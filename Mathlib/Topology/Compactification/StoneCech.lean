@@ -245,6 +245,7 @@ instance [Inhabited α] : Inhabited (PreStoneCech α) :=
 def preStoneCechUnit (x : α) : PreStoneCech α :=
   Quot.mk _ (pure x : Ultrafilter α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreStoneCech α) :=
   continuous_iff_ultrafilter.mpr fun x g gx ↦ by
     have : (g.map pure).toFilter ≤ 𝓝 g := by
@@ -370,6 +371,7 @@ variable [CompactSpace β]
 def stoneCechExtend : StoneCech α → β :=
   T2Quotient.lift (continuous_preStoneCechExtend hg)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
   ext x

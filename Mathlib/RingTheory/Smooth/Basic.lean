@@ -302,6 +302,7 @@ theorem iff_split_injection
     simp [LinearMap.ext_iff]
   · rw [and_iff_right (by exact mapBaseChange_surjective R P A hf)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
 with kernel `I` (typically a presentation `R[X] → S`),
@@ -449,12 +450,12 @@ end surjective
 
 section BaseChange
 
-open scoped TensorProduct
 
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
 variable (B : Type*) [CommRing B] [Algebra R B]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
   let := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
@@ -497,6 +498,7 @@ instance [FormallySmooth R A] (M : Submonoid A) : FormallySmooth R (Localization
   have : FormallySmooth A (Localization M) := of_isLocalization M
   .comp _ A _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
   refine .of_comp_surjective fun Q _ _ I e f ↦ ?_
   let := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
