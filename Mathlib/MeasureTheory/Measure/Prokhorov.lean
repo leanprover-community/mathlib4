@@ -64,6 +64,7 @@ open FiniteMeasure
 
 variable {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [BorelSpace E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (E) in
 /-- In a compact space, the set of finite measures with mass at most `C` is compact. -/
 theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : ℝ≥0) :
@@ -519,7 +520,7 @@ lemma isCompact_closure_of_isTightMeasureSet {S : Set (ProbabilityMeasure E)}
     apply isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le u_lim
     · exact fun n ↦ (finite_Iic n).isCompact_biUnion (fun i hi ↦ K_comp i)
     · right
-      simp only [Monotone, mem_Iic, le_eq_subset, iUnion_subset_iff, K']
+      simp only [Monotone, mem_Iic, iUnion_subset_iff, K']
       intro a b hab i hi
       apply subset_biUnion_of_mem
       exact hi.trans hab

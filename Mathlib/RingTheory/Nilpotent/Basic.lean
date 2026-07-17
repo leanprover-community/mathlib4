@@ -44,6 +44,14 @@ theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   use n
   rw [neg_pow, hn, mul_zero]
 
+theorem not_isNilpotent_neg_one [Ring R] [Nontrivial R] : ¬ IsNilpotent (-1 : R) := by
+  intro h
+  simpa [not_isNilpotent_one] using h.neg
+
+theorem neg_one_pow_ne_zero [Ring R] [Nontrivial R] (n : ℕ) : (-1 : R) ^ n ≠ 0 := by
+  intro h
+  exact not_isNilpotent_neg_one ⟨n, h⟩
+
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
