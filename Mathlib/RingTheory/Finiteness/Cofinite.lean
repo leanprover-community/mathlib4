@@ -101,7 +101,7 @@ theorem CoFG.inf {S T : Submodule R M} (hS : S.CoFG) (hT : T.CoFG) :
 
 /-- Over a noetherian ring the infimum of a finite family of CoFG submodules is CoFG. -/
 protected theorem CoFG.sInf {s : Finset (Submodule R M)} (hs : ∀ S ∈ s, S.CoFG) :
-    (sInf (s : Set (Submodule R M))).CoFG := by classical
+    (sInf (s : Set (Submodule R M))).CoFG := by
   induction s using Finset.induction with
   | empty => simp
   | insert w s hws hs' =>
