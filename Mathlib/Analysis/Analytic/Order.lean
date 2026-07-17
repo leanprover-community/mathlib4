@@ -577,7 +577,7 @@ namespace AnalyticOnNhd
 variable {U : Set 𝕜} {f : 𝕜 → E}
 
 /-- The set where an analytic function has infinite order is clopen in its domain of analyticity. -/
-theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
+theorem isClopen_setOfPred_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
     IsClopen {u : U | analyticOrderAt f u = ⊤} := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
@@ -602,12 +602,15 @@ theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
     conv =>
       arg 1; intro; left; right; arg 1; intro
       rw [analyticOrderAt_eq_top, eventually_nhds_iff]
-    simp only [mem_setOf_eq] at hz
+    simp only [mem_ofPred_eq] at hz
     rw [analyticOrderAt_eq_top, eventually_nhds_iff] at hz
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
     simp only [isOpen_induced h₂t', mem_preimage, h₃t', and_self, and_true]
     grind
+
+@[deprecated (since := "2026-07-09")]
+alias isClopen_setOf_analyticOrderAt_eq_top := isClopen_setOfPred_analyticOrderAt_eq_top
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/
@@ -617,7 +620,7 @@ theorem exists_analyticOrderAt_ne_top_iff_forall (hf : AnalyticOnNhd 𝕜 f U) (
   obtain ⟨v⟩ : Nonempty U := inferInstance
   suffices (∀ (u : U), analyticOrderAt f u ≠ ⊤) ∨ ∀ (u : U), analyticOrderAt f u = ⊤ by tauto
   simpa [Set.eq_empty_iff_forall_notMem, Set.eq_univ_iff_forall] using
-      isClopen_iff.1 hf.isClopen_setOf_analyticOrderAt_eq_top
+      isClopen_iff.1 hf.isClopen_setOfPred_analyticOrderAt_eq_top
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
@@ -629,7 +632,7 @@ theorem analyticOrderAt_ne_top_of_isPreconnected {x y : 𝕜} (hf : AnalyticOnNh
 
 /-- The set where an analytic function has zero or infinite order is discrete within its domain of
 analyticity. -/
-theorem codiscrete_setOf_analyticOrderAt_eq_zero_or_top (hf : AnalyticOnNhd 𝕜 f U) :
+theorem codiscrete_setOfPred_analyticOrderAt_eq_zero_or_top (hf : AnalyticOnNhd 𝕜 f U) :
     {u : U | analyticOrderAt f u = 0 ∨ analyticOrderAt f u = ⊤} ∈ Filter.codiscrete U := by
   simp_rw [mem_codiscrete_subtype_iff_mem_codiscreteWithin, mem_codiscreteWithin,
     disjoint_principal_right]
@@ -640,11 +643,15 @@ theorem codiscrete_setOf_analyticOrderAt_eq_zero_or_top (hf : AnalyticOnNhd 𝕜
   · filter_upwards [h₁f] with a ha
     simp +contextual [(hf a _).analyticOrderAt_eq_zero, ha]
 
+@[deprecated (since := "2026-07-09")]
+alias codiscrete_setOf_analyticOrderAt_eq_zero_or_top :=
+  codiscrete_setOfPred_analyticOrderAt_eq_zero_or_top
+
 /--
 The set where an analytic function has zero or infinite order is discrete within its domain of
 analyticity.
 -/
-theorem codiscreteWithin_setOf_analyticOrderAt_eq_zero_or_top (hf : AnalyticOnNhd 𝕜 f U) :
+theorem codiscreteWithin_setOfPred_analyticOrderAt_eq_zero_or_top (hf : AnalyticOnNhd 𝕜 f U) :
     {u : 𝕜 | analyticOrderAt f u = 0 ∨ analyticOrderAt f u = ⊤} ∈ codiscreteWithin U := by
   simp_rw [mem_codiscreteWithin, disjoint_principal_right]
   intro x hx
@@ -653,6 +660,10 @@ theorem codiscreteWithin_setOf_analyticOrderAt_eq_zero_or_top (hf : AnalyticOnNh
     simp [analyticOrderAt_eq_top, ha]
   · filter_upwards [h₁f] with a ha
     simp +contextual [(hf a _).analyticOrderAt_eq_zero, ha]
+
+@[deprecated (since := "2026-07-09")]
+alias codiscreteWithin_setOf_analyticOrderAt_eq_zero_or_top :=
+  codiscreteWithin_setOfPred_analyticOrderAt_eq_zero_or_top
 
 /--
 If an analytic function `f` is not constantly zero on a connected set `U`, then its set of zeros is

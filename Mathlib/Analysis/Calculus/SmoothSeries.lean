@@ -280,6 +280,6 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hv k (hk.trans hm)).subtype _
   refine contDiff_tsum (fun i => (hf i).of_le (mod_cast hm)) h'u ?_
   rintro k ⟨i, hi⟩ x hk
-  simp only [t, T, Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
+  simp only [t, T, Finite.mem_toFinset, mem_ofPred_eq, Finset.mem_range, not_forall, not_le,
     exists_prop, not_exists, not_and, not_lt] at hi
   exact hi k (Nat.lt_succ_iff.2 (WithTop.coe_le_coe.1 hk)) x

@@ -125,24 +125,24 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
     have : netMaxcard T F U n
       = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
-      simp only [mem_setOf_eq, ENat.some_eq_natCast, Function.comp_apply]
+      simp only [mem_ofPred_eq, ENat.some_eq_natCast, Function.comp_apply]
       exact biSup_congr (fun _ _ ↦ rfl)
     rw [this] at k_max
     have h_bdda : BddAbove (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       refine ⟨k, mem_upperBounds.2 ?_⟩
-      simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+      simp only [mem_image, mem_ofPred_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro s h
       rw [← ENat.natCast_le_natCast, k_max]
       apply le_sSup
       exact Filter.frequently_principal.mp fun a ↦ a (by simpa using ⟨_, h, rfl⟩) rfl
     have h_nemp : (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}).Nonempty := by
       refine ⟨0, ?_⟩
-      simp only [mem_image, mem_setOf_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
+      simp only [mem_image, mem_ofPred_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
       exact isDynNetIn_empty
     rw [← WithTop.coe_sSup' h_bdda] at k_max
     have key := Nat.sSup_mem h_nemp h_bdda
     rw [← Nat.cast_inj.mp k_max, mem_image] at key
-    simp only [mem_setOf_eq] at key
+    simp only [mem_ofPred_eq] at key
     exact key
   · obtain ⟨s, _, s_card⟩ := h
     rw [← s_card]

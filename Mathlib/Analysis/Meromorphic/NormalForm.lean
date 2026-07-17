@@ -393,7 +393,7 @@ theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : Ana
     IsUnit.smul_eq_zero, true_and]
   filter_upwards [h₃p, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
     with a h₁a h₂a
-  simp_all only [Pi.smul_apply', Pi.pow_apply, Set.preimage_setOf_eq, Set.mem_setOf_eq,
+  simp_all only [Pi.smul_apply', Pi.pow_apply, Set.preimage_ofPred_eq, Set.mem_ofPred_eq,
     Function.comp_apply, ← smul_assoc, mul_zpow, smul_eq_mul]
   congr 2
   rw [mul_comm, zpow_mul, zpow_natCast]
