@@ -47,7 +47,8 @@ products of exponential unitaries.
   `expUnitary x` for a selfadjoint element `x`.
 + `Unitary.isPathConnected_ball`: any ball of radius `δ < 2` in the unitary group of a unital
   C⋆-algebra is path connected.
-+ `Unitary.instLocPathConnectedSpace`: the unitary group of a C⋆-algebra is locally path connected.
++ `Unitary.instLocallyPathConnectedSpace`: the unitary group of a C⋆-algebra is
+  locally path connected.
 + `Unitary.mem_pathComponentOne_iff`: The path component of the identity in the unitary group of a
   C⋆-algebra is the set of unitaries that can be expressed as a product of exponentials of
   selfadjoint elements.
@@ -214,7 +215,7 @@ lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
 lemma Unitary.continuousOn_argSelfAdjoint :
     ContinuousOn (argSelfAdjoint : unitary A → selfAdjoint A) (ball (1 : unitary A) 2) := by
   rw [Topology.IsInducing.subtypeVal.continuousOn_iff]
-  simp only [SetLike.coe_sort_coe, Function.comp_def, argSelfAdjoint_coe]
+  simp only [Function.comp_def, argSelfAdjoint_coe]
   rw [isOpen_ball.continuousOn_iff]
   intro u (hu : dist u 1 < 2)
   obtain ⟨ε, huε, hε2⟩ := exists_between (sq_lt_sq₀ (by positivity) (by positivity) |>.mpr hu)
@@ -326,9 +327,9 @@ lemma Unitary.isPathConnected_ball (u : unitary A) (δ : ℝ) (hδ₀ : 0 < δ) 
     norm_expUnitary_smul_argSelfAdjoint_sub_one_le u t.2 (hu.trans hδ₂) |>.trans_lt hu
 
 /-- The unitary group in a C⋆-algebra is locally path connected. -/
-instance Unitary.instLocPathConnectedSpace : LocPathConnectedSpace (unitary A) :=
+instance Unitary.instLocallyPathConnectedSpace : LocallyPathConnectedSpace (unitary A) :=
   .of_bases (fun _ ↦ nhds_basis_uniformity <| uniformity_basis_dist_lt zero_lt_two) <| by
-    simpa using isPathConnected_ball
+    simpa using! isPathConnected_ball
 
 /-- The path component of the identity in the unitary group of a C⋆-algebra is the set of
 unitaries that can be expressed as a product of exponential unitaries. -/
@@ -344,8 +345,8 @@ lemma Unitary.mem_pathComponentOne_iff {u : unitary A} :
     obtain ⟨v, ⟨⟨l, (hlv : (l.map expUnitary).prod = v)⟩, huv⟩⟩ := hu
     refine ⟨argSelfAdjoint (u * star v) :: l, ?_⟩
     simp [hlv, mul_assoc,
-      expUnitary_eq_mul_inv u v (by simpa [Subtype.dist_eq, dist_eq_norm] using huv)]
+      expUnitary_eq_mul_inv u v (by simpa [Subtype.dist_eq, dist_eq_norm] using! huv)]
   · rintro ⟨l, rfl⟩
     induction l with
     | nil => simp
-    | cons x xs ih => simpa using (joined_one_expUnitary x).mul ih
+    | cons x xs ih => simpa using! (joined_one_expUnitary x).mul ih

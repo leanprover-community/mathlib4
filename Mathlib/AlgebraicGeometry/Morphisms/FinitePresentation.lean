@@ -86,14 +86,17 @@ instance locallyOfFinitePresentation_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFinitePresentation :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finitePresentation_isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresentation g] :
     LocallyOfFinitePresentation (Limits.pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresentation f] :
     LocallyOfFinitePresentation (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFinitePresentation f] :
     LocallyOfFinitePresentation (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
@@ -109,6 +112,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [hf : LocallyOfFinitePresentation f] :
   refine affineLocally_le (fun hf ↦ ?_) f hf
   exact RingHom.FiniteType.of_finitePresentation hf
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- **Chevalley's Theorem**: The image of a locally constructible set under a
 morphism of finite presentation is locally constructible. -/

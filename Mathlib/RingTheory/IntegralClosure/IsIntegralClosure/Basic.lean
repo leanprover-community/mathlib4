@@ -46,7 +46,7 @@ theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   mul_comm := mul_comm
   mul_inv_cancel {x} hx := by
-    letI := hR.toField
+    let := hR.toField
     obtain ⟨y, rfl⟩ := (Algebra.IsIntegral.isIntegral (R := R) x).isUnit hx
     exact ⟨y.inv, y.val_inv⟩
 
@@ -492,7 +492,7 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
   refine .of_mem_of_fg ((S[x]).restrictScalars R) ?_ _
     ((Subalgebra.mem_restrictScalars R).mpr <| subset_adjoin rfl)
   rw [← Module.Finite.iff_fg]
-  letI : SMul S Sx := { MSx with } -- need this even though MSx is there
+  let : SMul S Sx := { MSx with } -- need this even though MSx is there
   have : IsScalarTower R S Sx :=
     Submodule.isScalarTower Sx -- Lean looks for `Module A Sx` without this
   exact Module.Finite.trans S Sx
@@ -574,12 +574,13 @@ theorem Algebra.IsIntegral.tower_top [Algebra R S] [Algebra R T] [Algebra S T] [
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
     (Ideal.quotientMap I f le_rfl).IsIntegral := by
   rintro ⟨x⟩
   obtain ⟨p, p_monic, hpx⟩ := hf x
   refine ⟨p.map (Ideal.Quotient.mk _), p_monic.map _, ?_⟩
-  simpa only [hom_eval₂, eval₂_map] using congr_arg (Ideal.Quotient.mk I) hpx
+  simpa only [hom_eval₂, eval₂_map] using! congr_arg (Ideal.Quotient.mk I) hpx
 
 instance {I : Ideal A} [Algebra.IsIntegral R A] : Algebra.IsIntegral R (A ⧸ I) :=
   Algebra.IsIntegral.trans A
@@ -598,6 +599,9 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   refine ⟨fun h => ?_, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
+
+theorem RingHom.IsIntegral.kerLift {f : S →+* T} (hf : f.IsIntegral) : f.kerLift.IsIntegral :=
+  RingHom.IsIntegral.tower_top (Ideal.Quotient.mk (RingHom.ker f)) f.kerLift hf
 
 theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
     (inj : Function.Injective f) : IsLocalHom f where

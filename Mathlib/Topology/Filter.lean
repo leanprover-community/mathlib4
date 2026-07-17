@@ -69,6 +69,7 @@ theorem isOpen_iff {s : Set (Filter α)} : IsOpen s ↔ ∃ T : Set (Set α), s 
   isTopologicalBasis_Iic_principal.open_iff_eq_sUnion.trans <| by
     simp only [exists_subset_range_and_iff, sUnion_image, (· ∘ ·)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
   nhds_generateFrom.trans <| by
     simp only [mem_setOf_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
@@ -129,7 +130,7 @@ protected theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 
 
 @[simp]
 protected theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
-  simpa only [iInf_bool_eq] using Filter.nhds_iInf fun b => cond b l₁ l₂
+  simpa only [iInf_bool_eq] using! Filter.nhds_iInf fun b => cond b l₁ l₂
 
 theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
   Monotone.of_map_inf Filter.nhds_inf

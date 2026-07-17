@@ -79,10 +79,11 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 
 theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι} (I_fin : I.Finite)
     {V : I → Set α} (hV : ∀ (i : I), V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
-  haveI := I_fin.fintype
+  have := I_fin.fintype
   refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
     (U ∈ ⨅ i, s i) ↔
       ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ (i : I), V i ∈ s i) ∧ U = ⋂ i, V i := by
@@ -132,6 +133,7 @@ theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Fil
   rintro ⟨t, ht, rfl⟩
   exact iInter_mem.2 fun i => mem_iInf_of_mem i (ht i)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {t : Set α} :
     t ∈ ⨅ (i : ι) (_ : p i), 𝓟 (s i) ↔
       ∃ I : Set ι, I.Finite ∧ (∀ i ∈ I, p i) ∧ ⋂ i ∈ I, s i ⊆ t := by
@@ -164,7 +166,7 @@ theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {
 theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → Filter α} {t : Set ι}
     (hd : t.PairwiseDisjoint l) (ht : t.Finite) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ t.PairwiseDisjoint s := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   rcases (hd.subtype _ _).exists_mem_filter_of_disjoint with ⟨s, hsl, hsd⟩
   lift s to (i : t) → {s // s ∈ l i} using hsl
   rcases @Subtype.exists_pi_extension ι (fun i => { s // s ∈ l i }) _ _ s with ⟨s, rfl⟩
@@ -226,6 +228,18 @@ theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
   lift s to Finset ι using hs
   exact mod_cast iInf_principal_finset s f
+
+/-- If a filter has finitely many sets, then it is principal. -/
+theorem eq_principal_of_finite_sets (hf : f.sets.Finite) : ∃ s, f = 𝓟 s := by
+  use ⋂₀ f.sets
+  exact Filter.ext fun B ↦ ⟨sInter_subset_of_mem, mem_of_superset ((sInter_mem hf).2 (by simp))⟩
+
+/-- Any filter on a finite type is principal. -/
+theorem eq_principal_of_finite [Finite α] (f : Filter α) : ∃ s, f = 𝓟 s :=
+  eq_principal_of_finite_sets (finite_univ.powerset.subset (by simp))
+
+theorem principal_surjective [Finite α] : Surjective (𝓟 : Set α → Filter α) :=
+  fun f ↦ (eq_principal_of_finite f).imp fun _ ↦ .symm
 
 end Lattice
 

@@ -39,7 +39,7 @@ def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
   __ := f.right.hom
   commutes' a := by
     have : (A.hom ≫ f.right) a = B.hom a := by simp
-    simpa only [Functor.const_obj_obj, Functor.id_obj, CommRingCat.comp_apply] using this
+    simpa only [Functor.const_obj_obj, Functor.id_obj, CommRingCat.comp_apply] using! this
 
 @[simp]
 lemma toAlgHom_id (A : Under R) : toAlgHom (𝟙 A) = AlgHom.id R A := rfl
@@ -93,6 +93,7 @@ end AlgHom
 
 namespace AlgEquiv
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Make an isomorphism in `Under R` from an algebra isomorphism. -/
 def toUnder {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (f : A ≃ₐ[R] B) :
@@ -142,8 +143,7 @@ variable (S) in
 def tensorProdObjIsoPushoutObj (A : Under R) :
     mkUnder S (S ⊗[R] A) ≅ (Under.pushout (ofHom <| algebraMap R S)).obj A :=
   Under.isoMk (CommRingCat.isPushout_tensorProduct R S A).flip.isoPushout <| by
-    simp only [Under.pushout_obj, Under.mk_right,
-      mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom, Under.mk_hom]
+    simp only [mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom]
     rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -161,6 +161,7 @@ lemma pushout_inr_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
       (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- `A ↦ S ⊗[R] A` is naturally isomorphic to `A ↦ pushout A.hom (algebraMap R S)`. -/

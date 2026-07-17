@@ -66,6 +66,7 @@ def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
       (congr_app (w j) x).trans
         ((t x).fac ⟨s.pt.obj _, whiskerRight s.π ((evaluation K C).obj _)⟩ j).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F` and a collection of limit cones for each diagram `X ↦ F X k`, we can stitch
 them together to give a cone for the diagram `F`.
@@ -84,17 +85,21 @@ def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
     { app := fun j => { app := fun k => (c k).cone.π.app j }
       naturality := fun j₁ j₂ g => by ext k; exact (c k).cone.π.naturality g }
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
 def evaluateCombinedCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCone (combineCones F c) ≅ (c k).cone :=
   Cone.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Stitching together limiting cones gives a limiting cone. -/
 def combinedIsLimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
     IsLimit (combineCones F c) :=
   evaluationJointlyReflectsLimits _ fun k =>
     (c k).isLimit.ofIsoLimit (evaluateCombinedCones F c k).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The evaluation functors jointly reflect colimits: that is, to show a cocone is a colimit of `F`
 it suffices to show that each evaluation cocone is a colimit. In other words, to prove a cocone is
@@ -117,6 +122,7 @@ def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
       (congr_app (w j) x).trans
         ((t x).fac ⟨s.pt.obj _, whiskerRight s.ι ((evaluation K C).obj _)⟩ j).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `F` and a collection of colimit cocones for each diagram `X ↦ F X k`, we can stitch
@@ -136,17 +142,21 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
     { app := fun j => { app := fun k => (c k).cocone.ι.app j }
       naturality := fun j₁ j₂ g => by ext k; exact (c k).cocone.ι.naturality g }
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/
 def evaluateCombinedCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCocone (combineCocones F c) ≅ (c k).cocone :=
   Cocone.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Stitching together colimiting cocones gives a colimiting cocone. -/
 def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) :
     IsColimit (combineCocones F c) :=
   evaluationJointlyReflectsColimits _ fun k =>
     (c k).isColimit.ofIsoColimit (evaluateCombinedCocones F c k).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 An alternative colimit cocone in the functor category `K ⥤ C` in the case where `C` has
@@ -164,6 +174,8 @@ noncomputable def pointwiseCocone [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
       change (F.flip.obj x).map f ≫ _ = _
       rw [colimit.w] }
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `pointwiseCocone` is indeed a colimit cocone. -/
 noncomputable def pointwiseIsColimit [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
     IsColimit (pointwiseCocone F) := by
@@ -264,6 +276,7 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
   ext j
   simpa using w j
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Taking a limit after whiskering by `G` is the same as using `G` and then taking a limit. -/
 def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLimitsOfShape J C] :
@@ -273,6 +286,7 @@ def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLi
       HasLimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
       (limitObjIsoLimitCompEvaluation F (G.obj j)).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringLeftIsoCompLimit_hom_whiskerLeft_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
@@ -282,6 +296,8 @@ theorem limitCompWhiskeringLeftIsoCompLimit_hom_whiskerLeft_π (F : J ⥤ K ⥤ 
   ext d
   simp [limitCompWhiskeringLeftIsoCompLimit]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringLeftIsoCompLimit_inv_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
     [HasLimitsOfShape J C] (j : J) :
@@ -358,6 +374,7 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
   ext j
   simpa using w j
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Taking a colimit after whiskering by `G` is the same as using `G` and then taking a colimit. -/
 def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasColimitsOfShape J C] :
@@ -367,6 +384,7 @@ def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [H
       HasColimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
       (colimitObjIsoColimitCompEvaluation F (G.obj j)).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitCompWhiskeringLeftIsoCompColimit_hom (F : J ⥤ K ⥤ C) (G : D ⥤ K)
@@ -458,6 +476,7 @@ the individual limits on objects. -/
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
   NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitIsoFlipCompLim` is natural with respect to diagrams. -/
 @[simps!]
@@ -469,6 +488,7 @@ def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
     intro j
     simp [comp_evaluation, ← NatTrans.comp_app (limMap η)]).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `limitIsoFlipCompLim` where the arguments of `F` are flipped. -/
 @[simps!]
@@ -477,6 +497,7 @@ def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.fli
     limitObjIsoLimitCompEvaluation F.flip k ≪≫ HasLimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitFlipIsoCompLim` is natural with respect to diagrams. -/
 @[simps!]
@@ -503,6 +524,7 @@ the individual colimits on objects. -/
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
   NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `colimitIsoFlipCompColim` is natural with respect to diagrams. -/
 @[simps!]
@@ -514,6 +536,7 @@ def colimIsoFlipCompWhiskerColim [HasColimitsOfShape J C] :
     intro j
     simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap η)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `colimitIsoFlipCompColim` where the arguments of `F` are flipped. -/
 @[simps!]
@@ -522,6 +545,7 @@ def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colim
       colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `colimitFlipIsoCompColim` is natural with respect to diagrams. -/
 @[simps!]

@@ -352,6 +352,7 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
     refine ⟨J₂, hJ₂, J₁, hJ₁, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₂ hJ₁] at hJ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Create a `BoxIntegral.Prepartition` from a collection of possibly empty boxes by filtering out
 the empty one if it exists. -/
 def ofWithBot (boxes : Finset (WithBot (Box ι)))
@@ -371,6 +372,7 @@ theorem mem_ofWithBot {boxes : Finset (WithBot (Box ι))} {h₁ h₂} :
     J ∈ (ofWithBot boxes h₁ h₂ : Prepartition I) ↔ (J : WithBot (Box ι)) ∈ boxes :=
   mem_eraseNone
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iUnion_ofWithBot (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
@@ -381,6 +383,7 @@ theorem iUnion_ofWithBot (boxes : Finset (WithBot (Box ι)))
   simp only [← Box.biUnion_coe_eq_coe, @iUnion_comm _ _ (Box ι), @iUnion_comm _ _ (@Eq _ _ _),
     iUnion_iUnion_eq_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofWithBot_le {boxes : Finset (WithBot (Box ι))}
     {le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I}
     {pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint}
@@ -449,6 +452,7 @@ theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : �
 theorem monotone_restrict : Monotone fun π : Prepartition I => restrict π J :=
   fun _ _ => restrict_mono
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restricting to a larger box does not change the set of boxes. We cannot claim equality
 of prepartitions because they have different types. -/
 theorem restrict_boxes_of_le (π : Prepartition I) (h : I ≤ J) : (π.restrict J).boxes = π.boxes := by
@@ -549,7 +553,7 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by
   simp only [Prepartition.iUnion]
   convert!
-    (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
+    (@Set.biUnion_sdiff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
   · simp +contextual
   · rw [Set.PairwiseDisjoint]
     convert! π.pairwiseDisjoint
@@ -570,7 +574,7 @@ def disjUnion (π₁ π₂ : Prepartition I) (h : Disjoint π₁.iUnion π₂.iU
   le_of_mem' _ hJ := (Finset.mem_union.1 hJ).elim π₁.le_of_mem π₂.le_of_mem
   pairwiseDisjoint :=
     suffices ∀ J₁ ∈ π₁, ∀ J₂ ∈ π₂, J₁ ≠ J₂ → Disjoint (J₁ : Set (ι → ℝ)) J₂ by
-      simpa [pairwise_union_of_symmetric (symmetric_disjoint.comap _), pairwiseDisjoint]
+      simpa [pairwise_union_of_symm, pairwiseDisjoint]
     fun _ h₁ _ h₂ _ => h.mono (π₁.subset_iUnion h₁) (π₂.subset_iUnion h₂)
 
 @[simp]

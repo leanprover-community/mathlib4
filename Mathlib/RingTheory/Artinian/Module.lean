@@ -188,7 +188,7 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
       exact Nat.succ_le_succ_iff.mp p
   obtain ⟨n, w⟩ := monotone_stabilizes (partialSups (OrderDual.toDual ∘ f))
   refine ⟨n, fun m p ↦ (h m).eq_bot_of_ge <| sup_eq_left.mp ?_⟩
-  simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
+  simpa only [partialSups_add_one] using! (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end IsArtinian
 
@@ -600,6 +600,9 @@ instance : Finite (PrimeSpectrum R) :=
     (I : MaximalSpectrum R) : Field (R ⧸ I.asIdeal) :=
   Ideal.Quotient.field I.asIdeal
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The quotient of a commutative Artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/
 @[simps!]
@@ -609,6 +612,9 @@ noncomputable def quotNilradicalEquivPi :
     { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ I.isCoprime_of_ne
       commutes' _ := rfl}
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The quotient of a commutative Artinian ring by a power of its nilradical is isomorphic to
 a finite product of local rings, namely the quotients by the powers of the maximal ideals. -/
 @[simps!]
@@ -623,6 +629,10 @@ namely the quotients by the maximal ideals. -/
 noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
   .trans (.symm <| .quotientBot R R) <| .trans
     (Ideal.quotientEquivAlgOfEq R (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
+
+@[simp]
+lemma equivPi_apply [IsReduced R] (x : R) (m : MaximalSpectrum R) : equivPi R x m = x :=
+  rfl
 
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing

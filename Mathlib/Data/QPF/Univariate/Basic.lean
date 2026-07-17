@@ -63,6 +63,7 @@ variable {F : Type u → Type v} [q : QPF F]
 
 open Functor (Liftp Liftr)
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 Show that every qpf is a lawful functor.
 
@@ -95,6 +96,7 @@ section
 
 open Functor
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
     Liftp p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i, p (f i) := by
   constructor
@@ -110,6 +112,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
   use abs ⟨a, fun i => ⟨f i, h₁ i⟩⟩
   rw [← abs_map, h₀]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
     Liftp p x ↔ ∃ u : q.P α, abs u = x ∧ ∀ i, p (u.snd i) := by
   constructor
@@ -126,6 +129,7 @@ theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
   use abs ⟨a, fun i => ⟨f i, h₁ i⟩⟩
   rw [← abs_map, ← h₀]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : F α) :
     Liftr r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by
   constructor
@@ -174,6 +178,7 @@ inductive Wequiv : q.P.W → q.P.W → Prop
       abs ⟨a, f⟩ = abs ⟨a', f'⟩ → Wequiv ⟨a, f⟩ ⟨a', f'⟩
   | trans (u v w : q.P.W) : Wequiv u v → Wequiv v w → Wequiv u w
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `recF` is insensitive to the representation -/
 theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
@@ -206,9 +211,8 @@ def Wrepr : q.P.W → q.P.W :=
 
 theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
   induction x with | _ a f ih
-  apply Wequiv.trans
-  · change Wequiv (Wrepr ⟨a, f⟩) (PFunctor.W.mk (q.P.map Wrepr ⟨a, f⟩))
-    apply Wequiv.abs'
+  apply Wequiv.trans (v := PFunctor.W.mk (q.P.map Wrepr ⟨a, f⟩))
+  · apply Wequiv.abs'
     have : Wrepr ⟨a, f⟩ = PFunctor.W.mk (repr (abs (q.P.map Wrepr ⟨a, f⟩))) := rfl
     rw [this, PFunctor.W.dest_mk, abs_repr]
     rfl
@@ -243,6 +247,7 @@ def Fix.mk (x : F (Fix F)) : Fix F :=
 def Fix.dest : Fix F → F (Fix F) :=
   Fix.rec (Functor.map Fix.mk)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
     Fix.rec g (Fix.mk x) = g (Fix.rec g <$> x) := by
   have : recF g ∘ fixToW = Fix.rec g := by
@@ -258,6 +263,7 @@ theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
   rw [PFunctor.map_eq, recF_eq, ← PFunctor.map_eq, PFunctor.W.dest_mk, PFunctor.map_map, abs_map,
     ← h, abs_repr, this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
     Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦⟨a, f⟩⟧ := by
   have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by
@@ -269,6 +275,7 @@ theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
   apply Quot.sound
   apply Wrepr_equiv
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
     (h : ∀ x : F (Fix F), g₁ <$> x = g₂ <$> x → g₁ (Fix.mk x) = g₂ (Fix.mk x)) :
     ∀ x, g₁ x = g₂ x := by
@@ -358,7 +365,6 @@ def Cofix.dest : Cofix F → F (Cofix F) :=
   Quot.lift (fun x => Quot.mk Mcongr <$> abs (PFunctor.M.dest x))
     (by
       rintro x y ⟨r, pr, rxy⟩
-      dsimp
       have : ∀ x y, r x y → Mcongr x y := by
         intro x y h
         exact ⟨r, pr, h⟩
@@ -367,6 +373,7 @@ def Cofix.dest : Cofix F → F (Cofix F) :=
         lhs
         rw [comp_map, ← abs_map, pr rxy, abs_map, ← comp_map])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Cofix.dest_corec {α : Type u} (g : α → F α) (x : α) :
     Cofix.dest (Cofix.corec g x) = Cofix.corec g <$> g x := by
   conv =>
@@ -375,6 +382,7 @@ theorem Cofix.dest_corec {α : Type u} (g : α → F α) (x : α) :
   dsimp
   rw [corecF_eq, abs_map, abs_repr, ← comp_map]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, r x x)
     (h : ∀ x y, r x y → Quot.mk r <$> Cofix.dest x = Quot.mk r <$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
@@ -422,6 +430,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     rw [h _ _ r'xy]
   right; exact rxy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
     (h : ∀ x y, r x y → Liftr r (Cofix.dest x) (Cofix.dest y)) : ∀ x y, r x y → x = y := by
   apply Cofix.bisim_rel
@@ -454,8 +463,9 @@ namespace QPF
 variable {F₂ : Type u → Type u} [q₂ : QPF F₂]
 variable {F₁ : Type u → Type u} [q₁ : QPF F₁]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- composition of qpfs gives another qpf -/
-@[implicit_reducible]
+@[instance_reducible]
 def comp : QPF (Functor.Comp F₂ F₁) where
   P := PFunctor.comp q₂.P q₁.P
   abs {α} := by
@@ -515,7 +525,7 @@ variable {FG_repr : ∀ {α}, G α → F α}
 functor `G α`, `G` is a qpf. We can consider `G` a quotient on `F` where
 elements `x y : F α` are in the same equivalence class if
 `FG_abs x = FG_abs y`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
     (FG_abs_map : ∀ {α β} (f : α → β) (x : F α), FG_abs (f <$> x) = f <$> FG_abs x) : QPF G where
   P := q.P
@@ -616,11 +626,13 @@ theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : �
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem supp_map (h : q.IsUniform) {α β : Type u} (g : α → β) (x : F α) :
     supp (g <$> x) = g '' supp x := by
   rw [← abs_repr x]; obtain ⟨a, f⟩ := repr x; rw [← abs_map, PFunctor.map_eq]
   rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, image_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
   · intro h α a a' f f' h'
@@ -628,6 +640,7 @@ theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform := by
   · rintro h α ⟨a, f⟩
     rwa [supp_eq_of_isUniform, PFunctor.supp_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpPreservation := by
   constructor <;> intro h
   · rintro α p ⟨a, f⟩

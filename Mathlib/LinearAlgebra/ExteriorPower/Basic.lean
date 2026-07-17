@@ -144,6 +144,7 @@ noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
         r • Finsupp.single (update m i x) 1
     | .alt m _ _ _ _ => Finsupp.single m 1
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 /-- The solutions in a module `N` to the linear equations
@@ -178,6 +179,7 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         · simp
         · simpa using f.map_eq_zero_of_eq v hm hij }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The universal property of the exterior power. -/
 noncomputable def isPresentationCore :
     (relationsSolutionEquiv.symm (ιMulti R n (M := M))).IsPresentationCore where

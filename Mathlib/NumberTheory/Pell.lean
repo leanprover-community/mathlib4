@@ -355,7 +355,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_ne_zero).mp ⟨d, hq⟩
     rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩
-  haveI := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
+  have := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
   let f : ℚ → ZMod m.natAbs × ZMod m.natAbs := fun q => (q.num, q.den)
   obtain ⟨q₁, h₁ : q₁.num ^ 2 - d * (q₁.den : ℤ) ^ 2 = m,
       q₂, h₂ : q₂.num ^ 2 - d * (q₂.den : ℤ) ^ 2 = m, hne, hqf⟩ :=
@@ -550,7 +550,7 @@ theorem x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : 
 the `y`-coordinate remains nonnegative. -/
 theorem mul_inv_y_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : 0 ≤ (a * a₁⁻¹).y := by
-  simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using
+  simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using!
     h.x_mul_y_le_y_mul_x hax hay
 
 /-- If we multiply a positive solution with the inverse of a fundamental solution,

@@ -12,8 +12,6 @@ public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.Tactic.Group
 
-import all Mathlib.Algebra.Group.End -- TODO: needed for `to_additive`
-
 /-!
 # SubMulActions on complements of invariant subsets
 
@@ -125,7 +123,7 @@ def ofFixingSubgroup_equivariantMap :
 theorem ofFixingSubgroup_equivariantMap_injective :
     Injective (ofFixingSubgroup_equivariantMap M s) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-  simpa [Subtype.mk.injEq] using hxy
+  simpa [Subtype.mk.injEq] using! hxy
 
 section Comparisons
 
@@ -213,13 +211,6 @@ section FixingSubgroupConj
 
 variable {s t : Set α} {g : M}
 
-/-
-FIXME: The use of `to_additive` in this section is a horrible mess.
-It requires translating `MulAut.instGroup` to `AddAut.instAddGroup` instead of `AddAut.instGroup`,
-and `MulAut.conj` shouldn't be able to translate to `AddAut.conj`, but somehow it works out.
--/
-attribute [to_additive] MulAut.instGroup
-
 @[to_additive]
 theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k ∈ fixingSubgroup M t) :
     MulAut.conj g k ∈ fixingSubgroup M s := by
@@ -230,6 +221,7 @@ theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k �
   rw [← Set.mem_smul_set_iff_inv_smul_mem, hg]
   exact hy
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
     (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s := by
@@ -365,7 +357,7 @@ theorem map_ofFixingSubgroupUnion_bijective :
     Bijective (map_ofFixingSubgroupUnion M s t) := by
   constructor
   · intro a b h
-    simpa only [← SetLike.coe_eq_coe] using h
+    simpa only [← SetLike.coe_eq_coe] using! h
   · rintro ⟨⟨a, ha⟩, ha'⟩
     suffices a ∈ ofFixingSubgroup M (s ∪ t) by
       exact ⟨⟨a, this⟩,  rfl⟩
@@ -393,6 +385,7 @@ lemma ofFixingSubgroup_of_inclusion_injective {hst : t ⊆ s} :
   rw [← SetLike.coe_eq_coe] at hxy ⊢
   exact hxy
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The equivariant map between `SubMulAction.ofStabilizer M a`
 and `ofFixingSubgroup M {a}`. -/

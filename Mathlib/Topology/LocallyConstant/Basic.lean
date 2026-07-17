@@ -153,7 +153,7 @@ theorem iff_is_const [PreconnectedSpace X] {f : X → Y} : IsLocallyConstant f �
 
 theorem range_finite [CompactSpace X] {f : X → Y} (hf : IsLocallyConstant f) :
     (Set.range f).Finite := by
-  letI : TopologicalSpace Y := ⊥; haveI := discreteTopology_bot Y
+  let : TopologicalSpace Y := ⊥; have := discreteTopology_bot Y
   exact (isCompact_range hf.continuous).finite_of_discrete
 
 @[to_additive]
@@ -213,7 +213,7 @@ instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
 
 instance : FunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
-  coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
+  coe_injective := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
 /-- See Note [custom simps projections]. -/
 def Simps.apply (f : LocallyConstant X Y) : X → Y := f
@@ -446,12 +446,12 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
-    rw [mulIndicator_preimage, Set.ite, Set.diff_eq]
+    rw [mulIndicator_preimage, Set.ite, Set.sdiff_eq]
     exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 
 variable (a : X)
 
-open Classical in
+open scoped Classical in
 @[to_additive]
 theorem mulIndicator_apply_eq_if (hU : IsClopen U) :
     mulIndicator f hU a = if a ∈ U then f a else 1 :=
@@ -525,7 +525,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
   toFun i := if hi : i ∈ C₁ then f ⟨i, hi⟩ else g ⟨i, (Set.compl_subset_iff_union.mpr h) hi⟩
   isLocallyConstant := by
     let dZ : TopologicalSpace Z := ⊥
-    haveI : DiscreteTopology Z := discreteTopology_bot Z
+    have : DiscreteTopology Z := discreteTopology_bot Z
     obtain ⟨f, hf⟩ := f
     obtain ⟨g, hg⟩ := g
     rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
@@ -572,7 +572,7 @@ def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : 
     LocallyConstant C₀ Z :=
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
-    (by simpa [eq_univ_iff_forall] using h₀)
+    (by simpa [eq_univ_iff_forall] using! h₀)
     (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩)
     (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩) <| by
       rintro ⟨x, hx₀⟩ ⟨hx₁ : x ∈ C₁, hx₂ : x ∈ C₂⟩
@@ -584,7 +584,7 @@ lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
     (x : C₀) (hx : x.val ∈ C₁) :
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
-  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  let : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_left (f := (f₁.comap
     ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
     (hx := hx)]
@@ -596,7 +596,7 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
     (x : C₀) (hx : x.val ∈ C₂) :
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
-  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  let : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_right (f := (f₁.comap
     ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
     (hx := hx)]

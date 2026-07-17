@@ -107,7 +107,7 @@ theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β 
     (hg' : Measurable g') : Measurable (extend f g g') := by
   refine measurable_of_restrict_of_restrict_compl hf.measurableSet_range ?_ ?_
   · rw [restrict_extend_range]
-    simpa only [rangeSplitting] using hg.comp hf.measurable_rangeSplitting
+    simpa only [rangeSplitting] using! hg.comp hf.measurable_rangeSplitting
   · rw [restrict_extend_compl_range]
     exact hg'.comp measurable_subtype_coe
 
@@ -376,6 +376,7 @@ def prodCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α × γ ≃ᵐ β × δ
 def prodComm : α × β ≃ᵐ β × α where
   toEquiv := .prodComm α β
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Products of measurable spaces are associative. -/
 def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
@@ -500,6 +501,7 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
     piCongrLeft (fun i' ↦ β i') e x (e i) = x i := by
   rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
 def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
@@ -564,7 +566,7 @@ def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpac
   measurable_toFun := (measurable_pi_apply i).prodMk <| measurable_pi_iff.2 fun _ =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩
+    ⟨by simp [measurable_fst], fun j => by simpa using! (measurable_pi_apply _).comp measurable_snd⟩
 
 variable (π)
 
@@ -575,6 +577,7 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
     (∀ i, π i) ≃ᵐ (∀ i : Subtype p, π i) × ∀ i : { i // ¬p i }, π i where
   toEquiv := .piEquivPiSubtypeProd p π
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
@@ -636,6 +639,7 @@ def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α �
 @[simp] theorem ofInvolutive_symm (f : α → α) (hf : Involutive f) (hf' : Measurable f) :
     (ofInvolutive f hf hf').symm = ofInvolutive f hf hf' := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `setOf` as a `MeasurableEquiv`. -/
 @[simps]
 protected def setOf {α : Type*} : (α → Prop) ≃ᵐ Set α where
@@ -745,6 +749,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   apply hx
   exact ⟨y, h, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
     hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
@@ -760,13 +765,13 @@ lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
 /-- The left-inverse of a `MeasurableEmbedding` -/
 protected noncomputable
 def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
-  open Classical in
+  open scoped Classical in
   if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
 
 @[fun_prop]
 lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
     Measurable (hf.invFun : β → α) :=
-  open Classical in
+  open scoped Classical in
   Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
 
 lemma leftInverse_invFun [Nonempty α] (hf : MeasurableEmbedding f) : hf.invFun.LeftInverse f := by

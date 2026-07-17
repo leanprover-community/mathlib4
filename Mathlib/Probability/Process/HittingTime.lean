@@ -88,7 +88,6 @@ lemma hittingAfter_empty (n : ι) : hittingAfter u ∅ n = fun _ ↦ ⊤ := by e
 lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} (n m : ι) :
     hittingBtwn u .univ n m = fun _ ↦ min n m := by
   ext ω
-  classical
   simp only [hittingBtwn_def, Set.mem_Icc, Set.mem_univ, and_true, Set.setOf_true, Set.inter_univ]
   by_cases hnm : n ≤ m <;> simp [hnm] <;> grind
 
@@ -121,7 +120,6 @@ theorem hittingBtwn_le {m : ι} (ω : Ω) : hittingBtwn u s n m ω ≤ m := by
 
 theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
-  classical
   intro h
   have hexists : ∃ j ∈ Set.Icc n m, u j ω ∈ s := ⟨k, ⟨hk₂, le_trans hk₁.le <| hittingBtwn_le _⟩, h⟩
   refine not_le.2 hk₁ ?_
@@ -319,7 +317,7 @@ lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn
   simp only [hittingBtwn_def]
   split_ifs with hF hE hE
   · gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hEF]
+    exact ⟨n, by simp [mem_lowerBounds]; grind⟩
   · obtain ⟨t, ht⟩ := hF
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · obtain ⟨t, ht⟩ := hE
@@ -333,7 +331,7 @@ lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter
   split_ifs with hF hE hE
   · norm_cast
     gcongr
-    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hEF]
+    exact ⟨n, by simp only [mem_lowerBounds]; grind⟩
   · simp
   · obtain ⟨t, ht⟩ := hE
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF

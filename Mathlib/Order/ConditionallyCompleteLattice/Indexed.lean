@@ -433,11 +433,11 @@ theorem exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : �
 
 theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :
     a < iSup f ↔ ∃ i, a < f i := by
-  simpa only [mem_range, exists_exists_eq_and] using lt_csSup_iff hb (range_nonempty _)
+  simpa only [mem_range, exists_exists_eq_and] using! lt_csSup_iff hb (range_nonempty _)
 
 theorem ciInf_lt_iff [Nonempty ι] {f : ι → α} (hb : BddBelow (range f)) :
     iInf f < a ↔ ∃ i, f i < a := by
-  simpa only [mem_range, exists_exists_eq_and] using csInf_lt_iff hb (range_nonempty _)
+  simpa only [mem_range, exists_exists_eq_and] using! csInf_lt_iff hb (range_nonempty _)
 
 theorem cbiSup_of_not_bddAbove {p : ι → Prop} {f : ∀ i, p i → α}
     (h : ¬BddAbove (range fun i : Subtype p ↦ f i i.prop)) :
@@ -578,7 +578,7 @@ theorem l_ciSup (gc : GaloisConnection l u) {f : ι → α} (hf : BddAbove (rang
 
 theorem l_ciSup_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
-  haveI := hne.to_subtype
+  have := hne.to_subtype
   rw [image_eq_range] at hf
   exact gc.l_ciSup hf
 

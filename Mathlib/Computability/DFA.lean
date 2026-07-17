@@ -183,7 +183,7 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   rw [Language.mem_mul] at hab
   rcases hab with ⟨a', ha', b', hb', rfl⟩
   rw [Set.mem_singleton_iff] at ha' hc'
-  substs ha' hc'
+  subst ha' hc'
   have h := M.evalFrom_of_pow hb hb'
   rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
 
@@ -262,6 +262,7 @@ theorem accepts_reindex (g : σ ≃ σ') : (reindex g M).accepts = M.accepts := 
   ext x
   simp [mem_accepts]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
     (reindex g M).comap f = reindex g (M.comap f) := by
   simp [comap, reindex]

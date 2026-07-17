@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.Portmanteau
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
@@ -510,7 +509,7 @@ section Levy_Prokhorov_metrizes_convergence_in_distribution
 
 /-! ### On separable spaces the Lévy-Prokhorov distance metrizes convergence in distribution -/
 
-open BoundedContinuousFunction TopologicalSpace
+open TopologicalSpace
 
 variable {Ω : Type*} [PseudoMetricSpace Ω]
 variable [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
@@ -670,7 +669,7 @@ theorem eq_convergenceInDistribution :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
       = TopologicalSpace.coinduced LevyProkhorov.toMeasure inferInstance :=
   le_convergenceInDistribution.antisymm' fun s hs ↦ by
-    simpa using hs.preimage continuous_ofMeasure_probabilityMeasure
+    simpa using! hs.preimage continuous_ofMeasure_probabilityMeasure
 
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
@@ -696,7 +695,7 @@ instance (X : Type*) [TopologicalSpace X] [PseudoMetrizableSpace X] [SeparableSp
 instance instMetrizableSpaceProbabilityMeasure (X : Type*) [TopologicalSpace X]
     [PseudoMetrizableSpace X] [SeparableSpace X] [MeasurableSpace X] [BorelSpace X] :
     MetrizableSpace (ProbabilityMeasure X) := by
-  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  let : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   exact LevyProkhorov.probabilityMeasureHomeomorph.isEmbedding.metrizableSpace
 
 end Levy_Prokhorov_metrizes_convergence_in_distribution

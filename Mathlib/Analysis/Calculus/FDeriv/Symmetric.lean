@@ -212,6 +212,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddComm
 section
 include s_conv hf xs hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one can
 Taylor-expand to order two the function `f` on the segment `[x + h v, x + h (v + w)]`, giving a
@@ -273,7 +274,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     · apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_mul_const]
     · suffices H : HasDerivWithinAt (fun u => ((u * h) ^ 2 / 2) • f'' w w)
           ((((2 : ℕ) : ℝ) * (t * h) ^ (2 - 1) * (1 * h) / 2) • f'' w w) (Icc 0 1) t by
-        convert! H using 2
+        convert H
         ring
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_id',
         HasDerivAt.pow, HasDerivAt.mul_const]
@@ -292,8 +293,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       ‖g' t‖ = ‖(f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)) (h • w)‖ := by
         rw [hg']
         congrm ‖?_‖
-        simp only [ContinuousLinearMap.sub_apply, ContinuousLinearMap.add_apply,
-          ContinuousLinearMap.smul_apply, map_add, map_smul]
+        simp only [sub_apply, add_apply, smul_apply, map_add, map_smul]
         module
       _ ≤ ‖f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)‖ * ‖h • w‖ :=
         (ContinuousLinearMap.le_opNorm _ _)
@@ -361,7 +361,7 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   convert! TA1.sub TA2 using 1
   ext h
   simp only [two_smul, smul_add, ← add_assoc, map_add,
-    ContinuousLinearMap.add_apply]
+    add_apply]
   abel
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
@@ -391,6 +391,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function is differentiable inside a convex set with nonempty interior, and has a second
 derivative at a point of this convex set, then this second derivative is symmetric. -/
 theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Convex ℝ s)
@@ -424,16 +425,14 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : f'' (z + t m • m) (z + t 0 • (0 : E)) = f'' (z + t 0 • (0 : E)) (z + t m • m) :=
       s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts 0) (ts m)
-    simp only [map_add, map_smul, add_right_inj, ContinuousLinearMap.add_apply, Pi.smul_apply,
-      ContinuousLinearMap.coe_smul', add_zero, smul_zero] at this
+    simp only [map_add, map_smul, add_right_inj, add_apply, smul_apply, add_zero, smul_zero] at this
     exact smul_right_injective F (tpos m).ne' this
   -- applying `second_derivative_within_at_symmetric_of_mem_interior` to the vectors `z + (t v) v`
   -- and `z + (t w) w`, we deduce that `f'' v w = f'' w v`. Cross terms involving `z` can be
   -- eliminated thanks to the fact proved above that `f'' m z = f'' z m`.
   have : f'' (z + t v • v) (z + t w • w) = f'' (z + t w • w) (z + t v • v) :=
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
-  simp only [map_add, map_smul, ContinuousLinearMap.add_apply, Pi.smul_apply,
-    ContinuousLinearMap.coe_smul', C] at this
+  simp only [map_add, map_smul, add_apply, smul_apply, C] at this
   have : (t v * t w) • (f'' v) w = (t v * t w) • (f'' w) v := by
     linear_combination (norm := module) this
   apply smul_right_injective F _ this
@@ -460,6 +459,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
     {f' : E → E →L[𝕜] F} {x : E}
     {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y)
@@ -467,8 +467,6 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
   let _ := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   let _ : NormedSpace ℝ F := NormedSpace.restrictScalars ℝ 𝕜 F
-  let _ : LinearMap.CompatibleSMul E F ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
-  let _ : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
   let f''R : E →L[ℝ] E →L[ℝ] F := f''.bilinearRestrictScalars ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by

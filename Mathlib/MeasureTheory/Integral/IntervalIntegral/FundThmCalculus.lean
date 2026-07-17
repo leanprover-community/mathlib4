@@ -5,10 +5,8 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
-public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
 public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
@@ -400,7 +398,7 @@ theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae
         ((∫ x in va t..vb t, f x ∂μ) - ∫ x in ua t..ub t, f x ∂μ) -
           ((∫ _ in ub t..vb t, cb ∂μ) - ∫ _ in ua t..va t, ca ∂μ)) =o[lt]
       fun t => ‖∫ _ in ua t..va t, (1 : ℝ) ∂μ‖ + ‖∫ _ in ub t..vb t, (1 : ℝ) ∂μ‖ := by
-  haveI := FTCFilter.meas_gen la; haveI := FTCFilter.meas_gen lb
+  have := FTCFilter.meas_gen la; have := FTCFilter.meas_gen lb
   refine
     ((measure_integral_sub_linear_isLittleO_of_tendsto_ae hmeas_a ha_lim hua hva).neg_left.add_add
           (measure_integral_sub_linear_isLittleO_of_tendsto_ae hmeas_b hb_lim hub hvb)).congr'
@@ -493,7 +491,7 @@ theorem integral_sub_linear_isLittleO_of_tendsto_ae [FTCFilter a l l']
     (hfm : StronglyMeasurableAtFilter f l') (hf : Tendsto f (l' ⊓ ae volume) (𝓝 c)) {u v : ι → ℝ}
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
     (fun t => (∫ x in u t..v t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
-  simpa [integral_const] using measure_integral_sub_linear_isLittleO_of_tendsto_ae hfm hf hu hv
+  simpa [integral_const] using! measure_integral_sub_linear_isLittleO_of_tendsto_ae hfm hf hu hv
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability at filter in both endpoints.
 
@@ -529,7 +527,7 @@ theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right
     (hab : IntervalIntegrable f volume a b) (hmeas : StronglyMeasurableAtFilter f lb')
     (hf : Tendsto f (lb' ⊓ ae volume) (𝓝 c)) (hu : Tendsto u lt lb) (hv : Tendsto v lt lb) :
     (fun t => ((∫ x in a..v t, f x) - ∫ x in a..u t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
-  simpa only [integral_const, smul_eq_mul, mul_one] using
+  simpa only [integral_const, smul_eq_mul, mul_one] using!
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hab hmeas hf hu hv
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability at filter in both endpoints.
@@ -543,7 +541,7 @@ theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left
     (hab : IntervalIntegrable f volume a b) (hmeas : StronglyMeasurableAtFilter f la')
     (hf : Tendsto f (la' ⊓ ae volume) (𝓝 c)) (hu : Tendsto u lt la) (hv : Tendsto v lt la) :
     (fun t => ((∫ x in v t..b, f x) - ∫ x in u t..b, f x) + (v t - u t) • c) =o[lt] (v - u) := by
-  simpa only [integral_const, smul_eq_mul, mul_one] using
+  simpa only [integral_const, smul_eq_mul, mul_one] using!
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left hab hmeas hf hu hv
 
 open ContinuousLinearMap (fst snd smulRight sub_apply smulRight_apply coe_fst' coe_snd' map_sub)
@@ -1098,8 +1096,8 @@ theorem integral_le_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
     (hφg : ∀ x ∈ Ioo a b, φ x ≤ g' x) : (∫ y in a..b, φ y) ≤ g b - g a := by
   rw [← neg_le_neg_iff]
   convert!
-    sub_le_integral_of_hasDeriv_right_of_le hab hcont.neg (fun x hx => (hderiv x hx).neg) φint.neg
-      fun x hx => neg_le_neg (hφg x hx) using 1
+    sub_le_integral_of_hasDeriv_right_of_le hab hcont.fun_neg (fun x hx => (hderiv x hx).neg)
+      φint.neg fun x hx => neg_le_neg (hφg x hx) using 1
   · abel
   · simp only [← integral_neg]; rfl
 
@@ -1163,7 +1161,7 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     unfold F
     rw [update_of_ne hy.2.ne, update_of_ne hy.1.ne']
   have hcont : ContinuousOn F (Icc a b) := by
-    rw [continuousOn_update_iff, continuousOn_update_iff, Icc_diff_right, Ico_diff_left]
+    rw [continuousOn_update_iff, continuousOn_update_iff, Icc_sdiff_right, Ico_sdiff_left]
     refine ⟨⟨fun z hz => (hderiv z hz).continuousAt.continuousWithinAt, ?_⟩, ?_⟩
     · exact fun _ => ha.mono_left (nhdsWithin_mono _ Ioo_subset_Ioi_self)
     · rintro -

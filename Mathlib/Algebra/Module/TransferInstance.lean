@@ -73,6 +73,7 @@ lemma linearEquiv_symm_apply (b : β) [AddCommMonoid β] [Module R β] :
     letI := Equiv.module R e
     (e.linearEquiv R).symm b= e.symm b := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Transfer `Module.IsTorsionFree` across an `Equiv` -/
 protected lemma moduleIsTorsionFree (e : α ≃ β) [AddCommMonoid β] [Module R β]
@@ -104,7 +105,7 @@ lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A �
     (e : α ≃ₗ[R] β) :
     letI := e.toAddEquiv.module A
     IsScalarTower R A α := by
-  letI := e.toAddEquiv.module A
+  let := e.toAddEquiv.module A
   constructor
   intro x y z
   simp only [Equiv.smul_def, smul_assoc]

@@ -7,8 +7,6 @@ module
 
 public import Mathlib.FieldTheory.AlgebraicClosure
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
-public import Mathlib.GroupTheory.Solvable
-public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # The Abel-Ruffini Theorem
@@ -67,12 +65,12 @@ theorem gal_isSolvable_tower (p q : F[X]) (hpq : (p.map (algebraMap F q.Splittin
     IsSolvable q.Gal := by
   let K := p.SplittingField
   let L := q.SplittingField
-  haveI : Fact ((p.map (algebraMap F L)).Splits) := ⟨hpq⟩
+  have : Fact ((p.map (algebraMap F L)).Splits) := ⟨hpq⟩
   let ϕ : Gal(L/K) ≃* (q.map (algebraMap F K)).Gal :=
     (IsSplittingField.algEquiv L (q.map (algebraMap F K))).autCongr
   have ϕ_inj : Function.Injective ϕ.toMonoidHom := ϕ.injective
-  haveI : IsSolvable Gal(K/F) := hp
-  haveI : IsSolvable Gal(L/K) := solvable_of_solvable_injective ϕ_inj
+  have : IsSolvable Gal(K/F) := hp
+  have : IsSolvable Gal(L/K) := solvable_of_solvable_injective ϕ_inj
   exact isSolvable_of_isScalarTower F p.SplittingField q.SplittingField
 
 section GalXPowSubC
@@ -296,7 +294,7 @@ private theorem induction_step {x y z : E}
   let q := minpoly F y
   have hpq := SplittingField.splits (p * q)
   rw [Polynomial.map_mul,
-    splits_mul_iff (map_ne_zero (minpoly.ne_zero (isIntegral_of_mem_solvableByRad hx)))
+    splits_mul (map_ne_zero (minpoly.ne_zero (isIntegral_of_mem_solvableByRad hx)))
       (map_ne_zero (minpoly.ne_zero (isIntegral_of_mem_solvableByRad hy)))] at hpq
   have f : ↥F⟮x, y⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by

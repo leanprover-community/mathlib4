@@ -24,7 +24,6 @@ The following meta-property is defined
 
 @[expose] public section
 
-
 universe w v v' u u'
 
 open CategoryTheory Opposite
@@ -74,6 +73,7 @@ lemma of_eq_top {P : MorphismProperty C} (h : P = ⊤) {X Y : C} (f : X ⟶ Y) :
 lemma sup_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊔ W') f ↔ W f ∨ W' f :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
     sSup S f ↔ ∃ W ∈ S, W f := by
@@ -88,6 +88,7 @@ lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶
 lemma inf_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊓ W') f ↔ W f ∧ W' f :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma sInf_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
     sInf S f ↔ ∀ W ∈ S, W f := by
@@ -758,6 +759,7 @@ namespace NatTrans
 
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
     IsIso (α.app X) ↔ IsIso (α.app Y) :=
   (MorphismProperty.isomorphisms D).arrow_mk_iso_iff

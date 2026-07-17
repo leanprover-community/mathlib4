@@ -86,7 +86,7 @@ private theorem exists_isSemilinearSet_setOf_le {s : Set M} (hs : IsSlice s) (hs
     intro x hx y hy hxy z hz
     rw [le_iff_exists_add] at hxy
     rcases hxy with ⟨y, rfl⟩
-    simp only [AddSemigroupIdeal.mem_closure'', mem_diff, SetLike.mem_coe, mem_singleton_iff,
+    simp only [AddSemigroupIdeal.mem_closure'', mem_sdiff, SetLike.mem_coe, mem_singleton_iff,
       g] at hz ⊢
     rcases hz with ⟨y', z, ⟨hz₁, hz₂⟩, rfl⟩
     rw [hf _ hx] at hz₁
@@ -108,10 +108,10 @@ private theorem exists_isSemilinearSet_setOf_le {s : Set M} (hs : IsSlice s) (hs
     · simp [hy]
     replace hy : y ∈ g (a + x) := by
       apply AddSemigroupIdeal.subset_closure
-      refine Set.mem_diff_of_mem ?_ hy
+      refine Set.mem_sdiff_of_mem ?_ hy
       rwa [SetLike.mem_coe, hf _ hx]
     apply ha.2 hx (hg _ ha.1 _ hx le_self_add) at hy
-    simp only [g, AddSemigroupIdeal.mem_closure'', Set.mem_diff, SetLike.mem_coe,
+    simp only [g, AddSemigroupIdeal.mem_closure'', Set.mem_sdiff, SetLike.mem_coe,
       Set.notMem_singleton_iff] at hy
     rcases hy with ⟨w, u, ⟨hu₁, hu₂⟩, rfl⟩
     induction w using WellQuasiOrderedLE.to_wellFoundedLT.induction (α := M) generalizing u with
@@ -121,10 +121,10 @@ private theorem exists_isSemilinearSet_setOf_le {s : Set M} (hs : IsSlice s) (hs
     have hxu : a + x + u ∈ s := hs _ ha.1 _ _ hx (by rwa [hf _ ha.1] at hu₁)
     have hw₂ : w ∈ g (a + x + u) := by
       apply AddSemigroupIdeal.subset_closure
-      refine Set.mem_diff_of_mem ?_ hw₁
+      refine Set.mem_sdiff_of_mem ?_ hw₁
       rwa [SetLike.mem_coe, hf _ hxu, add_assoc, add_comm u w]
     apply ha.2 hxu (hg _ ha.1 _ hxu (le_add_right le_self_add)) at hw₂
-    simp only [g, AddSemigroupIdeal.mem_closure'', Set.mem_diff, SetLike.mem_coe,
+    simp only [g, AddSemigroupIdeal.mem_closure'', Set.mem_sdiff, SetLike.mem_coe,
       Set.notMem_singleton_iff] at hw₂
     rcases hw₂ with ⟨w', u', ⟨hu'₁, hu'₂⟩, rfl⟩
     rw [add_assoc]
@@ -140,7 +140,7 @@ private theorem Nat.isSemilinearSet_of_isSlice {ι : Type*} [Finite ι] {s : Set
     (hs : IsSlice s) : IsSemilinearSet s := by
   classical
   suffices h : ∀ (a : ι → ℕ) (t : Finset ι), (∀ x ∈ s, ∀ i ∉ t, x i = a i) → IsSemilinearSet s by
-    haveI := Fintype.ofFinite ι
+    have := Fintype.ofFinite ι
     exact h 0 Finset.univ (by simp)
   intro a t ht
   induction t using Finset.strongInductionOn generalizing s a with | _ t ih
@@ -201,6 +201,7 @@ public theorem Nat.isLinearSet_iff_exists_matrix {s : Set (ι → ℕ)} :
   refine exists₂_congr fun v n => ⟨fun ⟨f, hf⟩ => ⟨f.toNatLinearMap.toMatrix', ?_⟩, fun ⟨A, hA⟩ =>
     ⟨A.mulVecLin, ?_⟩⟩ <;> ext <;> simp [*, mem_vadd_set]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma Nat.isSemilinearSet_preimage_of_isLinearSet [Finite ι] {F : Type*}
     [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] {s : Set M} (hs : IsLinearSet s) (f : F) :
     IsSemilinearSet (f ⁻¹' s) := by
@@ -249,7 +250,7 @@ public lemma IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
     ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsSemilinearSet s' ∧ s = Subtype.val '' s' := by
   rcases hs with ⟨S, hS, hS', rfl⟩
   choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_fg_eq_subtypeVal
-  haveI : Finite S := hS
+  have : Finite S := hS
   refine ⟨⨆ s : S, P s, ⋃ (s : S), AddSubmonoid.inclusion (le_iSup _ s) '' t s.1,
     .iSup _ fun s => hP s s.2, .iUnion fun s => (ht s s.2).isSemilinearSet.image _, ?_⟩
   simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
@@ -270,7 +271,7 @@ public lemma IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet
 private lemma Nat.isSemilinearSet_inter_of_isLinearSet [Finite ι] {s₁ s₂ : Set (ι → ℕ)}
     (hs₁ : IsLinearSet s₁) (hs₂ : IsLinearSet s₂) : IsSemilinearSet (s₁ ∩ s₂) := by
   classical
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   rw [isLinearSet_iff_exists_matrix] at hs₁ hs₂
   rcases hs₁ with ⟨u, n, A, rfl⟩
   rcases hs₂ with ⟨v, m, B, rfl⟩
@@ -432,6 +433,7 @@ private theorem span_basisSet : span ℚ (toRatVec '' hs.basisSet) = ⊤ := by
 private noncomputable def basis : Basis hs.basisSet ℚ (ι → ℚ) :=
   Basis.mk hs.linearIndepOn_basisSet (image_eq_range _ _ ▸ top_le_iff.2 hs.span_basisSet)
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem basis_apply (i) : hs.basis i = toRatVec i.1 := by
   simp [basis]
 
@@ -440,7 +442,7 @@ private noncomputable def fundamentalDomain : Set (ι → ℕ) :=
 
 private theorem finite_fundamentalDomain : hs.fundamentalDomain.Finite := by
   classical
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   apply (finite_Iic (hs.base + ∑ i : hs.basisSet, i.1)).subset
   intro x hx
   rw [mem_Iic, ← toRatVec_mono, map_add, map_sum, ← add_sub_cancel (toRatVec hs.base) (toRatVec x),
@@ -548,6 +550,7 @@ private theorem fract_add_of_mem_closure {x y} (hy : y ∈ closure hs.basisSet) 
   rw [map_add, ← sub_add_eq_add_sub]
   simp [-nsmul_eq_mul, ← hs.basis_apply, Finsupp.single_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem fract_mem_fundamentalDomain (x) : hs.fract x ∈ hs.fundamentalDomain := by
   classical
   intro i
@@ -611,7 +614,7 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
       rw [hs.fract_add_of_mem_closure hy', hs.fract_add_of_mem_closure hy,
         hs.fract_eq_self_of_mem_fundamentalDomain hu] at heq
       rwa [heq]
-  · refine .biUnion hs.finite_fundamentalDomain.diff fun i hi => .proj' ?_
+  · refine .biUnion hs.finite_fundamentalDomain.sdiff fun i hi => .proj' ?_
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite hs.finite_basisSet) (LinearMap.funLeft ℕ ℕ Sum.inr)
@@ -620,7 +623,7 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite hs.finite_basisSet) (LinearMap.funLeft ℕ ℕ Sum.inr)
     classical
-    haveI := Fintype.ofFinite ι
+    have := Fintype.ofFinite ι
     convert!
       Nat.isSemilinearSet_setOf_mulVec_eq (κ := (ι ⊕ ι) ⊕ ι) 0 i
         (Matrix.fromCols (Matrix.fromCols 1 0) 1) (Matrix.fromCols (Matrix.fromCols 0 1) 0) using
@@ -658,15 +661,15 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
     · intro ⟨i, y, hy, z, hz, z', hz', heq⟩
       refine ⟨?_, i, ?_⟩
       · apply congr_arg hs.fract at heq
-        rwa [hs.fract_add_of_mem_closure (closure_mono diff_subset hz'),
+        rwa [hs.fract_add_of_mem_closure (closure_mono sdiff_subset hz'),
           hs.fract_add_of_mem_closure (closure_mono (singleton_subset_iff.2 i.2) hy),
           hs.fract_add_of_mem_closure (mem_closure_of_mem i.2),
-          hs.fract_add_of_mem_closure (closure_mono diff_subset hz), hs.fract_base] at heq
+          hs.fract_add_of_mem_closure (closure_mono sdiff_subset hz), hs.fract_base] at heq
       · rw [mem_closure_singleton] at hy
         rcases hy with ⟨n, rfl⟩
         apply congr_arg (hs.floor · i) at heq
-        rw [hs.floor_add_of_mem_closure diff_subset (notMem_diff_of_mem (mem_singleton i.1)) hz,
-          hs.floor_add_of_mem_closure diff_subset (notMem_diff_of_mem (mem_singleton i.1)) hz',
+        rw [hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz,
+          hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz',
           hs.floor_base, add_assoc x, ← succ_nsmul', hs.floor_add_nsmul_self,
           ← eq_neg_iff_add_eq_zero] at heq
         simpa [heq] using neg_one_lt_zero.trans_le (Nat.cast_nonneg _)
@@ -677,12 +680,12 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
     apply IsSemilinearSet.proj'
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
-      (.closure_of_finite hs.finite_basisSet.diff) (LinearMap.funLeft ℕ ℕ Sum.inr)
+      (.closure_of_finite hs.finite_basisSet.sdiff) (LinearMap.funLeft ℕ ℕ Sum.inr)
     apply IsSemilinearSet.proj'
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
-      (.closure_of_finite hs.finite_basisSet.diff) (LinearMap.funLeft ℕ ℕ Sum.inr)
-    haveI := Fintype.ofFinite ι
+      (.closure_of_finite hs.finite_basisSet.sdiff) (LinearMap.funLeft ℕ ℕ Sum.inr)
+    have := Fintype.ofFinite ι
     convert!
       Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.1 hs.base
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
@@ -720,15 +723,15 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
     · intro ⟨i, hi, y, hy, z, hz, z', hz', heq⟩
       refine ⟨?_, i, hi, ?_⟩
       · apply congr_arg hs.fract at heq
-        rwa [hs.fract_add_of_mem_closure (closure_mono diff_subset hz'),
-          hs.fract_add_of_mem_closure (closure_mono diff_subset hz),
+        rwa [hs.fract_add_of_mem_closure (closure_mono sdiff_subset hz'),
+          hs.fract_add_of_mem_closure (closure_mono sdiff_subset hz),
           hs.fract_add_of_mem_closure (closure_mono (singleton_subset_iff.2 i.2) hy),
           hs.fract_add_of_mem_closure (mem_closure_of_mem i.2), hs.fract_base] at heq
       · rw [mem_closure_singleton] at hy
         rcases hy with ⟨n, rfl⟩
         apply congr_arg (hs.floor · i) at heq
-        rw [hs.floor_add_of_mem_closure diff_subset (notMem_diff_of_mem (mem_singleton i.1)) hz,
-          hs.floor_add_of_mem_closure diff_subset (notMem_diff_of_mem (mem_singleton i.1)) hz',
+        rw [hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz,
+          hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz',
           add_assoc hs.base, ← succ_nsmul', hs.floor_add_nsmul_self, hs.floor_base, zero_add] at heq
         simp [heq]
   · refine .biUnion (toFinite _) fun i hi => .proj' ?_
@@ -738,12 +741,12 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
     apply IsSemilinearSet.proj'
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
-      (.closure_of_finite hs.finite_basisSet.diff) (LinearMap.funLeft ℕ ℕ Sum.inr)
+      (.closure_of_finite hs.finite_basisSet.sdiff) (LinearMap.funLeft ℕ ℕ Sum.inr)
     apply IsSemilinearSet.proj'
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
-      (.closure_of_finite hs.finite_basisSet.diff) (LinearMap.funLeft ℕ ℕ Sum.inr)
-    haveI := Fintype.ofFinite ι
+      (.closure_of_finite hs.finite_basisSet.sdiff) (LinearMap.funLeft ℕ ℕ Sum.inr)
+    have := Fintype.ofFinite ι
     convert!
       Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.1)
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 0) 0) 1)
@@ -768,25 +771,29 @@ private theorem Nat.isSemilinearSet_compl [Finite ι] {s : Set (ι → ℕ)} (hs
   simp_rw [sUnion_eq_biUnion, compl_iUnion]
   exact .biInter hS fun s hs => isSemilinearSet_compl_of_isProperLinearSet (hS' s hs)
 
-private theorem Nat.isSemilinearSet_diff [Finite ι] {s₁ s₂ : Set (ι → ℕ)} (hs₁ : IsSemilinearSet s₁)
-    (hs₂ : IsSemilinearSet s₂) : IsSemilinearSet (s₁ \ s₂) :=
+private theorem Nat.isSemilinearSet_sdiff [Finite ι] {s₁ s₂ : Set (ι → ℕ)}
+    (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) : IsSemilinearSet (s₁ \ s₂) :=
   isSemilinearSet_inter hs₁ (isSemilinearSet_compl hs₂)
 
+@[deprecated (since := "2026-06-03")] alias Nat.isSemilinearSet_diff := Nat.isSemilinearSet_sdiff
+
 /-- Semilinear sets are closed under set difference. -/
-public theorem IsSemilinearSet.diff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
+public theorem IsSemilinearSet.sdiff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
     IsSemilinearSet (s₁ \ s₂) := by
   rcases hs₁.exists_fg_eq_subtypeVal₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
-  rw [← image_diff Subtype.val_injective]
+  rw [← image_sdiff Subtype.val_injective]
   apply image (f := P.subtype)
   rw [← AddMonoid.fg_iff_addSubmonoid_fg, AddMonoid.fg_def, fg_iff_exists_fin_addMonoidHom] at hP
   rcases hP with ⟨n, f, hf⟩
   rw [AddMonoidHom.mrange_eq_top] at hf
-  rw [← image_preimage_eq (s₁' \ s₂') hf, preimage_diff]
+  rw [← image_preimage_eq (s₁' \ s₂') hf, preimage_sdiff]
   apply image
-  apply Nat.isSemilinearSet_diff <;> apply Nat.isSemilinearSet_preimage <;> assumption
+  apply Nat.isSemilinearSet_sdiff <;> apply Nat.isSemilinearSet_preimage <;> assumption
+
+@[deprecated (since := "2026-06-03")] alias IsSemilinearSet.diff := IsSemilinearSet.sdiff
 
 /-- Semilinear sets in a finitely generated monoid are closed under complement. -/
 public theorem IsSemilinearSet.compl [AddMonoid.FG M] (hs : IsSemilinearSet s) :
     IsSemilinearSet sᶜ := by
-  rw [compl_eq_univ_diff]
-  exact diff .univ hs
+  rw [compl_eq_univ_sdiff]
+  exact sdiff .univ hs
