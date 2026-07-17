@@ -279,7 +279,7 @@ theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} [IsZeroOrMarkovKernel κ] :
     Indep m' ⊥ κ μ := by
   intro s t _ ht
-  rw [Set.mem_setOf_eq, MeasurableSpace.measurableSet_bot_iff] at ht
+  rw [Set.mem_ofPred_eq, MeasurableSpace.measurableSet_bot_iff] at ht
   rcases eq_zero_or_isMarkovKernel κ with rfl | h
   · simp
   refine Filter.Eventually.of_forall (fun a ↦ ?_)
@@ -484,8 +484,8 @@ theorem IndepSets.indep_aux {m₂ m : MeasurableSpace Ω}
   | basic u hu => exact hyp t1 u ht1 hu
   | compl u hu ihu =>
     filter_upwards [ihu] with a ha
-    rw [← Set.diff_eq, ← Set.diff_self_inter,
-      measure_diff inter_subset_left (ht1m.inter (h2 _ hu)).nullMeasurableSet (measure_ne_top _ _),
+    rw [← Set.sdiff_eq, ← Set.sdiff_self_inter,
+      measure_sdiff inter_subset_left (ht1m.inter (h2 _ hu)).nullMeasurableSet (measure_ne_top _ _),
       ha, measure_compl (h2 _ hu) (measure_ne_top _ _), measure_univ, ENNReal.mul_sub, mul_one]
     exact fun _ _ ↦ measure_ne_top _ _
   | iUnion f hfd hfm ihf =>
@@ -515,9 +515,9 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : Kernel α Ω} {μ :
   | compl t ht iht =>
     filter_upwards [iht] with a ha
     have : tᶜ ∩ t2 = t2 \ (t ∩ t2) := by
-      rw [Set.inter_comm t, Set.diff_self_inter, Set.diff_eq_compl_inter]
+      rw [Set.inter_comm t, Set.sdiff_self_inter, Set.sdiff_eq_compl_inter]
     rw [this, Set.inter_comm t t2,
-      measure_diff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht)).nullMeasurableSet
+      measure_sdiff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht)).nullMeasurableSet
         (measure_ne_top (κ a) _),
       Set.inter_comm, ha, measure_compl (h1 _ ht) (measure_ne_top (κ a) t), measure_univ,
       mul_comm (1 - κ a t), ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, mul_comm]
@@ -586,7 +586,6 @@ theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
 theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (S T : Set ι) (hST : Disjoint S T) :
     Indep (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) κ μ := by
-  classical
   rcases eq_or_ne μ 0 with rfl | hμ
   · simp
   obtain ⟨η, η_eq, hη⟩ : ∃ (η : Kernel α Ω), κ =ᵐ[μ] η ∧ IsMarkovKernel η :=
@@ -606,7 +605,6 @@ theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
 theorem indep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m κ μ) {S T : Set ι} (hST : Disjoint S T) :
     Indep (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) κ μ := by
-  classical
   rcases eq_or_ne μ 0 with rfl | hμ
   · simp
   obtain ⟨η, η_eq, hη⟩ : ∃ (η : Kernel α Ω), κ =ᵐ[μ] η ∧ IsMarkovKernel η :=
@@ -649,7 +647,7 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { i } {j | j < i}
       (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
-  simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
+  simp only [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
@@ -657,7 +655,7 @@ theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { k } {j | j ≤ i}
       (Set.disjoint_singleton_left.mpr hk.not_ge) using 1
-  simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
+  simp only [Set.mem_singleton_iff, exists_eq_left, Set.ofPred_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le_nat {s : ℕ → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (n : ℕ) :

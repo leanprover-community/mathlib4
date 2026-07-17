@@ -10,6 +10,8 @@ public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Unit
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
 
 /-!
 # Limits and colimits in comma categories
@@ -27,7 +29,7 @@ The duals of all the above are also given.
 
 namespace CategoryTheory
 
-open Category Limits Functor
+open Category Limits CategoryTheory.Functor
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -150,6 +152,10 @@ instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} A] [HasLimitsOfSize.{w, w'} B]
     [PreservesLimitsOfSize.{w, w'} R] : HasLimitsOfSize.{w, w'} (Comma L R) :=
   ⟨fun _ _ => inferInstance⟩
 
+instance hasFiniteLimits [HasFiniteLimits A] [HasFiniteLimits B]
+    [PreservesFiniteLimits R] : HasFiniteLimits (Comma L R) where
+      out _ _ _ := inferInstance
+
 instance hasColimit (F : J ⥤ Comma L R) [HasColimit (F ⋙ fst L R)] [HasColimit (F ⋙ snd L R)]
     [PreservesColimit (F ⋙ fst L R) L] : HasColimit F :=
   HasColimit.mk ⟨_, coconeOfPreservesIsColimit _ (colimit.isColimit _) (colimit.isColimit _)⟩
@@ -160,6 +166,10 @@ instance hasColimitsOfShape [HasColimitsOfShape J A] [HasColimitsOfShape J B]
 instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [HasColimitsOfSize.{w, w'} B]
     [PreservesColimitsOfSize.{w, w'} L] : HasColimitsOfSize.{w, w'} (Comma L R) :=
   ⟨fun _ _ => inferInstance⟩
+
+instance hasFiniteColimits [HasFiniteColimits A] [HasFiniteColimits B]
+    [PreservesFiniteColimits L] : HasFiniteColimits (Comma L R) where
+      out _ _ _ := inferInstance
 
 instance preservesColimitsOfShape_fst [HasColimitsOfShape J A] [HasColimitsOfShape J B]
     [PreservesColimitsOfShape J L] : PreservesColimitsOfShape J (Comma.fst L R) where
@@ -182,11 +192,14 @@ namespace Arrow
 set_option backward.isDefEq.respectTransparency false in
 instance hasLimit (F : J ⥤ Arrow T) [i₁ : HasLimit (F ⋙ leftFunc)] [i₂ : HasLimit (F ⋙ rightFunc)] :
     HasLimit F := by
-  haveI : HasLimit (F ⋙ Comma.fst _ _) := i₁
-  haveI : HasLimit (F ⋙ Comma.snd _ _) := i₂
+  have : HasLimit (F ⋙ Comma.fst _ _) := i₁
+  have : HasLimit (F ⋙ Comma.snd _ _) := i₂
   apply Comma.hasLimit
 
 instance hasLimitsOfShape [HasLimitsOfShape J T] : HasLimitsOfShape J (Arrow T) where
+
+instance hasFiniteLimits [HasFiniteLimits T] : HasFiniteLimits (Arrow T) where
+  out _ _ _ := inferInstance
 
 instance hasLimits [HasLimits T] : HasLimits (Arrow T) :=
   ⟨fun _ _ => inferInstance⟩
@@ -194,11 +207,14 @@ instance hasLimits [HasLimits T] : HasLimits (Arrow T) :=
 set_option backward.isDefEq.respectTransparency false in
 instance hasColimit (F : J ⥤ Arrow T) [i₁ : HasColimit (F ⋙ leftFunc)]
     [i₂ : HasColimit (F ⋙ rightFunc)] : HasColimit F := by
-  haveI : HasColimit (F ⋙ Comma.fst _ _) := i₁
-  haveI : HasColimit (F ⋙ Comma.snd _ _) := i₂
+  have : HasColimit (F ⋙ Comma.fst _ _) := i₁
+  have : HasColimit (F ⋙ Comma.snd _ _) := i₂
   apply Comma.hasColimit
 
 instance hasColimitsOfShape [HasColimitsOfShape J T] : HasColimitsOfShape J (Arrow T) where
+
+instance hasFiniteColimits [HasFiniteColimits T] : HasFiniteColimits (Arrow T) where
+  out _ _ _ := inferInstance
 
 instance hasColimits [HasColimits T] : HasColimits (Arrow T) :=
   ⟨fun _ _ => inferInstance⟩
@@ -223,12 +239,16 @@ instance [G.Faithful] [G.Full] {Y : A} : HasInitial (StructuredArrow (G.obj Y) G
 set_option backward.isDefEq.respectTransparency false in
 instance hasLimit [i₁ : HasLimit (F ⋙ proj X G)] [i₂ : PreservesLimit (F ⋙ proj X G) G] :
     HasLimit F := by
-  haveI : HasLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) := i₁
-  haveI : PreservesLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) _ := i₂
+  have : HasLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) := i₁
+  have : PreservesLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) _ := i₂
   apply Comma.hasLimit
 
 instance hasLimitsOfShape [HasLimitsOfShape J A] [PreservesLimitsOfShape J G] :
     HasLimitsOfShape J (StructuredArrow X G) where
+
+instance hasFiniteLimits [HasFiniteLimits A] [PreservesFiniteLimits G] :
+    HasFiniteLimits (StructuredArrow X G) where
+      out _ _ _ := inferInstance
 
 instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} A] [PreservesLimitsOfSize.{w, w'} G] :
     HasLimitsOfSize.{w, w'} (StructuredArrow X G) :=
@@ -245,6 +265,10 @@ noncomputable instance createsLimit [i : PreservesLimit (F ⋙ proj X G) G] :
 
 noncomputable instance createsLimitsOfShape [PreservesLimitsOfShape J G] :
     CreatesLimitsOfShape J (proj X G) where
+
+noncomputable instance createsFiniteLimits [PreservesFiniteLimits G] :
+    CreatesFiniteLimits (proj X G) where
+      createsFiniteLimits _ _ _ := inferInstance
 
 noncomputable instance createsLimitsOfSize [PreservesLimitsOfSize.{w, w'} G] :
     CreatesLimitsOfSize.{w, w'} (proj X G :) where
@@ -270,12 +294,16 @@ instance hasTerminal [G.Faithful] [G.Full] {Y : A} :
 set_option backward.isDefEq.respectTransparency false in
 instance hasColimit [i₁ : HasColimit (F ⋙ proj G X)] [i₂ : PreservesColimit (F ⋙ proj G X) G] :
     HasColimit F := by
-  haveI : HasColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) := i₁
-  haveI : PreservesColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) _ := i₂
+  have : HasColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) := i₁
+  have : PreservesColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) _ := i₂
   apply Comma.hasColimit
 
 instance hasColimitsOfShape [HasColimitsOfShape J A] [PreservesColimitsOfShape J G] :
     HasColimitsOfShape J (CostructuredArrow G X) where
+
+instance hasFiniteColimits [HasFiniteColimits A] [PreservesFiniteColimits G] :
+    HasFiniteColimits (CostructuredArrow G X) where
+      out _ _ _ := inferInstance
 
 instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [PreservesColimitsOfSize.{w, w'} G] :
     HasColimitsOfSize.{w, w'} (CostructuredArrow G X) :=
@@ -292,6 +320,10 @@ noncomputable instance createsColimit [i : PreservesColimit (F ⋙ proj G X) G] 
 
 noncomputable instance createsColimitsOfShape [PreservesColimitsOfShape J G] :
     CreatesColimitsOfShape J (proj G X) where
+
+noncomputable instance createsFiniteColimits [PreservesFiniteColimits G] :
+    CreatesFiniteColimits (proj G X) where
+      createsFiniteColimits _ _ _ := inferInstance
 
 noncomputable instance createsColimitsOfSize [PreservesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (proj G X :) where

@@ -69,7 +69,6 @@ def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
   M.mk F ⟨x.1, r • x.2⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
     colimitSMulAux F r x = colimitSMulAux F r y := by
@@ -150,6 +149,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
     map_smul' := by solve_by_elim }
 
 /-- The cocone over the proposed colimit module. -/
+@[implicit_reducible]
 def colimitCocone : Cocone F where
   pt := colimit F
   ι :=
@@ -175,9 +175,10 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
         obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
         simp [hf] }
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :
-    (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
+    dsimp% (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
   (forget₂ _ AddCommGrpCat).map_injective
     ((AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
 

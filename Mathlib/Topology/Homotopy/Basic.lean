@@ -73,6 +73,7 @@ When possible, instead of parametrizing results over `(f : ContinuousMap.Homotop
 you should parametrize over `{F : Type*} [HomotopyLike F f₀ f₁] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMap.HomotopyLike`. -/
+@[wikidata Q746083]
 structure Homotopy (f₀ f₁ : C(X, Y)) extends C(I × X, Y) where
   /-- value of the homotopy at 0 -/
   map_zero_left : ∀ x, toFun (0, x) = f₀ x
@@ -245,6 +246,7 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Hom
       · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
         rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
   ext ⟨t, _⟩

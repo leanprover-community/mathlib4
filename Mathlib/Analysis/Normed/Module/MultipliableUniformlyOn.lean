@@ -91,8 +91,8 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
   by_cases hKe : K = ∅
   · simp [TendstoUniformly, hKe]
-  · haveI hCK : CompactSpace K := isCompact_iff_compactSpace.mp hK
-    haveI hne : Nonempty K := by rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty]
+  · have hCK : CompactSpace K := isCompact_iff_compactSpace.mp hK
+    have hne : Nonempty K := by rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty]
     let f' i : C(K, R) := ⟨_, continuousOn_iff_continuous_restrict.mp (hcts i)⟩
     have hf'_bd : ∀ᶠ i in cofinite, ‖f' i‖ ≤ u i := by
       simp only [ContinuousMap.norm_le_of_nonempty]

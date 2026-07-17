@@ -237,7 +237,7 @@ their compatibilities with shifts. -/
 def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
   (HomotopyCategory.singleFunctors C).postcomp Qh
 
-/-- The shift functor `C ⥤ DerivedCategory C` which sends `X : C` to the
+/-- The single functor `C ⥤ DerivedCategory C` which sends `X : C` to the
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
@@ -272,6 +272,7 @@ def singleFunctorsPostcompQIso :
       SingleFunctors.postcompIsoOfIso
         (CochainComplex.singleFunctors C) (quotientCompQhIso C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
@@ -282,6 +283,7 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
   erw [Category.id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
