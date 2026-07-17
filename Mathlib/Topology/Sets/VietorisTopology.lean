@@ -1074,7 +1074,7 @@ theorem preconnectedSpace_iff : PreconnectedSpace (NonemptyCompacts α) ↔ Prec
   apply h _ ⟨isClosed_subsets_of_isClosed hs.isClosed, isOpen_subsets_of_isOpen hs.isOpen⟩ |>.imp
   · simp only [Set.eq_empty_iff_forall_notMem]
     exact fun h x hx => h {x} (Set.singleton_subset_iff.mpr hx)
-  · simp only [Set.eq_univ_iff_forall] 
+  · simp only [Set.eq_univ_iff_forall]
     exact fun h x => Set.singleton_subset_iff.mp (h {x})
 
 instance [ConnectedSpace α] : ConnectedSpace (NonemptyCompacts α) where
