@@ -40,8 +40,6 @@ The theory will be expanded in future PRs.
 * `Distribution.toDistribution Ω n f μ`: the distribution induced by a function `f : E → F`,
   sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if
   `f` is not locally integrable on `Ω`.
-* `Distribution.instCoeToDistribution`: when `E` is a measure space, the coercion
-  `(f : E → F) → 𝓓'^{n}(Ω, F)` given by `Distribution.toDistribution` with respect to `volume`.
 
 ## Notation
 
