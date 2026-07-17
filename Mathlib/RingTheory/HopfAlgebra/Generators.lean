@@ -22,9 +22,6 @@ antimultiplicative antipode data on generators.
 * `LinearMap.convMul_eq_one_of_adjoin_eq_top_left` and
   `LinearMap.convMul_eq_one_of_adjoin_eq_top_right`: a pointwise one-sided convolution inverse of
   a multiplicative map on generators is a global one.
-* `HopfAlgebra.eq_antipode_of_convMul_id_eq_one` and
-  `HopfAlgebra.eq_antipode_of_id_convMul_eq_one`: a one-sided convolution inverse of `id` is the
-  antipode.
 * `HopfAlgebra.eq_antipode_of_adjoin_eq_top_left` and
   `HopfAlgebra.eq_antipode_of_adjoin_eq_top_right`: a one-sided convolution inverse of `id` on a
   generating set is the antipode.
