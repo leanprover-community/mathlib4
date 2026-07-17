@@ -189,6 +189,7 @@ theorem _root_.UniformSpace.RingHom.completion_comp
     (uniformContinuous_addMonoidHom_of_continuous hg)
     (uniformContinuous_addMonoidHom_of_continuous hf)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.UniformSpace.RingHom.completion_id :
     (RingHom.id α).completion continuous_id = .id (Completion α) := by
@@ -201,6 +202,9 @@ theorem _root_.UniformSpace.RingHom.completion_id :
 @[deprecated (since := "2026-04-14")] alias mapRingHom_comp := RingHom.completion_comp
 @[deprecated (since := "2026-04-14")] alias mapRingHom_id := RingHom.completion_id
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
 lifts to a ring isomorphism between corresponding uniform space completions. -/
 @[simps!]
