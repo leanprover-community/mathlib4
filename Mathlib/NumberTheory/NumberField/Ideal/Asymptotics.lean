@@ -34,7 +34,8 @@ namespace NumberField.Ideal
 
 open scoped nonZeroDivisors Real
 
-open Filter InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule Topology Units
+open Filter InfinitePlace mixedEmbedding euclidean fundamentalCone Submodule Topology
+open NumberField.Units
 
 variable {C : ClassGroup (𝓞 K)} {J : (Ideal (𝓞 K))⁰} {s : ℝ}
 

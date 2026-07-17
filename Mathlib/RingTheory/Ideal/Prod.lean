@@ -96,6 +96,7 @@ theorem map_prodComm_prod :
   refine Trans.trans (ideal_prod_eq _) ?_
   simp [map_map]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Ideals of `R × S` are in one-to-one correspondence with pairs of ideals of `R` and ideals of
 `S`. -/
 def idealProdEquiv : Ideal (R × S) ≃o Ideal R × Ideal S where
@@ -172,7 +173,7 @@ theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Id
   mem_or_mem' {x y} := by simpa using h.mem_or_mem
 
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
-  letI : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
+  let : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
   rw [← map_prodComm_prod]
   -- Note: couldn't synthesize the right instances without the `R` and `S` hints
   exact map_isPrime_of_equiv (RingEquiv.prodComm (R := S) (S := R))

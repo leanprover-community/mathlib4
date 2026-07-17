@@ -529,7 +529,7 @@ manifold satisfies the `IsRiemannianManifold I M` predicate. -/
 instance [RegularSpace M] :
     letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
     IsRiemannianManifold I M := by
-  letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
+  let : PseudoEMetricSpace M := .ofRiemannianMetric I M
   exact ⟨fun x y ↦ rfl⟩
 
 variable (M) in

@@ -257,7 +257,7 @@ limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
 Note that this has no reason to be a locally convex (or even vector space) topology. For this
 reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
 topology which is coarser than this original topology. See `TestFunction.topologicalSpace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
@@ -323,14 +323,10 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[deprecated (since := "2025-12-10")] alias ofSupportedInLM := ofSupportedInCLM
-
 @[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) :
     (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
-
-@[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
@@ -414,6 +410,7 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarT
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
@@ -460,6 +457,7 @@ section Monotone
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 /-- If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
 `𝓓^{n₁}(Ω₁, F)` inside `𝓓^{n₂}(Ω₂, F)`. Otherwise, this is the zero map.
@@ -504,6 +502,7 @@ section FDerivCLM
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 n k) in
 /-- `fderivCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.

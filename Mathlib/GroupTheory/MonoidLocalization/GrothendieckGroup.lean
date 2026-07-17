@@ -84,6 +84,7 @@ noncomputable def lift : (M →* G) ≃ (GrothendieckGroup M →* G) where
   left_inv f := by ext; simp
   right_inv f := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma lift_apply (f : M →* G) (x : GrothendieckGroup M) :
     lift f x = f ((monoidOf ⊤).sec x).1 / f ((monoidOf ⊤).sec x).2 := by
