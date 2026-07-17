@@ -82,7 +82,7 @@ section IsUniformAddGroup
 
 variable [UniformSpace α] [AddGroup α] [IsUniformAddGroup α]
 
-open Function
+open UniformSpace.Function
 
 @[norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : Completion α) = -a :=

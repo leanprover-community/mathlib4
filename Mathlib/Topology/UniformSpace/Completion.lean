@@ -592,7 +592,7 @@ namespace Completion
 completion of its separation quotient -/
 section SeparationQuotientCompletion
 
-open SeparationQuotient Function in
+open SeparationQuotient UniformSpace.Function in
 /-- The isomorphism between the completion of a uniform space and the completion of its separation
 quotient. -/
 def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
@@ -625,8 +625,6 @@ section Extension₂
 
 variable (f : α → β → γ)
 
-open Function
-
 /-- Extend a two variable map to the Hausdorff completions. -/
 protected def extension₂ (f : α → β → γ) : Completion α → Completion β → γ :=
   cPkg.extend₂ cPkg f
@@ -650,8 +648,6 @@ theorem uniformContinuous_extension₂ : UniformContinuous₂ (Completion.extens
 end Extension₂
 
 section Map₂
-
-open Function
 
 /-- Lift a two variable map to the Hausdorff completions. -/
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=

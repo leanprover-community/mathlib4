@@ -45,7 +45,7 @@ noncomputable section
 universe u
 namespace UniformSpace.Completion
 
-open IsDenseInducing UniformSpace Function
+open IsDenseInducing UniformSpace UniformSpace.Function
 
 section one_and_mul
 variable (α : Type*) [Ring α] [UniformSpace α]
