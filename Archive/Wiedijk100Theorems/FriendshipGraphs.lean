@@ -173,6 +173,7 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
 
 open scoped Classical in
 include hG in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` be the adjacency matrix of a `d`-regular friendship graph, and let `v` be a vector
   all of whose components are `1`. Then `v` is an eigenvector of `A ^ 2`, and we can compute
   the eigenvalue to be `d * d`, or as `d + (Fintype.card V - 1)`, so those quantities must be equal.

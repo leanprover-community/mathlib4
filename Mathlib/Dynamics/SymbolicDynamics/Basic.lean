@@ -370,7 +370,6 @@ Uniqueness (and the usual equations such as `Pattern.shift p v (v + w) = p.confi
 require a left-cancellation hypothesis and are proved in separate lemmas.
 -/]
 protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : G → A := by
-  classical
   intro h
   if hmem : h ∈ p.support.image (v * ·) then
     -- package existence of a preimage under (v * ·)
@@ -582,7 +581,7 @@ variable {A : Type*} [Fintype A] [Inhabited A]
 variable {G : Type*}
 
 /-- Patterns with support exactly `U` form a finite set. -/
-lemma finite_setOf_pattern_support_eq
+lemma finite_setOfPred_pattern_support_eq
     {A G : Type*} [Finite A] [Inhabited A]
     (U : Finset G) :
     ({p : Pattern A G | p.support = U}).Finite := by
@@ -607,6 +606,9 @@ lemma finite_setOf_pattern_support_eq
     right_inv := fun f => by ext i; simp [i.2] }
   let : Fintype { p : Pattern A G | p.support = U } := Fintype.ofEquiv (U → A) e.symm
   apply toFinite
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_pattern_support_eq := finite_setOfPred_pattern_support_eq
 
 /-- The language of a set of configurations `X` on a finite shape `U`.
 

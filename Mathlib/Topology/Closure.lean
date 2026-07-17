@@ -37,7 +37,7 @@ variable {X : Type u} [TopologicalSpace X] {ι : Sort v} {x : X} {s s₁ s₂ t 
 section Interior
 
 theorem mem_interior : x ∈ interior s ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t := by
-  simp only [interior, mem_sUnion, mem_setOf_eq, and_assoc, and_left_comm]
+  simp only [interior, mem_sUnion, mem_ofPred_eq, and_assoc, and_left_comm]
 
 @[simp]
 theorem isOpen_interior : IsOpen (interior s) :=
@@ -276,7 +276,7 @@ theorem closure_closure : closure (closure s) = closure s :=
   isClosed_closure.closure_eq
 
 theorem closure_eq_compl_interior_compl : closure s = (interior sᶜ)ᶜ := by
-  rw [interior, closure, compl_sUnion, compl_image_set_of]
+  rw [interior, closure, compl_sUnion, compl_image_ofPred]
   simp only [compl_subset_compl, isOpen_compl_iff]
 
 @[simp]
