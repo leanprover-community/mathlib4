@@ -549,9 +549,8 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective
   rw [← Set.mem_range, Copy.range_toSubgraph, Set.mem_setOf_eq]
 
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
-  classical
-  rw [copyCount, Fintype.card_eq_zero_iff, isEmpty_subtype]
-  simp [Free, isContained_iff_exists_iso_subgraph]
+  simp [copyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph,
+    Fintype.card_eq_zero_iff, isEmpty_subtype, not_nonempty_iff]
 
 @[simp] lemma copyCount_pos : 0 < G.copyCount H ↔ H ⊑ G := by
   simp [Nat.pos_iff_ne_zero, copyCount_eq_zero]
