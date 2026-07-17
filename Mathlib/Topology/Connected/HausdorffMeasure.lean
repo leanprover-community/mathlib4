@@ -45,25 +45,16 @@ open scoped ENNReal
 
 variable {X : Type*} [EMetricSpace X] {s : Set X} {a b : X}
 
-/-- The set of points at finite distance from `a` is clopen. -/
-theorem isClopen_setOf_edist_ne_top : IsClopen {x | edist a x ≠ ∞} := by
-  constructor
-  · rw [← isOpen_compl_iff, EMetric.isOpen_iff]
-    refine fun x hx => ⟨1, one_pos, fun y hy => ?_⟩
-    simp only [mem_compl_iff, mem_setOf_eq, not_not] at hx ⊢
-    rw [mem_eball] at hy
-    refine (ENNReal.add_eq_top.1 (top_le_iff.1 (hx ▸ edist_triangle a y x))).resolve_right ?_
-    exact (hy.trans_le le_top).ne
-  · rw [EMetric.isOpen_iff]
-    refine fun x hx => ⟨1, one_pos, fun z hz => ?_⟩
-    refine ((edist_triangle a x z).trans_lt (ENNReal.add_lt_top.2 ⟨hx.lt_top, ?_⟩)).ne
-    rw [edist_comm]
-    exact hz.trans_le le_top
+/-- The extended ball of radius `∞`, i.e. the set of points at finite distance from `a`, is
+clopen. -/
+theorem isClopen_eball_top : IsClopen (eball a ⊤) :=
+  ⟨isClosed_eball_top, isOpen_eball⟩
 
 /-- In a preconnected subset of an extended metric space, any two points are at finite distance. -/
 theorem IsPreconnected.edist_ne_top (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
-    edist a b ≠ ∞ :=
-  hs.subset_isClopen isClopen_setOf_edist_ne_top ⟨a, ha, by simp⟩ hb
+    edist a b ≠ ∞ := by
+  rw [edist_comm, ← lt_top_iff_ne_top, ← mem_eball]
+  exact hs.subset_isClopen isClopen_eball_top ⟨a, ha, by simp⟩ hb
 
 /-- The points at finite distance from `a` form a pseudometric space, with distance given by the
 real part of the extended distance. -/
