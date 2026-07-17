@@ -622,7 +622,7 @@ lemma comm (r : R) (x : ℍ[R,c₁,c₂,c₃]) : r * x = x * r := by
 
 instance : IsStarNormal a :=
   ⟨by
-    rw [commute_iff_eq, a.star_eq_two_re_sub];
+    rw [commute_iff_eq, a.star_eq_two_re_sub]
     ext <;> simp <;> ring⟩
 
 @[simp, norm_cast]

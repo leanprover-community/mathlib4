@@ -25,7 +25,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜}
 to `f`. -/
 theorem AnalyticOn.hasFPowerSeriesOnSubball
     {r : ENNReal} (hr_pos : 0 < r) (h : AnalyticOn 𝕜 f (Metric.eball x r)) :
-    letI p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
+    letI p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial)
     r ≤ p.radius → HasFPowerSeriesOnBall f p x r := by
   rw [Metric.isOpen_eball.analyticOn_iff_analyticOnNhd] at h
   intro hr
@@ -54,7 +54,7 @@ the assumption `RCLike 𝕜`.
 For example, over the `p`-adic numbers, the indicator function of the unit ball is
 analytic everywhere, but it agrees with the sum of its Taylor series only on this unit ball. -/
 theorem AnalyticOn.hasFPowerSeriesOnBall :
-    letI p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
+    letI p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial)
     0 < p.radius → AnalyticOn 𝕜 f (Metric.eball x p.radius) →
     HasFPowerSeriesOnBall f p x p.radius := by
   intro hr hs

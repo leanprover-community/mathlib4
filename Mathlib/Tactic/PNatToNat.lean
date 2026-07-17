@@ -68,7 +68,7 @@ lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := b
 /-- `pnat_to_nat` shifts all `PNat`s in the context to `Nat`, rewriting propositions about them.
 A typical use case is `pnat_to_nat; lia`. -/
 macro "pnat_to_nat" : tactic => `(tactic| focus (
-  pnat_positivity;
+  pnat_positivity
   simp only [pnat_to_nat_coe] at *)
 )
 

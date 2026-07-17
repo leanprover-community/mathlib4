@@ -455,8 +455,8 @@ where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the
 derivative. -/
 theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
-    (hf : ∀ k ≤ n, let u := fun t ↦ (x - t) ^ k / k !;
-      let v := fun t ↦ iteratedDerivWithin k f [[x₀, x]] t;
+    (hf : ∀ k ≤ n, let u := fun t ↦ (x - t) ^ k / k !
+      let v := fun t ↦ iteratedDerivWithin k f [[x₀, x]] t
       ∫ (t : ℝ) in x₀..x, u t • deriv v t = u x • v x - u x₀ • v x₀ -
       ∫ (t : ℝ) in x₀..x, deriv u t • v t) :
     f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =

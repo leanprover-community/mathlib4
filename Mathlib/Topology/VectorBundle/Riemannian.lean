@@ -496,7 +496,7 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
 a `ContinuousRiemannianMetric`, then we make sure typeclass inference can infer automatically
 that the bundle is a continuous Riemannian bundle. -/
 instance (g : ContinuousRiemannianMetric F E) :
-    letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
+    letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
     IsContinuousRiemannianBundle F E := by
   let : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
   exact ⟨⟨g.inner, g.continuous, fun b v w ↦ rfl⟩⟩

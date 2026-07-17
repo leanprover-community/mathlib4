@@ -93,7 +93,7 @@ lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn :
   calc
   _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub hkn, preHilbertPoly]
   _ = (n - k + d).choose d := by
-    rw [ascPochhammer_nat_eq_natCast_ascFactorial];
+    rw [ascPochhammer_nat_eq_natCast_ascFactorial]
     simp [field, ascFactorial_eq_factorial_mul_choose]
 
 variable {F}

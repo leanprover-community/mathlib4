@@ -29,8 +29,7 @@ example : True := by
 
 -- both `;` and `<;>` are unseen by the linter
 example : True ∧ True := by
-  constructor <;> trivial;
-
+  constructor <;> trivial
 set_option linter.unusedTactic true
 /--
 warning: 'congr' tactic does nothing

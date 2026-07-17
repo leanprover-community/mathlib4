@@ -117,7 +117,7 @@ theorem support_powerSeriesFamily_subset {x : V⟦Γ⟧} (a b : PowerSeries R) (
 theorem hsum_powerSeriesFamily_mul {x : V⟦Γ⟧} (a b : PowerSeries R) :
     (powerSeriesFamily x (a * b)).hsum =
     ((powerSeriesFamily x a).mul (powerSeriesFamily x b)).hsum := by
-  by_cases h : 0 < x.orderTop;
+  by_cases h : 0 < x.orderTop
   · ext g
     simp only [coeff_hsum_eq_sum, smulFamily_toFun, h, powers_of_orderTop_pos,
       HahnSeries.coeff_smul, mul_toFun, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]

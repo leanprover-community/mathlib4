@@ -60,7 +60,7 @@ class IsIrreducible (φ : Measure α) (κ : Kernel α α) : Prop where
 instance {φ : Measure α} [Subsingleton α] :
     IsIrreducible φ Kernel.id where
   irreducible s hs hsp a := by
-    use 1;
+    use 1
     have ha : a ∈ s :=
       Subsingleton.mem_iff_nonempty.mpr
         <| MeasureTheory.nonempty_of_measure_ne_zero (μ := φ) (ne_of_lt hsp).symm

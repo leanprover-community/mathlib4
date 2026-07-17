@@ -92,7 +92,7 @@ def range (p : Permutation) : Nat :=
 /-- Two permutations are considered equal if they permute in the same way. -/
 def beq (p₁ p₂ : Permutation) : Bool :=
   p₁.range == p₂.range &&
-    let rangeArr := (0...p₁.range).toArray;
+    let rangeArr := (0...p₁.range).toArray
     p₁.permute! rangeArr == p₂.permute! rangeArr
 
 end Permutation

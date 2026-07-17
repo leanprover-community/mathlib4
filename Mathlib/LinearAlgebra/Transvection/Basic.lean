@@ -187,7 +187,7 @@ theorem of_right_eq_zero (f : Dual R V) (hf := f.map_zero) :
 theorem symm_eq {f : Dual R V} {v : V}
     (hv : f v = 0) (hv' : f (-v) = 0 := by simp [hv]) :
     (transvection hv).symm = transvection hv' := by
-  ext;
+  ext
   simp [symm_apply_eq, comp_of_left_eq_apply hv']
 
 theorem inv_eq {f : Dual R V} {v : V}

@@ -208,7 +208,7 @@ lemma testProperty1_of_bar {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B)
 
 @[algebraize testProperty2_of_bar]
 def Bar.testProperty2 {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) : Prop :=
-  letI : Algebra A B := b.f.toAlgebra;
+  letI : Algebra A B := b.f.toAlgebra
   ∀ (r : A) (M : B), r • M = 0
 
 lemma testProperty2_of_bar {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.testProperty2) :

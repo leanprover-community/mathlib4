@@ -298,7 +298,7 @@ uses `h`, which was modified by the flexible tactic `simp` on line
 #guard_msgs (substring := true) in
 -- `simp at h` stains `h` but not other locations
 example {h : 0 = 0} {k : 1 = 1} : True := by
-  simp at h k;
+  simp at h k
   rw [← Classical.not_not (a := True)]
   -- flag the two below vvv do not above ^^^
   rw [← Classical.not_not (a := True)] at k

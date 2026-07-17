@@ -275,10 +275,10 @@ private theorem f_inj {n : ℕ} (a : Fin 3 → ℕ) (ha : a ∈ finMulAntidiag 3
     exact hprods
   have hab0 : a 0 = b 0 := by
     rw [hab2] at hfab2
-    exact (mul_left_inj' <| ne_zero_of_mem_finMulAntidiag hb 2).mp hfab2;
+    exact (mul_left_inj' <| ne_zero_of_mem_finMulAntidiag hb 2).mp hfab2
   have hab1 : a 1 = b 1 := by
     rw [hab0] at hfab1
-    exact (mul_right_inj' <| ne_zero_of_mem_finMulAntidiag hb 0).mp hfab1;
+    exact (mul_right_inj' <| ne_zero_of_mem_finMulAntidiag hb 0).mp hfab1
   funext i; fin_cases i <;> assumption
 
 private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
