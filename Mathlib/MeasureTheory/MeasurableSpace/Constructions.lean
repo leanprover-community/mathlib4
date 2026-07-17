@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.Finset.Update
 public import Mathlib.Data.Prod.TProd
 public import Mathlib.Data.Set.UnionLift
@@ -43,15 +44,14 @@ theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [Measurable
     (h : ∀ x, MeasurableSet (f ⁻¹' {x})) : Measurable f :=
   measurable_to_countable fun y => h (f y)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞} :
     Measurable f ↔ ∀ n : ℕ, MeasurableSet (f ⁻¹' {↑n}) := by
   refine ⟨fun hf n ↦ hf <| measurableSet_singleton _, fun h ↦ measurable_to_countable' fun n ↦ ?_⟩
   cases n with
   | top =>
-    rw [← WithTop.none_eq_top, ← compl_range_some, preimage_compl, ← iUnion_singleton_eq_range,
-      preimage_iUnion]
-    exact .compl <| .iUnion h
+    rw [← MeasurableSet.compl_iff, ← compl_compl (f ⁻¹' {⊤}), compl_compl, ← preimage_compl,
+      ← range_natCast_eq_top_compl, ← iUnion_singleton_eq_range, preimage_iUnion]
+    exact MeasurableSet.iUnion h
   | coe n => exact h n
 
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
@@ -114,12 +114,12 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
     MeasurableSet (disjointed f n) :=
   disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
-  rw [preimage_find_eq_disjointed (fun k => {x | p x k})]
-  exact MeasurableSet.disjointed hm _
+  convert! MeasurableSet.disjointed hm (Nat.find (hp x))
+  rw [← preimage_find_eq_disjointed (fun k => {x | p x k})]
+  rfl
 
 end Nat
 
