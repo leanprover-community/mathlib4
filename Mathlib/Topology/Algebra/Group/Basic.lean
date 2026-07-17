@@ -48,7 +48,7 @@ variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 /-- In a Hausdorff magma with continuous multiplication, the centralizer of any set is closed. -/
 lemma Set.isClosed_centralizer {M : Type*} (s : Set M) [Mul M] [TopologicalSpace M]
     [SeparatelyContinuousMul M] [T2Space M] : IsClosed (centralizer s) := by
-  rw [centralizer, setOf_forall]
+  rw [centralizer, ofPred_forall]
   refine isClosed_sInter ?_
   rintro - ⟨m, ht, rfl⟩
   refine isClosed_imp (by simp) <| isClosed_eq ?_ ?_
@@ -284,10 +284,16 @@ section PointwiseLimits
 variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
 
 @[to_additive]
-theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
+theorem isClosed_setOfPred_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
     IsClosed { f : G₁ → G₂ | ∀ x, f x⁻¹ = (f x)⁻¹ } := by
-  simp only [setOf_forall]
+  simp only [ofPred_forall]
   exact isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_map_inv := isClosed_setOfPred_map_inv
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_map_neg := isClosed_setOfPred_map_neg
 
 end PointwiseLimits
 
@@ -373,7 +379,7 @@ lemma continuousOn_inv_iff : ContinuousOn f⁻¹ s ↔ ContinuousOn f s :=
 @[to_additive] alias ⟨ContinuousOn.of_inv, _⟩ := continuousOn_inv_iff
 
 @[to_additive (attr := simp)]
-theorem Filter.inv_nhdsNE {a : G} : (𝓝[≠] a)⁻¹ = (𝓝[≠] (a⁻¹)) := by
+theorem Filter.inv_nhdsNE {a : G} : (𝓝[≠] a)⁻¹ = 𝓝[≠] (a⁻¹) := by
   convert! (Homeomorph.inv G).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
@@ -517,22 +523,22 @@ section mul
 variable [ContinuousMul H]
 
 @[to_additive (attr := simp)]
-theorem Filter.map_mul_left_nhdsGT {c a : H} : map (c * ·) (𝓝[>] a) = (𝓝[>] (c * a)) := by
+theorem Filter.map_mul_left_nhdsGT {c a : H} : map (c * ·) (𝓝[>] a) = 𝓝[>] (c * a) := by
   convert! (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp [mul_comm]
 
 @[to_additive (attr := simp)]
-theorem Filter.map_mul_left_nhdsLT {c a : H} : map (c * ·) (𝓝[<] a) = (𝓝[<] (c * a)) := by
+theorem Filter.map_mul_left_nhdsLT {c a : H} : map (c * ·) (𝓝[<] a) = 𝓝[<] (c * a) := by
   convert! (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp [mul_comm]
 
 @[to_additive (attr := simp)]
-theorem Filter.map_mul_right_nhdsGT {c a : H} : map (· * c) (𝓝[>] a) = (𝓝[>] (a * c)) := by
+theorem Filter.map_mul_right_nhdsGT {c a : H} : map (· * c) (𝓝[>] a) = 𝓝[>] (a * c) := by
   convert! (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 @[to_additive (attr := simp)]
-theorem Filter.map_mul_right_nhdsLT {c a : H} : map (· * c) (𝓝[<] a) = (𝓝[<] (a * c)) := by
+theorem Filter.map_mul_right_nhdsLT {c a : H} : map (· * c) (𝓝[<] a) = 𝓝[<] (a * c) := by
   convert! (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
@@ -543,12 +549,12 @@ section inv
 variable [ContinuousInv H]
 
 @[to_additive (attr := simp)]
-theorem Filter.inv_nhdsGT {a : H} : (𝓝[>] a)⁻¹ = (𝓝[<] (a⁻¹)) := by
+theorem Filter.inv_nhdsGT {a : H} : (𝓝[>] a)⁻¹ = 𝓝[<] (a⁻¹) := by
   convert! (Homeomorph.inv H).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 @[to_additive (attr := simp)]
-theorem Filter.inv_nhdsLT {a : H} : (𝓝[<] a)⁻¹ = (𝓝[>] (a⁻¹)) := by
+theorem Filter.inv_nhdsLT {a : H} : (𝓝[<] a)⁻¹ = 𝓝[>] (a⁻¹) := by
   convert! (Homeomorph.inv H).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
@@ -804,7 +810,7 @@ theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → S
 theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
     x ∈ closure s ↔ ∀ U ∈ (𝓝 1 : Filter G), ∃ y ∈ s, y / x ∈ U := by
   rw [mem_closure_iff_nhds_basis ((𝓝 1 : Filter G).basis_sets.nhds_of_one x)]
-  simp_rw [Set.mem_setOf, id]
+  simp_rw [Set.mem_ofPred, id]
 
 /-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`)
 from a topological group to a topological monoid is continuous
@@ -1064,6 +1070,10 @@ alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with }
 
+@[to_additive (attr := simp)]
+theorem Homeomorph.coe_divLeft (a : G) : ⇑(Homeomorph.divLeft a) = (a / ·) :=
+  rfl
+
 @[to_additive]
 theorem isOpenMap_div_left (a : G) : IsOpenMap (a / ·) :=
   (Homeomorph.divLeft _).isOpenMap
@@ -1077,6 +1087,10 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
   /-- A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. -/]
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
   { Equiv.divRight x with }
+
+@[to_additive (attr := simp)]
+theorem Homeomorph.coe_divRight (a : G) : ⇑(Homeomorph.divRight a) = (· / a) :=
+  rfl
 
 @[to_additive]
 lemma isOpenMap_div_right (a : G) : IsOpenMap (· / a) := (Homeomorph.divRight a).isOpenMap
@@ -1093,6 +1107,51 @@ theorem tendsto_div_nhds_one_iff {α : Type*} {l : Filter α} {x : G} {u : α �
 @[to_additive]
 theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
   simpa only [div_eq_mul_inv] using nhds_translation_mul_inv x
+
+variable [TopologicalSpace H] [CommGroup H] [IsTopologicalGroup H]
+  [PartialOrder H] [IsOrderedMonoid H]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhdsGT {c a : H} : map (· / c) (𝓝[>] a) = 𝓝[>] (a / c) := by
+  convert! (Homeomorph.divRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhdsLT {c a : H} : map (· / c) (𝓝[<] a) = 𝓝[<] (a / c) := by
+  convert! (Homeomorph.divRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhdsNE {c a : G} :
+    map (· / c) (𝓝[≠] a) = 𝓝[≠] (a / c) := by
+  convert! (Homeomorph.divRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp [div_eq_mul_inv]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhds {c a : G} :
+    map (· / c) (𝓝 a) = 𝓝 (a / c) := by
+  convert! (Homeomorph.divRight c).map_nhds_eq .. using 2
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhdsGT {c a : H} : map (c / ·) (𝓝[>] a) = 𝓝[<] (c / a) := by
+  convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhdsLT {c a : H} : map (c / ·) (𝓝[<] a) = 𝓝[>] (c / a) := by
+  convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhdsNE {c a : G} :
+    map (c / ·) (𝓝[≠] a) = 𝓝[≠] (c / a) := by
+  convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp [image_div_left]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhds {c a : G} :
+    map (c / ·) (𝓝 a) = 𝓝 (c / a) := by
+  convert! (Homeomorph.divLeft c).map_nhds_eq .. using 2
 
 end DivInvTopologicalGroup
 
@@ -1129,7 +1188,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       rw [preimage_compl, compl_compl] at H
       convert! H
       ext x
-      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
@@ -1156,7 +1215,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       apply Finite.of_preimage _ (equivOp S).surjective
       convert! H using 1
       ext x
-      simp only [image_smul, mem_setOf_eq, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred_eq, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_nonempty_iff }
 
 end
