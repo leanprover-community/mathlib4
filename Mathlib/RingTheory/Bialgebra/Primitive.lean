@@ -80,12 +80,11 @@ variable [CommSemiring R] [Ring A] [Bialgebra R A] {a b : A}
 /-- Primitive elements in a bialgebra are stable under negation. -/
 lemma IsPrimitiveElem.neg (ha : IsPrimitiveElem R a) : IsPrimitiveElem R (-a) :=
   ⟨by simpa [ha] using (map_add (counit (R := R)) (-a) a).symm,
-    by rw [map_neg, ha.comul_eq_tmul_add_tmul, neg_add, neg_tmul, tmul_neg]⟩
+    by simp [ha, neg_tmul, tmul_neg, add_comm]⟩
 
 /-- Primitive elements in a bialgebra are stable under subtraction. -/
 lemma IsPrimitiveElem.sub (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
-    IsPrimitiveElem R (a - b) :=
-  sub_eq_add_neg a b ▸ ha.add hb.neg
+    IsPrimitiveElem R (a - b) := sub_eq_add_neg a b ▸ ha.add hb.neg
 
 /-- The commutator `[a, b] = a * b - b * a` of two primitive elements is primitive. -/
 lemma IsPrimitiveElem.commutator (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
