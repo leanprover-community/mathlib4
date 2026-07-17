@@ -6,6 +6,7 @@ Authors: Hang Lu Su, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Tactic.MkIffOfInductiveProp
@@ -238,15 +239,11 @@ theorem IsRightOrderable.of_mulEquiv [IsRightOrderable G] (e : G ≃* H) : IsRig
 theorem IsBiOrderable.of_mulEquiv [IsBiOrderable G] (e : G ≃* H) : IsBiOrderable H := by
   obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono G
   let : LinearOrder H := LinearOrder.lift' e.symm e.symm.injective
-  refine ⟨‹LinearOrder H›, ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩
-  · change e.symm (c * a) ≤ e.symm (c * b)
-    rw [map_mul, map_mul]
-    gcongr
-    exact hab
-  · change e.symm (a * c) ≤ e.symm (b * c)
-    rw [map_mul, map_mul]
-    gcongr
-    exact hab
+  refine ⟨‹LinearOrder H›, ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
+    · change e.symm _ ≤ e.symm _
+      rw [map_mul, map_mul]
+      gcongr
+      exact hab
 
 /-- Left-orderability is invariant under monoid isomorphism. -/
 @[to_additive /-- Left-orderability is invariant under additive monoid isomorphism. -/]
@@ -288,20 +285,9 @@ left multiplication on `G` is right multiplication on `Gᵐᵒᵖ`. -/
 @[to_additive /-- Left-orderability of `G` is the same as right-orderability of the opposite
 additive monoid `Gᵃᵒᵖ`, since left addition on `G` is right addition on `Gᵃᵒᵖ`. -/]
 theorem isRightOrderable_mulOpposite_iff_isLeftOrderable :
-    IsRightOrderable Gᵐᵒᵖ ↔ IsLeftOrderable G := by
-  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
-  · obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono Gᵐᵒᵖ
-    refine ⟨LinearOrder.lift' MulOpposite.op MulOpposite.op_injective, ⟨fun c a b hab ↦ ?_⟩⟩
-    change MulOpposite.op (c * a) ≤ MulOpposite.op (c * b)
-    rw [MulOpposite.op_mul, MulOpposite.op_mul]
-    gcongr
-    exact hab
-  · obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
-    refine ⟨LinearOrder.lift' MulOpposite.unop MulOpposite.unop_injective, ⟨fun c a b hab ↦ ?_⟩⟩
-    change (a * c).unop ≤ (b * c).unop
-    rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
-    gcongr
-    exact hab
+    IsRightOrderable Gᵐᵒᵖ ↔ IsLeftOrderable G :=
+  (isLeftOrderable_mulOpposite_iff_isRightOrderable (G := Gᵐᵒᵖ)).symm.trans
+    (MulEquiv.opOp G).isLeftOrderable_congr.symm
 
 /-- Bi-orderability transfers to the opposite monoid `Gᵐᵒᵖ`, since left and right multiplication on
 `G` are respectively right and left multiplication on `Gᵐᵒᵖ`. -/
@@ -311,23 +297,15 @@ theorem isBiOrderable_mulOpposite_iff : IsBiOrderable Gᵐᵒᵖ ↔ IsBiOrderab
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
   · obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono Gᵐᵒᵖ
     refine ⟨LinearOrder.lift' MulOpposite.op MulOpposite.op_injective,
-      ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩
-    · change MulOpposite.op (c * a) ≤ MulOpposite.op (c * b)
-      rw [MulOpposite.op_mul, MulOpposite.op_mul]
-      gcongr
-      exact hab
-    · change MulOpposite.op (a * c) ≤ MulOpposite.op (b * c)
+      ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
+    · change MulOpposite.op _ ≤ MulOpposite.op _
       rw [MulOpposite.op_mul, MulOpposite.op_mul]
       gcongr
       exact hab
   · obtain ⟨_, _, _⟩ := exists_linearOrder_mulLeftMono_mulRightMono G
     refine ⟨LinearOrder.lift' MulOpposite.unop MulOpposite.unop_injective,
-      ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩
-    · change (c * a).unop ≤ (c * b).unop
-      rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
-      gcongr
-      exact hab
-    · change (a * c).unop ≤ (b * c).unop
+      ⟨fun c a b hab ↦ ?_⟩, ⟨fun c a b hab ↦ ?_⟩⟩ <;>
+    · change (_ : Gᵐᵒᵖ).unop ≤ (_ : Gᵐᵒᵖ).unop
       rw [MulOpposite.unop_mul, MulOpposite.unop_mul]
       gcongr
       exact hab
@@ -335,21 +313,12 @@ theorem isBiOrderable_mulOpposite_iff : IsBiOrderable Gᵐᵒᵖ ↔ IsBiOrderab
 section Group
 variable {G : Type*} [Group G]
 
-/-- A group `G` is left-orderable iff it is right-orderable. -/
-@[to_additive /-- An additive group `G` is left-orderable iff it is right-orderable. -/]
-theorem isLeftOrderable_iff_isRightOrderable : IsLeftOrderable G ↔ IsRightOrderable G := by
-  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
-  · obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
-    refine ⟨LinearOrder.lift' (·⁻¹) inv_injective, ⟨fun c a b hab ↦ ?_⟩⟩
-    change (a * c)⁻¹ ≤ (b * c)⁻¹
-    rw [mul_inv_rev, mul_inv_rev]
-    gcongr
-    exact hab
-  · obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono G
-    refine ⟨LinearOrder.lift' (·⁻¹) inv_injective, ⟨fun c a b hab ↦ ?_⟩⟩
-    change (c * a)⁻¹ ≤ (c * b)⁻¹
-    rw [mul_inv_rev, mul_inv_rev]
-    gcongr
-    exact hab
+/-- A group `G` is left-orderable iff it is right-orderable, since inversion `x ↦ x⁻¹` is a
+multiplicative anti-automorphism, realised as the isomorphism `MulEquiv.inv' : G ≃* Gᵐᵒᵖ`. -/
+@[to_additive /-- An additive group `G` is left-orderable iff it is right-orderable, since negation
+`x ↦ -x` is an additive anti-automorphism, realised as the isomorphism
+`AddEquiv.inv' : G ≃+ Gᵃᵒᵖ`. -/]
+theorem isLeftOrderable_iff_isRightOrderable : IsLeftOrderable G ↔ IsRightOrderable G :=
+  (MulEquiv.inv' G).isLeftOrderable_congr.trans isLeftOrderable_mulOpposite_iff_isRightOrderable
 
 end Group
