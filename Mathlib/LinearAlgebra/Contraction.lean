@@ -43,24 +43,25 @@ attribute [local ext high] TensorProduct.ext
 section Contraction
 section CommSemiring
 
-variable (R M N P Q) [CommSemiring R]
+variable [CommSemiring R]
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 
+variable (R M) in
 /-- The natural left-handed pairing between a module and its dual. -/
 def contractLeft : Module.Dual R M ⊗[R] M →ₗ[R] R :=
   (uncurry _ _ _ _).toFun LinearMap.id
 
+variable (R M) in
 /-- The natural right-handed pairing between a module and its dual. -/
 def contractRight : M ⊗[R] Module.Dual R M →ₗ[R] R :=
   (uncurry _ _ _ _).toFun (LinearMap.flip LinearMap.id)
 
+variable (R M N) in
 /-- The natural map associating a linear map to the tensor product of two modules. -/
 def dualTensorHom : Module.Dual R M ⊗[R] N →ₗ[R] M →ₗ[R] N :=
   let M' := Module.Dual R M
   (uncurry (.id R) M' N (M →ₗ[R] N) : _ → M' ⊗ N →ₗ[R] M →ₗ[R] N) LinearMap.smulRightₗ
-
-variable {R M N P Q}
 
 @[simp]
 theorem contractLeft_apply (f : Module.Dual R M) (m : M) : contractLeft R M (f ⊗ₜ m) = f m :=
