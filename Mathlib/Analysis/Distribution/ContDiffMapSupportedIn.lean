@@ -1039,7 +1039,7 @@ noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E
       have hfG : ∀ i ≤ k, ∀ x ∈ K, ‖iteratedFDeriv ℝ i g x‖ ≤ G := fun i hi x hx ↦
         (Finset.le_sup' _ (Finset.mem_range_succ_iff.2 hi)).trans
           ((Real.le_norm_self _).trans (hC₀ x hx) |>.trans (le_max_left _ _))
-      set C : ℝ≥0 := ⟨‖B‖*((k : ℝ) + 1)*(Nat.pow k k)*G, by positivity⟩ with C_def
+      set C : ℝ≥0 := ⟨‖B‖ * ((k : ℝ) + 1) * (Nat.pow k k) * G, by positivity⟩ with C_def
       refine ⟨Finset.Iic k, C, fun φ ↦ ?_⟩
       apply ((T φ).seminorm_le_iff 𝕜 (by positivity) k).2
       intro k_le_n x x_in_K
