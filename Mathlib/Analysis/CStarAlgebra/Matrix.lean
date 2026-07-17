@@ -290,7 +290,7 @@ lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
 
-/-- The matrices Matrix n n ℂ with the L2 operator norm form a CStarAlgebra. -/
+/-- The matrices `Matrix n n ℂ` with the L2 operator norm form a `CStarAlgebra`. -/
 @[instance_reducible] noncomputable def instCStarAlgebra {n : Type*} [Fintype n] [DecidableEq n] :
     CStarAlgebra (Matrix n n ℂ) where
 
