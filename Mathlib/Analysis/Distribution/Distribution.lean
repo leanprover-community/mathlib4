@@ -416,10 +416,6 @@ theorem coe_eq_zero {f : E → F} (hf : ¬ LocallyIntegrableOn f Ω volume) :
 theorem coe_zero : ((0 : E → F) : 𝓓'^{n}(Ω, F)) = 0 :=
   toDistribution_zero
 
-theorem coe_eq_coe_of_ae {f f' : E → F} (h : f =ᵐ[volume.restrict Ω] f') :
-    (f : 𝓓'^{n}(Ω, F)) = (f' : 𝓓'^{n}(Ω, F)) :=
-  toDistribution_eq_of_ae h
-
 @[simp]
 theorem coe_add {f g : E → F} (hf : LocallyIntegrableOn f Ω volume)
     (hg : LocallyIntegrableOn g Ω volume) :
