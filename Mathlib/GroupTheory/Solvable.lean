@@ -177,9 +177,8 @@ instance (H : Subgroup G) [H.Normal] [IsSolvable G] :
 
 theorem isSolvable_iff_subgroup_quotient (H : Subgroup G) [H.Normal] :
     IsSolvable G ↔ IsSolvable H ∧ IsSolvable (G ⧸ H) :=
-  ⟨fun _ => ⟨inferInstance, inferInstance⟩, and_imp.2 fun _ _ =>
-    isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H)
-      ((QuotientGroup.ker_mk' H).trans H.range_subtype.symm).le⟩
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦
+    isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H) (by simp)⟩
 
 instance {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
