@@ -32,9 +32,9 @@ into a strictly commutative diagram of functors
      |                           |
   SmRep k G -- SmRep.res --> SmRep k H.
 
-The coinduced functor `SmRep.coind` is defined for arbitary group morphisms `H →* G`, by cutting out
-the smooth vectors from the naive coinduced representations. In other words, we have
-  `SmRep.coind = ι (natural inclusion) ⋙ Rep.ind ⋙ smVec (taking smooth vectors)`
+The coinduced functor `SmRep.coind` is defined for arbitrary group morphisms `H →* G`, by cutting
+out the smooth vectors from the naive coinduced representations. In other words, we have
+  `SmRep.coind = ι (natural inclusion) ⋙ Rep.coind ⋙ smVec (taking smooth vectors).`
 This is also called the "smooth induction functor" in literature.
 
 The induced functor `SmRep.ind` is defined for group morphism `H →* G` which is an open map, fitting
@@ -95,7 +95,8 @@ lemma isSmoothVector_IndVMk {ρ : Representation k H V} {v : V} (h_isOpen : IsOp
     intro _ _ _ h_stab rfl h_conj
     rw [← h_conj,MonoidHom.coe_coe, MulAut.conj_apply, inv_inv, ind_map_conj_mk, h_stab]
   have h_open : IsOpen (((stabilizer ρ v).map s).map (MulAut.conj g⁻¹).toMonoidHom : Set G) := by
-    simpa using ((isOpenMap_mul_right g).comp (isOpenMap_mul_left g⁻¹)) _ (h_isOpen _ hv)
+    convert ((isOpenMap_mul_right g).comp (isOpenMap_mul_left g⁻¹)) _ (h_isOpen _ hv)
+    ext; simp
   exact Subgroup.isOpen_mono h_sub h_open
 
 omit [IsTopologicalGroup H] in
