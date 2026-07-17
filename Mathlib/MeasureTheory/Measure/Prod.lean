@@ -576,7 +576,7 @@ theorem prod_eq_generateFrom {μ : Measure α} {ν : Measure β} {C : Set (Set �
       (generateFrom_eq_prod hC hD h3C.isCountablySpanning h3D.isCountablySpanning).symm
       (h2C.prod h2D) ?_
   rintro _ ⟨s, hs, t, ht, rfl⟩
-  haveI := h3D.sigmaFinite
+  have := h3D.sigmaFinite
   rw [h₁ s hs t ht, prod_prod]
 
 /- Note that the next theorem is not true for s-finite measures: let `μ = ν = ∞ • Leb` on `[0,1]`

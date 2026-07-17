@@ -361,7 +361,6 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
     haveI := Classical.decEq α
     if a' = a then 0 else f a'
   mem_support_toFun a' := by
-    classical
     grind
 
 @[grind =]
@@ -373,7 +372,6 @@ theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
 @[simp]
 theorem support_erase [DecidableEq α] {a : α} {f : α →₀ M} :
     (f.erase a).support = f.support.erase a := by
-  classical
   grind
 
 @[simp]

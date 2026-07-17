@@ -40,7 +40,6 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}
 
 theorem Ideal.iUnion_minimalPrimes :
     ⋃ p ∈ I.minimalPrimes, p = { x | ∃ y ∉ I.radical, x * y ∈ I.radical } := by
-  classical
   ext x
   simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop, Set.mem_setOf_eq]
   constructor
