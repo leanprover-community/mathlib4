@@ -143,7 +143,7 @@ end UniqueFactorizationMonoid
 
 end RationalRootTheorem
 
-theorem IsIntegral.mem_range_ratCast_iff_mem_range_intCast {α : Type*} [DivisionRing α] [CharZero α]
+theorem IsIntegral.mem_range_ratCast_iff {α : Type*} [DivisionRing α] [CharZero α]
     {x : α} (h : IsIntegral ℤ x) : x ∈ Set.range Rat.cast ↔ x ∈ Set.range Int.cast :=
   IsIntegralClosure.mem_range_algebraMap ℤ h
 

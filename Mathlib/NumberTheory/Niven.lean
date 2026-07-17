@@ -109,7 +109,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
   -- Hence, `2 cos θ ∈ {-2, -1, 0, 1, 2}`.
   obtain ⟨r, rfl⟩ := hθ
   obtain ⟨k, hk⟩ : 2 * cos (r * π) ∈ Set.range Int.cast := by
-    rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).mem_range_ratCast_iff_mem_range_intCast]
+    rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).mem_range_ratCast_iff]
     exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
   -- Since k is an integer and `2 * cos (w * pi) = k`, we have $k ∈ {-2, -1, 0, 1, 2}$.
   have hk_values : k ∈ Finset.Icc (-2 : ℤ) 2 := by
