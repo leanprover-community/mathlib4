@@ -855,15 +855,9 @@ A prefixed point is a value `a` with `f a ≤ a`. -/
 theorem ωSup_iterate_le_prefixedPoint (h : x ≤ f x) {a : α}
     (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
     ωSup (iterateChain f x h) ≤ a := by
-  apply ωSup_le
-  intro n
-  induction n with
-  | zero => exact h_x_le_a
-  | succ n h_ind =>
-    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) :=
-      Function.iterate_succ_apply' ..
-    rw [this]
-    exact le_trans (f.monotone h_ind) h_a
+  apply ωSup_iterate_induction (p := (· ≤ a)) h h_x_le_a ?_ (by simp)
+  intro i hi
+  exact (f.monotone hi).trans h_a
 
 /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point. -/
 theorem ωSup_iterate_le_fixedPoint (h : x ≤ f x) {a : α}
@@ -891,16 +885,21 @@ theorem map_lfp : f (lfp f) = lfp f :=
 
 theorem isFixedPt_lfp : IsFixedPt f (lfp f) := map_lfp f
 
+/-- `lfp f` is below every prefixed point of `f`, i.e. every `a` such that `f a ≤ a`. -/
+theorem lfp_le {a : α} (h : f a ≤ a) : lfp f ≤ a :=
+  ωSup_iterate_le_prefixedPoint f ⊥ bot_le h bot_le
+
 /-- `lfp f` is below every fixed point of `f`. -/
 theorem lfp_le_fixed {a : α} (h : f a = a) : lfp f ≤ a :=
-  ωSup_iterate_le_fixedPoint f ⊥ bot_le h bot_le
+  lfp_le f h.le
 
 /-- `lfp f` is the least fixed point of `f`. -/
 theorem isLeast_lfp : IsLeast (fixedPoints f) (lfp f) :=
   ⟨isFixedPt_lfp f, fun _ ha => lfp_le_fixed f ha⟩
 
 /-- **Scott induction** for `lfp`: to prove a predicate `p` of `lfp f`, it suffices to show
-`p ⊥`, that `p` is preserved by `f`, and that `p` is closed under ωSup of chains. -/
+`p ⊥`, that `p` is preserved by `f`, and that `p` is closed under ωSup of chains.
+See [Denotational Semantics][pitts2012denotational]. -/
 theorem lfp_induction {p : α → Prop} (h_bot : p ⊥) (h_step : ∀ a, p a → p (f a))
     (h_sup : ∀ c : Chain α, (∀ n, p (c n)) → p (ωSup c)) : p (lfp f) :=
   ωSup_iterate_induction bot_le h_bot h_step h_sup
