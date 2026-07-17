@@ -135,6 +135,7 @@ attribute [to_additive existing] faithfulSMul
 
 variable (α G)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (n) in
 /-- The equivariant map from embeddings of `Fin n` (aka arrangement) to combinations. -/
 @[to_additive /-- The equivariant map from embeddings of `Fin n`

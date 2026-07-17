@@ -225,7 +225,7 @@ variable {C₁ C₂ H₁ H₂ D : Type*} [Category* C₁] [Category* C₂] [Cate
   [Category* H₁] [Category* H₂] {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
   (Φ : LocalizerMorphism W₁ W₂) [Φ.IsLocalizedEquivalence] [Φ.functor.IsEquivalence]
 
-open Functor in
+open CategoryTheory.Functor in
 lemma isRightDerivedFunctor_iff_precomp
     (L₁ : C₁ ⥤ H₁) (L₂ : C₂ ⥤ H₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
     (G : H₁ ⥤ H₂) (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)

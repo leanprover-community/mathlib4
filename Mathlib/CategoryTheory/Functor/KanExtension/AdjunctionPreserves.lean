@@ -20,7 +20,7 @@ In particuliar, this applies to equivalences of categories.
 
 namespace CategoryTheory
 
-open Functor Limits
+open CategoryTheory.Functor Limits
 
 variable {C D H₁ H₂ : Type*} [Category* C] [Category* D] [Category* H₁] [Category* H₂]
   {G₁ : H₁ ⥤ H₂} {G₂ : H₂ ⥤ H₁}
@@ -44,6 +44,7 @@ def leftExtensionPostCompose₂RightAdjoint :
     (F.rightUnitor.inv ≫ whiskerLeft F adj.unit ≫ (associator _ _ _).inv)
     { app _ := (associator _ _ _).hom }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The adjunction exhibiting that `LeftExtension.postcompose₂ L F G₁` has a right adjoint
 when `G₁` has. -/
@@ -52,6 +53,7 @@ def leftExtensionPostcompose₂ :
   unit.app E := StructuredArrow.homMk (whiskerLeft E.right adj.unit)
   counit.app E := StructuredArrow.homMk (whiskerLeft E.right adj.counit)
 
+set_option backward.isDefEq.respectTransparency false in
 include adj in
 lemma preservesLeftKanExtension : G₁.PreservesLeftKanExtension F L where
   preserves F' α hα := by
@@ -77,6 +79,7 @@ def rightExtensionPostCompose₂LeftAdjoint :
     (G := (whiskeringRight _ _ _).obj G₁) { app _ := (associator _ _ _).inv }
     ((associator _ _ _).hom ≫ whiskerLeft F adj.counit ≫ F.rightUnitor.hom)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The adjunction exhibiting that `RightExtension.postcompose₂ L F G₂` has a left adjoint
 when `G₂` has. -/
@@ -85,6 +88,7 @@ def rightExtensionPostcompose₂ :
   unit.app E := CostructuredArrow.homMk (whiskerLeft E.left adj.unit)
   counit.app E := CostructuredArrow.homMk (whiskerLeft E.left adj.counit)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 include adj in
 lemma preservesRightKanExtension : G₂.PreservesRightKanExtension F L where
