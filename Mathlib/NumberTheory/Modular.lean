@@ -115,7 +115,7 @@ theorem tendsto_normSq_coprime_pair :
     Filter.Tendsto (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * z + p 1)) cofinite atTop := by
   -- using this instance rather than the automatic `Function.module` makes unification issues in
   -- `LinearEquiv.isClosedEmbedding_of_injective` less bad later in the proof.
-  letI : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
+  let : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
   let π₀ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 0
   let π₁ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 1
   let f : (Fin 2 → ℝ) →ₗ[ℝ] ℂ := π₀.smulRight (z : ℂ) + π₁.smulRight 1
@@ -184,6 +184,7 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
@@ -275,7 +276,6 @@ attribute [local simp] UpperHalfPlane.coe_specialLinearGroup_apply
 
 /-- For `z : ℍ`, there is a `g : SL(2,ℤ)` maximizing `(g•z).im` -/
 theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
-  classical
   let s : Set (Fin 2 → ℤ) := {cd | IsCoprime (cd 0) (cd 1)}
   have hs : s.Nonempty := ⟨![1, 1], isCoprime_one_left⟩
   obtain ⟨p, hp_coprime, hp⟩ :=
@@ -294,7 +294,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
 theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     ∃ g : SL(2, ℤ), g 1 = cd ∧ ∀ g' : SL(2, ℤ), g 1 = g' 1 →
       |(g • z).re| ≤ |(g' • z).re| := by
-  haveI : Nonempty { g : SL(2, ℤ) // g 1 = cd } :=
+  have : Nonempty { g : SL(2, ℤ) // g 1 = cd } :=
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
@@ -654,6 +654,7 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
   rw [← Int.cast_one, ← Int.cast_neg, Int.cast_le] at this
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g • z).im = z.im := by
   wlog hden : z.im ≤ (g • z).im
   · rw [← this (g := g⁻¹) hg (by simpa using hz) (by simpa using le_of_not_ge hden)]

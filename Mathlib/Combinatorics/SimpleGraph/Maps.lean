@@ -608,6 +608,7 @@ def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
 
 @[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induceHomOfLE_toHom :
     (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
   ext; simp
@@ -730,6 +731,9 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
 
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
+/-- Equivalence of homomorphisms induced by isomorphisms of graphs. -/
+abbrev homCongr (f' : G'' ≃g G''') : G →g G'' ≃ G' →g G''' := RelIso.relHomCongr f f'
+
 /-- Composition of graph isomorphisms. -/
 abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
   f.trans f'
@@ -789,12 +793,21 @@ theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
     (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
   Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 implies_true]
+
+/-- The isomorphism between `completeBipartiteGraph V₁ W₁` and
+`completeBipartiteGraph V₂ W₂` where `V₁ ≃ V₂` and `W₁ ≃ W₂`. -/
+@[simps!]
+def completeBipartiteGraphCongr {V₁ V₂ W₁ W₂ : Type*} (hV : V₁ ≃ V₂) (hW : W₁ ≃ W₂) :
+    completeBipartiteGraph V₁ W₁ ≃g completeBipartiteGraph V₂ W₂ where
+  __ := hV.sumCongr hW
+  map_rel_iff' := by simp
 
 section Finite
 

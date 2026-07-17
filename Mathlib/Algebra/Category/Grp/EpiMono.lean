@@ -13,6 +13,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Monomorphisms and epimorphisms in `Group`
+
 In this file, we prove monomorphisms in the category of groups are injective homomorphisms and
 epimorphisms are surjective homomorphisms.
 -/
@@ -134,6 +135,7 @@ theorem fromCoset_eq_of_mem_range {b : B} (hb : b ∈ f.hom.range) :
 
 example (G : Type) [Group G] (S : Subgroup G) : Set G := S
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem fromCoset_ne_of_nin_range {b : B} (hb : b ∉ f.hom.range) :
     fromCoset ⟨b • ↑f.hom.range, b, rfl⟩ ≠ fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
   intro r
@@ -170,6 +172,7 @@ theorem τ_symm_apply_infinity :
     Equiv.symm τ ∞ = fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
   rw [tau, Equiv.symm_swap, Equiv.swap_apply_right]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `g : B ⟶ S(X')` be defined as such that, for any `β : B`, `g(β)` is the function sending
 point at infinity to point at infinity and sending coset `y` to `β • y`.
 -/
@@ -279,6 +282,7 @@ theorem comp_eq : (f ≫ ofHom g) = f ≫ ofHom h := by
     use a
   rw [this]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem g_ne_h (x : B) (hx : x ∉ f.hom.range) : g ≠ h := by
   intro r
   apply fromCoset_ne_of_nin_range _ hx
