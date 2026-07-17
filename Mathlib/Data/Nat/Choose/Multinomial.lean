@@ -508,7 +508,7 @@ theorem multinomial_pos (m : Multiset ℕ) : 0 < m.multinomial := by
     simp only [multinomial_cons, h, mul_pos_iff_of_pos_right]
     exact Nat.choose_pos (Nat.le_add_right x m.sum)
 
-public meta section PositivityExtension
+section PositivityExtension
 
 open Lean Meta Mathlib Meta Positivity Qq
 
