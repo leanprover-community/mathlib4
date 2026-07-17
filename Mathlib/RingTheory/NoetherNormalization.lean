@@ -10,6 +10,7 @@ public import Mathlib.Data.List.Indexes
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Noether normalization lemma
+
 This file contains a proof by Nagata of the Noether normalization lemma.
 
 ## Main Results

@@ -114,7 +114,7 @@ theorem isDiameter_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} {s : Sphere P}
     (hne₁₂ : p₁ ≠ p₂) (hne₂₃ : p₂ ≠ p₃)
     (hangle : ∠ p₁ p₂ p₃ = π / 2) :
     s.IsDiameter p₁ p₃ := by
-  haveI : FiniteDimensional ℝ V := .of_finrank_eq_succ (Fact.out : finrank ℝ V = 2)
+  have : FiniteDimensional ℝ V := .of_finrank_eq_succ (Fact.out : finrank ℝ V = 2)
   have hne₁₃ : p₁ ≠ p₃ := fun h ↦ by
     rw [h, angle_self_of_ne hne₂₃.symm] at hangle; linarith [Real.pi_pos]
   have hd := Sphere.isDiameter_ofDiameter p₁ p₃

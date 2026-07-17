@@ -6,7 +6,7 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
@@ -220,9 +220,6 @@ end Submodule
 theorem orthogonalBilin_innerₗ {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     (K : Submodule ℝ E) : K.orthogonalBilin (innerₗ E) = Kᗮ :=
   rfl
-
-@[deprecated (since := "2025-12-26")]
-alias bilinFormOfRealInner_orthogonal := orthogonalBilin_innerₗ
 
 /-!
 ### Orthogonality of submodules
