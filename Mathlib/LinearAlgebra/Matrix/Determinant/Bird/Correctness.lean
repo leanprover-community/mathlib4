@@ -90,12 +90,6 @@ abbrev bminor (i j : Fin n) (α : Fin p → Fin n) : R :=
 abbrev pminor (α : Fin p → Fin n) : R :=
   (A.submatrix α α).det
 
-lemma Fin.cons_removeNth_eq_comp_cycleRange_symm {β : Type*}
-    (α : Fin (n + 1) → β) (s : Fin (n + 1)) :
-    Fin.cons (α s) (s.removeNth α) = α ∘ s.cycleRange.symm := by
-  ext i
-  cases i using Fin.cons <;> simp [Fin.removeNth_apply]
-
 lemma det_submatrix_removeNth_eq_sign_mul_bminor
   (α : Fin (p + 1) → Fin n) (i : Fin n) (s : Fin (p + 1)) :
     (A.submatrix (Fin.cons i (s.removeNth α)) α).det =
