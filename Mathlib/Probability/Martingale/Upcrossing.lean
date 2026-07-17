@@ -379,7 +379,7 @@ theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
     stronglyMeasurable_const.indicator ?_
   have hl := hf.isStoppingTime_lowerCrossingTime (a := a) (b := b) (N := N) (n := i) n
   have hu := hf.isStoppingTime_upperCrossingTime (a := a) (b := b) (N := N) (n := i + 1) n
-  simp only [ENat.some_eq_coe, Nat.cast_le] at hl hu
+  simp only [ENat.some_eq_natCast, Nat.cast_le] at hl hu
   simp_rw [← not_le]
   exact hl.inter hu.compl
 
@@ -755,7 +755,7 @@ theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f
   rw [this]
   refine Finset.measurable_fun_sum _ fun i _ => Measurable.indicator measurable_const <|
     ℱ.le N _ ?_
-  simpa only [ENat.some_eq_coe, Nat.cast_lt] using!
+  simpa only [ENat.some_eq_natCast, Nat.cast_lt] using!
     hf.isStoppingTime_upperCrossingTime.measurableSet_lt_of_pred N
 
 theorem StronglyAdapted.integrable_upcrossingsBefore [IsFiniteMeasure μ]

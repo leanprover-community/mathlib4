@@ -1145,7 +1145,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       exact nsmul_le_nsmul_left zero_le <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
-        _ ≤ M := ENat.toNat_le_of_le_coe hCM
+        _ ≤ M := ENat.toNat_le_of_le_natCast hCM
     _ = M • (μ.restrict (⋃ C ∈ Cs, (P C)) t) := by
       rw [← smul_sum, ← Cs.tsum_subtype, μ.restrict_biUnion_finset _ P_meas, Measure.sum_apply _ ht]
       refine fun C₁ hC₁ C₂ hC₂ hC ↦ Set.disjoint_iff.mpr fun x hx ↦ hC <| ?_
