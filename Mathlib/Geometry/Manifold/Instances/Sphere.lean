@@ -307,7 +307,7 @@ theorem range_stereographic_symm (hv : ‖v‖ = 1) (hv' : v ∈ sphere 0 1 := b
 
 lemma isOpenEmbedding_stereographic_symm (hv : ‖v‖ = 1) :
     Topology.IsOpenEmbedding (stereographic hv).symm :=
-  (stereographic hv).symm.to_isOpenEmbedding (by simp)
+  (stereographic hv).symm.isOpenEmbedding (by simp)
 
 end StereographicProjection
 
