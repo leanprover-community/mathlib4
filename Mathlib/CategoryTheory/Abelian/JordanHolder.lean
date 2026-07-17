@@ -34,7 +34,7 @@ namespace Abelian.Subobject
 open CategoryTheory.Subobject
 
 /-- The second isomorphism theorem: `(X ⊔ Y)/X ≅ Y/(X ⊓ Y)`. -/
-noncomputable def supQuotientIsoQuotientInf {A : C} (X Y : Subobject A) :
+noncomputable def cokernelSupIsoCokernelInf {A : C} (X Y : Subobject A) :
     cokernel (X.ofLE (X ⊔ Y) le_sup_left) ≅
       cokernel ((X ⊓ Y).ofLE Y inf_le_right) := by
   let i := X.ofLE (X ⊔ Y) le_sup_left
@@ -65,5 +65,23 @@ noncomputable def supQuotientIsoQuotientInf {A : C} (X Y : Subobject A) :
     cokernel.mapIso _ _ (Abelian.isoKernelOfIsPullback hpb).symm (Iso.refl _) (by simp [b, f])
 
 end Abelian.Subobject
+
+namespace JordanHolderLattice
+
+/-- The isomorphism relation for composition series of subobjects in an abelian category implies
+isomorphism of cokernels: `cokernel(X₁ ⊓ X₂ ↪ X₂) ≅ cokernel(Y₁ ⊓ Y₂ ↪ Y₂)`. -/
+noncomputable def Iso.cokernelIso {A : C} {X Y : Subobject A × Subobject A}
+    (h : JordanHolderLattice.Iso X Y) :
+    (cokernel (Subobject.ofLE _ _ (inf_le_right : X.1 ⊓ X.2 ≤ X.2)) ≅
+      cokernel (Subobject.ofLE _ _ (inf_le_right : Y.1 ⊓ Y.2 ≤ Y.2))) :=
+  letI e : Subobject A × Subobject A → Subobject A × Subobject A → Prop :=
+    fun X Y ↦ Nonempty <| (cokernel (Subobject.ofLE _ _ (inf_le_right : X.1 ⊓ X.2 ≤ X.2)) ≅
+      cokernel (Subobject.ofLE _ _ (inf_le_right : Y.1 ⊓ Y.2 ≤ Y.2)))
+  Nonempty.some <| h.rel e ⟨.refl _⟩ (fun ⟨f⟩ ↦ ⟨f.symm⟩) (fun ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩)
+    fun {X Y} h ↦ ⟨cokernel.mapIso _ _ (Subobject.isoOfEq _ _ inf_sup_self) (Iso.refl _) (by simp)
+      ≪≫ Abelian.Subobject.cokernelSupIsoCokernelInf X Y ≪≫
+      cokernel.mapIso _ _ (Subobject.isoOfEq _ _ (inf_right_idem _ _)).symm (Iso.refl _) (by simp)⟩
+
+end JordanHolderLattice
 
 end CategoryTheory
