@@ -6,7 +6,8 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
-public import Mathlib.Init
+public meta import Mathlib.Lean.Linter
+public meta import Mathlib.Init
 
 /-!
 # The "ppRoundtrip" linter
@@ -117,9 +118,7 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
 namespace PPRoundtrip
 
 @[inherit_doc Mathlib.Linter.linter.ppRoundtrip]
-def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.ppRoundtrip (← getLinterOptions) do
-      return
+def ppRoundtrip : Linter where run := whenLinterActivated linter.ppRoundtrip fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     let stx := capSyntax stx (stx.getTailPos?.getD default).1

@@ -144,6 +144,8 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
   let missing := nonDeprecated.erase `Mathlib.Tactic.Linter.Header
     -- This file is imported by `Mathlib/Tactic/Linter/Header.lean`.
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
+    -- This file is imported by `Mathlib/Tactic/Linter/Header.lean`.
+    |>.erase `Mathlib.Lean.Linter
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
       {missing}\n"

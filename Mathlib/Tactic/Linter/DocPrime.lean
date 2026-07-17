@@ -6,6 +6,7 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
+public meta import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -42,9 +43,7 @@ public register_option linter.docPrime : Bool := {
 namespace DocPrime
 
 @[inherit_doc Mathlib.Linter.linter.docPrime]
-def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless getLinterValue linter.docPrime (← getLinterOptions) do
-    return
+def docPrimeLinter : Linter where run := whenLinterActivated linter.docPrime fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind do return

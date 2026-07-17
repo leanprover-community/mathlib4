@@ -370,7 +370,7 @@ def headerTestFiles : NameSet := .ofList
   `MathlibTest.DirectoryDependencyLinter.Test]
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
-def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def headerLinter : Linter where run := whenLinterActivated linter.style.header fun stx ↦ do
   let mainModule ← getMainModule
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
