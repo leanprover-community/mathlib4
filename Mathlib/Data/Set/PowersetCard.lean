@@ -40,7 +40,7 @@ open Finset Set Function
 @[simp]
 theorem mem_iff {s : Finset α} :
     s ∈ powersetCard α n ↔ s.card = n := by
-  rw [powersetCard, Set.mem_setOf_eq]
+  rw [powersetCard, Set.mem_ofPred_eq]
 
 instance : SetLike (powersetCard α n) α := SetLike.instSubtype
 
@@ -240,7 +240,6 @@ instance instInfinite [NeZero n] [Infinite α] : Infinite (powersetCard α n) :=
 
 protected theorem card :
     Nat.card (powersetCard α n) = (Nat.card α).choose n := by
-  classical
   cases fintypeOrInfinite α
   · simp [coe_finset]
   · rcases n with _ | n

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.NumberTheory.MulChar.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Dirichlet Characters
@@ -35,6 +36,7 @@ dirichlet character, multiplicative character
 -/
 
 /-- The type of Dirichlet characters of level `n`. -/
+@[wikidata Q1063579]
 abbrev DirichletCharacter (R : Type*) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
 
 open MulChar
@@ -450,7 +452,7 @@ def subgroupOfCoprimeConductor [NeZero n] (d : ℕ) :
     apply Nat.Coprime.of_dvd_right (conductor_mul_dvd_lcm_conductor _ _)
     exact (Nat.Coprime.mul_right hχ hψ).coprime_div_right <| Nat.gcd_dvd_mul _ _
   one_mem' := by simp [conductor_one]
-  inv_mem' hχ := by rwa [Set.mem_setOf, conductor_inv]
+  inv_mem' hχ := by rwa [Set.mem_ofPred, conductor_inv]
 
 @[simp]
 lemma mem_subgroupOfCoprimeConductor [NeZero n] {d : ℕ} {χ : DirichletCharacter R n} :
@@ -459,16 +461,27 @@ lemma mem_subgroupOfCoprimeConductor [NeZero n] {d : ℕ} {χ : DirichletCharact
 variable (R) in
 /-- The annihilator of a set `H` of units mod `n`: the subgroup of Dirichlet characters
 of level `n` that send every element of `H` to `1`. -/
-def annihilator (H : Set (ZMod n)ˣ) :
-    Subgroup (DirichletCharacter R n) where
-  carrier := {χ | ∀ a ∈ H, χ a = 1}
-  mul_mem' hχ hψ a h := by rw [MulChar.mul_apply, hχ a h, hψ a h, one_mul]
-  one_mem' := by simp
-  inv_mem' hχ a h := by rw [MulChar.inv_apply_eq_inv, hχ a h, Ring.inverse_one]
+noncomputable def annihilator (H : Set (ZMod n)ˣ) :
+    Subgroup (DirichletCharacter R n) :=
+  (MulChar.restrictHom ((Submonoid.closure H).map (Units.coeHom (ZMod n))) _).ker
+
+theorem mem_annihilator_iff_mem_closure {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
+    χ ∈ annihilator R H ↔ ∀ x ∈ Submonoid.closure H, χ x = 1 := by
+  simp only [annihilator, MonoidHom.mem_ker, MulChar.restrictHom_apply, MulChar.restrict_eq_one_iff]
+  refine ⟨fun hχ x hx ↦ ?_, fun h u ↦ ?_⟩
+  · exact hχ <| (Submonoid.unitsEquivUnitsType _) <|
+      ⟨x, Submonoid.mem_units_of_val_mem_inv_val_mem _ ⟨x, hx, rfl⟩
+        ⟨x⁻¹, by simpa [← Subgroup.closure_toSubmonoid_of_finite] using hx, rfl⟩⟩
+  · obtain ⟨y, hy, hyu⟩ := Submonoid.mem_map.mp u.val.prop
+    exact hyu ▸ h _ hy
 
 @[simp]
 theorem mem_annihilator_iff {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
-    χ ∈ annihilator R H ↔ ∀ a ∈ H, χ a = 1 := Iff.rfl
+    χ ∈ annihilator R H ↔ ∀ a ∈ H, χ a = 1 := by
+  rw [mem_annihilator_iff_mem_closure]
+  refine ⟨fun h a ha ↦ h a (Submonoid.subset_closure ha), fun h x hx ↦ ?_⟩
+  refine Submonoid.closure_induction h (by simp) (fun a b _ _ ha hb ↦ ?_) hx
+  simp [map_mul, ha, hb]
 
 variable (R n) in
 /-- The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
@@ -488,9 +501,8 @@ theorem mem_subgroupOfPrimitiveMapToOne_iff [NeZero n] [Nontrivial R] (p : ℕ) 
     χ ∈ subgroupOfPrimitiveMapToOne R n p ↔ χ.primitiveCharacter p = 1 := by
   have : NeZero (n / p ^ n.factorization p) := ⟨(Nat.ordCompl_pos p (NeZero.ne n)).ne'⟩
   have hcop := Nat.coprime_ordCompl hp.out (NeZero.ne n)
-  rw [subgroupOfPrimitiveMapToOne]
-  simp only [Subgroup.mem_map, mem_annihilator_iff, Set.mem_singleton_iff, forall_eq,
-    ZMod.coe_unitOfCoprime]
+  simp only [subgroupOfPrimitiveMapToOne, Subgroup.mem_map, mem_annihilator_iff,
+    Set.mem_singleton_iff, forall_eq, ZMod.coe_unitOfCoprime]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨ψ, hψ, rfl⟩
     rw [← Int.cast_natCast] at hψ ⊢

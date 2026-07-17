@@ -83,7 +83,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
   · rw [← top_le_iff]
     simp only [Submodule.finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
   -- Otherwise the vector space is nontrivial.
-  · haveI : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
+  · have : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
     -- Hence, `f` has an eigenvalue `μ₀`.
     obtain ⟨μ₀, hμ₀⟩ : ∃ μ₀, f.HasEigenvalue μ₀ := exists_eigenvalue f
     -- We define `ES` to be the generalized eigenspace
@@ -142,6 +142,7 @@ namespace Submodule
 
 variable {p : Submodule K V} {f : Module.End K V}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) (k : ℕ∞) :
     p ⊓ ⨆ μ, f.genEigenspace μ k = ⨆ μ, p ⊓ f.genEigenspace μ k := by
   refine le_antisymm (fun m hm ↦ ?_)
@@ -192,7 +193,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     f.mapsTo_genEigenspace_of_comm hfg μ k
   have hg₃ : InjOn g ↑(f.genEigenspace μ k) := by
     apply LinearMap.injOn_of_disjoint_ker subset_rfl
-    have this := f.independent_genEigenspace k
+    have := f.independent_genEigenspace k
     have aux (μ') (_hμ' : μ' ∈ m.support.erase μ) :
         (f.genEigenspace μ') ↑l₀ ≤ (f.genEigenspace μ') k := by
       apply (f.genEigenspace μ').mono
