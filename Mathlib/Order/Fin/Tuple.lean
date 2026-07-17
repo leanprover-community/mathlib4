@@ -64,6 +64,21 @@ lemma liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin
 
 variable [Preorder α] {n : ℕ}
 
+lemma strictMono_insertNth_iff (q : Fin (n + 1)) (x : α) (f : Fin n → α) :
+    StrictMono (q.insertNth x f) ↔
+      StrictMono f ∧ (∀ i, i.castSucc < q → f i < x) ∧ (∀ i, q ≤ i.castSucc → x < f i) := by
+  refine ⟨fun h ↦ ⟨fun a b hab ↦ ?_, ⟨fun i hlt ↦ ?_, fun i hlt ↦ ?_⟩⟩, ?_⟩
+  · simpa [hab] using @h (q.succAbove a) (q.succAbove b)
+  · simpa using @h (q.succAbove i) q (by simp [succAbove_of_castSucc_lt, hlt])
+  · simpa using @h q (q.succAbove i)
+      (by simp [succAbove_of_le_castSucc, hlt, ← le_castSucc_iff])
+  · rintro ⟨h, hlt, hgt⟩ a b hab
+    cases a using succAboveCases q <;> cases b using succAboveCases q
+    · simp at hab
+    · simpa using hgt _ (by simpa [lt_succAbove_iff_le_castSucc] using hab)
+    · simpa using hlt _ (by simpa [succAbove_lt_iff_castSucc_lt] using hab)
+    · simpa using h ((strictMono_succAbove _).lt_iff_lt.mp hab)
+
 @[simp] lemma strictMono_cons {f : Fin n → α} {a : α} :
     StrictMono (Fin.cons a f) ↔ (∀ j, a < f j) ∧ StrictMono f := by
   constructor

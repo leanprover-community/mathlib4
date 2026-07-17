@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Preorder.Finite
 
 /-!
@@ -266,26 +267,23 @@ preserving strict monotonicity. -/
 lemma exists_insertNth_mem_S {i : Fin n} {α : Fin p → Fin n} {k : Fin n}
     (hα : α ∈ S p i) (hik : i < k) (hk : k ∉ Set.range α) :
     ∃ t : Fin (p + 1), t.insertNth k α ∈ S (p + 1) i := by
-  simp only [mem_S_iff_strictMono_cons]
-  induction p generalizing i with
-  | zero =>
-    exact ⟨0, by simpa [Fin.insertNth_zero', Fin.strictMono_iff_lt_succ] using hik⟩
-  | succ p ih =>
-    obtain ⟨hmono, hbound⟩ := mem_S_iff.mp hα
-    have htail : Fin.tail α ∈ S p (α 0) := by
-      rw [mem_S_iff_strictMono_cons, Fin.cons_self_tail]
-      assumption
-    have hk_tail : k ∉ Set.range (Fin.tail α) := by
-      rintro ⟨j, hj⟩
-      exact hk ⟨j.succ, hj⟩
-    by_cases hhead : k < α 0
-    · exists 0
-      simp only [Fin.insertNth_zero']
-      exact (hmono.vecCons hhead).vecCons hik
-    · obtain ⟨t, ht⟩ := ih htail (by grind) hk_tail
-      exists t.succ
-      rw [← Fin.cons_self_tail α, Fin.insertNth_succ_cons]
-      exact ht.vecCons (hbound 0)
+  have k_ne : ∀ j, k ≠ α j := fun j hj ↦ hk ⟨j, hj.symm⟩
+  set t := ⨅ j ∈ {j | k < α j}, Fin.castSucc j with t_eq
+  use t
+  simp only [mem_S_iff] at ⊢ hα
+  refine ⟨?_, fun j ↦ Fin.succAboveCases t ?_ ?_ j⟩
+  · simp only [t_eq, Set.mem_setOf_eq, strictMono_insertNth_iff, hα.1, lt_iInf_iff,
+      le_iInf_iff, forall_exists_index, and_imp, iInf_le_iff_forall_lt, iInf_lt_iff,
+      exists_prop, true_and]
+    constructor
+    · intro j x hjx h
+      contrapose! h
+      refine ⟨j, h.lt_of_ne (k_ne _), hjx⟩
+    · intro j h
+      obtain ⟨q, hkq, hqj⟩ := h j.succ j.castSucc_lt_succ
+      exact hkq.trans_le <| hα.1.monotone <| Fin.castSucc_lt_succ_iff.mp hqj
+  · simpa
+  · simpa using hα.2
 
 /-- The off-diagonal sums in Bird's equations (3) and (5) agree. -/
 theorem paper_eq3_eq5_off_diag (i j : Fin n) :
