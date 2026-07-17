@@ -330,7 +330,9 @@ open MeasureTheory
 variable [TopologicalSpace X] [CompactSpace X] [MeasurableSpace X] [BorelSpace X]
 variable (μ : Measure X) [IsFiniteMeasure μ]
 
-instance : NormedSpace ℝ V := NormedSpace.restrictScalars ℝ 𝕜 V
+section attempt1
+
+local instance : NormedSpace ℝ V := NormedSpace.restrictScalars ℝ 𝕜 V
 
 variable (K) in
 private noncomputable def integralOperatorAux (f : Lp V 2 μ) : X → V :=
@@ -428,42 +430,84 @@ def integralOperator' (hK : MemLp (fun ((x, y) : X × X) ↦ K x y) 2 (μ.prod �
       refine ENNReal.mul_lt_top hK.2 f.2
     )
 
-variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+end attempt1
 
-variable [SMulCommClass ℝ 𝕜 𝕜]
+section attempt2
 
-def mercerForm : Lp V 2 μ →L[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
-  (LinearMap.mk₂ 𝕜
+variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) [MeasurableSpace V]
+
+def mercerForm : Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
+  (LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
     (fun (f : Lp V 2 μ) (g : Lp V 2 μ) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ))
     (fun f₁ f₂ g ↦ by
-      rw [← integral_add (by sorry) (by sorry)]
-      simp_rw [← inner_add_left]
-      simp_rw [← map_add]
-      sorry)
+      simp_rw [← integral_add (by sorry) (by sorry), ← inner_add_left, ← map_add]
+      have hf : ∀ᵐ p ∂(μ.prod μ), (f₁ + f₂) p.2 = f₁ p.2 + f₂ p.2 := by
+        rw [Measure.ae_prod_iff_ae_ae (by sorry), Measure.ae_ae_comm (by sorry)]
+        filter_upwards [Lp.coeFn_add f₁ f₂] with p hp
+        exact ae_of_all μ fun a ↦ hp
+      apply integral_congr_ae
+      filter_upwards [hf] with p hf
+      rw [hf]
+    )
     (fun c f g ↦ by
-      -- rw [← integral_smul]
-      sorry)
+      simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul, ← map_smul]
+      have hf : ∀ᵐ p ∂(μ.prod μ), (c • f) p.2 = c • f p.2 := by
+        rw [Measure.ae_prod_iff_ae_ae (by sorry), Measure.ae_ae_comm (by sorry)]
+        filter_upwards [Lp.coeFn_smul c f] with p hp
+        exact ae_of_all μ fun a ↦ hp
+      apply integral_congr_ae
+      filter_upwards [hf] with p hf
+      rw [hf]
+    )
     (fun f g₁ g₂ ↦ by
       rw [← integral_add (by sorry) (by sorry)]
       simp_rw [← inner_add_right]
-      sorry)
+      have hf : ∀ᵐ p ∂(μ.prod μ), (g₁ + g₂) p.1 = g₁ p.1 + g₂ p.1 := by
+        rw [Measure.ae_prod_iff_ae_ae (by sorry)]
+        filter_upwards [Lp.coeFn_add g₁ g₂] with p hp
+        exact ae_of_all μ fun a ↦ hp
+      apply integral_congr_ae
+      filter_upwards [hf] with p hf
+      rw [hf]
+    )
     (fun c f g ↦ by
-      -- rw [← integral_smul]
-      sorry))
+      simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply]
+      have hf : ∀ᵐ p ∂(μ.prod μ), (c • g) p.1 = c • g p.1 := by
+        rw [Measure.ae_prod_iff_ae_ae (by sorry)]
+        filter_upwards [Lp.coeFn_smul c g] with p hp
+        exact ae_of_all μ fun a ↦ hp
+      apply integral_congr_ae
+      filter_upwards [hf] with p hf
+      rw [hf]
+    )
+  )
   (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
   (fun f g ↦ by
     simp
     have := hK
+    grw [norm_integral_le_lintegral_norm, norm_inner_le_norm, le_opNorm]
+    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (Ne.symm (NeZero.ne' 2)) (ENNReal.ofNat_ne_top)]
+    simp_rw [mul_assoc]
+-- , ENNReal.ofReal_mul (norm_nonneg)
+    sorry
+    sorry
     sorry)
 
 def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
   {
     toFun := fun (f : Lp V 2 μ) ↦ (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm μ hK f)
     map_add' f g := by ext; simp
-    map_smul' c f := by ext; simp; sorry
+    map_smul' c f := by simp [ContinuousLinearMap.map_smulₛₗ, LinearIsometryEquiv.map_smulₛₗ]
   }
   (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
-  (fun f ↦ by simp; sorry)
+  (fun f ↦ by
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, norm_map]
+    unfold mercerForm
+    grw [le_opNorm, LinearMap.mkContinuous₂_norm_le]
+    exact ENNReal.toReal_nonneg
+  )
+
+end attempt2
 
 end Mercer
 
