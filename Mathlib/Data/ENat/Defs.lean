@@ -38,6 +38,6 @@ theorem recTopCoe_natCast {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C
     @recTopCoe C d f ↑x = f x :=
   rfl
 
-@[deprecated (since := "2026-06-29")] alias recTopCoe_coe := recTopCoe_natCast
+@[deprecated (since := "2026-07-17")] alias recTopCoe_coe := recTopCoe_natCast
 
 end ENat

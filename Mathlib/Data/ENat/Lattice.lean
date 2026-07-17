@@ -43,30 +43,30 @@ lemma iInf_natCast_ne_top : ⨅ i, (f i : ℕ∞) ≠ ⊤ ↔ Nonempty ι := by
   rw [Ne, iInf_natCast_eq_top, not_isEmpty_iff]
 lemma iInf_natCast_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
 
-@[deprecated (since := "2026-06-29")] alias iSup_coe_eq_top := iSup_natCast_eq_top
-@[deprecated (since := "2026-06-29")] alias iSup_coe_ne_top := iSup_natCast_ne_top
-@[deprecated (since := "2026-06-29")] alias iSup_coe_lt_top := iSup_natCast_lt_top
-@[deprecated (since := "2026-06-29")] alias iInf_coe_eq_top := iInf_natCast_eq_top
-@[deprecated (since := "2026-06-29")] alias iInf_coe_ne_top := iInf_natCast_ne_top
-@[deprecated (since := "2026-06-29")] alias iInf_coe_lt_top := iInf_natCast_lt_top
+@[deprecated (since := "2026-07-17")] alias iSup_coe_eq_top := iSup_natCast_eq_top
+@[deprecated (since := "2026-07-17")] alias iSup_coe_ne_top := iSup_natCast_ne_top
+@[deprecated (since := "2026-07-17")] alias iSup_coe_lt_top := iSup_natCast_lt_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_eq_top := iInf_natCast_eq_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_ne_top := iInf_natCast_ne_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_lt_top := iInf_natCast_lt_top
 
 lemma natCast_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := WithTop.coe_sSup
 
-@[deprecated (since := "2026-06-29")] alias coe_sSup := natCast_sSup
+@[deprecated (since := "2026-07-17")] alias coe_sSup := natCast_sSup
 
 lemma natCast_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) :=
   WithTop.coe_sInf hs (OrderBot.bddBelow s)
 
-@[deprecated (since := "2026-06-29")] alias coe_sInf := natCast_sInf
+@[deprecated (since := "2026-07-17")] alias coe_sInf := natCast_sInf
 
 lemma natCast_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := WithTop.coe_iSup _
 
-@[deprecated (since := "2026-06-29")] alias coe_iSup := natCast_iSup
+@[deprecated (since := "2026-07-17")] alias coe_iSup := natCast_iSup
 
 @[norm_cast] lemma natCast_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) :=
   WithTop.coe_iInf (OrderBot.bddBelow _)
 
-@[deprecated (since := "2026-06-29")] alias coe_iInf := natCast_iInf
+@[deprecated (since := "2026-07-17")] alias coe_iInf := natCast_iInf
 
 @[simp]
 lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ :=
@@ -78,7 +78,7 @@ lemma iInf_eq_natCast_iff {f : ι → ℕ∞} {n : ℕ} :
   · simp [iInf_of_isEmpty]
   apply ciInf_eq_iff
 
-@[deprecated (since := "2026-06-29")] alias iInf_eq_coe_iff := iInf_eq_natCast_iff
+@[deprecated (since := "2026-07-17")] alias iInf_eq_coe_iff := iInf_eq_natCast_iff
 
 lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   cases isEmpty_or_nonempty ι
