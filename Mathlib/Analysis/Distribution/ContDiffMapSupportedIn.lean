@@ -713,6 +713,45 @@ theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
   simp [BoundedContinuousFunction.norm_eq_iSup_norm,
     ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply]
 
+/-- Define a continuous `𝕜`-linear map from `𝓓^{n₁}_{K₁}(E, F)` to `𝓓^{n₂}_{K₂}(E, F')`. -/
+protected noncomputable def mkCLM (A : 𝓓^{n₁}_{K₁}(E, F) → E → F')
+    (hadd : ∀ f g x, A (f + g) x = A f x + A g x)
+    (hsmul : ∀ (c : 𝕜) f x, A (c • f) x = c • A f x)
+    (hsmooth : ∀ f, ContDiff ℝ n₂ (A f))
+    (hsupp : ∀ f, EqOn (A f) 0 K₂ᶜ)
+    (hbound : ∀ i : ℕ, i ≤ n₂ → ∃ (s : Finset ℕ) (C : ℝ), 0 ≤ C ∧ ∀ f, ∀ x ∈ K₂,
+      ‖iteratedFDeriv ℝ i (A f) x‖ ≤ C * (s.sup fun j ↦ N[𝕜]_{K₁, n₁, j}) f) :
+    𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F') :=
+  letI Φ : 𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F') :=
+    { toFun f := ⟨A f, hsmooth f, hsupp f⟩
+      map_add' f g := ext (hadd f g)
+      map_smul' c f := ext (hsmul c f) }
+  { toLinearMap := Φ
+    cont := show Continuous Φ by
+      refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
+        (ContDiffMapSupportedIn.withSeminorms ..) _ (.of_real fun i ↦ ?_)
+      by_cases hi : i ≤ n₂
+      · obtain ⟨s, C, hC, h⟩ := hbound i hi
+        exact ⟨s, C, fun f ↦ ((Φ f).seminorm_le_iff 𝕜 (mul_nonneg hC (apply_nonneg _ _)) i).2
+          fun _ x hx ↦ h f x hx⟩
+      · exact ⟨∅, 0, fun f ↦ by
+          simp [ContDiffMapSupportedIn.seminorm_eq_bot_of_gt 𝕜 (not_le.1 hi)]⟩ }
+
+/-- Define a continous `𝕜`-linear map fom `𝓓^{n}_{K}(E, F)` to a normed space. -/
+protected noncomputable def mkCLMtoNormedSpace {G : Type*} [NormedAddCommGroup G]
+    [NormedSpace 𝕜 G] (A : 𝓓^{n}_{K}(E, F) → G)
+    (hadd : ∀ f g, A (f + g) = A f + A g)
+    (hsmul : ∀ (c : 𝕜) f, A (c • f) = c • A f)
+    (hbound : ∃ (s : Finset ℕ) (C : ℝ), 0 ≤ C ∧ ∀ f,
+      ‖A f‖ ≤ C * (s.sup fun i ↦ N[𝕜]_{K, n, i}) f) :
+    𝓓^{n}_{K}(E, F) →L[𝕜] G :=
+  letI Φ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] G := ⟨⟨A, hadd⟩, hsmul⟩
+  { toLinearMap := Φ
+    cont := show Continuous Φ by
+      obtain ⟨s, C, hC, h⟩ := hbound
+      exact continuous_normedSpace_rng G (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K)
+        Φ ⟨s, ⟨C, hC⟩, h⟩ }
+
 /-- The inclusion of the space `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
 functions as a continuous `𝕜`-linear map. -/
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F where
@@ -972,13 +1011,11 @@ lemma norm_integralAgainstBilinLM_le {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} 
 and a function `φ : E → F₂` which is integrable on `K`, this is the *continuous* `𝕜`-linear map
 `f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`. Otherwise, this is the zero map. -/
 noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
-    𝓓^{n}_{K}(E, F₁) →L[𝕜] F₃ where
-  toLinearMap := integralAgainstBilinLM B μ φ
-  cont := show Continuous (integralAgainstBilinLM B μ φ) by
-    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
-      (norm_withSeminorms 𝕜 _) _
-      (.of_real fun _ ↦ ⟨{0}, (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖, fun f ↦ ?_⟩)
-    simpa using! norm_integralAgainstBilinLM_le
+    𝓓^{n}_{K}(E, F₁) →L[𝕜] F₃ :=
+  ContDiffMapSupportedIn.mkCLMtoNormedSpace 𝕜 (integralAgainstBilinLM B μ φ)
+    (integralAgainstBilinLM B μ φ).map_add (integralAgainstBilinLM B μ φ).map_smul
+    ⟨{0}, (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖, by positivity,
+      fun f ↦ by simpa using! norm_integralAgainstBilinLM_le⟩
 
 @[simp]
 lemma integralAgainstBilinCLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
@@ -1017,56 +1054,40 @@ variable {𝕜}
 where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
 noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
     𝓓^{n}_{K}(E, F₁) →L[𝕜] 𝓓^{n}_{K}(E, F₃) :=
-  letI T : 𝓓^{n}_{K}(E, F₁) →ₗ[𝕜] 𝓓^{n}_{K}(E, F₃) := {
-    toFun φ := ⟨fun x ↦ B (φ x) (g x),
-    ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
-    (fun x hx ↦ by simp only [φ.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply])⟩
-    map_add' := by aesop
-    map_smul' := by aesop
-  }
-  ⟨T, show Continuous T by {
-    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
-      (ContDiffMapSupportedIn.withSeminorms ..) _ (fun k ↦ ?_)
-    by_cases k_le_n : k ≤ n
-    · have hcont : Continuous fun x ↦ (Finset.range (k + 1)).sup' Finset.nonempty_range_add_one
+  ContDiffMapSupportedIn.mkCLM 𝕜 (fun φ x ↦ B (φ x) (g x))
+    (fun φ ψ x ↦ by simp)
+    (fun c φ x ↦ by simp)
+    (fun φ ↦ (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
+      (φ.contDiff.prodMk hg))
+    (fun φ x hx ↦ by simp only [φ.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply])
+    (fun k hk ↦ by
+      have hcont : Continuous fun x ↦ (Finset.range (k + 1)).sup' Finset.nonempty_range_add_one
           (fun i ↦ ‖iteratedFDeriv ℝ i g x‖) :=
         Continuous.finset_sup'_apply Finset.nonempty_range_add_one fun i hi ↦
-          (hg.continuous_iteratedFDeriv (m := i) (WithTop.coe_le_coe.2
-            (le_trans (WithTop.coe_le_coe.2 (mem_range_succ_iff.mp hi)) (k_le_n)))).norm
+          (hg.continuous_iteratedFDeriv (WithTop.coe_le_coe.2
+            (le_trans (WithTop.coe_le_coe.2 (mem_range_succ_iff.mp hi)) hk))).norm
       obtain ⟨C₀, hC₀⟩ := K.isCompact.exists_bound_of_continuousOn hcont.continuousOn
-      set G := max C₀ 0 with G_def
-      have G_pos : 0 ≤ G := le_max_right _ _
-      have hfG : ∀ i ≤ k, ∀ x ∈ K, ‖iteratedFDeriv ℝ i g x‖ ≤ G := fun i hi x hx ↦
+      have hgC₀ : ∀ i ≤ k, ∀ x ∈ K, ‖iteratedFDeriv ℝ i g x‖ ≤ ‖C₀‖ := fun i hi x hx ↦
         (Finset.le_sup' _ (Finset.mem_range_succ_iff.2 hi)).trans
-          ((Real.le_norm_self _).trans (hC₀ x hx) |>.trans (le_max_left _ _))
-      set C : ℝ≥0 := ⟨‖B‖ * ((k : ℝ) + 1) * (Nat.pow k k) * G, by positivity⟩ with C_def
-      refine ⟨Finset.Iic k, C, fun φ ↦ ?_⟩
-      apply ((T φ).seminorm_le_iff 𝕜 (by positivity) k).2
-      intro k_le_n x x_in_K
-      apply le_trans (norm_iteratedFDeriv_le_of_bilinear
-        (B.bilinearRestrictScalars ℝ) (φ.contDiff) hg x (mod_cast k_le_n))
-      rw [norm_bilinearRestrictScalars, C_def]
-      conv =>
-        rhs
-        change ‖B‖*((k : ℝ) + 1)*((Nat.pow k k))*G*((Finset.Iic k).sup (fun m ↦ N[𝕜]_{K, n, m}) φ)
-      repeat simp_rw [mul_assoc]
-      rw [← show (∑ _x ∈ Finset.range (k + 1), (1 : ℝ)) = k + 1 by simp, Finset.sum_mul, one_mul]
-      rw [mul_comm G _]
-      gcongr 1
-      apply Finset.sum_le_sum (fun i hi ↦ ?_)
-      gcongr
-      · simp only [Finset.mem_range, Order.lt_add_one_iff] at hi
-        by_cases h : 0 < k
-        · apply_mod_cast le_trans (Nat.choose_le_pow k i) (Nat.pow_le_pow_right h hi)
-        · rw [Nat.eq_zero_of_not_pos h]; cases i <;> simp
-      · have i_le_n : i ≤ n := by
-          apply_mod_cast le_trans (show (i : ℕ∞) ≤ (k : ℕ∞) by aesop) k_le_n
-        have := norm_iteratedFDeriv_apply_le_seminorm 𝕜 i_le_n (f := φ) (x := x)
-        refine le_trans this (Seminorm.le_finset_sup_apply (by aesop))
-      · exact hfG (k-i) (by simp) x x_in_K
-    · refine ⟨{0}, 0, fun φ ↦ ?_⟩
-      simp [ContDiffMapSupportedIn.seminorm_eq_bot_of_gt 𝕜 (not_le.1 k_le_n)]
-  }⟩
+          ((Real.le_norm_self _).trans ((hC₀ x hx).trans (Real.le_norm_self C₀)))
+      refine ⟨Finset.Iic k, ‖B‖ * 2 ^ k * ‖C₀‖, by positivity, fun φ x hx ↦ ?_⟩
+      calc
+        ‖iteratedFDeriv ℝ k (fun y ↦ B (φ y) (g y)) x‖
+          ≤ ‖B‖ * ∑ i ∈ Finset.range (k + 1), (k.choose i : ℝ) * ‖iteratedFDeriv ℝ i φ x‖ *
+              ‖iteratedFDeriv ℝ (k - i) g x‖ := by
+            simpa using (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear
+              φ.contDiff hg x (mod_cast hk)
+        _ ≤ ‖B‖ * ∑ i ∈ Finset.range (k + 1), (k.choose i : ℝ) *
+              ((Finset.Iic k).sup fun m ↦ N[𝕜]_{K, n, m}) φ * ‖C₀‖ := by
+            gcongr with i hi
+            · exact (norm_iteratedFDeriv_apply_le_seminorm 𝕜
+                ((WithTop.coe_le_coe.2 (mem_range_succ_iff.mp hi)).trans hk)).trans
+                (Seminorm.le_finset_sup_apply (Finset.mem_Iic.2 (mem_range_succ_iff.mp hi)))
+            · exact hgC₀ (k - i) (Nat.sub_le k i) x hx
+        _ = ‖B‖ * 2 ^ k * ‖C₀‖ * ((Finset.Iic k).sup fun m ↦ N[𝕜]_{K, n, m}) φ := by
+            simp_rw [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose]
+            push_cast
+            ring)
 
 @[simp]
 theorem bilinLeftCLM_apply (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
