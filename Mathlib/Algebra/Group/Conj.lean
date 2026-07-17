@@ -317,17 +317,13 @@ lemma mk_conj {α : Type*} [Group α] (m x : α) :
   simp [mk_eq_mk_iff_isConj]
 
 @[to_additive]
-theorem invOn_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
-    Set.InvOn (MulAut.conj k⁻¹) (MulAut.conj k) c.carrier c.carrier := by
-  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩ <;> simp [mul_assoc]
+theorem mapsTo_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
+    Set.MapsTo (MulAut.conj k) c.carrier c.carrier := by
+  simp [Set.MapsTo, mem_carrier_iff_mk_eq]
 
 @[to_additive]
 theorem bijOn_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
-    Set.BijOn (MulAut.conj k) c.carrier c.carrier := by
-  refine (invOn_conj k c).bijOn (fun a ha ↦ ?_) (fun b hb ↦ ?_)
-  · rw [mem_carrier_iff_mk_eq] at ha ⊢
-    rw [MulAut.conj_apply, mk_conj, ha]
-  · rw [mem_carrier_iff_mk_eq] at hb
-    rw [mem_carrier_iff_mk_eq, MulAut.conj_apply, mk_conj, hb]
+    Set.BijOn (MulAut.conj k) c.carrier c.carrier :=
+  (MulAut.conj k).bijOn' (mapsTo_conj k c) (by simpa using mapsTo_conj k⁻¹ _)
 
 end ConjClasses
