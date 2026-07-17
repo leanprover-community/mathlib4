@@ -15,8 +15,10 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 
 A monoid `M` is *left-orderable* if it admits a linear order invariant under left multiplication
 (`a ≤ b → c * a ≤ c * b`), *right-orderable* if it admits one invariant under right multiplication,
-and *bi-orderable* if a single order is invariant under both — stronger than being both left- and
-right-orderable, since those may need different orders. This file defines the `Prop`-valued classes
+and *bi-orderable* if a single order is invariant under both left and right multiplication. This is
+stronger than being both left- and right-orderable, since those may need different orders.
+
+This file defines the `Prop`-valued classes
 `IsLeftOrderable`, `IsRightOrderable` and `IsBiOrderable`, and the instances producing them from a
 compatible `LinearOrder`. Their richer theory over a *group*, where the two one-sided notions
 coincide, is developed in the final section.
@@ -25,8 +27,8 @@ coincide, is developed in the final section.
 
 The classes are stated with `MulLeftMono` (`a ≤ b → c * a ≤ c * b`) rather than the strict
 `MulLeftStrictMono` (`a < b → c * a < c * b`), and likewise on the right and both sides. The two
-coincide on cancellative structures — in a left-cancellative monoid a `MulLeftMono` order is
-automatically strict (`mulLeftStrictMono_iff_isLeftCancelMul`) — so over a group nothing is lost:
+coincide on cancellative structures: in a left-cancellative monoid a `MulLeftMono` order is
+automatically strict (`mulLeftStrictMono_iff_isLeftCancelMul`). Over a group nothing is lost:
 `IsLeftOrderable` can be recast in the strict form
 `isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono`.
 
