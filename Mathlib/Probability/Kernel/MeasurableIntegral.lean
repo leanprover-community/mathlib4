@@ -50,11 +50,11 @@ namespace MeasureTheory
 
 variable [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 omit [IsSFiniteKernel κ] in
 @[fun_prop]
 theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ ∫ y, f y ∂κ x := by
-  classical
   by_cases hE : CompleteSpace E; swap
   · simp [integral, hE, stronglyMeasurable_const]
   borelize E
@@ -75,6 +75,7 @@ theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
       exact subset_rfl
     · simp [f', hfx, integral_undef]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂κ x := by
   classical

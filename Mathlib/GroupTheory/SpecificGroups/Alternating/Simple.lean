@@ -67,6 +67,7 @@ namespace Equiv.Perm
 
 variable {α : Type*} [Finite α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Iwasawa structure of `Perm α` acting on `Set.powersetCard α 2`. -/
 def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     IwasawaStructure (Perm α) (Set.powersetCard α 2) where

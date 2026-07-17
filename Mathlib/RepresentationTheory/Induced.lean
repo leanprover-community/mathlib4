@@ -49,7 +49,7 @@ universe t w w' u u' v v'
 
 namespace Representation
 
-open Finsupp TensorProduct
+open Finsupp
 
 variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B : Type*}
   [AddCommGroup A] [Module k A] (ρ : Representation k G A)

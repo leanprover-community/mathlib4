@@ -47,6 +47,7 @@ variable {R}
 
 theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
   simp [expand, eval₂_eq_sum]
 
@@ -58,6 +59,7 @@ theorem expand_C (r : R) : expand R p (C r) = C r :=
 theorem expand_X : expand R p X = X ^ p :=
   eval₂_X _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem expand_monomial (r : R) : expand R p (monomial q r) = monomial (q * p) r := by
   simp_rw [← smul_X_eq_monomial, map_smul, map_pow, expand_X, mul_comm, pow_mul]
@@ -266,9 +268,6 @@ theorem map_frobenius_expand (f : R[X]) : map (frobenius R p) (expand R p f) = f
       mul_pow, ← C.map_pow, frobenius_def]
     ring
 
-@[deprecated (since := "2025-12-27")]
-alias expand_char := map_frobenius_expand
-
 theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
     map (iterateFrobenius R p n) (expand R (p ^ n) f) = f ^ p ^ n := by
   induction n with
@@ -278,9 +277,6 @@ theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
     conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
     simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
       ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
-
-@[deprecated (since := "2025-12-27")]
-alias map_expand_pow_char := map_iterateFrobenius_expand
 
 end ExpChar
 
