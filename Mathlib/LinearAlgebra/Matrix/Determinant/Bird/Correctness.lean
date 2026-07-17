@@ -304,7 +304,6 @@ theorem birdDetSpec_eq_det (A : Matrix (Fin n) (Fin n) R) :
   entries are stored in row-major order in `A`. -/
 public theorem det_eq_birdDet (A : Array R) (hA : A.size = n * n) :
     Matrix.det (.ofArray A hA) = birdDet n A := by
-  rw [birdDet_eq_birdDetSpec]
-  exact birdDetSpec_eq_det (Matrix.ofArray A hA)
+  rw [birdDet_eq_birdDetSpec, birdDetSpec_eq_det]
 
 end BirdDet
