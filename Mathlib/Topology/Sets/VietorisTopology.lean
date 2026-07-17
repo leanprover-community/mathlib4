@@ -758,6 +758,21 @@ theorem isPreconnected_nonempty_subsets {s : Set α} (hs : IsPreconnected s) :
   grw [← isClopen_singleton_bot.compl.isOpen.inter_closure, closure_finite_subsets,
     ← subset_closure]
 
+theorem isPreconnected_Icc {K L : Compacts α} (hK : K ≠ ⊥) (hL : IsPreconnected (L : Set α)) :
+    IsPreconnected (Icc K L) := by
+  wlog hKL : K ≤ L
+  · simpa [hKL] using isPreconnected_empty
+  convert (isPreconnected_nonempty_subsets hL).image (K ⊔ ·) (by fun_prop)
+  exact subset_antisymm
+    (fun M hM => ⟨M, ⟨Compacts.coe_nonempty.mpr (ne_bot_of_le_ne_bot hK hM.1), hM.2⟩,
+      sup_eq_right.mpr hM.1⟩)
+    (image_subset_iff.mpr fun M ⟨_, hM⟩ => ⟨le_sup_left, sup_le hKL hM⟩)
+
+theorem isPreconnected_Ioc {K L : Compacts α} (hL : IsPreconnected (L : Set α)) :
+    IsPreconnected (Ioc K L) :=
+  isPreconnected_of_forall L fun M hM => ⟨Icc M L, Icc_subset_Ioc_left hM.1, right_mem_Icc.mpr hM.2,
+    left_mem_Icc.mpr hM.2, isPreconnected_Icc (ne_bot_of_gt hM.1) hL⟩
+
 end Compacts
 
 namespace NonemptyCompacts
@@ -1031,6 +1046,22 @@ theorem isPreconnected_subsets {s : Set α} (hs : IsPreconnected s) :
   exact subset_antisymm
     (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
     (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+
+theorem isPreconnected_Icc {K L : NonemptyCompacts α} (hL : IsPreconnected (L : Set α)) :
+    IsPreconnected (Icc K L) := by
+  rw [← isEmbedding_toCompacts.isPreconnected_image, ← coe_toCompactsOrderEmbedding,
+    OrderEmbedding.image_Icc _ (by simpa [← Set.Ioi_bot] using ordConnected_Ioi)]
+  exact Compacts.isPreconnected_Icc (Compacts.coe_nonempty.mp K.nonempty) hL
+
+theorem isPreconnected_Ioc {K L : NonemptyCompacts α} (hL : IsPreconnected (L : Set α)) :
+    IsPreconnected (Ioc K L) := by
+  rw [← isEmbedding_toCompacts.isPreconnected_image, ← coe_toCompactsOrderEmbedding,
+    OrderEmbedding.image_Ioc _ (by simpa [← Set.Ioi_bot] using ordConnected_Ioi)]
+  exact Compacts.isPreconnected_Ioc hL
+
+theorem isPreconnected_Iic {K : NonemptyCompacts α} (hK : IsPreconnected (K : Set α)) :
+    IsPreconnected (Iic K) :=
+  isPreconnected_subsets hK
 
 instance [PreconnectedSpace α] : PreconnectedSpace (NonemptyCompacts α) where
   isPreconnected_univ := by
