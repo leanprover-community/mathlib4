@@ -34,7 +34,9 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Reconcile
-        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@20a1db8d1e1017676558fe4f5bbea77ee9f0a257
+        # Temporarily pinned to the head of leanprover-community/mathlib-ci#61
+        # (GraphQL resource-limits fix); repoint to master once that merges.
+        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@8730dce634444f94aa786caf1feb7985a7826426
         with:
           config: .github/zulip-emoji-config.json
           sweep: true
