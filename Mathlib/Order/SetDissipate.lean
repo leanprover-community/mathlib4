@@ -74,8 +74,6 @@ lemma dissipate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : dissip
 lemma dissipate_zero_nat (s : ℕ → Set β) : dissipate s 0 = s 0 := by
   simp [dissipate_def]
 
-open Nat
-
 @[simp]
 theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
   dissipate s (n + 1) = (dissipate s n) ∩ s (n + 1) := by

@@ -468,6 +468,7 @@ theorem ones_length (n : ℕ) : (ones n).length = n :=
 theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ones_blocksFun (n : ℕ) (i : Fin (ones n).length) : (ones n).blocksFun i = 1 := by
   simp only [blocksFun, ones, get_eq_getElem, getElem_replicate]
@@ -535,10 +536,12 @@ theorem single_length {n : ℕ} (h : 0 < n) : (single n h).length = 1 :=
 theorem single_blocks {n : ℕ} (h : 0 < n) : (single n h).blocks = [n] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem single_blocksFun {n : ℕ} (h : 0 < n) (i : Fin (single n h).length) :
     (single n h).blocksFun i = n := by simp [blocksFun, single]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem single_embedding {n : ℕ} (h : 0 < n) (i : Fin n) :
     ((single n h).embedding (0 : Fin 1)) i = i := by
@@ -558,6 +561,7 @@ theorem eq_single_iff_length {n : ℕ} (h : 0 < n) {c : Composition n} :
     rw [eq_cons_of_length_one A] at B ⊢
     simpa [single_blocks] using B
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
     c ≠ single n hn ↔ ∀ i, c.blocksFun i < n := by
   contrapose!
@@ -808,6 +812,7 @@ Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` 
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bijection between compositions of `n` and subsets of `{0, ..., n-2}`, defined by
 considering the restriction of the subset to `{1, ..., n-1}` and shifting to the left by one. -/
 def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
@@ -823,7 +828,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   left_inv := by
     intro c
     ext i
-    simp only [add_comm, Set.toFinset_setOf, Finset.mem_univ,
+    simp only [add_comm, Set.toFinset_ofPred, Finset.mem_univ,
      Finset.mem_filter, true_and, exists_prop]
     constructor
     · rintro (rfl | rfl | ⟨j, hj1, hj2⟩)
@@ -841,7 +846,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     intro s
     ext i
     have : (i : ℕ) + 1 ≠ n := by lia
-    simp_rw [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
+    simp_rw [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_ofPred,
       Finset.mem_filter_univ, reduceCtorEq, this, false_or, add_left_inj, ← Fin.ext_iff,
       exists_eq_right']
 
@@ -911,6 +916,7 @@ def blocks (c : CompositionAsSet n) : List ℕ :=
 theorem blocks_length : c.blocks.length = c.length :=
   length_ofFn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     (c.blocks.take i).sum = c.boundary ⟨i, h⟩ := by
   induction i with

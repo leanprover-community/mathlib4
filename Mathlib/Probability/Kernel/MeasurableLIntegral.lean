@@ -44,7 +44,7 @@ theorem measurable_kernel_prodMk_left_of_finite {t : Set (α × β)} (ht : Measu
     using MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod with
   | empty => simp only [preimage_empty, measure_empty, measurable_const]
   | basic t ht =>
-    simp only [Set.mem_image2, Set.mem_setOf_eq] at ht
+    simp only [Set.mem_image2, Set.mem_ofPred_eq] at ht
     obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := ht
     classical
     simp_rw [mk_preimage_prod_right_eq_if]
