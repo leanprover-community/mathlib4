@@ -225,10 +225,25 @@ theorem IsIntegral.pow {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (x 
   .of_mem_of_fg _ h.fg_adjoin_singleton _ <|
     Subalgebra.pow_mem _ (by exact Algebra.subset_adjoin rfl) _
 
+section zpow
+variable {F D : Type*} [Field F] [DivisionRing D] [Algebra F D] {x : D} {A : Subalgebra F D}
+
 /-- An integer power of an integral element in a division ring over a field is integral. -/
-theorem IsIntegral.zpow {F D : Type*} [Field F] [DivisionRing D] [Algebra F D] {x : D}
-    (h : IsIntegral F x) (n : ℤ) : IsIntegral F (x ^ n) := by
+theorem IsIntegral.zpow (h : IsIntegral F x) (n : ℤ) : IsIntegral F (x ^ n) := by
   cases n <;> simp [h.pow, IsIntegral.inv]
+
+/-- An integer power of an integral element of a subalgebra lies in that subalgebra. -/
+theorem IsIntegral.zpow_mem (h : IsIntegral F x) (hx : x ∈ A) (n : ℤ) : x ^ n ∈ A := by
+  cases n <;> simp [h.pow, pow_mem hx, IsIntegral.inv_mem]
+
+theorem IsIntegral.zpow_mem_adjoin (h : IsIntegral F x) (n : ℤ) : x ^ n ∈ Algebra.adjoin F {x} :=
+  h.zpow_mem (Algebra.self_mem_adjoin_singleton F x) n
+
+/-- An integral subalgebra of a division ring over a field is closed under integer powers. -/
+theorem Algebra.IsIntegral.zpow_mem [Algebra.IsIntegral F A] (hx : x ∈ A) (n : ℤ) : x ^ n ∈ A := by
+  cases n <;> simp [pow_mem hx, Algebra.IsIntegral.inv_mem]
+
+end zpow
 
 theorem IsIntegral.nsmul {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (n • x) :=
   h.smul n
