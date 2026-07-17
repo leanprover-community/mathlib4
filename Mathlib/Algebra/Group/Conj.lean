@@ -81,10 +81,26 @@ section Group
 
 variable [Group α]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
   ⟨fun ⟨c, hc⟩ => ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ =>
     ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
+
+@[to_additive (attr := simp)]
+theorem isConj_conj_self {a b : α} : IsConj (a * b * a⁻¹) b :=
+  isConj_iff.2 ⟨a⁻¹, by simp [mul_assoc]⟩
+
+@[to_additive (attr := simp)]
+theorem isConj_conj_symm_self {a b : α} : IsConj (a⁻¹ * b * a) b :=
+  isConj_iff.2 ⟨a, by simp [mul_assoc]⟩
+
+@[to_additive (attr := simp)]
+theorem isConj_self_conj {a b : α} : IsConj b (a * b * a⁻¹) :=
+  isConj_conj_self.symm
+
+@[to_additive (attr := simp)]
+theorem isConj_self_conj_symm {a b : α} : IsConj b (a⁻¹ * b * a) :=
+  isConj_conj_symm_self.symm
 
 @[to_additive]
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ := by
@@ -298,18 +314,20 @@ theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk
 @[to_additive (attr := simp)]
 lemma mk_conj {α : Type*} [Group α] (m x : α) :
     ConjClasses.mk (m * x * m⁻¹) = ConjClasses.mk x := by
-  rw [mk_eq_mk_iff_isConj]
-  exact (isConj_iff.2 ⟨m, rfl⟩).symm
+  simp [mk_eq_mk_iff_isConj]
+
+@[to_additive]
+theorem invOn_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
+    Set.InvOn (MulAut.conj k⁻¹) (MulAut.conj k) c.carrier c.carrier := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩ <;> simp [mul_assoc]
 
 @[to_additive]
 theorem bijOn_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
     Set.BijOn (MulAut.conj k) c.carrier c.carrier := by
-  refine ⟨fun a ha ↦ ?_, (MulAut.conj k).injective.injOn, fun b hb ↦ ?_⟩
+  refine (invOn_conj k c).bijOn (fun a ha ↦ ?_) (fun b hb ↦ ?_)
   · rw [mem_carrier_iff_mk_eq] at ha ⊢
     rw [MulAut.conj_apply, mk_conj, ha]
   · rw [mem_carrier_iff_mk_eq] at hb
-    refine ⟨MulAut.conj k⁻¹ b, ?_, ?_⟩
-    · rw [mem_carrier_iff_mk_eq, MulAut.conj_apply, mk_conj, hb]
-    · rw [← MulAut.mul_apply, ← map_mul, mul_inv_cancel, map_one, MulAut.one_apply]
+    rw [mem_carrier_iff_mk_eq, MulAut.conj_apply, mk_conj, hb]
 
 end ConjClasses

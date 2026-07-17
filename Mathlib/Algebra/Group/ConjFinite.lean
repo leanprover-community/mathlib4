@@ -54,9 +54,9 @@ variable {G M : Type*} [Group G] [Fintype G] [DecidableEq G] [CommMonoid M]
 /-- Summing `f (g * h * g⁻¹)` over `h` in any conjugacy class of `G` equals summing
 `f h` over `h`. -/]
 theorem prod_carrier_conj :
-    ∏ h ∈ c.carrier, f (MulAut.conj g h) = ∏ h ∈ c.carrier, f h := by
-  rw [← Finset.prod_set_coe, ← Finset.prod_set_coe]
-  exact Fintype.prod_equiv (bijOn_conj g _).equiv _ _ fun _ ↦ by simp [Set.BijOn.equiv]
+    ∏ h ∈ c.carrier, f (MulAut.conj g h) = ∏ h ∈ c.carrier, f h :=
+  have := c.carrier.coe_toFinset ▸ (bijOn_conj g c)
+  Finset.prod_nbij (MulAut.conj g) this.mapsTo this.injOn this.surjOn (by simp)
 
 /-- Multiplying `f (g * h)` over `h` in any conjugacy class of `G` equals multiplying
 `f (h * g)` over `h`. -/
@@ -64,9 +64,9 @@ theorem prod_carrier_conj :
 /-- Summing `f (g * h)` over `h` in any conjugacy class of `G` equals summing
 `f (h * g)` over `h`. -/]
 theorem prod_carrier_mul_left :
-    ∏ h ∈ c.carrier, f (g * h) = ∏ h ∈ c.carrier, f (h * g) := by
-  rw [← Finset.prod_set_coe, ← Finset.prod_set_coe]
-  exact Fintype.prod_equiv (bijOn_conj g _).equiv _ _ fun _ ↦ by simp [Set.BijOn.equiv]
+    ∏ h ∈ c.carrier, f (g * h) = ∏ h ∈ c.carrier, f (h * g) :=
+  have := c.carrier.coe_toFinset ▸ (bijOn_conj g c)
+  Finset.prod_nbij (MulAut.conj g) this.mapsTo this.injOn this.surjOn (by simp)
 
 end Group
 
