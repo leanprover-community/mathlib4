@@ -213,13 +213,13 @@ theorem Fintype.card_subtype_true [Fintype α] {h : Fintype {_a : α // True}} :
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def Fintype.sumLeft {α β} [Fintype (α ⊕ β)] : Fintype α :=
   Fintype.ofInjective (Sum.inl : α → α ⊕ β) Sum.inl_injective
 
 /-- Given that `α ⊕ β` is a fintype, `β` is also a fintype. This is non-computable as it uses
 that `Sum.inr` is an injection, but there's no clear inverse if `β` is empty. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def Fintype.sumRight {α β} [Fintype (α ⊕ β)] : Fintype β :=
   Fintype.ofInjective (Sum.inr : β → α ⊕ β) Sum.inr_injective
 
@@ -270,6 +270,7 @@ theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Inject
 theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card β ≤ card α :=
   card_le_of_injective _ (Function.injective_surjInv h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card α :=
   Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
@@ -358,12 +359,6 @@ alias ⟨_root_.Function.Surjective.bijective_of_finite, _⟩ := surjective_iff_
 alias ⟨_root_.Function.Injective.surjective_of_finite,
     _root_.Function.Surjective.injective_of_finite⟩ :=
   injective_iff_surjective_of_equiv
-
-@[deprecated (since := "2025-11-28")]
-alias _root_.Function.Injective.surjective_of_fintype := Injective.surjective_of_finite
-
-@[deprecated (since := "2025-11-28")]
-alias _root_.Function.Surjective.injective_of_fintype := Surjective.injective_of_finite
 
 end Finite
 

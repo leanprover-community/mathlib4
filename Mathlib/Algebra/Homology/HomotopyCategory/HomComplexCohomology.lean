@@ -53,6 +53,7 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
     rintro α ⟨m, hm, β, hβ⟩
     exact ⟨m, hm, -β, by aesop⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {K L n} in
 lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
     α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
