@@ -70,12 +70,12 @@ section topEdge
 
 variable (R) in
 /-- `Spec` as a functor from `R`-algebras to schemes over `Spec R`. -/
-abbrev algSpec : (CommAlgCat R)ᵒᵖ ⥤ Over (Spec R) :=
+@[implicit_reducible] def algSpec : (CommAlgCat R)ᵒᵖ ⥤ Over (Spec R) :=
   (commAlgCatEquivUnder R).op.functor ⋙ (Over.opEquivOpUnder R).inverse ⋙ Over.post Scheme.Spec
 
 variable (R) in
 /-- The Gamma functor as a functor from schemes over `Spec R` to `R`-algebras. -/
-abbrev algΓ : Over (Spec R) ⥤ (CommAlgCat R)ᵒᵖ :=
+@[implicit_reducible] def algΓ : Over (Spec R) ⥤ (CommAlgCat R)ᵒᵖ :=
   Over.post Γ.rightOp ⋙ Over.map (ΓSpecIso R).inv.op ⋙
     (Over.opEquivOpUnder R).functor ⋙ (commAlgCatEquivUnder R).inverse.op
 
@@ -84,19 +84,17 @@ instance preservesLimitsOfSize_algSpec : PreservesLimitsOfSize.{w, v} (algSpec R
     (commAlgCatEquivUnder R).op.functor ⋙ (Over.opEquivOpUnder R).inverse ⋙ Over.post Scheme.Spec
 
 set_option backward.isDefEq.respectTransparency false in
-instance preservesColimitsOfSize_algΓ : PreservesColimitsOfSize.{w, v} (algΓ R) := inferInstance
+instance preservesColimitsOfSize_algΓ : PreservesColimitsOfSize.{w, v} (algΓ R) := by
+  unfold algΓ; infer_instance
 
 @[simp] lemma algSpec_obj_hom (X : (CommAlgCat R)ᵒᵖ) :
     ((algSpec R).obj X).hom = Spec.map (CommRingCat.ofHom (algebraMap R X.unop)) := rfl
 
+@[simp] lemma left_map_algSpec {X Y : (CommAlgCat R)ᵒᵖ} (f : X ⟶ Y) :
+    ((algSpec R).map f).left = Spec.map ((commAlgCatEquivUnder R).functor.map f.unop).right := rfl
+
 lemma preservesTerminalIso_algSpec :
-    preservesTerminalIso (algSpec R) =
-      Over.isoMk (.refl (Spec R))
-        (by rw [algSpec_obj_hom]
-            simp only [comp_obj, Over.tensorUnit_left, Iso.refl_hom, Over.tensorUnit_hom,
-              unop_tensorUnit, CommAlgCat.coe_tensorUnit, Algebra.algebraMap_self,
-              CommRingCat.ofHom_id, Spec.map_id]
-            exact Category.comp_id _) := by
+    preservesTerminalIso (algSpec R) = Over.isoMk (.refl (Spec R)) := by
   ext : 1; exact toUnit_unique ..
 
 @[simp] lemma left_inv_preservesTerminalIso_algSpec :
@@ -123,14 +121,9 @@ The monoidal data is copied from `Functor.Braided.ofChosenFiniteProducts` so tha
 definitionally `𝟙 (Spec R)` and `μ`, `δ` are definitionally `pullbackSpecIso`. -/
 instance braidedAlgSpec : (algSpec R).Braided :=
   .copy (.ofChosenFiniteProducts _)
-    (Over.homMk (𝟙 (Spec R)) <| by simpa using Over.w (preservesTerminalIso (algSpec R)).inv)
-    (fun X Y ↦ Over.homMk (pullbackSpecIso R X.unop Y.unop).hom <| by
-      simpa using Over.w (prodComparisonIso (algSpec R) X Y).inv)
-    (Over.homMk (𝟙 (Spec R)) <| by
-      rw [algSpec_obj_hom]
-      simp only [comp_obj, Over.tensorUnit_left, Over.tensorUnit_hom, unop_tensorUnit,
-        CommAlgCat.coe_tensorUnit, Algebra.algebraMap_self, CommRingCat.ofHom_id, Spec.map_id]
-      exact Category.comp_id _)
+    (Over.homMk <| 𝟙 <| Spec R)
+    (fun X Y ↦ Over.homMk (pullbackSpecIso R X.unop Y.unop).hom)
+    (Over.homMk <| 𝟙 <| Spec R)
     (fun X Y ↦ Over.homMk (pullbackSpecIso R X.unop Y.unop).inv <| by
       simpa using Over.w (prodComparison (algSpec R) X Y))
     (Over.OverMorphism.ext (by simp))
@@ -223,7 +216,8 @@ lemma one_spec_asOver_spec [Bialgebra R A] :
     η[(Spec A).asOver (Spec R)] = LaxMonoidal.ε (algSpec R) ≫
       Over.homMk (V := (Spec A).asOver (Spec R))
         (Spec.map <| CommRingCat.ofHom <| Bialgebra.counitAlgHom R A)
-          (by simp [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp]) := rfl
+          (by simp [specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
+            CommRingCat.of_carrier]) := rfl
 
 lemma left_one_spec_asOver_spec [Bialgebra R A] :
     η[(Spec A).asOver (Spec R)].left =
@@ -249,7 +243,10 @@ instance isCommMonObj_spec_asOver_spec [Bialgebra R A] [IsCocomm R A] :
       (RingHomClass.toRingHom (Bialgebra.TensorProduct.comm R A A)).comp
        (Algebra.TensorProduct.includeRight : A →ₐ[R] A ⊗[R] A) := rfl
     convert! this using 1
-    simp only [Spec.map_comp, ← Category.assoc, left_mul_spec_asOver_spec]
+    simp only [left_mul_spec_asOver_spec, ← Category.assoc, algSpec, Equivalence.op_functor,
+      comp_obj, op_obj, commAlgCatEquivUnder_functor_obj, Over.opEquivOpUnder_inverse_obj,
+      CommRingCat.mkUnder_hom, Over.post_obj, Spec_obj, Over.mk_left, Over.mk_hom, Spec_map,
+      Quiver.Hom.unop_op, Spec.map_comp]
     congr 1
     rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
     ext
@@ -430,12 +427,14 @@ instance [Bialgebra R T] :
     ext
     · simp [Scheme.monObjAsOverPullback_one, left_ε_algSpec (R := CommRingCat.of _),
         pullbackSpecIso', specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
-        Bialgebra.TensorProduct.counitAlgHom_def, AlgHom.comp_toRingHom, RingHom.comp_assoc]
+        AlgHom.toUnder, Under.homMk_right, Bialgebra.TensorProduct.counitAlgHom_def,
+        AlgHom.comp_toRingHom, RingHom.comp_assoc]
     · simp [Scheme.monObjAsOverPullback_one, left_ε_algSpec (R := CommRingCat.of _),
         pullbackSpecIso', specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
-        ← AlgHom.coe_restrictScalars R (Bialgebra.counitAlgHom S _), - AlgHom.coe_restrictScalars,
+        AlgHom.toUnder, Under.homMk_right,
+        ← AlgHom.coe_restrictScalars R (Bialgebra.counitAlgHom S _), -AlgHom.coe_restrictScalars,
         ← AlgHom.comp_toRingHom, Bialgebra.counitAlgHom_comp_includeRight]
-      rfl
+      simp [AlgHom.comp_toRingHom, Algebra.toRingHom_ofId]
   mul_hom := by
     ext
     rw [← cancel_mono (pullbackSpecIso' ..).inv]
