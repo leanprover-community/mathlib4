@@ -113,6 +113,9 @@ class IsSolvable : Prop where
 @[deprecated (since := "2026-07-16")]
 alias _root_.IsSolvable := Group.IsSolvable
 
+@[deprecated (since := "2026-07-17")]
+alias _root_.isSolvable_def := Group.isSolvable_def
+
 instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 
