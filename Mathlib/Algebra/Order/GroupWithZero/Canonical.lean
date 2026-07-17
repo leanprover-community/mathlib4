@@ -98,6 +98,7 @@ instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
   top_add' a := by ext; simp [bot_eq_zero]
   isAddLeftRegular_of_ne_top := by simp +contextual [IsRegular.of_ne_zero, bot_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
   top_add' a := by ext; simp; simp [bot_eq_zero (α := α)]
@@ -192,18 +193,6 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
   mul_lt_mul_of_pos_left := by
     simpa [← ofAdd_add, ← toDual_add]
       using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
-
-@[deprecated "Use simp" (since := "2025-11-17")]
-theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
-
-@[deprecated "Use simp" (since := "2025-11-17")]
-theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
-
-@[deprecated bot_eq_zero (since := "2025-11-17")]
-theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
-    Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
 
 @[simp]
 theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :

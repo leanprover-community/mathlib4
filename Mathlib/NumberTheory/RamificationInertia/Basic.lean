@@ -199,7 +199,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
   use s
   obtain ⟨a, hag, j, hjs, hgI⟩ := Ideal.exist_integer_multiples_notMem hRS s g hj's hj'g
   choose g'' hg'' using hag
-  letI := Classical.propDecidable
+  let := Classical.propDecidable
   let g' i := if h : i ∈ s then g'' i h else 0
   have hg' : ∀ i ∈ s, algebraMap _ _ (g' i) = a * g i := by
     intro i hi; exact (congr_arg _ (dif_pos hi)).trans (hg'' i hi)
@@ -363,6 +363,7 @@ theorem quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
   quotientToQuotientRangePowQuotSuccAux_mk p P a_mem x
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsPrime]
     {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i) (a_notMem : a ∉ P ^ (i + 1)) :
     Function.Injective (quotientToQuotientRangePowQuotSucc p P a_mem) := fun x =>
@@ -457,7 +458,7 @@ theorem rank_prime_pow_ramificationIdx [IsDedekindDomain S] [p.IsMaximal] [P.IsP
         @Module.rank (R ⧸ p) (S ⧸ P) _ _
           (@Algebra.toModule _ _ _ _ <|
             @Quotient.algebraQuotientOfRamificationIdxNeZero _ _ _ _ _ _ _ ⟨he⟩) := by
-  letI : NeZero e := ⟨he⟩
+  let : NeZero e := ⟨he⟩
   have := rank_pow_quot p P hP0 0 (Nat.zero_le e)
   rw [pow_zero, Nat.sub_zero, Ideal.one_eq_top, Ideal.map_top] at this
   exact (rank_top (R ⧸ p) _).symm.trans this
@@ -471,8 +472,8 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
         @finrank (R ⧸ p) (S ⧸ P) _ _
           (@Algebra.toModule _ _ _ _ <|
             @Quotient.algebraQuotientOfRamificationIdxNeZero _ _ _ _ _ _ _ ⟨he⟩) := by
-  letI : NeZero e := ⟨he⟩
-  letI : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfRamificationIdxNeZero p P
+  let : NeZero e := ⟨he⟩
+  let : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfRamificationIdxNeZero p P
   have hdim := rank_prime_pow_ramificationIdx _ _ hP0 he
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
   · have := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
@@ -606,7 +607,6 @@ theorem sum_ramification_inertia {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
 theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
     (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] (hp0 : p ≠ ⊥) :
     p.inertiaDeg' P ≤ Module.finrank K L := by
-  classical
   have hP : P ∈ IsDedekindDomain.primesOverFinset p S :=
     (IsDedekindDomain.mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
   rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
@@ -616,7 +616,6 @@ theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaxima
 theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
     (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
     p.ramificationIdx' P ≤ Module.finrank K L := by
-  classical
   by_cases hp0 : p = ⊥
   · simp [hp0]
   have hP : P ∈ IsDedekindDomain.primesOverFinset p S :=

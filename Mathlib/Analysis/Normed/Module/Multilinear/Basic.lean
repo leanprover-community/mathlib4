@@ -559,7 +559,7 @@ section
 @[simp]
 theorem norm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
     ‖ofSubsingleton 𝕜 G G' i f‖ = ‖f‖ := by
-  letI : Unique ι := uniqueOfSubsingleton i
+  let : Unique ι := uniqueOfSubsingleton i
   simp [norm_def, ContinuousLinearMap.norm_def, (Equiv.funUnique _ _).symm.surjective.forall]
 
 @[simp]
@@ -924,6 +924,7 @@ theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : Continuo
       ‖g (f m)‖ ≤ ‖g‖ * (‖f‖ * ∏ i, ‖m i‖) := g.le_opNorm_of_le <| f.le_opNorm _
       _ = _ := (mul_assoc _ _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 @[simps! apply_apply]

@@ -69,6 +69,7 @@ lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
 lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
 @[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
@@ -154,6 +155,7 @@ lemma exp_pi_ne_one : Circle.exp Real.pi ≠ 1 := by
 
 variable {e : AddChar ℝ Circle}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma star_addChar (x : ℝ) : star ((e x) : ℂ) = e (-x) := by
   have h := Circle.coe_inv_eq_conj ⟨e x, ?_⟩
@@ -192,6 +194,7 @@ instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [Continuous
     ContinuousSMul Circle α :=
   inferInstanceAs <| ContinuousSMul (Submonoid.unitSphere _) α
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :
