@@ -132,7 +132,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
 namespace Valued
 
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
     toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
@@ -178,6 +178,7 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass _i.v))ˣ, { x | v.restrict x < γ.1 } ⊆ s := by
   simp only [mem_nhds, sub_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
 This does not imply that `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
 but it is equivalent to the restriction of `v` to the complement of its support being
@@ -263,6 +264,7 @@ theorem isOpen_closedBall {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : ValueGroup₀ (.ofClass _i.v)) :
     IsClosed {x | v.restrict x ≤ r} := by
@@ -279,6 +281,7 @@ theorem isClopen_closedBall {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
     IsClopen {x | v.restrict x ≤ r} :=
   ⟨isClosed_closedBall _ _, isOpen_closedBall _ hr⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A sphere centred at the origin in a valued ring is clopen. -/
 theorem isClopen_sphere {r : ValueGroup₀ (.ofClass _i.v)} (hr : r ≠ 0) :
     IsClopen {x | v.restrict x = r} := by

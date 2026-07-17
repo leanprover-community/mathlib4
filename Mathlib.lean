@@ -953,7 +953,6 @@ public import Mathlib.Algebra.Order.CompleteField
 public import Mathlib.Algebra.Order.Disjointed
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Field.Canonical
-public import Mathlib.Algebra.Order.Field.Defs
 public import Mathlib.Algebra.Order.Field.GeomSum
 public import Mathlib.Algebra.Order.Field.Pi
 public import Mathlib.Algebra.Order.Field.Pointwise
@@ -2254,6 +2253,7 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Operator.NNNorm
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.Analysis.Normed.Operator.Prod
 public import Mathlib.Analysis.Normed.Order.Basic
 public import Mathlib.Analysis.Normed.Order.Hom.Basic
@@ -3575,6 +3575,9 @@ public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
 public import Mathlib.Combinatorics.Enumerative.Pentagonal
+public import Mathlib.Combinatorics.Enumerative.Pentagonal.Basic
+public import Mathlib.Combinatorics.Enumerative.Pentagonal.PowerSeries
+public import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
 public import Mathlib.Combinatorics.Enumerative.Schroder
 public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
@@ -3672,6 +3675,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.ErdosStoneSimonovits
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.TuranDensity
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Zarankiewicz
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 public import Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
@@ -3878,6 +3882,7 @@ public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Fin.Embedding
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.Fin.FlagRange
+public import Mathlib.Data.Fin.Init
 public import Mathlib.Data.Fin.Parity
 public import Mathlib.Data.Fin.Pigeonhole
 public import Mathlib.Data.Fin.Rev
@@ -4062,7 +4067,8 @@ public import Mathlib.Data.Int.Sqrt
 public import Mathlib.Data.Int.Star
 public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Data.Int.WithZero
-public import Mathlib.Data.LawfulXor
+public import Mathlib.Data.LawfulXor.Basic
+public import Mathlib.Data.LawfulXor.Equiv
 public import Mathlib.Data.List.AList
 public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Chain
@@ -5661,6 +5667,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.SignedMeasure
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
 public import Mathlib.ModelTheory.Algebra.Field.Basic
@@ -6826,6 +6833,7 @@ public import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Derivative
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.Expand

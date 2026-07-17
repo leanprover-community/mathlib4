@@ -198,6 +198,7 @@ theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableE
 
 open AlternatingMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Perm in
 /-- Computing the `MultilinearMap.alternatization` of the `MultilinearMap.domCoprod` is the same
 as computing the `AlternatingMap.domCoprod` of the `MultilinearMap.alternatization`s.
