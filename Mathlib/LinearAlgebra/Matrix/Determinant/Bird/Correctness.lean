@@ -90,22 +90,24 @@ abbrev bminor (i j : Fin n) (α : Fin p → Fin n) : R :=
 abbrev pminor (α : Fin p → Fin n) : R :=
   (A.submatrix α α).det
 
+lemma Fin.cons_removeNth_eq_comp_cycleRange_symm {β : Type*}
+    (α : Fin (n + 1) → β) (s : Fin (n + 1)) :
+    Fin.cons (α s) (s.removeNth α) = α ∘ s.cycleRange.symm := by
+  ext i
+  cases i using Fin.cons <;> simp [Fin.removeNth_apply]
+
 lemma det_submatrix_removeNth_eq_sign_mul_bminor
   (α : Fin (p + 1) → Fin n) (i : Fin n) (s : Fin (p + 1)) :
     (A.submatrix (Fin.cons i (s.removeNth α)) α).det =
-      (-1 : R) ^ s.val * bminor A i (α s) (s.removeNth α) := calc
-  _ = ((A.submatrix (update α s i) α).submatrix (Fin.cycleRange s).symm id).det := by
-    simp [← Fin.insertNth_removeNth]
-  _ = Equiv.Perm.sign (Fin.cycleRange s) * (A.submatrix (update α s i) α).det := by
-    rw [Matrix.det_permute, Equiv.Perm.sign_symm]
-  _ = Equiv.Perm.sign (Fin.cycleRange s) * ((A.submatrix (Fin.cons i (s.removeNth α))
-        (Fin.cons (α s) (s.removeNth α))).submatrix (Fin.cycleRange s) (Fin.cycleRange s)).det := by
-    congrm Equiv.Perm.sign (Fin.cycleRange s) * Matrix.det ?_
-    simp only [Matrix.submatrix_submatrix, Fin.cons_comp_cycleRange,
-      Fin.insertNth_self_removeNth, Fin.insertNth_removeNth]
-  _ = Equiv.Perm.sign (Fin.cycleRange s) * bminor A i (α s) (s.removeNth α) := by
-    rw [Matrix.det_submatrix_equiv_self]
-  _ = (-1 : R) ^ s.val * bminor A i (α s) (s.removeNth α) := by simp [Fin.sign_cycleRange]
+      (-1 : R) ^ s.val * bminor A i (α s) (s.removeNth α) :=
+  calc
+    _ = (-1 : R) ^ s.val * ((A.submatrix (Fin.cons i (s.removeNth α)) α)
+        |>.submatrix id (Fin.cycleRange s).symm).det := by
+      rw [Matrix.det_permute']
+      simp [← mul_assoc, ← pow_add]
+    _ = (-1 : R) ^ s.val * bminor A i (α s) (s.removeNth α) := by
+      congrm _ * Matrix.det ?_
+      simp [Fin.cons_removeNth_eq_comp_cycleRange_symm]
 
 /-- First-column Laplace expansion of a bordered minor -/
 theorem det_bordered_expand (α : Fin (p + 1) → Fin n) (i j : Fin n) :
