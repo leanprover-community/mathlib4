@@ -22,6 +22,7 @@ This will be useful to define embedded submanifolds.
 * `IsSmoothEmbedding.id`: the identity map is a smooth embedding
 * `IsSmoothEmbedding.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth embedding
+* `ModelWithCorners.isSmoothEmbedding`: every model with corners is itself a smooth embedding
 * `IsSmoothEmbedding.sumInl` and `IsSmoothEmbedding.sumInr`: given `C^n` manifolds `M` and `N`,
   `Sum.inl : M → M ⊕ N` and `Sum.inr : N → M ⊕ N` are `C^n` embeddings
 * `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`
@@ -93,6 +94,11 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsSmoothEmbedding I I n (Subtype.val : s → M) := by
   rw [isSmoothEmbedding_iff]
   exact ⟨IsImmersion.of_opens s, IsEmbedding.subtypeVal⟩
+
+/-- Every `ModelWithCorners 𝕜 E H` is a smooth embedding when viewed as a map `H → E`. -/
+protected lemma _root_.ModelWithCorners.isSmoothEmbedding {n : ℕ} :
+    IsSmoothEmbedding I (modelWithCornersSelf 𝕜 E₁) n I :=
+  ⟨I.isImmersion, I.isClosedEmbedding.isEmbedding⟩
 
 /-- Given `C^n` manifolds `M` and `N`, `Sum.inl : M → M ⊕ N` is a `C^n` embedding. -/
 lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']

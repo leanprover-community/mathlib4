@@ -27,6 +27,7 @@ namespace PartialOrder
 
 variable {X : Type*} [PartialOrder X] {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
     s ∈ Set.range ((nerve X).σ i) ↔
       s.obj i.castSucc = s.obj i.succ := by

@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Send message on Zulip
-      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
+      uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -362,7 +362,7 @@ jobs:
 
     - name: Send warning message on Zulip if pattern doesn't match
       if: steps.tag.outputs.is_nightly == 'true' && failure() && steps.bump_version.outcome == 'failure'
-      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
+      uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -546,7 +546,7 @@ jobs:
     # own dedicated ⚠️ warning step above (otherwise we would double-post).
     - name: Report housekeeping failure to Zulip
       if: failure() && steps.bump_version.outcome != 'failure'
-      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
+      uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
