@@ -1064,37 +1064,25 @@ theorem isPreconnected_Iic {K : NonemptyCompacts α} (hK : IsPreconnected (K : S
   isPreconnected_subsets hK
 
 instance [PreconnectedSpace α] : PreconnectedSpace (NonemptyCompacts α) where
-  isPreconnected_univ := by
-    convert isPreconnected_subsets (α := α) isPreconnected_univ
-    simp
+  isPreconnected_univ := by simpa using isPreconnected_subsets isPreconnected_univ
 
 @[simp]
 theorem preconnectedSpace_iff : PreconnectedSpace (NonemptyCompacts α) ↔ PreconnectedSpace α := by
   refine ⟨fun h => ?_, fun h => inferInstance⟩
   rw [preconnectedSpace_iff_clopen] at h ⊢
   intro s hs
-  rcases (h {K | ↑K ⊆ s}
-    ⟨isClosed_subsets_of_isClosed hs.isClosed, isOpen_subsets_of_isOpen hs.isOpen⟩) with h | h
-  · left
-    rw [Set.eq_empty_iff_forall_notMem] at h ⊢
-    exact fun x hx => h {x} (Set.singleton_subset_iff.mpr hx)
-  · right
-    rw [Set.eq_univ_iff_forall] at h ⊢
-    exact fun x => Set.singleton_subset_iff.mp (h {x})
+  apply h _ ⟨isClosed_subsets_of_isClosed hs.isClosed, isOpen_subsets_of_isOpen hs.isOpen⟩ |>.imp
+  · simp only [Set.eq_empty_iff_forall_notMem]
+    exact fun h x hx => h {x} (Set.singleton_subset_iff.mpr hx)
+  · simp only [Set.eq_univ_iff_forall] 
+    exact fun h x => Set.singleton_subset_iff.mp (h {x})
 
 instance [ConnectedSpace α] : ConnectedSpace (NonemptyCompacts α) where
   toNonempty := inferInstance
 
 @[simp]
-theorem connectedSpace_iff : ConnectedSpace (NonemptyCompacts α) ↔ ConnectedSpace α := by
-  refine ⟨fun h => ?_, fun _ => inferInstance⟩
-  have := preconnectedSpace_iff.mp h.toPreconnectedSpace;
-  constructor
-  rw [← not_isEmpty_iff]
-  intro
-  absurd h.toNonempty
-  rw [not_nonempty_iff]
-  infer_instance
+protected theorem connectedSpace_iff : ConnectedSpace (NonemptyCompacts α) ↔ ConnectedSpace α := by
+  simp [connectedSpace_iff]
 
 end NonemptyCompacts
 
