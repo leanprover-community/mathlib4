@@ -5,7 +5,7 @@ Authors: Robert Hawkins
 -/
 module
 
-public import Mathlib.RingTheory.Bialgebra.Hom
+public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
 # Primitive elements in a bialgebra
@@ -21,8 +21,12 @@ This file defines primitive elements in a bialgebra, i.e. elements `a` such that
 ## TODO
 
 * `primitiveSubmodule` is a `LieSubalgebra` with bracket `[a, b] = a * b - b * a`.
+  (`IsPrimitiveElem.commutator` is stated with `a * b - b * a` rather than `⁅a, b⁆` to avoid
+  importing Lie theory into this file.)
 * In characteristic 0 over a field, the primitive elements of a cocommutative connected
   bialgebra generate it as the universal enveloping of a Lie algebra.
+* Generalize to `(g, h)`-skew-primitive elements `Δ a = a ⊗ₜ g + h ⊗ₜ a` for group-like `g`, `h`
+  over a plain coalgebra, of which primitivity is the `(1, 1)` case over a bialgebra.
 -/
 
 public section
@@ -35,7 +39,8 @@ section Semiring
 variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R B] {a b : A}
 
 variable (R) in
-/-- An element `a` of a bialgebra is *primitive* if `Δ a = a ⊗ₜ 1 + 1 ⊗ₜ a` and `ε a = 0`. -/
+/-- An element `a` of a bialgebra is *primitive* if `Δ a = a ⊗ₜ 1 + 1 ⊗ₜ a` and `ε a = 0`,
+where `ε` and `Δ` are the counit and comultiplication respectively. -/
 @[mk_iff]
 structure IsPrimitiveElem (a : A) : Prop where
   /-- A primitive element `a` satisfies `ε(a) = 0`. -/
@@ -47,6 +52,9 @@ attribute [simp] IsPrimitiveElem.counit_eq_zero IsPrimitiveElem.comul_eq_tmul_ad
 
 /-- In a bialgebra, `0` is a primitive element. -/
 lemma IsPrimitiveElem.zero : IsPrimitiveElem R (0 : A) := by simp [isPrimitiveElem_iff]
+
+lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1 := by
+  rintro rfl; simpa using ha.counit_eq_zero
 
 /-- Primitive elements in a bialgebra are stable under addition. -/
 lemma IsPrimitiveElem.add (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
@@ -61,6 +69,12 @@ lemma IsPrimitiveElem.smul (ha : IsPrimitiveElem R a) (r : R) : IsPrimitiveElem 
 lemma IsPrimitiveElem.map [FunLike F A B] [BialgHomClass F R A B] (f : F)
     (ha : IsPrimitiveElem R a) : IsPrimitiveElem R (f a) :=
   ⟨by simp [ha], by simp [ha, ← CoalgHomClass.map_comp_comul_apply]⟩
+
+/-- A bialgebra isomorphism preserves primitive elements. -/
+@[simp] lemma isPrimitiveElem_map_equiv [EquivLike F A B] [BialgEquivClass F R A B] (f : F) :
+    IsPrimitiveElem R (f a) ↔ IsPrimitiveElem R a where
+  mp ha := (BialgEquivClass.toBialgEquiv f).symm_apply_apply a ▸ ha.map _
+  mpr := .map f
 
 variable (R A) in
 /-- The primitive elements form a submodule. -/
