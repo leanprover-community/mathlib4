@@ -61,6 +61,7 @@ instance Submodule.FG.directedSystem :
   map_self := fun _ _ ↦ rfl
   map_map  := fun _ _ _ _ _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
 /-- Any module is the direct limit of its finitely generated submodules -/
 noncomputable def Submodule.FG.directLimit [DecidableEq {P : Submodule R M // P.FG}] :
@@ -117,6 +118,7 @@ noncomputable def Submodule.FG.rTensor.directLimit [DecidableEq {P : Submodule R
       (fun ⦃P Q⦄ (h : P ≤ Q) ↦ (Submodule.inclusion h).rTensor N) ≃ₗ[R] M ⊗[R] N :=
   (TensorProduct.directLimitLeft _ N).symm.trans ((Submodule.FG.directLimit R M).rTensor N)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Submodule.FG.rTensor.directLimit_apply [DecidableEq {P : Submodule R M // P.FG}]
     {P : {P : Submodule R M // P.FG}} (u : P ⊗[R] N) :
     (Submodule.FG.rTensor.directLimit R M N)
@@ -170,6 +172,7 @@ noncomputable def Submodule.FG.lTensor.directLimit [DecidableEq {Q : Submodule R
       (fun _ _ hPQ ↦ (inclusion hPQ).lTensor M) ≃ₗ[R] M ⊗[R] N :=
   (TensorProduct.directLimitRight _ M).symm.trans ((Submodule.FG.directLimit R N).lTensor M)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Submodule.FG.lTensor.directLimit_apply [DecidableEq {P : Submodule R N // P.FG}]
     (Q : {Q : Submodule R N // Q.FG}) (u : M ⊗[R] Q.val) :
     (Submodule.FG.lTensor.directLimit R M N)

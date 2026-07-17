@@ -496,6 +496,7 @@ theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a := by
   intro he
   simpa using monomial_eq_monomial_iff.1 he
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `X` commutes with everything, even when the coefficients are noncommutative. -/
 theorem X_mul : X * p = p * X := by
   rcases p with ⟨⟩
@@ -618,6 +619,7 @@ theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
 theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
   rw [coeff_X, if_neg hn.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   rcases p with ⟨⟩
@@ -697,6 +699,7 @@ theorem Nontrivial.of_polynomial_ne (h : p ≠ q) : Nontrivial R :=
 theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b := by
   simpa only [← subsingleton_iff] using subsingleton_iff_subsingleton
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f⟩
   rcases q with ⟨g⟩
@@ -708,7 +711,7 @@ theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Monomials generate the additive monoid of polynomials. -/
-theorem addSubmonoid_closure_setOf_eq_monomial :
+theorem addSubmonoid_closure_setOfPred_eq_monomial :
     AddSubmonoid.closure { p : R[X] | ∃ n a, p = monomial n a } = ⊤ := by
   apply top_unique
   rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ← addSubmonoidClosure_single,
@@ -717,10 +720,13 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 
+@[deprecated (since := "2026-07-09")]
+alias addSubmonoid_closure_setOf_eq_monomial := addSubmonoid_closure_setOfPred_eq_monomial
+
 @[ext high]
 theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
-  AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
+  AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOfPred_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
     exact h n a
 
@@ -962,6 +968,7 @@ theorem ofFinsupp_erase (p : R[ℕ]) (n : ℕ) :
     (⟨p.erase n⟩ : R[X]) = (⟨p⟩ : R[X]).erase n := by
   simp only [erase_def]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).erase n := by
   simp [support]
@@ -1000,6 +1007,7 @@ If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`. -/
 def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
   Polynomial.ofFinsupp (p.toFinsupp.update n a)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_update (p : R[X]) (n : ℕ) (a : R) :
     (p.update n a).coeff = Function.update p.coeff n a := by ext; simp [coeff, update]
 
@@ -1019,6 +1027,7 @@ theorem update_zero_eq_erase (p : R[X]) (n : ℕ) : p.update n 0 = p.erase n := 
   ext
   rw [coeff_update_apply, coeff_erase]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_update (p : R[X]) (n : ℕ) (a : R) [Decidable (a = 0)] :
     support (p.update n a) = if a = 0 then p.support.erase n else insert n p.support := by
   classical simp [support, update, Finsupp.support_update]

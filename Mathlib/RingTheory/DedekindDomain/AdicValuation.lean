@@ -189,7 +189,7 @@ theorem intValuation_eq_exp_neg_multiplicity {r : R} (hr : r ≠ 0) :
   have hsr : Ideal.span {r} ≠ 0 := Submodule.span_singleton_eq_bot.mp.mt hr
   have hfm : FiniteMultiplicity v.asIdeal (Ideal.span {r}) :=
     FiniteMultiplicity.of_prime_left v.prime hsr
-  rw [v.intValuation_if_neg hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.coe_inj,
+  rw [v.intValuation_if_neg hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.natCast_inj,
     ← FiniteMultiplicity.emultiplicity_eq_multiplicity hfm,
     UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors (irreducible v) hsr,
     normalize_eq, Ideal.count_associates_factors_eq hsr v.isPrime v.ne_bot]
@@ -232,6 +232,7 @@ theorem intValuation_lt_one_iff_mem (r : R) :
     v.intValuation r < 1 ↔ r ∈ v.asIdeal := by
   rw [intValuation_lt_one_iff_dvd, Ideal.dvd_span_singleton]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `v`-adic valuation of `r : R` is equal to 1 if and only if `r ∈ vᶜ`. -/
 theorem intValuation_eq_one_iff_mem_primeCompl (r : R) :
     v.intValuation r = 1 ↔ r ∈ v.asIdeal.primeCompl := by
@@ -259,9 +260,9 @@ theorem intValuation_le_exp_iff_le_emultiplicity {r : R} {n : ℕ} :
 
 theorem exp_le_intValuation_iff_emultiplicity_le {r : R} {n : ℕ} :
     exp (-(n : ℤ)) ≤ v.intValuation r ↔ emultiplicity v.asIdeal (Ideal.span {r}) ≤ n := by
-  rw [← ENat.lt_coe_add_one_iff, ← ENat.coe_one, ← ENat.coe_add, emultiplicity_lt_iff_not_dvd,
-    ← intValuation_le_pow_iff_dvd, not_le, Nat.cast_add, Nat.cast_one, neg_add, exp_add,
-    exp_neg 1, mul_inv_lt_iff₀ (by simp)]
+  rw [← ENat.lt_natCast_add_one_iff, ← ENat.natCast_one, ← ENat.natCast_add,
+    emultiplicity_lt_iff_not_dvd, ← intValuation_le_pow_iff_dvd, not_le, Nat.cast_add, Nat.cast_one,
+    neg_add, exp_add, exp_neg 1, mul_inv_lt_iff₀ (by simp)]
   by_cases hv : v.intValuation r = 0
   · simp [hv]
   · rw [lt_mul_exp_iff_le hv]
@@ -327,12 +328,14 @@ theorem valuation_def (x : K) :
       v.intValuation.extendToLocalization
         (fun r hr => Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x := by rw [valuation]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The `v`-adic valuation of `r / s : K` is the valuation of `r` divided by the valuation of `s`. -/
 theorem valuation_of_mk' {r : R} {s : nonZeroDivisors R} :
     v.valuation K (IsLocalization.mk' K r s) = v.intValuation r / v.intValuation s := by
   rw [valuation_def, Valuation.extendToLocalization_mk', div_eq_mul_inv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped algebraMap in
 /-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
 theorem valuation_of_algebraMap (r : R) : v.valuation K r = v.intValuation r := by
@@ -578,7 +581,7 @@ ring of integers, denoted `v.adicCompletionIntegers`. -/
 
 
 /-- `K` as a valued field with the `v`-adic valuation. -/
-@[implicit_reducible]
+@[instance_reducible]
 def adicValued : Valued K ℤᵐ⁰ :=
   Valued.mk' (v.valuation K)
 
@@ -710,13 +713,13 @@ noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
     refine ⟨fun ⟨t, ht, hts⟩ ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
     · obtain ⟨δ, hδ⟩ := Valued.mem_nhds_zero.1 ht
       refine ⟨Units.mapEquiv (valueGroupOrderIso K v).symm.toMulEquiv δ, fun x hx ↦ hts (hδ ?_)⟩
-      rw [Set.mem_setOf_eq] at hx ⊢
+      rw [Set.mem_ofPred_eq] at hx ⊢
       simpa [← map_lt_map_iff (valueGroupOrderIso K v), valueGroupOrderIso_restrict] using hx
     · refine ⟨{y | Valued.v.restrict y < ↑(Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ)},
         ?_, fun x hx ↦ hγ ?_⟩
       · rw [Valued.mem_nhds_zero]
         exact ⟨Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ, subset_rfl⟩
-      · rw [Set.mem_setOf_eq, ← map_lt_map_iff (valueGroupOrderIso K v),
+      · rw [Set.mem_ofPred_eq, ← map_lt_map_iff (valueGroupOrderIso K v),
           valueGroupOrderIso_restrict]
         simpa using hx
 

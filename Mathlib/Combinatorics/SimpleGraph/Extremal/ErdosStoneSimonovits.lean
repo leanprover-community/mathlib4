@@ -58,6 +58,7 @@ lemma le_card_edgeFinset_between_verts :
   exact sum_le_sum (fun v hv ↦ sub_le_iff_le_add.mpr <|
     mod_cast (G.minDegree_le_degree v).trans (degree_le_between_add hv))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For `v ∈ K.vertsᶜ \ ErdosStone.filter`, since `v` is adjacent to fewer than `t`
 vertices in at least one part of the complete equipartite subgraph, it follows that `v` is
 adjacent to fewer than `#K.verts - (t' - t)` vertices in `K.verts`.
@@ -188,6 +189,7 @@ theorem filter.pi.exists_le_card_fiber (hr_pos : 0 < r) (ht'_pos : 0 < t')
 
 end ErdosStone
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `G` has a minimal degree of at least `(1 - 1 / r + o(1)) * n`, then `G` contains a
 copy of a `completeEquipartiteGraph` in `r + 1` parts each of size `t`.
 
