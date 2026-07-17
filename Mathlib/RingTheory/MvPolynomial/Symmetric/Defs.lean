@@ -173,6 +173,7 @@ end CommRing
 
 end IsSymmetric
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
 @[simps! apply_coe symm_apply_coe]
 def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
