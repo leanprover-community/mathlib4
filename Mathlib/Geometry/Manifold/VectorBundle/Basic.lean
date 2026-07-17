@@ -426,8 +426,8 @@ instance ContMDiffFiberwiseLinear.hasGroupoid :
     HasGroupoid (TotalSpace F E) (contMDiffFiberwiseLinear B F IB n) where
   compatible := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-    haveI : MemTrivializationAtlas e := ⟨he⟩
-    haveI : MemTrivializationAtlas e' := ⟨he'⟩
+    have : MemTrivializationAtlas e := ⟨he⟩
+    have : MemTrivializationAtlas e' := ⟨he'⟩
     rw [mem_contMDiffFiberwiseLinear_iff]
     refine ⟨_, _, e.open_baseSet.inter e'.open_baseSet, contMDiffOn_coordChangeL e e',
       contMDiffOn_symm_coordChangeL e e', ?_⟩
