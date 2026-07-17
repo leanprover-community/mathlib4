@@ -136,10 +136,10 @@ theorem endomorphism_simple_eq_smul_id {X : C} [Simple X] [FiniteDimensional �
 /-- Endomorphisms of a simple object form a field if they are finite dimensional.
 This can't be an instance as `𝕜` would be undetermined.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDimensional 𝕜 (X ⟶ X)] :
     Field (End X) := by
-  classical exact
+  exact
     { (inferInstance : DivisionRing (End X)) with
       mul_comm := fun f g => by
         obtain ⟨c, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 f

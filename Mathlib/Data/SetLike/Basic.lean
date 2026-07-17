@@ -193,7 +193,9 @@ lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p 
 @[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 
-@[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
+@[simp] lemma setOfPred_mem_eq (a : A) : {b | b ∈ a} = a := rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem_eq := setOfPred_mem_eq
 
 @[nontriviality]
 lemma mem_of_subsingleton [Subsingleton B] (S : A) [h : Nonempty S] {b : B} : b ∈ S := by

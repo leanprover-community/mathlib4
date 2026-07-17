@@ -91,7 +91,6 @@ namespace ZMod
 @[simp]
 protected lemma minOrder {n : ℕ} (hn : n ≠ 0) (hn₁ : n ≠ 1) : minOrder (ZMod n) = n.minFac := by
   have : Fact (1 < n) := ⟨one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn, hn₁⟩⟩
-  classical
   have : (↑(n / n.minFac) : ZMod n) ≠ 0 := by
     rw [Ne, ringChar.spec, ringChar.eq (ZMod n) n]
     exact

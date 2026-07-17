@@ -184,6 +184,7 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
@@ -275,7 +276,6 @@ attribute [local simp] UpperHalfPlane.coe_specialLinearGroup_apply
 
 /-- For `z : ℍ`, there is a `g : SL(2,ℤ)` maximizing `(g•z).im` -/
 theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
-  classical
   let s : Set (Fin 2 → ℤ) := {cd | IsCoprime (cd 0) (cd 1)}
   have hs : s.Nonempty := ⟨![1, 1], isCoprime_one_left⟩
   obtain ⟨p, hp_coprime, hp⟩ :=
@@ -654,6 +654,7 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
   rw [← Int.cast_one, ← Int.cast_neg, Int.cast_le] at this
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g • z).im = z.im := by
   wlog hden : z.im ≤ (g • z).im
   · rw [← this (g := g⁻¹) hg (by simpa using hz) (by simpa using le_of_not_ge hden)]
@@ -860,7 +861,7 @@ private lemma mem_closure_of_one_lt_norm {x : ℍ} (hxnorm : 1 < ‖(x : ℂ)‖
   apply mem_closure_of_frequently_of_tendsto (α := ℝ)
       (b := 𝓝[<] 1) (f := fun t ↦ ofComplex (t * x))
   · apply Filter.Eventually.frequently
-    simp only [fdo, Set.mem_setOf, Filter.eventually_and, one_lt_normSq_iff]
+    simp only [fdo, Set.mem_ofPred, Filter.eventually_and, one_lt_normSq_iff]
     refine ⟨Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds), ?_⟩
     · have : ContinuousAt (fun a : ℝ ↦ (ofComplex (a * x : ℂ) : ℂ)) 1 := by
         refine .comp (by fun_prop) ((OpenPartialHomeomorph.continuousAt _ ?_).comp (by fun_prop))
