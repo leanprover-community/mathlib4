@@ -169,12 +169,14 @@ theorem set_smul_closure_subset (s : Set M) (t : Set α) : s • closure t ⊆ c
   exact iUnion₂_subset fun c hc ↦ (smul_closure_subset c t).trans <| closure_mono <|
     subset_biUnion_of_mem (u := (· • t)) hc
 
-theorem isClosed_setOf_map_smul {N : Type*} (α β) [SMul M α] [SMul N β]
+theorem isClosed_setOfPred_map_smul {N : Type*} (α β) [SMul M α] [SMul N β]
     [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
     IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
-  simp only [Set.setOf_forall]
+  simp only [Set.ofPred_forall]
   exact isClosed_iInter fun c => isClosed_iInter fun x =>
     isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_smul := isClosed_setOfPred_map_smul
 
 end SMul
 
@@ -607,7 +609,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [bad_Γ_set, image_smul, not_nonempty_iff_eq_empty, mem_setOf_eq] at H
+    simp only [bad_Γ_set, image_smul, not_nonempty_iff_eq_empty, mem_ofPred_eq] at H
     exact eq_empty_iff_forall_notMem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 
 /-- The quotient of a second countable space by a group action is second countable. -/

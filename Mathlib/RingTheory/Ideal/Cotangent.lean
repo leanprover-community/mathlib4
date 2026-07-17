@@ -39,9 +39,11 @@ variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] 
 
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
-deriving Inhabited, AddCommGroup, Module (R ⧸ I)
+deriving Inhabited
 
-deriving instance Module S, IsScalarTower S S', IsScalarTower R (R ⧸ I) for Cotangent I
+-- The `SMul` instance exists to avoid nsmul and zsmul diamonds.
+deriving instance SMul S, AddCommGroup, Module (R ⧸ I), Module S, IsScalarTower S S',
+  IsScalarTower R (R ⧸ I) for Cotangent I
 
 variable [IsNoetherian R I] in
 deriving instance IsNoetherian R for Cotangent I

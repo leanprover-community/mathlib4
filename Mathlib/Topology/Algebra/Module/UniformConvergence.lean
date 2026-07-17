@@ -84,7 +84,7 @@ lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     refine ⟨_, this hU, fun u hu x ↦ ?_⟩
     simpa only [map_smul] using! hu x
   · intro u U hU
-    simp only [Set.mem_setOf_eq, map_smul, Pi.smul_apply]
+    simp only [Set.mem_ofPred_eq, map_smul, Pi.smul_apply]
     simpa only [Set.mapsTo_range_iff] using (h u hU).eventually_nhds_zero (mem_of_mem_nhds hU)
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any

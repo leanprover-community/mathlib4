@@ -338,7 +338,7 @@ lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFinite
     rw [this]
     exact Measure.measurable_coe MeasurableSet.univ measurableSet_Ico
   ext μ
-  simp only [mem_setOf_eq, mem_preimage, mem_Ico, zero_le, true_and]
+  simp only [mem_ofPred_eq, mem_preimage, mem_Ico, zero_le, true_and]
   exact isFiniteMeasure_iff μ
 
 /-- The monoidal product is a measurable function from the product of finite measures over
@@ -354,7 +354,7 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
       ((Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
-  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
+  simp only [mem_image2, mem_ofPred_eq, forall_exists_index, and_imp]
   intro _ _ Hu _ Hv Heq
   simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
 
@@ -991,7 +991,7 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
   let B : FiniteMeasure Ω ≃ₜ M :=
   { toFun μ := by
       refine ⟨μ.map f, ?_⟩
-      simp only [null_iff_toMeasure_null, mem_setOf_eq, toMeasure_map, M]
+      simp only [null_iff_toMeasure_null, mem_ofPred_eq, toMeasure_map, M]
       rw [Measure.map_apply hf.continuous.measurable hf.isClosed_range.isOpen_compl.measurableSet]
       simp
     invFun := M.restrict (fun μ ↦ μ.comap f)

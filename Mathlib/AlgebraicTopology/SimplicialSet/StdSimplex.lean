@@ -272,7 +272,7 @@ attribute [local simp] image_subset_iff
 as a subcomplex. -/
 @[simps -isSimp obj]
 def face {n : ℕ} (S : Finset (Fin (n + 1))) : (Δ[n] : SSet.{u}).Subcomplex where
-  obj U := setOf (fun f ↦ Finset.image (objEquiv f).toOrderHom ⊤ ≤ S)
+  obj U := Set.ofPred (fun f ↦ Finset.image (objEquiv f).toOrderHom ⊤ ≤ S)
   map {U V} i := by aesop
 
 attribute [local simp] face_obj
@@ -605,7 +605,7 @@ private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     obtain ⟨f₂, rfl⟩ := objEquiv.symm.surjective x₂
     simp only [mem_nonDegenerate_iff_mono, Equiv.apply_symm_apply,
       SimplexCategory.mono_iff_injective, SimplexCategory.len_mk] at h₁ h₂
-    simp only [Set.mem_setOf_eq, SimplexCategory.len_mk, Equiv.apply_symm_apply,
+    simp only [Set.mem_ofPred_eq, SimplexCategory.len_mk, Equiv.apply_symm_apply,
       Subtype.mk.injEq, EmbeddingLike.apply_eq_iff_eq] at h₃ ⊢
     apply SimplexCategory.Hom.ext
     rw [← OrderHom.range_eq_iff h₁ h₂]

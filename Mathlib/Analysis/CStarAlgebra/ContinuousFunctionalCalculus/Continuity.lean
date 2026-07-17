@@ -220,7 +220,7 @@ theorem continuous_cfcHomSuperset_left
     apply continuous_of_uniform_approx_of_continuous
     rw [Metric.uniformity_basis_dist_le.forall_iff (by aesop)]
     intro ε hε
-    simp only [Set.mem_setOf_eq, dist_eq_norm]
+    simp only [Set.mem_ofPred_eq, dist_eq_norm]
     obtain ⟨g, hg, g_cont⟩ := frequently_iff.mp hf (Metric.closedBall_mem_nhds f hε)
     simp only [Metric.mem_closedBall, dist_comm g, dist_eq_norm] at hg
     refine ⟨_, g_cont, fun x ↦ ?_⟩
@@ -422,7 +422,7 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     intro x hx
     simpa
   refine continuousOn_cfc A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
-  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  simp only [Set.mem_ofPred_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
   rw [← SpectrumRestricts] at ha
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
@@ -754,7 +754,7 @@ theorem continuous_cfcₙHomSuperset_left
     apply continuous_of_uniform_approx_of_continuous
     rw [Metric.uniformity_basis_dist_le.forall_iff (by aesop)]
     intro ε hε
-    simp only [Set.mem_setOf_eq, dist_eq_norm]
+    simp only [Set.mem_ofPred_eq, dist_eq_norm]
     obtain ⟨g, hg, g_cont⟩ := frequently_iff.mp hf (Metric.closedBall_mem_nhds f hε)
     simp only [Metric.mem_closedBall, dist_comm g, dist_eq_norm] at hg
     refine ⟨_, g_cont, fun x ↦ ?_⟩
@@ -973,7 +973,7 @@ theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ
     intro x hx
     simpa
   refine continuousOn_cfcₙ A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
-  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  simp only [Set.mem_ofPred_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
   exact Set.image_mono ha.2

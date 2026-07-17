@@ -117,7 +117,7 @@ alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := in
 @[simp]
 theorem intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by
   simp only [intrinsicInterior, preimage_coe_affineSpan_singleton, interior_univ, image_univ,
-    Subtype.range_coe_subtype, mem_affineSpan_singleton, setOf_eq_eq_singleton]
+    Subtype.range_coe_subtype, mem_affineSpan_singleton, ofPred_eq_eq_singleton]
 
 @[simp]
 theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set P) = ∅ := by
@@ -126,7 +126,7 @@ theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set 
 @[simp]
 theorem intrinsicClosure_singleton (x : P) : intrinsicClosure 𝕜 ({x} : Set P) = {x} := by
   simp only [intrinsicClosure, preimage_coe_affineSpan_singleton, closure_univ, image_univ,
-    Subtype.range_coe_subtype, mem_affineSpan_singleton, setOf_eq_eq_singleton]
+    Subtype.range_coe_subtype, mem_affineSpan_singleton, ofPred_eq_eq_singleton]
 
 /-!
 Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.

@@ -292,15 +292,22 @@ section PointwiseLimits
 variable (M₁ M₂ : Type*) [TopologicalSpace M₂] [T2Space M₂]
 
 @[to_additive]
-theorem isClosed_setOf_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M₂ | f 1 = 1 } :=
+theorem isClosed_setOfPred_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M₂ | f 1 = 1 } :=
   isClosed_eq (continuous_apply 1) continuous_const
 
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_one := isClosed_setOfPred_map_one
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_zero := isClosed_setOfPred_map_zero
+
 @[to_additive]
-theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
+theorem isClosed_setOfPred_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     IsClosed { f : M₁ → M₂ | ∀ x y, f (x * y) = f x * f y } := by
-  simp only [setOf_forall]
+  simp only [ofPred_forall]
   exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦
     isClosed_eq (continuous_apply _) (by fun_prop)
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_mul := isClosed_setOfPred_map_mul
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_add := isClosed_setOfPred_map_add
 
 section Semigroup
 
@@ -317,7 +324,8 @@ type of bundled homomorphisms that has an `AddHomClass` instance) to `M₁ → M
 def mulHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →ₙ* M₂ where
   toFun := f
-  map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
+  map_mul' := (isClosed_setOfPred_map_mul M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled semigroup homomorphism from a pointwise limit of semigroup homomorphisms. -/
 @[to_additive (attr := simps! -fullyApplied)
@@ -351,8 +359,10 @@ type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂ where
   toFun := f
-  map_one' := (isClosed_setOf_map_one M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_one) hf
-  map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
+  map_one' := (isClosed_setOfPred_map_one M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_one) hf
+  map_mul' := (isClosed_setOfPred_map_mul M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
 @[to_additive (attr := simps! -fullyApplied)

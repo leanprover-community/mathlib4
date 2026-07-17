@@ -379,7 +379,7 @@ lemma nhdsWithin_compl_singleton_le [T1Space X] (x y : X) : 𝓝[{x}ᶜ] x ≤ �
   · rw [Ne.nhdsWithin_compl_singleton hy]
     exact nhdsWithin_le_nhds
 
-theorem isOpen_setOf_eventually_nhdsWithin [T1Space X] {p : X → Prop} :
+theorem isOpen_setOfPred_eventually_nhdsWithin [T1Space X] {p : X → Prop} :
     IsOpen { x | ∀ᶠ y in 𝓝[≠] x, p y } := by
   refine isOpen_iff_mem_nhds.mpr fun a ha => ?_
   filter_upwards [eventually_nhds_nhdsWithin.mpr ha] with b hb
@@ -387,6 +387,9 @@ theorem isOpen_setOf_eventually_nhdsWithin [T1Space X] {p : X → Prop} :
   · exact hb
   · rw [h.symm.nhdsWithin_compl_singleton] at hb
     exact hb.filter_mono nhdsWithin_le_nhds
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_eventually_nhdsWithin := isOpen_setOfPred_eventually_nhdsWithin
 
 @[simp] protected lemma Set.Finite.isClosed [T1Space X] {s : Set X} (hs : s.Finite) :
     IsClosed s := by
@@ -944,12 +947,18 @@ theorem tendsto_nhds_unique_inseparable {f : Y → X} {l : Filter Y} {a b : X} [
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : Inseparable a b :=
   .of_nhds_neBot <| neBot_of_le <| le_inf ha hb
 
-theorem isClosed_setOf_specializes : IsClosed { p : X × X | p.1 ⤳ p.2 } := by
-  simp only [← isOpen_compl_iff, compl_setOf, ← disjoint_nhds_nhds_iff_not_specializes,
-    isOpen_setOf_disjoint_nhds_nhds]
+theorem isClosed_setOfPred_specializes : IsClosed { p : X × X | p.1 ⤳ p.2 } := by
+  simp only [← isOpen_compl_iff, compl_ofPred, ← disjoint_nhds_nhds_iff_not_specializes,
+    isOpen_setOfPred_disjoint_nhds_nhds]
 
-theorem isClosed_setOf_inseparable : IsClosed { p : X × X | Inseparable p.1 p.2 } := by
-  simp only [← specializes_iff_inseparable, isClosed_setOf_specializes]
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_specializes := isClosed_setOfPred_specializes
+
+theorem isClosed_setOfPred_inseparable : IsClosed { p : X × X | Inseparable p.1 p.2 } := by
+  simp only [← specializes_iff_inseparable, isClosed_setOfPred_specializes]
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_inseparable := isClosed_setOfPred_inseparable
 
 /-- In an R₁ space, a point belongs to the closure of a compact set `K`
 if and only if it is topologically inseparable from some point of `K`. -/
@@ -971,7 +980,7 @@ theorem IsCompact.closure_eq_biUnion_inseparable {K : Set X} (hK : IsCompact K) 
 theorem IsCompact.closure_eq_biUnion_closure_singleton {K : Set X} (hK : IsCompact K) :
     closure K = ⋃ x ∈ K, closure {x} := by
   simp only [hK.closure_eq_biUnion_inseparable, ← specializes_iff_inseparable,
-    specializes_iff_mem_closure, setOf_mem_eq]
+    specializes_iff_mem_closure, ofPred_mem_eq]
 
 /-- In an R₁ space, if a compact set `K` is contained in an open set `U`,
 then its closure is also contained in `U`. -/

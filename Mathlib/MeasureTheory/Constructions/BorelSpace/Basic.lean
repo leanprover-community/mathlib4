@@ -251,7 +251,7 @@ theorem IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
 
 theorem measurableSet_of_continuousAt {β} [PseudoEMetricSpace β] (f : α → β) :
     MeasurableSet { x | ContinuousAt f x } :=
-  (IsGδ.setOf_continuousAt f).measurableSet
+  (IsGδ.setOfPred_continuousAt f).measurableSet
 
 theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
   h.isOpen_compl.measurableSet.of_compl
@@ -379,7 +379,7 @@ instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*}
     rw [borel, MeasurableSpace.pi, ciSup_unique]
     refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
     simp +instances only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
-      Set.mem_setOf_eq] at hs
+      Set.mem_ofPred_eq] at hs
     obtain ⟨t, ht, rfl⟩ := hs
     exact ⟨t, ht.measurableSet, rfl⟩
 

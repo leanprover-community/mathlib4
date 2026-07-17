@@ -403,7 +403,7 @@ theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
   rw [measurable_pi_iff]
   refine fun n ↦ measurable_to_bool ?_
   simp only [preimage, mem_singleton_iff, mapNatBool,
-    Bool.decide_iff, setOf_mem_eq]
+    Bool.decide_iff, ofPred_mem_eq]
   apply measurableSet_natGeneratingSequence
 
 theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
@@ -527,7 +527,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>
-      simp only [memPartition_succ, mem_setOf_eq] at hun
+      simp only [memPartition_succ, mem_ofPred_eq] at hun
       obtain ⟨v, hv, huv⟩ := hun
       rcases huv with rfl | rfl
       · exact (ih v hv).inter (measurableSet_generateFrom ⟨n, rfl⟩)

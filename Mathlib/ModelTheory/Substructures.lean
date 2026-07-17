@@ -331,15 +331,16 @@ variable {L} (S)
 is preserved under function symbols, then `p` holds for all elements of the closure of `s`. -/
 @[elab_as_elim]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure L s) (Hs : ∀ x ∈ s, p x)
-    (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x :=
-  (@closure_le L M _ ⟨setOf p, fun {_} => Hfun⟩ _).2 Hs h
+    (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (Set.ofPred p)) : p x :=
+  (@closure_le L M _ ⟨Set.ofPred p, fun {_} => Hfun⟩ _).2 Hs h
 
 /-- If `s` is a dense set in a structure `M`, `Substructure.closure L s = ⊤`, then in order to prove
 that some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify
 that `p` is preserved under function symbols. -/
 @[elab_as_elim]
 theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure L s = ⊤)
-    (Hs : ∀ x ∈ s, p x) (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x := by
+    (Hs : ∀ x ∈ s, p x) (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (Set.ofPred p)) :
+    p x := by
   have : ∀ x ∈ closure L s, p x := fun x hx => closure_induction hx Hs fun {n} => Hfun
   simpa [hs] using this x
 
@@ -392,7 +393,7 @@ theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Subs
   suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
   refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) (fun f v hC ↦ ?_)
-  simp_rw [Set.mem_setOf] at *
+  simp_rw [Set.mem_ofPred] at *
   have ⟨i, hi⟩ := hS.finite_le (fun i ↦ Classical.choose (hC i))
   refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
 

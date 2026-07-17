@@ -125,7 +125,7 @@ variable [ContinuousStar A] [StarModule ℝ A]
 lemma range_cfc_nnreal_subset
     [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfc (R := ℝ≥0) · a) ⊆ {x | x ∈ StarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
-  grw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
+  grw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.ofPred_and, SetLike.setOfPred_mem_eq,
     ← range_cfc_subset ℝ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   exact Set.image_mono fun _ ↦ cfc_nonneg
 
@@ -133,7 +133,7 @@ lemma range_cfc_nnreal
     [ClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a) :
     Set.range (cfc (R := ℝ≥0) · a) = {x | x ∈ StarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
   apply subset_antisymm (range_cfc_nnreal_subset a ha)
-  rw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
+  rw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.ofPred_and, SetLike.setOfPred_mem_eq,
     ← range_cfc _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   rintro _ ⟨f, hf, rfl⟩
   exact cfc_cases _ a f ⟨0, by simp, by simp⟩ fun hf' ha' ↦
@@ -235,18 +235,18 @@ variable [StarModule ℝ A] [ContinuousStar A] [ContinuousConstSMul ℝ A]
 lemma range_cfcₙ_nnreal_subset
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) ⊆ {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
-  grw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
+  grw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.ofPred_and, SetLike.setOfPred_mem_eq,
     ← range_cfcₙ_subset _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   exact Set.image_mono fun _ ↦ cfcₙ_nonneg
 
 lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
-  rw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
+  rw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.ofPred_and, SetLike.setOfPred_mem_eq,
     ← range_cfcₙ _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   refine Set.Subset.antisymm (Set.image_mono (fun _ ↦ cfcₙ_nonneg)) ?_
   rintro _ ⟨f, hf, rfl⟩
-  simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq, Set.mem_image] at hf ⊢
+  simp only [Set.preimage_ofPred_eq, Set.mem_ofPred_eq, Set.mem_image] at hf ⊢
   obtain (⟨h₁, h₂, h₃⟩ | h | h | h) := by
     simpa only [not_and_or] using
       em (ContinuousOn f (quasispectrum ℝ a) ∧ f 0 = 0 ∧ IsSelfAdjoint a)

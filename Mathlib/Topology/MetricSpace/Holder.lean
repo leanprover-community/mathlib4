@@ -223,18 +223,21 @@ lemma interpolate_const {C s t₁ t₂ : ℝ≥0} {A : Set X}
 variable (f) in
 /-- For fixed `f : X → Y`, `A : Set X` and `C : ℝ≥0`, the set of all parameters `r : ℝ≥0` such that
 `f` is `(C, r)`-Hölder on `A` is convex. -/
-lemma _root_.convex_setOf_holderOnWith (C : ℝ≥0) (A : Set X) :
+lemma _root_.convex_setOfPred_holderOnWith (C : ℝ≥0) (A : Set X) :
     Convex ℝ≥0 {r | HolderOnWith C r f A} := by
   intro r hr s hs _ _ _ _ ht
   rw [smul_eq_mul, smul_eq_mul, ← mul_comm r, ← mul_comm s]
   exact hr.interpolate_const hs ht
+
+@[deprecated (since := "2026-07-09")]
+alias _root_.convex_setOf_holderOnWith := _root_.convex_setOfPred_holderOnWith
 
 lemma of_le_of_le {C₁ C₂ s t : ℝ≥0} {A : Set X}
     (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (hrt : r ≤ t)
     (hts : t ≤ s) : HolderOnWith (max C₁ C₂) t f A := by
   replace hf₁ := hf₁.mono_const (le_max_left C₁ C₂)
   replace hf₂ := hf₂.mono_const (le_max_right C₁ C₂)
-  exact convex_setOf_holderOnWith f (max C₁ C₂) A |>.segment_subset hf₁ hf₂
+  exact convex_setOfPred_holderOnWith f (max C₁ C₂) A |>.segment_subset hf₁ hf₂
     (NNReal.Icc_subset_segment ⟨hrt, hts⟩)
 
 end HolderOnWith
@@ -318,10 +321,13 @@ lemma interpolate_const {C s t₁ t₂ : ℝ≥0}
 variable (f) in
 /-- For fixed `f : X → Y` and `C : ℝ≥0`, the set of all parameters `r : ℝ≥0` such that
 `f` is `(C, r)`-Hölder is convex. -/
-lemma _root_.convex_setOf_holderWith (C : ℝ≥0) :
+lemma _root_.convex_setOfPred_holderWith (C : ℝ≥0) :
     Convex ℝ≥0 {r | HolderWith C r f} := by
   simp_rw [← holderOnWith_univ]
-  exact convex_setOf_holderOnWith f C _
+  exact convex_setOfPred_holderOnWith f C _
+
+@[deprecated (since := "2026-07-09")]
+alias _root_.convex_setOf_holderWith := _root_.convex_setOfPred_holderWith
 
 lemma of_le_of_le {C₁ C₂ s t : ℝ≥0}
     (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ s f) (hrt : r ≤ t)

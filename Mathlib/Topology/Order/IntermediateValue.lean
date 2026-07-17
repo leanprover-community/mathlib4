@@ -288,7 +288,7 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
 `Iic`, `Iio`, or `univ`, or `∅`. The converse statement requires `α` to be densely ordered. Though
 one can represent `∅` as `(Inf ∅, Inf ∅)`, we include it into the list of possible cases to improve
 readability. -/
-theorem setOf_isPreconnected_subset_of_ordered :
+theorem setOfPred_isPreconnected_subset_of_ordered :
     { s : Set α | IsPreconnected s } ⊆
       -- bounded intervals
       (range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo)) ∪
@@ -298,6 +298,9 @@ theorem setOf_isPreconnected_subset_of_ordered :
   rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs) <;> rw [hs] <;>
     simp only [union_insert, union_singleton, mem_insert_iff, mem_union, mem_range, Prod.exists,
       uncurry_apply_pair, exists_apply_eq_apply, true_or, or_true, exists_apply_eq_apply2]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isPreconnected_subset_of_ordered := setOfPred_isPreconnected_subset_of_ordered
 
 /-!
 ### Intervals are connected
@@ -511,18 +514,21 @@ instance (priority := 100) ordered_connected_space : PreconnectedSpace α :=
 the set of the intervals `Icc`, `Ico`, `Ioc`, `Ioo`, `Ici`, `Ioi`, `Iic`, `Iio`, `(-∞, +∞)`,
 or `∅`. Though one can represent `∅` as `(sInf s, sInf s)`, we include it into the list of
 possible cases to improve readability. -/
-theorem setOf_isPreconnected_eq_of_ordered :
+theorem setOfPred_isPreconnected_eq_of_ordered :
     { s : Set α | IsPreconnected s } =
       -- bounded intervals
       range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo) ∪
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
-  refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
+  refine Subset.antisymm setOfPred_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
-    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
+    mem_ofPred_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isPreconnected_eq_of_ordered := setOfPred_isPreconnected_eq_of_ordered
 
 /-- This lemma characterizes when a subset `s` of a densely ordered conditionally complete linear
 order is totally disconnected with respect to the order topology: between any two distinct points

@@ -211,7 +211,7 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
     delta ContinuousWithinAt
-    simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
+    simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_ofPred_eq,
       and_imp]
     exact forall_congr' fun t => forall_comm
 

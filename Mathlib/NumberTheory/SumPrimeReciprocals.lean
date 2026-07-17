@@ -79,7 +79,7 @@ theorem not_summable_one_div_on_primes :
     Summable.sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
       (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using
     2 with p hp
-  obtain ⟨hp₁, hp₂⟩ := mem_setOf_eq ▸ Finset.mem_sdiff.mp hp
+  obtain ⟨hp₁, hp₂⟩ := mem_ofPred_eq ▸ Finset.mem_sdiff.mp hp
   have hpp := prime_of_mem_primesBelow hp₁
   refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
   exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩

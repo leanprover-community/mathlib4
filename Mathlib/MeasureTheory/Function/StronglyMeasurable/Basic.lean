@@ -423,12 +423,12 @@ protected theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpa
   refine ⟨fun n => ((hf.approx n).restrict {x | f x ≠ 0})⁻¹, fun x => ?_⟩
   have : MeasurableSet {x | f x ≠ 0} := ((MeasurableSet.singleton 0).preimage hf.measurable).compl
   by_cases h : f x = 0
-  · simp_all only [ne_eq, measurableSet_setOf, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
-      Pi.inv_apply, mem_setOf_eq, not_true_eq_false, not_false_eq_true, indicator_of_notMem,
+  · simp_all only [ne_eq, measurableSet_setOfPred, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
+      Pi.inv_apply, mem_ofPred_eq, not_true_eq_false, not_false_eq_true, indicator_of_notMem,
       _root_.inv_zero]
     exact tendsto_const_nhds
-  · simp_all only [ne_eq, measurableSet_setOf, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
-      Pi.inv_apply, mem_setOf_eq, not_false_eq_true, indicator_of_mem]
+  · simp_all only [ne_eq, measurableSet_setOfPred, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
+      Pi.inv_apply, mem_ofPred_eq, not_false_eq_true, indicator_of_mem]
     apply (hf.tendsto_approx x).inv₀ h
 
 @[to_additive (attr := to_fun (attr := fun_prop)) sub]
@@ -451,11 +451,11 @@ theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [Metriza
   refine ⟨fun n => hf.approx n / (hg.approx n).restrict {x | g x ≠ 0}, fun x => ?_⟩
   have : MeasurableSet {x | g x ≠ 0} := ((MeasurableSet.singleton 0).preimage hg.measurable).compl
   by_cases h : g x = 0
-  · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict, Pi.div_apply, mem_setOf_eq,
+  · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict, Pi.div_apply, mem_ofPred_eq,
       not_true_eq_false, not_false_eq_true, indicator_of_notMem, _root_.div_zero]
     exact tendsto_const_nhds
   · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict,
-      Pi.div_apply, mem_setOf_eq, not_false_eq_true, indicator_of_mem]
+      Pi.div_apply, mem_ofPred_eq, not_false_eq_true, indicator_of_mem]
     exact (hf.tendsto_approx x).div (hg.tendsto_approx x) h
 
 @[to_additive]

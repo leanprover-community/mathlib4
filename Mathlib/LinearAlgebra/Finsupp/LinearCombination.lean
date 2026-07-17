@@ -170,7 +170,7 @@ theorem linearCombination_equivMapDomain (f : α ≃ α') (l : α →₀ R) :
 direction -/
 theorem span_eq_range_linearCombination (s : Set M) :
     span R s = LinearMap.range (linearCombination R ((↑) : s → M)) := by
-  rw [range_linearCombination, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  rw [range_linearCombination, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
 
 theorem mem_span_iff_linearCombination (s : Set M) (x : M) :
     x ∈ span R s ↔ ∃ l : s →₀ R, linearCombination R (↑) l = x :=
@@ -515,7 +515,7 @@ lemma Submodule.span_eq_iUnion_nat (s : Set M) :
     (Submodule.span R s : Set M) = ⋃ (n : ℕ),
       (fun (f : Fin n → (R × M)) ↦ ∑ i, (f i).1 • (f i).2) '' ({f | ∀ i, (f i).2 ∈ s}) := by
   ext m
-  simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_setOf_eq, mem_span_set']
+  simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_ofPred_eq, mem_span_set']
   refine exists_congr (fun n ↦ ⟨?_, ?_⟩)
   · rintro ⟨f, g, rfl⟩
     exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).2, rfl⟩

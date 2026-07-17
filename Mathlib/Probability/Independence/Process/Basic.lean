@@ -106,7 +106,7 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     πX_pi (@isPiSystem_measurableSet Ω (.comap Y inferInstance)) πX_gen
     (@generateFrom_measurableSet Ω (.comap Y inferInstance)).symm ?_
   rintro - - ⟨-, ⟨I, s, hs, rfl⟩, rfl⟩ ⟨t, ht, rfl⟩
-  simp only [Set.mem_pi, Set.mem_univ, Set.mem_setOf_eq, forall_const] at hs
+  simp only [Set.mem_pi, Set.mem_univ, Set.mem_ofPred_eq, forall_const] at hs
   have : (fun ω i ↦ X i ω) ⁻¹' .pi I s =
       (fun ω (i : I) ↦ X i ω) ⁻¹' .pi (SetLike.coe Finset.univ) (fun i ↦ s i)
        := by
@@ -255,7 +255,7 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
     rfl
   refine iIndepSets.iIndep _ (fun i ↦ (measurable_pi_iff.2 (hX i)).comap_le) π π_pi π_gen
     fun I s hs ↦ ?_
-  simp only [squareCylinders, Set.mem_pi, Set.mem_univ, Set.mem_setOf_eq, forall_const,
+  simp only [squareCylinders, Set.mem_pi, Set.mem_univ, Set.mem_ofPred_eq, forall_const,
     ↓existsAndEq, and_true, π] at hs
   choose! J t ht hs using hs
   simp_rw [Set.iInter₂_congr (fun i hi ↦ (hs i hi).symm),

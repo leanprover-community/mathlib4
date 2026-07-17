@@ -977,11 +977,14 @@ theorem EquicontinuousAt.tendsto_of_mem_closure {l : Filter ι} {F : ι → X �
 /-- If `F : ι → X → α` is an equicontinuous family of functions,
 `f : X → α` is a continuous function, and `l` is a filter on `ι`,
 then `{x | Filter.Tendsto (F · x) l (𝓝 (f x))}` is a closed set. -/
-theorem Equicontinuous.isClosed_setOf_tendsto {l : Filter ι} {F : ι → X → α} {f : X → α}
+theorem Equicontinuous.isClosed_setOfPred_tendsto {l : Filter ι} {F : ι → X → α} {f : X → α}
     (hF : Equicontinuous F) (hf : Continuous f) :
     IsClosed {x | Tendsto (F · x) l (𝓝 (f x))} :=
   closure_subset_iff_isClosed.mp fun x hx ↦
     (hF x).tendsto_of_mem_closure (hf.continuousAt.mono_left inf_le_left) (fun _ ↦ id) hx
+
+@[deprecated (since := "2026-07-09")]
+alias Equicontinuous.isClosed_setOf_tendsto := Equicontinuous.isClosed_setOfPred_tendsto
 
 end
 

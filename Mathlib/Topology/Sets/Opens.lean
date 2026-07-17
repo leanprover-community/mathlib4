@@ -345,7 +345,7 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
   · intro hB U
     refine ⟨{ V : Opens α | V ∈ B ∧ V ≤ U }, fun U hU => hU.left, ext ?_⟩
     rw [coe_sSup, hB.open_eq_sUnion' U.isOpen]
-    simp_rw [sUnion_eq_biUnion, iUnion, mem_setOf_eq, iSup_and, iSup_image]
+    simp_rw [sUnion_eq_biUnion, iUnion, mem_ofPred_eq, iSup_and, iSup_image]
     rfl
   · intro h
     rw [isBasis_iff_nbhd]

@@ -212,7 +212,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     · simp only [g, hx, piecewise_eq_of_notMem, not_false_iff]
       contrapose hx
       apply subset_toMeasurable
-      simp +contextual only [hx, mem_compl_iff, mem_setOf_eq, not_and,
+      simp +contextual only [hx, mem_compl_iff, mem_ofPred_eq, not_and,
         not_false_iff, imp_true_iff]
   · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
@@ -222,7 +222,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     simp only [s, g, hx, piecewise_eq_of_notMem, not_false_iff]
     contrapose! hx
     apply subset_toMeasurable
-    simp only [hx, mem_compl_iff, mem_setOf_eq, false_and, not_false_iff]
+    simp only [hx, mem_compl_iff, mem_ofPred_eq, false_and, not_false_iff]
 
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
     (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by

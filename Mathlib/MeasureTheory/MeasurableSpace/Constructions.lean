@@ -105,7 +105,7 @@ theorem measurable_findGreatest' {p : α → ℕ → Prop} [∀ x, DecidablePred
 theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N}
     (hN : ∀ k ≤ N, MeasurableSet { x | p x k }) : Measurable fun x => Nat.findGreatest (p x) N := by
   refine measurable_findGreatest' fun k hk => ?_
-  simp only [Nat.findGreatest_eq_iff, setOf_and, setOf_forall, ← compl_setOf]
+  simp only [Nat.findGreatest_eq_iff, ofPred_and, ofPred_forall, ← compl_ofPred]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
     MeasurableSet.compl, hN] <;> try intros
 
@@ -861,11 +861,14 @@ instance Sigma.instMeasurableSpace {α} {β : α → Type*} [m : ∀ a, Measurab
 section prop
 variable [MeasurableSpace α] {p q : α → Prop}
 
-@[simp] theorem measurableSet_setOf : MeasurableSet {a | p a} ↔ Measurable p :=
+@[simp] theorem measurableSet_setOfPred : MeasurableSet {a | p a} ↔ Measurable p :=
   ⟨fun h ↦ measurable_to_prop <| by simpa only [preimage_singleton_true], fun h => by
     simpa using h (measurableSet_singleton True)⟩
 
-@[simp] theorem measurable_mem : Measurable (· ∈ s) ↔ MeasurableSet s := measurableSet_setOf.symm
+@[deprecated (since := "2026-07-09")] alias measurableSet_setOf := measurableSet_setOfPred
+
+@[simp] theorem measurable_mem : Measurable (· ∈ s) ↔ MeasurableSet s :=
+  measurableSet_setOfPred.symm
 
 alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 
@@ -874,40 +877,43 @@ alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 
 @[fun_prop]
 lemma Measurable.not (hp : Measurable p) : Measurable (¬ p ·) :=
-  measurableSet_setOf.1 hp.setOf.compl
+  measurableSet_setOfPred.1 hp.setOf.compl
 
 @[fun_prop]
 lemma Measurable.and (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∧ q a :=
-  measurableSet_setOf.1 <| hp.setOf.inter hq.setOf
+  measurableSet_setOfPred.1 <| hp.setOf.inter hq.setOf
 
 @[fun_prop]
 lemma Measurable.or (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∨ q a :=
-  measurableSet_setOf.1 <| hp.setOf.union hq.setOf
+  measurableSet_setOfPred.1 <| hp.setOf.union hq.setOf
 
 @[fun_prop]
 lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a → q a :=
-  measurableSet_setOf.1 <| hp.setOf.himp hq.setOf
+  measurableSet_setOfPred.1 <| hp.setOf.himp hq.setOf
 
 @[fun_prop]
 lemma Measurable.iff (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ↔ q a :=
-  measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
+  measurableSet_setOfPred.1 <| by
+    simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
 
 @[fun_prop]
 lemma Measurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
     Measurable fun a ↦ ∀ i, p i a :=
-  measurableSet_setOf.1 <| by rw [setOf_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf
+  measurableSet_setOfPred.1 <| by
+    rw [ofPred_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf
 
 @[fun_prop]
 lemma Measurable.exists [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
     Measurable fun a ↦ ∃ i, p i a :=
-  measurableSet_setOf.1 <| by rw [setOf_exists]; exact MeasurableSet.iUnion fun i ↦ (hp i).setOf
+  measurableSet_setOfPred.1 <| by
+    rw [ofPred_exists]; exact MeasurableSet.iUnion fun i ↦ (hp i).setOf
 
 end prop
 
 @[fun_prop]
 lemma Measurable.eq_const {_ : MeasurableSpace α} [MeasurableSpace β] [MeasurableSingletonClass β]
     {f : α → β} (hf : Measurable f) (a : β) : Measurable fun x => f x = a :=
-  measurableSet_setOf.mp (measurableSet_eq.preimage hf)
+  measurableSet_setOfPred.mp (measurableSet_eq.preimage hf)
 
 @[fun_prop]
 lemma Measurable.const_eq {_ : MeasurableSpace α} [MeasurableSpace β] [MeasurableSingletonClass β]
@@ -926,7 +932,11 @@ instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) :=
   inferInstanceAs <| MeasurableSingletonClass (α → Prop)
 
-@[simp, fun_prop] lemma measurable_setOf : Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
+@[simp, fun_prop] lemma measurable_setOfPred :
+    Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
+
+@[deprecated (since := "2026-07-09")]
+alias measurable_setOf := measurable_setOfPred
 
 lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
 
@@ -937,29 +947,35 @@ lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
 
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
-  measurableSet_setOf.2 <| measurable_set_mem _
+  measurableSet_setOfPred.2 <| measurable_set_mem _
 
 lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
-  measurableSet_setOf.2 <| measurable_set_notMem _
+  measurableSet_setOfPred.2 <| measurable_set_notMem _
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_notMem _
 
 variable [Countable α]
 
-lemma MeasurableSet.setOf_finite : MeasurableSet {s : Set α | s.Finite} :=
-  Countable.setOf_finite.measurableSet
+lemma MeasurableSet.setOfPred_finite : MeasurableSet {s : Set α | s.Finite} :=
+  Countable.ofPred_finite.measurableSet
 
-lemma MeasurableSet.setOf_infinite : MeasurableSet {s : Set α | s.Infinite} :=
-  .setOf_finite |> .compl
+@[deprecated (since := "2026-07-09")]
+alias MeasurableSet.setOf_finite := MeasurableSet.setOfPred_finite
+
+lemma MeasurableSet.setOfPred_infinite : MeasurableSet {s : Set α | s.Infinite} :=
+  .setOfPred_finite |> .compl
+
+@[deprecated (since := "2026-07-09")]
+alias MeasurableSet.setOf_infinite := MeasurableSet.setOfPred_infinite
 
 lemma MeasurableSet.sep_finite {S : Set (Set α)} (hS : MeasurableSet S) :
     MeasurableSet {s ∈ S | s.Finite} :=
-  hS.inter .setOf_finite
+  hS.inter .setOfPred_finite
 
 lemma MeasurableSet.sep_infinite {S : Set (Set α)} (hS : MeasurableSet S) :
     MeasurableSet {s ∈ S | s.Infinite} :=
-  hS.inter .setOf_infinite
+  hS.inter .setOfPred_infinite
 
 @[fun_prop]
 protected lemma Measurable.subset {s t : β → Set α} (hs : Measurable s) (hs : Measurable t) :
@@ -996,10 +1012,10 @@ lemma measurable_finset_notMem (a : α) : Measurable fun s : Finset α ↦ a ∉
   (measurable_set_notMem a).comp (comap_measurable _)
 
 lemma measurableSet_mem_finset (a : α) : MeasurableSet {s : Finset α | a ∈ s} :=
-  measurableSet_setOf.2 <| measurable_finset_mem _
+  measurableSet_setOfPred.2 <| measurable_finset_mem _
 
 lemma measurableSet_notMem_finset (a : α) : MeasurableSet {s : Finset α | a ∉ s} :=
-  measurableSet_setOf.2 <| measurable_finset_notMem _
+  measurableSet_setOfPred.2 <| measurable_finset_notMem _
 
 variable [Countable α]
 
@@ -1071,11 +1087,11 @@ theorem measurableSet_eq_fun {m : MeasurableSpace α} [MeasurableSpace β] [Meas
 @[fun_prop]
 theorem Measurable.eq {m : MeasurableSpace α} [MeasurableSpace β] [MeasurableEq β]
     {f g : α → β} (hf : Measurable f) (hg : Measurable g) : Measurable fun x => f x = g x :=
-  measurableSet_setOf.mp (measurableSet_eq_fun hf hg)
+  measurableSet_setOfPred.mp (measurableSet_eq_fun hf hg)
 
 instance [MeasurableSpace α] [MeasurableEq α] : MeasurableSingletonClass α := by
   constructor
-  simp_rw [← setOf_eq_eq_singleton, measurableSet_setOf]
+  simp_rw [← ofPred_eq_eq_singleton, measurableSet_setOfPred]
   measurability
 
 instance [MeasurableSpace α] [MeasurableSingletonClass α] [Countable α] : MeasurableEq α := by

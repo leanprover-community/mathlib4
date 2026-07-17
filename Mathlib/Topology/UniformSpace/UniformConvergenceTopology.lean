@@ -455,7 +455,7 @@ instance [T2Space β] : T2Space (α →ᵤ β) :=
 protected theorem tendsto_iff_tendstoUniformly {F : ι → α →ᵤ β} {f : α →ᵤ β} :
     Tendsto F p (𝓝 f) ↔ TendstoUniformly (toFun ∘ F) (toFun f) p := by
   rw [(UniformFun.hasBasis_nhds α β f).tendsto_right_iff, TendstoUniformly]
-  simp only [mem_setOf, UniformFun.gen, Function.comp_def]
+  simp only [mem_ofPred, UniformFun.gen, Function.comp_def]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
@@ -510,11 +510,14 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
 
 /-- The set of continuous functions is closed in the uniform convergence topology.
 This is a simple wrapper over `TendstoUniformly.continuous`. -/
-theorem isClosed_setOf_continuous [TopologicalSpace α] :
+theorem isClosed_setOfPred_continuous [TopologicalSpace α] :
     IsClosed {f : α →ᵤ β | Continuous (toFun f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
   rw [← tendsto_id', UniformFun.tendsto_iff_tendstoUniformly] at huf
   exact huf.continuous <| Eventually.frequently (le_principal_iff.mp hu)
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_continuous := isClosed_setOfPred_continuous
 
 variable {α} (β) in
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)
@@ -763,7 +766,7 @@ protected theorem uniformity_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι 
     𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ (i) (_ : p i), 𝓟 (UniformOnFun.gen 𝔖 s (V i)) := by
   simp_rw [iInf_uniformity, uniformity_comap,
     (UniformFun.hasBasis_uniformity_of_basis _ _ h).eq_biInf, comap_iInf, comap_principal,
-    Function.comp_apply, UniformFun.gen, Subtype.forall, UniformOnFun.gen, preimage_setOf_eq,
+    Function.comp_apply, UniformFun.gen, Subtype.forall, UniformOnFun.gen, preimage_ofPred_eq,
     Prod.map_fst, Prod.map_snd, Function.comp_apply, UniformFun.toFun_ofFun, restrict_apply]
 
 protected theorem uniformity_eq : 𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 (UniformOnFun.gen 𝔖 s V) :=
@@ -783,7 +786,7 @@ protected theorem nhds_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι → Se
     (h : (𝓤 β).HasBasis p V) (f : α →ᵤ[𝔖] β) :
     𝓝 f = ⨅ s ∈ 𝔖, ⨅ (i) (_ : p i), 𝓟 {g | ∀ x ∈ s, (toFun 𝔖 f x, toFun 𝔖 g x) ∈ V i} := by
   simp_rw [nhds_eq_comap_uniformity, UniformOnFun.uniformity_eq_of_basis _ _ h, comap_iInf,
-    comap_principal, UniformOnFun.gen, preimage_setOf_eq]
+    comap_principal, UniformOnFun.gen, preimage_ofPred_eq]
 
 protected theorem nhds_eq (f : α →ᵤ[𝔖] β) :
     𝓝 f = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 {g | ∀ x ∈ s, (toFun 𝔖 f x, toFun 𝔖 g x) ∈ V} :=
@@ -826,7 +829,7 @@ lemma uniformContinuous_ofFun_toFun (𝔗 : Set (Set α)) (h : ∀ s ∈ 𝔖, �
   intro s hs
   obtain ⟨T, hT𝔗, hT, hsT⟩ := h s hs
   refine ⟨T, hT, hT𝔗, fun f hf ↦ ?_⟩
-  simp only [UniformOnFun.gen, Set.mem_iInter, Set.mem_setOf_eq] at hf ⊢
+  simp only [UniformOnFun.gen, Set.mem_iInter, Set.mem_ofPred_eq] at hf ⊢
   intro x hx
   obtain ⟨t, ht, hxt⟩ := Set.mem_sUnion.mp <| hsT hx
   exact hf t ht x hxt
@@ -1028,7 +1031,7 @@ of `TendstoUniformlyOn`) for all `S ∈ 𝔖`. -/
 protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β} {f : α →ᵤ[𝔖] β} :
     Tendsto F p (𝓝 f) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (toFun 𝔖 ∘ F) (toFun 𝔖 f) p s := by
   simp only [UniformOnFun.nhds_eq, tendsto_iInf, tendsto_principal, TendstoUniformlyOn,
-    Function.comp_apply, mem_setOf]
+    Function.comp_apply, mem_ofPred]
 
 protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (α →ᵤ[𝔖] β)} :
     Continuous f ↔ ∀ s ∈ 𝔖,
@@ -1111,11 +1114,14 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
-theorem isClosed_setOf_continuous [TopologicalSpace α] (h : IsCoherentWith 𝔖) :
+theorem isClosed_setOfPred_continuous [TopologicalSpace α] (h : IsCoherentWith 𝔖) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
   exact (huf s hs).continuousOn <| Eventually.frequently <| hu fun _ ↦ Continuous.continuousOn
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_continuous := isClosed_setOfPred_continuous
 
 set_option backward.isDefEq.respectTransparency false in
 variable (𝔖) in

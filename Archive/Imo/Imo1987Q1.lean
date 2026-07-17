@@ -56,7 +56,7 @@ fixed points. -/
 def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
 
-instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (setOf _)
+instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (Set.ofPred _)
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=

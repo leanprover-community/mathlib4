@@ -928,7 +928,7 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   Therefore, we need to remove the points where the map is not injective. There are only countably
   many points that have several preimages, so this set is also measurable. -/
   let u : Set β := {c | ∃ x, ∃ y, x ∈ t ∧ y ∈ t ∧ x < y ∧ g x = c ∧ g y = c}
-  have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
+  have hu : Set.Countable u := MonotoneOn.countable_setOfPred_two_preimages hg
   let t' := t ∩ g ⁻¹' u
   have ht' : MeasurableSet t' := by
     have : t' = ⋃ c ∈ u, t ∩ g ⁻¹' {c} := by ext; simp [t']
@@ -961,14 +961,14 @@ theorem MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
     rw [← image_union]
     congr!
     ext
-    simp only [sdiff_sep_self, not_not, mem_union, mem_setOf_eq, t']
+    simp only [sdiff_sep_self, not_not, mem_union, mem_ofPred_eq, t']
     tauto
   rw [this]
   apply MeasurableSet.union _ (ht'.image g).measurableSet
   apply MeasurableSet.image_of_monotoneOn_of_continuousOn (ht.diff ht'.measurableSet)
     (hg.mono sdiff_subset)
   intro x hx
-  simp only [sdiff_sep_self, not_not, mem_setOf_eq, t'] at hx
+  simp only [sdiff_sep_self, not_not, mem_ofPred_eq, t'] at hx
   exact hx.2.mono sdiff_subset
 
 /-- The image of a measurable set under an antitone map is measurable. -/
@@ -1008,11 +1008,11 @@ theorem MeasureTheory.measurableSet_exists_tendsto [TopologicalSpace γ]
       ((f · x) '' u n) ×ˢ ((f · x) '' u n) := fun x => (hu.map _).prod (hu.map _)
   simp_rw [and_iff_right (hl.map _),
     Filter.HasBasis.le_basis_iff (this _).toHasBasis Metric.uniformity_basis_dist_inv_nat_succ,
-    Set.setOf_forall]
+    Set.ofPred_forall]
   refine MeasurableSet.biInter Set.countable_univ fun K _ => ?_
-  simp_rw [Set.setOf_exists, true_and]
+  simp_rw [Set.ofPred_exists, true_and]
   refine MeasurableSet.iUnion fun N => ?_
-  simp_rw [prod_image_image_eq, image_subset_iff, prod_subset_iff, Set.setOf_forall]
+  simp_rw [prod_image_image_eq, image_subset_iff, prod_subset_iff, Set.ofPred_forall]
   exact
     MeasurableSet.biInter (to_countable (u N)) fun i _ =>
       MeasurableSet.biInter (to_countable (u N)) fun j _ =>

@@ -195,7 +195,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     intro x y
     refine IsOpen.mem_nhds ?_ ?_
     · apply isOpen_lt <;> fun_prop
-    · rw [Set.mem_setOf_eq, w₂]
+    · rw [Set.mem_ofPred_eq, w₂]
       exact sub_lt_self _ pos
   -- Fixing `x` for a moment, we have a family of functions `fun y ↦ g x y`
   -- which on different patches (the `U x y`) are greater than `f z - ε`.
@@ -229,7 +229,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     intro x
     refine IsOpen.mem_nhds ?_ ?_
     · apply isOpen_lt <;> fun_prop
-    · dsimp only [W, Set.mem_setOf_eq]
+    · dsimp only [W, Set.mem_ofPred_eq]
       rw [h_eq]
       exact lt_add_of_pos_right _ pos
   -- Since `X` is compact, there is some finset `ys t`

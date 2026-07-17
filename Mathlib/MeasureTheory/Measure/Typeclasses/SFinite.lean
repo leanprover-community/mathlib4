@@ -284,7 +284,7 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpa
       ⊆ ⋃ n, { i : ι | 0 < sfiniteSeq μ n (As i) } := by
     intro i hi
     by_contra con
-    simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
+    simp only [mem_iUnion, mem_ofPred_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
     rw [sum_apply₀] at hi
     · simp_rw [con] at hi
       simp at hi

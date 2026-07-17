@@ -62,7 +62,7 @@ def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
     squareCylinders C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
   ext1 f
-  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_setOf_eq,
+  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_ofPred_eq,
     eq_comm (a := f)]
 
 theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
@@ -117,7 +117,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
   simp only [singleton_pi]
   rw [MeasurableSpace.comap_eq_generateFrom]
   refine MeasurableSpace.generateFrom_mono fun S ↦ ?_
-  simp only [mem_setOf_eq, mem_image, mem_univ_pi, forall_exists_index, and_imp]
+  simp only [mem_ofPred_eq, mem_image, mem_univ_pi, forall_exists_index, and_imp]
   intro t ht h
   classical
   refine ⟨fun j ↦ if hji : j = i then by convert! t else univ, fun j ↦ ?_, ?_⟩
@@ -139,7 +139,7 @@ theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
   apply le_antisymm
   · rw [MeasurableSpace.generateFrom_le_iff]
     rintro S ⟨s, t, h, rfl⟩
-    simp only [mem_univ_pi, mem_setOf_eq] at h
+    simp only [mem_univ_pi, mem_ofPred_eq] at h
     exact MeasurableSet.pi (Finset.countable_toSet _) (fun i _ ↦ h i)
   · refine iSup_le fun i ↦ ?_
     refine (comap_eval_le_generateFrom_squareCylinders_singleton α i).trans ?_
@@ -147,7 +147,7 @@ theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
     rw [← Finset.coe_singleton, squareCylinders_eq_iUnion_image]
     exact subset_iUnion
       (fun (s : Finset ι) ↦
-        (fun t : ∀ i, Set (α i) ↦ (s : Set ι).pi t) '' univ.pi (fun i ↦ setOf MeasurableSet))
+        (fun t : ∀ i, Set (α i) ↦ (s : Set ι).pi t) '' univ.pi (fun i ↦ Set.ofPred MeasurableSet))
       ({i} : Finset ι)
 
 end squareCylinders
@@ -366,12 +366,12 @@ theorem generateFrom_measurableCylinders :
   · refine iSup_le fun i ↦ ?_
     refine (comap_eval_le_generateFrom_squareCylinders_singleton α i).trans ?_
     refine MeasurableSpace.generateFrom_mono (fun x ↦ ?_)
-    simp only [singleton_pi, mem_image, mem_pi, mem_univ, mem_setOf_eq,
+    simp only [singleton_pi, mem_image, mem_pi, mem_univ, mem_ofPred_eq,
       forall_true_left, mem_measurableCylinders, forall_exists_index, and_imp]
     rintro t ht rfl
     refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i}, measurable_pi_apply _ (ht i), ?_⟩
     ext1 x
-    simp only [mem_preimage, Function.eval, mem_cylinder, mem_setOf_eq, Finset.restrict]
+    simp only [mem_preimage, Function.eval, mem_cylinder, mem_ofPred_eq, Finset.restrict]
 
 /-- The cylinders of a product space indexed by `ℕ` can be seen as depending on the first
 coordinates. -/

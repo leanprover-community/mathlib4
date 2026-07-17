@@ -239,7 +239,7 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
     let _ := Fintype.ofFinite 𝔖;
     simp_rw [← isUniformInducing_pi_restrict.comap_uniformity,
       PseudoEMetricSpace.uniformity_edist, comap_iInf, comap_principal, edist_eq_pi_restrict,
-      Set.preimage_setOf_eq]
+      Set.preimage_ofPred_eq]
 
 lemma edist_le {f g : α →ᵤ[𝔖] β} {C : ℝ≥0∞} :
     edist f g ≤ C ↔ ∀ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ C := by

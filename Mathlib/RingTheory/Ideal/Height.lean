@@ -52,7 +52,7 @@ lemma Ideal.height_eq_inf_minimalPrimes : I.height = ⨅ J ∈ I.minimalPrimes, 
 
 lemma Ideal.exists_isPrime_height_eq {I : Ideal R} {n : ℕ} (hI : I.height = n) :
     ∃ (p : Ideal R) (_ : p.IsPrime) (_  : I ≤ p), p.height = n := by
-  simp only [Ideal.height, ENat.iInf_eq_coe_iff] at hI
+  simp only [Ideal.height, ENat.iInf_eq_natCast_iff] at hI
   rcases hI with ⟨⟨p, ⟨⟨⟨hpp, hIp⟩, _⟩, h⟩, -⟩, -⟩
   exact ⟨p, hpp, hIp, h ▸ p.height_eq_primeHeight⟩
 

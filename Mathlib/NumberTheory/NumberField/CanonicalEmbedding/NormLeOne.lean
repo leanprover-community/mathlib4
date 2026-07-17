@@ -150,7 +150,7 @@ theorem norm_normAtAllPlaces (x : mixedSpace K) :
 theorem normAtAllPlaces_mem_fundamentalCone_iff {x : mixedSpace K} :
     mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   simp_rw [fundamentalCone, Set.mem_sdiff, Set.mem_preimage, logMap_normAtAllPlaces,
-    Set.mem_setOf_eq, norm_normAtAllPlaces]
+    Set.mem_ofPred_eq, norm_normAtAllPlaces]
 
 end normAtAllPlaces
 
@@ -195,8 +195,8 @@ theorem normAtAllPlaces_normLeOne :
     refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩
     · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
     · exact fun w ↦ normAtPlace_nonneg w y
-    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
-    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₃
+    · rwa [Set.mem_ofPred_eq, ← norm_normAtAllPlaces] at h₂
+    · rwa [Set.mem_ofPred_eq, ← norm_normAtAllPlaces] at h₃
   · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
 end normLeOne_def
@@ -658,7 +658,7 @@ theorem normAtAllPlaces_normLeOne_eq_image :
   ext x
   by_cases hx : ∀ w, 0 < x w
   · rw [← expMapBasis.right_inv (Set.mem_univ_pi.mpr hx), (injective_expMapBasis K).mem_set_image]
-    simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_setOf_eq, expMapBasis_nonneg,
+    simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_ofPred_eq, expMapBasis_nonneg,
       Set.mem_preimage, logMap_expMapBasis, implies_true, and_true, norm_expMapBasis,
       pow_le_one_iff_of_nonneg (Real.exp_nonneg _) Module.finrank_pos.ne', Real.exp_le_one_iff,
       ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true, Set.mem_univ_pi]
