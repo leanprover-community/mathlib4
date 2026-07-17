@@ -93,6 +93,7 @@ theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
 theorem convex_absConvexHull : Convex 𝕜 (absConvexHull 𝕜 s) :=
   absConvex_absConvexHull.2
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 s) in
 theorem absConvexHull_eq_iInter :
     absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
