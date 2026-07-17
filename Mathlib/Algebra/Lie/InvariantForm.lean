@@ -74,7 +74,7 @@ def orthogonal (hΦ_inv : Φ.lieInvariant L) (N : LieSubmodule R L M) : LieSubmo
   __ := Φ.orthogonal N
   lie_mem {x y} := by
     suffices (∀ n ∈ N, Φ n y = 0) → ∀ n ∈ N, Φ n ⁅x, y⁆ = 0 by
-      simpa only [LinearMap.BilinForm.isOrtho_def, -- and some default simp lemmas
+      simpa only [
         AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_toAddSubmonoid,
         LinearMap.BilinForm.mem_orthogonal_iff, LieSubmodule.mem_toSubmodule]
     intro H a ha
@@ -89,7 +89,7 @@ lemma orthogonal_toSubmodule (N : LieSubmodule R L M) :
 
 lemma mem_orthogonal (N : LieSubmodule R L M) (y : M) :
     y ∈ orthogonal Φ hΦ_inv N ↔ ∀ x ∈ N, Φ x y = 0 := by
-  simp [orthogonal, LinearMap.BilinForm.isOrtho_def, LinearMap.BilinForm.mem_orthogonal_iff]
+  simp [orthogonal, LinearMap.BilinForm.mem_orthogonal_iff]
 
 variable [LieAlgebra R L]
 
@@ -172,7 +172,7 @@ lemma atomistic : ∀ I : LieIdeal K L, sSup {J : LieIdeal K L | IsAtom J ∧ J 
     · exact le_sSup ⟨hJ, hJI⟩
     rw [← atomistic (J' ⊓ I)]
     apply sSup_le_sSup
-    simp only [le_inf_iff, Set.setOf_subset_setOf, and_imp]
+    simp only [le_inf_iff, Set.ofPred_subset_ofPred, and_imp]
     tauto
   suffices J ⊔ J' = ⊤ by rw [← sup_inf_assoc_of_le _ hJI, this, top_inf_eq]
   exact (orthogonal_isCompl Φ hΦ_nondeg hΦ_inv hΦ_refl hL J hJ).codisjoint.eq_top
@@ -198,11 +198,11 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   intro I hI
   apply (orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI).mono_right
   apply sSup_le
-  simp only [Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
+  simp only [Set.mem_sdiff, Set.mem_ofPred_eq, Set.mem_singleton_iff, and_imp]
   intro J hJ hJI
   rw [← lie_eq_self_of_isAtom_of_nonabelian J hJ (hL J hJ), lieIdeal_oper_eq_span, lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
-  simp only [orthogonal_carrier, LinearMap.IsOrtho, Set.mem_setOf_eq]
+  simp only [orthogonal_carrier, Set.mem_ofPred_eq]
   intro z hz
   rw [← neg_eq_zero, ← hΦ_inv]
   suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]

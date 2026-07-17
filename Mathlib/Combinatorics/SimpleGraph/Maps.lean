@@ -101,6 +101,7 @@ theorem map_adj_apply' {f : V → W} (hadj : G.Adj u v) (hne : f u ≠ f v) :
     (G.map f).Adj (f u) (f v) :=
   ⟨hne, u, v, hadj, rfl, rfl⟩
 
+@[gcongr]
 theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   rintro G G' h z1 z2 ⟨huv, u, v, ha, rfl, rfl⟩
   exact ⟨huv, _, _, h ha, rfl, rfl⟩
@@ -151,6 +152,7 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 
+@[gcongr]
 theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) :=
   fun _ _ h _ _ ha ↦ h ha
 
@@ -606,6 +608,7 @@ def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
 
 @[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induceHomOfLE_toHom :
     (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
   ext; simp
@@ -728,6 +731,9 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
 
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
+/-- Equivalence of homomorphisms induced by isomorphisms of graphs. -/
+abbrev homCongr (f' : G'' ≃g G''') : G →g G'' ≃ G' →g G''' := RelIso.relHomCongr f f'
+
 /-- Composition of graph isomorphisms. -/
 abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
   f.trans f'
@@ -787,12 +793,21 @@ theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
     (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
   Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 implies_true]
+
+/-- The isomorphism between `completeBipartiteGraph V₁ W₁` and
+`completeBipartiteGraph V₂ W₂` where `V₁ ≃ V₂` and `W₁ ≃ W₂`. -/
+@[simps!]
+def completeBipartiteGraphCongr {V₁ V₂ W₁ W₂ : Type*} (hV : V₁ ≃ V₂) (hW : W₁ ≃ W₂) :
+    completeBipartiteGraph V₁ W₁ ≃g completeBipartiteGraph V₂ W₂ where
+  __ := hV.sumCongr hW
+  map_rel_iff' := by simp
 
 section Finite
 
