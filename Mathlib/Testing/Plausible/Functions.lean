@@ -189,9 +189,6 @@ theorem List.applyId_cons [DecidableEq α] (xs : List (α × α)) (x y z : α) :
   split_ifs <;> rfl
 
 open Function
-open List
-
-open Nat
 
 theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs)
     (h₁ : xs.length = ys.length) (x y : α) (i : ℕ) (h₂ : xs[i]? = some x) :
@@ -230,7 +227,9 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
     | cons x' xs xs_ih =>
       rcases ys with - | ⟨y, ys⟩
       · cases h₃
-      dsimp [List.dlookup] at h₃; split_ifs at h₃ with h
+      simp only [zip_cons_cons, map_cons, Prod.toSigma_mk, dlookup, eq_rec_constant,
+        dite_eq_ite] at h₃
+      split_ifs at h₃ with h
       · rw [Option.some_inj] at h₃
         subst x'; subst val
         simp only [List.mem_cons, true_or]

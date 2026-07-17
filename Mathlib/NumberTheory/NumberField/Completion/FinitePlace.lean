@@ -93,7 +93,8 @@ variable {K : Type*} [Field K] {R : Type*} [CommRing R] [Algebra R K] [IsDedekin
 
 /-- The embedding of a field inside its `adicCompletion` with respect to `v`. -/
 noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
-  UniformSpace.Completion.coeRingHom.comp (WithVal.equiv (v.valuation K)).symm
+  (adicCompletion.equiv K v).symm.toRingHom.comp
+    (UniformSpace.Completion.coeRingHom.comp (WithVal.equiv (v.valuation K)).symm)
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
@@ -251,6 +252,7 @@ end HeightOneSpectrum
 
 open HeightOneSpectrum Valuation.IsRankOneDiscrete
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The norm of an element in the `v`-adic completion of `K`. See `FinitePlace.norm_embedding`
 for the equality involving `‖embedding v x‖` on the LHS. -/
 theorem FinitePlace.norm_def (x : v.adicCompletion K) :

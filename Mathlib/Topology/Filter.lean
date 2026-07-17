@@ -69,6 +69,7 @@ theorem isOpen_iff {s : Set (Filter α)} : IsOpen s ↔ ∃ T : Set (Set α), s 
   isTopologicalBasis_Iic_principal.open_iff_eq_sUnion.trans <| by
     simp only [exists_subset_range_and_iff, sUnion_image, (· ∘ ·)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
   nhds_generateFrom.trans <| by
     simp only [mem_setOf_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
