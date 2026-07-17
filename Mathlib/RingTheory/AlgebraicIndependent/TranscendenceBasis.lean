@@ -333,8 +333,8 @@ theorem isAlgebraic_adjoin_iff_of_matroid_isBasis [NoZeroDivisors A] {s t : Set 
 theorem matroid_closure_eq [IsDomain A] {s : Set A} :
     (matroid R A).closure s = algebraicClosure (adjoin R s) A := by
   have ⟨B, hB⟩ := (matroid R A).exists_isBasis s
-  simp_rw [← hB.closure_eq_closure, hB.1.1.1.closure_eq_setOf_isBasis_insert, Set.ext_iff,
-    mem_setOf, matroid_isBasis_iff, ← matroid_indep_iff, hB.1.1.1, subset_insert, true_and,
+  simp_rw [← hB.closure_eq_closure, hB.1.1.1.closure_eq_setOfPred_isBasis_insert, Set.ext_iff,
+    mem_ofPred, matroid_isBasis_iff, ← matroid_indep_iff, hB.1.1.1, subset_insert, true_and,
     SetLike.mem_coe, mem_algebraicClosure, ← isAlgebraic_adjoin_iff_of_matroid_isBasis hB,
     forall_mem_insert]
   exact fun _ ↦ and_iff_left fun x hx ↦ isAlgebraic_algebraMap (⟨x, subset_adjoin hx⟩ : adjoin R B)

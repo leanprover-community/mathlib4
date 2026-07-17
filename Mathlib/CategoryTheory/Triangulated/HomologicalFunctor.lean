@@ -127,6 +127,7 @@ instance : F.homologicalKernel.IsTriangulated where
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
@@ -212,8 +213,8 @@ lemma homologySequence_comp :
 
 attribute [local simp] smul_smul
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma homologySequence_exact₂ :
     (ShortComplex.mk _ _ (F.homologySequence_comp T hT n₀)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _

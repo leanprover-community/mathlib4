@@ -258,7 +258,7 @@ theorem mem_sSup {Us : Set (Opens α)} {x : α} : x ∈ sSup Us ↔ ∃ u ∈ Us
   simp_rw [sSup_eq_iSup, mem_iSup, exists_prop]
 
 /-- Open sets in a topological space form a frame. -/
-@[implicit_reducible]
+@[instance_reducible]
 def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
   inf_sSup_le_iSup_inf a s :=
     (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le
@@ -345,7 +345,7 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
   · intro hB U
     refine ⟨{ V : Opens α | V ∈ B ∧ V ≤ U }, fun U hU => hU.left, ext ?_⟩
     rw [coe_sSup, hB.open_eq_sUnion' U.isOpen]
-    simp_rw [sUnion_eq_biUnion, iUnion, mem_setOf_eq, iSup_and, iSup_image]
+    simp_rw [sUnion_eq_biUnion, iUnion, mem_ofPred_eq, iSup_and, iSup_image]
     rfl
   · intro h
     rw [isBasis_iff_nbhd]

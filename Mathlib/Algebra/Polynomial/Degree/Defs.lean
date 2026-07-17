@@ -20,7 +20,7 @@ public import Mathlib.Order.SuccPred.WithBot
 * `Polynomial.degree`: the degree of a polynomial, where `0` has degree `⊥`
 * `Polynomial.natDegree`: the degree of a polynomial, where `0` has degree `0`
 * `Polynomial.leadingCoeff`: the leading coefficient of a polynomial
-* `Polynomial.Monic`: a polynomial is monic if its leading coefficient is 0
+* `Polynomial.Monic`: a polynomial is monic if its leading coefficient is 1
 * `Polynomial.nextCoeff`: the next coefficient after the leading coefficient
 
 ## Main results
@@ -365,6 +365,7 @@ theorem leadingCoeff_eq_zero_iff_deg_eq_bot : leadingCoeff p = 0 ↔ degree p = 
 theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤ n :=
   natDegree_le_iff_degree_le.2 <| degree_C_mul_X_pow_le _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   apply sup_mono
   simpa using Finset.erase_subset ..

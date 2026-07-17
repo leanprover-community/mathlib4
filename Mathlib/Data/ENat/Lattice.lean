@@ -35,31 +35,48 @@ noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
 namespace ENat
 variable {ι : Sort*} {f : ι → ℕ} {s : Set ℕ}
 
-lemma iSup_coe_eq_top : ⨆ i, (f i : ℕ∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
-lemma iSup_coe_ne_top : ⨆ i, (f i : ℕ∞) ≠ ⊤ ↔ BddAbove (range f) := iSup_coe_eq_top.not_left
-lemma iSup_coe_lt_top : ⨆ i, (f i : ℕ∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top
-lemma iInf_coe_eq_top : ⨅ i, (f i : ℕ∞) = ⊤ ↔ IsEmpty ι := WithTop.iInf_coe_eq_top
-lemma iInf_coe_ne_top : ⨅ i, (f i : ℕ∞) ≠ ⊤ ↔ Nonempty ι := by
-  rw [Ne, iInf_coe_eq_top, not_isEmpty_iff]
-lemma iInf_coe_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
+lemma iSup_natCast_eq_top : ⨆ i, (f i : ℕ∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
+lemma iSup_natCast_ne_top : ⨆ i, (f i : ℕ∞) ≠ ⊤ ↔ BddAbove (range f) := iSup_natCast_eq_top.not_left
+lemma iSup_natCast_lt_top : ⨆ i, (f i : ℕ∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top
+lemma iInf_natCast_eq_top : ⨅ i, (f i : ℕ∞) = ⊤ ↔ IsEmpty ι := WithTop.iInf_coe_eq_top
+lemma iInf_natCast_ne_top : ⨅ i, (f i : ℕ∞) ≠ ⊤ ↔ Nonempty ι := by
+  rw [Ne, iInf_natCast_eq_top, not_isEmpty_iff]
+lemma iInf_natCast_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
 
-lemma coe_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := WithTop.coe_sSup
+@[deprecated (since := "2026-07-17")] alias iSup_coe_eq_top := iSup_natCast_eq_top
+@[deprecated (since := "2026-07-17")] alias iSup_coe_ne_top := iSup_natCast_ne_top
+@[deprecated (since := "2026-07-17")] alias iSup_coe_lt_top := iSup_natCast_lt_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_eq_top := iInf_natCast_eq_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_ne_top := iInf_natCast_ne_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_lt_top := iInf_natCast_lt_top
 
-lemma coe_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) :=
+lemma natCast_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := WithTop.coe_sSup
+
+@[deprecated (since := "2026-07-17")] alias coe_sSup := natCast_sSup
+
+lemma natCast_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) :=
   WithTop.coe_sInf hs (OrderBot.bddBelow s)
 
-lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := WithTop.coe_iSup _
+@[deprecated (since := "2026-07-17")] alias coe_sInf := natCast_sInf
 
-@[norm_cast] lemma coe_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) :=
+lemma natCast_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := WithTop.coe_iSup _
+
+@[deprecated (since := "2026-07-17")] alias coe_iSup := natCast_iSup
+
+@[norm_cast] lemma natCast_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) :=
   WithTop.coe_iInf (OrderBot.bddBelow _)
+
+@[deprecated (since := "2026-07-17")] alias coe_iInf := natCast_iInf
 
 lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ := by
   simp
 
-lemma iInf_eq_coe_iff {f : ι → ℕ∞} {n : ℕ} : ⨅ i, f i = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
+lemma iInf_eq_natCast_iff {f : ι → ℕ∞} {n : ℕ} : ⨅ i, f i = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
   cases isEmpty_or_nonempty ι
   · simp
   apply ciInf_eq_iff
+
+@[deprecated (since := "2026-07-17")] alias iInf_eq_coe_iff := iInf_eq_natCast_iff
 
 lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   cases isEmpty_or_nonempty ι
@@ -96,7 +113,7 @@ lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
     specialize h y hy
     have hxt : y < ⊤ := lt_of_le_of_lt h hx
     use y.toNat
-    simp [toNat_le_of_le_coe h, LT.lt.ne_top hxt]
+    simp [toNat_le_of_le_natCast h, LT.lt.ne_top hxt]
 
 lemma finite_of_sSup_lt_top (h : sSup s < ⊤) : s.Finite := by
   contrapose! h
