@@ -62,6 +62,17 @@ lemma liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin
   simp only [liftFun_iff_succ r, forall_iff_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
     castSucc_zero]
 
+open scoped Relator in
+lemma Fin.liftFun_cons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin n → α} {a : α} :
+    ((· < ·) ⇒ r) (cons a f) (cons a f) ↔ (∀ i, r a (f i)) ∧ ((· < ·) ⇒ r) f f := by
+  match n with
+  | 0 => simp [Relator.LiftFun]
+  | n + 1 =>
+    apply (liftFun_vecCons r).trans
+    simp only [forall_iff_succ, and_congr_left_iff, iff_self_and]
+    intro h r0 i
+    exact _root_.trans r0 (h (by grind))
+
 variable [Preorder α] {n : ℕ}
 
 lemma Fin.strictMono_insertNth_iff (q : Fin (n + 1)) (x : α) (f : Fin n → α) :
