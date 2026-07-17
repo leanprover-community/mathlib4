@@ -398,53 +398,25 @@ theorem floor_add_eq (a b : R) : ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + ⌊fract a + 
   conv_lhs => rw [← floor_add_fract a, ← floor_add_fract b]
   rw [add_add_add_comm, ← Int.cast_add, floor_intCast_add]
 
-/-- The floor of a sum is the sum of the floors iff the fractional parts sum to less
-than one. -/
+/-- The floors add exactly when the fractional parts sum to less than one. -/
 theorem floor_add_eq_add_iff : ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ ↔ fract a + fract b < 1 := by
-  have h0 : (0 : R) ≤ fract a + fract b := add_nonneg (fract_nonneg a) (fract_nonneg b)
-  have key := floor_add_eq a b
-  constructor
-  · intro h
-    have hz : ⌊fract a + fract b⌋ = 0 := by omega
-    exact (floor_eq_zero_iff.mp hz).2
-  · intro h
-    have hz : ⌊fract a + fract b⌋ = 0 := floor_eq_zero_iff.mpr ⟨h0, h⟩
-    omega
+  rw [floor_add_eq, add_eq_left, floor_eq_zero_iff, mem_Ico, and_iff_right_iff_imp]
+  intro _
+  exact add_nonneg (fract_nonneg a) (fract_nonneg b)
 
-/-- The floor of a sum exceeds the sum of the floors by one iff the fractional parts
-sum to at least one. -/
+/-- The floor of a sum overshoots by one exactly when the fractional parts sum to at least one. -/
 theorem floor_add_eq_add_add_one_iff :
     ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + 1 ↔ 1 ≤ fract a + fract b := by
-  have h2 : fract a + fract b < 2 :=
-    (add_lt_add (fract_lt_one a) (fract_lt_one b)).trans_eq one_add_one_eq_two
-  have key := floor_add_eq a b
-  constructor
-  · intro h
-    have hz : ⌊fract a + fract b⌋ = 1 := by omega
-    have := (floor_eq_iff.mp hz).1
-    simpa using this
-  · intro h
-    have hz : ⌊fract a + fract b⌋ = 1 := by
-      rw [floor_eq_iff]
-      constructor
-      · simpa using h
-      · push_cast
-        exact add_lt_add (fract_lt_one a) (fract_lt_one b)
-    omega
+  rw [floor_add_eq, add_right_inj, floor_eq_iff, cast_one, and_iff_left_iff_imp]
+  intro _
+  exact add_lt_add_of_lt_of_lt (fract_lt_one a) (fract_lt_one b)
 
 /-- **Floor-additivity dichotomy**: `⌊a + b⌋` is either `⌊a⌋ + ⌊b⌋` or `⌊a⌋ + ⌊b⌋ + 1`. -/
 theorem floor_add_eq_or (a b : R) :
     ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ ∨ ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + 1 := by
-  have h0 : (0 : R) ≤ fract a + fract b := add_nonneg (fract_nonneg a) (fract_nonneg b)
-  have h2 : fract a + fract b < 2 :=
-    (add_lt_add (fract_lt_one a) (fract_lt_one b)).trans_eq one_add_one_eq_two
-  have key := floor_add_eq a b
-  have hz0 : 0 ≤ ⌊fract a + fract b⌋ := floor_nonneg.mpr h0
-  have hz2 : ⌊fract a + fract b⌋ < 2 := by
-    rw [floor_lt]
-    push_cast
-    exact h2
-  omega
+  by_cases h : fract a + fract b < 1
+  · grind [floor_add_eq_add_iff]
+  · grind [floor_add_eq_add_add_one_iff]
 
 @[simp]
 theorem fract_zero : fract (0 : R) = 0 := by rw [fract, floor_zero, cast_zero, sub_self]
