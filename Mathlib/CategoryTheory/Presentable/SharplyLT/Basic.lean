@@ -326,7 +326,7 @@ that is `κ₁`-directed and of cardinality `< κ₂`, this is
 the colimit of the restriction of the diagram `p.diag` to `A`. -/
 noncomputable abbrev colimit
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : C :=
-    Limits.colimit (A.val.mono_coe.functor ⋙ p.diag)
+  Limits.colimit (A.val.mono_coe.functor ⋙ p.diag)
 
 /-- The inclusions in `colimit`. -/
 noncomputable abbrev colimit.ι
