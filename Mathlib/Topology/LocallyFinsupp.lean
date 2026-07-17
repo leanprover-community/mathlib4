@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
+public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Data.Int.Cast.Pi
@@ -620,6 +621,15 @@ Restriction of the zero function is the zero function.
   rw [restrict_apply]
   aesop
 
+/-- Restriction is monotone -/
+lemma restrict_mono [Zero Y] [LinearOrder Y] {A B : locallyFinsuppWithin U Y} {V : Set X}
+    (hVU : V ⊆ U) (hAB : A ≤ B) :
+    A.restrict hVU ≤ B.restrict hVU := by
+  intro z
+  by_cases hz : z ∈ V
+  · simp_all [restrict_apply, hAB z]
+  · simp_all
+
 /-- Restriction as a group morphism -/
 noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
     locallyFinsuppWithin U Y →+ locallyFinsuppWithin V Y where
@@ -636,6 +646,26 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
 lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWithin U Y)
     (h : V ⊆ U) :
     restrictMonoidHom h D = D.restrict h := by rfl
+
+/-- Restriction as an ordered group morphism -/
+noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
+    {V : Set X} (h : V ⊆ U) :
+    locallyFinsuppWithin U Y →+o locallyFinsuppWithin V Y where
+  toFun D := D.restrict h
+  map_zero' := by
+    ext x
+    simp [restrict_apply]
+  map_add' D₁ D₂ := by
+    ext x
+    by_cases hx : x ∈ V
+    <;> simp [restrict_apply, hx]
+  monotone' _ _ hAB z := by
+    apply restrict_mono h hAB
+
+@[simp]
+lemma restrictOrderMonoidHom_apply [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
+    {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
+    restrictOrderMonoidHom h D = D.restrict h := by rfl
 
 /--
 Present a function with with finite support as a finsum of singleton indicator functions.
