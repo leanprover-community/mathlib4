@@ -23,6 +23,7 @@ of `M`. `Submonoid.units` and `Subgroup.ofUnits` form a Galois coinsertion.
 We also make the equivalent additive definitions.
 
 ## Implementation details
+
 There are a number of other constructions which are multiplicatively equivalent to `S.units` but
 which have a different type.
 

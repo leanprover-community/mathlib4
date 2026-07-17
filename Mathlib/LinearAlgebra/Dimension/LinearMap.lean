@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 # The rank of a linear map
 
 ## Main Definition
+
 -  `LinearMap.rank`: The rank of a linear map.
 -/
 

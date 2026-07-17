@@ -24,6 +24,7 @@ identify to `A`. The choice of a cleavage for this fibered category gives the in
 shift functors.)
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/

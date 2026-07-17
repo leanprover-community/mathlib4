@@ -16,6 +16,7 @@ import Mathlib.RingTheory.Valuation.IsTrivialOn
 * Study of the X-adic valuation
 
 ## Main definitions
+
 - `RatFunc.C` is the constant polynomial
 - `RatFunc.X` is the indeterminate
 - `RatFunc.eval` evaluates a rational function given a value for the indeterminate

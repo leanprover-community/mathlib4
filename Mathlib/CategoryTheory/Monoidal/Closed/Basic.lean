@@ -18,6 +18,7 @@ public import Mathlib.Tactic.BDSimp
 Define (right) closed objects and (right) closed monoidal categories.
 
 ## TODO
+
 Some theorems about Cartesian closed categories
 should be generalised and moved to this file.
 -/

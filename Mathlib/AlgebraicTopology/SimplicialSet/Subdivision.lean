@@ -16,6 +16,7 @@ In this file, we define the subdivision functor `sd : SSet ⥤ SSet`
 and its right adjoint `ex`.
 
 ## TODO (@joelriou)
+
 * define another functor `SSet.B : SSet ⥤ SSet` by sending `X` to
 the nerve of the partially ordered type `X.N` of nondegenerate
 simplices in `X`, define a natural transformation `sd ⟶ B`,
@@ -23,6 +24,7 @@ and show that on suitable simplicial sets `X`, this natural
 transformation is an isomorphism.
 
 ## References
+
 * [J. F. Jardine, *Simplicial approximation*][jardine-2004]
 
 -/

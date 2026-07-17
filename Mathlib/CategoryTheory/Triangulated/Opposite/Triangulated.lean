@@ -15,6 +15,7 @@ The pretriangulated structure on `Cᵒᵖ` was constructed in the file
 that `Cᵒᵖ` is triangulated if `C` is triangulated.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/

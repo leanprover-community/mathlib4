@@ -20,6 +20,7 @@ The classes `HasTerminal` and `HasInitial` and the associated notations for term
 objects are defined in `Terminal.lean`.
 
 ## References
+
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
 

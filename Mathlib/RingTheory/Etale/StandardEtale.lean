@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Ideal.IdempotentFG
 # Standard etale maps
 
 ## Main definitions
+
 - `StandardEtalePair`:
   A pair `f g : R[X]` such that `f` is monic and `f'` is invertible in `R[X][1/g]`.
 - `StandardEtalePair`: The standard etale algebra corresponding to a `StandardEtalePair`.

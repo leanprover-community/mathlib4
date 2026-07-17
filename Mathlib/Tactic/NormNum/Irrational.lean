@@ -17,6 +17,7 @@ This module defines a `norm_num` extension for `Irrational x ^ y` for rational `
 supports `Irrational √x` expressions.
 
 ## Implementation details
+
 To prove that `(a / b) ^ (p / q)` is irrational, we reduce the problem to showing that `(a / b) ^ p`
 is not a `q`-th power of any rational number. This, in turn, reduces to proving that either `a` or
 `b` is not a `q`-th power of a natural number, assuming `p` and `q` are coprime.
@@ -24,6 +25,7 @@ To show that a given `n : ℕ` is not a `q`-th power, we find a natural number `
 such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 
 ## TODO
+
 Disprove `Irrational x` for rational `x`.
 
 -/

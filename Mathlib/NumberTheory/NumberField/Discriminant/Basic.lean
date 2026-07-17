@@ -27,6 +27,7 @@ This file defines the discriminant of a number field.
   finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
 
 ## Tags
+
 number field, discriminant
 -/
 
@@ -284,6 +285,7 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
 
 /-!
 ### Hermite Theorem
+
 This section is devoted to the proof of Hermite theorem.
 
 Let `N` be an integer . We prove that the set `S` of finite extensions `K` of `ℚ`

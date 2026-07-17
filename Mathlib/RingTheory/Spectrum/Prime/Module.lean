@@ -18,6 +18,7 @@ public import Mathlib.RingTheory.Support
 - `Module.isClosed_support` : If `M` is a finite `R`-module, then `Supp M` is closed.
 
 ## TODO
+
 - If `M` is finitely presented, the complement of `Supp M` is quasi-compact. (stacks#051B)
 
 -/

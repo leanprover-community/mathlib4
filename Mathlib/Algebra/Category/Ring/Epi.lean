@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 # Epimorphisms in `CommRingCat`
 
 ## Main results
+
 - `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
 -/
 

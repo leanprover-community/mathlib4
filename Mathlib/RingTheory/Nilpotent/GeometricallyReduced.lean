@@ -28,11 +28,13 @@ In the case of `R = k` a field, this is equivalent to `AlgebraicClosure k ⊗[k]
   reduced.
 
 ## References
+
 - See [https://stacks.math.columbia.edu/tag/05DS] for some theory of geometrically reduced algebras.
   Note that their definition differs from the one here, we still need a proof that these are
   equivalent (see TODO).
 
 ## TODO
+
 - Prove that if `A` is a geometrically reduced `R`-algebra, then for every `R`-algebra `K` that is
   a field, the tensor product `K ⊗[R] A` is reduced. (@Thmoas-Guan)
 

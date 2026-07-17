@@ -24,6 +24,7 @@ a slight generalization of Liouville's theorem. Note that this definition doesn'
 literature, and we introduce it as part of the formalization of Liouville's theorem.
 
 ## Main declarations
+
 - `IsLiouville`: A field extension being Liouville
 - `isLiouville_of_finiteDimensional`: all finite-dimensional field extensions
   (of a field with characteristic 0) are Liouville.

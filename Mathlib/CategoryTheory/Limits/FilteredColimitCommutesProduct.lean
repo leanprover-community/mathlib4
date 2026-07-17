@@ -40,6 +40,7 @@ These results will be used to show that if a category `C` has products indexed b
 does the category of Ind-objects of `C`.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], 3.1.10, 3.1.11, 3.1.12.
 -/
 

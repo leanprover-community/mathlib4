@@ -16,6 +16,7 @@ to the symmetric equivalence defines an equivalence between `C ≌ D` and `(D �
 and provides the definition of the functor that takes an equivalence to its inverse.
 
 ## Main definitions
+
 - `Equivalence.symmEquiv C D`: the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ` obtained by
   taking `Equivalence.symm` on objects, and `conjugateEquiv` on maps.
 - `Equivalence.inverseFunctor C D`: The functor `(C ≌ D) ⥤ (D ⥤ C)ᵒᵖ` sending an equivalence

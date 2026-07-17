@@ -50,10 +50,12 @@ group.
 * `Rack.oppositeRack` gives the rack with the action replaced by its inverse.
 
 ## Main statements
+
 * `Rack.EnvelGroup` is left adjoint to `Quandle.Conj` (`toEnvelGroup.map`).
   The universality statements are `toEnvelGroup.univ` and `toEnvelGroup.univ_uniq`.
 
 ## Implementation notes
+
 "Unital racks" are uninteresting (see `Rack.assoc_iff_id`, `UnitalShelf.assoc`), so we do not
 define them.
 

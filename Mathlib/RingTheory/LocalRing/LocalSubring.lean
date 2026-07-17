@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 # Local subrings of fields
 
 ## Main results
+
 - `LocalSubring` : The class of local subrings of a commutative ring.
 - `LocalSubring.ofPrime`: The localization of a subring as a `LocalSubring`.
 -/

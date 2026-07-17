@@ -17,9 +17,11 @@ We define the notion of K-injective cochain complex in an abelian category,
 and show that bounded below complexes of injective objects are K-injective.
 
 ## TODO (@joelriou)
+
 * Provide an API for computing `Ext`-groups using an injective resolution
 
 ## References
+
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
 
 -/

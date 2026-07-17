@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Coprime.Lemmas
 We prove some results relating characteristic and cardinality of finite rings
 
 ## Tags
+
 characteristic, cardinality, ring
 -/
 

@@ -14,6 +14,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 This file provides an instance `T2Space X` given `TotallySeparatedSpace X`.
 
 ## TODO
+
 * Move the last part of `Topology/Separation` to this file.
 -/
 

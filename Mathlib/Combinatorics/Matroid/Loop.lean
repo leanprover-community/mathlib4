@@ -12,6 +12,7 @@ public import Mathlib.Tactic.TFAE
 # Matroid loops and coloops
 
 ## Loops
+
 A 'loop' of a matroid `M` is an element `e` satisfying one of the following equivalent conditions:
 * `e ∈ M.closure ∅`;
 * `{e}` is dependent in `M`;
@@ -28,6 +29,7 @@ as well as predicates `Matroid.IsLoop M : α → Prop` and `Matroid.IsNonloop M 
 and provides API for interacting with them.
 
 ## Coloops
+
 The dual notion of a loop is a 'coloop'. Geometrically, these can be thought of elements that are
 skew to the remainder of the matroid. Coloops in graphic matroids are 'bridge' edges of the graph,
 and coloops in linearly representable matroids are vectors not spanned by the other vectors
@@ -42,6 +44,7 @@ a coloop is an element of `M.E` if any of the following equivalent conditions ho
 * `M.E \ {e}` is nonspanning.
 
 ## Main Declarations
+
 For `M` : Matroid `α`:
 * `M.loops` is the set `M.closure ∅`.
 * `M.IsLoop e` means that `e : α` is a loop of `M`, defined as the statement `e ∈ M.loops`.

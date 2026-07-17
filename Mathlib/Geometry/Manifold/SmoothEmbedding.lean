@@ -38,6 +38,7 @@ This will be useful to define embedded submanifolds.
   https://math.stackexchange.com/a/3769328 for counterexamples.
 
 ## TODO
+
 * `IsSmoothEmbedding.comp`: the composition of smooth embeddings (between Banach manifolds)
   is a smooth embedding
 * `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:

@@ -20,14 +20,17 @@ Define the Frobenius morphism, and show it is an isomorphism iff the exponential
 isomorphism.
 
 ## TODO
+
 Some of the results here are true more generally for closed objects and for closed monoidal
 categories, and these could be generalised.
 
 ## References
+
 https://ncatlab.org/nlab/show/cartesian+closed+functor
 https://ncatlab.org/nlab/show/Frobenius+reciprocity
 
 ## Tags
+
 Frobenius reciprocity, Cartesian closed functor
 
 -/

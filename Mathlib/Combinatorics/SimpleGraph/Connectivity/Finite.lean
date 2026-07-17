@@ -14,6 +14,7 @@ public import Mathlib.Data.Set.Card
 # Counting walks of a given length
 
 ## Main definitions
+
 - `walkLengthTwoEquivCommonNeighbors`: bijective correspondence between walks of length two
 from `u` to `v` and common neighbours of `u` and `v`. Note that `u` and `v` may be the same.
 - `finsetWalkLength`: the `Finset` of length-`n` walks from `u` to `v`.

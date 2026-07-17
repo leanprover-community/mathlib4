@@ -170,6 +170,7 @@ theorem MDifferentiable.mdifferentiableAt (hf : MDifferentiable I I' f) :
 
 /-!
 ### Relating differentiability in a manifold and differentiability in the model space
+
 through extended charts
 -/
 

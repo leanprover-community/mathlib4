@@ -57,6 +57,7 @@ in the book by Adámek and Rosický (note that according to the
 errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/

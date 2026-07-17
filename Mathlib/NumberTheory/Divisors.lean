@@ -23,6 +23,7 @@ This file defines sets of divisors of a natural number. This is particularly use
 for defining Dirichlet convolution.
 
 ## Main Definitions
+
 Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
 * `divisors n` is the `Finset` of natural numbers that divide `n`.
 * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
@@ -36,6 +37,7 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 `Nat.divisorsAntidiagonal 0` and `Int.divisorsAntidiag 0` are all `∅`.
 
 ## Tags
+
 divisors, perfect numbers
 
 -/

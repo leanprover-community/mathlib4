@@ -32,6 +32,7 @@ operation `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x ↦ b₁ (a₂
 This file introduces the global notation `D ≀ᵣ Q` for `RegularWreathProduct D Q`.
 
 ## Tags
+
 group, regular wreath product, sylow p-subgroup
 -/
 

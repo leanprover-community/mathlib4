@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Presentable.Finite
 # Presentation of a colimit of objects equipped with a presentation
 
 ## Main definition:
+
 - `CategoryTheory.Limits.ColimitPresentation.bind`: Given a colimit presentation of `X` and
   colimit presentations of the components, this is the colimit presentation over the sigma type.
 

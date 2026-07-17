@@ -21,6 +21,7 @@ We show that if `F : I ⥤ Cᵒᵖ ⥤ Type v` is a functor such that `I` is sma
 Our proof is a slight variant of the proof given in Kashiwara-Schapira.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Theorem 6.1.8
 -/
 

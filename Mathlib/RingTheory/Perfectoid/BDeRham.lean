@@ -41,6 +41,7 @@ take a perfectoid field as the input.
 * [Scholze, *p-adic Hodge theory for rigid-analytic varieties*][scholze2013adic]
 
 ## Tags
+
 Period rings, p-adic Hodge theory
 -/
 

@@ -17,6 +17,7 @@ A few more logic lemmas. These are in their own file, rather than `Logic.Basic`,
 convenient to be able to use the `tauto` or `split_ifs` tactics.
 
 ## Implementation notes
+
 We spell those lemmas out with `dite` and `ite` rather than the `if then else` notation because this
 would result in less delta-reduced statements.
 -/

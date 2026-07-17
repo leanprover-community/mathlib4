@@ -48,6 +48,7 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
   The case where `S` is finite over `R⟨x₁,...,xₙ⟩`. This is proved using induction on `n`.
 
 ## Main definition and results
+
 - `Algebra.ZariskisMainProperty`:
   We say that an `R` algebra `S` satisfies the Zariski's main property at a prime `p` of `S`
   if there exists `r ∉ p` in the integral closure `S'` of `R` in `S`, such that `S'[1/r] = S[1/r]`.

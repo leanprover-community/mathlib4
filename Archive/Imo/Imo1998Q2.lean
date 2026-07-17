@@ -19,6 +19,7 @@ judge rates each contestant as either "pass" or "fail". Suppose `k` is a number 
 two judges, their ratings coincide for at most `k` contestants. Prove that `k / a ≥ (b - 1) / (2b)`.
 
 ## Solution
+
 The problem asks us to think about triples consisting of a contestant and two judges whose ratings
 agree for that contestant. We thus consider the subset `A ⊆ C × JJ` of all such incidences of
 agreement, where `C` and `J` are the sets of contestants and judges, and `JJ = J × J - {(j, j)}`. We

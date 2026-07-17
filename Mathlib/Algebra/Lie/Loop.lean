@@ -27,6 +27,7 @@ We implement the basic theory using `AddMonoidAlgebra` instead of `LaurentPolyno
 flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
 
 ## Main definitions
+
 * `LieAlgebra.loopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
 * `LieAlgebra.loopAlgebra.toFinsupp`: A linear equivalence from the loop algebra to the space of
   finitely supported functions.
@@ -36,11 +37,13 @@ flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
   coefficients attached to a symmetric invariant bilinear form on the base Lie algebra.
 
 ## TODO
+
 * Evaluation representations
 * Construction of central extensions from invariant forms.
 * Positive energy representations induced from a fixed central character
 
 ## Tags
+
 lie ring, lie algebra, base change, Laurent polynomial
 -/
 

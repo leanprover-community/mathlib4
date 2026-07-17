@@ -25,6 +25,7 @@ Note that this also means that dot notation (i.e. `f.range` for a linear map `f`
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
 
 ## Tags
+
 linear algebra, vector space, module, range
 -/
 

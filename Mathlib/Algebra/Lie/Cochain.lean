@@ -15,6 +15,7 @@ useful in the construction of central extensions, so we treat these easier cases
 general theory of Lie algebra cohomology.
 
 ## Main definitions
+
 * `LieAlgebra.oneCochain`: an abbreviation for a linear map.
 * `LieAlgebra.twoCochain`: a submodule of bilinear maps, giving 2-cochains.
 * `LieAlgebra.d₁₂`: The coboundary map taking 1-cochains to 2-cochains.
@@ -22,11 +23,13 @@ general theory of Lie algebra cohomology.
 * `LieAlgebra.twoCocycle`: The submodule of 2-cocycles.
 
 ## TODO
+
 * coboundaries, cohomology
 * comparison to the Chevalley-Eilenberg complex.
 * construction and classification of central extensions
 
 ## References
+
 * [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
 
 -/

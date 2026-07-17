@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 In this file we show that localizations are flat, and flatness is a local property.
 
 ## Main result
+
 * `IsLocalization.flat`: a localization of a commutative ring is flat over it.
 * `Module.flat_iff_of_isLocalization` : Let `Rₚ` a localization of a commutative ring `R`
   and `M` be a module over `Rₚ`. Then `M` is flat over `R` if and only if `M` is flat over `Rₚ`.

@@ -35,6 +35,7 @@ Some notable properties of `H-spaces` are
 * The loop space based at every `x : X` carries a structure of an `H-space`.
 
 ## To Do
+
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
   `fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the

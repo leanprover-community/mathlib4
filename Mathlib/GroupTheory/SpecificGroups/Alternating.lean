@@ -24,6 +24,7 @@ consisting of the even permutations.
 * `alternatingGroup α` is the alternating group on `α`, defined as a `Subgroup (Perm α)`.
 
 ## Main results
+
 * `alternatingGroup.index_eq_two` shows that the index of the alternating group is two.
 
 * `two_mul_card_alternatingGroup` shows that the alternating group is half as large as
@@ -50,10 +51,12 @@ consisting of the even permutations.
 * The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
+
 alternating group permutation simple characteristic index
 
 
 ## TODO
+
 * Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
 
 -/

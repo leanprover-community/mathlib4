@@ -16,6 +16,7 @@ the `Finset` of all pairs of an element in `s` and an element in `t` that scalar
 assuming that set is finite.
 
 ## Definitions
+
 * Finset.SMulAntidiagonal : Finset antidiagonal for PWO inputs.
 * Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
 

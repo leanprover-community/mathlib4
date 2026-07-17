@@ -28,6 +28,7 @@ In particular, if `Φ.functor ⋙ F` inverts `W₁`, it follows that the
 right derived functor of `F` with respect to `W₂` exists.
 
 ## References
+
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/

@@ -22,6 +22,7 @@ is an abelian category if the following conditions are satisfied:
   and `Q`, and a distinguished triangle `(ι.obj K)⟦1⟧ ⟶ X₃ ⟶ (ι.obj Q) ⟶ ...`.
 
 ## References
+
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*, 1.2][bbd-1982]
 
 -/

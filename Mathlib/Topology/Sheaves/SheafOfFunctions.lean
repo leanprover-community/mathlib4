@@ -22,6 +22,7 @@ please see `Mathlib/Topology/Sheaves/LocalPredicate.lean`, where we set up a gen
 for constructing sub(pre)sheaves of the sheaf of dependent functions.
 
 ## Future work
+
 Obviously there's more to do:
 * sections of a fiber bundle
 * various classes of smooth and structure-preserving functions

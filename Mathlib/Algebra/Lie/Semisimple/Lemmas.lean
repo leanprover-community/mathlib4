@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Lie.Semisimple.Basic
 This file is a home for lemmas about semisimple and reductive Lie algebras.
 
 ## Main definitions / results:
+
 * `LieAlgebra.hasCentralRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
   algebra with an irreducible faithful finite-dimensional representation is reductive.
 * `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie

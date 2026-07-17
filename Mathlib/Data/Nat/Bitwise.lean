@@ -25,6 +25,7 @@ bitwise properties. In the second half of this file, we show properties of the b
 `lor`, `land` and `xor`, which are defined in core.
 
 ## Main results
+
 * `eq_of_testBit_eq`: two natural numbers are equal if they have equal bits at every position.
 * `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
   significant `1`-bit of `n`.

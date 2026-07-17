@@ -19,6 +19,7 @@ public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary schemes.
 
 ## Main results
+
 - `isNilpotent_tensor_residueField_iff`:
   If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
   prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`.

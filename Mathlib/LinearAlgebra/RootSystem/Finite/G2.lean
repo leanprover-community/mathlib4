@@ -21,6 +21,7 @@ corollary of the fact that no node can have degree greater than three) and moreo
 stronger assumptions on the coefficients than here.
 
 ## Main results:
+
 * `RootPairing.EmbeddedG2`: a data-bearing typeclass which distinguishes a pair of roots whose
   pairing is `-3` (equivalently, with a distinguished choice of base). This is a sufficient
   condition for the span of this pair of roots to be a `𝔤₂` root system.
@@ -38,6 +39,7 @@ stronger assumptions on the coefficients than here.
 * `RootPairing.EmbeddedG2.card_index_eq_twelve`: the `𝔤₂` root pairing has twelve roots.
 
 ## TODO
+
 Once sufficient API for `RootPairing.Base` has been developed:
 * Add `def EmbeddedG2.toBase [P.EmbeddedG2] : P.Base` with `support := {long P, short P}`
 * Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).

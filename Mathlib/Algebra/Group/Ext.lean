@@ -24,6 +24,7 @@ To refer to the `*` operator of a particular instance `i`, we use
 former uses `HMul.hMul` which is the canonical spelling.
 
 ## Tags
+
 monoid, group, extensionality
 -/
 

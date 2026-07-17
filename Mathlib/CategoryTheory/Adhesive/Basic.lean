@@ -14,12 +14,14 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 # Adhesive categories
 
 ## Main definitions
+
 - `CategoryTheory.IsPushout.IsVanKampen`: A convenience formulation for a pushout being
   a van Kampen colimit.
 - `CategoryTheory.Adhesive`: A category is adhesive if it has pushouts and pullbacks along
   monomorphisms, and such pushouts are van Kampen.
 
 ## Main Results
+
 - `CategoryTheory.Type.adhesive`: The category of `Type` is adhesive.
 - `CategoryTheory.Adhesive.isPullback_of_isPushout_of_mono_left`: In adhesive categories,
   pushouts along monomorphisms are pullbacks.
@@ -31,6 +33,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
   has all pullbacks and all pushouts and is adhesive
 
 ## References
+
 - https://ncatlab.org/nlab/show/adhesive+category
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 

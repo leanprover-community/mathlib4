@@ -24,11 +24,13 @@ See also `CategoryTheory.Limits.HasLimits` which further builds:
 * `HasLimit F`, asserting the mere existence of some limit cone for `F`.
 
 ## Implementation
+
 At present we simply say everything twice, in order to handle both limits and colimits.
 It would be highly desirable to have some automation support,
 e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 
 ## References
+
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
 -/

@@ -13,11 +13,13 @@ public import Mathlib.Data.Int.WithZero
 # Discrete valuations have rank one
 
 ## Main Definitions and Results
+
 * `Valuation.IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt` : the order-preserving isomorphism
   between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
 
 ## Tags
+
 valuation, discrete, rank one
 -/
 

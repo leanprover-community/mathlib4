@@ -13,6 +13,7 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 # Evaluating a polynomial
 
 ## Main definitions
+
 * `Polynomial.eval₂`: evaluate `p : R[X]` in `S` given a ring hom `f : R →+* S` and `x : S`.
 * `Polynomial.eval`: evaluate `p : R[X]` given `x : R`.
 * `Polynomial.IsRoot`: `x : R` is a root of `p : R[X]`.

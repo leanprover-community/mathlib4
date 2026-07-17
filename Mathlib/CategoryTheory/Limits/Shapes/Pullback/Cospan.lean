@@ -16,6 +16,7 @@ for the given data for a pullback (resp. pushout) diagram. Convenience methods `
 and `span f g` construct functors from the walking (co)span, hitting the given morphisms.
 
 ## References
+
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/

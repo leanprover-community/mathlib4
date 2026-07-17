@@ -31,6 +31,7 @@ a denominator `s : S`.
 
 
 ## Tags
+
 localization, Ore, non-commutative
 
 ## Implementation detail

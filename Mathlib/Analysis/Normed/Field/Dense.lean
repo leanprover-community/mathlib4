@@ -16,10 +16,12 @@ zero can be inherited from its dense subfields. Let `K` be a dense subfield of a
 field `L`.
 
 ## Main results
+
 - `IsAlgClosed.of_denseRange` : If `K` is an algebraically closed dense subfield of a complete
 nonarchimedean normed field `L` of characteristic zero, then `L` is also algebraically closed.
 
 ## TODO
+
 Show that
 1. if `K` is perfect, then `L` is perfect;
 2. if `L` is separably closed, then `K` is separably closed;
@@ -30,9 +32,11 @@ algebraically closed.
 approximated by a *separable* polynomial.
 
 ## Reference
+
 [Notes](https://math.stanford.edu/%7Econrad/248APage/handouts/algclosurecomp.pdf) by Brian Conrad.
 
 ## Tags
+
 Normed field, algebraically closedness
 -/
 

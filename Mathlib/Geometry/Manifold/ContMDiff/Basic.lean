@@ -19,6 +19,7 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
   embedding `e : M → H`, then `e` is `C^n`.
 
 ## Tags
+
 chain rule, manifolds, higher derivative
 
 -/

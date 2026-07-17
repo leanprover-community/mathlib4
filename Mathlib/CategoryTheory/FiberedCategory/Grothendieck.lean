@@ -18,6 +18,7 @@ We also provide a `HasFibers` instance to `∫ᶜ F`, such that the fiber over `
 category `F(S)`.
 
 ## References
+
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
 

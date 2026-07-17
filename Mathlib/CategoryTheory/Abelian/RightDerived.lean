@@ -29,6 +29,7 @@ natural transformations between the original additive functors,
 and show how to compute the components.
 
 ## Main results
+
 * `Functor.isZero_rightDerived_obj_injective_succ`: injective objects have no higher
   right derived functor.
 * `NatTrans.rightDerived`: the natural transformation between right derived functors

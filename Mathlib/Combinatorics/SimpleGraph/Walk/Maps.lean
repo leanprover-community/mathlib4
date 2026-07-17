@@ -26,6 +26,7 @@ Functions that map walks between different graphs.
   Map a walk that avoids an edge to the subgraph with that edge deleted
 
 ## Tags
+
 walks
 -/
 

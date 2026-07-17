@@ -18,6 +18,7 @@ the kernel of the restriction to the complement of the union of the other irredu
 For example, if `X` is irreducible then this will give back the original scheme `X`.
 
 ## Main definition
+
 * `AlgebraicGeometry.Scheme.irreducibleComponentIdeal`: The ideal sheaf data associated to an
   irreducible component of a Noetherian scheme.
 * `AlgebraicGeometry.Scheme.irreducibleComponent`: The subscheme structure on an irreducible

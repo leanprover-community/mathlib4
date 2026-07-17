@@ -56,6 +56,7 @@ Given `M : Matroid α` ...
 There are a few design decisions worth discussing.
 
 ### Finiteness
+
   The first is that our matroids are allowed to be infinite.
   Unlike with many mathematical structures, this isn't such an obvious choice.
   Finite matroids have been studied since the 1930's,
@@ -86,6 +87,7 @@ There are a few design decisions worth discussing.
   `[M.Finite]` and `[RankFinite M]` and associated API.
 
 ### Cardinality
+
   Just as with bases of a vector space,
   all bases of a finite matroid `M` are finite and have the same cardinality;
   this cardinality is an important invariant known as the 'rank' of `M`.
@@ -99,6 +101,7 @@ There are a few design decisions worth discussing.
   because it allows infinite sets to be handled without splitting into cases.
 
 ### The ground `Set`
+
   A last place where we make a consequential choice is making the ground set of a matroid
   a structure field of type `Set α` (where `α` is the type of 'possible matroid elements')
   rather than just having a type `α` of all the matroid elements.
@@ -136,6 +139,7 @@ There are a few design decisions worth discussing.
   so our notation mirrors common practice.
 
 ### Notation
+
   We use a few nonstandard conventions in theorem names that are related to the above.
   First, we mirror common informal practice by referring explicitly to the `ground` set rather
   than the notation `E`. (Writing `ground` everywhere in a proof term would be unwieldy, and

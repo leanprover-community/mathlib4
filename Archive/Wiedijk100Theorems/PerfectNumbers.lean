@@ -21,6 +21,7 @@ Euler proved the converse, that if `n` is even and perfect, then there exists `k
   `n = 2 ^ k * (2 ^ (k + 1) - 1)` and `2 ^ (k + 1) - 1` is prime.
 
 ## References
+
 https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
 -/
 

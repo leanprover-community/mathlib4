@@ -17,6 +17,7 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 `fourierTransformCLE`.
 
 ## Main statements
+
 * `SchwartzMap.fderivCLM_fourier_eq`: The derivative of the Fourier transform is given by the
   Fourier transform of the multiplication with `-(2 * π * Complex.I) • innerSL ℝ`.
 * `SchwartzMap.lineDerivOp_fourier_eq`: The line derivative of the Fourier transform is given by the

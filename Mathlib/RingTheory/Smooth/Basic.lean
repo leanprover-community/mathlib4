@@ -28,6 +28,7 @@ We show that smooth is stable under algebra isomorphisms, composition and
 localization at an element.
 
 ## Main results
+
 - `Algebra.FormallySmooth`: The class of formally smooth algebras.
 - `Algebra.formallySmooth_iff` :
   Formally smooth iff `Ω[A⁄R]` is `A`-projective and `H¹(L_{A/R}) = 0`.

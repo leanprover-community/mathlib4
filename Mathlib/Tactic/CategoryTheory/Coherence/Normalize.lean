@@ -55,6 +55,7 @@ I would be happy to discuss.
   this approach.
 
 ## Main definitions
+
 - `Tactic.BicategoryLike.eval`: Given a Lean expression `e` that represents a morphism in a monoidal
   category, this function returns a pair of `⟨e', pf⟩` where `e'` is the normalized expression of
   `e` and `pf` is a proof that `e = e'`.

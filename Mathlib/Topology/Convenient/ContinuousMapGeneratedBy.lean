@@ -16,6 +16,7 @@ Given a family `X i` of topological spaces, we introduce a predicate
 the composition `g ∘ f` is continuous.
 
 ## References
+
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
