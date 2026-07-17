@@ -222,7 +222,7 @@ theorem mem_admissibleIndex_iff {B : Box ι} {ν : ι → ℤ} :
     ν ∈ admissibleIndex n B ↔ box n ν ≤ B := by
   rw [admissibleIndex, Set.Finite.mem_toFinset, Set.mem_setOf_eq, Box.coe_subset_coe]
 
-open Classical in
+open scoped Classical in
 /-- For `B : BoxIntegral.Box`, the `TaggedPrepartition` formed by the set of all
 `unitPartition.box` whose index is `B`-admissible. -/
 def prepartition (B : Box ι) : TaggedPrepartition B where
@@ -243,6 +243,7 @@ def prepartition (B : Box ι) : TaggedPrepartition B where
     · simp_rw [dif_neg hI]
       exact Box.coe_subset_Icc B.exists_mem.choose_spec
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {n} in
 @[simp]
 theorem mem_prepartition_iff {B I : Box ι} :
