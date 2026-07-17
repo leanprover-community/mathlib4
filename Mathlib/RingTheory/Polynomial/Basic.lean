@@ -681,7 +681,7 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
   dsimp
   have : C (coeff f n) ∈ p := by
     apply subset_span
-    rw [mem_setOf_eq]
+    rw [mem_ofPred_eq]
     use n
   have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
   convert! this using 1
@@ -813,7 +813,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
             refine (mul_one _).symm.trans ?_
             rw [← h, mul_zero]
             rfl
-          haveI : Nontrivial R := ⟨⟨0, 1, this⟩⟩
+          have : Nontrivial R := ⟨⟨0, 1, this⟩⟩
           have : p.leadingCoeff ∈ I.leadingCoeffNth N := by
             rw [HN]
             exact hm2 k ((I.mem_leadingCoeffNth _ _).2
