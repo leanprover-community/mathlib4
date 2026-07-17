@@ -488,6 +488,8 @@ section SetIntegral
 variable {Ω 𝓧 : Type*} {m mΩ : MeasurableSpace Ω} {P : Measure Ω} [m𝓧 : MeasurableSpace 𝓧]
   {X : Ω → 𝓧} {A : Set Ω}
 
+/-- If a random variable `X` is independent of a sigma-algebra `m` and `A` is a set in `m`
+then `∫ ω in A, f (X ω) ∂P = P.real A • ∫ ω, f (X ω) ∂P` for a measurable function `f : 𝓧 → E`. -/
 lemma Indep.setIntegral_eq_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (hm : m ≤ mΩ) {f : 𝓧 → E} (hA1 : Indep m (m𝓧.comap X) P)
     (hX : AEMeasurable X P) (hA2 : MeasurableSet[m] A)
@@ -504,6 +506,8 @@ lemma Indep.setIntegral_eq_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace 
     · exact hA1.indicator_indepFun 1 hA2
     · exact (aemeasurable_indicator_const_iff 1).2 (hm A hA2).nullMeasurableSet
 
+/-- If a random variable `X` is independent of a sigma-algebra `m` and `A` is a set in `m`
+then `∫ ω in A, f (X ω) ∂P = P.real A * ∫ ω, f (X ω) ∂P` for a measurable function `f : 𝓧 → ℝ`. -/
 lemma Indep.setIntegral_eq_mul (hm : m ≤ mΩ) {f : 𝓧 → ℝ} (hA1 : Indep m (m𝓧.comap X) P)
     (hX : AEMeasurable X P) (hA : MeasurableSet[m] A)
     (hf : AEStronglyMeasurable f (P.map X)) :
