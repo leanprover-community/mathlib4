@@ -62,10 +62,32 @@ lemma liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin
   simp only [liftFun_iff_succ r, forall_iff_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
     castSucc_zero]
 
-variable [Preorder α] {n : ℕ} {f : Fin (n + 1) → α} {a : α}
+variable [Preorder α] {n : ℕ}
 
-@[simp] lemma strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono f :=
-  liftFun_vecCons (· < ·)
+@[simp] lemma strictMono_cons {f : Fin n → α} {a : α} :
+    StrictMono (Fin.cons a f) ↔ (∀ j, a < f j) ∧ StrictMono f := by
+  constructor
+  · intro h
+    exact ⟨fun j ↦ h (Fin.succ_pos j), h.comp Fin.strictMono_succ⟩
+  · rintro ⟨ha, hf⟩
+    simp only [strictMono_iff_lt_succ, cons_succ]
+    cases n with
+    | zero => simp only [IsEmpty.forall_iff]
+    | succ n =>
+      simp only [forall_iff_succ, castSucc_succ]
+      constructor
+      · simp only [castSucc_zero, cons_zero]
+        grind
+      · intro i
+        exact hf i.castSucc_lt_succ
+
+variable {f : Fin (n + 1) → α} {a : α}
+
+@[simp] lemma strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono f := by
+  rw [vecCons, strictMono_cons]
+  apply and_congr_left
+  intro hf
+  exact ⟨fun h ↦ h 0, fun h j ↦ h.trans_le (hf.monotone (by simp))⟩
 
 @[simp]
 lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by
