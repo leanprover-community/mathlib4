@@ -300,6 +300,7 @@ theorem ker_normedMk (S : AddSubgroup M) : S.normedMk.ker = S :=
 theorem norm_normedMk_le (S : AddSubgroup M) : ‖S.normedMk‖ ≤ 1 :=
   NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp [norm_mk_le_norm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : NormedAddGroupHom M N)
     (hf : ∀ x ∈ S, f x = 0) (x : M ⧸ S) : ‖lift S f.toAddMonoidHom hf x‖ ≤ ‖f‖ * ‖x‖ := by
   cases (norm_nonneg f).eq_or_lt' with

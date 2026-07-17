@@ -172,6 +172,7 @@ theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
   rcases this with ⟨_, ⟨g₃, rfl⟩, A, ⟨hg₃, rfl⟩, h2V⟩; rw [mem_preimage, ← mul_assoc] at h2V
   exact mem_biUnion (Finset.mul_mem_mul hg₃ hg₁) h2V
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive addIndex_pos]
 theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonempty) :
     0 < index (K : Set G) V := by
@@ -457,6 +458,7 @@ theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compact
     apply is_left_invariant_prehaar; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `chaar` interpreted in `ℝ≥0`, as a content -/
 @[to_additive /-- additive version of `MeasureTheory.Measure.haar.haarContent` -/]
 noncomputable def haarContent (K₀ : PositiveCompacts G) : Content G where
@@ -475,11 +477,13 @@ theorem haarContent_apply (K₀ : PositiveCompacts G) (K : Compacts G) :
     haarContent K₀ K = show NNReal from ⟨chaar K₀ K, chaar_nonneg _ _⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The variant of `chaar_self` for `haarContent` -/
 @[to_additive /-- The variant of `addCHaar_self` for `addHaarContent`. -/]
 theorem haarContent_self {K₀ : PositiveCompacts G} : haarContent K₀ K₀.toCompacts = 1 := by
   simp_rw [← ENNReal.coe_one, haarContent_apply, ENNReal.coe_inj, chaar_self]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The variant of `is_left_invariant_chaar` for `haarContent` -/
 @[to_additive /-- The variant of `is_left_invariant_addCHaar` for `addHaarContent` -/]
 theorem is_left_invariant_haarContent {K₀ : PositiveCompacts G} (g : G) (K : Compacts G) :
@@ -536,7 +540,7 @@ instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
 
 @[to_additive]
 theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1 := by
-  haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
+  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   simp only [haarMeasure, coe_smul, Pi.smul_apply, smul_eq_mul]
   rw [← K₀.isCompact.measure_closure,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_mul_cancel]
@@ -546,7 +550,7 @@ theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1
 /-- The Haar measure is regular. -/
 @[to_additive /-- The additive Haar measure is regular. -/]
 instance regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Regular := by
-  haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
+  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   apply Regular.smul
   rw [← K₀.isCompact.measure_closure,
     Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_ne_top]
@@ -560,7 +564,7 @@ theorem haarMeasure_closure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ 
 @[to_additive /-- The additive Haar measure is sigma-finite in a second countable group. -/]
 instance sigmaFinite_haarMeasure [SecondCountableTopology G] {K₀ : PositiveCompacts G} :
     SigmaFinite (haarMeasure K₀) := by
-  haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group; infer_instance
+  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group; infer_instance
 
 /-- The Haar measure is a Haar measure, i.e., it is invariant and gives finite mass to compact
 sets and positive mass to nonempty open sets. -/
