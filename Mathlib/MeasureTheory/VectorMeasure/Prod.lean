@@ -35,27 +35,23 @@ variable {ι X Y E F G H I J : Type*} {mX : MeasurableSpace X} {mY : MeasurableS
   [NormedAddCommGroup H] [NormedSpace ℝ H]
   [NormedAddCommGroup I] [NormedSpace ℝ I]
   [NormedAddCommGroup J] [NormedSpace ℝ J]
-  {μ : VectorMeasure X E} {ν : VectorMeasure Y F}
-  {B : E →L[ℝ] F →L[ℝ] G} {f g : X → E} {s t : Set X}
+  {μ : VectorMeasure X E} {ν : VectorMeasure Y F} {B : E →L[ℝ] F →L[ℝ] G}
 
 namespace MeasureTheory.VectorMeasure
 
-open scoped Classical in
-/-- The product of two vector measures `μ` and `ν` with respect to a continuous bilinear map `B`,
-giving mass `B (μ s) (ν s)` to a measurable set `s`.
-If such a measure does not exist, we use the junk value `0`. -/
-noncomputable def prod (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G) :
-    VectorMeasure (X × Y) G :=
-  if h : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
-    MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t) then h.choose
-  else 0
-
 /-- Two vector measures `μ` and `ν` have a product with respect to `B` if there exists a
-measure giving mass `B (μ s) (ν t)` to any measurable product `s × t`.
+measure giving mass `B (μ s) (ν t)` to any measurable product set `s × t`.
 This is satisfied whenever `μ` or `ν` has finite variation. -/
 class HasProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G) : Prop where
   exists_prod : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
     MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t)
+
+/-- The product of two vector measures `μ` and `ν` with respect to a continuous bilinear map `B`,
+giving mass `B (μ s) (ν t)` to any measurable product set `s × t`.
+If such a measure does not exist, we use the junk value `0`. -/
+noncomputable def prod (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G) :
+    VectorMeasure (X × Y) G :=
+  open scoped Classical in if h : HasProd μ ν B then h.exists_prod.choose else 0
 
 lemma prod_eq_zero_of_not_hasProd (h : ¬HasProd μ ν B) :
     μ.prod ν B = 0 := by
@@ -75,13 +71,16 @@ lemma prod_eq_zero_of_not_hasProd (h : ¬HasProd μ ν B) :
   · simp only [h't, not_false_eq_true, not_measurable, _root_.map_zero]
     rw [not_measurable]
     simp [measurableSet_prod, hs, ht, h't]
-  simpa [prod, h.exists_prod] using h.exists_prod.choose_spec s t h's h't
+  simpa [prod, h] using h.exists_prod.choose_spec s t h's h't
 
 lemma HasProd.flip [HasProd μ ν B] : HasProd ν μ B.flip where
   exists_prod := by
     refine ⟨(μ.prod ν B).map Prod.swap, fun s t hs ht ↦ ?_⟩
     rw [map_apply _ (by fun_prop) (hs.prod ht)]
     simp
+
+lemma hasProd_flip_iff : HasProd ν μ B.flip ↔ HasProd μ ν B :=
+  ⟨fun h ↦ by simpa using HasProd.flip (μ := ν) (ν := μ) (B := B.flip), fun h ↦ HasProd.flip⟩
 
 omit [NormedSpace ℝ F] in
 /-- If `ν` is a vector measure, and `s ⊆ X × Y` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
@@ -156,9 +155,8 @@ instance [CompleteSpace G] [IsFiniteMeasure μ.variation] : HasProd μ ν B wher
     simp [prodOfIsFiniteMeasureLeft, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if,
       of_if, integral_indicator hs, ContinuousLinearMap.flip_apply, hs, restrict_apply]
 
-instance [CompleteSpace G] [h : IsFiniteMeasure ν.variation] : HasProd μ ν B := by
-  rw [← B.flip_flip]
-  apply HasProd.flip
+instance [CompleteSpace G] [h : IsFiniteMeasure ν.variation] : HasProd μ ν B :=
+  hasProd_flip_iff.1 inferInstance
 
 lemma prod_eq_of_forall_apply_prod {ρ : VectorMeasure (X × Y) G} (hρ : ∀ (s : Set X) (t : Set Y),
     MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t)) :
@@ -184,15 +182,6 @@ lemma prod_flip_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variatio
     {B : F →L[ℝ] E →L[ℝ] G} {s : Set (X × Y)} (hs : MeasurableSet s) :
     μ.prod ν B.flip s = ∫ᵛ x, ν (Prod.mk x ⁻¹' s) ∂[B; μ] := by
   simp [prod_apply_eq_integral hs]
-
-lemma hasProd_flip [HasProd μ ν B] : HasProd ν μ B.flip where
-  exists_prod := by
-    refine ⟨(μ.prod ν B).map MeasurableEquiv.prodComm, fun s t hs ht ↦ ?_⟩
-    rw [map_apply _ MeasurableEquiv.prodComm.measurable (hs.prod ht)]
-    simp [MeasurableEquiv.prodComm]
-
-lemma hasProd_flip_iff : HasProd ν μ B.flip ↔ HasProd μ ν B :=
-  ⟨fun h ↦ by simpa using hasProd_flip (μ := ν) (ν := μ) (B := B.flip), fun h ↦ hasProd_flip⟩
 
 lemma variation_prod_le [CompleteSpace G] [IsFiniteMeasure μ.variation] [SFinite ν.variation] :
     (μ.prod ν B).variation ≤ ‖B‖ₑ • μ.variation.prod ν.variation := by

@@ -66,7 +66,7 @@ theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) 
 
 @[simp]
 theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree p := by
-  haveI := Classical.propDecidable
+  have := Classical.propDecidable
   by_cases hp : p = 0
   · rw [hp, zero_scaleRoots]
   refine le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree ?_)
@@ -307,8 +307,6 @@ lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
         exact (monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).ne_zero
   · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
     simpa
-
-@[deprecated (since := "2025-12-09")] alias Factors.scaleRoots := Splits.scaleRoots
 
 end CommSemiring
 
