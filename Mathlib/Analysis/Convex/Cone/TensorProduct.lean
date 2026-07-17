@@ -88,7 +88,7 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     minTensorProduct C₁ C₂.toPointedCone = maxTensorProduct C₁ C₂.toPointedCone := by
   classical
   obtain ⟨s, hs_fin, hs_lin, hs_span⟩ := h₁_simp
-  haveI : Fintype s := hs_fin.fintype
+  have : Fintype s := hs_fin.fintype
   -- The conic hull (R≥0-span) is contained in the linear span (ℝ-span)
   have hull_sub_span : (hull ℝ s : Set E) ⊆ Submodule.span ℝ s := by
     intro x hx

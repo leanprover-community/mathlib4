@@ -214,7 +214,6 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 @[simp]
 lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).jacobian = 1 := by
-  classical
   have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
       (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
     ext (i j : PEmpty)

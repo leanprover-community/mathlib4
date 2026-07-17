@@ -1049,7 +1049,6 @@ lemma sPolynomial_leadingTerm_mul' [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvP
         ((m.degree (p₁ * q₁)) ⊔ (m.degree (p₂ * q₂)) - m.degree q₁ ⊔ m.degree q₂)
         (m.leadingCoeff p₁ * m.leadingCoeff p₂) *
       m.sPolynomial q₁ q₂ := by
-  classical
   wlog! +distrib H : p₁ ≠ 0 ∧ p₂ ≠ 0 ∧ q₁ ≠ 0 ∧ q₂ ≠ 0
   · (obtain rfl | rfl | rfl | rfl := H) <;> simp
   simp [H, leadingTerm, sPolynomial_monomial_mul, degree_mul]

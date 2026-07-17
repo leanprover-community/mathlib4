@@ -122,12 +122,12 @@ lemma exists_mem_of_isClosed_of_nonempty
     map_id _ := by simp [← cancel_mono (subschemeι _)]
     map_comp _ _ := by simp [← cancel_mono (subschemeι _)] }
   let ι : D' ⟶ D := { app i := subschemeι _, naturality _ _ _ := by simp [D'] }
-  haveI {i j} (f : i ⟶ j) : IsAffineHom (D'.map f) := by
+  have {i j} (f : i ⟶ j) : IsAffineHom (D'.map f) := by
     suffices IsAffineHom (D'.map f ≫ ι.app j) from .of_comp _ (ι.app j)
     simp only [subschemeMap_subschemeι, D', ι]
     infer_instance
-  haveI _ (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
-  haveI _ (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
+  have _ (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
+  have _ (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
   let c' : Cone D' :=
   { pt := (⨆ i, (vanishingIdeal ⟨Z i, hZc i⟩).comap (c.π.app i)).subscheme
     π :=
@@ -1061,7 +1061,6 @@ lemma exists_isAffineOpen_preimage_eq
     [∀ i, QuasiSeparatedSpace (D.obj i)]
     (U : c.pt.Opens) (hU : IsAffineOpen U) :
     ∃ (i : I) (V : (D.obj i).Opens), IsAffineOpen V ∧ c.π.app i ⁻¹ᵁ V = U := by
-  classical
   obtain ⟨i, U, hU', rfl⟩ := exists_preimage_eq D c hc U hU.isCompact
   have (j : Over i) : CompactSpace ((opensDiagram D i U).obj j) :=
     isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ U.2 hU')
@@ -1106,7 +1105,6 @@ lemma Scheme.exists_isOpenCover_and_isAffine [IsCofiltered I]
     {J : Type*} (U : J → c.pt.Opens) (hU : IsOpenCover U) (hU' : ∀ i, IsAffineOpen (U i)) :
     ∃ (i : I) (s : Finset J) (V : s → (D.obj i).Opens),
       IsOpenCover V ∧ ∀ j, IsAffineOpen (V j) ∧ U j = c.π.app i ⁻¹ᵁ (V j) := by
-  classical
   have := compactSpace_of_isLimit D c hc
   obtain ⟨s, hs⟩ := isCompact_univ.elim_finite_subcover _
     (fun i ↦ (U i).isOpen) hU.iSup_set_eq_univ.ge
@@ -1233,7 +1231,6 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)]
     (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f)) :
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
-  classical
   -- The open cover of `c := lim Dᵢ` indexed by triplets of affine opens `(U, V, W)` with
   -- `U ⊆ c`, `V ⊆ X`, `W ⊆ S` such that `U` maps to `V` maps to `W`.
   have 𝒰 := (c.pt.isBasis_affineOpens).isOpenCover_mem_and_le

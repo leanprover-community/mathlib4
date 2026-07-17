@@ -278,7 +278,7 @@ theorem nonempty_algebraRat_iff :
     Nonempty (Algebra ℚ R) ↔ ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   constructor
   · intro h_alg
-    haveI h_alg' : Algebra ℚ R := h_alg.some
+    have h_alg' : Algebra ℚ R := h_alg.some
     apply of_algebraRat
   · intro h
     apply Nonempty.intro
@@ -333,7 +333,7 @@ theorem split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → 
   | intro p p_charP =>
     by_cases h : p = 0
     · rw [h] at p_charP
-      haveI h0 : CharZero R := CharP.charP_to_charZero R
+      have h0 : CharZero R := CharP.charP_to_charZero R
       exact split_equalCharZero_mixedCharZero R h_equal h_mixed
     · exact h_pos p h p_charP
 

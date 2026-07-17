@@ -631,7 +631,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
 theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
     IsPretransitive (alternatingGroup α) α := by
   rw [← is_one_pretransitive_iff]
-  letI := isMultiplyPretransitive α
+  let := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
   rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
 
@@ -652,7 +652,7 @@ theorem isTrivialBlock_of_isBlock {B : Set α} (hB : IsBlock (alternatingGroup �
   suffices IsPreprimitive (alternatingGroup α) α by
     apply IsPreprimitive.isTrivialBlock_of_isBlock hB
   apply isPreprimitive_of_is_two_pretransitive
-  letI := isMultiplyPretransitive α
+  let := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
   rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_of_lt h2)]
 

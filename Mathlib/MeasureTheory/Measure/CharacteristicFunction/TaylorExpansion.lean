@@ -66,7 +66,6 @@ lemma continuous_charFun : Continuous (charFun μ) := by
   refine contDiff_zero.1 (contDiff_charFun ?_)
   simpa using by fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin n → E) :
     iteratedFDeriv ℝ n (charFun μ) t x = I ^ n * ∫ y, (∏ i, ⟪y, x i⟫) * exp (⟪y, t⟫ * I) ∂μ := by
   have h : innerₗ E = (innerSL ℝ).toLinearMap₁₂ := rfl

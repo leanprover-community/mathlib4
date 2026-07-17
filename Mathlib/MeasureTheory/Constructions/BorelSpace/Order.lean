@@ -55,7 +55,7 @@ variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [Or
 theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
   refine le_antisymm ?_ (generateFrom_le ?_)
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
-    letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
+    let : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
     refine generateFrom_le ?_
     rintro _ ⟨a, rfl | rfl⟩
@@ -296,7 +296,7 @@ theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace �
     borel α = .generateFrom {S : Set α | ∃ l ∈ s, ∃ u ∈ s, l ≤ u ∧ Icc l u = S} := by
   set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l ≤ u ∧ Icc l u = S }
   refine le_antisymm ?_ (generateFrom_Icc_mem_le_borel _ _)
-  letI : MeasurableSpace α := generateFrom S
+  let : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
@@ -357,7 +357,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } := by
   set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S }
   refine le_antisymm ?_ (generateFrom_Ico_mem_le_borel _ _)
-  letI : MeasurableSpace α := generateFrom S
+  let : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
@@ -745,7 +745,7 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
     AEMeasurable g μ := by
   classical
   nontriviality α
-  haveI hα : Nonempty α := inferInstance
+  have hα : Nonempty α := inferInstance
   rcases isEmpty_or_nonempty ι with hι | hι
   · simp only [IsEmpty.exists_iff, setOf_false, isLUB_empty_iff] at hg
     exact aemeasurable_const' (hg.mono fun a ha => hg.mono fun b hb => (ha _).antisymm (hb _))
@@ -959,7 +959,7 @@ protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs :
 
 theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
-  haveI : Encodable s := hs.toEncodable
+  have : Encodable s := hs.toEncodable
   by_cases H : ∀ i, i ∈ s
   · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b :=
       fun b ↦ cbiSup_eq_of_forall (f := fun i ↦ f i b) H

@@ -63,7 +63,6 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     {s : Finset (Submodule R M)} (hs : s.inf id = N) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Submodule R M), t.inf id = N ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical) := by
-  classical
   refine ⟨(s.image fun J ↦ {I ∈ s | (I.colon .univ).radical = (J.colon .univ).radical}).image
     fun t ↦ t.inf id, ?_, ?_, ?_⟩
   · ext

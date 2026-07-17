@@ -473,9 +473,11 @@ theorem support_embDomain_subset {f : Γ ↪o Γ'} {x : R⟦Γ⟧} :
   contrapose hg
   rw [mem_support, embDomain_notin_image_support hg, Classical.not_not]
 
-theorem embDomain_notin_range {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'} (hb : b ∉ Set.range f) :
+theorem embDomain_of_notMem_range {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'} (hb : b ∉ Set.range f) :
     (embDomain f x).coeff b = 0 :=
   embDomain_notin_image_support fun con => hb (Set.image_subset_range _ _ con)
+
+@[deprecated (since := "2026-07-15")] alias embDomain_notin_range := embDomain_of_notMem_range
 
 @[simp]
 theorem embDomain_zero {f : Γ ↪o Γ'} : embDomain f (0 : R⟦Γ⟧) = 0 := by
