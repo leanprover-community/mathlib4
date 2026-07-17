@@ -334,7 +334,7 @@ variable [TopologicalSpace γ] [ClosedIciTopology γ]
 theorem lowerSemicontinuousOn_iff_isClosed_epigraph {f : α → γ} {s : Set α} (hs : IsClosed s) :
     LowerSemicontinuousOn f s ↔ IsClosed {p : α × γ | p.1 ∈ s ∧ f p.1 ≤ p.2} := by
   simp_rw [lowerSemicontinuousOn_iff, lowerSemicontinuousWithinAt_iff,
-    eventually_nhdsWithin_iff, ← isOpen_compl_iff, compl_setOf, isOpen_iff_eventually, mem_setOf,
+    eventually_nhdsWithin_iff, ← isOpen_compl_iff, compl_ofPred, isOpen_iff_eventually, mem_ofPred,
     not_and, not_le]
   constructor
   · intro hf ⟨x, y⟩ h

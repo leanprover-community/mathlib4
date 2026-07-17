@@ -98,7 +98,7 @@ lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
   rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
   congr! 2
   ext c
-  simp_rw [Set.toFinset_setOf, mem_filter, ← Set.ncard_coe_finset, coe_filter,
+  simp_rw [Set.toFinset_ofPred, mem_filter, ← Set.ncard_coe_finset, coe_filter,
     mem_supp_iff, mem_univ, true_and, supp, and_comm]
 
 lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Nat.card V) := by

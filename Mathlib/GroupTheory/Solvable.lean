@@ -113,14 +113,17 @@ class IsSolvable : Prop where
 @[deprecated (since := "2026-07-16")]
 alias _root_.IsSolvable := Group.IsSolvable
 
-instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSolvable G :=
+@[deprecated (since := "2026-07-17")]
+alias _root_.isSolvable_def := Group.isSolvable_def
+
+instance (priority := 100) {G : Type*} [CommGroup G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 
 theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
     IsSolvable G := by
   let hG' : CommGroup G := { hG with mul_comm := h }
   cases hG
-  exact CommGroup.isSolvable
+  infer_instance
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.isSolvable_of_comm := Group.isSolvable_of_comm
@@ -131,7 +134,7 @@ theorem isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :
 @[deprecated (since := "2026-07-16")]
 alias _root_.isSolvable_of_top_eq_bot := Group.isSolvable_of_top_eq_bot
 
-instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolvable G :=
+instance (priority := 100) [Subsingleton G] : IsSolvable G :=
   isSolvable_of_top_eq_bot G (by simp [eq_iff_true_of_subsingleton])
 
 variable {G}
@@ -159,7 +162,7 @@ theorem isSolvable_of_isSolvable_injective (hf : Function.Injective f) [IsSolvab
 @[deprecated (since := "2026-07-16")]
 alias _root_.solvable_of_solvable_injective := isSolvable_of_isSolvable_injective
 
-instance isSolvable_subgroup_of_isSolvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
+instance (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
   isSolvable_of_isSolvable_injective H.subtype_injective
 
 theorem isSolvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
@@ -168,17 +171,17 @@ theorem isSolvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : I
 @[deprecated (since := "2026-07-16")]
 alias _root_.solvable_of_surjective := isSolvable_of_surjective
 
-instance isSolvable_quotient_of_isSolvable (H : Subgroup G) [H.Normal] [IsSolvable G] :
+instance (H : Subgroup G) [H.Normal] [IsSolvable G] :
     IsSolvable (G ⧸ H) :=
   isSolvable_of_surjective (QuotientGroup.mk'_surjective H)
 
 theorem isSolvable_iff_subgroup_quotient (H : Subgroup G) [H.Normal] :
     IsSolvable G ↔ IsSolvable H ∧ IsSolvable (G ⧸ H) :=
-  ⟨fun _ => ⟨isSolvable_subgroup_of_isSolvable H, isSolvable_quotient_of_isSolvable H⟩,
-    and_imp.2 fun _ _ => isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H)
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩, and_imp.2 fun _ _ =>
+    isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H)
       ((QuotientGroup.ker_mk' H).trans H.range_subtype.symm).le⟩
 
-instance isSolvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
+instance {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   isSolvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
     ⟨x.1, Prod.ext rfl hx.symm⟩

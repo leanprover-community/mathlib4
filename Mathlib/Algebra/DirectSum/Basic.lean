@@ -38,7 +38,6 @@ Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι 
 @[implicit_reducible]
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
-deriving AddCommMonoid, Inhabited, DFunLike
 
 set_option backward.inferInstanceAs.wrap.data false in
 deriving instance CoeFun for DirectSum
@@ -58,14 +57,21 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 --   | `(⨁ ($x:ident) ($y:ident), $p) => `(DirectSum _ (fun $x ↦ fun $y ↦ $p))
 -- end
 
+namespace DirectSum
+
+variable {ι β}
+
+-- This instance exists to avoid nsmul and zsmul diamonds.
+instance {R : Type u} [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
+    SMul R (⨁ i, β i) := inferInstanceAs <| SMul R (Π₀ (i : ι), β i)
+
+deriving instance AddCommMonoid, Inhabited, DFunLike for DirectSum
+
 instance [DecidableEq ι] [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] :
     DecidableEq (DirectSum ι β) :=
   inferInstanceAs <| DecidableEq (Π₀ i, β i)
 
-namespace DirectSum
-
-variable {ι}
-
+variable (β) in
 /-- Coercion from a `DirectSum` to a pi type is an `AddMonoidHom`. -/
 def coeFnAddMonoidHom [∀ i, AddCommMonoid (β i)] : (⨁ i, β i) →+ (Π i, β i) where
   toFun x := x
@@ -83,8 +89,6 @@ variable [∀ i, AddCommGroup (β i)]
 instance : AddCommGroup (DirectSum ι β) :=
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
 
-variable {β}
-
 @[simp]
 theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
   rfl
@@ -99,8 +103,6 @@ variable [∀ i, AddCommMonoid (β i)]
 @[simp]
 theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
   rfl
-
-variable {β}
 
 @[simp]
 theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
