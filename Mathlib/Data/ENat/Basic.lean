@@ -328,6 +328,8 @@ theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
 theorem natCast_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
   add_one_le_iff <| natCast_ne_top m
 
+@[deprecated (since := "2026-07-17")] alias coe_add_one_le_iff := natCast_add_one_le_iff
+
 theorem add_one_le_natCast_iff {m : ℕ∞} {n : ℕ} : m + 1 ≤ n ↔ m < n :=
   add_one_le_iff' <| natCast_ne_top n
 
