@@ -36,7 +36,7 @@ variable (F : C ⥤ H₁) (L : C ⥤ D)
 set_option backward.defeqAttrib.useBackward true in
 /-- The right adjoint of `LeftExtension.postcompose₂ L F G₁` when `G₁` is
 part of an adjunction `adj : G₁ ⊣ G₂`. -/
-@[simps!]
+@[simps! +dsimpLhs obj_right_obj obj_right_map obj_hom_app map_right_app]
 def leftExtensionPostCompose₂RightAdjoint :
     L.LeftExtension (F ⋙ G₁) ⥤ L.LeftExtension F :=
   StructuredArrow.map₂ (F := (whiskeringRight _ _ _).obj G₂)
@@ -72,7 +72,7 @@ variable (F : C ⥤ H₂) (L : C ⥤ D)
 set_option backward.defeqAttrib.useBackward true in
 /-- The left adjoint of `RightExtension.postcompose₂ L F G₂` when `G₂` is
 part of an adjunction `adj : G₁ ⊣ G₂`. -/
-@[simps!]
+@[simps! +dsimpLhs obj_left_obj obj_left_map obj_hom_app map_left_app]
 def rightExtensionPostCompose₂LeftAdjoint :
     L.RightExtension (F ⋙ G₂) ⥤ L.RightExtension F :=
   CostructuredArrow.map₂ (F := (whiskeringRight _ _ _).obj G₁)
