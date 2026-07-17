@@ -148,4 +148,4 @@ theorem IsIntegral.mem_range_ratCast_iff {α : Type*} [DivisionRing α] [CharZer
   IsIntegralClosure.mem_range_algebraMap ℤ h
 
 @[deprecated (since := "2026-07-17")]
-alias IsIntegral.exists_int_iff_exists_rat := IsIntegral.mem_range_ratCast_iff_mem_range_intCast
+alias IsIntegral.exists_int_iff_exists_rat := IsIntegral.mem_range_ratCast_iff
