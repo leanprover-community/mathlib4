@@ -35,22 +35,19 @@ variable {ι X Y E F G H I J : Type*} {mX : MeasurableSpace X} {mY : MeasurableS
 
 namespace MeasureTheory.VectorMeasure
 
-/-- The product of two vector measures `μ` and `ν` with respect to a continuous bilinear map `B`,
-giving mass `B (μ s) (ν t)` to any measurable product set `s × t`.
-If such a measure does not exist, we use the junk value `0`. -/
-noncomputable def prod (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G) :
-    VectorMeasure (X × Y) G :=
-  open scoped Classical in
-  if h : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
-    MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t) then h.choose
-  else 0
-
 /-- Two vector measures `μ` and `ν` have a product with respect to `B` if there exists a
 measure giving mass `B (μ s) (ν t)` to any measurable product set `s × t`.
 This is satisfied whenever `μ` or `ν` has finite variation. -/
 class HasProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G) : Prop where
   exists_prod : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
     MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t)
+
+/-- The product of two vector measures `μ` and `ν` with respect to a continuous bilinear map `B`,
+giving mass `B (μ s) (ν t)` to any measurable product set `s × t`.
+If such a measure does not exist, we use the junk value `0`. -/
+noncomputable def prod (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G) :
+    VectorMeasure (X × Y) G :=
+  open scoped Classical in if h : HasProd μ ν B then h.exists_prod.choose else 0
 
 lemma prod_eq_zero_of_not_hasProd (h : ¬HasProd μ ν B) :
     μ.prod ν B = 0 := by
@@ -70,7 +67,7 @@ lemma prod_eq_zero_of_not_hasProd (h : ¬HasProd μ ν B) :
   · simp only [h't, not_false_eq_true, not_measurable, _root_.map_zero]
     rw [not_measurable]
     simp [measurableSet_prod, hs, ht, h't]
-  simpa [prod, h.exists_prod] using h.exists_prod.choose_spec s t h's h't
+  simpa [prod, h] using h.exists_prod.choose_spec s t h's h't
 
 lemma HasProd.flip [HasProd μ ν B] : HasProd ν μ B.flip where
   exists_prod := by
