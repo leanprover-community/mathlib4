@@ -29,7 +29,7 @@ namespace FirstOrder
 
 namespace Field
 
-open Language Ring
+open Language FirstOrder.Ring
 
 /-- For a given natural number `n`, `eqZero n` is the sentence in the language of rings
 saying that `n` is zero. -/
