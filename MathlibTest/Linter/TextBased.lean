@@ -2,7 +2,7 @@ module
 
 import all Batteries.Data.List.Basic
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Linter.Style
+import all Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Contrapose
@@ -605,7 +605,7 @@ def aux' : Nat := 1
 
 end openClassical
 
-/- Tests for the `show` linter -/
+/-! Tests for the `show` linter -/
 section showLinter
 
 set_option linter.style.show true
@@ -652,6 +652,73 @@ example := by
   rfl
 
 end showLinter
+
+/-! Unit tests for the `nameCheck` linter and friends -/
+section nameCheck
+
+open Mathlib.Linter.Style.nameCheck
+
+#guard !isWronglyCasedName "something"
+#guard !isWronglyCasedName "myDeclaration"
+#guard !isWronglyCasedName "lowerCamelCase"
+#guard isWronglyCasedName "Foo"
+-- Acronyms and acronym-like names.
+#guard !isWronglyCasedName "ofLE"
+#guard !isWronglyCasedName "LE"
+#guard isWronglyCasedName "LEOne"
+#guard !isWronglyCasedName "leOne"
+#guard !isWronglyCasedName "GL"
+#guard !isWronglyCasedName "SL"
+#guard !isWronglyCasedName "L1"
+#guard !isWronglyCasedName "L2"
+#guard !isWronglyCasedName "L1H'"
+#guard !isWronglyCasedName "L1"
+#guard !isWronglyCasedName "L₁"
+#guard !isWronglyCasedName "I₀'"
+-- One-letter names are not acronyms.
+#guard isWronglyCasedName "A"
+#guard isWronglyCasedName "A_b"
+#guard isWronglyCasedName "a_B"
+#guard !isWronglyCasedName "a_BE"
+-- False negative.
+#guard !isWronglyCasedName "a_BA"
+
+-- Explicit exceptions.
+#guard !isWronglyCasedName "Ioo"
+#guard !isWronglyCasedName "Lp"
+#guard !isWronglyCasedName "Iotop"
+#guard !isWronglyCasedName "Ioo'"
+#guard !isWronglyCasedName "Ioc₀"
+#guard !isWronglyCasedName "Ioi₀"
+#guard !isWronglyCasedName "Ioi₁"
+#guard !isWronglyCasedName "Ioi₀_bar"
+#guard !isWronglyCasedName "Ioi₁_bar"
+#guard !isWronglyCasedName "Ioi₁₂_bar₀"
+
+-- False negatives: the acronym heuristics allows some undesirable behaviour.
+#guard !isWronglyCasedName "myDef_LE"
+#guard !isWronglyCasedName "Ioc_LE"
+#guard !isWronglyCasedName "foo₀_TFAE"
+
+-- Tests for theorem names starting in uppercase.
+-- The first *component* being capitalized is fine,
+public theorem Foo.my_lemma_name : True := sorry
+-- we only care about the last component.
+public theorem Foo.My_lemma_name : True := sorry
+public theorem MyConcept_some_lemma : True := sorry
+public theorem Nat.Ioc_something : True := sorry
+/--
+error: -- Found 2 errors in 4 declarations (plus 12 automatically generated ones) in the current file with 1 linters
+
+/- The `badNamingUppercaseComponent` linter reports:
+FOUND declaration(s) with underscores with an uppercase middle component. These names violate rule 5 of mathlib's naming convention.
+This linter can be disabled with `@[nolint badNamingUppercaseComponent]`. -/
+#check Foo.My_lemma_name /- The theorem `Foo.My_lemma_name` has an upper-case name: this certainly violates the naming convention: please use `snake_case` instead -/
+#check MyConcept_some_lemma /- The theorem `MyConcept_some_lemma` has an upper-case name: this certainly violates the naming convention: please use `snake_case` instead -/
+-/
+#guard_msgs in
+#lint only badNamingUppercaseComponent
+end nameCheck
 
 /-! Tests for linters defined in `TextBased.lean`. -/
 section textBased

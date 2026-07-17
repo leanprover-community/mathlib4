@@ -43,6 +43,9 @@ This file defines the following linters:
   by containing a double underscore. The `defsWithUnderscore` environment linter checks for
   definitions whose name contains an underscore: that is also very likely to be a violation of
   mathlib's naming convention.
+  The `badNamingUppercaseComponent` environment linter checks for declarations whose names
+  contains an underscore, with an uppercase middle component: this is violation mathlib's naming
+  convention.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -497,6 +500,37 @@ public register_option linter.style.nameCheck : Bool := {
 
 namespace Style.nameCheck
 
+/--
+Is `s` a string consisting only of digits, uppercase letters and primes?
+
+TODO: This heuristic is not correct and leads to plenty of false-negatives like `_LE` or `_TFAE` which
+should indeed be lower-cased as `_le` and `_tfae` following the style convention.
+See #34440 for more details.
+-/
+def isAcronymLike (s : String.Slice) : Bool :=
+  -- A single letter is not an acronym.
+  s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || "'₀₁₂₃₄₅₆₇₈₉".contains c) &&
+    s.positions.length != 1
+
+/-- Explicit allow-list of naming components which are allowed to be in uppercase. -/
+def allowed : Array String.Slice := #[
+  "Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio", "Iotop",
+  "IicProdIoc", "IocProdIoc", -- all components (Iic, Prod, Ioc etc.) are allowed
+  "Lp", "Lq", -- TODO: should Lp and Lq be used in names?
+]
+
+/-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules ---
+assuming `s` does not contain any underscores. -/
+def isWronglyCased (s : String.Slice) : Bool :=
+  -- The string starts with an uppercase character, is not like an acronym
+  -- and (after removing any trailing primes and subscript digits) is not an allowed exception.
+  s.front.isUpper && !(isAcronymLike s) &&
+    (!allowed.contains (s.dropEndWhile (fun c : Char ↦ "'₀₁₂₃₄₅₆₇₈₉".contains c)))
+
+/-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
+def isWronglyCasedName (s : String) : Bool :=
+  (s.split "_").toList.any (fun t ↦ isWronglyCased t)
+
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
     unless getLinterValue linter.style.nameCheck (← getLinterOptions) do
@@ -514,8 +548,47 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
         -- Check whether the declaration name contains "__".
         if 1 < (declName.toString.splitOn "__").length then
           Linter.logLint linter.style.nameCheck id
-            m!"The declaration '{id}' contains '__', which does not follow the mathlib naming \
+            m!"The declaration `{id}` contains '__', which does not follow the mathlib naming \
               conventions. Consider using single underscores instead."
+        -- TODO: once the `badNamingUppercaseComponent` linter is free of exceptions,
+        -- enable this check and remove `badNamingUppercaseComponent`.
+        -- Also check if a name is capitalized after an underscore: this is often wrong.
+        -- let parts := declName.toString.splitOn "_" |>.drop 1
+        -- let bad := parts.filter (isWronglyCased ·)
+        -- for badComponent in bad do
+        --   Linter.logLint linter.style.nameCheck id
+        --     m!"The component `{bad}` of `{id}` starts in uppercase, but is not an acronym. \
+        --     Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
+        --     depending on the type of this declaration."
+
+-- Sadly, we cannot disable this environment linter by default while enabling it in mathlib.
+-- Rewriting this as a syntax linter will fix it!
+open Batteries.Tactic.Lint in
+/-- Linter that checks for theorems starting with an uppercase name, and for declarations with
+uppercase middle components: such naming violates rules 1 and 5 of mathlib's naming convention,
+respectively. -/
+@[env_linter] public def badNamingUppercaseComponent : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "no declarations with uppercase middle components found."
+  errorsFound := "FOUND declaration(s) with underscores with an uppercase middle component. \
+    These names violate rule 5 of mathlib's naming convention."
+  test declName := do
+    if (← isAutoDecl declName) then return none
+    -- If a theorem name is uppercased, this is an error (unless it the name starts with an acronym).
+    if ((← getEnv).find? declName).get!.isTheorem then
+      -- Get the last component of the theorem name (i.e., without any namespaces).
+      -- If it is uppercase and (the first component before an underscore) is not an acronym,
+      -- this is definitely an error.
+      let bareName := declName.components.getLast!.toString
+      if isWronglyCasedName (bareName.split "_"|>.toList.head!.toString) then
+        return m!"The theorem `{declName}` has an upper-case name: \
+          this certainly violates the naming convention: please use `snake_case` instead"
+    let parts := declName.toString.splitOn "_" |>.drop 1
+    let bad := parts.filter (isWronglyCasedName ·)
+    if bad.isEmpty then return none
+    let aux := ", ".intercalate bad
+    return m!"The component(s) `{aux}` of `{declName}` start(s) in uppercase, but is not an acronym. \
+      Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
+      depending on the type of this declaration."
 
 initialize addLinter doubleUnderscore
 

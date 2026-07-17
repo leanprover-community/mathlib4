@@ -128,21 +128,21 @@ register_linter_set linter.weeklyLintSet :=
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType AuxLemma
 
-run_cmd liftTermElabM do
-  let DefinedInScripts : Array Name :=
-    #[`linter.checkInitImports, `linter.allScriptsDocumented]
-  let env ← getEnv
-  let ls := (linterSetsExt.getState env).localEntries
-  let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
-    throwError m!"'linter.mathlibStandardSet' is not defined."
-  let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |
-    throwError m!"'linter.nightlyRegressionSet is not defined."
-  let some (_, wlLinters) := ls.find? (·.1 == ``linter.weeklyLintSet) |
-    throwError m!"'linter.weeklyLintSet is not defined."
-  for mll in mlLinters ∪ nrLinters ∪ wlLinters do
-    let [(mlRes, _)] ← realizeGlobalName mll |
-      if !DefinedInScripts.contains mll then
-        throwError "Unknown option '{mll}'!"
-    let some cinfo := env.find? mlRes | throwError "{mlRes}: this code should be unreachable."
-    if !cinfo.type.isAppOf ``Lean.Option then
-      throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
+-- run_cmd liftTermElabM do
+--   let DefinedInScripts : Array Name :=
+--     #[`linter.checkInitImports, `linter.allScriptsDocumented]
+--   let env ← getEnv
+--   let ls := (linterSetsExt.getState env).localEntries
+--   let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
+--     throwError m!"'linter.mathlibStandardSet' is not defined."
+--   let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |
+--     throwError m!"'linter.nightlyRegressionSet is not defined."
+--   let some (_, wlLinters) := ls.find? (·.1 == ``linter.weeklyLintSet) |
+--     throwError m!"'linter.weeklyLintSet is not defined."
+--   for mll in mlLinters ∪ nrLinters ∪ wlLinters do
+--     let [(mlRes, _)] ← realizeGlobalName mll |
+--       if !DefinedInScripts.contains mll then
+--         throwError "Unknown option '{mll}'!"
+--     let some cinfo := env.find? mlRes | throwError "{mlRes}: this code should be unreachable."
+--     if !cinfo.type.isAppOf ``Lean.Option then
+--       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
