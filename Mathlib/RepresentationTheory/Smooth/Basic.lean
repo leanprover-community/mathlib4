@@ -5,218 +5,238 @@ Authors: Jiaxi Mo
 -/
 module
 
-public import Mathlib.RepresentationTheory.Smooth.Basic
-public import Mathlib.RepresentationTheory.Rep.Basic
-public import Mathlib.CategoryTheory.Adjunction.Restrict
-public import Mathlib.CategoryTheory.Monoidal.Subcategory
-public import Mathlib.CategoryTheory.Abelian.Subcategory
+public import Mathlib.RepresentationTheory.Stabilizer
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Smooth representations
 
-This file defines the category `SmRep k G` of smooth representations of a topological group `G`,
-and proves it is a full, coreflective, abelian, braided, closed monoidal subcategory of `Rep k G`.
+This file defines smoothness for representations of a topological group, and proves basic closure
+properties.
+
+A representation is called smooth if the stabilizer of any vector is open. We prove that
+subrepresentations, quotient representations, direct sums, and tensor products of smooth
+representations are smooth. We define `smoothHom` and `contragredient` by cutting out the
+smooth vectors from the naive `linHom` and `dual`.
 
 ## Main definitions
 
-* `Representation.Smooth.SmRep.SmRep`
-* `Representation.Smooth.SmRep.smVec`
-* `Representation.Smooth.SmRep.ihom`
-* `Representation.Smooth.SmRep.dual`
+* `Representation.Smooth.IsSmoothVector`
+* `Representation.Smooth.IsSmooth`
+* `Representation.Smooth.smoothVectors`
+* `Representation.Smooth.smoothHom`
+* `Representation.Smooth.contragredient`
 
 ## Main theorems
 
-* `Representation.Smooth.SmRep.tensorHomAdjunction`
-
-## Implementation notes
-
-We use `ObjectProperty.FullSubcategory` to define the category of smooth representations.
-
-To obtain the monoidal structure, we first show that taking smooth vectors `smVec` is right adjoint
-to the canonical inclusion `ι`, and then we employ the categorical machinery to obtain the desired
-categorical structures by restricting those structures in `Rep` along the fully faithful inclusion.
+* `Representation.Smooth.instIsSmooth_smoothVectors`
 
 -/
 
 @[expose] public section
 
-open CategoryTheory Representation
+open Representation
 
 namespace Representation.Smooth
 
-universe w u v
+section basic
 
-variable (k : Type u) [Ring k]
-variable (G : Type v) [TopologicalSpace G] [Group G]
+variable {G : Type*} [TopologicalSpace G] [Group G]
+variable {k : Type*} [Semiring k]
+variable {V : Type*} [AddCommMonoid V] [Module k V]
 
-/-- Smoothness is an `ObjectProperty` of `Rep k G`. -/
-def smoothProperty : ObjectProperty (Rep.{w} k G) := fun A ↦ (Smooth.IsSmooth A.ρ)
+/-- A vector is called smooth if its stabilizer is open. -/
+def IsSmoothVector (ρ : Representation k G V) (v : V) : Prop :=
+  IsOpen ((stabilizer ρ v) : Set G)
 
-/-- `SmRep k G` is the full subcategory of `Rep k G` consisting of smooth representations. -/
-abbrev SmRep := (smoothProperty.{w} k G).FullSubcategory
-
-variable {k G}
-
-@[simp]
-lemma smoothProperty_iff {A : Rep.{w} k G}
-    : smoothProperty k G A ↔ Smooth.IsSmooth A.ρ := by
+lemma isSmoothVector_iff {ρ : Representation k G V} {v : V} :
+    IsSmoothVector ρ v ↔ IsOpen {g : G | ρ g v = v} := by
   rfl
 
-namespace SmRep
+/-- A representation is called smooth if every vector is smooth. -/
+class IsSmooth (ρ : Representation k G V) : Prop where
+  smooth : ∀ v : V, IsSmoothVector ρ v
 
-/-- The object in `SmRep k G` associated to an smooth object in `Rep k G`. -/
-abbrev mk (A : Rep.{w} k G) [h : IsSmooth A.ρ] : SmRep.{w} k G := ⟨A, h⟩
+lemma isSmooth_iff {ρ : Representation k G V} :
+    IsSmooth ρ ↔ ∀ v : V, IsOpen {g : G | ρ g v = v} :=
+  ⟨fun h v => isSmoothVector_iff.mp (h.smooth v),
+    fun h => {smooth v := isSmoothVector_iff.mpr (h v)}⟩
 
-/-- The associated object in `Rep k G` forgetting the smoothness. -/
-abbrev rep (A : SmRep.{w} k G) : Rep.{w} k G := A.obj
+/-- Any trivial representation is smooth. -/
+lemma isSmooth_trivial : IsSmooth (trivial k G V) := by
+  simp [isSmooth_iff]
 
-variable {V : Type w} [AddCommGroup V] [Module k V] in
-/-- The object in `SmRep k G` associated to a smooth representation. -/
-abbrev of (ρ : Representation k G V) [h : IsSmooth ρ] : SmRep.{w} k G := ⟨Rep.of ρ, h⟩
+/-- Any subrepresentation of a smooth representation is smooth. -/
+lemma isSmooth_subrepresentation {ρ : Representation k G V} (φ : Subrepresentation ρ)
+    [h : IsSmooth ρ] :
+    IsSmooth φ.toRepresentation := by
+  simpa [isSmooth_iff, isSmoothVector_iff] using fun v _ => h.smooth v
 
-/-- The underlying representation of an object in `SmRep k G`. -/
-abbrev ρ (A : SmRep.{w} k G) : Representation k G A.obj.V := A.obj.ρ
+/-- An arbitrary direct sum of smooth representations is smooth. -/
+lemma isSmooth_directSum {I : Type*} {V : I → Type*} [(i : I) → AddCommMonoid (V i)]
+    [(i : I) → Module k (V i)] (ρ : (i : I) → Representation k G (V i)) [h : ∀ i, IsSmooth (ρ i)] :
+    IsSmooth (Representation.directSum ρ) := by
+  classical
+  simp only [isSmooth_iff, directSum_apply, DirectSum.ext_iff, DirectSum.lmap_apply]
+  intro v
+  have heq : {g | ∀ i, ρ i g (v i) = v i} = ⋂ i ∈ DFinsupp.support v, {g | ρ i g (v i) = v i} := by
+    ext g
+    simp only [Set.mem_setOf_eq, Set.mem_iInter]
+    constructor
+    · exact fun h_stab i _ => h_stab i
+    · intro h_stab i
+      by_cases h_supp : i ∈ DFinsupp.support v
+      · exact h_stab i h_supp
+      · rw [DFinsupp.notMem_support_iff] at h_supp
+        rw [h_supp, map_zero]
+  rw [heq]
+  exact isOpen_biInter_finset fun i _ => (h i).smooth (v i)
 
-/-- The morphism in `SmRep k G` associted to a morphism in `Rep k G`. -/
-abbrev homMk {A B : SmRep.{w} k G} (f : A.rep ⟶ B.rep) :
-    A ⟶ B := ObjectProperty.homMk f
+variable {V' : Type*} [AddCommMonoid V'] [Module k V'] in
+/-- Any biproduct of two smooth representations is smooth. -/
+lemma isSmooth_prod (ρ : Representation k G V) (ρ' : Representation k G V') [h1 : IsSmooth ρ]
+    [h2 : IsSmooth ρ'] :
+    IsSmooth (ρ.prod ρ') := by
+  rw [isSmooth_iff]
+  rintro ⟨v, v'⟩
+  convert (h1.smooth v).inter (h2.smooth v')
+  ext
+  simp
 
-variable {V V' : Type w} [AddCommGroup V] [Module k V] [AddCommGroup V'] [Module k V'] in
-/-- Typecheck an IntertwiningMap between smooth representations as a morphism in `SmRep k G`. -/
-abbrev ofHom {ρ : Representation k G V} {ρ' : Representation k G V'} [h : IsSmooth ρ]
-    [h' : IsSmooth ρ'] (f : ρ.IntertwiningMap ρ') :
-    of ρ ⟶ of ρ' := homMk (Rep.ofHom f)
+end basic
 
-instance {A : SmRep.{w} k G} : IsSmooth A.ρ := A.property
+section smoothVectors
 
-@[simp] lemma homMk_hom {A B : SmRep.{w} k G} (f : A ⟶ B) : homMk f.hom = f := rfl
+variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
+variable {k : Type*} [Semiring k]
+variable {V V' : Type*} [AddCommMonoid V] [Module k V] [AddCommMonoid V'] [Module k V']
 
-@[simp] lemma ofHom_hom_hom {A B : SmRep.{w} k G} (f : A ⟶ B) : ofHom f.hom.hom = f := rfl
+omit [IsTopologicalGroup G] in
+lemma isSmoothVector_zero (ρ : Representation k G V) : IsSmoothVector ρ 0 := by
+  simp [isSmoothVector_iff]
 
-variable [IsTopologicalGroup G]
+lemma isSmoothVector_add {ρ : Representation k G V} {v1 v2 : V}
+    (hv1 : IsSmoothVector ρ v1) (hv2 : IsSmoothVector ρ v2) :
+    IsSmoothVector ρ (v1 + v2) :=
+  Subgroup.isOpen_mono (le_stabilizer_add ρ v1 v2) (hv1.inter hv2)
 
-/-- The canonical inclusion functor from `SmRep` to `Rep`. -/
-abbrev ι : SmRep.{w} k G ⥤ Rep.{w} k G := (smoothProperty.{w} k G).ι
+lemma isSmoothVector_sum {n : ℕ} {ρ : Representation k G V} {v : Fin n → V}
+    (h : ∀ i : Fin n, IsSmoothVector ρ (v i)) : IsSmoothVector ρ (∑ i, v i) :=
+  Subgroup.isOpen_mono (le_stabilizer_sum ρ v) (by simpa using isOpen_iInter_of_finite h)
 
-/-- The functor of taking the maximal smooth subrepresentation. -/
-def smVec : Rep.{w} k G ⥤ SmRep.{w} k G where
-  obj := fun A ↦ mk (Rep.of ((smoothVectors A.ρ).toRepresentation))
-  map := fun f ↦ ofHom (IntertwiningMap.smoothVectors f.hom)
+lemma isSmoothVector_smul {ρ : Representation k G V} {v : V} (c : k)
+    (h : IsSmoothVector ρ v) : IsSmoothVector ρ (c • v) :=
+  Subgroup.isOpen_mono (le_stabilizer_smul ρ c v) h
 
-/-- `ι` is left adjoint to `smVec`. -/
-def smVecAdjunction : ι ⊣ smVec.{w} (k := k) (G := G) where
-  unit := { app A := ofHom {
-    toFun v := ⟨v, A.property.smooth v⟩
-    map_add' x y := by rfl, map_smul' m x := by rfl, isIntertwining' g := by rfl }}
-  counit := { app A := Rep.ofHom {
-    toFun v := v.1
-    map_add' x y := by rfl, map_smul' m x := by rfl, isIntertwining' g :=  by rfl }}
+open scoped Pointwise
 
-/-- `SmRep` is a coreflective full subcategory of `Rep`. -/
-lemma isIso_smVecAdjunction_unit : IsIso (smVecAdjunction.{w} (k := k) (G := G)).unit :=
-  smVecAdjunction.unit_isIso_of_L_fully_faithful
+lemma isSmoothVector_apply {ρ : Representation k G V} {v : V} (g : G) (hv : IsSmoothVector ρ v) :
+    IsSmoothVector ρ (ρ g v) := by
+  rw [IsSmoothVector, stabilizer_conj]
+  convert isOpenMap_mul_right g⁻¹ (g • ρ.stabilizer v) (isOpenMap_mul_left g (ρ.stabilizer v) hv)
+  ext x
+  rw [Set.mem_image]
+  simp [Set.mem_smul_set]
 
-section abelian
+/-- `IntertwiningMap` sends smooth vectors to smooth vectors. -/
+lemma IntertwiningMap.isSmoothVector {ρ : Representation k G V} {ρ' : Representation k G V'}
+    {v : V} (f : ρ.IntertwiningMap ρ') (h : IsSmoothVector ρ v) : IsSmoothVector ρ' (f v) :=
+  Subgroup.isOpen_mono (IntertwiningMap.stabilizer_le f v) h
 
-instance : (smoothProperty.{w} k G).IsClosedUnderSubobjects := by
-  constructor
-  simp only [smoothProperty_iff, Rep.mono_iff_injective]
-  exact fun _ h _ => IntertwiningMap.isSmooth_injective h
+/-- The submodule of smooth vectors of a representation. -/
+def smoothSubmodule (ρ : Representation k G V) : Submodule k V where
+  carrier := {v : V | IsSmoothVector ρ v}
+  add_mem' h1 h2 := isSmoothVector_add h1 h2
+  zero_mem' := isSmoothVector_zero ρ
+  smul_mem' c _ h := isSmoothVector_smul c h
 
-instance : (smoothProperty.{w} k G).IsClosedUnderQuotients := by
-  constructor
-  simp only [smoothProperty_iff, Rep.epi_iff_surjective]
-  exact fun _ h _ => IntertwiningMap.isSmooth_surjective h
+/-- Smooth vectors of a representation form a `Subrepresentation`. -/
+def smoothVectors (ρ : Representation k G V) : Subrepresentation ρ where
+  toSubmodule := smoothSubmodule ρ
+  apply_mem_toSubmodule g _ h := isSmoothVector_apply g h
 
-instance : (smoothProperty.{w} k G).ContainsZero :=
-  ⟨Rep.trivial k G PUnit, by simp [Rep.isZero_iff, subsingleton_iff], isSmooth_trivial⟩
+@[simp]
+lemma mem_smoothSubmodule {ρ : Representation k G V} {v : V} :
+    v ∈ (smoothVectors ρ).toSubmodule ↔ IsSmoothVector ρ v := by
+  rfl
 
-/-- Smoothness is stable under isomorphisms. -/
-lemma isSmooth_iso {A B : Rep.{w} k G} (f : A ≅ B) (h : IsSmooth A.ρ) : IsSmooth B.ρ := by
-  exact (smoothProperty k G).prop_of_iso f h
+/-- Taking smooth vectors gives a smooth representation. -/
+instance instIsSmooth_smoothVectors {ρ : Representation k G V} :
+    IsSmooth (smoothVectors ρ).toRepresentation := by
+  simp [isSmooth_iff, isSmoothVector_iff]
 
-instance : (smoothProperty.{w} k G).IsClosedUnderBinaryProducts := by
-  apply ObjectProperty.IsClosedUnderLimitsOfShape.mk'
-  rintro _ ⟨F, hF⟩
-  simp only [smoothProperty_iff] at hF ⊢
-  -- Change the abstract limit to the concrete (bi)product and then apply isSmooth_prod.
-  exact isSmooth_iso
-    ((Rep.prodIsoProduct (F.obj ⟨.left⟩) (F.obj ⟨.right⟩)).trans
-      (Limits.HasLimit.isoOfNatIso (Limits.diagramIsoPair F)).symm)
-    (isSmooth_prod (F.obj ⟨.left⟩).ρ (F.obj ⟨.right⟩).ρ)
+/-- `IntertwiningMap` descends to maximal smooth subrepresentations. -/
+def IntertwiningMap.smoothVectors {ρ : Representation k G V} {ρ' : Representation k G V'}
+    (f : ρ.IntertwiningMap ρ') :
+    ((smoothVectors ρ).toRepresentation).IntertwiningMap (smoothVectors ρ').toRepresentation where
+  toFun v := ⟨f v.1, IntertwiningMap.isSmoothVector f v.2⟩
+  map_add' := by simp [Subtype.ext_iff]
+  map_smul' := by simp [Subtype.ext_iff]
+  isIntertwining' g := by ext; apply IntertwiningMap.isIntertwining
 
-instance : (smoothProperty.{w} k G).IsClosedUnderFiniteProducts := by
-  apply ObjectProperty.IsClosedUnderFiniteProducts.mk'
+omit [IsTopologicalGroup G] in
+lemma IntertwiningMap.isSmooth_injective {ρ : Representation k G V} {ρ' : Representation k G V'}
+    {f : ρ.IntertwiningMap ρ'} (hf : Function.Injective f) [h' : IsSmooth ρ'] : IsSmooth ρ := by
+  rw [isSmooth_iff]
+  intro v
+  convert isSmoothVector_iff.mp (h'.smooth (f v))
+  rw [← IntertwiningMap.isIntertwining, hf.eq_iff]
 
-end abelian
+lemma IntertwiningMap.isSmooth_surjective {ρ : Representation k G V} {ρ' : Representation k G V'}
+    {f : ρ.IntertwiningMap ρ'} (hf : Function.Surjective f) [h : IsSmooth ρ] : IsSmooth ρ' := by
+  rw [isSmooth_iff]
+  intro v'
+  rcases hf v' with ⟨v, rfl⟩
+  exact IntertwiningMap.isSmoothVector f (h.smooth v)
 
-section monoidal
+end smoothVectors
 
-variable {k : Type u} [CommRing k]
+section quotient
 
-open MonoidalCategory
+variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
+variable {k : Type*} [Ring k]
+variable {V : Type*} [AddCommGroup V] [Module k V]
 
-/-- `SmRep` is a full monoidal subcategory of `Rep`. -/
-instance : ObjectProperty.IsMonoidal (smoothProperty.{u} k G) where
-  prop_unit := by simp [isSmooth_trivial]
-  prop_tensor X Y := by simp_all [isSmooth_tprod]
+/-- Any quotient representation of a smooth representation is smooth. -/
+lemma isSmooth_quotient {ρ : Representation k G V} {φ : Subrepresentation ρ} [h : IsSmooth ρ] :
+    IsSmooth φ.quotient := by
+  refine IntertwiningMap.isSmooth_surjective (f := ⟨φ.1.mkQ, fun _ ↦ rfl⟩) ?_
+  simp [Submodule.mkQ_surjective]
 
-/-- The definition of internal `Hom` in the category of smooth representations. -/
-noncomputable def ihom (A : SmRep.{w} k G) := ι ⋙ (ι.obj A).ihom ⋙ smVec
+end quotient
 
-/-- The underlying representation of `ihom` is `smoothHom`. -/
-lemma ihom_eq_of_smoothHom (A B : SmRep.{w} k G)
-    : (ihom A).obj B = of (smoothHom A.ρ B.ρ) := rfl
+section tensorHomContragredient
 
-/-- An auxiliary form of `tensorHomAdjunction`. -/
-noncomputable def tensorHomAdjunction_aux (A : SmRep.{u} k G)
-    : ι ⋙ (tensorLeft (ι.obj A)) ⊣ (Rep.ihom (ι.obj A)) ⋙ smVec :=
-  smVecAdjunction.comp (ihom.adjunction (ι.obj A))
+variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
+variable {k : Type*} [CommSemiring k]
+variable {V V' : Type*} [AddCommMonoid V] [Module k V] [AddCommMonoid V'] [Module k V']
 
-/-- The adjunction between `A ⨂ _` and `ihom (A, _)` in the category `SmRep`. -/
-noncomputable def tensorHomAdjunction (A : SmRep.{u} k G) : tensorLeft A ⊣ ihom A :=
-  Adjunction.restrictFullyFaithful
-    (adj := tensorHomAdjunction_aux A)
-    (hiC := Functor.FullyFaithful.id (SmRep k G))
-    (hiD := (smoothProperty k G).fullyFaithfulι)
-    (comm1 := Functor.Monoidal.commTensorLeft ι A)
-    (comm2 := (Functor.rightUnitor (ihom A)).symm)
+lemma isSmoothVector_tmul {ρ : Representation k G V} {ρ' : Representation k G V'} {v : V} {v' : V'}
+    (h : IsSmoothVector ρ v) (h' : IsSmoothVector ρ' v') :
+    IsSmoothVector (ρ.tprod ρ') (v ⊗ₜ[k] v') :=
+  Subgroup.isOpen_mono (le_stabilizer_tmul ρ ρ' v v') (h.inter h')
 
-/-- The explicit isomorphism between `A ⊗ B ⟶ C` and `B ⟶ ihom (A, C)`. -/
-noncomputable def tensorHomEquiv (A B C : SmRep.{u} k G) :
-    (A ⊗ B ⟶ C) ≃ (B ⟶ (SmRep.ihom A).obj C) :=
-  ((smoothProperty k G).fullyFaithfulι.homEquiv).trans <|
-  (Rep.tensorHomEquiv (ι.obj A) (ι.obj B) (ι.obj C)).trans <|
-  smVecAdjunction.homEquiv B ((Rep.ihom (ι.obj A)).obj (ι.obj C))
+/-- The tensor product of two smooth representations is smooth. -/
+lemma isSmooth_tprod (ρ : Representation k G V) (ρ' : Representation k G V')
+    [h : IsSmooth ρ] [h' : IsSmooth ρ'] : IsSmooth (tprod ρ ρ') := by
+  refine ⟨fun v => ?_⟩
+  induction v with
+  | zero => exact isSmoothVector_zero _
+  | tmul v v' => exact isSmoothVector_tmul (h.smooth v) (h'.smooth v')
+  | add _ _ h1 h2 => exact isSmoothVector_add h1 h2
 
-lemma tensorHomAdjunction_homEquiv_eq_tensorHomEquiv (A : SmRep.{u} k G)
-    : (tensorHomAdjunction A).homEquiv = tensorHomEquiv A := by
-  ext; rfl
+/-- The maximal smooth subrepresentation of the `linHom` representation. -/
+@[reducible]
+def smoothHom (ρ : Representation k G V) (ρ' : Representation k G V') :
+    Representation k G (smoothVectors (linHom ρ ρ')).toSubmodule :=
+  (smoothVectors (linHom ρ ρ')).toRepresentation
 
-/-- `SmRep` is a full closed monoidal subcategory of `Rep`. -/
-noncomputable instance : MonoidalClosed (SmRep.{u} k G) where
-  closed A := { rightAdj := ihom A, adj := tensorHomAdjunction A }
+/-- The maximal smooth subrepresentation of the dual representation. -/
+@[reducible]
+def contragredient (ρ : Representation k G V) :
+    Representation k G (smoothVectors ρ.dual).toSubmodule :=
+  (smoothVectors ρ.dual).toRepresentation
 
-/-- `SmRep` is a full braided subcategory of `Rep`. -/
-noncomputable instance : BraidedCategory (SmRep.{u} k G) := by
-  infer_instance
-
-open Opposite
-
-/-- The smooth dual object in `SmRep`. -/
-noncomputable abbrev dual (A : SmRep.{u} k G) := (ihom A).obj (𝟙_ (SmRep.{u} k G))
-
-/-- The dualizing functor in `SmRep`. -/
-noncomputable def dualFunctor : SmRep.{u} k G ⥤ (SmRep.{u} k G)ᵒᵖ where
-  obj A := op (dual A)
-  map {A B} f := op ((MonoidalClosed.pre (C := SmRep.{u} k G) f).app (𝟙_ (SmRep.{u} k G)))
-
-/-- The underlying representation of the dual object is given by `contragredient`. -/
-lemma dual_eq_of_contragredient (A : SmRep.{u} k G) :
-    dual A = of (contragredient A.ρ) := rfl
-
-end monoidal
-
-end SmRep
+end tensorHomContragredient
 
 end Representation.Smooth
