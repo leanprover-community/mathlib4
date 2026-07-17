@@ -58,25 +58,24 @@ noncomputable def toClosedBall (r : ℝ) :
     locallyFinsupp E ℤ →+o locallyFinsuppWithin (closedBall (0 : E) |r|) ℤ :=
   restrictOrderMonoidHom (subset_univ _)
 
-set_option backward.isDefEq.respectTransparency.types false in
+lemma toClosedBall_apply (r : ℝ) (f : locallyFinsupp E ℤ) :
+    toClosedBall r f = f.restrict (subset_univ _) := rfl
+
 @[simp]
 lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsupp E ℤ)
     (ha : z ∈ closedBall 0 |r|) :
     toClosedBall r f z = f z := by
-  unfold toClosedBall
-  simp_all [restrict_apply]
+  simp_all [toClosedBall_apply, restrict_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : Meromorphic f) :
     (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
-  simp_all [locallyFinsuppWithin.toClosedBall]
+  simp_all [toClosedBall_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] {r : ℝ}
     (f : locallyFinsupp E ℤ) :
     (toClosedBall r f).support ⊆ closedBall 0 |r| := by
-  simp_all [toClosedBall, restrict_apply]
+  simp_all [toClosedBall_apply, restrict_apply]
 
 /-!
 ## The Logarithmic Counting Function of a Function with Locally Finite Support
@@ -126,7 +125,6 @@ Evaluation of the logarithmic counting function at zero yields zero.
     logCounting D 0 = 0 := by
   simp [logCounting]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The logarithmic counting function of a singleton indicator is asymptotically equal to
 `log · - log ‖e‖`.
@@ -136,7 +134,7 @@ The logarithmic counting function of a singleton indicator is asymptotically equ
     logCounting (single e n) r = n * (log r - log ‖e‖) := by
   simp only [logCounting, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   rw [finsum_eq_sum_of_support_subset _ (s := (finite_singleton e).toFinset)
-    (by simp_all [toClosedBall, restrict_apply, single_apply])]
+    (by simp_all [toClosedBall_apply, restrict_apply, single_apply])]
   simp only [toFinite_toFinset, toFinset_singleton, Finset.sum_singleton]
   rw [toClosedBall_eval_within _ (by simpa [abs_of_nonneg ((norm_nonneg e).trans hr)])]
   by_cases he : 0 = e
@@ -150,12 +148,11 @@ The logarithmic counting function of a singleton indicator is asymptotically equ
 ### Elementary Properties of Logarithmic Counting Functions
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The logarithmic counting function is even.
 -/
 lemma logCounting_even [ProperSpace E] (D : locallyFinsupp E ℤ) :
-    (logCounting D).Even := fun r ↦ by simp [logCounting, toClosedBall, restrict_apply]
+    (logCounting D).Even := fun r ↦ by simp [logCounting, toClosedBall_apply, restrict_apply]
 
 /--
 The logarithmic counting function is monotonous.
