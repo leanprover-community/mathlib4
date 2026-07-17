@@ -775,10 +775,12 @@ def curryAddEquiv : R[M × N] ≃+ R[N][M] :=
   coeffAddEquiv.trans <| .trans Finsupp.curryAddEquiv <| .trans
     (Finsupp.mapRange.addEquiv coeffAddEquiv.symm) coeffAddEquiv.symm
 
+omit [Monoid M] in
 @[to_additive (attr := simp)]
 lemma curryAddEquiv_single (m : M) (n : N) (r : R) :
     curryAddEquiv (single (m, n) r) = single m (single n r) := by simp [curryAddEquiv]
 
+omit [Monoid M] in
 @[to_additive (attr := simp)]
 lemma curryAddEquiv_symm_single (m : M) (n : N) (r : R) :
     curryAddEquiv.symm (single m <| single n r) = (single (m, n) r) := by simp [curryAddEquiv]

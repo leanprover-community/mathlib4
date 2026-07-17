@@ -68,8 +68,14 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   /-- The canonical map `ℕ → R` is a homomorphism. -/
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
 
+attribute [instance 50] AddMonoidWithOne.toAddMonoid
+attribute [instance 20] AddMonoidWithOne.toOne
+
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
+
+attribute [instance 90] AddCommMonoidWithOne.toAddMonoidWithOne
+attribute [instance 50] AddCommMonoidWithOne.toAddCommMonoid
 
 namespace Nat
 

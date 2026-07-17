@@ -163,37 +163,6 @@ lemma mapDomain_comapDomain {f : M → N} {x : R[N]} (hx : ↑x.coeff.support �
     mapDomain f (comapDomain f hf x) = x := by
   ext : 1; exact Finsupp.mapDomain_comapDomain _ hf _ hx
 
-section Mul
-variable [Mul M] [Mul N] [Mul O] [FunLike F M N] [MulHomClass F M N]
-
-@[to_additive (dont_translate := R) mapDomain_mul]
-lemma mapDomain_mul (f : F) (x y : R[M]) : mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
-  simp [mul_def, mapDomain_sum, add_mul, mul_add, sum_mapDomain_index]
-
-variable (R) in
-/-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
-`MonoidAlgebra.mapDomain f` is a ring homomorphism between their monoid algebras. -/
-@[to_additive (attr := simps) /--
-If `f : G → H` is a multiplicative homomorphism between two additive monoids, then
-`AddMonoidAlgebra.mapDomain f` is a ring homomorphism between their additive monoid algebras. -/]
-def mapDomainNonUnitalRingHom (f : M →ₙ* N) : R[M] →ₙ+* R[N] where
-  toFun := mapDomain f
-  map_zero' := mapDomain_zero _
-  map_add' := mapDomain_add _
-  map_mul' := mapDomain_mul f
-
-set_option backward.isDefEq.respectTransparency false in
-@[to_additive (dont_translate := R) (attr := simp)]
-lemma mapDomainNonUnitalRingHom_id : mapDomainNonUnitalRingHom R (.id M) = .id R[M] := by ext; simp
-
-set_option backward.isDefEq.respectTransparency false in
-@[to_additive (dont_translate := R) (attr := simp)]
-lemma mapDomainNonUnitalRingHom_comp (f : N →ₙ* O) (g : M →ₙ* N) :
-    mapDomainNonUnitalRingHom R (f.comp g) =
-      (mapDomainNonUnitalRingHom R f).comp (mapDomainNonUnitalRingHom R g) := by
-  ext; simp [Finsupp.mapDomain_comp]
-
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Equivalent monoids have additively isomorphic monoid algebras.
 
@@ -275,6 +244,34 @@ lemma mapAddEquiv_trans (e₁ : R ≃+ S) (e₂ : S ≃+ T) :
   ext; simp
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_trans := mapAddEquiv_trans
+
+section Mul
+variable [Mul M] [Mul N] [Mul O] [FunLike F M N] [MulHomClass F M N]
+
+@[to_additive (dont_translate := R) mapDomain_mul]
+lemma mapDomain_mul (f : F) (x y : R[M]) : mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
+  simp [mul_def, mapDomain_sum, add_mul, mul_add, sum_mapDomain_index]
+
+variable (R) in
+/-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
+`MonoidAlgebra.mapDomain f` is a ring homomorphism between their monoid algebras. -/
+@[to_additive (attr := simps) /--
+If `f : G → H` is a multiplicative homomorphism between two additive monoids, then
+`AddMonoidAlgebra.mapDomain f` is a ring homomorphism between their additive monoid algebras. -/]
+def mapDomainNonUnitalRingHom (f : M →ₙ* N) : R[M] →ₙ+* R[N] where
+  toFun := mapDomain f
+  map_zero' := mapDomain_zero _
+  map_add' := mapDomain_add _
+  map_mul' := mapDomain_mul f
+
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma mapDomainNonUnitalRingHom_id : mapDomainNonUnitalRingHom R (.id M) = .id R[M] := by ext; simp
+
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma mapDomainNonUnitalRingHom_comp (f : N →ₙ* O) (g : M →ₙ* N) :
+    mapDomainNonUnitalRingHom R (f.comp g) =
+      (mapDomainNonUnitalRingHom R f).comp (mapDomainNonUnitalRingHom R g) := by
+  ext; simp [Finsupp.mapDomain_comp]
 
 @[to_additive (attr := simp) (dont_translate := R S) map_mul]
 protected lemma map_mul (f : R →+* S) (x y : R[M]) :
@@ -411,7 +408,7 @@ def mapRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
 
 @[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv := mapRingEquiv
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R S) (attr := simp)]
 lemma coeff_mapRingEquiv (e : R ≃+* S) (x : R[M]) (m : M) :
     (mapRingEquiv M e x).coeff m = e (x.coeff m) := by simp [mapRingEquiv]
 
@@ -419,26 +416,26 @@ lemma coeff_mapRingEquiv (e : R ≃+* S) (x : R[M]) (m : M) :
 
 @[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_apply := coeff_mapRingEquiv
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R S) (attr := simp)]
 lemma mapRingEquiv_single (e : R ≃+* S) (r : R) (m : M) :
     mapRingEquiv M e (single m r) = single m (e r) := by simp [mapRingEquiv]
 
 @[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_single := mapRingEquiv_single
 
-@[to_additive]
+@[to_additive (dont_translate := R S)]
 lemma toRingHom_mapRingEquiv (e : R ≃+* S) :
     (mapRingEquiv M e).toRingHom = mapRingHom M e := rfl
 
 @[deprecated (since := "2026-03-20")]
 alias toRingHom_mapRangeRingEquiv := toRingHom_mapRingEquiv
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R S) (attr := simp)]
 lemma symm_mapRingEquiv (e : R ≃+* S) :
     (mapRingEquiv M e).symm = mapRingEquiv M e.symm := rfl
 
 @[deprecated (since := "2026-03-20")] alias symm_mapRangeRingEquiv := symm_mapRingEquiv
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R S T) (attr := simp)]
 lemma mapRingEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
     mapRingEquiv M (e₁.trans e₂) =
       (mapRingEquiv M e₁).trans (mapRingEquiv M e₂) := by ext; simp

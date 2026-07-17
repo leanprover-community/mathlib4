@@ -35,6 +35,8 @@ instance monMonoid (A : Type u) [MonObj A] : Monoid A where
   mul_one x := by convert! congr_hom (CC := fun X ↦ X) (mul_one A) (x, PUnit.unit)
   mul_assoc x y z := by convert! congr_hom (CC := fun X ↦ X) (mul_assoc A) ((x, y), z)
 
+attribute [instance 20] MonTypeEquivalenceMon.monMonoid
+
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
 noncomputable def functor : Mon (Type u) ⥤ MonCat.{u} where

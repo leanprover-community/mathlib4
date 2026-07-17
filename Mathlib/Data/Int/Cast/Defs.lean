@@ -46,6 +46,13 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
   of the canonical homomorphism `ℕ → R`. -/
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = -Nat.cast (n + 1) := by intros; rfl
 
+attribute [instance 150] AddGroupWithOne.toAddMonoidWithOne
+attribute [instance 50] AddGroupWithOne.toAddGroup
+
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u)
-  extends AddCommGroup R, AddGroupWithOne R, AddCommMonoidWithOne R
+  extends AddGroupWithOne R, AddCommGroup R, AddCommMonoidWithOne R
+
+attribute [instance 90] AddCommGroupWithOne.toAddGroupWithOne
+attribute [instance 50] AddCommGroupWithOne.toAddCommGroup
+attribute [instance 50] AddCommGroupWithOne.toAddCommMonoidWithOne

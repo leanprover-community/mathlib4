@@ -86,8 +86,8 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
     exact ⟨{
       hom' := withZeroUnitsEquiv.toMonoidWithZeroHom.comp <| (map' (rf.comp e)).comp
         withZeroUnitsEquiv.symm.toMonoidWithZeroHom
-      strictMono' := withZeroUnitsEquiv_strictMono.comp <| H.comp
-        withZeroUnitsEquiv_symm_strictMono
+      strictMono' := by exact withZeroUnitsEquiv_strictMono.comp <| H.comp
+                          withZeroUnitsEquiv_symm_strictMono
     }⟩
 
 namespace RankOne

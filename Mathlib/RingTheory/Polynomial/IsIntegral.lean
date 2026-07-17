@@ -227,9 +227,9 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
         (by convert H <;> aesop)) (n.embDomain e.symm)
     simpa [Finsupp.embDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective] using! this
   · intro f H n
-    refine .of_map (g := (isEmptyAlgEquiv _ PEmpty).symm.toRingHom)
-      (isEmptyAlgEquiv _ PEmpty).symm.injective
-      (.of_comp (f := (isEmptyAlgEquiv _ PEmpty).toRingHom) ?_)
+    refine .of_map (g := (isEmptyAlgEquiv S PEmpty).symm.toRingHom)
+      (isEmptyAlgEquiv S PEmpty).symm.injective
+      (.of_comp (f := (isEmptyAlgEquiv R PEmpty).toRingHom) ?_)
     convert! H
     · ext r m <;> simp [Subsingleton.elim m 0, C, X, monomial, coeff, map]
     · obtain rfl := Subsingleton.elim n 0

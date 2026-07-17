@@ -141,7 +141,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
                 = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
-    congr 2; ext : 1; exact h_mul
+    congr 1; ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
@@ -155,8 +155,10 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end NonAssocSemiring
 
@@ -198,13 +200,15 @@ theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end NonUnitalRing
 
@@ -236,9 +240,9 @@ TODO consider relocating these lemmas. -/
     inst₁ = inst₂ := by
   have : inst₁.toAddCommGroup = inst₂.toAddCommGroup :=
     AddCommGroup.ext h_add
+  injection this
   have : inst₁.toAddGroupWithOne = inst₂.toAddGroupWithOne :=
     AddGroupWithOne.ext h_add h_one
-  injection this with _ h_addMonoidWithOne; injection h_addMonoidWithOne
   cases inst₁; cases inst₂
   congr
 
@@ -255,8 +259,9 @@ namespace NonAssocRing
   -- Mathematically non-trivial fact: `intCast` is determined by the rest.
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
+  injection h₃ with h₃
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₂ | injection h₃
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -267,8 +272,10 @@ theorem toNonAssocSemiring_injective :
 
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end NonAssocRing
 

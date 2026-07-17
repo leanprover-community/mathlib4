@@ -39,6 +39,8 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
   protected isAddLeftRegular_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → IsAddLeftRegular x
 
+attribute [instance 10] LinearOrderedAddCommMonoidWithTop.toAddCommMonoid
+
 /-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 -- We do not extend `LinearOrderedAddCommMonoidWithTop` as that would bring in the unnecessary
@@ -50,6 +52,9 @@ class LinearOrderedAddCommGroupWithTop (α : Type*)
   protected top_add' (x : α) : ⊤ + x = ⊤
   neg_top : -(⊤ : α) = ⊤
   add_neg_cancel_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → x + -x = 0
+
+attribute [instance 10] LinearOrderedAddCommGroupWithTop.toAddCommMonoid
+attribute [instance 10] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
 
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b c : α}

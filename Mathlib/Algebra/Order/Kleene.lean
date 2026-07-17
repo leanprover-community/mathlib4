@@ -61,9 +61,13 @@ variable {α β ι : Type*} {π : ι → Type*}
 class IdemSemiring (α : Type*) extends Semiring α, SemilatticeSup α, OrderBot α where
   protected add_eq_sup (a b : α) : a + b = a ⊔ b := by intros; rfl
 
+attribute [instance 50] IdemSemiring.toSemiring
+
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
 class IdemCommSemiring (α : Type*) extends CommSemiring α, IdemSemiring α
+
+attribute [instance 50] IdemCommSemiring.toCommSemiring
 
 /-- Notation typeclass for the Kleene star `∗`. -/
 class KStar (α : Type*) where

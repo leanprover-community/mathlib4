@@ -202,7 +202,7 @@ theorem id_comp : (GradedAlgHom.id R ℬ).comp f = f := rfl
 theorem comp_assoc (fCD : 𝒞 →ₐᵍ[R] 𝒟) (fBC : ℬ →ₐᵍ[R] 𝒞) (fAB : 𝒜 →ₐᵍ[R] ℬ) :
     (fCD.comp fBC).comp fAB = fCD.comp (fBC.comp fAB) := rfl
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMulOneClass_toMul_mul toMulOneClass_toOne_one]
 instance : Monoid (𝒜 →ₐᵍ[R] 𝒜) where
   mul := comp
   one := .id R 𝒜

@@ -40,6 +40,9 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   /-- Zero is a right absorbing element for multiplication -/
   mul_zero : ∀ a : M₀, a * 0 = 0
 
+attribute [instance 20] MulZeroClass.toZero
+attribute [instance 20] MulZeroClass.toMul
+
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
 
@@ -116,12 +119,21 @@ export NoZeroDivisors (eq_zero_or_eq_zero_of_mul_eq_zero)
 and right absorbing. -/
 class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
 
+attribute [instance 20] SemigroupWithZero.toSemigroup
+attribute [instance 50] SemigroupWithZero.toMulZeroClass
+
 /-- A typeclass for non-associative monoids with zero elements. -/
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
+
+attribute [instance 100] MulZeroOneClass.toMulZeroClass
+attribute [instance 20] MulZeroOneClass.toMulOneClass
 
 /-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
 and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
+
+attribute [instance 100] MonoidWithZero.toMonoid
+attribute [instance 100] MonoidWithZero.toMulZeroOneClass
 
 section MonoidWithZero
 
@@ -144,7 +156,10 @@ structure CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCan
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
-class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
+class CommMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, CommMonoid M₀
+
+attribute [instance 90] CommMonoidWithZero.toMonoidWithZero
+attribute [instance 50] CommMonoidWithZero.toCommMonoid
 
 section MulZeroClass
 
@@ -230,6 +245,9 @@ class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G�
   /-- Every nonzero element of a group with zero is invertible. -/
   protected mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 
+attribute [instance 100] GroupWithZero.toMonoidWithZero
+attribute [instance 100] GroupWithZero.toDivInvMonoid
+
 section GroupWithZero
 variable [GroupWithZero G₀] {a : G₀}
 
@@ -248,7 +266,7 @@ end GroupWithZero
 if it is a commutative monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
-class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
+class CommGroupWithZero (G₀ : Type*) extends GroupWithZero G₀, CommMonoidWithZero G₀
 
 lemma eq_zero_or_one_of_sq_eq_self [MonoidWithZero M₀] [IsRightCancelMulZero M₀]
     {x : M₀} (hx : x ^ 2 = x) :

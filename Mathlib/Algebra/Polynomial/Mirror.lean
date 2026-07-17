@@ -105,8 +105,7 @@ theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
       rw [revAt_le (hn.trans (Nat.le_add_right _ _))]
       rw [tsub_le_iff_tsub_le, add_comm, add_tsub_cancel_right]
       exact natTrailingDegree_le_of_ne_zero hp
-    · change p.mirror.coeff _ ≠ 0
-      rwa [coeff_mirror, revAt_invol]
+    · rwa [coeff_mirror, revAt_invol]
   · exact fun n _ _ => p.coeff_mirror n
 
 theorem mirror_mirror : p.mirror.mirror = p :=

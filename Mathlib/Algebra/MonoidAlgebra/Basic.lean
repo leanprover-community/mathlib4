@@ -137,13 +137,13 @@ lemma coeff_uniqueAlgEquiv_symm [Subsingleton M] (a : A) (m : M) :
     ((uniqueAlgEquiv R M).symm a).coeff m = a := by simp [Subsingleton.elim m 1]
 
 variable (R M) in
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R A) (attr := simp)]
 lemma toRingEquiv_uniqueAlgEquiv [Unique M] :
     RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M) =
       uniqueRingEquiv (R := A) M := rfl
 
 variable (R M) in
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R A) (attr := simp)]
 lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
     RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M).symm =
       (uniqueRingEquiv (R := A) M).symm := rfl

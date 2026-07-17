@@ -35,6 +35,7 @@ namespace MeasureTheory
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [TopologicalSpace A]
   [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {g : G}
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The distributive Haar character of a group `G` acting distributively on a group `A` is the
 unique positive real number `Δ(g)` such that `μ (g • s) = Δ(g) * μ s` for all Haar

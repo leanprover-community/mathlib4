@@ -53,6 +53,8 @@ class BooleanRing (α) extends Ring α where
   /-- Multiplication in a Boolean ring is idempotent. -/
   isIdempotentElem (a : α) : IsIdempotentElem a
 
+attribute [instance 50] BooleanRing.toRing
+
 namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
@@ -101,7 +103,7 @@ theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_
 theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
 
 -- Note [lower instance priority]
-instance (priority := 100) toCommRing : CommRing α :=
+instance (priority := 50) toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
     mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
 

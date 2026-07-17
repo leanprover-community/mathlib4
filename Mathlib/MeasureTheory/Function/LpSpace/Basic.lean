@@ -517,7 +517,7 @@ theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMe
   convert! h.enorm_rpow_div q⁻¹ using 1
   · ext x
     have : q.toReal * q.toReal⁻¹ = 1 :=
-      CommGroupWithZero.mul_inv_cancel q.toReal <| ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩
+      mul_inv_cancel₀ <| ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩
     simp [← ENNReal.rpow_mul, this, ENNReal.rpow_one]
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]

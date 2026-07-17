@@ -241,7 +241,7 @@ lemma extMk_comp_mk₀ {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n +
   have : (f ≫ φ.hom.f n) ≫ (R'.cochainComplexXIso n n (by lia)).inv =
       (f ≫ (R.cochainComplexXIso n n (by lia)).inv) ≫ φ.hom'.f n := by
     simp [φ.hom'_f n n rfl]
-  simp only [Ext.comp_hom, extMk_hom, Ext.mk₀_hom, this]
+  simp only [Ext.comp_hom, extMk_hom, Ext.mk₀_hom, this, Int.cast_ofNat_Int]
   rw [Cocycle.fromSingleMk_postcomp _ (zero_add _) _ (by lia)
       (by simp [R.cochainComplex_d _ _ _ _ rfl rfl, reassoc_of% hf]),
     Cocycle.equivHomShift_symm_postcomp,
