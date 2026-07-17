@@ -662,8 +662,8 @@ noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : S
     apply restrict_mono h hAB
 
 @[simp]
-lemma restrictOrderMonoidHom_apply [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
-    {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
+lemma restrictOrderMonoidHom_apply [AddCommGroup Y] [LinearOrder Y] {V : Set X}
+    (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     restrictOrderMonoidHom h D = D.restrict h := by rfl
 
 /--
