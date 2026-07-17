@@ -15,7 +15,7 @@ antimultiplicative antipode data on generators.
 
 ## Main definitions
 
-* `HopfAlgebra.ofGenerators` : construct a Hopf algebra from data on a generating set.
+* `HopfAlgebra.ofGenerators`: construct a Hopf algebra from data on a generating set.
 
 ## Main results
 
@@ -51,7 +51,7 @@ theorem convMul_eq_one_of_adjoin_eq_top_left
     (g_convMul_f : ∀ p ∈ s, (toConv g * toConv f) p = (1 : WithConv (A →ₗ[R] B)) p) :
     toConv g * toConv f = 1 := by
   ext x; refine adjoin_le
-    (S := (eqLocus (toConv g * toConv f).ofConv (ofConv 1)).toSubalgebra ?_ fun a b ha hb => ?_)
+    (S := (eqLocus (toConv g * toConv f).ofConv (ofConv 1)).toSubalgebra ?_ fun a b ha hb ↦ ?_)
     g_convMul_f (adjoin_eq_top.ge mem_top)
   · simp [g_one, f_one, TensorProduct.one_def]
   let 𝓡a := ℛ R a; let 𝓡b := ℛ R b
@@ -73,7 +73,7 @@ theorem convMul_eq_one_of_adjoin_eq_top_right
     (f_convMul_g : ∀ p ∈ s, (toConv f * toConv g) p = (1 : WithConv (A →ₗ[R] B)) p) :
     toConv f * toConv g = 1 := by
   ext x; refine adjoin_le
-    (S := (eqLocus (toConv f * toConv g).ofConv (ofConv 1)).toSubalgebra ?_ fun a b ha hb => ?_)
+    (S := (eqLocus (toConv f * toConv g).ofConv (ofConv 1)).toSubalgebra ?_ fun a b ha hb ↦ ?_)
     f_convMul_g (adjoin_eq_top.ge mem_top)
   · simp [g_one, f_one, TensorProduct.one_def]
   let 𝓡a := ℛ R a; let 𝓡b := ℛ R b
@@ -108,9 +108,9 @@ noncomputable abbrev ofGenerators (S₀_one : S₀ 1 = 1) (S₀_mul : ∀ x y, S
       (toConv (.id : A →ₗ[R] A) * toConv S₀) p = (1 : WithConv (A →ₗ[R] A)) p) :
     HopfAlgebra R A :=
   ofConvInverse S₀
-    (convMul_eq_one_of_adjoin_eq_top_left S₀_one S₀_mul rfl (fun _ _ => rfl)
+    (convMul_eq_one_of_adjoin_eq_top_left S₀_one S₀_mul rfl (fun _ _ ↦ rfl)
       adjoin_eq_top S₀_convMul_id)
-    (convMul_eq_one_of_adjoin_eq_top_right S₀_one S₀_mul rfl (fun _ _ => rfl)
+    (convMul_eq_one_of_adjoin_eq_top_right S₀_one S₀_mul rfl (fun _ _ ↦ rfl)
       adjoin_eq_top id_convMul_S₀)
 
 end Construction
@@ -136,7 +136,7 @@ theorem eq_antipode_of_adjoin_eq_top_left (S₀_one : S₀ 1 = 1)
       (toConv S₀ * toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p) :
     S₀ = antipode R :=
   eq_antipode_of_convMul_id_eq_one
-    (convMul_eq_one_of_adjoin_eq_top_left S₀_one S₀_mul rfl (fun _ _ => rfl)
+    (convMul_eq_one_of_adjoin_eq_top_left S₀_one S₀_mul rfl (fun _ _ ↦ rfl)
       adjoin_eq_top S₀_convMul_id)
 
 /-- A unital antimultiplicative map that is a right convolution inverse of the identity on an
@@ -147,7 +147,7 @@ theorem eq_antipode_of_adjoin_eq_top_right (S₀_one : S₀ 1 = 1)
       (toConv (.id : A →ₗ[R] A) * toConv S₀) p = (1 : WithConv (A →ₗ[R] A)) p) :
     S₀ = antipode R :=
   eq_antipode_of_id_convMul_eq_one
-    (convMul_eq_one_of_adjoin_eq_top_right S₀_one S₀_mul rfl (fun _ _ => rfl)
+    (convMul_eq_one_of_adjoin_eq_top_right S₀_one S₀_mul rfl (fun _ _ ↦ rfl)
       adjoin_eq_top id_convMul_S₀)
 
 end Uniqueness
