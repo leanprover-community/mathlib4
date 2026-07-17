@@ -510,13 +510,8 @@ sequence of partial sums over `Finset.range n`; this restricts the unconditional
 protected def toSchauderBasis (b : HilbertBasis ℕ 𝕜 E) : SchauderBasis 𝕜 E where
   basis := ⇑b
   coord i := innerSL 𝕜 (b i)
-  ortho i j := by
-    classical
-    simpa [innerSL_apply_apply, Pi.single_apply] using orthonormal_iff_ite.mp b.orthonormal i j
-  expansion x := by
-    have hx : HasSum (fun i ↦ innerSL 𝕜 (b i) x • b i) x := by
-      simpa only [innerSL_apply_apply, ← b.repr_apply_apply] using b.hasSum_repr x
-    exact hx.mono_left SummationFilter.le_atTop
+  ortho := b.toUnconditionalSchauderBasis.ortho
+  expansion x := (b.toUnconditionalSchauderBasis.expansion x).mono_left SummationFilter.le_atTop
 
 protected theorem hasSum_orthogonalProjectionOnto {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : HilbertBasis ι 𝕜 U) (x : E) :
