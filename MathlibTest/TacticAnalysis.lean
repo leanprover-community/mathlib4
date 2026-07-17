@@ -27,7 +27,6 @@ warning: `simp only` failed where `simp` succeeded.
 Original tactic:
   simp
 Counterexample:
-  import Mathlib.Algebra.GroupWithZero.Nat
 -/
 -- The counterexample name contains a number that varies between runs, so we can't fully test this.
 #guard_msgs (substring := true) in
