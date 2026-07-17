@@ -200,8 +200,8 @@ variable {V : Type*} [AddCommGroup V] [Module k V]
 /-- Any quotient representation of a smooth representation is smooth. -/
 lemma isSmooth_quotient {ρ : Representation k G V} {φ : Subrepresentation ρ} [h : IsSmooth ρ] :
     IsSmooth φ.quotient := by
-  refine IntertwiningMap.isSmooth_surjective (f := ⟨φ.1.mkQ, fun _ ↦ rfl⟩) ?_
-  simp [Submodule.mkQ_surjective]
+  refine IntertwiningMap.isSmooth_surjective (f := ⟨φ.1.mkQ, fun _ ↦ by rfl⟩) ?_
+  exact φ.1.mkQ_surjective
 
 end quotient
 
