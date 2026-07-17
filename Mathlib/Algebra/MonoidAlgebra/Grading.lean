@@ -67,6 +67,7 @@ theorem mem_grade_iff (m : M) (a : R[M]) : a ∈ grade R m ↔ a.coeff.support �
   rw [← Finset.coe_subset, Finset.coe_singleton]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_grade_iff' (m : M) (a : R[M]) :
     a ∈ grade R m ↔ a ∈ LinearMap.range (lsingle (R := R) m) := by
   rw [mem_grade_iff, Finsupp.support_subset_singleton']; simp [← coeff_inj, eq_comm]
@@ -154,6 +155,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     apply DirectSum.of_eq_of_gradedMonoid_eq
     congr 2
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
   .ofAlgHom _ (decomposeAux f) (by ext; simp [decomposeAux_single]) <| by simp [decomposeAux_coe]
 

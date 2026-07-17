@@ -149,6 +149,7 @@ theorem parallelFamily_obj_one : (parallelFamily f).obj one = Y :=
 theorem parallelFamily_map_left {j : J} : (parallelFamily f).map (line j) = f j :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every functor indexing a wide (co)equalizer is naturally isomorphic (actually, equal) to a
     `parallelFamily` -/
 @[simps!]
@@ -250,10 +251,16 @@ theorem Cotrident.π_ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂
     (Cotrident.ofπ π w).π = π :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem Trident.condition (j₁ j₂ : J) (t : Trident f) : t.ι ≫ f j₁ = t.ι ≫ f j₂ := by
   rw [t.app_zero, t.app_zero]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem Cotrident.condition (j₁ j₂ : J) (t : Cotrident f) : f j₁ ≫ t.π = f j₂ ≫ t.π := by
   rw [t.app_one, t.app_one]
@@ -441,6 +448,7 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) :
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
       naturality := by rintro _ _ (_ | _) <;> cat_disch }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (F.map left) (F.map right)` and a cocone on `F`, we get a cotrident on
@@ -630,6 +638,7 @@ theorem wideCoequalizer.condition (j₁ j₂ : J) :
     f j₁ ≫ wideCoequalizer.π f = f j₂ ≫ wideCoequalizer.π f :=
   Cotrident.condition j₁ j₂ <| colimit.cocone <| parallelFamily f
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The cotrident built from `wideCoequalizer.π f` is colimiting. -/
 def wideCoequalizerIsWideCoequalizer [Nonempty J] :

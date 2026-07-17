@@ -307,7 +307,7 @@ lemma span_weight_isNonZero_eq_top :
     insert 0 ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) by
     simpa only [Submodule.span_insert_zero] using Submodule.span_mono this
   rintro - ⟨α, rfl⟩
-  simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_setOf_eq]
+  simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_ofPred_eq]
   tauto
 
 @[simp]
@@ -693,6 +693,7 @@ lemma coe_coroot_mem_corootSubmodule (α : Weight K H L) :
   (LieSubmodule.mem_map _).mpr
     ⟨⟨coroot α, (coroot α).property⟩, coroot_mem_corootSpace α, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
 lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubmoduleOfRoot hα = genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := by

@@ -52,7 +52,7 @@ instance (priority := 100) (α) [CommMonoidWithZero α] [UniqueFactorizationMono
 
 /-- `toNormalizedGCDMonoid` constructs a GCD monoid out of a normalization on a
   unique factorization domain. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
     NormalizedGCDMonoid α :=
