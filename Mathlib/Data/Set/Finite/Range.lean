@@ -106,7 +106,7 @@ lemma Finite.exists_subset_finite_image_eq {f : α → β} {s : Set α} {u : Set
 
 /-- If an injective function from a finite domain has a different range from another function, then
 the range of the first contains an element not in the range of the second. -/
-lemma _root_.Function.Injective.exists_not_mem_range_of_range_ne {α γ : Type*} [Finite α]
+lemma _root_.Function.Injective.exists_not_mem_range_of_range_ne [Finite α]
     {f g : α → γ} (hf : Function.Injective f) (h : range f ≠ range g) : ∃ i, f i ∉ range g := by
   classical
   have := Fintype.ofFinite α

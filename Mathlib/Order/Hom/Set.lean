@@ -166,6 +166,15 @@ lemma OrderEmbedding.eq_of_range_eq [Preorder α] [Preorder β] [Subsingleton (�
     g.orderIso.apply_symm_apply (OrderIso.setCongr _ _ h (f.orderIso x))
   simp_all
 
+/-- Two strictly monotone functions are equal provided that their ranges are equal, assuming the
+type of order automorphisms of the domain is a subsingleton. -/
+lemma StrictMono.eq_of_range_eq [LinearOrder α] [Preorder β]
+    [Subsingleton (α ≃o α)] {f g : α → β} (hf : StrictMono f) (hg : StrictMono g)
+    (h : Set.range f = Set.range g) : f = g := by
+  have : Set.range (OrderEmbedding.ofStrictMono f hf) = Set.range f := by simp
+  have : Set.range (OrderEmbedding.ofStrictMono g hg) = Set.range g := by simp
+  grind [OrderEmbedding.eq_of_range_eq]
+
 /-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
 lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [Preorder β] {f g : α ↪o β} :
     Set.range f = Set.range g ↔ f = g := by

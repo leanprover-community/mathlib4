@@ -272,15 +272,6 @@ theorem orderEmbOfFin_unique' {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fi
     (hfs : ∀ x, f x ∈ s) : f = s.orderEmbOfFin h :=
   RelEmbedding.ext <| funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
 
-/-- Two strictly monotone functions are equal provided that their ranges are equal, assuming the
-type of order automorphisms of the domain is a subsingleton. -/
-lemma _root_.StrictMono.eq_of_range_eq {α β : Type*} [LinearOrder α] [Preorder β]
-    [Subsingleton (α ≃o α)] {f g : α → β} (hf : StrictMono f) (hg : StrictMono g)
-    (h : Set.range f = Set.range g) : f = g := by
-  have : Set.range (OrderEmbedding.ofStrictMono f hf) = Set.range f := by simp
-  have : Set.range (OrderEmbedding.ofStrictMono g hg) = Set.range g := by simp
-  grind [OrderEmbedding.eq_of_range_eq]
-
 /-- Two parametrizations `orderEmbOfFin` of the same set take the same value on `i` and `j` if
 and only if `i = j`. Since they can be defined on a priori not defeq types `Fin k` and `Fin l`
 (although necessarily `k = l`), the conclusion is rather written `(i : ℕ) = (j : ℕ)`. -/
