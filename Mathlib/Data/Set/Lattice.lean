@@ -737,7 +737,7 @@ theorem biInter_pair (a b : α) (s : α → Set β) : ⋂ x ∈ ({a, b} : Set α
 
 theorem biInter_inter {ι α : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → Set α) (t : Set α) :
     ⋂ i ∈ s, f i ∩ t = (⋂ i ∈ s, f i) ∩ t := by
-  haveI : Nonempty s := hs.to_subtype
+  have : Nonempty s := hs.to_subtype
   simp [biInter_eq_iInter, ← iInter_inter]
 
 theorem inter_biInter {ι α : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → Set α) (t : Set α) :
