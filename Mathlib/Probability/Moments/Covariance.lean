@@ -153,9 +153,6 @@ lemma covariance_fun_div_right (c : ℝ) :
     cov[X, fun ω ↦ Y ω / c; μ] = cov[X, Y; μ] / c := by
   simp_rw [← inv_mul_eq_div, covariance_const_mul_right]
 
-@[deprecated (since := "2025-11-29")] alias covariance_mul_left := covariance_const_mul_left
-@[deprecated (since := "2025-11-29")] alias covariance_mul_right := covariance_const_mul_right
-
 @[simp]
 lemma covariance_neg_left : cov[-X, Y; μ] = -cov[X, Y; μ] := by
   calc cov[-X, Y; μ]

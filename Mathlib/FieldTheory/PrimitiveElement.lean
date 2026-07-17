@@ -5,11 +5,8 @@ Authors: Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.IntegralDomain
-public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Primitive Element Theorem
@@ -83,6 +80,7 @@ section PrimitiveElementInf
 
 variable {F : Type*} [Field F] [Infinite F] {E : Type*} [Field E] (ϕ : F →+* E) (α β : E)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
     ∃ c : F, ∀ α' ∈ (f.map ϕ).roots, ∀ β' ∈ (g.map ϕ).roots, -(α' - α) / (β' - β) ≠ ϕ c := by
   let sf := (f.map ϕ).roots
