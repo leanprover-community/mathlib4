@@ -41,9 +41,47 @@ The theorem names `paper_eq1`, ..., `paper_eq5` follow Bird's numbering.
 
 namespace BirdDet
 
-open scoped BigOperators
-
+open Function
 variable {R : Type*} [CommRing R] {m n : ℕ}
+
+/-- Row-major array lookup agrees with lookup in the corresponding matrix. -/
+theorem get_eq_ofArray_apply (A : Array R) (hA : A.size = m * n) (i : Fin m) (j : Fin n) :
+    BirdDet.get n A i.val j.val = Matrix.ofArray A hA i j := by
+  have hidx : n * i.val + j.val < m * n := (Fin.mkDivMod i j).isLt
+  simp [BirdDet.get_eq, Matrix.ofArray, Array.getD, hA, hidx]
+
+/-- `sumFrom n lo f` is the sum of `f` over the half-open interval `[lo, n)`. -/
+theorem sumFrom_eq_sum_Ico {lo : ℕ} (f : ℕ → R) :
+    BirdDet.sumFrom n lo f = ∑ k ∈ Finset.Ico lo n, f k := by
+  induction lo using BirdDet.sumFrom_induct n with
+  | step lo hlo ih => rw [sumFrom_step n lo f hlo, ih, ← Finset.sum_eq_sum_Ico_succ_bot hlo f]
+  | stop lo hlo => rw [sumFrom_stop n lo f hlo, Finset.Ico_eq_empty hlo, Finset.sum_empty]
+
+theorem sumFrom_fin_tail (i : Fin n) (f : ℕ → R) :
+    BirdDet.sumFrom n (i.val + 1) f = ∑ k ∈ Finset.Ioi i, f k.val := calc
+  _ = ∑ k ∈ Finset.Ico (i.val + 1) n, f k := by rw [sumFrom_eq_sum_Ico]
+  _ = ∑ k ∈ (Finset.range n).filter (fun x ↦ i.val < x), f k := by congr; ext; aesop
+  _ = ∑ k ∈ Finset.range n, if i.val < k then f k else 0 := by rw [Finset.sum_filter]
+  _ = ∑ k : Fin n, if i.val < k.val then f k.val else 0 := by rw [← Fin.sum_univ_eq_sum_range]
+  _ = ∑ k ∈ Finset.Ioi i, f k.val := by simp [← Finset.sum_filter, Finset.filter_lt_eq_Ioi]
+
+/-- The scalar recurrence initialized by array lookup agrees pointwise
+  with the matrix recurrence. -/
+theorem iterate_stepEntry_get_eq_spec (A : Array R) (hA : A.size = n * n) (t : ℕ) (i j : Fin n) :
+    ((stepEntry n A)^[t] (BirdDet.get n A)) i.val j.val =
+      (Spec.stepEntry (.ofArray A hA))^[t] (.ofArray A hA) i j := by
+  induction t generalizing i j with
+  | zero => exact get_eq_ofArray_apply A hA i j
+  | succ t ih => simp [ih, iterate_succ_apply', stepEntry_eq, Spec.stepEntry_eq, sumFrom_fin_tail,
+      get_eq_ofArray_apply A hA]
+
+/-- The flat-array algorithm `BirdDet.birdDet` computes the same determinant as
+  `BirdDet.Spec.birdDet`. -/
+theorem birdDet_eq_birdDetSpec (A : Array R) (hA : A.size = n * n) :
+    birdDet n A = Spec.birdDet (.ofArray A hA) := by
+  cases n with
+  | zero => rw [birdDet_zero, Spec.birdDetSpec_zero]
+  | succ k => simp [birdDet_succ, Spec.birdDetSpec_succ, ← iterate_stepEntry_get_eq_spec A hA k 0 0]
 
 /-- `S p i` is Bird's `Sₚ(βᵢ)`: words `α` of length `p` over the alphabet `βᵢ`. -/
 def S (p : ℕ) (i : Fin n) : Finset (Fin p → Fin n) :=
@@ -131,7 +169,7 @@ theorem iter_succ_entry (i j : Fin n) :
     ((Spec.stepEntry A)^[p + 1] A) i j =
       (-∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) k k) * A i j +
       ∑ k ∈ Finset.Ioi i, ((Spec.stepEntry A)^[p] A) i k * A k j := by
-  rw [Function.iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply]
+  rw [iterate_succ_apply', Spec.stepEntry_eq, Matrix.of_apply]
 
 /-- Bird's equation (3), assuming equation (1) at `p` as the induction hypothesis. -/
 theorem paper_eq3 (i j : Fin n) (hEq1 : Eq1 A p) :
@@ -150,13 +188,13 @@ lemma det_submatrix_removeNth_eq_sign_mul_bminor
       (-1 : R) ^ s.val * bminor A i (α s) (s.removeNth α) := by
   calc
     (A.submatrix (Fin.cons i (s.removeNth α)) α).det =
-        ((A.submatrix (Function.update α s i) α).submatrix
+        ((A.submatrix (update α s i) α).submatrix
           (Fin.cycleRange s).symm id).det := by
       apply congrArg Matrix.det
-      rw [Matrix.submatrix_submatrix, Function.comp_id, ← Fin.insertNth_removeNth,
+      rw [Matrix.submatrix_submatrix, comp_id, ← Fin.insertNth_removeNth,
         Fin.insertNth_comp_cycleRange_symm]
     _ = Equiv.Perm.sign (Fin.cycleRange s) *
-        (A.submatrix (Function.update α s i) α).det := by
+        (A.submatrix (update α s i) α).det := by
       rw [Matrix.det_permute, Equiv.Perm.sign_symm]
     _ = Equiv.Perm.sign (Fin.cycleRange s) *
         ((A.submatrix (Fin.cons i (s.removeNth α))
@@ -313,7 +351,7 @@ theorem paper_eq1 : Eq1 A p := by
   induction p with
   | zero =>
     ext i j
-    simp [Function.iterate_zero_apply, S_zero, bminor]
+    simp [iterate_zero_apply, S_zero, bminor]
   | succ p ih =>
     ext i j
     rw [Matrix.of_apply, paper_eq3 A i j ih, paper_eq4 A i j]
@@ -336,79 +374,8 @@ theorem sum_bminor_max_length_eq_det (A : Matrix (Fin (p + 1)) (Fin (p + 1)) R) 
   rw [S_zero_eq_singleton, Finset.sum_singleton, bminor, Fin.cons_zero_succ,
     Matrix.submatrix_id_id]
 
-
-end MatrixProof
-
-section FlatArrayProof
-
-variable {rows cols n lo : ℕ}
-
-/-! ## The flat-array implementation -/
-
-/-- The row-major index is in-bounds of the Array of size `rows * cols`. -/
-theorem rowMajorIndex_lt (i : Fin rows) (j : Fin cols) :
-    cols * i.val + j.val < rows * cols := by
-  exact (Fin.mkDivMod i j).isLt
-
-/-- `sumFrom n lo f` is the sum of `f` over the half-open interval `[lo, n)`. -/
-theorem sumFrom_eq_sum_Ico (f : ℕ → R) :
-    BirdDet.sumFrom n lo f = ∑ k ∈ Finset.Ico lo n, f k := by
-  induction lo using BirdDet.sumFrom_induct n with
-  | step lo hlo ih =>
-    rw [BirdDet.sumFrom_step n lo f hlo, ih,
-      ← Finset.sum_eq_sum_Ico_succ_bot hlo f]
-  | stop lo hlo =>
-    rw [BirdDet.sumFrom_stop n lo f hlo, Finset.Ico_eq_empty hlo, Finset.sum_empty]
-
-/-- Row-major array lookup agrees with lookup in the corresponding matrix. -/
-theorem get_eq_ofArray_apply (A : Array R) (hA : A.size = rows * cols)
-  (i : Fin rows) (j : Fin cols) :
-    BirdDet.get cols A i.val j.val = Matrix.ofArray (m := rows) (n := cols) A hA i j := by
-  have hidx : cols * i.val + j.val < A.size := by
-    rw [hA]
-    exact rowMajorIndex_lt i j
-  simp [BirdDet.get_eq, Matrix.ofArray, Array.getD, hidx]
-
-theorem sumFrom_fin_tail (i : Fin n) (f : ℕ → R) :
-    BirdDet.sumFrom n (i.val + 1) f =
-      ∑ k ∈ Finset.Ioi i, f k.val := by
-  rw [sumFrom_eq_sum_Ico]
-  calc
-    ∑ k ∈ Finset.Ico (i.val + 1) n, f k =
-        ∑ k ∈ (Finset.range n).filter (fun x ↦ i.val < x), f k := by
-      congr
-      ext x
-      simp only [Finset.mem_Ico, Order.add_one_le_iff,
-        Finset.mem_filter, Finset.mem_range, and_comm]
-    _ = ∑ k ∈ Finset.range n, if i.val < k then f k else 0 := by
-      rw [Finset.sum_filter]
-    _ = ∑ k : Fin n, if i.val < k.val then f k.val else 0 := by
-      rw [← Fin.sum_univ_eq_sum_range]
-    _ = ∑ k ∈ Finset.Ioi i, f k.val := by
-      simp only [Fin.val_fin_lt, ← Finset.sum_filter, Finset.filter_lt_eq_Ioi]
-
-/-- The scalar recurrence initialized by array lookup agrees pointwise
-  with the matrix recurrence. -/
-theorem iterate_stepEntry_get_eq_spec (A : Array R) (hA : A.size = n * n) (t : ℕ)
-    (i j : Fin n) :
-    ((stepEntry n A)^[t] (BirdDet.get n A)) i.val j.val =
-      (Spec.stepEntry (Matrix.ofArray (m := n) (n := n) A hA))^[t]
-        (Matrix.ofArray A hA) i j := by
-  induction t generalizing i j with
-  | zero =>
-    exact get_eq_ofArray_apply A hA i j
-  | succ t ih =>
-    simp only [Function.iterate_succ_apply', stepEntry_eq, Spec.stepEntry_eq,
-      Matrix.of_apply, sumFrom_fin_tail, ih, get_eq_ofArray_apply A hA, neg_mul]
-
-end FlatArrayProof
-
-public section
-
-variable {n : ℕ}
-
 /-- Bird's Theorem 1 -/
-public theorem birdDetSpec_eq_det (A : Matrix (Fin n) (Fin n) R) :
+theorem birdDetSpec_eq_det (A : Matrix (Fin n) (Fin n) R) :
     Matrix.det A = Spec.birdDet A := by
   cases n with
   | zero =>
@@ -419,24 +386,13 @@ public theorem birdDetSpec_eq_det (A : Matrix (Fin n) (Fin n) R) :
       Matrix.of_apply, sum_bminor_max_length_eq_det,
       ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩, one_mul]
 
-/-- The flat-array algorithm `BirdDet.birdDet` computes the same determinant as
-  `BirdDet.Spec.birdDet`. -/
-theorem birdDet_eq_birdDetSpec (A : Array R) (hA : A.size = n * n) :
-    birdDet n A = Spec.birdDet (Matrix.ofArray (m := n) (n := n) A hA) := by
-  cases n with
-  | zero => rw [birdDet_zero, Spec.birdDetSpec_zero]
-  | succ k =>
-    rw [birdDet_succ, Spec.birdDetSpec_succ]
-    apply congrArg ((-1 : R) ^ k * ·)
-    exact iterate_stepEntry_get_eq_spec A hA k 0 0
+end MatrixProof
 
 /-- `BirdDet.birdDet n A` computes the determinant of the `n × n` matrix whose
   entries are stored in row-major order in `A`. -/
-theorem det_eq_birdDet (A : Array R) (hA : A.size = n * n) :
-    Matrix.det (Matrix.ofArray (m := n) (n := n) A hA) = birdDet n A := by
+public theorem det_eq_birdDet (A : Array R) (hA : A.size = n * n) :
+    Matrix.det (.ofArray A hA) = birdDet n A := by
   rw [birdDet_eq_birdDetSpec]
   exact birdDetSpec_eq_det (Matrix.ofArray A hA)
-
-end
 
 end BirdDet
