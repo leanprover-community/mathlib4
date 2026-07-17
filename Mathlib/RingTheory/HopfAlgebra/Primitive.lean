@@ -42,8 +42,7 @@ protected lemma IsPrimitiveElem.antipode (ha : IsPrimitiveElem R a) :
 
 /-- The antipode is involutive on primitive elements. -/
 lemma IsPrimitiveElem.antipode_antipode (ha : IsPrimitiveElem R a) :
-    antipode R (antipode R a) = a := by
-  simp [ha.antipode_eq_neg, ha.neg.antipode_eq_neg]
+    antipode R (antipode R a) = a := by simp [ha.antipode_eq_neg, ha.neg.antipode_eq_neg]
 
 end Ring
 
