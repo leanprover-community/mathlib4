@@ -542,7 +542,7 @@ section UnlabeledCopyCount
 
 /-- `G.UnlabeledCopy H` is the type of `SimpleGraph.Subgraph`s of `H` isomorphic to `G`. The
 corresponding count is `SimpleGraph.unlabeledCopyCount`. -/
-abbrev UnlabeledCopy (G : SimpleGraph V) (H : SimpleGraph W) : Type _ :=
+@[expose] def UnlabeledCopy (G : SimpleGraph V) (H : SimpleGraph W) : Type _ :=
   {H' : H.Subgraph // Nonempty (G ≃g H'.coe)}
 
 instance [Finite W] : Finite (G.UnlabeledCopy H) := Subtype.finite
@@ -568,7 +568,7 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : G →g H // Injective
 
 @[simp] lemma unlabeledCopyCount_eq_zero [Finite W] : H.unlabeledCopyCount G = 0 ↔ G.Free H := by
   rw [unlabeledCopyCount, Nat.card_eq_zero,
-    or_iff_left (Finite.not_infinite inferInstance), isEmpty_subtype]
+    or_iff_left (Finite.not_infinite inferInstance), UnlabeledCopy, isEmpty_subtype]
   simp [Free, isContained_iff_exists_iso_subgraph]
 
 @[simp] lemma unlabeledCopyCount_pos [Finite W] : 0 < H.unlabeledCopyCount G ↔ G ⊑ H := by
@@ -715,7 +715,7 @@ lemma le_card_edgeFinset_killCopies [Finite W] :
         congr 1
         ext e
         induction e using Sym2.inductionOn with | hf v w
-        simp [mem_edgeSet, killCopies_of_ne_bot hG, f, eq_comm]
+        simp [mem_edgeSet, killCopies_of_ne_bot hG, f, eq_comm, UnlabeledCopy]
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
 we've removed is at most the number of copies of `G` in `H`. -/
