@@ -9,6 +9,7 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.PiLex
+public import Mathlib.Order.Preorder.Finite
 public import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -64,45 +65,45 @@ lemma liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin
 
 variable [Preorder α] {n : ℕ}
 
-lemma strictMono_insertNth_iff (q : Fin (n + 1)) (x : α) (f : Fin n → α) :
+lemma Fin.strictMono_insertNth_iff (q : Fin (n + 1)) (x : α) (f : Fin n → α) :
     StrictMono (q.insertNth x f) ↔
       StrictMono f ∧ (∀ i, i.castSucc < q → f i < x) ∧ (∀ i, q ≤ i.castSucc → x < f i) := by
   refine ⟨fun h ↦ ⟨fun a b hab ↦ ?_, ⟨fun i hlt ↦ ?_, fun i hlt ↦ ?_⟩⟩, ?_⟩
-  · simpa [hab] using @h (q.succAbove a) (q.succAbove b)
-  · simpa using @h (q.succAbove i) q (by simp [succAbove_of_castSucc_lt, hlt])
-  · simpa using @h q (q.succAbove i)
-      (by simp [succAbove_of_le_castSucc, hlt, ← le_castSucc_iff])
+  · simpa [hab] using h (a := q.succAbove a) (b := q.succAbove b)
+  · have : q.succAbove i < q := by simp [succAbove_of_castSucc_lt, hlt]
+    simpa using h this
+  · have : q < q.succAbove i := by simp [succAbove_of_le_castSucc, hlt, ← le_castSucc_iff]
+    simpa using h this
   · rintro ⟨h, hlt, hgt⟩ a b hab
     cases a using succAboveCases q <;> cases b using succAboveCases q
     · simp at hab
-    · simpa using hgt _ (by simpa [lt_succAbove_iff_le_castSucc] using hab)
-    · simpa using hlt _ (by simpa [succAbove_lt_iff_castSucc_lt] using hab)
-    · simpa using h ((strictMono_succAbove _).lt_iff_lt.mp hab)
+    · rename_i j
+      have : q ≤ j.castSucc := by simpa [lt_succAbove_iff_le_castSucc] using hab
+      simpa using hgt _ this
+    · rename_i j
+      have : j.castSucc < q := by simpa [succAbove_lt_iff_castSucc_lt] using hab
+      simpa using hlt _ this
+    · simpa using h <| (strictMono_succAbove _).lt_iff_lt.mp hab
 
-@[simp] lemma strictMono_cons {f : Fin n → α} {a : α} :
+lemma Fin.strictMono_cons {f : Fin n → α} {a : α} :
     StrictMono (Fin.cons a f) ↔ (∀ j, a < f j) ∧ StrictMono f := by
-  constructor
-  · intro h
-    exact ⟨fun j ↦ h (Fin.succ_pos j), h.comp Fin.strictMono_succ⟩
-  · rintro ⟨ha, hf⟩
-    simp only [strictMono_iff_lt_succ, cons_succ]
-    cases n with
-    | zero => simp only [IsEmpty.forall_iff]
-    | succ n =>
-      simp only [forall_iff_succ, castSucc_succ]
-      constructor
-      · simp only [castSucc_zero, cons_zero]
-        grind
-      · intro i
-        exact hf i.castSucc_lt_succ
+  refine ⟨fun h ↦ ⟨fun j ↦ h (Fin.succ_pos j), h.comp Fin.strictMono_succ⟩, fun ⟨ha, hf⟩ ↦ ?_⟩
+  simp only [strictMono_iff_lt_succ, cons_succ]
+  cases n with
+  | zero => simp
+  | succ n =>
+    rw [forall_iff_succ]
+    aesop
+
+@[simp] lemma Fin.strictMono_cons_zero_succ {f : Fin n → Fin (n + 1)} :
+    StrictMono (Fin.cons 0 f) ↔ f = Fin.succ :=
+  ⟨fun h ↦ funext fun i ↦ by simpa using congrFun h.eq_id i.succ,
+    fun h ↦ by simp [h, strictMono_id]⟩
 
 variable {f : Fin (n + 1) → α} {a : α}
 
-@[simp] lemma strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono f := by
-  rw [vecCons, strictMono_cons]
-  apply and_congr_left
-  intro hf
-  exact ⟨fun h ↦ h 0, fun h j ↦ h.trans_le (hf.monotone (by simp))⟩
+@[simp] lemma strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono f :=
+  liftFun_vecCons (· < ·)
 
 @[simp]
 lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by

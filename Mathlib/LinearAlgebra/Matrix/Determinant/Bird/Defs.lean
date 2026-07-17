@@ -166,7 +166,7 @@ theorem stepEntry_eq {n : ℕ} (A F : Matrix (Fin n) (Fin n) R) :
         + ∑ k ∈ Finset.Ioi i, F i k * A k j := by
   rfl
 
-theorem birdDetSpec_zero (A : Matrix (Fin 0) (Fin 0) R) :
+@[simp] theorem birdDetSpec_zero (A : Matrix (Fin 0) (Fin 0) R) :
     birdDet A = 1 := by
   rfl
 
