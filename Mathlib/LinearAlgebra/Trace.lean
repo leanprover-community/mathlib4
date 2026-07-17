@@ -182,7 +182,8 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
 the isomorphism `End(M) ≃ M* ⊗ M`. -/
 theorem trace_eq_contract' :
     LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap := by
-  simpa using trace_eq_contract_of_basis' (Module.Free.chooseBasis R M)
+  rw [dualTensorHomEquiv_eq_dualTensorHomEquivOfBasis (Module.Free.chooseBasis R M)]
+  exact trace_eq_contract_of_basis' _
 
 /-- The trace of the identity endomorphism is the dimension of the free module. -/
 @[simp]
@@ -400,7 +401,7 @@ lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing
       (dualTensorHomEquiv R S S)
   have h2 : (f ∘ₗ Algebra.linearMap R S) ∘ₗ LinearMap.trace R S = LinearMap.id :=
     b.ext fun i ↦
-      (basisUnique Unit h).ext fun j ↦ (by simp [f, b, Basis.tensorProduct, dualTensorHomEquiv])
+      (basisUnique Unit h).ext fun j ↦ (by simp [f, b, Basis.tensorProduct])
   let eq : R ≃ₗ[R] End R S := .ofLinear (f ∘ₗ Algebra.linearMap R S) (.trace R S) h2 h1
   have hf : Function.Bijective f := ⟨Algebra.lmul_injective, .of_comp eq.surjective⟩
   exact (Function.Bijective.of_comp_iff' hf _).mp eq.bijective

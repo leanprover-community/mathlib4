@@ -435,7 +435,7 @@ noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
       applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
 
 @[deprecated dualDistribEquiv (since := "2026-07-07")]
-lemma dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
+theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
     dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
   simp [dualDistribInvOfBasis]
 
@@ -456,7 +456,7 @@ lemma dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Bas
   all_goals { intros; simp [*] at * }
 
 @[deprecated dualDistribEquiv (since := "2026-07-07")]
-lemma dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
+theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
     (dualDistribInvOfBasis b c).comp (dualDistrib R M N) = LinearMap.id := by
   apply (b.dualBasis.tensorProduct c.dualBasis).ext
   rintro ⟨i, j⟩
@@ -473,7 +473,7 @@ isomorphism `R ⊗ R ≃ R`. -/
 @[simps!, deprecated dualDistribEquiv (since := "2026-07-07")]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine .ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
+  refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
   · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
   · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
 
