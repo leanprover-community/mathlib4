@@ -1105,6 +1105,10 @@ private theorem exists_tangentCoordChangeL_neg_det :
   · exact ⟨p, q, z_pos_I, z_neg_I, hmem_pos, hmem_neg,
       by linarith [hfactor_pos, hgt], by linarith [hfactor_neg, hgt], hpc_p, hpc_q⟩
 
+instance : Fact (Fintype.card (Fin 2) =
+    Module.finrank ℝ (EuclideanSpace ℝ (Fin 1) × ℝ)) :=
+  ⟨by simp [Module.finrank_prod]⟩
+
 /-- The Möbius band is not orientable.
 
 The tangent coordinate change between charts using the two different bundle trivializations has
@@ -1113,25 +1117,28 @@ compatibility condition would force the two charts' signs to agree at the point 
 determinant and disagree at the point with negative determinant; but each chart-sign is locally
 constant on its (preconnected) domain, a contradiction. -/
 theorem not_orientable :
-    ¬ Manifold.Orientable ((𝓡 1).prod 𝓘(ℝ, ℝ)) MoebiusBand := by
-  intro ⟨orient⟩
+    ¬ Manifold.Orientable ((𝓡 1).prod 𝓘(ℝ, ℝ)) MoebiusBand (Fin 2) := by
+  intro h
+  obtain ⟨orient⟩ := h.nonemptyOrientation
+  -- Reduce to a representative orientation lift, whose chart signs we can compare directly.
+  refine Quotient.inductionOn' orient fun o => ?_
   -- Get points where the tangent coordChange has opposite determinant signs.
   obtain ⟨p, q, zU, zL, hzU, hzL, hdet_pos, hdet_neg, hpc_p, hpc_q⟩ :=
     exists_tangentCoordChangeL_neg_det
   -- Compatibility: positive determinant at `zU` ⇒ the chart signs agree there; negative at `zL`
   -- ⇒ they disagree there.
-  have hU : orient.chartSign p zU = orient.chartSign q zU :=
-    (orient.compatible p q zU hzU.1 hzU.2).mp hdet_pos
-  have hL : orient.chartSign p zL ≠ orient.chartSign q zL := fun h =>
-    absurd ((orient.compatible p q zL hzL.1 hzL.2).mpr h) (not_lt.mpr hdet_neg.le)
+  have hU : o.chartSign p zU = o.chartSign q zU :=
+    (o.compatible_det hzU.1 hzU.2).mp hdet_pos
+  have hL : o.chartSign p zL ≠ o.chartSign q zL := fun heq =>
+    absurd ((o.compatible_det hzL.1 hzL.2).mpr heq) (not_lt.mpr hdet_neg.le)
   -- Each chart-sign is locally constant on its (preconnected) chart domain.
-  have hcp : orient.chartSign p zU = orient.chartSign p zL :=
+  have hcp : o.chartSign p zU = o.chartSign p zL :=
     ((IsLocallyConstant.iff_continuous _).mpr
-      (orient.continuousOn_chartSign p).restrict).apply_eq_of_isPreconnected
+      (o.continuousOn_chartSign p).restrict).apply_eq_of_isPreconnected
       (x := ⟨zU, hzU.1⟩) (y := ⟨zL, hzL.1⟩) hpc_p (mem_univ _) (mem_univ _)
-  have hcq : orient.chartSign q zU = orient.chartSign q zL :=
+  have hcq : o.chartSign q zU = o.chartSign q zL :=
     ((IsLocallyConstant.iff_continuous _).mpr
-      (orient.continuousOn_chartSign q).restrict).apply_eq_of_isPreconnected
+      (o.continuousOn_chartSign q).restrict).apply_eq_of_isPreconnected
       (x := ⟨zU, hzU.2⟩) (y := ⟨zL, hzL.2⟩) hpc_q (mem_univ _) (mem_univ _)
   exact hL (by rw [← hcp, ← hcq]; exact hU)
 
