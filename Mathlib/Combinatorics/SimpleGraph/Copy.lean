@@ -544,9 +544,7 @@ abbrev UnlabeledCopy (G : SimpleGraph V) (H : SimpleGraph W) : Type _ :=
 noncomputable def unlabeledCopyCount (H : SimpleGraph W) (G : SimpleGraph V) : ℕ := by
   classical exact Fintype.card (G.UnlabeledCopy H)
 
-@[deprecated "the bridge through the image of `Copy.toSubgraph` is no longer needed now that the \
-count is defined directly on the subtype of isomorphic subgraphs" (since := "2026-07-12")]
-lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : G →g H // Injective f}]
+lemma unlabeledCopyCount_eq_card_image_copyToSubgraph [Fintype {f : G →g H // Injective f}]
     [DecidableEq H.Subgraph] :
     H.unlabeledCopyCount G = #((Finset.univ : Finset (G.Copy H)).image Copy.toSubgraph) := by
   classical
@@ -554,7 +552,11 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : G →g H // Injective
   congr 1
   ext H'
   simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_image]
-  rw [← Set.mem_range, Copy.range_toSubgraph, Set.mem_setOf_eq]
+  rw [← Set.mem_range, Copy.range_toSubgraph, Set.mem_ofPred_eq]
+
+@[deprecated (since := "2026-07-17")]
+alias copyCount_eq_card_image_copyToSubgraph :=
+  unlabeledCopyCount_eq_card_image_copyToSubgraph
 
 @[simp] lemma unlabeledCopyCount_eq_zero : H.unlabeledCopyCount G = 0 ↔ G.Free H := by
   simp [unlabeledCopyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph,
@@ -565,14 +567,7 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : G →g H // Injective
 
 /-- There are at least as many labeled copies of `G` in `H` as there are unlabeled ones. -/
 lemma unlabeledCopyCount_le_copyCount [Fintype V] : H.unlabeledCopyCount G ≤ H.copyCount G := by
-  classical
-  rw [unlabeledCopyCount, copyCount]
-  apply Fintype.card_le_of_surjective
-    (fun c : Copy G H ↦ (⟨c.toSubgraph, ⟨c.isoToSubgraph⟩⟩ : G.UnlabeledCopy H))
-  rintro ⟨H', hG'⟩
-  obtain ⟨c, hc⟩ : ∃ c, Copy.toSubgraph c = H' := by
-    rwa [← Set.mem_range, Copy.range_toSubgraph]
-  exact ⟨c, Subtype.ext hc⟩
+  classical rw [unlabeledCopyCount_eq_card_image_copyToSubgraph]; exact card_image_le
 
 instance uniqueUnlabeledCopyBot (H : SimpleGraph W) :
     Unique ((⊥ : SimpleGraph W).UnlabeledCopy H) where
@@ -652,6 +647,7 @@ protected lemma Free.killCopies_eq_left (hGH : G.Free H) : H.killCopies G = H :=
   · exact killCopies_bot _
   · exact (killCopies_eq_left hG).2 hGH
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` results in a graph that doesn't
 contain `G`. -/
 lemma free_killCopies (hG : G ≠ ⊥) : G.Free (H.killCopies G) := by
