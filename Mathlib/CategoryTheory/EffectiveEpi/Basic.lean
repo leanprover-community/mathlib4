@@ -102,8 +102,6 @@ instance epi_of_effectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f wh
     rw [show m₂ = desc f (f ≫ m₂) (fun _ _ h => by simp [← assoc, h]) from uniq _ _ _ _ rfl]
     exact uniq _ _ _ _ h
 
-@[deprecated (since := "2025-11-20")] alias epiOfEffectiveEpi := epi_of_effectiveEpi
-
 instance (priority := 100) strongEpi_of_effectiveEpi {X Y : C} (f : X ⟶ Y) [EffectiveEpi f] :
     StrongEpi f :=
   StrongEpi.mk' fun A B z hz u v sq ↦
