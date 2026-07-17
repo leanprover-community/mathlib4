@@ -135,13 +135,7 @@ theorem getElem_edges {p : G.Walk u v} {i : ℕ} (h : i < p.edges.length) :
 
 theorem mk_mem_edges_iff_exists {u' v' : V} (p : G.Walk u v) :
     s(u', v') ∈ p.edges ↔ ∃ i < p.length, s(p.getVert i, p.getVert (i + 1)) = s(u', v') := by
-  rw [← p.length_darts]
-  refine ⟨fun h ↦ ?_, fun ⟨i, hlt, heq⟩ ↦ List.mem_map.mpr ⟨p.darts[i], ?_, ?_⟩⟩
-  · have ⟨d, hmem, heq⟩ := List.mem_map.mp h
-    refine List.getElem_of_mem hmem |>.imp fun i ⟨hi, heq'⟩ ↦ ⟨hi, ?_⟩
-    simp [← heq, ← heq', darts_getElem_eq_getVert]
-  · simp
-  · simp [← heq, darts_getElem_eq_getVert]
+  constructor <;> grind [getElem_edges, List.mem_iff_getElem]
 
 theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.support) :
     G.Adj u' v' := by
