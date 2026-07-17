@@ -55,6 +55,7 @@ section resolvent
 
 variable [NontriviallyNormedField 𝕜] [MeasurableSpace 𝕜]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[fun_prop]
 theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
     [CompleteSpace A] [MeasurableSpace A] [BorelSpace A] :

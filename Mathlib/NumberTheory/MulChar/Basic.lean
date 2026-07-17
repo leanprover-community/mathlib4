@@ -254,7 +254,7 @@ noncomputable instance inhabited : Inhabited (MulChar R R') :=
 
 /-- Evaluation of the trivial character -/
 @[simp]
-theorem one_apply_coe (a : Rˣ) : (1 : MulChar R R') a = 1 := by classical exact dif_pos a.isUnit
+theorem one_apply_coe (a : Rˣ) : (1 : MulChar R R') a = 1 := by exact dif_pos a.isUnit
 
 /-- Evaluation of the trivial character -/
 lemma one_apply {x : R} (hx : IsUnit x) : (1 : MulChar R R') x = 1 := one_apply_coe hx.unit

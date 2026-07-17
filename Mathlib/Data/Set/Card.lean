@@ -282,7 +282,7 @@ theorem Finite.encard_lt_encard (hs : s.Finite) (h : s ⊂ t) : s.encard < t.enc
 theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) :=
   fun _ _ h ↦ (toFinite _).encard_lt_encard h
 
-theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (setOf Set.Finite) :=
+theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (Set.ofPred Set.Finite) :=
   fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt
 
 theorem Finite.encard_lt_card (hfin : s.Finite) (hne : s ≠ univ) : s.encard < ENat.card α :=
@@ -541,6 +541,7 @@ open Notation in
 lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=
   (Function.Embedding.subtype _).encard_le
 
+set_option backward.isDefEq.respectTransparency false in
 open Notation in
 lemma encard_preimage_val_le_encard_right (P Q : Set α) : (P ↓∩ Q).encard ≤ Q.encard :=
   Function.Embedding.encard_le ⟨fun ⟨⟨x, _⟩, hx⟩ ↦ ⟨x, hx⟩, fun _ _ h ↦ by
@@ -593,8 +594,6 @@ lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : 
 end Function
 
 section ncard
-
-open Nat
 
 /-- A tactic (for use in default params) that applies `Set.toFinite` to synthesize a `Set.Finite`
   term. -/
@@ -846,7 +845,7 @@ theorem fiber_ncard_ne_zero_iff_mem_image {y : β} (hs : s.Finite := by toFinite
   ncard_image_of_injective _ f.inj'
 
 @[simp] theorem ncard_subtype (P : α → Prop) (s : Set α) :
-    { x : Subtype P | (x : α) ∈ s }.ncard = (s ∩ setOf P).ncard := by
+    { x : Subtype P | (x : α) ∈ s }.ncard = (s ∩ Set.ofPred P).ncard := by
   convert! (ncard_image_of_injective _ (@Subtype.coe_injective _ P)).symm
   ext x
   simp [← and_assoc, exists_eq_right]
@@ -887,7 +886,7 @@ theorem ncard_lt_card [Finite α] (h : s ≠ univ) : s.ncard < Nat.card α :=
 theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h
 
-theorem Finite.ncard_strictMonoOn : StrictMonoOn (α := Set α) ncard (setOf Set.Finite) :=
+theorem Finite.ncard_strictMonoOn : StrictMonoOn (α := Set α) ncard (Set.ofPred Set.Finite) :=
   fun _ _ _ ht hlt ↦ ncard_lt_ncard hlt ht
 
 theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
@@ -983,8 +982,8 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     obtain ⟨a, ha, rfl⟩ := hsurj y hy
     simp only [Subtype.exists]
     exact ⟨_, ha, rfl⟩
-  haveI := hs.fintype
-  haveI := Fintype.ofSurjective _ hsurj
+  have := hs.fintype
+  have := Fintype.ofSurjective _ hsurj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   exact
     @Finset.inj_on_of_surj_on_of_card_le _ _ _ t.toFinset f''

@@ -140,7 +140,7 @@ lemma sphere_pi (x : ∀ b, X b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
   obtain hr | rfl | hr := lt_trichotomy r 0
   · simp [hr]
   · rw [closedBall_eq_sphere_of_nonpos le_rfl, eq_comm, Set.inter_eq_right]
-    letI := h.resolve_left (lt_irrefl _)
+    let := h.resolve_left (lt_irrefl _)
     inhabit β
     refine subset_iUnion_of_subset default ?_
     intro x hx

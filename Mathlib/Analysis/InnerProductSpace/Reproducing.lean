@@ -150,6 +150,7 @@ bounded by `‖f‖` times the square root of the kernel diagonal `‖kernel H x
 lemma norm_apply_le (f : H) (x : X) : ‖f x‖ ≤ ‖f‖ * √‖kernel H x x‖ := by
   grw [← adjoint_kerFun, le_opNorm, norm_map, norm_kerFun_eq_sqrt_norm_kernel, mul_comm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
   refine (orthogonal_eq_bot_iff.mp ((Submodule.eq_bot_iff _).mpr fun f fin ↦ DFunLike.ext f 0 ?_))
