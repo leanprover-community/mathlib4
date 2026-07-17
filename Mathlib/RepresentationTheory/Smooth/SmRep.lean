@@ -169,14 +169,14 @@ lemma ihom_eq_of_smoothHom (A B : SmRep.{w} k G)
     : (ihom A).obj B = of (smoothHom A.ρ B.ρ) := rfl
 
 /-- An auxiliary form of `tensorHomAdjunction`. -/
-noncomputable def tensorHomAdjunction_aux (A : SmRep.{u} k G)
+noncomputable def tensorHomAdjunctionAux (A : SmRep.{u} k G)
     : ι ⋙ (tensorLeft (ι.obj A)) ⊣ (Rep.ihom (ι.obj A)) ⋙ smVec :=
   smVecAdjunction.comp (ihom.adjunction (ι.obj A))
 
 /-- The adjunction between `A ⨂ _` and `ihom (A, _)` in the category `SmRep`. -/
 noncomputable def tensorHomAdjunction (A : SmRep.{u} k G) : tensorLeft A ⊣ ihom A :=
   Adjunction.restrictFullyFaithful
-    (adj := tensorHomAdjunction_aux A)
+    (adj := tensorHomAdjunctionAux A)
     (hiC := Functor.FullyFaithful.id (SmRep k G))
     (hiD := (smoothProperty k G).fullyFaithfulι)
     (comm1 := Functor.Monoidal.commTensorLeft ι A)
