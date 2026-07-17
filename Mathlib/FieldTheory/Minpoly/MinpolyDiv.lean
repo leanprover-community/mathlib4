@@ -157,7 +157,6 @@ lemma span_coeff_minpolyDiv :
     Submodule.span R (Set.range (coeff (minpolyDiv R x))) =
       Subalgebra.toSubmodule (R[x]) := by
   nontriviality S
-  classical
   apply le_antisymm
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩

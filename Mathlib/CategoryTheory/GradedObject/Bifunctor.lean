@@ -32,15 +32,18 @@ variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C
 
 namespace GradedObject
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, this is the obvious
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`. -/
 @[simps]
 def mapBifunctor (I J : Type*) :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
+    set_option backward.isDefEq.respectTransparency.types false in
     { obj := fun Y ij => (F.obj (X ij.1)).obj (Y ij.2)
       map := fun φ ij => (F.obj (X ij.1)).map (φ ij.2) }
   map φ :=
+    set_option backward.isDefEq.respectTransparency.types false in
     { app := fun Y ij => (F.map (φ ij.1)).app (Y ij.2) }
 
 section
@@ -119,6 +122,7 @@ variable {X₁ X₂ : GradedObject I C₁} {Y₁ Y₂ : GradedObject J C₂}
     [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
     [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `mapBifunctorMapObj F p X₁ Y₁ ≅ mapBifunctorMapObj F p X₂ Y₂`
 induced by isomorphisms `X₁ ≅ X₂` and `Y₁ ≅ Y₂`. -/
 @[simps]
