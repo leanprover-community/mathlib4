@@ -259,8 +259,7 @@ def witnessHom : R →+* WitnessRing :=
   Ideal.Quotient.lift baseIdeal evalWitness baseIdeal_le_ker_evalWitness
 
 @[simp] theorem witnessHom_b : witnessHom b = bw := by
-  rw [witnessHom, b, Ideal.Quotient.lift_mk]
-  simp only [evalWitness, bp, eval₂Hom_X', Matrix.cons_val_one, Matrix.cons_val_zero]
+  simp [witnessHom, b, evalWitness, bp]
 
 theorem two_b_ne_zero : (2 : R) * b ≠ 0 := by
   intro h
