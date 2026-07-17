@@ -11,7 +11,7 @@ public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
-
+public import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Adjoining Elements to Fields

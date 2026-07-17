@@ -155,7 +155,7 @@ noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve
     · dsimp [Presieve.FamilyOfElements.map] at hj ⊢
       rwa [Functor.map_comp, comp_apply]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Subfunctor.to_sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsSheaf J F') :
     Subfunctor.homOfLe (G.le_sheafify J) ≫ G.sheafifyLift f h = f := by
   ext U s
@@ -165,7 +165,7 @@ theorem Subfunctor.to_sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsShea
   exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : _ ≤ sheafify _ _)).app _ _).2)
     ((G.family_of_elements_compatible _).map _) _ _).trans (this _ _)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toFunctor ⟶ F')
@@ -178,7 +178,7 @@ theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
   rw [← dsimp% l₁.naturality_apply, ← dsimp% l₂.naturality_apply]
   exact ConcreteCategory.congr_hom (congr_app e <| op V) ⟨_, hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Subfunctor.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
     (hG' : Presieve.IsSheaf J G'.toFunctor) : G.sheafify J ≤ G' := by
   intro U x hx

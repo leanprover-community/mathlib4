@@ -1318,6 +1318,7 @@ def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFai
     (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm))
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps! +dsimpLhs]
 def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}

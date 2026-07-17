@@ -343,9 +343,12 @@ the same ambient group, which permits lemma statements like `lp.monotone` (below
 @[nolint unusedArguments]
 def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i
-deriving AddCommGroup
 
 namespace PreLp
+
+-- The `SMul` instance exists to avoid a zsmul diamond.
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] in
+deriving instance SMul 𝕜, AddCommGroup for PreLp E
 
 @[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
 @[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl

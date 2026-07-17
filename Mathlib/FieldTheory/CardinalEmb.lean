@@ -5,13 +5,9 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.LinearAlgebra.FreeAlgebra
-public import Mathlib.Order.Interval.Set.WithBotTop
 public import Mathlib.Order.DirectedInverseSystem
-
-import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree
@@ -87,7 +83,6 @@ set_option quotPrecheck false
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
 local notation "ι" => (Module.rank F E).ord.ToType
 
-set_option backward.privateInPublic true in
 local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/

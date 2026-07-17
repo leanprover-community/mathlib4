@@ -227,7 +227,7 @@ instance {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCate
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance Functor.Monoidal.whiskeringLeft
