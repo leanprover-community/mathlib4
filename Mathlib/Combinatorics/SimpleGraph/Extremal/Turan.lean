@@ -348,6 +348,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by lia,
       Nat.mul_add_mod_self_left]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma turanNumber_add : turanNumber (n + r) r = turanNumber n r + n * (r - 1) + r.choose 2 := by
   rw [← mul_right_inj' two_ne_zero]
   simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges,
