@@ -140,9 +140,7 @@ lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
 lemma adj_edge {v w : V} : (edge s t).Adj v w ↔ s(s, t) = s(v, w) ∧ v ≠ w := by
-  simp only [edge_adj, ne_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk,
-    and_congr_left_iff]
-  tauto
+  grind [edge_adj]
 
 lemma edge_comm : edge s t = edge t s := by
   rw [edge, edge, Sym2.eq_swap]
@@ -166,7 +164,7 @@ lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
   obtain h | h := eq_or_ne v w
   · simp [h]
   · refine ⟨fun h ↦ .inr <| h (by simp_all [edge_adj]), fun hadj v' w' hvw' ↦ ?_⟩
-    aesop (add simp [edge_adj, adj_symm])
+    grind [edge_adj, adj_symm]
 
 @[simp]
 lemma edgeSet_edge (v w : V) : (edge v w).edgeSet = {s(v, w)} \ Sym2.diagSet := by simp [edge]
@@ -180,16 +178,14 @@ lemma edgeSet_edge_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by si
 @[deprecated (since := "2026-03-18")] alias edge_edgeSet_of_ne := edgeSet_edge_of_ne
 
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
-  rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edgeSet_edge_of_ne h.ne, Set.singleton_subset_iff,
-    mem_edgeSet]
+  simp [h]
 
 @[simp] lemma deleteEdges_edge {u v : V} {s : Set (Sym2 V)} (h : s(u, v) ∈ s) :
     (edge u v).deleteEdges s = ⊥ := by simp [edge, Set.sdiff_subset_iff, h]
 
 lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
-  by_cases h : u = v
-  · subst h
-    simp [edge_self_eq_bot]
+  rcases eq_or_ne u v with rfl | h
+  · simp [edge_self_eq_bot]
   simp [← disjoint_edgeSet, edgeSet_edge_of_ne h]
 
 lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
@@ -207,11 +203,7 @@ theorem sSup_edge_eq : sSup { edge u v | (u : V) (v : V) (_ : G.Adj u v) } = G :
 theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
     H.spanningCoe ≤ G := by
   intro v w hvw
-  have := hvw.adj_sub
-  simp only [Subgraph.spanningCoe_adj, SimpleGraph.sup_adj, SimpleGraph.edge_adj] at *
-  by_cases hs : s(v, w) = s(s, t)
-  · exact (h ((Subgraph.adj_congr_of_sym2 hs).mp hvw)).elim
-  · aesop
+  grind [hvw.adj_sub, H.spanningCoe_adj, G.sup_adj, SimpleGraph.edge_adj, adj_congr_of_sym2]
 
 variable [Fintype V] [DecidableRel G.Adj]
 
@@ -220,9 +212,8 @@ instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
 
 theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G ⊔ edge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
-  let := Classical.decEq V
-  rw [edgeFinset_sup, cons_eq_insert, insert_eq, union_comm]
-  simp_rw [edgeFinset, edgeSet_edge_of_ne h]; rfl
+  classical
+  simp [edgeFinset, edgeSet_edge_of_ne h]
 
 theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     #(G ⊔ edge s t).edgeFinset = #G.edgeFinset + 1 := by
