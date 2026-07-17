@@ -753,9 +753,8 @@ theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected
 theorem isPreconnected_nonempty_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ ↑K ⊆ s} := by
   refine (isPreconnected_nonempty_finite_subsets hs).subset_closure (by grind) ?_
-  conv_lhs => rw [setOf_and]
-  conv_rhs => rw [setOf_and]
-  simp_rw [nonempty_iff_ne_empty, ← coe_bot, SetLike.coe_ne_coe, Ne, ← compl_singleton_eq]
+  rw [ofPred_and, ofPred_and]
+  simp_rw [Compacts.coe_nonempty, ← compl_singleton_eq]
   grw [← isClopen_singleton_bot.compl.isOpen.inter_closure, closure_finite_subsets,
     ← subset_closure]
 
