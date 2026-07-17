@@ -137,7 +137,7 @@ lemma Iso.sumAssoc_comp_sumCongr (f : G ≃g G') (g : H ≃g H') (h : I ≃g I')
 the disjoint sum of the edges of `G` and the edges of `H` -/
 def edgeSetSumEquiv : (G ⊕g H).edgeSet ≃ G.edgeSet ⊕ H.edgeSet where
   toFun :=
-    fun ⟨e, he⟩ ↦ e.fromRelNdrec (sym := symm _) he (fun
+    fun ⟨e, he⟩ ↦ e.fromRelNdrec (sym := symm_adj _) he (fun
       | Sum.inl u, Sum.inl v, h => .inl ⟨s(u, v), h⟩
       | Sum.inr u, Sum.inr v, h => .inr ⟨s(u, v), h⟩
       | Sum.inl u, Sum.inr v, h => by contradiction
@@ -145,9 +145,9 @@ def edgeSetSumEquiv : (G ⊕g H).edgeSet ≃ G.edgeSet ⊕ H.edgeSet where
     ) (by grind)
   invFun
     | Sum.inl ⟨e, he⟩ =>
-      e.fromRelNdrec (sym := G.symm) he (fun u v h ↦ ⟨s(.inl u, .inl v), h⟩) <| by simp
+      e.fromRelNdrec (sym := G.symm_adj) he (fun u v h ↦ ⟨s(.inl u, .inl v), h⟩) <| by simp
     | Sum.inr ⟨e, he⟩ =>
-      e.fromRelNdrec (sym := H.symm) he (fun u v h ↦ ⟨s(.inr u, .inr v), h⟩) <| by simp
+      e.fromRelNdrec (sym := H.symm_adj) he (fun u v h ↦ ⟨s(.inr u, .inr v), h⟩) <| by simp
   left_inv := by rintro ⟨⟨u | u, v | v⟩, h⟩ <;> first | contradiction | rfl
   right_inv := by rintro (⟨⟨u, v⟩, h⟩ | ⟨⟨u, v⟩, h⟩) <;> rfl
 
