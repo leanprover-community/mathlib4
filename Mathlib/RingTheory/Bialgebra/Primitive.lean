@@ -45,25 +45,22 @@ structure IsPrimitiveElem (a : A) : Prop where
 
 attribute [simp] IsPrimitiveElem.counit_eq_zero IsPrimitiveElem.comul_eq_tmul_add_tmul
 
-namespace IsPrimitiveElem
-
 /-- In a bialgebra, `0` is a primitive element. -/
-lemma zero : IsPrimitiveElem R (0 : A) := by simp [isPrimitiveElem_iff]
+lemma IsPrimitiveElem.zero : IsPrimitiveElem R (0 : A) := by simp [isPrimitiveElem_iff]
 
 /-- Primitive elements in a bialgebra are stable under addition. -/
-lemma add (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) : IsPrimitiveElem R (a + b) :=
+lemma IsPrimitiveElem.add (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
+    IsPrimitiveElem R (a + b) :=
   ⟨by simp [ha, hb], by simp [ha, hb, add_tmul, tmul_add]; abel⟩
 
 /-- Primitive elements in a bialgebra are stable under scalar multiplication. -/
-lemma smul (ha : IsPrimitiveElem R a) (r : R) : IsPrimitiveElem R (r • a) :=
+lemma IsPrimitiveElem.smul (ha : IsPrimitiveElem R a) (r : R) : IsPrimitiveElem R (r • a) :=
   ⟨by simp [ha], by simp [ha, smul_add, smul_tmul']⟩
 
 /-- A bialgebra homomorphism sends primitive elements to primitive elements. -/
-lemma map [FunLike F A B] [BialgHomClass F R A B] (f : F) (ha : IsPrimitiveElem R a) :
-    IsPrimitiveElem R (f a) :=
-  ⟨by simp [ha], by rw [← CoalgHomClass.map_comp_comul_apply]; simp [ha]⟩
-
-end IsPrimitiveElem
+lemma IsPrimitiveElem.map [FunLike F A B] [BialgHomClass F R A B] (f : F)
+    (ha : IsPrimitiveElem R a) : IsPrimitiveElem R (f a) :=
+  ⟨by simp [ha], by simp [ha, ← CoalgHomClass.map_comp_comul_apply]⟩
 
 variable (R A) in
 /-- The primitive elements form a submodule. -/
@@ -80,23 +77,20 @@ end Semiring
 section Ring
 variable [CommSemiring R] [Ring A] [Bialgebra R A] {a b : A}
 
-namespace IsPrimitiveElem
-
 /-- Primitive elements in a bialgebra are stable under negation. -/
-lemma neg (ha : IsPrimitiveElem R a) : IsPrimitiveElem R (-a) :=
+lemma IsPrimitiveElem.neg (ha : IsPrimitiveElem R a) : IsPrimitiveElem R (-a) :=
   ⟨by simpa [ha] using (map_add (counit (R := R)) (-a) a).symm,
     by rw [map_neg, ha.comul_eq_tmul_add_tmul, neg_add, neg_tmul, tmul_neg]⟩
 
 /-- Primitive elements in a bialgebra are stable under subtraction. -/
-lemma sub (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) : IsPrimitiveElem R (a - b) :=
+lemma IsPrimitiveElem.sub (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
+    IsPrimitiveElem R (a - b) :=
   sub_eq_add_neg a b ▸ ha.add hb.neg
 
 /-- The commutator `[a, b] = a * b - b * a` of two primitive elements is primitive. -/
-lemma commutator (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
+lemma IsPrimitiveElem.commutator (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
     IsPrimitiveElem R (a * b - b * a) :=
   ⟨by simpa [ha] using (map_add (counit (R := R)) (a * b - b * a) (b * a)).symm,
     by simp [ha, hb, add_mul, mul_add, sub_tmul, tmul_sub]; abel⟩
-
-end IsPrimitiveElem
 
 end Ring
