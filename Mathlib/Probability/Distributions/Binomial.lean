@@ -8,9 +8,15 @@ module
 public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.Distributions.SetBernoulli
+public import Mathlib.Probability.Independence.InfinitePi
+public import Mathlib.Probability.Moments.Variance
+public import Mathlib.Probability.HasLaw
 
+import Mathlib.Data.Set.Notation
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
+import Mathlib.Probability.Distributions.TwoValued
+import Mathlib.Probability.HasLawExists
 import Mathlib.Probability.Notation
 
 /-!
@@ -28,8 +34,8 @@ of `Set.Iic n` such that each `k ∈ Set.Iic n` belongs to `U` independently wit
 
 ## Implementation details
 
-We provide the definition `binomial` with notation `Bin(n, P)` as the corresponding measure
-over `ℕ`. We also introduce a notation `Bin(R, n p)` for the same measure but over a general
+We provide the definition `binomial` with notation `Bin(n, p)` as the corresponding measure
+over `ℕ`. We also introduce a notation `Bin(R, n, p)` for the same measure but over a general
 `AddMonoidWithOne R`, that stands for `Bin(n, p).map (Nat.cast : ℕ → R)`. This is in particular
 useful if one is interested in the binomial distribution as a measure over `ℝ` or `ℤ`.
 Results should be proven for both `Bin(n, p)` and `Bin(R, n, p)` when possible, using the first
@@ -48,7 +54,7 @@ use `map_cast_binomial`.
 public section
 
 open MeasureTheory Set Measure
-open scoped NNReal ProbabilityTheory unitInterval ENNReal
+open scoped NNReal ProbabilityTheory unitInterval ENNReal Set.Notation
 
 namespace ProbabilityTheory
 variable {R Ω : Type*} [MeasurableSpace R] [AddMonoidWithOne R] {m : MeasurableSpace Ω}
@@ -178,6 +184,58 @@ lemma integral_map_cast_binomial [MeasurableSingletonClass R] (f : R → E) :
       ∑ k ∈ Finset.Iic n, (n.choose k * (p : ℝ) ^ k * (1 - p) ^ (n - k)) • f k := by
   rw [integral_map .of_discrete (integrable_map_cast_binomial f).aestronglyMeasurable,
     integral_binomial]
+
+lemma l1 {ι : Type*} (u : Set ι) {S : Ω → Set ι} (hS : HasLaw S setBer(u, p) P) :
+    iIndepFun (fun i ω ↦ i ∈ S ω) P := by
+  have := hS.isProbabilityMeasure
+  rw [iIndepFun_iff_finset]
+  intro s
+  rw [iIndepFun_iff_map_fun_eq_pi_map]
+  · have : (fun ω i ↦ s.restrict (fun i ω ↦ i ∈ S ω) i ω) = (fun t (i : s) ↦ i.1 ∈ t) ∘ S := by
+      ext; simp
+    have h1 : (fun t (i : s) ↦ i.1 ∈ t) ∘ (fun (p : ι → Prop) ↦ {i | p i}) = s.restrict := by
+      ext; simp
+    rw [this, ← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map, map_map,
+      h1, infinitePi_map_restrict]
+    · congr
+      ext i : 1
+      have : s.restrict (fun i ω ↦ i ∈ S ω) i = (fun t ↦ i.1 ∈ t) ∘ S := by ext; simp
+      have h1 : (fun t ↦ i.1 ∈ t) ∘ (fun (p : ι → Prop) ↦ {i | p i}) = Function.eval i.1 := by
+        ext; simp
+      rw [this, ← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map, map_map, h1,
+        infinitePi_map_eval]
+      all_goals fun_prop
+    any_goals fun_prop
+  intro
+  exact ((Finset.measurable_restrict s).comp_aemeasurable hS.aemeasurable).eval _
+
+lemma measurePreserving_ncard_setBernoulli_binomial_ncard {ι : Type*} [Countable ι] {u : Set ι}
+    (hu : u.Finite) :
+    MeasurePreserving ncard setBer(u, p) Bin(u.ncard, p) where
+  measurable := by fun_prop
+  map_eq := by
+    refine ext_of_singleton fun k ↦ ?_
+    rw [binomial_singleton, map_ncard_setBernoulli_singleton hu]
+
+/-- A sum of independent Bernoulli random variables is a binomial random variable. -/
+lemma iIndepFun.hasLaw_finsetSum_binomial {ι : Type*} {s : Finset ι} {X : ι → Ω → ℕ}
+    (hX : iIndepFun (s.restrict X) P) (lawX : ∀ i ∈ s, HasLaw (X i) Ber(1, 0, p) P) :
+    HasLaw (∑ i ∈ s, X i) Bin(s.card, p) P := by
+  classical
+  obtain ⟨Ω', mΩ', P', S, -, hS⟩ := setBer((Finset.univ (α := s) : Set s), p).exists_hasLaw
+  convert hS.hasLaw_indicator_infinitePi_ite_of_setBernoulli.comp_of_hasLaw_comp
+    (f := fun x ↦ ∑ i, x i) (Y := fun ω i ↦ X i.1 ω) (by fun_prop) ?_ ?_
+  · simp only [Finset.sum_apply]
+    rw [← Finset.sum_coe_sort, ← Finset.sum_coe_sort]
+  · rw [infinitePi_eq_pi]
+    exact iIndepFun.hasLaw_pi (by simpa using lawX) hX
+  have : HasLaw (fun ω ↦ (S ω).ncard) Bin(s.card, p) P' := by
+    convert (measurePreserving_ncard_setBernoulli_binomial_ncard (by simp)).comp_hasLaw hS <;>
+    simp
+  convert this with ω
+  rw [Set.ncard_eq_toFinset_card _ (toFinite (S ω)), Finset.card_eq_sum_ite (Finset.subset_univ _)]
+  congr with i
+  simp [Set.indicator]
 
 end Integral
 
