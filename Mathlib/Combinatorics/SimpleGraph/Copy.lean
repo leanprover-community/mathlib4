@@ -536,8 +536,6 @@ of `G` isomorphic to `H`. See `SimpleGraph.labelledCopyCount` for the number of 
 noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
   classical exact Fintype.card (H.UnlabeledCopy G)
 
-@[deprecated "`copyCount` is now defined directly as `Fintype.card (H.UnlabeledCopy G)`; there is \
-no longer a need to bridge through the image of `Copy.toSubgraph`" (since := "2026-07-12")]
 lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective f}]
     [DecidableEq G.Subgraph] :
     copyCount G H = #((Finset.univ : Finset (H.Copy G)).image Copy.toSubgraph) := by
@@ -557,14 +555,7 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective
 
 /-- There's at least as many labelled copies of `H` in `G` than unlabelled ones. -/
 lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledCopyCount H := by
-  classical
-  rw [copyCount, labelledCopyCount]
-  apply Fintype.card_le_of_surjective
-    (fun c : Copy H G ↦ (⟨c.toSubgraph, ⟨c.isoToSubgraph⟩⟩ : H.UnlabeledCopy G))
-  rintro ⟨G', hG'⟩
-  obtain ⟨c, hc⟩ : ∃ c : Copy H G, c.toSubgraph = G' := by
-    rwa [← Set.mem_range, Copy.range_toSubgraph]
-  exact ⟨c, Subtype.ext hc⟩
+  classical rw [copyCount_eq_card_image_copyToSubgraph]; exact card_image_le
 
 instance uniqueUnlabeledCopyBot (G : SimpleGraph V) :
     Unique ((⊥ : SimpleGraph V).UnlabeledCopy G) where
