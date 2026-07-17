@@ -285,10 +285,9 @@ variable (κ₁ κ₂) {C : Type u} [Category.{v} C] {X : C}
 
 variable [IsCardinalAccessibleCategory C κ₁]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
-    HasColimit ((Subtype.mono_coe A.val).functor ⋙ p.diag) := by
-  have : IsCardinalFiltered (Subtype A.val) κ₁ := A.prop.1
+    HasColimit (A.val.mono_coe.functor ⋙ p.diag) := by
+  have : IsCardinalFiltered A.val κ₁ := A.prop.1
   have := HasCardinalFilteredColimits.hasColimitsOfShape  C κ₁
   infer_instance
 
@@ -315,40 +314,34 @@ abbrev pair {j j' : J} (h : j ≤ j') :
 
 lemma le_pair {j j' : J} (h : j ≤ j') :
     singleton κ₁ κ₂ j ≤ pair κ₁ κ₂ h := by
-  rw [Subtype.mk_le_mk]
   simp
 
 lemma le_pair' {j j' : J} (h : j ≤ j') :
     singleton κ₁ κ₂ j' ≤ pair κ₁ κ₂ h := by
-  rw [Subtype.mk_le_mk]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a presentation `p` of `X : C` as a colimit indexed by a partially
 ordered type `J` of `κ₁`-presentable objects and `A` a subset of `J`
 that is `κ₁`-directed and of cardinality `< κ₂`, this is
 the colimit of the restriction of the diagram `p.diag` to `A`. -/
 noncomputable abbrev colimit
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : C :=
-    Limits.colimit ((Subtype.mono_coe A.val).functor ⋙ p.diag)
+    Limits.colimit (A.val.mono_coe.functor ⋙ p.diag)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inclusions in `colimit`. -/
 noncomputable abbrev colimit.ι
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) (a : J) (ha : a ∈ A.val) :
     p.diag.obj a ⟶ colimit κ₁ κ₂ p A :=
-  Limits.colimit.ι ((Subtype.mono_coe A.val).functor ⋙ p.diag) ⟨a, ha⟩
+  Limits.colimit.ι (A.val.mono_coe.functor ⋙ p.diag) ⟨a, ha⟩
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
 lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
     {a b : J} (hab : a ≤ b) (ha : a ∈ A.val) (hb : b ∈ A.val) :
     p.diag.map (homOfLE hab) ≫ colimit.ι κ₁ κ₂ p A b hb = colimit.ι κ₁ κ₂ p A a ha :=
-  Limits.colimit.w ((Subtype.mono_coe A.val).functor ⋙ p.diag)
+  Limits.colimit.w (A.val.mono_coe.functor ⋙ p.diag)
     (j := ⟨a, ha⟩) (j' := ⟨b, hb⟩) (homOfLE hab)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functoriality of `colimit` with respect to the subset `A`. -/
 noncomputable def colimit.map
@@ -359,7 +352,6 @@ noncomputable def colimit.map
       naturality j₁ j₂ f := by
         simpa using! colimit.w κ₁ κ₂ p A₂ (leOfHom f) (hA j₁.prop) (hA j₂.prop) })
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
 lemma colimit.ι_map {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)}
@@ -367,7 +359,6 @@ lemma colimit.ι_map {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ
     colimit.ι κ₁ κ₂ p A₁ j hj ≫ colimit.map κ₁ κ₂ p hA = colimit.ι κ₁ κ₂ p A₂ j (hA hj) :=
   colimit.ι_desc ..
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Fact κ₂.IsRegular] in
 @[ext]
 lemma colimit.hom_ext
@@ -380,14 +371,12 @@ lemma colimit.hom_ext
   apply h
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- As `X` is the colimit of a diagram `p.diag`, this is the induced morphism
 `colimit κ₁ κ₂ p A ⟶ X` from the colimit of the restriction of this diagram to `A`. -/
 noncomputable def colimit.π
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : colimit κ₁ κ₂ p A ⟶ X :=
   colimit.desc _ (Cocone.mk _ { app a := by exact p.ι.app a })
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
 lemma colimit.ι_π
@@ -440,7 +429,6 @@ noncomputable def coconeDesc : Cocone p.diag where
 /-- Auxiliary definition for `isColimit`. -/
 noncomputable def desc : X ⟶ s.pt := p.isColimit.desc (coconeDesc s)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma fac (j : J) :
     dsimp% p.ι.app j ≫ desc s =
@@ -448,7 +436,6 @@ lemma fac (j : J) :
   p.isColimit.fac (coconeDesc s) j
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma fac' (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
     colimit.π κ₁ κ₂ p A ≫ desc s = s.ι.app A := by
@@ -462,7 +449,6 @@ end isColimit
 
 open isColimit in
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a presentation `p` of `X : C` as a colimit indexed by a partially
 ordered type `J` of `κ₁`-presentable objects, `X` is also the colimit
 of all the colimits of the restrictions of the diagram `p.diag`
@@ -470,8 +456,7 @@ to the subsets `A` of `J` that are `κ₁`-directed and of cardinality `< κ₂`
 noncomputable def isColimit : IsColimit (cocone κ₁ κ₂ p) where
   desc s := desc s
   fac s A := fac' s A
-  uniq s m hm :=
-    p.isColimit.hom_ext (fun j ↦ by simp [fac s j, ← hm])
+  uniq s m hm := p.isColimit.hom_ext (fun j ↦ by simp [fac s j, ← hm])
 
 variable {κ₁ κ₂} in
 include hκ' in
@@ -503,7 +488,6 @@ lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
     (fun _ _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C hJ)
     (isCardinalPresentable_monotone _ hκ.le)
 
-set_option backward.isDefEq.respectTransparency false in
 open IsCardinalFilteredAndHasCardinalLT in
 include hκ hκ' in
 /-- This is part of the proof of the implication (iv) → (ii) in the
@@ -526,7 +510,7 @@ lemma isCardinalFilteredGenerator'
     refine ⟨Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J), inferInstance,
       isCardinalFiltered_subtype hκ',
       ⟨{ diag := _, ι := _, isColimit := isColimit κ₁ κ₂ p, prop_diag_obj A := ?_ }⟩⟩
-    have : (generator κ₁ κ₂ C).IsClosedUnderColimitsOfShape (Subtype A.val) := by
+    have : (generator κ₁ κ₂ C).IsClosedUnderColimitsOfShape A.val := by
       apply ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure
       rw [hasCardinalLT_arrow_iff_of_isThin _ _ (IsRegular.aleph0_le Fact.out)]
       exact A.prop.2
