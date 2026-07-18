@@ -102,7 +102,6 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     intro i j
     convert! h' i ((b.indexEquiv b').symm j)
     simp [Basis.toMatrix_apply]
-  classical
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
     ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]
   congr

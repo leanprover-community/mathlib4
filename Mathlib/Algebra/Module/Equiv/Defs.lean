@@ -140,6 +140,7 @@ instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
 /-- The equivalence of types underlying a linear equivalence. -/
+@[implicit_reducible]
 def toEquiv (e : M ≃ₛₗ[σ] M₂) : M ≃ M₂ := e.toAddEquiv.toEquiv
 
 theorem toEquiv_injective :
@@ -243,7 +244,7 @@ theorem refl_apply [Module R M] (x : M) : refl R M x = x :=
   rfl
 
 /-- Linear equivalences are symmetric. -/
-@[symm]
+@[symm, implicit_reducible]
 def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
   { e.toLinearMap.inverse e.invFun e.left_inv e.right_inv,
     e.toEquiv.symm with
@@ -541,8 +542,7 @@ theorem coe_symm_mk [Module R M] [Module R M₂]
 @[simp]
 theorem coe_symm_mk' [Module R M] [Module R M₂]
     {f inv_fun left_inv right_inv} :
-    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
-  rfl
+    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun := rfl
 
 protected theorem bijective : Function.Bijective e :=
   e.toEquiv.bijective
@@ -584,6 +584,7 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
   f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl

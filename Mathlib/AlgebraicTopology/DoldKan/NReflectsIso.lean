@@ -43,7 +43,7 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
     intro
     -- restating the result in a way that allows induction on the degree n
     suffices ∀ n : ℕ, IsIso (f.app (op ⦋n⦌)) by
-      haveI : ∀ Δ : SimplexCategoryᵒᵖ, IsIso (f.app Δ) := fun Δ => this Δ.unop.len
+      have : ∀ Δ : SimplexCategoryᵒᵖ, IsIso (f.app Δ) := fun Δ => this Δ.unop.len
       apply NatIso.isIso_of_isIso_app
     -- restating the assumption in a more practical form
     have h₁ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.hom_inv_id (N₁.map f)))

@@ -80,8 +80,8 @@ theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π
 theorem dualDistrib_dualDistribInvOfBasis_left_inverse [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
     (dualDistrib) ∘ₗ (dualDistribInvOfBasis b) = LinearMap.id := by
-  haveI := Fintype.ofFinite ι
-  haveI := fun i => Fintype.ofFinite (κ i)
+  have := Fintype.ofFinite ι
+  have := fun i => Fintype.ofFinite (κ i)
   classical
   refine (Basis.piTensorProduct b).dualBasis.ext (fun p ↦ ?_)
   refine (Basis.piTensorProduct b).ext (fun q ↦ ?_)
@@ -90,8 +90,8 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse [Finite ι] [∀ i, Finit
 theorem dualDistrib_dualDistribInvOfBasis_right_inverse [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
     (dualDistribInvOfBasis b) ∘ₗ dualDistrib = LinearMap.id := by
-  haveI := Fintype.ofFinite ι
-  haveI := fun i => Fintype.ofFinite (κ i)
+  have := Fintype.ofFinite ι
+  have := fun i => Fintype.ofFinite (κ i)
   classical
   refine (Basis.piTensorProduct (fun i => (b i).dualBasis)).ext (fun p ↦ ?_)
   refine (Basis.piTensorProduct (fun i => (b i).dualBasis)).ext_elem (fun q ↦ ?_)
