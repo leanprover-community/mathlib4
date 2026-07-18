@@ -97,7 +97,6 @@ export MonadCont (Label goto)
 
 variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
-
 /-- Build a `ContT` from a function taking a continuation callback. -/
 def mk (f : (α → m r) → m r) : ContT r m α := f
 
