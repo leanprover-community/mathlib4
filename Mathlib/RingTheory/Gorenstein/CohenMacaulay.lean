@@ -754,9 +754,9 @@ lemma Module.length_ne_top_of_support_subset (M : Type*) [AddCommGroup M] [Modul
     simp [e.length_eq]
   | exact N₁ N₂ N₃ f g inj surj exac ih1 ih3 =>
     simp only [Module.support_of_exact exac inj surj, Set.union_subset_iff] at h
-    rw [Module.length_eq_add_of_exact f g inj surj exac, ← ENat.coe_toNat_eq_self.mpr (ih1 h.1),
-      ← ENat.coe_toNat_eq_self.mpr (ih3 h.2), ← Nat.cast_add]
-    exact ENat.coe_ne_top _
+    rw [Module.length_eq_add_of_exact f g inj surj exac, ← ENat.natCast_toNat_eq_self.mpr (ih1 h.1),
+      ← ENat.natCast_toNat_eq_self.mpr (ih3 h.2), ← Nat.cast_add]
+    exact ENat.natCast_ne_top _
 
 omit [IsLocalRing R] in
 lemma LinearMap.surjective_of_injective_of_length_ne_top (M : Type*) [AddCommGroup M] [Module R M]
@@ -782,7 +782,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
       apply ModuleCat.hasInjectiveDimensionLT_of_quotients _ _ (fun I ↦ ?_)
       apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
-      rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
+      rw [Set.mem_ofPred_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
       exact (((extFunctor k).mapIso (e (maximalIdeal R)).op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp h
     exact (isGorensteinLocalRing_def R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
@@ -843,7 +843,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
             Set.singleton_subset_iff, SetLike.mem_coe, Module.mem_support_iff_of_finite] at hq
           apply not_not.mpr (lt_of_le_of_ne _ (ne_of_mem_of_not_mem' hq.2 nmem).symm)
           exact le_of_eq_of_le Ideal.annihilator_quotient.symm hq.1
-        simp only [Set.mem_setOf_eq, q.2, true_and, not_nontrivial_iff_subsingleton, S] at qnin
+        simp only [Set.mem_ofPred_eq, q.2, true_and, not_nontrivial_iff_subsingleton, S] at qnin
         exact (((extFunctor k).mapIso (e q.1).op).app
           (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp qnin
       let S := (ModuleCat.of R (R ⧸ p)).smulShortComplex x
