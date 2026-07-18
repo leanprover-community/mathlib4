@@ -55,6 +55,7 @@ private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
   set p : E → E := fun x ↦ d x • x
   have norm_d : ∀ x, ‖d x‖ ≤ 1 := fun x ↦ by simpa [d] using pow_le_one₀ hc₀.le hc₁.le
   have p_mem : ∀ x, p x ∈ V := fun x ↦ Nat.find_spec (cover x)
+  use d, norm_d, p_mem
   have k_eqOn_V : ∀ x ∈ V, k x = 0 := fun x ↦ by simp [k]
   have p_eqOn_V : ∀ x ∈ V, p x = x := fun x hx ↦ by simp [p, d, k_eqOn_V x hx]
   have p_mapsto : MapsTo p Vᶜ (c • V)ᶜ := by
@@ -63,7 +64,6 @@ private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
       rwa [pow_sub₀ c c_ne (by simpa [k]), pow_one, mul_comm, mul_smul,
         ← mem_smul_set_iff_inv_smul_mem₀ c_ne]
     exact Nat.find_min (cover x) (by simpa [k]) this
-  use d, norm_d, p_mem
   have V_mem' : V ∈ comap p (𝓝 0) := by
     grw [mem_comap_iff_compl, ← le_principal_iff, p_mapsto.image_subset, compl_compl]
     simpa [set_smul_mem_nhds_zero_iff c_ne]
