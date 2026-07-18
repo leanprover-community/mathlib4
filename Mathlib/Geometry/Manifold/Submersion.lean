@@ -83,8 +83,8 @@ The implementation strategy is identical to the one for immersions. See the impl
   [schmeding2023]
 * Note that Margelef-Roig and Dominguez have a slightly different definition of submersions.
 
-**Please do not work** on this file without prior discussion with Michael Rothgang.
-This will be the topic of Samantha Naranjo's master's thesis, and it's nice to coordinate.
+**Please talk** to Michael Rothgang before working on this file, to avoid duplicate work.
+The above TODOs are the topic of Samantha Naranjo's master's thesis; it's nicer to coordinate.
 
 -/
 
