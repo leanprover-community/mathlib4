@@ -104,17 +104,14 @@ def mk (f : (α → m r) → m r) : ContT r m α := f
 /-- Run a continuation computation by providing a continuation function. -/
 def run (x : ContT r m α) : (α → m r) → m r := x
 
-/-- Map a function over the final result of a continuation computation.
-This composes the given function with the continuation computation. -/
+/-- Compose a given function with the continuation computation. -/
 def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
   f ∘ x
 
 theorem run_contT_map_contT (f : m r → m r) (x : ContT r m α) : run (map f x) = f ∘ run x :=
   rfl
 
-/-- Transform the continuation of a computation.
-Takes a function that transforms continuations and a computation, and returns a new computation
-with the transformed continuation. -/
+/-- Transform the continuation of a computation. -/
 def withContT (f : (β → m r) → α → m r) (x : ContT r m α) : ContT r m β := fun g => x <| f g
 
 theorem run_withContT (f : (β → m r) → α → m r) (x : ContT r m α) :
