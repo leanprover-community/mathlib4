@@ -118,6 +118,7 @@ theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRea
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
     simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using! norm_le_sqrt_two_mul_max z
 
+@[fun_prop]
 theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
 
@@ -153,6 +154,7 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
+@[fun_prop]
 lemma uniformContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
 
@@ -175,6 +177,7 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
+@[fun_prop]
 lemma uniformContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
 
@@ -201,11 +204,6 @@ theorem restrictScalars_toSpanSingleton (x : ℂ) :
   ext1 z
   dsimp
   apply mul_comm
-
-@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight' :=
-  restrictScalars_toSpanSingleton'
-@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight :=
-  restrictScalars_toSpanSingleton
 
 /-- The complex-conjugation function from `ℂ` to itself is an isometric linear equivalence. -/
 def conjLIE : ℂ ≃ₗᵢ[ℝ] ℂ :=
@@ -633,7 +631,7 @@ open scoped ComplexOrder
 /-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
 def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
-lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_ofPred
 
 /- If `z` is non-zero, then either `z` or `-z` is in `slitPlane`. -/
 lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
@@ -645,7 +643,7 @@ lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
   by_contra! contra
   exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
 
-lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.setOf_or.symm
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.ofPred_or.symm
 
 lemma isOpen_slitPlane : IsOpen slitPlane :=
   (isOpen_lt continuous_const continuous_re).union (isOpen_ne_fun continuous_im continuous_const)
