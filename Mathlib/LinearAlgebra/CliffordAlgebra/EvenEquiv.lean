@@ -106,6 +106,7 @@ end EquivEven
 
 open EquivEven
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine CliffordAlgebra.lift Q ⟨?_, fun m => ?_⟩
@@ -118,6 +119,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [LinearMap.codRestrict_apply]
     simp [← mul_assoc, v_sq_scalar]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   simp only [toEven, CliffordAlgebra.lift_ι_apply, ← even_toSubmodule]
   rw [LinearMap.codRestrict_apply, LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]

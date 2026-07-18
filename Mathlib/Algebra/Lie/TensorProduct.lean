@@ -66,6 +66,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
       map_add, LieHom.lie_apply, Module.End.lie_apply, LinearMap.lTensor_tmul]
     abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two Lie modules is a Lie module. -/
 instance lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by

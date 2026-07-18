@@ -197,7 +197,7 @@ theorem dimH_iUnion {ι : Sort*} [Countable ι] (s : ι → Set X) :
 @[simp]
 theorem dimH_bUnion {s : Set ι} (hs : s.Countable) (t : ι → Set X) :
     dimH (⋃ i ∈ s, t i) = ⨆ i ∈ s, dimH (t i) := by
-  haveI := hs.toEncodable
+  have := hs.toEncodable
   rw [biUnion_eq_iUnion, dimH_iUnion, ← iSup_subtype'']
 
 @[simp]
@@ -526,7 +526,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensi
 
 theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
   refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_ge ?_
-  rw [← diff_eq, diff_eq_empty] at he
+  rw [← sdiff_eq, sdiff_eq_empty] at he
   rw [← Real.dimH_of_mem_nhds ht]
   exact dimH_mono he
 

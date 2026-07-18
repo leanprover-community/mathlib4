@@ -11,7 +11,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -82,18 +82,24 @@ lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 theorem IsClique.of_subsingleton {G : SimpleGraph α} (hs : s.Subsingleton) : G.IsClique s :=
   hs.pairwise G.Adj
 
-lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwise_pair_of_symmetric G.symm
+lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b :=
+  have := G.symm
+  Set.pairwise_pair_of_symm
 
 @[simp]
 lemma isClique_insert : G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, a ≠ b → G.Adj a b :=
-  Set.pairwise_insert_of_symmetric G.symm
+  have := G.symm
+  Set.pairwise_insert_of_symm
 
 lemma isClique_insert_of_notMem (ha : a ∉ s) :
     G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, G.Adj a b :=
-  Set.pairwise_insert_of_symmetric_of_notMem G.symm ha
+  have := G.symm
+  Set.pairwise_insert_of_symm_of_notMem ha
 
 lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a b) :
-    G.IsClique (insert a s) := hs.insert_of_symmetric G.symm h
+    G.IsClique (insert a s) :=
+  have := G.symm
+  hs.insert_of_symm h
 
 @[gcongr]
 theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := Set.Pairwise.mono' h
@@ -311,9 +317,8 @@ protected lemma IsNClique.insert_erase
   | succ _ => exact (hs.erase_of_mem hb).insert fun w h ↦ by aesop
 
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
-  simp only [isNClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
-  by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
-    simp [and_rotate, *]
+  by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;>
+    simp [isNClique_iff, and_rotate, *]
 
 theorem is3Clique_iff :
     G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} := by
@@ -334,6 +339,7 @@ theorem is3Clique_iff_exists_cycle_length_three :
     ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
 its embedding is an `n`-clique in `G`. -/
 theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
@@ -471,6 +477,7 @@ namespace completeMultipartiteGraph
 
 variable {ι : Type*} (V : ι → Type*)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts -/
 @[simps]
 def topEmbedding (f : ∀ (i : ι), V i) :
@@ -541,11 +548,11 @@ lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} 
   have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
   exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
 
-open Classical in
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
-    (G ⊔ edge v w).CliqueFree (n + 1) :=
-  fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
+    (G ⊔ edge v w).CliqueFree (n + 1) := by
+  classical
+  exact fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
 lemma IsNClique.exists_not_adj_of_cliqueFree_succ (hc : G.IsNClique n s)
@@ -877,6 +884,7 @@ theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
 set in `G` and vice versa. -/

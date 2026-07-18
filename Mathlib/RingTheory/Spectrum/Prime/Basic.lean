@@ -85,8 +85,8 @@ variable (R S)
 
 theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
-    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
-      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_ofPred.mpr <| hj ▸ j.isPrime,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_ofPred.mp hJ⟩, rfl⟩⟩
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -166,7 +166,7 @@ theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :
 
 theorem mem_vanishingIdeal (t : Set (PrimeSpectrum R)) (f : R) :
     f ∈ vanishingIdeal t ↔ ∀ x ∈ t, f ∈ x.asIdeal := by
-  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_setOf_eq]
+  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_ofPred_eq]
 
 @[simp]
 theorem vanishingIdeal_singleton (x : PrimeSpectrum R) :
@@ -187,6 +187,7 @@ theorem gc :
       vanishingIdeal t :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
@@ -376,8 +377,11 @@ lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s :
   rw [← Set.union_singleton, zeroLocus_union, zeroLocus_singleton_zero, Set.inter_univ]
 
 @[simp]
-lemma zeroLocus_diff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
+lemma zeroLocus_sdiff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
   rw [← zeroLocus_insert_zero, ← zeroLocus_insert_zero (s := s)]; simp
+
+@[deprecated (since := "2026-06-03")]
+alias zeroLocus_diff_singleton_zero := zeroLocus_sdiff_singleton_zero
 
 lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
     zeroLocus (r • s) = zeroLocus s := by
