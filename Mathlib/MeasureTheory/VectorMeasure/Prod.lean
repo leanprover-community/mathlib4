@@ -424,7 +424,7 @@ theorem integral_integral_smul_symm [CompleteSpace E] {B : E →L[ℝ] F →L[�
     ∫ᵛ y, (∫ᵛ x, f x y ∂•μ) ∂[B; ν] = ∫ᵛ z, f z.1 z.2 ∂•(μ.prod ν B) :=
   (integral_prod_smul_symm hf).symm
 
-/-- Change the order of Bochner integration in integrals wrt vector measures.
+/-- Change the order of integration in integrals wrt vector measures.
 We express this with respect to general pairing functions, with a compatibility
 condition saying that the compositions coincide up to reordering. -/
 theorem integral_integral_swap
@@ -444,7 +444,7 @@ theorem integral_integral_swap
   rw [integral_integral (A := A') (D := D') hf (by simp [D', A', P])]
   exact (integral_integral_symm hf (by simp [D', A', P, h])).symm
 
-/-- Change the order of Bochner integration in integrals wrt vector measures.
+/-- Change the order of integration in integrals wrt vector measures.
 Case where `f` is scalar. -/
 theorem integral_integral_smul_swap [CompleteSpace E] [CompleteSpace F]
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
