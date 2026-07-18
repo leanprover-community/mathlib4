@@ -158,10 +158,10 @@ def applyAutoLemma (lemmaName : Name) (e : Expr) : MetaM (AutoRel × Expr) := do
             m.assign (.fvar fvarId)
           else
             throw ex
-  let proof ← instantiateMVars (mkAppN (.const lemmaName us) args)
-  if proof.hasExprMVar then
-    throwError "could not determine all arguments of {lemmaName} when proving positivity of {e}"
-  return (rel, proof)
+  for arg in args do
+    unless ← arg.mvarId!.isAssigned do
+      throwError "could not determine all arguments of {lemmaName} when proving positivity of {e}"
+  return (rel, ← instantiateMVars (mkAppN (.const lemmaName us) args))
 
 /-- Package a raw proof `pf` of the relation `rel` about `e` into a `Strictness` result. -/
 def AutoRel.toStrictness {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
