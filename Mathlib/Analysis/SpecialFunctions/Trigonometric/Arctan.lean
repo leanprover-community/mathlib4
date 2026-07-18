@@ -417,8 +417,6 @@ meta def evalRealArctan : PositivityExt where eval {u α} z p e :=
     | .none => return .none
   | _ => throwError "not Real.arctan"
 
-/-! The former hand-written extension `evalRealCosArctan` is replaced by `@[auto_positivity]`:
-`Real.cos (Real.arctan x)` is always positive. -/
 attribute [auto_positivity] Real.cos_arctan_pos
 
 /-- Extension for `Real.sin (Real.arctan _)`. -/

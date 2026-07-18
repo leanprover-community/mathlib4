@@ -485,6 +485,4 @@ lemma probReal_compl_eq_one_sub (hs : MeasurableSet s) : μ.real sᶜ = 1 - μ.r
 
 end MeasureTheory
 
-/-! The former hand-written extension `evalMeasureReal` is replaced by `@[auto_positivity]`:
-applications of `μ.real` are nonnegative. -/
 attribute [auto_positivity] MeasureTheory.measureReal_nonneg

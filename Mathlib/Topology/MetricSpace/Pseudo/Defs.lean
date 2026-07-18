@@ -252,8 +252,6 @@ theorem abs_dist_sub_le (x y z : α) : |dist x z - dist y z| ≤ dist x y :=
 theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 
-/-! The former hand-written extension `evalDist` is replaced by `@[auto_positivity]`:
-distances are nonnegative. -/
 attribute [auto_positivity] dist_nonneg
 
 example {x y : α} : 0 ≤ dist x y := by positivity

@@ -74,8 +74,6 @@ theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
   have h₂ : (0 : ℝ) ≤ 1 - x := by unit_interval
   positivity
 
-/-! The former hand-written extension `evalBernstein` is replaced by `@[auto_positivity]`:
-Bernstein polynomials are always nonnegative. -/
 attribute [auto_positivity] bernstein_nonneg
 
 /-!

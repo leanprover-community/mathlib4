@@ -745,8 +745,6 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq
 
-/-! The former hand-written extension `evalENNRealtoReal` is replaced by `@[auto_positivity]`:
-`ENNReal.toReal` is always nonnegative. -/
 attribute [auto_positivity] ENNReal.toReal_nonneg
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/

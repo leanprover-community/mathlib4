@@ -82,7 +82,6 @@ theorem doubleFactorial_eq_prod_odd :
 
 end Nat
 
-/-! The former hand-written extension `evalDoubleFactorial` is replaced by `@[auto_positivity]`. -/
 attribute [auto_positivity] Nat.doubleFactorial_pos
 
 example (n : ℕ) : 0 < n‼ := by positivity

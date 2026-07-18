@@ -317,9 +317,6 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 
 end Real
 
-/-! The former hand-written `positivity` extensions `evalNNRealSqrt` and `evalSqrt` are replaced
-by tagging the lemmas they used to apply with `@[auto_positivity]`: a square root is nonnegative,
-and is strictly positive if its input is. -/
 attribute [auto_positivity] NNReal.sqrt_pos_of_pos Real.sqrt_pos_of_pos Real.sqrt_nonneg
 
 namespace Real

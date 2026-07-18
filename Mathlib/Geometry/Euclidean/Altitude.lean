@@ -258,8 +258,6 @@ def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
 lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   simp [height]
 
-/-! The former hand-written extension `evalHeight` is replaced by `@[auto_positivity]`: the height
-of a simplex is always positive (the required `NeZero` instance is discharged by synthesis). -/
 attribute [auto_positivity] height_pos
 
 example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by

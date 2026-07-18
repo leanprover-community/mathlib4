@@ -83,8 +83,6 @@ theorem dvd_radical_pow_self {n : ℕ} (hn : n ≠ 0) : n ∣ radical n ^ n := b
 
 open Qq Lean Mathlib.Meta Finset
 
-/-! The former hand-written extension `evalRadical` is replaced by `@[auto_positivity]`:
-radicals are nonzero (the required `Nontrivial` instance is discharged by instance synthesis). -/
 attribute [auto_positivity] radical_ne_zero
 
 example : 0 < radical 100 := by positivity

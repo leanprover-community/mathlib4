@@ -857,6 +857,4 @@ theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x 
 end PrimeCounting
 end Chebyshev
 
-/-! The former hand-written extensions `evalTheta` and `evalPsi` are replaced by
-`@[auto_positivity]`: the two Chebyshev functions are nonnegative. -/
 attribute [auto_positivity] Chebyshev.theta_nonneg Chebyshev.psi_nonneg

@@ -172,8 +172,6 @@ theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
 
 end Real
 
-/-! The former hand-written extension `evalRealPi` is replaced by `@[auto_positivity]`:
-`π` is always positive. -/
 attribute [auto_positivity] Real.pi_pos
 
 namespace NNReal

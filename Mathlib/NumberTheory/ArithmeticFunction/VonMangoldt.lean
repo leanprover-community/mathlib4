@@ -157,8 +157,6 @@ theorem vonMangoldt_le_log : ∀ {n : ℕ}, Λ n ≤ Real.log (n : ℝ)
 
 end ArithmeticFunction
 
-/-! The former hand-written extension `evalVonMangoldt` is replaced by `@[auto_positivity]`:
-the von Mangoldt function is nonnegative. -/
 attribute [auto_positivity] ArithmeticFunction.vonMangoldt_nonneg
 
 example (n : ℕ) : 0 ≤ ArithmeticFunction.vonMangoldt n := by positivity

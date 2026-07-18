@@ -56,9 +56,6 @@ lemma ite_ne_zero_of_ne_zero_of_pos [Preorder α] (ha : a ≠ 0) (hb : 0 < b) :
 
 end ite
 
-/-! The former hand-written extension `evalIte` is replaced by tagging the `ite` lemmas above
-with `@[auto_positivity]`; the mixed-strictness cases follow from these three because
-`auto_positivity` weakens stronger positivity results when solving hypotheses. -/
 attribute [auto_positivity] ite_pos ite_nonneg ite_ne_zero
 
 section LinearOrder
@@ -395,17 +392,11 @@ meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
 theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
     [AddLeftMono α] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
-/-! The former hand-written extension `evalAbs` is replaced by tagging the lemmas it applied
-with `@[auto_positivity]`. -/
 attribute [auto_positivity] abs_pos_of_pos abs_pos_of_ne_zero abs_nonneg
 
 theorem int_natAbs_pos {n : ℤ} (hn : n ≠ 0) : 0 < n.natAbs :=
   Int.natAbs_pos.mpr hn
 
-/-! The former hand-written extension `evalNatAbs` is replaced by `@[auto_positivity]`:
-`Int.natAbs` is positive when its input is positive or nonzero (a positive input weakens to
-nonzero when the hypothesis is solved). Since the output type of `Int.natAbs` is `ℕ`, the
-nonnegative case is handled by the default `positivity` tactic. -/
 attribute [auto_positivity] int_natAbs_pos
 
 /-- Extension for the `positivity` tactic: `Nat.cast` is always non-negative,
@@ -476,23 +467,15 @@ meta def evalPNatVal : PositivityExt where eval {u α} _zα pα? e :=
     pure (.positive q(PNat.pos $a))
   | _, _, _ => throwError "not PNat.val"
 
-/-! The former hand-written extensions `evalNatSucc`, `evalFactorial` and `evalAscFactorial` are
-replaced by tagging the lemmas they used to apply with `@[auto_positivity]`. -/
 attribute [auto_positivity] Nat.succ_pos Nat.factorial_pos Nat.ascFactorial_pos
 
-/-! The former hand-written extensions `evalNatGCD` and `evalNatLCM` are replaced by tagging
-the lemmas they applied with `@[auto_positivity]`. -/
 attribute [auto_positivity] Nat.gcd_pos_of_pos_left Nat.gcd_pos_of_pos_right Nat.lcm_pos
 
 theorem nat_sqrt_pos_of_pos {n : ℕ} (hn : 0 < n) : 0 < Nat.sqrt n :=
   Nat.sqrt_pos.mpr hn
 
-/-! The former hand-written extension `evalNatSqrt` is replaced by `@[auto_positivity]` on the
-implication form of `Nat.sqrt_pos`. -/
 attribute [auto_positivity] nat_sqrt_pos_of_pos
 
-/-! The former hand-written extensions `evalIntGCD` and `evalIntLCM` are replaced by tagging
-the lemmas they applied with `@[auto_positivity]`. -/
 attribute [auto_positivity] Int.gcd_pos_of_ne_zero_left Int.gcd_pos_of_ne_zero_right
   Int.lcm_pos
 
@@ -502,8 +485,6 @@ open NNRat
 alias ⟨_, NNRat.num_pos_of_pos⟩ := num_pos
 alias ⟨_, NNRat.num_ne_zero_of_ne_zero⟩ := num_ne_zero
 
-/-! The former hand-written extensions `evalNNRatNum` and `evalNNRatDen` are replaced by
-tagging the lemmas they applied with `@[auto_positivity]`. -/
 attribute [auto_positivity] NNRat.num_pos_of_pos NNRat.num_ne_zero_of_ne_zero NNRat.den_pos
 
 variable {q : ℚ≥0}
@@ -520,14 +501,9 @@ alias ⟨_, num_pos_of_pos⟩ := num_pos
 alias ⟨_, num_nonneg_of_nonneg⟩ := num_nonneg
 alias ⟨_, num_ne_zero_of_ne_zero⟩ := num_ne_zero
 
-/-! The former hand-written extensions `evalRatNum` and `evalRatDen` are replaced by tagging
-the lemmas they applied with `@[auto_positivity]`. -/
 attribute [auto_positivity] num_pos_of_pos num_nonneg_of_nonneg num_ne_zero_of_ne_zero
   Rat.den_pos
 
-/-! The former hand-written extensions `evalPosPart` and `evalNegPart` are replaced by tagging
-the lemmas they applied with `@[auto_positivity]`: `a⁺` is always nonnegative, and positive if
-`a` is; `a⁻` is always nonnegative. -/
 attribute [auto_positivity] posPart_pos posPart_nonneg negPart_nonneg
 
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/

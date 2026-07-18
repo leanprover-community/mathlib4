@@ -689,8 +689,6 @@ theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
 
 end Real
 
-/-! The former hand-written `positivity` extension `evalExp` is replaced by
-`@[auto_positivity]`: `Real.exp` is always positive. -/
 attribute [auto_positivity] Real.exp_pos
 
 namespace Complex

@@ -922,8 +922,6 @@ theorem cos_two_neg : cos 2 < 0 :=
 
 end Real
 
-/-! The former hand-written `positivity` extension `evalCosh` is replaced by
-`@[auto_positivity]`: `Real.cosh` is always positive. -/
 attribute [auto_positivity] Real.cosh_pos
 
 example (x : ℝ) : 0 < x.cosh := by positivity
