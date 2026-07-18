@@ -288,7 +288,7 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
 `Iic`, `Iio`, or `univ`, or `∅`. The converse statement requires `α` to be densely ordered. Though
 one can represent `∅` as `(Inf ∅, Inf ∅)`, we include it into the list of possible cases to improve
 readability. -/
-theorem setOf_isPreconnected_subset_of_ordered :
+theorem setOfPred_isPreconnected_subset_of_ordered :
     { s : Set α | IsPreconnected s } ⊆
       -- bounded intervals
       (range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo)) ∪
@@ -298,6 +298,9 @@ theorem setOf_isPreconnected_subset_of_ordered :
   rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs) <;> rw [hs] <;>
     simp only [union_insert, union_singleton, mem_insert_iff, mem_union, mem_range, Prod.exists,
       uncurry_apply_pair, exists_apply_eq_apply, true_or, or_true, exists_apply_eq_apply2]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isPreconnected_subset_of_ordered := setOfPred_isPreconnected_subset_of_ordered
 
 /-!
 ### Intervals are connected
@@ -511,18 +514,21 @@ instance (priority := 100) ordered_connected_space : PreconnectedSpace α :=
 the set of the intervals `Icc`, `Ico`, `Ioc`, `Ioo`, `Ici`, `Ioi`, `Iic`, `Iio`, `(-∞, +∞)`,
 or `∅`. Though one can represent `∅` as `(sInf s, sInf s)`, we include it into the list of
 possible cases to improve readability. -/
-theorem setOf_isPreconnected_eq_of_ordered :
+theorem setOfPred_isPreconnected_eq_of_ordered :
     { s : Set α | IsPreconnected s } =
       -- bounded intervals
       range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo) ∪
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
-  refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
+  refine Subset.antisymm setOfPred_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
-    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
+    mem_ofPred_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isPreconnected_eq_of_ordered := setOfPred_isPreconnected_eq_of_ordered
 
 /-- This lemma characterizes when a subset `s` of a densely ordered conditionally complete linear
 order is totally disconnected with respect to the order topology: between any two distinct points
@@ -586,6 +592,25 @@ then this map has a fixed point on this interval. -/
 theorem exists_mem_Icc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : ContinuousOn f (Icc a b))
     (hle : a ≤ b) (hmaps : MapsTo f (Icc a b) (Icc a b)) : ∃ c ∈ Icc a b, IsFixedPt f c :=
   exists_mem_Icc_isFixedPt hf hle (hmaps <| left_mem_Icc.2 hle).1 (hmaps <| right_mem_Icc.2 hle).2
+
+/-- Version of `exists_mem_Icc_isFixedPt_of_mapsTo` using `Set.uIcc` -/
+theorem exists_mem_uIcc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : ContinuousOn f (uIcc a b))
+    (hmaps : MapsTo f (uIcc a b) (uIcc a b)) : ∃ c ∈ uIcc a b, IsFixedPt f c :=
+  exists_mem_Icc_isFixedPt_of_mapsTo hf inf_left_le_sup_left hmaps
+
+/-- If a closed interval is contained in its own image under a continuous map `f : α → α`,
+then this map has a fixed point on this interval. -/
+theorem exists_mem_Icc_isFixedPt_of_surjOn {a b : α} {f : α → α} (hf : ContinuousOn f (Icc a b))
+    (hle : a ≤ b) (h_surj : SurjOn f (Icc a b) (Icc a b)) : ∃ c ∈ Icc a b, IsFixedPt f c :=
+  have ⟨x₀, hx₀⟩ := h_surj (left_mem_Icc.mpr hle)
+  have ⟨x₁, hx₁⟩ := h_surj (right_mem_Icc.mpr hle)
+  isPreconnected_Icc.intermediate_value₂
+    hx₀.1 hx₁.1 hf continuousOn_id (by grind) (by grind)
+
+/-- Version of `exists_mem_Icc_isFixedPt_of_surjOn` using `Set.uIcc` -/
+theorem exists_mem_uIcc_isFixedPt_of_surjOn {a b : α} {f : α → α} (hf : ContinuousOn f (uIcc a b))
+    (h_surj : SurjOn f (uIcc a b) (uIcc a b)) : ∃ c ∈ uIcc a b, IsFixedPt f c :=
+  exists_mem_Icc_isFixedPt_of_surjOn hf inf_left_le_sup_left h_surj
 
 theorem intermediate_value_Ico {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ico (f a) (f b) ⊆ f '' Ico a b :=
@@ -830,7 +855,7 @@ or antitone (increasing or decreasing). -/
 theorem ContinuousOn.strictMonoOn_of_injOn_Ioo {a b : α} {f : α → δ} (hab : a < b)
     (hf_c : ContinuousOn f (Ioo a b)) (hf_i : InjOn f (Ioo a b)) :
     StrictMonoOn f (Ioo a b) ∨ StrictAntiOn f (Ioo a b) := by
-  haveI : Inhabited (Ioo a b) := Classical.inhabited_of_nonempty (nonempty_Ioo_subtype hab)
+  have : Inhabited (Ioo a b) := Classical.inhabited_of_nonempty (nonempty_Ioo_subtype hab)
   let g : Ioo a b → δ := Set.restrict (Ioo a b) f
   have : StrictMono g ∨ StrictAnti g :=
     Continuous.strictMono_of_inj hf_c.restrict hf_i.injective

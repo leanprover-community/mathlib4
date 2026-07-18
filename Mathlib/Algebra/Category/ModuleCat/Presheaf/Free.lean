@@ -35,6 +35,7 @@ namespace PresheafOfModules
 
 variable {C : Type u₁} [Category.{v₁} C] (R : Cᵒᵖ ⥤ RingCat.{u})
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {R} in
 /-- Given a presheaf of types `F : Cᵒᵖ ⥤ Type u`, this is the presheaf
 of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F.obj X`. -/
@@ -44,6 +45,7 @@ noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R whe
   map {X Y} f := ModuleCat.freeDesc (↾fun x ↦ ModuleCat.freeMk (F.map f x))
   map_id := by aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The free presheaf of modules functor `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
 @[simps]
@@ -57,6 +59,7 @@ variable {R}
 
 variable {F : Cᵒᵖ ⥤ Type u} {G : PresheafOfModules.{u} R}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism of presheaves of modules `freeObj F ⟶ G` corresponding to
 a morphism `F ⟶ G.presheaf ⋙ forget _` of presheaves of types. -/
@@ -105,11 +108,13 @@ noncomputable def freeAdjunction :
         free_hom_ext (by ext; simp [freeHomEquiv, toPresheaf])
       homEquiv_naturality_right := fun {F G₁ G₂} f g ↦ rfl }
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (F G) in
 @[simp]
 lemma freeAdjunction_homEquiv : (freeAdjunction R).homEquiv F G = freeHomEquiv := by
   simp [freeAdjunction, Adjunction.mkOfHomEquiv_homEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R F) in
 @[simp]
 lemma freeAdjunction_unit_app :
