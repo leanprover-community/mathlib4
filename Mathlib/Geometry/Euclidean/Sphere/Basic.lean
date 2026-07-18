@@ -379,7 +379,7 @@ inclusion into a larger affine subspace `S₂` is cospherical. -/
 theorem Cospherical.inclusion_iff {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
     [S₁.direction.HasOrthogonalProjection] [S₂.direction.HasOrthogonalProjection] (hS : S₁ ≤ S₂) :
     Cospherical (AffineSubspace.inclusion hS '' ps) ↔ Cospherical ps := by
-  haveI : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
+  have : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
   simp [(Cospherical.subtype_val_iff (S := S₂) (ps := AffineSubspace.inclusion hS '' ps)).symm,
     Set.image_image]
 
@@ -455,6 +455,7 @@ theorem Sphere.inner_vsub_center_midpoint_vsub {p₁ p₂ : P} {s : Sphere P}
     (dist_left_midpoint_eq_dist_right_midpoint p₁ p₂)
     (dist_center_eq_dist_center_of_mem_sphere hp₁ hp₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The distance from the center of a sphere to any point strictly between
 two points on the sphere is strictly less than the radius. -/
 theorem Sphere.dist_center_lt_radius_of_sbtw {p₁ p₂ p : P} {s : Sphere P}

@@ -76,7 +76,7 @@ theorem isJacobsonRing_iff_prime_eq :
   refine fun h I hI ↦ le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ mem_sInf.mpr fun _ hJ ↦ hJ.left hx)
   rw [← hI.radical, radical_eq_sInf I, mem_sInf]
   intro P hP
-  rw [Set.mem_setOf_eq] at hP
+  rw [Set.mem_ofPred_eq] at hP
   rw [jacobson, mem_sInf] at hx
   rw [← h P hP.right, jacobson, mem_sInf]
   exact fun J hJ => hx ⟨le_trans hP.left hJ.left, hJ.right⟩
@@ -136,7 +136,7 @@ theorem isJacobsonRing_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] [IsJ
     ((isJacobsonRing_iff_prime_eq.1 ‹_›) (comap (algebraMap R S) P) (comap_isPrime _ _)),
     comap_jacobson]
   refine sInf_le_sInf fun J hJ => ?_
-  simp only [true_and, Set.mem_image, bot_le, Set.mem_setOf_eq]
+  simp only [true_and, Set.mem_image, bot_le, Set.mem_ofPred_eq]
   have : J.IsMaximal := by simpa using hJ
   exact exists_ideal_over_maximal_of_isIntegral J
     (comap_bot_le_of_injective _ algebraMap_quotient_injective)
@@ -329,7 +329,7 @@ theorem jacobson_bot_of_integral_localization
     (⊥ : Ideal S).jacobson = (⊥ : Ideal S) := by
   have hM : ((Submonoid.powers x).map φ : Submonoid S) ≤ nonZeroDivisors S :=
     map_le_nonZeroDivisors_of_injective φ hφ (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
-  letI : IsDomain Sₘ := IsLocalization.isDomain_of_le_nonZeroDivisors _ hM
+  let : IsDomain Sₘ := IsLocalization.isDomain_of_le_nonZeroDivisors _ hM
   let φ' : Rₘ →+* Sₘ := IsLocalization.map _ φ (Submonoid.powers x).le_comap_map
   suffices ∀ I : Ideal Sₘ, I.IsMaximal → (I.comap (algebraMap S Sₘ)).IsMaximal by
     have hϕ' : comap (algebraMap S Sₘ) (⊥ : Ideal Sₘ) = (⊥ : Ideal S) := by
@@ -703,7 +703,7 @@ theorem finite_of_algHom_finiteType_of_isJacobsonRing
     [Algebra.FiniteType K A] (f : L →ₐ[K] A) :
     Module.Finite K L := by
   obtain ⟨m, hm⟩ := Ideal.exists_maximal A
-  letI := Ideal.Quotient.field m
+  let := Ideal.Quotient.field m
   have := finite_of_finite_type_of_isJacobsonRing K (A ⧸ m)
   exact Module.Finite.of_injective ((Ideal.Quotient.mkₐ K m).comp f).toLinearMap
     (RingHom.injective _)
