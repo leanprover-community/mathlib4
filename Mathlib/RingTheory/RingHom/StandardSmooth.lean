@@ -253,7 +253,6 @@ where `n` is the relative dimension and `R[X₁,...,Xₙ] → S` is etale. -/
 theorem IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
     {f : R →+* S} {n : ℕ} (hf : f.IsStandardSmoothOfRelativeDimension n) :
     ∃ g : MvPolynomial (Fin n) R →+* S, g.comp MvPolynomial.C = f ∧ g.Etale := by
-  classical
   algebraize [f]
   obtain ⟨g, hg⟩ := Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial n R S
   exact ⟨_, g.comp_algebraMap, hg⟩
