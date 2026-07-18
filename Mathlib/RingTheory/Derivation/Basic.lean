@@ -263,7 +263,7 @@ instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
 theorem coe_sum_linear_maps {ι : Type*} (t : Finset ι) (f : ι → Derivation R A M) :
     ↑(∑ i ∈ t, f i) = ∑ i ∈ t, (f i : A →ₗ[R] M) := _root_.map_sum coeAddMonoidHom f t
 
-theorem sum_apply {ι : Type*} (t : Finset ι) (f : ι → (Derivation R A M)) (a : A) :
+theorem sum_apply {ι : Type*} (t : Finset ι) (f : ι → Derivation R A M) (a : A) :
     (∑ i ∈ t, f i) a = ∑ i ∈ t, (f i a) := by
   rw [← Derivation.coeFn_coe, Derivation.coe_sum_linear_maps, LinearMap.sum_apply]
   simp
