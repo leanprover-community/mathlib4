@@ -131,7 +131,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
   apply ext_subsingleton_of_support_subset
   intro p foo
   clear foo
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   have (m : ℕ) (j : ℕ) (hj : j ≥ n) : ringKrullDim (R ⧸ p.1) ≤ m →
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p.asIdeal))) M j) := by
     induction m generalizing j hj p with
