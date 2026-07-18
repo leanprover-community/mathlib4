@@ -291,7 +291,7 @@ theorem isHamiltonian_sup_edge {V : Type*} [DecidableEq V] [Fintype V] {G : Simp
 section
 variable {V : Type*} {G H : SimpleGraph V}
 
-/-- **Bondy-Chvátal theorem**: Adding an edge to a graph where the sum of the degrees of its
+/-- The **Bondy-Chvátal theorem**: Adding an edge to a graph where the sum of the degrees of its
 endpoints is at least the number of vertices does not change whether the graph is Hamiltonian. -/
 @[wikidata Q60978620]
 theorem isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree [DecidableEq V] [Fintype V]
@@ -338,7 +338,7 @@ an edge to `G` where the sum of the degrees of its endpoints is at least the num
 def BondyChvatalRel [Fintype V] (G G' : SimpleGraph V) : Prop :=
   ∃ u v, G' = G ⊔ edge u v ∧ Fintype.card V ≤ G.degree u + G.degree v
 
-/-- **Bondy-Chvátal theorem**, spelled using a relation. -/
+/-- The **Bondy-Chvátal theorem**, spelled using a relation. -/
 @[wikidata Q60978620]
 theorem isHamiltonian_iff_of_eqvGen_bondyChvatalRel [DecidableEq V] [Fintype V]
     (h : Relation.EqvGen BondyChvatalRel G H) : G.IsHamiltonian ↔ H.IsHamiltonian := by
