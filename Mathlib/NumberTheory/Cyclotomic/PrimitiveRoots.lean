@@ -178,7 +178,7 @@ variable {K} (L)
 /-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the `finrank` of a
 cyclotomic extension is `n.totient`. -/
 theorem finrank (hirr : Irreducible (cyclotomic n K)) : finrank K L = n.totient := by
-  haveI := IsCyclotomicExtension.neZero' n K L
+  have := IsCyclotomicExtension.neZero' n K L
   rw [((zeta_spec n K L).powerBasis K).finrank, IsPrimitiveRoot.powerBasis_dim, ←
     (zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible hirr, natDegree_cyclotomic]
 
@@ -197,7 +197,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   let z := x ^ (p / factorizationLCMLeft p q) * y ^ (q / factorizationLCMRight p q)
   let k := PNat.lcm ⟨p, hppos⟩ ⟨q, hqpos⟩
   have : IsPrimitiveRoot z k := hx.pow_mul_pow_lcm hy hppos.ne' hqpos.ne'
-  haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
+  have := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
   convert! Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K { z }))
   rw [show Nat.lcm p q = (k : ℕ) from rfl] at hirr
   simpa using! (IsCyclotomicExtension.finrank (Algebra.adjoin K {z}) hirr).symm
@@ -290,7 +290,7 @@ include hζ
 `1` if `n ≠ 2`. -/
 theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
     (hirr : Irreducible (cyclotomic n K)) : norm K ζ = 1 := by
-  haveI := IsCyclotomicExtension.neZero' n K L
+  have := IsCyclotomicExtension.neZero' n K L
   by_cases h1 : n = 1
   · rw [h1, one_right_iff] at hζ
     rw [hζ, show 1 = algebraMap K L 1 by simp, Algebra.norm_algebraMap, one_pow]
@@ -332,12 +332,12 @@ include hζ
 `ζ - 1` is `eval 1 (cyclotomic n ℤ)`. -/
 theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 < n)
     (hirr : Irreducible (cyclotomic n K)) : norm K (ζ - 1) = ↑(eval 1 (cyclotomic n ℤ)) := by
-  haveI := IsCyclotomicExtension.neZero' n K L
+  have := IsCyclotomicExtension.neZero' n K L
   let E := AlgebraicClosure L
   obtain ⟨z, hz⟩ := IsAlgClosed.exists_root _ (degree_cyclotomic_pos n E (NeZero.pos _)).ne.symm
   apply (algebraMap K E).injective
-  letI := IsCyclotomicExtension.finiteDimensional {n} K L
-  letI := IsCyclotomicExtension.isGalois {n} K L
+  let := IsCyclotomicExtension.finiteDimensional {n} K L
+  let := IsCyclotomicExtension.isGalois {n} K L
   rw [norm_eq_prod_embeddings]
   conv_lhs =>
     congr
@@ -378,7 +378,7 @@ theorem minpoly_sub_one_eq_cyclotomic_comp [Algebra K A] [IsDomain A] {ζ : A}
     [IsCyclotomicExtension {n} K A] (hζ : IsPrimitiveRoot ζ n)
     (h : Irreducible (Polynomial.cyclotomic n K)) :
     minpoly K (ζ - 1) = (cyclotomic n K).comp (X + 1) := by
-  haveI := IsCyclotomicExtension.neZero' n K A
+  have := IsCyclotomicExtension.neZero' n K A
   rw [show ζ - 1 = ζ + algebraMap K A (-1) by simp [sub_eq_add_neg],
     minpoly.add_algebraMap ζ,
     hζ.minpoly_eq_cyclotomic_of_irreducible h]
@@ -467,7 +467,7 @@ theorem norm_sub_one_of_prime_ne_two' [hpri : Fact p.Prime]
     (hirr : Irreducible (cyclotomic p K)) (h : p ≠ 2) : norm K (ζ - 1) = p := by
   replace hirr : Irreducible (cyclotomic (p ^ (0 + 1)) K) := by simp [hirr]
   replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simp [hζ]
-  haveI : IsCyclotomicExtension {p ^ (0 + 1)} K L := by simp [hcyc]
+  have : IsCyclotomicExtension {p ^ (0 + 1)} K L := by simp [hcyc]
   simpa using norm_sub_one_of_prime_ne_two hζ hirr h
 
 /-- If `Irreducible (cyclotomic (2 ^ (k + 1)) K)` (in particular for `K = ℚ`), then the norm of

@@ -123,6 +123,7 @@ def inverse : HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C
   map f := Inverse.map f
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit isomorphism of the equivalence
 `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c`. -/
 @[simps!]
@@ -180,6 +181,7 @@ end KaroubiHomologicalComplexEquivalence
 
 variable (C) (c)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c`. -/
 @[simps]
@@ -192,11 +194,13 @@ def karoubiHomologicalComplexEquivalence :
 
 variable (α : Type*) [AddRightCancelSemigroup α] [One α]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `Karoubi (ChainComplex C α) ≌ ChainComplex (Karoubi C) α`. -/
 @[simps!]
 def karoubiChainComplexEquivalence : Karoubi (ChainComplex C α) ≌ ChainComplex (Karoubi C) α :=
   karoubiHomologicalComplexEquivalence C (ComplexShape.down α)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `Karoubi (CochainComplex C α) ≌ CochainComplex (Karoubi C) α`. -/
 @[simps!]
 def karoubiCochainComplexEquivalence :

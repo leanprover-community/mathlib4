@@ -553,7 +553,7 @@ section nonunits
 /-- The nonunits of a valuation subring of `K`, as a nonunital subring of `K` -/
 def nonunits : NonUnitalSubring K where
   carrier := {x | A.valuation x < 1}
-  mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
+  mul_mem' ha hb := (mul_lt_mul'' (Set.mem_ofPred.mp ha) (Set.mem_ofPred.mp hb)
     zero_le zero_le).trans_eq <| mul_one _
   add_mem' ha hb := (A.valuation.map_add ..).trans_lt (max_lt ha hb)
   zero_mem' := by simp
@@ -635,7 +635,7 @@ def principalUnitGroup : Subgroup Kˣ where
   carrier := {x | A.valuation (x - 1) < 1}
   mul_mem' := by
     intro a b ha hb
-    rw [Set.mem_setOf] at ha hb ⊢
+    rw [Set.mem_ofPred] at ha hb ⊢
     refine lt_of_le_of_lt ?_ (max_lt hb ha)
     rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
       ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel]
@@ -694,6 +694,7 @@ theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
   simp [mem_principalUnitGroup_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The principal unit group agrees with the kernel of the canonical map from
 the units of `A` to the units of the residue field of `A`. -/
 def principalUnitGroupEquiv :
