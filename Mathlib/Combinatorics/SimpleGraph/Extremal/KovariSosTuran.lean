@@ -26,7 +26,6 @@ This file proves the **Kővári-Sós-Turán theorem** for the Zarankiewicz funct
   **Kővári-Sós-Turán theorem** upper bounding the extremal numbers of `completeBipartiteGraph α β`.
 -/
 
-
 open Finset Fintype
 
 namespace SimpleGraph
@@ -112,8 +111,7 @@ lemma le_card_filter [Nonempty W] [Nonempty α]
     filter_comm, ← mem_powerset, sum_congr rfl h_card_filter_subset_eq, ← powersetCard_eq_filter,
     card_powersetCard, card_neighborFinset_eq_degree, Nat.cast_sum,
     ← le_inv_mul_iff₀ (mod_cast card_pos : 0 < (card W : ℝ)), mul_sum,
-    div_eq_mul_inv _ (card W : ℝ), mul_comm _ (card W : ℝ)⁻¹, mul_sum, sum_map,
-    Function.Embedding.inr_apply]
+    div_eq_mul_inv _ (card W : ℝ), mul_comm _ (card W : ℝ)⁻¹, mul_sum, sum_map]
   rw [div_eq_inv_mul, mul_sum] at h_avg
   exact descPochhammer_eval_div_factorial_le_sum_choose
     (by positivity) _ _ (by simp) (by simp) h_avg
@@ -204,16 +202,15 @@ This is the **Kővári-Sós-Turán theorem**. -/
 public theorem zarankiewicz_le (m n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
     zarankiewicz m n s t
       ≤ ((t - 1) ^ (s⁻¹ : ℝ) * m * n ^ (1 - (s⁻¹ : ℝ)) + (s - 1) * n : ℝ) := by
-  have hs' : 1 ≤ card (Fin s) := by rwa [← Fintype.card_fin s] at hs
-  have ht' : card (Fin s) ≤ card (Fin t) := by
-    rwa [← Fintype.card_fin s, ← Fintype.card_fin t] at ht
-  rw [← Fintype.card_fin m, ← Fintype.card_fin n, ← Fintype.card_fin s, ← Fintype.card_fin t,
-    ← KovariSosTuran.bound, zarankiewicz_le_iff_of_nonneg <|
-    KovariSosTuran.bound_nonneg _ _ hs' (hs'.trans ht')]
-  intro G _
   have : NeZero s := ⟨Nat.pos_iff_ne_zero.mp hs⟩
   have : NeZero t := ⟨Nat.pos_iff_ne_zero.mp <| hs.trans ht⟩
-  exact KovariSosTuran.card_edgeFinset_le_bound_of_completeBipartiteGraph_free
+  rw [← KovariSosTuran.bound, zarankiewicz_le_iff_of_nonneg
+    (Fintype.card_fin m) (Fintype.card_fin n) (Fintype.card_fin s) (Fintype.card_fin t) <|
+    KovariSosTuran.bound_nonneg m n hs (hs.trans ht)]
+  conv =>
+    enter [_, _, _, _, 2]
+    rw [← Fintype.card_fin m, ← Fintype.card_fin n, ← Fintype.card_fin s, ← Fintype.card_fin t]
+  exact fun G _ ↦ KovariSosTuran.card_edgeFinset_le_bound_of_completeBipartiteGraph_free
 
 /-- An upper bound on the symmetric Zarankiewicz function.
 
@@ -221,11 +218,11 @@ This is a corollary of the **Kővári-Sós-Turán theorem**. -/
 public theorem symm_zarankiewicz_le (n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
     zarankiewicz n n s t
       ≤ ((t - 1) ^ (s : ℝ)⁻¹ * n ^ (2 - (s : ℝ)⁻¹) + (s - 1) * n : ℝ) := by
-  have hone_add_one_sub_inv_card_ne_zero : 1 + (1 - (s : ℝ)⁻¹) ≠ 0 := by
+  have h_one_add_one_sub_inv_card_ne_zero : 1 + (1 - (s : ℝ)⁻¹) ≠ 0 := by
       rw [← add_sub_assoc, ← show (2 : ℝ) = (1 : ℝ) + (1 : ℝ) by norm_num]
       exact sub_ne_zero_of_ne <| ne_of_gt <| s.cast_inv_le_one.trans_lt one_lt_two
   rw [show (2 : ℝ) = (1 : ℝ) + (1 : ℝ) by norm_num, add_sub_assoc,
-    Real.rpow_one_add' (by positivity) hone_add_one_sub_inv_card_ne_zero, ← mul_assoc]
+    Real.rpow_one_add' (by positivity) h_one_add_one_sub_inv_card_ne_zero, ← mul_assoc]
   exact zarankiewicz_le n n hs ht
 
 /-- An upper bound on the extremal numbers of `completeBipartiteGraph α β`.
@@ -238,6 +235,6 @@ public theorem extremalNumber_completeBipartiteGraph_le
   have : Nonempty β := card_pos_iff.mp <|  card_pos.trans_le hcard_le
   rw [← add_div, le_div_iff₀' zero_lt_two, ← Nat.cast_two, ← Nat.cast_mul]
   exact (symm_zarankiewicz_le n card_pos hcard_le).trans' <|
-    mod_cast two_mul_extremalNumber_le_zarankiewicz_symm
+    mod_cast two_mul_extremalNumber_le_zarankiewicz_symm rfl rfl
 
 end SimpleGraph
