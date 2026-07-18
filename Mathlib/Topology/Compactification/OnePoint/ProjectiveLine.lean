@@ -60,6 +60,7 @@ instance {S} [DistribSMul S R] [SMulCommClass R S R] :
     SMulCommClass (Matrix (Fin 2) (Fin 2) R) S (R × R) :=
   (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
 lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
@@ -110,6 +111,7 @@ lemma equivProjectivization_apply_coe (t : K) :
     equivProjectivization K t = mk K ![t, 1] (by simp) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma equivProjectivization_symm_apply_mk (v : Fin 2 → K) (h : v ≠ 0) :
     (equivProjectivization K).symm (mk K v h) = if v 1 = 0 then ∞ else (v 1)⁻¹ * v 0 := by
@@ -130,6 +132,7 @@ lemma equivProjectivization_smul {g : GL (Fin 2) K} (x : OnePoint K) :
     equivProjectivization K (g • x) = g • equivProjectivization K x := by
   rw [Equiv.smul_def, Equiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma smul_infty_def {g : GL (Fin 2) K} :
     g • ∞ = (equivProjectivization K).symm (.mk K ![g 0 0, g 1 0] (fun h ↦ by
       simpa [det_fin_two, show g 0 0 = 0 from congr_fun h 0, show g 1 0 = 0 from congr_fun h 1]

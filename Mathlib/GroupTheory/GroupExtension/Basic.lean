@@ -148,6 +148,7 @@ variable (s : S.Splitting)
 /-- `G` acts on `N` by conjugation. -/
 noncomputable def conjAct : G →* MulAut N := S.conjAct.comp s
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A split group extension is equivalent to the extension associated to a semidirect product. -/
 noncomputable def semidirectProductToGroupExtensionEquiv :
     (SemidirectProduct.toGroupExtension s.conjAct).Equiv S where
