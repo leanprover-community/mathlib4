@@ -620,7 +620,7 @@ theorem exists_contMDiffSection_forall_mem_convex_of_local
     -- Future: can grind do this?
     apply ρ.locallyFinite.subset fun i x hx ↦ ?_
     rw [support]
-    rw [mem_setOf_eq] at hx ⊢
+    rw [mem_ofPred_eq] at hx ⊢
     exact left_ne_zero_of_smul hx
   -- Construct the smooth section and prove it lies in the convex sets `t x`.
   refine ⟨⟨s, hs⟩, fun x ↦ ?_⟩

@@ -52,7 +52,7 @@ theorem IsLinearSet.definable [Finite α] (hs : IsLinearSet s) : A.Definable pre
           x.1 i • Term.var (Sum.inr (Sum.inr x))))), ?_⟩
   ext x
   simp only [mem_vadd_set, SetLike.mem_coe, AddSubmonoid.mem_closure_finset', Finset.univ_eq_attach,
-    nsmul_eq_mul, vadd_eq_add, ↓existsAndEq, true_and, mem_setOf_eq, Formula.realize_iExs,
+    nsmul_eq_mul, vadd_eq_add, ↓existsAndEq, true_and, mem_ofPred_eq, Formula.realize_iExs,
     Formula.realize_iInf, Formula.realize_equal, Term.realize_var, Sum.elim_inl,
     Term.realize_varsToConstants, coe_con, presburger.realize_add, presburger.realize_natCast,
     Nat.cast_id, presburger.realize_sum, presburger.realize_nsmul, Sum.elim_inr, smul_eq_mul]
@@ -69,7 +69,7 @@ theorem IsSemilinearSet.definable [Finite α] (hs : IsSemilinearSet s) :
   refine ⟨Formula.iSup φ, ?_⟩
   ext x
   have := fun s hs x => Set.ext_iff.1 (hφ ⟨s, hs⟩).symm x
-  simp only [mem_setOf_eq] at this
+  simp only [mem_ofPred_eq] at this
   simp [this]
 
 namespace FirstOrder.Language.presburger
@@ -117,31 +117,31 @@ lemma isSemilinearSet_boundedFormula_realize {n} (φ : presburger[[A]].BoundedFo
   | equal t₁ t₂ =>
     rcases term_realize_eq_add_dotProduct t₁ with ⟨k₁, u₁, ht₁⟩
     rcases term_realize_eq_add_dotProduct t₂ with ⟨k₂, u₂, ht₂⟩
-    convert! Nat.isSemilinearSet_setOf_mulVec_eq ![k₁] ![k₂] (.of ![u₁]) (.of ![u₂])
+    convert! Nat.isSemilinearSet_setOfPred_mulVec_eq ![k₁] ![k₂] (.of ![u₁]) (.of ![u₂])
     simp [ht₁, ht₂]
   | rel f => nomatch f
   | falsum => exact .empty
   | imp _ _ ih₁ ih₂ =>
     convert! (ih₂.compl.inter ih₁).compl using 1
-    simp [setOf_inter_eq_sep, imp_iff_not_or, compl_setOf]
+    simp [ofPred_inter_eq_sep, imp_iff_not_or, compl_ofPred]
   | @all n φ ih =>
     let e := (Equiv.sumAssoc α (Fin n) (Fin 1)).trans (Equiv.sumCongr (.refl α) finSumFinEquiv)
     rw [← isSemilinearSet_image_iff (LinearEquiv.funCongrLeft ℕ ℕ e)] at ih
     convert! ih.compl.proj.compl using 1
-    simp_rw [compl_setOf, not_exists, Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi,
+    simp_rw [compl_ofPred, not_exists, Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi,
       mem_compl_iff, mem_image, not_not, ← LinearEquiv.eq_symm_apply, LinearEquiv.funCongrLeft_symm,
-      exists_eq_right, mem_setOf, LinearEquiv.funCongrLeft_apply, LinearMap.funLeft,
+      exists_eq_right, mem_ofPred, LinearEquiv.funCongrLeft_apply, LinearMap.funLeft,
       LinearMap.coe_mk, AddHom.coe_mk]
     congr! 4
     ext i
     cases i using Fin.lastCases <;> simp [e]
 
 lemma isSemilinearSet_formula_realize_semilinear (φ : presburger[[A]].Formula α) :
-    IsSemilinearSet (setOf φ.Realize : Set (α → ℕ)) := by
+    IsSemilinearSet (Set.ofPred φ.Realize : Set (α → ℕ)) := by
   let e := Equiv.sumEmpty α (Fin 0)
   convert! (isSemilinearSet_boundedFormula_realize φ).image (LinearMap.funLeft ℕ ℕ e.symm)
   ext x
-  simp only [mem_setOf_eq, mem_image]
+  simp only [mem_ofPred_eq, mem_image]
   rw [(e.arrowCongr (.refl ℕ)).exists_congr_left]
   simp [Formula.Realize, Unique.eq_default, Function.comp_def, LinearMap.funLeft, e]
 
@@ -155,8 +155,8 @@ theorem definable_iff_isSemilinearSet {s : Set (α → ℕ)} :
 theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
     A.Definable₁ presburger s ↔ ∃ k, ∃ p > 0, ∀ x ≥ k, x ∈ s ↔ x + p ∈ s := by
   rw [Definable₁, definable_iff_isSemilinearSet,
-    ← isSemilinearSet_image_iff (LinearEquiv.funUnique (Fin 1) ℕ ℕ), ← preimage_setOf_eq]
-  simp only [LinearEquiv.funUnique_apply, Function.eval, Fin.default_eq_zero, setOf_mem_eq]
+    ← isSemilinearSet_image_iff (LinearEquiv.funUnique (Fin 1) ℕ ℕ), ← preimage_ofPred_eq]
+  simp only [LinearEquiv.funUnique_apply, Function.eval, Fin.default_eq_zero, ofPred_mem_eq]
   rw [image_preimage_eq s fun x => ⟨![x], rfl⟩, Nat.isSemilinearSet_iff_ultimately_periodic]
 
 /-- The graph of multiplication is not Presburger definable in `ℕ`. -/
@@ -170,7 +170,7 @@ theorem mul_not_definable : ¬ A.Definable presburger {v : Fin 3 → ℕ | v 0 =
   rw [definable₁_iff_ultimately_periodic] at hsqr
   rcases hsqr with ⟨k, p, hp, h⟩
   specialize h ((max k p) * (max k p)) ((Nat.le_mul_self _).trans' (le_max_left _ _))
-  simp only [mem_setOf_eq, exists_apply_eq_apply, true_iff] at h
+  simp only [mem_ofPred_eq, exists_apply_eq_apply, true_iff] at h
   rcases h with ⟨x, h₁⟩
   by_cases h₂ : x ≤ max k p
   · apply Nat.mul_self_le_mul_self at h₂

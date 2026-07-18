@@ -337,7 +337,7 @@ theorem isPreirreducible_iff_subset_closure_inter_open (S : Set X) :
   · intro a b ha hb ⟨p, pS, pa⟩ bS
     by_contra! h0
     suffices p ∉ closure (S ∩ b) from this <| (h b hb bS) pS
-    simp only [closure, mem_sInter, mem_setOf_eq, and_imp, not_forall, exists_prop]
+    simp only [closure, mem_sInter, mem_ofPred_eq, and_imp, not_forall, exists_prop]
     use aᶜ
     grind [isClosed_compl_iff, subset_compl_iff_disjoint_left, disjoint_iff_inter_eq_empty]
 

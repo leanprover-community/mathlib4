@@ -317,7 +317,7 @@ profinite additive groups. -/]
 def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   carrier := {x | ∀ ⦃i j : J⦄ (π : i ⟶ j), F.map π (x i) = x j}
   mul_mem' hx hy _ _ π := by simp only [Pi.mul_apply, map_mul, hx π, hy π]
-  one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
+  one_mem' := by simp only [Set.mem_ofPred_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
 @[to_additive]

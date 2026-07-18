@@ -140,7 +140,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
 
 @[symm]
 theorem adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
-  simp only [adjacent, ne_comm, Set.mem_setOf_eq]
+  simp only [adjacent, ne_comm, Set.mem_ofPred_eq]
 
 end Q
 
