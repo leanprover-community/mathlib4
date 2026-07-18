@@ -23,10 +23,13 @@ variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [Nontri
   [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ]
   {f : E →ₛₗ[σ] F}
 
-#check Filter.IsBoundedUnder.smul_tendsto_zero_normedSpace
+/-!
+## First version
+-/
 
 variable (𝕜₁) in
-private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
+omit [IsTopologicalAddGroup E] in
+lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
     ∃ d : E → 𝕜₁, (∀ x, ‖d x‖ ≤ 1) ∧ (∀ x, d x • x ∈ V) ∧
       (𝓝 (0 : E) = comap (fun x ↦ d x • x) (𝓝 0)) := by
   classical
@@ -43,18 +46,25 @@ private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
   set p : E → E := fun x ↦ d x • x
   have norm_d : ∀ x, ‖d x‖ ≤ 1 := fun x ↦ by simpa [d] using pow_le_one₀ hc₀.le hc₁.le
   have p_mem : ∀ x, p x ∈ V := fun x ↦ Nat.find_spec (cover x)
+  have p_mapsto : MapsTo p Vᶜ (c • V)ᶜ := by
+    intro x hx₁ hx₂
+    have : c ^ (k x - 1) • x ∈ V := by
+      rwa [pow_sub₀ c c_ne (by simpa [k]), pow_one, mul_comm, mul_smul,
+        ← mem_smul_set_iff_inv_smul_mem₀ c_ne]
+    exact Nat.find_min (cover x) (by simpa [k]) this
   use d, norm_d, p_mem
+  have k_eqOn_V : ∀ x ∈ V, k x = 0 := fun x ↦ by simp [k]
+  have p_eqOn_V : ∀ x ∈ V, p x = x := fun x hx ↦ by simp [p, d, k_eqOn_V x hx]
+  have V_mem' : V ∈ comap p (𝓝 0) := by
+    grw [mem_comap_iff_compl, ← le_principal_iff, p_mapsto.image_subset, compl_compl]
+    simpa [set_smul_mem_nhds_zero_iff c_ne]
   refine le_antisymm ?_ ?_
   · rw [← tendsto_iff_comap]
     suffices p =ᶠ[𝓝 0] id from tendsto_id.congr' this.symm
-    have k_eqOn_V : ∀ x ∈ V, k x = 0 := fun x ↦ by simp [k]
-    have p_eqOn_V : ∀ x ∈ V, p x = x := fun x hx ↦ by simp [p, d, k_eqOn_V x hx]
     filter_upwards [V_mem] using p_eqOn_V
   · rw [← tendsto_id']
     suffices p =ᶠ[comap p (𝓝 0)] id from tendsto_comap.congr' this
-    have k_eqOn_preimage_cV : ∀ x ∈ p ⁻¹' (c • V), k x = 0 := fun x (hx₁ : p x ∈ c • V) ↦ by
-
-    sorry
+    filter_upwards [V_mem'] using p_eqOn_V
 
 lemma LinearMap.isInducing_of_restrict_nhds_zero_new {V : Set E}
     (V_mem : V ∈ 𝓝 0) (H : IsInducing (Set.restrict V f)) : IsInducing f := by
@@ -85,41 +95,9 @@ lemma LinearMap.isInducing_of_restrict_nhds_zero_new {V : Set E}
     _ = comap p (𝓝 0) := by rw [H]
     _ = 𝓝 0 := by rw [← hp]
 
-private lemma LinearMap.isInducing_of_restrict_nhds_zero_of_balanced {V : Set E} (V_mem : V ∈ 𝓝 0)
-    (V_bal : Balanced 𝕜₁ V) (H : IsInducing (Set.restrict V f)) : IsInducing f := by
-  classical
-  obtain ⟨c, hc₀, hc₁⟩ := NormedField.exists_norm_lt_one 𝕜₁
-  have c_ne : c ≠ 0 := fun h ↦ by simp [h] at hc₀
-  have cover : ∀ x : E, ∃ k : ℕ, c ^ k • x ∈ V := by
-    intro x
-    suffices Tendsto (fun k : ℕ ↦ c ^ k • x) atTop (𝓝 0) from
-      this.eventually V_mem |>.exists
-    rw [← zero_smul 𝕜₁ x]
-    exact .smul_const (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁) _
-  set k : E → ℕ := fun x ↦ Nat.find (cover x)
-  set p : E → E := fun x ↦ c ^ (k x) • x
-  have p_mem_V : ∀ x, p x ∈ V := fun x ↦ Nat.find_spec (cover x)
-  have k_eq_zero : ∀ x ∈ V, k x = 0 := fun x ↦ by simp [k]
-  have p_eqOn : ∀ x ∈ V, p x = x := fun x hx ↦ by simp [p, k_eq_zero x hx]
-  have p_mapsto : MapsTo p Vᶜ (c • V)ᶜ := by
-    intro x hx₁ hx₂
-    have : c ^ (k x - 1) • x ∈ V := by
-      rwa [pow_sub₀ c c_ne (by simpa [k]), pow_one, mul_comm, mul_smul,
-        ← mem_smul_set_iff_inv_smul_mem₀ c_ne]
-    exact Nat.find_min (cover x) (by simpa [k]) this
-  have key₁ : comap p (𝓝 0) ≤ 𝓝 0 := by
-    have : p =ᶠ[comap p (𝓝 0)] _root_.id := by
-      filter_upwards [preimage_mem_comap (set_smul_mem_nhds_zero_iff c_ne |>.mpr V_mem)]
-      intro x (hx₁ : p x ∈ c • V)
-      apply p_eqOn
-      by_contra hx₂
-      exact p_mapsto hx₂ hx₁
-    rw [← tendsto_id', ← tendsto_congr' this, tendsto_iff_comap]
-  have key₂ : comap f (𝓝 0) ≤ comap (f ∘ p) (𝓝 0) := by
-    have : f ∘ p = fun x ↦ (σ c) ^ (k x) • f x := by ext; simp [p]
-    rw [← tendsto_iff_comap, this]
-    sorry
-  sorry
+/-!
+## Second version
+-/
 
 lemma LinearMap.isInducing_of_restrict_nhds_zero_old {V : Set E} (V_mem : V ∈ 𝓝 0)
     (H : IsInducing (Set.restrict V f)) : IsInducing f := by
