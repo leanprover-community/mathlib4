@@ -327,6 +327,7 @@ for any additive category `C`. -/
 def Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   (CategoryTheory.Idempotents.functorExtension₂ _ _).obj Γ₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ) :
     @HigherFacesVanish C _ _ (Γ₀.obj K) _ n (n + 1)
       (((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n + 1⦌))) := by

@@ -193,7 +193,9 @@ lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p 
 @[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 
-@[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
+@[simp] lemma setOfPred_mem_eq (a : A) : {b | b ∈ a} = a := rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem_eq := setOfPred_mem_eq
 
 @[nontriviality]
 lemma mem_of_subsingleton [Subsingleton B] (S : A) [h : Nonempty S] {b : B} : b ∈ S := by
@@ -222,9 +224,16 @@ section default
 
 variable (A B : Type*) [SetLike A B]
 
-/-- The order induced from a `SetLike` instance by inclusion. -/
+/-- The order induced from a `SetLike` instance by inclusion.
+
+An order defined as `.ofSetLike` will automatically make available an instance
+of `IsConcreteLE`.
+-/
 @[reducible] def LE.ofSetLike : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
+
+instance : letI := LE.ofSetLike A B; IsConcreteLE A B :=
+  letI := LE.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
 
@@ -235,9 +244,6 @@ of `IsConcreteLE`.
   __ := LE.ofSetLike A B
   lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
-
-instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=
-  letI := PartialOrder.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
 
 end default
 
