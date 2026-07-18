@@ -300,9 +300,9 @@ theorem isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree [DecidableEq V] 
   refine ⟨fun hsup ↦ ?_, .mono le_sup_left⟩
   by_contra hG
   have ⟨p, hp, hlen⟩ := isHamiltonian_sup_edge.mp hsup |>.resolve_left hG
-  -- `p` is Hamiltonian and so its support contains all the vertices exactly once.
-  -- Since `u` is not adjacent to itself, all of its neighbors appear from index `1` to `|V| - 2`.
-  -- Since `v` is not adjacent to itself, all of its neighbors appear from index `0` to `|V| - 1`.
+  -- `p` is Hamiltonian and so its support contains all `|V|` vertices exactly once.
+  -- Since `u` is not adjacent to itself, all of its neighbors appear from index `1` to `|V| - 1`.
+  -- Since `v` is not adjacent to itself, all of its neighbors appear from index `0` to `|V| - 2`.
   classical
   let su := (Finset.range <| Fintype.card V - 1).filter (G.Adj u <| p.getVert <| · + 1)
   let sv := (Finset.range <| Fintype.card V - 1).filter (G.Adj v <| p.getVert ·)
