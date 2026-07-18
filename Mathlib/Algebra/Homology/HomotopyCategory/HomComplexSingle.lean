@@ -86,6 +86,7 @@ noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
   right_inv f := by simp
   map_add' := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma fromSingleEquiv_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
     fromSingleEquiv h (fromSingleMk f h) = f := by

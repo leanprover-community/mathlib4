@@ -93,7 +93,6 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem Module
 
 variable [NumberField K] {K}
 
-open Classical in
 /-- The map from the mixed space to `logSpace K` defined in such way that: 1) it factors the map
 `logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
 `{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
@@ -173,7 +172,7 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem
 
 variable [NumberField K]
 
-open Classical in
+open scoped Classical in
 /-- The fundamental cone is a cone in the mixed space, i.e. a subset fixed by multiplication by
 a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
 of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
@@ -217,7 +216,7 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
   refine ⟨?_, ?_⟩
   · rw [Set.mem_preimage, logMap_real_smul hx.2 hc]
     exact hx.1
-  · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
+  · rw [Set.mem_ofPred_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
     exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
 
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
@@ -226,6 +225,7 @@ theorem smul_mem_iff_mem (hc : c ≠ 0) :
   convert! smul_mem_of_mem h (inv_ne_zero hc)
   rw [eq_inv_smul_iff₀ hc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
     ∃ u : (𝓞 K)ˣ, u • x ∈ fundamentalCone K := by
   classical
@@ -240,7 +240,7 @@ theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
   constructor
   · rw [Set.mem_preimage, logMap_torsion_smul _ hζ]
     exact hx.1
-  · rw [Set.mem_setOf_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
+  · rw [Set.mem_ofPred_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
     exact hx.2
 
 theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 K)ˣ) :
@@ -480,6 +480,7 @@ the integral ideal `J`. -/
 def idealSet : Set (mixedSpace K) :=
   fundamentalCone K ∩ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {K J} in
 theorem mem_idealSet :
     x ∈ idealSet K J ↔ x ∈ fundamentalCone K ∧ ∃ a : (𝓞 K), (a : 𝓞 K) ∈ (J : Set (𝓞 K)) ∧
@@ -521,6 +522,7 @@ variable {K J}
 theorem idealSetEquiv_apply (a : idealSet K J) :
     (idealSetEquiv K J a : mixedSpace K) = a := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem idealSetEquiv_symm_apply
     (a : {a : integerSet K // (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K)) }) :
     ((idealSetEquiv K J).symm a : mixedSpace K) = a := by

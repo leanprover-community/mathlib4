@@ -37,7 +37,7 @@ variable {α : Type*} [PseudoEMetricSpace α]
 theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0∞}
     (h : hausdorffEDist s t < δ) : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 < δ} := by
   rw [hausdorffEDist, max_lt_iff] at h
-  rw [hausdorffEntourage, Set.mem_setOf]
+  rw [hausdorffEntourage, Set.mem_ofPred]
   conv => enter [2, 2, 1, 1, _]; rw [edist_comm]
   have {s t : Set α} (h : ⨆ x ∈ s, infEDist x t < δ) :
       s ⊆ SetRel.preimage {p | edist p.1 p.2 < δ} t := by
@@ -48,7 +48,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
 theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
     (h : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 ≤ δ}) : hausdorffEDist s t ≤ δ := by
   rw [hausdorffEDist, max_le_iff]
-  rw [hausdorffEntourage, Set.mem_setOf] at h
+  rw [hausdorffEntourage, Set.mem_ofPred] at h
   conv at h => enter [2, 2, 1, 1, _]; rw [edist_comm]
   have {s t : Set α} (h : s ⊆ SetRel.preimage {p | edist p.1 p.2 ≤ δ} t) :
       ⨆ x ∈ s, infEDist x t ≤ δ := by
@@ -296,18 +296,6 @@ namespace EMetric
 
 open Metric
 
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.continuous_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.continuous_toCloseds
-
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.isClosed_subsets_of_isClosed :=
-  TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
-
-@[deprecated (since := "2025-11-19")]
-alias Closeds.isClosed_subsets_of_isClosed :=
-  TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
-
 @[deprecated (since := "2026-01-08")]
 alias mem_hausdorffEntourage_of_hausdorffEdist_lt :=
   mem_hausdorffEntourage_of_hausdorffEDist_lt
@@ -331,10 +319,6 @@ alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_toCloseds :=
   TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.isUniformEmbedding_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isClosed_in_closeds :=
