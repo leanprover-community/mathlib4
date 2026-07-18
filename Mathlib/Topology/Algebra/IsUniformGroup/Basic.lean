@@ -137,9 +137,13 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
     simp [← preimage_smul_inv, preimage]
 
 @[to_additive]
-theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
-  convert! TotallyBounded.image hs uniformContinuous_inv
-  aesop
+protected lemma TotallyBounded.inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded s⁻¹ := by
+  simpa using hs.image uniformContinuous_inv
+
+@[to_additive (attr := simp)]
+lemma totallyBounded_inv {s : Set α} : TotallyBounded s⁻¹ ↔ TotallyBounded s where
+  mp hs := by simpa using hs.inv
+  mpr := .inv
 
 section UniformConvergence
 
@@ -287,8 +291,8 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
 @[to_additive]
 lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
     (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
- haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
- IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
+  haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
+  IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
 
 @[to_additive]
 lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
@@ -629,9 +633,9 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     sequential antitone neighborhood basis `u` for `𝓝 (1 : G)` so that `(u (n + 1)) ^ 2 ⊆ u n`, and
     this descends to an antitone neighborhood basis `v` for `𝓝 (1 : G ⧸ N)`. Since `𝓤 (G ⧸ N)` is
     countably generated, it suffices to show any Cauchy sequence `x` converges. -/
-  letI : UniformSpace (G ⧸ N) := IsTopologicalGroup.rightUniformSpace (G ⧸ N)
-  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
-  haveI : (𝓤 (G ⧸ N)).IsCountablyGenerated := comap.isCountablyGenerated _ _
+  let : UniformSpace (G ⧸ N) := IsTopologicalGroup.rightUniformSpace (G ⧸ N)
+  let : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
+  have : (𝓤 (G ⧸ N)).IsCountablyGenerated := comap.isCountablyGenerated _ _
   obtain ⟨u, hu, u_mul⟩ := IsTopologicalGroup.exists_antitone_basis_nhds_one G
   obtain ⟨hv, v_anti⟩ := hu.map ((↑) : G → G ⧸ N)
   rw [← QuotientGroup.nhds_eq N 1, QuotientGroup.mk_one] at hv
@@ -643,7 +647,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ ↦ True) fun i ↦ { x | x.snd / x.fst ∈ (↑) '' u i } := by
       simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
-    simp only [mem_setOf_eq, forall_true_left, mem_image] at hx
+    simp only [mem_ofPred_eq, forall_true_left, mem_image] at hx
     intro i j
     rcases hx i with ⟨M, hM⟩
     refine ⟨max j M + 1, (le_max_left _ _).trans_lt (lt_add_one _), fun a b ha hb g hg => ?_⟩
@@ -683,7 +687,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
       simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
-    simp only [mem_setOf_eq, forall_true_left]
+    simp only [mem_ofPred_eq, forall_true_left]
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'

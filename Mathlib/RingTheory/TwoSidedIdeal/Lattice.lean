@@ -37,6 +37,7 @@ lemma mem_sup_right {I J : TwoSidedIdeal R} {x : R} (h : x ∈ J) :
     x ∈ I ⊔ J :=
   (show J ≤ I ⊔ J from le_sup_right) h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_sup {I J : TwoSidedIdeal R} {x : R} :
     x ∈ I ⊔ J ↔ ∃ y ∈ I, ∃ z ∈ J, y + z = x := by
   constructor
