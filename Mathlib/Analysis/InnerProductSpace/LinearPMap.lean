@@ -90,11 +90,11 @@ This definition is needed to construct the adjoint operator and the preferred ve
 def adjointDomain : Submodule 𝕜 F where
   carrier := {y | Continuous ((innerₛₗ 𝕜 y).comp T.toFun)}
   zero_mem' := by
-    rw [Set.mem_setOf_eq, LinearMap.map_zero, LinearMap.zero_comp]
+    rw [Set.mem_ofPred_eq, LinearMap.map_zero, LinearMap.zero_comp]
     exact continuous_zero
-  add_mem' hx hy := by rw [Set.mem_setOf_eq, LinearMap.map_add] at *; exact hx.add hy
+  add_mem' hx hy := by rw [Set.mem_ofPred_eq, LinearMap.map_add] at *; exact hx.add hy
   smul_mem' a x hx := by
-    rw [Set.mem_setOf_eq, LinearMap.map_smulₛₗ] at *
+    rw [Set.mem_ofPred_eq, LinearMap.map_smulₛₗ] at *
     exact hx.const_smul (conj a)
 
 /-- The operator `fun x ↦ ⟪y, T x⟫` considered as a continuous linear operator
