@@ -35,7 +35,7 @@ into a strictly commutative diagram of functors
 The coinduced functor `SmRep.coind` is defined for arbitrary group morphisms `H →* G`, by cutting
 out the smooth vectors from the naive coinduced representations. In other words, we have
   `SmRep.coind = ι (natural inclusion) ⋙ Rep.coind ⋙ smVec (taking smooth vectors).`
-This is also called the "smooth induction functor" in literature.
+When `H` is a subgroup of G, this is also known as the "smooth induction functor" in literature.
 
 The induced functor `SmRep.ind` is defined for group morphism `H →* G` which is an open map, fitting
 into a strictly commutative diagram of functors
@@ -45,8 +45,8 @@ into a strictly commutative diagram of functors
      ι (natural inclusion)       ι (natural inclusion)
      |                           |
   SmRep k H -- SmRep.ind --> SmRep k G.
-When `H` is a compact open subgroup of `G`, this functor is also called the "compact induction
-functor" in literature.
+When `H` is a compact (or compact modulo center) open subgroup of `G`, this functor is also known as
+the "compact induction functor" in literature.
 
 The adjunctions are then formally obtained by combining the adjunctions in `Rep`, the adjunction
   `ι (natural inclusion) ⊣ smVec (taking smooth vectors)`, and the commutative diagrams above.
@@ -57,7 +57,7 @@ The adjunctions are then formally obtained by combining the adjunctions in `Rep`
 
 universe t u v w
 variable {G : Type v} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
-variable {H : Type w} [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
+variable {H : Type w} [Group H] [TopologicalSpace H]
 
 open CategoryTheory
 
@@ -68,12 +68,10 @@ section representation
 variable {k : Type u} [Semiring k]
 variable {V : Type t} [AddCommMonoid V] [Module k V]
 
-omit [IsTopologicalGroup G] in
 instance instIsSmooth_comp {ρ : Representation k G V} [h : IsSmooth ρ] {s : H →ₜ* G} :
     IsSmooth (ρ.comp s.1) := by
   rw [isSmooth_iff]
-  exact fun v => Subgroup.isOpen_mono
-    (stabilizer_comap_le_stabilizer s.1 ρ v) (s.2.isOpen_preimage (stabilizer ρ v) (h.smooth v))
+  exact fun v => s.2.isOpen_preimage (stabilizer ρ v) (h.smooth v)
 
 /-- The maximal smooth subrepresentation in the coinduced representation. -/
 @[reducible]
@@ -85,7 +83,6 @@ variable {k : Type u} [CommRing k]
 variable {V : Type t} [AddCommGroup V] [Module k V]
 variable {s : H →* G}
 
-omit [IsTopologicalGroup H] in
 lemma isSmoothVector_IndVMk {ρ : Representation k H V} {v : V} (h_isOpen : IsOpenMap s) (g : G)
     (hv : IsSmoothVector ρ v) :
     IsSmoothVector (ind s ρ) (IndV.mk s ρ g v) := by
@@ -99,7 +96,6 @@ lemma isSmoothVector_IndVMk {ρ : Representation k H V} {v : V} (h_isOpen : IsOp
     ext; simp
   exact Subgroup.isOpen_mono h_sub h_open
 
-omit [IsTopologicalGroup H] in
 lemma isSmooth_openMap_ind (h_isOpen : IsOpenMap s) (ρ : Representation k H V) [h_sm : IsSmooth ρ] :
     IsSmooth (Representation.ind s ρ) := by
   rw [isSmooth_iff]
@@ -126,7 +122,7 @@ abbrev res (A : SmRep.{t} k G) :
 abbrev resMap {A B : SmRep.{t} k G} (f : A ⟶ B) :
     res s A ⟶ res s B := homMk (Rep.resMap s.1 f.hom)
 
-omit [IsTopologicalGroup G]
+omit [IsTopologicalGroup G] in
 lemma res_eq_of_comp (A : SmRep.{t} k G) :
     (res s A) = of ((A.ρ).comp s.1) := rfl
 
@@ -162,7 +158,6 @@ noncomputable abbrev coind (s : H →* G) (A : SmRep.{t} k H) :
 noncomputable abbrev coindMap (s : H →* G) {A B : SmRep.{t} k H} (f : A ⟶ B) :
     coind s A ⟶ coind s B := (coindFunctor s).map f
 
-omit [IsTopologicalGroup H] in
 lemma coind_eq_of_smoothCoind (s : H →* G) (A : SmRep.{t} k H) :
     coind s A = of (smoothCoind s A.ρ) := rfl
 
@@ -204,7 +199,6 @@ noncomputable abbrev indFunctor : SmRep.{t} k H ⥤ SmRep.{max u v t} k G where
   obj A := ind s isOpen A
   map f := homMk (Rep.indMap s f.hom)
 
-omit [IsTopologicalGroup H] in
 lemma ind_eq_of_ind (A : SmRep.{t} k H) :
     ind s isOpen A = of (Representation.ind s A.ρ) (h := isSmooth_openMap_ind isOpen A.ρ) := rfl
 
