@@ -52,21 +52,20 @@ variable (F) in
 /-- The linear map from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
 `x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`. -/
 @[simps!]
-noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[𝕜]
-    ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
+noncomputable def toDualContinuousMultilinearMap :
+    (⨂[𝕜] i, E i) →ₗ[𝕜] ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
   toFun x := LinearMap.mkContinuous
-    (lift.toLinearMap.flip x ∘ₗ ContinuousMultilinearMap.toMultilinearMapLinear)
-    (projectiveSeminorm x)
-    (fun _ ↦ by simpa [mul_comm] using! norm_eval_le_projectiveSeminorm ..)
+    (lift.toLinearMap.flip x ∘ₗ ContinuousMultilinearMap.toMultilinearMapLinear) ‖x‖
+    (fun f ↦ by simpa [mul_comm] using norm_eval_le_projectiveSeminorm f x)
   map_add' x y := by
     ext; simp
   map_smul' a x := by
     ext; simp
 
 theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) :
-    ‖toDualContinuousMultilinearMap F x‖ ≤ projectiveSeminorm x := by
+    ‖toDualContinuousMultilinearMap F x‖ ≤ ‖x‖ := by
   simp only [toDualContinuousMultilinearMap, LinearMap.coe_mk, AddHom.coe_mk]
-  apply LinearMap.mkContinuous_norm_le _ (apply_nonneg _ _)
+  apply LinearMap.mkContinuous_norm_le _ (by positivity)
 
 /-- The injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
 `sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap F x`, for all
@@ -87,9 +86,9 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))} := by
   use projectiveSeminorm
-  simp only [mem_upperBounds, Set.mem_setOf_eq, forall_exists_index]
+  simp only [mem_upperBounds, Set.mem_ofPred_eq, forall_exists_index]
   intro p G _ _ hp x
-  simpa [hp] using toDualContinuousMultilinearMap_le_projectiveSeminorm _
+  simpa [hp] using! toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
@@ -99,9 +98,10 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
-  simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
+  simpa only [injectiveSeminorm, Set.coe_ofPred, Set.mem_ofPred_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] instSeminormedAddCommGroup in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
@@ -124,8 +124,8 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   set G := (⨂[𝕜] i, E i) ⧸ LinearMap.ker (lift f.toMultilinearMap)
   set G' := LinearMap.range (lift f.toMultilinearMap)
   set e := LinearMap.quotKerEquivRange (lift f.toMultilinearMap)
-  letI := SeminormedAddCommGroup.induced G G' e
-  letI := NormedSpace.induced 𝕜 G G' e
+  let := SeminormedAddCommGroup.induced G G' e
+  let := NormedSpace.induced 𝕜 G G' e
   set f'₀ := lift.symm (e.symm.toLinearMap ∘ₗ LinearMap.rangeRestrict (lift f.toMultilinearMap))
   have hf'₀ : ∀ (x : Π (i : ι), E i), ‖f'₀ x‖ ≤ ‖f‖ * ∏ i, ‖x i‖ := fun x ↦ by
     change ‖e (f'₀ x)‖ ≤ _
@@ -151,7 +151,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
       (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E)) ≤ injectiveSeminorm := by
     simp only [injectiveSeminorm]
     refine le_csSup dualSeminorms_bounded ?_
-    rw [Set.mem_setOf]
+    rw [Set.mem_ofPred]
     existsi G, inferInstance, inferInstance
     rfl
   refine le_trans ?_ (mul_le_mul_of_nonneg_left (hle x) (norm_nonneg f'))
@@ -167,14 +167,14 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
   rw [injectiveSeminorm]
   refine csSup_le ?_ ?_
   · existsi 0
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     existsi PUnit, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
     rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit.{(max (max uE uι) u𝕜) + 1} x) 0,
       norm_zero]
   · intro p hp
-    simp only [Set.mem_setOf_eq] at hp
+    simp only [Set.mem_ofPred_eq] at hp
     obtain ⟨G, _, _, h⟩ := hp
     rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
     exact toDualContinuousMultilinearMap_le_projectiveSeminorm _

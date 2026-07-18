@@ -138,6 +138,7 @@ noncomputable def Sheaf.coneΓ [HasGlobalSectionsFunctor J A] (F : Sheaf J A) : 
   pt := (Γ J A).obj F
   π := ΓHomEquiv.symm (𝟙 _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The global sections cone `Sheaf.coneΓ` is limiting - that is, global sections are limits even
 when not all limits of shape `Cᵒᵖ` exist in `A`. -/
 noncomputable def Sheaf.isLimitConeΓ [HasGlobalSectionsFunctor J A] (F : Sheaf J A) :

@@ -100,7 +100,7 @@ theorem CountablyGenerated.comap [m : MeasurableSpace β] [h : CountablyGenerate
     @CountablyGenerated α (.comap f m) := by
   rcases h with ⟨⟨b, hbc, rfl⟩⟩
   rw [comap_generateFrom]
-  letI := generateFrom (preimage f '' b)
+  let := generateFrom (preimage f '' b)
   exact ⟨_, hbc.image _, rfl⟩
 
 theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @CountablyGenerated β m₁)
@@ -282,7 +282,7 @@ then this is witnessed by sets in `S`. -/
 theorem separating_of_generateFrom (S : Set (Set α))
     [h : @SeparatesPoints α (generateFrom S)] :
     ∀ x y : α, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y := by
-  letI := generateFrom S
+  let := generateFrom S
   intro x y hxy
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
   exact separatesPoints_def <| fun _ hs ↦ (hxy _ hs).mp
@@ -403,7 +403,7 @@ theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
   rw [measurable_pi_iff]
   refine fun n ↦ measurable_to_bool ?_
   simp only [preimage, mem_singleton_iff, mapNatBool,
-    Bool.decide_iff, setOf_mem_eq]
+    Bool.decide_iff, ofPred_mem_eq]
   apply measurableSet_natGeneratingSequence
 
 theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
@@ -479,7 +479,6 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
     | empty => exact ⟨∅, by simp, by simp⟩
     | compl u _ hu =>
       obtain ⟨S, hS_subset, rfl⟩ := hu
-      classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
         exact sdiff_subset
@@ -528,7 +527,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>
-      simp only [memPartition_succ, mem_setOf_eq] at hun
+      simp only [memPartition_succ, mem_ofPred_eq] at hun
       obtain ⟨v, hv, huv⟩ := hun
       rcases huv with rfl | rfl
       · exact (ih v hv).inter (measurableSet_generateFrom ⟨n, rfl⟩)

@@ -212,6 +212,23 @@ instance [AddCommGroup V] : AddCommGroup (HahnModule Γ R V) where
     simp only [(· • ·), SMul.smul]
     rw [eq_of, of_neg, of_carrier, of_carrier, eq_of, Int.natCast_add_one, zsmul_eq_smul,
       negSucc_zsmul, zsmul_eq_smul, of_neg, ← Int.natCast_add_one, natCast_zsmul]
+instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
+  smul x y := (of R) {
+    coeff := fun a =>
+      ∑ ij ∈ VAddAntidiagonal a
+        (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a),
+        x.coeff ij.fst • ((of R).symm y).coeff ij.snd
+    isPWO_support' :=
+        have h : { a : Γ' | (∑ ij ∈ VAddAntidiagonal a
+            (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a),
+              x.coeff ij.fst • ((of R).symm y).coeff ij.snd) ≠ 0 } ⊆
+            { a : Γ' | (VAddAntidiagonal a (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support
+              ((of R).symm y).isPWO_support a)).Nonempty } := by
+          intro a ha
+          simp only [Set.mem_ofPred_eq]
+          contrapose! ha
+          simp [ha]
+        (isPWO_support_vaddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support).mono h }
 
 @[simp] theorem of_nsmul [AddCommMonoid V] (n : ℕ) (x : HahnSeries Γ V) :
     (of R) (n • x) = n • (of R) x := rfl
@@ -844,7 +861,7 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
     intro x y hx hy
     obtain (_ | _) := subsingleton_or_nontrivial R
     · simp
-    · simp_all only [Set.mem_setOf_eq, orderTop_self_sub_one_pos_iff]
+    · simp_all only [Set.mem_ofPred_eq, orderTop_self_sub_one_pos_iff]
       have h1 : x.val.leadingCoeff * y.val.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
       constructor
       · rw [Units.val_mul, orderTop_mul_of_ne_zero (by simp [h1]), hx.1, hy.1, add_zero]
@@ -1206,7 +1223,7 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
       simp only [mem_antidiagonal, embDomain_coeff, mem_support, ← hf,
         OrderEmbedding.eq_iff_eq] at h1
       exact ⟨i, j, h1, rfl⟩
-  · rw [embDomain_notin_range hg, eq_comm]
+  · rw [embDomain_of_notMem_range hg, eq_comm]
     contrapose! hg
     obtain ⟨_, hi, _, hj, rfl⟩ := support_mul_subset ((mem_support _ _).2 hg)
     obtain ⟨i, _, rfl⟩ := support_embDomain_subset hi
@@ -1521,7 +1538,7 @@ variable [NonUnitalNonAssocSemiring R]
 instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
   -- TODO: This proof is painful because `coeff_mul` isn't stated in terms of `Finsupp.sum`.
   mul_left_cancel_of_ne_zero {x} hx y z hyz := by
-    letI : AddCancelCommMonoid R := ⟨⟩
+    let : AddCancelCommMonoid R := ⟨⟩
     contrapose! hyz
     simp only [ne_eq, ← coeff_inj, funext_iff, not_forall] at ⊢ hyz
     have : Set.IsWF {a | y.coeff a ≠ z.coeff a} :=
@@ -1540,11 +1557,11 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
       rintro b c hxb - hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq (order_le_of_coeff_ne_zero hxb)
-        (Set.IsWF.min_le _ _ hbc'), eq_comm]
+        (Set.IsWF.min_le this hyz hbc'), eq_comm]
     · simp +contextual [← and_or_left, ← or_and_right]
     · simp +contextual [← and_or_left, ← or_and_right]
   mul_right_cancel_of_ne_zero {x} hx y z hyz := by
-    letI : AddCancelCommMonoid R := ⟨⟩
+    let : AddCancelCommMonoid R := ⟨⟩
     contrapose! hyz
     simp only [ne_eq, ← coeff_inj, funext_iff, not_forall] at ⊢ hyz
     have : Set.IsWF {a | y.coeff a ≠ z.coeff a} :=
@@ -1562,7 +1579,8 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
       rintro b c - hxb hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq
-        (Set.IsWF.min_le _ _ hbc') (order_le_of_coeff_ne_zero hxb), eq_comm]
+        (Set.IsWF.min_le this hyz ((Set.mem_ofPred (p := fun a => y.coeff a ≠ z.coeff a)).mpr hbc'))
+        (order_le_of_coeff_ne_zero hxb), eq_comm]
     · simp +contextual [← or_and_right]
     · simp +contextual [← or_and_right]
 

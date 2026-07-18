@@ -166,6 +166,7 @@ lemma addOppositeEquiv_symm_support (x : R⟦Γ⟧ᵃᵒᵖ) :
     (addOppositeEquiv.symm x).support = x.unop.support := by
   rw [← addOppositeEquiv_support, AddEquiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addOppositeEquiv_orderTop (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
@@ -181,10 +182,10 @@ lemma addOppositeEquiv_symm_orderTop (x : R⟦Γ⟧ᵃᵒᵖ) :
     (addOppositeEquiv.symm x).orderTop = x.unop.orderTop := by
   rw [← addOppositeEquiv_orderTop, AddEquiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  classical
   obtain rfl | hx := eq_or_ne x 0
   · simp
   simp only [ne_eq, AddOpposite.unop_eq_zero_iff, EmbeddingLike.map_eq_zero_iff, hx,
@@ -306,7 +307,7 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : R⟦Γ⟧) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [embDomain_notin_range hg]
+  · simp [embDomain_of_notMem_range hg]
 
 end Domain
 
@@ -591,7 +592,7 @@ theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : R⟦Γ⟧) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [embDomain_notin_range hg]
+  · simp [embDomain_of_notMem_range hg]
 
 /-- Extending the domain of Hahn series is a linear map. -/
 @[simps]
