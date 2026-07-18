@@ -305,7 +305,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
         SetLike.coe_subset_coe, P] at mem_supp
       have min := associated_prime_minimal_of_isCohenMacaulay p' M ass
       convert min
-      simp only [Ideal.minimalPrimes, Set.mem_setOf_eq] at min
+      simp only [Ideal.minimalPrimes, Set.mem_ofPred_eq] at min
       apply min.eq_of_le ⟨‹_›, mem_supp⟩ (le.trans (le_of_eq_of_le _ hp'))
       rw [Submodule.bot_colon', Submodule.annihilator_span_singleton (g 1)]
     have : Module.support Rₚ Mₚ = {closedPoint Rₚ} := by
@@ -324,7 +324,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
           ((Module.annihilator R M).map (algebraMap R Rₚ)).minimalPrimes := by
           simpa [IsLocalization.minimalPrimes_map p.primeCompl,
             IsLocalization.AtPrime.under_maximalIdeal Rₚ p] using min
-        simp only [Ideal.minimalPrimes, Set.mem_setOf_eq] at this
+        simp only [Ideal.minimalPrimes, Set.mem_ofPred_eq] at this
         exact PrimeSpectrum.ext (this.eq_of_le ⟨I.2, le.trans hI⟩ (le_maximalIdeal_of_isPrime I.1))
       · simpa using IsLocalRing.closedPoint_mem_support Rₚ Mₚ
     have : Unique (Module.support Rₚ Mₚ) := by simpa [this] using Set.uniqueSingleton _
@@ -345,7 +345,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
       ne_top_of_le_ne_top (depth_ne_top M') (ideal_depth_le_depth p Ideal.IsPrime.ne_top' M')
     have depth_eq : p.depth M'= n := by
       simp only [Nat.cast_add, ← p.depth_quotSMulTop_succ_eq_moduleDepth M a reg mem] at hn
-      exact (WithTop.add_right_inj (ENat.coe_ne_top 1)).mp hn.symm
+      exact (WithTop.add_right_inj (ENat.natCast_ne_top 1)).mp hn.symm
     let M'ₚ := ModuleCat.of Rₚ (QuotSMulTop ((algebraMap R Rₚ) a) Mₚ)
     have map_mem : (algebraMap R Rₚ) a ∈ maximalIdeal Rₚ :=
       ((IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p a _).mpr mem)

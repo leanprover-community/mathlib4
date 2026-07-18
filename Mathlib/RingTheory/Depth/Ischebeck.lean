@@ -59,7 +59,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
               Ideal.annihilator_quotient, ringKrullDim_eq_zero_of_field]
           absurd dim_eq
           simpa only [Module.supportDim_eq_of_equiv e, this, WithBot.unbot_zero,
-            ← ENat.coe_zero, ENat.coe_inj, eq_comm] using eq0
+            ← ENat.natCast_zero, ENat.natCast_inj, eq_comm] using eq0
         let S := (ModuleCat.of R L).smulShortComplex x
         have reg' : IsSMulRegular (R ⧸ p.asIdeal) (Ideal.Quotient.mk p.1 x) :=
           (IsRegular.of_ne_zero (Ideal.Quotient.eq_zero_iff_mem.not.mpr hx2)).isSMulRegular
@@ -94,13 +94,13 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           apply ext_subsingleton_of_lt_moduleDepth
           refine lt_of_lt_of_le ?_ (ihr m dimlt (ModuleCat.of R (QuotSMulTop x L)) hm.symm)
           by_cases eqtop : IsLocalRing.depth M = ⊤
-          · simp only [Nat.cast_add, eqtop, ENat.top_sub_coe, ENat.add_lt_top,
-              ENat.coe_lt_top, true_and]
+          · simp only [Nat.cast_add, eqtop, ENat.top_sub_natCast, ENat.add_lt_top,
+              ENat.natCast_lt_top, true_and]
           · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨k, hk⟩
             have : (i + 1 : ℕ) ≤ IsLocalRing.depth M - r := by
-              simpa [ENat.add_one_le_iff (ENat.coe_ne_top i)] using hi
+              simpa [ENat.add_one_le_iff (ENat.natCast_ne_top i)] using hi
             apply lt_of_le_of_lt this
-            simp only [← hk, ← ENat.coe_sub, Nat.cast_lt] at hi ⊢
+            simp only [← hk, ← ENat.natCast_sub, Nat.cast_lt] at hi ⊢
             omega
         have epi' : Function.Surjective (x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
           convert (AddCommGrpCat.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
