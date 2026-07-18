@@ -29,7 +29,7 @@ variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [Nontri
 
 variable (𝕜₁) in
 omit [IsTopologicalAddGroup E] in
-lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
+private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
     ∃ d : E → 𝕜₁, (∀ x, ‖d x‖ ≤ 1) ∧ (∀ x, d x • x ∈ V) ∧
       (𝓝 (0 : E) = comap (fun x ↦ d x • x) (𝓝 0)) := by
   classical
