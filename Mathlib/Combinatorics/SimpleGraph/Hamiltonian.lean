@@ -284,4 +284,102 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
     (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
+-- #41721
+set_option warn.sorry false in set_option linter.style.longLine false in
+theorem isHamiltonian_sup_edge {V : Type*} [DecidableEq V] [Fintype V] {G : SimpleGraph V} {u v : V} : (G ⊔ edge u v).IsHamiltonian ↔ G.IsHamiltonian ∨ ∃ p : G.Walk u v, p.IsHamiltonian ∧ 2 ≤ p.length := sorry
+
+section
+variable {V : Type*} {G H : SimpleGraph V}
+
+/-- **Bondy-Chvátal theorem**: Adding an edge to a graph where the sum of the degrees of its
+endpoints is at least the number of vertices does not change whether the graph is Hamiltonian. -/
+@[wikidata Q60978620]
+theorem isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree [DecidableEq V] [Fintype V]
+    [G.LocallyFinite] {u v : V} (hdeg : Fintype.card V ≤ G.degree u + G.degree v) :
+    (G ⊔ edge u v).IsHamiltonian ↔ G.IsHamiltonian := by
+  refine ⟨fun hsup ↦ ?_, .mono le_sup_left⟩
+  by_contra hG
+  have ⟨p, hp, hlen⟩ := isHamiltonian_sup_edge.mp hsup |>.resolve_left hG
+  -- `p` is Hamiltonian and so its support contains all the vertices exactly once.
+  -- Since `a` is not adjacent to itself, all of its neighbors appear from index `1` to `|V| - 2`.
+  -- Since `b` is not adjacent to itself, all of its neighbors appear from index `0` to `|V| - 1`.
+  classical
+  let sa := (Finset.range <| Fintype.card V - 1).filter (G.Adj u <| p.getVert <| · + 1)
+  let sb := (Finset.range <| Fintype.card V - 1).filter (G.Adj v <| p.getVert ·)
+  have ha : (G.neighborFinset u).card ≤ sa.card := by
+    refine sa.card_le_card_of_surjOn (p.getVert <| · + 1) fun w hw ↦ ⟨p.support.idxOf w - 1, ?_⟩
+    have hadj := G.mem_neighborFinset u w |>.mp hw
+    have : p.support.idxOf w ≠ 0 := by grind [p.support_getElem_zero, hadj.ne]
+    grind [hp.length_support, hp.mem_support, p.getVert_support_idxOf]
+  have hb : (G.neighborFinset v).card ≤ sb.card := by
+    refine sb.card_le_card_of_surjOn p.getVert fun w hw ↦ ⟨p.support.idxOf w, ?_⟩
+    have hadj := G.mem_neighborFinset v w |>.mp hw
+    have : p.support.idxOf w ≠ p.support.length - 1 := by grind [p.support_getElem_length, hadj.ne]
+    grind [hp.length_support, hp.mem_support, p.getVert_support_idxOf]
+  -- By assumption `|V| ≤ G.degree u + G.degree v`, and we distributed the neighbors into `|V| - 1`
+  -- boxes, so by the piegonhole principle there must exist some `0 ≤ i < |V| - 1` such that
+  -- `G.Adj u (p.getVert (i + 1))` and `G.Adj v (p.getVert i)`.
+  grw [← card_neighborFinset_eq_degree, ← card_neighborFinset_eq_degree, ha, hb] at hdeg
+  have : 0 < Fintype.card V := Fintype.card_pos_iff.mpr ⟨v⟩
+  have ⟨i, hi⟩ := Finset.inter_nonempty_of_card_lt_card_add_card (t := sa) (u := sb)
+    (Finset.filter_subset ..) (Finset.filter_subset ..) (by grind [Finset.card_range])
+  have hia := (Finset.mem_filter.mp <| sa.mem_of_mem_inter_left hi).right
+  have hib := (Finset.mem_filter.mp <| sa.mem_of_mem_inter_right hi).right
+  -- Using those two edges and `p` we can construct a Hamiltonian cycle without `(u, v)`,
+  refine hG fun _ ↦ ⟨v, p.take i |>.reverse.cons hib |>.append <| p.drop (i + 1) |>.cons hia, ?_⟩
+  -- and so `G` is Hamiltonian; contradiction!
+  rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq, Walk.isCycle_iff_isPath_tail_and_le_length]
+  simp [Walk.isPath_def, Walk.support_append, List.nodup_append]
+  grind [Walk.support_take_append_support_drop, hp.length_eq, hp.isPath.support_nodup]
+
+open scoped Classical in
+/-- Two graphs `G`, `G'` are related by the Bondy-Chvátal relation if `G'` is the result of adding
+an edge to `G` where the sum of the degrees of its endpoints is at least the number of vertices. -/
+def BondyChvatalRel [Fintype V] (G G' : SimpleGraph V) : Prop :=
+  ∃ u v, G' = G ⊔ edge u v ∧ Fintype.card V ≤ G.degree u + G.degree v
+
+/-- **Bondy-Chvátal theorem**, spelled using a relation. -/
+@[wikidata Q60978620]
+theorem isHamiltonian_iff_of_eqvGen_bondyChvatalRel [DecidableEq V] [Fintype V]
+    (h : Relation.EqvGen BondyChvatalRel G H) : G.IsHamiltonian ↔ H.IsHamiltonian := by
+  suffices BondyChvatalRel (V := V) ≤ Iff.onFun SimpleGraph.IsHamiltonian by
+    simpa [Equivalence.of_isEquiv _ |>.eqvGen_eq] using Relation.EqvGen.mono this G H h
+  rintro G H ⟨u, v, rfl, hdeg⟩
+  classical
+  exact .symm <| isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree hdeg
+
+-- #34799
+set_option warn.sorry false in set_option linter.style.longLine false in
+theorem isHamiltonian_top {V : Type*} [Fintype V] [DecidableEq V] (h : 2 < Fintype.card V) : (completeGraph V).IsHamiltonian := sorry
+
+/-- **Ore's theorem**: If the sum of the degrees of every pair of non-adjacent vertices is at least
+the number of vertices, then the graph is Hamiltonian. -/
+@[wikidata Q225973]
+theorem isHamiltonian_of_pairwise_not_adj_imp_card_le_degree_add_degree [DecidableEq V] [Fintype V]
+    [G.LocallyFinite] (h₃ : 3 ≤ Fintype.card V)
+    (h : Pairwise fun u v ↦ ¬G.Adj u v → Fintype.card V ≤ G.degree u + G.degree v) :
+    G.IsHamiltonian := by
+  -- If `G` isn't Hamiltonian, there's a maximal non-Hamiltonian graph `H` that contains it.
+  by_contra hG
+  obtain ⟨H, hle, ⟨hH, hmax⟩⟩ := Finite.exists_le_maximal (p := (¬IsHamiltonian ·)) hG
+  -- Since the complete graph is Hamiltonian, `H` must be missing some edge `(u, v)`,
+  have ⟨u, v, hne, hadj⟩ := H.ne_top_iff_exists_not_adj.mp <| by grind [isHamiltonian_top]
+  -- and by maximality adding it to `H` results in a Hamiltonian graph.
+  have : (H ⊔ edge u v).IsHamiltonian := by grind [le_sup_left, sup_le_iff, edge_le_iff]
+  -- By assumption we have `|V| ≤ G.degree u + G.degree v`, and the same for `H` since `G ≤ H`.
+  have : Fintype.card V ≤ G.degree u + G.degree v := h hne <| mt (le_iff_adj.mp hle u v) hadj
+  classical
+  grw [degree_le_of_le hle, degree_le_of_le hle] at this
+  -- This contradicts the Bondy-Chvátal theorem.
+  grind [isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree]
+
+/-- **Dirac's theorem**: If the degree of every vertex is least half of the number of vertices,
+then the graph is Hamiltonian. -/
+theorem isHamiltonian_of_forall_card_le_two_mul_degree {V : Type*} [DecidableEq V] [Fintype V]
+    {G : SimpleGraph V} [G.LocallyFinite] (h₃ : 3 ≤ Fintype.card V)
+    (h : ∀ v, Fintype.card V ≤ 2 * G.degree v) : G.IsHamiltonian :=
+  isHamiltonian_of_pairwise_not_adj_imp_card_le_degree_add_degree h₃ <| by grind [Pairwise]
+
+end
+
 end SimpleGraph

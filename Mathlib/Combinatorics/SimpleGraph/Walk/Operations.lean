@@ -37,7 +37,7 @@ namespace SimpleGraph
 namespace Walk
 
 universe u
-variable {V : Type u} {G : SimpleGraph V} {u v w : V}
+variable {V : Type u} {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}
 
 /-- Change the endpoints of a walk using equalities. This is helpful for relaxing
 definitional equality constraints and to be able to state otherwise difficult-to-state
@@ -679,6 +679,10 @@ lemma nil_drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
+
+theorem support_take_append_support_drop {i : ℕ} (h : i < p.length) :
+    (p.take i).support ++ (p.drop (i + 1)).support = p.support := by
+  simp [support_take, drop_support_eq_support_drop_min, Nat.succ_le_of_lt h]
 
 @[simp]
 theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
