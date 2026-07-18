@@ -408,10 +408,6 @@ private theorem law_relations_generic {S : Type*} [CommRing S]
     let du := u₁ + l₁ * u₂
     dv ^ 2 = a ^ 2 * dv ∧ du ^ 2 = a * b * du - b ^ 2 * dv := by
   dsimp only
-  /-
-  TODO `grind` gives
-  `grind` internal error, `NoNatZeroDivisors` instance is needed, but it is not available for
-  S  -/
   have hab' : a ^ 2 * b = -2 := eq_neg_of_add_eq_zero_left hab
   have h2a : 2 * a = 0 := by
     linear_combination a * hab - b * ha
