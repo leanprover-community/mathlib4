@@ -525,7 +525,7 @@ and `xy + -xy = 0` is a `.zero` overlap.
 def evalAddOverlap {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
     OptionT MetaM (Overlap bt sα q($a + $b)) := do
   Lean.Core.checkSystem decl_name%.toString
-  match va, vb with
+  match (dependent := true) va, vb with
   | .const za, .const zb => do
     let ⟨⟨_, zc, pf⟩, isZero⟩ ← rc.add za zb
     match isZero with
@@ -568,12 +568,12 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
 * `(a₁ + a₂) + (b₁ + b₂) = b₁ + ((a₁ + a₂) + b₂)` (if not `a₁.lt b₁`)
 -/
 partial def evalAdd {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
-    MetaM <| Result (ExSum bt sα) q($a + $b) := do
-  Lean.Core.checkSystem decl_name%.toString
+    MetaM <| Result (ExSum bt sα) q($a + $b) :=
+  Lean.Core.checkSystem decl_name%.toString *>
   match va, vb with
-  | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
-  | va, .zero => return ⟨a, va, q(add_pf_add_zero $a)⟩
-  | .add (a := a₁) (b := _a₂) va₁ va₂, .add (a := b₁) (b := _b₂) vb₁ vb₂ =>
+  | .zero, vb => do return ⟨b, vb, q(add_pf_zero_add $b)⟩
+  | va, .zero => do return ⟨a, va, q(add_pf_add_zero $a)⟩
+  | .add (a := a₁) (b := _a₂) va₁ va₂, .add (a := b₁) (b := _b₂) vb₁ vb₂ => do
     have va := .add va₁ va₂; have vb := .add vb₁ vb₂ -- FIXME: why does `va@(...)` fail?
     match ← (evalAddOverlap rc rcℕ va₁ vb₁).run with
     | some (.nonzero ⟨_, vc₁, pc₁⟩) =>
@@ -619,20 +619,20 @@ theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * 
 * `(a₁ * a₂) * (b₁ * b₂) = b₁ * ((a₁ * a₂) * b₂)` (if not `a₁.lt b₁`)
 -/
 partial def evalMulProd {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
-    MetaM <| Result (ExProd bt sα) q($a * $b) := do
-  Lean.Core.checkSystem decl_name%.toString
+    MetaM <| Result (ExProd bt sα) q($a * $b) :=
+  Lean.Core.checkSystem decl_name%.toString *>
   match va, vb with
-  | .const za, .const zb =>
+  | .const za, .const zb => do
     let ⟨_, zc, pf⟩ ← rc.mul za zb
     assumeInstancesCommute
     return ⟨_, .const zc, q($pf)⟩
-  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, vb@(.const _) =>
+  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, vb@(.const _) => do
     let ⟨_, vc, pc⟩ ← evalMulProd va₃ vb
     return ⟨_, .mul va₁ va₂ vc, q(mul_pf_left $a₁ $a₂ $pc)⟩
-  | va@(.const _), .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
+  | va@(.const _), .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ => do
     let ⟨_, vc, pc⟩ ← evalMulProd va vb₃
     return ⟨_, .mul vb₁ vb₂ vc, q(mul_pf_right $b₁ $b₂ $pc)⟩
-  | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ =>
+  | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
     have va := .mul vxa vea va₂; have vb := .mul vxb veb vb₂ -- FIXME: why does `va@(...)` fail?
     let ⟨ea', vea'⟩ := vea.toExProd
     let ⟨eb', veb'⟩ := veb.toExProd
@@ -664,10 +664,10 @@ theorem mul_add {d : R} (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c
 * `a * (b₁ + b₂) = (a * b₁) + (a * b₂)`
 -/
 def evalMul₁ {a b : Q($α)} (va : ExProd bt sα a) (vb : ExSum bt sα b) :
-    MetaM <| Result (ExSum bt sα) q($a * $b) := do
+    MetaM <| Result (ExSum bt sα) q($a * $b) :=
   match vb with
-  | .zero => return ⟨_, .zero, q(mul_zero $a)⟩
-  | .add vb₁ vb₂ =>
+  | .zero => do return ⟨_, .zero, q(mul_zero $a)⟩
+  | .add vb₁ vb₂ => do
     let ⟨_, vc₁, pc₁⟩ ← evalMulProd rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalMul₁ va vb₂
     let ⟨_, vd, pd⟩ ← evalAdd rc rcℕ vc₁.toSum vc₂
@@ -684,10 +684,10 @@ theorem add_mul {d : R} (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c
 * `(a₁ + a₂) * b = (a₁ * b) + (a₂ * b)`
 -/
 def evalMul {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
-    MetaM <| Result (ExSum bt sα) q($a * $b) := do
+    MetaM <| Result (ExSum bt sα) q($a * $b) :=
   match va with
-  | .zero => return ⟨_, .zero, q(zero_mul $b)⟩
-  | .add va₁ va₂ =>
+  | .zero => do return ⟨_, .zero, q(zero_mul $b)⟩
+  | .add va₁ va₂ => do
     let ⟨_, vc₁, pc₁⟩ ← evalMul₁ rc rcℕ va₁ vb
     let ⟨_, vc₂, pc₂⟩ ← evalMul va₂ vb
     let ⟨_, vd, pd⟩ ← evalAdd rc rcℕ vc₁ vc₂
@@ -707,13 +707,13 @@ theorem neg_mul {R} [CommRing R] (a₁ : R) (a₂) {a₃ b : R}
 * `-(a₁ * a₂) = a₁ * -a₂`
 -/
 def evalNegProd {a : Q($α)} (rα : Q(CommRing $α)) (va : ExProd bt sα a) :
-    MetaM <| Result (ExProd bt sα) q(-$a) := do
-  Lean.Core.checkSystem decl_name%.toString
+    MetaM <| Result (ExProd bt sα) q(-$a) :=
+  Lean.Core.checkSystem decl_name%.toString *>
   match va with
-  | .const za =>
+  | .const za => do
     let ⟨b, zb, pb⟩ ← rc.neg q($rα) za
     return ⟨b, .const zb,  q($pb)⟩
-  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
+  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ => do
     let ⟨_, vb, pb⟩ ← evalNegProd rα va₃
     assumeInstancesCommute
     return ⟨_, .mul va₁ va₂ vb, q(neg_mul $a₁ $a₂ $pb)⟩
@@ -730,11 +730,13 @@ theorem neg_add {R} [CommRing R] {a₁ a₂ b₁ b₂ : R}
 * `-(a₁ + a₂) = -a₁ + -a₂`
 -/
 def evalNeg {a : Q($α)} (rα : Q(CommRing $α)) (va : ExSum bt sα a) :
-    MetaM <| Result (ExSum bt sα) q(-$a) := do
-  assumeInstancesCommute
+    MetaM <| Result (ExSum bt sα) q(-$a) :=
   match va with
-  | .zero => return ⟨_, .zero, q(neg_zero (R := $α))⟩
-  | .add va₁ va₂ =>
+  | .zero => do
+    assumeInstancesCommute
+    return ⟨_, .zero, q(neg_zero (R := $α))⟩
+  | .add va₁ va₂ => do
+    assumeInstancesCommute
     let ⟨_, vb₁, pb₁⟩ ← evalNegProd rc rα va₁
     let ⟨_, vb₂, pb₂⟩ ← evalNeg rα va₂
     return ⟨_, .add vb₁ vb₂, q(neg_add $pb₁ $pb₂)⟩
@@ -898,8 +900,7 @@ theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ c₃ d : R} (_ : ea₁ * b = c�
   subst_vars; simp [_root_.mul_pow, pow_mul, Nat.rawCast]
 
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
-private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
-    MonadLiftT (OptionT m) (OptionT m') where
+private local instance {m m'} [MonadLiftT m m'] : MonadLiftT (OptionT m) (OptionT m') where
   monadLift x := OptionT.mk x.run
 
 /-- There are several special cases when exponentiating monomials:
@@ -913,9 +914,9 @@ In all other cases we use `evalPowProdAtom`.
 def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat b) :
     MetaM <| Result (ExProd bt sα) q($a ^ $b) := do
   Lean.Core.checkSystem decl_name%.toString
-  let res : OptionT MetaM (Result (ExProd bt sα) q($a ^ $b)) := do
+  let res : OptionT MetaM (Result (ExProd bt sα) q($a ^ $b)) :=
     match va with
-    | va@(.const za) =>
+    | va@(.const za) => do
       match rc.isOne za with
       | .some pf =>
         return ⟨_, va, q(one_pow $b $pf)⟩
@@ -923,7 +924,7 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat
         -- NOTE: rc.pow may fail, e.g. for `ring` when `vb` is not a constant.
         let ⟨_, zc, pc⟩ ← rc.pow za vb
         return ⟨_, .const zc, q($pc)⟩
-    | .mul vxa₁ (e := ea₁) vea₁ va₂ =>
+    | .mul vxa₁ (e := ea₁) vea₁ va₂ => do
       let ⟨ea₁', vea₁'⟩ := vea₁.toExProd
       let ⟨b', vb'⟩ := vb.toExProd
       let ⟨c₁, vc₁, pc₁⟩ ← evalMulProd rcℕ rcℕ vea₁' vb'
@@ -1002,15 +1003,15 @@ Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
 -/
 partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExProdNat b) :
     MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
-  let notPowOne : MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
+  let notPowOne : MetaM <| Result (ExSum bt sα) q($a ^ $b) :=
     match va with
-    | .zero => match vb.evalPos with
+    | .zero => do match vb.evalPos with
       | some p => return ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
       | none => return evalPowAtom rc (.sum .zero) vb
-    | ExSum.add va .zero => -- TODO: using `.add` here takes a while to compile?
+    | ExSum.add va .zero => do -- TODO: using `.add` here takes a while to compile?
       let ⟨_, vc, pc⟩ ← evalPowProd rc rcℕ va vb
       return ⟨_, vc.toSum, q(single_pow $pc)⟩
-    | va =>
+    | va => do
       -- FIXME: condition used to be k.coeff > 1. Should go back to something like this.
       let ⟨k, _, vc, pc⟩ := extractCoeff rcℕ vb
       if k.natLit! > 1 then
@@ -1020,7 +1021,7 @@ partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExP
       else
         return evalPowAtom rc (.sum va) vb
   match vb with
-  | .const zb =>
+  | .const zb => do
     match rcℕ.isOne zb with
     | .some pf =>
       assumeInstancesCommute
@@ -1042,13 +1043,13 @@ theorem pow_add {b₁ b₂ : ℕ} {d : R}
 * `a ^ (b₁ + b₂) = a ^ b₁ * a ^ b₂`
 -/
 def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExSumNat b) :
-    MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
+    MetaM <| Result (ExSum bt sα) q($a ^ $b) :=
   match vb with
-  | .zero =>
+  | .zero => do
     let ⟨_, one, pf⟩ := rc.one
     assumeInstancesCommute
     return ⟨_, (ExProd.const (one)).toSum, q(pow_zero $a $pf)⟩
-  | .add vb₁ vb₂ =>
+  | .add vb₁ vb₂ => do
     let ⟨_, vc₁, pc₁⟩ ← evalPow₁ rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
     let ⟨_, vd, pd⟩ ← evalMul rc rcℕ vc₁ vc₂
@@ -1130,10 +1131,10 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase bt sα) q($a⁻¹)) := do
 * `(a ^ b * c)⁻¹ = a⁻¹ ^ b * c⁻¹`
 -/
 def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd bt sα a) :
-    AtomM (Result (ExProd bt sα) q($a⁻¹)) := do
-  Lean.Core.checkSystem decl_name%.toString
+    AtomM (Result (ExProd bt sα) q($a⁻¹)) :=
+  Lean.Core.checkSystem decl_name%.toString *>
   match va with
-  | .const c =>
+  | .const c => do
     match ← rc.inv czα q($dsα) c with
     | some ⟨_, vd, pd⟩ => pure ⟨_, .const vd, q($pd)⟩
     | none =>

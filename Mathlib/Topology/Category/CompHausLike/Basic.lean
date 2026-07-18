@@ -125,7 +125,7 @@ theorem coe_id (X : CompHausLike P) : (𝟙 X : X → X) = id :=
 
 @[simp]
 theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g : X → Z) = g ∘ f :=
+    (f ≫ g : X → Z) = (g ∘ f) :=
   rfl
 
 section

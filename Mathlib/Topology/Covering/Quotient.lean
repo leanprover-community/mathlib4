@@ -41,6 +41,26 @@ structure IsQuotientCoveringMap : Prop extends IsQuotientMap f, ContinuousConstS
 
 attribute [to_additive] isQuotientCoveringMap_iff
 
+lemma IsAddQuotientCoveringMap.toMultiplicative (G) [AddGroup G] [AddAction G E]
+    (hf : IsAddQuotientCoveringMap f G) :
+    IsQuotientCoveringMap f (Multiplicative G) where
+  __ := hf.toIsQuotientMap
+  continuous_const_smul g := by simpa using hf.continuous_const_vadd (Multiplicative.ofAdd.symm g)
+  apply_eq_iff_mem_orbit {e₁ e₂} := by simp [hf.apply_eq_iff_mem_orbit]
+  disjoint e := by
+    obtain ⟨U, hU, hU'⟩ := hf.disjoint e
+    exact ⟨U, hU, fun g ↦ by simpa using hU' (Multiplicative.ofAdd.symm g)⟩
+
+lemma IsQuotientCoveringMap.toAdditive (G) [Group G] [MulAction G E]
+    (hf : IsQuotientCoveringMap f G) :
+    IsAddQuotientCoveringMap f (Additive G) where
+  __ := hf.toIsQuotientMap
+  continuous_const_vadd g := by simpa using hf.continuous_const_smul (Additive.ofMul.symm g)
+  apply_eq_iff_mem_orbit {e₁ e₂} := by simp [hf.apply_eq_iff_mem_orbit]
+  disjoint e := by
+    obtain ⟨U, hU, hU'⟩ := hf.disjoint e
+    exact ⟨U, hU, fun g ↦ by simpa using hU' (Additive.ofMul.symm g)⟩
+
 namespace IsQuotientCoveringMap
 
 @[to_additive] theorem subgroup_congr (S S' : Subgroup G) (eq : S = S') :
@@ -83,6 +103,7 @@ noncomputable def fiberEquivGroup {x : X} (e : f ⁻¹' {x}) : f ⁻¹' {x} ≃ 
 @[simp] theorem fiberEquivGroup_self {x : X} (e : f ⁻¹' {x}) : hf.fiberEquivGroup e e = 1 :=
   (Equiv.apply_eq_iff_eq_symm_apply _).mpr <| Subtype.ext (one_smul ..).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem fiberEquivGroup_eq_iff {x : X} (e e' : f ⁻¹' {x}) (g : G) :
     hf.fiberEquivGroup e e' = g ↔ e' = g • (e : E) := by
   rw [fiberEquivGroup, Equiv.symm_apply_eq, Equiv.ofBijective_apply, Subtype.mk.injEq]
@@ -103,7 +124,7 @@ noncomputable def fiberEquivGroup {x : X} (e : f ⁻¹' {x}) : f ⁻¹' {x} ≃ 
 lemma mulActionFiber_isPretransitive (x : X) :
     letI := hf.mulActionFiber x
     MulAction.IsPretransitive G (f ⁻¹' {x}) := by
-  letI := hf.mulActionFiber x
+  let := hf.mulActionFiber x
   constructor
   intro e e'
   obtain ⟨g, hg⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm)
@@ -123,7 +144,7 @@ theorem toPermFiber_injective (x : X) : Function.Injective (hf.toPermFiber x) :=
   fun _ _ eq ↦ hf.toPermFiber_ext x ⟨e, he⟩ congr($eq _)
 
 theorem exists_toPermFiber_eq {x : X} (e e' : f ⁻¹' {x}) : ∃ g, hf.toPermFiber x g e = e' := by
-  letI := hf.mulActionFiber x
+  let := hf.mulActionFiber x
   have := hf.mulActionFiber_isPretransitive x
   obtain ⟨g, rfl⟩ := MulAction.IsPretransitive.exists_smul_eq e e' (M := G)
   use g
@@ -186,7 +207,7 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
 @[to_additive] lemma isCoveringMapOn_of_smul_disjoint
     (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g • e = e) :
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) := by
-  letI : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
+  let : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
   suffices ∀ x ∈ f '' {e | MulAction.stabilizer G e = ⊥}, ∃ t : Trivialization G f, x ∈ t.baseSet by
     choose t ht using this; exact IsCoveringMapOn.mk _ _ _ _ fun x ↦ ht x x.2
   rintro x ⟨e, he, rfl⟩

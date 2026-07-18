@@ -5,10 +5,7 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
-public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.MeasureTheory.Group.LIntegral
 public import Mathlib.MeasureTheory.Integral.Marginal
 public import Mathlib.MeasureTheory.Measure.Stieltjes
@@ -55,7 +52,7 @@ variable {ι : Type*} [Fintype ι]
 /-- The volume on the real line (as a particular case of the volume on a finite-dimensional
 inner product space) coincides with the Stieltjes measure coming from the identity function. -/
 theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.measure := by
-  haveI : IsAddLeftInvariant StieltjesFunction.id.measure :=
+  have : IsAddLeftInvariant StieltjesFunction.id.measure :=
     ⟨fun a =>
       Eq.symm <|
         Real.measure_ext_Ioo_rat fun p q => by
@@ -170,8 +167,11 @@ theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBa
 @[deprecated (since := "2026-01-24")]
 alias volume_emetric_closedBall := volume_closedEBall
 
-instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
+instance nullSingletonClass_volume : NullSingletonClass (volume : Measure ℝ) :=
   ⟨fun _ => volume_singleton⟩
+
+@[deprecated (since := "2026-06-09")]
+alias noAtoms_volume := nullSingletonClass_volume
 
 @[simp]
 theorem volume_interval {a b : ℝ} : volume (uIcc a b) = ofReal |b - a| := by
@@ -453,14 +453,14 @@ def regionBetween (f g : α → ℝ) (s : Set α) : Set (α × ℝ) :=
   { p : α × ℝ | p.1 ∈ s ∧ p.2 ∈ Ioo (f p.1) (g p.1) }
 
 theorem regionBetween_subset (f g : α → ℝ) (s : Set α) : regionBetween f g s ⊆ s ×ˢ univ := by
-  simpa only [prod_univ, regionBetween, Set.preimage, setOf_subset_setOf] using fun a => And.left
+  simpa only [prod_univ, regionBetween, Set.preimage, ofPred_subset_ofPred] using fun a => And.left
 
 variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 
 /-- The region between two measurable functions on a measurable set is measurable. -/
 theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs : MeasurableSet s) :
     MeasurableSet (regionBetween f g s) := by
-  dsimp only [regionBetween, Ioo, mem_setOf_eq, setOf_and]
+  dsimp only [regionBetween, Ioo, mem_ofPred_eq, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
@@ -472,7 +472,7 @@ a version for the region together with the graph of the upper function. -/
 theorem measurableSet_region_between_oc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Ioc, mem_setOf_eq, setOf_and]
+  dsimp only [regionBetween, Ioc, mem_ofPred_eq, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
@@ -484,7 +484,7 @@ a version for the region together with the graph of the lower function. -/
 theorem measurableSet_region_between_co (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Ico, mem_setOf_eq, setOf_and]
+  dsimp only [regionBetween, Ico, mem_ofPred_eq, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
@@ -496,7 +496,7 @@ a version for the region together with the graphs of both functions. -/
 theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Icc, mem_setOf_eq, setOf_and]
+  dsimp only [regionBetween, Icc, mem_ofPred_eq, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
@@ -523,7 +523,7 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
           simp only [hx, Real.volume_Ioo]
         · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = ∅ := by simp [h]
           simp only [hx, measure_empty]
-      dsimp only [regionBetween, preimage_setOf_eq]
+      dsimp only [regionBetween, preimage_ofPred_eq]
       rw [h, lintegral_indicator] <;> simp only [hs, Pi.sub_apply]
     · exact measurableSet_regionBetween hf hg hs
 
@@ -619,8 +619,8 @@ end regionBetween
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for
 all `a, b ∈ s`, then it is true almost everywhere in `s`. Formulated with `μ.restrict`.
 See also `ae_of_mem_of_ae_of_mem_inter_Ioo`. -/
-theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Set ℝ} {p : ℝ → Prop}
-    (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ.restrict (s ∩ Ioo a b), p x) :
+theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NullSingletonClass μ] {s : Set ℝ}
+    {p : ℝ → Prop} (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ.restrict (s ∩ Ioo a b), p x) :
     ∀ᵐ x ∂μ.restrict s, p x := by
   /- By second-countability, we cover `s` by countably many intervals `(a, b)` (except maybe for
     two endpoints, which don't matter since `μ` does not have any atom). -/
@@ -653,8 +653,8 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s 
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for
 all `a, b ∈ s`, then it is true almost everywhere in `s`. Formulated with bare membership.
 See also `ae_restrict_of_ae_restrict_inter_Ioo`. -/
-theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Set ℝ} {p : ℝ → Prop}
-    (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ, x ∈ s ∩ Ioo a b → p x) :
+theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NullSingletonClass μ] {s : Set ℝ}
+    {p : ℝ → Prop} (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ, x ∈ s ∩ Ioo a b → p x) :
     ∀ᵐ x ∂μ, x ∈ s → p x := by
   /- By second-countability, we cover `s` by countably many intervals `(a, b)` (except maybe for
     two endpoints, which don't matter since `μ` does not have any atom). -/
