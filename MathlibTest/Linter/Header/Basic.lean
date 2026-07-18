@@ -65,23 +65,6 @@ elab "#check_copyright " copStx:str : command => do
            Range: {(rg.start, rg.stop)}\n\
            Message: '{replaceMultilineComments m}'"
 
-open Lean Elab Command in
-/--
-`#check_copyright_license lic cop` is like `#check_copyright cop`, but checks the second line against
-the custom expected license `lic`. This exercises the `expectedLicense` parameter of
-`copyrightHeaderChecks`, which `linter.style.header` reads from the `linter.style.header.license`
-option.
--/
-elab "#check_copyright_license " licStx:str copStx:str : command => do
-  let cop := copStx.getString
-  let offset := copStx.raw.getPos?.get!.increaseBy 1
-  for (s, m) in Mathlib.Linter.copyrightHeaderChecks cop licStx.getString do
-    if let some rg := s.getRange? then
-      logInfoAt (.ofRange ({start := rg.start.offsetBy offset, stop := rg.stop.offsetBy offset}))
-        m!"Text: `{replaceMultilineComments s.getAtomVal}`\n\
-           Range: {(rg.start, rg.stop)}\n\
-           Message: '{replaceMultilineComments m}'"
-
 -- well-formed
 #check_copyright
 "/-
@@ -407,37 +390,5 @@ Authors: A
 Copyright (c) 2024 First Last Name jr.. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: A
--/
-"
-
-/-!
-### The expected license line is configurable
-
-`copyrightHeaderChecks` takes the expected second line as a parameter (default: the Apache LICENSE
-line), which `linter.style.header` reads from the `linter.style.header.license` option.
--/
-
--- A header whose second line matches the custom license is accepted (no warnings).
-#guard_msgs in
-#check_copyright_license "Released under the Custom License."
-"/-
-Copyright (c) 2024 Damiano Testa. All rights reserved.
-Released under the Custom License.
-Authors: Name LastName
--/
-"
-
--- With a custom expected license, the old default second line is now flagged.
-/--
-info: Text: `Released under Apache 2.0 license as described in the file LICENSE.`
-Range: (58, 125)
-Message: 'Second copyright line should be "Released under the Custom License."'
--/
-#guard_msgs in
-#check_copyright_license "Released under the Custom License."
-"/-
-Copyright (c) 2024 Damiano Testa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Name LastName
 -/
 "
