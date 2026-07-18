@@ -66,14 +66,14 @@ open Classical in
 lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
     moduleDepth N M = Nat.find h := by
   apply le_antisymm
-  · simp only [moduleDepth, sSup_le_iff, Set.mem_setOf_eq]
+  · simp only [moduleDepth, sSup_le_iff, Set.mem_ofPred_eq]
     intro n hn
     by_contra gt
     absurd Nat.find_spec h
     exact not_nontrivial_iff_subsingleton.mpr (hn (Nat.find h) (not_le.mp gt))
   · simp only [moduleDepth]
     apply le_sSup
-    simp only [Set.mem_setOf_eq, Nat.cast_lt, Nat.lt_find_iff]
+    simp only [Set.mem_ofPred_eq, Nat.cast_lt, Nat.lt_find_iff]
     intro i hi
     exact not_nontrivial_iff_subsingleton.mp (hi i (le_refl i))
 
@@ -131,7 +131,7 @@ lemma moduleDepth_eq_sup_nat (N M : ModuleCat.{v} R) : moduleDepth N M =
   · rw [csSup_eq_top_of_top_mem h, eq_comm, ENat.eq_top_iff_forall_ge]
     intro m
     apply le_sSup
-    simp only [Set.mem_setOf_eq, ENat.coe_lt_top, forall_const] at h
+    simp only [Set.mem_ofPred_eq, ENat.natCast_lt_top, forall_const] at h
     simpa using fun i _ ↦ h i
   · congr
     ext n
@@ -190,7 +190,7 @@ lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
       by_contra mem
       absurd le_sSup mem
       simp [h]
-    simp only [Set.mem_setOf_eq, Nat.cast_lt_one, forall_eq,
+    simp only [Set.mem_ofPred_eq, Nat.cast_lt_one, forall_eq,
       not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr] at this
     exact (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr.mp this
   · apply nonpos_iff_eq_zero.mp (sSup_le (fun n mem ↦ ?_))
@@ -203,7 +203,7 @@ lemma moduleDepth_ge_min_of_shortExact_snd_fst
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
     (N : ModuleCat.{v} R) : moduleDepth S.X₂ N ≥ moduleDepth S.X₁ N ⊓ moduleDepth S.X₃ N := by
   apply le_sSup
-  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi1 hi3
   have zero1 : IsZero (AddCommGrpCat.of (Ext S.X₁ N i)) :=
     AddCommGrpCat.isZero_of_iff_subsingleton.mpr (ext_subsingleton_of_lt_moduleDepth hi1)
@@ -217,7 +217,7 @@ lemma moduleDepth_ge_min_of_shortExact_fst_fst
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
     (N : ModuleCat.{v} R) : moduleDepth S.X₁ N ≥ moduleDepth S.X₂ N ⊓ (moduleDepth S.X₃ N - 1) := by
   apply le_sSup
-  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi3
   have hi3' : (i + 1 : ℕ) < moduleDepth S.X₃ N := by simpa using lt_tsub_iff_right.mp hi3
   have zero2 : IsZero (AddCommGrpCat.of (Ext S.X₂ N i)) :=
@@ -232,7 +232,7 @@ lemma moduleDepth_ge_min_of_shortExact_trd_fst
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
     (N : ModuleCat.{v} R) : moduleDepth S.X₃ N ≥ moduleDepth S.X₂ N ⊓ (moduleDepth S.X₁ N + 1) := by
   apply le_sSup
-  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi1
   have zero2 :=
     AddCommGrpCat.isZero_of_iff_subsingleton.mpr (ext_subsingleton_of_lt_moduleDepth hi2)
@@ -252,7 +252,7 @@ lemma moduleDepth_ge_min_of_shortExact_snd_snd
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
     (hS : S.ShortExact) : moduleDepth N S.X₂ ≥ moduleDepth N S.X₁ ⊓ moduleDepth N S.X₃ := by
   apply le_sSup
-  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi1 hi3
   have zero1 : IsZero (AddCommGrpCat.of (Ext N S.X₁ i)) :=
     AddCommGrpCat.isZero_of_iff_subsingleton.mpr (ext_subsingleton_of_lt_moduleDepth hi1)
@@ -266,7 +266,7 @@ lemma moduleDepth_ge_min_of_shortExact_fst_snd
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
     (hS : S.ShortExact) : moduleDepth N S.X₁ ≥ moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₃ + 1) := by
   apply le_sSup
-  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi3
   have zero2 : IsZero (AddCommGrpCat.of (Ext N S.X₂ i)) :=
     AddCommGrpCat.isZero_of_iff_subsingleton.mpr (ext_subsingleton_of_lt_moduleDepth hi2)
@@ -286,7 +286,7 @@ lemma moduleDepth_ge_min_of_shortExact_trd_snd
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
     (hS : S.ShortExact) : moduleDepth N S.X₃ ≥ moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₁ - 1) := by
   apply le_sSup
-  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi1
   have hi1' : (i + 1 : ℕ) < moduleDepth N S.X₁ := by simpa using lt_tsub_iff_right.mp hi1
   have zero2 : IsZero (AddCommGrpCat.of (Ext N S.X₂ i)) :=
@@ -313,7 +313,7 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
     simp only [← hn, Nat.cast_lt, Nat.cast_inj] at h ⊢
     rcases ((exists_isRegular_tfae I n M smul_lt).out 2 3).mp (by use N) with ⟨rs, len, mem, reg⟩
     use rs
-  · simp only [← len, ENat.coe_lt_top, Nat.cast_lt, true_and]
+  · simp only [← len, ENat.natCast_lt_top, Nat.cast_lt, true_and]
     have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 3 0).mp (by use rs)
     exact rees N Nntr Nfin (le_of_eq hsupp)
 
