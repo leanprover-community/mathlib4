@@ -162,9 +162,6 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 theorem toSpanSingleton_one_eq_algebraLinearMap :
     toSpanSingleton R A 1 = Algebra.linearMap R A := by ext; simp
 
-@[deprecated (since := "2025-12-30")] alias toSpanSingleton_eq_algebra_linearMap :=
-  toSpanSingleton_one_eq_algebraLinearMap
-
 variable (R A) in
 /-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
 @[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where

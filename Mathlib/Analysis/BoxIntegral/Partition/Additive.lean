@@ -63,6 +63,8 @@ open Box Prepartition Finset
 variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I : Box ι}
   {i : ι}
 
+/-! ### Coercion, extensionality, and the defining property -/
+
 instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -77,9 +79,15 @@ theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
 
 theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g := DFunLike.coe_fn_eq
 
+@[ext]
+theorem ext {f g : ι →ᵇᵃ[I₀] M} (h : ∀ J, f J = g J) : f = g :=
+  DFunLike.ext _ _ h
+
 theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π : Prepartition I}
     (h : π.IsPartition) : ∑ J ∈ π.boxes, f J = f I :=
   f.sum_partition_boxes' I hI π h
+
+/-! ### Additive monoid structure -/
 
 @[simps -fullyApplied]
 instance : Zero (ι →ᵇᵃ[I₀] M) :=
@@ -100,6 +108,15 @@ instance {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) :
 
 instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
   Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
+
+@[simp]
+lemma add_apply (f g : ι →ᵇᵃ[I₀] M) (J : Box ι) : (f + g) J = f J + g J := rfl
+
+@[simp]
+lemma smul_apply {R : Type*} [Monoid R] [DistribMulAction R M]
+    (c : R) (f : ι →ᵇᵃ[I₀] M) (J : Box ι) : (c • f) J = c • (f J) := rfl
+
+/-! ### Constructions and combinators -/
 
 @[simp]
 theorem map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (x : ℝ) :
@@ -163,7 +180,38 @@ theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I�
   exacts [(WithTop.coe_le_coe.2 <| π₁.le_of_mem hJ).trans hI,
     (WithTop.coe_le_coe.2 <| π₂.le_of_mem hJ).trans hI]
 
+section AddCommGroup
+
+/-! ### Additive group structure -/
+
+variable {M : Type*} [AddCommGroup M]
+
+instance : Neg (ι →ᵇᵃ[I₀] M) :=
+  ⟨fun f ↦
+    ⟨-(f : Box ι → M), fun I hI π hπ ↦ by
+      simp only [Pi.neg_apply, Finset.sum_neg_distrib, sum_partition_boxes _ hI hπ]⟩⟩
+
+instance : Sub (ι →ᵇᵃ[I₀] M) :=
+  ⟨fun f g ↦
+    ⟨(f : Box ι → M) - g, fun I hI π hπ ↦ by
+      simp only [Pi.sub_apply, Finset.sum_sub_distrib, sum_partition_boxes _ hI hπ]⟩⟩
+
+instance : AddCommGroup (ι →ᵇᵃ[I₀] M) :=
+  Function.Injective.addCommGroup _ DFunLike.coe_injective
+    rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+@[simp]
+lemma neg_apply (f : ι →ᵇᵃ[I₀] M) (J : Box ι) : (-f) J = -(f J) := rfl
+
+@[simp]
+lemma sub_apply (f g : ι →ᵇᵃ[I₀] M) (J : Box ι) : (f - g) J = f J - g J := rfl
+
+end AddCommGroup
+
 section ToSMul
+
+/-! ### Scalar multiplication on a normed space -/
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -176,6 +224,8 @@ def toSMul (f : ι →ᵇᵃ[I₀] ℝ) : ι →ᵇᵃ[I₀] E →L[ℝ] E :=
 theorem toSMul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSMul I x = f I • x := rfl
 
 end ToSMul
+
+/-! ### Difference along an axis: `upper − lower` over faces -/
 
 /-- Given a box `I₀` in `ℝⁿ⁺¹`, `f x : Box (Fin n) → G` is a family of functions indexed by a real
 `x` and for `x ∈ [I₀.lower i, I₀.upper i]`, `f x` is box-additive on subboxes of the `i`-th face of
