@@ -443,10 +443,10 @@ lemma induction {motive : R[M] → Prop} (x : R[M])
     (by simpa using zero) (fun m r x ↦ single_add m r (ofCoeff x))
 
 @[to_additive (attr := elab_as_elim)]
-lemma induction_linear {p : R[M] → Prop} (x : R[M]) (zero : p 0)
-    (add : ∀ x y : R[M], p x → p y → p (x + y))
-    (single : ∀ m r, p (single m r)) : p x :=
-  Finsupp.induction_linear (motive := (p <| ofCoeff ·)) x.coeff zero (fun _ _ ↦ add _ _)
+lemma induction_linear {motive : R[M] → Prop} (x : R[M]) (zero : motive 0)
+    (add : ∀ x y : R[M], motive x → motive y → motive (x + y))
+    (single : ∀ m r, motive (single m r)) : motive x :=
+  Finsupp.induction_linear (motive := (motive <| ofCoeff ·)) x.coeff zero (fun _ _ ↦ add _ _)
     (fun _ _ ↦ single _ _)
 
 @[to_additive (attr := simp) addSubmonoidClosure_single]
