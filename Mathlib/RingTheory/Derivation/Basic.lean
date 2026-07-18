@@ -260,7 +260,7 @@ instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M)
 instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 
-theorem coe_sum_linear_maps {ι : Type*} (t : Finset ι) (f : ι → (Derivation R A M)) :
+theorem coe_sum_linear_maps {ι : Type*} (t : Finset ι) (f : ι → Derivation R A M) :
     ↑(∑ i ∈ t, f i) = ∑ i ∈ t, (f i : A →ₗ[R] M) := _root_.map_sum coeAddMonoidHom f t
 
 theorem sum_apply {ι : Type*} (t : Finset ι) (f : ι → (Derivation R A M)) (a : A) :
