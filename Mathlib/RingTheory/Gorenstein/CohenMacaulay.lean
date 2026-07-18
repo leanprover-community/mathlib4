@@ -473,7 +473,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
       (M.localizedModuleMkLinearMap qq.1.1.primeCompl)
       (M.localizedModule_isLocalizedModule qq.1.1.primeCompl) q.length
     exact nontrivial_of_islocalizedModule isl ntr'
-  simp only [← hq, injectiveDimension_eq_sInf_of_finite.{v} M, le_sInf_iff, Set.mem_setOf_eq]
+  simp only [← hq, injectiveDimension_eq_sInf_of_finite.{v} M, le_sInf_iff, Set.mem_ofPred_eq]
   intro b hb
   by_contra! lt
   exact (not_subsingleton_iff_nontrivial.mpr ntr) (hb q.length lt)
@@ -551,7 +551,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
         rs reg'
       rw [IsLocalRing.depth_eq_sSup_length_regular (ModuleCat.of R (Shrink.{v} R)), ← len] at this
       nth_rw 2 [← zero_add (rs.length : ℕ∞)] at this
-      exact (WithTop.add_right_inj (ENat.coe_ne_top rs.length)).mp this
+      exact (WithTop.add_right_inj (ENat.natCast_ne_top rs.length)).mp this
     have := (moduleDepth_eq_zero_of_hom_nontrivial _ _).mp depth_zero
     rcases (nontrivial_iff_exists_ne 0).mp this with ⟨f, hf⟩
     have injf : Function.Injective f := by
@@ -584,7 +584,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     have surj : Function.Surjective ((Ext.mk₀.{v} S.f).precomp M (zero_add r)) :=
       (AddCommGrpCat.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
     exact surj.nontrivial
-  · simp only [injectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
+  · simp only [injectiveDimension, le_sInf_iff, Set.mem_ofPred_eq]
     intro b hb
     by_contra! lt
     have := hb rs.length lt
@@ -628,7 +628,8 @@ lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
     induction n with
     | top => rfl
     | coe n =>
-      simpa [- ENat.WithBot.coe_eq_natCast] using WithBot.coe_inj.not.mpr (ENat.coe_ne_top (n + 1))
+      simpa [- ENat.WithBot.coe_eq_natCast] using
+        WithBot.coe_inj.not.mpr (ENat.natCast_ne_top (n + 1))
 
 variable [IsLocalRing R]
 
