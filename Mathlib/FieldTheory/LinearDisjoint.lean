@@ -630,10 +630,10 @@ theorem isDomain' {A B : Type*} [Field A] [Algebra F A] [Field B] [Algebra F B]
 theorem of_isField (H : IsField (A ⊗[F] L)) : A.LinearDisjoint L := by
   apply Subalgebra.LinearDisjoint.of_isField
   -- need these otherwise the `exact` will stuck at typeclass
-  haveI : SMulCommClass F A A := SMulCommClass.of_commMonoid F A A
-  haveI : SMulCommClass F A.toSubalgebra A.toSubalgebra := ‹SMulCommClass F A A›
-  letI : Mul (A ⊗[F] L) := Algebra.TensorProduct.instMul
-  letI : Mul (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) :=
+  have : SMulCommClass F A A := SMulCommClass.of_commMonoid F A A
+  have : SMulCommClass F A.toSubalgebra A.toSubalgebra := ‹SMulCommClass F A A›
+  let : Mul (A ⊗[F] L) := Algebra.TensorProduct.instMul
+  let : Mul (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) :=
     Algebra.TensorProduct.instMul
   exact Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
     (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))
@@ -674,7 +674,7 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
   obtain ⟨M, hM⟩ := Ideal.exists_maximal (A ⊗[F] B)
   apply not_imp_not.1 (Ring.ne_bot_of_isMaximal_of_not_isField hM)
   let K : Type (max v w) := A ⊗[F] B ⧸ M
-  letI : Field K := Ideal.Quotient.field _
+  let : Field K := Ideal.Quotient.field _
   let i := IsScalarTower.toAlgHom F (A ⊗[F] B) K
   let fa := i.comp (Algebra.TensorProduct.includeLeft : A →ₐ[F] _)
   let fb := i.comp (Algebra.TensorProduct.includeRight : B →ₐ[F] _)

@@ -69,6 +69,7 @@ lemma exists_res_eq_zero_of_germ_eq_zero (U : Opens X) (f : X.presheaf.obj (op U
   use V, i, hv
   simpa using hv4
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If the germ of a section `f` is a unit in the stalk at `x`, then `f` must be a unit on some small
 neighborhood around `x`.
