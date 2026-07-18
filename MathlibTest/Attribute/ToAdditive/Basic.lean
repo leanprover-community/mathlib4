@@ -1025,3 +1025,52 @@ info: @add_comm_alias : ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a 
 -/
 #guard_msgs in
 #check @add_comm_alias
+
+/-! Warning when adding docstrings to existing declarations -/
+
+namespace ExistingDeclDocstring
+
+/-- Existing docstring -/
+opaque add (G : Type*) [AddGroup G] : Prop
+
+/-- warning: The target declaration `add` already has a docstring. -/
+#guard_msgs in
+@[to_additive existing /-- New docstring -/]
+opaque mul (G : Type*) [Group G] : Prop
+
+/-- warning: The target declaration `self` already has a docstring. -/
+#guard_msgs in
+/-- Existing docstring -/
+@[to_additive self (reorder := x y) /-- New docstring -/]
+opaque self (x y : Nat) : Prop
+
+/-- Existing docstring -/
+structure addStruct (G : Type*) [AddGroup G] where
+
+/-- warning: The target declaration `addStruct` already has a docstring. -/
+#guard_msgs in
+@[to_additive /-- New docstring -/]
+structure mulStruct (G : Type*) [Group G] where
+
+-- Examples with no pre-existing docstring
+
+opaque add' (G : Type*) [AddGroup G] : Prop
+
+/-- warning: This docstring should be added directly to `add'`. -/
+#guard_msgs in
+@[to_additive existing /-- New docstring -/]
+opaque mul' (G : Type*) [Group G] : Prop
+
+/-- warning: This docstring should be added directly to `self'`. -/
+#guard_msgs in
+@[to_additive self (reorder := x y) /-- New docstring -/]
+opaque self' (x y : Nat) : Prop
+
+structure addStruct' (G : Type*) [AddGroup G] where
+
+/-- warning: This docstring should be added directly to `addStruct'`. -/
+#guard_msgs in
+@[to_additive /-- New docstring -/]
+structure mulStruct' (G : Type*) [Group G] where
+
+end ExistingDeclDocstring

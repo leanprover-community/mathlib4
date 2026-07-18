@@ -1275,6 +1275,12 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder cfg.rename
   if let some doc := cfg.doc then
+    if alreadyExists then
+      logWarningAt doc <|
+        if (← findInternalDocString? (← getEnv) tgt).isSome then
+          m!"The target declaration `{.ofConstName tgt}` already has a docstring."
+        else
+          m!"This docstring should be added directly to `{.ofConstName tgt}`."
     addMarkdownDocString tgt doc
   let nestedNames ← copyMetaData t cfg src tgt
   -- add pop-up information when mousing over the given translated name
