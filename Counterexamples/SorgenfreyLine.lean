@@ -71,7 +71,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
     refine (IsLeast.isGLB ?_).iInf_eq
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
-  simp only [mem_setOf_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
+  simp only [mem_ofPred_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
     iInf_iInf_eq_right, mem_Ico]
   simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal,
     ← inf_iInf, ← iInf_inf, this, iInf_subtype]
@@ -281,7 +281,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   have H : {x : ℝ | Irrational x} ⊆ ⋃ n, C n := fun x hx =>
     mem_iUnion.2 ⟨_, subset_closure ⟨hx, rfl⟩⟩
   have Hd : Dense (⋃ n, interior (C n)) :=
-    IsGδ.setOf_irrational.dense_iUnion_interior_of_closed dense_irrational
+    IsGδ.setOfPred_irrational.dense_iUnion_interior_of_closed dense_irrational
       (fun _ => isClosed_closure) H
   obtain ⟨N, hN⟩ : ∃ n : ℕ+, (interior <| C n).Nonempty := nonempty_iUnion.mp Hd.nonempty
   /- Choose a rational number `r` in the interior of the closure of `C N`, then choose `n ≥ N > 0`
