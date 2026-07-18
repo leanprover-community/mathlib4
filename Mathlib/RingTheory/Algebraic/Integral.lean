@@ -67,23 +67,6 @@ theorem LinearIndepOn.image_algebraMap_iff (R S A : Type*) [CommRing R] [CommRin
   rw [← linearIndepOn_iff_image (FaithfulSMul.algebraMap_injective S A).injOn]
   exact LinearIndepOn.comp_algebraMap_iff
 
-theorem IsLocalization.integerMultipleMultiple_injective {R : Type*} [CommSemiring R]
-    (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S]
-    {ι : Type*} (s : Finset ι) (f : ι → S) (hf : Function.Injective f) :
-    Function.Injective (integerMultiple M s f) := by
-  intro i j h
-  have hi := map_integerMultiple M s f i
-  have hj := map_integerMultiple M s f j
-  rwa [← h, hi, (IsLocalization.smul_bijective S (commonDenom M s f)).injective.eq_iff,
-    hf.eq_iff, SetLike.coe_eq_coe] at hj
-
-theorem IsLocalization.card_finsetIntegerMultiple {R : Type*} [CommSemiring R] (M : Submonoid R)
-    {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S] [DecidableEq R] (s : Finset S) :
-    (finsetIntegerMultiple M s).card = s.card := by
-  rw [finsetIntegerMultiple, Finset.card_image_of_injective, Finset.card_attach]
-  apply integerMultipleMultiple_injective
-  exact Function.injective_id
-
 theorem IsLocalization.linearIndepOn_finsetIntegerMultiple
     (R : Type*) {S A : Type*} [DecidableEq S]
     [CommRing R] [CommRing S] [CommRing A] [Algebra R S] [Algebra S A] [Algebra R A]
