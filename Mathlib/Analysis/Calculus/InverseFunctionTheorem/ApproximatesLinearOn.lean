@@ -327,7 +327,7 @@ protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
 protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : Surjective f := by
   rcases hc with hE | hc
-  · haveI : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
+  · have : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
     exact surjective_to_subsingleton _
   · apply forall_of_forall_mem_closedBall (fun y : F => ∃ a, f a = y) (f 0) _
     have hc' : (0 : ℝ) < N⁻¹ - c := by rw [sub_pos]; exact hc

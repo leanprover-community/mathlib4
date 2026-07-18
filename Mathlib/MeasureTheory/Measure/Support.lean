@@ -126,7 +126,7 @@ lemma support_subset_of_isClosed {t : Set X} (ht : IsClosed t) (h : t ∈ ae μ)
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
   ext x
-  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
+  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_ofPred_eq, and_right_comm,
     nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by

@@ -40,7 +40,7 @@ variable {γ : Type*}
 
 
 /-- The unique uniform structure inducing a given compact topological structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
   symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm
@@ -57,7 +57,7 @@ def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ]
     rw [le_iff_forall_inf_principal_compl]
     intro V V_in
     by_contra H
-    haveI : NeBot (F ⊓ 𝓟 Vᶜ) := ⟨H⟩
+    have : NeBot (F ⊓ 𝓟 Vᶜ) := ⟨H⟩
     -- Hence compactness would give us a cluster point (x, y) for F ⊓ 𝓟 Vᶜ
     obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := exists_clusterPt_of_compactSpace _
     -- In particular (x, y) is a cluster point of 𝓟 Vᶜ, hence is not in the interior of V,

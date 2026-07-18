@@ -470,7 +470,7 @@ theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥
   refine memLp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
-  haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
+  have hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
   exact ((Lp.memLp _).restrict s).mono_exponent hp
 
 theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
@@ -749,7 +749,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isSeparable [TopologicalSpace α]
     [PseudoMetrizableSpace β] {f : α → β} {s : Set α} {μ : Measure α} (hf : ContinuousOn f s)
     (hs : MeasurableSet s) (h's : TopologicalSpace.IsSeparable s) :
     AEStronglyMeasurable f (μ.restrict s) := by
-  letI := pseudoMetrizableSpacePseudoMetric α
+  let := pseudoMetrizableSpacePseudoMetric α
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
   refine ⟨hf.aemeasurable hs, f '' s, hf.isSeparable_image h's, ?_⟩
