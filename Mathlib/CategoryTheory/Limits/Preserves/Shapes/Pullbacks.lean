@@ -52,6 +52,7 @@ abbrev map : PullbackCone (G.map f) (G.map g) :=
   PullbackCone.mk (G.map c.fst) (G.map c.snd)
     (by simpa using G.congr_map c.condition)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cone) of a pullback cone is limit iff
 the map (as a pullback cone) is limit. -/
@@ -89,7 +90,7 @@ def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
-    from by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
+    by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   isLimitOfReflects G
     ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).2 l)
 
@@ -180,6 +181,7 @@ variable {W X Y : C} {f : W ⟶ X} {g : W ⟶ Y} (c : PushoutCocone f g) (G : C 
 abbrev map : PushoutCocone (G.map f) (G.map g) :=
   PushoutCocone.mk (G.map c.inl) (G.map c.inr) (by simpa using G.congr_map c.condition)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cocone) of a pushout cocone is colimit iff
 the map (as a pushout cocone) is limit. -/
@@ -198,6 +200,7 @@ end PushoutCocone
 variable (G : C ⥤ D)
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The map of a pushout cocone is a colimit iff the cofork consisting of the mapped morphisms is a
 colimit. This essentially lets us commute `PushoutCocone.mk` with `Functor.mapCocone`. -/
@@ -222,7 +225,7 @@ def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
 def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h =
-      G.map g ≫ G.map k from by simp only [← G.map_comp, comm]))) :
+      G.map g ≫ G.map k by simp only [← G.map_comp, comm]))) :
     IsColimit (PushoutCocone.mk h k comm) :=
   isColimitOfReflects G ((isColimitMapCoconePushoutCoconeEquiv G comm).symm l)
 
@@ -232,7 +235,7 @@ variable (f g) [PreservesColimit (span f g) G]
 morphisms of the pushout cocone is a colimit. -/
 def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
     IsColimit (PushoutCocone.mk (G.map (pushout.inl _ _)) (G.map (@pushout.inr _ _ _ _ _ f g i))
-    (show G.map f ≫ G.map (pushout.inl _ _) = G.map g ≫ G.map (pushout.inr _ _) from by
+    (show G.map f ≫ G.map (pushout.inl _ _) = G.map g ≫ G.map (pushout.inr _ _) by
       simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 
@@ -333,7 +336,9 @@ instance : IsIso (pushoutComparison G f g) := by
   rw [← PreservesPushout.iso_hom]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A pushout cocone in `C` is colimit iff it becomes limit
 after the application of `yoneda.obj X` for all `X : C`. -/
 def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :

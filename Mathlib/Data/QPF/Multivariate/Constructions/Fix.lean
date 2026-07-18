@@ -84,6 +84,7 @@ inductive WEquiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
       WEquiv (q.P.wMk a₀ f'₀ f₀) (q.P.wMk a₁ f'₁ f₁)
   | trans (u v w : q.P.W α) : WEquiv u v → WEquiv v w → WEquiv u w
 
+set_option backward.isDefEq.respectTransparency false in
 theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) → β) (x y : q.P.W α) :
     WEquiv x y → recF u x = recF u y := by
   induction x using q.P.wCases
@@ -192,6 +193,7 @@ def Fix.mk (x : F (append1 α (Fix F α))) : Fix F α :=
 def Fix.dest : Fix F α → F (append1 α (Fix F α)) :=
   Fix.rec (MvFunctor.map (appendFun id Fix.mk))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 α (Fix F α))) :
     Fix.rec g (Fix.mk x) = g (appendFun id (Fix.rec g) <$$> x) := by
   have : recF g ∘ fixToW = Fix.rec g := by
@@ -208,6 +210,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
   rw [MvPFunctor.map_eq, recF_eq', ← MvPFunctor.map_eq, MvPFunctor.wDest'_wMk']
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
     Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦q.P.wMk a f' f⟧ := by
   have : Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦wrepr (q.P.wMk a f' f)⟧ := by

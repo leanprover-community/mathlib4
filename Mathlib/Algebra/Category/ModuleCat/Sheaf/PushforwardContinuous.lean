@@ -88,9 +88,7 @@ noncomputable def overFunctorMap {X Y : D} (f : X ⟶ Y) :
 
 /-- The pushforward of `R.over Y` along `Over.map f` is isomorphic to `R.over X`. -/
 @[simps! +dsimpLhs]
-noncomputable def overMapUnitIso {X Y : D}
-    [(K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-    [(K.over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})] (f : X ⟶ Y) :
+noncomputable def overMapUnitIso {X Y : D} (f : X ⟶ Y) :
     (overMap.{u} R f).obj (.unit (R.over Y)) ≅ .unit (R.over X) :=
   Iso.refl _
 
@@ -223,6 +221,7 @@ lemma pushforwardNatTrans_comp (α : F ⟶ G) (β : G ⟶ H)
 lemma pushforwardNatTrans_app_val_app_apply (α : F ⟶ G) (X U x) :
     ((pushforwardNatTrans φ α).app X).val.app U x = X.val.map (α.app U.unop).op x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism gives a natural isomorphism between the pushforward functors. -/
 @[simps]
@@ -305,6 +304,7 @@ lemma pushforwardPushforwardAdj_counit_app_val_app (M U x) :
     ((pushforwardPushforwardAdj adj φ ψ H₁ H₂).counit.app M).val.app U x =
       M.val.map (adj.unit.app U.unop).op x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance isLeftAdjoint_pushforward_of_isIso [F.IsCocontinuous J K] [IsIso φ] [F.IsLeftAdjoint] :
     (pushforward.{u} φ).IsLeftAdjoint := by

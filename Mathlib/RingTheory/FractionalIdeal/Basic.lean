@@ -183,8 +183,9 @@ theorem coe_ext_iff {I J : FractionalIdeal S P} :
 theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J :=
   SetLike.ext
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
- theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
+theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
     {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) (x : I) :
     algebraMap R P (equivNum h_nz x) = I.den • x := by
   change Algebra.linearMap R P _ = _
@@ -558,6 +559,7 @@ instance : Mul (FractionalIdeal S P) :=
 theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_def (I J : FractionalIdeal S P) :
     I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul_def']
 
@@ -645,12 +647,12 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
   · intro hJ
     refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
-      rw [mem_setOf, map_add]
+      rw [mem_ofPred, map_add]
       exact J.val.add_mem ha hb
-    · rw [mem_setOf, map_zero]
+    · rw [mem_ofPred, map_zero]
       exact J.zero_mem
     · intro c x hx
-      rw [smul_eq_mul, mem_setOf, map_mul, ← Algebra.smul_def]
+      rw [smul_eq_mul, mem_ofPred, map_mul, ← Algebra.smul_def]
       exact J.val.smul_mem c hx
     · ext x
       constructor
@@ -658,7 +660,7 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
         rwa [← eq_y]
       · intro hx
         obtain ⟨y, rfl⟩ := (mem_one_iff S).mp (hJ hx)
-        exact mem_setOf.mpr ⟨y, hx, rfl⟩
+        exact mem_ofPred.mpr ⟨y, hx, rfl⟩
   · rintro ⟨I, hI⟩
     rw [← hI]
     apply coeIdeal_le_one
