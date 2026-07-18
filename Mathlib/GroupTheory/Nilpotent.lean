@@ -192,7 +192,7 @@ theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
-    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq, mem_center_iff]
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_ofPred_eq, mem_center_iff]
   exact forall_congr' fun y => by
     rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 
@@ -201,7 +201,7 @@ theorem _root_.AddSubgroup.upperCentralSeries_one (G : Type*) [AddGroup G] :
   ext
   simp only [AddSubgroup.upperCentralSeries, AddSubgroup.upperCentralSeriesAux,
     AddSubgroup.upperCentralSeriesStep, AddSubgroup.mem_bot, AddSubgroup.mem_mk,
-    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_setOf_eq, AddSubgroup.mem_center_iff]
+    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_ofPred_eq, AddSubgroup.mem_center_iff]
   exact forall_congr' fun y => by
     rw [addCommutatorElement_def, add_neg_eq_zero, add_neg_eq_iff_eq_add, eq_comm]
 
@@ -1158,7 +1158,7 @@ theorem Group.nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
 end FinitePi
 
 /-- A nilpotent subgroup is solvable -/
-instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSolvable G := by
+instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group.IsSolvable G := by
   obtain ⟨n, hn⟩ := nilpotent_iff_lowerCentralSeries.1 h
   use n
   rw [eq_bot_iff, ← hn]
