@@ -52,6 +52,7 @@ lemma LinearIndependent.linearIndependent_of_exact_of_retraction
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
   rw [← hs, hz, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma top_le_span_of_aux (v : κ ⊕ σ → M)
     (hg : Function.Surjective g) (hslzero : ∀ i, s (v (.inl i)) = 0)
     (hli : LinearIndependent R (s ∘ v ∘ .inr)) (hsp : ⊤ ≤ Submodule.span R (Set.range v)) :

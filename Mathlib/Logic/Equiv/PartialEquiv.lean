@@ -79,7 +79,7 @@ This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attr
 new file to become functional.
 -/
 
-namespace Tactic.MfldSetTac
+namespace Mathlib.Tactic.MfldSetTac
 
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included
 in one another. -/
@@ -103,7 +103,7 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
 
 attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
 
-end Tactic.MfldSetTac
+end Mathlib.Tactic.MfldSetTac
 
 open Function Set
 
@@ -200,9 +200,13 @@ theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
 theorem target_subset_range : e.target ⊆ range e :=
   fun x hx ↦ ⟨e.symm x, right_inv e hx⟩
 
-theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
-    x = e.symm y ↔ e x = y :=
+theorem symm_apply_eq {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
+    e.symm y = x ↔ y = e x :=
   ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
+
+theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
+    x = e.symm y ↔ e x = y := by
+  simp [eq_comm, ← symm_apply_eq e hx hy]
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 
