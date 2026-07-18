@@ -264,7 +264,7 @@ theorem smul_add [Zero R] [DistribSMul R V] (x : R⟦Γ⟧) (y z : HahnModule Γ
       coeff_smul_right hwf Set.subset_union_left]
     simp [sum_add_distrib]
   · intro b
-    simp only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, of_symm_add,
+    simp only [of_symm_add,
       HahnSeries.coeff_add', Pi.add_apply, ne_eq, Set.mem_union, HahnSeries.mem_support]
     contrapose!
     intro h

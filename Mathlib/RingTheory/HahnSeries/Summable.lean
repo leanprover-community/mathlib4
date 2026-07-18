@@ -286,7 +286,7 @@ def smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R) (s : Summable
     exact Exists.intro i <| right_ne_zero_of_smul hi
   finite_co_support' g := by
     refine Set.Finite.subset (s.finite_co_support g) fun i hi => ?_
-    simp only [coeff_smul, ne_eq, Set.mem_ofPred_eq, Function.mem_support]
+    simp only [ne_eq, Function.mem_support]
     exact right_ne_zero_of_smul hi
 
 theorem hsum_smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R)
@@ -376,7 +376,7 @@ theorem smul_support_subset_prod (s : SummableFamily Γ R α)
     (Function.support fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2) ⊆
     ((s.finite_co_support' gh.1).prod (t.finite_co_support' gh.2)).toFinset := by
   intro _ hab
-  simp only [Function.mem_support, ne_eq, Set.Finite.coe_toFinset, Set.mem_prod,
+  simp only [ne_eq, Set.Finite.coe_toFinset, Set.mem_prod,
     Set.mem_ofPred_eq]
   exact ⟨left_ne_zero_of_smul hab, right_ne_zero_of_smul hab⟩
 

@@ -53,7 +53,7 @@ lemma mulSupport (d : 𝕜 → ℤ) :
     (fun u ↦ (· - u) ^ d u).mulSupport = d.support := by
   ext u
   constructor <;> intro h
-  · simp only [mem_mulSupport, ne_eq, mem_support]
+  · simp only [ne_eq, mem_support]
     by_contra hCon
     simp_all [zpow_zero]
   · simp only [mem_mulSupport, ne_eq, ne_iff]
