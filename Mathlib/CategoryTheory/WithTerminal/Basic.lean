@@ -83,10 +83,8 @@ def id : ∀ X : WithTerminal C, Hom X X
   | of _ => 𝟙 _
   | star => PUnit.unit
 
-#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
-Assistance investigating this would be appreciated. -/
 /-- Composition of morphisms for `WithTerminal C`. -/
-@[simp, nolint simpNF]
+@[simp]
 def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | of _X, of _Y, of _Z => fun f g => f ≫ g
   | of _X, _, star => fun _f _g => PUnit.unit
@@ -429,7 +427,6 @@ instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)
   · rfl
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 @[simps apply]
 private def widePullbackShapeEquivObj {J : Type*} :
@@ -444,7 +441,6 @@ private def widePullbackShapeEquivObj {J : Type*} :
   right_inv x := by cases x <;> simp
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where

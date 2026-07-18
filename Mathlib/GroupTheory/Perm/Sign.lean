@@ -349,8 +349,7 @@ theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : 
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
   rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,
     ← signAux_eq_signAux2 _ _ (e.trans e') fun _ _ => hs _]
-  exact congr_arg signAux
-    (Equiv.ext fun x => by simp [symm_trans_apply])
+  simp [trans_assoc]
 
 /-- `SignType.sign` of a permutation returns the signature or parity of a permutation, `1` for even
 permutations, `-1` for odd permutations. It is the unique surjective group homomorphism from
@@ -551,6 +550,14 @@ theorem sign_prodCongrLeft (σ : α → Perm β) : sign (prodCongrLeft σ) = ∏
 @[simp]
 theorem sign_permCongr (e : α ≃ β) (p : Perm α) : sign (e.permCongr p) = sign p :=
   sign_eq_sign_of_equiv _ _ e.symm (by simp)
+
+@[simp] theorem sign_trans_trans (f : β ≃ α) (p : Perm α) (g : α ≃ β) :
+    sign (f.trans (p.trans g)) = sign p * sign (f.trans g) := by
+  rw [← sign_permCongr g, ← sign_mul]; congr; ext; simp
+
+@[simp] theorem sign_equivCongr (f g : α ≃ β) (p : Perm α) :
+    sign (f.equivCongr g p) = sign p * sign (f.symm.trans g) :=
+  sign_trans_trans ..
 
 @[simp]
 theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : sign (sumCongr σa σb) = sign σa * sign σb := by
