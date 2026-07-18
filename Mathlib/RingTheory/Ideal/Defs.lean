@@ -94,7 +94,7 @@ with the kernel of `LinearMap.toSpanSingleton R M (m - m')`. -/
 def Module.eqIdeal (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M) : Ideal R where
   carrier := {r : R | r • m = r • m'}
   add_mem' h h' := by simpa [add_smul] using congr($h + $h')
-  zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
+  zero_mem' := by simp_rw [Set.mem_ofPred, zero_smul]
   smul_mem' _ _ h := by simpa [mul_smul] using congr(_ • $h)
 
 end Semiring
