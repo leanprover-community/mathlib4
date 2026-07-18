@@ -369,6 +369,13 @@ theorem toDistribution_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     · have hcf : ¬ LocallyIntegrableOn (c • f) Ω μ := by aesop
       rw [toDistribution_eq_zero hf, toDistribution_eq_zero hcf, smul_zero]
 
+theorem toDistribution_dirac_eq_delta (x : E) :
+    toDistribution Ω (1 : E → ℝ) (Measure.dirac x) n = delta x := by
+  ext φ
+  rw [Pi.one_def, toDistribution_apply <|
+    (locallyIntegrable_const (1 : ℝ)).locallyIntegrableOn (Ω : Set E)]
+  simp
+
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
 theorem toDistribution_injective {f f' : E → F} {μ : Measure E}
