@@ -1190,7 +1190,7 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R]
       (ModuleCat.of R R) n)).IsPrincipal := by
   have : IsGorensteinLocalRing R := by
     rw [isGorensteinLocalRing_def, h1]
-    exact WithBot.coe_inj.not.mpr (ENat.coe_ne_top _)
+    exact WithBot.coe_inj.not.mpr (ENat.natCast_ne_top _)
   have : IsCohenMacaulayLocalRing R := isCohenMacaulayLocalRing_of_isGorensteinLocalRing R
   have deptheq : IsLocalRing.depth (ModuleCat.of R R) = n := by
     rw [← WithBot.coe_inj, ← (isCohenMacaulayLocalRing_def R).mp ‹_›, h2]
@@ -1198,7 +1198,7 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R]
   rw [IsLocalRing.depth_eq_sSup_length_regular] at deptheq
   rcases Set.mem_of_eq_of_mem deptheq.symm (@ENat.sSup_mem_of_nonempty_of_lt_top _
     (by use 0, []; simpa using IsRegular.nil _ _)
-    (lt_of_eq_of_lt deptheq (ENat.coe_lt_top n))) with ⟨rs, reg, mem, len⟩
+    (lt_of_eq_of_lt deptheq (ENat.natCast_lt_top n))) with ⟨rs, reg, mem, len⟩
   have := (quotient_regular_isGorenstein_iff_isGorenstein R rs reg).mp ‹_›
   have netop : Ideal.ofList rs ≠ ⊤ :=
     (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') (Ideal.span_le.mpr mem))
@@ -1295,7 +1295,7 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
   apply ModuleCat.injective_of_subsingleton_ext_quotient_one _ (fun I ↦ ?_)
   apply ext_subsingleton_of_support_subset
   intro p _
-  rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
+  rw [Set.mem_ofPred_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
   apply (((extFunctor _).mapIso (Shrink.linearEquiv.{u} R (R ⧸ maximalIdeal R)).toModuleIso.op).app
     (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr.mpr
   have : Subsingleton (Ext.{u} (ModuleCat.of R R) (ModuleCat.of R R) 1) :=
@@ -1344,12 +1344,12 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
     intro injdim
     have : IsGorensteinLocalRing R := by
       rw [isGorensteinLocalRing_def, injdim]
-      exact WithBot.coe_inj.not.mpr (ENat.coe_ne_top n)
+      exact WithBot.coe_inj.not.mpr (ENat.natCast_ne_top n)
     have : IsCohenMacaulayLocalRing R := isCohenMacaulayLocalRing_of_isGorensteinLocalRing R
     refine ⟨fun i hi ↦ ?_, ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim n injdim h⟩
     rcases hi.lt_or_gt with lt|gt
     · have lt' : i < IsLocalRing.depth (ModuleCat.of R R) := by
-        apply lt_of_lt_of_eq (ENat.coe_lt_coe.mpr lt)  (WithBot.coe_inj.mp _)
+        apply lt_of_lt_of_eq (ENat.natCast_lt_natCast.mpr lt)  (WithBot.coe_inj.mp _)
         exact h.symm.trans ((isCohenMacaulayLocalRing_def R).mp ‹_›)
       apply (((extFunctor _).mapIso
         (Shrink.linearEquiv R (R ⧸ maximalIdeal R)).toModuleIso.op).app
@@ -1398,8 +1398,8 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
         rfl
       apply le_antisymm
       · apply le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite S.finite_toSet)
-        simpa [← ENat.coe_inj, hS] using hteq
-      · rw [← ENat.coe_le_coe, ← hteq]
+        simpa [← ENat.natCast_inj, hS] using hteq
+      · rw [← ENat.natCast_le_natCast, ← hteq]
         apply le_of_le_of_eq (Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes _ _ min)
         simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using!
           (isNoetherianRing_iff_ideal_fg R).mp ‹_› _
@@ -1417,6 +1417,6 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
     rw [Ideal.irreducible_iff_bot_irreducible, Ideal.bot_isIrreducible_iff_isPrincipal] at irr
     have inj := injective_of_isPrincipal (R ⧸ J) irr
     rw [quotient_regular_isGorenstein_iff_isGorenstein R rs reg, gen, isGorensteinLocalRing_def]
-    apply ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.coe_ne_top 0))
+    apply ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr ENat.zero_ne_top)
     exact (injectiveDimension_le_iff _ _).mpr inferInstance
   tfae_finish
