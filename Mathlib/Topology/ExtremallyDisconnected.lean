@@ -111,7 +111,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
     by_cases hx : x ∈ U
     · exact ⟨⟨(x, false), Or.inr ⟨subset_closure hx, mem_singleton _⟩⟩, rfl⟩
     · exact ⟨⟨(x, true), Or.inl ⟨hx, mem_singleton _⟩⟩, rfl⟩
-  haveI : CompactSpace Z := isCompact_iff_compactSpace.mp hZ.isCompact
+  have : CompactSpace Z := isCompact_iff_compactSpace.mp hZ.isCompact
   obtain ⟨g, hg, g_sec⟩ := h continuous_id f_cont f_sur
   let φ := Subtype.val ∘ g
   have hφ : Continuous φ := continuous_subtype_val.comp hg
@@ -167,8 +167,8 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
       ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
-      have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| X ⁻¹' {a}
-      exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
+      exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (g := (· ∩ X ⁻¹' {a})) _
+        fun _ _ => inter_subset_inter_left _
     · rw [← image_inter_nonempty_iff, (C_sub c.mem).right, univ_inter]
       exact singleton_nonempty a
     all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage X_cont

@@ -15,53 +15,53 @@ public section
 
 variable {α : Type*}
 
-instance : ∀ [LE α], LE (Multiplicative α) :=
-  fun {inst} => inst
+instance [LE α] : LE (Multiplicative α) :=
+  inferInstanceAs <| LE α
 
-instance : ∀ [LE α], LE (Additive α) :=
-  fun {inst} => inst
+instance [LE α] : LE (Additive α) :=
+  inferInstanceAs <| LE α
 
-instance : ∀ [LT α], LT (Multiplicative α) :=
-  fun {inst} => inst
+instance [LT α] : LT (Multiplicative α) :=
+  inferInstanceAs <| LT α
 
-instance : ∀ [LT α], LT (Additive α) :=
-  fun {inst} => inst
+instance [LT α] : LT (Additive α) :=
+  inferInstanceAs <| LT α
 
-instance Multiplicative.preorder : ∀ [Preorder α], Preorder (Multiplicative α) :=
-  fun {inst} => inst
+instance Multiplicative.preorder [Preorder α] : Preorder (Multiplicative α) :=
+  inferInstanceAs <| Preorder α
 
-instance Additive.preorder : ∀ [Preorder α], Preorder (Additive α) :=
-  fun {inst} => inst
+instance Additive.preorder [Preorder α] : Preorder (Additive α) :=
+  inferInstanceAs <| Preorder α
 
-instance Multiplicative.partialOrder : ∀ [PartialOrder α], PartialOrder (Multiplicative α) :=
-  fun {inst} => inst
+instance Multiplicative.partialOrder [PartialOrder α] : PartialOrder (Multiplicative α) :=
+  inferInstanceAs <| PartialOrder α
 
-instance Additive.partialOrder : ∀ [PartialOrder α], PartialOrder (Additive α) :=
-  fun {inst} => inst
+instance Additive.partialOrder [PartialOrder α] : PartialOrder (Additive α) :=
+  inferInstanceAs <| PartialOrder α
 
-instance Multiplicative.linearOrder : ∀ [LinearOrder α], LinearOrder (Multiplicative α) :=
-  fun {inst} => inst
+instance Multiplicative.linearOrder [LinearOrder α] : LinearOrder (Multiplicative α) :=
+  inferInstanceAs <| LinearOrder α
 
-instance Additive.linearOrder : ∀ [LinearOrder α], LinearOrder (Additive α) :=
-  fun {inst} => inst
+instance Additive.linearOrder [LinearOrder α] : LinearOrder (Additive α) :=
+  inferInstanceAs <| LinearOrder α
 
-instance Multiplicative.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Multiplicative α) :=
-  fun {inst} => inst
+instance Multiplicative.orderBot [LE α] [OrderBot α] : OrderBot (Multiplicative α) :=
+  inferInstanceAs <| OrderBot α
 
-instance Additive.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Additive α) :=
-  fun {inst} => inst
+instance Additive.orderBot [LE α] [OrderBot α] : OrderBot (Additive α) :=
+  inferInstanceAs <| OrderBot α
 
-instance Multiplicative.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Multiplicative α) :=
-  fun {inst} => inst
+instance Multiplicative.orderTop [LE α] [OrderTop α] : OrderTop (Multiplicative α) :=
+  inferInstanceAs <| OrderTop α
 
-instance Additive.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Additive α) :=
-  fun {inst} => inst
+instance Additive.orderTop [LE α] [OrderTop α] : OrderTop (Additive α) :=
+  inferInstanceAs <| OrderTop α
 
-instance Multiplicative.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Multiplicative α) :=
-  fun {inst} => inst
+instance Multiplicative.boundedOrder [LE α] [BoundedOrder α] : BoundedOrder (Multiplicative α) :=
+  inferInstanceAs <| BoundedOrder α
 
-instance Additive.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Additive α) :=
-  fun {inst} => inst
+instance Additive.boundedOrder [LE α] [BoundedOrder α] : BoundedOrder (Additive α) :=
+  inferInstanceAs <| BoundedOrder α
 
 instance Multiplicative.existsMulOfLe [Add α] [LE α] [ExistsAddOfLE α] :
     ExistsMulOfLE (Multiplicative α) :=
@@ -94,8 +94,6 @@ theorem toMul_lt {a b : Additive α} : a.toMul < b.toMul ↔ a < b :=
 @[gcongr] alias ⟨_, ofMul_mono⟩ := ofMul_le
 @[gcongr] alias ⟨_, toMul_strictMono⟩ := toMul_lt
 @[gcongr] alias ⟨_, ofMul_strictMono⟩ := ofMul_lt
-
-@[deprecated (since := "2025-11-18")] alias foMul_strictMono := ofMul_strictMono
 
 end Preorder
 

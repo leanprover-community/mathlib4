@@ -43,6 +43,7 @@ open ComplexConjugate
 
 local notation "|" x "|" => Complex.abs x
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An element of the unit circle defines a `LinearIsometryEquiv` from `ℂ` to itself, by
 rotation. -/
 def rotation : Circle →* ℂ ≃ₗᵢ[ℝ] ℂ where
@@ -80,6 +81,7 @@ unit circle. -/
 def rotationOf (e : ℂ ≃ₗᵢ[ℝ] ℂ) : Circle :=
   ⟨e 1 / ‖e 1‖, by simp [Submonoid.unitSphere]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rotationOf_rotation (a : Circle) : rotationOf (rotation a) = a :=
   Subtype.ext <| by simp
@@ -125,6 +127,7 @@ theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
       intro i
       fin_cases i <;> simp [h, h']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linear_isometry_complex (f : ℂ ≃ₗᵢ[ℝ] ℂ) :
     ∃ a : Circle, f = rotation a ∨ f = conjLIE.trans (rotation a) := by
   let a : Circle := ⟨f 1, by simp [Submonoid.unitSphere, f.norm_map]⟩

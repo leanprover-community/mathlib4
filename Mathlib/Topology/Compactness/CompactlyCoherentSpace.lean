@@ -161,7 +161,6 @@ the intersection `K ∩ A` is closed in `K`. -/
 lemma isClosed_iff {A : Set (𝐤X)} :
     IsClosed A ↔ ∀ (K : Set X), IsCompact K → IsClosed (K ↓∩ .mk X ⁻¹' A) := by
   simp_rw [isClosed_coinduced, isClosed_iSup_iff, ← isClosed_coinduced]
-  rfl
 
 lemma continuous_dom_iff {f : 𝐤X → Y} :
     Continuous f ↔

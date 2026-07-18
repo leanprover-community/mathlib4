@@ -316,6 +316,31 @@ instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
 
+/-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
+automorphism of `H`. -/
+@[to_additive (attr := simps!)
+  /-- If `H` is a characteristic additive subgroup of `G`, then every automorphism of `G` induces an
+  automorphism of `H`. -/]
+def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
+  toFun φ :=
+    { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
+      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
+      left_inv h := Subtype.ext (φ.symm_apply_apply h)
+      right_inv h := Subtype.ext (φ.apply_symm_apply h)
+      map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G)) }
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+/-- If `H` is a characteristic subgroup of `G` and `K` is a characteristic subgroup of `H`, then
+`K` is a characteristic subgroup of `G`. -/
+@[to_additive
+  /-- If `H` is a characteristic additive subgroup of `G` and `K` is a characteristic additive
+  subgroup of `H`, then `K` is a characteristic additive subgroup of `G`. -/]
+instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
+    {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
+  refine characteristic_iff_map_eq.2 fun φ ↦ ?_
+  have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)
+  simpa [Subgroup.map_map, MulAut.characteristic]
 
 variable (H)
 
@@ -499,7 +524,7 @@ def conjugatesOfSet (s : Set G) : Set G :=
 @[to_additive]
 theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x := by
   rw [conjugatesOfSet, Set.mem_iUnion₂]
-  simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
+  simp only [conjugatesOf, isConj_iff, Set.mem_ofPred_eq, exists_prop]
 
 @[to_additive]
 theorem subset_conjugatesOfSet : s ⊆ conjugatesOfSet s := fun (x : G) (h : x ∈ s) =>
@@ -729,6 +754,11 @@ lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_e
 
 end Ker
 
+@[to_additive (attr := simp) range_prodMap]
+lemma range_prodMap {G' N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G' →* N') :
+    (f.prodMap g).range = f.range.prod g.range :=
+  SetLike.coe_injective Set.range_prodMap
+
 end MonoidHom
 
 namespace Subgroup
@@ -800,6 +830,7 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : G₁ →* G�
     rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one, f.map_mul]
     simp only [hf _]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃)
     (hg : f.ker ≤ g.ker) (x : G₁) : (f.liftOfRightInverseAux f_inv hf g hg) (f x) = g x := by
@@ -907,6 +938,7 @@ instance (priority := 100) normal_subgroupOf {H N : Subgroup G} [N.Normal] :
     (N.subgroupOf H).Normal :=
   Subgroup.normal_comap _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem comap_normalClosure_image_ge (s : Set G) (f : G →* N) :
     (normalClosure s) ≤ (normalClosure (f '' s)).comap f := by
@@ -1047,6 +1079,7 @@ namespace IsConj
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg : g ∈ N}
     {hg' : g' ∈ N} (hc : IsConj g g') (ht : normalClosure ({⟨g, hg⟩} : Set N) = ⊤) :
     normalClosure ({⟨g', hg'⟩} : Set N) = ⊤ := by
@@ -1083,26 +1116,34 @@ def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
 
 end ConjClasses
 
+namespace AddSubgroup
+
+variable {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
+    [Group G] [MulAction G M]
+
 /-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
 The inertia subgroup of `I` is the subgroup of `G` whose action is trivial mod `I`. -/
-def AddSubgroup.inertia {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
-    [Group G] [MulAction G M] : Subgroup G where
+def inertia : Subgroup G where
   carrier := { σ | ∀ x, σ • x - x ∈ I }
   mul_mem' {a b} ha hb x := by simpa [mul_smul] using add_mem (ha (b • x)) (hb x)
   one_mem' := by simp [zero_mem]
   inv_mem' {a} ha x := by simpa using sub_mem_comm_iff.mp (ha (a⁻¹ • x))
 
-@[simp] lemma AddSubgroup.mem_inertia {M : Type*} [AddGroup M] {I : AddSubgroup M} {G : Type*}
-    [Group G] [MulAction G M] {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
-
+variable {I G} in
 @[simp]
-lemma AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
-    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
-    (I.inertia G).subgroupOf H = I.inertia H :=
+lemma mem_inertia {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
+
+variable {G} in
+@[simp]
+lemma subgroupOf_inertia (H : Subgroup G) : (I.inertia G).subgroupOf H = I.inertia H :=
   rfl
 
+variable {I G} in
+lemma coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H := .rfl
+
+variable {G} in
 @[simp]
-lemma AddSubgroup.inertia_map_subtype {M : Type*} [AddGroup M] (I : AddSubgroup M)
-    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
-    (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
+lemma inertia_map_subtype (H : Subgroup G) : (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
   rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]
+
+end AddSubgroup

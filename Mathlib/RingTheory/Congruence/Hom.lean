@@ -131,6 +131,7 @@ theorem mapGen_apply_apply_of_surjective
   refine ⟨fun ⟨a, b, h₁, h₂, h₃⟩ ↦ ?_, by grind⟩
   exact c.trans (h h₂.symm) <| c.trans h₁ <| h h₃
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a ring congruence relation `c` on a semiring `M`, the order-preserving
 bijection between the set of ring congruence relations containing `c` and the
 ring congruence relations on the quotient of `M` by `c`. -/
@@ -340,6 +341,7 @@ noncomputable def comapQuotientEquivOfSurj
     (c.comapQuotientEquivOfSurj f hf hcd).symm (f x) = x := by
   rw [← c.comapQuotientEquivOfSurj_mk hf hcd x, RingEquiv.symm_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This version infers the surjectivity of the function from a RingEquiv function -/
 @[simp] lemma comapQuotientEquivOfSurj_symm_mk' (c : RingCon M) (f : N ≃+* M)
     {d : RingCon N} (hcd : d = c.comap f) (x : N) :
@@ -452,6 +454,7 @@ variable {R : Type*} [CommSemiring R]
 
 variable {c d : RingCon M} {f : M →ₐ[R] P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- An isomorphism of algebras `e : M ≃ₐ[R] N` generates an isomorphism between quotient spaces,
 if it is compatible with the relations. -/
@@ -502,10 +505,19 @@ theorem liftₐ_range (H : c ≤ ker f.toRingHom) :
 
 /-- Homomorphisms on the quotient of a ring by a ring congruence relation are
 equal if they are equal on elements that are coercions from the ring. -/
-@[ext high] -- This should have higher priority than `AlgHom.ext`
+-- This should have higher priority than `AlgHom.ext`, but lower than any types implemented with
+-- `Quotient`, as `ext` is lax with reducibility.
+@[ext 1100]
 theorem Quotient.hom_extₐ {f g : c.Quotient →ₐ[R] P}
     (h : f.comp (c.mkₐ R) = g.comp (c.mkₐ R)) : f = g :=
   DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
+
+/-- `liftₐ` as an equivalence. -/
+@[simps]
+def liftₐEquiv (c : RingCon M) :
+    { f : M →ₐ[R] P // c ≤ ker (f : M →+* P)} ≃ (c.Quotient →ₐ[R] P) where
+  toFun f := liftₐ c f.1 f.2
+  invFun F := ⟨F.comp (c.mkₐ R), fun x y h => congr(F $(Quotient.sound h))⟩
 
 variable (f) in
 /-- The homomorphism induced on the quotient of a ring by the kernel of a ring homomorphism. -/
