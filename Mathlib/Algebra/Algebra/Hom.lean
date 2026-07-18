@@ -423,7 +423,7 @@ lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     f.toNatAlgHom x = f x := rfl
 
 @[simps]
-def _root_.ringHomEquivNatAlgHom [Ring R] [Ring S] : (R →+* S) ≃ (R →ₐ[ℕ] S) where
+def _root_.ringHomEquivNatAlgHom [Semiring R] [Semiring S] : (R →+* S) ≃ (R →ₐ[ℕ] S) where
   toFun := RingHom.toNatAlgHom
   invFun := AlgHom.toRingHom
 
