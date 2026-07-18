@@ -366,11 +366,13 @@ section Examples
 /-!
 ## Examples
 
-Ths section adapts the example(s) from the end of the Haskell documentation for `MonadCont`:
+This section adapts the example(s) from the end of the Haskell documentation for `MonadCont`:
 <https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html#t:MonadCont>
+
+The declarations are `private` since they only serve as illustrations, not as API.
 -/
 
-def runCont {r α} (x : Cont r α) (f : α → r) : r :=
+private def runCont {r α} (x : Cont r α) (f : α → r) : r :=
   ContT.run (m := id) x f
 
 /-!
@@ -400,21 +402,21 @@ main = do
 ```
 -/
 
-def calculateLength {r α} (l : List α) : Cont r Int :=
+private def calculateLength {r α} (l : List α) : Cont r Int :=
   pure l.length
 
-def example1a_main : IO Unit := do
+private def example1a_main : IO Unit := do
   runCont (calculateLength ["1", "2", "3"]) IO.print
 
-#eval example1a_main -- "3"
+example : runCont (calculateLength ["1", "2", "3"]) id = 3 := rfl
 
-def double {r} (n : Int) : Cont r Int :=
+private def double {r} (n : Int) : Cont r Int :=
   pure (n * 2)
 
-def example1b_main : IO Unit := do
+private def example1b_main : IO Unit := do
   runCont (calculateLength ["1", "2", "3"] >>= double) IO.print
 
-#eval example1b_main -- "6"
+example : runCont (calculateLength ["1", "2", "3"] >>= double) id = 6 := rfl
 
 /-!
 ### Example 2: Using `callCC`
@@ -452,22 +454,22 @@ Here is what this example does:
 
 -/
 
-def validateName (name : String) (exit : MonadCont.Label String (Cont String) Unit) :
+private def validateName (name : String) (exit : MonadCont.Label String (Cont String) Unit) :
     Cont String Unit :=
   if name.isEmpty then
     exit.apply "You forgot to tell me your name!"
   else
     pure ()
 
-def whatsYourName (name : String) : String :=
+private def whatsYourName (name : String) : String :=
   (runCont · id) (do
-    let mut response ← callCC (fun exit => do
+    let response ← callCC (fun exit => do
       validateName name exit
       pure <| "Welcome, " ++ name ++ "!")
     pure response)
 
-#eval whatsYourName "Alice" -- "Welcome, Alice!"
-#eval whatsYourName "" -- "You forgot to tell me your name!"
+example : whatsYourName "Alice" = "Welcome, Alice!" := rfl
+example : whatsYourName "" = "You forgot to tell me your name!" := rfl
 
 /-!
 ### Example 3: Using `ContT` Monad Transformer
@@ -500,20 +502,19 @@ Compare its signature to `runContT` definition.
 
 -/
 
--- Placeholder for IO operations
-def IO.getLine : IO String := return "example input"
+-- Placeholder standing in for interactive input
+private def mockGetLine : IO String := return "example input"
 
-def askString (next : Label String (ContT Unit IO) String) : ContT Unit IO String := do
+private def askString (next : Label String (ContT Unit IO) String) : ContT Unit IO String := do
   IO.println "Please enter a string"
-  let s ← IO.getLine
+  let s ← mockGetLine
   next.apply s
 
-def reportResult (s : String) : IO Unit := do
+private def reportResult (s : String) : IO Unit := do
   IO.println s!"You entered: {s}"
 
-def example3_main : IO Unit := do
+private def example3_main : IO Unit := do
   ContT.run (callCC askString) reportResult
-
-#eval example3_main -- "You entered: example input"
+-- running `example3_main` prints "Please enter a string" and then "You entered: example input"
 
 end Examples
