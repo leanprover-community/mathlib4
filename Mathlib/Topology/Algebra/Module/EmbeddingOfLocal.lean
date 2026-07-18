@@ -17,6 +17,16 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 open Topology Filter Bornology Set
 open scoped Pointwise
 
+private lemma Filter.comap_inf_congr_aux {α β : Type*} {m₁ m₂ : α → β} {f : Filter α} {g : Filter β}
+    (H : m₁ =ᶠ[f] m₂) : comap m₁ g ⊓ f ≤ comap m₂ g ⊓ f := by
+  refine le_inf ?_ inf_le_right
+  rw [← map_le_iff_le_comap, ← Filter.map_congr (H.filter_mono inf_le_right), map_le_iff_le_comap]
+  exact inf_le_left
+
+lemma Filter.comap_inf_congr {α β : Type*} {m₁ m₂ : α → β} {f : Filter α} {g : Filter β}
+    (H : m₁ =ᶠ[f] m₂) : comap m₁ g ⊓ f = comap m₂ g ⊓ f :=
+  le_antisymm (comap_inf_congr_aux H) (comap_inf_congr_aux H.symm)
+
 variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
   [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F]
   [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
@@ -37,15 +47,16 @@ private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
   have c_ne : c ≠ 0 := fun h ↦ by simp [h] at hc₀
   have cover : ∀ x : E, ∃ k : ℕ, c ^ k • x ∈ V := by
     intro x
-    suffices Tendsto (fun k : ℕ ↦ c ^ k • x) atTop (𝓝 0) from
-      this.eventually V_mem |>.exists
-    rw [← zero_smul 𝕜₁ x]
-    exact .smul_const (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁) _
+    have : Tendsto (fun k : ℕ ↦ c ^ k • x) atTop (𝓝 0) :=
+      zero_smul 𝕜₁ x ▸ .smul_const (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁) _
+    exact this.eventually V_mem |>.exists
   set k : E → ℕ := fun x ↦ Nat.find (cover x)
   set d : E → 𝕜₁ := fun x ↦ c ^ (k x)
   set p : E → E := fun x ↦ d x • x
   have norm_d : ∀ x, ‖d x‖ ≤ 1 := fun x ↦ by simpa [d] using pow_le_one₀ hc₀.le hc₁.le
   have p_mem : ∀ x, p x ∈ V := fun x ↦ Nat.find_spec (cover x)
+  have k_eqOn_V : ∀ x ∈ V, k x = 0 := fun x ↦ by simp [k]
+  have p_eqOn_V : ∀ x ∈ V, p x = x := fun x hx ↦ by simp [p, d, k_eqOn_V x hx]
   have p_mapsto : MapsTo p Vᶜ (c • V)ᶜ := by
     intro x hx₁ hx₂
     have : c ^ (k x - 1) • x ∈ V := by
@@ -53,8 +64,6 @@ private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
         ← mem_smul_set_iff_inv_smul_mem₀ c_ne]
     exact Nat.find_min (cover x) (by simpa [k]) this
   use d, norm_d, p_mem
-  have k_eqOn_V : ∀ x ∈ V, k x = 0 := fun x ↦ by simp [k]
-  have p_eqOn_V : ∀ x ∈ V, p x = x := fun x hx ↦ by simp [p, d, k_eqOn_V x hx]
   have V_mem' : V ∈ comap p (𝓝 0) := by
     grw [mem_comap_iff_compl, ← le_principal_iff, p_mapsto.image_subset, compl_compl]
     simpa [set_smul_mem_nhds_zero_iff c_ne]
