@@ -45,11 +45,6 @@ open scoped ENNReal
 
 variable {X : Type*} [EMetricSpace X] {s : Set X} {a b : X}
 
-/-- The extended ball of radius `∞`, i.e. the set of points at finite distance from `a`, is
-clopen. -/
-theorem isClopen_eball_top : IsClopen (eball a ⊤) :=
-  ⟨isClosed_eball_top, isOpen_eball⟩
-
 /-- In a preconnected subset of an extended metric space, any two points are at finite distance. -/
 theorem IsPreconnected.edist_ne_top (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
     edist a b ≠ ∞ := by
@@ -173,5 +168,9 @@ theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconn
   obtain ⟨a, ha⟩ := hse
   refine hcov {a} (finite_singleton a) fun b hb => ?_
   simpa [heq] using (hs.edist_ne_top hb ha).lt_top
+
+theorem IsPreconnected.isCompact_of_hausdorffMeasure_lt_top_isComplete (hs : IsPreconnected s)
+    (hle : μH[1] s < ∞) (hc : IsComplete s) : IsCompact s :=
+  (hs.totallyBounded_of_hausdorffMeasure_lt_top hle).isCompact_of_isComplete hc
 
 end
