@@ -468,7 +468,7 @@ alias finite_diff_of_mem_codiscreteWithin := finite_sdiff_of_mem_codiscreteWithi
 theorem cofinite_inf_le_codiscreteWithin (hK : IsCompact K) :
     cofinite ⊓ 𝓟 K ≤ codiscreteWithin K := by
   intro s hs
-  simpa [mem_inf_principal, compl_setOf] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
+  simpa [mem_inf_principal, compl_ofPred] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
 
 theorem codiscreteWithin_eq [T1Space X] (hK : IsCompact K) :
     codiscreteWithin K = cofinite ⊓ 𝓟 K := by

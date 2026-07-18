@@ -81,7 +81,7 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
   have μs : ∀ n, μ (s n) = 0 := fun n => A _ _ _ (u_pos n)
   have B : {x | f x ≤ g x}ᶜ ⊆ ⋃ n, s n := by
     intro x hx
-    simp only [Set.mem_compl_iff, Set.mem_setOf, not_le] at hx
+    simp only [Set.mem_compl_iff, Set.mem_ofPred, not_le] at hx
     have L1 : ∀ᶠ n in atTop, g x + u n ≤ f x := by
       have : Tendsto (fun n => g x + u n) atTop (𝓝 (g x + (0 : ℝ≥0))) :=
         tendsto_const_nhds.add (ENNReal.tendsto_coe.2 u_lim)

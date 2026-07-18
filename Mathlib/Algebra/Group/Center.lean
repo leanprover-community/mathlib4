@@ -124,7 +124,7 @@ lemma center_subset_centralizer (S : Set M) : Set.center M ⊆ S.centralizer :=
 
 @[to_additive addCentralizer_union]
 lemma centralizer_union : centralizer (S ∪ T) = centralizer S ∩ centralizer T := by
-  simp [centralizer, or_imp, forall_and, setOf_and]
+  simp [centralizer, or_imp, forall_and, ofPred_and]
 
 @[to_additive (attr := gcongr) addCentralizer_subset]
 lemma centralizer_subset (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun _ ht s hs ↦ ht s (h hs)

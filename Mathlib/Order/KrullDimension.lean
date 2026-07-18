@@ -204,7 +204,7 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; lia)
     suffices p'.length ≤ height x by
-      simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.coe_sub,
+      simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.natCast_sub,
         Nat.cast_one, p'] at this
       convert! this
       norm_cast
@@ -360,7 +360,7 @@ lemma coheight_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x 
 
 private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
     (h : (⨆ x, f x) = n) : ∃ x, f x = n := by
-  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
+  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_nonempty_of_lt_top (h ▸ ENat.natCast_lt_top _)
   use x
   simpa [hx] using! h
 
@@ -371,7 +371,7 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
   cases ha : height a with
   | top =>
     clear h
-    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def] at ha
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_natCast_eq_top, bddAbove_def] at ha
     contrapose! ha
     use n
     rintro m ⟨⟨p, rfl⟩, hp⟩
@@ -445,7 +445,7 @@ lemma height_eq_top_iff {x : α} :
     apply exists_series_of_le_height x (n := n)
     simp [h]
   mpr h := by
-    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_natCast_eq_top, bddAbove_def]
     push Not
     intro n
     obtain ⟨p, hlast, hp⟩ := h (n + 1)
@@ -746,7 +746,7 @@ lemma krullDim_eq_iSup_length [Nonempty α] :
 lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l.length < n := by
   rw [krullDim, ← WithBot.coe_natCast]
   rcases n with - | n
-  · rw [ENat.coe_zero, ← bot_eq_zero, WithBot.lt_coe_bot]
+  · rw [ENat.natCast_zero, ← bot_eq_zero, WithBot.lt_coe_bot]
     simp
   · simp [ENat.WithBot.lt_add_one_iff, WithBot.coe_natCast]
 
@@ -1113,15 +1113,15 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
     let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
     suffices h'' : f (p i) < f x by
       obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp
-        ((height_mono h''.le).trans_lt (h' ▸ ENat.coe_lt_top _)).ne
-      have h_lt : n' < n := ENat.coe_lt_coe.mp
-        (h' ▸ hn' ▸ height_strictMono h'' (hn' ▸ ENat.coe_lt_top _))
+        ((height_mono h''.le).trans_lt (h' ▸ ENat.natCast_lt_top _)).ne
+      have h_lt : n' < n := ENat.natCast_lt_natCast.mp
+        (h' ▸ hn' ▸ height_strictMono h'' (hn' ▸ ENat.natCast_lt_top _))
       have := (length_le_height_last (p := p.take i)).trans <| ih n' h_lt (p i) hn'.symm
-      rw [RelSeries.take_length, ENat.coe_sub, Nat.cast_add, Nat.cast_one, tsub_le_iff_right,
+      rw [RelSeries.take_length, ENat.natCast_sub, Nat.cast_add, Nat.cast_one, tsub_le_iff_right,
         add_assoc, add_comm _ (_ + 1), ← add_assoc, ← mul_add_one] at this
       refine not_lt_of_ge ?_ (h_len.trans_le this)
       gcongr
-      rwa [← ENat.coe_one, ← ENat.coe_add, ENat.coe_le_coe]
+      rwa [← ENat.natCast_one, ← ENat.natCast_add, ENat.natCast_le_natCast]
     refine (f.monotone ((p.monotone (Fin.le_last _)).trans hp)).lt_of_not_ge fun h'' ↦ ?_
     let q' : LTSeries α := p.drop i
     let q : LTSeries (f ⁻¹' {f x}) := ⟨q'.length, fun j ↦ ⟨q' j, le_antisymm
@@ -1130,7 +1130,7 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
         (f.monotone (q'.monotone (Fin.zero_le _))))⟩, fun i ↦ q'.step i⟩
     have := (LTSeries.length_le_krullDim q).trans (h (f x))
     simp only [RelSeries.drop_length, Nat.cast_le, tsub_le_iff_right, q', i, q] at this
-    have : p.length > m := ENat.coe_lt_coe.mp ((le_add_left le_rfl).trans_lt h_len)
+    have : p.length > m := ENat.natCast_lt_natCast.mp ((le_add_left le_rfl).trans_lt h_len)
     lia
 
 include h in

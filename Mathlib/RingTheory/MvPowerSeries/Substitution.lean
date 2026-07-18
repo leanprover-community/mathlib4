@@ -139,7 +139,7 @@ theorem HasSubst.smul_X (a : σ → R) :
 
 /-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
 noncomputable def hasSubstIdeal : Ideal (σ → MvPowerSeries τ S) :=
-  { carrier := setOf HasSubst
+  { carrier := Set.ofPred HasSubst
     add_mem' := HasSubst.add
     zero_mem' := HasSubst.zero
     smul_mem' := HasSubst.mul_left }

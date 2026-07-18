@@ -146,7 +146,7 @@ theorem tendsto_nhds_top {m : α → ℝ≥0∞} {f : Filter α} (h : ∀ n : �
 
 theorem tendsto_nat_nhds_top : Tendsto (fun n : ℕ => ↑n) atTop (𝓝 ∞) :=
   tendsto_nhds_top fun n =>
-    mem_atTop_sets.2 ⟨n + 1, fun _m hm => mem_setOf.2 <| Nat.cast_lt.2 <| Nat.lt_of_succ_le hm⟩
+    mem_atTop_sets.2 ⟨n + 1, fun _m hm => mem_ofPred.2 <| Nat.cast_lt.2 <| Nat.lt_of_succ_le hm⟩
 
 @[simp, norm_cast]
 theorem tendsto_coe_nhds_top {f : α → ℝ≥0} {l : Filter α} :
@@ -418,13 +418,13 @@ theorem continuousOn_sub :
     ContinuousOn (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) { p : ℝ≥0∞ × ℝ≥0∞ | p ≠ ⟨∞, ∞⟩ } := by
   rw [ContinuousOn]
   rintro ⟨x, y⟩ hp
-  simp only [Ne, Set.mem_setOf_eq, Prod.mk_inj] at hp
+  simp only [Ne, Set.mem_ofPred_eq, Prod.mk_inj] at hp
   exact tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
 
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
   change Continuous (Function.uncurry Sub.sub ∘ (a, ·))
   refine continuousOn_sub.comp_continuous (.prodMk_right a) fun x => ?_
-  simp only [a_ne_top, Ne, mem_setOf_eq, Prod.mk_inj, false_and, not_false_iff]
+  simp only [a_ne_top, Ne, mem_ofPred_eq, Prod.mk_inj, false_and, not_false_iff]
 
 theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a : ℝ≥0∞) - x :=
   continuous_sub_left coe_ne_top
@@ -441,7 +441,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply continuousOn_sub.comp_continuous (by fun_prop)
     intro x
-    simp only [a_infty, Ne, mem_setOf_eq, Prod.mk_inj, and_false, not_false_iff]
+    simp only [a_infty, Ne, mem_ofPred_eq, Prod.mk_inj, and_false, not_false_iff]
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
@@ -661,15 +661,23 @@ theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
 theorem Metric.diam_closure {α : Type*} [PseudoMetricSpace α] (s : Set α) :
     Metric.diam (closure s) = diam s := by simp only [Metric.diam, Metric.ediam_closure]
 
-theorem isClosed_setOf_lipschitzOnWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0)
+theorem isClosed_setOfPred_lipschitzOnWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    (K : ℝ≥0)
     (s : Set α) : IsClosed { f : α → β | LipschitzOnWith K f s } := by
-  simp only [LipschitzOnWith, setOf_forall]
+  simp only [LipschitzOnWith, ofPred_forall]
   refine isClosed_biInter fun x _ => isClosed_biInter fun y _ => isClosed_le ?_ ?_
   exacts [.edist (continuous_apply x) (continuous_apply y), continuous_const]
 
-theorem isClosed_setOf_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) :
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_lipschitzOnWith := isClosed_setOfPred_lipschitzOnWith
+
+theorem isClosed_setOfPred_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    (K : ℝ≥0) :
     IsClosed { f : α → β | LipschitzWith K f } := by
-  simp only [← lipschitzOnWith_univ, isClosed_setOf_lipschitzOnWith]
+  simp only [← lipschitzOnWith_univ, isClosed_setOfPred_lipschitzOnWith]
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_lipschitzWith := isClosed_setOfPred_lipschitzWith
 
 protected lemma LipschitzOnWith.closure [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
     (hcont : ContinuousOn f (closure s)) (hf : LipschitzOnWith K f s) :
@@ -929,6 +937,6 @@ lemma Dense.lipschitzWith_extend {α β : Type*}
     rintro ⟨x, y⟩ ⟨hx, hy⟩
     have Ax : hs.extend f x = f ⟨x, hx⟩ := hs.extend_eq hf.continuous ⟨x, hx⟩
     have Ay : hs.extend f y = f ⟨y, hy⟩ := hs.extend_eq hf.continuous ⟨y, hy⟩
-    simp only [Set.mem_setOf_eq, Ax, Ay]
+    simp only [Set.mem_ofPred_eq, Ax, Ay]
     exact hf ⟨x, hx⟩ ⟨y, hy⟩
-  simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using! this
+  simpa only [Dense, IsClosed.closure_eq, Set.mem_ofPred_eq, Prod.forall] using! this

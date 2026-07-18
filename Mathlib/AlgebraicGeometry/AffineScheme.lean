@@ -328,7 +328,7 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     PrimeSpectrum.isBasis_basic_opens.of_isInducing
       (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
   ext V
-  simp only [Set.mem_range, exists_exists_eq_and, Set.mem_setOf,
+  simp only [Set.mem_range, exists_exists_eq_and, Set.mem_ofPred,
     ← Opens.coe_inj (V := V), ← Scheme.toSpecΓ_preimage_basicOpen]
   rfl
 
@@ -950,7 +950,7 @@ theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
   · simp only [Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [← Set.compl_iInter, Set.compl_univ_iff, ← PrimeSpectrum.zeroLocus_iUnion, ←
       PrimeSpectrum.zeroLocus_empty_iff_eq_top, PrimeSpectrum.zeroLocus_span]
-    simp only [Set.iUnion_singleton_eq_range, Subtype.range_val_subtype, Set.setOf_mem_eq]
+    simp only [Set.iUnion_singleton_eq_range, Subtype.range_val_subtype, Set.ofPred_mem_eq]
 
 include hU in
 theorem self_le_iSup_basicOpen_iff {s : Set Γ(X, U)} :
