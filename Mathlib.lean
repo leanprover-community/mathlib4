@@ -6743,6 +6743,7 @@ public import Mathlib.RingTheory.Kaehler.Polynomial
 public import Mathlib.RingTheory.Kaehler.TensorProduct
 public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.KrullDimension.Integral
 public import Mathlib.RingTheory.KrullDimension.LocalRing
 public import Mathlib.RingTheory.KrullDimension.Module
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
