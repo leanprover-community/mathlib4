@@ -243,6 +243,7 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
 theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = p := by
   simp only [PMF.bind_pure, PMF.bindOnSupport_eq_bind]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β)
     (g : ∀ b ∈ (p.bindOnSupport f).support, PMF γ) :

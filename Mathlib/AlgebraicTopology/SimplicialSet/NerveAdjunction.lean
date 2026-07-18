@@ -83,11 +83,13 @@ lemma spineEquiv_f₂_arrow_one (x : X _⦋2⦌₂) :
     ((hY.spineEquiv 2) (f₂ f₀ f₁ hδ₁ hδ₀ hY x)).arrow 1 = f₁ (X.map (δ₂ 0).op x) := by
   simp [f₂]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hδ'₀ (x : X _⦋2⦌₂) :
     f₁ (X.map (δ₂ 0).op x) = Y.map (δ₂ 0).op (f₂ f₀ f₁ hδ₁ hδ₀ hY x) := by
   simp [← spineEquiv_f₂_arrow_one f₀ f₁ hδ₁ hδ₀ hY, StrictSegal.spineEquiv,
     SimplexCategory.mkOfSucc_one_eq_δ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hδ'₂ (x : X _⦋2⦌₂) :
     f₁ (X.map (δ₂ 2).op x) = Y.map (δ₂ 2).op (f₂ f₀ f₁ hδ₁ hδ₀ hY x) := by
   simp [← spineEquiv_f₂_arrow_zero f₀ f₁ hδ₁ hδ₀ hY, StrictSegal.spineEquiv,
@@ -98,6 +100,7 @@ lemma hδ'₁ (x : X _⦋2⦌₂) :
     f₁ (X.map (δ₂ 1).op x) = Y.map (δ₂ 1).op (f₂ f₀ f₁ hδ₁ hδ₀ hY x) :=
   H x (f₂ f₀ f₁ hδ₁ hδ₀ hY x) (hδ'₂ f₀ f₁ hδ₁ hδ₀ hY x) (hδ'₀ f₀ f₁ hδ₁ hδ₀ hY x)
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hσ in
 lemma hσ'₀ (x : X _⦋1⦌₂) :
     f₂ f₀ f₁ hδ₁ hδ₀ hY (X.map (σ₂ 0).op x) = Y.map (σ₂ 0).op (f₁ x) := by
@@ -116,6 +119,7 @@ lemma hσ'₀ (x : X _⦋1⦌₂) :
     simp [StrictSegal.spineEquiv, SimplexCategory.mkOfSucc_one_eq_δ,
       ← Functor.map_comp_apply, ← op_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hσ in
 lemma hσ'₁ (x : X _⦋1⦌₂) :
     f₂ f₀ f₁ hδ₁ hδ₀ hY (X.map (σ₂ 1).op x) = Y.map (σ₂ 1).op (f₁ x) := by
@@ -213,12 +217,14 @@ lemma descOfTruncation_map_homMk (φ : X ⟶ (truncation 2).obj (nerve C))
     (descOfTruncation φ).map (homMk e) = nerve.homEquiv (e.map φ) :=
   Category.id_comp _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
     (φ : X' ⟶ (truncation 2).obj (nerve C)) :
     descOfTruncation (ψ ≫ φ) = mapHomotopyCategory ψ ⋙ descOfTruncation φ :=
   functor_ext (fun _ ↦ by simp) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the morphism `X ⟶ (truncation 2).obj (nerve C)` corresponding
@@ -334,6 +340,7 @@ namespace nerve
 
 variable {C D : Type u} [SmallCategory C] [SmallCategory D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `C ⥤ D` that is reconstructed for a morphism
 between the `2`-truncated nerves. -/
 @[simps]
@@ -348,6 +355,7 @@ def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj 
     obtain ⟨h⟩ := (nerve.nonempty_compStruct_iff f g (f ≫ g)).2 rfl
     exact (nerve.homEquiv_comp (h.toTruncated.map φ)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma nerveFunctor₂_map_functorOfNerveMap
     (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
     nerveFunctor₂.map (functorOfNerveMap φ).toCatHom = φ :=
@@ -356,10 +364,12 @@ lemma nerveFunctor₂_map_functorOfNerveMap
     exact (nerveMap_app_mk₁ _ _).trans ((nerve.mk₁_homEquiv_apply _).trans
       (ComposableArrows.mk₁_hom _)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma functorOfNerveMap_nerveFunctor₂_map (F : C ⥤ D) :
     functorOfNerveMap ((SSet.truncation 2).map (nerveMap F)) = F :=
   Functor.ext (fun x ↦ by cat_disch) (fun x y f ↦ by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `2`-truncated nerve functor is fully faithful. -/
 def fullyFaithfulNerveFunctor₂ : nerveFunctor₂.{u, u}.FullyFaithful where
   preimage φ := (functorOfNerveMap φ).toCatHom
