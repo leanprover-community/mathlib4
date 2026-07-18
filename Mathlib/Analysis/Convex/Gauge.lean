@@ -133,10 +133,10 @@ theorem gauge_le_of_mem (ha : 0 ≤ a) (hx : x ∈ a • s) : gauge s x ≤ a :=
   · rw [mem_singleton_iff.1 (zero_smul_set_subset _ hx), gauge_zero]
   · exact csInf_le bddBelow_gauge_set ⟨ha', hx⟩
 
-theorem setOf_gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Absorbent ℝ s)
+theorem setOfPred_gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Absorbent ℝ s)
     (ha : 0 ≤ a) : { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_ : a < r), r • s := by
   ext x
-  simp_rw [Set.mem_iInter, Set.mem_setOf_eq]
+  simp_rw [Set.mem_iInter, Set.mem_ofPred_eq]
   refine ⟨fun h r hr => ?_, fun h => le_of_forall_pos_lt_add fun ε hε => ?_⟩
   · have hr' := ha.trans_lt hr
     rw [mem_smul_set_iff_inv_smul_mem₀ hr'.ne']
@@ -148,27 +148,36 @@ theorem setOf_gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ 
     exact hδr.le
   · linarith [gauge_le_of_mem (by linarith) <| h (a + ε / 2) (by linarith)]
 
-@[deprecated (since := "2026-06-17")] alias gauge_le_eq := setOf_gauge_le_eq
+@[deprecated (since := "2026-07-09")]
+alias setOf_gauge_le_eq := setOfPred_gauge_le_eq
 
-theorem setOf_gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
+@[deprecated (since := "2026-06-17")] alias gauge_le_eq := setOfPred_gauge_le_eq
+
+theorem setOfPred_gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
     { x | gauge s x < a } = ⋃ (r : ℝ) (_ : 0 < r) (_ : r < a), r • s := by
   ext
-  simp_rw [mem_setOf, mem_iUnion, exists_prop]
+  simp_rw [mem_ofPred, mem_iUnion, exists_prop]
   exact
     ⟨exists_lt_of_gauge_lt absorbs, fun ⟨r, hr₀, hr₁, hx⟩ =>
       (gauge_le_of_mem hr₀.le hx).trans_lt hr₁⟩
 
-@[deprecated (since := "2026-06-17")] alias gauge_lt_eq' := setOf_gauge_lt_eq'
+@[deprecated (since := "2026-07-09")]
+alias setOf_gauge_lt_eq' := setOfPred_gauge_lt_eq'
 
-theorem setOf_gauge_lt_eq (absorbs : Absorbent ℝ s) (a : ℝ) :
+@[deprecated (since := "2026-06-17")] alias gauge_lt_eq' := setOfPred_gauge_lt_eq'
+
+theorem setOfPred_gauge_lt_eq (absorbs : Absorbent ℝ s) (a : ℝ) :
     { x | gauge s x < a } = ⋃ r ∈ Set.Ioo 0 (a : ℝ), r • s := by
   ext
-  simp_rw [mem_setOf, mem_iUnion, exists_prop, mem_Ioo, and_assoc]
+  simp_rw [mem_ofPred, mem_iUnion, exists_prop, mem_Ioo, and_assoc]
   exact
     ⟨exists_lt_of_gauge_lt absorbs, fun ⟨r, hr₀, hr₁, hx⟩ =>
       (gauge_le_of_mem hr₀.le hx).trans_lt hr₁⟩
 
-@[deprecated (since := "2026-06-17")] alias gauge_lt_eq := setOf_gauge_lt_eq
+@[deprecated (since := "2026-07-09")]
+alias setOf_gauge_lt_eq := setOfPred_gauge_lt_eq
+
+@[deprecated (since := "2026-06-17")] alias gauge_lt_eq := setOfPred_gauge_lt_eq
 
 theorem mem_openSegment_of_gauge_lt_one (absorbs : Absorbent ℝ s) (hgauge : gauge s x < 1) :
     ∃ y ∈ s, x ∈ openSegment ℝ 0 y := by
@@ -176,13 +185,16 @@ theorem mem_openSegment_of_gauge_lt_one (absorbs : Absorbent ℝ s) (hgauge : ga
   refine ⟨y, hy, 1 - r, r, ?_⟩
   simp [*]
 
-theorem setOf_gauge_lt_one_subset_self (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s)
+theorem setOfPred_gauge_lt_one_subset_self (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s)
     (absorbs : Absorbent ℝ s) : { x | gauge s x < 1 } ⊆ s := fun _x hx ↦
   let ⟨_y, hys, hx⟩ := mem_openSegment_of_gauge_lt_one absorbs hx
   hs.openSegment_subset h₀ hys hx
 
+@[deprecated (since := "2026-07-09")]
+alias setOf_gauge_lt_one_subset_self := setOfPred_gauge_lt_one_subset_self
+
 @[deprecated (since := "2026-06-17")]
-alias gauge_lt_one_subset_self := setOf_gauge_lt_one_subset_self
+alias gauge_lt_one_subset_self := setOfPred_gauge_lt_one_subset_self
 
 theorem gauge_le_one_of_mem {x : E} (hx : x ∈ s) : gauge s x ≤ 1 :=
   gauge_le_of_mem zero_le_one <| by rwa [one_smul]
@@ -205,20 +217,27 @@ theorem gauge_sum_le {ι : Type*} (hs : Convex ℝ s) (absorbs : Absorbent ℝ s
     (f : ι → E) : gauge s (∑ i ∈ t, f i) ≤ ∑ i ∈ t, gauge s (f i) :=
   Finset.le_sum_of_subadditive _ gauge_zero.le (gauge_add_le hs absorbs) _ _
 
-theorem self_subset_setOf_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
+theorem self_subset_setOfPred_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } :=
+  fun _ => gauge_le_one_of_mem
+
+@[deprecated (since := "2026-07-09")]
+alias self_subset_setOf_gauge_le_one := self_subset_setOfPred_gauge_le_one
 
 @[deprecated (since := "2026-06-17")]
-alias self_subset_gauge_le_one := self_subset_setOf_gauge_le_one
+alias self_subset_gauge_le_one := self_subset_setOfPred_gauge_le_one
 
-theorem Convex.setOf_gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s)
+theorem Convex.setOfPred_gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s)
     (a : ℝ) : Convex ℝ { x | gauge s x ≤ a } := by
   by_cases ha : 0 ≤ a
-  · rw [setOf_gauge_le_eq hs h₀ absorbs ha]
+  · rw [setOfPred_gauge_le_eq hs h₀ absorbs ha]
     exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
   · convert! convex_empty (𝕜 := ℝ)
     exact eq_empty_iff_forall_notMem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
-@[deprecated (since := "2026-06-17")] alias Convex.gauge_le := Convex.setOf_gauge_le
+@[deprecated (since := "2026-07-09")]
+alias Convex.setOf_gauge_le := Convex.setOfPred_gauge_le
+
+@[deprecated (since := "2026-06-17")] alias Convex.gauge_le := Convex.setOfPred_gauge_le
 
 theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
     a ≤ gauge s x := by
@@ -367,15 +386,18 @@ theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s 
   rcases H₂.exists with ⟨r, hxr, hr₀, hr₁⟩
   exact (gauge_le_of_mem hr₀.le hxr).trans_lt hr₁
 
-theorem setOf_gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s)
+theorem setOfPred_gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s)
     (hs₂ : IsOpen s) : { x | gauge s x < 1 } = s := by
-  refine (setOf_gauge_lt_one_subset_self hs₁ ‹_› <| absorbent_nhds_zero <|
+  refine (setOfPred_gauge_lt_one_subset_self hs₁ ‹_› <| absorbent_nhds_zero <|
     hs₂.mem_nhds hs₀).antisymm ?_
   convert! interior_subset_gauge_lt_one s
   exact hs₂.interior_eq.symm
 
+@[deprecated (since := "2026-07-09")]
+alias setOf_gauge_lt_one_eq_self_of_isOpen := setOfPred_gauge_lt_one_eq_self_of_isOpen
+
 @[deprecated (since := "2026-06-17")]
-alias gauge_lt_one_eq_self_of_isOpen := setOf_gauge_lt_one_eq_self_of_isOpen
+alias gauge_lt_one_eq_self_of_isOpen := setOfPred_gauge_lt_one_eq_self_of_isOpen
 
 theorem gauge_lt_one_of_mem_of_isOpen (hs₂ : IsOpen s) {x : E} (hx : x ∈ s) :
     gauge s x < 1 :=
@@ -392,8 +414,8 @@ theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : 
     (h : gauge s x ≤ 1) : x ∈ closure s := by
   have : ∀ᶠ r : ℝ in 𝓝[<] 1, r • x ∈ s := by
     filter_upwards [Ico_mem_nhdsLT one_pos] with r ⟨hr₀, hr₁⟩
-    apply setOf_gauge_lt_one_subset_self hc hs₀ ha
-    rw [mem_setOf_eq, gauge_smul_of_nonneg hr₀]
+    apply setOfPred_gauge_lt_one_subset_self hc hs₀ ha
+    rw [mem_ofPred_eq, gauge_smul_of_nonneg hr₀]
     exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
   refine mem_closure_of_tendsto ?_ this
   exact Filter.Tendsto.mono_left (Continuous.tendsto' (by fun_prop) _ _ (one_smul _ _))
@@ -460,18 +482,21 @@ is continuous. If the ambient space is a normed space, then `gauge s` is Lipschi
 theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) :=
   continuous_iff_continuousAt.2 fun _ ↦ continuousAt_gauge hc hs₀
 
-theorem setOf_gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
+theorem setOfPred_gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     { x | gauge s x < 1 } = interior s := by
   refine Subset.antisymm (fun x hx ↦ ?_) (interior_subset_gauge_lt_one s)
   rcases mem_openSegment_of_gauge_lt_one (absorbent_nhds_zero hs₀) hx with ⟨y, hys, hxy⟩
   exact hc.openSegment_interior_self_subset_interior (mem_interior_iff_mem_nhds.2 hs₀) hys hxy
 
+@[deprecated (since := "2026-07-09")]
+alias setOf_gauge_lt_one_eq_interior := setOfPred_gauge_lt_one_eq_interior
+
 @[deprecated (since := "2026-06-17")]
-alias gauge_lt_one_eq_interior := setOf_gauge_lt_one_eq_interior
+alias gauge_lt_one_eq_interior := setOfPred_gauge_lt_one_eq_interior
 
 theorem gauge_lt_one_iff_mem_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     gauge s x < 1 ↔ x ∈ interior s :=
-  Set.ext_iff.1 (setOf_gauge_lt_one_eq_interior hc hs₀) _
+  Set.ext_iff.1 (setOfPred_gauge_lt_one_eq_interior hc hs₀) _
 
 theorem gauge_le_one_iff_mem_closure (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     gauge s x ≤ 1 ↔ x ∈ closure s :=
@@ -504,7 +529,7 @@ theorem gaugeSeminorm_lt_one_of_isOpen (hs : IsOpen s) {x : E} (hx : x ∈ s) :
 
 theorem gaugeSeminorm_ball_one (hs : IsOpen s) : (gaugeSeminorm hs₀ hs₁ hs₂).ball 0 1 = s := by
   rw [Seminorm.ball_zero_eq]
-  exact setOf_gauge_lt_one_eq_self_of_isOpen hs₁ hs₂.zero_mem hs
+  exact setOfPred_gauge_lt_one_eq_self_of_isOpen hs₁ hs₂.zero_mem hs
 
 end RCLike
 

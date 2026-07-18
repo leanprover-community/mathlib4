@@ -192,7 +192,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
     refine hs.biUnion fun z hz => ?_
     by_cases! h : ∃ w, exp w = z
     · rcases h with ⟨w, rfl⟩
-      simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
+      simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.ofPred_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
     · simp [Set.preimage, h]
 
@@ -303,7 +303,7 @@ noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
     simp [exp_mem_slitPlane, h₂.ne,
       (toIocMod_eq_self Real.two_pi_pos).mpr ⟨h₁, by simpa [two_mul] using h₂.le⟩]
   map_target' z h := by
-    simp only [mem_setOf, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
+    simp only [mem_ofPred, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
     exact h.imp_left le_of_lt
   left_inv' _x hx := log_exp hx.1 (le_of_lt hx.2)
   right_inv' _x hx := exp_log <| slitPlane_ne_zero hx
