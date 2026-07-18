@@ -84,6 +84,7 @@ lemma isSheaf_fpqcTopology_continuousMapPresheaf :
     · intro y hy
       rwa [← ContinuousMap.cancel_right (Spec.map f).surjective, Topology.IsQuotientMap.lift_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `continuousMapPresheaf` is `U ↦ C(ConnectedComponents U, T)` if `T` is totally
 disconnected. -/
 def continuousMapPresheafEquivOfTotallyDisconnectedSpace [TotallyDisconnectedSpace T]

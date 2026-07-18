@@ -108,7 +108,6 @@ lemma addContent_sUnion (h_ss : ↑I ⊆ C)
 lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : ∀ i ∈ a, f i ∈ C)
     (h_dis : PairwiseDisjoint ↑a f) (h_mem : ⋃ i ∈ a, f i ∈ C) :
     m (⋃ i ∈ a, f i) = ∑ i ∈ a, m (f i) := by
-  classical
   have A : ⋃ i ∈ a, f i = ⋃₀ (a.image f) := by simp
   rw [A, addContent_sUnion]; rotate_left
   · grind
@@ -156,7 +155,6 @@ lemma addContent_eq_add_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) :
     m s = ∑ i ∈ I, m i + ∑ i ∈ hC.disjointOfDiffUnion hs hI, m i := by
-  classical
   conv_lhs => rw [← hC.sUnion_union_disjointOfDiffUnion_of_subset hs hI hI_ss]
   rw [addContent_sUnion]
   · rw [sum_union]
@@ -172,7 +170,6 @@ lemma addContent_eq_add_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
 theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) :
     m t = m s + ∑ i ∈ hC.disjointOfDiff ht hs, m i := by
-  classical
   conv_lhs => rw [← hC.sUnion_insert_disjointOfDiff ht hs hst]
   rw [← coe_insert, addContent_sUnion]
   · rw [sum_insert]
@@ -285,7 +282,6 @@ lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
     ∑ u ∈ I, m u ≤ m t := by
-  classical
   rw [addContent_eq_add_disjointOfDiffUnion_of_subset hC ht h_ss hJt h_dis]
   exact le_add_right le_rfl
 
@@ -336,7 +332,6 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
   refine ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
-  classical
   rw [← Finset.sum_image_of_disjoint addContent_empty (hf_disj.pairwiseDisjoint _)]
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ hf_Union ?_
   · simp only [coe_image, Set.image_subset_iff]
@@ -400,7 +395,6 @@ noncomputable def AddContent.onIoc (f : α → G) :
   toFun := AddContent.onIocAux f
   empty' := AddContent.onIocAux_empty f
   sUnion' := by
-    classical
     /- Consider a finite union of open-closed intervals whose union is again an open-closed
     interval `(u, v]`. We have to show that the sum of `f b - f a` over the intervals gives
     `f v - f u`. Informally, `(u, v]` is an ordered
@@ -533,7 +527,6 @@ def IsSetRing.addContent_of_union (m : Set α → G) (hC : IsSetRing C) (m_empty
   toFun := m
   empty' := m_empty
   sUnion' I h_ss h_dis h_mem := by
-    classical
     induction I using Finset.induction with
     | empty => simp only [Finset.coe_empty, Set.sUnion_empty, Finset.sum_empty, m_empty]
     | insert s I hsI h =>

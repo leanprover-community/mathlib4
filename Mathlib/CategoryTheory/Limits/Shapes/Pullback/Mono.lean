@@ -162,6 +162,7 @@ variable (f : X ⟶ Z) (i : Z ⟶ W) [Mono i]
 instance hasPullback_of_right_factors_mono : HasPullback i (f ≫ i) := by
   simpa only [Category.id_comp] using hasPullback_of_comp_mono (𝟙 Z) f i
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance pullback_snd_iso_of_right_factors_mono :
     IsIso (pullback.snd i (f ≫ i)) := by
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right
@@ -174,6 +175,7 @@ attribute [local instance] hasPullback_of_right_iso
 instance hasPullback_of_left_factors_mono : HasPullback (f ≫ i) i := by
   simpa only [Category.id_comp] using hasPullback_of_comp_mono f (𝟙 Z) i
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance pullback_snd_iso_of_left_factors_mono :
     IsIso (pullback.fst (f ≫ i) i) := by
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left
@@ -323,7 +325,7 @@ instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ 
 /-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]
     [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr f g)
-    (show (h ≫ f) ≫ pushout.inl f g = (h ≫ g) ≫ pushout.inr f g from by
+    (show (h ≫ f) ≫ pushout.inl f g = (h ≫ g) ≫ pushout.inr f g by
     simp only [Category.assoc]; rw [cancel_epi]; exact pushout.condition)) :=
   PushoutCocone.isColimitOfEpiComp f g h _ (colimit.isColimit (span f g))
 

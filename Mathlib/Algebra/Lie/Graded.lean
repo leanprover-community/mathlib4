@@ -83,6 +83,7 @@ lemma decompose_symm_bracket (x y : ⨁ i, ℒ i) :
   simp only [← decomposeLinearEquiv_symm_apply]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LieAlgebra R (⨁ i, ℒ i) where
   add_smul _ _ _ := by simp [add_smul]
   zero_smul _ := by simp
@@ -141,6 +142,7 @@ lemma ofGradingSum_of (φ : ι →+ R) (i : ι) (a : ℒ i) :
     ofGradingSum ℒ φ (of (ℒ ·) i a) = (φ i) • (of (ℒ ·) i a) := by
   simp [← lof_eq_of R, ofGradingSum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie derivation on a graded Lie algebra that scalar-multiplies by an additive function of
 the degree. -/
 def ofGrading (φ : ι →+ R) :
@@ -150,6 +152,7 @@ def ofGrading (φ : ι →+ R) :
   map_smul' _ _ := by simp
   leibniz' x y := by simp [decomposeLinearEquiv_apply, decomposeLinearEquiv_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofGrading_apply_apply (φ : ι →+ R) {i : ι} {a : L} (ha : a ∈ ℒ i) :
     ofGrading ℒ φ a = φ i • a := by
   simp [ofGrading, decomposeLinearEquiv_apply, decompose_of_mem ℒ ha]

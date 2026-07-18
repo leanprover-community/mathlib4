@@ -474,7 +474,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
       (M.localizedModuleMkLinearMap qq.1.1.primeCompl)
       (M.localizedModule_isLocalizedModule qq.1.1.primeCompl) q.length
     exact nontrivial_of_islocalizedModule isl ntr'
-  simp only [← hq, injectiveDimension_eq_sInf_of_finite.{v} M, le_sInf_iff, Set.mem_setOf_eq]
+  simp only [← hq, injectiveDimension_eq_sInf_of_finite.{v} M, le_sInf_iff, Set.mem_ofPred_eq]
   intro b hb
   by_contra! lt
   exact (not_subsingleton_iff_nontrivial.mpr ntr) (hb q.length lt)
@@ -552,7 +552,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
         rs reg'
       rw [IsLocalRing.depth_eq_sSup_length_regular (ModuleCat.of R (Shrink.{v} R)), ← len] at this
       nth_rw 2 [← zero_add (rs.length : ℕ∞)] at this
-      exact (WithTop.add_right_inj (ENat.coe_ne_top rs.length)).mp this
+      exact (WithTop.add_right_inj (ENat.natCast_ne_top rs.length)).mp this
     have := (moduleDepth_eq_zero_of_hom_nontrivial _ _).mp depth_zero
     rcases (nontrivial_iff_exists_ne 0).mp this with ⟨f, hf⟩
     have injf : Function.Injective f := by
@@ -585,7 +585,7 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     have surj : Function.Surjective ((Ext.mk₀.{v} S.f).precomp M (zero_add r)) :=
       (AddCommGrpCat.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
     exact surj.nontrivial
-  · simp only [injectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
+  · simp only [injectiveDimension, le_sInf_iff, Set.mem_ofPred_eq]
     intro b hb
     by_contra! lt
     have := hb rs.length lt
@@ -629,7 +629,8 @@ lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
     induction n with
     | top => rfl
     | coe n =>
-      simpa [- ENat.WithBot.coe_eq_natCast] using WithBot.coe_inj.not.mpr (ENat.coe_ne_top (n + 1))
+      simpa [- ENat.WithBot.coe_eq_natCast] using
+        WithBot.coe_inj.not.mpr (ENat.natCast_ne_top (n + 1))
 
 variable [IsLocalRing R]
 
@@ -753,9 +754,9 @@ lemma Module.length_ne_top_of_support_subset (M : Type*) [AddCommGroup M] [Modul
     simp [e.length_eq]
   | exact N₁ N₂ N₃ f g inj surj exac ih1 ih3 =>
     simp only [Module.support_of_exact exac inj surj, Set.union_subset_iff] at h
-    rw [Module.length_eq_add_of_exact f g inj surj exac, ← ENat.coe_toNat_eq_self.mpr (ih1 h.1),
-      ← ENat.coe_toNat_eq_self.mpr (ih3 h.2), ← Nat.cast_add]
-    exact ENat.coe_ne_top _
+    rw [Module.length_eq_add_of_exact f g inj surj exac, ← ENat.natCast_toNat_eq_self.mpr (ih1 h.1),
+      ← ENat.natCast_toNat_eq_self.mpr (ih3 h.2), ← Nat.cast_add]
+    exact ENat.natCast_ne_top _
 
 omit [IsLocalRing R] in
 lemma LinearMap.surjective_of_injective_of_length_ne_top (M : Type*) [AddCommGroup M] [Module R M]
@@ -781,7 +782,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
     have injlt : HasInjectiveDimensionLT (ModuleCat.of R R) k := by
       apply ModuleCat.hasInjectiveDimensionLT_of_quotients _ _ (fun I ↦ ?_)
       apply ext_subsingleton_of_support_subset _ _ k (fun p hp ↦ ?_)
-      rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
+      rw [Set.mem_ofPred_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
       exact (((extFunctor k).mapIso (e (maximalIdeal R)).op).app
         (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp h
     exact (isGorensteinLocalRing_def R).mpr (ne_top_of_lt (injectiveDimension_lt_iff.mpr injlt))
@@ -842,7 +843,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
             Set.singleton_subset_iff, SetLike.mem_coe, Module.mem_support_iff_of_finite] at hq
           apply not_not.mpr (lt_of_le_of_ne _ (ne_of_mem_of_not_mem' hq.2 nmem).symm)
           exact le_of_eq_of_le Ideal.annihilator_quotient.symm hq.1
-        simp only [Set.mem_setOf_eq, q.2, true_and, not_nontrivial_iff_subsingleton, S] at qnin
+        simp only [Set.mem_ofPred_eq, q.2, true_and, not_nontrivial_iff_subsingleton, S] at qnin
         exact (((extFunctor k).mapIso (e q.1).op).app
           (ModuleCat.of R R)).addCommGroupIsoToAddEquiv.subsingleton_congr.mp qnin
       let S := (ModuleCat.of R (R ⧸ p)).smulShortComplex x
