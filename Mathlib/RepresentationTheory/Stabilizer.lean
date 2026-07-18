@@ -65,9 +65,9 @@ lemma stabilizer_conj (ρ : Representation k G V) (g : G) (v : V) :
   exact ⟨fun h ↦ ⟨_, h, by simp [mul_assoc]⟩, by rintro ⟨y, hy1, rfl⟩; simp [mul_assoc, hy1]⟩
 
 variable {H : Type*} [Group H] (f : H →* G) in
-lemma stabilizer_comap_le_stabilizer (ρ : Representation k G V) (v : V) :
-    (stabilizer ρ v).comap f ≤ stabilizer (ρ.comp f) v := by
-  simp +contextual [SetLike.le_def]
+lemma stabilizer_comap_eq (ρ : Representation k G V) (v : V) :
+    (stabilizer ρ v).comap f = stabilizer (ρ.comp f) v := by
+  ext; simp
 
 section tmul
 
