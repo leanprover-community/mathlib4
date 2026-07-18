@@ -282,6 +282,7 @@ end bij
 @[simp] lemma expect_neg_index [DecidableEq ι] [InvolutiveNeg ι] (s : Finset ι) (f : ι → M) :
     𝔼 i ∈ -s, f i = 𝔼 i ∈ s, f (-i) := expect_image neg_injective.injOn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.map_expect {F : Type*} [FunLike F M N] [LinearMapClass F ℚ≥0 M N]
     (g : F) (f : ι → M) (s : Finset ι) :
     g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_sum]
@@ -346,7 +347,6 @@ variable [CommSemiring M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M] [SMulCo
 
 lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
     (𝔼 i ∈ s, f i) ^ n = 𝔼 p ∈ Fintype.piFinset fun _ : Fin n ↦ s, ∏ i, f (p i) := by
-  classical
   rw [expect, smul_pow, sum_pow', expect, Fintype.card_piFinset_const, inv_pow, Nat.cast_pow]
 
 end CommSemiring
