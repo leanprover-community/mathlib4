@@ -31,6 +31,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace WithOne
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) where
   inv_inv a := (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id]

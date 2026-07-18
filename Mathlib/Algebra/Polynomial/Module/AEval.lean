@@ -70,6 +70,7 @@ lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R
 @[simp] lemma of_symm_smul (f : R[X]) (m : AEval R M a) :
     (of R M a).symm (f • m) = aeval a f • (of R M a).symm m := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma C_smul (t : R) (m : AEval R M a) : C t • m = t • m :=
   (of R M a).symm.injective <| by simp
 
@@ -167,6 +168,7 @@ def equiv_mapSubmodule :
   map_add' x y := rfl
   map_smul' t x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural `R[X]`-linear equivalence between the two ways to represent an invariant submodule.
 -/
 noncomputable def restrict_equiv_mapSubmodule :

@@ -118,13 +118,15 @@ lemma ιNormalizedChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
   simp [ιNormalizedChainComplex, Preadditive.sum_comp,
     -ιChainComplex_toNormalizedChainComplex_f]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ιNormalizedChainComplex_fromNormalizedChainComplex_f (x : X _⦋n⦌) :
     X.ιNormalizedChainComplex x ≫ (X.fromNormalizedChainComplex R).f n =
       X.ιChainComplex x ≫ (PInfty).f n := by
   dsimp [ιNormalizedChainComplex]
   rw [Category.assoc, toNormalizedChainComplex_f_fromNormalizedChainComplex_f]
-  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ιNormalizedChainComplex_eq_zero (x : X _⦋n⦌) (hx : x ∈ X.degenerate n) :

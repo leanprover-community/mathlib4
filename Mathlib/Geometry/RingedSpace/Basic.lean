@@ -38,9 +38,9 @@ open TopCat.Presheaf
 
 namespace AlgebraicGeometry
 
+-- The universes appear together in the type, but separately in the value.
 set_option linter.checkUnivs false in
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
-@[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
 abbrev RingedSpace : Type max (u + 1) (v + 1) :=
   SheafedSpace.{v + 1, v, u} CommRingCat.{v}
 
@@ -69,6 +69,7 @@ lemma exists_res_eq_zero_of_germ_eq_zero (U : Opens X) (f : X.presheaf.obj (op U
   use V, i, hv
   simpa using hv4
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If the germ of a section `f` is a unit in the stalk at `x`, then `f` must be a unit on some small
 neighborhood around `x`.

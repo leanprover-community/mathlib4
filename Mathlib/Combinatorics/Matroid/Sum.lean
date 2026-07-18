@@ -164,6 +164,7 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum'_ground_eq (M : ι → Matroid α) :
     (Matroid.sum' M).E = ⋃ i, Prod.mk i '' (M i).E := by
   ext
