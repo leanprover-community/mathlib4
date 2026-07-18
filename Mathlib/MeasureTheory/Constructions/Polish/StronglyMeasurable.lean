@@ -38,7 +38,7 @@ theorem measurableSet_exists_tendsto [IsCompletelyPseudoMetrizableSpace E]
   obtain rfl | hl := eq_or_neBot l
   · simp_all
   borelize E
-  letI := upgradeIsCompletelyPseudoMetrizable E
+  let := upgradeIsCompletelyPseudoMetrizable E
   let s := closure (⋃ i, range (f i))
   have : SecondCountableTopology s := @UniformSpace.secondCountable_of_separable s _ _
     (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
