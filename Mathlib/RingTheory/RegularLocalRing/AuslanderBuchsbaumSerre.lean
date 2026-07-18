@@ -153,7 +153,7 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
   have eq0 : IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) = 0 :=
     (moduleDepth_eq_zero_of_hom_nontrivial _ _).mpr (not_subsingleton_iff_nontrivial.mp h)
   have eq := AuslanderBuchsbaum (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R)))
-    (ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.coe_ne_top _))
+    (ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.natCast_ne_top _))
       ((projectiveDimension_le_iff _ _).mpr projdim))
   have : projectiveDimension (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) ≤ 0 := by
     simpa [← WithBot.coe_zero, ← eq0, ← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
@@ -221,6 +221,7 @@ lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x 
     finrank_span_singleton this, Nat.add_sub_cancel_right]
 
 open Pointwise in
+set_option backward.isDefEq.respectTransparency false in
 theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n)
     (n : ℕ) : Submodule.spanFinrank (maximalIdeal R) = n →
@@ -257,18 +258,18 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       have : RingHomSurjective (residue R) := ⟨residue_surjective⟩
       rw [sup_comm, ← sup_eq_left.mpr (LinearMap.ker_le_comap g), ← sup_assoc,
         ← Submodule.comap_map_eq, Submodule.map_sup, Submodule.map_span,
-        Submodule.map_comap_eq_of_surjective surjg]
-      simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, Set.image_singleton, g]
-      rw [codisjoint_iff.mp sup, Submodule.comap_top]
+        Submodule.map_comap_eq_of_surjective surjg, Set.image_singleton,
+        ← Submodule.comap_top g, ← codisjoint_iff.mp sup]
+      simp [xm', g]
     have infle : (J'.comap g) ⊓ Submodule.span R {⟨x, mem⟩} ≤
       x • (⊤ : Submodule R (maximalIdeal R)) := by
       intro y hy
       simp only [Submodule.mem_inf, Submodule.mem_comap] at hy
       rcases Submodule.mem_span_singleton.mp hy.2 with ⟨r, hr⟩
       rw [← hr, LinearMap.map_smulₛₗ] at hy
-      simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, SetLike.mk_smul_mk, smul_eq_mul, g] at hy
+      simp only [SetLike.mk_smul_mk, smul_eq_mul, g] at hy
       have := Submodule.mem_inf.mpr ⟨Submodule.mem_span_singleton.mpr (by use (residue R) r), hy.1⟩
-      rw [disjoint_iff.mp inf, Submodule.mem_bot] at this
+      erw [disjoint_iff.mp inf, Submodule.mem_bot] at this
       have eq0 : r ∈ maximalIdeal R := (residue_eq_zero_iff _).mp
         ((smul_eq_zero_iff_left (by simpa [Ideal.toCotangent_eq_zero] using nmem)).mp this)
       simp only [SetLike.mk_smul_mk, smul_eq_mul, ← Subtype.val_inj] at hr
