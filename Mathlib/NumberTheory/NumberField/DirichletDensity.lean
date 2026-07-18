@@ -13,7 +13,7 @@ public import Mathlib.NumberTheory.NumberField.DedekindZeta
 Let `K` be a number field and let `S` be a set of nonzero prime ideals of `𝓞 K`, that is a set of
 elements of `IsDedekindDomain.HeightOneSpectrum (𝓞 K)`. The Dirichlet density of `S` is
 
-  δ(S) = lim_{s → 1⁺} ( Σ_{𝔭 ∈ S} N𝔭^{-s} ) / ( Σ_𝔭 N𝔭^{-s} ),
+  δ(S) = lim_{s → 1⁺} Σ_{𝔭 ∈ S} N𝔭^{-s} / Σ_𝔭 N𝔭^{-s},
 
 when this limit exists, the sum in the denominator running over all nonzero prime ideals.
 
