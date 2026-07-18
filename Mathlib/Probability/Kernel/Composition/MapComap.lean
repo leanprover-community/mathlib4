@@ -454,7 +454,7 @@ lemma fst_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hg : Mea
   by_cases hf : Measurable f
   · ext x s hs
     rw [fst_apply' _ _ hs, map_apply' _ (hf.prod hg) _, map_apply' _ hf _ hs]
-    · simp only [Set.preimage, Set.mem_setOf]
+    · simp only [Set.preimage, Set.mem_ofPred]
     · exact measurable_fst hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
       contrapose hf; exact hf.fst
@@ -516,7 +516,7 @@ lemma snd_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hf : Mea
   by_cases hg : Measurable g
   · ext x s hs
     rw [snd_apply' _ _ hs, map_apply' _ (hf.prod hg), map_apply' _ hg _ hs]
-    · simp only [Set.preimage, Set.mem_setOf]
+    · simp only [Set.preimage, Set.mem_ofPred]
     · exact measurable_snd hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
       contrapose hg; exact hg.snd

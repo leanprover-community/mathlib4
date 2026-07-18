@@ -118,6 +118,7 @@ lemma res_map_exact {k : Type u} [CommRing k]
     (S.map (resFunctor f)).Exact ↔ S.Exact := by
   rw [ShortComplex.exact_map_iff_of_faithful]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex (Rep.{w} k G)} :
     (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
   constructor
