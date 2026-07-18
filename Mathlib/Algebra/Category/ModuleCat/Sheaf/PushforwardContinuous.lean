@@ -48,6 +48,11 @@ noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S wh
   map f :=
     { val := (PresheafOfModules.pushforward φ.hom).map f.val }
 
+lemma forget₂_map_pushforward_obj_val_map {U V : Cᵒᵖ} (f : U ⟶ V) (M) :
+    (forget₂ _ Ab).map (((pushforward.{v} φ).obj M).val.map f) =
+      M.val.presheaf.map (F.map f.unop).op :=
+  rfl
+
 variable (R) in
 /-- The restriction functor from sheaves of `R`-modules to sheaves of `R.over X`-modules
 for some `X : D`. -/
@@ -83,9 +88,7 @@ noncomputable def overFunctorMap {X Y : D} (f : X ⟶ Y) :
 
 /-- The pushforward of `R.over Y` along `Over.map f` is isomorphic to `R.over X`. -/
 @[simps! +dsimpLhs]
-noncomputable def overMapUnitIso {X Y : D}
-    [(K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-    [(K.over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})] (f : X ⟶ Y) :
+noncomputable def overMapUnitIso {X Y : D} (f : X ⟶ Y) :
     (overMap.{u} R f).obj (.unit (R.over Y)) ≅ .unit (R.over X) :=
   Iso.refl _
 
@@ -128,12 +131,13 @@ section
 
 variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
   {G : D ⥤ D'} {R' : Sheaf K' RingCat.{u}}
-  [Functor.IsContinuous G K K'] [Functor.IsContinuous (F ⋙ G) J K']
+  [Functor.IsContinuous G K K']
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K K').obj R')
 
 /-- The composition of two pushforward functors on categories of sheaves of modules
 identify to the pushforward for the composition. -/
 noncomputable def pushforwardComp :
+    haveI : Functor.IsContinuous (F ⋙ G) J K' := Functor.isContinuous_comp _ _ _ K _
     pushforward.{v} ψ ⋙ pushforward.{v} φ ≅
       pushforward.{v} (F := F ⋙ G) (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ) :=
   Iso.refl _
@@ -149,8 +153,7 @@ lemma pushforwardComp_inv_app_val_app (M U x) :
 variable {G' : D' ⥤ D''} {R'' : Sheaf K'' RingCat.{u}}
   [Functor.IsContinuous G' K' K'']
   [Functor.IsContinuous (G ⋙ G') K K'']
-  [Functor.IsContinuous ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous (F ⋙ G ⋙ G') J K'']
+  [(F ⋙ G).IsContinuous J K']
   (ψ' : R' ⟶ (G'.sheafPushforwardContinuous RingCat.{u} K' K'').obj R'')
 
 lemma pushforward_assoc :
@@ -218,6 +221,7 @@ lemma pushforwardNatTrans_comp (α : F ⟶ G) (β : G ⟶ H)
 lemma pushforwardNatTrans_app_val_app_apply (α : F ⟶ G) (X U x) :
     ((pushforwardNatTrans φ α).app X).val.app U x = X.val.map (α.app U.unop).op x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism gives a natural isomorphism between the pushforward functors. -/
 @[simps]
@@ -239,6 +243,14 @@ noncomputable def pushforwardNatIso (α : F ≅ G) :
       X.val.presheaf.map (α.hom.app U.unop).op = 𝟙 _ from congr($this x)
     simp only [← Functor.map_comp, ← op_comp,
       Iso.hom_inv_id_app, op_id, CategoryTheory.Functor.map_id]
+
+/-- More flexible variant of `SheafOfModules.pushforwardNatIso`. -/
+@[simps!]
+noncomputable
+def pushforwardCongr₂ {ψ : T ⟶ (F.sheafPushforwardContinuous RingCat J K).obj S} (e : F ≅ G)
+    (he : φ ≫ (Functor.sheafPushforwardContinuousNatTrans e.hom _ _ _).app S = ψ) :
+    pushforward.{v} φ ≅ pushforward.{v} ψ :=
+  pushforwardNatIso _ e ≪≫ pushforwardCongr he
 
 end NatTrans
 
@@ -291,6 +303,24 @@ lemma pushforwardPushforwardAdj_unit_app_val_app (M U x) :
 lemma pushforwardPushforwardAdj_counit_app_val_app (M U x) :
     ((pushforwardPushforwardAdj adj φ ψ H₁ H₂).counit.app M).val.app U x =
       M.val.map (adj.unit.app U.unop).op x := rfl
+
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+instance isLeftAdjoint_pushforward_of_isIso [F.IsCocontinuous J K] [IsIso φ] [F.IsLeftAdjoint] :
+    (pushforward.{u} φ).IsLeftAdjoint := by
+  let adj := Adjunction.ofIsLeftAdjoint F
+  let shAdj := adj.sheafPushforwardContinuous (E := RingCat.{u}) J K
+  let ψ : R ⟶ (F.rightAdjoint.sheafPushforwardContinuous RingCat.{u} K J).obj S :=
+    shAdj.unit.app R ≫ (F.rightAdjoint.sheafPushforwardContinuous _ _ _).map (inv φ)
+  refine (SheafOfModules.pushforwardPushforwardAdj adj φ ψ ?_ ?_).isLeftAdjoint
+  · ext U : 2
+    simp [ψ, shAdj]
+  · ext U : 2
+    have := (inv φ).hom.naturality
+    dsimp at this
+    simp only [ObjectProperty.hom_inv, NatIso.isIso_inv_app, sheafPushforwardContinuous_obj_obj_obj,
+      IsIso.eq_inv_comp] at this
+    simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
 
 noncomputable section
 

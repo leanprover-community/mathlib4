@@ -161,7 +161,7 @@ def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
   comp := ((B.hasBasis.lift' (monotone_id.relComp monotone_id)).le_basis_iff B.hasBasis).2 comp
 
 /-- A uniform space generates a topological space -/
-@[implicit_reducible]
+@[instance_reducible]
 def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α) :
     TopologicalSpace α :=
   .mkOfNhds fun x ↦ .comap (Prod.mk x) u.uniformity
@@ -189,6 +189,7 @@ theorem UniformSpace.Core.nhds_toTopologicalSpace {α : Type u} (u : Core α) (x
 
   A metric space has a natural uniformity, and a uniform space has a natural topology.
   A topological group also has a natural uniformity, even when it is not metrizable. -/
+@[wikidata Q652446]
 class UniformSpace (α : Type u) extends TopologicalSpace α where
   /-- The uniformity filter. -/
   protected uniformity : Filter (α × α)
@@ -499,7 +500,7 @@ theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by
   rw [uniformity_eq_symm, mem_nhds_uniformity_iff_right]
-  simp only [mem_map, preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap]
+  simp only [mem_map, preimage_ofPred_eq, Prod.snd_swap, Prod.fst_swap]
 
 theorem nhdsWithin_eq_comap_uniformity_of_mem {x : α} {T : Set α} (hx : x ∈ T) (S : Set α) :
     𝓝[S] x = (𝓤 α ⊓ 𝓟 (T ×ˢ S)).comap (Prod.mk x) := by
@@ -626,6 +627,7 @@ variable [UniformSpace β]
 /-- A function `f : α → β` is *uniformly continuous* if `(f x, f y)` tends to the diagonal
 as `(x, y)` tends to the diagonal. In other words, if `x` is sufficiently close to `y`, then
 `f x` is close to `f y` no matter where `x` and `y` are located in `α`. -/
+@[fun_prop]
 def UniformContinuous (f : α → β) :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α) (𝓤 β)
 
@@ -636,6 +638,7 @@ scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformC
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
 `f y` no matter where `x` and `y` are located in `s`. -/
+@[fun_prop]
 def UniformContinuousOn (f : α → β) (s : Set α) : Prop :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
 
@@ -657,17 +660,21 @@ theorem uniformContinuous_of_const {c : α → β} (h : ∀ a b, c a = c b) :
     eq_univ_iff_forall.2 fun ⟨a, b⟩ => h a b
   le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this]) refl_le_uniformity
 
+@[fun_prop]
 theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 
+@[fun_prop]
 theorem uniformContinuous_const {b : β} : UniformContinuous fun _ : α => b :=
   uniformContinuous_of_const fun _ _ => rfl
 
+@[fun_prop]
 nonrec theorem UniformContinuous.comp [UniformSpace γ] {g : β → γ} {f : α → β}
     (hg : UniformContinuous g) (hf : UniformContinuous f) : UniformContinuous (g ∘ f) :=
   hg.comp hf
 
 /-- If a function `T` is uniformly continuous in a uniform space `β`,
 then its `n`-th iterate `T^[n]` is also uniformly continuous. -/
+@[fun_prop]
 theorem UniformContinuous.iterate (T : β → β) (n : ℕ) (h : UniformContinuous T) :
     UniformContinuous T^[n] := by
   induction n with
@@ -691,7 +698,7 @@ theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} {p : ι → Prop}
 /-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
 on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
 space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`. -/
-@[mk_iff]
+@[mk_iff, fun_prop]
 structure IsUniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
   under `Prod.map f f`. -/
@@ -699,7 +706,7 @@ structure IsUniformInducing (f : α → β) : Prop where
 
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
-@[mk_iff]
+@[mk_iff, fun_prop]
 structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
   /-- A uniform embedding is injective. -/
   injective : Function.Injective f

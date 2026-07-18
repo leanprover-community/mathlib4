@@ -70,6 +70,7 @@ theorem ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
 
 section rankOne
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
 theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
@@ -419,7 +420,7 @@ noncomputable def centerEquivRootsOfUnity_invFun
       simpa [← Subtype.val_inj, ← Units.val_inj]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 /-- The isomorphism between the roots of unity and the center of the special linear group. -/
 noncomputable def centerEquivRootsOfUnity :
     (Subgroup.center (SpecialLinearGroup R V)) ≃*
@@ -523,6 +524,7 @@ theorem centerEquivRootsOfUnity_apply_of_finrank_le_one
   apply rootsOfUnity.eq_one
   rw [Nat.max_eq_right d1]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem centerEquivRootsOfUnity_symm_apply
     (r : rootsOfUnity (max (Module.finrank R V) 1) R) :
     (centerEquivRootsOfUnity.symm r : V →ₗ[R] V) = r • LinearMap.id := by

@@ -44,6 +44,9 @@ class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSp
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
 -- see Note [lower instance priority]
+attribute [instance 10] NormedDivisionRing.toDivisionRing
+
+-- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/
 instance (priority := 100) NormedDivisionRing.toNormedRing [β : NormedDivisionRing α] :
     NormedRing α :=
@@ -153,6 +156,9 @@ class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
+
+-- see Note [lower instance priority]
+attribute [instance 10] NormedField.toField
 
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
@@ -280,7 +286,7 @@ end NormedField
 
 /-- A normed field is nontrivially normed
 provided that the norm of some nonzero element is not one. -/
-@[implicit_reducible]
+@[instance_reducible]
 def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
   toNormedField := h'
@@ -355,7 +361,7 @@ end SubfieldClass
 namespace AbsoluteValue
 
 /-- A real absolute value on a field determines a `NormedField` structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
   toField := inferInstanceAs (Field K)
   __ := v.toNormedRing

@@ -211,7 +211,7 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
     delta ContinuousWithinAt
-    simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
+    simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_ofPred_eq,
       and_imp]
     exact forall_congr' fun t => forall_comm
 
@@ -867,10 +867,10 @@ lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)
 
-open Classical in
 /-- If a function is continuous on two closed sets, it is also continuous on their union. -/
 theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
     (hs : IsClosed s) (ht : IsClosed t) : ContinuousOn f (s ∪ t) := by
+  classical
   refine fun x hx ↦ .union ?_ ?_
   · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [hs.closure_eq]
