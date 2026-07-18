@@ -311,7 +311,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
 theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
     fundamentalDomain b ⊆ parallelepiped b := by
-  rw [fundamentalDomain, parallelepiped_basis_eq, Set.setOf_subset_setOf]
+  rw [fundamentalDomain, parallelepiped_basis_eq, Set.ofPred_subset_ofPred]
   exact fun _ h i ↦ Set.Ico_subset_Icc_self (h i)
 
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
@@ -342,7 +342,7 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
   · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
     exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Ico
   · ext
-    simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_setOf_eq, LinearEquiv.coe_coe,
+    simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_ofPred_eq, LinearEquiv.coe_coe,
       Set.mem_preimage, Basis.equivFun_apply, Set.mem_pi, Set.mem_univ, forall_true_left]
 
 /-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
@@ -409,7 +409,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
-  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_sdiff, Set.mem_setOf_eq,
+  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_sdiff, Set.mem_ofPred_eq,
     mem_fundamentalDomain, Set.mem_Ico, not_forall, not_and, not_lt] at hx
   obtain ⟨i, hi⟩ := hx.2
   have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
@@ -458,7 +458,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
     refine fg_def.mpr ⟨map (span ℤ s).mkQ L, ?_, span_eq _⟩
     let b := Basis.mk h_lind (by
       rw [← hs.span_top, ← h_span]
-      exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
+      exact span_mono (by simp only [Subtype.range_coe_subtype, Set.ofPred_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
     refine Set.Finite.of_finite_image (f := ((↑) : _ → E) ∘ quotientEquiv b) ?_
@@ -476,7 +476,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
     · rw [fract, SetLike.mem_coe, sub_eq_add_neg]
       refine Submodule.add_mem _ h_mem
         (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (floor b x))))
-      rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+      rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
       exact span_le.mpr h_incl
   · -- `span ℤ s` is finitely generated because `s` is finite
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
@@ -557,7 +557,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     contrapose! h
     -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
-      rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
+      rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.ofPred_mem_eq, ← Set.toFinset_nonempty]
       contrapose! h
       rw [Set.toFinset_sdiff, Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h

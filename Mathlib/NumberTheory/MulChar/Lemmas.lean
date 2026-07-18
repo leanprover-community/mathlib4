@@ -28,8 +28,7 @@ lemma eq_iff {g : Rˣ} (hg : ∀ x, x ∈ Subgroup.zpowers g) (χ₁ χ₂ : Mul
   rw [← Equiv.apply_eq_iff_eq equivToUnitHom, MonoidHom.eq_iff_eq_on_generator hg,
     ← coe_equivToUnitHom, ← coe_equivToUnitHom, Units.ext_iff]
 
-theorem domRestrict_ofUnitHom (f : Rˣ →* R'ˣ) (S : Submonoid R) :
-    domRestrict S (ofUnitHom f) =
+theorem domRestrict_ofUnitHom (f : Rˣ →* R'ˣ) (S : Submonoid R) : domRestrict S (ofUnitHom f) =
       ofUnitHom ((f.domRestrict S.units).comp S.unitsEquivUnitsType.symm) := by
   ext x
   simp only [ofUnitHom_eq, domRestrict_apply, Units.isUnit, reduceIte, equivToUnitHom_symm_coe,

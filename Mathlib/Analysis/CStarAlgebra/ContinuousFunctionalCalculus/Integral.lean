@@ -140,8 +140,7 @@ lemma cfc_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     filter_upwards [hf₁] with x cont_x
     rw [mkD_apply_of_continuousOn cont_x]
   have key₂ (z : spectrum 𝕜 a) :
-      ∫ x, f x z ∂μ =
-        mkD ((spectrum 𝕜 a).domRestrict (fun z ↦ ∫ x, f x z ∂μ)) 0 z := by
+      ∫ x, f x z ∂μ = mkD ((spectrum 𝕜 a).domRestrict (fun z ↦ ∫ x, f x z ∂μ)) 0 z := by
     rw [mkD_apply_of_continuousOn]
     rw [continuousOn_iff_continuous_domRestrict]
     refine continuous_congr key₁ |>.mpr ?_
@@ -293,15 +292,13 @@ lemma cfcₙ_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     (ha : p a := by cfc_tac) :
     cfcₙ (fun z => ∫ x, f x z ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
   have key₁ (z : quasispectrum 𝕜 a) :
-      ∫ x, f x z ∂μ =
-        (∫ x, mkD ((quasispectrum 𝕜 a).domRestrict (f x)) 0 ∂μ) z := by
+      ∫ x, f x z ∂μ = (∫ x, mkD ((quasispectrum 𝕜 a).domRestrict (f x)) 0 ∂μ) z := by
     rw [integral_apply hf₃]
     refine integral_congr_ae ?_
     filter_upwards [hf₁, hf₂] with x cont_x zero_x
     rw [mkD_apply_of_continuousOn cont_x zero_x]
   have key₂ (z : quasispectrum 𝕜 a) :
-      ∫ x, f x z ∂μ =
-        mkD ((quasispectrum 𝕜 a).domRestrict (fun z ↦ ∫ x, f x z ∂μ)) 0 z := by
+      ∫ x, f x z ∂μ = mkD ((quasispectrum 𝕜 a).domRestrict (fun z ↦ ∫ x, f x z ∂μ)) 0 z := by
     rw [mkD_apply_of_continuousOn]
     · rw [continuousOn_iff_continuous_domRestrict]
       refine continuous_congr key₁ |>.mpr ?_

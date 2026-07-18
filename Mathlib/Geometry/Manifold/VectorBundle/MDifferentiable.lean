@@ -519,7 +519,7 @@ lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
   by_contra! h
   have : i ∈ s.toFinset := by
     refine Set.mem_toFinset.mpr ?_
-    simp only [s, ne_eq, Set.mem_setOf_eq]
+    simp only [s, ne_eq, Set.mem_ofPred_eq]
     use y
     simp [h, hy]
   exact hi this
@@ -556,7 +556,7 @@ lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
     intro x hx
-    rw [Set.mem_setOf] at hx ⊢
+    rw [Set.mem_ofPred] at hx ⊢
     use y
     simpa using ⟨hx, mem_of_mem_nhds hu⟩
   rw [tsum_eq_finsum (hfin.subset this)]

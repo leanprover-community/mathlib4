@@ -131,18 +131,14 @@ section strictMono
 variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
 
 @[simp]
-theorem strictMono_domRestrict :
-    StrictMono (s.domRestrict f) ↔ StrictMonoOn f s := by
+theorem strictMono_domRestrict : StrictMono (s.domRestrict f) ↔ StrictMonoOn f s := by
   simp [Set.domRestrict, StrictMono, StrictMonoOn]
 
-alias ⟨_root_.StrictMono.of_domRestrict, _root_.StrictMonoOn.domRestrict⟩ :=
-  strictMono_domRestrict
+alias ⟨_root_.StrictMono.of_domRestrict, _root_.StrictMonoOn.domRestrict⟩ := strictMono_domRestrict
 
 @[deprecated (since := "2026-02-10")] alias strictMono_restrict := strictMono_domRestrict
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.StrictMono.of_restrict := _root_.StrictMono.of_domRestrict
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.StrictMonoOn.restrict := _root_.StrictMonoOn.domRestrict
 

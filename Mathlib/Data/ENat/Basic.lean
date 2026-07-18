@@ -26,7 +26,7 @@ There are two natural coercions from `ℕ` to `WithTop ℕ = ENat`: `WithTop.som
 Lean 3, this difference was hidden in typeclass instances. Since these instances were definitionally
 equal, we did not duplicate generic lemmas about `WithTop α` and `WithTop.some` coercion for `ENat`
 and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may either rewrite back
-and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
+and forth using `ENat.some_eq_natCast`, or restate the lemma for `ENat`.
 
 ## TODO
 
@@ -56,31 +56,47 @@ variable {a b c d m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
-@[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
+@[simp] theorem some_eq_natCast : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
 
-theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
+@[deprecated (since := "2026-07-17")] alias some_eq_coe := some_eq_natCast
 
-@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
+theorem natCast_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
+
+@[deprecated (since := "2026-07-17")] alias coe_inj := natCast_inj
+
+@[simp] theorem succ_natCast (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
+
+@[deprecated (since := "2026-07-17")] alias succ_coe := succ_natCast
 
 @[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
 
 instance : SuccAddOrder ℕ∞ where
   succ_eq_add_one x := by cases x <;> simp
 
-theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
+theorem natCast_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
 
-theorem coe_one : ((1 : ℕ) : ℕ∞) = 1 :=
+@[deprecated (since := "2026-07-17")] alias coe_zero := natCast_zero
+
+theorem natCast_one : ((1 : ℕ) : ℕ∞) = 1 :=
   rfl
 
-theorem coe_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
+@[deprecated (since := "2026-07-17")] alias coe_one := natCast_one
+
+theorem natCast_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
   rfl
+
+@[deprecated (since := "2026-07-17")] alias coe_add := natCast_add
 
 @[simp, norm_cast]
-theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
+theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
   rfl
 
-@[simp] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+@[deprecated (since := "2026-07-17")] alias coe_sub := natCast_sub
+
+@[simp] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+
+@[deprecated (since := "2026-07-17")] alias coe_mul := natCast_mul
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
 @[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
@@ -104,25 +120,30 @@ lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ⊤) : a = ⊤ := WithTop.eq_top_of_
 /-- Convert a `ℕ∞` to a `ℕ` using a proof that it is not infinite. -/
 def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff_ne_top.mp h)
 
-@[simp] theorem coe_lift (x : ℕ∞) (h : x < ⊤) : (lift x h : ℕ∞) = x :=
+@[simp] theorem natCast_lift (x : ℕ∞) (h : x < ⊤) : (lift x h : ℕ∞) = x :=
   WithTop.coe_untop x (WithTop.lt_top_iff_ne_top.mp h)
-@[simp] theorem lift_coe (n : ℕ) : lift (n : ℕ∞) (WithTop.coe_lt_top n) = n := rfl
+
+@[deprecated (since := "2026-07-17")] alias coe_lift := natCast_lift
+
+@[simp] theorem lift_natCast (n : ℕ) : lift (n : ℕ∞) (WithTop.natCast_lt_top n) = n := rfl
 @[simp] theorem lift_lt_iff {x : ℕ∞} {h} {n : ℕ} : lift x h < n ↔ x < n := WithTop.untop_lt_iff _
 @[simp] theorem lift_le_iff {x : ℕ∞} {h} {n : ℕ} : lift x h ≤ n ↔ x ≤ n := WithTop.untop_le_iff _
 @[simp] theorem lt_lift_iff {x : ℕ} {n : ℕ∞} {h} : x < lift n h ↔ x < n := WithTop.lt_untop_iff _
 @[simp] theorem le_lift_iff {x : ℕ} {n : ℕ∞} {h} : x ≤ lift n h ↔ x ≤ n := WithTop.le_untop_iff _
 
-@[simp] theorem lift_zero : lift 0 (WithTop.coe_lt_top 0) = 0 := rfl
-@[simp] theorem lift_one : lift 1 (WithTop.coe_lt_top 1) = 1 := rfl
+@[deprecated (since := "2026-07-17")] alias lift_coe := lift_natCast
+
+@[simp] theorem lift_zero : lift 0 (WithTop.natCast_lt_top 0) = 0 := rfl
+@[simp] theorem lift_one : lift 1 (WithTop.natCast_lt_top 1) = 1 := rfl
 @[simp] theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift ofNat(n) (WithTop.coe_lt_top n) = OfNat.ofNat n := rfl
+    lift ofNat(n) (WithTop.natCast_lt_top n) = OfNat.ofNat n := rfl
 
 @[simp] theorem add_lt_top {a b : ℕ∞} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := WithTop.add_lt_top
 @[simp] theorem add_eq_top {a b : ℕ∞} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := WithTop.add_eq_top
 
 @[simp] theorem lift_add (a b : ℕ∞) (h : a + b < ⊤) :
     lift (a + b) h = lift a (add_lt_top.1 h).1 + lift b (add_lt_top.1 h).2 := by
-  apply coe_inj.1
+  apply natCast_inj.1
   simp
 
 instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
@@ -145,8 +166,10 @@ def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
 lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 
 @[simp]
-theorem toNat_coe (n : ℕ) : toNat n = n :=
+theorem toNat_natCast (n : ℕ) : toNat n = n :=
   rfl
+
+@[deprecated (since := "2026-07-17")] alias toNat_coe := toNat_natCast
 
 @[simp]
 theorem toNat_zero : toNat 0 = 0 :=
@@ -189,8 +212,10 @@ theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a
   rfl
 
 @[simp]
-theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
+theorem top_ne_natCast (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
   nofun
+
+@[deprecated (since := "2026-07-17")] alias top_ne_coe := top_ne_natCast
 
 @[simp]
 theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (ofNat(a) : ℕ∞) :=
@@ -200,8 +225,10 @@ theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (ofNat(a) : ℕ∞) :=
 @[simp] lemma top_ne_one : (⊤ : ℕ∞) ≠ 1 := nofun
 
 @[simp]
-theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
+theorem natCast_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
+
+@[deprecated (since := "2026-07-17")] alias coe_ne_top := natCast_ne_top
 
 @[simp]
 theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
@@ -211,8 +238,10 @@ theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
 @[simp] lemma one_ne_top : 1 ≠ (⊤ : ℕ∞) := nofun
 
 @[simp]
-theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
+theorem top_sub_natCast (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   rfl
+
+@[deprecated (since := "2026-07-17")] alias top_sub_coe := top_sub_natCast
 
 @[simp]
 theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
@@ -233,19 +262,27 @@ theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
 @[simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
 
 @[simp]
-theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
-  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_coe]) n
+theorem natCast_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
+  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_natCast]) n
 
-alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
+@[deprecated (since := "2026-07-17")] alias coe_toNat_eq_self := natCast_toNat_eq_self
 
-@[simp] lemma toNat_eq_iff_eq_coe (n : ℕ∞) (m : ℕ) [NeZero m] :
+alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
+
+@[deprecated (since := "2026-07-17")] alias coe_toNat := natCast_toNat
+
+@[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
     n.toNat = m ↔ n = m := by
   cases n
   · simpa using NeZero.ne' m
   · simp
 
-theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
+@[deprecated (since := "2026-07-17")] alias toNat_eq_iff_eq_coe := toNat_eq_iff_eq_natCast
+
+theorem natCast_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
   ENat.recTopCoe le_top (fun _ => le_rfl) n
+
+@[deprecated (since := "2026-07-17")] alias coe_toNat_le_self := natCast_toNat_le_self
 
 theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + n) = toNat m + toNat n := by
   lift m to ℕ using hm
@@ -255,26 +292,28 @@ theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + 
 theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
   induction m
-  · rw [top_sub_coe, toNat_top, zero_tsub]
-  · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
+  · rw [top_sub_natCast, toNat_top, zero_tsub]
+  · rw [← natCast_sub, toNat_natCast, toNat_natCast, toNat_natCast]
 
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
   · simp
   · rename_i b; cases b <;> simp
   · rename_i a; cases a <;> simp
-  · simp only [toNat_coe]; rw [← coe_mul, toNat_coe]
+  · simp only [toNat_natCast]; rw [← natCast_mul, toNat_natCast]
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
 
-lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
-  lift m to ℕ using ne_top_of_le_ne_top (coe_ne_top n) h
+lemma toNat_le_of_le_natCast {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
+  lift m to ℕ using ne_top_of_le_ne_top (natCast_ne_top n) h
   simpa using h
+
+@[deprecated (since := "2026-07-17")] alias toNat_le_of_le_coe := toNat_le_of_le_natCast
 
 @[gcongr]
 lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
-  toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
+  toNat_le_of_le_natCast <| h.trans_eq (natCast_toNat hn).symm
 
 @[deprecated Order.succ_eq_add_one (since := "2026-05-25")]
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
@@ -286,11 +325,15 @@ theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
 theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax' (not_isMax_iff_ne_top.mpr hn)
 
-theorem coe_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
-  add_one_le_iff <| coe_ne_top m
+theorem natCast_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
+  add_one_le_iff <| natCast_ne_top m
 
-theorem add_one_le_coe_iff {m : ℕ∞} {n : ℕ} : m + 1 ≤ n ↔ m < n :=
-  add_one_le_iff' <| coe_ne_top n
+@[deprecated (since := "2026-07-17")] alias coe_add_one_le_iff := natCast_add_one_le_iff
+
+theorem add_one_le_natCast_iff {m : ℕ∞} {n : ℕ} : m + 1 ≤ n ↔ m < n :=
+  add_one_le_iff' <| natCast_ne_top n
+
+@[deprecated (since := "2026-07-17")] alias add_one_le_coe_iff := add_one_le_natCast_iff
 
 @[deprecated Order.one_le_iff_ne_zero (since := "2026-05-25")]
 protected theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
@@ -322,22 +365,34 @@ theorem add_le_add_iff_right {m n k : ENat} (h : k ≠ ⊤) :
     n + k ≤ m + k ↔ n ≤ m :=
   WithTop.add_le_add_iff_right h
 
-theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
-  lt_add_one_iff (coe_ne_top n)
+theorem lt_natCast_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
+  lt_add_one_iff (natCast_ne_top n)
 
-theorem coe_lt_add_one_iff {m : ℕ} {n : ℕ∞} : m < n + 1 ↔ m ≤ n :=
-  lt_add_one_iff' (coe_ne_top m)
+@[deprecated (since := "2026-07-17")] alias lt_coe_add_one_iff := lt_natCast_add_one_iff
 
-theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
+theorem natCast_lt_add_one_iff {m : ℕ} {n : ℕ∞} : m < n + 1 ↔ m ≤ n :=
+  lt_add_one_iff' (natCast_ne_top m)
+
+@[deprecated (since := "2026-07-17")] alias coe_lt_add_one_iff := natCast_lt_add_one_iff
+
+theorem le_natCast_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
+@[deprecated (since := "2026-07-17")] alias le_coe_iff := le_natCast_iff
+
 @[simp]
-lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
-  WithTop.coe_lt_top n
+lemma natCast_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
+  WithTop.natCast_lt_top n
 
-lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
+@[deprecated (since := "2026-07-17")] alias coe_lt_top := natCast_lt_top
 
-lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
+lemma natCast_lt_natCast {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
+
+@[deprecated (since := "2026-07-17")] alias coe_lt_coe := natCast_lt_natCast
+
+lemma natCast_le_natCast {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
+
+@[deprecated (since := "2026-07-17")] alias coe_le_coe := natCast_le_natCast
 
 @[elab_as_elim]
 theorem nat_induction {motive : ℕ∞ → Prop} (a : ℕ∞) (zero : motive 0)
@@ -354,7 +409,7 @@ lemma add_one_pos : 0 < n + 1 :=
 
 lemma natCast_lt_succ {n : ℕ} :
     (n : ℕ∞) < (n : ℕ∞) + 1 := by
-  rw [← Nat.cast_one, ← Nat.cast_add, coe_lt_coe]
+  rw [← Nat.cast_one, ← Nat.cast_add, natCast_lt_natCast]
   exact lt_add_one n
 
 lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
@@ -380,10 +435,10 @@ lemma exists_ne_top {p : ℕ∞ → Prop} : (∃ x ≠ ⊤, p x) ↔ ∃ x : ℕ
 lemma eq_top_iff_forall_gt : n = ⊤ ↔ ∀ m : ℕ, m < n := WithTop.eq_top_iff_forall_gt
 lemma eq_top_iff_forall_ge : n = ⊤ ↔ ∀ m : ℕ, m ≤ n := WithTop.eq_top_iff_forall_ge
 
-/-- Version of `WithTop.forall_coe_le_iff_le` using `Nat.cast` rather than `WithTop.some`. -/
+/-- Version of `WithTop.forall_natCast_le_iff_le` using `Nat.cast` rather than `WithTop.some`. -/
 lemma forall_natCast_le_iff_le : (∀ a : ℕ, a ≤ m → a ≤ n) ↔ m ≤ n := WithTop.forall_coe_le_iff_le
 
-/-- Version of `WithTop.eq_of_forall_coe_le_iff` using `Nat.cast` rather than `WithTop.some`. -/
+/-- Version of `WithTop.eq_of_forall_natCast_le_iff` using `Nat.cast` rather than `WithTop.some`. -/
 lemma eq_of_forall_natCast_le_iff (hm : ∀ a : ℕ, a ≤ m ↔ a ≤ n) : m = n :=
   WithTop.eq_of_forall_coe_le_iff hm
 
@@ -396,7 +451,9 @@ lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne
 
 lemma addLECancellable_of_ne_top : a ≠ ⊤ → AddLECancellable a := WithTop.addLECancellable_of_ne_top
 lemma addLECancellable_of_lt_top : a < ⊤ → AddLECancellable a := WithTop.addLECancellable_of_lt_top
-lemma addLECancellable_coe (a : ℕ) : AddLECancellable (a : ℕ∞) := WithTop.addLECancellable_coe _
+lemma addLECancellable_natCast (a : ℕ) : AddLECancellable (a : ℕ∞) := WithTop.addLECancellable_coe _
+
+@[deprecated (since := "2026-07-17")] alias addLECancellable_coe := addLECancellable_natCast
 
 protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c - a :=
   (addLECancellable_of_ne_top ha).le_tsub_of_add_le_left
@@ -407,7 +464,8 @@ protected lemma le_sub_of_add_le_right (hb : b ≠ ⊤) : a + b ≤ c → a ≤ 
 protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
   cases b
   · simp
-  · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_coe_add_one_iff.mp <| lt_tsub_iff_right.mp h
+  · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_natCast_add_one_iff.mp <|
+      lt_tsub_iff_right.mp h
 
 lemma lt_add_left {n k : ℕ∞} (h : n ≠ ⊤) (h' : 0 < k) : n < k + n := calc
     _ = 0 + n := (zero_add n).symm
@@ -469,7 +527,7 @@ instance : Unique ℕ∞ˣ where
     obtain ⟨y, x_y⟩ := ne_top_iff_exists.1 x_top
     obtain ⟨z, x_z⟩ := ne_top_iff_exists.1 x_inv_top
     replace x_y := x_y.symm
-    rw [x_y, ← x_z, ← coe_mul, ← coe_one, coe_inj, _root_.mul_eq_one] at this
+    rw [x_y, ← x_z, ← natCast_mul, ← natCast_one, natCast_inj, _root_.mul_eq_one] at this
     rwa [this.1, Nat.cast_one, Units.val_eq_one] at x_y
 
 section withTop_enat
@@ -488,7 +546,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   | (⊤ : ℕ∞) => simp
   | (n : ℕ) =>
     norm_cast
-    simp only [coe_ne_top]
+    simp only [natCast_ne_top]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
@@ -515,7 +573,9 @@ def map (f : ℕ → α) (k : ℕ∞) : WithTop α := WithTop.map f k
 theorem map_top (f : ℕ → α) : map f ⊤ = ⊤ := rfl
 
 @[simp]
-theorem map_coe (f : ℕ → α) (a : ℕ) : map f a = f a := rfl
+theorem map_natCast (f : ℕ → α) (a : ℕ) : map f a = f a := rfl
+
+@[deprecated (since := "2026-07-17")] alias map_coe := map_natCast
 
 @[simp]
 protected theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
@@ -610,7 +670,7 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
         | top =>
           have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
           simp [mul_top hx, WithTop.mul_top this]
-        | coe y => simp [← Nat.cast_mul, -coe_mul] }
+        | coe y => simp [← Nat.cast_mul, -natCast_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
@@ -635,17 +695,18 @@ lemma eq_top_iff_forall_ge {n : WithBot ℕ∞} : n = ⊤ ↔ ∀ m : ℕ, m ≤
   _root_.WithBot.eq_top_iff_forall_ge
 
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
-  rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
+  rw [← WithBot.coe_one, ← ENat.natCast_one, WithBot.coe_natCast, ← Nat.cast_add,
+    ← WithBot.coe_natCast]
   cases n
   · simp only [bot_le, WithBot.bot_lt_coe]
-  · rw [WithBot.coe_lt_coe, Nat.cast_add, ENat.coe_one, ENat.lt_add_one_iff (ENat.coe_ne_top _),
+  · rw [WithBot.coe_lt_coe, Nat.cast_add, natCast_one, ENat.lt_add_one_iff (natCast_ne_top _),
       ← WithBot.coe_le_coe, WithBot.coe_natCast]
 
 lemma add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
-  rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
+  rw [← WithBot.coe_one, ← natCast_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases m
   · simp
-  · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
+  · rw [WithBot.coe_le_coe, natCast_add, natCast_one, ENat.add_one_le_iff (natCast_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
 
 lemma add_one_le_natCast_iff {n : WithBot ℕ∞} {m : ℕ} : n + 1 ≤ m ↔ n < m := by

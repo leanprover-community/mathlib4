@@ -130,8 +130,7 @@ theorem mem_of_mem_coe {a : α} (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha
 theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
 
-theorem image_coe_eq_domRestrict_image {δ : Type*} {f : α → δ} :
-    f '' γ = β.domRestrict f '' γ :=
+theorem image_coe_eq_domRestrict_image {δ : Type*} {f : α → δ} : f '' γ = β.domRestrict f '' γ :=
   ext fun _ =>
     ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
 

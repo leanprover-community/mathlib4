@@ -229,8 +229,7 @@ lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.domRestrict�
 lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
     (hf0 : ∀ i, f i 0 = 0 := by cfc_zero_tac) :
-    (fun i => cfcₙ (f i) a) =
-      (fun i => cfcₙHom (a := a) ha ⟨⟨_, (hf i).domRestrict⟩, hf0 i⟩) := by
+    (fun i => cfcₙ (f i) a) = (fun i => cfcₙHom (a := a) ha ⟨⟨_, (hf i).domRestrict⟩, hf0 i⟩) := by
   ext i
   simp only [cfcₙ_apply (f i) a (hf i) (hf0 i)]
 
@@ -287,8 +286,7 @@ lemma cfcₙ_eq_cfcₙL_mkD :
   cfcₙ_apply_mkD _ _
 
 lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
-    (haf : ∀ (hf : ContinuousOn f (σₙ R a)) h0 ha,
-      P (cfcₙHom ha ⟨⟨_, hf.domRestrict⟩, h0⟩)) :
+    (haf : ∀ (hf : ContinuousOn f (σₙ R a)) h0 ha, P (cfcₙHom ha ⟨⟨_, hf.domRestrict⟩, h0⟩)) :
     P (cfcₙ f a) := by
   by_cases h : ContinuousOn f (σₙ R a) ∧ f 0 = 0 ∧ p a
   · rw [cfcₙ_apply f a h.1 h.2.1 h.2.2]

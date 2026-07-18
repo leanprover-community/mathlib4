@@ -690,8 +690,7 @@ theorem mk'_mul_cancel_left (x) (y : S) : f.mk' ((y : M) * x) y = f x := by
 
 @[to_additive]
 theorem isUnit_comp (j : N →* P) (y : S) : IsUnit (j.comp f.toMonoidHom y) :=
-  ⟨Units.map j <| IsUnit.liftRight (f.toMonoidHom.domRestrict S) f.map_units y,
-    show j _ = j _ from
+  ⟨Units.map j <| IsUnit.liftRight (f.toMonoidHom.domRestrict S) f.map_units y, show j _ = j _ from
       congr_arg j (IsUnit.coe_liftRight (f.toMonoidHom.domRestrict S) f.map_units _)⟩
 
 @[to_additive]

@@ -95,7 +95,7 @@ lemma dynEntourage_comp_subset (T : X → X) (U V : SetRel X X) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff]
   intro k k_n xy xy_comp
-  simp only [SetRel.comp, mem_iInter, mem_preimage, map_apply, mem_setOf_eq] at xy_comp ⊢
+  simp only [SetRel.comp, mem_iInter, mem_preimage, map_apply, mem_ofPred_eq] at xy_comp ⊢
   rcases xy_comp with ⟨z, hz1, hz2⟩
   exact mem_ball_comp (hz1 k k_n) (hz2 k k_n)
 

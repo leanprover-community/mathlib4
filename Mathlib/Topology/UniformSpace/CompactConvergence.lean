@@ -347,8 +347,7 @@ section ContinuousOnRestrict
 
 /-- Given functions `F i, f` which are continuous on a compact set `s`, `F` tends to `f`
 uniformly on `s` if and only if the restrictions (as elements of `C(s, β)`) converge. -/
-theorem _root_.ContinuousOn.tendsto_domRestrict_iff_tendstoUniformlyOn {s : Set α}
-    [CompactSpace s]
+theorem _root_.ContinuousOn.tendsto_domRestrict_iff_tendstoUniformlyOn {s : Set α} [CompactSpace s]
     {f : α → β} (hf : ContinuousOn f s) {ι : Type*} {p : Filter ι}
     {F : ι → α → β} (hF : ∀ i, ContinuousOn (F i) s) :
     Tendsto (fun i ↦ ⟨_, (hF i).domRestrict⟩ : ι → C(s, β)) p (𝓝 ⟨_, hf.domRestrict⟩) ↔
@@ -414,7 +413,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} [∀ i, Topolo
   have h_cover' : ∀ S ∈ 𝔖, ∃ I : Set ι, I.Finite ∧ S ⊆ ⋃ i ∈ I, range (φ i) := fun S hS ↦ by
     refine ⟨{i | (range (φ i) ∩ S).Nonempty}, h_lf.finite_nonempty_inter_compact hS,
       inter_eq_right.mp ?_⟩
-    simp_rw [iUnion₂_inter, mem_setOf, iUnion_nonempty_self, ← iUnion_inter, h_cover, univ_inter]
+    simp_rw [iUnion₂_inter, mem_ofPred, iUnion_nonempty_self, ← iUnion_inter, h_cover, univ_inter]
   -- ... and we just pull it back.
   simp_rw +zetaDelta [compactConvergenceUniformSpace, replaceTopology_eq,
     UniformOnFun.uniformSpace_eq_iInf_precomp_of_cover _ _ _ h_image h_preimage h_cover',
@@ -435,7 +434,7 @@ instance instCompleteSpaceOfCompactlyCoherentSpace [CompactlyCoherentSpace α] :
   rw [completeSpace_iff_isComplete_range
     isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing,
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
-  exact (UniformOnFun.isClosed_setOf_continuous
+  exact (UniformOnFun.isClosed_setOfPred_continuous
     CompactlyCoherentSpace.isCoherentWith).completeSpace_coe
 
 end CompleteSpace
@@ -448,7 +447,7 @@ Note that this set does not have to be a closed set when `β` is not T0.
 This lemma is useful to prove that, e.g., the space of paths between two points
 and the space of homotopies between two continuous maps are complete spaces,
 without assuming that the codomain is a Hausdorff space. -/
-theorem isComplete_setOf_eqOn [CompleteSpace C(α, β)] (f : α → β) (s : Set α) :
+theorem isComplete_setOfPred_eqOn [CompleteSpace C(α, β)] (f : α → β) (s : Set α) :
     IsComplete {g : C(α, β) | EqOn g f s} := by
   classical
   intro l hlc hlf
@@ -464,5 +463,7 @@ theorem isComplete_setOf_eqOn [CompleteSpace C(α, β)] (f : α → β) (s : Set
     ⟨s.piecewise f f', (continuous_congr_of_inseparable H₂).mpr <| map_continuous f'⟩
   refine ⟨g, Set.piecewise_eqOn _ _ _, hf'.trans_eq ?_⟩
   rwa [eq_comm, ← Inseparable, ← inseparable_coe, inseparable_pi]
+
+@[deprecated (since := "2026-07-09")] alias isComplete_setOf_eqOn := isComplete_setOfPred_eqOn
 
 end ContinuousMap

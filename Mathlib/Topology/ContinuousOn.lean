@@ -53,8 +53,7 @@ theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α}
     (h : x ∈ s) : ContinuousWithinAt f s x ↔ ContinuousAt (s.domRestrict f) ⟨x, h⟩ :=
   tendsto_nhdsWithin_iff_subtype h f _
 
-@[deprecated (since := "2026-02-10")]
-alias continuousWithinAt_iff_continuousAt_restrict :=
+@[deprecated (since := "2026-02-10")] alias continuousWithinAt_iff_continuousAt_restrict :=
   continuousWithinAt_iff_continuousAt_domRestrict
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
@@ -115,7 +114,6 @@ alias ⟨ContinuousOn.domRestrict, _⟩ := continuousOn_iff_continuous_domRestri
 
 @[deprecated (since := "2026-02-10")]
 alias continuousOn_iff_continuous_restrict := continuousOn_iff_continuous_domRestrict
-
 @[deprecated (since := "2026-02-10")]
 alias ContinuousOn.restrict := ContinuousOn.domRestrict
 
@@ -125,8 +123,7 @@ theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : M
 
 theorem continuousOn_iff' :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  have : ∀ t, IsOpen (s.domRestrict f ⁻¹' t) ↔
-      ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
+  have : ∀ t, IsOpen (s.domRestrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
     rw [isOpen_induced_iff, Set.domRestrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff]
@@ -151,8 +148,7 @@ theorem ContinuousOn.mono_rng {α β : Type*} {t₁ : TopologicalSpace α} {t₂
 
 theorem continuousOn_iff_isClosed :
     ContinuousOn f s ↔ ∀ t : Set β, IsClosed t → ∃ u, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  have : ∀ t, IsClosed (s.domRestrict f ⁻¹' t) ↔
-      ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
+  have : ∀ t, IsClosed (s.domRestrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
     rw [isClosed_induced_iff, Set.domRestrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm, Set.inter_comm s]
@@ -223,7 +219,7 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
     delta ContinuousWithinAt
-    simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
+    simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_ofPred_eq,
       and_imp]
     exact forall_congr' fun t => forall_comm
 
@@ -854,8 +850,7 @@ theorem Topology.IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf 
 
 theorem Topology.IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : IsQuotientMap f)
     {s : Set β} (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by
-  simp only [continuousOn_iff_continuous_domRestrict,
-    (h.restrictPreimage_isOpen hs).continuous_iff]
+  simp only [continuousOn_iff_continuous_domRestrict, (h.restrictPreimage_isOpen hs).continuous_iff]
   rfl
 
 theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}

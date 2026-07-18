@@ -39,7 +39,7 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 (with a derivative `f'`) and injective on `s`.
 
 * `measurable_image_of_fderivWithin`: the image `f '' s` is measurable.
-* `measurableEmbedding_of_fderivWithin`: the function `s.restrict f` is a measurable embedding.
+* `measurableEmbedding_of_fderivWithin`: the function `s.domRestrict f` is a measurable embedding.
 * `lintegral_abs_det_fderiv_eq_addHaar_image`: the image measure is given by
     `μ (f '' s) = ∫⁻ x in s, |(f' x).det| ∂μ`.
 * `lintegral_image_eq_lintegral_abs_det_fderiv_mul`: for `g : E → ℝ≥0∞`, one has
@@ -1150,8 +1150,7 @@ For a version for the original function, see `map_withDensity_abs_det_fderiv_eq_
 -/
 theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
-    Measure.map (s.domRestrict f)
-      (comap (↑) (μ.withDensity fun x => ENNReal.ofReal |(f' x).det|)) =
+    Measure.map (s.domRestrict f) (comap (↑) (μ.withDensity fun x => ENNReal.ofReal |(f' x).det|)) =
       μ.restrict (f '' s) := by
   obtain ⟨u, u_meas, uf⟩ : ∃ u, Measurable u ∧ EqOn u f s := by
     classical

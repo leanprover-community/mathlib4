@@ -39,8 +39,7 @@ theorem domRestrict_eq (f : α → β) (s : Set α) : s.domRestrict f = f ∘ Su
 @[simp] lemma domRestrict_id (s : Set α) : domRestrict s id = Subtype.val := rfl
 
 @[simp, grind =]
-theorem domRestrict_apply (f : (a : α) → π a) (s : Set α) (x : s) :
-    s.domRestrict f x = f x :=
+theorem domRestrict_apply (f : (a : α) → π a) (s : Set α) (x : s) : s.domRestrict f x = f x :=
   rfl
 
 theorem domRestrict_eq_iff {f : ∀ a, π a} {s : Set α} {g : ∀ a : s, π a} :
@@ -74,8 +73,7 @@ theorem domRestrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : �
 
 @[simp]
 theorem domRestrict_ite (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    (s.domRestrict fun a => if a ∈ s then f a else g a) = s.domRestrict f :=
-  domRestrict_dite _ _
+    (s.domRestrict fun a => if a ∈ s then f a else g a) = s.domRestrict f := domRestrict_dite _ _
 
 @[simp]
 theorem domRestrict_ite_compl (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
@@ -84,13 +82,11 @@ theorem domRestrict_ite_compl (f g : α → β) (s : Set α) [∀ x, Decidable (
 
 @[simp]
 theorem domRestrict_piecewise (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    s.domRestrict (piecewise s f g) = s.domRestrict f :=
-  domRestrict_ite _ _ _
+    s.domRestrict (piecewise s f g) = s.domRestrict f := domRestrict_ite _ _ _
 
 @[simp]
 theorem domRestrict_piecewise_compl (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    sᶜ.domRestrict (piecewise s f g) = sᶜ.domRestrict g :=
-  domRestrict_ite_compl _ _ _
+    sᶜ.domRestrict (piecewise s f g) = sᶜ.domRestrict g := domRestrict_ite_compl _ _ _
 
 theorem domRestrict_extend_range (f : α → β) (g : α → γ) (g' : β → γ) :
     (range f).domRestrict (extend f g g') = fun x => g x.coe_prop.choose := by
@@ -184,8 +180,7 @@ variable {s : Set α} {f₁ f₂ : α → β}
 
 @[simp]
 theorem domRestrict_eq_domRestrict_iff :
-    domRestrict s f₁ = domRestrict s f₂ ↔ EqOn f₁ f₂ s :=
-  domRestrict_eq_iff
+    domRestrict s f₁ = domRestrict s f₂ ↔ EqOn f₁ f₂ s := domRestrict_eq_iff
 
 @[deprecated (since := "2026-02-10")] alias restrict := domRestrict
 @[deprecated (since := "2026-02-10")] alias restrict_def := domRestrict_def
@@ -201,16 +196,13 @@ theorem domRestrict_eq_domRestrict_iff :
 @[deprecated (since := "2026-02-10")] alias restrict_ite := domRestrict_ite
 @[deprecated (since := "2026-02-10")] alias restrict_ite_compl := domRestrict_ite_compl
 @[deprecated (since := "2026-02-10")] alias restrict_piecewise := domRestrict_piecewise
-@[deprecated (since := "2026-02-10")]
-alias restrict_piecewise_compl := domRestrict_piecewise_compl
-@[deprecated (since := "2026-02-10")]
-alias restrict_extend_range := domRestrict_extend_range
+@[deprecated (since := "2026-02-10")] alias restrict_piecewise_compl := domRestrict_piecewise_compl
+@[deprecated (since := "2026-02-10")] alias restrict_extend_range := domRestrict_extend_range
 @[deprecated (since := "2026-02-10")]
 alias restrict_extend_compl_range := domRestrict_extend_compl_range
 @[deprecated (since := "2026-02-10")] alias restrict₂ := domRestrict₂
 @[deprecated (since := "2026-02-10")] alias restrict₂_def := domRestrict₂_def
-@[deprecated (since := "2026-02-10")]
-alias restrict₂_comp_restrict := domRestrict₂_comp_domRestrict
+@[deprecated (since := "2026-02-10")] alias restrict₂_comp_restrict := domRestrict₂_comp_domRestrict
 @[deprecated (since := "2026-02-10")]
 alias restrict₂_comp_restrict₂ := domRestrict₂_comp_domRestrict₂
 @[deprecated (since := "2026-02-10")]

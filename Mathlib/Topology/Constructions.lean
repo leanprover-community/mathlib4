@@ -867,15 +867,13 @@ lemma Pi.continuous_domRestrict (S : Set ι) :
     Continuous (S.domRestrict : (∀ i : ι, A i) → (∀ i : S, A i)) :=
   Pi.continuous_precomp' ((↑) : S → ι)
 
-@[deprecated (since := "2026-02-10")]
-alias Pi.continuous_restrict := Pi.continuous_domRestrict
+@[deprecated (since := "2026-02-10")] alias Pi.continuous_restrict := Pi.continuous_domRestrict
 
 @[continuity, fun_prop]
 lemma Pi.continuous_domRestrict₂ {s t : Set ι} (hst : s ⊆ t) :
     Continuous (domRestrict₂ (π := A) hst) := continuous_pi fun _ ↦ continuous_apply _
 
-@[deprecated (since := "2026-02-10")]
-alias Pi.continuous_restrict₂ := Pi.continuous_domRestrict₂
+@[deprecated (since := "2026-02-10")] alias Pi.continuous_restrict₂ := Pi.continuous_domRestrict₂
 
 @[continuity, fun_prop]
 theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (π := A)) :=
@@ -1165,7 +1163,7 @@ theorem pi_eq_generateFrom :
         { g | ∃ (s : ∀ a, Set (A a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
   _ = @Pi.topologicalSpace ι A fun _ => generateFrom { s | IsOpen s } := by
-    simp +instances only [generateFrom_setOf_isOpen]
+    simp +instances only [generateFrom_setOfPred_isOpen]
   _ = _ := pi_generateFrom_eq
 
 theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))} [Finite ι]

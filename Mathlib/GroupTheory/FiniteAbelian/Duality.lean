@@ -137,8 +137,7 @@ theorem card_domRestrictHom_ker (H : Subgroup G) :
   rw [Nat.card_congr (MonoidHom.domRestrictHomKerEquiv Mˣ H).toEquiv,
     card_monoidHom_of_hasEnoughRootsOfUnity]
 
-@[deprecated (since := "2026-02-10")]
-alias card_restrictHom_ker := card_domRestrictHom_ker
+@[deprecated (since := "2026-02-10")] alias card_restrictHom_ker := card_domRestrictHom_ker
 
 variable (G) in
 /--

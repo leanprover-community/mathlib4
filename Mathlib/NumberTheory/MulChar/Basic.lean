@@ -383,7 +383,6 @@ noncomputable def domRestrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T 
   ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
 
 @[deprecated (since := "2026-02-10")] alias restrict := domRestrict
-
 @[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
 
 /--
@@ -400,7 +399,6 @@ noncomputable def domRestrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] 
   map_mul' x y := by ext; simp
 
 @[deprecated (since := "2026-02-10")] alias restrictHom := domRestrictHom
-
 @[deprecated (since := "2026-02-10")] alias restrictHom_apply := domRestrictHom_apply
 
 end Group

@@ -99,7 +99,6 @@ theorem domRestrict_range (f : G →* N) : (f.domRestrict K).range = K.map f := 
     exists_prop, forall_const]
 
 @[deprecated (since := "2026-02-10")] alias restrict_range := domRestrict_range
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrict_range := _root_.AddMonoidHom.domRestrict_range
 
@@ -289,7 +288,6 @@ theorem ker_domRestrict (f : G →* M) : (f.domRestrict K).ker = f.ker.subgroupO
   rfl
 
 @[deprecated (since := "2026-02-10")] alias ker_restrict := ker_domRestrict
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.ker_restrict := _root_.AddMonoidHom.ker_domRestrict
 

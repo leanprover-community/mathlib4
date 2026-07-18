@@ -133,8 +133,7 @@ theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.domRestrict f))
     using! hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
 
 theorem to_rightInvOn (hf : AntilipschitzWith K f) {g : β → α} {t : Set β} (h : RightInvOn g f t) :
-    LipschitzWith K (t.domRestrict g) :=
-  (hf.domRestrict univ).to_rightInvOn' (mapsTo_univ g t) h
+    LipschitzWith K (t.domRestrict g) := (hf.domRestrict univ).to_rightInvOn' (mapsTo_univ g t) h
 
 theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
     LipschitzWith K g := by

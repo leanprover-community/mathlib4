@@ -335,8 +335,7 @@ lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Con
 
 lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
     (hf : ContinuousOn f s) :
-    mkD (s.domRestrict f) g = ⟨s.domRestrict f, hf.domRestrict⟩ :=
-  mkD_of_continuous hf.domRestrict
+    mkD (s.domRestrict f) g = ⟨s.domRestrict f, hf.domRestrict⟩ := mkD_of_continuous hf.domRestrict
 
 lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
     (hf : ¬ ContinuousOn f s) :
@@ -346,8 +345,7 @@ lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
 
 lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
     (hf : ContinuousOn f s) :
-    mkD (s.domRestrict f) g x = f x := by
-  rw [mkD_of_continuousOn hf, coe_mk, Set.domRestrict_apply]
+    mkD (s.domRestrict f) g x = f x := by rw [mkD_of_continuousOn hf, coe_mk, Set.domRestrict_apply]
 
 lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
   mkD_of_continuous f.continuous

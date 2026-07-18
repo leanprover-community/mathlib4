@@ -110,21 +110,18 @@ functions in `E`. -/
 theorem sSup_affine_eq (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     sSup {f | f ≤ s.domRestrict φ ∧
-      ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = s.domRestrict (re ∘ l) + const s c} =
-      s.domRestrict φ := by
+      ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = s.domRestrict (re ∘ l) + const s c} = s.domRestrict φ := by
   let A := { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 }
   ext x
   rw [sSup_apply]
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ (fun r ⟨f, hf⟩ => ?_) (fun r hr => ?_)
   · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x by grind)
       hsc hφc hφcv
-    exact ⟨φ x - 1,
-      hlc.2 ▸ ⟨⟨s.domRestrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩⟩
+    exact ⟨φ x - 1, hlc.2 ▸ ⟨⟨s.domRestrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩⟩
   · exact hf ▸ f.2.1 x
   · obtain ⟨z, hz⟩ := exists_between hr
     obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 hz.2 hsc hφc hφcv
-    exact ⟨z, hlc.2 ▸
-      ⟨⟨s.domRestrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩, hz.1⟩
+    exact ⟨z, hlc.2 ▸ ⟨⟨s.domRestrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩, hz.1⟩
 
 /-- The countable version of `sSup_affine_eq`. -/
 theorem sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
@@ -241,16 +238,14 @@ variable [AddCommGroup E] [Module ℝ E] [IsTopologicalAddGroup E] [ContinuousSM
 theorem real_sSup_affine_eq (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     sSup {f | f ≤ s.domRestrict φ ∧
-      ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.domRestrict l + const s c} =
-      s.domRestrict φ :=
+      ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.domRestrict l + const s c} = s.domRestrict φ :=
   sSup_affine_eq (𝕜 := ℝ) hsc hφc hφcv
 
 /-- The real version of `sSup_of_countable_affine_eq`. -/
 theorem real_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     ∃ 𝓕' : Set (s → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = s.domRestrict φ ∧
-      ∀ f ∈ 𝓕', f ≤ s.domRestrict φ ∧
-      ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.domRestrict l + const s c :=
+      ∀ f ∈ 𝓕', f ≤ s.domRestrict φ ∧ ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.domRestrict l + const s c :=
   sSup_of_countable_affine_eq (𝕜 := ℝ) hsc hφc hφcv
 
 /-- The real version of `sSup_of_nat_affine_eq`. -/

@@ -719,7 +719,6 @@ theorem domRestrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [Submonoid
   rfl
 
 @[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrict_apply := _root_.AddMonoidHom.domRestrict_apply
 
@@ -730,7 +729,6 @@ theorem domRestrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [Set
   simp [MonoidHom.ext_iff]
 
 @[deprecated (since := "2026-02-10")] alias restrict_eq_one_iff := domRestrict_eq_one_iff
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrict_eq_zero_iff := _root_.AddMonoidHom.domRestrict_eq_zero_iff
 
@@ -739,7 +737,6 @@ theorem domRestrict_mrange (f : M →* N) : mrange (f.domRestrict S) = S.map f :
   simp [SetLike.ext_iff]
 
 @[deprecated (since := "2026-02-10")] alias restrict_mrange := domRestrict_mrange
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrict_mrange := _root_.AddMonoidHom.domRestrict_mrange
 
@@ -753,12 +750,9 @@ def domRestrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : 
   map_mul' _ _ := by ext; simp
 
 @[deprecated (since := "2026-02-10")] alias restrictHom := domRestrictHom
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrictHom := _root_.AddMonoidHom.domRestrictHom
-
 @[deprecated (since := "2026-02-10")] alias restrictHom_apply := domRestrictHom_apply
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrictHom_apply := _root_.AddMonoidHom.domRestrictHom_apply
 
@@ -825,7 +819,6 @@ theorem domRestrict_mker (f : M →* N) :
   rfl
 
 @[deprecated (since := "2026-02-10")] alias restrict_mker := domRestrict_mker
-
 @[deprecated (since := "2026-02-10")]
 alias _root_.AddMonoidHom.restrict_mker := _root_.AddMonoidHom.domRestrict_mker
 
@@ -1087,11 +1080,9 @@ end Submonoid
 /-- Restrict the domain and codomain of a `MonoidHom`. -/
 @[to_additive /-- Restrict the domain and codomain of an `AddMonoidHom`. -/]
 def MonoidHom.restrict {M' : Submonoid M} {N' : Submonoid N} {f : M →* N}
-    (h : Set.MapsTo f M' N') : M' →* N' :=
-  (f.domRestrict M').codRestrict N' <| SetLike.forall.mpr h
+    (h : Set.MapsTo f M' N') : M' →* N' := (f.domRestrict M').codRestrict N' <| SetLike.forall.mpr h
 
-@[to_additive]
-lemma MonoidHom.restrict_injective {M' : Submonoid M} {N' : Submonoid N} {f : M →* N}
+@[to_additive] lemma MonoidHom.restrict_injective {M' : Submonoid M} {N' : Submonoid N} {f : M →* N}
     (h : Set.MapsTo f M' N') (hf' : Function.Injective f) : Function.Injective <| f.restrict h :=
   fun _ _ h => Subtype.ext <| hf' <| Subtype.ext_iff.mp h
 

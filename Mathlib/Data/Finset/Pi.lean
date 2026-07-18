@@ -165,15 +165,13 @@ theorem restrict_def (s : Finset ι) : s.restrict (π := π) = fun f x ↦ f x :
 variable {s t u : Finset ι}
 
 theorem _root_.Set.piCongrLeft_comp_domRestrict :
-    (s.equivToSet.symm.piCongrLeft (fun i : s ↦ π i)) ∘ (s : Set ι).domRestrict =
-      s.restrict := rfl
+    (s.equivToSet.symm.piCongrLeft (fun i : s ↦ π i)) ∘ (s : Set ι).domRestrict = s.restrict := rfl
 
 @[deprecated (since := "2026-02-10")]
 alias _root_.Set.piCongrLeft_comp_restrict := _root_.Set.piCongrLeft_comp_domRestrict
 
 theorem piCongrLeft_comp_restrict :
-    (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict =
-      (s : Set ι).domRestrict := rfl
+    (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = (s : Set ι).domRestrict := rfl
 
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
 this is the restriction to `s`. -/

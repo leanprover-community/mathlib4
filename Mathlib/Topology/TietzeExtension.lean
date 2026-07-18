@@ -444,8 +444,7 @@ real-valued function on `s`. Let `t` be a nonempty convex set of real numbers (w
 `OrdConnected` instead of `Convex` to automatically deduce this argument by typeclass search) such
 that `f x ∈ t` for all `x : s`. Then there exists a bounded continuous real-valued function
 `g : Y →ᵇ ℝ` such that `g y ∈ t` for all `y` and `g.domRestrict s = f`. -/
-theorem exists_forall_mem_domRestrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ)
-    (hs : IsClosed s)
+theorem exists_forall_mem_domRestrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs : IsClosed s)
     {t : Set ℝ} [OrdConnected t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) :
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g.domRestrict s = f := by
   obtain ⟨g, hg, hgf⟩ :=
