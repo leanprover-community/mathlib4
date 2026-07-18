@@ -357,6 +357,7 @@ section Equiv
 variable {ι : Type*} [DecidableEq ι] {N : ι → Submodule R M}
   (ind : iSupIndep N) (iSup_top : ⨆ i, N i = ⊤) (invar : ∀ i, (N i).IsFullyInvariant)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
 then `End R M` is isomorphic to `Πᵢ End R Nᵢ` as a ring. -/
 noncomputable def iSupIndep.ringEquiv : Module.End R M ≃+* Π i, Module.End R (N i) where
@@ -465,6 +466,7 @@ form a complete atomic Boolean algebra. -/
     exact le_biSup _ (isFullyInvariant_iff_le_imp_isotypicComponent_le.mp m.2 _ le)
   map_rel_iff' := (GaloisCoinsertion.setIsotypicComponents R M).l_le_l_iff
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isFullyInvariant_iff_sSup_isotypicComponents {m : Submodule R M} :
     m.IsFullyInvariant ↔ ∃ s ⊆ isotypicComponents R M, m = sSup s := by
   refine ⟨fun h ↦ ⟨OrderIso.setIsotypicComponents.symm ⟨m, h⟩, ⟨?_, ?_⟩⟩, ?_⟩
