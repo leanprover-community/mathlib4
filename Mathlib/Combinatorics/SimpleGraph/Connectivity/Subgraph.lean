@@ -278,7 +278,7 @@ theorem toSubgraph_adj_snd {u v} (w : G.Walk u v) (h : ¬ w.Nil) : w.toSubgraph.
 theorem toSubgraph_adj_penultimate {u v} (w : G.Walk u v) (h : ¬ w.Nil) :
     w.toSubgraph.Adj w.penultimate v := by
   rw [not_nil_iff_lt_length] at h
-  simpa [show w.length - 1 + 1 = w.length from by lia]
+  simpa [show w.length - 1 + 1 = w.length by lia]
     using w.toSubgraph_adj_getVert (by lia : w.length - 1 < w.length)
 
 theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
@@ -391,7 +391,7 @@ lemma neighborSet_toSubgraph_endpoint {u v} {p : G.Walk u v}
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsPath)
     (h : i ≠ 0) (h' : i < p.length) :
     p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
-  have hadj1 := ((show i - 1 + 1 = i from by lia) ▸
+  have hadj1 := ((show i - 1 + 1 = i by lia) ▸
     p.toSubgraph_adj_getVert (by lia : (i - 1) < p.length)).symm
   ext v
   simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
@@ -439,7 +439,7 @@ lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≠ 0) (h' : i < p.length) :
     p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
-  have hadj1 := ((show i - 1 + 1 = i from by lia) ▸
+  have hadj1 := ((show i - 1 + 1 = i by lia) ▸
     p.toSubgraph_adj_getVert (by lia : (i - 1) < p.length)).symm
   ext v
   simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
@@ -649,7 +649,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset, Set.mem_iUnion,
-                 Set.mem_setOf_eq, Walk.start_mem_support, exists_prop, and_true]
+                 Set.mem_ofPred_eq, Walk.start_mem_support, exists_prop, and_true]
       exact ⟨u, ut⟩
     intro v hv
     simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset] at hv
@@ -657,7 +657,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     refine ⟨{x | x ∈ (Gpc u w).some.support}, ?_, ?_⟩
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]
       exact fun x xw => Set.mem_iUnion₂.mpr ⟨w, wt, xw⟩
-    · simp only [Set.mem_setOf_eq, Walk.start_mem_support, exists_true_left]
+    · simp only [Set.mem_ofPred_eq, Walk.start_mem_support, exists_true_left]
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs

@@ -282,7 +282,7 @@ theorem comap_injective {f : A →⋆ₐ[R] B} (hf : Function.Surjective f) :
     Function.Injective (comap f) := fun _S₁ _S₂ h =>
   ext fun b =>
     let ⟨x, hx⟩ := hf b
-    let this := SetLike.ext_iff.1 h x
+    let := SetLike.ext_iff.1 h x
     hx ▸ this
 
 @[simp]
@@ -381,7 +381,7 @@ theorem star_mono : Monotone (star : Subalgebra R A → Subalgebra R A) := fun _
 variable (R) in
 /-- The star operation on `Subalgebra` commutes with `Algebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoin R (star s) :=
-  have this : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun _ =>
+  have : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun _ =>
     Algebra.adjoin_le fun _ hx => Algebra.subset_adjoin hx
   le_antisymm (by simpa only [star_star] using Subalgebra.star_mono (this (star s))) (this s)
 

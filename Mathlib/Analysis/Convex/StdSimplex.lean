@@ -37,7 +37,7 @@ def stdSimplex : Set (ι → 𝕜) :=
 
 theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | ∑ x, f x = 1 } := by
   ext f
-  simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_setOf_eq]
+  simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
 
 theorem convex_stdSimplex [IsOrderedRing 𝕜] : Convex 𝕜 (stdSimplex 𝕜 ι) := by
   refine fun f hf g hg a b ha hb hab => ⟨fun x => ?_, ?_⟩
@@ -162,7 +162,7 @@ theorem Set.Finite.convexHull_eq_image {E : Type*} [AddCommGroup E] [Module R E]
     haveI := hs.fintype
     (⇑(∑ x : s, (LinearMap.proj (R := R) x).smulRight x.1)) '' stdSimplex R s := by
   classical
-  letI := hs.fintype
+  let := hs.fintype
   rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
   aesop

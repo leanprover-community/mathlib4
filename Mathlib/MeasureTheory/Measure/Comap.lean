@@ -32,7 +32,7 @@ namespace Measure
 
 variable {α β γ : Type*} {s : Set α}
 
-open Classical in
+open scoped Classical in
 /-- Pullback of a `Measure` as a linear map. If `f` sends each measurable set to a measurable
 set, then for each measurable set `s` we have `comapₗ f μ s = μ (f '' s)`.
 
@@ -48,13 +48,14 @@ def comapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure
       exact hf.2 s hs
   else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comapₗ_apply {_ : MeasurableSpace α} {_ : MeasurableSpace β} (f : α → β)
     (hfi : Injective f) (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β)
     (hs : MeasurableSet s) : comapₗ f μ s = μ (f '' s) := by
   rw [comapₗ, dif_pos, liftLinear_apply _ hs, OuterMeasure.comap_apply, coe_toOuterMeasure]
   exact ⟨hfi, hf⟩
 
-open Classical in
+open scoped Classical in
 /-- Pullback of a `Measure`. If `f` sends each measurable set to a null-measurable set,
 then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
 
@@ -107,17 +108,18 @@ theorem measure_image_eq_zero_of_comap_eq_zero (f : α → β) (μ : Measure β)
   rw [← nonpos_iff_eq_zero]
   exact (le_comap_apply f μ hfi hf s).trans hs.le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_image_of_ae_eq_comap (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
     {s t : Set α} (hst : s =ᵐ[comap f μ] t) : f '' s =ᵐ[μ] f '' t := by
   rw [EventuallyEq, ae_iff] at hst ⊢
   have h_eq_α : { a : α | ¬s a = t a } = s \ t ∪ t \ s := by
     ext1 x
-    simp only [eq_iff_iff, mem_setOf_eq, mem_union, Set.mem_sdiff]
+    simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
     tauto
   have h_eq_β : { a : β | ¬(f '' s) a = (f '' t) a } = f '' s \ f '' t ∪ f '' t \ f '' s := by
     ext1 x
-    simp only [eq_iff_iff, mem_setOf_eq, mem_union, Set.mem_sdiff]
+    simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
     tauto
   rw [← Set.image_sdiff hfi, ← Set.image_sdiff hfi, ← Set.image_union] at h_eq_β
   rw [h_eq_β]

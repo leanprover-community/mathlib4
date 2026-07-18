@@ -76,7 +76,6 @@ def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
   toFun p := ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x)
   map_add' _ _ := by simp [sum_add_distrib]
   map_smul' _ _ := by
-    classical
     ext
     simp [MvPolynomial.coeff, single, MvPolynomial.monomial]
 
@@ -378,6 +377,7 @@ theorem totalDegree_truncTotal_lt (h : n ≠ 0) :
   apply (totalDegree_truncFinset p).trans_lt
   simp [Finset.sup_lt_iff (Nat.lt_of_sub_ne_zero h)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem truncTotal_coe_eq_self_iff (p : MvPolynomial σ R) (h : n ≠ 0) :
     truncTotal n p = p ↔ p.totalDegree < n := by
   rw [truncTotal, truncFinset_coe_eq_self_iff, Set.Finite.subset_toFinset,
