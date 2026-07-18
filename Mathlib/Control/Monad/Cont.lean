@@ -25,34 +25,52 @@ Haskell's `Cont`, `ContT` and `MonadCont`:
 
 universe u v w u₀ u₁ v₀ v₁
 
+/--
+A `Label α m β` is a jump target for `MonadCont.callCC`: it wraps a continuation `α → m β`,
+which represents the rest of the computation surrounding the `callCC` block,
+pending the value of type `α`.
+Jumping to a label with `MonadCont.goto` abandons the rest of the block and finishes it immediately.
+
+The result type `β` is arbitrary: a jump never returns control to the jump site,
+so the `m β` it "returns" is never consumed (compare `throw`).
+-/
 structure MonadCont.Label (α : Type w) (m : Type u → Type v) (β : Type u) where
+  /-- The continuation to jump to. Use `MonadCont.goto` rather than calling this directly. -/
   apply : α → m β
 
+/-- Jump to a label: abandon the rest of the enclosing `MonadCont.callCC` block
+and finish the block immediately, with `x` as its result. -/
 abbrev MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
   f.apply x
 
 /--
-The class of continuation monads/type transformers.
+The class of monads equipped with `callCC` ("call with current continuation").
 
-These are monads that support continuation-passing style programming
-by providing a way to call-with-current-continuation (callCC).
-That is, for any types α, β (in a particular universe)
-This provides a function of type
-`((α → m β) → m α) → m α`
+At any point in a monadic computation, the "current continuation" is the rest of the computation:
+everything that is waiting to consume the value produced so far.
+`callCC f` captures the current continuation, packages it as a first-class value
+(a `MonadCont.Label`), and hands it to `f`.
+The label then acts as an escape hatch out of `f`, allowing possibilities like
+early termination of the computation.
 
-TODO now explain what this means
+The canonical instance is the continuation monad transformer `ContT`.
 -/
 class MonadCont (m : Type u → Type v) where
+  /-- Capture the current continuation as a `Label` and pass it to the given block. -/
   callCC : ∀ {α β}, (MonadCont.Label α m β → m α) → m α
 
 open MonadCont
 
+/-- The laws a well-behaved `callCC` must satisfy. -/
 class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] : Prop
     extends LawfulMonad m where
+  /-- Actions performed before the label is available can be moved out of the block. -/
   callCC_bind_right {α ω γ} (cmd : m α) (next : Label ω m γ → α → m ω) :
     (callCC fun f => cmd >>= next f) = cmd >>= fun x => callCC fun f => next f x
+  /-- A jump discards everything sequenced after it. -/
   callCC_bind_left {α} (β) (x : α) (dead : Label α m β → β → m α) :
     (callCC fun f : Label α m β => goto f x >>= dead f) = pure x
+  /-- A block that never uses its label is just the underlying computation. -/
   callCC_dummy {α β} (dummy : m α) : (callCC fun _ : Label α m β => dummy) = dummy
 
 export LawfulMonadCont (callCC_bind_right callCC_bind_left callCC_dummy)
@@ -69,6 +87,7 @@ capturing and invoking continuations.
 def ContT (r : Type u) (m : Type u → Type v) (α : Type w) :=
   (α → m r) → m r
 
+/-- The continuation monad: `ContT` over the identity monad. -/
 abbrev Cont (r : Type u) (α : Type w) :=
   ContT r Id α
 
