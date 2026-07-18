@@ -693,35 +693,14 @@ warning: `to_additive` did not change the type of theorem `mulTrivial`. Please r
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
 #guard_msgs in
-@[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
+@[to_additive /-- I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
-/-- info: (via `docComment` syntax) I am an additive docstring! -/
+/-- info: I am an additive docstring! -/
 #guard_msgs in
 run_cmd
   let some doc ← findDocString? (← getEnv) ``addTrivial
-    | throwError "no `docComment` docstring found"
-  logInfo doc
-
-/--
-warning: String syntax for `to_additive` docstrings is deprecated: Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
-
-Update deprecated syntax to:
-  [apply] /-- (via `str` syntax) I am an additive docstring! -/
----
-warning: `to_additive` did not change the type of theorem `mulTrivial'`. Please remove the attribute.
-
-Note: This linter can be disabled with `set_option linter.translateRedundant false`
--/
-#guard_msgs in
-@[to_additive "(via `str` syntax) I am an additive docstring!"]
-theorem mulTrivial' : True := trivial
-
-/-- info: (via `str` syntax) I am an additive docstring! -/
-#guard_msgs in
-run_cmd
-  let some doc ← findDocString? (← getEnv) ``addTrivial'
-    | throwError "no `str` docstring found"
+    | throwError "no docstring found"
   logInfo doc
 
 /-! Test handling of noncomputability -/
