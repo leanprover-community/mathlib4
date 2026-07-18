@@ -414,15 +414,17 @@ lemma mapRange.addEquiv_toEquiv (e : M ≃+ N) :
 
 end AddCommMonoid
 
-instance instNeg [NegZeroClass G] : Neg (ι →₀ G) where neg := mapRange Neg.neg neg_zero
+instance instNeg [Zero G] [Neg G] [NegZeroClass G] : Neg (ι →₀ G) where
+  neg := mapRange Neg.neg neg_zero
 
-@[simp, norm_cast] lemma coe_neg [NegZeroClass G] (g : ι →₀ G) : ⇑(-g) = -g := rfl
+@[simp, norm_cast] lemma coe_neg [Zero G] [Neg G] [NegZeroClass G] (g : ι →₀ G) : ⇑(-g) = -g := rfl
 
-lemma neg_apply [NegZeroClass G] (g : ι →₀ G) (a : ι) : (-g) a = -g a :=
+lemma neg_apply [Zero G] [Neg G] [NegZeroClass G] (g : ι →₀ G) (a : ι) : (-g) a = -g a :=
   rfl
 
-lemma mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 = 0}
-    (hf' : ∀ x, f (-x) = -f x) (v : ι →₀ G) : mapRange f hf (-v) = -mapRange f hf v :=
+lemma mapRange_neg [Zero G] [Neg G] [NegZeroClass G] [Zero H] [Neg H] [NegZeroClass H]
+    {f : G → H} {hf : f 0 = 0} (hf' : ∀ x, f (-x) = -f x) (v : ι →₀ G) :
+    mapRange f hf (-v) = -mapRange f hf v :=
   ext fun _ => by simp only [hf', neg_apply, mapRange_apply]
 
 instance instSub [SubNegZeroMonoid G] : Sub (ι →₀ G) :=

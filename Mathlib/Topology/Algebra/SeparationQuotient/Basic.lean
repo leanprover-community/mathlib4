@@ -167,7 +167,7 @@ instance instInvolutiveInv [InvolutiveInv G] [ContinuousInv G] :
   surjective_mk.involutiveInv mk mk_inv
 
 @[to_additive]
-instance instInvOneClass [InvOneClass G] [ContinuousInv G] :
+instance instInvOneClass [One G] [Inv G] [InvOneClass G] [ContinuousInv G] :
     InvOneClass (SeparationQuotient G) where
   inv_one := congr_arg mk inv_one
 

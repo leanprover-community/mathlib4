@@ -164,7 +164,8 @@ end Neg
 section AddGroup
 
 @[simp]
-theorem C_neg [NegZeroClass R] (x : R) : (.C (-x) : QuadraticAlgebra R a b) = -.C x := by
+theorem C_neg [Zero R] [Neg R] [NegZeroClass R] (x : R) :
+    (.C (-x) : QuadraticAlgebra R a b) = -.C x := by
   ext <;> simp
 
 instance [Sub R] : Sub (QuadraticAlgebra R a b) where

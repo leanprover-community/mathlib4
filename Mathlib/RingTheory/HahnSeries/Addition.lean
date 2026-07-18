@@ -328,7 +328,7 @@ end AddCommMonoid
 
 section NegZeroClass
 
-variable [NegZeroClass R]
+variable [Zero R] [Neg R] [NegZeroClass R]
 
 instance : Neg R⟦Γ⟧ where
   neg x := x.map (-ZeroHom.id _)

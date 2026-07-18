@@ -217,8 +217,8 @@ protected abbrev involutiveInv [InvolutiveInv β] [IsInvApply F α β] : Involut
 /-- A `FunLike` type with `1` and inverse is an `InvOneClass` if `β` is an `InvOneClass`. -/
 @[to_additive /-- A `FunLike` type with `0` and negation is a `NegZeroClass` if `β` is a
 `NegZeroClass`. -/]
-protected abbrev invOneClass [InvOneClass β] [IsOneApply F α β] [IsInvApply F α β] :
-    InvOneClass F :=
+protected abbrev invOneClass [One β] [Inv β] [InvOneClass β] [IsOneApply F α β]
+    [IsInvApply F α β] : InvOneClass F :=
   DFunLike.coe_injective.invOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_inv
 
 variable [Div F] [Pow F ℤ]

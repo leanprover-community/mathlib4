@@ -312,7 +312,8 @@ theorem inl_add [Add R] [AddZeroClass M] (r₁ r₂ : R) :
   ext rfl (add_zero 0).symm
 
 @[simp]
-theorem inl_neg [Neg R] [NegZeroClass M] (r : R) : (inl (-r) : tsze R M) = -inl r :=
+theorem inl_neg [Neg R] [Zero M] [Neg M] [NegZeroClass M] (r : R) :
+    (inl (-r) : tsze R M) = -inl r :=
   ext rfl neg_zero.symm
 
 @[simp]
@@ -345,7 +346,8 @@ theorem inr_add [AddZeroClass R] [Add M] (m₁ m₂ : M) :
   ext (add_zero 0).symm rfl
 
 @[simp]
-theorem inr_neg [NegZeroClass R] [Neg M] (m : M) : (inr (-m) : tsze R M) = -inr m :=
+theorem inr_neg [Zero R] [Neg R] [NegZeroClass R] [Neg M] (m : M) :
+    (inr (-m) : tsze R M) = -inr m :=
   ext neg_zero.symm rfl
 
 @[simp]

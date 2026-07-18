@@ -105,7 +105,7 @@ theorem diagonal_smul [Zero α] [SMulZeroClass R α] (r : R) (d : n → α) :
   by_cases h : i = j <;> simp [h]
 
 @[simp]
-theorem diagonal_neg [NegZeroClass α] (d : n → α) :
+theorem diagonal_neg [Zero α] [Neg α] [NegZeroClass α] (d : n → α) :
     -diagonal d = diagonal fun i => -d i := by
   ext i j
   by_cases h : i = j <;>

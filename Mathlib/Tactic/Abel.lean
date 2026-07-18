@@ -239,7 +239,7 @@ Interpret a negated expression in `abel`'s normal form.
 -/
 def evalNeg : NormalExpr → M (NormalExpr × Expr)
   | (zero _) => do
-    let p ← (← read).mkApp ``neg_zero ``NegZeroClass #[]
+    let p ← mkAppOptM ``neg_zero #[(← read).α, none, none, none]
     return (← zero', p)
   | (nterm _ n x a) => do
     let n' ← Mathlib.Meta.NormNum.eval (← mkAppM ``Neg.neg #[n.1])

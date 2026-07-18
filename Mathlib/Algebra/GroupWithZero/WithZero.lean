@@ -218,7 +218,7 @@ instance inv : Inv (WithZero α) where inv a := Option.map (·⁻¹) a
 
 end Inv
 
-instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) where
+instance invOneClass [One α] [Inv α] [InvOneClass α] : InvOneClass (WithZero α) where
   inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp
 
 section Div

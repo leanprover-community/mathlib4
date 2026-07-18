@@ -196,12 +196,11 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
 instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) where
   add_comm _ _ := ext fun _ ↦ add_comm _ _
 
-instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
+instance [Zero R] [Neg R] [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨-f, by simp⟩
 
-@[simp]
-theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n = -f n := by
-  rfl
+instance [Zero R] [Neg R] [NegZeroClass R] : IsNegApply (ArithmeticFunction R) ℕ R where
+  neg_apply _ _ := by rfl
 
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
   neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
