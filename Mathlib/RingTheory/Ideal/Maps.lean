@@ -418,6 +418,9 @@ theorem map_evalRingHom_pi {I : Π i, Ideal (R i)} (i : ι) :
   rintro ⟨r, hr, rfl⟩
   exact hr i
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Ideals in a finite direct product semiring `Πᵢ Rᵢ` are identified with tuples of ideals
 in the individual semirings, in an order-preserving way.
 
@@ -522,6 +525,7 @@ section Bijective
 variable (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S}
 include hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Special case of the correspondence theorem for isomorphic rings -/
 def relIsoOfBijective : Ideal S ≃o Ideal R where
   toFun := comap f
@@ -665,6 +669,7 @@ def mapHom : Ideal R →+* Ideal S where
 protected theorem map_pow (n : ℕ) : map f (I ^ n) = map f I ^ n :=
   map_pow (mapHom f) I n
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_radical : comap f (radical K) = radical (comap f K) := by
   ext
   simp [radical]
@@ -1140,11 +1145,11 @@ theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {
   ext j
   constructor
   · rintro ⟨hj, hj'⟩
-    haveI : j.IsPrime := hj'
+    have : j.IsPrime := hj'
     exact
       ⟨comap f j, ⟨⟨map_le_iff_le_comap.1 hj, comap_isPrime f j⟩, map_comap_of_surjective f hf j⟩⟩
   · rintro ⟨J, ⟨hJ, hJ'⟩⟩
-    haveI : J.IsPrime := hJ.right
+    have : J.IsPrime := hJ.right
     exact ⟨hJ' ▸ map_mono hJ.left, hJ' ▸ map_isPrime_of_surjective hf (le_trans h hJ.left)⟩
 
 end CommRing
@@ -1249,6 +1254,7 @@ theorem eq_liftOfSurjective (hf : Function.Surjective f) (g : A →+* C)
 
 end RingHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any ring isomorphism induces an order isomorphism of ideals. -/
 @[simps apply]
 def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) :

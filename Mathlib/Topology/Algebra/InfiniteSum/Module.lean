@@ -92,7 +92,7 @@ variable {f : ι → R} {g : κ → M} {s : R} {t u : M}
 theorem HasSum.smul_eq (hf : HasSum f s) (hg : HasSum g t)
     (hfg : HasSum (fun x : ι × κ ↦ f x.1 • g x.2) u) : s • t = u :=
   have key₁ : HasSum (fun i ↦ f i • t) (s • t) := hf.smul_const t
-  have this : ∀ i : ι, HasSum (fun c : κ ↦ f i • g c) (f i • t) := fun i ↦ hg.const_smul (f i)
+  have : ∀ i : ι, HasSum (fun c : κ ↦ f i • g c) (f i • t) := fun i ↦ hg.const_smul (f i)
   have key₂ : HasSum (fun i ↦ f i • t) u := HasSum.prod_fiberwise hfg this
   key₁.unique key₂
 
@@ -198,10 +198,11 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   congr 1
   simp only [mul_smul]
 
--- we can't use `to_additive`, because it tries to translate `•` into `+ᵥ`
-
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
+@[to_additive (dont_translate := R) automorphize_smul_left /--
+Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/]
 lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
     (g : Quotient (MulAction.orbitRel α β) → R) :
     MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
@@ -215,24 +216,6 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
     apply (@Quotient.eq _ (MulAction.orbitRel α β) (a • b) b).mpr
     use a
   change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
-  simp_rw [H₁]
-  exact tsum_const_smul'' _
-
-/-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
-`R`-scalar multiplication. -/
-lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β → M)
-    (g : Quotient (AddAction.orbitRel α β) → R) :
-    AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
-      = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
-  ext x
-  induction x using Quotient.inductionOn with | _ b
-  simp only [automorphize, Pi.smul_apply', comp_apply]
-  set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)
-  have H₁ : ∀ a : α, π (a +ᵥ b) = π b := by
-    intro a
-    apply (@Quotient.eq _ (AddAction.orbitRel α β) (a +ᵥ b) b).mpr
-    use a
-  change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
   simp_rw [H₁]
   exact tsum_const_smul'' _
 
