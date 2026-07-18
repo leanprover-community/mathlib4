@@ -211,17 +211,9 @@ theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
     IsComplete (f '' s) ↔ IsComplete s :=
   _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
 
-@[deprecated LinearIsometry.isComplete_image_iff (since := "2025-12-25")]
-theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
-    IsComplete (f '' s) ↔ IsComplete s :=
-  LinearIsometry.isComplete_image_iff _
-
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
     IsComplete (p.map f.toLinearMap : Set E₂) ↔ IsComplete (p : Set E) :=
   isComplete_image_iff f
-
-@[deprecated (since := "2025-12-25")]
-alias isComplete_map_iff' := isComplete_map_iff
 
 instance completeSpace_map [RingHomSurjective σ₁₂] (p : Submodule R E) [CompleteSpace p] :
     CompleteSpace (p.map (f : E →ₛₗ[σ₁₂] E₂)) :=
@@ -651,6 +643,12 @@ theorem apply_symm_apply (x : E₂) : e (e.symm x) = x :=
 @[simp]
 theorem symm_apply_apply (x : E) : e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply x
+
+theorem symm_apply_eq {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
 
 theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
   e.toLinearEquiv.map_eq_zero_iff
