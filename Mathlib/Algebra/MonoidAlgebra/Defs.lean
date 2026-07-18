@@ -1001,13 +1001,14 @@ def singleHom [AddZeroClass M] : R × Multiplicative M →* R[M] where
   map_mul' _a _b := (single_mul_single ..).symm
 
 set_option backward.isDefEq.respectTransparency false in
-theorem induction_on [AddMonoid M] {p : R[M] → Prop} (x : R[M])
-    (hM : ∀ m, p (of R M <| .ofAdd m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
-    (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
-  Finsupp.induction_linear (motive := fun x ↦ p (ofCoeff x)) x.coeff
-    (by simpa using hsmul 0 (of R M 1) (hM 0))
-    (fun x y hf hg ↦ hadd (ofCoeff x) (ofCoeff y) hf hg)
-    fun m r ↦ by simpa using! hsmul r (of R M m) (hM m)
+theorem induction_on [AddMonoid M] {motive : R[M] → Prop} (x : R[M])
+    (of : ∀ m, motive (of R M <| .ofAdd m))
+    (add : ∀ x y : R[M], motive x → motive y → motive (x + y))
+    (smul : ∀ (r : R) (x), motive x → motive (r • x)) : motive x :=
+  Finsupp.induction_linear (motive := fun x ↦ motive (ofCoeff x)) x.coeff
+    (by simpa using smul 0 (AddMonoidAlgebra.of R M 1) (of 0))
+    (fun x y hf hg ↦ add (ofCoeff x) (ofCoeff y) hf hg)
+    fun m r ↦ by simpa using! smul r (AddMonoidAlgebra.of R M m) (of m)
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
 and `single 0 r`, then they are equal.
