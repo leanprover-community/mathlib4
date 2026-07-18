@@ -18,9 +18,9 @@ preserves Krull dimension.
 ## Main results
 
 - `RingHom.IsIntegral.ringKrullDim_eq_of_injective`: injective integral homomorphisms of
-    commutative rings preserve Krull dimension.
+  commutative rings preserve Krull dimension.
 - `RingHom.IsIntegral.ringKrullDim_quotient_ker_eq`: for an integral extension `f : A →+* B`,
-    the Krull dimension of `B` is equal to the Krull dimension of `A ⧸ RingHom.ker f`.
+  the Krull dimension of `B` is equal to the Krull dimension of `A ⧸ RingHom.ker f`.
 
 -/
 
@@ -69,6 +69,6 @@ theorem IsIntegral.ringKrullDim_quotient_ker_eq
     {f : A →+* B} (hf : f.IsIntegral) :
     ringKrullDim (A ⧸ RingHom.ker f) = ringKrullDim B :=
     RingHom.IsIntegral.ringKrullDim_eq_of_injective (f := RingHom.kerLift f)
-    (RingHom.IsIntegral.kerLift hf) (RingHom.kerLift_injective f)
+      (RingHom.IsIntegral.kerLift hf) (RingHom.kerLift_injective f)
 
 end RingHom
