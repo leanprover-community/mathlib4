@@ -53,6 +53,7 @@ theorem sSup_of_not_bddAbove {s : Set ℕ} (h : ¬BddAbove s) : sSup s = 0 :=
 lemma iSup_of_not_bddAbove {ι : Sort*} {f : ι → ℕ} (h : ¬ BddAbove (Set.range f)) :
     (⨆ i, f i : ℕ) = 0 := Nat.sSup_of_not_bddAbove h
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   cases eq_empty_or_nonempty s with

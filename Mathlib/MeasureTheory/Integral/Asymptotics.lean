@@ -72,7 +72,7 @@ theorem IsBigO.eventually_integrableOn [Norm F]
   obtain ⟨u, hu, v, hv, huv⟩ := Filter.mem_prod_iff.mp htl
   obtain ⟨w, hwl, hw⟩ := hfm.exists_mem
   refine eventually_iff_exists_mem.mpr ⟨w ∩ v, inter_mem hwl hv, fun x hx ↦ ?_⟩
-  haveI : IsFiniteMeasure (μ.restrict s) := ⟨Measure.restrict_apply_univ s ▸ hμ⟩
+  have : IsFiniteMeasure (μ.restrict s) := ⟨Measure.restrict_apply_univ s ▸ hμ⟩
   refine Integrable.mono' (integrable_const (C * ‖g x‖)) (hw x hx.1) ?_
   filter_upwards [MeasureTheory.self_mem_ae_restrict hs]
   intro y hy
