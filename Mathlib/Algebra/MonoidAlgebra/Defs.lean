@@ -729,13 +729,13 @@ lemma single_pow (m : M) (r : R) : ∀ n : ℕ, single m r ^ n = single (m ^ n) 
   | 0 => by simp [one_def]
   | n + 1 => by simp [pow_succ, single_pow _ _ n]
 
-lemma induction_on {p : R[M] → Prop} (x : R[M])
-    (hM : ∀ m, p (of R M m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
-    (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
-  Finsupp.induction_linear (motive := fun x ↦ p <| ofCoeff x) x.coeff
-    (by simpa using hsmul 0 (of R M 1) (hM 1))
-    (fun x y hf hg ↦ hadd (ofCoeff x) (ofCoeff y) hf hg)
-    fun m r ↦ by simpa using hsmul r (of R M m) (hM m)
+lemma induction_on {motive : R[M] → Prop} (x : R[M])
+    (of : ∀ m, motive (of R M m)) (add : ∀ x y : R[M], motive x → motive y → motive (x + y))
+    (smul : ∀ (r : R) (x), motive x → motive (r • x)) : motive x :=
+  Finsupp.induction_linear (motive := fun x ↦ motive <| ofCoeff x) x.coeff
+    (by simpa using smul 0 (MonoidAlgebra.of R M 1) (of 1))
+    (fun x y hf hg ↦ add (ofCoeff x) (ofCoeff y) hf hg)
+    fun m r ↦ by simpa using smul r (MonoidAlgebra.of R M m) (of m)
 
 @[to_additive (dont_translate := R)]
 instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M := M)) where
