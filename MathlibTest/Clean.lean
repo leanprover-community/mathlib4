@@ -42,7 +42,7 @@ example : True := by
   guard_hyp x' :ₛ id Nat := (1 : Nat)
 
   let y := show Nat from 1
-  guard_hyp y :ₛ Nat := have this := 1; this
+  guard_hyp y :ₛ Nat := have := 1; this
   let y' := clean% show Nat from 1
   guard_hyp y' :ₛ Nat := 1
 

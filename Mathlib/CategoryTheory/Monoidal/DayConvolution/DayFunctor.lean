@@ -177,6 +177,7 @@ def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
     (F ⊗ G).functor (η F G) _
     ((tensor C).pointwiseLeftKanExtensionUnit (F.functor ⊠ G.functor))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
     (η F G).app (x, y) ≫ (isoPointwiseLeftKanExtension F G).hom.app (x ⊗ y) =

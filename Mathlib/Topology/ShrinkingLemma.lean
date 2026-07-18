@@ -140,7 +140,7 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
     · use i
       simpa only [(find c ne i).apply_eq (mt (mem_find_carrier_iff _).1 hi)]
     · simp_rw [not_exists, not_and, not_imp_not, chainSupCarrier, mem_iUnion₂] at hx
-      haveI : Nonempty (PartialRefinement u s p) := ⟨ne.some⟩
+      have : Nonempty (PartialRefinement u s p) := ⟨ne.some⟩
       choose! v hvc hiv using hx
       rcases (hfin x hxs).exists_maximalFor v _ (mem_iUnion.1 (hU hxs)) with
         ⟨i, hxi : x ∈ u i, hmax : ∀ j, x ∈ u j → v i ≤ v j → v j ≤ v i⟩
@@ -216,7 +216,7 @@ corresponding original open set. -/
 theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ ∀ i, closure (v i) ⊆ u i := by
-  haveI : Nonempty (PartialRefinement u s ⊤) :=
+  have : Nonempty (PartialRefinement u s ⊤) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
   have : ∀ c : Set (PartialRefinement u s ⊤),
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
@@ -344,7 +344,7 @@ theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ (∀ i, closure (v i) ⊆ u i)
       ∧ (∀ i, IsCompact (closure (v i))) := by
-  haveI : Nonempty (PartialRefinement u s (fun w => IsCompact (closure w))) :=
+  have : Nonempty (PartialRefinement u s (fun w => IsCompact (closure w))) :=
     ⟨⟨u, ∅, uo, us, False.elim, False.elim, fun _ => rfl⟩⟩
   have : ∀ c : Set (PartialRefinement u s (fun w => IsCompact (closure w))),
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
