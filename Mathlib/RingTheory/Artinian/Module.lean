@@ -514,14 +514,16 @@ section CommSemiring
 variable (R : Type*) [CommSemiring R] [IsArtinianRing R]
 
 @[stacks 00J7]
-lemma setOf_isMaximal_finite : {I : Ideal R | I.IsMaximal}.Finite := by
+lemma setOfPred_isMaximal_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   have ⟨s, H⟩ := Finset.exists_inf_le (Subtype.val (p := fun I : Ideal R ↦ I.IsMaximal))
   refine Set.finite_def.2 ⟨s, fun p ↦ ?_⟩
   have ⟨q, hq1, hq2⟩ := p.2.isPrime.inf_le'.mp (H p)
   rwa [← Subtype.ext <| q.2.eq_of_le p.2.ne_top hq2]
 
+@[deprecated (since := "2026-07-09")] alias setOf_isMaximal_finite := setOfPred_isMaximal_finite
+
 instance : Finite (MaximalSpectrum R) :=
-  haveI : Finite {I : Ideal R // I.IsMaximal} := (setOf_isMaximal_finite R).to_subtype
+  haveI : Finite {I : Ideal R // I.IsMaximal} := (setOfPred_isMaximal_finite R).to_subtype
   .of_equiv _ (MaximalSpectrum.equivSubtype _).symm
 
 end CommSemiring
@@ -588,11 +590,13 @@ theorem nilradical_pow_eq_iInf (n : ℕ) :
 theorem nilradical_eq_iInf : nilradical R = iInf MaximalSpectrum.asIdeal := by
   simpa using nilradical_pow_eq_iInf R 1
 
-lemma setOf_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
-  simpa only [isPrime_iff_isMaximal] using setOf_isMaximal_finite R
+lemma setOfPred_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
+  simpa only [isPrime_iff_isMaximal] using setOfPred_isMaximal_finite R
+
+@[deprecated (since := "2026-07-09")] alias setOf_isPrime_finite := setOfPred_isPrime_finite
 
 instance : Finite (PrimeSpectrum R) :=
-  haveI : Finite {I : Ideal R // I.IsPrime} := (setOf_isPrime_finite R).to_subtype
+  haveI : Finite {I : Ideal R // I.IsPrime} := (setOfPred_isPrime_finite R).to_subtype
   .of_equiv _ (PrimeSpectrum.equivSubtype _).symm.toEquiv
 
 /-- A temporary field instance on the quotients by maximal ideals. -/

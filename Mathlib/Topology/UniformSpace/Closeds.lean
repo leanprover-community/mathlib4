@@ -163,7 +163,7 @@ theorem isOpen_inter_nonempty_of_isOpen {U : Set α} (hU : IsOpen U) :
 /-- In the Hausdorff uniformity, the powerset of a closed set is closed. -/
 theorem _root_.IsClosed.powerset_hausdorff {F : Set α} (hF : IsClosed F) :
     IsClosed F.powerset := by
-  simp_rw [Set.powerset, ← isOpen_compl_iff, Set.compl_setOf, ← Set.inter_compl_nonempty_iff]
+  simp_rw [Set.powerset, ← isOpen_compl_iff, Set.compl_ofPred, ← Set.inter_compl_nonempty_iff]
   exact isOpen_inter_nonempty_of_isOpen hF.isOpen_compl
 
 theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
@@ -231,7 +231,7 @@ theorem isUniformInducing_closure : IsUniformInducing (closure (X := α)) := by
 theorem nhds_closure (s : Set α) : 𝓝 (closure s) = 𝓝 s := by
   simp_rw +singlePass [isUniformInducing_closure.isInducing.nhds_eq_comap, closure_closure]
 
-theorem isClosed_setOf_totallyBounded : IsClosed {s : Set α | TotallyBounded s} := by
+theorem isClosed_setOfPred_totallyBounded : IsClosed {s : Set α | TotallyBounded s} := by
   simp_rw [isClosed_iff_frequently, nhds_eq_comap_uniformity]
   intro s hs U hU
   obtain ⟨V : SetRel α α, hV, hVU⟩ := comp_mem_uniformity_sets hU
@@ -242,6 +242,9 @@ theorem isClosed_setOf_totallyBounded : IsClosed {s : Set α | TotallyBounded s}
   grw [hst, htu, ← hVU]
   simp [Set.subset_def]
   grind
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_totallyBounded := isClosed_setOfPred_totallyBounded
 
 instance [DiscreteUniformity α] : DiscreteUniformity (Set α) := by
   rw [discreteUniformity_iff_setRelId_mem_uniformity]
@@ -270,7 +273,7 @@ theorem IsUniformInducing.image_hausdorff {f : α → β} (hf : IsUniformInducin
     Filter.comap_lift'_eq2 monotone_hausdorffEntourage]
   congr with U ⟨s, t⟩
   simp only [Function.comp, hausdorffEntourage, SetRel.preimage, SetRel.image, Set.preimage,
-    Set.mem_setOf, Set.image_subset_iff, Set.exists_mem_image]
+    Set.mem_ofPred, Set.image_subset_iff, Set.exists_mem_image]
 
 /-- When `Set` is equipped with the Hausdorff uniformity, taking the image under a uniform
 embedding is a uniform embedding. -/
@@ -283,7 +286,7 @@ theorem IsUniformEmbedding.image_hausdorff {f : α → β} (hf : IsUniformEmbedd
 theorem TotallyBounded.powerset_hausdorff {t : Set α} (ht : TotallyBounded t) :
     TotallyBounded t.powerset := by
   simp_rw [(𝓤 α).basis_sets.uniformity_hausdorff.totallyBounded_iff, Function.comp_id,
-    Set.powerset, Set.setOf_subset, Set.mem_iUnion]
+    Set.powerset, Set.ofPred_subset, Set.mem_iUnion]
   intro (U : SetRel α α) hU
   obtain ⟨u, hu, ht⟩ := ht U hU
   refine ⟨u.powerset, hu.powerset, fun s hs => ⟨u ∩ U.image s, by grind, fun x hx => ?_,
@@ -298,7 +301,7 @@ theorem TotallyBounded.nhds_vietoris_le_nhds_hausdorff {s : Set α} (hs : Totall
   open UniformSpace TopologicalSpace.vietoris in
   simp_rw [nhds_eq_comap_uniformity,
     uniformity_hasBasis_open.uniformity_hausdorff |>.comap _ |>.ge_iff, Function.comp_id,
-    hausdorffEntourage, Set.preimage_setOf_eq, Set.setOf_and]
+    hausdorffEntourage, Set.preimage_ofPred_eq, Set.ofPred_and]
   intro U ⟨hU₁, hU₂⟩
   have : U.IsRefl := ⟨fun _ => refl_mem_uniformity hU₁⟩
   let := TopologicalSpace.vietoris α
@@ -377,8 +380,11 @@ theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBound
     TotallyBounded {F : Closeds α | ↑F ⊆ t} :=
   totallyBounded_preimage isUniformEmbedding_coe.isUniformInducing ht.powerset_hausdorff
 
-theorem isClosed_setOf_totallyBounded : IsClosed {s : Closeds α | TotallyBounded (s : Set α)} :=
-  UniformSpace.hausdorff.isClosed_setOf_totallyBounded.preimage uniformContinuous_coe.continuous
+theorem isClosed_setOfPred_totallyBounded : IsClosed {s : Closeds α | TotallyBounded (s : Set α)} :=
+  UniformSpace.hausdorff.isClosed_setOfPred_totallyBounded.preimage uniformContinuous_coe.continuous
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_totallyBounded := isClosed_setOfPred_totallyBounded
 
 instance [DiscreteUniformity α] : DiscreteUniformity (Closeds α) :=
   isUniformEmbedding_coe.discreteUniformity
@@ -476,8 +482,8 @@ theorem compactSpace_iff : CompactSpace (Closeds α) ↔ CompactSpace α := by
     (fun i => {C : Closeds α | ↑C ⊆ F i})
     (fun i => isClosed_subsets_of_isClosed (hF₁ i))
   simp_rw [← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
-    ← Set.setOf_forall, ← Set.subset_iInter_iff, hF₂, Set.subset_empty_iff, coe_eq_empty,
-    Set.setOf_eq_eq_singleton] at this
+    ← Set.ofPred_forall, ← Set.subset_iInter_iff, hF₂, Set.subset_empty_iff, coe_eq_empty,
+    Set.ofPred_eq_eq_singleton] at this
   obtain ⟨s, hs⟩ := this .rfl
   specialize @hs ⟨⋂ i ∈ s, F i, isClosed_biInter fun i _ => hF₁ i⟩ .rfl
   exact ⟨s, congr($hs)⟩
@@ -533,7 +539,7 @@ theorem isClosedEmbedding_toCloseds [T2Space α] [CompleteSpace α] :
     IsClosedEmbedding (toCloseds (α := α)) where
   __ := isEmbedding_toCloseds
   isClosed_range := by
-    convert! Closeds.isClosed_setOf_totallyBounded
+    convert! Closeds.isClosed_setOfPred_totallyBounded
     exact subset_antisymm
       (Set.range_subset_iff.mpr fun K => K.isCompact.totallyBounded)
       (fun K hK => ⟨⟨K, hK.isCompact_of_isClosed K.isClosed⟩, rfl⟩)
@@ -606,7 +612,7 @@ instance [CompleteSpace α] : CompleteSpace (Compacts α) := by
     rw [Set.iUnion₂_subset_iff]
     intro K' ⟨_, (hK' : ↑K' ⊆ V.preimage K)⟩
     grw [← hVU, SetRel.preimage_comp, ← ht₂, hK']
-  let L : Compacts α := ⟨{x | ClusterPt x l}, hl.isCompact_setOf_clusterPt⟩
+  let L : Compacts α := ⟨{x | ClusterPt x l}, hl.isCompact_setOfPred_clusterPt⟩
   exists L
   simp_rw [nhds_eq_comap_uniformity']
   rw [uniformity_hasBasis_closed.uniformity_compacts.comap _ |>.ge_iff]

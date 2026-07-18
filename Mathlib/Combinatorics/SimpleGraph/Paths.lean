@@ -426,7 +426,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
   induction p generalizing n m with
   | nil => simp_all
   | @cons v w u h p ihp =>
-    simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
+    simp only [length_cons, Set.mem_ofPred_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
     · lia
     · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
@@ -444,7 +444,7 @@ lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.
     p.getVert i = u ↔ i = 0 := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases h' : i ≤ p.length
-  · apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
+  · apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
     simp [h]
   · rw [p.getVert_of_length_le (le_of_not_ge h')] at h
     subst h
@@ -473,7 +473,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
     rw [cons_isPath_iff]
     refine ⟨ih (by
       intro n hn m hm hnm
-      simp only [Set.mem_setOf_eq] at hn hm
+      simp only [Set.mem_ofPred_eq] at hn hm
       have := hinj
         (by rw [length_cons]; lia : n + 1 ≤ (q.cons h).length)
         (by rw [length_cons]; lia : m + 1 ≤ (q.cons h).length)
@@ -516,7 +516,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
   rw [← p.cons_tail_eq hpc.not_nil] at hpc
   intro n hn m hm hnm
   rw [← SimpleGraph.Walk.length_tail_add_one
-    (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
+    (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_ofPred] at hn hm
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
     (by lia : n - 1 ≤ p.tail.length) (by lia : m - 1 ≤ p.tail.length)
     (by simp_all)
@@ -525,11 +525,11 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
   intro n hn m hm hnm
-  simp only [Set.mem_setOf_eq] at *
+  simp only [Set.mem_ofPred_eq] at *
   have := hpc.three_le_length
   have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
-    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; lia)
-    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; lia)
+    (by simp only [Walk.length_reverse, Set.mem_ofPred_eq]; lia)
+    (by simp only [Walk.length_reverse, Set.mem_ofPred_eq]; lia)
     (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n by lia, hnm,
       show p.length - (p.length - m) = m by lia])
   lia
@@ -545,8 +545,8 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
   refine ⟨?_, by aesop⟩
   rw [or_iff_not_imp_left]
   intro h hi
-  exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; lia)
-    (by simp only [Set.mem_setOf_eq]; lia) (h.symm ▸ (Walk.getVert_length p).symm)
+  exact hpc.getVert_injOn (by simp only [Set.mem_ofPred_eq]; lia)
+    (by simp only [Set.mem_ofPred_eq]; lia) (h.symm ▸ (Walk.getVert_length p).symm)
 
 lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
@@ -556,8 +556,8 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
   · rw [p.getVert_of_length_le (by lia : p.length ≤ i + 1),
       hpc.getVert_endpoint_iff (by lia)] at h'
     lia
-  have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; lia)
-    (by simp only [Set.mem_setOf_eq]; lia) h'
+  have := hpc.getVert_injOn' (by simp only [Set.mem_ofPred_eq, Nat.sub_le_iff_le_add]; lia)
+    (by simp only [Set.mem_ofPred_eq]; lia) h'
   lia
 
 theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
@@ -643,7 +643,7 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
   rw [getVert_takeUntil hw hnl] at hn
   have := p.length_takeUntil_lt_length hw h.symm
-  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by simp)
+  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
   lia
 
