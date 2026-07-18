@@ -357,8 +357,9 @@ variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SM
 lemma mapOfCompatibleSMul_same :
     (mapOfCompatibleSMul R A S M N).toAddHom  = (mapOfCompatibleSMul R A S' M N).toAddHom := rfl
 
-lemma mapOfCompatibleSMul_ker_same (x : M ⊗[A] N) : x ∈ (mapOfCompatibleSMul R A S M N).ker
-    ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker := Iff.of_eq rfl
+lemma mapOfCompatibleSMul_ker_same (x : M ⊗[A] N) :
+    x ∈ (mapOfCompatibleSMul R A S M N).ker ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker :=
+  Iff.of_eq rfl
 
 end CompatibleSMul
 
