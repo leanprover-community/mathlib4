@@ -78,7 +78,7 @@ The images of `x` by the embeddings of `K` in `A` are exactly the roots in `A` o
 the minimal polynomial of `x` over `ℚ`. -/
 theorem range_eval_eq_rootSet_minpoly :
     (range fun φ : K →+* A => φ x) = (minpoly ℚ x).rootSet A := by
-  convert (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
+  convert! (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
   ext a
   exact ⟨fun ⟨φ, hφ⟩ => ⟨φ.toRatAlgHom, hφ⟩, fun ⟨φ, hφ⟩ => ⟨φ.toRingHom, hφ⟩⟩
 
@@ -125,7 +125,7 @@ theorem pow_eq_one_of_norm_le_one {x : K} (hx₀ : x ≠ 0) (hxi : IsIntegral �
     (hx : ∀ φ : K →+* A, ‖φ x‖ ≤ 1) : ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
     Set.Infinite.exists_ne_map_eq_of_mapsTo (f := (x ^ · : ℕ → K)) Set.infinite_univ
-      (fun a _ => mem_setOf.mpr <|
+      (fun a _ => mem_ofPred.mpr <|
         ⟨hxi.pow a, fun φ => by simp [pow_le_one₀ (norm_nonneg (φ x)) <| hx φ]⟩)
       (finite_of_norm_le K A (1 : ℝ))
   wlog hlt : b < a
@@ -148,7 +148,7 @@ end NumberField.Embeddings
 
 section Place
 
-variable {K : Type*} [Field K] {A : Type*} [NormedDivisionRing A] [Nontrivial A] (φ : K →+* A)
+variable {K : Type*} [Field K] {A : Type*} [NormedDivisionRing A] (φ : K →+* A)
 
 /-- An embedding into a normed division ring defines a place of `K` -/
 def NumberField.place : AbsoluteValue K ℝ :=
@@ -178,7 +178,7 @@ noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ
 theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (lift K φ).comp (algebraMap k K) = φ := by
   unfold lift
-  letI := φ.toAlgebra
+  let := φ.toAlgebra
   rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra']
 
 @[simp]
@@ -238,13 +238,13 @@ lemma IsReal.comp (f : k →+* K) {φ : K →+* ℂ} (hφ : IsReal φ) :
 
 lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
     IsReal (φ.comp (f : k →+* K)) ↔ IsReal φ :=
-  ⟨fun H ↦ by convert H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
+  ⟨fun H ↦ by convert! H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
 
 lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
     ∃ σ : Gal(K/k), φ.comp σ.symm = ψ := by
-  letI := (φ.comp (algebraMap k K)).toAlgebra
-  letI := φ.toAlgebra
+  let := (φ.comp (algebraMap k K)).toAlgebra
+  let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
   let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ (RingHom.congr_fun h r).symm }
   use (AlgHom.restrictNormal' ψ' K).symm
@@ -295,7 +295,7 @@ lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
 theorem IsConj.comp (hσ : IsConj φ σ) (ν : Gal(K/k)) :
     IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
   ext
-  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _
+  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using! RingHom.congr_fun hσ _
 
 lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
     orderOf σ = 2 :=
@@ -375,7 +375,7 @@ theorem disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver :
 theorem union_unmixedEmbeddingsOver_mixedEmbeddingsOver :
     (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) =
       { φ | ComplexEmbedding.LiesOver φ ψ } := by
-  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
+  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.ofPred_or]
 
 end Extension
 

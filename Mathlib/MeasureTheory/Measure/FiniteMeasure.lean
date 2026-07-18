@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
-public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.TietzeExtension
 
@@ -135,7 +134,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : FiniteMeasure Ω → M
 
 instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
-  coe_injective' μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
+  coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
     simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
 
 lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
@@ -192,7 +191,7 @@ protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
 def mass (μ : FiniteMeasure Ω) : ℝ≥0 := μ univ
 
 @[simp] theorem apply_le_mass (μ : FiniteMeasure Ω) (s : Set Ω) : μ s ≤ μ.mass := by
-  simpa using apply_mono μ (subset_univ s)
+  simpa using! apply_mono μ (subset_univ s)
 
 @[simp]
 theorem ennreal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Measure Ω) univ :=
@@ -317,9 +316,9 @@ lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset �
     {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
   ext t ht
-  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finsetSum, Finset.sum_apply]
   rw [Measure.restrict_biUnion_finset hd hm]
-  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finset_sum, Finset.sum_apply]
+  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finsetSum, Finset.sum_apply]
   conv_rhs => rw [← Finset.sum_attach]
 
 @[simp]
@@ -339,7 +338,7 @@ lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFinite
     rw [this]
     exact Measure.measurable_coe MeasurableSet.univ measurableSet_Ico
   ext μ
-  simp only [mem_setOf_eq, mem_preimage, mem_Ico, zero_le, true_and]
+  simp only [mem_ofPred_eq, mem_preimage, mem_Ico, zero_le, true_and]
   exact isFiniteMeasure_iff μ
 
 /-- The monoidal product is a measurable function from the product of finite measures over
@@ -355,7 +354,7 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
       ((Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
-  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
+  simp only [mem_image2, mem_ofPred_eq, forall_exists_index, and_imp]
   intro _ _ Hu _ Hv Heq
   simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
 
@@ -411,7 +410,7 @@ theorem testAgainstNN_mono (μ : FiniteMeasure Ω) {f g : Ω →ᵇ ℝ≥0} (f_
 
 @[simp]
 theorem testAgainstNN_zero (μ : FiniteMeasure Ω) : μ.testAgainstNN 0 = 0 := by
-  simpa only [zero_mul] using μ.testAgainstNN_const 0
+  simpa only [zero_mul] using! μ.testAgainstNN_const 0
 
 @[simp]
 theorem testAgainstNN_one (μ : FiniteMeasure Ω) : μ.testAgainstNN 1 = μ.mass := by
@@ -558,14 +557,14 @@ theorem tendsto_zero_testAgainstNN_of_tendsto_zero_mass {γ : Type*} {F : Filter
   apply squeeze_zero (fun i ↦ NNReal.coe_nonneg _) obs
   have lim_pair : Tendsto (fun i ↦ (⟨nndist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nndist f 0, 0⟩) :=
     (Prod.tendsto_iff _ _).mpr ⟨tendsto_const_nhds, (NNReal.continuous_coe.tendsto 0).comp mass_lim⟩
-  simpa using tendsto_mul.comp lim_pair
+  simpa using! tendsto_mul.comp lim_pair
 
 /-- If the total masses of finite measures tend to zero, then the measures tend to zero. -/
 theorem tendsto_zero_of_tendsto_zero_mass {γ : Type*} {F : Filter γ} {μs : γ → FiniteMeasure Ω}
     (mass_lim : Tendsto (fun i ↦ (μs i).mass) F (𝓝 0)) : Tendsto μs F (𝓝 0) := by
   rw [tendsto_iff_forall_testAgainstNN_tendsto]
   intro f
-  convert tendsto_zero_testAgainstNN_of_tendsto_zero_mass mass_lim f
+  convert! tendsto_zero_testAgainstNN_of_tendsto_zero_mass mass_lim f
   rw [zero_testAgainstNN_apply]
 
 /-- A characterization of weak convergence in terms of integrals of bounded continuous
@@ -720,7 +719,7 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   have auxs := fun i ↦
     integral_eq_lintegral_of_nonneg_ae (f₀_ae_nns i) f₀.continuous.measurable.aestronglyMeasurable
   simp_rw [f₀_eq, Function.comp_apply, ENNReal.ofReal_coe_nnreal] at aux auxs
-  simpa only [← aux, ← auxs] using h f₀
+  simpa only [← aux, ← auxs] using! h f₀
 
 /-- A characterization of weak convergence in terms of integrals of bounded continuous
 real-valued functions. -/
@@ -745,6 +744,7 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : 
   simp_rw [aux, BoundedContinuousFunction.toReal_lintegral_coe_eq_integral] at tends_pos tends_neg
   exact Tendsto.sub tends_pos tends_neg
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [RCLike 𝕜]
     {F : Filter γ} {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
@@ -775,7 +775,7 @@ instance : ContinuousAdd (FiniteMeasure Ω) := by
       (𝓝 (∫⁻ x, g x ∂p.2)) := by
     rw [nhds_prod_eq]
     exact (tendsto_iff_forall_lintegral_tendsto.1 tendsto_id g).comp tendsto_snd
-  convert A.add B with q <;> simp
+  convert! A.add B with q <;> simp
 
 instance : ContinuousSMul ℝ≥0 (FiniteMeasure Ω) := by
   refine ⟨continuous_iff_continuousAt.2 (fun p ↦ ?_)⟩
@@ -787,7 +787,7 @@ instance : ContinuousSMul ℝ≥0 (FiniteMeasure Ω) := by
       (𝓝 (∫ x, g x ∂p.2)) := by
     rw [nhds_prod_eq]
     exact (tendsto_iff_forall_integral_tendsto.1 tendsto_id g).comp tendsto_snd
-  convert A.smul B with q <;> simp
+  convert! A.smul B with q <;> simp
 
 variable {X : Type*} [TopologicalSpace X] {μs : X → FiniteMeasure Ω}
 
@@ -960,7 +960,7 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
     Tendsto (fun i ↦ (νs i).map f) L (𝓝 (ν.map f)) := by
   rw [FiniteMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
-  convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
+  convert! lim (g.compContinuous ⟨f, f_cont⟩) <;>
   · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
     refine lintegral_map ?_ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable
@@ -981,7 +981,6 @@ noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable
   map_smul' := map_smul
-  cont := continuous_map f_cont
 
 lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
     [MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [NormalSpace Ω']
@@ -992,7 +991,7 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
   let B : FiniteMeasure Ω ≃ₜ M :=
   { toFun μ := by
       refine ⟨μ.map f, ?_⟩
-      simp only [null_iff_toMeasure_null, mem_setOf_eq, toMeasure_map, M]
+      simp only [null_iff_toMeasure_null, mem_ofPred_eq, toMeasure_map, M]
       rw [Measure.map_apply hf.continuous.measurable hf.isClosed_range.isOpen_compl.measurableSet]
       simp
     invFun := M.restrict (fun μ ↦ μ.comap f)

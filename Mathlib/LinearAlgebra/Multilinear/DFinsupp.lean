@@ -269,6 +269,7 @@ theorem freeDFinsuppEquiv_def (f : Π₀ (_ : (Π i, κ i) × ι'), R) :
       (DFinsupp.domLCongr (R := R) (Equiv.sigmaEquivProd _ _).symm) f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When `freeDFinsuppEquiv` is applied to a map with a single value of one the resulting multilinear
 map sends inputs to a single value in the codomain, taking a product over images from each

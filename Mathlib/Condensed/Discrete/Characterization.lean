@@ -31,7 +31,7 @@ condensed `R`-modules are nearly identical (`CondensedMod.isDiscrete_tfae`,
 `LightCondSet.isDiscrete_tfae`, and `LightCondMod.isDiscrete_tfae`).
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -148,13 +148,13 @@ theorem isDiscrete_tfae (M : CondensedMod.{u} R) :
     intro h
     rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6 :)]
     intro S
-    letI : PreservesFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
+    let : PreservesFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
       preservesFilteredColimitsOfSize_shrink.{u, u + 1, u, u + 1} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 7 := by
     intro h S
     rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6 :)] at h
-    letI : ReflectsFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
+    let : ReflectsFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
       reflectsFilteredColimitsOfSize_shrink.{u, u + 1, u, u + 1} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
   tfae_finish
@@ -225,8 +225,8 @@ variable (R : Type u) [Ring R]
 
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete :=
-  Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
-    (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
+  Sheaf.isConstant_iff_forget (coherentTopology LightProfinite.{u})
+    (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit.{u}
 
 open LightCondMod.LocallyConstant List in
 theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
@@ -252,13 +252,13 @@ theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
     intro h
     rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5 :)]
     intro S
-    letI : PreservesFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
+    let : PreservesFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
       preservesFilteredColimitsOfSize_shrink.{0, u, 0, u} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 6 := by
     intro h S
     rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5 :)] at h
-    letI : ReflectsFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
+    let : ReflectsFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
       reflectsFilteredColimitsOfSize_shrink.{0, u, 0, u} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
   tfae_finish

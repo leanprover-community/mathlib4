@@ -69,7 +69,7 @@ variable [Preorder α] {n : ℕ} {f : Fin (n + 1) → α} {a : α}
 
 @[simp]
 lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by
-  simpa only [monotone_iff_forall_lt] using @liftFun_vecCons α n (· ≤ ·) _ f a
+  simpa only [monotone_iff_forall_lt] using! @liftFun_vecCons α n (· ≤ ·) _ f a
 
 @[simp] lemma monotone_vecEmpty : Monotone ![a]
   | ⟨0, _⟩, ⟨0, _⟩, _ => le_refl _
@@ -179,6 +179,7 @@ lemma finSuccAboveOrderIso_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.l
   rw [← Option.some_inj]
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_ne_last_apply h x.property
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
 @[simps apply symm_apply]

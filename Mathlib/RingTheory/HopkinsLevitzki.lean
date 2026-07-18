@@ -32,7 +32,7 @@ public import Mathlib.RingTheory.KrullDimension.Zero
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -115,7 +115,7 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
 instance (X : Type u) : Projective X where
   factors f e _ :=
     have he : Function.Surjective e := surjective_of_epi e
-    ⟨TypeCat.ofHom (fun x => (he (f x)).choose), by ext x; exact (he (f x)).choose_spec⟩
+    ⟨↾fun x => (he (f x)).choose, by ext x; exact (he (f x)).choose_spec⟩
 
 instance Type.enoughProjectives : EnoughProjectives (Type u) where
   presentation X := ⟨⟨X, 𝟙 X⟩⟩
@@ -201,6 +201,7 @@ namespace Adjunction
 
 variable {D : Type u'} [Category.{v'} D] {F : C ⥤ D} {G : D ⥤ C}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : Projective P) :
     Projective (F.obj P) where
   factors f g _ := by
@@ -209,11 +210,10 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     rw [Category.assoc, ← Adjunction.counit_naturality, ← Category.assoc, ← F.map_comp, hf']
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
-    haveI := Adjunction.leftAdjoint_preservesColimits.{0, 0} adj
+    have := Adjunction.leftAdjoint_preservesColimits.{0, 0} adj
     rcases (@hP).1 (F.map f) (F.map g) with ⟨f', hf'⟩
     use adj.unit.app _ ≫ G.map f' ≫ (inv <| adj.unit.app _)
     exact F.map_injective (by simpa)
@@ -248,7 +248,6 @@ variable {D : Type u'} [Category.{v'} D] (F : C ≌ D)
 theorem map_projective_iff (P : C) : Projective (F.functor.obj P) ↔ Projective P :=
   ⟨F.toAdjunction.projective_of_map_projective P, F.toAdjunction.map_projective P⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence of categories `F`, a projective presentation of `F(X)` induces a
 projective presentation of `X.` -/
 def projectivePresentationOfMapProjectivePresentation (X : C)

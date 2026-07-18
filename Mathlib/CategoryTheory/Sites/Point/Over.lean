@@ -50,7 +50,7 @@ def over : Point.{w} (J.over X) where
   jointly_surjective := by
     rintro U R hR ⟨u, hu⟩
     obtain ⟨R, rfl⟩ := (Sieve.overEquiv _).symm.surjective R
-    simp only [mem_over_iff, Equiv.apply_symm_apply] at hR
+    simp only [mem_over_iff, OrderIso.apply_symm_apply] at hR
     obtain ⟨Y, f, hf, v, rfl⟩ := Φ.jointly_surjective R hR u
     refine ⟨Over.mk (f ≫ U.hom), Over.homMk f, hf, ⟨v, ?_⟩, rfl⟩
     rw [FunctorToTypes.mem_fromOverSubfunctor_iff] at hu ⊢
@@ -71,7 +71,7 @@ lemma IsConservativeFamilyOfPoints.over
   mk' (fun Y S hS ↦ by
     obtain ⟨Y, f, rfl⟩ := Over.mk_surjective Y
     obtain ⟨S, rfl⟩ := (Sieve.overEquiv _).symm.surjective S
-    rw [mem_over_iff, Equiv.apply_symm_apply]
+    rw [mem_over_iff, OrderIso.apply_symm_apply]
     obtain ⟨ι, Z, g, rfl⟩ := S.exists_eq_ofArrows
     rw [hP.jointly_reflect_ofArrows_mem_of_small]
     intro Φ y

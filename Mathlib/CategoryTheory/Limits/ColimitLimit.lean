@@ -38,7 +38,7 @@ variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 variable {C : Type u} [Category.{v} C]
 variable (F : J × K ⥤ C)
 
-open CategoryTheory.prod Prod
+open CategoryTheory.prod CategoryTheory.Prod
 
 theorem map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
     F.map (𝟙 j ×ₘ f) = ((curry.obj F).obj j).map f :=
@@ -51,6 +51,7 @@ theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
 variable [HasLimitsOfShape J C]
 variable [HasColimitsOfShape K C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The universal morphism
 $\colim_k \lim_j F(j,k) → \lim_j \colim_k F(j, k)$.
@@ -94,6 +95,7 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
   dsimp [colimitLimitToLimitColimit]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `colimit_limit_to_limit_colimit` realized as a map of cones. -/
 @[simps]
@@ -111,6 +113,6 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
       ι_colimitLimitToLimitColimit_π_assoc, curry_obj_obj_obj, Prod.swap_obj,
       uncurry_obj_obj, ι_colimMap, currying_unitIso_inv_app_app_app, Category.id_comp,
       limMap_π_assoc, Functor.flip_obj_obj, flipIsoCurrySwapUncurry_hom_app_app]
-    erw [limitObjIsoLimitCompEvaluation_hom_π_assoc]
+    simp only [← comp_evaluation G k, limitObjIsoLimitCompEvaluation_hom_π_assoc]
 
 end CategoryTheory.Limits

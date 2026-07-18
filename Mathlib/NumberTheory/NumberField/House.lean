@@ -10,8 +10,8 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 
 /-!
-
 # House of an algebraic number
+
 This file defines the house of an algebraic number `α`, which is
 the largest of the modulus of its conjugates.
 
@@ -84,6 +84,7 @@ lemma norm_embedding_le_house (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ hous
   rw [house_eq_sup']
   exact Finset.le_sup' (f := (‖· α‖₊)) (Finset.mem_univ σ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
     1 ≤ house α := by
   have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
@@ -176,9 +177,7 @@ variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
   (newBasis K).repr (a k l * (newBasis K) r)
 
-
-set_option backward.privateInPublic true
-
+set_option backward.privateInPublic true in
 /-- `asiegel K a` is the integer matrix of the coefficients of the
 product of matrix elements and basis vectors. -/
 private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l => a' K a k.1 l.1 l.2 k.2
@@ -210,6 +209,7 @@ variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → �
 /-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
 private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
+set_option backward.privateInPublic true in
 include hxl in
 private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   intro H
@@ -224,6 +224,8 @@ private theorem lin_1 (l k r) : a k l * (newBasis K) r =
     ∑ u, (a' K a k l r u) * (newBasis K) u := by
   simp only [Basis.sum_repr (newBasis K) (a k l * (newBasis K) r), a', ← zsmul_eq_mul]
 
+-- Variable declarations can only reference public items.
+set_option backward.privateInPublic true
 variable [Fintype β] (cardβ : Fintype.card β = q) (hmulvec0 : asiegel K a *ᵥ x = 0)
 
 include hxl hmulvec0 in
@@ -319,7 +321,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
        _ ≤ h * (c₂ K) * ((q * c₁ K * A) ^ ((p : ℝ) / (q - p))) := ?_
        _ ≤ c₁ K * ((c₁ K * ↑q * A) ^ ((p : ℝ) / (q - p))) := ?_
   · simp_rw [← map_mul, map_sum]; apply house_sum_le_sum_house
-  · gcongr with r _; convert house_mul_le ..
+  · gcongr with r _; convert! house_mul_le ..
     simp only [map_intCast, house_intCast, Int.cast_abs, Int.norm_eq_abs]
   · unfold supOfBasis
     gcongr with r _
@@ -334,7 +336,6 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     · exact asiegel_remark K a habs Apos
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
@@ -342,7 +343,6 @@ non-trivial underdetermined system of linear equations with algebraic integer co
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
-  classical
   let h := finrank ℚ K
   have hphqh : p * h < q * h := by gcongr; exact finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩

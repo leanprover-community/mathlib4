@@ -141,7 +141,7 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
 /-- For a compact set `s`, locally uniform convergence on `s` is just uniform convergence on `s`. -/
 theorem tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (hs : IsCompact s) :
     TendstoLocallyUniformlyOn F f p s ↔ TendstoUniformlyOn F f p s := by
-  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
+  have : CompactSpace s := isCompact_iff_compactSpace.mp hs
   refine ⟨fun h => ?_, TendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
   rwa [tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe,
     tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace, ←
@@ -208,7 +208,7 @@ theorem TendstoLocallyUniformlyOn.prodMk [UniformSpace γ] {G : ι → α → γ
 
 theorem TendstoLocallyUniformlyOn.piProd [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
     (hF : TendstoLocallyUniformlyOn F f p s) (hG : TendstoLocallyUniformlyOn G g p s) :
-    TendstoLocallyUniformlyOn (fun n ↦ Pi.prod (F n) (G n)) (Pi.prod f g) p s :=
+    TendstoLocallyUniformlyOn (fun n ↦ Function.prod (F n) (G n)) (Function.prod f g) p s :=
   hF.prodMk hG
 
 theorem TendstoLocallyUniformly.prodMk [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
@@ -219,7 +219,7 @@ theorem TendstoLocallyUniformly.prodMk [UniformSpace γ] {G : ι → α → γ} 
 
 theorem TendstoLocallyUniformly.piProd [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
     (hF : TendstoLocallyUniformly F f p) (hG : TendstoLocallyUniformly G g p) :
-    TendstoLocallyUniformly (fun n ↦ Pi.prod (F n) (G n)) (Pi.prod f g) p :=
+    TendstoLocallyUniformly (fun n ↦ Function.prod (F n) (G n)) (Function.prod f g) p :=
   hF.prodMk hG
 
 /-- If every `x ∈ s` has a neighbourhood within `s` on which `F i` tends uniformly to `f`, then

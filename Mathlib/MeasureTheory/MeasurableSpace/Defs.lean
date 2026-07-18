@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Countable
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.Measurability
 
@@ -194,7 +194,7 @@ protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t
     (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) : MeasurableSet (t.ite s₁ s₂) :=
   (h₁.inter ht).union (h₂.diff ht)
 
-open Classical in
+open scoped Classical in
 theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s)
     (ht : ¬p → MeasurableSet t) : MeasurableSet (ite p s t) := by
   split_ifs with h
@@ -266,7 +266,7 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   classical
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
-    else insert_diff_self_of_notMem ha ▸ h.diff (.singleton _),
+    else insert_sdiff_self_of_notMem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=
@@ -289,13 +289,13 @@ namespace MeasurableSpace
 
 /-- Copy of a `MeasurableSpace` with a new `MeasurableSet` equal to the old one. Useful to fix
 definitional equalities. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def copy (m : MeasurableSpace α) (p : Set α → Prop) (h : ∀ s, p s ↔ MeasurableSet[m] s) :
     MeasurableSpace α where
   MeasurableSet' := p
-  measurableSet_empty := by simpa only [h] using m.measurableSet_empty
-  measurableSet_compl := by simpa only [h] using m.measurableSet_compl
-  measurableSet_iUnion := by simpa only [h] using m.measurableSet_iUnion
+  measurableSet_empty := by simpa only [h] using! m.measurableSet_empty
+  measurableSet_compl := by simpa only [h] using! m.measurableSet_compl
+  measurableSet_iUnion := by simpa only [h] using! m.measurableSet_iUnion
 
 lemma measurableSet_copy {m : MeasurableSpace α} {p : Set α → Prop}
     (h : ∀ s, p s ↔ MeasurableSet[m] s) {s} : MeasurableSet[.copy m p h] s ↔ p s :=
@@ -326,7 +326,7 @@ inductive GenerateMeasurable (s : Set (Set α)) : Set α → Prop
       GenerateMeasurable s (⋃ i, f i)
 
 /-- Construct the smallest measure space containing a collection of basic sets -/
-@[implicit_reducible]
+@[instance_reducible]
 def generateFrom (s : Set (Set α)) : MeasurableSpace α where
   MeasurableSet' := GenerateMeasurable s
   measurableSet_empty := .empty
@@ -373,7 +373,7 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
 the same sets as `g`, then `g` was already a `σ`-algebra. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def mkOfClosure (g : Set (Set α)) (hg : { t | MeasurableSet[generateFrom g] t } = g) :
     MeasurableSpace α :=
   (generateFrom g).copy (· ∈ g) <| Set.ext_iff.1 hg.symm
@@ -395,7 +395,7 @@ instance : CompleteLattice (MeasurableSpace α) :=
 
 instance : Inhabited (MeasurableSpace α) := ⟨⊤⟩
 
-@[mono]
+@[gcongr, mono]
 theorem generateFrom_mono {s t : Set (Set α)} (h : s ⊆ t) : generateFrom s ≤ generateFrom t :=
   giGenerateFrom.gc.monotone_l h
 
@@ -466,11 +466,11 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
     MeasurableSet[sSup ms] s ↔
       GenerateMeasurable { s : Set α | ∃ m ∈ ms, MeasurableSet[m] s } s := by
   change GenerateMeasurable (⋃₀ _) _ ↔ _
-  simp [← setOf_exists]
+  simp [← ofPred_exists]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
+  unfold iSup
   simp only [measurableSet_sSup, exists_range_iff]
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
@@ -489,7 +489,7 @@ end MeasurableSpace
 
 /-- A function `f` between measurable spaces is measurable if the preimage of every
   measurable set is measurable. -/
-@[fun_prop]
+@[fun_prop, wikidata Q516776]
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 
@@ -516,6 +516,8 @@ theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ =>
 @[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 @[to_fun]
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}

@@ -178,6 +178,7 @@ def IsPure (q : Semiquot α) : Prop :=
 def get (q : Semiquot α) (h : q.IsPure) : α :=
   liftOn q id h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   let ⟨a, h⟩ := exists_mem q
   unfold get; rw [liftOn_ofMem q _ _ a h]; exact h
@@ -197,7 +198,6 @@ theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
 theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by

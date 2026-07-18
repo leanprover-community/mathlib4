@@ -130,6 +130,7 @@ section CompatibleSMul
 
 variable (N₁ N₂ : Type*) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M S) in
 include M in
 theorem linearMap_compatibleSMul [Module S N₁] [Module S N₂]
@@ -201,8 +202,7 @@ include hf
 /-- `AlgHom` version of `IsLocalization.lift`. -/
 noncomputable def liftAlgHom : S →ₐ[A] P where
   __ := lift hf
-  commutes' r := show lift hf (algebraMap A S r) = _ by
-    simp [IsScalarTower.algebraMap_apply A R S]
+  commutes' r := by simp [IsScalarTower.algebraMap_apply A R S]
 
 theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
 
@@ -224,6 +224,8 @@ variable {A : Type*} [CommSemiring A]
 
 include H
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M`, `T` respectively,
 an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
 `S ≃ₐ[A] Q`. -/
@@ -240,10 +242,12 @@ theorem algEquivOfAlgEquiv_eq_map :
       map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem algEquivOfAlgEquiv_eq (x : R) :
     algEquivOfAlgEquiv S Q h H ((algebraMap R S) x) = algebraMap P Q (h x) := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.docPrime false in
 theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
     algEquivOfAlgEquiv S Q h H (mk' S x y) =
@@ -300,6 +304,7 @@ instance : IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S
 
 variable (R M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The localization at a module of units is isomorphic to the ring. -/
 noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
   refine AlgEquiv.ofBijective (Algebra.ofId R S) ⟨?_, ?_⟩
@@ -327,7 +332,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     IsLocalization M P := by
   constructor; constructor
   · intro y
-    convert (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
+    convert! (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
     exact (h.commutes y).symm
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)
@@ -453,7 +458,7 @@ noncomputable def algEquiv : Localization M ≃ₐ[R] S :=
   IsLocalization.algEquiv M _ _
 
 /-- The localization of a singleton is a singleton. Cannot be an instance due to metavariables. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def _root_.IsLocalization.unique (R Rₘ) [CommSemiring R] [CommSemiring Rₘ]
     (M : Submonoid R) [Subsingleton R] [Algebra R Rₘ] [IsLocalization M Rₘ] : Unique Rₘ :=
   have : Inhabited Rₘ := ⟨1⟩
@@ -489,7 +494,7 @@ open IsLocalization
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :
     Function.Bijective (algebraMap R Rₘ) := by
-  letI := hR.toField
+  let := hR.toField
   replace hM := le_nonZeroDivisors_of_noZeroDivisors hM
   refine ⟨IsLocalization.injective _ hM, fun x => ?_⟩
   obtain ⟨r, ⟨m, hm⟩, rfl⟩ := exists_mk'_eq M x
@@ -524,7 +529,7 @@ This instance can be helpful if you define `Sₘ := Localization (Algebra.algebr
 however we will instead use the hypotheses `[Algebra Rₘ Sₘ] [IsScalarTower R Rₘ Sₘ]` in lemmas
 since the algebra structure may arise in different ways.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def localizationAlgebra : Algebra Rₘ Sₘ :=
   (map Sₘ (algebraMap R S)
         (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
@@ -533,9 +538,17 @@ noncomputable def localizationAlgebra : Algebra Rₘ Sₘ :=
 noncomputable instance : Algebra (Localization M)
     (Localization (Algebra.algebraMapSubmonoid S M)) := localizationAlgebra M S
 
+-- This is not an instance, because the discrimination tree key is `IsScalarTower _ _ _ _ _ _`, so
+-- it would cause significant slowdowns.
+lemma isScalarTower_localizationAlgebra [Algebra R Sₘ] [IsScalarTower R S Sₘ] :
+    letI : Algebra Rₘ Sₘ := localizationAlgebra M S
+    IsScalarTower R Rₘ Sₘ :=
+  letI : Algebra Rₘ Sₘ := localizationAlgebra M S
+  .of_algebraMap_eq' <| by
+    simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_eq R S Sₘ]
+
 instance : IsScalarTower R (Localization M) (Localization (Algebra.algebraMapSubmonoid S M)) :=
-  IsScalarTower.of_algebraMap_eq (fun x ↦
-    (IsLocalization.map_eq (T := (Algebra.algebraMapSubmonoid S M)) M.le_comap_map x).symm)
+  isScalarTower_localizationAlgebra _ _
 
 end
 
@@ -675,5 +688,38 @@ theorem IsLocalization.algHom_ext {R A L B : Type*}
     (h : f.comp (Algebra.algHom R A _) = g.comp (Algebra.algHom R A _)) :
     f = g :=
   IsLocalization.algHom_ext W h
+
+section extend
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+  (S : Type*) [CommSemiring S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
+  [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+  [Algebra R B] [Algebra S B] [IsScalarTower R S B]
+
+/-- For an algebra homomorphism `f : A →ₐ[R] B`, if `A` and `B` are algebras over a localization
+`S` of `R`, then `f` is automatically an `S`-algebra homomorphism. -/
+def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B where
+  __ := f
+  commutes' := by
+    let f := f.comp (IsScalarTower.toAlgHom R S A)
+    let g := IsScalarTower.toAlgHom R S B
+    have : f.toRingHom.comp (algebraMap R S) = g.toRingHom.comp (algebraMap R S) := by simp
+    suffices f = g by rwa [DFunLike.ext_iff] at this
+    apply IsLocalization.algHom_ext M
+    rwa [DFunLike.ext_iff] at this ⊢
+
+@[simp]
+theorem AlgHom.extendScalarsOfIsLocalization_apply (f : A →ₐ[R] B) (a : A) :
+    f.extendScalarsOfIsLocalization S M a = f a :=
+  rfl
+
+/-- For an algebra isomorphism `f : A ≃ₐ[R] B`, if `A` and `B` are algebras over a localization
+`S` of `R`, then `f` is automatically an `S`-algebra isomorphism. -/
+@[simps]
+def AlgEquiv.extendScalarsOfIsLocalization (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
+  __ := f.toAlgHom.extendScalarsOfIsLocalization S M
+  __ := f
+
+end extend
 
 end Algebra

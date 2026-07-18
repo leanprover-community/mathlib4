@@ -95,9 +95,9 @@ theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M�
     simp only [Multiset.prod_zero] at hprod
     left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>
-    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
+    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_ofPred] at hm
     simp only [Multiset.prod_cons] at hprod
-    simp only [Set.mem_setOf_eq] at hind
+    simp only [Set.mem_ofPred_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
       refine hind x (y * k) ?_ hs ?_
@@ -160,10 +160,12 @@ variable [CommMonoid M]
 theorem prod_mk {p : Multiset M} : (p.map Associates.mk).prod = Associates.mk p.prod :=
   Multiset.induction_on p (by simp) fun a s ih => by simp [ih, Associates.mk_mul_mk]
 
-theorem finset_prod_mk {p : Finset ι} {f : ι → M} :
+theorem finsetProd_mk {p : Finset ι} {f : ι → M} :
     (∏ i ∈ p, Associates.mk (f i)) = Associates.mk (∏ i ∈ p, f i) := by
   rw [Finset.prod_eq_multiset_prod, ← Function.comp_def, ← Multiset.map_map, prod_mk,
     ← Finset.prod_eq_multiset_prod]
+
+@[deprecated (since := "2026-04-08")] alias finset_prod_mk := finsetProd_mk
 
 theorem rel_associated_iff_map_eq_map {p q : Multiset M} :
     Multiset.Rel Associated p q ↔ p.map Associates.mk = q.map Associates.mk := by
@@ -176,7 +178,7 @@ theorem prod_eq_one_iff {p : Multiset (Associates M)} :
     (by simp +contextual [mul_eq_one, or_imp, forall_and])
 
 theorem prod_le_prod {p q : Multiset (Associates M)} (h : p ≤ q) : p.prod ≤ q.prod := by
-  haveI := Classical.decEq (Associates M)
+  have := Classical.decEq (Associates M)
   suffices p.prod ≤ (p + (q - p)).prod by rwa [add_tsub_cancel_of_le h] at this
   suffices p.prod * 1 ≤ p.prod * (q - p).prod by simpa
   exact mul_mono (le_refl p.prod) one_le
@@ -216,20 +218,24 @@ section CommMonoidWithZero
 
 variable {M : Type*} [CommMonoidWithZero M]
 
-theorem Prime.dvd_finset_prod_iff {S : Finset M₀} {p : M} (pp : Prime p) (g : M₀ → M) :
+theorem Prime.dvd_finsetProd_iff {S : Finset M₀} {p : M} (pp : Prime p) (g : M₀ → M) :
     p ∣ S.prod g ↔ ∃ a ∈ S, p ∣ g a :=
   ⟨pp.exists_mem_finset_dvd, fun ⟨_, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod_of_mem g ha1)⟩
 
-theorem Prime.not_dvd_finset_prod {S : Finset M₀} {p : M} (pp : Prime p) {g : M₀ → M}
+@[deprecated (since := "2026-04-08")] alias Prime.dvd_finset_prod_iff := Prime.dvd_finsetProd_iff
+
+theorem Prime.not_dvd_finsetProd {S : Finset M₀} {p : M} (pp : Prime p) {g : M₀ → M}
     (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
-  exact mt (Prime.dvd_finset_prod_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
+  exact mt (Prime.dvd_finsetProd_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
+
+@[deprecated (since := "2026-04-08")] alias Prime.not_dvd_finset_prod := Prime.not_dvd_finsetProd
 
 theorem Prime.dvd_finsuppProd_iff {f : M₀ →₀ M} {g : M₀ → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=
-  Prime.dvd_finset_prod_iff pp _
+  Prime.dvd_finsetProd_iff pp _
 
 theorem Prime.not_dvd_finsuppProd {f : M₀ →₀ M} {g : M₀ → M → ℕ} {p : ℕ} (pp : Prime p)
     (hS : ∀ a ∈ f.support, ¬p ∣ g a (f a)) : ¬p ∣ f.prod g :=
-  Prime.not_dvd_finset_prod pp hS
+  Prime.not_dvd_finsetProd pp hS
 
 end CommMonoidWithZero

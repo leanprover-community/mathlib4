@@ -59,11 +59,12 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
 open scoped Pointwise in
 theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
   calc #(p * q).support
-    _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
-    _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
-      Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+    _ = #(p.toFinsupp * q.toFinsupp).coeff.support := by rw [← support_toFinsupp, toFinsupp_mul]
+    _ ≤ #(p.toFinsupp.coeff.support + q.toFinsupp.coeff.support) := by
+      grw [AddMonoidAlgebra.support_coeff_mul_subset]
     _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
 def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
@@ -86,9 +87,11 @@ theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
   rfl
 
 @[simp]
-theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
+theorem finsetSum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
     coeff (∑ b ∈ s, f b) n = ∑ b ∈ s, coeff (f b) n :=
   map_sum (lcoeff R n) _ _
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_coeff := finsetSum_coeff
 
 lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
     l.sum.coeff n = (l.map (lcoeff R n)).sum :=
@@ -110,11 +113,12 @@ theorem coeff_mul (p q : R[X]) (n : ℕ) :
     coeff (p * q) n = ∑ x ∈ antidiagonal n, coeff p x.1 * coeff q x.2 := by
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp_rw [← ofFinsupp_mul, coeff]
-  exact AddMonoidAlgebra.mul_apply_antidiagonal p q n _ Finset.mem_antidiagonal
+  exact AddMonoidAlgebra.coeff_mul_antidiag p q n _ Finset.mem_antidiagonal
 
 @[simp]
 theorem mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_coeff_one (p q : R[X]) :
     coeff (p * q) 1 = coeff p 0 * coeff q 1 + coeff p 1 * coeff q 0 := by
   rw [coeff_mul, Nat.antidiagonal_eq_map]
@@ -152,7 +156,7 @@ theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 th
 theorem coeff_C_mul (p : R[X]) : coeff (C a * p) n = a * coeff p n := by
   rcases p with ⟨p⟩
   simp_rw [← monomial_zero_left, ← ofFinsupp_single, ← ofFinsupp_mul, coeff]
-  exact AddMonoidAlgebra.single_zero_mul_apply p a n
+  exact p.coeff_single_zero_mul a n
 
 theorem C_mul' (a : R) (f : R[X]) : C a * f = a • f := by
   ext
@@ -162,7 +166,7 @@ theorem C_mul' (a : R) (f : R[X]) : C a * f = a • f := by
 theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n * a := by
   rcases p with ⟨p⟩
   simp_rw [← monomial_zero_left, ← ofFinsupp_single, ← ofFinsupp_mul, coeff]
-  exact AddMonoidAlgebra.mul_single_zero_apply p a n
+  exact p.coeff_mul_single_zero a n
 
 @[simp] lemma coeff_mul_natCast {a k : ℕ} :
     coeff (p * (a : R[X])) k = coeff p k * (↑a : R) := coeff_mul_C _ _ _
@@ -194,7 +198,7 @@ open Finset
 
 theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     support (C x * X ^ k + C y * X ^ m) = {k, m} := by
-  apply subset_antisymm (support_binomial' k m x y)
+  apply subset_antisymm (support_binomial_subset k m x y)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
     add_zero, Ne, hx, hy, not_false_eq_true, and_true]
@@ -202,7 +206,7 @@ theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (h
 theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) :
     support (C x * X ^ k + C y * X ^ m + C z * X ^ n) = {k, m, n} := by
-  apply subset_antisymm (support_trinomial' k m n x y z)
+  apply subset_antisymm (support_trinomial_subset k m n x y z)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
     if_neg hmn.ne', if_neg (hkm.trans hmn).ne, if_neg (hkm.trans hmn).ne', mul_zero, add_zero,
@@ -320,7 +324,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       let ψ : R[X] := ∑ i ∈ φ.support, monomial i (c' i)
       use ψ
       ext i
-      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
+      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finsetSum_coeff,
         Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]

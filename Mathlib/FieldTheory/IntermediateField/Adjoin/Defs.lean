@@ -155,7 +155,7 @@ theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) = ⋂
 
 @[simp, grind =]
 theorem mem_sInf {S : Set (IntermediateField F E)} {x : E} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
-  simpa only [Set.mem_iInter] using Set.ext_iff.1 (coe_sInf S) x
+  simpa only [Set.mem_iInter] using! Set.ext_iff.1 (coe_sInf S) x
 
 @[simp]
 theorem sInf_toSubalgebra (S : Set (IntermediateField F E)) :
@@ -170,7 +170,7 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
 @[simp]
 theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
     (sSup S).toSubfield = sSup (toSubfield '' S) := by
-  have h : toSubfield '' S = Subfield.closure '' (SetLike.coe '' S) := by
+  have h : toSubfield '' S = Subfield.closure '' SetLike.coe '' S := by
     rw [Set.image_image]
     congr! with x
     exact x.toSubfield.closure_eq.symm
@@ -360,6 +360,9 @@ theorem adjoin_univ (F E : Type*) [Field F] [Field E] [Algebra F E] :
     adjoin F (Set.univ : Set E) = ⊤ :=
   eq_top_iff.mpr <| subset_adjoin _ _
 
+theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
+  gc.l_sup
+
 /-- If `K` is a field with `F ⊆ K` and `S ⊆ K` then `adjoin F S ≤ K`. -/
 theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆ K) (HS : S ⊆ K) :
     (adjoin F S).toSubfield ≤ K := by
@@ -385,15 +388,18 @@ theorem adjoin_adjoin_left (T : Set E) :
       (fun x hx ↦ Subfield.subset_closure <| .inl ⟨⟨x, Subfield.subset_closure (.inr hx)⟩, rfl⟩)
       (fun x hx ↦ Subfield.subset_closure <| .inr hx)
 
+/-- Adjoining is idempotent: adjoining an adjoin is the same as a single adjoin. -/
+@[simp]
+lemma adjoin_adjoin_right {K : Type*} [Field K] [Algebra K F] [Algebra K E] [IsScalarTower K F E] :
+    adjoin F (adjoin K S) = adjoin F S := by
+  refine le_antisymm ?_ (adjoin.mono F S (adjoin K S) (subset_adjoin K S))
+  rw [adjoin_le_iff, ← (adjoin F S).coe_restrictScalars K, SetLike.coe_subset_coe]
+  simp
+
 @[simp]
 theorem adjoin_insert_adjoin (x : E) :
-    adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
-  le_antisymm
-    (adjoin_le_iff.mpr
-      (Set.insert_subset_iff.mpr
-        ⟨subset_adjoin _ _ (Set.mem_insert _ _),
-          adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
-    (by grw [← subset_adjoin])
+    adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) := by
+  simp_rw [← Set.singleton_union, adjoin_union, adjoin_adjoin_right]
 
 /-- `F[S][T] = F[T][S]` -/
 theorem adjoin_adjoin_comm (T : Set E) :
@@ -446,9 +452,6 @@ theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ 
   exact le_antisymm (adjoin.mono F S _ Set.subset_union_right) <| adjoin_le_iff.2 <|
     Set.union_subset h (subset_adjoin F S)
 
-theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
-  gc.l_sup
-
 theorem restrictScalars_adjoin_eq_sup (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = K ⊔ adjoin F S := by
   rw [restrictScalars_adjoin, adjoin_union, adjoin_self]
@@ -496,9 +499,9 @@ theorem adjoin_algHom_ext {s : Set E} ⦃φ₁ φ₂ : adjoin F s →ₐ[F] K⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin _ _ hx⟩ = φ₂ ⟨x, subset_adjoin _ _ hx⟩) :
     φ₁ = φ₂ :=
   AlgHom.ext fun ⟨x, hx⟩ ↦ adjoin_induction _ h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
     (fun _ _ ↦ eq_on_inv₀ _ _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
     hx
 
 theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S = adjoin F s)
@@ -591,17 +594,17 @@ variable {A B C : Type*} [Field A] [Field B] [Field C] [Algebra A B] [Algebra B 
 /-- Ring homomorphism between `A⟮b⟯` and `A⟮↑b⟯`. -/
 def RingHom.adjoinAlgebraMap : A⟮b⟯ →+* A⟮((algebraMap B C) b)⟯ :=
   RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp (IntermediateField.val A⟮b⟯)) _
-   (fun x ↦ by
-    rw [show (algebraMap B C) b = (Algebra.ofId B C).restrictScalars A b by rfl,
-      ← Set.image_singleton, ← IntermediateField.adjoin_map A {b}]
-    use x
-    simp)
+    (fun x ↦ by
+      rw [show (algebraMap B C) b = (Algebra.ofId B C).restrictScalars A b by rfl,
+        ← Set.image_singleton, ← IntermediateField.adjoin_map A {b}]
+      use x
+      simp)
 
 instance : Algebra A⟮b⟯ A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMap _)
 
 instance : IsScalarTower A⟮b⟯ A⟮(algebraMap B C) b⟯ C :=
-  IsScalarTower.of_algebraMap_eq' (by rfl)
+  IsScalarTower.of_algebraMap_eq' rfl
 
 end AdjoinSimple
 
@@ -672,6 +675,13 @@ theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h :
   choose s hs using h
   simp_rw [← hs, ← adjoin_iUnion]
   exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
+
+/-- A field is finitely generated if and only if it is finitely generated over its prime
+subfield. -/
+theorem _root_.Field.fg_iff_fg_top_bot :
+    Field.FG F ↔ (⊤ : IntermediateField (⊥ : Subfield F) F).FG := by
+  simp [Field.fg_iff, fg_def, Set.exists_finite_iff_finset,
+    ← toSubfield_inj, Subfield.algebraMap_ofSubfield, Subfield.closure_union]
 
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :

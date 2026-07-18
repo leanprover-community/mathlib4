@@ -178,11 +178,8 @@ lemma penultimate_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Ni
   p.notNilRec (by simp) hp h
 
 @[simp]
-lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
-    G.Adj p.penultimate w := by
-  conv => rhs; rw [← getVert_length p]
-  rw [nil_iff_length_eq] at hp
-  convert adj_getVert_succ _ _ <;> lia
+lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) : G.Adj p.penultimate w := by
+  grind [getVert_length, length_eq_zero_iff, adj_getVert_succ]
 
 lemma penultimate_mem_dropLast_support {p : G.Walk u v} (h : ¬p.Nil) :
     p.penultimate ∈ p.support.dropLast := by
@@ -234,11 +231,6 @@ theorem firstDart_eq_head_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
     p.firstDart hnil = p.darts.head (darts_eq_nil.not.mpr hnil) :=
   head_darts_eq_firstDart _ |>.symm
 
-@[deprecated "Use `head_darts_eq_firstDart`" (since := "2025-12-10")]
-theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.head hp).fst = a := by
-  simp
-
 @[simp]
 theorem firstDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil ∈ p.darts :=
   p.firstDart_eq_head_darts _ ▸ List.head_mem _
@@ -251,11 +243,6 @@ theorem getLast_darts_eq_lastDart {p : G.Walk v w} (hnil : p.darts ≠ []) :
 theorem lastDart_eq_getLast_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
     p.lastDart hnil = p.darts.getLast (darts_eq_nil.not.mpr hnil) := by
   grind [lastDart_eq, not_nil_iff_lt_length]
-
-@[deprecated "Use `getLast_darts_eq_lastDart`" (since := "2025-12-10")]
-theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.getLast hp).snd = b := by
-  simp
 
 @[simp]
 theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil ∈ p.darts :=

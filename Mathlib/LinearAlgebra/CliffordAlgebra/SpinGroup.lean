@@ -73,15 +73,15 @@ theorem conjAct_smul_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lip
   induction hx using Subgroup.closure_induction'' generalizing m with
   | mem x hx =>
     obtain ⟨a, ha⟩ := hx
-    letI := x.invertible
-    letI : Invertible (ι Q a) := by rwa [ha]
-    letI : Invertible (Q a) := invertibleOfInvertibleι Q a
+    let := x.invertible
+    let : Invertible (ι Q a) := by rwa [ha]
+    let : Invertible (Q a) := invertibleOfInvertibleι Q a
     simp_rw [← invOf_units x, ← ha, ι_mul_ι_mul_invOf_ι, LinearMap.mem_range_self]
   | inv_mem x hx =>
     obtain ⟨a, ha⟩ := hx
-    letI := x.invertible
-    letI : Invertible (ι Q a) := by rwa [ha]
-    letI : Invertible (Q a) := invertibleOfInvertibleι Q a
+    let := x.invertible
+    let : Invertible (ι Q a) := by rwa [ha]
+    let : Invertible (Q a) := invertibleOfInvertibleι Q a
     simp_rw [← invOf_units x, inv_inv, ← ha, invOf_ι_mul_ι_mul_ι, LinearMap.mem_range_self]
   | one => simp_rw [inv_one, Units.val_one, one_mul, mul_one, LinearMap.mem_range_self]
   | mul y z _ _ hy hz =>
@@ -100,18 +100,18 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
   induction hx using Subgroup.closure_induction'' generalizing b with
   | mem x hx =>
     obtain ⟨a, ha⟩ := hx
-    letI := x.invertible
-    letI : Invertible (ι Q a) := by rwa [ha]
-    letI : Invertible (Q a) := invertibleOfInvertibleι Q a
+    let := x.invertible
+    let : Invertible (ι Q a) := by rwa [ha]
+    let : Invertible (Q a) := invertibleOfInvertibleι Q a
     simp_rw [← invOf_units x, ← ha, involute_ι, neg_mul, ι_mul_ι_mul_invOf_ι Q a b, ← map_neg,
       LinearMap.mem_range_self]
   | inv_mem x hx =>
     obtain ⟨a, ha⟩ := hx
-    letI := x.invertible
-    letI : Invertible (ι Q a) := by rwa [ha]
-    letI : Invertible (Q a) := invertibleOfInvertibleι Q a
-    letI := invertibleNeg (ι Q a)
-    letI := Invertible.map involute (ι Q a)
+    let := x.invertible
+    let : Invertible (ι Q a) := by rwa [ha]
+    let : Invertible (Q a) := invertibleOfInvertibleι Q a
+    let := invertibleNeg (ι Q a)
+    let := Invertible.map involute (ι Q a)
     simp_rw [← invOf_units x, inv_inv, ← ha, map_invOf, involute_ι, invOf_neg, neg_mul,
       invOf_ι_mul_ι_mul_ι, ← map_neg, LinearMap.mem_range_self]
   | one => simp_rw [inv_one, Units.val_one, map_one, one_mul, mul_one, LinearMap.mem_range_self]
@@ -136,7 +136,7 @@ theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzG
       refine Eq.trans_le ?_ this
       simp only [map_inv, smul_inv_smul]
   intro x hx
-  erw [Submodule.map_le_iff_le_comap]
+  rw [Submodule.pointwise_smul_def, Submodule.map_le_iff_le_comap]
   rintro _ ⟨m, rfl⟩
   exact conjAct_smul_ι_mem_range_ι hx _
 
@@ -226,7 +226,7 @@ See `star_mem` for only one direction. -/
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert star_mem hx
+  convert! star_mem hx
   exact (star_star x).symm
 
 instance : Star (pinGroup Q) where
@@ -322,7 +322,7 @@ theorem conjAct_smul_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ 
     [Invertible (2 : R)] (y : M) : ConjAct.toConjAct x • ι Q y ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
-/- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`. -/
+/-- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`. -/
 theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
@@ -357,7 +357,7 @@ See `star_mem` for only one direction.
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ spinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert star_mem hx
+  convert! star_mem hx
   exact (star_star x).symm
 
 instance : Star (spinGroup Q) where

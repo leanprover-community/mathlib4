@@ -50,7 +50,7 @@ lemma IndepFun.process_congr_left {𝓧 : S → Type*} {𝓨 : Type*}
     h1 ((fun ω i ↦ X i ω) ⁻¹' s) (Y ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
   obtain ⟨I, u, hI, rfl⟩ : ∃ (I : Set S) (u : Set (Π i : I, 𝓧 i)),
       I.Countable ∧ s = I.restrict ⁻¹' u := hs.eq_preimage_restrict_countable
-  have aux (f : (i : S) → Ω → 𝓧 i) : (fun ω i ↦ f i ω) ⁻¹' (I.restrict ⁻¹' u) =
+  have aux (f : (i : S) → Ω → 𝓧 i) : (fun ω i ↦ f i ω) ⁻¹' I.restrict ⁻¹' u =
       (fun ω (i : I) ↦ f i ω) ⁻¹' u := rfl
   simp_rw [aux] at *
   have _ : Countable I := hI.to_subtype
@@ -106,7 +106,7 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     πX_pi (@isPiSystem_measurableSet Ω (.comap Y inferInstance)) πX_gen
     (@generateFrom_measurableSet Ω (.comap Y inferInstance)).symm ?_
   rintro - - ⟨-, ⟨I, s, hs, rfl⟩, rfl⟩ ⟨t, ht, rfl⟩
-  simp only [Set.mem_pi, Set.mem_univ, Set.mem_setOf_eq, forall_const] at hs
+  simp only [Set.mem_pi, Set.mem_univ, Set.mem_ofPred_eq, forall_const] at hs
   have : (fun ω i ↦ X i ω) ⁻¹' .pi I s =
       (fun ω (i : I) ↦ X i ω) ⁻¹' .pi (SetLike.coe Finset.univ) (fun i ↦ s i)
        := by
@@ -206,16 +206,16 @@ lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) �
   simp_rw [h3, h3']
   choose! I u hI hu using fun i hi ↦ (mg i hi).eq_preimage_restrict_countable
   have h4 (f : (i : S) → (j : T i) → Ω → 𝓧 i j) : ⋂ i ∈ s, (fun i ω j ↦ f i j ω) i ⁻¹' g i =
-      ⋂ i ∈ s, (fun i ω j ↦ f i j ω) i ⁻¹' ((I i).restrict ⁻¹' u i) :=
+      ⋂ i ∈ s, (fun i ω j ↦ f i j ω) i ⁻¹' (I i).restrict ⁻¹' u i :=
       (biInf_congr (fun i hi ↦ by rw [hu i hi])).symm
   have h4' a (f : (i : S) → (j : T i) → Ω → 𝓧 i j) :
       ∏ i ∈ s, κ a ((fun i ω j ↦ f i j ω) i ⁻¹' g i) =
-      ∏ i ∈ s, κ a ((fun i ω j ↦ f i j ω) i ⁻¹' ((I i).restrict ⁻¹' u i)) := by
+      ∏ i ∈ s, κ a ((fun i ω j ↦ f i j ω) i ⁻¹' (I i).restrict ⁻¹' u i) := by
     refine Finset.prod_congr rfl fun i hi ↦ ?_
     rw [hu i hi]
   have h5 := h1 s (fun i hi ↦ ⟨g i, mg i hi, rfl⟩)
   simp_rw [h4, h4'] at h5 ⊢
-  have h6 i (f : (j : T i) → Ω → 𝓧 i j) : (fun ω j ↦ f j ω) ⁻¹' ((I i).restrict ⁻¹' (u i)) =
+  have h6 i (f : (j : T i) → Ω → 𝓧 i j) : (fun ω j ↦ f j ω) ⁻¹' (I i).restrict ⁻¹' (u i) =
       (fun ω (j : I i) ↦ f j ω) ⁻¹' (u i) := rfl
   simp_rw [h6] at h5 ⊢
   have h :
@@ -255,7 +255,7 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
     rfl
   refine iIndepSets.iIndep _ (fun i ↦ (measurable_pi_iff.2 (hX i)).comap_le) π π_pi π_gen
     fun I s hs ↦ ?_
-  simp only [squareCylinders, Set.mem_pi, Set.mem_univ, Set.mem_setOf_eq, forall_const,
+  simp only [squareCylinders, Set.mem_pi, Set.mem_univ, Set.mem_ofPred_eq, forall_const,
     ↓existsAndEq, and_true, π] at hs
   choose! J t ht hs using hs
   simp_rw [Set.iInter₂_congr (fun i hi ↦ (hs i hi).symm),

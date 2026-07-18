@@ -65,7 +65,7 @@ namespace LHom
 variable (ϕ : L →ᴸ L')
 
 /-- Pulls a structure back along a language map. -/
-@[implicit_reducible]
+@[instance_reducible]
 def reduct (M : Type*) [L'.Structure M] : L.Structure M where
   funMap f xs := funMap (ϕ.onFunction f) xs
   RelMap r xs := RelMap (ϕ.onRelation r) xs
@@ -182,7 +182,7 @@ protected structure Injective : Prop where
 
 /-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
   to an `L'`-structure arbitrarily. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => onRelation ϕ r)]
@@ -264,7 +264,7 @@ theorem Injective.isExpansionOn_default {ϕ : L →ᴸ L'}
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => ϕ.onRelation r)]
     (h : ϕ.Injective) (M : Type*) [Inhabited M] [L.Structure M] :
     @IsExpansionOn L L' ϕ M _ (ϕ.defaultExpansion M) := by
-  letI := ϕ.defaultExpansion M
+  let := ϕ.defaultExpansion M
   refine ⟨fun {n} f xs => ?_, fun {n} r xs => ?_⟩
   · have hf : ϕ.onFunction f ∈ Set.range fun f : L.Functions n => ϕ.onFunction f := ⟨f, rfl⟩
     refine (dif_pos hf).trans ?_
@@ -344,7 +344,7 @@ theorem card_constantsOn : (constantsOn α).card = #α := by
   simp [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
-@[implicit_reducible]
+@[instance_reducible]
 def constantsOn.structure (f : α → M) : (constantsOn α).Structure M where
   funMap := fun {n} c _ =>
     match n, c with
@@ -361,8 +361,8 @@ def LHom.constantsOnMap (f : α → β) : constantsOn α →ᴸ constantsOn β w
 theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β → M} (h : fβ ∘ f = fα) :
     @LHom.IsExpansionOn _ _ (LHom.constantsOnMap f) M (constantsOn.structure fα)
       (constantsOn.structure fβ) := by
-  letI := constantsOn.structure fα
-  letI := constantsOn.structure fβ
+  let := constantsOn.structure fα
+  let := constantsOn.structure fβ
   exact
     ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F :)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
@@ -449,19 +449,18 @@ end
 
 open FirstOrder
 
-instance constantsOnSelfStructure : (constantsOn M).Structure M :=
-  constantsOn.structure id
-
-instance withConstantsSelfStructure : L[[M]].Structure M :=
-  inferInstanceAs <| (L.sum _).Structure M
-
-instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
-  ⟨fun _ _ => rfl, fun _ _ => rfl⟩
-
 variable (α : Type*) [(constantsOn α).Structure M]
 
 instance withConstantsStructure : L[[α]].Structure M :=
   inferInstanceAs <| (L.sum _).Structure M
+
+instance constantsOnSelfStructure : (constantsOn M).Structure M :=
+  fast_instance% constantsOn.structure id
+
+instance withConstantsSelfStructure : L[[M]].Structure M := inferInstance
+
+instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
+  ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 
 instance withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
@@ -510,9 +509,9 @@ def Embedding.withConstants (_f : M ↪[L] N) (_A : Set M) : Type w' := N
 deriving L.Structure
 
 instance (f : M ↪[L] N) : (constantsOn A).Structure (f.withConstants A) :=
-  constantsOn.structure fun a => f a
+  fast_instance% constantsOn.structure fun a => f a
 
-instance : L[[A]].Structure (f.withConstants A) := L.withConstantsStructure A
+instance : L[[A]].Structure (f.withConstants A) := inferInstance
 
 /-- Lifts an embedding to the expanded language with constants. -/
 def Embedding.liftWithConstants :

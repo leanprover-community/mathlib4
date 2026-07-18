@@ -79,7 +79,7 @@ This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attr
 new file to become functional.
 -/
 
-namespace Tactic.MfldSetTac
+namespace Mathlib.Tactic.MfldSetTac
 
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included
 in one another. -/
@@ -94,7 +94,7 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
         · intro h_my_y
           try simp only [*, mfld_simps] at h_my_y
           try simp only [*, mfld_simps])))
-  | (``Subset, #[_ty, _inst, _e₁, _e₂]) =>
+  | (``LE.le, #[_ty, _inst, _e₁, _e₂]) =>
     evalTactic (← `(tactic| (
       intro my_y h_my_y
       try simp only [*, mfld_simps] at h_my_y
@@ -103,7 +103,7 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
 
 attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
 
-end Tactic.MfldSetTac
+end Mathlib.Tactic.MfldSetTac
 
 open Function Set
 
@@ -180,8 +180,10 @@ theorem map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 
 /-- Variant of `e.map_source` and `map_source'`, stated for images of subsets of `source`. -/
-lemma map_source'' : e '' e.source ⊆ e.target :=
+lemma image_source_subset : e '' e.source ⊆ e.target :=
   fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+
+@[deprecated (since := "2026-06-17")] alias map_source'' := image_source_subset
 
 @[simp, mfld_simps]
 theorem map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=
@@ -198,14 +200,20 @@ theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
 theorem target_subset_range : e.target ⊆ range e :=
   fun x hx ↦ ⟨e.symm x, right_inv e hx⟩
 
-theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
-    x = e.symm y ↔ e x = y :=
+theorem symm_apply_eq {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
+    e.symm y = x ↔ y = e x :=
   ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
+
+theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
+    x = e.symm y ↔ e x = y := by
+  simp [eq_comm, ← symm_apply_eq e hx hy]
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 
-theorem symm_mapsTo : MapsTo e.symm e.target e.source :=
+theorem mapsTo_symm : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
+
+@[deprecated (since := "2026-05-18")] alias symm_mapsTo := mapsTo_symm
 
 protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
 
@@ -218,7 +226,7 @@ protected theorem injOn : InjOn e e.source :=
   e.leftInvOn.injOn
 
 protected theorem bijOn : BijOn e e.source e.target :=
-  e.invOn.bijOn e.mapsTo e.symm_mapsTo
+  e.invOn.bijOn e.mapsTo e.mapsTo_symm
 
 protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
@@ -265,7 +273,7 @@ def copy (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α
 theorem copy_eq (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) (hg : ⇑e.symm = g)
     (s : Set α) (hs : e.source = s) (t : Set β) (ht : e.target = t) :
     e.copy f hf g hg s hs t ht = e := by
-  substs f g s t
+  subst f g s t
   cases e
   rfl
 
@@ -430,7 +438,7 @@ theorem symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = 
   e.symm.image_source_inter_eq' _
 
 theorem source_inter_preimage_inv_preimage (s : Set α) :
-    e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
+    e.source ∩ e ⁻¹' e.symm ⁻¹' s = e.source ∩ s :=
   Set.ext fun x => and_congr_right_iff.2 fun hx =>
     by simp only [mem_preimage, e.left_inv hx]
 
@@ -439,13 +447,13 @@ theorem source_inter_preimage_target_inter (s : Set β) :
   ext fun _ => ⟨fun hx => ⟨hx.1, hx.2.2⟩, fun hx => ⟨hx.1, e.map_source hx.1, hx.2⟩⟩
 
 theorem target_inter_inv_preimage_preimage (s : Set β) :
-    e.target ∩ e.symm ⁻¹' (e ⁻¹' s) = e.target ∩ s :=
+    e.target ∩ e.symm ⁻¹' e ⁻¹' s = e.target ∩ s :=
   e.symm.source_inter_preimage_inv_preimage _
 
-theorem symm_image_image_of_subset_source {s : Set α} (h : s ⊆ e.source) : e.symm '' (e '' s) = s :=
+theorem symm_image_image_of_subset_source {s : Set α} (h : s ⊆ e.source) : e.symm '' e '' s = s :=
   (e.leftInvOn.mono h).image_image
 
-theorem image_symm_image_of_subset_target {s : Set β} (h : s ⊆ e.target) : e '' (e.symm '' s) = s :=
+theorem image_symm_image_of_subset_target {s : Set β} (h : s ⊆ e.target) : e '' e.symm '' s = s :=
   e.symm.symm_image_image_of_subset_source h
 
 theorem source_subset_preimage_target : e.source ⊆ e ⁻¹' e.target :=
@@ -455,7 +463,7 @@ theorem symm_image_target_eq_source : e.symm '' e.target = e.source :=
   e.symm.image_source_eq_target
 
 theorem target_subset_preimage_source : e.target ⊆ e.symm ⁻¹' e.source :=
-  e.symm_mapsTo
+  e.mapsTo_symm
 
 /-- Two partial equivs that have the same `source`, same `toFun` and same `invFun`, coincide. -/
 @[ext]
@@ -692,8 +700,8 @@ theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.targ
 /-- If two partial equivs are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈ e'.symm := by
   refine ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn ?_ ?_⟩ <;>
-    simp only [symm_source, target_eq h, source_eq h, e'.symm_mapsTo]
-  exact e'.rightInvOn.congr_right e'.symm_mapsTo (source_eq h ▸ h.eqOn.symm)
+    simp only [symm_source, target_eq h, source_eq h, e'.mapsTo_symm]
+  exact e'.rightInvOn.congr_right e'.mapsTo_symm (source_eq h ▸ h.eqOn.symm)
 
 /-- Two equivalent partial equivs have coinciding inverses on the target. -/
 theorem EqOnSource.symm_eqOn {e e' : PartialEquiv α β} (h : e ≈ e') :
