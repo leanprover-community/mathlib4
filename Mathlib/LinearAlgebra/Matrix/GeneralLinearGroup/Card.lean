@@ -61,11 +61,10 @@ end LinearIndependent
 
 namespace Matrix
 
-open Nat in
-/-- The cardinal of the matrix -/
+/-- The cardinal of a matrix. -/
 theorem card_matrix {m n α} [Finite m] [Finite n] :
   Nat.card (Matrix m n α) = Nat.card α ^ (Nat.card n * Nat.card m) := by
-  simp [Matrix, card_fun, ← pow_mul]
+  simp [Matrix, Nat.card_fun, ← pow_mul]
 
 section field
 
