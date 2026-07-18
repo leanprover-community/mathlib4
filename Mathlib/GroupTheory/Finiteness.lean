@@ -126,7 +126,7 @@ variable {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, Monoid (M i)] {P : 
 @[to_additive]
 theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
     ⨆ i, map (MonoidHom.mulSingle M i) (P i) = pi Set.univ P := by
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   refine iSup_map_mulSingle_le.antisymm fun x hx => ?_
   rw [← Finset.noncommProd_mulSingle x]
   exact noncommProd_mem _ _ _ _ fun i _ => mem_iSup_of_mem _ (mem_map_of_mem _ (hx i trivial))
@@ -136,7 +136,7 @@ theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
 /-- Finite product of finitely generated additive submonoids is finitely generated. -/]
 theorem Submonoid.FG.pi (hP : ∀ i, (P i).FG) : (pi Set.univ P).FG := by
   classical
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   choose s hs using hP
   refine ⟨Finset.univ.biUnion fun i => (s i).image (MonoidHom.mulSingle M i), ?_⟩
   simp_rw [Finset.coe_biUnion, Finset.coe_univ, Set.biUnion_univ, closure_iUnion, Finset.coe_image,
@@ -587,18 +587,18 @@ theorem Submonoid.fg_of_divisive {P : Submonoid M} (hP : ∀ x ∈ P, ∀ y, x *
     P.FG := by
   have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 1 }
   rw [fg_iff]
-  refine ⟨_, ?_, (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
-    (hpwo.mono (setOf_minimal_subset _))⟩
+  refine ⟨_, ?_, (setOfPred_minimal_antichain _).finite_of_partiallyWellOrderedOn
+    (hpwo.mono (setOfPred_minimal_subset _))⟩
   ext x
   constructor
   · intro hx
     rw [← P.closure_eq]
-    exact closure_mono ((setOf_minimal_subset _).trans fun _ => And.left) hx
+    exact closure_mono ((setOfPred_minimal_subset _).trans fun _ => And.left) hx
   · intro hx₁
     by_cases hx₂ : x = 1
     · simp [hx₂]
     refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih => ?_
-    simp only [Set.mem_setOf_eq, and_imp] at ih
+    simp only [Set.mem_ofPred_eq, and_imp] at ih
     by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 1 }) y
     · exact mem_closure_of_mem hy₃
     rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩
