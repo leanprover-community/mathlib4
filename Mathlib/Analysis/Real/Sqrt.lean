@@ -317,39 +317,10 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 
 end Real
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
-positive. -/
-@[positivity NNReal.sqrt _]
-meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
-    assertInstancesCommute
-    let ra ← core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
-    | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
-  | _, _, _ => throwError "not NNReal.sqrt"
-
-/-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
-its input is. -/
-@[positivity √_]
-meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(√$a) =>
-    assertInstancesCommute
-    let ra ← catchNone <| core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))
-    | _ => pure (.nonnegative q(Real.sqrt_nonneg $a))
-  | _, _, _ => throwError "not Real.sqrt"
-
-end Mathlib.Meta.Positivity
+/-! The former hand-written `positivity` extensions `evalNNRealSqrt` and `evalSqrt` are replaced
+by tagging the lemmas they used to apply with `@[auto_positivity]`: a square root is nonnegative,
+and is strictly positive if its input is. -/
+attribute [auto_positivity] NNReal.sqrt_pos_of_pos Real.sqrt_pos_of_pos Real.sqrt_nonneg
 
 namespace Real
 

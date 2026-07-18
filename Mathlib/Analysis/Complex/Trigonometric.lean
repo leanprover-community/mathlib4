@@ -922,22 +922,11 @@ theorem cos_two_neg : cos 2 < 0 :=
 
 end Real
 
-namespace Mathlib.Meta.Positivity
-open Lean.Meta Qq
-
-/-- Extension for the `positivity` tactic: `Real.cosh` is always positive. -/
-@[positivity Real.cosh _]
-meta def evalCosh : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.cosh $a) =>
-    assertInstancesCommute
-    return .positive q(Real.cosh_pos $a)
-  | _, _, _ => throwError "not Real.cosh"
+/-! The former hand-written `positivity` extension `evalCosh` is replaced by
+`@[auto_positivity]`: `Real.cosh` is always positive. -/
+attribute [auto_positivity] Real.cosh_pos
 
 example (x : ℝ) : 0 < x.cosh := by positivity
-
-end Mathlib.Meta.Positivity
 
 namespace Complex
 
