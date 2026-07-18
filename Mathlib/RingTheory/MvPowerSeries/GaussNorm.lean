@@ -89,7 +89,6 @@ lemma gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
   calc
   0 < v (f.coeff n) * ∏ i ∈ n.support, (c i) ^ (n i) := by
     apply mul_pos _ (by exact Finset.prod_pos fun i a ↦ (fun i ↦ pow_pos (hc i) (n i)) i)
-    specialize h_eq_zero (f.coeff n)
     grind
   _ ≤ _ := le_gaussNorm v c f hbd n
 
