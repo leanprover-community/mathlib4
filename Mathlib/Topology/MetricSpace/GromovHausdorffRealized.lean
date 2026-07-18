@@ -231,7 +231,7 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
       ⋂ x, { f : Cb X Y | f (x, x) = 0 }) ∩
       ⋂ (x) (y), { f : Cb X Y | f (x, y) ≤ maxVar X Y } := by
     ext
-    simp only [candidatesB, candidates, mem_inter_iff, mem_iInter, mem_setOf_eq]
+    simp only [candidatesB, candidates, mem_inter_iff, mem_iInter, mem_ofPred_eq]
   rw [this]
   repeat'
     first
@@ -389,7 +389,7 @@ set_option backward.privateInPublic true in
 /-- The distance on `X ⊕ Y` is a candidate -/
 private theorem dist_mem_candidates :
     (fun p : (X ⊕ Y) × (X ⊕ Y) => dist p.1 p.2) ∈ candidates X Y := by
-  simp_rw [candidates, Set.mem_setOf_eq, dist_comm, dist_triangle, dist_self, maxVar_bound,
+  simp_rw [candidates, Set.mem_ofPred_eq, dist_comm, dist_triangle, dist_self, maxVar_bound,
     forall_const, and_true]
   exact ⟨fun x y => rfl, fun x y => rfl⟩
 
