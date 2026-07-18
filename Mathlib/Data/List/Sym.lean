@@ -96,9 +96,11 @@ theorem mem_sym2_iff {xs : List α} {z : Sym2 α} :
   refine z.ind (fun a b => ?_)
   simp [mk_mem_sym2_iff]
 
-lemma setOf_mem_sym2 {xs : List α} :
+lemma setOfPred_mem_sym2 {xs : List α} :
     {z : Sym2 α | z ∈ xs.sym2} = {x : α | x ∈ xs}.sym2 :=
   Set.ext fun z ↦ z.ind fun a b => by simp [mk_mem_sym2_iff]
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem_sym2 := setOfPred_mem_sym2
 
 protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
   induction xs with
