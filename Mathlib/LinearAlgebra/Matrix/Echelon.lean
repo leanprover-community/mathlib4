@@ -74,26 +74,6 @@ lemma mul_rowScale (i : m) (c : R) (M : Matrix n m R) :
   aesop (add simp [rowScale, updateCol_apply, mul_comm])
 
 @[simp]
-lemma rowScale_mul_apply_same (i : m) (c : R) (M : Matrix m n R) (j : n) :
-    (rowScale i c * M) i j = c * M i j := by
-  simp [rowScale_mul]
-
-@[simp]
-lemma rowScale_mul_apply_of_ne {i a : m} (ha : a ≠ i) (c : R) (M : Matrix m n R) (j : n) :
-    (rowScale i c * M) a j = M a j := by
-  simp [rowScale_mul, ha]
-
-@[simp]
-lemma mul_rowScale_apply_same (i : m) (c : R) (M : Matrix n m R) (a : n) :
-    (M * rowScale i c) a i = M a i * c := by
-  simp [mul_rowScale, mul_comm]
-
-@[simp]
-lemma mul_rowScale_apply_of_ne {i b : m} (hb : b ≠ i) (c : R) (M : Matrix n m R) (a : n) :
-    (M * rowScale i c) a b = M a b := by
-  simp [mul_rowScale, hb]
-
-@[simp]
 lemma rowScale_mul_rowScale (i : m) (c d : R) :
     rowScale i c * rowScale i d = rowScale i (c * d) := by
   rw [rowScale, rowScale, Matrix.diagonal_mul_diagonal]
