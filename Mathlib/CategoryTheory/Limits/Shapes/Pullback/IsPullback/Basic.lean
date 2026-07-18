@@ -35,6 +35,7 @@ namespace IsPullback
 
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a limiting binary product cone, and we have a terminal object,
 then we have `IsPullback c.fst c.snd 0 0`
@@ -429,6 +430,7 @@ namespace IsPushout
 
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a colimiting binary coproduct cocone, and we have an initial object,
 then we have `IsPushout 0 0 c.inl c.inr`
