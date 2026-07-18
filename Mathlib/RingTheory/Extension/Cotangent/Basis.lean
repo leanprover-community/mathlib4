@@ -70,7 +70,6 @@ def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
 
 instance : Algebra D.T S := D.hom.toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Nontrivial S] : Nontrivial D.T := RingHom.domain_nontrivial (algebraMap D.T S)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -98,7 +97,7 @@ instance : IsLocalization.Away D.gbar S := by
     rw [← map_one (algebraMap P.Ring S), ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
     exact D.hgmem
 
-open Classical in
+open scoped Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
 We make sure the section `T → R[X₁, ..., Xₙ]` maps `-1` to `-1` and `0` to `0`. -/
 def presLeft : Presentation R D.T ι σ :=
@@ -120,7 +119,6 @@ def fhom : D.presLeft.Hom P where
   val i := X i
   aeval_val i := by simp [RingHom.algebraMap_toAlgebra, presLeft, hom, T]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toAlgHom_fhom : D.fhom.toAlgHom = AlgHom.id R P.Ring := by
   ext : 1
@@ -134,7 +132,6 @@ lemma ker_presLeft_le : D.presLeft.ker ≤ P.ker := by
     toExtension_algebra₂, algebraMap_apply, Ideal.Quotient.algebraMap_eq,
     map_zero] using! (algebraMap D.T S).congr_arg hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentHom : S ⊗[D.T] D.presLeft.toExtension.Cotangent →ₗ[S] P.toExtension.Cotangent :=
   LinearMap.liftBaseChange _ (Extension.Cotangent.map D.fhom.toExtensionHom)
@@ -149,12 +146,10 @@ lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, toExtension_Ring,
     toExtension_commRing, toExtension_algebra₂, Presentation.naive_toGenerators, RingHom.id_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The backwards direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentInv : P.toExtension.Cotangent →ₗ[S] S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
   b.constr S fun i : σ ↦ 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorCotangentInv_apply (i : σ) :
     D.tensorCotangentInv (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=
@@ -265,6 +260,9 @@ lemma basis_apply [Nontrivial S] (r : Unit ⊕ σ) :
   · rw [basis_inr, cotangentEquivProd_symm_apply, cotangentCompLocalizationAwayEquiv_symm_inl,
       basisLeft, Module.Basis.map_apply, tensorCotangentEquiv_symm_apply,
       LinearMap.liftBaseChange_tmul, one_smul, Extension.Cotangent.map_mk]
+    simp only [Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom, AlgHom.toRingHom_eq_coe]
+    congr! 2 with x
+    simp [pres, Presentation.comp_relation_inr, kerGen, presLeft, Generators.toComp_toAlgHom]
     rfl
 
 end PresentationOfFreeCotangent.Aux

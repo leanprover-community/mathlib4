@@ -39,14 +39,14 @@ jobs:
     # This token is masked by the token minting action and will not be logged accidentally.
 
     - name: Checkout nightly-testing branch
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         ref: nightly-testing
         fetch-depth: 0  # Fetch all branches and history
         token: ${{ steps.app-token.outputs.token }}
 
     - name: Checkout local actions
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         ref: ${{ github.workflow_sha }}
         fetch-depth: 1
@@ -371,7 +371,7 @@ jobs:
 
     - name: Send message on Zulip
       if: steps.commit-bump.outputs.bumped == 'true' && env.branches_exist == 'true'
-      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'

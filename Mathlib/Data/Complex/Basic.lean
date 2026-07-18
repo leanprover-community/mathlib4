@@ -323,8 +323,6 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 end SMul
 
 instance addCommGroup : AddCommGroup ℂ where
-  nsmul := (· • ·)
-  zsmul := (· • ·)
   zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
@@ -389,19 +387,34 @@ instance commRing : CommRing ℂ :=
     mul_one := by intros; ext <;> simp
     mul_comm := by intros; ext <;> simp <;> ring }
 
+section computable_shortcuts
+
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
-instance : Ring ℂ := by infer_instance
+instance : Ring ℂ :=
+  delta% inferInstance
+
+/-- This shortcut instance ensures we do not find `NonUnitalCommRing` via the noncomputable
+`instCommCStarAlgebraComplex` instance. -/
+instance : NonUnitalCommRing ℂ :=
+  delta% inferInstance
 
 /-- This shortcut instance ensures we do not find `CommSemiring` via the noncomputable
 `Complex.field` instance. -/
 instance : CommSemiring ℂ :=
-  inferInstance
+  delta% inferInstance
 
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
 instance : Semiring ℂ :=
-  inferInstance
+  delta% inferInstance
+
+/-- This shortcut instance ensures we do not find `AddCommMonoid` via the noncomputable
+`Complex.instNormedField` instance. -/
+instance : AddCommMonoid ℂ :=
+  delta% inferInstance
+
+end computable_shortcuts
 
 /-- The "real part" map, considered as an additive group homomorphism. -/
 def reAddGroupHom : ℂ →+ ℝ where

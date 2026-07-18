@@ -227,7 +227,6 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
         exact (wo.wf.not_lt_min {j | r j i ∧ f i ≤ f j} ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.comp_isNormal (since := "2026-03-23")]
 theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     {a o} (ha : IsSuccLimit a) {g} (hg : IsFundamentalSequence a o g) :

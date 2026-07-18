@@ -88,6 +88,10 @@ theorem one_eq_map_iff {α} {f : α → β} {v : WithTop α} [One β] :
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
+@[to_additive]
+instance [LE α] [IsBotOneClass α] : IsBotOneClass (WithTop α) where
+  isBot_one x := by cases x <;> simp
+
 end One
 
 section Add
@@ -260,8 +264,10 @@ instance addMonoid : AddMonoid (WithTop α) where
     | (a : α), n => ↑(n • a)
     | ⊤, 0 => 0
     | ⊤, _n + 1 => ⊤
-  nsmul_zero a := by cases a <;> simp [zero_nsmul]
-  nsmul_succ n a := by cases a <;> cases n <;> simp [succ_nsmul, coe_add]
+  nsmul_zero a := by simp_rw [HSMul.hSMul, SMul.smul]; cases a <;> simp [zero_nsmul]
+  nsmul_succ n a := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    cases a <;> cases n <;> simp [succ_nsmul, coe_add]
 
 @[simp, norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
 
@@ -630,8 +636,17 @@ end AddMonoid
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
   inferInstanceAs <| AddCommMonoid (WithTop α)
 
-instance natCast [NatCast α] : NatCast (WithBot α) :=
-  ⟨fun n ↦ (n : α)⟩
+section NatCast
+variable [NatCast α]
+
+instance : NatCast (WithBot α) where natCast n := (n : α)
+
+@[to_dual (attr := simp)] lemma unbotD_natCast (d : α) (n : ℕ) : unbotD d n = n := rfl
+
+@[to_dual (attr := simp)]
+lemma unbotD_ofNat (d : α) (n : ℕ) [n.AtLeastTwo] : unbotD d ofNat(n) = ofNat(n) := rfl
+
+end NatCast
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]

@@ -5,9 +5,9 @@ Authors: Paul Lezeau, Bhavik Mehta
 -/
 module
 
-public meta import Mathlib.NumberTheory.Divisors -- TODO: check if `meta` is still needed after https://github.com/leanprover/lean4/pull/13043
+public meta import Mathlib.NumberTheory.Divisors
 public meta import Mathlib.Tactic.ToAdditive
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
 
 /-! # Divisor Simprocs
 

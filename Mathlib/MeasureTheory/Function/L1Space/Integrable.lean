@@ -339,10 +339,10 @@ theorem Integrable.to_average {f : α → ε} (h : Integrable f μ) : Integrable
   · apply h.smul_measure
     simpa
 
-open scoped Classical in
 theorem integrable_average [IsFiniteMeasure μ] {f : α → ε} :
-    Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ :=
-  (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
+    Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ := by
+  classical
+  exact (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
     integrable_smul_measure (ENNReal.inv_ne_zero.2 <| by finiteness)
       (ENNReal.inv_ne_top.2 <| mt Measure.measure_univ_eq_zero.1 h)
 
@@ -405,9 +405,9 @@ section ESeminormedAddMonoid
 variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 variable (α ε') in
-@[simp]
-theorem integrable_zero (μ : Measure α) : Integrable (fun _ => (0 : ε')) μ := by
-  simp [Integrable, aestronglyMeasurable_const]
+@[to_fun (attr := fun_prop, simp) integrable_fun_zero]
+theorem integrable_zero (μ : Measure α) : Integrable (0 : α → ε') μ := by
+  simp [Integrable, aestronglyMeasurable_zero]
 
 theorem Integrable.add' {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     HasFiniteIntegral (f + g) μ :=
