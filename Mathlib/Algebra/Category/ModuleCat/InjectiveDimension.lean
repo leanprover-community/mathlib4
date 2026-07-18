@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 
 /-!
 
-# Projective Dimension in ModuleCat
+# Injective Dimension in ModuleCat
 
 -/
 
@@ -23,7 +23,7 @@ universe v v' u u'
 
 variable {R : Type u} [CommRing R]
 
-open CategoryTheory Abelian Module
+open CategoryTheory Abelian
 
 namespace ModuleCat
 
