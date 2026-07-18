@@ -31,6 +31,7 @@ open Finset (range sum_const)
 
 namespace Imo1987Q1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of pairs `(x : α, σ : Perm α)` such that `σ x = x` is equivalent to the set of pairs
 `(x : α, σ : Perm {x}ᶜ)`. -/
 def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, Perm ({x}ᶜ : Set α) :=
@@ -41,19 +42,21 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
       (sigmaCongrRight fun x => Equiv.setCongr <| by simp only [SetCoe.forall]; simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_fixed_points :
     card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by
   simp only [card_congr (fixedPointsEquiv α), card_sigma, card_perm]
-  have (x : _) : ({x}ᶜ : Set α) = Finset.filter (· ≠ x) Finset.univ := by
+  have h (x : α) : ({x}ᶜ : Set α) = Finset.univ.erase x := by
     ext; simp
-  simp [this]
+  simp_rw [h, Fintype.card_subtype, SetLike.mem_coe, Finset.filter_univ_mem]
+  simp
 
 /-- Given `α : Type*` and `k : ℕ`, `fiber α k` is the set of permutations of `α` with exactly `k`
 fixed points. -/
 def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
 
-instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (setOf _)
+instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (Set.ofPred _)
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=
