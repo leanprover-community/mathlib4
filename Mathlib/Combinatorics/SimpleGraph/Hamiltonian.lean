@@ -301,18 +301,18 @@ theorem isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree [DecidableEq V] 
   by_contra hG
   have ⟨p, hp, hlen⟩ := isHamiltonian_sup_edge.mp hsup |>.resolve_left hG
   -- `p` is Hamiltonian and so its support contains all the vertices exactly once.
-  -- Since `a` is not adjacent to itself, all of its neighbors appear from index `1` to `|V| - 2`.
-  -- Since `b` is not adjacent to itself, all of its neighbors appear from index `0` to `|V| - 1`.
+  -- Since `u` is not adjacent to itself, all of its neighbors appear from index `1` to `|V| - 2`.
+  -- Since `v` is not adjacent to itself, all of its neighbors appear from index `0` to `|V| - 1`.
   classical
-  let sa := (Finset.range <| Fintype.card V - 1).filter (G.Adj u <| p.getVert <| · + 1)
-  let sb := (Finset.range <| Fintype.card V - 1).filter (G.Adj v <| p.getVert ·)
-  have ha : (G.neighborFinset u).card ≤ sa.card := by
-    refine sa.card_le_card_of_surjOn (p.getVert <| · + 1) fun w hw ↦ ⟨p.support.idxOf w - 1, ?_⟩
+  let su := (Finset.range <| Fintype.card V - 1).filter (G.Adj u <| p.getVert <| · + 1)
+  let sv := (Finset.range <| Fintype.card V - 1).filter (G.Adj v <| p.getVert ·)
+  have ha : (G.neighborFinset u).card ≤ su.card := by
+    refine su.card_le_card_of_surjOn (p.getVert <| · + 1) fun w hw ↦ ⟨p.support.idxOf w - 1, ?_⟩
     have hadj := G.mem_neighborFinset u w |>.mp hw
     have : p.support.idxOf w ≠ 0 := by grind [p.support_getElem_zero, hadj.ne]
     grind [hp.length_support, hp.mem_support, p.getVert_support_idxOf]
-  have hb : (G.neighborFinset v).card ≤ sb.card := by
-    refine sb.card_le_card_of_surjOn p.getVert fun w hw ↦ ⟨p.support.idxOf w, ?_⟩
+  have hb : (G.neighborFinset v).card ≤ sv.card := by
+    refine sv.card_le_card_of_surjOn p.getVert fun w hw ↦ ⟨p.support.idxOf w, ?_⟩
     have hadj := G.mem_neighborFinset v w |>.mp hw
     have : p.support.idxOf w ≠ p.support.length - 1 := by grind [p.support_getElem_length, hadj.ne]
     grind [hp.length_support, hp.mem_support, p.getVert_support_idxOf]
@@ -321,10 +321,10 @@ theorem isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree [DecidableEq V] 
   -- `G.Adj u (p.getVert (i + 1))` and `G.Adj v (p.getVert i)`.
   grw [← card_neighborFinset_eq_degree, ← card_neighborFinset_eq_degree, ha, hb] at hdeg
   have : 0 < Fintype.card V := Fintype.card_pos_iff.mpr ⟨v⟩
-  have ⟨i, hi⟩ := Finset.inter_nonempty_of_card_lt_card_add_card (t := sa) (u := sb)
+  have ⟨i, hi⟩ := Finset.inter_nonempty_of_card_lt_card_add_card (t := su) (u := sv)
     (Finset.filter_subset ..) (Finset.filter_subset ..) (by grind [Finset.card_range])
-  have hia := (Finset.mem_filter.mp <| sa.mem_of_mem_inter_left hi).right
-  have hib := (Finset.mem_filter.mp <| sa.mem_of_mem_inter_right hi).right
+  have hia := (Finset.mem_filter.mp <| su.mem_of_mem_inter_left hi).right
+  have hib := (Finset.mem_filter.mp <| su.mem_of_mem_inter_right hi).right
   -- Using those two edges and `p` we can construct a Hamiltonian cycle without `(u, v)`,
   refine hG fun _ ↦ ⟨v, p.take i |>.reverse.cons hib |>.append <| p.drop (i + 1) |>.cons hia, ?_⟩
   -- and so `G` is Hamiltonian; contradiction!
