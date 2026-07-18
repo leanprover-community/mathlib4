@@ -159,14 +159,20 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀
   rwa [Nat.card_units] at h
 
 /--
-If the prime ideal `P` is unramified over `ℤ` and the norm of the prime of `ℤ` lying under `P` is
-greater than `2`, then the norm of `P` is congruent to `1` modulo `torsionOrder K`.
+If the maximal ideal `P` is unramified over `ℤ` and the norm of the prime of `ℤ` lying under `P` is
+different from `2`, then the norm of `P` is congruent to `1` modulo `torsionOrder K`.
 -/
-theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
-    (hP₁ : Algebra.IsUnramifiedAt ℤ P) (hP₂ : 2 < absNorm (under ℤ P)) :
+theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP : P.IsMaximal]
+    (hP₁ : Algebra.IsUnramifiedAt ℤ P) (hP₂ : absNorm (under ℤ P) ≠ 2) :
     torsionOrder K ∣ absNorm P - 1 := by
+  obtain hP₂ | hP₂ := Nat.lt_or_gt.mp hP₂
+  · obtain  hP₂ | hP₂ := Nat.lt_succ_iff_lt_or_eq.mp hP₂
+    · have hp := Nat.absNorm_under_prime P
+      rw [Nat.lt_one_iff.mp hP₂] at hp
+      exact (Nat.prime_zero_false hp).elim
+    · rw [absNorm_eq_one_iff, comap_eq_top_iff, ← absNorm_eq_one_iff] at hP₂
+      simp [hP₂]
   have hP₀ : P ≠ ⊥ := fun h ↦ by simp [h] at hP₂
-  have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP
   let _ := Ideal.Quotient.field P
   have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective' hP₁ hP₂)
   rwa [Nat.card_units] at h
