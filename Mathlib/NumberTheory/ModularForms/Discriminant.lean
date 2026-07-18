@@ -123,6 +123,7 @@ lemma discriminant_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n 
 lemma discriminant_ne_zero (z : ℍ) : Δ z ≠ 0 := by
   simpa [discriminant] using eta_ne_zero z.2
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant is invariant under `T : z ↦ z + 1`, i.e., `Δ(z + 1) = Δ(z)`. -/
 lemma discriminant_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
@@ -138,6 +139,7 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
   have h3 : η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
   grind [sqrt, eta_ne_zero (show 0 < I.im by simp)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:
 we have `Δ(-1 / z) = z ^ 12 · Δ(z)`. -/
 lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by

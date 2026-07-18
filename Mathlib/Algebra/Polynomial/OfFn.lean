@@ -40,9 +40,10 @@ section ofFn
 
 variable {R : Type*} [Semiring R] [DecidableEq R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ofFn n v` is the polynomial whose coefficients are the entries of the vector `v`. -/
 def ofFn (n : ℕ) : (Fin n → R) →ₗ[R] R[X] where
-  toFun v := ⟨(List.ofFn v).toFinsupp⟩
+  toFun v := ⟨.ofCoeff (List.ofFn v).toFinsupp⟩
   map_add' x y := by
     ext i
     by_cases h : i < n
@@ -64,12 +65,14 @@ lemma ne_zero_of_ofFn_ne_zero {n : ℕ} {v : Fin n → R} (h : ofFn n v ≠ 0) :
   subst h
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `i < n` the `i`-th coefficient of `ofFn n v` is `v i`. -/
 @[simp]
 theorem ofFn_coeff_eq_val_of_lt {n i : ℕ} (v : Fin n → R) (hi : i < n) :
     (ofFn n v).coeff i = v ⟨i, hi⟩ := by
   simp [ofFn, hi]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `n ≤ i` the `i`-th coefficient of `ofFn n v` is `0`. -/
 @[simp]
 theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) :
@@ -89,7 +92,6 @@ theorem ofFn_degree_lt {n : ℕ} (v : Fin n → R) : (ofFn n v).degree < n := by
   · exact (natDegree_lt_iff_degree_lt h).mp
       <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr <| ne_zero_of_ofFn_ne_zero h) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
     ∑ i : Fin n, monomial i (v i) := by
   by_cases h : n = 0
@@ -98,6 +100,7 @@ theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
   · rw [as_sum_range' (ofFn n v) n <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr h) v]
     simp [Finset.sum_range]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toFn_comp_ofFn_eq_id (n : ℕ) (v : Fin n → R) : toFn n (ofFn n v) = v := by
   simp [toFn, ofFn, LinearMap.pi]
 
@@ -106,7 +109,7 @@ theorem injective_ofFn (n : ℕ) : Function.Injective (ofFn (R := R) n) :=
 
 omit [DecidableEq R] in
 theorem surjective_toFn (n : ℕ) : Function.Surjective (toFn (R := R) n) :=
-  open Classical in
+  open scoped Classical in
   Function.RightInverse.surjective <| toFn_comp_ofFn_eq_id n
 
 theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R[X]} (h_deg : p.natDegree < n) :
