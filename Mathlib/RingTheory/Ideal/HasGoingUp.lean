@@ -44,7 +44,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 namespace Ideal
 
 lemma exists_ideal_ge_liesOver_of_le [Algebra.HasGoingUp R S]
-    {p q : Ideal R} [p.IsPrime] [q.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p]
+    {p q : Ideal R} [q.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p]
     (hle : p ≤ q) :
     ∃ Q, P ≤ Q ∧ Q.IsPrime ∧ Q.LiesOver q := by
   rcases eq_or_ne p q with rfl | h
@@ -81,7 +81,7 @@ lemma exists_ltSeries_of_hasGoingUp [Algebra.HasGoingUp R S]
       Ideal.exists_ideal_gt_liesOver_of_lt P lt
     obtain ⟨L, len, head, spec⟩ := ih Q
     refine ⟨L.cons ⟨P, inferInstance⟩ (by
-      simp_all only [Set.mem_setOf_eq]
+      simp_all only [Set.mem_ofPred_eq]
       exact PQlt), by simpa using len, rfl, ?_⟩
     simpa [spec, PrimeSpectrum.ext_iff] using lo.over.symm
 
