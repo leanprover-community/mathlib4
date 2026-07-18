@@ -107,8 +107,8 @@ alias ⟨_, relfinrank_eq_one_of_le⟩ := relfinrank_eq_one_iff
 
 theorem relrank_mul_rank_top (h : A ≤ B) : relrank A B * Module.rank B E = Module.rank A E := by
   rw [relrank_eq_rank_of_le h]
-  letI : Algebra A B := (inclusion h).toAlgebra
-  haveI : IsScalarTower A B E := IsScalarTower.of_algebraMap_eq' rfl
+  let : Algebra A B := (inclusion h).toAlgebra
+  have : IsScalarTower A B E := IsScalarTower.of_algebraMap_eq' rfl
   exact rank_mul_rank A B E
 
 theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E = finrank A E := by
@@ -124,7 +124,6 @@ theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le
 
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
-  let _ : AddCommMonoid (⊤ : IntermediateField A E) := inferInstance
   rw [relrank_eq_rank_of_le (show A ≤ ⊤ from le_top), extendScalars_top,
     IntermediateField.topEquiv.toLinearEquiv.rank_eq]
 
@@ -230,10 +229,10 @@ theorem relrank_mul_relrank (h1 : A ≤ B) (h2 : B ≤ C) :
     relrank A B * relrank B C = relrank A C := by
   have h3 := h1.trans h2
   rw [relrank_eq_rank_of_le h1, relrank_eq_rank_of_le h2, relrank_eq_rank_of_le h3]
-  letI : Algebra A B := (inclusion h1).toAlgebra
-  letI : Algebra B C := (inclusion h2).toAlgebra
-  letI : Algebra A C := (inclusion h3).toAlgebra
-  haveI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' rfl
+  let : Algebra A B := (inclusion h1).toAlgebra
+  let : Algebra B C := (inclusion h2).toAlgebra
+  let : Algebra A C := (inclusion h3).toAlgebra
+  have : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' rfl
   exact rank_mul_rank A B C
 
 variable {A B C} in
@@ -436,7 +435,7 @@ theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E 
 variable {A B} in
 theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Module.rank F B := by
   rw [relrank_eq_rank_of_le h]
-  letI : Algebra A B := (inclusion h).toAlgebra
+  let : Algebra A B := (inclusion h).toAlgebra
   exact rank_mul_rank F A B
 
 variable {A B} in
