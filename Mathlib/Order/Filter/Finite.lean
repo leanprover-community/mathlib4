@@ -142,7 +142,7 @@ theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {
     rintro ⟨I, hIf, V, hV₁, hV₂, rfl⟩
     choose! t ht₁ ht₂ using hV₁
     refine ⟨I ∩ {i | p i}, hIf.inter_of_left _, fun i ↦ And.right, ?_⟩
-    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_setOf_eq]
+    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_ofPred_eq]
     gcongr with i hpi
     exact ht₁ i hpi
   · rintro ⟨I, hIf, hpI, hst⟩
@@ -248,12 +248,12 @@ end Lattice
 @[simp]
 theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, setOf_forall] using iInter_mem
+  simpa only [Filter.Eventually, ofPred_forall] using iInter_mem
 
 @[simp]
 theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
+  simpa only [Filter.Eventually, ofPred_forall] using biInter_mem hI
 
 protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
 

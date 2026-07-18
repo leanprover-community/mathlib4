@@ -5,13 +5,9 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.LinearAlgebra.FreeAlgebra
-public import Mathlib.Order.Interval.Set.WithBotTop
 public import Mathlib.Order.DirectedInverseSystem
-
-import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree
@@ -121,8 +117,8 @@ def leastExt : ι → ι :=
   wellFounded_lt.fix fun i ih ↦
     let s := range fun j : Iio i ↦ b (ih j j.2)
     wellFounded_lt.min {k | b k ∉ adjoin F s} <| by
-      rw [← compl_setOf, nonempty_compl]; by_contra!
-      simp_rw [eq_univ_iff_forall, mem_setOf] at this
+      rw [← compl_ofPred, nonempty_compl]; by_contra!
+      simp_rw [eq_univ_iff_forall, mem_ofPred] at this
       have := adjoin_le_iff.mpr (range_subset_iff.mpr this)
       rw [adjoin_basis_eq_top, ← eq_top_iff] at this
       apply_fun Module.rank F at this

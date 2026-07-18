@@ -23,7 +23,7 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 * `IsPrincipal`: A principal (or indecomposable) ordinal under some binary operation. We include `0`
   and other typically excluded edge cases for simplicity.
-* `not_bddAbove_setOf_isPrincipal`: Principal ordinals (under any operation) are unbounded.
+* `not_bddAbove_setOfPred_isPrincipal`: Principal ordinals (under any operation) are unbounded.
 * `isPrincipal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are
   `0` and the ordinal powers of `ω`.
 * `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
@@ -177,13 +177,16 @@ private theorem isPrincipal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o :
       ⟨_, Set.mk_mem_prod ha (hb.trans_le h)⟩
 
 /-- Principal ordinals under any operation are unbounded. -/
-theorem not_bddAbove_setOf_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
+theorem not_bddAbove_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
     ¬ BddAbove { o | IsPrincipal op o } := by
   rintro ⟨a, ha⟩
   exact ((le_nfp _ _).trans (ha (isPrincipal_nfp_iSup op (succ a)))).not_gt (lt_succ a)
 
+@[deprecated (since := "2026-07-09")]
+alias not_bddAbove_setOf_isPrincipal := not_bddAbove_setOfPred_isPrincipal
+
 @[deprecated (since := "2026-03-17")]
-alias not_bddAbove_principal := not_bddAbove_setOf_isPrincipal
+alias not_bddAbove_principal := not_bddAbove_setOfPred_isPrincipal
 
 /-! ### Additive principal ordinals -/
 
