@@ -200,7 +200,11 @@ instance [Zero R] [Neg R] [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨-f, by simp⟩
 
 instance [Zero R] [Neg R] [NegZeroClass R] : IsNegApply (ArithmeticFunction R) ℕ R where
-  neg_apply _ _ := by rfl
+  neg_apply _ _ := rfl
+
+@[deprecated _root_.neg_apply (since := "2026-07-18")]
+protected theorem neg_apply [Zero R] [Neg R] [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} :
+    (-f) n = -f n := neg_apply f n
 
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
   neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
