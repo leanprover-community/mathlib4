@@ -59,7 +59,7 @@ This could be an instance but that causes some slowness issues with typeclass se
 keep it as a def and turn it on as an instance for the explicit examples of `CompHausLike` as
 needed.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def cartesianMonoidalCategory [∀ (X Y : CompHausLike.{u} P), HasProp P (X × Y)]
     [HasProp P PUnit.{u + 1}] : CartesianMonoidalCategory (CompHausLike.{u} P) :=
   .ofChosenFiniteProducts
@@ -79,6 +79,7 @@ type-theoretic sums.
 def coproductCocone : BinaryCofan X Y := BinaryCofan.mk (P := CompHausLike.of P (X ⊕ Y))
   (ofHom _ { toFun := Sum.inl }) (ofHom _ { toFun := Sum.inr })
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 When the predicate `P` is preserved under taking type-theoretic sums, that sum is a
 category-theoretic coproduct in `CompHausLike P`.

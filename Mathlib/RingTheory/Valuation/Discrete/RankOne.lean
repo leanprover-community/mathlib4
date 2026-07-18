@@ -67,7 +67,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
     (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).lt_iff_lt]
 
 /-- A discrete valuation has rank one. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
   hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp
       (.ofClass (valueGroup₀_equiv_withZeroMulInt v))
@@ -80,6 +80,7 @@ section WithZeroMulInt
 
 variable {v : Valuation R ℤᵐ⁰} [hv : v.IsRankOneDiscrete]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : Function.Surjective v)
     (x : R) : (valueGroup₀_equiv_withZeroMulInt v) (v.restrict x) = v x := by
   simp only [Valuation.restrict_def, ValueGroup₀.restrict₀_apply,
