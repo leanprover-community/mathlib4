@@ -297,10 +297,10 @@ endpoints is at least the number of vertices does not change whether the graph i
 theorem isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree [DecidableEq V] [Fintype V]
     [G.LocallyFinite] {u v : V} (hdeg : Fintype.card V ≤ G.degree u + G.degree v) :
     (G ⊔ edge u v).IsHamiltonian ↔ G.IsHamiltonian := by
-  refine ⟨fun hsup ↦ ?_, .mono le_sup_left⟩
-  by_contra hG
-  have ⟨p, hp, hlen⟩ := isHamiltonian_sup_edge.mp hsup |>.resolve_left hG
-  -- `p` is Hamiltonian and so its support contains all `|V|` vertices exactly once.
+  -- The reverse implication is trivial. For the forward direction, since `G` with `(u, v)` is
+  -- Hamiltonian, `G` must either be Hamiltonian or have a Hamiltonian path `p` from `u` to `v`.
+  refine ⟨(isHamiltonian_sup_edge.mp · |>.elim id fun ⟨p, hp, hlen⟩ _ ↦ ?_), .mono le_sup_left⟩
+  -- `p` is a Hamiltonian path and so its support contains all `|V|` vertices exactly once.
   -- Since `u` is not adjacent to itself, all of its neighbors appear from index `1` to `|V| - 1`.
   -- Since `v` is not adjacent to itself, all of its neighbors appear from index `0` to `|V| - 2`.
   classical
@@ -326,8 +326,7 @@ theorem isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree [DecidableEq V] 
   have hia := (Finset.mem_filter.mp <| su.mem_of_mem_inter_left hi).right
   have hib := (Finset.mem_filter.mp <| su.mem_of_mem_inter_right hi).right
   -- Using those two edges and `p` we can construct a Hamiltonian cycle without `(u, v)`,
-  refine hG fun _ ↦ ⟨v, p.take i |>.reverse.cons hib |>.append <| p.drop (i + 1) |>.cons hia, ?_⟩
-  -- and so `G` is Hamiltonian; contradiction!
+  refine ⟨v, p.take i |>.reverse.cons hib |>.append <| p.drop (i + 1) |>.cons hia, ?_⟩
   rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq, Walk.isCycle_iff_isPath_tail_and_le_length]
   simp [Walk.isPath_def, Walk.support_append, List.nodup_append]
   grind [Walk.support_take_append_support_drop, hp.length_eq, hp.isPath.support_nodup]
