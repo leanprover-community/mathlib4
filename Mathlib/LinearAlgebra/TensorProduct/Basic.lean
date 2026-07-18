@@ -129,7 +129,7 @@ lemma lifts_add {x y : M ⊗[R] N} {p q : FreeAddMonoid (M × N)}
 and if `a` is an element of `R`, then the list obtained by multiplying the first entry of each
 element of `p` by `a` lifts `a • x`.
 -/
-lemma lifts_smul_left {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ lifts x) (a : R) :
+lemma lifts_smul {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ lifts x) (a : R) :
     p.map (fun (y : M × N) ↦ (a • y.1, y.2)) ∈ lifts (a • x) := by
   rw [mem_lifts_iff] at h ⊢
   rw [← h]
@@ -137,20 +137,6 @@ lemma lifts_smul_left {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ l
   induction p.toList with
   | nil => simp
   | cons hd tl ih => simp [ih, smul_add, smul_tmul]
-
-
-/-- If an element `p` of `FreeAddMonoid (M × N)` lifts an element `x` of `M ⊗[R] N`,
-and if `a` is an element of `R`, then the list obtained by multiplying the second entry of each
-element of `p` by `a` lifts `a • x`.
--/
-lemma lifts_smul_right {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ lifts x) (a : R) :
-    p.map (fun (y : M × N) ↦ (y.1, a • y.2)) ∈ lifts (a • x) := by
-  rw [mem_lifts_iff] at h ⊢
-  rw [← h]
-  simp only [FreeAddMonoid.toList_map, List.map_map]
-  induction p.toList with
-  | nil => simp
-  | cons hd tl ih => simp [ih, smul_add]
 
 end Module
 
