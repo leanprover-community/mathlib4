@@ -235,7 +235,7 @@ private theorem mem_aux {e : OpenPartialHomeomorph (B × F) (B × F)} {n : ℕ�
         (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x).symm : B → F →L[𝕜] F) U),
           e.EqOnSource
             (FiberwiseLinear.openPartialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
-  simp only [mem_iUnion, mem_setOf_eq]
+  simp only [mem_iUnion, mem_ofPred_eq]
 
 variable (F B IB)
 
