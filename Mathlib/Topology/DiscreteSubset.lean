@@ -65,9 +65,38 @@ lemma discreteTopology_subtype_iff' {S : Set Y} :
   simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
   grind
 
-theorem isDiscrete_iff_forall_exists_isOpen {S : Set Y} :
-    IsDiscrete S ↔ ∀ y ∈ S, ∃ U, IsOpen U ∧ U ∩ S = {y} := by
+/-- A set `s` is discrete iff for every `y ∈ s` there is an open `u` with `u ∩ s = {y}`.
+See `isDiscrete_iff_forall_subset_exists_isOpen'` for a related version of this with subsets. -/
+theorem isDiscrete_iff_forall_mem_exists_isOpen {s : Set Y} :
+    IsDiscrete s ↔ ∀ y ∈ s, ∃ u, IsOpen u ∧ u ∩ s = {y} := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff']
+
+@[deprecated (since := "2026-06-24")]
+alias isDiscrete_iff_forall_exists_isOpen := isDiscrete_iff_forall_mem_exists_isOpen
+
+/-- A set `s` is discrete iff for every `t ⊆ s` there is an open `u` with `u ∩ s = t`.
+See `isDiscrete_iff_forall_mem_exists_isOpen` for a similar version of this with singletons. -/
+theorem isDiscrete_iff_forall_subset_exists_isOpen {s : Set X} :
+    IsDiscrete s ↔ ∀ t ⊆ s, ∃ u, IsOpen u ∧ u ∩ s = t := by
+  simp_rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_forall_isOpen,
+    isOpen_induced_iff, ← image_eq_image (Subtype.val_injective), Subtype.image_preimage_coe,
+    Subtype.forall_set_subtype (p := fun t ↦ ∃ u, IsOpen u ∧ s ∩ u = t), inter_comm]
+
+/-- A set `s` is discrete iff for every `t ⊆ s` there is a closed `u` with `u ∩ s = t`. -/
+theorem isDiscrete_iff_forall_mem_exists_isClosed {S : Set X} :
+    IsDiscrete S ↔ ∀ s ⊆ S, ∃ U, IsClosed U ∧ U ∩ S = s := by
+  rw [isDiscrete_iff_forall_subset_exists_isOpen]
+  constructor <;> intro h s sS
+  · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
+    exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+  · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
+    exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+
+theorem isClosed_of_subset_discrete_closed {s t : Set X} (sd : s ⊆ t)
+    (ht : IsDiscrete t) (tc : IsClosed t) : IsClosed s := by
+  obtain ⟨_, rp, rt⟩ := isDiscrete_iff_forall_mem_exists_isClosed.mp ht s sd
+  rw [← rt]
+  exact rp.inter tc
 
 lemma Set.Subsingleton.isDiscrete (hs : s.Subsingleton) : IsDiscrete s :=
   have : Subsingleton s := (Set.subsingleton_coe s).mpr hs
@@ -112,7 +141,7 @@ lemma IsOpenMap.isDiscrete_range [DiscreteTopology X] (hf : IsOpenMap f) :
 lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsInducing f) : IsDiscrete (f '' s) := by
   simp_all [isDiscrete_iff_nhdsWithin, ← hf.map_nhdsWithin_eq s]
 
-lemma IsInducing.isDiscrete_range [DiscreteTopology X] (hf : IsInducing f) :
+lemma Topology.IsInducing.isDiscrete_range [DiscreteTopology X] (hf : IsInducing f) :
     IsDiscrete (Set.range f) := by
   simpa using IsDiscrete.univ.image hf
 
@@ -138,7 +167,7 @@ lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
 
 lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
     {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
-  letI := hs.1
+  let := hs.1
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 
@@ -303,6 +332,16 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     simp
 
 /--
+In a `T1Space`, every set is codiscrete within a subsingleton set.
+-/
+@[simp] theorem Set.Subsingleton.mem_codiscreteWithin [T1Space X] {s t : Set X}
+    (h : Set.Subsingleton t) :
+    s ∈ codiscreteWithin t := by
+  rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
+  intro z hz
+  use univ \ t, nhdsNE_of_nhdsNE_sdiff_finite univ_mem h.finite, by aesop
+
+/--
 In a `T1Space`, complements of singleton sets are codiscrete within any set.
 -/
 @[simp]
@@ -335,6 +374,30 @@ def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteW
 lemma mem_codiscrete {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
   simp [codiscrete, mem_codiscreteWithin, compl_eq_univ_sdiff]
+
+lemma Disjoint.eventually_nhdsWithin_specializes
+    {p : X} {s : Set X} (hs : Disjoint (𝓝[s] p) cofinite) :
+    ∀ᶠ x in 𝓝[s] p, x ⤳ p := by
+  obtain ⟨t, h₁t, h₂t⟩ := disjoint_cofinite_right.mp hs
+  set S := {y ∈ t ∩ s | ¬(y ⤳ p)}
+  have hS_nhds (y) (hy : y ∈ S) : (closure ({y} : Set X))ᶜ ∈ 𝓝 p :=
+    isClosed_closure.isOpen_compl.mem_nhds <| by
+      simpa [specializes_iff_mem_closure] using hy.2
+  filter_upwards [h₁t, nhdsWithin_le_nhds ((biInter_mem <| h₂t.subset (by grind)).mpr hS_nhds),
+    self_mem_nhdsWithin] with x hxt hxS
+  contrapose
+  refine fun hxp hxf ↦ mem_iInter₂.mp hxS x ⟨⟨hxt, hxf⟩, hxp⟩ ?_
+  grind [subset_closure]
+
+lemma Disjoint.nhdsWithin_eq_of_cofinite
+    {p : X} {s : Set X} (hs : Disjoint (𝓝[s] p) cofinite) :
+    𝓝[s] p = 𝓟 ({x | x ⤳ p} ∩ s) := by
+  apply le_antisymm
+  · simpa using ⟨hs.eventually_nhdsWithin_specializes, self_mem_nhdsWithin⟩
+  · rw [← inf_principal, nhdsWithin]
+    gcongr
+    rw [Filter.principal_le_iff]
+    exact fun s hs x hx ↦ mem_of_mem_nhds (hx hs)
 
 lemma mem_codiscrete_accPt {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, ¬AccPt x (𝓟 Sᶜ) := by
@@ -405,7 +468,7 @@ alias finite_diff_of_mem_codiscreteWithin := finite_sdiff_of_mem_codiscreteWithi
 theorem cofinite_inf_le_codiscreteWithin (hK : IsCompact K) :
     cofinite ⊓ 𝓟 K ≤ codiscreteWithin K := by
   intro s hs
-  simpa [mem_inf_principal, compl_setOf] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
+  simpa [mem_inf_principal, compl_ofPred] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
 
 theorem codiscreteWithin_eq [T1Space X] (hK : IsCompact K) :
     codiscreteWithin K = cofinite ⊓ 𝓟 K := by
@@ -475,8 +538,5 @@ theorem discreteTopology_iUnion_finite {ι : Type*} [Finite ι] {s : ι → Set 
     DiscreteTopology (⋃ i, s i) := by
   simp only [← isDiscrete_iff_discreteTopology] at *
   exact .iUnion hs hs'
-
-@[deprecated (since := "2025-11-28")]
-alias discreteTopology_iUnion_fintype := discreteTopology_iUnion_finite
 
 end discrete_union

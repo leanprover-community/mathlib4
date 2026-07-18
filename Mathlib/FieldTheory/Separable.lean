@@ -5,14 +5,9 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.FieldTheory.IntermediateField.Basic
-public import Mathlib.FieldTheory.Minpoly.Field
-public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.RingTheory.PowerBasis
-public import Mathlib.Data.ENat.Lattice
 
 /-!
 
@@ -179,7 +174,6 @@ theorem emultiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep :
 See `PerfectField.separable_iff_squarefree` for the converse when the coefficients are a perfect
 field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
-  classical
   rw [squarefree_iff_emultiplicity_le_one p]
   exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
 
@@ -345,11 +339,11 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
   classical
   exact if H : derivative f = 0 then by
     rcases p.eq_zero_or_pos with (rfl | hp)
-    · haveI := CharP.charP_to_charZero F
+    · have := CharP.charP_to_charZero F
       have := derivative_eq_zero.1 H
       have := (natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_irreducible hf).ne'
       contradiction
-    haveI := isLocalHom_expand F hp
+    have := isLocalHom_expand F hp
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,
@@ -565,7 +559,7 @@ variable {F} in
 because the minimal polynomial of a non-integral element is `0`, which is not separable. -/
 theorem IsSeparable.isIntegral {x : K} (h : IsSeparable F x) : IsIntegral F x := by
   cases subsingleton_or_nontrivial F
-  · haveI := Module.subsingleton F K
+  · have := Module.subsingleton F K
     exact ⟨1, monic_one, Subsingleton.elim _ _⟩
   · exact of_not_not (h.ne_zero <| minpoly.eq_zero ·)
 
@@ -702,7 +696,7 @@ include f
 variable {F} in
 theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
   let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
+  have : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
   exact h.tower_bot
 
 
@@ -782,7 +776,6 @@ theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
     (h_splits : ((minpoly K pb.gen).map (algebraMap K L)).Splits) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
-  classical
   rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_powerBasis pb h_sep h_splits]
 
 end CardAlgHom

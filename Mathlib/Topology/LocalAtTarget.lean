@@ -220,14 +220,11 @@ lemma isOpenMap_iff_comp : IsOpenMap f ↔ ∀ i, IsOpenMap (f ∘ ((↑) : U i 
   intro V hV
   convert! isOpen_iUnion (fun i ↦ hf i _ <| isOpen_induced hV)
   simp_rw [Set.image_comp, Set.image_preimage_eq_inter_range, ← Set.image_iUnion,
-    Subtype.range_coe_subtype, SetLike.setOf_mem_eq, hU.iUnion_inter]
+    Subtype.range_coe_subtype, SetLike.setOfPred_mem_eq, hU.iUnion_inter]
 
 lemma generalizingMap_iff_comp :
     GeneralizingMap f ↔ ∀ i, GeneralizingMap (f ∘ ((↑) : U i → α)) := by
-  refine ⟨fun hf ↦ fun i ↦
-      ((U i).isOpenEmbedding'.generalizingMap
-        (U i).isOpenEmbedding'.isOpen_range.stableUnderGeneralization).comp hf,
-    fun hf ↦ fun x y h ↦ ?_⟩
+  refine ⟨fun hf i ↦ ((U i).isOpenEmbedding'.generalizingMap).comp hf, fun hf ↦ fun x y h ↦ ?_⟩
   obtain ⟨i, hi⟩ := hU.exists_mem x
   replace h : y ⤳ (f ∘ ((↑) : U i → α)) ⟨x, hi⟩ := h
   obtain ⟨a, ha, rfl⟩ := hf i h
