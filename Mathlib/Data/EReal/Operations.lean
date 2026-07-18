@@ -241,9 +241,8 @@ theorem neg_eq_top_iff {x : EReal} : -x = ⊤ ↔ x = ⊥ :=
 theorem neg_eq_bot_iff {x : EReal} : -x = ⊥ ↔ x = ⊤ :=
   neg_injective.eq_iff' rfl
 
-@[simp]
-theorem neg_eq_zero_iff {x : EReal} : -x = 0 ↔ x = 0 :=
-  neg_injective.eq_iff' neg_zero
+@[deprecated neg_eq_zero (since := "2026-07-18")]
+theorem neg_eq_zero_iff {x : EReal} : -x = 0 ↔ x = 0 := neg_eq_zero
 
 theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
   WithBot.strictAnti_iff.2 ⟨WithTop.strictAnti_iff.2
