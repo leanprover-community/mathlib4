@@ -113,7 +113,8 @@ theorem lineDeriv_descent_le (h : LipschitzSmoothWith K f) (x y : E) :
     f y ≤ f x + lineDeriv ℝ f x (y - x) + K / 2 * (dist x y) ^ 2 := by
   linarith [(abs_le.mp (h.lineDeriv_norm_le x y)).2]
 
-/-- The quadratic lower bound on `f y`: the descent lemma applied to `-f`. -/
+/-- The quadratic lower bound on `f y`, sometimes referred to as the *ascent lemma*, obtained by
+applying the descent lemma to `-f`. -/
 theorem lineDeriv_descent_ge (h : LipschitzSmoothWith K f) (x y : E) :
     f x + lineDeriv ℝ f x (y - x) - K / 2 * (dist x y) ^ 2 ≤ f y := by
   linarith [(abs_le.mp (h.lineDeriv_norm_le x y)).1]
