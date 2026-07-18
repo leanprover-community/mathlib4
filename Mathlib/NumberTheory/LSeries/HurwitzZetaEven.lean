@@ -183,7 +183,7 @@ lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ if n + a = 0 then 0 else rexp (-π * (n + a) ^ 2 * t))
     (evenKernel a t - if (a : UnitAddCircle) = 0 then 1 else 0) := by
-  haveI := Classical.propDecidable -- speed up instance search for `if / then / else`
+  have := Classical.propDecidable -- speed up instance search for `if / then / else`
   simp_rw [AddCircle.coe_eq_zero_iff, zsmul_one]
   split_ifs with h
   · obtain ⟨k, rfl⟩ := h

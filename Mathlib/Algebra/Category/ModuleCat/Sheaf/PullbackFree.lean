@@ -68,6 +68,7 @@ noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj
 lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.obj.obj X) :
     (unitToPushforwardObjUnit φ).val.app X a = φ.hom.app X a := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma pushforwardSections_unitHomEquiv
     {M : SheafOfModules.{u} R} (f : unit R ⟶ M) :
     pushforwardSections φ (M.unitHomEquiv f) =
@@ -75,8 +76,7 @@ lemma pushforwardSections_unitHomEquiv
         (unitToPushforwardObjUnit φ ≫ (pushforward φ).map f) := by
   ext X
   have := unitToPushforwardObjUnit_val_app_apply φ (X := X) 1
-  dsimp at this ⊢
-  simp +instances [this, map_one]
+  simp [this, map_one]
   rfl
 
 variable [(pushforward.{u} φ).IsRightAdjoint]
