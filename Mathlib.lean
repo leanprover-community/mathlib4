@@ -6434,7 +6434,7 @@ public import Mathlib.RepresentationTheory.Rep.Iso
 public import Mathlib.RepresentationTheory.Rep.Res
 public import Mathlib.RepresentationTheory.Semisimple
 public import Mathlib.RepresentationTheory.Smooth.Basic
-public import Mathlib.RepresentationTheory.Smooth.Induction
+public import Mathlib.RepresentationTheory.Smooth.Res
 public import Mathlib.RepresentationTheory.Smooth.SmRep
 public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.RepresentationTheory.Submodule
