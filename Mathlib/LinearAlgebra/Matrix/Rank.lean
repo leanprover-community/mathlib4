@@ -213,6 +213,16 @@ theorem rank_of_isUnit [DecidableEq n] [CommSemiring R] [StrongRankCondition R] 
   obtain ⟨A, rfl⟩ := h
   exact rank_unit A
 
+theorem rank_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R] [StrongRankCondition R]
+    [Fintype m] [DecidableEq m] {A : Matrix m m R} (hA : A.det ∈ nonZeroDivisors R) :
+    A.rank = Fintype.card m := by
+  rw [rank, LinearMap.finrank_range_of_inj (mulVec_injective_of_det_mem_nonZeroDivisors hA),
+    Module.finrank_eq_card_basis (Pi.basisFun R m)]
+
+theorem rank_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R] [Fintype m] [DecidableEq m]
+    {A : Matrix m m R} (h : A.det ≠ 0) : A.rank = Fintype.card m :=
+  rank_of_det_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero h)
+
 /-- Right multiplying by an invertible matrix does not change the rank -/
 @[simp]
 lemma rank_mul_eq_left_of_isUnit_det {R : Type*} [CommRing R] [DecidableEq n] (A : Matrix n n R)
@@ -223,15 +233,23 @@ lemma rank_mul_eq_left_of_isUnit_det {R : Type*} [CommRing R] [DecidableEq n] (A
   intro v
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
+lemma rank_mul_eq_right_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
+    [Fintype m] [DecidableEq m] (A : Matrix m m R) (B : Matrix m n R)
+    (hA : A.det ∈ nonZeroDivisors R) : (A * B).rank = B.rank := by
+  rw [rank, rank, mulVecLin_mul, LinearMap.range_comp,
+    ← (Submodule.equivMapOfInjective A.mulVecLin
+      (mulVec_injective_of_det_mem_nonZeroDivisors hA) _).finrank_eq]
+
+lemma rank_mul_eq_right_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
+    [Fintype m] [DecidableEq m] (A : Matrix m m R) (B : Matrix m n R) (h : A.det ≠ 0) :
+    (A * B).rank = B.rank :=
+  rank_mul_eq_right_of_det_mem_nonZeroDivisors A B (mem_nonZeroDivisors_of_ne_zero h)
+
 /-- Left multiplying by an invertible matrix does not change the rank -/
 @[simp]
 lemma rank_mul_eq_right_of_isUnit_det {R : Type*} [CommRing R] [Fintype m] [DecidableEq m]
-    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) : (A * B).rank = B.rank := by
-  let b : Basis m R (m → R) := Pi.basisFun R m
-  replace hA : IsUnit (LinearMap.toMatrix b b A.mulVecLin).det := by
-    convert! hA; rw [← LinearEquiv.eq_symm_apply]; rfl
-  have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
-  rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
+    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) : (A * B).rank = B.rank :=
+  rank_mul_eq_right_of_det_mem_nonZeroDivisors A B hA.mem_nonZeroDivisors
 
 /-- Taking a subset of the rows and columns reduces the rank. -/
 theorem rank_submatrix_le [CommSemiring R] [StrongRankCondition R] [Fintype n₀] (A : Matrix m n R)
