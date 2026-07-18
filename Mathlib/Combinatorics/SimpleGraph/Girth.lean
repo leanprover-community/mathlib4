@@ -130,15 +130,16 @@ theorem IsClique.egirth_le_encard {s : Set α} (hs : G.IsClique s) (hcard : 3 �
     G.egirth ≤ s.encard := by
   rcases s.finite_or_infinite with hfin | hinf
   · by_contra! hlt
-    have : 3 ≤ s.ncard := ENat.coe_le_coe.mp <| hcard.trans_eq hfin.cast_ncard_eq.symm
+    have : 3 ≤ s.ncard := ENat.natCast_le_natCast.mp <| hcard.trans_eq hfin.cast_ncard_eq.symm
     have := (free_cycleGraph_of_lt_egirth this <| hfin.cast_ncard_eq.trans_lt hlt).cliqueFree
     exact this hfin.toFinset ⟨by simpa using hs, s.ncard_eq_toFinset_card (hs := hfin).symm⟩
   · simp [hinf]
 
 theorem egirth_ne_three_iff_cliqueFree : G.egirth ≠ 3 ↔ G.CliqueFree 3 := by
   simp_rw [← G.three_le_egirth.lt_iff_ne', ← Nat.cast_ofNat (R := ℕ∞),
-    ← ENat.coe_add_one_le_iff, le_egirth_iff_free_cycleGraph, ENat.lt_coe_add_one_iff,
-    ENat.coe_le_coe, cliqueFree_iff_free_top_fin, completeGraph_eq_top, ← cycleGraph_three_eq_top]
+    ← ENat.natCast_add_one_le_iff, le_egirth_iff_free_cycleGraph, ENat.lt_natCast_add_one_iff,
+    ENat.natCast_le_natCast, cliqueFree_iff_free_top_fin, completeGraph_eq_top,
+    ← cycleGraph_three_eq_top]
   grind
 
 end egirth
@@ -226,16 +227,16 @@ lemma Iso.girth_eq (f : G ≃g G') : G.girth = G'.girth := by
 
 theorem le_girth_iff_free_cycleGraph {k : ℕ} :
     k ≤ G.girth ↔ (k = 0 ∨ ¬G.IsAcyclic) ∧ ∀ n : ℕ, 3 ≤ n → n < k → (cycleGraph n).Free G := by
-  simp_rw [le_girth_iff_coe_le_egirth, and_comm, le_egirth_iff_free_cycleGraph, Nat.cast_lt]
+  simp_rw [le_girth_iff_natCast_le_egirth, and_comm, le_egirth_iff_free_cycleGraph, Nat.cast_lt]
 
 theorem free_cycleGraph_of_lt_girth {n : ℕ} (hle : 3 ≤ n) (hlt : n < G.girth) :
     (cycleGraph n).Free G :=
-  free_cycleGraph_of_lt_egirth hle <| by grw [hlt, ← G.coe_girth_le_egirth]
+  free_cycleGraph_of_lt_egirth hle <| by grw [hlt, ← G.natCast_girth_le_egirth]
 
 theorem IsClique.girth_le_encard {s : Set α} (hs : G.IsClique s) (hcard : 3 ≤ s.ncard) :
     G.girth ≤ s.ncard := by
   have := s.finite_of_ncard_pos <| by lia
-  grw [← Nat.cast_le (α := ℕ∞), G.coe_girth_le_egirth, this.cast_ncard_eq, hs.egirth_le_encard ?_]
+  grw [← Nat.cast_le (α := ℕ∞), G.natCast_girth_le_egirth, this.cast_ncard_eq, hs.egirth_le_encard]
   grw [← Nat.cast_ofNat, hcard, this.cast_ncard_eq]
 
 theorem girth_ne_three_iff_cliqueFree : G.girth ≠ 3 ↔ G.CliqueFree 3 := by
