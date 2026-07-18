@@ -941,10 +941,6 @@ lemma IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := b
 theorem bypass_eq_self_iff_isPath {p : G.Walk u v} : p.bypass = p ↔ p.IsPath :=
   ⟨fun hp ↦ hp ▸ p.bypass_isPath, IsPath.bypass_eq_self⟩
 
-theorem length_bypass_lt_iff_not_isPath {p : G.Walk u v} :
-    p.bypass.length < p.length ↔ ¬p.IsPath := by
-  rw [iff_not_comm, Nat.not_lt, ← bypass_eq_self_iff_isPath, length_le_bypass_length_iff]
-
 theorem darts_toPath_subset_darts (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   p.darts_bypass_subset_darts
 
