@@ -64,11 +64,6 @@ lemma stabilizer_conj (ρ : Representation k G V) (g : G) (v : V) :
     ← Module.End.mul_apply, ← inv_apply_eq_iff, ← map_mul, ← mul_assoc]
   exact ⟨fun h ↦ ⟨_, h, by simp [mul_assoc]⟩, by rintro ⟨y, hy1, rfl⟩; simp [mul_assoc, hy1]⟩
 
-variable {H : Type*} [Group H] (f : H →* G) in
-lemma stabilizer_comap_eq (ρ : Representation k G V) (v : V) :
-    (stabilizer ρ v).comap f = stabilizer (ρ.comp f) v := by
-  ext; simp
-
 section tmul
 
 variable {k : Type*} [CommSemiring k]
