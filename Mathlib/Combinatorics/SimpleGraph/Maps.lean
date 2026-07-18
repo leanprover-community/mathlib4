@@ -608,6 +608,7 @@ def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
 
 @[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induceHomOfLE_toHom :
     (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
   ext; simp
@@ -792,6 +793,7 @@ theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
     (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
   Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
@@ -799,14 +801,12 @@ def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 implies_true]
 
-/-- The isomorphism between `completeBipartiteGraph α₁ β₁` and
-`completeBipartiteGraph α₂ β₂ ` where `α₁ ≃ α₂` and `β₁ ≃ β₂`. -/
-def completeBipartiteGraph.congr {α₁ α₂ β₁ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) :
-    completeBipartiteGraph α₁ β₁ ≃g completeBipartiteGraph α₂ β₂ where
-  toFun := Sum.map hα hβ
-  invFun := Sum.map hα.symm hβ.symm
-  left_inv _ := by simp
-  right_inv _ := by simp
+/-- The isomorphism between `completeBipartiteGraph V₁ W₁` and
+`completeBipartiteGraph V₂ W₂` where `V₁ ≃ V₂` and `W₁ ≃ W₂`. -/
+@[simps!]
+def completeBipartiteGraphCongr {V₁ V₂ W₁ W₂ : Type*} (hV : V₁ ≃ V₂) (hW : W₁ ≃ W₂) :
+    completeBipartiteGraph V₁ W₁ ≃g completeBipartiteGraph V₂ W₂ where
+  __ := hV.sumCongr hW
   map_rel_iff' := by simp
 
 section Finite
@@ -821,17 +821,6 @@ noncomputable def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) :=
 /-- The isomorphism between `G` and `G.overFin hc`. -/
 noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc :=
   .symm <| .comap ..
-
-/-- The isomorphism between `completeBipartiteGraph α β` and
-`completeBipartiteGraph (Fin s) (Fin t)` where `card α = s` and `card β = t`. -/
-noncomputable def completeBipartiteGraph.overFinIso {α β : Type*} [Fintype α] [Fintype β]
-    {s t : ℕ} (hc₁ : Fintype.card α = s) (hc₂ : Fintype.card β = t) :
-    completeBipartiteGraph α β ≃g completeBipartiteGraph (Fin s) (Fin t) where
-  toFun := Sum.map (Fintype.equivFinOfCardEq hc₁) (Fintype.equivFinOfCardEq hc₂)
-  invFun := Sum.map (Fintype.equivFinOfCardEq hc₁).symm (Fintype.equivFinOfCardEq hc₂).symm
-  left_inv _ := by simp
-  right_inv _ := by simp
-  map_rel_iff' := by simp
 
 end Finite
 
