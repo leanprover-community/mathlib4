@@ -943,7 +943,7 @@ theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : F
   let g (i : ℕ) : Finset α := s.image f^[i]
   have (i : ℕ) : 0 < #(g i) := (hs₀.image _).card_pos
   have hg : Antitone g := antitone_nat_of_succ_le <| fun i ↦ by
-    simp_rw [le_iff_subset, g, Function.iterate_succ, ← image_image]
+    simp_rw [g, Function.iterate_succ, ← image_image]
     grw [hs.finsetImage_subset]
   have eq_iff (i j : ℕ) : #(g i) - 1 = #(g j) - 1 ↔ g i = g j := by
     wlog hij : j ≤ i generalizing i j
