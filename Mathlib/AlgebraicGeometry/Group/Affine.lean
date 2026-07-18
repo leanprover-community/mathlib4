@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Bialgebra.TensorProduct
 This file constructs `Spec` as a functor from `R`-Hopf algebras to group schemes over `Spec R`,
 shows it is full and faithful, and has affine group schemes as essential image.
 
-We want to show that Hopf algebras correspond to affine group schemes. This can easily be done
+We want to show that affine group schemes correspond to Hopf algebras. This can easily be done
 categorically assuming both categories on either side are defined thoughtfully. However, the
 categorical version will not be workable with if we do not also have links to the non-categorical
 notions. Therefore, one solution would be to build the left, top and right edges of the following
@@ -25,11 +25,11 @@ diagram so that the bottom edge can be obtained by composing the three.
 ```
   Cogrp Mod_R ≌ Grp AffSch_{Spec R} ≌ Aff Grp Sch_{Spec R}
       ↑ ↓                                      ↑ ↓
-R-Hopf algebras         ≃       Affine group schemes over Spec R
+R-Hopf algebras         ⇄       Affine group schemes over Spec R
 ```
 
 If we do not care about going back from affine group schemes over `Spec R` to `R`-Hopf algebras
-(eg because all our affine group schemes are given as the `Spec` of some algebra), then we can
+(e.g. because all our affine group schemes are given as the `Spec` of some algebra), then we can
 follow the following simpler diagram:
 
 ```
@@ -37,7 +37,7 @@ follow the following simpler diagram:
       ↑ ↓                        ↓
 R-Hopf algebras → Affine group schemes over Spec R
 ```
-where the top `≌` comes from the essentially surjective functor `Cogrp Mod_R ⥤ Grp Sch_{Spec R}`,
+where the top `⥤` comes from the essentially surjective functor `Cogrp Mod_R ⥤ Grp Sch_{Spec R}`,
 so that in particular we do not easily know that its inverse is given by `Γ`.
 -/
 
@@ -60,7 +60,7 @@ are already provided in `Mathlib.Algebra.Category.CommHopfAlgCat`.
 
 ### Top edge: `Spec` as a functor on Hopf algebras
 
-In this section we construct `Spec` as a functor from `R`-Hopf algebras to affine group schemes over
+In this section we bundle `Spec` as a functor from `R`-Hopf algebras to affine group schemes over
 `Spec R`.
 -/
 
@@ -348,7 +348,10 @@ open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 
 variable (R S T) in
 /-- The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
-over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
+over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`.
+
+This is a version of `pullbackSpecIso` stated in terms of `specOverSpec`.
+TODO: Unify with `pullbackSpecIso` once `OverClass` is refactored to not bundle the morphism. -/
 def pullbackSpecIso' [Algebra R T] :
     pullback (Spec (.of S) ↘ Spec (.of R)) (Spec (.of T) ↘ Spec (.of R)) ≅
       Spec (.of <| S ⊗[R] T) := pullbackSpecIso ..
