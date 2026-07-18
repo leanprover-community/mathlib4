@@ -84,26 +84,8 @@ theorem left_notMem_Ioo : a ∉ Ioo a b := by simp
 @[to_dual right_notMem_Ico]
 theorem left_notMem_Ioc : a ∉ Ioc a b := by simp
 
-@[deprecated left_notMem_Ioo (since := "2025-12-26")]
-theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp
-
-@[deprecated left_notMem_Ioc (since := "2025-12-26")]
-theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp
-
 @[to_dual right_mem_Ioc] theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp
 @[to_dual right_mem_Icc] theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp
-
-@[deprecated (since := "2025-12-26")]
-alias left_mem_Ici := self_mem_Ici
-
-@[deprecated right_notMem_Ioo (since := "2025-12-26")]
-theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp
-
-@[deprecated right_notMem_Ico (since := "2025-12-26")]
-theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp
-
-@[deprecated (since := "2025-12-26")]
-alias right_mem_Iic := self_mem_Iic
 
 @[to_dual (attr := simp)]
 theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
@@ -596,22 +578,21 @@ theorem mem_Iic_Iio_of_subset_of_subset {s : Set α} (ho : Iio a ⊆ s) (hc : s 
 
 theorem mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset {s : Set α} (ho : Ioo a b ⊆ s) (hc : s ⊆ Icc a b) :
     s ∈ ({Icc a b, Ico a b, Ioc a b, Ioo a b} : Set (Set α)) := by
-  classical
-    by_cases ha : a ∈ s <;> by_cases hb : b ∈ s
-    · refine Or.inl (Subset.antisymm hc ?_)
-      rwa [← Ico_sdiff_left, sdiff_singleton_subset_iff, insert_eq_of_mem ha, ← Icc_sdiff_right,
-        sdiff_singleton_subset_iff, insert_eq_of_mem hb] at ho
-    · refine Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
-      · rw [← Icc_sdiff_right]
-        exact subset_sdiff_singleton hc hb
-      · rwa [← Ico_sdiff_left, sdiff_singleton_subset_iff, insert_eq_of_mem ha] at ho
-    · refine Or.inr <| Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
-      · rw [← Icc_sdiff_left]
-        exact subset_sdiff_singleton hc ha
-      · rwa [← Ioc_sdiff_right, sdiff_singleton_subset_iff, insert_eq_of_mem hb] at ho
-    · refine Or.inr <| Or.inr <| Or.inr <| Subset.antisymm ?_ ho
-      rw [← Ico_sdiff_left, ← Icc_sdiff_right]
-      apply_rules [subset_sdiff_singleton]
+  by_cases ha : a ∈ s <;> by_cases hb : b ∈ s
+  · refine Or.inl (Subset.antisymm hc ?_)
+    rwa [← Ico_sdiff_left, sdiff_singleton_subset_iff, insert_eq_of_mem ha, ← Icc_sdiff_right,
+      sdiff_singleton_subset_iff, insert_eq_of_mem hb] at ho
+  · refine Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
+    · rw [← Icc_sdiff_right]
+      exact subset_sdiff_singleton hc hb
+    · rwa [← Ico_sdiff_left, sdiff_singleton_subset_iff, insert_eq_of_mem ha] at ho
+  · refine Or.inr <| Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
+    · rw [← Icc_sdiff_left]
+      exact subset_sdiff_singleton hc ha
+    · rwa [← Ioc_sdiff_right, sdiff_singleton_subset_iff, insert_eq_of_mem hb] at ho
+  · refine Or.inr <| Or.inr <| Or.inr <| Subset.antisymm ?_ ho
+    rw [← Ico_sdiff_left, ← Icc_sdiff_right]
+    apply_rules [subset_sdiff_singleton]
 
 @[to_dual]
 theorem eq_left_or_mem_Ioo_of_mem_Ico {x : α} (hmem : x ∈ Ico a b) : x = a ∨ x ∈ Ioo a b :=
