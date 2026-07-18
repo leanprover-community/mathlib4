@@ -208,6 +208,7 @@ example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
     PseudoMetricSpace.toUniformSpace := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   erw [WithLp.norm_seminormedAddCommGroupToProd]
   rw [WithLp.prod_norm_eq_add (by norm_num)]
@@ -227,6 +228,7 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   norm_mul_le
   | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by

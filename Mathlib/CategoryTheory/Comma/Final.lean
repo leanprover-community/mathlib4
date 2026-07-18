@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 namespace Comma
 
-open Limits Functor CostructuredArrow
+open Limits CategoryTheory.Functor CostructuredArrow
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
@@ -158,7 +158,7 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v
     {G : B ⥤ B'} {H : T ⥤ T'} (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H) [IsFiltered B]
     [R.Final] [R'.Final] [F.Final] [G.Final] :
     (Comma.map iL.hom iR.inv).Final := ⟨fun ⟨i₂, j₂, u₂⟩ => by
-  haveI := final_of_natIso iR
+  have := final_of_natIso iR
   rw [isConnected_iff_of_equivalence (StructuredArrow.commaMapEquivalence iL.hom iR.inv _)]
   have : StructuredArrow.map₂ u₂ iR.hom ≅ StructuredArrow.post j₂ G R' ⋙
       StructuredArrow.map₂ (G := 𝟭 _) (F := 𝟭 _) (R' := R ⋙ H) u₂ iR.hom ⋙
@@ -171,7 +171,7 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v
     isoWhiskerLeft _ ((StructuredArrow.map₂CompMap₂Iso _ _ _ _).symm ≪≫
       isoWhiskerLeft _ (StructuredArrow.preIsoMap₂ _ _ _).symm) ≪≫
     isoWhiskerRight (StructuredArrow.postIsoMap₂ j₂ G R').symm _
-  haveI := final_of_natIso this.symm
+  have := final_of_natIso this.symm
   rw [IsIso.Iso.inv_inv]
   infer_instance⟩
 
@@ -190,6 +190,7 @@ lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
   have := L.initial_iff_isCofiltered_costructuredArrow.mp inferInstance
   exact isCofiltered_of_isCofiltered_costructuredArrow L R
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the
 projection `snd L R : Comma L R ⥤ B` is final. -/
 instance final_snd [IsFiltered A] [IsFiltered B] [R.Final] : (snd L R).Final := by

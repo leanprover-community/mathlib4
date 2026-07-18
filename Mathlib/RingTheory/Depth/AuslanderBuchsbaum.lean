@@ -350,7 +350,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
             rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
               (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
             apply ext_subsingleton_of_lt_moduleDepth
-            exact lt_of_lt_of_eq (ENat.coe_lt_top (i + 1)) eqtop.symm
+            exact lt_of_lt_of_eq (ENat.natCast_lt_top (i + 1)) eqtop.symm
           simp [M_depth_eqtop, eqtop]
         · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨k, hk⟩
           simp only [← hk, gt_iff_lt, Nat.cast_pos] at depth_pos
@@ -358,7 +358,8 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
           have : IsLocalRing.depth M = (k - 1 : ℕ) := by
             simp only [IsLocalRing.depth, Ideal.depth, moduleDepth_eq_iff]
             have lt : (k - 1 : ℕ) + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
-              simp only [← h_ker', ← ENat.coe_one, ← ENat.coe_add, eq, ← hk, ENat.coe_lt_coe]
+              simp only [← h_ker', ← ENat.natCast_one, ← ENat.natCast_add, eq, ← hk,
+                ENat.natCast_lt_natCast]
               omega
             refine ⟨?_, fun i hi ↦ ?_⟩
             · have := ext_iso (k - 1) lt
@@ -366,11 +367,11 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
                 (Eq.refl (k - 1 + 1))))).addCommGroupIsoToAddEquiv.nontrivial_congr, eq]
               exact ((moduleDepth_eq_iff _ _ k).mp hk.symm).1
             · have := ext_iso i (lt_trans ((WithTop.add_lt_add_iff_right WithTop.one_ne_top).mpr
-                (ENat.coe_lt_coe.mpr hi)) lt)
+                (ENat.natCast_lt_natCast.mpr hi)) lt)
               rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                 (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
               exact ((moduleDepth_eq_iff _ _ k).mp hk.symm).2 _ (Nat.add_lt_of_lt_sub hi)
-          simpa [hk, this] using ENat.coe_inj.mpr eq.symm
+          simpa [hk, this] using ENat.natCast_inj.mpr eq.symm
       rw [hn, Nat.cast_add, Nat.cast_one, add_assoc, add_comm 1, ← WithBot.coe_one,
         ← WithBot.coe_add, ← eq_add1, ← projdim]
       exact h_ker

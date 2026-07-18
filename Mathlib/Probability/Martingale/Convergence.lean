@@ -198,7 +198,7 @@ theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : S
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) :
     ∀ᵐ ω ∂μ.trim (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
-  letI := (⨆ n, ℱ n)
+  let := (⨆ n, ℱ n)
   rw [ae_iff, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
   · exact MeasurableSet.compl <| measurableSet_exists_tendsto
@@ -381,7 +381,7 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aestronglyMeasurable
     stronglyMeasurable_limitProcess.aestronglyMeasurable
   have hpi : IsPiSystem {s | ∃ n, MeasurableSet[ℱ n] s} := by
-    rw [Set.setOf_exists]
+    rw [Set.ofPred_exists]
     exact isPiSystem_iUnion_of_monotone _ (fun n ↦ (ℱ n).isPiSystem_measurableSet) fun _ _ ↦ ℱ.mono
   induction s, hs
     using MeasurableSpace.induction_on_inter (MeasurableSpace.measurableSpace_iSup_eq ℱ) hpi with
