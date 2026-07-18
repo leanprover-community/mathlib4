@@ -232,12 +232,12 @@ restriction to `ker(I/I² → ⊕ S dyᵢ)` is the connecting homomorphism in th
 noncomputable
 def δAux :
     Q.Ring →ₗ[R] T ⊗[S] Ω[S⁄R] :=
-  Finsupp.lsum R (R := R) fun f ↦
-    (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap
+  Finsupp.lsum R (R := R) (fun f ↦
+    (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap)
+    ∘ₗ (AddMonoidAlgebra.coeffLinearEquiv _).toLinearMap
 
 lemma δAux_monomial (n r) :
-    δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r :=
-  Finsupp.lsum_single _ _ _ _
+    δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r := by simp [δAux]
 
 @[simp]
 lemma δAux_X (i) :
@@ -267,7 +267,7 @@ variable {Q} {Q'} in
 lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
@@ -289,7 +289,7 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s =>
@@ -392,6 +392,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
   apply SnakeLemma.δ_eq
   exacts [hy, hz]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δAux (x : Q.ker) (hx) :
     δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
@@ -415,11 +416,13 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_C {r : S} (hr : C r ∈ Q.ker) :
     δ Q P ⟨Extension.Cotangent.mk ⟨C r, hr⟩, Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
       = 1 ⊗ₜ[S] D R S r := by
   rw [δ_eq_δAux, δAux_C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δ : δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -437,7 +440,7 @@ lemma exact_map_δ :
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   change δ _ _ ⟨_, _⟩ = δ _ _ _
@@ -461,6 +464,7 @@ lemma exact_map_δ' (f : Hom W Q) :
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
 
+set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 lemma liftBaseChange_range_le :
     (liftBaseChange T (Extension.H1Cotangent.map (Q.toComp P).toExtensionHom)).range ≤
@@ -475,6 +479,7 @@ lemma liftBaseChange_range_le :
     x_in, RingHom.map_zero]
   exact Ideal.zero_mem _
 
+set_option backward.isDefEq.respectTransparency.types false in
 private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
     LinearMap.liftBaseChange T (Extension.Cotangent.map (Q.toComp P).toExtensionHom)
       ((LinearMap.lTensor T Extension.h1Cotangentι) z) ∈
@@ -484,6 +489,7 @@ private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
   | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
   | add x y hx hy => simpa using Submodule.add_mem _ hx hy
 
+set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 /-- When $T$ is flat over $S$, the left bottom part of the snake lemma diagram used in
 the construction of the connecting homomorphism `Algebra.Generators.H1Cotangent.δ`

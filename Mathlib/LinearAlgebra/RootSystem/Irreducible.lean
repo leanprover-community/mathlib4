@@ -219,7 +219,7 @@ lemma exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule
     (hq : ∀ i, q ∈ invtSubmodule (P.reflection i)) :
     ∃ Φ : Set ι, (∀ i ∈ Φ, ¬ Disjoint q (R ∙ P.root i)) ∧ (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) := by
   refine ⟨{i | ¬ Disjoint q (R ∙ P.root i)}, by simp, fun i hi ↦ ?_⟩
-  simp only [mem_setOf_eq, not_not] at hi
+  simp only [mem_ofPred_eq, not_not] at hi
   rw [← Submodule.mem_invtSubmodule_reflection_iff (by simp) hi]
   exact hq i
 
