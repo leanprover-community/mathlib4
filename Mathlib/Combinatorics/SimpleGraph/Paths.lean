@@ -370,6 +370,19 @@ theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.Is
 theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
   hp.take _
 
+theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) :
+    (p.drop n).IsPath := by
+  replace h : (p.drop 1).IsPath := h.isPath_tail
+  rw [← Nat.add_sub_of_le hn, drop_add_eq]
+  simp [h.drop (n - 1)]
+
+theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
+    (p.take n).IsPath := by
+  replace h : (p.take (p.length - 1)).IsPath := h.isPath_dropLast
+  suffices ((p.take (p.length - 1)).take n).IsPath by
+    rwa [take_take, isPath_copy, show min (p.length - 1) n = n by omega] at this
+  exact h.take n
+
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
     [Finite G.edgeSet] :
@@ -417,7 +430,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
   induction p generalizing n m with
   | nil => simp_all
   | @cons v w u h p ihp =>
-    simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
+    simp only [length_cons, Set.mem_ofPred_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
     · lia
     · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
@@ -435,7 +448,7 @@ lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.
     p.getVert i = u ↔ i = 0 := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases h' : i ≤ p.length
-  · apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
+  · apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
     simp [h]
   · rw [p.getVert_of_length_le (le_of_not_ge h')] at h
     subst h
@@ -464,7 +477,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
     rw [cons_isPath_iff]
     refine ⟨ih (by
       intro n hn m hm hnm
-      simp only [Set.mem_setOf_eq] at hn hm
+      simp only [Set.mem_ofPred_eq] at hn hm
       have := hinj
         (by rw [length_cons]; lia : n + 1 ≤ (q.cons h).length)
         (by rw [length_cons]; lia : m + 1 ≤ (q.cons h).length)
@@ -646,7 +659,7 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
   rw [getVert_takeUntil hw hnl] at hn
   have := p.length_takeUntil_lt_length hw h.symm
-  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by simp)
+  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
   lia
 
@@ -1121,6 +1134,7 @@ namespace Walk
 variable {G} {u v : V} {H : SimpleGraph V}
 variable {p : G.Walk u v}
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     (p.transfer H hp).IsPath := by
   induction p with
@@ -1129,6 +1143,7 @@ protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
     (q.transfer H hq).IsCycle := by
   cases q with

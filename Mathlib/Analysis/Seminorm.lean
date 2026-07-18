@@ -488,7 +488,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
           rcases h with ⟨q, hq⟩
           obtain rfl | h := s.eq_empty_or_nonempty
           · simp [Real.iSup_of_isEmpty]
-          haveI : Nonempty ↑s := h.coe_sort
+          have : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
           refine ciSup_le fun i =>
             ((i : Seminorm 𝕜 E).add_le' x y).trans <| add_le_add
@@ -555,7 +555,7 @@ protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
 set_option backward.privateInPublic true in
 private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
-  refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
+  refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> have : Nonempty ↑s := hs₂.coe_sort <;>
     dsimp <;> rw [Seminorm.coe_sSup_eq hs₁, iSup_apply]
   · rcases hs₁ with ⟨q, hq⟩
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
@@ -656,11 +656,11 @@ theorem closedBall_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ
 
 theorem ball_sup (p : Seminorm 𝕜 E) (q : Seminorm 𝕜 E) (e : E) (r : ℝ) :
     ball (p ⊔ q) e r = ball p e r ∩ ball q e r := by
-  simp_rw [ball, ← Set.setOf_and, coe_sup, Pi.sup_apply, sup_lt_iff]
+  simp_rw [ball, ← Set.ofPred_and, coe_sup, Pi.sup_apply, sup_lt_iff]
 
 theorem closedBall_sup (p : Seminorm 𝕜 E) (q : Seminorm 𝕜 E) (e : E) (r : ℝ) :
     closedBall (p ⊔ q) e r = closedBall p e r ∩ closedBall q e r := by
-  simp_rw [closedBall, ← Set.setOf_and, coe_sup, Pi.sup_apply, sup_le_iff]
+  simp_rw [closedBall, ← Set.ofPred_and, coe_sup, Pi.sup_apply, sup_le_iff]
 
 theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E) (r : ℝ) :
     ball (s.sup' H p) e r = s.inf' H fun i => ball (p i) e r := by
@@ -725,12 +725,12 @@ lemma closedBall_eq_metric :
 
 /-- The image of a ball under addition with a singleton is another ball. -/
 theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
   simp [ball_eq_metric]
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
 theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
   simp [closedBall_eq_metric]
 
 end SMul
@@ -744,22 +744,22 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 theorem ball_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).ball x r = f ⁻¹' p.ball (f x) r := by
   ext
-  simp_rw [ball, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
+  simp_rw [ball, mem_preimage, comp_apply, Set.mem_ofPred_eq, map_sub]
 
 theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) (x : E) (r : ℝ) :
     (p.comp f).closedBall x r = f ⁻¹' p.closedBall (f x) r := by
   ext
-  simp_rw [closedBall, mem_preimage, comp_apply, Set.mem_setOf_eq, map_sub]
+  simp_rw [closedBall, mem_preimage, comp_apply, Set.mem_ofPred_eq, map_sub]
 
 variable (p : Seminorm 𝕜 E)
 
 theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
-  simp only [mem_setOf, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
+  simp only [mem_ofPred, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
 
 theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
-  simp only [mem_setOf, mem_preimage, mem_closedBall_zero_iff,
+  simp only [mem_ofPred, mem_preimage, mem_closedBall_zero_iff,
     Real.norm_of_nonneg (apply_nonneg p _)]
 
 theorem ball_zero_eq_preimage_ball {r : ℝ} : p.ball 0 r = p ⁻¹' Metric.ball 0 r := by
@@ -797,13 +797,13 @@ theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) :=
 theorem ball_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 < r) : ball (s.sup p) x r = ⋂ i ∈ s, ball (p i) x r := by
   lift r to NNReal using hr.le
-  simp_rw [ball, iInter_setOf, finset_sup_apply, NNReal.coe_lt_coe,
+  simp_rw [ball, iInter_ofPred, finset_sup_apply, NNReal.coe_lt_coe,
     Finset.sup_lt_iff (show ⊥ < r from hr), ← NNReal.coe_lt_coe, NNReal.coe_mk]
 
 theorem closedBall_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 ≤ r) : closedBall (s.sup p) x r = ⋂ i ∈ s, closedBall (p i) x r := by
   lift r to NNReal using hr
-  simp_rw [closedBall, iInter_setOf, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
+  simp_rw [closedBall, iInter_ofPred, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
     NNReal.coe_le_coe, NNReal.coe_mk]
 
 theorem ball_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 < r) :
@@ -1093,8 +1093,8 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [IsUni
 
 protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
-  letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  let := IsTopologicalAddGroup.rightUniformSpace E
+  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
 /-- A seminorm is uniformly continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1177,7 +1177,7 @@ theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
-  have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
+  have : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
   simpa only [p.ball_zero_eq] using! this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis

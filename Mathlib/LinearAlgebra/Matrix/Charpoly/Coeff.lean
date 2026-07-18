@@ -393,6 +393,7 @@ lemma det_piecewise_one_eq_submatrix_det
     · simp only [Finset.piecewise, if_neg i.prop, Matrix.one_apply, Subtype.ext_iff]
   rw [h_blocks, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, mul_one]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The k-th coefficient of `det (1 + X • M)` equals the sum of all k×k principal minors of M.
 This generalizes `coeff_det_one_add_X_smul_one` (the k = 1 case, which gives the trace)
 and `det_eq_sign_charpoly_coeff` (the k = n case, which gives the determinant). -/
