@@ -23,6 +23,8 @@ variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [Nontri
   [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ]
   {f : E →ₛₗ[σ] F}
 
+#check Filter.IsBoundedUnder.smul_tendsto_zero_normedSpace
+
 variable (𝕜₁) in
 private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
     ∃ d : E → 𝕜₁, (∀ x, ‖d x‖ ≤ 1) ∧ (∀ x, d x • x ∈ V) ∧
@@ -39,11 +41,23 @@ private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
   set k : E → ℕ := fun x ↦ Nat.find (cover x)
   set d : E → 𝕜₁ := fun x ↦ c ^ (k x)
   set p : E → E := fun x ↦ d x • x
+  have norm_d : ∀ x, ‖d x‖ ≤ 1 := fun x ↦ by simpa [d] using pow_le_one₀ hc₀.le hc₁.le
+  have p_mem : ∀ x, p x ∈ V := fun x ↦ Nat.find_spec (cover x)
+  use d, norm_d, p_mem
+  refine le_antisymm ?_ ?_
+  · rw [← tendsto_iff_comap]
+    suffices p =ᶠ[𝓝 0] id from tendsto_id.congr' this.symm
+    have k_eqOn_V : ∀ x ∈ V, k x = 0 := fun x ↦ by simp [k]
+    have p_eqOn_V : ∀ x ∈ V, p x = x := fun x hx ↦ by simp [p, d, k_eqOn_V x hx]
+    filter_upwards [V_mem] using p_eqOn_V
+  · rw [← tendsto_id']
+    suffices p =ᶠ[comap p (𝓝 0)] id from tendsto_comap.congr' this
+    have k_eqOn_preimage_cV : ∀ x ∈ p ⁻¹' (c • V), k x = 0 := fun x (hx₁ : p x ∈ c • V) ↦ by
 
-  sorry
+    sorry
 
-private lemma LinearMap.isInducing_of_restrict_nhds_zero_of_balanced_final {V : Set E} (V_mem : V ∈ 𝓝 0)
-    (H : IsInducing (Set.restrict V f)) : IsInducing f := by
+lemma LinearMap.isInducing_of_restrict_nhds_zero_new {V : Set E}
+    (V_mem : V ∈ 𝓝 0) (H : IsInducing (Set.restrict V f)) : IsInducing f := by
   replace H : comap f (𝓝 0) ⊓ 𝓟 V = 𝓝 0 := by
     set o : V := ⟨0, mem_of_mem_nhds V_mem⟩
     set f' : V → F := Set.restrict V f
@@ -62,7 +76,8 @@ private lemma LinearMap.isInducing_of_restrict_nhds_zero_of_balanced_final {V : 
   have : comap f (𝓝 0) ≤ comap p (comap f (𝓝 0)) := by
     have : f ∘ p = (σ ∘ d) • f := by ext; simp [p]
     rw [comap_comap, ← tendsto_iff_comap, this]
-    sorry
+    refine IsBoundedUnder.smul_tendsto_zero ?_ tendsto_comap
+    exact isBoundedUnder_of ⟨1, fun x ↦ by simpa using norm_d x⟩
   calc comap f (𝓝 0)
     _ ≤ comap p (comap f (𝓝 0)) := this
     _ = comap p (comap f (𝓝 0) ⊓ 𝓟 (Set.range p)) := by rw [comap_inf_principal_range]
@@ -106,8 +121,8 @@ private lemma LinearMap.isInducing_of_restrict_nhds_zero_of_balanced {V : Set E}
     sorry
   sorry
 
-private lemma LinearMap.isInducing_of_restrict_nhds_zero_of_balanced_old {V : Set E} (V_mem : V ∈ 𝓝 0)
-    (V_bal : Balanced 𝕜₁ V) (H : IsInducing (Set.restrict V f)) : IsInducing f := by
+lemma LinearMap.isInducing_of_restrict_nhds_zero_old {V : Set E} (V_mem : V ∈ 𝓝 0)
+    (H : IsInducing (Set.restrict V f)) : IsInducing f := by
   classical
   replace H : comap f (𝓝 0) ⊓ 𝓟 V = 𝓝 0 := by
     set o : V := ⟨0, mem_of_mem_nhds V_mem⟩
@@ -140,10 +155,24 @@ private lemma LinearMap.isInducing_of_restrict_nhds_zero_of_balanced_old {V : Se
       rwa [pow_sub₀ c c_ne (by simpa [k]), pow_one, mul_comm, mul_smul,
         ← mem_smul_set_iff_inv_smul_mem₀ c_ne]
     exact Nat.find_min (cover x) (by simpa [k]) this
+  have p_tendsto : Tendsto p (comap f (𝓝 0)) (comap f (𝓝 0)) := by
+    have : f ∘ p = (fun x ↦ (σ c) ^ (k x) • f x) := by ext; simp [p]
+    rw [tendsto_comap_iff, this]
+    refine IsBoundedUnder.smul_tendsto_zero ?_ tendsto_comap
+    exact isBoundedUnder_of ⟨1, fun x ↦ by simpa using pow_le_one₀ hc₀.le hc₁.le⟩
   suffices map p 𝓕 ≤ ⊥ by rwa [le_bot_iff, map_eq_bot_iff] at this
-  -- have h₁ : map p 𝓕 ≤
-  sorry
-
-lemma isInducing_of_restrict_nhds_zero {V : Set E} (V_mem : V ∈ 𝓝 0)
-    (H : IsInducing (Set.restrict V f)) : IsInducing f :=
-  sorry
+  have h₁ : map p 𝓕 ≤ 𝓟 (c • V)ᶜ :=
+    calc map p 𝓕
+      _ ≤ map p (𝓟 Vᶜ) := map_mono inf_le_right
+      _ ≤ 𝓟 (c • V)ᶜ := p_mapsto.tendsto
+  have h₂ : map p 𝓕 ≤ 𝓟 (c • V) :=
+    calc map p 𝓕
+      _ ≤ map p (comap f (𝓝 0)) := map_mono inf_le_left
+      _ ≤ map p (comap p (comap f (𝓝 0))) := map_mono (by rwa [← tendsto_iff_comap])
+      _ = comap f (𝓝 0) ⊓ 𝓟 (Set.range p) := by rw [map_comap]
+      _ ≤ comap f (𝓝 0) ⊓ 𝓟 V := by gcongr; simpa [range_subset_iff]
+      _ = 𝓝 0 := by rw [H]
+      _ ≤ 𝓟 (c • V) := by simpa [set_smul_mem_nhds_zero_iff c_ne]
+  calc map p 𝓕
+    _ ≤ 𝓟 (c • V)ᶜ ⊓ 𝓟 (c • V) := le_inf h₁ h₂
+    _ = ⊥ := by simp
