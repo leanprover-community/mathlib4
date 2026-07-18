@@ -229,10 +229,19 @@ theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
 instance : AddCommMonoid (Derivation R A M) :=
   coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
+/-- `coe` as an `AddMonoidHom`. -/
+def coeAddMonoidHom : Derivation R A M →+ A →ₗ[R] M where
+  toFun := (↑)
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+@[simp]
+lemma coeAddMonoidHom_apply (D : Derivation R A M) : coeAddMonoidHom D = D := rfl
+
 /-- `coeFn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   toFun := (⇑)
-  map_zero' := coe_zero
+  map_zero' := rfl
   map_add' := coe_add
 
 @[simp]
@@ -250,6 +259,14 @@ instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M)
 
 instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
+
+theorem coe_sum_linear_maps {ι : Type*} (t : Finset ι) (f : ι → (Derivation R A M)) :
+    ↑(∑ i ∈ t, f i) = ∑ i ∈ t, (f i : A →ₗ[R] M) := _root_.map_sum coeAddMonoidHom f t
+
+theorem sum_apply {ι : Type*} (t : Finset ι) (f : ι → (Derivation R A M)) (a : A) :
+    (∑ i ∈ t, f i) a = ∑ i ∈ t, (f i a) := by
+  rw [← Derivation.coeFn_coe, Derivation.coe_sum_linear_maps, LinearMap.sum_apply]
+  simp
 
 end Scalar
 
@@ -331,6 +348,10 @@ def compAlgebraMapL [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
   toFun d := d.compAlgebraMap A
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+theorem leibniz_smul' [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
+    [IsScalarTower R B M] (d : Derivation R B M) (a : A) (b : B) :
+    d (a • b) = a • (d b) + b • (d.compAlgebraMapL R A B M a) := by simp [Algebra.smul_def]
 
 section RestrictScalars
 
