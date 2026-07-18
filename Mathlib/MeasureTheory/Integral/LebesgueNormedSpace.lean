@@ -37,7 +37,7 @@ theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedS
       rw [ha this]
     · filter_upwards [ae_restrict_mem A.compl]
       intro x hx
-      simp only [Classical.not_not, mem_setOf_eq, mem_compl_iff] at hx
+      simp only [Classical.not_not, mem_ofPred_eq, mem_compl_iff] at hx
       simp [hx]
   · rintro ⟨g', g'meas, hg'⟩
     refine ⟨fun x => (f x : ℝ)⁻¹ • g' x, hf.coe_nnreal_real.inv.smul g'meas, ?_⟩
