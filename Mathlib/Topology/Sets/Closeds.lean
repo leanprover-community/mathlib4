@@ -43,7 +43,7 @@ namespace Closeds
 
 instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (Closeds α) := fast_instance% .ofSetLike (Closeds α) α
 
@@ -183,7 +183,7 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
   iInf_def _
 
 /-- Closed sets in a topological space form a coframe. -/
-@[implicit_reducible]
+@[instance_reducible]
 def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
   iInf_sup_le_sup_sInf a s :=
     (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
@@ -193,10 +193,6 @@ instance instCoframe : Coframe (Closeds α) := fast_instance% .ofMinimalAxioms c
 @[simps]
 instance [T1Space α] : Singleton α (Closeds α) where
   singleton x := ⟨{x}, isClosed_singleton⟩
-
-/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
-@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
-abbrev singleton [T1Space α] (x : α) : Closeds α := {x}
 
 @[simp]
 theorem mk_singleton [T1Space α] {x : α} :
@@ -320,7 +316,7 @@ namespace Clopens
 
 instance : SetLike (Clopens α) α where
   coe s := s.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (Clopens α) := fast_instance% .ofSetLike (Clopens α) α
 
@@ -408,7 +404,7 @@ namespace IrreducibleCloseds
 
 instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (IrreducibleCloseds α) := fast_instance% .ofSetLike (IrreducibleCloseds α) α
 
@@ -435,10 +431,6 @@ theorem coe_mk (s : Set α) (h : IsIrreducible s) (h' : IsClosed s) : (mk s h h'
 @[simps]
 instance [T1Space α] : Singleton α (IrreducibleCloseds α) where
   singleton x := ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
-
-/-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
-@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
-abbrev singleton [T1Space α] (x : α) : IrreducibleCloseds α := {x}
 
 @[simp]
 theorem mk_singleton [T1Space α] {x : α} :
@@ -517,6 +509,30 @@ lemma map_injective_of_isInducing {f : β → α} (hf : IsInducing f) :
 lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
     StrictMono (map f hf.continuous) :=
   Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Given `f : U → X` a continuous open embedding, the irreducible closeds of `U` are order isomorphic
+to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
+-/
+noncomputable
+def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
+    IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
+  toFun T := ⟨map f h.continuous T, nonempty_preimage_closure_image h.continuous T T.2.nonempty⟩
+  invFun V :=
+    { carrier := f ⁻¹' V
+      isIrreducible' := ⟨V.2, V.1.2.isPreirreducible.preimage h⟩
+      isClosed' := V.1.3.preimage h.continuous }
+  left_inv V := by
+    ext
+    simp [h.isOpenMap.preimage_closure_image h.injective h.continuous _ V.isClosed]
+  right_inv V := by
+    ext
+    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.2 V.1.2.2 V.1.3]
+  map_rel_iff' {a b} := by
+    refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
+    simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,
+      b.isClosed.closure_eq] using Set.preimage_mono (f := f) hle
 
 end IrreducibleCloseds
 

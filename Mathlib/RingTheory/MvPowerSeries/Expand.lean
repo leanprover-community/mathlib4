@@ -136,19 +136,20 @@ theorem coeff_expand_of_not_dvd (φ : MvPowerSeries σ R) {m : σ →₀ ℕ} {i
     contradiction
   simp [meq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem support_expand_subset (φ : MvPowerSeries σ R) :
     (expand p hp φ).support ⊆ φ.support.image (p • ·) := by
   intro d hd
   have : ∀ i, p ∣ d i := fun _ => by_contra fun hc => hd (coeff_expand_of_not_dvd p hp φ hc)
-  letI m := d.mapRange (fun n => n / p) (Nat.zero_div p)
+  let m := d.mapRange (fun n => n / p) (Nat.zero_div p)
   have eq_aux : p • m = d := (Finsupp.ext fun a => Nat.eq_mul_of_div_eq_right (this a) rfl).symm
   rw [Function.mem_support, ← eq_aux, ← coeff_apply (expand p hp φ), coeff_expand_smul,
     coeff_apply] at hd
   exact ⟨m, hd, eq_aux⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem support_expand (φ : MvPowerSeries σ R) :
     (expand p hp φ).support = φ.support.image (p • ·) := by
-  classical
   refine (support_expand_subset p hp φ).antisymm ?_
   intro d hd
   obtain ⟨n, hn₁, hn₂⟩ := hd
@@ -235,14 +236,14 @@ theorem map_frobenius_expand {f : MvPowerSeries σ R} :
   rw [eq_iff_frequently_trunc'_eq, Filter.frequently_atTop]
   intro n
   use (p • n)
-  refine ⟨le_self_nsmul (zero_le n) hp, ?_⟩
+  refine ⟨le_self_nsmul zero_le hp, ?_⟩
   · have : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
       MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
       simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
       congr
     rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
       (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
-        trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul (zero_le n) hp)]
+        trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul zero_le hp)]
 
 theorem map_iterateFrobenius_expand (f : MvPowerSeries σ R) (n : ℕ) :
     map (iterateFrobenius R p n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by

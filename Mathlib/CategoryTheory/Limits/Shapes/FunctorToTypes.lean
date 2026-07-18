@@ -36,31 +36,34 @@ section prod
 @[simps obj map]
 def prod : C ⥤ Type w where
   obj a := F.obj a × G.obj a
-  map f := TypeCat.ofHom (fun a ↦ (F.map f a.1, G.map f a.2))
+  map f := ↾fun a ↦ (F.map f a.1, G.map f a.2)
 
 variable {F G}
 
 /-- The first projection of `prod F G`, onto `F`. -/
 @[simps app]
 def prod.fst : prod F G ⟶ F where
-  app _ := TypeCat.ofHom (fun a ↦ a.1)
+  app _ := ↾fun a ↦ a.1
 
 /-- The second projection of `prod F G`, onto `G`. -/
 @[simps app]
 def prod.snd : prod F G ⟶ G where
-  app _ := TypeCat.ofHom (fun a ↦ a.2)
+  app _ := ↾fun a ↦ a.2
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given natural transformations `F ⟶ F₁` and `F ⟶ F₂`, construct
 a natural transformation `F ⟶ prod F₁ F₂`. -/
 @[simps]
 def prod.lift {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     F ⟶ prod F₁ F₂ where
-  app x := TypeCat.ofHom fun y ↦ ⟨τ₁.app x y, τ₂.app x y⟩
+  app x := ↾fun y ↦ ⟨τ₁.app x y, τ₂.app x y⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma prod.lift_fst {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     prod.lift τ₁ τ₂ ≫ prod.fst = τ₁ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma prod.lift_snd {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     prod.lift τ₁ τ₂ ≫ prod.snd = τ₂ := rfl
@@ -72,6 +75,7 @@ variable (F G)
 def binaryProductCone : BinaryFan F G :=
   BinaryFan.mk prod.fst prod.snd
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `prod F G` is a limit cone. -/
 @[simps]
 def binaryProductLimit : IsLimit (binaryProductCone F G) where
@@ -81,6 +85,7 @@ def binaryProductLimit : IsLimit (binaryProductCone F G) where
     simp only [← h ⟨WalkingPair.right⟩, ← h ⟨WalkingPair.left⟩]
     congr
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `prod F G` is a binary product for `F` and `G`. -/
 def binaryProductLimitCone : Limits.LimitCone (pair F G) :=
   ⟨_, binaryProductLimit F G⟩
@@ -89,10 +94,12 @@ def binaryProductLimitCone : Limits.LimitCone (pair F G) :=
 noncomputable def binaryProductIso : F ⨯ G ≅ prod F G :=
   limit.isoLimitCone (binaryProductLimitCone F G)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma binaryProductIso_hom_comp_fst :
     (binaryProductIso F G).hom ≫ prod.fst = Limits.prod.fst := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma binaryProductIso_hom_comp_snd :
     (binaryProductIso F G).hom ≫ prod.snd = Limits.prod.snd := rfl
@@ -127,11 +134,13 @@ noncomputable
 def prodMk {a : C} (x : F.obj a) (y : G.obj a) : (F ⨯ G).obj a :=
   ((binaryProductIso F G).inv).app a ⟨x, y⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma prodMk_fst {a : C} (x : F.obj a) (y : G.obj a) :
     (Limits.prod.fst (X := F)).app a (prodMk x y) = x := by
   simp [prodMk]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma prodMk_snd {a : C} (x : F.obj a) (y : G.obj a) :
     (Limits.prod.snd (X := F)).app a (prodMk x y) = y := by
@@ -143,6 +152,7 @@ lemma prod_ext {a : C} (z w : (prod F G).obj a) (h1 : z.1 = w.1) (h2 : z.2 = w.2
 
 variable (F G)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `(F ⨯ G).obj a` is in bijection with the product of `F.obj a` and `G.obj a`. -/
 @[simps]
 noncomputable
@@ -152,6 +162,7 @@ def binaryProductEquiv (a : C) : (F ⨯ G).obj a ≃ (F.obj a) × (G.obj a) wher
   left_inv _ := by simp [-prod_obj, prodMk]
   right_inv _ := by simp [-prod_obj, prodMk]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma prod_ext' (a : C) (z w : (F ⨯ G).obj a)
     (h1 : (Limits.prod.fst (X := F)).app a z = (Limits.prod.fst (X := F)).app a w)
@@ -168,7 +179,7 @@ section coprod
 @[simps obj map]
 def coprod : C ⥤ Type w where
   obj a := F.obj a ⊕ G.obj a
-  map f := TypeCat.ofHom (Sum.map (F.map f) (G.map f))
+  map f := ↾(Sum.map (F.map f) (G.map f))
   map_id _ := by ext ⟨⟩ <;> simp
   map_comp _ _ := by ext ⟨⟩ <;> simp
 
@@ -177,19 +188,20 @@ variable {F G}
 /-- The left inclusion of `F` into `coprod F G`. -/
 @[simps]
 def coprod.inl : F ⟶ coprod F G where
-  app _ := TypeCat.ofHom (fun x ↦ .inl x)
+  app _ := ↾fun x ↦ .inl x
 
 /-- The right inclusion of `G` into `coprod F G`. -/
 @[simps]
 def coprod.inr : G ⟶ coprod F G where
-  app _ := TypeCat.ofHom (fun x ↦ .inr x)
+  app _ := ↾fun x ↦ .inr x
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given natural transformations `F₁ ⟶ F` and `F₂ ⟶ F`, construct
 a natural transformation `coprod F₁ F₂ ⟶ F`. -/
 @[simps]
 def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod F₁ F₂ ⟶ F where
-  app a := TypeCat.ofHom (Sum.elim (τ₁.app a) (τ₂.app a))
+  app a := ↾(Sum.elim (τ₁.app a) (τ₂.app a))
   naturality _ _ _ := by ext ⟨⟩ <;> simp
 
 @[simp]
@@ -207,6 +219,8 @@ variable (F G)
 def binaryCoproductCocone : BinaryCofan F G :=
   BinaryCofan.mk coprod.inl coprod.inr
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `coprod F G` is a colimit cocone. -/
 @[simps]
 def binaryCoproductColimit : IsColimit (binaryCoproductCocone F G) where
@@ -278,6 +292,7 @@ abbrev coprodInr {a : C} (x : G.obj a) : (F ⨿ G).obj a :=
 
 variable (F G)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `(F ⨿ G).obj a` is in bijection with disjoint union of `F.obj a` and `G.obj a`. -/
 @[simps]
 noncomputable

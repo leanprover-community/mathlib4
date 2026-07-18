@@ -72,9 +72,7 @@ theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -
 theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
   Finsupp.sub_apply _ _ _
 
-@[simp]
-theorem support_neg : (-p).support = p.support :=
-  Finsupp.support_neg p
+@[simp] lemma support_neg : (-p).support = p.support := by ext; simp
 
 theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p - q).support ⊆ p.support ∪ q.support :=
@@ -88,9 +86,10 @@ section Degrees
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
-  simpa [degrees_def] using AddMonoidAlgebra.supDegree_sub_le
+  simpa [degrees_def] using! AddMonoidAlgebra.supDegree_sub_le
 
 end Degrees
 
@@ -112,13 +111,13 @@ section Vars
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 
 theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
-  convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
+  convert! vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 
 @[simp]
 theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
     (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
-  convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
+  convert! vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
 
 end Vars
 

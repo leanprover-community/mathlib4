@@ -131,10 +131,16 @@ as `f`, the pullback of that morphism along `f` exists. -/
 protected class HasPullbacksAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPullback {W} (g : W ⟶ Y) : P g → HasPullback g f
 
+instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : P.HasPullbacksAlong f where
+  hasPullback _ _ := inferInstance
+
 /-- `P.HasPushoutsAlong f` states that for any morphism satisfying `P` with the same domain
 as `f`, the pushout of that morphism along `f` exists. -/
 protected class HasPushoutsAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPushout {W} (g : X ⟶ W) : P g → HasPushout g f
+
+instance {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] : P.HasPushoutsAlong f where
+  hasPushout _ _ := inferInstance
 
 /-- `P.IsStableUnderBaseChangeAlong f` states that for any morphism satisfying `P` with the same
 codomain as `f`, any pullback of that morphism along `f` also satisfies `P`. -/
@@ -177,7 +183,7 @@ theorem IsStableUnderBaseChange.mk' [RespectsIso P]
       P (pullback.fst f g)) :
     IsStableUnderBaseChange P where
   of_isPullback {X Y Y' S f g f' g'} sq hg := by
-    haveI : HasPullback f g := sq.flip.hasPullback
+    have : HasPullback f g := sq.flip.hasPullback
     let e := sq.flip.isoPullback
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
@@ -216,7 +222,6 @@ theorem pullback_snd {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g]
     [P.IsStableUnderBaseChangeAlong g] (H : P f) : P (pullback.snd f g) :=
   IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_hasPullback f g) H
 
-set_option backward.isDefEq.respectTransparency false in
 theorem baseChange_obj {S S' : C} (f : S' ⟶ S)
     [HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
@@ -306,7 +311,7 @@ theorem IsStableUnderCobaseChange.mk' [RespectsIso P]
       P (pushout.inr f g)) :
     IsStableUnderCobaseChange P where
   of_isPushout {A A' B B' f g f' g'} sq hf := by
-    haveI : HasPushout f g := sq.flip.hasPushout
+    have : HasPushout f g := sq.flip.hasPushout
     let e := sq.flip.isoPushout
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
@@ -359,6 +364,7 @@ theorem underPushoutMap [IsStableUnderCobaseChange P] {S S' : C} (f : S' ⟶ S)
     P ((Under.pushout f).map g).right :=
   pushoutDesc_inl_inr f g.w.symm H
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
 theorem pushoutMap
@@ -526,6 +532,7 @@ lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W�
   rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {J} in
 lemma colimitsOfShape_le_of_final {J' : Type*} [Category* J'] (F : J ⥤ J') [F.Final] :
@@ -572,6 +579,7 @@ lemma colimitsOfShape_colimMap {X Y : J ⥤ C}
     W.colimitsOfShape J (colimMap f) :=
   ⟨_, _, _, _, _, colimit.isColimit Y, _, hf⟩
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] IsCofiltered.isConnected in
 variable {W} in
 lemma colimitsOfShape.of_isColimit
@@ -614,6 +622,7 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
     W (colimMap f) :=
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
@@ -660,6 +669,9 @@ lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
   refine ⟨Shrink J, ?_⟩
   rwa [← W.colimitsOfShape_eq_of_equivalence (Discrete.equivalence (equivShrink.{w} J))]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma le_colimitsOfShape_punit : W ≤ W.colimitsOfShape (Discrete PUnit.{w + 1}) := by
   intro X₁ X₂ f hf
   have h := initialIsInitial (C := Discrete (PUnit.{w + 1}))
@@ -741,6 +753,12 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     apply colimit.hom_ext
     rintro ⟨j⟩
     simp [φ, hα]
+
+instance (J : Type*) [(monomorphisms C).IsStableUnderCoproductsOfShape J]
+    {X₁ X₂ : J → C} (f : ∀ j, X₁ j ⟶ X₂ j) [HasCoproduct X₁] [HasCoproduct X₂]
+    [∀ j, Mono (f j)] :
+    Mono (Limits.Sigma.map f) :=
+  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ inferInstanceAs (Mono (f j)))
 
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
@@ -972,6 +990,102 @@ instance {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderCobaseChangeAlo
     have right := IsPushout.of_hasPushout p f
     IsStableUnderCobaseChangeAlong.of_isPushout (IsPushout.of_left' pb right.flip)
       (IsStableUnderCobaseChangeAlong.of_isPushout right.flip hp)
+
+/-- `P.IsStableUnderBaseChangeAgainst P'` states that for any morphism `f` satisfying `P` and
+any morphism `g` with the same codomain as `f` satisfying `P'`, any pullback of `f` along `g`
+also satisfies `P`. -/
+class IsStableUnderBaseChangeAgainst
+    (P P' : MorphismProperty C) : Prop where
+  isStableUnderBaseChangeAlong ⦃X Y : C⦄ (f : X ⟶ Y) (hf : P' f) :
+    P.IsStableUnderBaseChangeAlong f
+
+instance (P : MorphismProperty C) [P.IsStableUnderBaseChange]
+    (P' : MorphismProperty C) :
+    P.IsStableUnderBaseChangeAgainst P' where
+  isStableUnderBaseChangeAlong := inferInstance
+
+lemma isStableUnderBaseChangeAgainst_top_iff
+    (P : MorphismProperty C) :
+    P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange where
+  mp h :=
+    ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩
+  mpr _ := inferInstance
+
+/-- `P.HasPullbacksAgainst P'` states that for any morphism `f` satisfying `P'`,
+`P` has pullbacks along `f`. -/
+class HasPullbacksAgainst
+    (P P' : MorphismProperty C) : Prop where
+  hasPullbacksAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
+    P.HasPullbacksAlong f
+
+instance (P : MorphismProperty C) [P.HasPullbacks] (P' : MorphismProperty C) :
+    P.HasPullbacksAgainst P' where
+  hasPullbacksAlong := inferInstance
+
+lemma hasPullbacksAgainst_top_iff
+    (P : MorphismProperty C) :
+    P.HasPullbacksAgainst ⊤ ↔ P.HasPullbacks where
+  mp h :=
+    ⟨fun _ h' ↦
+      (h.hasPullbacksAlong _ (by tauto)).hasPullback _ h'⟩
+  mpr _ := inferInstance
+
+lemma _root_.CategoryTheory.Limits.hasPullback_ofHasPullbacksAgainst
+    {P : MorphismProperty C} {P' : MorphismProperty C} {c c' c'' : C}
+    {f : c ⟶ c'} {g : c'' ⟶ c'} [P.HasPullbacksAgainst P'] (hf : P f) (hg : P' g) :
+    Limits.HasPullback f g :=
+  letI : P.HasPullbacksAlong g :=
+    MorphismProperty.HasPullbacksAgainst.hasPullbacksAlong g hg
+  MorphismProperty.HasPullbacksAlong.hasPullback f hf
+
+/-- `P.IsStableUnderCobaseChangeAgainst P'` states that for any morphism `f` satisfying `P` and
+any morphism `g` with the same domain as `f` satisfying `P'`, any pushout of `f` along `g`
+also satisfies `P`. -/
+class IsStableUnderCobaseChangeAgainst
+    (P P' : MorphismProperty C) : Prop where
+  isStableUnderCobaseChangeAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
+    P.IsStableUnderCobaseChangeAlong f
+
+instance (P : MorphismProperty C) [P.IsStableUnderCobaseChange]
+    (P' : MorphismProperty C) :
+    P.IsStableUnderCobaseChangeAgainst P' where
+  isStableUnderCobaseChangeAlong := inferInstance
+
+lemma isStableUnderCobaseChangeAgainst_top_iff
+    (P : MorphismProperty C) :
+    P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange where
+  mp h :=
+    ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩
+  mpr _ := inferInstance
+
+/-- `P.HasPushoutsAgainst P'` states that for any morphism `f` satisfying `P'`,
+`P` has pushouts along `f`. -/
+class HasPushoutsAgainst
+    (P P' : MorphismProperty C) : Prop where
+  hasPushoutsAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
+    P.HasPushoutsAlong f
+
+instance (P : MorphismProperty C) [P.HasPushouts] (P' : MorphismProperty C) :
+    P.HasPushoutsAgainst P' where
+  hasPushoutsAlong := inferInstance
+
+lemma hasPushoutsAgainst_top_iff
+    (P : MorphismProperty C) :
+    P.HasPushoutsAgainst ⊤ ↔ P.HasPushouts where
+  mp h :=
+    ⟨fun _ h' ↦
+      (h.hasPushoutsAlong _ (by tauto)).hasPushout _ h'⟩
+  mpr _ := inferInstance
+
+lemma _root_.CategoryTheory.Limits.hasPushout_ofHasPushoutsAgainst
+    {P : MorphismProperty C} {P' : MorphismProperty C} {c c' c'' : C}
+    {f : c ⟶ c'} {g : c ⟶ c''} [P.HasPushoutsAgainst P'] (hf : P f) (hg : P' g) :
+    Limits.HasPushout f g :=
+  letI : P.HasPushoutsAlong g :=
+    MorphismProperty.HasPushoutsAgainst.hasPushoutsAlong g hg
+  MorphismProperty.HasPushoutsAlong.hasPushout f hf
 
 end MorphismProperty
 

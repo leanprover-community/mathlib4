@@ -128,7 +128,7 @@ theorem adjustToOrientation_apply_eq_or_eq_neg (i : ι) :
 theorem det_adjustToOrientation :
     (e.adjustToOrientation x).toBasis.det = e.toBasis.det ∨
       (e.adjustToOrientation x).toBasis.det = -e.toBasis.det := by
-  simpa using e.toBasis.det_adjustToOrientation x
+  simpa using! e.toBasis.det_adjustToOrientation x
 
 theorem abs_det_adjustToOrientation (v : ι → E) :
     |(e.adjustToOrientation x).toBasis.det v| = |e.toBasis.det v| := by
@@ -155,8 +155,8 @@ protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orie
 @[simp]
 theorem finOrthonormalBasis_orientation (hn : 0 < n) (h : finrank ℝ E = n)
     (x : Orientation ℝ E (Fin n)) : (x.finOrthonormalBasis hn h).toBasis.orientation = x := by
-  haveI := Fin.pos_iff_nonempty.1 hn
-  haveI : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
+  have := Fin.pos_iff_nonempty.1 hn
+  have : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
   exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <|
     finCongr h).orientation_adjustToOrientation x
 
@@ -181,6 +181,7 @@ theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
       AlternatingMap.constLinearEquivOfIsEmpty 1 := by
   simp [volumeForm, Or.by_cases]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
       -AlternatingMap.constLinearEquivOfIsEmpty 1 := by
@@ -215,7 +216,7 @@ theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBas
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   simp_rw [volumeForm]
   apply e.det_eq_neg_det_of_opposite_orientation b
-  convert hb.symm
+  convert! hb.symm
   exact o.finOrthonormalBasis_orientation _ _
 
 @[simp]
@@ -244,7 +245,7 @@ value by the product of the norms of the vectors `v i`. -/
 theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i : Fin n, ‖v i‖ := by
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
-  haveI : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
+  have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
   have : finrank ℝ E = Fintype.card (Fin n.succ) := by simpa using _i.out
   let b : OrthonormalBasis (Fin n.succ) ℝ E := gramSchmidtOrthonormalBasis this v
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det this v
@@ -253,7 +254,7 @@ theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i :
   · intro i _
     positivity
   intro i _
-  convert abs_real_inner_le_norm (b i) (v i)
+  convert! abs_real_inner_le_norm (b i) (v i)
   simp [b.orthonormal.1 i]
 
 theorem volumeForm_apply_le (v : Fin n → E) : o.volumeForm v ≤ ∏ i : Fin n, ‖v i‖ :=
@@ -266,7 +267,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
     (hv : Pairwise fun i j => ⟪v i, v j⟫ = 0) : |o.volumeForm v| = ∏ i : Fin n, ‖v i‖ := by
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
-  haveI : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
+  have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
   have hdim : finrank ℝ E = Fintype.card (Fin n.succ) := by simpa using _i.out
   let b : OrthonormalBasis (Fin n.succ) ℝ E := gramSchmidtOrthonormalBasis hdim v
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det hdim v
@@ -311,7 +312,7 @@ theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
   have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
-  convert o.volumeForm_map φ (φ ∘ x)
+  convert! o.volumeForm_map φ (φ ∘ x)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [_i.out, Fintype.card_fin]

@@ -539,20 +539,33 @@ class DAG:
         Uses ``lean --deps-json`` to parse imports correctly.
         """
         if directories is None:
-            directories = ["Mathlib", "MathlibTest", "Archive", "Counterexamples"]
+            directories = ["."]
 
         # Collect all .lean file paths (relative to project_root).
+        # Skip the Lake build directory (`.lake/`); it contains vendored
+        # dependencies that we don't want to modify or build directly.
         rel_paths: list[Path] = []
         for directory in directories:
             dir_path = project_root / directory
             if not dir_path.exists():
                 continue
-            for root, _, files in os.walk(dir_path):
+            for root, dirs, files in os.walk(dir_path):
+                dirs[:] = [d for d in dirs if d != ".lake"]
                 for fname in files:
                     if not fname.endswith(".lean"):
                         continue
                     full_path = Path(root) / fname
                     rel_paths.append(full_path.relative_to(project_root))
+
+        if not rel_paths:
+            import sys as _sys
+            _sys.stderr.write(
+                f"warning: no .lean files found under {project_root} "
+                f"(directories={list(directories)}).\n"
+                "  hint: pass --directories <your-source-dir> if your files\n"
+                "  aren't directly under the project root.\n"
+            )
+            return DAG({}, project_root.resolve())
 
         # Batch-parse imports using lean --deps-json.
         all_imports = _parse_all_imports(rel_paths, project_root)
@@ -858,7 +871,7 @@ def _cli_main():
         "--directories",
         nargs="+",
         default=None,
-        help="Directories to scan (default: Mathlib MathlibTest Archive Counterexamples)",
+        help="Directories to scan (default: '.', relative to project root specified by --dir)",
     )
 
     args = parser.parse_args()

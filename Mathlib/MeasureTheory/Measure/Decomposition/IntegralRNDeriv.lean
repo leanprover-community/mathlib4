@@ -109,7 +109,7 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     filter_upwards [h_rnDeriv_eq] with x hx
     rw [hx]
   rw [h_eq, mul_comm, ← div_le_iff₀, div_eq_inv_mul, inv_inv] at h
-  · convert h
+  · convert! h
     · simp only [div_eq_inv_mul, Measure.smul_apply, smul_eq_mul, ENNReal.toReal_mul,
       ENNReal.toReal_inv, μ', measureReal_def]
   · simp [ENNReal.toReal_pos_iff, hν, measureReal_def]
@@ -168,7 +168,7 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral (hf : StronglyMeasurable f)
     have h_compProd : (fun p ↦ μ.rnDeriv ν p.1 * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
         (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) := (rnDeriv_compProd hκη ν).symm
     rwa [Filter.EventuallyEq, Measure.ae_compProd_iff] at h_compProd
-    simp only [measurableSet_setOf]
+    simp only [measurableSet_setOfPred]
     fun_prop
   filter_upwards [h_ae1, h_ae2, h_lt_top, h_integrable.1, h_int.1]
     with a h_eq_one h_mul_eq h_lt_top h_int' h_int

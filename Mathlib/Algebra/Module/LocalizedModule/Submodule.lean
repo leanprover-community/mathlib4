@@ -147,7 +147,7 @@ theorem localized₀_iSup {ι : Type*} (g : ι → Submodule R M) :
     (⨆ i, g i).localized₀ p f = ⨆ i, (g i).localized₀ p f := by
   let : Module (Localization p) N := IsLocalizedModule.module p f
   have : IsScalarTower R (Localization p) N := IsLocalizedModule.isScalarTower_module p f
-  simpa using congr_arg (restrictScalars R) (localized'_iSup (Localization p) p f g)
+  simpa using! congr_arg (restrictScalars R) (localized'_iSup (Localization p) p f g)
 
 /-- `localized₀` as a `FrameHom`. -/
 noncomputable def localized₀FrameHom : FrameHom (Submodule R M) (Submodule R N) where
@@ -245,7 +245,7 @@ noncomputable def localizedEquiv : M'.localized p ≃ₗ[Localization p] Localiz
   IsLocalizedModule.linearEquiv p (M'.toLocalized p) (LocalizedModule.mkLinearMap _ _)
     |>.restrictScalars _
 
-open Pointwise
+open scoped Pointwise
 
 lemma localized₀_le_localized₀_of_smul_le {P Q : Submodule R M} (x : p) (h : x • P ≤ Q) :
     P.localized₀ p f ≤ Q.localized₀ p f := by
@@ -297,10 +297,10 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
       by simp only [Function.uncurry_apply_pair, toLocalizedQuotient'_mk, ← mk_smul, mk'_cancel']⟩
   exists_of_eq {m n} e := by
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
-    obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ _ := by simpa [Submodule.Quotient.eq] using e
+    obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ _ := by simpa [Submodule.Quotient.eq] using! e
     obtain ⟨c, hc⟩ := exists_of_eq (S := p) (show f (s • (m - n)) = f x by simp [-map_sub, ← hs])
     exact ⟨c * s, by simpa only [← Quotient.mk_smul, Submodule.Quotient.eq,
-      ← smul_sub, mul_smul, hc] using M'.smul_mem c hx⟩
+      ← smul_sub, mul_smul, hc] using! M'.smul_mem c hx⟩
 
 instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
   IsLocalizedModule.toLocalizedQuotient' _ _ _ _
@@ -372,5 +372,14 @@ lemma range_localizedMap_eq_localized₀_range (g : M →ₗ[R] P) :
 lemma localized'_range_eq_range_localizedMap (g : M →ₗ[R] P) :
     (range g).localized' S p f' = range ((map p f f' g).extendScalarsOfIsLocalization p S) :=
   SetLike.ext (by apply SetLike.ext_iff.mp (f.range_localizedMap_eq_localized₀_range p f' g).symm)
+
+lemma localizedMap_surjective_iff_subsingleton_localized_coker {R M N : Type*} [CommRing R]
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (S : Submonoid R) (φ : M →ₗ[R] N) :
+    Function.Surjective (LocalizedModule.map S φ) ↔
+      Subsingleton (LocalizedModule S (N ⧸ φ.range)) := by
+  simp [(localizedQuotientEquiv S φ.range).symm.subsingleton_congr,
+    LinearMap.localized'_range_eq_range_localizedMap (Localization S) S
+      (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N),
+    LinearMap.range_eq_top, LocalizedModule.map, mapExtendScalars]
 
 end LinearMap

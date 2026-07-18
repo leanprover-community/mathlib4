@@ -43,7 +43,7 @@ presheaf `U ↦ C(U, T)`. For universe reasons, we implement it by hand.
 @[simps]
 def continuousMapPresheaf (T : Type v) [TopologicalSpace T] : Scheme.{u}ᵒᵖ ⥤ Type (max v u) where
   obj U := C(U.unop, T)
-  map {U V} f := TypeCat.ofHom fun g ↦ ContinuousMap.comp g f.unop.base.hom
+  map {U V} f := ↾fun g ↦ ContinuousMap.comp g f.unop.base.hom
 
 /-- `continuousMapPresheaf` is isomorphic to the composition of the forgetful
 functor to `TopCat` and the yoneda embedding. -/
@@ -84,6 +84,7 @@ lemma isSheaf_fpqcTopology_continuousMapPresheaf :
     · intro y hy
       rwa [← ContinuousMap.cancel_right (Spec.map f).surjective, Topology.IsQuotientMap.lift_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `continuousMapPresheaf` is `U ↦ C(ConnectedComponents U, T)` if `T` is totally
 disconnected. -/
 def continuousMapPresheafEquivOfTotallyDisconnectedSpace [TotallyDisconnectedSpace T]
@@ -107,7 +108,7 @@ def continuousMapPresheafAb (A : Type v) [TopologicalSpace A] [AddCommGroup A]
 variable (A : Type v) [TopologicalSpace A] [AddCommGroup A] [IsTopologicalAddGroup A]
 
 /-- `continuousMapPresheafAb` viewed as a type valued sheaf is isomorphic to
-`continuousMapPresheaf. -/
+`continuousMapPresheaf`. -/
 def continuousMapPresheafAbForgetIso :
     continuousMapPresheafAb A ⋙ CategoryTheory.forget Ab ≅ continuousMapPresheaf A :=
   Iso.refl _

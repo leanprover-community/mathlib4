@@ -18,13 +18,13 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 ## Main results
 
-* `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and ⟨2, 3⟩ = {1}ᶜ.
+* `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and `⟨2, 3⟩ = {1}ᶜ`.
   The proof follows https://math.stackexchange.com/a/4224486.
 
 * `Ideal.isPrime_int_iff` : the prime ideals in ℤ are ⟨0⟩ and ⟨p⟩ (for prime `p`).
 -/
 
-@[expose] public section
+public section
 
 /-- The natural numbers form a local semiring. -/
 instance : IsLocalRing ℕ where
@@ -47,8 +47,8 @@ theorem Nat.maximalIdeal_eq_span_two_three : maximalIdeal ℕ = span {2, 3} := b
 
 theorem Nat.one_mem_span_iff {s : Set ℕ} : 1 ∈ span s ↔ 1 ∈ s := by
   rw [← SetLike.mem_coe, ← not_iff_not]
-  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm,
-    ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
+  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm]
+  rw [Set.subset_compl_comm, ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
 
 theorem Nat.one_mem_closure_iff {s : Set ℕ} : 1 ∈ AddSubmonoid.closure s ↔ 1 ∈ s := by
   rw [← Submodule.span_nat_eq_addSubmonoidClosure]
@@ -94,7 +94,7 @@ theorem Ideal.isPrime_int_iff {P : Ideal ℤ} :
 
 theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
   refine le_antisymm (iSup_le fun s ↦ le_of_not_gt fun hs ↦ ?_) ?_
-  · replace hs : 2 < s.length := ENat.coe_lt_coe.mp (WithBot.coe_lt_coe.mp hs)
+  · replace hs : 2 < s.length := ENat.natCast_lt_natCast.mp (WithBot.coe_lt_coe.mp hs)
     let s := s.take ⟨3, by lia⟩
     have : NeZero s.length := ⟨three_ne_zero⟩
     have h1 : ⊥ < (s 1).asIdeal := bot_le.trans_lt (s.step 0)

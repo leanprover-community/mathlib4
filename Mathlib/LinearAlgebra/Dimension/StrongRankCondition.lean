@@ -67,12 +67,11 @@ variable [InvariantBasisNumber R]
 have the same cardinalities. -/
 theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
     Cardinal.lift.{w'} #ι = Cardinal.lift.{w} #ι' := by
-  classical
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite ι
   · -- `v` is a finite basis, so by `basis_finite_of_finite_spans` so is `v'`.
     -- haveI : Finite (range v) := Set.finite_range v
-    haveI := basis_finite_of_finite_spans (Set.finite_range v) v.span_eq v'
+    have := basis_finite_of_finite_spans (Set.finite_range v) v.span_eq v'
     cases nonempty_fintype ι'
     -- We clean up a little:
     rw [Cardinal.mk_fintype, Cardinal.mk_fintype]
@@ -88,7 +87,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
     -- we see they have the same cardinality.
     have w₁ := infinite_basis_le_maximal_linearIndependent' v _ v'.linearIndependent v'.maximal
     rcases Cardinal.lift_mk_le'.mp w₁ with ⟨f⟩
-    haveI : Infinite ι' := Infinite.of_injective f f.2
+    have : Infinite ι' := Infinite.of_injective f f.2
     have w₂ := infinite_basis_le_maximal_linearIndependent' v' _ v.linearIndependent v.maximal
     exact le_antisymm w₁ w₂
 
@@ -130,8 +129,8 @@ but still assumes we have a finite spanning set.
 -/
 theorem basis_le_span' {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
     #ι ≤ Fintype.card w := by
-  haveI := nontrivial_of_invariantBasisNumber R
-  haveI := basis_finite_of_finite_spans w.toFinite s b
+  have := nontrivial_of_invariantBasisNumber R
+  have := basis_finite_of_finite_spans w.toFinite s b
   cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
   simp only [Nat.cast_le]
@@ -144,10 +143,10 @@ then the cardinality of any basis is bounded by the cardinality of any spanning 
 -/
 theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) :
     #(range v) ≤ #J := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite J
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
-    convert Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
+    convert! Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
     simp
   · let S : J → Set ι := fun j => ↑(v.repr j).support
     let S' : J → Set M := fun j => v '' S j
@@ -158,7 +157,7 @@ theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤
         span_le.2 fun j hj x hx => ⟨_, ⟨⟨j, hj⟩, rfl⟩, hx⟩
       rw [hJ] at this
       replace : v.repr (v i) ∈ Finsupp.supported R R (⋃ j, S j) := this trivial
-      rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single_ne_zero _ one_ne_zero] at this
+      rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single _ one_ne_zero] at this
       · subst b
         rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
         exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
@@ -216,8 +215,8 @@ the cardinality of `ι` is bounded by the cardinality of `w`.
 -/
 theorem linearIndependent_le_span' {ι : Type*} (v : ι → M) (i : LinearIndependent R v) (w : Set M)
     [Fintype w] (s : range v ≤ span R w) : #ι ≤ Fintype.card w := by
-  haveI : Finite ι := i.finite_of_le_span_finite v w s
-  letI := Fintype.ofFinite ι
+  have : Finite ι := i.finite_of_le_span_finite v w s
+  let := Fintype.ofFinite ι
   rw [Cardinal.mk_fintype]
   simp only [Nat.cast_le]
   exact linearIndependent_le_span_aux' v i w s
@@ -268,7 +267,7 @@ theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w
   -- We split into cases depending on whether `ι` is infinite.
   cases fintypeOrInfinite ι
   · rw [Cardinal.mk_fintype ι] -- When `ι` is finite, we have `linearIndependent_le_span`,
-    haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R
+    have : Nontrivial R := nontrivial_of_invariantBasisNumber R
     rw [Fintype.card_congr (Equiv.ofInjective b b.injective)]
     exact linearIndependent_le_span v i (range b) b.span_eq
   · -- and otherwise we have `linearIndependent_le_infinite_basis`.
@@ -317,20 +316,20 @@ theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι 
     {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
   apply le_antisymm
   · exact linearIndependent_le_basis b v i
-  · haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R
+  · have : Nontrivial R := nontrivial_of_invariantBasisNumber R
     exact infinite_basis_le_maximal_linearIndependent b v i m
 
 theorem Module.Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank R M := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   rw [Module.rank_def]
   apply le_antisymm
   · trans
     swap
-    · apply le_ciSup (Cardinal.bddAbove_range _)
+    · apply le_ciSup Cardinal.bddAbove_of_small
       exact
         ⟨Set.range v, by
           rw [LinearIndepOn]
-          convert v.reindexRange.linearIndependent
+          convert! v.reindexRange.linearIndependent
           simp⟩
     · exact (Cardinal.mk_range_eq v v.injective).ge
   · apply ciSup_le'
@@ -345,7 +344,7 @@ cardinality of the basis. -/
 theorem rank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι R M) :
     Module.rank R M = Fintype.card ι := by
   classical
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   rw [← h.mk_range_eq_rank, Cardinal.mk_fintype, Set.card_range_of_injective h.injective]
 
 namespace Module.Basis
@@ -367,7 +366,7 @@ theorem card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι]
 
 theorem mk_eq_rank (v : Basis ι R M) :
     Cardinal.lift.{v} #ι = Cardinal.lift.{w} (Module.rank R M) := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   rw [← v.mk_range_eq_rank, Cardinal.mk_range_eq_of_injective v.injective]
 
 theorem mk_eq_rank'.{m} (v : Basis ι R M) :
@@ -378,12 +377,12 @@ end Module.Basis
 
 theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
     Module.rank R ↑(span R (range v)) = #(range v) := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
 
 theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : Module.rank R ↑(span R s) = #s := by
-  rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
+  rw [← @ofPred_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
 
 theorem toENat_rank_span_set {v : ι → M} {s : Set ι} (hs : LinearIndepOn R v s) :
@@ -496,7 +495,7 @@ theorem rank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S]
   rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_algebraMap h]
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
   have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
   have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]
@@ -530,8 +529,8 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   rw [← not_le] at this
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
 
-@[simp]
-theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Module.Finite R M] [Subsingleton M] :
+@[nontriviality]
+theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Subsingleton M] :
     Module.finrank R M = 0 :=
   (finrank_eq_zero_iff_of_free R M).mpr inferInstance
 
@@ -553,7 +552,11 @@ variable {M'} [AddCommMonoid M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
     (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=
-  finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
+  finrank_le_finrank_of_rank_le_rank (lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
+
+theorem LinearMap.finrank_le_finrank_of_surjective [Module.Finite R M] {f : M →ₗ[R] M'}
+    (hf : Function.Surjective f) : Module.finrank R M' ≤ Module.finrank R M :=
+  finrank_le_finrank_of_rank_le_rank (lift_rank_le_of_surjective _ hf) (rank_lt_aleph0 _ _)
 
 theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
     finrank R (LinearMap.range f) ≤ finrank R M :=
@@ -597,7 +600,7 @@ theorem strongRankCondition_iff_forall_rank_lt_aleph0 [Nontrivial R] :
     refine ⟨fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩, fun ⟨n, le⟩ ↦
       ⟨n, le_rank_iff_exists_linearMap.mp (natCast_le_aleph0.trans le)⟩⟩
     have ⟨g, hg⟩ := f.exists_finsupp_nat_of_fin_fun_injective inj
-    convert (Finsupp.basisSingleOne.linearIndependent.map_injOn _ hg.injOn).cardinal_lift_le_rank
+    convert! (Finsupp.basisSingleOne.linearIndependent.map_injOn _ hg.injOn).cardinal_lift_le_rank
     simp
 
 theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :

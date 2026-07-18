@@ -108,7 +108,7 @@ theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
 
 Somewhat arbitrarily, we define the default element to be `0`.
 All other elements will be provably equal to it, but not necessarily definitionally equal. -/
-@[implicit_reducible]
+@[instance_reducible]
 def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
   default := 0
   uniq := eq_zero_of_zero_eq_one h
@@ -325,6 +325,22 @@ theorem eq_zero_of_mul_eq_self_left [IsRightCancelMulZero M₀] (h₁ : b ≠ 1)
     a = 0 :=
   Classical.byContradiction fun ha => h₁ <| mul_right_cancel₀ ha <| h₂.symm ▸ (one_mul a).symm
 
+variable {M₀ : Type*} [MonoidWithZero M₀]
+
+instance (priority := 100) [IsLeftCancelMulZero M₀] : IsDedekindFiniteMonoid M₀ where
+  mul_eq_one_symm h := by
+    cases subsingleton_or_nontrivial M₀
+    · exact Subsingleton.elim _ _
+    exact (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero
+      (left_ne_zero_of_mul_eq_one h)).mul_eq_one_symm h
+
+instance (priority := 100) [IsRightCancelMulZero M₀] : IsDedekindFiniteMonoid M₀ where
+  mul_eq_one_symm h := by
+    cases subsingleton_or_nontrivial M₀
+    · exact Subsingleton.elim _ _
+    exact (IsRightCancelMulZero.mul_right_cancel_of_ne_zero
+      (right_ne_zero_of_mul_eq_one h)).mul_eq_one_symm h
+
 end CancelMonoidWithZero
 
 section GroupWithZero
@@ -353,28 +369,23 @@ theorem inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :
     _ = b := by simp [h]
 
 
-set_option backward.privateInPublic true in
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
   rw [← inv_mul_cancel_left₀ (left_ne_zero_of_mul_eq_one h) b, h, mul_one]
 
 -- See note [lower instance priority]
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
-  { ‹GroupWithZero G₀› with
-    inv := Inv.inv,
-    inv_inv := fun a => by
-      by_cases h : a = 0
-      · simp [h]
-      · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
-    mul_inv_rev := fun a b => by
-      by_cases ha : a = 0
-      · simp [ha]
-      by_cases hb : b = 0
-      · simp [hb]
-      apply inv_eq_of_mul
-      simp [mul_assoc, ha, hb],
-    inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
+instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ where
+  inv_inv a := by
+    by_cases h : a = 0
+    · simp [h]
+    · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
+  mul_inv_rev a b := by
+    by_cases ha : a = 0
+    · simp [ha]
+    by_cases hb : b = 0
+    · simp [hb]
+    apply inv_eq_of_mul
+    simp [mul_assoc, ha, hb]
+  inv_eq_of_mul _ _ := by exact inv_eq_of_mul
 
 -- see Note [lower instance priority]
 instance (priority := 10) : IsCancelMulZero G₀ where
