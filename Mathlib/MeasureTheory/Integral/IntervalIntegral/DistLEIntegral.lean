@@ -104,7 +104,7 @@ lemma norm_sub_le_mul_volume_of_norm_deriv_le_of_le {C : ℝ} (hab : a ≤ b)
         setIntegral_const, smul_eq_mul, mul_comm]
       simp only [s, Measure.real,
         Measure.measure_toMeasurable_inter_of_sFinite measurableSet_Ioo]
-      simp only [inter_def, mem_setOf_eq, and_comm]
+      simp only [inter_def, mem_ofPred_eq, and_comm]
 
 end Line
 
@@ -113,6 +113,7 @@ section NormedSpace
 open AffineMap
 variable {f : E → F} {a b : E} {C r : ℝ} {s : Set E}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Consider a function `f : E → F` continuous on a segment `[a, b]`
 and line differentiable in the direction `b - a` at all points of the open segment `(a, b)`.
 
@@ -142,6 +143,7 @@ lemma norm_sub_le_mul_volume_of_norm_lineDeriv_le
   · exact fun t ht ↦ (hdg t ht).differentiableAt.differentiableWithinAt
   · exact hf'.mono fun t ht ht_mem ↦ by simpa only [(hdg t ht_mem).deriv] using ht ht_mem
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `f : E → F` be a function differentiable on a set `s` and continuous on its closure.
 Let `a`, `b` be two points such that the open segment connecting `a` to `b` is a subset of `s`.
 
