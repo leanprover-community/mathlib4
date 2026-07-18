@@ -124,7 +124,7 @@ theorem cardinalMk_prod_le_two_mul_cardinalMk_fromRel :
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm]
   grw [Cardinal.sum_le_mk_mul_iSup]
   apply mul_le_mul_right <| ciSup_le' fun z ↦ ?_
-  rw [← Set.coe_setOf, ← Set.preimage_singleton]
+  rw [← Set.coe_ofPred, ← Set.preimage_singleton]
   rcases z with ⟨⟨⟩⟩
   grw [mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
     simp
@@ -135,7 +135,7 @@ theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel [Std.Irrefl r] :
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm, ← Cardinal.sum_const']
   congr
   ext ⟨z, hz⟩
-  rw [← Set.coe_setOf, ← Set.preimage_singleton, ← Set.cast_ncard z.finite_mk_fiber,
+  rw [← Set.coe_ofPred, ← Set.preimage_singleton, ← Set.cast_ncard z.finite_mk_fiber,
     z.ncard_mk_fiber_of_not_isDiag, Nat.cast_two]
   exact fromRel_irrefl.mp ‹_› hz
 
@@ -147,7 +147,7 @@ theorem finite_fromRel_iff : (fromRel sym).Finite ↔ Finite { p : α × α // r
   · refine h.of_injective (fun z ↦ ⟨z.val.out, (z.val.mk_fst_out_snd_out ▸ z.prop :)⟩) ?_
     intro z₁ z₂ h
     apply Quotient.out_injective (s := Sym2.Rel.setoid α) |>.comp Subtype.coe_injective
-    rwa [Subtype.mk.injEq] at h
+    exact congr(($h).val)
 
 theorem infinite_fromRel_iff : (fromRel sym).Infinite ↔ { p : α × α | r p.fst p.snd }.Infinite := by
   contrapose!
