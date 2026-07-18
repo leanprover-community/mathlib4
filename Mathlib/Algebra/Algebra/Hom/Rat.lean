@@ -21,7 +21,7 @@ namespace RingHom
 variable {R S : Type*}
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
-see `RingHom.equivRatAlgHom`. -/
+see `ringHomEquivRatAlgHom`. -/
 def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
   { f with commutes' := f.map_rat_algebraMap }
 
