@@ -809,7 +809,6 @@ theorem st_add {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x + y)
 
 @[deprecated stdPart_neg (since := "2026-01-05")]
 theorem st_neg (x : ℝ*) : st (-x) = -st x := by
-  classical
   by_cases h : Infinite x
   · rw [h.st_eq, (infinite_neg.2 h).st_eq, neg_zero]
   · exact (isSt_st' (not_infinite_neg h)).unique (isSt_st' h).neg
