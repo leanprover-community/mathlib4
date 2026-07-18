@@ -60,5 +60,5 @@ lemma projectiveDimension_ne_top_of_isRegularLocalRing [IsRegularLocalRing R] [S
   rcases FiniteRingKrullDim.ringKrullDim_eq_nat R with ⟨m, hm⟩
   obtain ⟨n, hn⟩ := finite_projectiveDimension_of_isRegularLocalRing_aux M m
     (by simpa [hm] using! WithBot.coe_le_coe.mpr le_add_self)
-  exact ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.coe_ne_top n))
+  exact ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.natCast_ne_top n))
     ((projectiveDimension_le_iff M n).mpr hn)
