@@ -331,7 +331,7 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
   rfl
 
 /- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
-`TensorProduct.ker_mapOfCompatibleSMul`. -/
+`TensorProduct.AlgebraTensorModule.ker_mapOfCompatibleSMul`. -/
 theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A S M N) :=
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
