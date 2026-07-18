@@ -324,7 +324,7 @@ def Reachable (a b : V) : Prop := Nonempty (Path a b)
 variable {a b c : V}
 
 protected theorem Reachable.elim {p : Prop} (h : Reachable a b) (hp : Path a b → p) : p :=
-  h.elim hp
+  Nonempty.elim h hp
 
 @[refl]
 protected theorem Reachable.refl (a : V) : Reachable a a := ⟨.nil⟩
