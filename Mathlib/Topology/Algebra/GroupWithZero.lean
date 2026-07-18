@@ -112,22 +112,23 @@ theorem Filter.Tendsto.inv₀ {a : G₀} (hf : Tendsto f l (𝓝 a)) (ha : a ≠
 
 variable [TopologicalSpace α]
 
+@[to_fun (attr := fun_prop)]
 nonrec theorem ContinuousWithinAt.inv₀ (hf : ContinuousWithinAt f s a) (ha : f a ≠ 0) :
-    ContinuousWithinAt (fun x => (f x)⁻¹) s a :=
+    ContinuousWithinAt f⁻¹ s a :=
   hf.inv₀ ha
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 nonrec theorem ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
-    ContinuousAt (fun x => (f x)⁻¹) a :=
+    ContinuousAt f⁻¹ a :=
   hf.inv₀ ha
 
-@[continuity, fun_prop]
-theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous fun x => (f x)⁻¹ :=
+@[to_fun (attr := continuity, fun_prop)]
+theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous f⁻¹ :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).inv₀ (h0 x)
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
-    ContinuousOn (fun x => (f x)⁻¹) s := fun x hx => (hf x hx).inv₀ (h0 x hx)
+    ContinuousOn f⁻¹ s := fun x hx => (hf x hx).inv₀ (h0 x hx)
 
 end Inv₀
 
@@ -167,7 +168,7 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] {x
 
 lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
   refine le_antisymm (inv_le_iff_le_inv.1 ?_) (tendsto_inv₀ hx)
-  simpa only [inv_inv] using tendsto_inv₀ (inv_ne_zero hx)
+  simpa only [inv_inv] using! tendsto_inv₀ (inv_ne_zero hx)
 
 lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
     Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 x⁻¹) ↔ Tendsto f l (𝓝 x) := by
@@ -189,7 +190,19 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] [C
 
 theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 a))
     (hg : Tendsto g l (𝓝 b)) (hy : b ≠ 0) : Tendsto (f / g) l (𝓝 (a / b)) := by
-  simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ hy)
+  simpa only [div_eq_mul_inv] using! hf.mul (hg.inv₀ hy)
+
+/-- If `f → a` and `g → b` along a nontrivial filter, valued in a Hausdorff
+`GroupWithZero` with continuous multiplication and `ContinuousInv₀`, and `b ≠ 0`,
+then `f / g → 1` if and only if `a = b`. -/
+theorem tendsto_div_nhds_one_iff_eq₀
+    {l : Filter α} [l.NeBot] [T2Space G₀] {a b : G₀}
+    (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) (hb : b ≠ 0) :
+    Tendsto (fun x ↦ f x / g x) l (𝓝 1) ↔ a = b :=
+  ⟨fun hfg => (div_eq_one_iff_eq hb).mp (tendsto_nhds_unique (hf.div hg hb) hfg),
+   fun hab => (div_eq_one_iff_eq hb).mpr hab ▸ hf.div hg hb⟩
+
+alias ⟨eq_of_tendsto_div_nhds_one₀, _⟩ := tendsto_div_nhds_one_iff_eq₀
 
 theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : Filter α} {x y : G₀}
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :
@@ -216,7 +229,7 @@ nonrec theorem ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) 
 
 @[continuity]
 theorem Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
-    Continuous (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+    Continuous (f / g) := by simpa only [div_eq_mul_inv] using! hf.mul (hg.inv₀ h₀)
 
 theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p | p.2 ≠ 0 } :=
   continuousOn_fst.div continuousOn_snd fun _ => id
@@ -224,7 +237,7 @@ theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p 
 @[fun_prop]
 theorem Continuous.div₀ (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
     Continuous (fun x => f x / g x) := by
-  simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+  simpa only [div_eq_mul_inv] using! hf.mul (hg.inv₀ h₀)
 
 @[fun_prop]
 theorem ContinuousAt.div₀ (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
@@ -248,7 +261,7 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
   · rw [ContinuousAt]
     simp_rw [comp_apply, hga, div_zero]
     exact (h2h hga).comp (continuousAt_id.tendsto.prodMk tendsto_top)
-  · fun_prop (disch := assumption)
+  · fun_prop
 
 /-- `h x (f x / g x)` is continuous under certain conditions, even if the denominator is sometimes
   `0`. See docstring of `ContinuousAt.comp_div_cases`. -/

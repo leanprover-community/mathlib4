@@ -277,6 +277,14 @@ lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
     lift (f ≫ fst _ _) (f ≫ snd _ _) = f := by
   cat_disch
 
+/-- The universal property of a cartesian `⊗` as an equivalence. -/
+@[simps]
+def liftEquiv {T X Y : C} : (T ⟶ X) × (T ⟶ Y) ≃ (T ⟶ X ⊗ Y) where
+  toFun f := lift f.1 f.2
+  invFun f := ⟨f ≫ fst _ _, f ≫ snd _ _⟩
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ fst _ _ = fst _ _ := by
   simp [fst_def, ← whiskerLeft_comp_assoc]
@@ -466,7 +474,7 @@ instance (priority := low) toSymmetricCategory : SymmetricCategory C where
 
 /-- `CartesianMonoidalCategory` implies `BraidedCategory`.
 This is not an instance to prevent diamonds. -/
-@[implicit_reducible]
+@[instance_reducible]
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
@@ -622,6 +630,7 @@ theorem prodComparison_inv_natural_whiskerRight (f : A ⟶ A') [IsIso (prodCompa
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 lemma prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
@@ -632,6 +641,7 @@ lemma prodComparison_comp :
 lemma prodComparison_id :
     prodComparison (𝟭 C) A B = 𝟙 (A ⊗ B) := lift_fst_snd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product comparison morphism from `F(A ⊗ -)` to `FA ⊗ F-`, whose components are given by
 `prodComparison`. -/
 @[simps]
@@ -644,15 +654,18 @@ def prodComparisonNatTrans (A : C) :
       Functor.comp_map, curriedTensor_obj_map, Category.assoc, prodComparison_fst, whiskerLeft_fst,
       prodComparison_snd, prodComparison_snd_assoc, whiskerLeft_snd, ← F.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem prodComparisonNatTrans_comp :
     prodComparisonNatTrans (F ⋙ G) A = Functor.whiskerRight (prodComparisonNatTrans F A) G ≫
       Functor.whiskerLeft F (prodComparisonNatTrans G (F.obj A)) := by
   ext; simp [prodComparison_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma prodComparisonNatTrans_id :
     prodComparisonNatTrans (𝟭 C) A = 𝟙 _ := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product comparison morphism from `F(- ⊗ -)` to `F- ⊗ F-`, whose components are given by
 `prodComparison`. -/
 @[simps]
@@ -666,6 +679,8 @@ def prodComparisonBifunctorNatTrans :
 
 variable {E : Type u₂} [Category.{v₂} E] [CartesianMonoidalCategory E] (G : D ⥤ E)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (F ⋙ G) =
     Functor.whiskerRight
       (prodComparisonBifunctorNatTrans F) ((Functor.whiskeringRight _ _ _).obj G) ≫
@@ -674,11 +689,12 @@ theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (
   ext; simp [prodComparison_comp]
 
 instance (A : C) [∀ B, IsIso (prodComparison F A B)] : IsIso (prodComparisonNatTrans F A) := by
-  letI : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
+  let : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
   apply NatIso.isIso_of_isIso_app
 
+set_option backward.defeqAttrib.useBackward true in
 instance [∀ A B, IsIso (prodComparison F A B)] : IsIso (prodComparisonBifunctorNatTrans F) := by
-  letI : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
+  let : ∀ X, IsIso ((prodComparisonBifunctorNatTrans F).app X) :=
     fun _ ↦ by dsimp; apply NatIso.isIso_of_isIso_app
   apply NatIso.isIso_of_isIso_app
 
@@ -713,6 +729,7 @@ instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A
 
 @[simp] lemma prodComparisonIso_id : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma prodComparisonIso_comp [PreservesLimit (pair A B) (F ⋙ G)]
     [PreservesLimit (pair (F.obj A) (F.obj B)) G] :
@@ -771,6 +788,7 @@ end prodComparison
 
 end CartesianMonoidalCategoryComparison
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
 -/
@@ -784,6 +802,8 @@ open Limits
 
 variable {P : ObjectProperty C}
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/
@@ -900,7 +920,7 @@ lemma μ_fst (X Y : C) : μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) 
 lemma μ_snd (X Y : C) : μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 @[reassoc]
 lemma μ_comp [(F ⋙ G).Monoidal] (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G.map (μ F X Y) := by
@@ -969,16 +989,21 @@ end Braided
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = ObjectProperty.homMk (lift f.hom g.hom) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
     (α_ X Y Z).hom = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma associator_inv_def (X Y Z : F.EssImageSubcategory) :
     (α_ X Y Z).inv = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).inv := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toUnit_def (X : F.EssImageSubcategory) :
     toUnit X = ObjectProperty.homMk (toUnit X.obj) := rfl
 

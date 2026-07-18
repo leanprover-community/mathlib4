@@ -257,7 +257,7 @@ theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
     e⁻¹ ∈ transvections R V ↔ e ∈ transvections R V :=
   symm_mem_transvections_iff
 
-open Pointwise in
+open scoped Pointwise in
 theorem transvections_pow_mono :
     Monotone (fun n : ℕ ↦ (transvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_transvections
@@ -349,10 +349,10 @@ theorem dilatransvection.apply {f : Dual R V} {v : V} {h : IsUnit (1 + f v)} {x 
 @[simp]
 theorem dilatransvection_mem_dilatransvections {f : Dual R V} {v : V} {h : IsUnit (1 + f v)} :
     dilatransvection h ∈ dilatransvections R V := by
-  simp only [dilatransvections, Set.mem_setOf_eq]
+  simp only [dilatransvections, Set.mem_ofPred_eq]
   refine ⟨f, v, by simp⟩
 
-open Pointwise in
+open scoped Pointwise in
 theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_dilatransvections
@@ -370,15 +370,14 @@ theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
       Module.rank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   simp only [dilatransvections]
   constructor
-  · simp only [Set.mem_setOf_eq]
+  · simp only [Set.mem_ofPred_eq]
     rintro ⟨f, v, he⟩
     apply le_trans (rank_mono (t := K ∙ v) ?_)
     · apply le_trans (rank_span_le _) (by simp)
     rintro _ ⟨x, rfl⟩
     simp [mem_span_singleton, he, LinearMap.transvection.apply]
   · intro he
-    simp only at he
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     set u := (e : V →ₗ[K] V) - LinearMap.id with hu
     rw [eq_sub_iff_add_eq] at hu
     by_cases hr : Module.rank K (range u) = 0
@@ -423,7 +422,6 @@ theorem mem_dilatransvections_iff_rank_quotient {e : V ≃ₗ[K] V} :
   rw [mem_dilatransvections_iff_rank, ← (quotKerEquivRange _).rank_eq, ← fixedSubmodule_eq_ker]
 
 variable (e f : V ≃ₗ[K] V)
-open Pointwise MulAction
 
 /-- Characterization of transvections within dilatransvections. -/
 theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
@@ -610,7 +608,7 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     · simp [← hxy, hxi]
     · rw [Finsupp.single_eq_of_ne hxi]; simp [hxy]
     · rw [Finsupp.single_eq_of_ne hxy, zero_add, mul_assoc]
-      convert mul_zero _
+      convert! mul_zero _
       by_cases hxi : x = i
       · simp [← hxi, Finsupp.single_eq_of_ne hxy]
       · simp [Finsupp.single_eq_of_ne hxi]

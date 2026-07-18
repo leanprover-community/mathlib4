@@ -53,6 +53,7 @@ noncomputable def colimitYonedaHomEquiv :
 
 attribute [elementwise] HasLimit.isoOfNatIso_hom_π
 
+set_option backward.defeqAttrib.useBackward true in
 unif_hint {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (G : D ⥤ Type*) (X X' : C)
   where X ≟ X'⊢ (F ⋙ G).obj X ≟ (G.obj (F.obj X)) in
 @[simp]
@@ -60,7 +61,7 @@ theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : 
     dsimp% limit.π (F.op ⋙ G) i (colimitYonedaHomEquiv F G η) =
       η.app (op (F.obj i.unop)) ((colimit.ι (F ⋙ yoneda) i.unop).app _ (𝟙 _)) := by
   simp only [colimitYonedaHomEquiv, Iso.toEquiv, uliftFunctor_obj,
-    Iso.trans_def, Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, Iso.symm_inv,
+    Iso.trans_def, Iso.trans_assoc, Iso.trans_hom, Iso.trans_inv,
     Category.assoc, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_mk, comp_apply,
     Equiv.ulift_apply]
   have (a : limit ((F.op ⋙ G) ⋙ uliftFunctor.{u, v})) := congrArg ULift.down
@@ -68,8 +69,7 @@ theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : 
   refine Eq.trans (dsimp% this _) ?_
   rw [HasLimit.isoOfNatIso_hom_π_apply]
   dsimp
-  rw [colimitYonedaHomIsoLimitOp_π_apply]
-  rfl
+  erw [colimitYonedaHomIsoLimitOp_π_apply]
 
 instance : Small.{v} (colimit (F ⋙ yoneda) ⟶ G) where
   equiv_small := ⟨_, ⟨colimitYonedaHomEquiv F G⟩⟩

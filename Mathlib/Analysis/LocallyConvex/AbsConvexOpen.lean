@@ -100,17 +100,18 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
   simp_rw [gaugeSeminorm_toFun]
-  exact gauge_lt_one_eq_self_of_isOpen (s.coe_convex.lift ℝ) s.coe_zero_mem s.coe_isOpen
+  exact setOfPred_gauge_lt_one_eq_self_of_isOpen (s.coe_convex.lift ℝ) s.coe_zero_mem s.coe_isOpen
 
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [LocallyConvexSpace 𝕜 E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
   refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
   · refine ⟨s, ⟨?_, rfl.subset⟩⟩
-    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
+    convert! (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
   refine ⟨s, ⟨?_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs

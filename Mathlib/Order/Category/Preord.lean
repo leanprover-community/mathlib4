@@ -43,7 +43,6 @@ instance : CoeSort Preord (Type u) :=
 
 attribute [coe] Preord.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where
@@ -83,10 +82,8 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : Preord} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom

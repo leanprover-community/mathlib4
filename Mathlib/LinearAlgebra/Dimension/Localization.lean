@@ -54,7 +54,7 @@ lemma IsLocalizedModule.lift_rank_eq :
       |>.cardinal_lift_le_rank]
 
 lemma IsLocalizedModule.finrank_eq : finrank R N = finrank R M := by
-  simpa using congr_arg toNat (lift_rank_eq p f hp)
+  simpa using! congr_arg toNat (lift_rank_eq p f hp)
 
 end
 
@@ -71,6 +71,29 @@ lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
     exact (hs.restrict_scalars' R).cardinal_le_rank
   · have := inj.nontrivial
     exact (hs.localization S p).cardinal_le_rank
+
+theorem IsLocalization.finrank_eq : finrank S N = finrank R N := by
+  simp_rw [finrank, rank_eq S p hp]
+
+end
+
+section
+
+variable (R N) [IsFractionRing R S]
+
+/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the rank `rank S N`
+of the right part of the tower equals the rank `rank R N` of the whole tower.
+
+See `IsFractionRing.finrank_right_eq` for the finrank version. -/
+theorem IsFractionRing.rank_right_eq : Module.rank S N = Module.rank R N :=
+  IsLocalization.rank_eq S R⁰ le_rfl
+
+/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the finrank `finrank S N`
+of the right part of the tower equals the finrank `finrank R N` of the whole tower.
+
+See `IsFractionRing.rank_right_eq` for the rank version. -/
+theorem IsFractionRing.finrank_right_eq : finrank S N = finrank R N :=
+  IsLocalization.finrank_eq S R⁰ le_rfl
 
 end
 
@@ -135,7 +158,7 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
     AlgebraTensorModule.congr (.refl ..) ((isLocalizedModule_iff_isBaseChange p S f).mp ‹_›).equiv
 
 theorem finrank_eq_of_le_nonZeroDivisors : finrank T P = finrank R M := by
-  simpa using congr_arg toNat (lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc)
+  simpa using! congr_arg toNat (lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc)
 
 omit bc
 theorem rank_eq_of_le_nonZeroDivisors {P : Type uM} [AddCommGroup P] [Module R P] [Module T P]
@@ -175,7 +198,7 @@ theorem lift_rank_eq :
     lift_rank_eq_of_le_nonZeroDivisors FR (LocalizedModule.mkLinearMap R⁰ M) le_rfl
       (map_le_nonZeroDivisors_of_injective _ inj le_rfl) this, lift_lift]
 
-theorem finrank_eq : finrank T P = finrank R M := by simpa using congr_arg toNat bc.lift_rank_eq
+theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr_arg toNat bc.lift_rank_eq
 
 omit bc
 theorem rank_eq {P : Type uM} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
@@ -194,7 +217,6 @@ variable {R} [Ring R] [IsDomain R]
 See [cohn_1995] Proposition 1.3.6 -/
 lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R⁰)) :
     ℵ₀ ≤ Module.rank R R := by
-  classical
   rw [← not_nonempty_iff, OreLocalization.nonempty_oreSet_iff_of_noZeroDivisors] at hS
   push Not at hS
   obtain ⟨r, s, h⟩ := hS
@@ -208,7 +230,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
   induction n generalizing g x i with
-  | zero => exact (hin.not_ge (zero_le i)).elim
+  | zero => contradiction
   | succ n IH =>
     rw [Finset.sum_range_succ'] at hg
     by_cases hg0 : g 0 = 0

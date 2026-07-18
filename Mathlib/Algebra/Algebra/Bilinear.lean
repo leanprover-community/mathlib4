@@ -53,6 +53,12 @@ theorem mul_apply' (a b : A) : mul R A a b = a * b :=
 theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
 
+lemma restrictScalars_mul {S : Type*} [CommSemiring S] [Module S A] [SMulCommClass S A A]
+    [IsScalarTower S A A] [CompatibleSMul A A R S] (a : A) :
+    LinearMap.restrictScalars R (LinearMap.mul S A a) = LinearMap.mul R A a := by
+  ext x
+  simp
+
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 
 theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
@@ -155,9 +161,6 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 
 theorem toSpanSingleton_one_eq_algebraLinearMap :
     toSpanSingleton R A 1 = Algebra.linearMap R A := by ext; simp
-
-@[deprecated (since := "2025-12-30")] alias toSpanSingleton_eq_algebra_linearMap :=
-  toSpanSingleton_one_eq_algebraLinearMap
 
 variable (R A) in
 /-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/

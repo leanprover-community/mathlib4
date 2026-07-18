@@ -29,7 +29,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 namespace CategoryTheory
 
-open MonoidalCategory ComonObj Functor
+open MonoidalCategory ComonObj
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 
@@ -97,5 +97,12 @@ def forget₂Comon : CommComon C ⥤ Comon C :=
 end
 
 end CommComon
+
+instance {C : Type*} [Category* C] [MonoidalCategory C] [SymmetricCategory C]
+    (A B : C) [ComonObj A] [ComonObj B]
+    [IsCommComonObj A] [IsCommComonObj B] : IsCommComonObj (A ⊗ B) where
+  comul_comm := by
+    rw [Comon.tensorObj_comul, Category.assoc, SymmetricCategory.tensorμ_braid_swap]
+    simp
 
 end CategoryTheory

@@ -32,7 +32,6 @@ open CategoryTheory Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
   [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 namespace SheafOfModules
 
@@ -71,6 +70,7 @@ lemma freeHomEquiv_comp_apply {M N : SheafOfModules.{u} R} {I : Type u}
     (f : free I ⟶ M) (p : M ⟶ N) (i : I) :
     N.freeHomEquiv (f ≫ p) i = sectionsMap p (M.freeHomEquiv f i) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma freeHomEquiv_symm_comp {M N : SheafOfModules.{u} R} {I : Type u} (s : I → M.sections)
     (p : M ⟶ N) :
     M.freeHomEquiv.symm s ≫ p = N.freeHomEquiv.symm (fun i ↦ sectionsMap p (s i)) :=
@@ -85,6 +85,7 @@ lemma freeHomEquiv_apply {M : SheafOfModules.{u} R} {I : Type u}
     freeHomEquiv M f i = sectionsMap f (freeSection i) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma unitHomEquiv_symm_freeHomEquiv_apply
     {I : Type u} {M : SheafOfModules.{u} R} (f : free I ⟶ M) (i : I) :
     M.unitHomEquiv.symm (M.freeHomEquiv f i) = ιFree i ≫ f := by
@@ -158,14 +159,14 @@ noncomputable def freeSumIso : free I ⨿ free J ≅ free (R := R) (I ⊕ J) :=
 @[reassoc (attr := simp)]
 lemma inl_freeSumIso_hom :
     coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl := by
-  rw [← dsimp% freeFunctor_map (TypeCat.ofHom (Sum.inl : I → I ⊕ J))]
+  rw [← dsimp% freeFunctor_map (↾(Sum.inl : I → I ⊕ J))]
   exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .left)
 
 @[reassoc (attr := simp)]
 lemma inr_freeSumIso_hom :
     coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr := by
-  rw [← dsimp% freeFunctor_map (TypeCat.ofHom (Sum.inr : J → I ⊕ J))]
+  rw [← dsimp% freeFunctor_map (↾(Sum.inr : J → I ⊕ J))]
   exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .right)
 
@@ -175,7 +176,6 @@ section
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) (I : Type u)
 
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.

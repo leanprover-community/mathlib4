@@ -81,6 +81,7 @@ def _root_.lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
   obj X := X.toTopCat
   map f := toTopCatMap f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X :=
   TopCat.ofHom
@@ -89,6 +90,7 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toT
       rw [continuous_coinduced_dom]
       continuity }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is sequential).
 -/
@@ -100,11 +102,12 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
   (topCatAdjunctionCounitEquiv X).bijective
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 @[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   hom := {
-    app S := TypeCat.ofHom fun x ↦ {
+    app S := ↾fun x ↦ {
       toFun := fun s ↦ X.obj.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : LightProfinite.{u}) × X.obj.obj ⟨T⟩),
@@ -113,11 +116,12 @@ noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat
         apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
-      simp only [TopCat.toSheafCompHausLike_obj_obj, Opposite.op_unop, TypeCat.Fun.toFun_apply,
+      simp only [Opposite.op_unop, TypeCat.Fun.toFun_apply,
         comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
         TopCat.toSheafCompHausLike_obj_map, ← Functor.map_comp_apply]
       rfl }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightCondSet where
@@ -128,6 +132,7 @@ noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightC
     change Y.obj.map (𝟙 _) _ = _
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   rw [TopCat.epi_iff_surjective]
   exact (topCatAdjunctionCounit_bijective _).2
