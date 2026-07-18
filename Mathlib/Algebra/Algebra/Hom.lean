@@ -424,7 +424,7 @@ lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
 
 /-- Ring homomorphisms are the same as `ℕ`-algebra homomorphisms. -/
 @[simps]
-def _root_.ringHomEquivNatAlgHom [Semiring R] [Semiring S] : (R →+* S) ≃ (R →ₐ[ℕ] S) where
+def equivNatAlgHom [Semiring R] [Semiring S] : (R →+* S) ≃ (R →ₐ[ℕ] S) where
   toFun := RingHom.toNatAlgHom
   invFun := AlgHom.toRingHom
 
@@ -445,7 +445,7 @@ lemma toIntAlgHom_injective [Ring R] [Ring S] :
 
 /-- Ring homomorphisms are the same as `ℤ`-algebra homomorphisms. -/
 @[simps]
-def _root_.ringHomEquivIntAlgHom [Ring R] [Ring S] : (R →+* S) ≃ (R →ₐ[ℤ] S) where
+def equivIntAlgHom [Ring R] [Ring S] : (R →+* S) ≃ (R →ₐ[ℤ] S) where
   toFun := RingHom.toIntAlgHom
   invFun := AlgHom.toRingHom
 
