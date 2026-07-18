@@ -170,11 +170,8 @@ lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
 
 /-- The set of functions which are 1-Lipschitz on a metric space separates points. -/
 theorem _root_.Set.separatesPoints_lipschitzWith_one (E : Type*) [MetricSpace E] :
-    Set.SeparatesPoints { f : E → ℝ | LipschitzWith 1 f } := by
-  intro x y hxy
-  refine ⟨(dist · y), LipschitzWith.dist_left _, ?_⟩
-  contrapose! hxy
-  apply eq_of_dist_eq_zero (by simpa using hxy)
+    { f : E → ℝ | LipschitzWith 1 f }.SeparatesPoints :=
+  fun _ y _ ↦ ⟨(dist · y), by simp [LipschitzWith.dist_left], by simpa⟩
 
 end Metric
 
