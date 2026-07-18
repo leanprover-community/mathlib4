@@ -47,7 +47,7 @@ theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i ∈ s, f i) ↔
       ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i ∈ t, f i‖ < ε := by
   rw [cauchySeq_finset_iff_sum_vanishing, nhds_basis_ball.forall_iff]
-  · simp only [ball_zero_eq, Set.mem_setOf_eq]
+  · simp only [ball_zero_eq, Set.mem_ofPred_eq]
   · rintro s t hst ⟨s', hs'⟩
     exact ⟨s', fun t' ht' => hst <| hs' _ ht'⟩
 

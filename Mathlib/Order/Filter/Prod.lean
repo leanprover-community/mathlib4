@@ -88,7 +88,7 @@ theorem mem_prod_top {s : Set (α × β)} :
 theorem eventually_prod_principal_iff {p : α × β → Prop} {s : Set β} :
     (∀ᶠ x : α × β in f ×ˢ 𝓟 s, p x) ↔ ∀ᶠ x : α in f, ∀ y : β, y ∈ s → p (x, y) := by
   rw [eventually_iff, eventually_iff, mem_prod_principal]
-  simp only [mem_setOf_eq]
+  simp only [mem_ofPred_eq]
 
 theorem comap_prod (f : α → β × γ) (b : Filter β) (c : Filter γ) :
     comap f (b ×ˢ c) = comap (Prod.fst ∘ f) b ⊓ comap (Prod.snd ∘ f) c := by

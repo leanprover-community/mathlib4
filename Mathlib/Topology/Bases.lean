@@ -793,7 +793,7 @@ theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
   refine ⟨_, ?_, notMem_sdiff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).sdiff_empty⟩
-  exacts [((countable_setOf_finite_subset hb₁).image _).mono sdiff_subset, rfl]
+  exacts [((countable_ofPred_finite_subset hb₁).image _).mono sdiff_subset, rfl]
 
 theorem exists_seq_basis [SecondCountableTopology α] :
     ∃ b : ℕ → Set α, IsTopologicalBasis (range b) := by
