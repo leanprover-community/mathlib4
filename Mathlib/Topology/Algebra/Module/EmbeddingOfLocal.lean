@@ -67,13 +67,10 @@ private lemma exists_good_rescaling {V : Set E} (V_mem : V ∈ 𝓝 0) :
   have V_mem' : V ∈ comap p (𝓝 0) := by
     grw [mem_comap_iff_compl, ← le_principal_iff, p_mapsto.image_subset, compl_compl]
     simpa [set_smul_mem_nhds_zero_iff c_ne]
-  refine le_antisymm ?_ ?_
-  · rw [← tendsto_iff_comap]
-    suffices p =ᶠ[𝓝 0] id from tendsto_id.congr' this.symm
-    filter_upwards [V_mem] using p_eqOn_V
-  · rw [← tendsto_id']
-    suffices p =ᶠ[comap p (𝓝 0)] id from tendsto_comap.congr' this
-    filter_upwards [V_mem'] using p_eqOn_V
+  calc 𝓝 0
+    _ = comap id (𝓝 0) ⊓ 𝓟 V := by simp [comap_id, V_mem]
+    _ = comap p (𝓝 0) ⊓ 𝓟 V := .symm <| comap_inf_congr (by simpa)
+    _ = comap p (𝓝 0) := by simp [V_mem']
 
 lemma LinearMap.isInducing_of_restrict_nhds_zero_new {V : Set E}
     (V_mem : V ∈ 𝓝 0) (H : IsInducing (Set.restrict V f)) : IsInducing f := by
