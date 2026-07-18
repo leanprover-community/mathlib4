@@ -68,7 +68,7 @@ lemma isCohenMacaulayRing_of_unmixed
     | zero => exact fun _ ↦ ⟨[], by simp, IsWeaklyRegular.nil _ _, List.length_nil⟩
     | succ i hi =>
       intro le
-      have lt : i < p.height := lt_of_lt_of_le (ENat.coe_lt_coe.mpr (lt_add_one i)) le
+      have lt : i < p.height := lt_of_lt_of_le (ENat.natCast_lt_natCast.mpr (lt_add_one i)) le
       rcases hi (le_of_lt lt) with ⟨rs, mem, reg, len⟩
       have netop : Ideal.ofList rs ≠ ⊤ := ne_top_of_le_ne_top hp.ne_top (Ideal.span_le.mpr mem)
       have ht := (Ideal.ofList_height_eq_length_of_isWeaklyRegular rs reg netop)
@@ -100,9 +100,9 @@ lemma isCohenMacaulayRing_of_unmixed
   rw [IsLocalization.AtPrime.ringKrullDim_eq_height p, IsLocalRing.depth_eq_sSup_length_regular,
     WithBot.coe_le_coe]
   apply le_sSup
-  rcases this p.height.coe_toNat_le_self with ⟨rs, mem, reg, len⟩
+  rcases this p.height.natCast_toNat_le_self with ⟨rs, mem, reg, len⟩
   use List.map (algebraMap R (Localization.AtPrime p)) rs
-  simp only [List.length_map, len, ENat.coe_toNat_eq_self, ne_eq, netop, not_false_eq_true,
+  simp only [List.length_map, len, ENat.natCast_toNat_eq_self, ne_eq, netop, not_false_eq_true,
     List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, exists_prop, and_true]
   have : ∀ a ∈ rs, (algebraMap R (Localization.AtPrime p)) a ∈
     IsLocalRing.maximalIdeal (Localization.AtPrime p) := by
@@ -119,7 +119,7 @@ omit [IsNoetherianRing R] in
 lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal R) : J.height ≤ (Ideal.map (algebraMap R A) J).height := by
   rw [(Ideal.map (algebraMap R A) J).height_eq_inf_minimalPrimes]
-  simp only [Set.mem_setOf_eq, le_iInf_iff]
+  simp only [Set.mem_ofPred_eq, le_iInf_iff]
   intro p hp
   have := hp.isPrime
   rw [← IsLocalization.height_under S p]
@@ -169,7 +169,9 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     let f := Submodule.toLocalizedQuotient' (Localization.AtPrime p) p.primeCompl
       (Algebra.linearMap R (Localization.AtPrime p)) (Ideal.ofList l)
     exact LinearEquiv.AssociatedPrimes.eq
-      ((Submodule.quotEquivOfEq _ _ (by simp [← Ideal.map_span])).trans
+      ((Submodule.quotEquivOfEq _ _ (by
+        rw [Ideal.localized'_eq_map]
+        simp)).trans
       (IsLocalizedModule.mapEquiv p.primeCompl f
       (LocalizedModule.mkLinearMap p.primeCompl (R ⧸ Ideal.ofList l)) (Localization.AtPrime p)
       (LinearEquiv.refl R _)))
