@@ -958,7 +958,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>
         ↑(x : Set.Iic i × Ω).fst by
-      simp +unfoldPartialApp only [sc, Set.restrict, h_min_eq_left]
+      simp +unfoldPartialApp only [sc, Set.domRestrict, h_min_eq_left]
       exact (h_meas_fst _).withTop_coe
     ext1 ω
     rw [min_eq_left]

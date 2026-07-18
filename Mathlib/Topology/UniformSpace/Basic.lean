@@ -680,7 +680,7 @@ theorem UniformContinuous.subtype_map [UniformSpace α] [UniformSpace β] {p : �
   (hf.comp uniformContinuous_subtype_val).subtype_mk _
 
 theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α} :
-    UniformContinuousOn f s ↔ UniformContinuous (s.restrict f) := by
+    UniformContinuousOn f s ↔ UniformContinuous (s.domRestrict f) := by
   delta UniformContinuousOn UniformContinuous
   rw [← map_uniformity_set_coe, tendsto_map'_iff]; rfl
 
@@ -697,7 +697,7 @@ theorem tendsto_of_uniformContinuous_subtype [UniformSpace α] [UniformSpace β]
 theorem UniformContinuousOn.continuousOn [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α}
     (h : UniformContinuousOn f s) : ContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict] at h
-  rw [continuousOn_iff_continuous_restrict]
+  rw [continuousOn_iff_continuous_domRestrict]
   exact h.continuous
 
 instance [UniformSpace α] [(𝓤 α).IsCountablyGenerated] (s : Set α) : (𝓤 s).IsCountablyGenerated :=
