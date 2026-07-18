@@ -71,13 +71,6 @@ prime number, arithmetic progression, residue class, Dirichlet's Theorem
 @[expose] public section
 
 /-!
-### Auxiliary statements
-
-An infinite product or sum over a function supported in prime powers can be written
-as an iterated product or sum over primes and natural numbers.
--/
-
-/-!
 ### The L-series of the von Mangoldt function restricted to a residue class
 -/
 
