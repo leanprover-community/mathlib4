@@ -913,34 +913,37 @@ theorem length_bypass_le_length (p : G.Walk u v) : p.bypass.length ≤ p.length 
 
 @[deprecated (since := "2026-05-25")] alias length_bypass_le := length_bypass_le_length
 
-lemma bypass_eq_self_of_length_le_length_bypass (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
-    p.bypass = p :=
-  ext_support <| p.support_bypass_sublist_support.eq_of_length_le <| by simpa using h
+@[simp]
+lemma length_le_bypass_length_iff (p : G.Walk u v) :
+    p.length ≤ p.bypass.length ↔ p.bypass = p :=
+  ⟨fun h ↦ ext_support <| p.support_bypass_sublist_support.eq_of_length_le <| by simpa using h,
+    fun hp ↦ (congrArg length hp).ge⟩
+
+@[deprecated (since := "2026-06-18")]
+alias bypass_eq_self_of_length_le_length_bypass := length_le_bypass_length_iff
 
 @[deprecated (since := "2026-05-25")]
 alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
-
-lemma bypass_eq_self_iff_length_le (p : G.Walk u v) : p.bypass = p ↔ p.length ≤ p.bypass.length :=
-  ⟨fun hp ↦ (congrArg length hp).ge, p.bypass_eq_self_of_length_le_length_bypass⟩
 
 @[simp]
 lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj nil := by
   grind [bypass, support_nil, SimpleGraph.irrefl]
 
 @[simp]
-lemma bypass_eq_nil (p : G.Walk u u) : p.bypass = nil := by
+lemma nil_bypass (p : G.Walk u u) : p.bypass.Nil := by
   grind [p.bypass_isPath, isPath_iff_nil, Nil]
 
 @[grind →]
 lemma IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := by
   induction p <;> simp_all [cons_isPath_iff, bypass]
 
-theorem bypass_eq_self_iff_isPath (p : G.Walk u v) : p.bypass = p ↔ p.IsPath :=
+@[simp]
+theorem bypass_eq_self_iff_isPath {p : G.Walk u v} : p.bypass = p ↔ p.IsPath :=
   ⟨fun hp ↦ hp ▸ p.bypass_isPath, IsPath.bypass_eq_self⟩
 
-theorem length_bypass_lt_iff_not_isPath (p : G.Walk u v) :
+theorem length_bypass_lt_iff_not_isPath {p : G.Walk u v} :
     p.bypass.length < p.length ↔ ¬p.IsPath := by
-  rw [iff_not_comm, Nat.not_lt, ← bypass_eq_self_iff_isPath, bypass_eq_self_iff_length_le]
+  rw [iff_not_comm, Nat.not_lt, ← bypass_eq_self_iff_isPath, length_le_bypass_length_iff]
 
 theorem darts_toPath_subset_darts (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   p.darts_bypass_subset_darts
@@ -999,17 +1002,9 @@ lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.Is
     w.cycleBypass.IsCycle :=
   (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
 
-lemma cycleBypass_eq_self_of_length_le (w : G.Walk v v) (h : w.length ≤ w.cycleBypass.length) :
-    w.cycleBypass = w := by
-  cases w
-  · simp
-  · simp only [length_cons, cycleBypass, Nat.add_le_add_iff_right, cons.injEq, heq_eq_eq,
-      true_and] at h ⊢
-    exact bypass_eq_self_of_length_le_length_bypass _ h
-
 theorem cycleBypass_eq_self_iff_length_le (w : G.Walk v v) :
     w.cycleBypass = w ↔ w.length ≤ w.cycleBypass.length := by
-  cases w <;> simp [cycleBypass, bypass_eq_self_iff_length_le]
+  cases w <;> simp [cycleBypass]
 
 theorem IsCycle.cycleBypass_eq_self {w : G.Walk v v} (hw : w.IsCycle) : w.cycleBypass = w := by
   cases w
@@ -1026,9 +1021,7 @@ theorem IsTrail.cycleBypass_eq_self_iff_isCycle_or_nil {w : G.Walk v v} (hw : w.
 theorem IsTrail.length_cycleBypass_lt_iff_not_isCycle_and_not_nil {w : G.Walk v v}
     (hw : w.IsTrail) :
     w.cycleBypass.length < w.length ↔ ¬w.IsCycle ∧ ¬w.Nil := by
-  cases w
-  · simp
-  · simp [cycleBypass, length_bypass_lt_iff_not_isPath, cons_isCycle_iff, (isTrail_cons ..).mp hw]
+  grind [hw.cycleBypass_eq_self_iff_isCycle_or_nil, cycleBypass_eq_self_iff_length_le]
 
 end Walk
 
