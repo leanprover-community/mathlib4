@@ -29,7 +29,7 @@ variable {K : NNReal} {f : F → ℝ}
 open scoped Gradient RealInnerProductSpace
 
 theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
-    LipschitzSmoothWith K f ↔
+    LipschitzSmoothWith ℝ K f ↔
       ∀ x y : F, ‖f y - f x - ⟪∇ f x, y - x⟫‖ ≤ K / 2 * ‖y - x‖ ^ 2 := by
   rw [lipschitzSmoothWith_iff_fderiv hf]
   refine forall_congr' fun x => forall_congr' fun y => ?_
@@ -37,24 +37,24 @@ theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
 
 namespace LipschitzSmoothWith
 
-theorem inner_gradient_norm_le (h : LipschitzSmoothWith K f) (x y : F)
+theorem inner_gradient_norm_le (h : LipschitzSmoothWith ℝ K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
     ‖f y - f x - ⟪∇ f x, y - x⟫‖ ≤ K / 2 * ‖y - x‖ ^ 2 := by
   simpa only [inner_gradient_left, dist_eq_norm'] using h.fderiv_norm_le x y hf
 
-theorem inner_gradient_descent_le (h : LipschitzSmoothWith K f) (x y : F)
+theorem inner_gradient_descent_le (h : LipschitzSmoothWith ℝ K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
     f y ≤ f x + ⟪∇ f x, y - x⟫ + K / 2 * ‖y - x‖ ^ 2 := by
   rw [inner_gradient_left, ← dist_eq_norm']
   exact h.fderiv_descent_le x y hf
 
-theorem inner_gradient_descent_ge (h : LipschitzSmoothWith K f) (x y : F)
+theorem inner_gradient_descent_ge (h : LipschitzSmoothWith ℝ K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
     f x + ⟪∇ f x, y - x⟫ - K / 2 * ‖y - x‖ ^ 2 ≤ f y := by
   rw [inner_gradient_left, ← dist_eq_norm']
   exact h.fderiv_descent_ge x y hf
 
-theorem inner_gradient_sub_le (h : LipschitzSmoothWith K f) (x y : F)
+theorem inner_gradient_sub_le (h : LipschitzSmoothWith ℝ K f) (x y : F)
     (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
     ⟪∇ f y - ∇ f x, y - x⟫ ≤ K * ‖y - x‖ ^ 2 := by
   simp only [← dist_eq_norm', inner_sub_left, inner_gradient_left, ← sub_apply]
