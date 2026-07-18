@@ -176,6 +176,7 @@ Cantor Normal Form (`CNF`) of `o`, for each `e`. -/
 def coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
   lookupFinsupp ⟨_, nodupKeys b o⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_coeff (b o : Ordinal) :
     (coeff b o).support = ((CNF b o).map Prod.fst).toFinset := by
   rw [coeff, lookupFinsupp_support, filter_eq_self.2]
