@@ -22,7 +22,7 @@ notably several versions of Prokhorov theorem on tight sets of probability measu
 
 * `instCompactSpaceProbabilityMeasure` proves that the space of probability measures on a compact
   space is itself compact
-* `isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le`: Given a sequence of compact
+* `isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le`: Given a sequence of compact
   sets `Kₙ` and a sequence `uₙ` tending to zero, the probability measures giving mass at most `uₙ`
   to the complement of `Kₙ` form a compact set.
 * `isCompact_closure_of_isTightMeasureSet`: Given a tight set of probability measures, its closure
@@ -40,7 +40,7 @@ For the compactness of the space of probability measures in a compact space, we 
 ultrafilter converges, using the Riesz-Markov-Kakutani theorem to construct the limiting measure
 in terms of its integrals against continuous functions.
 
-For Prokhorov theorem `isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le`,
+For Prokhorov theorem `isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le`,
 we rely on the compactness of the space of measures inside each compact set to get convergence
 of the restriction there, and argue that the full measure converges to the sum of the individual
 limits of the disjointed components. There is a subtlety that the space of finite measures
@@ -64,9 +64,10 @@ open FiniteMeasure
 
 variable {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [BorelSpace E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (E) in
 /-- In a compact space, the set of finite measures with mass at most `C` is compact. -/
-theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : ℝ≥0) :
+theorem isCompact_setOfPred_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : ℝ≥0) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C} := by
   /- To prove the compactness, we will show that any sequence has a converging subsequence, in
   ultrafilters terms as things are not second countable. The integral against any bounded continuous
@@ -141,7 +142,7 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
     filter_upwards [hf] with μ hμ using by simpa [o] using! hμ
   let μlim' : FiniteMeasure E := ⟨μlim, ⟨μlim_le.trans_lt (by simp)⟩⟩
   refine ⟨μlim', ?_, ?_⟩
-  · simp only [mem_setOf_eq, FiniteMeasure.mk_apply, μlim', FiniteMeasure.mass]
+  · simp only [mem_ofPred_eq, FiniteMeasure.mk_apply, μlim', FiniteMeasure.mass]
     rw [show C = (ENNReal.ofReal ↑C).toNNReal by simp]
     exact ENNReal.toNNReal_mono (by simp) μlim_le
   change Tendsto id f (𝓝 μlim')
@@ -154,24 +155,32 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
   simp only [FiniteMeasure.toMeasure_mk, RealRMK.integral_rieszMeasure, μlim', μlim]
   rfl
 
+@[deprecated (since := "2026-07-09")]
+alias isCompact_setOf_finiteMeasure_le_of_compactSpace :=
+  isCompact_setOfPred_finiteMeasure_le_of_compactSpace
+
 variable (E) in
 /-- In a compact space, the set of finite measures with mass `C` is compact. -/
-lemma isCompact_setOf_finiteMeasure_eq_of_compactSpace [CompactSpace E] (C : ℝ≥0) :
+lemma isCompact_setOfPred_finiteMeasure_eq_of_compactSpace [CompactSpace E] (C : ℝ≥0) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C} := by
   have : {μ : FiniteMeasure E | μ.mass = C} = {μ | μ.mass ≤ C} ∩ {μ | μ.mass = C} := by grind
   rw [this]
-  apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_le_of_compactSpace E C)
+  apply IsCompact.inter_right (isCompact_setOfPred_finiteMeasure_le_of_compactSpace E C)
   exact isClosed_eq (by fun_prop) (by fun_prop)
+
+@[deprecated (since := "2026-07-09")]
+alias isCompact_setOf_finiteMeasure_eq_of_compactSpace :=
+  isCompact_setOfPred_finiteMeasure_eq_of_compactSpace
 
 /-- In a compact space, the space of probability measures is also compact. -/
 instance [CompactSpace E] : CompactSpace (ProbabilityMeasure E) := by
   constructor
   apply (ProbabilityMeasure.toFiniteMeasure_isEmbedding E).isCompact_iff.2
-  simpa using isCompact_setOf_finiteMeasure_eq_of_compactSpace E 1
+  simpa using isCompact_setOfPred_finiteMeasure_eq_of_compactSpace E 1
 
 /-- The set of finite measures of mass at most `C` supported on a given compact set `K` is
 compact. -/
-lemma isCompact_setOf_finiteMeasure_le_of_isCompact
+lemma isCompact_setOfPred_finiteMeasure_le_of_isCompact
     (C : ℝ≥0) {K : Set E} (hK : IsCompact K) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ μ Kᶜ = 0} := by
   let f : K → E := Subtype.val
@@ -195,20 +204,24 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
         exact hμ.2
       · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
       · exact hf.continuous.measurable hs
-    · simp only [null_iff_toMeasure_null, image_subset_iff, preimage_setOf_eq, toMeasure_map,
-        setOf_subset_setOf, F, T]
+    · simp only [null_iff_toMeasure_null, image_subset_iff, preimage_ofPred_eq, toMeasure_map,
+        ofPred_subset_ofPred, F, T]
       intro μ hμ
       rw [Measure.map_apply hf.continuous.measurable hK.measurableSet.compl]
       refine ⟨(mass_map_le _ _).trans hμ, by simp [f]⟩
   rw [this]
   apply IsCompact.image _ (by fun_prop)
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
-  exact isCompact_setOf_finiteMeasure_le_of_compactSpace _ _
+  exact isCompact_setOfPred_finiteMeasure_le_of_compactSpace _ _
+
+@[deprecated (since := "2026-07-09")]
+alias isCompact_setOf_finiteMeasure_le_of_isCompact :=
+  isCompact_setOfPred_finiteMeasure_le_of_isCompact
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending
 to zero, the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ`
 form a compact set. -/
-lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
+lemma isCompact_setOfPred_finiteMeasure_mass_le_compl_isCompact_le
     {u : ℕ → ℝ≥0} {K : ℕ → Set E} (C : ℝ≥0)
     (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
@@ -250,8 +263,8 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       simp only [Tendsto]
       rw [← Ultrafilter.coe_map]
       apply IsCompact.ultrafilter_le_nhds'
-        (isCompact_setOf_finiteMeasure_le_of_isCompact C (A n))
-      simp only [null_iff_toMeasure_null, Ultrafilter.mem_map, preimage_setOf_eq]
+        (isCompact_setOfPred_finiteMeasure_le_of_isCompact C (A n))
+      simp only [null_iff_toMeasure_null, Ultrafilter.mem_map, preimage_ofPred_eq]
       filter_upwards [hf] with ρ hρ
       simp only [restrict_mass, restrict_measure_eq,
         Measure.restrict_apply (A n).measurableSet.compl]
@@ -462,25 +475,34 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       · exact (disjoint_disjointed K).set_pairwise _
       · exact MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
     rw [this, restrict_mass]
-    exact le_trans (apply_mono _ (diff_subset_compl (K m) (K n))) (hμ.2 n)
+    exact le_trans (apply_mono _ (sdiff_subset_compl (K m) (K n))) (hμ.2 n)
+
+@[deprecated (since := "2026-07-09")]
+alias isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le :=
+  isCompact_setOfPred_finiteMeasure_mass_le_compl_isCompact_le
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the finite measures of mass `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
 compact set. -/
-lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ≥0}
+lemma isCompact_setOfPred_finiteMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ≥0}
     {K : ℕ → Set E} (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n))
     (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   have : {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} =
     {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩ {μ | μ.mass = C} := by ext; grind
   rw [this]
-  apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le C hu hK h)
+  apply IsCompact.inter_right
+    (isCompact_setOfPred_finiteMeasure_mass_le_compl_isCompact_le C hu hK h)
   exact isClosed_eq (by fun_prop) (by fun_prop)
+
+@[deprecated (since := "2026-07-09")]
+alias isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le :=
+  isCompact_setOfPred_finiteMeasure_mass_eq_compl_isCompact_le
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the probability measures giving mass at most `uₙ` to the complement of `Kₙ` form a
 compact set. -/
-lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ≥0}
+lemma isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ≥0}
     {K : ℕ → Set E} (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n))
     (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K n)ᶜ ≤ u n} := by
@@ -488,7 +510,7 @@ lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ →
   have : ProbabilityMeasure.toFiniteMeasure '' {μ | ∀ (n : ℕ), μ (K n)ᶜ ≤ u n}
       = {μ : FiniteMeasure E | μ.mass = 1 ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
     ext μ
-    simp only [mem_image, mem_setOf_eq]
+    simp only [mem_image, mem_ofPred_eq]
     refine ⟨?_, ?_⟩
     · rintro ⟨ν, hν, rfl⟩
       simpa using! hν
@@ -497,7 +519,11 @@ lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ →
       have : ν.toFiniteMeasure = μ := by ext; rfl
       exact ⟨ν, by simpa [← this] using! h'μ , this⟩
   rw [this]
-  exact isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le 1 hu hK h
+  exact isCompact_setOfPred_finiteMeasure_mass_eq_compl_isCompact_le 1 hu hK h
+
+@[deprecated (since := "2026-07-09")]
+alias isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le :=
+  isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le
 
 /-- **Prokhorov theorem**: the closure of a tight set of probability measures is compact.
 We only require the space to be T2. -/
@@ -516,10 +542,10 @@ lemma isCompact_closure_of_isTightMeasureSet {S : Set (ProbabilityMeasure E)}
   choose K K_comp hK using A
   let K' n := ⋃ i ∈ Iic n, K i
   have h'K : IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K' n)ᶜ ≤ u n} := by
-    apply isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le u_lim
+    apply isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le u_lim
     · exact fun n ↦ (finite_Iic n).isCompact_biUnion (fun i hi ↦ K_comp i)
     · right
-      simp only [Monotone, mem_Iic, le_eq_subset, iUnion_subset_iff, K']
+      simp only [Monotone, mem_Iic, iUnion_subset_iff, K']
       intro a b hab i hi
       apply subset_biUnion_of_mem
       exact hi.trans hab
@@ -566,11 +592,11 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
       rw [← ofNNReal_liminf] at this
       · exact mod_cast this
       use 1
-      simpa [ge_iff_le, eventually_map, eventually_atTop, forall_exists_index] using fun _ x h ↦
+      simpa [eventually_map, eventually_atTop, forall_exists_index] using fun _ x h ↦
           (h x (by simp)).trans <| ProbabilityMeasure.apply_le_one (μ (sub x)) (⋃ i ≤ n, U i)
     _ ≤ liminf (fun k ↦ (μ (sub k) (⋃ (i ≤ sub k), U i) : ℝ)) atTop := by
       apply Filter.liminf_le_liminf
-      · simp only [NNReal.coe_le_coe, eventually_atTop, ge_iff_le]
+      · simp only [NNReal.coe_le_coe, eventually_atTop]
         use n + 1
         intro b hypo
         refine (μ (sub b)).apply_mono
@@ -578,12 +604,12 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
         exact le_trans (Nat.le_add_right n 1) (le_trans hypo (StrictMono.le_apply hsubmono))
       · use 0; simp
       · use 1
-        simpa [ge_iff_le, eventually_map, eventually_atTop, ge_iff_le, forall_exists_index] using
+        simpa [eventually_map, eventually_atTop, forall_exists_index] using
             fun _ d hyp ↦ (hyp d (by simp)).trans (by simp)
     _ ≤ 1 - ε := by
       apply Filter.liminf_le_of_le
       · use 0; simp
-      simp only [eventually_atTop, ge_iff_le, forall_exists_index]
+      simp only [eventually_atTop, forall_exists_index]
       intro b c h
       apply le_trans (h c le_rfl)
       refine (ofReal_le_ofReal_iff (by rw [sub_nonneg]; exact hεbound)).mp ?_
@@ -621,7 +647,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
   intro ε εpos
   rcases lt_or_ge 1 ε with hεbound | hεbound
   · refine ⟨∅, isCompact_empty, fun μ hμ ↦ ?_⟩
-    simp only [mem_setOf_eq] at hμ
+    simp only [mem_ofPred_eq] at hμ
     obtain ⟨μ', hμ', rfl⟩ := hμ
     rw [compl_empty, measure_univ]
     exact le_of_lt hεbound

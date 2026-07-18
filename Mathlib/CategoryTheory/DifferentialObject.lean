@@ -226,7 +226,7 @@ abbrev HomSubtype (X Y : DifferentialObject S C) :=
 instance (X Y : DifferentialObject S C) :
     FunLike (HomSubtype S C X Y) (CC X.obj) (CC Y.obj) where
   coe f := f.1
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance concreteCategoryOfDifferentialObjects :
     ConcreteCategory (DifferentialObject S C) (HomSubtype S C) where
@@ -276,7 +276,6 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor on `DifferentialObject S C` is additive. -/
 @[simps!]
 nonrec def shiftFunctorAdd (m n : S) :
@@ -294,8 +293,8 @@ nonrec def shiftFunctorAdd (m n : S) :
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
 def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by

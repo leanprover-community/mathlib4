@@ -107,6 +107,7 @@ lemma contMDiff_subtype_coe_Icc : CMDiff n (fun (z : Icc x y) ↦ (z : ℝ)) := 
     rw [max_eq_left hw, max_eq_left]
     linarith
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
 lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
   intro z hz
@@ -186,7 +187,7 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
   · simp [hw]
   · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt one_ne_zero
   · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
   have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
   rw [projIcc_of_mem _ w.2]
   congr 1

@@ -129,9 +129,6 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
 
 variable [Field L] [Algebra K L]
 
-theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
-  (Algebra.IsAlgebraic.of_finite K L).algHom_bijective ϕ
-
 variable (K L) in
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 noncomputable abbrev algEquivEquivAlgHom [FiniteDimensional K L] :
@@ -248,6 +245,7 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
     e, ← Algebra.smul_def, mul_comm, mul_smul]
   exact isIntegral_trans _ (int_s.smul _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem restrictScalars [Algebra.IsAlgebraic R S]
     {a : A} (h : IsAlgebraic S a) : IsAlgebraic R a := by
   have ⟨p, hp, eval0⟩ := h

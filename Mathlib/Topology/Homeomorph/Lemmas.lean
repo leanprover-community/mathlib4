@@ -9,6 +9,7 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Further properties of homeomorphisms
@@ -172,6 +173,7 @@ abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s
   h.subtype <| Set.ext_iff.mp h_eq
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Equiv.setCongr h
@@ -272,6 +274,7 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
 def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
   toEquiv := Equiv.ulift
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
 `Equiv.sumArrowEquivProdArrow` as a homeomorphism. -/
 @[simps!]
@@ -483,17 +486,6 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 namespace IsHomeomorph
 variable (hf : IsHomeomorph f)
 include hf
-
-variable (f) in
-/-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
-@[simps! toEquiv apply symm_apply]
-noncomputable def homeomorph : X ≃ₜ Y where
-  continuous_toFun := hf.1
-  continuous_invFun := by
-    rw [← continuousOn_univ, ← hf.bijective.2.range_eq]
-    exact hf.isOpenMap.continuousOn_range_of_leftInverse
-      (Equiv.ofBijective f hf.bijective).left_inv
-  toEquiv := Equiv.ofBijective f hf.bijective
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 lemma isInducing : IsInducing f := (hf.homeomorph f).isInducing

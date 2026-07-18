@@ -528,7 +528,7 @@ theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [O
         rw [inter_assoc] at hz
         exact mem_of_mem_inter_left hz
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
-      simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
+      simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_ofPred_eq, mem_iInter,
         and_imp] at hz
       suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
         refine hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => ?_
@@ -536,7 +536,7 @@ theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [O
         contrapose hz
         simp [hz, subset_mulTSupport (f i) hi]
       intro i hi
-      simp only [Finite.coe_toFinset, mem_setOf_eq]
+      simp only [Finite.coe_toFinset, mem_ofPred_eq]
       exact ⟨z, ⟨hi, hzn⟩⟩
 
 @[to_additive]
