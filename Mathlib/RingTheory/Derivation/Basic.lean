@@ -241,7 +241,7 @@ lemma coeAddMonoidHom_apply (D : Derivation R A M) : coeAddMonoidHom D = D := rf
 /-- `coeFn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   toFun := (⇑)
-  map_zero' := rfl
+  map_zero' := coe_zero
   map_add' := coe_add
 
 @[simp]
@@ -348,10 +348,6 @@ def compAlgebraMapL [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
   toFun d := d.compAlgebraMap A
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-
-theorem leibniz_smul' [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
-    [IsScalarTower R B M] (d : Derivation R B M) (a : A) (b : B) :
-    d (a • b) = a • (d b) + b • (d.compAlgebraMapL R A B M a) := by simp [Algebra.smul_def]
 
 section RestrictScalars
 
