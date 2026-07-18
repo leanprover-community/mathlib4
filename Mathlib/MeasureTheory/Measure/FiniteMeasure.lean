@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
-public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.TietzeExtension
 
@@ -135,7 +134,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : FiniteMeasure Ω → M
 
 instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
-  coe_injective' μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
+  coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
     simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
 
 lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
@@ -339,7 +338,7 @@ lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFinite
     rw [this]
     exact Measure.measurable_coe MeasurableSet.univ measurableSet_Ico
   ext μ
-  simp only [mem_setOf_eq, mem_preimage, mem_Ico, zero_le, true_and]
+  simp only [mem_ofPred_eq, mem_preimage, mem_Ico, zero_le, true_and]
   exact isFiniteMeasure_iff μ
 
 /-- The monoidal product is a measurable function from the product of finite measures over
@@ -355,7 +354,7 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
       ((Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
-  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
+  simp only [mem_image2, mem_ofPred_eq, forall_exists_index, and_imp]
   intro _ _ Hu _ Hv Heq
   simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
 
@@ -745,6 +744,7 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : 
   simp_rw [aux, BoundedContinuousFunction.toReal_lintegral_coe_eq_integral] at tends_pos tends_neg
   exact Tendsto.sub tends_pos tends_neg
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [RCLike 𝕜]
     {F : Filter γ} {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
@@ -991,7 +991,7 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
   let B : FiniteMeasure Ω ≃ₜ M :=
   { toFun μ := by
       refine ⟨μ.map f, ?_⟩
-      simp only [null_iff_toMeasure_null, mem_setOf_eq, toMeasure_map, M]
+      simp only [null_iff_toMeasure_null, mem_ofPred_eq, toMeasure_map, M]
       rw [Measure.map_apply hf.continuous.measurable hf.isClosed_range.isOpen_compl.measurableSet]
       simp
     invFun := M.restrict (fun μ ↦ μ.comap f)

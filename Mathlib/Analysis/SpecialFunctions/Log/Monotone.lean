@@ -71,7 +71,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     log_rpow (rpow_pos_of_pos y_pos a), log_rpow (rpow_pos_of_pos x_pos a), mul_div_assoc,
     mul_div_assoc, mul_le_mul_iff_right₀ (one_div_pos.mpr ha)]
   have hbound {z : ℝ} (hz : z ∈ Ici (rexp a⁻¹)) : z ^ a ∈ {b | rexp 1 ≤ b} := by
-    rw [mem_setOf_eq]
+    rw [mem_ofPred_eq]
     convert! rpow_le_rpow _ hz (le_of_lt ha) using 1
     · simp only [← exp_mul, Real.exp_eq_exp, field]
     positivity

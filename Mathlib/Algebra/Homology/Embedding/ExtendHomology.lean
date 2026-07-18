@@ -261,6 +261,7 @@ lemma rightHomologyData_g' (h : (K.sc' i j k).RightHomologyData) (hk'' : e.f k =
   rw [assoc] at this
   rw [this, K.extend_d_eq e hj' hk'', h.p_g'_assoc, shortComplexFunctor'_obj_g]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The homology data of `(K.extend e).sc' i' j' k'` that is deduced
 from a homology data of `K.sc' i j k`. -/
@@ -271,6 +272,7 @@ noncomputable def homologyData (h : (K.sc' i j k).HomologyData) :
   right := rightHomologyData K e hj' hi hi' hk hk' h.right
   iso := h.iso
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The homology data of `(K.extend e).sc j'` that is deduced
 from a homology data of `K.sc' i j k`. -/
 @[simps!]

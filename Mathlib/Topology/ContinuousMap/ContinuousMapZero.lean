@@ -48,7 +48,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
 
 instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
-  coe_injective' _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
+  coe_injective _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
 
 instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
   map_continuous f := f.continuous
@@ -87,7 +87,7 @@ def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
 lemma comp_apply (g : C(Y, R)₀) (f : C(X, Y)₀) (x : X) : g.comp f x = g (f x) := rfl
 
 instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ := fast_instance%
-  .lift _ DFunLike.coe_injective'
+  .lift _ DFunLike.coe_injective
 
 lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g x := Iff.rfl
 
@@ -194,6 +194,7 @@ lemma mkD_of_not_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀
   rw [continuousOn_iff_continuous_restrict] at hf
   exact mkD_of_not_continuous hf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkD_apply_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀} {x : s}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
     mkD (s.restrict f) g x = f x := by
@@ -329,7 +330,7 @@ def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ
   map_mul' _ _ := rfl
   map_star' _ := rfl
 
-lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
+@[simp] lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
   rfl
 
@@ -443,6 +444,7 @@ def nonUnitalStarAlgHom_precomp (f : C(X, Y)₀) : C(Y, R)₀ →⋆ₙₐ[R] C(
   map_star' _ := rfl
   map_smul' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- The functor `C(X, ·)₀` from non-unital topological star algebras (with non-unital continuous
 star homomorphisms) to non-unital star algebras. -/

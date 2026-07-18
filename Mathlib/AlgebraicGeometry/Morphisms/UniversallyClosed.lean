@@ -74,6 +74,7 @@ instance universallyClosed_isStableUnderComposition :
   rw [universallyClosed_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
   constructor
@@ -90,10 +91,12 @@ instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
 instance : MorphismProperty.IsMultiplicative @UniversallyClosed where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
     UniversallyClosed (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g hg
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
     UniversallyClosed (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g hf
@@ -164,6 +167,7 @@ lemma Scheme.Hom.isProperMap (f : X ⟶ Y) [UniversallyClosed f] : IsProperMap f
 instance (priority := 900) [UniversallyClosed f] : QuasiCompact f where
   isCompact_preimage _ _ := f.isProperMap.isCompact_preimage
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma universallyClosed_eq_universallySpecializing :
     @UniversallyClosed = (topologically @SpecializingMap).universally ⊓ @QuasiCompact := by
   rw [← universally_eq_iff (P := @QuasiCompact).mpr inferInstance, ← universally_inf]

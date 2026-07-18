@@ -7,15 +7,12 @@ module
 
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.RankOne
+public import Mathlib.Data.Int.WithZero
 
 /-!
 # Discrete valuations have rank one
 
 ## Main Definitions and Results
-* `Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range` : the generator of
-a discrete valuation in `ℤᵐ⁰` that contains `exp (-1)` in its range is equal to `exp (-1)`.
-* `Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_surjective` : the generator of
-a surjective discrete valuation in `ℤᵐ⁰` is equal to `exp (-1)`.
 * `Valuation.IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt` : the order-preserving isomorphism
   between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
@@ -70,7 +67,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
     (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).lt_iff_lt]
 
 /-- A discrete valuation has rank one. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
   hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp
       (.ofClass (valueGroup₀_equiv_withZeroMulInt v))
@@ -83,38 +80,7 @@ section WithZeroMulInt
 
 variable {v : Valuation R ℤᵐ⁰} [hv : v.IsRankOneDiscrete]
 
-open LinearOrderedCommGroup in
-/--
-The generator of a discrete valuation in `ℤᵐ⁰` that contains `exp (-1)` in its range
-is equal to `exp (-1)`. -/
-theorem generator_eq_exp_neg_one_of_mem_range (hπ : exp (-1) ∈ Set.range v) :
-    hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) := by
-  rw [← Valuation.IsRankOneDiscrete.valueGroup_genLTOne_eq_generator]
-  suffices Units.mk0 (exp (-1)) (by simp) = (Subgroup.genLTOne (valueGroup (.ofClass v))) by
-    simp [← this]
-  apply LinearOrderedCommGroup.Subgroup.genLTOne_unique
-  · exact compareOfLessAndEq_eq_lt.mp rfl
-  · ext n
-    simp_all only [Int.reduceNeg, exp_neg, Subgroup.mem_zpowers_iff, mem_valueGroup_iff_of_comm,
-      ne_eq]
-    refine ⟨fun ⟨k, h⟩ ↦ ?_ , fun _ ↦ ⟨-WithZero.log n, by aesop⟩⟩
-    rw [← h]
-    have ⟨π, hπ⟩ := hπ
-    cases k with
-    | ofNat n => refine ⟨1, ?_, π ^ n, ?_⟩ <;> simp [hπ]
-    | negSucc n => refine ⟨π ^ (n + 1), ?_, 1, ?_⟩ <;> simp [hπ, Int.negSucc_eq, mul_assoc]
-
-/--
-The generator of a surjective discrete valuation in `ℤᵐ⁰` is equal to `exp (-1)`. -/
-lemma generator_eq_exp_neg_one_of_surjective (hsurj : Function.Surjective v) :
-    hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
-  generator_eq_exp_neg_one_of_mem_range (by aesop)
-
-@[deprecated generator_eq_exp_neg_one_of_surjective (since := "2026-04-01")]
-lemma generator_eq_neg_exp_one_of_surjective (hsurj : Function.Surjective v) :
-    hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
-  generator_eq_exp_neg_one_of_surjective hsurj
-
+set_option backward.isDefEq.respectTransparency.types false in
 lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : Function.Surjective v)
     (x : R) : (valueGroup₀_equiv_withZeroMulInt v) (v.restrict x) = v x := by
   simp only [Valuation.restrict_def, ValueGroup₀.restrict₀_apply,

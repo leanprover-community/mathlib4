@@ -184,7 +184,7 @@ lemma isClosed_iUnion_closure_singleton_of_not_tendsto {x : ℕ → X} [Sequenti
   · have (j : ℕ) : ∃ᶠ k in atTop, ∃ n ≥ j, y n ∈ closure {x k} := by
       refine frequently_atTop.2 fun a => ?_
       have := (Filter.eventually_all_finite (by simp : (Iic a).Finite)).2 fun i hi => hm i
-      simp only [mem_Iic, eventually_atTop, ge_iff_le] at this
+      simp only [mem_Iic, eventually_atTop] at this
       obtain ⟨c, hc⟩ := this
       obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
       refine ⟨b, ?_, c + j, j.le_add_left c, hb⟩
@@ -230,9 +230,9 @@ theorem SequentialSpace.coinduced [SequentialSpace X] {Y} (f : X → Y) :
 
 protected theorem SequentialSpace.iSup {X} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
-  letI : TopologicalSpace X := ⨆ i, t i
+  let : TopologicalSpace X := ⨆ i, t i
   refine ⟨fun s hs ↦ isClosed_iSup_iff.2 fun i ↦ ?_⟩
-  letI := t i
+  let := t i
   exact IsSeqClosed.isClosed fun u x hus hux ↦ hs hus <| hux.mono_right <| nhds_mono <| le_iSup _ _
 
 protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
@@ -413,13 +413,7 @@ only if it is sequentially compact. -/
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.isCompact_iff_isSeqCompact := isCompact_iff_isSeqCompact
-
 theorem compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
   simp only [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
-
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.compactSpace_iff_seqCompactSpace := compactSpace_iff_seqCompactSpace
 
 end MetrizableSpaceSeqCompact
