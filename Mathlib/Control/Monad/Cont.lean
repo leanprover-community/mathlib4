@@ -216,6 +216,8 @@ variable {m : Type u → Type v}
 section
 variable [Monad m]
 
+/-- Lift a jump target along `ExceptT`: jumping with `a` becomes a jump in the base monad
+with `Except.ok a`. -/
 def ExceptT.mkLabel {α β ε} : Label (Except.{u, u} ε α) m β → Label α (ExceptT ε m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (Except.ok a)⟩
 
@@ -223,6 +225,7 @@ theorem ExceptT.goto_mkLabel {α β ε : Type _} (x : Label (Except.{u, u} ε α
     goto (ExceptT.mkLabel x) i = ExceptT.mk (Except.ok <$> goto x (Except.ok i)) := by
   cases x; rfl
 
+/-- The `callCC` operation of `ExceptT ε m`, delegating to `callCC` in the base monad. -/
 nonrec def ExceptT.callCC {ε} [MonadCont m] {α β : Type _}
     (f : Label α (ExceptT ε m) β → ExceptT ε m α) : ExceptT ε m α :=
   ExceptT.mk (callCC fun x : Label _ m β => ExceptT.run <| f (ExceptT.mkLabel x))
@@ -242,6 +245,8 @@ instance {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m)
     ext; rfl
   callCC_dummy := by intros; simp only [callCC, ExceptT.callCC, @callCC_dummy m _]; ext; rfl
 
+/-- Lift a jump target along `OptionT`: jumping with `a` becomes a jump in the base monad
+with `some a`. -/
 def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (some a)⟩
 
@@ -249,6 +254,7 @@ theorem OptionT.goto_mkLabel {α β : Type _} (x : Label (Option.{u} α) m β) (
     goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a => pure (some a)) :=
   (rfl)
 
+/-- The `callCC` operation of `OptionT m`, delegating to `callCC` in the base monad. -/
 nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
     OptionT m α :=
   OptionT.mk (callCC fun x : Label _ m β => OptionT.run <| f (OptionT.mkLabel x) : m (Option α))
@@ -271,9 +277,13 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
     simp [callCC, OptionT.goto_mkLabel, @callCC_bind_left m _]
   callCC_dummy := by intros; ext; simp [callCC, OptionT.callCC, @callCC_dummy m _]
 
+/-- Lift a jump target along `WriterT`: jumping with `a` becomes a jump in the base monad
+with `(a, ∅)`, resetting the accumulated log. -/
 def WriterT.mkLabel {α β ω} [EmptyCollection ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, ∅)⟩
 
+/-- Lift a jump target along `WriterT`: jumping with `a` becomes a jump in the base monad
+with `(a, 1)`, resetting the accumulated log. -/
 def WriterT.mkLabel' {α β ω} [Monoid ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, 1)⟩
 
@@ -283,10 +293,14 @@ theorem WriterT.goto_mkLabel {α β ω : Type _} [EmptyCollection ω] (x : Label
 theorem WriterT.goto_mkLabel' {α β ω : Type _} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
     goto (WriterT.mkLabel' x) i = monadLift (goto x (i, 1)) := by cases x; rfl
 
+/-- The `callCC` operation of `WriterT ω m` for an `EmptyCollection` log, delegating to `callCC`
+in the base monad. -/
 nonrec def WriterT.callCC [MonadCont m] {α β ω : Type _} [EmptyCollection ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <| callCC (WriterT.run ∘ f ∘ WriterT.mkLabel : Label (α × ω) m β → m (α × ω))
 
+/-- The `callCC` operation of `WriterT ω m` for a `Monoid` log, delegating to `callCC`
+in the base monad. -/
 def WriterT.callCC' [MonadCont m] {α β ω : Type _} [Monoid ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <|
@@ -300,12 +314,16 @@ instance (ω) [Monad m] [EmptyCollection ω] [MonadCont m] : MonadCont (WriterT 
 instance (ω) [Monad m] [Monoid ω] [MonadCont m] : MonadCont (WriterT ω m) where
   callCC := WriterT.callCC'
 
+/-- Lift a jump target along `StateT`: jumping with `a` becomes a jump in the base monad
+with `(a, s)`, where `s` is the state at the jump site. -/
 def StateT.mkLabel {α β σ : Type u} : Label (α × σ) m (β × σ) → Label α (StateT σ m) β
   | ⟨f⟩ => ⟨fun a => StateT.mk (fun s => f (a, s))⟩
 
 theorem StateT.goto_mkLabel {α β σ : Type u} (x : Label (α × σ) m (β × σ)) (i : α) :
     goto (StateT.mkLabel x) i = StateT.mk (fun s => goto x (i, s)) := by cases x; rfl
 
+/-- The `callCC` operation of `StateT σ m`, delegating to `callCC` in the base monad;
+the state at the jump site is carried through the jump. -/
 nonrec def StateT.callCC {σ} [MonadCont m] {α β : Type _}
     (f : Label α (StateT σ m) β → StateT σ m α) : StateT σ m α :=
   StateT.mk (fun r => callCC fun f' => (f <| StateT.mkLabel f').run r)
@@ -326,12 +344,14 @@ instance {σ} [Monad m] [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (Sta
     simp only [callCC, StateT.callCC, @callCC_dummy m _]
     ext; rfl
 
+/-- Lift a jump target along `ReaderT`; the jump does not depend on the environment. -/
 def ReaderT.mkLabel {α β} (ρ) : Label α m β → Label α (ReaderT ρ m) β
   | ⟨f⟩ => ⟨monadLift ∘ f⟩
 
 theorem ReaderT.goto_mkLabel {α ρ β} (x : Label α m β) (i : α) :
     goto (ReaderT.mkLabel ρ x) i = monadLift (goto x i) := by cases x; rfl
 
+/-- The `callCC` operation of `ReaderT ρ m`, delegating to `callCC` in the base monad. -/
 nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type _}
     (f : Label α (ReaderT ε m) β → ReaderT ε m α) : ReaderT ε m α :=
   ReaderT.mk (fun r => callCC fun f' => (f <| ReaderT.mkLabel _ f').run r)
