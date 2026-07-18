@@ -53,7 +53,7 @@ lemma exists_ideal_ge_liesOver_of_le [Algebra.HasGoingUp R S]
     exact Algebra.HasGoingUp.exists_ideal_ge_liesOver_of_lt P (lt_of_le_of_ne hle h)
 
 lemma exists_ideal_gt_liesOver_of_lt [Algebra.HasGoingUp R S]
-    {p q : Ideal R} [p.IsPrime] [q.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p]
+    {p q : Ideal R} [q.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p]
     (hpq : p < q) :
     ∃ Q, P < Q ∧ Q.IsPrime ∧ Q.LiesOver q := by
   obtain ⟨Q, hPQ, hQ, hQq⟩ := P.exists_ideal_ge_liesOver_of_le (p := p) (q := q) hpq.le
