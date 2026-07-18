@@ -104,6 +104,18 @@ meta def evalIntCeil : PositivityExt where eval {u α} _zα pα? e :=
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Int.ceil application"
 
+theorem int_fract_nonneg [Ring α] [LinearOrder α] [FloorRing α] [IsOrderedRing α] (a : α) :
+    0 ≤ Int.fract a :=
+  sub_nonneg.2 (Int.floor_le a)
+
+/-- Extension for the `positivity` tactic: `Int.fract` is always nonnegative. -/
+@[positivity Int.fract _]
+meta def evalIntFract : PositivityExt where eval {_u} (_α _zα pα?) e :=
+  match pα? with | none => pure .none | some pα' => do
+  let ~q(@Int.fract _ (_) (_) (_) $a) := e | throwError "not Int.fract"
+  let pa' ← mkAppM ``int_fract_nonneg #[a]
+  pure (.nonnegative (pα := pα') pa')
+
 end Mathlib.Meta.Positivity
 
 variable {F R S : Type*}
