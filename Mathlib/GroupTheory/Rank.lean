@@ -102,7 +102,7 @@ lemma rank_closure_finset_le_card (s : Finset G) : rank (closure (s : Set G)) �
 
 @[to_additive]
 lemma rank_closure_finite_le_nat_card (s : Set G) [Finite s] : rank (closure s) ≤ Nat.card s := by
-  haveI := Fintype.ofFinite s
+  have := Fintype.ofFinite s
   rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]
   exact rank_closure_finset_le_card s.toFinset
 
