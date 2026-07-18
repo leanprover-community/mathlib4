@@ -64,7 +64,7 @@ variable {R S : Type*}
 
 /-- Reinterpret a `RingEquiv` as a `ℚ`-algebra isomorphism. This actually yields an
 equivalence, see `RingEquiv.equivRatAlgEquiv`. -/
-@[simps]
+@[simps!]
 def toRatAlgEquiv [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R ≃+* S) : R ≃ₐ[ℚ] S where
   __ := f
   toFun := f
