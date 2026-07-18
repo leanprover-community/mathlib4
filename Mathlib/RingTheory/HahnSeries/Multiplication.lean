@@ -259,12 +259,12 @@ theorem smul_add [Zero R] [DistribSMul R V] (x : R⟦Γ⟧) (y z : HahnModule Γ
   ext k
   have hwf := ((of R).symm y).isPWO_support.union ((of R).symm z).isPWO_support
   rw [coeff_smul_right hwf, of_symm_add]
-  · simp_all only [HahnSeries.coeff_add', Pi.add_apply, of_symm_add]
+  · simp only [HahnSeries.coeff_add', Pi.add_apply, of_symm_add]
     rw [coeff_smul_right hwf Set.subset_union_right,
       coeff_smul_right hwf Set.subset_union_left]
-    simp_all [sum_add_distrib]
+    simp [sum_add_distrib]
   · intro b
-    simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, of_symm_add,
+    simp only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, of_symm_add,
       HahnSeries.coeff_add', Pi.add_apply, ne_eq, Set.mem_union, HahnSeries.mem_support]
     contrapose!
     intro h

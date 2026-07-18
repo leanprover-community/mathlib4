@@ -53,10 +53,10 @@ lemma mulSupport (d : 𝕜 → ℤ) :
     (fun u ↦ (· - u) ^ d u).mulSupport = d.support := by
   ext u
   constructor <;> intro h
-  · simp_all only [mem_mulSupport, ne_eq, mem_support]
+  · simp only [mem_mulSupport, ne_eq, mem_support]
     by_contra hCon
     simp_all [zpow_zero]
-  · simp_all only [mem_mulSupport, ne_eq, ne_iff]
+  · simp only [mem_mulSupport, ne_eq, ne_iff]
     use u
     simp_all [zero_zpow_eq_one₀]
 
@@ -214,7 +214,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational {d : 𝕜 → ℤ} {x : �
   rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop)]
   by_cases hxy : x = y
   · rw [hxy, meromorphicTrailingCoeffAt_id_sub_const]
-    simp_all
+    simp
   · grind [meromorphicTrailingCoeffAt_id_sub_const]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -254,7 +254,7 @@ theorem log_norm_meromorphicTrailingCoeffAt {d : 𝕜 → ℤ} {x : 𝕜} (h : d
     intro y _
     by_cases h : x = y
     · rw [h]
-      simp_all
+      simp
     · simp_all [zpow_ne_zero, sub_ne_zero]
   rw [norm_prod, log_prod this]
   have : (fun u ↦ (d u) * log ‖x - u‖).support ⊆ h.toFinset := by
@@ -367,7 +367,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
   filter_upwards [h, D.eq_zero_codiscreteWithin, self_mem_codiscreteWithin U] with z hz h₂z h₃z
   rw [Pi.zero_apply] at h₂z
   rw [hz, finprod_eq_prod_of_mulSupport_subset (s := h₃f.toFinset) _
-      (by simp_all [FactorizedRational.mulSupport]),
+      (by simp [FactorizedRational.mulSupport]),
     finsum_eq_sum_of_support_subset (s := h₃f.toFinset) _ (by simp_all)]
   have : ∀ x ∈ h₃f.toFinset, ‖z - x‖ ^ D x ≠ 0 := by
     intro x hx

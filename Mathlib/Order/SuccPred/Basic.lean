@@ -848,7 +848,7 @@ variable {α : Type*} [PartialOrder α] {s : Set α} [s.OrdConnected]
 open scoped Classical in
 noncomputable instance Set.OrdConnected.predOrder [PredOrder α] : PredOrder s where
   pred x := if h : Order.pred x.1 ∈ s then ⟨Order.pred x.1, h⟩ else x
-  pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp_all [Order.pred_le]
+  pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp [Order.pred_le]
   min_of_le_pred := @fun ⟨x, hx⟩ h ↦ by
     dsimp at h
     split_ifs at h with h'

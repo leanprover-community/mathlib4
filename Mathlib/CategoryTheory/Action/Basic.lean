@@ -113,7 +113,7 @@ def comp {M N K : Action V G} (p : Action.Hom M N) (q : Action.Hom N K) : Action
   hom := p.hom ≫ q.hom
   comm := by
     intro g
-    simp_all only [comm_assoc, comm, Category.assoc]
+    simp only [comm_assoc, comm, Category.assoc]
 
 end Hom
 

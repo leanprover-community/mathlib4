@@ -90,7 +90,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
               · simp_all
         · have := ht₃ v
           have := he₃ v
-          simp_all? says
+          simp? says
             simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_eq_eq_not, Bool.not_true,
               AList.lookup_insert_eq_none, ne_eq, AList.lookup_insert, reduceCtorEq, imp_false]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
@@ -102,7 +102,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           have := he₃ w
           by_cases h : w = v
           · subst h; simp_all
-          · simp_all? says
+          · simp? says
               simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_eq_eq_not, Bool.not_true,
                 AList.lookup_insert_eq_none, ne_eq, not_false_eq_true, AList.lookup_insert_ne,
                 implies_true]

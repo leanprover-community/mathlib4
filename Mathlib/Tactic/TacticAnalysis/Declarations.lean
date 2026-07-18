@@ -505,7 +505,7 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAll : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAll,
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAll]
-def tryAtEachStepSimpAll := tryAtEachStep fun _ _ => `(tactic| simp_all)
+def tryAtEachStepSimpAll := tryAtEachStep fun _ _ => `(tactic| simp)
 
 /-- Run `aesop` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepAesop : Bool := {
@@ -535,7 +535,7 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := 
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
-def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
+def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp? +suggestions)
 
 /-- Run a custom tactic at every step in proofs, configured via environment variables.
 

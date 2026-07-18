@@ -142,7 +142,7 @@ theorem ascPochhammer_succ_succ (r : R) (k : ℕ) :
   simp only [smeval_one, npow_one, npow_zero, one_smul]
   rw [← C_eq_natCast, smeval_C, npow_zero, add_assoc, add_mul, add_comm 1, @nsmul_one, add_mul]
   rw [← @nsmul_eq_mul, @add_rotate', @succ_nsmul, add_assoc]
-  simp_all only [Nat.cast_id, nsmul_eq_mul, one_mul]
+  simp only [Nat.cast_id, nsmul_eq_mul, one_mul]
 
 theorem multichoose_succ_succ (r : R) (k : ℕ) :
     multichoose (r + 1) (k + 1) = multichoose r (k + 1) + multichoose (r + 1) k := by

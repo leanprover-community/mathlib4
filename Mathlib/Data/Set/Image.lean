@@ -341,7 +341,7 @@ theorem range_inter_ssubset_iff_preimage_ssubset {f : α → β} {s s' : Set β}
   constructor
   all_goals
     intro r x hx
-    simp_all only [subset_inter_iff, inter_subset_left, true_and, mem_preimage,
+    simp only [subset_inter_iff, inter_subset_left, true_and, mem_preimage,
       mem_inter_iff, mem_range, true_and]
     aesop
 

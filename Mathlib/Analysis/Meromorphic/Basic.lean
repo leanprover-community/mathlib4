@@ -379,7 +379,7 @@ protected theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : Merom
       =ᶠ[𝓝[≠] x] fun z ↦ (n * (z - x) ^ (n - 1)) • g z + (z - x) ^ n • _root_.deriv g z := by
     filter_upwards [eventually_nhdsWithin_of_eventually_nhds h₁g.eventually_analyticAt,
       eventually_nhdsWithin_of_forall fun _ a ↦ a] with z₀ h₁ h₂
-    rw [deriv_fun_smul (DifferentiableAt.zpow (by fun_prop) (by simp_all [sub_ne_zero_of_ne h₂]))
+    rw [deriv_fun_smul (DifferentiableAt.zpow (by fun_prop) (by simp [sub_ne_zero_of_ne h₂]))
       (by fun_prop), add_comm, deriv_comp_sub_const (f := (· ^ n))]
     aesop
   rw [MeromorphicAt.meromorphicAt_congr (Filter.EventuallyEq.nhdsNE_deriv h₂g),

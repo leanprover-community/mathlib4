@@ -102,7 +102,7 @@ theorem nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} :
 
 theorem nodupKeys_middle {s : Sigma β} :
     (l₁ ++ s :: l₂).NodupKeys ↔ (s :: (l₁ ++ l₂)).NodupKeys := by
-  simp_all [NodupKeys, keys, nodup_middle]
+  simp [NodupKeys, keys, nodup_middle]
 
 theorem notMem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     s.1 ∉ l.keys := by grind

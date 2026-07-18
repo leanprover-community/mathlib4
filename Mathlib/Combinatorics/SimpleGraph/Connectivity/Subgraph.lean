@@ -690,8 +690,8 @@ protected lemma Reachable.coe_subgraphMap {G' : G.Subgraph} {G'' : G'.coe.Subgra
 
 protected lemma Reachable.coe_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
-    (Subgraph.coeSubgraph G'').coe.Reachable (Subgraph.vert _ u (by simp_all))
-      (Subgraph.vert _ v (by simp_all)) :=
+    (Subgraph.coeSubgraph G'').coe.Reachable (Subgraph.vert _ u (by simp))
+      (Subgraph.vert _ v (by simp)) :=
   hreachable.coe_subgraphMap G'.hom
 
 namespace Subgraph

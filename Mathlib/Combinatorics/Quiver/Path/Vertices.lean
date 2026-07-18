@@ -48,7 +48,7 @@ lemma mem_vertices_cons {a b c : V} (p : Path a b)
     (e : b ⟶ c) {x : V} :
     x ∈ (p.cons e).vertices ↔ x ∈ p.vertices ∨ x = c := by
   simp only [vertices_cons]
-  simp_all only [concat_eq_append, mem_append, mem_cons, not_mem_nil, or_false]
+  simp only [concat_eq_append, mem_append, mem_cons, not_mem_nil, or_false]
 
 lemma verticesSet_nil {a : V} : {v | v ∈ (nil : Path a a).vertices} = {a} := by
   simp only [vertices_nil, mem_singleton, Set.ext_iff, Set.mem_singleton_iff]

@@ -73,7 +73,7 @@ theorem fourierCoeff_toAddCircle (n : ℤ) :
   | add p q hp hq =>
     simp_all [not_le_of_gt, fourierCoeff.add (toAddCircle.integrable p) (toAddCircle.integrable q)]
   | monomial m a =>
-    simp_all [not_le_of_gt, coeff_monomial, toAddCircle_monomial_eq_smul_fourier,
+    simp [not_le_of_gt, coeff_monomial, toAddCircle_monomial_eq_smul_fourier,
       fourierCoeff.const_smul, fourierCoeff_fourier, Pi.single_apply]
     grind
 

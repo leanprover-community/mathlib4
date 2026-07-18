@@ -234,7 +234,7 @@ lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)}
   rw [← card_t_eq_card_t'] at ht'
   have ht'inj : Set.InjOn a t := by
     refine (hc.injOn_setOfPred_apply_add_one_eq_of_M_le hi1).mono ?_
-    simp_all [t, t']
+    simp [t, t']
   have card_image_eq_card_t : #(Finset.image a t) = #t := Finset.card_image_of_injOn ht'inj
   have card_image_lt_M : #(Finset.image a t) < M a N := by
     refine (Finset.card_le_card (t := Finset.Ico 1 (M a N)) ?_).trans_lt ?_
