@@ -66,6 +66,9 @@ def toProd : K ⋊⁅ψ⁆ L ≃ K × L where
 
 @[simp] lemma toProd_apply (x : K ⋊⁅ψ⁆ L) : toProd (x) = ⟨x.left, x.right⟩ := rfl
 
+@[simp] lemma toProd_symm_apply (x : K × L) : (toProd : K ⋊⁅ψ⁆ L ≃ K × L).symm (x) = ⟨x.1, x.2⟩ :=
+  rfl
+
 instance : AddCommGroup (K ⋊⁅ψ⁆ L) := toProd.addCommGroup
 
 instance : Module R (K ⋊⁅ψ⁆ L) := toProd.module R
@@ -77,6 +80,7 @@ def toProdl : (K ⋊⁅ψ⁆ L) ≃ₗ[R] K × L :=
     map_smul' _ _ := rfl }
 
 @[simp] lemma toProdl_coe (x : K ⋊⁅ψ⁆ L) : toProdl ψ x = toProd x := rfl
+@[simp] lemma toProdl_symm_coe (x : K × L) : (toProdl ψ).symm x = toProd.symm x := rfl
 
 instance : Bracket (K ⋊⁅ψ⁆ L) (K ⋊⁅ψ⁆ L) where
   bracket x y := ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩
