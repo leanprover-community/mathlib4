@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Algebra.Ring.Shrink
+public import Mathlib.Algebra.Ring.Shrink  -- shake: keep (Semiring (Shrink ...)), cf. lean#13417
 public import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
@@ -29,10 +29,7 @@ not obviously match the target type. In this case, instead of just giving the te
 with `by apply` may speed up things considerably as the types are not elaborated in the same order.
 -/
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v u w
 
@@ -89,8 +86,9 @@ def limitCone : Cone F where
     { app := fun j ↦ SemiRingCat.ofHom <| limitπRingHom.{v, u} F j
       naturality _ _ f := by
         ext
-        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
+        simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `SemiRingCat` is a limit cone.
 (Internal use only; use the limits API.)
@@ -322,7 +320,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
       { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
         naturality _ _ f := by
           ext
-          simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
+          simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
@@ -422,7 +420,6 @@ instance limitCommRing :
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
   inferInstanceAs <| CommRing (Shrink _)
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
 All we need to do is notice that the limit point has a `CommRing` instance available,
@@ -450,7 +447,7 @@ instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
         { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
           naturality _ _ f := by
             ext
-            simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
+            simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
     createsLimitOfReflectsIso fun _ t =>
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (RingCat.limitConeIsLimit.{v, u} _) t
@@ -502,8 +499,6 @@ instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, u}] :
 instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) :=
   CommRingCat.forget₂Ring_preservesLimitsOfSize.{u, u}
 
-#adaptation_note /-- After nightly-2026-02-23 this requires more heartbeats. -/
-set_option maxHeartbeats 400000 in -- see note above
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂CommSemiRingPreservesLimitsAux :

@@ -14,15 +14,15 @@ For the most part, natural isomorphisms are just another sort of isomorphism.
 
 We provide some special support for extracting components:
 * if `α : F ≅ G`, then `α.app X : F.obj X ≅ G.obj X`,
+
 and building natural isomorphisms from components:
-*
-```
-NatIso.ofComponents
-  (app : ∀ X : C, F.obj X ≅ G.obj X)
-  (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f) :
-F ≅ G
-```
-only needing to check naturality in one direction.
+* ```
+  NatIso.ofComponents
+    (app : ∀ X : C, F.obj X ≅ G.obj X)
+    (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f) :
+  F ≅ G
+  ```
+  only needing to check naturality in one direction.
 
 ## Implementation
 
@@ -55,7 +55,6 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
   hom := α.hom.app X
   inv := α.inv.app X
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing app_inv] app_hom
 
 @[reassoc +to_dual (attr := simp), grind =]
@@ -191,11 +190,9 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         exact h }
 
 set_option linter.translateOverwrite false in
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing ofComponents'_inv_app] ofComponents_hom_app
 
 set_option linter.translateOverwrite false in
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing ofComponents'_hom_app] ofComponents_inv_app
 
 @[to_dual (attr := simp)]
@@ -214,7 +211,6 @@ def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ 
   hom := α.hom ◫ β.hom
   inv := α.inv ◫ β.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing hcomp_inv] hcomp_hom
 
 @[to_dual self]

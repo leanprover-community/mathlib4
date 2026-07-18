@@ -29,7 +29,7 @@ universe v u
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits ConcreteCategory
+open CategoryTheory Limits ConcreteCategory
 
 open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
@@ -68,6 +68,7 @@ lemma M.mk_map {j k : J} (f : j ⟶ k) (x : F.obj j) :
 def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
   M.mk F ⟨x.1, r • x.2⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
@@ -155,7 +156,7 @@ def colimitCocone : Cocone F where
     { app := coconeMorphism F
       naturality _ _ f := by
         ext
-        simpa using (Types.TypeMax.colimitCocone
+        simpa using! (Types.TypeMax.colimitCocone
           (F ⋙ forget (ModuleCat R))).ι.naturality_apply f _ }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -174,13 +175,13 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
         obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
         simp [hf] }
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :
-    (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
+    dsimp% (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
   (forget₂ _ AddCommGrpCat).map_injective
     ((AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
