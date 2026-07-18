@@ -83,23 +83,11 @@ theorem dvd_radical_pow_self {n : ℕ} (hn : n ≠ 0) : n ∣ radical n ^ n := b
 
 open Qq Lean Mathlib.Meta Finset
 
-namespace Mathlib.Meta.Positivity
-open Positivity
-
-attribute [local instance] monadLiftOptionMetaM in
-/-- Positivity extension for radical. Proves radicals are nonzero. -/
-@[positivity UniqueFactorizationMonoid.radical _]
-meta def evalRadical : PositivityExt where eval {u α} _ _ e := do
-  match e with
-  | ~q(@radical _ $inst $inst' $inst'' $n) =>
-    have _ := ← synthInstanceQ q(Nontrivial $α)
-    assertInstancesCommute
-    return .nonzero q(radical_ne_zero)
-  | _ => throwError "not radical"
+/-! The former hand-written extension `evalRadical` is replaced by `@[auto_positivity]`:
+radicals are nonzero (the required `Nontrivial` instance is discharged by instance synthesis). -/
+attribute [auto_positivity] radical_ne_zero
 
 example : 0 < radical 100 := by positivity
-
-end Mathlib.Meta.Positivity
 
 end Nat
 

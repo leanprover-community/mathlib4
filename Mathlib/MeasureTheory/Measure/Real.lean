@@ -485,16 +485,6 @@ lemma probReal_compl_eq_one_sub (hs : MeasurableSet s) : μ.real sᶜ = 1 - μ.r
 
 end MeasureTheory
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension for the `positivity` tactic: applications of `μ.real` are nonnegative. -/
-@[positivity MeasureTheory.Measure.real _ _]
-meta def evalMeasureReal : PositivityExt where eval {_ _} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  let .app (.app _ a) b ← whnfR e | throwError "not measureReal"
-  let p ← mkAppOptM ``MeasureTheory.measureReal_nonneg #[none, none, a, b]
-  pure (.nonnegative p)
-
-end Mathlib.Meta.Positivity
+/-! The former hand-written extension `evalMeasureReal` is replaced by `@[auto_positivity]`:
+applications of `μ.real` are nonnegative. -/
+attribute [auto_positivity] MeasureTheory.measureReal_nonneg

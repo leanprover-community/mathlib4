@@ -252,22 +252,9 @@ theorem abs_dist_sub_le (x y z : α) : |dist x z - dist y z| ≤ dist x y :=
 theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension for the `positivity` tactic: distances are nonnegative. -/
-@[positivity Dist.dist _ _]
-meta def evalDist : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
-    let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
-    assertInstancesCommute
-    pure (.nonnegative q(dist_nonneg))
-  | _, _, _ => throwError "not dist"
-
-end Mathlib.Meta.Positivity
+/-! The former hand-written extension `evalDist` is replaced by `@[auto_positivity]`:
+distances are nonnegative. -/
+attribute [auto_positivity] dist_nonneg
 
 example {x y : α} : 0 ≤ dist x y := by positivity
 

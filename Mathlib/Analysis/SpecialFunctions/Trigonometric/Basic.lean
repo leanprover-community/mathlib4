@@ -172,20 +172,9 @@ theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
 
 end Real
 
-namespace Mathlib.Meta.Positivity
-open Lean.Meta Qq
-
-/-- Extension for the `positivity` tactic: `π` is always positive. -/
-@[positivity Real.pi]
-meta def evalRealPi : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.pi) =>
-    assertInstancesCommute
-    pure (.positive q(Real.pi_pos))
-  | _, _, _ => throwError "not Real.pi"
-
-end Mathlib.Meta.Positivity
+/-! The former hand-written extension `evalRealPi` is replaced by `@[auto_positivity]`:
+`π` is always positive. -/
+attribute [auto_positivity] Real.pi_pos
 
 namespace NNReal
 
