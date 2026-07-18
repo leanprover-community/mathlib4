@@ -169,7 +169,7 @@ lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
 /-- The set of functions which are 1-Lipschitz on a metric space separates points. -/
-theorem separatesPoints_lipschitzWith_one {E : Type*} [MetricSpace E] :
+theorem _root_.separatesPoints_lipschitzWith_one (E : Type*) [MetricSpace E] :
     Set.SeparatesPoints {f : E → ℝ | LipschitzWith 1 f} := by
   intro x y hxy
   refine ⟨(dist · y), LipschitzWith.dist_left _, ?_⟩
