@@ -117,7 +117,7 @@ def pushforwardCongr {φ ψ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J 
 
 @[simp] lemma pushforwardCongr_symm
     {φ ψ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R} (e : φ = ψ) :
-  (pushforwardCongr e).symm = pushforwardCongr e.symm := rfl
+  (pushforwardCongr e).symm = pushforwardCongr e.symm := by subst e; ext; rfl
 
 @[simp] lemma pushforwardCongr_hom_app_val_app
     {φ ψ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R} (e : φ = ψ) (M U x) :

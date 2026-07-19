@@ -224,6 +224,15 @@ This is the underlying cone, and it is limiting as witnessed by `isLimitOpensCon
 def opensCone (i : I) (U : (D.obj i).Opens) : Cone (opensDiagram D i U) where
   pt := c.π.app i ⁻¹ᵁ U
   π.app j := (c.π.app j.left).resLE _ _ (by rw [← Scheme.Hom.comp_preimage, c.w])
+  -- Note: we do not let `aesop_cat` discharge this. `Category.id_comp` does not fire on the
+  -- goal (the two objects of the composition are `((Functor.const _).obj _).obj X` and
+  -- `... .obj Y`, which are not syntactically equal), so `simp` instead closes the goal by
+  -- `rfl`, leaving the kernel to check `𝟙 _ ≫ g ≡ g` in `Scheme` by unfolding. That check
+  -- costs ~17.5M kernel heartbeats; applying `Category.id_comp` explicitly costs ~0.07M.
+  π.naturality := by
+    intro X Y f
+    simp only [Functor.const_obj_map, opensDiagram_map, Scheme.Hom.resLE_comp_resLE, Cone.w]
+    exact Category.id_comp _
 
 attribute [local instance] CategoryTheory.isConnected_of_hasTerminal
 

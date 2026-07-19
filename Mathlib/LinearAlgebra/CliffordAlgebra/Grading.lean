@@ -78,34 +78,52 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
-theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
-    lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
-      DirectSum.of (fun i => evenOdd Q i) i' x' := by
-  obtain ⟨x', hx'⟩ := x'
-  dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-  induction hx' using Submodule.iSup_induction' with
+/-- Auxiliary lemma for `CliffordAlgebra.GradedAlgebra.lift_ι_eq`.
+
+This is stated for an arbitrary algebra map `f` agreeing with `CliffordAlgebra.GradedAlgebra.ι`
+on the image of `ι Q`, so that the term
+`lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩` (which is expensive for the kernel to
+typecheck) does not appear anywhere inside the proof term. -/
+private theorem GradedAlgebra.lift_ι_eq_aux
+    (f : CliffordAlgebra Q →ₐ[R] ⨁ i : ZMod 2, evenOdd Q i)
+    (hf : ∀ m, f (ι Q m) =
+      DirectSum.of (fun i => evenOdd Q i) 1 ⟨ι Q m, ι_mem_evenOdd_one Q m⟩)
+    (i' : ZMod 2) (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q i') :
+    f x = DirectSum.of (fun i => evenOdd Q i) i' ⟨x, hx⟩ := by
+  induction hx using Submodule.iSup_induction' with
   | mem i x hx =>
     obtain ⟨i, rfl⟩ := i
     dsimp only [Subtype.coe_mk] at hx
     induction hx using Submodule.pow_induction_on_left' with
     | algebraMap r =>
-      rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
+      -- avoid closing this goal by `rfl`: the kernel would have to unfold the graded algebra
+      -- structure on `⨁ i, evenOdd Q i` by hand
+      exact (AlgHom.commutes _ _).trans <| (DirectSum.algebraMap_apply _ _ r).trans <|
+        DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext Nat.cast_zero.symm
+          (Submodule.setLike.coe_galgebra_toFun _ _))
     | add x y i hx hy ihx ihy =>
       rw [map_add, ihx, ihy, ← map_add]
       rfl
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
-      rw [map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
+      rw [map_mul, ih, hf, DirectSum.of_mul_of]
       refine DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext ?_ ?_) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
-      rfl
+      -- likewise, `rfl` here would cost the kernel tens of millions of heartbeats
+      exact SetLike.coe_gMul _ _ _
   | zero =>
     rw [map_zero]
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl
   | add x y hx hy ihx ihy =>
     rw [map_add, ihx, ihy, ← map_add]; rfl
+
+theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
+    lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
+      DirectSum.of (fun i => evenOdd Q i) i' x' :=
+  GradedAlgebra.lift_ι_eq_aux Q _
+    (fun m => (lift_ι_apply _ _ m).trans (GradedAlgebra.ι_apply Q m)) i' x' x'.2
 
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
