@@ -379,7 +379,7 @@ lemma mem_convexHull_iff_exists_fintype {s : Set E} {x : E} :
     x ∈ convexHull R s ↔ ∃ (ι : Type) (_ : Fintype ι) (w : ι → R) (z : ι → E), (∀ i, 0 ≤ w i) ∧
       ∑ i, w i = 1 ∧ (∀ i, z i ∈ s) ∧ ∑ i, w i • z i = x := by
   constructor
-  · simp only [convexHull_eq, mem_setOf_eq]
+  · simp only [convexHull_eq, mem_ofPred_eq]
     rintro ⟨ι, t, w, z, h⟩
     refine ⟨t, inferInstance, w ∘ (↑), z ∘ (↑), ?_⟩
     simpa [← sum_attach t, centerMass_eq_of_sum_1 _ _ h.2.1] using h
@@ -409,7 +409,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
 
 theorem Finset.mem_convexHull {s : Finset E} {x : E} : x ∈ convexHull R (s : Set E) ↔
     ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y ∈ s, w y = 1 ∧ s.centerMass w id = x := by
-  rw [Finset.convexHull_eq, Set.mem_setOf_eq]
+  rw [Finset.convexHull_eq, Set.mem_ofPred_eq]
 
 /-- This is a version of `Finset.mem_convexHull` stated without `Finset.centerMass`. -/
 lemma Finset.mem_convexHull' {s : Finset E} {x : E} :
@@ -617,7 +617,7 @@ namespace Affine.Simplex
     [IsOrderedRing 𝕜] [AddCommGroup V] [Module 𝕜 V] {n : ℕ} (s : Simplex 𝕜 V n) :
     convexHull 𝕜 (Set.range s.points) = s.closedInterior := by
   ext p
-  rw [convexHull_range_eq_exists_affineCombination, Set.mem_setOf]
+  rw [convexHull_range_eq_exists_affineCombination, Set.mem_ofPred]
   constructor <;> intro h
   · obtain ⟨u, w, hw, hw1, rfl⟩ := h
     have hw' : ∀ i ∈ u, w i ≤ 1 := by

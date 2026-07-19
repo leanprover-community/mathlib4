@@ -321,7 +321,7 @@ lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σ l, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
-  haveI : Countable s := h.to_subtype
+  have : Countable s := h.to_subtype
   rw [← mk_le_aleph0_iff, ← lift_le_aleph0]
   exact lift_card_closure_le_card_term.trans mk_le_aleph0
 
@@ -331,15 +331,16 @@ variable {L} (S)
 is preserved under function symbols, then `p` holds for all elements of the closure of `s`. -/
 @[elab_as_elim]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure L s) (Hs : ∀ x ∈ s, p x)
-    (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x :=
-  (@closure_le L M _ ⟨setOf p, fun {_} => Hfun⟩ _).2 Hs h
+    (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (Set.ofPred p)) : p x :=
+  (@closure_le L M _ ⟨Set.ofPred p, fun {_} => Hfun⟩ _).2 Hs h
 
 /-- If `s` is a dense set in a structure `M`, `Substructure.closure L s = ⊤`, then in order to prove
 that some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify
 that `p` is preserved under function symbols. -/
 @[elab_as_elim]
 theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure L s = ⊤)
-    (Hs : ∀ x ∈ s, p x) (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x := by
+    (Hs : ∀ x ∈ s, p x) (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (Set.ofPred p)) :
+    p x := by
   have : ∀ x ∈ closure L s, p x := fun x hx => closure_induction hx Hs fun {n} => Hfun
   simpa [hs] using this x
 
@@ -378,7 +379,7 @@ theorem closure_insert (s : Set M) (m : M) : closure L (insert m s) = closure L 
 
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
-  haveI : Small.{u} (∅ : Set M) := small_subsingleton _
+  have : Small.{u} (∅ : Set M) := small_subsingleton _
   exact Substructure.small_closure
 
 theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
@@ -392,7 +393,7 @@ theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Subs
   suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
   refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) (fun f v hC ↦ ?_)
-  simp_rw [Set.mem_setOf] at *
+  simp_rw [Set.mem_ofPred] at *
   have ⟨i, hi⟩ := hS.finite_le (fun i ↦ Classical.choose (hC i))
   refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
 
@@ -400,7 +401,7 @@ theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Subs
 theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : M} :
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 variable (L) (M)
@@ -686,6 +687,7 @@ namespace LHom
 
 variable {L' : Language} [L'.Structure M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reduces the language of a substructure along a language hom. -/
 def substructureReduct (φ : L →ᴸ L') [φ.IsExpansionOn M] :
     L'.Substructure M ↪o L.Substructure M where
@@ -866,6 +868,7 @@ def domRestrict (f : M ↪[L] N) (p : L.Substructure M) : p ↪[L] N :=
 theorem domRestrict_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) : f.domRestrict p x = f x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A first-order embedding `f : M → N` whose values lie in a substructure `p ⊆ N` can be restricted
 to an embedding `M → p`. -/
 def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) : M ↪[L] p where

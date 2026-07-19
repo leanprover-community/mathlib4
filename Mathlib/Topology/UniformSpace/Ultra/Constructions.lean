@@ -37,7 +37,7 @@ instance SetRel.isTrans_entourageProd {s : SetRel X X} {t : SetRel Y Y} [s.IsTra
 
 lemma IsUltraUniformity.comap {u : UniformSpace Y} (h : IsUltraUniformity Y) (f : X → Y) :
     @IsUltraUniformity _ (u.comap f) := by
-  letI := u.comap f
+  let := u.comap f
   refine .mk_of_hasBasis (h.hasBasis.comap (Prod.map f f)) ?_ ?_ <;>
   · dsimp
     rintro _ ⟨_, _, _⟩
@@ -46,7 +46,7 @@ lemma IsUltraUniformity.comap {u : UniformSpace Y} (h : IsUltraUniformity Y) (f 
 lemma IsUltraUniformity.inf {u u' : UniformSpace X} (h : @IsUltraUniformity _ u)
     (h' : @IsUltraUniformity _ u') :
     @IsUltraUniformity _ (u ⊓ u') := by
-  letI := u ⊓ u'
+  let := u ⊓ u'
   refine .mk_of_hasBasis (h.hasBasis.inf h'.hasBasis) ?_ ?_ <;>
   · dsimp
     rintro _ ⟨⟨_, _, _⟩, _, _, _⟩
@@ -62,7 +62,7 @@ instance IsUltraUniformity.prod [UniformSpace X] [UniformSpace Y]
 lemma IsUltraUniformity.iInf {ι : Type*} {U : (i : ι) → UniformSpace X}
     (hU : ∀ i, @IsUltraUniformity X (U i)) :
     @IsUltraUniformity _ (⨅ i, U i : UniformSpace X) := by
-  letI : UniformSpace X := ⨅ i, U i
+  let : UniformSpace X := ⨅ i, U i
   refine .mk_of_hasBasis (iInf_uniformity ▸ Filter.HasBasis.iInf fun i ↦ (hU i).hasBasis) ?_ ?_ <;>
   · simp only [forall_and, Subtype.forall, id_eq, Set.iInter_coe_set, and_imp]
     rintro _ _ _ _ _
@@ -83,7 +83,7 @@ instance IsUltraUniformity.bot [UniformSpace X] [DiscreteUniformity X] : IsUltra
   apply mk_of_hasBasis this <;> { rw [forall_const]; infer_instance }
 
 lemma IsUltraUniformity.top : @IsUltraUniformity X (⊤ : UniformSpace X) := by
-  letI : UniformSpace X := ⊤
+  let : UniformSpace X := ⊤
   have := Filter.hasBasis_top (α := (X × X))
   rw [← top_uniformity] at this
   apply mk_of_hasBasis this <;> { rw [forall_const]; infer_instance }

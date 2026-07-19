@@ -317,6 +317,7 @@ theorem mdifferentiable [ContMDiffVectorBundle 1 F Z I]
     e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
   ⟨e.contMDiffOn.mdifferentiableOn one_ne_zero, e.contMDiffOn_symm.mdifferentiableOn one_ne_zero⟩
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")] alias Bundle.Trivialization.mdifferentiable := mdifferentiable
 
 end
@@ -454,29 +455,30 @@ lemma mdifferentiable_smul_const_section
   fun x₀ ↦ (hs x₀).smul_const_section
 
 lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
-    (hs : ∀ i, MDiffAt[u] (T% (t i ·)) x₀) :
+    (hs : ∀ i ∈ s, MDiffAt[u] (T% (t i ·)) x₀) :
     MDiffAt[u] (T% (fun x ↦ ∑ i ∈ s, (t i x))) x₀ := by
   classical
   induction s using Finset.induction_on with
   | empty => simpa using! (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt one_ne_zero
   | insert i s hi h =>
-    simpa [Finset.sum_insert hi] using! mdifferentiableWithinAt_add_section (hs i) h
+    simp only [Finset.mem_insert, forall_eq_or_imp] at hs
+    simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section (hs.1) (h hs.2)
 
 lemma MDifferentiableAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x} {x₀ : B}
-    (hs : ∀ i, MDiffAt (T% (t i ·)) x₀) :
+    (hs : ∀ i ∈ s, MDiffAt (T% (t i ·)) x₀) :
     MDiffAt (T% (fun x ↦ ∑ i ∈ s, (t i x))) x₀ := by
   simp_rw [← mdifferentiableWithinAt_univ] at hs ⊢
   exact MDifferentiableWithinAt.sum_section hs
 
 lemma MDifferentiableOn.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
-    (hs : ∀ i, MDiff[u] (T% (t i ·))) :
+    (hs : ∀ i ∈ s, MDiff[u] (T% (t i ·))) :
     MDiff[u] (T% (fun x ↦ ∑ i ∈ s, (t i x))) :=
-  fun x₀ hx₀ ↦ .sum_section fun i ↦ hs i x₀ hx₀
+  fun x₀ hx₀ ↦ .sum_section fun i hi ↦ hs i hi x₀ hx₀
 
 lemma MDifferentiable.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
-    (hs : ∀ i, MDiff (T% (t i ·))) :
+    (hs : ∀ i ∈ s, MDiff (T% (t i ·))) :
     MDiff (T% (fun x ↦ ∑ i ∈ s, (t i x))) :=
-  fun x₀ ↦ .sum_section fun i ↦ (hs i) x₀
+  fun x₀ ↦ .sum_section fun i hi ↦ (hs i) hi x₀
 
 /-- The scalar product `ψ • s` of a differentiable function `ψ : M → 𝕜` and a section `s` of a
 vector bundle `V → M` is differentiable once `s` is differentiable on an open set containing
@@ -509,7 +511,7 @@ lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
   let s := {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ u').Nonempty}
   have := hfin.fintype
   have : MDiffAt[u ∩ u'] (T% (fun x ↦ ∑ i ∈ s, (t i x))) x₀ :=
-     .sum_section fun i ↦ ((ht' i).mono inter_subset_left)
+     .sum_section fun i _ ↦ ((ht' i).mono inter_subset_left)
   apply (mdifferentiableWithinAt_inter hu').mp
   apply this.congr' (fun y hy ↦ ?_) inter_subset_right (mem_of_mem_nhds hu')
   rw [TotalSpace.mk_inj, tsum_eq_sum']
@@ -517,7 +519,7 @@ lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
   by_contra! h
   have : i ∈ s.toFinset := by
     refine Set.mem_toFinset.mpr ?_
-    simp only [s, ne_eq, Set.mem_setOf_eq]
+    simp only [s, ne_eq, Set.mem_ofPred_eq]
     use y
     simp [h, hy]
   exact hi this
@@ -554,7 +556,7 @@ lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
     intro x hx
-    rw [Set.mem_setOf] at hx ⊢
+    rw [Set.mem_ofPred] at hx ⊢
     use y
     simpa using ⟨hx, mem_of_mem_nhds hu⟩
   rw [tsum_eq_finsum (hfin.subset this)]
