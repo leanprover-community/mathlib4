@@ -18,17 +18,18 @@ universe u v
 
 namespace Module
 
-variable {R : Type u} [CommRing R] [Small.{v, u} R]
+variable {R : Type u} [CommRing R]
 
 theorem HasFiniteFreeResolutionOfLength.isStablyFree_of_projective {P : Type v} [AddCommGroup P]
     [Module R P] {n : ℕ} (hn : HasFiniteFreeResolutionOfLength R P n) :
     [Projective R P] → Module.IsStablyFree R P := by
-  induction hn with
+  induction hn using induction_on with
   | zero P =>
       intro
       infer_instance
-  | succ P _ F K f g hf hg he _ ih =>
+  | succ K F P _ f g hf hg he hK ih =>
       intro
+      have : Module.Finite R K := hK.module_finite
       obtain ⟨l, hl⟩ := Module.projective_lifting_property g LinearMap.id hg
       let e : F ≃ₗ[R] K × P := ((Function.Exact.splitSurjectiveEquiv he hf) ⟨l, hl⟩).1
       have : Projective R (K × P) := Projective.of_equiv e
@@ -50,12 +51,17 @@ instance HasFiniteFreeResolution.isStablyFree (P : Type v) [AddCommGroup P] [Mod
   obtain ⟨_, hn⟩ := HasFiniteFreeResolution.out R P
   exact hn.isStablyFree_of_projective
 
-theorem HasFiniteFreeResolution.iff_isStablyFree (P : Type v) [AddCommGroup P] [Module R P]
-    [Module.Finite R P] [Projective R P] :
+theorem HasFiniteFreeResolution.iff_isStablyFree [Small.{v} R] (P : Type v) [AddCommGroup P]
+    [Module R P] [Module.Finite R P] [Projective R P] :
     HasFiniteFreeResolution R P ↔ IsStablyFree R P := by
   refine ⟨fun _ ↦ HasFiniteFreeResolution.isStablyFree R P, fun _ ↦ ?_⟩
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R P
-  exact of_shortExact_of_left_of_middle (LinearMap.inr R P N)
-    (LinearMap.fst R P N) LinearMap.inr_injective LinearMap.fst_surjective Function.Exact.inr_fst
+  have : Small.{v} N := Module.Finite.small.{v} R N
+  let +nondep eN : N ≃ₗ[R] Shrink.{v} N := (Shrink.linearEquiv R N).symm
+  have : Module.Free R (P × Shrink.{v} N) :=
+    Module.Free.of_equiv ((LinearEquiv.refl R P).prodCongr eN)
+  exact of_shortExact_of_left_of_middle (LinearMap.inr R P (Shrink.{v} N))
+    (LinearMap.fst R P (Shrink.{v} N)) LinearMap.inr_injective LinearMap.fst_surjective
+      Function.Exact.inr_fst
 
 end Module

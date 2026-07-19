@@ -34,14 +34,14 @@ theorem HasFiniteFreeResolutionOfLength.of_hasProjectiveDimensionLE (n : ℕ)
       have : Projective R M := (IsProjective.iff_projective M).2 <|
         projective_iff_hasProjectiveDimensionLT_one.2 inferInstance
       have : Free R M := free_of_flat_of_isLocalRing
-      exact HasFiniteFreeResolutionOfLength.zero M
+      exact HasFiniteFreeResolutionOfLength.zero R M
   | succ n ih =>
       rcases exists_finite_presentation R M with ⟨P, _, _, _, _, f, hfs⟩
       have : HasProjectiveDimensionLE (ModuleCat.of R f.ker) n :=
         (LinearMap.shortExact_shortComplexKer hfs).hasProjectiveDimensionLT_X₁ (n + 1)
           inferInstance inferInstance
-      exact (ih (LinearMap.ker f)).succ' (LinearMap.ker f).subtype f f.ker.subtype_injective hfs
-        (LinearMap.exact_subtype_ker_map f)
+      exact (ih (LinearMap.ker f)).succ (LinearMap.ker f).subtype f
+        f.ker.subtype_injective hfs (LinearMap.exact_subtype_ker_map f)
 
 variable {R M} in
 /-- Let `M` be an module over a local noetherian ring `R`. Then `M` has a finite free resolution
