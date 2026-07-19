@@ -421,6 +421,11 @@ theorem Dense.exists_mem_open (hs : Dense s) {U : Set X} (ho : IsOpen U)
   let ⟨x, hx⟩ := hs.inter_open_nonempty U ho hne
   ⟨x, hx.2, hx.1⟩
 
+/-- A dense set contains every point whose singleton is open, that is, every isolated point. -/
+theorem Dense.mem_of_isOpen_singleton (hs : Dense s) (hx : IsOpen {x}) : x ∈ s := by
+  obtain ⟨y, hys, hy⟩ := hs.exists_mem_open hx ⟨x, rfl⟩
+  exact mem_singleton_iff.1 hy ▸ hys
+
 theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
   ⟨fun ⟨x, _⟩ => ⟨x⟩, fun ⟨x⟩ =>
     let ⟨y, hy⟩ := hs.inter_open_nonempty _ isOpen_univ ⟨x, trivial⟩
