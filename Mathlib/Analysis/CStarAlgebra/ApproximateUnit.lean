@@ -335,6 +335,4 @@ instance : (approximateUnit A).NeBot := (increasingApproximateUnit A).neBot
 
 end CStarAlgebra
 
-instance : (approximateUnit A).NeBot := (increasingApproximateUnit A).neBot
-
 end ApproximateUnit

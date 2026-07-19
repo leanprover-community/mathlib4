@@ -15,11 +15,13 @@ import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
 /-! # Extreme points of the closed unit ball in C⋆-algebras
 
-This file contains results on the extreme points of the closed unit ball in (unital) C⋆-algebras. -/
+This file contains results on the extreme points of the closed unit ball in (unital) C⋆-algebras.
+
+## References
+
+[C⋆-algebras and W⋆-algebras][sakai1971] -/
 
 @[expose] public section
-
-set_option backward.isDefEq.respectTransparency false
 
 open Set Metric CFC CStarAlgebra Unitization
 
