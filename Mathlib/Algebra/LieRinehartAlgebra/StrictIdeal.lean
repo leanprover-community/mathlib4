@@ -109,7 +109,7 @@ theorem toSubmodule_injective :
   ext fun x => by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
 
 theorem toSubmodule_inj {s t : StrictLieRinehartIdeal A L} :
-    s.toSubmodule = t.toSubmodule ↔ s = t := 
+    s.toSubmodule = t.toSubmodule ↔ s = t :=
   toSubmodule_injective.eq_iff
 
 theorem toSubmodule_le_iff {s t : StrictLieRinehartIdeal A L} :
