@@ -55,7 +55,7 @@ variable (n : ℕ)
 def Q : QuadraticForm ℝ (EuclideanSpace ℝ (Fin n)) :=
   LinearMap.BilinMap.toQuadraticMap (innerₗ _)
 
-@[simp] theorem Q_apply (x : EuclideanSpace ℝ (Fin n)) : Q n x = ⟪x, x⟫ := rfl
+theorem Q_apply (x : EuclideanSpace ℝ (Fin n)) : Q n x = ⟪x, x⟫ := rfl
 
 variable {n}
 
@@ -66,7 +66,7 @@ theorem inner_e_e_of_ne {i j : Fin n} (h : i ≠ j) : ⟪e i, e j⟫ = 0 := by
   simp [e, EuclideanSpace.inner_single_left, h.symm]
 
 @[simp] theorem Q_e (i : Fin n) : Q n (e i) = 1 := by
-  simp [e]
+  simp [e, Q_apply]
 
 theorem isOrtho_e {i j : Fin n} (h : i ≠ j) : (Q n).IsOrtho (e i) (e j) := by
   rw [QuadraticMap.isOrtho_def]
