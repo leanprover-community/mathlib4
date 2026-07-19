@@ -162,21 +162,6 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L :=
   inferInstanceAs (IsGaloisGroup H (FixedPoints.subalgebra K L H) L)
 
-theorem smul_eq_self [IsGaloisGroup H F L] (g : G) (hg : g ∈ H) (x : F) :
-    g • (x : L) = x :=
-  smul_algebraMap (⟨g, hg⟩ : H) x
-
-theorem smul_mem_of_normal (N : Subgroup G) [hN : N.Normal] [hF : IsGaloisGroup N F L] (g : G)
-    (x : F) : g • (x : L) ∈ F := by
-  have : ∀ (n : N), n • g • (x : L) = g • x := by
-    intro n
-    rw [← smul_assoc, MulAction.subgroup_smul_def, smul_eq_mul,
-      show n * g = g * (g⁻¹ * n * g) by group, ← smul_eq_mul, smul_assoc,
-      IsGaloisGroup.smul_eq_self G K L N F (g⁻¹ * (n : G) * g)]
-    exact hN.conj_mem' n n.prop g
-  obtain ⟨y, hy⟩ := hF.isInvariant.isInvariant (g • x) this
-  simp [← hy]
-
 open IntermediateField in
 theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGaloisGroup H F L] :
     FixedPoints.intermediateField H = F := by

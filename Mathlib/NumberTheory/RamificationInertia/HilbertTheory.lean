@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
-public import Mathlib.FieldTheory.IntermediateField.ExtendTop
 
 /-!
 
@@ -740,6 +739,39 @@ theorem eq_inertiaField_iff' :
 
 end arithmetic
 
+section compositum
+
+variable [CommRing A] [IsDedekindDomain A] [Ring.HasFiniteQuotients A] [Algebra A K]
+  [IsFractionRing A K] [Algebra A L] [IsScalarTower A K L] [Algebra A B] [IsDedekindDomain B]
+  [Ring.HasFiniteQuotients B] {p : Ideal A}
+  (C : Type*) [CommRing C] [IsDedekindDomain C] [Algebra A C] [Module.Finite A C]
+  [Module.IsTorsionFree A C] [Algebra B C] [FaithfulSMul B C] [IsScalarTower A B C]
+  (F₁ F₂ : IntermediateField K L) {B₁ B₂ : Type*} [CommRing B₁] [CommRing B₂] [IsDedekindDomain B₁]
+  [IsDedekindDomain B₂] [Ring.HasFiniteQuotients B₁] [Ring.HasFiniteQuotients B₂] [Algebra A B₁]
+  [Algebra A B₂] [Algebra B₁ C] [FaithfulSMul B₁ C] [Algebra B₂ C] [FaithfulSMul B₂ C]
+  [Algebra B ↥(F₁ ⊔ F₂)] [IsFractionRing B ↥(F₁ ⊔ F₂)] [Algebra B₁ F₁] [IsFractionRing B₁ F₁]
+  [Algebra B₂ F₂] [IsFractionRing B₂ F₂] [Algebra B₁ B] [Algebra B₂ B] [IsScalarTower A B₁ C]
+  [IsScalarTower B₁ B C] [IsScalarTower B₂ B C] [IsScalarTower A B₂ C]
+  {P₁ : Ideal B₁} {P₂ : Ideal B₂} [P.IsMaximal] [P.LiesOver p] [P.LiesOver P₁] [P.LiesOver P₂]
+  [FiniteDimensional K L] [IsGalois K L]
+
+include F₁ F₂ C in
+/-- If `p` is unramified in both `F₁/K` and `F₂/K`, then `p` is unramified in `(F₁ ⊔ F₂)/K`,
+assuming `L/K` is Galois. -/
+theorem ramificationIdx_sup_eq_one_of_isGalois
+    (h₁ : P₁.ramificationIdx A = 1) (h₂ : P₂.ramificationIdx A = 1) (hp : p ≠ ⊥) :
+    P.ramificationIdx A = 1 := sorry
+
+include F₁ F₂ C in
+/-- If `p` totally splits in both `F₁/K` and `F₂/K`, then `p` totally splits in `(F₁ ⊔ F₂)/K`,
+assuming `L/K` is Galois. -/
+theorem ramificationIdx_inertiaDeg_sup_eq_one_of_isGalois [Algebra.IsIntegral A B]
+    (h₁ : P₁.ramificationIdx A = 1 ∧ P₁.inertiaDeg A = 1)
+    (h₂ : P₂.ramificationIdx A = 1 ∧ P₂.inertiaDeg A = 1) (hp : p ≠ ⊥) :
+    P.ramificationIdx A = 1 ∧ P.inertiaDeg A = 1 := sorry
+
+end compositum
+
 end IntermediateField
 
 end Ideal
@@ -1053,111 +1085,3 @@ end IsDecompositionField
 end splitting
 
 end deprecated
-
--- TODO (merge #36843 <- #36733): `section Galois` kept from galfields9. These are the
--- compositum statements we want to prove; the proofs still use the pre-refactor API and
--- must be adapted to the new one, so this block does not build yet.
-namespace IntermediateField
-
-variable [Field K] [Field L] [Algebra K L] [CommRing A] [CommRing B] [Algebra A B]
-  {p : Ideal A} (P : Ideal B)
-
-open MulAction Pointwise Ideal
-
-section applications
-
-variable [IsDedekindDomain A] [Ring.HasFiniteQuotients A] [Algebra A K] [IsFractionRing A K]
-  [Algebra A L] [IsScalarTower A K L] [IsDedekindDomain B] [Ring.HasFiniteQuotients B]
-  (C : Type*) [CommRing C] [IsDedekindDomain C] [Algebra A C] [Module.Finite A C]
-  [Module.IsTorsionFree A C] [Algebra B C] [FaithfulSMul B C] [IsScalarTower A B C]
-  (F₁ F₂ : IntermediateField K L) {B₁ B₂ : Type*} [CommRing B₁] [CommRing B₂] [IsDedekindDomain B₁]
-  [IsDedekindDomain B₂] [Ring.HasFiniteQuotients B₁] [Ring.HasFiniteQuotients B₂] [Algebra A B₁]
-  [Algebra A B₂] [Algebra B₁ C] [FaithfulSMul B₁ C] [Algebra B₂ C] [FaithfulSMul B₂ C]
-  [Algebra B ↥(F₁ ⊔ F₂)] [IsFractionRing B ↥(F₁ ⊔ F₂)] [Algebra B₁ F₁] [IsFractionRing B₁ F₁]
-  [Algebra B₂ F₂] [IsFractionRing B₂ F₂] [Algebra B₁ B] [Algebra B₂ B] [IsScalarTower A B₁ C]
-  [IsScalarTower B₁ B C] [IsScalarTower B₂ B C] [IsScalarTower A B₂ C]
-  {P₁ : Ideal B₁} {P₂ : Ideal B₂} [P.IsMaximal] [P.LiesOver p] [P.LiesOver P₁] [P.LiesOver P₂]
-
-section Galois
-
-variable {A} [FiniteDimensional K L] [Algebra C L] [IsFractionRing C L] [Algebra B L] [Algebra B₁ L]
-  [Algebra B₂ L] [IsScalarTower A C L] [IsScalarTower B C L] [IsScalarTower B₁ C L]
-  [IsScalarTower B₂ C L] [IsScalarTower B ↥(F₁ ⊔ F₂) L] [IsScalarTower B₁ F₁ L]
-  [IsScalarTower B₂ F₂ L] [IsGalois K L] [MulSemiringAction Gal(L/K) C]
-  [SMulDistribClass Gal(L/K) C L]
-
-include F₁ F₂ C in
-/--
-If `p` is unramified in both `F₁/K` and `F₂/K`, then `p` is unramified in `(F₁ ⊔ F₂)/K`,
-assuming `L/K` is Galois. See `Ideal.ramificationIdx_sup_eq_one` for the version without the
-Galois assumption.
--/
-theorem Ideal.ramificationIdx_sup_eq_one_of_isGalois
-    (h₁ : ramificationIdx (algebraMap A B₁) p P₁ = 1)
-    (h₂ : ramificationIdx (algebraMap A B₂) p P₂ = 1) (hp : p ≠ ⊥) :
-    ramificationIdx (algebraMap A B) p P = 1 := by
-  have : Module.Finite B₁ C := Module.Finite.right A B₁ C
-  have : Module.Finite B₂ C := Module.Finite.right A B₂ C
-  have : Module.Finite B C := Module.Finite.right A B C
-  obtain ⟨Q, _, _⟩ := Ideal.exists_maximal_ideal_liesOver_of_isIntegral (S := C) P
-  have : Q.LiesOver p := LiesOver.trans Q P p
-  have : Q.LiesOver P₁ := LiesOver.trans Q P P₁
-  have : Q.LiesOver P₂ := LiesOver.trans Q P P₂
-  let E : IntermediateField K L := FixedPoints.intermediateField (inertia Gal(L/K) Q)
-  rw [← le_isInertiaField_iff A K L Q F₁ E _ _ hp] at h₁
-  rw [← le_isInertiaField_iff A K L Q F₂ E _ _ hp] at h₂
-  have := sup_le h₁ h₂
-  rwa [le_isInertiaField_iff A K L Q (F₁ ⊔ F₂) E B P hp] at this
-
-include F₁ F₂ C in
-/--
-If `p` totally splits in both `F₁/K` and `F₂/K`, then `p` totally splits in `(F₁ ⊔ F₂)/K`,
-assuming `L/K` is Galois. See `Ideal.ramificationIdx_inertiaDeg_sup_eq_one` for the version
-without the Galois assumption.
--/
-theorem Ideal.ramificationIdx_inertiaDeg_sup_eq_one_of_isGalois [Algebra.IsIntegral A B]
-    (h₁ : ramificationIdx (algebraMap A B₁) p P₁ = 1 ∧ inertiaDeg p P₁ = 1)
-    (h₂ : ramificationIdx (algebraMap A B₂) p P₂ = 1 ∧ inertiaDeg p P₂ = 1)
-    (hp : p ≠ ⊥) :
-    ramificationIdx (algebraMap A B) p P = 1 ∧ inertiaDeg p P = 1 := by
-  have : IsScalarTower A B₁ B := IsScalarTower.to₁₂₃ A B₁ B C
-  have : IsScalarTower A B₂ B := IsScalarTower.to₁₂₃ A B₂ B C
-  have : Algebra.IsIntegral B₁ B := Algebra.IsIntegral.tower_top A
-  have : Algebra.IsIntegral B₂ B := Algebra.IsIntegral.tower_top A
-  have : p.IsMaximal := Ideal.IsMaximal.of_isMaximal_liesOver P p
-  have : P₁.IsMaximal := Ideal.IsMaximal.of_isMaximal_liesOver P P₁
-  have : P₂.IsMaximal := Ideal.IsMaximal.of_isMaximal_liesOver P P₂
-  have : Module.Finite B₁ C := Module.Finite.right A B₁ C
-  have : Module.Finite B₂ C := Module.Finite.right A B₂ C
-  have : Module.Finite B C := Module.Finite.right A B C
-  obtain ⟨Q, _, _⟩ := Ideal.exists_maximal_ideal_liesOver_of_isIntegral (S := C) P
-  have : Q.LiesOver p := LiesOver.trans Q P p
-  have : Q.LiesOver P₁ := LiesOver.trans Q P P₁
-  have : Q.LiesOver P₂ := LiesOver.trans Q P P₂
-  let D : IntermediateField K L := FixedPoints.intermediateField (stabilizer Gal(L/K) Q)
-  let : Algebra A D := D.algebra'
-  let 𝓞D := integralClosure A D
-  have : IsDedekindDomain 𝓞D := integralClosure.isDedekindDomain A K D
-  have : IsFractionRing 𝓞D D := integralClosure.isFractionRing_of_finite_extension K D
-  let : Algebra 𝓞D L := 𝓞D.toAlgebra
-  let : Algebra 𝓞D C := (galRestrict' A 𝓞D C D.val).toRingHom.toAlgebra
-  have : Module.IsTorsionFree 𝓞D C := by
-    rw [Module.isTorsionFree_iff_faithfulSMul]
-    apply Algebra.IsAlgebraic.faithfulSMul_tower_top A
-  have : IsScalarTower A 𝓞D C := IsScalarTower.of_algHom _
-  have : IsScalarTower 𝓞D C L := by
-    refine IsScalarTower.of_algebraMap_eq fun x ↦ ?_
-    have := algebraMap_galRestrict'_apply A 𝓞D C D.val x
-    rw [RingHom.algebraMap_toAlgebra (galRestrict' A 𝓞D C D.val).toRingHom, AlgHom.toRingHom_eq_coe,
-      RingHom.coe_coe, algebraMap_galRestrict'_apply, IsScalarTower.algebraMap_apply 𝓞D D L,
-      Subalgebra.algebraMap_apply, IntermediateField.algebraMap_apply, IntermediateField.coe_val]
-  rw [← IntermediateField.le_isDecompositionField_iff A K L Q F₁ D _ _ hp] at h₁
-  rw [← IntermediateField.le_isDecompositionField_iff A K L Q F₂ D _ _ hp] at h₂
-  have := sup_le h₁ h₂
-  rwa [IntermediateField.le_isDecompositionField_iff A K L Q (F₁ ⊔ F₂) D _ P hp] at this
-
-end Galois
-
-end applications
-
-end IntermediateField
