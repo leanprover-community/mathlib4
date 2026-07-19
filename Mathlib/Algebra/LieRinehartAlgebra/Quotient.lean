@@ -113,7 +113,7 @@ open LieRinehartAlgebra in
 @[expose] def mk' : L →ₗ⁅(AlgHom.id R A)⁆ L ⧸ s :=
   { (s.toSubmodule.restrictScalars R).mkQ with
     toFun := mk
-    map_lie'  {_ _} := rfl
+    map_lie' {_ _} := rfl
     map_smul_apply' _ _ := rfl
     apply_lie' _ _ := rfl }
 
