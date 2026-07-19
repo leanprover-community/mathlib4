@@ -19,6 +19,11 @@ Let `C` be a category, `P : ObjectProperty C` be a property of objects in `C`.
   exact sequence `0 ⟶ Eₙ ⟶ ⋯ ⟶ E₀ ⟶ X ⟶ 0` such that each `Eᵢ : C` satisfies `P`.
 * `CategoryTheory.ObjectProperty.HasFiniteResolution`:
   We say that `X : C` has a finite `P`-resolution if it has a `P`-resolution of some finite length.
+
+## TODO
+
+* Construct a chain complex `K` whose terms satisfy `P` with a quasi-isomorphism from `K` to the
+  single complex on `X` when `C` is abelian and `X` has a finite `P`-resolution.
 -/
 
 public section
@@ -48,7 +53,7 @@ variable {P Q : ObjectProperty C} {X : C} {n : ℕ}
 
 namespace HasFiniteResolutionOfLength
 
-theorem property_of_zero (hX : P.HasFiniteResolutionOfLength X 0) : P X := by
+theorem property (hX : P.HasFiniteResolutionOfLength X 0) : P X := by
   cases hX with
   | zero _ hX => exact hX
 
@@ -58,14 +63,11 @@ theorem monotone (hPQ : P ≤ Q) (hX : P.HasFiniteResolutionOfLength X n) :
   | zero X hX => exact HasFiniteResolutionOfLength.zero X (hPQ X hX)
   | succ S n hS h₂ _ ih => exact HasFiniteResolutionOfLength.succ S n hS (hPQ S.X₂ h₂) ih
 
-theorem property [P.IsClosedUnderQuotients] (hX : P.HasFiniteResolutionOfLength X n) : P X := by
+theorem property_of_isClosedUnderQuotients [P.IsClosedUnderQuotients]
+    (hX : P.HasFiniteResolutionOfLength X n) : P X := by
   cases hX with
   | zero _ hX => exact hX
   | succ S _ hS h₂ _ => exact P.prop_X₃_of_shortExact hS h₂
-
-theorem property_of_le [Q.IsClosedUnderQuotients] (hPQ : P ≤ Q)
-    (hX : P.HasFiniteResolutionOfLength X n) : Q X :=
-  (hX.mono hPQ).property
 
 theorem of_iso [P.IsClosedUnderIsomorphisms] {Y : C} (e : X ≅ Y)
     (hX : P.HasFiniteResolutionOfLength X n) : P.HasFiniteResolutionOfLength Y n := by
@@ -100,34 +102,32 @@ theorem of_property (hX : P X) : P.HasFiniteResolution X :=
 instance [P.Is X] : P.HasFiniteResolution X :=
   of_property (P.prop_of_is X)
 
-protected theorem elim [P.HasFiniteResolution X] {Q : Prop}
-    (h : ∀ n, P.HasFiniteResolutionOfLength X n → Q) : Q :=
-  Exists.elim (HasFiniteResolution.out P X) h
+theorem monotone (hPQ : P ≤ Q) [P.HasFiniteResolution X] : Q.HasFiniteResolution X := by
+  obtain ⟨_, hX⟩ := HasFiniteResolution.out P X
+  exact (hX.monotone hPQ).hasFiniteResolution
 
-theorem monotone (hPQ : P ≤ Q) [P.HasFiniteResolution X] : Q.HasFiniteResolution X :=
-  HasFiniteResolution.elim fun _ hX ↦ (hX.mono hPQ).hasFiniteResolution
-
-theorem property_of_le [Q.IsClosedUnderQuotients] (hPQ : P ≤ Q) [P.HasFiniteResolution X] : Q X :=
-  HasFiniteResolution.elim fun _ hX ↦ hX.property_of_le hPQ
-
-theorem property [P.IsClosedUnderQuotients] [P.HasFiniteResolution X] : P X :=
-  property_of_le (le_refl P)
+theorem property_of_isClosedUnderQuotients [P.IsClosedUnderQuotients] [P.HasFiniteResolution X] :
+    P X := by
+  obtain ⟨_, hX⟩ := HasFiniteResolution.out P X
+  exact hX.property_of_isClosedUnderQuotients
 
 theorem of_iso [P.IsClosedUnderIsomorphisms] [P.HasFiniteResolution X] {Y : C} (e : X ≅ Y) :
-    P.HasFiniteResolution Y :=
-  HasFiniteResolution.elim fun _ hX ↦ (hX.of_iso e).hasFiniteResolution
+    P.HasFiniteResolution Y := by
+  obtain ⟨_, hX⟩ := HasFiniteResolution.out P X
+  exact (hX.of_iso e).hasFiniteResolution
 
 theorem of_shortExact {S : ShortComplex C} (hS : S.ShortExact) (h₂ : P S.X₂)
-    [P.HasFiniteResolution S.X₁] : P.HasFiniteResolution S.X₃ :=
-  HasFiniteResolution.elim fun n h₁ ↦
-    (HasFiniteResolutionOfLength.succ S n hS h₂ h₁).hasFiniteResolution
+    [P.HasFiniteResolution S.X₁] : P.HasFiniteResolution S.X₃ := by
+  obtain ⟨n, h₁⟩ := HasFiniteResolution.out P S.X₁
+  exact (HasFiniteResolutionOfLength.succ S n hS h₂ h₁).hasFiniteResolution
 
 theorem map_exactFunctor {D : Type u'} [Category.{v'} D] [HasZeroMorphisms D]
     {Q : ObjectProperty D} (F : C ⥤ D) [F.PreservesZeroMorphisms]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F]
     (hF : P ≤ Q.inverseImage F) [P.HasFiniteResolution X] :
-    Q.HasFiniteResolution (F.obj X) :=
-  HasFiniteResolution.elim fun _ hX ↦ (hX.map_exactFunctor F hF).hasFiniteResolution
+    Q.HasFiniteResolution (F.obj X) := by
+  obtain ⟨_, hX⟩ := HasFiniteResolution.out P X
+  exact (hX.map_exactFunctor F hF).hasFiniteResolution
 
 end HasFiniteResolution
 
