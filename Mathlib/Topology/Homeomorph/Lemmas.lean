@@ -372,27 +372,27 @@ see `inducing_sigma`. A weaker condition like any two sets in the family having 
 neighbourhoods is not enough, as the example of infinite collections of singletons in
 Hausdorff spaces shows. -/
 @[simps! symm_apply_coe]
-noncomputable def Set.iUnion {X : Type*} [TopologicalSpace X] {ι : Type*}
-    {s : ι → Set X} (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) :
+noncomputable def Set.iUnion {ι : Type*} {s : ι → Set X}
+    (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) :
     ⋃ i, s i ≃ₜ Σ i, s i := by
   haveI hs' : Pairwise (Disjoint on s) := fun i j h ↦ by
     have ⟨u, hu, hu'⟩ := hs i
     exact (hu' j h.symm).mono_left (subset_of_mem_nhdsSet hu)
-  refine ((Set.unionEqSigmaOfDisjoint hs').symm.toHomeomorphOfIsInducing ?_).symm
+  refine ((unionEqSigmaOfDisjoint hs').symm.toHomeomorphOfIsInducing ?_).symm
   refine inducing_sigma.2 ⟨fun i ↦ ?_, fun i ↦ ?_⟩
   · simp [Function.comp_def, ← IsInducing.subtypeVal.of_comp_iff, IsInducing.subtypeVal]
   · have ⟨u, hu, hu'⟩ := hs i
     have ⟨v, hvu, hv, hv'⟩ := mem_nhdsSet.1 hu
     refine ⟨(↑) ⁻¹' v, hv.preimage_val, fun x ↦ ⟨fun h ↦ ?_, ?_⟩⟩
-    · simp only [Set.mem_preimage, Set.coe_unionEqSigmaOfDisjoint_symm_apply] at h
+    · simp only [mem_preimage, coe_unionEqSigmaOfDisjoint_symm_apply] at h
       contrapose! h
-      exact Set.notMem_subset hvu <| (hu' _ h).notMem_of_mem_right x.snd.2
+      exact notMem_subset hvu <| (hu' _ h).notMem_of_mem_right x.snd.2
     · intro rfl
       simpa using hv' x.snd.2
 
 @[simp]
-lemma Set.iUnion_apply_snd_coe {X : Type*} [TopologicalSpace X] {ι : Type*}
-    {s : ι → Set X} (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) {x : ⋃ i, s i} :
+lemma Set.iUnion_apply_snd_coe {ι : Type*} {s : ι → Set X}
+    (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) {x : ⋃ i, s i} :
     ((Homeomorph.Set.iUnion hs x).snd : X) = x := by
   have hs' : Pairwise (Disjoint on s) := fun i j h ↦ by
     have ⟨u, hu, hu'⟩ := hs i
