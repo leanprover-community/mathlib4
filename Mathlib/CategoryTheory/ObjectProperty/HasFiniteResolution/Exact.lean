@@ -21,14 +21,15 @@ universe v u
 
 namespace CategoryTheory
 
-open Category Limits ZeroObject Preadditive
+open Limits Preadditive
 
 namespace ObjectProperty
 
 variable {A : Type u} [Category.{v} A] [Abelian A]
 
-theorem prop_biprod {P : ObjectProperty A} [P.IsClosedUnderBinaryProducts] {X Y : A}
-    (hX : P X) (hY : P Y) : P (X ⊞ Y) :=
+-- move to `Mathlib.CategoryTheory.ObjectProperty.FiniteProducts`
+theorem prop_biprod_of_isClosedUnderBinaryProducts {P : ObjectProperty A}
+    [P.IsClosedUnderBinaryProducts] {X Y : A} (hX : P X) (hY : P Y) : P (X ⊞ Y) :=
   P.prop_of_isLimit_binaryFan (BinaryBiproduct.isLimit X Y) hX hY
 
 theorem HasFiniteResolutionOfLength.biprod_right {P : ObjectProperty A}
@@ -36,11 +37,12 @@ theorem HasFiniteResolutionOfLength.biprod_right {P : ObjectProperty A}
     (hX : P.HasFiniteResolutionOfLength X n) (hY : P Y) :
     P.HasFiniteResolutionOfLength (X ⊞ Y) n := by
   cases hX with
-  | zero X hX => exact HasFiniteResolutionOfLength.zero _ (prop_biprod hX hY)
+  | zero X hX =>
+      exact HasFiniteResolutionOfLength.zero _ (prop_biprod_of_isClosedUnderBinaryProducts hX hY)
   | succ S n hS h₂ h₁ =>
       refine HasFiniteResolutionOfLength.succ
         (ShortComplex.mk (biprod.lift S.f 0) (biprod.map S.g (𝟙 Y)) (by ext <;> simp [S.zero])) n
-          ?_ (prop_biprod h₂ hY) h₁
+          ?_ (prop_biprod_of_isClosedUnderBinaryProducts h₂ hY) h₁
       have := hS.mono_f
       have := hS.epi_g
       refine ⟨ShortComplex.exact_of_f_is_kernel _ (KernelFork.IsLimit.ofι' _ _ fun {W} a ha ↦ ?_)⟩
@@ -154,7 +156,8 @@ theorem of_shortExact_of_left_of_right {P : ObjectProperty A}
           have : P.HasFiniteResolution (pullback (𝟙 X₁) (- t)) :=
             HasFiniteResolution.of_iso (asIso (pullback.snd (𝟙 X₁) (- t))).symm
           exact HasFiniteResolution.of_shortExact
-            (horseshoe_middle_shortExact (𝟙 X₁) hS hS₃ l t hl ht) (prop_biprod hX₁ hF₃)
+            (horseshoe_middle_shortExact (𝟙 X₁) hS hS₃ l t hl ht)
+              (prop_biprod_of_isClosedUnderBinaryProducts hX₁ hF₃)
   | succ T₁ n hS₁ hF₁ hK₁ ih =>
       obtain ⟨_, h₃⟩ := HasFiniteResolution.out P X₃
       have := hS.mono_f
@@ -174,7 +177,8 @@ theorem of_shortExact_of_left_of_right {P : ObjectProperty A}
               (pullback.snd T₁.g (- t)) (by rw [pullback.lift_snd]) (hS₁.pullback (- t))
           have := hS₁.epi_g
           exact HasFiniteResolution.of_shortExact
-            (horseshoe_middle_shortExact T₁.g hS hS₃ l t hl ht) (prop_biprod hF₁ hF₃)
+            (horseshoe_middle_shortExact T₁.g hS hS₃ l t hl ht)
+              (prop_biprod_of_isClosedUnderBinaryProducts hF₁ hF₃)
 
 /-- In a short exact sequence, if the left and middle objects have finite `P`-resolutions,
 then so does the right object. -/
