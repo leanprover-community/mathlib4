@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # `Take` and `Drop` lemmas for lists

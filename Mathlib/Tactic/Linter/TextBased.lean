@@ -5,9 +5,7 @@ Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 module
 
-public meta import Batteries.Data.String.Matcher
 public meta import Lake.Util.Casing
-public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter

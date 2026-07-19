@@ -9,6 +9,7 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Factorial and variants

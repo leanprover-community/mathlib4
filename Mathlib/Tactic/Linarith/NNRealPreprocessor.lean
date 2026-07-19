@@ -6,8 +6,8 @@ Authors: David Ledvinka
 module
 
 public meta import Mathlib.Tactic.Linarith
-public meta import Mathlib.Tactic.Rify
 public import Mathlib.Data.NNReal.Basic -- shake: keep (tactic dependency)
+public import Mathlib.Tactic.Rify
 
 /-!
 # NNReal linarith preprocessing

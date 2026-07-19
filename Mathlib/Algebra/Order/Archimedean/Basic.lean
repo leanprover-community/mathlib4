@@ -15,6 +15,7 @@ import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
+public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Archimedean groups and fields

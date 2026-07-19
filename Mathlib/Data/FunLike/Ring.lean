@@ -6,8 +6,9 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Data.FunLike.Group
-public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.Finiteness.Attr
 
 /-! # Ring instances for `FunLike` types
 In this file we define various instances related to ring for `FunLike` types.

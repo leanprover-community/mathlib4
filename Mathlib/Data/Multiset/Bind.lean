@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Rudy Peterson
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Bind operation for multisets

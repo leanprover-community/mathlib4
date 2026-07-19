@@ -8,12 +8,12 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus
-public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.Module.Basic
 public import Mathlib.Data.FunLike.Module
 public import Mathlib.Data.FunLike.Ring
+public import Mathlib.Algebra.Module.Submodule.Invariant
 
 /-!
 # Continuous linear maps

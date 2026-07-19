@@ -5,7 +5,6 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 

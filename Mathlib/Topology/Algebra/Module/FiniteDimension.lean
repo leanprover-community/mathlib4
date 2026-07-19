@@ -18,6 +18,7 @@ public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
+public import Lean.Meta.Tactic.Rfl
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
