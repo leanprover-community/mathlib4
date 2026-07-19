@@ -52,7 +52,7 @@ theorem property_of_zero (hX : P.HasFiniteResolutionOfLength X 0) : P X := by
   cases hX with
   | zero _ hX => exact hX
 
-theorem mono (hPQ : P ≤ Q) (hX : P.HasFiniteResolutionOfLength X n) :
+theorem monotone (hPQ : P ≤ Q) (hX : P.HasFiniteResolutionOfLength X n) :
     Q.HasFiniteResolutionOfLength X n := by
   induction hX with
   | zero X hX => exact HasFiniteResolutionOfLength.zero X (hPQ X hX)
@@ -104,7 +104,7 @@ protected theorem elim [P.HasFiniteResolution X] {Q : Prop}
     (h : ∀ n, P.HasFiniteResolutionOfLength X n → Q) : Q :=
   Exists.elim (HasFiniteResolution.out P X) h
 
-theorem mono (hPQ : P ≤ Q) [P.HasFiniteResolution X] : Q.HasFiniteResolution X :=
+theorem monotone (hPQ : P ≤ Q) [P.HasFiniteResolution X] : Q.HasFiniteResolution X :=
   HasFiniteResolution.elim fun _ hX ↦ (hX.mono hPQ).hasFiniteResolution
 
 theorem property_of_le [Q.IsClosedUnderQuotients] (hPQ : P ≤ Q) [P.HasFiniteResolution X] : Q X :=
