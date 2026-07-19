@@ -166,6 +166,15 @@ theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
 theorem singleton_inj {x y : α} : ({x} : Compacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
 
+theorem disjoint_coe_iff (K L : Compacts α) : Disjoint (K : Set α) L ↔ Disjoint K L where
+  mp h := .of_orderEmbedding (.ofMapLEIff SetLike.coe (fun _ _ => SetLike.coe_subset_coe)) h
+  mpr h := by
+    rw [Set.disjoint_iff]
+    intro x ⟨hxK, hxL⟩
+    specialize @h {x}
+    simp_rw [← SetLike.coe_subset_coe, coe_singleton, singleton_subset_iff] at h
+    exact h hxK hxL
+
 instance [Nonempty α] : Nontrivial (Compacts α) := by
   constructor
   obtain ⟨x⟩ := ‹Nonempty α›
