@@ -5,10 +5,10 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Embedding of archimedean groups into reals
@@ -70,7 +70,7 @@ abbrev ratLt (x : M) : Set ℚ := {r | r.num • 1 < r.den • x}
 
 theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :
     mkRat num den ∈ ratLt x ↔ num • 1 < den • x := by
-  rw [Set.mem_setOf]
+  rw [Set.mem_ofPred]
   obtain ⟨m, hm0, hnum, hden⟩ := Rat.mkRat_num_den hden (show mkRat num den = _ by rfl)
   conv in num • 1 => rw [hnum, mul_comm, ← smul_smul, natCast_zsmul]
   conv in den • x => rw [hden, mul_comm, ← smul_smul]
@@ -119,7 +119,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
       To ensure a large enough denominator, we take `d * k`, where
       `1 + 1 ≤ k • (d • (x + y) - a.num • 1)`. -/
     intro h
-    rw [Set.mem_setOf_eq] at h
+    rw [Set.mem_ofPred_eq] at h
     obtain ⟨k, hk⟩ := Archimedean.arch (1 + 1) <| sub_pos.mpr h
     have hk0 : k ≠ 0 := by
       contrapose! hk
@@ -132,7 +132,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     · have hk' : 1 + (k • a.num • 1 - k • a.den • y) ≤ k • a.den • x - 1 := by
         rw [smul_add, smul_sub, smul_add, le_sub_iff_add_le, ← sub_le_iff_le_add] at hk
         rw [le_sub_iff_add_le]
-        convert hk using 1
+        convert! hk using 1
         abel
       have : k • a.num • 1 - k • a.den • y < m • 1 :=
         lt_of_lt_of_le (lt_add_of_pos_left _ zero_lt_one) (by simpa using hk'.trans hm1)
@@ -143,7 +143,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
   · -- `u ∈ ratLt 1 x`, `v ∈ ratLt 1 y` → `u + v ∈ ratLt 1 (x + y)`
     intro ⟨u, hu, v, hv, huv⟩
     rw [← huv]
-    rw [Set.mem_setOf_eq] at hu hv ⊢
+    rw [Set.mem_ofPred_eq] at hu hv ⊢
     exact num_smul_one_lt_den_smul_add hu hv
 
 theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=

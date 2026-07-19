@@ -41,7 +41,7 @@ instance nontrivial : Nontrivial R[R⁰⁻¹] :=
 
 variable [NoZeroDivisors R]
 
-open Classical in
+open scoped Classical in
 /-- The inversion of Ore fractions for a ring without zero divisors, satisfying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
 @[irreducible]
@@ -64,7 +64,7 @@ protected noncomputable def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
 noncomputable instance inv' : Inv R[R⁰⁻¹] :=
   ⟨OreLocalization.inv⟩
 
-open Classical in
+open scoped Classical in
 protected theorem inv_def {r : R} {s : R⁰} :
     (r /ₒ s)⁻¹ =
       if hr : r = (0 : R) then (0 : R[R⁰⁻¹])
