@@ -84,6 +84,7 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
   rfl
 
 variable {M} in
+@[simp]
 theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
     integerNormalization M p = 0 ↔ p = 0 := by
   obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
@@ -577,7 +578,7 @@ namespace IsLocalization
 section NormalizedGCDMonoid
 
 variable {R S : Type*} [CommRing R] [NormalizedGCDMonoid R] (M : Submonoid R) [CommRing S]
-variable [Algebra R S] [IsLocalization M S] (p : Polynomial S)
+variable [Algebra R S] [IsLocalization M S] (p : S[X])
 
 private lemma aux_ne_zero [Nontrivial R] :
     normalize (integerNormalization M p).primPart ≠ 0 := by
@@ -595,30 +596,48 @@ lemma normalizedPrimPartIntegerNormalization_eq_zero_iff [Nontrivial R] :
 
 @[simp]
 lemma normalizedPrimPartIntegerNormalization_ne_zero [Nontrivial R] (hp : p ≠ 0) :
-    normalizedPrimPartIntegerNormalization M p ≠  0 := by
+    normalizedPrimPartIntegerNormalization M p ≠ 0 := by
   simp [normalizedPrimPartIntegerNormalization_eq_zero_iff, hp]
 
 variable {M} in
 lemma normalizedPrimPartIntegerNormalization_algebraMap [IsDomain R] (hM : M ≤ nonZeroDivisors R)
     {p : R[X]} (hp : p ≠ 0) :
     normalizedPrimPartIntegerNormalization M (p.map (algebraMap R S)) = normalize p.primPart := by
-  letI := isDomain_of_le_nonZeroDivisors S hM
   have hp' : p.map (algebraMap R S) ≠ 0 := by
     rwa [Polynomial.map_ne_zero_iff <| IsLocalization.injective S hM]
-  simp [normalizedPrimPartIntegerNormalization, hp']
-  sorry
+  obtain ⟨b, hbM, h1⟩ := integerNormalization_spec M (p.map (algebraMap R S))
+  have h_integerNormalization :
+      integerNormalization M (p.map (algebraMap R S)) = C b * p := by
+    apply Polynomial.map_injective _ (IsLocalization.injective S hM)
+    simp [← smul_eq_C_mul, h1]
+  simpa [normalizedPrimPartIntegerNormalization, hp', h_integerNormalization,
+    normalize_eq_normalize_iff_associated]
+    using associated_primPart_C_mul (nonZeroDivisors.ne_zero (hM hbM)) hp
 
 variable {M p} in
 theorem normalizedPrimPartIntegerNormalization_C_mul_eq [IsDomain R] (hM : M ≤ nonZeroDivisors R)
-    (hp : p ≠ 0) {a : S} (hc : a ≠ 0) : normalizedPrimPartIntegerNormalization M (C a * p) =
+    (hp : p ≠ 0) {a : S} (ha : a ≠ 0) : normalizedPrimPartIntegerNormalization M (C a * p) =
     normalizedPrimPartIntegerNormalization M p := by
   letI := isDomain_of_le_nonZeroDivisors S hM
-  have hap : C a * p ≠ 0 := by aesop
-  simp [normalizedPrimPartIntegerNormalization, hp, hap]
-
-
-
-  sorry
+  simp only [normalizedPrimPartIntegerNormalization, hp, mul_ne_zero (C_ne_zero.mpr ha) hp,
+    ↓reduceIte, normalize_eq_normalize_iff_associated]
+  obtain ⟨b, hbM, hb⟩ := integerNormalization_spec M p
+  obtain ⟨c, hcM, hc⟩ := integerNormalization_spec M (C a * p)
+  let y := (sec M a).2
+  let z := (sec M a).1
+  have : b * y ≠ 0 := mul_ne_zero (nonZeroDivisors.ne_zero (hM hbM))
+    (nonZeroDivisors.ne_zero (hM y.2))
+  apply (associated_primPart_C_mul this (by simp_all)).symm.trans
+  have : Associated (C (b * (y : R)) * integerNormalization M (C a * p)).primPart
+      (C (c * z) * integerNormalization M p).primPart := by
+    apply Associated.of_eq <| congr_arg primPart
+      <| map_injective _ (IsLocalization.injective S hM) _
+    simp only [Polynomial.map_mul, map_C, hc, hb, map_mul, y, z, sec_spec' M a,
+      ← algebraMap_smul S c, ← algebraMap_smul S b, smul_eq_C_mul]
+    ring
+  apply this.trans
+  have : c * z ≠ 0 := mul_ne_zero (nonZeroDivisors.ne_zero (hM hcM)) (sec_fst_ne_zero ha)
+  exact associated_primPart_C_mul this (by simp_all)
 
 variable {p} in
 theorem normalizedPrimPartIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
