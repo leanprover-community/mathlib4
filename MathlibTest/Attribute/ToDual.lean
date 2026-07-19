@@ -12,12 +12,10 @@ variable {α : Type} [PartialOrder α] (a b c : α)
 class SemilatticeInf (α : Type) extends PartialOrder α, Min α where
   le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
 
+-- The `reorder` arguments are automatically inferred here:
+@[to_dual]
 class SemilatticeSup (α : Type) extends PartialOrder α, Max α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
-
-attribute [to_dual] SemilatticeInf
--- The `reorder` argument is automatically inferred here:
-attribute [to_dual existing] SemilatticeSup.sup_le SemilatticeInf.mk
 
 @[to_dual]
 lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
@@ -55,16 +53,17 @@ def SemilatticeSup.casesOn' {α} {motive : SemilatticeSup α → Sort*} (t : Sem
   t.casesOn mk
 
 /--
-info: SemilatticeInf.casesOn'.{u_1} {α : Type} {motive : SemilatticeInf α → Sort u_1}
-  (mk :
-    [inst : Min α] →
-      [inst_1 : PartialOrder α] →
-        (sup_le : ∀ (b a c : α), c ≤ a → c ≤ b → c ≤ a ⊓ b) →
-          motive { toPartialOrder := inst_1, toMin := inst, le_inf := ⋯ })
-  (t : SemilatticeInf α) : motive t
+info: @[expose] def SemilatticeInf.casesOn'.{u_1} : {α : Type} →
+  {motive : SemilatticeInf α → Sort u_1} →
+    ([inst : Min α] →
+        [inst_1 : PartialOrder α] →
+          (sup_le : ∀ (b a c : α), c ≤ a → c ≤ b → c ≤ a ⊓ b) →
+            motive { toPartialOrder := inst_1, toMin := inst, le_inf := ⋯ }) →
+      (t : SemilatticeInf α) → motive t :=
+fun {α} {motive} mk t => SemilatticeInf.casesOn t fun [PartialOrder α] [Min α] sup_le => mk ⋯
 -/
 #guard_msgs in
-#check SemilatticeInf.casesOn'
+#print SemilatticeInf.casesOn'
 
 class Semilattice (α : Type) extends SemilatticeInf α, SemilatticeSup α
 attribute [to_dual existing] Semilattice.toSemilatticeSup
@@ -208,13 +207,12 @@ def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
     a < b ⊕' a = b :=
   if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
 
-set_option warn.classDefReducibility false in
+set_option linter.translate.warnInvalid false in
 @[to_dual DecidableLE1_dual]
-def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
+abbrev DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
 
-set_option warn.classDefReducibility false in
 @[to_dual DecidableLE2_dual]
-def DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
+abbrev DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
 
 -- Not yet supported because it probably won't show up in practice
 -- (though it wouldn't be too hard to fix `unfoldConsts` to support this)
@@ -338,12 +336,13 @@ inductive WithBot.LE : WithBot α → WithBot α → Prop where
   | bot_le (x : WithBot α) : WithBot.LE .bot x
   | coe_le_coe {a b : α} : a ≤ b → WithBot.LE (.coe a) (.coe b)
 
+set_option linter.translate.warnInvalid false in
 @[to_dual existing (reorder := 3 4)]
 inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
 
-attribute [to_dual existing] WithTop.LE.le_top
+attribute [to_dual existing bot_le] WithTop.LE.le_top
 
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
@@ -391,36 +390,45 @@ info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x :
 theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b → a ≤ b) ∧ (c < d → c ≤ d) :=
   ⟨le_of_lt, (fun γ [Preorder γ] (c d : γ) ↦ @le_of_lt γ _ c d) β c d⟩
 
--- Test the reordering of universes
-@[to_dual (reorder := α β γ) universeTest1']
-def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+/-! Test the reordering of universes -/
 
-/-- info: universeTest1'.{w, u, v} (γ : Type w) (α : Type u) (β : Type v) : Type (max u w v) -/
+def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+@[to_dual existing (reorder := α β γ) universeTest1]
+def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+
+-- Due to the reordering of arguments, the equation theorem of the dual has a different shape,
+-- so we get this warning.
+/--
+warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to `universeTest1''._to_dual_1.eq_1`. Please silence this warning and add a translation manually. Error:
+
+`to_dual` validation failed: expected
+  universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
+but 'universeTest1''._to_dual_1.eq_1' has type
+  ∀ (α : Type u) (β : Type v) (γ : Type w), universeTest1''._to_dual_1 α β γ = universeTest1' β γ α
+
+Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
+-/
 #guard_msgs in
-#check universeTest1'
+@[to_dual none] alias universeTest1'' := universeTest1
 
 @[to_dual (reorder := u₁ u₂) universeTest2']
 def universeTest2.{u,v} (u₁ : PUnit.{u}) (u₂ : PUnit.{v}) := PProd.mk u₁ u₂
 
-/-- info: universeTest2'.{v, u} (u₂ : PUnit) (u₁ : PUnit) : PUnit ×' PUnit -/
+/-- info: universeTest2'.{u, v} (u₂ : PUnit) (u₁ : PUnit) : PUnit ×' PUnit -/
 #guard_msgs in
 #check universeTest2'
-
-@[to_dual (reorder := u₁ u₂) universeTest3']
-def universeTest3.{u,u',v,v'} (u₁ : PProd PUnit.{u} PUnit.{u'}) (u₂ : PProd PUnit.{v} PUnit.{v'}) :=
-  PProd.mk u₁ u₂
-
-/--
-info: universeTest3'.{v, v', u, u'} (u₂ : PUnit ×' PUnit) (u₁ : PUnit ×' PUnit) : (PUnit ×' PUnit) ×' PUnit ×' PUnit
--/
-#guard_msgs in
-#check universeTest3'
 
 class Category.{v,u} (c : Type u) where
   bla : Type v
 
 @[to_dual self (reorder := A B, 2 4)]
 structure Comma {A : Type u} [Category.{v} A] {B : Type u'} [Category.{v'} B] where
+
+@[to_dual self (reorder := α β, 3 4)]
+axiom HLE {α β : Type*} : α → β → Prop
+
+@[to_dual self (reorder := α γ, a c, 7 8)]
+axiom hle_trans {α β γ : Type*} (a : α) (b : β) (c : γ) : HLE a b → HLE b c → HLE a c
 
 open Mathlib.Tactic Translate ToDual
 
