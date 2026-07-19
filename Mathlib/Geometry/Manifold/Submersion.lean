@@ -328,7 +328,7 @@ lemma trans_F (h : IsSubmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F')
 /-- Being a submersion at `x` w.r.t. `F` is stable under replacing `F` by an isomorphic copy. -/
 lemma congr_F (e : F ≃L[𝕜] F') :
     IsSubmersionAtOfComplement F I J n f x ↔ IsSubmersionAtOfComplement F' I J n f x :=
-  ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
+  ⟨trans_F (e := e), fun h ↦ trans_F (e := e.symm) h⟩
 
 /- The set of points where `IsSubmersionAtOfComplement` holds is open. -/
 lemma _root_.isOpen_isSubmersionAtOfComplement :
@@ -579,7 +579,7 @@ lemma trans_F (h : IsSubmersionOfComplement F I J n f) (e : F ≃L[𝕜] F') :
 /-- Being a submersion w.r.t. `F` is stable under replacing `F` by an isomorphic copy. -/
 lemma congr_F (e : F ≃L[𝕜] F') :
     IsSubmersionOfComplement F I J n f ↔ IsSubmersionOfComplement F' I J n f :=
-  ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
+  ⟨trans_F (e := e), fun h ↦ trans_F (e := e.symm) h⟩
 
 /-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'` (w.r.t. `F` and `F'`),
 respectively, then `f × g: M × M' → N × N'` is a submersion at `(x, x')` w.r.t. `F × F'`. -/

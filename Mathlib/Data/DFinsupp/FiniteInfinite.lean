@@ -42,7 +42,7 @@ it needs all `π i` to be infinite. -/
 theorem DFinsupp.infinite_of_exists_right {ι : Sort _} {π : ι → Sort _} (i : ι) [Infinite (π i)]
     [∀ i, Zero (π i)] : Infinite (Π₀ i, π i) :=
   letI := Classical.decEq ι
-  Infinite.of_injective (fun j => DFinsupp.single i j) DFinsupp.single_injective
+  Infinite.of_injective (DFinsupp.single i) DFinsupp.single_injective
 
 /-- See `DFinsupp.infinite_of_exists_right` for the case that only one `π ι` is infinite. -/
 instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, Infinite (π i)]

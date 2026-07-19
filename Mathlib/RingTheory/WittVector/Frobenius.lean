@@ -260,10 +260,10 @@ theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x
   let : Algebra (ZMod p) R := ZMod.algebra _ _
   -- outline of the calculation, proofs follow below
   calc
-    aeval (fun k => x.coeff k) (frobeniusPoly p n) =
-        aeval (fun k => x.coeff k)
+    aeval x.coeff (frobeniusPoly p n) =
+        aeval x.coeff
           (MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n)) := ?_
-    _ = aeval (fun k => x.coeff k) (X n ^ p : MvPolynomial ℕ (ZMod p)) := ?_
+    _ = aeval x.coeff (X n ^ p : MvPolynomial ℕ (ZMod p)) := ?_
     _ = x.coeff n ^ p := ?_
   · conv_rhs => rw [aeval_eq_eval₂Hom, eval₂Hom_map_hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl

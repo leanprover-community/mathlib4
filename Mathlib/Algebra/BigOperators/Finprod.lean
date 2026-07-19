@@ -1121,7 +1121,7 @@ theorem mul_finprod_cond_ne (a : α) (hf : HasFiniteMulSupport f) :
       intro x hx
       rw [Finset.mem_sdiff, Finset.mem_singleton, Finite.mem_toFinset, mem_mulSupport]
       grind
-    rw [finprod_cond_eq_prod_of_cond_iff f (fun hx => h _ hx), Finset.sdiff_singleton_eq_erase]
+    rw [finprod_cond_eq_prod_of_cond_iff f (h _), Finset.sdiff_singleton_eq_erase]
     by_cases ha : a ∈ mulSupport f
     · apply Finset.mul_prod_erase _ _ ((Finite.mem_toFinset _).mpr ha)
     · rw [mem_mulSupport, not_not] at ha

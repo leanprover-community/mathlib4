@@ -112,7 +112,7 @@ theorem zero_of_hom_zero {x : ValueGroup₀ (.ofClass v)} (hx : hom v x = 0) : x
 /-- If `v` is a rank one valuation, then `x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
 theorem hom_eq_zero_iff {x : ValueGroup₀ (.ofClass v)} : hom v x = 0 ↔ x = 0 :=
-  ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩
+  ⟨zero_of_hom_zero v, fun h ↦ by rw [h, map_zero]⟩
 
 /-- A nontrivial unit of `Γ₀`, given that there exists a rank one `v : Valuation R Γ₀`. -/
 def unit : Γ₀ˣ :=

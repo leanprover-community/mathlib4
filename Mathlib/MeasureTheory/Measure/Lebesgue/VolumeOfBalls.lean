@@ -221,7 +221,7 @@ theorem MeasureTheory.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
     norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℝ)) r (toLp (.ofReal p) x)
   simp_rw [← toLp_neg, ← toLp_add, ← toLp_smul, eq_norm,
     norm_eq_abs] at eq_zero nm_zero nm_neg nm_add nm_smul
-  rw [measure_le_eq_lt _ nm_zero (fun x ↦ nm_neg x) (fun x y ↦ nm_add x y) (eq_zero _).mp
+  rw [measure_le_eq_lt _ nm_zero nm_neg (fun x y ↦ nm_add x y) (eq_zero _).mp
     (fun r x => nm_smul r x), volume_sum_rpow_lt _ hp]
 
 theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
@@ -297,7 +297,7 @@ theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
   have nm_smul := fun (r : ℝ) (x : ι → ℂ) =>
     norm_smul_le (β := PiLp (.ofReal p) (fun _ : ι => ℂ)) r (toLp (.ofReal p) x)
   simp_rw [← toLp_neg, ← toLp_add, ← toLp_smul, eq_norm] at eq_zero nm_zero nm_neg nm_add nm_smul
-  rw [measure_le_eq_lt _ nm_zero (fun x ↦ nm_neg x) (fun x y ↦ nm_add x y) (eq_zero _).mp
+  rw [measure_le_eq_lt _ nm_zero nm_neg (fun x y ↦ nm_add x y) (eq_zero _).mp
     (fun r x => nm_smul r x), Complex.volume_sum_rpow_lt _ hp]
 
 end LpSpace

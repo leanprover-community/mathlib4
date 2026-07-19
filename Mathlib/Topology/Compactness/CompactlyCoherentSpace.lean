@@ -191,7 +191,7 @@ lemma continuousOn_isCompact_mk {K : Set X} (hK : IsCompact K) :
 lemma continuousOn_rng_of_isCompact {f : X → 𝐤Y} {K : Set X}
     (hK : IsCompact K) :
     ContinuousOn f K ↔ ContinuousOn ((CompactCoherentification.mk Y).symm ∘ f) K := by
-  refine ⟨fun H ↦ continuous_mk_symm.comp_continuousOn H, fun H ↦ ?_⟩
+  refine ⟨continuous_mk_symm.comp_continuousOn, fun H ↦ ?_⟩
   exact continuousOn_isCompact_mk (hK.image_of_continuousOn H) |>.comp H (mapsTo_image f K)
 
 lemma continuous_mk [CompactlyCoherentSpace X] :

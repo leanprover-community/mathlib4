@@ -386,11 +386,11 @@ theorem convexBodySum_volume :
       · exact this.symm
     rw [MeasureTheory.measure_le_eq_lt _ ((convexBodySumFun_eq_zero_iff 0).mpr rfl)
       convexBodySumFun_neg convexBodySumFun_add_le
-      (fun hx => (convexBodySumFun_eq_zero_iff _).mp hx)
+      (convexBodySumFun_eq_zero_iff _).mp
       (fun r x => le_of_eq (convexBodySumFun_smul r x))]
     rw [measure_lt_one_eq_integral_div_gamma (g := fun x : (mixedSpace K) => convexBodySumFun x)
       volume ((convexBodySumFun_eq_zero_iff 0).mpr rfl) convexBodySumFun_neg convexBodySumFun_add_le
-      (fun hx => (convexBodySumFun_eq_zero_iff _).mp hx)
+      (convexBodySumFun_eq_zero_iff _).mp
       (fun r x => le_of_eq (convexBodySumFun_smul r x)) zero_lt_one]
     simp_rw [mixedEmbedding.finrank, div_one, Gamma_nat_eq_factorial, ofReal_div_of_pos
       (Nat.cast_pos.mpr (Nat.factorial_pos _)), Real.rpow_one, ofReal_natCast]

@@ -527,7 +527,7 @@ lemma _root_.MeasurableEmbedding.rnDeriv_map (hf : MeasurableEmbedding f)
   refine Filter.EventuallyEq.add ?_ ?_
   · refine (Measure.rnDeriv_singularPart μ ν).trans ?_
     symm
-    suffices (fun x ↦ ((μ.singularPart ν).map f).rnDeriv (ν.map f) x) =ᵐ[ν.map f] 0 by
+    suffices (((μ.singularPart ν).map f).rnDeriv (ν.map f)) =ᵐ[ν.map f] 0 by
       rw [Filter.EventuallyEq, hf.ae_map_iff] at this
       exact this
     refine Measure.rnDeriv_eq_zero_of_mutuallySingular ?_ Measure.AbsolutelyContinuous.rfl

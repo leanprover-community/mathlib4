@@ -491,7 +491,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
   obtain ⟨a, ha⟩ : ∃ (a : ℕ → ℕ), ∀ n, (n + k).descFactorial k
       = n ^ k + ∑ i ∈ range k, a i * n ^ i := by
     let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + C 1)
-    refine ⟨fun i ↦ P.coeff i, fun n ↦ ?_⟩
+    refine ⟨P.coeff, fun n ↦ ?_⟩
     have mP : Monic P := Monic.comp_X_add_C (monic_ascPochhammer ℕ k) _
     have dP : P.natDegree = k := by
       simp only [P, natDegree_comp, ascPochhammer_natDegree, mul_one, natDegree_X_add_C]

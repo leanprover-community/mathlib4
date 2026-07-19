@@ -59,7 +59,7 @@ theorem adjoin_eq_top_of_conductor_eq_top {x : S} (h : conductor R x = ⊤) :
 
 theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
     conductor R x = ⊤ ↔ R[x] = ⊤ :=
-  ⟨fun h ↦ adjoin_eq_top_of_conductor_eq_top h, fun h ↦ conductor_eq_top_of_adjoin_eq_top h⟩
+  ⟨adjoin_eq_top_of_conductor_eq_top, fun h ↦ conductor_eq_top_of_adjoin_eq_top h⟩
 
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]

@@ -453,13 +453,13 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
 
 /-- Elaborate set builder notation for `Finset`.
 
-* `{x ≤ a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Iic a)` if the expected type
+* `{x ≤ a | p x}` is elaborated as `Finset.filter p (Finset.Iic a)` if the expected type
   is `Finset ?α`.
-* `{x ≥ a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Ici a)` if the expected type
+* `{x ≥ a | p x}` is elaborated as `Finset.filter p (Finset.Ici a)` if the expected type
   is `Finset ?α`.
-* `{x < a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Iio a)` if the expected type
+* `{x < a | p x}` is elaborated as `Finset.filter p (Finset.Iio a)` if the expected type
   is `Finset ?α`.
-* `{x > a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Ioi a)` if the expected type
+* `{x > a | p x}` is elaborated as `Finset.filter p (Finset.Ioi a)` if the expected type
   is `Finset ?α`.
 
 See also

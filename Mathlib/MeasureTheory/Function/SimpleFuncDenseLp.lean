@@ -295,7 +295,7 @@ theorem memLp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
 
 theorem memLp_iff {f : α →ₛ E} (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp f p μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ :=
-  ⟨fun h => measure_preimage_lt_top_of_memLp hp_pos hp_ne_top f h, fun h =>
+  ⟨measure_preimage_lt_top_of_memLp hp_pos hp_ne_top f, fun h =>
     memLp_of_finite_measure_preimage p h⟩
 
 theorem integrable_iff {f : α →ₛ E} : Integrable f μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ :=

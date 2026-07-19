@@ -281,7 +281,7 @@ lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi [UniformSpace ι]
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
-  exact ⟨fun H ↦ φ.isUniformInducing.comp H, fun H ↦ φ.symm.isUniformInducing.comp H⟩
+  exact ⟨φ.isUniformInducing.comp, fun H ↦ φ.symm.isUniformInducing.comp H⟩
 
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the topologies
@@ -320,7 +320,7 @@ lemma EquicontinuousOn.isInducing_uniformOnFun_iff_pi [TopologicalSpace ι]
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [EquicontinuousOn.inducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
-  exact ⟨fun H ↦ φ.isInducing.comp H, fun H ↦ φ.symm.isInducing.comp H⟩
+  exact ⟨φ.isInducing.comp, fun H ↦ φ.symm.isInducing.comp H⟩
 
 -- TODO: find a way to factor common elements of this proof and the proof of
 -- `EquicontinuousOn.comap_uniformOnFun_eq`

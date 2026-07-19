@@ -860,7 +860,7 @@ lemma ι_jointly_surjective (x : ↑(colimit F)) :
   apply ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).inv.isOpenEmbedding.injective
   simp_rw [← h, colimit.cocone_x, ← Scheme.Hom.comp_apply]
   congr 5
-  have := eqToHom_naturality (fun j ↦ (glueData F).ι j)
+  have := eqToHom_naturality (glueData F).ι
     (show i = ((equivShrink J) ((equivShrink J).symm i)) by simp)
   simp [cocone, eqToHom_map, ← this]
 

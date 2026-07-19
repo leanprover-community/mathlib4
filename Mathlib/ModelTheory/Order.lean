@@ -250,14 +250,14 @@ theorem Term.realize_le {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}
 theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := by
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize_le]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
+  refine ⟨fun h => ⟨h⟩, ?_⟩
   intro h a
   exact exists_not_le a
 
 theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := by
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize_le]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
+  refine ⟨fun h => ⟨h⟩, ?_⟩
   intro h a
   exact exists_not_ge a
 

@@ -85,16 +85,16 @@ theorem abs_condExp_ae_le_condExp_abs (f : α → E) : |(μ[f | m])| ≤ᵐ[μ] 
   · simp only [condExp_of_not_integrable hfint, abs_zero]
     apply condExp_nonneg
     filter_upwards with a using abs_nonneg (f a)
-  have h1 := condExp_mono (m := m) hfint hfint.abs (.of_forall (fun x => le_abs_self f x))
+  have h1 := condExp_mono (m := m) hfint hfint.abs (.of_forall (le_abs_self f))
   have h2 := condExp_mono (m := m) hfint.neg hfint.abs (.of_forall fun x => neg_le_abs (f x))
   filter_upwards [h1, h2, condExp_neg f m] with a ha hb hc
   exact abs_le'.2 ⟨ha, hc.symm.le.trans hb⟩
 
 theorem integral_abs_condExp_le (f : α → E) : ∫ x, |μ[f | m] x| ∂μ ≤ ∫ x, |f x| ∂μ := by
   by_cases! hm : ¬ m ≤ m0
-  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => abs_nonneg f x)
+  · simpa [condExp_of_not_le hm] using integral_nonneg (abs_nonneg f)
   by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => abs_nonneg f x)
+  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (abs_nonneg f)
   calc
   _ ≤ ∫ x, μ[|f| | m] x ∂μ :=
     integral_mono_ae integrable_condExp.abs integrable_condExp (abs_condExp_ae_le_condExp_abs f)
@@ -114,11 +114,11 @@ lemma integral_condExp_le_of_ae_nonneg {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) :
 theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → E) :
     ∫ x in s, |μ[f | m] x| ∂μ ≤ ∫ x in s, |f x| ∂μ := by
   by_cases! hm : ¬ m ≤ m0
-  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => abs_nonneg f x)
+  · simpa [condExp_of_not_le hm] using integral_nonneg (abs_nonneg f)
   by_cases! hfint : ¬ Integrable f μ
-  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => abs_nonneg f x)
+  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (abs_nonneg f)
   by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => abs_nonneg f x)
+  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (abs_nonneg f)
   calc
   _ = ∫ x in s, |(μ.restrict s)[f | m] x| ∂μ :=
     (integral_congr_ae ((condExp_restrict_ae_eq_restrict hm hs hfint).fun_comp abs)).symm

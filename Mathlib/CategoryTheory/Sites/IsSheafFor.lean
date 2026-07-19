@@ -720,7 +720,7 @@ lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ �
       e (P₁.map f.op x) = P₂.map f.op (e x))
     {X : C} {R : Presieve X} :
     IsSheafFor P₁ R ↔ IsSheafFor P₂ R := by
-  refine ⟨fun h ↦ isSheafFor_of_nat_equiv _ he h,
+  refine ⟨isSheafFor_of_nat_equiv _ he,
       fun h ↦ isSheafFor_of_nat_equiv (fun _ ↦ (@e _).symm) ?_ h⟩
   intro X Y f x
   obtain ⟨y, rfl⟩ := e.surjective x
@@ -885,10 +885,10 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
   dsimp at this
   let e : Subtype (Arrows.Compatible P g) ≃
     Subtype (Arrows.Compatible P (fun i ↦ g i ≫ inv f)) :=
-    { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ W g₁ g₂ h ↦ by
+    { toFun s := ⟨s.val, fun i₁ i₂ W g₁ g₂ h ↦ by
         simp only [← cancel_mono f, assoc, IsIso.inv_hom_id, comp_id] at h
         exact s.property _ _ _ _ _ h⟩
-      invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ W g₁ g₂ h ↦ by
+      invFun s := ⟨s.val, fun i₁ i₂ W g₁ g₂ h ↦ by
         replace h := h =≫ inv f
         simp only [Category.assoc] at h
         exact s.property _ _ _ _ _ h⟩ }
@@ -908,7 +908,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
       IsSheafFor P (Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i))) := by
   let e : Subtype (Arrows.Compatible ((Over.map p).op ⋙ P) f) ≃
       Subtype (Arrows.Compatible P (fun i ↦ (Over.map p).map (f i))) :=
-    { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦ by
+    { toFun s := ⟨s.val, fun i₁ i₂ Z g₁ g₂ h ↦ by
         replace h := (Over.forget _).congr_map h
         dsimp at h
         have := s.property i₁ i₂ (Over.mk (g₁.left ≫ (f i₁).left ≫ X.hom))
@@ -922,7 +922,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
         dsimp at this
         simp only [← comp_apply, ← Functor.map_comp, ← op_comp] at this
         convert! this <;> cat_disch⟩
-      invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
+      invFun s := ⟨s.val, fun i₁ i₂ Z g₁ g₂ h ↦
         s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
           (by simp only [← Functor.map_comp, h])⟩ }
   simp only [isSheafFor_ofArrows_iff_bijective_toCompabible,

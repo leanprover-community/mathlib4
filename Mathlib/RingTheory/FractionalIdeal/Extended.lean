@@ -295,7 +295,7 @@ alias le_one_of_extendedHomₐ_le_one := le_one_of_extendedHom_le_one
 
 theorem extendedHom_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
     extendedHom L B I ≤ 1 ↔ I ≤ 1 :=
-  ⟨fun h ↦ le_one_of_extendedHom_le_one L B h, fun a ↦ extended_le_one_of_le_one L _ I a⟩
+  ⟨le_one_of_extendedHom_le_one L B, fun a ↦ extended_le_one_of_le_one L _ I a⟩
 
 @[deprecated (since := "2026-04-16")] alias extendedHomₐ_le_one_iff := extendedHom_le_one_iff
 

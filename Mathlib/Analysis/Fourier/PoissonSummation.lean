@@ -62,7 +62,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
-    have : Periodic e 1 := Periodic.comp (fun x => AddCircle.coe_add_period 1 x) (fourier (-m))
+    have : Periodic e 1 := Periodic.comp (AddCircle.coe_add_period 1) (fourier (-m))
     simpa only [mul_one] using! this.int_mul n x
   -- Now the main argument. First unwind some definitions.
   calc

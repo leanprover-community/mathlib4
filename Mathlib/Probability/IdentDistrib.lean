@@ -168,7 +168,7 @@ theorem aestronglyMeasurable_snd [TopologicalSpace γ] [PseudoMetrizableSpace γ
 
 theorem aestronglyMeasurable_iff [TopologicalSpace γ] [PseudoMetrizableSpace γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) : AEStronglyMeasurable f μ ↔ AEStronglyMeasurable g ν :=
-  ⟨fun hf => h.aestronglyMeasurable_snd hf, fun hg => h.symm.aestronglyMeasurable_snd hg⟩
+  ⟨h.aestronglyMeasurable_snd, fun hg => h.symm.aestronglyMeasurable_snd hg⟩
 
 theorem essSup_eq [ConditionallyCompleteLinearOrder γ] [TopologicalSpace γ] [OpensMeasurableSpace γ]
     [OrderClosedTopology γ] (h : IdentDistrib f g μ ν) : essSup f μ = essSup g ν := by
@@ -223,7 +223,7 @@ theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : 
 
 theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     MemLp f p μ ↔ MemLp g p ν :=
-  ⟨fun hf => h.memLp_snd hf, fun hg => h.symm.memLp_snd hg⟩
+  ⟨h.memLp_snd, fun hg => h.symm.memLp_snd hg⟩
 
 theorem integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (hf : Integrable f μ) : Integrable g ν := by
@@ -232,7 +232,7 @@ theorem integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib
 
 theorem integrable_iff [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
     Integrable f μ ↔ Integrable g ν :=
-  ⟨fun hf => h.integrable_snd hf, fun hg => h.symm.integrable_snd hg⟩
+  ⟨h.integrable_snd, fun hg => h.symm.integrable_snd hg⟩
 
 protected theorem norm [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν) :
     IdentDistrib (fun x => ‖f x‖) (fun x => ‖g x‖) μ ν :=

@@ -248,7 +248,7 @@ protected theorem mul_right_cancel_iff' (hc : c ≠ 0) :
 
 theorem dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b := by
   simp only [← modEq_zero_iff_dvd]
-  exact ⟨fun ha ↦ h.symm.trans ha, h.trans⟩
+  exact ⟨h.symm.trans, h.trans⟩
 
 end ModEq
 

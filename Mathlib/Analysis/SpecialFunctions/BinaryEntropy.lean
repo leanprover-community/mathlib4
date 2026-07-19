@@ -333,7 +333,7 @@ lemma deriv2_qaryEntropy :
   by_cases is_x_where_nondiff : p ≠ 0 ∧ p ≠ 1  -- normal case
   · obtain ⟨xne0, xne1⟩ := is_x_where_nondiff
     suffices ∀ᶠ y in (𝓝 p),
-        deriv (fun p ↦ (qaryEntropy q) p) y = log (q - 1) + log (1 - y) - log y by
+        deriv (qaryEntropy q) y = log (q - 1) + log (1 - y) - log y by
       refine (Filter.EventuallyEq.deriv_eq this).trans ?_
       rw [deriv_fun_sub ?_ (differentiableAt_log xne0)]
       · rw [deriv.log differentiableAt_fun_id xne0]

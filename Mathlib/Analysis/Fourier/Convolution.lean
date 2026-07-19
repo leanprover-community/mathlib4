@@ -173,7 +173,7 @@ theorem fourier_convolution_apply (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 
 theorem convolution_apply (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) (x : E) :
     convolution B f g x = (f ⋆[B] g) x := calc
   _ = 𝓕⁻ (𝓕 (convolution B f g)) x := by simp
-  _ = 𝓕⁻ (fun y ↦ 𝓕 (f ⋆[B] g) y) x := by
+  _ = 𝓕⁻ (𝓕 (f ⋆[B] g)) x := by
     rw [fourierInv_coe]
     apply MeasureTheory.integral_congr_ae
     filter_upwards with x

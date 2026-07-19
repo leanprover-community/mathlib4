@@ -824,7 +824,7 @@ theorem exists_rat_btwn_of_lt :
 
 theorem lt_iff_exists_rat_btwn {a b : EReal} :
     a < b ↔ ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b :=
-  ⟨fun hab => exists_rat_btwn_of_lt hab, fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
+  ⟨exists_rat_btwn_of_lt, fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
 
 theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧ (x : EReal) < b :=
   ⟨fun hab =>

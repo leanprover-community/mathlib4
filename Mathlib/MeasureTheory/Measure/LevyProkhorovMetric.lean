@@ -366,7 +366,7 @@ lemma BoundedContinuousFunction.integral_eq_integral_meas_le_of_hasFiniteIntegra
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, μ.real {a : α | t ≤ f a} := by
   rw [Integrable.integral_eq_integral_Ioc_meas_le (M := ‖f‖) ?_ f_nn ?_]
   · exact ⟨f.continuous.measurable.aestronglyMeasurable, hf⟩
-  · exact Eventually.of_forall (fun x ↦ BoundedContinuousFunction.apply_le_norm f x)
+  · exact Eventually.of_forall (BoundedContinuousFunction.apply_le_norm f)
 
 /-- A version of the layer cake formula for bounded continuous functions and finite measures:
 `∫ f dμ = ∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt`. -/

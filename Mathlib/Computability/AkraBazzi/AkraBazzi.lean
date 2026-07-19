@@ -162,14 +162,14 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
 lemma isTheta_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0) :
     (fun x => ‖deriv (fun z => z ^ p * (1 - ε z)) x‖) =Θ[atTop] fun z => z ^ (p - 1) := by
   refine IsTheta.norm_left ?_
-  calc (fun x => deriv (fun z => z ^ p * (1 - ε z)) x) =Θ[atTop] fun z => p * z ^ (p - 1) :=
+  calc (deriv (fun z => z ^ p * (1 - ε z))) =Θ[atTop] fun z => p * z ^ (p - 1) :=
         (isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn hp).isTheta
     _ =Θ[atTop] fun z => z ^ (p - 1) := IsTheta.const_mul_left hp <| isTheta_refl _ _
 
 lemma isTheta_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0) :
     (fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖) =Θ[atTop] fun z => z ^ (p - 1) := by
   refine IsTheta.norm_left ?_
-  calc (fun x => deriv (fun z => z ^ p * (1 + ε z)) x) =Θ[atTop] fun z => p * z ^ (p - 1) :=
+  calc (deriv (fun z => z ^ p * (1 + ε z))) =Θ[atTop] fun z => p * z ^ (p - 1) :=
       (isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn hp).isTheta
     _ =Θ[atTop] fun z => z ^ (p - 1) := IsTheta.const_mul_left hp <| isTheta_refl _ _
 

@@ -202,7 +202,7 @@ theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →+* P) (Hg : g.comp c.mk
 of a ring congruence relation induce a surjective homomorphism on the quotient. -/
 theorem lift_surjective_iff {h : c ≤ ker f} :
     Surjective (c.lift f h) ↔ Surjective f := by
-  refine ⟨fun H ↦ (Quot.surjective_lift fun x x_1 h_1 ↦ h h_1).mp H,
+  refine ⟨(Quot.surjective_lift fun x x_1 h_1 ↦ h h_1).mp,
     fun H ↦ AddCon.lift_surjective_of_surjective h H⟩
 
 /-- Surjective ring homomorphisms constant on the equivalence classes

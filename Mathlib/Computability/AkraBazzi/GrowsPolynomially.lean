@@ -57,7 +57,7 @@ lemma congr_of_eventuallyEq {f g : ℝ → ℝ} (hfg : f =ᶠ[atTop] g) (hg : Gr
 
 lemma iff_eventuallyEq {f g : ℝ → ℝ} (h : f =ᶠ[atTop] g) :
     GrowsPolynomially f ↔ GrowsPolynomially g :=
-  ⟨fun hf => congr_of_eventuallyEq h.symm hf, fun hg => congr_of_eventuallyEq h hg⟩
+  ⟨congr_of_eventuallyEq h.symm, fun hg => congr_of_eventuallyEq h hg⟩
 
 variable {f : ℝ → ℝ}
 

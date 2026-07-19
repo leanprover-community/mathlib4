@@ -145,7 +145,7 @@ theorem associated_normalize_iff {x y : α} : Associated x (normalize y) ↔ Ass
   ⟨fun h => h.trans (normalize_associated y), fun h => h.trans (associated_normalize y)⟩
 
 theorem normalize_associated_iff {x y : α} : Associated (normalize x) y ↔ Associated x y :=
-  ⟨fun h => (associated_normalize _).trans h, fun h => (normalize_associated _).trans h⟩
+  ⟨(associated_normalize _).trans, fun h => (normalize_associated _).trans h⟩
 
 theorem Associates.mk_normalize (x : α) : Associates.mk (normalize x) = Associates.mk x :=
   Associates.mk_eq_mk_iff_associated.2 (normalize_associated _)

@@ -391,7 +391,7 @@ theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b :=
 
 @[to_dual lt_pred_iff]
 theorem IsSuccPrelimit.succ_lt_iff (hb : IsSuccPrelimit b) : succ a < b ↔ a < b :=
-  ⟨fun h => (le_succ a).trans_lt h, hb.succ_lt⟩
+  ⟨(le_succ a).trans_lt, hb.succ_lt⟩
 
 @[to_dual lt_pred_iff]
 theorem IsSuccLimit.succ_lt_iff (hb : IsSuccLimit b) : succ a < b ↔ a < b :=

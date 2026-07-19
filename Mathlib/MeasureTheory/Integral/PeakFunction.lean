@@ -330,7 +330,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
   have : Tendsto (fun i : ℕ => ∫ x : α in s, φ i x • g x ∂μ) atTop (𝓝 (g x₀)) := by
     have B : Tendsto (fun i ↦ ∫ (x : α) in s, φ i x ∂μ) atTop (𝓝 1) :=
       tendsto_const_nhds.congr (fun n ↦ (hiφ n).symm)
-    have C : ∀ᶠ (i : ℕ) in atTop, AEStronglyMeasurable (fun x ↦ φ i x) (μ.restrict s) := by
+    have C : ∀ᶠ (i : ℕ) in atTop, AEStronglyMeasurable (φ i) (μ.restrict s) := by
       apply Eventually.of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
     exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
       hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)

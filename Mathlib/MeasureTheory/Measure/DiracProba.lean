@@ -149,7 +149,7 @@ lemma tendsto_diracProbaEquivSymm_iff_tendsto [T0Space X] [CompletelyRegularSpac
   simp only [tendsto_map'_iff, map_map, Equiv.self_comp_symm, map_id] at key
   simp only [← key, diracProba_comp_diracProbaEquiv_symm_eq_val]
   convert! tendsto_subtype_rng.symm
-  exact apply_rangeSplitting (fun x ↦ diracProba x) μ
+  exact apply_rangeSplitting diracProba μ
 
 /-- In a T0 topological space, `diracProbaEquiv` is continuous. -/
 lemma continuous_diracProbaEquiv [T0Space X] :

@@ -335,7 +335,7 @@ instance (X : C) : Epi (𝟙 X) :=
 
 @[to_dual]
 theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
-  ⟨fun p => Epi.left_cancellation g h p, congr_arg _⟩
+  ⟨Epi.left_cancellation g h, congr_arg _⟩
 
 @[to_dual]
 theorem cancel_epi_assoc_iff (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} {W : C} {k l : Z ⟶ W} :

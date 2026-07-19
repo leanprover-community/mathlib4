@@ -1182,7 +1182,7 @@ theorem eventuallyLE_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α �
 @[to_dual ge_iff_eq']
 theorem EventuallyLE.ge_iff_eq [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
     g ≤ᶠ[l] f ↔ f =ᶠ[l] g :=
-  ⟨fun h' => h.antisymm h', EventuallyEq.ge⟩
+  ⟨h.antisymm, EventuallyEq.ge⟩
 
 @[to_dual ne_of_gt]
 theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ᶠ x in l, f x < g x) :

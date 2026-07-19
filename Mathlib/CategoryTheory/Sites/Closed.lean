@@ -223,7 +223,7 @@ is a sheaf for `S`. -/
 lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
     (J : GrothendieckTopology C) {X : C} (S : Sieve X) :
     S ∈ J X ↔ Presieve.IsSheafFor (Functor.closedSieves J).toFunctor S.arrows := by
-  refine ⟨fun hS ↦ classifier_isSheaf _ _ hS, fun H ↦ ?_⟩
+  refine ⟨classifier_isSheaf _ _, fun H ↦ ?_⟩
   rw [← J.close_eq_top_iff_mem]
   have : J.IsClosed (⊤ : Sieve X) := by
     intro Y f _

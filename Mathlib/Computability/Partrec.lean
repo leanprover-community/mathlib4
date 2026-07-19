@@ -578,7 +578,7 @@ theorem bind_decode_iff {f : α → β → Option σ} :
         (encode (decode (α := β) a.2)).casesOn (some Option.none)
           fun n => Part.map (f a.1) (decode (α := β) n) :=
       Partrec.nat_casesOn_right
-        (h := fun (a : α × ℕ) (n : ℕ) ↦ map (fun b ↦ f a.1 b) (Part.ofOption (decode n)))
+        (h := fun (a : α × ℕ) (n : ℕ) ↦ map (f a.1) (Part.ofOption (decode n)))
         (Primrec.encdec.to_comp.comp snd) (const Option.none)
         ((ofOption (Computable.decode.comp snd)).map (hf.comp (fst.comp <| fst.comp fst) snd).to₂)
     refine this.of_eq fun a => ?_

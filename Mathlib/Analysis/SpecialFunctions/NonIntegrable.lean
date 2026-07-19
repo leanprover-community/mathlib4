@@ -207,7 +207,7 @@ theorem intervalIntegrable_inv_iff {a b : ℝ} :
 /-- The function `fun x ↦ x⁻¹` is not integrable on any interval `[a, +∞)`. -/
 theorem not_integrableOn_Ici_inv {a : ℝ} :
     ¬ IntegrableOn (fun x => x⁻¹) (Ici a) := by
-  have A : ∀ᶠ x in atTop, HasDerivAt (fun x => Real.log x) x⁻¹ x := by
+  have A : ∀ᶠ x in atTop, HasDerivAt Real.log x⁻¹ x := by
     filter_upwards [Ioi_mem_atTop 0] with x hx using Real.hasDerivAt_log (ne_of_gt hx)
   have B : Tendsto (fun x => ‖Real.log x‖) atTop atTop :=
     tendsto_norm_atTop_atTop.comp Real.tendsto_log_atTop

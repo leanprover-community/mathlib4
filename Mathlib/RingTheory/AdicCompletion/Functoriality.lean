@@ -141,7 +141,7 @@ theorem map_ext'' {f g : AdicCompletion I M →ₗ[R] N}
     (h : f.comp (AdicCompletion.mk I M) = g.comp (AdicCompletion.mk I M)) :
     f = g := by
   ext x
-  apply induction_on I M x (fun a ↦ LinearMap.ext_iff.mp h a)
+  apply induction_on I M x (LinearMap.ext_iff.mp h)
 
 variable (M) in
 @[simp]

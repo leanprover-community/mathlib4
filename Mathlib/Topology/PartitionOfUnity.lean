@@ -652,7 +652,7 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
   obtain ⟨f, hfsub, hfcp⟩ := PartitionOfUnity.exists_isSubordinate_of_locallyFinite_t2space htcp s
     hs (locallyFinite_of_finite _) hst
   use f
-  refine ⟨fun i ↦ hfsub i, ?_, ?_, fun i => hfcp i⟩
+  refine ⟨hfsub, ?_, ?_, fun i => hfcp i⟩
   · intro x hx
     simp only [Finset.sum_apply, Pi.one_apply]
     have h := f.sum_eq_one' x hx

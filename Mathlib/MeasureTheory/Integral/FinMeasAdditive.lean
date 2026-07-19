@@ -100,7 +100,7 @@ theorem smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditi
 
 theorem smul_measure_iff (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     FinMeasAdditive (c • μ) T ↔ FinMeasAdditive μ T :=
-  ⟨fun hT => of_smul_measure hc_ne_top hT, fun hT => smul_measure c hc_ne_zero hT⟩
+  ⟨of_smul_measure hc_ne_top, fun hT => smul_measure c hc_ne_zero hT⟩
 
 theorem map_empty_eq_zero {β} [AddCancelMonoid β] {T : Set α → β} (hT : FinMeasAdditive μ T) :
     T ∅ = 0 := by

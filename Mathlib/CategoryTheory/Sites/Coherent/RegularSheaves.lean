@@ -186,7 +186,7 @@ theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCon
 /-- `P` satisfies the equalizer condition iff its precomposition by an equivalence does. -/
 theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
     (e : C ≌ E) : EqualizerCondition P ↔ EqualizerCondition (e.op.inverse ⋙ P) :=
-  ⟨fun h ↦ equalizerCondition_precomp_of_preservesPullback P e.inverse h, fun h ↦
+  ⟨equalizerCondition_precomp_of_preservesPullback P e.inverse, fun h ↦
     equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
 

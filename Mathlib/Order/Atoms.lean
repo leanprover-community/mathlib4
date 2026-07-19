@@ -1035,7 +1035,7 @@ theorem isCoatom_of_image [OrderTop α] [OrderTop β] {l : α → β} {u : β �
 theorem isCoatom_iff [OrderTop α] [IsCoatomic α] [OrderTop β] {l : α → β} {u : β → α}
     (gi : GaloisInsertion l u) (h_coatom : ∀ a : α, IsCoatom a → u (l a) = a) (b : β) :
     IsCoatom (u b) ↔ IsCoatom b := by
-  refine ⟨fun hb => gi.isCoatom_of_image hb, fun hb => ?_⟩
+  refine ⟨gi.isCoatom_of_image, fun hb => ?_⟩
   obtain ⟨a, ha, hab⟩ :=
     (eq_top_or_exists_le_coatom (u b)).resolve_left fun h =>
       hb.1 <| (gi.gc.u_top ▸ gi.l_u_eq ⊤ : l ⊤ = ⊤) ▸ gi.l_u_eq b ▸ congr_arg l h

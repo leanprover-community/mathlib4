@@ -486,7 +486,7 @@ lemma FormalMultilinearSeries.radius_pi_eq_iInf :
     (FormalMultilinearSeries.pi p).radius = ⨅ i, (p i).radius := by
   refine le_antisymm (by simp [radius_pi_le]) ?_
   apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
-  exact le_radius_pi (fun i ↦ le_iInf_iff.1 hr'.le i)
+  exact le_radius_pi (le_iInf_iff.1 hr'.le)
 
 /-- If each function in a finite family has a power series within a ball, then so does the
 family as a whole. Note that the positivity assumption on the radius is only needed when

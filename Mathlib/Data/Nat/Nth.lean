@@ -372,7 +372,7 @@ lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
 lemma nth_add {m n : ℕ} (h0 : ∀ k < m, ¬p k) (h : nth p n ≠ 0) :
     nth (fun i ↦ p (i + m)) n + m = nth p n := by
   refine nth_comp_of_strictMono (strictMono_id.add_const m) (fun k hk ↦ ?_)
-    (fun hf ↦ lt_card_toFinset_of_nth_ne_zero h hf)
+    (lt_card_toFinset_of_nth_ne_zero h)
   by_contra hn
   simp_rw [id_eq, Set.mem_range, eq_comm] at hn
   exact h0 _ (not_le.mp fun h ↦ hn (le_iff_exists_add'.mp h)) hk

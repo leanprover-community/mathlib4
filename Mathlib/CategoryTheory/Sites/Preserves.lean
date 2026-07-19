@@ -162,7 +162,7 @@ lemma preservesProduct_of_isSheafFor
 include hc hd hF hI in
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F :=
-  ⟨fun hF' ↦ preservesProduct_of_isSheafFor _ hF hI c hc hd hF',
+  ⟨preservesProduct_of_isSheafFor _ hF hI c hc hd,
     fun _ ↦ isSheafFor_of_preservesProduct F c hc⟩
 
 end Product

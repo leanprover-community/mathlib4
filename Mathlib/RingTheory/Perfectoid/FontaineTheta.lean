@@ -203,8 +203,7 @@ theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP R p)
   simp only [RingHom.coe_comp]
   suffices h : Function.Surjective (Ideal.Quotient.mk 𝔭 ∘ fontaineTheta R p) by
     rwa [Ideal.map_span, Set.image_singleton, map_natCast]
-  have : Ideal.Quotient.mk 𝔭 ∘ fontaineTheta R p = (fun x ↦
-      PreTilt.coeff 0 x) ∘ fun (x : 𝕎 R♭) ↦ (x.coeff 0) := by
+  have : Ideal.Quotient.mk 𝔭 ∘ fontaineTheta R p = (PreTilt.coeff 0) ∘ fun (x : 𝕎 R♭) ↦ (x.coeff 0) := by
     ext
     simp [mk_fontaineTheta]
   rw [this]

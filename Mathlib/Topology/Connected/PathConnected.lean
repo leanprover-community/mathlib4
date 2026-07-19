@@ -291,7 +291,7 @@ theorem mem_pathComponent_of_mem (h : x ∈ pathComponent y) : y ∈ pathCompone
   Joined.symm h
 
 theorem pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
-  ⟨fun h => mem_pathComponent_of_mem h, fun h => mem_pathComponent_of_mem h⟩
+  ⟨mem_pathComponent_of_mem, fun h => mem_pathComponent_of_mem h⟩
 
 theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
   ext z

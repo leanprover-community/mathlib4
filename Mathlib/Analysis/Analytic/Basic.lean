@@ -624,7 +624,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     exact ((tendsto_order.1 this).2 _ (by linarith)).exists
   have A : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y,
       dist (p.partialSum k z.2) (p.partialSum k y) < ε / 4 := by
-    have : ContinuousAt (fun z ↦ p.partialSum k z) y := (p.partialSum_continuous k).continuousAt
+    have : ContinuousAt (p.partialSum k) y := (p.partialSum_continuous k).continuousAt
     exact tendsto_snd (Metric.tendsto_nhds.1 this.tendsto (ε / 4) (by linarith))
   have B : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y, ‖z.2‖₊ < r' := by
     suffices ∀ᶠ (z : E) in 𝓝 y, ‖z‖₊ < r' from tendsto_snd this

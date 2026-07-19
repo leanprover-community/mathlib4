@@ -507,7 +507,7 @@ public theorem DMCompletion.exists_isSaddlePointOn :
   -- Reduce to the cae of EReal-valued functions
   let φ : E → F → γ := fun x y ↦ ι (f x y)
   -- suffices : ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y φ a b
-  have hφx (x) (hx : x ∈ X) : UpperSemicontinuousOn (fun y ↦ φ x y) Y := by
+  have hφx (x) (hx : x ∈ X) : UpperSemicontinuousOn (φ x) Y := by
     convert! Continuous.comp_upperSemicontinuousOn hι (hfx x hx) ι.monotone
   have hφx' (x) (hx : x ∈ X) : QuasiconcaveOn ℝ Y fun y ↦ φ x y := by
     convert! (hfx' x hx).monotone_comp ι.monotone

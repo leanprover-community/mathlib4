@@ -294,7 +294,7 @@ lemma veq_mul_mul_mul_comm (x y z w : R) : x * y * (z * w) =ᵥ x * z * (y * w) 
   grw [← mul_assoc, veq_mul_right_comm x, mul_assoc]
 
 theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
-  (vle_total y x).imp (fun h => vle_add .rfl h) (fun h => vle_add h .rfl)
+  (vle_total y x).imp (vle_add .rfl) (fun h => vle_add h .rfl)
 
 @[simp] lemma zero_vlt_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
   contrapose hy

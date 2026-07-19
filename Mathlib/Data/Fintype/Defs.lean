@@ -121,13 +121,13 @@ open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Dela
 
 /-- Elaborate set builder notation for `Finset`.
 
-* `{x | p x}` is elaborated as `Finset.filter (fun x ↦ p x) Finset.univ` if the expected type is
+* `{x | p x}` is elaborated as `Finset.filter p Finset.univ` if the expected type is
   `Finset ?α`.
 * `{x : α | p x}` is elaborated as `Finset.filter (fun x : α ↦ p x) Finset.univ` if the expected
   type is `Finset ?α`.
-* `{x ∉ s | p x}` is elaborated as `Finset.filter (fun x ↦ p x) sᶜ` if either the expected type is
+* `{x ∉ s | p x}` is elaborated as `Finset.filter p sᶜ` if either the expected type is
   `Finset ?α` or the expected type is not `Set ?α` and `s` has expected type `Finset ?α`.
-* `{x ≠ a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) {a}ᶜ` if the expected type is
+* `{x ≠ a | p x}` is elaborated as `Finset.filter p {a}ᶜ` if the expected type is
   `Finset ?α`.
 
 See also

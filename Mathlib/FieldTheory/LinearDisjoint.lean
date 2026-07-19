@@ -467,7 +467,7 @@ theorem of_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional 
 @[simp]
 theorem iff_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional F B] :
     A.LinearDisjoint B ↔ A ⊓ B = ⊥ :=
-  ⟨fun h ↦ inf_eq_bot h, fun h ↦ of_inf_eq_bot h⟩
+  ⟨inf_eq_bot, fun h ↦ of_inf_eq_bot h⟩
 
 /-- If `A` and `L` are linearly disjoint over `F`, one of them is algebraic,
 then `[L(A) : L] = [A : F]`. -/

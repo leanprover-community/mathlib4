@@ -53,7 +53,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 @[simp]
 theorem adjoin_le_iff {S : Set E} {T : IntermediateField F E} : adjoin F S ≤ T ↔ S ⊆ T :=
-  ⟨fun H => le_trans (le_trans Set.subset_union_right Subfield.subset_closure) H, fun H =>
+  ⟨le_trans (le_trans Set.subset_union_right Subfield.subset_closure), fun H =>
     (@Subfield.closure_le E _ (Set.range (algebraMap F E) ∪ S) T.toSubfield).mpr
       (Set.union_subset (IntermediateField.set_range_subset T) H)⟩
 

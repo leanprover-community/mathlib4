@@ -295,7 +295,7 @@ theorem volume_preserving_homeoRealMixedSpacePolarSpace [NumberField K] :
         (((MeasurePreserving.id volume).prod (volume_preserving_arrowCongr' _
           (MeasurableEquiv.refl ℝ) (.id volume))).prod (.id volume)).trans <|
             ((volume_preserving_piEquivPiSubtypeProd
-              (fun _ : InfinitePlace K ↦ ℝ) (fun w ↦ IsReal w)).symm).prod (.id volume)
+              (fun _ : InfinitePlace K ↦ ℝ) IsReal).symm).prod (.id volume)
 
 /--
 The polar coordinate open partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the polar

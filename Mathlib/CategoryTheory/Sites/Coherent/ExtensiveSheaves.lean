@@ -95,14 +95,14 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
         Presieve.preservesProduct_of_isSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
         (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
-        (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
+        (hF (Presieve.ofArrows Z (Sigma.ι Z)) ?_)
     · exact preservesLimit_of_iso_diagram F i.symm
     · apply hF
       refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default,?_, ?_⟩⟩
       · ext b
         cases b
       · simp only [eq_iff_true_of_subsingleton]
-    · exact ⟨Fin n, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, instIsIsoDescι⟩
+    · exact ⟨Fin n, inferInstance, Z, (Sigma.ι Z), rfl, instIsIsoDescι⟩
   · rw [extensiveTopology, Presieve.isSheaf_coverage]
     intro X R ⟨Y, α, Z, π, hR, hi⟩
     have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi

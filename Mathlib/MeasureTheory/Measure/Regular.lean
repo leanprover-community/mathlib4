@@ -1062,7 +1062,7 @@ theorem restrict_of_measure_ne_top [BorelSpace α] [WeaklyRegular μ] {A : Set �
     (h'A : μ A ≠ ∞) : WeaklyRegular (μ.restrict A) := by
   have : Fact (μ A < ∞) := ⟨h'A.lt_top⟩
   refine InnerRegularWRT.weaklyRegular_of_finite (μ.restrict A) (fun V V_open r hr ↦ ?_)
-  have : InnerRegularWRT (μ.restrict A) IsClosed (fun s ↦ MeasurableSet s) :=
+  have : InnerRegularWRT (μ.restrict A) IsClosed MeasurableSet :=
     InnerRegularWRT.restrict_of_measure_ne_top innerRegular_measurable h'A
   exact this V_open.measurableSet r hr
 

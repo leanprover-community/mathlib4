@@ -215,7 +215,7 @@ theorem coeff_heval (f : PowerSeries R) (g : Γ) :
 
 theorem coeff_heval_zero (f : PowerSeries R) :
     (heval x f).coeff 0 = PowerSeries.constantCoeff f := by
-  rw [coeff_heval, finsum_eq_single (fun n => ((powerSeriesFamily x f).coeff 0) n) 0,
+  rw [coeff_heval, finsum_eq_single ((powerSeriesFamily x f).coeff 0) 0,
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp
   · intro n hn

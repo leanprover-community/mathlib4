@@ -369,7 +369,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
     · have ht_eq_i : t = {i} := by
         ext1 x
         rw [Finset.mem_singleton]
-        exact ⟨fun h => hti x h, fun h => h.symm ▸ hi⟩
+        exact ⟨hti x, fun h => h.symm ▸ hi⟩
       simp only [ht_eq_i, Finset.mem_singleton, iInter_iInter_eq_left]
       exact Or.inl (hfπ i hi)
     · have ht_empty : t = ∅ := by

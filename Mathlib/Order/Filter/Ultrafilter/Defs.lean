@@ -79,7 +79,7 @@ theorem eq_of_le {f g : Ultrafilter α} (h : (f : Filter α) ≤ g) : f = g :=
 
 @[simp, norm_cast]
 theorem coe_le_coe {f g : Ultrafilter α} : (f : Filter α) ≤ g ↔ f = g :=
-  ⟨fun h => eq_of_le h, fun h => h ▸ le_rfl⟩
+  ⟨eq_of_le, fun h => h ▸ le_rfl⟩
 
 @[simp, norm_cast]
 theorem coe_inj : (f : Filter α) = g ↔ f = g :=

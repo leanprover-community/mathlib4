@@ -541,7 +541,7 @@ def relIsoOfBijective : Ideal S ≃o Ideal R where
     simpa only [Equiv.coe_fn_mk, map_comap_of_surjective f hf.2] using this
 
 theorem comap_le_iff_le_map : comap f K ≤ I ↔ K ≤ map f I :=
-  ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
+  ⟨le_map_of_comap_le_of_surjective f hf.right, fun h =>
     (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
 
 theorem map_eq_top_of_bijective : I.map f = ⊤ ↔ I = ⊤ := by

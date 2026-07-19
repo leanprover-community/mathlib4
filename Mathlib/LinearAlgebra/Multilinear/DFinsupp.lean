@@ -58,7 +58,7 @@ theorem dfinsupp_ext [∀ i, DecidableEq (κ i)]
       f.compLinearMap (fun i => DFinsupp.lsingle (p i)) =
       g.compLinearMap (fun i => DFinsupp.lsingle (p i))) : f = g := by
   ext x
-  change f (fun i ↦ x i) = g (fun i ↦ x i)
+  change f x = g x
   classical
   cases nonempty_fintype ι
   rw [funext (fun i ↦ Eq.symm (DFinsupp.sum_single (f := x i)))]

@@ -562,7 +562,7 @@ theorem norm_sq_eq_add_norm_sq_starProjection (x : E) (S : Submodule 𝕜 E)
 theorem mem_iff_norm_starProjection (U : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] (v : E) :
     v ∈ U ↔ ‖U.starProjection v‖ = ‖v‖ := by
-  refine ⟨fun h => norm_starProjection_apply _ h, fun h => ?_⟩
+  refine ⟨norm_starProjection_apply _, fun h => ?_⟩
   simpa [h, sub_eq_zero, eq_comm (a := v), starProjection_eq_self_iff] using
     U.norm_sq_eq_add_norm_sq_starProjection v
 

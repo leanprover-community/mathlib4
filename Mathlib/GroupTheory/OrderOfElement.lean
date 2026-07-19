@@ -594,7 +594,7 @@ theorem IsOfFinOrder.pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD order
   · rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   rw [pow_add, (hx.isUnit.pow _).mul_eq_left, pow_eq_one_iff_modEq]
-  exact ⟨fun h ↦ Nat.ModEq.add_left _ h, fun h ↦ Nat.ModEq.add_left_cancel' _ h⟩
+  exact ⟨Nat.ModEq.add_left _, fun h ↦ Nat.ModEq.add_left_cancel' _ h⟩
 
 @[to_additive]
 lemma IsOfFinOrder.pow_inj_mod {n m : ℕ} : x ^ n = x ^ m ↔ n % orderOf x = m % orderOf x :=
@@ -611,11 +611,11 @@ theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
   · rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   rw [← mul_one (x ^ m), pow_add, mul_left_cancel_iff, pow_eq_one_iff_modEq]
-  exact ⟨fun h => Nat.ModEq.add_left _ h, fun h => Nat.ModEq.add_left_cancel' _ h⟩
+  exact ⟨Nat.ModEq.add_left _, fun h => Nat.ModEq.add_left_cancel' _ h⟩
 
 @[to_additive (attr := simp)]
 lemma injective_pow_iff_not_isOfFinOrder : Injective (fun n : ℕ ↦ x ^ n) ↔ ¬IsOfFinOrder x := by
-  refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩
+  refine ⟨not_isOfFinOrder_of_injective_pow, fun h n m hnm => ?_⟩
   rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, modEq_zero_iff] at hnm
 
 @[to_additive]
@@ -695,7 +695,7 @@ theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
 @[to_additive (attr := simp)]
 lemma injective_pow_iff_not_isOfFinOrder : Function.Injective (fun n : ℕ ↦ x ^ n) ↔
     ¬IsOfFinOrder x := by
-  refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩
+  refine ⟨not_isOfFinOrder_of_injective_pow, fun h n m hnm => ?_⟩
   rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, Nat.modEq_zero_iff] at hnm
 
 @[to_additive]
