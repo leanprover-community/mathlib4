@@ -335,7 +335,7 @@ lemma induction_on {w : σ → M} {m : M}
   rw [Set.image_subset_iff]
   intro d hd
   simp only [MvPolynomial, Submodule.coe_set_mk, AddSubmonoid.coe_set_mk,
-    AddSubsemigroup.coe_set_mk, preimage_setOf_eq, mem_setOf_eq, A]
+    AddSubsemigroup.coe_set_mk, preimage_ofPred_eq, mem_ofPred_eq, A]
   refine ⟨isWeightedHomogeneous_monomial w d 1 hd, fun a ↦ ?_⟩
   simpa only [single_eq_monomial, ← MvPolynomial.C_mul_monomial] using monomial _ (a * 1) hd
 

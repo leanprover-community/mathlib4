@@ -1202,7 +1202,7 @@ theorem MonotoneOn.boundedVariationOn (hf : MonotoneOn f s) (h : ∀ x ∈ s, |f
   suffices eVariationOn f s ≤ .ofReal (2 * C) from
     ne_of_lt (this.trans_lt (by simp [mul_lt_top]))
   rw [eVariationOn.eq_biSup_inter_Icc]
-  simp only [mem_setOf_eq, iSup_le_iff, and_imp, Prod.forall]
+  simp only [mem_ofPred_eq, iSup_le_iff, and_imp, Prod.forall]
   intro a b as bs hab
   grw [hf.eVariationOn_eq as bs]
   exact ofReal_mono (by grind)

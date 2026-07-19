@@ -82,7 +82,7 @@ protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
     𝓝[⋃ i, f i] a = 𝓝[⋃ i, f i ∩ U] a := by
       rw [← iUnion_inter, ← nhdsWithin_inter_of_mem' (nhdsWithin_le_nhds haU)]
     _ = 𝓝[⋃ i ∈ {j | (f j ∩ U).Nonempty}, (f i ∩ U)] a := by
-      simp only [mem_setOf_eq, iUnion_nonempty_self]
+      simp only [mem_ofPred_eq, iUnion_nonempty_self]
     _ = ⨆ i ∈ {j | (f j ∩ U).Nonempty}, 𝓝[f i ∩ U] a := nhdsWithin_biUnion hfin _ _
     _ ≤ ⨆ i, 𝓝[f i ∩ U] a := iSup₂_le_iSup _ _
     _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ inter_subset_left
@@ -200,7 +200,7 @@ theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) 
 theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ Sum.inl) ∧ LocallyFinite (f ∘ Sum.inr) := by
   simp only [locallyFinite_iff_smallSets, ← forall_and, ← finite_preimage_inl_and_inr,
-    preimage_setOf_eq, (· ∘ ·), eventually_and]
+    preimage_ofPred_eq, (· ∘ ·), eventually_and]
 
 theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
     LocallyFinite (Sum.elim f g) :=
