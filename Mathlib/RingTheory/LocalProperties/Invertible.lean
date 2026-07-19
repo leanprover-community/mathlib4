@@ -24,8 +24,6 @@ public section
 
 namespace Module
 
-open scoped TensorProduct
-
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 theorem FinitePresentation.of_finite_of_flat_of_rankAtStalk_constant [Module.Flat R M] (n : ℕ)
@@ -39,7 +37,7 @@ theorem FinitePresentation.of_finite_of_flat_of_rankAtStalk_constant [Module.Fla
       Free.away_of_finite_of_flat_of_rankAtStalk_constant M m (fun p _ ↦ by simp [h p, h m])
     exact hgm (hsm (Submodule.mem_span_of_mem hfree))
   refine FinitePresentation.of_localizationSpan s hs (fun ⟨g, hg⟩ ↦ ?_)
-  simp only [Set.mem_setOf_eq, s] at hg
+  simp only [Set.mem_ofPred_eq, s] at hg
   exact finitePresentation_of_projective (Localization.Away g) (LocalizedModule.Away g M)
 
 open IsLocalizedModule IsLocalization
