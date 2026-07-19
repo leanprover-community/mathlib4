@@ -40,7 +40,7 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
   {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
   {κ : Kernel α β} {η : Kernel γ δ} {x : α × γ}
 
-open Classical in
+open scoped Classical in
 /-- Parallel product of two kernels. -/
 noncomputable
 irreducible_def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=
@@ -103,6 +103,12 @@ lemma parallelComp_zero_right (κ : Kernel α β) : κ ∥ₖ (0 : Kernel γ δ)
   by_cases h : IsSFiniteKernel κ
   · ext; simp [parallelComp_apply]
   · exact parallelComp_of_not_isSFiniteKernel_left _ h
+
+@[simp]
+lemma id_parallelComp_id :
+    Kernel.id ∥ₖ Kernel.id = (Kernel.id : Kernel (α × β) (α × β)) := by
+  ext : 1
+  simp [parallelComp_apply, id_apply, Measure.dirac_prod_dirac]
 
 lemma deterministic_parallelComp_deterministic
     {f : α → γ} {g : β → δ} (hf : Measurable f) (hg : Measurable g) :

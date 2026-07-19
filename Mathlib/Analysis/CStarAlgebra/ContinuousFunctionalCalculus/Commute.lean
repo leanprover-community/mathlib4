@@ -39,7 +39,8 @@ section Unital
 section RCLike
 
 variable {p : A → Prop} [RCLike 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A]
-variable [TopologicalSpace A] [ContinuousFunctionalCalculus 𝕜 A p] [IsTopologicalRing A] [T2Space A]
+variable [TopologicalSpace A] [ContinuousFunctionalCalculus 𝕜 A p]
+  [IsSemitopologicalRing A] [T2Space A]
 
 open StarAlgebra.elemental in
 protected theorem Commute.cfcHom {a b : A} (ha : p a) (hb₁ : Commute a b)
@@ -58,7 +59,7 @@ protected theorem Commute.cfcHom {a b : A} (ha : p a) (hb₁ : Commute a b)
   | add f g hf hg => rw [map_add]; exact hf.add_left hg
   | mul f g hf hg => rw [map_mul]; exact mul_left hf hg
   | frequently f hf =>
-    rw [commute_iff_eq, ← Set.mem_setOf (p := fun x => x * b = b * x),
+    rw [commute_iff_eq, ← Set.mem_ofPred (p := fun x => x * b = b * x),
       ← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
     apply mem_closure_of_frequently_of_tendsto hf
     exact cfcHom_continuous ha |>.tendsto _
@@ -143,7 +144,7 @@ protected theorem Commute.cfcₙHom {a b : A} (ha : p a) (hb₁ : Commute a b)
   | add f g hf hg => rw [map_add]; exact hf.add_left hg
   | mul f g hf hg => rw [map_mul]; exact mul_left hf hg
   | frequently f hf =>
-    rw [commute_iff_eq, ← Set.mem_setOf (p := fun x => x * b = b * x),
+    rw [commute_iff_eq, ← Set.mem_ofPred (p := fun x => x * b = b * x),
       ← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
     apply mem_closure_of_frequently_of_tendsto hf
     exact cfcₙHom_continuous ha |>.tendsto _
@@ -193,7 +194,6 @@ protected theorem Commute.cfcₙ_real {a b : A} (hb : Commute a b) (f : ℝ → 
 
 variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
 interaction with `star` when the base ring is `ℝ≥0`. -/
 @[grind ←]

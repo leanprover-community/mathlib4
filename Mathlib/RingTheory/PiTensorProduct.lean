@@ -5,7 +5,7 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Data.Finset.NoncommProd
@@ -37,7 +37,7 @@ instance instOne : One (⨂[R] i, A i) where
 lemma one_def : 1 = tprod R (1 : Π i, A i) := rfl
 
 instance instAddCommMonoidWithOne : AddCommMonoidWithOne (⨂[R] i, A i) where
-  __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
   __ := instOne
 
 end AddCommMonoidWithOne
@@ -76,13 +76,14 @@ nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a
     Commute (tprod R a₁) (tprod R a₂) :=
   ha.tprod
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by
   simp only [mul_def, map_smul, LinearMap.smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
-  __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
   left_distrib _ _ _ := (mul _).map_add _ _
   right_distrib _ _ _ := mul.map_add₂ _ _ _
   zero_mul _ := mul.map_zero₂ _
@@ -234,7 +235,7 @@ variable [CommRing R] [∀ i, Ring (A i)] [∀ i, Algebra R (A i)]
 
 instance instRing : Ring (⨂[R] i, A i) where
   __ := instSemiring
-  __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
+  __ := (inferInstance : AddCommGroup (⨂[R] i, A i))
 
 end Ring
 
@@ -251,7 +252,7 @@ protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
 
 instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
   __ := instSemiring
-  __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
+  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
   mul_comm := PiTensorProduct.mul_comm
 
 @[simp] lemma tprod_prod {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) :
@@ -276,9 +277,9 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
       ((lift.tprod _).trans Finset.prod_const_one)
       (by
         -- one of these is required, the other is a performance optimization
-        letI : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           IsScalarTower.right (R := R) (A := ⨂[R] (x : ι), R)
-        letI : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
         ext
@@ -309,7 +310,7 @@ noncomputable section CommRing
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 instance instCommRing : CommRing (⨂[R] i, A i) where
   __ := instCommSemiring
-  __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
+  __ := (inferInstance : AddCommGroup (⨂[R] i, A i))
 
 end CommRing
 

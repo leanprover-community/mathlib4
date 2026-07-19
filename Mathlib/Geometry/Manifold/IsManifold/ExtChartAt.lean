@@ -303,19 +303,6 @@ theorem extend_preimage_inter_eq :
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
 
-@[deprecated "Removed without replacement" (since := "2025-08-27")]
-theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
-      ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
-  rw [f.extend_target, inter_assoc, inter_comm (range I)]
-  conv =>
-    congr
-    · skip
-    rw [← univ_inter (_ ∩ range I)]
-  refine (eventuallyEq_univ.mpr ?_).symm.inter EventuallyEq.rfl
-  refine I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds ?_)
-  simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
-
 theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
     (hx : x ∈ f.source) :
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
@@ -421,7 +408,7 @@ lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
     · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
     · exact (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn) :)
     · exact (hφ' _ (φ.map_source hx)).differentiableWithinAt hn
-    · exact φ.symm_mapsTo
+    · exact φ.mapsTo_symm
     · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
   · rw [← fderivWithin_comp, fderivWithin_congr' φ.leftInvOn.eqOn hx, fderivWithin_id]
     · exact I.uniqueDiffOn_extendCoordChange_source _ hx
@@ -582,7 +569,7 @@ theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
 theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
     (extChartAt I x).target ∈ 𝓝 (extChartAt I x x) := by
-  convert extChartAt_target_mem_nhdsWithin x
+  convert! extChartAt_target_mem_nhdsWithin x
   simp only [I.range_eq_univ, nhdsWithin_univ]
 
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/
@@ -814,17 +801,21 @@ The manifold derivative of `f` will just be the derivative of this conjugated fu
 def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
   simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
   simp_all only [mfld_simps]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
@@ -863,6 +854,7 @@ theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
 theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by
@@ -887,14 +879,14 @@ theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
 theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
     (letI := ChartedSpace.comp H H' M'; writtenInExtChartAt I I x (chartAt H' x) y) = y := by
-  letI := ChartedSpace.comp H H' M'
+  let := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
 theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
     (letI := ChartedSpace.comp H H' M'
      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
-  letI := ChartedSpace.comp H H' M'
+  let := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts

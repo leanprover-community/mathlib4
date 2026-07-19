@@ -54,7 +54,7 @@ variable {α : Type u₁} {β : Type*}
 /-- A subset of a finite Cartesian product of a structure is definable over a set `A` when
   membership in the set is given by a first-order formula with parameters from `A`. -/
 def Definable (s : Set (α → M)) : Prop :=
-  ∃ φ : L[[A]].Formula α, s = setOf φ.Realize
+  ∃ φ : L[[A]].Formula α, s = Set.ofPred φ.Realize
 
 variable {L} {A} {B : Set M} {s : Set (α → M)}
 
@@ -63,7 +63,7 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
   obtain ⟨ψ, rfl⟩ := h
   refine ⟨(φ.addConstants A).onFormula ψ, ?_⟩
   ext x
-  simp only [mem_setOf_eq, LHom.realize_onFormula]
+  simp only [mem_ofPred_eq, LHom.realize_onFormula]
 
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
@@ -71,7 +71,7 @@ theorem definable_iff_exists_formula_sum :
   refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
   simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
-    BoundedFormula.mapTermRelEquiv_symm_apply, mem_setOf_eq, Formula.Realize]
+    mem_ofPred_eq, Formula.Realize]
   refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
@@ -81,7 +81,7 @@ theorem definable_iff_exists_formula_sum :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem empty_definable_iff :
-    (∅ : Set M).Definable L s ↔ ∃ φ : L.Formula α, s = setOf φ.Realize := by
+    (∅ : Set M).Definable L s ↔ ∃ φ : L.Formula α, s = Set.ofPred φ.Realize := by
   rw [Definable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onFormula]
   simp
 
@@ -121,7 +121,7 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
   rcases hg with ⟨θ, hθ⟩
   refine ⟨φ ⊔ θ, ?_⟩
   ext
-  rw [hφ, hθ, mem_setOf_eq, Formula.realize_sup, mem_union, mem_setOf_eq, mem_setOf_eq]
+  rw [hφ, hθ, mem_ofPred_eq, Formula.realize_sup, mem_union, mem_ofPred_eq, mem_ofPred_eq]
 
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
@@ -142,23 +142,29 @@ theorem definable_biInter_finset {ι : Type*} {f : ι → Set (α → M)}
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 
-@[deprecated (since := "2025-08-28")]
-alias definable_finset_biInter := definable_biInter_finset
-
 theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
 
-@[deprecated (since := "2025-08-28")]
-alias definable_finset_biUnion := definable_biUnion_finset
+theorem definable_iInter_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
+    (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋂ i, f i) := by
+  have := Fintype.ofFinite ι
+  convert! definable_finset_inf hf Finset.univ using 1
+  simp
+
+theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
+    (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋃ i, f i) := by
+  have := Fintype.ofFinite ι
+  convert! definable_finset_sup hf Finset.univ using 1
+  simp
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
   rcases hf with ⟨φ, hφ⟩
   refine ⟨φ.not, ?_⟩
   ext v
-  rw [hφ, compl_setOf, mem_setOf, mem_setOf, Formula.realize_not]
+  rw [hφ, compl_ofPred, mem_ofPred, mem_ofPred, Formula.realize_not]
 
 @[simp]
 theorem Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.Definable L t) :
@@ -173,7 +179,7 @@ theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Defi
   obtain ⟨φ, rfl⟩ := h
   refine ⟨φ.relabel f, ?_⟩
   ext
-  simp only [Set.preimage_setOf_eq, mem_setOf_eq, Formula.realize_relabel]
+  simp only [Set.preimage_ofPred_eq, mem_ofPred_eq, Formula.realize_relabel]
 
 theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f : α ≃ β) :
     A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
@@ -197,7 +203,7 @@ theorem definable_iff_finitely_definable :
     refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.1
         (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.2), ?_⟩
     ext
-    simp only [Formula.Realize, mem_setOf_eq, Finset.coe_sort_coe]
+    simp only [Formula.Realize, mem_ofPred_eq, Finset.coe_sort_coe]
     exact iff_comm.1 <| BoundedFormula.realize_restrictFreeVar _ (by simp)
   · rintro ⟨A0, hA0, hd⟩
     exact Definable.mono hd hA0
@@ -208,7 +214,7 @@ theorem Definable.image_comp_sumInl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M
   obtain ⟨φ, rfl⟩ := h
   refine ⟨(BoundedFormula.relabel id φ).exs, ?_⟩
   ext x
-  simp only [Set.mem_image, mem_setOf_eq, BoundedFormula.realize_exs,
+  simp only [Set.mem_image, mem_ofPred_eq, BoundedFormula.realize_exs,
     BoundedFormula.realize_relabel, Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -254,7 +260,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
     simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
-      mem_setOf_eq]
+      mem_ofPred_eq]
     constructor
     · rintro ⟨⟨y, ys, hy⟩, hx⟩
       refine ⟨y, ys, ?_⟩
@@ -268,6 +274,24 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,
           rangeFactorization_coe]
 
+/-- Finite existential quantifiers preserve definablity. -/
+lemma Definable.exists_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}
+    (hS : A.Definable L S) :
+    A.Definable L { v : α → M | ∃ u : β → M, Sum.elim v u ∈ S } := by
+  obtain ⟨φ, hφ⟩ := hS
+  exists φ.iExs β
+  ext v
+  simp [hφ]
+
+/-- Finite universal quantifiers preserve definablity. -/
+lemma Definable.forall_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}
+    (hS : A.Definable L S) :
+    A.Definable L { v : α → M | ∀ u : β → M, Sum.elim v u ∈ S } := by
+  obtain ⟨φ, hφ⟩ := hS
+  exists φ.iAlls β
+  ext v
+  simp [hφ]
+
 variable (L A)
 
 /-- A 1-dimensional version of `Definable`, for `Set M`. -/
@@ -277,6 +301,21 @@ def Definable₁ (s : Set M) : Prop :=
 /-- A 2-dimensional version of `Definable`, for `Set (M × M)`. -/
 def Definable₂ (s : Set (M × M)) : Prop :=
   A.Definable L { x : Fin 2 → M | (x 0, x 1) ∈ s }
+
+/-- A singleton is definable by parameter as itself. -/
+theorem Definable.singleton (a : M) :
+    ({a} : Set M).Definable₁ L {a} := by
+  exists (Term.var 0).equal (L.con (⟨a, rfl⟩ : ↑({a} : Set M))).term
+
+/-- A singleton `{a}` is definable over any set `A` that contains `a`. -/
+theorem Definable.singleton_of_mem {a : M} {A : Set M} (ha : a ∈ A) :
+    A.Definable₁ L {a} :=
+  (Definable.singleton L a).mono (Set.singleton_subset_iff.mpr ha)
+
+/-- The 2-dimensional diagonal is definable independent from parameters. -/
+theorem Definable.diagonal (A : Set M) :
+    A.Definable₂ L (diagonal M) := by
+  exists (Term.var 0).equal (Term.var 1)
 
 end Set
 
@@ -300,7 +339,7 @@ variable {s t : L.DefinableSet A α} {x : α → M}
 
 instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 instance : PartialOrder (L.DefinableSet A α) := .ofSetLike (L.DefinableSet A α) (α → M)
 
@@ -397,6 +436,149 @@ end Language
 
 end FirstOrder
 
+section
+
+open FirstOrder FirstOrder.Language Set Function
+
+variable {M : Type*} (L : Language) [L.Structure M]
+variable {α β : Type*} (A : Set M)
+
+namespace Set
+
+/-- A function from tuples of elements of `M` to `M` is definable if its graph is definable. -/
+@[fun_prop]
+def DefinableFun (f : (α → M) → M) : Prop :=
+  A.Definable L f.tupleGraph
+
+/-- A family of functions is definable when each coordinate is definable. -/
+def DefinableMap (F : (α → M) → (β → M)) : Prop :=
+  ∀ i : β, A.DefinableFun L (fun x => F x i)
+
+variable {L A} {f : (α → M) → M}
+
+@[fun_prop, gcongr]
+theorem DefinableFun.mono {B : Set M} (hAs : A.DefinableFun L f) (hAB : A ⊆ B) :
+    B.DefinableFun L f :=
+  Set.Definable.mono hAs hAB
+
+@[fun_prop]
+theorem DefinableFun.of_empty (hAs : (∅ : Set M).DefinableFun L f) :
+    A.DefinableFun L f := Set.Definable.mono hAs (empty_subset A)
+
+theorem empty_definableFun_iff :
+    (∅ : Set M).DefinableFun L f ↔
+      ∃ φ : L.Formula (Option α), f.tupleGraph = Set.ofPred φ.Realize := by
+  simp [DefinableFun, Set.empty_definable_iff]
+
+theorem definableFun_iff_empty_definableFun_with_params :
+    A.DefinableFun L f ↔ (∅ : Set M).DefinableFun (L[[A]]) f :=
+  empty_definable_iff.symm
+
+/-- A term is a definable function. -/
+@[fun_prop]
+theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
+    (∅ : Set M).DefinableFun L (t.realize) := by
+  rw [empty_definableFun_iff]
+  refine ⟨(t.relabel some).equal (Term.var none), ?_⟩
+  ext v
+  simp [tupleGraph]
+
+/-- A function symbol is a definable function. -/
+@[fun_prop]
+theorem DefinableFun.fun_symbol {n : ℕ} (f : L.Functions n) :
+    (∅ : Set M).DefinableFun L (Structure.funMap f) :=
+  (Term.func f Term.var).definableFun_realize
+
+variable (L)
+
+/-- A coordinate projection is a definable function. -/
+@[fun_prop]
+theorem _root_.FirstOrder.Language.definableFun_var (i : α) :
+    (∅ : Set M).DefinableFun L (fun v => v i) :=
+  (Term.var i).definableFun_realize
+
+@[fun_prop]
+theorem DefinableFun.proj {i : α} : A.DefinableFun L fun v => v i :=
+  of_empty <| L.definableFun_var i
+
+/-- A constant function is a definable function. -/
+@[fun_prop]
+theorem _root_.FirstOrder.Language.definableFun_const {A : Set M} {a : M}
+    (γ : Type*) (ha : a ∈ A) :
+    A.DefinableFun L (fun _ : γ → M => a) := by
+  rw [definableFun_iff_empty_definableFun_with_params]
+  exact ((L.con (⟨a,ha⟩ : ↑A)).term).definableFun_realize
+
+variable {L}
+
+/-- The preimage of a definable set under a definable map is definable. -/
+lemma _root_.Set.Definable.preimage_map
+    {α β : Type*} [Finite β] {F : (α → M) → (β → M)} (hF : A.DefinableMap L F)
+    {S : Set (β → M)} (hS : A.Definable L S) :
+    A.Definable L (F ⁻¹' S) := by
+  have h_graph : A.Definable L { w : α ⊕ β → M | ∀ i, F (w ∘ Sum.inl) i = w (Sum.inr i) } := by
+    rw [ofPred_forall]
+    refine definable_iInter_of_finite fun i => ?_
+    simpa [tupleGraph] using!
+      (hF i).preimage_comp (fun | none => Sum.inr i | some j => Sum.inl j)
+  have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
+    hS.preimage_comp Sum.inr
+  convert! Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
+  ext v
+  simp [← funext_iff]
+
+@[fun_prop]
+theorem DefinableFun.comp [Finite α] {g : (β → M) → α → M}
+    (hg : A.DefinableMap L g) (hf : A.DefinableFun L f) :
+    A.DefinableFun L fun v => f (g v) := by
+  let G : (Option β → M) → Option α → M := fun w j =>
+    match j with
+    | none => w none
+    | some i => g (w ∘ some) i
+  have hG : A.DefinableMap L G := by
+    intro i
+    cases i with
+    | none => fun_prop
+    | some j =>
+      simpa [tupleGraph] using!
+        ((hg j).preimage_comp fun | none => none | some i => some (some i))
+  simpa [DefinableFun, G, tupleGraph] using! hf.preimage_map hG
+
+@[fun_prop]
+theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
+    (hp : A.Definable L (Set.ofPred p)) (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
+    DefinableFun L A fun v => if p v then f v else g v := by
+  let P : Set (Option α → M) := {w | p (w ∘ some)}
+  have hP : A.Definable L P := hp.preimage_comp some
+  simp only [DefinableFun]
+  convert! (hP.inter hf).union (hP.compl.inter hg)
+  ext w
+  by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
+
+/-- The set where two definable functions agree is definable. -/
+lemma DefinableFun.ofPred_eq {f g : (α → M) → M}
+    (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
+    A.Definable L {v : α → M | f v = g v} := by
+  have hF : A.DefinableMap L (fun v => ![f v, g v]) := by
+    simp [DefinableMap, *]
+  exact (Definable.diagonal L A).preimage_map hF
+
+@[deprecated (since := "2026-07-09")]
+alias DefinableFun.setOf_eq := DefinableFun.ofPred_eq
+
+/-- The preimage of a constant under a definable function is definable. -/
+lemma DefinableFun.ofPred_eq_const {f : (α → M) → M} (hf : A.DefinableFun L f) {a : M}
+    (ha : a ∈ A) :
+    A.Definable L {v : α → M | f v = a} :=
+  hf.ofPred_eq (L.definableFun_const α ha)
+
+@[deprecated (since := "2026-07-09")]
+alias DefinableFun.setOf_eq_const := DefinableFun.ofPred_eq_const
+
+end Set
+
+end
+
 namespace Set
 
 variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) {L' : FirstOrder.Language}
@@ -489,7 +671,7 @@ theorem TermDefinable₁.definable₂_graph {f : M → M} (h : A.TermDefinable�
   obtain ⟨t, h⟩ := h.termDefinable.definable_tupleGraph A L
   use t.relabel (Option.elim · 1 (fun _ ↦ 0))
   ext v
-  convert Set.ext_iff.1 h (v ∘ (Option.elim · 1 (fun _ ↦ 0)))
+  convert! Set.ext_iff.1 h (v ∘ (Option.elim · 1 (fun _ ↦ 0)))
   simp
 
 /-- The identity function is `TermDefinable₁` -/

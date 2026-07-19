@@ -89,7 +89,7 @@ deriving Inhabited, BEq
 
 /-- `fun_prop` context -/
 structure Context where
-  /-- fun_prop config -/
+  /-- `fun_prop` config -/
   config : Config := {}
   /-- Name to unfold -/
   constToUnfold : TreeSet Name Name.quickCmp :=

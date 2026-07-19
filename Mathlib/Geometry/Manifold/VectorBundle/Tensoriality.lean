@@ -35,6 +35,7 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
   arguments defines a continuous bilinear map out of `V x` and `V' x`.
 
 -/
+
 open Bundle FiberBundle Topology Module
 
 open scoped Manifold ContDiff
@@ -99,7 +100,7 @@ protected theorem «local» (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x
 variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V']
 
 /-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
-  multiplication). -/
+multiplication). -/
 theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
   calc
     Φ 0 = Φ ((0 : M → 𝕜) • (0 : Π x, V x)) := by simp
@@ -109,7 +110,7 @@ theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
 /-- A tensorial operation on sections of a vector bundle respects sums (since it respects binary
 addition). -/
 theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι → Π x : M, V x)
-    (hσ : ∀ i, MDiffAt (T% (σ i)) x) :
+    (hσ : ∀ i ∈ s, MDiffAt (T% (σ i)) x) :
     Φ (fun x' ↦ ∑ i ∈ s, σ i x') = ∑ i ∈ s, Φ (σ i) := by
   classical
   induction s using Finset.induction_on with
@@ -117,8 +118,9 @@ theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι �
       rw [Finset.sum_empty]
       exact hΦ.zero
   | insert a s ha h =>
-      simp only [Finset.sum_insert ha, ← h]
-      exact hΦ.add (hσ a) (.sum_section hσ)
+      simp only [Finset.mem_insert, forall_eq_or_imp] at hσ
+      simp only [Finset.sum_insert ha, ← h hσ.2]
+      exact hΦ.add (hσ.1) (.sum_section hσ.2)
 
 variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 F']
   [ContMDiffVectorBundle 1 F V I] [ContMDiffVectorBundle 1 F' V' I]
@@ -146,7 +148,7 @@ lemma pointwise (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
   have hΦ_eq {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) :
       Φ σ = Φ (fun x' ↦ ∑ i, c i x' (σ x') • s i x') :=
     hΦ.local hσ
-      (.sum_section fun i ↦ (hc hσ i).smul_section (hs i))
+      (.sum_section fun i _ ↦ (hc hσ i).smul_section (hs i))
       (t.eventually_eq_localFrame_sum_coeff_smul b x_mem)
   -- Now evaluate using the tensoriality properties.
   rw [hΦ_eq hσ, hΦ_eq hσ', hΦ.sum, hΦ.sum]
@@ -156,8 +158,8 @@ lemma pointwise (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
       _ = c i x (σ' x) • Φ (s i) := by rw [hσσ']
       _ = Φ ((LinearMap.piApply (c i) σ') • (s i)) :=
           hΦ.smul (hc hσ' i) (hs i) |>.symm
-  · exact fun i ↦ (hc hσ' i).smul_section (hs i)
-  · exact fun i ↦ (hc hσ i).smul_section (hs i)
+  · exact fun i _ ↦ (hc hσ' i).smul_section (hs i)
+  · exact fun i _ ↦ (hc hσ i).smul_section (hs i)
 
 /-- If the operation `Φ` on sections of vector bundles `V` and `V'` is tensorial at `x` in each
 argument, then it depends only on the value of the sections at `x`. -/

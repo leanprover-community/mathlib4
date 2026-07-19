@@ -101,11 +101,7 @@ lemma IsTangentAt.dist_sq_eq_of_mem {s : Sphere P} {p q : P} {as : AffineSubspac
     (h : s.IsTangentAt p as) (hq : q ∈ as) :
     (dist q s.center) ^ 2 = s.radius ^ 2 + (dist q p) ^ 2 := by
   rw [← h.mem_sphere]
-  simp_rw [dist_eq_norm_vsub, pow_two]
-  rw [← vsub_add_vsub_cancel q p s.center]
-  conv_rhs => rw [add_comm]
-  rw [norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
-  exact h.inner_left_eq_zero_of_mem hq
+  exact s.dist_sq_eq_of_mem_orthRadius (SetLike.le_def.1 h.le_orthRadius hq)
 
 lemma IsTangentAt.mem_and_mem_iff_eq {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
     (h : s.IsTangentAt p as) : (q ∈ s ∧ q ∈ as) ↔ q = p := by
@@ -182,7 +178,7 @@ lemma IsTangent.infDist_eq_radius {s : Sphere P} {as : AffineSubspace ℝ P} (h 
     Metric.infDist s.center as = s.radius := by
   obtain ⟨p, h⟩ := h
   refine le_antisymm ?_ ?_
-  · convert Metric.infDist_le_dist_of_mem h.mem_space
+  · convert! Metric.infDist_le_dist_of_mem h.mem_space
     rw [mem_sphere'.1 h.mem_sphere]
   · rw [Metric.infDist_eq_iInf]
     have : Nonempty as := ⟨⟨p, h.mem_space⟩⟩
@@ -250,7 +246,7 @@ lemma IsTangent.eq_orthRadius_or_eq_orthRadius_pointReflection_of_parallel_orthR
     rcases eq_or_eq_neg_of_abs_eq hr' with rfl | rfl
     · simp_all
     · right
-      convert rfl
+      convert! rfl
       rw [← eq_vadd_iff_vsub_eq] at hr
       rw [hr]
       simp [Equiv.pointReflection_apply]
@@ -431,6 +427,7 @@ lemma IsIntTangent.dist_center {s₁ s₂ : Sphere P} (h : s₁.IsIntTangent s�
   rw [← dist_add_dist_eq_iff, mem_sphere'.1 h₁, mem_sphere'.1 h₂] at h
   simp [← h, dist_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s₂ ↔
     dist s₁.center s₂.center = s₁.radius + s₂.radius ∧ 0 ≤ s₁.radius ∧ 0 ≤ s₂.radius := by
   refine ⟨fun h ↦ ⟨h.dist_center, ?_⟩, ?_⟩
@@ -455,6 +452,7 @@ lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s�
         · rw [div_le_one (by positivity)]
           linarith
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIntTangent_iff_dist_center [Nontrivial V] {s₁ s₂ : Sphere P} : s₁.IsIntTangent s₂ ↔
     dist s₁.center s₂.center = s₂.radius - s₁.radius ∧ 0 ≤ s₁.radius ∧ 0 ≤ s₂.radius := by
   refine ⟨fun h ↦ ⟨h.dist_center, ?_⟩, ?_⟩

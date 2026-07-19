@@ -14,7 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Finsupp
 # Rank of free modules
 
 ## Main result
-- `LinearEquiv.nonempty_equiv_iff_lift_rank_eq`:
+- `Module.nonempty_linearEquiv_iff_lift_rank_eq`:
   Two free modules are isomorphic iff they have the same dimension.
 - `Module.finBasis`:
   An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
@@ -58,7 +58,7 @@ This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the s
 theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
-  convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
+  convert! lift_rank_mul_lift_rank F K A <;> rw [lift_id]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
@@ -70,10 +70,49 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
 end Tower
 
 variable {R : Type u} {S : Type*} {M M₁ : Type v} {M' : Type v'}
-variable [Semiring R] [StrongRankCondition R]
+variable [Semiring R]
 variable [AddCommMonoid M] [Module R M] [Module.Free R M]
 variable [AddCommMonoid M'] [Module R M'] [Module.Free R M']
 variable [AddCommMonoid M₁] [Module R M₁] [Module.Free R M₁]
+
+namespace Module.Free
+
+variable {N : Type v} [AddCommMonoid N] [Module R N]
+variable {N' : Type v'} [AddCommMonoid N'] [Module R N']
+
+theorem exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
+    {ι : Type w} {v : ι → N'} (hv : LinearIndependent R v)
+    (cnd : Cardinal.lift.{w} (Module.rank R M) ≤ Cardinal.lift.{v} #ι) :
+    ∃ f : M →ₗ[R] N', Function.Injective f := by
+  nontriviality M
+  have := Module.nontrivial R M
+  rcases Module.Free.exists_set R M with ⟨_, ⟨B⟩⟩
+  replace cnd := (Cardinal.lift_le.2 B.linearIndependent.cardinal_le_rank).trans cnd
+  rw [Cardinal.lift_mk_le'] at cnd
+  rcases cnd with ⟨i, hi⟩
+  refine ⟨B.constr ℕ (v ∘ i), B.injective_constr_of_linearIndependent (hv.comp _ hi)⟩
+
+theorem exists_linearMap_injective_of_linearIndependent_of_rank_le
+    {ι : Type v} {v : ι → N} (hv : LinearIndependent R v) (cnd : Module.rank R M ≤ #ι) :
+    ∃ f : M →ₗ[R] N, Function.Injective f :=
+  exists_linearMap_injective_of_linearIndependent_of_lift_rank_le hv (by simpa using cnd)
+
+theorem exists_linearMap_injective_of_lift_rank_lt
+    (cnd : Cardinal.lift.{v'} (Module.rank R M) < Cardinal.lift.{v} (Module.rank R N')) :
+    ∃ f : M →ₗ[R] N', Function.Injective f := by
+  rcases exists_set_linearIndependent_of_lt_lift_rank cnd with ⟨s, hs, hs₂⟩
+  exact exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
+    hs₂.linearIndependent hs.symm.le
+
+theorem exists_linearMap_injective_of_rank_lt (cnd : Module.rank R M < Module.rank R N) :
+    ∃ f : M →ₗ[R] N, Function.Injective f :=
+  exists_linearMap_injective_of_lift_rank_lt (by simpa using cnd)
+
+end Module.Free
+
+section StrongRankCondition
+
+variable [StrongRankCondition R]
 
 namespace Module.Free
 
@@ -104,6 +143,23 @@ end Module.Free
 open Module.Free
 
 open Cardinal
+
+theorem lift_rank_le_iff_exists_linearMap :
+    Cardinal.lift.{v'} (Module.rank R M) ≤ Cardinal.lift.{v} (Module.rank R M') ↔
+    ∃ f : M →ₗ[R] M', Function.Injective f where
+  mp h := by
+    rcases Module.Free.exists_set R M' with ⟨_, ⟨B⟩⟩
+    exact exists_linearMap_injective_of_linearIndependent_of_lift_rank_le B.linearIndependent
+      (B.mk_eq_rank''.symm ▸ h)
+  mpr := fun ⟨f, hf⟩ ↦ LinearMap.lift_rank_le_of_injective f hf
+
+theorem rank_le_iff_exists_linearMap :
+    Module.rank R M ≤ Module.rank R M₁ ↔ ∃ f : M →ₗ[R] M₁, Function.Injective f := by
+  simp [← lift_rank_le_iff_exists_linearMap]
+
+theorem finrank_le_iff_exists_linearMap [Module.Finite R M] [Module.Finite R M'] :
+    finrank R M ≤ finrank R M' ↔ ∃ f : M →ₗ[R] M', Function.Injective f := by
+  simp [← lift_rank_le_iff_exists_linearMap, ← finrank_eq_rank]
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
 theorem nonempty_linearEquiv_of_lift_rank_eq
@@ -137,14 +193,20 @@ def LinearEquiv.ofRankEq (cond : Module.rank R M = Module.rank R M₁) : M ≃�
 end
 
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
-theorem LinearEquiv.nonempty_equiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') ↔
+theorem Module.nonempty_linearEquiv_iff_lift_rank_eq : Nonempty (M ≃ₗ[R] M') ↔
     Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} (Module.rank R M') :=
   ⟨fun ⟨h⟩ => LinearEquiv.lift_rank_eq h, fun h => nonempty_linearEquiv_of_lift_rank_eq h⟩
 
+@[deprecated (since := "2026-06-30")]
+alias LinearEquiv.nonempty_equiv_iff_lift_rank_eq := Module.nonempty_linearEquiv_iff_lift_rank_eq
+
 /-- Two vector spaces are isomorphic if and only if they have the same dimension. -/
-theorem LinearEquiv.nonempty_equiv_iff_rank_eq :
+theorem Module.nonempty_linearEquiv_iff_rank_eq :
     Nonempty (M ≃ₗ[R] M₁) ↔ Module.rank R M = Module.rank R M₁ :=
   ⟨fun ⟨h⟩ => LinearEquiv.rank_eq h, fun h => nonempty_linearEquiv_of_rank_eq h⟩
+
+@[deprecated (since := "2026-06-30")]
+alias LinearEquiv.nonempty_equiv_iff_rank_eq := Module.nonempty_linearEquiv_iff_rank_eq
 
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 theorem FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
@@ -207,7 +269,7 @@ lemma finrank_top_le_finrank_of_isScalarTower_of_free [Semiring S] [StrongRankCo
   · have := Module.Finite.trans (R := R) S M
     exact finrank_top_le_finrank_of_isScalarTower R S M
   · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
-    · exact zero_le _
+    · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 variable (R) in
@@ -221,7 +283,7 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
   · have := Module.Finite.trans (R := R) S T
     exact finrank_bot_le_finrank_of_isScalarTower R S T
   · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
-    · exact zero_le _
+    · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 variable (R M)
@@ -252,7 +314,7 @@ theorem Basis.nonempty_unique_index_of_finrank_eq_one
     Nonempty (Unique ι) := by
   -- why isn't this an instance?
   have : Nontrivial R := nontrivial_of_invariantBasisNumber R
-  haveI : Module.Finite R M :=
+  have : Module.Finite R M :=
     Module.finite_of_finrank_pos (Nat.lt_of_sub_eq_succ d1)
   have : Finite ι := Module.Finite.finite_basis b
   have : Fintype ι := Fintype.ofFinite ι
@@ -272,9 +334,22 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, map_zero, Finsupp.zero_apply]⟩
 
+omit [StrongRankCondition R] in
+theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
+    [OrzechProperty R] [Module.Finite R M] [Module.Finite R M']
+    (f : M →ₗ[R] M') (hf : Function.Surjective f) (h : Module.finrank R M ≤ Module.finrank R M') :
+    Function.Bijective f := by
+  cases subsingleton_or_nontrivial R
+  -- TODO : figure out how to make `nontriviality` work here nicely
+  · have := Module.subsingleton R M
+    exact ⟨Function.injective_of_subsingleton f, hf⟩
+  rcases finrank_le_iff_exists_linearMap.mp h with ⟨_, hi⟩
+  exact OrzechProperty.bijective_of_surjective_of_injective _ _ hi hf
+
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
     (d1 : Module.finrank R M = 1) (u : M →ₗ[R] M) :
     ∃! c : R, u = c • LinearMap.id := by
@@ -306,10 +381,12 @@ noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finr
 
 end Module
 
+end StrongRankCondition
+
 namespace Algebra
 
-instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
-    [IsQuadraticExtension R S] :
+instance (priority := 100) (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Algebra R S] [IsQuadraticExtension R S] :
     Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticExtension.finrank_eq_two R S
 
 end Algebra

@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
+
 Given a preadditive category `V`, the opposite of its category of chain complexes is equivalent to
 the category of cochain complexes of objects in `Vᵒᵖ`. We define this equivalence, and another
 analogous equivalence (for a general category of homological complexes with a general
@@ -52,6 +53,7 @@ theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 
     ← imageSubobject_arrow, ← imageUnopOp_inv_comp_op_factorThruImage g.op]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.unop f.unop (by rw [← unop_comp, w, unop_zero]) =
       (imageSubobjectIso _ ≪≫ (imageUnopUnop _).symm).hom ≫
@@ -126,6 +128,7 @@ def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)�
     { f := fun i => (f.f i).unop
       comm' := fun i j _ => by simp only [unopSymm_d, ← unop_comp, f.comm] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
@@ -141,11 +144,14 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
       ext x
       simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
   NatIso.ofComponents
     fun X => HomologicalComplex.Hom.isoOfComponents fun _ => Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a category of complexes with objects in `V`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `Vᵒᵖ`. -/
 @[simps]
@@ -159,6 +165,9 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
     simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
       opFunctor_map_f, Hom.isoOfComponents_hom_f]
     exact Category.comp_id _
+
+instance : (opFunctor V c).IsEquivalence := (opEquivalence V c).isEquivalence_functor
+instance : (opInverse V c).IsEquivalence := (opEquivalence V c).isEquivalence_inverse
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
@@ -178,6 +187,7 @@ def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)
     { f := fun i => (f.f i).op
       comm' := fun i j _ => by simp only [opSymm_d, ← op_comp, f.comm] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=
@@ -193,11 +203,14 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
       ext x
       simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
   NatIso.ofComponents
     fun X => HomologicalComplex.Hom.isoOfComponents fun _ => Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a category of complexes with objects in `Vᵒᵖ`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `V`. -/
 @[simps]
@@ -211,19 +224,24 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
     simp only [comp_f]
     exact Category.comp_id _
 
+instance : (unopFunctor V c).IsEquivalence := (unopEquivalence V c).isEquivalence_functor
+instance : (unopInverse V c).IsEquivalence := (unopEquivalence V c).isEquivalence_inverse
+
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.HasHomology i :=
-  (inferInstance : (K.sc i).op.HasHomology)
+  inferInstanceAs <| (K.sc i).op.HasHomology
 
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
-  (inferInstance : (K.sc i).unop.HasHomology)
+  inferInstanceAs <| (K.sc i).unop.HasHomology
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     ((opFunctor _ _).obj (op K)).HasHomology i := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     ((unopFunctor _ _).obj (op K)).HasHomology i := by
   dsimp
@@ -362,25 +380,36 @@ section
 variable {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
   [K.HasHomology i] [L.HasHomology i]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma homologyOp_hom_naturality :
     homologyMap ((opFunctor _ _).map φ.op) _ ≫ (K.homologyOp i).hom =
       (L.homologyOp i).hom ≫ (homologyMap φ i).op :=
   ShortComplex.homologyOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma opcyclesOpIso_hom_naturality :
     opcyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.opcyclesOpIso i).hom =
       (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
   ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed in Algebra/Homology/Embedding/TruncLE.lean
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma opcyclesOpIso_inv_naturality :
     (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
       (L.opcyclesOpIso i).inv ≫ opcyclesMap ((opFunctor _ _).map φ.op) _ :=
   ShortComplex.opcyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma cyclesOpIso_hom_naturality :
     cyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.cyclesOpIso i).hom =
@@ -426,12 +455,47 @@ section
 
 variable [Preadditive V]
 
-set_option backward.isDefEq.respectTransparency false in
+example : Preadditive (HomologicalComplex Vᵒᵖ c) := inferInstance
+
 instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
 
-set_option backward.isDefEq.respectTransparency false in
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 
 end
 
 end HomologicalComplex
+
+namespace Homotopy
+
+open HomologicalComplex
+
+variable {V : Type*} [Category* V] {ι : Type*} {c : ComplexShape ι} [Preadditive V]
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The opposite of a homotopy between morphisms of homological complexes. -/
+@[simps]
+def op {F G : HomologicalComplex V c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    Homotopy ((opFunctor V c).map φ₁.op) ((opFunctor V c).map φ₂.op) where
+  hom i j := (h.hom j i).op
+  zero i j hij := Quiver.Hom.unop_inj (h.zero _ _ hij)
+  comm n := Quiver.Hom.unop_inj (by
+    dsimp
+    rw [h.comm n]
+    nth_rw 2 [add_comm]
+    rfl)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The homotopy between morphisms of homological complexes that is deduced
+from a homotopy in the opposite category. -/
+@[simps]
+def unop {F G : HomologicalComplex Vᵒᵖ c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    Homotopy ((unopFunctor V c).map φ₁.op) ((unopFunctor V c).map φ₂.op) where
+  hom i j := (h.hom j i).unop
+  zero i j hij := Quiver.Hom.op_inj (h.zero _ _ hij)
+  comm n := Quiver.Hom.op_inj (by
+    dsimp
+    rw [h.comm n]
+    nth_rw 2 [add_comm]
+    rfl)
+
+end Homotopy

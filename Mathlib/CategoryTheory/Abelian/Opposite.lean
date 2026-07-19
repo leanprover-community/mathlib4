@@ -105,10 +105,12 @@ def cokernelOpOp : cokernel f.op ≅ Opposite.op (kernel f) :=
 def kernelUnopUnop : kernel g.unop ≅ (cokernel g).unop :=
   (kernelUnopOp g).unop.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem kernel.ι_unop :
     (kernel.ι g.unop).op = eqToHom (Opposite.op_unop _) ≫ cokernel.π g ≫ (kernelUnopOp g).inv := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem cokernel.π_unop :
     (cokernel.π g.unop).op =
       (cokernelUnopOp g).hom ≫ kernel.ι g ≫ eqToHom (Opposite.op_unop _).symm := by
@@ -138,7 +140,6 @@ def imageOpUnop : (image f.op).unop ≅ image f :=
 def imageUnopUnop : (image g).unop ≅ image g.unop :=
   (imageUnopOp g).unop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem image_ι_op_comp_imageUnopOp_hom :
     (image.ι g.unop).op ≫ (imageUnopOp g).hom = factorThruImage g := by
   simp only [imageUnopOp, Iso.trans, Iso.symm, Iso.op, cokernelOpOp_inv, cokernelEpiComp_hom,

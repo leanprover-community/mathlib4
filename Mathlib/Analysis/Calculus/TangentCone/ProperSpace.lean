@@ -48,12 +48,12 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
       ∃ (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto ((fun n ↦ c n • d n) ∘ φ) atTop (𝓝 l) := by
     apply IsCompact.tendsto_subseq _ (fun n ↦ ?_)
     · exact (isCompact_closedBall 0 1).diff Metric.isOpen_ball
-    simp only [mem_diff, Metric.mem_closedBall, dist_zero_right, (c_le n).le,
+    simp only [Set.mem_sdiff, Metric.mem_closedBall, dist_zero_right, (c_le n).le,
       Metric.mem_ball, not_lt, true_and, le_c n]
   refine ⟨l, ?_, ?_⟩; swap
   · push _ ∈ _
-    contrapose! l_mem
-    simp only [one_div, l_mem, mem_diff, Metric.mem_closedBall, dist_self, zero_le_one,
+    contrapose l_mem
+    simp only [one_div, l_mem, Set.mem_sdiff, Metric.mem_closedBall, dist_self, zero_le_one,
       Metric.mem_ball, inv_pos, norm_pos_iff, ne_eq, not_not, true_and]
     contrapose! hr
     simp [hr]

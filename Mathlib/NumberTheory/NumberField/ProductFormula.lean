@@ -58,11 +58,10 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   have h_fin₁ : t₁.Finite := h_fin₀.subset <| by simp [norm_eq_one_iff_notMem, t₁, t₀]
   have h_fin₂ : t₂.Finite := by
     refine h_fin₀.subset ?_
-    simp only [mulSupport_subset_iff, Set.mem_setOf_eq, t₂, t₀,
+    simp only [mulSupport_subset_iff, Set.mem_ofPred_eq, t₂, t₀,
       maxPowDividing, ← dvd_span_singleton]
     intro v hv
     simp only [map_pow, Nat.cast_pow, ← pow_zero (absNorm v.asIdeal : ℝ)] at hv
-    classical
     refine (Associates.count_ne_zero_iff_dvd h_span_nezero (irreducible v)).1 <| fun h ↦ hv ?_
     congr
   have h_prod : (absNorm (∏ᶠ (v : HeightOneSpectrum (𝓞 K)), v.maxPowDividing (span {x})) : ℝ) =
@@ -72,7 +71,6 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   rw [h_prod, ← finprod_mul_distrib h_fin₁ h_fin₂]
   exact finprod_eq_one_of_forall_eq_one fun v ↦ embedding_mul_absNorm _ v h_x_nezero
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any non-zero `x` in `K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℚ x`. -/
 theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :

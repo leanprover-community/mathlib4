@@ -65,6 +65,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
     [nonem : Nonempty β] (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),
@@ -107,12 +108,11 @@ def PartialIso : Type _ :=
   { f : Finset (α × β) //
     ∀ p ∈ f, ∀ q ∈ f,
       cmp (Prod.fst p) (Prod.fst q) = cmp (Prod.snd p) (Prod.snd q) }
+deriving Preorder
 
 namespace PartialIso
 
 instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.notMem_empty _ h).elim⟩⟩
-
-instance : Preorder (PartialIso α β) := Subtype.preorder _
 
 variable {α β}
 
@@ -228,7 +228,7 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
   cases nonempty_encodable α
   rcases exists_pair_lt β with ⟨x, y, hxy⟩
   obtain ⟨a, ha⟩ := exists_between hxy
-  haveI : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
+  have : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
   let our_ideal : Ideal (PartialIso α _) :=
     idealOfCofinals default (definedAtLeft (Set.Ioo x y))
   let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ _ a)

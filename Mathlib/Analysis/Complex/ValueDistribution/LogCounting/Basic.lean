@@ -59,6 +59,7 @@ noncomputable def toClosedBall (r : ℝ) :
   apply restrictMonoidHom
   tauto
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsupp E ℤ)
     (ha : z ∈ closedBall 0 |r|) :
@@ -66,11 +67,13 @@ lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsupp E ℤ)
   unfold toClosedBall
   simp_all [restrict_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : Meromorphic f) :
     (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
   simp_all [locallyFinsuppWithin.toClosedBall]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] {r : ℝ}
     (f : locallyFinsupp E ℤ) :
     (toClosedBall r f).support ⊆ closedBall 0 |r| := by
@@ -124,6 +127,7 @@ Evaluation of the logarithmic counting function at zero yields zero.
     logCounting D 0 = 0 := by
   simp [logCounting]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The logarithmic counting function of a singleton indicator is asymptotically equal to
 `log · - log ‖e‖`.
@@ -131,7 +135,6 @@ The logarithmic counting function of a singleton indicator is asymptotically equ
 @[simp] lemma logCounting_single_eq_log_sub_const [DecidableEq E] [ProperSpace E] {e : E} {r : ℝ}
     {n : ℤ} (hr : ‖e‖ ≤ r) :
     logCounting (single e n) r = n * (log r - log ‖e‖) := by
-  classical
   simp only [logCounting, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   rw [finsum_eq_sum_of_support_subset _ (s := (finite_singleton e).toFinset)
     (by simp_all [toClosedBall, restrict_apply, single_apply])]
@@ -148,6 +151,7 @@ The logarithmic counting function of a singleton indicator is asymptotically equ
 ### Elementary Properties of Logarithmic Counting Functions
 -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The logarithmic counting function is even.
 -/
@@ -246,8 +250,6 @@ theorem logCounting_eventuallyLE {E : Type*} [NormedAddCommGroup E] [ProperSpace
     logCounting f₁ ≤ᶠ[atTop] logCounting f₂ := by
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_le h hr
 
-@[deprecated (since := "2025-12-11")] alias logCounting_eventually_le := logCounting_eventuallyLE
-
 end Function.locallyFinsuppWithin
 
 /-!
@@ -278,7 +280,7 @@ noncomputable def logCounting : ℝ → ℝ := by
 Relation between `ValueDistribution.logCounting` and `locallyFinsuppWithin.logCounting`.
 -/
 lemma _root_.locallyFinsuppWithin.logCounting_divisor {f : ℂ → ℂ} :
-    locallyFinsuppWithin.logCounting (divisor f ⊤) = logCounting f 0 - logCounting f ⊤ := by
+    locallyFinsuppWithin.logCounting (divisor f univ) = logCounting f 0 - logCounting f ⊤ := by
   simp [logCounting, ← locallyFinsuppWithin.logCounting.map_sub]
 
 /--
@@ -425,7 +427,7 @@ counting function for the poles.
 -/
 @[simp] theorem logCounting_sub_const (hf : Meromorphic f) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
-  simpa [sub_eq_add_neg] using logCounting_add_const hf
+  simpa [sub_eq_add_neg] using! logCounting_add_const hf
 
 /-!
 ## Behaviour under Arithmetic Operations
@@ -457,7 +459,7 @@ For `1 ≤ r`, the logarithmic counting function for the poles of a sum `∑ a �
 equal to the sum of the logarithmic counting functions for the poles of the `f ·`.
 -/
 theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 → E) {r : ℝ}
-    (h₁f : ∀ a, Meromorphic (f a)) (hr : 1 ≤ r) :
+    (h₁f : ∀ a ∈ s, Meromorphic (f a)) (hr : 1 ≤ r) :
     logCounting (∑ a ∈ s, f a) ⊤ r ≤ (∑ a ∈ s, (logCounting (f a) ⊤)) r := by
   classical
   induction s using Finset.induction with
@@ -467,16 +469,17 @@ theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 →
     rw [Finset.sum_insert ha, Finset.sum_insert ha]
     calc logCounting (f a + ∑ x ∈ s, f x) ⊤ r
       _ ≤ (logCounting (f a) ⊤ + logCounting (∑ x ∈ s, f x) ⊤) r :=
-        logCounting_add_top_le (h₁f a) (Meromorphic.sum h₁f) hr
+        logCounting_add_top_le (h₁f a (Finset.mem_insert_self a s))
+          (Meromorphic.sum (fun σ hσ ↦ h₁f σ (Finset.mem_insert_of_mem hσ))) hr
       _ ≤ (logCounting (f a) ⊤ + ∑ x ∈ s, logCounting (f x) ⊤) r :=
-        add_le_add (by trivial) hs
+        add_le_add (by trivial) (hs (fun a ha ↦ h₁f a (Finset.mem_insert_of_mem ha)))
 
 /--
 Asymptotically, the logarithmic counting function for the poles of a sum `∑ a ∈ s, f a` is less than
 or equal to the sum of the logarithmic counting functions for the poles of the `f ·`.
 -/
 theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α → 𝕜 → E)
-    (h₁f : ∀ a, Meromorphic (f a)) :
+    (h₁f : ∀ a ∈ s, Meromorphic (f a)) :
     logCounting (∑ a ∈ s, f a) ⊤ ≤ᶠ[atTop] ∑ a ∈ s, (logCounting (f a) ⊤) := by
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_sum_top_le s f h₁f hr
 
@@ -506,8 +509,6 @@ theorem logCounting_mul_zero_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 �
   apply locallyFinsuppWithin.logCounting_le _ hr
   apply locallyFinsuppWithin.posPart_add
 
-@[deprecated (since := "2025-12-11")] alias logCounting_zero_mul_le := logCounting_mul_zero_le
-
 /--
 Asymptotically, the logarithmic counting function for the zeros of `f * g` is less than or equal to
 the sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
@@ -518,9 +519,6 @@ theorem logCounting_mul_zero_eventuallyLE {f₁ f₂ : 𝕜 → 𝕜}
     logCounting (f₁ * f₂) 0 ≤ᶠ[atTop] logCounting f₁ 0 + logCounting f₂ 0 := by
   filter_upwards [eventually_ge_atTop 1] using
     fun _ hr ↦ logCounting_mul_zero_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
-
-@[deprecated (since := "2025-12-11")]
-alias logCounting_zero_mul_eventually_le := logCounting_mul_zero_eventuallyLE
 
 /--
 For `1 ≤ r`, the logarithmic counting function for the poles of `f * g` is less than or equal to the
@@ -536,8 +534,6 @@ theorem logCounting_mul_top_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤
   apply locallyFinsuppWithin.logCounting_le _ hr
   apply locallyFinsuppWithin.negPart_add
 
-@[deprecated (since := "2025-12-11")] alias logCounting_top_mul_le := logCounting_mul_top_le
-
 /--
 Asymptotically, the logarithmic counting function for the zeros of `f * g` is less than or equal to
 the sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
@@ -548,9 +544,6 @@ theorem logCounting_mul_top_eventuallyLE {f₁ f₂ : 𝕜 → 𝕜}
     logCounting (f₁ * f₂) ⊤ ≤ᶠ[atTop] logCounting f₁ ⊤ + logCounting f₂ ⊤ := by
   filter_upwards [eventually_ge_atTop 1] using
     fun _ hr ↦ logCounting_mul_top_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
-
-@[deprecated (since := "2025-12-11")]
-alias logCounting_top_mul_eventually_le := logCounting_mul_top_eventuallyLE
 
 /--
 For natural numbers `n`, the logarithmic counting function for the zeros of `f ^ n` equals `n`
@@ -586,11 +579,11 @@ This is a reformulation of Jensen's formula of complex analysis. See
 -/
 theorem Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const {R : ℝ}
     {f : ℂ → ℂ} (h : Meromorphic f) (hR : R ≠ 0) :
-    logCounting (divisor f ⊤) R =
+    logCounting (divisor f univ) R =
       circleAverage (log ‖f ·‖) 0 R - log ‖meromorphicTrailingCoeffAt f 0‖ := by
   have h₁f : MeromorphicOn f (closedBall 0 |R|) := by tauto
-  simp only [MeromorphicOn.circleAverage_log_norm hR h₁f, logCounting, top_eq_univ,
-    AddMonoidHom.coe_mk, ZeroHom.coe_mk, zero_sub, norm_neg, add_sub_cancel_right]
+  simp only [MeromorphicOn.circleAverage_log_norm hR h₁f, logCounting, AddMonoidHom.coe_mk,
+    ZeroHom.coe_mk, zero_sub, norm_neg, add_sub_cancel_right]
   congr 1
   · simp_all
   · rw [divisor_apply, divisor_apply]

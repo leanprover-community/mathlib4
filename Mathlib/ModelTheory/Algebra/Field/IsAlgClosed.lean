@@ -52,20 +52,21 @@ namespace FirstOrder
 
 namespace Field
 
-open Ring FreeCommRing Polynomial Language
+open FirstOrder.Ring FreeCommRing Polynomial Language
 
 /-- A generic monic polynomial of degree `n` as an element of the
 free commutative ring in `n + 1` variables, with a variable for each
 of the `n` non-leading coefficients of the polynomial and one variable (`Fin.last n`)
 for `X`. -/
-def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
+noncomputable def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n + 1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
       (v (Fin.last _)) := by
-  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finset_sum]
+  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finsetSum]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
@@ -74,7 +75,6 @@ noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
 theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
-  let _ := Classical.decEq K
   rw [Equiv.forall_congr_left ((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 
@@ -176,6 +176,7 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     have := isAlgClosed_of_model_ACF p M
     infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     (φ : Language.ring.Sentence) (h : Theory.ACF 0 ⊨ᵇ φ) :
     Set.Finite { p : Nat.Primes | ¬ Theory.ACF p ⊨ᵇ φ } := by

@@ -114,18 +114,14 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
--- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
--- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated toList_one (since := "2026-03-26"))]
 theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
-
--- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
--- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
-theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
+
+@[to_additive (attr := deprecated toList_mul (since := "2026-03-26"))]
+theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList ys := rfl
@@ -344,7 +340,7 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
   DFunLike.ext_iff.1 (comp_lift g f) x
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
@@ -385,6 +381,7 @@ theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
 @[to_additive]
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
     map f (map g x) = map (f ∘ g) x := by

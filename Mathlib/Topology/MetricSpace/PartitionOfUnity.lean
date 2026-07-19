@@ -81,7 +81,7 @@ theorem exists_forall_closedEBall_subset_aux₂ (y : X) :
       (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedEBall y r ⊆ U i }) :=
   (convex_Ioi _).inter <| OrdConnected.convex <| OrdConnected.preimage_ennreal_ofReal <|
     ordConnected_iInter fun i => ordConnected_iInter fun (_ : y ∈ K i) =>
-      ordConnected_setOf_closedEBall_subset y (U i)
+      ordConnected_setOfPred_closedEBall_subset y (U i)
 
 /-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
@@ -91,7 +91,7 @@ theorem exists_continuous_real_forall_closedEBall_subset (hK : ∀ i, IsClosed (
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧
       ∀ (i), ∀ x ∈ K i, closedEBall x (ENNReal.ofReal <| δ x) ⊆ U i := by
-  simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_swap ι X] using
+  simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_comm ι X] using!
     exists_continuous_forall_mem_convex_of_local_const exists_forall_closedEBall_subset_aux₂
       (exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
 
@@ -105,7 +105,7 @@ theorem exists_continuous_nnreal_forall_closedEBall_subset (hK : ∀ i, IsClosed
   rcases exists_continuous_real_forall_closedEBall_subset hK hU hKU hfin with ⟨δ, hδ₀, hδ⟩
   lift δ to C(X, ℝ≥0) using fun x => (hδ₀ x).le
   refine ⟨δ, hδ₀, fun i x hi => ?_⟩
-  simpa only [← ENNReal.ofReal_coe_nnreal] using hδ i x hi
+  simpa only [← ENNReal.ofReal_coe_nnreal] using! hδ i x hi
 
 /-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there

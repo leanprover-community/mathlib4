@@ -114,7 +114,6 @@ theorem roots_of_cyclotomic (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :
     (cyclotomic' n R).roots = (primitiveRoots n R).val := by
   rw [cyclotomic']; exact roots_prod_X_sub_C (primitiveRoots n R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If there is a primitive `n`th root of unity in `K`, then `X ^ n - 1 = ∏ (X - μ)`, where `μ`
 varies over the `n`-th roots of unity. -/
 theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
@@ -518,7 +517,7 @@ theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (h
     rw [eq_comm] at this
     rw [this, Nat.prod_properDivisors_prime_pow hp]
   induction n with
-  | zero => haveI := Fact.mk hp; simp [cyclotomic_prime]
+  | zero => have := Fact.mk hp; simp [cyclotomic_prime]
   | succ n_n n_ih =>
     rw [← (eq_cyclotomic_iff (pow_pos hp.pos (n_n + 1 + 1)) _).mpr ?_]
     rw [Nat.prod_properDivisors_prime_pow hp, Finset.prod_range_succ, n_ih]
@@ -617,9 +616,9 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
   · simp only [hy, zero_pow (Nat.ne_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
-  convert congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K)))
-    <| X_pow_sub_one_eq_prod hpos h
-    using 1
+  convert!
+    congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K))) <|
+      X_pow_sub_one_eq_prod hpos h using 1
   · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]
   · simp [eval_prod, prod_mul_pow_card, sub_mul, hy]
 
@@ -657,7 +656,7 @@ theorem separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
 
 theorem squarefree_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
     Squarefree (cyclotomic n K) :=
- (separable_cyclotomic n K).squarefree
+  (separable_cyclotomic n K).squarefree
 
 end miscellaneous
 

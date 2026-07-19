@@ -239,7 +239,7 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
     let _ := Fintype.ofFinite 𝔖;
     simp_rw [← isUniformInducing_pi_restrict.comap_uniformity,
       PseudoEMetricSpace.uniformity_edist, comap_iInf, comap_principal, edist_eq_pi_restrict,
-      Set.preimage_setOf_eq]
+      Set.preimage_ofPred_eq]
 
 lemma edist_le {f g : α →ᵤ[𝔖] β} {C : ℝ≥0∞} :
     edist f g ≤ C ↔ ∀ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ C := by
@@ -303,7 +303,7 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by
-    convert lipschitzWith_one_ofFun_toFun (𝔖 := 𝔖) (β := β) |>.isBounded_image (.all Set.univ)
+    convert! lipschitzWith_one_ofFun_toFun (𝔖 := 𝔖) (β := β) |>.isBounded_image (.all Set.univ)
     ext f
     simp only [Set.mem_univ, Function.comp_apply, Set.image_univ, Set.mem_range, true_iff]
     exact ⟨UniformFun.ofFun (toFun 𝔖 f), by simp⟩

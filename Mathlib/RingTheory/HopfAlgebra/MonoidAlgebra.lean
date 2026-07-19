@@ -24,7 +24,7 @@ results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
   is a group scheme.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -36,17 +36,16 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type*} [Group G]
 
 variable (R A G) in
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
-  antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode R
+  antipode := Finsupp.lsum R (fun g ↦ lsingle g⁻¹ ∘ₗ antipode R) ∘ₗ (coeffLinearEquiv _).toLinearMap
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
-lemma antipode_single (g : G) (a : A) :
-    antipode R (single g a) = single g⁻¹ (antipode R a) := by
-  simp [MonoidAlgebra, antipode]
+lemma antipode_single (g : G) (a : A) : antipode R (single g a) = single g⁻¹ (antipode R a) := by
+  simp [antipode]
 
-set_option backward.isDefEq.respectTransparency false in
 open Coalgebra in
 @[to_additive (dont_translate := R A)]
 instance instHopfAlgebra : HopfAlgebra R A[G] where

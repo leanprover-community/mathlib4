@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
 
 /-!
@@ -29,8 +29,6 @@ structure CommGrp where
   [grp : GrpObj X]
   [comm : IsCommMonObj X]
 
-@[deprecated (since := "2025-10-13")] alias CommGrp_ := CommGrp
-
 attribute [instance] CommGrp.grp CommGrp.comm
 
 namespace CommGrp
@@ -41,18 +39,12 @@ variable {C}
 @[simps -isSimp X]
 abbrev toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
 
-@[deprecated (since := "2025-10-13")] alias toGrp_ := toGrp
-
 /-- A commutative group object is a commutative monoid object. -/
 @[simps X]
 def toCommMon (A : CommGrp C) : CommMon C := ⟨A.X⟩
 
-@[deprecated (since := "2025-09-15")] alias toCommMon_ := toCommMon
-
 /-- A commutative group object is a monoid object. -/
 abbrev toMon (A : CommGrp C) : Mon C := (toCommMon A).toMon
-
-@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 variable (C) in
 /-- The trivial commutative group object. -/
@@ -78,9 +70,6 @@ theorem comp_hom {R S T : CommGrp C} (f : R ⟶ S) (g : S ⟶ T) :
 theorem hom_ext {A B : CommGrp C} (f g : A ⟶ B) (h : f.hom.hom.hom = g.hom.hom.hom) : f = g :=
   InducedCategory.hom_ext (Grp.hom_ext _ _ h)
 
-@[deprecated (since := "2025-12-18")] alias id' := id_hom
-@[deprecated (since := "2025-12-18")] alias comp' := comp_hom
-
 section
 
 variable (C)
@@ -90,13 +79,9 @@ variable (C)
 def forget₂Grp : CommGrp C ⥤ Grp C :=
   inducedFunctor CommGrp.toGrp
 
-@[deprecated (since := "2025-10-13")] alias forget₂Grp_ := forget₂Grp
-
 /-- The forgetful functor from commutative group objects to group objects is fully faithful. -/
 def fullyFaithfulForget₂Grp : (forget₂Grp C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
-
-@[deprecated (since := "2025-10-13")] alias fullyFaithfulForget₂Grp_ := fullyFaithfulForget₂Grp
 
 instance : (forget₂Grp C).Full := InducedCategory.full _
 instance : (forget₂Grp C).Faithful := InducedCategory.faithful _
@@ -118,8 +103,6 @@ theorem forget₂Grp_map_hom {A B : CommGrp C} (f : A ⟶ B) :
 def forget₂CommMon : CommGrp C ⥤ CommMon C where
   obj G := CommMon.mk G.X
   map f := CommMon.homMk f.hom.hom
-
-@[deprecated (since := "2025-09-15")] alias forget₂CommMon_ := forget₂CommMon
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects is fully
 faithful. -/
@@ -187,9 +170,6 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic true in
 @[simp] lemma mkIso_inv_hom_hom_hom : (mkIso e one_f mul_f).inv.hom.hom.hom = e.inv := rfl
 
-@[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom_hom
-@[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom_hom
-
 end
 
 instance uniqueHomFromTrivial (A : CommGrp C) : Unique (trivial C ⟶ A) :=
@@ -210,6 +190,7 @@ variable {F F' : C ⥤ D} [F.Braided] [F'.Braided] {G : D ⥤ E} [G.Braided]
 
 open Monoidal
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- A finite-product-preserving functor takes commutative group objects to commutative group
@@ -228,6 +209,7 @@ protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful wher
   map_injective hfg :=
     (CommGrp.forget _ ⋙ F).map_injective ((CommGrp.forget _).congr_map hfg)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
 `CommGrpCat(F) : CommGrpCat C ⥤ CommGrpCat D` is fully faithful too. -/
 @[simps]
@@ -270,6 +252,8 @@ set_option backward.isDefEq.respectTransparency false in
 def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
   NatIso.ofComponents fun X ↦ CommGrp.mkIso (.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
 def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
@@ -290,12 +274,13 @@ noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp C ⥤ CommGrp D w
 
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative group
 objects. -/
 @[simps] noncomputable def mapCommGrp : F.mapCommGrp ⊣ G.mapCommGrp where
@@ -307,6 +292,7 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their commutative group objects. -/
 @[simps] noncomputable def mapCommGrp : CommGrp C ≌ CommGrp D where
   functor := e.functor.mapCommGrp

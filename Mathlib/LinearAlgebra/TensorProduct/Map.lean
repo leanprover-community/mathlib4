@@ -86,11 +86,8 @@ theorem range_map_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
   congr; ext t
   simp
 
-@[deprecated (since := "2025-09-07")] alias map_range_eq_span_tmul := range_map_eq_span_tmul
-
 /-- Given submodules `p ⊆ P` and `q ⊆ Q`, this is the natural map: `p ⊗ q → P ⊗ Q`. -/
-@[simp]
-def mapIncl (p : Submodule R P) (q : Submodule R Q) : p ⊗[R] q →ₗ[R] P ⊗[R] Q :=
+abbrev mapIncl (p : Submodule R P) (q : Submodule R Q) : p ⊗[R] q →ₗ[R] P ⊗[R] Q :=
   map p.subtype q.subtype
 
 lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
@@ -598,21 +595,29 @@ def rTensor (f : N ≃ₗ[R] P) : N ⊗[R] M ≃ₗ[R] P ⊗[R] M := TensorProdu
 
 variable (g : P ≃ₗ[R] Q) (f : N ≃ₗ[R] P) (m : M) (n : N) (p : P) (x : M ⊗[R] N) (y : N ⊗[R] M)
 
+@[simp] theorem symm_lTensor : (f.lTensor M).symm = f.symm.lTensor M := rfl
+
+@[simp] theorem symm_rTensor : (f.rTensor M).symm = f.symm.rTensor M := rfl
+
 @[simp] theorem coe_lTensor : lTensor M f = (f : N →ₗ[R] P).lTensor M := rfl
 
-@[simp] theorem coe_lTensor_symm : (lTensor M f).symm = (f.symm : P →ₗ[R] N).lTensor M := rfl
+@[deprecated "use symm_lTensor and coe_lTensor" (since := "2026-07-04")]
+theorem coe_lTensor_symm : (lTensor M f).symm = (f.symm : P →ₗ[R] N).lTensor M := rfl
 
 @[simp] theorem coe_rTensor : rTensor M f = (f : N →ₗ[R] P).rTensor M := rfl
 
-@[simp] theorem coe_rTensor_symm : (rTensor M f).symm = (f.symm : P →ₗ[R] N).rTensor M := rfl
+@[deprecated "use symm_rTensor and coe_rTensor" (since := "2026-07-04")]
+theorem coe_rTensor_symm : (rTensor M f).symm = (f.symm : P →ₗ[R] N).rTensor M := rfl
 
 @[simp] theorem lTensor_tmul : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n := rfl
 
-@[simp] theorem lTensor_symm_tmul : (f.lTensor M).symm (m ⊗ₜ p) = m ⊗ₜ f.symm p := rfl
+@[deprecated "use symm_lTensor and lTensor_tmul" (since := "2026-07-04")]
+theorem lTensor_symm_tmul : (f.lTensor M).symm (m ⊗ₜ p) = m ⊗ₜ f.symm p := rfl
 
 @[simp] theorem rTensor_tmul : f.rTensor M (n ⊗ₜ m) = f n ⊗ₜ m := rfl
 
-@[simp] theorem rTensor_symm_tmul : (f.rTensor M).symm (p ⊗ₜ m) = f.symm p ⊗ₜ m := rfl
+@[deprecated "use symm_rTensor and rTensor_tmul" (since := "2026-07-04")]
+theorem rTensor_symm_tmul : (f.rTensor M).symm (p ⊗ₜ m) = f.symm p ⊗ₜ m := rfl
 
 lemma comm_trans_rTensor_trans_comm_eq (g : N ≃ₗ[R] P) :
     TensorProduct.comm R Q N ≪≫ₗ rTensor Q g ≪≫ₗ TensorProduct.comm R P Q = lTensor Q g :=
@@ -679,16 +684,16 @@ variable {N}
 variable {M}
 
 @[simp] theorem rTensor_pow (f : M ≃ₗ[R] M) (n : ℕ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
-  simpa only [one_pow] using TensorProduct.congr_pow f (1 : N ≃ₗ[R] N) n
+  simpa only [one_pow] using! TensorProduct.congr_pow f (1 : N ≃ₗ[R] N) n
 
 @[simp] theorem rTensor_zpow (f : M ≃ₗ[R] M) (n : ℤ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
-  simpa only [one_zpow] using TensorProduct.congr_zpow f (1 : N ≃ₗ[R] N) n
+  simpa only [one_zpow] using! TensorProduct.congr_zpow f (1 : N ≃ₗ[R] N) n
 
 @[simp] theorem lTensor_pow (f : N ≃ₗ[R] N) (n : ℕ) : f.lTensor M ^ n = (f ^ n).lTensor M := by
-  simpa only [one_pow] using TensorProduct.congr_pow (1 : M ≃ₗ[R] M) f n
+  simpa only [one_pow] using! TensorProduct.congr_pow (1 : M ≃ₗ[R] M) f n
 
 @[simp] theorem lTensor_zpow (f : N ≃ₗ[R] N) (n : ℤ) : f.lTensor M ^ n = (f ^ n).lTensor M := by
-  simpa only [one_zpow] using TensorProduct.congr_zpow (1 : M ≃ₗ[R] M) f n
+  simpa only [one_zpow] using! TensorProduct.congr_zpow (1 : M ≃ₗ[R] M) f n
 
 end LinearEquiv
 

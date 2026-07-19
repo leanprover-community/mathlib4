@@ -88,7 +88,6 @@ variable {R X}
 theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
 
@@ -262,6 +261,7 @@ theorem hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F�
   (lift R).symm.injective h'
 
 variable (R X)
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The universal enveloping algebra of the free Lie algebra is just the free unital associative
 algebra. -/

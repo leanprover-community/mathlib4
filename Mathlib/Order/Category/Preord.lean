@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.CompleteBooleanAlgebra
 
@@ -43,7 +43,6 @@ instance : CoeSort Preord (Type u) :=
 
 attribute [coe] Preord.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where
@@ -83,15 +82,11 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : Preord} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp]
-lemma forget_map {X Y : Preord} (f : X ⟶ Y) :
-    (forget Preord).map f = (f : X → Y) := rfl
+@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[ext]
 lemma ext {X Y : Preord} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

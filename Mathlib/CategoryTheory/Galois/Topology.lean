@@ -34,7 +34,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 
@@ -47,6 +47,7 @@ def autEmbedding : Aut F →* ∀ X, Aut (F.obj X) :=
 lemma autEmbedding_apply (σ : Aut F) (X : C) : autEmbedding F σ X = σ.app X :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma autEmbedding_injective : Function.Injective (autEmbedding F) := by
   intro σ τ h
   ext X x
@@ -62,6 +63,14 @@ lemma obj_discreteTopology (X : C) : DiscreteTopology (F.obj X) := ⟨rfl⟩
 /-- We put the discrete topology on `Aut (F.obj X)`. -/
 scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
 
+/-- We give `F.obj X  ⟶ F.obj Y` the product topology. -/
+@[local simp]
+scoped instance {X Y : C} : TopologicalSpace (F.obj X ⟶ F.obj Y) :=
+  .coinduced (fun f ↦ ObjectProperty.homMk (↾f)) inferInstance
+
+scoped instance {X Y : C} : DiscreteTopology (F.obj X ⟶ F.obj Y) :=
+  ⟨by simp [DiscreteTopology.eq_bot]⟩
+
 @[scoped instance]
 lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl⟩
 
@@ -73,18 +82,19 @@ instance : TopologicalSpace (Aut F) :=
     Set.range (autEmbedding F) =
       ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom = (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
+  simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_ofPred_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
   · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl-/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
 automorphisms. -/
 lemma autEmbedding_range :
-    Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | (F.map f.hom ≫ (a f.right).hom : _ → _) =
+    Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom =
       (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp +instances only [Set.mem_range, id_obj, DFunLike.coe_fn_eq, Set.mem_iInter, Set.mem_setOf_eq]
+  simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
   exact ⟨NatIso.ofComponents a (fun {X Y} f ↦ by
     ext; simpa using ConcreteCategory.congr_hom (h ⟨X, Y, f⟩) _), rfl⟩
@@ -180,7 +190,7 @@ lemma exists_set_ker_evaluation_subset_of_isOpen
       ext x
       obtain ⟨⟨j⟩, a, ha : F.map _ a = x⟩ := Limits.FintypeCat.jointly_surjective
         (Discrete.functor (ff ⟨X, XinI⟩) ⋙ F) _ (Limits.isColimitOfPreserves F (h4 ⟨X, XinI⟩)) x
-      rw [FintypeCat.id_apply, ← ha, FunctorToFintypeCat.naturality]
+      rw [FintypeCat.id_apply, ← ha, NatTrans.naturality_apply]
       simp [h ⟨(ff _) j, ⟨Set.range (ff ⟨X, XinI⟩), ⟨⟨_, rfl⟩, ⟨j, rfl⟩⟩⟩⟩]
     exact Iso.ext h
 
@@ -201,15 +211,15 @@ lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ Tr
       intro t (ht : t.hom.app A a = a)
       apply hU
       apply hmem
-      haveI (X : I) : IsConnected X.val := hc X.val X.property
-      haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
+      have (X : I) : IsConnected X.val := hc X.val X.property
+      have (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
       intro X
       ext x
       simp only [FintypeCat.id_apply]
       obtain ⟨z, rfl⟩ :=
         surjective_of_nonempty_fiber_of_isConnected F (Pi.π (fun X : I ↦ X.val) X) x
       obtain ⟨f, rfl⟩ := hbij.surjective z
-      rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, ht]
+      rw [NatTrans.naturality_apply, NatTrans.naturality_apply, ht]
     · intro ⟨X, _, h⟩
       exact ⟨MulAction.stabilizer (Aut F) X.pt, h, stabilizer_isOpen (Aut F) X.pt,
         Subgroup.one_mem _⟩

@@ -59,7 +59,7 @@ It is defined *inductively* as follows:
 4. Add all sieves required by the *local character* axiom of a Grothendieck topology.
 -/
 def toGrothendieck (J : Precoverage C) : GrothendieckTopology C where
-  sieves X := setOf (J.Saturate X)
+  sieves X := Set.ofPred (J.Saturate X)
   top_mem' := .top
   pullback_stable' _ _ _ _ hS := .pullback _ _ hS _ _
   transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
@@ -72,7 +72,6 @@ lemma generate_mem_toGrothendieck {X : C} {R : Presieve X} (hR : R ∈ J X) :
     Sieve.generate R ∈ J.toGrothendieck X :=
   .of _ _ hR
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 An alternative characterization of the Grothendieck topology associated to a precoverage `J`:
 it is the infimum of all Grothendieck topologies containing `Sieve.generate S` for all presieves
@@ -101,7 +100,8 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       (∀ {X Y : C} {f : Y ⟶ X} (R : Presieve X), R ∈ J X →
         Presieve.IsSheafFor P ((Sieve.generate R).pullback f).arrows) := by
   constructor
-  · refine fun H _ _ _ _ hR => H.isSheafFor _ ?_
+  · intro H _ _ _ _ hR
+    apply H.isSheafFor
     rw [Sieve.generate_sieve]
     exact J.toGrothendieck.pullback_stable _ (Saturate.of _ _ hR)
   · intro H X S hS
@@ -128,7 +128,7 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
         refine (H1 f).ext (fun Z g hg => ?_)
         refine (H2 hg (𝟙 _)).ext (fun ZZ gg hgg => ?_)
         simp only [Sieve.pullback_id, Sieve.pullback_apply] at hgg
-        simp only [← types_comp_apply]
+        simp only [← comp_apply]
         rw [← P.map_comp, ← op_comp, h₁, h₂]
         simpa only [Sieve.pullback_apply, Category.assoc] using hgg
       let y : ∀ ⦃Z : C⦄ (g : Z ⟶ Y),
@@ -145,7 +145,7 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
         intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ h
         apply (H2 h₁ g₁).ext
         intro ZZ gg hgg
-        simp only [← types_comp_apply]
+        simp only [← comp_apply]
         rw [← P.map_comp, ← P.map_comp, ← op_comp, ← op_comp, hz, hz]
         · dsimp [y]; congr 1; simp only [Category.assoc, h]
         · simpa [reassoc_of% h] using hgg
@@ -153,13 +153,13 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       obtain ⟨t, ht⟩ := H1' f q hq
       refine ⟨t, fun Z g hg => ?_⟩
       refine (H1 (g ≫ f)).ext (fun ZZ gg hgg => ?_)
-      rw [← types_comp_apply _ (P.map gg.op), ← P.map_comp, ← op_comp, ht]
+      rw [← comp_apply _ (P.map gg.op), ← P.map_comp, ← op_comp, ht]
       on_goal 2 => simpa using hgg
       refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg => ?_)
-      rw [← types_comp_apply _ (P.map ggg.op), ← P.map_comp, ← op_comp, hz]
+      rw [← comp_apply _ (P.map ggg.op), ← P.map_comp, ← op_comp, hz]
       on_goal 2 => simpa using hggg
       refine (H2 hgg ggg).ext (fun ZZZZ gggg _ => ?_)
-      rw [← types_comp_apply _ (P.map gggg.op), ← P.map_comp, ← op_comp]
+      rw [← comp_apply _ (P.map gggg.op), ← P.map_comp, ← op_comp]
       apply hx
       simp
 
@@ -214,8 +214,8 @@ lemma Presieve.IsSheaf.isSheafFor_of_mem_precoverage {J : Precoverage C} {P : C�
   rw [J.isSheaf_toGrothendieck_iff] at h
   simpa [Presieve.isSheafFor_iff_generate] using h (f := 𝟙 S) R hR
 
-lemma PreZeroHypercover.isSheafFor_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S : C} {𝒰 𝒱 : PreZeroHypercover S}
-    (e : 𝒰 ≅ 𝒱) :
+lemma PreZeroHypercover.isSheafFor_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S : C}
+    {𝒰 𝒱 : PreZeroHypercover S} (e : 𝒰 ≅ 𝒱) :
     𝒰.presieve₀.IsSheafFor F ↔ 𝒱.presieve₀.IsSheafFor F := by
   rw [Presieve.isSheafFor_iff_generate, ← Sieve.ofArrows, ← PreZeroHypercover.sieve₀,
     PreZeroHypercover.sieve₀_eq_of_iso e, ← Presieve.isSheafFor_iff_generate]
@@ -228,17 +228,19 @@ lemma Presieve.isSheafFor_ofArrows_comp_iff {F : Cᵒᵖ ⥤ Type*} {X : C} {ι 
   let e : 𝒰 ≅ 𝒱 := PreZeroHypercover.isoMk (.refl _) (fun i ↦ (e i).symm)
   exact PreZeroHypercover.isSheafFor_iff_of_iso e.symm
 
-lemma Presieve.isSheafFor_singleton_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S X Y : C} (f : X ⟶ S) (g : Y ⟶ S)
-    (e : X ≅ Y) (he : e.hom ≫ g = f) :
+lemma Presieve.isSheafFor_singleton_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S X Y : C} (f : X ⟶ S)
+    (g : Y ⟶ S) (e : X ≅ Y) (he : e.hom ≫ g = f) :
     (singleton f).IsSheafFor F ↔ (singleton g).IsSheafFor F := by
   subst he
-  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ← Presieve.ofArrows_pUnit,
+  rw [← Presieve.ofArrows_pUnit.{0}, ← Presieve.ofArrows_pUnit,
     Presieve.isSheafFor_ofArrows_comp_iff]
 
 open Limits
 
 variable {D : Type*} [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks (F : C ⥤ D) (P : Dᵒᵖ ⥤ Type*)
     {X : C} (R : Presieve X) [R.HasPairwisePullbacks]
     [F.PreservesPairwisePullbacks R] :
@@ -312,12 +314,10 @@ lemma galoisConnection_toGrothendieck_toPrecoverage :
 
 end Precoverage
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma Precoverage.toGrothendieck_bot : toGrothendieck (⊥ : Precoverage C) = ⊥ :=
   (galoisConnection_toGrothendieck_toPrecoverage C).l_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma GrothendieckTopology.toPrecoverage_top : toPrecoverage (⊤ : GrothendieckTopology C) = ⊤ :=
   (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).u_top
@@ -330,6 +330,7 @@ lemma Precoverage.toGrothendieck_mono {J K : Precoverage C} (h : J ≤ K) :
     J.toGrothendieck ≤ K.toGrothendieck :=
   toGrothendieck_monotone h
 
+@[mono, gcongr]
 lemma GrothendieckTopology.toPrecoverage_monotone : Monotone (toPrecoverage (C := C)) :=
   (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).monotone_u
 

@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Category.FGModuleCat.Colimits
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.RepresentationTheory.Rep.Basic
 
 /-!
 # `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.
@@ -50,7 +50,7 @@ and this is reflected in the documentation.
 
 suppress_compilation
 
-universe u
+universe u v
 
 open CategoryTheory
 
@@ -61,37 +61,23 @@ open CategoryTheory.Limits
 
 Note that `R` can be any ring,
 but the main case of interest is when `R = k` is a field and `G` is a group. -/
-abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
+abbrev FDRep (R : Type u) (G : Type v) [Ring R] [Monoid G] :=
   Action (FGModuleCat.{u} R) G
 
 namespace FDRep
 
-variable {R k G : Type u} [CommRing R] [Field k] [Monoid G]
+variable {R k : Type u} {G : Type v} [CommRing R] [Field k] [Monoid G]
 
--- The `LargeCategory, ConcreteCategory, Preadditive, HasFiniteLimits` instances should be
--- constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : LargeCategory (FDRep R G) := inferInstance
-instance : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := inferInstance
-instance : Preadditive (FDRep R G) := inferInstance
-instance : HasFiniteLimits (FDRep k G) := inferInstance
-
-instance : Linear R (FDRep R G) := by infer_instance
+example {G : Type u} [Monoid G] : LargeCategory (FDRep R G) := by infer_instance
+example : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := by infer_instance
+example : Preadditive (FDRep R G) := by infer_instance
+example : HasFiniteLimits (FDRep k G) := by infer_instance
+example : Linear R (FDRep R G) := by infer_instance
 
 instance : CoeSort (FDRep R G) (Type u) :=
   ⟨fun V => V.V⟩
 
-instance (V : FDRep R G) : AddCommGroup V := by
-  change AddCommGroup ((forget₂ (FDRep R G) (FGModuleCat R)).obj V).obj; infer_instance
-
-instance (V : FDRep R G) : Module R V := by
-  change Module R ((forget₂ (FDRep R G) (FGModuleCat R)).obj V).obj; infer_instance
-
-instance (V : FDRep R G) : Module.Finite R V := by
-  change Module.Finite R ((forget₂ (FDRep R G) (FGModuleCat R)).obj V); infer_instance
-
-instance (V : FDRep k G) : FiniteDimensional k V := by
-  infer_instance
+example (V : FDRep R G) : Module.Finite R V := by infer_instance
 
 /-- All hom spaces are finite dimensional. -/
 instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
@@ -117,13 +103,12 @@ lemma endRingEquiv_comp_ρ (V : FDRep R G) :
 @[simp]
 lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom.hom = (ρ V g) := rfl
 
-@[deprecated (since := "2025-12-18")] alias hom_action_ρ := hom_hom_action_ρ
-
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
   FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) G).mapIso i)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   rw [FDRep.isoToLinearEquiv, ← hom_hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj,
@@ -145,16 +130,16 @@ theorem of_ρ' {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V] (�
     (of ρ).ρ = ρ := rfl
 
 instance : HasForget₂ (FDRep R G) (Rep R G) where
-  forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+  forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G ⋙ Rep.ActionToRep R G
 
 theorem forget₂_ρ (V : FDRep R G) : ((forget₂ (FDRep R G) (Rep R G)).obj V).ρ = V.ρ := by
   ext g v; rfl
 
 instance [IsNoetherianRing R] : PreservesFiniteLimits (forget₂ (FDRep R G) (Rep R G)) :=
-  inferInstanceAs <| PreservesFiniteLimits <| (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+  Limits.comp_preservesFiniteLimits _ _
 
 instance : PreservesFiniteColimits (forget₂ (FDRep R G) (Rep R G)) :=
-  inferInstanceAs <| PreservesFiniteColimits <| (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+  Limits.comp_preservesFiniteColimits _ _
 
 -- Verify that the monoidal structure is available.
 example : MonoidalCategory (FDRep R G) := by infer_instance
@@ -180,14 +165,15 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [
 def forget₂HomLinearEquiv (X Y : FDRep R G) :
     ((forget₂ (FDRep R G) (Rep R G)).obj X ⟶
       (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
-  toFun f := ⟨InducedCategory.homMk f.hom, fun g ↦ by
-    ext x
-    exact congr_fun ((forget (ModuleCat R)).congr_map (f.comm g)) x⟩
+  toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom <| f.hom.toLinearMap), fun g ↦ by
+    ext1
+    simp only [FGModuleCat.obj_carrier]
+    exact f.hom.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, fun g ↦ by
+  invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by
     ext x
-    exact congr_fun ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
+    exact ConcreteCategory.congr_hom ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
 
 instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
   dsimp [forget₂, HasForget₂.forget₂]
@@ -201,18 +187,6 @@ end FDRep
 
 namespace FDRep
 
-variable {k G : Type u} [Field k] [Group G]
-
--- Verify that the right rigid structure is available when the monoid is a group.
-noncomputable instance : RightRigidCategory (FDRep k G) := by
-  change RightRigidCategory (Action (FGModuleCat k) G); infer_instance
-
-example : RigidCategory (FDRep k G) := by infer_instance
-
-end FDRep
-
-namespace FDRep
-
 -- The variables in this section are slightly weird, living half in `Representation` and half in
 -- `FDRep`. When we have a better API for general monoidal closed and rigid categories and these
 -- structures on `FDRep`, we should remove the dependency of statements about `FDRep` on
@@ -220,7 +194,7 @@ namespace FDRep
 -- below should then just be obtained from general results about rigid categories.
 open Representation
 
-variable {k G V : Type u} [Field k] [Group G]
+variable {k : Type u} {G : Type v} {V : Type u} [Field k] [Group G]
 variable [AddCommGroup V] [Module k V]
 variable [FiniteDimensional k V]
 variable (ρV : Representation k G V) (W : FDRep k G)

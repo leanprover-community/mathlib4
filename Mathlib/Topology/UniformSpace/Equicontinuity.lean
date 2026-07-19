@@ -247,29 +247,29 @@ lemma uniformEquicontinuousOn_empty [h : IsEmpty ι] (F : ι → β → α) (S :
 theorem equicontinuousAt_finite [Finite ι] {F : ι → X → α} {x₀ : X} :
     EquicontinuousAt F x₀ ↔ ∀ i, ContinuousAt (F i) x₀ := by
   simp [EquicontinuousAt, ContinuousAt, (nhds_basis_uniformity' (𝓤 α).basis_sets).tendsto_right_iff,
-    UniformSpace.ball, @forall_swap _ ι]
+    UniformSpace.ball, @forall_comm _ ι]
 
 theorem equicontinuousWithinAt_finite [Finite ι] {F : ι → X → α} {S : Set X} {x₀ : X} :
     EquicontinuousWithinAt F S x₀ ↔ ∀ i, ContinuousWithinAt (F i) S x₀ := by
   simp [EquicontinuousWithinAt, ContinuousWithinAt,
     (nhds_basis_uniformity' (𝓤 α).basis_sets).tendsto_right_iff, UniformSpace.ball,
-    @forall_swap _ ι]
+    @forall_comm _ ι]
 
 theorem equicontinuous_finite [Finite ι] {F : ι → X → α} :
     Equicontinuous F ↔ ∀ i, Continuous (F i) := by
-  simp only [Equicontinuous, equicontinuousAt_finite, continuous_iff_continuousAt, @forall_swap ι]
+  simp only [Equicontinuous, equicontinuousAt_finite, continuous_iff_continuousAt, @forall_comm ι]
 
 theorem equicontinuousOn_finite [Finite ι] {F : ι → X → α} {S : Set X} :
     EquicontinuousOn F S ↔ ∀ i, ContinuousOn (F i) S := by
-  simp only [EquicontinuousOn, equicontinuousWithinAt_finite, ContinuousOn, @forall_swap ι]
+  simp only [EquicontinuousOn, equicontinuousWithinAt_finite, ContinuousOn, @forall_comm ι]
 
 theorem uniformEquicontinuous_finite [Finite ι] {F : ι → β → α} :
     UniformEquicontinuous F ↔ ∀ i, UniformContinuous (F i) := by
-  simp only [UniformEquicontinuous, eventually_all, @forall_swap _ ι]; rfl
+  simp only [UniformEquicontinuous, eventually_all, @forall_comm _ ι]; rfl
 
 theorem uniformEquicontinuousOn_finite [Finite ι] {F : ι → β → α} {S : Set β} :
     UniformEquicontinuousOn F S ↔ ∀ i, UniformContinuousOn (F i) S := by
-  simp only [UniformEquicontinuousOn, eventually_all, @forall_swap _ ι]; rfl
+  simp only [UniformEquicontinuousOn, eventually_all, @forall_comm _ ι]; rfl
 
 /-!
 ### Index type with a unique element
@@ -554,7 +554,7 @@ theorem equicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → 
 theorem equicontinuousOn_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
     {S : Set X} :
     EquicontinuousOn (uα := ⨅ k, u k) F S ↔ ∀ k, EquicontinuousOn (uα := u k) F S := by
-  simp_rw [EquicontinuousOn, equicontinuousWithinAt_iInf_rng, @forall_swap _ κ]
+  simp_rw [EquicontinuousOn, equicontinuousWithinAt_iInf_rng, @forall_comm _ κ]
 
 theorem uniformEquicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → β → α'} :
     UniformEquicontinuous (uα := ⨅ k, u k) F ↔ ∀ k, UniformEquicontinuous (uα := u k) F := by
@@ -977,11 +977,14 @@ theorem EquicontinuousAt.tendsto_of_mem_closure {l : Filter ι} {F : ι → X �
 /-- If `F : ι → X → α` is an equicontinuous family of functions,
 `f : X → α` is a continuous function, and `l` is a filter on `ι`,
 then `{x | Filter.Tendsto (F · x) l (𝓝 (f x))}` is a closed set. -/
-theorem Equicontinuous.isClosed_setOf_tendsto {l : Filter ι} {F : ι → X → α} {f : X → α}
+theorem Equicontinuous.isClosed_setOfPred_tendsto {l : Filter ι} {F : ι → X → α} {f : X → α}
     (hF : Equicontinuous F) (hf : Continuous f) :
     IsClosed {x | Tendsto (F · x) l (𝓝 (f x))} :=
   closure_subset_iff_isClosed.mp fun x hx ↦
     (hF x).tendsto_of_mem_closure (hf.continuousAt.mono_left inf_le_left) (fun _ ↦ id) hx
+
+@[deprecated (since := "2026-07-09")]
+alias Equicontinuous.isClosed_setOf_tendsto := Equicontinuous.isClosed_setOfPred_tendsto
 
 end
 

@@ -102,7 +102,7 @@ def dfinsuppFamily
           forall_true_left]
         simp_rw [or_iff_not_imp_right]
         intro h
-        push_neg at h
+        push Not at h
         refine ⟨fun i _ => p i, fun i => (s i).prop _ |>.resolve_right ?_, rfl⟩
         exact mt ((f p).map_coord_zero (m := fun i => x i _) i) h⟩}
   map_update_add' {dec} m i x y := DFinsupp.ext fun p => by
@@ -269,6 +269,7 @@ theorem freeDFinsuppEquiv_def (f : Π₀ (_ : (Π i, κ i) × ι'), R) :
       (DFinsupp.domLCongr (R := R) (Equiv.sigmaEquivProd _ _).symm) f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When `freeDFinsuppEquiv` is applied to a map with a single value of one the resulting multilinear
 map sends inputs to a single value in the codomain, taking a product over images from each

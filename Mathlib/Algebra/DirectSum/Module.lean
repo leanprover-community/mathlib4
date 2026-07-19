@@ -40,18 +40,18 @@ variable {ι : Type v}
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
-  DFinsupp.module
+  inferInstanceAs <| Module R (Π₀ i, M i)
 
 instance {S : Type*} [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
     SMulCommClass R S (⨁ i, M i) :=
-  DFinsupp.smulCommClass
+  inferInstanceAs <| SMulCommClass R S (Π₀ i, M i)
 
 instance {S : Type*} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsScalarTower R S (M i)] :
     IsScalarTower R S (⨁ i, M i) :=
-  DFinsupp.isScalarTower
+  inferInstanceAs <| IsScalarTower R S (Π₀ i, M i)
 
 instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsCentralScalar R (⨁ i, M i) :=
-  DFinsupp.isCentralScalar
+  inferInstanceAs <| IsCentralScalar R (Π₀ i, M i)
 
 theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :=
   DFinsupp.smul_apply _ _ _
@@ -137,6 +137,7 @@ theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
     (H : ∀ i, ψ.comp (lof R ι M i) = ψ'.comp (lof R ι M i)) : ψ = ψ' :=
   DFinsupp.lhom_ext' H
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of a subset of the direct summands
 into a larger subset of the direct summands, as a linear map. -/
 def lsetToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, M i) →ₗ[R] ⨁ i : T, M i :=
@@ -213,6 +214,14 @@ theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
 
+lemma component_comp_lof [DecidableEq ι] (i j : ι) :
+    component R ι M i ∘ₗ lof R ι M j = if h : j = i then h ▸ .id else 0 := by
+  aesop (add simp component.of)
+
+@[simp]
+lemma component_comp_lof_same [DecidableEq ι] (i : ι) : component R ι M i ∘ₗ lof R ι M i = .id := by
+  simp [component_comp_lof]
+
 section map
 
 variable {R} {N : ι → Type*}
@@ -260,10 +269,10 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
   DFinsupp.mapRange.linearMap_comp _ _
 
 theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
-  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
 theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) := by
-  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma lmap_eq_iff (x y : ⨁ i, M i) :
     lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
@@ -325,12 +334,8 @@ lemma lequivCongrLeft_lof [DecidableEq ι] [DecidableEq κ] {e : ι ≃ κ}
     lequivCongrLeft R e (lof R ι M i x) = lof R _ _ k y := by
   subst hik hxy
   ext j
-  simp_rw [lequivCongrLeft_apply, lof_eq_of, of_apply]
-  by_cases eq : k = j
-  · subst eq
-    rw [dif_pos rfl, dif_pos rfl]
-    rfl
-  · rw [dif_neg (by aesop), dif_neg eq]
+  simp [lof_eq_of, of_apply]
+  lia
 
 lemma lequivCongrLeft_symm_lof [DecidableEq ι] [DecidableEq κ] {h : ι ≃ κ}
     {k : κ} {x : M (h.symm k)} :
@@ -348,7 +353,7 @@ variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
+  { sigmaCurry with map_smul' := fun r ↦ by convert! DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
 theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) :
@@ -420,12 +425,14 @@ variable {A}
 theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, A i :=
   (Submodule.iSup_eq_range_dfinsupp_lsum _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
     {i : ι} (x : A i) :
     (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = x := by
   rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
     {i j : ι} (hij : i ≠ j) (x : A i) :
@@ -470,12 +477,14 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
   change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
   simp [h.ofBijective_coeLinearMap_of_mem hx]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by
@@ -573,13 +582,9 @@ def congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
   left_inv x := by aesop
   right_inv y := by aesop
 
-@[deprecated (since := "2025-12-01")] alias congr_addEquiv := congrAddEquiv
-
 theorem coe_congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
     ⇑(congrAddEquiv u).toAddMonoidHom = ⇑(DirectSum.map fun i ↦ (u i).toAddMonoidHom) :=
   rfl
-
-@[deprecated (since := "2025-12-01")] alias coe_congr_addEquiv := coe_congrAddEquiv
 
 /-- Direct sums of isomorphic modules are isomorphic. -/
 def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
@@ -588,27 +593,17 @@ def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
   map_smul' r x := by
     exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
 
-@[deprecated (since := "2025-12-01")] alias congr_linearEquiv := congrLinearEquiv
-
 theorem coe_congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     ⇑(congrLinearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=
   rfl
-
-@[deprecated (since := "2025-12-01")] alias coe_congr_linearEquiv := coe_congrLinearEquiv
 
 theorem congrLinearEquiv_toAddEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     (congrLinearEquiv u).toAddEquiv = congrAddEquiv (fun i ↦ (u i).toAddEquiv) :=
   rfl
 
-@[deprecated (since := "2025-12-01")]
-alias congr_linearEquiv_toAddEquiv := congrLinearEquiv_toAddEquiv
-
 theorem congrLinearEquiv_toLinearMap (u : (i : ι) → N i ≃ₗ[R] P i) :
     (congrLinearEquiv u).toLinearMap = DirectSum.lmap (fun i ↦ (u i).toLinearMap) :=
   rfl
-
-@[deprecated (since := "2025-12-01")]
-alias congr_linearEquiv_toLinearMap := congrLinearEquiv_toLinearMap
 
 end Congr
 

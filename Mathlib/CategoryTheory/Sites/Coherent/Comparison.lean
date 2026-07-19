@@ -22,7 +22,7 @@ This file compares the regular, extensive and coherent topologies.
   generates the coherent topology on `C` if `C` is precoherent, preextensive and preregular.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -82,7 +82,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         (fun (_ : Unit) ↦ (∐ fun (i : I) => X i)) (fun (_ : Unit) ↦ Sigma.desc f)))
       · apply Coverage.Saturate.of
         simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
-          Set.mem_setOf_eq]
+          Set.mem_ofPred_eq]
         exact Or.inr ⟨_, Sigma.desc f, ⟨rfl, inferInstance⟩⟩
       · rintro R g ⟨W, ψ, σ, ⟨⟩, rfl⟩
         change _ ∈ ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck R
@@ -95,7 +95,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         apply Coverage.saturate_of_superset _ this
         apply Coverage.Saturate.of
         refine Or.inl ⟨I, inferInstance, _, _, ⟨rfl, ?_⟩⟩
-        convert IsIso.id _
+        convert! IsIso.id _
         aesop
     | top => apply Coverage.Saturate.top
     | transitive Y T => apply Coverage.Saturate.transitive Y T <;> [assumption; assumption]

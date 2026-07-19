@@ -183,10 +183,6 @@ variable [AddCommMonoid α] [Mul α]
 theorem dotProduct_of_isEmpty [Fintype n'] [IsEmpty n'] (v w : n' → α) : v ⬝ᵥ w = 0 :=
   Finset.sum_of_isEmpty _
 
-@[deprecated "Use Matrix.dotProduct_of_isEmpty instead." (since := "2025-09-07")]
-theorem dotProduct_empty (v w : Fin 0 → α) : v ⬝ᵥ w = 0 :=
-  Finset.sum_empty
-
 @[simp]
 theorem cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     vecCons x v ⬝ᵥ w = x * vecHead w + v ⬝ᵥ vecTail w := by
@@ -235,6 +231,7 @@ variable {ι : Type*}
 theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
   empty_eq _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem replicateCol_cons (x : α) (u : Fin m → α) :
     replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
@@ -261,6 +258,7 @@ theorem transpose_empty_rows (A : Matrix m' (Fin 0) α) : Aᵀ = of ![] :=
 theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![] :=
   funext fun _ => empty_eq _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
     (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
@@ -377,6 +375,7 @@ theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![]
 theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = of fun _ => ![] :=
   funext fun _ => empty_eq _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
     vecMulVec (vecCons x v) w = vecCons (x • w) (vecMulVec v w) := by
@@ -396,8 +395,6 @@ variable [NonUnitalNonAssocSemiring α]
 theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 
-@[deprecated (since := "2025-11-07")] alias smul_mat_cons := smul_cons
-
 end SMul
 
 section Submatrix
@@ -407,6 +404,7 @@ theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' →
     submatrix A row col = ![] :=
   empty_eq _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
     submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) := by

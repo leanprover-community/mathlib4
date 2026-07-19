@@ -137,7 +137,7 @@ theorem eventuallyEq_toIcoDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
     toIcoDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIcoDiv hp a x := by
   rw [← nhdsLT_sup_nhdsGE, Filter.EventuallyEq, Filter.eventually_sup]
   refine ⟨?_, eventuallyEq_toIcoDiv_nhdsGE hp a x⟩
-  convert (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
+  convert! (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
   rwa [← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
 /-- If `x` is not congruent to `a` modulo `p`, then `toIcoDiv` is continuous at `x`.
@@ -156,7 +156,7 @@ theorem eventuallyEq_toIocDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
     toIocDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIocDiv hp a x := by
   rw [← nhdsLE_sup_nhdsGT, Filter.EventuallyEq, Filter.eventually_sup]
   refine ⟨eventuallyEq_toIocDiv_nhdsLE hp a x, ?_⟩
-  convert (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
+  convert! (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
   rwa [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
 /-- If `x` is not congruent to `a` modulo `p`, then `toIocDiv` is continuous at `x`.
@@ -177,7 +177,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : ¬x ≡ a [PMOD p]) :
   refine IsOpen.mem_nhds ?_ ?_
   · rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
     exact isOpen_iUnion fun i => isOpen_Ioo
-  · rwa [mem_setOf_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
+  · rwa [mem_ofPred_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
 
 theorem continuousAt_toIcoMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIcoMod hp a) x :=
   continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
@@ -241,7 +241,7 @@ theorem card_torsion_le_of_isSMulRegular (n : ℕ) (h0 : n ≠ 0) (hn : IsSMulRe
   have (x : {x : AddCircle p | n • x = 0}) : ∃ (k : Fin n) (y : 𝕜), y = x.1 ∧ n • y = k.1 • p := by
     obtain ⟨x, hx⟩ := x
     obtain ⟨y, rfl⟩ := mk_surjective x
-    rw [Set.mem_setOf, ← mk_nsmul, eq_zero_iff] at hx
+    rw [Set.mem_ofPred, ← mk_nsmul, eq_zero_iff] at hx
     have ⟨m', hm⟩ := hx
     have : NeZero n := ⟨h0⟩
     rw [← (Int.divModEquiv n).symm_apply_apply m', Int.divModEquiv_symm_apply] at hm
@@ -262,12 +262,13 @@ theorem finite_torsion_of_isSMulRegular (n : ℕ) (hn : IsSMulRegular 𝕜 n) :
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.coe_lt_top n]
+    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.natCast_lt_top n]
 
 theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
-  convert card_torsion_le_of_isSMulRegular p _
-    (Int.natAbs_ne_zero.mpr h0) (IsSMulRegular.natAbs_iff.mpr hn) using 1
+  convert!
+    card_torsion_le_of_isSMulRegular p _ (Int.natAbs_ne_zero.mpr h0)
+      (IsSMulRegular.natAbs_iff.mpr hn) using 1
   simp
 
 theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n) :
@@ -275,7 +276,7 @@ theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.coe_lt_top _]
+    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.natCast_lt_top _]
 
 end Torsion
 
@@ -284,9 +285,12 @@ variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite :=
   finite_torsion_of_isSMulRegular _ _ <| .of_right_eq_zero_of_smul fun _ ↦ by simp [hn.ne']
 
-theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
+theorem finite_setOfPred_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
   (finite_torsion p hn).subset fun _ h ↦ ((addOrderOf_eq_iff hn).mp h).1
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_addOrderOf_eq := finite_setOfPred_addOrderOf_eq
 
 theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
@@ -328,12 +332,41 @@ theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x
 theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
   rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
 
+@[simp]
+lemma coe_equivIco {y : AddCircle p} :
+    (equivIco p a y : AddCircle p) = y :=
+  (equivIco p a).left_inv y
+
+@[simp]
+lemma coe_equivIoc {y : AddCircle p} :
+    (equivIoc p a y : AddCircle p) = y :=
+  (equivIoc p a).left_inv y
+
+lemma equivIco_coe_of_mem {y : 𝕜} (hy : y ∈ Ico a (a + p)) :
+    equivIco p a y = y := by
+  have : equivIco p a y = ⟨y, hy⟩ := (equivIco p a).right_inv ⟨y, hy⟩
+  simp [this]
+
+lemma equivIoc_coe_of_mem {y : 𝕜} (hy : y ∈ Ioc a (a + p)) :
+    equivIoc p a y = y := by
+  have : equivIoc p a y = ⟨y, hy⟩ := (equivIoc p a).right_inv ⟨y, hy⟩
+  simp [this]
+
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
   refine ⟨fun h => ?_, by tauto⟩
   suffices (⟨x, hx⟩ : Ico a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
   apply_fun equivIco p a at h
   rw [← (equivIco p a).right_inv ⟨x, hx⟩, ← (equivIco p a).right_inv ⟨y, hy⟩]
+  exact h
+
+/-- Ioc version of `coe_eq_coe_iff_of_mem_Ico`. -/
+lemma coe_eq_coe_iff_of_mem_Ioc {x y : 𝕜} (hx : x ∈ Ioc a (a + p)) (hy : y ∈ Ioc a (a + p)) :
+    (x : AddCircle p) = y ↔ x = y := by
+  refine ⟨fun h => ?_, by tauto⟩
+  suffices (⟨x, hx⟩ : Ioc a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
+  apply_fun equivIoc p a at h
+  rw [← (equivIoc p a).right_inv ⟨x, hx⟩, ← (equivIoc p a).right_inv ⟨y, hy⟩]
   exact h
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) :
@@ -344,16 +377,28 @@ theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p))
     liftIoc p a f ↑x = f x := by
   simp [liftIoc, equivIoc_coe_eq hx]
 
+theorem liftIoc_eq_liftIco_of_ne {f : 𝕜 → B} {x : AddCircle p}
+    (x_ne_a : x ≠ a) : liftIoc p a f x = liftIco p a f x := by
+  have x_eq_b : x = ↑(equivIco p a x) := coe_equivIco.symm
+  rw [x_eq_b, liftIco_coe_apply (equivIco p a x).coe_prop]
+  exact liftIoc_coe_apply (by grind)
+
 lemma liftIco_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
     liftIco p a (g ∘ f) x = g (liftIco p a f x) := rfl
 
 lemma liftIoc_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
     liftIoc p a (g ∘ f) x = g (liftIoc p a f x) := rfl
 
-lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
+lemma eq_coe_Ico (a : AddCircle p) : ∃ b ∈ Ico 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIcoMod hp.out 0 a
   exact ⟨b.1, by simpa only [zero_add] using b.2,
     (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
+
+/-- `Ioc` version of `eq_coe_Ico`. -/
+lemma eq_coe_Ioc (a : AddCircle p) : ∃ b ∈ Ioc 0 p, ↑b = a := by
+  let b := QuotientAddGroup.equivIocMod hp.out 0 a
+  exact ⟨b.1, by simpa only [zero_add] using b.2,
+    (QuotientAddGroup.equivIocMod hp.out 0).symm_apply_apply a⟩
 
 lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
     (a : AddCircle p) = 0 ↔ a = 0 := by
@@ -411,9 +456,6 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   continuousOn_invFun := by
     exact continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
-
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  partialHomeomorphCoe := openPartialHomeomorphCoe
 
 end Continuity
 
@@ -552,7 +594,7 @@ theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
 
 theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  convert gcd_mul_addOrderOf_div_eq p m hn
+  convert! gcd_mul_addOrderOf_div_eq p m hn
   rw [h, one_mul]
 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
@@ -597,7 +639,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   obtain ⟨m, hm, hk⟩ := (AddCircle.nsmul_eq_zero_iff h).mp
     (addOrderOf_nsmul_eq_zero (k : AddCircle p))
   refine ⟨m, hm, mul_right_cancel₀ h.ne' ?_, hk⟩
-  convert gcd_mul_addOrderOf_div_eq p m h using 1
+  convert! gcd_mul_addOrderOf_div_eq p m h using 1
   · rw [hk]
   · apply one_mul
 
@@ -619,6 +661,7 @@ lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
 
 variable (p)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
 `n`. The inverse of the map sends `m ↦ (m/n * p : AddCircle p)` where `m` is coprime to `n` and
 satisfies `0 ≤ m < n`. -/
@@ -641,12 +684,12 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
   · simp only [Nat.totient_zero, addOrderOf_eq_zero_iff]
     rcases em (∃ u : AddCircle p, ¬IsOfFinAddOrder u) with (⟨u, hu⟩ | h)
     · have : Infinite { u : AddCircle p // ¬IsOfFinAddOrder u } := by
-        rw [← coe_setOf, infinite_coe_iff]
+        rw [← coe_ofPred, infinite_coe_iff]
         exact infinite_not_isOfFinAddOrder hu
       exact Nat.card_eq_zero_of_infinite
     · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa [isEmpty_subtype] using h
       exact Nat.card_of_isEmpty
-  · rw [← coe_setOf, Nat.card_congr (setAddOrderOfEquiv p hn),
+  · rw [← coe_ofPred, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 

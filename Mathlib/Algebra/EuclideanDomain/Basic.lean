@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Lemmas about Euclidean domains
@@ -55,7 +55,7 @@ theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
     rw [← div_add_mod a b, h, add_zero]
     exact dvd_mul_right _ _, fun ⟨c, e⟩ => by
     rw [e, ← add_left_cancel_iff, div_add_mod, add_zero]
-    haveI := Classical.dec
+    have := Classical.dec
     by_cases b0 : b = 0
     · simp only [b0, zero_mul]
     · rw [mul_div_cancel_left₀ _ b0]⟩
@@ -413,3 +413,28 @@ theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t �
 end Div
 
 end EuclideanDomain
+
+section RingEquiv
+
+variable {R S : Type*} [EuclideanDomain R] [CommRing S]
+
+/-- If `S` is a nontrivial commutative ring isomorphic to a Euclidean domain
+`R` then it is also a Euclidean domain. -/
+protected abbrev RingEquiv.euclideanDomain (e : S ≃+* R) : EuclideanDomain S where
+  toNontrivial := e.nontrivial
+  quotient a b := e.symm (e a / e b)
+  remainder a b := e.symm (e a % e b)
+  r a b := EuclideanDomain.r (e a) (e b)
+  r_wellFounded := InvImage.wf e EuclideanDomain.r_wellFounded
+  quotient_zero a := by simp
+  quotient_mul_add_remainder_eq a b := by
+    apply e.injective
+    simpa using! EuclideanDomain.quotient_mul_add_remainder_eq (e a) (e b)
+  remainder_lt a b hb := by
+    have hb' : e b ≠ 0 := by simpa using hb
+    simpa using! EuclideanDomain.remainder_lt (e a) hb'
+  mul_left_not_lt a b hb := by
+    have hb' : e b ≠ 0 := by simpa using hb
+    simpa using! EuclideanDomain.mul_left_not_lt (e a) hb'
+
+end RingEquiv

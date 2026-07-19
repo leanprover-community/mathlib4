@@ -95,16 +95,10 @@ TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
 -/
 def FreeAbelianGroup : Type u :=
   Additive <| Abelianization <| FreeGroup α
+deriving Inhabited, AddCommGroup
 
--- FIXME: this is super broken, because the functions have type `Additive .. → ..`
--- instead of `FreeAbelianGroup α → ..` and those are not defeq!
-instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) :=
-  @Additive.addCommGroup _ <| Abelianization.commGroup _
-
-instance : Inhabited (FreeAbelianGroup α) :=
-  ⟨0⟩
-
-instance [IsEmpty α] : Unique (FreeAbelianGroup α) := by unfold FreeAbelianGroup; infer_instance
+instance [IsEmpty α] : Unique (FreeAbelianGroup α) :=
+  inferInstanceAs <| Unique (delta% FreeAbelianGroup α)
 
 variable {α}
 
@@ -128,8 +122,7 @@ open FreeAbelianGroup
 -- Porting note: needed to add `(β := Multiplicative β)`
 @[simp]
 theorem lift_apply_of (x : α) : lift f (of x) = f x := by
-  convert Abelianization.lift_apply_of
-     (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
+  convert! Abelianization.lift_apply_of (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
   exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
 
 theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
@@ -153,9 +146,9 @@ end lift
 
 section
 
-open scoped Classical in
-theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
-  fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
+theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) := by
+  classical
+  exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
     let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
     have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| if_pos rfl
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
@@ -178,8 +171,6 @@ instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
 
 end
 
-attribute [local instance] QuotientGroup.leftRel
-
 @[elab_as_elim]
 protected theorem induction_on
     {motive : FreeAbelianGroup α → Prop} (z : FreeAbelianGroup α) (zero : motive 0)
@@ -199,6 +190,9 @@ theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup �
 @[simp] lemma lift_add [AddCommGroup G] (f g : α → G) : lift (f + g) = lift f + lift g :=
   AddMonoidHom.ext <| lift_add_apply _ _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `FreeAbelianGroup.lift` as an equivalence of groups. -/
 @[simps!]
 def liftAddEquiv [AddCommGroup G] : (α → G) ≃+ (FreeAbelianGroup α →+ G) := ⟨lift, lift_add⟩
@@ -410,18 +404,15 @@ theorem of_mul_of (x y : α) : of x * of y = of (x * y) := by
 theorem of_mul (x y : α) : of (x * y) = of x * of y :=
   Eq.symm <| of_mul_of x y
 
-instance distrib : Distrib (FreeAbelianGroup α) :=
-  { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
-    left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
-    right_distrib x y z := by simp [mul_def, ← Pi.add_def] }
+instance distrib : Distrib (FreeAbelianGroup α) where
+  left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
+  right_distrib x y z := by simp [mul_def, ← Pi.add_def]
 
-instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
-  { FreeAbelianGroup.distrib,
-    FreeAbelianGroup.addCommGroup _ with
-    zero_mul := fun a ↦ by
-      have h : 0 * a + 0 * a = 0 * a := by simp [← add_mul]
-      simpa using h
-    mul_zero := fun _ ↦ rfl }
+instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) where
+  zero_mul a := by
+    have h : 0 * a + 0 * a = 0 * a := by simp [← add_mul]
+    simpa using h
+  mul_zero _ := rfl
 
 end Mul
 
@@ -439,46 +430,43 @@ theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
 
 end One
 
-instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
-  { FreeAbelianGroup.nonUnitalNonAssocRing with
-    mul_assoc x y z := by
-      induction z using FreeAbelianGroup.induction_on with
-      | zero => simp only [mul_zero]
-      | of L3 =>
-        induction y using FreeAbelianGroup.induction_on with
-        | zero => simp only [mul_zero, zero_mul]
-        | of L2 =>
-          induction x using FreeAbelianGroup.induction_on with
-          | zero => simp only [zero_mul]
-          | of L1 => rw [of_mul_of, of_mul_of, of_mul_of, of_mul_of, mul_assoc]
-          | neg L1 ih => rw [neg_mul, neg_mul, neg_mul, ih]
-          | add x₁ x₂ ih₁ ih₂ => rw [add_mul, add_mul, add_mul, ih₁, ih₂]
-        | neg L2 ih => rw [neg_mul, mul_neg, mul_neg, neg_mul, ih]
-        | add y₁ y₂ ih₁ ih₂ => rw [add_mul, mul_add, mul_add, add_mul, ih₁, ih₂]
-      | neg L3 ih => rw [mul_neg, mul_neg, mul_neg, ih]
-      | add z₁ z₂ ih₁ ih₂ => rw [mul_add, mul_add, mul_add, ih₁, ih₂] }
+instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) where
+  mul_assoc x y z := by
+    induction z using FreeAbelianGroup.induction_on with
+    | zero => simp only [mul_zero]
+    | of L3 =>
+      induction y using FreeAbelianGroup.induction_on with
+      | zero => simp only [mul_zero, zero_mul]
+      | of L2 =>
+        induction x using FreeAbelianGroup.induction_on with
+        | zero => simp only [zero_mul]
+        | of L1 => rw [of_mul_of, of_mul_of, of_mul_of, of_mul_of, mul_assoc]
+        | neg L1 ih => rw [neg_mul, neg_mul, neg_mul, ih]
+        | add x₁ x₂ ih₁ ih₂ => rw [add_mul, add_mul, add_mul, ih₁, ih₂]
+      | neg L2 ih => rw [neg_mul, mul_neg, mul_neg, neg_mul, ih]
+      | add y₁ y₂ ih₁ ih₂ => rw [add_mul, mul_add, mul_add, add_mul, ih₁, ih₂]
+    | neg L3 ih => rw [mul_neg, mul_neg, mul_neg, ih]
+    | add z₁ z₂ ih₁ ih₂ => rw [mul_add, mul_add, mul_add, ih₁, ih₂]
 
 section Monoid
 
 variable {R : Type*} [Monoid α] [Ring R]
 
-instance ring : Ring (FreeAbelianGroup α) :=
-  { FreeAbelianGroup.nonUnitalRing _,
-    FreeAbelianGroup.one _ with
-    mul_one x := by
-      rw [mul_def, one_def, lift_apply_of]
-      induction x using FreeAbelianGroup.induction_on with
-      | zero => rfl
-      | of L => rw [lift_apply_of, mul_one]
-      | neg L ih => rw [map_neg, ih]
-      | add x1 x2 ih1 ih2 => rw [map_add, ih1, ih2]
-    one_mul x := by
-      simp_rw [mul_def, one_def, lift_apply_of]
-      induction x using FreeAbelianGroup.induction_on with
-      | zero => rfl
-      | of L => rw [lift_apply_of, one_mul]
-      | neg L ih => rw [map_neg, ih]
-      | add x1 x2 ih1 ih2 => rw [map_add, ih1, ih2] }
+instance ring : Ring (FreeAbelianGroup α) where
+  mul_one x := by
+    rw [mul_def, one_def, lift_apply_of]
+    induction x using FreeAbelianGroup.induction_on with
+    | zero => rfl
+    | of L => rw [lift_apply_of, mul_one]
+    | neg L ih => rw [map_neg, ih]
+    | add x1 x2 ih1 ih2 => rw [map_add, ih1, ih2]
+  one_mul x := by
+    simp_rw [mul_def, one_def, lift_apply_of]
+    induction x using FreeAbelianGroup.induction_on with
+    | zero => rfl
+    | of L => rw [lift_apply_of, one_mul]
+    | neg L ih => rw [map_neg, ih]
+    | add x1 x2 ih1 ih2 => rw [map_add, ih1, ih2]
 
 variable {α}
 
@@ -536,29 +524,22 @@ theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
 
 end Monoid
 
-instance [CommMonoid α] : CommRing (FreeAbelianGroup α) :=
-  { FreeAbelianGroup.ring α with
-    mul_comm x y := by
-      induction x using FreeAbelianGroup.induction_on with
-      | zero => exact zero_mul y
-      | of s =>
-        induction y using FreeAbelianGroup.induction_on with
-        | zero => exact (zero_mul _).symm
-        | of t =>
-          dsimp only [(· * ·), Mul.mul]
-          iterate 4 rw [lift_apply_of]
-          congr 1
-          exact mul_comm _ _
-        | neg t ih => rw [mul_neg, ih, neg_mul_eq_neg_mul]
-        | add y1 y2 ih1 ih2 => rw [mul_add, add_mul, ih1, ih2]
-      | neg s ih => rw [neg_mul, ih, neg_mul_eq_mul_neg]
-      | add x1 x2 ih1 ih2 => rw [add_mul, mul_add, ih1, ih2] }
-
-instance pemptyUnique : Unique (FreeAbelianGroup PEmpty) where
-  default := 0
-  uniq x := FreeAbelianGroup.induction_on x rfl (PEmpty.elim ·) (PEmpty.elim ·) (by
-    rintro - - rfl rfl
-    rfl)
+instance [CommMonoid α] : CommRing (FreeAbelianGroup α) where
+  mul_comm x y := by
+    induction x using FreeAbelianGroup.induction_on with
+    | zero => exact zero_mul y
+    | of s =>
+      induction y using FreeAbelianGroup.induction_on with
+      | zero => exact (zero_mul _).symm
+      | of t =>
+        dsimp only [(· * ·), Mul.mul]
+        iterate 4 rw [lift_apply_of]
+        congr 1
+        exact mul_comm _ _
+      | neg t ih => rw [mul_neg, ih, neg_mul_eq_neg_mul]
+      | add y1 y2 ih1 ih2 => rw [mul_add, add_mul, ih1, ih2]
+    | neg s ih => rw [neg_mul, ih, neg_mul_eq_mul_neg]
+    | add x1 x2 ih1 ih2 => rw [add_mul, mul_add, ih1, ih2]
 
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
 def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where

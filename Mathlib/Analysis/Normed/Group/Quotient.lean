@@ -152,7 +152,7 @@ lemma norm_lt_iff : ‖x‖ < r ↔ ∃ m : M, ↑m = x ∧ ‖m‖ < r := by
 lemma nhds_one_hasBasis : (𝓝 (1 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ {x | ‖x‖ < ε} := by
   have : ∀ ε : ℝ, mk '' ball (1 : M) ε = {x : M ⧸ S | ‖x‖ < ε} := by
     refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
-    rw [ball_one_eq, mem_setOf_eq, norm_lt_iff, mem_image]
+    rw [ball_one_eq, mem_ofPred_eq, norm_lt_iff, mem_image]
     exact exists_congr fun _ ↦ and_comm
   rw [← mk_one, nhds_eq, ← funext this]
   exact .map _ Metric.nhds_basis_ball
@@ -211,7 +211,7 @@ noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) w
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one_left, (nhds_one_hasBasis.comap _).eq_biInf]
-    simp only [dist, preimage_setOf_eq, norm_eq_groupSeminorm]
+    simp only [dist, preimage_ofPred_eq, norm_eq_groupSeminorm]
 
 variable (S) in
 /-- The quotient in the category of normed groups. -/
@@ -300,6 +300,7 @@ theorem ker_normedMk (S : AddSubgroup M) : S.normedMk.ker = S :=
 theorem norm_normedMk_le (S : AddSubgroup M) : ‖S.normedMk‖ ≤ 1 :=
   NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp [norm_mk_le_norm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : NormedAddGroupHom M N)
     (hf : ∀ x ∈ S, f x = 0) (x : M ⧸ S) : ‖lift S f.toAddMonoidHom hf x‖ ≤ ‖f‖ * ‖x‖ := by
   cases (norm_nonneg f).eq_or_lt' with
@@ -424,11 +425,11 @@ section Submodule
 variable {R : Type*} [Ring R] [Module R M] (S T : Submodule R M)
 
 instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
-  QuotientAddGroup.instSeminormedAddCommGroup S.toAddSubgroup
+  inferInstanceAs <| SeminormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
 instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
     NormedAddCommGroup (M ⧸ S) :=
-  QuotientAddGroup.instNormedAddCommGroup S.toAddSubgroup (hS := hS)
+  inferInstanceAs <| NormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
 instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
   QuotientAddGroup.completeSpace_left M S.toAddSubgroup
@@ -459,7 +460,6 @@ instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
         _ ≤ ‖k‖ * ‖a‖ := (norm_mk_le ..).trans (norm_smul_le k a)
         _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
-set_option backward.isDefEq.respectTransparency false in
 instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
     [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) where
   norm_smul_le := norm_smul_le

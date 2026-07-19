@@ -53,12 +53,11 @@ instance : (fromSum C D).EssSurj where
     | left c => Functor.obj_mem_essImage _ (Sum.inl c)
     | right d => Functor.obj_mem_essImage _ (Sum.inr d)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (fromSum C D).Faithful where
   map_injective {x y} h h' heq := by
     cases h <;> cases h'
     all_goals
-      simp only [fromSum_obj, Sum.inl__obj, fromSum_map_inl, Sum.inr__obj, fromSum_map_inr] at heq
+      simp only [fromSum_map_inl, fromSum_map_inr] at heq
       simp [Functor.map_injective _ heq]
 
 end CategoryTheory.Join

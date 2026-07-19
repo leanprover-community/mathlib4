@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Fintype
 
 /-!
 # Third Cyclotomic Field
+
 We gather various results about the third cyclotomic field. The following notations are used in this
 file: `K` is a number field such that `IsCyclotomicExtension {3} ℚ K`, `ζ` is any primitive `3`-rd
 root of unity in `K`, `η` is the element in the units of the ring of integers corresponding to `ζ`
@@ -62,10 +63,10 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     congr
     rw [Finset.univ_eq_empty_iff, hrank]
     infer_instance
-  obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _ _).1 x.2
+  obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _).1 x.2
   replace hn : (↑u : K) ^ ((⟨n, hnpos⟩ : ℕ+) : ℕ) = 1 := by
     rw [← map_pow]
-    convert map_one (algebraMap (𝓞 K) K)
+    convert! map_one (algebraMap (𝓞 K) K)
     rw_mod_cast [hxu, hn]
     simp
   obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_isOfFinOrder (by decide)
@@ -77,19 +78,22 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     · right; ext; exact h
   fin_cases hr <;> rcases hru with h | h <;> simp [h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We have that `λ ^ 2 = -3 * η`. -/
 private lemma lambda_sq : λ ^ 2 = -3 * η := by
   ext
   calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by
-        simp only [RingOfIntegers.map_mk, IsUnit.unit_spec]; ring
+        simp only [IsUnit.unit_spec]; ring
   _ = 0 - 3 * η := by simpa using hζ.isRoot_cyclotomic (by decide)
   _ = -3 * η := by ring
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We have that `η ^ 2 = -η - 1`. -/
 lemma eta_sq : (η ^ 2 : 𝓞 K) = -η - 1 := by
   rw [← neg_add', ← add_eq_zero_iff_eq_neg, ← add_assoc]
   ext; simpa using hζ.isRoot_cyclotomic (by decide)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a unit `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma*. -/
@@ -123,7 +127,6 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
 
 variable (x : 𝓞 K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `(x : 𝓞 K)`. Then we have that `λ` divides one amongst `x`, `x - 1` and `x + 1`. -/
 lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
@@ -188,9 +191,9 @@ lemma lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one {x : 𝓞 K} (h : λ ∣ x
 lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x + 1) :
     λ ^ 4 ∣ x ^ 3 + 1 := by
   replace h : λ ∣ -x - 1 := by
-    convert h.neg_right using 1
+    convert! h.neg_right using 1
     exact (neg_add' x 1).symm
-  convert (lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h).neg_right using 1
+  convert! (lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h).neg_right using 1
   ring
 
 /-- If `λ` does not divide `x`, then `λ ^ 4` divides `x ^ 3 - 1` or `x ^ 3 + 1`. -/
