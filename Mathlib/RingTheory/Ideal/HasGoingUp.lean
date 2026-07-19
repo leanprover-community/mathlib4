@@ -76,8 +76,7 @@ lemma exists_ltSeries_of_hasGoingUp [Algebra.HasGoingUp R S]
     simpa [PrimeSpectrum.ext_iff] using lo.over.symm
   | cons l q lt ih =>
     simp only [RelSeries.head_cons] at lo
-    obtain ⟨Q, PQlt, hQ, Qlo⟩ :=
-      Ideal.exists_ideal_gt_liesOver_of_lt P lt
+    obtain ⟨Q, PQlt, hQ, Qlo⟩ := Ideal.exists_ideal_gt_liesOver_of_lt P lt
     obtain ⟨L, len, head, spec⟩ := ih Q
     refine ⟨L.cons ⟨P, inferInstance⟩ (by simpa [head]), by simpa using len, rfl, ?_⟩
     simpa [spec, PrimeSpectrum.ext_iff] using lo.over.symm

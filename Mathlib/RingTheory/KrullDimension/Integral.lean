@@ -47,8 +47,7 @@ variable {f : A →+* B} (hf : f.IsIntegral)
 include hf
 
 /-- An integral ring homomorphism cannot increase Krull dimension. -/
-theorem IsIntegral.ringKrullDim_le :
-    ringKrullDim B ≤ ringKrullDim A :=
+theorem IsIntegral.ringKrullDim_le : ringKrullDim B ≤ ringKrullDim A :=
   let := f.toAlgebra
   have : Algebra.IsIntegral A B := ⟨hf⟩
   Order.krullDim_le_of_strictMono (PrimeSpectrum.comap f)
@@ -67,7 +66,6 @@ For an integral extension `f : A →+* B`, the Krull dimension of `B`
 is equal to the Krull dimension of `A ⧸ RingHom.ker f`. -/
 theorem IsIntegral.ringKrullDim_quotient_ker_eq :
     ringKrullDim (A ⧸ RingHom.ker f) = ringKrullDim B :=
-  RingHom.IsIntegral.ringKrullDim_eq_of_injective (f := RingHom.kerLift f)
-    (RingHom.IsIntegral.kerLift hf) (RingHom.kerLift_injective f)
+  RingHom.IsIntegral.ringKrullDim_eq_of_injective hf.kerLift f.kerLift_injective
 
 end RingHom
