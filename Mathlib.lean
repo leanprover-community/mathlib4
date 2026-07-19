@@ -2015,6 +2015,7 @@ public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.AddCircleMulti
 public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
+public import Mathlib.Analysis.Fourier.CliffordPlancherel
 public import Mathlib.Analysis.Fourier.Convolution
 public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 public import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
