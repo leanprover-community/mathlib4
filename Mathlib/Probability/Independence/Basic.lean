@@ -513,6 +513,16 @@ theorem indep_iSup_of_disjoint
     Indep (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) μ :=
   Kernel.indep_iSup_of_disjoint h_le h_indep hST
 
+/-- Grouping an independent family of σ-algebras into pairwise disjoint sets of indices yields
+an independent family: if `m : ι → MeasurableSpace Ω` is an independent family and the sets
+`G i'` are pairwise disjoint, then `fun i' ↦ ⨆ j ∈ G i', m j` is an independent family.
+This is the indexed-family version of `indep_iSup_of_disjoint`. -/
+theorem iIndep_iSup_of_disjoint {ι' : Type*}
+    (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m μ) {G : ι' → Set ι}
+    (hG : Pairwise (Function.onFun Disjoint G)) :
+    iIndep (fun i' ↦ ⨆ j ∈ G i', m j) μ :=
+  Kernel.iIndep_iSup_of_disjoint h_le h_indep hG
+
 theorem indep_iSup_of_directed_le
     [IsZeroOrProbabilityMeasure μ] (h_indep : ∀ i, Indep (m i) m1 μ)
     (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Directed (· ≤ ·) m) :
