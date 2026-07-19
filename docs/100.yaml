@@ -198,7 +198,7 @@
   authors: Thomas Zhu, Rémy Degenne, Etienne Marion
 48:
   title  : Dirichlet’s Theorem
-  decl   : Nat.infinite_setOf_prime_and_eq_mod
+  decl   : Nat.infinite_setOfPred_prime_and_eq_mod
   authors: David Loeffler, Michael Stoll
 49:
   title  : The Cayley-Hamilton Theorem

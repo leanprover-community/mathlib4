@@ -398,7 +398,7 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
   rw [completeSpace_iff_isComplete_range (isUniformInducing_coeFn _ _ _)]
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
-    UniformOnFun.isClosed_setOf_continuous h𝔖
+    UniformOnFun.isClosed_setOfPred_continuous h𝔖
   convert!
     H₁.inter <|
       (LinearMap.isClosed_range_coe E F σ).preimage
