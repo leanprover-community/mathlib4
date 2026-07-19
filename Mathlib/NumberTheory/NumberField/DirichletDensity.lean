@@ -40,19 +40,20 @@ open Filter IsDedekindDomain Topology Set
 
 namespace NumberField
 
-variable {K : Type*} [Field K] [NumberField K] {S : Set (HeightOneSpectrum (𝓞 K))} {δ : ℝ}
+variable {K : Type*} [Field K] [NumberField K] (S : Set (HeightOneSpectrum (𝓞 K)))
 
 /-- The partial Dirichlet series `∑_{𝔭 ∈ S} N𝔭 ^ (-s)`. -/
 def primeIdealZetaSum (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) : ℝ :=
   ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
 
-theorem primeIdealZetaSum_def (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) :
+theorem primeIdealZetaSum_def (s : ℝ) :
     primeIdealZetaSum S s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s) := rfl
 
-theorem primeIdealZetaSum_nonneg (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) :
+theorem primeIdealZetaSum_nonneg (s : ℝ) :
     0 ≤ primeIdealZetaSum S s :=
   tsum_nonneg fun _ ↦ by positivity
 
+variable {S} in
 /-- For a finite set `S` of prime ideals, the partial sum `∑_{𝔭 ∈ S} N𝔭 ^ (-s)` is bounded above
 by the number of elements of `S`. -/
 theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 ≤ s) :
@@ -68,13 +69,15 @@ theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 �
 
 /-- `S` has Dirichlet density `δ` when the ratio `∑_{𝔭 ∈ S} N𝔭 ^ (-s) / ∑_𝔭 N𝔭 ^ (-s)`, of the
 partial sum over `S` to the sum over all nonzero prime ideals, tends to `δ` as `s ↓ 1`. -/
-def HasDirichletDensity (S : Set (HeightOneSpectrum (𝓞 K))) (δ : ℝ) : Prop :=
+def HasDirichletDensity (δ : ℝ) : Prop :=
   Tendsto (fun s : ℝ ↦ primeIdealZetaSum S s /
     primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) (𝓝 δ)
 
+variable {S}
+
 /-- The Dirichlet density of `S`, when it exists, is unique. -/
-theorem HasDirichletDensity.unique {S : Set (HeightOneSpectrum (𝓞 K))} {δ₁ δ₂ : ℝ}
-    (h₁ : HasDirichletDensity S δ₁) (h₂ : HasDirichletDensity S δ₂) :
+theorem HasDirichletDensity.unique {δ₁ δ₂ : ℝ} (h₁ : HasDirichletDensity S δ₁)
+    (h₂ : HasDirichletDensity S δ₂) :
     δ₁ = δ₂ :=
   tendsto_nhds_unique h₁ h₂
 
@@ -84,7 +87,7 @@ theorem hasDirichletDensity_empty :
   simp [HasDirichletDensity, primeIdealZetaSum_def]
 
 /-- The Dirichlet density is nonnegative. -/
-theorem HasDirichletDensity.nonneg (h : HasDirichletDensity S δ) :
+theorem HasDirichletDensity.nonneg {δ : ℝ} (h : HasDirichletDensity S δ) :
     0 ≤ δ :=
   ge_of_tendsto h <| Eventually.of_forall fun s ↦
     div_nonneg (primeIdealZetaSum_nonneg S s) (primeIdealZetaSum_nonneg univ s)
