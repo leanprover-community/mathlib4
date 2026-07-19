@@ -182,7 +182,7 @@ theorem mul_smul_comm' [Monoid S] [Star S] [TrivialStar S] [DistribMulAction S A
   ext <;> simp [hstar, smul_sub, smul_add, mul_smul_comm, smul_mul_assoc]
 
 /-- The self-action compatibility propagates up the Cayley–Dickson tower. -/
-instance [Monoid S] [Star S] [TrivialStar S] [DistribMulAction S A] [StarModule S A]
+instance [Monoid S] [DistribMulAction S A]
     [SMulCommClass S A A] [IsScalarTower S A A] :
     IsScalarTower S (CayleyDickson A) (CayleyDickson A) :=
   ⟨fun s x y => smul_mul_assoc' s x y⟩
