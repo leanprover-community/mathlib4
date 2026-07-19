@@ -51,7 +51,6 @@ lemma PreservesLeftKanExtension.mk'
     ⟨⟨Limits.IsInitial.equivOfIso
         (LeftExtension.postcompose₂ObjMkIso _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
 Kan extension. -/
 lemma PreservesLeftKanExtension.mk_of_preserves_isLeftKanExtension
@@ -107,6 +106,7 @@ def LeftExtension.IsPointwiseLeftKanExtension.postcompose
     LeftExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseLeftKanExtension := fun c ↦
   (hE c).postcompose G
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The cocone at a point of the whiskering right by `G` of an extension is isomorphic to the
 action of `G` on the cocone at that point for the original extension. -/
@@ -237,6 +237,7 @@ lemma pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac :
       (α := whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
       (β := L.pointwiseLeftKanExtensionUnit <| F ⋙ G)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
@@ -274,7 +275,6 @@ abbrev PreservesPointwiseLeftKanExtensions :=
   ∀ (F : A ⥤ B), G.PreservesPointwiseLeftKanExtension F L
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Commuting a functor that preserves left Kan extensions with the `lan` functor. -/
 @[simps!]
 def lanCompIsoOfPreserves [G.PreservesLeftKanExtensions L]
@@ -367,6 +367,7 @@ def RightExtension.IsPointwiseRightKanExtension.postcompose
     RightExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseRightKanExtension := fun c ↦
   (hE c).postcompose G
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The cone at a point of the whiskering right by `G` of an extension is isomorphic to the
 action of `G` on the cone at that point for the original extension. -/
@@ -421,7 +422,6 @@ lemma rightKanExtensionCompIsoOfPreserves_hom_fac :
     (Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F) G := by
   simp [rightKanExtensionCompIsoOfPreserves]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
     (G.rightKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) ≫
