@@ -48,7 +48,7 @@ lemma le_stabilizer_add (ρ : Representation k G V) (v1 v2 : V) :
     (stabilizer ρ v1) ⊓ (stabilizer ρ v2) ≤ stabilizer ρ (v1 + v2) := by
   simp +contextual [SetLike.le_def]
 
-lemma le_stabilizer_sum {n : ℕ} (ρ : Representation k G V) (v : Fin n → V) :
+lemma le_stabilizer_sum {ι : Type*} [Fintype ι] (ρ : Representation k G V) (v : ι → V) :
     ⨅ i, (stabilizer ρ (v i)) ≤ stabilizer ρ (∑ i, v i) := by
   simp +contextual [SetLike.le_def]
 
