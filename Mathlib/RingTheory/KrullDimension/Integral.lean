@@ -21,7 +21,6 @@ preserves Krull dimension.
   commutative rings preserve Krull dimension.
 - `RingHom.IsIntegral.ringKrullDim_quotient_ker_eq`: for an integral extension `f : A →+* B`,
   the Krull dimension of `B` is equal to the Krull dimension of `A ⧸ RingHom.ker f`.
-
 -/
 
 @[expose] public section
@@ -34,41 +33,41 @@ theorem Algebra.HasGoingUp.ringKrullDim_le_of_comap_surjective
     [Algebra A B] [Algebra.HasGoingUp A B]
     (hsurj : Function.Surjective (PrimeSpectrum.comap (algebraMap A B))) :
     ringKrullDim A ≤ ringKrullDim B := by
-    apply iSup_le
-    intro l
-    obtain ⟨P, hP⟩ := hsurj l.head
-    have : P.asIdeal.LiesOver l.head.asIdeal := ⟨by simp [hP.symm]⟩
-    obtain ⟨L, hlen, _, _⟩ := Ideal.exists_ltSeries_of_hasGoingUp l P.asIdeal
-    exact hlen ▸ le_iSup (fun L : LTSeries (PrimeSpectrum B) => (L.length : WithBot ℕ∞)) L
+  apply iSup_le
+  intro l
+  obtain ⟨P, hP⟩ := hsurj l.head
+  have : P.asIdeal.LiesOver l.head.asIdeal := ⟨by simp [hP.symm]⟩
+  obtain ⟨L, hlen, _, _⟩ := Ideal.exists_ltSeries_of_hasGoingUp l P.asIdeal
+  exact hlen ▸ le_iSup (fun L : LTSeries (PrimeSpectrum B) => (L.length : WithBot ℕ∞)) L
 
 namespace RingHom
 
+variable {f : A →+* B} (hf : f.IsIntegral)
+
+include hf
+
 /-- An integral ring homomorphism cannot increase Krull dimension. -/
-theorem IsIntegral.ringKrullDim_le
-    {f : A →+* B} (hf : f.IsIntegral) :
+theorem IsIntegral.ringKrullDim_le :
     ringKrullDim B ≤ ringKrullDim A :=
-    let := f.toAlgebra
-    have : Algebra.IsIntegral A B := ⟨hf⟩
-    Order.krullDim_le_of_strictMono (PrimeSpectrum.comap f)
-      (fun _ _ hPQ => Ideal.IsIntegral.comap_lt_comap hPQ)
+  let := f.toAlgebra
+  have : Algebra.IsIntegral A B := ⟨hf⟩
+  Order.krullDim_le_of_strictMono (PrimeSpectrum.comap f)
+    (fun _ _ hPQ => Ideal.IsIntegral.comap_lt_comap hPQ)
 
 /-- An injective integral ring homomorphism preserves Krull dimension. -/
 theorem IsIntegral.ringKrullDim_eq_of_injective
-    {f : A →+* B} (hf : f.IsIntegral)
-    (hinj : Function.Injective f) :
-    ringKrullDim A = ringKrullDim B :=
-    let := f.toAlgebra
-    have : Algebra.IsIntegral A B := ⟨hf⟩
-    le_antisymm (Algebra.HasGoingUp.ringKrullDim_le_of_comap_surjective
-        (hf.comap_surjective hinj)) (RingHom.IsIntegral.ringKrullDim_le hf)
+    (hinj : Function.Injective f) : ringKrullDim A = ringKrullDim B :=
+  let := f.toAlgebra
+  have : Algebra.IsIntegral A B := ⟨hf⟩
+  le_antisymm (Algebra.HasGoingUp.ringKrullDim_le_of_comap_surjective
+    (hf.comap_surjective hinj)) (RingHom.IsIntegral.ringKrullDim_le hf)
 
 /-- A generalized version of `RingHom.IsIntegral.ringKrullDim_eq_of_injective`.
 For an integral extension `f : A →+* B`, the Krull dimension of `B`
 is equal to the Krull dimension of `A ⧸ RingHom.ker f`. -/
-theorem IsIntegral.ringKrullDim_quotient_ker_eq
-    {f : A →+* B} (hf : f.IsIntegral) :
+theorem IsIntegral.ringKrullDim_quotient_ker_eq :
     ringKrullDim (A ⧸ RingHom.ker f) = ringKrullDim B :=
-    RingHom.IsIntegral.ringKrullDim_eq_of_injective (f := RingHom.kerLift f)
-      (RingHom.IsIntegral.kerLift hf) (RingHom.kerLift_injective f)
+  RingHom.IsIntegral.ringKrullDim_eq_of_injective (f := RingHom.kerLift f)
+    (RingHom.IsIntegral.kerLift hf) (RingHom.kerLift_injective f)
 
 end RingHom

@@ -25,7 +25,6 @@ This file closely mirrors `Mathlib.RingTheory.Ideal.GoingDown`.
 -/
 
 @[expose] public section
-
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingUp R S` if for every pair of
 prime ideals `p ≤ q` of `R` with `P` a prime of `S` lying above `p`, there exists a
@@ -115,7 +114,7 @@ lemma trans (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower 
     Algebra.HasGoingUp R T := by
   rw [iff_specializingMap_primeSpectrumComap, IsScalarTower.algebraMap_eq R S T]
   simp only [PrimeSpectrum.comap_comp]
-  apply SpecializingMap.comp <;> rwa [← iff_specializingMap_primeSpectrum_comap]
+  apply SpecializingMap.comp <;> rwa [← iff_specializingMap_primeSpectrumComap]
 
 /-- Integral algebras satisfy the going up property. -/
 @[stacks 00GU]
