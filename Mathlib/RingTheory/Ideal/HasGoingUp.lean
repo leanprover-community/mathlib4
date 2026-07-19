@@ -95,10 +95,8 @@ along `Spec S → Spec R`. -/
 lemma iff_specializingMap_primeSpectrumComap :
     Algebra.HasGoingUp R S ↔
       SpecializingMap (PrimeSpectrum.comap (algebraMap R S)) := by
-  refine ⟨?_, fun h ↦ ⟨fun {q} hq P hP hlt ↦ ?_⟩⟩
-  · intro h P q hq
-    simp only [flip] at hq
-    rw [← PrimeSpectrum.le_iff_specializes] at hq
+  refine ⟨fun h P q hq ↦ ?_, fun h ↦ ⟨fun {q} hq P hP hlt ↦ ?_⟩⟩
+  · rw [flip, ← PrimeSpectrum.le_iff_specializes] at hq
     obtain ⟨Q, hle, hQ, h⟩ := P.asIdeal.exists_ideal_ge_liesOver_of_le (q := q.asIdeal)
       (p := P.asIdeal.under R) hq
     refine ⟨⟨Q, hQ⟩, (PrimeSpectrum.le_iff_specializes P _).mp hle, ?_⟩
@@ -117,9 +115,7 @@ lemma trans (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower 
     Algebra.HasGoingUp R T := by
   rw [iff_specializingMap_primeSpectrumComap, IsScalarTower.algebraMap_eq R S T]
   simp only [PrimeSpectrum.comap_comp]
-  apply SpecializingMap.comp
-  · rwa [← iff_specializingMap_primeSpectrumComap]
-  · rwa [← iff_specializingMap_primeSpectrumComap]
+  apply SpecializingMap.comp <;> rwa [← iff_specializingMap_primeSpectrum_comap]
 
 /-- Integral algebras satisfy the going up property. -/
 @[stacks 00GU]
