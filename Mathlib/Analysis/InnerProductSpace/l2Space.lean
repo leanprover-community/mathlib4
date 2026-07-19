@@ -496,7 +496,7 @@ converges unconditionally. -/
 @[simps]
 protected def toUnconditionalSchauderBasis (b : HilbertBasis ι 𝕜 E) :
     UnconditionalSchauderBasis ι 𝕜 E where
-  basis := ⇑b
+  basis := b
   coord i := innerSL 𝕜 (b i)
   ortho i j := by
     classical
