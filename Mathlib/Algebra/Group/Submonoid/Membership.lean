@@ -277,7 +277,7 @@ theorem closure_induction_left
   obtain ⟨l, rfl⟩ := h
   induction l using FreeMonoid.inductionOn' with
   | one => exact one
-  | mul_of x y ih =>
+  | of_mul x y ih =>
     simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
     simp only [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]
