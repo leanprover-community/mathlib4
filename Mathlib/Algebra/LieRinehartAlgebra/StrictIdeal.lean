@@ -20,7 +20,7 @@ which is a Lie ideal with respect to the Lie bracket and whose action on `A` is 
 acting trivially on `A.
 
 * The inverse image of an ideal under a Lie-Rinehart algebra homomorphism over
-`f: L₁→ₗ⁅(AlgHom.id R A)⁆ L₂` is a Lie-Rinehart ideal. In particular the kernel of such an `f`
+`f: L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂` is a Lie-Rinehart ideal. In particular the kernel of such an `f`
 is an ideal.
 
 ## Remark on strictness:
@@ -108,8 +108,8 @@ theorem toSubmodule_injective :
     Function.Injective (toSubmodule : StrictLieRinehartIdeal A L → Submodule A L) := fun S T h =>
   ext fun x => by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
 
-theorem toSubmodule_inj {s t : StrictLieRinehartIdeal A L} : s.toSubmodule = t.toSubmodule ↔ s = t
-  := toSubmodule_injective.eq_iff
+theorem toSubmodule_inj {s t : StrictLieRinehartIdeal A L} : s.toSubmodule = t.toSubmodule ↔ s = t :=
+  toSubmodule_injective.eq_iff
 
 theorem toSubmodule_le_iff {s t : StrictLieRinehartIdeal A L} :
     s.toSubmodule ≤ t.toSubmodule ↔ s ≤ t :=
@@ -157,7 +157,7 @@ variable (R) in
 @[expose] def toLieIdeal {s : StrictLieRinehartIdeal A L} : LieIdeal R L where
   toSubmodule := s.toSubmodule.restrictScalars R
   lie_mem {x y} hy := by
-    rw [←lie_skew]
+    rw [← lie_skew]
     refine neg_mem ?_
     exact s.ideal' hy
 
@@ -206,7 +206,7 @@ variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ 
 
 /-- The preimage of a strict Lie-Rinehart ideal under a homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/
-def comap (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
+def comap (f : L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
     StrictLieRinehartIdeal A L₁ := {
   s₂.toSubmodule.comap (f.toLinearMap') with
   ideal' {x y} h := by
@@ -217,7 +217,7 @@ def comap (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartId
     exact s₂.ideal' h
   isotropic x a h := by
     change f.toLinearMap' x ∈ s₂ at h
-    rw [LieRinehartAlgebra.Hom.toLinearMap'_apply,] at h
+    rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
     have h2 := f.apply_lie' a x
     simp only [AlgHom.coe_id, id_eq] at h2
     rw [h2]
@@ -231,7 +231,7 @@ namespace Hom
 
 variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRing L₁] [Module A L₁]
   [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
-  [LieAlgebra R L₂] (f : L₁→ₗ⁅(AlgHom.id R A)⁆ L₂)
+  [LieAlgebra R L₂] (f : L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂)
 
 /-- The kernel of a Lie-Rinehart homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/
