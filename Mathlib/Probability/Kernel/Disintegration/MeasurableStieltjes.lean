@@ -167,7 +167,7 @@ def defaultRatCDF (q : ℚ) := if q < 0 then (0 : ℝ) else 1
 lemma monotone_defaultRatCDF : Monotone defaultRatCDF := by
   unfold defaultRatCDF
   intro x y hxy
-  dsimp only
+  beta_reduce
   split_ifs with h_1 h_2 h_2
   exacts [le_rfl, zero_le_one, absurd (hxy.trans_lt h_2) h_1, le_rfl]
 
@@ -198,7 +198,7 @@ lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
   have h_bdd : BddBelow (range fun r : ↥(Ioi t) ↦ ite ((r : ℚ) < 0) (0 : ℝ) 1) := by
     refine ⟨0, fun x hx ↦ ?_⟩
     obtain ⟨y, rfl⟩ := mem_range.mpr hx
-    dsimp only
+    beta_reduce
     split_ifs
     exacts [le_rfl, zero_le_one]
   split_ifs with h

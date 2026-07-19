@@ -35,7 +35,7 @@ variable {α : Type*}
 theorem zero_cpow_eq_nhds {b : ℂ} (hb : b ≠ 0) : (fun x : ℂ => (0 : ℂ) ^ x) =ᶠ[𝓝 b] 0 := by
   suffices ∀ᶠ x : ℂ in 𝓝 b, x ≠ 0 from
     this.mono fun x hx ↦ by
-      dsimp only
+      beta_reduce
       rw [zero_cpow hx, Pi.zero_apply]
   exact IsOpen.eventually_mem isOpen_ne hb
 
@@ -43,7 +43,7 @@ theorem cpow_eq_nhds {a b : ℂ} (ha : a ≠ 0) :
     (fun x => x ^ b) =ᶠ[𝓝 a] fun x => exp (log x * b) := by
   suffices ∀ᶠ x : ℂ in 𝓝 a, x ≠ 0 from
     this.mono fun x hx ↦ by
-      dsimp only
+      beta_reduce
       rw [cpow_def_of_ne_zero hx]
   exact IsOpen.eventually_mem isOpen_ne ha
 
@@ -164,7 +164,7 @@ theorem rpow_eq_nhds_of_neg {p : ℝ × ℝ} (hp_fst : p.fst < 0) :
     (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) * cos (x.2 * π) := by
   suffices ∀ᶠ x : ℝ × ℝ in 𝓝 p, x.1 < 0 from
     this.mono fun x hx ↦ by
-      dsimp only
+      beta_reduce
       rw [rpow_def_of_neg hx]
   exact IsOpen.eventually_mem (isOpen_lt continuous_fst continuous_const) hp_fst
 
@@ -172,7 +172,7 @@ theorem rpow_eq_nhds_of_pos {p : ℝ × ℝ} (hp_fst : 0 < p.fst) :
     (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
   suffices ∀ᶠ x : ℝ × ℝ in 𝓝 p, 0 < x.1 from
     this.mono fun x hx ↦ by
-      dsimp only
+      beta_reduce
       rw [rpow_def_of_pos hx]
   exact IsOpen.eventually_mem (isOpen_lt continuous_const continuous_fst) hp_fst
 

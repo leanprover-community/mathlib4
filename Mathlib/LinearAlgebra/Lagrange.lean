@@ -519,7 +519,7 @@ lemma _root_.Polynomial.exists_eval_eq_iff {ι : Type*} [Finite ι] (x y : ι �
   set v : F → F := fun z ↦ if h : ∃ i, x i = z then y h.choose else 0 with v_def
   refine ⟨Lagrange.interpolate (Finset.univ.image x) (fun d : F ↦ d) v, fun i ↦ ?_⟩
   rw [Lagrange.eval_interpolate_at_node _ hinj (by simp), v_def]
-  simp only
+  beta_reduce
   split_ifs with h
   · exact hwd _ _ h.choose_spec
   · aesop

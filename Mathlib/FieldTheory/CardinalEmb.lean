@@ -333,7 +333,7 @@ theorem cardinal_eq_two_pow_rank [Algebra.IsSeparable F E]
 
 theorem cardinal_eq_of_isSeparable [Algebra.IsSeparable F E] :
     #(Field.Emb F E) = (fun c ↦ if ℵ₀ ≤ c then 2 ^ c else c) (Module.rank F E) := by
-  dsimp only; split_ifs with h
+  beta_reduce; split_ifs with h
   · exact cardinal_eq_two_pow_rank h
   rw [not_le, ← IsNoetherian.iff_rank_lt_aleph0] at h
   rw [← Module.finrank_eq_rank, ← toNat_eq_iff Module.finrank_pos.ne',

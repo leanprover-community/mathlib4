@@ -184,7 +184,7 @@ private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = ⟪f, g
 private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫ = conj r * ⟪f, g⟫ := by
   rw [inner_def, inner_def, ← smul_eq_mul, ← integral_smul]
   refine integral_congr_ae ((coeFn_smul r f).mono fun x hx => ?_)
-  simp only
+  beta_reduce
   rw [smul_eq_mul, ← inner_smul_left, hx, Pi.smul_apply]
 
 instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where

@@ -181,10 +181,10 @@ def g : B →* SX' where
     { toFun := fun x => β • x
       invFun := fun x => β⁻¹ • x
       left_inv := fun x => by
-        dsimp only
+        beta_reduce
         rw [← mul_smul, inv_mul_cancel, one_smul]
       right_inv := fun x => by
-        dsimp only
+        beta_reduce
         rw [← mul_smul, mul_inv_cancel, one_smul] }
   map_one' := by
     ext

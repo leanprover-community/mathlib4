@@ -864,7 +864,7 @@ theorem trNormal_respects (c k v s) :
   | comp f _ _ IHg => exact IHg (Cont.comp f k) v s
   | case f g IHf IHg =>
     rw [stepNormal]
-    simp only
+    beta_reduce
     obtain ⟨s', h⟩ := pred_ok _ _ s v _ _
     revert h; rcases v.headI with - | n <;> intro h
     · obtain ⟨c, h₁, h₂⟩ := IHf k _ s'
@@ -1149,7 +1149,7 @@ theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
   simpa [Supports] using forall_comm
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
-  dsimp only; split_ifs <;> exact H
+  beta_reduce; split_ifs <;> exact H
 
 theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (Λ'.ret k)) := by
   have W := fun {q} => trStmts₁_self q
@@ -1161,7 +1161,7 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
   | fix =>
     rw [contSupp_fix] at H₁
     have L := @Finset.mem_union_left; have R := @Finset.mem_union_right
-    intro s; dsimp only; cases natEnd (s.getD default)
+    intro s; beta_reduce; cases natEnd (s.getD default)
     · refine H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 

@@ -96,7 +96,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
   rw [← sSup_unitClosedBall_eq_norm]
   refine csSup_le ((Metric.nonempty_closedBall.2 zero_le_one).image _) ?_
   rintro - ⟨b, hb, rfl⟩
-  simp only
+  beta_reduce
   -- rewrite to a more convenient form; this is where we use the C⋆-property
   rw [← Real.sqrt_sq (norm_nonneg _), Real.sqrt_le_sqrt_iff (norm_nonneg _), sq,
     ← CStarRing.norm_star_mul_self, add_apply, star_add, mul_apply',

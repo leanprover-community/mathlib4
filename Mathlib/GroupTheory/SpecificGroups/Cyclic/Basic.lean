@@ -320,7 +320,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
       intro x hx
       let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
       refine Set.mem_toFinset.2 ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), ?_⟩
-      dsimp only at ⊢ hm
+      beta_reduce at ⊢ hm
       rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
       refine Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) ?_
       conv_lhs =>

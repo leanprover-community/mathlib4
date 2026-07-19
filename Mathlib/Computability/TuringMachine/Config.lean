@@ -718,7 +718,7 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     · exact ReflTransGen.single rfl
     rw [IH, bind_pure_comp]
   | fix f k IH =>
-    rw [Cont.eval, stepRet]; simp only
+    rw [Cont.eval, stepRet]; beta_reduce
     split_ifs; · exact IH
     simp only [← bind_pure_comp, bind_assoc, cont_eval_fix (code_is_ok _)]
     congr; funext; rw [bind_pure_comp, ← IH]

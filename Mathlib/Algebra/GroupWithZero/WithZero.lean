@@ -314,7 +314,7 @@ def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
   toFun := WithZero.recZeroCoe 0 Units.val
   invFun a := if h : a = 0 then 0 else (Units.mk0 a h : Gˣ)
   left_inv := (by induction · <;> simp)
-  right_inv _ := by simp only; split <;> simp_all
+  right_inv _ := by beta_reduce; split <;> simp_all
   map_mul' := (by induction · <;> induction · <;> simp [← WithZero.coe_mul])
 
 lemma withZeroUnitsEquiv_symm_apply_coe {G : Type*} [GroupWithZero G]

@@ -484,7 +484,7 @@ Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
     target_eq := rfl,
     proj_toFun _ _ := rfl }
   · by_contra h; apply (disjoint h).le_bot
-    · dsimp only; rw [dif_pos (by exact he'.2)]; exact ⟨he'.1, idx_U ..⟩
+    · beta_reduce; rw [dif_pos (by exact he'.2)]; exact ⟨he'.1, idx_U ..⟩
   · rwa [Set.inter_comm, ← open_iff _ subset_rfl]
   · simp_rw [F, Set.prodMk_mem_set_prod_eq, Set.mem_univ, and_true]
     refine (continuousOn_open_iff open_V).mpr fun W open_W ↦ ?_

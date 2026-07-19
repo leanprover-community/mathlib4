@@ -310,7 +310,7 @@ theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R)
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
     apply_fun (χ a * ·) using IsUnit.mul_right_injective h
-    dsimp only
+    beta_reduce
     rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, map_one]
   · revert ha
     nontriviality R

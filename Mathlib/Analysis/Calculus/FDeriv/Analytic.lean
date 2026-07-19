@@ -217,7 +217,7 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
       |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFPowerSeriesOnBall ?_
     simpa using! ((p.hasFPowerSeriesOnBall_changeOrigin 1
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
-  dsimp only
+  beta_reduce
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_enorm_sub, Metric.mem_eball] using! hz
 
@@ -245,7 +245,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
     apply HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall
     simpa using! ((p.hasFPowerSeriesOnBall_changeOrigin 1
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
-  · dsimp only
+  · beta_reduce
     rw [← h.fderivWithin_eq _ _ hu, add_sub_cancel]
     · simpa only [edist_eq_enorm_sub, Metric.mem_eball] using! hz.2
     · simpa using! hz.1
@@ -516,7 +516,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
       |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall ?_
     simpa using!
       ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
-  dsimp only
+  beta_reduce
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_enorm_sub, Metric.mem_eball] using! hz
 

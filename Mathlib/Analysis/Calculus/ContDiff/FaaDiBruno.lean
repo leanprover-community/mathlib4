@@ -673,7 +673,7 @@ def extendEquiv (n : ℕ) :
   right_inv c := by
     by_cases h : range (c.emb 0) = {0}
     · have A : c.length - 1 + 1 = c.length := Nat.sub_add_cancel (c.length_pos (Nat.zero_lt_succ n))
-      dsimp only
+      beta_reduce
       rw [dif_pos h]
       simp only [extend, extendLeft, eraseLeft]
       ext
@@ -697,7 +697,7 @@ def extendEquiv (n : ℕ) :
             simp only [cases_zero, cast_zero, val_eq_zero]
             exact (apply_eq_of_range_eq_singleton h _).symm
           | succ i => simp
-    · dsimp only
+    · beta_reduce
       rw [dif_neg h]
       have B : c.partSize (c.index 0) - 1 + 1 = c.partSize (c.index 0) :=
         Nat.sub_add_cancel (c.partSize_pos (c.index 0))

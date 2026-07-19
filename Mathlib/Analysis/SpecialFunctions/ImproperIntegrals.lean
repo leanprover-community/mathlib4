@@ -201,7 +201,7 @@ theorem integrableOn_Ioi_norm_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
   instantiation order leads to a term with a beta redex.
   https://github.com/leanprover/lean4/pull/13762
   This will be removed once app elaboration itself does beta reduction. -/
-  dsimp only
+  beta_reduce
   rw [Complex.norm_cpow_eq_rpow_re_of_pos (ht.trans ha)]
 
 theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
@@ -252,7 +252,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
     Tendsto (fun x : ℝ => ((x : ℂ) ^ (a + 1) - (c : ℂ) ^ (a + 1)) / (a + 1)) atTop
       (𝓝 <| -c ^ (a + 1) / (a + 1)) by
     refine this.congr' ((eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx => ?_))
-    dsimp only
+    beta_reduce
     rw [integral_cpow, id]
     refine Or.inr ⟨?_, notMem_uIcc_of_lt hc hx⟩
     apply_fun Complex.re

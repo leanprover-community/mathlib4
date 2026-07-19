@@ -65,11 +65,11 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     intro s
     exact (hV s).1.2.preimage (C.π.app (j s)).hom.hom.continuous
   have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ C.π.app (j s) ⁻¹' V s) i := by
-    dsimp only
+    beta_reduce
     rw [h]
     rintro x ⟨T, hT, hx⟩
     refine ⟨_, ⟨⟨T, hT⟩, rfl⟩, ?_⟩
-    dsimp only
+    beta_reduce
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
   -- We thus obtain a finite set `G : Finset J` and a clopen set of `F.obj j` for each

@@ -146,7 +146,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     let Y := of (ULift (Fin 2))
     let p₁ : B ⟶ Y := ofHom
       ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
-        simp only
+        beta_reduce
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
         · exfalso
@@ -154,7 +154,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         · rfl⟩
     let p₂ : B ⟶ Y := ofHom
       ⟨fun b => if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
-        simp only
+        beta_reduce
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
         · exfalso

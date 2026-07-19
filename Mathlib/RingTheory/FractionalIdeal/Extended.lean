@@ -320,7 +320,7 @@ variable (A K) in
 theorem extendedHom_injective :
     Function.Injective (fun I : FractionalIdeal A⁰ K ↦ extendedHom L B I) := by
   intro I J h
-  dsimp only at h
+  beta_reduce at h
   by_cases hI : I = 0
   · rwa [hI, map_zero, eq_comm, extendedHom_eq_zero_iff L B, eq_comm, ← hI] at h
   by_cases hJ : J = 0

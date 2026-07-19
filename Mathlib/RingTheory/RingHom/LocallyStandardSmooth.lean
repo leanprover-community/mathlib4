@@ -37,7 +37,7 @@ theorem Smooth.locally_isStandardSmooth (hf : f.Smooth) : Locally IsStandardSmoo
   algebraize [f]
   obtain ⟨s, hs, h⟩ := Algebra.Smooth.exists_span_eq_top_isStandardSmooth R S
   refine ⟨s, hs, fun t ht ↦ ?_⟩
-  dsimp only
+  beta_reduce
   rw [← f.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_eq, isStandardSmooth_algebraMap]
   exact h t ht
 
