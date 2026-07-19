@@ -3,12 +3,14 @@ Copyright (c) 2026 Marcin Bugaj. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcin Bugaj
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Fin.Tuple.Sort
-import Mathlib.Order.OrderDual
-import Mathlib.Data.Fin.SuccPredOrder
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.SuccPred.LinearLocallyFinite
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Fin.Tuple.Sort
+public import Mathlib.Order.OrderDual
+public import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Majorization
@@ -45,6 +47,8 @@ bounded by the corresponding prefix sum of `b`.
 
 majorization, T-transform, Robin Hood transfer
 -/
+
+@[expose] public section
 
 namespace Majorization
 
