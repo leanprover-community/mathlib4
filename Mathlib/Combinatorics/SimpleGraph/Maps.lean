@@ -45,7 +45,7 @@ open Function
 
 namespace SimpleGraph
 
-variable {V W X : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
+variable {V W X Y : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
 
 /-! ## Map and comap -/
 
@@ -101,6 +101,7 @@ theorem map_adj_apply' {f : V → W} (hadj : G.Adj u v) (hne : f u ≠ f v) :
     (G.map f).Adj (f u) (f v) :=
   ⟨hne, u, v, hadj, rfl, rfl⟩
 
+@[gcongr]
 theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   rintro G G' h z1 z2 ⟨huv, u, v, ha, rfl, rfl⟩
   exact ⟨huv, _, _, h ha, rfl, rfl⟩
@@ -151,6 +152,7 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 
+@[gcongr]
 theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) :=
   fun _ _ h _ _ ha ↦ h ha
 
@@ -387,11 +389,6 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
   repeat rw [Subtype.mk_eq_mk]
   apply Sym2.map.injective hinj
 
-@[gcongr]
-theorem _root_.SimpleGraph.neighborSet_mono (hle : G₁ ≤ G₂) (v : V) :
-    G₁.neighborSet v ⊆ G₂.neighborSet v :=
-  subset_preimage_neighborSet v <| .ofLE hle
-
 /-- Every graph homomorphism from a complete graph is injective. -/
 theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Injective f := by
   intro v w h
@@ -420,7 +417,7 @@ theorem le_comap (f : H →g G) : H ≤ G.comap f :=
 theorem nonempty_hom_iff_exists_le_comap : Nonempty (H →g G) ↔ ∃ f, H ≤ G.comap f :=
   ⟨fun ⟨f⟩ ↦ ⟨f, f.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨f, (h ·)⟩⟩
 
-variable {G'' : SimpleGraph X}
+variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Composition of graph homomorphisms. -/
 abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
@@ -429,6 +426,15 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 @[simp]
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+theorem comp_assoc (f : G'' →g G''') (g : G' →g G'') (h : G →g G') :
+    f.comp (g.comp h) = (f.comp g).comp h := rfl
+
+@[simp]
+theorem comp_id (f : G →g G') : f.comp .id = f := rfl
+
+@[simp]
+theorem id_comp (f : G →g G') : .comp .id f = f := rfl
 
 @[simp]
 theorem comp_comap_ofLE (f : H →g G) : .comp (.comap f G) (.ofLE f.le_comap) = f :=
@@ -533,7 +539,7 @@ protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α �
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
 
-variable {G'' : SimpleGraph X}
+variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Composition of graph embeddings. -/
 abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
@@ -542,6 +548,15 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+theorem comp_assoc (f : G'' ↪g G''') (g : G' ↪g G'') (h : G ↪g G') :
+    f.comp (g.comp h) = (f.comp g).comp h := rfl
+
+@[simp]
+theorem comp_refl (f : G ↪g G') : f.comp .refl = f := rfl
+
+@[simp]
+theorem refl_comp (f : G ↪g G') : .comp .refl f = f := rfl
 
 /-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
 def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
@@ -593,6 +608,7 @@ def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
 
 @[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induceHomOfLE_toHom :
     (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
   ext; simp
@@ -713,7 +729,10 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
   rfl
 
-variable {G'' : SimpleGraph X}
+variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
+
+/-- Equivalence of homomorphisms induced by isomorphisms of graphs. -/
+abbrev homCongr (f' : G'' ≃g G''') : G →g G'' ≃ G' →g G''' := RelIso.relHomCongr f f'
 
 /-- Composition of graph isomorphisms. -/
 abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
@@ -722,6 +741,15 @@ abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+theorem comp_assoc (f : G'' ≃g G''') (g : G' ≃g G'') (h : G ≃g G') :
+    f.comp (g.comp h) = (f.comp g).comp h := rfl
+
+@[simp]
+theorem comp_refl (f : G ≃g G') : f.comp .refl = f := rfl
+
+@[simp]
+theorem refl_comp (f : G ≃g G') : .comp .refl f = f := rfl
 
 section induce
 
@@ -765,12 +793,21 @@ theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
     (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
   Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 implies_true]
+
+/-- The isomorphism between `completeBipartiteGraph V₁ W₁` and
+`completeBipartiteGraph V₂ W₂` where `V₁ ≃ V₂` and `W₁ ≃ W₂`. -/
+@[simps!]
+def completeBipartiteGraphCongr {V₁ V₂ W₁ W₂ : Type*} (hV : V₁ ≃ V₂) (hW : W₁ ≃ W₂) :
+    completeBipartiteGraph V₁ W₁ ≃g completeBipartiteGraph V₂ W₂ where
+  __ := hV.sumCongr hW
+  map_rel_iff' := by simp
 
 section Finite
 

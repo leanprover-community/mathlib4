@@ -15,8 +15,8 @@ public import Mathlib.NumberTheory.ModularForms.QExpansion
 This file contains results specific to modular forms of level one, i.e. modular forms for
 `SL(2, ℤ)`.
 
-TODO: Add finite-dimensionality of these spaces of modular forms.
-
+Finite-dimensionality of these spaces is proved in a later file
+(`Mathlib/NumberTheory/ModularForms/LevelOne/DimensionFormula.lean`).
 -/
 
 public section

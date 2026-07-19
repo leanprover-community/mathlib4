@@ -238,7 +238,7 @@ lemma convexOn_of_hasDerivWithinAt2_nonneg {D : Set ℝ} (hD : Convex ℝ D) {f 
   · rw [differentiableOn_congr this]
     exact fun x hx ↦ (hf'' _ hx).differentiableWithinAt
   · rintro x hx
-    convert! hf''₀ _ hx using 1
+    convert hf''₀ _ hx
     dsimp
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
     exact (hf'' _ hy).congr this <| by rw [this hy]
@@ -254,7 +254,7 @@ lemma concaveOn_of_hasDerivWithinAt2_nonpos {D : Set ℝ} (hD : Convex ℝ D) {f
   · rw [differentiableOn_congr this]
     exact fun x hx ↦ (hf'' _ hx).differentiableWithinAt
   · rintro x hx
-    convert! hf''₀ _ hx using 1
+    convert hf''₀ _ hx
     dsimp
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
     exact (hf'' _ hy).congr this <| by rw [this hy]
@@ -492,7 +492,7 @@ lemma monotoneOn_rightDeriv (hfc : ConvexOn ℝ S f) :
   simp_rw [hfc.rightDeriv_eq_sInf_slope_of_mem_interior hxs,
     hfc.rightDeriv_eq_sInf_slope_of_mem_interior hys]
   refine csInf_le_of_le (b := slope f x y) (bddBelow_slope_lt_of_mem_interior hfc hxs)
-    ⟨y, by simp only [mem_setOf_eq, hxy, and_true]; exact interior_subset hys⟩
+    ⟨y, by simp only [mem_ofPred_eq, hxy, and_true]; exact interior_subset hys⟩
     (le_csInf ?_ ?_)
   · have hys' := hys
     rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hys'
@@ -512,7 +512,7 @@ lemma monotoneOn_leftDeriv (hfc : ConvexOn ℝ S f) :
   simp_rw [hfc.leftDeriv_eq_sSup_slope_of_mem_interior hxs,
     hfc.leftDeriv_eq_sSup_slope_of_mem_interior hys]
   refine le_csSup_of_le (b := slope f x y) (bddAbove_slope_gt_of_mem_interior hfc hys)
-    ⟨x, by simp only [slope_comm, mem_setOf_eq, hxy, and_true]; exact interior_subset hxs⟩
+    ⟨x, by simp only [slope_comm, mem_ofPred_eq, hxy, and_true]; exact interior_subset hxs⟩
     (csSup_le ?_ ?_)
   · have hxs' := hxs
     rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hxs'
