@@ -650,7 +650,7 @@ theorem exists_forall_le_of_isBounded {f : β → α} (hf : Continuous f) (x₀ 
   refine hf.exists_forall_le' (x₀ := x₀) ?_
   have hU : {x : β | f x₀ < f x} ∈ Filter.cocompact β := by
     refine Filter.mem_cocompact'.mpr ⟨_, ?_, fun ⦃_⦄ a ↦ a⟩
-    simp only [Set.compl_setOf, not_lt]
+    simp only [Set.compl_ofPred, not_lt]
     exact Metric.isCompact_of_isClosed_isBounded (isClosed_le (by fun_prop) (by fun_prop)) h
   filter_upwards [hU] with x hx using hx.le
 
