@@ -33,7 +33,8 @@ variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [Nontri
 /-- Let `V` be an absorbent set in a vector space, and fix a "scale" `c : 𝕜` with `0 < ‖c‖ < 1`.
 Then, we can build a retraction `p : E → V` such that:
 * if `x` is outside of `V`, then `p x` is outside of `c • V`.
-* for *any* topology on `E` compatible with the vector space structure, `p` is continuous at zero.
+* for *any* topology on `E` compatible with the vector space structure, `p` is continuous at zero
+  (crucially, this is the case even if `V` is not a neighborhood of zero).
 -/
 private lemma exists_good_retraction {V : Set E} (V_abs : Absorbent 𝕜₁ V)
     {c : 𝕜₁} (c_ne : c ≠ 0) (hc₁ : ‖c‖ < 1) :
@@ -80,28 +81,38 @@ lemma foo (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
   -- Because both `t₁` and `t₂` are additive group topologies, we have to show `𝓕₁ = 𝓕₂`.
   suffices 𝓕₁ = 𝓕₂ by rwa [IsTopologicalAddGroup.ext_iff] <;> infer_instance
   -- If we can show that `V ∈ 𝓕₂`, we get `𝓕₁ = 𝓕₁ ⊓ 𝓟 V = 𝓕₂ ⊓ 𝓟 V = 𝓕₂`.
-  suffices 𝓕₂ ≤ 𝓟 V from
+  suffices V ∈ 𝓕₂ from
     calc 𝓕₁
       _ = 𝓕₁ ⊓ 𝓟 V := by simpa
       _ = 𝓕₂ ⊓ 𝓟 V := H
       _ = 𝓕₂ := by simpa
-  -- Hence, let us show that `V ∈ 𝓕₂`. Fix a scalar `c` with `0 < ‖c‖ < 1`.
-  -- Note that `V` is absorbent, so we get a good retraction `p : E → V` as in the lemma above.
+  -- Hence, let us show that `V ∈ 𝓕₂`. Equivalently, we have to show that the filter
+  -- `𝓖 := 𝓕₂ ⊓ 𝓟 Vᶜ` is trivial (that is, you cannot go to `0` for `t₂` without entering `V`).
+  rw [← compl_compl V, ← inf_principal_eq_bot]
+  set 𝓖 := 𝓕₂ ⊓ 𝓟 Vᶜ
+  -- Fix a scalar `c` with `0 < ‖c‖ < 1`. Note that `V` is absorbent, so we get a good retraction
+  -- `p : E → V` as in the lemma above.
   obtain ⟨c, hc₀, hc₁⟩ := NormedField.exists_norm_lt_one 𝕜₁
   have c_ne : c ≠ 0 := fun h ↦ by simp [h] at hc₀
   have V_abs : Absorbent 𝕜₁ V := letI := t₁; absorbent_nhds_zero V_mem
-  have cV_mem : c • V ∈ 𝓕₁ := letI := t₁; set_smul_mem_nhds_zero_iff c_ne |>.mpr V_mem
   obtain ⟨p, p_mem_V, p_mapsto, p_tendsto⟩ := exists_good_retraction V_abs c_ne hc₁
-  replace p_mem_V : p ⁻¹' V = univ := by simpa [range_subset_iff]
-  -- To finish the proof, we compute :
-  calc 𝓕₂
-    _ ≤ comap p 𝓕₂ := tendsto_iff_comap.mp <| p_tendsto t₂ -- because `p` is `t₂`-continuous at 0;
-    _ = comap p (𝓕₂ ⊓ 𝓟 V) := by simp [p_mem_V] -- because `p` takes values in `V`;
-    _ = comap p (𝓕₁ ⊓ 𝓟 V) := by rw [H] -- by hypothesis;
-    _ = comap p 𝓕₁ := by simp [p_mem_V] -- because `p` takes values in `V`;
-    _ ≤ 𝓟 V := by -- because the inequality `p '' Vᶜ ⊆ (c • V)ᶜ` implies `p ⁻¹' (c • V) ⊆ V`.
-      grw [le_principal_iff, mem_comap_iff_compl, p_mapsto.image_subset, compl_compl]
-      exact cV_mem
+  -- We will show that `map p 𝓖 ≤ ⊥`.
+  suffices map p 𝓖 ≤ ⊥ by simpa
+  -- On the one hand, the inclusion `p '' Vᶜ ⊆ (c • V)ᶜ` guarantees that `map p 𝓖 ≤ 𝓟 (c • V)ᶜ`.
+  have fact₁ : map p 𝓖 ≤ 𝓟 (c • V)ᶜ := (map_mono inf_le_right).trans p_mapsto.tendsto
+  -- On the other hand, because `p` is `t₂`-continuous at zero, we have `map p 𝓖 ≤ 𝓕₂`,
+  -- and because `p` takes values in `V`, `map p 𝓖 ≤ 𝓟 V`.
+  -- Hence, `map p 𝓖 ≤ 𝓕₂ ⊓ 𝓟 V = 𝓕₁ ⊓ 𝓟 V ≤ 𝓕₁ ≤ 𝓟 (c • V)`.
+  have fact₂ : map p 𝓖 ≤ 𝓟 (c • V) :=
+    calc map p 𝓖
+      _ ≤ map p 𝓕₂ := map_mono inf_le_left
+      _ ≤ 𝓕₂ ⊓ 𝓟 (range p) := le_inf (p_tendsto t₂) (by simp)
+      _ ≤ 𝓕₂ ⊓ 𝓟 V := by gcongr; simpa [range_subset_iff]
+      _ = 𝓕₁ ⊓ 𝓟 V := by rw [H]
+      _ ≤ 𝓕₁ := inf_le_left
+      _ ≤ 𝓟 (c • V) := by letI := t₁; simpa [𝓕₁, set_smul_mem_nhds_zero_iff c_ne]
+  -- Thus `𝓖` has to be trivial, and we are done.
+  simpa using le_inf fact₁ fact₂
 
 variable (𝕜₁) in
 lemma bar (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
