@@ -14,10 +14,10 @@ A strict Lie-Rinehart Ideal of a Lie-Rinehart algebra `(R A L)` is an `A`-submod
 which is a Lie ideal with respect to the Lie bracket and whose action on `A` is trivial.
 (This can be defined independently of `R` and most Lie-Rinehart algebra axioms).
 
-## Main definitions/ statements:
+## Main definitions/statements
 
 * `StrictLieRinehartIdeal` as an `A`-submodule of `L` forming an ideal under the Lie bracket, and
-acting trivially on `A.
+acting trivially on `A`.
 
 * The inverse image of an ideal under a Lie-Rinehart algebra homomorphism over
 `f: L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂` is a Lie-Rinehart ideal. In particular the kernel of such an `f`
