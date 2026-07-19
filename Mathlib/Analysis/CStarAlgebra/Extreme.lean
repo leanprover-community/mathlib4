@@ -27,7 +27,7 @@ public section
 open Set Metric CFC CStarAlgebra Unitization
 
 open scoped ComplexStarModule in
-lemma CStarAlgebra.one_mem_extremePoints_closedUnitBall {A : Type*} [CStarAlgebra A] :
+lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] :
     1 ∈ extremePoints ℝ (closedBall (0 : A) 1) := by
   nontriviality A
   /- Suppose that `1` is a convex combination of `x` and `y`. Then, since `1` is self
@@ -88,7 +88,7 @@ lemma CStarAlgebra.one_mem_extremePoints_closedUnitBall {A : Type*} [CStarAlgebr
 lemma Unitary.coe_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] (u : unitary A) :
     (u : A) ∈ extremePoints ℝ (closedBall 0 1) := by
   rw [← map_zero (mulLeft ℝ A u), ← LinearIsometryEquiv.image_closedBall, ← image_extremePoints]
-  exact ⟨1 , ⟨one_mem_extremePoints_closedUnitBall, by simp⟩⟩
+  exact ⟨1 , ⟨one_mem_extremePoints_unitClosedBall, by simp⟩⟩
 
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 
@@ -170,6 +170,7 @@ private theorem eq_zero_of_eq_sub_of_mem_closedBall_of_mem_extremePoints_closedU
   `‖x - a‖ * ‖x - a‖ = ‖p + star a * a‖ ≤ 1`. -/
   have : ‖x - a‖ ≤ 1 := sq_le_one_iff₀ (by positivity) |>.mp <| by
     simp [sq, ← CStarRing.norm_star_mul_self, sub_mul, mul_sub, hax, hxa, ← hp, hmax]
+  rw [mem_extremePoints_iff_left] at hx
   exact add_eq_left.mp <| @hx.2 (x + a) (by simpa) (x - a) (by simpa)
     ⟨2⁻¹, 2⁻¹, by simp [smul_add, smul_sub, ← add_smul, ← one_div]⟩
 
@@ -203,6 +204,7 @@ theorem star_mem_extremePoints_closedBall_zero_iff {A : Type*} [NonUnitalSeminor
     from ⟨fun h ↦ star_star x ▸ this (star x) h, this x⟩
   refine fun x hx ↦ ⟨by simpa using hx.1, fun y hy z hz ⟨α, β, hα, hβ, hαβ, hxyz⟩ ↦ ?_⟩
   rw [eq_star_iff_eq_star, eq_comm] at hxyz ⊢
+  rw [mem_extremePoints_iff_left] at hx
   apply @hx.2 _ (by simpa using hy) (star z) (by simpa using hz) ⟨star α, star β, ?_⟩
   simp [← hxyz, hα, hβ, hαβ]
 
