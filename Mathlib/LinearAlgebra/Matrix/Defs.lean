@@ -6,6 +6,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 module
 
 public import Mathlib.Algebra.Module.Pi
+public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.CrossRefAttribute
@@ -102,6 +103,12 @@ def ofArray {m n : ℕ} (A : Array R) (hA : A.size = m * n) : Matrix (Fin m) (Fi
 @[simp]
 theorem ofArray_apply {m n : ℕ} (A : Array R) (hA : A.size = m * n) (i : Fin m) (j : Fin n) :
     ofArray A hA i j = A[Fin.mkDivMod i j] := rfl
+
+lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
+    ofArray A hA = .of fun i j ↦ A.getD (n * i.val + j.val) 0 := by
+  ext i j
+  have : n * i.val + j.val < m * n := (Fin.mkDivMod i j).isLt
+  simp [ofArray, hA, this]
 
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
