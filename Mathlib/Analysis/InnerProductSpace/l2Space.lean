@@ -493,6 +493,7 @@ theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
 /-- A Hilbert basis of is an unconditional Schauder basis (`UnconditionalSchauderBasis`),
 with coordinate functionals `x ↦ ⟪b i, x⟫`. The basis expansion `x = ∑' i, ⟪b i, x⟫ • b i`
 converges unconditionally. -/
+@[simps]
 protected def toUnconditionalSchauderBasis (b : HilbertBasis ι 𝕜 E) :
     UnconditionalSchauderBasis ι 𝕜 E where
   basis := ⇑b
@@ -505,6 +506,7 @@ protected def toUnconditionalSchauderBasis (b : HilbertBasis ι 𝕜 E) :
 
 /-- Every Hilbert basis indexed by `ℕ` is a Schauder basis (`SchauderBasis`) with
 coordinate functionals `x ↦ ⟪b i, x⟫`. The expansion `x = ∑ i, ⟪b i, x⟫ • b i` converges. -/
+@[simps]
 protected def toSchauderBasis (b : HilbertBasis ℕ 𝕜 E) : SchauderBasis 𝕜 E where
   basis := ⇑b
   coord i := innerSL 𝕜 (b i)
