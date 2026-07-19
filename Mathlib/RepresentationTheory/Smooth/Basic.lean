@@ -120,10 +120,6 @@ lemma isSmoothVector_add {ρ : Representation k G V} {v1 v2 : V}
     IsSmoothVector ρ (v1 + v2) :=
   Subgroup.isOpen_mono (le_stabilizer_add ρ v1 v2) (hv1.inter hv2)
 
-lemma isSmoothVector_sum {n : ℕ} {ρ : Representation k G V} {v : Fin n → V}
-    (h : ∀ i : Fin n, IsSmoothVector ρ (v i)) : IsSmoothVector ρ (∑ i, v i) :=
-  Subgroup.isOpen_mono (le_stabilizer_sum ρ v) (by simpa using isOpen_iInter_of_finite h)
-
 lemma isSmoothVector_smul {ρ : Representation k G V} {v : V} (c : k)
     (h : IsSmoothVector ρ v) : IsSmoothVector ρ (c • v) :=
   Subgroup.isOpen_mono (le_stabilizer_smul ρ c v) h
