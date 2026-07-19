@@ -1145,7 +1145,6 @@ theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {
   ext j
   constructor
   · rintro ⟨hj, hj'⟩
-    have : j.IsPrime := hj'
     exact
       ⟨comap f j, ⟨⟨map_le_iff_le_comap.1 hj, comap_isPrime f j⟩, map_comap_of_surjective f hf j⟩⟩
   · rintro ⟨J, ⟨hJ, hJ'⟩⟩

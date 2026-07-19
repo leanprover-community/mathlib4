@@ -212,7 +212,6 @@ lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ Tr
       apply hU
       apply hmem
       have (X : I) : IsConnected X.val := hc X.val X.property
-      have (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
       intro X
       ext x
       simp only [FintypeCat.id_apply]

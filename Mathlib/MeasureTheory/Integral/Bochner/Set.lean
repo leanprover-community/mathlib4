@@ -1010,7 +1010,6 @@ theorem LpToLpRestrictCLM_coeFn [Fact (1 ≤ p)] (s : Set X) (f : Lp F p μ) :
 @[continuity]
 theorem continuous_setIntegral [NormedSpace ℝ E] (s : Set X) :
     Continuous fun f : X →₁[μ] E => ∫ x in s, f x ∂μ := by
-  have : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
   have h_comp :
     (fun f : X →₁[μ] E => ∫ x in s, f x ∂μ) =
       integral (μ.restrict s) ∘ fun f => LpToLpRestrictCLM X E ℝ μ 1 s f := by

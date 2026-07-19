@@ -98,7 +98,6 @@ theorem norm_norm [Algebra F L] [FiniteDimensional F L] [IsScalarTower K F L] (x
 variable {F}
 
 theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x := by
-  let : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
   let L := normalClosure K F (AlgebraicClosure F)
   have : FiniteDimensional F L := FiniteDimensional.right K F L
   have : IsGalois F L := IsGalois.tower_top_of_isGalois K F L

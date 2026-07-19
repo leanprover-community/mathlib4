@@ -50,7 +50,6 @@ omit [IsScalarTower K L M] [Algebra L M] in
 lemma IsAbelianGalois.of_algHom (f : L →ₐ[K] M) [IsAbelianGalois K M] :
     IsAbelianGalois K L :=
   letI := f.toRingHom.toAlgebra
-  haveI := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   .tower_bot K L M
 
 instance [IsAbelianGalois K L] (K' : IntermediateField K L) : IsAbelianGalois K K' :=

@@ -340,7 +340,6 @@ lemma finite_universalFactorizationMap :
     (universalFactorizationMap R n m k hn).Finite := by
   refine RingHom.IsIntegral.to_finite ?_
     (.of_finitePresentation (finitePresentation_universalFactorizationMap R n m k hn))
-  let := (universalFactorizationMap R n m k hn).toAlgebra
   have : IsDomain (MvPolynomial (Fin m) ℤ ⊗[ℤ] MvPolynomial (Fin k) ℤ) :=
     (MvPolynomial.tensorEquivSum ℤ (Fin m) (Fin k) ℤ).toRingEquiv.isDomain_iff.mpr inferInstance
   let := (universalFactorizationMap ℤ n m k hn).toAlgebra

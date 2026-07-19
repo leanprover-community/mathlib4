@@ -148,7 +148,6 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     letI := differentialFiniteDimensional F K
     DifferentialAlgebra F K := by
   let k := (Field.exists_primitive_element F K).choose
-  have h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
   have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
   have : Fact (Irreducible (minpoly F k)) :=
     ⟨minpoly.irreducible (IsAlgebraic.of_finite ..).isIntegral⟩

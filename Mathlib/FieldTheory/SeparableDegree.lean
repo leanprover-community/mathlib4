@@ -581,7 +581,6 @@ theorem eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible (q : ℕ) 
     exact ⟨0, y, .inl rfl, hf⟩
   | prime hq =>
     refine ⟨n, y, (em _).imp id fun hn ⟨z, hy⟩ ↦ ?_, hf⟩
-    have := expChar_of_injective_ringHom (R := F) C_injective q
     rw [hf, ← Nat.succ_pred hn, pow_succ, pow_mul, ← hy, frobenius_def, map_pow,
       ← sub_pow_expChar] at hi
     exact not_irreducible_pow hq.ne_one hi
@@ -667,7 +666,6 @@ separable degree one if and only if the minimal polynomial is of the form
 theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 ↔
     ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n := by
   have := expChar_of_injective_algebraMap (algebraMap F E).injective q
-  have := expChar_of_injective_ringHom (C_injective (R := E)) q
   refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_pow_mem q).2 ?_⟩
   · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
     have hx := congr_arg (Polynomial.aeval x) h.symm
@@ -818,7 +816,6 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
     isIntegral_trans (R := F) (A := E) _ (IsSeparable.isIntegral hsep) |>.tower_top
   simp only [IsSeparable, ← hf, ← h, separable_map] at hsep
   replace hsep := hsep.of_dvd <| minpoly.dvd E' x hzero
-  have : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
   have := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   have := adjoin.finiteDimensional halg
   have : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯

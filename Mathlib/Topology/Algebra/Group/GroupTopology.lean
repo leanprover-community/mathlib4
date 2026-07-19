@@ -59,7 +59,6 @@ theorem continuous_mul' (g : GroupTopology α) :
 theorem continuous_inv' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous (Inv.inv : α → α) := by
-  let := g.toTopologicalSpace
   have := g.toIsTopologicalGroup
   exact continuous_inv
 

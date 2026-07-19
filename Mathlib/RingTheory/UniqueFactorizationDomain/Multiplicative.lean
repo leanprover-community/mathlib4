@@ -82,7 +82,6 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
     exact hcp (fun p _ hpx => isUnit_of_dvd_unit hpx u.isUnit) hx (h1 u.isUnit)
   by_cases ha0 : a = 0
   · rwa [ha0]
-  have : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
   let : StrongNormalizationMonoid α := UniqueFactorizationMonoid.strongNormalizationMonoid
   refine P_of_associated (prod_normalizedFactors ha0) ?_
   rw [← (normalizedFactors a).map_id, Finset.prod_multiset_map_count]
@@ -129,7 +128,6 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
       _ = 0 := by simp only [h1 isUnit_one, hf1, mul_zero]
       _ = f a * f (b * 1) := by simp only [h1 isUnit_one, hf1, mul_zero]
       _ = f a * f b := by rw [mul_one]
-  have : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
   let : StrongNormalizationMonoid α := UniqueFactorizationMonoid.strongNormalizationMonoid
   suffices
       f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,

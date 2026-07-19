@@ -70,7 +70,6 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   set Z := Subring.center D
   -- We proceed by contradiction; that is, we assume the center is strictly smaller than `D`.
   by_contra! hZ
-  let : Field Z := hD.field hZ.lt_top
   set q := card Z with card_Z
   have hq : 1 < q := by rw [card_Z]; exact one_lt_card
   let n := finrank Z D

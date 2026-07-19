@@ -388,7 +388,6 @@ variable (D : L ⥤ K)
 @[simp]
 theorem limit.pre_pre [h : HasLimit (D ⋙ E ⋙ F)] : haveI : HasLimit ((D ⋙ E) ⋙ F) := h
     limit.pre F E ≫ limit.pre (E ⋙ F) D = limit.pre F (D ⋙ E) := by
-  have : HasLimit ((D ⋙ E) ⋙ F) := h
   ext j; erw [assoc, limit.pre_π, limit.pre_π, limit.pre_π]; rfl
 
 variable {E F}
@@ -433,7 +432,6 @@ theorem limit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) [h : Has
     -- H G (limit F) ⟶ limit (F ⋙ (G ⋙ H))
     haveI : HasLimit (F ⋙ G ⋙ H) := h
     H.map (limit.post F G) ≫ limit.post (F ⋙ G) H = limit.post F (G ⋙ H) := by
-  have : HasLimit (F ⋙ G ⋙ H) := h
   ext; erw [assoc, limit.post_π, ← H.map_comp, limit.post_π, limit.post_π]; rfl
 
 end Post
@@ -444,7 +442,6 @@ theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ 
             -- G (limit F) ⟶ limit F ⋙ G ⟶ limit (E ⋙ (F ⋙ G)) or
     haveI : HasLimit (E ⋙ F ⋙ G) := h
     G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G = limit.post F G ≫ limit.pre (F ⋙ G) E := by
-  have : HasLimit (E ⋙ F ⋙ G) := h
   ext; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
 
 open CategoryTheory.Equivalence

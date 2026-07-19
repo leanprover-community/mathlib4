@@ -693,7 +693,6 @@ theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
     rw [Equalizer.Presieve.sheaf_condition]
     refine ⟨?_⟩
     refine isSheafForIsSheafFor' _ _ _ _ ?_
-    letI := preservesSmallestLimits_of_preservesLimits (coyoneda.obj (op U))
     apply isLimitOfPreserves
     apply Classical.choice (h _ S.arrows _)
     simpa

@@ -150,10 +150,6 @@ lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
   have ht't : t' * algebraMap S St t = 1 := by rw [mul_comm, IsLocalization.Away.mul_invSelf]
   let R₁ := Algebra.adjoin R {t'}
   let R₂ := Algebra.adjoin R₁ {algebraMap S St (φ X)}
-  let : Algebra R₁ R₂ := R₂.algebra
-  let : Algebra R₂ St := R₂.toAlgebra
-  let : Algebra R₁ St := R₁.toAlgebra
-  have : IsScalarTower R₁ R₂ St := Subalgebra.isScalarTower_mid _
   have : Algebra.IsIntegral R₁ R₂ := by
     cases subsingleton_or_nontrivial R₁
     · have := (algebraMap R₁ R₂).codomain_trivial; exact ⟨(Subsingleton.elim · 0 ▸ isIntegral_zero)⟩

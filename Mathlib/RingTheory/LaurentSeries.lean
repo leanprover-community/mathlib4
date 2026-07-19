@@ -1108,8 +1108,6 @@ theorem valuation_compare (f : K⸨X⸩) :
   change Valued.v (adicCompletion.ofCompletion
     ((LaurentSeriesPkg K).compare ratfuncAdicComplPkg f)) = Valued.v f
   rw [adicCompletion.valued_ofCompletion]
-  let : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
-      ratfuncAdicComplPkg.uniformStruct
   have raw_surj : Function.Surjective (Valued.v : (polynomialValuationX K).Completion → ℤᵐ⁰) :=
     Valued.valuedCompletion_surjective_iff.mpr <| .of_comp ((idealX K).valuation_surjective K⟮X⟯)
   rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare ratfuncAdicComplPkg _]

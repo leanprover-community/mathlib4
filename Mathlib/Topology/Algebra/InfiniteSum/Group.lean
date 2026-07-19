@@ -372,7 +372,6 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
 theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
     {α : Type*} [CommGroup α] [TopologicalSpace α] [DiscreteTopology α]
     {β : Type*} (f : β → α) (h : Multipliable f) : HasFiniteMulSupport f :=
-  haveI : IsTopologicalGroup α := ⟨⟩
   h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
 
 @[deprecated (since := "2026-03-03")] alias

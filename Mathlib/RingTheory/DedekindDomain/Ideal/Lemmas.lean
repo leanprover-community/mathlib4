@@ -1233,7 +1233,6 @@ namespace IsDedekindDomain
 theorem primesOver_finite : (primesOver p B).Finite := by
   by_cases hpb : p = ⊥
   · rw [hpb] at hpm ⊢
-    have : IsDomain A := IsDomain.of_bot_isPrime A
     rw [primesOver_bot A B]
     exact Set.finite_singleton ⊥
   · rw [← coe_primesOverFinset hpb B]

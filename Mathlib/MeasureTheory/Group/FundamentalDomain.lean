@@ -783,7 +783,6 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
     MeasurePreserving π (ν.restrict 𝓕) μ where
   measurable := measurable_quotient_mk' (s := α_mod_G)
   map_eq := by
-    have : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
     rw [h𝓕.projection_respects_measure (μ := μ)]
 
 variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableConstSMul G α]

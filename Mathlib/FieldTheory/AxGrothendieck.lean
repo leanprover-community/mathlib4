@@ -203,7 +203,6 @@ theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     S.MapsTo (fun v i => eval v (ps i)) S →
     S.InjOn (fun v i => eval v (ps i)) →
     S.SurjOn (fun v i => eval v (ps i)) S := by
-  let := Fintype.ofFinite ι
   let p : ℕ := ringChar K
   rw [Set.definable_iff_finitely_definable] at hS
   rcases hS with ⟨c, _, hS⟩

@@ -109,7 +109,6 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
   apply forall_congr'
   intro j
   conv_lhs => rw [← Category.comp_id (α.app j)]
-  have : IsIso e.inv.hom := Functor.map_isIso (Cocone.forget _) e.inv
   exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff (NatTrans.congr_app h j).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -279,9 +278,6 @@ theorem IsUniversalColimit.map_reflective
     intro X
     apply IsIso.eq_inv_of_inv_hom_id
     exact adj.left_triangle_components _
-  have : ∀ X, IsIso (Gl.map (adj.unit.app X)) := by
-    simp_rw [hadj]
-    infer_instance
   have hα'' : ∀ j, Gl.map (Gr.map <| α'.app j) = adj.counit.app _ ≫ α.app j := by
     intro j
     rw [← cancel_mono (adj.counit.app <| F.obj j)]

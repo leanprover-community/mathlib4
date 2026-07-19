@@ -213,7 +213,6 @@ private lemma exists_variableChange_of_char_ne_two_or_three
     ∃ C : VariableChange F, C • E = E' := by
   replace hchar2 : (2 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime F Nat.prime_two hchar2
   replace hchar3 : (3 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime F Nat.prime_three hchar3
-  have := NeZero.mk hchar2
   have : NeZero (4 : F) := NeZero.mk <| by
     have := pow_ne_zero 2 hchar2
     norm_num1 at this

@@ -548,8 +548,6 @@ theorem iSupIndep.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : iSupIn
   -- simplify everything down to binders over equalities in `N`
   rw [iSupIndep_iff_forall_dfinsupp] at h
   suffices LinearMap.ker (lsum ℕ fun i => (p i).subtype) = ⊥ by
-    -- Lean can't find this without our help
-    let thisI : AddCommGroup (Π₀ i, p i) := inferInstance
     rw [LinearMap.ker_eq_bot] at this
     exact this
   rw [LinearMap.ker_eq_bot']

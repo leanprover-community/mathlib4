@@ -245,9 +245,6 @@ namespace Module.Basis
 @[simp]
 theorem toMatrix_mul_toMatrix {ι'' : Type*} [Fintype ι'] (b'' : ι'' → M) :
     b.toMatrix b' * b'.toMatrix b'' = b.toMatrix b'' := by
-  have := Classical.decEq ι
-  have := Classical.decEq ι'
-  have := Classical.decEq ι''
   ext i j
   simp only [Matrix.mul_apply, toMatrix_apply, sum_repr_mul_repr]
 

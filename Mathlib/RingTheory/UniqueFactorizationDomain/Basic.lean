@@ -73,6 +73,7 @@ instance Associates.ufm [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
 theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     ∀ {f g : Multiset α},
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
+  classical
   intro f
   induction f using Multiset.induction_on with
   | empty =>
@@ -87,7 +88,6 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     let ⟨b, hbg, hb⟩ :=
       (exists_associated_mem_of_dvd_prod (hf p (by simp)) fun q hq => hg _ hq) <|
         hfg.dvd_iff_dvd_right.1 (show p ∣ (p ::ₘ f).prod by simp)
-    have := Classical.decEq α
     rw [← Multiset.cons_erase hbg]
     exact
       Multiset.Rel.cons hb

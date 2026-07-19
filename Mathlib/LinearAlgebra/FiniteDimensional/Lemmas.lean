@@ -324,7 +324,6 @@ noncomputable def finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (
 theorem coe_finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)
     (lin_ind : LinearIndependent K ((↑) : s → V)) (card_eq : s.card = finrank K V) :
     ⇑(finsetBasisOfLinearIndependentOfCardEqFinrank hs lin_ind card_eq) = ((↑) : s → V) := by
-  have : Nonempty s := ⟨⟨hs.choose, hs.choose_spec⟩⟩
   simp [finsetBasisOfLinearIndependentOfCardEqFinrank]
 
 /-- A linear independent set of `finrank K V`-many vectors forms a basis. -/
@@ -376,8 +375,6 @@ theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     eq_bot_or_eq_top := by
       intro S
       have : FiniteDimensional F E := .of_finrank_eq_succ hr
-      have : FiniteDimensional F S :=
-        FiniteDimensional.finiteDimensional_submodule (Subalgebra.toSubmodule S)
       have : finrank F S ≤ 2 := hr ▸ S.toSubmodule.finrank_le
       have : 0 < finrank F S := finrank_pos_iff.mpr inferInstance
       interval_cases h : finrank F { x // x ∈ S }

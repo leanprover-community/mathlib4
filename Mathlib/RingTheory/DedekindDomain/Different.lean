@@ -576,9 +576,6 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomai
     isSeparable_tower_top_of_isSeparable (FractionRing A) _ _
   have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
     isSeparable_tower_bot_of_isSeparable _ _ (FractionRing C)
-  have : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
-  have : FiniteDimensional (FractionRing A) (FractionRing C) := .of_isLocalization A C A⁰
-  have : FiniteDimensional (FractionRing B) (FractionRing C) := .of_isLocalization B C B⁰
   rw [← coeIdeal_inj (K := FractionRing C), coeIdeal_mul, coeIdeal_differentIdeal A
     (FractionRing A), coeIdeal_differentIdeal B (FractionRing B)]
   rw [← extendedHom_coeIdeal_eq_map (K := FractionRing B), coeIdeal_differentIdeal A
@@ -760,9 +757,6 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
       exact differentIdeal_ne_bot
     · obtain rfl := hxQ
       simp at hx
-  let : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
-      rw [← Ideal.map_le_iff_le_comap, ← hP]
-      exact Ideal.mul_le_left)
   let K := FractionRing A
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=

@@ -61,7 +61,6 @@ theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKerne
       have : i.inv.app X ≫ G.map (F.map f) ≫ i.hom.app Y = f := by
         simpa using NatIso.naturality_1 i f
       rw [← this]
-      have : HasKernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasKernel_comp_mono _ _
       apply Limits.hasKernel_iso_comp }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -72,7 +71,6 @@ theorem hasCokernels (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) : HasCokernels C :
       have : i.inv.app X ≫ G.map (F.map f) ≫ i.hom.app Y = f := by
         simpa using NatIso.naturality_1 i f
       rw [← this]
-      have : HasCokernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasCokernel_comp_iso _ _
       apply Limits.hasCokernel_epi_comp }
 
 end AbelianOfAdjunction

@@ -514,8 +514,6 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     by_contra! ⟨⟨MF, hMF⟩, MT, hMT⟩
     rw [Sentence.realize_not, Classical.not_not] at hMT
     refine hMF ?_
-    have := hT MT
-    have := hT MF
     obtain ⟨NT, MNT, hNT⟩ := exists_elementarilyEquivalent_card_eq L MT κ h1 h2
     obtain ⟨NF, MNF, hNF⟩ := exists_elementarilyEquivalent_card_eq L MF κ h1 h2
     obtain ⟨TF⟩ := h (MNT.toModel T) (MNF.toModel T) hNT hNF

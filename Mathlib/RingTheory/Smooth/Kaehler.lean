@@ -117,10 +117,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
     retractionOfSectionOfKerSqZero g hf' hg (s ⊗ₜ .D _ _ t) =
       g s * t - g s * g (algebraMap _ _ t) := by
-  let := g.toRingHom.toAlgebra
-  have := isScalarTower_of_section_of_ker_sqZero g hf' hg
   simp only [retractionOfSectionOfKerSqZero, LinearMap.coe_restrictScalars,
-    LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
+    LinearMap.liftBaseChange_tmul]
   -- The issue is a mismatch between `RingHom.ker (algebraMap P S)` and
   -- `RingHom.ker (IsScalarTower.toAlgHom R P S)`, but `rw` and `simp` can't rewrite it away...
   erw [Derivation.liftKaehlerDifferential_comp_D]
