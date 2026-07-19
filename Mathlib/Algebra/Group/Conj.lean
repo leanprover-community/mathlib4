@@ -87,19 +87,19 @@ theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
     ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
 
 @[to_additive (attr := simp)]
-theorem isConj_conj_self {a b : α} : IsConj (a * b * a⁻¹) b :=
+theorem isConj_mul_mul_inv_left {a b : α} : IsConj (a * b * a⁻¹) b :=
   isConj_iff.2 ⟨a⁻¹, by simp [mul_assoc]⟩
 
 @[to_additive (attr := simp)]
-theorem isConj_conj_symm_self {a b : α} : IsConj (a⁻¹ * b * a) b :=
+theorem isConj_inv_mul_mul_left {a b : α} : IsConj (a⁻¹ * b * a) b :=
   isConj_iff.2 ⟨a, by simp [mul_assoc]⟩
 
 @[to_additive (attr := simp)]
-theorem isConj_self_conj {a b : α} : IsConj b (a * b * a⁻¹) :=
+theorem isConj_mul_mul_inv_right {a b : α} : IsConj b (a * b * a⁻¹) :=
   isConj_conj_self.symm
 
 @[to_additive (attr := simp)]
-theorem isConj_self_conj_symm {a b : α} : IsConj b (a⁻¹ * b * a) :=
+theorem isConj_inv_mul_mul_right {a b : α} : IsConj b (a⁻¹ * b * a) :=
   isConj_conj_symm_self.symm
 
 @[to_additive]
