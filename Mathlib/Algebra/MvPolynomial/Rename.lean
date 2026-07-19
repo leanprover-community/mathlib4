@@ -288,8 +288,7 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
     refine ⟨s ∪ t, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p + rename (Subtype.map id ?_) q <;>
-        simp +contextual only [id, true_or, or_true,
-          Finset.mem_union, forall_true_iff]
+        simp +contextual only [id, true_or, or_true, Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, map_add]
       rfl
   · rintro p n ⟨s, p, rfl⟩

@@ -107,8 +107,7 @@ def sumInv (pqr : Multiset ℕ+) : ℚ :=
   Multiset.sum (pqr.map fun (x : ℕ+) => x⁻¹)
 
 theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ := by
-  simp only [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons,
-    map_singleton, sum_singleton]
+  simp only [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons, map_singleton, sum_singleton]
 
 /-- A multiset `pqr` of positive natural numbers is `Admissible`
 if it is equal to `A' q r`, or `D' r`, or one of `E6`, `E7`, or `E8`. -/

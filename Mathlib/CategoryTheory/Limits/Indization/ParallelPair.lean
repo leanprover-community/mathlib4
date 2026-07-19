@@ -103,8 +103,7 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.1.left
   naturality _ _ h := by
     have := h.w
-    simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff,
-      CostructuredArrow.hom_eq_iff] at this
+    simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff, CostructuredArrow.hom_eq_iff] at this
     exact this.1
 
 set_option backward.defeqAttrib.useBackward true in
@@ -119,8 +118,7 @@ def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.2.left
   naturality _ _ h := by
     have := h.w
-    simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff,
-      CostructuredArrow.hom_eq_iff] at this
+    simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff, CostructuredArrow.hom_eq_iff] at this
     exact this.2
 
 set_option backward.defeqAttrib.useBackward true in

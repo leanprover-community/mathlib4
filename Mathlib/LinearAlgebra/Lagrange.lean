@@ -263,8 +263,7 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
   · rw [degree_one, ← WithBot.coe_zero, Nat.cast_withBot, WithBot.coe_lt_coe]
     exact Nonempty.card_pos hs
   · intro i hi
-    rw [eval_finsetSum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi,
-      add_eq_left]
+    rw [eval_finsetSum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi, add_eq_left]
     refine sum_eq_zero fun j hj => ?_
     rcases mem_erase.mp hj with ⟨hij, _⟩
     rw [eval_basis_of_ne hij hi]
@@ -443,10 +442,9 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
       interpolate (s.erase j) v r * basisDivisor (v i) (v j) +
         interpolate (s.erase i) v r * basisDivisor (v j) (v i) := by
   rw [interpolate_eq_sum_interpolate_insert_sdiff _ hvs ⟨i, mem_insert_self i {j}⟩ _,
-    sum_insert (notMem_singleton.mpr hij), sum_singleton, basis_pair_left hij,
-    basis_pair_right hij, sdiff_insert_insert_of_mem_of_notMem hi (notMem_singleton.mpr hij),
-    sdiff_singleton_eq_erase, pair_comm,
-    sdiff_insert_insert_of_mem_of_notMem hj (notMem_singleton.mpr hij.symm),
+    sum_insert (notMem_singleton.mpr hij), sum_singleton, basis_pair_left hij, basis_pair_right hij,
+    sdiff_insert_insert_of_mem_of_notMem hi (notMem_singleton.mpr hij), sdiff_singleton_eq_erase,
+    pair_comm, sdiff_insert_insert_of_mem_of_notMem hj (notMem_singleton.mpr hij.symm),
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 

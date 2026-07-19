@@ -88,8 +88,7 @@ noncomputable def adjunction :
         intros
         dsimp [Functor.FullyFaithful.homEquiv]
         -- these erw seem difficult to remove
-        erw [Adjunction.homEquiv_naturality_left_symm,
-          Adjunction.homEquiv_naturality_left_symm]
+        erw [Adjunction.homEquiv_naturality_left_symm, Adjunction.homEquiv_naturality_left_symm]
         dsimp [pushforward_obj_val]
         simp only [Functor.map_comp, Category.assoc]
       homEquiv_naturality_right := by

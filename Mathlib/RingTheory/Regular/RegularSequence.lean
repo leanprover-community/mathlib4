@@ -166,13 +166,11 @@ private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
     convert! AddSubgroup.map_bot f using 1 <;>
       rw [Ideal.ofList_nil, bot_smul, bot_toAddSubgroup]
   | @cons r s _ _ h _ ih =>
-    conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup,
-      ideal_span_singleton_smul, pointwise_smul_toAddSubgroup,
-      top_toAddSubgroup, AddSubgroup.pointwise_smul_def]
+    conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup, ideal_span_singleton_smul,
+      pointwise_smul_toAddSubgroup, top_toAddSubgroup, AddSubgroup.pointwise_smul_def]
     apply DFunLike.ext (f.comp (toAddMonoidEnd R M r))
       ((toAddMonoidEnd S M₂ s).comp f) at h
-    rw [AddSubgroup.map_sup, ih, map_map, h, ← map_map,
-      map_top_of_surjective f hf]
+    rw [AddSubgroup.map_sup, ih, map_map, h, ← map_map, map_top_of_surjective f hf]
 
 lemma _root_.AddEquiv.isWeaklyRegular_congr {e : M ≃+ M₂} {as bs}
     (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :

@@ -96,7 +96,6 @@ lemma quasiIso_iff_of_injective {K L : CochainComplex C ℕ}
     (f : K ⟶ L) :
     QuasiIso f ↔ homotopyEquivalences C (.up ℕ) f := by
   rw [← quasiIso_extendMap_iff _ ComplexShape.embeddingUpNat,
-    CochainComplex.IsKInjective.quasiIso_iff,
-    homotopyEquivalences_extendMap_iff]
+    CochainComplex.IsKInjective.quasiIso_iff, homotopyEquivalences_extendMap_iff]
 
 end CochainComplex

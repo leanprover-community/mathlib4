@@ -159,8 +159,7 @@ theorem zmodEquivTrunc_compat (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂) :
     (TruncatedWittVector.truncate hk).comp
         ((zmodEquivTrunc p k₂).toRingHom.comp (PadicInt.toZModPow k₂)) =
       (zmodEquivTrunc p k₁).toRingHom.comp (PadicInt.toZModPow k₁) := by
-  rw [← RingHom.comp_assoc, commutes, RingHom.comp_assoc,
-    PadicInt.zmod_cast_comp_toZModPow _ _ hk]
+  rw [← RingHom.comp_assoc, commutes, RingHom.comp_assoc, PadicInt.zmod_cast_comp_toZModPow _ _ hk]
 
 /-- `fromPadicInt` uses `WittVector.lift` to lift `TruncatedWittVector.zmodEquivTrunc`
 composed with `PadicInt.toZModPow` to a ring hom `ℤ_[p] →+* 𝕎 (ZMod p)`.

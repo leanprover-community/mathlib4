@@ -397,17 +397,15 @@ theorem X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd (R) [CommRing 
     (hdvd : d ∣ n) (hn : n ≠ 0) :
     ((X ^ d - 1) * ∏ x ∈ n.divisors \ d.divisors, cyclotomic x R) = X ^ n - 1 := by
   have h0d : 0 < d := Nat.pos_of_dvd_of_pos hdvd (by positivity)
-  rw [← prod_cyclotomic_eq_X_pow_sub_one h0d,
-    ← prod_cyclotomic_eq_X_pow_sub_one (by positivity), mul_comm,
-    Finset.prod_sdiff (by gcongr)]
+  rw [← prod_cyclotomic_eq_X_pow_sub_one h0d, ← prod_cyclotomic_eq_X_pow_sub_one (by positivity),
+    mul_comm, Finset.prod_sdiff (by gcongr)]
 
 theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
     (h : d ∈ n.properDivisors) : (X ^ d - 1) * cyclotomic n R ∣ X ^ n - 1 := by
   rw [Nat.mem_properDivisors] at h
   use ∏ x ∈ n.properDivisors \ d.divisors, cyclotomic x R
   rw [← X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd R h.1 h.2.ne_bot,
-    ← Nat.insert_self_properDivisors, Finset.insert_sdiff_of_notMem,
-    Finset.prod_insert, mul_assoc]
+    ← Nat.insert_self_properDivisors, Finset.insert_sdiff_of_notMem, Finset.prod_insert, mul_assoc]
   · exact Finset.notMem_sdiff_of_notMem_left Nat.self_notMem_properDivisors
   · exact fun hk => h.2.not_ge <| Nat.divisor_le hk
   · exact h.2.ne_bot

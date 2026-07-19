@@ -82,8 +82,7 @@ lemma sUnion_memPartition (f : ℕ → Set α) (n : ℕ) : ⋃₀ memPartition f
     rw [memPartition_succ]
     ext x
     have : x ∈ ⋃₀ memPartition f n := by simp [ih]
-    simp only [mem_sUnion, mem_univ,
-      iff_true] at this ⊢
+    simp only [mem_sUnion, mem_univ, iff_true] at this ⊢
     obtain ⟨t, ht, hxt⟩ := this
     by_cases hxf : x ∈ f n
     · exact ⟨t ∩ f n, ⟨t, ht, Or.inl rfl⟩, hxt, hxf⟩

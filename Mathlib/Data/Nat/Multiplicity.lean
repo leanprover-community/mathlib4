@@ -64,8 +64,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
       congr_arg _ <|
         congr_arg card <|
           Finset.ext fun i => by
-            simp only [mem_Ico, Nat.lt_succ_iff,
-              fin.pow_dvd_iff_le_multiplicity, mem_filter,
+            simp only [mem_Ico, Nat.lt_succ_iff, fin.pow_dvd_iff_le_multiplicity, mem_filter,
               and_assoc, and_congr_right_iff, iff_and_self]
             intro hi h
             rw [← fin.pow_dvd_iff_le_multiplicity] at h
@@ -233,8 +232,7 @@ theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k
       have hdisj :
         Disjoint {i ∈ Ico 1 n.succ | p ^ i ≤ k % p ^ i + (p ^ n - k) % p ^ i}
           {i ∈ Ico 1 n.succ | p ^ i ∣ k} := by
-        simp +contextual [disjoint_right, *, dvd_iff_mod_eq_zero,
-          Nat.mod_lt _ (pow_pos hp.pos _)]
+        simp +contextual [disjoint_right, *, dvd_iff_mod_eq_zero, Nat.mod_lt _ (pow_pos hp.pos _)]
       rw [emultiplicity_choose hp hkn (lt_succ_self _),
         emultiplicity_eq_card_pow_dvd (ne_of_gt hp.one_lt) hk0.bot_lt
           (lt_succ_of_le (log_mono_right hkn)),

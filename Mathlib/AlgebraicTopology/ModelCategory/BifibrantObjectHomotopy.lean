@@ -334,11 +334,9 @@ lemma bifibrantResolutionObj_hom_ext
   obtain ⟨g, rfl⟩ := BifibrantObject.toHoCat.map_surjective g
   change toHoCat.map (X.iBifibrantResolutionObj ≫ BifibrantObject.ιCofibrantObject.map f) =
     toHoCat.map (X.iBifibrantResolutionObj ≫ BifibrantObject.ιCofibrantObject.map g) at h
-  rw [CofibrantObject.toHoCat_map_eq_iff,
-    CofibrantObject.homRel_iff_rightHomotopyRel,
+  rw [CofibrantObject.toHoCat_map_eq_iff, CofibrantObject.homRel_iff_rightHomotopyRel,
     ← RightHomotopyClass.mk_eq_mk_iff] at h
-  rw [BifibrantObject.toHoCat_map_eq_iff,
-    BifibrantObject.homRel_iff_rightHomotopyRel,
+  rw [BifibrantObject.toHoCat_map_eq_iff, BifibrantObject.homRel_iff_rightHomotopyRel,
     ← RightHomotopyClass.mk_eq_mk_iff]
   apply (RightHomotopyClass.precomp_bijective_of_cofibration_of_weakEquivalence
     _ (iBifibrantResolutionObj X).hom).1
@@ -390,8 +388,7 @@ lemma HoCat.adjUnit_app (X : CofibrantObject C) :
 set_option backward.isDefEq.respectTransparency false in
 instance (X : CofibrantObject.HoCat C) : WeakEquivalence (HoCat.adjUnit.app X) := by
   obtain ⟨X, rfl⟩ := toHoCat_obj_surjective X
-  rw [HoCat.adjUnit_app, weakEquivalence_toHoCat_map_iff,
-    weakEquivalence_iff_of_objectProperty]
+  rw [HoCat.adjUnit_app, weakEquivalence_toHoCat_map_iff, weakEquivalence_iff_of_objectProperty]
   infer_instance
 
 /-- Auxiliary definition for `CofibrantObject.HoCat.adj`. -/

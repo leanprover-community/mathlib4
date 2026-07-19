@@ -67,9 +67,8 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
   dist_comm x y :=
     NNReal.coe_inj.2 <| by
       refine reverse_surjective.iInf_congr _ fun l ↦ ?_
-      rw [← sum_reverse, reverse_zipWith, reverse_append, reverse_reverse,
-        reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
-        zipWith_comm_of_comm dist_comm]
+      rw [← sum_reverse, reverse_zipWith, reverse_append, reverse_reverse, reverse_singleton,
+        singleton_append, reverse_cons, reverse_reverse, zipWith_comm_of_comm dist_comm]
       simp only [length, length_append]
   dist_triangle x y z := by
     rw [← NNReal.coe_add, NNReal.coe_le_coe]

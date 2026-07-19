@@ -98,8 +98,7 @@ lemma mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a = 1
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_eq_one : (mulIndicator s f = fun _ => 1) ↔ Disjoint (mulSupport f) s := by
-  simp only [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport,
-    not_imp_not]
+  simp only [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport, not_imp_not]
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_eq_one' : mulIndicator s f = 1 ↔ Disjoint (mulSupport f) s :=
@@ -263,8 +262,7 @@ lemma mulIndicator_preimage_of_notMem (s : Set α) (f : α → M) {t : Set M} (h
 @[to_additive]
 lemma mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :
     r ∈ range (mulIndicator s f) ↔ r = 1 ∧ s ≠ univ ∨ r ∈ f '' s := by
-  simp [mulIndicator, ite_eq_iff, exists_or, eq_univ_iff_forall, and_comm, or_comm,
-    @eq_comm _ r 1]
+  simp [mulIndicator, ite_eq_iff, exists_or, eq_univ_iff_forall, and_comm, or_comm, @eq_comm _ r 1]
 
 @[to_additive]
 lemma mulIndicator_rel_mulIndicator {r : M → M → Prop} (h1 : r 1 1) (ha : a ∈ s → r (f a) (g a)) :

@@ -108,8 +108,7 @@ of `⨅ i, 𝓟 (s i)`. -/
 theorem hasBasis_iInf_principal_finite {ι : Type*} (s : ι → Set α) :
     (⨅ i, 𝓟 (s i)).HasBasis (fun t : Set ι => t.Finite) fun t => ⋂ i ∈ t, s i := by
   refine ⟨fun U => (mem_iInf_finite _).trans ?_⟩
-  simp only [iInf_principal_finset, mem_principal,
-    exists_finite_iff_finset, Finset.set_biInter_coe]
+  simp only [iInf_principal_finset, mem_principal, exists_finite_iff_finset, Finset.set_biInter_coe]
 
 end SameType
 

@@ -213,9 +213,8 @@ lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
 
 lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
     ‖(x : v.Completion)‖ = |x| := by
-  rw [← (WithAbs.equiv v.1).apply_symm_apply x, WithAbs.ratCast_equiv,
-    norm_coe, (WithAbs.equiv v.1).apply_symm_apply,
-    Rat.infinitePlace_apply]
+  rw [← (WithAbs.equiv v.1).apply_symm_apply x, WithAbs.ratCast_equiv, norm_coe,
+    (WithAbs.equiv v.1).apply_symm_apply, Rat.infinitePlace_apply]
 
 /-- The completion of a number field at an infinite place is locally compact. -/
 instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=

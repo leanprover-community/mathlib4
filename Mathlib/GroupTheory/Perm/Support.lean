@@ -384,8 +384,7 @@ theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.support ∩ g.support, f x = g
     rwa [mem_inter, apply_mem_support, ← h _ hx, apply_mem_support, ← mem_inter]
 
 theorem disjoint_iff_disjoint_support : Disjoint f g ↔ _root_.Disjoint f.support g.support := by
-  simp [disjoint_iff_eq_or_eq, disjoint_iff, disjoint_iff, Finset.ext_iff,
-    imp_iff_not_or]
+  simp [disjoint_iff_eq_or_eq, disjoint_iff, disjoint_iff, Finset.ext_iff, imp_iff_not_or]
 
 theorem Disjoint.disjoint_support (h : Disjoint f g) : _root_.Disjoint f.support g.support :=
   disjoint_iff_disjoint_support.1 h
@@ -530,8 +529,7 @@ variable {β : Type*} [DecidableEq β] [Fintype β] {p : β → Prop} [Decidable
 theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
     support (g.extendDomain f) = g.support.map f.asEmbedding := by
   ext b
-  simp only [mem_map, Ne,
-    mem_support]
+  simp only [mem_map, Ne, mem_support]
   by_cases pb : p b
   · rw [extendDomain_apply_subtype _ _ pb]
     grind [asEmbedding_apply]

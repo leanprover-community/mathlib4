@@ -245,8 +245,7 @@ theorem min_weightedOrder_le_add :
     min (f.weightedOrder w) (g.weightedOrder w) ≤ (f + g).weightedOrder w := by
   apply le_weightedOrder w
   simp +contextual only
-    [coeff_eq_zero_of_lt_weightedOrder w, lt_min_iff, map_add, add_zero,
-      imp_true_iff]
+    [coeff_eq_zero_of_lt_weightedOrder w, lt_min_iff, map_add, add_zero, imp_true_iff]
 
 private theorem weightedOrder_add_of_weightedOrder_lt.aux
     (H : f.weightedOrder w < g.weightedOrder w) :
@@ -597,8 +596,7 @@ def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowe
     · rw [add_zero]
   map_smul' a f := by
     ext d
-    simp only [map_smul,
-      smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, mul_zero]
+    simp only [map_smul, smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, mul_zero]
 
 theorem coeff_weightedHomogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : MvPowerSeries σ R) :
     coeff d (weightedHomogeneousComponent w p f) =

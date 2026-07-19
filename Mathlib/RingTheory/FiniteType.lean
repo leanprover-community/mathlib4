@@ -390,8 +390,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
     · rintro m₁ m₂ _ _ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
-          rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
-            one_mul]; rfl⟩
+          rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]; rfl⟩
   | hadd f g ihf ihg =>
     rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
@@ -418,8 +417,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     · rintro m₁ m₂ _ _ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
-          rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
-            one_mul]; rfl⟩
+          rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]; rfl⟩
   | hadd f g ihf ihg =>
     rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩

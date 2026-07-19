@@ -75,8 +75,7 @@ lemma quotient_of_nonempty_leftHomotopy (e : T ⋙ R ≅ L ⋙ B)
   obtain ⟨P, hP, ⟨h⟩⟩ := he s₀.val s₁.val (by simp [s₀.property, s₁.property])
   let Z' : CostructuredArrowDownwards e.hom g :=
     CostructuredArrowDownwards.mk _ _ P.I (e₀.inv ≫ T.map P.i₀) h.h (by
-      simp [R.map_comp, ← B.map_comp, dsimp% h.h₀, s₀.property,
-        dsimp% e.hom.naturality_assoc P.i₀])
+      simp [R.map_comp, ← B.map_comp, dsimp% h.h₀, s₀.property, dsimp% e.hom.naturality_assoc P.i₀])
   calc
     Zigzag A₀ (Z s₀) := .of_inv f₀
     Zigzag (Z s₀) Z' := .of_hom <|

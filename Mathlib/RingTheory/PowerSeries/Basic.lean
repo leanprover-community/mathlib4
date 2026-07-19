@@ -430,16 +430,14 @@ theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
     φ = (mk fun p => coeff (p + 1) φ) * X + C (constantCoeff φ) := by
   ext (_ | n)
   · simp
-  · simp only [coeff_succ_mul_X, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
-      if_false, add_zero]
+  · simp only [coeff_succ_mul_X, coeff_mk, map_add, coeff_C, n.succ_ne_zero, if_false, add_zero]
 
 /-- Split off the constant coefficient. -/
 theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
     φ = (X * mk fun p => coeff (p + 1) φ) + C (constantCoeff φ) := by
   ext (_ | n)
   · simp
-  · simp only [coeff_succ_X_mul, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
-      if_false, add_zero]
+  · simp only [coeff_succ_X_mul, coeff_mk, map_add, coeff_C, n.succ_ne_zero, if_false, add_zero]
 
 section Map
 
@@ -571,8 +569,7 @@ theorem coeff_rescale (f : R⟦X⟧) (a : R) (n : ℕ) :
 @[simp]
 theorem rescale_zero : rescale 0 = (C (R := R)).comp constantCoeff := by
   ext x n
-  simp only [Function.comp_apply, RingHom.coe_comp, rescale, RingHom.coe_mk,
-    coeff_C]
+  simp only [Function.comp_apply, RingHom.coe_comp, rescale, RingHom.coe_mk, coeff_C]
   split_ifs with h <;> simp [h]
 
 theorem rescale_zero_apply (f : R⟦X⟧) : rescale 0 f = C (constantCoeff f) := by simp

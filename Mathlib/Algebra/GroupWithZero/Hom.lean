@@ -189,8 +189,7 @@ lemma cancel_right {g₁ g₂ : β →*₀ γ} {f : α →*₀ β} (hf : Surject
 
 lemma cancel_left {g : β →*₀ γ} {f₁ f₂ : α →*₀ β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ ext fun x ↦ hg <| by rw [← comp_apply, h,
-    comp_apply], fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext fun x ↦ hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 lemma toMonoidHom_injective : Injective (toMonoidHom : (α →*₀ β) → α →* β) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective

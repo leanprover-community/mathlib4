@@ -354,8 +354,7 @@ def ofPolar (toFun : M → N) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
 /-- In a ring the companion bilinear form is unique and equal to `QuadraticMap.polar`. -/
 theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
   LinearMap.ext₂ fun x y => by
-    rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub,
-      add_sub_cancel_left]
+    rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub, add_sub_cancel_left]
 
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i)
@@ -365,9 +364,8 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Fi
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
-      Sym2.mkEmbedding_apply, Sym2.mk_isDiag_iff, not_true, if_false, zero_add,
-      Sym2.map_mk, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
-      polarBilin_apply_apply]
+      Sym2.mkEmbedding_apply, Sym2.mk_isDiag_iff, not_true, if_false, zero_add, Sym2.map_mk,
+      polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply]
     congr 2
     rw [add_comm]
     congr! with i hi

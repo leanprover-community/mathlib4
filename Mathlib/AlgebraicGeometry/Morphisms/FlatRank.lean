@@ -109,8 +109,7 @@ private lemma Scheme.Hom.finrank_eq_finrank_snd_of_isAffine (g : T ⟶ S) [IsAff
 
 private lemma Scheme.Hom.finrank_eq_of_isAffine [IsAffine S] [Flat f] [IsFinite f] (s : S) :
     f.finrank s = IsAffine.finrank f s := by
-  rw [show s = (𝟙 S : S ⟶ S) s from rfl, finrank_eq_finrank_snd_of_isAffine,
-    IsAffine.finrank_snd]
+  rw [show s = (𝟙 S : S ⟶ S) s from rfl, finrank_eq_finrank_snd_of_isAffine, IsAffine.finrank_snd]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]

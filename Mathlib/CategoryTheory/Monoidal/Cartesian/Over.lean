@@ -309,8 +309,7 @@ lemma prodComparisonIso_pullback_inv_left_fst_fst (f : X ⟶ Y) (A B : Over Y) :
     (prodComparisonIso (Over.pullback f) A B).inv.left ≫
       pullback.fst (pullback.fst A.hom B.hom ≫ A.hom) f ≫ pullback.fst _ _ =
         pullback.fst (pullback.snd A.hom f) (pullback.snd B.hom f) ≫ pullback.fst _ _ := by
-  rw [← cancel_epi (prodComparisonIso (Over.pullback f) A B).hom.left,
-    Over.hom_left_inv_left_assoc]
+  rw [← cancel_epi (prodComparisonIso (Over.pullback f) A B).hom.left, Over.hom_left_inv_left_assoc]
   simp [CartesianMonoidalCategory.prodComparison, fst]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -328,8 +327,7 @@ lemma prodComparisonIso_pullback_inv_left_fst_snd' (f : X ⟶ Y) (gA : A ⟶ Y) 
     (prodComparisonIso (Over.pullback f) (.mk gA) (.mk gB)).inv.left ≫
       pullback.fst (pullback.fst gA gB ≫ gA) f ≫ pullback.snd _ _ =
         pullback.snd _ _ ≫ pullback.fst _ _ := by
-  rw [← cancel_epi (prodComparisonIso (Over.pullback f) _ _).hom.left,
-    Over.hom_left_inv_left_assoc]
+  rw [← cancel_epi (prodComparisonIso (Over.pullback f) _ _).hom.left, Over.hom_left_inv_left_assoc]
   simp [CartesianMonoidalCategory.prodComparison, snd]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -337,8 +335,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma prodComparisonIso_pullback_inv_left_snd' (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
     (prodComparisonIso (Over.pullback f) (.mk gA) (.mk gB)).inv.left ≫
       pullback.snd (pullback.fst gA gB ≫ gA) f = pullback.snd _ _ ≫ pullback.snd _ _ := by
-  rw [← cancel_epi (prodComparisonIso (Over.pullback f) _ _).hom.left,
-    Over.hom_left_inv_left_assoc]
+  rw [← cancel_epi (prodComparisonIso (Over.pullback f) _ _).hom.left, Over.hom_left_inv_left_assoc]
   simp [CartesianMonoidalCategory.prodComparison]
 
 set_option backward.isDefEq.respectTransparency.types false in

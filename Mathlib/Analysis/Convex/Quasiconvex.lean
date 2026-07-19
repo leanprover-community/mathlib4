@@ -162,8 +162,7 @@ open scoped Set.Notation
 theorem QuasiconcaveOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
     (hfc : QuasiconcaveOn ℝ s f) :
     IsPreconnected (s ↓∩ (f ⁻¹' Ici t)) := by
-  rw [← Topology.IsInducing.subtypeVal.isPreconnected_image,
-    image_preimage_eq_inter_range,
+  rw [← Topology.IsInducing.subtypeVal.isPreconnected_image, image_preimage_eq_inter_range,
     Subtype.range_coe, inter_comm]
   exact (hfc t).isPreconnected
 

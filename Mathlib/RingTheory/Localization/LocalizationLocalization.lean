@@ -216,8 +216,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
         (IsLocalization.map_units T ⟨(s₂ : R), h s₂.prop⟩)
       simp only [IsScalarTower.algebraMap_apply R S T] at h₁ h₂
       simp only [IsScalarTower.algebraMap_apply R S T, map_mul, ← e₁, ← e₂, ← mul_assoc,
-        mul_right_comm _ (algebraMap R S s₂),
-        (IsLocalization.map_units S s₁).mul_left_inj,
+        mul_right_comm _ (algebraMap R S s₂), (IsLocalization.map_units S s₁).mul_left_inj,
         (IsLocalization.map_units S s₂).mul_left_inj] at this
       rw [h₂, h₁] at this
       simpa only [mul_comm] using! this
@@ -272,8 +271,7 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
     apply IsLocalization.injective S hM
     rw [map_zero]
     apply hx
-    rw [← (map_units S s).mul_left_inj, mul_assoc, e, ← map_mul, hz, map_zero,
-      zero_mul]
+    rw [← (map_units S s).mul_left_inj, mul_assoc, e, ← map_mul, hz, map_zero, zero_mul]
 
 theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [CommRing S]
     [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

@@ -138,9 +138,8 @@ lemma orthRadius_parallel_orthRadius_iff {s : Sphere P} {p q : P} :
     s.orthRadius p ∥ s.orthRadius q ↔ ∃ r : ℝ, r ≠ 0 ∧ q -ᵥ s.center = r • (p -ᵥ s.center) := by
   simp_rw [orthRadius, parallel_iff_direction_eq_and_eq_bot_iff_eq_bot, direction_mk',
     Submodule.orthogonalComplement_eq_orthogonalComplement,
-    Submodule.span_singleton_eq_span_singleton, ← coe_eq_bot_iff,
-    ← Set.not_nonempty_iff_eq_empty, mk'_nonempty, and_true, ← Units.exists_iff_ne_zero, eq_comm,
-    Units.smul_def]
+    Submodule.span_singleton_eq_span_singleton, ← coe_eq_bot_iff, ← Set.not_nonempty_iff_eq_empty,
+    mk'_nonempty, and_true, ← Units.exists_iff_ne_zero, eq_comm, Units.smul_def]
 
 lemma dist_sq_eq_iff_mem_orthRadius {s : Sphere P} {p q : P} :
     (dist q s.center) ^ 2 = (dist p s.center) ^ 2 + (dist q p) ^ 2 ↔ q ∈ s.orthRadius p := by

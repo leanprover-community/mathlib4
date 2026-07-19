@@ -326,8 +326,7 @@ theorem IsUniversalColimit.map_reflective
         rw [Category.comp_id, Category.assoc]
   have :
       cf.hom ≫ (PreservesPullback.iso _ _ _).hom ≫ pullback.fst _ _ ≫ adj.counit.app _ = 𝟙 _ := by
-    simp only [cf, IsIso.inv_hom_id, Iso.inv_hom_id_assoc, Category.assoc,
-      pullback.lift_fst_assoc]
+    simp only [cf, IsIso.inv_hom_id, Iso.inv_hom_id_assoc, Category.assoc, pullback.lift_fst_assoc]
   have : IsIso cf := by
     apply @Cocone.cocone_iso_of_hom_iso (i := ?_)
     rw [← IsIso.eq_comp_inv] at this
@@ -606,8 +605,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     (fun i ↦ (Discrete.functor F').obj ⟨i⟩) H₁ H₂) <| Cocone.ext (Iso.refl _) ?_⟩
   dsimp
   rintro ⟨j⟩
-  simp only [limit.lift_π, PullbackCone.mk_pt,
-    PullbackCone.mk_π_app, Category.comp_id]
+  simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
   induction j using Fin.inductionOn
   · simp only [Fin.cases_zero]
   · simp only [Fin.cases_succ]
@@ -649,8 +647,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
       (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))))
     · intro T f₁ f₂
       simp only [Discrete.functor_obj, pair_obj_left, BinaryCofan.mk_pt, Functor.const_obj_obj,
-        BinaryCofan.mk_inl, IsColimit.fac, Cofan.mk_pt, Cofan.mk_ι_app,
-        Fin.cases_zero]
+        BinaryCofan.mk_inl, IsColimit.fac, Cofan.mk_pt, Cofan.mk_ι_app, Fin.cases_zero]
     · intro T f₁ f₂
       simp only [Discrete.functor_obj, pair_obj_right, BinaryCofan.mk_pt, Functor.const_obj_obj,
         BinaryCofan.mk_inr]

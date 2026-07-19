@@ -151,8 +151,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by lia)
   · rw [List.getElem?_append_right (List.length_replicate ▸ hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
-    · rw [List.length_map, List.length_range,
-        List.getElem?_range (by lia), Option.map_some]
+    · rw [List.length_map, List.length_range, List.getElem?_range (by lia), Option.map_some]
       congr 2
       lia
     · simp

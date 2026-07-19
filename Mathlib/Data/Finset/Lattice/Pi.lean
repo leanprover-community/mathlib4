@@ -33,8 +33,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   | insert i s hi ih => ?_
   rw [inf_insert, ih, attach_insert, sup_inf_sup]
   refine eq_of_forall_ge_iff fun c => ?_
-  simp only [Finset.sup_le_iff, mem_product, mem_pi, and_imp, Prod.forall,
-    inf_insert, inf_image]
+  simp only [Finset.sup_le_iff, mem_product, mem_pi, and_imp, Prod.forall, inf_insert, inf_image]
   refine
     ⟨fun h g hg =>
       h (g i <| mem_insert_self _ _) (fun j hj => g j <| mem_insert_of_mem hj)

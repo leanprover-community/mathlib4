@@ -152,8 +152,7 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
   rcases p with ⟨x, v⟩
   dsimp
   rintro ⟨z, w⟩ ⟨hz, -⟩
-  simp only [mem_inter_iff, mem_preimage, Function.comp_apply,
-    mem_range] at hz
+  simp only [mem_inter_iff, mem_preimage, Function.comp_apply, mem_range] at hz
   simp only [FiberBundle.chartedSpace_chartAt, OpenPartialHomeomorph.coe_trans_symm, mem_inter_iff,
     mem_preimage, Function.comp_apply, mem_range]
   constructor

@@ -134,9 +134,8 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
           dsimp; rw [ContMDiffMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
       fun g g' => by
         dsimp
-        rw [ContMDiffMap.mul_comp, Derivation.leibniz,
-          PointedContMDiffMap.smul_def, ContMDiffMap.comp_apply,
-          PointedContMDiffMap.smul_def, ContMDiffMap.comp_apply, h]
+        rw [ContMDiffMap.mul_comp, Derivation.leibniz, PointedContMDiffMap.smul_def,
+          ContMDiffMap.comp_apply, PointedContMDiffMap.smul_def, ContMDiffMap.comp_apply, h]
         norm_cast
   map_smul' _ _ := rfl
   map_add' _ _ := rfl

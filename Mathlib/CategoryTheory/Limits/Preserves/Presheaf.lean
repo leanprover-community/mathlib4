@@ -155,12 +155,11 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     ι_colimitLimitIso_limit_π_assoc, isoAux_hom_app, ← NatTrans.comp_app_assoc,
     ← NatTrans.comp_app_assoc, Category.assoc, HasLimit.isoOfNatIso_hom_π,
-    preservesLimitIso_hom_π_assoc, Iso.symm_hom,
-    ← NatTrans.comp_app_assoc, HasColimit.isoOfNatIso_ι_hom,
-    ← NatTrans.comp_app_assoc, Category.assoc,
-    ι_colimitCompWhiskeringLeftIsoCompColimit_hom,
-    NatTrans.comp_app, Category.assoc, isoWhiskerLeft_hom, NatTrans.comp_app, Category.assoc,
-    ← NatTrans.comp_app, ← whiskerLeft_comp, colimit.comp_coconePointUniqueUpToIso_hom]
+    preservesLimitIso_hom_π_assoc, Iso.symm_hom, ← NatTrans.comp_app_assoc,
+    HasColimit.isoOfNatIso_ι_hom, ← NatTrans.comp_app_assoc, Category.assoc,
+    ι_colimitCompWhiskeringLeftIsoCompColimit_hom, NatTrans.comp_app, Category.assoc,
+    isoWhiskerLeft_hom, NatTrans.comp_app, Category.assoc, ← NatTrans.comp_app, ← whiskerLeft_comp,
+    colimit.comp_coconePointUniqueUpToIso_hom]
   have := i.hom.naturality (limit.π K j)
   dsimp only [yoneda_obj_obj, Functor.const_obj_obj] at this
   rw [← this]

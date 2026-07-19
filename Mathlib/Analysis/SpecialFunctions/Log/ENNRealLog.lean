@@ -54,8 +54,7 @@ noncomputable def log (x : ℝ≥0∞) : EReal :=
 
 @[simp]
 lemma log_ofReal (x : ℝ) : log (ENNReal.ofReal x) = if x ≤ 0 then ⊥ else ↑(Real.log x) := by
-  simp only [log, ENNReal.ofReal_ne_top,
-    ENNReal.ofReal_eq_zero, if_false]
+  simp only [log, ENNReal.ofReal_ne_top, ENNReal.ofReal_eq_zero, if_false]
   split_ifs with h_nonpos
   · rfl
   · rw [ENNReal.toReal_ofReal (not_le.mp h_nonpos).le]

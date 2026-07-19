@@ -215,8 +215,7 @@ theorem hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMe
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
-  rw [hasFiniteIntegral_congr h1f.ae_eq_mk,
-    hasFiniteIntegral_prod_iff h1f.stronglyMeasurable_mk]
+  rw [hasFiniteIntegral_congr h1f.ae_eq_mk, hasFiniteIntegral_prod_iff h1f.stronglyMeasurable_mk]
   apply and_congr
   · apply eventually_congr
     filter_upwards [ae_ae_of_ae_prod h1f.ae_eq_mk.symm]

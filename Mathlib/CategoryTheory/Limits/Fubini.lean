@@ -156,8 +156,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
             dsimp
             intro k
             simp only [Limits.CoconeMorphism.w_assoc, Limits.Cocone.precompose_obj_ι,
-              Limits.IsColimit.fac, NatTrans.comp_app, Category.comp_id,
-              Category.assoc]
+              Limits.IsColimit.fac, NatTrans.comp_app, Category.comp_id, Category.assoc]
             have := @NatTrans.naturality _ _ _ _ _ _ c.ι (j, k) (j', k) (f, 𝟙 k)
             dsimp at this
             simp only [Category.comp_id, CategoryTheory.Functor.map_id] at this
@@ -470,9 +469,8 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
       naturality {x y} := fun ⟨f₁, f₂⟩ ↦ by
         have := (Q.obj y.1).w f₂
         dsimp [Q] at this ⊢
-        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁),
-          Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
-          G.map_comp_assoc, ← curry_obj_map_app, ← curry_obj_obj_map]
+        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁), Category.assoc, Category.comp_id,
+          Prod.fac' (f₁, f₂), G.map_comp_assoc, ← curry_obj_map_app, ← curry_obj_obj_map]
         dsimp
         simp [ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this] } }
 

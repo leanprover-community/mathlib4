@@ -488,8 +488,7 @@ noncomputable def centerEquivRootsOfUnity :
       = (Hg.choose • LinearMap.id) * (Hh.choose • LinearMap.id) by
       apply FaithfulSMul.eq_of_smul_eq_smul (α := V)
       intro x
-      simp [mul_smul,
-        ← mem_center_iff_spec (g * h).prop, ← mem_center_iff_spec h.prop,
+      simp [mul_smul, ← mem_center_iff_spec (g * h).prop, ← mem_center_iff_spec h.prop,
         ← mem_center_iff_spec g.prop]
     simp [← Hgh.choose_spec.2, ← Hh.choose_spec.2, ← Hg.choose_spec.2]
 
@@ -576,8 +575,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     rw [this, ← LinearEquiv.coe_toLinearMap, hgg',
       Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq,
-      Matrix.SpecialLinearGroup.eq_scalar_center_equiv_rootsOfUnity g,
-      Matrix.toLin_scalar]
+      Matrix.SpecialLinearGroup.eq_scalar_center_equiv_rootsOfUnity g, Matrix.toLin_scalar]
     simp
 
 end

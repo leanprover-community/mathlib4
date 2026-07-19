@@ -361,8 +361,7 @@ theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
     #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
     these two `simp` calls cannot be combined. -/
     simp only [partialEquivLimit_comp_inclusion]
-    simp only [cod_partialEquivLimit, ← Embedding.comp_assoc,
-      subtype_comp_inclusion]⟩
+    simp only [cod_partialEquivLimit, ← Embedding.comp_assoc, subtype_comp_inclusion]⟩
 
 end DirectLimit
 
@@ -437,8 +436,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
   refine ⟨fun h S S_FG f m => ?_, fun h ⟨f, f_FG⟩ m => ?_⟩
   · obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
     refine ⟨f'.toEmbedding.comp (Substructure.inclusion ?_), ?_⟩
-    · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
-        and_self]
+    · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf', and_self]
     · ext ⟨x, hx⟩
       rw [Embedding.subtype_equivRange] at ff'2
       simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion,

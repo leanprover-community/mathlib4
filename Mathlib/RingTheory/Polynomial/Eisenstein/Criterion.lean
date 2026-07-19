@@ -180,9 +180,8 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
   apply generalizedEisenstein (K := FractionRing (R ⧸ P)) (q := X) (p := f.natDegree)
     (by simp [map_X, irreducible_X]) monic_X hu
     (natDegree_pos_iff_degree_pos.mpr hfd0)
-  · simp only [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P)),
-      Quotient.algebraMap_eq, coe_comp, Function.comp_apply, ne_eq,
-      FaithfulSMul.algebraMap_eq_zero_iff]
+  · simp only [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P)), Quotient.algebraMap_eq,
+      coe_comp, Function.comp_apply, ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
     rw [Ideal.Quotient.eq_zero_iff_mem]
     exact hfl
   · rw [← map_C, ← Polynomial.map_pow, ← Polynomial.map_mul]

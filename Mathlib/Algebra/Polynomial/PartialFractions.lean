@@ -110,9 +110,8 @@ theorem eq_quo_mul_pow_add_sum_rem_mul_pow [Nontrivial R] (f : R[X]) {g : R[X]} 
     · cases i using Fin.lastCases with
       | cast i => simpa using hr i
       | last => simpa using degree_modByMonic_lt q hg
-    · rw [Fin.sum_univ_castSucc, ← add_rotate', Fin.snoc_last, Fin.val_last,
-        ← add_assoc, pow_succ', ← mul_assoc, ← add_mul, mul_comm (q /ₘ g) g,
-        modByMonic_add_div q]
+    · rw [Fin.sum_univ_castSucc, ← add_rotate', Fin.snoc_last, Fin.val_last, ← add_assoc, pow_succ',
+        ← mul_assoc, ← add_mul, mul_comm (q /ₘ g) g, modByMonic_add_div q]
       simp
 
 /-- Let `R` be a commutative ring and `f g : R[X]`. Let `n` be a natural number.
@@ -185,10 +184,9 @@ theorem eq_quo_mul_prod_add_sum_rem_mul_prod [Nontrivial R] {ι : Type*} [Decida
       simp_rw [← mul_assoc, ← add_mul]
       refine congrArg (· * _) ?_
       rw [add_mul, add_mul, ← add_assoc, ← add_assoc, ← add_mul, ← mul_comm (g i),
-        modByMonic_add_div, add_assoc, mul_right_comm (_ /ₘ g j),
-        ← add_mul, add_comm (_ * g j) (_ %ₘ g j), mul_comm (_ /ₘ g j),
-        modByMonic_add_div, mul_assoc, mul_assoc, ← mul_add,
-        add_comm, hab j hj, mul_one]
+        modByMonic_add_div, add_assoc, mul_right_comm (_ /ₘ g j), ← add_mul,
+        add_comm (_ * g j) (_ %ₘ g j), mul_comm (_ /ₘ g j), modByMonic_add_div, mul_assoc,
+        mul_assoc, ← mul_add, add_comm, hab j hj, mul_one]
 
 /-- Let `R` be a commutative ring and `f : R[X]`. Let `s` be a finite index set.
 Let `g i` be a collection of monic and pairwise coprime polynomials indexed by `s`.

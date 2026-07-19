@@ -62,8 +62,7 @@ lemma isArtinianObject_iff_antitone_chain_condition :
     IsArtinianObject X ↔ ∀ (f : ℕ →o (Subobject X)ᵒᵈ),
       ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → f n = f m := by
   dsimp only [IsArtinianObject]
-  rw [ObjectProperty.is_iff, isArtinianObject,
-    ← wellFoundedGT_dual_iff,
+  rw [ObjectProperty.is_iff, isArtinianObject, ← wellFoundedGT_dual_iff,
     wellFoundedGT_iff_monotone_chain_condition]
 
 variable {X} in

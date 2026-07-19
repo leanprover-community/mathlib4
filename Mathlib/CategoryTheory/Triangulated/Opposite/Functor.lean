@@ -120,12 +120,10 @@ lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ)
         (((F.op).commShiftIso n).inv.app X).unop⟦n⟧' ≫
         ((opShiftFunctorEquivalence D n).unitIso.hom.app (op _)).unop := by
   dsimp [opShiftFunctorEquivalence]
-  simp only [map_comp, unop_comp, Quiver.Hom.unop_op, assoc,
-    map_shiftFunctorCompIsoId_hom_app, commShiftIso_hom_naturality_assoc,
-    op_commShiftIso_inv_app _ _ _ _ (add_neg_cancel n)]
+  simp only [map_comp, unop_comp, Quiver.Hom.unop_op, assoc, map_shiftFunctorCompIsoId_hom_app,
+    commShiftIso_hom_naturality_assoc, op_commShiftIso_inv_app _ _ _ _ (add_neg_cancel n)]
   congr 3
-  rw [← Functor.map_comp_assoc, ← unop_comp,
-    Iso.inv_hom_id_app]
+  rw [← Functor.map_comp_assoc, ← unop_comp, Iso.inv_hom_id_app]
   dsimp
   rw [map_id, id_comp]
 
@@ -137,10 +135,9 @@ lemma map_opShiftFunctorEquivalence_unitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ)
       ((opShiftFunctorEquivalence D n).unitIso.inv.app (op (F.obj X.unop))).unop ≫
         (((F.op).commShiftIso n).hom.app X).unop⟦n⟧' ≫
         ((F.commShiftIso n).inv.app _) := by
-  rw [← cancel_mono (F.map ((opShiftFunctorEquivalence C n).unitIso.hom.app X).unop),
-    ← F.map_comp, ← unop_comp, Iso.hom_inv_id_app,
-    map_opShiftFunctorEquivalence_unitIso_hom_app_unop, assoc, assoc,
-    Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc, ← unop_comp]
+  rw [← cancel_mono (F.map ((opShiftFunctorEquivalence C n).unitIso.hom.app X).unop), ← F.map_comp,
+    ← unop_comp, Iso.hom_inv_id_app, map_opShiftFunctorEquivalence_unitIso_hom_app_unop, assoc,
+    assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc, ← unop_comp]
   simp
 
 set_option backward.defeqAttrib.useBackward true in
@@ -164,13 +161,11 @@ lemma map_opShiftFunctorEquivalence_counitIso_inv_app_unop (X : Cᵒᵖ) (n : �
       ((F.op.commShiftIso n).inv.app (op (X.unop⟦n⟧))).unop ≫
         (((F.commShiftIso n).hom.app X.unop).op⟦n⟧').unop ≫
           ((opShiftFunctorEquivalence D n).counitIso.inv.app (op (F.obj X.unop))).unop := by
-  rw [← cancel_epi (F.map ((opShiftFunctorEquivalence C n).counitIso.hom.app X).unop),
-    ← F.map_comp, ← unop_comp, Iso.inv_hom_id_app,
-    map_opShiftFunctorEquivalence_counitIso_hom_app_unop]
+  rw [← cancel_epi (F.map ((opShiftFunctorEquivalence C n).counitIso.hom.app X).unop), ← F.map_comp,
+    ← unop_comp, Iso.inv_hom_id_app, map_opShiftFunctorEquivalence_counitIso_hom_app_unop]
   dsimp
-  simp only [map_id, assoc, ← Functor.map_comp_assoc,
-    ← unop_comp, Iso.inv_hom_id_app_assoc, ← op_comp,
-    Iso.inv_hom_id_app]
+  simp only [map_id, assoc, ← Functor.map_comp_assoc, ← unop_comp, Iso.inv_hom_id_app_assoc,
+    ← op_comp, Iso.inv_hom_id_app]
   simp
 
 end Functor

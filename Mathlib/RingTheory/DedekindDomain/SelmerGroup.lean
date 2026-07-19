@@ -101,8 +101,7 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
-    if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero,
-    if_neg (nonZeroDivisors.coe_ne_zero _),
+    if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero, if_neg (nonZeroDivisors.coe_ne_zero _),
     ← exp_neg, ← exp_add, valuationOfNeZeroToFun, ← sub_eq_add_neg, exp]
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/

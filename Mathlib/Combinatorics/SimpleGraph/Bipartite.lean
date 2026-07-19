@@ -349,11 +349,9 @@ noncomputable def Copy.completeBipartiteGraph
   refine ⟨⟨f.toFun, fun {s₁ s₂} hadj ↦ ?_⟩, f.injective⟩
   rcases hadj with ⟨hs₁, hs₂⟩ | ⟨hs₁, hs₂⟩
   all_goals dsimp [f]
-  · rw [← Sum.inl_getLeft s₁ hs₁, ← Sum.inr_getRight s₂ hs₂,
-      Sum.elim_inl, Sum.elim_inr]
+  · rw [← Sum.inl_getLeft s₁ hs₁, ← Sum.inr_getRight s₂ hs₂, Sum.elim_inl, Sum.elim_inr]
     exact h (by simp) (by simp)
-  · rw [← Sum.inr_getRight s₁ hs₁, ← Sum.inl_getLeft s₂ hs₂,
-      Sum.elim_inl, Sum.elim_inr, adj_comm]
+  · rw [← Sum.inr_getRight s₁ hs₁, ← Sum.inl_getLeft s₂ hs₂, Sum.elim_inl, Sum.elim_inr, adj_comm]
     exact h (by simp) (by simp)
 
 /-- Simple graphs contain a copy of a `completeBipartiteGraph α β` iff there exists a "left"
@@ -598,8 +596,7 @@ theorem completeBipartiteGraph_isContained_bipartiteDoubleCover
     · simpa using h hl hr
   · simp_rw [← card_left, ← card_right]
     refine ⟨left.map .inl, right.map .inr, card_map _, card_map _, fun i hi j hj ↦ ?_⟩
-    simp_rw [mem_coe, mem_map, Function.Embedding.inl_apply,
-      Function.Embedding.inr_apply] at hi hj
+    simp_rw [mem_coe, mem_map, Function.Embedding.inl_apply, Function.Embedding.inr_apply] at hi hj
     obtain ⟨i', hi', hi⟩ := hi
     obtain ⟨j', hj', hj⟩ := hj
     simpa [← hi, ← hj] using h hi' hj'

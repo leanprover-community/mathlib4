@@ -146,11 +146,10 @@ lemma traceForm_genWeightSpace_eq [Module.Free R M]
   have := traceForm_eq_zero_of_isNilpotent R L (shiftedGenWeightSpace R L M χ)
   replace this := LinearMap.congr_fun (LinearMap.congr_fun this x) y
   rwa [LinearMap.zero_apply, LinearMap.zero_apply, traceForm_apply_apply,
-    shiftedGenWeightSpace.toEnd_eq, shiftedGenWeightSpace.toEnd_eq,
-    ← LinearEquiv.conj_comp, LinearMap.trace_conj', LinearMap.comp_sub, LinearMap.sub_comp,
-    LinearMap.sub_comp, map_sub, map_sub, map_sub, LinearMap.comp_smul, LinearMap.smul_comp,
-    LinearMap.comp_id, LinearMap.id_comp, map_smul, map_smul,
-    trace_toEnd_genWeightSpace, trace_toEnd_genWeightSpace,
+    shiftedGenWeightSpace.toEnd_eq, shiftedGenWeightSpace.toEnd_eq, ← LinearEquiv.conj_comp,
+    LinearMap.trace_conj', LinearMap.comp_sub, LinearMap.sub_comp, LinearMap.sub_comp, map_sub,
+    map_sub, map_sub, LinearMap.comp_smul, LinearMap.smul_comp, LinearMap.comp_id,
+    LinearMap.id_comp, map_smul, map_smul, trace_toEnd_genWeightSpace, trace_toEnd_genWeightSpace,
     LinearMap.comp_smul, LinearMap.smul_comp, LinearMap.id_comp, map_smul, map_smul,
     LinearMap.trace_id, ← traceForm_apply_apply, h₁, h₂, sub_zero, sub_eq_zero] at this
 

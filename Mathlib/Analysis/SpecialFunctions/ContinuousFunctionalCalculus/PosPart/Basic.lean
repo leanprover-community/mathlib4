@@ -112,8 +112,7 @@ lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   · obtain (rfl | hr) := eq_or_ne r 0
     · simp
     · have := (not_iff_not.mpr <| (IsSelfAdjoint.all r).smul_iff hr.isUnit (x := a)) |>.mpr ha
-      simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha,
-        cfcₙ_apply_of_not_predicate _ this]
+      simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate _ this]
 
 @[simp]
 lemma negPart_smul {r : ℝ≥0} {a : A} : (r • a)⁻ = r • a⁻ := by
@@ -263,8 +262,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
       toFun := cfcₙHomSuperset hb' hbs + cfcₙHomSuperset hc' hcs
       map_zero' := by simp [-cfcₙHomSuperset_apply]
       map_mul' := fun f g ↦ by
-        simp only [Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁,
-          zero_add]
+        simp only [Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁, zero_add]
       map_star' := fun f ↦ by simp [← map_star] }
   have key : (cfcₙHomSuperset ha has) = ψ :=
     have : ContinuousMapZero.UniqueHom ℝ A := inferInstance
@@ -288,9 +286,8 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
       all_goals
         refine cfcₙ_congr fun x hx ↦ Eq.symm ?_
         lift x to σₙ ℝ _ using hx
-        simp only [Subtype.val_injective.extend_apply, comp_apply, coe_mk,
-          ContinuousMap.coe_mk, Subtype.map_coe, id_eq, _root_.posPart_eq_self, f, Pi.zero_apply,
-          posPart_eq_zero]
+        simp only [Subtype.val_injective.extend_apply, comp_apply, coe_mk, ContinuousMap.coe_mk,
+          Subtype.map_coe, id_eq, _root_.posPart_eq_self, f, Pi.zero_apply, posPart_eq_zero]
       · exact quasispectrum_nonneg_of_nonneg b hb x.val x.property
       · obtain ⟨x, hx⟩ := x
         simp only [← neg_nonneg]

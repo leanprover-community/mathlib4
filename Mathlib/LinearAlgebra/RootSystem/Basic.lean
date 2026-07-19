@@ -237,8 +237,7 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [IsD
       preReflection_apply] -- v4.7.0-rc1 issues
   apply p.flip.toPerfPair.injective
   apply Dual.eq_of_preReflection_mapsTo (finite_range root) hsp (hp k) (hs k)
-  · simp [map_sub, α, β, α', β', sα, hk, preReflection_apply, hp i, hp j,
-      mul_comm (p α β')]
+  · simp [map_sub, α, β, α', β', sα, hk, preReflection_apply, hp i, hp j, mul_comm (p α β')]
     ring -- v4.7.0-rc1 issues
   · rw [hk, LinearMap.toLinearMap_toPerfPair, hij]
     exact (hs i).comp <| (hs j).comp (hs i)

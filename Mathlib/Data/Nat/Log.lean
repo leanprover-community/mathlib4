@@ -299,8 +299,7 @@ theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
     Nat.sub_add_cancel (succ_le_iff.2 <| log_pos hb h)]
 
 theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / b < n := by
-  rw [div_lt_iff_lt_mul (by lia), ← succ_le_iff, ← pred_eq_sub_one,
-    succ_pred_eq_of_pos (by lia)]
+  rw [div_lt_iff_lt_mul (by lia), ← succ_le_iff, ← pred_eq_sub_one, succ_pred_eq_of_pos (by lia)]
   exact Nat.add_le_mul hn hb
 
 lemma log_two_bit {b n} (hn : n ≠ 0) : Nat.log 2 (n.bit b) = Nat.log 2 n + 1 := by

@@ -58,9 +58,8 @@ lemma ε_app (X₁ : C₁) :
         F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
   let : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
     Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso.symm
-  simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
-    Functor.id_obj, Functor.comp_obj, Functor.rightUnitor_hom_app,
-      whiskerRight_app, CatCommSq.hComp_iso_hom_app, id_comp]
+  simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm, Functor.id_obj, Functor.comp_obj,
+    Functor.rightUnitor_hom_app, whiskerRight_app, CatCommSq.hComp_iso_hom_app, id_comp]
 
 /-- Auxiliary definition of the counit morphism for the adjunction `Adjunction.localization` -/
 noncomputable def η : F' ⋙ G' ⟶ 𝟭 D₂ := by
@@ -108,10 +107,9 @@ noncomputable def localization : G' ⊣ F' :=
         have eq := adj.right_triangle_components X₂
         rw [NatTrans.comp_app, NatTrans.comp_app, whiskerLeft_app, whiskerRight_app,
           Localization.η_app, Functor.associator_inv_app, id_comp, F'.map_comp, F'.map_comp]
-        erw [← (Localization.ε _ _ _ _ _ _).naturality_assoc, Localization.ε_app,
-          assoc, assoc, ← F'.map_comp_assoc, Iso.hom_inv_id_app, F'.map_id, id_comp,
-          ← NatTrans.naturality, ← L₁.map_comp_assoc, eq, L₁.map_id, id_comp,
-          Iso.inv_hom_id_app]
+        erw [← (Localization.ε _ _ _ _ _ _).naturality_assoc, Localization.ε_app, assoc, assoc,
+          ← F'.map_comp_assoc, Iso.hom_inv_id_app, F'.map_id, id_comp, ← NatTrans.naturality,
+          ← L₁.map_comp_assoc, eq, L₁.map_id, id_comp, Iso.inv_hom_id_app]
         rfl }
 
 @[simp]

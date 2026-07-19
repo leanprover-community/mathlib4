@@ -191,8 +191,7 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
       refine Ideal.radical_mono (fun b hb ↦ ?_) hb
       rw [mem_colon_singleton, mem_bot] at hb ⊢
       rw [← map_smul, hb, map_zero]
-    · rw [mem_colon_singleton, mem_bot, ← map_smul, ← LinearMap.mem_ker,
-        hfg.linearMap_ker_eq] at hb
+    · rw [mem_colon_singleton, mem_bot, ← map_smul, ← LinearMap.mem_ker, hfg.linearMap_ker_eq] at hb
       obtain ⟨y, hy⟩ := hb
       by_contra H
       exact h b H y n hy

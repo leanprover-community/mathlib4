@@ -95,8 +95,7 @@ class IsCommJordan [CommMagma A] : Prop where
 instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_comm, mul_comm a b]
   lmul_lmul_comm_lmul a b := by
-    rw [mul_comm (a * a) (a * b), IsCommJordan.lmul_comm_rmul_rmul,
-      mul_comm b (a * a)]
+    rw [mul_comm (a * a) (a * b), IsCommJordan.lmul_comm_rmul_rmul, mul_comm b (a * a)]
   lmul_comm_rmul_rmul := IsCommJordan.lmul_comm_rmul_rmul
   lmul_lmul_comm_rmul a b := by
     rw [mul_comm (a * a) (b * a), mul_comm b a,

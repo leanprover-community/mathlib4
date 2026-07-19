@@ -290,9 +290,8 @@ lemma opShiftFunctorEquivalence_add_unitIso_inv_app_eq
     Category.assoc, Category.assoc, Category.assoc, Iso.inv_hom_id_app_assoc]
   apply Quiver.Hom.unop_inj
   dsimp
-  simp only [Category.assoc,
-    ← unop_comp, Iso.inv_hom_id_app, Functor.comp_obj, Functor.op_obj, unop_id,
-    Functor.map_id, id_comp, ← Functor.map_comp, Iso.hom_inv_id_app]
+  simp only [Category.assoc, ← unop_comp, Iso.inv_hom_id_app, Functor.comp_obj, Functor.op_obj,
+    unop_id, Functor.map_id, id_comp, ← Functor.map_comp, Iso.hom_inv_id_app]
 
 lemma shift_unop_opShiftFunctorEquivalence_counitIso_inv_app (X : Cᵒᵖ) (n : ℤ) :
     ((opShiftFunctorEquivalence C n).counitIso.inv.app X).unop⟦n⟧' =

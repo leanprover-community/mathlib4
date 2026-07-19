@@ -53,10 +53,9 @@ theorem exists_embedding_disjoint_range_of_add_le_ENat_card
   · let _ : Fintype α := Fintype.ofFinite α
     classical
     apply nonempty_of_card_le
-    rwa [Fintype.card_fin, ← add_le_add_iff_left s.ncard,
-      ← Nat.card_eq_fintype_card, Nat.card_coe_set_eq,
-        ncard_add_ncard_compl, ← ENat.natCast_le_natCast,
-        ← ENat.card_eq_coe_natCard, ENat.natCast_add]
+    rwa [Fintype.card_fin, ← add_le_add_iff_left s.ncard, ← Nat.card_eq_fintype_card,
+      Nat.card_coe_set_eq, ncard_add_ncard_compl, ← ENat.natCast_le_natCast,
+      ← ENat.card_eq_coe_natCard, ENat.natCast_add]
   · exact ⟨valEmbedding.trans s.toFinite.infinite_compl.to_subtype.natEmbedding⟩
 
 theorem exists_embedding_disjoint_range_of_add_le_Nat_card

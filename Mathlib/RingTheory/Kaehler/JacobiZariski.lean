@@ -132,10 +132,9 @@ lemma Cotangent.exact :
     refine (show Ideal.map (Q.toComp P).toAlgHom.toRingHom P.ker ≤ _ from ?_) hz
     rw [Ideal.map_le_iff_le_comap]
     rintro w hw
-    simp only [AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe,
-      Submodule.mem_map, Submodule.mem_comap, Submodule.restrictScalars_mem, Submodule.coe_subtype,
-      Subtype.exists, exists_and_right, exists_eq_right,
-      toExtension_Ring]
+    simp only [AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe, Submodule.mem_map,
+      Submodule.mem_comap, Submodule.restrictScalars_mem, Submodule.coe_subtype, Subtype.exists,
+      exists_and_right, exists_eq_right, toExtension_Ring]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
     · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
       rw [aeval_val_eq_zero hw, map_zero]
@@ -165,11 +164,10 @@ lemma CotangentSpace.compEquiv_symm_inr :
     Function.comp_apply, LinearEquiv.trans_apply, Basis.repr_symm_apply, pderiv_X, toComp_val,
     Basis.repr_linearCombination, LinearMap.liftBaseChange_tmul, one_smul, repr_CotangentSpaceMap]
   obtain (j | j) := j <;>
-    simp only [Basis.prod_repr_inr, Basis.baseChange_repr_tmul,
-      Basis.repr_self, Basis.prod_repr_inl, map_zero, Finsupp.coe_zero,
-      Pi.zero_apply, ne_eq, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_apply,
-      Finsupp.single_apply, ite_smul, one_smul, zero_smul, Sum.inr.injEq,
-      MonoidWithZeroHom.map_ite_one_zero, reduceCtorEq]
+    simp only [Basis.prod_repr_inr, Basis.baseChange_repr_tmul, Basis.repr_self,
+      Basis.prod_repr_inl, map_zero, Finsupp.coe_zero, Pi.zero_apply, ne_eq, not_false_eq_true,
+      Pi.single_eq_of_ne, Pi.single_apply, Finsupp.single_apply, ite_smul, one_smul, zero_smul,
+      Sum.inr.injEq, MonoidWithZeroHom.map_ite_one_zero, reduceCtorEq]
 
 lemma CotangentSpace.compEquiv_symm_zero (x) :
     (compEquiv Q P).symm (0, x) =

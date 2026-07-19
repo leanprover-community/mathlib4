@@ -454,8 +454,7 @@ theorem emem_iff_mem_toList {x : α} {t} : Emem x t ↔ x ∈ toList t := by
 theorem length_toList' : ∀ t : Ordnode α, (toList t).length = t.realSize
   | nil => rfl
   | node _ l _ r => by
-    rw [toList_node, List.length_append, List.length_cons, length_toList' l,
-        length_toList' r]; rfl
+    rw [toList_node, List.length_append, List.length_cons, length_toList' l, length_toList' r]; rfl
 
 theorem length_toList {t : Ordnode α} (h : Sized t) : (toList t).length = t.size := by
   rw [length_toList', size_eq_realSize h]

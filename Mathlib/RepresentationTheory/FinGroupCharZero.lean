@@ -58,8 +58,7 @@ If `G` is finite and its order is nonzero in the field `k`, then every object of
 -/
 -- Will this clash with the previously defined `Projective` instances?
 instance (V : Rep.{u} k G) : Projective V := by
-  rw [← Rep.equivalenceModuleMonoidAlgebra.map_projective_iff,
-    ← IsProjective.iff_projective]
+  rw [← Rep.equivalenceModuleMonoidAlgebra.map_projective_iff, ← IsProjective.iff_projective]
   exact Module.projective_of_isSemisimpleRing _ _
 
 end Rep

@@ -174,8 +174,7 @@ instance [P.IsTriangulatedClosed₂] : P.isoClosure.IsTriangulatedClosed₂ wher
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by simp) (by simp) (by
           dsimp
-          simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id,
-            Functor.map_id, comp_id]))) h₁ h₃)
+          simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id, Functor.map_id, comp_id]))) h₁ h₃)
 
 /-- The property that `P : ObjectProperty C` is a triangulated subcategory
 (of a pretriangulated category `C`). -/

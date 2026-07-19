@@ -379,8 +379,7 @@ lemma norm_sub_one_sq_eqOn_sphere :
 
 lemma normSq_ofReal_add_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
     normSq (x + I * √(1 - x ^ 2)) = 1 := by
-  simp [mul_comm I, normSq_add_mul_I,
-    Real.sq_sqrt (x := 1 - x ^ 2) (by nlinarith [abs_le.mp hx])]
+  simp [mul_comm I, normSq_add_mul_I, Real.sq_sqrt (x := 1 - x ^ 2) (by nlinarith [abs_le.mp hx])]
 
 lemma normSq_ofReal_sub_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
     normSq (x - I * √(1 - x ^ 2)) = 1 := by

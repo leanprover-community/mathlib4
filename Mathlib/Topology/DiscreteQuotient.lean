@@ -374,9 +374,8 @@ lemma comp_finsetClopens [CompactSpace X] :
     (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ (↑)) ∘
       finsetClopens X = fun ⟨f, _⟩ ↦ f.classes := by
   ext d
-  simp only [Setoid.classes, Set.mem_ofPred_eq, Function.comp_apply,
-    finsetClopens, Set.coe_toFinset, Set.mem_image, Set.mem_range,
-    exists_exists_eq_and]
+  simp only [Setoid.classes, Set.mem_ofPred_eq, Function.comp_apply, finsetClopens,
+    Set.coe_toFinset, Set.mem_image, Set.mem_range, exists_exists_eq_and]
   constructor
   · refine fun ⟨y, h⟩ ↦ ⟨Quotient.out (s := d.toSetoid) y, ?_⟩
     ext

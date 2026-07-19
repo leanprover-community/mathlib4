@@ -687,8 +687,7 @@ theorem scale_eq_mul (x) [NF x] : ∀ (o) [NF o], scale x o = oadd x 1 0 * o
     have := h.snd
     by_cases e0 : e = 0
     · simp_rw [scale_eq_mul]
-      simp [Mul.mul, mul, e0, h.zero_of_zero,
-        show x + 0 = x from repr_inj.1 (by simp)]
+      simp [Mul.mul, mul, e0, h.zero_of_zero, show x + 0 = x from repr_inj.1 (by simp)]
     · simp [e0, Mul.mul, mul, scale_eq_mul, (· * ·)]
 
 instance nf_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
@@ -835,9 +834,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     by_cases h : m = 0
     · simp only [R, R', h, ONote.ofNat, Nat.cast_zero, ONote.repr_zero,
         mul_zero, ONote.opowAux, add_zero]
-    · simp only [α', ω0, R, R', ONote.repr_scale, ONote.repr,
-        ONote.mulNat_eq_mul, ONote.opowAux, ONote.repr_ofNat, ONote.repr_mul, ONote.repr_add,
-        Ordinal.opow_mul, ONote.zero_add]
+    · simp only [α', ω0, R, R', ONote.repr_scale, ONote.repr, ONote.mulNat_eq_mul, ONote.opowAux,
+        ONote.repr_ofNat, ONote.repr_mul, ONote.repr_add, Ordinal.opow_mul, ONote.zero_add]
   have α0 : 0 < α' := by simpa [lt_def, repr] using oadd_pos a0 n a'
   have ω00 : 0 < ω0 ^ (k : Ordinal) := opow_pos _ (opow_pos _ omega0_pos)
   have Rl : R < ω ^ (repr a0 * succ ↑k) := by
@@ -934,11 +932,9 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     · rcases e₂ : split' o₂ with ⟨b', k⟩
       obtain ⟨_, r₂⟩ := nf_repr_split' e₂
       by_cases h : m = 0
-      · simp only [opowAux2, opow_def, e₁, h, r₁, r₂, OfNat.ofNat, Zero.zero, One.one,
-          repr]
+      · simp only [opowAux2, opow_def, e₁, h, r₁, r₂, OfNat.ofNat, Zero.zero, One.one, repr]
         simp [opow_add, opow_mul]
-      simp only [opow_def, opowAux2, e₁, r₁, e₂, r₂, repr,
-          Nat.cast_succ, _root_.zero_add, add_zero]
+      simp only [opow_def, opowAux2, e₁, r₁, e₂, r₂, repr, Nat.cast_succ, _root_.zero_add, add_zero]
       rw [opow_add, opow_mul, opow_omega0]
       · simp
       · simpa [Nat.one_le_iff_ne_zero]
@@ -957,8 +953,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     · simp [r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
     · simp [r₂, opow_add, opow_mul, mul_assoc, add_assoc, repr_one]
       rw [repr_opow_aux₁ a00 al aa, scale_opowAux]
-      simp only [repr_mul, repr_scale, repr_one,
-        Nat.cast_one, opow_one, opow_mul]
+      simp only [repr_mul, repr_scale, repr_one, Nat.cast_one, opow_one, opow_mul]
       rw [← mul_add, ← add_assoc ((ω : Ordinal.{0}) ^ repr a0 * (n : ℕ))]
       congr 1
       rw [← pow_succ, ← opow_natCast, ← opow_natCast]

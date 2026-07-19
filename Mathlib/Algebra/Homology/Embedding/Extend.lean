@@ -190,8 +190,7 @@ noncomputable def extendMap : K.extend e ⟶ L.extend e where
     · obtain ⟨i, hi⟩ := hi
       by_cases hj : ∃ j, e.f j = j'
       · obtain ⟨j, hj⟩ := hj
-        rw [K.extend_d_eq e hi hj, L.extend_d_eq e hi hj,
-          extend.mapX_some φ (e.r_eq_some hi),
+        rw [K.extend_d_eq e hi hj, L.extend_d_eq e hi hj, extend.mapX_some φ (e.r_eq_some hi),
           extend.mapX_some φ (e.r_eq_some hj)]
         simp only [extendXIso, assoc, Iso.inv_hom_id_assoc, Hom.comm_assoc]
       · have hj' := e.r_eq_none j' (fun j'' hj'' => hj ⟨j'', hj''⟩)
@@ -200,8 +199,7 @@ noncomputable def extendMap : K.extend e ⟶ L.extend e where
           comp_zero, zero_comp]
     · have hi' := e.r_eq_none i' (fun i'' hi'' => hi ⟨i'', hi''⟩)
       dsimp [extend]
-      rw [extend.d_none_eq_zero _ _ _ hi', extend.d_none_eq_zero _ _ _ hi',
-        comp_zero, zero_comp]
+      rw [extend.d_none_eq_zero _ _ _ hi', extend.d_none_eq_zero _ _ _ hi', comp_zero, zero_comp]
 
 lemma extendMap_f {i : ι} {i' : ι'} (h : e.f i = i') :
     (extendMap φ e).f i' =

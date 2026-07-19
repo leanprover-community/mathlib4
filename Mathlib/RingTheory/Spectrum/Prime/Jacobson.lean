@@ -96,8 +96,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
       exact (finite_setOfPred_isMin R).subset fun x h ↦ h.1
     ext p
     simp only [Set.mem_singleton_iff, ne_eq, Set.mem_ofPred_eq, Set.compl_iUnion, Set.mem_iInter,
-      Set.mem_compl_iff, and_imp, ← specializes_iff_mem_closure, ← le_iff_specializes,
-      not_imp_not]
+      Set.mem_compl_iff, and_imp, ← specializes_iff_mem_closure, ← le_iff_specializes, not_imp_not]
     constructor
     · rintro rfl _ _
       rw [stableUnderGeneralization_singleton, ← isMin_iff] at h₂

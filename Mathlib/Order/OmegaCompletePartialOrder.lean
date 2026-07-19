@@ -561,12 +561,10 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     replace hb : b ∈ f (c (max i j)) := f.mono (c.mono (le_max_right i j)) _ hb
     replace hy : y ∈ g (c (max i j)) b := g.mono (c.mono (le_max_left i j)) _ _ hy
     apply h''' (max i j)
-    simp only [Part.mem_bind_iff, Chain.coe_map,
-      Function.comp_apply, OrderHom.partBind_coe]
+    simp only [Part.mem_bind_iff, Chain.coe_map, Function.comp_apply, OrderHom.partBind_coe]
     exact ⟨_, hb, hy⟩
   · intro i y hy
-    simp only [Part.mem_bind_iff, Chain.coe_map,
-      Function.comp_apply, OrderHom.partBind_coe] at hy
+    simp only [Part.mem_bind_iff, Chain.coe_map, Function.comp_apply, OrderHom.partBind_coe] at hy
     rcases hy with ⟨b, hb₀, hb₁⟩
     apply h''' b _
     · apply le_ωSup (c.map g) _ _ _ hb₁

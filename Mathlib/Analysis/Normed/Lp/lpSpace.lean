@@ -1012,8 +1012,7 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     refine (memℓp_zero ?_).of_exponent_ge zero_le
     refine (Set.finite_singleton i).subset ?_
     intro j
-    simp only [Set.mem_singleton_iff, Ne,
-      Set.mem_ofPred_eq]
+    simp only [Set.mem_singleton_iff, Ne, Set.mem_ofPred_eq]
     rw [not_imp_comm]
     intro h
     exact Pi.single_eq_of_ne h _⟩

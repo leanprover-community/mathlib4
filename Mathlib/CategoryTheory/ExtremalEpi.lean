@@ -73,8 +73,7 @@ lemma extremalEpi_iff_strongEpi_of_hasPullbacks [HasPullbacks C] :
       fac_left := by
         rw [← cancel_mono i, sq.w, Category.assoc, Category.assoc]
         congr 1
-        rw [← cancel_epi (pullback.snd i b), IsIso.hom_inv_id_assoc,
-          pullback.condition]
+        rw [← cancel_epi (pullback.snd i b), IsIso.hom_inv_id_assoc, pullback.condition]
       fac_right := by simp [pullback.condition] }
 
 end CategoryTheory

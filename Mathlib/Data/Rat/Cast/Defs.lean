@@ -258,8 +258,7 @@ variable [FunLike F ℚ M₀] [MonoidWithZeroHomClass F ℚ M₀] {f g : F}
 /-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal. -/
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
   (DFunLike.ext f g) fun r => by
-    rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_natCast,
-      eq_on_inv₀ f g]
+    rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_natCast, eq_on_inv₀ f g]
     apply h
 
 /-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal.

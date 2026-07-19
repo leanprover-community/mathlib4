@@ -57,8 +57,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     · have h₂ : x ∉ t₂ := h h₁
       simp [*]
     by_cases h₂ : x ∈ t₂
-    · simp only [*, inter_cons_of_notMem, false_or, mem_append, inter_cons_of_mem,
-        not_false_iff]
+    · simp only [*, inter_cons_of_notMem, false_or, mem_append, inter_cons_of_mem, not_false_iff]
       exact perm_cons_append_cons _ l_ih
     · simp [*]
 

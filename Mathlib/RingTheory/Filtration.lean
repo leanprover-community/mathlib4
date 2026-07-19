@@ -291,8 +291,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
-  rw [← submodule_span_single,
-    ← (Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)).ge_iff_eq',
+  rw [← submodule_span_single, ← (Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)).ge_iff_eq',
     Submodule.span_le, Set.iUnion_subset_iff]
   constructor
   · intro H n hn

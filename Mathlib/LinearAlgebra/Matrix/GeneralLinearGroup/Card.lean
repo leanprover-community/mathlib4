@@ -80,8 +80,7 @@ noncomputable def equiv_GL_linearindependent :
     classical
     let b := basisOfPiSpaceOfLinearIndependent M.2
     have := (Pi.basisFun 𝔽 (Fin n)).invertibleToMatrix b
-    rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
-      ← coe_basisOfPiSpaceOfLinearIndependent M.2]
+    rw [← Basis.coePiBasisFun.toMatrix_eq_transpose, ← coe_basisOfPiSpaceOfLinearIndependent M.2]
     exact isUnit_det_of_invertible _
   right_inv := by exact congrFun rfl
 

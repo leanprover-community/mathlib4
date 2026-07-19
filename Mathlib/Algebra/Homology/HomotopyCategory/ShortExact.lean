@@ -125,9 +125,8 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
     S.X₁.liftCycles_shift_homologyπ_assoc _ _ _ _ n₁ (by lia) (n₁ + 1) (by simp),
     Iso.inv_hom_id_app]
   dsimp [homologyFunctor_shift]
-  simp only [hab, add_comp, assoc, inl_v_triangle_mor₃_f_assoc,
-    shiftFunctorObjXIso, neg_comp, Iso.inv_hom_id, comp_neg, comp_id,
-    inr_f_triangle_mor₃_f_assoc, zero_comp, comp_zero, add_zero]
+  simp only [hab, add_comp, assoc, inl_v_triangle_mor₃_f_assoc, shiftFunctorObjXIso, neg_comp,
+    Iso.inv_hom_id, comp_neg, comp_id, inr_f_triangle_mor₃_f_assoc, zero_comp, comp_zero, add_zero]
 
 open ComposableArrows
 

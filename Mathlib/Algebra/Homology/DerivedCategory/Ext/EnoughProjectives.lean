@@ -47,8 +47,7 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
   have : π.f i = α ≫ (singleObjXSelf (ComplexShape.up ℤ) i P).inv := by
     rw [← cancel_epi e.hom]
     dsimp [α, e]
-    rw [assoc, assoc, assoc, iCyclesIso_hom_inv_id_assoc,
-      homologyπ_naturality_assoc]
+    rw [assoc, assoc, assoc, iCyclesIso_hom_inv_id_assoc, homologyπ_naturality_assoc]
     dsimp [singleFunctor, singleFunctors]
     rw [homologyπ_singleObjHomologySelfIso_hom_assoc,
       ← singleObjCyclesSelfIso_inv_iCycles, Iso.hom_inv_id_assoc, ← cyclesMap_i]

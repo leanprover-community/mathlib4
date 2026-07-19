@@ -155,8 +155,7 @@ theorem evalₐ_of (n : ℕ) (x : R) :
   simp [evalₐ]
 
 theorem surjective_evalₐ (n : ℕ) : Function.Surjective (evalₐ I n) := by
-  simp only [evalₐ, smul_eq_mul, Ideal.quotientEquivAlgOfEq_coe_eq_factorₐ,
-    AlgHom.coe_comp]
+  simp only [evalₐ, smul_eq_mul, Ideal.quotientEquivAlgOfEq_coe_eq_factorₐ, AlgHom.coe_comp]
   apply Function.Surjective.comp
   · exact factor_surjective Ideal.mul_le_right
   · exact eval_surjective I R n
@@ -267,9 +266,8 @@ theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
     (x : AdicCauchySequence I M) :
     r.val n • Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val n) =
       r.val m • Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val m) := by
-  rw [← Submodule.Quotient.mk_smul, ← Module.Quotient.mk_smul_mk,
-    AdicCauchySequence.mk_eq_mk hmn, Ideal.mk_eq_mk I hmn, Module.Quotient.mk_smul_mk,
-    Submodule.Quotient.mk_smul]
+  rw [← Submodule.Quotient.mk_smul, ← Module.Quotient.mk_smul_mk, AdicCauchySequence.mk_eq_mk hmn,
+    Ideal.mk_eq_mk I hmn, Module.Quotient.mk_smul_mk, Submodule.Quotient.mk_smul]
 
 /-- Scalar multiplication of `R ⧸ (I • ⊤)` on `M ⧸ (I • ⊤)`. This is used in order to have
 good definitional behaviour for the module instance on adic completions -/

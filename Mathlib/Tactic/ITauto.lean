@@ -155,12 +155,8 @@ def IProp.cmp (p q : IProp) : Ordering := by
   case and'.and' ap p₁ p₂ aq q₁ q₂ => exact (ap.cmp aq).then <| (p₁.cmp q₁).then (p₂.cmp q₂)
   case or.or p₁ p₂ q₁ q₂ => exact (p₁.cmp q₁).then (p₂.cmp q₂)
   case imp.imp p₁ p₂ q₁ q₂ => exact (p₁.cmp q₁).then (p₂.cmp q₂)
-  exacts [.lt, .lt, .lt, .lt, .lt,
-          .gt, .lt, .lt, .lt, .lt,
-          .gt, .gt, .lt, .lt, .lt,
-          .gt, .gt, .gt, .lt, .lt,
-          .gt, .gt, .gt, .gt, .lt,
-          .gt, .gt, .gt, .gt, .gt]
+  exacts [.lt, .lt, .lt, .lt, .lt, .gt, .lt, .lt, .lt, .lt, .gt, .gt, .lt, .lt, .lt, .gt, .gt, .gt,
+          .lt, .lt, .gt, .gt, .gt, .gt, .lt, .gt, .gt, .gt, .gt, .gt]
 
 instance : LT IProp := ⟨fun p q => p.cmp q = .lt⟩
 

@@ -300,11 +300,10 @@ theorem liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
   obtain ⟨m, h⟩ := mem_pNilradical.1 (IsPRadical.ker_le i p h)
   refine (iterateFrobeniusEquiv M p (m + n + n')).injective ?_
   conv_lhs => rw [iterateFrobeniusEquiv_add_apply, RingEquiv.apply_symm_apply]
-  rw [add_assoc, add_comm n n', ← add_assoc,
-    iterateFrobeniusEquiv_add_apply (m := m + n'), RingEquiv.apply_symm_apply,
-    iterateFrobeniusEquiv_def, iterateFrobeniusEquiv_def,
-    ← sub_eq_zero, ← map_pow, ← map_pow, ← map_sub,
-    add_comm m, add_comm m, pow_add, pow_mul, pow_add, pow_mul, ← sub_pow_expChar_pow, h, map_zero]
+  rw [add_assoc, add_comm n n', ← add_assoc, iterateFrobeniusEquiv_add_apply (m := m + n'),
+    RingEquiv.apply_symm_apply, iterateFrobeniusEquiv_def, iterateFrobeniusEquiv_def, ← sub_eq_zero,
+    ← map_pow, ← map_pow, ← map_sub, add_comm m, add_comm m, pow_add, pow_mul, pow_add, pow_mul,
+    ← sub_pow_expChar_pow, h, map_zero]
 
 variable [ExpChar L p]
 
@@ -318,9 +317,8 @@ def lift : L →+* M where
     obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
     obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
     rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
-      liftAux_apply i j p (x1 * x2) (n1 + n2) (y1 ^ p ^ n2 * y2 ^ p ^ n1) (by rw [map_mul,
-        map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
-        add_comm n2, mul_pow]),
+      liftAux_apply i j p (x1 * x2) (n1 + n2) (y1 ^ p ^ n2 * y2 ^ p ^ n1) (by rw [map_mul, map_pow,
+        map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add, add_comm n2, mul_pow]),
       map_mul, map_pow, map_pow, map_mul, ← iterateFrobeniusEquiv_def]
     nth_rw 1 [iterateFrobeniusEquiv_symm_add_apply]
     rw [RingEquiv.symm_apply_apply, add_comm n1, iterateFrobeniusEquiv_symm_add_apply,

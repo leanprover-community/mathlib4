@@ -60,8 +60,7 @@ noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Φ.Iteration j) :
     · rw [arrowSucc_def, arrowMap_extendToSucc _ _ _ _ _ _ (Order.succ_le_of_lt hi₁),
         ← arrowSucc_def _ _ hi₁, iter.arrowSucc_eq i hi₁,
         extendToSucc_obj_eq hj iter.F (Φ.toSucc _) i hi₁.le]
-    · rw [arrowSucc_extendToSucc, toSuccArrow,
-        extendToSucc_obj_eq hj iter.F (Φ.toSucc _) i]
+    · rw [arrowSucc_extendToSucc, toSuccArrow, extendToSucc_obj_eq hj iter.F (Φ.toSucc _) i]
   arrowMap_limit i hi hij k hk := by
     have hij' := (Order.IsSuccLimit.le_succ_iff hi).1 hij
     rw [arrowMap_extendToSucc _ _ _ _ _ _ hij', arrowMap_limit _ _ hi _ _ hk]
@@ -129,15 +128,13 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
       arrowSucc_eq, functor_obj _ _ _ hi]
   arrowMap_limit i hi hij k hk := by
     obtain hij | rfl := hij.lt_or_eq
-    · rw [arrowMap_functor _ _ _ _ _ hij, arrow_mk_mapObj,
-        arrowMap_limit _ _ hi _ _ hk]
+    · rw [arrowMap_functor _ _ _ _ _ hij, arrow_mk_mapObj, arrowMap_limit _ _ hi _ _ hk]
       congr 1
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
       dsimp
       generalize_proofs
-      rw [← arrowMap, ← arrowMap, arrowMap_functor hj iter l₁ l₂ _ (hl₂.trans hij),
-        arrow_mk_mapObj]
+      rw [← arrowMap, ← arrowMap, arrowMap_functor hj iter l₁ l₂ _ (hl₂.trans hij), arrow_mk_mapObj]
       apply congr_arrowMap
     · rw [arrowMap_functor_to_top _ _ _ hk, ← arrowι_def _ hi]
       congr 1

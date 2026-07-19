@@ -92,9 +92,8 @@ theorem pi_iff :
       rw [← sub_eq_zero]
       simp only [Ideal.Quotient.algebraMap_eq, AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk,
         Function.comp_apply, ← map_sub, Ideal.Quotient.eq_zero_iff_mem, f₁', f₂',
-        AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp,
-        LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply,
-        Ideal.Quotient.mkₐ_eq_mk]
+        AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp, LinearMap.coe_single,
+        Function.comp_apply, AlgHom.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
       exact Ideal.mem_map_of_mem (Ideal.Quotient.mk J') (hf (Pi.single x r))
 
 instance [∀ i, FormallyUnramified R (f i)] : FormallyUnramified R (Π i, f i) :=

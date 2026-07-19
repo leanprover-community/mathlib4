@@ -341,9 +341,8 @@ theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
   simp only [← Nat.cast_le (α := ℕ∞)]
   rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← emultiplicity_eq_count_normalizedFactors
     irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors X_irreducible] <;>
-  simp only [← pow_dvd_iff_le_emultiplicity, Polynomial.X_pow_dvd_iff,
-    PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true, ne_eq, coe_eq_zero_iff, hP,
-    not_false_eq_true]
+  simp only [← pow_dvd_iff_le_emultiplicity, Polynomial.X_pow_dvd_iff, PowerSeries.X_pow_dvd_iff,
+    Polynomial.coeff_coe P, implies_true, ne_eq, coe_eq_zero_iff, hP, not_false_eq_true]
 
 open IsLocalRing
 

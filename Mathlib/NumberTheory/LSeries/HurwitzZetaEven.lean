@@ -364,21 +364,17 @@ lemma completedCosZeta₀_neg (a : UnitAddCircle) (s : ℂ) :
 /-- Functional equation for the even Hurwitz zeta function. -/
 lemma completedHurwitzZetaEven_one_sub (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaEven a (1 - s) = completedCosZeta a s := by
-  rw [completedHurwitzZetaEven, completedCosZeta, sub_div,
-    (by simp : (1 / 2 : ℂ) = ↑(1 / 2 : ℝ)),
+  rw [completedHurwitzZetaEven, completedCosZeta, sub_div, (by simp : (1 / 2 : ℂ) = ↑(1 / 2 : ℝ)),
     (by rfl : (1 / 2 : ℝ) = (hurwitzEvenFEPair a).k),
-    (hurwitzEvenFEPair a).functional_equation (s / 2),
-    (by rfl : (hurwitzEvenFEPair a).ε = 1),
+    (hurwitzEvenFEPair a).functional_equation (s / 2), (by rfl : (hurwitzEvenFEPair a).ε = 1),
     one_smul]
 
 /-- Functional equation for the even Hurwitz zeta function with poles removed. -/
 lemma completedHurwitzZetaEven₀_one_sub (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaEven₀ a (1 - s) = completedCosZeta₀ a s := by
-  rw [completedHurwitzZetaEven₀, completedCosZeta₀, sub_div,
-    (by simp : (1 / 2 : ℂ) = ↑(1 / 2 : ℝ)),
+  rw [completedHurwitzZetaEven₀, completedCosZeta₀, sub_div, (by simp : (1 / 2 : ℂ) = ↑(1 / 2 : ℝ)),
     (by rfl : (1 / 2 : ℝ) = (hurwitzEvenFEPair a).k),
-    (hurwitzEvenFEPair a).functional_equation₀ (s / 2),
-    (by rfl : (hurwitzEvenFEPair a).ε = 1),
+    (hurwitzEvenFEPair a).functional_equation₀ (s / 2), (by rfl : (hurwitzEvenFEPair a).ε = 1),
     one_smul]
 
 /-- Functional equation for the even Hurwitz zeta function (alternative form). -/

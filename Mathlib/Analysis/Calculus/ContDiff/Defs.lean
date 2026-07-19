@@ -828,13 +828,11 @@ theorem contDiffOn_succ_of_fderivWithin (hf : DifferentiableOn 𝕜 f s)
   · rw [ENat.coe_top_add_one, contDiffOn_infty]
     intro m x hx
     apply ContDiffWithinAt.of_le _ (show (m : ℕ∞ω) ≤ m + 1 from le_self_add)
-    rw [contDiffWithinAt_succ_iff_hasFDerivWithinAt (by simp),
-      insert_eq_of_mem hx]
+    rw [contDiffWithinAt_succ_iff_hasFDerivWithinAt (by simp), insert_eq_of_mem hx]
     exact ⟨s, self_mem_nhdsWithin, (by simp), fderivWithin 𝕜 f s,
       fun y hy => (hf y hy).hasFDerivWithinAt, (h x hx).of_le (mod_cast le_top)⟩
   · intro x hx
-    rw [contDiffWithinAt_succ_iff_hasFDerivWithinAt hn,
-      insert_eq_of_mem hx]
+    rw [contDiffWithinAt_succ_iff_hasFDerivWithinAt hn, insert_eq_of_mem hx]
     exact ⟨s, self_mem_nhdsWithin, h', fderivWithin 𝕜 f s,
       fun y hy => (hf y hy).hasFDerivWithinAt, h x hx⟩
 

@@ -117,8 +117,7 @@ private lemma lt_card_mul_inv_eq (hA : #(B * A) < K * #A) (hx : x ∈ B⁻¹ * B
 private lemma mul_inv_eq_inv_mul_of_doubling_lt_two_aux (h : #(A * A) < 2 * #A) :
     A⁻¹ * A ⊆ A * A⁻¹ := by
   intro z
-  simp only [mem_mul, forall_exists_index, and_imp, mem_inv,
-    exists_exists_and_eq_and]
+  simp only [mem_mul, forall_exists_index, and_imp, mem_inv, exists_exists_and_eq_and]
   rintro x hx y hy rfl
   have ⟨t, ht⟩ : (x • A ∩ y • A).Nonempty := by
     simpa using lt_card_smul_inter_smul (K := 2) (mod_cast h) hx hy
@@ -159,8 +158,7 @@ def invMulSubgroup (A : Finset G) (h : #(A * A) < (3 / 2 : ℚ) * #A) : Subgroup
     exact ⟨x⁻¹, inv_mem_inv hx, x, by simp [hx]⟩
   inv_mem' := by
     intro x
-    simp only [Set.mem_mul, Set.mem_inv, coe_inv, forall_exists_index, mem_coe,
-      and_imp]
+    simp only [Set.mem_mul, Set.mem_inv, coe_inv, forall_exists_index, mem_coe, and_imp]
     rintro a ha b hb rfl
     exact ⟨b⁻¹, by simpa using hb, a⁻¹, ha, by simp⟩
   mul_mem' := by

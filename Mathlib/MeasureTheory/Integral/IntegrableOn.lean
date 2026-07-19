@@ -384,8 +384,7 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
   let v n := toMeasurable (μ.restrict s) { x | u n ≤ ‖f x‖ₑ }
   have A : ∀ n, μ (s ∩ v n) ≠ ∞ := by
     intro n
-    rw [inter_comm, ← Measure.restrict_apply (measurableSet_toMeasurable _ _),
-      measure_toMeasurable]
+    rw [inter_comm, ← Measure.restrict_apply (measurableSet_toMeasurable _ _), measure_toMeasurable]
     exact (hf.measure_enorm_ge_lt_top (u_pos n).1 (u_pos n).2.ne).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
@@ -882,8 +881,7 @@ theorem integrableOn_Ico_iff_integrableOn_Ioo'
     (ha : μ {a} ≠ ∞) (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn f (Ico a b) μ ↔ IntegrableOn f (Ioo a b) μ := by
   by_cases hab : a < b
-  · rw [← Ioo_union_left hab, integrableOn_union,
-      eq_true (integrableOn_singleton ha'), and_true]
+  · rw [← Ioo_union_left hab, integrableOn_union, eq_true (integrableOn_singleton ha'), and_true]
   · rw [Ioo_eq_empty hab, Ico_eq_empty hab]
 
 theorem integrableOn_Ioc_iff_integrableOn_Ioo'

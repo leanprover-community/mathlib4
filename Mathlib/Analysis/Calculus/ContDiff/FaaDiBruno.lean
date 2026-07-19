@@ -644,13 +644,11 @@ def extendEquiv (n : ℕ) :
     rintro ⟨c, o⟩
     match o with
     | none =>
-      simp only [extend, range_extendLeft_zero, ↓reduceDIte, Sigma.mk.inj_iff, heq_eq_eq,
-        and_true]
+      simp only [extend, range_extendLeft_zero, ↓reduceDIte, Sigma.mk.inj_iff, heq_eq_eq, and_true]
       rfl
     | some i =>
-      simp only [extend, range_emb_extendMiddle_ne_singleton_zero, ↓reduceDIte,
-        Sigma.mk.inj_iff, heq_eq_eq, and_true, eraseMiddle,
-        index_extendMiddle_zero]
+      simp only [extend, range_emb_extendMiddle_ne_singleton_zero, ↓reduceDIte, Sigma.mk.inj_iff,
+        heq_eq_eq, and_true, eraseMiddle, index_extendMiddle_zero]
       ext
       · rfl
       · simp only [heq_eq_eq, index_extendMiddle_zero]
@@ -759,8 +757,7 @@ theorem applyOrderedFinpartition_update_right
     rw [← Function.update_comp_eq_of_injective]
     · simp
     · exact (c.emb_strictMono (c.index j)).injective
-  · simp only [applyOrderedFinpartition, ne_eq, h, not_false_eq_true,
-      update_of_ne]
+  · simp only [applyOrderedFinpartition, ne_eq, h, not_false_eq_true, update_of_ne]
     congr 1
     apply Function.update_comp_eq_of_notMem_range
     have A : Disjoint (range (c.emb m)) (range (c.emb (c.index j))) :=
@@ -788,11 +785,9 @@ def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E 
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ f (c.applyOrderedFinpartition p v))
       (fun v i x y ↦ by
-        simp only [applyOrderedFinpartition_update_right,
-          ContinuousMultilinearMap.map_update_add])
+        simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_add])
       (fun v i c x ↦ by
-        simp only [applyOrderedFinpartition_update_right,
-          ContinuousMultilinearMap.map_update_smul])
+        simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_smul])
   cont := by
     apply f.cont.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))

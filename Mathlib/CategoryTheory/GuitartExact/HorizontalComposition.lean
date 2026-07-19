@@ -146,8 +146,7 @@ lemma hComp_iff_of_equivalences (eT : C₂ ≌ C₃) (eB : D₂ ≌ D₃)
     (w ≫ₕ w'.hom).GuitartExact ↔ w.GuitartExact := by
   let w'' : V₂.op ⋙ eB.op.functor ≅ eT.op.functor ⋙ V₃.op := NatIso.op w'
   have : (w ≫ₕ w'.hom).op = (w.op ≫ᵥ w''.hom) := by ext; simp [w'']
-  rw [← guitartExact_op_iff, ← guitartExact_op_iff w,
-    ← vComp_iff_of_equivalences _ _ _ w'', this]
+  rw [← guitartExact_op_iff, ← guitartExact_op_iff w, ← vComp_iff_of_equivalences _ _ _ w'', this]
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in

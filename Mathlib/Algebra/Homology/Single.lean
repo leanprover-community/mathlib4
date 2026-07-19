@@ -128,9 +128,8 @@ lemma to_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
 
 instance (j : ι) : (single V c j).Faithful where
   map_injective {A B f g} w := by
-    rw [← cancel_mono (singleObjXSelf c j B).inv,
-      ← cancel_epi (singleObjXSelf c j A).hom, ← single_map_f_self,
-      ← single_map_f_self, w]
+    rw [← cancel_mono (singleObjXSelf c j B).inv, ← cancel_epi (singleObjXSelf c j A).hom,
+      ← single_map_f_self, ← single_map_f_self, w]
 
 instance (j : ι) : (single V c j).Full where
   map_surjective {A B} f :=

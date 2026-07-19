@@ -110,9 +110,8 @@ def lowerCone
         ⟨.mk .unit, f.right, 𝟙 _⟩
     naturality := by
       rintro x y e
-      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
-        Functor.op_obj, Functor.pointwiseRightKanExtension_obj,
-        Category.id_comp, Functor.comp_map, Category.assoc]
+      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Functor.op_obj,
+        Functor.pointwiseRightKanExtension_obj, Category.id_comp, Functor.comp_map, Category.assoc]
       rw [← S.w ((projSup Us).map e), Category.assoc]
       congr 1
       let xx : StructuredArrow (Opposite.op (principalOpen x.right)) (principals X) :=

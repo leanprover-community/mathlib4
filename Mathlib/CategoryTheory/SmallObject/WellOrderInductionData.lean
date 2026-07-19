@@ -116,8 +116,7 @@ def ofLE {j : J} (e : d.Extension val₀ j) {i : J} (hij : i ≤ j) : d.Extensio
     rw [← comp_apply, ← map_comp, ← comp_apply, ← map_comp, ← op_comp, ← op_comp,
       homOfLE_comp, homOfLE_comp, e.map_succ k (lt_of_lt_of_le hk hij)]
   map_limit k hk hki := by
-    rw [← comp_apply, ← map_comp, ← op_comp, homOfLE_comp,
-      e.map_limit k hk (hki.trans hij)]
+    rw [← comp_apply, ← map_comp, ← op_comp, homOfLE_comp, e.map_limit k hk (hki.trans hij)]
     congr
     ext ⟨l, hl⟩
     dsimp

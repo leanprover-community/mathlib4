@@ -200,8 +200,7 @@ lemma exactAt_X₁ (hS : S.ShortExact) (j : ι)
         ← HomologicalComplex.homologyMap_comp]
   · have := hS.mono_f
     have := HomologicalComplex.mono_homologyMap_of_mono_of_not_rel S.f j hj
-    rw [IsZero.iff_id_eq_zero,
-      ← cancel_mono (HomologicalComplex.homologyMap S.f j),
+    rw [IsZero.iff_id_eq_zero, ← cancel_mono (HomologicalComplex.homologyMap S.f j),
       ← cancel_mono (HomologicalComplex.homologyMap S.g j)]
     simp [← HomologicalComplex.homologyMap_comp]
 
@@ -224,8 +223,7 @@ lemma exactAt_X₃ (hS : S.ShortExact) (i : ι)
     · simp [← cancel_mono (HomologicalComplex.homologyMap S.f j)]
   · have := hS.epi_g
     have := HomologicalComplex.epi_homologyMap_of_epi_of_not_rel S.g i hi
-    rw [IsZero.iff_id_eq_zero,
-      ← cancel_epi (HomologicalComplex.homologyMap S.g i),
+    rw [IsZero.iff_id_eq_zero, ← cancel_epi (HomologicalComplex.homologyMap S.g i),
       ← cancel_epi (HomologicalComplex.homologyMap S.f i)]
     simp [← HomologicalComplex.homologyMap_comp]
 

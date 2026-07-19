@@ -107,8 +107,7 @@ theorem besselPotential_neg_one_lineDerivOp_eq {m : E} (f : 𝓢'(E, F)) :
     (besselPotential E F (-1)) (∂_{m} f) =
       (2 * π * Complex.I) • fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
       inner ℝ x m * (1 + ‖x‖ ^ 2) ^ (-1 / 2 : ℝ)) f := by
-  rw [lineDeriv_eq_fourierMultiplierCLM, besselPotential,
-    ContinuousLinearMap.map_smul_of_tower,
+  rw [lineDeriv_eq_fourierMultiplierCLM, besselPotential, ContinuousLinearMap.map_smul_of_tower,
     fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
   congr
   ext x
@@ -117,8 +116,7 @@ theorem besselPotential_neg_one_lineDerivOp_eq {m : E} (f : 𝓢'(E, F)) :
 theorem besselPotential_neg_two_laplacian_eq (f : 𝓢'(E, F)) :
     (besselPotential E F (-2)) (Δ f) = -(2 * π) ^ 2 •
       fourierMultiplierCLM F (fun x ↦ Complex.ofReal <| ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := by
-  rw [laplacian_eq_fourierMultiplierCLM, besselPotential,
-    ContinuousLinearMap.map_smul_of_tower,
+  rw [laplacian_eq_fourierMultiplierCLM, besselPotential, ContinuousLinearMap.map_smul_of_tower,
     fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
   congr
   ext x

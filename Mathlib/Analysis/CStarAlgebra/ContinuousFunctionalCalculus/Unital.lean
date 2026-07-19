@@ -354,8 +354,7 @@ lemma cfc_apply_mkD :
     cfc f a = cfcHom (a := a) ha (mkD ((spectrum R a).restrict f) 0) := by
   by_cases hf : ContinuousOn f (spectrum R a)
   · rw [cfc_apply f a, mkD_of_continuousOn hf]
-  · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
-      map_zero]
+  · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf, map_zero]
 
 set_option backward.privateInPublic true in
 /-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
@@ -665,8 +664,7 @@ lemma CFC.eq_one_of_spectrum_subset_one (h_spec : spectrum R a ⊆ {1}) (ha : p 
 
 include instCFC in
 lemma CFC.spectrum_algebraMap_subset (r : R) : spectrum R (algebraMap R A r) ⊆ {r} := by
-  rw [← cfc_const r 0 (cfc_predicate_zero R),
-    cfc_map_spectrum (fun _ ↦ r) 0 (cfc_predicate_zero R)]
+  rw [← cfc_const r 0 (cfc_predicate_zero R), cfc_map_spectrum (fun _ ↦ r) 0 (cfc_predicate_zero R)]
   rintro - ⟨x, -, rfl⟩
   simp
 

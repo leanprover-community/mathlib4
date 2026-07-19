@@ -760,8 +760,7 @@ theorem nilpotencyClass_le_of_ker_le_center {H : Type*} [Group H] (f : G →* H)
   classical apply Nat.find_min'
   refine lowerCentralSeries_succ_eq_bot ⊤
     (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)
-  rw [map_lowerCentralSeries, ← le_bot_iff,
-    ← lowerCentralSeries_nilpotencyClass (G := H)]
+  rw [map_lowerCentralSeries, ← le_bot_iff, ← lowerCentralSeries_nilpotencyClass (G := H)]
   exact Subgroup.lowerCentralSeries_mono _ le_top
 
 /-- The range of a surjective homomorphism from a nilpotent group is nilpotent. -/

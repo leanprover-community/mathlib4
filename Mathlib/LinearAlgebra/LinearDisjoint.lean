@@ -214,9 +214,8 @@ variable (M N)
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_left' {ι : Type*} (m : Basis ι R M)
     (H : Function.Injective (mulLeftMap N m)) : M.LinearDisjoint N := by
-  classical simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
-    ← LinearEquiv.coe_rTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+  classical simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm, ← LinearEquiv.coe_rTensor,
+    LinearEquiv.comp_coe, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent
@@ -224,9 +223,8 @@ theorem of_basis_left' {ι : Type*} (m : Basis ι R M)
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
-  classical simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
-    ← LinearEquiv.coe_lTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+  classical simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm, ← LinearEquiv.coe_lTensor,
+    LinearEquiv.comp_coe, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,

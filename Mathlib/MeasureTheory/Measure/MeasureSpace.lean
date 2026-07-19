@@ -929,8 +929,7 @@ instance instSMul {_ : MeasurableSpace α} : SMul R (Measure α) :=
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
       m_iUnion := fun s hs hd => by
-        simp only [smul_apply, coe_toOuterMeasure, ENNReal.tsum_const_smul,
-          measure_iUnion hd hs]
+        simp only [smul_apply, coe_toOuterMeasure, ENNReal.tsum_const_smul, measure_iUnion hd hs]
       trim_le := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 
 @[simp]
@@ -1409,8 +1408,7 @@ theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ
 
 theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
   ext1 s hs
-  simp only [add_apply, sum_apply _ hs,
-    ENNReal.summable.tsum_add ENNReal.summable]
+  simp only [add_apply, sum_apply _ hs, ENNReal.summable.tsum_add ENNReal.summable]
 
 @[simp] lemma sum_comp_equiv {ι ι' : Type*} (e : ι' ≃ ι) (m : ι → Measure α) :
     sum (m ∘ e) = sum m := by

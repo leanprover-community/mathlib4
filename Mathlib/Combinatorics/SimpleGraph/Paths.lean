@@ -553,8 +553,7 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
   intro h'
   have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
-  · rw [p.getVert_of_length_le (by lia : p.length ≤ i + 1),
-      hpc.getVert_endpoint_iff (by lia)] at h'
+  · rw [p.getVert_of_length_le (by lia : p.length ≤ i + 1), hpc.getVert_endpoint_iff (by lia)] at h'
     lia
   have := hpc.getVert_injOn' (by simp only [Set.mem_ofPred_eq, Nat.sub_le_iff_le_add]; lia)
     (by simp only [Set.mem_ofPred_eq]; lia) h'

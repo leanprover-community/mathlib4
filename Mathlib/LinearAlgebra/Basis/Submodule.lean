@@ -65,8 +65,7 @@ theorem Basis.eq_bot_of_rank_eq_zero [IsDomain R] (b : Basis ι R M) (N : Submod
   refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
-  simp only [Fin.default_eq_zero, Finset.univ_unique,
-    Finset.sum_singleton] at sum_eq
+  simp only [Fin.default_eq_zero, Finset.univ_unique, Finset.sum_singleton] at sum_eq
   convert! (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
 
 end Module

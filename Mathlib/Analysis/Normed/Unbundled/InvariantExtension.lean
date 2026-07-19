@@ -117,8 +117,7 @@ def invariantExtension : AlgebraNorm K L where
     exact fun hx ↦ ne_of_gt (lt_of_lt_of_le (map_pos_of_ne_zero _ hx)
       (Finite.le_ciSup (fun σ ↦ (algNormOfAlgEquiv σ) x) AlgEquiv.refl))
   smul' r x := by
-    simp only [AlgebraNormClass.map_smul_eq_mul,
-      Real.mul_iSup_of_nonneg (norm_nonneg _)]
+    simp only [AlgebraNormClass.map_smul_eq_mul, Real.mul_iSup_of_nonneg (norm_nonneg _)]
 
 @[simp]
 theorem invariantExtension_apply (x : L) :

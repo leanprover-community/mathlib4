@@ -202,8 +202,7 @@ theorem accPt_principal_iff_clusterPt {x : X} {C : Set X} :
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
 theorem accPt_iff_nhds {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
-  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty,
-    and_assoc]
+  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty, and_assoc]
 
 /-- `x` is an accumulation point of a set `C` iff
 there are points near `x` in `C` and different from `x`. -/

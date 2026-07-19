@@ -84,8 +84,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
-  simp only [reflection_apply, map_sub, map_smul, sub_apply,
-    smul_apply, smul_eq_mul]
+  simp only [reflection_apply, map_sub, map_smul, sub_apply, smul_apply, smul_eq_mul]
   refine hx.1.1 ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]
   rw [sub_eq_iff_eq_add, ← hSB.eq x y, RingHom.id_apply, mul_assoc _ _ (B x x), mul_comm _ (B x x),
@@ -102,8 +101,7 @@ lemma reflective_reflection (hSB : LinearMap.IsSymm B) {y : M}
     have hz : Module.reflection (coroot_apply_self B hx)
         (Module.reflection (coroot_apply_self B hx) z) = z := by
       exact (LinearEquiv.eq_symm_apply (Module.reflection (coroot_apply_self B hx))).mp rfl
-    rw [← hz, isOrthogonal_reflection B hx hSB,
-      isOrthogonal_reflection B hx hSB]
+    rw [← hz, isOrthogonal_reflection B hx hSB, isOrthogonal_reflection B hx hSB]
     exact hy.2 _
 
 end IsReflective

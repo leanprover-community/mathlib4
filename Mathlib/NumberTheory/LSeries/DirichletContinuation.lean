@@ -275,8 +275,7 @@ noncomputable def rootNumber (χ : DirichletCharacter ℂ N) : ℂ :=
 /-- The root number of the unique Dirichlet character modulo 1 is 1. -/
 lemma rootNumber_modOne (χ : DirichletCharacter ℂ 1) : rootNumber χ = 1 := by
   simp [rootNumber, gaussSum, -univ_unique, ← singleton_eq_univ (1 : ZMod 1),
-    (show stdAddChar (1 : ZMod 1) = 1 from AddChar.map_zero_eq_one _),
-    (show χ.Even from map_one _)]
+    (show stdAddChar (1 : ZMod 1) = 1 from AddChar.map_zero_eq_one _), (show χ.Even from map_one _)]
 
 namespace IsPrimitive
 

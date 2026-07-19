@@ -412,8 +412,7 @@ lemma Icc_isBoundaryPoint_bot : (𝓡∂ 1).IsBoundaryPoint (⊥ : Set.Icc x y) 
   exact IccLeftChart_extend_bot_mem_frontier
 
 lemma Icc_isBoundaryPoint_top : (𝓡∂ 1).IsBoundaryPoint (⊤ : Set.Icc x y) := by
-  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
-    Icc_chartedSpaceChartAt_of_top_le (by simp)]
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt, Icc_chartedSpaceChartAt_of_top_le (by simp)]
   exact IccRightChart_extend_top_mem_frontier
 
 lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :

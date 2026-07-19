@@ -289,8 +289,7 @@ theorem isConj_of_cycleType_eq {σ τ : Perm α} (h : cycleType σ = cycleType �
       rw [← Finset.mem_def, mem_cycleFactorsFinset_iff] at hσ'l
       rw [hc.cycleType, ← hσ', hσ'l.left.cycleType]; rfl
     refine hd.isConj_mul (hσ hs) (hπ ?_) ?_
-    · rw [cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub, ← h, add_comm, hs,
-        add_tsub_cancel_right]
+    · rw [cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub, ← h, add_comm, hs, add_tsub_cancel_right]
       rwa [Finset.mem_def]
     · exact (disjoint_mul_inv_of_mem_cycleFactorsFinset hσ'l).symm
 
@@ -349,8 +348,7 @@ theorem sign_of_cycleType_eq_replicate {σ : Perm α} {n : ℕ} (hn : 0 < n)
   obtain h | h := Nat.even_or_odd n
   · rw [if_neg (Nat.not_odd_iff_even.mpr h), h.neg_one_pow, σ.card_fixedPoints,
       Nat.sub_sub_self σ.sum_cycleType_le,
-      show σ.cycleType.sum = σ.cycleType.card * n by rw [hσ]; simp,
-        Nat.mul_div_cancel _ hn]
+      show σ.cycleType.sum = σ.cycleType.card * n by rw [hσ]; simp, Nat.mul_div_cancel _ hn]
   · rw [if_pos h, h.neg_one_pow, neg_neg, one_pow]
 
 theorem sign_of_pow_two_eq_one {σ : Perm α} (hσ : σ ^ 2 = 1) :

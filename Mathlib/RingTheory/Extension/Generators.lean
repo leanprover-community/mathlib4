@@ -690,8 +690,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
       have : (Q.toComp P).toAlgHom (monomial j (coeff (e.symm (i, j)) x)) =
           monomial (e.symm (0, j)) (coeff (e.symm (i, j)) x) :=
         toComp_toAlgHom_monomial ..
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-          this]
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, this]
       rw [monomial_mul, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
     · apply Ideal.mul_mem_left
       refine Ideal.mem_map_of_mem _ ?_
@@ -773,8 +772,7 @@ lemma map_ofComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
   rw [Ideal.mem_map_iff_of_surjective _ (toAlgHom_ofComp_surjective Q P)]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    simp only [ker_eq_ker_aeval_val,
-      RingHom.mem_ker] at hx ⊢
+    simp only [ker_eq_ker_aeval_val, RingHom.mem_ker] at hx ⊢
     rw [← hx, Hom.algebraMap_toAlgHom, algebraMap_self_apply]
   · intro hx
     exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).2, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
@@ -782,8 +780,7 @@ lemma map_ofComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
 lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
     (Q.comp P).ker =
       Ideal.map (Q.toComp P).toAlgHom P.ker ⊔ Ideal.comap (Q.ofComp P).toAlgHom Q.ker := by
-  rw [← map_ofComp_ker Q P,
-    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective Q P)]
+  rw [← map_ofComp_ker Q P, Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective Q P)]
   rw [← sup_assoc, Algebra.Generators.map_toComp_ker, ← RingHom.ker_eq_comap_bot]
   apply le_antisymm (le_trans le_sup_right le_sup_left)
   simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]

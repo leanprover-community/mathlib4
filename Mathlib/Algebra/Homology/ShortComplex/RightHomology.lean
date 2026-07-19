@@ -161,8 +161,7 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ofIsLimitKernelFork_g' (hf : S.f = 0) (c : KernelFork S.g)
     (hc : IsLimit c) : (ofIsLimitKernelFork S hf c hc).g' = S.g := by
-  rw [← cancel_epi (ofIsLimitKernelFork S hf c hc).p, p_g',
-    ofIsLimitKernelFork_p, id_comp]
+  rw [← cancel_epi (ofIsLimitKernelFork S hf c hc).p, p_g', ofIsLimitKernelFork_p, id_comp]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -1038,17 +1037,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma fromOpcycles_op_cyclesOpIso_inv [S.HasRightHomology] :
     S.fromOpcycles.op ≫ S.cyclesOpIso.inv = S.op.toCycles := by
   dsimp [cyclesOpIso, fromOpcycles]
-  rw [← cancel_mono S.op.iCycles, assoc, toCycles_i,
-    LeftHomologyData.cyclesIso_inv_comp_iCycles, RightHomologyData.op_i,
-    ← op_comp, RightHomologyData.p_g', op_f]
+  rw [← cancel_mono S.op.iCycles, assoc, toCycles_i, LeftHomologyData.cyclesIso_inv_comp_iCycles,
+    RightHomologyData.op_i, ← op_comp, RightHomologyData.p_g', op_f]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma op_pOpcycles_opcyclesOpIso_hom [S.HasLeftHomology] :
     S.op.pOpcycles ≫ S.opcyclesOpIso.hom = S.iCycles.op := by
   dsimp [opcyclesOpIso]
-  rw [← S.leftHomologyData.op.p_comp_opcyclesIso_inv, assoc,
-    Iso.inv_hom_id, comp_id]
+  rw [← S.leftHomologyData.op.p_comp_opcyclesIso_inv, assoc, Iso.inv_hom_id, comp_id]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1065,9 +1062,8 @@ lemma opcyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
     [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     opcyclesMap (opMap φ) ≫ (S₁.opcyclesOpIso).hom =
       S₂.opcyclesOpIso.hom ≫ (cyclesMap φ).op := by
-  rw [← cancel_epi S₂.op.pOpcycles, p_opcyclesMap_assoc, opMap_τ₂,
-    op_pOpcycles_opcyclesOpIso_hom, op_pOpcycles_opcyclesOpIso_hom_assoc, ← op_comp,
-    ← op_comp, cyclesMap_i]
+  rw [← cancel_epi S₂.op.pOpcycles, p_opcyclesMap_assoc, opMap_τ₂, op_pOpcycles_opcyclesOpIso_hom,
+    op_pOpcycles_opcyclesOpIso_hom_assoc, ← op_comp, ← op_comp, cyclesMap_i]
 
 @[reassoc]
 lemma opcyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
@@ -1099,16 +1095,14 @@ lemma leftHomologyMap'_op
     (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     (leftHomologyMap' φ h₁ h₂).op = rightHomologyMap' (opMap φ) h₂.op h₁.op := by
   let γ : LeftHomologyMapData φ h₁ h₂ := leftHomologyMapData φ h₁ h₂
-  simp only [γ.leftHomologyMap'_eq, γ.op.rightHomologyMap'_eq,
-    LeftHomologyMapData.op_φH]
+  simp only [γ.leftHomologyMap'_eq, γ.op.rightHomologyMap'_eq, LeftHomologyMapData.op_φH]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     (leftHomologyMap φ).op = S₂.rightHomologyOpIso.inv ≫ rightHomologyMap (opMap φ) ≫
       S₁.rightHomologyOpIso.hom := by
-  dsimp [rightHomologyOpIso, RightHomologyData.rightHomologyIso, rightHomologyMap,
-    leftHomologyMap]
+  dsimp [rightHomologyOpIso, RightHomologyData.rightHomologyIso, rightHomologyMap, leftHomologyMap]
   simp only [← rightHomologyMap'_comp, comp_id, id_comp, leftHomologyMap'_op]
 
 @[simp]
@@ -1116,16 +1110,14 @@ lemma rightHomologyMap'_op
     (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
     (rightHomologyMap' φ h₁ h₂).op = leftHomologyMap' (opMap φ) h₂.op h₁.op := by
   let γ : RightHomologyMapData φ h₁ h₂ := rightHomologyMapData φ h₁ h₂
-  simp only [γ.rightHomologyMap'_eq, γ.op.leftHomologyMap'_eq,
-    RightHomologyMapData.op_φH]
+  simp only [γ.rightHomologyMap'_eq, γ.op.leftHomologyMap'_eq, RightHomologyMapData.op_φH]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
     (rightHomologyMap φ).op = S₂.leftHomologyOpIso.inv ≫ leftHomologyMap (opMap φ) ≫
       S₁.leftHomologyOpIso.hom := by
-  dsimp [leftHomologyOpIso, LeftHomologyData.leftHomologyIso, leftHomologyMap,
-    rightHomologyMap]
+  dsimp [leftHomologyOpIso, LeftHomologyData.leftHomologyIso, leftHomologyMap, rightHomologyMap]
   simp only [← leftHomologyMap'_comp, comp_id, id_comp, rightHomologyMap'_op]
 
 namespace RightHomologyData
@@ -1412,8 +1404,7 @@ lemma isIso_opcyclesMap'_of_isIso_of_epi (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.�
     IsIso (opcyclesMap' φ h₁ h₂) := by
   refine ⟨h₂.descQ (inv φ.τ₂ ≫ h₁.p) ?_, ?_, ?_⟩
   · simp only [← cancel_epi φ.τ₁, comp_zero, φ.comm₁₂_assoc, IsIso.hom_inv_id_assoc, h₁.wp]
-  · simp only [← cancel_epi h₁.p, p_opcyclesMap'_assoc, h₂.p_descQ,
-      IsIso.hom_inv_id_assoc, comp_id]
+  · simp only [← cancel_epi h₁.p, p_opcyclesMap'_assoc, h₂.p_descQ, IsIso.hom_inv_id_assoc, comp_id]
   · simp only [← cancel_epi h₂.p, h₂.p_descQ_assoc, assoc, p_opcyclesMap',
       IsIso.inv_hom_id_assoc, comp_id]
 

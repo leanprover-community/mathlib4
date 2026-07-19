@@ -52,19 +52,17 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
           dsimp
           simp only [enrichedOrdinaryCategorySelf_eHomWhiskerLeft, Category.assoc,
             enrichedOrdinaryCategorySelf_eHomWhiskerRight]
-          rw [← curry_natural_left_assoc, ← curry_natural_left_assoc,
-            ← curry_natural_right, curry_pre_app, Category.assoc,
-            ← f.naturality φ.right, Monoidal.tensorObj_map, tensorHom_def_assoc,
-            ← Under.w φ, Functor.map_comp, MonoidalCategory.whiskerLeft_comp_assoc,
-            whisker_exchange_assoc]) }
+          rw [← curry_natural_left_assoc, ← curry_natural_left_assoc, ← curry_natural_right,
+            curry_pre_app, Category.assoc, ← f.naturality φ.right, Monoidal.tensorObj_map,
+            tensorHom_def_assoc, ← Under.w φ, Functor.map_comp,
+            MonoidalCategory.whiskerLeft_comp_assoc, whisker_exchange_assoc]) }
   invFun g :=
     { app j := uncurry (g.app j ≫ enrichedHomπ C _ _ (Under.mk (𝟙 j)))
       naturality j j' φ := by
         dsimp
         rw [← uncurry_natural_right, tensorHom_def'_assoc, ← uncurry_pre_app,
-          ← uncurry_natural_left, Category.assoc, Category.assoc,
-          NatTrans.naturality_assoc, functorEnrichedHom_map,
-          end_.lift_π_assoc, enrichedOrdinaryCategorySelf_eHomWhiskerRight]
+          ← uncurry_natural_left, Category.assoc, Category.assoc, NatTrans.naturality_assoc,
+          functorEnrichedHom_map, end_.lift_π_assoc, enrichedOrdinaryCategorySelf_eHomWhiskerRight]
         dsimp
         rw [pre_id, NatTrans.id_app, enrichedOrdinaryCategorySelf_eHomWhiskerLeft,
           Functor.map_id, Category.comp_id, Category.comp_id]
@@ -106,11 +104,10 @@ lemma homEquiv_naturality_three [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F�
   ext j
   dsimp
   ext k
-  rw [Category.assoc, Category.assoc, Category.assoc, end_.lift_π, enrichedComp_π,
-    tensorHom_def, Category.assoc, whisker_exchange_assoc, whiskerRight_id_assoc,
-    Iso.inv_hom_id_assoc, end_.lift_π_assoc, Category.assoc,
-    ← MonoidalCategory.whiskerLeft_comp_assoc, Category.assoc, end_.lift_π,
-    enrichedOrdinaryCategorySelf_eHomWhiskerRight,
+  rw [Category.assoc, Category.assoc, Category.assoc, end_.lift_π, enrichedComp_π, tensorHom_def,
+    Category.assoc, whisker_exchange_assoc, whiskerRight_id_assoc, Iso.inv_hom_id_assoc,
+    end_.lift_π_assoc, Category.assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, Category.assoc,
+    end_.lift_π, enrichedOrdinaryCategorySelf_eHomWhiskerRight,
     enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
   dsimp
   rw [pre_id, NatTrans.id_app, Functor.map_id, Category.comp_id,

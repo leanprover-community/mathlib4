@@ -1091,8 +1091,7 @@ theorem isCoatom_iff [OrderTop α] [OrderTop β] (f : α ≃o β) (a : α) :
 
 theorem isSimpleOrder_iff [BoundedOrder α] [BoundedOrder β] (f : α ≃o β) :
     IsSimpleOrder α ↔ IsSimpleOrder β := by
-  rw [isSimpleOrder_iff_isAtom_top, isSimpleOrder_iff_isAtom_top, ← f.isAtom_iff ⊤,
-    f.map_top]
+  rw [isSimpleOrder_iff_isAtom_top, isSimpleOrder_iff_isAtom_top, ← f.isAtom_iff ⊤, f.map_top]
 
 theorem isSimpleOrder [BoundedOrder α] [BoundedOrder β] [h : IsSimpleOrder β] (f : α ≃o β) :
     IsSimpleOrder α :=

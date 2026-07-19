@@ -36,8 +36,7 @@ def powerset (s : Finset α) : Finset (Finset α) :=
 @[simp, grind =]
 theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   cases s
-  simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,
-    ← val_le_iff]
+  simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right, ← val_le_iff]
 
 @[simp, norm_cast]
 theorem coe_powerset (s : Finset α) :

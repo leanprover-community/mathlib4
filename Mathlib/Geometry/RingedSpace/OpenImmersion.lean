@@ -139,8 +139,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ rfl <| NatTrans.ext <| funext fun x => ?_
-  simp only [eqToHom_refl,
-    Functor.whiskerRight_id']
+  simp only [eqToHom_refl, Functor.whiskerRight_id']
   erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
   trans f.c.app x ≫ X.presheaf.map (𝟙 _)
   · congr 1
@@ -234,8 +233,7 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
             (le_antisymm (Set.image_preimage_subset f.base U.1) <|
               (Set.image_preimage_eq_inter_range (f := f.base) (t := U.1)).symm ▸
                 Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op := by
-  simp only [app_invApp, Opens.carrier_eq_coe,
-    homOfLE_leOfHom, eqToHom_op]
+  simp only [app_invApp, Opens.carrier_eq_coe, homOfLE_leOfHom, eqToHom_op]
   tauto
 
 set_option backward.isDefEq.respectTransparency false in
@@ -325,8 +323,7 @@ def pullbackConeOfLeftFst :
             Y.presheaf.map
               (eqToHom
                 (by
-                  simp only [IsOpenMap.functor, op_inj_iff, Opens.map,
-                    Functor.op_obj]
+                  simp only [IsOpenMap.functor, op_inj_iff, Opens.map, Functor.op_obj]
                   apply LE.le.antisymm
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
@@ -490,9 +487,8 @@ instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :
       simp_rw [Category.id_comp]
       rintro (_ | _ | _) <;> symm
       · simp only [limit.cone_x, cospan_one, Functor.mapCone_π_app, PullbackCone.condition_one,
-        forget_map,
-          comp_base, cospan_left, cospan_right, Functor.comp_map, cospan_map_inl, cospan_map_inr,
-          diagramIsoCospan_hom_app, PullbackCone.fst_limit_cone]
+        forget_map, comp_base, cospan_left, cospan_right, Functor.comp_map, cospan_map_inl,
+        cospan_map_inr, diagramIsoCospan_hom_app, PullbackCone.fst_limit_cone]
         tauto
       · exact Category.comp_id _
       · exact Category.comp_id _)
@@ -951,8 +947,7 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.functor.obj U) by
       convert! this
-    rw [PresheafedSpace.comp_c_app,
-      ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
+    rw [PresheafedSpace.comp_c_app, ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
     -- Porting note: this instance created manually to make the `inferInstance` below work
     have : IsIso (preservesColimitIso forgetToPresheafedSpace F).inv.c := inferInstance
     suffices IsIso (limit.π (PresheafedSpace.componentwiseDiagram

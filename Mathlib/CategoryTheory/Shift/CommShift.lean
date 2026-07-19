@@ -118,8 +118,7 @@ lemma isoZero_isoAdd'_ {a : A}
   ext X
   have := e.hom.naturality ((shiftFunctorZero C A).inv.app X)
   dsimp at this
-  simp [shiftFunctorAdd'_zero_add_hom_app,
-    shiftFunctorAdd'_zero_add_inv_app, ← map_comp,
+  simp [shiftFunctorAdd'_zero_add_hom_app, shiftFunctorAdd'_zero_add_inv_app, ← map_comp,
     reassoc_of% this]
 
 lemma isoAdd'_assoc {a b c ab bc abc : A}
@@ -240,9 +239,8 @@ lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
   dsimp
   rw [Functor.map_comp]
   simp only [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
-    CommShift.isoAdd'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
-    Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
+    CommShift.isoAdd'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc,
+    Iso.hom_inv_id_app, Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
 
 @[simp, reassoc]
 lemma map_shiftFunctorCompIsoId_hom_app [F.CommShift A] (X : C) (a b : A) (h : a + b = 0) :
@@ -333,9 +331,8 @@ lemma add {a b : A} (ha : CommShiftCore τ a) (hb : CommShiftCore τ b) :
     have := (shiftFunctorAdd D a b).inv.naturality (τ.app X)
     dsimp at this ⊢
     simp only [Functor.commShiftIso_add, Functor.CommShift.isoAdd_hom_app,
-      ← NatTrans.naturality_2 τ ((shiftFunctorAdd C a b).app X),
-      Functor.comp_obj, hb.app_shift_assoc, ha.app_shift, assoc,
-      (shiftFunctor D b).map_comp_assoc]
+      ← NatTrans.naturality_2 τ ((shiftFunctorAdd C a b).app X), Functor.comp_obj,
+      hb.app_shift_assoc, ha.app_shift, assoc, (shiftFunctor D b).map_comp_assoc]
     simp [← Functor.map_comp_assoc, this]
 
 end CommShiftCore
@@ -451,10 +448,9 @@ def ofIso : G.CommShift A where
     simp [F.commShiftIso_zero, ← NatTrans.naturality]
   commShiftIso_add a b := by
     ext X
-    simp only [comp_obj, F.commShiftIso_add, Iso.trans_hom, isoWhiskerLeft_hom,
-      Iso.symm_hom, isoWhiskerRight_hom, NatTrans.comp_app, whiskerLeft_app,
-      isoAdd_hom_app, whiskerRight_app, assoc, map_comp, NatTrans.naturality_assoc,
-      NatIso.cancel_natIso_inv_left]
+    simp only [comp_obj, F.commShiftIso_add, Iso.trans_hom, isoWhiskerLeft_hom, Iso.symm_hom,
+      isoWhiskerRight_hom, NatTrans.comp_app, whiskerLeft_app, isoAdd_hom_app, whiskerRight_app,
+      assoc, map_comp, NatTrans.naturality_assoc, NatIso.cancel_natIso_inv_left]
     simp only [← Functor.map_comp_assoc, e.hom_inv_id_app_assoc]
     simp only [← NatTrans.naturality, comp_obj, comp_map, map_comp, assoc]
 
@@ -495,8 +491,7 @@ def ofHasShiftOfFullyFaithful :
       simp [ShiftMkCore.shiftFunctorZero_eq]
     commShiftIso_add := fun a b => by
       ext X
-      simp [ShiftMkCore.shiftFunctorAdd_eq, ShiftMkCore.shiftFunctor_eq,
-        ← Functor.map_comp_assoc] }
+      simp [ShiftMkCore.shiftFunctorAdd_eq, ShiftMkCore.shiftFunctor_eq, ← Functor.map_comp_assoc] }
 
 end CommShift
 

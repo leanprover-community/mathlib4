@@ -47,8 +47,7 @@ lemma mem_const_resol₀ (x : X) (hx : x ∈ X.ρ.invariants) :
 
 lemma cocycles₀IsoAux' (x : X) (h : ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants) :
     ⟨ContinuousMap.const G x, h⟩ ∈ ((homogeneousCochains X).d 0 1).hom.ker := by
-  rw [LinearMap.mem_ker, Subtype.ext_iff, ContinuousLinearMap.coe_coe,
-    homogeneousCochains.d_apply]
+  rw [LinearMap.mem_ker, Subtype.ext_iff, ContinuousLinearMap.coe_coe, homogeneousCochains.d_apply]
   simp [d_succ, hom_sub, ContIntertwiningMap.sub_apply, d_zero]
 
 /-- The isomorphism between the zeroth cocycles and the kernel of the zeroth differential. -/

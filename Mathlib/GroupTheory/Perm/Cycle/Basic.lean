@@ -1048,10 +1048,8 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
   · intro h; ext x
     rw [← h]
     by_cases hx : x ∈ s
-    · rw [ofSubtype_apply_of_mem (subtypePerm c _ ^ n) hx,
-        subtypePerm_zpow, subtypePerm_apply]
-    · rw [ofSubtype_apply_of_not_mem (subtypePerm c _ ^ n) hx,
-        ← notMem_support]
+    · rw [ofSubtype_apply_of_mem (subtypePerm c _ ^ n) hx, subtypePerm_zpow, subtypePerm_apply]
+    · rw [ofSubtype_apply_of_not_mem (subtypePerm c _ ^ n) hx, ← notMem_support]
       exact fun hx' ↦ hx (hc (support_zpow_le _ _ hx'))
 
 theorem cycle_zpow_mem_support_iff {g : Perm α}

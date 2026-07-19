@@ -276,8 +276,7 @@ lemma measurable_singularPart_fun_right (κ η : Kernel α γ) (a : α) :
 lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFiniteKernel κ]
     [IsSFiniteKernel η] (a : α) :
     singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
-  rw [singularPart, Kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq,
-    ae_restrict_iff]
+  rw [singularPart, Kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq, ae_restrict_iff]
   all_goals simp_rw [ofNNReal_toNNReal]
   rotate_left
   · exact measurableSet_preimage (measurable_singularPart_fun_right κ η a)

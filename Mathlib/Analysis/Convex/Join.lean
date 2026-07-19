@@ -180,8 +180,7 @@ theorem convexHull_insert (hs : s.Nonempty) :
 theorem convexJoin_segments (a b c d : E) :
     convexJoin 𝕜 (segment 𝕜 a b) (segment 𝕜 c d) = convexHull 𝕜 {a, b, c, d} := by
   simp_rw [← convexHull_pair, convexHull_insert (insert_nonempty _ _),
-    convexHull_insert (singleton_nonempty _), convexJoin_assoc,
-    convexHull_singleton]
+    convexHull_insert (singleton_nonempty _), convexJoin_assoc, convexHull_singleton]
 
 theorem convexJoin_segment_singleton (a b c : E) :
     convexJoin 𝕜 (segment 𝕜 a b) {c} = convexHull 𝕜 {a, b, c} := by

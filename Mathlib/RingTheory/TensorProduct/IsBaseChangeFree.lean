@@ -51,12 +51,10 @@ theorem basis_repr_comp_apply (v i) :
     map_finsuppSum, map_finsuppSum]
   simp only [map_smul, Finsupp.sum_apply]
   rw [Finsupp.sum_eq_single i]
-  · rw [← IsScalarTower.algebraMap_smul S (b.repr v i) (ε (b i)),
-      map_smul, ← ibc.basis_apply]
+  · rw [← IsScalarTower.algebraMap_smul S (b.repr v i) (ε (b i)), map_smul, ← ibc.basis_apply]
     simp [Finsupp.single_eq_same, Algebra.algebraMap_eq_smul_one]
   · intro i' _ h
-    rw [← IsScalarTower.algebraMap_smul S (b.repr v i') (ε (b i')), map_smul,
-      ← ibc.basis_apply]
+    rw [← IsScalarTower.algebraMap_smul S (b.repr v i') (ε (b i')), map_smul, ← ibc.basis_apply]
     simp [Finsupp.single_eq_of_ne (Ne.symm h)]
   · simp
 
@@ -93,10 +91,9 @@ theorem of_basis : IsBaseChange R (Finsupp.linearCombination A b) := by
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Finsupp.linearCombination R b ∘ₗ j)
     rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, j.bijective.of_comp_iff]
-    simp [Function.Bijective,
-        ← span_range_eq_top_iff_surjective_finsuppLinearCombination,
-        ← linearIndependent_iff_injective_finsuppLinearCombination,
-        Module.Basis.span_eq, b.linearIndependent]
+    simp [Function.Bijective, ← span_range_eq_top_iff_surjective_finsuppLinearCombination,
+        ← linearIndependent_iff_injective_finsuppLinearCombination, Module.Basis.span_eq,
+        b.linearIndependent]
   · intro x
     suffices (j (1 ⊗ₜ[A] x)) = x.mapRange (algebraMap A R) (by simp) by
       simp [this, Finsupp.linearCombination_apply, Finsupp.sum_mapRange_index]
@@ -113,10 +110,9 @@ theorem of_fintype_basis [Fintype ι] :
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Fintype.linearCombination R b ∘ₗ j)
     rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, j.bijective.of_comp_iff]
-    simp [Function.Bijective,
-        ← span_range_eq_top_iff_surjective_fintypeLinearCombination,
-        ← linearIndependent_iff_injective_fintypeLinearCombination,
-        Module.Basis.span_eq, b.linearIndependent]
+    simp [Function.Bijective, ← span_range_eq_top_iff_surjective_fintypeLinearCombination,
+        ← linearIndependent_iff_injective_fintypeLinearCombination, Module.Basis.span_eq,
+        b.linearIndependent]
   · intro x
     -- simp? [Fintype.linearCombination_apply] says:
     simp only [LinearEquiv.ofBijective_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,

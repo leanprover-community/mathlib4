@@ -52,8 +52,7 @@ noncomputable def measureT : Measure ℝ :=
 
 theorem integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
-  rw [integral_of_le (by norm_num), measureT,
-    restrict_withDensity (by measurability),
+  rw [integral_of_le (by norm_num), measureT, restrict_withDensity (by measurability),
     integral_withDensity_eq_integral_smul (by fun_prop)]
   congr! 2 with x hx
   simp [NNReal.smul_def, mul_comm]

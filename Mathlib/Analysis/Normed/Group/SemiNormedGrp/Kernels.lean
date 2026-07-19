@@ -44,9 +44,8 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       f.hom.1.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
     (by
       ext x
-      rw [Limits.zero_comp, comp_apply, SemiNormedGrp₁.mkHom_apply,
-        SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.hom.1.range.ker_normedMk,
-        f.hom.1.mem_range]
+      rw [Limits.zero_comp, comp_apply, SemiNormedGrp₁.mkHom_apply, SemiNormedGrp₁.zero_apply,
+        ← NormedAddGroupHom.mem_ker, f.hom.1.range.ker_normedMk, f.hom.1.mem_range]
       use x)
 
 set_option backward.isDefEq.respectTransparency.types false in

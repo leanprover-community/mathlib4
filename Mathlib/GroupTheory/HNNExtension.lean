@@ -415,8 +415,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
       simp only [Cancels, cons_head, cons_toList, List.head?_cons,
         Option.map_some, Option.some.injEq] at h
       cases h.2
-      simpa [Cancels, unitsSMulWithCancel,
-        Subgroup.mul_mem_cancel_left] using hc
+      simpa [Cancels, unitsSMulWithCancel, Subgroup.mul_mem_cancel_left] using hc
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
@@ -438,8 +437,7 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     | cons g u' w h1 h2 ih =>
       clear ih
       simp only [unitsSMulGroup, SetLike.coe_sort_coe, unitsSMulWithCancel, consRecOn_cons,
-        group_smul_head,
-        mul_inv_rev]
+        group_smul_head, mul_inv_rev]
       cases hcan2.2
       have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1

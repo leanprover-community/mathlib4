@@ -138,8 +138,7 @@ lemma toMk₁_surjective {n : ℕ} : Function.Surjective (toMk₁ (n := n)) := b
       goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
       the new canonicalizer; a minimization would help. The original proof was: `grind` -/
       simp [S] at hi; grind
-    · simp only [Fin.castSucc_lt_castSucc_iff, Finset.lt_min'_iff, not_forall,
-        not_lt] at h
+    · simp only [Fin.castSucc_lt_castSucc_iff, Finset.lt_min'_iff, not_forall, not_lt] at h
       obtain ⟨j, hj, hij⟩ := h
       have := f.toOrderHom.monotone hij
       #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166

@@ -421,8 +421,7 @@ theorem toCentralizer_equivariant :
     rw [this, ← (mem_cycleFactorsFinset_iff.mp ((τ : Perm g.cycleFactorsFinset) c).prop).2]
     rw [ofPermHomFun_apply_mem_support_cycle_iff]
     exact hx
-  · rw [notMem_support.mp hx, eq_comm, ← notMem_support,
-      ofPermHomFun_apply_mem_support_cycle_iff]
+  · rw [notMem_support.mp hx, eq_comm, ← notMem_support, ofPermHomFun_apply_mem_support_cycle_iff]
     exact hx
 
 theorem toPermHom_apply_toCentralizer :
@@ -513,8 +512,7 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     obtain ⟨k, hk⟩ := mem_zpowers_iff.mp (v ⟨g.cycleOf x, hx⟩).2
     rwa [← hk, zpow_apply_mem_support, notMem_support, cycleOf_apply_self] at ha2
   · rw [cycleOf_mem_cycleFactorsFinset_iff] at hx
-    rw [kerParam, MonoidHom.noncommCoprod_apply, mul_apply, Equiv.apply_eq_iff_eq,
-      ← notMem_support]
+    rw [kerParam, MonoidHom.noncommCoprod_apply, mul_apply, Equiv.apply_eq_iff_eq, ← notMem_support]
     contrapose hx
     obtain ⟨a, -, ha⟩ := mem_support_of_mem_noncommProd_support
       (comm := fun a ha b hb h ↦ g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).2 (v b).2) hx
@@ -673,8 +671,7 @@ variable (α)
 theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
     #({g | g.cycleType = m} : Finset (Perm α)) = 0
       ↔ ¬ ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a)) := by
-  rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff,
-    ← exists_with_cycleType_iff, not_exists]
+  rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff, ← exists_with_cycleType_iff, not_exists]
   simp
 
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :

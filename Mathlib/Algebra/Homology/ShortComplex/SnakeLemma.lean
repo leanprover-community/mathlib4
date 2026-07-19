@@ -255,8 +255,7 @@ noncomputable def L₀' : ShortComplex C where
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)] lemma L₁_f_φ₁ : S.L₀'.f ≫ S.φ₁ = S.v₁₂.τ₁ := by
   dsimp only [L₀']
-  simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, φ₂, pullback.lift_fst_assoc,
-    S.v₁₂.comm₁₂]
+  simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, φ₂, pullback.lift_fst_assoc, S.v₁₂.comm₁₂]
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Epi S.L₀'.g := by dsimp only [L₀']; infer_instance
@@ -355,9 +354,8 @@ noncomputable def P'IsoUnopOpP : S.P' ≅ Opposite.unop S.op.P := pushoutIsoUnop
 set_option backward.isDefEq.respectTransparency false in
 lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
   rw [Quiver.Hom.unop_op, ← cancel_mono (pushout.inr _ _ : _ ⟶ S.P'),
-    ← cancel_epi (pullback.snd _ _ : S.P ⟶ _), S.snd_δ_inr,
-    ← cancel_mono S.P'IsoUnopOpP.hom, ← cancel_epi S.PIsoUnopOpP'.inv,
-    P'IsoUnopOpP, PIsoUnopOpP', assoc, assoc, assoc, assoc,
+    ← cancel_epi (pullback.snd _ _ : S.P ⟶ _), S.snd_δ_inr, ← cancel_mono S.P'IsoUnopOpP.hom,
+    ← cancel_epi S.PIsoUnopOpP'.inv, P'IsoUnopOpP, PIsoUnopOpP', assoc, assoc, assoc, assoc,
     pushoutIsoUnopPullback_inr_hom, pullbackIsoUnopPushout_inv_snd_assoc,
     pushoutIsoUnopPullback_inl_hom, pullbackIsoUnopPushout_inv_fst_assoc]
   apply Quiver.Hom.op_inj

@@ -309,8 +309,7 @@ theorem modular_S_smul (z : ℍ) :
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
   rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, coe_specialLinearGroup_apply]
-  simp [ModularGroup.coe_T_zpow,
-    of_apply, cons_val_zero, Complex.ofReal_one, one_mul, cons_val_one,
+  simp [ModularGroup.coe_T_zpow, of_apply, cons_val_zero, Complex.ofReal_one, one_mul, cons_val_one,
     zero_mul, zero_add, div_one]
 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by

@@ -84,8 +84,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma inr_v_snd_v (p q : ℤ) (hpq : p + 1 = q) :
     (inr φ).1.v p q hpq ≫ (snd φ).v q p (by lia) = 𝟙 _ := by
   simp [inr, snd, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
-    Cochain.leftShift_v _ _ _ _ _ _ _ _ (add_zero p),
-    Int.negOnePow_even 2 ⟨1, rfl⟩]
+    Cochain.leftShift_v _ _ _ _ _ _ _ _ (add_zero p), Int.negOnePow_even 2 ⟨1, rfl⟩]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma id_X (p q : ℤ) (hpq : p + -1 = q) :
@@ -96,8 +95,7 @@ lemma id_X (p q : ℤ) (hpq : p + -1 = q) :
     Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia),
     Cochain.rightShift_v _ _ _ _ _ _ _ _ hpq,
     Cochain.leftShift_v _ _ _ _ _ _ _ _ (add_zero (p + -1)),
-    Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (p + -1)),
-    Int.negOnePow_even 2 ⟨1, rfl⟩,
+    Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (p + -1)), Int.negOnePow_even 2 ⟨1, rfl⟩,
     mappingCone.id_X φ (p + -1) p (by lia)]
 
 section
@@ -227,8 +225,7 @@ lemma liftCochain_v_snd_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h�
   subst h₂₃
   simp [liftCochain, mappingCocone, snd,
     Cochain.rightShift_v (n := m) _ _ _ _ p₁ _ _ (p₂ + -1) (by lia),
-    Cochain.leftShift_v (n := 0) _ _ _ _ _ _ _ _ (add_zero _),
-    Int.negOnePow_even 2 ⟨1, rfl⟩]
+    Cochain.leftShift_v (n := 0) _ _ _ _ _ _ _ _ (add_zero _), Int.negOnePow_even 2 ⟨1, rfl⟩]
 
 @[simp]
 lemma liftCochain_comp_fst :
@@ -249,12 +246,10 @@ lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
         (δ m n β + α.comp (Cochain.ofHom φ) (add_zero n)).comp (inr φ).1 hn' := by
   dsimp [liftCochain, inl, inr]
   ext p q hpq
-  simp [mappingCone.δ_liftCochain _ _ _ _ n' hn',
-    Cochain.δ_rightShift _ (-1) _ n' _ n (by lia),
+  simp [mappingCone.δ_liftCochain _ _ _ _ n' hn', Cochain.δ_rightShift _ (-1) _ n' _ n (by lia),
     Cochain.rightShift_v (n := n) _ _ _ _ p _ _ (q + -1) (by lia),
     Cochain.rightShift_v _ _ _ _ _ _ _ (q + -1) rfl,
-    Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (q + -1)),
-    Cochain.comp_v _ _ _ p q _ hpq rfl,
+    Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (q + -1)), Cochain.comp_v _ _ _ p q _ hpq rfl,
     Cochain.comp_v (n₁ := n) (n₂ := 1) _ _ _ p (q + -1) q (by lia) (by lia)]
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.

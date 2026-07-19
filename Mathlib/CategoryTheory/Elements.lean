@@ -264,8 +264,7 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
     (map α).op ⋙ toCostructuredArrow F₂ = toCostructuredArrow F₁ ⋙ CostructuredArrow.map α := by
   fapply Functor.ext
   · intro X
-    simp only [CostructuredArrow.map_mk, toCostructuredArrow_obj, Functor.op_obj,
-      Functor.comp_obj]
+    simp only [CostructuredArrow.map_mk, toCostructuredArrow_obj, Functor.op_obj, Functor.comp_obj]
     congr
     ext _ f
     exact (α.naturality_apply f.op (unop X).snd).symm

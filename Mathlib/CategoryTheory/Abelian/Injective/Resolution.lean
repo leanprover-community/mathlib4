@@ -146,8 +146,7 @@ def descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveRes
   (I.exact_succ (n + 1)).descToInjective (f.f (n + 2) - g' ≫ J.cocomplex.d _ _) (by
       dsimp
       rw [Preadditive.comp_sub, ← HomologicalComplex.Hom.comm, w, Preadditive.add_comp,
-        Category.assoc, Category.assoc, HomologicalComplex.d_comp_d, comp_zero,
-        add_zero, sub_self])
+        Category.assoc, Category.assoc, HomologicalComplex.d_comp_d, comp_zero, add_zero, sub_self])
 
 @[reassoc (attr := simp)]
 lemma comp_descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}

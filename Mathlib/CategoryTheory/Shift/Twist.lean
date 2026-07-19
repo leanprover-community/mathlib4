@@ -82,9 +82,8 @@ def shiftMkCore : ShiftMkCore t.Category A where
     simp only [Functor.map_comp, Category.assoc, CatCenter.smul_iso_hom_eq]
     rw [CatCenter.naturality, CatCenter.naturality_assoc, CatCenter.naturality_assoc,
       CatCenter.naturality_assoc, CatCenter.naturality_assoc, CatCenter.naturality_assoc,
-      t.shift_z_app, CatCenter.naturality, CatCenter.naturality_assoc,
-      ← CatCenter.mul_app_assoc, ← CatCenter.mul_app_assoc,
-      ← Units.val_mul, ← Units.val_mul, t.assoc a b c]
+      t.shift_z_app, CatCenter.naturality, CatCenter.naturality_assoc, ← CatCenter.mul_app_assoc,
+      ← CatCenter.mul_app_assoc, ← Units.val_mul, ← Units.val_mul, t.assoc a b c]
     simp [shiftFunctorAdd_assoc_hom_app (C := C) a b c X, shiftFunctorAdd']
 
 instance hasShift : HasShift t.Category A := hasShiftMk _ _ (shiftMkCore t)

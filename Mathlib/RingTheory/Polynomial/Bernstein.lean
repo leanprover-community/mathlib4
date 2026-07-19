@@ -143,10 +143,9 @@ theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     induction k generalizing n ν with
     | zero => simp [eval_at_0]
     | succ k ih =>
-      simp only [derivative_succ, Function.comp_apply,
-        Function.iterate_succ, Polynomial.iterate_derivative_sub,
-        Polynomial.iterate_derivative_natCast_mul, Polynomial.eval_mul, Polynomial.eval_natCast,
-        Polynomial.eval_sub]
+      simp only [derivative_succ, Function.comp_apply, Function.iterate_succ,
+        Polynomial.iterate_derivative_sub, Polynomial.iterate_derivative_natCast_mul,
+        Polynomial.eval_mul, Polynomial.eval_natCast, Polynomial.eval_sub]
       intro h
       apply mul_eq_zero_of_right
       rw [ih _ _ (Nat.le_of_succ_le h), sub_zero]
@@ -308,10 +307,9 @@ theorem sum_smul (n : ℕ) :
     rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
     refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
-    simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul,
-      Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, MvPolynomial.aeval_X,
-      MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow,
-      map_mul]
+    simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul, Bool.cond_true,
+      Bool.cond_false, add_zero, mul_one, mul_zero, MvPolynomial.aeval_X, MvPolynomial.pderiv_mul,
+      Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow, map_mul]
   · rw [(pderiv true).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y]
     simp only [x, y, e, smul_eq_mul, nsmul_eq_mul, map_natCast, map_pow, map_add,
       map_mul, Bool.cond_true, Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel,
@@ -347,17 +345,14 @@ theorem sum_mul_smul (n : ℕ) :
       Finset.sum_mul]
     -- Step inside the sum:
     refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
-    simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul,
-      Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, mul_one,
-      MvPolynomial.aeval_X,
+    simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul, Bool.cond_true,
+      Bool.cond_false, add_zero, zero_add, mul_zero, mul_one, MvPolynomial.aeval_X,
       Derivation.leibniz_pow, Derivation.leibniz, Derivation.map_natCast, map_natCast, map_pow,
       map_mul]
   -- On the right-hand side, we'll just simplify.
-  · simp only [x, y, e, (pderiv _).leibniz_pow,
-      (pderiv true).map_add, pderiv_true_x, pderiv_true_y, smul_eq_mul, add_zero,
-      mul_one, map_nsmul, map_pow, map_add, Bool.cond_true,
-      Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel, one_pow, smul_smul,
-      smul_one_mul]
+  · simp only [x, y, e, (pderiv _).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y,
+      smul_eq_mul, add_zero, mul_one, map_nsmul, map_pow, map_add, Bool.cond_true, Bool.cond_false,
+      MvPolynomial.aeval_X, add_sub_cancel, one_pow, smul_smul, smul_one_mul]
 
 /-- A certain linear combination of the previous three identities,
 which we'll want later.

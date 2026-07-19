@@ -325,8 +325,7 @@ lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     rw [sum_comm]
   -- bring `Δ_[1]` inside scalar-mult
   _ = ∑ j ∈ range (n + 1), (Δ_[1]^[n] (fun k ↦ k.choose j : ℕ → ℤ) 0) • (a j) := by
-    simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc,
-      natCast_zsmul]
+    simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc, natCast_zsmul]
   -- finish using `fwdDiff_iter_choose_zero`
   _ = a n := by
     simp only [fwdDiff_iter_choose_zero, ite_smul, one_smul, zero_smul, sum_ite_eq,

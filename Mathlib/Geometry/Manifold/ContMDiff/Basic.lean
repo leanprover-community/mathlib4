@@ -80,8 +80,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
     simp only [*, e, e', (· ∘ ·), writtenInExtChartAt, e'.left_inv]
-  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source,
-      e.left_inv, e'.left_inv]
+  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source, e.left_inv, e'.left_inv]
 
 /-- See note [comp_of_eq lemmas] -/
 theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : M'}

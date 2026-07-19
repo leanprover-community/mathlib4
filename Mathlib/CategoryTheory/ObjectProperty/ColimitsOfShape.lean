@@ -302,8 +302,7 @@ lemma limitsOfShape_eq_unop_colimitsOfShape :
 
 lemma limitsOfShape_op :
     P.op.limitsOfShape J = (P.colimitsOfShape Jᵒᵖ).op := by
-  rw [colimitsOfShape_eq_unop_limitsOfShape, op_unop,
-    P.op.limitsOfShape_congr (opOpEquivalence J)]
+  rw [colimitsOfShape_eq_unop_limitsOfShape, op_unop, P.op.limitsOfShape_congr (opOpEquivalence J)]
 
 lemma colimitsOfShape_op :
     P.op.colimitsOfShape J = (P.limitsOfShape Jᵒᵖ).op := by

@@ -109,8 +109,7 @@ theorem restrict_trim (hm : m ≤ m0) (μ : Measure α) (hs : @MeasurableSet α 
     @Measure.restrict α m (μ.trim hm) s = (μ.restrict s).trim hm := by
   refine @Measure.ext _ m _ _ (fun t ht => ?_)
   rw [@Measure.restrict_apply α m _ _ _ ht, trim_measurableSet_eq hm ht,
-    Measure.restrict_apply (hm t ht),
-    trim_measurableSet_eq hm (@MeasurableSet.inter α m t s ht hs)]
+    Measure.restrict_apply (hm t ht), trim_measurableSet_eq hm (@MeasurableSet.inter α m t s ht hs)]
 
 theorem measure_spanningSets_trim_lt_top (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
     (n : ℕ) :

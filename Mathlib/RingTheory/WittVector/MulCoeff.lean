@@ -203,9 +203,8 @@ theorem peval_polyOfInterest (n : ℕ) (x y : 𝕎 k) :
     (x * y).coeff (n + 1) + p ^ (n + 1) * x.coeff (n + 1) * y.coeff (n + 1) -
       y.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * x.coeff i ^ p ^ (n + 1 - i) -
       x.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * y.coeff i ^ p ^ (n + 1 - i) := by
-  simp only [polyOfInterest, peval,
-    Function.uncurry_apply_pair, aeval_X, Matrix.cons_val_one, map_mul, Matrix.cons_val_zero,
-    map_sub]
+  simp only [polyOfInterest, peval, Function.uncurry_apply_pair, aeval_X, Matrix.cons_val_one,
+    map_mul, Matrix.cons_val_zero, map_sub]
   rw [sub_sub, add_comm (_ * _), ← sub_sub]
   simp [wittPolynomial_eq_sum_C_mul_X_pow, aeval, mul_coeff, peval, map_natCast,
     map_add, map_pow, map_mul]

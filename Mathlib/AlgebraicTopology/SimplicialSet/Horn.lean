@@ -69,10 +69,9 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     (horn.{u} (n + 2) i).obj (op (.mk 0)) = ⊤ := by
   ext j
   -- this was produced using `simp? [horn_eq_iSup]`
-  simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set,
-    Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
-    Nat.reduceAdd, Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.top_eq_univ,
-    Set.mem_univ, iff_true]
+  simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
+    Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, Finset.mem_compl,
+    Finset.mem_singleton, exists_prop, Set.top_eq_univ, Set.mem_univ, iff_true]
   let S : Finset (Fin (n + 3)) := {i, j 0}
   have hS : ¬ (S = Finset.univ) := fun hS ↦ by
     have := Finset.card_le_card hS.symm.le
@@ -296,8 +295,7 @@ lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i
     σ₁ = σ₂ := by
   rw [← Subfunctor.equalizer_eq_iff]
   apply le_antisymm (Subfunctor.equalizer_le σ₁ σ₂)
-  simp only [horn_eq_iSup, iSup_le_iff,
-    Subtype.forall, Set.mem_compl_iff, Set.mem_singleton_iff,
+  simp only [horn_eq_iSup, iSup_le_iff, Subtype.forall, Set.mem_compl_iff, Set.mem_singleton_iff,
     ← stdSimplex.ofSimplex_yonedaEquiv_δ, Subcomplex.ofSimplex_le_iff]
   intro j hj
   exact (Subfunctor.mem_equalizer_iff σ₁ σ₂ (face i j hj)).2 (by apply h)

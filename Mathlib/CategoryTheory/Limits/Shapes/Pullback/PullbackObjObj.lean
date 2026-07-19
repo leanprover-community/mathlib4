@@ -583,8 +583,7 @@ def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushou
     (adj₂.homEquiv.symm (pullback.snd ..)) (by
     apply pushout.hom_ext
     · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three]
-    · simp [← homEquiv_symm_naturality_one, ← homEquiv_symm_naturality_three,
-      pullback.condition])
+    · simp [← homEquiv_symm_naturality_one, ← homEquiv_symm_naturality_three, pullback.condition])
   counit.naturality _ _ _ := by
     ext
     · apply pushout.hom_ext <;> simp [← homEquiv_symm_naturality_two,

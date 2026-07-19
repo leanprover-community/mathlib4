@@ -161,8 +161,7 @@ theorem adjoin_toSubalgebra [Algebra.IsAlgebraic F E] (S : Set E) :
 theorem adjoin_eq_top_iff_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
     adjoin F S = ⊤ ↔ Algebra.adjoin F S = ⊤ := by
   rw [← IntermediateField.adjoin_toSubalgebra_of_isAlgebraic hS,
-      ← IntermediateField.toSubalgebra_inj,
-      IntermediateField.top_toSubalgebra]
+      ← IntermediateField.toSubalgebra_inj, IntermediateField.top_toSubalgebra]
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_eq_top_iff_of_isAlgebraic
 

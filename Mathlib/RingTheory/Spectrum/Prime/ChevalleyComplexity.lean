@@ -224,8 +224,7 @@ private lemma induction_structure (n : ℕ)
           · rw [hjk]
             exact (degree_modByMonic_le _ hi).trans i_min
           · exact le_rfl
-        · simp only [hv, ne_eq, not_forall, funext_iff,
-            comp_apply]
+        · simp only [hv, ne_eq, not_forall, funext_iff, comp_apply]
           use j
           simp only [update_self]
           refine ((degree_modByMonic_lt _ hi).trans_le i_min).ne
@@ -693,9 +692,8 @@ lemma chevalley_mvPolynomialC
   let S' := S.map e.toRingHom
   have hS' : S'.degBound ≤ k * (1 + d.count 0) := by
     apply Finset.sup_le fun x hxS ↦ ?_
-    simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe,
-      AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image, BasicConstructibleSetData.map,
-      RingHom.coe_coe, S'] at hxS
+    simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom,
+      Finset.mem_image, BasicConstructibleSetData.map, RingHom.coe_coe, S'] at hxS
     obtain ⟨C, hxS, rfl⟩ := hxS
     trans ∑ i : Fin C.n, (1 + d.count 0)
     · gcongr with j hj
@@ -763,8 +761,7 @@ lemma chevalley_mvPolynomialC
   refine ⟨U, ?_, fun C hCU ↦ ⟨(hU₂ C hCU).1.trans ?_,
     fun i ↦ pow_le_pow_right' h1M ?_ <| (hU₂ C hCU).2 i⟩⟩
   · unfold S' at hT₁
-    rw [← hU₁, ← hT₁, ← Set.image_comp, ← comap_comp,
-      ConstructibleSetData.toSet_map]
+    rw [← hU₁, ← hT₁, ← Set.image_comp, ← comap_comp, ConstructibleSetData.toSet_map]
     change _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
     rw [← OrderIso.image_eq_preimage_symm, Set.image_image]
     simp only [comapEquiv_apply, ← comap_comp_apply]
@@ -835,8 +832,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
     obtain ⟨q₁, q₂, hq₁, rfl⟩ : ∃ q₁ q₂, q₁ ∈ Ideal.span s₀ ∧ p = q₁ + σ q₂ := by
       clear hp
       obtain ⟨p, rfl⟩ := (commAlgEquiv _ _ _).surjective p
-      simp_rw [← (commAlgEquiv R (Fin n) (Fin m)).symm.injective.eq_iff,
-        AlgEquiv.symm_apply_apply]
+      simp_rw [← (commAlgEquiv R (Fin n) (Fin m)).symm.injective.eq_iff, AlgEquiv.symm_apply_apply]
       induction p using MvPolynomial.induction_on with
       | C q =>
         exact ⟨0, q, by simp, (commAlgEquiv _ _ _).injective <|
@@ -859,9 +855,8 @@ lemma chevalley_mvPolynomial_mvPolynomial
     refine Set.injOn_preimage (f := comap g) .rfl ?_ ?_ ?_
     · simp
     · simp [hs]
-    · rw [Set.preimage_image_eq _ (comap_injective_of_surjective g hg'),
-        Set.preimage_inter, hs, Set.preimage_range, Set.inter_univ,
-        ← Set.preimage_comp, ← comap_comp, hσ]
+    · rw [Set.preimage_image_eq _ (comap_injective_of_surjective g hg'), Set.preimage_inter, hs,
+        Set.preimage_range, Set.inter_univ, ← Set.preimage_comp, ← comap_comp, hσ]
       simp only [comap_id, Set.preimage_id']
   have hS' : comap g '' S.toSet = S'.toSet := by
     simp only [S', BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion₂,
@@ -885,8 +880,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
         · simp only [MvPolynomial.algebraMap_eq, Sum.elim_inr, MvPolynomial.coeff_sub,
             MvPolynomial.coeff_C, MvPolynomial.coeff_map, σ]
           refine degrees_sub_le.trans ?_
-          simp only [degrees_C, apply_ite, degrees_zero,
-            Multiset.union_zero]
+          simp only [degrees_C, apply_ite, degrees_zero, Multiset.union_zero]
           split_ifs with h
           · refine (degrees_X' _).trans ?_
             simp
@@ -901,7 +895,6 @@ lemma chevalley_mvPolynomial_mvPolynomial
   · rwa [← hg, comap_comp, Set.image_comp, hS']
   · have := (hT' C hCT).2 i
     rw [← Submodule.restrictScalars_pow (MvPolynomialC.degBound_pos ..).ne', ← degreesLE_nsmul,
-      Submodule.restrictScalars_mem, mem_degreesLE,
-        Multiset.le_iff_count] at this
+      Submodule.restrictScalars_mem, mem_degreesLE, Multiset.le_iff_count] at this
     simpa only [Multiset.count_nsmul, Multiset.count_univ, mul_one, ← degreeOf_def]
       using! this j

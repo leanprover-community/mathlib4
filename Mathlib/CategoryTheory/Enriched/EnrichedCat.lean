@@ -109,8 +109,7 @@ lemma whisker_exchange {F G : EnrichedFunctor V C D} {H I : EnrichedFunctor V D 
     whiskerLeft F β ≫ whiskerRight α I = whiskerRight α H ≫ whiskerLeft G β := by
   ext X
   simp only [EnrichedFunctor.forget_obj, EnrichedFunctor.comp_obj,
-    EnrichedFunctor.category_comp_out, NatTrans.comp_app, whiskerLeft_out_app,
-    whiskerRight_out_app]
+    EnrichedFunctor.category_comp_out, NatTrans.comp_app, whiskerLeft_out_app, whiskerRight_out_app]
   exact (β.out.naturality (α.out.app (ForgetEnrichment.of V X))).symm
 
 set_option backward.isDefEq.respectTransparency.types false in

@@ -107,16 +107,14 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     · refine ⟨fun _ => 0, ?_, lowerSemicontinuous_const, ?_⟩
       · classical
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
-          SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
-          SimpleFunc.coe_piecewise, le_zero_iff]
+          SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, le_zero_iff]
       · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have ne_top : μ s ≠ ⊤ := by
-      simpa [f, hs, hc, lt_top_iff_ne_top, SimpleFunc.coe_const,
-        Function.const_apply, lintegral_const, ENNReal.coe_indicator, Set.univ_inter,
-        ENNReal.coe_ne_top, MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
-        lintegral_indicator, ENNReal.coe_eq_zero, Ne, not_false_iff,
-        SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
-        restrict_apply] using h
+      simpa [f, hs, hc, lt_top_iff_ne_top, SimpleFunc.coe_const, Function.const_apply,
+        lintegral_const, ENNReal.coe_indicator, Set.univ_inter, ENNReal.coe_ne_top,
+        MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero, lintegral_indicator,
+        ENNReal.coe_eq_zero, Ne, not_false_iff, SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
+        SimpleFunc.coe_piecewise, restrict_apply] using h
     have : μ s < μ s + ε / c := by
       have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
       simpa using ENNReal.add_lt_add_left ne_top this

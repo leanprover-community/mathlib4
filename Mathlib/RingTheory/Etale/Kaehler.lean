@@ -162,9 +162,8 @@ def tensorCotangentInvFun
     obtain ⟨x, hx⟩ := e.surjective ⟨a, ha⟩
     obtain rfl : (e x).1 = a := congr_arg Subtype.val hx
     obtain ⟨y, rfl⟩ := e.surjective b
-    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_coe, map_smul,
-      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      LinearEquiv.symm_apply_apply, f']
+    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_coe, map_smul, LinearMap.coe_comp,
+      LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.symm_apply_apply, f']
     clear hx ha
     induction x with
     | zero => simp only [map_zero, ZeroMemClass.coe_zero, zero_smul]
@@ -349,8 +348,7 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
   ext x : 3
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
-  simp only [tensorH1CotangentOfIsLocalization,
-    Extension.tensorH1CotangentOfFormallyEtale,
+  simp only [tensorH1CotangentOfIsLocalization, Extension.tensorH1CotangentOfFormallyEtale,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
     Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]
   let P : Extension R S := (Generators.self R S).toExtension

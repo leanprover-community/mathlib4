@@ -443,11 +443,10 @@ theorem eLpNorm_le_eLpNorm_fderiv_one {u : E → F} (hu : ContDiff ℝ 1 u) (h2u
     {p : ℝ≥0} (hp : NNReal.HolderConjugate (finrank ℝ E) p) :
     eLpNorm u p μ ≤ eLpNormLESNormFDerivOneConst μ p * eLpNorm (fderiv ℝ u) 1 μ := by
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
-  rw [eLpNorm_one_eq_lintegral_enorm,
-    ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
-    ← ENNReal.coe_rpow_of_nonneg _ h0p.le, eLpNormLESNormFDerivOneConst, ← NNReal.rpow_mul,
-    eLpNorm_nnreal_pow_eq_lintegral hp.symm.pos.ne',
-    inv_mul_cancel₀ h0p.ne', NNReal.rpow_one]
+  rw [eLpNorm_one_eq_lintegral_enorm, ← ENNReal.rpow_le_rpow_iff h0p,
+    ENNReal.mul_rpow_of_nonneg _ _ h0p.le, ← ENNReal.coe_rpow_of_nonneg _ h0p.le,
+    eLpNormLESNormFDerivOneConst, ← NNReal.rpow_mul,
+    eLpNorm_nnreal_pow_eq_lintegral hp.symm.pos.ne', inv_mul_cancel₀ h0p.ne', NNReal.rpow_one]
   exact lintegral_pow_le_pow_lintegral_fderiv μ hu h2u hp.coe
 
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_eq_inner`.

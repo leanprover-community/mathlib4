@@ -52,16 +52,12 @@ lemma toBiprod_apply {n : ℕ} (y : F.H' n S.X₄) :
   apply (AddCommGrpCat.biprodIsoProd _ _).addCommGroupIsoToAddEquiv.injective
   dsimp [toBiprod]
   ext
-  · rw [Iso.addCommGroupIsoToAddEquiv_apply,
-      Iso.addCommGroupIsoToAddEquiv_apply,
-      ← AddCommGrpCat.biprodIsoProd_inv_comp_fst_apply,
-      Iso.hom_inv_id_apply, ← ConcreteCategory.comp_apply,
-      biprod.lift_fst, Iso.inv_hom_id_apply]
-  · rw [Iso.addCommGroupIsoToAddEquiv_apply,
-      Iso.addCommGroupIsoToAddEquiv_apply,
-      ← AddCommGrpCat.biprodIsoProd_inv_comp_snd_apply,
-      Iso.hom_inv_id_apply, ← ConcreteCategory.comp_apply,
-      biprod.lift_snd, Iso.inv_hom_id_apply]
+  · rw [Iso.addCommGroupIsoToAddEquiv_apply, Iso.addCommGroupIsoToAddEquiv_apply,
+      ← AddCommGrpCat.biprodIsoProd_inv_comp_fst_apply, Iso.hom_inv_id_apply,
+      ← ConcreteCategory.comp_apply, biprod.lift_fst, Iso.inv_hom_id_apply]
+  · rw [Iso.addCommGroupIsoToAddEquiv_apply, Iso.addCommGroupIsoToAddEquiv_apply,
+      ← AddCommGrpCat.biprodIsoProd_inv_comp_snd_apply, Iso.hom_inv_id_apply,
+      ← ConcreteCategory.comp_apply, biprod.lift_snd, Iso.inv_hom_id_apply]
 
 /-- The difference of two restriction maps in sheaf cohomology. -/
 noncomputable def fromBiprod (n : ℕ) :
@@ -100,8 +96,7 @@ lemma mk₀_f_comp_biprodAddEquiv_symm_biprodIsoProd_hom
   obtain ⟨⟨x₂, x₃⟩, rfl⟩ :=
     (AddCommGrpCat.biprodIsoProd _ _).addCommGroupIsoToAddEquiv.symm.surjective x
   dsimp
-  rw [Ext.biprodAddEquiv_symm_apply,
-    Iso.addCommGroupIsoToAddEquiv_symm_apply,
+  rw [Ext.biprodAddEquiv_symm_apply, Iso.addCommGroupIsoToAddEquiv_symm_apply,
     fromBiprod_biprodIsoProd_inv_apply]
   cat_disch
 

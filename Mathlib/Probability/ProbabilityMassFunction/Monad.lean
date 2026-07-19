@@ -207,9 +207,8 @@ theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   ext
   -- `simp` suffices; squeezed for performance
-  simp only [mem_support_iff, bindOnSupport_apply, ne_eq, ENNReal.tsum_eq_zero,
-    dite_eq_left_iff, mul_eq_zero, not_forall, not_or, and_exists_self,
-    Set.mem_iUnion]
+  simp only [mem_support_iff, bindOnSupport_apply, ne_eq, ENNReal.tsum_eq_zero, dite_eq_left_iff,
+    mul_eq_zero, not_forall, not_or, and_exists_self, Set.mem_iUnion]
 
 theorem mem_support_bindOnSupport_iff (b : β) :
     b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
@@ -267,8 +266,7 @@ theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, �
     (p.bindOnSupport fun a ha => q.bindOnSupport (f a ha)) =
       q.bindOnSupport fun b hb => p.bindOnSupport fun a ha => f a ha b hb := by
   apply PMF.ext; rintro c
-  simp only [bindOnSupport_apply, ← tsum_dite_right,
-    ENNReal.tsum_mul_left.symm]
+  simp only [bindOnSupport_apply, ← tsum_dite_right, ENNReal.tsum_mul_left.symm]
   refine _root_.trans ENNReal.tsum_comm (tsum_congr fun b => tsum_congr fun a => ?_)
   split_ifs with h1 h2 h2 <;> ring
 

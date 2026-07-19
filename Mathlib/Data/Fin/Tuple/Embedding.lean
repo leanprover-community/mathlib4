@@ -105,8 +105,7 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ {(a, b) : α × α | a ≠ b} where
       by_cases hi : i = 0
       · by_cases hj : j = 0
         · simp [hi, hj]
-        · simp only [if_pos hi, eq_one_of_ne_zero j hj,
-          if_neg (Ne.symm Fin.zero_ne_one)] at hij
+        · simp only [if_pos hi, eq_one_of_ne_zero j hj, if_neg (Ne.symm Fin.zero_ne_one)] at hij
           apply (h hij).elim
       · rw [eq_one_of_ne_zero i hi] at hij ⊢
         by_cases hj : j = 0

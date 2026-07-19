@@ -281,8 +281,7 @@ lemma pullbackAwayιIso_hom_SpecMap_awayMap_right :
       Spec.map (CommRingCat.ofHom (awayMap 𝒜 f_deg (hx.trans (mul_comm _ _)))) =
       Limits.pullback.snd _ _ := by
   rw [← cancel_mono (awayι 𝒜 g g_deg hm'), ← Limits.pullback.condition,
-    ← pullbackAwayιIso_hom_awayι 𝒜 f_deg hm g_deg hm' hx,
-    Category.assoc, SpecMap_awayMap_awayι]
+    ← pullbackAwayιIso_hom_awayι 𝒜 f_deg hm g_deg hm' hx, Category.assoc, SpecMap_awayMap_awayι]
   rfl
 
 @[reassoc (attr := simp)]
@@ -421,8 +420,7 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
       apply le_antisymm
       · rw [Ideal.span_le, Set.range_subset_iff]
         rintro ⟨i, r, hi0, hri⟩
-        simp [-ZeroMemClass.coe_eq_zero,
-          DirectSum.decompose_of_mem_ne 𝒜 hri hi0.ne']
+        simp [-ZeroMemClass.coe_eq_zero, DirectSum.decompose_of_mem_ne 𝒜 hri hi0.ne']
       · intro x hx
         rw [← DirectSum.sum_support_decompose 𝒜 x]
         refine Ideal.sum_mem _ fun c hc ↦ ?_

@@ -70,8 +70,7 @@ theorem definable_iff_exists_formula_sum :
   rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
   refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
-  simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
-    mem_ofPred_eq, Formula.Realize]
+  simp only [BoundedFormula.constantsVarsEquiv, constantsOn, mem_ofPred_eq, Formula.Realize]
   refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
@@ -259,8 +258,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       refine (congr rfl (ext ?_)).mp (definable_biInter_finset h' Finset.univ)
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
-    simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
-      mem_ofPred_eq]
+    simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and, mem_ofPred_eq]
     constructor
     · rintro ⟨⟨y, ys, hy⟩, hx⟩
       refine ⟨y, ys, ?_⟩

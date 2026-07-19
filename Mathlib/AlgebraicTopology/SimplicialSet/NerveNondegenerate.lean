@@ -43,9 +43,8 @@ lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
       rw [Fin.predAbove_of_castSucc_lt _ _ h₁, Fin.pred_succ,
         Fin.succAbove_of_le_castSucc _ _ (Fin.le_castSucc_iff.2 h₁)]
     · simp only [not_lt] at h₁
-      grind [→ Fin.succAbove_of_castSucc_lt,
-        → Fin.predAbove_of_le_castSucc, Fin.castSucc_castPred, Fin.castPred_castSucc,
-        Fin.succAbove_castSucc_self, → LE.le.lt_or_eq]
+      grind [→ Fin.succAbove_of_castSucc_lt, → Fin.predAbove_of_le_castSucc, Fin.castSucc_castPred,
+        Fin.castPred_castSucc, Fin.succAbove_castSucc_self, → LE.le.lt_or_eq]
 
 lemma mem_nerve_degenerate_of_eq (s : (nerve X) _⦋n + 1⦌) {i : Fin (n + 1)}
     (hi : s.obj i.castSucc = s.obj i.succ) :

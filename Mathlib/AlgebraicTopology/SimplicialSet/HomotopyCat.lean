@@ -293,8 +293,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma homMk_id (x : V _⦋0⦌₂) :
     homMk (.id x) = 𝟙 (mk x) := by
-  rw [homMk, ← OneTruncation₂.reflQuiver_id, Cat.FreeRefl.homMk_id,
-    CategoryTheory.Functor.map_id]
+  rw [homMk, ← OneTruncation₂.reflQuiver_id, Cat.FreeRefl.homMk_id, CategoryTheory.Functor.map_id]
   rfl
 
 @[reassoc]

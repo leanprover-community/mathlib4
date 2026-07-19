@@ -205,10 +205,9 @@ instance : AddCommGroup (M →ₚₗ[R] N) where
     simp_rw [HSMul.hSMul, SMul.smul]
     ext S _ _ m
     rw [neg_def]
-    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_smul,
-      add_def_apply, smul_def_apply, Nat.succ_eq_add_one, Int.cast_add, Int.cast_natCast,
-      Int.cast_one, one_smul, add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add,
-      smul_smul, neg_mul, one_mul]
+    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_smul, add_def_apply,
+      smul_def_apply, Nat.succ_eq_add_one, Int.cast_add, Int.cast_natCast, Int.cast_one, one_smul,
+      add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add, smul_smul, neg_mul, one_mul]
     rw [add_comm]
   neg_add_cancel f := by
     ext S _ _ m
@@ -359,14 +358,12 @@ theorem toFun'_eq_of_diagram
       ψ.range.val.comp ((quotientKerEquivRangeₐ ψ).toAlgHom.comp θ) := by
     simp only [θ, ← AlgHom.comp_assoc, ← hh']
     simp [AlgHom.comp_assoc]
-  rw [← φ.val_comp_rangeRestrict, ← quotientKerEquivRangeₐ_comp_mkₐ φ,
-    ← ψ.val_comp_rangeRestrict, ← quotientKerEquivRangeₐ_comp_mkₐ ψ,
-    ← AlgHom.comp_assoc, ← AlgHom.comp_assoc _, ht]
+  rw [← φ.val_comp_rangeRestrict, ← quotientKerEquivRangeₐ_comp_mkₐ φ, ← ψ.val_comp_rangeRestrict,
+    ← quotientKerEquivRangeₐ_comp_mkₐ ψ, ← AlgHom.comp_assoc, ← AlgHom.comp_assoc _, ht]
   simp only [AlgHom.comp_toLinearMap, rTensor_comp_apply]
   apply congr_arg
-  rw [← rTensor_comp_apply, ← AlgHom.comp_toLinearMap, isCompat_apply',
-    isCompat_apply', AlgHom.comp_toLinearMap, rTensor_comp_apply,
-    isCompat_apply']
+  rw [← rTensor_comp_apply, ← AlgHom.comp_toLinearMap, isCompat_apply', isCompat_apply',
+    AlgHom.comp_toLinearMap, rTensor_comp_apply, isCompat_apply']
   apply congr_arg
   simp only [θ, ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap, AlgHom.comp_assoc]
   rw [quotientKerEquivRangeₐ_comp_mkₐ, comp_toLinearMap,

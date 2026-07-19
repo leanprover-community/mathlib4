@@ -563,9 +563,8 @@ set_option backward.defeqAttrib.useBackward true in
 lemma reflexiveCoforkEquivCofork_inverse_obj_π
     (G : Cofork (F.map left) (F.map right)) :
     ((reflexiveCoforkEquivCofork F).inverse.obj G).π = G.π := by
-  dsimp only [reflexiveCoforkEquivCofork, Equivalence.symm, Equivalence.trans,
-    ReflexiveCofork.π, Cocone.precomposeEquivalence, Cocone.precompose,
-    Functor.comp, Functor.Final.coconesEquiv]
+  dsimp only [reflexiveCoforkEquivCofork, Equivalence.symm, Equivalence.trans, ReflexiveCofork.π,
+    Cocone.precomposeEquivalence, Cocone.precompose, Functor.comp, Functor.Final.coconesEquiv]
   rw [Functor.Final.extendCocone_obj_ι_app' (Y := .one) (f := 𝟙 zero)]
   simp
 
@@ -617,8 +616,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by
   rw [reflexiveCoequalizerIsoCoequalizer]
-  simp only [colimit.comp_coconePointUniqueUpToIso_inv,
-    Cofork.ofπ_ι_app, colimit.cocone_ι]
+  simp only [colimit.comp_coconePointUniqueUpToIso_inv, Cofork.ofπ_ι_app, colimit.cocone_ι]
 
 end
 

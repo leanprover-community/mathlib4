@@ -50,8 +50,7 @@ def mapTriangle : Triangle C ⥤ Triangle D where
       comm₂ := by dsimp; simp only [← F.map_comp, f.comm₂]
       comm₃ := by
         dsimp [Functor.comp]
-        simp only [Category.assoc, ← NatTrans.naturality,
-          ← F.map_comp_assoc, f.comm₃] }
+        simp only [Category.assoc, ← NatTrans.naturality, ← F.map_comp_assoc, f.comm₃] }
 
 instance [Faithful F] : Faithful F.mapTriangle where
   map_injective {X Y} f g h := by
@@ -222,12 +221,10 @@ noncomputable instance [F.IsTriangulated] :
       comm₁ := by
         dsimp
         ext
-        · simp only [assoc, prodComparison_fst, prod.comp_lift, comp_id, comp_zero,
-            limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
-            ← F.map_comp, F.map_id]
-        · simp only [assoc, prodComparison_snd, prod.comp_lift, comp_id, comp_zero,
-            limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
-            ← F.map_comp, F.map_zero]
+        · simp only [assoc, prodComparison_fst, prod.comp_lift, comp_id, comp_zero, limit.lift_π,
+            BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst, ← F.map_comp, F.map_id]
+        · simp only [assoc, prodComparison_snd, prod.comp_lift, comp_id, comp_zero, limit.lift_π,
+            BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd, ← F.map_comp, F.map_zero]
       comm₂ := by simp
       comm₃ := by simp }
   exact isIso₂_of_isIso₁₃ φ (F.map_distinguished _ (binaryProductTriangle_distinguished X₁ X₃))

@@ -854,8 +854,7 @@ theorem eq_padicNorm (q : ℚ) : ‖(q : ℚ_[p])‖ = padicNorm p q := by
 theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by
   rw [← @Rat.cast_natCast ℝ _ p]
   rw [← @Rat.cast_natCast ℚ_[p] _ p]
-  simp [hp.1.ne_zero, norm, padicNorm, padicValRat, padicValInt, zpow_neg,
-    -Rat.cast_natCast]
+  simp [hp.1.ne_zero, norm, padicNorm, padicValRat, padicValInt, zpow_neg, -Rat.cast_natCast]
 
 theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   rw [norm_p]

@@ -282,9 +282,8 @@ theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero {x y : V} (hx : 
   have hp := div_pos (norm_pos_iff.2 hy) (norm_pos_iff.2 hx)
   constructor
   · rintro rfl
-    rw [← map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm,
-      rotation_oangle_eq_iff_norm_eq, norm_smul, Real.norm_of_nonneg hp.le,
-      div_mul_cancel₀ _ (norm_ne_zero_iff.2 hx)]
+    rw [← map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm, rotation_oangle_eq_iff_norm_eq,
+      norm_smul, Real.norm_of_nonneg hp.le, div_mul_cancel₀ _ (norm_ne_zero_iff.2 hx)]
   · intro hye
     rw [hye, o.oangle_smul_right_of_pos _ _ hp, o.oangle_rotation_self_right hx]
 

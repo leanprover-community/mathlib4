@@ -227,8 +227,7 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
       rw [← mk, ← mk, ← mk, mk_mul_mk, mk_mul_mk, mk_add_mk, mk_mul_mk, mk_add_mk]
       apply mk_eq.mpr _
       use 1
-      simp only [one_mul, smul_add, add_mul, smul_smul, ← mul_assoc, smul_mul_assoc,
-        mul_right_comm]
+      simp only [one_mul, smul_add, add_mul, smul_smul, ← mul_assoc, smul_mul_assoc, mul_right_comm]
     zero_mul := by with_unfolding_all
       rintro ⟨a, s⟩
       exact mk_eq.mpr ⟨1, by simp only [zero_mul, smul_zero]⟩

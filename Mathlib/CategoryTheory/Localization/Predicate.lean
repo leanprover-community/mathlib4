@@ -481,10 +481,9 @@ lemma morphismProperty_eq_top [L.IsLocalization W] (P : MorphismProperty D) [P.R
       (fun X Y f hf ↦ by
         refine (P.arrow_mk_iso_iff (Arrow.isoMk (e.app _) (e.app _) ?_)).2 (h₂ f hf)
         dsimp
-        rw [Construction.wInv_eq_isoOfHom_inv, ← cancel_mono (isoOfHom L W f hf).hom,
-          assoc, assoc, Iso.inv_hom_id, comp_id, isoOfHom_hom, ← NatTrans.naturality,
-          Functor.comp_map, ← Functor.map_comp_assoc,
-          isoOfHom_inv_hom_id, map_id, id_comp])
+        rw [Construction.wInv_eq_isoOfHom_inv, ← cancel_mono (isoOfHom L W f hf).hom, assoc, assoc,
+          Iso.inv_hom_id, comp_id, isoOfHom_hom, ← NatTrans.naturality, Functor.comp_map,
+          ← Functor.map_comp_assoc, isoOfHom_inv_hom_id, map_id, id_comp])
   rw [← P.map_inverseImage_eq_of_isEquivalence (uniq W.Q L W).functor, hP,
     MorphismProperty.map_top_eq_top_of_essSurj_of_full]
 

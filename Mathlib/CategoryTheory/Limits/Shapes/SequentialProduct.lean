@@ -85,8 +85,7 @@ lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
         homOfLE (by lia : n ≤ m) ≫ homOfLE (by lia : m ≤ m + 1) := by simp
     rw [this, op_comp, Functor.map_comp]
     slice_lhs 2 4 => rw [ih]
-    simp only [homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
-      functorMap, dite_eq_ite]
+    simp only [homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ, functorMap, dite_eq_ite]
     split_ifs
     · omega
     simp [dif_neg (by lia : ¬(k < m)), dif_neg hh]
@@ -104,13 +103,11 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
       simp [functorMap]
   | succ m =>
       rw [← functorMap_commSq_succ f (m + 1)]
-      simp only [homOfLE_leOfHom, dite_eq_ite,
-        Functor.ofOpSequence_map_homOfLE_succ]
+      simp only [homOfLE_leOfHom, dite_eq_ite, Functor.ofOpSequence_map_homOfLE_succ]
       have : homOfLE (by lia : n ≤ m + 1 + 1) =
           homOfLE (by lia : n ≤ m + 1) ≫ homOfLE (by lia : m + 1 ≤ m + 1 + 1) := by simp
       rw [this, op_comp, Functor.map_comp]
-      simp only [homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
-        Category.assoc]
+      simp only [homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ, Category.assoc]
       congr 1
       exact functorMap_commSq_aux f (by lia) (by lia)
 
@@ -208,8 +205,7 @@ noncomputable def isLimit : IsLimit (cone f) where
   uniq s m h := by
     apply Pi.hom_ext
     intro n
-    simp only [dite_eq_ite, limit.lift_π,
-      Fan.mk_π_app, ← h ⟨n + 1⟩, Category.assoc]
+    simp only [dite_eq_ite, limit.lift_π, Fan.mk_π_app, ← h ⟨n + 1⟩, Category.assoc]
     slice_rhs 2 3 => simp only [← dite_eq_ite, cone_π_app_comp_Pi_π_pos f (n + 1) n (by lia)]
     simp
 

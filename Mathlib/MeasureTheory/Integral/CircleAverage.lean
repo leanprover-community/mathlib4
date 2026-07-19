@@ -72,10 +72,8 @@ lemma circleAverage_eq_intervalAverage :
 @[simp] lemma circleAverage_zero [CompleteSpace E] :
     circleAverage f c 0 = f c := by
   rw [circleAverage]
-  simp only [circleMap_zero_radius, Function.const_apply,
-    intervalIntegral.integral_const, sub_zero,
-    ← smul_assoc, smul_eq_mul, inv_mul_cancel₀ (mul_ne_zero two_ne_zero pi_ne_zero),
-    one_smul]
+  simp only [circleMap_zero_radius, Function.const_apply, intervalIntegral.integral_const, sub_zero,
+    ← smul_assoc, smul_eq_mul, inv_mul_cancel₀ (mul_ne_zero two_ne_zero pi_ne_zero), one_smul]
 
 /--
 Expression of `circleAverage` with arbitrary center in terms of `circleAverage` with center zero.

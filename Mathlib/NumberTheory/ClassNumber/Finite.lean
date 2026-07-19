@@ -76,8 +76,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
     abv (Algebra.norm R a) ≤ normBound abv bS * y ^ Fintype.card ι := by
   conv_lhs => rw [← bS.sum_repr a]
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
-  simp only [map_sum, map_smul, map_sum, map_smul,
-    normBound, smul_mul_assoc, ← mul_pow]
+  simp only [map_sum, map_smul, map_sum, map_smul, normBound, smul_mul_assoc, ← mul_pow]
   convert! Matrix.det_sum_smul_le Finset.univ _ hy using 3
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
@@ -251,9 +250,8 @@ theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R S] (a : S) {b : S} (hb 
     lt_of_le_of_lt (le_of_eq ?_)
       (mul_lt_mul hqr le_rfl (abv.pos ((Algebra.norm_ne_zero_iff_of_basis bS).mpr hb))
         (abv.nonneg _))
-  rw [← abv.map_mul, ← map_mul, ← abv.map_mul, ← map_mul, ← Algebra.smul_def,
-    smul_sub b', sub_mul, smul_comm, h, mul_comm b a', Algebra.smul_mul_assoc r a' b,
-    Algebra.smul_mul_assoc b' q b]
+  rw [← abv.map_mul, ← map_mul, ← abv.map_mul, ← map_mul, ← Algebra.smul_def, smul_sub b', sub_mul,
+    smul_comm, h, mul_comm b a', Algebra.smul_mul_assoc r a' b, Algebra.smul_mul_assoc b' q b]
 
 end Real
 

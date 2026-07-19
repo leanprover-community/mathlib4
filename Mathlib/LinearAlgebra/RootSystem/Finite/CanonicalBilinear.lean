@@ -261,8 +261,7 @@ lemma rootFormIn_self_smul_coroot (i : ι) :
   nth_rw 2 [hP]
   rw [PolarizationIn_apply]
   simp only [coroot'In_rootSpanMem_eq_pairingIn, pairingIn_reflectionPerm,
-    pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul,
-    smul_sub, sub_neg_eq_add]
+    pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul, smul_sub, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add, RootFormIn]
   simp only [LinearMap.coe_sum, LinearMap.coe_smulRight, Finset.sum_apply,
     coroot'In_rootSpanMem_eq_pairingIn, LinearMap.smul_apply, smul_eq_mul, Finset.sum_smul,

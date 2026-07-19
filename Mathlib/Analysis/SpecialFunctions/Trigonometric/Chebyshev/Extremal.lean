@@ -142,8 +142,7 @@ theorem sumNodes_eq_sumNodes_T_iff {n : ℕ} {c : ℕ → ℝ}
     rw [Nat.cast_lt, Finset.card_image_of_injOn (strictAntiOn_node n).injOn,
       Finset.card_range, Nat.lt_succ_iff]
   · rw [degree_T, Int.natAbs_natCast, Nat.cast_lt,
-      Finset.card_image_of_injOn (strictAntiOn_node n).injOn,
-      Finset.card_range, Nat.lt_succ_iff]
+      Finset.card_image_of_injOn (strictAntiOn_node n).injOn, Finset.card_range, Nat.lt_succ_iff]
   replace h := ge_of_eq h
   contrapose! h
   obtain ⟨x, hx, hPx⟩ := h

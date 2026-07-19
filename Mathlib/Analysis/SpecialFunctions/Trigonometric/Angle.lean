@@ -147,9 +147,8 @@ theorem nsmul_eq_iff {ψ θ : Angle} {n : ℕ} (hz : n ≠ 0) :
 
 theorem two_zsmul_eq_iff {ψ θ : Angle} : (2 : ℤ) • ψ = (2 : ℤ) • θ ↔ ψ = θ ∨ ψ = θ + ↑π := by
   have : Int.natAbs 2 = 2 := rfl
-  rw [zsmul_eq_iff two_ne_zero, this, Fin.exists_fin_two, Fin.val_zero,
-    Fin.val_one, zero_smul, add_zero, one_smul, Int.cast_two,
-    mul_div_cancel_left₀ (_ : ℝ) two_ne_zero]
+  rw [zsmul_eq_iff two_ne_zero, this, Fin.exists_fin_two, Fin.val_zero, Fin.val_one, zero_smul,
+    add_zero, one_smul, Int.cast_two, mul_div_cancel_left₀ (_ : ℝ) two_ne_zero]
 
 theorem two_nsmul_eq_iff {ψ θ : Angle} : (2 : ℕ) • ψ = (2 : ℕ) • θ ↔ ψ = θ ∨ ψ = θ + ↑π := by
   simp_rw [← natCast_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
@@ -209,8 +208,7 @@ theorem cos_eq_iff_coe_eq_or_eq_neg {θ ψ : ℝ} :
     · rw [← sub_eq_zero, cos_sub_cos, H, mul_assoc 2 π k, mul_div_cancel_left₀ _ (two_ne_zero' ℝ),
         mul_comm π _, sin_int_mul_pi, mul_zero]
     rw [← sub_eq_zero, cos_sub_cos, ← sub_neg_eq_add, H, mul_assoc 2 π k,
-      mul_div_cancel_left₀ _ (two_ne_zero' ℝ), mul_comm π _, sin_int_mul_pi, mul_zero,
-      zero_mul]
+      mul_div_cancel_left₀ _ (two_ne_zero' ℝ), mul_comm π _, sin_int_mul_pi, mul_zero, zero_mul]
 
 theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
     sin θ = sin ψ ↔ (θ : Angle) = ψ ∨ (θ : Angle) + ψ = π := by

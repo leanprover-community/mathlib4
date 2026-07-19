@@ -163,8 +163,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma addOppositeEquiv_orderTop (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
   classical
-  simp only [orderTop,
-    addOppositeEquiv_support]
+  simp only [orderTop, addOppositeEquiv_support]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero]
   simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, coeff_zero]

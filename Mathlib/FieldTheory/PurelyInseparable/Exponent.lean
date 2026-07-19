@@ -264,30 +264,22 @@ noncomputable def iterateFrobenius {n : ℕ} (hn : exponent K L ≤ n) : L →+*
   toFun := iterateFrobeniusAux K L p n
   map_zero' := by
     apply (algebraMap K L).injective
-    rw [(algebraMap K L).map_zero,
-      algebraMap_iterateFrobeniusAux K p hn 0,
-      zero_pow]
+    rw [(algebraMap K L).map_zero, algebraMap_iterateFrobeniusAux K p hn 0, zero_pow]
     exact Nat.pos_iff_ne_zero.mp <| expChar_pow_pos K p n
   map_add' a b := by
     have inj := (algebraMap K L).injective
     have : ExpChar L p := expChar_of_injective_ringHom inj p
     apply inj
-    rw [(algebraMap K L).map_add,
-      algebraMap_iterateFrobeniusAux K p hn a,
-      algebraMap_iterateFrobeniusAux K p hn b,
-      algebraMap_iterateFrobeniusAux K p hn (a + b),
+    rw [(algebraMap K L).map_add, algebraMap_iterateFrobeniusAux K p hn a,
+      algebraMap_iterateFrobeniusAux K p hn b, algebraMap_iterateFrobeniusAux K p hn (a + b),
       add_pow_expChar_pow a b]
   map_one' := by
     apply (algebraMap K L).injective
-    rw [(algebraMap K L).map_one,
-      algebraMap_iterateFrobeniusAux K p hn 1,
-      one_pow]
+    rw [(algebraMap K L).map_one, algebraMap_iterateFrobeniusAux K p hn 1, one_pow]
   map_mul' a b := by
     apply (algebraMap K L).injective
-    rw [(algebraMap K L).map_mul,
-      algebraMap_iterateFrobeniusAux K p hn a,
-      algebraMap_iterateFrobeniusAux K p hn b,
-      algebraMap_iterateFrobeniusAux K p hn (a * b),
+    rw [(algebraMap K L).map_mul, algebraMap_iterateFrobeniusAux K p hn a,
+      algebraMap_iterateFrobeniusAux K p hn b, algebraMap_iterateFrobeniusAux K p hn (a * b),
       mul_pow]
 
 variable {L} in
@@ -319,14 +311,9 @@ noncomputable def iterateFrobeniusₛₗ {n : ℕ} (hn : exponent K L ≤ n) :
     dsimp [iterateFrobenius]
     rw [Algebra.smul_def _ (iterateFrobeniusAux K L p n a)]
     apply (algebraMap K L).injective
-    rw [(algebraMap K L).map_mul,
-      ← IsScalarTower.algebraMap_apply,
-      algebraMap_iterateFrobeniusAux K p hn a,
-      algebraMap_iterateFrobeniusAux K p hn (r • a),
-      iterateFrobenius_def,
-      map_pow,
-      Algebra.smul_def,
-      mul_pow]
+    rw [(algebraMap K L).map_mul, ← IsScalarTower.algebraMap_apply,
+      algebraMap_iterateFrobeniusAux K p hn a, algebraMap_iterateFrobeniusAux K p hn (r • a),
+      iterateFrobenius_def, map_pow, Algebra.smul_def, mul_pow]
 
 /-- Action of `iterateFrobeniusₛₗ` on the top field. -/
 theorem algebraMap_iterateFrobeniusₛₗ {n : ℕ} (hn : exponent K L ≤ n) (a : L) :

@@ -465,8 +465,7 @@ theorem map_prod_of_subset_primeFactors [CommMonoidWithZero R] {f : ArithmeticFu
 theorem prod_primeFactors [CommMonoidWithZero R] {f : ArithmeticFunction R}
     (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
     ∏ a ∈ l.primeFactors, f a = f l := by
-  rw [← h_mult.map_prod_of_subset_primeFactors l _ Subset.rfl,
-    prod_primeFactors_of_squarefree hl]
+  rw [← h_mult.map_prod_of_subset_primeFactors l _ Subset.rfl, prod_primeFactors_of_squarefree hl]
 
 theorem map_div_of_coprime [GroupWithZero R] {f : ArithmeticFunction R}
     (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l / d).Coprime d) (hd : f d ≠ 0) :
@@ -590,9 +589,8 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
     apply prod_congr rfl
     intro p _
     rcases Nat.le_or_le (x.factorization p) (y.factorization p) with h | h <;>
-      simp only [factorization_lcm hx hy, Finsupp.sup_apply, h, sup_of_le_right,
-        sup_of_le_left, inf_of_le_right, factorization_gcd hx hy, Finsupp.inf_apply,
-        inf_of_le_left, mul_comm]
+      simp only [factorization_lcm hx hy, Finsupp.sup_apply, h, sup_of_le_right, sup_of_le_left,
+        inf_of_le_right, factorization_gcd hx hy, Finsupp.inf_apply, inf_of_le_left, mul_comm]
   · apply subset_union_right
   · apply subset_union_left
   · rw [factorization_gcd hx hy, Finsupp.support_inf]

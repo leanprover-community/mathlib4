@@ -157,8 +157,7 @@ lemma Bundle.Trivialization.contMDiffAt_symmL [ContMDiffVectorBundle n F₁ E₁
     (trivializationAt F₁ E₁ x).open_baseSet.mem_nhds hx'] with b hb hb'
   ext v
   simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-    coordChangeL_apply' e _ ⟨hb, hb'⟩, coe_linearMapAt_of_mem _ hb',
-    e.symmL_apply hb, e.mk_symm hb]
+    coordChangeL_apply' e _ ⟨hb, hb'⟩, coe_linearMapAt_of_mem _ hb', e.symmL_apply hb, e.mk_symm hb]
 
 /-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
 defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section

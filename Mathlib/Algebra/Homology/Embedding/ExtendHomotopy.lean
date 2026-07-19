@@ -80,16 +80,14 @@ noncomputable def extend (h : Homotopy f g) (e : c.Embedding c') [e.IsRelIff] :
       congr 1
       · by_cases hi : c.Rel i (c.next i)
         · have hi' : c'.Rel (e.f i) (e.f (c.next i)) := by rwa [e.rel_iff]
-          simp [dNext_eq _ hi, dNext_eq _ hi', extend.hom_eq _ _ rfl rfl,
-            extend_d_eq _ _ rfl rfl]
+          simp [dNext_eq _ hi, dNext_eq _ hi', extend.hom_eq _ _ rfl rfl, extend_d_eq _ _ rfl rfl]
         · rw [dNext_eq_zero _ _ hi]
           by_cases hi' : c'.Rel (e.f i) (c'.next (e.f i))
           · simp [dNext_eq _ hi', K.extend_d_from_eq_zero _ _ _ _ rfl hi]
           · simp [dNext_eq_zero _ _ hi']
       · by_cases hi : c.Rel (c.prev i) i
         · have hi' : c'.Rel (e.f (c.prev i)) (e.f i) := by rwa [e.rel_iff]
-          simp [prevD_eq _ hi, prevD_eq _ hi', extend.hom_eq _ _ rfl rfl,
-            extend_d_eq _ _ rfl rfl]
+          simp [prevD_eq _ hi, prevD_eq _ hi', extend.hom_eq _ _ rfl rfl, extend_d_eq _ _ rfl rfl]
         · rw [prevD_eq_zero _ _ hi]
           by_cases hi' : c'.Rel (c'.prev (e.f i)) (e.f i)
           · simp [prevD_eq _ hi', L.extend_d_to_eq_zero _ _ _ _ rfl hi]
@@ -100,8 +98,7 @@ noncomputable def extend (h : Homotopy f g) (e : c.Embedding c') [e.IsRelIff] :
     · obtain ⟨i, rfl⟩ := hi'
       by_cases hj' : ∃ j, e.f j = j'
       · obtain ⟨j, rfl⟩ := hj'
-        rw [extend.hom_eq _ _ rfl rfl, h.zero _ _ (by rwa [← e.rel_iff]),
-          zero_comp, comp_zero]
+        rw [extend.hom_eq _ _ rfl rfl, h.zero _ _ (by rwa [← e.rel_iff]), zero_comp, comp_zero]
       · exact extend.hom_eq_zero₂ _ _ _ _ (by tauto)
     · exact extend.hom_eq_zero₁ _ _ _ _ (by tauto)
 
@@ -122,9 +119,8 @@ noncomputable def ofExtend {e : c.Embedding c'} [e.IsRelIff]
   comm i := by
     have := h.comm (e.f i)
     simp only [extendMap_f _ _ rfl] at this
-    simp only [← cancel_mono (L.extendXIso e rfl).inv,
-      ← cancel_epi (K.extendXIso e rfl).hom, this, Preadditive.add_comp,
-      Preadditive.comp_add, add_left_inj]
+    simp only [← cancel_mono (L.extendXIso e rfl).inv, ← cancel_epi (K.extendXIso e rfl).hom, this,
+      Preadditive.add_comp, Preadditive.comp_add, add_left_inj]
     congr 1
     · by_cases hi : c.Rel i (c.next i)
       · have hi' : c'.Rel (e.f i) (e.f (c.next i)) := by rwa [e.rel_iff]

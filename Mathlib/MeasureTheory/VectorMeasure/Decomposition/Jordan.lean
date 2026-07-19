@@ -522,8 +522,7 @@ theorem mutuallySingular_iff (s t : SignedMeasure α) :
         toMeasureOfLEZero_apply _ _ _ hmeas]
       simp [hu₁ _ Set.inter_subset_right]
     · rw [totalVariation, Measure.add_apply, hjpos, hjneg,
-        toMeasureOfZeroLE_apply _ _ _ hmeas.compl,
-        toMeasureOfLEZero_apply _ _ _ hmeas.compl]
+        toMeasureOfZeroLE_apply _ _ _ hmeas.compl, toMeasureOfLEZero_apply _ _ _ hmeas.compl]
       simp [hu₂ _ Set.inter_subset_right]
   · rintro ⟨u, hmeas, hu₁, hu₂⟩
     exact

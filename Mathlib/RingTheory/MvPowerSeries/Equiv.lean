@@ -39,8 +39,7 @@ lemma truncTotal_sub_truncTotal_mem_pow_idealOfVars {l m n : ℕ} (h : l ≤ m) 
     (p : MvPowerSeries σ R) : p.truncTotal m - p.truncTotal n ∈
       MvPolynomial.idealOfVars σ R ^ l := by
   refine (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr (fun x hx ↦ ?_)
-  rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ (by lia),
-    coeff_truncTotal _ (by lia)]
+  rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ (by lia), coeff_truncTotal _ (by lia)]
 
 lemma truncTotal_mul_sub_mul_truncTotal_mem_pow_idealOfVars (p q : MvPowerSeries σ R) :
     (p * q).truncTotal n - p.truncTotal n * q.truncTotal n ∈

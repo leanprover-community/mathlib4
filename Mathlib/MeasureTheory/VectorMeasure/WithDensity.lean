@@ -70,8 +70,7 @@ theorem withDensityᵥ_zero : μ.withDensityᵥ (0 : α → E) = 0 := by
 theorem withDensityᵥ_neg : μ.withDensityᵥ (-f) = -μ.withDensityᵥ f := by
   by_cases hf : Integrable f μ
   · ext1 i hi
-    rw [_root_.neg_apply, withDensityᵥ_apply hf hi, ← integral_neg,
-      withDensityᵥ_apply hf.neg hi]
+    rw [_root_.neg_apply, withDensityᵥ_apply hf hi, ← integral_neg, withDensityᵥ_apply hf.neg hi]
     simp only [Pi.neg_apply]
   · rw [withDensityᵥ, withDensityᵥ, dif_neg hf, dif_neg, neg_zero]
     rwa [integrable_neg_iff]
@@ -194,10 +193,9 @@ theorem withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part {f : α 
   have := isFiniteMeasure_withDensity_ofReal hfi.neg.2
   ext i hi
   rw [withDensityᵥ_apply hfi hi,
-    integral_eq_lintegral_pos_part_sub_lintegral_neg_part hfi.integrableOn,
-    _root_.sub_apply, toSignedMeasure_apply_measurable hi,
-    toSignedMeasure_apply_measurable hi, measureReal_def, measureReal_def,
-    withDensity_apply _ hi, withDensity_apply _ hi]
+    integral_eq_lintegral_pos_part_sub_lintegral_neg_part hfi.integrableOn, _root_.sub_apply,
+    toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi, measureReal_def,
+    measureReal_def, withDensity_apply _ hi, withDensity_apply _ hi]
 
 theorem Integrable.withDensityᵥ_trim_eq_integral {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) {f : α → ℝ} (hf : Integrable f μ) {i : Set α} (hi : MeasurableSet[m] i) :

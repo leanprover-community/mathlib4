@@ -45,8 +45,7 @@ noncomputable def nonDegenerateEquiv₁ :
       ext j
       dsimp
       by_cases hj : j ≤ i.castSucc
-      · rw [objMk₁_of_castSucc_lt _ _ (by simpa),
-          Fin.coe_ofNat_eq_mod, Nat.zero_mod, add_zero]
+      · rw [objMk₁_of_castSucc_lt _ _ (by simpa), Fin.coe_ofNat_eq_mod, Nat.zero_mod, add_zero]
         change (i.predAbove j : ℕ) = _
         simp [Fin.predAbove_of_le_castSucc _ _ hj]
       · simp only [not_le] at hj

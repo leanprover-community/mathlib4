@@ -229,8 +229,7 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
   trans (n.choose (i + 1) : R); swap
   · simp only [finsetSum_coeff, ← C_eq_natCast, coeff_C_mul_X_pow]
     rw [Finset.sum_eq_single i, if_pos rfl]
-    · simp +contextual only [@eq_comm _ i, if_false,
-        imp_true_iff]
+    · simp +contextual only [@eq_comm _ i, if_false, imp_true_iff]
     · simp +contextual only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
         Nat.cast_zero, Finset.mem_range, not_lt, if_true, imp_true_iff]
   induction n generalizing i with

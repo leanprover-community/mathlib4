@@ -122,8 +122,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     ‹TopologicalSpace A›.coinduced p = ‹TopologicalSpace D›.induced g := by
   ext U
   change IsOpen (p ⁻¹' U) ↔ ∃ V, _
-  simp_rw [hf.isOpen_iff,
-    (Set.image_surjective.mpr hq.surjective).exists,
+  simp_rw [hf.isOpen_iff, (Set.image_surjective.mpr hq.surjective).exists,
     ← hq.isQuotientMap.isOpen_preimage]
   constructor
   · rintro ⟨V, hV, e⟩

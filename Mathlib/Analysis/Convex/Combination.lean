@@ -314,9 +314,8 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
   · rintro x ⟨s, w, hw₀, hw₁, rfl⟩ y ⟨s', w', hw₀', hw₁', rfl⟩ a b ha hb hab
     let W : ι → R := fun i => (if i ∈ s then a * w i else 0) + if i ∈ s' then b * w' i else 0
     have hW₁ : (s ∪ s').sum W = 1 := by
-      rw [sum_add_distrib, ← sum_subset subset_union_left,
-        ← sum_subset subset_union_right, sum_ite_of_true,
-        sum_ite_of_true, ← mul_sum, ← mul_sum, hw₁, hw₁', ← add_mul, hab,
+      rw [sum_add_distrib, ← sum_subset subset_union_left, ← sum_subset subset_union_right,
+        sum_ite_of_true, sum_ite_of_true, ← mul_sum, ← mul_sum, hw₁, hw₁', ← add_mul, hab,
         mul_one] <;> intros <;> simp_all
     refine ⟨s ∪ s', W, ?_, hW₁, ?_⟩
     · rintro i -

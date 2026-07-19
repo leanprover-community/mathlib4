@@ -64,8 +64,7 @@ private lemma auxDFT_auxDFT (Φ : ZMod N → E) : auxDFT (auxDFT Φ) = fun j ↦
   simp only [← sum_smul, ← neg_mul]
   have h1 (t : ZMod N) : ∑ i, stdAddChar (t * i) = if t = 0 then ↑N else 0 := by
     split_ifs with h
-    · simp only [h, zero_mul, map_zero_eq_one, sum_const, card_univ, card,
-        nsmul_eq_mul, mul_one]
+    · simp only [h, zero_mul, map_zero_eq_one, sum_const, card_univ, card, nsmul_eq_mul, mul_one]
     · exact sum_eq_zero_of_ne_one (isPrimitive_stdAddChar N h)
   have h2 (x j : ZMod N) : -(j + x) = 0 ↔ x = -j := by
     rw [neg_add, add_comm, add_eq_zero_iff_neg_eq, neg_neg]

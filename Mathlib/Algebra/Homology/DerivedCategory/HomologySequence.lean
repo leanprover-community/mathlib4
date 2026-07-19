@@ -136,13 +136,10 @@ lemma shiftMap_homologyFunctor_map_Q
     (homologyFunctorFactors C a).hom.app _ ≫
       (HomologicalComplex.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
         (homologyFunctorFactors C a').inv.app _ := by
-  rw [← ShiftedHom.map_naturality_1 f (quotientCompQhIso C),
-    ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
-    Functor.shiftMap_comp', Functor.shiftMap_comp,
-    ShiftedHom.comp_map, shiftMap_homologyFunctor_map_Qh ..,
-    homologyFunctorFactorsh_hom_app_quotient_obj,
-    homologyFunctorFactorsh_inv_app_quotient_obj,
-    HomotopyCategory.homologyFunctor_shiftMap]
+  rw [← ShiftedHom.map_naturality_1 f (quotientCompQhIso C), ShiftedHom.mk₀_comp,
+    ShiftedHom.comp_mk₀, Functor.shiftMap_comp', Functor.shiftMap_comp, ShiftedHom.comp_map,
+    shiftMap_homologyFunctor_map_Qh .., homologyFunctorFactorsh_hom_app_quotient_obj,
+    homologyFunctorFactorsh_inv_app_quotient_obj, HomotopyCategory.homologyFunctor_shiftMap]
   simp [shift_homologyFunctor, ← Functor.map_comp, ← Functor.map_comp_assoc]
 
 namespace HomologySequence
@@ -241,9 +238,8 @@ lemma homologyMap_comp_eq_zero_of_distTriang (n : ℤ) :
     homologyMap T.mor₁ n ≫ homologyMap T.mor₂ n = 0 := by
   rw [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
     ← DerivedCategory.homologyFunctorFactors_hom_naturality_assoc,
-    ← DerivedCategory.homologyFunctorFactors_hom_naturality,
-    ← Functor.map_comp_assoc, dsimp% comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero,
-    Limits.zero_comp, Limits.comp_zero]
+    ← DerivedCategory.homologyFunctorFactors_hom_naturality, ← Functor.map_comp_assoc,
+    dsimp% comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero, Limits.zero_comp, Limits.comp_zero]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

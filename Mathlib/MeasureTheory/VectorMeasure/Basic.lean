@@ -502,9 +502,8 @@ theorem toSignedMeasure_zero : (0 : Measure α).toSignedMeasure = 0 := by
 theorem toSignedMeasure_add (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     (μ + ν).toSignedMeasure = μ.toSignedMeasure + ν.toSignedMeasure := by
   ext i hi
-  rw [toSignedMeasure_apply_measurable hi, measureReal_add_apply,
-    _root_.add_apply, toSignedMeasure_apply_measurable hi,
-    toSignedMeasure_apply_measurable hi]
+  rw [toSignedMeasure_apply_measurable hi, measureReal_add_apply, _root_.add_apply,
+    toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi]
 
 @[simp]
 theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0) :

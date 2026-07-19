@@ -337,8 +337,7 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
   refine ⟨min c₁ c₃, by change 0 < min c₁ c₃; positivity, ?_⟩
   refine ⟨max c₂ c₄, by change 0 < max c₂ c₄; positivity, ?_⟩
-  filter_upwards [hf, hg,
-                  (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
+  filter_upwards [hf, hg, (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hg',
                   eventually_ge_atTop 0] with x hf hg hf' hg' hx_pos
   intro u hu
@@ -378,8 +377,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
     specialize hfg (c := 1 / 2) (by norm_num)
     refine ⟨c₁ / 3, by positivity, 3*c₂, by positivity, ?_⟩
-    filter_upwards [hf,
-                    (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg,
+    filter_upwards [hf, (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg,
                     (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                     eventually_ge_atTop 0] with x hf₁ hfg' hf₂ hx_nonneg
     have hbx : b * x ≤ x := by nth_rewrite 2 [← one_mul x]; gcongr
@@ -421,8 +419,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
     specialize hfg (c := 1 / 2) (by norm_num)
     refine ⟨3*c₁, by positivity, c₂/3, by positivity, ?_⟩
-    filter_upwards [hf,
-                    (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg,
+    filter_upwards [hf, (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg,
                     (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                     eventually_ge_atTop 0] with x hf₁ hfg' hf₂ hx_nonneg
     have hbx : b * x ≤ x := by nth_rewrite 2 [← one_mul x]; gcongr
@@ -556,8 +553,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
       refine ⟨1, by norm_num, 1, by norm_num, ?_⟩
       filter_upwards [hzero, hfnew] with x hx hx'
       intro u hu
-      simp only [hx, zero_rpow (ne_of_lt hp), mul_zero,
-        Set.Icc_self, Set.mem_singleton_iff]
+      simp only [hx, zero_rpow (ne_of_lt hp), mul_zero, Set.Icc_self, Set.mem_singleton_iff]
       simp only [hx, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx'
       rw [hx' u hu, zero_rpow (ne_of_lt hp)]
     | .inr (.inl hpos) => -- eventually positive

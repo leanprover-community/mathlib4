@@ -108,9 +108,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma oppositeShiftFunctorZero_hom_app (X : OppositeShift C A) :
     (shiftFunctorZero (OppositeShift C A) A).hom.app X =
       ((shiftFunctorZero C A).inv.app X.unop).op := by
-  rw [← cancel_mono ((shiftFunctorZero (OppositeShift C A) A).inv.app X),
-    Iso.hom_inv_id_app, oppositeShiftFunctorZero_inv_app, ← op_comp,
-    Iso.hom_inv_id_app, op_id]
+  rw [← cancel_mono ((shiftFunctorZero (OppositeShift C A) A).inv.app X), Iso.hom_inv_id_app,
+    oppositeShiftFunctorZero_inv_app, ← op_comp, Iso.hom_inv_id_app, op_id]
   rfl
 
 variable {C A}
@@ -124,9 +123,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma oppositeShiftFunctorAdd_hom_app :
     (shiftFunctorAdd (OppositeShift C A) a b).hom.app X =
       ((shiftFunctorAdd C a b).inv.app X.unop).op := by
-  rw [← cancel_mono ((shiftFunctorAdd (OppositeShift C A) a b).inv.app X),
-    Iso.hom_inv_id_app, oppositeShiftFunctorAdd_inv_app, ← op_comp,
-    Iso.hom_inv_id_app, op_id]
+  rw [← cancel_mono ((shiftFunctorAdd (OppositeShift C A) a b).inv.app X), Iso.hom_inv_id_app,
+    oppositeShiftFunctorAdd_inv_app, ← op_comp, Iso.hom_inv_id_app, op_id]
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -214,9 +212,8 @@ def commShiftUnop
   commShiftIso_add a b := by
     rw [commShiftIso_add]
     ext
-    simp only [NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app,
-      CommShift.isoAdd_inv_app, unop_comp, Category.assoc,
-      CommShift.isoAdd_hom_app]
+    simp only [NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, CommShift.isoAdd_inv_app,
+      unop_comp, Category.assoc, CommShift.isoAdd_hom_app]
     erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
     rfl
 

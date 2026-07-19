@@ -421,8 +421,7 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
     by_cases hI : I = 0
     · have h_neg : ¬(I ^ n ≠ 0 ∧ I ≠ 0) := by order
       rw [if_neg h_neg, hI, count_zero, mul_zero]
-    · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add,
-        Nat.cast_one]
+    · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add, Nat.cast_one]
       ring
 
 /-- `val_v(v) = 1`, when `v` is regarded as a fractional ideal. -/
@@ -619,8 +618,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   have : ∀ p ∈ s, J * ∏ q ∈ s, q.asIdeal < J * ∏ q ∈ s \ {p}, q.asIdeal := by
     intro p hps
     conv_rhs => rw [← mul_one (J * _)]
-    rw [Finset.prod_eq_mul_prod_sdiff_singleton_of_mem hps, ← mul_assoc,
-      mul_right_comm _ p.asIdeal]
+    rw [Finset.prod_eq_mul_prod_sdiff_singleton_of_mem hps, ← mul_assoc, mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
       exact p.2.ne_top
@@ -755,12 +753,11 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     refine (Submodule.mem_inf.mp (this.ge ?_)).1
     simp only [Algebra.lsmul_coe, smul_eq_mul]
     exact mul_mem_mul (mem_spanSingleton_self _ _) hx
-  · rw [← LinearMap.ker_eq_bot, Submodule.mapQ, Submodule.ker_liftQ,
-      LinearMap.ker_comp, Submodule.ker_mkQ, ← Submodule.comap_comp,
-      LinearMap.subtype_comp_restrict, ← le_bot_iff, Submodule.map_le_iff_le_comap,
-      Submodule.comap_bot, Submodule.ker_mkQ, LinearMap.domRestrict,
-      Submodule.comap_comp, ← Submodule.map_le_iff_le_comap,
-      Submodule.map_comap_eq, Submodule.range_subtype]
+  · rw [← LinearMap.ker_eq_bot, Submodule.mapQ, Submodule.ker_liftQ, LinearMap.ker_comp,
+      Submodule.ker_mkQ, ← Submodule.comap_comp, LinearMap.subtype_comp_restrict, ← le_bot_iff,
+      Submodule.map_le_iff_le_comap, Submodule.comap_bot, Submodule.ker_mkQ, LinearMap.domRestrict,
+      Submodule.comap_comp, ← Submodule.map_le_iff_le_comap, Submodule.map_comap_eq,
+      Submodule.range_subtype]
     by_cases H' : I'.divMod I J' = 0
     · obtain rfl : J' = I' := by simpa [H'] using divMod_spec h' hJ' hI
       obtain rfl : I = J := mul_left_injective₀ hJ' (H.trans (mul_comm _ _))
@@ -777,15 +774,13 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
         (spanSingleton R⁰ (I'.divMod I J') * I) := by
       ext x
       simp [Submodule.mem_span_singleton_mul]
-    rw [← LinearMap.range_eq_top, Submodule.mapQ, Submodule.range_liftQ,
-      LinearMap.range_comp, LinearMap.restrict, LinearMap.range_codRestrict,
-      LinearMap.range_domRestrict, ← top_le_iff, H,
-      ← LinearMap.range_eq_top.mpr (Submodule.mkQ_surjective _),
-      ← Submodule.map_top, Submodule.map_le_iff_le_comap, Submodule.comap_map_eq, Submodule.ker_mkQ,
+    rw [← LinearMap.range_eq_top, Submodule.mapQ, Submodule.range_liftQ, LinearMap.range_comp,
+      LinearMap.restrict, LinearMap.range_codRestrict, LinearMap.range_domRestrict, ← top_le_iff, H,
+      ← LinearMap.range_eq_top.mpr (Submodule.mkQ_surjective _), ← Submodule.map_top,
+      Submodule.map_le_iff_le_comap, Submodule.comap_map_eq, Submodule.ker_mkQ,
       ← Submodule.map_le_map_iff_of_injective I'.coeToSubmodule.injective_subtype,
-      Submodule.map_top, Submodule.map_sup,
-      Submodule.map_comap_eq, Submodule.map_comap_eq, Submodule.range_subtype, sup_comm,
-      inf_eq_right.mpr, inf_eq_right.mpr]
+      Submodule.map_top, Submodule.map_sup, Submodule.map_comap_eq, Submodule.map_comap_eq,
+      Submodule.range_subtype, sup_comm, inf_eq_right.mpr, inf_eq_right.mpr]
     · exact le_trans (divMod_spec h' hJ' hI).ge (by simp)
     · exact le_trans (by simp) (divMod_spec h' hJ' hI).le
     · exact h'

@@ -932,9 +932,8 @@ theorem sum_eapproxDiff (f : α → ℝ≥0∞) (n : ℕ) (a : α) :
   | zero =>
     simp [eapproxDiff, (eapprox_lt_top f 0 a).ne]
   | succ n IH =>
-    rw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply,
-      coe_sub, Pi.sub_apply, ENNReal.coe_toNNReal,
-      add_tsub_cancel_of_le (monotone_eapprox f (Nat.le_succ _) _)]
+    rw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply, coe_sub, Pi.sub_apply,
+      ENNReal.coe_toNNReal, add_tsub_cancel_of_le (monotone_eapprox f (Nat.le_succ _) _)]
     apply (lt_of_le_of_lt _ (eapprox_lt_top f (n + 1) a)).ne
     rw [tsub_le_iff_right]
     exact le_self_add

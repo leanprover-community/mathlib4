@@ -98,8 +98,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
   rw [sylvesterDeriv, dif_neg hn]
   rcases ne_or_eq i (2 * f.natDegree - 2) with hi' | rfl
   · -- Top part of matrix
-    rw [Matrix.updateRow_ne (Fin.ne_of_val_ne hi'),
-      Matrix.updateRow_ne (Fin.ne_of_val_ne hi')]
+    rw [Matrix.updateRow_ne (Fin.ne_of_val_ne hi'), Matrix.updateRow_ne (Fin.ne_of_val_ne hi')]
   · -- Bottom row
     simp only [sylvester, Fin.addCases, mem_Icc, coeff_derivative, eq_rec_constant, leadingCoeff,
       Matrix.updateRow_self, Matrix.updateRow_apply, ↓reduceIte, Pi.smul_apply, smul_eq_mul,
@@ -725,9 +724,8 @@ nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     have hgl : g.leadingCoeff = φ g'.leadingCoeff := by
       simp_rw [← coeff_natDegree, ← natDegree_eq_natDegree eg, ← hg', coeff_map]
     rw [← hf', ← map_scaleRoots _ _ _ (by simpa [← hfl]), ← hg',
-      ← map_scaleRoots _ _ _ (by simpa [← hgl]), hf', hg',
-      ← natDegree_eq_natDegree ef, ← natDegree_eq_natDegree eg,
-      resultant_map_map, IH f' g' r (by aesop) (by aesop)]
+      ← map_scaleRoots _ _ _ (by simpa [← hgl]), hf', hg', ← natDegree_eq_natDegree ef,
+      ← natDegree_eq_natDegree eg, resultant_map_map, IH f' g' r (by aesop) (by aesop)]
     rw [← hf', ← hg', resultant_map_map]
     simp
 

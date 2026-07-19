@@ -202,8 +202,7 @@ lemma exists_regular_cardinal (X : Type u) [Small.{w} X] :
     ∃ (κ : Cardinal.{w}), κ.IsRegular ∧ HasCardinalLT X κ :=
   ⟨Order.succ (max (Cardinal.mk (Shrink.{w} X)) .aleph0),
     Cardinal.isRegular_succ (le_max_right _ _), by
-      simp [hasCardinalLT_iff_of_equiv (equivShrink.{w} X),
-        hasCardinalLT_iff_cardinal_mk_lt]⟩
+      simp [hasCardinalLT_iff_of_equiv (equivShrink.{w} X), hasCardinalLT_iff_cardinal_mk_lt]⟩
 
 /-- For any `w`-small family `X : ι → Type u` of `w`-small types, there exists
 a regular cardinal `κ : Cardinal.{w}` such that `HasCardinalLT (X i) κ` for all `i : ι`. -/

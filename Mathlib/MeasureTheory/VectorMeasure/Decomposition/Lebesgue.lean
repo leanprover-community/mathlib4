@@ -234,15 +234,13 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
   refine toJordanDecomposition_eq ?_
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
   ext i hi
-  rw [_root_.sub_apply, toSignedMeasure_apply_measurable hi,
-      toSignedMeasure_apply_measurable hi, measureReal_add_apply, measureReal_add_apply,
-      add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
-      ← toSignedMeasure_apply_measurable hi, ← _root_.sub_apply,
-      ← JordanDecomposition.toSignedMeasure, toSignedMeasure_toJordanDecomposition,
-      _root_.add_apply, ← toSignedMeasure_apply_measurable hi,
-      ← toSignedMeasure_apply_measurable hi,
-      withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part hfi,
-      _root_.sub_apply]
+  rw [_root_.sub_apply, toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi,
+      measureReal_add_apply, measureReal_add_apply, add_sub_add_comm,
+      ← toSignedMeasure_apply_measurable hi, ← toSignedMeasure_apply_measurable hi,
+      ← _root_.sub_apply, ← JordanDecomposition.toSignedMeasure,
+      toSignedMeasure_toJordanDecomposition, _root_.add_apply,
+      ← toSignedMeasure_apply_measurable hi, ← toSignedMeasure_apply_measurable hi,
+      withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part hfi, _root_.sub_apply]
 
 private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
@@ -276,8 +274,7 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
   have htμ' := htμ
   rw [mutuallySingular_ennreal_iff, totalVariation_mutuallySingular_iff,
     VectorMeasure.ennrealToMeasure_toENNRealVectorMeasure] at htμ
-  rw [singularPart, ← t.toSignedMeasure_toJordanDecomposition,
-    JordanDecomposition.toSignedMeasure]
+  rw [singularPart, ← t.toSignedMeasure_toJordanDecomposition, JordanDecomposition.toSignedMeasure]
   congr
   · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := by fun_prop
     refine eq_singularPart hfpos htμ.1 ?_
@@ -346,8 +343,7 @@ theorem singularPart_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebes
         ?_).symm
   rw [withDensityᵥ_add (integrable_rnDeriv s μ) (integrable_rnDeriv t μ), add_assoc,
     add_comm (t.singularPart μ), add_assoc, add_comm _ (t.singularPart μ),
-    singularPart_add_withDensity_rnDeriv_eq, ← add_assoc,
-    singularPart_add_withDensity_rnDeriv_eq]
+    singularPart_add_withDensity_rnDeriv_eq, ← add_assoc, singularPart_add_withDensity_rnDeriv_eq]
 
 theorem singularPart_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
     [t.HaveLebesgueDecomposition μ] :
@@ -393,10 +389,9 @@ theorem rnDeriv_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDe
     Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _)
       ((integrable_rnDeriv _ _).add (integrable_rnDeriv _ _)) ?_
   rw [← add_right_inj ((s + t).singularPart μ), singularPart_add_withDensity_rnDeriv_eq,
-    withDensityᵥ_add (integrable_rnDeriv _ _) (integrable_rnDeriv _ _), singularPart_add,
-    add_assoc, add_comm (t.singularPart μ), add_assoc, add_comm _ (t.singularPart μ),
-    singularPart_add_withDensity_rnDeriv_eq, ← add_assoc,
-    singularPart_add_withDensity_rnDeriv_eq]
+    withDensityᵥ_add (integrable_rnDeriv _ _) (integrable_rnDeriv _ _), singularPart_add, add_assoc,
+    add_comm (t.singularPart μ), add_assoc, add_comm _ (t.singularPart μ),
+    singularPart_add_withDensity_rnDeriv_eq, ← add_assoc, singularPart_add_withDensity_rnDeriv_eq]
 
 theorem rnDeriv_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
     [t.HaveLebesgueDecomposition μ] [hst : (s - t).HaveLebesgueDecomposition μ] :

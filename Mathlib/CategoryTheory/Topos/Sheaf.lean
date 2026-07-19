@@ -148,8 +148,7 @@ lemma GrothendieckTopology.isClosed_χ_app_apply_of_isSheaf_of_isSeparated
   refine ⟨(hF _ hf).amalgamate a ?_, ?_⟩
   · introv Y₁ h
     apply (mono_iff_injective (m.app (.op Z))).mp inferInstance
-    simp_rw [NatTrans.naturality_apply, ← ha, ← Functor.map_comp_apply, ← op_comp,
-      reassoc_of% h]
+    simp_rw [NatTrans.naturality_apply, ← ha, ← Functor.map_comp_apply, ← op_comp, reassoc_of% h]
   · refine (hG _ hf).ext fun Z f' hf' => ?_
     rw [← NatTrans.naturality_apply, (hF _ hf).valid_glue _ _ hf', ← (ha _ _ _),
       op_comp, Functor.map_comp_apply]

@@ -51,8 +51,7 @@ theorem InnerProductSpace.canonicalCovariantTensor_eq_sum [FiniteDimensional ℝ
     congr 1 with m
     rw [Fintype.sum_eq_single m _, orthonormal_iff_ite.1 w.orthonormal]
     · simp only [↓reduceIte, one_smul]
-    simp only [orthonormal_iff_ite.1 w.orthonormal, ite_smul, one_smul, zero_smul,
-      ite_eq_right_iff]
+    simp only [orthonormal_iff_ite.1 w.orthonormal, ite_smul, one_smul, zero_smul, ite_eq_right_iff]
     tauto
   _ = ∑ m, ∑ n, (∑ i, ⟪w m, v i⟫_ℝ * ⟪v i, w n⟫_ℝ) • w m ⊗ₜ[ℝ] w n := by
     simp_rw [OrthonormalBasis.sum_inner_mul_inner v]

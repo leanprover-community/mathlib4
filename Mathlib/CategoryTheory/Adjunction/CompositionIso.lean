@@ -113,8 +113,7 @@ lemma leftAdjointCompIso_id_comp
   have h₁ := congr_map F₀'₁ (adj₀₀'.counit.naturality (adj₀'₁.unit.app X₀))
   have h₂ := congr_map (F₀₀' ⋙ F₀'₁) (e₀'₀.inv.naturality (adj₀'₁.unit.app X₀))
   simp only [id_obj, comp_obj, Functor.id_map, Functor.comp_map, Functor.map_comp] at h₁ h₂
-  simp [leftAdjointCompIso_hom_app, leftAdjointIdIso_hom_app,
-    reassoc_of% h₂, reassoc_of% h₁]
+  simp [leftAdjointCompIso_hom_app, leftAdjointIdIso_hom_app, reassoc_of% h₂, reassoc_of% h₁]
 
 section
 

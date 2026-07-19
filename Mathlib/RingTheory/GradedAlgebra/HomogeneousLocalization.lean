@@ -635,8 +635,7 @@ theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
   by_cases hfk : f ^ k = 0
   · refine ⟨0, zero_mem _, ?_⟩
     rw [← tsub_add_cancel_of_le hk', map_zero, pow_add, hfk, mul_zero, zero_smul]
-  rw [← tsub_add_cancel_of_le hk', pow_add, mul_smul, hk, den_smul_val,
-    Algebra.smul_def, ← map_mul]
+  rw [← tsub_add_cancel_of_le hk', pow_add, mul_smul, hk, den_smul_val, Algebra.smul_def, ← map_mul]
   rw [← smul_eq_mul, add_smul,
     DirectSum.degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded _ hf) (hk.symm ▸ z.den_mem_deg) hfk]
   exact ⟨_, SetLike.mul_mem_graded (SetLike.pow_mem_graded _ hf) z.num_mem_deg, rfl⟩
@@ -684,8 +683,7 @@ def map (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) :
     simp only [← mk_mul, Quotient.map'_mk'', num_mul, map_mul, den_mul]; rfl
   map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
     num_zero, ZeroMemClass.coe_zero, map_zero, den_zero, map_one]; rfl
-  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'',
-    num_one, den_one, map_one]; rfl
+  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'', num_one, den_one, map_one]; rfl
 
 variable (𝒜) in
 /--
@@ -1025,9 +1023,8 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
     apply (show Function.Injective (algebraMap (Away 𝒜 f) (Localization.Away f))
       from val_injective _)
     simp only [map_pow, map_prod, map_mul]
-    simp only [HomogeneousLocalization.algebraMap_apply, val_mk,
-      Localization.mk_pow, Localization.mk_prod, Localization.mk_mul,
-      ← Finset.prod_mul_distrib, ← pow_add, ← pow_mul]
+    simp only [HomogeneousLocalization.algebraMap_apply, val_mk, Localization.mk_pow,
+      Localization.mk_prod, Localization.mk_mul, ← Finset.prod_mul_distrib, ← pow_add, ← pow_mul]
     congr
     · ext i
       congr

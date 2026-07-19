@@ -916,9 +916,8 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     LinearMap.toMatrix v₁ v₁ (DistribSMul.toLinearMap R M₁ x) =
     Matrix.diagonal fun _ ↦ x := by
   ext
-  rw [LinearMap.toMatrix_apply, DistribSMul.toLinearMap_apply, map_smul,
-    Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
-    Pi.single_apply]
+  rw [LinearMap.toMatrix_apply, DistribSMul.toLinearMap_apply, map_smul, Basis.repr_self,
+    Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply, Pi.single_apply]
 
 lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
     (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :

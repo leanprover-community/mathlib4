@@ -359,8 +359,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine contDiffOn_convolution_right_with_param_aux eL hes hek ?_ ?_ ?_
     · intro p x hp hx
-      simp only [eg,
-        ContinuousLinearEquiv.map_eq_zero_iff]
+      simp only [eg, ContinuousLinearEquiv.map_eq_zero_iff]
       exact hgs _ _ hp hx
     · exact (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2 hf
     · apply isoE'.symm.contDiff.comp_contDiffOn

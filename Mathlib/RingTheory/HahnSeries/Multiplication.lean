@@ -260,8 +260,7 @@ theorem smul_add [Zero R] [DistribSMul R V] (x : R⟦Γ⟧) (y z : HahnModule Γ
   have hwf := ((of R).symm y).isPWO_support.union ((of R).symm z).isPWO_support
   rw [coeff_smul_right hwf, of_symm_add]
   · simp_all only [HahnSeries.coeff_add', Pi.add_apply, of_symm_add]
-    rw [coeff_smul_right hwf Set.subset_union_right,
-      coeff_smul_right hwf Set.subset_union_left]
+    rw [coeff_smul_right hwf Set.subset_union_right, coeff_smul_right hwf Set.subset_union_left]
     simp_all [sum_add_distrib]
   · intro b
     simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, of_symm_add,
@@ -281,8 +280,7 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : R⟦Γ⟧}
   have hwf := x.isPWO_support.union y.isPWO_support
   rw [coeff_smul_left hwf, HahnSeries.coeff_add', of_symm_add]
   · simp_all only [Pi.add_apply, HahnSeries.coeff_add']
-    rw [coeff_smul_left hwf Set.subset_union_right,
-      coeff_smul_left hwf Set.subset_union_left]
+    rw [coeff_smul_left hwf Set.subset_union_right, coeff_smul_left hwf Set.subset_union_left]
     simp only [sum_add_distrib]
   · exact support_add_subset _ _
 
@@ -297,8 +295,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
   · simp only [hx, smul_zero]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
-    simp only [notMem_empty, not_and, Set.mem_singleton_iff,
-      mem_vaddAntidiagonal, iff_false]
+    simp only [notMem_empty, not_and, Set.mem_singleton_iff, mem_vaddAntidiagonal, iff_false]
     rintro rfl h2 h1
     rw [IsCancelVAdd.left_cancel a1 a2 a h1] at h2
     exact h2 hx
@@ -411,8 +408,7 @@ protected lemma map_mul [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring
   refine Eq.symm (sum_subset (fun gh hgh => ?_) (fun gh hgh hz => ?_))
   · simp_all only [mem_antidiagonal, mem_support, map_coeff, ne_eq, and_true]
     exact ⟨fun h => hgh.1 (map_zero f ▸ congrArg f h), fun h => hgh.2.1 (map_zero f ▸ congrArg f h)⟩
-  · simp_all only [mem_antidiagonal, mem_support, ne_eq, map_coeff, and_true,
-      not_and, not_not]
+  · simp_all only [mem_antidiagonal, mem_support, ne_eq, map_coeff, and_true, not_and, not_not]
     by_cases h : f (x.coeff gh.1) = 0
     · exact mul_eq_zero_of_left h (f (y.coeff gh.2))
     · exact mul_eq_zero_of_right (f (x.coeff gh.1)) (hz h)
@@ -453,8 +449,7 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ�
   · simp only [hx, zero_mul]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
-    simp only [notMem_empty, not_and, Set.mem_singleton_iff,
-      mem_antidiagonal, iff_false]
+    simp only [notMem_empty, not_and, Set.mem_singleton_iff, mem_antidiagonal, iff_false]
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx
     exact h2 hx

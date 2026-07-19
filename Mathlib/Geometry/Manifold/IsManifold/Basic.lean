@@ -748,8 +748,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
     e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
   obtain ⟨he, he_symm⟩ := he
   obtain ⟨he', he'_symm⟩ := he'
-  constructor <;> simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph,
-    contDiffPregroupoid]
+  constructor <;> simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph, contDiffPregroupoid]
   · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
@@ -951,8 +950,7 @@ lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
     e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
   simp only [mem_maximalAtlas_iff]
   rintro e'' ⟨f, hf, f', hf', rfl⟩
-  rw [OpenPartialHomeomorph.prod_symm_trans_prod,
-    OpenPartialHomeomorph.prod_symm_trans_prod]
+  rw [OpenPartialHomeomorph.prod_symm_trans_prod, OpenPartialHomeomorph.prod_symm_trans_prod]
   constructor <;>
     apply contDiffGroupoid_prod <;> grind [compatible_of_mem_maximalAtlas, subset_maximalAtlas]
 

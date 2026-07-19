@@ -176,11 +176,10 @@ lemma liftCycles_shift_homologyπ
         rw [← Int.units_mul_self n.negOnePow, mul_smul, comp_id, hf, smul_zero]) ≫
         K.homologyπ i' ≫
           ((HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftIso n i i' hi').inv.app K := by
-  simp only [liftCycles, homologyπ,
-    shiftFunctorObjXIso, Functor.shiftIso, Functor.ShiftSequence.shiftIso,
-    ShiftSequence.shiftIso_inv_app, ShortComplex.homologyπ_naturality,
-    ShortComplex.liftCycles_comp_cyclesMap_assoc, shiftShortComplexFunctorIso_inv_app_τ₂,
-    assoc, Iso.hom_inv_id, comp_id]
+  simp only [liftCycles, homologyπ, shiftFunctorObjXIso, Functor.shiftIso,
+    Functor.ShiftSequence.shiftIso, ShiftSequence.shiftIso_inv_app,
+    ShortComplex.homologyπ_naturality, ShortComplex.liftCycles_comp_cyclesMap_assoc,
+    shiftShortComplexFunctorIso_inv_app_τ₂, assoc, Iso.hom_inv_id, comp_id]
   rfl
 
 end CochainComplex

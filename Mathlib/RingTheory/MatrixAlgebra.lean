@@ -69,8 +69,7 @@ theorem kroneckerTMulAlgEquiv_symm_single_tmul
     (ia : l) (ja : m) (ib : n) (jb : p) (a : M) (b : N) :
     (kroneckerTMulLinearEquiv l m n p R S M N).symm (single (ia, ib) (ja, jb) (a ⊗ₜ b)) =
       single ia ja a ⊗ₜ single ib jb b := by
-  rw [LinearEquiv.symm_apply_eq, kroneckerTMulLinearEquiv_tmul,
-    single_kroneckerTMul_single]
+  rw [LinearEquiv.symm_apply_eq, kroneckerTMulLinearEquiv_tmul, single_kroneckerTMul_single]
 
 @[simp]
 theorem kroneckerTMulLinearEquiv_one [Module S A] [IsScalarTower R S A] :

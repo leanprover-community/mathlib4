@@ -60,8 +60,7 @@ lemma fibres_compl_eq_iUnion (π : T → S × Option X) (σ : Option X → S →
   ext x
   -- simp? says:
   simp only [Set.mem_compl_iff, mem_fibres_iff, not_or, not_exists, Set.mem_iUnion,
-    Set.mem_inter_iff, Set.mem_range, Set.mem_preimage, Function.comp_apply,
-    Set.mem_singleton_iff]
+    Set.mem_inter_iff, Set.mem_range, Set.mem_preimage, Function.comp_apply, Set.mem_singleton_iff]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun ⟨n, hn, hn'⟩ ↦ ?_⟩
   · obtain ⟨n, hn⟩ := Option.ne_none_iff_exists'.mp h₁
     exact ⟨n, h₂ n, hn⟩
@@ -234,9 +233,8 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
           ((pullback.snd _ _) ≫ LightProfinite.fibreIncl _ _)
           (by simp [pullback.condition]))).val := rfl
     -- simp? [this, ← Functor.map_comp] says:
-    simp only [this, pair_obj_left, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
-      IsColimit.fac, BinaryCofan.mk_inr, ← Functor.map_comp,
-      pullback.lift_fst, IsColimit.fac_assoc, assoc,
+    simp only [this, pair_obj_left, pair_obj_right, BinaryCofan.IsColimit.desc'_coe, IsColimit.fac,
+      BinaryCofan.mk_inr, ← Functor.map_comp, pullback.lift_fst, IsColimit.fac_assoc, assoc,
       pullback.lift_snd]
     -- simp? [-Functor.map_comp, ← assoc, hr] says:
     simp only [← assoc, hr, id_comp, sub_self, zero_add]

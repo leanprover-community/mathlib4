@@ -167,8 +167,7 @@ def sheafComposeNatTrans :
   app P := (adj₂.homEquiv _ _).symm (whiskerRight (adj₁.unit.app P) F)
   naturality {P Q} f := by
     dsimp
-    erw [← adj₂.homEquiv_naturality_left_symm,
-      ← adj₂.homEquiv_naturality_right_symm]
+    erw [← adj₂.homEquiv_naturality_left_symm, ← adj₂.homEquiv_naturality_right_symm]
     congr 1
     ext X
     have := NatTrans.congr_app (adj₁.unit.naturality f) X
@@ -197,13 +196,11 @@ lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
 set_option backward.isDefEq.respectTransparency false in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions_of_hasSheafCompose :
     J.PreservesSheafification F ↔ IsIso (sheafComposeNatTrans J F adj₁ adj₂) := by
-  rw [J.preservesSheafification_iff_of_adjunctions F adj₁ adj₂,
-    NatTrans.isIso_iff_isIso_app]
+  rw [J.preservesSheafification_iff_of_adjunctions F adj₁ adj₂, NatTrans.isIso_iff_isIso_app]
   apply forall_congr'
   intro P
   rw [← J.W_iff_isIso_map_of_adjunction adj₂, ← J.W_sheafToPresheaf_map_iff_isIso,
-    ← sheafComposeNatTrans_fac J F adj₁ adj₂,
-    (W _).precomp_iff _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
+    ← sheafComposeNatTrans_fac J F adj₁ adj₂, (W _).precomp_iff _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
 
 variable [J.PreservesSheafification F]
 

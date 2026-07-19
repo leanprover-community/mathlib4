@@ -85,8 +85,7 @@ instance [MvQPF F] [∀ i, MvQPF <| G i] : MvQPF (Comp F G) where
     intros
     simp only [(· ∘ ·)]
     rw [← abs_map]
-    simp +unfoldPartialApp only [comp.get_map, map_map, TypeVec.comp,
-      abs_map, map_mk]
+    simp +unfoldPartialApp only [comp.get_map, map_map, TypeVec.comp, abs_map, map_mk]
 
 end Comp
 

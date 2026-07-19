@@ -460,8 +460,7 @@ instance IsGLPos.instSMul : SMul α (CuspForm Γ k) where smul c f :=
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
-        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f,
-        smul_slash]
+        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
 @[simp]

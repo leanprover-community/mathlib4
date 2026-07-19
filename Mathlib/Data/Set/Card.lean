@@ -1266,8 +1266,7 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
     convert! Iff.rfl using 2; simp only [Finite.mem_toFinset]
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
-  simp only [ht.ncard, add_eq_zero, and_false, iff_false, not_exists, not_and,
-    reduceCtorEq]
+  simp only [ht.ncard, add_eq_zero, and_false, iff_false, not_exists, not_and, reduceCtorEq]
   rintro x - rfl
   exact ht (hs.insert x)
 

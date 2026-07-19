@@ -357,8 +357,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     · intro h
       apply_fun (d.compl i).equiv at h
       simp only [Prod.ext_iff, equiv_one (d.compl i) (one_mem _) (d.one_mem _),
-        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff,
-        Prod.ext_iff] at h
+        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff, Prod.ext_iff] at h
       rcases h with ⟨h₁, h₂⟩
       rw [h₂, coe_mul, ((d.compl i).coe_equiv_fst_eq_one_iff_mem (one_mem _)).mpr (d.one_mem _),
         mul_one, Subtype.coe_mk, map_eq_one_iff (φ i) (d.injective i)] at h₁
@@ -408,9 +407,8 @@ theorem rcons_injective {i : ι} : Function.Injective (rcons (d := d) i) := by
   simp only [rcons, NormalWord.mk.injEq, EmbeddingLike.apply_eq_iff_eq,
     Word.Pair.mk.injEq, Pair.mk.injEq, and_imp]
   rintro h₁ rfl h₃
-  rw [← equiv_fst_mul_equiv_snd (d.compl i) head₁,
-      ← equiv_fst_mul_equiv_snd (d.compl i) head₂,
-    h₁, h₃]
+  rw [← equiv_fst_mul_equiv_snd (d.compl i) head₁, ← equiv_fst_mul_equiv_snd (d.compl i) head₂, h₁,
+      h₃]
   simp
 
 /-- The equivalence between `NormalWord`s and pairs. We can turn a `NormalWord` into a
@@ -428,10 +426,9 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   haveI leftInv : Function.LeftInverse (rcons i) toFun :=
     fun w => ext_smul i <| by
-      simp only [toFun, rcons, Word.equivPair_symm,
-        Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul,
-        MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
-        mul_smul, inv_smul_smul, smul_inv_smul]
+      simp only [toFun, rcons, Word.equivPair_symm, Word.equivPair_smul_same,
+        Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul, MonoidHom.apply_ofInjective_symm,
+        equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, smul_inv_smul]
   { toFun := toFun
     invFun := rcons i
     left_inv := leftInv
@@ -671,14 +668,11 @@ theorem inf_of_range_eq_base_range
         exact hx (of_apply_eq_base φ j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
       have hw : Reduced φ w := by
-        simp only [w, Reduced, List.mem_cons,
-          forall_eq_or_imp, not_false_eq_true,
-          hg₁r, hg₂r, List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true,
-          inv_mem_iff]
+        simp only [w, Reduced, List.mem_cons, forall_eq_or_imp, not_false_eq_true, hg₁r, hg₂r,
+          List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true, inv_mem_iff]
       have := hw.eq_empty_of_mem_range hφ (by
-        simp only [w, Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
-          List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, mul_one,
-          mul_inv_cancel, one_mem])
+        simp only [w, Word.prod, List.map_cons, List.prod_cons, List.prod_nil, List.map_nil,
+          map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, mul_one, mul_inv_cancel, one_mem])
       simp [w, Word.empty] at this)
     (le_inf
       (by rw [← of_comp_eq_base i]

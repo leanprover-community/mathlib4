@@ -98,7 +98,6 @@ is equal to `g (f^[n] x) - g x`. -/
 theorem birkhoffSum_apply_sub_birkhoffSum (f : α → α) (g : α → G) (n : ℕ) (x : α) :
     birkhoffSum f g n (f x) - birkhoffSum f g n x = g (f^[n] x) - g x := by
   rw [← sub_eq_iff_eq_add.2 (birkhoffSum_succ f g n x),
-    ← sub_eq_iff_eq_add.2 (birkhoffSum_succ' f g n x),
-    ← sub_add, ← sub_add, sub_add_comm]
+    ← sub_eq_iff_eq_add.2 (birkhoffSum_succ' f g n x), ← sub_add, ← sub_add, sub_add_comm]
 
 end AddCommGroup

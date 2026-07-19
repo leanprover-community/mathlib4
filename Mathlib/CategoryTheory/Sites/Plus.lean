@@ -240,8 +240,7 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   congr 1
   refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
   erw [Multiequalizer.lift_ι]
-  simp only [unop_op, op_unop, diagram_map, Category.assoc, limit.lift_π,
-    Multifork.ofι_π_app]
+  simp only [unop_op, op_unop, diagram_map, Category.assoc, limit.lift_π, Multifork.ofι_π_app]
   let ee : (J.pullback (I.map e).f).obj S.unop ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   erw [← colimit.w _ ee.op, ι_colimMap_assoc, colimit.ι_pre, diagramPullback_app,
     ← Category.assoc, ← Category.assoc]

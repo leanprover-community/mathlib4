@@ -480,8 +480,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
       intro y hy
       have : v.limRatioMeas hρ y = ∞ := hy.1
       simp only [this, ENNReal.coe_lt_top, mem_ofPred_eq]
-    · simp only [(zero_lt_one.trans_le hq).ne', true_or, ENNReal.coe_eq_zero, Ne,
-        not_false_iff]
+    · simp only [(zero_lt_one.trans_le hq).ne', true_or, ENNReal.coe_eq_zero, Ne, not_false_iff]
   have B : Tendsto (fun q : ℝ≥0 => (q : ℝ≥0∞)⁻¹ * ρ s) atTop (𝓝 (∞⁻¹ * ρ s)) := by
     apply ENNReal.Tendsto.mul_const _ (Or.inr ρs)
     exact tendsto_inv_iff.2 (ENNReal.tendsto_coe_nhds_top.2 tendsto_id)

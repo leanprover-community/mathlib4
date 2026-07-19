@@ -184,8 +184,7 @@ theorem gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : Group.IsSolvable (X ^ n -
     apply gal_X_pow_sub_C_isSolvable_aux
     rw [map_id]
     have key := SplittingField.splits (X ^ n - 1 : F[X])
-    rwa [Polynomial.map_sub, Polynomial.map_pow, map_X,
-      Polynomial.map_one] at key
+    rwa [Polynomial.map_sub, Polynomial.map_pow, map_X, Polynomial.map_one] at key
 
 end GalXPowSubC
 

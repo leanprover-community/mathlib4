@@ -79,9 +79,8 @@ lemma mk₀_id_comp (m₀ : M) (hm₀ : m₀ = 0) {a : M} (f : ShiftedHom X Y a)
 lemma comp_mk₀ {a : M} (f : ShiftedHom X Y a) (m₀ : M) (hm₀ : m₀ = 0) (g : Y ⟶ Z) :
     f.comp (mk₀ m₀ hm₀ g) (by rw [hm₀, zero_add]) = f ≫ g⟦a⟧' := by
   subst hm₀
-  simp only [comp, shiftFunctorAdd'_zero_add_inv_app, mk₀, shiftFunctorZero',
-    eqToIso_refl, Iso.refl_trans, ← Functor.map_comp, assoc, Iso.inv_hom_id_app,
-    Functor.id_obj, comp_id]
+  simp only [comp, shiftFunctorAdd'_zero_add_inv_app, mk₀, shiftFunctorZero', eqToIso_refl,
+    Iso.refl_trans, ← Functor.map_comp, assoc, Iso.inv_hom_id_app, Functor.id_obj, comp_id]
 
 @[simp]
 lemma comp_mk₀_id {a : M} (f : ShiftedHom X Y a) (m₀ : M) (hm₀ : m₀ = 0) :
@@ -185,8 +184,7 @@ lemma map_naturality {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (τ : F ⟶ 
     [F.CommShift M] [G.CommShift M] [NatTrans.CommShift τ M] :
     (f.map F).comp (mk₀ 0 rfl (τ.app Y)) (zero_add _) =
       (mk₀ 0 rfl (τ.app X)).comp (f.map G) (add_zero _) := by
-  rw [comp_mk₀, mk₀_comp, map, map, Category.assoc, ← τ.naturality_assoc,
-    τ.shift_app_comm a]
+  rw [comp_mk₀, mk₀_comp, map, map, Category.assoc, ← τ.naturality_assoc, τ.shift_app_comm a]
 
 @[simp]
 lemma map_naturality_1

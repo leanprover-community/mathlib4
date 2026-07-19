@@ -176,26 +176,22 @@ theorem models_sentence_iff {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
 
 protected theorem all {φ ψ : L.BoundedFormula α (n + 1)}
     (h : φ ⇔[T] ψ) : φ.all ⇔[T] ψ.all := by
-  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_all]
+  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff, BoundedFormula.realize_all]
   exact fun M v xs => forall_congr' fun a => h.realize_bd_iff
 
 protected theorem ex {φ ψ : L.BoundedFormula α (n + 1)} (h : φ ⇔[T] ψ) :
     φ.ex ⇔[T] ψ.ex := by
-  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_ex]
+  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff, BoundedFormula.realize_ex]
   exact fun M v xs => exists_congr fun a => h.realize_bd_iff
 
 protected theorem not {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
     φ.not ⇔[T] ψ.not := by
-  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_not]
+  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff, BoundedFormula.realize_not]
   exact fun M v xs => not_congr h.realize_bd_iff
 
 protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ.imp φ') ⇔[T] (ψ.imp ψ') := by
-  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_imp]
+  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff, BoundedFormula.realize_imp]
   exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
 
 end Iff

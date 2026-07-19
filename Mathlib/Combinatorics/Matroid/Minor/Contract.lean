@@ -195,10 +195,9 @@ lemma Indep.union_isBasis_union_of_contract_isBasis (hI : M.Indep I) (hB : (M �
 lemma IsBasis'.contract_isBasis'_sdiff_sdiff_of_subset (hIX : M.IsBasis' I X) (hJI : J ⊆ I) :
     (M ／ J).IsBasis' (I \ J) (X \ J) := by
   suffices ∀ ⦃K⦄, Disjoint K J → M.Indep (K ∪ J) → K ⊆ X → I ⊆ K ∪ J → K ⊆ I by
-    simpa +contextual [IsBasis', (hIX.indep.subset hJI).contract_indep_iff,
-      subset_sdiff, maximal_subset_iff, disjoint_sdiff_left,
-      union_eq_self_of_subset_right hJI, hIX.indep, sdiff_subset.trans hIX.subset,
-      sdiff_subset_iff, subset_antisymm_iff, union_comm J]
+    simpa +contextual [IsBasis', (hIX.indep.subset hJI).contract_indep_iff, subset_sdiff,
+      maximal_subset_iff, disjoint_sdiff_left, union_eq_self_of_subset_right hJI, hIX.indep,
+      sdiff_subset.trans hIX.subset, sdiff_subset_iff, subset_antisymm_iff, union_comm J]
   exact fun K hJK hKJi hKX hIJK ↦ by
     simp [hIX.eq_of_subset_indep hKJi hIJK (union_subset hKX (hJI.trans hIX.subset))]
 
@@ -333,8 +332,7 @@ lemma Indep.of_contract (hI : (M ／ C).Indep I) : M.Indep I :=
 lemma Dep.of_contract (h : (M ／ C).Dep X) (hC : C ⊆ M.E := by aesop_mat) : M.Dep (C ∪ X) := by
   rw [Dep, and_iff_left (union_subset hC (h.subset_ground.trans sdiff_subset))]
   intro hi
-  rw [Dep, (hi.subset subset_union_left).contract_indep_iff, union_comm,
-    and_iff_left hi] at h
+  rw [Dep, (hi.subset subset_union_left).contract_indep_iff, union_comm, and_iff_left hi] at h
   exact h.1 (subset_sdiff.1 h.2).2
 
 /-! ### Finiteness -/

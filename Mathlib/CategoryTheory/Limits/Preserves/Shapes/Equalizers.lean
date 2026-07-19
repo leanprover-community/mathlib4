@@ -199,8 +199,7 @@ instance map_π_epi : Epi (G.map (coequalizer.π f g)) :=
 theorem map_π_preserves_coequalizer_inv :
     G.map (coequalizer.π f g) ≫ (PreservesCoequalizer.iso G f g).inv =
       coequalizer.π (G.map f) (G.map g) := by
-  rw [← ι_comp_coequalizerComparison_assoc, ← PreservesCoequalizer.iso_hom, Iso.hom_inv_id,
-    comp_id]
+  rw [← ι_comp_coequalizerComparison_assoc, ← PreservesCoequalizer.iso_hom, Iso.hom_inv_id, comp_id]
 
 @[reassoc]
 theorem map_π_preserves_coequalizer_inv_desc {W : D} (k : G.obj Y ⟶ W)

@@ -72,8 +72,7 @@ variable {F R : Type*} [CommRing F] [Nontrivial F] [Fintype F] [DecidableEq F] [
 can be written as a sum over `F \ {0,1}`. -/
 lemma jacobiSum_eq_sum_sdiff (χ ψ : MulChar F R) :
     jacobiSum χ ψ = ∑ x ∈ univ \ {0,1}, χ x * ψ (1 - x) := by
-  simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, left_eq_add,
-    neg_eq_zero]
+  simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, left_eq_add, neg_eq_zero]
   apply sum_eq_zero
   simp only [mem_insert, mem_singleton, forall_eq_or_imp, χ.map_zero, neg_zero, add_zero, map_one,
     mul_one, forall_eq, add_neg_cancel, ψ.map_zero, mul_zero, and_self]
@@ -127,9 +126,8 @@ theorem jacobiSum_one_nontrivial {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
   classical
   have : ∑ x ∈ univ \ {0, 1}, ((1 : MulChar F R) x - 1) * (χ (1 - x) - 1) = 0 := by
     apply Finset.sum_eq_zero
-    simp +contextual only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
-      not_or, ← isUnit_iff_ne_zero, true_and, MulChar.one_apply, sub_self, zero_mul,
-      implies_true]
+    simp +contextual only [mem_sdiff, mem_univ, mem_insert, mem_singleton, not_or,
+      ← isUnit_iff_ne_zero, true_and, MulChar.one_apply, sub_self, zero_mul, implies_true]
   simp only [jacobiSum_eq_aux, MulChar.sum_one_eq_card_units, MulChar.sum_eq_zero_of_ne_one hχ,
     add_zero, Fintype.card_eq_card_units_add_one (α := F), Nat.cast_add, Nat.cast_one,
     sub_add_cancel_left, this]

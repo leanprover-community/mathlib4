@@ -63,8 +63,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     (IsLocalRing.maximalIdeal R).height ≤ 1 := by
   refine Ideal.height_le_iff.mpr fun q h₁ h₂ ↦ ?_
   suffices q.height = 0 by rw [this]; exact zero_lt_one
-  rw [← WithBot.coe_inj,
-    ← IsLocalization.AtPrime.ringKrullDim_eq_height q (Localization.AtPrime q),
+  rw [← WithBot.coe_inj, ← IsLocalization.AtPrime.ringKrullDim_eq_height q (Localization.AtPrime q),
     WithBot.coe_zero, ← ringKrullDimZero_iff_ringKrullDim_eq_zero,
     ← isArtinianRing_iff_krullDimLE_zero, isArtinianRing_iff_isNilpotent_maximalIdeal,
     ← Localization.AtPrime.map_eq_maximalIdeal]

@@ -50,8 +50,7 @@ lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
     ((ShiftedHom.opEquiv a).symm f).comp z h =
       (ShiftedHom.opEquiv a).symm (z.op ≫ f) ≫
         (shiftFunctorAdd' C b a c h).inv.app Z := by
-  rw [ShiftedHom.opEquiv_symm_apply, ShiftedHom.opEquiv_symm_apply,
-    ShiftedHom.comp]
+  rw [ShiftedHom.opEquiv_symm_apply, ShiftedHom.opEquiv_symm_apply, ShiftedHom.comp]
   dsimp
   simp only [assoc, Functor.map_comp]
 
@@ -65,14 +64,12 @@ lemma opEquiv_symm_comp {a b : ℤ}
   rw [opEquiv_symm_apply, opEquiv_symm_apply,
     opShiftFunctorEquivalence_add_unitIso_inv_app_eq _ _ _ _ (show a + b = c by lia), comp, comp]
   dsimp
-  rw [assoc, assoc, assoc, assoc, ← Functor.map_comp, ← unop_comp_assoc,
-    Iso.inv_hom_id_app]
+  rw [assoc, assoc, assoc, assoc, ← Functor.map_comp, ← unop_comp_assoc, Iso.inv_hom_id_app]
   dsimp
   rw [assoc, id_comp, Functor.map_comp, ← NatTrans.naturality_assoc,
     ← NatTrans.naturality, opEquiv_symm_apply]
   dsimp
-  rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
-    ← Functor.map_comp_assoc]
+  rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
   rw [← unop_comp_assoc]
   erw [← NatTrans.naturality]
   rfl

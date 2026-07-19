@@ -267,8 +267,7 @@ theorem cond_mul_eq_inter (hms : MeasurableSet s) (t : Set Ω) (μ : Measure Ω)
 /-- A version of the law of total probability. -/
 theorem cond_add_cond_compl_eq (hms : MeasurableSet s) (μ : Measure Ω) [IsFiniteMeasure μ] :
     μ[t | s] * μ s + μ[t | sᶜ] * μ sᶜ = μ t := by
-  rw [cond_mul_eq_inter hms, cond_mul_eq_inter hms.compl, Set.inter_comm _ t,
-    Set.inter_comm _ t]
+  rw [cond_mul_eq_inter hms, cond_mul_eq_inter hms.compl, Set.inter_comm _ t, Set.inter_comm _ t]
   exact measure_inter_add_sdiff t hms
 
 /-- **Bayes' Theorem** -/

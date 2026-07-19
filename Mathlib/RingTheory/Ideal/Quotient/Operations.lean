@@ -476,9 +476,8 @@ def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : �
       I (f : A →+* B) hI with
     commutes' := fun r => by
       have : algebraMap R₁ (A ⧸ I) r = Ideal.Quotient.mk I (algebraMap R₁ A r) := rfl
-      rw [this, RingHom.toFun_eq_coe, Ideal.Quotient.lift_mk,
-        AlgHom.coe_toRingHom, Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one,
-        map_smul, map_one] }
+      rw [this, RingHom.toFun_eq_coe, Ideal.Quotient.lift_mk, AlgHom.coe_toRingHom,
+        Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
 @[simp]
 theorem Quotient.liftₐ_apply (I : Ideal A) [I.IsTwoSided]

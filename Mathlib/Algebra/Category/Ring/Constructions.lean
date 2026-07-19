@@ -433,8 +433,7 @@ instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat
   refine Limits.π_isLocalHom _ (limit.isLimit _) (op one) fun x hx i ↦ ?_
   rcases i with _ | _
   · refine ⟨op zero, 𝟙 _, op left, inferInstance, ?_⟩
-    simp only [CategoryTheory.Functor.map_id, hom_id, limit.cone_x, limit.cone_π,
-      RingHom.id_apply]
+    simp only [CategoryTheory.Functor.map_id, hom_id, limit.cone_x, limit.cone_π, RingHom.id_apply]
     exact (limit.w_apply F (op left) x).symm
   · exact ⟨op one, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
 

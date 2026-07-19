@@ -268,8 +268,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert! I.mul_mem_left (star g) hI
       ext
-      simp only [comp_apply, coe_mk, algebraMapCLM_apply, map_pow,
-        mul_apply, star_apply, star_def]
+      simp only [comp_apply, coe_mk, algebraMapCLM_apply, map_pow, mul_apply, star_apply, star_def]
       simp only [RCLike.conj_mul]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and

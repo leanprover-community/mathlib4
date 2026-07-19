@@ -154,9 +154,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
   simp only [assoc, Iso.unop_hom_inv_id_app_assoc] at hc₂
   refine ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj ?_⟩
   apply (shiftFunctor C (1 : ℤ)).map_injective
-  rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp,
-    Quiver.Hom.unop_op, hc₂, ← unop_comp_assoc, ← unop_comp_assoc,
-    ← opShiftFunctorEquivalence_unitIso_inv_naturality]
+  rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp, Quiver.Hom.unop_op, hc₂,
+    ← unop_comp_assoc, ← unop_comp_assoc, ← opShiftFunctorEquivalence_unitIso_inv_naturality]
   simp
 
 /-- The pretriangulated structure on the opposite category of

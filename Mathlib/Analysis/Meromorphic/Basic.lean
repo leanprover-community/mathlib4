@@ -482,8 +482,7 @@ theorem congr_codiscreteWithin_of_eqOn_compl (hf : MeromorphicOn f U)
     MeromorphicOn g U := by
   intro x hx
   apply (hf x hx).congr
-  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
-    disjoint_principal_right] at h₁
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin, disjoint_principal_right] at h₁
   filter_upwards [h₁ x hx] with a ha
   simp at ha
   tauto
@@ -497,8 +496,7 @@ theorem congr_codiscreteWithin (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscret
     MeromorphicOn g U := by
   intro x hx
   apply (hf x hx).congr
-  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
-    disjoint_principal_right] at h₁
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin, disjoint_principal_right] at h₁
   have : U ∈ 𝓝[≠] x := by
     apply mem_nhdsWithin.mpr
     use U, h₂, hx, Set.inter_subset_left

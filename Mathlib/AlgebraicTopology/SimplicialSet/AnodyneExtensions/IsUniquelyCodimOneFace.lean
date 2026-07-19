@@ -90,8 +90,7 @@ include hxy in
 lemma le : x ≤ y := by
   have := hxy.δ_index rfl
   simp only [cast_simplex_rfl] at this
-  rw [S.le_def, ← y.subcomplex_cast hxy.dim_eq, Subfunctor.ofSection_le_iff,
-    ← this]
+  rw [S.le_def, ← y.subcomplex_cast hxy.dim_eq, Subfunctor.ofSection_le_iff, ← this]
   exact ⟨(SimplexCategory.δ _).op, rfl⟩
 
 set_option backward.defeqAttrib.useBackward true in
@@ -137,8 +136,7 @@ lemma index_of_iso {Y : SSet.{u}} (e : X ≅ Y) {d : ℕ} (hd : x.dim = d) :
   obtain rfl : dy = dx + 1 := hxy.dim_eq
   obtain rfl : dx = d := hd
   symm
-  simp [← (hxy.of_iso e).δ_eq_iff rfl,
-    ← SSet.δ_naturality_apply, dsimp% hxy.δ_index rfl]
+  simp [← (hxy.of_iso e).δ_eq_iff rfl, ← SSet.δ_naturality_apply, dsimp% hxy.δ_index rfl]
 
 end IsUniquelyCodimOneFace
 

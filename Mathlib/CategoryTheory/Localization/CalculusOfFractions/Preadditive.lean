@@ -113,9 +113,8 @@ lemma neg'_eq (f : L.obj X ⟶ L.obj Y) (φ : W.LeftFraction X Y)
   have := inverts L W _ ht
   rw [← cancel_mono (L.map (φ₀.s ≫ t₁))]
   nth_rw 1 [L.map_comp]
-  rw [hφ₀, hst, LeftFraction.map_comp_map_s_assoc, L.map_comp,
-    LeftFraction.map_comp_map_s_assoc, ← L.map_comp, ← L.map_comp,
-    neg_comp, neg_comp, hft]
+  rw [hφ₀, hst, LeftFraction.map_comp_map_s_assoc, L.map_comp, LeftFraction.map_comp_map_s_assoc,
+    ← L.map_comp, ← L.map_comp, neg_comp, neg_comp, hft]
 
 /-- The addition of two maps `L.obj X ⟶ L.obj Y` when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
@@ -137,9 +136,8 @@ lemma add'_eq (f₁ f₂ : L.obj X ⟶ L.obj Y) (φ : W.LeftFraction₂ X Y)
   have := inverts L W _ ht
   rw [hφ₀, ← cancel_mono (L.map (φ₀.s ≫ t₁))]
   nth_rw 2 [hst]
-  rw [L.map_comp, L.map_comp, LeftFraction.map_comp_map_s_assoc,
-    LeftFraction.map_comp_map_s_assoc, ← L.map_comp, ← L.map_comp,
-    add_comp, add_comp, hft, hft']
+  rw [L.map_comp, L.map_comp, LeftFraction.map_comp_map_s_assoc, LeftFraction.map_comp_map_s_assoc,
+    ← L.map_comp, ← L.map_comp, add_comp, add_comp, hft, hft']
 
 lemma add'_comm (f₁ f₂ : L.obj X ⟶ L.obj Y) :
     add' W f₁ f₂ = add' W f₂ f₁ := by
@@ -150,8 +148,7 @@ lemma add'_zero (f : L.obj X ⟶ L.obj Y) :
     add' W f (L.map 0) = f := by
   obtain ⟨α, hα⟩ := exists_leftFraction L W f
   rw [add'_eq W f (L.map 0) (LeftFraction₂.mk α.f 0 α.s α.hs) hα, hα]; swap
-  · rw [← cancel_mono (L.map α.s), ← L.map_comp, Limits.zero_comp,
-      LeftFraction.map_comp_map_s]
+  · rw [← cancel_mono (L.map α.s), ← L.map_comp, Limits.zero_comp, LeftFraction.map_comp_map_s]
   dsimp [LeftFraction₂.add]
   rw [add_zero]
 

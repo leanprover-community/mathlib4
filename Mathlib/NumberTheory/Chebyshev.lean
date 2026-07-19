@@ -548,8 +548,7 @@ private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) :
   | zero => simp
   | succ N ih =>
     rw [show 1 + 6 * (N + 1) = (1 + 6 * N) + 1 + 1 + 1 + 1 + 1 + 1 by ring,
-      show 3 * (N + 1) = 3 * N + 1 + 1 + 1 by ring,
-      show 2 * (N + 1) = 2 * N + 1 + 1 by ring]
+      show 3 * (N + 1) = 3 * N + 1 + 1 + 1 by ring, show 2 * (N + 1) = 2 * N + 1 + 1 by ring]
     simp only [le_add_iff_nonneg_left, _root_.zero_le, sum_Icc_succ_top, ih, c]
     rw [show 6 * (N + 1) - 1 = 6 * N + 5 by lia]
     ring_nf

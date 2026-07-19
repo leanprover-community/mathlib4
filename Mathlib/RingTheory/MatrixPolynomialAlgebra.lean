@@ -77,8 +77,7 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
   apply (polyEquivTensor R (Matrix n n R)).injective
   simp only [AlgEquiv.apply_symm_apply, Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
-  simp only [one_pow,
-    Algebra.TensorProduct.tmul_pow]
+  simp only [one_pow, Algebra.TensorProduct.tmul_pow]
   rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
   congr with i' <;> simp [single]
 

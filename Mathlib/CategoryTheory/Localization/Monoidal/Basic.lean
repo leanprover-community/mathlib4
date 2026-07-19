@@ -359,9 +359,8 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
           (α_ ((L').obj X₁) ((L').obj (X₂ ⊗ X₃)) ((L').obj X₄)).hom :=
     pentagon_aux₂ _ _ _ (μ L W ε X₂ X₃).symm
   rw [associator_hom_app, tensorHom_id, id_tensorHom, associator_hom_app, tensorHom_id,
-    whiskerLeft_comp, whiskerRight_comp, whiskerRight_comp, whiskerRight_comp, assoc, assoc,
-    assoc, whiskerRight_comp, assoc,
-    reassoc_of% this, associator_hom_app, tensorHom_id,
+    whiskerLeft_comp, whiskerRight_comp, whiskerRight_comp, whiskerRight_comp, assoc, assoc, assoc,
+    whiskerRight_comp, assoc, reassoc_of% this, associator_hom_app, tensorHom_id,
     ← pentagon_aux₁ (X₂ := (L').obj X₃) (X₃ := (L').obj X₄) (i := μ L W ε X₁ X₂),
     ← pentagon_aux₃ (X₁ := (L').obj X₁) (X₂ := (L').obj X₂) (i := μ L W ε X₃ X₄),
     associator_hom_app, associator_hom_app]
@@ -372,9 +371,8 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
     whiskerRight_comp_assoc]
   congr 3; simp only [← assoc]; congr
   simp only [← cancel_mono (μ L W ε (X₁ ⊗ X₂) (X₃ ⊗ X₄)).inv, assoc, id_comp,
-    whisker_exchange_assoc, ← whiskerRight_comp_assoc,
-    Iso.inv_hom_id, whiskerRight_id, ← whiskerLeft_comp,
-    whiskerLeft_id]
+    whisker_exchange_assoc, ← whiskerRight_comp_assoc, Iso.inv_hom_id, whiskerRight_id,
+    ← whiskerLeft_comp, whiskerLeft_id]
 
 lemma leftUnitor_naturality {X Y : LocalizedMonoidal L W ε} (f : X ⟶ Y) :
     𝟙_ (LocalizedMonoidal L W ε) ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
@@ -408,12 +406,10 @@ lemma triangle_aux₃ {X Y : LocalizedMonoidal L W ε} {X' Y' : C}
     (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) : (ρ_ X).hom ▷ _ =
       ((e₁.inv ⊗ₘ ε.inv) ⊗ₘ e₂.inv) ≫ _ ◁ e₂.hom ≫ ((μ L W ε X' (𝟙_ C)).hom ≫
         (L').map (ρ_ X').hom) ▷ Y ≫ e₁.hom ▷ Y := by
-  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp, assoc, comp_id,
-    id_comp, Iso.inv_hom_id]
+  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp, assoc, comp_id, id_comp, Iso.inv_hom_id]
   congr
-  rw [← cancel_mono e₁.inv, assoc, assoc, assoc, Iso.hom_inv_id, comp_id,
-    ← rightUnitor_naturality, rightUnitor_hom_app,
-    ← tensorHom_id, ← id_tensorHom, ← tensor_comp_assoc, comp_id, id_comp]
+  rw [← cancel_mono e₁.inv, assoc, assoc, assoc, Iso.hom_inv_id, comp_id, ← rightUnitor_naturality,
+    rightUnitor_hom_app, ← tensorHom_id, ← id_tensorHom, ← tensor_comp_assoc, comp_id, id_comp]
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable {L W ε} in
@@ -423,23 +419,20 @@ lemma triangle (X Y : LocalizedMonoidal L W ε) :
   obtain ⟨Y', ⟨e₂⟩⟩ : ∃ X₂, Nonempty ((L').obj X₂ ≅ Y) := ⟨_, ⟨(L').objObjPreimageIso Y⟩⟩
   have h₁ := (associator_hom_app L W ε X' (𝟙_ _) Y' =≫
     (𝟙 ((L').obj X') ⊗ₘ (μ L W ε (𝟙_ C) Y').hom))
-  simp only [assoc, id_tensorHom, ← whiskerLeft_comp,
-    Iso.inv_hom_id, whiskerLeft_id, comp_id, Iso.inv_hom_id,
-    ← cancel_mono (μ L W ε X' (𝟙_ C ⊗ Y')).hom] at h₁
+  simp only [assoc, id_tensorHom, ← whiskerLeft_comp, Iso.inv_hom_id, whiskerLeft_id, comp_id,
+    Iso.inv_hom_id, ← cancel_mono (μ L W ε X' (𝟙_ C ⊗ Y')).hom] at h₁
   have h₂ := (ε' L W ε).hom ▷ (L').obj Y' ≫= leftUnitor_hom_app L W ε Y'
   simp only [← whiskerRight_comp_assoc, Iso.hom_inv_id, whiskerRight_id, id_comp] at h₂
   have h₃ := (((μ L W ε _ _).hom ⊗ₘ 𝟙 _) ≫ (μ L W ε _ _).hom) ≫=
     ((L').congr_map (MonoidalCategory.triangle X' Y'))
   simp only [assoc, Functor.map_comp, ← reassoc_of% h₁] at h₃
-  rw [← μ_natural_left, tensorHom_id, ← whiskerRight_comp_assoc,
-    ← μ_natural_right, ← Iso.comp_inv_eq, assoc, assoc, assoc,
-    Iso.hom_inv_id, comp_id, ← whiskerLeft_comp, ← h₂] at h₃
+  rw [← μ_natural_left, tensorHom_id, ← whiskerRight_comp_assoc, ← μ_natural_right,
+    ← Iso.comp_inv_eq, assoc, assoc, assoc, Iso.hom_inv_id, comp_id, ← whiskerLeft_comp, ← h₂] at h₃
   replace h₃ := ((e₁.inv ⊗ₘ ε.inv) ⊗ₘ e₂.inv) ≫= (h₃ =≫ (_ ◁ e₂.hom)) =≫ (e₁.hom ▷ _)
   simp only [← whiskerLeft_comp, assoc, ← leftUnitor_naturality, ← whisker_exchange] at h₃
   have : _ = (α_ X (𝟙_ (LocalizedMonoidal L W ε)) Y).hom :=
     triangle_aux₁ _ _ _ e₁.symm ε.symm e₂.symm
-  simp only [← this, Iso.symm_hom, Iso.symm_inv, assoc,
-    ← id_tensorHom, ← tensor_comp, comp_id]
+  simp only [← this, Iso.symm_hom, Iso.symm_inv, assoc, ← id_tensorHom, ← tensor_comp, comp_id]
   convert! h₃
   · exact triangle_aux₂ _ _ _ e₁ e₂
   · exact triangle_aux₃ _ _ _ e₁ e₂

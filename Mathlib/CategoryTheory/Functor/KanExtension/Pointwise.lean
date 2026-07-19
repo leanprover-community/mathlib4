@@ -230,8 +230,7 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
       naturality := fun g₁ g₂ φ => by
         dsimp
         rw [← CostructuredArrow.w φ]
-        simp only [NatTrans.naturality_assoc, Functor.comp_map,
-          Functor.map_comp, comp_id] }
+        simp only [NatTrans.naturality_assoc, Functor.comp_map, Functor.map_comp, comp_id] }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -628,8 +627,7 @@ noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanEx
   app X := colimit.ι (CostructuredArrow.proj L (L.obj X) ⋙ F)
     (CostructuredArrow.mk (𝟙 (L.obj X)))
   naturality {X₁ X₂} f := by
-    simp only [comp_map,
-      pointwiseLeftKanExtension_map, colimit.ι_desc, CostructuredArrow.map_mk]
+    simp only [comp_map, pointwiseLeftKanExtension_map, colimit.ι_desc, CostructuredArrow.map_mk]
     rw [id_comp]
     let φ : CostructuredArrow.mk (L.map f) ⟶ CostructuredArrow.mk (𝟙 (L.obj X₂)) :=
       CostructuredArrow.homMk f
@@ -735,8 +733,7 @@ noncomputable def pointwiseRightKanExtensionCounit :
   app X := limit.π (StructuredArrow.proj (L.obj X) L ⋙ F)
     (StructuredArrow.mk (𝟙 (L.obj X)))
   naturality {X₁ X₂} f := by
-    simp only [comp_map,
-      pointwiseRightKanExtension_map, limit.lift_π, StructuredArrow.map_mk]
+    simp only [comp_map, pointwiseRightKanExtension_map, limit.lift_π, StructuredArrow.map_mk]
     rw [comp_id]
     let φ : StructuredArrow.mk (𝟙 (L.obj X₁)) ⟶ StructuredArrow.mk (L.map f) :=
       StructuredArrow.homMk f

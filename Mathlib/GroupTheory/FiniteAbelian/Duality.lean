@@ -196,9 +196,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff (Φ : Subgroup (G →* Mˣ)) (g : G) :
     g ∈ (subgroupOrderIsoSubgroupMonoidHom G M).symm (OrderDual.toDual Φ) ↔ ∀ φ ∈ Φ, φ g = 1 := by
   simp_rw [subgroupOrderIsoSubgroupMonoidHom, OrderIso.symm_mk, RelIso.coe_fn_mk,
-    Equiv.coe_fn_symm_mk, OrderDual.ofDual_toDual, MulEquiv.coe_mapSubgroup,
-    Subgroup.mem_map_equiv, mem_ker, restrictHom_apply, restrict_eq_one_iff,
-    monoidHomMonoidHomEquiv_symm_apply_apply]
+    Equiv.coe_fn_symm_mk, OrderDual.ofDual_toDual, MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv,
+    mem_ker, restrictHom_apply, restrict_eq_one_iff, monoidHomMonoidHomEquiv_symm_apply_apply]
 
 /-- The cardinality of the dual subgroup of `G →* Mˣ` associated to a subgroup `H` of `G`
 equals the index of `H` in `G`. -/

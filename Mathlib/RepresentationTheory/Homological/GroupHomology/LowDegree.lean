@@ -164,15 +164,13 @@ lemma d₂₁_single_one_snd (g : G) (a : A) :
 lemma d₂₁_single_inv_self_ρ_sub_self_inv (g : G) (a : A) :
     d₂₁ A (single (g⁻¹, g) (A.ρ g⁻¹ a) - single (g, g⁻¹) a) =
       single 1 a - single 1 (A.ρ g⁻¹ a) := by
-  simp only [map_sub, d₂₁_single (G := G), inv_inv, self_inv_apply, inv_mul_cancel,
-    mul_inv_cancel]
+  simp only [map_sub, d₂₁_single (G := G), inv_inv, self_inv_apply, inv_mul_cancel, mul_inv_cancel]
   abel
 
 lemma d₂₁_single_self_inv_ρ_sub_inv_self (g : G) (a : A) :
     d₂₁ A (single (g, g⁻¹) (A.ρ g a) - single (g⁻¹, g) a) =
       single 1 a - single 1 (A.ρ g a) := by
-  simp only [map_sub, d₂₁_single (G := G), inv_self_apply, mul_inv_cancel, inv_inv,
-    inv_mul_cancel]
+  simp only [map_sub, d₂₁_single (G := G), inv_self_apply, mul_inv_cancel, inv_inv, inv_mul_cancel]
   abel
 
 lemma d₂₁_single_ρ_add_single_inv_mul (g h : G) (a : A) :
@@ -282,9 +280,8 @@ where the vertical arrows are `chainsIso₃` and `chainsIso₂` respectively.
 theorem comp_d₃₂_eq :
     (chainsIso₃ A).hom ≫ d₃₂ A = (inhomogeneousChains A).d 3 2 ≫ (chainsIso₂ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [chainsIso₂, ChainComplex.of.d, pow_succ, chainsIso₃,
-      -domLCongr_apply, domLCongr_single, d₃₂, Fin.sum_univ_three,
-      Fin.contractNth, Fin.tail_def, sub_eq_add_neg, add_assoc,
+    simp [chainsIso₂, ChainComplex.of.d, pow_succ, chainsIso₃, -domLCongr_apply, domLCongr_single,
+      d₃₂, Fin.sum_univ_three, Fin.contractNth, Fin.tail_def, sub_eq_add_neg, add_assoc,
       inhomogeneousChains.d_single (G := G), add_rotate' (-(single (_ * _, _) _)),
       add_left_comm (single (_, _ * _) _)]
 
@@ -773,8 +770,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toCycles_comp_isoCycles₁_hom :
     toCycles A 2 1 ≫ (isoCycles₁ A).hom =
       (chainsIso₂ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.f' := by
-  simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₂₁_eq,
-    shortComplexH1_f]
+  simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₂₁_eq, shortComplexH1_f]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma cyclesMk₁_eq (x : cycles₁ A) :
@@ -825,8 +821,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toCycles_comp_isoCycles₂_hom :
     toCycles A 3 2 ≫ (isoCycles₂ A).hom =
       (chainsIso₃ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.f' := by
-  simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₃₂_eq,
-    shortComplexH2_f]
+  simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₃₂_eq, shortComplexH2_f]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma cyclesMk₂_eq (x : cycles₂ A) :

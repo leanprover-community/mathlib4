@@ -79,9 +79,8 @@ lemma eHomWhiskerRight_comp {X X' X'' : C} (f : X ⟶ X') (f' : X' ⟶ X'') (Y :
   dsimp [eHomWhiskerRight]
   rw [assoc, assoc, eHomEquiv_comp, comp_whiskerRight_assoc, comp_whiskerRight_assoc, ← e_assoc',
     tensorHom_def', comp_whiskerRight_assoc, id_whiskerLeft, comp_whiskerRight_assoc,
-    ← comp_whiskerRight_assoc, Iso.inv_hom_id, id_whiskerRight_assoc,
-    comp_whiskerRight_assoc, leftUnitor_inv_whiskerRight_assoc,
-    ← associator_inv_naturality_left_assoc, Iso.inv_hom_id_assoc,
+    ← comp_whiskerRight_assoc, Iso.inv_hom_id, id_whiskerRight_assoc, comp_whiskerRight_assoc,
+    leftUnitor_inv_whiskerRight_assoc, ← associator_inv_naturality_left_assoc, Iso.inv_hom_id_assoc,
     ← whisker_exchange_assoc, id_whiskerLeft_assoc, Iso.inv_hom_id_assoc]
 
 /-- Whiskering commutes with the enriched composition. -/
@@ -150,12 +149,11 @@ lemma eHom_whisker_exchange {X X' Y Y' : C} (f : X ⟶ X') (g : Y ⟶ Y') :
     eHomWhiskerLeft V X' g ≫ eHomWhiskerRight V f Y' =
       eHomWhiskerRight V f Y ≫ eHomWhiskerLeft V X g := by
   dsimp [eHomWhiskerLeft, eHomWhiskerRight]
-  rw [assoc, assoc, assoc, assoc, leftUnitor_inv_naturality_assoc,
-    whisker_exchange_assoc, ← e_assoc, leftUnitor_tensor_inv_assoc,
-    associator_inv_naturality_left_assoc, Iso.hom_inv_id_assoc,
-    ← comp_whiskerRight_assoc, whisker_exchange_assoc,
-    MonoidalCategory.whiskerRight_id_assoc, assoc, Iso.inv_hom_id_assoc,
-    whisker_exchange_assoc, MonoidalCategory.whiskerRight_id_assoc, Iso.inv_hom_id_assoc]
+  rw [assoc, assoc, assoc, assoc, leftUnitor_inv_naturality_assoc, whisker_exchange_assoc,
+    ← e_assoc, leftUnitor_tensor_inv_assoc, associator_inv_naturality_left_assoc,
+    Iso.hom_inv_id_assoc, ← comp_whiskerRight_assoc, whisker_exchange_assoc,
+    MonoidalCategory.whiskerRight_id_assoc, assoc, Iso.inv_hom_id_assoc, whisker_exchange_assoc,
+    MonoidalCategory.whiskerRight_id_assoc, Iso.inv_hom_id_assoc]
 
 attribute [local simp] eHom_whisker_exchange
 

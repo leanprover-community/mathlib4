@@ -170,9 +170,8 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
       norm_real, norm_of_nonneg zero_le_two, Real.norm_of_nonneg pi_pos.le, norm_I, mul_one,
       Real.norm_eq_abs, ← Int.cast_abs, ← Int.cast_pow]
     grw [ContinuousLinearMap.norm_fst_le, mul_one, ← Int.le_self_sq]
-  · simp_rw [hns, norm_mul, one_mul, norm_I, mul_one,
-      norm_real, norm_of_nonneg pi_pos.le, ← ofReal_intCast, ← ofReal_pow, norm_real,
-      Real.norm_eq_abs, Int.cast_abs, abs_pow]
+  · simp_rw [hns, norm_mul, one_mul, norm_I, mul_one, norm_real, norm_of_nonneg pi_pos.le,
+      ← ofReal_intCast, ← ofReal_pow, norm_real, Real.norm_eq_abs, Int.cast_abs, abs_pow]
     apply mul_le_of_le_one_right (mul_nonneg pi_pos.le (pow_nonneg (abs_nonneg _) _))
     exact ContinuousLinearMap.norm_snd_le ..
 
@@ -182,10 +181,9 @@ lemma norm_jacobiTheta₂_term_fderiv_ge (n : ℤ) (z τ : ℂ) :
     refine (ContinuousLinearMap.le_opNorm _ _).trans ?_
     simp_rw [Prod.norm_def, norm_one, norm_zero, max_eq_right zero_le_one, mul_one, le_refl]
   refine le_trans ?_ this
-  simp_rw [jacobiTheta₂_term_fderiv, jacobiTheta₂_term, FunLike.coe_smul',
-    Pi.smul_apply, add_apply, FunLike.coe_smul',
-    ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd', Pi.smul_apply, smul_zero, zero_add,
-    smul_eq_mul, mul_one, mul_comm _ ‖cexp _‖, norm_mul]
+  simp_rw [jacobiTheta₂_term_fderiv, jacobiTheta₂_term, FunLike.coe_smul', Pi.smul_apply, add_apply,
+    FunLike.coe_smul', ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd', Pi.smul_apply,
+    smul_zero, zero_add, smul_eq_mul, mul_one, mul_comm _ ‖cexp _‖, norm_mul]
   refine mul_le_mul_of_nonneg_left (le_of_eq ?_) (norm_nonneg _)
   simp_rw [norm_real, norm_of_nonneg pi_pos.le, norm_I, mul_one,
     Int.cast_abs, ← norm_intCast, norm_pow]
@@ -226,10 +224,9 @@ lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
     filter_upwards [this] with n hn
     rw [jacobiTheta₂'_term, norm_mul, ← mul_assoc]
     refine le_mul_of_one_le_left (norm_nonneg _) ?_
-    simp_rw [norm_mul, norm_I, norm_real, mul_one, norm_of_nonneg pi_pos.le,
-      ← ofReal_ofNat, norm_real, norm_of_nonneg two_pos.le, ← ofReal_intCast, norm_real,
-      Real.norm_eq_abs, ← Int.cast_abs, ← mul_assoc _ (2 * π),
-      inv_mul_cancel₀ (mul_pos two_pos pi_pos).ne', one_mul]
+    simp_rw [norm_mul, norm_I, norm_real, mul_one, norm_of_nonneg pi_pos.le, ← ofReal_ofNat,
+      norm_real, norm_of_nonneg two_pos.le, ← ofReal_intCast, norm_real, Real.norm_eq_abs,
+      ← Int.cast_abs, ← mul_assoc _ (2 * π), inv_mul_cancel₀ (mul_pos two_pos pi_pos).ne', one_mul]
     rw [← Int.cast_one, Int.cast_le]
     exact Int.one_le_abs hn
   · refine fun hτ ↦ ((summable_pow_mul_jacobiTheta₂_term_bound

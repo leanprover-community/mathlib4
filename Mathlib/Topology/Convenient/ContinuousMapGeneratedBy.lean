@@ -48,8 +48,7 @@ lemma continuousGeneratedBy_iff (g : Y → Z) :
     ContinuousGeneratedBy X g ↔
       Continuous ((WithGeneratedByTopology.equiv (X := X)).symm ∘ g ∘
         WithGeneratedByTopology.equiv (X := X)) := by
-  rw [IsGeneratedBy.equiv_symm_comp_continuous_iff,
-    WithGeneratedByTopology.continuous_from_iff]
+  rw [IsGeneratedBy.equiv_symm_comp_continuous_iff, WithGeneratedByTopology.continuous_from_iff]
   rfl
 
 /-- A `X`-continuous map `g : Y → Z` induces a continuous map

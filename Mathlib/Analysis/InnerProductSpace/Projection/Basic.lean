@@ -209,8 +209,7 @@ alias orthogonalProjection_orthogonal := orthogonalProjectionOnto_orthogonal
 lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
   ext
-  simp only [starProjection, ContinuousLinearMap.comp_apply,
-    orthogonalProjectionOnto_orthogonal]
+  simp only [starProjection, ContinuousLinearMap.comp_apply, orthogonalProjectionOnto_orthogonal]
   simp
 
 lemma starProjection_orthogonal' (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :

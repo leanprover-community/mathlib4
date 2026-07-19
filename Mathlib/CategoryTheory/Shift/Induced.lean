@@ -127,11 +127,10 @@ noncomputable def induced : HasShift D A :=
         ext X
         dsimp
         erw [Induced.add_hom_app_obj, dcongr_arg (fun a => (i a).hom.app X) (add_zero n),
-          ← cancel_mono ((s 0).map ((i n).hom.app X)), Category.assoc,
-          Category.assoc, Category.assoc, Category.assoc, Category.assoc,
-          Category.assoc, ← (s 0).map_comp, Iso.inv_hom_id_app, Functor.map_id, Category.comp_id,
-          ← NatTrans.naturality, Induced.zero_inv_app_obj,
-          shiftFunctorAdd_add_zero_hom_app]
+          ← cancel_mono ((s 0).map ((i n).hom.app X)), Category.assoc, Category.assoc,
+          Category.assoc, Category.assoc, Category.assoc, Category.assoc, ← (s 0).map_comp,
+          Iso.inv_hom_id_app, Functor.map_id, Category.comp_id, ← NatTrans.naturality,
+          Induced.zero_inv_app_obj, shiftFunctorAdd_add_zero_hom_app]
         simp [eqToHom_map, eqToHom_app]
       assoc_hom_app := fun m₁ m₂ m₃ => by
         suffices (Induced.add F s i (m₁ + m₂) m₃).hom ≫
@@ -146,9 +145,8 @@ noncomputable def induced : HasShift D A :=
         have eq := F.congr_map (shiftFunctorAdd'_assoc_hom_app
           m₁ m₂ m₃ _ _ (m₁ + m₂ + m₃) rfl rfl rfl X)
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd] at eq
-        simp only [Functor.comp_obj, Functor.map_comp, shiftFunctorAdd',
-          Iso.trans_hom, eqToIso.hom, NatTrans.comp_app, eqToHom_app,
-          Category.assoc] at eq
+        simp only [Functor.comp_obj, Functor.map_comp, shiftFunctorAdd', Iso.trans_hom, eqToIso.hom,
+          NatTrans.comp_app, eqToHom_app, Category.assoc] at eq
         rw [← cancel_mono ((s m₃).map ((s m₂).map ((i m₁).hom.app X)))]
         simp only [Induced.add_hom_app_obj, Category.assoc, Functor.map_comp]
         slice_lhs 4 5 =>

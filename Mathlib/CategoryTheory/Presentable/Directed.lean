@@ -306,8 +306,7 @@ lemma isCardinalFiltered_aux
   have hshape : HasCardinalLT (Arrow (WalkingMultispan shape)) κ := by
     rw [hasCardinalLT_iff_of_equiv (WalkingMultispan.arrowEquiv shape),
       hasCardinalLT_sum_iff _ _ _ hκ, hasCardinalLT_sum_iff _ _ _ hκ,
-      hasCardinalLT_iff_of_equiv (WalkingMultispan.equiv shape),
-      hasCardinalLT_sum_iff _ _ _ hκ]
+      hasCardinalLT_iff_of_equiv (WalkingMultispan.equiv shape), hasCardinalLT_sum_iff _ _ _ hκ]
     refine ⟨⟨?_, ?_⟩, ?_, ?_⟩ <;> assumption
   let c : Multicofork _ := IsCardinalFiltered.cocone index.multispan hshape
   exact ⟨c.pt, fun i ↦ u i ≫ c.π ⟨⟩,

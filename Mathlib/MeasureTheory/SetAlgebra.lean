@@ -200,8 +200,7 @@ theorem mem_generateSetAlgebra_elim (s_mem : s ∈ generateSetAlgebra 𝒜) :
       exact hA a.1 a.2 (f a).1 (f a).2
     · ext x
       simp only [u_eq, compl_iUnion, compl_iInter, mem_iInter, mem_iUnion, mem_compl_iff,
-        exists_prop, Subtype.exists, mem_ofPred_eq, iUnion_exists, iUnion_iUnion_eq',
-        iInter_exists]
+        exists_prop, Subtype.exists, mem_ofPred_eq, iUnion_exists, iUnion_iUnion_eq', iInter_exists]
       constructor <;> intro hx
       · choose f hf using hx
         exact ⟨fun ⟨a, ha⟩ ↦ ⟨f a ha, (hf a ha).1⟩, fun _ a ha h ↦ by rw [← h]; exact (hf a ha).2⟩

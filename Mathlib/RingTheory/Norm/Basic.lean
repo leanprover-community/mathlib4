@@ -74,10 +74,9 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).aroots F).prod := by
   have := Module.nontrivial R F
   have := minpoly.monic pb.isIntegral_gen
-  rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, map_mul,
-    ← coeff_map,
-    hf.coeff_zero_eq_prod_roots_of_monic (this.map _),
-    this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
+  rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, map_mul, ← coeff_map,
+    hf.coeff_zero_eq_prod_roots_of_monic (this.map _), this.natDegree_map, map_pow, ← mul_assoc,
+    ← mul_pow]
   simp only [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
 
 end EqProdRoots
@@ -223,8 +222,7 @@ lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
     let : Algebra A B := RingHom.toAlgebra e
     let : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.norm_eq_matrix_det b,
-      Algebra.norm_eq_matrix_det (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he])),
-      e.map_det]
+      Algebra.norm_eq_matrix_det (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he])), e.map_det]
     congr
     ext i j
     simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]

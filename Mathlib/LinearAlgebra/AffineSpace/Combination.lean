@@ -507,8 +507,7 @@ in `s` not satisfying `pred` are zero. -/
 theorem affineCombination_filter_of_ne (w : ι → k) (p : ι → P) {pred : ι → Prop}
     [DecidablePred pred] (h : ∀ i ∈ s, w i ≠ 0 → pred i) :
     {x ∈ s | pred x}.affineCombination k p w = s.affineCombination k p w := by
-  rw [affineCombination_apply, affineCombination_apply,
-    s.weightedVSubOfPoint_filter_of_ne _ _ _ h]
+  rw [affineCombination_apply, affineCombination_apply, s.weightedVSubOfPoint_filter_of_ne _ _ _ h]
 
 /-- Suppose an indexed family of points is given, along with a subset
 of the index type.  A vector can be expressed as
@@ -860,8 +859,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     let w0 : ι → k := Function.update (Function.const ι 0) i0 1
     have hw0 : ∑ i ∈ s', w0 i = 1 := by
       rw [Finset.sum_update_of_mem (Finset.mem_insert_self _ _)]
-      simp only [Function.const_apply, Finset.sum_const_zero,
-        add_zero]
+      simp only [Function.const_apply, Finset.sum_const_zero, add_zero]
     have hw0s : s'.affineCombination k p w0 = p i0 :=
       s'.affineCombination_of_eq_one_of_eq_zero w0 p (Finset.mem_insert_self _ _)
         (Function.update_self ..) fun _ _ hne => Function.update_of_ne hne _ _

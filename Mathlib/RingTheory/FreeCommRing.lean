@@ -110,8 +110,7 @@ lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.
     @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
   dsimp [FreeCommRing]
-  rw [← Multiset.singleton_add, ofAdd_add,
-    of, FreeAbelianGroup.of_mul_of]
+  rw [← Multiset.singleton_add, ofAdd_add, of, FreeAbelianGroup.of_mul_of]
 
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : FreeCommRing α → Prop} (z : FreeCommRing α)

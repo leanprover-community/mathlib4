@@ -166,8 +166,7 @@ def comp (F : StrictlyUnitaryLaxFunctor B C)
   __ := LaxFunctor.comp F.toLaxFunctor G.toLaxFunctor
   map_id _ := by simp [StrictlyUnitaryLaxFunctor.map_id]
   mapId_eq_eqToHom _ := by
-    simp [StrictlyUnitaryLaxFunctor.mapId_eq_eqToHom,
-      PrelaxFunctor.map₂_eqToHom]
+    simp [StrictlyUnitaryLaxFunctor.mapId_eq_eqToHom, PrelaxFunctor.map₂_eqToHom]
 
 section
 attribute [local ext] StrictlyUnitaryLaxFunctor
@@ -361,8 +360,7 @@ def comp (F : StrictlyUnitaryPseudofunctor B C)
   map_id _ := by simp [StrictlyUnitaryPseudofunctor.map_id]
   mapId_eq_eqToIso _ := by
     ext
-    simp [StrictlyUnitaryPseudofunctor.mapId_eq_eqToIso,
-      PrelaxFunctor.map₂_eqToHom]
+    simp [StrictlyUnitaryPseudofunctor.mapId_eq_eqToIso, PrelaxFunctor.map₂_eqToHom]
 
 end
 

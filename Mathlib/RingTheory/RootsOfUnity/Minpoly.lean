@@ -54,8 +54,7 @@ theorem minpoly_dvd_x_pow_sub_one : minpoly ℤ μ ∣ X ^ n - 1 := by
   rcases n.eq_zero_or_pos with (rfl | h0)
   · simp
   apply minpoly.isIntegrallyClosed_dvd (isIntegral h h0)
-  simp only [((IsPrimitiveRoot.iff_def μ n).mp h).left, aeval_X_pow,
-    aeval_one, map_sub, sub_self]
+  simp only [((IsPrimitiveRoot.iff_def μ n).mp h).left, aeval_X_pow, aeval_one, map_sub, sub_self]
 
 /-- The reduction modulo `p` of the minimal polynomial of a root of unity `μ` is separable. -/
 theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
@@ -153,8 +152,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   · replace hunit := degree_eq_zero_of_isUnit hunit
     rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom (ZMod p)) _] at hunit
     · exact (minpoly.degree_pos (isIntegral h hpos)).ne' hunit
-    simp only [Pmonic, eq_intCast, Monic.leadingCoeff, Int.cast_one, Ne, not_false_iff,
-      one_ne_zero]
+    simp only [Pmonic, eq_intCast, Monic.leadingCoeff, Int.cast_one, Ne, not_false_iff, one_ne_zero]
 
 /-- If `m : ℕ` is coprime with `n`,
 then the minimal polynomials of a primitive `n`-th root of unity `μ`

@@ -161,10 +161,9 @@ def ev_app : F ⊛ H ⟶ G :=
         simp only [whiskerLeft_comp] at this
         simp only [Category.assoc, MonoidalClosed.uncurry_eq, Functor.id_obj,
           ← whiskerLeft_comp_assoc, map_comp_π]
-        simp only [whiskerLeft_comp, Category.assoc, ihom.ev_naturality,
-          Functor.comp_obj, curriedTensor_obj_obj, Functor.id_obj,
-          ← whisker_exchange_assoc, tensorHom_def, Functor.map_comp,
-          ← ihom.ev_naturality_assoc]
+        simp only [whiskerLeft_comp, Category.assoc, ihom.ev_naturality, Functor.comp_obj,
+          curriedTensor_obj_obj, Functor.id_obj, ← whisker_exchange_assoc, tensorHom_def,
+          Functor.map_comp, ← ihom.ev_naturality_assoc]
         rw [reassoc_of% this]
         simp }
 
@@ -219,9 +218,8 @@ def coev_app : G ⟶ H where
     dsimp
     apply Wedge.IsLimit.hom_ext <| ℌ.isLimitWedge c'
     intro (j : C)
-    simp only [multicospanIndexEnd_left,
-      dayConvolutionInternalHomDiagramFunctor_obj_obj_obj_obj, Multifork.ofι_pt,
-      Wedge.mk_ι, Category.assoc, map_comp_π]
+    simp only [multicospanIndexEnd_left, dayConvolutionInternalHomDiagramFunctor_obj_obj_obj_obj,
+      Multifork.ofι_pt, Wedge.mk_ι, Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
         (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
         (H.obj c) (ℌ.π c) (ℌ.hπ c),
@@ -259,10 +257,9 @@ lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G'
   intro j
   apply MonoidalClosed.uncurry_injective
   dsimp
-  simp only [Category.assoc, coev_app_π, Functor.comp_obj, tensor_obj,
-    map_app_comp_π, coev_app_π_assoc, MonoidalClosed.uncurry_natural_right,
-    MonoidalClosed.uncurry_curry, DayConvolution.unit_app_map_app,
-    NatTrans.id_app, id_tensorHom]
+  simp only [Category.assoc, coev_app_π, Functor.comp_obj, tensor_obj, map_app_comp_π,
+    coev_app_π_assoc, MonoidalClosed.uncurry_natural_right, MonoidalClosed.uncurry_curry,
+    DayConvolution.unit_app_map_app, NatTrans.id_app, id_tensorHom]
   simp [MonoidalClosed.uncurry_natural_left]
 
 end coev

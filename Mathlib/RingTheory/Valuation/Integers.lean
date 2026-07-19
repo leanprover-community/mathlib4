@@ -284,8 +284,7 @@ end Integers
 
 open Integers in
 theorem Integer.not_isUnit_iff_valuation_lt_one {x : v.integer} : ¬IsUnit x ↔ v x < 1 := by
-  rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one (F := F) (Γ₀ := Γ₀),
-    le_antisymm_iff]
+  rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one (F := F) (Γ₀ := Γ₀), le_antisymm_iff]
   exacts [and_iff_right x.2, integer.integers v]
 
 namespace integer

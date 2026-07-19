@@ -83,9 +83,8 @@ theorem transpose_dualTensorHom (f : Module.Dual R M) (m : M) :
     Dual.transpose (R := R) (dualTensorHom R M M (f ⊗ₜ m)) =
     dualTensorHom R _ _ (Dual.eval R M m ⊗ₜ f) := by
   ext f' m'
-  simp only [Dual.transpose_apply, coe_comp, Function.comp_apply, dualTensorHom_apply,
-    map_smulₛₗ, RingHom.id_apply, smul_eq_mul, Dual.eval_apply,
-    LinearMap.smul_apply]
+  simp only [Dual.transpose_apply, coe_comp, Function.comp_apply, dualTensorHom_apply, map_smulₛₗ,
+    RingHom.id_apply, smul_eq_mul, Dual.eval_apply, LinearMap.smul_apply]
   exact mul_comm _ _
 
 @[simp]
@@ -373,8 +372,7 @@ theorem homTensorHomEquiv_toLinearMap :
   simp only [homTensorHomEquiv, compr₂ₛₗ_apply, mk_apply, LinearEquiv.coe_toLinearMap,
     LinearEquiv.trans_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply, LinearEquiv.refl_symm,
     LinearEquiv.refl_apply, rTensorHomEquivHomRTensor_apply, lTensorHomEquivHomLTensor_apply,
-    lTensorHomToHomLTensor_apply, rTensorHomToHomRTensor_apply, homTensorHomMap_apply,
-    map_tmul]
+    lTensorHomToHomLTensor_apply, rTensorHomToHomRTensor_apply, homTensorHomMap_apply, map_tmul]
 
 variable {R M N P Q}
 

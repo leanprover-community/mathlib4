@@ -89,8 +89,7 @@ theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFun
     factors_eq]
   apply sum_congr rfl
   intro t ht
-  rw [t.prod_val, Function.id_def,
-    ← prod_primeFactors_sdiff_of_squarefree hn (mem_powerset.mp ht),
+  rw [t.prod_val, Function.id_def, ← prod_primeFactors_sdiff_of_squarefree hn (mem_powerset.mp ht),
     hf.map_prod_of_subset_primeFactors n t (mem_powerset.mp ht),
     ← hg.map_prod_of_subset_primeFactors n (_ \ t) sdiff_subset]
 

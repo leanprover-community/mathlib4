@@ -96,8 +96,7 @@ lemma residueClass_le (n : ℕ) : residueClass a n ≤ vonMangoldt n :=
 
 @[simp]
 lemma residueClass_apply_zero : residueClass a 0 = 0 := by
-  simp only [Set.indicator_apply_eq_zero, Set.mem_ofPred_eq, Nat.cast_zero, map_zero,
-    implies_true]
+  simp only [Set.indicator_apply_eq_zero, Set.mem_ofPred_eq, Nat.cast_zero, map_zero, implies_true]
 
 lemma abscissaOfAbsConv_residueClass_le_one :
     abscissaOfAbsConv ↗(residueClass a) ≤ 1 := by
@@ -145,9 +144,8 @@ private lemma F''_le (p : Nat.Primes) (k : ℕ) : F'' (p, k) ≤ 2 * (p : ℝ)�
       simp only [← div_mul, div_one, mul_comm, neg_div, Real.inv_rpow p.val.cast_nonneg,
         ← Real.rpow_neg p.val.cast_nonneg, neg_neg]
     _ = _ := by
-      rw [mul_assoc, ← Real.rpow_natCast,
-        ← Real.rpow_add <| by have := p.prop.pos; positivity, Nat.cast_add, Nat.cast_two,
-        add_comm, add_assoc]
+      rw [mul_assoc, ← Real.rpow_natCast, ← Real.rpow_add <| by have := p.prop.pos; positivity,
+        Nat.cast_add, Nat.cast_two, add_comm, add_assoc]
       norm_num
 
 open Nat.Primes
@@ -318,9 +316,8 @@ lemma eqOn_LFunctionResidueClassAux (ha : IsUnit a) :
   simp only [mul_div_assoc]
   congrm (?_ + _)
   have hs₁ : s ≠ 1 := fun h ↦ ((h ▸ hs).trans_eq one_re).false
-  rw [deriv_LFunctionTrivChar₁_apply_of_ne_one _ hs₁, LFunctionTrivChar₁,
-    Function.update_of_ne hs₁, LFunctionTrivChar, add_div,
-    mul_div_mul_left _ _ (sub_ne_zero_of_ne hs₁)]
+  rw [deriv_LFunctionTrivChar₁_apply_of_ne_one _ hs₁, LFunctionTrivChar₁, Function.update_of_ne hs₁,
+    LFunctionTrivChar, add_div, mul_div_mul_left _ _ (sub_ne_zero_of_ne hs₁)]
   conv_lhs => enter [2, 1]; rw [← mul_one (LFunction ..)]
   rw [mul_comm _ 1, mul_div_mul_right _ _ <| LFunction_ne_zero_of_one_le_re 1 (.inr hs₁) hs.le]
 
@@ -338,8 +335,7 @@ lemma LFunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
     · simp only [term_zero, zero_re, ofReal_zero]
     · simp only [term_of_ne_zero hn, ← ofReal_natCast n, ← ofReal_cpow n.cast_nonneg, ← ofReal_div,
         ofReal_re]
-  · rw [← ofReal_natCast, ← ofReal_one, ← ofReal_sub, ← ofReal_inv,
-      ← ofReal_div, ofReal_re]
+  · rw [← ofReal_natCast, ← ofReal_one, ← ofReal_sub, ← ofReal_inv, ← ofReal_div, ofReal_re]
 
 variable {q : ℕ} [NeZero q] {a : ZMod q}
 

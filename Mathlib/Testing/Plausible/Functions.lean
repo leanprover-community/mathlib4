@@ -344,8 +344,7 @@ protected def mk (xs ys : List α) (h : xs ~ ys) (h' : ys.Nodup) : InjectiveFunc
   have h₁ : ys.length ≤ xs.length := le_of_eq h.length_eq.symm
   InjectiveFunction.mapToSelf (List.toFinmap' (xs.zip ys))
     (by
-      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *,
-        List.map_map])
+      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *, List.map_map])
     (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, List.map_map])
 
 protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Injective (apply f) := by
@@ -358,8 +357,7 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
     induction xs with
     | nil => simp only [List.zip_nil_right, List.map_nil]
     | cons xs_hd xs_tl xs_ih =>
-      simp only [Sigma.eta, List.zip_cons_cons,
-        List.map, List.cons_inj_right]
+      simp only [Sigma.eta, List.zip_cons_cons, List.map, List.cons_inj_right]
       exact xs_ih
   revert hperm hnodup
   rw [hxs]; intro hperm hnodup

@@ -541,8 +541,7 @@ the spectrum of `x` relative to `S` is a subset of the boundary of the spectrum 
 relative to `A`. -/
 lemma Subalgebra.frontier_subset_frontier :
     frontier (σ 𝕜 x) ⊆ frontier (σ 𝕜 (x : A)) := by
-  rw [frontier_eq_closure_inter_closure (s := σ 𝕜 (x : A)),
-    (spectrum.isClosed (x : A)).closure_eq]
+  rw [frontier_eq_closure_inter_closure (s := σ 𝕜 (x : A)), (spectrum.isClosed (x : A)).closure_eq]
   apply subset_inter (frontier_spectrum S x)
   rw [frontier_eq_closure_inter_closure]
   exact inter_subset_right |>.trans <|

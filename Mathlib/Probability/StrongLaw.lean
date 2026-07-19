@@ -421,8 +421,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
       _ = ∑ j ∈ range (u (N - 1)), (∑ i ∈ range N with j < u i, ((u i : ℝ) ^ 2)⁻¹) * Var[Y j] := by
         simp_rw [mul_sum, sum_mul, sum_sigma']
         refine sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) ?_ ?_ ?_ ?_ ?_
-        · simp only [mem_sigma, mem_range, mem_filter, and_imp,
-            Sigma.forall]
+        · simp only [mem_sigma, mem_range, mem_filter, and_imp, Sigma.forall]
           exact fun a b haN hb ↦ ⟨hb.trans_le <| u_mono <| Nat.le_pred_of_lt haN, haN, hb⟩
         all_goals simp
       _ ≤ ∑ j ∈ range (u (N - 1)), c ^ 5 * (c - 1)⁻¹ ^ 3 / ↑j ^ 2 * Var[Y j] := by
@@ -770,8 +769,7 @@ lemma strong_law_ae_of_measurable
       norm_add₃_le
   _ ≤ (∑ i ∈ Finset.range n, ‖X i ω - Y k i ω‖) / n + δ + δ := by
       gcongr
-      simp only [norm_smul, norm_inv, RCLike.norm_natCast,
-        div_eq_inv_mul]
+      simp only [norm_smul, norm_inv, RCLike.norm_natCast, div_eq_inv_mul]
       gcongr
       exact norm_sum_le _ _
   _ ≤ δ + δ + δ := by

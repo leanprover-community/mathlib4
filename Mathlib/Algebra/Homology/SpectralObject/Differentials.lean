@@ -75,11 +75,10 @@ lemma d_ιE_fromOpcycles
       X.fromOpcycles f₂ f₃ f₂₃ h₂₃ n₂ =
       X.ιE f₃ f₄ f₅ n₀ n₁ n₂ hn₁ hn₂ ≫ X.fromOpcycles f₄ f₅ f₄₅ h₄₅ n₁ ≫
         X.δ f₂₃ f₄₅ n₁ n₂ hn₂ := by
-  rw [← cancel_epi (X.πE f₃ f₄ f₅ n₀ n₁ n₂ hn₁ hn₂),
-    ← cancel_epi (X.toCycles f₃ f₄ f₃₄ h₃₄ n₁),
-    X.toCycles_πE_d_assoc f₁ f₂ f₃ f₄ f₅ _ rfl _ _ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃,
-    πE_ιE_assoc .., p_fromOpcycles, toCycles_i_assoc, fromOpcyles_δ ..,
-    πE_ιE_assoc .., pOpcycles_δFromOpcycles, toCycles_i_assoc, ← Functor.map_comp, Eq.comm]
+  rw [← cancel_epi (X.πE f₃ f₄ f₅ n₀ n₁ n₂ hn₁ hn₂), ← cancel_epi (X.toCycles f₃ f₄ f₃₄ h₃₄ n₁),
+    X.toCycles_πE_d_assoc f₁ f₂ f₃ f₄ f₅ _ rfl _ _ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃, πE_ιE_assoc ..,
+    p_fromOpcycles, toCycles_i_assoc, fromOpcyles_δ .., πE_ιE_assoc .., pOpcycles_δFromOpcycles,
+    toCycles_i_assoc, ← Functor.map_comp, Eq.comm]
   apply δ_naturality
   simp
 
@@ -96,11 +95,9 @@ lemma d_d (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia
     (hn₃ : n₂ + 1 = n₃ := by lia) (hn₄ : n₃ + 1 = n₄ := by lia) :
     X.d f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ ≫
       X.d f₁ f₂ f₃ f₄ f₅ n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ = 0 := by
-  rw [← cancel_epi (X.πE f₅ f₆ f₇ n₀ n₁ n₂ hn₁ hn₂),
-    ← cancel_epi (X.toCycles f₅ f₆ _ rfl n₁), comp_zero, comp_zero,
-    X.toCycles_πE_d_assoc f₃ f₄ f₅ f₆ f₇ _ rfl _ rfl n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃,
-    X.toCycles_πE_d f₁ f₂ f₃ f₄ f₅ _ rfl _ rfl n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄,
-    δ_δ_assoc .., zero_comp]
+  rw [← cancel_epi (X.πE f₅ f₆ f₇ n₀ n₁ n₂ hn₁ hn₂), ← cancel_epi (X.toCycles f₅ f₆ _ rfl n₁),
+    comp_zero, comp_zero, X.toCycles_πE_d_assoc f₃ f₄ f₅ f₆ f₇ _ rfl _ rfl n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃,
+    X.toCycles_πE_d f₁ f₂ f₃ f₄ f₅ _ rfl _ rfl n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄, δ_δ_assoc .., zero_comp]
 
 end
 
@@ -193,9 +190,8 @@ lemma Ψ_opcyclesMap_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
     rw [Functor.map_id, id_comp] at H
     rw [← H, ← reassoc_of% hz₁, hz₀, comp_zero])
   refine ⟨A₂, π₂ ≫ π₁, inferInstance, z₂ ≫ X.toCycles f₂ f₃ f₂₃ h₂₃ n₀, ?_⟩
-  rw [← cancel_mono (X.fromOpcycles f₁ f₂ f₁₂ h₁₂ n₁), assoc, assoc,
-    assoc, assoc, toCycles_Ψ_assoc .., p_fromOpcycles, ← reassoc_of% dsimp% hz₂,
-    reassoc_of% hz₁, p_fromOpcycles]
+  rw [← cancel_mono (X.fromOpcycles f₁ f₂ f₁₂ h₁₂ n₁), assoc, assoc, assoc, assoc,
+    toCycles_Ψ_assoc .., p_fromOpcycles, ← reassoc_of% dsimp% hz₂, reassoc_of% hz₁, p_fromOpcycles]
 
 lemma sequenceΨ_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
     (X.sequenceΨ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ n₀ n₁ hn₁).Exact :=

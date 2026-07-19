@@ -262,8 +262,7 @@ noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
     convert!
       pushouts_ofLE_le_largerSubobject hG (transfiniteIterate (largerSubobject hG) k.1 A₀) using 2
     all_goals
-      rw [Set.Iic.succ_eq_of_not_isMax hk,
-        transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk)]
+      rw [Set.Iic.succ_eq_of_not_isMax hk, transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk)]
 
 end
 
@@ -284,8 +283,7 @@ noncomputable def transfiniteCompositionOfShapeOfEqTop
   refine Arrow.isoMk ((Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
     Subobject.underlyingIso f)) (asIso t.arrow) ?_
   dsimp [MonoOver.forget]
-  rw [assoc, Subobject.underlyingIso_hom_comp_eq_mk, Subobject.ofLE_arrow,
-    Subobject.ofLE_arrow]
+  rw [assoc, Subobject.underlyingIso_hom_comp_eq_mk, Subobject.ofLE_arrow, Subobject.ofLE_arrow]
 
 variable (f)
 
@@ -372,8 +370,7 @@ instance {X Y : C} (f : X ⟶ Y) :
 
 instance {X : C} : Injective (monoMapFactorizationDataRlp (0 : X ⟶ 0)).Z := by
   let fac := (monoMapFactorizationDataRlp (0 : X ⟶ 0))
-  simpa only [injective_iff_rlp_monomorphisms_zero,
-    (isZero_zero C).eq_of_tgt fac.p 0] using fac.hp
+  simpa only [injective_iff_rlp_monomorphisms_zero, (isZero_zero C).eq_of_tgt fac.p 0] using fac.hp
 
 /-- A Grothendieck abelian category has enough injectives. -/
 @[stacks 079H]

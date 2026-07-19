@@ -121,8 +121,7 @@ lemma homOfVector_toSpecMvPoly :
 @[simp]
 lemma homOfVector_appTop_coord (i) :
     (homOfVector f v).appTop (coord S i) = v i := by
-  rw [coord, ← toSpecMvPolyIntEquiv_comp, homOfVector_toSpecMvPoly,
-    Equiv.apply_symm_apply]
+  rw [coord, ← toSpecMvPolyIntEquiv_comp, homOfVector_toSpecMvPoly, Equiv.apply_symm_apply]
 
 @[ext 1100]
 lemma hom_ext {f g : X ⟶ 𝔸(n; S)}

@@ -176,8 +176,7 @@ noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
     rw [dif_neg (e.not_boundaryGE_next hij)]
     by_cases hi : e.BoundaryGE i
     · rw [dif_pos hi]
-      simp [truncGE'_d_eq_fromOpcycles _ e hij rfl rfl hi,
-        ← cancel_epi (K.pOpcycles (e.f i))]
+      simp [truncGE'_d_eq_fromOpcycles _ e hij rfl rfl hi, ← cancel_epi (K.pOpcycles (e.f i))]
     · rw [dif_neg hi]
       simp [truncGE'_d_eq _ e hij rfl rfl hi]
 
@@ -265,8 +264,7 @@ lemma comm (i j : ι) :
         f_eq_iso_hom_iso_inv K e rfl (e.not_boundaryGE_next hij),
         K.truncGE'_d_eq_fromOpcycles e hij rfl rfl hi]
       simp [restrictionXIso]
-    · rw [f_eq_iso_hom_iso_inv K e rfl hi,
-        f_eq_iso_hom_iso_inv K e rfl (e.not_boundaryGE_next hij),
+    · rw [f_eq_iso_hom_iso_inv K e rfl hi, f_eq_iso_hom_iso_inv K e rfl (e.not_boundaryGE_next hij),
         K.truncGE'_d_eq e hij rfl rfl hi]
       simp [restrictionXIso]
   · simp [HomologicalComplex.shape _ _ _ hij]

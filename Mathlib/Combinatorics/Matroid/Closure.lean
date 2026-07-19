@@ -370,8 +370,7 @@ lemma Indep.mem_closure_iff (hI : M.Indep I) :
 
 lemma Indep.mem_closure_iff' (hI : M.Indep I) :
     x ∈ M.closure I ↔ x ∈ M.E ∧ (M.Indep (insert x I) → x ∈ I) := by
-  rw [hI.mem_closure_iff, dep_iff, insert_subset_iff, and_iff_left hI.subset_ground,
-    imp_iff_not_or]
+  rw [hI.mem_closure_iff, dep_iff, insert_subset_iff, and_iff_left hI.subset_ground, imp_iff_not_or]
   have := hI.subset_ground
   aesop
 

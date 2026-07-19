@@ -299,8 +299,7 @@ def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
         dsimp at this x ⊢
         rw [← this, uliftYonedaEquiv_comp]
         dsimp
-        rw [uliftYonedaEquiv_apply, uliftYonedaEquiv_apply,
-          ← NatTrans.naturality_apply]
+        rw [uliftYonedaEquiv_apply, uliftYonedaEquiv_apply, ← NatTrans.naturality_apply]
         simp [uliftYoneda] }
   fac s j := by
     ext X x
@@ -555,9 +554,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶ Q) :
     presheafHom.{w} φ P ≫ Functor.whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
   hom_ext_uliftYoneda.{max w v₂} (fun X p ↦ uliftYonedaEquiv.injective (by
-    rw [← assoc p f, uliftYonedaEquiv_ι_presheafHom, ← assoc,
-      uliftYonedaEquiv_comp, uliftYonedaEquiv_ι_presheafHom,
-      Functor.map_comp]
+    rw [← assoc p f, uliftYonedaEquiv_ι_presheafHom, ← assoc, uliftYonedaEquiv_comp,
+      uliftYonedaEquiv_ι_presheafHom, Functor.map_comp]
     dsimp))
 
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]

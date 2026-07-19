@@ -103,8 +103,7 @@ lemma ofLocalizationSpanTarget :
   refine Algebra.basicOpen_subset_unramifiedLocus_iff.mpr ?_ hrx
   convert! H ⟨r, hr⟩
   dsimp
-  rw [← algebraMap_toAlgebra f, ← IsScalarTower.algebraMap_eq,
-    formallyUnramified_algebraMap]
+  rw [← algebraMap_toAlgebra f, ← IsScalarTower.algebraMap_eq, formallyUnramified_algebraMap]
 
 lemma propertyIsLocal :
     PropertyIsLocal FormallyUnramified := by

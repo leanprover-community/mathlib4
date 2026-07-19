@@ -296,8 +296,7 @@ lemma IsLocalization.mk'_tmul (M : Submonoid R) [IsLocalization M A] (s : S) (x 
     IsLocalization.mk' A x y ⊗ₜ s =
       IsLocalization.mk' (A ⊗[R] S) (algebraMap R S x * s)
         ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
-  simp [IsLocalization.eq_mk'_iff_mul_eq, map_mul,
-    RingHom.algebraMap_toAlgebra]
+  simp [IsLocalization.eq_mk'_iff_mul_eq, map_mul, RingHom.algebraMap_toAlgebra]
 
 namespace Localization
 

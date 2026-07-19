@@ -121,8 +121,7 @@ alias uniformOn_isProbabilityMeasure := isProbabilityMeasure_uniformOn
 
 theorem uniformOn_singleton (ω : Ω) (t : Set Ω) [Decidable (ω ∈ t)] :
     uniformOn {ω} t = if ω ∈ t then 1 else 0 := by
-  rw [uniformOn, cond_apply (measurableSet_singleton ω), Measure.count_singleton, inv_one,
-    one_mul]
+  rw [uniformOn, cond_apply (measurableSet_singleton ω), Measure.count_singleton, inv_one, one_mul]
   split_ifs
   · rw [(by simpa : ({ω} : Set Ω) ∩ t = {ω}), Measure.count_singleton]
   · simpa

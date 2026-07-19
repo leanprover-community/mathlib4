@@ -136,8 +136,7 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
     simp only [Scheme.Hom.comp_base, TopCat.coe_comp] at h
     refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.injective.of_comp ?_
     intro Z hZ
-    rw [IsClosedEmbedding.isClosed_iff_image_isClosed g.isClosedEmbedding,
-      ← Set.image_comp]
+    rw [IsClosedEmbedding.isClosed_iff_image_isClosed g.isClosedEmbedding, ← Set.image_comp]
     exact h.isClosedMap _ hZ
   stalkMap_surjective x := by
     have h := (f ≫ g).stalkMap_surjective x

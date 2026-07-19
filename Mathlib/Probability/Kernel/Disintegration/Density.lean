@@ -285,8 +285,7 @@ lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   · exact integrable_densityProcess hκν j a hs
   · exact fun _ _ _ ↦ (integrable_densityProcess hκν _ _ hs).integrableOn
   · intro x hx _
-    rw [setIntegral_densityProcess hκν i a hs hx,
-      setIntegral_densityProcess_of_le hκν hij a hs hx]
+    rw [setIntegral_densityProcess hκν i a hs hx, setIntegral_densityProcess_of_le hκν hij a hs hx]
   · exact StronglyMeasurable.aestronglyMeasurable
       (stronglyMeasurable_countableFiltration_densityProcess κ ν i a hs)
 
@@ -482,8 +481,7 @@ section Integral
 lemma eLpNorm_density_le (hκν : fst κ ≤ ν) (a : α) (s : Set β) :
     eLpNorm (fun x ↦ density κ ν a x s) 1 (ν a) ≤ ν a univ := by
   refine (eLpNorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun t ↦ ?_))).trans ?_
-  · simp only [Real.norm_eq_abs, abs_of_nonneg (density_nonneg hκν a t s),
-      density_le_one hκν a t s]
+  · simp only [Real.norm_eq_abs, abs_of_nonneg (density_nonneg hκν a t s), density_le_one hκν a t s]
   · simp
 
 lemma integrable_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
@@ -519,8 +517,7 @@ lemma setIntegral_density_of_measurableSet (hκν : fst κ ≤ ν)
       limsup_congr]
     simp only [eventually_atTop]
     refine ⟨n, fun m hnm ↦ ?_⟩
-    rw [setIntegral_densityProcess_of_le hκν hnm _ hs hA,
-      setIntegral_densityProcess hκν _ _ hs hA]
+    rw [setIntegral_densityProcess_of_le hκν hnm _ hs hA, setIntegral_densityProcess hκν _ _ hs hA]
   -- use L1 convergence
   have h := tendsto_setIntegral_densityProcess hκν a hs A
   rw [h.limsup_eq]

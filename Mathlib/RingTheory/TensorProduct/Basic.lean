@@ -642,8 +642,7 @@ protected def module : Module (A ⊗[R] B) M where
     · intro z w hz hw a b
       -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
-      simp only [moduleAux_apply, mul_add, map_add,
-        LinearMap.add_apply, moduleAux_apply, hz, hw]
+      simp only [moduleAux_apply, mul_add, map_add, LinearMap.add_apply, moduleAux_apply, hz, hw]
     · intro z w _ _
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw

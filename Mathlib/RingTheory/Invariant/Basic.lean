@@ -294,9 +294,8 @@ private theorem fixed_of_fixed1 [Module.IsTorsionFree (B ⧸ Q) L] (f : Gal(L/K)
     · rw [map_zero, map_zero, sub_zero]
   simp only [key₀, Finset.prod_ite, Finset.prod_const] at key
   replace key := congrArg (map (algebraMap (B ⧸ Q) L)) key
-  rw [map_map, ← algebraMap_eq, algebraMap_eq (A ⧸ P) K L,
-      ← map_map, Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_pow, Polynomial.map_sub,
-      map_X, map_C] at key
+  rw [map_map, ← algebraMap_eq, algebraMap_eq (A ⧸ P) K L, ← map_map, Polynomial.map_mul,
+      Polynomial.map_pow, Polynomial.map_pow, Polynomial.map_sub, map_X, map_C] at key
   replace key := fixed_of_fixed1_aux3 key f (Finset.card_ne_zero_of_mem
     (Finset.mem_filter.mpr ⟨Finset.mem_univ 1, one_smul G Q⟩))
   simp only [map_mul] at key

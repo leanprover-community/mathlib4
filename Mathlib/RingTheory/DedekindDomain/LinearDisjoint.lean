@@ -133,8 +133,7 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime
       ((differentIdeal A R₂).map (algebraMap R₂ B))) :
     differentIdeal A B = differentIdeal R₁ B * differentIdeal R₂ B := by
   have := differentIdeal_eq_differentIdeal_mul_differentIdeal A R₂ B
-  rwa [← differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃,
-    mul_comm] at this
+  rwa [← differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃, mul_comm] at this
 
 end IsDedekindDomain
 

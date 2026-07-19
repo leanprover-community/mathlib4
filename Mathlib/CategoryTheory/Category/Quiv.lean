@@ -276,9 +276,8 @@ def pathsEquiv {V : Type u} {C : Type u₁} [Quiver.{v} V] [Category.{v₁} C] :
       freeMap_pathsOf_pathComposition, Functor.id_comp]
   right_inv G := by
     dsimp
-    rw [← Functor.toPrefunctor_comp, ← Prefunctor.comp_assoc,
-      pathsOf_freeMap_toPrefunctor, Prefunctor.comp_assoc,
-      pathsOf_pathComposition_toPrefunctor, Prefunctor.comp_id]
+    rw [← Functor.toPrefunctor_comp, ← Prefunctor.comp_assoc, pathsOf_freeMap_toPrefunctor,
+      Prefunctor.comp_assoc, pathsOf_pathComposition_toPrefunctor, Prefunctor.comp_id]
 
 @[simp]
 lemma adj_homEquiv {V C : Type u} [Quiver.{max u v} V] [Category.{max u v} C] :

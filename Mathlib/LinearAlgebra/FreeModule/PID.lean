@@ -589,8 +589,7 @@ theorem Submodule.exists_smith_normal_form_of_rank_eq (b : Basis ι R M)
   have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
   exact
     ⟨bM, a ∘ e.symm, bN.reindex e, fun i ↦ by
-      simp only [snf, fe,
-          Basis.coe_reindex, (· ∘ ·)]⟩
+      simp only [snf, fe, Basis.coe_reindex, (· ∘ ·)]⟩
 
 /--
 If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,

@@ -107,8 +107,7 @@ the measure to `s` equals the outer measure of `t ∩ s`. This is an alternate v
 `Measure.restrict_apply`, requiring that `s` is measurable instead of `t`. -/
 @[simp]
 theorem restrict_apply' (hs : MeasurableSet s) : μ.restrict s t = μ (t ∩ s) := by
-  rw [← toOuterMeasure_apply,
-    Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
+  rw [← toOuterMeasure_apply, Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
     OuterMeasure.restrict_apply s t _, toOuterMeasure_apply]
 
 theorem _root_.IsCountablySpanning.null_of_forall_inter_null {C : Set (Set α)}
@@ -131,8 +130,7 @@ theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α
   simpa [← μ.restrict_apply' (hm htc)] using ht t htc
 
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
-  rw [← restrict_congr_set hs.toMeasurable_ae_eq,
-    restrict_apply' (measurableSet_toMeasurable _ _),
+  rw [← restrict_congr_set hs.toMeasurable_ae_eq, restrict_apply' (measurableSet_toMeasurable _ _),
     measure_congr ((ae_eq_refl t).inter hs.toMeasurable_ae_eq)]
 
 theorem restrict_le_self : μ.restrict s ≤ μ :=
@@ -192,8 +190,7 @@ theorem restrict_smul {_m0 : MeasurableSpace α} {R : Type*} [SMul R ℝ≥0∞]
 theorem restrict_restrict₀ (hs : NullMeasurableSet s (μ.restrict t)) :
     (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=
   ext fun u hu => by
-    simp only [Set.inter_assoc, restrict_apply hu,
-      restrict_apply₀ (hu.nullMeasurableSet.inter hs)]
+    simp only [Set.inter_assoc, restrict_apply hu, restrict_apply₀ (hu.nullMeasurableSet.inter hs)]
 
 @[simp]
 theorem restrict_restrict (hs : MeasurableSet s) : (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=
@@ -1018,8 +1015,7 @@ theorem mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem [Zero β] {t : 
   rw [Measure.restrict_apply' hs, Set.indicator_preimage, Set.ite]
   simp_rw [Set.compl_union, Set.compl_inter]
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∩ s) = 0
-  simp only [ht, ← Set.compl_eq_univ_sdiff, compl_compl, if_true,
-    Set.preimage_const]
+  simp only [ht, ← Set.compl_eq_univ_sdiff, compl_compl, if_true, Set.preimage_const]
   simp_rw [Set.union_inter_distrib_right, Set.compl_inter_self s, Set.union_empty]
 
 theorem mem_map_indicator_ae_iff_of_zero_notMem [Zero β] {t : Set β} (ht : (0 : β) ∉ t) :

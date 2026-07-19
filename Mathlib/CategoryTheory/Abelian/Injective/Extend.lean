@@ -119,8 +119,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ι'_comp_hom' :
     R.ι' ≫ φ.hom' = (CochainComplex.singleFunctor C 0).map f ≫ R'.ι' :=
   HomologicalComplex.from_single_hom_ext (by
-    simp [hom'_f _ 0 0 rfl, ι'_f_zero, CochainComplex.singleFunctor,
-      CochainComplex.singleFunctors,
+    simp [hom'_f _ 0 0 rfl, ι'_f_zero, CochainComplex.singleFunctor, CochainComplex.singleFunctors,
       HomologicalComplex.single, HomologicalComplex.singleObjXSelf,
       HomologicalComplex.singleObjXIsoOfEq])
 

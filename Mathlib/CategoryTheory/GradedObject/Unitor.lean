@@ -347,18 +347,16 @@ lemma mapBifunctor_triangle
     (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).inv (𝟙 X₃)))]
   ext j i₁ i₃ hj
   simp only [categoryOfGradedObjects_comp, ι_mapBifunctorMapMap_assoc,
-    mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.map_comp,
-    NatTrans.comp_app, categoryOfGradedObjects_id, Functor.map_id, id_comp, assoc,
-    ι_mapBifunctorMapMap]
+    mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.map_comp, NatTrans.comp_app,
+    categoryOfGradedObjects_id, Functor.map_id, id_comp, assoc, ι_mapBifunctorMapMap]
   congr 2
   rw [← ιMapBifunctor₁₂BifunctorMapObj_eq_assoc F₁ G τ.ρ₁₂ _ _ _ i₁ 0 i₃ j
     (by rw [τ.r_zero, hj]) i₁ (by simp), ι_mapBifunctorAssociator_hom_assoc,
     ιMapBifunctorBifunctor₂₃MapObj_eq_assoc G F₂ τ.ρ₂₃ _ _ _ i₁ 0 i₃ j
     (by rw [τ.r_zero, hj]) i₃ (by simp), ι_mapBifunctorMapMap]
   dsimp
-  rw [Functor.map_id, NatTrans.id_app, id_comp,
-    ← Functor.map_comp_assoc, ← NatTrans.comp_app_assoc, ← Functor.map_comp,
-    ι_mapBifunctorLeftUnitor_hom_apply F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃ i₃,
+  rw [Functor.map_id, NatTrans.id_app, id_comp, ← Functor.map_comp_assoc, ← NatTrans.comp_app_assoc,
+    ← Functor.map_comp, ι_mapBifunctorLeftUnitor_hom_apply F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃ i₃,
     ι_mapBifunctorRightUnitor_hom_apply F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁ i₁]
   dsimp
   simp only [Functor.map_comp, NatTrans.comp_app, ← triangle (X₁ i₁) (X₃ i₃), ← assoc]

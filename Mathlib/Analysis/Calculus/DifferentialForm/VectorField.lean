@@ -92,10 +92,9 @@ theorem extDerivWithin_apply_vectorField
   have H₀ (i : Fin (n + 2)) (j : Fin (n + 1)) :
       DifferentiableWithinAt 𝕜 (fun y ↦ i.removeNth (V · y) j) s x := hV ..
   symm
-  simp only [extDerivWithin_apply,
-    fderivWithin_continuousAlternatingMap_apply_const_apply,
-    fderivWithin_continuousAlternatingMap_apply_apply hω (H₀ _) hsx, *,
-    smul_add, sum_add_distrib, add_sub_assoc, add_eq_left, sub_eq_zero, smul_sum]
+  simp only [extDerivWithin_apply, fderivWithin_continuousAlternatingMap_apply_const_apply,
+    fderivWithin_continuousAlternatingMap_apply_apply hω (H₀ _) hsx, *, smul_add, sum_add_distrib,
+    add_sub_assoc, add_eq_left, sub_eq_zero, smul_sum]
   rw [Fin.sum_sum_eq_sum_triangle_add]
   refine Fintype.sum_congr _ _ fun i ↦ sum_congr rfl fun j hj ↦ ?_
   rw [mem_Ici] at hj

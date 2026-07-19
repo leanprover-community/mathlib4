@@ -128,10 +128,8 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
       ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf))
       (fun n ↦ (hG n).aemeasurable.enorm)
     grw [hG'] at ebound
-    rw [uIcc_of_le hab,
-        ← MeasureTheory.ofReal_integral_norm_eq_lintegral_enorm integrable_f_deriv,
-        ENNReal.ofReal_le_ofReal_iff (by linarith),
-        integral_Icc_eq_integral_Ioc,
+    rw [uIcc_of_le hab, ← MeasureTheory.ofReal_integral_norm_eq_lintegral_enorm integrable_f_deriv,
+        ENNReal.ofReal_le_ofReal_iff (by linarith), integral_Icc_eq_integral_Ioc,
         ← intervalIntegral.integral_of_le hab] at ebound
     convert! ebound using 1
     refine intervalIntegral.integral_congr_uIoo ?_

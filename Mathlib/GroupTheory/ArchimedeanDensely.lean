@@ -315,8 +315,7 @@ either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered, 
 lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
     Nonempty (G ≃*o ℤᵐ⁰) ↔ ¬ DenselyOrdered G := by
-  rw [← denselyOrdered_units_iff,
-      ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
+  rw [← denselyOrdered_units_iff, ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
   refine Nonempty.congr ?_ ?_ <;> intro f
   · refine ⟨MulEquiv.withZero.symm (withZeroUnitsEquiv.trans f), ?_⟩
     intros

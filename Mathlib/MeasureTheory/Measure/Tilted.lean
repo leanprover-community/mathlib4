@@ -256,8 +256,7 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
     ext1 s hs
     rw [tilted_apply' _ _ hs, tilted_apply' _ _ hs, setLIntegral_tilted' f _ hs]
     congr with x
-    rw [← ENNReal.ofReal_mul (by positivity),
-      integral_exp_tilted f, Pi.add_apply, exp_add]
+    rw [← ENNReal.ofReal_mul (by positivity), integral_exp_tilted f, Pi.add_apply, exp_add]
     congr 1
     simp only [Pi.add_apply]
     have := (integral_exp_pos hf).ne'

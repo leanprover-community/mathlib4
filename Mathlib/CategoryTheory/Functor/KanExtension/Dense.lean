@@ -116,8 +116,7 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
         ι :=
           { app g := ((f.app (op g.left)) (ULift.up g.hom)).down
             naturality g₁ g₂ φ := by
-              simpa [uliftFunctor, uliftYoneda,
-                restrictedULiftYoneda, ← ULift.down_inj] using
+              simpa [uliftFunctor, uliftYoneda, restrictedULiftYoneda, ← ULift.down_inj] using
                 ((f.naturality_apply φ.left.op) (ULift.up g₂.hom)).symm } }
     refine ⟨(F.denseAt Y).desc c, ?_⟩
     ext ⟨X⟩ ⟨x⟩

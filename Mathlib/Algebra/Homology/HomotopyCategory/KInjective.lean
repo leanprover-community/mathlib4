@@ -121,8 +121,7 @@ lemma isKInjective_of_injective_aux {K L : CochainComplex C ℤ}
   obtain hp | rfl := hp.lt_or_eq
   · rw [δ_add, Cochain.add_v, hα p p (by lia) (by lia), add_eq_left,
       δ_v (-1) 0 (neg_add_cancel 1) _ p p hpq (p - 1) (p + 1) rfl rfl,
-      Cochain.single_v_eq_zero _ _ _ _ _ (by lia),
-      Cochain.single_v_eq_zero _ _ _ _ _ (by lia)]
+      Cochain.single_v_eq_zero _ _ _ _ _ (by lia), Cochain.single_v_eq_zero _ _ _ _ _ (by lia)]
     simp
   · rw [δ_v (-1) 0 (neg_add_cancel 1) _ (n + 1) (n + 1) (by lia) n (n + 2)
       (by lia) (by lia), Cochain.add_v,

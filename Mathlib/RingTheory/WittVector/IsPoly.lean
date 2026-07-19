@@ -232,8 +232,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), ?_⟩⟩
   intros
   funext n
-  simp +unfoldPartialApp only [peval, aeval_bind₁, hh, hf, hg,
-    uncurry]
+  simp +unfoldPartialApp only [peval, aeval_bind₁, hh, hf, hg, uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
   fin_cases i <;> simp [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp_def]

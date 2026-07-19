@@ -138,8 +138,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
       (IsFiltered.leftToMax j₂ j₃) (IsFiltered.rightToMax j₂ j₃) f g
   apply M.mk_eq
   use s, α, γ
-  simp_rw [map_mul, ← comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
-    comp_apply, hfg]
+  simp_rw [map_mul, ← comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp, comp_apply, hfg]
 
 /-- Multiplication in the colimit. See also `colimitMulAux`. -/
 @[to_additive /-- Addition in the colimit. See also `colimitAddAux`. -/]

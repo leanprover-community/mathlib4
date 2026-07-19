@@ -82,8 +82,7 @@ lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
     rw [← L.comp_inl_add_comp_inr]
     simp
   rw [h1, h2]
-  simp only [FunLike.coe_sub, FunLike.coe_smul,
-    FunLike.coe_add]
+  simp only [FunLike.coe_sub, FunLike.coe_smul, FunLike.coe_add]
   rw [variance_sub, variance_smul, variance_add, variance_smul, variance_smul, covariance_smul_left,
     covariance_smul_right, variance_smul, covariance_smul_left, covariance_smul_right]
   · have h := Real.cos_sq_add_sin_sq θ

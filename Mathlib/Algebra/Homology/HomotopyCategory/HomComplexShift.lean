@@ -138,8 +138,7 @@ lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : �
     (γ.rightUnshift n hn').rightShift a n' hn' = γ := by
   ext p q hpq
   simp only [(γ.rightUnshift n hn').rightShift_v a n' hn' p q hpq (p + n) rfl,
-    γ.rightUnshift_v n hn' p (p + n) rfl q hpq,
-    shiftFunctorObjXIso, assoc, Iso.hom_inv_id, comp_id]
+    γ.rightUnshift_v n hn' p (p + n) rfl q hpq, shiftFunctorObjXIso, assoc, Iso.hom_inv_id, comp_id]
 
 @[simp]
 lemma leftUnshift_leftShift (a n' : ℤ) (hn' : n + a = n') :
@@ -298,8 +297,7 @@ lemma leftShift_smul (a n' : ℤ) (hn' : n + a = n') (x : R) :
     (x • γ).leftShift a n' hn' = x • γ.leftShift a n' hn' := by
   ext p q hpq
   dsimp
-  simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by lia), smul_v, Linear.comp_smul,
-    smul_comm x]
+  simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by lia), smul_v, Linear.comp_smul, smul_comm x]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -425,12 +423,10 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
       δ_v n' m' hnm' _ p q hpq (p + n') (p + 1) (by lia) rfl,
       γ.rightShift_v a n' hn' p (p + n') rfl (p + n) rfl,
       γ.rightShift_v a n' hn' (p + 1) q _ (p + m) (by lia)]
-    simp only [shiftFunctorObjXIso, shiftFunctor_obj_d',
-      Linear.comp_units_smul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d,
-      add_comp, HomologicalComplex.d_comp_XIsoOfEq_inv, Linear.units_smul_comp, smul_add,
-      add_right_inj, smul_smul]
-    simp only [← hm', add_comm m', Int.negOnePow_add, ← mul_assoc,
-      Int.units_mul_self, one_mul]
+    simp only [shiftFunctorObjXIso, shiftFunctor_obj_d', Linear.comp_units_smul, assoc,
+      HomologicalComplex.XIsoOfEq_inv_comp_d, add_comp, HomologicalComplex.d_comp_XIsoOfEq_inv,
+      Linear.units_smul_comp, smul_add, add_right_inj, smul_smul]
+    simp only [← hm', add_comm m', Int.negOnePow_add, ← mul_assoc, Int.units_mul_self, one_mul]
   · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by lia)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 

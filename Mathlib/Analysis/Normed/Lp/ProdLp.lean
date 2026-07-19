@@ -741,8 +741,7 @@ variable {p α β}
 theorem prod_norm_eq_of_nat [Norm α] [Norm β] (n : ℕ) (h : p = n) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ n + ‖f.snd‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
-  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
-    prod_norm_eq_add this]
+  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast, prod_norm_eq_add this]
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
@@ -864,14 +863,12 @@ lemma norm_toLp_snd (y : β) : ‖toLp p ((0 : α), y)‖ = ‖y‖ :=
 @[simp]
 lemma nndist_toLp_fst (x₁ x₂ : α) :
     nndist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = nndist x₁ x₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
-    nnnorm_toLp_inl]
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero, nnnorm_toLp_inl]
 
 @[simp]
 lemma nndist_toLp_snd (y₁ y₂ : β) :
     nndist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = nndist y₁ y₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
-    nnnorm_toLp_inr]
+  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero, nnnorm_toLp_inr]
 
 @[simp]
 lemma dist_toLp_fst (x₁ x₂ : α) : dist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = dist x₁ x₂ :=

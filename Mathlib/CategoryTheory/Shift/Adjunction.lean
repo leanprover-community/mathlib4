@@ -92,9 +92,8 @@ lemma compatibilityCounit_of_compatibilityUnit (h : CompatibilityUnit adj e₁ e
     CompatibilityCounit adj e₁ e₂ := by
   intro Y
   have eq := h (G.obj Y)
-  simp only [← cancel_mono (e₂.inv.app _ ≫ G.map (e₁.inv.app _)),
-    assoc, Iso.hom_inv_id_app_assoc, comp_id, ← Functor.map_comp,
-    Iso.hom_inv_id_app, Functor.comp_obj, Functor.map_id] at eq
+  simp only [← cancel_mono (e₂.inv.app _ ≫ G.map (e₁.inv.app _)), assoc, Iso.hom_inv_id_app_assoc,
+    comp_id, ← Functor.map_comp, Iso.hom_inv_id_app, Functor.comp_obj, Functor.map_id] at eq
   apply (adj.homEquiv _ _).injective
   dsimp
   rw [adj.homEquiv_unit, adj.homEquiv_unit, G.map_comp, adj.unit_naturality_assoc, ← eq]

@@ -152,8 +152,7 @@ lemma nhdsWithin_top : 𝓝[≠] (⊤ : EReal) = (atTop).map Real.toEReal := by
 
 lemma nhdsWithin_bot : 𝓝[≠] (⊥ : EReal) = (atBot).map Real.toEReal := by
   apply (nhdsWithin_hasBasis nhds_bot_basis_Iic _).ext (atBot_basis.map Real.toEReal)
-  · simp only [EReal.image_coe_Iic,
-      true_and]
+  · simp only [EReal.image_coe_Iic, true_and]
     intro x hx
     by_cases hx_top : x = ⊤
     · simp [hx_top]

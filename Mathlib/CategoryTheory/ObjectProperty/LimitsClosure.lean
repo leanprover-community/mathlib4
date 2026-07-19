@@ -146,8 +146,7 @@ lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     exact ⟨hb', fun a ↦ ((strictLimitsOfShape_le_limitsOfShape _ _).trans
       (limitsOfShape_monotone _ hb')).trans (limitsOfShape_le _ _)⟩
   | isSuccLimit b hb hb' =>
-    simp only [transfiniteIterate_limit _ _ _ hb,
-      iSup_le_iff, Subtype.forall, Set.mem_Iio]
+    simp only [transfiniteIterate_limit _ _ _ hb, iSup_le_iff, Subtype.forall, Set.mem_Iio]
     intro c hc
     exact hb' _ hc
 
@@ -166,8 +165,7 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
     infer_instance
   | succ b hb hb' =>
     have := H (Order.le_succ b)
-    rw [strictLimitsClosureIter, transfiniteIterate_succ _ _ _ hb,
-      strictLimitsClosureStep]
+    rw [strictLimitsClosureIter, transfiniteIterate_succ _ _ _ hb, strictLimitsClosureStep]
     infer_instance
   | isSuccLimit b hb hb' =>
     simp only [transfiniteIterate_limit _ _ _ hb]
@@ -222,8 +220,7 @@ lemma isoClosure_strictLimitsClosureIter_eq_limitsClosure :
   · have (a : α) :
         (P.strictLimitsClosureIter J κ.ord).isoClosure.IsClosedUnderLimitsOfShape (J a) := ⟨by
       conv_rhs => rw [← P.strictLimitsClosureStep_strictLimitsClosureIter_eq_self J κ h]
-      rw [limitsOfShape_isoClosure, ← isoClosure_strictLimitsOfShape,
-        strictLimitsClosureStep]
+      rw [limitsOfShape_isoClosure, ← isoClosure_strictLimitsOfShape, strictLimitsClosureStep]
       exact monotone_isoClosure ((le_trans (by rfl) (le_iSup _ a)).trans le_sup_right)⟩
     refine limitsClosure_le
       ((P.le_strictLimitsClosureIter J κ.ord).trans (le_isoClosure _))
@@ -234,8 +231,7 @@ lemma isEssentiallySmall_limitsClosure
     ObjectProperty.EssentiallySmall.{w} (P.limitsClosure J) := by
   obtain ⟨Q, hQ, hQ₁, hQ₂⟩ := EssentiallySmall.exists_small_le.{w} P
   have : ObjectProperty.EssentiallySmall.{w} (Q.isoClosure.limitsClosure J) := by
-    rw [limitsClosure_isoClosure,
-      ← Q.isoClosure_strictLimitsClosureIter_eq_limitsClosure J κ h]
+    rw [limitsClosure_isoClosure, ← Q.isoClosure_strictLimitsClosureIter_eq_limitsClosure J κ h]
     infer_instance
   exact .of_le (limitsClosure_monotone J hQ₂)
 

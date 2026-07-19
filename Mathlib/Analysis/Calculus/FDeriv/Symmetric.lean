@@ -360,8 +360,7 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
   convert! TA1.sub TA2 using 1
   ext h
-  simp only [two_smul, smul_add, ← add_assoc, map_add,
-    add_apply]
+  simp only [two_smul, smul_add, ← add_assoc, map_add, add_apply]
   abel
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is

@@ -559,8 +559,7 @@ theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
   by_cases hq : q = 0
   · simp [hq]
   rw [div_def, leadingCoeff_mul, leadingCoeff_C,
-    leadingCoeff_divByMonic_of_monic (monic_mul_leadingCoeff_inv hq) _, mul_comm,
-    div_eq_mul_inv]
+    leadingCoeff_divByMonic_of_monic (monic_mul_leadingCoeff_inv hq) _, mul_comm, div_eq_mul_inv]
   rwa [degree_mul_leadingCoeff_inv q hq]
 
 theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
@@ -585,8 +584,7 @@ theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
 theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
   ⟨fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
-      rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, inv_mul_cancel₀ ha, C.map_one,
-        one_mul]⟩,
+      rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, inv_mul_cancel₀ ha, C.map_one, one_mul]⟩,
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :

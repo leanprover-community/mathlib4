@@ -168,8 +168,7 @@ theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
         fun k => (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by
   simp only [exp_pow_eq_rescale_exp, rescale]
   ext
-  simp only [one_div, coeff_mk, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    coeff_exp, map_sum]
+  simp only [one_div, coeff_mk, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, coeff_exp, map_sum]
 
 end PowerSeries
 

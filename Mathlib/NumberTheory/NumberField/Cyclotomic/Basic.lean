@@ -289,8 +289,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K
     apply RingHom.injective_int (algebraMap ℤ ℚ)
     rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
     simp only [algebraMap_int_eq, map_neg, map_ofNat]
-    simpa only [zero_add, pow_one, AddSubgroupClass.coe_sub, OneMemClass.coe_one,
-        pow_zero]
+    simpa only [zero_add, pow_one, AddSubgroupClass.coe_sub, OneMemClass.coe_one, pow_zero]
       using! hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat
         (by simp only [zero_add, pow_one, Nat.ofNat_pos]))
   convert! Int.prime_two
@@ -459,10 +458,9 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   rw [← this, show pB.gen = pB.gen ^ (⟨1, hdim⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.repr_self_apply] at h
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
-  rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
-    map_smul, ← zsmul_one, ← pB.basis.coord_apply, map_smul,
-    show 1 = pB.gen ^ (⟨0, by lia⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
-    pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
+  rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply, map_smul, ← zsmul_one,
+    ← pB.basis.coord_apply, map_smul, show 1 = pB.gen ^ (⟨0, by lia⟩ : Fin pB.dim).1 by simp,
+    ← pB.basis_eq_pow, pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩
 

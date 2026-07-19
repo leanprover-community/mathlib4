@@ -574,8 +574,7 @@ theorem natCast_eq_iff (p : ℕ) (n : ℕ) (z : ZMod p) [NeZero p] :
     refine ⟨n / p, ?_⟩
     rw [val_natCast, Nat.mod_add_div]
   · rintro ⟨k, rfl⟩
-    rw [Nat.cast_add, natCast_zmod_val, Nat.cast_mul, natCast_self, zero_mul,
-      add_zero]
+    rw [Nat.cast_add, natCast_zmod_val, Nat.cast_mul, natCast_self, zero_mul, add_zero]
 
 theorem intCast_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
     ↑n = z ↔ ∃ k, n = z.val + p * k := by
@@ -827,8 +826,7 @@ lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUn
 /-- In `ZMod (p ^ d)` with `0 < d`, a natural number is a unit iff `p` does not divide it. -/
 theorem isUnit_natCast_iff_not_dvd_pow {p d a : ℕ} (hp : p.Prime) (hd : 0 < d) :
     IsUnit (a : ZMod (p ^ d)) ↔ ¬ p ∣ a := by
-  rw [isUnit_iff_coprime, Nat.coprime_pow_right_iff hd, Nat.coprime_comm,
-    hp.coprime_iff_not_dvd]
+  rw [isUnit_iff_coprime, Nat.coprime_pow_right_iff hd, Nat.coprime_comm, hp.coprime_iff_not_dvd]
 
 /-- In `ZMod (p ^ d)` with `0 < d`, the prime `p` is not a unit. -/
 theorem prime_natCast_not_isUnit_pow {p d : ℕ} (hp : p.Prime) (hd : 0 < d) :

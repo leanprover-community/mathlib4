@@ -164,17 +164,15 @@ lemma singleObjHomologySelfIso_inv_naturality :
     (singleObjHomologySelfIso c j A).inv ≫ homologyMap ((single C c j).map f) j =
       f ≫ (singleObjHomologySelfIso c j B).inv := by
   rw [← cancel_mono (singleObjHomologySelfIso c j B).hom, assoc, assoc,
-    singleObjHomologySelfIso_hom_naturality,
-    Iso.inv_hom_id_assoc, Iso.inv_hom_id, comp_id]
+    singleObjHomologySelfIso_hom_naturality, Iso.inv_hom_id_assoc, Iso.inv_hom_id, comp_id]
 
 @[reassoc (attr := simp)]
 lemma singleObjOpcyclesSelfIso_hom_naturality :
     (singleObjOpcyclesSelfIso c j A).hom ≫ opcyclesMap ((single C c j).map f) j =
       f ≫ (singleObjOpcyclesSelfIso c j B).hom := by
   rw [← cancel_epi (singleObjCyclesSelfIso c j A).hom,
-    singleObjCyclesSelfIso_hom_singleObjOpcyclesSelfIso_hom_assoc, p_opcyclesMap,
-    single_map_f_self, assoc, assoc, singleObjCyclesSelfIso_hom,
-    singleObjOpcyclesSelfIso_hom, assoc]
+    singleObjCyclesSelfIso_hom_singleObjOpcyclesSelfIso_hom_assoc, p_opcyclesMap, single_map_f_self,
+    assoc, assoc, singleObjCyclesSelfIso_hom, singleObjOpcyclesSelfIso_hom, assoc]
 
 @[reassoc (attr := simp)]
 lemma singleObjOpcyclesSelfIso_inv_naturality :

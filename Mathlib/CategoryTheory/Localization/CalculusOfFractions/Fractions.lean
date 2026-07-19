@@ -287,13 +287,11 @@ lemma exists_leftFraction₂ {X Y : C} (f f' : L.obj X ⟶ L.obj Y) :
     rw [L.map_comp]
     infer_instance
   refine ⟨ψ, ?_, ?_⟩
-  · rw [← cancel_mono (L.map (φ'.s ≫ α.s)), LeftFraction.map_comp_map_s,
-      hα, L.map_comp, hφ, LeftFraction.map_comp_map_s_assoc,
-      L.map_comp]
+  · rw [← cancel_mono (L.map (φ'.s ≫ α.s)), LeftFraction.map_comp_map_s, hα, L.map_comp, hφ,
+      LeftFraction.map_comp_map_s_assoc, L.map_comp]
   · rw [← cancel_mono (L.map (φ'.s ≫ α.s)), hφ']
     nth_rw 1 [L.map_comp]
-    rw [LeftFraction.map_comp_map_s_assoc, LeftFraction.map_comp_map_s,
-      L.map_comp]
+    rw [LeftFraction.map_comp_map_s_assoc, LeftFraction.map_comp_map_s, L.map_comp]
 
 lemma exists_leftFraction₃ {X Y : C} (f f' f'' : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.LeftFraction₃ X Y), f = φ.fst.map L (inverts L W) ∧

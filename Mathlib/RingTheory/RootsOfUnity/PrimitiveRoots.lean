@@ -593,8 +593,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (
   obtain (rfl | hn) := n.eq_zero_or_pos; · simp
   by_cases hα : α = 0
   · rw [hα, zero_pow hn.ne'] at e
-    simp only [hα, e.symm, nthRoots_zero_right, mul_zero,
-      Multiset.map_const', Multiset.card_range]
+    simp only [hα, e.symm, nthRoots_zero_right, mul_zero, Multiset.map_const', Multiset.card_range]
   classical
   symm; apply Multiset.eq_of_le_of_card_le
   · rw [← Finset.range_val,

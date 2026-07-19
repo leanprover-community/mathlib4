@@ -232,8 +232,7 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
           rw [← Fintype.card_fin n]
         exact_mod_cast G.minDegree_lt_card
       contrapose! hδ_lt_card with h1_le_rε
-      rw [← div_le_iff₀' (by positivity), ← sub_nonpos,
-        ← le_sub_self_iff 1, ← sub_add] at h1_le_rε
+      rw [← div_le_iff₀' (by positivity), ← sub_nonpos, ← le_sub_self_iff 1, ← sub_add] at h1_le_rε
       exact hδ.trans' (le_mul_of_one_le_left n.cast_nonneg h1_le_rε)
     have ht_lt_t' : t < t' := by
       rw [mul_comm (r : ℝ) (t' : ℝ), mul_assoc] at ht_lt_rt'ε

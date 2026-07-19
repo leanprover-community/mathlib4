@@ -607,8 +607,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
   filter_upwards [Ici_mem_atTop (0, 1)]
   rintro ⟨-, n⟩ ⟨-, (hn : 1 ≤ n)⟩
   congr
-  rw [partialSum, eq_sub_iff_add_eq', Finset.range_eq_Ico,
-        Finset.sum_eq_sum_Ico_succ_bot hn]
+  rw [partialSum, eq_sub_iff_add_eq', Finset.range_eq_Ico, Finset.sum_eq_sum_Ico_succ_bot hn]
   congr with i
   exact i.elim0
 

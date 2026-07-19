@@ -346,8 +346,7 @@ theorem tendsto_nhds_infty {α : Type*} {f : OnePoint X → α} {l : Filter α} 
     Tendsto f (𝓝 ∞) l ↔
       ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   tendsto_nhds_infty'.trans <| by
-    simp only [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and,
-      and_assoc]
+    simp only [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and, and_assoc]
 
 theorem continuousAt_infty' {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔ Tendsto (f ∘ (↑)) (coclosedCompact X) (𝓝 (f ∞)) :=

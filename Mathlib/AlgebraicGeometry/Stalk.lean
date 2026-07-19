@@ -211,8 +211,7 @@ lemma Spec.fromSpecStalk_eq :
     (Spec R).fromSpecStalk x =
       Spec.map ((Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.germ ⊤ x trivial) := by
   rw [← (isAffineOpen_top (Spec R)).fromSpecStalk_eq_fromSpecStalk (x := x) trivial,
-    IsAffineOpen.fromSpecStalk, IsAffineOpen.fromSpec_top, Scheme.isoSpec_Spec_inv,
-    ← Spec.map_comp]
+    IsAffineOpen.fromSpecStalk, IsAffineOpen.fromSpec_top, Scheme.isoSpec_Spec_inv, ← Spec.map_comp]
 
 -- This is not a simp lemma to respect the abstraction boundaries
 /-- A variant of `Spec.fromSpecStalk_eq` that breaks abstraction boundaries. -/
@@ -323,8 +322,7 @@ lemma germ_stalkClosedPointTo (U : Opens X) (hU : f (closedPoint R) ∈ U) :
   rw [stalkClosedPointTo, Scheme.Hom.germ_stalkMap_assoc, Iso.trans_hom]
   congr 1
   rw [← Iso.eq_comp_inv, Category.assoc, ΓSpecIso_hom_stalkClosedPointIso_inv]
-  simp only [Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
-    TopCat.Presheaf.germ_res]
+  simp only [Functor.mapIso_hom, Iso.op_hom, eqToIso.hom, TopCat.Presheaf.germ_res]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]

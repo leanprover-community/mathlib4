@@ -333,8 +333,7 @@ lemma lmarginalPartialTraj_eq_lintegral_map [∀ n, IsSFiniteKernel (κ n)] {f :
       ∂(partialTraj κ a b).map (restrict₂ Ioc_subset_Iic_self) (frestrictLe a x₀) := by
   nth_rw 1 [lmarginalPartialTraj, partialTraj_eq_prod, lintegral_map, lintegral_id_prod]
   · congrm ∫⁻ _, f (fun i ↦ ?_) ∂_
-    simp only [updateFinset, mem_Iic, IicProdIoc_def,
-      frestrictLe_apply, mem_Ioc]
+    simp only [updateFinset, mem_Iic, IicProdIoc_def, frestrictLe_apply, mem_Ioc]
     split_ifs <;> try rfl
     all_goals lia
   all_goals fun_prop

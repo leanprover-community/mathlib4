@@ -110,8 +110,7 @@ lemma fac [H.IsGenerating] {Y : C} (f : Y ⟶ X) (hf : S f) :
   apply hom_ext H P hP _ (J.pullback_stable f E.mem₀)
   intro Z g
   rintro ⟨T, a, b, ⟨i⟩, fac⟩
-  rw [assoc, ← P.map_comp, ← op_comp, ← fac,
-    op_comp, P.map_comp, fac'_assoc]
+  rw [assoc, ← P.map_comp, ← op_comp, ← fac, op_comp, P.map_comp, fac'_assoc]
   exact F.condition {
     fst := { hf := le _ (Sieve.ofArrows_mk _ _ _), .. }
     snd := { hf := hf, .. }

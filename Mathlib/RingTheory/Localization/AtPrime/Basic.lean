@@ -595,9 +595,8 @@ theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
   have h₂ : equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk p ↑s) ≠ 0 := by
     rwa [RingEquiv.map_ne_zero_iff]
   rw [RingEquiv.symm_apply_eq, ← mul_left_inj' h₂, map_mul, mul_assoc, ← map_mul,
-    inv_mul_cancel₀ h₁, map_one, mul_one, equivQuotMaximalIdeal_apply_mk, ← map_mul,
-    mk'_spec, Ideal.Quotient.mk_algebraMap, equivQuotMaximalIdeal_apply_mk,
-    Ideal.Quotient.mk_algebraMap]
+    inv_mul_cancel₀ h₁, map_one, mul_one, equivQuotMaximalIdeal_apply_mk, ← map_mul, mk'_spec,
+    Ideal.Quotient.mk_algebraMap, equivQuotMaximalIdeal_apply_mk, Ideal.Quotient.mk_algebraMap]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `R ⧸ p ^ n ≃ₐ[R] Rₚ ⧸ maximalIdeal Rₚ ^ n`, where `Rₚ` satisfies
@@ -646,8 +645,7 @@ lemma under_map_eq_map : (Ideal.map (algebraMap R Sₚ) p).under S = pS := by
   obtain ⟨α, hα, hαx⟩ : ∃ α ∉ p, α • x ∈ pS := by
     have ⟨⟨y, s⟩, hy⟩ := (IsLocalization.mem_map_algebraMap_iff
       (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ).mp hx
-    rw [← map_mul,
-      IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S p.primeCompl)] at hy
+    rw [← map_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S p.primeCompl)] at hy
     obtain ⟨c, hc⟩ := hy
     obtain ⟨α, hα, e⟩ := (c * s).prop
     refine ⟨α, hα, ?_⟩

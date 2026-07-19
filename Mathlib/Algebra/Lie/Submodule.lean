@@ -485,8 +485,7 @@ theorem add_eq_sup : N + N' = N ⊔ N' :=
 
 @[simp]
 theorem mem_inf (x : M) : x ∈ N ⊓ N' ↔ x ∈ N ∧ x ∈ N' := by
-  rw [← mem_toSubmodule, ← mem_toSubmodule, ← mem_toSubmodule, inf_toSubmodule,
-    Submodule.mem_inf]
+  rw [← mem_toSubmodule, ← mem_toSubmodule, ← mem_toSubmodule, inf_toSubmodule, Submodule.mem_inf]
 
 theorem mem_sup (x : M) : x ∈ N ⊔ N' ↔ ∃ y ∈ N, ∃ z ∈ N', y + z = x := by
   rw [← mem_toSubmodule, sup_toSubmodule, Submodule.mem_sup]; exact Iff.rfl
@@ -798,8 +797,7 @@ theorem comap_incl_eq_top : N₂.comap N.incl = ⊤ ↔ N ≤ N₂ := by
     LieSubmodule.top_toSubmodule, Submodule.comap_subtype_eq_top, toSubmodule_le_toSubmodule]
 
 theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
-  simp only [← toSubmodule_inj, toSubmodule_comap, incl_coe, bot_toSubmodule,
-    inf_toSubmodule]
+  simp only [← toSubmodule_inj, toSubmodule_comap, incl_coe, bot_toSubmodule, inf_toSubmodule]
   rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
 @[gcongr, mono]

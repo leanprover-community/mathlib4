@@ -137,9 +137,8 @@ def isPointwiseRightKanExtensionAtOfIsoOfIsLocalization
       dsimp at eq hφ ⊢
       rw [id_comp] at eq
       rw [assoc] at hφ
-      simp only [← cancel_mono (F.map w), ← eq, comp_obj, comp_map, assoc,
-        ← hφ, ← NatTrans.naturality, ← G.map_comp_assoc,
-        Localization.isoOfHom_inv_hom_id, comp_id]
+      simp only [← cancel_mono (F.map w), ← eq, comp_obj, comp_map, assoc, ← hφ,
+        ← NatTrans.naturality, ← G.map_comp_assoc, Localization.isoOfHom_inv_hom_id, comp_id]
   uniq s m hm := by
     have := hm (StructuredArrow.mk (𝟙 (L.obj Y)))
     dsimp at this m hm ⊢

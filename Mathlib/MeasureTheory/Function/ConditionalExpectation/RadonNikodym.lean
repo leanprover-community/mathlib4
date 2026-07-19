@@ -67,9 +67,8 @@ lemma toReal_rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
       rw [setIntegral_map ht _ hg.aemeasurable]
       exact Measurable.aestronglyMeasurable (by fun_prop)
     _ = ∫ x in g ⁻¹' t, (μ.rnDeriv ν x).toReal ∂ν := by
-      rw [Measure.setIntegral_toReal_rnDeriv (hμν.map hg),
-        Measure.setIntegral_toReal_rnDeriv hμν, measureReal_def, Measure.map_apply hg ht,
-        measureReal_def]
+      rw [Measure.setIntegral_toReal_rnDeriv (hμν.map hg), Measure.setIntegral_toReal_rnDeriv hμν,
+        measureReal_def, Measure.map_apply hg ht, measureReal_def]
   · refine (Measurable.ennreal_toReal fun s hs ↦ ?_).aestronglyMeasurable
     exact ⟨_, Measure.measurable_rnDeriv _ _ hs, rfl⟩
 

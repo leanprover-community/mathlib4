@@ -188,8 +188,7 @@ lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.aff
     (I.map f).ideal U = (I.ideal ⟨_, H⟩).comap (f.app U).hom := by
   have : RingHom.ker (I.subschemeObjIso ⟨_, H⟩).inv.hom = ⊥ :=
     RingHom.ker_coe_equiv (I.subschemeObjIso ⟨_, H⟩).symm.commRingCatIsoToRingEquiv
-  simp [map, ← RingHom.comap_ker, subschemeι_app _ ⟨_, H⟩,
-    this, ← RingHom.ker_eq_comap_bot]
+  simp [map, ← RingHom.comap_ker, subschemeι_app _ ⟨_, H⟩, this, ← RingHom.ker_eq_comap_bot]
 
 lemma ideal_map_of_isAffineHom
     (I : X.IdealSheafData) (f : X ⟶ Y) [IsAffineHom f] (U : Y.affineOpens) :

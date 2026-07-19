@@ -68,8 +68,7 @@ lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
   · dsimp only [fromSingleMk]
     rw [δ_single _ n n' (by lia) (p - 1) q' (by lia) hq]
     simp
-  · simp [δ_shape n n' (by lia), HomologicalComplex.shape K q q' (by simp; lia),
-      fromSingleMk]
+  · simp [δ_shape n n' (by lia), HomologicalComplex.shape K q q' (by simp; lia), fromSingleMk]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify

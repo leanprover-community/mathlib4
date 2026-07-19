@@ -78,8 +78,7 @@ lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
       obtain ⟨y, _, e⟩ := H 1
       rw [map_one, mul_one] at e
       subst e
-      simp only [← map_mul, (FaithfulSMul.algebraMap_injective S L).eq_iff,
-        exists_eq_right] at H
+      simp only [← map_mul, (FaithfulSMul.algebraMap_injective S L).eq_iff, exists_eq_right] at H
       exact ⟨_, H, rfl⟩
   · rw [AlgHom.map_adjoin, Set.image_singleton]; rfl
 

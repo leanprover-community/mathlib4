@@ -220,8 +220,7 @@ lemma indepFun_iff_hasLaw_prodMk_prod [IsFiniteMeasure P] {𝓨 : Type*} {m𝓨 
     X ⟂ᵢ[P] Y ↔ HasLaw (fun ω ↦ (X ω, Y ω)) (μ.prod ν) P where
   mp h :=
     { map_eq := by
-        rw [h.map_prod_eq_prod_map_map (by fun_prop) (by fun_prop), hX.map_eq,
-          hY.map_eq] }
+        rw [h.map_prod_eq_prod_map_map (by fun_prop) (by fun_prop), hX.map_eq, hY.map_eq] }
   mpr h := by
     rw [indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop),
       h.map_eq, hX.map_eq, hY.map_eq]

@@ -113,8 +113,7 @@ theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
 @[simp]
 theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C r) = HahnSeries.C r := by
   ext n
-  simp only [ofPowerSeries_apply, C, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    coeff_single]
+  simp only [ofPowerSeries_apply, C, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, coeff_single]
   split_ifs with hn
   · subst hn
     convert! embDomain_coeff (a := 0) <;> simp

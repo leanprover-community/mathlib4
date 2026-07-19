@@ -214,9 +214,8 @@ theorem continuousAlternatingMapCoordChange_apply (b : B)
         ⟨b, (continuousAlternatingMap 𝕜 ι e₁ e₂).symm b L⟩).2 := by
   ext v
   simp only [mem_inter_iff] at hb
-  simp [continuousAlternatingMapCoordChange, continuousAlternatingMap_apply,
-    Function.comp_def, Trivialization.coordChangeL_apply,
-    continuousAlternatingMap_symm_apply' hb.left, hb]
+  simp [continuousAlternatingMapCoordChange, continuousAlternatingMap_apply, Function.comp_def,
+    Trivialization.coordChangeL_apply, continuousAlternatingMap_symm_apply' hb.left, hb]
 
 end Bundle.Pretrivialization
 

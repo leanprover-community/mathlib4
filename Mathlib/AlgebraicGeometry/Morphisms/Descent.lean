@@ -118,8 +118,7 @@ lemma IsStableUnderBaseChange.of_pullback_fst_of_isAffine [P'.RespectsIso]
   apply H ((T.isoSpec.inv ≫ p) ≫ f)
   · rw [Category.assoc, P'.cancel_left_of_respectsIso]
     exact P'.comp_mem _ _ hp h
-  · rw [← pullbackRightPullbackFstIso_inv_fst f g (T.isoSpec.inv ≫ p),
-        P.cancel_left_of_respectsIso]
+  · rw [← pullbackRightPullbackFstIso_inv_fst f g (T.isoSpec.inv ≫ p), P.cancel_left_of_respectsIso]
     exact P.pullback_fst _ _ hf
 
 open Opposite

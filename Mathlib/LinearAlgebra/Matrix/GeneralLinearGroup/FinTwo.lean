@@ -248,9 +248,8 @@ lemma fixpointPolynomial_eq_zero_iff {g : GL (Fin 2) R} :
 lemma parabolicEigenvalue_ne_zero {g : GL (Fin 2) K} [NeZero (2 : K)] (hg : IsParabolic g) :
     g.val.parabolicEigenvalue ≠ 0 := by
   have : g.val.trace ^ 2 = 4 * g.val.det := by simpa [sub_eq_zero, discr_fin_two] using hg.2
-  rw [parabolicEigenvalue, div_ne_zero_iff, eq_true_intro (two_ne_zero' K), and_true,
-    Ne, ← sq_eq_zero_iff, this, show (4 : K) = 2 ^ 2 by norm_num, mul_eq_zero,
-    sq_eq_zero_iff, not_or]
+  rw [parabolicEigenvalue, div_ne_zero_iff, eq_true_intro (two_ne_zero' K), and_true, Ne,
+    ← sq_eq_zero_iff, this, show (4 : K) = 2 ^ 2 by norm_num, mul_eq_zero, sq_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, g.det_ne_zero⟩
 
 /-- A non-zero power of a parabolic element is parabolic. -/
@@ -265,9 +264,8 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     | base => simp
     | succ n hn IH =>
       simp only [pow_succ, IH, add_mul, Nat.add_sub_cancel, mul_add, ← map_mul, add_assoc]
-      simp only [scalar_apply, ← smul_eq_mul_diagonal, ← mul_smul,
-        ← smul_eq_diagonal_mul, smul_mul, ← sq, hmsq, smul_zero, add_zero, ← add_smul,
-        Nat.cast_add_one, add_mul, one_mul]
+      simp only [scalar_apply, ← smul_eq_mul_diagonal, ← mul_smul, ← smul_eq_diagonal_mul, smul_mul,
+        ← sq, hmsq, smul_zero, add_zero, ← add_smul, Nat.cast_add_one, add_mul, one_mul]
       rw [(by lia : n = n - 1 + 1), pow_succ, (by lia : n - 1 + 1 = n)]
       ring_nf
   · suffices a ≠ 0 by simp [this, hm0, hn]

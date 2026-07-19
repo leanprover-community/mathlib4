@@ -230,9 +230,8 @@ theorem ι_isoCarrier_inv (i : D.J) :
     PresheafedSpace.forget_map, ← PresheafedSpace.comp_base, ← Category.assoc,
     D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
   dsimp
-  rw [← Category.assoc, ← PresheafedSpace.comp_base,
-    ← InducedCategory.comp_hom, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i,
-    ← PresheafedSpace.comp_base]
+  rw [← Category.assoc, ← PresheafedSpace.comp_base, ← InducedCategory.comp_hom,
+    D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i, ← PresheafedSpace.comp_base]
   change (_ ≫ D.isoLocallyRingedSpace.inv).base = _
   rw [D.ι_isoLocallyRingedSpace_inv i]
 

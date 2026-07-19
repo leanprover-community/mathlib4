@@ -189,8 +189,7 @@ theorem IsStationary.nonempty (hs : IsStationary s) : s.Nonempty := by
   simpa using hs .univ
 
 theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α := by
-  simp [IsStationary, ← not_imp_not (b := IsClub _), not_nonempty_iff_eq_empty,
-    isClub_empty_iff]
+  simp [IsStationary, ← not_imp_not (b := IsClub _), not_nonempty_iff_eq_empty, isClub_empty_iff]
 
 @[simp]
 protected theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=

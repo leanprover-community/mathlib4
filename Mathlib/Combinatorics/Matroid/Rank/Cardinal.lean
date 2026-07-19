@@ -141,8 +141,7 @@ theorem cRk_restrict_subset (M : Matroid α) (hYX : Y ⊆ X) : (M ↾ X).cRk Y =
   exact ⟨fun I hI ↦ (aux.2 hI).cardinalMk_le_cRk, fun I hI ↦ (aux.1 hI).cardinalMk_le_cRk⟩
 
 theorem cRk_restrict (M : Matroid α) (X Y : Set α) : (M ↾ X).cRk Y = M.cRk (X ∩ Y) := by
-  rw [← cRk_inter_ground, restrict_ground_eq, cRk_restrict_subset _ inter_subset_right,
-    inter_comm]
+  rw [← cRk_inter_ground, restrict_ground_eq, cRk_restrict_subset _ inter_subset_right, inter_comm]
 
 theorem Indep.cRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cRk I :=
   (M.cRk_le_cardinalMk I).antisymm' (hI.isBasis_self.cardinalMk_le_cRk)
@@ -351,10 +350,9 @@ instance invariantCardinalRank_map (M : Matroid α) [InvariantCardinalRank M] (h
   have hcard := hIX.cardinalMk_sdiff_comm hJX
   rwa [← lift_inj.{u, v},
     ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hIX.indep.sdiff _).subset_ground)),
-    ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hJX.indep.sdiff _).subset_ground)),
-    lift_inj, (hf.mono hIX.indep.subset_ground).image_sdiff,
-    (hf.mono hJX.indep.subset_ground).image_sdiff, inter_comm,
-    hf.image_inter hJX.indep.subset_ground hIX.indep.subset_ground,
+    ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hJX.indep.sdiff _).subset_ground)), lift_inj,
+    (hf.mono hIX.indep.subset_ground).image_sdiff, (hf.mono hJX.indep.subset_ground).image_sdiff,
+    inter_comm, hf.image_inter hJX.indep.subset_ground hIX.indep.subset_ground,
     sdiff_inter_self_eq_sdiff, sdiff_self_inter] at hcard
 
 instance invariantCardinalRank_comap (M : Matroid β) [InvariantCardinalRank M] (f : α → β) :

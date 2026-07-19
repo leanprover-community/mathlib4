@@ -51,8 +51,7 @@ theorem toReal_add_le : (a + b).toReal ≤ a.toReal + b.toReal :=
 
 theorem ofReal_add {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     ENNReal.ofReal (p + q) = ENNReal.ofReal p + ENNReal.ofReal q := by
-  rw [ENNReal.ofReal, ENNReal.ofReal, ENNReal.ofReal, ← coe_add, coe_inj,
-    Real.toNNReal_add hp hq]
+  rw [ENNReal.ofReal, ENNReal.ofReal, ENNReal.ofReal, ← coe_add, coe_inj, Real.toNNReal_add hp hq]
 
 theorem ofReal_add_le {p q : ℝ} : ENNReal.ofReal (p + q) ≤ ENNReal.ofReal p + ENNReal.ofReal q :=
   coe_le_coe.2 Real.toNNReal_add_le

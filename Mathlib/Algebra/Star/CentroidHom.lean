@@ -123,9 +123,8 @@ def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α wh
   __ := starCenterToCentroid
   invFun T :=
     ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
-  left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
-    NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom,
-    starCenterToCentroid_apply, mul_one]
+  left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom,
+    NonUnitalStarRingHom.coe_toNonUnitalRingHom, starCenterToCentroid_apply, mul_one]
   right_inv T := CentroidHom.ext <| fun _ => by
     simp [starCenterToCentroid_apply, ← map_mul_right]
 

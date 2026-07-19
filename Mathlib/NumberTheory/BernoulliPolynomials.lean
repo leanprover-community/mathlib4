@@ -140,9 +140,8 @@ nonrec theorem sum_bernoulli (n : ℕ) :
           mul_assoc, mul_comm, ← smul_eq_mul, ← smul_monomial]
   simp_rw [← sum_smul, Nat.sub_zero]
   rw [sum_range_succ_comm]
-  simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
-    choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
-    map_add, range_one, mul_one]
+  simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left, choose_succ_self_right,
+    one_smul, _root_.bernoulli_zero, sum_singleton, zero_add, map_add, range_one, mul_one]
   refine sum_eq_zero ?_
   intro x hx
   have hx1 : n + 1 - x ≠ 1 := by grind
@@ -152,9 +151,8 @@ nonrec theorem sum_bernoulli (n : ℕ) :
 theorem bernoulli_eq_sub_sum (n : ℕ) :
     (n + 1) • bernoulli n =
       (n + 1) • X ^ n - ∑ k ∈ Finset.range n, ((n + 1).choose k) • bernoulli k := by
-  simp_rw [← cast_smul_eq_nsmul (R := ℚ), smul_X_eq_monomial,
-    Nat.cast_succ, ← sum_bernoulli n, sum_range_succ_sub_sum, choose_succ_self_right,
-    Nat.cast_succ]
+  simp_rw [← cast_smul_eq_nsmul (R := ℚ), smul_X_eq_monomial, Nat.cast_succ, ← sum_bernoulli n,
+    sum_range_succ_sub_sum, choose_succ_self_right, Nat.cast_succ]
 
 /-- Another version of `sum_range_pow`. -/
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
@@ -290,9 +288,8 @@ theorem bernoulli_generating_function (t : A) :
   intro i hi
   -- deal with coefficients of e^X-1
   simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
-    PowerSeries.coeff_one, coeff_exp, sub_zero, Algebra.smul_def,
-    mul_right_comm _ ((aeval t) _), ← mul_assoc, ← map_mul, ← Polynomial.C_eq_algebraMap,
-    Polynomial.aeval_mul, Polynomial.aeval_C]
+    PowerSeries.coeff_one, coeff_exp, sub_zero, Algebra.smul_def, mul_right_comm _ ((aeval t) _),
+    ← mul_assoc, ← map_mul, ← Polynomial.C_eq_algebraMap, Polynomial.aeval_mul, Polynomial.aeval_C]
   -- finally cancel the Bernoulli polynomial and the algebra_map
   field_simp
 

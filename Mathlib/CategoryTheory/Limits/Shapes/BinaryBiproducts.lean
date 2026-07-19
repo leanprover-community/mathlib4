@@ -1015,8 +1015,7 @@ lemma biprod_isZero_iff (A B : C) [HasBinaryBiproduct A B] :
   · intro h
     simp only [IsZero.iff_id_eq_zero] at h ⊢
     simp only [show 𝟙 A = biprod.inl ≫ 𝟙 (A ⊞ B) ≫ biprod.fst by simp,
-      show 𝟙 B = biprod.inr ≫ 𝟙 (A ⊞ B) ≫ biprod.snd by simp, h, zero_comp, comp_zero,
-      and_self]
+      show 𝟙 B = biprod.inr ≫ 𝟙 (A ⊞ B) ≫ biprod.snd by simp, h, zero_comp, comp_zero, and_self]
   · rintro ⟨hA, hB⟩
     rw [IsZero.iff_id_eq_zero]
     apply biprod.hom_ext

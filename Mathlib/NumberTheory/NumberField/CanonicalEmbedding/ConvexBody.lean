@@ -68,9 +68,8 @@ theorem convexBodyLT_mem {x : K} :
 
 theorem convexBodyLT_neg_mem (x : mixedSpace K) (hx : x ∈ (convexBodyLT K f)) :
     -x ∈ (convexBodyLT K f) := by
-  simp only [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
-    mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
-    Prod.snd_neg] at hx ⊢
+  simp only [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply, mem_ball_zero_iff,
+    norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall, Prod.snd_neg] at hx ⊢
   exact hx
 
 theorem convexBodyLT_convex : Convex ℝ (convexBodyLT K f) :=

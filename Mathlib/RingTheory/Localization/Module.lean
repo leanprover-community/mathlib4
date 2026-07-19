@@ -62,9 +62,8 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   simp_rw [Sum.forall, Finset.inl_mem_disjSum, Sum.elim_inl, Finset.inr_mem_disjSum, Sum.elim_inr,
     Subtype.forall'] at hfg
   apply_fun ((a : R) • ·) at eq
-  simp_rw [← t.sum_coe_sort, Finset.smul_sum, ← smul_assoc, ← hfg,
-    algebraMap_smul, Function.comp_def, ← map_smul, ← map_sum,
-    t.sum_coe_sort (f := fun x ↦ fg (Sum.inl x) • v x),
+  simp_rw [← t.sum_coe_sort, Finset.smul_sum, ← smul_assoc, ← hfg, algebraMap_smul,
+    Function.comp_def, ← map_smul, ← map_sum, t.sum_coe_sort (f := fun x ↦ fg (Sum.inl x) • v x),
     t.sum_coe_sort (f := fun x ↦ fg (Sum.inr x) • v x)] at eq
   have ⟨s, eq⟩ := IsLocalizedModule.exists_of_eq (S := S) eq
   simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at eq

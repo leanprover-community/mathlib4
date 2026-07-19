@@ -755,9 +755,8 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       rwa [← H] at A
     ext v m
     simp only [ContinuousMultilinearMap.iteratedFDeriv, curryLeft_apply, sum_apply,
-      iteratedFDerivComponent_apply, Finset.univ_sigma_univ,
-      Pi.compRightL_apply, _root_.sum_apply, ContinuousLinearMap.comp_apply, linearDeriv_apply,
-      Finset.sum_sigma']
+      iteratedFDerivComponent_apply, Finset.univ_sigma_univ, Pi.compRightL_apply, _root_.sum_apply,
+      ContinuousLinearMap.comp_apply, linearDeriv_apply, Finset.sum_sigma']
     rw [← (Equiv.embeddingFinSucc n ι).sum_comp]
     congr with e
     congr with k

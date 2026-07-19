@@ -63,8 +63,7 @@ lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     (cocycle₁' sq hsq).1.v n m hnm ≫ p.f m = 0 := by
   have fac_right (k : ℤ) := (hsq k).fac_right
   dsimp at fac_right
-  simp [cocycle₁', -HomologicalComplex.Hom.comm,
-    ← p.comm, fac_right, reassoc_of% fac_right, b.comm]
+  simp [cocycle₁', -HomologicalComplex.Hom.comm, ← p.comm, fac_right, reassoc_of% fac_right, b.comm]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -111,11 +110,9 @@ noncomputable def cocycle₁ : Cocycle Q K 1 :=
     have := Cochain.congr_v ((cocycle₁' sq hsq).δ_eq_zero 2) n _ rfl
     rw [Cochain.zero_v, δ_v _ _ (by simp) _ _ _ _ (n + 1) _ (by lia) rfl,
       Int.negOnePow_even 2 ⟨1, by simp⟩, one_smul] at this ⊢
-    rwa [← cancel_mono (ι.f (n + 2)), ← cancel_epi (π.f n),
-      Preadditive.add_comp, Category.assoc, Category.assoc, Preadditive.comp_add,
-      HomologicalComplex.Hom.comm_assoc,
-      π_f_cochain₁_v_ι_f, zero_comp, comp_zero, ← ι.comm,
-      π_f_cochain₁_v_ι_f_assoc])
+    rwa [← cancel_mono (ι.f (n + 2)), ← cancel_epi (π.f n), Preadditive.add_comp, Category.assoc,
+      Category.assoc, Preadditive.comp_add, HomologicalComplex.Hom.comm_assoc, π_f_cochain₁_v_ι_f,
+      zero_comp, comp_zero, ← ι.comm, π_f_cochain₁_v_ι_f_assoc])
 
 lemma comp_coe_cocycle₁_comp :
     (Cochain.ofHom π).comp ((cocycle₁ sq hsq hQ hK).1.comp (.ofHom ι)

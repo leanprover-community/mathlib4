@@ -89,8 +89,7 @@ noncomputable abbrev PSL2.Iwasawa : IwasawaStructure PSL(2, F) (ℙ F (Fin 2 →
     obtain ⟨g_SL, rfl⟩ := QuotientGroup.mk_surjective g
     rw [Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk]
     change Subgroup.map _ _ = _
-    rw [PSL.smul_submodule, Matrix.SpecialLinearGroup.lineStab_smul,
-      PSL.iwasawaT_map_conj]
+    rw [PSL.smul_submodule, Matrix.SpecialLinearGroup.lineStab_smul, PSL.iwasawaT_map_conj]
   is_generator := PSL.iSup_iwasawaT_eq_top
 
 namespace SL2Simple

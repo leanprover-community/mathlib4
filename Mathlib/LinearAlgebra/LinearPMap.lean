@@ -291,8 +291,7 @@ private theorem sup_aux (f g : E →ₛₗ.[σ] F)
     rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← map_sub, ← map_sub]
     apply h
     simp only [← eq_sub_iff_add_eq] at hxy
-    simp only [AddSubgroupClass.coe_sub, hxy, ← sub_add, ← sub_sub, sub_self,
-      zero_sub, ← H]
+    simp only [AddSubgroupClass.coe_sub, hxy, ← sub_add, ← sub_sub, sub_self, zero_sub, ← H]
     apply neg_add_eq_sub
   use { toFun := fg, map_add' := ?_, map_smul' := ?_ }, fg_eq
   · rintro ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩
@@ -779,8 +778,7 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.smul_apply,
-    Prod.mk_inj] at h
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.smul_apply, Prod.mk_inj] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y
@@ -803,8 +801,7 @@ theorem neg_graph (f : E →ₗ.[R] F) :
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply,
-    Prod.mk_inj] at h
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply, Prod.mk_inj] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y

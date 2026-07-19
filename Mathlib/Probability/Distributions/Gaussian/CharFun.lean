@@ -135,8 +135,7 @@ variable [InnerProductSpace ℝ E]
 
 lemma IsGaussian.charFun_eq' [IsGaussian μ] (t : E) :
     charFun μ t = exp (⟪t, μ[id]⟫ * I - covarianceBilin μ t t / 2) := by
-  rw [IsGaussian.charFun_eq, covarianceBilin_self, integral_complex_ofReal,
-    integral_inner]
+  rw [IsGaussian.charFun_eq, covarianceBilin_self, integral_complex_ofReal, integral_inner]
   · rfl
   · exact IsGaussian.integrable_id
   · exact IsGaussian.memLp_two_id

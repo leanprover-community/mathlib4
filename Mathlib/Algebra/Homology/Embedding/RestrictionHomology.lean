@@ -69,8 +69,7 @@ noncomputable def restrictionCyclesIso :
         iCycles_d, zero_comp])
   inv :=
     (K.restriction e).liftCycles (K.iCycles j' ≫ (K.restrictionXIso e hj').inv) _ hk (by
-      rw [assoc, restriction_d_eq _ _ hj' hk', Iso.inv_hom_id_assoc,
-        iCycles_d_assoc, zero_comp])
+      rw [assoc, restriction_d_eq _ _ hj' hk', Iso.inv_hom_id_assoc, iCycles_d_assoc, zero_comp])
   hom_inv_id := by simp [← cancel_mono ((K.restriction e).iCycles j)]
   inv_hom_id := by simp [← cancel_mono (K.iCycles j')]
 
@@ -92,8 +91,7 @@ noncomputable def restrictionOpcyclesIso :
     (K.restriction e).opcycles j ≅ K.opcycles j' where
   hom :=
     (K.restriction e).descOpcycles ((K.restrictionXIso e hj').hom ≫ K.pOpcycles j') _ hi (by
-      rw [restriction_d_eq _ _ hi' hj', assoc, assoc, Iso.inv_hom_id_assoc,
-        d_pOpcycles, comp_zero])
+      rw [restriction_d_eq _ _ hi' hj', assoc, assoc, Iso.inv_hom_id_assoc, d_pOpcycles, comp_zero])
   inv :=
     K.descOpcycles ((K.restrictionXIso e hj').inv ≫ (K.restriction e).pOpcycles j) _ hi'' (by
       rw [← cancel_epi (K.restrictionXIso e hi').hom, ← restriction_d_eq_assoc,
@@ -148,9 +146,8 @@ lemma homologyπ_restrictionHomologyIso_hom :
 lemma homologyπ_restrictionHomologyIso_inv :
     K.homologyπ j' ≫ (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').inv =
       (K.restrictionCyclesIso e j k hk hj' hk' hk'').inv ≫ (K.restriction e).homologyπ j := by
-  rw [← cancel_mono (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').hom,
-    assoc, assoc, Iso.inv_hom_id, homologyπ_restrictionHomologyIso_hom, comp_id,
-    Iso.inv_hom_id_assoc]
+  rw [← cancel_mono (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').hom, assoc,
+    assoc, Iso.inv_hom_id, homologyπ_restrictionHomologyIso_hom, comp_id, Iso.inv_hom_id_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -176,7 +173,6 @@ lemma restrictionHomologyIso_hom_homologyι :
     (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').hom ≫ K.homologyι j' =
       (K.restriction e).homologyι j ≫ (K.restrictionOpcyclesIso e i j hi hi' hj' hi'').hom := by
   rw [← cancel_epi (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').inv,
-    Iso.inv_hom_id_assoc, restrictionHomologyIso_inv_homologyι_assoc,
-      Iso.inv_hom_id, comp_id]
+    Iso.inv_hom_id_assoc, restrictionHomologyIso_inv_homologyι_assoc, Iso.inv_hom_id, comp_id]
 
 end HomologicalComplex

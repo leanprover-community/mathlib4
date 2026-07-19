@@ -656,8 +656,7 @@ lemma cyclesMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     cyclesMap' (φ₁ ≫ φ₂) h₁ h₃ = cyclesMap' φ₁ h₁ h₂ ≫ cyclesMap' φ₂ h₂ h₃ := by
   let γ₁ := leftHomologyMapData φ₁ h₁ h₂
   let γ₂ := leftHomologyMapData φ₂ h₂ h₃
-  rw [γ₁.cyclesMap'_eq, γ₂.cyclesMap'_eq, (γ₁.comp γ₂).cyclesMap'_eq,
-    LeftHomologyMapData.comp_φK]
+  rw [γ₁.cyclesMap'_eq, γ₂.cyclesMap'_eq, (γ₁.comp γ₂).cyclesMap'_eq, LeftHomologyMapData.comp_φK]
 
 @[reassoc]
 lemma leftHomologyMap_comp [HasLeftHomology S₁] [HasLeftHomology S₂] [HasLeftHomology S₃]
@@ -786,8 +785,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma leftHomologyMap_eq [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     leftHomologyMap φ = h₁.leftHomologyIso.hom ≫ γ.φH ≫ h₂.leftHomologyIso.inv := by
   dsimp [LeftHomologyData.leftHomologyIso, leftHomologyMapIso']
-  rw [← γ.leftHomologyMap'_eq, ← leftHomologyMap'_comp,
-    ← leftHomologyMap'_comp, id_comp, comp_id]
+  rw [← γ.leftHomologyMap'_eq, ← leftHomologyMap'_comp, ← leftHomologyMap'_comp, id_comp, comp_id]
   rfl
 
 set_option backward.defeqAttrib.useBackward true in

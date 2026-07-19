@@ -364,9 +364,8 @@ lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_vari
     (∀ t ∈ P, MeasurableSet t) ∧ a < ∑ p ∈ P, ‖μ p‖ₑ := exists_lt_sum_of_lt_variation _ hs ha
   have I : (∑ p ∈ P.filter (fun p ↦ 0 ≤ μ p), ‖μ p‖ₑ) =
       ‖μ (⋃ p ∈ P.filter (fun p ↦ 0 ≤ μ p), p)‖ₑ := by
-    simp only [Real.norm_eq_abs, enorm_eq_nnnorm,
-      ← ENNReal.ofNNReal_finsetSum, ENNReal.coe_inj, ← NNReal.coe_inj,
-      NNReal.coe_sum, coe_nnnorm, Real.norm_eq_abs]
+    simp only [Real.norm_eq_abs, enorm_eq_nnnorm, ← ENNReal.ofNNReal_finsetSum, ENNReal.coe_inj,
+      ← NNReal.coe_inj, NNReal.coe_sum, coe_nnnorm, Real.norm_eq_abs]
     have A : ∑ x ∈ P with 0 ≤ μ x, |μ x| = μ (⋃ x ∈ P.filter (fun x ↦ 0 ≤ μ x), x) := calc
       _ = ∑ x ∈ P with 0 ≤ μ x, μ x := by
         apply Finset.sum_congr rfl (fun p hp ↦ ?_)

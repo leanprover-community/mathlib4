@@ -142,8 +142,7 @@ theorem lintegral_countable [MeasurableSingletonClass α] (f : α → ℝ≥0∞
 
 theorem lintegral_insert [MeasurableSingletonClass α] {a : α} {s : Set α} (h : a ∉ s)
     (f : α → ℝ≥0∞) : ∫⁻ x in insert a s, f x ∂μ = f a * μ {a} + ∫⁻ x in s, f x ∂μ := by
-  rw [← union_singleton, lintegral_union (measurableSet_singleton a), lintegral_singleton,
-    add_comm]
+  rw [← union_singleton, lintegral_union (measurableSet_singleton a), lintegral_singleton, add_comm]
   rwa [disjoint_singleton_right]
 
 theorem lintegral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → ℝ≥0∞) :

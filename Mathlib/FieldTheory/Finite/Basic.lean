@@ -300,8 +300,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
           simp only [this]
           split_ifs; swap
           · exact Nat.cast_zero
-          · rw [Fintype.card_units, Nat.cast_sub,
-              cast_card_eq_zero, Nat.cast_one, zero_sub]
+          · rw [Fintype.card_units, Nat.cast_sub, cast_card_eq_zero, Nat.cast_one, zero_sub]
             show 1 ≤ q; exact Fintype.card_pos_iff.mpr ⟨0⟩
         rw [← forall_pow_eq_one_iff, DFunLike.ext_iff]
         apply forall_congr'; intro x; simp [φ, Units.ext_iff]

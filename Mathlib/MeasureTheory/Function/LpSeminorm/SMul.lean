@@ -104,8 +104,7 @@ theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
 
 theorem eLpNormEssSup_const_smul (c : 𝕜) (f : α → F) :
     eLpNormEssSup (c • f) μ = ‖c‖ₑ * eLpNormEssSup f μ := by
-  simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul,
-    ENNReal.essSup_const_mul]
+  simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul, ENNReal.essSup_const_mul]
 
 theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Measure α) :
     eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by

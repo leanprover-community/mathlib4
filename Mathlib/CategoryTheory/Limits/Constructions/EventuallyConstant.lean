@@ -92,9 +92,8 @@ lemma coneπApp_eq (j j' : J) (α : j' ⟶ i₀) (β : j' ⟶ j) :
     (IsCofiltered.minToRight i₀ j) β (IsCofiltered.minToLeft i₀ j) α
   dsimp [coneπApp]
   rw [← cancel_epi ((h.isoMap α ⟨𝟙 _⟩).hom), isoMap_hom, isoMap_hom_inv_id_assoc,
-    ← cancel_epi (h.isoMap δ ⟨α⟩).hom, isoMap_hom,
-    ← F.map_comp δ β, ← h₁, F.map_comp, ← F.map_comp_assoc, ← h₂, F.map_comp_assoc,
-    isoMap_hom_inv_id_assoc]
+    ← cancel_epi (h.isoMap δ ⟨α⟩).hom, isoMap_hom, ← F.map_comp δ β, ← h₁, F.map_comp,
+    ← F.map_comp_assoc, ← h₂, F.map_comp_assoc, isoMap_hom_inv_id_assoc]
 
 @[simp]
 lemma coneπApp_eq_id : h.coneπApp i₀ = 𝟙 _ := by

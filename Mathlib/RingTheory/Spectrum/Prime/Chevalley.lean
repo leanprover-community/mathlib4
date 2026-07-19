@@ -84,8 +84,7 @@ theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
     isOpenMap_comap_of_hasGoingDown_of_finitePresentation (R := A) (S := A ⊗[K] B') _
       (basicOpen f).isOpen using 1
   ext x
-  rw [PrimeSpectrum.mem_image_comap_basicOpen, PrimeSpectrum.mem_image_comap_basicOpen,
-    not_iff_not]
+  rw [PrimeSpectrum.mem_image_comap_basicOpen, PrimeSpectrum.mem_image_comap_basicOpen, not_iff_not]
   let ψ := Algebra.TensorProduct.map
     (Algebra.TensorProduct.map (.id A A) B'.val) (.id A x.asIdeal.ResidueField)
   have hψeq : ψ = (Algebra.TensorProduct.comm _ _ _ |>.toAlgHom.comp <|

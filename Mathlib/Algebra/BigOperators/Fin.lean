@@ -525,8 +525,7 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
     simp only [Function.comp_apply, succ_succAbove_succ] at *
     rw [partialProd_succ, partialProd_succ, hi]
     rcases lt_trichotomy (i : ℕ) a with (h | h | h)
-    · rw [succAbove_of_castSucc_lt, contractNth_apply_of_lt _ _ _ _ h,
-        succAbove_of_castSucc_lt] <;>
+    · rw [succAbove_of_castSucc_lt, contractNth_apply_of_lt _ _ _ _ h, succAbove_of_castSucc_lt] <;>
       simp only [lt_def, val_castSucc, val_succ] <;>
       lia
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
@@ -559,9 +558,8 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
     · assumption
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
-  · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
-    castSucc_succ, ← mul_assoc,
-      partialProd_right_inv, contractNth_apply_of_eq]
+  · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ, castSucc_succ,
+    ← mul_assoc, partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h

@@ -99,8 +99,7 @@ theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
     F := by
   intro j hj
   rw [mem_Iio] at hj
-  simp only [intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt,
-    SetLike.mem_coe, hj]
+  simp only [intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt, SetLike.mem_coe, hj]
   convert! F.orderEmbOfFin_mem h ⟨j, hj⟩ using 1
 
 theorem intervalGapsWithin_injOn : (Set.Iio k).InjOn
@@ -187,8 +186,7 @@ theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : α}
   have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j' - 1) (by grind)) |>.right.left
   simp only [Nat.succ_eq_add_one, hj'₀] at this
   grw [← this]
-  rw [intervalGapsWithin_snd_of_lt (hj := by omega),
-      intervalGapsWithin_snd_of_lt (hj := by omega)]
+  rw [intervalGapsWithin_snd_of_lt (hj := by omega), intervalGapsWithin_snd_of_lt (hj := by omega)]
   exact Prod.Lex.le_iff'.mp (F.orderEmbOfFin (α := α ×ₗ α) h |>.monotone (by grind)) |>.left
 
 end Finset

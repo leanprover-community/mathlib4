@@ -428,8 +428,7 @@ theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
     invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
     left_inv x := by rcases x with y | y <;> simp
     right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp }
-  rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp,
-    Equiv.coe_fn_mk]
+  rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp, Equiv.coe_fn_mk]
 
 end Append
 
@@ -769,8 +768,7 @@ theorem snoc_injective_iff {α} {x₀ : α} {x : Fin n → α} :
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ snoc_injective_of_injective h.1 h.2⟩
   · simpa [Function.comp] using h.comp (Fin.castSucc_injective _)
   · rintro ⟨i, hi⟩
-    rw [← @snoc_last n (fun i ↦ α) x₀ x, ← @snoc_castSucc n (fun i ↦ α) x₀ x i,
-      h.eq_iff] at hi
+    rw [← @snoc_last n (fun i ↦ α) x₀ x, ← @snoc_castSucc n (fun i ↦ α) x₀ x i, h.eq_iff] at hi
     exact ne_last_of_lt i.castSucc_lt_last hi
 
 end TupleRight

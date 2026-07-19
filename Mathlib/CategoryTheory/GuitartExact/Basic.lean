@@ -237,8 +237,7 @@ lemma guitartExact_iff_isConnected_rightwards :
 lemma guitartExact_iff_isConnected_downwards :
     w.GuitartExact ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),
       IsConnected (w.CostructuredArrowDownwards g) := by
-  simp only [guitartExact_iff_isConnected_rightwards,
-    isConnected_rightwards_iff_downwards]
+  simp only [guitartExact_iff_isConnected_rightwards, isConnected_rightwards_iff_downwards]
 
 instance [hw : w.GuitartExact] {X₃ : C₃} (g : CostructuredArrow R (B.obj X₃)) :
     IsConnected (StructuredArrow g (w.costructuredArrowRightwards X₃)) := by

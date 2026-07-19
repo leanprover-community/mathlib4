@@ -168,9 +168,8 @@ theorem leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
   classical
   ext
   dsimp [leftDistributor, Functor.mapBiproduct, Functor.mapBicone]
-  simp only [Preadditive.comp_sum, biproduct.ι_π_assoc, dite_comp, zero_comp,
-    Finset.sum_dite_eq, Finset.mem_univ, ite_true, eqToHom_refl, Category.id_comp,
-    biproduct.ι_desc]
+  simp only [Preadditive.comp_sum, biproduct.ι_π_assoc, dite_comp, zero_comp, Finset.sum_dite_eq,
+    Finset.mem_univ, ite_true, eqToHom_refl, Category.id_comp, biproduct.ι_desc]
 
 @[reassoc (attr := simp)]
 theorem leftDistributor_hom_comp_biproduct_π {J : Type} [Finite J] (X : C) (f : J → C) (j : J) :
@@ -270,8 +269,7 @@ theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Finite J] (f : J → 
     biproduct.ι _ j ≫ (rightDistributor f X).inv = biproduct.ι _ j ▷ X := by
   classical
   cases nonempty_fintype J
-  simp [rightDistributor_inv, Preadditive.comp_sum, biproduct.ι_π_assoc,
-    dite_comp]
+  simp [rightDistributor_inv, Preadditive.comp_sum, biproduct.ι_π_assoc, dite_comp]
 
 theorem rightDistributor_assoc {J : Type} [Finite J] (f : J → C) (X Y : C) :
     (rightDistributor f X ⊗ᵢ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
@@ -279,11 +277,10 @@ theorem rightDistributor_assoc {J : Type} [Finite J] (f : J → C) (X Y : C) :
   classical
   cases nonempty_fintype J
   ext
-  simp only [Category.comp_id, Category.assoc, eqToHom_refl, Iso.symm_hom, Iso.trans_hom,
-    asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,
-    comp_tensor_id, tensorIso_hom, rightDistributor_hom, biproduct.mapIso_hom, biproduct.ι_map,
-    biproduct.ι_π, Finset.sum_dite_irrel, Finset.sum_dite_eq', Finset.sum_const_zero,
-    Finset.mem_univ, if_true]
+  simp only [Category.comp_id, Category.assoc, eqToHom_refl, Iso.symm_hom, Iso.trans_hom, asIso_hom,
+    comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor, comp_tensor_id,
+    tensorIso_hom, rightDistributor_hom, biproduct.mapIso_hom, biproduct.ι_map, biproduct.ι_π,
+    Finset.sum_dite_irrel, Finset.sum_dite_eq', Finset.sum_const_zero, Finset.mem_univ, if_true]
   simp_rw [← tensorHom_id]
   simp only [← comp_tensor_id, biproduct.ι_π, dite_tensor, comp_dite]
   simp

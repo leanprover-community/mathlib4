@@ -129,9 +129,8 @@ lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
     infer_instance
   · simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
       ← cancel_epi (Q.map s), IsIso.hom_inv_id_assoc]
-    rw [← Functor.map_comp_assoc, ← CochainComplex.πTruncGE_naturality s a,
-      Functor.map_comp, assoc, IsIso.hom_inv_id_assoc,
-      ← Functor.map_comp_assoc, CochainComplex.πTruncGE_naturality g a,
+    rw [← Functor.map_comp_assoc, ← CochainComplex.πTruncGE_naturality s a, Functor.map_comp, assoc,
+      IsIso.hom_inv_id_assoc, ← Functor.map_comp_assoc, CochainComplex.πTruncGE_naturality g a,
       Functor.map_comp, assoc, IsIso.hom_inv_id, comp_id]
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category
@@ -155,9 +154,8 @@ lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
     infer_instance
   · simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
       ← cancel_mono (Q.map s), IsIso.inv_hom_id, comp_id]
-    rw [← Functor.map_comp, ← CochainComplex.ιTruncLE_naturality s b,
-      Functor.map_comp, IsIso.inv_hom_id_assoc,
-      ← Functor.map_comp, CochainComplex.ιTruncLE_naturality g b,
+    rw [← Functor.map_comp, ← CochainComplex.ιTruncLE_naturality s b, Functor.map_comp,
+      IsIso.inv_hom_id_assoc, ← Functor.map_comp, CochainComplex.ιTruncLE_naturality g b,
       Functor.map_comp, IsIso.inv_hom_id_assoc]
 
 lemma subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE (X Y : CochainComplex C ℤ)

@@ -339,9 +339,8 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
        most one, so we can induct. -/
       have : signVariations ((X - C η) * P).eraseLead + 1 =
           signVariations ((X - C η) * P) := by
-        simp [-leadingCoeff_mul, ← sign_ne_zero,
-          signVariations_eq_eraseLead_add_ite h_mul, leadingCoeff_eraseLead_eq_nextCoeff,
-          hs_nC_mul, h_mul_lC]
+        simp [-leadingCoeff_mul, ← sign_ne_zero, signVariations_eq_eraseLead_add_ite h_mul,
+          leadingCoeff_eraseLead_eq_nextCoeff, hs_nC_mul, h_mul_lC]
       have : ((X - C η) * P.eraseLead).signVariations ≤
           ((X - C η) * P).eraseLead.signVariations := by
         have := signVariations_eraseLead_le (eraseLead ((X - C η) * P))

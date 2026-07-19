@@ -55,8 +55,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
     triangleOfSESδ hS₁ ≫ (Q.map f.τ₁)⟦1⟧' = Q.map f.τ₃ ≫ triangleOfSESδ hS₂ := by
-  simp only [triangleOfSESδ, Category.assoc,
-    IsIso.inv_comp_eq]
+  simp only [triangleOfSESδ, Category.assoc, IsIso.inv_comp_eq]
   rw [← Functor.comp_map, ← (Q.commShiftIso (1 : ℤ)).hom.naturality, ← Category.assoc,
     ← Category.assoc, ← Category.assoc, ← Category.assoc, ← Iso.app_hom,
     Iso.cancel_iso_hom_right, ← Q.map_comp]
@@ -115,10 +114,9 @@ noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ 
   comm₃ := by
     dsimp [triangleOfSES, triangleOfSESδ]
     rw [assoc, assoc, IsIso.inv_comp_eq, ← Functor.map_comp_assoc,
-      ← CochainComplex.mappingCone.map_descShortComplex,
-      Functor.map_comp_assoc, IsIso.hom_inv_id_assoc,
-      ← Functor.commShiftIso_hom_naturality,
-      ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
+      ← CochainComplex.mappingCone.map_descShortComplex, Functor.map_comp_assoc,
+      IsIso.hom_inv_id_assoc, ← Functor.commShiftIso_hom_naturality, ← Functor.map_comp_assoc,
+      ← Functor.map_comp_assoc]
     congr 2
     exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm).comm₃
 

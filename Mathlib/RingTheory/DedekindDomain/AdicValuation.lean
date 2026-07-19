@@ -377,9 +377,8 @@ theorem valuation_div_le_one_iff (a : R) {b : R} (hb : b ≠ 0)
   have ha₀ : a ≠ 0 := fun _ ↦ by simp_all
   have hva : v.valuation K a ≠ 0 := (Valuation.ne_zero_iff _).2 (by simp [ha₀])
   have hvb : v.valuation K b ≠ 0 := (Valuation.ne_zero_iff _).2 (by simp [hb])
-  rw [← WithZero.log_lt_log one_ne_zero ((Valuation.ne_zero_iff _).2 (by simp [ha₀, hb])),
-    map_div₀, WithZero.log_div hva hvb, WithZero.log_one, Int.sub_pos,
-    WithZero.log_lt_log hvb hva]
+  rw [← WithZero.log_lt_log one_ne_zero ((Valuation.ne_zero_iff _).2 (by simp [ha₀, hb])), map_div₀,
+    WithZero.log_div hva hvb, WithZero.log_one, Int.sub_pos, WithZero.log_lt_log hvb hva]
   simpa [valuation_of_algebraMap, intValuation_eq_one_iff.2 <| h hv, intValuation_lt_one_iff_mem]
 
 variable (K)

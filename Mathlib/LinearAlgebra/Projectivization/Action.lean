@@ -227,9 +227,8 @@ theorem _root_.Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
     Function.Injective (PSLAction.toPermHom (K := K) (ι := ι)) := by
   rw [injective_iff_map_eq_one]
   intro g hg
-  rwa [← MonoidHom.mem_ker, PSLAction.toPermHom,
-    QuotientGroup.ker_lift, SL_mulAction_ker, QuotientGroup.map_mk'_self,
-    Subgroup.mem_bot] at hg
+  rwa [← MonoidHom.mem_ker, PSLAction.toPermHom, QuotientGroup.ker_lift, SL_mulAction_ker,
+    QuotientGroup.map_mk'_self, Subgroup.mem_bot] at hg
 
 instance : FaithfulSMul (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
   faithfulSMul_iff.2 fun g hg ↦

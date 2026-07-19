@@ -763,8 +763,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
       IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)
   set M := L⟮x⟯
-  rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
-    Module.finrank_mul_finrank F L M] at heq
+  rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M, Module.finrank_mul_finrank F L M] at heq
 
 alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
 
@@ -823,10 +822,8 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   have := adjoin.finiteDimensional halg
   have : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
   have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
-  rw [finSepDegree_eq_finrank_of_isSeparable F E',
-    finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
-    Module.finrank_mul_finrank F E' E'⟮x⟯,
-    eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
+  rw [finSepDegree_eq_finrank_of_isSeparable F E', finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
+    Module.finrank_mul_finrank F E' E'⟮x⟯, eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
   change Algebra.IsSeparable F (restrictScalars F E'⟮x⟯) at this
   exact isSeparable_of_mem_isSeparable F K hx
 

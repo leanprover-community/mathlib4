@@ -326,8 +326,7 @@ noncomputable def dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v))
     nth_rewrite 1 [← one_mul (h.unit⁻¹), Units.val_mul, ← add_mul]
     simp
   right_inv x := by
-    simp only [LinearMap.transvection.apply, add_assoc, add_eq_left,
-      Units.smul_def]
+    simp only [LinearMap.transvection.apply, add_assoc, add_eq_left, Units.smul_def]
     rw [smul_smul, ← add_smul]
     suffices (f x * ↑(-h.unit⁻¹) + f (x + (f x * ↑(-h.unit⁻¹)) • v)) = 0 by rw [this, zero_smul]
     rw [LinearMap.map_add, LinearMap.map_smul, smul_eq_mul]
@@ -582,8 +581,7 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     · by_cases h : i = x ∧ j = y
       · rw [h.1, h.2]; simp
       · rcases not_and_or.mp h with h' | h' <;>
-          simp [Finsupp.single_eq_of_ne' h',
-            Finsupp.single_eq_of_ne h',
+          simp [Finsupp.single_eq_of_ne' h', Finsupp.single_eq_of_ne h',
             Matrix.single_apply_of_ne (h := h)]
   · obtain ⟨ι, b, i, hv, hf⟩ := exists_basis_of_pairing_ne_zero hfv
     have : Fintype ι := FiniteDimensional.fintypeBasisIndex b
@@ -626,8 +624,7 @@ private theorem det_ofDomain [Free R V] [Module.Finite R V] [IsDomain R] (f : Du
   let : Field K := inferInstance
   apply FaithfulSMul.algebraMap_injective R K
   have := det_ofField (f.baseChange K) (1 ⊗ₜ[R] v)
-  rw [← transvection.baseChange, det_baseChange,
-    ← algebraMap.coe_one (R := R) (A := K)] at this
+  rw [← transvection.baseChange, det_baseChange, ← algebraMap.coe_one (R := R) (A := K)] at this
   simpa [Algebra.algebraMap_eq_smul_one, add_smul] using this
 
 open IsBaseChange

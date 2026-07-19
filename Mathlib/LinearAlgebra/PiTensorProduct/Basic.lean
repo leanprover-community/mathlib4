@@ -723,8 +723,7 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
   apply LinearEquiv.toLinearMap_injective
   ext f
   simp only [LinearEquiv.trans_apply, LinearEquiv.coe_coe, reindex_tprod,
-    LinearMap.coe_compMultilinearMap, Function.comp_apply,
-    reindex_comp_tprod]
+    LinearMap.coe_compMultilinearMap, Function.comp_apply, reindex_comp_tprod]
   congr
 
 theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i, s i) :

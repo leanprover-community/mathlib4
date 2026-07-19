@@ -83,8 +83,7 @@ theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) (a : α) :
 
 @[simp] lemma comp_id (κ : Kernel β γ) : κ ∘ₖ Kernel.id = κ := by
   ext a s hs
-  simp [comp_apply' _ _ _ hs, id_apply,
-    lintegral_dirac' a <| κ.measurable_coe hs]
+  simp [comp_apply' _ _ _ hs, id_apply, lintegral_dirac' a <| κ.measurable_coe hs]
 
 section Ae
 
@@ -193,8 +192,7 @@ lemma comp_sum_right {ι : Type*} [Countable ι] (κ : ι → Kernel α β) (η 
 lemma comp_sum_left {ι : Type*} [Countable ι] (κ : Kernel α β) (η : ι → Kernel β γ) :
     (Kernel.sum η) ∘ₖ κ = Kernel.sum (fun i ↦ (η i) ∘ₖ κ) := by
   ext _ _ hs
-  simp_rw [sum_apply, comp_apply' _ _ _ hs, sum_apply, Measure.sum_apply _ hs,
-    comp_apply' _ _ _ hs]
+  simp_rw [sum_apply, comp_apply' _ _ _ hs, sum_apply, Measure.sum_apply _ hs, comp_apply' _ _ _ hs]
   rw [lintegral_tsum]
   exact fun _ ↦ (Kernel.measurable_coe _ hs).aemeasurable
 

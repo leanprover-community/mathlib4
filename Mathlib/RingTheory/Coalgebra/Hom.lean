@@ -184,8 +184,7 @@ equalities. -/
 protected def copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : A →ₗc[R] B :=
   { toLinearMap := (f : A →ₗ[R] B).copy f' h
     counit_comp := by ext; simp_all
-    map_comp_comul := by simp only [(f : A →ₗ[R] B).copy_eq f' h,
-      CoalgHomClass.map_comp_comul] }
+    map_comp_comul := by simp only [(f : A →ₗ[R] B).copy_eq f' h, CoalgHomClass.map_comp_comul] }
 
 @[simp]
 theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=

@@ -28,10 +28,8 @@ theorem mul_ediv_le_mul_ediv_assoc {a : Int} (ha : 0 ≤ a) (b : Int) {c : Int} 
 
 theorem fdiv_fdiv_eq_fdiv_mul (m : Int) {n k : Int} (hn : 0 ≤ n) (hk : 0 ≤ k) :
     (m.fdiv n).fdiv k = m.fdiv (n * k) := by
-  rw [Int.fdiv_eq_ediv_of_nonneg _ hn,
-    Int.fdiv_eq_ediv_of_nonneg _ hk,
-    Int.fdiv_eq_ediv_of_nonneg _ (Int.mul_nonneg hn hk),
-    ediv_ediv_of_nonneg hn]
+  rw [Int.fdiv_eq_ediv_of_nonneg _ hn, Int.fdiv_eq_ediv_of_nonneg _ hk,
+    Int.fdiv_eq_ediv_of_nonneg _ (Int.mul_nonneg hn hk), ediv_ediv_of_nonneg hn]
 
 /-! ### `emod` -/
 

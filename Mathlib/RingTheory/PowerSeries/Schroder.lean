@@ -51,8 +51,7 @@ lemma constantCoeff_largeSchroderSeries :
 lemma coeff_X_mul_largeSchroderSeries (n : ℕ) (hn : 0 < n) :
     coeff n (X * largeSchroderSeries) = largeSchroder (n - 1) := by
   simp only [coeff_mul, coeff_largeSchroderSeries,
-    Nat.sum_antidiagonal_eq_sum_range_succ (coeff · X * largeSchroder ·),
-    succ_eq_add_one]
+    Nat.sum_antidiagonal_eq_sum_range_succ (coeff · X * largeSchroder ·), succ_eq_add_one]
   simp only [coeff_X, ite_mul, one_mul, zero_mul, sum_ite_eq', mem_range, lt_add_iff_pos_left,
     ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
   rintro rfl
@@ -87,8 +86,7 @@ lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     intros x hx
     have hx' : 0 < x := by grind
     rw [if_pos hx']
-  rw [this, sum_Ico_eq_sum_range, show n = n - 1 + 1 by lia,
-    sum_range_succ]
+  rw [this, sum_Ico_eq_sum_range, show n = n - 1 + 1 by lia, sum_range_succ]
   grind [largeSchroder_zero]
 
 theorem largeSchroderSeries_eq_one_add_X_mul_largeSchroderSeries_add_X_mul_largeSchroderSeries_sq :

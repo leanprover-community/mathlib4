@@ -156,8 +156,7 @@ theorem mem_centeredArc_div {z : Circle} {s : ℝ} {n : ℕ} (hs : s ≤ π)
     contrapose! h1
     simp [h1]
   have hn : 1 ≤ (n : ℝ) := by simpa [Nat.one_le_iff_ne_zero]
-  rw [mem_centeredArc ((div_le_self hs0.le hn).trans hs),
-    lt_div_iff₀' (one_pos.trans_le hn)]
+  rw [mem_centeredArc ((div_le_self hs0.le hn).trans hs), lt_div_iff₀' (one_pos.trans_le hn)]
   rw [mem_centeredArc (div_le_self pi_nonneg hn)] at h1
   rwa [mem_centeredArc hs, coe_pow, ← arg_coe_angle_toReal_eq_arg, arg_pow_coe_angle,
     (Angle.nsmul_toReal_eq_mul hn0).mpr (mem_Ioc_of_Ioo ?_), abs_mul, Nat.abs_cast,
@@ -277,10 +276,9 @@ lemma compl_path_image_Ioc (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '
     <| (disjoint_path_image_Ioc h.symm).subset_compl_right
 
 lemma compl_range_path (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
-  rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,
-    ← path_image_Ioc_of_ne h, ← union_singleton, compl_union, compl_path_image_Ioc h,
-    ← Ioo_insert_right (by simp), image_insert_eq, (y.path x).target, exp_arg,
-    insert_inter_of_notMem (by simp), inter_eq_left]
+  rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq, ← path_image_Ioc_of_ne h,
+    ← union_singleton, compl_union, compl_path_image_Ioc h, ← Ioo_insert_right (by simp),
+    image_insert_eq, (y.path x).target, exp_arg, insert_inter_of_notMem (by simp), inter_eq_left]
   rintro z ⟨t, ht, rfl⟩
   exact (path_injective_of_ne h.symm).ne ht.2.ne |>.trans_eq (y.path x).target
 

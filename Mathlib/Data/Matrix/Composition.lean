@@ -64,11 +64,9 @@ theorem comp_single_single
       single_apply_of_col_ne _ _ (ne_of_apply_ne Prod.fst hj), Matrix.zero_apply]
   rw [single_apply_same]
   obtain hk | rfl := ne_or_eq k k'
-  · rw [single_apply_of_row_ne hk,
-      single_apply_of_row_ne (ne_of_apply_ne Prod.snd hk)]
+  · rw [single_apply_of_row_ne hk, single_apply_of_row_ne (ne_of_apply_ne Prod.snd hk)]
   obtain hj | rfl := ne_or_eq l l'
-  · rw [single_apply_of_col_ne _ _ hj,
-      single_apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
+  · rw [single_apply_of_col_ne _ _ hj, single_apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
   rw [single_apply_same, single_apply_same]
 
 @[simp]
@@ -86,8 +84,7 @@ theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I �
   ext ⟨i₁, j₁⟩ ⟨i₂, j₂⟩
   dsimp [comp_apply]
   obtain hi | rfl := ne_or_eq i₁ i₂
-  · rw [diagonal_apply_ne _ hi, diagonal_apply_ne _ (ne_of_apply_ne Prod.fst hi),
-      Matrix.zero_apply]
+  · rw [diagonal_apply_ne _ hi, diagonal_apply_ne _ (ne_of_apply_ne Prod.fst hi), Matrix.zero_apply]
   rw [diagonal_apply_eq]
   obtain hj | rfl := ne_or_eq j₁ j₂
   · rw [diagonal_apply_ne _ hj, diagonal_apply_ne _ (ne_of_apply_ne Prod.snd hj)]

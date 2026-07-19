@@ -284,8 +284,7 @@ variable (X) in
 lemma functorMap_id : functorMap f (𝟙 (Arrow.mk πX)) = 𝟙 _ := by
   ext ⟨i, t, b, w⟩
   · simp [functorMap]
-  · simp [functorMap,
-      ι_functorMapTgt_assoc f (𝟙 (Arrow.mk πX)) i t b w b (by simp) t (by simp)]
+  · simp [functorMap, ι_functorMapTgt_assoc f (𝟙 (Arrow.mk πX)) i t b w b (by simp) t (by simp)]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]

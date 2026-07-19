@@ -99,8 +99,7 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
       simp [v₂, condition]
     dsimp [curryRightUnitorHom] at comm
     have w' := (ihom.adjunction I).homEquiv_naturality_right_square _ _ _ _ comm
-    simp only [curriedTensor_obj_obj, curriedTensor_obj_map, curry,
-      Equiv.symm_apply_apply] at w'
+    simp only [curriedTensor_obj_obj, curriedTensor_obj_map, curry, Equiv.symm_apply_apply] at w'
     dsimp [uncurry] at *
     rw [Category.assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
 

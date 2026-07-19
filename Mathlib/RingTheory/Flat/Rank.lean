@@ -50,8 +50,7 @@ surjective. -/
 lemma PrimeSpectrum.rankAtStalk_pos_iff_comap_surjective :
     (∀ p, 0 < Module.rankAtStalk (R := R) S p) ↔
       Function.Surjective (PrimeSpectrum.comap <| algebraMap R S) := by
-  simp_rw [rankAtStalk_pos_iff_mem_range_comap, ← Set.range_eq_univ,
-    Set.eq_univ_iff_forall]
+  simp_rw [rankAtStalk_pos_iff_mem_range_comap, ← Set.range_eq_univ, Set.eq_univ_iff_forall]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma PrimeSpectrum.comap_surjective_iff_injective_of_finite :

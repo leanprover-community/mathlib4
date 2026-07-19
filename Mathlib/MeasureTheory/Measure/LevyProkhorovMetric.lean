@@ -60,8 +60,7 @@ lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} 
     (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁) :
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
   by_cases ε_top : ε₂ = ∞
-  · simp only [ε_top, toReal_top,
-                add_top, le_top]
+  · simp only [ε_top, toReal_top, add_top, le_top]
   apply hε₁.trans (add_le_add ?_ h_le)
   exact measure_mono (μ := ν) (thickening_mono (toReal_mono ε_top h_le) B)
 
@@ -492,8 +491,7 @@ lemma LevyProkhorov.continuous_toMeasure_probabilityMeasure :
         ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
       rfl
     · exact Eventually.of_forall f_nn
-  · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
-               forall_exists_index]
+  · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop, forall_exists_index]
     refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i le_rfl)⟩
 
 /-- The topology of the Lévy-Prokhorov metric is at least as fine as the topology of convergence in

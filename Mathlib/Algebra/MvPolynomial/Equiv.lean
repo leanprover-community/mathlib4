@@ -724,11 +724,10 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Fin.forall_iff_succ]
-  simp only [aeval_X, Fin.cons_zero, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
-    AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_toAlgHom,
-    comp_apply, finSuccEquiv_apply, eval₂Hom_X', Fin.cases_zero, Polynomial.map_X,
-    Polynomial.eval_X, Fin.cons_succ, Fin.cases_succ, Polynomial.map_C, eval_X, Polynomial.eval_C,
-    implies_true, and_self, φ]
+  simp only [aeval_X, Fin.cons_zero, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval, AlgHom.coe_mk,
+    Polynomial.coe_mapRingHom, AlgEquiv.coe_toAlgHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',
+    Fin.cases_zero, Polynomial.map_X, Polynomial.eval_X, Fin.cons_succ, Fin.cases_succ,
+    Polynomial.map_C, eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 
 theorem coeff_eval_eq_eval_coeff (s' : S₁ → R) (f : Polynomial (MvPolynomial S₁ R))
     (i : ℕ) : Polynomial.coeff (Polynomial.map (eval s') f) i = eval s' (Polynomial.coeff f i) := by

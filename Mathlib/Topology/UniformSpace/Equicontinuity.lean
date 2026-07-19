@@ -169,8 +169,7 @@ lemma EquicontinuousWithinAt.mono {F : ι → X → α} {x₀ : X} {S T : Set X}
 
 lemma equicontinuousAt_restrict_iff (F : ι → X → α) {S : Set X} (x₀ : S) :
     EquicontinuousAt (S.restrict ∘ F) x₀ ↔ EquicontinuousWithinAt F S x₀ := by
-  simp [EquicontinuousWithinAt, EquicontinuousAt,
-    ← eventually_nhds_subtype_iff]
+  simp [EquicontinuousWithinAt, EquicontinuousAt, ← eventually_nhds_subtype_iff]
 
 lemma Equicontinuous.equicontinuousOn {F : ι → X → α} (H : Equicontinuous F)
     (S : Set X) : EquicontinuousOn F S :=

@@ -139,8 +139,7 @@ lemma ev_refl (γ : OneCocycle G U) (i : I) ⦃T : C⦄ (a : T ⟶ U i) :
 
 lemma ev_symm (γ : OneCocycle G U) (i j : I) ⦃T : C⦄ (a : T ⟶ U i) (b : T ⟶ U j) :
     γ.ev i j a b = (γ.ev j i b a)⁻¹ := by
-  rw [← mul_left_inj (γ.ev j i b a), γ.ev_trans i j i a b a,
-    ev_refl, inv_mul_cancel]
+  rw [← mul_left_inj (γ.ev j i b a), γ.ev_trans i j i a b a, ev_refl, inv_mul_cancel]
 
 end OneCocycle
 
@@ -158,16 +157,14 @@ lemma refl (γ : OneCochain G U) : OneCohomologyRelation γ γ 1 := fun _ _ _ _ 
 
 lemma symm {γ₁ γ₂ : OneCochain G U} {α : ZeroCochain G U} (h : OneCohomologyRelation γ₁ γ₂ α) :
     OneCohomologyRelation γ₂ γ₁ α⁻¹ := fun i j T a b ↦ by
-  rw [← mul_left_inj (G.map b.op (α j)), mul_assoc, ← h i j a b,
-    mul_assoc, Cochain₀.inv_apply, map_inv, inv_mul_cancel_left,
-    Cochain₀.inv_apply, map_inv, inv_mul_cancel, mul_one]
+  rw [← mul_left_inj (G.map b.op (α j)), mul_assoc, ← h i j a b, mul_assoc, Cochain₀.inv_apply,
+    map_inv, inv_mul_cancel_left, Cochain₀.inv_apply, map_inv, inv_mul_cancel, mul_one]
 
 lemma trans {γ₁ γ₂ γ₃ : OneCochain G U} {α β : ZeroCochain G U}
     (h₁₂ : OneCohomologyRelation γ₁ γ₂ α) (h₂₃ : OneCohomologyRelation γ₂ γ₃ β) :
     OneCohomologyRelation γ₁ γ₃ (β * α) := fun i j T a b ↦ by
   dsimp
-  rw [map_mul, map_mul, mul_assoc, h₁₂ i j a b, ← mul_assoc,
-    h₂₃ i j a b, mul_assoc]
+  rw [map_mul, map_mul, mul_assoc, h₁₂ i j a b, ← mul_assoc, h₂₃ i j a b, mul_assoc]
 
 end OneCohomologyRelation
 

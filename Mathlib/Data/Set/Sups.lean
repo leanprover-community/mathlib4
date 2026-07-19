@@ -344,8 +344,7 @@ open SetFamily
 theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
     upperClosure (s ⊻ t) = upperClosure s ⊔ upperClosure t := by
   ext a
-  simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups,
-    UpperSet.coe_sup, Set.mem_inter_iff]
+  simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups, UpperSet.coe_sup, Set.mem_inter_iff]
   constructor
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
     exact ⟨⟨b, hb, le_sup_left.trans ha⟩, c, hc, le_sup_right.trans ha⟩

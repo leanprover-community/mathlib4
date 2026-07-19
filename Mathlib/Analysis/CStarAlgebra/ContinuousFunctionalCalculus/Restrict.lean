@@ -310,8 +310,7 @@ protected theorem cfc (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
       rw [h]
       refine ⟨cfcₙHom_predicate _ _, ?_⟩
       refine { rightInvOn := fun s hs ↦ ?_, left_inv := ((h a).mp ha).2.left_inv }
-      rw [nonUnitalStarAlgHom_apply,
-        cfcₙHom_map_quasispectrum] at hs
+      rw [nonUnitalStarAlgHom_apply, cfcₙHom_map_quasispectrum] at hs
       obtain ⟨r, rfl⟩ := hs
       simp [((h a).mp ha).2.left_inv _]
 

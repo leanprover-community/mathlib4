@@ -361,9 +361,8 @@ def associativity'Iso :
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ mkNatIso (fun z ↦ Iso.refl _)
       (fun z₀ z₁ e ↦ by
         dsimp
-        rw [Category.comp_id, Category.id_comp, ← prod_id,
-          inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
-          CategoryTheory.Functor.map_id]
+        rw [Category.comp_id, Category.id_comp, ← prod_id, inverse_map_mkHom_id_homMk,
+          inverse_map_mkHom_id_homMk, CategoryTheory.Functor.map_id]
         dsimp [← Edge.id_tensor_id]))
       (fun y₀ y₁ e ↦ by
         ext z
@@ -407,9 +406,8 @@ lemma associativityIso_hom_app (xyz) :
   dsimp [associativityIso]
   rw [associativity'Iso_hom_app _]
   dsimp
-  rw [CategoryTheory.Functor.map_id, Category.id_comp, Category.comp_id,
-    Category.comp_id, ← prod_id, CategoryTheory.Functor.map_id,
-    CategoryTheory.Functor.map_id]
+  rw [CategoryTheory.Functor.map_id, Category.id_comp, Category.comp_id, Category.comp_id,
+    ← prod_id, CategoryTheory.Functor.map_id, CategoryTheory.Functor.map_id]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma associativity :

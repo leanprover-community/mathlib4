@@ -46,8 +46,7 @@ instance : Monoid (Conv M N) where
   mul_one f := by simp [one_eq, mul_eq, ← whisker_exchange_assoc]
   mul_assoc f g h := by
     simp only [mul_eq]
-    simp only [comp_whiskerRight, whisker_assoc, Category.assoc,
-      MonoidalCategory.whiskerLeft_comp]
+    simp only [comp_whiskerRight, whisker_assoc, Category.assoc, MonoidalCategory.whiskerLeft_comp]
     slice_lhs 7 8 =>
       rw [← whisker_exchange]
     slice_rhs 2 3 =>

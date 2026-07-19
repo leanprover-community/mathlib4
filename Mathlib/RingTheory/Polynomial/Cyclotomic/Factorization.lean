@@ -77,9 +77,8 @@ private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ 
   · let φ := frobeniusAlgEquivOfAlgebraic K (AdjoinRoot P)
     have : (φ ^ orderOf φ) (root P) = root P := by simp [pow_orderOf_eq_one φ]
     simp only [AlgEquiv.coe_pow, φ, coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, hK] at this
-    rw [Units.val_one, ← Nat.cast_one, Units.val_pow_eq_pow_val, coe_unitOfCoprime,
-      ← Nat.cast_pow, natCast_eq_natCast_iff, hζ.eq_orderOf, ← hζ'.pow_eq_pow_iff_modEq, this,
-      pow_one]
+    rw [Units.val_one, ← Nat.cast_one, Units.val_pow_eq_pow_val, coe_unitOfCoprime, ← Nat.cast_pow,
+      natCast_eq_natCast_iff, hζ.eq_orderOf, ← hζ'.pow_eq_pow_iff_modEq, this, pow_one]
 
 /-- Let `K` be a finite field of cardinality `p ^ f` and let `P` be an irreducible factor of the
   `n`-th cyclotomic polynomial over `K`, where `p` and `n` are coprime. Then the degree of `P` is

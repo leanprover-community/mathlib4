@@ -182,9 +182,8 @@ theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3} (ha : ∀ n, a n
   have : ∑ x ∈ Finset.range n1, ofDigitsTerm a x = ∑ x ∈ Finset.range n1, ofDigitsTerm b x := by
     apply Finset.sum_congr rfl
     grind [ofDigitsTerm]
-  rw [ofDigits_eq_sum_add_ofDigits a (n1 + 1),
-    ofDigits_eq_sum_add_ofDigits b (n1 + 1), Finset.sum_range_succ,
-    Finset.sum_range_succ, this] at h
+  rw [ofDigits_eq_sum_add_ofDigits a (n1 + 1), ofDigits_eq_sum_add_ofDigits b (n1 + 1),
+    Finset.sum_range_succ, Finset.sum_range_succ, this] at h
   replace h : ofDigitsTerm a n1 + (3⁻¹ ^ n1 * ofDigits fun i ↦ a (1 + n1 + i)) * (1 / 3) =
       (3⁻¹ ^ n1 * ofDigits fun i ↦ b (1 + n1 + i)) * (1 / 3) + ofDigitsTerm b n1 := by
     ring_nf at h

@@ -140,14 +140,12 @@ lemma map_inv_hom_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
 @[reassoc (attr := simp)]
 lemma map_hom_inv_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
     (F.map (e.hom j)).app Y ≫ (F.map (e.inv j)).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, hom_inv_id_eval,
-    Functor.map_id, NatTrans.id_app]
+  rw [← NatTrans.comp_app, ← F.map_comp, hom_inv_id_eval, Functor.map_id, NatTrans.id_app]
 
 @[reassoc (attr := simp)]
 lemma map_inv_hom_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
     (F.map (e.inv j)).app Y ≫ (F.map (e.hom j)).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, inv_hom_id_eval,
-    Functor.map_id, NatTrans.id_app]
+  rw [← NatTrans.comp_app, ← F.map_comp, inv_hom_id_eval, Functor.map_id, NatTrans.id_app]
 
 end Iso
 

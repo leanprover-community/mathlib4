@@ -140,8 +140,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
     apply IsGaussian.ext
     · rw [integral_map, integral_map, integral_map]
       · simp only [id_eq]
-        rw [ContinuousLinearEquiv.integral_comp_id_comm,
-          ContinuousLinearEquiv.integral_comp_comm]
+        rw [ContinuousLinearEquiv.integral_comp_id_comm, ContinuousLinearEquiv.integral_comp_comm]
         simp only [PiLp.continuousLinearEquiv_symm_apply, integral_id_projectiveFamily,
           WithLp.toLp_zero, WithLp.toLp_eq_zero]
         congr with i

@@ -234,8 +234,7 @@ theorem alternatizeUncurryFin_fderivCompContinuousLinearMap_eq_zero (f : F [⋀^
   | zero =>
     simp [fderivCompContinuousLinearMap_of_isEmpty, ← alternatizeUncurryFinCLM_apply]
   | succ n =>
-    rw [fderivCompContinuousLinearMap_eq_alternatizeUncurryFin,
-      ContinuousLinearMap.comp_assoc,
+    rw [fderivCompContinuousLinearMap_eq_alternatizeUncurryFin, ContinuousLinearMap.comp_assoc,
       alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric]
     intro x y
     ext v

@@ -235,8 +235,7 @@ lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
   simp only [Subfunctor.toFunctor_obj, Functor.sieves_obj, Functor.closedSieves_obj, Set.coe_ofPred]
   ext1
   dsimp
-  rw [Sieve.pullback_top, ← J.pullback_close, S.pullback_eq_top_of_mem hf,
-    J.close_eq_top_iff_mem]
+  rw [Sieve.pullback_top, ← J.pullback_close, S.pullback_eq_top_of_mem hf, J.close_eq_top_iff_mem]
   apply J.top_mem
 
 /-- If presheaf of `J₁`-closed sieves is a `J₂`-sheaf then `J₁ ≤ J₂`. Note the converse is true by

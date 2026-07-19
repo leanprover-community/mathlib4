@@ -95,9 +95,8 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
 
 theorem subsingleton_tensorProduct [Module.Finite R M] :
     Subsingleton (k ⊗[R] M) ↔ Subsingleton M := by
-  rw [← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top,
-    ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top,
-    ← map_tensorProduct_mk_eq_top (M := M), Submodule.map_bot]
+  rw [← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top, ← Submodule.subsingleton_iff R,
+    ← subsingleton_iff_bot_eq_top, ← map_tensorProduct_mk_eq_top (M := M), Submodule.map_bot]
 
 theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
     (f : ι → M) (b : Basis ι k (k ⊗[R] M))

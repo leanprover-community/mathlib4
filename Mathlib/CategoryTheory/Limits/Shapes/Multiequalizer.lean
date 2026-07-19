@@ -876,8 +876,7 @@ def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
   { desc
     fac := by
       rintro S (a | b)
-      · rw [← K.w (WalkingMultispan.Hom.fst a), ← S.w (WalkingMultispan.Hom.fst a),
-          Category.assoc]
+      · rw [← K.w (WalkingMultispan.Hom.fst a), ← S.w (WalkingMultispan.Hom.fst a), Category.assoc]
         congr 1
         apply fac
       · apply fac

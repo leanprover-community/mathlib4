@@ -272,8 +272,7 @@ protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
   carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
   zero_mem' := by
     simp only [support_subset_iff, ne_eq, mem_ofPred_eq, Pi.zero_apply, not_true_eq_false,
-      IsEmpty.forall_iff, implies_true, support_zero, inter_empty, finite_empty, and_true,
-      true_and]
+      IsEmpty.forall_iff, implies_true, support_zero, inter_empty, finite_empty, and_true, true_and]
     exact fun _ _ ↦ ⟨⊤, univ_mem⟩
   add_mem' {f g} hf hg := by
     constructor

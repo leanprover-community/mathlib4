@@ -99,10 +99,9 @@ variable (f)
 theorem stabilizer_card [DecidableEq α] [DecidableEq ι] [Fintype ι] :
     Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
-  rw [← Nat.card_eq_fintype_card,
-    Nat.card_congr (subtypeEquiv mk fun _ ↦ ?_),
-    Nat.card_congr MulOpposite.opEquiv,
-    Nat.card_congr (DomMulAct.stabilizerMulEquiv f).toEquiv, Nat.card_pi]
+  rw [← Nat.card_eq_fintype_card, Nat.card_congr (subtypeEquiv mk fun _ ↦ ?_),
+    Nat.card_congr MulOpposite.opEquiv, Nat.card_congr (DomMulAct.stabilizerMulEquiv f).toEquiv,
+    Nat.card_pi]
   · exact Finset.prod_congr rfl fun i _ ↦ by rw [Nat.card_eq_fintype_card, Fintype.card_perm]
   · rfl
 

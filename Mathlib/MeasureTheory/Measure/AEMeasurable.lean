@@ -98,8 +98,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     refine ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ, MeasurableSet.iUnion fun i ↦
       (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl, ?_⟩
     ext ⟨x, hx⟩
-    simp only [mem_preimage, mem_iUnion, Set.restrict, mem_inter_iff,
-      mem_compl_iff] at hx ⊢
+    simp only [mem_preimage, mem_iUnion, Set.restrict, mem_inter_iff, mem_compl_iff] at hx ⊢
     constructor
     · rintro ⟨i, hxt, hxs⟩
       rwa [hs _ _ hxs]
@@ -212,8 +211,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     · simp only [g, hx, piecewise_eq_of_notMem, not_false_iff]
       contrapose hx
       apply subset_toMeasurable
-      simp +contextual only [hx, mem_compl_iff, mem_ofPred_eq, not_and,
-        not_false_iff, imp_true_iff]
+      simp +contextual only [hx, mem_compl_iff, mem_ofPred_eq, not_and, not_false_iff, imp_true_iff]
   · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
       exact H.ae_eq_mk.and ht

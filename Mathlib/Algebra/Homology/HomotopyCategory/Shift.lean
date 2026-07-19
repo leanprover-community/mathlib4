@@ -266,9 +266,8 @@ instance commShiftMapCochainComplex :
     rw [CommShift.isoAdd_hom_app]
     dsimp
     rw [id_comp, id_comp]
-    simp only [CochainComplex.shiftFunctorAdd_hom_app_f,
-      CochainComplex.shiftFunctorAdd_inv_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
-      eqToHom_map, eqToHom_trans, eqToHom_refl]
+    simp only [CochainComplex.shiftFunctorAdd_hom_app_f, CochainComplex.shiftFunctorAdd_inv_app_f,
+      HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl]
 
 lemma mapHomologicalComplex_commShiftIso_eq (n : ℤ) :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n =
@@ -307,9 +306,8 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
     rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i + 1) by simp),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1) i by simp)]
     dsimp
-    simpa only [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul,
-      Int.units_mul_self, one_smul,
-      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; lia),
+    simpa only [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, Int.units_mul_self,
+      one_smul, dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; lia),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; lia)]
         using h.comm (i + n)
 

@@ -222,10 +222,8 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         ∈ P'.ker ^ 2 := by
     rw [pow_two]
     refine Ideal.add_mem _ (Ideal.mul_mem_mul ?_ ?_) (Ideal.mul_mem_mul ?_ ?_) <;>
-      simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_comp,
-        Function.comp_apply,
-        ker, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
-        algebraMap_σ, sub_self, toAlgHom_apply]
+      simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_comp, Function.comp_apply, ker,
+        RingHom.mem_ker, map_sub, algebraMap_toRingHom, algebraMap_σ, sub_self, toAlgHom_apply]
   convert! this using 1
   simp only [map_mul]
   ring
@@ -239,9 +237,8 @@ def Hom.subToKer (f g : Hom P P') : P.Ring →ₗ[R] P'.ker := by
   refine ((f.toAlgHom.toLinearMap - g.toAlgHom.toLinearMap).codRestrict
     (P'.ker.restrictScalars R) ?_)
   intro x
-  simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, ker,
-    Submodule.restrictScalars_mem, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
-    sub_self, toAlgHom_apply]
+  simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, ker, Submodule.restrictScalars_mem,
+    RingHom.mem_ker, map_sub, algebraMap_toRingHom, sub_self, toAlgHom_apply]
 
 variable [IsScalarTower R S S'] in
 /--

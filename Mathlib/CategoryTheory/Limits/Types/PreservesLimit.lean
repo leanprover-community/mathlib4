@@ -85,8 +85,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma nonempty_isLimit_mapCone_iff :
     Nonempty (IsLimit (P.mapCone c)) ↔
       (MorphismProperty.single (coconePtToShrinkYoneda c hc')).isLocal P := by
-  rw [Types.isLimit_iff_bijective_sectionOfCone,
-    MorphismProperty.isLocal_single_iff_bijective,
+  rw [Types.isLimit_iff_bijective_sectionOfCone, MorphismProperty.isLocal_single_iff_bijective,
     ← Function.Bijective.of_comp_iff' (coconeCompShrinkYonedaHomEquiv hc').symm.bijective,
     ← Function.Bijective.of_comp_iff _ shrinkYonedaEquiv.bijective]
   convert Iff.rfl using 2

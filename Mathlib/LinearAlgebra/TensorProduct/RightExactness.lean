@@ -432,10 +432,8 @@ theorem TensorProduct.map_ker :
   rw [← Exact.linearMap_ker_eq (rTensor_exact N' hfg hg)]
   rw [← Submodule.comap_map_eq]
   apply congr_arg₂ _ rfl
-  rw [range_eq_map, ← Submodule.map_comp, rTensor_comp_lTensor,
-    Submodule.map_top]
-  rw [← lTensor_comp_rTensor, range_eq_map, Submodule.map_comp,
-    Submodule.map_top]
+  rw [range_eq_map, ← Submodule.map_comp, rTensor_comp_lTensor, Submodule.map_top]
+  rw [← lTensor_comp_rTensor, range_eq_map, Submodule.map_comp, Submodule.map_top]
   rw [range_eq_top.mpr (rTensor_surjective M' hg), Submodule.map_top]
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
 
@@ -509,8 +507,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           -- Note: adding `includeLeft` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeLeft
           exact Submodule.coe_mem a
-        simp only [Algebra.TensorProduct.tmul_mul_tmul,
-          mul_one, one_mul]
+        simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]
         apply Submodule.add_mem _ hx hy
@@ -573,8 +570,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           -- Note: adding `includeRight` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeRight
           exact Submodule.coe_mem b
-        simp only [Algebra.TensorProduct.tmul_mul_tmul,
-          mul_one, one_mul]
+        simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]
         apply Submodule.add_mem _ hx hy

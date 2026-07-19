@@ -245,8 +245,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
   ext
   dsimp [PEquiv.trans]
-  simp only [eq_some_iff f, Option.isSome_iff_exists, bind_eq_some_iff,
-    ofSet_eq_some_iff]
+  simp only [eq_some_iff f, Option.isSome_iff_exists, bind_eq_some_iff, ofSet_eq_some_iff]
   constructor
   · rintro ⟨b, hb₁, hb₂⟩
     exact ⟨PEquiv.inj _ hb₂ hb₁, b, hb₂⟩

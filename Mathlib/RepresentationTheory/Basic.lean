@@ -386,8 +386,7 @@ lemma apply_sub_id_partialSum_eq (n : ℕ) (g : G) (x : V) :
   | succ n h =>
     have : Fin.init (fun (j : Fin (n + 2)) => ρ (g ^ (j : ℕ)) x) =
       fun (j : Fin (n + 1)) => ρ (g ^ (j : ℕ)) x := by ext; simp [Fin.init]
-    rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_init, map_add,
-      this, h]
+    rw [← Fin.succ_eq_last_succ.2 rfl, Fin.partialSum_succ, ← Fin.partialSum_init, map_add, this, h]
     simp [pow_succ']
 
 end AddCommGroup

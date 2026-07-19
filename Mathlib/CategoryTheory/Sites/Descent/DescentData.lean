@@ -223,8 +223,7 @@ def pullFunctorObj (D : F.DescentData f) :
     rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ _ _ (by cat_disch),
       mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ _ (by cat_disch)]
   hom_self Y q j g hg := by
-    rw [pullFunctorObjHom_eq _ _ _ _ _ _ _ _ rfl rfl rfl rfl rfl,
-      D.hom_self _ _ (by cat_disch)]
+    rw [pullFunctorObjHom_eq _ _ _ _ _ _ _ _ rfl rfl rfl rfl rfl, D.hom_self _ _ (by cat_disch)]
     simp
   hom_comp Y q j₁ j₂ j₃ f₁ f₂ f₃ hf₁ hf₂ hf₃ := by
     rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂),
@@ -253,8 +252,7 @@ def pullFunctor : F.DescentData f ⥤ F.DescentData f' where
         rw [pullFunctorObjHom_eq_assoc _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂),
           pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂)]
         dsimp
-        rw [mapComp'_inv_naturality_assoc, ← mapComp'_hom_naturality,
-          reassoc_of% this] }
+        rw [mapComp'_inv_naturality_assoc, ← mapComp'_hom_naturality, reassoc_of% this] }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given families of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, suitable
@@ -464,9 +462,8 @@ lemma subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
     subtypeCompatibleHomEquiv F f (Presieve.Arrows.toCompatible _ _
       (F.presheafHomObjHomEquiv φ)) = (F.toDescentData f).map φ := by
   ext i
-  simp [subtypeCompatibleHomEquiv, presheafHomObjHomEquiv, pullHom,
-    ← Functor.map_comp, Pseudofunctor.mapComp'_id_comp_hom_app_assoc,
-    Pseudofunctor.mapComp'_id_comp_inv_app]
+  simp [subtypeCompatibleHomEquiv, presheafHomObjHomEquiv, pullHom, ← Functor.map_comp,
+    Pseudofunctor.mapComp'_id_comp_hom_app_assoc, Pseudofunctor.mapComp'_id_comp_inv_app]
 
 end DescentData
 
@@ -615,8 +612,7 @@ family of morphisms, then the functor `F.toDescentData f` is fully faithful. -/
 noncomputable def fullyFaithfulToDescentData [F.IsPrestack J] (hf : Sieve.ofArrows _ f ∈ J S) :
     (F.toDescentData f).FullyFaithful :=
   Nonempty.some (by
-    rw [← isPrestackFor_ofArrows_iff, ← IsPrestackFor_generate_iff,
-      isPrestackFor_iff_isSheafFor]
+    rw [← isPrestackFor_ofArrows_iff, ← IsPrestackFor_generate_iff, isPrestackFor_iff_isSheafFor]
     intro M N
     refine ((isSheaf_iff_isSheaf_of_type _ _).1
       (IsPrestack.isSheaf J M N)).isSheafFor _ ?_

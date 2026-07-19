@@ -290,8 +290,7 @@ theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bor
   · exact (b.ofZLatticeBasis ℝ).equivFunL.toHomeomorph.toMeasurableEquiv.measurableSet_image.mpr h₃
   · simp_rw [← image_smul_set]
     apply Set.image_mono
-    rw [tendsto_card_le_div''_aux hX h₁ hx,
-      tendsto_card_le_div''_aux hX h₁ (lt_of_lt_of_le hx hy)]
+    rw [tendsto_card_le_div''_aux hX h₁ hx, tendsto_card_le_div''_aux hX h₁ (lt_of_lt_of_le hx hy)]
     exact fun a ⟨ha₁, ha₂⟩ ↦ ⟨ha₁, le_trans ha₂ <| pow_le_pow_left₀ (le_of_lt hx) hy _⟩
 
 end General

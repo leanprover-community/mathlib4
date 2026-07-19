@@ -76,8 +76,7 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
           (Q.obj ((CochainComplex.singleFunctor C 0).obj Y))⟦b⟧) from inferInstance
       constructor
       intro x y
-      rw [← cancel_mono ((Q.commShiftIso b).inv.app _),
-        ← cancel_epi ((Q.commShiftIso a).hom.app _)]
+      rw [← cancel_mono ((Q.commShiftIso b).inv.app _), ← cancel_epi ((Q.commShiftIso a).hom.app _)]
       have : (((CochainComplex.singleFunctor C 0).obj X)⟦a⟧).IsStrictlyLE (-a) :=
         CochainComplex.isStrictlyLE_shift _ 0 _ _ (by lia)
       have : (((CochainComplex.singleFunctor C 0).obj Y)⟦b⟧).IsStrictlyGE (-b) :=

@@ -287,17 +287,15 @@ theorem prepartition_isSubordinate (B : Box ι) {r : ℝ} (hr : 0 < r) (hn : 1 /
 private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
     a < x ↔ a ≤ (⌈n * x⌉ - 1) / (n : ℝ) := by
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
-  rw [le_div_iff₀' h, le_sub_iff_add_le,
-    show (n : ℝ) * a + 1 = (n * a + 1 : ℤ) by norm_cast,
+  rw [le_div_iff₀' h, le_sub_iff_add_le, show (n : ℝ) * a + 1 = (n * a + 1 : ℤ) by norm_cast,
     Int.cast_le, Int.add_one_le_iff, Int.lt_ceil, Int.cast_mul, Int.cast_natCast,
     mul_lt_mul_iff_right₀ h]
 
 private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
     x ≤ a ↔ (⌈n * x⌉ - 1 + 1) / (n : ℝ) ≤ a := by
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
-  rw [sub_add_cancel, div_le_iff₀' h,
-    show (n : ℝ) * a = (n * a : ℤ) by norm_cast,
-    Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_iff_right₀ h]
+  rw [sub_add_cancel, div_le_iff₀' h, show (n : ℝ) * a = (n * a : ℤ) by norm_cast, Int.cast_le,
+    Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_iff_right₀ h]
 
 /-- If `B : BoxIntegral.Box` has integral vertices and contains the point `x`, then the index of
 `x` is admissible for `B`. -/

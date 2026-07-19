@@ -78,13 +78,11 @@ lemma eHomCongr_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y�
     eHomEquiv V (f ≫ g) ≫ (eHomCongr V α γ).hom =
       (λ_ _).inv ≫ (eHomEquiv V f ≫ (eHomCongr V α β).hom) ▷ _ ≫
         _ ◁ (eHomEquiv V g ≫ (eHomCongr V β γ).hom) ≫ eComp V X₁ Y₁ Z₁ := by
-  simp only [eHomCongr, MonoidalCategory.whiskerRight_id, assoc,
-    MonoidalCategory.whiskerLeft_comp]
+  simp only [eHomCongr, MonoidalCategory.whiskerRight_id, assoc, MonoidalCategory.whiskerLeft_comp]
   rw [rightUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc,
     rightUnitor_inv_naturality_assoc, hom_inv_id_assoc, ← whisker_exchange_assoc,
     ← whisker_exchange_assoc, ← eComp_eHomWhiskerLeft, eHom_whisker_cancel_assoc,
-    ← eComp_eHomWhiskerRight_assoc, ← tensorHom_def_assoc,
-    ← eHomEquiv_comp_assoc]
+    ← eComp_eHomWhiskerRight_assoc, ← tensorHom_def_assoc, ← eHomEquiv_comp_assoc]
 
 /-- The inverse map defined by `eHomCongr` respects composition of morphisms. -/
 @[reassoc]

@@ -39,9 +39,8 @@ variable (f : R →+* S) (x : S)
 
 @[simp]
 theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
-  simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
-    mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff, map_zero,
-    imp_true_iff]
+  simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero, mul_one, sum,
+    Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff, map_zero, imp_true_iff]
 
 @[simp]
 theorem eval₂_C_X : eval₂ C X p = p :=
@@ -210,8 +209,7 @@ theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) 
 
 theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}
     (hf : Function.Injective f) : (map f p).support = p.support := by
-  simp_rw [Finset.ext_iff, mem_support_iff, coeff_map, ← map_zero f, hf.ne_iff,
-    forall_const]
+  simp_rw [Finset.ext_iff, mem_support_iff, coeff_map, ← map_zero f, hf.ne_iff, forall_const]
 
 variable [CommSemiring R] [CommSemiring S] (f : R →+* S)
 

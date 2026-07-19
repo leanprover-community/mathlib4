@@ -402,8 +402,7 @@ theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
     Measurable (mapNatBool α) := by
   rw [measurable_pi_iff]
   refine fun n ↦ measurable_to_bool ?_
-  simp only [preimage, mem_singleton_iff, mapNatBool,
-    Bool.decide_iff, ofPred_mem_eq]
+  simp only [preimage, mem_singleton_iff, mapNatBool, Bool.decide_iff, ofPred_mem_eq]
   apply measurableSet_natGeneratingSequence
 
 theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]

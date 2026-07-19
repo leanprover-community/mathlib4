@@ -70,10 +70,9 @@ noncomputable def colimitLimitToLimitColimit :
                         colimit.ι ((curry.obj F).obj j) k
                     naturality := by
                       intro k k' f
-                      simp only [Functor.comp_obj, lim_obj, colimit.cocone_x,
-                        Functor.const_obj_obj, Functor.comp_map, lim_map,
-                        curry_obj_obj_obj, Prod.swap_obj, limMap_π_assoc, curry_obj_map_app,
-                        Prod.swap_map, Functor.const_obj_map, Category.comp_id]
+                      simp only [Functor.comp_obj, lim_obj, colimit.cocone_x, Functor.const_obj_obj,
+                        Functor.comp_map, lim_map, curry_obj_obj_obj, Prod.swap_obj, limMap_π_assoc,
+                        curry_obj_map_app, Prod.swap_map, Functor.const_obj_map, Category.comp_id]
                       rw [map_id_left_eq_curry_map, colimit.w] } }
           naturality := by
             intro j j' f

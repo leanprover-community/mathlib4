@@ -244,8 +244,7 @@ instance toAlexandrovDiscrete : AlexandrovDiscrete α where
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower : IsClosed s ↔ IsLowerSet s := by
-  rw [← isOpen_compl_iff, isOpen_iff_isUpperSet,
-    isLowerSet_compl.symm, compl_compl]
+  rw [← isOpen_compl_iff, isOpen_iff_isUpperSet, isLowerSet_compl.symm, compl_compl]
 
 lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
   rw [subset_antisymm_iff]

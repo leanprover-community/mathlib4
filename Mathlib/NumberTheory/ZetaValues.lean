@@ -249,12 +249,10 @@ theorem bernoulliFourierCoeff_zero {k : ℕ} (hk : k ≠ 0) : bernoulliFourierCo
 theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     bernoulliFourierCoeff k n = -k ! / (2 * π * I * n) ^ k := by
   rcases eq_or_ne n 0 with (rfl | hn)
-  · rw [bernoulliFourierCoeff_zero hk, Int.cast_zero, mul_zero, zero_pow hk,
-      div_zero]
+  · rw [bernoulliFourierCoeff_zero hk, Int.cast_zero, mul_zero, zero_pow hk, div_zero]
   refine Nat.le_induction ?_ (fun k hk h'k => ?_) k (Nat.one_le_iff_ne_zero.mpr hk)
   · rw [bernoulliFourierCoeff_recurrence 1 hn]
-    simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, if_true,
-      Nat.factorial_one, pow_one]
+    simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, if_true, Nat.factorial_one, pow_one]
     rw [bernoulli_zero_fourier_coeff hn, sub_zero, mul_one, div_neg, neg_div]
   · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, if_neg (by grind), Nat.add_sub_cancel k 1, h'k,
       Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
@@ -375,8 +373,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
     · rw [ofReal_cos, ofReal_mul, fourier_coe_apply, fourier_coe_apply, cos, ofReal_one, div_one,
-        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_natCast,
-        ofReal_natCast]
+        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_natCast, ofReal_natCast]
       congr 3
       · ring
       · ring
@@ -420,8 +417,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
       · ring
   · convert! (ofReal_re _).symm
     rw [ofReal_mul, ofReal_div, ofReal_div, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_neg,
-      ofReal_natCast, ofReal_mul, ofReal_two, ofReal_one, ← div_div, div_I,
-      div_mul_eq_mul_div₀]
+      ofReal_natCast, ofReal_mul, ofReal_two, ofReal_one, ← div_div, div_I, div_mul_eq_mul_div₀]
     have : ∀ α β γ δ : ℂ, α * I * β / γ * δ * I = I ^ 2 * α * β / γ * δ := by intros; ring
     rw [this, I_sq]
     rw [bernoulliFun]

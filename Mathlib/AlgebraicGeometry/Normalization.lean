@@ -296,8 +296,7 @@ instance [IsIntegralHom f] : IsIso f.toNormalization := by
   convert_to! IsIso (Spec.map (CommRingCat.ofHom
       (integralClosure Γ(Y, U.1) Γ(X, f ⁻¹ᵁ U.1)).val.toRingHom))
   · rw [← cancel_mono (f.normalizationOpenCover.f U), ← cancel_epi (U.2.preimage f).isoSpec.hom]
-    simp [e, -Iso.cancel_iso_hom_left, IsAffineOpen.isoSpec_hom,
-      Hom.ι_toNormalization]
+    simp [e, -Iso.cancel_iso_hom_left, IsAffineOpen.isoSpec_hom, Hom.ι_toNormalization]
   have : integralClosure Γ(Y, U.1) Γ(X, f ⁻¹ᵁ U.1) = ⊤ := by
     rw [integralClosure_eq_top_iff, ← algebraMap_isIntegral_iff, RingHom.algebraMap_toAlgebra]
     exact IsIntegralHom.isIntegral_app _ _ U.2
@@ -332,8 +331,7 @@ lemma ker_toNormalization : f.toNormalization.ker = ⊥ := by
   simp only [ker_apply, IdealSheafData.ideal_bot, Pi.bot_apply]
   rw [← RingHom.injective_iff_ker_eq_bot,
     ← ConcreteCategory.mono_iff_injective_of_preservesPullback, ← MorphismProperty.monomorphisms]
-  simp only [toNormalization_app_preimage,
-    eqToHom_op, MorphismProperty.cancel_left_of_respectsIso,
+  simp only [toNormalization_app_preimage, eqToHom_op, MorphismProperty.cancel_left_of_respectsIso,
     MorphismProperty.cancel_right_of_respectsIso]
   rw [MorphismProperty.monomorphisms, @ConcreteCategory.mono_iff_injective_of_preservesPullback]
   exact Subtype.val_injective

@@ -249,8 +249,7 @@ theorem IsIntegral.pair {x : A × B} (hx₁ : IsIntegral R x.1) (hx₂ : IsInteg
   obtain ⟨p₂, ⟨hp₂Monic, hp₂Eval⟩⟩ := hx₂
   refine ⟨p₁ * p₂, ⟨hp₁Monic.mul hp₂Monic, ?_⟩⟩
   rw [← aeval_def] at *
-  rw [aeval_prod_apply, aeval_mul, hp₁Eval, zero_mul, aeval_mul, hp₂Eval, mul_zero,
-    Prod.zero_eq_mk]
+  rw [aeval_prod_apply, aeval_mul, hp₁Eval, zero_mul, aeval_mul, hp₂Eval, mul_zero, Prod.zero_eq_mk]
 
 /-- An element of a product algebra is integral iff each component is integral. -/
 theorem IsIntegral.pair_iff {x : A × B} : IsIntegral R x ↔ IsIntegral R x.1 ∧ IsIntegral R x.2 :=

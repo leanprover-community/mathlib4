@@ -268,8 +268,7 @@ variable {K L : IntermediateField F E}
 
 @[simp]
 theorem rank_eq_one_iff : Module.rank F K = 1 ↔ K = ⊥ := by
-  rw [← toSubalgebra_inj, ← rank_eq_rank_subalgebra, Subalgebra.rank_eq_one_iff,
-    bot_toSubalgebra]
+  rw [← toSubalgebra_inj, ← rank_eq_rank_subalgebra, Subalgebra.rank_eq_one_iff, bot_toSubalgebra]
 
 @[simp]
 theorem finrank_eq_one_iff : finrank F K = 1 ↔ K = ⊥ := by
@@ -688,9 +687,8 @@ noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
 theorem algEquiv_apply {x y : L} (hx : IsAlgebraic K x) (h_mp : minpoly K x = minpoly K y) :
     algEquiv hx h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by
   have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, (h_mp ▸ aeval _ _)⟩
-  rw [algEquiv, trans_apply, ← adjoinRootEquivAdjoin_apply_root K hx.isIntegral,
-    symm_apply_apply, trans_apply, AdjoinRoot.algEquivOfEq_root,
-    adjoinRootEquivAdjoin_apply_root K hy.isIntegral]
+  rw [algEquiv, trans_apply, ← adjoinRootEquivAdjoin_apply_root K hx.isIntegral, symm_apply_apply,
+    trans_apply, AdjoinRoot.algEquivOfEq_root, adjoinRootEquivAdjoin_apply_root K hy.isIntegral]
 
 end minpoly
 

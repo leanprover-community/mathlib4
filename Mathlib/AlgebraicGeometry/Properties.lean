@@ -366,9 +366,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 open Order in
 lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
-  rw [PrimeSpectrum.height_eq_orderHeight,
-    ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R), ← height_ofDual,
-    specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
+  rw [PrimeSpectrum.height_eq_orderHeight, ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R),
+    ← height_ofDual, specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
 
 set_option backward.isDefEq.respectTransparency.types false in
 open Order in

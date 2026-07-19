@@ -1044,8 +1044,7 @@ iterated integral on `t` and `s` respectively. -/
 theorem setLIntegral_prod_symm [SFinite μ] {s : Set α} {t : Set β} (f : α × β → ℝ≥0∞)
     (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
     ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ y in t, ∫⁻ x in s, f (x, y) ∂μ ∂ν := by
-  rw [← Measure.prod_restrict, ← lintegral_prod_swap, Measure.prod_restrict,
-    setLIntegral_prod]
+  rw [← Measure.prod_restrict, ← lintegral_prod_swap, Measure.prod_restrict, setLIntegral_prod]
   · rfl
   · refine AEMeasurable.comp_measurable ?_ measurable_swap
     convert! hf

@@ -181,19 +181,16 @@ lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     (X.spine a hₐ (X.map φ.op Δ)).vertex i =
       (X.spine m hₘ Δ).vertex (φ.hom.toOrderHom i) := by
   dsimp only [spine_vertex]
-  rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp',
-    SimplexCategory.const_comp]
+  rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp', SimplexCategory.const_comp]
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
     X.spine l (by lia) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
   ext i
   · dsimp only [spine_vertex, Path.interval]
-    rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp,
-      const_subinterval_eq]
+    rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp, const_subinterval_eq]
   · dsimp only [spine_arrow, Path.interval]
-    rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp,
-      mkOfSucc_subinterval_eq]
+    rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp, mkOfSucc_subinterval_eq]
 
 end Truncated
 
@@ -302,9 +299,8 @@ lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
     X.spine m (X.δ 0 x) = (X.spine (m + 1) x).interval 1 m := by
   obtain _ | m := m
   · ext
-    simp [spine, Path.vertex, Truncated.Path.vertex,
-      Truncated.spine, Path.interval, Truncated.Path.interval,
-      Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const]
+    simp [spine, Path.vertex, Truncated.Path.vertex, Truncated.spine, Path.interval,
+      Truncated.Path.interval, Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const]
     rfl
   · ext i
     dsimp

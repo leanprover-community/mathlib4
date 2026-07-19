@@ -399,8 +399,7 @@ which corresponds to `c.ιSigmaStdSimplex`. -/
 noncomputable def Cell.type₁ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m j)).N where
   simplex := c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm (𝟙 _))
   nonDegenerate := by
-    rw [nonDegenerate_iff_of_mono, stdSimplex.mem_nonDegenerate_iff_mono,
-      Equiv.apply_symm_apply]
+    rw [nonDegenerate_iff_of_mono, stdSimplex.mem_nonDegenerate_iff_mono, Equiv.apply_symm_apply]
     infer_instance
   notMem := by
     rintro ⟨y, hy⟩
@@ -420,8 +419,7 @@ noncomputable def Cell.type₂ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m 
   simplex := c.ιSigmaStdSimplex.app _
     (stdSimplex.objEquiv.symm (SimplexCategory.δ c.index))
   nonDegenerate := by
-    rw [nonDegenerate_iff_of_mono, stdSimplex.mem_nonDegenerate_iff_mono,
-      Equiv.apply_symm_apply]
+    rw [nonDegenerate_iff_of_mono, stdSimplex.mem_nonDegenerate_iff_mono, Equiv.apply_symm_apply]
     infer_instance
   notMem := by
     rintro ⟨y, hy⟩
@@ -553,8 +551,7 @@ private lemma isPushout_aux₂ {j : ι} : Function.Injective (f.mapN (j := j)) :
   intro s t h
   obtain ⟨c, rfl | rfl⟩ := f.exists_or_of_range_m_N s <;>
     obtain ⟨c', rfl | rfl⟩ := f.exists_or_of_range_m_N t <;>
-    simp only [mapN_type₁, mapN_type₂, ← Subcomplex.N.eq_iff_sMk_eq,
-      ← Subtype.ext_iff] at h
+    simp only [mapN_type₁, mapN_type₂, ← Subcomplex.N.eq_iff_sMk_eq, ← Subtype.ext_iff] at h
   · obtain rfl : c = c' := by ext : 1; exact P.p.injective h
     rfl
   · exact (P.ne _ _ h).elim

@@ -207,8 +207,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         induction n with
         | zero => simpa only [Nat.rec_zero, zero_add, pow_one] using! h₁
         | succ n ih => ?_
-        rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
-          add_neg_cancel_comm]
+        rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg, add_neg_cancel_comm]
         rw [eval_eq_sum, sum_over_range' _ _ _ (lt_add_of_pos_right _ zero_lt_two), ←
           Finset.sum_range_add_sum_Ico _ (Nat.le_add_left _ _)]
         swap

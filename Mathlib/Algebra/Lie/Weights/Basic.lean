@@ -668,8 +668,7 @@ lemma injOn_genWeightSpace :
 
 See also `LieModule.iSupIndep_genWeightSpace'`. -/
 lemma iSupIndep_genWeightSpace : iSupIndep fun χ : L → R ↦ genWeightSpace M χ := by
-  simp only [← LieSubmodule.iSupIndep_toSubmodule, genWeightSpace,
-    LieSubmodule.iInf_toSubmodule]
+  simp only [← LieSubmodule.iSupIndep_toSubmodule, genWeightSpace, LieSubmodule.iInf_toSubmodule]
   exact Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo (toEnd R L M)
     (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
 
@@ -729,8 +728,7 @@ lemma IsTriangularizable.exists_hasEigenvalue [Nontrivial M] [IsTriangularizable
 @[simp]
 lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), genWeightSpaceOf M φ x = ⊤ := by
-  rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.iSup_toSubmodule,
-    LieSubmodule.top_toSubmodule]
+  rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.iSup_toSubmodule, LieSubmodule.top_toSubmodule]
   dsimp [genWeightSpaceOf]
   exact IsTriangularizable.maxGenEigenspace_eq_top x
 
@@ -741,8 +739,7 @@ lemma trace_toEnd_genWeightSpace [IsDomain R] [IsPrincipalIdealRing R]
     trace R _ (toEnd R L (genWeightSpace M χ) x) = finrank R (genWeightSpace M χ) • χ x := by
   suffices _root_.IsNilpotent ((toEnd R L (genWeightSpace M χ) x) - χ x • LinearMap.id) by
     replace this := (isNilpotent_trace_of_isNilpotent this).eq_zero
-    rwa [map_sub, map_smul, trace_id, sub_eq_zero, smul_eq_mul, mul_comm,
-      ← nsmul_eq_mul] at this
+    rwa [map_sub, map_smul, trace_id, sub_eq_zero, smul_eq_mul, mul_comm, ← nsmul_eq_mul] at this
   rw [← Module.algebraMap_end_eq_smul_id]
   exact isNilpotent_toEnd_sub_algebraMap M χ x
 

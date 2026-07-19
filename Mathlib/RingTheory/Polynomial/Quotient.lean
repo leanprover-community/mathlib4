@@ -132,9 +132,8 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
       rw [hp, hq]
     · intro n a
       simp only [← smul_X_eq_monomial, ← C_mul' a (X ^ n), Quotient.lift_mk,
-        Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk,
-        coe_eval₂RingHom, map_pow, eval₂_C, RingHom.coe_comp, map_mul, eval₂_X,
-        Function.comp_apply]
+        Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, coe_eval₂RingHom, map_pow, eval₂_C,
+        RingHom.coe_comp, map_mul, eval₂_X, Function.comp_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -256,8 +255,7 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
     simp only [eval₂_add, map_add, coe_eval₂Hom] at hp hq ⊢
     rw [hp, hq]
   · intro p i hp
-    simp only [coe_eval₂Hom, Ideal.Quotient.lift_mk,
-      eval₂_mul, map_mul, eval₂_X] at hp ⊢
+    simp only [coe_eval₂Hom, Ideal.Quotient.lift_mk, eval₂_mul, map_mul, eval₂_X] at hp ⊢
     simp only [hp]
 
 /-- If `I` is an ideal of `R`, then the ring `MvPolynomial σ I.quotient` is isomorphic as an

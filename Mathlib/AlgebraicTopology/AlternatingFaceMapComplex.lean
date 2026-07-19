@@ -194,9 +194,8 @@ theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] 
     apply HomologicalComplex.ext
     · rintro i j (rfl : j + 1 = i)
       dsimp only [Functor.comp_obj]
-      simp only [Functor.mapHomologicalComplex_obj_d, alternatingFaceMapComplex_obj_d,
-        eqToHom_refl, id_comp, comp_id, AlternatingFaceMapComplex.objD, Functor.map_sum,
-        Functor.map_zsmul]
+      simp only [Functor.mapHomologicalComplex_obj_d, alternatingFaceMapComplex_obj_d, eqToHom_refl,
+        id_comp, comp_id, AlternatingFaceMapComplex.objD, Functor.map_sum, Functor.map_zsmul]
       rfl
     · ext n
       rfl
@@ -242,8 +241,7 @@ def ε [Limits.HasZeroObject C] :
     -/
     change f.left.app _ ≫ _ = _ ≫ ((ChainComplex.single₀ _).map f.right).f 0
     rw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
-      ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
-      ChainComplex.single₀_map_f_zero]
+      ChainComplex.toSingle₀Equiv_symm_apply_f_zero, ChainComplex.single₀_map_f_zero]
     exact SimplicialObject.Augmented.w₀ f
 
 @[simp]

@@ -119,8 +119,7 @@ private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
   match x1, x2, H with
   | _, _, R.intro n x =>
     Quot.sound <| by
-      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_mul,
-        Nat.succ_add]
+      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_mul, Nat.succ_add]
       apply R.intro
 
 set_option backward.privateInPublic true in
@@ -158,8 +157,7 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
             apply congr_arg (Quot.mk _)
-            simp only [mul_assoc, iterate_map_mul, ← iterate_add_apply,
-              add_comm, add_left_comm]
+            simp only [mul_assoc, iterate_map_mul, ← iterate_add_apply, add_comm, add_left_comm]
     one := mk K p (0, 1)
     one_mul := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
@@ -187,8 +185,7 @@ private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
   match x1, x2, H with
   | _, _, R.intro n x =>
     Quot.sound <| by
-      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_add,
-        Nat.succ_add]
+      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_add, Nat.succ_add]
       apply R.intro
 
 set_option backward.privateInPublic true in

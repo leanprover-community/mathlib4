@@ -315,8 +315,7 @@ theorem eq_scalar_center_equiv_rootsOfUnity
   generalize_proofs _ eq
   generalize max (Fintype.card n) 1 = c at eq
   subst eq
-  rw [center_equiv_rootsOfUnity'_apply, rootsOfUnity.val_mkOfPowEq_coe,
-    scalar_eq_coe_self_center]
+  rw [center_equiv_rootsOfUnity'_apply, rootsOfUnity.val_mkOfPowEq_coe, scalar_eq_coe_self_center]
 
 end center
 
@@ -521,8 +520,7 @@ lemma transvection_mulVec_single_self {i j : ι} (hij : i ≠ j) (b : F) :
 /-- The transvection `transvection i j hij b` acts on `e_j = Pi.single j 1` by adding `b·e_i`. -/
 lemma transvection_smul_single_snd {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b) • (Pi.single j 1 : ι → F) = Pi.single j 1 + b • Pi.single i 1 := by
-  simp [SpecialLinearGroup.smul_def, transvection_coe, -mulVec_single,
-    add_mulVec, single_mulVec_eq]
+  simp [SpecialLinearGroup.smul_def, transvection_coe, -mulVec_single, add_mulVec, single_mulVec_eq]
 
 @[deprecated transvection_smul_single_snd (since := "2026-06-22")]
 lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
@@ -533,8 +531,7 @@ lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
 /-- Inverse of a transvection: `transvection i j hij b * transvection i j hij (-b) = 1`. -/
 lemma transvection_mul_neg {i j : ι} (hij : i ≠ j) (b : F) :
     transvection hij b * transvection hij (-b) = 1 := Subtype.ext <| by
-  simp [transvection_coe, mul_add, add_mul,
-    single_mul_single_of_ne _ _ _ _ hij.symm, ← single_neg]
+  simp [transvection_coe, mul_add, add_mul, single_mul_single_of_ne _ _ _ _ hij.symm, ← single_neg]
 
 lemma transvection_inv {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b)⁻¹ = transvection hij (-b) :=

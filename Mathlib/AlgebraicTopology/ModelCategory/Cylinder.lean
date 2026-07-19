@@ -276,8 +276,7 @@ noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
   weakEquivalence_π := by
     have : WeakEquivalence ((P.i₀ ≫ pushout.inl P.i₁ P'.i₀) ≫
         pushout.desc P.π P'.π (by simp)) := by
-      simp only [assoc, colimit.ι_desc, PushoutCocone.mk_ι_app,
-        Precylinder.i₀_π]
+      simp only [assoc, colimit.ι_desc, PushoutCocone.mk_ι_app, Precylinder.i₀_π]
       infer_instance
     dsimp
     apply weakEquivalence_of_precomp (P.i₀ ≫ pushout.inl _ _)

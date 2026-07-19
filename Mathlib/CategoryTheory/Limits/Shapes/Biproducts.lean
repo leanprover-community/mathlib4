@@ -916,8 +916,7 @@ def kernelForkBiproductToSubtype (p : K → Prop) :
         classical
         intro W' g' w
         ext j
-        simp only [Category.assoc, biproduct.toSubtype_fromSubtype, Pi.compl_apply,
-          biproduct.map_π]
+        simp only [Category.assoc, biproduct.toSubtype_fromSubtype, Pi.compl_apply, biproduct.map_π]
         split_ifs with h
         · simp
         · replace w := w =≫ biproduct.π _ ⟨j, not_not.mp h⟩

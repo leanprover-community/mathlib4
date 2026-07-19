@@ -392,8 +392,7 @@ lemma map_cyclesMap' : F.map (ShortComplex.cyclesMap' φ hl₁ hl₂) =
 lemma map_leftHomologyMap' : F.map (ShortComplex.leftHomologyMap' φ hl₁ hl₂) =
     ShortComplex.leftHomologyMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
   have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
-  rw [γ.leftHomologyMap'_eq, (γ.map F).leftHomologyMap'_eq,
-    ShortComplex.LeftHomologyMapData.map_φH]
+  rw [γ.leftHomologyMap'_eq, (γ.map F).leftHomologyMap'_eq, ShortComplex.LeftHomologyMapData.map_φH]
 
 end LeftHomologyData
 
@@ -513,9 +512,8 @@ lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
     [(S.map F).HasHomology] [F.PreservesLeftHomologyOf S] :
     S.mapHomologyIso F = (hl.map F).homologyIso ≪≫ F.mapIso hl.homologyIso.symm := by
   ext
-  dsimp only [mapHomologyIso, homologyIso, ShortComplex.leftHomologyIso,
-    leftHomologyMapIso', leftHomologyIso, Functor.mapIso,
-    Iso.symm, Iso.trans, Iso.refl]
+  dsimp only [mapHomologyIso, homologyIso, ShortComplex.leftHomologyIso, leftHomologyMapIso',
+    leftHomologyIso, Functor.mapIso, Iso.symm, Iso.trans, Iso.refl]
   simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id, Functor.map_id,
     Functor.mapShortComplex_obj]
 
@@ -576,8 +574,7 @@ lemma mapOpcyclesIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomolo
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
     opcyclesMap (F.mapShortComplex.map φ) ≫ (S₂.mapOpcyclesIso F).hom =
       (S₁.mapOpcyclesIso F).hom ≫ F.map (opcyclesMap φ) := by
-  dsimp only [opcyclesMap, mapOpcyclesIso, RightHomologyData.opcyclesIso,
-    opcyclesMapIso', Iso.refl]
+  dsimp only [opcyclesMap, mapOpcyclesIso, RightHomologyData.opcyclesIso, opcyclesMapIso', Iso.refl]
   simp only [RightHomologyData.map_opcyclesMap', Functor.mapShortComplex_obj, ← opcyclesMap'_comp,
     comp_id, id_comp]
 

@@ -767,8 +767,7 @@ theorem isSelfAdjoint_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
 theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[𝕜] E) :
     have := FiniteDimensional.complete 𝕜 E
     IsSelfAdjoint T.toLinearMap ↔ IsSelfAdjoint T := by
-  simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
-    coe_toContinuousLinearMap_symm,
+  simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply, coe_toContinuousLinearMap_symm,
     ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
   rfl
 

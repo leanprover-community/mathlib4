@@ -172,8 +172,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
         (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
   · exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
   · exact irreducible_of_normalized_factor _ hJ
-  · rwa [← bot_eq_zero, Ne,
-      map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)]
+  · rwa [← bot_eq_zero, Ne, map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
@@ -228,8 +227,7 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
   erw [IsDedekindDomain.idealFactorsFunOfQuotHom_coe_coe]
   dsimp only
   rw [map_span, image_singleton, map_span, image_singleton, coe_coe,
-    quotMapEquivQuotQuotMap_symm_apply, span_union, span_eq, sup_comm,
-    ← image_singleton, ← map_span, Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective,
-    Ideal.mk_ker]
+    quotMapEquivQuotQuotMap_symm_apply, span_union, span_eq, sup_comm, ← image_singleton,
+    ← map_span, Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
 
 end KummerDedekind

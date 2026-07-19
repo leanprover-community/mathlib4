@@ -51,8 +51,7 @@ lemma δ₀Iter_succ' (i : ℕ) {n m : ℕ} (h : n + (i + 1) = m := by lia) :
     δ₀Iter (i + 1) h = δ 0 ≫ δ₀Iter i := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   ext
-  rw [dsimp% ConcreteCategory.comp_apply (δ 0) (δ₀Iter i), coe_δ,
-    δ₀Iter_apply .., δ₀Iter_apply ..]
+  rw [dsimp% ConcreteCategory.comp_apply (δ 0) (δ₀Iter i), coe_δ, δ₀Iter_apply .., δ₀Iter_apply ..]
   dsimp
   lia
 
@@ -61,9 +60,8 @@ lemma δ₀Iter_δ (i : ℕ) {n m : ℕ} (j : Fin (m + 2))
     δ₀Iter i hi ≫ δ j = δ₀Iter (i + 1) := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   ext
-  rw [dsimp% ConcreteCategory.comp_apply (δ₀Iter i hi) (δ j), coe_δ,
-    δ₀Iter_apply .., δ₀Iter_apply ..,
-    Fin.succAbove_of_le_castSucc _ _ (by grind)]
+  rw [dsimp% ConcreteCategory.comp_apply (δ₀Iter i hi) (δ j), coe_δ, δ₀Iter_apply ..,
+    δ₀Iter_apply .., Fin.succAbove_of_le_castSucc _ _ (by grind)]
   simp [add_assoc]
 
 @[reassoc]
@@ -78,8 +76,7 @@ lemma δ₀Iter_δ' {n : ℕ} (i : Fin (n + 2)) (j : ℕ) {m : ℕ}
     simp
   | succ j hj =>
     rw [δ₀Iter_succ'_assoc .., δ₀Iter_succ' ..,
-      ← reassoc_of% dsimp% δ_comp_δ (i := 0) (j := i) (by simp),
-      ← hj _ i' _ (by grind)]
+      ← reassoc_of% dsimp% δ_comp_δ (i := 0) (j := i) (by simp), ← hj _ i' _ (by grind)]
 
 @[reassoc]
 lemma δ₀Iter_σ (i : ℕ) {n m : ℕ} (j : Fin (m + 1))
@@ -88,9 +85,8 @@ lemma δ₀Iter_σ (i : ℕ) {n m : ℕ} (j : Fin (m + 1))
     δ₀Iter (i + 1) hi ≫ σ j = δ₀Iter i := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   ext
-  rw [dsimp% ConcreteCategory.comp_apply (δ₀Iter (i + 1)) (σ j),
-    δ₀Iter_apply .., δ₀Iter_apply .., coe_σ,
-    Fin.predAbove_of_castSucc_lt _ _ (by grind)]
+  rw [dsimp% ConcreteCategory.comp_apply (δ₀Iter (i + 1)) (σ j), δ₀Iter_apply .., δ₀Iter_apply ..,
+    coe_σ, Fin.predAbove_of_castSucc_lt _ _ (by grind)]
   dsimp
 
 @[reassoc]
@@ -109,8 +105,7 @@ lemma δ₀Iter_σ' (i : ℕ) {n m : ℕ} (j : Fin (m + 1))
     · grind
     · obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero
         (by rintro rfl; dsimp at hj'; lia)
-      rw [δ₀Iter_succ_assoc .., δ₀Iter_succ ..,
-        dsimp% δ_comp_σ_of_le (i := 0) (j := j) (by simp),
+      rw [δ₀Iter_succ_assoc .., δ₀Iter_succ .., dsimp% δ_comp_σ_of_le (i := 0) (j := j) (by simp),
         reassoc_of% hi j j' (by lia) (by grind)]
 
 /-- If `n + i = m`, this is the morphism `⦋m⦌ ⟶ ⦋n⦌` in the simplex category
@@ -152,8 +147,7 @@ lemma σ₀Iter_one (n : ℕ) : σ₀Iter 1 (n := n) rfl = σ 0 := by
   ext
   dsimp
   obtain rfl | ⟨k, rfl⟩ := k.eq_zero_or_eq_succ
-  · rw [σ₀Iter_coe_eq_of_lt _ _ _ (by simp), coe_σ,
-      Fin.predAbove_of_le_castSucc _ _ (by simp)]
+  · rw [σ₀Iter_coe_eq_of_lt _ _ _ (by simp), coe_σ, Fin.predAbove_of_le_castSucc _ _ (by simp)]
     dsimp
   · rw [σ₀Iter_coe_eq_of_ge .., coe_σ]
     simp
@@ -169,11 +163,9 @@ lemma σ₀Iter_succ (i : ℕ) {n m : ℕ} (h : n + (i + 1) = m) :
     obtain hk | rfl := hk.lt_or_eq
     · grind [Fin.predAbove_of_le_castSucc, Fin.coe_castPred, σ₀Iter_coe_eq_of_lt]
     · grind [Fin.predAbove_of_le_castSucc, Fin.coe_castPred, σ₀Iter_coe_eq_of_ge, tsub_self]
-  · rw [σ₀Iter_coe_eq_of_ge .., coe_σ,
-      Fin.predAbove_of_castSucc_lt _ _ ?_, Fin.val_pred,
+  · rw [σ₀Iter_coe_eq_of_ge .., coe_σ, Fin.predAbove_of_castSucc_lt _ _ ?_, Fin.val_pred,
       σ₀Iter_coe_eq_of_ge .., Nat.sub_add_eq]
-    rw [Fin.lt_def, Fin.castSucc_zero, σ₀Iter_coe_eq_of_ge ..,
-      Fin.coe_ofNat_eq_mod, Nat.zero_mod]
+    rw [Fin.lt_def, Fin.castSucc_zero, σ₀Iter_coe_eq_of_ge .., Fin.coe_ofNat_eq_mod, Nat.zero_mod]
     lia
 
 @[reassoc]
@@ -200,8 +192,7 @@ lemma δ_σ₀Iter {n : ℕ} (i : Fin (n + 2)) (j : ℕ) {m : ℕ} (h : m + (j +
     · rw [Fin.succAbove_of_le_castSucc _ _ hk', σ₀Iter_coe_eq_of_ge ..]
       simp
     · obtain rfl : j = k.val := by grind [dsimp% Fin.lt_def.1 hk']
-      rw [Fin.succAbove_of_castSucc_lt _ _ (by lia),
-        σ₀Iter_coe_eq_of_lt .., tsub_self]
+      rw [Fin.succAbove_of_castSucc_lt _ _ (by lia), σ₀Iter_coe_eq_of_lt .., tsub_self]
   · rw [σ₀Iter_coe_eq_of_lt j .., coe_δ]
     by_cases! hk' : i ≤ k.castSucc
     · rw [Fin.succAbove_of_le_castSucc _ _ hk', σ₀Iter_coe_eq_of_lt ..]
@@ -232,8 +223,7 @@ lemma σ_σ₀Iter (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (hi : n + i = m := by
   ext
   rw [dsimp% ConcreteCategory.comp_apply (σ j) (σ₀Iter i), coe_σ]
   by_cases! hk : i < k.val
-  · rw [σ₀Iter_coe_eq_of_ge (i + 1) ..,
-      Fin.predAbove_of_castSucc_lt _ _ (by grind),
+  · rw [σ₀Iter_coe_eq_of_ge (i + 1) .., Fin.predAbove_of_castSucc_lt _ _ (by grind),
       σ₀Iter_coe_eq_of_ge ..]
     grind
   · rw [σ₀Iter_coe_eq_of_lt (i + 1) ..]
@@ -253,8 +243,7 @@ lemma σ_σ₀Iter' (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (j' : Fin (n + 1))
     obtain rfl : j = j' := by lia
     simp
   | succ i hi' =>
-    rw [σ₀Iter_succ, σ₀Iter_succ_assoc,
-      reassoc_of% hi' _ j'.succ (by lia) (by grind),
+    rw [σ₀Iter_succ, σ₀Iter_succ_assoc, reassoc_of% hi' _ j'.succ (by lia) (by grind),
       ← σ_comp_σ (by simp), Fin.castSucc_zero]
 
 @[reassoc (attr := simp)]

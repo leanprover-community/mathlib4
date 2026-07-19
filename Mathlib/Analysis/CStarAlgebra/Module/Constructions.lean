@@ -142,8 +142,7 @@ lemma prod_inner (x y : C⋆ᵐᵒᵈ(A, E × F)) : ⟪x, y⟫_A = ⟪x.1, y.1�
 lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ(A, E × F)) : max ‖x.1‖ ‖x.2‖ ≤ ‖x‖ := by
   rw [prod_norm]
   simp only [norm_eq_sqrt_norm_inner_self (A := A) (E := E),
-    norm_eq_sqrt_norm_inner_self (A := A) (E := F), max_le_iff, norm_nonneg,
-    Real.sqrt_le_sqrt_iff]
+    norm_eq_sqrt_norm_inner_self (A := A) (E := F), max_le_iff, norm_nonneg, Real.sqrt_le_sqrt_iff]
   constructor
   all_goals
     refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (A := A) ?_ ?_

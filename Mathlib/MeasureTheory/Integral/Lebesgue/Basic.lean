@@ -395,8 +395,7 @@ to zero as `μ s` tends to zero. -/
 theorem tendsto_setLIntegral_zero {ι} {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞) {l : Filter ι}
     {s : ι → Set α} (hl : Tendsto (μ ∘ s) l (𝓝 0)) :
     Tendsto (fun i => ∫⁻ x in s i, f x ∂μ) l (𝓝 0) := by
-  simp only [ENNReal.nhds_zero, tendsto_iInf, tendsto_principal, mem_Iio,
-    ← pos_iff_ne_zero] at hl ⊢
+  simp only [ENNReal.nhds_zero, tendsto_iInf, tendsto_principal, mem_Iio, ← pos_iff_ne_zero] at hl ⊢
   intro ε ε0
   rcases exists_pos_setLIntegral_lt_of_measure_lt h ε0.ne' with ⟨δ, δ0, hδ⟩
   exact (hl δ δ0).mono fun i => hδ _

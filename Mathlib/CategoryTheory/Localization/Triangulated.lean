@@ -112,9 +112,8 @@ lemma complete_distinguished_essImageDistTriang_morphism
   dsimp at h₂ h₃
   simp only [assoc] at h₃
   refine ⟨e₁.hom.hom₃ ≫ φ.hom₃ ≫ e₂.inv.hom₃, ?_, ?_⟩
-  · rw [reassoc_of% comm₂, reassoc_of% h₂, hφ₂, assoc, assoc,
-      Iso.hom_inv_id_triangle_hom₂_assoc, ← reassoc_of% comm₂',
-      Iso.hom_inv_id_triangle_hom₃, comp_id]
+  · rw [reassoc_of% comm₂, reassoc_of% h₂, hφ₂, assoc, assoc, Iso.hom_inv_id_triangle_hom₂_assoc,
+      ← reassoc_of% comm₂', Iso.hom_inv_id_triangle_hom₃, comp_id]
   · rw [assoc, assoc, ← cancel_epi e₁.inv.hom₃, ← reassoc_of% comm₃,
       Iso.inv_hom_id_triangle_hom₃_assoc, ← cancel_mono (e₂.hom.hom₁⟦(1 : ℤ)⟧'),
       assoc, assoc, assoc, assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, ← hφ₁,
@@ -166,9 +165,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   dsimp at hβ
   obtain ⟨Z₂, σ, hσ, fac⟩ := (MorphismProperty.map_eq_iff_postcomp L W
     (α.f ≫ β.f ≫ γ.s) (T₁.mor₁ ≫ γ.f)).1 (by
-      rw [← cancel_mono (L.map β.s), assoc, assoc, hγ, ← cancel_mono (L.map γ.s),
-        assoc, assoc, assoc, hα, MorphismProperty.LeftFraction.map_comp_map_s,
-        ← Functor.map_comp] at fac
+      rw [← cancel_mono (L.map β.s), assoc, assoc, hγ, ← cancel_mono (L.map γ.s), assoc, assoc,
+        assoc, hα, MorphismProperty.LeftFraction.map_comp_map_s, ← Functor.map_comp] at fac
       rw [fac, ← Functor.map_comp_assoc, hβ, Functor.map_comp, Functor.map_comp,
         Functor.map_comp, assoc, MorphismProperty.LeftFraction.map_comp_map_s_assoc])
   simp only [assoc] at fac
@@ -189,8 +187,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     rw [hα, MorphismProperty.LeftFraction.map_comp_map_s]
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₂, ← comp_hom₂, assoc, IsIso.inv_hom_id, comp_id]
     dsimp [ψ]
-    simp only [Functor.map_comp, reassoc_of% hγ,
-      MorphismProperty.LeftFraction.map_comp_map_s_assoc]
+    simp only [Functor.map_comp, reassoc_of% hγ, MorphismProperty.LeftFraction.map_comp_map_s_assoc]
 
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
 

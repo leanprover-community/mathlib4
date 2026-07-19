@@ -265,8 +265,7 @@ def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
     simp only [isoFinYonedaComponents_hom, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
-      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, toProfinite_obj,
-      ← Functor.map_comp_apply]
+      ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, toProfinite_obj, ← Functor.map_comp_apply]
     rfl
 
 /--
@@ -456,8 +455,7 @@ def lanPresheafNatIso
     lanPresheaf F ≅ F := by
   refine NatIso.ofComponents
     (fun ⟨S⟩ ↦ (lanPresheafIso (hF S))) fun _ ↦ ?_
-  simp only [lanPresheaf, pointwiseLeftKanExtension_map,
-    lanPresheafIso_hom, Opposite.op_unop]
+  simp only [lanPresheaf, pointwiseLeftKanExtension_map, lanPresheafIso_hom, Opposite.op_unop]
   exact colimit.hom_ext fun _ ↦ (by simp)
 
 set_option backward.isDefEq.respectTransparency.types false in

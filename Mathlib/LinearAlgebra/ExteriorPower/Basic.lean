@@ -165,9 +165,8 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
       map_update_smul' := fun m i r x ↦ by
         have := s.linearCombination_var_relation (.smul m i r x)
         dsimp at this ⊢
-        rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub,
-          Finsupp.linearCombination_single, one_smul,
-          Finsupp.linearCombination_single, sub_eq_zero] at this
+        rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub, Finsupp.linearCombination_single,
+          one_smul, Finsupp.linearCombination_single, sub_eq_zero] at this
         convert! this
       map_eq_zero_of_eq' := fun v i j hm hij ↦
         by simpa using s.linearCombination_var_relation (.alt v i j hm hij) }

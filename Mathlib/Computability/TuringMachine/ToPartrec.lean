@@ -741,9 +741,8 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
           (splitAtPred_eq _ _ (trNat a) (some Γ'.cons) (trList L₂ ++ Γ'.consₗ :: L₃)
             (trNat_natEnd _) ⟨rfl, by simp⟩))
         (TransGen.head rfl (TransGen.head rfl ?_))
-    simp only [TM2.step, Option.mem_def, trList, List.append_assoc,
-      List.cons_append, elim_update_stack, elim_rev, elim_update_rev, Function.update_self,
-      List.headI_cons]
+    simp only [TM2.step, Option.mem_def, trList, List.append_assoc, List.cons_append,
+      elim_update_stack, elim_rev, elim_update_rev, Function.update_self, List.headI_cons]
     refine
       TransGen.trans
         (clear_ok
@@ -891,9 +890,8 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
     · exact splitAtPred_eq _ _ _ (some Γ'.consₗ) _
         (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, rfl⟩
     refine (move₂_ok (by decide) ?_ (splitAtPred_false _)).trans ?_; · rfl
-    simp only [TM2.step, Option.mem_def, Option.elim, elim_update_stack, elim_main,
-      List.append_nil, elim_update_main, id_eq, elim_update_aux,
-      elim_aux, elim_stack]
+    simp only [TM2.step, Option.mem_def, Option.elim, elim_update_stack, elim_main, List.append_nil,
+      elim_update_main, id_eq, elim_update_aux, elim_aux, elim_stack]
     exact h₂
   | cons₂ ns k IH =>
     obtain ⟨c, h₁, h₂⟩ := IH (ns.headI :: v) none
@@ -1072,8 +1070,7 @@ theorem codeSupp_comp (f g k) :
     codeSupp (Code.comp f g) k =
       trStmts₁ (trNormal (Code.comp f g) k) ∪ codeSupp g (Cont'.comp f k) := by
   simp only [codeSupp, codeSupp', trNormal, Finset.union_assoc, contSupp]
-  rw [← Finset.union_assoc _ _ (contSupp k),
-    Finset.union_eq_right.2 (codeSupp'_self _ _)]
+  rw [← Finset.union_assoc _ _ (contSupp k), Finset.union_eq_right.2 (codeSupp'_self _ _)]
 
 @[simp]
 theorem codeSupp_case (f g k) :

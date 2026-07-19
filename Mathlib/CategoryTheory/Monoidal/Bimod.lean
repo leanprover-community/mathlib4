@@ -248,8 +248,7 @@ theorem left_assoc' :
   slice_lhs 2 3 => rw [← comp_whiskerRight, left_assoc, comp_whiskerRight, comp_whiskerRight]
   slice_rhs 1 2 => rw [associator_naturality_right]
   slice_rhs 2 3 =>
-    rw [← whiskerLeft_comp, whiskerLeft_π_actLeft,
-      whiskerLeft_comp, whiskerLeft_comp]
+    rw [← whiskerLeft_comp, whiskerLeft_π_actLeft, whiskerLeft_comp, whiskerLeft_comp]
   slice_rhs 4 5 => rw [whiskerLeft_π_actLeft]
   slice_rhs 3 4 => rw [associator_inv_naturality_middle]
   monoidal
@@ -308,8 +307,7 @@ theorem right_assoc' :
   slice_lhs 1 2 => rw [← whisker_exchange]
   slice_lhs 2 3 => rw [π_tensor_id_actRight]
   slice_lhs 1 2 => rw [associator_naturality_right]
-  slice_lhs 2 3 => rw [← whiskerLeft_comp, right_assoc,
-    whiskerLeft_comp, whiskerLeft_comp]
+  slice_lhs 2 3 => rw [← whiskerLeft_comp, right_assoc, whiskerLeft_comp, whiskerLeft_comp]
   slice_rhs 1 2 => rw [associator_inv_naturality_left]
   slice_rhs 2 3 => rw [← comp_whiskerRight, π_tensor_id_actRight, comp_whiskerRight,
     comp_whiskerRight]
@@ -335,8 +333,7 @@ theorem middle_assoc' :
   slice_lhs 3 4 => rw [π_tensor_id_actRight]
   slice_lhs 2 3 => rw [associator_naturality_left]
   slice_rhs 1 2 => rw [associator_naturality_middle]
-  slice_rhs 2 3 => rw [← whiskerLeft_comp, π_tensor_id_actRight,
-    whiskerLeft_comp, whiskerLeft_comp]
+  slice_rhs 2 3 => rw [← whiskerLeft_comp, π_tensor_id_actRight, whiskerLeft_comp, whiskerLeft_comp]
   slice_rhs 4 5 => rw [whiskerLeft_π_actLeft]
   slice_rhs 3 4 => rw [associator_inv_naturality_right]
   slice_rhs 4 5 => rw [whisker_exchange]
@@ -383,8 +380,7 @@ noncomputable def whiskerLeft {X Y Z : Mon C} (M : Bimod X Y) {N₁ N₂ : Bimod
     dsimp
     slice_lhs 1 2 => rw [TensorBimod.whiskerLeft_π_actLeft]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
-    slice_rhs 1 2 => rw [← whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one,
-      whiskerLeft_comp]
+    slice_rhs 1 2 => rw [← whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one, whiskerLeft_comp]
     slice_rhs 2 3 => rw [TensorBimod.whiskerLeft_π_actLeft]
     slice_rhs 1 2 => rw [associator_inv_naturality_right]
     slice_rhs 2 3 => rw [whisker_exchange]
@@ -474,8 +470,7 @@ noncomputable def hom :
       slice_lhs 3 5 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
       slice_lhs 2 3 => rw [associator_naturality_middle]
       slice_lhs 3 4 =>
-        rw [← whiskerLeft_comp, coequalizer.condition,
-          whiskerLeft_comp, whiskerLeft_comp]
+        rw [← whiskerLeft_comp, coequalizer.condition, whiskerLeft_comp, whiskerLeft_comp]
       slice_rhs 1 2 => rw [associator_naturality_left]
       slice_rhs 2 3 => rw [← whisker_exchange]
       slice_rhs 3 5 => rw [π_tensor_id_preserves_coequalizer_inv_desc]

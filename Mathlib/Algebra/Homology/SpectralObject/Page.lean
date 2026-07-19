@@ -475,8 +475,7 @@ lemma kernelSequenceE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 
     (X.kernelSequenceOpcyclesE_exact f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).exact_up_to_refinements
       (X.liftOpcycles f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
         dsimp
-        rw [← X.fromOpcyles_δ f₁ f₂ f₃ f₂₃ h₂₃ n₁ n₂,
-          X.liftOpcycles_fromOpcycles_assoc]
+        rw [← X.fromOpcyles_δ f₁ f₂ f₃ f₂₃ h₂₃ n₁ n₂, X.liftOpcycles_fromOpcycles_assoc]
         simpa using hx₂ =≫ biprod.snd)
   dsimp at x₁ hx₁
   refine ⟨A₁, π₁, inferInstance, x₁, ?_⟩
@@ -809,8 +808,7 @@ lemma cyclesIsoH_hom_EIsoH_inv :
   have : h.cyclesIso.inv =
       X.toCycles (𝟙 i) f f (by simp) n₁ ≫
         (X.cyclesIso (𝟙 i) f (𝟙 j) n₀ n₁ n₂ hn₁ hn₂).inv := by
-    rw [← cancel_mono (X.cyclesIso ..).hom,
-      Category.assoc, Iso.inv_hom_id, Category.comp_id,
+    rw [← cancel_mono (X.cyclesIso ..).hom, Category.assoc, Iso.inv_hom_id, Category.comp_id,
       ← cancel_mono (X.iCycles ..), Category.assoc, cyclesIso_hom_i ..,
       h.cyclesIso_inv_comp_iCycles, toCycles_i]
     dsimp [h]
@@ -834,9 +832,8 @@ lemma EIsoH_hom_opcyclesIsoH_inv :
   have : h.right.opcyclesIso.hom =
       (X.opcyclesIso (𝟙 i) f (𝟙 j) n₀ n₁ n₂ hn₁ hn₂).hom ≫
         X.fromOpcycles f (𝟙 j) f (by simp) n₁ := by
-    rw [← cancel_epi (X.opcyclesIso ..).inv, Iso.inv_hom_id_assoc,
-      ← cancel_epi (X.pOpcycles ..), p_opcyclesIso_inv_assoc ..,
-      h.right.pOpcycles_comp_opcyclesIso_hom, p_fromOpcycles]
+    rw [← cancel_epi (X.opcyclesIso ..).inv, Iso.inv_hom_id_assoc, ← cancel_epi (X.pOpcycles ..),
+      p_opcyclesIso_inv_assoc .., h.right.pOpcycles_comp_opcyclesIso_hom, p_fromOpcycles]
     dsimp [h]
     rw [← Functor.map_id]
     congr 1
@@ -845,8 +842,7 @@ lemma EIsoH_hom_opcyclesIsoH_inv :
   rw [← cancel_mono (X.opcyclesIsoH f n₀ n₁ hn₁).hom, Category.assoc,
     opcyclesIsoH_hom .., opcyclesIsoH_inv_hom_id ..]
   dsimp [EIsoH, ιE]
-  rw [Category.assoc, ← this,
-    h.left_homologyIso_eq_right_homologyIso_trans_iso_symm,
+  rw [Category.assoc, ← this, h.left_homologyIso_eq_right_homologyIso_trans_iso_symm,
     ← ShortComplex.RightHomologyData.homologyIso_hom_comp_ι]
   simp [h]
 

@@ -135,8 +135,7 @@ lemma range_weylGroup_coweightHom :
       Subgroup.closure (range (MulOpposite.op ∘ P.coreflection)) := by
   refine (Subgroup.closure_eq_of_le _ ?_ ?_).symm
   · rintro - ⟨i, rfl⟩
-    simp only [MonoidHom.restrict_range, Subgroup.coe_map, mem_image,
-      SetLike.mem_coe]
+    simp only [MonoidHom.restrict_range, Subgroup.coe_map, mem_image, SetLike.mem_coe]
     use Equiv.reflection P i
     refine ⟨reflection_mem_weylGroup P i, by simp⟩
   · rintro fg ⟨⟨w, hw⟩, rfl⟩
@@ -163,8 +162,7 @@ lemma range_weylGroupToPerm :
     P.weylGroupToPerm.range = Subgroup.closure (range P.reflectionPerm) := by
   refine (Subgroup.closure_eq_of_le _ ?_ ?_).symm
   · rintro - ⟨i, rfl⟩
-    simp only [MonoidHom.restrict_range, Subgroup.coe_map, mem_image,
-      SetLike.mem_coe]
+    simp only [MonoidHom.restrict_range, Subgroup.coe_map, mem_image, SetLike.mem_coe]
     use Equiv.reflection P i
     refine ⟨reflection_mem_weylGroup P i, by simp⟩
   · rintro fg ⟨⟨w, hw⟩, rfl⟩

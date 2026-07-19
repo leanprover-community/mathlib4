@@ -54,8 +54,7 @@ theorem integralNormalization_coeff {i : ℕ} :
     (integralNormalization p).coeff i =
       if p.degree = i then 1 else coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) := by
   have : p.coeff i = 0 → p.degree ≠ i := fun hc hd => coeff_ne_zero_of_eq_degree hd hc
-  simp +contextual [sum_def, integralNormalization, coeff_monomial, this,
-    mem_support_iff]
+  simp +contextual [sum_def, integralNormalization, coeff_monomial, this, mem_support_iff]
 
 theorem support_integralNormalization_subset :
     (integralNormalization p).support ⊆ p.support := by

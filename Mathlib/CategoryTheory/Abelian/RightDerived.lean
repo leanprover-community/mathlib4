@@ -87,8 +87,7 @@ lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
       (I.isoRightDerivedToHomotopyCategoryObj F).hom ≫
         (F.mapHomologicalComplex _ ⋙ HomotopyCategory.quotient _ _).map φ := by
   dsimp [Functor.rightDerivedToHomotopyCategory, isoRightDerivedToHomotopyCategoryObj]
-  rw [← Functor.map_comp_assoc, iso_hom_naturality f I J φ comm, Functor.map_comp,
-    assoc, assoc]
+  rw [← Functor.map_comp_assoc, iso_hom_naturality f I J φ comm, Functor.map_comp, assoc, assoc]
   erw [(F.mapHomotopyCategoryFactors (ComplexShape.up ℕ)).hom.naturality]
   rfl
 
@@ -171,8 +170,7 @@ theorem Functor.rightDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : 
   rw [← cancel_mono (Q.isoRightDerivedObj F n).hom,
     InjectiveResolution.isoRightDerivedObj_hom_naturality f P Q g _ F n,
     assoc, assoc, Iso.inv_hom_id, comp_id]
-  rw [← HomologicalComplex.comp_f, w, HomologicalComplex.comp_f,
-    CochainComplex.single₀_map_f_zero]
+  rw [← HomologicalComplex.comp_f, w, HomologicalComplex.comp_f, CochainComplex.single₀_map_f_zero]
 
 /-- The natural transformation
 `F.rightDerivedToHomotopyCategory ⟶ G.rightDerivedToHomotopyCategory` induced by
@@ -286,10 +284,9 @@ lemma toRightDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f 
       P.toRightDerivedZero' F ≫
         HomologicalComplex.cyclesMap ((F.mapHomologicalComplex _).map φ) 0 := by
   simp only [← cancel_mono (HomologicalComplex.iCycles _ _), assoc,
-    toRightDerivedZero'_comp_iCycles,
-    CochainComplex.single₀_obj_zero, HomologicalComplex.cyclesMap_i,
-    Functor.mapHomologicalComplex_map_f, toRightDerivedZero'_comp_iCycles_assoc,
-    ← F.map_comp, comm]
+    toRightDerivedZero'_comp_iCycles, CochainComplex.single₀_obj_zero,
+    HomologicalComplex.cyclesMap_i, Functor.mapHomologicalComplex_map_f,
+    toRightDerivedZero'_comp_iCycles_assoc, ← F.map_comp, comm]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

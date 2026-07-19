@@ -85,8 +85,7 @@ lemma isLocallyBijective_iff_isIso :
     IsLocallyInjective f ∧ IsLocallySurjective f ↔ IsIso f := by
   constructor
   · rintro ⟨_, _⟩
-    rw [← isIso_iff_of_reflects_iso f (sheafCompose J (forget A)),
-      ← isLocallyBijective_iff_isIso']
+    rw [← isIso_iff_of_reflects_iso f (sheafCompose J (forget A)), ← isLocallyBijective_iff_isIso']
     constructor <;> infer_instance
   · intro
     constructor <;> infer_instance
@@ -172,16 +171,14 @@ lemma isLocallyInjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallyInjective ((presheafToSheaf J A).map φ) ↔ IsLocallyInjective J φ := by
   rw [← Sheaf.isLocallyInjective_sheafToPresheaf_map_iff,
     ← isLocallyInjective_comp_iff J _ (toSheafify J Q),
-    ← comp_isLocallyInjective_iff J (toSheafify J P),
-    toSheafify_naturality, ObjectProperty.ι_map]
+    ← comp_isLocallyInjective_iff J (toSheafify J P), toSheafify_naturality, ObjectProperty.ι_map]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isLocallySurjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallySurjective ((presheafToSheaf J A).map φ) ↔ IsLocallySurjective J φ := by
   rw [← Sheaf.isLocallySurjective_sheafToPresheaf_map_iff,
     ← isLocallySurjective_comp_iff J _ (toSheafify J Q),
-    ← comp_isLocallySurjective_iff J (toSheafify J P),
-    toSheafify_naturality, ObjectProperty.ι_map]
+    ← comp_isLocallySurjective_iff J (toSheafify J P), toSheafify_naturality, ObjectProperty.ι_map]
 
 end Presheaf
 

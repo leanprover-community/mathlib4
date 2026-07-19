@@ -85,8 +85,7 @@ protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
     HasSubst (MvPowerSeries.monomial n s) := by
   classical
   apply HasSubst.of_constantCoeff_zero
-  rw [← MvPowerSeries.coeff_zero_eq_constantCoeff, MvPowerSeries.coeff_monomial,
-    if_neg hn.symm]
+  rw [← MvPowerSeries.coeff_zero_eq_constantCoeff, MvPowerSeries.coeff_monomial, if_neg hn.symm]
 
 /-- A variant of `HasSubst.monomial` to avoid the expansion of `Unit`. -/
 protected theorem HasSubst.monomial' {n : ℕ} (hn : n ≠ 0) (s : S) :
@@ -628,9 +627,8 @@ lemma coeff_subst_X_zero_add_X_one (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
       (e 0 + e 1).choose (e 0) * coeff (e 0 + e 1) f := by
   rw [PowerSeries.subst, MvPowerSeries.coeff_subst
     (MvPowerSeries.hasSubst_of_constantCoeff_zero (fun _ ↦ by simp))]
-  simp_rw [Finsupp.prod_pow, univ_unique, PUnit.default_eq_unit, prod_singleton,
-    smul_eq_mul, ← MvPolynomial.coe_X, ← MvPolynomial.coe_add, ← MvPolynomial.coe_pow,
-    MvPolynomial.coeff_coe]
+  simp_rw [Finsupp.prod_pow, univ_unique, PUnit.default_eq_unit, prod_singleton, smul_eq_mul,
+    ← MvPolynomial.coe_X, ← MvPolynomial.coe_add, ← MvPolynomial.coe_pow, MvPolynomial.coeff_coe]
   rw [finsum_eq_single _ (single () (e 0 + e 1)), mul_comm]
   · simp [MvPolynomial.coeff_add_pow, coeff]
   · simp only [MvPolynomial.coeff_add_pow, mem_antidiagonal, cast_ite]

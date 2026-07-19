@@ -316,11 +316,10 @@ lemma rotateHomotopyEquiv_comm₃ :
   simp only [Int.reduceNeg, lift_f _ _ _ _ _ (p + 1) rfl, shiftFunctor_obj_X', Cocycle.coe_neg,
     Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.neg_v,
     (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by lia), mul_one,
-      sub_self, mul_zero, Int.zero_ediv, add_zero, Int.negOnePow_one,
-    shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Cochain.ofHom_v, id_comp,
-    Units.neg_smul, one_smul, neg_neg, Preadditive.neg_comp, Preadditive.add_comp, assoc,
-    inl_v_triangle_mor₃_f, Iso.refl_inv, Preadditive.comp_neg, comp_id, inr_f_triangle_mor₃_f,
-    comp_zero, neg_zero]
+    sub_self, mul_zero, Int.zero_ediv, add_zero, Int.negOnePow_one, shiftFunctorObjXIso,
+    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Cochain.ofHom_v, id_comp, Units.neg_smul,
+    one_smul, neg_neg, Preadditive.neg_comp, Preadditive.add_comp, assoc, inl_v_triangle_mor₃_f,
+    Iso.refl_inv, Preadditive.comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, neg_zero]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -334,8 +333,7 @@ noncomputable def rotateTrianglehIso :
         dsimp
         rw [CategoryTheory.Functor.map_id, comp_id, assoc, ← Functor.map_comp_assoc,
           rotateHomotopyEquiv_comm₃, Functor.map_neg, Preadditive.neg_comp,
-          Functor.commShiftIso_hom_naturality, Preadditive.comp_neg,
-          Iso.inv_hom_id_app_assoc])
+          Functor.commShiftIso_hom_naturality, Preadditive.comp_neg, Iso.inv_hom_id_app_assoc])
 
 end Rotate
 
@@ -381,8 +379,7 @@ noncomputable def shiftTriangleIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') := by
   refine Triangle.isoMk _ _ (Iso.refl _) (n.negOnePow • Iso.refl _) (shiftIso φ n) ?_ ?_ ?_
   · dsimp
-    simp only [Linear.comp_units_smul, comp_id, id_comp, smul_smul,
-      Int.units_mul_self, one_smul]
+    simp only [Linear.comp_units_smul, comp_id, id_comp, smul_smul, Int.units_mul_self, one_smul]
   · ext p
     dsimp
     simp only [Units.smul_def, shiftIso, Int.reduceNeg, Linear.smul_comp, id_comp,
@@ -552,8 +549,7 @@ lemma complete_distinguished_triangle_morphism
     have comm₁₁ := e₁.inv.comm₁
     have comm₁₂ := e₂.hom.comm₁
     dsimp at comm₁₁ comm₁₂
-    simp only [Functor.map_comp, ha', hb', reassoc_of% comm₁₁,
-      reassoc_of% fac, comm₁₂, assoc])
+    simp only [Functor.map_comp, ha', hb', reassoc_of% comm₁₁, reassoc_of% fac, comm₁₂, assoc])
   let γ := e₁.hom ≫ trianglehMapOfHomotopy H ≫ e₂.inv
   have comm₂ := γ.comm₂
   have comm₃ := γ.comm₃

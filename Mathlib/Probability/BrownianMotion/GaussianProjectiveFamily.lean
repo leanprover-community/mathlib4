@@ -145,8 +145,7 @@ lemma integral_eval_projectiveFamily (I : Finset ℝ≥0) (s : I) :
 lemma covariance_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
     cov[fun x ↦ x s, fun x ↦ x t; projectiveFamily I] = min s.1 t.1 := by
   rw [covariance_fun_projectiveFamily,
-    covariance_eval_multivariateGaussian (posSemidef_covMatrix I),
-    covMatrix_apply]
+    covariance_eval_multivariateGaussian (posSemidef_covMatrix I), covMatrix_apply]
 
 lemma variance_eval_projectiveFamily (s : I) :
     Var[fun x ↦ x s; projectiveFamily I] = s := by
@@ -159,8 +158,7 @@ lemma measurePreserving_eval_projectiveFamily (s : I) :
     MeasurePreserving (fun x ↦ x s) (projectiveFamily I) (gaussianReal 0 s) where
   measurable := by fun_prop
   map_eq := by
-    rw [(IsGaussian.hasGaussianLaw_id.eval s).map_eq_gaussianReal,
-      integral_eval_projectiveFamily,
+    rw [(IsGaussian.hasGaussianLaw_id.eval s).map_eq_gaussianReal, integral_eval_projectiveFamily,
       variance_eval_projectiveFamily, Real.toNNReal_coe]
 
 /-- The distribution of the increment of the real Brownian motion from time `s` to time `t`
@@ -170,9 +168,8 @@ lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t
       (gaussianReal 0 (nndist s.1 t.1)) where
   measurable := by fun_prop
   map_eq := by
-    rw [HasGaussianLaw.map_eq_gaussianReal, variance_fun_sub,
-      variance_eval_projectiveFamily, variance_eval_projectiveFamily,
-      covariance_eval_projectiveFamily, integral_sub]
+    rw [HasGaussianLaw.map_eq_gaussianReal, variance_fun_sub, variance_eval_projectiveFamily,
+      variance_eval_projectiveFamily, covariance_eval_projectiveFamily, integral_sub]
     · congr
       · simp
       norm_cast

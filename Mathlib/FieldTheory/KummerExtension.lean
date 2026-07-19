@@ -313,8 +313,7 @@ lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
   have := Fact.mk H
   let : Algebra K K[n√a] := inferInstance
   constructor
-  · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
-      Polynomial.map_X]
+  · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C, Polynomial.map_X]
     have ⟨_, hζ⟩ := hζ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero <| ne_zero_of_irreducible_X_pow_sub_C H)] at hζ
     exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective)
@@ -412,8 +411,7 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : Gal(L/K)) :
     (rootOfSplitsXPowSubC_pow a L)] at hα
   simp only [Multiset.mem_map, Multiset.mem_range] at hα
   obtain ⟨i, _, rfl⟩ := hα
-  simp only [← map_pow, ← Algebra.smul_def, map_smul,
-    autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
+  simp only [← map_pow, ← Algebra.smul_def, map_smul, autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 
 /-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is an `n`-th primitive root of unity
@@ -530,8 +528,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
     {a : K} {α : L} (ha : α ^ (finrank K L) = algebraMap K L a) (hα : K⟮α⟯ = ⊤) :
     IsSplittingField K L (X ^ (finrank K L) - C a) := by
   constructor
-  · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
-      Polynomial.map_X]
+  · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C, Polynomial.map_X]
     have ⟨_, hζ⟩ := hK
     rw [mem_primitiveRoots finrank_pos] at hζ
     exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective) ha

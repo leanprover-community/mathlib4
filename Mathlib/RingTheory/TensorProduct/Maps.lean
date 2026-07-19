@@ -780,9 +780,8 @@ theorem productMap_right : (productMap f g).comp includeRight = g :=
 
 theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
   rw [productMap_eq_comp_map, AlgHom.range_comp, map_range, map_sup, ← AlgHom.range_comp,
-    ← AlgHom.range_comp,
-    ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
-    AlgHom.id_comp, AlgHom.id_comp]
+    ← AlgHom.range_comp, ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft,
+    lmul'_comp_includeRight, AlgHom.id_comp, AlgHom.id_comp]
 
 end
 

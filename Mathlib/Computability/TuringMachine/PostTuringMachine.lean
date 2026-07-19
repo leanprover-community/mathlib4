@@ -853,9 +853,8 @@ theorem tr_respects :
     induction q generalizing v L R with
     | move d q IH =>
       cases d <;>
-          simp only [trNormal, stepAux_move, stepAux,
-            Tape.move_left_mk',
-            trTape'_move_left enc0, trTape'_move_right enc0] <;>
+          simp only [trNormal, stepAux_move, stepAux, Tape.move_left_mk', trTape'_move_left enc0,
+            trTape'_move_right enc0] <;>
         apply IH
     | write f q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
@@ -874,8 +873,7 @@ theorem tr_respects :
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
       apply ReflTransGen.refl
     | halt =>
-      simp only [trNormal, stepAux, trCfg,
-        trTape_mk']
+      simp only [trNormal, stepAux, trCfg, trTape_mk']
       apply ReflTransGen.refl
 
 end

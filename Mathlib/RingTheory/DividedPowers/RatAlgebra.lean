@@ -122,12 +122,10 @@ theorem dpow_mul_of_add_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m k : ℕ
     dpow I m x * dpow I k x = ↑((m + k).choose m) * dpow I (m + k) x := by
   have hm : m < n := lt_of_le_of_lt le_self_add hkm
   have hk : k < n := lt_of_le_of_lt le_add_self hkm
-  rw [dpow_eq_of_mem hx, dpow_eq_of_mem hx, dpow_eq_of_mem hx,
-    mul_assoc, ← mul_assoc (x ^ m), mul_comm (x ^ m), mul_assoc _ (x ^ m),
-    ← pow_add, ← mul_assoc, ← mul_assoc]
+  rw [dpow_eq_of_mem hx, dpow_eq_of_mem hx, dpow_eq_of_mem hx, mul_assoc, ← mul_assoc (x ^ m),
+    mul_comm (x ^ m), mul_assoc _ (x ^ m), ← pow_add, ← mul_assoc, ← mul_assoc]
   apply congr_arg₂ _ _ rfl
-  rw [eq_mul_inverse_iff_mul_eq _ _ _ (hn_fac.natCast_factorial_of_lt hkm),
-      mul_assoc,
+  rw [eq_mul_inverse_iff_mul_eq _ _ _ (hn_fac.natCast_factorial_of_lt hkm), mul_assoc,
       inverse_mul_eq_iff_eq_mul _ _ _ (hn_fac.natCast_factorial_of_lt hm),
       inverse_mul_eq_iff_eq_mul _ _ _ (hn_fac.natCast_factorial_of_lt hk)]
   norm_cast; apply congr_arg

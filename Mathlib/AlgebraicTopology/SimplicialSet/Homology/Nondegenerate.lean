@@ -115,8 +115,7 @@ lemma ιChainComplex_toNormalizedChainComplex_f (x : X _⦋n⦌) :
 lemma ιNormalizedChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
     X.ιNormalizedChainComplex x ≫ (X.normalizedChainComplex R).d (n + 1) n =
       ∑ (i : Fin (n + 2)), (-1) ^ i.val • X.ιNormalizedChainComplex (X.δ i x) := by
-  simp [ιNormalizedChainComplex, Preadditive.sum_comp,
-    -ιChainComplex_toNormalizedChainComplex_f]
+  simp [ιNormalizedChainComplex, Preadditive.sum_comp, -ιChainComplex_toNormalizedChainComplex_f]
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/

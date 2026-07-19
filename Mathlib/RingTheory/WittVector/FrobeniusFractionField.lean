@@ -127,9 +127,8 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
         nthRemainder p n bs (truncateFun (n + 1) a₂) := by
   rw [← sub_eq_zero]
   have := succNthVal_spec p n a₁ a₂ bs ha₁ ha₂
-  simp only [Polynomial.eval_X, Polynomial.eval_C,
-    Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
-    Polynomial.eval_sub, Polynomial.IsRoot.def]
+  simp only [Polynomial.eval_X, Polynomial.eval_C, Polynomial.eval_pow, succNthDefiningPoly,
+    Polynomial.eval_mul, Polynomial.eval_add, Polynomial.eval_sub, Polynomial.IsRoot.def]
     at this
   convert! this using 1
   ring

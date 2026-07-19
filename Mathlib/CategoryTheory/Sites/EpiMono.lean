@@ -68,8 +68,7 @@ noncomputable def functorialLocallySurjectiveInjectiveFactorization :
     ext f : 2
     dsimp
     simp only [assoc, ← Functor.map_comp_assoc,
-      MorphismProperty.FunctorialFactorizationData.fac_app,
-      NatIso.isIso_inv_app, IsIso.inv_comp_eq]
+      MorphismProperty.FunctorialFactorizationData.fac_app, NatIso.isIso_inv_app, IsIso.inv_comp_eq]
     exact (sheafificationAdjunction J A).counit.naturality f.hom
   hi _ := by
     dsimp [locallySurjective]

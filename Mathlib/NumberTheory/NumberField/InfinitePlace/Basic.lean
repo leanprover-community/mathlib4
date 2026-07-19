@@ -309,8 +309,7 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
     congr; congr; ext
     rw [← mk_embedding w, mk_eq_iff, ComplexEmbedding.conjugate, star_involutive.eq_iff]
   simp_rw [Finset.filter_or, Finset.filter_eq' _ (embedding w),
-    Finset.filter_eq' _ (ComplexEmbedding.conjugate (embedding w)),
-    Finset.mem_univ, ite_true, mult]
+    Finset.filter_eq' _ (ComplexEmbedding.conjugate (embedding w)), Finset.mem_univ, ite_true, mult]
   split_ifs with hw
   · rw [ComplexEmbedding.isReal_iff.mp (isReal_iff.mp hw), Finset.union_idempotent,
       Finset.card_singleton]

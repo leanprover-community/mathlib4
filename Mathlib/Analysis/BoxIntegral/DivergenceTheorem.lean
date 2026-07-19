@@ -133,8 +133,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       gcongr
       exact I.diam_Icc_le_of_distortion_le i hc
     _ = 2 * ε * c * ∏ j, (I.upper j - I.lower j) := by
-      rw [← measureReal_def, ← Measure.toBoxAdditive_apply, Box.volume_apply,
-        ← I.volume_face_mul i]
+      rw [← measureReal_def, ← Measure.toBoxAdditive_apply, Box.volume_apply, ← I.volume_face_mul i]
       ac_rfl
 
 set_option backward.isDefEq.respectTransparency.types false in

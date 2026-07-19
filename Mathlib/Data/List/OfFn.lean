@@ -118,9 +118,8 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 @[simp]
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
-  simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
-    Fin.forall_iff,
-    Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
+  simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn, Fin.forall_iff, Fin.mk_lt_mk,
+    forall_comm (α := (_ : Prop)) (β := ℕ)]
 
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=

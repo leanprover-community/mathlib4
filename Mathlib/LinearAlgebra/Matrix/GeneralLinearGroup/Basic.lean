@@ -96,8 +96,7 @@ lemma SpecialLinearGroup.toGL_mem_center_iff {n R : Type*} [Fintype n] [Decidabl
   refine ⟨fun ⟨r, hr⟩ ↦ ⟨r, by simpa [Units.ext_iff] using congr(GeneralLinearGroup.det $hr),
     by simpa [Units.ext_iff] using hr⟩, fun ⟨r, hr1, hr⟩ ↦ ⟨⟨r, g⁻¹.1 i i, ?_, ?_⟩,
       by simp [Units.ext_iff, hr]⟩⟩
-  · simpa [-mul_inv_cancel, ← hr, ← pow_succ',
-      Nat.sub_one_add_one Fintype.card_pos.ne.symm] using
+  · simpa [-mul_inv_cancel, ← hr, ← pow_succ', Nat.sub_one_add_one Fintype.card_pos.ne.symm] using
         Matrix.ext_iff.2 (Subtype.ext_iff.1 (mul_inv_cancel g)) i i
   · simpa [-inv_mul_cancel, ← hr] using Matrix.ext_iff.2 (Subtype.ext_iff.1 (inv_mul_cancel g)) i i
 

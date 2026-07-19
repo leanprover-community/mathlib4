@@ -52,9 +52,8 @@ lemma colim.map_mono' [HasColimitsOfShape J C]
     (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
     (hc₁.hom_ext (fun j ↦ by
       dsimp
-      rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
-        colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
-        IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
+      rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, colimit.cocone_ι, ι_colimMap,
+        reassoc_of% (hf j), IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Assume that `φ : X₁ ⟶ X₂` is a natural transformation in `J ⥤ C` which
@@ -131,13 +130,11 @@ lemma colim.exact_mapShortComplex :
     (IsColimit.coconePointUniqueUpToIso hc₃ (colimit.isColimit _))
     (hc₁.hom_ext (fun j ↦ ?_)) (hc₂.hom_ext (fun j ↦ ?_))
   · dsimp
-    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
-      colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
-      IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
+    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, colimit.cocone_ι, ι_colimMap,
+      reassoc_of% (hf j), IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
   · dsimp
-    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
-      colimit.cocone_ι, ι_colimMap, reassoc_of% (hg j),
-      IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
+    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, colimit.cocone_ι, ι_colimMap,
+      reassoc_of% (hg j), IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
 
 end
 

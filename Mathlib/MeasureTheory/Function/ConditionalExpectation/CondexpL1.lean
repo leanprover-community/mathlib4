@@ -160,8 +160,7 @@ theorem condExpIndL1_of_measurableSet_of_measure_ne_top (hs : MeasurableSet s) (
   simp only [condExpIndL1, And.intro hs hμs, dif_pos, Ne, not_false_iff, and_self_iff]
 
 theorem condExpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condExpIndL1 hm μ s x = 0 := by
-  simp only [condExpIndL1, hμs, not_true, Ne, dif_neg, not_false_iff,
-    and_false]
+  simp only [condExpIndL1, hμs, not_true, Ne, dif_neg, not_false_iff, and_false]
 
 theorem condExpIndL1_of_not_measurableSet (hs : ¬MeasurableSet s) (x : G) :
     condExpIndL1 hm μ s x = 0 := by

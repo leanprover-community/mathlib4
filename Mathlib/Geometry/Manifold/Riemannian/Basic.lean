@@ -479,8 +479,7 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set
       refine (hu ?_).le
       apply t₁_mem ht'
     _ = C * pathELength I γ 0 t₁ := by
-      rw [lintegral_const_mul' _ _ ENNReal.coe_ne_top,
-          pathELength_eq_lintegral_mfderivWithin_Icc]
+      rw [lintegral_const_mul' _ _ ENNReal.coe_ne_top, pathELength_eq_lintegral_mfderivWithin_Icc]
     _ ≤ C * pathELength I γ 0 1 := by
       gcongr
     _ < C * (r / C) := by

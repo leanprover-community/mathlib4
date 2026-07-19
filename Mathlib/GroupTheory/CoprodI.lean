@@ -237,8 +237,7 @@ instance : Group (CoprodI G) :=
         change of _⁻¹ * of _ = 1
         rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | mul x y ihx ihy =>
-        rw [map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
-          ihy] }
+        rw [map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul, ihy] }
 
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s := by

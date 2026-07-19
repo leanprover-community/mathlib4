@@ -65,8 +65,7 @@ include hg hρ h₂ hσ hι₃ in
 lemma SnakeLemma.δ_aux (x : K₃) : g₁ (ρ (i₂ (σ (ι₃ x)))) = i₂ (σ (ι₃ x)) := by
   obtain ⟨d, hd⟩ : i₂ (σ (ι₃ x)) ∈ range g₁ := by
     rw [← hg.linearMap_ker_eq, mem_ker, show g₂ (i₂ _) = i₃ (f₂ _) from DFunLike.congr_fun h₂ _,
-      ← @comp_apply _ _ _ f₂ σ, hσ, id_eq, ← i₃.comp_apply,
-      hι₃.linearMap_comp_eq_zero, zero_apply]
+      ← @comp_apply _ _ _ f₂ σ, hσ, id_eq, ← i₃.comp_apply, hι₃.linearMap_comp_eq_zero, zero_apply]
   rw [← hd, ← ρ.comp_apply, hρ, id_eq]
 
 include hf h₁ hρ hπ₁ in
@@ -76,9 +75,8 @@ lemma SnakeLemma.eq_of_eq (x : K₃)
   have := sub_eq_zero.mpr (hy₁.trans hy₂.symm)
   rw [← map_sub, hf] at this
   obtain ⟨d, hd⟩ := this
-  rw [← eq_sub_iff_add_eq.mp hd, map_add, ← hz₂, ← sub_eq_iff_eq_add, ← map_sub,
-    ← i₂.comp_apply, ← h₁, LinearMap.comp_apply,
-    (HasLeftInverse.injective ⟨ρ, congr_fun hρ⟩).eq_iff] at hz₁
+  rw [← eq_sub_iff_add_eq.mp hd, map_add, ← hz₂, ← sub_eq_iff_eq_add, ← map_sub, ← i₂.comp_apply,
+    ← h₁, LinearMap.comp_apply, (HasLeftInverse.injective ⟨ρ, congr_fun hρ⟩).eq_iff] at hz₁
   rw [← sub_eq_zero, ← map_sub, hz₁, hπ₁]
   exact ⟨_, rfl⟩
 

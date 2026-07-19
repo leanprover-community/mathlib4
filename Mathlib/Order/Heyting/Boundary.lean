@@ -124,8 +124,7 @@ theorem hnot_hnot_sup_boundary (a : α) : ￢￢a ⊔ ∂ a = a := by
 
 theorem sdiff_boundary_self : a \ ∂ a = ￢￢a := by
   rw (occs := [1]) [← hnot_hnot_sup_boundary a]
-  rw [sup_sdiff_distrib, sdiff_self, sup_bot_eq, hnot_sdiff_comm,
-    hnot_boundary, top_sdiff']
+  rw [sup_sdiff_distrib, sdiff_self, sup_bot_eq, hnot_sdiff_comm, hnot_boundary, top_sdiff']
 
 theorem hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
   ⟨fun h => ⟨a, by rw [boundary, h, inf_top_eq]⟩, by

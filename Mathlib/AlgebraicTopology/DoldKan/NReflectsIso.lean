@@ -93,10 +93,9 @@ theorem compatibility_N₂_N₁_karoubi :
         ← HomologicalComplex.Hom.comm_assoc, ← h, app_idem_assoc]
   · ext n
     dsimp [KaroubiKaroubi.inverse, Functor.mapHomologicalComplex]
-    simp only [karoubi_PInfty_f, HomologicalComplex.eqToHom_f, Karoubi.eqToHom_f,
-      assoc, comp_id, PInfty_f_naturality, app_p_comp,
-      karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f, eqToHom_refl,
-      PInfty_f_naturality_assoc, app_comp_p, PInfty_f_idem_assoc]
+    simp only [karoubi_PInfty_f, HomologicalComplex.eqToHom_f, Karoubi.eqToHom_f, assoc, comp_id,
+      PInfty_f_naturality, app_p_comp, karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f,
+      eqToHom_refl, PInfty_f_naturality_assoc, app_comp_p, PInfty_f_idem_assoc]
 
 /-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms from the fact that

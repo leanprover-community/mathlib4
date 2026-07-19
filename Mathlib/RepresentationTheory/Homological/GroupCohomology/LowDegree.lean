@@ -831,8 +831,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toCocycles_comp_isoCocycles₁_hom :
     toCocycles A 0 1 ≫ (isoCocycles₁ A).hom =
       (cochainsIso₀ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.f' := by
-  simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₀₁_eq,
-    shortComplexH1_f]
+  simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₀₁_eq, shortComplexH1_f]
 
 lemma cocyclesMk₁_eq (x : cocycles₁ A) :
     cocyclesMk ((cochainsIso₁ A).inv x) (by
@@ -888,8 +887,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toCocycles_comp_isoCocycles₂_hom :
     toCocycles A 1 2 ≫ (isoCocycles₂ A).hom =
       (cochainsIso₁ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.f' := by
-  simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₁₂_eq,
-    shortComplexH2_f]
+  simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₁₂_eq, shortComplexH2_f]
 
 lemma cocyclesMk₂_eq (x : cocycles₂ A) :
     cocyclesMk ((cochainsIso₂ A).inv x) (by

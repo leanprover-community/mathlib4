@@ -48,8 +48,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
   constructor
   · -- length
     rw [← ranges_length c]
-    simp only [l, klift', map_pmap, length_pmap,
-      pmap_eq_map]
+    simp only [l, klift', map_pmap, length_pmap, pmap_eq_map]
   constructor
   · -- nodup
     intro s

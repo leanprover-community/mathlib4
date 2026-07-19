@@ -474,12 +474,10 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
   dsimp
   simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
     δ_v n₀ n₁ h₀₁ z p (q - 1) (by lia) (q - 2) _ (by lia) rfl,
-    δ_v n₀ n₁ h₀₁ z (p + 1) q (by lia) _ (p + 2) rfl (by lia),
-    ← h₁₂, Int.negOnePow_succ, add_comp, assoc,
-    HomologicalComplex.d_comp_d, comp_zero, zero_add, comp_add,
-    HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero,
-    add_zero, add_neg_cancel, Units.neg_smul,
-    Linear.units_smul_comp, Linear.comp_units_smul]
+    δ_v n₀ n₁ h₀₁ z (p + 1) q (by lia) _ (p + 2) rfl (by lia), ← h₁₂, Int.negOnePow_succ, add_comp,
+    assoc, HomologicalComplex.d_comp_d, comp_zero, zero_add, comp_add,
+    HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero, add_zero, add_neg_cancel,
+    Units.neg_smul, Linear.units_smul_comp, Linear.comp_units_smul]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
@@ -514,8 +512,7 @@ lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
     (m₁ : ℤ) (h₁ : n₁ + 1 = m₁) :
     δ n₁ m₁ (z₁.comp z₂ (add_zero n₁)) =
       z₁.comp (δ 0 1 z₂) h₁ + (δ n₁ m₁ z₁).comp z₂ (add_zero m₁) := by
-  simp only [δ_comp z₁ z₂ (add_zero n₁) m₁ 1 m₁ h₁ h₁ (zero_add 1), one_smul,
-    Int.negOnePow_zero]
+  simp only [δ_comp z₁ z₂ (add_zero n₁) m₁ 1 m₁ h₁ h₁ (zero_add 1), one_smul, Int.negOnePow_zero]
 
 @[simp]
 lemma δ_zero_cochain_v (z : Cochain F G 0) (p q : ℤ) (hpq : p + 1 = q) :
@@ -944,9 +941,8 @@ lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
   by_cases hnm : n + 1 = m
   · ext p q hpq
     dsimp
-    simp only [δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl,
-      Functor.map_add, Functor.map_comp, Functor.map_units_smul,
-      Cochain.map_v, Functor.mapHomologicalComplex_obj_d]
+    simp only [δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl, Functor.map_add, Functor.map_comp,
+      Functor.map_units_smul, Cochain.map_v, Functor.mapHomologicalComplex_obj_d]
   · simp only [δ_shape _ _ hnm, Cochain.map_zero]
 
 end

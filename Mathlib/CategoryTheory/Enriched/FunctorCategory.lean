@@ -148,24 +148,21 @@ noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ 
       dsimp [eHomWhiskerLeft, eHomWhiskerRight] at this ⊢
       conv_lhs => rw [assoc, tensorHom_def_assoc]
       conv_rhs =>
-        rw [tensorHom_def_assoc, whisker_assoc_assoc, e_assoc,
-          triangle_assoc_comp_right_inv_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+        rw [tensorHom_def_assoc, whisker_assoc_assoc, e_assoc, triangle_assoc_comp_right_inv_assoc,
           ← MonoidalCategory.whiskerLeft_comp_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
-          assoc, assoc, ← this, MonoidalCategory.whiskerLeft_comp_assoc,
+          ← MonoidalCategory.whiskerLeft_comp_assoc, assoc, assoc, ← this,
           MonoidalCategory.whiskerLeft_comp_assoc, MonoidalCategory.whiskerLeft_comp_assoc,
-          ← e_assoc, whiskerLeft_rightUnitor_inv_assoc, associator_inv_naturality_right_assoc,
-          Iso.hom_inv_id_assoc, whisker_exchange_assoc, MonoidalCategory.whiskerRight_id_assoc,
-          Iso.inv_hom_id_assoc]
+          MonoidalCategory.whiskerLeft_comp_assoc, ← e_assoc, whiskerLeft_rightUnitor_inv_assoc,
+          associator_inv_naturality_right_assoc, Iso.hom_inv_id_assoc, whisker_exchange_assoc,
+          MonoidalCategory.whiskerRight_id_assoc, Iso.inv_hom_id_assoc]
     · have := end_.condition (diagram V F₁ F₂) f
       dsimp [eHomWhiskerLeft, eHomWhiskerRight] at this ⊢
       conv_lhs =>
-        rw [tensorHom_def'_assoc, ← comp_whiskerRight_assoc,
-          ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc,
-          assoc, assoc, this, comp_whiskerRight_assoc, comp_whiskerRight_assoc,
-          comp_whiskerRight_assoc, leftUnitor_inv_whiskerRight_assoc,
-          ← associator_inv_naturality_left_assoc, ← e_assoc',
-          Iso.inv_hom_id_assoc, ← whisker_exchange_assoc, id_whiskerLeft_assoc,
-          Iso.inv_hom_id_assoc]
+        rw [tensorHom_def'_assoc, ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc,
+          ← comp_whiskerRight_assoc, assoc, assoc, this, comp_whiskerRight_assoc,
+          comp_whiskerRight_assoc, comp_whiskerRight_assoc, leftUnitor_inv_whiskerRight_assoc,
+          ← associator_inv_naturality_left_assoc, ← e_assoc', Iso.inv_hom_id_assoc,
+          ← whisker_exchange_assoc, id_whiskerLeft_assoc, Iso.inv_hom_id_assoc]
       conv_rhs => rw [assoc, tensorHom_def'_assoc])
 
 set_option backward.isDefEq.respectTransparency false in
@@ -194,9 +191,8 @@ lemma enriched_id_comp [HasEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₂]
     (λ_ (enrichedHom V F₁ F₂)).inv ≫ enrichedId V F₁ ▷ enrichedHom V F₁ F₂ ≫
       enrichedComp V F₁ F₁ F₂ = 𝟙 _ := by
   ext j
-  rw [assoc, assoc, enrichedComp_π, id_comp, tensorHom_def, assoc,
-    ← comp_whiskerRight_assoc, enrichedId_π, ← whisker_exchange_assoc,
-    id_whiskerLeft, assoc, assoc, Iso.inv_hom_id_assoc]
+  rw [assoc, assoc, enrichedComp_π, id_comp, tensorHom_def, assoc, ← comp_whiskerRight_assoc,
+    enrichedId_π, ← whisker_exchange_assoc, id_whiskerLeft, assoc, assoc, Iso.inv_hom_id_assoc]
   dsimp
   rw [e_id_comp, comp_id]
 
@@ -207,9 +203,8 @@ lemma enriched_comp_id [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₂]
       enrichedComp V F₁ F₂ F₂ = 𝟙 _ := by
   ext j
   rw [assoc, assoc, enrichedComp_π, id_comp, tensorHom_def', assoc,
-    ← MonoidalCategory.whiskerLeft_comp_assoc, enrichedId_π,
-    whisker_exchange_assoc, MonoidalCategory.whiskerRight_id, assoc, assoc,
-    Iso.inv_hom_id_assoc]
+    ← MonoidalCategory.whiskerLeft_comp_assoc, enrichedId_π, whisker_exchange_assoc,
+    MonoidalCategory.whiskerRight_id, assoc, assoc, Iso.inv_hom_id_assoc]
   dsimp
   rw [e_comp_id, comp_id]
 
@@ -222,10 +217,9 @@ lemma enriched_assoc [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₃] [
       enrichedHom V F₁ F₂ ◁ enrichedComp V F₂ F₃ F₄ ≫ enrichedComp V F₁ F₂ F₄ := by
   ext j
   conv_lhs =>
-    rw [assoc, assoc, enrichedComp_π,
-      tensorHom_def_assoc, ← comp_whiskerRight_assoc, enrichedComp_π,
-      comp_whiskerRight_assoc, ← whisker_exchange_assoc,
-      ← whisker_exchange_assoc, ← tensorHom_def'_assoc, ← associator_inv_naturality_assoc]
+    rw [assoc, assoc, enrichedComp_π, tensorHom_def_assoc, ← comp_whiskerRight_assoc,
+      enrichedComp_π, comp_whiskerRight_assoc, ← whisker_exchange_assoc, ← whisker_exchange_assoc,
+      ← tensorHom_def'_assoc, ← associator_inv_naturality_assoc]
   conv_rhs =>
     rw [assoc, enrichedComp_π, tensorHom_def'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
       enrichedComp_π, MonoidalCategory.whiskerLeft_comp_assoc, whisker_exchange_assoc,
@@ -267,13 +261,11 @@ noncomputable abbrev precompEnrichedHom' {F₁' F₂' : K ⥤ C}
     (eHomWhiskerRight _ (e₁.inv.app x) _ ≫ eHomWhiskerLeft _ _ (e₂.hom.app x)))
     (fun i j f ↦ by
       dsimp
-      rw [assoc, assoc, assoc, assoc, ← eHomWhiskerLeft_comp,
-        ← eHom_whisker_exchange, ← e₂.hom.naturality f,
-        eHomWhiskerLeft_comp_assoc]
+      rw [assoc, assoc, assoc, assoc, ← eHomWhiskerLeft_comp, ← eHom_whisker_exchange,
+        ← e₂.hom.naturality f, eHomWhiskerLeft_comp_assoc]
       dsimp
-      rw [enrichedHom_condition_assoc, eHom_whisker_exchange,
-        eHom_whisker_exchange, ← eHomWhiskerRight_comp_assoc,
-        ← eHomWhiskerRight_comp_assoc, NatTrans.naturality]
+      rw [enrichedHom_condition_assoc, eHom_whisker_exchange, eHom_whisker_exchange,
+        ← eHomWhiskerRight_comp_assoc, ← eHomWhiskerRight_comp_assoc, NatTrans.naturality]
       dsimp)
 
 /-- If `F₁` and `F₂` are functors `J ⥤ C`, and `G : K ⥤ J`,

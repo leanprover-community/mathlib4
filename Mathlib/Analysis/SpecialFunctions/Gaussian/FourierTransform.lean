@@ -270,8 +270,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add (hb : 0 < b.re) (c : ℂ) (w : V) :
   rw [← e.measurePreserving.integrable_comp_emb e.toHomeomorph.measurableEmbedding]
   convert! integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace hb c (e.symm w) with v
   simp only [neg_mul, Function.comp_apply, LinearIsometryEquiv.norm_map,
-    LinearIsometryEquiv.symm_symm,
-    LinearIsometryEquiv.inner_map_eq_flip]
+    LinearIsometryEquiv.symm_symm, LinearIsometryEquiv.inner_map_eq_flip]
 
 theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :

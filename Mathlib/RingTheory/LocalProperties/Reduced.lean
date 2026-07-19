@@ -40,8 +40,7 @@ theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsRed
   simp only [mul_assoc, zero_mul, mul_zero] at hm'
   rw [← mul_left_comm, ← pow_succ', ← mul_pow] at hm'
   replace hm' := IsNilpotent.eq_zero ⟨_, hm'.symm⟩
-  rw [← (IsLocalization.map_units S m).mul_left_inj, hx, zero_mul,
-    IsLocalization.map_eq_zero_iff M]
+  rw [← (IsLocalization.map_units S m).mul_left_inj, hx, zero_mul, IsLocalization.map_eq_zero_iff M]
   exact ⟨m', by rw [← hm', mul_comm]⟩
 
 instance {R : Type*} [CommRing R] (M : Submonoid R) [IsReduced R] : IsReduced (Localization M) :=

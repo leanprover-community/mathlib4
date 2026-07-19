@@ -91,9 +91,8 @@ lemma resolutionMap_comp_d (φ : H →ₜ* G) (f : res φ X ⟶ Y) (i : ℕ) :
     ext : 1
     replace ih := congr($(ih).hom)
     simp only [TopRep.hom_comp, resolutionMap_succ, TopRep.hom_ofHom, hom_d_succ,
-      ContIntertwiningMap.restrict_sub, ContIntertwiningMap.sub_comp,
-      ContIntertwiningMap.comp_sub, coind₁Map_comp_coind₁ResMap,
-      coind₁ResMap_comp_coind₁Map_restrict] at ih ⊢
+      ContIntertwiningMap.restrict_sub, ContIntertwiningMap.sub_comp, ContIntertwiningMap.comp_sub,
+      coind₁Map_comp_coind₁ResMap, coind₁ResMap_comp_coind₁Map_restrict] at ih ⊢
     rw [ih, ← coind₁ResMap_comp_coind₁ι_restrict]
 
 /-- The cochain map `homogeneousCochains X ⟶ homogeneousCochains Y` induced by a continuous

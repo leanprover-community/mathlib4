@@ -621,8 +621,7 @@ theorem SetLike.coe_list_dProd (A : ι → S) [SetLike.GradedMonoid A] (fι : α
   | [] =>
     rw [List.dProd_nil, coe_gOne, List.map_nil, List.prod_nil]
   | head::tail =>
-    rw [List.dProd_cons, coe_gMul, List.map_cons, List.prod_cons,
-      SetLike.coe_list_dProd _ _ _ tail]
+    rw [List.dProd_cons, coe_gMul, List.map_cons, List.prod_cons, SetLike.coe_list_dProd _ _ _ tail]
 
 /-- A version of `List.coe_dProd_set_like` with `Subtype.mk`. -/
 theorem SetLike.list_dProd_eq (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι) (fA : ∀ a, A (fι a))

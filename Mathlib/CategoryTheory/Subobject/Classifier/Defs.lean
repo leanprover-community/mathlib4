@@ -540,8 +540,7 @@ noncomputable def isTerminalΩ₀ : IsTerminal (h.Ω₀ : C) :=
       { isLimit' := ⟨PullbackCone.IsLimit.mk _ (fun s ↦ s.fst) (by simp)
           (fun s ↦ by rw [← cancel_mono h.Ω₀.arrow, ← s.condition, Category.assoc])
           (fun s m hm _ ↦ by simpa using hm) ⟩ }
-    rw [← cancel_mono h.Ω₀.arrow, h.uniq this,
-      ← (h.isPullback (𝟙 X)).w, Category.id_comp])
+    rw [← cancel_mono h.Ω₀.arrow, h.uniq this, ← (h.isPullback (𝟙 X)).w, Category.id_comp])
 
 set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-06")]

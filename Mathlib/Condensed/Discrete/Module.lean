@@ -124,8 +124,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
     dsimp
     rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [functorIsoDiscreteComponents]
-    rw [assoc, ← Iso.eq_inv_comp,
-      ← (discreteUnderlyingAdj (ModuleCat R)).counit_naturality]
+    rw [assoc, ← Iso.eq_inv_comp, ← (discreteUnderlyingAdj (ModuleCat R)).counit_naturality]
     simp only [← assoc]
     congr 1
     rw [← Iso.comp_inv_eq]

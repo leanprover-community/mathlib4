@@ -239,9 +239,8 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
   ext n
   rw [← sub_add_cancel n x.order, coeff_single_mul_add, sub_add_cancel, one_mul]
   by_cases h : x.order ≤ n
-  · rw [Int.eq_natAbs_of_nonneg (sub_nonneg_of_le h), coeff_coe_powerSeries,
-      powerSeriesPart_coeff, ← Int.eq_natAbs_of_nonneg (sub_nonneg_of_le h),
-      add_sub_cancel]
+  · rw [Int.eq_natAbs_of_nonneg (sub_nonneg_of_le h), coeff_coe_powerSeries, powerSeriesPart_coeff,
+      ← Int.eq_natAbs_of_nonneg (sub_nonneg_of_le h), add_sub_cancel]
   · rw [ofPowerSeries_apply, embDomain_of_notMem_range]
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
@@ -281,8 +280,7 @@ instance of_powerSeries_localization [CommRing R] :
   surj z := by
     by_cases! h : 0 ≤ z.order
     · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
-      simp only [map_one, mul_one, map_mul, coe_algebraMap, ofPowerSeries_X_pow,
-        Submonoid.coe_one]
+      simp only [map_one, mul_one, map_mul, coe_algebraMap, ofPowerSeries_X_pow, Submonoid.coe_one]
       rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
     · refine ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, ?_⟩
       simp only [coe_algebraMap, ofPowerSeries_powerSeriesPart]
@@ -390,8 +388,7 @@ theorem single_zpow (n : ℤ) :
   match n with
   | (n : ℕ) => apply single_one_eq_pow
   | -(n + 1 : ℕ) =>
-    rw [← Nat.cast_one, ← inv_one, ← HahnSeries.inv_single, zpow_neg,
-      ← Nat.cast_one, Nat.cast_one,
+    rw [← Nat.cast_one, ← inv_one, ← HahnSeries.inv_single, zpow_neg, ← Nat.cast_one, Nat.cast_one,
       inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 theorem algebraMap_apply_div :
@@ -850,14 +847,12 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (le_of_lt ord_nonpos)
     rw [← hF, hs, neg_neg, ← ofPowerSeries_X_pow s, ← inv_mul_eq_iff_eq_mul₀] at F_mul
     · have : (algebraMap K⟮X⟯ K⸨X⸩) 1 = 1 := by exact algebraMap.coe_one
-      rw [hs, ← F_mul, PowerSeries.coe_pow, PowerSeries.coe_X, map_mul, zpow_neg,
-        zpow_natCast, inv_eq_one_div (RatFunc.X ^ s), map_div₀, map_pow,
-        RatFunc.coe_X]
+      rw [hs, ← F_mul, PowerSeries.coe_pow, PowerSeries.coe_X, map_mul, zpow_neg, zpow_natCast,
+        inv_eq_one_div (RatFunc.X ^ s), map_div₀, map_pow, RatFunc.coe_X]
       simp only [map_one]
-      rw [← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀,
-        ← PowerSeries.coe_X, valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← PowerSeries.coe_sub,
-        ← coe_algebraMap, adicValued_apply, valuation_of_algebraMap,
-        ← Units.val_mk0 (a := exp f.order) exp_ne_zero, ← hη]
+      rw [← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀, ← PowerSeries.coe_X, valuation_X_pow,
+        ← hs, ← RatFunc.coe_coe, ← PowerSeries.coe_sub, ← coe_algebraMap, adicValued_apply,
+        valuation_of_algebraMap, ← Units.val_mk0 (a := exp f.order) exp_ne_zero, ← hη]
       apply inv_mul_lt_of_lt_mul₀
       rwa [← Units.val_mul]
     · simp
@@ -909,8 +904,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
-  simp only [Filter.mem_mk, Set.mem_ofPred_eq, uniformity_eq_comap_nhds_zero,
-    Filter.mem_comap]
+  simp only [Filter.mem_mk, Set.mem_ofPred_eq, uniformity_eq_comap_nhds_zero, Filter.mem_comap]
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR

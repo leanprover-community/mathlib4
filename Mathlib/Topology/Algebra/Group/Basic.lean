@@ -1000,8 +1000,7 @@ theorem IsTopologicalGroup.exists_antitone_basis_nhds_one [FirstCountableTopolog
   have :=
     ((hu.prod_nhds hu).tendsto_iff hu).mp
       (by simpa only [mul_one] using continuous_mul.tendsto ((1, 1) : G × G))
-  simp only [and_self_iff, mem_prod, and_imp, Prod.forall, Prod.exists,
-    forall_true_left] at this
+  simp only [and_self_iff, mem_prod, and_imp, Prod.forall, Prod.exists, forall_true_left] at this
   have event_mul : ∀ n : ℕ, ∀ᶠ m in atTop, u m * u m ⊆ u n := by
     intro n
     rcases this n with ⟨j, k, -, h⟩

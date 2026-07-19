@@ -84,8 +84,7 @@ theorem natDegree_linear (ha : a ≠ 0) : natDegree (C a * X + C b) = 1 := by
 
 @[simp]
 theorem leadingCoeff_linear (ha : a ≠ 0) : leadingCoeff (C a * X + C b) = a := by
-  rw [add_comm, leadingCoeff_add_of_degree_lt (degree_C_lt_degree_C_mul_X ha),
-    leadingCoeff_C_mul_X]
+  rw [add_comm, leadingCoeff_add_of_degree_lt (degree_C_lt_degree_C_mul_X ha), leadingCoeff_C_mul_X]
 
 theorem degree_quadratic_le : degree (C a * X ^ 2 + C b * X + C c) ≤ 2 := by
   simpa only [add_assoc] using!

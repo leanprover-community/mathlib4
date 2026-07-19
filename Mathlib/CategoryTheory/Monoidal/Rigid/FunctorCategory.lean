@@ -45,10 +45,9 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
         { app := fun _ => η_ _ _
           naturality := fun X Y f => by
             dsimp
-            rw [Functor.map_inv, Category.id_comp, ← id_tensor_comp_tensor_id,
-              id_tensorHom, tensorHom_id, ← Category.assoc,
-              coevaluation_comp_rightAdjointMate, Category.assoc, ← comp_whiskerRight,
-              IsIso.inv_hom_id, id_whiskerRight, Category.comp_id] } }
+            rw [Functor.map_inv, Category.id_comp, ← id_tensor_comp_tensor_id, id_tensorHom,
+              tensorHom_id, ← Category.assoc, coevaluation_comp_rightAdjointMate, Category.assoc,
+              ← comp_whiskerRight, IsIso.inv_hom_id, id_whiskerRight, Category.comp_id] } }
 
 instance rightRigidFunctorCategory [RightRigidCategory D] : RightRigidCategory (C ⥤ D) where
 

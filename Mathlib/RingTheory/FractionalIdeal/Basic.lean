@@ -190,8 +190,7 @@ theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
     algebraMap R P (equivNum h_nz x) = I.den • x := by
   change Algebra.linearMap R P _ = _
   rw [equivNum, LinearEquiv.trans_apply, LinearEquiv.ofBijective_apply, LinearMap.restrict_apply,
-    Submodule.map_equivMapOfInjective_symm_apply, Subtype.coe_mk,
-    DistribSMul.toLinearMap_apply]
+    Submodule.map_equivMapOfInjective_symm_apply, Subtype.coe_mk, DistribSMul.toLinearMap_apply]
 
 /-- Copy of a `FractionalIdeal` with a new underlying set equal to the old one.
 Useful to fix definitional equalities. -/

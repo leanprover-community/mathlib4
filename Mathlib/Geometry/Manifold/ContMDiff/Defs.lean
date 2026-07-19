@@ -403,8 +403,7 @@ theorem contMDiffWithinAt_iff_of_mem_maximalAtlas'
       ContinuousWithinAt f s x ∧
         ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
-  rw [contMDiffWithinAt_iff_source,
-    contMDiffWithinAt_iff_target_of_mem_maximalAtlas he' (by simpa)]
+  rw [contMDiffWithinAt_iff_source, contMDiffWithinAt_iff_target_of_mem_maximalAtlas he' (by simpa)]
   apply and_congr continuousWithinAt_iff_source.symm
   -- TODO: this is `contMDiffWithinAt_iff_contDiffWithinAt` copied,
   -- which is not put here for import reasons
@@ -430,8 +429,7 @@ theorem contMDiffAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I n
     ContMDiffAt I I' n f x ↔
       ContinuousAt f x ∧
         ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (range I) (e.extend I x) := by
-  rw [← contMDiffWithinAt_univ,
-    contMDiffWithinAt_iff_of_mem_maximalAtlas he he' hx hy,
+  rw [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_of_mem_maximalAtlas he he' hx hy,
     continuousWithinAt_univ, preimage_univ, univ_inter]
 
 /-- One can reformulate being `C^n` within a set at a point as continuity within this set at this

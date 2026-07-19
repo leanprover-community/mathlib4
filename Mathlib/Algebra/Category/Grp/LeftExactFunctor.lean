@@ -90,11 +90,9 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
   dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_ofHom]
   have : F.Additive := Functor.additive_of_preserves_binary_products _
   simp only [Category.id_comp]
-  rw [Functor.obj.μ_def X (F := F ⋙ forget AddCommGrpCat), Preadditive.mul_def X,
-    Functor.comp_map, F.map_add,
-    Functor.Monoidal.μ_comp F (forget AddCommGrpCat) X X,
-    Category.assoc, ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst,
-    Functor.Monoidal.μ_snd]
+  rw [Functor.obj.μ_def X (F := F ⋙ forget AddCommGrpCat), Preadditive.mul_def X, Functor.comp_map,
+    F.map_add, Functor.Monoidal.μ_comp F (forget AddCommGrpCat) X X, Category.assoc,
+    ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst, Functor.Monoidal.μ_snd]
   ext
   -- `simp [types_tensorObj_def]` says
   simp only [types_tensorObj_def, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,

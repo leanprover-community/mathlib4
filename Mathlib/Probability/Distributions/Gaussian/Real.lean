@@ -100,10 +100,9 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
       refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
       simpa [pos_iff_ne_zero]
     ext x
-    simp only [g, NNReal.zero_le_coe, Real.sqrt_mul',
-      mul_inv_rev, NNReal.coe_mul, NNReal.coe_inv, NNReal.coe_ofNat, neg_mul, mul_eq_mul_left_iff,
-      Real.exp_eq_exp, mul_eq_zero, inv_eq_zero, Real.sqrt_eq_zero, NNReal.coe_eq_zero, hv,
-      false_or]
+    simp only [g, NNReal.zero_le_coe, Real.sqrt_mul', mul_inv_rev, NNReal.coe_mul, NNReal.coe_inv,
+      NNReal.coe_ofNat, neg_mul, mul_eq_mul_left_iff, Real.exp_eq_exp, mul_eq_zero, inv_eq_zero,
+      Real.sqrt_eq_zero, NNReal.coe_eq_zero, hv, false_or]
     rw [mul_comm]
     left
     field
@@ -116,11 +115,9 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
   have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume := by fun_prop
   have hf : 0 ≤ₐₛ gaussianPDFReal μ v := ae_of_all _ (gaussianPDFReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
-  simp only [gaussianPDFReal,
-    integral_const_mul]
+  simp only [gaussianPDFReal, integral_const_mul]
   rw [integral_sub_right_eq_self (μ := volume) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
-  simp only [div_eq_inv_mul, mul_inv_rev,
-    mul_neg]
+  simp only [div_eq_inv_mul, mul_inv_rev, mul_neg]
   simp_rw [← neg_mul]
   rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ← Real.sqrt_mul]
   · simp [field]
@@ -345,9 +342,8 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_inj]
     simp [hc]
-  simp only [e, Homeomorph.mulLeft₀,
-    Equiv.mulLeft₀_symm_apply, Homeomorph.toMeasurableEquiv_coe, Homeomorph.homeomorph_mk_coe_symm,
-    gaussianPDFReal_inv_mul hc]
+  simp only [e, Homeomorph.mulLeft₀, Equiv.mulLeft₀_symm_apply, Homeomorph.toMeasurableEquiv_coe,
+    Homeomorph.homeomorph_mk_coe_symm, gaussianPDFReal_inv_mul hc]
   congr with x
   suffices |c⁻¹| * |c| = 1 by rw [← mul_assoc, this, one_mul]
   rw [abs_inv, inv_mul_cancel₀]

@@ -683,8 +683,7 @@ lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
 @[simp]
 theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
   apply ext_support
-  rw [support_append, support_take, drop_support_eq_support_drop_min,
-    List.tail_drop]
+  rw [support_append, support_take, drop_support_eq_support_drop_min, List.tail_drop]
   by_cases! h : n < p.length
   · simp [min_eq_left_of_lt h]
   · rw [Nat.min_eq_right h, ← length_support, List.drop_length]

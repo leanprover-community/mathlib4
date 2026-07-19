@@ -242,9 +242,8 @@ private lemma det_one_if_fromBlocks_invertible [Invertible A]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
     (fromBlocks A B C D).det = 1 := by
   have h_block := fromBlocks_mem_iff.1 hA
-  rw [det_fromBlocks₁₁, invOf_eq_nonsing_inv, ← A.det_transpose, ← det_mul,
-    mul_sub, ← mul_assoc, ← mul_assoc, h_block.1, mul_assoc Cᵀ,
-    mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
+  rw [det_fromBlocks₁₁, invOf_eq_nonsing_inv, ← A.det_transpose, ← det_mul, mul_sub, ← mul_assoc,
+    ← mul_assoc, h_block.1, mul_assoc Cᵀ, mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
 
 /-- Given square matrices `A` and `C` over a field, if the only vector annihilated by both of
 them is 0, and `Aᵀ * C = Cᵀ * A`, then one can construct a symmetric matrix `X` such that

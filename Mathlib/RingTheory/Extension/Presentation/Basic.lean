@@ -252,8 +252,7 @@ lemma span_range_relation_eq_ker_baseChange :
     have Z := aeval_val_relation P y
     apply_fun TensorProduct.includeRight (R := R) (A := T) at Z
     rw [map_zero] at Z
-    simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy,
-      TensorProduct.includeRight_apply]
+    simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy, TensorProduct.includeRight_apply]
     rw [aeval_map_algebraMap T (P.baseChange T).val (P.relation y)]
     change _ = TensorProduct.includeRight.toRingHom _
     rw [map_aeval, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
@@ -270,8 +269,7 @@ lemma span_range_relation_eq_ker_baseChange :
       clear hx
       induction x using MvPolynomial.induction_on with
       | C a =>
-        simp only [algHom_C, TensorProduct.algebraMap_apply,
-          algebraMap_self, RingHom.id_apply, e]
+        simp only [algHom_C, TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply, e]
         rw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
         simp only [TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply,
           TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one]
@@ -483,9 +481,8 @@ noncomputable def reindex (P : Presentation R S ι σ)
   relation := rename e.symm ∘ P.relation ∘ f
   span_range_relation_eq_ker := by
     rw [Generators.ker_eq_ker_aeval_val, Generators.reindex_val, ← aeval_comp_rename,
-      ← AlgHom.comap_ker, ← P.ker_eq_ker_aeval_val, ← P.span_range_relation_eq_ker,
-      Set.range_comp, Set.range_comp, Equiv.range_eq_univ, Set.image_univ,
-      ← Ideal.map_span (rename ⇑e.symm)]
+      ← AlgHom.comap_ker, ← P.ker_eq_ker_aeval_val, ← P.span_range_relation_eq_ker, Set.range_comp,
+      Set.range_comp, Equiv.range_eq_univ, Set.image_univ, ← Ideal.map_span (rename ⇑e.symm)]
     have hf : Function.Bijective (MvPolynomial.rename e.symm) := (renameEquiv R e.symm).bijective
     apply Ideal.comap_injective_of_surjective _ hf.2
     simp_rw [Ideal.comap_comapₐ, rename_comp_rename, Equiv.self_comp_symm]

@@ -587,8 +587,7 @@ theorem realize_relabel {φ : L.Formula α} {g : α → β} {v : β → M} :
 theorem realize_relabel_sumInr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
     (BoundedFormula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
   rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
-    cast_refl, Function.comp_id,
-    Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
+    cast_refl, Function.comp_id, Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 
 @[simp]
 theorem realize_equal {t₁ t₂ : L.Term α} {x : α → M} :
@@ -1015,8 +1014,7 @@ theorem realize_formula (φ : L.Formula α) {v : α → M} :
 include g
 
 theorem realize_sentence (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
-  rw [Sentence.Realize, Sentence.Realize, ← realize_formula g,
-    Unique.eq_default (g ∘ default)]
+  rw [Sentence.Realize, Sentence.Realize, ← realize_formula g, Unique.eq_default (g ∘ default)]
 
 theorem theory_model [M ⊨ T] : N ⊨ T :=
   ⟨fun φ hφ => (realize_sentence g φ).1 (Theory.realize_sentence_of_mem T hφ)⟩

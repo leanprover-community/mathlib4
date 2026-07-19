@@ -76,8 +76,7 @@ noncomputable def TStructure.t : TStructure (DerivedCategory C) where
       rw [id_comp]
       rfl
     · dsimp
-      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE ..,
-        Iso.hom_inv_id_assoc]
+      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE .., Iso.hom_inv_id_assoc]
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
 that `X` is `≤ n` for the canonical t-structure. -/
@@ -135,15 +134,13 @@ lemma isGE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).IsGE n ↔ K.IsGE n := by
   have eq := fun i ↦ ((homologyFunctorFactors C i).app K).isZero_iff
   simp only [Functor.comp_obj, HomologicalComplex.homologyFunctor_obj] at eq
-  simp only [isGE_iff, CochainComplex.isGE_iff,
-    HomologicalComplex.exactAt_iff_isZero_homology, eq]
+  simp only [isGE_iff, CochainComplex.isGE_iff, HomologicalComplex.exactAt_iff_isZero_homology, eq]
 
 lemma isLE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).IsLE n ↔ K.IsLE n := by
   have eq := fun i ↦ ((homologyFunctorFactors C i).app K).isZero_iff
   simp only [Functor.comp_obj, HomologicalComplex.homologyFunctor_obj] at eq
-  simp only [isLE_iff, CochainComplex.isLE_iff,
-    HomologicalComplex.exactAt_iff_isZero_homology, eq]
+  simp only [isLE_iff, CochainComplex.isLE_iff, HomologicalComplex.exactAt_iff_isZero_homology, eq]
 
 instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsGE n] :
     (Q.obj K).IsGE n := by

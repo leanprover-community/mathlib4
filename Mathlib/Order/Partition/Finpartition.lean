@@ -583,8 +583,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
 
 @[simp]
 theorem mem_avoid : c ∈ (P.avoid b).parts ↔ ∃ d ∈ P.parts, ¬d ≤ b ∧ d \ b = c := by
-  simp only [avoid, ofErase, mem_erase, Ne, mem_image, ← exists_and_left,
-    @and_left_comm (c ≠ ⊥)]
+  simp only [avoid, ofErase, mem_erase, Ne, mem_image, ← exists_and_left, @and_left_comm (c ≠ ⊥)]
   refine exists_congr fun d ↦ and_congr_right' <| and_congr_left ?_
   rintro rfl
   rw [sdiff_eq_bot_iff]

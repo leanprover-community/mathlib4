@@ -83,8 +83,7 @@ noncomputable def isColimitOfMulticoequalizerDiagram
     IsColimit (c.multicofork.map Set.functorToTypes) := by
   let e := (c.multispanIndex.map Set.functorToTypes).multispan
   apply _root_.Nonempty.some
-  rw [Types.isColimit_iff_coconeTypesIsColimit,
-    Functor.CoconeTypes.isMulticoequalizer_iff]
+  rw [Types.isColimit_iff_coconeTypesIsColimit, Functor.CoconeTypes.isMulticoequalizer_iff]
   refine ⟨fun i₁ i₂ ⟨x₁, h₁⟩ ⟨x₂, h₂⟩ h ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
   · dsimp at i₁ i₂ h₁ h₂
     obtain rfl : x₁ = x₂ := by simpa using h

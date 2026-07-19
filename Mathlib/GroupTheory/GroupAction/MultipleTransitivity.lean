@@ -621,9 +621,8 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
   have := hmt.index_of_fixingSubgroup_mul rfl
   rw [hs, Nat.sub_sub_self hα, factorial_two] at this
   -- conclude
-  rw [← mul_le_mul_iff_of_pos_left (a := Nat.card G) card_pos,
-    Subgroup.card_mul_index, ← (fixingSubgroup G s).index_mul_card,
-    mul_assoc, mul_comm _ 2, ← mul_assoc]
+  rw [← mul_le_mul_iff_of_pos_left (a := Nat.card G) card_pos, Subgroup.card_mul_index,
+    ← (fixingSubgroup G s).index_mul_card, mul_assoc, mul_comm _ 2, ← mul_assoc]
   rw [this, Nat.card_perm]
   refine Nat.le_mul_of_pos_right (Nat.card α)! card_pos
 

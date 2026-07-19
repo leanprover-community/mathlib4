@@ -107,8 +107,7 @@ instance : (plus C).IsStableUnderShift ℤ where
         obtain ⟨K : CochainComplex _ _, rfl⟩ := K.quotient_obj_surjective
         simp only [plus_quotient_obj_iff] at hK
         obtain ⟨q, _⟩ := hK
-        rw [ObjectProperty.prop_shift_iff, shift_quotient_obj,
-          plus_quotient_obj_iff]
+        rw [ObjectProperty.prop_shift_iff, shift_quotient_obj, plus_quotient_obj_iff]
         exact ⟨q - n, K.isStrictlyGE_shift q n (q - n) (by lia)⟩ }
 
 set_option backward.defeqAttrib.useBackward true in

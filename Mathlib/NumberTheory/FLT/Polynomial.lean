@@ -102,15 +102,10 @@ private theorem Polynomial.flt_catalan_deriv
       (mul_ne_zero hCu hap) (mul_ne_zero hCv hbq) (mul_ne_zero hCw hcr)
       habp heq with nd_lt | dr0
   · simp_rw [radical_mul habcp.isRelPrime, radical_mul habp.isRelPrime,
-      radical_mul_of_isUnit_left hu.isUnit_C,
-      radical_mul_of_isUnit_left hv.isUnit_C,
-      radical_mul_of_isUnit_left hw.isUnit_C,
-      radical_pow a hp, radical_pow b hq, radical_pow c hr,
-      natDegree_mul hCu hap,
-      natDegree_mul hCv hbq,
-      natDegree_mul hCw hcr,
-      natDegree_C, natDegree_pow, zero_add,
-      ← radical_mul hab.isRelPrime,
+      radical_mul_of_isUnit_left hu.isUnit_C, radical_mul_of_isUnit_left hv.isUnit_C,
+      radical_mul_of_isUnit_left hw.isUnit_C, radical_pow a hp, radical_pow b hq, radical_pow c hr,
+      natDegree_mul hCu hap, natDegree_mul hCv hbq, natDegree_mul hCw hcr, natDegree_C,
+      natDegree_pow, zero_add, ← radical_mul hab.isRelPrime,
       ← radical_mul (hca.symm.mul_left hbc).isRelPrime] at nd_lt
     obtain ⟨hpa', hqb', hrc'⟩ := nd_lt
     have hpa := hpa'.trans natDegree_radical_le
@@ -121,12 +116,9 @@ private theorem Polynomial.flt_catalan_deriv
     exfalso
     exact (ineq_pqr_contradiction hp hq hr hineq hpa hqb hrc)
   · rw [derivative_C_mul, derivative_C_mul, derivative_C_mul,
-      mul_eq_zero_iff_left (C_ne_zero.mpr hu),
-      mul_eq_zero_iff_left (C_ne_zero.mpr hv),
-      mul_eq_zero_iff_left (C_ne_zero.mpr hw),
-      derivative_pow_eq_zero chp,
-      derivative_pow_eq_zero chq,
-      derivative_pow_eq_zero chr] at dr0
+      mul_eq_zero_iff_left (C_ne_zero.mpr hu), mul_eq_zero_iff_left (C_ne_zero.mpr hv),
+      mul_eq_zero_iff_left (C_ne_zero.mpr hw), derivative_pow_eq_zero chp,
+      derivative_pow_eq_zero chq, derivative_pow_eq_zero chr] at dr0
     exact dr0
 
 -- helper lemma that gives a baggage of small facts on `contract (ringChar k) a`

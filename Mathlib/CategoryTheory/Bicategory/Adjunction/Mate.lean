@@ -178,8 +178,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma mateEquiv_id_comp_right (φ : f ≫ 𝟙 _ ≫ l₂ ⟶ l₁ ≫ g) :
     mateEquiv adj₁ ((Adjunction.id _).comp adj₂) φ =
       mateEquiv adj₁ adj₂ (f ◁ (λ_ l₂).inv ≫ φ) ≫ (ρ_ _).inv ≫ (α_ _ _ _).hom := by
-  simp only [mateEquiv_apply, Adjunction.homEquiv₁_apply, Adjunction.homEquiv₂_apply,
-    Adjunction.id]
+  simp only [mateEquiv_apply, Adjunction.homEquiv₁_apply, Adjunction.homEquiv₂_apply, Adjunction.id]
   dsimp
   bicategory
 
@@ -187,8 +186,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma mateEquiv_comp_id_right (φ : f ≫ l₂ ≫ 𝟙 d ⟶ l₁ ≫ g) :
     mateEquiv adj₁ (adj₂.comp (Adjunction.id _)) φ =
       mateEquiv adj₁ adj₂ ((ρ_ _).inv ≫ (α_ _ _ _).hom ≫ φ) ≫ g ◁ (λ_ r₂).inv := by
-  simp only [mateEquiv_apply, Adjunction.homEquiv₁_apply, Adjunction.homEquiv₂_apply,
-    Adjunction.id]
+  simp only [mateEquiv_apply, Adjunction.homEquiv₁_apply, Adjunction.homEquiv₂_apply, Adjunction.id]
   dsimp
   bicategory
 
@@ -455,8 +453,7 @@ end
 lemma mateEquiv_leftUnitor_hom_rightUnitor_inv
     {a b : B} {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) :
     mateEquiv adj adj ((λ_ _).hom ≫ (ρ_ _).inv) = (ρ_ _).hom ≫ (λ_ _).inv := by
-  simp [← cancel_mono (λ_ r).hom,
-    ← conjugateEquiv_id adj, conjugateEquiv_apply]
+  simp [← cancel_mono (λ_ r).hom, ← conjugateEquiv_id adj, conjugateEquiv_apply]
 
 section
 
@@ -691,8 +688,7 @@ theorem mateEquiv_conjugateEquiv_vcomp
           rightAdjointSquare.vcomp
             (mateEquiv adj₁ adj₂ α)
             (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _ := by
-      dsimp only [conjugateEquiv_apply, rightAdjointSquareConjugate.vcomp,
-        rightAdjointSquare.vcomp]
+      dsimp only [conjugateEquiv_apply, rightAdjointSquareConjugate.vcomp, rightAdjointSquare.vcomp]
       bicategory
     _ = _ := by
       rw [← mateEquiv_vcomp]

@@ -129,8 +129,7 @@ lemma triangle_counting'
     gcongr
   rintro a _ b _ t
   rw [Function.onFun, Finset.disjoint_left]
-  simp only [Prod.forall, mem_image, not_exists, Prod.mk_inj,
-    exists_imp, and_imp, not_and]
+  simp only [Prod.forall, mem_image, not_exists, Prod.mk_inj, exists_imp, and_imp, not_and]
   aesop
 
 variable [DecidableEq α]

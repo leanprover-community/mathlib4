@@ -702,8 +702,7 @@ lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Ty
     (by simp only [he, Equiv.apply_symm_apply, hx₂ g₁ g₂ h₁ h₂ fac, x₁])
   have : ∀ (t₂ : P₂.obj (op X)),
       x₂.IsAmalgamation t₂ ↔ x₁.IsAmalgamation (e.symm t₂) := fun t₂ ↦ by
-    simp only [FamilyOfElements.IsAmalgamation, x₁,
-      ← he', EmbeddingLike.apply_eq_iff_eq]
+    simp only [FamilyOfElements.IsAmalgamation, x₁, ← he', EmbeddingLike.apply_eq_iff_eq]
   refine ⟨e (hP₁.amalgamate x₁ hx₁), ?_, ?_⟩
   · dsimp
     simp only [this, Equiv.symm_apply_apply]
@@ -925,8 +924,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
       invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
         s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
           (by simp only [← Functor.map_comp, h])⟩ }
-  simp only [isSheafFor_ofArrows_iff_bijective_toCompabible,
-    ← e.bijective.of_comp_iff']
+  simp only [isSheafFor_ofArrows_iff_bijective_toCompabible, ← e.bijective.of_comp_iff']
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in

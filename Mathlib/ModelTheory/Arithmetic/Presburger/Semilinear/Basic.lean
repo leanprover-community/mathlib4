@@ -539,8 +539,7 @@ private theorem toRatVec_fract_eq (x) :
   rw [← sub_add_eq_add_sub, sub_add, ← Finset.sum_sub_distrib]
   conv =>
     enter [1, 2, 2, _]
-    rw [← Nat.cast_smul_eq_nsmul ℤ, ← Nat.cast_smul_eq_nsmul ℤ, ← sub_smul,
-      Int.toNat_sub_toNat_neg]
+    rw [← Nat.cast_smul_eq_nsmul ℤ, ← Nat.cast_smul_eq_nsmul ℤ, ← sub_smul, Int.toNat_sub_toNat_neg]
   rw [sub_eq_iff_eq_add, add_assoc, ← sub_eq_iff_eq_add', ← Finset.sum_add_distrib]
   simp only [floor]
   conv =>

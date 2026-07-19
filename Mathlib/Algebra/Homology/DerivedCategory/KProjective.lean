@@ -101,7 +101,6 @@ lemma quasiIso_iff_of_projective {K L : ChainComplex C ℕ}
     (f : K ⟶ L) :
     QuasiIso f ↔ homotopyEquivalences C (.down ℕ) f := by
   rw [← quasiIso_extendMap_iff _ ComplexShape.embeddingDownNat,
-    CochainComplex.IsKProjective.quasiIso_iff,
-    homotopyEquivalences_extendMap_iff]
+    CochainComplex.IsKProjective.quasiIso_iff, homotopyEquivalences_extendMap_iff]
 
 end ChainComplex

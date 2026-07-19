@@ -108,8 +108,7 @@ theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
   refine pi_ext fun i x ↦ ?_
   induction x using Submodule.Quotient.induction_on with | _ x'
   refine funext fun j ↦ ?_
-  rw [comp_apply, piQuotientLift_single, mapQ_apply,
-    quotientPiLift_mk, id_apply]
+  rw [comp_apply, piQuotientLift_single, mapQ_apply, quotientPiLift_mk, id_apply]
   by_cases hij : i = j <;> simp only [mkQ_apply, coe_single]
   · subst hij
     rw [Pi.single_eq_same, Pi.single_eq_same]

@@ -295,9 +295,8 @@ theorem _root_.Submodule.isSymmetric_projection_iff
   rw [projection]
   refine ⟨fun h u hu v hv => ?_, fun h x y => ?_⟩
   · rw [← Subtype.coe_mk u hu, ← Subtype.coe_mk v hv,
-      ← Submodule.projectionOnto_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
-      ← h, comp_apply, Submodule.projectionOnto_apply_right hUV ⟨v, hv⟩,
-      map_zero, inner_zero_left]
+      ← Submodule.projectionOnto_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply, ← h,
+      comp_apply, Submodule.projectionOnto_apply_right hUV ⟨v, hv⟩, map_zero, inner_zero_left]
   · nth_rw 2 [← projection_add_projection_eq_self hUV x]
     nth_rw 1 [← projection_add_projection_eq_self hUV y]
     rw [isOrtho_iff_inner_eq] at h

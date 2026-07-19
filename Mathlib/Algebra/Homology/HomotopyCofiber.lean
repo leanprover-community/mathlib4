@@ -291,9 +291,8 @@ noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     obtain ⟨i, hij⟩ := hc j
     rw [prevD_eq _ hij, dif_pos hij]
     by_cases hj : c.Rel j (c.next j)
-    · simp only [comp_f, homotopyCofiber_d, zero_f, add_zero,
-        inlX_d φ i j _ hij hj, dNext_eq _ hj, dif_pos hj,
-        add_neg_cancel_left, inr_f]
+    · simp only [comp_f, homotopyCofiber_d, zero_f, add_zero, inlX_d φ i j _ hij hj, dNext_eq _ hj,
+        dif_pos hj, add_neg_cancel_left, inr_f]
     · rw [dNext_eq_zero _ _ hj, zero_add, zero_f, add_zero, homotopyCofiber_d,
         inlX_d' _ _ _ _ hj, comp_f, inr_f]
 
@@ -645,11 +644,10 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
       zero_sub, ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f,
       neg_comp, id_comp]
   · simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj, homotopyCofiber_d, assoc,
-    comp_sub, comp_id,
-      homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, zero_comp, add_zero,
-      homotopyCofiber.inlX_fstX_assoc, homotopyCofiber.inlX_sndX_assoc,
-      ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f, neg_comp,
-      id_comp, inlX_π_assoc, zero_sub]
+    comp_sub, comp_id, homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, zero_comp,
+    add_zero, homotopyCofiber.inlX_fstX_assoc, homotopyCofiber.inlX_sndX_assoc,
+    ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f, neg_comp, id_comp,
+    inlX_π_assoc, zero_sub]
 
 include hc
 

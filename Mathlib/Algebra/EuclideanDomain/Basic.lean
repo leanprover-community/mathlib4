@@ -404,8 +404,7 @@ theorem eq_div_iff_mul_eq_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) :
 
 theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0)
     (h3 : y ∣ x) (h4 : t ∣ z) : x / y = z / t ↔ t * x = y * z := by
-  rw [div_eq_iff_eq_mul_of_dvd _ _ _ h1 h3, ← mul_div_assoc _ h4,
-    eq_div_iff_mul_eq_of_dvd _ _ _ h2]
+  rw [div_eq_iff_eq_mul_of_dvd _ _ _ h1 h3, ← mul_div_assoc _ h4, eq_div_iff_mul_eq_of_dvd _ _ _ h2]
   obtain ⟨a, ha⟩ := h4
   use y * a
   rw [ha, mul_comm, mul_assoc, mul_comm y a]

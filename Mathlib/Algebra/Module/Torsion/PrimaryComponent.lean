@@ -165,9 +165,8 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
   rw [← SetLike.le_def]
   refine iSup_mono (fun P x hxmem ↦ ?_)
   by_cases hPS : P ∈ S
-  · simp_all only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, mem_toFinset, mem_mulSupport,
-      one_eq_top, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
-      Subtype.forall, iSup_pos, S]
+  · simp_all only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, mem_toFinset, mem_mulSupport, one_eq_top,
+      primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall, iSup_pos, S]
     exact ⟨(Associates.mk P.asIdeal).count (Associates.mk (span {a})).factors, fun _ b ↦ hxmem _ b⟩
   · simp_all
 

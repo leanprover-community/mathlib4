@@ -53,9 +53,8 @@ theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
   · intro c t hmt _
     rw [Indep_iff] at hindp
     rw [integral_indicator (hle₁ _ hmt), setIntegral_const, smul_smul, measureReal_def,
-      measureReal_def, ← ENNReal.toReal_mul,
-      mul_comm, ← hindp _ _ hmt hms, setIntegral_indicator (hle₁ _ hmt), setIntegral_const,
-      Set.inter_comm, measureReal_def]
+      measureReal_def, ← ENNReal.toReal_mul, mul_comm, ← hindp _ _ hmt hms,
+      setIntegral_indicator (hle₁ _ hmt), setIntegral_const, Set.inter_comm, measureReal_def]
   · intro u v _ huint hvint hu hv hu_eq hv_eq
     rw [memLp_one_iff_integrable] at huint hvint
     rw [integral_add' huint hvint, smul_add, hu_eq, hv_eq,

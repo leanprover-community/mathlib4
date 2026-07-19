@@ -543,8 +543,7 @@ def indexEquiv : (index K) ≃ (K →+* ℂ) := by
       · exact ⟨Sum.inr ⟨InfinitePlace.mkComplex ⟨φ, hφ⟩, 0⟩, by simp [hw]⟩
       · exact ⟨Sum.inr ⟨InfinitePlace.mkComplex ⟨φ, hφ⟩, 1⟩,
           by simp [(embedding_mk_eq φ).resolve_left hw]⟩
-  · rw [Embeddings.card, ← mixedEmbedding.finrank K,
-      ← Module.finrank_eq_card_basis (stdBasis K)]
+  · rw [Embeddings.card, ← mixedEmbedding.finrank K, ← Module.finrank_eq_card_basis (stdBasis K)]
 
 variable {K}
 
@@ -591,11 +590,10 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
     (hx : ∀ φ, conj (x φ) = x (ComplexEmbedding.conjugate φ)) (c : index K) :
     ((stdBasis K).repr (commMap K x) c : ℂ) =
       (matrixToStdBasis K *ᵥ (x ∘ (indexEquiv K))) c := by
-  simp_rw [commMap, matrixToStdBasis, LinearMap.coe_mk, AddHom.coe_mk,
-    mulVec, dotProduct, Function.comp_apply, index, Fintype.sum_sum_type,
-    diagonal_one, reindex_apply, ← univ_product_univ, sum_product,
-    indexEquiv_apply_isReal, Fin.sum_univ_two, indexEquiv_apply_isComplex_fst,
-    indexEquiv_apply_isComplex_snd, smul_of, smul_cons, smul_eq_mul,
+  simp_rw [commMap, matrixToStdBasis, LinearMap.coe_mk, AddHom.coe_mk, mulVec, dotProduct,
+    Function.comp_apply, index, Fintype.sum_sum_type, diagonal_one, reindex_apply,
+    ← univ_product_univ, sum_product, indexEquiv_apply_isReal, Fin.sum_univ_two,
+    indexEquiv_apply_isComplex_fst, indexEquiv_apply_isComplex_snd, smul_of, smul_cons, smul_eq_mul,
     mul_one, Matrix.smul_empty, Equiv.prodComm_symm, Equiv.coe_prodComm]
   cases c with
   | inl w =>
@@ -900,14 +898,12 @@ variable {s}
 @[simp]
 theorem negAt_apply_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
     (negAt s x).1 w = -x.1 w := by
-  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_pos hw,
-    ContinuousLinearEquiv.neg_apply]
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_pos hw, ContinuousLinearEquiv.neg_apply]
 
 @[simp]
 theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
-  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw,
-    ContinuousLinearEquiv.refl_apply]
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw, ContinuousLinearEquiv.refl_apply]
 
 @[simp]
 theorem negAt_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
@@ -953,12 +949,10 @@ theorem negAt_symm :
     (negAt s).symm = negAt s := by
   ext x w
   · by_cases hw : w ∈ s
-    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
-        prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
-        ContinuousLinearEquiv.neg_apply]
-    · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
-        prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
-        refl_apply]
+    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm, prodCongr_apply,
+        piCongrRight_symm_apply, if_pos hw, symm_neg, ContinuousLinearEquiv.neg_apply]
+    · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm, prodCongr_apply,
+        piCongrRight_symm_apply, if_neg hw, refl_symm, refl_apply]
   · rfl
 
 /-- For `x : mixedSpace K`, the set `signSet x` is the set of real places `w` s.t. `x w ≤ 0`. -/

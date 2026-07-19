@@ -227,8 +227,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
     rw [mem_antidiagonal] at hx
     subst hx
     by_cases! hm : m < x.1
-    · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul,
-                 monomial_zero_right]
+    · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul, monomial_zero_right]
     by_cases! hn : n < x.2
     · simp only [Nat.choose_eq_zero_of_lt hn, Nat.cast_zero, zero_mul,
                  mul_zero, monomial_zero_right]

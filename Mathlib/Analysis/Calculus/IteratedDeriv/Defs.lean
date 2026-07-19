@@ -177,8 +177,7 @@ reformulated in terms of the one-dimensional derivative on sets with unique deri
 theorem contDiffOn_nat_iff_continuousOn_differentiableOn_deriv {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔ (∀ m : ℕ, m ≤ n → ContinuousOn (iteratedDerivWithin m f s) s) ∧
       ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s := by
-  rw [show n = ((n : ℕ∞) : ℕ∞ω) from rfl,
-    contDiffOn_iff_continuousOn_differentiableOn_deriv hs]
+  rw [show n = ((n : ℕ∞) : ℕ∞ω) from rfl, contDiffOn_iff_continuousOn_differentiableOn_deriv hs]
   simp
 
 /-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by

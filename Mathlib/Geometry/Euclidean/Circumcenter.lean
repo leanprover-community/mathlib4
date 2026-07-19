@@ -595,9 +595,8 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
       ↑((s.face hc).orthogonalProjectionSpan s.circumcenter) := by
     apply eq_orthogonalProjection_of_eq_subspace
     simp [W]
-  rw [reflection_apply', h_faces, s.orthogonalProjection_circumcenter hc,
-    circumcenter_eq_centroid, s.face_centroid_eq_centroid hc,
-    centroid_eq_affineCombination_of_pointsWithCircumcenter,
+  rw [reflection_apply', h_faces, s.orthogonalProjection_circumcenter hc, circumcenter_eq_centroid,
+    s.face_centroid_eq_centroid hc, centroid_eq_affineCombination_of_pointsWithCircumcenter,
     circumcenter_eq_affineCombination_of_pointsWithCircumcenter, ← @vsub_eq_zero_iff_eq V,
     affineCombination_vsub, weightedVSub_vadd_affineCombination, affineCombination_vsub,
     weightedVSub_apply, sum_pointsWithCircumcenter]

@@ -272,10 +272,8 @@ def conjMap_ofFixingSubgroup (hg : g • t = s) :
       rw [← hg] at hgxt
       exact Set.smul_mem_smul_set_iff.mp hgxt⟩
   map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => by
-    simp only [← SetLike.coe_eq_coe, subgroup_smul_def,
-      SetLike.val_smul,
-      fixingSubgroupEquivFixingSubgroup_coe_apply,
-      MulAut.conj_apply, mul_smul, inv_smul_smul]
+    simp only [← SetLike.coe_eq_coe, subgroup_smul_def, SetLike.val_smul,
+      fixingSubgroupEquivFixingSubgroup_coe_apply, MulAut.conj_apply, mul_smul, inv_smul_smul]
 
 @[to_additive (attr := simp)]
 theorem conjMap_ofFixingSubgroup_coe_apply {hg : g • t = s} (x : ofFixingSubgroup M t) :

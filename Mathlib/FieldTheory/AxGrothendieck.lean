@@ -153,11 +153,10 @@ theorem realize_genericPolyMapSurjOnOfInjOn
   simp only [Sentence.Realize, Formula.Realize, genericPolyMapSurjOnOfInjOn, Formula.relabel,
     Function.comp_def, Sum.map, id_eq, Equiv.sumAssoc, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     realize_iAlls, realize_imp, realize_relabel, Fin.natAdd_zero, realize_subst, realize_iInf,
-    realize_bdEqual, Term.realize_relabel,
-    Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply,
-    Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum,
-    Set.MapsTo, Set.mem_ofPred_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
-    Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
+    realize_bdEqual, Term.realize_relabel, Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K),
+    Equiv.curry_symm_apply, Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs,
+    realize_inf, Sum.forall_sum, Set.MapsTo, Set.mem_ofPred_eq, injOnAlt, funext_iff, Set.SurjOn,
+    Set.image, Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
   -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, Fin.castAdd_zero, Fin.cast_eq_self,

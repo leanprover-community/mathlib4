@@ -139,8 +139,7 @@ def comp (F : StrictPseudofunctor B C)
   map_comp _ := by simp [StrictPseudofunctor.map_comp]
   mapComp_eq_eqToIso _ _ := by
     ext
-    simp [StrictPseudofunctor.mapComp_eq_eqToIso,
-      PrelaxFunctor.map₂_eqToHom]
+    simp [StrictPseudofunctor.mapComp_eq_eqToIso, PrelaxFunctor.map₂_eqToHom]
 
 end
 

@@ -139,8 +139,7 @@ lemma Gammaℝ_one_sub_mul_Gammaℝ_one_add (s : ℂ) :
     rw [Complex.Gamma_mul_Gamma_one_sub, cpow_one]
     ring_nf
   _ = _ := by
-    simp_rw [← cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero),
-      Complex.sin_pi_div_two_sub]
+    simp_rw [← cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), Complex.sin_pi_div_two_sub]
     ring_nf
     rw [cpow_zero, one_mul]
 
@@ -148,8 +147,7 @@ lemma Gammaℝ_one_sub_mul_Gammaℝ_one_add (s : ℂ) :
 lemma Gammaℝ_div_Gammaℝ_one_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -(2 * n + 1)) :
     Gammaℝ s / Gammaℝ (1 - s) = Gammaℂ s * cos (π * s / 2) := by
   have : Gammaℝ (s + 1) ≠ 0 := by
-    simpa only [Ne, Gammaℝ_eq_zero_iff, not_exists, ← eq_sub_iff_add_eq,
-      sub_eq_add_neg, ← neg_add]
+    simpa only [Ne, Gammaℝ_eq_zero_iff, not_exists, ← eq_sub_iff_add_eq, sub_eq_add_neg, ← neg_add]
   calc Gammaℝ s / Gammaℝ (1 - s)
   _ = (Gammaℝ s * Gammaℝ (s + 1)) / (Gammaℝ (1 - s) * Gammaℝ (1 + s)) := by
     rw [add_comm 1 s, mul_comm (Gammaℝ (1 - s)) (Gammaℝ (s + 1)), ← div_div,

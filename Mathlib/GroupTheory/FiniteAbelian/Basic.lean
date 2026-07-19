@@ -74,8 +74,7 @@ private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ
     induction x using DirectSum.induction_on with
     | zero => simp
     | of i x =>
-      rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
-        dif_neg i.prop]
+      rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of, dif_neg i.prop]
     | add x y hx hy => rw [map_add, map_add, hx, hy]
   right_inv x := by
     induction x using DirectSum.induction_on with

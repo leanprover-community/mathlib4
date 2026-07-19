@@ -85,8 +85,7 @@ theorem centroid_notMem_affineSpan_of_ne_univ [CharZero k] (s : Simplex k P n)
   have h1 := AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan s.independent hw h
     (by simp) hi.2
   have h2 : w i = (1 : k) / (n + 1) := by
-    simp [wdef, centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add,
-      Nat.cast_one]
+    simp [wdef, centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_one]
   simp only [h2, one_div, inv_eq_zero] at h1
   norm_cast at h1
 
@@ -324,8 +323,7 @@ theorem faceOppositeCentroid_vsub_point_eq_smul_vsub [CharZero k] (s : Simplex k
     s.faceOppositeCentroid i -ᵥ s.points i =
     (n + 1 : k) • (s.faceOppositeCentroid i -ᵥ s.centroid) := by
   rw [← vsub_sub_vsub_cancel_right _ (s.centroid) (s.points i),
-    faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, centroid_vsub_eq,
-    ← sub_smul, smul_smul]
+    faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, centroid_vsub_eq, ← sub_smul, smul_smul]
   congr
   rw [mul_sub, add_mul, mul_inv_cancel₀ (NeZero.ne (n : k)), mul_inv_cancel₀ (by norm_cast),
     one_mul]
@@ -344,8 +342,7 @@ theorem point_vsub_centroid_eq_smul_vsub [CharZero k] (s : Simplex k P n) (i : F
     s.points i -ᵥ s.centroid = (n : k) • (s.centroid -ᵥ s.faceOppositeCentroid i) := by
   symm
   rw [← vsub_sub_vsub_cancel_right _ _ (s.points i),
-    faceOppositeCentroid_vsub_point_eq_smul_sum_vsub,
-    centroid_vsub_eq, ← neg_vsub_eq_vsub_rev,
+    faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, centroid_vsub_eq, ← neg_vsub_eq_vsub_rev,
     centroid_vsub_eq, ← sub_smul, smul_smul, ← neg_smul]
   congr
   simp_rw [mul_sub, sub_eq_iff_eq_add, neg_add_eq_sub]

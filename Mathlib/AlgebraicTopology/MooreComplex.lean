@@ -105,8 +105,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin 2) (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
   · rw [factorThru_right, factorThru_eq_zero, factorThru_arrow_assoc, Category.assoc,
-      ← Fin.castSucc_zero,
-      ← X.δ_comp_δ (Fin.zero_le (0 : Fin (n + 3))),
+      ← Fin.castSucc_zero, ← X.δ_comp_δ (Fin.zero_le (0 : Fin (n + 3))),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin (n + 3)) (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
 

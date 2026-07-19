@@ -148,8 +148,7 @@ theorem kernelSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = 0) :
 theorem kernelSubobject_factors_iff {W : C} (h : W ⟶ X) :
     (kernelSubobject f).Factors h ↔ h ≫ f = 0 :=
   ⟨fun w => by
-    rw [← Subobject.factorThru_arrow _ _ w, Category.assoc, kernelSubobject_arrow_comp,
-      comp_zero],
+    rw [← Subobject.factorThru_arrow _ _ w, Category.assoc, kernelSubobject_arrow_comp, comp_zero],
     kernelSubobject_factors f h⟩
 
 /-- A factorisation of `h : W ⟶ X` through `kernelSubobject f`, assuming `h ≫ f = 0`. -/
@@ -270,8 +269,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
         · exact (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
             (isCokernelEpiComp (colimit.isColimit _) i.hom rfl)).symm
         · simp only [Iso.comp_inv_eq, Iso.op_hom, Iso.symm_hom, unop_comp, Quiver.Hom.unop_op,
-            colimit.comp_coconePointUniqueUpToIso_hom, Cofork.ofπ_ι_app,
-            coequalizer.cofork_π])
+            colimit.comp_coconePointUniqueUpToIso_hom, Cofork.ofπ_ι_app, coequalizer.cofork_π])
   monotone' :=
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h
@@ -295,8 +293,7 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
             IsLimit.conePointUniqueUpToIso (limit.isLimit _)
               (isKernelCompMono (limit.isLimit (parallelPair g.unop 0)) i.unop.hom rfl)
         · dsimp
-          simp only [← Iso.eq_inv_comp, limit.conePointUniqueUpToIso_inv_comp,
-            Fork.ofι_π_app])
+          simp only [← Iso.eq_inv_comp, limit.conePointUniqueUpToIso_inv_comp, Fork.ofι_π_app])
   monotone' :=
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h

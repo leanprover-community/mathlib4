@@ -72,8 +72,7 @@ theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
 theorem gronwallBound_x0 (δ K ε : ℝ) : gronwallBound δ K ε 0 = δ := by
   by_cases hK : K = 0
   · simp only [gronwallBound, if_pos hK, mul_zero, add_zero]
-  · simp only [gronwallBound, if_neg hK, mul_zero, exp_zero, sub_self, mul_one,
-      add_zero]
+  · simp only [gronwallBound, if_neg hK, mul_zero, exp_zero, sub_self, mul_one, add_zero]
 
 theorem gronwallBound_ε0 (δ K x : ℝ) : gronwallBound δ K 0 x = δ * exp (K * x) := by
   by_cases hK : K = 0

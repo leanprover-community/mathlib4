@@ -195,9 +195,8 @@ def Triangle.isoMk (A B : Triangle C)
       comm₁, Iso.inv_hom_id_assoc])
     (by simp only [← cancel_mono iso₃.hom, assoc, Iso.inv_hom_id, comp_id,
       comm₂, Iso.inv_hom_id_assoc])
-    (by simp only [← cancel_mono (iso₁.hom⟦(1 : ℤ)⟧'), Category.assoc, comm₃,
-      Iso.inv_hom_id_assoc, ← Functor.map_comp, Iso.inv_hom_id,
-      Functor.map_id, Category.comp_id])
+    (by simp only [← cancel_mono (iso₁.hom⟦(1 : ℤ)⟧'), Category.assoc, comm₃, Iso.inv_hom_id_assoc,
+      ← Functor.map_comp, Iso.inv_hom_id, Functor.map_id, Category.comp_id])
 
 lemma Triangle.isIso_of_isIsos {A B : Triangle C} (f : A ⟶ B)
     (h₁ : IsIso f.hom₁) (h₂ : IsIso f.hom₂) (h₃ : IsIso f.hom₃) : IsIso f := by

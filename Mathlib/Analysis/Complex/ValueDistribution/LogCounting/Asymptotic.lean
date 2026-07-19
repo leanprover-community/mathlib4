@@ -85,8 +85,7 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
       · apply logCounting_le he h₂ℓ
     _ < a * |logCounting D (1 + ℓ)| := by
       gcongr 2
-      rw [abs_of_nonneg (logCounting_nonneg h h₂ℓ),
-        abs_of_nonneg (logCounting_nonneg h (by grind))]
+      rw [abs_of_nonneg (logCounting_nonneg h h₂ℓ), abs_of_nonneg (logCounting_nonneg h (by grind))]
       apply logCounting_strictMono he <;> grind
 
 end Function.locallyFinsuppWithin

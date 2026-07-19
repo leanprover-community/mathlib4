@@ -470,8 +470,7 @@ open MulAction
 lemma stabilizer_coe :
     stabilizer G S = stabilizer G (S : Set M) := by
   ext
-  rw [mem_stabilizer_iff, SetLike.ext'_iff, coe_pointwise_smul,
-    ← mem_stabilizer_iff]
+  rw [mem_stabilizer_iff, SetLike.ext'_iff, coe_pointwise_smul, ← mem_stabilizer_iff]
 
 theorem mem_stabilizer_submodule_iff_map_eq {e : G} :
     e ∈ stabilizer G S ↔ S.map (DistribSMul.toLinearMap R M e) = S := by

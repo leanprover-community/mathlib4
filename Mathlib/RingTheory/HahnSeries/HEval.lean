@@ -99,8 +99,7 @@ theorem support_powerSeriesFamily_subset {x : V⟦Γ⟧} (a b : PowerSeries R) (
     obtain ⟨c, hcn, hc⟩ := he
     simp only [coe_image, Set.Finite.coe_toFinset, Set.mem_image]
     use c
-    simp only [mul_toFun, smulFamily_toFun, Function.mem_support, hcn,
-      and_true]
+    simp only [mul_toFun, smulFamily_toFun, Function.mem_support, hcn, and_true]
     rw [powers_of_orderTop_pos h c.1, powers_of_orderTop_pos h c.2, Algebra.smul_mul_assoc,
       Algebra.mul_smul_comm, ← pow_add, hcn]
     simp [hc]

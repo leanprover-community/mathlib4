@@ -371,8 +371,7 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
     Quotient.inductionOn' y fun y h => by
       have Pe_le_Pi1 : P ^ e ≤ P ^ (i + 1) := Ideal.pow_le_pow_right hi
       simp only [Submodule.Quotient.mk''_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
-        Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff,
-        Submodule.coe_sub] at h ⊢
+        Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Submodule.coe_sub] at h ⊢
       rcases h with ⟨⟨⟨z⟩, hz⟩, h⟩
       rw [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.mem_quotient_iff_mem_sup,
         sup_eq_left.mpr Pe_le_Pi1] at hz
@@ -396,8 +395,7 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.mp hy'
     refine ⟨Submodule.Quotient.mk y, ?_⟩
     simp only [Submodule.Quotient.quot_mk_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
-      Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff,
-      Submodule.coe_sub]
+      Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Submodule.coe_sub]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
       sub_add_cancel_left, map_neg]
@@ -480,8 +478,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
     apply @Nat.cast_injective Cardinal
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
-  simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
-    mul_zero]
+  simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe, mul_zero]
 
 end FactLeComap
 

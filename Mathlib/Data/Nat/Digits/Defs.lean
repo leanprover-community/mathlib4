@@ -322,8 +322,7 @@ lemma ofDigits_inj_of_len_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
   simp only [ofDigits_cons] at h
   have eqd : D = d := by
     have H : (D + b * ofDigits b L) % b = (d + b * ofDigits b l) % b := by rw [h]
-    simpa [mod_eq_of_lt (w2 d List.mem_cons_self),
-      mod_eq_of_lt (w1 D List.mem_cons_self)] using H
+    simpa [mod_eq_of_lt (w2 d List.mem_cons_self), mod_eq_of_lt (w1 D List.mem_cons_self)] using H
   simp only [eqd, add_right_inj, mul_left_cancel_iff_of_pos (zero_lt_of_lt hb)] at h
   have := ih len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
     (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
@@ -339,8 +338,7 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
     induction l2 generalizing tl₁ with
     | nil => simp_all
     | cons hd₂ tl₂ ih₂ =>
-      simp_all only [List.length_cons, ofDigits_cons, add_left_inj,
-        eq_comm, List.zipWith_cons_cons]
+      simp_all only [List.length_cons, ofDigits_cons, add_left_inj, eq_comm, List.zipWith_cons_cons]
       rw [← ih₁ h.symm, mul_add]
       ac_rfl
 

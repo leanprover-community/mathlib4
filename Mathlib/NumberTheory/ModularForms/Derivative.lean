@@ -65,8 +65,7 @@ theorem normalizedDerivOfComplex_add (F G : ℍ → ℂ) (hF : MDiff F) (hG : MD
   have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
   have hGz := UpperHalfPlane.mdifferentiableAt_iff.mp (hG z)
   simp only [normalizedDerivOfComplex, Pi.add_apply]
-  rw [show (F + G) ∘ ofComplex = F ∘ ofComplex + G ∘ ofComplex from rfl,
-    deriv_add hFz hGz, mul_add]
+  rw [show (F + G) ∘ ofComplex = F ∘ ofComplex + G ∘ ofComplex from rfl, deriv_add hFz hGz, mul_add]
 
 @[simp]
 theorem normalizedDerivOfComplex_sub (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
@@ -75,8 +74,7 @@ theorem normalizedDerivOfComplex_sub (F G : ℍ → ℂ) (hF : MDiff F) (hG : MD
   have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
   have hGz := UpperHalfPlane.mdifferentiableAt_iff.mp (hG z)
   simp only [normalizedDerivOfComplex, Pi.sub_apply]
-  rw [show (F - G) ∘ ofComplex = F ∘ ofComplex - G ∘ ofComplex from rfl,
-    deriv_sub hFz hGz, mul_sub]
+  rw [show (F - G) ∘ ofComplex = F ∘ ofComplex - G ∘ ofComplex from rfl, deriv_sub hFz hGz, mul_sub]
 
 @[simp]
 theorem normalizedDerivOfComplex_const (c : ℂ) : D (fun _ ↦ c) = 0 := by
@@ -89,8 +87,7 @@ theorem normalizedDerivOfComplex_smul (c : ℂ) (F : ℍ → ℂ) (hF : MDiff F)
   ext z
   have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
   simp only [normalizedDerivOfComplex, Pi.smul_apply, smul_eq_mul]
-  rw [show (c • F) ∘ ofComplex = c • (F ∘ ofComplex) from rfl,
-    deriv_const_smul c hFz, smul_eq_mul]
+  rw [show (c • F) ∘ ofComplex = c • (F ∘ ofComplex) from rfl, deriv_const_smul c hFz, smul_eq_mul]
   ring
 
 @[simp]
@@ -107,8 +104,7 @@ theorem normalizedDerivOfComplex_mul (F G : ℍ → ℂ) (hF : MDiff F) (hG : MD
   have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
   have hGz := UpperHalfPlane.mdifferentiableAt_iff.mp (hG z)
   simp only [normalizedDerivOfComplex, Pi.add_apply, Pi.mul_apply]
-  rw [show (F * G) ∘ ofComplex = (F ∘ ofComplex) * (G ∘ ofComplex) from rfl,
-    deriv_mul hFz hGz]
+  rw [show (F * G) ∘ ofComplex = (F ∘ ofComplex) * (G ∘ ofComplex) from rfl, deriv_mul hFz hGz]
   simp [Function.comp_apply, ofComplex_apply]
   ring
 

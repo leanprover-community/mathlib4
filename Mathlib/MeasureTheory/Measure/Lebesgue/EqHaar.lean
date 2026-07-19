@@ -708,8 +708,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
     calc
       μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono inter_subset_right
       _ = 0 := by
-        simp only [h't, addHaar_smul, image_add_left, measure_preimage_add, singleton_add,
-          mul_zero]
+        simp only [h't, addHaar_smul, image_add_left, measure_preimage_add, singleton_add, mul_zero]
   obtain ⟨n, npos, hn⟩ : ∃ n : ℕ, 0 < n ∧ μ (t \ closedBall 0 n) < ε / 2 * μ t := by
     have A :
       Tendsto (fun n : ℕ => μ (t \ closedBall 0 n)) atTop

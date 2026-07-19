@@ -90,13 +90,11 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
     let a' : E := ⟨a, ha⟩
     let b' : E := ⟨b, hb⟩
     let ab' : E := ⟨a + b, hab⟩
-    rw [normalizedTraceAux_intermediateField F K a',
-      normalizedTraceAux_intermediateField F K b',
-      normalizedTraceAux_intermediateField F K ab',
-      normalizedTraceAux_eq_of_finiteDimensional F a',
+    rw [normalizedTraceAux_intermediateField F K a', normalizedTraceAux_intermediateField F K b',
+      normalizedTraceAux_intermediateField F K ab', normalizedTraceAux_eq_of_finiteDimensional F a',
       normalizedTraceAux_eq_of_finiteDimensional F b',
-      normalizedTraceAux_eq_of_finiteDimensional F ab',
-      ← smul_add, ← map_add, AddMemClass.mk_add_mk]
+      normalizedTraceAux_eq_of_finiteDimensional F ab', ← smul_add, ← map_add,
+      AddMemClass.mk_add_mk]
   map_smul' m a := by
     dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply]
     let E := F⟮a⟯
@@ -105,11 +103,10 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
     have hma : m • a ∈ E := smul_mem E ha
     let a' : E := ⟨a, ha⟩
     let ma' : E := ⟨m • a, hma⟩
-    rw [normalizedTraceAux_intermediateField F K a',
-      normalizedTraceAux_intermediateField F K ma',
+    rw [normalizedTraceAux_intermediateField F K a', normalizedTraceAux_intermediateField F K ma',
       normalizedTraceAux_eq_of_finiteDimensional F a',
-      normalizedTraceAux_eq_of_finiteDimensional F ma',
-      smul_comm, ← map_smul _ m, SetLike.mk_smul_mk]
+      normalizedTraceAux_eq_of_finiteDimensional F ma', smul_comm, ← map_smul _ m,
+      SetLike.mk_smul_mk]
 
 theorem normalizedTrace_def (a : K) : normalizedTrace F K a =
     (Module.finrank F F⟮a⟯ : F)⁻¹ • trace F F⟮a⟯ (AdjoinSimple.gen F a) :=

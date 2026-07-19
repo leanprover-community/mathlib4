@@ -464,8 +464,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
     lt_of_le_of_lt upperCrossingTime_le_lowerCrossingTime h
   induction n with
   | zero =>
-    simp only [upperCrossingTime_zero, bot_eq_zero',
-      lowerCrossingTime_zero, true_and, eq_comm]
+    simp only [upperCrossingTime_zero, bot_eq_zero', lowerCrossingTime_zero, true_and, eq_comm]
     refine hittingBtwn_eq_hittingBtwn_of_exists hNM ?_
     rw [lowerCrossingTime, hittingBtwn_lt_iff] at h
     · obtain ⟨j, hj₁, hj₂⟩ := h
@@ -642,8 +641,7 @@ theorem crossing_pos_eq (hab : a < b) :
   induction n with
   | zero =>
     refine ⟨rfl, ?_⟩
-    simp +unfoldPartialApp only [lowerCrossingTime_zero, hittingBtwn,
-      Set.mem_Icc, Set.mem_Iic]
+    simp +unfoldPartialApp only [lowerCrossingTime_zero, hittingBtwn, Set.mem_Icc, Set.mem_Iic]
     simp_all
   | succ k ih =>
     have : upperCrossingTime 0 (b - a) (fun n ω => (f n ω - a)⁺) N (k + 1) =

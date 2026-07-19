@@ -64,8 +64,7 @@ lemma hasDimensionLT_of_finite [X.Finite] :
       exact ⟨0, by simp⟩
   refine ⟨d, ⟨fun n hn ↦ ?_⟩⟩
   ext x
-  simp only [mem_degenerate_iff_notMem_nonDegenerate, Set.top_eq_univ,
-    Set.mem_univ, iff_true]
+  simp only [mem_degenerate_iff_notMem_nonDegenerate, Set.top_eq_univ, Set.mem_univ, iff_true]
   intro hx
   have := hd (φ (N.mk _ hx)) (by simp)
   dsimp [φ] at this

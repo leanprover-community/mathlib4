@@ -257,8 +257,7 @@ lemma isCoboundedUnder_ge_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι 
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 
 theorem isCobounded_top : IsCobounded r ⊤ ↔ Nonempty α := by
-  simp +contextual [IsCobounded,
-    exists_true_iff_nonempty]
+  simp +contextual [IsCobounded, exists_true_iff_nonempty]
 
 theorem isCobounded_principal (s : Set α) :
     (𝓟 s).IsCobounded r ↔ ∃ b, ∀ a, (∀ x ∈ s, r x a) → r b a := by simp [IsCobounded]

@@ -178,8 +178,7 @@ lemma mappingConeCompTriangleh_comm₁ :
       (mappingConeCompHomotopyEquiv f g)).inv, assoc]
   dsimp [mappingConeCompTriangleh]
   rw [← Functor.map_comp, ← Functor.map_comp, ← Functor.map_comp,
-    mappingConeCompHomotopyEquiv_hom_inv_id, comp_id,
-    mappingConeCompHomotopyEquiv_comm₁ f g,
+    mappingConeCompHomotopyEquiv_hom_inv_id, comp_id, mappingConeCompHomotopyEquiv_comm₁ f g,
     mappingConeCompTriangle_mor₂]
 
 end CochainComplex

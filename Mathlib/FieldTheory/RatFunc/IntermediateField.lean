@@ -151,8 +151,7 @@ theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX 
 theorem irreducible_minpolyX (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K⟮f⟯) := by
   have : UniqueFactorizationMonoid K[f] :=
     (f.transcendental_of_ne_C hf).uniqueFactorizationMonoid_adjoin
-  rw [← f.minpolyX_map K[f] K⟮f⟯,
-    ← IsPrimitive.irreducible_iff_irreducible_map_fraction_map]
+  rw [← f.minpolyX_map K[f] K⟮f⟯, ← IsPrimitive.irreducible_iff_irreducible_map_fraction_map]
   · exact f.irreducible_minpolyX' hf
   · apply (f.irreducible_minpolyX' hf).isPrimitive
     intro H

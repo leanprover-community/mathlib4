@@ -679,8 +679,7 @@ lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
   obtain ⟨z, rfl⟩ := z.mk_surjective
   rw [← HomogeneousLocalization.isUnit_iff_isUnit_val,
     ProjIsoSpecTopComponent.ToSpec.mk_mem_carrier, HomogeneousLocalization.map_mk,
-    HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
-    IsLocalization.AtPrime.isUnit_mk'_iff]
+    HomogeneousLocalization.val_mk, Localization.mk_eq_mk', IsLocalization.AtPrime.isUnit_mk'_iff]
   exact not_not
 
 lemma toSpec_base_isIso {f} {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :

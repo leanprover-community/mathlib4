@@ -186,8 +186,7 @@ lemma d_comp_desc_eq_zero_iff' ⦃W : C⦄ (f' : cocone.pt ⟶ K.X k)
   · have hk'' : e.f k = k' := by rw [← hk', ← hj', c'.next_eq' (e.rel hjk)]
     have : f' ≫ (K.extendXIso e hk'').inv = f'' := by
       apply Cofork.IsColimit.hom_ext hcocone
-      rw [reassoc_of% hf', ← cancel_epi (extendXIso K e hj').hom, hf'',
-        K.extend_d_eq e hj' hk'']
+      rw [reassoc_of% hf', ← cancel_epi (extendXIso K e hj').hom, hf'', K.extend_d_eq e hj' hk'']
     rw [← cancel_mono (K.extendXIso e hk'').inv, zero_comp, assoc, this]
   · have h₁ : f' = 0 := by
       apply Cofork.IsColimit.hom_ext hcocone
@@ -343,8 +342,7 @@ lemma extendCyclesIso_hom_iCycles :
   dsimp [extendCyclesIso, iCycles]
   rw [assoc, ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles_assoc]
   dsimp
-  rw [assoc, Iso.inv_hom_id, comp_id,
-    ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i]
+  rw [assoc, Iso.inv_hom_id, comp_id, ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i]
 
 @[reassoc (attr := simp)]
 lemma extendCyclesIso_inv_iCycles :
@@ -361,9 +359,8 @@ lemma homologyπ_extendHomologyIso_hom :
       (K.extendCyclesIso e hj').hom ≫ K.homologyπ j := by
   dsimp [extendHomologyIso, homologyπ]
   rw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom_assoc,
-    ← cancel_mono (K.sc j).homologyData.left.homologyIso.hom,
-    assoc, assoc, assoc, Iso.inv_hom_id, comp_id,
-    ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom]
+    ← cancel_mono (K.sc j).homologyData.left.homologyIso.hom, assoc, assoc, assoc, Iso.inv_hom_id,
+    comp_id, ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom]
   dsimp [extendCyclesIso]
   simp only [assoc, Iso.inv_hom_id_assoc]
 

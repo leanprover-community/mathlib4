@@ -55,8 +55,7 @@ instance EnrichedCategory.opposite : EnrichedCategory V Cᵒᵖ where
       Category.assoc, Iso.inv_hom_id_assoc]
     exact EnrichedCategory.id_comp _ _
   assoc _ _ _ _ := by
-    simp only [braiding_naturality_left_assoc,
-      MonoidalCategory.whiskerLeft_comp, Category.assoc]
+    simp only [braiding_naturality_left_assoc, MonoidalCategory.whiskerLeft_comp, Category.assoc]
     rw [← EnrichedCategory.assoc]
     simp only [braiding_tensor_left_hom, Category.assoc, Iso.inv_hom_id_assoc,
       braiding_naturality_right_assoc, braiding_tensor_right_hom]

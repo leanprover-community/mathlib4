@@ -379,8 +379,7 @@ theorem ofLEMk_comp_ofMkLEMk {B A₁ A₂ : C} (X : Subobject B) (f : A₁ ⟶ B
 @[reassoc (attr := simp)]
 theorem ofMkLE_comp_ofLE {B A₁ : C} (f : A₁ ⟶ B) [Mono f] (X Y : Subobject B) (h₁ : mk f ≤ X)
     (h₂ : X ≤ Y) : ofMkLE f X h₁ ≫ ofLE X Y h₂ = ofMkLE f Y (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLE, ← Functor.map_comp underlying,
-    assoc]
+  simp only [ofMkLE, ofLE, ← Functor.map_comp underlying, assoc]
   congr 1
 
 @[reassoc (attr := simp)]
@@ -394,16 +393,14 @@ theorem ofMkLE_comp_ofLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (X : Subo
 theorem ofMkLEMk_comp_ofMkLE {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
     (X : Subobject B) (h₁ : mk f ≤ mk g) (h₂ : mk g ≤ X) :
     ofMkLEMk f g h₁ ≫ ofMkLE g X h₂ = ofMkLE f X (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
-    assoc, Iso.hom_inv_id_assoc]
+  simp only [ofMkLE, ofLE, ofMkLEMk, ← Functor.map_comp underlying, assoc, Iso.hom_inv_id_assoc]
   congr 1
 
 @[reassoc (attr := simp)]
 theorem ofMkLEMk_comp_ofMkLEMk {B A₁ A₂ A₃ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
     (h : A₃ ⟶ B) [Mono h] (h₁ : mk f ≤ mk g) (h₂ : mk g ≤ mk h) :
     ofMkLEMk f g h₁ ≫ ofMkLEMk g h h₂ = ofMkLEMk f h (h₁.trans h₂) := by
-  simp only [ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc,
-    Iso.hom_inv_id_assoc]
+  simp only [ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc, Iso.hom_inv_id_assoc]
   congr 1
 
 @[simp]

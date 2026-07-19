@@ -257,8 +257,7 @@ theorem formPerm_pow_apply_getElem (l : List α) (w : Nodup l) (n : ℕ) (i : �
   induction n with
   | zero => simp [Nat.mod_eq_of_lt h]
   | succ n hn =>
-    simp [pow_succ', mul_apply, hn, formPerm_apply_getElem _ w,
-      ← Nat.add_assoc]
+    simp [pow_succ', mul_apply, hn, formPerm_apply_getElem _ w, ← Nat.add_assoc]
 
 theorem formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n : ℕ) :
     (formPerm (x :: l) ^ n) x =

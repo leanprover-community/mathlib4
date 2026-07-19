@@ -246,13 +246,11 @@ lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) 
   obtain ⟨W₀, c : _ ⟶ _, d, ⟨j, e, h₁, h₂⟩, fac⟩ := h
   dsimp
   refine ⟨j, d ≫ F.map e, ?_, ?_⟩
-  · rw [assoc, assoc, ← F.map_comp, ← h₁, F.map_comp, ← reassoc_of% fac,
-      str.cover.1.choose_spec, ← reassoc_of% str.fac,
-      Presieve.CoverByImageStructure.fac_assoc,
+  · rw [assoc, assoc, ← F.map_comp, ← h₁, F.map_comp, ← reassoc_of% fac, str.cover.1.choose_spec,
+      ← reassoc_of% str.fac, Presieve.CoverByImageStructure.fac_assoc,
       Presieve.BindStruct.fac_assoc]
-  · rw [assoc, assoc, ← F.map_comp, ← h₂, F.map_comp, ← reassoc_of% fac,
-      str.cover.2.choose_spec, ← reassoc_of% str.fac,
-      Presieve.CoverByImageStructure.fac_assoc,
+  · rw [assoc, assoc, ← F.map_comp, ← h₂, F.map_comp, ← reassoc_of% fac, str.cover.2.choose_spec,
+      ← reassoc_of% str.fac, Presieve.CoverByImageStructure.fac_assoc,
       Presieve.BindStruct.fac_assoc]
 
 /-- The `1`-hypercover associated to a `OneHypercoverDenseData` structure. -/
@@ -627,8 +625,7 @@ lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g 
   refine Presheaf.IsSheaf.hom_ext G₀.property ⟨_, this⟩ _ _ ?_
   rintro ⟨V₀, a, ⟨x₁, fac₁⟩, ⟨x₂, fac₂⟩⟩
   dsimp
-  rw [assoc, assoc,
-    IsDenseSubsite.mapPreimage_map_of_fac J F G₀ _ _ x₂ (by simpa using fac₂.symm),
+  rw [assoc, assoc, IsDenseSubsite.mapPreimage_map_of_fac J F G₀ _ _ x₂ (by simpa using fac₂.symm),
     IsDenseSubsite.mapPreimage_map_of_fac J F G₀ _ _ x₁ fac₁.symm]
   /- #adaptation_note Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), the last argument below was
@@ -639,8 +636,7 @@ lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g 
 lemma presheafMap_id (X : C) :
     presheafMap data G₀ (𝟙 X) = 𝟙 _ := by
   ext i
-  rw [presheafMap_π, comp_id, id_comp,
-    restriction_eq_of_fac data G₀ ((data X).f i) (𝟙 _) (by simp),
+  rw [presheafMap_π, comp_id, id_comp, restriction_eq_of_fac data G₀ ((data X).f i) (𝟙 _) (by simp),
     IsDenseSubsite.mapPreimage_id, comp_id]
 
 @[reassoc]
@@ -711,8 +707,7 @@ lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (
       ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F a⟩ _ _ ?_
   rintro ⟨T₀, b, ⟨c, hc⟩⟩
   dsimp
-  simp only [assoc, IsDenseSubsite.mapPreimage_comp_map, ← hc,
-    IsDenseSubsite.mapPreimage_map]
+  simp only [assoc, IsDenseSubsite.mapPreimage_comp_map, ← hc, IsDenseSubsite.mapPreimage_map]
   exact hom_map data G₀ c _ (by simp only [assoc, fac, hc])
 
 variable (X₀)
@@ -777,8 +772,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
     presheafMap data G₀ ((data X).f i) ≫ (presheafObjObjIso data G₀ ((data X).X i)).hom =
       presheafObjπ data G₀ X i := by
-  rw [← cancel_mono (presheafObjObjIso data G₀ ((data X).X i)).inv, assoc, Iso.hom_inv_id,
-    comp_id]
+  rw [← cancel_mono (presheafObjObjIso data G₀ ((data X).X i)).inv, assoc, Iso.hom_inv_id, comp_id]
   apply presheafObj_hom_ext
   intro j
   rw [assoc, presheafMap_π, presheafObjObjIso, presheafObjObjIso.inv_π data G₀]

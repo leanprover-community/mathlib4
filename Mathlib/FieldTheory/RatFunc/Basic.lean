@@ -241,9 +241,8 @@ macro "frac_tac" : tactic => `(tactic|
   · repeat (rintro (⟨⟩ : _⟮X⟯))
     try simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
       ← ofFractionRing_neg, ← ofFractionRing_one, ← ofFractionRing_mul, ← ofFractionRing_div,
-      ← ofFractionRing_inv,
-      add_assoc, zero_add, add_zero, mul_assoc, mul_zero, mul_one, mul_add, inv_zero,
-      add_comm, add_left_comm, mul_comm, mul_left_comm, sub_eq_add_neg, div_eq_mul_inv,
+      ← ofFractionRing_inv, add_assoc, zero_add, add_zero, mul_assoc, mul_zero, mul_one, mul_add,
+      inv_zero, add_comm, add_left_comm, mul_comm, mul_left_comm, sub_eq_add_neg, div_eq_mul_inv,
       add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_cancel])
 
 /-- Solve equations for `K⟮X⟯` by applying `RatFunc.induction_on`. -/
@@ -254,11 +253,9 @@ macro "smul_tac" : tactic => `(tactic|
         | intro) <;>
     simp_rw [← ofFractionRing_smul] <;>
     simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
-      neg_add, mul_neg,
-      Int.cast_zero, Int.cast_add, Int.cast_one,
-      Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
-      Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
-      ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
+      neg_add, mul_neg, Int.cast_zero, Int.cast_add, Int.cast_one, Int.cast_negSucc,
+      Int.cast_natCast, Nat.cast_succ, Localization.mk_zero, Localization.add_mk_self,
+      Localization.neg_mk, ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
 
 end TacticInterlude
 
@@ -446,8 +443,7 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯
       obtain ⟨p, q⟩ := pq
       obtain ⟨p', q'⟩ := p'q'
       rw [← ofFractionRing_add, Localization.add_mk]
-      simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-        liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+      simp only [RingHom.toMonoidWithZeroHom_eq_coe, liftMonoidWithZeroHom_apply_ofFractionRing_mk]
       rw [div_add_div, div_eq_div_iff]
       · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
         simp only [map_add, map_mul, Submonoid.coe_mul]
@@ -582,8 +578,7 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q := by
   rcases eq_or_ne q 0 with (rfl | hq)
   · simp only [div_zero, map_zero]
-  simp only [← mk_eq_div, mk_eq_localization_mk _ hq,
-    liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+  simp only [← mk_eq_div, mk_eq_localization_mk _ hq, liftMonoidWithZeroHom_apply_ofFractionRing_mk]
 
 @[simp]
 theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [CommGroupWithZero L]
@@ -692,8 +687,7 @@ instance : IsFractionRing K[X] K⟮X⟯ where
   surj := by
     rintro ⟨z⟩
     convert! IsLocalization.surj K[X]⁰ z
-    simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
-      ofFractionRing.injEq]
+    simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul, ofFractionRing.injEq]
 
 variable {K}
 
@@ -796,8 +790,7 @@ attribute [local instance] Polynomial.algebra
 variable (k K : Type*) [Field k] [Field K] [Algebra k K] [Algebra.IsAlgebraic k K]
 
 theorem rank_ratFunc_ratFunc : Module.rank k⟮X⟯ K⟮X⟯ = Module.rank k K := by
-  rw [Algebra.IsAlgebraic.rank_of_isFractionRing k[X] k⟮X⟯ K[X] K⟮X⟯,
-    rank_polynomial_polynomial]
+  rw [Algebra.IsAlgebraic.rank_of_isFractionRing k[X] k⟮X⟯ K[X] K⟮X⟯, rank_polynomial_polynomial]
 
 theorem finrank_ratFunc_ratFunc : Module.finrank k⟮X⟯ K⟮X⟯ = Module.finrank k K := by
   by_cases hf : Module.Finite k⟮X⟯ K⟮X⟯

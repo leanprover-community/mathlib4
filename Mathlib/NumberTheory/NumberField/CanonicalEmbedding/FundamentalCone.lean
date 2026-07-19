@@ -373,9 +373,8 @@ theorem integerSetToAssociates_surjective :
   refine ⟨⟨u • mixedEmbedding K (x : 𝓞 K), hu⟩,
     Quotient.sound ⟨unitsNonZeroDivisorsEquiv.symm u⁻¹, ?_⟩⟩
   simp_rw [Subtype.ext_iff, RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
-    Submonoid.coe_mul, map_mul, mixedEmbedding_preimageOfMemIntegerSet,
-    unitSMul_smul, ← map_mul, mul_comm, map_inv, val_inv_unitsNonZeroDivisorsEquiv_symm_apply_coe,
-    Units.mul_inv_cancel_right]
+    Submonoid.coe_mul, map_mul, mixedEmbedding_preimageOfMemIntegerSet, unitSMul_smul, ← map_mul,
+    mul_comm, map_inv, val_inv_unitsNonZeroDivisorsEquiv_symm_apply_coe, Units.mul_inv_cancel_right]
 
 theorem integerSetToAssociates_eq_iff (a b : integerSet K) :
     integerSetToAssociates K a = integerSetToAssociates K b ↔

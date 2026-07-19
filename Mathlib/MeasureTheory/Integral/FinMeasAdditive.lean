@@ -270,8 +270,7 @@ theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : Dominated
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
   have h : ∀ s, MeasurableSet s → c • μ s = ∞ → μ s = ∞ := by
     intro s _ hcμs
-    simp only [hc_ne_top, smul_eq_mul, ENNReal.mul_eq_top, or_false, Ne,
-      false_and] at hcμs
+    simp only [hc_ne_top, smul_eq_mul, ENNReal.mul_eq_top, or_false, Ne, false_and] at hcμs
     exact hcμs.2
   refine ⟨hT.1.of_eq_top_imp_eq_top (μ := c • μ) h, fun s hs hμs => ?_⟩
   have hcμs : c • μ s ≠ ∞ := mt (h s hs) hμs.ne
@@ -602,8 +601,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
       T s x := by
   classical
   obtain rfl | hs_empty := s.eq_empty_or_nonempty
-  · simp only [hT_empty, zero_apply, piecewise_empty, const_zero,
-      setToSimpleFunc_zero_apply]
+  · simp only [hT_empty, zero_apply, piecewise_empty, const_zero, setToSimpleFunc_zero_apply]
   simp_rw [setToSimpleFunc]
   obtain rfl | hs_univ := eq_or_ne s univ
   · have hα := hs_empty.to_type
@@ -633,8 +631,7 @@ theorem setToSimpleFunc_const (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ 
   cases isEmpty_or_nonempty α
   · have h_univ_empty : (univ : Set α) = ∅ := Subsingleton.elim _ _
     rw [h_univ_empty, hT_empty]
-    simp only [setToSimpleFunc, zero_apply, sum_empty,
-      range_eq_empty_of_isEmpty]
+    simp only [setToSimpleFunc, zero_apply, sum_empty, range_eq_empty_of_isEmpty]
   · exact setToSimpleFunc_const' T x
 
 end SimpleFunc

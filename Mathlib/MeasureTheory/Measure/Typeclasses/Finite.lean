@@ -213,8 +213,7 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
     convert! abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
   rw [measure_sdiff' s ht ht', measure_sdiff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
-    ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
-    union_comm t s]
+    ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness), union_comm t s]
   abel
 
 theorem abs_measureReal_sub_le_measureReal_symmDiff [IsFiniteMeasure μ]

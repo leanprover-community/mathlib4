@@ -296,8 +296,7 @@ theorem lastStep_nonempty :
       rw [TauPackage.index]; rfl
     rw [this]
     exact (Classical.epsilon_spec h).1
-  simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and,
-    Subtype.exists] at A
+  simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and, Subtype.exists] at A
   specialize A x H
   replace A : p.r (p.index y) ≤ 0 := by simpa [hxy] using A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
@@ -317,8 +316,7 @@ theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := 
     exact mul_lt_mul (inv_lt_one_of_one_lt₀ p.one_lt_tau) le_rfl Rpos zero_le_one
   obtain ⟨y, hy1, hy2⟩ : ∃ y, p.c y ∉ p.iUnionUpTo p.lastStep ∧ p.τ⁻¹ * p.R p.lastStep < p.r y := by
     have := exists_lt_of_lt_csSup ?_ B
-    · simpa only [exists_prop, mem_range, exists_exists_and_eq_and, Subtype.exists,
-      Subtype.coe_mk]
+    · simpa only [exists_prop, mem_range, exists_exists_and_eq_and, Subtype.exists, Subtype.coe_mk]
     rw [← image_univ, image_nonempty]
     exact ⟨⟨_, h⟩, mem_univ _⟩
   rcases A y with (Hy | Hy)
@@ -403,8 +401,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     have hb : (b : ℕ) ≤ N := Nat.lt_succ_iff.1 b.2
     constructor
     · have := (fGn b hb).1
-      simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and,
-        Subtype.exists] at this
+      simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and, Subtype.exists] at this
       simpa only [dist_comm, mem_ball, not_lt] using this (G a) G_lt
     · apply le_trans _ (fGn a ha).2
       have B : p.c (p.index (G b)) ∉ p.iUnionUpTo (G a) := by

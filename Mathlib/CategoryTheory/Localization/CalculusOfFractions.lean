@@ -373,8 +373,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
     apply Quot.sound
     refine ⟨Z, w₁.f ≫ u.f ≫ p, w₂.f ≫ u.s ≫ p, ?_, ?_, ?_⟩
     · dsimp
-      simp only [assoc, ← reassoc_of% fac₁', ← reassoc_of% fac₂',
-        reassoc_of% hst, reassoc_of% fac₃]
+      simp only [assoc, ← reassoc_of% fac₁', ← reassoc_of% fac₂', reassoc_of% hst, reassoc_of% fac₃]
     · dsimp
       simp only [assoc, fac₄]
     · dsimp
@@ -573,9 +572,8 @@ noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInve
   Quot.lift (fun f => f.map F hF) (by
     intro a₁ a₂ ⟨Z, t₁, t₂, hst, hft, h⟩
     have := hF _ h
-    rw [← cancel_mono (F.map (a₁.s ≫ t₁)), F.map_comp, map_comp_map_s_assoc,
-      ← F.map_comp, ← F.map_comp, hst, hft, F.map_comp,
-      F.map_comp, map_comp_map_s_assoc]) f
+    rw [← cancel_mono (F.map (a₁.s ≫ t₁)), F.map_comp, map_comp_map_s_assoc, ← F.map_comp,
+      ← F.map_comp, hst, hft, F.map_comp, F.map_comp, map_comp_map_s_assoc]) f
 
 @[simp]
 lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
@@ -612,9 +610,8 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     dsimp at fac ⊢
     have := hF _ g.hs
     have := hF _ z.hs
-    rw [← cancel_mono (F.map g.s), assoc, map_comp_map_s,
-      ← cancel_mono (F.map z.s), assoc, assoc, ← F.map_comp,
-      ← F.map_comp, map_comp_map_s, fac]
+    rw [← cancel_mono (F.map g.s), assoc, map_comp_map_s, ← cancel_mono (F.map z.s), assoc, assoc,
+      ← F.map_comp, ← F.map_comp, map_comp_map_s, fac]
     dsimp
     rw [F.map_comp, F.map_comp, map_comp_map_s_assoc]
 
@@ -640,8 +637,7 @@ lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) 
       Qiso_hom_inv_id, Functor.map_id, id_comp]
     erw [Functor.congr_hom h.symm f.s]
     dsimp
-    rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
-      Qiso_hom_inv_id]
+    rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp, Qiso_hom_inv_id]
     dsimp
     rw [F₁.map_id, comp_id])
 
@@ -721,9 +717,8 @@ lemma map_comp_map_eq_map {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.Left
     rw [L.map_comp]
     infer_instance
   dsimp [LeftFraction.comp₀]
-  rw [← cancel_mono (L.map (z₂.s ≫ z₃.s)), map_comp_map_s,
-    L.map_comp, assoc, map_comp_map_s_assoc, ← L.map_comp, h₃,
-    L.map_comp, map_comp_map_s_assoc, L.map_comp]
+  rw [← cancel_mono (L.map (z₂.s ≫ z₃.s)), map_comp_map_s, L.map_comp, assoc, map_comp_map_s_assoc,
+    ← L.map_comp, h₃, L.map_comp, map_comp_map_s_assoc, L.map_comp]
 
 end
 
@@ -773,8 +768,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
   constructor
   · intro h
     rw [← LeftFraction.map_ofHom W _ L (Localization.inverts _ _),
-      ← LeftFraction.map_ofHom W _ L (Localization.inverts _ _),
-      LeftFraction.map_eq_iff] at h
+      ← LeftFraction.map_ofHom W _ L (Localization.inverts _ _), LeftFraction.map_eq_iff] at h
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
     dsimp at t₁ t₂ hst hft ht
     grind
@@ -986,8 +980,7 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
   constructor
   · intro h
     rw [← RightFraction.map_ofHom W _ L (Localization.inverts _ _),
-      ← RightFraction.map_ofHom W _ L (Localization.inverts _ _),
-      RightFraction.map_eq_iff] at h
+      ← RightFraction.map_ofHom W _ L (Localization.inverts _ _), RightFraction.map_eq_iff] at h
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
     dsimp at t₁ t₂ hst hft ht
     grind

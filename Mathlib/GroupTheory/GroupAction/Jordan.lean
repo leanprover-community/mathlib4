@@ -131,8 +131,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       IsMultiplyPretransitive G α 2 by
       refine ⟨this, fun hs_prim ↦ ?_⟩
       rw [hsa] at hs_prim
-      rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G α le_rfl (a := a),
-        is_one_preprimitive_iff]
+      rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G α le_rfl (a := a), is_one_preprimitive_iff]
       exact IsPreprimitive.of_surjective
           ofFixingSubgroup_of_singleton_bijective.surjective
     rw [hsa]
@@ -404,8 +403,7 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα3
   have hsc : Set.ncard ((g.support)ᶜ : Set α) = n + 1 := by
     apply Nat.add_left_cancel
-    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
-      card_support_eq_two.mpr h2g, add_comm, hn]
+    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset, card_support_eq_two.mpr h2g, add_comm, hn]
   apply eq_top_of_isMultiplyPretransitive
   suffices IsMultiplyPreprimitive G α (Nat.card α - 1) by
     apply IsMultiplyPreprimitive.isMultiplyPretransitive
@@ -446,8 +444,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   rw [show Nat.card α - 2 = n + 2 by grind]
   apply hG.isMultiplyPreprimitive (s := (g.supportᶜ : Set α))
   · apply Nat.add_left_cancel
-    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
-      h3g.card_support, add_comm, hn]
+    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset, h3g.card_support, add_comm, hn]
   · grind
   have := isPretransitive_of_isCycle_mem h3g.isCycle hg
   apply IsPreprimitive.of_prime_card

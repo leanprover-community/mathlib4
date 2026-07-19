@@ -315,9 +315,8 @@ def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.I
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
-  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_ofPred_eq,
-    Opens.coe_bot, Set.mem_empty_iff_false,
-    iff_false, not_exists]
+  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_ofPred_eq, Opens.coe_bot,
+    Set.mem_empty_iff_false, iff_false, not_exists]
   intro hx
   rw [map_zero, isUnit_zero_iff]
   change (0 : X.presheaf.stalk x) ≠ (1 : X.presheaf.stalk x)

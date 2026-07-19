@@ -163,8 +163,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     rw [← c.w (homOfLE <| (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dif_pos]
-    · simp only [eqToHom_trans_assoc,
-        eqToHom_refl, Category.id_comp, op_unop]
+    · simp only [eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, op_unop]
     · exact h.mem_open U.unop.1.2 U.unop.2
   uniq c f h := by
     dsimp

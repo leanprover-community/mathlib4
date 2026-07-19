@@ -440,8 +440,7 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp only [← Nat.add_assoc, Nat.add_right_comm, cons_val_succ',
-      vecAlt0]
+  · simp only [← Nat.add_assoc, Nat.add_right_comm, cons_val_succ', vecAlt0]
 
 @[simp]
 theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by

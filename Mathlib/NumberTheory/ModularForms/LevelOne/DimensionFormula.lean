@@ -263,8 +263,7 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     fin_cases this <;> simp [Nat.ModEq]
   · -- `12 ≤ k`: rank decomposition + induction hypothesis at weight `k - 12`
     rw [rank_eq_one_add_rank_cuspForm (by lia) hk2, CuspForm.discriminantEquiv.rank_eq,
-      show ((k : ℤ) - 12 : ℤ) = ((k - 12 : ℕ) : ℤ) by lia,
-      ihn (k - 12) (by lia) (by grind)]
+      show ((k : ℤ) - 12 : ℤ) = ((k - 12 : ℕ) : ℤ) by lia, ihn (k - 12) (by lia) (by grind)]
     simp only [Nat.ModEq, show k / 12 = (k - 12) / 12 + 1 by lia,
       show (k - 12) % 12 = k % 12 by lia]
     split_ifs <;> grind

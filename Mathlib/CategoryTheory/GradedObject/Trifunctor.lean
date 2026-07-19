@@ -254,8 +254,7 @@ noncomputable def mapTrifunctorMap
         dsimp
         ext i₁ i₂ i₃ h
         simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
-          NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp,
-          NatTrans.naturality_app_assoc] }
+          NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_app_assoc] }
 
 attribute [simps] mapTrifunctorMap
 

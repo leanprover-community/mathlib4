@@ -215,8 +215,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
 @[simp] lemma comap_isBasis'_iff {I X : Set α} :
     (N.comap f).IsBasis' I X ↔ N.IsBasis' (f '' I) (f '' X) ∧ I.InjOn f ∧ I ⊆ X := by
   simp only [isBasis'_iff_isBasis_inter_ground, comap_ground_eq, comap_isBasis_iff,
-    image_inter_preimage, subset_inter_iff, ← and_assoc, and_iff_left_iff_imp,
-    and_imp]
+    image_inter_preimage, subset_inter_iff, ← and_assoc, and_iff_left_iff_imp, and_imp]
   exact fun h _ _ ↦ (image_subset_iff.1 h.indep.subset_ground)
 
 instance comap_finitary (N : Matroid β) [N.Finitary] (f : α → β) : (N.comap f).Finitary := by
@@ -466,8 +465,7 @@ lemma map_comap {f : α → β} (h_range : N.E ⊆ range f) (hf : InjOn f (f ⁻
   exact fun I hI ↦ ⟨by grind, fun h ↦ ⟨_, ⟨h, hf.mono hI⟩, rfl⟩⟩
 
 lemma comap_map {f : α → β} (hf : f.Injective) : (M.map f hf.injOn).comap f = M := by
-  simp [ext_iff_indep, preimage_image_eq _ hf, and_iff_left hf.injOn,
-    image_eq_image hf]
+  simp [ext_iff_indep, preimage_image_eq _ hf, and_iff_left hf.injOn, image_eq_image hf]
 
 instance [M.Nonempty] {f : α → β} (hf) : (M.map f hf).Nonempty :=
   ⟨by simp [M.ground_nonempty]⟩
@@ -660,8 +658,7 @@ lemma restrictSubtype_isBasis_iff {Y : Set α} {I X : Set Y} :
 
 lemma restrictSubtype_isBase_iff {B : Set X} : (M.restrictSubtype X).IsBase B ↔ M.IsBasis' B X := by
   rw [restrictSubtype, comap_isBase_iff]
-  simp [Subtype.val_injective.injOn, isBasis_restrict_iff',
-    isBasis'_iff_isBasis_inter_ground]
+  simp [Subtype.val_injective.injOn, isBasis_restrict_iff', isBasis'_iff_isBasis_inter_ground]
 
 @[simp] lemma restrictSubtype_ground_isBase_iff {B : Set M.E} :
     (M.restrictSubtype M.E).IsBase B ↔ M.IsBase B := by

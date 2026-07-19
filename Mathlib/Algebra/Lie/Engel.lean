@@ -116,8 +116,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
   intro l
   induction l with
   | zero =>
-    simp only [add_zero, LieIdeal.lcs_succ, pow_zero, Module.End.one_eq_id,
-      Submodule.map_id]
+    simp only [add_zero, LieIdeal.lcs_succ, pow_zero, Module.End.one_eq_id, Submodule.map_id]
     exact le_sup_of_le_left hIM
   | succ l ih =>
     simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]

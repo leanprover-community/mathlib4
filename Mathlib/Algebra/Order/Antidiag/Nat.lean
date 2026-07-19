@@ -117,8 +117,7 @@ theorem finMulAntidiag_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n)
     finMulAntidiag d m =
       {f ∈ Fintype.piFinset fun _ : Fin d => n.divisors | ∏ i, f i = m} := by
   ext f
-  simp only [ne_eq,
-    Fintype.mem_piFinset, mem_divisors, mem_filter]
+  simp only [ne_eq, Fintype.mem_piFinset, mem_divisors, mem_filter]
   constructor
   · intro hf
     refine ⟨?_, prod_eq_of_mem_finMulAntidiag hf⟩
@@ -143,8 +142,7 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     obtain ⟨i', hi_ne⟩ := exists_ne i
     use fun j => if j = i then k else if j = i' then r else 1
     simp only [ite_true, and_true]
-    rw [← Finset.mul_prod_erase (h := mem_univ i),
-      ← Finset.mul_prod_erase (a := i')]
+    rw [← Finset.mul_prod_erase (h := mem_univ i), ← Finset.mul_prod_erase (a := i')]
     · simp_all
     exact mem_erase.mpr ⟨hi_ne, mem_univ _⟩
 

@@ -114,8 +114,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
     rw [← pow_add, Odd.neg_one_pow, neg_smul, one_zsmul]
     exact ⟨a, by lia⟩
   · -- d + e = 0
-    rw [X.δ_comp_σ_self' (Fin.castSucc_mk _ _ _).symm,
-      X.δ_comp_σ_succ' (Fin.succ_mk _ _ _).symm]
+    rw [X.δ_comp_σ_self' (Fin.castSucc_mk _ _ _).symm, X.δ_comp_σ_succ' (Fin.succ_mk _ _ _).symm]
     simp only [comp_id, pow_add _ (a + 1) 1, pow_one, mul_neg, mul_one, neg_mul, neg_smul,
       add_neg_cancel]
   · -- c + a = 0
@@ -141,9 +140,8 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
   rw [hσ'_eq_zero hqn (c_mk (n + 1) n rfl), comp_zero, zero_add]
   by_cases hqn' : n + 1 < q
   · rw [hσ'_eq_zero hqn' (c_mk (n + 2) (n + 1) rfl), zero_comp, comp_zero]
-  · simp only [hσ'_eq (show n + 1 = 0 + q by lia) (c_mk (n + 2) (n + 1) rfl), pow_zero,
-      Fin.mk_zero, one_zsmul, eqToHom_refl, comp_id, comp_sum,
-      AlternatingFaceMapComplex.obj_d_eq]
+  · simp only [hσ'_eq (show n + 1 = 0 + q by lia) (c_mk (n + 2) (n + 1) rfl), pow_zero, Fin.mk_zero,
+      one_zsmul, eqToHom_refl, comp_id, comp_sum, AlternatingFaceMapComplex.obj_d_eq]
     -- All terms of the sum but the first two are zeros
     rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fintype.sum_eq_zero, add_zero]
     · simp only [Fin.val_zero, Fin.val_succ, Fin.val_castSucc, zero_add, pow_zero, one_smul,

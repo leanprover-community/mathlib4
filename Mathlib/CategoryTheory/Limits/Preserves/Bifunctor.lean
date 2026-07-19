@@ -45,9 +45,8 @@ def Functor.mapCocone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ 
       naturality := by
         rintro ⟨j₁, j₂⟩ ⟨k₁, k₂⟩ ⟨f₁, f₂⟩
         dsimp
-        simp only [assoc, comp_id, NatTrans.naturality_assoc,
-          ← Functor.map_comp, NatTrans.naturality, const_obj_map, const_obj_obj,
-          ← NatTrans.comp_app_assoc, c₁.w] }
+        simp only [assoc, comp_id, NatTrans.naturality_assoc, ← Functor.map_comp,
+          NatTrans.naturality, const_obj_map, const_obj_obj, ← NatTrans.comp_app_assoc, c₁.w] }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a bifunctor `G : C₁ ⥤ C₂ ⥤ C`, diagrams `K₁ : J₁ ⥤ C₁` and `K₂ : J₂ ⥤ C₂`, and cones
@@ -63,8 +62,7 @@ def Functor.mapCone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ : 
       naturality := by
         rintro ⟨j₁, j₂⟩ ⟨k₁, k₂⟩ ⟨f₁, f₂⟩
         dsimp
-        simp only [assoc, id_comp, NatTrans.naturality_assoc,
-          ← Functor.map_comp,
+        simp only [assoc, id_comp, NatTrans.naturality_assoc, ← Functor.map_comp,
           ← NatTrans.comp_app_assoc, c₁.w, c₂.w] }
 
 namespace Limits

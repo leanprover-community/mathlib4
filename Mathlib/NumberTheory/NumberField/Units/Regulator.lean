@@ -251,9 +251,8 @@ theorem finrank_mul_regOfFamily_eq_det (u : Fin (rank K) → (𝓞 K)ˣ) (w' : I
     congr with i j
     rw [reindex_apply, submatrix_apply, submatrix_apply, of_apply, of_apply, dif_neg]
     rfl
-  · simp_rw [Equiv.forall_congr_left f, ← f.symm.sum_comp, reindex_apply, submatrix_apply,
-      of_apply, f.symm_symm, f.apply_symm_apply, Finset.sum_dite_irrel, ne_eq,
-      EmbeddingLike.apply_eq_iff_eq]
+  · simp_rw [Equiv.forall_congr_left f, ← f.symm.sum_comp, reindex_apply, submatrix_apply, of_apply,
+      f.symm_symm, f.apply_symm_apply, Finset.sum_dite_irrel, ne_eq, EmbeddingLike.apply_eq_iff_eq]
     intro _ h
     rw [dif_neg h, sum_mult_mul_log]
 

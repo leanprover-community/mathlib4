@@ -512,11 +512,9 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
   let el : Basis l R (l → R) := Pi.basisFun R l
   let em : Basis m R (m → R) := Pi.basisFun R m
   let en : Basis n R (n → R) := Pi.basisFun R n
-  rw [Matrix.rank_eq_finrank_range_toLin A el em,
-      Matrix.rank_eq_finrank_range_toLin B em en,
+  rw [Matrix.rank_eq_finrank_range_toLin A el em, Matrix.rank_eq_finrank_range_toLin B em en,
       ← Module.finrank_fintype_fun_eq_card R,
-      ← LinearMap.finrank_range_add_finrank_ker (Matrix.toLin em el A),
-      add_le_add_iff_left]
+      ← LinearMap.finrank_range_add_finrank_ker (Matrix.toLin em el A), add_le_add_iff_left]
   apply Submodule.finrank_mono
   rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
 

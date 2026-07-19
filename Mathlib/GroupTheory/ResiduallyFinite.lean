@@ -73,8 +73,7 @@ theorem residuallyFinite_iff_forall_finiteIndex :
 @[to_additive]
 theorem residuallyFinite_iff_exists_finiteIndex :
     ResiduallyFinite G ↔ ∀ g : G, g ≠ 1 → ∃ (H : Subgroup G), H.FiniteIndex ∧ g ∉ H := by
-  simp_rw [residuallyFinite_iff_forall_finiteIndex, ← Classical.not_imp, ← not_forall,
-    not_imp_not]
+  simp_rw [residuallyFinite_iff_forall_finiteIndex, ← Classical.not_imp, ← not_forall, not_imp_not]
 
 /-- If `G` is residually finite, for every pair of distinct elements `g`, `h` there exists a finite
 index normal subgroup `H` such that `g` and `h` differ in the quotient `G ⧸ H`. -/

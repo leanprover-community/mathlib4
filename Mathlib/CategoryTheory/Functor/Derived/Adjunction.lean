@@ -68,10 +68,9 @@ def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂
     have eq₃ := α.naturality (adj.unit.app X₁)
     dsimp at eq₁ eq₂ eq₃ ⊢
     simp only [Functor.map_comp] at eq₂
-    rw [Category.assoc, Category.assoc, Category.assoc, Category.comp_id,
-      Category.id_comp, Category.id_comp, Category.id_comp, ← eq₁, reassoc_of% eq₂,
-      hε (G.obj X₁), reassoc_of% eq₃, ← L₂.map_comp, adj.left_triangle_components,
-      Functor.map_id, Category.comp_id]
+    rw [Category.assoc, Category.assoc, Category.assoc, Category.comp_id, Category.id_comp,
+      Category.id_comp, Category.id_comp, ← eq₁, reassoc_of% eq₂, hε (G.obj X₁), reassoc_of% eq₃,
+      ← L₂.map_comp, adj.left_triangle_components, Functor.map_id, Category.comp_id]
   right_triangle_components := by
     suffices F'.leftUnitor.inv ≫ whiskerLeft F' η ≫ (Functor.associator _ _ _).inv ≫
       whiskerRight ε F' ≫ F'.rightUnitor.hom = 𝟙 _ from

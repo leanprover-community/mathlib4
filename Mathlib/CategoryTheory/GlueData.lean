@@ -472,8 +472,7 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
       subst hjk
       ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq]
     else
-      ext <;> simp [hij, Ne.symm hij, hik, Ne.symm hik, hjk, Ne.symm hjk,
-        pullback.map_comp_assoc]
+      ext <;> simp [hij, Ne.symm hij, hik, Ne.symm hik, hjk, Ne.symm hjk, pullback.map_comp_assoc]
 
 end GlueData'
 

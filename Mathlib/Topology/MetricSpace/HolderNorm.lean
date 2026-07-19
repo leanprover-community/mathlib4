@@ -308,9 +308,8 @@ lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (
     · rw [← (hf.holderWith.smul c).memHolder.coe_nnHolderNorm_eq_eHolderNorm, ← coe_div hc]
       refine HolderWith.eHolderNorm_le fun x₁ x₂ => ?_
       rw [coe_div hc, ← ENNReal.mul_div_right_comm,
-        ENNReal.le_div_iff_mul_le (Or.inl <| coe_ne_zero.2 hc) <| Or.inl coe_ne_top,
-        mul_comm, ← smul_eq_mul, ← ENNReal.smul_def, ← edist_smul₀, ← Pi.smul_apply,
-        ← Pi.smul_apply]
+        ENNReal.le_div_iff_mul_le (Or.inl <| coe_ne_zero.2 hc) <| Or.inl coe_ne_top, mul_comm,
+        ← smul_eq_mul, ← ENNReal.smul_def, ← edist_smul₀, ← Pi.smul_apply, ← Pi.smul_apply]
       exact hf.smul.holderWith x₁ x₂
   · rw [← eHolderNorm_eq_top] at hf
     rw [hf, mul_top <| coe_ne_zero.2 hc, eHolderNorm_eq_top, MemHolder.smul_iff hc]

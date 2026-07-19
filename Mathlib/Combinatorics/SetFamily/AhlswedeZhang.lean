@@ -220,8 +220,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
 @[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_notMem (by simp)
 
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
-  simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
-    id_eq]
+  simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff, id_eq]
   split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :

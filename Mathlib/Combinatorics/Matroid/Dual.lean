@@ -122,9 +122,8 @@ theorem dual_indep_iff_exists (hI : I ⊆ M.E := by aesop_mat) :
   rw [dual_indep_iff_exists', and_iff_right hI]
 
 theorem dual_dep_iff_forall : (M✶.Dep I) ↔ (∀ B, M.IsBase B → (I ∩ B).Nonempty) ∧ I ⊆ M.E := by
-  simp_rw [dep_iff, dual_indep_iff_exists', dual_ground, and_congr_left_iff, not_and,
-    not_exists, not_and, not_disjoint_iff_nonempty_inter, Classical.imp_iff_right_iff,
-    iff_true_intro Or.inl]
+  simp_rw [dep_iff, dual_indep_iff_exists', dual_ground, and_congr_left_iff, not_and, not_exists,
+    not_and, not_disjoint_iff_nonempty_inter, Classical.imp_iff_right_iff, iff_true_intro Or.inl]
 
 instance dual_finite [M.Finite] : M✶.Finite :=
   ⟨M.ground_finite⟩

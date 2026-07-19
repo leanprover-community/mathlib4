@@ -96,8 +96,7 @@ theorem Derivation.tensorProductTo_mul (D : Derivation R S M) (x y : S ⊗[R] S)
     rw [mul_add, map_add, map_add, map_add, add_smul, smul_add, h₁, h₂, add_add_add_comm]
   intro x y
   simp only [TensorProduct.tmul_mul_tmul, Derivation.tensorProductTo,
-    TensorProduct.AlgebraTensorModule.lift_apply,
-    TensorProduct.lmul'_apply_tmul]
+    TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lmul'_apply_tmul]
   dsimp
   rw [D.leibniz]
   simp only [smul_smul, smul_add, mul_comm (x * y) x₁, mul_right_comm x₁ x₂, ← mul_assoc]
@@ -210,9 +209,8 @@ def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
       convert!
         Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
           (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
-      simp only [Submodule.coe_add,
-        TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b, Submodule.coe_smul_of_tower,
-        smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+      simp only [Submodule.coe_add, TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b,
+        Submodule.coe_smul_of_tower, smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
       ring_nf }
 
 theorem KaehlerDifferential.D_apply (s : S) :
@@ -702,9 +700,8 @@ open IsScalarTower (toAlgHom)
 theorem KaehlerDifferential.map_surjective_of_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.map R S A B) := by
-  rw [← LinearMap.range_eq_top, _root_.eq_top_iff,
-    ← @Submodule.restrictScalars_top A B, ← span_range_derivation,
-    Submodule.restrictScalars_span _ _ h, Submodule.span_le]
+  rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← @Submodule.restrictScalars_top A B,
+    ← span_range_derivation, Submodule.restrictScalars_span _ _ h, Submodule.span_le]
   rintro _ ⟨x, rfl⟩
   obtain ⟨y, rfl⟩ := h x
   rw [← KaehlerDifferential.map_D R S A B]
@@ -811,8 +808,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       Algebra.linearMap_apply, map_one]
     rw [← Finsupp.sum_single x, Finsupp.sum, ← Finset.sum_fiberwise_of_maps_to
       (fun _ ↦ Finset.mem_image_of_mem (algebraMap A B))]
-    simp only [map_sum (s := x.support.image (algebraMap A B)),
-      TensorProduct.tmul_sum]
+    simp only [map_sum (s := x.support.image (algebraMap A B)), TensorProduct.tmul_sum]
     apply sum_mem
     intro c _
     simp only [LinearMap.mem_range]

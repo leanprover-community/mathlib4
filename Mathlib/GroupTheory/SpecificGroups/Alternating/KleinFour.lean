@@ -201,11 +201,9 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     rw [← Subgroup.Normal.quotient_commutative_iff_commutator_le]
     exact (isCyclic_of_prime_card this).isMulCommutative
   have comm_ne_bot : commutator (alternatingGroup α) ≠ ⊥ := by
-    rw [ne_eq, commutator_eq_bot_iff_center_eq_top,
-      center_eq_bot (le_of_eq hα4.symm)]
+    rw [ne_eq, commutator_eq_bot_iff_center_eq_top, center_eq_bot (le_of_eq hα4.symm)]
     apply @bot_ne_top _ _ _ ?_
-    rw [Subgroup.nontrivial_iff, ← Finite.one_lt_card_iff_nontrivial,
-      card_of_card_eq_four hα4]
+    rw [Subgroup.nontrivial_iff, ← Finite.one_lt_card_iff_nontrivial, card_of_card_eq_four hα4]
     simp
   obtain ⟨k, hk, hk'⟩ := Or.resolve_left (Subgroup.bot_or_exists_ne_one _) comm_ne_bot
   suffices hk22 : (k : Equiv.Perm α).cycleType = {2, 2} by

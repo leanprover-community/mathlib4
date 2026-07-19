@@ -60,8 +60,7 @@ theorem sign_discr :
   have : 0 ≤ (discr K : ℂ) ↔ Even (nrComplexPlaces K) := by
     rw [discr_eq_basisMatrix_det_sq, Complex.sq_nonneg_iff, ← conj_eq_iff_im, RingHom.map_det,
       RingHom.mapMatrix_apply, conj_basisMatrix, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
-      Function.Involutive.toPerm_symm, det_permute', mul_eq_right₀,
-      ComplexEmbedding.conjugate_sign]
+      Function.Involutive.toPerm_symm, det_permute', mul_eq_right₀, ComplexEmbedding.conjugate_sign]
     · simp only [Units.val_pow_eq_pow_val, Units.val_neg, Units.val_one, Int.reduceNeg,
         Int.cast_pow, Int.cast_neg, Int.cast_one]
       rw [neg_one_pow_eq_one_iff_even (by norm_num)]
@@ -126,8 +125,7 @@ theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ZLattice.covolume (mixedEmbedding.integerLattice K) =
       (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
-    measureReal_def,
-    volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
+    measureReal_def, volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
     ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
     Int.norm_eq_abs]
 

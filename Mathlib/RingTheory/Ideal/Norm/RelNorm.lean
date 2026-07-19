@@ -147,8 +147,7 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     apply_fun Algebra.norm K at has
     simp only [map_mul] at has
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
-      ← IsScalarTower.algebraMap_apply,
-      IsScalarTower.algebraMap_apply R K L,
+      ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R K L,
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
     simp only [map_mul, map_pow]

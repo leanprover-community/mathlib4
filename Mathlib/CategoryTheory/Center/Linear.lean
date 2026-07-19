@@ -88,8 +88,7 @@ def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
     smul_zero := fun a => by
       simp only [smulOfRingMorphism_smul_eq, comp_zero]
     zero_smul := fun a => by
-      simp only [smulOfRingMorphism_smul_eq, map_zero,
-        zero_app, zero_comp]
+      simp only [smulOfRingMorphism_smul_eq, map_zero, zero_app, zero_comp]
     smul_add := fun a b => by
       simp [smulOfRingMorphism_smul_eq]
     add_smul := fun a b f => by

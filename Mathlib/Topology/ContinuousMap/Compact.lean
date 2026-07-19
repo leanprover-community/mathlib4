@@ -136,8 +136,7 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   simp only [mkOfCompact_apply]
 
 theorem dist_eq_iSup : dist f g = ⨆ x, dist (f x) (g x) := by
-  simp [← isometryEquivBoundedOfCompact α β |>.dist_eq f g,
-    BoundedContinuousFunction.dist_eq_iSup]
+  simp [← isometryEquivBoundedOfCompact α β |>.dist_eq f g, BoundedContinuousFunction.dist_eq_iSup]
 
 theorem nndist_eq_iSup : nndist f g = ⨆ x, nndist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.nndist_eq f g,

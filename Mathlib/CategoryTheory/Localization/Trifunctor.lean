@@ -126,8 +126,7 @@ theorem lift₃NatTrans_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
         (((Lifting₃.iso L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₂').inv.app X₁).app X₂).app X₃ := by
   dsimp [lift₃NatTrans, fullyFaithfulUncurry₃, Equivalence.fullyFaithfulFunctor]
   simp only [currying₃_unitIso_hom_app_app_app_app, Functor.id_obj,
-    currying₃_unitIso_inv_app_app_app_app, Functor.comp_obj,
-    Category.comp_id, Category.id_comp]
+    currying₃_unitIso_inv_app_app_app_app, Functor.comp_obj, Category.comp_id, Category.id_comp]
   exact liftNatTrans_app _ _ _ _ (uncurry₃.obj F₁') (uncurry₃.obj F₂') (uncurry₃.map τ) ⟨X₁, X₂, X₃⟩
 
 variable {F₁' F₂'} in

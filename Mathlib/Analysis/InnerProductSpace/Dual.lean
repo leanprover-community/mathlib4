@@ -150,8 +150,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
         apply ContinuousLinearMap.ext
         intro x
         have h₁ : ℓ z • x - ℓ x • z ∈ Y := by
-          rw [LinearMap.mem_ker, map_sub, map_smul, map_smul, smul_eq_mul,
-            smul_eq_mul, mul_comm]
+          rw [LinearMap.mem_ker, map_sub, map_smul, map_smul, smul_eq_mul, smul_eq_mul, mul_comm]
           exact sub_self (ℓ x * ℓ z)
         have h₂ : ℓ z * ⟪z, x⟫ = ℓ x * ⟪z, z⟫ :=
           haveI h₃ :=

@@ -331,11 +331,10 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
       show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
     refine Part.ext fun x => ?_
-    simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.bind_some,
-      cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
-      List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
-      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind,
-      List.tail_cons, true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
+    simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.bind_some, cons_eval, comp_eval,
+      fix_eval, tail_eval, succ_eval, zero'_eval, List.headI_cons, pred_eval, Part.map_some,
+      false_eq_decide_iff, Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind, List.tail_cons,
+      true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix

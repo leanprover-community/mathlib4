@@ -343,8 +343,7 @@ theorem laplacianWithin_smul (v : 𝕜) (hf : ContDiffWithinAt ℝ 2 f s x) (hs 
     (hx : x ∈ s) :
     (Δ[s] (v • f)) x = v • (Δ[s] f) x := by
   simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx,
-    iteratedFDerivWithin_const_smul_apply hf hs hx,
-    Finset.smul_sum]
+    iteratedFDerivWithin_const_smul_apply hf hs hx, Finset.smul_sum]
 
 /-- The Laplacian commutes with scalar multiplication. -/
 theorem laplacian_smul (v : 𝕜) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = v • (Δ f) x := by

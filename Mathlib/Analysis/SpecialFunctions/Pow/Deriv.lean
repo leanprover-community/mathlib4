@@ -183,9 +183,8 @@ expected by lemmas like `HasDerivAt.cpow`. -/
 private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulRight f' +
     (f x ^ g x * log (f x)) • (1 : ℂ →L[ℂ] ℂ).smulRight g') 1 =
       g x * f x ^ (g x - 1) * f' + f x ^ g x * log (f x) * g' := by
-  simp only [smul_eq_mul, one_mul, one_apply_eq_self,
-    ContinuousLinearMap.smulRight_apply, add_apply, Pi.smul_apply,
-    FunLike.coe_smul']
+  simp only [smul_eq_mul, one_mul, one_apply_eq_self, ContinuousLinearMap.smulRight_apply,
+    add_apply, Pi.smul_apply, FunLike.coe_smul']
 
 nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasStrictDerivAt (fun x => f x ^ g x)
@@ -738,8 +737,7 @@ theorem derivWithin_const_rpow (ha : 0 < a) (hf : DifferentiableWithinAt ℝ f s
   by_cases hxs : UniqueDiffWithinAt ℝ s x
   · exact (hf.hasDerivWithinAt.const_rpow ha).derivWithin hxs
   · rw [derivWithin_zero_of_not_uniqueDiffWithinAt hxs,
-      derivWithin_zero_of_not_uniqueDiffWithinAt hxs,
-      mul_zero, zero_mul]
+      derivWithin_zero_of_not_uniqueDiffWithinAt hxs, mul_zero, zero_mul]
 
 @[simp]
 theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :

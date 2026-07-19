@@ -92,9 +92,8 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
   use (Units.mk0 (aux f z) hz)⁻¹
   intro g
 /- Then the equality follows from the hypothesis that `f` is a 1-cocycle. -/
-  simp only [IsMulCocycle₁, AlgEquiv.smul_units_def,
-    map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
-    Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
+  simp only [IsMulCocycle₁, AlgEquiv.smul_units_def, map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul,
+    Units.ext_iff, this, Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]
   exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
     (Group.mulLeft_bijective g) _ _ (fun i => rfl))
@@ -150,10 +149,9 @@ theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
     with ⟨y, hy⟩
   use toMul <| toAdditive y
   have := Units.ext_iff.1 congr(toMul <| toAdditive $hy)
-  simp only [sub_hom, hom_id,
-    Representation.IntertwiningMap.sub_toLinearMap, Representation.IntertwiningMap.toLinearMap_id,
-    LinearMap.sub_apply, Representation.IntertwiningMap.coe_toLinearMap, applyAsHom_apply,
-    LinearMap.id_coe, id_eq,
+  simp only [sub_hom, hom_id, Representation.IntertwiningMap.sub_toLinearMap,
+    Representation.IntertwiningMap.toLinearMap_id, LinearMap.sub_apply,
+    Representation.IntertwiningMap.coe_toLinearMap, applyAsHom_apply, LinearMap.id_coe, id_eq,
     toAdditive_symm_apply, toAdditive_apply, toMul_ofMul, IsUnit.unit_spec, xu] at this
   rw [← this, toMul_sub]
   simp

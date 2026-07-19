@@ -134,12 +134,11 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     dsimp at r_f s_g ⊢
     simp only [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
       mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by lia),
-      cocycleOfDegreewiseSplit, r_f, Int.reduceNeg, Cochain.ofHom_v, sub_comp, assoc,
-      Hom.comm, comp_sub, mappingCone.inl_v_fst_v_assoc, mappingCone.inl_v_snd_v_assoc,
-      shiftFunctor_obj_X', zero_comp, sub_zero, homOfDegreewiseSplit_f,
-      mappingCone.inr_f_fst_v_assoc, comp_zero, zero_sub, mappingCone.inr_f_snd_v_assoc,
-      neg_neg, mappingCone.inr_f_d_assoc, shiftFunctor_obj_d',
-      Int.negOnePow_one, neg_comp, sub_neg_eq_add, zero_add, and_true,
+      cocycleOfDegreewiseSplit, r_f, Int.reduceNeg, Cochain.ofHom_v, sub_comp, assoc, Hom.comm,
+      comp_sub, mappingCone.inl_v_fst_v_assoc, mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X',
+      zero_comp, sub_zero, homOfDegreewiseSplit_f, mappingCone.inr_f_fst_v_assoc, comp_zero,
+      zero_sub, mappingCone.inr_f_snd_v_assoc, neg_neg, mappingCone.inr_f_d_assoc,
+      shiftFunctor_obj_d', Int.negOnePow_one, neg_comp, sub_neg_eq_add, zero_add, and_true,
       Units.neg_smul, one_smul, comp_neg, ShortComplex.map_X₂, eval_obj, Cocycle.mk_coe,
       Cochain.mk_v]
     simp only [← S.g.comm_assoc, reassoc_of% s_g, comp_id]

@@ -221,8 +221,7 @@ theorem restrict_withDensity {s : Set α} (hs : MeasurableSet s) (f : α → ℝ
 theorem restrict_withDensity' [SFinite μ] (s : Set α) (f : α → ℝ≥0∞) :
     (μ.withDensity f).restrict s = (μ.restrict s).withDensity f := by
   ext1 t ht
-  rw [restrict_apply ht, withDensity_apply _ ht, withDensity_apply' _ (t ∩ s),
-    restrict_restrict ht]
+  rw [restrict_apply ht, withDensity_apply _ ht, withDensity_apply' _ (t ∩ s), restrict_restrict ht]
 
 lemma trim_withDensity {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
@@ -257,8 +256,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     simp only [Pi.zero_apply] at A
     convert! A using 2
     ext x
-    simp only [and_comm, exists_prop, mem_inter_iff, mem_ofPred_eq,
-      not_forall]
+    simp only [and_comm, exists_prop, mem_inter_iff, mem_ofPred_eq, not_forall]
   · intro hs
     let t := toMeasurable μ ({ x | f x ≠ 0 } ∩ s)
     have A : s ⊆ t ∪ { x | f x = 0 } := by
@@ -358,8 +356,7 @@ theorem dirac_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) 
     (dirac a).withDensity f = f a • dirac a := by
   ext s hs
   classical
-  simp [withDensity_apply f hs, setLIntegral_dirac' hf hs, dirac_apply' _ hs,
-    Set.indicator]
+  simp [withDensity_apply f hs, setLIntegral_dirac' hf hs, dirac_apply' _ hs, Set.indicator]
 
 theorem dirac_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
     (dirac a).withDensity f = f a • dirac a := by
@@ -775,9 +772,8 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     μ.withDensity f ∗ₘ μ.withDensity g = μ.withDensity (f ⋆ₘₗ[μ] g) := by
   refine ext_of_lintegral _ fun φ hφ ↦ ?_
   rw [lintegral_mconv_eq_lintegral_prod hφ, prod_withDensity₀ hf hg,
-    lintegral_withDensity_eq_lintegral_mul₀,
-    lintegral_withDensity_eq_lintegral_mul₀, lintegral_prod,
-    lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
+    lintegral_withDensity_eq_lintegral_mul₀, lintegral_withDensity_eq_lintegral_mul₀,
+    lintegral_prod, lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
     lintegral_lintegral_swap]
   · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
     conv in (∫⁻ _, _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]

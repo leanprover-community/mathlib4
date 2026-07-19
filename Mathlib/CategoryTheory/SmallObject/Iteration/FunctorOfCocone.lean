@@ -80,8 +80,7 @@ lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (
       · rw [dif_pos hi₃', dif_pos (hi₂₃.trans hi₃'), dif_pos hi₃', assoc, assoc,
           Iso.inv_hom_id_assoc, ← Functor.map_comp_assoc, homOfLE_comp]
       · rw [dif_neg (by simp), dif_pos (hi₁₂.trans hi₂₃), dif_pos hi₂₃, dif_neg (by simp),
-          dif_pos hi₂₃, eqToHom_refl, comp_id, assoc, assoc, Iso.inv_hom_id_assoc,
-          Cocone.w_assoc]
+          dif_pos hi₂₃, eqToHom_refl, comp_id, assoc, assoc, Iso.inv_hom_id_assoc, Cocone.w_assoc]
     · rw [map_id, comp_id]
   · rw [map_id, id_comp]
 

@@ -113,11 +113,9 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
     simpa [← SimplicialObject.δ_naturality] using
       congr_app (drop.mapIso e).inv_hom_id (op ⦋n⦌)
   s_comp_δ n i := by
-    simp [← SimplicialObject.δ_naturality, s_comp_δ_assoc,
-      ← SimplicialObject.δ_naturality_assoc]
+    simp [← SimplicialObject.δ_naturality, s_comp_δ_assoc, ← SimplicialObject.δ_naturality_assoc]
   s_comp_σ n i := by
-    simp [← SimplicialObject.σ_naturality, s_comp_σ_assoc,
-      ← SimplicialObject.σ_naturality_assoc]
+    simp [← SimplicialObject.σ_naturality, s_comp_σ_assoc, ← SimplicialObject.σ_naturality_assoc]
 
 variable {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
 
@@ -193,8 +191,7 @@ def homotopy : SimplicialObject.Homotopy (X.hom ≫ ed.section_) (𝟙 X.left) w
       exact ⟨l, by grind⟩
     have := ed.s_comp_δ k ⟨l + 1, by grind⟩
     dsimp at this ⊢
-    rw [h_eq_assoc _ _ (k + 1), h_eq _ _ k,
-      X.left.σ₀Iter_δ' _ _ ⟨l + 2, by grind⟩ (by grind),
+    rw [h_eq_assoc _ _ (k + 1), h_eq _ _ k, X.left.σ₀Iter_δ' _ _ ⟨l + 2, by grind⟩ (by grind),
       reassoc_of% this, ← X.left.δ_δ₀Iter'_assoc _ _ i (by grind)]
     dsimp
   h_succ_comp_δ_castSucc_succ {n} i := by
@@ -434,8 +431,7 @@ noncomputable def homotopyEquiv [Preadditive C] [HasZeroObject C]
         | succ i =>
           rw [Homotopy.prevD_chainComplex, Homotopy.dNext_succ_chainComplex]
           simp [Fin.sum_univ_succ (n := i + 2), s_comp_δ₀, Preadditive.sum_comp,
-            Preadditive.comp_sum,
-            s_comp_δ, pow_succ] }
+            Preadditive.comp_sum, s_comp_δ, pow_succ] }
 
 end ExtraDegeneracy
 

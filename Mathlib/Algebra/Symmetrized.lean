@@ -251,11 +251,9 @@ set_option backward.isDefEq.respectTransparency false in
 instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
   { SymAlg.addCommMonoid with
     zero_mul := fun _ => by
-      rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
-        mul_zero, sym_zero]
+      rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero, mul_zero, sym_zero]
     mul_zero := fun _ => by
-      rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
-        mul_zero, sym_zero]
+      rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero, mul_zero, sym_zero]
     mul_one := fun _ => by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
     one_mul := fun _ => by

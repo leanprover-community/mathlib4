@@ -61,8 +61,7 @@ noncomputable instance : (extendScalars f).Monoidal :=
         ext m
         dsimp
         rw [MonoidalCategory.leftUnitor_inv_apply]
-        erw [AlgebraTensorModule.distribBaseChange_tmul,
-          MonoidalCategory.whiskerRight_apply,
+        erw [AlgebraTensorModule.distribBaseChange_tmul, MonoidalCategory.whiskerRight_apply,
           AlgebraTensorModule.rid_tmul]
         rw [one_smul]
         rfl)
@@ -70,8 +69,7 @@ noncomputable instance : (extendScalars f).Monoidal :=
         ext m
         dsimp
         rw [MonoidalCategory.rightUnitor_inv_apply]
-        erw [AlgebraTensorModule.distribBaseChange_tmul,
-          MonoidalCategory.whiskerLeft_apply,
+        erw [AlgebraTensorModule.distribBaseChange_tmul, MonoidalCategory.whiskerLeft_apply,
           AlgebraTensorModule.rid_tmul]
         rw [one_smul]
         rfl))
@@ -132,8 +130,7 @@ lemma restrictScalars_μ_tmul (M₁ M₂ : ModuleCat S) (m₁ : M₁) (m₂ : M�
   dsimp [Adjunction.rightAdjointLaxMonoidal_μ]
   rw [extendRestrictScalarsAdj_homEquiv_apply]
   dsimp
-  rw [extendScalars_δ_tmul, tensorHom_tmul,
-    extendRestrictScalarsAdj_counit_app_apply_one_tmul,
+  rw [extendScalars_δ_tmul, tensorHom_tmul, extendRestrictScalarsAdj_counit_app_apply_one_tmul,
     extendRestrictScalarsAdj_counit_app_apply_one_tmul]
 
 end ModuleCat

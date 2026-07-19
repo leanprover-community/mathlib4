@@ -193,8 +193,7 @@ noncomputable def coinvariantsTensorIndHom :
       fun g ↦ by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]
         using! Coinvariants.sub_mem_ker _ _) fun _ ↦ by
     simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V, tensor_ρ, res_obj_ρ,
-      Functor.postcompose₂_obj_obj_obj_obj, coinvariantsFunctor_obj_carrier,
-      tprod_apply, ind_apply]
+      Functor.postcompose₂_obj_obj_obj_obj, coinvariantsFunctor_obj_carrier, tprod_apply, ind_apply]
     ext; simp
 
 set_option backward.defeqAttrib.useBackward true in

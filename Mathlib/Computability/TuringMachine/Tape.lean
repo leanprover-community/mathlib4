@@ -589,8 +589,7 @@ theorem Tape.map_move {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ
 
 theorem Tape.map_mk' {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (L R : ListBlank Γ) :
     (Tape.mk' L R).map f = Tape.mk' (L.map f) (R.map f) := by
-  simp only [Tape.mk', Tape.map, ListBlank.head_map,
-    ListBlank.tail_map]
+  simp only [Tape.mk', Tape.map, ListBlank.head_map, ListBlank.tail_map]
 
 theorem Tape.map_mk₂ {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (L R : List Γ) :
     (Tape.mk₂ L R).map f = Tape.mk₂ (L.map f) (R.map f) := by

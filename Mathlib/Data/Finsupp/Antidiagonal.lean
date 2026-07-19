@@ -78,8 +78,7 @@ theorem image_prodMap_embDomain_antidiagonal {β : Type*} [DecidableEq β] (f : 
     (y : α →₀ ℕ) : image (Prod.map (embDomain f) (embDomain f)) (antidiagonal y) =
       antidiagonal (embDomain f y) := by
   ext ⟨u, v⟩
-  simp only [mem_image, mem_antidiagonal, Prod.exists, Prod.map_apply,
-    Prod.mk.injEq]
+  simp only [mem_image, mem_antidiagonal, Prod.exists, Prod.map_apply, Prod.mk.injEq]
   refine ⟨fun ⟨w, z, h, hw, hz⟩ ↦ ?_, fun h ↦ ⟨u.comapDomain f f.injective.injOn,
     ⟨v.comapDomain f f.injective.injOn, ?_, ?_, ?_⟩⟩⟩
   · rw [← hw, ← hz, ← embDomain_add, h]

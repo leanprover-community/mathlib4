@@ -441,8 +441,7 @@ lemma mem_nonDegenerate_iff_strictMono {n d : ℕ} (s : (Δ[n] : SSet.{u}) _⦋d
 
 lemma mem_nonDegenerate_iff_mono {n d : ℕ} (s : (Δ[n] : SSet.{u}) _⦋d⦌) :
     s ∈ Δ[n].nonDegenerate d ↔ Mono (objEquiv s) := by
-  rw [mem_nonDegenerate_iff_strictMono,
-    SimplexCategory.mono_iff_injective]
+  rw [mem_nonDegenerate_iff_strictMono, SimplexCategory.mono_iff_injective]
   refine ⟨fun h ↦ h.injective, fun h ↦ ?_⟩
   rw [Fin.strictMono_iff_lt_succ]
   intro i
@@ -551,9 +550,8 @@ lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_pred {n : ℕ
     Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
       (faceSingletonComplIso.{u} i).inv =
     (facePairComplIso i j h).inv ≫ stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) := by
-  simp [← cancel_mono (faceSingletonComplIso i).hom,
-    ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom,
-    facePairComplIso_hom_ι']
+  simp [← cancel_mono (faceSingletonComplIso i).hom, ← cancel_mono (Subcomplex.ι _),
+    ← cancel_epi (facePairComplIso i j h).hom, facePairComplIso_hom_ι']
 
 @[reassoc]
 lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_castPred
@@ -561,9 +559,8 @@ lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_castPred
     Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
       (faceSingletonComplIso.{u} j).inv =
     (facePairComplIso i j h).inv ≫ stdSimplex.δ (i.castPred (Fin.ne_last_of_lt h)) := by
-  simp [← cancel_mono (faceSingletonComplIso j).hom,
-    ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom,
-    facePairComplIso_hom_ι]
+  simp [← cancel_mono (faceSingletonComplIso j).hom, ← cancel_mono (Subcomplex.ι _),
+    ← cancel_epi (facePairComplIso i j h).hom, facePairComplIso_hom_ι]
 
 /-- Given `i : Fin (n + 1)`, this is the isomorphism from `Δ[0]` to the face
 of `Δ[n]` corresponding to `{i}`. -/

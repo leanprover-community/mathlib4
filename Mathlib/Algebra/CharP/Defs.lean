@@ -139,8 +139,7 @@ lemma «exists» : ∃ p, CharP R p :=
                     H2⟩)),
           fun H1 => by
           rw [← Nat.mul_div_cancel' H1, Nat.cast_mul,
-            of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
-            zero_mul]⟩⟩⟩
+            of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)), zero_mul]⟩⟩⟩
 
 lemma existsUnique : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R

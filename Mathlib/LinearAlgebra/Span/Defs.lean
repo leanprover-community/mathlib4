@@ -365,8 +365,7 @@ theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : 
 theorem mem_sSup_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
     (hdir : DirectedOn (· ≤ ·) s) : z ∈ sSup s ↔ ∃ y ∈ s, z ∈ y := by
   have : Nonempty s := hs.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists,
-    exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists, exists_prop]
 
 @[norm_cast, simp]
 theorem coe_iSup_of_chain (a : ℕ →o Submodule R M) : (↑(⨆ k, a k) : Set M) = ⋃ k, (a k : Set M) :=

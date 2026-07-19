@@ -190,8 +190,7 @@ theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
     exact fun i => Span.repr R w ⟨v i, s (mem_range_self i)⟩
   · intro f g h
     apply_fun linearCombination R ((↑) : w → M) at h
-    simp only [linearCombination_linearCombination,
-               Span.finsupp_linearCombination_repr] at h
+    simp only [linearCombination_linearCombination, Span.finsupp_linearCombination_repr] at h
     exact i h
 
 /-- If `R` satisfies the strong rank condition,
@@ -294,8 +293,7 @@ theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearInde
     exact fun i ↦ Span.repr R w ⟨v i, s ▸ trivial⟩
   · intro f g h
     apply_fun linearCombination R ((↑) : w → M) at h
-    simp only [linearCombination_linearCombination,
-               Span.finsupp_linearCombination_repr] at h
+    simp only [linearCombination_linearCombination, Span.finsupp_linearCombination_repr] at h
     exact i h
 
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are

@@ -213,16 +213,14 @@ lemma Exact.map_of_preservesLeftHomologyOf (h : S.Exact) (F : C ⥤ D)
     [(S.map F).HasHomology] : (S.map F).Exact := by
   have := h.hasHomology
   rw [S.leftHomologyData.exact_iff, IsZero.iff_id_eq_zero] at h
-  rw [S.leftHomologyData.exact_map_iff F, IsZero.iff_id_eq_zero,
-    ← F.map_id, h, F.map_zero]
+  rw [S.leftHomologyData.exact_map_iff F, IsZero.iff_id_eq_zero, ← F.map_id, h, F.map_zero]
 
 lemma Exact.map_of_preservesRightHomologyOf (h : S.Exact) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [F.PreservesRightHomologyOf S]
     [(S.map F).HasHomology] : (S.map F).Exact := by
   have : S.HasHomology := h.hasHomology
   rw [S.rightHomologyData.exact_iff, IsZero.iff_id_eq_zero] at h
-  rw [S.rightHomologyData.exact_map_iff F, IsZero.iff_id_eq_zero,
-    ← F.map_id, h, F.map_zero]
+  rw [S.rightHomologyData.exact_map_iff F, IsZero.iff_id_eq_zero, ← F.map_id, h, F.map_zero]
 
 lemma Exact.map (h : S.Exact) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
@@ -239,8 +237,7 @@ lemma exact_map_iff_of_faithful [S.HasHomology]
   constructor
   · intro h
     rw [S.leftHomologyData.exact_iff, IsZero.iff_id_eq_zero]
-    rw [(S.leftHomologyData.map F).exact_iff, IsZero.iff_id_eq_zero,
-      LeftHomologyData.map_H] at h
+    rw [(S.leftHomologyData.map F).exact_iff, IsZero.iff_id_eq_zero, LeftHomologyData.map_H] at h
     apply F.map_injective
     rw [F.map_id, F.map_zero, h]
   · intro h
@@ -254,8 +251,7 @@ lemma Exact.comp_eq_zero (h : S.Exact) {X Y : C} {a : X ⟶ S.X₂} (ha : a ≫ 
   have := h.hasHomology
   have eq := h
   rw [exact_iff_iCycles_pOpcycles_zero] at eq
-  rw [← S.liftCycles_i a ha, ← S.p_descOpcycles b hb, assoc, reassoc_of% eq,
-    zero_comp, comp_zero]
+  rw [← S.liftCycles_i a ha, ← S.p_descOpcycles b hb, assoc, reassoc_of% eq, zero_comp, comp_zero]
 
 lemma Exact.isZero_of_both_zeros (ex : S.Exact) (hf : S.f = 0) (hg : S.g = 0) :
     IsZero S.X₂ :=
@@ -653,8 +649,7 @@ def ofIso {S₁ S₂ : ShortComplex C} (s : S₁.Splitting) (e : S₁ ≅ S₂) 
   id := by
     have eq := e.inv.τ₂ ≫= s.id =≫ e.hom.τ₂
     rw [id_comp, ← comp_τ₂, e.inv_hom_id, id_τ₂] at eq
-    rw [← eq, assoc, assoc, add_comp, assoc, assoc, comp_add,
-      e.hom.comm₁₂, e.inv.comm₂₃_assoc]
+    rw [← eq, assoc, assoc, add_comp, assoc, assoc, comp_add, e.hom.comm₁₂, e.inv.comm₂₃_assoc]
 
 /-- The obvious splitting of the short complex `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂`. -/
 noncomputable def ofHasBinaryBiproduct (X₁ X₂ : C) [HasBinaryBiproduct X₁ X₂] :

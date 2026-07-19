@@ -317,8 +317,7 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
             simp [Function.flip_def, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
       _ = toList xs := by
             rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
-            simp only [toList, foldl, Foldl.get, foldl.ofFreeMonoid_comp_of,
-              Function.comp_apply]
+            simp only [toList, foldl, Foldl.get, foldl.ofFreeMonoid_comp_of, Function.comp_apply]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :

@@ -25,9 +25,8 @@ variable
 theorem AffineSpace.asymptoticNhds_le_cobounded {v : V} (hv : v ≠ 0) :
     asymptoticNhds ℝ P v ≤ cobounded P := by
   have ⟨p⟩ : Nonempty P := inferInstance
-  rw [← tendsto_id', ← Metric.tendsto_dist_right_atTop_iff p,
-    asymptoticNhds_eq_smul_vadd v p, vadd_pure, ← map₂_smul, ← map_prod_eq_map₂, map_map,
-    tendsto_map'_iff]
+  rw [← tendsto_id', ← Metric.tendsto_dist_right_atTop_iff p, asymptoticNhds_eq_smul_vadd v p,
+    vadd_pure, ← map₂_smul, ← map_prod_eq_map₂, map_map, tendsto_map'_iff]
   change Tendsto (fun x : ℝ × V => dist (x.1 • x.2 +ᵥ p) p) (atTop ×ˢ 𝓝 v) atTop
   simp_rw [dist_vadd_left, norm_smul]
   exact Tendsto.atTop_mul_pos (norm_pos_iff.mpr hv)

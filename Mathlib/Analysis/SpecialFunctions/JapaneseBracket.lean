@@ -130,8 +130,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
       simp only [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
     -- The integral over the constant zero function is finite:
-    rw [setLIntegral_congr_fun measurableSet_Ioi h_int'', lintegral_const 0,
-      zero_mul]
+    rw [setLIntegral_congr_fun measurableSet_Ioi h_int'', lintegral_const 0, zero_mul]
     exact WithTop.top_pos
 
 theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :

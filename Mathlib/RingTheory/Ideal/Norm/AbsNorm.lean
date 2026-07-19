@@ -93,8 +93,7 @@ This is essentially just a repackaging of the Chinese Remainder Theorem.
 theorem cardQuot_mul_of_coprime
     {I J : Ideal S} (coprime : IsCoprime I J) : cardQuot (I * J) = cardQuot I * cardQuot J := by
   rw [cardQuot_apply, cardQuot_apply, cardQuot_apply,
-    Nat.card_congr (Ideal.quotientMulEquivQuotientProd I J coprime).toEquiv,
-    Nat.card_prod]
+    Nat.card_congr (Ideal.quotientMulEquivQuotientProd I J coprime).toEquiv, Nat.card_prod]
 
 /-- If the `d` from `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`,
 then so are the `c`s, up to `P ^ (i + 1)`.

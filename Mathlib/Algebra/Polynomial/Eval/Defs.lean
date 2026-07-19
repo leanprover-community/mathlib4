@@ -587,8 +587,7 @@ protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
   Polynomial.induction_on p (by simp)
     (by
-      simp +contextual only [Polynomial.map_add, add_comp, forall_const,
-        imp_true_iff])
+      simp +contextual only [Polynomial.map_add, add_comp, forall_const, imp_true_iff])
     (by
       simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
         eval₂_mul_X, imp_true_iff, map_X, Polynomial.map_mul])

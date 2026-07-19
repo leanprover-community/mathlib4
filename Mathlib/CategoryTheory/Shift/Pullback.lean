@@ -220,8 +220,7 @@ instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     ext
     dsimp [PullbackShift.natTrans]
     simp only [commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
-      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, whiskerRight_app, whiskerLeft_app,
-      assoc]
+      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, whiskerRight_app, whiskerLeft_app, assoc]
     rw [← τ.naturality_assoc]
     simp [← NatTrans.shift_app_comm_assoc]
 

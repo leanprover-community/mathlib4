@@ -453,9 +453,8 @@ theorem dist_iteratedFDerivWithin_one (f g : E → F) {y}
     (hsx : UniqueDiffWithinAt 𝕜 s x) (hyt : UniqueDiffWithinAt 𝕜 t y) :
     dist (iteratedFDerivWithin 𝕜 1 f s x) (iteratedFDerivWithin 𝕜 1 g t y)
       = dist (fderivWithin 𝕜 f s x) (fderivWithin 𝕜 g t y) := by
-  simp only [iteratedFDerivWithin_succ_eq_comp_left, comp_apply,
-    LinearIsometryEquiv.dist_map, iteratedFDerivWithin_zero_eq_comp,
-    LinearIsometryEquiv.comp_fderivWithin, hsx, hyt]
+  simp only [iteratedFDerivWithin_succ_eq_comp_left, comp_apply, LinearIsometryEquiv.dist_map,
+    iteratedFDerivWithin_zero_eq_comp, LinearIsometryEquiv.comp_fderivWithin, hsx, hyt]
   apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.postcomp.dist_map
 
 @[simp]
@@ -736,8 +735,7 @@ theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Conti
 
 theorem hasFTaylorSeriesUpTo_zero_iff :
     HasFTaylorSeriesUpTo 0 f p ↔ Continuous f ∧ ∀ x, (p x 0).curry0 = f x := by
-  simp [hasFTaylorSeriesUpToOn_univ_iff.symm, continuousOn_univ,
-    hasFTaylorSeriesUpToOn_zero_iff]
+  simp [hasFTaylorSeriesUpToOn_univ_iff.symm, continuousOn_univ, hasFTaylorSeriesUpToOn_zero_iff]
 
 theorem hasFTaylorSeriesUpTo_top_iff (hN : ∞ ≤ N) :
     HasFTaylorSeriesUpTo N f p ↔ ∀ n : ℕ, HasFTaylorSeriesUpTo n f p := by

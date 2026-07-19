@@ -772,9 +772,8 @@ theorem mem_support_cycle_of_cycle {g d c : Perm α}
   simp only [mem_support, not_iff_not]
   by_cases h : c = d
   · rw [← h, EmbeddingLike.apply_eq_iff_eq]
-  · rw [← Perm.mul_apply,
-      Commute.eq (cycleFactorsFinset_mem_commute g hc hd h),
-      mul_apply, EmbeddingLike.apply_eq_iff_eq]
+  · rw [← Perm.mul_apply, Commute.eq (cycleFactorsFinset_mem_commute g hc hd h), mul_apply,
+      EmbeddingLike.apply_eq_iff_eq]
 
 /-- If a permutation is a cycle of `g`, then its support is invariant under `g`. -/
 theorem mem_cycleFactorsFinset_support {g c : Perm α} (hc : c ∈ g.cycleFactorsFinset) (a : α) :

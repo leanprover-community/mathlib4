@@ -167,8 +167,7 @@ lemma Ring.krullDimLE_one_iff_of_isPrime_bot [(⊥ : Ideal R).IsPrime] :
   let : OrderBot (PrimeSpectrum R) := { bot := ⟨⊥, ‹_›⟩, bot_le I := bot_le (a := I.1) }
   simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_one,
     Order.krullDim_le_one_iff_forall_isMax, (PrimeSpectrum.equivSubtype R).forall_congr_left,
-    Subtype.forall, PrimeSpectrum.isMax_iff, forall_comm (α := _ ≠ ⊥),
-    ne_eq, PrimeSpectrum.ext_iff]
+    Subtype.forall, PrimeSpectrum.isMax_iff, forall_comm (α := _ ≠ ⊥), ne_eq, PrimeSpectrum.ext_iff]
   rfl
 
 lemma Ring.krullDimLE_one_iff_of_noZeroDivisors [NoZeroDivisors R] :

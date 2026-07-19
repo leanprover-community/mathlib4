@@ -99,8 +99,7 @@ instance liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 :
 
 theorem inertiaDeg_span_zeta_sub_one : inertiaDeg (span {hζ.toInteger - 1}) ℤ = 1 := by
   have : IsMaximal (span {hζ.toInteger - 1}) := .of_liesOver_isMaximal _ 𝒑
-  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, pow_inertiaDeg,
-    absNorm_span_zeta_sub_one]
+  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, pow_inertiaDeg, absNorm_span_zeta_sub_one]
 
 attribute [local instance] FractionRing.liftAlgebra in
 theorem map_eq_span_zeta_sub_one_pow :
@@ -140,10 +139,9 @@ theorem ncard_primesOver_of_prime_pow :
   have hζ := hK.zeta_spec
   have := liesOver_span_zeta_sub_one p k hζ
   rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) Gal(K/ℚ),
-    inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) Gal(K/ℚ),
-    inertiaDeg_span_zeta_sub_one,
-    ramificationIdx_span_zeta_sub_one, mul_one, ← Nat.totient_prime_pow_succ hp.out,
-    ← finrank _ K, IsGaloisGroup.card_eq_finrank Gal(K/ℚ) ℚ K, Nat.mul_eq_right] at h_main
+    inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) Gal(K/ℚ), inertiaDeg_span_zeta_sub_one,
+    ramificationIdx_span_zeta_sub_one, mul_one, ← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
+    IsGaloisGroup.card_eq_finrank Gal(K/ℚ) ℚ K, Nat.mul_eq_right] at h_main
   exact Module.finrank_pos.ne'
 
 theorem eq_span_zeta_sub_one_of_liesOver (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :

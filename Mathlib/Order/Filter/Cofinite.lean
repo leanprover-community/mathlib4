@@ -321,8 +321,7 @@ theorem existsUnique_eq_principal_sup_free :
   · exact boundary_le_cofinite f
   · rw [disjoint_principal_left]
     exact mem_inf_of_right (mem_principal_self f.kerᶜ)
-  · rw [← compl_compl f.ker, ← hnot_principal, ← Filter.hnot_def,
-      Coheyting.hnot_hnot_sup_boundary]
+  · rw [← compl_compl f.ker, ← hnot_principal, ← Filter.hnot_def, Coheyting.hnot_hnot_sup_boundary]
   · have hqk := congrArg Filter.ker hq.2.2
     rw [ker_sup, ker_principal, le_cofinite_iff_ker.mp hq.1, union_empty] at hqk
     refine congrArg₂ Prod.mk hqk.symm (le_antisymm (le_inf ?_ ?_) ?_)

@@ -285,8 +285,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
   constructor <;> intro h
   · exact Metric.isClosed_closedBall.isComplete
   rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _ | ⟨_, rfl⟩
-  · rwa [completeSpace_iff_isComplete_univ,
-         ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
+  · rwa [completeSpace_iff_isComplete_univ, ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
   refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
   obtain ⟨k, hk⟩ := hu.norm_bddAbove
   have kpos : 0 ≤ k := (_root_.norm_nonneg (u 0)).trans (hk (by simp))

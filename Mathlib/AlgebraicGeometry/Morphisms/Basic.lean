@@ -581,8 +581,7 @@ theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
   trans Q (pullback.snd f (𝟙 _))
   · exact ⟨fun H => H PUnit.unit, fun H _ => H⟩
-  rw [← Category.comp_id (pullback.snd _ _), ← pullback.condition,
-    Q.cancel_left_of_respectsIso]
+  rw [← Category.comp_id (pullback.snd _ _), ← pullback.condition, Q.cancel_left_of_respectsIso]
 
 set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) : IsZariskiLocalAtTarget P := by

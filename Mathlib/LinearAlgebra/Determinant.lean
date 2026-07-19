@@ -759,8 +759,7 @@ theorem det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndependent 
   apply (Basis.mk hli hsp).ext
   intro k
   rcases eq_or_ne k i with (rfl | hik) <;>
-    simp only [smul_eq_mul, coe_mk, LinearMap.smul_apply,
-      MultilinearMap.toLinearMap_apply]
+    simp only [smul_eq_mul, coe_mk, LinearMap.smul_apply, MultilinearMap.toLinearMap_apply]
   · rw [mk_coord_apply_eq, mul_one, update_eq_self]
     congr
   · rw [mk_coord_apply_ne hik, mul_zero, eq_comm]
@@ -841,8 +840,7 @@ theorem LinearMap.det_eq_det_mul_det (e : V →ₗ[R] V) (he : W ≤ W.comap e) 
       rw [← LinearMap.mem_ker, Submodule.ker_mkQ]
       exact he (Submodule.coe_mem (bW k))
     | inr l =>
-      simp only [LinearMap.toMatrix_apply, sumQuot_repr_inr,
-        Matrix.fromBlocks_apply₂₂, b, D]
+      simp only [LinearMap.toMatrix_apply, sumQuot_repr_inr, Matrix.fromBlocks_apply₂₂, b, D]
       rw [← sumQuot_inr bW bQ l, W.mapQ_apply]
       simp
 

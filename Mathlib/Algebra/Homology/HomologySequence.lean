@@ -343,8 +343,7 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.X₃.X i) (hx₃ : x₃ ≫ S.X₃.d i j = 0
   simpa only [assoc] using hS.δ_eq' i j hij (S.X₃.liftCycles x₃ j
     (c.next_eq' hij) hx₃ ≫ S.X₃.homologyπ i)
     (x₂ ≫ S.X₂.pOpcycles i) (S.X₁.liftCycles x₁ k hk _)
-      (by simp only [assoc, HomologicalComplex.p_opcyclesMap,
-        HomologicalComplex.homology_π_ι,
+      (by simp only [assoc, HomologicalComplex.p_opcyclesMap, HomologicalComplex.homology_π_ι,
         HomologicalComplex.liftCycles_i_assoc, reassoc_of% hx₂])
       (by rw [← cancel_mono (S.X₂.iCycles j), HomologicalComplex.liftCycles_comp_cyclesMap,
         HomologicalComplex.liftCycles_i, assoc, assoc, opcyclesToCycles_iCycles,

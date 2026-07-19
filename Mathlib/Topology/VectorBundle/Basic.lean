@@ -990,8 +990,7 @@ protected theorem _root_.VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorB
     inCoordinates F Z.Fiber F' Z'.Fiber x₀ x y₀ y ϕ =
       (Z'.coordChange (Z'.indexAt y) (Z'.indexAt y₀) y).comp
         (ϕ.comp <| Z.coordChange (Z.indexAt x₀) (Z.indexAt x) x) := by
-  simp_rw [inCoordinates, Z'.trivializationAt_continuousLinearMapAt hy,
-    Z.trivializationAt_symmL hx]
+  simp_rw [inCoordinates, Z'.trivializationAt_continuousLinearMapAt hy, Z.trivializationAt_symmL hx]
 
 end ContinuousLinearMap
 

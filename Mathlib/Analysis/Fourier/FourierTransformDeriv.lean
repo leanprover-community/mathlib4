@@ -174,9 +174,8 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
   convert! ((hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg).smul_const (f v)
   ext w' : 1
   simp_rw [fourierSMulRight, smul_apply, ContinuousLinearMap.smulRight_apply]
-  rw [ContinuousLinearMap.comp_apply, neg_apply,
-    ContinuousLinearMap.toSpanSingleton_apply, ← smul_assoc, smul_comm,
-    ← smul_assoc, real_smul, real_smul, Submonoid.smul_def, smul_eq_mul]
+  rw [ContinuousLinearMap.comp_apply, neg_apply, ContinuousLinearMap.toSpanSingleton_apply,
+    ← smul_assoc, smul_comm, ← smul_assoc, real_smul, real_smul, Submonoid.smul_def, smul_eq_mul]
   push_cast
   ring_nf
 

@@ -198,8 +198,7 @@ theorem IsSRGWith.param_eq
     simp_rw [neighborFinset_compl, mem_sdiff, mem_compl, mem_singleton, mem_neighborFinset,
       ← Ne.eq_def] at hw
     simp_rw [bipartiteBelow, adj_comm, ← mem_neighborFinset, filter_mem_eq_inter,
-      neighborFinset_def, ← Set.toFinset_inter, ← h.of_not_adj hw.2.symm hw.1,
-      ← Set.toFinset_card]
+      neighborFinset_def, ← Set.toFinset_inter, ← h.of_not_adj hw.2.symm hw.1, ← Set.toFinset_card]
     congr!
 
 set_option backward.isDefEq.respectTransparency.types false in

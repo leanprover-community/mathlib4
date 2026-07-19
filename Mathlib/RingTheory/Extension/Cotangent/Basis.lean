@@ -128,9 +128,8 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ker_presLeft_le : D.presLeft.ker ≤ P.ker := by
   intro x hx
-  simpa only [toExtension_commRing, toExtension_Ring, RingHom.mem_ker,
-    toExtension_algebra₂, algebraMap_apply, Ideal.Quotient.algebraMap_eq,
-    map_zero] using! (algebraMap D.T S).congr_arg hx
+  simpa only [toExtension_commRing, toExtension_Ring, RingHom.mem_ker, toExtension_algebra₂,
+    algebraMap_apply, Ideal.Quotient.algebraMap_eq, map_zero] using! (algebraMap D.T S).congr_arg hx
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
@@ -318,8 +317,7 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
     Submodule.comap_smul'' P.ker.subtype_injective (by simp)]
   simp only [Submodule.comap_subtype_self, J]
   rw [← Submodule.coe_subtype, Ideal.span, Set.range_comp, ← Submodule.map_span,
-    Submodule.comap_map_eq_of_injective P.ker.subtype_injective,
-    ← Extension.Cotangent.ker_mk]
+    Submodule.comap_map_eq_of_injective P.ker.subtype_injective, ← Extension.Cotangent.ker_mk]
   dsimp
   simp only [← LinearMap.map_le_map_iff, Submodule.map_span, ← Set.range_comp,
     Function.comp_def, ← Submodule.restrictScalars_span P.Ring S P.algebraMap_surjective]

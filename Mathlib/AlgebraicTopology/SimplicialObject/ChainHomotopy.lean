@@ -138,14 +138,11 @@ private lemma comm_succ (n : ℕ) :
         Finset.card_image_of_injective _ hγ₃, Finset.card_image_of_injective _ hγ₄]
       simp
       lia)
-  rw [eq₁, eq₂, ← S.sum_add_sum_compl, eq₃, eq₄,
-    neg_add_rev, neg_neg, neg_neg, ← Finset.sum_disjUnion h₁,
-    ← (Finset.disjUnion _ _ h₁).sum_add_sum_compl, neg_add,
-    ← add_assoc, add_neg_cancel, zero_add, H,
-    Finset.sum_disjUnion, Finset.sum_disjUnion,
-    Finset.sum_image hγ₃.injOn, Finset.sum_image hγ₄.injOn,
-    Finset.sum_insert (by simp), Finset.sum_singleton,
-    neg_add_rev, neg_add_rev, neg_add_rev, eq₅]
+  rw [eq₁, eq₂, ← S.sum_add_sum_compl, eq₃, eq₄, neg_add_rev, neg_neg, neg_neg,
+    ← Finset.sum_disjUnion h₁, ← (Finset.disjUnion _ _ h₁).sum_add_sum_compl, neg_add, ← add_assoc,
+    add_neg_cancel, zero_add, H, Finset.sum_disjUnion, Finset.sum_disjUnion,
+    Finset.sum_image hγ₃.injOn, Finset.sum_image hγ₄.injOn, Finset.sum_insert (by simp),
+    Finset.sum_singleton, neg_add_rev, neg_add_rev, neg_add_rev, eq₅]
   simp
 
 end ToChainHomotopy

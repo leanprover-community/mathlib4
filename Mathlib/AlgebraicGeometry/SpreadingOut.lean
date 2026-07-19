@@ -354,9 +354,8 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
     (Y.presheaf.germ _ y hyV ≫ φ) (sY.appLE U V iVU) (sX.app U)
     (sY.finiteType_appLE hU hV _) this
   refine ⟨W, hxW, W.toSpecΓ ≫ Spec.map φ' ≫ hV.fromSpec, ?_, ?_⟩
-  · rw [W.fromSpecStalkOfMem_toSpecΓ_assoc x hxW, ← Spec.map_comp_assoc, ← h₁,
-      Spec.map_comp, Category.assoc, ← IsAffineOpen.fromSpecStalk,
-      IsAffineOpen.fromSpecStalk_eq_fromSpecStalk]
+  · rw [W.fromSpecStalkOfMem_toSpecΓ_assoc x hxW, ← Spec.map_comp_assoc, ← h₁, Spec.map_comp,
+      Category.assoc, ← IsAffineOpen.fromSpecStalk, IsAffineOpen.fromSpecStalk_eq_fromSpecStalk]
   · simp only [Category.assoc]
     rw [← IsAffineOpen.SpecMap_appLE_fromSpec sY hU hV iVU, ← Spec.map_comp_assoc, ← h₂,
       ← Scheme.Hom.appLE, ← hW.isoSpec_hom, IsAffineOpen.SpecMap_appLE_fromSpec sX hU hW i,

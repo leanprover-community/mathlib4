@@ -86,8 +86,7 @@ lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = (D2 A) ∣[(2 : ℤ)] B + D2 B :=
     simp [specialLinearGroup_apply, denom, num]
   rw [(by intros; field_simp : ∀ {a b c d f e : ℂ} (he : e ≠ 0), a / b =
     c / d * (e ^ (2 : ℤ))⁻¹ + f / e ↔ a * e ^ 2 / b = c / d + e * f) (denom_ne_zero B z)]
-  simp only [pow_two, ← mul_assoc, denom_cocycle A B z.im_ne_zero, this,
-    ModularGroup.sl_moeb, ← hd]
+  simp only [pow_two, ← mul_assoc, denom_cocycle A B z.im_ne_zero, this, ModularGroup.sl_moeb, ← hd]
   field_simp [denom_ne_zero A (toGL (φ B) • z)]
   ring
 

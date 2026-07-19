@@ -694,11 +694,9 @@ theorem oangle_eq_zero_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
 theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
     o.oangle x y = π ↔ InnerProductGeometry.angle x y = π := by
   by_cases hx : x = 0
-  · simp [hx, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
-      Real.pi_ne_zero]
+  · simp [hx, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv, Real.pi_ne_zero]
   by_cases hy : y = 0
-  · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
-      Real.pi_ne_zero]
+  · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv, Real.pi_ne_zero]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
     simp [Real.pi_pos.le]

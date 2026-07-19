@@ -122,9 +122,8 @@ theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
   exact fun _ h _ ↦ h
 
 theorem empty_isBase_iff : M.IsBase ∅ ↔ M = loopyOn M.E := by
-  simp only [isBase_iff_maximal_indep, Maximal, empty_indep, empty_subset,
-    subset_empty_iff, true_implies, true_and, ext_iff_indep, loopyOn_ground,
-    loopyOn_indep_iff]
+  simp only [isBase_iff_maximal_indep, Maximal, empty_indep, empty_subset, subset_empty_iff,
+    true_implies, true_and, ext_iff_indep, loopyOn_ground, loopyOn_indep_iff]
   exact ⟨fun h I _ ↦ ⟨@h _, fun hI ↦ by simp [hI]⟩, fun h I hI ↦ (h hI.subset_ground).1 hI⟩
 
 theorem eq_loopyOn_or_rankPos (M : Matroid α) : M = loopyOn M.E ∨ RankPos M := by

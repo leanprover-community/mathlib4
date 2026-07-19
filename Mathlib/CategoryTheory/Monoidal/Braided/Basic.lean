@@ -677,8 +677,7 @@ theorem tensor_left_unitality (X₁ X₂ : C) :
     simp
   slice_rhs 1 3 => rw [this]
   clear this
-  slice_rhs 1 2 => rw [← whiskerLeft_comp, ← comp_whiskerRight,
-    leftUnitor_inv_braiding]
+  slice_rhs 1 2 => rw [← whiskerLeft_comp, ← comp_whiskerRight, leftUnitor_inv_braiding]
   simp [tensorHom_def]
 
 @[reassoc]
@@ -694,8 +693,7 @@ theorem tensor_right_unitality (X₁ X₂ : C) :
     monoidal
   slice_rhs 1 3 => rw [this]
   clear this
-  slice_rhs 2 3 => rw [← whiskerLeft_comp, ← comp_whiskerRight,
-    rightUnitor_inv_braiding]
+  slice_rhs 2 3 => rw [← whiskerLeft_comp, ← comp_whiskerRight, rightUnitor_inv_braiding]
   simp [tensorHom_def]
 
 @[reassoc]
@@ -777,18 +775,16 @@ lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y 
       (μ F W X ⊗ₘ μ F Y Z) ≫ μ F (W ⊗ X) (Y ⊗ Z) ≫ F.map (tensorμ W X Y Z) := by
   rw [tensorHom_def]
   simp only [tensorμ, Category.assoc]
-  rw [whiskerLeft_μ_comp_μ,
-    associator_inv_naturality_left_assoc, ← pentagon_inv_assoc,
+  rw [whiskerLeft_μ_comp_μ, associator_inv_naturality_left_assoc, ← pentagon_inv_assoc,
     ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc, Category.assoc, μ_whiskerRight_comp_μ,
     whiskerLeft_hom_inv_assoc, Iso.inv_hom_id_assoc, comp_whiskerRight_assoc,
     comp_whiskerRight_assoc, μ_natural_left_assoc, associator_inv_naturality_middle_assoc,
     ← comp_whiskerRight_assoc, ← comp_whiskerRight_assoc, ← MonoidalCategory.whiskerLeft_comp,
-    ← Functor.LaxBraided.braided,
-    MonoidalCategory.whiskerLeft_comp_assoc, μ_natural_right, whiskerLeft_μ_comp_μ_assoc,
-    comp_whiskerRight_assoc, comp_whiskerRight_assoc, comp_whiskerRight_assoc,
-    comp_whiskerRight_assoc, pentagon_inv_assoc, μ_natural_left_assoc, μ_natural_left_assoc,
-    Iso.hom_inv_id_assoc, ← associator_inv_naturality_left_assoc, μ_whiskerRight_comp_μ_assoc,
-    Iso.inv_hom_id_assoc, ← tensorHom_def_assoc]
+    ← Functor.LaxBraided.braided, MonoidalCategory.whiskerLeft_comp_assoc, μ_natural_right,
+    whiskerLeft_μ_comp_μ_assoc, comp_whiskerRight_assoc, comp_whiskerRight_assoc,
+    comp_whiskerRight_assoc, comp_whiskerRight_assoc, pentagon_inv_assoc, μ_natural_left_assoc,
+    μ_natural_left_assoc, Iso.hom_inv_id_assoc, ← associator_inv_naturality_left_assoc,
+    μ_whiskerRight_comp_μ_assoc, Iso.inv_hom_id_assoc, ← tensorHom_def_assoc]
   simp only [← Functor.map_comp, whisker_assoc, Category.assoc, pentagon_inv_inv_hom_hom_inv,
     pentagon_inv_hom_hom_hom_inv_assoc]
 

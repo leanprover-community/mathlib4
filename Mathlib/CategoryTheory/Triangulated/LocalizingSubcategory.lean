@@ -231,8 +231,7 @@ instance : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Full
   refine ⟨g.map L₁ (Localization.inverts _ _), ?_⟩
   rw [← cancel_mono (F.map (L₁.map g.s)), ← Functor.map_comp,
     MorphismProperty.LeftFraction.map_comp_map_s]
-  simp [g, ← fac, hφ', hf, ← dsimp% NatIso.naturality_1 e,
-    dsimp% e.hom_inv_id_app_assoc]
+  simp [g, ← fac, hφ', hf, ← dsimp% NatIso.naturality_1 e, dsimp% e.hom_inv_id_app_assoc]
 
 instance [Preadditive D₁] [Preadditive D₂] [L₁.Additive] [L₂.Additive] :
     ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Additive := by

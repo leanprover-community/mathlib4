@@ -94,8 +94,7 @@ lemma isoClosure_iSup :
 
 instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     ((⨆ (a : α), P a)).IsClosedUnderIsomorphisms := by
-  simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self,
-    isoClosure_iSup, isoClosure_eq_self]
+  simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self, isoClosure_iSup, isoClosure_eq_self]
 
 instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     ((⨅ (a : α), P a)).IsClosedUnderIsomorphisms where

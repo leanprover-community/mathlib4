@@ -120,9 +120,8 @@ lemma IsCoseparating.of_equivalence
     IsCoseparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h
-    simp only [Equivalence.symm_inverse, Equivalence.symm_functor,
-      Adjunction.homEquiv_counit, ← Functor.map_comp_assoc,
-      H _ (P.strictMap_obj _ hZ) h']))
+    simp only [Equivalence.symm_inverse, Equivalence.symm_functor, Adjunction.homEquiv_counit,
+      ← Functor.map_comp_assoc, H _ (P.strictMap_obj _ hZ) h']))
 
 end Equivalence
 

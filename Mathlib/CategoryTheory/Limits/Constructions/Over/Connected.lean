@@ -103,9 +103,8 @@ instance [IsConnected J] {B : D} : PreservesLimitsOfShape J (CostructuredArrow.p
   preservesLimit.preserves hc := ⟨{
     lift s := (CostructuredArrow.proj K B).map (hc.lift (CreatesConnected.raiseCone s))
     fac _ _ := by
-      rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac,
-        CreatesConnected.raiseCone_π_app, CostructuredArrow.proj_map,
-        CostructuredArrow.homMk_left _ _]
+      rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac, CreatesConnected.raiseCone_π_app,
+        CostructuredArrow.proj_map, CostructuredArrow.homMk_left _ _]
     uniq s m fac :=
       congrArg (CostructuredArrow.proj K B).map (hc.uniq (CreatesConnected.raiseCone s)
         (CostructuredArrow.homMk m (by simp [← fac])) fun j =>

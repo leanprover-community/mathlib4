@@ -418,8 +418,7 @@ instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
         refine ?_ =≫ v
         let : Mono (v ≫ pushout.desc a b pullback.condition) := by rwa [pushout.inr_desc]
         rw [← cancel_mono (v ≫ pushout.desc a b pullback.condition), Category.assoc,
-          ← sq_f_v.w_assoc, w, ← pullback.condition_assoc, Category.assoc,
-          ← sq_g_v.w_assoc]
+          ← sq_f_v.w_assoc, w, ← pullback.condition_assoc, Category.assoc, ← sq_g_v.w_assoc]
 
 instance Type.adhesive : Adhesive (Type u) :=
   ⟨fun {_ _ _ _ f _ _ _ _} H =>

@@ -739,8 +739,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   classical
   ext n
   rw [coeff_rescale]
-  rw [coeff_subst (HasSubst.smul_X a),
-    finsum_eq_sum _ (coeff_subst_finite (HasSubst.smul_X a) f n)]
+  rw [coeff_subst (HasSubst.smul_X a), finsum_eq_sum _ (coeff_subst_finite (HasSubst.smul_X a) f n)]
   simp only [Pi.smul_apply', smul_eq_mul]
   rw [Finset.sum_eq_single n _ _]
   · simp [mul_comm, ← monomial_eq]

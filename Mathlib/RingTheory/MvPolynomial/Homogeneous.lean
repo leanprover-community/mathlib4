@@ -152,9 +152,8 @@ alias ⟨isHomogeneous_of_totalDegree_zero, _⟩ := totalDegree_zero_iff_isHomog
 lemma homogeneousSubmodule_zero :
     MvPolynomial.homogeneousSubmodule σ R 0 = 1 := by
   ext
-  rw [MvPolynomial.mem_homogeneousSubmodule,
-    ← MvPolynomial.totalDegree_zero_iff_isHomogeneous, Submodule.mem_one,
-    MvPolynomial.algebraMap_eq, MvPolynomial.totalDegree_eq_zero_iff_eq_C]
+  rw [MvPolynomial.mem_homogeneousSubmodule, ← MvPolynomial.totalDegree_zero_iff_isHomogeneous,
+    Submodule.mem_one, MvPolynomial.algebraMap_eq, MvPolynomial.totalDegree_eq_zero_iff_eq_C]
   grind [coeff_zero_C]
 
 theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
@@ -586,8 +585,7 @@ lemma rename_homogeneousComponent {τ : Type*} {φ : σ → τ} (n : ℕ) (p : M
     rename φ (homogeneousComponent n p) = homogeneousComponent n (rename φ p) := by
   induction p using MvPolynomial.induction_on' with
   | monomial d c =>
-    rw [rename_monomial,
-      homogeneousComponent_of_mem (isHomogeneous_monomial c rfl),
+    rw [rename_monomial, homogeneousComponent_of_mem (isHomogeneous_monomial c rfl),
       homogeneousComponent_of_mem (isHomogeneous_monomial c (Finsupp.degree_mapDomain φ d))]
     split_ifs <;> simp [rename_monomial]
   | add p q hp hq => simp [map_add, hp, hq]

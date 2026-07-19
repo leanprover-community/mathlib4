@@ -628,8 +628,7 @@ theorem sumQuot_repr_inr (v : V) (j : n) :
   intro x
   induction x with
   | inl i =>
-    simp [sumQuot_inl, LinearMap.comp_apply,
-      (Quotient.mk_eq_zero W).mpr (Submodule.coe_mem (bW i))]
+    simp [sumQuot_inl, LinearMap.comp_apply, (Quotient.mk_eq_zero W).mpr (Submodule.coe_mem (bW i))]
   | inr i =>
     classical
     simp [LinearMap.comp_apply, sumQuot_inr, Finsupp.single_apply]

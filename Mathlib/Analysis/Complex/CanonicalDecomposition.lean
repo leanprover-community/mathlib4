@@ -106,8 +106,7 @@ theorem meromorphicOrderAt_canonicalFactor (h : w ∈ ball 0 R) :
         ofReal_inj, sq_eq_sq₀ (pos_of_mem_ball h).le (norm_nonneg w)]
       rw [mem_ball_iff_norm, sub_zero] at h
       grind
-  simp [this, meromorphicOrderAt_const, (pos_of_mem_ball h).ne',
-    meromorphicOrderAt_id_sub_const]
+  simp [this, meromorphicOrderAt_const, (pos_of_mem_ball h).ne', meromorphicOrderAt_id_sub_const]
 
 /--
 Canonical factors are meromorphic in normal form.

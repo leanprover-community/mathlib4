@@ -1068,8 +1068,7 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
       ⟨span {↑d}, singleton_span_mem_normalizedFactors_of_mem_normalizedFactors d.prop⟩
   · refine ⟨?_, ?_⟩
     · rintro ⟨a, ha⟩ ⟨b, hb⟩ h
-      rw [Subtype.mk_eq_mk, span_singleton_eq_span_singleton, Subtype.coe_mk,
-          Subtype.coe_mk] at h
+      rw [Subtype.mk_eq_mk, span_singleton_eq_span_singleton, Subtype.coe_mk, Subtype.coe_mk] at h
       exact Subtype.mk_eq_mk.mpr (mem_normalizedFactors_eq_of_associated ha hb h)
     · rintro ⟨i, hi⟩
       have : i.IsPrime := isPrime_of_prime (prime_of_normalized_factor i hi)
@@ -1078,8 +1077,7 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
         (prime_of_normalized_factor i hi).ne_zero).irreducible ?_
       · obtain ⟨a, ha, ha'⟩ := this
         use ⟨a, ha⟩
-        simp only [← span_singleton_eq_span_singleton.mpr ha',
-            span_singleton_generator]
+        simp only [← span_singleton_eq_span_singleton.mpr ha', span_singleton_generator]
       · exact (Submodule.IsPrincipal.mem_iff_generator_dvd i).mp
           ((show span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))
             (mem_span_singleton.mpr (dvd_refl r)))

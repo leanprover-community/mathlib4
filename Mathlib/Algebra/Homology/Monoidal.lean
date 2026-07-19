@@ -207,9 +207,8 @@ lemma leftUnitor'_inv_comm (i j : I) :
     (leftUnitor' K).inv i ≫ (tensorObj (tensorUnit C c) K).d i j =
       K.d i j ≫ (leftUnitor' K).inv j := by
   by_cases hij : c.Rel i j
-  · simp only [leftUnitor'_inv, assoc, mapBifunctor.d_eq,
-      Preadditive.comp_add, mapBifunctor.ι_D₁, mapBifunctor.ι_D₂,
-      unit_tensor_d₁, comp_zero, zero_add]
+  · simp only [leftUnitor'_inv, assoc, mapBifunctor.d_eq, Preadditive.comp_add, mapBifunctor.ι_D₁,
+      mapBifunctor.ι_D₂, unit_tensor_d₁, comp_zero, zero_add]
     rw [mapBifunctor.d₂_eq _ _ _ _ _ hij _ (by simp)]
     dsimp
     simp only [ComplexShape.ε_zero, one_smul, ← whisker_exchange_assoc,
@@ -257,9 +256,8 @@ lemma rightUnitor'_inv_comm (i j : I) :
     (rightUnitor' K).inv i ≫ (tensorObj K (tensorUnit C c)).d i j =
       K.d i j ≫ (rightUnitor' K).inv j := by
   by_cases hij : c.Rel i j
-  · simp only [rightUnitor'_inv, assoc, mapBifunctor.d_eq,
-      Preadditive.comp_add, mapBifunctor.ι_D₁, mapBifunctor.ι_D₂,
-      tensor_unit_d₂, comp_zero, add_zero]
+  · simp only [rightUnitor'_inv, assoc, mapBifunctor.d_eq, Preadditive.comp_add, mapBifunctor.ι_D₁,
+      mapBifunctor.ι_D₂, tensor_unit_d₂, comp_zero, add_zero]
     rw [mapBifunctor.d₁_eq _ _ _ _ hij _ _ (by simp)]
     dsimp
     simp only [one_smul, whisker_exchange_assoc, whiskerRight_id, assoc, Iso.inv_hom_id_assoc]

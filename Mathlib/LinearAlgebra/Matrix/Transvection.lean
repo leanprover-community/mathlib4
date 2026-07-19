@@ -101,16 +101,14 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
     · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
         smul_eq_mul, mul_zero, add_zero, transvection, add_apply, and_false, not_false_eq_true,
         single_apply_of_ne]
-  · simp only [updateRow_ne, transvection, ha, Ne.symm ha, single_apply_of_ne, add_zero,
-      Ne, not_false_iff,
-      false_and, add_apply]
+  · simp only [updateRow_ne, transvection, ha, Ne.symm ha, single_apply_of_ne, add_zero, Ne,
+      not_false_iff, false_and, add_apply]
 
 variable [Fintype n]
 
 theorem transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
     transvection i j c * transvection i j d = transvection i j (c + d) := by
-  simp [transvection, Matrix.add_mul, Matrix.mul_add, h.symm, add_assoc,
-    single_add]
+  simp [transvection, Matrix.add_mul, Matrix.mul_add, h.symm, add_assoc, single_add]
 
 @[simp]
 theorem transvection_mul_apply_same {m : Type*} (b : m) (c : R) (M : Matrix n m R) :

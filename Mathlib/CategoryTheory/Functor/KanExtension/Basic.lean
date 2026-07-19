@@ -677,9 +677,8 @@ def LeftExtension.isUniversalPrecomp₂
         (hα.fac <| LeftExtension.mk _ <|
           y.hom ≫ (L.associator L' y.right).hom) t
     dsimp at hb_fac_app hα_fac_app
-    simp only [whiskeringLeft_obj_obj, comp_obj,
-      precomp₂_obj_right, whiskeringLeft_obj_map, NatTrans.comp_app,
-      precomp₂_obj_hom_app, whiskerLeft_app, assoc] at a_w_t
+    simp only [whiskeringLeft_obj_obj, comp_obj, precomp₂_obj_right, whiskeringLeft_obj_map,
+      NatTrans.comp_app, precomp₂_obj_hom_app, whiskerLeft_app, assoc] at a_w_t
     simp [← a_w_t, hb_fac_app, u, hα_fac_app]
   apply IsInitial.ofUnique
 

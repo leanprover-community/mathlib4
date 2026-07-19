@@ -683,8 +683,7 @@ lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
 lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
   have : IsStrictlyPositive a := by grind
-  rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
-      rpow_rpow _ _ _ (by simp), inv_mul_eq_div]
+  rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul, rpow_rpow _ _ _ (by simp), inv_mul_eq_div]
 
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a

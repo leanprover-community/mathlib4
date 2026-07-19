@@ -156,8 +156,7 @@ variable (Q)
 theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) := by
 -- Porting note: Lean cannot figure out anymore the third argument
   refine (foldr'_ι _ _ ?_ _ _).trans <| by
-    simp_rw [contractLeftAux_apply_apply, mul_zero, sub_zero,
-      Algebra.algebraMap_eq_smul_one]
+    simp_rw [contractLeftAux_apply_apply, mul_zero, sub_zero, Algebra.algebraMap_eq_smul_one]
   exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 
 @[simp]

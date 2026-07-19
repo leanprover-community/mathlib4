@@ -111,8 +111,7 @@ lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :
     (X.chainComplex R).liftCycles (k := X.ιChainComplex x) 0 (by simp) (by simp) ≫
       (X.chainComplex R).homologyπ 0 ≫ (X.homology₀Iso R).hom =
     Sigma.ι (fun (_ : π₀ X) ↦ R) (π₀.mk x) := by
-  simp [homology₀Iso, HomologicalComplex.homologyπ, SSet.homology,
-    HomologicalComplex.liftCycles]
+  simp [homology₀Iso, HomologicalComplex.homologyπ, SSet.homology, HomologicalComplex.liftCycles]
 
 /-- The augmentation map `X.homology R 0 ⟶ R`. -/
 noncomputable def homology₀ε : X.homology R 0 ⟶ R :=

@@ -45,9 +45,8 @@ lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
   rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotient b), AddMonoidHom.map_trace]
   congr 1
   ext i j
-  simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
-    basisQuotient_apply, LinearMap.mul_apply', Matrix.map_apply, ← map_mul,
-    basisQuotient_repr]
+  simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply, basisQuotient_apply,
+    LinearMap.mul_apply', Matrix.map_apply, ← map_mul, basisQuotient_repr]
 
 end IsLocalRing
 

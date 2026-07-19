@@ -575,13 +575,11 @@ instance (R S : CommRingCat.{u}ᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S
     ((limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).inv ≫
       (opProdIsoCoprod R S).unop.inv)) = coprodSpec R S := by
     ext1
-    · rw [coprodComparison_inl_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map,
-        ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inl,
-        limit.isoLimitCone_inv_π]
+    · rw [coprodComparison_inl_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map, ← Spec.map_comp,
+        Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inl, limit.isoLimitCone_inv_π]
       rfl
-    · rw [coprodComparison_inr_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map,
-        ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inr,
-        limit.isoLimitCone_inv_π]
+    · rw [coprodComparison_inr_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map, ← Spec.map_comp,
+        Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inr, limit.isoLimitCone_inv_π]
       rfl
   rw [(IsIso.eq_comp_inv _).mpr this]
   infer_instance

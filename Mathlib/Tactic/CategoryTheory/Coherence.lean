@@ -214,9 +214,8 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
   evalTactic (← `(tactic|
     (simp -failIfUnchanged only
       [monoidalComp, bicategoricalComp, Category.assoc, BicategoricalCoherence.iso,
-      MonoidalCoherence.iso, Iso.trans, Iso.symm, Iso.refl,
-      MonoidalCategory.whiskerRightIso, MonoidalCategory.whiskerLeftIso,
-      Bicategory.whiskerRightIso, Bicategory.whiskerLeftIso]) <;>
+      MonoidalCoherence.iso, Iso.trans, Iso.symm, Iso.refl, MonoidalCategory.whiskerRightIso,
+      MonoidalCategory.whiskerLeftIso, Bicategory.whiskerRightIso, Bicategory.whiskerLeftIso]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     (simp -failIfUnchanged only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
@@ -287,12 +286,11 @@ syntax (name := monoidal_simps) "monoidal_simps" optConfig : tactic
 elab_rules : tactic
 | `(tactic| monoidal_simps $cfg:optConfig) => do
   evalTactic (← `(tactic|
-    simp $cfg only [
-      Category.assoc, MonoidalCategory.tensor_whiskerLeft, MonoidalCategory.id_whiskerLeft,
-      MonoidalCategory.whiskerRight_tensor, MonoidalCategory.whiskerRight_id,
-      MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,
-      MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
-      MonoidalCategory.whisker_assoc,
+    simp $cfg only [Category.assoc, MonoidalCategory.tensor_whiskerLeft,
+      MonoidalCategory.id_whiskerLeft, MonoidalCategory.whiskerRight_tensor,
+      MonoidalCategory.whiskerRight_id, MonoidalCategory.whiskerLeft_comp,
+      MonoidalCategory.whiskerLeft_id, MonoidalCategory.comp_whiskerRight,
+      MonoidalCategory.id_whiskerRight, MonoidalCategory.whisker_assoc,
       MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id];
     -- I'm not sure if `tensorHom` should be expanded.
     try simp only [MonoidalCategory.tensorHom_def]

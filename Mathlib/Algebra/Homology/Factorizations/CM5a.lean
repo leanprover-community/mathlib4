@@ -184,9 +184,8 @@ instance : Mono (homologyMap (ι f n₁) n₁) := by
     have : (biprod.inl : _ ⟶ mid K L n₁).f n₀ = 0 :=
       (isZero_single_obj_X (.up ℤ) _ _ _ (by lia)).eq_of_src _ _
     simp [this, ← biprod_total_f]
-  simp only [Category.assoc, Hom.comm, biprodX_ext_to_iff, biprod_lift_fst_f,
-    biprod_inr_fst_f, comp_zero, biprod_lift_snd_f, biprod_inr_snd_f,
-    Category.comp_id] at hy₀
+  simp only [Category.assoc, Hom.comm, biprodX_ext_to_iff, biprod_lift_fst_f, biprod_inr_fst_f,
+    comp_zero, biprod_lift_snd_f, biprod_inr_snd_f, Category.comp_id] at hy₀
   obtain ⟨h₁, h₂⟩ := hy₀
   replace h₁ : x₁ ≫ K.pOpcycles n₁ = 0 := by
     rw [← cancel_mono (Injective.ι _)]

@@ -141,8 +141,7 @@ theorem finsuppPow (ibc : IsBaseChange S ε) :
     LinearEquiv.baseChange R S _ _ (finsuppLEquivDirectSum ..) ≪≫ₗ
       (directSum (fun _ ↦ ibc)).equiv ≪≫ₗ (finsuppLEquivDirectSum ..).symm
   intro x
-  rw [LinearEquiv.trans_apply, Finsupp.mapRange.linearMap_apply,
-    LinearEquiv.symm_apply_eq]
+  rw [LinearEquiv.trans_apply, Finsupp.mapRange.linearMap_apply, LinearEquiv.symm_apply_eq]
   ext
   simp [LinearEquiv.baseChange_tmul, IsBaseChange.equiv_tmul, lmap_finsuppLEquivDirectSum_eq]
 

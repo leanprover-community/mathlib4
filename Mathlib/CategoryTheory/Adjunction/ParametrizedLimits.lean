@@ -56,8 +56,7 @@ lemma preservesLimit_flip_obj (P : J ⥤ C₁ᵒᵖ)
       uniq s m hm := adj₂.homEquiv.symm.injective (by
         simp only [op_unop, Equiv.symm_apply_apply]
         refine (hc' s).uniq (cocone s) _ (fun j ↦ ?_)
-        simp [cocone, ← hm,
-          dsimp% adj₂.homEquiv_symm_naturality_one (c.π.app j.unop).unop]) }⟩
+        simp [cocone, ← hm, dsimp% adj₂.homEquiv_symm_naturality_one (c.π.app j.unop).unop]) }⟩
 
 variable (J) in
 lemma preservesLimitsOfShape_flip_obj

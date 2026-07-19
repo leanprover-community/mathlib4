@@ -53,14 +53,11 @@ noncomputable def arrowHomEquiv :
     Arrow.homMk (adj₂.homEquiv (sq₁₂.inl ≫ α.left))
       (sq₁₃.isPullback.lift
         (adj₂.homEquiv (sq₁₂.inr ≫ α.left)) (adj₂.homEquiv α.right)
-          (by simp [← adj₂.homEquiv_naturality_one,
-              ← adj₂.homEquiv_naturality_three])) (by
+          (by simp [← adj₂.homEquiv_naturality_one, ← adj₂.homEquiv_naturality_three])) (by
             apply sq₁₃.isPullback.hom_ext
-            · simp [← adj₂.homEquiv_naturality_two,
-                ← adj₂.homEquiv_naturality_one,
+            · simp [← adj₂.homEquiv_naturality_two, ← adj₂.homEquiv_naturality_one,
                 sq₁₂.isPushout.w_assoc]
-            · simp [← adj₂.homEquiv_naturality_two,
-                ← adj₂.homEquiv_naturality_three])
+            · simp [← adj₂.homEquiv_naturality_two, ← adj₂.homEquiv_naturality_three])
   invFun β :=
     Arrow.homMk
       (sq₁₂.isPushout.desc
@@ -69,16 +66,14 @@ noncomputable def arrowHomEquiv :
           have := Arrow.w β =≫ sq₁₃.fst
           dsimp at this
           simp only [Category.assoc, sq₁₃.π_fst] at this
-          simp only [← adj₂.homEquiv_symm_naturality_one,
-            ← adj₂.homEquiv_symm_naturality_two,
+          simp only [← adj₂.homEquiv_symm_naturality_one, ← adj₂.homEquiv_symm_naturality_two,
             Arrow.mk_left, Arrow.mk_right, this]))
       (adj₂.homEquiv.symm (β.right ≫ sq₁₃.snd)) (by
         apply sq₁₂.isPushout.hom_ext
         · have := Arrow.w β =≫ sq₁₃.snd
           dsimp at this
           simp only [Category.assoc, sq₁₃.π_snd] at this
-          simp [← adj₂.homEquiv_symm_naturality_two,
-            ← adj₂.homEquiv_symm_naturality_three, this]
+          simp [← adj₂.homEquiv_symm_naturality_two, ← adj₂.homEquiv_symm_naturality_three, this]
         · simp [← adj₂.homEquiv_symm_naturality_one,
             ← adj₂.homEquiv_symm_naturality_three, sq₁₃.isPullback.w])
   left_inv α := by
@@ -125,8 +120,7 @@ noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) 
       fac_left := by
         have := l.fac_left
         dsimp at this ⊢
-        simp only [← adj₂.homEquiv_naturality_two, ← this,
-          sq₁₂.inl_ι_assoc]
+        simp only [← adj₂.homEquiv_naturality_two, ← this, sq₁₂.inl_ι_assoc]
       fac_right := by
         apply sq₁₃.isPullback.hom_ext
         · have := l.fac_left
@@ -155,8 +149,7 @@ noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) 
         dsimp at this ⊢
         simp only [Category.assoc, sq₁₃.π_snd, arrowHomEquiv_apply_right_snd,
           Arrow.mk_right] at this
-        rw [← adj₂.homEquiv_symm_naturality_three, this,
-          Equiv.symm_apply_apply] }
+        rw [← adj₂.homEquiv_symm_naturality_three, this, Equiv.symm_apply_apply] }
   left_inv _ := by aesop
   right_inv _ := by aesop
 

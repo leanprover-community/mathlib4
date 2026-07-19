@@ -235,8 +235,7 @@ theorem bitwise_or : bitwise or = lor := by
 theorem bitwise_and : bitwise and = land := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false,
-      cond_false, cond_true, Bool.and_true,
+    <;> simp only [bitwise, natBitwise, Bool.not_false, cond_false, cond_true, Bool.and_true,
       Bool.and_false]
   · rw [Nat.bitwise_swap, Function.swap]
     congr
@@ -249,9 +248,8 @@ theorem bitwise_and : bitwise and = land := by
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false,
-      cond_false, cond_true, Nat.ldiff, Bool.and_true, negSucc.injEq,
-      Bool.and_false, Bool.not_true, ldiff]
+    <;> simp only [bitwise, natBitwise, Bool.not_false, cond_false, cond_true, Nat.ldiff,
+      Bool.and_true, negSucc.injEq, Bool.and_false, Bool.not_true, ldiff]
   · congr
     simp
   · congr
@@ -265,17 +263,15 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
 theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.bne_eq_xor,
-      cond_false, cond_true, negSucc.injEq, Bool.false_xor,
-      Bool.true_xor, Bool.not_true,
-      Int.xor, HXor.hXor, XorOp.xor, Nat.xor] <;> simp
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.bne_eq_xor, cond_false, cond_true,
+      negSucc.injEq, Bool.false_xor, Bool.true_xor, Bool.not_true, Int.xor, HXor.hXor, XorOp.xor,
+      Nat.xor] <;> simp
 
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   rcases m with m | m <;> rcases n with n | n <;>
-  simp [bitwise, ofNat_eq_natCast, bit_coe_nat, natBitwise, Bool.not_false,
-    bit_negSucc]
+  simp [bitwise, ofNat_eq_natCast, bit_coe_nat, natBitwise, Bool.not_false, bit_negSucc]
   · by_cases h : f false false <;> simp +decide [h]
   · by_cases h : f false true <;> simp +decide [h]
   · by_cases h : f true false <;> simp +decide [h]

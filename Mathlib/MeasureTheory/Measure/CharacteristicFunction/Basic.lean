@@ -161,10 +161,9 @@ lemma charFun_eq_fourierIntegral (t : E) :
 lemma charFun_eq_fourierIntegral' (t : E) :
     charFun μ t
       = VectorFourier.fourierIntegral fourierChar μ (innerₗ E) 1 (-(2 * π)⁻¹ • t) := by
-  simp only [charFun_apply, VectorFourier.fourierIntegral, neg_smul,
-    innerₗ_apply_apply, inner_neg_right, inner_smul_right, neg_neg,
-    fourierChar_apply', Pi.ofNat_apply, Circle.smul_def, Circle.coe_exp, ofReal_mul, ofReal_ofNat,
-    ofReal_inv, smul_eq_mul, mul_one]
+  simp only [charFun_apply, VectorFourier.fourierIntegral, neg_smul, innerₗ_apply_apply,
+    inner_neg_right, inner_smul_right, neg_neg, fourierChar_apply', Pi.ofNat_apply, Circle.smul_def,
+    Circle.coe_exp, ofReal_mul, ofReal_ofNat, ofReal_inv, smul_eq_mul, mul_one]
   congr with x
   rw [← mul_assoc, mul_inv_cancel₀ (by simp [pi_ne_zero]), one_mul]
 
@@ -198,8 +197,7 @@ lemma intervalIntegrable_charFun {μ : Measure ℝ} [IsFiniteMeasure μ] {a b : 
 
 lemma charFun_map_smul [BorelSpace E] (r : ℝ) (t : E) :
     charFun (μ.map (r • ·)) t = charFun μ (r • t) := by
-  rw [charFun_apply, charFun_apply,
-    integral_map (by fun_prop) (by fun_prop)]
+  rw [charFun_apply, charFun_apply, integral_map (by fun_prop) (by fun_prop)]
   simp_rw [inner_smul_right, ← real_inner_smul_left]
 
 lemma charFun_map_smul_comp {X : Type*} {mX : MeasurableSpace X} {μ : Measure X} [BorelSpace E]
@@ -227,8 +225,7 @@ lemma charFun_dirac [OpensMeasurableSpace E] {x : E} (t : E) :
 
 lemma charFun_map_add_const [BorelSpace E] (r t : E) :
     charFun (μ.map (· + r)) t = charFun μ t * cexp (⟪r, t⟫ * I) := by
-  rw [charFun_apply, charFun_apply, integral_map (by fun_prop) (by fun_prop),
-    ← integral_mul_const]
+  rw [charFun_apply, charFun_apply, integral_map (by fun_prop) (by fun_prop), ← integral_mul_const]
   congr with a
   rw [← Complex.exp_add]
   congr

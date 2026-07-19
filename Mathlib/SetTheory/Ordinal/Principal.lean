@@ -494,8 +494,7 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : IsPrincipal (· * ·) b) (hb�
     a * b = b ^ succ (log b a) := by
   apply le_antisymm
   · have hbl := isSuccLimit_of_isPrincipal_mul hb₂ hb
-    rw [(isNormal_mul_right (pos_iff_ne_zero.2 ha)).apply_of_isSuccLimit hbl,
-      Ordinal.iSup_le_iff]
+    rw [(isNormal_mul_right (pos_iff_ne_zero.2 ha)).apply_of_isSuccLimit hbl, Ordinal.iSup_le_iff]
     intro ⟨c, hcb⟩
     have hb₁ : 1 < b := one_lt_two.trans hb₂
     have hbo₀ : b ^ log b a ≠ 0 := pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))

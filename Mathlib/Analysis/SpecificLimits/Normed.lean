@@ -316,8 +316,7 @@ theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, 
   (summable_geometric_of_norm_lt_one h).one_sub_mul_tsum_pow
 
 theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
-  rw [eq_sub_iff_add_eq, (summable_geometric_of_norm_lt_one h).tsum_eq_zero_add,
-    pow_zero, add_comm]
+  rw [eq_sub_iff_add_eq, (summable_geometric_of_norm_lt_one h).tsum_eq_zero_add, pow_zero, add_comm]
 
 theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
     x * ∑' i : ℕ, x ^ i = ∑' i : ℕ, x ^ (i + 1) := by

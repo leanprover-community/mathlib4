@@ -485,11 +485,10 @@ lemma SpecMap_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
   have : IsAffine U := hU
   simp only [IsAffineOpen.fromSpec, Category.assoc, isoSpec_inv]
   simp_rw [← Scheme.homOfLE_ι _ i]
-  rw [Category.assoc, ← morphismRestrict_ι,
-    ← Category.assoc _ (f ∣_ U) U.ι, ← @Scheme.isoSpec_inv_naturality_assoc,
-    ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.Hom.comp_appTop, morphismRestrict_appTop,
-    Scheme.homOfLE_appTop, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
-    Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
+  rw [Category.assoc, ← morphismRestrict_ι, ← Category.assoc _ (f ∣_ U) U.ι,
+    ← @Scheme.isoSpec_inv_naturality_assoc, ← Spec.map_comp_assoc, ← Spec.map_comp_assoc,
+    Scheme.Hom.comp_appTop, morphismRestrict_appTop, Scheme.homOfLE_appTop, Scheme.Hom.app_eq_appLE,
+    Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
 lemma fromSpec_top [IsAffine X] : (isAffineOpen_top X).fromSpec = X.isoSpec.inv := by
   rw [fromSpec, Iso.inv_comp_eq]
@@ -717,9 +716,8 @@ lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
   ext : 1
   apply IsLocalization.ringHom_ext (.powers r)
   rw [IsLocalization.Away.map, CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom,
-    IsLocalization.map_comp, RingHom.algebraMap_toAlgebra,
-    RingHom.algebraMap_toAlgebra, ← RingHom.comp_assoc, ← CommRingCat.hom_comp,
-    ← CommRingCat.hom_comp, ← X.presheaf.map_comp]
+    IsLocalization.map_comp, RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra,
+    ← RingHom.comp_assoc, ← CommRingCat.hom_comp, ← CommRingCat.hom_comp, ← X.presheaf.map_comp]
   simp
 
 set_option backward.defeqAttrib.useBackward true in
@@ -1177,8 +1175,7 @@ lemma Scheme.zeroLocus_inf (X : Scheme.{u}) {U : X.Opens} (I J : Ideal Γ(X, U))
     · simp only [Submodule.coe_inf, Set.mem_union,
         codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) (I ∩ J)) hxU,
         codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) I) hxU, true_or]
-  simp only [← U.toSpecΓ_preimage_zeroLocus, PrimeSpectrum.zeroLocus_inf I J,
-    Set.preimage_union]
+  simp only [← U.toSpecΓ_preimage_zeroLocus, PrimeSpectrum.zeroLocus_inf I J, Set.preimage_union]
 
 lemma Scheme.zeroLocus_biInf
     {X : Scheme.{u}} {U : X.Opens} {ι : Type*}

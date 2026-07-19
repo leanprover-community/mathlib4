@@ -127,8 +127,7 @@ noncomputable def transfiniteCompositionOfShapeιIteration :
     have := (Φ.iter (Order.succ j)).prop_map_succ j (Order.lt_succ_of_not_isMax hj)
     rw [prop_iff] at this ⊢
     simp only [Φ.iterationFunctor_obj j (Φ.iter (Order.succ j)) (Order.le_succ j),
-      Φ.arrowMk_iterationFunctor_map _ _ (Order.le_succ j) (Φ.iter (Order.succ j)) (by simp),
-      this]
+      Φ.arrowMk_iterationFunctor_map _ _ (Order.le_succ j) (Φ.iter (Order.succ j)) (by simp), this]
   F := Φ.iterationFunctor J
   incl := (Φ.iterationCocone J).ι
   isColimit := Φ.isColimitIterationCocone J

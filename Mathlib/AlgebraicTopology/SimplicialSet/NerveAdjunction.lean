@@ -110,10 +110,9 @@ lemma hσ'₀ (x : X _⦋1⦌₂) :
   · dsimp
     rw [spineEquiv_f₂_arrow_zero]
     dsimp [StrictSegal.spineEquiv]
-    rw [← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero, op_comp,
-      Functor.map_comp_apply, hσ, SimplexCategory.mkOfSucc_zero_eq_δ,
-      ← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero,
-      op_comp, Functor.map_comp_apply, hδ₁]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero, op_comp, Functor.map_comp_apply,
+      hσ, SimplexCategory.mkOfSucc_zero_eq_δ, ← Functor.map_comp_apply, ← op_comp,
+      δ₂_two_comp_σ₂_zero, op_comp, Functor.map_comp_apply, hδ₁]
   · dsimp
     rw [spineEquiv_f₂_arrow_one]
     simp [StrictSegal.spineEquiv, SimplexCategory.mkOfSucc_one_eq_δ,
@@ -133,10 +132,9 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
   · dsimp
     rw [spineEquiv_f₂_arrow_one]
     dsimp [StrictSegal.spineEquiv]
-    rw [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one, op_comp,
-      Functor.map_comp_apply, hσ, SimplexCategory.mkOfSucc_one_eq_δ,
-      ← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one,
-      op_comp, Functor.map_comp_apply, hδ₀]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one, op_comp, Functor.map_comp_apply,
+      hσ, SimplexCategory.mkOfSucc_one_eq_δ, ← Functor.map_comp_apply, ← op_comp,
+      δ₂_zero_comp_σ₂_one, op_comp, Functor.map_comp_apply, hδ₀]
 
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
@@ -299,8 +297,7 @@ def functorEquiv :
     IsStrictSegal.hom_ext (fun s ↦ by
       obtain ⟨x₀, x₁, f, rfl⟩ := Edge.exists_of_simplex s
       dsimp [nerve.homEquiv]
-      simp only [homToNerveMk_app_edge, descOfTruncation_obj_mk,
-        descOfTruncation_map_homMk]
+      simp only [homToNerveMk_app_edge, descOfTruncation_obj_mk, descOfTruncation_map_homMk]
       refine ComposableArrows.ext₁ ?_ ?_ rfl
       · dsimp [nerveEquiv, ComposableArrows.right]
         simp only [← f.src_eq, NatTrans.naturality_apply]

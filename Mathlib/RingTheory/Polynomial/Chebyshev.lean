@@ -333,9 +333,8 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       Int.cast_add, Int.cast_natCast, Int.cast_one, ih2, Int.cast_ofNat]
     ring
   | neg_add_one n ih1 ih2 =>
-    simp only [U_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one,
-      ih1, Int.cast_neg, Int.cast_natCast, ih2, Int.cast_add, Int.cast_one, Int.cast_sub,
-      sub_add_cancel]
+    simp only [U_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one, ih1, Int.cast_neg,
+      Int.cast_natCast, ih2, Int.cast_add, Int.cast_one, Int.cast_sub, sub_add_cancel]
     ring
 
 set_option backward.isDefEq.respectTransparency false in
@@ -602,9 +601,8 @@ theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
   | zero => simp
   | one => simp
   | add_two n ih1 ih2 =>
-    simp only [C_add_two, eval_sub, eval_mul, eval_X, mul_neg, mul_one, ih1,
-      Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
-      Int.negOnePow_def 2]
+    simp only [C_add_two, eval_sub, eval_mul, eval_X, mul_neg, mul_one, ih1, Int.negOnePow_add,
+      Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2, Int.negOnePow_def 2]
     norm_cast
     norm_num
     ring
@@ -700,9 +698,8 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
       Int.cast_add, Int.cast_natCast, Int.cast_one, ih2, Int.cast_ofNat]
     ring
   | neg_add_one n ih1 ih2 =>
-    simp only [S_sub_one, eval_sub, eval_mul, eval_X,
-      ih1, Int.cast_neg, Int.cast_natCast, ih2, Int.cast_add, Int.cast_one, Int.cast_sub,
-      sub_add_cancel]
+    simp only [S_sub_one, eval_sub, eval_mul, eval_X, ih1, Int.cast_neg, Int.cast_natCast, ih2,
+      Int.cast_add, Int.cast_one, Int.cast_sub, sub_add_cancel]
     ring
 
 set_option backward.isDefEq.respectTransparency false in
@@ -712,9 +709,8 @@ theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := 
   | zero => simp
   | one => simp; norm_num
   | add_two n ih1 ih2 =>
-    simp only [S_add_two, eval_sub, eval_mul, eval_X, ih1,
-      Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
-      Int.negOnePow_def 2]
+    simp only [S_add_two, eval_sub, eval_mul, eval_X, ih1, Int.cast_add, Int.cast_natCast,
+      Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add, Int.negOnePow_def 2]
     norm_cast
     norm_num
     ring

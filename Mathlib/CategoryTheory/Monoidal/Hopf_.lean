@@ -249,8 +249,7 @@ theorem antipode_comul₂ (A : C) [HopfObj A] :
     simp only [whiskerLeft_comp]
   slice_lhs 5 7 =>
     rw [associator_inv_naturality_right_assoc, whisker_exchange]
-  simp only [braiding_tensorUnit_left,
-    whiskerLeft_comp, whiskerLeft_rightUnitor_inv,
+  simp only [braiding_tensorUnit_left, whiskerLeft_comp, whiskerLeft_rightUnitor_inv,
     whiskerRight_id, whiskerLeft_rightUnitor, Category.assoc, Iso.hom_inv_id_assoc,
     Iso.inv_hom_id_assoc, whiskerLeft_inv_hom_assoc, antipode_right_assoc]
   rw [rightUnitor_inv_naturality_assoc, tensorHom_def]

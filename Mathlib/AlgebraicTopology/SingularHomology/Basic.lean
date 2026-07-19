@@ -75,9 +75,8 @@ lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
       Sigma.ι (fun _ ↦ R) ((stdSimplexToTop.app ⦋n⦌).app (.op ⦋n⦌)
         (SSet.stdSimplex.objEquiv.symm (𝟙 ⦋n⦌))) := by
   dsimp [singularChainComplexFunctorAdjunction, Adjunction.ofNatIsoRight,
-    Adjunction.equivHomsetRightOfNatIso, Adjunction.homEquiv,
-    Adjunction.comp, singularChainComplexFunctor,
-    SSet.chainComplexFunctorAdjunction, SSet.chainComplexFunctor]
+    Adjunction.equivHomsetRightOfNatIso, Adjunction.homEquiv, Adjunction.comp,
+    singularChainComplexFunctor, SSet.chainComplexFunctorAdjunction, SSet.chainComplexFunctor]
   simp [stdSimplexToTop]
   rfl
 
@@ -89,9 +88,8 @@ lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C)
   trans F.map (SSet.toTopSimplex.inv.app ⦋n⦌ ≫ SSet.toTop.map (SSet.yonedaEquiv.symm i) ≫
       sSetTopAdj.counit.app X)
   · dsimp [singularChainComplexFunctorAdjunction, Adjunction.ofNatIsoRight,
-      Adjunction.equivHomsetRightOfNatIso, Adjunction.homEquiv,
-      Adjunction.comp, singularChainComplexFunctor, SSet.chainComplexFunctor,
-      SSet.chainComplexFunctorAdjunction]
+      Adjunction.equivHomsetRightOfNatIso, Adjunction.homEquiv, Adjunction.comp,
+      singularChainComplexFunctor, SSet.chainComplexFunctor, SSet.chainComplexFunctorAdjunction]
     simp
   · congr 1
     rw [← reassoc_of% sSetTopAdj_unit_app_app_down]

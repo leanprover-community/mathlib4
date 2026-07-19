@@ -463,10 +463,9 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
       ((N + 1).primesBelow \ k.primesBelow).biUnion
         fun p ↦ {m ∈ Finset.range (N + 1) | m ≠ 0 ∧ p ∣ m} := by
   ext m
-  simp only [roughNumbersUpTo, mem_smoothNumbers_iff_forall_le, not_and, not_forall,
-    not_lt, exists_prop, Finset.mem_range, Finset.mem_filter,
-    Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow,
-    show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
+  simp only [roughNumbersUpTo, mem_smoothNumbers_iff_forall_le, not_and, not_forall, not_lt,
+    exists_prop, Finset.mem_range, Finset.mem_filter, Finset.mem_biUnion, Finset.mem_sdiff,
+    mem_primesBelow, show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
   simp_rw [← exists_and_left, ← not_lt]
   refine exists_congr fun p ↦ ?_
   have H : m ≠ 0 → p ∣ m → ¬ m < p :=

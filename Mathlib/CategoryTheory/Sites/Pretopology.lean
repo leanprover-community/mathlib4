@@ -225,8 +225,7 @@ instance : InfSet (Pretopology C) where
     coverings := sInf ((fun J ↦ J.coverings) '' T)
     has_isos := fun X Y f _ ↦ by
       simp only [sInf_apply, Set.iInf_eq_iInter, Set.iInter_coe_set, Set.mem_image,
-        Set.iInter_exists,
-        Set.biInter_and', Set.iInter_iInter_eq_right, Set.mem_iInter]
+        Set.iInter_exists, Set.biInter_and', Set.iInter_iInter_eq_right, Set.mem_iInter]
       intro t _
       exact t.has_isos f
     pullbacks := fun X Y f S hS ↦ by

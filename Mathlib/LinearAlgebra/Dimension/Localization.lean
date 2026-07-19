@@ -149,9 +149,8 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
   let _ : Algebra T ST := Algebra.TensorProduct.rightAlgebra
   set pT := Algebra.algebraMapSubmonoid T p
   rw [← lift_lift.{max uS uT, max uM uN}, ← lift_umax.{uP},
-    ← IsLocalizedModule.lift_rank_eq pT (mk T ST P 1) hpT,
-    ← IsLocalization.rank_eq ST pT hpT, lift_id'.{uP, max uS uT},
-    ← lift_id'.{max uS uT, max uS uT uP} (Module.rank ..), lift_lift,
+    ← IsLocalizedModule.lift_rank_eq pT (mk T ST P 1) hpT, ← IsLocalization.rank_eq ST pT hpT,
+    lift_id'.{uP, max uS uT}, ← lift_id'.{max uS uT, max uS uT uP} (Module.rank ..), lift_lift,
     ← lift_lift.{max uS uT uN, uM}, lift_inj]
   exact LinearEquiv.lift_rank_eq <| AlgebraTensorModule.congr (.refl ST ST) bc.equiv.symm ≪≫ₗ
     AlgebraTensorModule.cancelBaseChange .. ≪≫ₗ (AlgebraTensorModule.cancelBaseChange ..).symm ≪≫ₗ
@@ -236,8 +235,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     by_cases hg0 : g 0 = 0
     · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
       cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]
-    simp only [zero_add, pow_add _ _ x,
-      ← mul_assoc, pow_succ, ← Finset.sum_mul, smul_eq_mul] at hg
+    simp only [zero_add, pow_add _ _ x, ← mul_assoc, pow_succ, ← Finset.sum_mul, smul_eq_mul] at hg
     rw [← neg_eq_iff_add_eq_zero, ← neg_mul, ← neg_mul] at hg
     have := mul_right_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp (s ^ x).prop) hg
     exact (h _ ⟨(g 0), mem_nonZeroDivisors_iff_ne_zero.mpr (by simpa)⟩ this.symm).elim

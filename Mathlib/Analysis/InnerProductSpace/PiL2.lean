@@ -417,8 +417,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         rw [this, Pi.single_smul]
         replace h := congr_fun h i
         simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
-          coe_symm_linearEquiv, PiLp.toLp_single,
-          LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
+          coe_symm_linearEquiv, PiLp.toLp_single, LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 
 @[simp]
@@ -1208,16 +1207,14 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
       have Lp1x : L (p1 x) ∈ LinearMap.range L.toLinearMap :=
         LinearMap.mem_range_self L.toLinearMap (p1 x)
       have Lp2x : L3 (p2 x) ∈ (LinearMap.range L.toLinearMap)ᗮ := by
-        simp only [LS,
-          ← Submodule.range_subtype LSᗮ]
+        simp only [LS, ← Submodule.range_subtype LSᗮ]
         apply LinearMap.mem_range_self
       apply Submodule.inner_right_of_mem_orthogonal Lp1x Lp2x
     -- Apply the Pythagorean theorem and simplify
     rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
-    simp only [p1, p2, LinearIsometry.norm_map,
-      ContinuousLinearMap.coe_coe, Submodule.coe_norm]
+    simp only [p1, p2, LinearIsometry.norm_map, ContinuousLinearMap.coe_coe, Submodule.coe_norm]
   exact
     { toLinearMap := M
       norm_map' := M_norm_map }

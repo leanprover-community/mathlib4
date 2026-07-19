@@ -98,8 +98,7 @@ theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p))]
   ext
-  rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
-    NNReal.coe_natCast]
+  rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv, NNReal.coe_natCast]
 
 open MonoidWithZeroHom.ValueGroup₀
 

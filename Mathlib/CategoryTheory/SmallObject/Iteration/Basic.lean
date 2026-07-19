@@ -394,8 +394,7 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
           · simp only [not_le] at h'
             obtain rfl : k₁ = Order.succ j := le_antisymm h₁₂
               ((Order.succ_le_iff_of_not_isMax hj₁).2 h')
-            rw [MapEq, arrowMap_refl, arrowMap_refl,
-              obj_succ _ _ h', obj_succ _ _ h', hsucc]
+            rw [MapEq, arrowMap_refl, arrowMap_refl, obj_succ _ _ h', obj_succ _ _ h', hsucc]
       simp only [MapEq, ← arrowMap_restrictionLE _ (Order.le_succ j) _ _ _ h, hj₂]
     | isSuccLimit j h₁ h₂ =>
       intro iter₁ iter₂

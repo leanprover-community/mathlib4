@@ -174,10 +174,9 @@ lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
   ext
   simp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
-    MonoidalCategoryStruct.tensorUnit, MonoidalCategoryStruct.tensorObj,
-    tensorUnit, tensorHom, WithInitial.down, rightUnitor, tensorObj, CategoryStruct.id,
-    CategoryStruct.comp, WithInitial.comp, WithInitial.id,
-    OrderEmbedding.toOrderHom]
+    MonoidalCategoryStruct.tensorUnit, MonoidalCategoryStruct.tensorObj, tensorUnit, tensorHom,
+    WithInitial.down, rightUnitor, tensorObj, CategoryStruct.id, CategoryStruct.comp,
+    WithInitial.comp, WithInitial.id, OrderEmbedding.toOrderHom]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
@@ -259,9 +258,8 @@ lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     have e₂ := inr'_eval y₁ y₂ <| (WithInitial.down f₂).toOrderHom i
     simp only [SimplexCategory.len_mk] at e₁ e₂
     rw [e₁, e₂]
-    simp only [SimplexCategory.eqToHom_toOrderHom, SimplexCategory.len_mk,
-      Nat.succ_eq_add_one, OrderEmbedding.toOrderHom_coe,
-      OrderIso.coe_toOrderEmbedding, Fin.castOrderIso_apply,
+    simp only [SimplexCategory.eqToHom_toOrderHom, SimplexCategory.len_mk, Nat.succ_eq_add_one,
+      OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding, Fin.castOrderIso_apply,
       Fin.cast_cast, Fin.cast_eq_self, Fin.cast_inj]
     conv_lhs =>
       change Fin.addCases

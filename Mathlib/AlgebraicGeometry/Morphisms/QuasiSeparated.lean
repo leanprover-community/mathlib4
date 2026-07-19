@@ -309,9 +309,8 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
   use n
   intro m hm
   rw [← tsub_add_cancel_of_le hm]
-  simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply,
-    pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
-    ← CommRingCat.comp_apply] at e ⊢
+  simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, pow_add, map_pow, map_mul, mul_assoc,
+    ← Functor.map_comp, ← op_comp, homOfLE_comp, ← CommRingCat.comp_apply] at e ⊢
   rw [e]
 
 set_option backward.isDefEq.respectTransparency false in

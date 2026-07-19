@@ -53,8 +53,7 @@ noncomputable instance :
       rw [← tensorHom_def'_assoc, associator_naturality]
     conv_rhs =>
       simp only [toPresheafFiber_naturality_assoc, toPresheafFiber_presheafFiberDesc_assoc,
-        tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp,
-        toPresheafFiber_presheafFiberDesc]
+        tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp, toPresheafFiber_presheafFiberDesc]
       rw [← tensorHom_def]
       dsimp
   oplax_left_unitality _ := by

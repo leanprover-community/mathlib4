@@ -175,8 +175,7 @@ variable (X)
 
 lemma isOpen_iff {U : Set Y} :
     IsOpen U ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), IsOpen (f ⁻¹' U) := by
-  simp [← (homeomorph (X := X)).isQuotientMap.isOpen_preimage,
-    WithGeneratedByTopology.isOpen_iff]
+  simp [← (homeomorph (X := X)).isQuotientMap.isOpen_preimage, WithGeneratedByTopology.isOpen_iff]
 
 lemma isClosed_iff {U : Set Y} :
     IsClosed U ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), IsClosed (f ⁻¹' U) := by

@@ -246,8 +246,7 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
   have f_eq_sum : f = g₁ * f + g₂ * f := by
     ext x
     simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mul,
-      Pi.mul_apply, NNReal.coe_mul,
-      Eq.symm (RightDistribClass.right_distrib _ _ _)]
+      Pi.mul_apply, NNReal.coe_mul, Eq.symm (RightDistribClass.right_distrib _ _ _)]
     by_cases h : f x = 0
     · rw [h]
       simp only [NNReal.coe_zero, mul_zero]

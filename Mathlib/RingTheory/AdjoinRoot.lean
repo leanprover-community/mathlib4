@@ -727,8 +727,7 @@ See `finrank_quotient_span_eq_natDegree'` for a version over a ring when `f` is 
 theorem _root_.finrank_quotient_span_eq_natDegree {f : K[X]} :
     Module.finrank K (K[X] ⧸ Ideal.span {f}) = f.natDegree := by
   by_cases hf : f = 0
-  · rw [hf, natDegree_zero,
-      ((Submodule.quotEquivOfEqBot _ (by simp)).restrictScalars K).finrank_eq]
+  · rw [hf, natDegree_zero, ((Submodule.quotEquivOfEqBot _ (by simp)).restrictScalars K).finrank_eq]
     exact finrank_of_not_finite Polynomial.not_finite
   rw [PowerBasis.finrank]
   exact AdjoinRoot.powerBasis_dim hf
@@ -1047,9 +1046,8 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                   (AdjoinRoot.equiv' (minpoly R pb.gen) pb
                         (by rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self])
                         (minpoly.aeval _ _)).symm.toRingEquiv
-                  (by rw [Ideal.map_map,
-                      ← AlgEquiv.coe_ringHom_commutes, ← AdjoinRoot.algebraMap_eq,
-                      AlgHom.comp_algebraMap]))
+                  (by rw [Ideal.map_map, ← AlgEquiv.coe_ringHom_commutes,
+                      ← AdjoinRoot.algebraMap_eq, AlgHom.comp_algebraMap]))
                 (algebraMap R (S ⧸ I.map (algebraMap R S)) x) = algebraMap R _ x from fun x => by
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
                     RingHom.toFun_eq_coe, Ideal.quotientMap_mk,

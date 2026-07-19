@@ -354,8 +354,7 @@ instance comparison_essSurj [Reflective R] :
     Monad.comparison_obj_A, Adjunction.toMonad_coe]
   rw [← cancel_epi ((reflectorAdjunction R).unit.app X.A)]
   dsimp only [Functor.id_obj, Functor.comp_obj]
-  rw [Adjunction.unit_naturality_assoc,
-    Adjunction.right_triangle_components, comp_id]
+  rw [Adjunction.unit_naturality_assoc, Adjunction.right_triangle_components, comp_id]
   apply (X.unit_assoc _).symm
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -387,8 +386,7 @@ instance comparison_essSurj [Coreflective R] :
   refine Comonad.Coalgebra.isoMk ?_ ?_
   · exact (asIso ((coreflectorAdjunction R).counit.app X.A))
   rw [← cancel_mono ((coreflectorAdjunction R).counit.app X.A)]
-  simp only [Functor.comp_obj, Functor.id_obj,
-    assoc]
+  simp only [Functor.comp_obj, Functor.id_obj, assoc]
   simpa using (coreflectorAdjunction R).counit.app X.A ≫= X.counit.symm
 
 set_option backward.isDefEq.respectTransparency.types false in

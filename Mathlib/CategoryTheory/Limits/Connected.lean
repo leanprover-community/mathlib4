@@ -122,8 +122,7 @@ theorem IsLimit.isIso_limMap_π {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : Is
       hc.conePointUniqueUpToIso (limit.isLimit _)).hom by
     rw [this]; infer_instance
   ext j
-  simp only [limMap_π, limit.cone_x, Iso.trans_hom, assoc,
-    limit.conePointUniqueUpToIso_hom_comp]
+  simp only [limMap_π, limit.cone_x, Iso.trans_hom, assoc, limit.conePointUniqueUpToIso_hom_comp]
   congr 1
   simp [← Iso.inv_comp_eq_id]
 

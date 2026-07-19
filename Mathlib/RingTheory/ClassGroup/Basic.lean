@@ -148,8 +148,7 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
 theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
     {I' : Ideal R} (hI : (I : FractionalIdeal R⁰ <| FractionRing R) = I') :
     ClassGroup.mk (FractionRing R) I = 1 ↔ ∃ x : R, x ≠ 0 ∧ I' = Ideal.span {x} := by
-  rw [← map_one (ClassGroup.mk (R := R) (K := FractionRing R)),
-    ClassGroup.mk_eq_mk_of_coe_ideal hI]
+  rw [← map_one (ClassGroup.mk (R := R) (K := FractionRing R)), ClassGroup.mk_eq_mk_of_coe_ideal hI]
   any_goals rfl
   constructor
   · rintro ⟨x, y, hx, hy, h⟩
@@ -220,9 +219,8 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.mk K' (Units.map (↑(canonicalEquiv R⁰ K K')) I : (FractionalIdeal R⁰ K')ˣ) =
       ClassGroup.mk K I := by
-  rw [ClassGroup.mk_def, ClassGroup.mk_def, ← MonoidHom.comp_apply (Units.map _),
-      ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
-      FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
+  rw [ClassGroup.mk_def, ClassGroup.mk_def, ← MonoidHom.comp_apply (Units.map _), ← Units.map_comp,
+      ← RingEquiv.coe_monoidHom_trans, FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
 
 set_option linter.overlappingInstances false
 

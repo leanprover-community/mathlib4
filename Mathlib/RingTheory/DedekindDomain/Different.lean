@@ -195,8 +195,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   have H := mulVec_cramer (traceMatrix K b) fun i => trace K L (x * a * b i)
   have : Function.Injective (traceMatrix K b).mulVec := by
     rwa [mulVec_injective_iff_isUnit, isUnit_iff_isUnit_det]
-  rw [← traceMatrix_of_basis_mulVec, ← mulVec_smul, this.eq_iff,
-    traceMatrix_of_basis_mulVec] at H
+  rw [← traceMatrix_of_basis_mulVec, ← mulVec_smul, this.eq_iff, traceMatrix_of_basis_mulVec] at H
   rw [← b.equivFun.symm_apply_apply (_ * _), b.equivFun_symm_apply]
   apply IsIntegral.sum
   intro i _
@@ -417,9 +416,8 @@ variable (C M : Type*) [CommRing C] [IsDedekindDomain C] [Field M] [Algebra C M]
 theorem trace_mem_dual_one (x : M) (hx : x ∈ dual A K (1 : FractionalIdeal C⁰ M)) :
     Algebra.trace L M x ∈ dual A K (1 : FractionalIdeal B⁰ L) := by
   simp only [ne_eq, one_ne_zero, not_false_eq_true, mem_dual, mem_one_iff, traceForm_apply,
-    RingHom.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-    mul_comm _ (algebraMap _ _ _), ← Algebra.smul_def, ← LinearMap.map_smul_of_tower,
-    Algebra.trace_trace] at hx ⊢
+    RingHom.mem_range, forall_exists_index, forall_apply_eq_imp_iff, mul_comm _ (algebraMap _ _ _),
+    ← Algebra.smul_def, ← LinearMap.map_smul_of_tower, Algebra.trace_trace] at hx ⊢
   simpa using fun b ↦ hx (algebraMap B C b)
 
 variable [IsIntegralClosure C B M] [Algebra.IsSeparable L M]
@@ -508,9 +506,8 @@ lemma coeSubmodule_differentIdeal :
         RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
     apply IsLocalization.ringHom_ext A⁰
     ext
-    simp only [RingHom.coe_comp, RingHom.coe_coe,
-      AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
-      ← IsScalarTower.algebraMap_apply]
+    simp only [RingHom.coe_comp, RingHom.coe_coe, AlgEquiv.coe_ringEquiv, Function.comp_apply,
+      AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
     Algebra.IsSeparable.of_equiv_equiv _ _ H
@@ -709,8 +706,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux
   suffices ∀ x ∈ a, intTrace A B x ∈ p by
     have hP : ((P ^ (e - 1) :)⁻¹ : FractionalIdeal B⁰ L) = a / p.map (algebraMap A B) := by
       apply inv_involutive.injective
-      simp only [inv_inv, ha, FractionalIdeal.coeIdeal_mul, inv_div,
-          mul_div_assoc]
+      simp only [inv_inv, ha, FractionalIdeal.coeIdeal_mul, inv_div, mul_div_assoc]
       rw [div_self (by simpa), mul_one]
     rw [Ideal.dvd_iff_le, differentialIdeal_le_iff (K := K) (L := L) (pow_ne_zero _ hPbot), hP,
       Submodule.map_le_iff_le_comap]
@@ -792,8 +788,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
       simp only [Algebra.traceForm_apply, mul_one] at hz
       refine ⟨z * y, Ideal.mul_mem_left _ _ hy, ?_⟩
       rw [Algebra.linearMap_apply, Algebra.linearMap_apply, mul_comm x,
-        ← IsScalarTower.algebraMap_apply,
-        ← Algebra.smul_def, LinearMap.map_smul_of_tower, ← hz,
+        ← IsScalarTower.algebraMap_apply, ← Algebra.smul_def, LinearMap.map_smul_of_tower, ← hz,
         Algebra.smul_def, map_mul, mul_comm]
     | zero => simp
     | add y z _ _ hy hz =>

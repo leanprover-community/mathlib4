@@ -161,8 +161,7 @@ private theorem order_add_of_order_ne.aux (φ ψ : R⟦X⟧)
     rw [(coeff _).map_add, coeff_of_lt_order i H, add_zero]
     exact (order_eq_nat.1 hi.symm).1
   · intro i hi
-    rw [(coeff _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
-      zero_add]
+    rw [(coeff _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H), zero_add]
 
 /-- The order of the sum of two formal power series
 is the minimum of their orders if their orders differ. -/

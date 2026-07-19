@@ -630,9 +630,8 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
   have hρ : z = (1 : ℝ) +ᵥ ρ := by
     apply eq_of_re_of_norm
     · norm_num [h', ρ]
-    · rw [norm_def, h, coe_vadd, ofReal_one,
-        show 1 + (ρ : ℂ) = -ρ ^ 2 by grind [ρ_sq], norm_neg, norm_pow, norm_ρ, Real.sqrt_one,
-        one_pow]
+    · rw [norm_def, h, coe_vadd, ofReal_one, show 1 + (ρ : ℂ) = -ρ ^ 2 by grind [ρ_sq], norm_neg,
+        norm_pow, norm_ρ, Real.sqrt_one, one_pow]
   refine ⟨?_, hρ⟩
   rw [hgeq, hρ, mul_assoc, mul_smul] at hg
   have : S • ρ = T • ρ := by

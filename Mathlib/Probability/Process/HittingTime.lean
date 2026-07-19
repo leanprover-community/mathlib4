@@ -476,8 +476,7 @@ section CompleteLattice
 variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β}
 
 theorem hittingBtwn_eq_sInf (ω : Ω) : hittingBtwn u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} := by
-  simp only [hittingBtwn, Set.Icc_bot,
-    Set.Iic_top, Set.univ_inter, ite_eq_left_iff, not_exists]
+  simp only [hittingBtwn, Set.Icc_bot, Set.Iic_top, Set.univ_inter, ite_eq_left_iff, not_exists]
   intro h_notMem_s
   symm
   rw [sInf_eq_top]

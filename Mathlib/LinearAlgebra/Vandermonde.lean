@@ -176,9 +176,8 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   have hW_eq : (W.submatrix succ succ) = .of fun i j ↦ (v (succ i) - r * w (succ i)) *
       projVandermonde (v ∘ succ) (w ∘ succ) i j := by
     ext i j
-    simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
-      val_castSucc, submatrix_apply, Function.comp_apply, rev_succ,
-      W, r, rev_castSucc]
+    simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ, val_castSucc,
+      submatrix_apply, Function.comp_apply, rev_succ, W, r, rev_castSucc]
     simp
     ring
   /- The first row of `W` is `[(w 0)^n, 0, ..., 0]` - take a cofactor expansion along this row,

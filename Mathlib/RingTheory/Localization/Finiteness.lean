@@ -105,8 +105,7 @@ theorem multiple_mem_span_of_mem_localization_span
   induction s' using Finset.induction_on generalizing x with
   | empty => use 1; simpa using hs'
   | insert a s _ hs =>
-  simp only [Finset.coe_insert,
-    Submodule.mem_span_insert] at hs' ⊢
+  simp only [Finset.coe_insert, Submodule.mem_span_insert] at hs' ⊢
   rcases hs' with ⟨y, z, hz, rfl⟩
   rcases IsLocalization.surj M y with ⟨⟨y', s'⟩, e⟩
   apply congrArg (fun x ↦ x • a) at e

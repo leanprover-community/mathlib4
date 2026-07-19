@@ -93,8 +93,7 @@ theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
   · congr
     ext1 x
-    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm,
-      ENNReal.toReal_ofReal (norm_nonneg _)]
+    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm, ENNReal.toReal_ofReal (norm_nonneg _)]
   · intro x _
     by_cases hx0 : x = 0
     · rw [hx0]; simp
@@ -770,8 +769,7 @@ theorem setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
   by_cases hF : CompleteSpace F; swap
   · simp [setToFun, hF]
   by_cases hf : Integrable f μ
-  · rw [setToFun_eq hT hf, setToFun_eq hT hf.neg, Integrable.toL1_neg,
-      (L1.setToL1 hT).map_neg]
+  · rw [setToFun_eq hT hf, setToFun_eq hT hf.neg, Integrable.toL1_neg, (L1.setToL1 hT).map_neg]
   · rw [setToFun_undef hT hf, setToFun_undef hT, neg_zero]
     rwa [← integrable_neg_iff] at hf
 

@@ -141,8 +141,7 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
     induction a using h.out.inductionOn with
     | zero => rw [map_zero, zero_smul, smul_zero, zero_add, zero_mul, map_zero]
     | smul x y e =>
-      rw [smul_mul_assoc, map_smul, e, map_smul, smul_add,
-        smul_comm x b, smul_assoc]
+      rw [smul_mul_assoc, map_smul, e, map_smul, smul_add, smul_comm x b, smul_assoc]
     | add b₁ b₂ e₁ e₂ => simp only [add_mul, add_smul, map_add, e₁, e₂, smul_add, add_add_add_comm]
     | tmul z =>
       dsimp

@@ -689,8 +689,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
       exact Nat.card_eq_zero_of_infinite
     · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa [isEmpty_subtype] using h
       exact Nat.card_of_isEmpty
-  · rw [← coe_ofPred, Nat.card_congr (setAddOrderOfEquiv p hn),
-      n.totient_eq_card_lt_and_coprime]
+  · rw [← coe_ofPred, Nat.card_congr (setAddOrderOfEquiv p hn), n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 
 end FiniteOrderPoints

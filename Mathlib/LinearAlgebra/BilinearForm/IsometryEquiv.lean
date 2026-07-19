@@ -127,7 +127,6 @@ def isometryEquivOfCompLinearEquiv (B : LinearMap.BilinForm R M) (f : M₁ ≃�
   { f.symm with
     map_app' := by
       intro _ _
-      simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
-        f.apply_symm_apply] }
+      simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe, f.apply_symm_apply] }
 
 end LinearMap.BilinForm

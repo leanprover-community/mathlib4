@@ -207,12 +207,9 @@ lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
   rw [Functor.map_comp, Functor.map_comp, assoc, assoc, assoc,
     ← HomologicalComplex₂.totalShift₁Iso_hom_naturality_assoc,
     HomologicalComplex₂.totalShift₁Iso_hom_totalShift₂Iso_hom,
-    ← HomologicalComplex₂.totalShift₂Iso_hom_naturality_assoc,
-    Linear.comp_units_smul, Linear.comp_units_smul,
-    smul_left_cancel_iff,
-    ← HomologicalComplex₂.total.map_comp_assoc,
-    ← HomologicalComplex₂.total.map_comp_assoc,
-    ← HomologicalComplex₂.total.map_comp_assoc]
+    ← HomologicalComplex₂.totalShift₂Iso_hom_naturality_assoc, Linear.comp_units_smul,
+    Linear.comp_units_smul, smul_left_cancel_iff, ← HomologicalComplex₂.total.map_comp_assoc,
+    ← HomologicalComplex₂.total.map_comp_assoc, ← HomologicalComplex₂.total.map_comp_assoc]
   congr 2
   ext a b
   dsimp [HomologicalComplex₂.shiftFunctor₁₂CommIso]
@@ -329,8 +326,7 @@ noncomputable instance :
     have := congr_arg Iso.hom
       (CochainComplex.mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso K₁ K₂ F p q)
     dsimp at this
-    simp [commShiftIso_map₂CochainComplex_hom_app,
-      commShiftIso_map₂CochainComplex_flip_hom_app,
+    simp [commShiftIso_map₂CochainComplex_hom_app, commShiftIso_map₂CochainComplex_flip_hom_app,
       reassoc_of% this, smul_smul]
 
 end CategoryTheory.Functor

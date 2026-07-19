@@ -95,8 +95,7 @@ theorem exists_adjoin_eq_top [Algebra.FormallyUnramified R S] :
   obtain ⟨β₀, hβ₀⟩ := Field.exists_primitive_element (ResidueField R) (ResidueField S)
   obtain ⟨β, hβ⟩ := residue_surjective (R := S) β₀
   refine ⟨β, adjoin_residue_eq_top_iff_adjoin_eq_top β |>.mp ?_⟩
-  rw [hβ,
-    ← IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.of_finite _ _),
+  rw [hβ, ← IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.of_finite _ _),
     hβ₀, IntermediateField.top_toSubalgebra]
 
 /-- For finite étale extensions of local rings,
@@ -129,10 +128,8 @@ lemma minpoly_map_residue [Algebra.Etale R S]
     simp
   · have : Module.Free R S := Module.free_of_flat_of_isLocalRing
     have hβ₀ := (adjoin_residue_eq_top_iff_adjoin_eq_top β).mpr hadj
-    rw [h.natDegree_map _,
-      ← (IsAdjoinRootMonic.mkOfAdjoinEqTop' hadj).finrank,
-      finrank_eq_finrank_residueField,
-      (IsAdjoinRootMonic.mkOfAdjoinEqTop' hβ₀).finrank]
+    rw [h.natDegree_map _, ← (IsAdjoinRootMonic.mkOfAdjoinEqTop' hadj).finrank,
+      finrank_eq_finrank_residueField, (IsAdjoinRootMonic.mkOfAdjoinEqTop' hβ₀).finrank]
 
 /-- If `R → S` is étale and `R[β] = S`, then `f'(β)` is a unit in `S`,
 where `f = minpoly R β`. The proof reduces to separability of the

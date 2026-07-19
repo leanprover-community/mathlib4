@@ -186,12 +186,10 @@ def homotopyOpEquiv {K L : CochainComplex C ℤ} {f g : K ⟶ L} :
   invFun h := homotopyUnop h
   left_inv h := by
     ext p q
-    simp [homotopyUnop_hom_eq _ p q (-p) (-q),
-      homotopyOp_hom_eq _ (-q) (-p) q p]
+    simp [homotopyUnop_hom_eq _ p q (-p) (-q), homotopyOp_hom_eq _ (-q) (-p) q p]
   right_inv h := by
     ext p q
-    simp [homotopyOp_hom_eq _ p q (-p) (-q),
-      homotopyUnop_hom_eq _ (-q) (-p) q p]
+    simp [homotopyOp_hom_eq _ p q (-p) (-q), homotopyUnop_hom_eq _ (-q) (-p) q p]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma exactAt_op {K : CochainComplex C ℤ} {n : ℤ} (hK : K.ExactAt n)

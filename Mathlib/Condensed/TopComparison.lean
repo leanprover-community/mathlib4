@@ -79,9 +79,8 @@ theorem equalizerCondition_yonedaPresheaf
     exact congr_fun h y
   · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.coe_mk, mk.injEq, Set.mem_ofPred_eq] at ha
-    simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
-      Set.coe_ofPred, mapToEqualizer, Set.mem_ofPred_eq, ConcreteCategory.hom_ofHom,
-      Subtype.mk.injEq]
+    simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk, Set.coe_ofPred,
+      mapToEqualizer, Set.mem_ofPred_eq, ConcreteCategory.hom_ofHom, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
     congr 1

@@ -281,8 +281,7 @@ theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S
   simp [two_smul]
 
 theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟(2 : R) • (PD l R)ᵀ = 1 := by
-  rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul,
-    Matrix.fromBlocks_multiply]
+  rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul, Matrix.fromBlocks_multiply]
   simp
 
 instance invertiblePD [Fintype l] [Invertible (2 : R)] : Invertible (PD l R) :=

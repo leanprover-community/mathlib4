@@ -216,8 +216,7 @@ theorem succ_nth_conv'_eq_squashGCF_nth_conv' :
     cases g_s_head_eq : g.s.get? 0 <;>
       simp [g_s_head_eq, squashGCF, convs', convs'Aux, Stream'.Seq.head]
   | succ =>
-    simp only [succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq, convs',
-      squashGCF]
+    simp only [succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq, convs', squashGCF]
 
 /-- The auxiliary continuants before the squashed position stay the same. -/
 theorem contsAux_eq_contsAux_squashGCF_of_le {m : ℕ} :

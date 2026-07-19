@@ -176,8 +176,7 @@ lemma isRightDerivabilityStructure_iff_of_equivalences
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.IsRightDerivabilityStructure ↔ B.IsRightDerivabilityStructure := by
   let e : T.op.functor ⋙ R.op.functor ≅ L.op.functor ⋙ B.op.functor := NatIso.op iso.symm
-  simp only [isRightDerivabilityStructure_iff_op,
-    isLeftDerivabilityStructure_iff_of_equivalences e]
+  simp only [isRightDerivabilityStructure_iff_op, isLeftDerivabilityStructure_iff_of_equivalences e]
 
 lemma isRightDerivabilityStructure_of_equivalences
     [T.IsRightDerivabilityStructure]

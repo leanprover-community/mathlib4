@@ -393,8 +393,7 @@ noncomputable def toCopy : Copy (completeEquipartiteGraph r t) G := by
     have : IsEmpty (Fin r × Fin t) := by simp [ht, Fin.isEmpty]
     exact Copy.bot .ofIsEmpty
   · have : Nonempty (Fin r ↪ K.parts) := by
-      rw [Embedding.nonempty_iff_card_le,
-        Fintype.card_fin, card_coe, K.card_parts.resolve_right ht]
+      rw [Embedding.nonempty_iff_card_le, Fintype.card_fin, card_coe, K.card_parts.resolve_right ht]
     let fᵣ : Fin r ↪ K.parts := Classical.arbitrary (Fin r ↪ K.parts)
     have (p : K.parts) : Nonempty (Fin t ↪ p) := by
       rw [Embedding.nonempty_iff_card_le, Fintype.card_fin, card_coe, K.card_mem_parts p.prop]

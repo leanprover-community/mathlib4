@@ -52,8 +52,7 @@ private lemma E₄CubeSubE₆SqForm_qExpansion_coeff_one :
     (qExpansion 1 E₄CubeSubE₆SqForm).coeff 1 = 1728 := by
   rw [E₄CubeSubE₆SqForm_qExpansion_eq]
   norm_num [PowerSeries.coeff_mul, Finset.Nat.antidiagonal_succ, E₄_qExpansion_coeff_one,
-    E₆_qExpansion_coeff_one, E_qExpansion_coeff_zero _ ⟨2, rfl⟩,
-    E_qExpansion_coeff_zero _ ⟨3, rfl⟩]
+    E₆_qExpansion_coeff_one, E_qExpansion_coeff_zero _ ⟨2, rfl⟩, E_qExpansion_coeff_zero _ ⟨3, rfl⟩]
 
 /-- The modular discriminant equals `(E₄³ - E₆²) / 1728`. -/
 theorem discriminant_eq_E₄_cube_sub_E₆_sq (z : ℍ) :

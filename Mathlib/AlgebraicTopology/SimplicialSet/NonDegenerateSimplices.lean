@@ -81,8 +81,7 @@ lemma lt_iff {x y : X.N} : x < y ↔ x.subcomplex < y.subcomplex :=
 
 lemma le_iff_exists_mono {x y : X.N} :
     x ≤ y ↔ ∃ (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) (_ : Mono f), X.map f.op y.simplex = x.simplex := by
-  simp only [le_iff, CategoryTheory.Subfunctor.ofSection_le_iff,
-    Subcomplex.mem_ofSimplex_obj_iff]
+  simp only [le_iff, CategoryTheory.Subfunctor.ofSection_le_iff, Subcomplex.mem_ofSimplex_obj_iff]
   exact ⟨fun ⟨f, hf⟩ ↦ ⟨f, X.mono_of_nonDegenerate ⟨_, x.nonDegenerate⟩ f _ hf, hf⟩, by tauto⟩
 
 lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by

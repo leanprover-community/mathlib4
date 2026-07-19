@@ -355,8 +355,7 @@ def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
       Scheme.fromSpecResidueField_apply, exists_true_left]
     rw [← Spec.map_inj, Spec.map_comp, ← cancel_mono (X.fromSpecResidueField _)]
     grind [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField,
-      Scheme.fromSpecResidueField_apply,
-      Scheme.residueFieldCongr_fromSpecResidueField]
+      Scheme.fromSpecResidueField_apply, Scheme.residueFieldCongr_fromSpecResidueField]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]

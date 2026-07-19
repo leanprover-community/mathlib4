@@ -849,9 +849,8 @@ def resLEStalkMap (x : V) :
   Arrow.isoMk (U.stalkIso _ ≪≫
       (Y.presheaf.stalkCongr <| Inseparable.of_eq <| by simp)) (V.stalkIso x) <| by
     dsimp
-    rw [Category.assoc, ← Iso.eq_inv_comp, ← Category.assoc, ← Iso.comp_inv_eq,
-      Opens.stalkIso_inv, Opens.stalkIso_inv, ← stalkMap_comp,
-      stalkMap_congr_hom _ _ (resLE_comp_ι f e), stalkMap_comp]
+    rw [Category.assoc, ← Iso.eq_inv_comp, ← Category.assoc, ← Iso.comp_inv_eq, Opens.stalkIso_inv,
+      Opens.stalkIso_inv, ← stalkMap_comp, stalkMap_congr_hom _ _ (resLE_comp_ι f e), stalkMap_comp]
     simp
 
 end Scheme.Hom

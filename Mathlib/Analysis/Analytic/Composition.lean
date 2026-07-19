@@ -265,8 +265,7 @@ theorem comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultili
     (v : Fin 1 → E) : (q.comp p) 1 v = q 1 fun _i => p 1 v := by
   have : {Composition.ones 1} = (Finset.univ : Finset (Composition 1)) :=
     Finset.eq_univ_of_card _ (by simp [composition_card])
-  simp only [FormalMultilinearSeries.comp, compAlongComposition_apply, ← this,
-    Finset.sum_singleton]
+  simp only [FormalMultilinearSeries.comp, compAlongComposition_apply, ← this, Finset.sum_singleton]
   refine q.congr (by simp) fun i hi1 hi2 => ?_
   simp only [applyComposition_ones]
   exact p.congr rfl fun j _hj1 hj2 => by congr!

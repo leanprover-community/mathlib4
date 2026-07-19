@@ -203,15 +203,13 @@ theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j the
 theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = w i := by
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_true,
-      mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
-      s.map_affineCombination b w hw]
+      mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq, s.map_affineCombination b w hw]
 
 @[simp]
 theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
-      mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
-      s.map_affineCombination b w hw]
+      mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq, s.map_affineCombination b w hw]
 
 @[simp]
 theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by

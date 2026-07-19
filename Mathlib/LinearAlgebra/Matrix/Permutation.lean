@@ -103,8 +103,7 @@ See `Matrix.permMatrix_l2_opNorm_eq` for the equality statement assuming the mat
 -/
 theorem permMatrix_l2_opNorm_le : ‖σ.permMatrix 𝕜‖ ≤ 1 :=
   ContinuousLinearMap.opNorm_le_bound _ (by simp) <| by
-    simp [EuclideanSpace.norm_eq, toLpLin_apply, permMatrix_mulVec,
-      σ.sum_comp _ (fun i ↦ ‖_‖ ^ 2)]
+    simp [EuclideanSpace.norm_eq, toLpLin_apply, permMatrix_mulVec, σ.sum_comp _ (fun i ↦ ‖_‖ ^ 2)]
 
 /--
 The l2-operator norm of a nonempty permutation matrix is equal to 1.

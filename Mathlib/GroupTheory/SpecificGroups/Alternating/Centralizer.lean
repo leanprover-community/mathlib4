@@ -126,8 +126,7 @@ lemma card_of_cycleType_singleton {n : ℕ} (hn : 2 ≤ n) (hα : n ≤ card α)
       if Odd n then (n - 1)! * (choose (card α) n) else 0 := by
   rw [← card_map, map_subtype_of_cycleType, apply_ite Finset.card]
   simp only [Multiset.sum_singleton, Multiset.card_singleton, Finset.card_empty]
-  simp_rw [← Nat.not_odd_iff_even, Nat.odd_add_one, not_not,
-    Perm.card_of_cycleType_singleton hn hα]
+  simp_rw [← Nat.not_odd_iff_even, Nat.odd_add_one, not_not, Perm.card_of_cycleType_singleton hn hα]
 
 end AlternatingGroup
 

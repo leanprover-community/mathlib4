@@ -81,8 +81,7 @@ noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
   Cocycle.mk (Cochain.mk (fun p q hpq => homotopyCofiber.fstX φ p q hpq)) 2 (by lia) (by
     ext p _ rfl
     simp [δ_v 1 2 (by lia) _ p (p + 2) (by lia) (p + 1) (p + 1) (by lia) rfl,
-      homotopyCofiber.d_fstX φ p (p + 1) (p + 2) rfl, mappingCone,
-      show Int.negOnePow 2 = 1 by rfl])
+      homotopyCofiber.d_fstX φ p (p + 1) (p + 2) rfl, mappingCone, show Int.negOnePow 2 = 1 by rfl])
 
 /-- The second projection from the mapping cone, as a cochain of degree `0`. -/
 noncomputable def snd : Cochain (mappingCone φ) G 0 :=
@@ -145,8 +144,7 @@ it is also interesting to have `reassoc` variants of lemmas, like `inl_fst_assoc
 @[simp]
 lemma inl_fst_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain F K d) (he : 1 + d = e) :
     (inl φ).comp ((fst φ).1.comp γ he) (by rw [← he, neg_add_cancel_left]) = γ := by
-  rw [← Cochain.comp_assoc _ _ _ (neg_add_cancel 1) (by lia) (by lia), inl_fst,
-    Cochain.id_comp]
+  rw [← Cochain.comp_assoc _ _ _ (neg_add_cancel 1) (by lia) (by lia), inl_fst, Cochain.id_comp]
 
 @[simp]
 lemma inl_snd_assoc {K : CochainComplex C ℤ} {d e f : ℤ} (γ : Cochain G K d)
@@ -469,9 +467,8 @@ lemma δ_liftCochain (m' : ℤ) (hm' : m + 1 = m') :
       (δ n m β + α.comp (Cochain.ofHom φ) (add_zero m)).comp
         (Cochain.ofHom (inr φ)) (add_zero m) := by
   dsimp only [liftCochain]
-  simp only [δ_add, δ_comp α (inl φ) _ m' _ _ h hm' (neg_add_cancel 1),
-    δ_comp_zero_cochain _ _ _ h, δ_inl, Cochain.ofHom_comp,
-    Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,
+  simp only [δ_add, δ_comp α (inl φ) _ m' _ _ h hm' (neg_add_cancel 1), δ_comp_zero_cochain _ _ _ h,
+    δ_inl, Cochain.ofHom_comp, Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,
     δ_ofHom, Cochain.comp_zero, zero_add, Cochain.add_comp,
     Cochain.comp_assoc_of_second_is_zero_cochain]
   abel
@@ -613,9 +610,8 @@ noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
     congr 1
     simp [ext_from_iff _ _ _ hnm]
   inv_hom_id := by
-    simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
-      ← H.map_comp_assoc, inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v,
-      inl_v_snd_v, inr_f_snd_v]
+    simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc, ← H.map_comp_assoc,
+      inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v, inl_v_snd_v, inr_f_snd_v]
     simp [ext_from_iff _ _ _ hnm]
 
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes

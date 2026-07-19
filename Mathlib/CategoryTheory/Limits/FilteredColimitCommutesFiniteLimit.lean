@@ -117,8 +117,7 @@ theorem colimitLimitToLimitColimit_injective :
       Finset.mem_union.mpr
         (Or.inl
           (by
-            simp only [true_and, Finset.mem_univ,
-              Finset.mem_image]
+            simp only [true_and, Finset.mem_univ, Finset.mem_image]
             refine ⟨j, ?_⟩
             simp only))
     have gH :
@@ -127,8 +126,7 @@ theorem colimitLimitToLimitColimit_injective :
       Finset.mem_union.mpr
         (Or.inr
           (by
-            simp only [true_and, Finset.mem_univ,
-              Finset.mem_image]
+            simp only [true_and, Finset.mem_univ, Finset.mem_image]
             refine ⟨j, ?_⟩
             simp only))
     -- Our goal is now an equation between equivalence classes of representatives of a colimit,

@@ -369,8 +369,7 @@ theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
   ⟨le_sup_left, fun x x' EQ => by
     symm
     change ExtensionOfMaxAdjoin.extensionToFun i f h _ = _
-    rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h x' x 0 (by simp [EQ]), map_zero,
-      add_zero]⟩
+    rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h x' x 0 (by simp [EQ]), map_zero, add_zero]⟩
 
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by

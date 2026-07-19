@@ -193,8 +193,7 @@ lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
     (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequenceδ
       ((triangleOpEquivalence _).functor.obj (op hS.singleTriangle)) n₀ n₁ (by lia) x.hom =
       (hS.extClass.comp x h).hom := by
-  rw [preadditiveYoneda_homologySequenceδ_apply,
-    comp_hom, hS.extClass_hom, ShiftedHom.comp]
+  rw [preadditiveYoneda_homologySequenceδ_apply, comp_hom, hS.extClass_hom, ShiftedHom.comp]
   rfl
 
 set_option backward.defeqAttrib.useBackward true in

@@ -494,8 +494,7 @@ theorem Topology.IsCoinducing.preimage_connectedComponent (hf : IsCoinducing f)
 lemma Topology.IsCoinducing.image_connectedComponent {f : α → β} (hf : IsCoinducing f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f '' connectedComponent a = connectedComponent (f a) := by
-  rw [← hf.preimage_connectedComponent h_fibers,
-    image_preimage_eq _ fun y ↦ (h_fibers y).nonempty]
+  rw [← hf.preimage_connectedComponent h_fibers, image_preimage_eq _ fun y ↦ (h_fibers y).nonempty]
 
 end Preconnected
 

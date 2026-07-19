@@ -295,8 +295,7 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
     map_mul' c d := by
         ext a b
         obtain rfl | h := eq_or_ne a b
-        · simp only [one_apply, smul_eq_mul, mul_apply, constSMul_apply, map_mul,
-            eq_comm, Icc_self]
+        · simp only [one_apply, smul_eq_mul, mul_apply, constSMul_apply, map_mul, eq_comm, Icc_self]
           simp
         · simp only [one_apply, mul_one, smul_eq_mul, mul_apply, zero_mul,
             constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, if_neg h]

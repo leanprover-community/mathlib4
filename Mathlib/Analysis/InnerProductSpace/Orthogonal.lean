@@ -123,8 +123,7 @@ instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
 lemma map_orthogonal (f : E →ₗᵢ[𝕜] F) :
     Kᗮ.map f.toLinearMap = (K.map f.toLinearMap)ᗮ ⊓ f.range := by
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, mem_inf, mem_map, LinearMap.mem_range,
-    LinearIsometry.coe_toLinearMap]
+    forall_apply_eq_imp_iff₂, mem_inf, mem_map, LinearMap.mem_range, LinearIsometry.coe_toLinearMap]
   grind [LinearIsometry.inner_map_map]
 
 lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :

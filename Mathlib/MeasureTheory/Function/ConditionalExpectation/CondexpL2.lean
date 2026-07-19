@@ -126,8 +126,7 @@ theorem inner_condExpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫ = ⟪f, g⟫ := by
   symm
   rw [← sub_eq_zero, ← inner_sub_left, condExpL2]
-  simp only [← Submodule.starProjection_apply,
-    mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
+  simp only [← Submodule.starProjection_apply, mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
     Submodule.starProjection_inner_eq_zero f g]
 
 section Real

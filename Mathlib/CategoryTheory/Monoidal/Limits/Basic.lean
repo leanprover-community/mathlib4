@@ -59,22 +59,18 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
         NatTrans.comp_app, Category.assoc, tensorHom_comp_tensorHom, limMap_π]))
     (associativity := fun F G H ↦ limit.hom_ext (fun j ↦ by
       dsimp
-      simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π,
-        id_tensorHom]
+      simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π, id_tensorHom]
       dsimp
-      conv_lhs => rw [tensorHom_def, Category.assoc, ← comp_whiskerRight_assoc,
-        limit.lift_π, tensor_whiskerLeft, Category.assoc, Category.assoc,
-        Iso.inv_hom_id, Category.comp_id,
+      conv_lhs => rw [tensorHom_def, Category.assoc, ← comp_whiskerRight_assoc, limit.lift_π,
+        tensor_whiskerLeft, Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id,
         ← associator_naturality_right, ← tensorHom_def_assoc]
       dsimp
-      conv_rhs => rw [tensorHom_def, ← whisker_exchange,
-        ← whiskerLeft_comp_assoc, limit.lift_π,
+      conv_rhs => rw [tensorHom_def, ← whisker_exchange, ← whiskerLeft_comp_assoc, limit.lift_π,
         whisker_exchange, ← associator_naturality_left_assoc]
       dsimp only
-      conv_rhs => rw [tensorHom_def, whiskerLeft_comp,
-        ← associator_naturality_middle_assoc,
-        ← associator_naturality_right, ← comp_whiskerRight_assoc,
-        ← tensorHom_def, ← tensorHom_def_assoc]))
+      conv_rhs => rw [tensorHom_def, whiskerLeft_comp, ← associator_naturality_middle_assoc,
+        ← associator_naturality_right, ← comp_whiskerRight_assoc, ← tensorHom_def,
+        ← tensorHom_def_assoc]))
     (left_unitality := fun F ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π]

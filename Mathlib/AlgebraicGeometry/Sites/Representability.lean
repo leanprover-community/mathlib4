@@ -121,8 +121,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
     dsimp% (yonedaGluedToSheaf hf).hom.app _ (toGlued hf i) = yonedaEquiv (f i) := by
-  rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp,
-    yonedaEquiv_yoneda_map]
+  rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp, yonedaEquiv_yoneda_map]
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp]

@@ -178,8 +178,7 @@ lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
   · exact (hi t).1
   · by_cases hp : p = 0
     · simp [hp]
-    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp),
-      ENNReal.coe_toReal]
+    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp), ENNReal.coe_toReal]
     have hf := (hi (p * t)).lintegral_lt_top
     convert! hf using 3 with ω
     rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),

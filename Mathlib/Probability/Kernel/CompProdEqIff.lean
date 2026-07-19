@@ -39,8 +39,7 @@ lemma compProd_withDensity [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel (�
     (hf : Measurable (Function.uncurry f)) :
     μ ⊗ₘ (κ.withDensity f) = (μ ⊗ₘ κ).withDensity (fun p ↦ f p.1 p.2) := by
   ext s hs
-  rw [compProd_apply hs, withDensity_apply _ hs, ← lintegral_indicator hs,
-    lintegral_compProd]
+  rw [compProd_apply hs, withDensity_apply _ hs, ← lintegral_indicator hs, lintegral_compProd]
   · congr with a
     rw [Kernel.withDensity_apply' _ hf, ← lintegral_indicator (measurable_prodMk_left hs)]
     rfl

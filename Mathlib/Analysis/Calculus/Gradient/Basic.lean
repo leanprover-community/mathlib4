@@ -284,8 +284,7 @@ lemma HasGradientAt.fderiv_apply (h : HasGradientAt f f' x) : fderiv 𝕜 f x y 
 @[simp]
 lemma inner_gradientWithin_left :
     ⟪gradientWithin f s x, y⟫ = fderivWithin 𝕜 f s x y := by
-  rw [gradientWithin, ← toDual_apply_apply (𝕜 := 𝕜) (E := F),
-      LinearIsometryEquiv.apply_symm_apply]
+  rw [gradientWithin, ← toDual_apply_apply (𝕜 := 𝕜) (E := F), LinearIsometryEquiv.apply_symm_apply]
 
 @[simp]
 lemma inner_gradient_left : ⟪∇ f x, y⟫ = fderiv 𝕜 f x y := by

@@ -128,8 +128,7 @@ instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
     ext x
     simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
     by_contra hx
-    rw [← mem_nonDegenerate_iff_notMem_degenerate,
-      nonDegenerate_iff_strictMono_objEquiv,
+    rw [← mem_nonDegenerate_iff_notMem_degenerate, nonDegenerate_iff_strictMono_objEquiv,
       ← strictMono_orderHomOfSimplex_iff _ rfl] at hx
     replace hx := Fintype.card_le_of_injective _ hx.injective
     simp only [Fintype.card_fin, add_le_add_iff_right] at hx

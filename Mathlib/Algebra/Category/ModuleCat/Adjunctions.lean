@@ -183,10 +183,9 @@ instance : (free R).Monoidal :=
         dsimp
         rw [μIso_inv_freeMk, MonoidalCategory.whiskerRight_apply, μIso_inv_freeMk,
           MonoidalCategory.whiskerRight_apply, μIso_hom_freeMk_tmul_freeMk,
-          μIso_hom_freeMk_tmul_freeMk, free_map_apply,
-          CategoryTheory.associator_hom_apply, MonoidalCategory.associator_hom_apply,
-          MonoidalCategory.whiskerLeft_apply, μIso_hom_freeMk_tmul_freeMk,
-          μIso_hom_freeMk_tmul_freeMk]
+          μIso_hom_freeMk_tmul_freeMk, free_map_apply, CategoryTheory.associator_hom_apply,
+          MonoidalCategory.associator_hom_apply, MonoidalCategory.whiskerLeft_apply,
+          μIso_hom_freeMk_tmul_freeMk, μIso_hom_freeMk_tmul_freeMk]
       left_unitality := fun X ↦ by
         rw [← cancel_epi (λ_ _).inv, Iso.inv_hom_id]
         aesop

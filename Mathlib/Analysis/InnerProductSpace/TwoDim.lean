@@ -387,10 +387,9 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
       rw [← (o.basisRightAngleRotation x hx).sum_repr y]
       simp only [Fin.sum_univ_succ, coe_basisRightAngleRotation, Matrix.cons_val_zero,
         Fin.succ_zero_eq_one', Finset.univ_eq_empty, Finset.sum_empty, areaForm_apply_self,
-        map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
-        smul_eq_mul, areaForm_rightAngleRotation_right,
-        mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
-        real_inner_self_eq_norm_sq]
+        map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one, smul_eq_mul,
+        areaForm_rightAngleRotation_right, mul_zero, add_zero, zero_add, neg_zero,
+        inner_rightAngleRotation_right, real_inner_self_eq_norm_sq]
       exact this
     simp_all
   · intro h
@@ -511,10 +510,9 @@ attribute [local instance] Complex.finrank_real_complex_fact
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation
-  simp only [o, o.areaForm_to_volumeForm,
-    o.volumeForm_robust Complex.orthonormalBasisOneI rfl, Basis.det_apply, Matrix.det_fin_two,
-    Basis.toMatrix_apply, toBasis_orthonormalBasisOneI, Matrix.cons_val_zero, coe_basisOneI_repr,
-    Matrix.cons_val_one, mul_im, conj_re, conj_im]
+  simp only [o, o.areaForm_to_volumeForm, o.volumeForm_robust Complex.orthonormalBasisOneI rfl,
+    Basis.det_apply, Matrix.det_fin_two, Basis.toMatrix_apply, toBasis_orthonormalBasisOneI,
+    Matrix.cons_val_zero, coe_basisOneI_repr, Matrix.cons_val_one, mul_im, conj_re, conj_im]
   ring
 
 @[simp]

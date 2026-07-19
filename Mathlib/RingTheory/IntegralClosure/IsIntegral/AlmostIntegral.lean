@@ -38,8 +38,7 @@ def completeIntegralClosure : Subalgebra R S where
   add_mem' := by
     rintro a b ⟨r, hr, hr'⟩ ⟨s, hs, hs'⟩
     refine ⟨r * s, mul_mem hr hs, fun n ↦ ?_⟩
-    simp only [add_pow, Finset.smul_sum, ← smul_mul_assoc _ (_ * _),
-      ← smul_mul_smul_comm _ (a ^ _)]
+    simp only [add_pow, Finset.smul_sum, ← smul_mul_assoc _ (_ * _), ← smul_mul_smul_comm _ (a ^ _)]
     exact sum_mem fun i _ ↦ mul_mem (mul_mem (hr' _) (hs' _)) (by simp)
   algebraMap_mem' r := ⟨1, one_mem _, by simp [← map_pow]⟩
 

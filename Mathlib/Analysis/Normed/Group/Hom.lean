@@ -585,8 +585,7 @@ def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ 
     (by
       intros
       ext
-      simp only [comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
-        AddMonoidHom.mk'_apply, coe_add])
+      simp only [comp_apply, Pi.add_apply, AddMonoidHom.add_apply, AddMonoidHom.mk'_apply, coe_add])
 
 @[simp]
 theorem comp_zero (f : NormedAddGroupHom V₂ V₃) : f.comp (0 : NormedAddGroupHom V₁ V₂) = 0 := by

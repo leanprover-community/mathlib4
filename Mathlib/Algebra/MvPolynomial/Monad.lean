@@ -276,8 +276,7 @@ alias eval₂Hom_C_left := eval₂Hom_C_eq_bind₁
 
 theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r : R) :
     bind₁ f (monomial d r) = C r * ∏ i ∈ d.support, f i ^ d i := by
-  simp only [monomial_eq, map_mul, bind₁_C_right, Finsupp.prod, map_prod,
-    map_pow, bind₁_X_right]
+  simp only [monomial_eq, map_mul, bind₁_C_right, Finsupp.prod, map_prod, map_pow, bind₁_X_right]
 
 theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r : R) :
     bind₂ f (monomial d r) = f r * monomial d 1 := by

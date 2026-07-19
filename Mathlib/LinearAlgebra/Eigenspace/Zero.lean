@@ -148,8 +148,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     rw [hV]
     exact LinearMap.isCompl_iSup_ker_pow_iInf_range_pow φ
   have hφV : ∀ x ∈ V, φ x ∈ V := by
-    simp only [V, Module.End.mem_maxGenEigenspace, zero_smul, sub_zero,
-      forall_exists_index]
+    simp only [V, Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, forall_exists_index]
     intro x n hx
     use n
     rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply, hx, map_zero]

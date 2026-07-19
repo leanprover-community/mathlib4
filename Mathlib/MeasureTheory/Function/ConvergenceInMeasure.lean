@@ -414,8 +414,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAdd
   refine tendstoInMeasure_of_ne_top fun ε hε hε_top ↦ ?_
   replace hfg := ENNReal.Tendsto.const_mul (a := 1 / ε ^ p.toReal)
     (Tendsto.ennrpow_const p.toReal hfg) (Or.inr <| by simp [hε.ne'])
-  simp only [mul_zero,
-    ENNReal.zero_rpow_of_pos (ENNReal.toReal_pos hp_ne_zero hp_ne_top)] at hfg
+  simp only [mul_zero, ENNReal.zero_rpow_of_pos (ENNReal.toReal_pos hp_ne_zero hp_ne_top)] at hfg
   rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro δ hδ
   refine (hfg δ hδ).mono fun n hn => ?_

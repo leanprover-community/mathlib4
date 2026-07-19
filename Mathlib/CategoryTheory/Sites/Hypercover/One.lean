@@ -678,8 +678,7 @@ def isoMk {S : C} {E F : PreOneHypercover S}
     obtain ⟨k, rfl⟩ := s₁.surjective k
     rw [← cancel_epi (h₁ k).hom, reassoc_of% w₁₁ k]
     simp only [PreZeroHypercover.isoMk_inv_s₀, Category.assoc, PreZeroHypercover.isoMk_inv_h₀,
-      Equiv.symm_apply_apply, eqToHom_iso_hom_naturality_assoc, Iso.hom_inv_id,
-      Category.comp_id]
+      Equiv.symm_apply_apply, eqToHom_iso_hom_naturality_assoc, Iso.hom_inv_id, Category.comp_id]
     rw [PreOneHypercover.isoMk_aux_assoc, ← eqToHom_naturality, eqToHom_refl, Category.comp_id,
       congrIndexOneOfEqIso_inv_p₁]
     apply PreOneHypercover.congrIndexOneOfEq_equiv
@@ -689,8 +688,7 @@ def isoMk {S : C} {E F : PreOneHypercover S}
     obtain ⟨k, rfl⟩ := s₁.surjective k
     rw [← cancel_epi (h₁ k).hom, reassoc_of% w₁₂ k]
     simp only [PreZeroHypercover.isoMk_inv_s₀, Category.assoc, PreZeroHypercover.isoMk_inv_h₀,
-      Equiv.symm_apply_apply, eqToHom_iso_hom_naturality_assoc, Iso.hom_inv_id,
-      Category.comp_id]
+      Equiv.symm_apply_apply, eqToHom_iso_hom_naturality_assoc, Iso.hom_inv_id, Category.comp_id]
     rw [PreOneHypercover.isoMk_aux_assoc, ← eqToHom_naturality, eqToHom_refl, Category.comp_id,
       congrIndexOneOfEqIso_inv_p₂]
     apply PreOneHypercover.congrIndexOneOfEq_equiv

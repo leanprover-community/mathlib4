@@ -119,8 +119,7 @@ instance isAdicCompleteIdealSpanP : IsAdicComplete (Ideal.span {(p : 𝕎 k)}) (
     ext n
     simp only [smul_eq_mul, Ideal.mul_top] at h
     have := h (n + 1)
-    simp only [Ideal.span_singleton_pow, SModEq.zero,
-        mem_span_p_pow_iff_le_coeff_eq_zero] at this
+    simp only [Ideal.span_singleton_pow, SModEq.zero, mem_span_p_pow_iff_le_coeff_eq_zero] at this
     simpa using this n
   prec' := by
     intro x h

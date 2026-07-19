@@ -846,8 +846,7 @@ theorem ofPred_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {
 
 theorem sep_eq_inter_sep {α : Type*} {s t : Set α} {p : α → Prop} (hst : s ⊆ t) :
     {x ∈ s | p x} = s ∩ {x ∈ t | p x} := by
-  rw [← inter_ofPred_eq_sep s p, ← inter_ofPred_eq_sep t p,
-    ← inter_assoc, ← left_eq_inter.mpr hst]
+  rw [← inter_ofPred_eq_sep s p, ← inter_ofPred_eq_sep t p, ← inter_assoc, ← left_eq_inter.mpr hst]
 
 @[simp]
 theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=

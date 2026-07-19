@@ -970,8 +970,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma extendScalarsId_hom_app_one_tmul (M : ModuleCat R) (m : M) :
     (extendScalarsId R).hom.app M ((1 : R) ⊗ₜ m) = m := by
-  rw [← extendRestrictScalarsAdj_homEquiv_apply,
-    homEquiv_extendScalarsId]
+  rw [← extendRestrictScalarsAdj_homEquiv_apply, homEquiv_extendScalarsId]
   dsimp
 
 section
@@ -996,10 +995,9 @@ lemma homEquiv_extendScalarsComp (M : ModuleCat R₁) :
         (restrictScalars f₁₂).map ((extendRestrictScalarsAdj f₂₃).unit.app _) ≫
         (restrictScalarsComp f₁₂ f₂₃).inv.app _ := by
   dsimp [extendScalarsComp, conjugateIsoEquiv, conjugateEquiv]
-  simp only [Functor.comp_obj, Category.assoc, Category.id_comp,
-    Category.comp_id, Adjunction.comp_unit_app, Adjunction.homEquiv_unit,
-    Functor.map_comp, Adjunction.unit_naturality_assoc,
-    Adjunction.right_triangle_components]
+  simp only [Functor.comp_obj, Category.assoc, Category.id_comp, Category.comp_id,
+    Adjunction.comp_unit_app, Adjunction.homEquiv_unit, Functor.map_comp,
+    Adjunction.unit_naturality_assoc, Adjunction.right_triangle_components]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1061,8 +1059,7 @@ lemma extendScalars_comp_id :
       (Functor.rightUnitor _).hom = 𝟙 _ := by
   ext M m
   dsimp
-  erw [extendScalarsComp_hom_app_one_tmul f₁₂ (RingHom.id R₂) M m,
-    extendScalarsId_hom_app_one_tmul]
+  erw [extendScalarsComp_hom_app_one_tmul f₁₂ (RingHom.id R₂) M m, extendScalarsId_hom_app_one_tmul]
   rfl
 
 end

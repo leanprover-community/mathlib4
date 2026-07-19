@@ -289,8 +289,7 @@ theorem isPretransitive_alternatingGroup [Fintype α] (hα : 3 ≤ Nat.card α) 
       aesop
     · suffices Subsingleton (powersetCard α n) by infer_instance
       rw [not_le] at hn'
-      rw [← Finite.card_le_one_iff_subsingleton, powersetCard.card,
-        Nat.choose_eq_zero_iff.mpr hn']
+      rw [← Finite.card_le_one_iff_subsingleton, powersetCard.card, Nat.choose_eq_zero_iff.mpr hn']
       simp
   apply isPretransitive_of_isMultiplyPretransitive
   rcases eq_or_ne n 0 with rfl | hn0

@@ -197,9 +197,8 @@ lemma of_le {C D s : ℝ≥0} {A : Set X}
   have hθ : θ₁ + θ₂ = 1 := by ext; simp [θ₁, θ₂]
   have hθt : r * θ₁ + 0 * θ₂ = s := by ext; simp [θ₁, mul_div_cancel₀ _ hr.ne']
   have hθC : C * D ^ (r - s : ℝ) = C ^ (θ₁ : ℝ) * (C * D ^ (r : ℝ)) ^ (θ₂ : ℝ) := by
-    simp (discharger := positivity) only [NNReal.mul_rpow, ← mul_assoc,
-      ← NNReal.rpow_add_of_nonneg, ← NNReal.rpow_mul, ← NNReal.coe_add, hθ, NNReal.coe_one,
-      NNReal.rpow_one]
+    simp (discharger := positivity) only [NNReal.mul_rpow, ← mul_assoc, ← NNReal.rpow_add_of_nonneg,
+      ← NNReal.rpow_mul, ← NNReal.coe_add, hθ, NNReal.coe_one, NNReal.rpow_one]
     congr
     simp [mul_sub, θ₂, mul_div_cancel₀ _ hr.ne']
   rw [hθC, ← hθt]

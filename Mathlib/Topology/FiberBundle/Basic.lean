@@ -545,10 +545,9 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
     simp only [mem_localTrivAsPartialEquiv_target, mfld_simps]
     rfl
   · rintro ⟨x, v⟩ hx
-    simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
-      Prod.mk_inj, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
-      mem_preimage, proj, mem_univ, (· ∘ ·),
-      PartialEquiv.coe_trans] at hx ⊢
+    simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm, Prod.mk_inj,
+      prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff, mem_preimage, proj,
+      mem_univ, (· ∘ ·), PartialEquiv.coe_trans] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
 
 /-- Topological structure on the total space of a fiber bundle created from core, designed so

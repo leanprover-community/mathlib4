@@ -242,9 +242,8 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
     ← mul_assoc (R : M) (↑Q * ↑R) _, ← coe_inf Q, (Pᶜ.prop.commute R.prop).eq,
     ((Q ⊓ R).prop.commute Pᶜ.prop).eq, (R.prop.commute (Q ⊓ R).prop).eq, coe_inf Q,
     mul_assoc (Q : M), ← mul_assoc, mul_assoc (R : M), (Pᶜ.prop.commute P.prop).eq, mul_compl_self,
-    zero_mul, mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq,
-    R.prop.proj.eq, ← coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute Pᶜ.prop).eq, ← mul_assoc,
-    Pᶜ.prop.proj.eq]
+    zero_mul, mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq, R.prop.proj.eq,
+    ← coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute Pᶜ.prop).eq, ← mul_assoc, Pᶜ.prop.proj.eq]
 
 /-- This instance was created as an auxiliary definition when defining `Subtype.distribLattice`
 all at once would cause a timeout. That is no longer the case. Keeping this as a useful shortcut.

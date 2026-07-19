@@ -154,8 +154,7 @@ lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated 𝓧]
   _ = (Kernel.copy 𝓧 ∘ₖ Kernel.deterministic f hf) ∘ₘ μ := by -- `deterministic` is used here
     rw [Measure.comp_assoc, Kernel.parallelComp_self_comp_copy]
   _ = μ.map f ⊗ₘ Kernel.id := by
-    rw [Measure.compProd_id_eq_copy_comp, ← Measure.comp_assoc,
-      Measure.deterministic_comp_eq_map]
+    rw [Measure.compProd_id_eq_copy_comp, ← Measure.comp_assoc, Measure.deterministic_comp_eq_map]
 
 lemma absolutelyContinuous_posterior {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
     ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ := by

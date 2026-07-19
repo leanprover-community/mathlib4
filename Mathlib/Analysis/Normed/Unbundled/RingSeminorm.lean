@@ -414,8 +414,7 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
         exact
           le_antisymm
             (le_trans (map_mul_le_mul f _ _)
-              (by rw [← RingSeminorm.toFun_eq_coe, ← AddGroupSeminorm.toFun_eq_coe, hx,
-                zero_mul]))
+              (by rw [← RingSeminorm.toFun_eq_coe, ← AddGroupSeminorm.toFun_eq_coe, hx, zero_mul]))
             (apply_nonneg f _)
       exact hc hc0 }
 

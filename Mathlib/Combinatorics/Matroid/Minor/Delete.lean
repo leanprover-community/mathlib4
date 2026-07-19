@@ -122,8 +122,7 @@ lemma IsRestriction.restrict_delete_of_disjoint (h : N ≤r M) (hX : Disjoint X 
     N ≤r (M ＼ X) := by
   obtain ⟨D, hD, rfl⟩ := isRestriction_iff_exists_eq_delete.1 h
   refine isRestriction_iff_exists_eq_delete.2 ⟨D \ X, sdiff_subset_sdiff_left hD, ?_⟩
-  rwa [delete_delete, union_sdiff_self, union_comm, ← delete_delete, eq_comm,
-    delete_eq_self_iff]
+  rwa [delete_delete, union_sdiff_self, union_comm, ← delete_delete, eq_comm, delete_eq_self_iff]
 
 lemma IsRestriction.isRestriction_deleteElem (h : N ≤r M) (he : e ∉ N.E) : N ≤r M ＼ {e} :=
   h.restrict_delete_of_disjoint (by simpa)

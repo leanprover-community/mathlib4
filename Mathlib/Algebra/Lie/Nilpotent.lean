@@ -237,8 +237,7 @@ lemma map_lowerCentralSeries_eq {f : M →ₗ⁅R,L⁆ M₂} (hf : Function.Surj
   apply le_antisymm (map_lowerCentralSeries_le k f)
   induction k with
   | zero =>
-    rwa [lowerCentralSeries_zero, lowerCentralSeries_zero, top_le_iff, f.map_top,
-      f.range_eq_top]
+    rwa [lowerCentralSeries_zero, lowerCentralSeries_zero, top_le_iff, f.map_top, f.range_eq_top]
   | succ =>
     simp only [lowerCentralSeries_succ, LieSubmodule.map_bracket_eq]
     apply LieSubmodule.mono_lie_right
@@ -345,8 +344,7 @@ theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent L M] (x y : L) :
 @[simp] lemma maxGenEigenSpace_toEnd_eq_top [IsNilpotent L M] (x : L) :
     ((toEnd R L M x).maxGenEigenspace 0) = ⊤ := by
   ext m
-  simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, Submodule.mem_top,
-    iff_true]
+  simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, Submodule.mem_top, iff_true]
   obtain ⟨k, hk⟩ := exists_forall_pow_toEnd_eq_zero R L M
   exact ⟨k, by simp [hk x]⟩
 

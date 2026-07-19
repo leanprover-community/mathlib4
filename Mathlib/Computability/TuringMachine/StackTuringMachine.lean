@@ -559,9 +559,8 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
       split_ifs with h
         <;> simp only [List.reverse_cons, Function.update_self, ListBlank.nth_mk, List.map]
       · rw [List.getI_eq_getElem _, List.getElem_append_right] <;>
-        simp only [List.length_append, List.length_reverse, List.length_map, ← h,
-          Nat.sub_self, List.length_singleton, List.getElem_singleton,
-          le_refl, Nat.lt_succ_self]
+        simp only [List.length_append, List.length_reverse, List.length_map, ← h, Nat.sub_self,
+          List.length_singleton, List.getElem_singleton, le_refl, Nat.lt_succ_self]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
       rcases lt_or_gt_of_ne h with h | h
       · rw [List.getI_append]

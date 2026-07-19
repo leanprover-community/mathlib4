@@ -284,8 +284,7 @@ lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R 
   have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
     (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
   convert! this using 1
-  simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
-    Function.comp_def]
+  simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe, Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
   congr 1
   aesop
@@ -676,8 +675,7 @@ theorem independent_genEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R M)
   classical
   suffices ∀ μ₁ (s : Finset R), μ₁ ∉ s → Disjoint (f.genEigenspace μ₁ k)
     (s.sup fun μ ↦ f.genEigenspace μ k) by
-    simp_rw [iSupIndep_iff_supIndep,
-      Finset.supIndep_iff_disjoint_erase]
+    simp_rw [iSupIndep_iff_supIndep, Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.notMem_erase μ)
   intro μ₁ s
   induction s using Finset.induction_on with

@@ -80,8 +80,7 @@ theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
   ext d
   apply WellFoundedLT.induction d
   intro e he
-  rw [map_zero, ← mul_left_mem_nonZeroDivisorsLeft_eq_zero_iff hφ,
-    ← map_zero (f := coeff e), ← hx]
+  rw [map_zero, ← mul_left_mem_nonZeroDivisorsLeft_eq_zero_iff hφ, ← map_zero (f := coeff e), ← hx]
   convert! (coeff_mul e φ x).symm
   rw [Finset.sum_eq_single (0, e), coeff_zero_eq_constantCoeff]
   · rintro ⟨_, u⟩ huv _

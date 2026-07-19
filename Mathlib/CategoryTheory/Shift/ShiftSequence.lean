@@ -232,9 +232,8 @@ lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n m
     (F.shiftIso n a a' ha').hom.app X ≫ F.shiftMap f a' a'' ha'' =
       (F.shift a).map (f⟦n⟧') ≫ (F.shift a).map ((shiftFunctorAdd' C m n mn hnm).inv.app Y) ≫
         (F.shiftIso mn a a'' (by rw [← ha'', ← ha', ← hnm, add_assoc])).hom.app Y := by
-  simp only [F.shiftIso_add'_hom_app n m mn hnm a a' a'' ha' ha'' Y,
-    ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
-    id_comp, comp_obj, shiftIso_hom_naturality_assoc, shiftMap]
+  simp only [F.shiftIso_add'_hom_app n m mn hnm a a' a'' ha' ha'' Y, ← Functor.map_comp_assoc,
+    Iso.inv_hom_id_app, Functor.map_id, id_comp, comp_obj, shiftIso_hom_naturality_assoc, shiftMap]
 
 /--
 If `f : X ⟶ Y⟦m⟧`, `n + m = 0` and `ha' : m + a = a'`, this lemma relates the two

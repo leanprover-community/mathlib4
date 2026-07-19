@@ -62,8 +62,7 @@ theorem ContDiffWithinAt.restrictScalars_iteratedFDerivWithin_eventuallyEq
     rw [← Filter.EventuallyEq] at h₁a
     ext m
     simp only [Function.comp_apply, coe_restrictScalars, iteratedFDerivWithin_succ_apply_left]
-    rw [← (h₁a.fderivWithin' (by tauto)).eq_of_nhdsWithin h₄a,
-      fderivWithin_restrictScalars_comp]
+    rw [← (h₁a.fderivWithin' (by tauto)).eq_of_nhdsWithin h₄a, fderivWithin_restrictScalars_comp]
     · simp
     · apply h₃a.differentiableWithinAt_iteratedFDerivWithin
       · rw [Nat.cast_lt]

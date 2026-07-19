@@ -272,10 +272,9 @@ theorem map_comap_incl {I₁ I₂ : LieIdeal R L} : map I₁.incl (comap I₁.in
 
 theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
     comap f ⁅f.idealRange ⊓ J₁, f.idealRange ⊓ J₂⁆ = ⁅comap f J₁, comap f J₂⁆ ⊔ f.ker := by
-  rw [← LieSubmodule.toSubmodule_inj, comap_toSubmodule,
-    LieSubmodule.sup_toSubmodule, f.ker_toSubmodule, ← Submodule.comap_map_eq,
-    LieSubmodule.lieIdeal_oper_eq_linear_span, LieSubmodule.lieIdeal_oper_eq_linear_span,
-    LinearMap.map_span]
+  rw [← LieSubmodule.toSubmodule_inj, comap_toSubmodule, LieSubmodule.sup_toSubmodule,
+    f.ker_toSubmodule, ← Submodule.comap_map_eq, LieSubmodule.lieIdeal_oper_eq_linear_span,
+    LieSubmodule.lieIdeal_oper_eq_linear_span, LinearMap.map_span]
   congr
   ext
   simp_all only [Subtype.exists, LieSubmodule.mem_inf, LieHom.mem_idealRange_iff, exists_prop,

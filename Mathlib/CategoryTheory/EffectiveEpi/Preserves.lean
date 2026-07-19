@@ -55,19 +55,16 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       (EffectiveEpiFamily.desc X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h))
   fac ε h a := by
-    simp only [Adjunction.homEquiv_counit,
-      Equivalence.toAdjunction_counit]
+    simp only [Adjunction.homEquiv_counit, Equivalence.toAdjunction_counit]
     have := congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map)
       (EffectiveEpiFamily.fac X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h) a)
-    simp only [Functor.id_obj, Function.comp_apply, Functor.map_comp,
-        Category.assoc, Equivalence.fun_inv_map,
-        Equivalence.counitIso_inv_hom_id_app, Category.comp_id,
+    simp only [Functor.id_obj, Function.comp_apply, Functor.map_comp, Category.assoc,
+        Equivalence.fun_inv_map, Equivalence.counitIso_inv_hom_id_app, Category.comp_id,
         Equivalence.functor_unit_comp_assoc] at this
     simp [this]
   uniq ε h m hm := by
-    simp only [Adjunction.homEquiv_counit,
-      Equivalence.toAdjunction_counit]
+    simp only [Adjunction.homEquiv_counit, Equivalence.toAdjunction_counit]
     have := EffectiveEpiFamily.uniq X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h)
     specialize this (e.unit.app _ ≫ e.inverse.map m) fun a ↦ ?_

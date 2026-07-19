@@ -311,8 +311,7 @@ noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J
         { app := fun j ↦ F.partialRightAdjointHomEquiv (f ≫ c'.π.app j)
           naturality := fun j j' φ ↦ by
             dsimp
-            rw [id_comp, ← c'.w φ, ← partialRightAdjointHomEquiv_map_comp,
-              ← assoc]
+            rw [id_comp, ← c'.w φ, ← partialRightAdjointHomEquiv_map_comp, ← assoc]
             dsimp })
       invFun := fun g ↦ hc'.lift (Cone.mk _
         { app := fun j ↦ F.partialRightAdjointHomEquiv.symm (g ≫ c.π.app j)

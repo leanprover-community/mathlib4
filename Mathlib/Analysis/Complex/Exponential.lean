@@ -264,9 +264,8 @@ lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x 
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i ∈ range 3, x ^ i / i ! := by
-        simp only [sum_range_succ, range_one, sum_singleton, _root_.pow_zero, factorial,
-          pow_one, mul_one, Nat.mul_one,
-          cast_succ]
+        simp only [sum_range_succ, range_one, sum_singleton, _root_.pow_zero, factorial, pow_one,
+          mul_one, Nat.mul_one, cast_succ]
         ring_nf
     _ ≤ exp x := sum_le_exp_of_nonneg hx 3
 

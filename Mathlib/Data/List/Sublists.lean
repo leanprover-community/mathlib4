@@ -164,8 +164,7 @@ theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublist
 
 @[simp]
 theorem mem_sublists {s t : List α} : s ∈ sublists t ↔ s <+ t := by
-  rw [← reverse_sublist, ← mem_sublists', sublists'_reverse,
-    mem_map_of_injective reverse_injective]
+  rw [← reverse_sublist, ← mem_sublists', sublists'_reverse, mem_map_of_injective reverse_injective]
 
 @[simp]
 theorem length_sublists (l : List α) : length (sublists l) = 2 ^ length l := by
@@ -202,8 +201,7 @@ theorem sublistsLenAux_append :
   | _ + 1, [], _, _, _, _ => rfl
   | n + 1, a :: l, f, g, r, s => by
     unfold sublistsLenAux
-    simp only [show (g ∘ f) ∘ List.cons a = g ∘ f ∘ List.cons a by rfl,
-      sublistsLenAux_append]
+    simp only [show (g ∘ f) ∘ List.cons a = g ∘ f ∘ List.cons a by rfl, sublistsLenAux_append]
 
 theorem sublistsLenAux_eq (l : List α) (n) (f : List α → β) (r) :
     sublistsLenAux n l f r = (sublistsLen n l).map f ++ r := by
@@ -223,8 +221,7 @@ theorem sublistsLen_succ_nil (n) : sublistsLen (n + 1) (@nil α) = [] :=
 @[simp]
 theorem sublistsLen_succ_cons (n) (a : α) (l) :
     sublistsLen (n + 1) (a :: l) = sublistsLen (n + 1) l ++ (sublistsLen n l).map (cons a) := by
-  rw [sublistsLen, sublistsLenAux, sublistsLenAux_eq, sublistsLenAux_eq, map_id,
-      append_nil]; rfl
+  rw [sublistsLen, sublistsLenAux, sublistsLenAux_eq, sublistsLenAux_eq, map_id, append_nil]; rfl
 
 theorem sublistsLen_one (l : List α) : sublistsLen 1 l = l.reverse.map ([·]) :=
   l.rec (by rw [sublistsLen_succ_nil, reverse_nil, map_nil]) fun a s ih ↦ by

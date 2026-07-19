@@ -227,8 +227,7 @@ lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
     equiv W L (f.comp g h) = (equiv W L f).comp (equiv W L g) h := by
   dsimp [comp, equiv, ShiftedHom.comp]
   erw [SmallHom.equiv_comp]
-  simp only [equiv_shift', Functor.comp_obj, assoc, Iso.inv_hom_id_app,
-    comp_id, Functor.map_comp]
+  simp only [equiv_shift', Functor.comp_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.map_comp]
   rfl
 
 end
@@ -431,10 +430,9 @@ lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
   simp only [Functor.comp_obj, SmallShiftedHom.equiv_apply, Iso.app_hom,
     Iso.homToEquiv_symm_apply, Iso.app_inv, assoc, Iso.hom_inv_id_app, comp_id]
   refine (Φ.equiv_smallHomMap' L₁ L₂ _ _ G e f).trans ?_
-  simp only [Functor.comp_obj, NatTrans.app_shift,
-    Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app, assoc,
-    Iso.trans_hom, Iso.app_hom, Functor.mapIso_hom, Functor.map_comp, ShiftedHom.map,
-    ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp,
+  simp only [Functor.comp_obj, NatTrans.app_shift, Functor.commShiftIso_comp_hom_app,
+    Functor.commShiftIso_comp_inv_app, assoc, Iso.trans_hom, Iso.app_hom, Functor.mapIso_hom,
+    Functor.map_comp, ShiftedHom.map, ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp,
     Functor.commShiftIso_inv_naturality]
   nth_rw 2 [← Functor.map_comp_assoc]
   simp
@@ -478,8 +476,7 @@ lemma smallShiftedHomMap_comp
   rw [ShiftedHom.comp_assoc _ _ _ _ (zero_add b) (by simpa),
     ShiftedHom.comp_assoc _ _ _ _ h (by simpa),
     ShiftedHom.comp_assoc _ _ _ _ (add_zero b) (by simpa),
-    ← ShiftedHom.comp_assoc _ _ _ (add_zero 0) (add_zero b) (by simp),
-    ShiftedHom.mk₀_comp_mk₀]
+    ← ShiftedHom.comp_assoc _ _ _ (add_zero 0) (add_zero b) (by simp), ShiftedHom.mk₀_comp_mk₀]
   simp
 
 end LocalizerMorphism

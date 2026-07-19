@@ -85,9 +85,8 @@ protected theorem opow_mul_add {b e x y : Ordinal}
     CNF b (b ^ e * x + y) = (e, x) :: CNF b y := by
   have hb' := hb.ne_bot
   rw [CNF.ne_zero]
-  · rw [log_opow_mul_add hb hx hy, log_eq_zero hxb, add_zero,
-      mul_add_div _ (opow_ne_zero _ hb'), Ordinal.div_eq_zero_of_lt hy, add_zero,
-      mul_add_mod_self, mod_eq_of_lt hy]
+  · rw [log_opow_mul_add hb hx hy, log_eq_zero hxb, add_zero, mul_add_div _ (opow_ne_zero _ hb'),
+      Ordinal.div_eq_zero_of_lt hy, add_zero, mul_add_mod_self, mod_eq_of_lt hy]
   · simp_all
 
 protected theorem zero_left {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [(0, o)] := by

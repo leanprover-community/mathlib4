@@ -322,8 +322,7 @@ theorem isCompl_orthogonal_of_restrict_nondegenerate
     exact b₁ n x (b₁ x n (b₁ n x (hx₂ n hn)))
   refine IsCompl.of_eq this (eq_top_of_finrank_eq <| (finrank_le _).antisymm ?_)
   conv_rhs => rw [← add_zero (finrank K _)]
-  rw [← finrank_bot K V, ← this, finrank_sup_add_finrank_inf_eq,
-    finrank_add_finrank_orthogonal b₁]
+  rw [← finrank_bot K V, ← this, finrank_sup_add_finrank_inf_eq, finrank_add_finrank_orthogonal b₁]
   exact le_self_add
 
 /-- A subspace is complement to its orthogonal complement with respect to some reflexive bilinear

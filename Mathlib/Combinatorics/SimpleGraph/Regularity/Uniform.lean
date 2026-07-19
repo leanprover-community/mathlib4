@@ -227,8 +227,7 @@ theorem nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' 
 theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε = ∅ := by
   rw [eq_empty_iff_forall_notMem]
   rintro ⟨u, v⟩
-  simp only [mk_mem_nonUniforms, parts_bot, mem_map, not_and,
-    Classical.not_not, exists_imp]; dsimp
+  simp only [mk_mem_nonUniforms, parts_bot, mem_map, not_and, Classical.not_not, exists_imp]; dsimp
   rintro x ⟨_, rfl⟩ y ⟨_, rfl⟩ _
   rwa [SimpleGraph.isUniform_singleton]
 

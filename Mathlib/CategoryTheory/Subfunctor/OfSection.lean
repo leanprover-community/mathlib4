@@ -69,8 +69,7 @@ variable {F : Cᵒᵖ ⥤ Type v}
 lemma ofSection_eq_range {X : Cᵒᵖ} (x : F.obj X) :
     ofSection x = range (yonedaEquiv.symm x) := by
   ext U y
-  simp only [ofSection_obj, Set.mem_ofPred_eq, Opposite.op_unop, range_obj,
-    Set.mem_range]
+  simp only [ofSection_obj, Set.mem_ofPred_eq, Opposite.op_unop, range_obj, Set.mem_range]
   constructor
   · rintro ⟨f, rfl⟩
     exact ⟨f.unop, rfl⟩

@@ -82,9 +82,8 @@ theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : M [⋀^Fin n]→�
   rw [← (i.predAbove j).insertNth_self_removeNth (removeNth _ _), ← removeNth_removeNth_eq_swap,
     removeNth, succAbove_succAbove_predAbove, map_insertNth, ← neg_one_pow_smul_map_insertNth,
     insertNth_removeNth, update_eq_self_iff.2, smul_smul, ← pow_add,
-    neg_one_pow_succAbove_add_predAbove, neg_smul, pow_add, mul_smul,
-    smul_smul (_ ^ i.val), ← sq, ← pow_mul, pow_mul', neg_one_pow_two, one_pow, one_smul,
-    neg_add_cancel]
+    neg_one_pow_succAbove_add_predAbove, neg_smul, pow_add, mul_smul, smul_smul (_ ^ i.val), ← sq,
+    ← pow_mul, pow_mul', neg_one_pow_two, one_pow, one_smul, neg_add_cancel]
   exact hvij.symm
 
 /-- Given a function which is linear in the first argument

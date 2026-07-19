@@ -61,8 +61,7 @@ lemma isNoetherianObject_iff_monotone_chain_condition :
     IsNoetherianObject X ↔ ∀ (f : ℕ →o Subobject X),
       ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → f n = f m := by
   dsimp only [IsNoetherianObject]
-  rw [ObjectProperty.is_iff, isNoetherianObject,
-    wellFoundedGT_iff_monotone_chain_condition]
+  rw [ObjectProperty.is_iff, isNoetherianObject, wellFoundedGT_iff_monotone_chain_condition]
 
 variable {X} in
 lemma monotone_chain_condition_of_isNoetherianObject

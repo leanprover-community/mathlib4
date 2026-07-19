@@ -573,8 +573,7 @@ lemma primeSpectrumEquivMaximalSpectrum_symm_comp_asIdeal :
 
 lemma primeSpectrum_asIdeal_range_eq :
     range PrimeSpectrum.asIdeal = (range <| MaximalSpectrum.asIdeal (R := R)) := by
-  simp only [PrimeSpectrum.range_asIdeal, MaximalSpectrum.range_asIdeal,
-    isPrime_iff_isMaximal]
+  simp only [PrimeSpectrum.range_asIdeal, MaximalSpectrum.range_asIdeal, isPrime_iff_isMaximal]
 
 variable (R)
 

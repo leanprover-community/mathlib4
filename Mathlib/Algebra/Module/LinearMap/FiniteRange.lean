@@ -459,8 +459,7 @@ lemma IsQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V�
 lemma isQuasiInverse_subtype_projectionOnto_iff {S T : Submodule K V} (hST : IsCompl S T) :
     IsQuasiInverse S.subtype (S.projectionOnto T hST) ↔ IsNoetherian K T := by
   rw [IsQuasiInverse, and_iff_left (by simp [IsRightQuasiInverse, projectionOnto_comp_subtype]),
-    IsLeftQuasiInverse, ← projection,
-    FiniteRangeSetoid.projection_equiv_id_iff_isNoetherian hST]
+    IsLeftQuasiInverse, ← projection, FiniteRangeSetoid.projection_equiv_id_iff_isNoetherian hST]
 
 lemma isQuasiInverse_subtype_projectionOnto {S T : Submodule K V} [IsNoetherian K T]
     (hST : IsCompl S T) :

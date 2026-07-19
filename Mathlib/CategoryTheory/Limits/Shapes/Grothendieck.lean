@@ -76,8 +76,7 @@ def fiberwiseColimit : C ⥤ H where
     rw [← Category.assoc, ← eqToHom_map G (by simp), ← G.map_comp, Grothendieck.eqToHom_eq]
     congr 2
     fapply Grothendieck.ext
-    · simp only [eqToHom_refl, Category.assoc, Grothendieck.comp_base,
-        Category.comp_id]
+    · simp only [eqToHom_refl, Category.assoc, Grothendieck.comp_base, Category.comp_id]
     · simp only [Grothendieck.ι_obj, eqToHom_refl,
         Grothendieck.comp_base, Category.comp_id, Grothendieck.comp_fiber, Functor.map_id]
       conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z)).toFunctor]
@@ -141,8 +140,7 @@ def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
   uniq s m hm := hc.hom_ext fun X => by
     have := hm X.base
     simp only [Functor.const_obj_obj, IsColimit.fac, NatTrans.comp_app, Functor.comp_obj,
-      Grothendieck.forget_obj, natTransIntoForgetCompFiberwiseColimit_app,
-      whiskerLeft_app]
+      Grothendieck.forget_obj, natTransIntoForgetCompFiberwiseColimit_app, whiskerLeft_app]
     simp only [coconeFiberwiseColimitOfCocone_pt, coconeFiberwiseColimitOfCocone_ι_app] at this
     simp [← this]
 

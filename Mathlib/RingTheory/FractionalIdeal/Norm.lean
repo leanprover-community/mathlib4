@@ -63,8 +63,7 @@ noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
     exact IsFractionRing.injective R K
   map_one' := by
     rw [absNorm_div_norm_eq_absNorm_div_norm 1 ⊤ (by simp [Submodule.one_eq_range]),
-      Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one, abs_one,
-      Int.cast_one,
+      Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one, abs_one, Int.cast_one,
       one_div_one]
   map_mul' I J := by
     rw [absNorm_div_norm_eq_absNorm_div_norm (I.den * J.den) (I.num * J.num) (by
@@ -119,9 +118,8 @@ theorem abs_det_basis_change [IsDomain K] {ι : Type*} [Fintype ι]
       b₀.toMatrix ((algebraMap R K (den I : R)) • ((↑) ∘ bI)) by
     ext : 2
     simp_rw [bI.num, RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply,
-      ← Basis.localizationLocalization_repr_algebraMap ℚ ℤ⁰ K, Function.comp_apply,
-      Basis.map_apply, LinearEquiv.restrictScalars_apply, equivNum_apply, Submonoid.smul_def,
-      Algebra.smul_def]
+      ← Basis.localizationLocalization_repr_algebraMap ℚ ℤ⁰ K, Function.comp_apply, Basis.map_apply,
+      LinearEquiv.restrictScalars_apply, equivNum_apply, Submonoid.smul_def, Algebra.smul_def]
     rfl]
   rw [Basis.toMatrix_smul, Matrix.det_mul, abs_mul, ← Algebra.norm_eq_matrix_det,
     Algebra.norm_localization ℤ ℤ⁰, show (Algebra.norm ℤ (den I : R) : ℚ) =

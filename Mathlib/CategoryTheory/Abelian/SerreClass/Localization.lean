@@ -44,8 +44,7 @@ lemma exists_epiModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
   · rintro ⟨X', s, hs, eq⟩
     have := P.epiModSerre.comp_mem s (Abelian.factorThruImage f) hs
       (epiModSerre_of_epi _ _)
-    rwa [show s ≫ Abelian.factorThruImage f = 0 by cat_disch,
-      epiModSerre_zero_iff] at this
+    rwa [show s ≫ Abelian.factorThruImage f = 0 by cat_disch, epiModSerre_zero_iff] at this
   · exact ⟨_, kernel.ι f, P.prop_of_iso (Abelian.coimageIsoImage f).symm hf, by simp⟩
 
 lemma exists_isoModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
@@ -67,8 +66,7 @@ lemma exists_comp_monoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     apply P.prop_of_iso (Abelian.coimageIsoImage f)
     have := P.monoModSerre.comp_mem (Abelian.factorThruCoimage f) s
       (monoModSerre_of_mono _ _) hs
-    rwa [show Abelian.factorThruCoimage f ≫ s = 0 by cat_disch,
-      monoModSerre_zero_iff] at this
+    rwa [show Abelian.factorThruCoimage f ≫ s = 0 by cat_disch, monoModSerre_zero_iff] at this
   · exact ⟨_, cokernel.π f, hf, by simp⟩
 
 lemma exists_comp_isoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
@@ -157,8 +155,7 @@ lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
   have := Localization.essSurj L P.isoModSerre
   tfae_have 1 → 2 := fun _ ↦ by
     have hf : L.map (kernel.ι f) = 0 := by
-      rw [← cancel_mono (L.map f), zero_comp, ← L.map_comp,
-        kernel.condition, L.map_zero]
+      rw [← cancel_mono (L.map f), zero_comp, ← L.map_comp, kernel.condition, L.map_zero]
     simpa [hf] using! map_comp_eq_zero_iff_of_epi_mono L P (𝟙 _) (kernel.ι f)
   tfae_have 2 → 3 := fun hf ↦ by
     intro Z z hz
@@ -171,9 +168,8 @@ lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
     intro W z hz
     obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
       ((L.objObjPreimageIso W).hom ≫ z)
-    rw [← cancel_epi (L.objObjPreimageIso W).hom, comp_zero, hφ,
-      ← cancel_epi (L.map φ.s), comp_zero,
-      MorphismProperty.RightFraction.map_s_comp_map]
+    rw [← cancel_epi (L.objObjPreimageIso W).hom, comp_zero, hφ, ← cancel_epi (L.map φ.s),
+      comp_zero, MorphismProperty.RightFraction.map_s_comp_map]
     apply hf φ.f
     have : L.map φ.s ≫ (L.objObjPreimageIso W).hom ≫ z = L.map φ.f := by cat_disch
     rw [← this, Category.assoc, Category.assoc, hz, comp_zero, comp_zero]
@@ -190,8 +186,7 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
   have := Localization.essSurj L P.isoModSerre
   tfae_have 1 → 2 := fun _ ↦ by
     have hf : L.map (cokernel.π f) = 0 := by
-      rw [← cancel_epi (L.map f), comp_zero, ← L.map_comp,
-        cokernel.condition, L.map_zero]
+      rw [← cancel_epi (L.map f), comp_zero, ← L.map_comp, cokernel.condition, L.map_zero]
     simpa [hf] using! map_comp_eq_zero_iff_of_epi_mono L P (cokernel.π f) (𝟙 _)
   tfae_have 2 → 3 := fun hf ↦ by
     intro Z z hz
@@ -204,9 +199,8 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     intro W z hz
     obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
       (z ≫ (L.objObjPreimageIso W).inv)
-    rw [← cancel_mono (L.objObjPreimageIso W).inv, zero_comp, hφ,
-      ← cancel_mono (L.map φ.s), zero_comp,
-      MorphismProperty.LeftFraction.map_comp_map_s]
+    rw [← cancel_mono (L.objObjPreimageIso W).inv, zero_comp, hφ, ← cancel_mono (L.map φ.s),
+      zero_comp, MorphismProperty.LeftFraction.map_comp_map_s]
     apply hf φ.f
     have : L.map φ.f = z ≫ (L.objObjPreimageIso W).inv ≫ L.map φ.s := by
       simp [reassoc_of% hφ]
@@ -298,8 +292,7 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
       generalizing W
   · obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
       ((L.objObjPreimageIso W).hom ≫ w)
-    rw [← cancel_epi (L.map φ.s),
-      MorphismProperty.RightFraction.map_s_comp_map] at hφ
+    rw [← cancel_epi (L.map φ.s), MorphismProperty.RightFraction.map_s_comp_map] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by
       rw [← hφ, Category.assoc, Category.assoc, hw, comp_zero, comp_zero]) ⟨_, rfl, by simp⟩
     exact ⟨(L.objObjPreimageIso W).inv ≫ inv (L.map φ.s) ≫ l, by simp [hl, ← hφ]⟩

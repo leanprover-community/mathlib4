@@ -61,9 +61,8 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
             (zero_add _)) (add_zero _) := by
   change SmallShiftedHom.equiv _ _ (.comp _ (CohomologyClass.mk x).toSmallShiftedHom _) = _
   simp only [SmallShiftedHom.equiv_comp, SmallShiftedHom.equiv_mk₀Inv, isoOfHom, asIso_inv,
-    CohomologyClass.equiv_toSmallShiftedHom_mk,
-    DerivedCategory.singleFunctorIsoCompQ, Iso.refl_hom, NatTrans.id_app, Category.id_comp,
-    Iso.refl_inv]
+    CohomologyClass.equiv_toSmallShiftedHom_mk, DerivedCategory.singleFunctorIsoCompQ, Iso.refl_hom,
+    NatTrans.id_app, Category.id_comp, Iso.refl_inv]
   congr
   exact (ShiftedHom.comp_mk₀_id ..).symm
 
@@ -201,9 +200,8 @@ lemma extMk_eq_zero_iff (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (p : ℕ) (hp : p + 1 = n) :
     R.extMk f m hm hf = 0 ↔
       ∃ (g : R.complex.X p ⟶ Y), R.complex.d n p ≫ g = f := by
-  simp only [← R.extEquivCohomologyClass.apply_eq_iff_eq,
-    extEquivCohomologyClass_extMk, extEquivCohomologyClass_zero,
-    CohomologyClass.mk_eq_zero_iff]
+  simp only [← R.extEquivCohomologyClass.apply_eq_iff_eq, extEquivCohomologyClass_extMk,
+    extEquivCohomologyClass_zero, CohomologyClass.mk_eq_zero_iff]
   rw [Cocycle.toSingleMk_mem_coboundaries_iff _ _ _ _ _ (-p) (by lia),
     R.cochainComplex_d _ _ _ _ rfl rfl]
   refine ⟨fun ⟨g, hg⟩ ↦ ⟨(R.cochainComplexXIso (-p) p rfl).inv ≫ g, ?_⟩,

@@ -49,8 +49,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
     rw [dsimp% Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
-      Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply,
-      mkOfSucc_δ_lt hlt]
+      Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply, mkOfSucc_δ_lt hlt]
     rfl
   · rw [← spine_arrow, spine_δ_arrow_gt sx _ hgt]
     dsimp
@@ -58,8 +57,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
     rw [dsimp% Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
-      Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply,
-      mkOfSucc_δ_gt hgt]
+      Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply, mkOfSucc_δ_gt hgt]
     rfl
   · obtain _ | n := n
     · /- The only inner horn of `Δ[2]` does not contain the diagonal edge. -/

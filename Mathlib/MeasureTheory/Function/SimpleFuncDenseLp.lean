@@ -373,8 +373,7 @@ def simpleFunc : AddSubgroup (Lp E p μ) where
   add_mem' := by
     rintro f g ⟨s, hs⟩ ⟨t, ht⟩
     use s + t
-    simp only [← hs, ← ht, AEEqFun.mk_add_mk, AddSubgroup.coe_add,
-      SimpleFunc.coe_add]
+    simp only [← hs, ← ht, AEEqFun.mk_add_mk, AddSubgroup.coe_add, SimpleFunc.coe_add]
   neg_mem' := by
     rintro f ⟨s, hs⟩
     use -s
@@ -536,8 +535,7 @@ theorem toSimpleFunc_toLp (f : α →ₛ E) (hfi : MemLp f p μ) : toSimpleFunc 
 variable (E μ)
 
 theorem zero_toSimpleFunc : toSimpleFunc (0 : Lp.simpleFunc E p μ) =ᵐ[μ] 0 := by
-  filter_upwards [toSimpleFunc_eq_toFun (0 : Lp.simpleFunc E p μ),
-    Lp.coeFn_zero E 1 μ] with _ h₁ _
+  filter_upwards [toSimpleFunc_eq_toFun (0 : Lp.simpleFunc E p μ), Lp.coeFn_zero E 1 μ] with _ h₁ _
   rwa [h₁]
 
 variable {E μ}

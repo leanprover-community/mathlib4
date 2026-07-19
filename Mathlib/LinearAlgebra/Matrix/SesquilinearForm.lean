@@ -477,8 +477,7 @@ theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) 
     rw [Finsupp.sum_fintype]
     · apply sum_congr rfl
       rintro j' -
-      simp only [smul_eq_mul, mul_assoc, mul_comm,
-        mul_left_comm]
+      simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm]
     · intros
       simp only [zero_smul, smul_zero]
   · intros
@@ -769,8 +768,7 @@ theorem _root_.Matrix.separatingRight_toLinearMap₂_iff :
 @[simp]
 theorem _root_.Matrix.nondegenerate_toLinearMap₂_iff :
     (toLinearMap₂ b₁ b₂ M).Nondegenerate ↔ M.Nondegenerate := by
-  rw [← nondegenerate_toLinearMap₂'_iff_nondegenerate_toLinearMap₂,
-    nondegenerate_toLinearMap₂'_iff]
+  rw [← nondegenerate_toLinearMap₂'_iff_nondegenerate_toLinearMap₂, nondegenerate_toLinearMap₂'_iff]
 
 theorem _root_.Matrix.SeparatingLeft.toLinearMap₂ (h : M.SeparatingLeft) :
     (toLinearMap₂ b₁ b₂ M).SeparatingLeft :=

@@ -533,10 +533,8 @@ def isBilimitBinaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSpli
     {c : CokernelCofork f} (i : IsColimit c) : (binaryBiconeOfIsSplitMonoOfCokernel i).IsBilimit :=
   isBinaryBilimitOfTotal _
     (by
-      simp only [binaryBiconeOfIsSplitMonoOfCokernel_fst,
-        binaryBiconeOfIsSplitMonoOfCokernel_inr,
-        binaryBiconeOfIsSplitMonoOfCokernel_snd,
-        splitEpiOfIdempotentOfIsColimitCofork_section_]
+      simp only [binaryBiconeOfIsSplitMonoOfCokernel_fst, binaryBiconeOfIsSplitMonoOfCokernel_inr,
+        binaryBiconeOfIsSplitMonoOfCokernel_snd, splitEpiOfIdempotentOfIsColimitCofork_section_]
       dsimp only [binaryBiconeOfIsSplitMonoOfCokernel_pt]
       rw [isColimitCoforkOfCokernelCofork_desc, isCokernelEpiComp_desc]
       simp only [binaryBiconeOfIsSplitMonoOfCokernel_inl, Cofork.IsColimit.π_desc,

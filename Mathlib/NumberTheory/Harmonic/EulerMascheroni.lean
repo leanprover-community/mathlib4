@@ -52,11 +52,10 @@ lemma eulerMascheroniSeq_zero : eulerMascheroniSeq 0 = 0 := by
 
 lemma strictMono_eulerMascheroniSeq : StrictMono eulerMascheroniSeq := by
   refine strictMono_nat_of_lt_succ (fun n ↦ ?_)
-  rw [eulerMascheroniSeq, eulerMascheroniSeq, ← sub_pos, sub_sub_sub_comm,
-    harmonic_succ, add_comm, Rat.cast_add, add_sub_cancel_right,
-    ← log_div (by positivity) (by positivity), add_div, Nat.cast_add_one,
-    Nat.cast_add_one, div_self (by positivity), sub_pos, one_div, Rat.cast_inv, Rat.cast_add,
-    Rat.cast_one, Rat.cast_natCast]
+  rw [eulerMascheroniSeq, eulerMascheroniSeq, ← sub_pos, sub_sub_sub_comm, harmonic_succ, add_comm,
+    Rat.cast_add, add_sub_cancel_right, ← log_div (by positivity) (by positivity), add_div,
+    Nat.cast_add_one, Nat.cast_add_one, div_self (by positivity), sub_pos, one_div, Rat.cast_inv,
+    Rat.cast_add, Rat.cast_one, Rat.cast_natCast]
   refine (log_lt_sub_one_of_pos ?_ (ne_of_gt <| lt_add_of_pos_right _ ?_)).trans_le (le_of_eq ?_)
   · positivity
   · positivity
@@ -88,10 +87,9 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [eulerMascheroniSeq']
   simp_rw [eulerMascheroniSeq', eq_false_intro hn.ne', reduceCtorEq, if_false]
-  rw [← sub_pos, sub_sub_sub_comm,
-    harmonic_succ, Rat.cast_add, ← sub_sub, sub_self, zero_sub, sub_eq_add_neg, neg_sub,
-    ← sub_eq_neg_add, sub_pos, ← log_div (by positivity) (by positivity), ← neg_lt_neg_iff,
-    ← log_inv]
+  rw [← sub_pos, sub_sub_sub_comm, harmonic_succ, Rat.cast_add, ← sub_sub, sub_self, zero_sub,
+    sub_eq_add_neg, neg_sub, ← sub_eq_neg_add, sub_pos, ← log_div (by positivity) (by positivity),
+    ← neg_lt_neg_iff, ← log_inv]
   refine (log_lt_sub_one_of_pos ?_ ?_).trans_le (le_of_eq ?_)
   · positivity
   · simp [field]

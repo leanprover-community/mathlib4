@@ -167,8 +167,7 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   have := Hom.isIso_app (I.glueDataObjMap (X.affineBasicOpen_le f))
     (I.glueDataObjι U ⁻¹ᵁ U.1.ι ⁻¹ᵁ X.basicOpen f) (by rw [opensRange_glueDataObjMap])
   apply ((ConcreteCategory.isIso_iff_bijective _).mp this).1
-  simp only [map_zero, ← RingHom.comp_apply,
-    ← CommRingCat.hom_comp, Category.assoc]
+  simp only [map_zero, ← RingHom.comp_apply, ← CommRingCat.hom_comp, Category.assoc]
   simp only [Scheme.Hom.app_eq_appLE, homOfLE_leOfHom, Scheme.Hom.map_appLE,
     Scheme.Hom.appLE_comp_appLE, Category.assoc, glueDataObjMap_glueDataObjι_assoc]
   rw [Scheme.Hom.appLE]
@@ -181,9 +180,8 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   convert RingHom.map_zero _
   rw [← RingHom.mem_ker, ker_glueDataObjι_appTop, ← Ideal.mem_comap, Ideal.comap_comap,
     ← CommRingCat.hom_comp]
-  simp only [homOfLE_leOfHom, Scheme.Hom.comp_base,
-    TopologicalSpace.Opens.map_comp_obj, eqToHom_op, eqToHom_unop, ← Functor.map_comp,
-    Scheme.Opens.topIso_hom, Category.assoc]
+  simp only [homOfLE_leOfHom, Scheme.Hom.comp_base, TopologicalSpace.Opens.map_comp_obj, eqToHom_op,
+    eqToHom_unop, ← Functor.map_comp, Scheme.Opens.topIso_hom, Category.assoc]
   exact I.ideal_le_comap_ideal (U := X.affineBasicOpen f) (V := V)
     (hfg.trans_le (X.basicOpen_le g)) hx
 
@@ -409,9 +407,8 @@ private lemma range_glueData_ι (U : X.affineOpens) :
       I.glueData.ι U).base = (I.gluedTo ⁻¹ᵁ U : Set I.glueData.glued) := by
   simp only [TopologicalSpace.Opens.map_coe]
   apply I.gluedTo_injective.image_injective
-  rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, ι_gluedTo,
-    range_glueDataObjι_ι, Set.image_preimage_eq_inter_range, range_gluedTo,
-    ← coe_support_inter, Set.inter_comm]
+  rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, ι_gluedTo, range_glueDataObjι_ι,
+    Set.image_preimage_eq_inter_range, range_gluedTo, ← coe_support_inter, Set.inter_comm]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) identifying `Spec(Γ(X, U)/I(U))` with its image in `Spec(𝒪ₓ/I)`. -/
@@ -549,9 +546,8 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
   simp only [← this, ← Functor.map_inv, inv_eqToHom, Category.assoc, eqToHom_unop,
     ← Functor.map_comp, IsIso.Iso.inv_inv, subschemeObjIso, Iso.trans_inv, Functor.mapIso_inv,
     Iso.op_inv, eqToIso.inv, eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc,
-      Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
-    Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
-    homOfLE_leOfHom]
+    Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op, Hom.app_appIso_inv_assoc,
+    TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe, homOfLE_leOfHom]
   convert! (Category.comp_id _).symm
   exact CategoryTheory.Functor.map_id _ _
 

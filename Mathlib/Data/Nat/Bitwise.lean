@@ -132,8 +132,7 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
   rw [← bit_ne_zero_iff] at ham hbn
-  simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit,
-    ite_false]
+  simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ite_false]
   conv_rhs => simp only [bit, two_mul, Bool.cond_eq_ite]
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :

@@ -631,10 +631,9 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
       (-∑ i₁ ∈ s₁, ∑ i₂ ∈ s₂, w₁ i₁ * w₂ i₂ * (‖v₁ i₁ - v₂ i₂‖ * ‖v₁ i₁ - v₂ i₂‖)) / 2 := by
   simp_rw [sum_inner, inner_sum, real_inner_smul_left, real_inner_smul_right,
     real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two, ← div_sub_div_same,
-    add_div, mul_sub_left_distrib, left_distrib, Finset.sum_sub_distrib,
-    Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
-    mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
-    Finset.sum_div, mul_div_assoc, mul_assoc]
+    add_div, mul_sub_left_distrib, left_distrib, Finset.sum_sub_distrib, Finset.sum_add_distrib,
+    ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul, mul_zero, Finset.sum_const_zero, zero_add,
+    zero_sub, Finset.mul_sum, neg_div, Finset.sum_div, mul_div_assoc, mul_assoc]
 
 end Norm_Seminormed
 
@@ -717,8 +716,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
   tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩
   tfae_have 3 → 1 := by
     rintro (rfl | ⟨r, rfl⟩) <;>
-    simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K,
-      sq, mul_left_comm]
+    simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K, sq, mul_left_comm]
   tfae_have 3 ↔ 4 := by simp only [Submodule.mem_span_singleton, eq_comm]
   tfae_finish
 

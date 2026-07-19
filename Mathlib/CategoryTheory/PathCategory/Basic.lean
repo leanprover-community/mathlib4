@@ -302,8 +302,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
   functor_unitIso_comp X := by
     cases X
-    simp only [Functor.id_obj,
-               quotientPathsTo_obj, Functor.comp_obj, toQuotientPaths_obj_as,
+    simp only [Functor.id_obj, quotientPathsTo_obj, Functor.comp_obj, toQuotientPaths_obj_as,
                NatIso.ofComponents_hom_app, Iso.refl_hom, quotientPathsTo_map, Category.comp_id]
     rfl
 

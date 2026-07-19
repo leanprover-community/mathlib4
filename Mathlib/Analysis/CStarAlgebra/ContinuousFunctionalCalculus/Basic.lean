@@ -98,8 +98,7 @@ theorem bijective_characterSpaceToSpectrum :
   refine ⟨fun φ ψ h => starAlgHomClass_ext ℂ ?_ ?_ ?_, ?_⟩
   · exact (map_continuous φ)
   · exact (map_continuous ψ)
-  · simpa only [characterSpaceToSpectrum, Subtype.mk_eq_mk,
-      ContinuousMap.coe_mk] using h
+  · simpa only [characterSpaceToSpectrum, Subtype.mk_eq_mk, ContinuousMap.coe_mk] using h
   · rintro ⟨z, hz⟩
     have hz' := (StarSubalgebra.spectrum_eq (hS := isClosed ℂ a)
       (a := ⟨a, self_mem ℂ a⟩) ▸ hz)

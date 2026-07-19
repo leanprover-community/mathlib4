@@ -244,11 +244,9 @@ instance NatTrans.commShift_iso_hom_of_localization :
   intro a
   ext X
   simp only [comp_app, Functor.whiskerRight_app, Functor.whiskerLeft_app,
-    Functor.commShiftIso_comp_hom_app,
-    Functor.commShiftOfLocalization_iso_hom_app,
-    Category.assoc, ← Functor.map_comp, ← Functor.map_comp_assoc,
-    Iso.hom_inv_id_app, Functor.map_id, Iso.inv_hom_id_app,
-    Category.comp_id, Category.id_comp, Functor.comp_obj]
+    Functor.commShiftIso_comp_hom_app, Functor.commShiftOfLocalization_iso_hom_app, Category.assoc,
+    ← Functor.map_comp, ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id,
+    Iso.inv_hom_id_app, Category.comp_id, Category.id_comp, Functor.comp_obj]
 
 end
 
@@ -286,8 +284,7 @@ lemma commShift_iso_hom_app (m : M) (X : C₁) :
       G.map ((L₁.commShiftIso m).inv.app X) ≫ e.inv.app _ ≫
         L₂.map ((Φ.functor.commShiftIso m).hom.app X) ≫
         (L₂.commShiftIso m).hom.app _ ≫ (e.hom.app X)⟦m⟧' := by
-  simp [Functor.commShiftOfLocalization_iso_hom_app,
-    Functor.commShiftIso_comp_hom_app]
+  simp [Functor.commShiftOfLocalization_iso_hom_app, Functor.commShiftIso_comp_hom_app]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
@@ -297,8 +294,7 @@ lemma commShift_iso_inv_app (m : M) (X : C₁) :
       (e.inv.app X)⟦m⟧' ≫ (L₂.commShiftIso m).inv.app _ ≫
         L₂.map ((Φ.functor.commShiftIso m).inv.app X) ≫ e.hom.app _ ≫
           G.map ((L₁.commShiftIso m).hom.app X) := by
-  simp [Functor.commShiftOfLocalization_iso_inv_app,
-    Functor.commShiftIso_comp_inv_app]
+  simp [Functor.commShiftOfLocalization_iso_inv_app, Functor.commShiftIso_comp_inv_app]
 
 set_option backward.defeqAttrib.useBackward true in
 lemma natTransCommShift_hom :

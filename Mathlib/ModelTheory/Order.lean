@@ -328,8 +328,7 @@ end Preorder
 instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
     M ⊨ L.partialOrderTheory := by
   simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
-    relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-    model_preorder, and_true]
+    relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, model_preorder, and_true]
   infer_instance
 
 section LinearOrder
@@ -338,8 +337,7 @@ variable [LinearOrder M] [L.OrderedStructure M]
 
 instance model_linearOrder : M ⊨ L.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_insert_iff, Relations.realize_total, relMap_leSymb,
-    Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, model_partialOrder,
-    and_true]
+    Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, model_partialOrder, and_true]
   infer_instance
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :

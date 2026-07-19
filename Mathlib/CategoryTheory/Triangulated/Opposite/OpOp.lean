@@ -106,8 +106,7 @@ instance : (opOp C).CommShift ℤ where
   commShiftIso_zero := by
     ext X
     refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
-    simp [iso_hom_app X 0 0, shiftFunctorZero_op_inv_app,
-      shiftFunctorZero_op_hom_app]
+    simp [iso_hom_app X 0 0, shiftFunctorZero_op_inv_app, shiftFunctorZero_op_hom_app]
   commShiftIso_add p q := by
     ext X
     refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
@@ -126,8 +125,7 @@ instance : (unopUnop C).CommShift ℤ where
   commShiftIso := iso _
   commShiftIso_zero := by
     ext X
-    simp [iso_hom_app _ 0 0, shiftFunctorZero_op_inv_app,
-      shiftFunctorZero_op_hom_app]
+    simp [iso_hom_app _ 0 0, shiftFunctorZero_op_inv_app, shiftFunctorZero_op_hom_app]
   commShiftIso_add p q := by
     ext X
     simp only [Functor.CommShift.isoAdd_hom_app, op_comp,
@@ -184,10 +182,8 @@ instance : (opOpEquivalence C).CommShift ℤ :=
   Equivalence.CommShift.mk'' _ _
     { shift_comm n := by
         ext X
-        simp [Functor.commShiftIso_comp_hom_app,
-          commShiftIso_opOp_hom_app _ n (-n),
-          commShiftIso_unopUnop_hom_app _ n (-n),
-          ← unop_comp_assoc] }
+        simp [Functor.commShiftIso_comp_hom_app, commShiftIso_opOp_hom_app _ n (-n),
+          commShiftIso_unopUnop_hom_app _ n (-n), ← unop_comp_assoc] }
 
 variable [Preadditive C] [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C]
@@ -201,11 +197,10 @@ instance : (opOp C).IsTriangulated where
       (Quiver.Hom.unop_inj ?_))
     have := (shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.naturality T.mor₃
     dsimp at this ⊢
-    simp only [shiftFunctor_op_map _ 1 (-1), Functor.op_obj,
-      unop_id, shiftFunctor_op_map _ (-1) 1,
+    simp only [shiftFunctor_op_map _ 1 (-1), Functor.op_obj, unop_id, shiftFunctor_op_map _ (-1) 1,
       commShiftIso_opOp_hom_app _ 1 (-1),
-      opShiftFunctorEquivalence_counitIso_inv_app _ 1 (-1) (add_neg_cancel 1),
-      unop_comp, Quiver.Hom.unop_op, Category.assoc, ← op_comp, Iso.inv_hom_id_app_assoc,
+      opShiftFunctorEquivalence_counitIso_inv_app _ 1 (-1) (add_neg_cancel 1), unop_comp,
+      Quiver.Hom.unop_op, Category.assoc, ← op_comp, Iso.inv_hom_id_app_assoc,
       shiftFunctorCompIsoId_op_hom_app, Iso.unop_hom_inv_id_app_assoc, ← Functor.map_comp]
     simp [Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app, ← reassoc_of% this]
 

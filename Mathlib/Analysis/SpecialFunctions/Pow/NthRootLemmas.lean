@@ -62,8 +62,7 @@ alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
     a ≤ ((a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by
   rw [Nat.le_div_iff_mul_le (by positivity), Nat.mul_comm,
-    ← Nat.add_mul_div_right _ _ (by positivity),
-    Nat.le_div_iff_mul_le (by positivity)]
+    ← Nat.add_mul_div_right _ _ (by positivity), Nat.le_div_iff_mul_le (by positivity)]
   #adaptation_note /-- Prior to nightly-2026-04-06, this was
   ```
   have := (Commute.all (b : ℤ) (a - b)).pow_add_mul_le_add_pow_of_sq_nonneg

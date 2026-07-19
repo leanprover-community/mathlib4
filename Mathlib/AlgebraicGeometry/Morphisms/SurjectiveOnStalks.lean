@@ -131,12 +131,10 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨x, rfl⟩ := (Scheme.homeoOfIso (pullbackSpecIso R A B).symm).surjective x
     simp only [Scheme.homeoOfIso_apply, Function.comp_apply]
     ext
-    · simp only [L, ← Scheme.Hom.comp_apply, pullback.lift_fst, Iso.symm_hom,
-        Iso.inv_hom_id]
+    · simp only [L, ← Scheme.Hom.comp_apply, pullback.lift_fst, Iso.symm_hom, Iso.inv_hom_id]
       erw [← Scheme.Hom.comp_apply, pullbackSpecIso_inv_fst_assoc]
       rfl
-    · simp only [L, ← Scheme.Hom.comp_apply, pullback.lift_snd, Iso.symm_hom,
-        Iso.inv_hom_id]
+    · simp only [L, ← Scheme.Hom.comp_apply, pullback.lift_snd, Iso.symm_hom, Iso.inv_hom_id]
       erw [← Scheme.Hom.comp_apply, pullbackSpecIso_inv_snd_assoc]
       rfl
   let 𝒰 := S.affineOpenCover.openCover

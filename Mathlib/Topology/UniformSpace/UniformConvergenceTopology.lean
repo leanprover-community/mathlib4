@@ -1036,10 +1036,9 @@ protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β}
 protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (α →ᵤ[𝔖] β)} :
     Continuous f ↔ ∀ s ∈ 𝔖,
       Continuous (UniformFun.ofFun ∘ s.restrict ∘ UniformOnFun.toFun 𝔖 ∘ f) := by
-  simp only [continuous_iff_continuousAt, ContinuousAt,
-    UniformOnFun.tendsto_iff_tendstoUniformlyOn, UniformFun.tendsto_iff_tendstoUniformly,
-    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_comm X,
-    Function.comp_def, restrict_eq, UniformFun.toFun_ofFun]
+  simp only [continuous_iff_continuousAt, ContinuousAt, UniformOnFun.tendsto_iff_tendstoUniformlyOn,
+    UniformFun.tendsto_iff_tendstoUniformly, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe,
+    @forall_comm X, Function.comp_def, restrict_eq, UniformFun.toFun_ofFun]
 
 instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
   rcases isEmpty_or_nonempty β

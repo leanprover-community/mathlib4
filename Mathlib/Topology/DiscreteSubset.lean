@@ -105,8 +105,7 @@ lemma Set.Subsingleton.isDiscrete (hs : s.Subsingleton) : IsDiscrete s :=
 lemma isDiscrete_iff_nhdsWithin : IsDiscrete s ↔ ∀ x ∈ s, 𝓝[s] x = pure x := by
   simp [isDiscrete_iff_discreteTopology, discreteTopology_iff_isOpen_singleton,
     isOpen_singleton_iff_nhds_eq_pure, nhds_induced,
-    ← (Filter.map_injective Subtype.val_injective).eq_iff,
-    Filter.map_comap, nhdsWithin]
+    ← (Filter.map_injective Subtype.val_injective).eq_iff, Filter.map_comap, nhdsWithin]
 
 protected alias ⟨IsDiscrete.nhdsWithin, _⟩ := isDiscrete_iff_nhdsWithin
 

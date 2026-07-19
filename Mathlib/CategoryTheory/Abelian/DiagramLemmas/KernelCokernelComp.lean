@@ -101,8 +101,7 @@ lemma ι_φ : ι f g ≫ φ f g = 0 := by
 lemma φ_π : φ f g ≫ π f g = 0 := by
   dsimp [φ, π]
   ext
-  · rw [biprod.inl_desc_assoc, assoc, biprod.inl_desc, comp_zero,
-      ← assoc, cokernel.condition]
+  · rw [biprod.inl_desc_assoc, assoc, biprod.inl_desc, comp_zero, ← assoc, cokernel.condition]
   · simp
 
 instance : Mono (ι f g) := mono_of_mono_fac (ι_fst f g)

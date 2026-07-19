@@ -29,8 +29,7 @@ lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ f
   let : MonObj X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
   have : μ = α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X)) := rfl
   constructor
-  simp_rw [this, ← α.homEquiv'.apply_eq_iff_eq, α.homEquiv'_comp,
-    Equiv.apply_symm_apply, map_mul, ← α.homEquiv'_comp, op_tensorObj,
-    braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
+  simp_rw [this, ← α.homEquiv'.apply_eq_iff_eq, α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul,
+    ← α.homEquiv'_comp, op_tensorObj, braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
 
 end CategoryTheory

@@ -110,8 +110,7 @@ theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
     {iV : V ⟶ X} {f' : V ⟶ U} (h : IsPullback iV f' f g) (H : P.diagonal f) :
     Q.diagonal f' := by
   let := isLocal_affineProperty P
-  rw [← Q.diagonal.cancel_left_of_respectsIso h.isoPullback.inv,
-    h.isoPullback_inv_snd]
+  rw [← Q.diagonal.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_snd]
   rintro U V f₁ f₂ hU hV hf₁ hf₂
   rw [← Q.cancel_left_of_respectsIso (pullbackDiagonalMapIso f _ f₁ f₂).hom]
   convert! HasAffineProperty.of_isPullback (P := P) (.of_hasPullback _ _) H

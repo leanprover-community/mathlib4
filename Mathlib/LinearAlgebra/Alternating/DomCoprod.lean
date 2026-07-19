@@ -82,9 +82,8 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : Mᵢ [⋀^ιa]→ₗ[R'] N�
   dsimp only [Quotient.liftOn'_mk'', Quotient.map'_mk'', MulAction.Quotient.smul_mk,
     domCoprod.summand]
   rw [smul_eq_mul, Perm.sign_mul, Perm.sign_swap hij]
-  simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul,
-    _root_.smul_apply, _root_.neg_apply, MultilinearMap.domDomCongr_apply,
-    MultilinearMap.domCoprod_apply]
+  simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul, _root_.smul_apply,
+    _root_.neg_apply, MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply]
   convert! add_neg_cancel (G := N₁ ⊗[R'] N₂) _ using 6 <;>
     · ext k
       rw [Equiv.apply_swap_eq_self hv]

@@ -144,11 +144,10 @@ syntax (name := whisker_simps) "whisker_simps" optConfig : tactic
 elab_rules : tactic
 | `(tactic| whisker_simps $cfg) => do
   evalTactic (← `(tactic|
-    simp $cfg only [Category.assoc,
-      Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
-      Bicategory.whiskerRight_comp, Bicategory.whiskerRight_id,
-      Bicategory.whiskerLeft_comp, Bicategory.whiskerLeft_id,
-      Bicategory.comp_whiskerRight, Bicategory.id_whiskerRight, Bicategory.whisker_assoc]
+    simp $cfg only [Category.assoc, Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
+      Bicategory.whiskerRight_comp, Bicategory.whiskerRight_id, Bicategory.whiskerLeft_comp,
+      Bicategory.whiskerLeft_id, Bicategory.comp_whiskerRight, Bicategory.id_whiskerRight,
+      Bicategory.whisker_assoc]
     ))
 
 -- We have unused typeclass arguments here.

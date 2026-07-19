@@ -625,8 +625,7 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
   induction n with
   | zero => simp only [coe_pow, pow_zero, qExpansion_one]
   | succ n ih =>
-    rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
-      pow_succ]
+    rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih, pow_succ]
 
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :

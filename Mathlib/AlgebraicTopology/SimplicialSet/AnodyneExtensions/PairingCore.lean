@@ -80,13 +80,11 @@ noncomputable def Pairing.pairingCore (P : A.Pairing) [P.IsProper] :
       ← (P.p s).val.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq,
       ← (P.p t).val.cast_eq_self (P.isUniquelyCodimOneFace t).dim_eq]
   injective_type₂' {s t} h := by
-    rw [(P.isUniquelyCodimOneFace s).δ_index rfl,
-      (P.isUniquelyCodimOneFace t).δ_index rfl] at h
+    rw [(P.isUniquelyCodimOneFace s).δ_index rfl, (P.isUniquelyCodimOneFace t).δ_index rfl] at h
     rwa [Subtype.ext_iff, N.ext_iff, SSet.N.ext_iff]
   type₁_ne_type₂' s t h := (P.ne (P.p s) t) (by
     rw [(P.isUniquelyCodimOneFace t).δ_index rfl] at h
-    rwa [← (P.p s).val.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq,
-      N.ext_iff, SSet.N.ext_iff])
+    rwa [← (P.p s).val.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq, N.ext_iff, SSet.N.ext_iff])
   surjective' x := by
     obtain ⟨s, rfl | rfl⟩ := P.exists_or x
     · refine ⟨s, Or.inr ?_⟩

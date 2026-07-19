@@ -407,8 +407,7 @@ lemma haarScalarFactor_map (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasur
     ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero hf.1 hf.2.1 hf.2.2)
   rw [← NNReal.coe_inj, haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hf,
     haarScalarFactor_eq_integral_div μ' μ (f_cont.comp φ.continuous),
-    integral_map (by fun_prop) (by fun_prop),
-    integral_map (by fun_prop) (by fun_prop)]
+    integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop)]
   · rfl
   · exact hf.1.comp_homeomorph φ.toHomeomorph
   · change ∫ x, f (φ x) ∂μ ≠ 0

@@ -221,8 +221,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     exact this _ _ _ _ (by simpa only [Category.assoc] using e)
   introv e
   refine ext G _ _ fun V iVZ ↦ ?_
-  simp only [← op_comp, ← Functor.map_comp_apply, naturality_apply,
-    Category.assoc, e]
+  simp only [← op_comp, ← Functor.map_comp_apply, naturality_apply, Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
 noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := ↾fun x =>
@@ -659,8 +658,7 @@ lemma mapPreimage_comp {X Y Z : C} (f : G.obj X ⟶ G.obj Y)
       dsimp
       simp only [Category.assoc, ← Functor.map_comp, ← op_comp]
       rw [mapPreimage_map_of_fac K G F (f ≫ g) (c ≫ a) d,
-        mapPreimage_map_of_fac K G F f (c ≫ a) (c ≫ b),
-        mapPreimage_map_of_fac K G F g (c ≫ b) d]
+        mapPreimage_map_of_fac K G F f (c ≫ a) (c ≫ b), mapPreimage_map_of_fac K G F g (c ≫ b) d]
       all_goals
         simp only [Functor.map_comp, Category.assoc, fac₁, fac₂])
 

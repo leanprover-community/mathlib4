@@ -683,8 +683,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
   ext j
-  simp only [Category.assoc, piComparison_comp_π, ← G.map_comp,
-    limit.lift_π, Fan.mk_π_app]
+  simp only [Category.assoc, piComparison_comp_π, ← G.map_comp, limit.lift_π, Fan.mk_π_app]
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
 of `f`, see `PreservesCoproduct.ofIsoComparison`. -/

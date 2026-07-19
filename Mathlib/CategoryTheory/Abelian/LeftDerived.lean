@@ -168,8 +168,7 @@ theorem Functor.leftDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : C
   rw [← cancel_mono (Q.isoLeftDerivedObj F n).hom,
     ProjectiveResolution.isoLeftDerivedObj_hom_naturality f P Q g _ F n,
     assoc, assoc, Iso.inv_hom_id, comp_id]
-  rw [← HomologicalComplex.comp_f, w, HomologicalComplex.comp_f,
-    ChainComplex.single₀_map_f_zero]
+  rw [← HomologicalComplex.comp_f, w, HomologicalComplex.comp_f, ChainComplex.single₀_map_f_zero]
 
 /-- The natural transformation
 `F.leftDerivedToHomotopyCategory ⟶ G.leftDerivedToHomotopyCategory` induced by

@@ -412,9 +412,8 @@ instance EuclideanSpace.instIsManifoldSphere
       simp only [OpenPartialHomeomorph.trans_toPartialEquiv,
         OpenPartialHomeomorph.symm_toPartialEquiv, PartialEquiv.trans_source,
         PartialEquiv.symm_source, stereographic'_target, stereographic'_source]
-      simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
-        Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq,
-        Set.preimage_ofPred_eq]
+      simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm, Set.range_id,
+        Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_ofPred_eq]
       simp only [id, comp_apply, OpenPartialHomeomorph.coe_toPartialEquiv_symm,
         innerSL_apply_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)

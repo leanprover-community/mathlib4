@@ -154,8 +154,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           exact lie_mem_right R I J ⟨a, ha⟩ y hy
         -- Finally `⁅b, y⁆ = 0`, by the independence of the atoms.
         · suffices ⁅b, y.val⁆ = 0 by erw [this]; simp only [zero_mem]
-          rw [← LieSubmodule.mem_bot (R := R) (L := L),
-              ← (IsSemisimple.sSupIndep_isAtom hI).eq_bot]
+          rw [← LieSubmodule.mem_bot (R := R) (L := L), ← (IsSemisimple.sSupIndep_isAtom hI).eq_bot]
           exact ⟨lie_mem_right R L I b y y.2, lie_mem_left _ _ _ _ _ hb⟩ }
     -- Now that we know that `J` is an ideal of `L`,
     -- we start with the proof that `I` is a simple Lie algebra.

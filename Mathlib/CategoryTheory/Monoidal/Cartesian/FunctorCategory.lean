@@ -94,8 +94,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
     (λ_ F).inv.app j = (λ_ (F.obj j)).inv := by
-  rw [← cancel_mono ((λ_ (F.obj j)).hom), Iso.inv_hom_id, ← leftUnitor_hom_app,
-    Iso.inv_hom_id_app]
+  rw [← cancel_mono ((λ_ (F.obj j)).hom), Iso.inv_hom_id, ← leftUnitor_hom_app, Iso.inv_hom_id_app]
 
 @[simp]
 lemma rightUnitor_hom_app (F : J ⥤ C) (j : J) :
@@ -105,8 +104,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
     (ρ_ F).inv.app j = (ρ_ (F.obj j)).inv := by
-  rw [← cancel_mono ((ρ_ (F.obj j)).hom), Iso.inv_hom_id, ← rightUnitor_hom_app,
-    Iso.inv_hom_id_app]
+  rw [← cancel_mono ((ρ_ (F.obj j)).hom), Iso.inv_hom_id, ← rightUnitor_hom_app, Iso.inv_hom_id_app]
 
 lemma tensorHom_app_fst {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
     (f ⊗ₘ g).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by

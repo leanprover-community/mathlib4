@@ -105,8 +105,7 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
     · exact (pow_one _).symm
     simpa using h
   rw [← natDegree_scaleRoots p (den A r)] at *
-  rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne h hj.symm),
-    zero_mul]
+  rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne h hj.symm), zero_mul]
   exact dvd_zero _
 
 /-- **Integral root theorem**:

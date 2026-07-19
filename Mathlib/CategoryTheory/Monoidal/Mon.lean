@@ -114,8 +114,7 @@ def ofIso (e : M ≅ X) : MonObj X where
   mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
   one_mul := by
     rw [← cancel_epi (λ_ X).inv]
-    simp only [comp_whiskerRight, tensorHom_def, Category.assoc,
-      hom_inv_whiskerRight_assoc]
+    simp only [comp_whiskerRight, tensorHom_def, Category.assoc, hom_inv_whiskerRight_assoc]
     simp [← tensorHom_def_assoc, leftUnitor_inv_comp_tensorHom_assoc]
   mul_one := by
     rw [← cancel_epi (ρ_ X).inv]

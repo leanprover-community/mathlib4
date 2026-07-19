@@ -355,10 +355,9 @@ lemma card_edgeFinset_turanGraph_add :
   conv_lhs =>
     enter [2, v]
     rw [Fin.sum_univ_eq_sum_range fun w ↦ if v % r ≠ w % r then 1 else 0, sum_range_add]
-  rw [sum_add_distrib,
-    Fin.sum_univ_eq_sum_range fun v ↦ ∑ w ∈ range n, if v % r ≠ w % r then 1 else 0,
-    Fin.sum_univ_eq_sum_range fun v ↦ ∑ w ∈ range r, if v % r ≠ (n + w) % r then 1 else 0,
-    sum_range_add, sum_range_add, add_assoc, add_assoc]
+  rw [sum_add_distrib, Fin.sum_univ_eq_sum_range fun v ↦ ∑ w ∈ range n,
+    if v % r ≠ w % r then 1 else 0, Fin.sum_univ_eq_sum_range fun v ↦ ∑ w ∈ range r,
+    if v % r ≠ (n + w) % r then 1 else 0, sum_range_add, sum_range_add, add_assoc, add_assoc]
   congr 1; · simp [← Fin.sum_univ_eq_sum_range]
   rw [← add_assoc, sum_comm]; simp_rw [ne_comm, ← two_mul]; congr
   · conv_rhs => rw [← card_range n, ← smul_eq_mul, ← sum_const]

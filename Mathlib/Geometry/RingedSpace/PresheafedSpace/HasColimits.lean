@@ -314,8 +314,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
   fapply NatIso.ofComponents
   · intro X
     refine (F.obj (unop X)).presheaf.mapIso (eqToIso ?_)
-    simp only [Functor.op_obj, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
-      Set.preimage_preimage]
+    simp only [Functor.op_obj, op_inj_iff, Opens.map_coe, SetLike.ext'_iff, Set.preimage_preimage]
     refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
     simp only [colimitCocone, colimit, ← TopCat.comp_app]
     congr

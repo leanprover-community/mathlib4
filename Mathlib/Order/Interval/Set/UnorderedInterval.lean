@@ -235,8 +235,7 @@ lemma monotone_or_antitone_iff_uIcc :
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
       ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
-  simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
-    mem_uIcc]
+  simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc, mem_uIcc]
 
 /-- The open-closed uIcc with unordered bounds. -/
 def uIoc : α → α → Set α := fun a b => Ioc (min a b) (max a b)

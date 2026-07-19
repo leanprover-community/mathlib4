@@ -456,11 +456,9 @@ instance : Mul (ValueGroupWithZero R) where
   mul := ValueGroupWithZero.lift₂ (fun a b c d => .mk (a * c) (b * d)) <| by
     intro x y z w t s u v h₁ h₂ h₃ h₄
     apply ValueGroupWithZero.sound
-    · grw [Submonoid.coe_mul, Submonoid.coe_mul,
-        veq_mul_mul_mul_comm x, veq_mul_mul_mul_comm y]
+    · grw [Submonoid.coe_mul, Submonoid.coe_mul, veq_mul_mul_mul_comm x, veq_mul_mul_mul_comm y]
       exact mul_vle_mul h₁ h₃
-    · grw [Submonoid.coe_mul, Submonoid.coe_mul,
-        veq_mul_mul_mul_comm x, veq_mul_mul_mul_comm y]
+    · grw [Submonoid.coe_mul, Submonoid.coe_mul, veq_mul_mul_mul_comm x, veq_mul_mul_mul_comm y]
       exact mul_vle_mul h₂ h₄
 
 @[simp]
@@ -652,8 +650,7 @@ instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
     simp
   mul_lt_mul_of_pos_left := ValueGroupWithZero.ind fun a x ha ↦ ValueGroupWithZero.ind fun b y ↦
     ValueGroupWithZero.ind fun c z hbc ↦ by
-      simp only [ValueGroupWithZero.mk_lt_mk,
-        ValueGroupWithZero.mk_mul_mk, Submonoid.coe_mul]
+      simp only [ValueGroupWithZero.mk_lt_mk, ValueGroupWithZero.mk_mul_mk, Submonoid.coe_mul]
       grw [veq_mul_mul_mul_comm, veq_mul_mul_mul_comm _ c]
       simp_all
 
@@ -1141,8 +1138,7 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   rw [div_lt_div_iff₀] at h ⊢
   any_goals simp only [zero_lt_iff, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
   · rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
-    simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation,
-      OneMemClass.coe_one, map_one, div_one]
+    simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation, OneMemClass.coe_one, map_one, div_one]
     rw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.1,
       embedding_restrict₀ s.1]
     simpa using h

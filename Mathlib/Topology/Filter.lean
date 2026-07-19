@@ -193,9 +193,8 @@ theorem nhds_nhds (x : X) :
 theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
   isInducing_iff_nhds.2 fun x =>
     (nhds_def' _).trans <| by
-      simp +contextual only [nhds_nhds, comap_iInf, comap_principal,
-        Iic_principal, preimage_ofPred_eq, ← mem_interior_iff_mem_nhds, ofPred_mem_eq,
-        IsOpen.interior_eq]
+      simp +contextual only [nhds_nhds, comap_iInf, comap_principal, Iic_principal,
+        preimage_ofPred_eq, ← mem_interior_iff_mem_nhds, ofPred_mem_eq, IsOpen.interior_eq]
 
 @[continuity]
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=

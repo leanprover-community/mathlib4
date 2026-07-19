@@ -204,9 +204,8 @@ lemma map_toTriangle_disjoint [ExplicitDisjoint t] :
   rintro a b c habc rfl e x y z hxyz rfl h'
   have := ne_of_apply_ne _ h'
   simp only [Ne, Prod.mk_inj, not_and] at this
-  simp only [toTriangle_apply, in₀, in₁, in₂, Set.mem_inter_iff, mem_insert, mem_singleton,
-    mem_coe, and_imp, Sum.forall,
-    Set.Subsingleton]
+  simp only [toTriangle_apply, in₀, in₁, in₂, Set.mem_inter_iff, mem_insert, mem_singleton, mem_coe,
+    and_imp, Sum.forall, Set.Subsingleton]
   suffices ¬ (a = x ∧ b = y) ∧ ¬ (a = x ∧ c = z) ∧ ¬ (b = y ∧ c = z) by aesop
   refine ⟨?_, ?_, ?_⟩
   · rintro ⟨rfl, rfl⟩

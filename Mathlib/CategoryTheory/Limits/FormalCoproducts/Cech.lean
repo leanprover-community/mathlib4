@@ -106,8 +106,7 @@ lemma powerMap_comp {U V W : FormalCoproduct.{w} C} (f : U ⟶ V) (g : V ⟶ W) 
   · cat_disch
   · dsimp
     ext
-    simp only [Category.comp_id, Category.assoc, Pi.map_π, Function.comp_apply,
-      Pi.map_π_assoc]
+    simp only [Category.comp_id, Category.assoc, Pi.map_π, Function.comp_apply, Pi.map_π_assoc]
     apply Pi.map_π
 
 attribute [local simp] powerMap_comp

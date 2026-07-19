@@ -145,8 +145,7 @@ theorem image_ι_op_comp_imageUnopOp_hom :
   simp only [imageUnopOp, Iso.trans, Iso.symm, Iso.op, cokernelOpOp_inv, cokernelEpiComp_hom,
     cokernelCompIsIso_hom, Abelian.coimageIsoImage'_hom, ← Category.assoc, ← op_comp]
   simp only [Category.assoc, Abelian.imageIsoImage_hom_comp_image_ι, kernel.lift_ι,
-    Quiver.Hom.op_unop, cokernelIsoOfEq_hom_comp_desc_assoc, cokernel.π_desc_assoc,
-    cokernel.π_desc]
+    Quiver.Hom.op_unop, cokernelIsoOfEq_hom_comp_desc_assoc, cokernel.π_desc_assoc, cokernel.π_desc]
   simp only [eqToHom_refl]
   rw [IsIso.inv_id, Category.id_comp]
 

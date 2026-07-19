@@ -113,8 +113,7 @@ See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version. -/
 theorem sum_degrees_support_eq_twice_card_edges :
     ∑ v ∈ G.support, G.degree v = 2 * #G.edgeFinset := by
   classical
-  simp_rw [← sum_degrees_eq_twice_card_edges,
-    ← sum_add_sum_compl G.support.toFinset, left_eq_add]
+  simp_rw [← sum_degrees_eq_twice_card_edges, ← sum_add_sum_compl G.support.toFinset, left_eq_add]
   apply Finset.sum_eq_zero
   intro v hv
   rw [degree_eq_zero_iff_notMem_support]

@@ -263,8 +263,7 @@ private theorem tsum_enorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AES
     refine ae_lt_top' (AEMeasurable.pow_const ?_ _) h_integral.ne
     exact AEMeasurable.tsum fun n => ((hf (n + 1)).sub (hf n)).enorm
   refine rpow_ae_lt_top.mono fun x hx => ?_
-  rwa [← ENNReal.lt_rpow_inv_iff hp_pos,
-    ENNReal.top_rpow_of_pos (by simp [hp_pos] : 0 < p⁻¹)] at hx
+  rwa [← ENNReal.lt_rpow_inv_iff hp_pos, ENNReal.top_rpow_of_pos (by simp [hp_pos] : 0 < p⁻¹)] at hx
 
 theorem ae_tendsto_of_cauchy_eLpNorm' [CompleteSpace E] {f : ℕ → α → E} {p : ℝ}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)
@@ -302,8 +301,7 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
     · intro n m N hnN hmN
       specialize hx N n m hnN hmN
       rw [_root_.dist_eq_norm,
-        ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.ne_top_of_tsum_ne_top hB N),
-        ofReal_norm]
+        ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.ne_top_of_tsum_ne_top hB N), ofReal_norm]
       exact hx.le
     · rw [← ENNReal.toReal_zero]
       exact

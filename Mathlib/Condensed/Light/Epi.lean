@@ -39,8 +39,7 @@ lemma isLocallySurjective_iff_locallySurjective_on_lightProfinite : IsLocallySur
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ)
         (x : ToType (X.obj.obj ⟨S'⟩)),
         f.hom.app ⟨S'⟩ x = Y.obj.map ⟨φ⟩ y) := by
-  rw [coherentTopology.isLocallySurjective_iff,
-    regularTopology.isLocallySurjective_iff]
+  rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff]
   simp_rw [LightProfinite.effectiveEpi_iff_surjective]
 
 end LightCondensed

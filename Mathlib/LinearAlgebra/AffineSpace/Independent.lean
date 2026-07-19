@@ -84,8 +84,7 @@ protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affin
 @[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
     [SMulCommClass G k V] {p : ι → V} {a : G} :
     AffineIndependent k (a • p) ↔ AffineIndependent k p := by
-  simp +contextual [AffineIndependent,
-    ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
+  simp +contextual [AffineIndependent, ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
 
 protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
 

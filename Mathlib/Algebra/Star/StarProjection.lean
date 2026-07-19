@@ -133,8 +133,7 @@ theorem sub_iff_mul_eq_right [NonUnitalRing R] [StarRing R] [IsAddTorsionFree R]
     {p q : R} (hp : IsStarProjection p) (hq : IsStarProjection q) :
     IsStarProjection (q - p) ↔ q * p = p := by
   rw [← star_inj]
-  simp [star_mul, hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq,
-    sub_iff_mul_eq_left hp hq]
+  simp [star_mul, hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq, sub_iff_mul_eq_left hp hq]
 
 theorem add_sub_mul_of_commute [NonUnitalRing R] [StarRing R]
     (hpq : Commute p q) (hp : IsStarProjection p) (hq : IsStarProjection q) :

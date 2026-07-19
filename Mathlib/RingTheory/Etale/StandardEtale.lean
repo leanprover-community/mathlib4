@@ -292,8 +292,7 @@ def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) 
     Bivariate.equivMvPolynomial R (.X * C P.g - 1)]
   span_range_relation_eq_ker := by
     rw [Algebra.Generators.ker_ofAlgHom, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
-      AlgHom.comp_toRingHom,
-      RingHom.ker_comp_of_injective _ (by exact P.lift_bijective.injective),
+      AlgHom.comp_toRingHom, RingHom.ker_comp_of_injective _ (by exact P.lift_bijective.injective),
       RingHom.ker_comp_of_injective _ (by exact P.equivMvPolynomialQuotient.symm.injective)]
     simp [Set.pair_comm]
 

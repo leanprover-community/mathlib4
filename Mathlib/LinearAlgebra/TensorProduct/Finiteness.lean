@@ -155,10 +155,8 @@ theorem exists_finite_submodule_of_setFinite' (s : Set (M₁ ⊗[R] N₁)) (hs :
   have hM := map_subtype_le M₁ M'
   have hN := map_subtype_le N₁ N'
   refine ⟨_, _, hM, hN, .map _ _, .map _ _, ?_⟩
-  rw [mapIncl,
-    show M'.subtype = inclusion hM ∘ₗ M₁.subtype.submoduleMap M' by ext; simp,
-    show N'.subtype = inclusion hN ∘ₗ N₁.subtype.submoduleMap N' by ext; simp,
-    map_comp] at h
+  rw [mapIncl, show M'.subtype = inclusion hM ∘ₗ M₁.subtype.submoduleMap M' by ext; simp,
+    show N'.subtype = inclusion hN ∘ₗ N₁.subtype.submoduleMap N' by ext; simp, map_comp] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
 /-- Variation of `TensorProduct.exists_finite_submodule_left_of_setFinite` where `M` and `N` are

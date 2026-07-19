@@ -133,8 +133,7 @@ theorem finrank_direction_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i
   refine add_left_cancel (_root_.trans h ?_)
   classical
   rw [s.independent.finrank_vectorSpan (Fintype.card_fin _), ← Finset.coe_singleton,
-    ← Finset.coe_compl, ← Finset.coe_image,
-    s.independent.finrank_vectorSpan_image_finset hc, hn]
+    ← Finset.coe_compl, ← Finset.coe_image, s.independent.finrank_vectorSpan_image_finset hc, hn]
 
 /-- A line through a vertex is the altitude through that vertex if and
 only if it is orthogonal to the opposite face. -/

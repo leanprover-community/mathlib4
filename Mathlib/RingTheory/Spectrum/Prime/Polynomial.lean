@@ -117,9 +117,8 @@ lemma mem_image_comap_basicOpen (f : A) (x) :
     refine Algebra.TensorProduct.congr ?f AlgEquiv.refl
     rw [Ideal.span_empty]
     exact { __ := (RingEquiv.quotientBot A).symm, __ := Algebra.ofId _ _ }
-  rw [← IsNilpotent.map_iff e.injective, AlgEquiv.commutes,
-    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_sdiff,
-    basicOpen_eq_zeroLocus_compl]
+  rw [← IsNilpotent.map_iff e.injective, AlgEquiv.commutes, ← mem_image_comap_zeroLocus_sdiff f ∅ x,
+    zeroLocus_empty, ← Set.compl_eq_univ_sdiff, basicOpen_eq_zeroLocus_compl]
 
 /-- Let `A` be an `R`-algebra. If `A ⧸ I` is finite free over `R`,
 then the image of `Z(I) ∩ D(f) ⊆ Spec S` in `Spec R` is compact open. -/
@@ -167,8 +166,7 @@ lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) C) := by
 lemma comap_C_surjective : Function.Surjective (comap (R := R) C) := by
   intro x
   refine ⟨comap (evalRingHom 0) x, ?_⟩
-  rw [← comap_comp_apply, (show (evalRingHom 0).comp C = .id R by ext; simp),
-    comap_id]
+  rw [← comap_comp_apply, (show (evalRingHom 0).comp C = .id R by ext; simp), comap_id]
 
 lemma exists_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     ∃ t : Finset R, comap C '' (zeroLocus {g} \ zeroLocus {f}) = (zeroLocus t)ᶜ := by
@@ -230,7 +228,6 @@ lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) (C (σ := σ))) := by
 lemma comap_C_surjective : Function.Surjective (comap (R := R) (C (σ := σ))) := by
   intro x
   refine ⟨comap (eval₂Hom (.id _) 0) x, ?_⟩
-  rw [← comap_comp_apply, (show (eval₂Hom (.id _) 0).comp C = .id R by ext; simp),
-    comap_id]
+  rw [← comap_comp_apply, (show (eval₂Hom (.id _) 0).comp C = .id R by ext; simp), comap_id]
 
 end MvPolynomial

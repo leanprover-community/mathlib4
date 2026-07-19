@@ -255,9 +255,8 @@ def isoMk {D₁ D₂ : F.DescentData' sq sq₃} (e : ∀ (i : ι), D₁.obj i �
   hom.comm := comm
   inv.hom i := (e i).inv
   inv.comm i₁ i₂ := by
-    rw [← cancel_mono ((F.map _).toFunctor.map (e i₂).hom), Category.assoc,
-      Category.assoc, Iso.map_inv_hom_id, Category.comp_id,
-      ← cancel_epi ((F.map _).toFunctor.map (e i₁).hom),
+    rw [← cancel_mono ((F.map _).toFunctor.map (e i₂).hom), Category.assoc, Category.assoc,
+      Iso.map_inv_hom_id, Category.comp_id, ← cancel_epi ((F.map _).toFunctor.map (e i₁).hom),
       Iso.map_hom_inv_id_assoc, comm i₁ i₂]
 
 /-- The functor `toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentData f`, on objects. -/
@@ -282,9 +281,8 @@ def ofDescentData (D : F.DescentData f) : F.DescentData' sq sq₃ where
   pullHom'_hom_comp i₁ i₂ i₃ := by
     rw [pullHom'_eq_pullHom _ _ _ _ (sq₃ i₁ i₂ i₃).p₁₂,
       pullHom'_eq_pullHom _ _ _ _ (sq₃ i₁ i₂ i₃).p₂₃,
-      pullHom'_eq_pullHom _ _ _ _ (sq₃ i₁ i₂ i₃).p₁₃,
-      D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p, D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p,
-      D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p, D.hom_comp]
+      pullHom'_eq_pullHom _ _ _ _ (sq₃ i₁ i₂ i₃).p₁₃, D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p,
+      D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p, D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p, D.hom_comp]
     all_goals cat_disch
 
 set_option backward.defeqAttrib.useBackward true in

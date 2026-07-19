@@ -276,8 +276,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
         (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
     have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
       ext m f <;> simp [e]
-    simp only [this,
-      coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
+    simp only [this, coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
 instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=

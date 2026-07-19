@@ -843,9 +843,8 @@ theorem DifferentiableAt.isBigO_sub (h : DifferentiableAt 𝕜 f x₀) :
 theorem Asymptotics.IsBigO.hasFDerivWithinAt {n : ℕ}
     (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
-  simp_rw [hasFDerivWithinAt_iff_isLittleO,
-    h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply, sub_zero,
-    h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
+  simp_rw [hasFDerivWithinAt_iff_isLittleO, h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply,
+    sub_zero, h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
 
 theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n)
     (hn : 1 < n) : HasFDerivAt f (0 : E →L[𝕜] F) x₀ := by

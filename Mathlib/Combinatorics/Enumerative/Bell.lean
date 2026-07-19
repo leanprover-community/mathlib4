@@ -208,8 +208,7 @@ theorem bell_succ (n : ℕ) :
 
 theorem bell_succ' (n : ℕ) :
     (n + 1).bell = ∑ ij ∈ Finset.antidiagonal n, choose n ij.1 * ij.2.bell := by
-  rw [Nat.bell_succ,
-    ← Nat.range_succ_eq_Iic,
+  rw [Nat.bell_succ, ← Nat.range_succ_eq_Iic,
     ← Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun x y ↦ choose n x * y.bell) n]
 
 @[simp]

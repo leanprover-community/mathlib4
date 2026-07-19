@@ -185,9 +185,8 @@ theorem isIso_tfae : List.TFAE
               ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _).symm := by
       rw [← Function.comp_assoc, ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _).eq_comp_symm]
       ext
-      simp only [id_obj, yoneda_obj_obj, comp_obj, Function.comp_apply,
-        yoneda_map_app, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, op_whiskerRight,
-        flip_map_app]
+      simp only [id_obj, yoneda_obj_obj, comp_obj, Function.comp_apply, yoneda_map_app,
+        op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, op_whiskerRight, flip_map_app]
       rw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
       simp
     rw [isIso_iff_bijective, isIso_iff_bijective, w₂, w₁]
@@ -228,9 +227,8 @@ noncomputable def closed (c : C) : Closed c where
     · refine NatIso.ofComponents (fun _ ↦ (μIso L _ _).symm ≪≫
         asIso ((adj.counit.app _) ⊗ₘ (adj.counit.app _))) (fun _ ↦ ?_)
       dsimp
-      rw [Category.assoc, ← δ_natural_right_assoc,
-        tensorHom_def', ← MonoidalCategory.whiskerLeft_comp_assoc,
-        Adjunction.counit_naturality, whisker_exchange,
+      rw [Category.assoc, ← δ_natural_right_assoc, tensorHom_def',
+        ← MonoidalCategory.whiskerLeft_comp_assoc, Adjunction.counit_naturality, whisker_exchange,
         tensorHom_def_assoc, MonoidalCategory.whiskerLeft_comp]
     · exact NatIso.ofComponents (fun _ ↦ asIso (adj.unit.app ((ihom _).obj _)))
 

@@ -131,8 +131,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.base).obj V) :
     Y.evaluation ⟨f.base x, x.property⟩ ≫ residueFieldMap f x.val =
       f.c.app (op V) ≫ X.evaluation x := by
-  dsimp only [LocallyRingedSpace.evaluation,
-    LocallyRingedSpace.residueFieldMap]
+  dsimp only [LocallyRingedSpace.evaluation, LocallyRingedSpace.residueFieldMap]
   rw [Category.assoc]
   ext a
   simp only [CommRingCat.comp_apply]

@@ -167,8 +167,7 @@ private def supOfBasis : ℝ := univ.sup' univ_nonempty
 end DecidableEq
 
 private theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
-  simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
-    exists_const, house_nonneg]
+  simp only [supOfBasis, le_sup'_iff, mem_univ, and_self, exists_const, house_nonneg]
 
 variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 
@@ -284,9 +283,8 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       _ ≤ c₂ K * A := ?_
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
     · have remark := basis_repr_norm_le_const_mul_house K
-      simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-        integralBasis_repr_apply, eq_intCast, Rat.cast_intCast,
-          Complex.norm_intCast] at remark
+      simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply, integralBasis_repr_apply,
+        eq_intCast, Rat.cast_intCast, Complex.norm_intCast] at remark
       exact mod_cast remark ((a kr.1 lu.1 * ((newBasis K) lu.2))) kr.2
     · simp only [house, map_mul, mul_assoc]
       gcongr

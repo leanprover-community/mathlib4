@@ -428,8 +428,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 5 ↔ 6 := by
     simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
   tfae_have 5 ↔ 7 := by
-    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, and_assoc,
-      and_left_comm]
+    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, and_assoc, and_left_comm]
   tfae_have 5 ↔ 8 := by
     simp only [← principal_singleton, disjoint_principal_right]
   tfae_have 8 ↔ 9 := forall_comm.trans (by simp only [disjoint_comm, ne_comm])

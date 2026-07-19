@@ -348,8 +348,7 @@ lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
   have H : (Y.presheaf.germ U _ (hVU hxV)).hom.QuasiFinite := by
     algebraize [(Y.presheaf.germ U _ (hVU hxV)).hom]
     have := hU.isLocalization_stalk ⟨f x, (hVU hxV)⟩
-    rw [← (Y.presheaf.germ U _ (hVU hxV)).hom.algebraMap_toAlgebra,
-      RingHom.quasiFinite_algebraMap]
+    rw [← (Y.presheaf.germ U _ (hVU hxV)).hom.algebraMap_toAlgebra, RingHom.quasiFinite_algebraMap]
     exact .of_isLocalization (hU.primeIdealOf ⟨_, hVU hxV⟩).asIdeal.primeCompl
   algebraize [(X.presheaf.germ V x hxV).hom]
   have := hV.isLocalization_stalk ⟨x, hxV⟩

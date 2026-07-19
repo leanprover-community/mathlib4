@@ -521,14 +521,12 @@ irreducible_def liftAlgHom {s : A → A → Prop} :
     invFun := fun F ↦ ⟨F.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg F (mkAlgHom_rel S h)⟩
     left_inv := fun f ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
-        AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-        Function.comp_apply]
+      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, AlgHom.coe_comp, AlgHom.coe_mk,
+        RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
     right_inv := fun F ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
-                 AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
-                 MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply] }
+      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, AlgHom.coe_comp, AlgHom.coe_mk,
+                 RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply] }
 
 @[simp]
 theorem liftAlgHom_mkAlgHom_apply (f : A →ₐ[S] B) {s : A → A → Prop}

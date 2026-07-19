@@ -129,9 +129,8 @@ theorem equivQuotientMapOfIsMaximal_symm_apply_mk [P.IsMaximal] (x : S)
   have h₂ : equivQuotientMapOfIsMaximal p Sₚ P (Ideal.Quotient.mk P ↑s) ≠ 0 := by
     rwa [RingEquiv.map_ne_zero_iff]
   rw [RingEquiv.symm_apply_eq, ← mul_left_inj' h₂, map_mul, mul_assoc, ← map_mul,
-    inv_mul_cancel₀ h₁, map_one, mul_one, equivQuotientMapOfIsMaximal_apply_mk,
-    ← map_mul, mk'_spec, Quotient.mk_algebraMap, equivQuotientMapOfIsMaximal_apply_mk,
-    Quotient.mk_algebraMap]
+    inv_mul_cancel₀ h₁, map_one, mul_one, equivQuotientMapOfIsMaximal_apply_mk, ← map_mul, mk'_spec,
+    Quotient.mk_algebraMap, equivQuotientMapOfIsMaximal_apply_mk, Quotient.mk_algebraMap]
 
 variable [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
 

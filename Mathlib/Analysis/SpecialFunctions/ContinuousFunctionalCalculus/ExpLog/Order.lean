@@ -68,8 +68,7 @@ private lemma CFC.cfc_rpow_sub_one_eqOn {p : ℝ} :
   intro a ha
   simp only [ha, ↓reduceIte, ← smul_eq_mul]
   rw [cfc_smul _ (hf := by fun_prop (disch := grind)),
-    cfc_sub _ _ (hf := by fun_prop (disch := grind)),
-    cfc_const_one .., rpow_eq_cfc_real ..]
+    cfc_sub _ _ (hf := by fun_prop (disch := grind)), cfc_const_one .., rpow_eq_cfc_real ..]
 
 open Classical Real in
 /-- `log` is operator monotone. -/

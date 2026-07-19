@@ -145,8 +145,7 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
     Ring.ordFrac R f ≤ Ring.ordFrac R (a • f) := by
   by_cases j : f = 0
   · simp [j]
-  suffices ordFrac R f ≤ ordFrac R (algebraMap S K a • f) by simp_all only [ne_eq,
-    algebraMap_smul]
+  suffices ordFrac R f ≤ ordFrac R (algebraMap S K a • f) by simp_all only [ne_eq, algebraMap_smul]
   simp only [smul_eq_mul, map_mul]
   apply le_mul_of_one_le_left'
   simp [IsScalarTower.algebraMap_eq S R K, ordFrac_ge_one_of_ne_zero ha]
@@ -168,8 +167,7 @@ lemma ordMonoidWithZeroHom_eq_intValuation {x : R} (h : x ∈ nonZeroDivisors R)
 
 lemma ordFrac_eq_intValuation {x : R} (h : x ≠ 0) : (ordFrac R) ((algebraMap R K) x) =
     ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
-  rw [ordFrac_eq_ord R h,
-      ordMonoidWithZeroHom_eq_intValuation (mem_nonZeroDivisors_of_ne_zero h)]
+  rw [ordFrac_eq_ord R h, ordMonoidWithZeroHom_eq_intValuation (mem_nonZeroDivisors_of_ne_zero h)]
 
 theorem ordFrac_eq_inverse_comp_valuation :
     ordFrac R = MonoidWithZeroHom.comp MonoidWithZero.inverse

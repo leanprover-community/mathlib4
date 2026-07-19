@@ -185,10 +185,9 @@ def IsNested : Prop :=
 
 protected lemma IsNested.nest : p.nest.IsNested := ⟨nest_ne_zero, fun i lb ub ↦ by
   simp_rw [nest, length_append, length_singleton] at ub ⊢
-  rw [take_append_of_le_length (by rw [singleton_append, length_cons]; lia),
-    take_append, take_of_length_le (by rw [length_singleton]; lia),
-    length_singleton, singleton_append, count_cons_of_ne (by simp), count_cons_self,
-    Nat.lt_add_one_iff]
+  rw [take_append_of_le_length (by rw [singleton_append, length_cons]; lia), take_append,
+    take_of_length_le (by rw [length_singleton]; lia), length_singleton, singleton_append,
+    count_cons_of_ne (by simp), count_cons_self, Nat.lt_add_one_iff]
   exact p.count_D_le_count_U _⟩
 
 variable (p) in
@@ -274,8 +273,7 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   apply findIdx_lt_length_of_exists
   simp only [mem_range, decide_eq_true_eq]
   use p.toList.length - 1
-  exact ⟨by lia, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
-    p.count_U_eq_count_D]⟩
+  exact ⟨by lia, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _), p.count_U_eq_count_D]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 include h in
@@ -302,8 +300,7 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
     · rw [take_append, show p.firstReturn + 1 - p.toList.length = 0 by lia,
         take_zero, append_nil, count_take_firstReturn_add_one h]
     · intro j hj
-      rw [take_append, show j + 1 - p.toList.length = 0 by lia,
-        take_zero, append_nil]
+      rw [take_append, show j + 1 - p.toList.length = 0 by lia, take_zero, append_nil]
       simpa using (count_D_lt_count_U_of_lt_firstReturn hj).ne'
   · rw [length_range, u, length_append]
     exact Nat.lt_add_right _ (firstReturn_lt_length h)

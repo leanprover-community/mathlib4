@@ -74,9 +74,8 @@ theorem iteratedDerivWithin_vcomp_two
     OrderedFinpartition.default_eq, Fintype.sum_option]
   have : (Fin.cons 1 (fun _ ↦ 1) : Fin 2 → ℕ) = fun _ ↦ 1 :=
     funext <| Fin.forall_fin_two.mpr ⟨rfl, rfl⟩
-  simp [OrderedFinpartition.extendEquiv, OrderedFinpartition.extend,
-    OrderedFinpartition.extendLeft, OrderedFinpartition.extendMiddle, ht _ (hst hx),
-    OrderedFinpartition.atomic, this]
+  simp [OrderedFinpartition.extendEquiv, OrderedFinpartition.extend, OrderedFinpartition.extendLeft,
+    OrderedFinpartition.extendMiddle, ht _ (hst hx), OrderedFinpartition.atomic, this]
 
 theorem iteratedDeriv_vcomp_two (hg : ContDiffAt 𝕜 2 g (f x)) (hf : ContDiffAt 𝕜 2 f x) :
     iteratedDeriv 2 (g ∘ f) x =

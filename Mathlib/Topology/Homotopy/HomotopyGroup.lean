@@ -287,9 +287,8 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
     (Cube.splitAt i),
     by
     rintro y ⟨j, Hj⟩
-    simp only [ContinuousMap.comp_apply,
-      funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
-      Function.uncurry_apply_pair]
+    simp only [ContinuousMap.comp_apply, funSplitAt_apply, ContinuousMap.uncurry_apply,
+      ContinuousMap.coe_mk, Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
     · rcases Hj with Hj | Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
     · exact GenLoop.boundary _ _ ⟨⟨j, Hne⟩, Hj⟩⟩
@@ -533,9 +532,8 @@ lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [DecidableEq N] [Unique N] 
     genLoopEquivOfUnique _ (transAt default q p) =
       (genLoopEquivOfUnique _ q).trans (genLoopEquivOfUnique _ p) := by
   ext t
-  simp only [genLoopEquivOfUnique, GenLoop.transAt, GenLoop.copy,
-    one_div, ContinuousMap.coe_mk, Path.coe_mk', Path.trans,
-    Function.comp_apply]
+  simp only [genLoopEquivOfUnique, GenLoop.transAt, GenLoop.copy, one_div, ContinuousMap.coe_mk,
+    Path.coe_mk', Path.trans, Function.comp_apply]
   refine ite_congr rfl (fun _ ↦ congrArg q ?_)
     fun _ ↦ congrArg p ?_
   <;> (ext i; rw [Unique.eq_default i]; simp)

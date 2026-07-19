@@ -97,13 +97,11 @@ private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
       use C'⁻¹ * C'' * C
       rw [mul_smul, mul_smul, hC, ← mul_smul, inv_mul_cancel, one_smul]
     · have h := (C • E).j_ne_zero_of_isCharTwoJNeZeroNF_of_char_two
-      rw [variableChange_j, heq, ← variableChange_j E' C',
-        j_of_isCharTwoJEqZeroNF_of_char_two] at h
+      rw [variableChange_j, heq, ← variableChange_j E' C', j_of_isCharTwoJEqZeroNF_of_char_two] at h
       exact False.elim (h rfl)
   · obtain ⟨C', _ | _⟩ := E'.exists_variableChange_isCharTwoNF
     · have h := (C' • E').j_ne_zero_of_isCharTwoJNeZeroNF_of_char_two
-      rw [variableChange_j, ← heq, ← variableChange_j E C,
-        j_of_isCharTwoJEqZeroNF_of_char_two] at h
+      rw [variableChange_j, ← heq, ← variableChange_j E C, j_of_isCharTwoJEqZeroNF_of_char_two] at h
       exact False.elim (h rfl)
     · obtain ⟨C'', hC⟩ := exists_variableChange_of_char_two_of_j_eq_zero (C • E) (C' • E')
       use C'⁻¹ * C'' * C

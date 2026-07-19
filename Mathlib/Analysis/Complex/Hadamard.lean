@@ -172,8 +172,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
         one_re, Real.rpow_le_one_of_one_le_of_nonpos hM0_one (sub_nonpos.mpr hset.2)]
     -- `0 < sSupNormIm f 0 < 1`
     · rw [not_le] at hM0_one; apply le_trans _ (le_max_right _ _)
-      simp only [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 0), sub_re,
-        one_re]
+      simp only [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 0), sub_re, one_re]
       apply Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 0) (le_of_lt hM0_one) _
       simp only [neg_le_sub_iff_le_add, le_add_iff_nonneg_left, hset.1]
   · by_cases hM1_one : 1 ≤ ε + sSupNormIm f 1
@@ -505,8 +504,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     · exact sub_nonneg.mpr hz.2
     rw [sSupNormIm]
     apply csSup_le _
-    · simpa [comp_apply, mem_image, forall_exists_index,
-        and_imp, forall_apply_eq_imp_iff₂] using ha
+    · simpa [comp_apply, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using ha
     · use ‖(f 0)‖, 0
       simp
   · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
@@ -515,8 +513,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
       · simpa [comp_apply, mem_image, forall_exists_index,
           and_imp, forall_apply_eq_imp_iff₂] using hb
       · use ‖(f 1)‖, 1
-        simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply,
-          and_self]
+        simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply, and_self]
 
 /-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
   to the strip ``re ⁻¹' (0, 1)``. -/
@@ -535,9 +532,8 @@ lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) 
   `re ⁻¹' [0, 1]`. -/
 lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u : ℝ} (hul : l < u)
     (hz : z ∈ verticalClosedStrip l u) : z / (u - l) - l / (u - l) ∈ verticalClosedStrip 0 1 := by
-  simp only [verticalClosedStrip, Complex.div_re, mem_preimage, sub_re, mem_Icc,
-    sub_nonneg, tsub_le_iff_right, ofReal_re, ofReal_im, sub_im, sub_self, mul_zero, zero_div,
-    add_zero]
+  simp only [verticalClosedStrip, Complex.div_re, mem_preimage, sub_re, mem_Icc, sub_nonneg,
+    tsub_le_iff_right, ofReal_re, ofReal_im, sub_im, sub_self, mul_zero, zero_div, add_zero]
   simp only [verticalClosedStrip] at hz
   norm_cast
   simp_rw [Complex.normSq_ofReal, mul_div_assoc, div_mul_eq_div_div_swap,
@@ -574,8 +570,7 @@ private lemma bound_exp_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
     (z / (↑u - ↑l)).re - ((l : ℂ) / (↑u - ↑l)).re = (z.re - l) / (u - l) := by
   norm_cast
   rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re, Complex.ofReal_im, mul_div_assoc,
-    div_mul_eq_div_div_swap, div_self (by norm_cast; linarith),
-    ← div_eq_mul_one_div]
+    div_mul_eq_div_div_swap, div_self (by norm_cast; linarith), ← div_eq_mul_one_div]
   simp only [mul_zero, zero_div, add_zero]
   rw [← div_sub_div_same]
 

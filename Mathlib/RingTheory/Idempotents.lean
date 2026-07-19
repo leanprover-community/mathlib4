@@ -336,8 +336,7 @@ theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
     (H' : Commute e₁ e₂) :
     e₁ = e₂ := by
   have : (e₁ - e₂) ^ 3 = (e₁ - e₂) := by
-    simp only [pow_succ, pow_zero, mul_sub, one_mul, sub_mul, he₁.eq, he₂.eq,
-      H'.eq, mul_assoc]
+    simp only [pow_succ, pow_zero, mul_sub, one_mul, sub_mul, he₁.eq, he₂.eq, H'.eq, mul_assoc]
     simp only [← mul_assoc, he₂.eq]
     abel
   obtain ⟨n, hn⟩ := H

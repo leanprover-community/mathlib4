@@ -556,8 +556,7 @@ open scoped ModuleCat.Algebra in
 theorem isLocalizing_pushforward_of_isLocalizing {M : (Spec S).Modules}
     (h : IsLocalizing (modulesSpecToSheaf.obj M)) :
     IsLocalizing (modulesSpecToSheaf.obj ((Scheme.Modules.pushforward (Spec.map φ)).obj M)) := by
-  rw [← Functor.comp_obj,
-  isLocalizing_iff_of_iso ((pushforwardCompModulesSpecToSheafIso φ).app M)]
+  rw [← Functor.comp_obj, isLocalizing_iff_of_iso ((pushforwardCompModulesSpecToSheafIso φ).app M)]
   have : CommRing ((Spec S).ringCatSheaf.obj.obj ((Opens.map (Spec.map φ).base).op.obj (op ⊤))) :=
     inferInstanceAs (CommRing Γ(Spec S, ⊤))
   algebraize [φ.hom]

@@ -397,9 +397,8 @@ lemma affineCombination_mem_setInterior_iff {I : Set k} {n : ℕ} {s : Simplex k
   refine ⟨fun ⟨w, hw, hwI, h⟩ ↦ ?_, fun ⟨w, hw, hwI, h⟩ ↦ ?_⟩
   · subst h
     simp_rw [reindex]
-    rw [← Function.comp_id w, ← e.self_comp_symm, ← Function.comp_assoc,
-      ← Equiv.coe_toEmbedding, ← Finset.univ.affineCombination_map e.symm.toEmbedding,
-      map_univ_equiv]
+    rw [← Function.comp_id w, ← e.self_comp_symm, ← Function.comp_assoc, ← Equiv.coe_toEmbedding,
+      ← Finset.univ.affineCombination_map e.symm.toEmbedding, map_univ_equiv]
     have hw' : ∑ i, (w ∘ e) i = 1 := by rwa [sum_comp_equiv, map_univ_equiv]
     rw [affineCombination_mem_setInterior_iff hw']
     exact fun i ↦ hwI (e i)

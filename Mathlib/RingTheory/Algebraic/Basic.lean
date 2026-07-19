@@ -59,8 +59,7 @@ theorem IsAlgebraic.of_aeval {r : A} (f : R[X]) (hf : f.natDegree ≠ 0)
     IsAlgebraic R r := by
   obtain ⟨p, h1, h2⟩ := H
   have : (p.comp f).coeff (p.natDegree * f.natDegree) ≠ 0 := fun h ↦ h1 <| by
-    rwa [coeff_comp_degree_mul_degree hf,
-      mul_right_mem_nonZeroDivisors_eq_zero_iff (pow_mem hf' _),
+    rwa [coeff_comp_degree_mul_degree hf, mul_right_mem_nonZeroDivisors_eq_zero_iff (pow_mem hf' _),
       leadingCoeff_eq_zero] at h
   exact ⟨p.comp f, fun h ↦ this (by simp [h]), by rwa [aeval_comp]⟩
 

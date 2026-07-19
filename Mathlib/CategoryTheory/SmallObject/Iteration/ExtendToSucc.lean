@@ -99,16 +99,14 @@ lemma map_id (i : J) (hi : i ≤ Order.succ j) :
   by_cases h₁ : i ≤ j
   · rw [dif_pos h₁, CategoryTheory.Functor.map_id, id_comp, Iso.hom_inv_id]
   · obtain rfl : i = Order.succ j := le_antisymm hi (Order.succ_le_of_lt (not_le.1 h₁))
-    rw [dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj),
-      dif_neg h₁]
+    rw [dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj), dif_neg h₁]
 
 lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ ≤ i₃) (h : i₃ ≤ Order.succ j) :
     map hj F τ i₁ i₃ (h₁₂.trans h₂₃) h =
       map hj F τ i₁ i₂ h₁₂ (h₂₃.trans h) ≫ map hj F τ i₂ i₃ h₂₃ h := by
   by_cases h₁ : i₃ ≤ j
-  · rw [map_eq hj F τ i₁ i₂ _ (h₂₃.trans h₁), map_eq hj F τ i₂ i₃ _ h₁,
-      map_eq hj F τ i₁ i₃ _ h₁, assoc, assoc, Iso.inv_hom_id_assoc, ← Functor.map_comp_assoc,
-      homOfLE_comp]
+  · rw [map_eq hj F τ i₁ i₂ _ (h₂₃.trans h₁), map_eq hj F τ i₂ i₃ _ h₁, map_eq hj F τ i₁ i₃ _ h₁,
+      assoc, assoc, Iso.inv_hom_id_assoc, ← Functor.map_comp_assoc, homOfLE_comp]
   · obtain rfl : i₃ = Order.succ j := le_antisymm h (Order.succ_le_of_lt (not_le.1 h₁))
     obtain h₂ | rfl := h₂₃.lt_or_eq
     · rw [Order.lt_succ_iff_of_not_isMax hj] at h₂
@@ -182,8 +180,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma arrowMap_extendToSucc (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     arrowMap (extendToSucc hj F τ) i₁ i₂ hi (hi₂.trans (Order.le_succ j)) =
       arrowMap F i₁ i₂ hi hi₂ := by
-  simp [arrowMap, extendToSucc_map hj F τ i₁ i₂ hi hi₂,
-    extendToSuccObjIso, extendToSucc.objIso]
+  simp [arrowMap, extendToSucc_map hj F τ i₁ i₂ hi hi₂, extendToSuccObjIso, extendToSucc.objIso]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma arrowSucc_extendToSucc :

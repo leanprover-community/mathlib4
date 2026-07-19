@@ -567,8 +567,7 @@ lemma star_mul_self_add_self_mul_star (a : A) :
     star a * a + a * star a = _ :=
       congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
     _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
-      simp [mul_add, add_mul, smul_smul, mul_smul_comm,
-        smul_mul_assoc]
+      simp [mul_add, add_mul, smul_smul, mul_smul_comm, smul_mul_assoc]
       abel
 
 lemma star_mul_self_sub_self_mul_star (a : A) :

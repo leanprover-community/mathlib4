@@ -50,8 +50,7 @@ abbrev of : Type _ := WithGeneratedByTopology (fun n ↦ Fin n → ℝ) Y
 /-- Delta-generated spaces are locally path-connected. -/
 instance [DeltaGeneratedSpace X] :
     LocallyPathConnectedSpace X := by
-  rw [← IsGeneratedBy.generatedBy_eq (X := fun n ↦ Fin n → ℝ) (Y := X),
-    generatedBy_eq_coinduced]
+  rw [← IsGeneratedBy.generatedBy_eq (X := fun n ↦ Fin n → ℝ) (Y := X), generatedBy_eq_coinduced]
   exact LocallyPathConnectedSpace.coinduced _
 
 /-- Delta-generated spaces are sequential. -/

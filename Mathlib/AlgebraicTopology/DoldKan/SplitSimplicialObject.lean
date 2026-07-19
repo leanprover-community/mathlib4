@@ -285,8 +285,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma fromNondegComplex_f (n : ℕ) :
     s.fromNondegComplex.f n = s.ι n ≫ PInfty.f n := by
-  simp [fromNondegComplex, fullyFaithfulToKaroubi,
-    cofan, IndexSet.id, IndexSet.e]
+  simp [fromNondegComplex, fullyFaithfulToKaroubi, cofan, IndexSet.id, IndexSet.e]
 
 instance isSplitEpi_toNondegComplex : IsSplitEpi s.toNondegComplex where
   exists_splitEpi := ⟨⟨s.fromNondegComplex, by simp⟩⟩

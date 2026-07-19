@@ -369,8 +369,7 @@ lemma sheafAdjunctionCocontinuous_homEquiv_apply_hom {F : Sheaf K A} {H : Sheaf 
       (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
       (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm f))).trans (by
         dsimp
-        erw [Functor.map_id, Category.comp_id, Category.id_comp,
-          Adjunction.homEquiv_unit])
+        erw [Functor.map_id, Category.comp_id, Category.id_comp, Adjunction.homEquiv_unit])
 
 @[deprecated (since := "2026-03-05")]
 alias sheafAdjunctionCocontinuous_homEquiv_apply_val :=
@@ -401,8 +400,7 @@ lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
       ((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).map (adj₃.unit.app F)
   apply (adj₁.homEquiv _ _).injective
   have eq := (adj₁.comp adj₂).unit_leftAdjointUniq_hom_app (adj₃.comp adj₄) F
-  rw [Adjunction.comp_unit_app, Adjunction.comp_unit_app, comp_map,
-    Category.assoc] at eq
+  rw [Adjunction.comp_unit_app, Adjunction.comp_unit_app, comp_map, Category.assoc] at eq
   rw [adj₁.homEquiv_unit, Functor.map_comp, eq]
   apply (adj₁.homEquiv _ _).symm.injective
   simp only [Adjunction.homEquiv_counit, map_comp, Category.assoc,

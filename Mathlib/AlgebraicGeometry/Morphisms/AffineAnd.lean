@@ -259,8 +259,7 @@ lemma HasAffineProperty.affineAnd_eq_of_propertyIsLocal {P P' : MorphismProperty
     (hP : HasAffineProperty P (affineAnd Q)) [HasRingHomProperty P' Q] :
     P = (@IsAffineHom ⊓ P' : MorphismProperty Scheme.{u}) := by
   rw [HasAffineProperty.eq_targetAffineLocally (P := P),
-    targetAffineLocally_affineAnd_eq_affineLocally,
-    HasRingHomProperty.eq_affineLocally (P := P')]
+    targetAffineLocally_affineAnd_eq_affineLocally, HasRingHomProperty.eq_affineLocally (P := P')]
   exact HasRingHomProperty.isLocal_ringHomProperty P'
 
 lemma HasAffineProperty.SpecMap_iff_of_affineAnd {P : MorphismProperty Scheme.{u}}

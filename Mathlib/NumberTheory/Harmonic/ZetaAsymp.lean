@@ -134,8 +134,7 @@ lemma termSum_one (N : ℕ) : termSum 1 N = log (N + 1) - harmonic (N + 1) + 1 :
       Nat.cast_zero, zero_add, Nat.cast_one, inv_one, Rat.cast_one, log_one, sub_add_cancel]
   | succ N hN =>
     unfold termSum at hN ⊢
-    rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1),
-      term_one (by positivity : 0 < N + 1)]
+    rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1), term_one (by positivity : 0 < N + 1)]
     push_cast
     ring_nf
 

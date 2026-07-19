@@ -71,13 +71,11 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         rw [show q = 0 by lia]
         change X.σ 0 ≫ (P 1).f 1 = 0
         simp only [P_succ, HomologicalComplex.add_f_apply, comp_add,
-          AlternatingFaceMapComplex.obj_d_eq, Hσ,
-          HomologicalComplex.comp_f, Homotopy.nullHomotopicMap'_f (c_mk 2 1 rfl) (c_mk 1 0 rfl),
-          comp_id]
+          AlternatingFaceMapComplex.obj_d_eq, Hσ, HomologicalComplex.comp_f,
+          Homotopy.nullHomotopicMap'_f (c_mk 2 1 rfl) (c_mk 1 0 rfl), comp_id]
         rw [hσ'_eq' (zero_add 0).symm, hσ'_eq' (add_zero 1).symm]
         dsimp [P_zero]
-        rw [comp_id, Fin.sum_univ_two,
-          Fin.sum_univ_succ, Fin.sum_univ_two]
+        rw [comp_id, Fin.sum_univ_two, Fin.sum_univ_succ, Fin.sum_univ_two]
         simp only [Fin.val_zero, pow_zero, pow_one, pow_add, one_smul, neg_smul, Fin.val_succ,
           Fin.val_one, mul_neg, one_mul, neg_mul, neg_neg, id_comp, add_comp, comp_add, neg_comp,
           comp_neg, Fin.succ_zero_eq_one]
@@ -90,17 +88,14 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
           ← Fin.castSucc_zero (n := 1), SimplicialObject.δ_comp_σ_self_assoc,
           SimplicialObject.δ_comp_σ_succ_assoc]
         simp only [add_neg_cancel, add_zero, zero_add]
-      · rw [← id_comp (X.σ i), ← (P_add_Q_f q n.succ : _ = 𝟙 (X.obj _)), add_comp, add_comp,
-          P_succ]
+      · rw [← id_comp (X.σ i), ← (P_add_Q_f q n.succ : _ = 𝟙 (X.obj _)), add_comp, add_comp, P_succ]
         have v : HigherFacesVanish q ((P q).f n.succ ≫ X.σ i) :=
           (HigherFacesVanish.of_P q n).comp_σ hi
         dsimp only [AlternatingFaceMapComplex.obj_X, Nat.succ_eq_add_one, HomologicalComplex.comp_f,
           HomologicalComplex.add_f_apply, HomologicalComplex.id_f]
-        rw [← assoc, v.comp_P_eq_self, Preadditive.comp_add,
-          comp_id, v.comp_Hσ_eq hi, assoc, ← Fin.succ_mk _ _ i.2,
-          SimplicialObject.δ_comp_σ_succ_assoc,
-          Fin.eta, decomposition_Q n q, sum_comp, sum_comp, Finset.sum_eq_zero, add_zero,
-          add_neg_eq_zero]
+        rw [← assoc, v.comp_P_eq_self, Preadditive.comp_add, comp_id, v.comp_Hσ_eq hi, assoc,
+          ← Fin.succ_mk _ _ i.2, SimplicialObject.δ_comp_σ_succ_assoc, Fin.eta, decomposition_Q n q,
+          sum_comp, sum_comp, Finset.sum_eq_zero, add_zero, add_neg_eq_zero]
         intro j hj
         simp only [Finset.mem_univ, Finset.mem_filter] at hj
         obtain ⟨k, hk⟩ := Nat.le.dest (Nat.lt_succ_iff.mp (Fin.is_lt j))
@@ -111,9 +106,8 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         have eq := hq j.rev.succ (by
           simp only [← hk, Fin.rev_eq j hk.symm, Fin.succ_mk, Fin.val_mk]
           lia)
-        rw [assoc, assoc, assoc, hi',
-          SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
-          comp_zero]
+        rw [assoc, assoc, assoc, hi', SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp,
+          comp_zero, comp_zero, comp_zero]
         simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val]
         lia
 
@@ -136,8 +130,7 @@ theorem degeneracy_comp_PInfty (X : SimplicialObject C) (n : ℕ) {Δ' : Simplex
     fin_cases y
     rfl
   · obtain ⟨i, α, h⟩ := SimplexCategory.eq_σ_comp_of_not_injective θ hθ
-    rw [h, op_comp, X.map_comp, assoc, ← SimplicialObject.σ_def,
-      σ_comp_PInfty, comp_zero]
+    rw [h, op_comp, X.map_comp, assoc, ← SimplicialObject.σ_def, σ_comp_PInfty, comp_zero]
 
 section
 

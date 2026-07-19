@@ -469,14 +469,12 @@ theorem hasBasis_iSup {ι : Sort*} {ι' : ι → Type*} {l : ι → Filter α} {
     {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
     (⨆ i, l i).HasBasis (fun f : ∀ i, ι' i => ∀ i, p i (f i)) fun f : ∀ i, ι' i => ⋃ i, s i (f i) :=
   hasBasis_iff.mpr fun t => by
-    simp only [(hl _).mem_iff, Classical.skolem, forall_and, iUnion_subset_iff,
-      mem_iSup]
+    simp only [(hl _).mem_iff, Classical.skolem, forall_and, iUnion_subset_iff, mem_iSup]
 
 theorem HasBasis.sup_principal (hl : l.HasBasis p s) (t : Set α) :
     (l ⊔ 𝓟 t).HasBasis p fun i => s i ∪ t :=
   ⟨fun u => by
-    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, and_true,
-      Unique.exists_iff]⟩
+    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, and_true, Unique.exists_iff]⟩
 
 theorem HasBasis.sup_pure (hl : l.HasBasis p s) (x : α) :
     (l ⊔ pure x).HasBasis p fun i => s i ∪ {x} := by

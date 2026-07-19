@@ -77,11 +77,10 @@ theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ 
     obtain ⟨m, w, rfl⟩ := eq_unit_mul_pow_irreducible (nonZeroDivisors.ne_zero hb) hπ
     replace hb := (mul_mem_nonZeroDivisors.mp hb).2
     rw [mul_comm (w : A) _, map_mul _ (u : A) _, map_mul _ _ (w : A), div_eq_mul_inv, mul_assoc,
-      Valuation.map_mul, Integers.one_of_isUnit' u.isUnit (valuation_le_one _), one_mul,
-      mul_inv, ← mul_assoc, Valuation.map_mul, map_mul, map_inv₀, map_inv₀,
+      Valuation.map_mul, Integers.one_of_isUnit' u.isUnit (valuation_le_one _), one_mul, mul_inv,
+      ← mul_assoc, Valuation.map_mul, map_mul, map_inv₀, map_inv₀,
       Integers.one_of_isUnit' w.isUnit (valuation_le_one _), inv_one, mul_one, ← div_eq_mul_inv,
-      ← map_div₀, ← IsFractionRing.mk'_mk_eq_div hb,
-      valuation_of_mk', map_pow, map_pow] at H
+      ← map_div₀, ← IsFractionRing.mk'_mk_eq_div hb, valuation_of_mk', map_pow, map_pow] at H
     have h_mn : m ≤ n := by
       have v_π_lt_one := (intValuation_lt_one_iff_dvd (maximalIdeal A) π).mpr
           (dvd_of_eq ((irreducible_iff_uniformizer _).mp hπ))

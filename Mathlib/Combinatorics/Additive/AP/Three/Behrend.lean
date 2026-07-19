@@ -216,8 +216,7 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   cases d
   · simp
   apply threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
-  · simp only [mem_image, and_imp, forall_exists_index,
-      sphere, mem_filter]
+  · simp only [mem_image, and_imp, forall_exists_index, sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
   apply map_injOn.mono fun x => ?_

@@ -476,8 +476,7 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
     ((toLocalizationMap M S).lift hg) z * w + w' = v ↔
       g ((toLocalizationMap M S).sec z).1 * w + g ((toLocalizationMap M S).sec z).2 * w' =
         g ((toLocalizationMap M S).sec z).2 * v := by
-  rw [mul_comm, Submonoid.LocalizationMap.lift_apply, ← mul_assoc, mul_add_inv_left hg,
-    mul_comm]
+  rw [mul_comm, Submonoid.LocalizationMap.lift_apply, ← mul_assoc, mul_add_inv_left hg, mul_comm]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in

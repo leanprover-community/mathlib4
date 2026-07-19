@@ -970,8 +970,7 @@ instance [Nonempty s] : Nonempty (affineSpan k s) :=
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/
 @[simp]
 theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
-  rw [← not_iff_not, ← Ne, ← Ne, ← nonempty_iff_ne_bot, affineSpan_nonempty,
-    nonempty_iff_ne_empty]
+  rw [← not_iff_not, ← Ne, ← Ne, ← nonempty_iff_ne_bot, affineSpan_nonempty, nonempty_iff_ne_empty]
 
 @[simp]
 theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by

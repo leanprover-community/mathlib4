@@ -419,9 +419,8 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     obtain ⟨b : X, hb : b ∈ B⟩ := hBe
     obtain ⟨g, rfl⟩ := exists_smul_eq G b a
     use g • B
-    simp only [Set.smul_mem_smul_set_iff, hb, Set.mem_range,
-      exists_apply_eq_apply, and_imp, forall_exists_index,
-      forall_apply_eq_imp_iff, true_and]
+    simp only [Set.smul_mem_smul_set_iff, hb, Set.mem_range, exists_apply_eq_apply, and_imp,
+      forall_exists_index, forall_apply_eq_imp_iff, true_and]
     exact fun g' ha ↦ hB.smul_eq_smul_of_nonempty ⟨g • b, ha, ⟨b, hb, rfl⟩⟩
 
 section Normal

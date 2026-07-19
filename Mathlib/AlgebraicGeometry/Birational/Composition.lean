@@ -209,9 +209,8 @@ lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialM
   · simp_rw [comp_domain, Hom.toPartialMap_domain, Hom.toPartialMap_hom, Category.comp_id,
       ← X.topIso_hom, ← Hom.inv_image, ← Hom.comp_image, Iso.inv_hom_id, Hom.id_image]
   · simp_rw [comp_hom, Hom.toPartialMap_hom, Hom.toPartialMap_domain, morphismRestrict_comp,
-      morphismRestrict_id, ← X.topIso_hom, Hom.comp_preimage, Hom.id_preimage,
-      Category.comp_id, ← X.topIso.hom.isoImage_preimage_hom_homOfLE, Category.assoc,
-      Iso.inv_hom_id_assoc]
+      morphismRestrict_id, ← X.topIso_hom, Hom.comp_preimage, Hom.id_preimage, Category.comp_id,
+      ← X.topIso.hom.isoImage_preimage_hom_homOfLE, Category.assoc, Iso.inv_hom_id_assoc]
     rfl
 
 @[simp, grind =]

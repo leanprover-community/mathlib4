@@ -231,9 +231,8 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
                 nlinarith
               · refine hl''s.pairwise.map _ fun a b hab ↦ ?_
                 gcongr
-            · simp only [map_cons, lineMap_apply_zero, map_map, ← hl'', cons.injEq,
-                map_inj_left, Function.comp_apply, lineMap_lineMap_left, lineMap_eq_lineMap_iff,
-                true_and]
+            · simp only [map_cons, lineMap_apply_zero, map_map, ← hl'', cons.injEq, map_inj_left,
+                Function.comp_apply, lineMap_lineMap_left, lineMap_eq_lineMap_iff, true_and]
               ring_nf
               simp
 

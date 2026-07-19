@@ -94,9 +94,8 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
   have (a b) (hab : a ≠ b) : {s ∈ (G.cliqueSet 3 : Set (Finset α)) | s(a, b) ∈ (s : Finset α).sym2}
     = {s | G.Adj a b ∧ ∃ c, G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c}} := by
     ext s
-    simp only [mem_sym2_iff, Sym2.mem_iff, forall_eq_or_imp, forall_eq,
-      mem_cliqueSet_iff, Set.mem_ofPred_eq,
-      is3Clique_iff]
+    simp only [mem_sym2_iff, Sym2.mem_iff, forall_eq_or_imp, forall_eq, mem_cliqueSet_iff,
+      Set.mem_ofPred_eq, is3Clique_iff]
     constructor
     · rintro ⟨⟨c, d, e, hcd, hce, hde, rfl⟩, hab⟩
       simp only [mem_insert, mem_singleton] at hab
@@ -172,9 +171,8 @@ lemma LocallyLinear.card_edgeFinset (hG : G.LocallyLinear) :
     _ ≤ #{s(a, b), s(a, c), s(b, c)} := card_le_card ?_
     _ ≤ 3 := (card_insert_le _ _).trans (succ_le_succ <| (card_insert_le _ _).trans_eq <| by
       rw [card_singleton])
-  simp only [subset_iff, Sym2.forall, mem_sym2_iff, mem_bipartiteBelow, mem_insert,
-    mem_edgeFinset, mem_singleton, and_imp, mem_edgeSet, Sym2.mem_iff, forall_eq_or_imp,
-    forall_eq]
+  simp only [subset_iff, Sym2.forall, mem_sym2_iff, mem_bipartiteBelow, mem_insert, mem_edgeFinset,
+    mem_singleton, and_imp, mem_edgeSet, Sym2.mem_iff, forall_eq_or_imp, forall_eq]
   rintro d e hde (rfl | rfl | rfl) (rfl | rfl | rfl) <;> simp [*] at *
 
 end LocallyLinear

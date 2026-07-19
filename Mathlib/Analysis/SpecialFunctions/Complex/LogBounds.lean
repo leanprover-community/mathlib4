@@ -69,8 +69,7 @@ def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j ∈ Finset.range n, (-1
 
 lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
   funext
-  simp only [logTaylor, Finset.range_zero,
-    Finset.sum_empty]
+  simp only [logTaylor, Finset.range_zero, Finset.sum_empty]
 
 lemma logTaylor_succ (n : ℕ) :
     logTaylor (n + 1) = logTaylor n + (fun z : ℂ ↦ (-1) ^ (n + 1) * z ^ n / n) := by
@@ -88,8 +87,7 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
   | zero => simp [logTaylor_succ, logTaylor_zero, Pi.add_def, hasDerivAt_const]
   | succ n ih =>
     rw [logTaylor_succ]
-    simp only [Nat.cast_add, Nat.cast_one,
-      Finset.sum_range_succ]
+    simp only [Nat.cast_add, Nat.cast_one, Finset.sum_range_succ]
     refine HasDerivAt.add ih ?_
     simp only [mul_div_assoc]
     have : HasDerivAt (fun x : ℂ ↦ (x ^ (n + 1) / (n + 1))) (z ^ n) z := by
@@ -157,8 +155,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
     convert! (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
-    · simp only [f', real_smul, zero_add,
-        smul_eq_mul]
+    · simp only [f', real_smul, zero_add, smul_eq_mul]
   unfold f at H
   simp only [H, norm_mul]
   simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
@@ -189,8 +186,7 @@ lemma log_sub_logTaylor_isBigO (n : ℕ) :
     (fun z ↦ log (1 + z) - logTaylor (n + 1) z) =O[𝓝 0] fun z ↦ z ^ (n + 1) := by
   rw [Asymptotics.isBigO_iff]
   use 2 / (n + 1)
-  filter_upwards [
-    eventually_norm_sub_lt 0 one_pos,
+  filter_upwards [eventually_norm_sub_lt 0 one_pos,
     eventually_norm_sub_lt 0 (show 0 < 1 / 2 by simp)] with z hz1 hz12
   rw [sub_zero] at hz1 hz12
   have : (1 - ‖z‖)⁻¹ ≤ 2 := by rw [inv_le_comm₀ (sub_pos_of_lt hz1) two_pos]; linarith

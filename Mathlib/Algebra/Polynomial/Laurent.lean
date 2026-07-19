@@ -428,8 +428,7 @@ theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n
 theorem degree_C_mul_T_ite [DecidableEq R] (n : ℤ) (a : R) :
     degree (C a * T n) = if a = 0 then ⊥ else ↑n := by
   split_ifs with h <;>
-    simp only [h, map_zero, zero_mul, degree_zero, degree_C_mul_T, Ne,
-      not_false_iff]
+    simp only [h, map_zero, zero_mul, degree_zero, degree_C_mul_T, Ne, not_false_iff]
 
 @[simp]
 theorem degree_T [Nontrivial R] (n : ℤ) : (T n : R[T;T⁻¹]).degree = n := by

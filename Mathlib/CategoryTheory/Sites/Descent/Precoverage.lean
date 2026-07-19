@@ -78,10 +78,9 @@ public lemma faithful_pullFunctor :
       obtain rfl : g = Over.homMk Z.hom := by cat_disch
       have := ψ.comm _ Z.hom (p ≫ p' j) rfl (by grind)
       dsimp [presheafHomObjHomEquiv, pullHom] at this ⊢
-      simp [mapComp'_inv_naturality, Cat.Hom.comp_toFunctor,
-        Functor.comp_obj, Cat.Hom.hom_inv_id_toNatTrans_app_assoc, ← reassoc_of% this,
-        D₂.hom_self _ _ rfl, F.mapComp'_id_comp_inv_app, ← Functor.map_comp,
-        F.mapComp'_id_comp_hom_app_assoc]
+      simp [mapComp'_inv_naturality, Cat.Hom.comp_toFunctor, Functor.comp_obj,
+        Cat.Hom.hom_inv_id_toNatTrans_app_assoc, ← reassoc_of% this, D₂.hom_self _ _ rfl,
+        F.mapComp'_id_comp_inv_app, ← Functor.map_comp, F.mapComp'_id_comp_hom_app_assoc]
     replace hφ := congr_fun (congr_arg DescentData.Hom.hom hφ) j
     dsimp at hφ
     simp only [this, hφ]
@@ -164,8 +163,7 @@ lemma mor_precomp ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ 
     mor w φ r' a' (by cat_disch) =
       (F.presheafHom (D₁.obj i) (D₂.obj i)).map (Over.homMk r).op (mor w φ q a fac) := by
   dsimp
-  rw [mor_eq _ _ _ _ _ (r ≫ q ≫ f i) (r ≫ a ≫ p' j),
-    mor_eq _ _ _ _ _ _ _ rfl rfl,
+  rw [mor_eq _ _ _ _ _ (r ≫ q ≫ f i) (r ≫ a ≫ p' j), mor_eq _ _ _ _ _ _ _ rfl rfl,
     ← D₁.pullHom_hom r (q ≫ f i) _ rfl q (a ≫ p' j) rfl (by cat_disch) r' _ hr' rfl,
     ← D₂.pullHom_hom r (q ≫ f i) _ rfl (a ≫ p' j) q (by cat_disch) rfl _ r' rfl hr']
   have := F.mapComp'_naturality_2 a.op.toLoc r.op.toLoc a'.op.toLoc (by cat_disch) (φ.hom j)
@@ -193,8 +191,7 @@ lemma mor_unique ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i)
   dsimp at this
   simp only [Category.assoc, Cat.Hom.hom_inv_id_toNatTrans_app_assoc, cancel_epi] at this
   simp only [← Category.assoc, cancel_mono] at this
-  rw [← cancel_mono (D₂.hom (q ≫ f i) (a₂ ≫ p' j₂) q), Category.assoc,
-    D₂.hom_comp] at this
+  rw [← cancel_mono (D₂.hom (q ≫ f i) (a₂ ≫ p' j₂) q), Category.assoc, D₂.hom_comp] at this
   rw [mor_eq _ _ _ _ _ _ _ rfl rfl, mor_eq _ _ _ _ _ _ _ rfl rfl, this]
   simp
 
@@ -262,9 +259,8 @@ lemma map_hom ⦃i : ι⦄ ⦃Y : C⦄ (q : Y ⟶ X i) ⦃j : ι'⦄
     Presieve.IsSheafFor.isAmalgamation
       (((isSheaf_iff_isSheaf_of_type _ _).1 (IsPrestack.isSheaf J _ _)).isSheafFor _
         (by simpa using sieve_mem _ hf' i)) (compatible_familyOfElements w φ i)
-  simpa [hom, familyOfElements_eq w φ (Z := Over.mk q) _ a fac,
-    presheafHomObjHomEquiv, pullHom, mapComp'_id_comp_hom_app,
-    mapComp'_id_comp_inv_app] using hs _ (mem_sieve _ _ fac)
+  simpa [hom, familyOfElements_eq w φ (Z := Over.mk q) _ a fac, presheafHomObjHomEquiv, pullHom,
+    mapComp'_id_comp_hom_app, mapComp'_id_comp_inv_app] using hs _ (mem_sieve _ _ fac)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
@@ -291,9 +287,8 @@ lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
   rw [← F.mapComp'_naturality_1 f₂.op.toLoc p.op.toLoc (p ≫ f₂).op.toLoc (by grind),
     map_hom _ _ _ _ g (by grind), map_hom _ _ _ _ g (by grind),
     mor_eq _ _ _ _ (by grind) (p ≫ q) _ (by grind) rfl,
-    mor_eq _ _ _ _ (by grind) (p ≫ q) _ (by grind) rfl,
-    map_eq_pullHom _ _ _ _ rfl rfl, map_eq_pullHom _ _ _ _ rfl rfl,
-    pullHom_hom _ _ _ _ rfl _ _ hf₁ hf₂ _ _ rfl rfl,
+    mor_eq _ _ _ _ (by grind) (p ≫ q) _ (by grind) rfl, map_eq_pullHom _ _ _ _ rfl rfl,
+    map_eq_pullHom _ _ _ _ rfl rfl, pullHom_hom _ _ _ _ rfl _ _ hf₁ hf₂ _ _ rfl rfl,
     pullHom_hom _ _ _ _ rfl _ _ hf₂ hf₁ _ _ rfl rfl]
   simp
 
@@ -310,10 +305,9 @@ lemma full_pullFunctor :
     ⟨{ hom := fun i ↦ full_pullFunctor.hom w hf' φ i, comm := comm _ _ _ }, by
       ext i
       dsimp
-      rw [map_hom _ _ _ _ (𝟙 _) (by cat_disch),
-        mor_eq _ _ _ _ _ (f' i) (p' i), pullHom_id,
-        D₁.hom_self _ _ (by cat_disch), D₂.hom_self _ _ (by cat_disch),
-        Category.id_comp, Category.comp_id]⟩
+      rw [map_hom _ _ _ _ (𝟙 _) (by cat_disch), mor_eq _ _ _ _ _ (f' i) (p' i), pullHom_id,
+        D₁.hom_self _ _ (by cat_disch), D₂.hom_self _ _ (by cat_disch), Category.id_comp,
+        Category.comp_id]⟩
 
 /-- Let `F` be a prestack for a Grothendieck topology `J`,
 `f : X i ⟶ S` and `f' : X' j ⟶ S` be two families of morphisms.
@@ -391,10 +385,8 @@ lemma IsPrestack.of_precoverage
     (hF : ∀ (S : C) (R : Presieve S) (_ : R ∈ J.coverings S), F.IsPrestackFor R) :
     F.IsPrestack J.toGrothendieck where
   isSheaf {S} M N := by
-    rw [isSheaf_iff_isSheaf_of_type,
-      over_toGrothendieck_eq_toGrothendieck_comap_forget,
-      ← Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck,
-      Presieve.isSheaf_pretopology]
+    rw [isSheaf_iff_isSheaf_of_type, over_toGrothendieck_eq_toGrothendieck_comap_forget,
+      ← Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck, Presieve.isSheaf_pretopology]
     intro X R hR
     simp only [Precoverage.toPretopology_toPrecoverage, Precoverage.mem_comap_iff,
       Over.forget_obj] at hR

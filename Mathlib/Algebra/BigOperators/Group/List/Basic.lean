@@ -162,8 +162,7 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
   induction l with
   | nil => rfl
   | cons i l hil =>
-    rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx),
-      hl _ mem_cons_self, one_mul]
+    rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx), hl _ mem_cons_self, one_mul]
 
 @[to_additive] lemma exists_mem_ne_one_of_prod_ne_one (h : l.prod ≠ 1) :
     ∃ x ∈ l, x ≠ (1 : M) := by simpa only [not_forall, exists_prop] using mt prod_eq_one h

@@ -224,8 +224,7 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
   simp only [wittOne, wittStructureRat, map_zero, map_one, map_wittStructureInt]
   induction n using Nat.strong_induction_on with | h n IH => ?_
   rw [xInTermsOfW_eq]
-  simp only [map_mul, map_sub, map_sum, map_pow, bind₁_X_right,
-    bind₁_C_right]
+  simp only [map_mul, map_sub, map_sum, map_pow, bind₁_X_right, bind₁_C_right]
   rw [sub_mul, one_mul]
   rw [Finset.sum_eq_single 0]
   · simp only [one_mul, pow_zero]

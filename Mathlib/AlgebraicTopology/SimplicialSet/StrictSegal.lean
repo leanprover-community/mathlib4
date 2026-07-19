@@ -83,8 +83,7 @@ lemma IsStrictSegal.hom_ext {Y : SSet.Truncated.{u} (n + 1)} [Y.IsStrictSegal]
   obtain _ | m := m
   · have fac := δ_comp_σ_self (i := (0 : Fin 1))
     dsimp at fac
-    simpa [← NatTrans.naturality_apply,
-      ← Functor.map_comp_apply, ← op_comp,
+    simpa [← NatTrans.naturality_apply, ← Functor.map_comp_apply, ← op_comp,
       ← SimplexCategory.Truncated.Hom.tr_comp, fac] using
       congr_arg (Y.map (SimplexCategory.Truncated.Hom.tr (SimplexCategory.δ 0)).op)
         (h (X.map (SimplexCategory.Truncated.Hom.tr (SimplexCategory.σ 0)).op x))
@@ -355,15 +354,13 @@ theorem spineToSimplex_interval :
       sx.spineToSimplex (f.interval j l hjl) := by
   apply sx.spineInjective
   dsimp only [spineEquiv, Equiv.coe_fn_mk]
-  rw [spine_spineToSimplex_apply, spine_map_subinterval,
-    spine_spineToSimplex_apply]
+  rw [spine_spineToSimplex_apply, spine_map_subinterval, spine_spineToSimplex_apply]
 
 theorem spineToSimplex_edge :
     X.map (intervalEdge j l hjl).op (sx.spineToSimplex f) =
       sx.spineToDiagonal (f.interval j l hjl) := by
   dsimp only [spineToDiagonal, SimplicialObject.diagonal]
-  rw [← spineToSimplex_interval, ← Functor.map_comp_apply, ← op_comp,
-    diag_subinterval_eq]
+  rw [← spineToSimplex_interval, ← Functor.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
 end interval
 
@@ -389,8 +386,7 @@ lemma spine_δ_vertex_lt (h : i.castSucc < j) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).vertex i =
       f.vertex i.castSucc := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← Functor.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
-    spineToSimplex_vertex]
+  rw [← Functor.map_comp_apply, ← op_comp, SimplexCategory.const_comp, spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_castSucc_lt j i h]
@@ -401,8 +397,7 @@ path. -/
 lemma spine_δ_vertex_ge (h : j ≤ i.castSucc) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).vertex i = f.vertex i.succ := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← Functor.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
-    spineToSimplex_vertex]
+  rw [← Functor.map_comp_apply, ← op_comp, SimplexCategory.const_comp, spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_le_castSucc j i h]

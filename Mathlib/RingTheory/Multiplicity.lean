@@ -410,8 +410,7 @@ theorem dvd_iff_emultiplicity_pos {a b : α} : 0 < emultiplicity a b ↔ a ∣ b
   emultiplicity_pos_iff.trans dvd_iff_multiplicity_pos
 
 theorem Nat.finiteMultiplicity_iff {a b : ℕ} : FiniteMultiplicity a b ↔ a ≠ 1 ∧ 0 < b := by
-  rw [← not_iff_not, FiniteMultiplicity.not_iff_forall, not_and_or, not_ne_iff, not_lt,
-    Nat.le_zero]
+  rw [← not_iff_not, FiniteMultiplicity.not_iff_forall, not_and_or, not_ne_iff, not_lt, Nat.le_zero]
   exact
     ⟨fun h =>
       or_iff_not_imp_right.2 fun hb =>

@@ -199,8 +199,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         rw [coe_inv, coe_inv, symm_apply_apply, h, (hd1 (τ x)).resolve_right hxτ]
       · rwa [mul_apply, mul_apply, coe_inv, symm_apply_apply, apply_eq_iff_eq]
     · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
-    · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
-        mem_coe, mem_support]
+    · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ, mem_coe, mem_support]
 
 theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
     (hp : p ∈ Subgroup.centralizer {g}) {x : α} :

@@ -117,8 +117,7 @@ abbrev pullbackDiagonalMapIso.hom :
       pullback i₁ i₂ :=
   pullback.lift (pullback.snd _ _ ≫ pullback.fst _ _) (pullback.snd _ _ ≫ pullback.snd _ _) (by
   ext
-  · simp only [Category.assoc, pullback_diagonal_map_snd_fst_fst,
-      pullback_diagonal_map_snd_snd_fst]
+  · simp only [Category.assoc, pullback_diagonal_map_snd_fst_fst, pullback_diagonal_map_snd_snd_fst]
   · simp only [Category.assoc, condition])
 
 set_option backward.isDefEq.respectTransparency false in

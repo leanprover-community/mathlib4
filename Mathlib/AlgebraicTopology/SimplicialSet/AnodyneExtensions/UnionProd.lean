@@ -479,9 +479,8 @@ lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] �
   · obtain ⟨l, rfl⟩ := Fin.eq_succ_of_ne_zero (i := l) (by grind)
     refine (hu _ rfl l.succ ?_).elim
     simp [isIndex_succ, S.cast_simplex_rfl, hu', stdSimplex.δ_apply,
-      Fin.succAbove_of_lt_succ i l.castSucc hi,
-      Fin.succAbove_of_lt_succ i l.succ (by grind), dsimp% hl.simplex_fst_succ,
-      dsimp% hl.simplex_snd_succ, dsimp% hl.simplex_fst_castSucc]
+      Fin.succAbove_of_lt_succ i l.castSucc hi, Fin.succAbove_of_lt_succ i l.succ (by grind),
+      dsimp% hl.simplex_fst_succ, dsimp% hl.simplex_snd_succ, dsimp% hl.simplex_fst_castSucc]
   · exact Or.inl rfl
   · obtain rfl | hi := (Fin.castSucc_lt_iff_succ_le.1 hi).eq_or_lt
     · exact Or.inr rfl
@@ -489,9 +488,8 @@ lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] �
       refine (hu _ rfl l.succ ?_).elim
       simp [isIndex_succ, hu', stdSimplex.δ_apply,
         Fin.succAbove_of_castSucc_lt i l.castSucc (by grind),
-        Fin.succAbove_of_castSucc_lt i l.succ (by grind),
-        dsimp% hl.simplex_fst_castSucc, dsimp% hl.simplex_snd_succ,
-        dsimp% hl.simplex_fst_succ]
+        Fin.succAbove_of_castSucc_lt i l.succ (by grind), dsimp% hl.simplex_fst_castSucc,
+        dsimp% hl.simplex_snd_succ, dsimp% hl.simplex_fst_succ]
 
 end IsIndex
 
@@ -565,8 +563,7 @@ noncomputable def pairingCore {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     replace h : s.δ = t.δ := by rwa [Subcomplex.N.ext_iff, N.ext_iff]
     generalize hs : s.δ = u
     have hu' : IsType₂ u := by simpa only [hs] using s.isType₂_δ
-    rw [← hu'.type₁_eq_of_δ_eq _ hs rfl,
-      hu'.type₁_eq_of_δ_eq _ (h.symm.trans hs) rfl]
+    rw [← hu'.type₁_eq_of_δ_eq _ hs rfl, hu'.type₁_eq_of_δ_eq _ (h.symm.trans hs) rfl]
   type₁_ne_type₂' s t hst := by
     replace hst : s.x = t.isIndex.δ := by
       rwa [Subcomplex.N.ext_iff, N.ext_iff, ← s.x.cast_eq_self s.hd]
@@ -643,8 +640,7 @@ noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
         · simp [hSs]
       · suffices St = Finset.image it.succ.succAbove Sδ ∪ {it.succ} by
           rw [this, Finset.card_union_of_disjoint (by simp),
-            Finset.card_image_of_injective _ Fin.succAbove_right_injective,
-            Finset.card_singleton]
+            Finset.card_image_of_injective _ Fin.succAbove_right_injective, Finset.card_singleton]
         ext i
         obtain rfl | ⟨i, rfl⟩ := it.succ.eq_self_or_eq_succAbove i
         · have : it.succ ∈ St := by
@@ -680,10 +676,8 @@ noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
       (((stdSimplex.opIso _).symm ⊗ᵢ (stdSimplex.opIso _).symm) ≪≫
         Functor.Monoidal.μIso opFunctor _ _) (by
           dsimp
-          rw [hk, Subcomplex.preimage_comp,
-            Subcomplex.preimage_op_unionProd,
-            Subcomplex.preimage_unionProd,
-            op_boundary, op_horn, Fin.rev_zero])
+          rw [hk, Subcomplex.preimage_comp, Subcomplex.preimage_op_unionProd,
+            Subcomplex.preimage_unionProd, op_boundary, op_horn, Fin.rev_zero])
   else
     (pairingCore.{u} (k.castPred hk) n).pairing
 

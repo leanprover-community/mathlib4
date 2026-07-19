@@ -99,9 +99,8 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
   simp only
   -- rewrite to a more convenient form; this is where we use the C⋆-property
   rw [← Real.sqrt_sq (norm_nonneg _), Real.sqrt_le_sqrt_iff (norm_nonneg _), sq,
-    ← CStarRing.norm_star_mul_self, add_apply, star_add, mul_apply',
-    Algebra.algebraMap_eq_smul_one, smul_apply,
-    one_apply_eq_self, star_mul, star_smul, add_mul, smul_mul_assoc, ← mul_smul_comm,
+    ← CStarRing.norm_star_mul_self, add_apply, star_add, mul_apply', Algebra.algebraMap_eq_smul_one,
+    smul_apply, one_apply_eq_self, star_mul, star_smul, add_mul, smul_mul_assoc, ← mul_smul_comm,
     mul_assoc, ← mul_add, ← sSup_unitClosedBall_eq_norm]
   refine (norm_mul_le _ _).trans ?_
   calc
@@ -150,8 +149,7 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
             exact norm_mul_le _ _
         rw [sq] at this
         rw [← Ne, ← norm_pos_iff] at h
-        simp only [Unitization.splitMul_apply, Unitization.snd_star,
-          Unitization.fst_star] at this
+        simp only [Unitization.splitMul_apply, Unitization.snd_star, Unitization.fst_star] at this
         exact (mul_le_mul_iff_left₀ h).mp this
     -- in this step we make use of the key lemma `norm_splitMul_snd_sq`
     have h₂ : ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖

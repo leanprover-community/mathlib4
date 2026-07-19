@@ -92,9 +92,8 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter {p₁ p₂ p₃ : P} {s
     rw [h_center, left_vsub_midpoint, right_vsub_midpoint, ← smul_neg, neg_vsub_eq_vsub_rev]
   rw [h_opp, inner_neg_left, inner_neg_left, real_inner_comm (p₃ -ᵥ o) (o -ᵥ p₂)]
   ring_nf
-  rw [neg_add_eq_zero, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
-    real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub, sq_eq_sq₀ dist_nonneg dist_nonneg,
-    mem_sphere.mp hd.right_mem]
+  rw [neg_add_eq_zero, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub, real_inner_self_eq_norm_sq,
+    ← dist_eq_norm_vsub, sq_eq_sq₀ dist_nonneg dist_nonneg, mem_sphere.mp hd.right_mem]
   exact eq_comm
 
 /-- **Thales' theorem**: For three distinct points, the angle at the second point

@@ -76,8 +76,7 @@ lemma σ_δ₀Iter' (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (j' : Fin (n + 1))
     (hi' : n + i = m := by lia)
     (hj' : j.val = j'.val + i := by grind) :
     X.σ j ≫ X.δ₀Iter i = X.δ₀Iter i hi' ≫ X.σ j' := by
-  simp [σ, δ₀Iter, ← Functor.map_comp, ← op_comp,
-    SimplexCategory.δ₀Iter_σ' i j j']
+  simp [σ, δ₀Iter, ← Functor.map_comp, ← op_comp, SimplexCategory.δ₀Iter_σ' i j j']
 
 /-- If `X` is a simplicial object and `n + i = m`, this is the morphism
 `X _⦋n⦌ ⟶ X _⦋m⦌` obtained by iterating `i` times the degeneracy map `X.σ 0`. -/
@@ -116,8 +115,7 @@ lemma σ₀Iter_δ' {n : ℕ} (i : Fin (n + 2)) (j : ℕ) {m : ℕ}
     (hi' : j < i.val := by grind)
     (hi'' : i.val = i'.val + j := by grind) :
     X.σ₀Iter (n := m + 1) j ≫ X.δ i = X.δ i' ≫ X.σ₀Iter j := by
-  simp only [σ₀Iter, δ, ← Functor.map_comp, ← op_comp,
-    SimplexCategory.δ_σ₀Iter' i j i']
+  simp only [σ₀Iter, δ, ← Functor.map_comp, ← op_comp, SimplexCategory.δ_σ₀Iter' i j i']
 
 @[reassoc]
 lemma σ₀Iter_σ (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (hi : n + i = m := by lia)
@@ -131,8 +129,7 @@ lemma σ₀Iter_σ' (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (j' : Fin (n + 1))
     (hi : n + i = m := by lia)
     (hj : j.val = j'.val + i := by grind) :
     X.σ₀Iter i hi ≫ X.σ j = X.σ j' ≫ X.σ₀Iter i := by
-  simp [σ, σ₀Iter, ← Functor.map_comp, ← op_comp,
-    SimplexCategory.σ_σ₀Iter' i j j']
+  simp [σ, σ₀Iter, ← Functor.map_comp, ← op_comp, SimplexCategory.σ_σ₀Iter' i j j']
 
 @[reassoc (attr := simp)]
 lemma σ₀Iter_δ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by lia) :

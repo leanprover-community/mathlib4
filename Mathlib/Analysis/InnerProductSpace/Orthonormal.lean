@@ -328,9 +328,8 @@ theorem Orthonormal.mapLinearIsometryEquiv {v : Basis ι 𝕜 E} (hv : Orthonorm
 def LinearMap.isometryOfOrthonormal (f : E →ₗ[𝕜] E') {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     (hf : Orthonormal 𝕜 (f ∘ v)) : E →ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
-    rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
-      Finsupp.apply_linearCombination, Finsupp.apply_linearCombination,
-      hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
+    rw [← v.linearCombination_repr x, ← v.linearCombination_repr y, Finsupp.apply_linearCombination,
+      Finsupp.apply_linearCombination, hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
 @[simp]
 theorem LinearMap.coe_isometryOfOrthonormal (f : E →ₗ[𝕜] E') {v : Basis ι 𝕜 E}

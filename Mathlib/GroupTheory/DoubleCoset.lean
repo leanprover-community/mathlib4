@@ -168,8 +168,7 @@ alias union_quotToDoubleCoset := iUnion_quotToDoubleCoset
 lemma doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doubleCoset a H K := by
   ext x
-  simp only [mem_rightCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doubleCoset,
-    SetLike.mem_coe]
+  simp only [mem_rightCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doubleCoset, SetLike.mem_coe]
   constructor
   · rintro ⟨y, h_h⟩
     refine ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.2, ?_⟩

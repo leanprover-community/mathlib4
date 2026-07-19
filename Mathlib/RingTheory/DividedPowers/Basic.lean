@@ -221,8 +221,7 @@ theorem factorial_mul_dpow_eq_pow {n : ℕ} (ha : a ∈ I) :
       ← hI.mul_dpow ha, ← mul_assoc, ih, hI.dpow_one ha, pow_succ, mul_comm]
 
 theorem dpow_eval_zero {n : ℕ} (hn : n ≠ 0) : hI.dpow n 0 = 0 := by
-  rw [← MulZeroClass.mul_zero (0 : A), hI.dpow_mul I.zero_mem,
-    zero_pow hn, zero_mul, zero_mul]
+  rw [← MulZeroClass.mul_zero (0 : A), hI.dpow_mul I.zero_mem, zero_pow hn, zero_mul, zero_mul]
 
 /-- If an element of a divided power ideal is killed by multiplication
 by some nonzero integer `n`, then its `n`th power is zero.
@@ -294,8 +293,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
   | insert a s ha ih =>
     -- This should be golfable using `Finset.symInsertEquiv`
     have hx' : ∀ i, i ∈ s → x i ∈ I := fun i hi ↦ hx i (mem_insert_of_mem hi)
-    simp_rw [sum_insert ha,
-      dpow_add (hx a (mem_insert_self a s)) (I.sum_mem fun i ↦ hx' i),
+    simp_rw [sum_insert ha, dpow_add (hx a (mem_insert_self a s)) (I.sum_mem fun i ↦ hx' i),
       sum_range, ih hx', mul_sum, sum_sigma', eq_comm]
     apply sum_bij'
       (fun m _ ↦ m.filterNe a)

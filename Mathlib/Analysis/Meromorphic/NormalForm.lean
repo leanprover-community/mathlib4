@@ -70,8 +70,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
         apply (AnalyticAt.zpow_nonneg (by fun_prop) hn).smul h₁g
       · right
         use hf
-        simp [this, WithTop.coe_lt_zero.2 hn, h₃g.eq_of_nhds,
-          zero_zpow n hn.ne]
+        simp [this, WithTop.coe_lt_zero.2 hn, h₃g.eq_of_nhds, zero_zpow n hn.ne]
   · rintro (h | ⟨h₁, h₂, h₃⟩)
     · by_cases h₂f : analyticOrderAt f x = ⊤
       · rw [analyticOrderAt_eq_top] at h₂f
@@ -239,8 +238,7 @@ theorem meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g : AnalyticAt 𝕜 g 
     have : f =ᶠ[𝓝 x] g⁻¹ • g • f := by
       filter_upwards [h₁g.continuousAt.preimage_mem_nhds (compl_singleton_mem_nhds_iff.mpr h₂g)]
       intro y hy
-      rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage,
-        Set.mem_singleton_iff] at hy
+      rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff] at hy
       simp [hy]
     rw [meromorphicNFAt_congr this]
     exact hprod.smul_analytic (h₁g.inv h₂g) (inv_ne_zero h₂g)
@@ -406,8 +404,7 @@ theorem meromorphicNFAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero
     {g : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
     MeromorphicNFAt (f ∘ g) x ↔ MeromorphicNFAt f (g x) := by
   simp [meromorphicNFAt_iff_analyticAt_or, analyticAt_comp_iff_of_deriv_ne_zero hg hg',
-    meromorphicAt_comp_iff_of_deriv_ne_zero hg hg',
-    meromorphicOrderAt_comp_of_deriv_ne_zero hg hg']
+    meromorphicAt_comp_iff_of_deriv_ne_zero hg hg', meromorphicOrderAt_comp_of_deriv_ne_zero hg hg']
 
 /-!
 ### Continuous extension and conversion to normal form

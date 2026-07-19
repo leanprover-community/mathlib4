@@ -59,8 +59,7 @@ variable
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.hom.app (op S.compHaus)) := by
   rw [← (StoneanCompHaus.equivalence A).inverse.epi_map_iff_epi,
-    ← Presheaf.coherentExtensiveEquivalence.functor.epi_map_iff_epi,
-    ← isLocallySurjective_iff_epi']
+    ← Presheaf.coherentExtensiveEquivalence.functor.epi_map_iff_epi, ← isLocallySurjective_iff_epi']
   exact extensiveTopology.isLocallySurjective_iff (D := A) _
 
 end Condensed

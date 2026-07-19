@@ -168,10 +168,8 @@ lemma Retract.hasProjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
   let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi T x
-  rw [← x.mk₀_id_comp, ← h.retract, ← Ext.mk₀_comp_mk₀,
-    Ext.comp_assoc_of_second_deg_zero,
-    ((Ext.mk₀ h.r).comp x (zero_add i)).eq_zero_of_hasProjectiveDimensionLT n hi,
-    Ext.comp_zero]
+  rw [← x.mk₀_id_comp, ← h.retract, ← Ext.mk₀_comp_mk₀, Ext.comp_assoc_of_second_deg_zero,
+    ((Ext.mk₀ h.r).comp x (zero_add i)).eq_zero_of_hasProjectiveDimensionLT n hi, Ext.comp_zero]
 
 lemma hasProjectiveDimensionLT_of_iso {X X' : C} (e : X ≅ X') (n : ℕ)
     [HasProjectiveDimensionLT X n] :

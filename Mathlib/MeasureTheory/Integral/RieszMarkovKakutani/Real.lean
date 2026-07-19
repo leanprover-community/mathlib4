@@ -254,8 +254,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ ≤ ∫ x, f x ∂μ + ε := by simp [hε'.2]
   · -- Equality since `∑ i : Fin N, (g i)` is equal to unity on the support of `f`
     congr; ext x
-    simp only [coe_sum, smul_eq_mul, coe_mul, Pi.mul_apply,
-      ← Finset.sum_mul]
+    simp only [coe_sum, smul_eq_mul, coe_mul, Pi.mul_apply, ← Finset.sum_mul]
     by_cases hx : x ∈ tsupport f
     · simp [hg.2.1 hx]
     · simp [image_eq_zero_of_notMem_tsupport hx]

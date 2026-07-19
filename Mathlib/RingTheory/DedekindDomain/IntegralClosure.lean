@@ -140,8 +140,7 @@ theorem FiniteDimensional.exists_is_basis_integral :
   · intro x; simp only [inv_mul_cancel_left₀ hy']
   · intro x; simp only [mul_inv_cancel_left₀ hy']
   · rintro ⟨x', hx'⟩
-    simp only [Algebra.smul_def, Finset.mem_image, Finset.mem_univ,
-      true_and] at his'
+    simp only [Algebra.smul_def, Finset.mem_image, Finset.mem_univ, true_and] at his'
     exact his' _ ⟨_, rfl⟩
 
 variable [Algebra.IsSeparable K L]

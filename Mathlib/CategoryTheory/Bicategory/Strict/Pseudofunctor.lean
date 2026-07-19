@@ -43,9 +43,8 @@ lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
   ext
   rw [mapComp']
   dsimp
-  rw [F.mapComp_id_right_hom f, Strict.rightUnitor_eqToIso, eqToIso.hom,
-    ← F.map₂_comp_assoc, eqToHom_trans, eqToHom_refl, PrelaxFunctor.map₂_id,
-    Category.id_comp]
+  rw [F.mapComp_id_right_hom f, Strict.rightUnitor_eqToIso, eqToIso.hom, ← F.map₂_comp_assoc,
+    eqToHom_trans, eqToHom_refl, PrelaxFunctor.map₂_id, Category.id_comp]
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -69,9 +68,8 @@ lemma mapComp'_id_comp {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
   ext
   rw [mapComp']
   dsimp
-  rw [F.mapComp_id_left_hom f, Strict.leftUnitor_eqToIso, eqToIso.hom,
-    ← F.map₂_comp_assoc, eqToHom_trans, eqToHom_refl, PrelaxFunctor.map₂_id,
-    Category.id_comp]
+  rw [F.mapComp_id_left_hom f, Strict.leftUnitor_eqToIso, eqToIso.hom, ← F.map₂_comp_assoc,
+    eqToHom_trans, eqToHom_refl, PrelaxFunctor.map₂_id, Category.id_comp]
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -136,8 +134,7 @@ lemma mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ 
     (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫ (F.mapComp' f₀₂ f₂₃ f).inv =
     (α_ _ _ _).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv ≫
       (F.mapComp' f₀₁ f₁₃ f).inv := by
-  rw [whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv _ _ _ _ _ _ f h₀₂ h₁₃,
-    Iso.hom_inv_id_assoc]
+  rw [whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv _ _ _ _ _ _ f h₀₂ h₁₃, Iso.hom_inv_id_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
@@ -253,8 +250,7 @@ lemma mapComp'_whiskerRight_comp_mapComp' (hf : f₀₂ ≫ f₂₃ = f) :
     F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂ ▷ F.map f₂₃ ≫ F.mapComp' f₀₂ f₂₃ f =
     (α_ _ _ _).hom ≫ F.map f₀₁ ◁ F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃ ≫
       F.mapComp' f₀₁ f₁₃ f := by
-  rw [whiskerLeft_mapComp'_comp_mapComp' _ _ _ _ _ _ f h₀₂ h₁₃,
-    Iso.hom_inv_id_assoc]
+  rw [whiskerLeft_mapComp'_comp_mapComp' _ _ _ _ _ _ f h₀₂ h₁₃, Iso.hom_inv_id_assoc]
 
 end associativity
 

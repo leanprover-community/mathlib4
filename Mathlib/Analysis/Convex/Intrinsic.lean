@@ -282,8 +282,7 @@ private theorem intrinsicClosure_image_of_homeomorph_affineSpan :
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   · have : Nonempty s := hs.to_subtype
-    rw [intrinsicClosure, ← image_closure_preimage_comp e he_homeo,
-      (funext he : (↑) ∘ e = f ∘ (↑)),
+    rw [intrinsicClosure, ← image_closure_preimage_comp e he_homeo, (funext he : (↑) ∘ e = f ∘ (↑)),
       preimage_image_eq_of_homeomorph_affineSpan e he_homeo he, image_comp]; rfl
 
 end ImageOfHomeomorphAffineSpan

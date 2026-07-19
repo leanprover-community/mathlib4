@@ -52,9 +52,8 @@ lemma Ideal.comap_fiberIsoOfBijectiveResidueField_symm
     ((Ideal.fiberIsoOfBijectiveResidueField H).symm Q).1.comap
       (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) = Q.1 := by
   ext x
-  simp [Ideal.fiberIsoOfBijectiveResidueField,
-    PrimeSpectrum.primesOverOrderIsoFiber, PrimeSpectrum.preimageOrderIsoFiber,
-    PrimeSpectrum.preimageEquivFiber]
+  simp [Ideal.fiberIsoOfBijectiveResidueField, PrimeSpectrum.primesOverOrderIsoFiber,
+    PrimeSpectrum.preimageOrderIsoFiber, PrimeSpectrum.preimageEquivFiber]
 
 @[simp]
 lemma Ideal.comap_fiberIsoOfBijectiveResidueField_apply
@@ -271,9 +270,8 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     inferInstance, P'.2.2, hP'q, heP', hP, fun P'' _ _ H ↦ ?_, fun P'' _ _ H ↦ ?_⟩
   · have : (P'.1.comap φ.toRingHom).LiesOver P := inferInstanceAs ((P'.1.comap φ).LiesOver P)
     apply Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap hP
-    simp only [Ideal.comap_comap, AlgHom.toRingHom_eq_coe,
-      ← @AlgHom.coe_restrictScalars R R', ← AlgHom.comp_toRingHom,
-      Algebra.TensorProduct.map_restrictScalars_comp_includeRight]
+    simp only [Ideal.comap_comap, AlgHom.toRingHom_eq_coe, ← @AlgHom.coe_restrictScalars R R',
+      ← AlgHom.comp_toRingHom, Algebra.TensorProduct.map_restrictScalars_comp_includeRight]
     simp_rw [AlgHom.comp_toRingHom, ← Ideal.comap_comap, ← AlgHom.toRingHom_eq_coe, hP'q]
     contrapose! H
     have : 1 ⊗ₜ s₀ ∈ P'' := hs₀ _ inferInstance H (by simp [Ideal.liesOver_iff, Ideal.under,
@@ -362,8 +360,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   refine RingHom.finite_algebraMap.mp ?_
   convert! equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
-  dsimp [-AlgEquiv.symm_toRingEquiv,
-    ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
+  dsimp [-AlgEquiv.symm_toRingEquiv, ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
   simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
 
 /--

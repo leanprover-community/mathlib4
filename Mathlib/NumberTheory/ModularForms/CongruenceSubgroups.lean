@@ -119,9 +119,8 @@ theorem Gamma1_to_Gamma0_mem {N} (A : Gamma0 N) :
     rw [Matrix.det_fin_two] at adet
     simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub,
       Int.cast_mul] at *
-    simpa only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub,
-      Int.cast_mul, ha, Gamma0_mem.mp A.property, and_self_iff, and_true, mul_one, mul_zero,
-      sub_zero] using adet
+    simpa only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub, Int.cast_mul,
+      ha, Gamma0_mem.mp A.property, and_self_iff, and_true, mul_one, mul_zero, sub_zero] using adet
   · intro ha
     simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk]
     exact ha.2.1
@@ -281,8 +280,7 @@ theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
       ≤ (Gamma M).map (mapGL ℝ) := by
   obtain ⟨N, hN, h⟩ := exists_Gamma_le_conj g M
   refine ⟨N, hN, fun y hy ↦ ?_⟩
-  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, Subgroup.mem_map,
-    eq_inv_smul_iff] at hy
+  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, Subgroup.mem_map, eq_inv_smul_iff] at hy
   obtain ⟨x, hx, rfl⟩ := hy
   obtain ⟨z, hz, hz'⟩ := h x hx
   use z, hz

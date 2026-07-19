@@ -252,8 +252,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one
         exact hf hv'
       -- Using that `e.fixedReduce = 1`, we have `v - e v ∈ e.fixedSubmodule`.
       have hv' : v - e v ∈ e.fixedSubmodule := by
-        rw [← e.fixedSubmodule.ker_mkQ, LinearMap.mem_ker,
-          map_sub, sub_eq_zero]
+        rw [← e.fixedSubmodule.ker_mkQ, LinearMap.mem_ker, map_sub, sub_eq_zero]
         simp [← fixedReduce_mk, he]
       set t := auxTransvection (e := e) (f := f) (u := v) (by
         simpa [hf] using hf (sub_mem_comm_iff.mp hv')) with ht
@@ -266,8 +265,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one
       · -- We prove that `(t * e).fixedReduce = 1`.
         simp only [ht, one_eq_refl, fixedReduce_eq_one, auxTransvection_mul_fixed hv] at he ⊢
         intro w
-        simp only [auxTransvection, LinearEquiv.mul_apply, transvection.apply,
-          add_sub_right_comm]
+        simp only [auxTransvection, LinearEquiv.mul_apply, transvection.apply, add_sub_right_comm]
         apply mem_sup_left
         apply Submodule.add_mem _ (he w)
         exact smul_mem _ _ hv'
@@ -292,8 +290,7 @@ private theorem apply_notMem_sup_of_linearIndependent {u : V}
   specialize hu a (1 - a) ?_
   · simp only [← LinearMap.map_smul, ← LinearEquiv.map_smul]
     simp only [Submodule.mkQ_apply, fixedReduce_mk]
-    simp only [← Submodule.mkQ_apply, ← map_add, ← mem_ker,
-      Submodule.ker_mkQ]
+    simp only [← Submodule.mkQ_apply, ← map_add, ← mem_ker, Submodule.ker_mkQ]
     convert hy
     grind [smul_sub, sub_smul, one_smul, map_smul]
   aesop
@@ -332,8 +329,7 @@ private theorem exists_dual_of_fixedReduce_ne_smul
   have hspan : K ∙ (e v - v) = K ∙ (e u - u) := by
     simp only [Submodule.span_singleton_eq_span_singleton]
     use (Ne.isUnit hfu).unit
-    simp [v_def, _root_.map_smul, Units.smul_isUnit, smul_sub,
-      ← mul_smul, mul_inv_cancel₀ hfu]
+    simp [v_def, _root_.map_smul, Units.smul_isUnit, smul_sub, ← mul_smul, mul_inv_cancel₀ hfu]
   rw [← hspan, ← le_ker_iff_map] at hf
   refine ⟨f, v, ?_, hf,
     by simp only [_root_.map_smul, smul_eq_mul, v_def, inv_mul_cancel₀ hfu]⟩

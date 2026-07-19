@@ -313,8 +313,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     · rcases hA p with _ | h; · contradiction
       simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left]
     · rcases hB p with _ | h; · contradiction
-      simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left,
-        union_ae_eq_univ_of_ae_eq_univ_right]
+      simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]
 
 /-- A general version of **Dirichlet's approximation theorem**.
 

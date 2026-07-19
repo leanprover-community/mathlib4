@@ -276,8 +276,7 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
   let α₁ : W₁.Q ⋙ E₁ ≅ L₁ := compUniqFunctor W₁.Q L₁ W₁
   let E₂ := (uniq W₂.Q L₂ W₂).functor
   let α₂ : W₂.Q ⋙ E₂ ≅ L₂ := compUniqFunctor W₂.Q L₂ W₂
-  rw [SmallHom.equiv_equiv_symm W₁ W₁.Q L₁ E₁ α₁,
-    SmallHom.equiv_equiv_symm W₂ W₂.Q L₂ E₂ α₂]
+  rw [SmallHom.equiv_equiv_symm W₁ W₁.Q L₁ E₁ α₁, SmallHom.equiv_equiv_symm W₂ W₂.Q L₂ E₂ α₂]
   change α₂.inv.app _ ≫ E₂.map (β.hom.app X ≫ G'.map g ≫ β.inv.app Y) ≫ _ = _
   let γ : G' ⋙ E₂ ≅ E₁ ⋙ G := liftNatIso W₁.Q W₁ (W₁.Q ⋙ G' ⋙ E₂) (W₁.Q ⋙ E₁ ⋙ G) _ _
     ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight β.symm E₂ ≪≫
@@ -290,11 +289,9 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
   simp only [Functor.map_comp, ← NatIso.naturality_1 γ, ← Functor.comp_map,
     ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
     ← cancel_epi (γ.hom.app (W₁.Q.obj X)), assoc, Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp,
-    Iso.hom_inv_id_app_assoc]
-  simp only [hγ, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
-    Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
-    Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
+    ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc]
+  simp only [hγ, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id, id_comp,
+    Iso.hom_inv_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
 @[simp]
 lemma smallHomMap_mk (f : X ⟶ Y) :

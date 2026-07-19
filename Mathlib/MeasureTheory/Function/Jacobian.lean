@@ -950,8 +950,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       exact hB.trans_lt (half_lt_self δ'pos)
     rcases eq_or_ne A.det 0 with (hA | hA)
     · refine ⟨δ'', half_pos δ'pos, I'', ?_⟩
-      simp only [hA, forall_const, zero_mul, ENNReal.ofReal_zero, imp_true_iff,
-        zero_le, abs_zero]
+      simp only [hA, forall_const, zero_mul, ENNReal.ofReal_zero, imp_true_iff, zero_le, abs_zero]
     let m : ℝ≥0 := Real.toNNReal |A.det| - ε
     have I : (m : ℝ≥0∞) < ENNReal.ofReal |A.det| := by
       simp only [m, ENNReal.ofReal, ENNReal.coe_sub]

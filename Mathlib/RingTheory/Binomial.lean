@@ -118,9 +118,8 @@ theorem multichoose_zero_right [MulOneClass R] [NatPowAssoc R]
 
 @[simp]
 theorem multichoose_one_right' (r : R) : multichoose r 1 = r ^ 1 := by
-  rw [← nsmul_right_inj (Nat.factorial_ne_zero 1),
-    factorial_nsmul_multichoose_eq_ascPochhammer, ascPochhammer_one, smeval_X, Nat.factorial_one,
-    one_smul]
+  rw [← nsmul_right_inj (Nat.factorial_ne_zero 1), factorial_nsmul_multichoose_eq_ascPochhammer,
+    ascPochhammer_one, smeval_X, Nat.factorial_one, one_smul]
 
 theorem multichoose_one_right [MulOneClass R] [NatPowAssoc R] (r : R) : multichoose r 1 = r := by
   rw [multichoose_one_right', npow_one]
@@ -327,9 +326,8 @@ theorem smeval_ascPochhammer_nat_cast {R} [NonAssocSemiring R] [Pow R ℕ] [NatP
   rw [smeval_at_natCast (ascPochhammer ℕ k) n]
 
 theorem multichoose_neg_self (n : ℕ) : multichoose (-n : ℤ) n = (-1) ^ n := by
-  rw [← nsmul_right_inj (Nat.factorial_ne_zero _),
-    factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_self_neg, nsmul_eq_mul,
-    Nat.cast_comm]
+  rw [← nsmul_right_inj (Nat.factorial_ne_zero _), factorial_nsmul_multichoose_eq_ascPochhammer,
+    smeval_ascPochhammer_self_neg, nsmul_eq_mul, Nat.cast_comm]
 
 @[simp]
 theorem multichoose_neg_succ (n : ℕ) : multichoose (-n : ℤ) (n + 1) = 0 := by
@@ -463,10 +461,9 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
 
 theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by
-  rw [← nsmul_right_inj (Nat.factorial_ne_zero n),
-    nsmul_left_comm, ← descPochhammer_eq_factorial_smul_choose,
-    ← Nat.choose_mul_factorial_mul_factorial hkn, ← smul_mul_smul_comm,
-    ← descPochhammer_eq_factorial_smul_choose, mul_nsmul',
+  rw [← nsmul_right_inj (Nat.factorial_ne_zero n), nsmul_left_comm,
+    ← descPochhammer_eq_factorial_smul_choose, ← Nat.choose_mul_factorial_mul_factorial hkn,
+    ← smul_mul_smul_comm, ← descPochhammer_eq_factorial_smul_choose, mul_nsmul',
     ← descPochhammer_eq_factorial_smul_choose, smul_mul_assoc]
   nth_rw 2 [← Nat.sub_add_cancel hkn]
   rw [add_comm, ← descPochhammer_mul, smeval_mul, smeval_comp, smeval_sub, smeval_X,
@@ -474,8 +471,7 @@ theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
 
 theorem choose_add_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) :
     (Nat.choose (n + k) k) • choose (r + k) (n + k) = choose (r + k) k * choose r n := by
-  rw [choose_smul_choose (r + k) (Nat.le_add_left k n), Nat.add_sub_cancel,
-    add_sub_cancel_right]
+  rw [choose_smul_choose (r + k) (Nat.le_add_left k n), Nat.add_sub_cancel, add_sub_cancel_right]
 
 end
 

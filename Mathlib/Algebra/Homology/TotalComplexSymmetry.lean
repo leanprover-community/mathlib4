@@ -78,9 +78,8 @@ lemma totalFlipIsoX_hom_D₁ (j j' : J) :
         rw [← ComplexShape.next_π₂ c₂ c i₂ h₂, h₁, c.next_eq' h₀]
       have h₄ : ComplexShape.π c₁ c₂ c ⟨c₁.next i₁, i₂⟩ = j' := by
         rw [← h₃, ComplexShape.π_symm c₁ c₂ c]
-      rw [K.d₁_eq _ h₂ _ _ h₄, K.flip.d₂_eq _ _ h₂ _ h₃, Linear.units_smul_comp,
-        assoc, ι_totalDesc, Linear.comp_units_smul, smul_smul, smul_smul,
-        ComplexShape.σ_ε₁ c₂ c h₂ i₂]
+      rw [K.d₁_eq _ h₂ _ _ h₄, K.flip.d₂_eq _ _ h₂ _ h₃, Linear.units_smul_comp, assoc, ι_totalDesc,
+        Linear.comp_units_smul, smul_smul, smul_smul, ComplexShape.σ_ε₁ c₂ c h₂ i₂]
       dsimp only [flip_X_X, flip_X_d]
     · rw [K.d₁_eq_zero _ _ _ _ h₂, K.flip.d₂_eq_zero _ _ _ _ h₂, smul_zero, zero_comp]
   · rw [K.D₁_shape _ _ _ h₀, K.flip.D₂_shape c _ _ h₀, zero_comp, comp_zero]
@@ -101,9 +100,8 @@ lemma totalFlipIsoX_hom_D₂ (j j' : J) :
         rw [← ComplexShape.next_π₁ c₁ c h₂ i₁, h₁, c.next_eq' h₀]
       have h₄ : ComplexShape.π c₁ c₂ c (i₁, ComplexShape.next c₂ i₂) = j' := by
         rw [← h₃, ComplexShape.π_symm c₁ c₂ c]
-      rw [K.d₂_eq _ _ h₂ _ h₄, K.flip.d₁_eq _ h₂ _ _ h₃, Linear.units_smul_comp,
-        assoc, ι_totalDesc, Linear.comp_units_smul, smul_smul, smul_smul,
-        ComplexShape.σ_ε₂ c₁ c i₁ h₂]
+      rw [K.d₂_eq _ _ h₂ _ h₄, K.flip.d₁_eq _ h₂ _ _ h₃, Linear.units_smul_comp, assoc, ι_totalDesc,
+        Linear.comp_units_smul, smul_smul, smul_smul, ComplexShape.σ_ε₂ c₁ c i₁ h₂]
       rfl
     · rw [K.d₂_eq_zero _ _ _ _ h₂, K.flip.d₁_eq_zero _ _ _ _ h₂, smul_zero, zero_comp]
   · rw [K.D₂_shape _ _ _ h₀, K.flip.D₁_shape c _ _ h₀, zero_comp, comp_zero]

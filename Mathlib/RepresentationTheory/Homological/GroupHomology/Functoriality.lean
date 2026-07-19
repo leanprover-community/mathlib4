@@ -853,10 +853,9 @@ noncomputable def coresNatTrans (n : ℕ) :
     resFunctor f ⋙ functor k G n ⟶ functor k H n where
   app X := map f (𝟙 _) n
   naturality {X Y} φ := by
-    simp only [← cancel_epi (groupHomology.π _ n), Functor.comp_map,
-      functor_map, HomologicalComplex.homologyπ_naturality_assoc,
-      HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
-      ← chainsMap_comp, Category.id_comp]
+    simp only [← cancel_epi (groupHomology.π _ n), Functor.comp_map, functor_map,
+      HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,
+      ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp, Category.id_comp]
     rfl
 
 set_option backward.isDefEq.respectTransparency false in

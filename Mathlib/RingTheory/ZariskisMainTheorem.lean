@@ -168,8 +168,7 @@ lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
     refine isIntegral_trans (A := R₂) (algebraMap S St t) ?_
     obtain ⟨q, hq, hq'⟩ := ht
     refine ⟨q.map (aeval ⟨_, Algebra.self_mem_adjoin_singleton _ _⟩).toRingHom, hq.map _, ?_⟩
-    rw [AlgHom.toRingHom_eq_coe, eval₂_map, ← map_zero (algebraMap S St), ← hq',
-      hom_eval₂]
+    rw [AlgHom.toRingHom_eq_coe, eval₂_map, ← map_zero (algebraMap S St), ← hq', hom_eval₂]
     congr 1
     ext <;> simp [-Polynomial.algebraMap_apply, ← algebraMap_eq, ← IsScalarTower.algebraMap_apply]
   simpa using IsLocalization.Away.isIntegral_of_isIntegral_map t

@@ -340,8 +340,7 @@ theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
     MeasurableSet (toMeasurable μ s) := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts [hs.choose_spec.2.1, h's.choose_spec.2.1,
-          (exists_measurable_superset μ s).choose_spec.2.1]
+  exacts [hs.choose_spec.2.1, h's.choose_spec.2.1, (exists_measurable_superset μ s).choose_spec.2.1]
 
 @[simp]
 theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by

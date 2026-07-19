@@ -96,8 +96,7 @@ theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n 
   simp only [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
-  rw [divisors, properDivisors,
-    ← Finset.insert_Ico_right_eq_Ico_add_one (one_le_iff_ne_zero.2 h),
+  rw [divisors, properDivisors, ← Finset.insert_Ico_right_eq_Ico_add_one (one_le_iff_ne_zero.2 h),
     Finset.filter_insert, if_pos (dvd_refl n)]
 
 theorem cons_self_properDivisors (h : n ≠ 0) :
@@ -537,8 +536,7 @@ theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
 
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
     {p ∈ n.primeFactors | p ∣ m} = m.primeFactors := by
-  simp_rw [primeFactors_eq_to_filter_divisors_prime, filter_comm,
-    divisors_filter_dvd_of_dvd hn hmn]
+  simp_rw [primeFactors_eq_to_filter_divisors_prime, filter_comm, divisors_filter_dvd_of_dvd hn hmn]
 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
