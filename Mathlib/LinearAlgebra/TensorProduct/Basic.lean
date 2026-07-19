@@ -100,14 +100,14 @@ def lifts (x : M ⊗[R] N) : Set (FreeAddMonoid (M × N)) :=
 
 lemma mem_lifts_iff (x : M ⊗[R] N) (p : FreeAddMonoid (M × N)) :
     p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 ⊗ₜ[R] x.2) p.toList) = x := by
-  simp only [lifts, Set.mem_setOf_eq, FreeAddMonoid.toTensorProduct]
+  simp only [lifts, Set.mem_ofPred_eq, FreeAddMonoid.toTensorProduct]
   rfl
 
 /-- Every element of `M ⊗[R] N` has a lift in `FreeAddMonoid (M × N)`.
 -/
 lemma nonempty_lifts (x : M ⊗[R] N) : Set.Nonempty (lifts x) := by
   existsi Quot.out x
-  simp [lifts, ← AddCon.quot_mk_eq_coe]
+  exact Function.surjInv_eq Quot.exists_rep x
 
 instance (x : M ⊗[R] N) : Nonempty ↑x.lifts := nonempty_subtype.mpr (nonempty_lifts x)
 
@@ -122,14 +122,14 @@ respectively, then `p + q` lifts `x + y`.
 -/
 lemma lifts_add {x y : M ⊗[R] N} {p q : FreeAddMonoid (M × N)}
     (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) := by
-  simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
+  simp only [lifts, Set.mem_ofPred_eq, AddCon.coe_add]
   rw [hp, hq]
 
 /-- If an element `p` of `FreeAddMonoid (M × N)` lifts an element `x` of `M ⊗[R] N`,
 and if `a` is an element of `R`, then the list obtained by multiplying the first entry of each
 element of `p` by `a` lifts `a • x`.
 -/
-lemma lifts_smul_left {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ lifts x) (a : R) :
+lemma lifts_smul {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ lifts x) (a : R) :
     p.map (fun (y : M × N) ↦ (a • y.1, y.2)) ∈ lifts (a • x) := by
   rw [mem_lifts_iff] at h ⊢
   rw [← h]
@@ -137,20 +137,6 @@ lemma lifts_smul_left {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ l
   induction p.toList with
   | nil => simp
   | cons hd tl ih => simp [ih, smul_add, smul_tmul]
-
-
-/-- If an element `p` of `FreeAddMonoid (M × N)` lifts an element `x` of `M ⊗[R] N`,
-and if `a` is an element of `R`, then the list obtained by multiplying the second entry of each
-element of `p` by `a` lifts `a • x`.
--/
-lemma lifts_smul_right {x : M ⊗[R] N} {p : FreeAddMonoid (M × N)} (h : p ∈ lifts x) (a : R) :
-    p.map (fun (y : M × N) ↦ (y.1, a • y.2)) ∈ lifts (a • x) := by
-  rw [mem_lifts_iff] at h ⊢
-  rw [← h]
-  simp only [FreeAddMonoid.toList_map, List.map_map]
-  induction p.toList with
-  | nil => simp
-  | cons hd tl ih => simp [ih, smul_add]
 
 end Module
 
