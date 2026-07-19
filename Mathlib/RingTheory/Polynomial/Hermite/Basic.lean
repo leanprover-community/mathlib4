@@ -151,7 +151,6 @@ theorem natDegree_hermite {n : ℕ} : (hermite R n).natDegree = n :=
 theorem leadingCoeff_hermite (n : ℕ) : (hermite R n).leadingCoeff = 1 := by
   rw [← coeff_natDegree, natDegree_hermite, coeff_hermite_self]
 
-variable (R : Type*) [CommRing R]
 
 theorem hermite_monic (n : ℕ) : (hermite R n).Monic := by
   nontriviality R
