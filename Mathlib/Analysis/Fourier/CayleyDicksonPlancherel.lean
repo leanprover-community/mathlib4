@@ -131,10 +131,13 @@ def toEuclidean :
       EuclideanSpace ℂ (Fin (Module.finrank ℂ (CayleyDickson A))) :=
   (Module.finBasis ℂ _).equivFun.trans (WithLp.linearEquiv 2 ℂ _).symm
 
+/-- The norm induced by the fixed complex Hilbert space structure (`toEuclidean`). -/
 scoped instance instNormedAddCommGroup : NormedAddCommGroup (CayleyDickson A) :=
   NormedAddCommGroup.induced _ _ (toEuclidean (A := A)).toLinearMap
     (toEuclidean (A := A)).injective
 
+/-- The complex inner product induced by the fixed complex Hilbert space structure
+(`toEuclidean`). -/
 scoped instance instInnerProductSpace : InnerProductSpace ℂ (CayleyDickson A) :=
   InnerProductSpace.induced (toEuclidean (A := A)).toLinearMap
 
