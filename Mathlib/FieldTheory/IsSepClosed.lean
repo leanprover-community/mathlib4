@@ -284,7 +284,7 @@ theorem surjective_domRestrict_of_isSeparable {E : Type*}
     fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s,
       IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias surjective_restrictDomain_of_isSeparable := surjective_domRestrict_of_isSeparable
 
 variable [Algebra.IsSeparable K L] {L}

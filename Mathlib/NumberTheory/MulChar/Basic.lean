@@ -382,8 +382,8 @@ noncomputable def domRestrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T 
     (χ : MulChar R R') : MulChar T R' :=
   ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
 
-@[deprecated (since := "2026-02-10")] alias restrict := domRestrict
-@[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
 
 /--
 The restriction of a `MulChar` to a submonoid as an homomorphism.
@@ -398,8 +398,8 @@ noncomputable def domRestrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] 
     rw [domRestrict_apply, if_pos x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
   map_mul' x y := by ext; simp
 
-@[deprecated (since := "2026-02-10")] alias restrictHom := domRestrictHom
-@[deprecated (since := "2026-02-10")] alias restrictHom_apply := domRestrictHom_apply
+@[deprecated (since := "2026-07-19")] alias restrictHom := domRestrictHom
+@[deprecated (since := "2026-07-19")] alias restrictHom_apply := domRestrictHom_apply
 
 end Group
 
@@ -429,7 +429,7 @@ theorem domRestrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T
     {χ : MulChar R R'} : χ.domRestrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
   simp [eq_one_iff]
 
-@[deprecated (since := "2026-02-10")] alias restrict_eq_one_iff := domRestrict_eq_one_iff
+@[deprecated (since := "2026-07-19")] alias restrict_eq_one_iff := domRestrict_eq_one_iff
 
 end nontrivial
 

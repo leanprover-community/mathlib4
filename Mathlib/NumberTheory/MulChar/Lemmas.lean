@@ -35,7 +35,7 @@ theorem domRestrict_ofUnitHom (f : Rˣ →* R'ˣ) (S : Submonoid R) : domRestric
     MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, MonoidHom.domRestrict_apply]
   rw [← Submonoid.val_unitsEquivUnitsType_symm_apply_coe S x, equivToUnitHom_symm_coe]
 
-@[deprecated (since := "2026-02-10")] alias restrict_ofUnitHom := domRestrict_ofUnitHom
+@[deprecated (since := "2026-07-19")] alias restrict_ofUnitHom := domRestrict_ofUnitHom
 
 end CommMonoid
 

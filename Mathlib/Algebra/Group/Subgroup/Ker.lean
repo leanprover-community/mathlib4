@@ -98,8 +98,8 @@ theorem domRestrict_range (f : G →* N) : (f.domRestrict K).range = K.map f := 
   simp_rw [SetLike.ext_iff, mem_range, mem_map, domRestrict_apply, SetLike.exists,
     exists_prop, forall_const]
 
-@[deprecated (since := "2026-02-10")] alias restrict_range := domRestrict_range
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")] alias restrict_range := domRestrict_range
+@[deprecated (since := "2026-07-19")]
 alias _root_.AddMonoidHom.restrict_range := _root_.AddMonoidHom.domRestrict_range
 
 /-- The canonical surjective group homomorphism `G →* f(G)` induced by a group
@@ -287,8 +287,8 @@ theorem ker_le_comap (f : G →* N) (H : Subgroup N) : f.ker ≤ H.comap f :=
 theorem ker_domRestrict (f : G →* M) : (f.domRestrict K).ker = f.ker.subgroupOf K :=
   rfl
 
-@[deprecated (since := "2026-02-10")] alias ker_restrict := ker_domRestrict
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")] alias ker_restrict := ker_domRestrict
+@[deprecated (since := "2026-07-19")]
 alias _root_.AddMonoidHom.ker_restrict := _root_.AddMonoidHom.ker_domRestrict
 
 @[to_additive (attr := simp)]

@@ -397,7 +397,7 @@ theorem IsOpenMap.domRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs :
     IsOpenMap (s.domRestrict f) :=
   hf.comp hs.isOpenMap_subtype_val
 
-@[deprecated (since := "2026-02-10")] alias IsOpenMap.restrict := IsOpenMap.domRestrict
+@[deprecated (since := "2026-07-19")] alias IsOpenMap.restrict := IsOpenMap.domRestrict
 
 @[fun_prop]
 lemma IsClosed.isClosedEmbedding_subtypeVal {s : Set X} (hs : IsClosed s) :
@@ -411,7 +411,7 @@ theorem IsClosedMap.domRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set X}
     (hs : IsClosed s) : IsClosedMap (s.domRestrict f) :=
   hf.comp hs.isClosedMap_subtype_val
 
-@[deprecated (since := "2026-02-10")] alias IsClosedMap.restrict := IsClosedMap.domRestrict
+@[deprecated (since := "2026-07-19")] alias IsClosedMap.restrict := IsClosedMap.domRestrict
 
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
@@ -867,13 +867,13 @@ lemma Pi.continuous_domRestrict (S : Set ι) :
     Continuous (S.domRestrict : (∀ i : ι, A i) → (∀ i : S, A i)) :=
   Pi.continuous_precomp' ((↑) : S → ι)
 
-@[deprecated (since := "2026-02-10")] alias Pi.continuous_restrict := Pi.continuous_domRestrict
+@[deprecated (since := "2026-07-19")] alias Pi.continuous_restrict := Pi.continuous_domRestrict
 
 @[continuity, fun_prop]
 lemma Pi.continuous_domRestrict₂ {s t : Set ι} (hst : s ⊆ t) :
     Continuous (domRestrict₂ (π := A) hst) := continuous_pi fun _ ↦ continuous_apply _
 
-@[deprecated (since := "2026-02-10")] alias Pi.continuous_restrict₂ := Pi.continuous_domRestrict₂
+@[deprecated (since := "2026-07-19")] alias Pi.continuous_restrict₂ := Pi.continuous_domRestrict₂
 
 @[continuity, fun_prop]
 theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (π := A)) :=
@@ -890,7 +890,7 @@ variable [TopologicalSpace Z]
 theorem Pi.continuous_domRestrict_apply (s : Set X) {f : X → Z} (hf : Continuous f) :
     Continuous (s.domRestrict f) := hf.comp continuous_subtype_val
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias Pi.continuous_restrict_apply := Pi.continuous_domRestrict_apply
 
 @[continuity, fun_prop]
@@ -898,7 +898,7 @@ theorem Pi.continuous_domRestrict₂_apply {s t : Set X} (hst : s ⊆ t)
     {f : t → Z} (hf : Continuous f) :
     Continuous (domRestrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias Pi.continuous_restrict₂_apply := Pi.continuous_domRestrict₂_apply
 
 @[continuity, fun_prop]
@@ -916,14 +916,14 @@ lemma Pi.induced_domRestrict (S : Set ι) :
   simp +unfoldPartialApp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
     domRestrict]
 
-@[deprecated (since := "2026-02-10")] alias Pi.induced_restrict := Pi.induced_domRestrict
+@[deprecated (since := "2026-07-19")] alias Pi.induced_restrict := Pi.induced_domRestrict
 
 lemma Pi.induced_domRestrict_sUnion (𝔖 : Set (Set ι)) :
     induced (⋃₀ 𝔖).domRestrict (Pi.topologicalSpace (Y := fun i : (⋃₀ 𝔖) ↦ A i)) =
     ⨅ S ∈ 𝔖, induced S.domRestrict Pi.topologicalSpace := by
   simp_rw [Pi.induced_domRestrict, iInf_sUnion]
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias Pi.induced_restrict_sUnion := Pi.induced_domRestrict_sUnion
 
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter Y} {f : Y → ∀ i, A i} {x : ∀ i, A i}

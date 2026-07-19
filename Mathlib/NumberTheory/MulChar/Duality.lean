@@ -89,7 +89,7 @@ theorem domRestrictHom_surjective (N : Submonoid M) :
   rw [domRestrictHom_apply, domRestrict_ofUnitHom]
   simp [hψ]
 
-@[deprecated (since := "2026-02-10")] alias restrictHom_surjective := domRestrictHom_surjective
+@[deprecated (since := "2026-07-19")] alias restrictHom_surjective := domRestrictHom_surjective
 
 /-- The `MulEquiv` between the double dual `MulChar (MulChar M R) R` of `M` and `Mˣ`.
 The image `m` of `η : MulChar (MulChar M R) R` is such that, for all `R`-valued multiplicative

@@ -134,7 +134,7 @@ theorem image_coe_eq_domRestrict_image {δ : Type*} {f : α → δ} : f '' γ = 
   ext fun _ =>
     ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias image_coe_eq_restrict_image := image_coe_eq_domRestrict_image
 
 end with_instance
@@ -169,7 +169,7 @@ theorem image_image_val_eq_domRestrict_image {δ : Type*} {f : α → δ} :
     f '' γ = β.domRestrict f '' γ := by
   ext; simp
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias image_image_val_eq_restrict_image := image_image_val_eq_domRestrict_image
 
 end Set

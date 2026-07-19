@@ -284,7 +284,7 @@ theorem exists_norm_eq_domRestrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (
   exists_extension_norm_eq_of_isClosedEmbedding' f ((ContinuousMap.id _).restrict s)
     hs.isClosedEmbedding_subtypeVal
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias exists_norm_eq_restrict_eq_of_closed := exists_norm_eq_domRestrict_eq_of_closed
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
@@ -451,7 +451,7 @@ theorem exists_forall_mem_domRestrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ
     exists_extension_forall_mem_of_isClosedEmbedding f hf hne hs.isClosedEmbedding_subtypeVal
   exact ⟨g, hg, DFunLike.coe_injective hgf⟩
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias exists_forall_mem_restrict_eq_of_closed := exists_forall_mem_domRestrict_eq_of_closed
 
 end BoundedContinuousFunction

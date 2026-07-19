@@ -355,7 +355,7 @@ theorem _root_.ContinuousOn.tendsto_domRestrict_iff_tendstoUniformlyOn {s : Set 
   rw [ContinuousMap.tendsto_iff_tendstoUniformly, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
   congr!
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias _root_.ContinuousOn.tendsto_restrict_iff_tendstoUniformlyOn :=
   _root_.ContinuousOn.tendsto_domRestrict_iff_tendstoUniformlyOn
 
@@ -371,7 +371,7 @@ theorem _root_.ContinuousOn.continuous_domRestrict_iff_continuous_uniformOnFun
   rw [ContinuousMap.continuous_iff_continuous_uniformFun, UniformOnFun.continuous_rng_iff]
   simp [Function.comp_def]
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias _root_.ContinuousOn.continuous_restrict_iff_continuous_uniformOnFun :=
   _root_.ContinuousOn.continuous_domRestrict_iff_continuous_uniformOnFun
 

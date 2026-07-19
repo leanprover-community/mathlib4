@@ -316,7 +316,7 @@ theorem surjective_domRestrict_of_isAlgebraic {E : Type*}
   fun f ↦ IntermediateField.exists_algHom_of_splits'
     (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits _⟩
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias surjective_restrictDomain_of_isAlgebraic := surjective_domRestrict_of_isAlgebraic
 
 variable [Algebra.IsAlgebraic K L] (K L M)

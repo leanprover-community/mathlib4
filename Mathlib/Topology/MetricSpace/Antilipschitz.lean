@@ -121,7 +121,7 @@ theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : 
 theorem domRestrict (hf : AntilipschitzWith K f) (s : Set α) :
     AntilipschitzWith K (s.domRestrict f) := fun x y => hf x y
 
-@[deprecated (since := "2026-02-10")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
 
 theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x ∈ s) :
     AntilipschitzWith K (s.codRestrict f hs) := fun x y => hf x y

@@ -358,9 +358,9 @@ theorem coe_domRestrict (f : α →ᵇ β) (s : Set α) : ⇑(f.domRestrict s) =
 @[simp]
 theorem domRestrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.domRestrict s x = f x := rfl
 
-@[deprecated (since := "2026-02-10")] alias restrict := domRestrict
-@[deprecated (since := "2026-02-10")] alias coe_restrict := coe_domRestrict
-@[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias coe_restrict := coe_domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
 
 /-- Composition (in the target) of a bounded continuous function with a Lipschitz map again
 gives a bounded continuous function. -/

@@ -273,7 +273,7 @@ theorem transferSylow_domRestrict_eq_pow : ⇑((transferSylow P hP).domRestrict 
     (fun x : P => x ^ (P : Subgroup G).index) :=
   funext fun g => transferSylow_eq_pow P hP g g.2
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias transferSylow_restrict_eq_pow := transferSylow_domRestrict_eq_pow
 
 /-- **Burnside's normal p-complement theorem**: If `N(P) ≤ C(P)`, then `P` has a normal

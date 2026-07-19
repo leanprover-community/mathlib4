@@ -189,7 +189,7 @@ variable [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f :
 def AlgHom.domRestrict : B →ₐ[A] D :=
   f.comp (IsScalarTower.toAlgHom A B C)
 
-@[deprecated (since := "2026-02-10")] alias AlgHom.restrictDomain := AlgHom.domRestrict
+@[deprecated (since := "2026-07-19")] alias AlgHom.restrictDomain := AlgHom.domRestrict
 
 /-- Extend the scalars of an `AlgHom`. -/
 def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.domRestrict B).toRingHom.toAlgebra where

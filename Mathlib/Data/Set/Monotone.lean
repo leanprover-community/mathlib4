@@ -115,7 +115,7 @@ variable [Preorder α] [Preorder β] {f : α → β}
 protected theorem domRestrict (h : Monotone f) (s : Set α) : Monotone (s.domRestrict f) :=
   fun _ _ hxy => h hxy
 
-@[deprecated (since := "2026-02-10")] alias restrict := Monotone.domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict := Monotone.domRestrict
 
 protected theorem codRestrict (h : Monotone f) {s : Set β} (hs : ∀ x, f x ∈ s) :
     Monotone (s.codRestrict f hs) :=
@@ -136,10 +136,10 @@ theorem strictMono_domRestrict : StrictMono (s.domRestrict f) ↔ StrictMonoOn f
 
 alias ⟨_root_.StrictMono.of_domRestrict, _root_.StrictMonoOn.domRestrict⟩ := strictMono_domRestrict
 
-@[deprecated (since := "2026-02-10")] alias strictMono_restrict := strictMono_domRestrict
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")] alias strictMono_restrict := strictMono_domRestrict
+@[deprecated (since := "2026-07-19")]
 alias _root_.StrictMono.of_restrict := _root_.StrictMono.of_domRestrict
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias _root_.StrictMonoOn.restrict := _root_.StrictMonoOn.domRestrict
 
 theorem StrictMono.codRestrict (hf : StrictMono f)

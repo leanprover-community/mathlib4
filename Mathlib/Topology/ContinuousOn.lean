@@ -53,7 +53,7 @@ theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α}
     (h : x ∈ s) : ContinuousWithinAt f s x ↔ ContinuousAt (s.domRestrict f) ⟨x, h⟩ :=
   tendsto_nhdsWithin_iff_subtype h f _
 
-@[deprecated (since := "2026-02-10")] alias continuousWithinAt_iff_continuousAt_restrict :=
+@[deprecated (since := "2026-07-19")] alias continuousWithinAt_iff_continuousAt_restrict :=
   continuousWithinAt_iff_continuousAt_domRestrict
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
@@ -112,9 +112,9 @@ theorem continuousOn_iff_continuous_domRestrict :
 
 alias ⟨ContinuousOn.domRestrict, _⟩ := continuousOn_iff_continuous_domRestrict
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias continuousOn_iff_continuous_restrict := continuousOn_iff_continuous_domRestrict
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias ContinuousOn.restrict := ContinuousOn.domRestrict
 
 theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : MapsTo f s t) :

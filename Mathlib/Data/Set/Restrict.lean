@@ -182,32 +182,32 @@ variable {s : Set α} {f₁ f₂ : α → β}
 theorem domRestrict_eq_domRestrict_iff :
     domRestrict s f₁ = domRestrict s f₂ ↔ EqOn f₁ f₂ s := domRestrict_eq_iff
 
-@[deprecated (since := "2026-02-10")] alias restrict := domRestrict
-@[deprecated (since := "2026-02-10")] alias restrict_def := domRestrict_def
-@[deprecated (since := "2026-02-10")] alias restrict_eq := domRestrict_eq
-@[deprecated (since := "2026-02-10")] alias restrict_id := domRestrict_id
-@[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
-@[deprecated (since := "2026-02-10")] alias restrict_eq_iff := domRestrict_eq_iff
-@[deprecated (since := "2026-02-10")] alias eq_restrict_iff := eq_domRestrict_iff
-@[deprecated (since := "2026-02-10")] alias range_restrict := range_domRestrict
-@[deprecated (since := "2026-02-10")] alias image_restrict := image_domRestrict
-@[deprecated (since := "2026-02-10")] alias restrict_dite := domRestrict_dite
-@[deprecated (since := "2026-02-10")] alias restrict_dite_compl := domRestrict_dite_compl
-@[deprecated (since := "2026-02-10")] alias restrict_ite := domRestrict_ite
-@[deprecated (since := "2026-02-10")] alias restrict_ite_compl := domRestrict_ite_compl
-@[deprecated (since := "2026-02-10")] alias restrict_piecewise := domRestrict_piecewise
-@[deprecated (since := "2026-02-10")] alias restrict_piecewise_compl := domRestrict_piecewise_compl
-@[deprecated (since := "2026-02-10")] alias restrict_extend_range := domRestrict_extend_range
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_def := domRestrict_def
+@[deprecated (since := "2026-07-19")] alias restrict_eq := domRestrict_eq
+@[deprecated (since := "2026-07-19")] alias restrict_id := domRestrict_id
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")] alias restrict_eq_iff := domRestrict_eq_iff
+@[deprecated (since := "2026-07-19")] alias eq_restrict_iff := eq_domRestrict_iff
+@[deprecated (since := "2026-07-19")] alias range_restrict := range_domRestrict
+@[deprecated (since := "2026-07-19")] alias image_restrict := image_domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_dite := domRestrict_dite
+@[deprecated (since := "2026-07-19")] alias restrict_dite_compl := domRestrict_dite_compl
+@[deprecated (since := "2026-07-19")] alias restrict_ite := domRestrict_ite
+@[deprecated (since := "2026-07-19")] alias restrict_ite_compl := domRestrict_ite_compl
+@[deprecated (since := "2026-07-19")] alias restrict_piecewise := domRestrict_piecewise
+@[deprecated (since := "2026-07-19")] alias restrict_piecewise_compl := domRestrict_piecewise_compl
+@[deprecated (since := "2026-07-19")] alias restrict_extend_range := domRestrict_extend_range
+@[deprecated (since := "2026-07-19")]
 alias restrict_extend_compl_range := domRestrict_extend_compl_range
-@[deprecated (since := "2026-02-10")] alias restrict₂ := domRestrict₂
-@[deprecated (since := "2026-02-10")] alias restrict₂_def := domRestrict₂_def
-@[deprecated (since := "2026-02-10")] alias restrict₂_comp_restrict := domRestrict₂_comp_domRestrict
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")] alias restrict₂ := domRestrict₂
+@[deprecated (since := "2026-07-19")] alias restrict₂_def := domRestrict₂_def
+@[deprecated (since := "2026-07-19")] alias restrict₂_comp_restrict := domRestrict₂_comp_domRestrict
+@[deprecated (since := "2026-07-19")]
 alias restrict₂_comp_restrict₂ := domRestrict₂_comp_domRestrict₂
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias restrict_comp_codRestrict := domRestrict_comp_codRestrict
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias restrict_eq_restrict_iff := domRestrict_eq_domRestrict_iff
 
 end domRestrict
@@ -237,7 +237,7 @@ theorem codRestrict_domRestrict (h : ∀ x : s, f x ∈ t) :
     codRestrict (s.domRestrict f) t h = MapsTo.restrict f s t fun x hx => h ⟨x, hx⟩ :=
   rfl
 
-@[deprecated (since := "2026-02-10")] alias codRestrict_restrict := codRestrict_domRestrict
+@[deprecated (since := "2026-07-19")] alias codRestrict_restrict := codRestrict_domRestrict
 
 /-- Reverse of `Set.codRestrict_domRestrict`. -/
 theorem MapsTo.restrict_eq_codRestrict (h : MapsTo f s t) :

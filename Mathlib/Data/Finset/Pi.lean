@@ -167,7 +167,7 @@ variable {s t u : Finset ι}
 theorem _root_.Set.piCongrLeft_comp_domRestrict :
     (s.equivToSet.symm.piCongrLeft (fun i : s ↦ π i)) ∘ (s : Set ι).domRestrict = s.restrict := rfl
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias _root_.Set.piCongrLeft_comp_restrict := _root_.Set.piCongrLeft_comp_domRestrict
 
 theorem piCongrLeft_comp_restrict :
@@ -201,7 +201,7 @@ lemma domRestrict_preimage [DecidableEq ι] {I : Set ι}
       Set.pi (s.image Subtype.val) (fun i ↦ if h : i ∈ I then u ⟨i, h⟩ else .univ) := by
   grind
 
-@[deprecated (since := "2026-02-10")] alias restrict_preimage := domRestrict_preimage
+@[deprecated (since := "2026-07-19")] alias restrict_preimage := domRestrict_preimage
 
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =

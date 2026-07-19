@@ -604,10 +604,10 @@ theorem domRestrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M]
     (f : M →ₙ* N) {S : σ} (x : S) : f.domRestrict S x = f x :=
   rfl
 
-@[deprecated (since := "2026-02-10")] alias restrict := domRestrict
-@[deprecated (since := "2026-02-10")] alias _root_.AddHom.restrict := _root_.AddHom.domRestrict
-@[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias _root_.AddHom.restrict := _root_.AddHom.domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")]
 alias _root_.AddHom.restrict_apply := _root_.AddHom.domRestrict_apply
 
 /-- Restriction of a semigroup hom to a subsemigroup of the codomain. -/

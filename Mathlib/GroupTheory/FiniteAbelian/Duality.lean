@@ -118,7 +118,7 @@ theorem _root_.MonoidHom.domRestrict_surjective (H : Subgroup G) :
     ← card_monoidHom_of_hasEnoughRootsOfUnity (G ⧸ H) M,
     Nat.card_congr (domRestrictHomKerEquiv Mˣ H).toEquiv]
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias _root_.MonoidHom.restrict_surjective := _root_.MonoidHom.domRestrict_surjective
 
 @[simp]
@@ -137,7 +137,7 @@ theorem card_domRestrictHom_ker (H : Subgroup G) :
   rw [Nat.card_congr (MonoidHom.domRestrictHomKerEquiv Mˣ H).toEquiv,
     card_monoidHom_of_hasEnoughRootsOfUnity]
 
-@[deprecated (since := "2026-02-10")] alias card_restrictHom_ker := card_domRestrictHom_ker
+@[deprecated (since := "2026-07-19")] alias card_restrictHom_ker := card_domRestrictHom_ker
 
 variable (G) in
 /--

@@ -287,5 +287,5 @@ protected theorem Set.OrdConnected.domRestrict (hs : s.OrdConnected) :
     {x | domRestrict t (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy hz⟩
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias Set.OrdConnected.restrict := Set.OrdConnected.domRestrict

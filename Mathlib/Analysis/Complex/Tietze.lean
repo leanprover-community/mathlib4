@@ -125,7 +125,7 @@ theorem exists_norm_eq_domRestrict_eq (f : s →ᵇ E) :
   rw [hx]
   exact g'.norm_le (norm_nonneg g') |>.mp le_rfl x
 
-@[deprecated (since := "2026-02-10")]
+@[deprecated (since := "2026-07-19")]
 alias exists_norm_eq_restrict_eq := exists_norm_eq_domRestrict_eq
 
 end BoundedContinuousFunction
