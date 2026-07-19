@@ -242,12 +242,12 @@ def cliffordFourierL2 :
       Lp (α := EuclideanSpace ℝ (Fin n)) (CliffordAlgebra (Q n)) 2 :=
   Lp.fourierTransformₗᵢ _ _
 
-@[simp] theorem norm_cliffordFourierL2_eq
+theorem norm_cliffordFourierL2_eq
     (f : Lp (α := EuclideanSpace ℝ (Fin n)) (CliffordAlgebra (Q n)) 2) :
     ‖cliffordFourierL2 f‖ = ‖f‖ :=
   cliffordFourierL2.norm_map f
 
-@[simp] theorem cliffordFourierL2_symm_apply_apply
+theorem cliffordFourierL2_symm_apply_apply
     (f : Lp (α := EuclideanSpace ℝ (Fin n)) (CliffordAlgebra (Q n)) 2) :
     cliffordFourierL2.symm (cliffordFourierL2 f) = f :=
   cliffordFourierL2.symm_apply_apply f
