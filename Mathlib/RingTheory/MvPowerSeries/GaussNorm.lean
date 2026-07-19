@@ -122,14 +122,14 @@ lemma gaussNorm_add_le_max (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
   · refine fun t ↦ calc
     _ ≤ _ := Final t
     _ ≤ max (gaussNorm v c f) (gaussNorm v c g) := by
-      simp only [le_sup_iff]
+      simp only [le_max_iff]
       rcases max_choice (v ((coeff t) f) * ∏ i ∈ t.support, c i ^ t i)
         (v ((coeff t) g) * ∏ i ∈ t.support, c i ^ t i) with h | h
       · left
         simpa [h] using! le_gaussNorm v c f hbfd t
       · right
         simpa [h] using! le_gaussNorm v c g hbgd t
-  · simp only [le_sup_iff]
+  · simp only [le_max_iff]
     left
     exact gaussNorm_nonneg v c f vNonneg
 

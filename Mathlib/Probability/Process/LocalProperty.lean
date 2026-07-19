@@ -174,7 +174,7 @@ lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     hp _ (hpX.stoppedProcess_localSeq n) _ <|
       hqX.isLocalizingSequence_localSeq.isStoppingTime n using 1
   ext i ω
-  simp_rw [stoppedProcess_indicator_comm, Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
+  simp_rw [stoppedProcess_indicator_comm, Pi.inf_apply, lt_min_iff, inf_comm (hpX.localSeq n)]
   rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm, Set.ofPred_and,
     Set.inter_comm]
   simp_rw [← Set.indicator_indicator]
@@ -252,7 +252,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     simp [Set.ofPred] at *
     grind
   · refine fun i ↦ .nullMeasurableSet ?_
-    simp_rw [lt_inf_iff, Set.ofPred_and]
+    simp_rw [lt_min_iff, Set.ofPred_and]
     exact MeasurableSet.inter
       (measurableSet_lt ((hσ n).isStoppingTime i).measurable' (hτ.isStoppingTime n).measurable')
         <| measurableSet_lt ((hσ n).isStoppingTime i).measurable' measurable_const
@@ -315,7 +315,7 @@ lemma IsStable.locally_locally_iff [IsRightContinuous 𝓕] (hp : IsStable 𝓕 
   ext i ω
   rw [stoppedProcess_indicator_comm', stoppedProcess_indicator_comm',
     stoppedProcess_stoppedProcess, stoppedProcess_indicator_comm']
-  simp only [lt_inf_iff, Set.indicator_indicator]
+  simp only [lt_min_iff, Set.indicator_indicator]
   congr 1
   · ext; grind
   · simp_rw [inf_comm]

@@ -132,7 +132,7 @@ theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
     (b : β) (y y' : Y) (z : segment ℝ y.val y'.val) :
     sublevelLeft X f b z ⊆ sublevelLeft X f b y ∪ sublevelLeft X f b y' := fun x hx ↦ by
-    simp only [Set.mem_union, mem_sublevelLeft_iff, ← inf_le_iff]
+    simp only [Set.mem_union, mem_sublevelLeft_iff, ← min_le_iff]
     specialize hfx' x x.2 (f x y ⊓ f x y')
     rw [convex_iff_segment_subset] at hfx'
     specialize hfx' ⟨y.prop, inf_le_left⟩ ⟨y'.prop, inf_le_right⟩ z.prop
