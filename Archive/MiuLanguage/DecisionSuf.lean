@@ -115,8 +115,7 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
   | succ a ha =>
     specialize ha (U :: xs)
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
-      singleton_append]
+    rw [replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc, singleton_append]
     apply ha
     apply Derivable.r3
     change Derivable (↑(M :: replicate (c + 3 * a) I) ++ ↑(replicate 3 I) ++ xs)
@@ -267,8 +266,7 @@ theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Deri
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
     intro k
-    simp only [k, count, countP, countP.go, zero_mod, zero_ne_one, false_or,
-      reduceCtorEq] at hi
+    simp only [k, count, countP, countP.go, zero_mod, zero_ne_one, false_or, reduceCtorEq] at hi
   rcases exists_cons_of_ne_nil this with ⟨y, ys, rfl⟩
   rcases mhead
   rsuffices ⟨c, rfl, hc⟩ : ∃ c, replicate c I = ys ∧ (c % 3 = 1 ∨ c % 3 = 2)

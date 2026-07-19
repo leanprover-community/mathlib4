@@ -239,9 +239,8 @@ With this lemma, in the short case, the inner integral's domain simplifies to
 lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
     Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) =
     Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) := by
-  rw [Set.Icc_inter_Icc, max_div_div_right zero_le_two,
-    min_div_div_right zero_le_two, neg_mul, max_neg_neg, mul_comm,
-    min_eq_right ((mul_le_of_le_one_right hl.le θ.sin_le_one).trans h)]
+  rw [Set.Icc_inter_Icc, max_div_div_right zero_le_two, min_div_div_right zero_le_two, neg_mul,
+    max_neg_neg, mul_comm, min_eq_right ((mul_le_of_le_one_right hl.le θ.sin_le_one).trans h)]
 
 include hd hBₘ hB hl in
 /--
@@ -250,9 +249,8 @@ equals `(2 * l) / (d * π)`.
 -/
 theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
   simp_rw [buffon_integral d l hd B hBₘ hB, short_needle_inter_eq d l hl h _,
-    MeasureTheory.setIntegral_const, MeasureTheory.measureReal_def,
-    Real.volume_Icc, smul_eq_mul, mul_one, mul_comm (d * π)⁻¹ _,
-    mul_eq_mul_right_iff]
+    MeasureTheory.setIntegral_const, MeasureTheory.measureReal_def, Real.volume_Icc, smul_eq_mul,
+    mul_one, mul_comm (d * π)⁻¹ _, mul_eq_mul_right_iff]
   apply Or.inl
   ring_nf
   have : ∀ᵐ θ, θ ∈ Set.Icc 0 π → ENNReal.toReal (ENNReal.ofReal (θ.sin * l)) = θ.sin * l := by
@@ -328,13 +326,11 @@ include hd hBₘ hB hl in
 /-- Buffon's Needle, the long case (`d ≤ l`) -/
 theorem buffon_long (h : d ≤ l) :
     ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * (√(l ^ 2 - d ^ 2) + d * (d / l).arcsin) + 1 := by
-  simp only [
-    buffon_integral d l hd B hBₘ hB, MeasureTheory.integral_const, smul_eq_mul, mul_one,
+  simp only [buffon_integral d l hd B hBₘ hB, MeasureTheory.integral_const, smul_eq_mul, mul_one,
     MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, Set.Icc_inter_Icc, Real.volume_Icc,
-    min_div_div_right zero_le_two d, max_div_div_right zero_le_two (-d),
-    div_sub_div_same, neg_mul, max_neg_neg, sub_neg_eq_add, ← mul_two,
-    mul_div_cancel_right₀ (min d (Real.sin _ * l)) two_ne_zero, MeasureTheory.measureReal_def
-  ]
+    min_div_div_right zero_le_two d, max_div_div_right zero_le_two (-d), div_sub_div_same, neg_mul,
+    max_neg_neg, sub_neg_eq_add, ← mul_two,
+    mul_div_cancel_right₀ (min d (Real.sin _ * l)) two_ne_zero, MeasureTheory.measureReal_def]
   have : ∀ᵐ θ, θ ∈ Set.Icc 0 π →
       ENNReal.toReal (ENNReal.ofReal (min d (θ.sin * l))) = min d (θ.sin * l) := by
     have (θ : ℝ) (hθ : θ ∈ Set.Icc 0 π) : 0 ≤ min d (θ.sin * l) := by

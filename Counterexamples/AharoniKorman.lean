@@ -840,12 +840,11 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   -- With this pair, we can use the "base" of the square as `max a b + 1`.
   rw [eventually_atTop]
   refine ⟨max a b + 1, ?_⟩
-  simp +contextual only [sup_le_iff, embed, RelEmbedding.coe_mk,
-    Function.Embedding.coeFn_mk, Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff,
-    Prod.forall, Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk,
-    Set.mem_ofPred_eq, forall_exists_index, Prod.mk.injEq,
-    toHollom_le_toHollom_iff_fixed_right, Set.mem_sdiff, and_true, ← max_add_add_right,
-    Hollom.ext_iff]
+  simp +contextual only [sup_le_iff, embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
+    Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff, Prod.forall, Set.subset_def,
+    Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, Set.mem_ofPred_eq, forall_exists_index,
+    Prod.mk.injEq, toHollom_le_toHollom_iff_fixed_right, Set.mem_sdiff, and_true,
+    ← max_add_add_right, Hollom.ext_iff]
   -- After simplifying, direct calculations show the subset relation as required.
   rintro k hak hbk _ _ _ f g hkf hkg rfl rfl rfl
   constructor
@@ -1156,8 +1155,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
     _ ⊆ S n C \ (C ∩ level n) := ha
   -- ...and it has length `2a+1`.
   have card_F : #F = 2 * a + 1 := by
-    rw [Finset.card_image_of_injective _ (embed n).injective,
-      card_chainBetween (by lia) (by simp)]
+    rw [Finset.card_image_of_injective _ (embed n).injective, card_chainBetween (by lia) (by simp)]
     lia
   let T := {x ∈ C ∩ level (n - 1) | line x < 2 * a}
   -- Therefore, the image of `F` is within `C ∩ level (n - 1)`, and each of its points must be

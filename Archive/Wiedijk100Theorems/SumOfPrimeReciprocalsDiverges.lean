@@ -169,8 +169,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : #(M x k) ≤ 2 ^ k * Nat.sqrt x :
   -- smaller than or equal to `k`.
   have h1 : M x k ⊆ image f K := by
     intro m hm
-    simp only [f, K, M, M₁, M₂, mem_image, Prod.exists, mem_product,
-               mem_filter, mem_range] at hm ⊢
+    simp only [f, K, M, M₁, M₂, mem_image, Prod.exists, mem_product, mem_filter, mem_range] at hm ⊢
     have hm' := m.zero_lt_succ
     obtain ⟨a, b, hab₁, hab₂⟩ := Nat.sq_mul_squarefree_of_pos' hm'
     obtain ⟨ham, hbm⟩ := Dvd.intro_left _ hab₁, Dvd.intro _ hab₁
