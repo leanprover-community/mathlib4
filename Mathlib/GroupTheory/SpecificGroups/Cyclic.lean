@@ -281,8 +281,7 @@ theorem isCyclic_of_isCoatom_subsingleton {G : Type*} [Group G] [IsCoatomic (Sub
   rw [isCyclic_iff_exists_zpowers_eq_top]
   obtain hbot | ⟨M, hM, -⟩ := eq_top_or_exists_le_coatom (⊥ : Subgroup G)
   · exact ⟨1, eq_top_of_bot_eq_top hbot _⟩
-  · obtain ⟨g, -, hg⟩ := SetLike.exists_of_lt hM.lt_top
-    refine ⟨g, ?_⟩
+  · refine SetLike.exists_of_lt hM.lt_top |>.imp fun g ⟨_, hg⟩ ↦ ?_
     by_contra hne
     obtain ⟨M', hM', hle⟩ := (eq_top_or_exists_le_coatom (zpowers g)).resolve_left hne
     exact hg (h M' M hM' hM ▸ hle (mem_zpowers g))
@@ -296,9 +295,7 @@ theorem CommGroup.isSimpleGroup_iff_isCoatom {G : Type*} [CommGroup G] {M : Subg
     IsSimpleGroup (G ⧸ M) ↔ IsCoatom M := by
   rw [← Set.isSimpleOrder_Ici_iff_isCoatom,
     ← (QuotientGroup.comapMk'OrderIso M).isSimpleOrder_iff, isSimpleGroup_iff, isSimpleOrder_iff]
-  by_cases hG : Nontrivial (G ⧸ M)
-  · simp [hG, Subgroup.normal_of_isMulCommutative]
-  · simp [hG]
+  simp [Subgroup.normal_of_isMulCommutative]
 
 section SpecificInstances
 
