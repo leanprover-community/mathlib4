@@ -104,12 +104,19 @@ lemma Y_sub_polynomialY : Y - W'.polynomialY = W'.negPolynomial := by
 lemma Y_sub_negPolynomial : Y - W'.negPolynomial = W'.polynomialY := by
   rw [← Y_sub_polynomialY, sub_sub_cancel]
 
+#adaptation_note
+/--
+Without this `implicit_reducible` attribute, `simpNF` gives a linter error on `slope_of_Y_eq`
+because of a nonconfluence: `negY` can be unfolded on the LHS, which prevents discharging the
+side condition of `slope_of_Y_eq` -- except if `negY` is implicit-reducible.
+So this attribute improves the confluence of `simp`.
+-/
 variable (W') in
 /-- The `Y`-coordinate of `-(x, y)` for a nonsingular affine point `(x, y)` on a Weierstrass curve
 `W`.
 
 This depends on `W`, and has argument order: `x`, `y`. -/
-@[simp]
+@[simp, implicit_reducible]
 def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
 
