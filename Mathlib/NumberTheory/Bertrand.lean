@@ -88,7 +88,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
       ext x
       simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
         LinearMap.id_coe, id_eq, smul_eq_mul]
-      rw [← mul_lt_mul_iff_right₀ (two_pos)]
+      rw [← mul_lt_mul_iff_right₀ two_pos]
       norm_num1
       rfl
     apply ConvexOn.smul

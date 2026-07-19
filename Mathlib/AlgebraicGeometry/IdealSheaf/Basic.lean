@@ -671,7 +671,7 @@ end IdealSheafData
 section IsReduced
 
 lemma nilradical_eq_bot [IsReduced X] : X.nilradical = ⊥ := by
-  ext; simp [nilradical, Ideal.radical_eq_iff.mpr (Ideal.isRadical_bot)]
+  ext; simp [nilradical, Ideal.radical_eq_iff.mpr Ideal.isRadical_bot]
 
 lemma IdealSheafData.support_eq_top_iff [IsReduced X] {I : X.IdealSheafData} :
     I.support = ⊤ ↔ I = ⊥ := by

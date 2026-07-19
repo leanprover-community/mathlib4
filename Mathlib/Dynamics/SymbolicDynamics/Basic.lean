@@ -209,7 +209,7 @@ variable [TopologicalSpace A]
 /-- Cylinders are open when `A` is discrete. -/
 lemma isOpen_cylinder [DiscreteTopology A] (U : Finset G) (x : G → A) :
     IsOpen (cylinder U x) := by
-  simpa [cylinder_eq_set_pi U x] using isOpen_set_pi (U.finite_toSet) (by simp)
+  simpa [cylinder_eq_set_pi U x] using isOpen_set_pi U.finite_toSet (by simp)
 
 /-- Cylinders are closed when `A` is a T1 Space. -/
 lemma isClosed_cylinder [T1Space A] (U : Finset G) (x : G → A) :

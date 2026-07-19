@@ -137,7 +137,7 @@ private lemma exists_unitInterval_gt {t₀ : unitInterval} (ht₀ : t₀ < 1) {�
   rw [Subtype.dist_eq, dist_comm, dist_eq, abs_of_nonneg (by linarith)]
   linarith
 
-private lemma mem_S_of_x_pos {p : ℝ × ℝ} (hx : 0 < p.1) (hT : p ∈ T) : p.2 = sin (p.1)⁻¹ := by
+private lemma mem_S_of_x_pos {p : ℝ × ℝ} (hx : 0 < p.1) (hT : p ∈ T) : p.2 = sin p.1⁻¹ := by
   obtain ⟨x, -, hx⟩ : p ∈ S := by
     cases hT with
     | inl hT => trivial

@@ -496,7 +496,7 @@ theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ
       Algebra.adjoin_image, s']
     exact ⟨x, hx, rfl⟩)
   let j : Fin s.card → Fin s'.card :=
-    (s'.equivFin) ∘ (fun ⟨x, hx⟩ ↦ ⟨h x, Finset.mem_image_of_mem h hx⟩) ∘ (s.equivFin).symm
+    s'.equivFin ∘ (fun ⟨x, hx⟩ ↦ ⟨h x, Finset.mem_image_of_mem h hx⟩) ∘ s.equivFin.symm
   have eq_h_comp : (φ R s').comp (rename j) = h.comp (φ R s) := by
     ext p
     simp only [φ, AlgHom.comp_apply, aeval_rename, comp_aeval]

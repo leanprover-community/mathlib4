@@ -398,7 +398,7 @@ def ExBase.toProd
     (va : ExBase bt sα a) (vb : ExProdNat b) :
     Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
   let ⟨_, one, pf⟩ := rc.one
-  ⟨_, .mul va vb (.const  (one)), q(by rw [← $pf])⟩
+  ⟨_, .mul va vb (.const  one), q(by rw [← $pf])⟩
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
@@ -972,7 +972,7 @@ def extractCoeff {a : Q(ℕ)} (va : ExProdNat a) : ExtractCoeff a :=
     have : $a =Q Nat.rawCast $k := ⟨⟩
     assumeInstancesCommute
     let ⟨_, one, pf⟩ := rcℕ.one
-    return ⟨k, _, .const (one), q(coeff_one $k $pf)⟩
+    return ⟨k, _, .const one, q(coeff_one $k $pf)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨k, _, vc, pc⟩ := extractCoeff va₃
     ⟨k, _, .mul va₁ va₂ vc, q(coeff_mul $a₁ $a₂ $pc)⟩
@@ -1048,7 +1048,7 @@ def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExSumNat b) :
   | .zero => do
     let ⟨_, one, pf⟩ := rc.one
     assumeInstancesCommute
-    return ⟨_, (ExProd.const (one)).toSum, q(pow_zero $a $pf)⟩
+    return ⟨_, (ExProd.const one).toSum, q(pow_zero $a $pf)⟩
   | .add vb₁ vb₂ => do
     let ⟨_, vc₁, pc₁⟩ ← evalPow₁ rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
@@ -1093,7 +1093,7 @@ def evalAtom (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := do
   have e' : Q($α) := r.expr
   let (i, ⟨a', _⟩) ← addAtomQ e'
   let ⟨_, one, pf_one⟩ := rcℕ.one
-  let one := ExProdNat.const (one)
+  let one := ExProdNat.const one
   let ⟨_, vb, pb⟩ : Result (ExProd bt sα) _ := (ExBase.atom i (e := a')).toProd rc one
   let vc := vb.toSum
   pure ⟨_, vc, match r.proof? with
@@ -1140,7 +1140,7 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd bt 
     | none =>
       let ⟨_, vc, pc⟩ ← evalInvAtom dsα a
       let ⟨_, one, pf⟩ := rcℕ.one
-      let ⟨_, vc', pc'⟩ := vc.toProd rc (ExProdNat.const (one))
+      let ⟨_, vc', pc'⟩ := vc.toProd rc (ExProdNat.const one)
       pure ⟨_, vc', q($pc' ▸ toProd_pf $pc $pf)⟩
   | .mul (x := a₁) (e := _a₂) _va₁ va₂ va₃ => do
     let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom dsα a₁
@@ -1165,7 +1165,7 @@ def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum bt s�
   | va => do
     let ⟨_, vb, pb⟩ ← evalInvAtom dsα a
     let ⟨_, one, pf⟩ := rcℕ.one
-    let ⟨_', vb', pb'⟩ := vb.toProd rc (ExProdNat.const (one))
+    let ⟨_', vb', pb'⟩ := vb.toProd rc (ExProdNat.const one)
     assumeInstancesCommute
     pure ⟨_, vb'.toSum, q(atom_pf' $pb $pf $pb')⟩
 

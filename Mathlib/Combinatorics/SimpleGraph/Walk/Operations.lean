@@ -665,7 +665,7 @@ lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
   cases p <;> simp [snd, getVert_append]
 
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
-def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
+def tail (p : G.Walk u v) : G.Walk p.snd v := p.drop 1
 
 @[simp]
 lemma drop_zero {u v} (p : G.Walk u v) :

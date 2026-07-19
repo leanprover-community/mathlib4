@@ -67,7 +67,7 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
 
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
-  rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
+  rw [Definable, Equiv.exists_congr_left BoundedFormula.constantsVarsEquiv]
   refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
   simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
@@ -477,7 +477,7 @@ theorem definableFun_iff_empty_definableFun_with_params :
 /-- A term is a definable function. -/
 @[fun_prop]
 theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
-    (∅ : Set M).DefinableFun L (t.realize) := by
+    (∅ : Set M).DefinableFun L t.realize := by
   rw [empty_definableFun_iff]
   refine ⟨(t.relabel some).equal (Term.var none), ?_⟩
   ext v

@@ -1155,8 +1155,8 @@ namespace Equivalence
 
 variable (e : C ≌ D)
 
-instance [e.inverse.Monoidal] : e.symm.functor.Monoidal := inferInstanceAs (e.inverse.Monoidal)
-instance [e.functor.Monoidal] : e.symm.inverse.Monoidal := inferInstanceAs (e.functor.Monoidal)
+instance [e.inverse.Monoidal] : e.symm.functor.Monoidal := inferInstanceAs e.inverse.Monoidal
+instance [e.functor.Monoidal] : e.symm.inverse.Monoidal := inferInstanceAs e.functor.Monoidal
 
 /-- If a monoidal functor `F` is an equivalence of categories then its inverse is also monoidal. -/
 @[instance_reducible]

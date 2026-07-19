@@ -23,7 +23,7 @@ namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /-- Preprocess the goal to pass it to `Linarith.SimplexAlgorithm.findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
-    (maxVar : ℕ) : matType (maxVar + 1) (hyps.length) × List Nat :=
+    (maxVar : ℕ) : matType (maxVar + 1) hyps.length × List Nat :=
   let values : List (ℕ × ℕ × ℚ) := hyps.foldlIdx (init := []) fun idx cur comp =>
     cur ++ comp.coeffs.map fun (var, c) => (var, idx, c)
 

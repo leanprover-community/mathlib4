@@ -597,7 +597,7 @@ lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
       K = a • K → K = ⊥) : IsWeaklyRegular M rs' :=
   have H := LinearEquiv.isWeaklyRegular_congr <| quotEquivOfEqBot _ <|
     Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
-  (H rs').mp <| (aux [] h'' (.refl rs) (h''.symm.subperm)) <| (H rs).mpr h
+  (H rs').mp <| (aux [] h'' (.refl rs) h''.symm.subperm) <| (H rs).mpr h
   where aux {rs₁ rs₂} (rs₀ : List R)
     (h₁₂ : rs₁ ~ rs₂) (H₁ : rs₀ ++ rs₁ <+~ rs) (H₃ : rs₀ ++ rs₂ <+~ rs)
     (h : IsWeaklyRegular (M ⧸ (Ideal.ofList rs₀ • ⊤ : Submodule R M)) rs₁) :

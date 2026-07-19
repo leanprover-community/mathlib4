@@ -775,12 +775,12 @@ theorem ContDiffWithinAt.sinh {n} (hf : ContDiffWithinAt ℝ n f s x) :
 section LogDeriv
 
 @[simp]
-theorem Complex.logDeriv_cosh : logDeriv (Complex.cosh) = Complex.tanh := by
+theorem Complex.logDeriv_cosh : logDeriv Complex.cosh = Complex.tanh := by
   ext
   rw [logDeriv, Complex.deriv_cosh, Pi.div_apply, Complex.tanh]
 
 @[simp]
-theorem Real.logDeriv_cosh : logDeriv (Real.cosh) = Real.tanh := by
+theorem Real.logDeriv_cosh : logDeriv Real.cosh = Real.tanh := by
   ext
   rw [logDeriv, Real.deriv_cosh, Pi.div_apply, Real.tanh_eq_sinh_div_cosh]
 

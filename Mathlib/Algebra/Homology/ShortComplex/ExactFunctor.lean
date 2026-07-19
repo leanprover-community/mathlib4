@@ -131,7 +131,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
         τ₃ := F.map <| Abelian.factorThruCoimage S.g
         comm₂₃ := show 𝟙 _ ≫ F.map _ = F.map (cokernel.π _) ≫ _ by
           rw [Category.id_comp, ← F.map_comp, cokernel.π_desc] }
-    exact (exact_iff_of_epi_of_isIso_of_mono φ).1 (hF T ⟨(S.exact_iff_exact_coimage_π).1 hS⟩).1
+    exact (exact_iff_of_epi_of_isIso_of_mono φ).1 (hF T ⟨S.exact_iff_exact_coimage_π.1 hS⟩).1
   tfae_have 2 → 3
   | hF, X, Y, f => by
     refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f) ?_
@@ -191,7 +191,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
         τ₃ := 𝟙 _
         comm₁₂ := show _ ≫ F.map (kernel.ι _) = F.map _ ≫ 𝟙 _ by
           rw [← F.map_comp, Abelian.image.fac, Category.comp_id] }
-    exact (exact_iff_of_epi_of_isIso_of_mono φ).2 (hF T ⟨(S.exact_iff_exact_image_ι).1 hS⟩).1
+    exact (exact_iff_of_epi_of_isIso_of_mono φ).2 (hF T ⟨S.exact_iff_exact_image_ι.1 hS⟩).1
   tfae_have 2 → 3
   | hF, X, Y, f => by
     refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f) ?_

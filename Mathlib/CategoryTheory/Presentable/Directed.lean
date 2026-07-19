@@ -94,7 +94,7 @@ attribute [reassoc] IsTerminal.comm
 
 variable {D : Diagram J κ} {e : J}
 
-lemma prop (h : D.IsTerminal e) : D.P e := D.src (h.prop_id)
+lemma prop (h : D.IsTerminal e) : D.P e := D.src h.prop_id
 
 @[simp]
 lemma lift_self (h : D.IsTerminal e) : h.lift h.prop = 𝟙 e := h.uniq _ h.prop_id

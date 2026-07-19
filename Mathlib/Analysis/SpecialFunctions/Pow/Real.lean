@@ -349,11 +349,11 @@ lemma norm_ofReal_cpow_eventually_eq_atTop (c : ℂ) :
   rw [norm_cpow_eq_rpow_re_of_pos ht]
 
 lemma norm_natCast_cpow_of_re_ne_zero (n : ℕ) {s : ℂ} (hs : s.re ≠ 0) :
-    ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ (s.re) := by
+    ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ s.re := by
   rw [← ofReal_natCast, norm_cpow_eq_rpow_re_of_nonneg n.cast_nonneg hs]
 
 lemma norm_natCast_cpow_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) :
-    ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ (s.re) := by
+    ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ s.re := by
   rw [← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos (Nat.cast_pos.mpr hn) _]
 
 lemma norm_natCast_cpow_pos_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) : 0 < ‖(n : ℂ) ^ s‖ :=

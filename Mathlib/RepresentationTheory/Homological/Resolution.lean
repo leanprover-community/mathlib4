@@ -102,7 +102,7 @@ variable [Monoid G]
 set_option backward.isDefEq.respectTransparency false in
 /-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
-def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G (G)) ≅
+def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G G) ≅
     classifyingSpaceUniversalCover G :=
   NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_

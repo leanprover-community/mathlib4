@@ -117,7 +117,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
       ↑(MulAction.orbit G x)
     let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
     let i : T' ⟶ X := ⟨FintypeCat.homMk Subtype.val, fun _ ↦ rfl⟩
-    have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
+    have : Mono i := ConcreteCategory.mono_of_injective _ Subtype.val_injective
     have : IsIso i := by
       apply IsConnected.noTrivialComponent T' i
       apply (not_initial_iff_fiber_nonempty (Action.forget _ _) T').mpr

@@ -143,7 +143,7 @@ abbrev Submonoid.toAddSubmonoid' : Submonoid (Multiplicative A) ≃o AddSubmonoi
   AddSubmonoid.toSubmonoid.symm
 
 theorem AddSubmonoid.toSubmonoid_closure (S : Set A) :
-    (AddSubmonoid.toSubmonoid) (AddSubmonoid.closure S)
+    AddSubmonoid.toSubmonoid (AddSubmonoid.closure S)
       = Submonoid.closure (Multiplicative.toAdd ⁻¹' S) :=
   le_antisymm
     (AddSubmonoid.toSubmonoid.to_galoisConnection.l_le <|

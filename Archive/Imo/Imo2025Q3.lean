@@ -120,7 +120,7 @@ lemma not_id_two_pow (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
         have p_gt_two : 2 < p := lt_of_le_of_ne pp.two_le (fun a ↦ nh (id (Eq.symm a)))
         rwa [hf.apply_prime_gt_two_eq_one hnf p p_gt_two pp, Nat.cast_one, one_pow] at this
     have : (p : ℤ) ∣ p ^ n := dvd_pow (Int.dvd_refl p) (ne_zero_of_lt hn)
-    exact (pp.not_dvd_one) (ofNat_dvd.mp ((Int.dvd_iff_dvd_of_dvd_sub dvd).mp this))
+    exact pp.not_dvd_one (ofNat_dvd.mp ((Int.dvd_iff_dvd_of_dvd_sub dvd).mp this))
   ⟨(f n).primeFactorsList.length, eq_prime_pow_of_unique_prime_dvd (ne_zero_of_lt (hf.2 n hn)) this⟩
 
 end IsBonza

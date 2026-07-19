@@ -409,7 +409,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     fun x ↦ (mfderiv[s] f x).inverse
   have hv : ContMDiffWithinAt I I'.tangent m
       (fun x ↦ (v x : TangentBundle I' M')) (s ∩ f ⁻¹' t) x₀ := by
-    apply hV.comp x₀ ((hf.of_le (le_trans (le_self_add) hmn)).mono inter_subset_left)
+    apply hV.comp x₀ ((hf.of_le (le_trans le_self_add hmn)).mono inter_subset_left)
     exact MapsTo.mono_left (mapsTo_preimage _ _) inter_subset_right
   /- The only nontrivial fact, from which the conclusion follows, is
   that `ϕ` depends smoothly on `x`. -/

@@ -303,7 +303,7 @@ theorem ker_toSubmodule : LieSubmodule.toSubmodule (ker f) = LinearMap.ker (f : 
 variable {f} in
 @[simp]
 theorem mem_ker {x : L} : x ∈ ker f ↔ f x = 0 :=
-  show x ∈ LieSubmodule.toSubmodule (f.ker) ↔ _ by
+  show x ∈ LieSubmodule.toSubmodule f.ker ↔ _ by
     simp only [ker_toSubmodule, LinearMap.mem_ker, coe_toLinearMap]
 
 theorem mem_idealRange (x : L) : f x ∈ idealRange f := by

@@ -154,7 +154,7 @@ theorem detp_mul :
   let ι : Perm n ↪ (n → n) := ⟨_, coe_fn_injective⟩
   have hι {σ x} : ι σ x = σ x := rfl
   let bij : Finset (n → n) := (disjUnion (ofSign 1) (ofSign (-1)) ofSign_disjoint).map ι
-  replace h (s) : detp s (A * B) =
+  replace h s : detp s (A * B) =
       ∑ σ ∈ bijᶜ, ∑ τ ∈ ofSign s, ∏ i : n, A i (σ i) * B (σ i) (τ i) +
         (detp 1 A * detp s B + detp (-1) A * detp (-s) B) := by
     simp_rw [h, neg_mul_neg, mul_one, detp, mul_apply, prod_univ_sum, Fintype.piFinset_univ]

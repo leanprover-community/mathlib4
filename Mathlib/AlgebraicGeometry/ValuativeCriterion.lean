@@ -86,7 +86,7 @@ def ValuativeCriterion.Uniqueness : MorphismProperty Scheme :=
 /-- A morphism `f : X ⟶ Y` satisfies the valuative criterion if
 every valuative commutative square over `f` has a unique lift. -/
 def ValuativeCriterion : MorphismProperty Scheme :=
-  fun _ _ f ↦ ∀ S : ValuativeCommSq f, Nonempty (Unique (S.commSq.LiftStruct))
+  fun _ _ f ↦ ∀ S : ValuativeCommSq f, Nonempty (Unique S.commSq.LiftStruct)
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
@@ -289,7 +289,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
     conv_lhs => rw [← pullback.lift_fst l₁ l₂ h, ← pullback.condition_assoc]
     conv_rhs => rw [← pullback.lift_snd l₁ l₂ h, ← pullback.condition_assoc]
     simp
-  suffices h : Function.Bijective (g.appTop) by
+  suffices h : Function.Bijective g.appTop by
     refine (HasAffineProperty.iff_of_isAffine (P := MorphismProperty.isomorphisms Scheme)).mpr ?_
     exact ⟨hZ, (ConcreteCategory.isIso_iff_bijective _).mpr h⟩
   constructor

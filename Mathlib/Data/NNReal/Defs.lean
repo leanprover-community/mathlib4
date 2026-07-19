@@ -357,7 +357,7 @@ theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
   NNReal.eq <| max_eq_left r.2
 
 @[simp]
-theorem mk_natCast (n : ℕ) : NNReal.mk (n : ℝ) (n.cast_nonneg) = n :=
+theorem mk_natCast (n : ℕ) : NNReal.mk (n : ℝ) n.cast_nonneg = n :=
   NNReal.eq (NNReal.coe_natCast n).symm
 
 @[simp]

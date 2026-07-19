@@ -169,7 +169,7 @@ instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
 set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   suffices ∀ (R : CommRingCat.{u}) (_ : IsNoetherianRing R), (Spec R).IsGermInjective by
-    refine @Scheme.IsGermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
+    refine @Scheme.IsGermInjective.of_openCover _ X.affineOpenCover.openCover (fun i ↦ this _ ?_)
     exact isLocallyNoetherian_Spec.mp
       (isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i))
   refine fun R hR ↦ Scheme.IsGermInjective.Spec fun I hI ↦ ?_

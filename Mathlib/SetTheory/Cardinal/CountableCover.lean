@@ -43,7 +43,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
   · obtain ⟨n, rfl⟩ : ∃ (n : ℕ), a = n := lt_aleph0.1 ha
     apply mk_le_iff_forall_finset_subset_card_le.2 (fun s hs ↦ ?_)
     have A : ∀ x ∈ s, ∀ᶠ i in l, x ∈ f i := fun x hx ↦ ht x (hs hx)
-    have B : ∀ᶠ i in l, ∀ x ∈ s, x ∈ f i := (s.eventually_all).2 A
+    have B : ∀ᶠ i in l, ∀ x ∈ s, x ∈ f i := s.eventually_all.2 A
     rcases B.exists with ⟨i, hi⟩
     have : ∀ i, Fintype (f i) := fun i ↦ (lt_aleph0_iff_fintype.1 ((h'f i).trans_lt ha)).some
     let u : Finset α := (f i).toFinset

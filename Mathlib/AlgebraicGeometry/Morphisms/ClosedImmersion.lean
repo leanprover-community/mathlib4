@@ -119,7 +119,7 @@ instance spec_of_quotient_mk {R : CommRingCat.{u}} (I : Ideal R) :
 /-- Any morphism between affine schemes that is surjective on global sections is a
 closed immersion. -/
 lemma of_surjective_of_isAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y)
-    (h : Function.Surjective (f.appTop)) : IsClosedImmersion f := by
+    (h : Function.Surjective f.appTop) : IsClosedImmersion f := by
   rw [MorphismProperty.arrow_mk_iso_iff @IsClosedImmersion (arrowIsoSpecΓOfIsAffine f)]
   apply spec_of_surjective
   exact h
@@ -246,7 +246,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target,
 `f` induces an injection on global sections, then `f` is dominant. -/
 lemma isDominant_of_of_appTop_injective [CompactSpace X]
-    (hfinj : Function.Injective (f.appTop)) :
+    (hfinj : Function.Injective f.appTop) :
     IsDominant f := by
   have : f.ker = ⊥ := Scheme.IdealSheafData.ext_of_isAffine
     (by simpa [f.ker_apply ⟨⊤, isAffineOpen_top Y⟩, ← RingHom.injective_iff_ker_eq_bot])
@@ -362,7 +362,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- On morphisms with affine target, being a closed immersion is precisely having affine source
 and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
-    (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.appTop)) := by
+    (fun X _ f ↦ IsAffine X ∧ Function.Surjective f.appTop) := by
   convert! HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 

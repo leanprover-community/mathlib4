@@ -359,7 +359,7 @@ lemma Cell.preimage_filtration_map {j : ι} (c : f.Cell j) :
         · rintro rfl
           exact c.subcomplex_not_le_image_horn hs
         · rw [Subcomplex.N.lt_iff, SSet.N.lt_iff]
-          exact lt_of_le_of_lt hs (c.image_horn_lt_subcomplex)
+          exact lt_of_le_of_lt hs c.image_horn_lt_subcomplex
 
 /-- Given a cell `c` of rank `j` for a rank function `f` for a proper
 pairing of a subcomplex of a simplicial set, this is the induced

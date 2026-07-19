@@ -143,7 +143,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
   let Ω := adjoin F (S : Set E) →ₐ[F] K
   have ⟨ω, hω⟩ : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ ∧ θ.carrier = π.1.1 ⊔ adjoin F S := by
     by_contra!; choose π hπ using this
-    have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).1 _
+    have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ alg.isIntegral.1 _
     have ⟨π₀, hπ₀⟩ := hc.directed.finite_le π
     have ⟨θ, hθπ, hθ⟩ := hext _ π₀.2 S
     rw [← adjoin_le_iff] at hθ

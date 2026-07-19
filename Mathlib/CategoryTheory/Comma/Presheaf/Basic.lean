@@ -415,7 +415,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def yonedaCollectionPresheafToA (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
     yonedaCollectionPresheaf A F ⟶ A where
-  app _ := ↾(YonedaCollection.yonedaEquivFst)
+  app _ := ↾YonedaCollection.yonedaEquivFst
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -423,7 +423,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps! obj map]
 def costructuredArrowPresheafToOver (A : Cᵒᵖ ⥤ Type v) :
     ((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Over A :=
-  (yonedaCollectionFunctor A).toOver _ (yonedaCollectionPresheafToA) (by cat_disch)
+  (yonedaCollectionFunctor A).toOver _ yonedaCollectionPresheafToA (by cat_disch)
 
 section unit
 

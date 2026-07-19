@@ -35,7 +35,7 @@ instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨
 
 /-- the inclusion of `Image f` into the target -/
 def Image.ι : Image f ⟶ β :=
-  ↾(Subtype.val)
+  ↾Subtype.val
 
 instance : Mono (Image.ι f) :=
   (mono_iff_injective _).2 Subtype.val_injective

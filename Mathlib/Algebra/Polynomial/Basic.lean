@@ -1050,7 +1050,7 @@ theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
   rfl
 
 theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
-  simp [coeffs, eq_comm, (Finset.mem_image)]
+  simp [coeffs, eq_comm, Finset.mem_image]
 
 theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
   simp_rw [coeffs, Finset.image_subset_iff]

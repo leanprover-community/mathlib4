@@ -111,7 +111,7 @@ theorem d₀₁_ker_eq_invariants : LinearMap.ker (d₀₁ A).hom = invariants A
   rfl
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma subtype_comp_d₀₁ : ModuleCat.ofHom (A.ρ.invariants.subtype) ≫ d₀₁ A = 0 := by
+lemma subtype_comp_d₀₁ : ModuleCat.ofHom A.ρ.invariants.subtype ≫ d₀₁ A = 0 := by
   ext ⟨x, hx⟩ g
   replace hx := hx g
   rw [← sub_eq_zero] at hx

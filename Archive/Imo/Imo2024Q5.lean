@@ -930,7 +930,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
   rw [winningStrategy_play_one] at hx
   rw [winningStrategy_play_two, ← hx, Option.getD_some]
   rw [path1, dif_pos hc₁0] at hx
-  have h1 := Path.mem_of_firstMonster_eq_some (hx.symm)
+  have h1 := Path.mem_of_firstMonster_eq_some hx.symm
   have hx2N : 2 ≤ (x.1 : ℕ) ∧ (x.1 : ℕ) ≤ N := by
     rw [path1OfEdge0, Path.ofFn_cells, List.mem_ofFn] at h1
     rcases h1 with ⟨⟨i, rfl⟩, hm⟩

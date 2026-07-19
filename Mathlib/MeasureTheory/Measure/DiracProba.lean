@@ -35,7 +35,7 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
   obtain ⟨g, g_cont, gx_zero, g_one_on_K⟩ :=
     CompletelyRegularSpace.completely_regular x K K_closed x_notin_K
   have g_bdd : ∀ x y, dist (Real.toNNReal (g x)) (Real.toNNReal (g y)) ≤ 1 := by
-    refine fun x y ↦ ((Real.lipschitzWith_toNNReal).dist_le_mul (g x) (g y)).trans ?_
+    refine fun x y ↦ (Real.lipschitzWith_toNNReal.dist_le_mul (g x) (g y)).trans ?_
     simpa using Real.dist_le_of_mem_Icc_01 (g x).prop (g y).prop
   set g' := BoundedContinuousFunction.mkOfBound
       ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtype_val⟩ 1 g_bdd

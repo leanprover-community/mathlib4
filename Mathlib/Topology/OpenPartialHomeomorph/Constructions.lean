@@ -372,16 +372,16 @@ noncomputable def lift_openEmbedding (e : OpenPartialHomeomorph X Z) (hf : IsOpe
     by_cases Nonempty X; swap
     · intro x hx; simp_all
     set F := (extend f e (fun _ ↦ (Classical.arbitrary Z))) with F_eq
-    have heq : EqOn F (e ∘ (hf.toOpenPartialHomeomorph).symm) (f '' e.source) := by
+    have heq : EqOn F (e ∘ hf.toOpenPartialHomeomorph.symm) (f '' e.source) := by
       intro x ⟨x₀, hx₀, hxx₀⟩
       rw [← hxx₀, F_eq, hf.injective.extend_apply e, comp_apply,
         hf.toOpenPartialHomeomorph_left_inv]
-    have : ContinuousOn (e ∘ (hf.toOpenPartialHomeomorph).symm) (f '' e.source) := by
+    have : ContinuousOn (e ∘ hf.toOpenPartialHomeomorph.symm) (f '' e.source) := by
       apply e.continuousOn_toFun.comp; swap
       · intro x' ⟨x, hx, hx'x⟩
         rw [← hx'x, hf.toOpenPartialHomeomorph_left_inv]; exact hx
-      have : ContinuousOn (hf.toOpenPartialHomeomorph).symm (f '' univ) :=
-        (hf.toOpenPartialHomeomorph).continuousOn_invFun
+      have : ContinuousOn hf.toOpenPartialHomeomorph.symm (f '' univ) :=
+        hf.toOpenPartialHomeomorph.continuousOn_invFun
       exact this.mono <| image_mono <| subset_univ _
     exact ContinuousOn.congr this heq
   continuousOn_invFun := hf.continuous.comp_continuousOn e.continuousOn_invFun

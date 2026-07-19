@@ -185,7 +185,7 @@ lemma mem_fundamentalEntourage (n : ℕ) (P : ℕ × ℕ) : P ∈ fundamentalEnt
       Subtype.exists, mem_Icc, zero_le, true_and, exists_prop', nonempty_prop, mem_Ici] at h
     rcases h with h | h
     · apply Or.inr
-      rw [((h.choose_spec).2).symm]
+      rw [(h.choose_spec.2).symm]
     · exact Or.inl h
   · simp only [iUnion_singleton_eq_range, mem_union, mem_range, Subtype.exists, mem_Icc, zero_le,
       true_and, exists_prop', nonempty_prop, mem_Ici, fundamentalEntourage]

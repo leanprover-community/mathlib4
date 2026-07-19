@@ -313,7 +313,7 @@ lemma evaluation_injective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A
 
 /-- The evaluation map on automorphisms is injective for connected objects. -/
 lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj A) :
-    Function.Injective (fun f : Aut A ↦ F.map (f.hom) a) := by
+    Function.Injective (fun f : Aut A ↦ F.map f.hom a) := by
   change Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
   apply Function.Injective.comp
   · exact evaluation_injective_of_isConnected F A A a

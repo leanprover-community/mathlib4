@@ -429,7 +429,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
 /-- An elementwise scalar multiplication of one summable family on another. -/
 @[simps]
 def smul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) : SummableFamily Γ' V (α × β) where
-  toFun ab := (of R).symm (s (ab.1) • ((of R) (t (ab.2))))
+  toFun ab := (of R).symm (s ab.1 • ((of R) (t ab.2)))
   isPWO_iUnion_support' :=
     isPWO_iUnion_support_prod_smul s.isPWO_iUnion_support t.isPWO_iUnion_support
   finite_co_support' g := finite_co_support_prod_smul s t g
@@ -469,7 +469,7 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
 set_option backward.isDefEq.respectTransparency false in
 theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
-    (smul s t).hsum = (of R).symm (s.hsum • (of R) (t.hsum)) := by
+    (smul s t).hsum = (of R).symm (s.hsum • (of R) t.hsum) := by
   ext g
   rw [coeff_smul s t g, HahnModule.coeff_smul, Equiv.symm_apply_apply]
   refine Eq.symm (sum_of_injOn (fun a ↦ a) (fun _ _ _ _ h ↦ h) (fun _ hgh => ?_)
@@ -549,7 +549,7 @@ theorem finite_co_support_prod_mul (s : SummableFamily Γ R α)
 @[simps]
 def mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     (SummableFamily Γ R (α × β)) where
-  toFun a := s (a.1) * t (a.2)
+  toFun a := s a.1 * t a.2
   isPWO_iUnion_support' :=
     isPWO_iUnion_support_prod_mul s.isPWO_iUnion_support t.isPWO_iUnion_support
   finite_co_support' g := finite_co_support_prod_mul s t g
@@ -842,11 +842,11 @@ section IsDomain
 
 variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R] [IsDomain R]
 
-theorem isUnit_iff {x : R⟦Γ⟧} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
+theorem isUnit_iff {x : R⟦Γ⟧} : IsUnit x ↔ IsUnit x.leadingCoeff := by
   constructor
   · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
     refine
-      .of_mul_eq_one (i.leadingCoeff)
+      .of_mul_eq_one i.leadingCoeff
         ((coeff_mul_order_add_order u i).symm.trans ?_)
     rw [ui, coeff_one, if_pos]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
@@ -867,8 +867,8 @@ variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
 @[simps -isSimp inv]
 instance : DivInvMonoid R⟦Γ⟧ where
   inv x :=
-    single (-x.order) (x.leadingCoeff)⁻¹ *
-      (SummableFamily.powers <| 1 - single (-x.order) (x.leadingCoeff)⁻¹ * x).hsum
+    single (-x.order) x.leadingCoeff⁻¹ *
+      (SummableFamily.powers <| 1 - single (-x.order) x.leadingCoeff⁻¹ * x).hsum
 
 @[simp]
 theorem inv_single (a : Γ) (r : R) : (single a r)⁻¹ = single (-a) r⁻¹ := by

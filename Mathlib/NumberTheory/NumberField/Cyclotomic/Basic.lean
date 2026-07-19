@@ -774,7 +774,7 @@ theorem adjoin_singleton_eq_top [hK : IsCyclotomicExtension {n} ℚ K]
   induction n using Nat.recOnPrimeCoprime generalizing K hn with
   | zero => exact (neZero_zero_iff_false.mp hn).elim
   | prime_pow p k hp =>
-    have : Fact (p.Prime) := ⟨hp⟩
+    have : Fact p.Prime := ⟨hp⟩
     rw [← hζ.integralPowerBasisOfPrimePow.adjoin_gen_eq_top, hζ.integralPowerBasisOfPrimePow_gen]
   | coprime n₁ n₂ hn₁ hn₂ h hK₁ hK₂ =>
     have : NeZero n₁ := NeZero.of_gt hn₁
@@ -897,7 +897,7 @@ open Units
 
 theorem NumberField.Units.dvd_torsionOrder_of_isPrimitiveRoot [NeZero n] {ζ : K}
     (hζ : IsPrimitiveRoot ζ n) : n ∣ torsionOrder K := by
-  replace hζ := (hζ.toInteger_isPrimitiveRoot).isUnit_unit (NeZero.ne n)
+  replace hζ := hζ.toInteger_isPrimitiveRoot.isUnit_unit (NeZero.ne n)
   convert! orderOf_dvd_natCard (⟨(hζ.isUnit (NeZero.ne n)).unit, ?_⟩ : torsion K)
   · rw [Subgroup.orderOf_mk]
     exact hζ.eq_orderOf

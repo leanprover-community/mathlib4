@@ -48,10 +48,10 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
         Finset.univ_eq_empty, Finset.prod_empty, card_unique]
   | succ k ih =>
       have (s : { s : Fin k → V // LinearIndependent K s }) :
-          card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set (V)) =
+          card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set V) =
           (q) ^ n - (q) ^ k := by
             rw [card_compl_set, Module.card_eq_pow_finrank (K := K)
-            (V := ((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
+            (V := ((Submodule.span K (Set.range (s : Fin k → V))) : Set V))]
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
             rw [Module.card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
@@ -76,7 +76,7 @@ noncomputable def equiv_GL_linearindependent :
   toFun M := ⟨M.1.col, by
     apply linearIndependent_iff_card_eq_finrank_span.2
     rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
-  invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
+  invFun M := GeneralLinearGroup.mk'' (transpose M.1) <| by
     classical
     let b := basisOfPiSpaceOfLinearIndependent M.2
     have := (Pi.basisFun 𝔽 (Fin n)).invertibleToMatrix b

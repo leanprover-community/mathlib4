@@ -211,7 +211,7 @@ theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList =
   | _, @cons _ _ _ d _ q _ => by simp [toList_comp]
 
 theorem isChain_toList_nonempty :
-    ∀ {b} (p : Path a b), (p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+    ∀ {b} (p : Path a b), p.toList.IsChain (fun x y => Nonempty (y ⟶ x))
   | _, nil => .nil
   | _, cons nil _ => .singleton _
   | _, cons (cons p g) _ => List.IsChain.cons_cons ⟨g⟩ (isChain_toList_nonempty (cons p g))

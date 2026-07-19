@@ -30,8 +30,8 @@ variable {α : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeasure) :
-    ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
-  _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
+    ∫ a, f a ∂p.toMeasure = ∑' a, (p a).toReal • f a := calc
+  _ = ∫ a in p.support, f a ∂p.toMeasure := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p.toMeasure {a.val}).toReal • f a := by
     apply setIntegral_countable f p.support_countable
     rwa [IntegrableOn, restrict_toMeasure_support p]
@@ -45,7 +45,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
       _ ⊆ support p := fun x h1 h2 => h1 (by simp [h2])
 
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
-    ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
+    ∫ a, f a ∂p.toMeasure = ∑ a, (p a).toReal • f a := by
   rw [integral_fintype .of_finite]
   congr with x
   rw [measureReal_def]

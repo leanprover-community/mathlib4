@@ -609,7 +609,7 @@ open IsManifold in
 /-- The identity map is a submersion with complement `PUnit`. -/
 protected lemma id [IsManifold I n M] : IsSubmersionOfComplement PUnit I I n (@id M) := by
   intro x
-  apply IsSubmersionAtOfComplement.mk_of_continuousAt (continuousAt_id)
+  apply IsSubmersionAtOfComplement.mk_of_continuousAt continuousAt_id
     (ContinuousLinearEquiv.prodUnique 𝕜 E PUnit).symm
     (chartAt H x) (chartAt H x) (mem_chart_source H x) (mem_chart_source H x)
     (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x)

@@ -431,7 +431,7 @@ noncomputable def relativeCellComplexOfMono [Mono i] :
   isoBot := Subcomplex.eqToIso (by simp) ≪≫ (asIso (Subcomplex.toRange i)).symm
   incl.app _ := Subcomplex.ι _
   isColimit :=
-    IsColimit.ofIsoColimit (isColimitOfPreserves (Subcomplex.toSSetFunctor)
+    IsColimit.ofIsoColimit (isColimitOfPreserves Subcomplex.toSSetFunctor
       ((CompleteLattice.colimitCocone ((skeletonOfMono i).monotone.functor)).isColimit))
         (Cocone.ext (Subcomplex.eqToIso (iSup_skeletonOfMono i) ≪≫ Subcomplex.topIso Y) )
   attachCells d _ :=

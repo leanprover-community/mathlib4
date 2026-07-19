@@ -389,7 +389,7 @@ variable [PartialOrder R] {Γ' : Type*} [LinearOrder Γ'] (f : Γ ↪o Γ')
 noncomputable
 def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
   toFun a := toLex (embDomain f (ofLex a))
-  inj' := toLex.injective.comp (embDomain_injective.comp (ofLex.injective))
+  inj' := toLex.injective.comp (embDomain_injective.comp ofLex.injective)
   map_rel_iff' {a b} := by
     simp_rw [le_iff_lt_or_eq, lt_iff]
     simp only [Function.Embedding.coeFn_mk, ofLex_toLex, EmbeddingLike.apply_eq_iff_eq]

@@ -105,7 +105,7 @@ abbrev toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
     toGlueData := 𝖣.mapGlueData forgetToLocallyRingedSpace }
 
 instance (i j : 𝖣.J) :
-    LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.f i j) := by
+    LocallyRingedSpace.IsOpenImmersion (D.toLocallyRingedSpaceGlueData.toGlueData.f i j) := by
   apply GlueData.f_open
 
 instance (i j : 𝖣.J) :
@@ -120,7 +120,7 @@ instance (i j : 𝖣.J) :
   apply GlueData.f_open
 
 instance (i : 𝖣.J) :
-    LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.ι i) := by
+    LocallyRingedSpace.IsOpenImmersion (D.toLocallyRingedSpaceGlueData.toGlueData.ι i) := by
   apply LocallyRingedSpace.GlueData.ι_isOpenImmersion
 
 set_option backward.isDefEq.respectTransparency false in

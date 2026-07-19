@@ -65,7 +65,7 @@ theorem smul_eq_C_mul (r : K) (x : K⟮X⟯) : r • x = C r * x := by
 
 theorem C_injective : Function.Injective (RatFunc.C (K := K)) := by
   rw [← algebraMap_comp_C, RingHom.coe_comp]
-  exact Function.Injective.comp (algebraMap_injective K) (Polynomial.C_injective)
+  exact Function.Injective.comp (algebraMap_injective K) Polynomial.C_injective
 
 /-- `RatFunc.X` is the polynomial variable (aka indeterminate). -/
 def X : K⟮X⟯ :=
@@ -295,7 +295,7 @@ theorem idealX_span : (idealX K).asIdeal = Ideal.span {X} := rfl
 theorem valuation_X_eq_neg_one :
     (idealX K).valuation K⟮X⟯ RatFunc.X = exp (-1 : ℤ) := by
   rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton
-      _ (Polynomial.X_ne_zero) (idealX_span K)]
+      _ Polynomial.X_ne_zero (idealX_span K)]
 
 theorem valuation_of_mk (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
     (Polynomial.idealX K).valuation _ (RatFunc.mk f g) =

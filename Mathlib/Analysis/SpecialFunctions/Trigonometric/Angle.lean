@@ -496,7 +496,7 @@ theorem toReal_pi : (π : Angle).toReal = π := by
 @[simp]
 theorem toReal_eq_pi_iff {θ : Angle} : θ.toReal = π ↔ θ = π := by rw [← toReal_inj, toReal_pi]
 
-lemma toReal_neg_eq_neg_toReal_iff {θ : Angle} : (-θ).toReal = -(θ.toReal) ↔ θ ≠ π := by
+lemma toReal_neg_eq_neg_toReal_iff {θ : Angle} : (-θ).toReal = -θ.toReal ↔ θ ≠ π := by
   nth_rw 1 [← coe_toReal θ, ← coe_neg, toReal_coe_eq_self_iff]
   constructor
   · rintro ⟨h, h'⟩ rfl

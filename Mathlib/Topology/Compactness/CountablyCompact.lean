@@ -396,7 +396,7 @@ theorem Set.Finite.isCountablyCompact_biUnion {s : Set ι} {f : ι → Set E} (h
     (hf : ∀ i ∈ s, IsCountablyCompact (f i)) : IsCountablyCompact (⋃ i ∈ s, f i) := by
   let s' : Finset ι := hs.toFinset
   have h1 : (⋃ i ∈ s, f i) = (⋃ i ∈ s', f i) := by simp [s']
-  exact h1 ▸ Finset.isCountablyCompact_biUnion s' (fun i hi => hf i ((hs.mem_toFinset).mp hi))
+  exact h1 ▸ Finset.isCountablyCompact_biUnion s' (fun i hi => hf i (hs.mem_toFinset.mp hi))
 
 /-- A finite union of countably compact sets is countably compact. -/
 theorem Set.Finite.isCountablyCompact_sUnion {S : Set (Set E)} (hf : S.Finite)

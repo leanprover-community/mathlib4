@@ -52,7 +52,7 @@ theorem tendsto_finset_image_atTop_atTop [DecidableEq β] {i : β → γ} {j : �
     ⟨{i a}, by simp only [Finset.image_singleton, h a, Finset.mem_singleton]⟩
 
 theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injective f) :
-    Tendsto (fun s : Finset β => s.preimage f (hf.injOn)) atTop atTop :=
+    Tendsto (fun s : Finset β => s.preimage f hf.injOn) atTop atTop :=
   (Finset.monotone_preimage hf).tendsto_atTop_finset fun x =>
     ⟨{f x}, Finset.mem_preimage.2 <| Finset.mem_singleton_self _⟩
 

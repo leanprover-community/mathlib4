@@ -247,7 +247,7 @@ lemma indicator_indepFun_of_bcf
     (h : ∀ f : G →ᵇ ℝ, ∫ ω in A, f (Z ω) ∂P = P.real A * ∫ ω, f (Z ω) ∂P) :
     (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] Z := by
   suffices (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] (fun ω (_ : Unit) ↦ Z ω) from
-    this.comp (measurable_id) (measurable_pi_apply ())
+    this.comp measurable_id (measurable_pi_apply ())
   refine indicator_indepFun_pi_of_prod_bcf mA (fun _ ↦ mZ) fun f ↦ ?_
   convert! h (f ()) <;> simp
 

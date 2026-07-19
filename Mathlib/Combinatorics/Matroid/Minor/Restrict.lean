@@ -167,7 +167,7 @@ theorem IsBasis.restrict_isBase (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
 
 instance restrict_rankFinite [M.RankFinite] (R : Set α) : (M ↾ R).RankFinite :=
   let ⟨_, hB⟩ := (M ↾ R).exists_isBase
-  hB.rankFinite_of_finite (hB.indep.of_restrict.finite)
+  hB.rankFinite_of_finite hB.indep.of_restrict.finite
 
 instance restrict_finitary [Finitary M] (R : Set α) : Finitary (M ↾ R) := by
   refine ⟨fun I hI ↦ ?_⟩

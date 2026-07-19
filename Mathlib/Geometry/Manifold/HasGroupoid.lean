@@ -146,8 +146,8 @@ lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource {e e' : OpenPartialHomeom
     (h : e' ≈ e) (he : e ∈ G.maximalAtlas M) : e' ∈ G.maximalAtlas M := by
   intro e'' he''
   obtain ⟨l, r⟩ := mem_maximalAtlas_iff.mp he e'' he''
-  exact ⟨G.mem_of_eqOnSource l (EqOnSource.trans' (EqOnSource.symm' h) (e''.eqOnSource_refl)),
-         G.mem_of_eqOnSource r (EqOnSource.trans' (e''.symm).eqOnSource_refl h)⟩
+  exact ⟨G.mem_of_eqOnSource l (EqOnSource.trans' (EqOnSource.symm' h) e''.eqOnSource_refl),
+         G.mem_of_eqOnSource r (EqOnSource.trans' e''.symm.eqOnSource_refl h)⟩
 
 variable (G)
 
@@ -446,7 +446,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
   have : Nonempty t := nonempty_coe_sort.mpr (e.mapsTo.nonempty (nonempty_coe_sort.mp hs))
   obtain ⟨x, hc'⟩ := Opens.chart_eq this hc'
   -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
-  rw [hc', (chartAt_self_eq)]
+  rw [hc', chartAt_self_eq]
   -- Our expression equals this chart, at least on its source.
   rw [OpenPartialHomeomorph.subtypeRestr_def, OpenPartialHomeomorph.trans_refl]
   let goal :=

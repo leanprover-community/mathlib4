@@ -175,7 +175,7 @@ lemma colimitsOfShape_monotone {Q : ObjectProperty C} (hPQ : P ≤ Q) :
 @[simp]
 lemma colimitsOfShape_isoClosure :
     P.isoClosure.colimitsOfShape J = P.colimitsOfShape J := by
-  refine le_antisymm ?_ (colimitsOfShape_monotone _ (P.le_isoClosure))
+  refine le_antisymm ?_ (colimitsOfShape_monotone _ P.le_isoClosure)
   intro X ⟨h⟩
   choose obj h₁ h₂ using h.prop_diag_obj
   exact

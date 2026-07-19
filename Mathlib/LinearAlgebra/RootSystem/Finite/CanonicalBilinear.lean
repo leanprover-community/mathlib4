@@ -298,7 +298,7 @@ lemma rootForm_self_smul_coroot (i : ι) :
 
 lemma corootForm_self_smul_root (i : ι) :
     (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i = 2 • P.CoPolarization (P.coroot i) :=
-  rootForm_self_smul_coroot (P.flip) i
+  rootForm_self_smul_coroot P.flip i
 
 lemma four_nsmul_coPolarization_compl_polarization_apply_root (i : ι) :
     (4 • P.CoPolarization ∘ₗ P.Polarization) (P.root i) =

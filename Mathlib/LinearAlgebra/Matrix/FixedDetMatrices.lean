@@ -131,7 +131,7 @@ private lemma A_c_eq_zero {A : Δ m} (ha : A.1 1 0 = 0) : A.1 0 0 * A.1 1 1 = m 
   simpa only [det_fin_two, ha, mul_zero, sub_zero] using A.2
 
 private lemma A_d_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 1 1 ≠ 0 :=
-  right_ne_zero_of_mul (A_c_eq_zero (ha) ▸ hm)
+  right_ne_zero_of_mul (A_c_eq_zero ha ▸ hm)
 
 private lemma A_a_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 0 0 ≠ 0 :=
   left_ne_zero_of_mul (A_c_eq_zero ha ▸ hm)

@@ -1302,7 +1302,7 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
     · simp only [add_comm p.1.val, cast_add, cast_mul, natCast_self, zero_mul, natCast_val,
         cast_id', id_eq, zero_add]
     · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
-        (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
+        Nat.div_eq_zero_iff.2 <| .inr p.1.val_lt, add_zero]
 
 -- there is a faster proof with Module.toAddMonoidEnd
 instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddCommMonoid M] :

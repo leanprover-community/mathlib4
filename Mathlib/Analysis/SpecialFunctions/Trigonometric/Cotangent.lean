@@ -108,7 +108,7 @@ private lemma sineTerm_bound_aux (hZ : IsCompact Z) :
     fun_prop
   obtain ⟨s, hs⟩ := bddAbove_def.mp (IsCompact.bddAbove_image hZ hf)
   refine ⟨fun n : ℕ => ‖(s : ℂ) / (n + 1) ^ 2‖, ?_, ?_⟩
-  · simpa using summable_pow_div_add (s : ℂ) 2 1 (Nat.one_lt_two)
+  · simpa using summable_pow_div_add (s : ℂ) 2 1 Nat.one_lt_two
   · simp only [norm_neg, norm_pow, Set.mem_image, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, sineTerm, norm_div, norm_real, norm_eq_abs] at *
     intro n x hx
@@ -161,8 +161,8 @@ lemma logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
   have : (fun t ↦ (Complex.sin (π * t) / (π * t))) = fun z ↦
     (Complex.sin ∘ fun t ↦ π * t) z / (π * z) := by simp
   rw [this, logDeriv_div _ (by apply sin_pi_mul_ne_zero hz) ?_
-    (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
-    logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
+    (DifferentiableAt.comp _ Complex.differentiableAt_sin (by fun_prop)) (by fun_prop),
+    logDeriv_comp Complex.differentiableAt_sin (by fun_prop), Complex.logDeriv_sin,
     deriv_const_mul_id, logDeriv_const_mul, logDeriv_id']
   · ring
   · simp
@@ -280,7 +280,7 @@ lemma eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet (d : ℕ) :
       ℍₒ := by
   apply Set.EqOn.trans (upperHalfPlane_inter_integerComplement ▸
     iteratedDerivWithin_congr_right_of_isOpen (fun z ↦ cotTerm z d) k
-    isOpen_upperHalfPlaneSet (isOpen_compl_range_intCast))
+    isOpen_upperHalfPlaneSet isOpen_compl_range_intCast)
   intro z hz
   simpa using! eqOn_iteratedDerivWithin_cotTerm_integerComplement k d
     (coe_mem_integerComplement ⟨z, hz⟩)

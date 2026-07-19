@@ -1151,7 +1151,7 @@ by the pullbacks are given by the pullbacks themselves. -/
 @[simps! toPreOneHypercover]
 noncomputable def Precoverage.ZeroHypercover.toOneHypercover {J : Precoverage C}
     {S : C} (E : J.ZeroHypercover S) [E.HasPullbacks] :
-    (J.toGrothendieck).OneHypercover S :=
+    J.toGrothendieck.OneHypercover S :=
   .mk' E.toPreZeroHypercover.toPreOneHypercover (J.generate_mem_toGrothendieck E.mem₀) (by simp)
 
 section

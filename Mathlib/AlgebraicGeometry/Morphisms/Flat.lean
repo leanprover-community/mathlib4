@@ -155,8 +155,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- A flat surjective morphism of schemes is an epimorphism in the category of schemes. -/
 @[stacks 02VW]
 lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
-  apply CategoryTheory.Functor.epi_of_epi_map (Scheme.forgetToLocallyRingedSpace)
-  apply CategoryTheory.Functor.epi_of_epi_map (LocallyRingedSpace.forgetToSheafedSpace)
+  apply CategoryTheory.Functor.epi_of_epi_map Scheme.forgetToLocallyRingedSpace
+  apply CategoryTheory.Functor.epi_of_epi_map LocallyRingedSpace.forgetToSheafedSpace
   apply SheafedSpace.epi_of_base_surjective_of_stalk_mono _ ‹Surjective f›.surj
   intro x
   apply ConcreteCategory.mono_of_injective

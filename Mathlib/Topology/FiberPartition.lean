@@ -55,7 +55,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion map from a fiber of a composition into the intermediate fiber. -/
 def sigmaInclIncl {X : Type*} (g : Y → X) (a : Fiber (g ∘ f))
     (b : Fiber (f ∘ (sigmaIncl (g ∘ f) a))) :
-    C(b.val, (Fiber.mk f (b.preimage).val).val) where
+    C(b.val, (Fiber.mk f b.preimage.val).val) where
   toFun x := ⟨x.val.val, by
     have := x.prop
     simp only [sigmaIncl, ContinuousMap.coe_mk, Fiber.mem_iff_eq_image, comp_apply] at this

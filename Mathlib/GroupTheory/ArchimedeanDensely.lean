@@ -195,7 +195,7 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
     ⟨AddEquiv.subsemigroupCongr (by simp [this]),
      (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩
   let g : (⊤ : AddSubgroup ℤ) ≃+o ℤ := ⟨AddSubsemigroup.topEquiv,
-    (AddSubsemigroup.strictMono_topEquiv).le_iff_le⟩
+    AddSubsemigroup.strictMono_topEquiv.le_iff_le⟩
   let g' : AddSubgroup.closure ({1} : Set ℤ) ≃+o (⊤ : AddSubgroup ℤ) :=
     ⟨(.subsemigroupCongr (by simp)),
      (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩

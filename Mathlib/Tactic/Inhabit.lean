@@ -22,7 +22,7 @@ namespace Lean.Elab.Tactic
 /-- Derives `Inhabited α` from `Nonempty α` with `Classical.choice`. -/
 @[instance_reducible]
 noncomputable def nonempty_to_inhabited (α : Sort*) (_ : Nonempty α) : Inhabited α :=
-  Inhabited.mk (Classical.ofNonempty)
+  Inhabited.mk Classical.ofNonempty
 
 /-- Derives `Inhabited α` from `Nonempty α` without `Classical.choice`
 assuming `α` is of type `Prop`. -/

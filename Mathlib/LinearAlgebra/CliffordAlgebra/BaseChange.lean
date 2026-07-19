@@ -120,7 +120,7 @@ theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
 /-- The involution acts only on the right of the tensor product. -/
 theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (involute x) =
-      TensorProduct.map LinearMap.id (involute.toLinearMap) (toBaseChange A Q x) :=
+      TensorProduct.map LinearMap.id involute.toLinearMap (toBaseChange A Q x) :=
   DFunLike.congr_fun (toBaseChange_comp_involute A Q) x
 
 open MulOpposite

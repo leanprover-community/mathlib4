@@ -38,10 +38,10 @@ set_option backward.defeqAttrib.useBackward true in
 then the category `Over U` is equivalent to `Opens ↥U`. -/
 @[simps!]
 def overEquivalence : Over U ≌ Opens ↥U where
-  functor.obj V := ⟨_, IsOpen.preimage (continuous_subtype_val) V.left.isOpen⟩
+  functor.obj V := ⟨_, IsOpen.preimage continuous_subtype_val V.left.isOpen⟩
   functor.map f := homOfLE (Set.preimage_mono (f := Subtype.val) (leOfHom f.left))
   inverse.obj W :=
-    Over.mk (Y := ⟨_, (U.isOpenEmbedding'.isOpen_iff_image_isOpen).1 W.isOpen⟩)
+    Over.mk (Y := ⟨_, U.isOpenEmbedding'.isOpen_iff_image_isOpen.1 W.isOpen⟩)
       (homOfLE (fun _ _ ↦ by aesop))
   inverse.map f := Over.homMk (homOfLE (Set.image_mono (leOfHom f)))
   unitIso := NatIso.ofComponents (fun V ↦ Over.isoMk (eqToIso (by

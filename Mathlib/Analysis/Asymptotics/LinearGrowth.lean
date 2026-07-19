@@ -91,7 +91,7 @@ lemma linearGrowthSup_monotone (h : u ≤ v) : linearGrowthSup u ≤ linearGrowt
 
 lemma linearGrowthInf_le_linearGrowthSup_of_frequently_le (h : ∃ᶠ n in atTop, u n ≤ v n) :
     linearGrowthInf u ≤ linearGrowthSup v :=
-  (liminf_le_limsup_of_frequently_le) <| h.mono fun n u_v ↦ by gcongr
+  liminf_le_limsup_of_frequently_le <| h.mono fun n u_v ↦ by gcongr
 
 lemma linearGrowthInf_le_iff :
     linearGrowthInf u ≤ a ↔ ∀ b > a, ∃ᶠ n : ℕ in atTop, u n ≤ b * n := by
@@ -426,7 +426,7 @@ lemma _root_.Monotone.linearGrowthInf_nonneg (h : Monotone u) (h' : u ≠ ⊥) :
 
 lemma _root_.Monotone.linearGrowthSup_nonneg (h : Monotone u) (h' : u ≠ ⊥) :
     0 ≤ linearGrowthSup u :=
-  (h.linearGrowthInf_nonneg h').trans (linearGrowthInf_le_linearGrowthSup)
+  (h.linearGrowthInf_nonneg h').trans linearGrowthInf_le_linearGrowthSup
 
 lemma linearGrowthInf_comp_nonneg (h : Monotone u) (h' : u ≠ ⊥) (hv : Tendsto v atTop atTop) :
     0 ≤ linearGrowthInf (u ∘ v) := by

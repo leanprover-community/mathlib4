@@ -135,7 +135,7 @@ lemma IsQuotientMap.isStrictMap (f_quot : IsQuotientMap f) :
 if and only if `g ∘ f` is strict. -/
 lemma IsEmbedding.isStrictMap_iff (g_emb : IsEmbedding g) :
     IsStrictMap f ↔ IsStrictMap (g ∘ f) := by
-  set Φ : Quotient (Setoid.ker (g ∘ f)) ≃ₜ Quotient (Setoid.ker (f)) :=
+  set Φ : Quotient (Setoid.ker (g ∘ f)) ≃ₜ Quotient (Setoid.ker f) :=
     Homeomorph.Quotient.congrRight (fun _ _ ↦ by simp [g_emb.injective.eq_iff])
   have key : g ∘ kerLift f ∘ Φ = kerLift (g ∘ f) :=
     funext <| Quotient.ind fun _ ↦ rfl

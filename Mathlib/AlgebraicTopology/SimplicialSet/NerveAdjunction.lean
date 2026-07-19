@@ -377,10 +377,10 @@ def fullyFaithfulNerveFunctor₂ : nerveFunctor₂.{u, u}.FullyFaithful where
   preimage_map _ := by ext1; exact functorOfNerveMap_nerveFunctor₂_map _
 
 instance : nerveFunctor₂.{u, u}.Faithful :=
-  (fullyFaithfulNerveFunctor₂).faithful
+  fullyFaithfulNerveFunctor₂.faithful
 
 instance : nerveFunctor₂.{u, u}.Full :=
-  (fullyFaithfulNerveFunctor₂).full
+  fullyFaithfulNerveFunctor₂.full
 
 instance : Reflective nerveFunctor₂.{u, u} := Reflective.mk _ SSet.Truncated.nerve₂Adj
 
@@ -412,7 +412,7 @@ instance nerveAdjunction.isIso_counit : IsIso nerveAdjunction.counit :=
 /-- The counit map of `nerveAdjunction` is an isomorphism since the nerve functor is fully
 faithful. -/
 noncomputable def nerveFunctorCompHoFunctorIso : nerveFunctor.{u, u} ⋙ hoFunctor ≅ 𝟭 Cat :=
-  asIso (nerveAdjunction.counit)
+  asIso nerveAdjunction.counit
 
 noncomputable instance : Reflective nerveFunctor where
   L := hoFunctor
@@ -455,7 +455,7 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
   have : IsIso (Functor.whiskerLeft (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
       (prodComparisonNatTrans hoFunctor.{u} D)) := by
     rw [NatTrans.isIso_iff_isIso_app]
-    exact fun x ↦ H (x.left).len
+    exact fun x ↦ H x.left.len
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
     (Presheaf.isColimitTautologicalCocone' X)
 

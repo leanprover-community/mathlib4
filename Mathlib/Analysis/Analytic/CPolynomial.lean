@@ -154,7 +154,7 @@ variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [�
 noncomputable def toFormalMultilinearSeriesOfMultilinear :
     FormalMultilinearSeries 𝕜 (G × (Π i, Em i)) F :=
   fun n ↦ if h : Fintype.card (Option ι) = n then
-    (f.continuousMultilinearMapOption).domDomCongr (Fintype.equivFinOfCardEq h)
+    f.continuousMultilinearMapOption.domDomCongr (Fintype.equivFinOfCardEq h)
   else 0
 
 protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :

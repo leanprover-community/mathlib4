@@ -797,7 +797,7 @@ lemma hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v₁} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using! congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
+    using! congr_arg yonedaEquiv (h _ (yonedaEquiv.symm x))
 
 variable (C)
 

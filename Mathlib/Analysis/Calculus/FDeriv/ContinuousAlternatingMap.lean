@@ -104,7 +104,7 @@ theorem fderivWithin_continuousAlternatingMapCompContinuousLinearMap
     fderivWithin 𝕜 (fun x ↦ (f x).compContinuousLinearMap (g x)) s x =
       compContinuousLinearMapCLM (g x) ∘L fderivWithin 𝕜 f s x +
         (f x).fderivCompContinuousLinearMap (g x) ∘L fderivWithin 𝕜 g s x :=
-  hf.hasFDerivWithinAt.continuousAlternatingMapCompContinuousLinearMap (hg.hasFDerivWithinAt)
+  hf.hasFDerivWithinAt.continuousAlternatingMapCompContinuousLinearMap hg.hasFDerivWithinAt
     |>.fderivWithin hs
 
 theorem fderiv_continuousAlternatingMapCompContinuousLinearMap
@@ -112,7 +112,7 @@ theorem fderiv_continuousAlternatingMapCompContinuousLinearMap
     fderiv 𝕜 (fun x ↦ (f x).compContinuousLinearMap (g x)) x =
       compContinuousLinearMapCLM (g x) ∘L fderiv 𝕜 f x +
         (f x).fderivCompContinuousLinearMap (g x) ∘L fderiv 𝕜 g x :=
-  hf.hasFDerivAt.continuousAlternatingMapCompContinuousLinearMap (hg.hasFDerivAt) |>.fderiv
+  hf.hasFDerivAt.continuousAlternatingMapCompContinuousLinearMap hg.hasFDerivAt |>.fderiv
 
 end HasFDerivAt
 

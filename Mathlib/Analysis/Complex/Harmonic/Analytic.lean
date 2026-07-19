@@ -116,10 +116,10 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq {f : ℂ
   have h₁F : ∀ z₁, HasDerivAt F (g z₁) z₁ := by simp_all
   have h₂F : Differentiable ℂ F := fun x ↦ (h₁F x).differentiableAt
   have h₃F : Differentiable ℝ F := h₂F.restrictScalars (𝕜 := ℝ)
-  use F, (h₂F.differentiableOn).analyticOnNhd isOpen_univ
+  use F, h₂F.differentiableOn.analyticOnNhd isOpen_univ
   ext x
   rw [← Complex.reCLM_apply, ← Function.comp_apply (f := reCLM)]
-  refine (convex_univ).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := 0) (by fun_prop) ?hd ?_ ?heq ?_ ?_ ?_
+  refine convex_univ.eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := 0) (by fun_prop) ?hd ?_ ?heq ?_ ?_ ?_
   case hd => exact hf.contDiffOn.differentiableOn two_ne_zero
   case heq =>
     intro y hy

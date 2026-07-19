@@ -272,7 +272,7 @@ def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
     use T.ofPoint_SpecTensorTo p
     have : Spec.map (Hom.residueFieldMap T.SpecTensorTo p) (⊥ : PrimeSpectrum _) =
         (⊥ : PrimeSpectrum _) :=
-      (PrimeSpectrum.instUnique).uniq _
+      PrimeSpectrum.instUnique.uniq _
     simp only [SpecOfPoint, Triplet.tensorCongr_inv, ← this, ← Scheme.Hom.comp_apply,
       ← Scheme.Hom.comp_apply]
     simp [Triplet.Spec_ofPointTensor_SpecTensorTo]

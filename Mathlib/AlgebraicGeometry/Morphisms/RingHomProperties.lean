@@ -353,7 +353,7 @@ theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffi
 
 set_option backward.defeqAttrib.useBackward true in
 theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
-    P f ↔ Q (f.appTop).hom := by
+    P f ↔ Q f.appTop.hom := by
   rw [iff_of_source_openCover (P := P) (Scheme.coverOfIsIso.{u} (𝟙 _))]
   simp +instances
 

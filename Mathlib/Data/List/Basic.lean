@@ -886,7 +886,7 @@ end FoldlMFoldrM
 
 /-! ### filter -/
 
-theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
+theorem length_eq_length_filter_add {l : List α} (f : α → Bool) :
     l.length = (l.filter f).length + (l.filter (!f ·)).length := by
   simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
     Bool.decide_eq_false]

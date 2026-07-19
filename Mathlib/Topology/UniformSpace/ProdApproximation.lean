@@ -103,7 +103,7 @@ lemma denseRange_tensorHom [CompactSpace X] [T2Space X] [CompactSpace Y]
   simp_rw [mem_closure_iff, Set.nonempty_def]
   intro U hUo hUf
   have := mem_nhds_uniformity_iff_right.mp (hUo.mem_nhds hUf)
-  obtain ⟨J, hJu, hJ'⟩ := (hasBasis_compactConvergenceUniformity_of_compact).mem_iff.mp this
+  obtain ⟨J, hJu, hJ'⟩ := hasBasis_compactConvergenceUniformity_of_compact.mem_iff.mp this
   obtain ⟨n, g, h, hgh⟩ := exists_finite_sum_mul_approximation_of_mem_uniformity f hJu
   have hG := Set.mem_of_subset_of_mem hJ' (a := (f, tensorHom <| ∑ i, g i ⊗ₜ h i))
   simp only [Prod.forall, Set.mem_ofPred_eq, forall_const] at hG

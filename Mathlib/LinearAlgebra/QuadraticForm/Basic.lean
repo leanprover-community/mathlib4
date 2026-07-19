@@ -344,7 +344,7 @@ def ofPolar (toFun : M → N) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
     QuadraticMap R M N :=
   { toFun
     toFun_smul
-    exists_companion' := ⟨LinearMap.mk₂ R (polar toFun) (polar_add_left) (polar_smul_left)
+    exists_companion' := ⟨LinearMap.mk₂ R (polar toFun) polar_add_left polar_smul_left
       (fun x _ _ ↦ by simp_rw [polar_comm _ x, polar_add_left])
       (fun _ _ _ ↦ by rw [polar_comm, polar_smul_left, polar_comm]),
       fun _ _ ↦ by
@@ -1256,7 +1256,7 @@ variable [AddCommGroup N] [Module R N] (b : Basis n R N) (Q : QuadraticForm R N)
   given basis. See also `QuadraticForm.toMatrix'` for the special case of `N = n → R` with
   the standard basis. -/
 noncomputable def toMatrix : Matrix n n R :=
-  LinearMap.toMatrix₂ b b (Q.associated)
+  LinearMap.toMatrix₂ b b Q.associated
 
 lemma toMatrix_eq_toMatrix' (Q : QuadraticForm R (n → R)) :
     Q.toMatrix (Pi.basisFun R n) = Q.toMatrix' := by

@@ -324,7 +324,7 @@ theorem nonempty_linearEquiv_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
     Nonempty (R ≃ₗ[R] M) := by
   let ⟨ι, b⟩ := (Module.Free.exists_basis R M).some
   have : Unique ι := (b.nonempty_unique_index_of_finrank_eq_one d1).some
-  exact ⟨((b.equivFun).trans (LinearEquiv.funUnique ι R R)).symm⟩
+  exact ⟨(b.equivFun.trans (LinearEquiv.funUnique ι R R)).symm⟩
 
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]

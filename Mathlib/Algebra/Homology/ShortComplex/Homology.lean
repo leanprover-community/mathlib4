@@ -780,7 +780,7 @@ lemma RightHomologyData.rightHomologyIso_hom_naturality
   rw [← cancel_epi h₁.homologyIso.inv, Iso.inv_hom_id_assoc,
     ← cancel_epi (leftRightHomologyComparison' S₁.leftHomologyData h₁),
     ← leftRightHomologyComparison'_naturality φ S₁.leftHomologyData h₁ S₂.leftHomologyData h₂,
-    ← cancel_epi (S₁.leftHomologyData.homologyIso.hom),
+    ← cancel_epi S₁.leftHomologyData.homologyIso.hom,
     LeftHomologyData.leftHomologyIso_hom_naturality_assoc,
     leftRightHomologyComparison'_fac, leftRightHomologyComparison'_fac, assoc,
     Iso.hom_inv_id_assoc, Iso.hom_inv_id_assoc, Iso.hom_inv_id_assoc]
@@ -912,10 +912,10 @@ noncomputable def homologyIsKernel :
     (Fork.ext S.rightHomologyIso (by simp))
 
 instance : Epi S.homologyπ :=
-  Limits.epi_of_isColimit_cofork (S.homologyIsCokernel)
+  Limits.epi_of_isColimit_cofork S.homologyIsCokernel
 
 instance : Mono S.homologyι :=
-  Limits.mono_of_isLimit_fork (S.homologyIsKernel)
+  Limits.mono_of_isLimit_fork S.homologyIsKernel
 
 /-- Given a morphism `k : S.cycles ⟶ A` such that `S.toCycles ≫ k = 0`, this is the
 induced morphism `S.homology ⟶ A`. -/
@@ -1069,7 +1069,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] :
     (homologyMap φ).op =
-      (S₂.homologyOpIso).inv ≫ homologyMap (opMap φ) ≫ (S₁.homologyOpIso).hom := by
+      S₂.homologyOpIso.inv ≫ homologyMap (opMap φ) ≫ S₁.homologyOpIso.hom := by
   dsimp only [homologyMap, homologyOpIso]
   rw [homologyMap'_op]
   dsimp only [Iso.symm, Iso.trans, Iso.op, Iso.refl, rightHomologyIso, leftHomologyIso,
@@ -1080,13 +1080,13 @@ lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] :
 
 @[reassoc]
 lemma homologyOpIso_hom_naturality [S₁.HasHomology] [S₂.HasHomology] :
-    homologyMap (opMap φ) ≫ (S₁.homologyOpIso).hom =
+    homologyMap (opMap φ) ≫ S₁.homologyOpIso.hom =
       S₂.homologyOpIso.hom ≫ (homologyMap φ).op := by
   simp [homologyMap_op]
 
 @[reassoc]
 lemma homologyOpIso_inv_naturality [S₁.HasHomology] [S₂.HasHomology] :
-    (homologyMap φ).op ≫ (S₁.homologyOpIso).inv =
+    (homologyMap φ).op ≫ S₁.homologyOpIso.inv =
       S₂.homologyOpIso.inv ≫ homologyMap (opMap φ) := by
   simp [homologyMap_op]
 

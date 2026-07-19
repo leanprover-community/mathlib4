@@ -108,7 +108,7 @@ lemma isSaddlePointOn_value [CompleteLinearOrder β]
   constructor
   · apply le_antisymm
     · rw [← h.1]
-      exact le_trans (iInf₂_le a ha) (le_rfl)
+      exact le_trans (iInf₂_le a ha) le_rfl
     · rw [← h.2]
       apply iInf₂_mono
       intro x _
@@ -119,6 +119,6 @@ lemma isSaddlePointOn_value [CompleteLinearOrder β]
       intro y _
       apply iInf₂_le a ha
     · rw [← h.2]
-      apply le_trans (le_rfl) (le_iSup₂ b hb)
+      apply le_trans le_rfl (le_iSup₂ b hb)
 
 end SaddlePoint

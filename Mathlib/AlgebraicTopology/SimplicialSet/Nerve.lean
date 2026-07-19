@@ -33,7 +33,7 @@ namespace CategoryTheory
 /-- The nerve of a category -/
 @[simps -isSimp]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
-  obj Δ := ComposableArrows C (Δ.unop.len)
+  obj Δ := ComposableArrows C Δ.unop.len
   map f := ↾fun x ↦ x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
   -- `aesop` can prove these but is slow, help it out:
   map_id _ := rfl
@@ -42,7 +42,7 @@ def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
 attribute [simp] nerve_obj
 
 instance {C : Type*} [Category* C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
-  inferInstanceAs <| Category (ComposableArrows C (Δ.unop.len))
+  inferInstanceAs <| Category (ComposableArrows C Δ.unop.len)
 
 section
 
@@ -221,8 +221,8 @@ lemma nonempty_compStruct_iff {x₀ x₁ x₂ : C}
   rw [← Arrow.mk_inj]
   apply ComposableArrows.arrowEquiv.symm.injective
   convert_to! (nerve C).δ 1 h'.simplex = (nerve C).δ 1 h.simplex
-  · exact (h'.d₁).symm
-  · exact (h.d₁).symm
+  · exact h'.d₁.symm
+  · exact h.d₁.symm
   · have h₀ := h.d₀
     have h₂ := h.d₂
     have h'₀ := h'.d₀

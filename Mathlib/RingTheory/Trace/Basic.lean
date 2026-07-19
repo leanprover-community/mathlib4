@@ -104,7 +104,7 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   contrapose hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
-  · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
+  · exact (Submodule.fg_iff_finiteDimensional _).mpr b.finiteDimensional_of_finite
   · exact subset_adjoin K _ (Set.mem_singleton x)
 
 theorem trace_gen_eq_sum_roots (x : L) (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
@@ -559,7 +559,7 @@ theorem Module.Basis.traceDual_def :
 
 @[simp]
 theorem Module.Basis.traceDual_repr_apply (x : L) (i : ι) :
-    (b.traceDual).repr x i = (traceForm K L x) (b i) :=
+    b.traceDual.repr x i = (traceForm K L x) (b i) :=
   (traceForm K L).dualBasis_repr_apply _ b _ i
 
 @[simp]

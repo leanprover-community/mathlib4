@@ -1063,7 +1063,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma opcyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
     [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
-    opcyclesMap (opMap φ) ≫ (S₁.opcyclesOpIso).hom =
+    opcyclesMap (opMap φ) ≫ S₁.opcyclesOpIso.hom =
       S₂.opcyclesOpIso.hom ≫ (cyclesMap φ).op := by
   rw [← cancel_epi S₂.op.pOpcycles, p_opcyclesMap_assoc, opMap_τ₂,
     op_pOpcycles_opcyclesOpIso_hom, op_pOpcycles_opcyclesOpIso_hom_assoc, ← op_comp,
@@ -1072,16 +1072,16 @@ lemma opcyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
 @[reassoc]
 lemma opcyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
     [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
-    (cyclesMap φ).op ≫ (S₁.opcyclesOpIso).inv =
+    (cyclesMap φ).op ≫ S₁.opcyclesOpIso.inv =
       S₂.opcyclesOpIso.inv ≫ opcyclesMap (opMap φ) := by
-  rw [← cancel_epi (S₂.opcyclesOpIso.hom), Iso.hom_inv_id_assoc,
+  rw [← cancel_epi S₂.opcyclesOpIso.hom, Iso.hom_inv_id_assoc,
     ← opcyclesOpIso_hom_naturality_assoc, Iso.hom_inv_id, comp_id]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
     [S₁.HasRightHomology] [S₂.HasRightHomology] :
-    (opcyclesMap φ).op ≫ (S₁.cyclesOpIso).inv =
+    (opcyclesMap φ).op ≫ S₁.cyclesOpIso.inv =
       S₂.cyclesOpIso.inv ≫ cyclesMap (opMap φ) := by
   rw [← cancel_mono S₁.op.iCycles, assoc, assoc, cyclesOpIso_inv_op_iCycles, cyclesMap_i,
     cyclesOpIso_inv_op_iCycles_assoc, ← op_comp, p_opcyclesMap, op_comp, opMap_τ₂]
@@ -1089,9 +1089,9 @@ lemma cyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
 @[reassoc]
 lemma cyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
     [S₁.HasRightHomology] [S₂.HasRightHomology] :
-    cyclesMap (opMap φ) ≫ (S₁.cyclesOpIso).hom =
+    cyclesMap (opMap φ) ≫ S₁.cyclesOpIso.hom =
       S₂.cyclesOpIso.hom ≫ (opcyclesMap φ).op := by
-  rw [← cancel_mono (S₁.cyclesOpIso).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
+  rw [← cancel_mono S₁.cyclesOpIso.inv, assoc, assoc, Iso.hom_inv_id, comp_id,
     cyclesOpIso_inv_naturality, Iso.hom_inv_id_assoc]
 
 @[simp]
@@ -1364,7 +1364,7 @@ variable {S}
 lemma opcyclesMap_comp_descOpcycles (φ : S₁ ⟶ S) [S₁.HasRightHomology] :
     opcyclesMap φ ≫ S.descOpcycles k hk =
       S₁.descOpcycles (φ.τ₂ ≫ k) (by rw [← φ.comm₁₂_assoc, hk, comp_zero]) := by
-  simp only [← cancel_epi (S₁.pOpcycles), p_opcyclesMap_assoc, p_descOpcycles]
+  simp only [← cancel_epi S₁.pOpcycles, p_opcyclesMap_assoc, p_descOpcycles]
 
 @[reassoc (attr := simp)]
 lemma RightHomologyData.opcyclesIso_inv_comp_descOpcycles :

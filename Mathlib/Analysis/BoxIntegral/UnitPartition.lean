@@ -434,7 +434,7 @@ theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : 
     · exact norm_zero.trans_le <| le_max_left 0 _
   have h₂ : ∀ᵐ x, ContinuousAt (s.indicator F) x := by
     filter_upwards [compl_mem_ae_iff.mpr hs₃] with _ h
-      using (hF.continuousOn).continuousAt_indicator h
+      using hF.continuousOn.continuousAt_indicator h
   obtain ⟨r, hr₁, hr₂⟩ := (hasIntegral_iff.mp <|
       AEContinuous.hasBoxIntegral (volume : Measure (ι → ℝ)) h₁ h₂
         IntegrationParams.Riemann) (ε / 2) (half_pos hε)

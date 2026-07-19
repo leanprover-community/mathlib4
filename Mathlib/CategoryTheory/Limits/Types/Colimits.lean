@@ -29,7 +29,7 @@ variable {J : Type v} [Category.{w} J]
 
 namespace Functor
 
-instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (F.ColimitType) :=
+instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} F.ColimitType :=
   small_of_surjective Quot.mk_surjective
 
 variable (F : J ⥤ Type u)

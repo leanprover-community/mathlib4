@@ -459,7 +459,7 @@ theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
     (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
   apply le_antisymm
-  · refine le_inf _ _ _ (Limits.prod.fst.le) (Limits.prod.snd.le)
+  · refine le_inf _ _ _ Limits.prod.fst.le Limits.prod.snd.le
   · apply leOfHom
     exact prod.lift (inf_le_left _ _).hom (inf_le_right _ _).hom
 

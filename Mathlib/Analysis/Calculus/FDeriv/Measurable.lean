@@ -937,7 +937,7 @@ theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [Measurab
       have A : deriv (f p.1) p.2 ∈ closure (Submodule.span 𝕜 (range (f p.1))) := by
         rw [← image_univ]
         apply range_deriv_subset_closure_span_image _ dense_univ (mem_range_self _)
-      have B : range (f p.1) ⊆ range (f.uncurry) := by
+      have B : range (f p.1) ⊆ range f.uncurry := by
         rintro - ⟨x, rfl⟩
         exact mem_range_self (p.1, x)
       exact closure_mono (Submodule.span_mono B) A

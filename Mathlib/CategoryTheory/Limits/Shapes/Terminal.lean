@@ -273,7 +273,7 @@ end Comparison
 variable {J : Type u} [Category.{v} J]
 
 instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F :=
-  HasLimit.mk { cone := _, isLimit := limitOfDiagramInitial (initialIsInitial) F }
+  HasLimit.mk { cone := _, isLimit := limitOfDiagramInitial initialIsInitial F }
 
 -- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object then the image of it is isomorphic
@@ -283,7 +283,7 @@ abbrev limitOfInitial (F : J ⥤ C) [HasInitial J] : limit F ≅ F.obj (⊥_ J) 
 
 instance hasLimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C}
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : HasLimit F :=
-  HasLimit.mk { cone := _, isLimit := limitOfDiagramTerminal (terminalIsTerminal) F }
+  HasLimit.mk { cone := _, isLimit := limitOfDiagramTerminal terminalIsTerminal F }
 
 -- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object and all the morphisms in the diagram
@@ -293,7 +293,7 @@ abbrev limitOfTerminal (F : J ⥤ C) [HasTerminal J] [∀ (i j : J) (f : i ⟶ j
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramTerminal terminalIsTerminal F)
 
 instance hasColimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C} : HasColimit F :=
-  HasColimit.mk { cocone := _, isColimit := colimitOfDiagramTerminal (terminalIsTerminal) F }
+  HasColimit.mk { cocone := _, isColimit := colimitOfDiagramTerminal terminalIsTerminal F }
 
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object then the image of it is isomorphic
@@ -304,7 +304,7 @@ abbrev colimitOfTerminal (F : J ⥤ C) [HasTerminal J] : colimit F ≅ F.obj (�
 
 instance hasColimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C}
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : HasColimit F :=
-  HasColimit.mk { cocone := _, isColimit := colimitOfDiagramInitial (initialIsInitial) F }
+  HasColimit.mk { cocone := _, isColimit := colimitOfDiagramInitial initialIsInitial F }
 
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object and all the morphisms in the diagram

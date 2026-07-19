@@ -1031,9 +1031,9 @@ lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s :=
   induction z using Sym2.inductionOn
   simp [pair_subset_iff]
 
-lemma sym2_eq_mk_image : s.sym2 = (Sym2.mk.uncurry) '' s ×ˢ s := by ext ⟨x, y⟩; aesop
+lemma sym2_eq_mk_image : s.sym2 = Sym2.mk.uncurry '' s ×ˢ s := by ext ⟨x, y⟩; aesop
 
-@[simp] lemma mk_preimage_sym2 : (Sym2.mk.uncurry) ⁻¹' s.sym2 = s ×ˢ s := rfl
+@[simp] lemma mk_preimage_sym2 : Sym2.mk.uncurry ⁻¹' s.sym2 = s ×ˢ s := rfl
 
 @[simp] lemma sym2_empty : (∅ : Set α).sym2 = ∅ := by ext ⟨x, y⟩; simp
 @[simp] lemma sym2_univ : (Set.univ : Set α).sym2 = Set.univ := by ext ⟨x, y⟩; simp

@@ -59,7 +59,7 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     simpa [hJK]
   -- From `(x) = J * (g)`, extract `y` with `x = y * g` and cancel `(g)` to show `J` is principal.
   suffices J * span {g} = span {x} by
-    obtain ⟨y, hyJ, rfl⟩ := (Ideal.mem_mul_span_singleton).1 hxJg
+    obtain ⟨y, hyJ, rfl⟩ := Ideal.mem_mul_span_singleton.1 hxJg
     rw [← span_singleton_mul_span_singleton, span_singleton_mul_left_inj] at this
     · exact ⟨y, this⟩
     · contrapose hx0

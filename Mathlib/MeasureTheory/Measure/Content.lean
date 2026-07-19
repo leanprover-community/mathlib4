@@ -422,7 +422,7 @@ theorem measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular 
   · calc
     μ K ≤ μ ⟨closure K, K.2.closure⟩ := μ.mono _ _ subset_closure
     _ ≤ μ.measure (closure K) := by
-      rw [μ.measure_apply (isClosed_closure.measurableSet)]
+      rw [μ.measure_apply isClosed_closure.measurableSet]
       exact μ.le_outerMeasure_compacts _
     _ = μ.measure K := K.2.measure_closure _
 

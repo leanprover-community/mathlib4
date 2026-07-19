@@ -278,7 +278,7 @@ namespace Embedding
 
 /-- Given an embedding, returns the corresponding partial equivalence with `⊤` as domain. -/
 noncomputable def toPartialEquiv (f : M ↪[L] N) : M ≃ₚ[L] N :=
-  ⟨⊤, f.toHom.range, f.equivRange.comp (Substructure.topEquiv)⟩
+  ⟨⊤, f.toHom.range, f.equivRange.comp Substructure.topEquiv⟩
 
 theorem toPartialEquiv_injective :
     Function.Injective (fun f : M ↪[L] N ↦ f.toPartialEquiv) := by

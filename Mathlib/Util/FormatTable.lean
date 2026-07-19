@@ -57,7 +57,7 @@ def formatTable (headers : Array String) (table : Array (Array String))
   let paddedTable := escapedTable.map fun row => row.mapIdx fun i cell =>
     cell.justify alignments[i]! widths[i]!
   -- Construct the lines of the table
-  let headerLine := "| " ++ String.intercalate " | " (paddedHeaders.toList) ++ " |"
+  let headerLine := "| " ++ String.intercalate " | " paddedHeaders.toList ++ " |"
   -- Construct the separator line, with colons to indicate alignment
   let separatorLine :=
     "| "
@@ -71,6 +71,6 @@ def formatTable (headers : Array String) (table : Array (Array String))
               | _ + 2, Alignment.center => ":" ++ String.replicate (w-2) '-' ++ ":"
               ).toList)
     ++ " |"
-  let rowLines := paddedTable.map (fun row => "| " ++ String.intercalate " | " (row.toList) ++ " |")
+  let rowLines := paddedTable.map (fun row => "| " ++ String.intercalate " | " row.toList ++ " |")
   -- Return the table
   return String.intercalate "\n" (headerLine :: separatorLine :: rowLines.toList)

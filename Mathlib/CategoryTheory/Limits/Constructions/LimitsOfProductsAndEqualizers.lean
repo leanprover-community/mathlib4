@@ -559,7 +559,7 @@ lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
   have : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts
   have : PreservesColimitsOfShape (Discrete WalkingPair) G :=
     preservesBinaryCoproducts_of_preservesInitial_and_pushouts G
-  have : PreservesColimitsOfShape (WalkingParallelPair) G :=
+  have : PreservesColimitsOfShape WalkingParallelPair G :=
       (preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts G)
   refine
     @preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts _ _ _ _ _ _ G _ ?_

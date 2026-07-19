@@ -1230,7 +1230,7 @@ theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
   · rw [embDomain_of_notMem_range] <;> simp [*]
 
 theorem support_extendDomain_subset (f : Subtype P →₀ M) :
-    ↑(f.extendDomain).support ⊆ {x | P x} := by
+    ↑f.extendDomain.support ⊆ {x | P x} := by
   grind
 
 @[simp]

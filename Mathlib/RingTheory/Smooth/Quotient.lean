@@ -41,7 +41,7 @@ lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] 
     have eq0 : f.lTensor I y = 0 := by
       apply inj
       rw [map_zero, ← LinearMap.comp_apply, comm1, LinearMap.comp_apply, hy, f.mem_ker.mp hx.1]
-    rcases ((lTensor_exact I (f.exact_subtype_ker_map) surj) y).mp eq0 with ⟨z, hz⟩
+    rcases ((lTensor_exact I f.exact_subtype_ker_map surj) y).mp eq0 with ⟨z, hz⟩
     have comm2 : ((TensorProduct.lid R M).comp (I.subtype.rTensor M)).comp
       (f.ker.subtype.lTensor I) = f.ker.subtype.comp
       ((TensorProduct.lid R f.ker).comp (I.subtype.rTensor f.ker)) := by

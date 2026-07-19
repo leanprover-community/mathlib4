@@ -206,7 +206,7 @@ theorem convexBodyLT'_volume :
     volume (convexBodyLT' K f w₀) = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
   have vol_box : ∀ B : ℝ≥0, volume {x : ℂ | |x.re| < 1 ∧ |x.im| < B ^ 2} = 4 * B ^ 2 := by
     intro B
-    rw [← (Complex.volume_preserving_equiv_real_prod.symm).measure_preimage]
+    rw [← Complex.volume_preserving_equiv_real_prod.symm.measure_preimage]
     · simp_rw [Set.preimage_ofPred_eq, Complex.measurableEquivRealProd_symm_apply]
       rw [show {a : ℝ × ℝ | |a.1| < 1 ∧ |a.2| < B ^ 2} =
         Set.Ioo (-1 : ℝ) (1 : ℝ) ×ˢ Set.Ioo (-(B : ℝ) ^ 2) ((B : ℝ) ^ 2) by

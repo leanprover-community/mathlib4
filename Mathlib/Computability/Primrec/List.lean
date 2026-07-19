@@ -313,11 +313,11 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
     (bindList b (m b - i)).filterMap fun b' ↦ (g b' <| mapGraph ih (l b')).map (b', ·)
   have mapGraph_primrec : Primrec₂ mapGraph :=
     to₂ <| list_flatMap snd <| optionToList.comp₂ <| listLookup.comp₂ .right (fst.comp₂ .left)
-  have bindList_primrec : Primrec₂ (bindList) :=
+  have bindList_primrec : Primrec₂ bindList :=
     nat_rec' snd
       (list_cons.comp fst (const []))
       (to₂ <| list_flatMap (snd.comp snd) (hl.comp₂ .right))
-  have graph_primrec : Primrec₂ (graph) :=
+  have graph_primrec : Primrec₂ graph :=
     to₂ <| nat_rec' snd (const []) <|
       to₂ <| listFilterMap
         (bindList_primrec.comp
@@ -440,7 +440,7 @@ theorem exists_mem_list : (hf : PrimrecPred p) → PrimrecPred fun L : List α �
 /-- Checking if every element of a list satisfies a decidable predicate is primitive recursive. -/
 theorem forall_mem_list : (hf : PrimrecPred p) → PrimrecPred fun L : List α ↦ ∀ a ∈ L, p a
   | ⟨_, hf⟩ => .of_eq
-      (Primrec.eq.comp (list_length.comp <| listFilter hf.primrecPred) (list_length)) <| by simp
+      (Primrec.eq.comp (list_length.comp <| listFilter hf.primrecPred) list_length) <| by simp
 
 variable {p : ℕ → Prop}
 

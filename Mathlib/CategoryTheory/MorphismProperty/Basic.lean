@@ -548,7 +548,7 @@ theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
 
 lemma isoClosure_eq_iff (P : MorphismProperty C) :
     P.isoClosure = P ↔ P.RespectsIso := by
-  refine ⟨(· ▸ P.isoClosure_respectsIso), fun hP ↦ le_antisymm ?_ (P.le_isoClosure)⟩
+  refine ⟨(· ▸ P.isoClosure_respectsIso), fun hP ↦ le_antisymm ?_ P.le_isoClosure⟩
   intro X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact (P.arrow_mk_iso_iff e).1 hf'
 
@@ -662,7 +662,7 @@ lemma map_inverseImage_eq_of_isEquivalence
 lemma inverseImage_map_eq_of_isEquivalence
     (P : MorphismProperty C) [P.RespectsIso] (F : C ⥤ D) [F.IsEquivalence] :
     (P.map F).inverseImage F = P := by
-  erw [((P.map F).inverseImage_equivalence_inverse_eq_map_functor (F.asEquivalence)), map_map,
+  erw [((P.map F).inverseImage_equivalence_inverse_eq_map_functor F.asEquivalence), map_map,
     P.map_eq_of_iso F.asEquivalence.unitIso.symm, map_id]
 
 end

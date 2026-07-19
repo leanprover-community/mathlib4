@@ -331,7 +331,7 @@ lemma mem_smoothNumbers_of_lt {m n : ℕ} (hm : 0 < m) (hmn : m < n) : m ∈ n.s
   fun _ h => Finset.mem_range.mpr <| lt_of_le_of_lt (le_of_mem_primeFactorsList h) hmn⟩
 
 /-- The non-zero non-`N`-smooth numbers are `≥ N`. -/
-lemma smoothNumbers_compl (N : ℕ) : (N.smoothNumbers)ᶜ \ {0} ⊆ {n | N ≤ n} := by
+lemma smoothNumbers_compl (N : ℕ) : N.smoothNumbersᶜ \ {0} ⊆ {n | N ≤ n} := by
   simpa only [smoothNumbers_eq_factoredNumbers]
     using factoredNumbers_compl <| Finset.filter_subset _ (Finset.range N)
 

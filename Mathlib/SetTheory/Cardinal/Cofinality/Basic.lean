@@ -179,7 +179,7 @@ theorem GaloisConnection.cof_le {f : γ → α} {g : α → γ} (h : GaloisConne
 
 theorem OrderIso.lift_cof_congr (f : α ≃o β) :
     Cardinal.lift.{v} (Order.cof α) = Cardinal.lift.{u} (Order.cof β) :=
-  f.to_galoisConnection.cof_le_lift.antisymm (f.symm.to_galoisConnection.cof_le_lift)
+  f.to_galoisConnection.cof_le_lift.antisymm f.symm.to_galoisConnection.cof_le_lift
 
 @[deprecated (since := "2026-03-20")] alias OrderIso.lift_cof_eq := OrderIso.lift_cof_congr
 

@@ -29,12 +29,12 @@ variable {R : Type u}
 namespace ULift
 
 instance mulZeroClass {M₀ : Type*} [MulZeroClass M₀] : MulZeroClass (ULift M₀) where
-  zero_mul _ := (Equiv.ulift).injective (by simp)
-  mul_zero _ := (Equiv.ulift).injective (by simp)
+  zero_mul _ := Equiv.ulift.injective (by simp)
+  mul_zero _ := Equiv.ulift.injective (by simp)
 
 instance distrib [Distrib R] : Distrib (ULift R) where
-  left_distrib _ _ _ := (Equiv.ulift).injective (by simp [left_distrib])
-  right_distrib _ _ _ := (Equiv.ulift).injective (by simp [right_distrib])
+  left_distrib _ _ _ := Equiv.ulift.injective (by simp [left_distrib])
+  right_distrib _ _ _ := Equiv.ulift.injective (by simp [right_distrib])
 
 instance instNatCast [NatCast R] : NatCast (ULift R) := ⟨(up ·)⟩
 instance instIntCast [IntCast R] : IntCast (ULift R) := ⟨(up ·)⟩

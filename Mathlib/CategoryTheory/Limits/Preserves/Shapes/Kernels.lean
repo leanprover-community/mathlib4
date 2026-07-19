@@ -137,7 +137,7 @@ def PreservesKernel.iso : G.obj (kernel f) ≅ kernel (G.map f) :=
 theorem PreservesKernel.iso_inv_ι :
     (PreservesKernel.iso G f).inv ≫ G.map (kernel.ι f) = kernel.ι (G.map f) :=
   IsLimit.conePointUniqueUpToIso_inv_comp (isLimitOfHasKernelOfPreservesLimit G f)
-    (limit.isLimit _) (WalkingParallelPair.zero)
+    (limit.isLimit _) WalkingParallelPair.zero
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -267,7 +267,7 @@ def PreservesCokernel.iso : G.obj (cokernel f) ≅ cokernel (G.map f) :=
 @[reassoc (attr := simp)]
 theorem PreservesCokernel.π_iso_hom : G.map (cokernel.π f) ≫ (iso G f).hom = cokernel.π (G.map f) :=
   IsColimit.comp_coconePointUniqueUpToIso_hom (isColimitOfHasCokernelOfPreservesColimit G f)
-    (colimit.isColimit _) (WalkingParallelPair.one)
+    (colimit.isColimit _) WalkingParallelPair.one
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

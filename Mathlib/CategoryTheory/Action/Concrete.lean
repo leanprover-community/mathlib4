@@ -48,7 +48,7 @@ variable {G : Type u} [Group G] {A : Action (Type u) G}
 
 @[simp]
 theorem ρ_inv_self_apply (g : G) (x : A.V) :
-    ConcreteCategory.hom ((A.ρ) g⁻¹) (ConcreteCategory.hom (A.ρ g) x) = x :=
+    ConcreteCategory.hom (A.ρ g⁻¹) (ConcreteCategory.hom (A.ρ g) x) = x :=
   show ConcreteCategory.hom (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul]
 
 @[simp]
@@ -173,7 +173,7 @@ lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n =
   apply Action.hom_ext
   ext (x : G ⧸ N)
   induction x using Quotient.inductionOn
-  exact Quotient.sound ((QuotientGroup.leftRel_apply).mpr <| by simpa)
+  exact Quotient.sound (QuotientGroup.leftRel_apply.mpr <| by simpa)
 
 /-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
 group homomorphism `H ⧸ N ⊓ H` to the `G`-endomorphisms of `G ⧸ N`. -/

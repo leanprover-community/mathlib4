@@ -60,7 +60,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     normalClosure ((stabilizer G a) : Set G) = ⊤ := by
   have : IsPretransitive G α := by
     rw [← is_one_pretransitive_iff]
-    exact isMultiplyPretransitive_of_le' (one_le_two) (le_of_lt hsn')
+    exact isMultiplyPretransitive_of_le' one_le_two (le_of_lt hsn')
   have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
     exact lt_trans (by norm_num) hsn'
@@ -402,7 +402,7 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
     exact orderOf_dvd_card
   -- important case : Nat.card α ≥ 3
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα3
-  have hsc : Set.ncard ((g.support)ᶜ : Set α) = n + 1 := by
+  have hsc : Set.ncard (g.supportᶜ : Set α) = n + 1 := by
     apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
       card_support_eq_two.mpr h2g, add_comm, hn]
@@ -428,7 +428,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   · -- trivial case : Fintype.card α ≤ 3
     rw [Nat.lt_succ_iff] at hα4
     apply alternatingGroup_le_of_index_le_two
-    rw [← Nat.mul_le_mul_right_iff (k := Nat.card G) (Nat.card_pos),
+    rw [← Nat.mul_le_mul_right_iff (k := Nat.card G) Nat.card_pos,
       Subgroup.index_mul_card, Nat.card_perm]
     apply le_trans (Nat.factorial_le hα4)
     rw [show Nat.factorial 3 = 2 * 3 by simp [Nat.factorial]]

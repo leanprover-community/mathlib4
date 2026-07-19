@@ -71,7 +71,7 @@ instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
   zero := by cat_disch
 
 instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
-  zero X Y := by repeat (constructor)
+  zero X Y := by repeat constructor
 
 namespace HasZeroMorphisms
 

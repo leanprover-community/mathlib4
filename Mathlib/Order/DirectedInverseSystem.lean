@@ -414,7 +414,7 @@ variable [SuccOrder ι] (f) (equivSucc : ∀ ⦃i⦄, ¬IsMax i → F i⁺ ≃ F
   /-- It is a natural family of bijections. -/
   nat : IsNatEquiv f equiv
   /-- It is compatible with a family of bijections relating `F i⁺` to `F i`. -/
-  compat {i : ι} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x) :
+  compat {i : ι} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) x :
     equiv ⟨i⁺, hsi⟩ x ⟨i, lt_succ_of_not_isMax hi⟩ = (equivSucc hi x).2
 
 variable {s t : Set ι} {f equivSucc} [WellFoundedLT ι]

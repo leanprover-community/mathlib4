@@ -77,7 +77,7 @@ lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖
 
 private lemma summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × {x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦
-    (c.2.1.2) ^ k * (r ^ (c.2.1.1 * c.2.1.2)) := by
+    c.2.1.2 ^ k * (r ^ (c.2.1.1 * c.2.1.2)) := by
   apply Summable.of_norm
   rw [summable_sigma_of_nonneg (fun a ↦ by positivity)]
   constructor

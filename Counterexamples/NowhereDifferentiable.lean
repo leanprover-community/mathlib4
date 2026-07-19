@@ -254,7 +254,7 @@ theorem not_differentiableAt_weierstrass
   have hb0' : (0 : ℝ) < b := by simpa using Nat.pos_of_ne_zero hb0
   have hb1 : (1 : ℝ) < b := by
     contrapose! hab with hb1
-    apply (mul_le_one₀ (ha.2.le) hb0'.le hb1).trans
+    apply (mul_le_one₀ ha.2.le hb0'.le hb1).trans
     simp [pi_nonneg]
   have hab' : 1 < a * b := lt_trans (lt_add_of_pos_left _ (mul_pos (by norm_num) pi_pos)) hab
   by_contra!

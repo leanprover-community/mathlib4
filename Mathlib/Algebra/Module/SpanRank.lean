@@ -289,7 +289,7 @@ lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPri
     fun ⟨⟨a, ha⟩, _⟩ ↦ ha ▸ spanFinrank_singleton (by simp_all)⟩
   have fg : p.FG := spanRank_finite_iff_fg.1 (by simp_all [spanFinrank])
   obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
-  exact ⟨a, ha ▸ (p.span_generators).symm⟩
+  exact ⟨a, ha ▸ p.span_generators.symm⟩
 
 end Defs
 

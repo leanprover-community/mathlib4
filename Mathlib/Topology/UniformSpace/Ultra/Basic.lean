@@ -128,7 +128,7 @@ variable [IsUltraUniformity X]
 
 lemma nhds_basis_clopens (x : X) :
     (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
-  refine (nhds_basis_uniformity' (IsUltraUniformity.hasBasis)).to_hasBasis' ?_ ?_
+  refine (nhds_basis_uniformity' IsUltraUniformity.hasBasis).to_hasBasis' ?_ ?_
   · intro V ⟨hV, h_symm, h_trans⟩
     exact ⟨ball x V, ⟨mem_ball_self _ hV,
       isClopen_ball_of_isSymm_of_isTrans_of_mem_uniformity _ hV⟩, le_rfl⟩

@@ -475,7 +475,7 @@ lemma injective_opcycles [Injective (K.X n₀)] [Injective (K.X n₁)]
   have hS : S.ShortExact :=
     { exact := S.exact_of_g_is_cokernel (K.opcyclesIsCokernel n₀ n₁ (by simp [← h])) }
   exact Retract.injective
-    { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
+    { i := _, r := _, retract := hS.splittingOfInjective.s_g }
 
 end Abelian
 

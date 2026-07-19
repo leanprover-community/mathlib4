@@ -579,7 +579,7 @@ lemma eq_bot_iff_forall_lt : x = ⊥ ↔ ∀ b : α, x < b := by
 
 @[to_dual eq_top_iff_forall_ge]
 lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := by
-  refine ⟨by simp +contextual, fun h ↦ (x.eq_bot_iff_forall_ne).2 fun y => ?_⟩
+  refine ⟨by simp +contextual, fun h ↦ x.eq_bot_iff_forall_ne.2 fun y => ?_⟩
   rintro rfl
   exact not_isBot y fun z => coe_le_coe.1 (h z)
 

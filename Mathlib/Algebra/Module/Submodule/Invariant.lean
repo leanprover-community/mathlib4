@@ -106,7 +106,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma bot_mem : ⊥ ∈ f.invtSubmodule := by simp [invtSubmodule]
 
-instance : BoundedOrder (f.invtSubmodule) where
+instance : BoundedOrder f.invtSubmodule where
   top := ⟨⊤, invtSubmodule.top_mem f⟩
   bot := ⟨⊥, invtSubmodule.bot_mem f⟩
   le_top := fun ⟨p, hp⟩ ↦ by simp

@@ -564,7 +564,7 @@ instance : Subsingleton (InfinitePlace ℚ) where
 noncomputable instance : Unique (InfinitePlace ℚ) :=
   ⟨⟨infinitePlace⟩, fun _ ↦ Subsingleton.elim _ infinitePlace⟩
 
-lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
+lemma isReal_infinitePlace : InfinitePlace.IsReal infinitePlace :=
   ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
 
 end Rat

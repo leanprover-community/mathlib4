@@ -43,7 +43,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     ∃ (ne : Set.Nonempty (toLex '' φ.support)),
       lexOrder φ = WithTop.some ((@wellFounded_lt (Lex (σ →₀ ℕ))
-        (instLTLex) (Lex.wellFoundedLT)).min (toLex '' φ.support) ne) := by
+        instLTLex Lex.wellFoundedLT).min (toLex '' φ.support) ne) := by
   suffices ne : Set.Nonempty (toLex '' φ.support) by
     use ne
     unfold lexOrder

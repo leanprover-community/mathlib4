@@ -167,7 +167,7 @@ open Polynomial Algebra in
   have : Ideal.span {xinv} ≠ ⊤ := fun eq ↦ hxR <|
     have ⟨p, hp, hpx⟩ := exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top _
       (⊥ : Ideal R) bot_ne_top (top_unique <| eq.ge.trans le_add_self)
-    (Subring.isIntegrallyClosedIn_iff).mp ‹_› ⟨p, by simpa [Monic, sub_eq_zero] using hp, hpx⟩
+    Subring.isIntegrallyClosedIn_iff.mp ‹_› ⟨p, by simpa [Monic, sub_eq_zero] using hp, hpx⟩
   have ⟨V, hV⟩ := Ideal.image_subset_nonunits_valuationSubring _ this
   exact ⟨V, fun r hr ↦ hV.1 (B.algebraMap_mem ⟨r, hr⟩),
     (V.inv_mem_nonunits_iff.mp <| hV.2 ⟨_, Ideal.subset_span rfl, rfl⟩).resolve_left hx0⟩
@@ -186,7 +186,7 @@ open Polynomial Algebra in
     have ⟨p, hp, hpx⟩ := exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top _ _
       (maximalIdeal.isMaximal R.toSubring).ne_top eq
     have H : IsUnit p.leadingCoeff := of_not_not fun h ↦ by simpa using sub_mem h hp
-    (Subring.isIntegrallyClosedIn_iff).mp ‹_›
+    Subring.isIntegrallyClosedIn_iff.mp ‹_›
       ⟨.C H.unit⁻¹.1 * p, by simp [Polynomial.Monic], by simpa using .inr hpx⟩
   have ⟨V, hV⟩ := Ideal.image_subset_nonunits_valuationSubring (A := B.toSubring) _ this
   refine ⟨V, ⟨fun r hr ↦ hV.1 (B.algebraMap_mem ⟨r, hr⟩),

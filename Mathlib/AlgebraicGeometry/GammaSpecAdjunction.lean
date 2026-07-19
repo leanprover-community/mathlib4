@@ -216,7 +216,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
 @[simps! base]
 def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) :=
-  LocallyRingedSpace.homMk (X.toΓSpecSheafedSpace) (fun x ↦ by
+  LocallyRingedSpace.homMk X.toΓSpecSheafedSpace (fun x ↦ by
     let p : PrimeSpectrum (Γ.obj (op X)) := X.toΓSpecFun x
     constructor
     -- show stalk map is local hom ↓

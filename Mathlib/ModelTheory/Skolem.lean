@@ -135,13 +135,13 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
     (aleph0_pos.trans_le (h1.trans (Cardinal.mk_subtype_le _))).ne')
   refine
     ⟨elementarySkolem₁Reduct (closure (L.sum L.skolem₁) (s ∪ Equiv.ulift '' s')),
-      (s.subset_union_left).trans subset_closure, ?_⟩
+      s.subset_union_left.trans subset_closure, ?_⟩
   have h := mk_image_eq_lift _ s' Equiv.ulift.injective
   rw [lift_umax.{w, w'}, lift_id'.{w, w'}] at h
   rw [coeSort_elementarySkolem₁Reduct, ← h, lift_inj]
   refine
     le_antisymm (lift_le.1 (lift_card_closure_le.trans ?_))
-      (mk_le_mk_of_subset ((s.subset_union_right).trans subset_closure))
+      (mk_le_mk_of_subset (s.subset_union_right.trans subset_closure))
   rw [max_le_iff, aleph0_le_lift, ← aleph0_le_lift.{_, w'}, h, add_eq_max, max_le_iff, lift_le]
   · refine ⟨h1, (mk_union_le _ _).trans ?_, (lift_le.2 card_functions_sum_skolem₁_le).trans ?_⟩
     · rw [← lift_le, lift_add, h, add_comm, add_eq_max h1]

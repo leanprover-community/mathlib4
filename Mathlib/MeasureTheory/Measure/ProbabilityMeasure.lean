@@ -664,7 +664,7 @@ section join_bind
 
 theorem isProbabilityMeasure_join {α : Type*} [MeasurableSpace α] {m : Measure (Measure α)}
     [IsProbabilityMeasure m] (hm : ∀ᵐ μ ∂m, IsProbabilityMeasure μ) :
-    IsProbabilityMeasure (m.join) := by
+    IsProbabilityMeasure m.join := by
   simp only [isProbabilityMeasure_iff, MeasurableSet.univ, Measure.join_apply]
   simp_rw [isProbabilityMeasure_iff] at hm
   exact lintegral_eq_const hm

@@ -774,7 +774,7 @@ open IsManifold in
 /-- The identity map is an immersion with complement `PUnit`. -/
 protected lemma id [IsManifold I n M] : IsImmersionOfComplement PUnit I I n (@id M) := by
   intro x
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (continuousAt_id) (.prodUnique 𝕜 E _)
+  apply IsImmersionAtOfComplement.mk_of_continuousAt continuousAt_id (.prodUnique 𝕜 E _)
     (chartAt H x) (chartAt H x) (mem_chart_source H x) (mem_chart_source H x)
     (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x)
   intro y hy

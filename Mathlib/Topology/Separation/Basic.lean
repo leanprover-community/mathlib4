@@ -625,7 +625,7 @@ lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{
   simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
     nhdsWithin_union, eventually_sup, nhdsWithin_singleton,
     eventually_pure, union_singleton, mem_insert_iff, true_or, and_true]
-  filter_upwards [nhdsWithin_compl_singleton_le x y h] with y using or_congr (Iff.rfl)
+  filter_upwards [nhdsWithin_compl_singleton_le x y h] with y using or_congr Iff.rfl
 
 @[simp]
 theorem ker_nhds [T1Space X] (x : X) : (𝓝 x).ker = {x} := by
@@ -1024,7 +1024,7 @@ theorem IsCompact.binary_compact_cover {K U V : Set X}
     rw [disjoint_iff_inter_eq_empty, sdiff_inter_sdiff, sdiff_eq_empty]
     exact hK.closure_subset_of_isOpen (hU.union hV) h2K
   have : SeparatedNhds (K \ U) (K \ V) :=
-    this.mono (sdiff_subset_sdiff_left (subset_closure)) (sdiff_subset_sdiff_left (subset_closure))
+    this.mono (sdiff_subset_sdiff_left subset_closure) (sdiff_subset_sdiff_left subset_closure)
   rcases this with ⟨O₁, O₂, h1O₁, h1O₂, h2O₁, h2O₂, hO⟩
   exact ⟨K \ O₁, K \ O₂, hK.diff h1O₁, hK.diff h1O₂, sdiff_subset_comm.mp h2O₁,
     sdiff_subset_comm.mp h2O₂, by rw [← sdiff_inter, hO.inter_eq, sdiff_empty]⟩

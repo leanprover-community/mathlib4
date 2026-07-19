@@ -173,7 +173,7 @@ instance (priority := 100) completable : CompletableTopField K :=
     nice := by
       rintro F hF h0
       have : ∃ γ₀ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass hv.v))ˣ, ∃ M ∈ F,
-          ∀ x ∈ M, (γ₀.1) ≤ v.restrict x := by
+          ∀ x ∈ M, γ₀.1 ≤ v.restrict x := by
         rcases Filter.inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
         rcases Valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
         exists γ₀, M, M_in
@@ -605,7 +605,7 @@ variable (K : Type*) [Field K] {Γ₀ : outParam Type*}
 /-- A `Valued` version of `Valuation.integer`, enabling the notation `𝒪[K]` for the
 valuation integers of a valued field `K`. -/
 @[reducible]
-def integer : Subring K := (vK.v).integer
+def integer : Subring K := vK.v.integer
 
 @[inherit_doc]
 scoped notation "𝒪[" K "]" => Valued.integer K

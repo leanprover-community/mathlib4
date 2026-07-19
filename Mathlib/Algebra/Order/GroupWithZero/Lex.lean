@@ -88,7 +88,7 @@ as their product. -/
 @[simps!]
 nonrec def inl : α →*₀o WithZero (αˣ ×ₗ βˣ) where
   __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inl α β)
-  monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inl_mono
+  monotone' := by simpa using (WithZero.map'_mono Prod.Lex.toLex_mono).comp inl_mono
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -99,7 +99,7 @@ as their product. -/
 @[simps!]
 nonrec def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
   __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inr α β)
-  monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inr_mono
+  monotone' := by simpa using (WithZero.map'_mono Prod.Lex.toLex_mono).comp inr_mono
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Given linearly ordered groups with zero M, N, the natural projection ordered homomorphism from

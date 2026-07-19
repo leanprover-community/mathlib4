@@ -307,7 +307,7 @@ theorem induced_orderTopology' {α β : Type*} [Preorder α] [ta : TopologicalSp
 theorem induced_orderTopology {α β : Type*} [Preorder α] [ta : TopologicalSpace β]
     [Preorder β] [OrderTopology β] (f : α → β) (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H : ∀ {x y}, x < y → ∃ a, f a ∈ Ioo x y) : @OrderTopology _ (induced f ta) _ :=
-  induced_orderTopology' f (hf)
+  induced_orderTopology' f hf
     (fun xa => let ⟨b, xb, ba⟩ := H xa; ⟨b, hf.1 ba, le_of_lt xb⟩)
     fun ax => let ⟨b, ab, bx⟩ := H ax; ⟨b, hf.1 ab, le_of_lt bx⟩
 

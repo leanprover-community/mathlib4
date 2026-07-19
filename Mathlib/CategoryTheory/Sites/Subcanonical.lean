@@ -112,7 +112,7 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using! congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
+    using! congr_arg J.yonedaEquiv (h _ (J.yonedaEquiv.symm x))
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -213,7 +213,7 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
-    using! congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
+    using! congr_arg J.uliftYonedaEquiv (h _ (J.uliftYonedaEquiv.symm x))
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -226,7 +226,7 @@ def uliftYonedaOpCompCoyoneda :
       (whiskeringLeft _ _ _).obj (sheafToPresheaf _ _) :=
   ((isoWhiskerLeft (J.yoneda.op ⋙ (sheafCompose J _).op)
     sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.symm).trans
-    (isoWhiskerRight (NatIso.op (J.uliftYonedaCompSheafToPresheaf.symm))
+    (isoWhiskerRight (NatIso.op J.uliftYonedaCompSheafToPresheaf.symm)
     (_ ⋙ (whiskeringLeft _ _ _).obj _))).trans
     (isoWhiskerRight CategoryTheory.uliftYonedaOpCompCoyoneda
     ((whiskeringLeft _ _ _).obj _))

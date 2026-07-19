@@ -113,7 +113,7 @@ def withValRingEquiv :
       refine isClosed_eq ?_ continuous_id
       exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
         Padic.isDenseInducing_cast_withVal.dense (uniformContinuous_coe _)).continuous.comp
-        (continuous_extension)
+        continuous_extension
     · rw [extensionHom_coe]
       apply IsDenseInducing.extend_eq
       exact continuous_coe _

@@ -144,7 +144,7 @@ noncomputable def differentialsSolution :
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe,
       Function.comp_apply, ← comm₂₃', ← comm₁₂_single]
     apply DFunLike.congr_fun (Function.Exact.linearMap_comp_eq_zero
-      (pres.toExtension.exact_cotangentComplex_toKaehler))
+      pres.toExtension.exact_cotangentComplex_toKaehler)
 
 lemma differentials.comm₂₃ :
     pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.repr.symm.toLinearMap =

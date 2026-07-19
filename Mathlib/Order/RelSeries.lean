@@ -133,7 +133,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.IsChain (· 
     simp_all [toList]
 
 lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
-  fun _ _ h ↦ (RelSeries.Equiv).injective <| Subtype.ext h
+  fun _ _ h ↦ RelSeries.Equiv.injective <| Subtype.ext h
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
@@ -185,7 +185,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
-  obtain ⟨p, _⟩ := (r.finiteDimensional_iff).mp ‹_›
+  obtain ⟨p, _⟩ := r.finiteDimensional_iff.mp ‹_›
   exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=

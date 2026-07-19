@@ -371,7 +371,7 @@ private lemma compRelationAux_map (r : σ') :
   simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom, map_one, one_mul, AddMonoidAlgebra.ofCoeff_single,
     single_eq_monomial]
   rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
-  simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
+  simp [Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
 
 private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
   induction p using MvPolynomial.induction_on with

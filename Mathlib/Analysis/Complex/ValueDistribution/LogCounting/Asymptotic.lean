@@ -49,7 +49,7 @@ lemma one_isLittleO_logCounting_single [DecidableEq E] [ProperSpace E] {e : E} :
   have hΘ : (fun r ↦ log r - log ‖e‖) =Θ[atTop] log :=
     (IsEquivalent.sub_isLittleO IsEquivalent.refl isLittleO_const_log_atTop).isTheta
   have h₁ : (1 : ℝ → ℝ) =o[atTop] fun r ↦ log r - log ‖e‖ :=
-    (hΘ.isLittleO_congr_right).2 isLittleO_const_log_atTop
+    hΘ.isLittleO_congr_right.2 isLittleO_const_log_atTop
   refine h₁.congr' EventuallyEq.rfl ?_
   filter_upwards [eventually_ge_atTop ‖e‖] with r hr
   simp [logCounting_single_eq_log_sub_const hr]

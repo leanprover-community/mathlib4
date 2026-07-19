@@ -121,7 +121,7 @@ noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnopIso (T : Triang
 lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
     T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
   simp only [mem_distinguishedTriangles_iff, Pretriangulated.rotate_distinguished_triangle
-    ((triangleOpEquivalence C).inverse.obj (T.rotate)).unop]
+    ((triangleOpEquivalence C).inverse.obj T.rotate).unop]
   exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnopIso T).symm
 
 set_option backward.defeqAttrib.useBackward true in

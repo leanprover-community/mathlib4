@@ -46,7 +46,7 @@ def sublists'Aux (a : α) (r₁ r₂ : List (List α)) : List (List α) :=
   r₁.foldl (init := r₂) fun r l => r ++ [a :: l]
 
 theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
-    sublists'Aux a r₁ r₂ = ((r₁.toArray).foldl (init := r₂.toArray)
+    sublists'Aux a r₁ r₂ = (r₁.toArray.foldl (init := r₂.toArray)
       (fun r l => r.push (a :: l))).toList := by
   intro r₁ r₂
   rw [sublists'Aux, Array.foldl_toList]

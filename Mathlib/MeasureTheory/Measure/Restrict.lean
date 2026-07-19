@@ -807,7 +807,7 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
   | hC t' ht' =>
     obtain ⟨s', hs', rfl⟩ := ht'
     rw [Subtype.image_preimage_coe]
-    exact hs.inter (hs'.nullMeasurableSet)
+    exact hs.inter hs'.nullMeasurableSet
   | empty => simp only [image_empty, nullMeasurableSet_empty]
   | compl t' _ ht' =>
     simp only [← range_sdiff_image Subtype.coe_injective, Subtype.range_coe_subtype, ofPred_mem_eq]

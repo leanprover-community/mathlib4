@@ -901,9 +901,9 @@ instance empty [IsEmpty M] : IsManifold I n M := by
   set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I
   -- Since `M` is empty, the condition about compatibility of transition maps is vacuous.
   have : (e.symm ≫ₕ e').source = ∅ := calc (e.symm ≫ₕ e').source
-    _ = (e.symm.source) ∩ e.symm ⁻¹' e'.source := by rw [← OpenPartialHomeomorph.trans_source]
-    _ = (e.symm.source) ∩ e.symm ⁻¹' ∅ := by rw [eq_empty_of_isEmpty (e'.source)]
-    _ = (e.symm.source) ∩ ∅ := by rw [preimage_empty]
+    _ = e.symm.source ∩ e.symm ⁻¹' e'.source := by rw [← OpenPartialHomeomorph.trans_source]
+    _ = e.symm.source ∩ e.symm ⁻¹' ∅ := by rw [eq_empty_of_isEmpty e'.source]
+    _ = e.symm.source ∩ ∅ := by rw [preimage_empty]
     _ = ∅ := inter_empty e.symm.source
   have : t = ∅ := calc t
     _ = I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I := by

@@ -1007,7 +1007,7 @@ lemma Topology.IsInducing.isCompact_preimage' (hf : IsInducing f) {K : Set Y}
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
 theorem Topology.IsClosedEmbedding.isCompact_preimage (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
-  hf.isInducing.isCompact_preimage (hf.isClosed_range) hK
+  hf.isInducing.isCompact_preimage hf.isClosed_range hK
 
 /-- A closed embedding is proper, i.e., inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `IsClosedEmbedding.isCompact_preimage`. -/

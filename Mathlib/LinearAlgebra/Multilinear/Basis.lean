@@ -53,7 +53,7 @@ noncomputable def multilinearMap [Finite ι] [∀ i, Finite (κ i)] :
     have : Fintype ι := Fintype.ofFinite _
     have (i : ι) : Fintype (κ i) := Fintype.ofFinite _
     LinearEquiv.multilinearMapCongrLeft (fun i => (b i).repr.symm) ≪≫ₗ
-      (b'.repr).multilinearMapCongrRight R ≪≫ₗ freeFinsuppEquiv.symm
+      b'.repr.multilinearMapCongrRight R ≪≫ₗ freeFinsuppEquiv.symm
 
 variable [Fintype ι] [∀ i, Finite (κ i)]
 

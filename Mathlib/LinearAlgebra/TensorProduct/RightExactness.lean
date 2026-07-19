@@ -279,7 +279,7 @@ def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_of_rightInverse_apply]
   right_inv := fun z ↦ by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom]
-    obtain ⟨y, rfl⟩ := lTensor_surjective Q (hgh.surjective) z
+    obtain ⟨y, rfl⟩ := lTensor_surjective Q hgh.surjective z
     rw [lTensor.inverse_of_rightInverse_apply]
     simp only [lTensor.toFun, Submodule.liftQ_apply] }
 

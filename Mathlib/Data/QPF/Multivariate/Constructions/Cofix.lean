@@ -514,7 +514,7 @@ theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
     (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α.append1 X)) (x : β)
     (h : ∀ (X Y) (f : Cofix F α → X) (f' : β → X) (k : X → Y),
       g (k ∘ f) (k ∘ f') x = (id ::: k) <$$> g f f' x) :
-    Cofix.dest (Cofix.corec₁ (@g) x) = g id (Cofix.corec₁ @g) x := by
+    Cofix.dest (Cofix.corec₁ @g x) = g id (Cofix.corec₁ @g) x := by
   rw [Cofix.corec₁, Cofix.dest_corec', ← h]; rfl
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised

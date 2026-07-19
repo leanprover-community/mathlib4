@@ -121,7 +121,7 @@ theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
   Finset.coe_inj.1 <| by simpa using hf.image_eq
 
 theorem image_preimage_of_bijective [DecidableEq β] {f : α → β} (s : Finset β)
-    (hf : Bijective f) : image f (preimage s f (hf.injective.injOn)) = s :=
+    (hf : Bijective f) : image f (preimage s f hf.injective.injOn) = s :=
   image_preimage_of_bij f s hf.bijOn_preimage
 
 lemma preimage_subset_of_subset_image [DecidableEq β] {f : α → β} {s : Finset β} {t : Finset α}

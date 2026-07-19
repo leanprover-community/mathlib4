@@ -262,7 +262,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ ⋙ functor.{u, w} P hs ⟶
         𝟭 (Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w))) where
   app X := haveI := CompHausLike.preregular hs
-    (ObjectProperty.homMk) (counitApp X.obj)
+    ObjectProperty.homMk (counitApp X.obj)
   naturality X Y g := by
     have := CompHausLike.preregular hs
     apply InducedCategory.hom_ext
@@ -296,7 +296,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     rw [this]
     apply congrArg
     symm
-    convert! (b.preimage).prop
+    convert! b.preimage.prop
     exact (mem_iff_eq_image (g.hom.app _ ∘ f) _ _).symm
 
 /--

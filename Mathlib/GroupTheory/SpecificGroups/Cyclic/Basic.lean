@@ -296,7 +296,7 @@ lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H') [IsCyclic H'] :
 theorem Subgroup.le_zpowers_iff (g : G) (H : Subgroup G) :
     H ≤ Subgroup.zpowers g ↔ ∃ n : ℕ, H = Subgroup.zpowers (g ^ n) := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · obtain ⟨x, rfl⟩ := (H.isCyclic_iff_exists_zpowers_eq_top).mp (isCyclic_of_le h)
+  · obtain ⟨x, rfl⟩ := H.isCyclic_iff_exists_zpowers_eq_top.mp (isCyclic_of_le h)
     obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp <| h (mem_zpowers x)
     obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg k
     · exact ⟨n, by rw [zpow_natCast]⟩

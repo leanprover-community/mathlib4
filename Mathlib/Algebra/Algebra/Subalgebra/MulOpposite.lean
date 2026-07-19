@@ -147,7 +147,7 @@ def linearEquivOp (S : Subalgebra R A) : S ≃ₗ[R] S.op where
 
 /-- Bijection between a subalgebra `S` and `MulOpposite` of its opposite. -/
 @[simps!]
-def algEquivOpMop (S : Subalgebra R A) : S ≃ₐ[R] (S.op)ᵐᵒᵖ where
+def algEquivOpMop (S : Subalgebra R A) : S ≃ₐ[R] S.opᵐᵒᵖ where
   __ := S.toSubsemiring.ringEquivOpMop
   commutes' _ := rfl
 

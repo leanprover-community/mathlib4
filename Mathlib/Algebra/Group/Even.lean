@@ -80,7 +80,7 @@ instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (IsSquare : α
 lemma even_ofMul_iff {a : α} : Even (Additive.ofMul a) ↔ IsSquare a := Iff.rfl
 
 @[simp]
-lemma isSquare_toMul_iff {a : Additive α} : IsSquare (a.toMul) ↔ Even a := Iff.rfl
+lemma isSquare_toMul_iff {a : Additive α} : IsSquare a.toMul ↔ Even a := Iff.rfl
 
 instance Additive.instDecidablePredEven [DecidablePred (IsSquare : α → Prop)] :
     DecidablePred (Even : Additive α → Prop) :=

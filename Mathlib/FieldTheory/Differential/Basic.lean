@@ -111,7 +111,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
         map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
       rw [div_mul_cancel₀, add_neg_cancel]
       simp only [ne_eq, AdjoinRoot.mk_eq_zero]
-      have : 0 < p.natDegree := Irreducible.natDegree_pos (Fact.out)
+      have : 0 < p.natDegree := Irreducible.natDegree_pos Fact.out
       apply not_dvd_of_natDegree_lt
       · intro nh
         simp_all

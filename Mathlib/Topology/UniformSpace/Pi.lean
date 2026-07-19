@@ -84,7 +84,7 @@ lemma Pi.uniformContinuous_restrict (S : Set ι) :
   Pi.uniformContinuous_precomp' _ ((↑) : S → ι)
 
 lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
-    UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
+    UniformSpace.comap S.restrict (Pi.uniformSpace (fun i : S ↦ α i)) =
     ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
   simp +unfoldPartialApp
     [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]

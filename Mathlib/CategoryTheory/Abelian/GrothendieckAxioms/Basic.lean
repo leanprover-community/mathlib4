@@ -408,7 +408,7 @@ lemma hasExactColimitsOfShape_discrete_of_hasExactColimitsOfShape_finset_discret
   preservesFiniteLimits :=
     letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
       comp_preservesFiniteLimits _ _
-    preservesFiniteLimits_of_natIso (liftToFinsetColimIso)
+    preservesFiniteLimits_of_natIso liftToFinsetColimIso
 
 attribute [local instance] hasCoproducts_of_finite_and_filtered in
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/

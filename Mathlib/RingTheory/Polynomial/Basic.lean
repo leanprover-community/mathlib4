@@ -495,7 +495,7 @@ lemma leadingCoeff_top : (⊤ : Ideal R[X]).leadingCoeff = ⊤ := by simp [← m
 
 lemma leadingCoeff_mul_le [NoZeroDivisors R] (I J : Ideal R[X]) :
     I.leadingCoeff * J.leadingCoeff ≤ (I * J).leadingCoeff := by
-  refine (mul_le).2 ?_
+  refine mul_le.2 ?_
   intro a ha b hb
   rcases (I.mem_leadingCoeff a).1 ha with ⟨p, hpI, hp⟩
   rcases (J.mem_leadingCoeff b).1 hb with ⟨q, hqJ, hq⟩

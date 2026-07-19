@@ -106,7 +106,7 @@ noncomputable def isColimitMapCoconeOfSubobjectMkEqISup
   rw [← h] at this
   refine IsColimit.ofIsoColimit (colimit.isColimit _)
     (Cocone.ext (Subobject.isoOfMkEqMk _ _ this) (fun j ↦ ?_))
-  rw [← cancel_mono (c.pt.hom)]
+  rw [← cancel_mono c.pt.hom]
   dsimp
   rw [Category.assoc, Subobject.ofMkLEMk_comp, Over.w]
   apply colimit.ι_desc

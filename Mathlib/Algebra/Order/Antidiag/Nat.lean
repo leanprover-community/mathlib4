@@ -45,7 +45,7 @@ This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
       Prod.ext_iff, true_and, ← coe_inj, Subtype.exists]
     simp
   { antidiagonal := fun n ↦ divisorsAntidiagonal (Additive.toMul n) |>.map
-      (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
+      (.prodMap Additive.ofMul.toEmbedding Additive.ofMul.toEmbedding)
     mem_antidiagonal := by simp [← ofMul_mul, mem_divisorsAntidiagonal] }
 
 end PNat
@@ -194,7 +194,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
   dsimp only [Nat.primeFactorsPiBij]
   apply ne_of_mem_of_not_mem (s := {x | p ∣ x}) <;> simp_rw [Set.mem_ofPred_eq]
   · rw [Finset.prod_filter]
-    convert! Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
+    convert! Finset.dvd_prod_of_mem _ (mem_attach n.primeFactors ⟨p, hp⟩)
     rw [if_pos rfl]
   · rw [mem_primeFactors] at hp
     rw [Prime.dvd_finsetProd_iff hp.1.prime]

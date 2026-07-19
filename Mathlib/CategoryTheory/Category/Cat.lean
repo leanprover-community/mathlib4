@@ -79,7 +79,7 @@ def _root_.CategoryTheory.Functor.toCatHom {C D : Type u} [Category.{v} C] [Cate
 
 @[ext]
 lemma ext {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F.toFunctor = G.toFunctor) : F = G :=
-  congrArg (Functor.toCatHom) h
+  congrArg Functor.toCatHom h
 
 /--
 The equivalence between the type of functors between two categories and
@@ -127,10 +127,10 @@ def _root_.CategoryTheory.NatTrans.toCatHom₂ {C D : Type u} [Category.{v} C]
 instance instCategory {X Y : Cat.{v, u}} : Category (X ⟶ Y) where
   id F := NatTrans.toCatHom₂ (𝟙 F.toFunctor)
   comp η₁ η₂ := NatTrans.toCatHom₂ (η₁.toNatTrans ≫ η₂.toNatTrans)
-  id_comp η := congrArg (NatTrans.toCatHom₂) (Category.id_comp η.toNatTrans)
-  comp_id η := congrArg (NatTrans.toCatHom₂) (Category.comp_id η.toNatTrans)
+  id_comp η := congrArg NatTrans.toCatHom₂ (Category.id_comp η.toNatTrans)
+  comp_id η := congrArg NatTrans.toCatHom₂ (Category.comp_id η.toNatTrans)
   assoc η₁ η₂ η₃ :=
-    congrArg (NatTrans.toCatHom₂) (Category.assoc η₁.toNatTrans η₂.toNatTrans η₃.toNatTrans)
+    congrArg NatTrans.toCatHom₂ (Category.assoc η₁.toNatTrans η₂.toNatTrans η₃.toNatTrans)
 
 @[simp, push_cast]
 lemma _root_.CategoryTheory.NatTrans.toCatHom₂_id {C D : Type u} [Category.{v} C] [Category.{v} D]
@@ -144,7 +144,7 @@ lemma _root_.CategoryTheory.NatTrans.toCatHom₂_comp {C D : Type u} [Category.{
 
 @[simp, push_cast]
 lemma toNatTrans_id {C D : Cat.{v, u}} (F : C ⟶ D) :
-  (𝟙 F : F ⟶ F).toNatTrans = 𝟙 (F.toFunctor) := rfl
+  (𝟙 F : F ⟶ F).toNatTrans = 𝟙 F.toFunctor := rfl
 
 @[simp, push_cast]
 lemma toNatTrans_comp {C D : Cat.{v, u}} {F G H : C ⟶ D} (η₁ : F ⟶ G) (η₂ : G ⟶ H) :
@@ -296,11 +296,11 @@ lemma Hom.toNatIso_leftUnitor {B C : Cat.{v, u}} (F : B ⟶ C) :
 
 @[simp, push_cast]
 lemma leftUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
-    (λ_ F).hom.toNatTrans = (F.toFunctor.leftUnitor).hom := rfl
+    (λ_ F).hom.toNatTrans = F.toFunctor.leftUnitor.hom := rfl
 
 @[simp, push_cast]
 lemma leftUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
-    (λ_ F).inv.toNatTrans = (F.toFunctor.leftUnitor).inv := rfl
+    (λ_ F).inv.toNatTrans = F.toFunctor.leftUnitor.inv := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -318,11 +318,11 @@ lemma Hom.toNatIso_rightUnitor {B C : Cat.{v, u}} (F : B ⟶ C) :
 
 @[simp, push_cast]
 lemma rightUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
-    (ρ_ F).hom.toNatTrans = (F.toFunctor.rightUnitor).hom := rfl
+    (ρ_ F).hom.toNatTrans = F.toFunctor.rightUnitor.hom := rfl
 
 @[simp, push_cast]
 lemma rightUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
-    (ρ_ F).inv.toNatTrans = (F.toFunctor.rightUnitor).inv := rfl
+    (ρ_ F).inv.toNatTrans = F.toFunctor.rightUnitor.inv := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

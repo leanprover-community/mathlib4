@@ -145,7 +145,7 @@ theorem IsIsotypic.linearEquiv_finsupp [Nontrivial M] (h : IsIsotypic R M) :
   have ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule R M)
   rw [← isSimpleModule_iff_isAtom] at hS
   have ⟨ι, e⟩ := (h S).linearEquiv_finsupp
-  exact ⟨ι, (isEmpty_or_nonempty ι).resolve_left fun _ ↦ not_subsingleton _ (e.some.subsingleton),
+  exact ⟨ι, (isEmpty_or_nonempty ι).resolve_left fun _ ↦ not_subsingleton _ e.some.subsingleton,
     S, hS, e⟩
 
 theorem IsIsotypicOfType.linearEquiv_fun [Module.Finite R M] (h : IsIsotypicOfType R M S) :
@@ -160,7 +160,7 @@ theorem IsIsotypic.linearEquiv_fun [Module.Finite R M] [Nontrivial M] (h : IsIso
   have ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule R M)
   rw [← isSimpleModule_iff_isAtom] at hS
   have ⟨n, e⟩ := (h S).linearEquiv_fun
-  exact ⟨n, neZero_iff.2 <| by rintro rfl; exact not_subsingleton _ (e.some.subsingleton), S, hS, e⟩
+  exact ⟨n, neZero_iff.2 <| by rintro rfl; exact not_subsingleton _ e.some.subsingleton, S, hS, e⟩
 
 theorem IsIsotypic.submodule_linearEquiv_fun {m : Submodule R M} [Module.Finite R m] [Nontrivial m]
     (h : IsIsotypic R m) : ∃ (n : ℕ) (_ : NeZero n) (S : Submodule R M),

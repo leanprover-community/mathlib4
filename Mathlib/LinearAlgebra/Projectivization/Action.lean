@@ -126,7 +126,7 @@ instance specialLinearGroup_is_two_pretransitive :
   obtain ⟨g, gD, gE⟩ := this hD hE
   by_cases hV : FiniteDimensional K V
   · suffices ∀ a : Kˣ, ∃ h : V ≃ₗ[K] V, h.det = a ∧ h • D = D ∧ h • D' = D' by
-      obtain ⟨h, hdet, hD, hE⟩ := this (g.det)⁻¹
+      obtain ⟨h, hdet, hD, hE⟩ := this g.det⁻¹
       use ⟨g * h, by simp [hdet]⟩
       simp [specialLinearGroup_smul_def, toLinearEquiv_eq_coe, mul_smul, gD, hD, gE, hE]
     intro a

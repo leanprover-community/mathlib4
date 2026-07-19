@@ -270,8 +270,8 @@ theorem symm_refl : (refl k P₁).symm = refl k P₁ :=
 @[trans]
 def trans (e : P₁ ≃ᴬ[k] P₂) (e' : P₂ ≃ᴬ[k] P₃) : P₁ ≃ᴬ[k] P₃ where
   toAffineEquiv := e.toAffineEquiv.trans e'.toAffineEquiv
-  continuous_toFun := e'.continuous_toFun.comp (e.continuous_toFun)
-  continuous_invFun := e.continuous_invFun.comp (e'.continuous_invFun)
+  continuous_toFun := e'.continuous_toFun.comp e.continuous_toFun
+  continuous_invFun := e.continuous_invFun.comp e'.continuous_invFun
 
 @[simp]
 theorem coe_trans (e : P₁ ≃ᴬ[k] P₂) (e' : P₂ ≃ᴬ[k] P₃) : ⇑(e.trans e') = e' ∘ e :=

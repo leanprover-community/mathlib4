@@ -164,7 +164,7 @@ lemma height_le_iff' {a : α} {n : ℕ∞} :
 Alternative definition of height, with the supremum ranging only over those series that end at `a`.
 -/
 lemma height_eq_iSup_last_eq (a : α) :
-    height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
+    height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑p.length := by
   apply eq_of_forall_ge_iff
   intro n
   rw [height_le_iff', iSup₂_le_iff]
@@ -175,8 +175,8 @@ Alternative definition of coheight, with the supremum only ranging over those se
 that begin at `a`.
 -/
 lemma coheight_eq_iSup_head_eq (a : α) :
-    coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
-  change height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
+    coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑p.length := by
+  change height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑p.length
   rw [height_eq_iSup_last_eq]
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, fun _ ↦ RelSeries.reverse_reverse _,
     fun _ ↦ RelSeries.reverse_reverse _⟩

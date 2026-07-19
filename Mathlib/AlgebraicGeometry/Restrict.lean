@@ -200,7 +200,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 def opensRestrict :
     Scheme.Opens U ≃ { V : X.Opens // V ≤ U } :=
-  (IsOpenImmersion.opensEquiv (U.ι)).trans (Equiv.subtypeEquivProp (by simp))
+  (IsOpenImmersion.opensEquiv U.ι).trans (Equiv.subtypeEquivProp (by simp))
 
 instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
     Algebra Γ(X, ⊤) Γ(U, ⊤) :=

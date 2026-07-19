@@ -98,7 +98,7 @@ lemma num_neg (A : Matrix m n ℚ) : (-A).num = -A.num := by
 @[simp] lemma den_transpose (A : Matrix m n ℚ) : (Aᵀ).den = A.den :=
   eq_of_forall_dvd fun _ ↦ by simpa [den_dvd_iff] using forall_comm
 
-@[simp] lemma num_transpose (A : Matrix m n ℚ) : (Aᵀ).num = (A.num)ᵀ := by
+@[simp] lemma num_transpose (A : Matrix m n ℚ) : (Aᵀ).num = A.numᵀ := by
   ext; simp [Matrix.num]
 
 /-!
