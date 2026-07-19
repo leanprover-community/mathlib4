@@ -15,8 +15,8 @@ public import Mathlib.Topology.Sets.Opens
 ## Main definitions
 
 * `OpenPartialHomeomorph.refl`: the identity open partial homeomorphism
-* `Topology.IsOpenEmbedding.toOpenPartialHomeomorph`: construct a partial homeomorphism from an
-  open embedding
+* `Topology.IsOpenEmbedding.toOpenPartialHomeomorph`: construct an open partial homeomorphism from
+  an open embedding
 -/
 
 @[expose] public section
@@ -224,9 +224,11 @@ theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
 
 /-- An open partial homeomorphism whose source is all of `X` defines an open embedding of `X` into
 `Y`. The converse is also true; see `IsOpenEmbedding.toOpenPartialHomeomorph`. -/
-theorem to_isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
+theorem isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
   e.isOpenEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.isOpenEmbedding
+
+@[deprecated (since := "2026-07-17")] alias to_isOpenEmbedding := isOpenEmbedding
 
 end OpenPartialHomeomorph
 
@@ -239,7 +241,7 @@ variable (f : X → Y) (h : IsOpenEmbedding f)
 
 /-- An open embedding of `X` into `Y`, with `X` nonempty, defines an open partial homeomorphism
 whose source is all of `X`. The converse is also true; see
-`OpenPartialHomeomorph.to_isOpenEmbedding`. -/
+`OpenPartialHomeomorph.isOpenEmbedding`. -/
 @[simps! (attr := mfld_simps) -fullyApplied apply source target]
 noncomputable def toOpenPartialHomeomorph [Nonempty X] : OpenPartialHomeomorph X Y :=
   OpenPartialHomeomorph.ofContinuousOpen (h.isEmbedding.injective.injOn.toPartialEquiv f univ)

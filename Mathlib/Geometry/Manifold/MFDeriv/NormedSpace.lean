@@ -105,6 +105,7 @@ section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- TODO: add pre-composition version also
 theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
     letI φ := extChartAt I x
