@@ -55,7 +55,7 @@ variable {G M : Type*} [Group G] [Fintype G] [DecidableEq G] [CommMonoid M]
 `f h` over `h`. -/]
 theorem prod_carrier_conj :
     ∏ h ∈ c.carrier, f (MulAut.conj g h) = ∏ h ∈ c.carrier, f h :=
-  have := c.carrier.coe_toFinset ▸ (bijOn_conj g c)
+  have := c.carrier.coe_toFinset ▸ (invOn_conj ..).bijOn (mapsTo_conj ..) (mapsTo_conj ..)
   Finset.prod_nbij (MulAut.conj g) this.mapsTo this.injOn this.surjOn (by simp)
 
 /-- Multiplying `f (g * h)` over `h` in any conjugacy class of `G` equals multiplying
@@ -65,7 +65,7 @@ theorem prod_carrier_conj :
 `f (h * g)` over `h`. -/]
 theorem prod_carrier_mul_left :
     ∏ h ∈ c.carrier, f (g * h) = ∏ h ∈ c.carrier, f (h * g) :=
-  have := c.carrier.coe_toFinset ▸ (bijOn_conj g c)
+  have := c.carrier.coe_toFinset ▸ (invOn_conj ..).bijOn (mapsTo_conj ..) (mapsTo_conj ..)
   Finset.prod_nbij (MulAut.conj g) this.mapsTo this.injOn this.surjOn (by simp)
 
 end Group

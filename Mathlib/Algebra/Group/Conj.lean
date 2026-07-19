@@ -308,6 +308,26 @@ theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
   rw [carrier, eq_comm, mk_eq_mk_iff_isConj, ← quotient_mk_eq_mk, Quotient.lift_mk]
   rfl
 
+@[to_additive (attr := simp)]
+lemma mk_conj {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (m * x * m⁻¹) = ConjClasses.mk x := by
+  simp [mk_eq_mk_iff_isConj]
+
+@[to_additive (attr := simp)]
+lemma mk_inv_conj {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (m⁻¹ * x * m) = ConjClasses.mk x := by
+  simp [mk_eq_mk_iff_isConj]
+
+@[to_additive (attr := simp)]
+lemma mk_conj_assoc {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (m * (x * m⁻¹)) = ConjClasses.mk x := by
+  simp [← mul_assoc]
+
+@[to_additive (attr := simp)]
+lemma mk_inv_conj_assoc {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (m⁻¹ * (x * m)) = ConjClasses.mk x := by
+  simp [← mul_assoc]
+
 @[to_additive]
 theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk ⁻¹' {a} :=
   Set.ext fun _ => mem_carrier_iff_mk_eq
@@ -315,12 +335,11 @@ theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk
 @[to_additive]
 theorem mapsTo_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
     Set.MapsTo (MulAut.conj k) c.carrier c.carrier := by
-  simp only [Set.MapsTo, mem_carrier_iff_mk_eq, MulAut.conj_apply]
-  intro _ hx; simp [← hx, mk_eq_mk_iff_isConj]
+  simp [Set.MapsTo, mem_carrier_iff_mk_eq]
 
 @[to_additive]
-theorem bijOn_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
-    Set.BijOn (MulAut.conj k) c.carrier c.carrier :=
-  (MulAut.conj k).bijOn' (mapsTo_conj k c) (by simpa using mapsTo_conj k⁻¹ _)
+theorem invOn_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
+    Set.InvOn (MulAut.conj k⁻¹) (MulAut.conj k) c.carrier c.carrier := by
+  simpa using (MulAut.conj k⁻¹).invOn
 
 end ConjClasses
