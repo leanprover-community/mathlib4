@@ -88,6 +88,12 @@ def Subfield.botEquivZMod (p : ℕ) [hp : Fact (Nat.Prime p)] [Algebra (ZMod p) 
     (algebraMap (ZMod p) K).rangeRestrictFieldEquiv.symm
 
 @[simp]
+theorem Subfield.botEquivZMod_symm_apply (p : ℕ) [hp : Fact (Nat.Prime p)] [Algebra (ZMod p) K]
+    [Algebra (ZMod p) (⊥ : Subfield K)] (x : ZMod p) :
+    (Subfield.botEquivZMod K p).symm x = algebraMap (ZMod p) (⊥ : Subfield K) x := by
+  rcases ZMod.natCast_zmod_surjective x with ⟨n, rfl⟩
+  simp
+
 theorem Subfield.coe_botEquivZMod_symm_apply (p : ℕ) [hp : Fact (Nat.Prime p)] [Algebra (ZMod p) K]
     (x : ZMod p) :
     ↑((Subfield.botEquivZMod K p).symm x) = algebraMap (ZMod p) K x :=
