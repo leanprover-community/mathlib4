@@ -235,7 +235,7 @@ theorem coeff_hermite_eq_intCast (n k : ℕ) :
 
 theorem coeff_hermite_explicit' (n k : ℕ) :
     coeff (hermite R (2 * n + k)) k
-      = (-1) ^ n * ((2 * n - 1)‼ : R) * Nat.choose (2 * n + k) k := by
+      = (-1) ^ n * (2 * n - 1)‼ * Nat.choose (2 * n + k) k := by
   rw [coeff_hermite_eq_intCast, coeff_hermite_explicit]
   push_cast
   ring
