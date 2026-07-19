@@ -376,8 +376,7 @@ theorem smul_support_subset_prod (s : SummableFamily Γ R α)
     (Function.support fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2) ⊆
     ((s.finite_co_support' gh.1).prod (t.finite_co_support' gh.2)).toFinset := by
   intro _ hab
-  simp only [ne_eq, Set.Finite.coe_toFinset, Set.mem_prod,
-    Set.mem_ofPred_eq]
+  simp only [ne_eq, Set.Finite.coe_toFinset, Set.mem_prod, Set.mem_ofPred_eq]
   exact ⟨left_ne_zero_of_smul hab, right_ne_zero_of_smul hab⟩
 
 theorem hasFiniteSupport_smul (s : SummableFamily Γ R α)

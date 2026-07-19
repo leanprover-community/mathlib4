@@ -286,8 +286,7 @@ protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
       use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
       apply Set.Finite.subset (s := (t₁ ∩ f.support) ∪ (t₂ ∩ g.support)) (ht₁.2.union ht₂.2)
       intro a ha
-      simp only [ne_eq,
-        mem_inter_iff, mem_support, mem_union]
+      simp only [ne_eq, mem_inter_iff, mem_support, mem_union]
       by_contra! hCon
       simp_all
 
