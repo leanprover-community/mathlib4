@@ -67,11 +67,11 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
     lift_rank_mul_lift_rank, toNat_lift]
 
-theorem Module.finrank_left_dvd_finrank :
+theorem Module.finrank_dvd_finrank_left :
     Module.finrank F K ∣ Module.finrank F A :=
   dvd_of_mul_right_eq (finrank K A) (finrank_mul_finrank ..)
 
-theorem Module.finrank_right_dvd_finrank :
+theorem Module.finrank_dvd_finrank_right :
     Module.finrank K A ∣ Module.finrank F A :=
   dvd_of_mul_left_eq (finrank F K) (finrank_mul_finrank ..)
 
