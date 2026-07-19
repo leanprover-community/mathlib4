@@ -21,7 +21,6 @@ a field admitting a finite extension which is algebraically closed is either alg
 closed or real closed.
 
 -/
-@[expose] public section
 
 universe u
 
@@ -32,19 +31,17 @@ open IntermediateField Module Nat Polynomial
 variable {F : Type u} {K : Type u} [Field F] [Field K] [Algebra F K] [Hac : IsAlgClosed K]
 
 -- All of these lemmas are easy corollaries of the main theorem.
-private
-/- The degree of any irreducible polynomial divides the degree of the algebraic closure .-/
-lemma finrank_divides {f : F[X]} (h : Irreducible f) : f.natDegree ∣ finrank F K :=
-  h.natDegree_dvd_finrank (Hac.splits _)
 
-/- If a field admits an algebraically closed extension of degree dividing a prime p, any polynomial
-   either has a root or has all irreducible divisors of degree p and degree divisible by p. -/
+/- If a field admits an algebraically closed extension of degree dividing a prime `p`, any
+   polynomial either has a root or has all irreducible divisors of degree `p` and degree
+   divisible by `p`. -/
 lemma divisor_by_finrank {p : ℕ} (f : F[X]) (hr : finrank F K ∣ p) (hp : p.Prime) :
     (∃ x, f.IsRoot x) ∨ (∀ d, Irreducible d → d ∣ f → d.natDegree = p) := by
   rw [or_iff_not_imp_right]
   push Not
   rintro ⟨d, h1, h2, h3⟩
-  have h := ((dvd_prime hp).mp ((finrank_divides h1).trans hr)).resolve_right h3
+  have h := h1.natDegree_dvd_finrank (Hac.splits _)
+  have h := ((dvd_prime hp).mp (h.trans hr)).resolve_right h3
   have ⟨x, hx⟩ := exists_root_of_natDegree_eq_one h
   exact ⟨x, hx.dvd h2⟩
 
@@ -75,10 +72,10 @@ lemma finite_alg_closure_perfect [hf : FiniteDimensional F K] : PerfectField F :
       exact PerfectField.ofCharZero
   exact perfectField_of_isSeparable_of_perfectField_top F E
 
-/- If a field admits an extension of prime degree p which is algebraically closed, then
-   its characteristic cannot equal p. -/
+/- If a field admits an extension of prime degree `p` which is algebraically closed, then
+   its characteristic cannot equal `p`. -/
 lemma finite_alg_closure_prime {p : ℕ} (hp : p.Prime) (hr : finrank F K = p) : ¬CharP F p := by
-  let t := p-1
+  let t := p - 1
   subst hr
   have hf := FiniteDimensional.of_finrank_pos hp.pos
   have := finite_alg_closure_perfect (hf := hf)
@@ -91,10 +88,10 @@ lemma finite_alg_closure_prime {p : ℕ} (hp : p.Prime) (hr : finrank F K = p) :
   rw [(artinSchreierPoly_isMonicOfDegree _ hp.one_lt).1] at h
   simp_all [Nat.not_prime_one]
 
-/- If a and b belong to a field which admits an algebraically closed quadratic extension,
-   then one of a^2+b or -b is a square. -/
+/- If `a` and `b` belong to a field which admits an algebraically closed quadratic extension,
+   then one of `a^2 + b` or `-b` is a square. -/
 lemma quadratic_alg_closure (h : finrank F K ∣ 2) (a b : F) :
-    IsSquare (a*a+b) ∨ IsSquare (-b) := by
+    IsSquare (a*a + b) ∨ IsSquare (-b) := by
   let g := monomial 4 1 + monomial 2 (-2*a) + monomial 0 (a^2 + b)
   have h1 : g.IsMonicOfDegree 4 := by
     subst g
@@ -128,7 +125,7 @@ lemma quadratic_alg_closure (h : finrank F K ∣ 2) (a b : F) :
       use f₀
       grind only
 
-/- A field containing a square root of -1 and admitting a finite extension which is algebraically
+/- A field containing a square root of `-1` and admitting a finite extension which is algebraically
    closed is itself algebraically closed. -/
 lemma finite_alg_closure_i [hf : FiniteDimensional F K] (hm : IsSquare (-1 : F)) :
     IsAlgClosed F := by
@@ -153,7 +150,7 @@ lemma finite_alg_closure_i [hf : FiniteDimensional F K] (hm : IsSquare (-1 : F))
         have := (hm.map (algebraMap F _)).mul h
         aesop
       · have h := (X_pow_sub_C_irreducible_iff_of_prime_pow hp h1 (n := 2) (by simp)).mpr h3
-        have h := finrank_divides h (K := K)
+        have h := h.natDegree_dvd_finrank (Hac.splits _)
         simp [hr, not_pos_pow_dvd hp.one_lt] at h
     rw [hr]
     rcases divisor_by_finrank' _ hr.dvd hp with ⟨z, hz⟩ | hz
@@ -165,7 +162,7 @@ lemma finite_alg_closure_i [hf : FiniteDimensional F K] (hm : IsSquare (-1 : F))
   have h := equivOfEq (bot_eq_top_iff_finrank_eq_one.mpr h)
   exact Hac.of_ringEquiv _ _ (((botEquiv _ _).symm.trans h).trans topEquiv).symm
 
-/- A field in which -1 is not a square, but adjoining its square root gives an algebraic
+/- A field in which `-1` is not a square, but adjoining its square root gives an algebraic
    closure, is real closed. -/
 omit Hac in
 lemma RealClosed_from_quadratic (h1 : ¬IsSquare (-1 : F)) (h2 : ∃ i : K, i ^ 2 = -1 ∧
@@ -196,8 +193,8 @@ end Lemmas
 
 /- The Artin-Schreier theorem: a field admitting a finite extension which is algebraically closed
    is either algebraically closed or real closed. -/
-theorem isAlgClosed_or_isRealClosed (F : Type u) (K : Type u) [Field F] [Field K] [Algebra F K]
-    [IsAlgClosed K] [FiniteDimensional F K] : IsAlgClosed F ∨ IsRealClosed F := by
+public theorem isAlgClosed_or_isRealClosed (F : Type u) (K : Type u) [Field F] [Field K]
+    [Algebra F K] [IsAlgClosed K] [FiniteDimensional F K] : IsAlgClosed F ∨ IsRealClosed F := by
   open IntermediateField in
   by_cases hF : IsSquare (-1 : F)
   · left

@@ -717,8 +717,8 @@ protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
   · simpa [hp] using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
 
-/-- If every monic irreducible factor of a polynomial f has natDegree divisible by n,
-  then so does f itself. -/
+/-- If every monic irreducible factor of a polynomial `f` has `natDegree` divisible by `n`,
+  then so does `f` itself. -/
 lemma dvd_natDegree_of_monic_of_irreducible (f : R[X]) {n : ℕ}
     (h : ∀ d, Monic d → Irreducible d → d ∣ f → n ∣ d.natDegree) : n ∣ f.natDegree := by
   open Multiset in
