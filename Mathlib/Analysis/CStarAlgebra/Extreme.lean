@@ -22,7 +22,7 @@ This file contains results on the extreme points of the closed unit ball in (uni
 
 [C⋆-algebras and W⋆-algebras][sakai1971] -/
 
-@[expose] public section
+public section
 
 open Set Metric CFC CStarAlgebra Unitization
 
