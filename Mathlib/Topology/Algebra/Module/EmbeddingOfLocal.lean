@@ -30,10 +30,6 @@ lemma Filter.comap_inf_congr {α β : Type*} {m₁ m₂ : α → β} {f : Filter
 variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
   [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} {f : E →ₛₗ[σ] F}
 
-/-!
-## Third version
--/
-
 /-- Let `V` be an absorbent set in a vector space, and fix a "scale" `c : 𝕜` with `0 < ‖c‖ < 1`.
 Then, we can build a retraction `p : E → V` such that:
 * if `x` is outside of `V`, then `p x` is outside of `c • V`.
