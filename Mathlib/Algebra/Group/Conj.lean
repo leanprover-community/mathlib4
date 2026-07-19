@@ -96,11 +96,11 @@ theorem isConj_inv_mul_mul_left {a b : α} : IsConj (a⁻¹ * b * a) b :=
 
 @[to_additive (attr := simp)]
 theorem isConj_mul_mul_inv_right {a b : α} : IsConj b (a * b * a⁻¹) :=
-  isConj_conj_self.symm
+  isConj_mul_mul_inv_left.symm
 
 @[to_additive (attr := simp)]
 theorem isConj_inv_mul_mul_right {a b : α} : IsConj b (a⁻¹ * b * a) :=
-  isConj_conj_symm_self.symm
+  isConj_inv_mul_mul_left.symm
 
 @[to_additive]
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ := by
