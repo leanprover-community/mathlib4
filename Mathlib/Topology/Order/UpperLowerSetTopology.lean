@@ -59,7 +59,7 @@ namespace Topology
 /-- Topology whose open sets are upper sets.
 
 Note: In general the upper set topology does not coincide with the upper topology. -/
-@[implicit_reducible]
+@[instance_reducible]
 def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsUpperSet
   isOpen_univ := isUpperSet_univ
@@ -69,7 +69,7 @@ def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
 /-- Topology whose open sets are lower sets.
 
 Note: In general the lower set topology does not coincide with the lower topology. -/
-@[implicit_reducible]
+@[instance_reducible]
 def lowerSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsLowerSet
   isOpen_univ := isLowerSet_univ
@@ -106,7 +106,9 @@ instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
 variable [Preorder α] [Preorder β]
 
 instance : Preorder (WithUpperSet α) := ‹Preorder α›
-instance : TopologicalSpace (WithUpperSet α) := upperSet α
+
+instance : TopologicalSpace (WithUpperSet α) :=
+  fast_instance% upperSet α
 
 lemma ofUpperSet_le_iff {a b : WithUpperSet α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b := Iff.rfl
 lemma toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b := Iff.rfl
@@ -153,7 +155,9 @@ instance [Inhabited α] : Inhabited (WithLowerSet α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithLowerSet α) := ‹Preorder α›
-instance : TopologicalSpace (WithLowerSet α) := lowerSet α
+
+instance : TopologicalSpace (WithLowerSet α) :=
+  fast_instance% lowerSet α
 
 lemma ofLowerSet_le_iff {a b : WithLowerSet α} : ofLowerSet a ≤ ofLowerSet b ↔ a ≤ b := Iff.rfl
 lemma toLowerSet_le_iff {a b : α} : toLowerSet a ≤ toLowerSet b ↔ a ≤ b := Iff.rfl
@@ -193,7 +197,7 @@ attribute [nolint docBlame] IsUpperSet.topology_eq_upperSetTopology
 instance [Preorder α] : Topology.IsUpperSet (WithUpperSet α) := ⟨rfl⟩
 
 instance [Preorder α] : @Topology.IsUpperSet α (upperSet α) _ := by
-  letI := upperSet α
+  let := upperSet α
   exact ⟨rfl⟩
 
 /--
@@ -208,7 +212,7 @@ attribute [nolint docBlame] IsLowerSet.topology_eq_lowerSetTopology
 instance [Preorder α] : Topology.IsLowerSet (WithLowerSet α) := ⟨rfl⟩
 
 instance [Preorder α] : @Topology.IsLowerSet α (lowerSet α) _ := by
-  letI := lowerSet α
+  let := lowerSet α
   exact ⟨rfl⟩
 
 namespace IsUpperSet
@@ -252,7 +256,7 @@ lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
 
 /--
 The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite
-interval (-∞,a].
+interval $(-∞,a]$.
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
   rw [closure_eq_lowerClosure, lowerClosure_singleton]
@@ -348,7 +352,7 @@ lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
 
 /--
 The closure of a singleton `{a}` in the lower set topology is the right-closed left-infinite
-interval (-∞,a].
+interval $(-∞,a]$.
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Ici a := by
   rw [closure_eq_upperClosure, upperClosure_singleton]

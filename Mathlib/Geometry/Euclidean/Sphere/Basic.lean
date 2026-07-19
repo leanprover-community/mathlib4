@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.StrictConvexBetween
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.Normed.Affine.Convex
 public import Mathlib.Geometry.Euclidean.Basic
+public import Mathlib.Geometry.Euclidean.Projection
 
 /-!
 # Spheres
@@ -137,6 +138,11 @@ lemma Sphere.radius_nonneg_of_mem {s : Sphere P} {p : P} (h : p ∈ s) : 0 ≤ s
 @[simp] lemma Sphere.center_mem_iff {s : Sphere P} : s.center ∈ s ↔ s.radius = 0 := by
   simp [mem_sphere, eq_comm]
 
+/-- A point of a sphere that differs from another point of the sphere is not its center. -/
+lemma Sphere.ne_center_of_mem_of_mem_of_ne {s : Sphere P} {p q : P}
+    (hp : p ∈ s) (hq : q ∈ s) (hpq : p ≠ q) : p ≠ s.center := by
+  grind [dist_eq_zero, mem_sphere']
+
 /-- A set of points is cospherical if they are equidistant from some
 point. In two dimensions, this is the same thing as being
 concyclic. -/
@@ -177,11 +183,39 @@ theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
   use p
   simp
 
+/-- If `ps` is cospherical, then any of its isometric images is cospherical. -/
+theorem _root_.Isometry.cospherical {E F : Type*} [MetricSpace E] [MetricSpace F] {f : E → F}
+    (hf : Isometry f) {ps : Set E} (hps : Cospherical ps) : Cospherical (f '' ps) := by
+  rcases hps with ⟨c, r, hc⟩
+  refine ⟨f c, r, ?_⟩
+  rintro _ ⟨p, hp, rfl⟩
+  rw [hf.dist_eq, hc p hp]
+
 end MetricSpace
 
 section NormedSpace
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+
+/-- If a set of points is cospherical, then its image under the inclusion of any affine subspace
+containing it is cospherical. -/
+theorem Cospherical.inclusion {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
+    (hps : Cospherical ps) (hS : S₁ ≤ S₂) :
+    Cospherical (AffineSubspace.inclusion hS '' ps) := by
+  refine Isometry.cospherical ?_ hps
+  exact S₁.subtypeₐᵢ.isometry
+
+/-- If a set of points in an affine subspace is cospherical, then its image under the coercion
+to the ambient space is cospherical. -/
+theorem Cospherical.subtype_val {S : AffineSubspace ℝ P} [Nonempty S] {ps : Set S}
+    (hps : Cospherical ps) : Cospherical (Subtype.val '' ps) :=
+  Isometry.cospherical S.subtypeₐᵢ.isometry hps
+
+omit [NormedSpace ℝ V] in
+/-- For a point on a sphere, the norm of its displacement from the center equals the radius. -/
+theorem norm_vsub_center_eq_radius {s : Sphere P} {p : P} (hp : p ∈ s) :
+    ‖p -ᵥ s.center‖ = s.radius := by
+  rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hp
 
 lemma Sphere.nonempty_iff [Nontrivial V] {s : Sphere P} : (s : Set P).Nonempty ↔ 0 ≤ s.radius := by
   refine ⟨fun ⟨p, hp⟩ ↦ radius_nonneg_of_mem hp, fun h ↦ ?_⟩
@@ -323,6 +357,32 @@ section EuclideanSpace
 
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
+/-- A set of points in an affine subspace is cospherical if and only if its image in the ambient
+space is cospherical. -/
+@[simp]
+theorem Cospherical.subtype_val_iff {S : AffineSubspace ℝ P} [Nonempty S]
+    [S.direction.HasOrthogonalProjection] {ps : Set S} :
+    Cospherical (Subtype.val '' ps) ↔ Cospherical ps := by
+  refine ⟨fun h => ?_, Cospherical.subtype_val⟩
+  rcases ps.eq_empty_or_nonempty with rfl | ⟨p₀, hp₀⟩
+  · exact cospherical_empty
+  · rcases h with ⟨c, r, hr⟩
+    let c' : S := orthogonalProjection S c
+    refine ⟨c', dist p₀ c', fun p hp => ?_⟩
+    have hp_dist : dist (p : P) c = r := by grind
+    have hp₀_dist : dist (p₀ : P) c = r := by grind
+    have hpp₀ : dist (p : P) (c : P) = dist (p₀ : P) (c : P) := hp_dist.trans hp₀_dist.symm
+    exact (dist_eq_iff_dist_orthogonalProjection_eq (s := S) (p₃ := c) p.2 p₀.2).1 hpp₀
+
+/-- A set of points is cospherical in an affine subspace `S₁` if and only if its image under the
+inclusion into a larger affine subspace `S₂` is cospherical. -/
+theorem Cospherical.inclusion_iff {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
+    [S₁.direction.HasOrthogonalProjection] [S₂.direction.HasOrthogonalProjection] (hS : S₁ ≤ S₂) :
+    Cospherical (AffineSubspace.inclusion hS '' ps) ↔ Cospherical ps := by
+  have : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
+  simp [(Cospherical.subtype_val_iff (S := S₂) (ps := AffineSubspace.inclusion hS '' ps)).symm,
+    Set.image_image]
+
 /-- Any three points in a cospherical set are affinely independent. -/
 theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 3 → P}
     (hps : Set.range p ⊆ s) (hpi : Function.Injective p) : AffineIndependent ℝ p := by
@@ -366,7 +426,7 @@ theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical
     AffineIndependent ℝ ![p₁, p₂, p₃] := by
   refine hs.affineIndependent ?_ ?_
   · simp [h₁, h₂, h₃, Set.insert_subset_iff]
-  · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
+  · simp only [Matrix.vecCons, Fin.cons_injective_iff]
     simp [h₁₂, h₁₃, h₂₃, Function.Injective, eq_iff_true_of_subsingleton]
 
 /-- The three points of a cospherical set are affinely independent. -/
@@ -395,6 +455,7 @@ theorem Sphere.inner_vsub_center_midpoint_vsub {p₁ p₂ : P} {s : Sphere P}
     (dist_left_midpoint_eq_dist_right_midpoint p₁ p₂)
     (dist_center_eq_dist_center_of_mem_sphere hp₁ hp₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The distance from the center of a sphere to any point strictly between
 two points on the sphere is strictly less than the radius. -/
 theorem Sphere.dist_center_lt_radius_of_sbtw {p₁ p₂ p : P} {s : Sphere P}
@@ -407,8 +468,8 @@ theorem Sphere.dist_center_lt_radius_of_sbtw {p₁ p₂ p : P} {s : Sphere P}
   have ht₁' : t < 1 := lt_of_le_of_ne ht₁ fun h => hne₂ <| by
     rw [← hpt, h, AffineMap.lineMap_apply_one]
   set u := p₁ -ᵥ o; set v := p₂ -ᵥ o
-  have hu : ‖u‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hp₁
-  have hv : ‖v‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hp₂
+  have hu : ‖u‖ = s.radius := norm_vsub_center_eq_radius hp₁
+  have hv : ‖v‖ = s.radius := norm_vsub_center_eq_radius hp₂
   have huv : u ≠ v := fun h => hne₁ <| by
     rw [← hpt, vsub_left_cancel h, AffineMap.lineMap_same, AffineMap.const_apply]
   have hpo : p -ᵥ o = (1 - t) • u + t • v := by
@@ -502,8 +563,8 @@ the radius vector at one endpoint is negative. -/
 theorem inner_vsub_center_vsub_pos {p₁ p₂ : P} {s : Sphere P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₁p₂ : p₁ ≠ p₂) :
     0 < ⟪p₂ -ᵥ p₁, s.center -ᵥ p₁⟫ := by
-  have hp₁' : ‖p₁ -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hp₁
-  have hp₂' : ‖p₂ -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hp₂
+  have hp₁' : ‖p₁ -ᵥ s.center‖ = s.radius := norm_vsub_center_eq_radius hp₁
+  have hp₂' : ‖p₂ -ᵥ s.center‖ = s.radius := norm_vsub_center_eq_radius hp₂
   have hd : ‖p₂ -ᵥ s.center‖ ^ 2 =
       ‖p₂ -ᵥ p₁‖ ^ 2 + 2 * ⟪p₂ -ᵥ p₁, p₁ -ᵥ s.center⟫ + ‖p₁ -ᵥ s.center‖ ^ 2 := by
     rw [← vsub_add_vsub_cancel p₂ p₁ s.center, norm_add_sq_real]
@@ -543,6 +604,17 @@ lemma isDiameter_iff_mem_and_mem_and_wbtw :
   have hd := hr.dist_add_dist
   rw [mem_sphere.1 h₁, mem_sphere'.1 h₂, ← two_mul, eq_comm] at hd
   exact isDiameter_iff_mem_and_mem_and_dist.2 ⟨h₁, h₂, hd⟩
+
+/-- The center lies on the line through two distinct points of a sphere if and only if those
+points are the endpoints of a diameter. -/
+theorem center_mem_affineSpan_pair_iff_isDiameter
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₁p₂ : p₁ ≠ p₂) :
+    s.center ∈ line[ℝ, p₁, p₂] ↔ s.IsDiameter p₁ p₂ := by
+  rw [isDiameter_iff_mem_and_mem_and_wbtw]
+  refine ⟨fun h => ⟨hp₁, hp₂, ?_⟩, fun h => h.2.2.mem_affineSpan⟩
+  refine wbtw_of_collinear_of_dist_center_le_radius ?_ hp₁ ?_ hp₂ hp₁p₂
+  · rw [Set.insert_comm]; exact collinear_insert_of_mem_affineSpan_pair h
+  · simpa using radius_nonneg_of_mem hp₁
 
 end Sphere
 

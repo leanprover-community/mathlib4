@@ -5,7 +5,6 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.Probability.Process.Filtration
 
 /-!
@@ -69,7 +68,7 @@ theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] [TopologicalSp
     exact ⟨t.piecewise h₁ h₂, mh₁.piecewise ht mh₂, by rw [piecewise_comp]⟩
   | @lim g i hg hi h₁ h₂ =>
     choose h mh hh using h₁
-    refine ⟨fun y ↦ _root_.limUnder atTop (h · y), StronglyMeasurable.limUnder mh, ?_⟩
+    refine ⟨fun y ↦ limUnder atTop (h · y), StronglyMeasurable.limUnder mh, ?_⟩
     ext x
     rw [Function.comp_apply, Tendsto.limUnder_eq]
     simp_all
@@ -79,7 +78,7 @@ then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`
 theorem _root_.Measurable.exists_eq_measurable_comp [Nonempty Z] [MeasurableSpace Z]
     [StandardBorelSpace Z] (hg : Measurable[mY.comap f] g) :
     ∃ h : Y → Z, Measurable h ∧ g = h ∘ f := by
-  letI := upgradeStandardBorel Z
+  let := upgradeStandardBorel Z
   obtain ⟨h, mh, hh⟩ := hg.stronglyMeasurable.exists_eq_measurable_comp
   exact ⟨h, mh.measurable, hh⟩
 

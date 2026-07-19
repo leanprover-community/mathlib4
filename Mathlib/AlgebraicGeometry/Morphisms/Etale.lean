@@ -64,6 +64,7 @@ instance : MorphismProperty.IsMultiplicative @Etale :=
   HasRingHomProperty.isMultiplicative RingHom.Etale.stableUnderComposition
     RingHom.Etale.containsIdentities
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The composition of étale morphisms is étale. -/
 instance etale_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Etale f] [Etale g] :
     Etale (f ≫ g) :=
@@ -77,14 +78,17 @@ instance etale_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChang
 instance (priority := 900) [IsOpenImmersion f] : Etale f :=
   HasRingHomProperty.of_isOpenImmersion RingHom.Etale.containsIdentities
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Etale g] :
     Etale (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Etale f] :
     Etale (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [Etale f] : Etale (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -115,6 +119,7 @@ instance (priority := 900) [Etale f] : FormallyUnramified f where
   formallyUnramified_appLE {_} hU {_} hV e :=
     (f.etale_appLE hU hV e).formallyUnramified
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.HasOfPostcompProperty
     @Etale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
   rw [MorphismProperty.hasOfPostcompProperty_iff_le_diagonal]
@@ -147,30 +152,71 @@ end Etale
 
 namespace Scheme
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
 protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
+deriving Category, HasPullbacks, HasFiniteLimits
 
 variable (X : Scheme.{u})
 
-instance : Category X.Etale :=
-  inferInstanceAs <| Category (MorphismProperty.Over @Etale ⊤ X)
+set_option backward.defeqAttrib.useBackward true in
+instance (Y : X.Etale) : dsimp% Etale Y.hom := Y.prop
 
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
+  have : Etale (f.left ≫ Y.hom) := by rw [CategoryTheory.Over.w]; infer_instance
+  exact Etale.of_comp f.left Y.hom
+
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @Etale ⊤ X
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
 
+-- Note: using `deriving Functor.Full/Faithful` in the declaration of `Etale.forget`
+-- would "succeed", but it seems it would fail to create the next two instances
 instance : (Etale.forget X).Full :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Full
-instance : (Etale.forget X).Faithful :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
+  (Etale.forgetFullyFaithful X).full
 
-instance : HasPullbacks X.Etale := by
-  unfold Scheme.Etale
-  infer_instance
+instance : (Etale.forget X).Faithful :=
+  (Etale.forgetFullyFaithful X).faithful
+
+variable {X} in
+/-- Constructor for objects in the étale site of a scheme `X`: it takes
+an étale morphism `f : Y ⟶ X` as an input. -/
+abbrev Etale.mk {Y : Scheme.{u}} (f : Y ⟶ X) [Etale f] : X.Etale :=
+  MorphismProperty.Over.mk _ f inferInstance
+
+variable {X} in
+@[simp]
+lemma Etale.forget_mk {Y : Scheme.{u}} (f : Y ⟶ X) [Etale f] :
+    (Etale.forget X).obj (.mk f) = Over.mk f := rfl
+
+@[simp]
+lemma Etale.forget_obj_left (Y : X.Etale) :
+    ((Etale.forget X).obj Y).left = Y.left := rfl
+
+@[simp]
+lemma Etale.forget_obj_hom (Y : X.Etale) :
+    ((Etale.forget X).obj Y).hom = Y.hom := rfl
+
+instance (Y : X.Etale) : Etale (Y.left ↘ X) := Y.prop
+
+/-- Induction principle for the objects of the small étale site of a scheme. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def Etale.rec {motive : X.Etale → Sort*}
+    (mk : ∀ (Y : Scheme.{u}) (f : Y ⟶ X) (_ : Etale f), motive (Etale.mk f))
+    (T : X.Etale) :
+    motive T :=
+  mk _ _ T.prop
+
+set_option backward.isDefEq.respectTransparency.types false in
+instance : PreservesFiniteLimits (Etale.forget X) :=
+  inferInstanceAs (PreservesFiniteLimits (MorphismProperty.Over.forget _ ⊤ X))
 
 end Scheme
 

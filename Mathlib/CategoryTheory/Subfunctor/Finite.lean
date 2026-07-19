@@ -112,26 +112,6 @@ lemma image_isFinite [G.IsFinite] {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') :
     (G.image f).IsFinite :=
   ((isGeneratedBy_of_isFinite G).image f).isFinite
 
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsGeneratedBy := IsGeneratedBy
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.isGeneratedBy_iff := isGeneratedBy_iff
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsGeneratedBy.iSup_eq :=
-  IsGeneratedBy.iSup_eq
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsGeneratedBy.ofSection_le :=
-  IsGeneratedBy.ofSection_le
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsGeneratedBy.mem := IsGeneratedBy.mem
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsGeneratedBy.of_equiv :=
-  IsGeneratedBy.of_equiv
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsGeneratedBy.image := IsGeneratedBy.image
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsFinite := IsFinite
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsFinite.Index := IsFinite.Index
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsFinite.X := IsFinite.X
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsFinite.x := IsFinite.x
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.isGeneratedBy_of_isFinite :=
-  isGeneratedBy_of_isFinite
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.IsGeneratedBy.isFinite :=
-  IsGeneratedBy.isFinite
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_isFinite := image_isFinite
-
 end Subfunctor
 
 variable (F)
@@ -175,12 +155,11 @@ lemma presheafIsFinite_of_epi [PresheafIsFinite F] {F' : Cᵒᵖ ⥤ Type w} (f 
     PresheafIsFinite F' :=
   ((presheafIsGeneratedBy_of_isFinite F).of_epi f).isFinite
 
-set_option backward.isDefEq.respectTransparency false in
 lemma yoneda_obj_isGeneratedBy (X : C) :
     PresheafIsGeneratedBy (yoneda.obj X) (fun (_ : Unit) ↦ 𝟙 X) := by
   simp only [Subfunctor.isGeneratedBy_iff]
   ext U u
-  simp only [yoneda_obj_obj, Subfunctor.iSup_obj, Set.mem_iUnion,
+  simp only [Subfunctor.iSup_obj, Set.mem_iUnion,
     exists_const, Subfunctor.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨u.op, by simp⟩
 

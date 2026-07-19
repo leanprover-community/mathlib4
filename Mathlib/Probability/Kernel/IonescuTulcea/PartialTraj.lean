@@ -118,8 +118,8 @@ lemma partialTraj_self (a : ℕ) : partialTraj κ a a = Kernel.id := by rw [part
 
 @[simp]
 lemma partialTraj_zero :
-    partialTraj κ a 0 = deterministic (frestrictLe₂ (zero_le a)) (measurable_frestrictLe₂ _) := by
-  rw [partialTraj_le (zero_le a)]
+    partialTraj κ a 0 = deterministic (frestrictLe₂ zero_le) (measurable_frestrictLe₂ _) := by
+  rw [partialTraj_le zero_le]
 
 lemma partialTraj_le_def (hab : a ≤ b) : partialTraj κ a b =
     @Nat.leRec a (fun b _ ↦ Kernel (Π i : Iic a, X i) (Π i : Iic b, X i)) Kernel.id
@@ -243,6 +243,7 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
 
 variable [∀ n, IsMarkovKernel (κ n)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward of `partialTraj κ a (a + 1)` along the the point at time `a + 1` is `κ a`. -/
 lemma map_partialTraj_succ_self (a : ℕ) :
     (partialTraj κ a (a + 1)).map (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) = κ a := by
@@ -346,7 +347,7 @@ lemma lmarginalPartialTraj_succ [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
   rw [lmarginalPartialTraj, partialTraj_succ_self, lintegral_map, lintegral_id_prod, lintegral_map]
   · congrm ∫⁻ x, f (fun i ↦ ?_) ∂_
     simp only [updateFinset, mem_Iic, IicProdIoc_def, frestrictLe_apply, piSingleton,
-      MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, update]
+      MeasurableEquiv.coe_mk, update]
     split_ifs with h1 h2 h3 <;> try rfl
     all_goals lia
   all_goals fun_prop
@@ -359,10 +360,7 @@ lemma measurable_lmarginalPartialTraj (a b : ℕ) {f : (Π n, X n) → ℝ≥0�
   let η : Kernel (Π n, X n) (Π i : Iic b, X i) :=
     (partialTraj κ a b).comap (frestrictLe a) (measurable_frestrictLe _)
   change Measurable fun x₀ ↦ ∫⁻ z : (i : Iic b) → X i, g (z, x₀) ∂η x₀
-  refine Measurable.lintegral_kernel_prod_left' <| hf.comp ?_
-  simp only [updateFinset, measurable_pi_iff]
-  intro i
-  by_cases h : i ∈ Iic b <;> simp only [h, ↓reduceDIte] <;> fun_prop
+  fun_prop
 
 /-- Integrating `f` against `partialTraj κ a b` and then against `partialTraj κ b c` is the same
 as integrating `f` against `partialTraj κ a c`. -/
@@ -427,7 +425,7 @@ theorem dependsOn_lmarginalPartialTraj [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
   congrm ∫⁻ z : _, ?_ ∂(partialTraj κ a b).map _ (fun i ↦ ?_)
   · exact hxy i.1 i.2
   · refine hf.updateFinset _ ?_
-    rwa [← coe_sdiff, Iic_diff_Ioc_self_of_le hab]
+    rwa [← coe_sdiff, Iic_sdiff_Ioc_self_of_le hab]
 
 end DependsOn
 

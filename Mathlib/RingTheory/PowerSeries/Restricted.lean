@@ -74,7 +74,6 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
        _ < ε / 2 + ε / 2 := by gcongr <;> grind
        _ = ε := by ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := by
   simpa [isRestricted_iff] using hf
 
@@ -101,7 +100,7 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   obtain ⟨N, hf⟩ := by simpa using (hf 1)
   rw [bddAbove_def, convergenceSet]
   use max 1 (max' (image (fun i ↦ ‖coeff i f‖ * c ^ i) (range (N + 1))) (by simp))
-  simp only [Set.mem_setOf_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
+  simp only [Set.mem_ofPred_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
   intro i
   rcases le_total i N with h | h
   · right
@@ -122,7 +121,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
     ((isRestricted_iff_abs c f).mp hf))
   obtain ⟨b, hb, gBound1⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove _
     ((isRestricted_iff_abs c g).mp hg))
-  simp only [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff]
+  simp only [convergenceSet, Set.mem_ofPred_eq, forall_exists_index, forall_apply_eq_imp_iff]
     at fBound1 gBound1
   simp only [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm,
     PowerSeries.coeff_mul] at ⊢ hf hg
@@ -130,7 +129,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   obtain ⟨Nf, fBound2⟩ := (hf (ε / (max a b))) (by positivity)
   obtain ⟨Ng, gBound2⟩ := (hg (ε / (max a b))) (by positivity)
   refine ⟨2 * max Nf Ng, fun n hn ↦ ?_⟩
-  obtain ⟨⟨fst, snd⟩, hi, ultrametric⟩ := exists_norm_finset_sum_le (Finset.antidiagonal n)
+  obtain ⟨⟨fst, snd⟩, hi, ultrametric⟩ := exists_norm_finsetSum_le (Finset.antidiagonal n)
     (fun a ↦ (coeff a.1) f * (coeff a.2) g)
   obtain ⟨rfl⟩ := by simpa using hi (⟨(0, n), by simp⟩)
   calc _ ≤ ‖(coeff fst) f * (coeff snd) g‖ * |c| ^ (fst + snd) := by bound

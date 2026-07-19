@@ -200,7 +200,7 @@ theorem natDegree_add_eq_right_of_natDegree_lt (h : natDegree p < natDegree q) :
 theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   add_comm (C a) p ▸ degree_add_eq_right_of_degree_lt <| lt_of_le_of_lt degree_C_le hp
 
-@[simp] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
+@[simp, grind =] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
   by_cases! hpd : p.degree ≤ 0
@@ -256,9 +256,6 @@ theorem monic_of_natDegree_le_of_coeff_eq_one (n : ℕ) (pn : p.natDegree ≤ n)
 
 theorem monic_of_degree_le (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) : Monic p :=
   monic_of_natDegree_le_of_coeff_eq_one n (natDegree_le_of_degree_le pn) p1
-
-@[deprecated (since := "2025-10-24")]
-alias monic_of_degree_le_of_coeff_eq_one := monic_of_degree_le
 
 theorem leadingCoeff_add_of_degree_lt (h : degree p < degree q) :
     leadingCoeff (p + q) = leadingCoeff q := by
@@ -473,7 +470,7 @@ theorem degree_smul_of_isRightRegular_leadingCoeff (ha : a ≠ 0)
   exact hp.mul_right_eq_zero_iff.ne.mpr ha
 
 theorem degree_lt_degree_mul_X (hp : p ≠ 0) : p.degree < (p * X).degree := by
-  haveI := Nontrivial.of_polynomial_ne hp
+  have := Nontrivial.of_polynomial_ne hp
   have : leadingCoeff p * leadingCoeff X ≠ 0 := by simpa
   rw [degree_mul' this, degree_eq_natDegree hp, degree_X, ← Nat.cast_one, ← Nat.cast_add]
   norm_cast
@@ -721,7 +718,6 @@ lemma leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
   map_dvd leadingCoeffHom hap
 
 lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
-  classical
   obtain rfl | hp := eq_or_ne p 0
   · simp
   · rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq]

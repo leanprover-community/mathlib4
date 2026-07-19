@@ -39,7 +39,7 @@ uniform convergence, strong dual
 
 -/
 
-@[expose] public section
+public section
 
 open Filter
 
@@ -49,7 +49,7 @@ section AlgebraicInstances
 
 variable {α β ι R : Type*} {𝔖 : Set <| Set α} {x : α}
 
-@[to_additive] instance [One β] : One (α →ᵤ β) := Pi.instOne
+@[to_additive] instance [One β] : One (α →ᵤ β) := inferInstanceAs <| One (α → β)
 
 @[to_additive (attr := simp)]
 lemma UniformFun.toFun_one [One β] : toFun (1 : α →ᵤ β) = 1 := rfl
@@ -57,7 +57,7 @@ lemma UniformFun.toFun_one [One β] : toFun (1 : α →ᵤ β) = 1 := rfl
 @[to_additive (attr := simp)]
 lemma UniformFun.ofFun_one [One β] : ofFun (1 : α → β) = 1 := rfl
 
-@[to_additive] instance [One β] : One (α →ᵤ[𝔖] β) := Pi.instOne
+@[to_additive] instance [One β] : One (α →ᵤ[𝔖] β) := inferInstanceAs <| One (α → β)
 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.toFun_one [One β] : toFun 𝔖 (1 : α →ᵤ[𝔖] β) = 1 := rfl
@@ -65,7 +65,7 @@ lemma UniformOnFun.toFun_one [One β] : toFun 𝔖 (1 : α →ᵤ[𝔖] β) = 1 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.one_apply [One β] : ofFun 𝔖 (1 : α → β) = 1 := rfl
 
-@[to_additive] instance [Mul β] : Mul (α →ᵤ β) := Pi.instMul
+@[to_additive] instance [Mul β] : Mul (α →ᵤ β) := inferInstanceAs <| Mul (α → β)
 
 @[to_additive (attr := simp)]
 lemma UniformFun.toFun_mul [Mul β] (f g : α →ᵤ β) : toFun (f * g) = toFun f * toFun g := rfl
@@ -73,7 +73,7 @@ lemma UniformFun.toFun_mul [Mul β] (f g : α →ᵤ β) : toFun (f * g) = toFun
 @[to_additive (attr := simp)]
 lemma UniformFun.ofFun_mul [Mul β] (f g : α → β) : ofFun (f * g) = ofFun f * ofFun g := rfl
 
-@[to_additive] instance [Mul β] : Mul (α →ᵤ[𝔖] β) := Pi.instMul
+@[to_additive] instance [Mul β] : Mul (α →ᵤ[𝔖] β) := inferInstanceAs <| Mul (α → β)
 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.toFun_mul [Mul β] (f g : α →ᵤ[𝔖] β) :
@@ -83,7 +83,7 @@ lemma UniformOnFun.toFun_mul [Mul β] (f g : α →ᵤ[𝔖] β) :
 @[to_additive (attr := simp)]
 lemma UniformOnFun.ofFun_mul [Mul β] (f g : α → β) : ofFun 𝔖 (f * g) = ofFun 𝔖 f * ofFun 𝔖 g := rfl
 
-@[to_additive] instance [Inv β] : Inv (α →ᵤ β) := Pi.instInv
+@[to_additive] instance [Inv β] : Inv (α →ᵤ β) := inferInstanceAs <| Inv (α → β)
 
 @[to_additive (attr := simp)]
 lemma UniformFun.toFun_inv [Inv β] (f : α →ᵤ β) : toFun (f⁻¹) = (toFun f)⁻¹ := rfl
@@ -91,7 +91,7 @@ lemma UniformFun.toFun_inv [Inv β] (f : α →ᵤ β) : toFun (f⁻¹) = (toFun
 @[to_additive (attr := simp)]
 lemma UniformFun.ofFun_inv [Inv β] (f : α → β) : ofFun (f⁻¹) = (ofFun f)⁻¹ := rfl
 
-@[to_additive] instance [Inv β] : Inv (α →ᵤ[𝔖] β) := Pi.instInv
+@[to_additive] instance [Inv β] : Inv (α →ᵤ[𝔖] β) := inferInstanceAs <| Inv (α → β)
 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.toFun_inv [Inv β] (f : α →ᵤ[𝔖] β) : toFun 𝔖 (f⁻¹) = (toFun 𝔖 f)⁻¹ := rfl
@@ -99,7 +99,7 @@ lemma UniformOnFun.toFun_inv [Inv β] (f : α →ᵤ[𝔖] β) : toFun 𝔖 (f�
 @[to_additive (attr := simp)]
 lemma UniformOnFun.ofFun_inv [Inv β] (f : α → β) : ofFun 𝔖 (f⁻¹) = (ofFun 𝔖 f)⁻¹ := rfl
 
-@[to_additive] instance [Div β] : Div (α →ᵤ β) := Pi.instDiv
+@[to_additive] instance [Div β] : Div (α →ᵤ β) := inferInstanceAs <| Div (α → β)
 
 @[to_additive (attr := simp)]
 lemma UniformFun.toFun_div [Div β] (f g : α →ᵤ β) : toFun (f / g) = toFun f / toFun g := rfl
@@ -107,7 +107,7 @@ lemma UniformFun.toFun_div [Div β] (f g : α →ᵤ β) : toFun (f / g) = toFun
 @[to_additive (attr := simp)]
 lemma UniformFun.ofFun_div [Div β] (f g : α → β) : ofFun (f / g) = ofFun f / ofFun g := rfl
 
-@[to_additive] instance [Div β] : Div (α →ᵤ[𝔖] β) := Pi.instDiv
+@[to_additive] instance [Div β] : Div (α →ᵤ[𝔖] β) := inferInstanceAs <| Div (α → β)
 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.toFun_div [Div β] (f g : α →ᵤ[𝔖] β) :
@@ -118,94 +118,90 @@ lemma UniformOnFun.toFun_div [Div β] (f g : α →ᵤ[𝔖] β) :
 lemma UniformOnFun.ofFun_div [Div β] (f g : α → β) : ofFun 𝔖 (f / g) = ofFun 𝔖 f / ofFun 𝔖 g := rfl
 
 @[to_additive]
-instance [Monoid β] : Monoid (α →ᵤ β) :=
-  Pi.monoid
+instance {M : Type*} [Pow β M] : Pow (α →ᵤ β) M := inferInstanceAs <| Pow (α → β) M
 
-@[to_additive]
-instance [Monoid β] : Monoid (α →ᵤ[𝔖] β) :=
-  Pi.monoid
-
-@[to_additive]
-instance [CommMonoid β] : CommMonoid (α →ᵤ β) :=
-  Pi.commMonoid
-
-@[to_additive]
-instance [CommMonoid β] : CommMonoid (α →ᵤ[𝔖] β) :=
-  Pi.commMonoid
-
-@[to_additive]
-instance [Group β] : Group (α →ᵤ β) :=
-  Pi.group
-
-@[to_additive]
-instance [Group β] : Group (α →ᵤ[𝔖] β) :=
-  Pi.group
-
-@[to_additive]
-instance [CommGroup β] : CommGroup (α →ᵤ β) :=
-  Pi.commGroup
-
-@[to_additive]
-instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) :=
-  Pi.commGroup
-
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := Pi.instSMul
-
-@[simp]
-lemma UniformFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ β) :
-    toFun (c • f) = c • toFun f :=
+@[to_additive (attr := simp) toFun_smul]
+lemma UniformFun.toFun_pow {M : Type*} [Pow β M] (c : M) (f : α →ᵤ β) :
+    toFun (f ^ c) = toFun f ^ c :=
   rfl
 
-@[simp]
-lemma UniformFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
-    ofFun (c • f) = c • ofFun f :=
+@[to_additive (attr := simp) ofFun_smul]
+lemma UniformFun.ofFun_pow {M : Type*} [Pow β M] (c : M) (f : α → β) :
+    ofFun (f ^ c) = ofFun f ^ c :=
   rfl
 
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
+@[to_additive]
+instance {M : Type*} [Pow β M] : Pow (α →ᵤ[𝔖] β) M := inferInstanceAs <| Pow (α → β) M
 
-@[simp]
-lemma UniformOnFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ[𝔖] β) :
-    toFun 𝔖 (c • f) = c • toFun 𝔖 f :=
+@[to_additive (attr := simp) toFun_smul]
+lemma UniformOnFun.toFun_pow {M : Type*} [Pow β M] (c : M) (f : α →ᵤ[𝔖] β) :
+    toFun 𝔖 (f ^ c) = toFun 𝔖 f ^ c :=
   rfl
 
-@[simp]
-lemma UniformOnFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
-    ofFun 𝔖 (c • f) = c • ofFun 𝔖 f :=
+@[to_additive (attr := simp) ofFun_smul]
+lemma UniformOnFun.ofFun_pow {M : Type*} [Pow β M] (c : M) (f : α → β) :
+    ofFun 𝔖 (f ^ c) = ofFun 𝔖 f ^ c :=
   rfl
+
+@[to_additive]
+instance [Monoid β] : Monoid (α →ᵤ β) := inferInstanceAs <| Monoid (α → β)
+
+@[to_additive]
+instance [Monoid β] : Monoid (α →ᵤ[𝔖] β) := inferInstanceAs <| Monoid (α → β)
+
+@[to_additive]
+instance [CommMonoid β] : CommMonoid (α →ᵤ β) := inferInstanceAs <| CommMonoid (α → β)
+
+@[to_additive]
+instance [CommMonoid β] : CommMonoid (α →ᵤ[𝔖] β) := inferInstanceAs <| CommMonoid (α → β)
+
+@[to_additive]
+instance [Group β] : Group (α →ᵤ β) := inferInstanceAs <| Group (α → β)
+
+@[to_additive]
+instance [Group β] : Group (α →ᵤ[𝔖] β) := inferInstanceAs <| Group (α → β)
+
+@[to_additive]
+instance [CommGroup β] : CommGroup (α →ᵤ β) := inferInstanceAs <| CommGroup (α → β)
+
+@[to_additive]
+instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) := inferInstanceAs <| CommGroup (α → β)
 
 instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ β) :=
-  Pi.isScalarTower
+  inferInstanceAs <| IsScalarTower M N (α → β)
 
 instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ[𝔖] β) :=
-  Pi.isScalarTower
+  inferInstanceAs <| IsScalarTower M N (α → β)
 
 instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
     SMulCommClass M N (α →ᵤ β) :=
-  Pi.smulCommClass
+  inferInstanceAs <| SMulCommClass M N (α → β)
 
 instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
     SMulCommClass M N (α →ᵤ[𝔖] β) :=
-  Pi.smulCommClass
+  inferInstanceAs <| SMulCommClass M N (α → β)
 
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := Pi.mulAction _
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) :=
+  inferInstanceAs <| MulAction M (α → β)
 
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) := Pi.mulAction _
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) :=
+  inferInstanceAs <| MulAction M (α → β)
 
 instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ β) :=
-  Pi.distribMulAction _
+  inferInstanceAs <| DistribMulAction M (α → β)
 
 instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ[𝔖] β) :=
-  Pi.distribMulAction _
+  inferInstanceAs <| DistribMulAction M (α → β)
 
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
-  Pi.module _ _ _
+  inferInstanceAs <| Module R (α → β)
 
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
-  Pi.module _ _ _
+  inferInstanceAs <| Module R (α → β)
 
 end AlgebraicInstances
 
@@ -229,7 +225,7 @@ instance : IsUniformGroup (α →ᵤ G) :=
 protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i => { f : α →ᵤ G | ∀ x, toFun f x ∈ b i } := by
-  convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) h.uniformity_of_nhds_one
+  convert! UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) h.uniformity_of_nhds_one
   simp
 
 @[to_additive]
@@ -257,8 +253,9 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, toFun 𝔖 f x ∈ b Si.2 } := by
-  convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ <|
-    h.uniformity_of_nhds_one_swapped
+  convert!
+    UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ <|
+      h.uniformity_of_nhds_one_swapped
   simp [UniformOnFun.gen]
 
 @[to_additive]

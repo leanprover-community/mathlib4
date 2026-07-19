@@ -125,6 +125,7 @@ lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
 
 end LinearOrder
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the product of `gᵢ` over `i ∈ sₙ` is equal
 to `∏_{i ∈ s₀} gᵢ` * `∏_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`. -/
 @[to_additive /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the sum of `gᵢ` over `i ∈ sₙ` is
@@ -138,6 +139,6 @@ lemma prod_eq_prod_range_sdiff
   congrm (∏ x ∈ ?_, g x) * ∏ k ∈ range n, ∏ x ∈ s (k + 1) \ ?_, g x
   · simp
   · change (Iic k).sup (s ∘ id) = s k
-    rw [← comp_sup_eq_sup_comp_of_nonempty hs nonempty_Iic, sup_Iic]
+    rw [← apply_sup_eq_sup_comp_of_nonempty hs nonempty_Iic, sup_Iic]
 
 end Finset

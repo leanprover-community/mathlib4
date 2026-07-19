@@ -84,6 +84,7 @@ theorem _root_.AddMonoid.exponent_additive :
 theorem exponent_multiplicative {G : Type*} [AddMonoid G] :
     exponent (Multiplicative G) = AddMonoid.exponent G := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open MulOpposite in
 @[to_additive (attr := simp)]
 theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
@@ -99,6 +100,7 @@ theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrde
 theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf g :=
   h.isOfFinOrder.orderOf_pos
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
   rw [exponent]
@@ -141,7 +143,7 @@ theorem exponent_eq_sInf :
 `n • g ≠ 0`. -/]
 theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g ^ n ≠ 1 := by
   rw [exponent_eq_zero_iff, ExponentExists]
-  push_neg
+  push Not
   rfl
 
 @[to_additive exponent_nsmul_eq_zero]
@@ -236,7 +238,7 @@ theorem lcm_orderOf_dvd_exponent [Fintype G] :
 @[to_additive exists_addOrderOf_eq_pow_padic_val_nat_add_exponent]
 theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} (hp : p.Prime) :
     ∃ g : G, orderOf g = p ^ (exponent G).factorization p := by
-  haveI := Fact.mk hp
+  have := Fact.mk hp
   rcases eq_or_ne ((exponent G).factorization p) 0 with (h | h)
   · refine ⟨1, by rw [h, pow_zero, orderOf_one]⟩
   have he : 0 < exponent G :=
@@ -506,6 +508,7 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid G]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by
@@ -562,7 +565,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
   classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
-  push_neg at hj ⊢
+  push Not at hj ⊢
   peel hj with n hn _
   obtain ⟨m, hm⟩ := this
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩

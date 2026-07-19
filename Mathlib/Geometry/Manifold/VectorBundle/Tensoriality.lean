@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
+public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
@@ -34,6 +35,7 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
   arguments defines a continuous bilinear map out of `V x` and `V' x`.
 
 -/
+
 open Bundle FiberBundle Topology Module
 
 open scoped Manifold ContDiff
@@ -98,7 +100,7 @@ protected theorem «local» (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x
 variable [VectorBundle 𝕜 F V] [VectorBundle 𝕜 F' V']
 
 /-- A tensorial operation on sections of a vector bundle respects zero (since it respects scalar
-  multiplication). -/
+multiplication). -/
 theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
   calc
     Φ 0 = Φ ((0 : M → 𝕜) • (0 : Π x, V x)) := by simp
@@ -108,7 +110,7 @@ theorem zero (hΦ : TensorialAt I F Φ x) : Φ 0 = 0 := by
 /-- A tensorial operation on sections of a vector bundle respects sums (since it respects binary
 addition). -/
 theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι → Π x : M, V x)
-    (hσ : ∀ i, MDiffAt (T% (σ i)) x) :
+    (hσ : ∀ i ∈ s, MDiffAt (T% (σ i)) x) :
     Φ (fun x' ↦ ∑ i ∈ s, σ i x') = ∑ i ∈ s, Φ (σ i) := by
   classical
   induction s using Finset.induction_on with
@@ -116,8 +118,9 @@ theorem sum (hΦ : TensorialAt I F Φ x) {ι : Type*} {s : Finset ι} (σ : ι �
       rw [Finset.sum_empty]
       exact hΦ.zero
   | insert a s ha h =>
-      simp only [Finset.sum_insert ha, ← h]
-      exact hΦ.add (hσ a) (.sum_section hσ)
+      simp only [Finset.mem_insert, forall_eq_or_imp] at hσ
+      simp only [Finset.sum_insert ha, ← h hσ.2]
+      exact hΦ.add (hσ.1) (.sum_section hσ.2)
 
 variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 F']
   [ContMDiffVectorBundle 1 F V I] [ContMDiffVectorBundle 1 F' V' I]
@@ -145,7 +148,7 @@ lemma pointwise (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
   have hΦ_eq {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) :
       Φ σ = Φ (fun x' ↦ ∑ i, c i x' (σ x') • s i x') :=
     hΦ.local hσ
-      (.sum_section fun i ↦ (hc hσ i).smul_section (hs i))
+      (.sum_section fun i _ ↦ (hc hσ i).smul_section (hs i))
       (t.eventually_eq_localFrame_sum_coeff_smul b x_mem)
   -- Now evaluate using the tensoriality properties.
   rw [hΦ_eq hσ, hΦ_eq hσ', hΦ.sum, hΦ.sum]
@@ -155,8 +158,8 @@ lemma pointwise (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
       _ = c i x (σ' x) • Φ (s i) := by rw [hσσ']
       _ = Φ ((LinearMap.piApply (c i) σ') • (s i)) :=
           hΦ.smul (hc hσ' i) (hs i) |>.symm
-  · exact fun i ↦ (hc hσ' i).smul_section (hs i)
-  · exact fun i ↦ (hc hσ i).smul_section (hs i)
+  · exact fun i _ ↦ (hc hσ' i).smul_section (hs i)
+  · exact fun i _ ↦ (hc hσ i).smul_section (hs i)
 
 /-- If the operation `Φ` on sections of vector bundles `V` and `V'` is tensorial at `x` in each
 argument, then it depends only on the value of the sections at `x`. -/
@@ -173,14 +176,7 @@ lemma pointwise₂
   · exact (hΦ₁ _ hτ).pointwise hσ hσ' hσσ'
   · exact (hΦ₂ _ hσ').pointwise hτ hτ' hττ'
 
-variable
-  -- TODO prove transport lemmas `ContinuousLinearEquiv.IsTopologicalAddGroup` and
-  -- `ContinuousLinearEquiv.continuousSMul`, then the next four hypotheses can be removed
-  -- (and the appropriate instances constructed in the proof of `TensorialAt.mkHom` by transport
-  -- from the model fibre.)
-  [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
-  [∀ x, IsTopologicalAddGroup (V' x)] [∀ x, ContinuousSMul 𝕜 (V' x)]
-  [TopologicalSpace A] [IsTopologicalAddGroup A] [ContinuousSMul 𝕜 A]
+variable [TopologicalSpace A] [IsTopologicalAddGroup A] [ContinuousSMul 𝕜 A]
 
 /-- Given an `A`-valued operation `Φ` on sections of a vector bundle `V` which is tensorial at `x`,
 the construction `TensorialAt.mkHom` provides the associated continuous linear map `V x →L[𝕜] A`. -/
@@ -190,6 +186,10 @@ noncomputable def mkHom
     V x →L[𝕜] A :=
   have : T2Space (V x) := FiberBundle.t2Space F V x
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
+  have : IsTopologicalAddGroup (V x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).toContinuousAddEquiv.isTopologicalAddGroup
+  have (x : M) : ContinuousSMul 𝕜 (V x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).continuousSMul
   LinearMap.toContinuousLinearMap {
     toFun v := Φ (extend F v)
     map_add' v₁ v₂ := by
@@ -226,6 +226,14 @@ noncomputable def mkHom₂
   have : FiniteDimensional 𝕜 (V x) := VectorBundle.finiteDimensional 𝕜 F V x
   have : T2Space (V' x) := FiberBundle.t2Space F' V' x
   have : FiniteDimensional 𝕜 (V' x) := VectorBundle.finiteDimensional 𝕜 F' V' x
+  have : IsTopologicalAddGroup (V x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).toContinuousAddEquiv.isTopologicalAddGroup
+  have : IsTopologicalAddGroup (V' x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).toContinuousAddEquiv.isTopologicalAddGroup
+  have (x : M) : ContinuousSMul 𝕜 (V x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F V x).continuousSMul
+  have (x : M) : ContinuousSMul 𝕜 (V' x) :=
+    (VectorBundle.continuousLinearEquivAt 𝕜 F' V' x).continuousSMul
   have H : IsBilinearMap 𝕜
     (fun (v : V x) (w : V' x) ↦ Φ (extend F v) (extend F' w)) :=
   { add_left v₁ v₂ w := by

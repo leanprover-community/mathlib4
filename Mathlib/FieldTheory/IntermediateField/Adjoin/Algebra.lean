@@ -121,12 +121,19 @@ lemma essFiniteType_iff {K : IntermediateField F E} :
       ∃ t : Finset E, adjoin F ↑t = K by
     simpa [IntermediateField.FG, (Equiv.finsetSubtypeComm _).exists_congr_left,
       ← (IntermediateField.map_injective K.val).eq_iff, ← IntermediateField.fg_top_iff,
-      adjoin_map, ← Set.range_comp, Function.comp_def, ← AlgHom.fieldRange_eq_map] using this
+      adjoin_map, ← Set.range_comp, Function.comp_def, ← AlgHom.fieldRange_eq_map] using! this
   exact ⟨fun ⟨s, _, hs⟩ ↦ ⟨s, hs⟩, fun ⟨s, hs⟩ ↦ ⟨s, hs ▸ subset_adjoin _ _, hs⟩⟩
+
+/-- A field is finitely generated if and only if it is essentially of finite type over its prime
+subfield. -/
+theorem _root_.Field.fg_iff_essFiniteType : Field.FG F ↔ Algebra.EssFiniteType (⊥ : Subfield F) F :=
+  Field.fg_iff_fg_top_bot.trans fg_top_iff
 
 end FG
 
 section AdjoinSimple
+
+open Algebra
 
 variable (α : E)
 
@@ -142,17 +149,9 @@ theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlge
   adjoin_eq_algebra_adjoin _ _ fun _ ↦
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
-@[deprecated (since := "2025-11-24")] alias adjoin_algebraic_toSubalgebra :=
-  adjoin_toSubalgebra_of_isAlgebraic
-
 theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+    F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa
-
-@[deprecated "Use `adjoin_simple_toSubalgebra_of_isAlgebraic` instead" (since := "2025-11-24")]
-theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
-  adjoin_toSubalgebra_of_isAlgebraic <| by simpa [isAlgebraic_iff_isIntegral]
 
 @[simp]
 theorem adjoin_toSubalgebra [Algebra.IsAlgebraic F E] (S : Set E) :
@@ -168,7 +167,7 @@ theorem adjoin_eq_top_iff_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebr
 alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_eq_top_iff_of_isAlgebraic
 
 theorem adjoin_simple_eq_top_iff_of_isAlgebraic {x : E} (hx : IsAlgebraic F x) :
-    F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
+    F⟮x⟯ = ⊤ ↔ F[x] = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ :=
   adjoin_simple_eq_top_iff_of_isAlgebraic
@@ -188,9 +187,6 @@ lemma _root_.Algebra.finite_of_essFiniteType_of_isAlgebraic
     simpa [← toSubalgebra_inj] using hs
   exact Algebra.IsIntegral.finite
 
-@[deprecated (since := "2025-12-08")]
-alias finite_of_fg_of_isAlgebraic := Algebra.finite_of_essFiniteType_of_isAlgebraic
-
 section RingHom
 
 variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
@@ -198,15 +194,15 @@ variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
 
 /-- Ring homomorphism between `A[b]` and `A⟮↑b⟯`. -/
 noncomputable def RingHom.adjoinAlgebraMapOfAlgebra :
-    Algebra.adjoin A {b} →+* A⟮((algebraMap B C) b)⟯ :=
+    A[b] →+* A⟮((algebraMap B C) b)⟯ :=
   RingHom.comp (Subalgebra.inclusion <|
     algebra_adjoin_le_adjoin A {((algebraMap B C) b)}).toRingHom
     (Algebra.RingHom.adjoinAlgebraMap b)
 
-noncomputable instance : Algebra (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ :=
+noncomputable instance : Algebra (A[b]) A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMapOfAlgebra _)
 
-instance : IsScalarTower (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ C :=
+instance : IsScalarTower (A[b]) A⟮(algebraMap B C) b⟯ C :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 end RingHom
@@ -224,7 +220,7 @@ theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     IsAlgebraic.tower_top _ (isAlgebraic_iff.mp (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
   rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin] at this
-  -- TODO: rather than using `← coe_type_toSubalgera` here, perhaps we should restate another
+  -- TODO: rather than using `← coe_type_toSubalgebra` here, perhaps we should restate another
   -- version of `Algebra.restrictScalars_adjoin` for intermediate fields?
   simp only [← coe_type_toSubalgebra] at this
   rw [Algebra.restrictScalars_adjoin] at this
@@ -280,16 +276,10 @@ theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic_left (L : Intermedi
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
   adjoin_intermediateField_toSubalgebra_of_isAlgebraic E L (Or.inl halg)
 
-@[deprecated (since := "2025-11-24")] alias adjoin_toSubalgebra_of_isAlgebraic_left :=
-  adjoin_intermediateField_toSubalgebra_of_isAlgebraic_left
-
 theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right (L : IntermediateField F K)
     [halg : Algebra.IsAlgebraic F L] :
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
   adjoin_intermediateField_toSubalgebra_of_isAlgebraic E L (Or.inr halg)
-
-@[deprecated (since := "2025-11-24")] alias adjoin_toSubalgebra_of_isAlgebraic_right :=
-  adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right
 
 end Tower
 
@@ -332,7 +322,7 @@ theorem algHom_fieldRange_eq_of_comp_eq (h : RingHom.comp f (algebraMap A K) = (
     f.fieldRange = IntermediateField.adjoin F g.range := by
   apply IntermediateField.toSubfield_injective
   simp_rw [AlgHom.fieldRange_toSubfield, IntermediateField.adjoin_toSubfield]
-  convert ringHom_fieldRange_eq_of_comp_eq h using 2
+  convert! ringHom_fieldRange_eq_of_comp_eq h using 2
   exact Set.union_eq_self_of_subset_left fun _ ⟨x, hx⟩ ↦ ⟨algebraMap F A x, by simp [← hx]⟩
 
 /-- If `F` is a field, `A` is an `F`-algebra with fraction field `K`, `L` is a field,

@@ -5,13 +5,13 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Ring.Archimedean
 public import Mathlib.Algebra.Ring.Subring.Order
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Quotient
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
-import Mathlib.Data.Real.CompleteField
+import Mathlib.Algebra.Order.Archimedean.Real.Hom
 
 /-!
 # Standard part function
@@ -34,7 +34,7 @@ part function on `Hyperreal`.
 * https://en.wikipedia.org/wiki/Standard_part_function
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 namespace ArchimedeanClass
 variable
@@ -46,28 +46,11 @@ variable
 variable (K) in
 /-- The valuation subring of elements in non-negative Archimedean classes, i.e. elements bounded by
 some natural number. -/
-noncomputable def FiniteElement : Type _ :=
+def FiniteElement : Type _ :=
   (addValuation K).toValuation.valuationSubring
+deriving CommRing, IsDomain, ValuationRing, LinearOrder, IsStrictOrderedRing
 
 namespace FiniteElement
-
-noncomputable instance : CommRing (FiniteElement K) := by
-  unfold FiniteElement; infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance : IsDomain (FiniteElement K) := by
-  unfold FiniteElement; infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance : ValuationRing (FiniteElement K) := by
-  unfold FiniteElement; infer_instance
-
-instance : LinearOrder (FiniteElement K) := by
-  unfold FiniteElement; infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance : IsStrictOrderedRing (FiniteElement K) := by
-  unfold FiniteElement; infer_instance
 
 @[simp] theorem val_zero : (0 : FiniteElement K).1 = 0 := rfl
 @[simp] theorem val_one : (1 : FiniteElement K).1 = 1 := rfl
@@ -89,9 +72,6 @@ protected def mk (x : K) (h : 0 ≤ mk x) : FiniteElement K := ⟨x, h⟩
 theorem neg_mk {x : K} (h : 0 ≤ mk x) :
     -FiniteElement.mk x h = FiniteElement.mk (-x) (by rwa [mk_neg]) :=
   rfl
-
-@[deprecated (since := "2025-12-24")]
-alias mk_neg := neg_mk
 
 @[simp]
 theorem mk_add_mk (x y : K) (hx hy) :
@@ -128,26 +108,26 @@ instance : RatCast (FiniteElement K) where
 @[simp] theorem mk_ratCast (q : ℚ) : FiniteElement.mk (q : K) (mk_ratCast_nonneg q) = q := rfl
 
 @[no_expose]
-noncomputable instance : FloorRing (FiniteElement K) :=
+instance : FloorRing (FiniteElement K) :=
   .ofBounded _ fun x ↦ by
     obtain ⟨n, hn⟩ := x.2
     refine ⟨n, (le_abs_self x).trans ?_⟩
-    simpa using hn
+    simpa using! hn
 
 end FiniteElement
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (K) in
 /-- The residue field of `FiniteElement`. This quotient inherits an order from `K`,
 which makes it into a linearly ordered Archimedean field. -/
 def FiniteResidueField : Type _ :=
   IsLocalRing.ResidueField (FiniteElement K)
+deriving Field
 
 namespace FiniteResidueField
 
-noncomputable instance : Field (FiniteResidueField K) :=
-  inferInstanceAs% Field (IsLocalRing.ResidueField _)
-
-private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
+set_option backward.isDefEq.respectTransparency.types false in
+instance ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
   refine fun x ↦ ⟨?_⟩
   rintro x rfl y hy z ⟨hxz, hzy⟩
@@ -156,18 +136,25 @@ private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.
     IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, FiniteElement.not_isUnit_iff_mk_pos] at hy ⊢
   apply hy.trans_le (mk_antitoneOn _ _ _) <;> simpa
 
-noncomputable instance : LinearOrder (FiniteResidueField K) :=
-  @Quotient.instLinearOrder _ _ _ (by exact ordConnected_preimage_mk') (Classical.decRel _)
+set_option backward.isDefEq.respectTransparency.types false in
+instance : LinearOrder (FiniteResidueField K) :=
+  haveI := Classical.decRel fun x y : FiniteElement K ↦
+    letI := Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))
+    x ≈ y
+  inferInstanceAs <| LinearOrder (Quotient _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The quotient map from finite elements on the field to the associated residue field. -/
-noncomputable def mk : FiniteElement K →+*o FiniteResidueField K where
+def mk : FiniteElement K →+*o FiniteResidueField K where
   monotone' _ _ h := Quotient.mk_monotone h
   __ := IsLocalRing.residue (FiniteElement K)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[induction_eliminator]
 theorem ind {motive : FiniteResidueField K → Prop} (mk : ∀ x, motive (mk x)) : ∀ x, motive x :=
   Quotient.ind mk
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance ordConnected_preimage_mk :
     ∀ x, Set.OrdConnected (mk ⁻¹' ({x} : Set (FiniteResidueField K))) :=
   ordConnected_preimage_mk'
@@ -182,22 +169,27 @@ theorem mk_eq_zero {x : FiniteElement K} : mk x = 0 ↔ 0 < ArchimedeanClass.mk 
   apply mk_eq_mk.trans
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mk_ne_zero {x : FiniteElement K} : mk x ≠ 0 ↔ ArchimedeanClass.mk x.1 = 0 := by
   rw [ne_eq, mk_eq_zero, not_lt, x.2.ge_iff_eq']
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mk_le_mk {x y : FiniteElement K} : mk x ≤ mk y ↔ x ≤ y ∨ mk x = mk y := by
   refine (Quotient.mk_le_mk (H := ordConnected_preimage_mk')).trans ?_
   rw [← Quotient.eq_iff_equiv]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mk_lt_mk {x y : FiniteElement K} : mk x < mk y ↔ x < y ∧ mk x ≠ mk y := by
   refine (Quotient.mk_lt_mk (H := ordConnected_preimage_mk')).trans ?_
   rw [← Quotient.eq_iff_equiv]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lt_of_mk_lt_mk {x y : FiniteElement K} (h : mk x < mk y) : x < y :=
   (mk_lt_mk.1 h).1
 
+set_option backward.isDefEq.respectTransparency.types false in
 private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x ≤ y) (hz : 0 ≤ z) :
     z * x ≤ z * y := by
   induction x with | mk x
@@ -208,6 +200,7 @@ private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x
   rw [mk_le_mk] at h hz ⊢
   grind [mul_le_mul_of_nonneg_left]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsOrderedRing (FiniteResidueField K) where
   zero_le_one := mk.monotone' zero_le_one
   add_le_add_left x y h z := by
@@ -222,6 +215,7 @@ instance : IsOrderedRing (FiniteResidueField K) where
     simp_rw [mul_comm _ x]
     exact mul_le_mul_of_nonneg_left' h hx
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Archimedean (FiniteResidueField K) where
   arch x y hy := by
     induction x with | mk x
@@ -232,10 +226,11 @@ instance : Archimedean (FiniteResidueField K) where
     · obtain ⟨n, hn⟩ := ((mk_ne_zero.1 hy.ne').trans (mk_ne_zero.1 hx.ne').symm).le
       refine ⟨n, mk.monotone' ?_⟩
       change x.1 ≤ n • y.1
-      convert ← hn
+      convert! ← hn
       · exact abs_of_pos <| lt_of_mk_lt_mk hx
       · exact abs_of_pos <| lt_of_mk_lt_mk hy
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem mk_ratCast (q : ℚ) : mk (q : FiniteElement K) = q := by
   change mk (FiniteElement.mk ..) = _
@@ -244,9 +239,10 @@ theorem mk_ratCast (q : ℚ) : mk (q : FiniteElement K) = q := by
     ← FiniteElement.mk_natCast, FiniteElement.mk_mul_mk]
   simp_all
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An embedding from an Archimedean field into `K` induces an embedding into
 `FiniteResidueField K`. -/
-noncomputable def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
+def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
   toFun r := mk <| .mk _ (mk_map_nonneg_of_archimedean f r)
   map_zero' := by simp
   map_one' := by simp
@@ -271,6 +267,7 @@ theorem ofArchimedean_injective (f : R →+*o K) : Function.Injective (ofArchime
   rw [ofArchimedean_apply, mk_ne_zero]
   exact mk_map_of_archimedean' f hr
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem ofArchimedean_inj (f : R →+*o K) {x y : R} :
     ofArchimedean f x = ofArchimedean f y ↔ x = y :=
@@ -280,21 +277,24 @@ end FiniteResidueField
 
 /-! ### Standard part -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The standard part of a `FiniteElement` is the unique real number with an infinitesimal
 difference.
 
 For any infinite inputs, this function outputs a junk value of 0. -/
 @[no_expose]
-noncomputable def stdPart (x : K) : ℝ :=
+def stdPart (x : K) : ℝ :=
   if h : 0 ≤ mk x then
-    OrderRingHom.comp default FiniteResidueField.mk (.mk x h) else 0
+    OrderRingHom.comp Classical.ofNonempty FiniteResidueField.mk (.mk x h) else 0
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk x) :
     stdPart x = f (.mk <| .mk x h) := by
   rw [stdPart, dif_pos h, OrderRingHom.comp_apply]
   congr
   exact Subsingleton.allEq _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem stdPart_eq_zero {x : K} : stdPart x = 0 ↔ mk x ≠ 0 where
   mpr h := by
@@ -305,7 +305,7 @@ theorem stdPart_eq_zero {x : K} : stdPart x = 0 ↔ mk x ≠ 0 where
   mp := by
     contrapose!
     intro h
-    rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
+    rwa [stdPart_of_mk_nonneg Classical.ofNonempty h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
 
 alias ⟨_, stdPart_of_mk_ne_zero⟩ := stdPart_eq_zero
 
@@ -381,9 +381,10 @@ theorem stdPart_div (hx : 0 ≤ mk x) (hy : 0 ≤ -mk y) :
   rw [div_eq_mul_inv, div_eq_mul_inv, stdPart_mul hx, stdPart_inv]
   rwa [mk_inv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem stdPart_ratCast (q : ℚ) : stdPart (q : K) = q := by
-  rw [stdPart_of_mk_nonneg default (mk_ratCast_nonneg q), FiniteElement.mk_ratCast,
+  rw [stdPart_of_mk_nonneg Classical.ofNonempty (mk_ratCast_nonneg q), FiniteElement.mk_ratCast,
     FiniteResidueField.mk_ratCast, map_ratCast]
 
 @[simp]
@@ -407,6 +408,7 @@ theorem stdPart_map_real (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
 theorem stdPart_real (r : ℝ) : stdPart r = r :=
   stdPart_map_real (.id ℝ) r
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
     FiniteResidueField.ofArchimedean f (stdPart x) = .mk (.mk x hx) := by
   rw [stdPart, dif_pos hx, ← OrderRingHom.comp_apply, ← OrderRingHom.comp_assoc,
@@ -477,10 +479,10 @@ theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f
   · rw [stdPart_of_mk_ne_zero hx.ne]
     have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
     obtain h | h := le_or_gt 0 x
-    · convert Real.sInf_empty.symm
+    · convert! Real.sInf_empty.symm
       rw [Set.eq_empty_iff_forall_notMem]
       exact fun r ↦ (lt_of_mk_lt_mk_of_nonneg hr h).not_gt
-    · convert Real.sInf_univ.symm
+    · convert! Real.sInf_univ.symm
       rw [Set.eq_univ_iff_forall]
       exact fun r ↦ lt_of_mk_lt_mk_of_nonpos hr h.le
 

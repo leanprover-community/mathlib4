@@ -63,7 +63,7 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
-    push_neg
+    push Not
     refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, ?_⟩⟩
     rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
@@ -111,7 +111,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
     by_cases hx : x ∈ U
     · exact ⟨⟨(x, false), Or.inr ⟨subset_closure hx, mem_singleton _⟩⟩, rfl⟩
     · exact ⟨⟨(x, true), Or.inl ⟨hx, mem_singleton _⟩⟩, rfl⟩
-  haveI : CompactSpace Z := isCompact_iff_compactSpace.mp hZ.isCompact
+  have : CompactSpace Z := isCompact_iff_compactSpace.mp hZ.isCompact
   obtain ⟨g, hg, g_sec⟩ := h continuous_id f_cont f_sur
   let φ := Subtype.val ∘ g
   have hφ : Continuous φ := continuous_subtype_val.comp hg
@@ -150,7 +150,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
     obtain ⟨E_closed, E_surj⟩ := E_min.prop
     refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, ?_⟩
     intro E₀ E₀_min E₀_closed
-    contrapose! E₀_min
+    contrapose E₀_min
     exact eq_univ_of_image_val_eq <|
       E_min.eq_of_subset ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
         image_val_subset
@@ -167,8 +167,8 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
       ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
-      have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| X ⁻¹' {a}
-      exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
+      exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (g := (· ∩ X ⁻¹' {a})) _
+        fun _ _ => inter_subset_inter_left _
     · rw [← image_inter_nonempty_iff, (C_sub c.mem).right, univ_inter]
       exact singleton_nonempty a
     all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage X_cont
@@ -308,5 +308,24 @@ instance instExtremallyDisconnected {ι : Type*} {X : ι → Type*} [∀ i, Topo
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
   · fun_prop
+
+variable {X}
+
+/-- A preirreducible space is extremally disconnected. -/
+instance (priority := 100) [h : PreirreducibleSpace X] : ExtremallyDisconnected X where
+  open_closure U hU := by
+    by_cases! Un : U = ∅
+    · simp_all
+    · exact ((preirreducibleSpace_iff_open_dense X).mp h hU Un).closure_eq ▸ isOpen_univ
+
+/-- A (pre-)connected, extremally disconnected space is preirreducible. -/
+theorem ExtremallyDisconnected.toPreirreducibleSpace [h : ExtremallyDisconnected X]
+    [h' : PreconnectedSpace X] :
+    PreirreducibleSpace X := by
+  apply (preirreducibleSpace_iff_open_dense X).mpr (fun s hs sn ↦ ?_)
+  apply dense_iff_closure_eq.mpr
+  cases preconnectedSpace_iff_clopen.mp h' (closure s) ⟨isClosed_closure, h.open_closure s hs⟩
+  · simp_all
+  · assumption
 
 end

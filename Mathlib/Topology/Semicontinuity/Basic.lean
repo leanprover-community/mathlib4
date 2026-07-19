@@ -191,6 +191,42 @@ end
 
 section
 
+variable {ι : Type*} {f : ι → α → β} [Preorder β] {I : Set ι}
+
+/-- Given a family of lower semicontinuous functions `f : ι → α → β` such that
+for each `x : α`, there is a choice `M x : ι` such that the maximum value of
+evaluation at `x` is achieved by the function `f (M x)`, then the pointwise
+maximum of the family `f` is lower semicontinuous.
+In the statement we restrict to subsets `I : Set ι` and `s : Set α` for more generality. -/
+theorem lowerSemicontinuousOn_of_forall_isMaxOn_and_mem
+    (hfy : ∀ i ∈ I, LowerSemicontinuousOn (f i) s)
+    {M : α → ι}
+    (M_mem : ∀ x ∈ s, M x ∈ I)
+    (M_max : ∀ x ∈ s, IsMaxOn (fun y ↦ f y x) I (M x)) :
+    LowerSemicontinuousOn (fun x ↦ f (M x) x) s := by
+  intro x hx b hb
+  apply Filter.Eventually.mp <| hfy (M x) (M_mem x hx) x hx b hb
+  apply eventually_nhdsWithin_of_forall
+  intro z hz h
+  exact lt_of_lt_of_le h (M_max z hz (M_mem x hx))
+
+/-- Given a family of upper semicontinuous functions `f : ι → α → β` such that
+for each `x : α`, there is a choice `m x : ι` such that the minimum value of
+evaluation at `x` is achieved by the function `f (m x)`, then the pointwise
+maximum of the family `f` is upper semicontinuous.
+In the statement we restrict to subsets `I : Set ι` and `s : Set α` for more generality. -/
+theorem upperSemicontinuousOn_of_forall_isMinOn_and_mem
+    (hfy : ∀ i ∈ I, UpperSemicontinuousOn (f i) s)
+    {m : α → ι}
+    (m_mem : ∀ x ∈ s, m x ∈ I)
+    (m_min : ∀ x ∈ s, IsMinOn (fun i ↦ f i x) I (m x)) :
+    UpperSemicontinuousOn (fun x ↦ f (m x) x) s :=
+  lowerSemicontinuousOn_of_forall_isMaxOn_and_mem (β := βᵒᵈ) hfy m_mem m_min
+
+end
+
+section
+
 variable {γ : Type*} [LinearOrder γ]
 
 theorem lowerSemicontinuous_iff_isClosed_preimage {f : α → γ} :
@@ -298,7 +334,7 @@ variable [TopologicalSpace γ] [ClosedIciTopology γ]
 theorem lowerSemicontinuousOn_iff_isClosed_epigraph {f : α → γ} {s : Set α} (hs : IsClosed s) :
     LowerSemicontinuousOn f s ↔ IsClosed {p : α × γ | p.1 ∈ s ∧ f p.1 ≤ p.2} := by
   simp_rw [lowerSemicontinuousOn_iff, lowerSemicontinuousWithinAt_iff,
-    eventually_nhdsWithin_iff, ← isOpen_compl_iff, compl_setOf, isOpen_iff_eventually, mem_setOf,
+    eventually_nhdsWithin_iff, ← isOpen_compl_iff, compl_ofPred, isOpen_iff_eventually, mem_ofPred,
     not_and, not_le]
   constructor
   · intro hf ⟨x, y⟩ h
@@ -371,15 +407,6 @@ theorem Continuous.comp_lowerSemicontinuousOn_antitone {g : γ → δ} {f : α �
 theorem Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : LowerSemicontinuous f) (gmon : Antitone g) : UpperSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_lowerSemicontinuousAt_antitone (hf x) gmon
-
-@[deprecated (since := "2025-12-06")]
-alias LowerSemicontinuousAt.comp_continuousAt := LowerSemicontinuousAt.comp
-
-@[deprecated (since := "2025-12-06")]
-alias LowerSemicontinuousAt.comp_continuousAt_of_eq := LowerSemicontinuousAt.comp
-
-@[deprecated (since := "2025-12-06")]
-alias LowerSemicontinuous.comp_continuous := LowerSemicontinuous.comp
 
 end
 
@@ -997,15 +1024,6 @@ theorem Continuous.comp_upperSemicontinuous_antitone {g : γ → δ} {f : α →
   hg.continuousAt.comp_upperSemicontinuousAt_antitone (hf x) gmon
 
 variable [Preorder β]
-
-@[deprecated (since := "2025-12-06")]
-alias UpperSemicontinuousAt.comp_continuousAt := UpperSemicontinuousAt.comp
-
-@[deprecated (since := "2025-12-06")]
-alias UpperSemicontinuousAt.comp_continuousAt_of_eq := UpperSemicontinuousAt.comp
-
-@[deprecated (since := "2025-12-06")]
-alias UpperSemicontinuous.comp_continuous := UpperSemicontinuous.comp
 
 end
 

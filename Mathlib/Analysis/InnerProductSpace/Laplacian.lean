@@ -128,6 +128,7 @@ variable (f s) in
 Laplacian for functions on real inner product spaces, with respect to a set `s`. Use `open
 InnerProductSpace` to access the notation `Δ[s]` for `InnerProductSpace.LaplacianWithin`.
 -/
+@[wikidata Q203484]
 noncomputable def laplacianWithin : E → F :=
   fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
 
@@ -137,9 +138,6 @@ scoped[InnerProductSpace] notation "Δ[" s "] " f:60 => laplacianWithin f s
 noncomputable
 instance instLaplacian : Laplacian (E → F) (E → F) where
   laplacian f x := tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
-
-@[deprecated (since := "2025-12-31")]
-alias InnerProduct.laplacian := _root_.Laplacian.laplacian
 
 open Laplacian
 
@@ -198,7 +196,6 @@ theorem laplacian_eq_iteratedFDeriv_stdOrthonormalBasis :
       ∑ i, iteratedFDeriv ℝ 2 f x ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] :=
   laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a function on `ℝ`, the Laplacian is the second derivative: version within a set. -/
 theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f : ℝ → F)
     (hs : UniqueDiffOn ℝ s) (he : e ∈ s) :
@@ -217,7 +214,6 @@ theorem laplacian_eq_iteratedDeriv_real {e : ℝ} (f : ℝ → F) :
   rw [← laplacianWithin_univ, ← iteratedDerivWithin_univ,
     laplacianWithin_eq_iteratedDerivWithin_real _ (by simp) (by simp)]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
 structure.
@@ -229,7 +225,6 @@ theorem laplacianWithin_eq_iteratedFDerivWithin_complexPlane {e : ℂ} {s : Set 
   simp [laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he
     Complex.orthonormalBasisOneI]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
 structure.

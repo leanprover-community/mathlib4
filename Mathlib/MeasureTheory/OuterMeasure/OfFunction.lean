@@ -57,10 +57,9 @@ variable {α : Type*}
 protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : OuterMeasure α :=
   let μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)
   { measureOf := μ
-    empty :=
-      le_antisymm
-        ((iInf_le_of_le fun _ => ∅) <| iInf_le_of_le (empty_subset _) <| by simp [m_empty])
-        (zero_le _)
+    empty := by
+      rw [← nonpos_iff_eq_zero]
+      exact (iInf_le_of_le fun _ => ∅) <| iInf_le_of_le (empty_subset _) <| by simpa
     mono := fun {_ _} hs => iInf_mono fun _ => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
     iUnion_nat := fun s _ =>
       ENNReal.le_of_forall_pos_le_add <| by
@@ -114,7 +113,7 @@ theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → 
     by_cases ht : ∀ i, P (t i)
     · exact iInf_le_of_le ht (iInf_le_of_le ht_subset le_rfl)
     · simp only [ht, not_false_eq_true, iInf_neg, top_le_iff]
-      push_neg at ht
+      push Not at ht
       obtain ⟨i, hti_notMem⟩ := ht
       have hfi_top : m (t i) = ∞ := m_top _ hti_notMem
       exact ENNReal.tsum_eq_top_of_eq_top ⟨i, hfi_top⟩
@@ -182,7 +181,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
       (ENNReal.summable.tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
-      (ENNReal.summable.tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _)
+      (ENNReal.summable.tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le)
         (fun _ => le_rfl) ENNReal.summable)
     _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i => ofFunction_le _
 
@@ -231,7 +230,7 @@ theorem restrict_ofFunction (s : Set α) (hm : Monotone m) :
 theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.ofFunction m m_empty =
     OuterMeasure.ofFunction (c • m) (by simp [m_empty]) := by
   ext1 s
-  haveI : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
+  have : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
   simp only [smul_apply, ofFunction_apply, ENNReal.tsum_mul_left, Pi.smul_apply, smul_eq_mul,
   iInf_subtype']
   rw [ENNReal.mul_iInf fun h => (hc h).elim]
@@ -392,7 +391,7 @@ the minimum value of a measure on that set: it is the infimum sum of measures of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem biInf_apply {ι} {I : Set ι} (hI : I.Nonempty) (m : ι → OuterMeasure α) (s : Set α) :
     (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   simp only [← iInf_subtype'', iInf_apply]
 
 /-- The value of the Infimum of a nonempty family of outer measures on a set is not simply
@@ -434,7 +433,7 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
 
 theorem map_biInf_comap {ι β} {I : Set ι} (hI : I.Nonempty) {f : α → β} (m : ι → OuterMeasure β) :
     map f (⨅ i ∈ I, comap f (m i)) = ⨅ i ∈ I, map f (comap f (m i)) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   rw [← iInf_subtype'', ← iInf_subtype'']
   exact map_iInf_comap _
 
@@ -451,7 +450,7 @@ theorem restrict_iInf {ι} [Nonempty ι] (s : Set α) (m : ι → OuterMeasure �
 
 theorem restrict_biInf {ι} {I : Set ι} (hI : I.Nonempty) (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨅ i ∈ I, m i) = ⨅ i ∈ I, restrict s (m i) := by
-  haveI := hI.to_subtype
+  have := hI.to_subtype
   rw [← iInf_subtype'', ← iInf_subtype'']
   exact restrict_iInf _ _
 

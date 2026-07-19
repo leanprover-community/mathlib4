@@ -13,7 +13,7 @@ public import Mathlib.Topology.Compactness.Lindelof
 
 In this file, we show that, if `X` is a hereditarily Lindelöf space and `𝓕` is any family
 of upper semicontinuous functions on `X`, then there is a countable subfamily `𝓕'`
-with the same infimum / lower enveloppe. Most importantly, this applies whenever `X` has a
+with the same infimum / lower envelope. Most importantly, this applies whenever `X` has a
 `SecondCountableTopology`.
 
 The codomain `E` of the functions is assumed to be linearly ordered, and to admit a countable
@@ -80,7 +80,7 @@ theorem exists_countable_upperSemicontinuous_isGLB {s : X → E} {𝓕 : Set (X 
   rcases D_dense.exists_between H with ⟨d, d_mem, hd⟩
   obtain ⟨f, f_mem, hf⟩ : ∃ f ∈ A d, f x < d := by
     have : x ∈ {y | s y < d} := hd.1
-    simpa only [hA d, mem_iUnion₂, exists_prop, U, mem_setOf_eq] using this
+    simpa only [hA d, mem_iUnion₂, exists_prop, U, mem_ofPred_eq] using this
   suffices e < e by simpa
   exact (he (mem_image_of_mem _ (mem_iUnion₂_of_mem d_mem f_mem))).trans_lt hf |>.trans hd.2
 

@@ -74,8 +74,6 @@ def mk {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
   obj := Over.mk f
   property := hf
 
-@[deprecated (since := "2025-12-18")] alias mk' := mk
-
 /-- The inclusion from monomorphisms over X to morphisms over X. -/
 abbrev forget (X : C) : MonoOver X ⥤ Over X :=
   ObjectProperty.ι _
@@ -90,16 +88,12 @@ theorem forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
 theorem mk_coe {X A : C} (f : A ⟶ X) [Mono f] : (mk f : C) = A :=
   rfl
 
-@[deprecated (since := "2025-12-18")] alias mk'_coe' := mk_coe
-
 /-- Convenience notation for the underlying arrow of a monomorphism over X. -/
 abbrev arrow (f : MonoOver X) : (f : C) ⟶ X := f.obj.hom
 
 @[simp]
 theorem mk_arrow {X A : C} (f : A ⟶ X) [Mono f] : (mk f).arrow = f :=
   rfl
-
-@[deprecated (since := "2025-12-18")] alias mk'_arrow := mk_arrow
 
 theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow := rfl
 
@@ -119,9 +113,7 @@ instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
     intro h₁ h₂
     apply InducedCategory.hom_ext
     apply Over.OverMorphism.ext
-    rw [← cancel_mono g.arrow]
-    erw [Over.w h₁.hom]
-    erw [Over.w h₂.hom]⟩
+    rw [← cancel_mono g.arrow, Over.w h₁.hom, Over.w h₂.hom]⟩
 
 @[reassoc]
 theorem w {f g : MonoOver X} (k : f ⟶ g) : k.hom.left ≫ g.arrow = f.arrow :=
@@ -145,16 +137,12 @@ package it as an isomorphism. -/
 def mkArrowIso {X : C} (f : MonoOver X) : mk f.arrow ≅ f :=
   isoMk (Iso.refl _)
 
-@[deprecated (since := "2025-12-18")] alias mk'ArrowIso := mkArrowIso
-
 instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.hom.left :=
   inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
 
 lemma isIso_iff_isIso_hom_left {A B : MonoOver X} (f : A ⟶ B) :
     IsIso f ↔ IsIso f.hom.left :=
   (isIso_iff_of_reflects_iso _ (MonoOver.forget X ⋙ Over.forget _)).symm
-
-@[deprecated (since := "2025-12-18")] alias isIso_iff_isIso_left := isIso_iff_isIso_hom_left
 
 /-- Lift a functor between over categories to a functor between `MonoOver` categories,
 given suitable evidence that morphisms are taken to monomorphisms.
@@ -245,6 +233,7 @@ def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
     StrongEpiMonoFactorisation (Sigma.desc fun i ↦ (F.obj i).arrow) :=
   Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
 `F : J ⥤ MonoOver Y`, there is a cocone under F. -/
@@ -254,6 +243,7 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
   ι.app j := homMk (Sigma.ι (fun i ↦ (F.obj i : C)) j ≫
     (strongEpiMonoFactorisationSigmaDesc F).e)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
     CommSq (Sigma.desc fun i ↦ (c.ι.app i).hom.left) (strongEpiMonoFactorisationSigmaDesc F).e
@@ -288,7 +278,7 @@ variable [HasPullbacks C]
 by pulling back a monomorphism along `f`. -/
 def pullback (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X :=
   MonoOver.lift (Over.pullback f) (fun g => by
-    haveI : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
+    have : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
     apply pullback.snd_of_mono)
 
 /-- pullback commutes with composition (up to a natural isomorphism) -/
@@ -361,6 +351,7 @@ theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : 
 theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
     refine ⟨homMk e.hom.left ?_, rfl⟩
@@ -382,6 +373,8 @@ section
 
 variable (X)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
 `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
@@ -436,7 +429,6 @@ section Image
 
 variable [HasImages C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Taking the image of a morphism gives a functor `Over X ⥤ MonoOver X`.
 -/
 @[simps]
@@ -461,7 +453,6 @@ def imageForgetAdj : image ⊣ forget X :=
     { homEquiv := fun f g =>
         { toFun := fun k => by
             apply Over.homMk (factorThruImage f.hom ≫ k.hom.left) _
-            change (factorThruImage f.hom ≫ k.hom.left) ≫ _ = f.hom
             rw [assoc, Over.w k.hom]
             apply image.fac
           invFun k :=

@@ -76,7 +76,7 @@ lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < μ.rnDeriv ν x := by
   rw [← Measure.withDensity_rnDeriv_eq _ _ hμν,
     ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _ hμν]
-  exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
+  exact ae_of_all _ (fun x hx ↦ hx.pos)
 
 lemma rnDeriv_pos' [HaveLebesgueDecomposition ν μ] [SigmaFinite μ] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < ν.rnDeriv μ x := by
@@ -200,6 +200,12 @@ lemma rnDeriv_eq_zero_of_mutuallySingular {ν' : Measure α} [HaveLebesgueDecomp
     exact h_ac'.ae_le this
   exact rnDeriv_zero _
 
+variable (μ ν) in
+lemma rnDeriv_eq_zero_ae_singularPart [SigmaFinite μ] [SigmaFinite ν] :
+    ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := by
+  refine rnDeriv_eq_zero_of_mutuallySingular (mutuallySingular_singularPart ν μ).symm ?_
+  exact (Measure.singularPart_le _ _).absolutelyContinuous
+
 /-- Auxiliary lemma for `rnDeriv_add_right_of_mutuallySingular`. -/
 lemma rnDeriv_add_right_of_absolutelyContinuous_of_mutuallySingular {ν' : Measure α}
     [HaveLebesgueDecomposition μ ν] [HaveLebesgueDecomposition μ (ν + ν')] [SigmaFinite ν]
@@ -296,6 +302,20 @@ lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (ν.rnDeriv μ)⁻¹ =ᵐ[μ] μ.rnDeriv ν := by
   filter_upwards [inv_rnDeriv hμν] with x hx; simp only [Pi.inv_apply, ← hx, inv_inv]
 
+variable (ν) in
+lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
+    (h : ∀ᵐ a ∂μ, p a) :
+    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
+  rw [ν.haveLebesgueDecomposition_add μ, ae_add_measure_iff]
+  constructor
+  · rw [← ν.haveLebesgueDecomposition_add μ]
+    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := μ.rnDeriv_eq_zero_ae_singularPart ν
+    filter_upwards [this] with x hx h_absurd using absurd hx h_absurd
+  · have h_ac : μ.withDensity (ν.rnDeriv μ) ≪ μ := withDensity_absolutelyContinuous _ _
+    rw [← ν.haveLebesgueDecomposition_add μ]
+    suffices ∀ᵐx ∂μ, μ.rnDeriv ν x ≠ 0 → p x from h_ac this
+    filter_upwards [h] with _ h _ using h
+
 section integral
 
 lemma setLIntegral_rnDeriv_le (s : Set α) :
@@ -346,15 +366,14 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
   have hμt : μ t ≠ ∞ := by rwa [ht, measure_toMeasurable s]
   calc ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν
     ≤ ∫ x in t, (μ.rnDeriv ν x).toReal ∂ν := by
-        refine setIntegral_mono_set ?_ ?_ (HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _))
+        refine setIntegral_mono_set ?_ ?_ (LE.le.eventuallyLE (subset_toMeasurable _ _))
         · exact integrableOn_toReal_rnDeriv hμt
         · exact ae_of_all _ (by simp)
   _ = (withDensity ν (rnDeriv μ ν)).real t := setIntegral_toReal_rnDeriv_eq_withDensity' ht_m
   _ ≤ μ.real t := by
         simp only [measureReal_def]
         gcongr
-        · exact hμt
-        · apply withDensity_rnDeriv_le
+        apply withDensity_rnDeriv_le
   _ = μ.real s := by rw [measureReal_def, measureReal_def, measure_toMeasurable s]
 
 lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
@@ -489,7 +508,7 @@ lemma _root_.MeasurableEmbedding.rnDeriv_map_aux (hf : MeasurableEmbedding f)
   · exact (Measure.measurable_rnDeriv _ _).comp hf.measurable
   · exact Measure.measurable_rnDeriv _ _
   rw [← hf.lintegral_map, Measure.setLIntegral_rnDeriv hμν]
-  have hs_eq : s = f ⁻¹' (f '' s) := by rw [hf.injective.preimage_image]
+  have hs_eq : s = f ⁻¹' f '' s := by rw [hf.injective.preimage_image]
   have : SigmaFinite (ν.map f) := hf.sigmaFinite_map
   rw [hs_eq, ← hf.restrict_map, Measure.setLIntegral_rnDeriv (hf.absolutelyContinuous_map hμν),
     hf.map_apply]
@@ -566,10 +585,17 @@ theorem integrable_rnDeriv_smul_iff (hμν : μ ≪ ν) :
   rw [← integrable_withDensity_iff_integrable_smul' (E := E)
     (measurable_rnDeriv μ ν) (rnDeriv_lt_top μ ν)]
 
+lemma integrable_toReal_rnDeriv_mul_iff (hμν : μ ≪ ν) {f : α → ℝ} :
+    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * f x) ν ↔ Integrable f μ :=
+  integrable_rnDeriv_smul_iff hμν
+
 theorem integral_rnDeriv_smul (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x, f x ∂μ := by
   rw [← integral_withDensity_eq_integral_toReal_smul (measurable_rnDeriv _ _) (rnDeriv_lt_top _ _),
     withDensity_rnDeriv_eq _ _ hμν]
+
+lemma integral_toReal_rnDeriv_mul (hμν : μ ≪ ν) {f : α → ℝ} :
+    ∫ x, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x, f x ∂μ := integral_rnDeriv_smul hμν
 
 /-- See also `setIntegral_rnDeriv_smul'` for a version that requires both measures to be σ-finite,
 but doesn't require `s` to be a measurable set. -/
@@ -578,6 +604,12 @@ lemma setIntegral_rnDeriv_smul (hμν : μ ≪ ν) {s : Set α} (hs : Measurable
   rw [← setIntegral_withDensity_eq_setIntegral_toReal_smul, withDensity_rnDeriv_eq _ _ hμν]
   exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _), hs]
 
+/-- See also `setIntegral_toReal_rnDeriv_mul'` for a version that requires both measures to be
+σ-finite, but doesn't require `s` to be a measurable set. -/
+lemma setIntegral_toReal_rnDeriv_mul (hμν : μ ≪ ν) {f : α → ℝ} {s : Set α} (hs : MeasurableSet s) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x in s, f x ∂μ :=
+  setIntegral_rnDeriv_smul hμν hs
+
 omit [HaveLebesgueDecomposition μ ν] in
 /-- A version of `setIntegral_rnDeriv_smul` that requires both measures to be σ-finite,
 but doesn't require `s` to be a measurable set. -/
@@ -585,6 +617,13 @@ lemma setIntegral_rnDeriv_smul' [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α
     ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
   rw [← setIntegral_withDensity_eq_setIntegral_toReal_smul', withDensity_rnDeriv_eq _ _ hμν]
   exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _)]
+
+omit [HaveLebesgueDecomposition μ ν] in
+/-- A version of `setIntegral_toReal_rnDeriv_mul` that requires both measures to be σ-finite,
+but doesn't require `s` to be a measurable set. -/
+lemma setIntegral_toReal_rnDeriv_mul' [SigmaFinite ν] (hμν : μ ≪ ν) (f : α → ℝ) (s : Set α) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x in s, f x ∂μ :=
+  setIntegral_rnDeriv_smul' hμν s
 
 end IntegralRNDerivMul
 

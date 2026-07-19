@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Normed.Module.Ball.Action
+public import Mathlib.Algebra.Group.NatPowAssoc
 public import Mathlib.Algebra.Group.PNatPowAssoc
 
 /-!
@@ -27,9 +28,15 @@ namespace Complex
 
 /-- The complex unit disc, denoted as `𝔻` within the Complex namespace -/
 def UnitDisc : Type :=
-  ball (0 : ℂ) 1 deriving TopologicalSpace
+  Subsemigroup.unitBall ℂ deriving TopologicalSpace
+
+/-- The complex closed unit disc, denoted as `𝕔𝔻` within the Complex namespace -/
+def UnitClosedDisc : Type :=
+  Submonoid.unitClosedBall ℂ deriving TopologicalSpace
 
 @[inherit_doc] scoped[Complex.UnitDisc] notation "𝔻" => Complex.UnitDisc
+@[inherit_doc] scoped[Complex.UnitDisc] notation "𝕔𝔻" => Complex.UnitClosedDisc
+
 open UnitDisc
 
 namespace UnitDisc
@@ -37,15 +44,16 @@ namespace UnitDisc
 /-- Coercion to `ℂ`. -/
 @[coe] protected def coe : 𝔻 → ℂ := Subtype.val
 
-instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
+instance instCommSemigroup : CommSemigroup UnitDisc := inferInstanceAs <| CommSemigroup (ball _ _)
 
-instance instSemigroupWithZero : SemigroupWithZero UnitDisc := by unfold UnitDisc; infer_instance
+instance instSemigroupWithZero : SemigroupWithZero UnitDisc :=
+  inferInstanceAs <| SemigroupWithZero (ball _ _)
 
-set_option backward.isDefEq.respectTransparency false in
-instance instIsCancelMulZero : IsCancelMulZero UnitDisc := by unfold UnitDisc; infer_instance
+instance instIsCancelMulZero : IsCancelMulZero UnitDisc :=
+  inferInstanceAs <| IsCancelMulZero (ball _ _)
 
-set_option backward.isDefEq.respectTransparency false in
-instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
+instance instHasDistribNeg : HasDistribNeg UnitDisc :=
+  inferInstanceAs <| HasDistribNeg (ball _ _)
 
 instance instCoe : Coe UnitDisc ℂ := ⟨UnitDisc.coe⟩
 
@@ -149,16 +157,16 @@ instance : Inhabited 𝔻 :=
   ⟨0⟩
 
 instance instMulActionCircle : MulAction Circle 𝔻 :=
-  mulActionSphereBall
+  inferInstanceAs <| MulAction (sphere _ _) (ball _ _)
 
 instance instIsScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
-  isScalarTower_sphere_sphere_ball
+  inferInstanceAs <| IsScalarTower (sphere _ _) (sphere _ _) (ball _ _)
 
 instance instIsScalarTower_circle : IsScalarTower Circle 𝔻 𝔻 :=
-  isScalarTower_sphere_ball_ball
+  inferInstanceAs <| IsScalarTower (sphere _ _) (ball _ _) (ball _ _)
 
 instance instSMulCommClass_circle_left : SMulCommClass Circle 𝔻 𝔻 :=
-  instSMulCommClass_sphere_ball_ball
+  inferInstanceAs <| SMulCommClass (sphere _ _) (ball _ _) (ball _ _)
 
 instance instSMulCommClass_circle_right : SMulCommClass 𝔻 Circle 𝔻 :=
   SMulCommClass.symm _ _ _
@@ -169,35 +177,6 @@ theorem coe_circle_smul (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :
 
 @[deprecated (since := "2026-01-06")]
 alias coe_smul_circle := coe_circle_smul
-
-instance instMulActionClosedBall : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
-  mulActionClosedBallBall
-
-instance instIsScalarTower_closedBall_closedBall :
-    IsScalarTower (closedBall (0 : ℂ) 1) (closedBall (0 : ℂ) 1) 𝔻 :=
-  isScalarTower_closedBall_closedBall_ball
-
-instance instIsScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
-  isScalarTower_closedBall_ball_ball
-
-instance instSMulCommClass_closedBall_left : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
-  ⟨fun _ _ _ => Subtype.ext <| mul_left_comm _ _ _⟩
-
-instance instSMulCommClass_closedBall_right : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
-  SMulCommClass.symm _ _ _
-
-instance instSMulCommClass_circle_closedBall : SMulCommClass Circle (closedBall (0 : ℂ) 1) 𝔻 :=
-  instSMulCommClass_sphere_closedBall_ball
-
-instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : ℂ) 1) Circle 𝔻 :=
-  SMulCommClass.symm _ _ _
-
-@[simp, norm_cast]
-theorem coe_closedBall_smul (z : closedBall (0 : ℂ) 1) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
-  rfl
-
-@[deprecated (since := "2026-01-06")]
-alias coe_smul_closedBall := coe_closedBall_smul
 
 instance : Pow UnitDisc ℕ+ where
   pow z n := ⟨z ^ (n : ℕ), by simp [pow_lt_one_iff_of_nonneg, z.norm_lt_one]⟩
@@ -295,11 +274,245 @@ alias re_conj := UnitDisc.re_star
 instance : StarMul 𝔻 where
   star_mul z w := coe_injective <| by simp [mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated star_mul' (since := "2026-01-06")]
 theorem conj_mul (z w : 𝔻) : star (z * w) = star z * star w :=
   star_mul' z w
 
 end UnitDisc
+
+namespace UnitClosedDisc
+
+/-- Coercion to `ℂ`. -/
+@[coe] protected def coe : 𝕔𝔻 → ℂ := Subtype.val
+
+instance : MonoidWithZero 𝕔𝔻 := inferInstanceAs <| MonoidWithZero (closedBall _ _)
+
+instance : IsCancelMulZero 𝕔𝔻 :=
+  inferInstanceAs <| IsCancelMulZero (closedBall _ _)
+
+instance : HasDistribNeg 𝕔𝔻 :=
+  inferInstanceAs <| HasDistribNeg (closedBall _ _)
+
+instance : Coe 𝕔𝔻 ℂ := ⟨UnitClosedDisc.coe⟩
+
+@[ext]
+theorem coe_injective : Injective ((↑) : 𝕔𝔻 → ℂ) :=
+  Subtype.coe_injective
+
+@[simp, norm_cast]
+theorem coe_inj {z w : 𝕔𝔻} : (z : ℂ) = w ↔ z = w := Subtype.val_inj
+
+@[fun_prop]
+theorem isEmbedding_coe : Topology.IsEmbedding ((↑) : 𝕔𝔻 → ℂ) := .subtypeVal
+
+@[fun_prop]
+theorem continuous_coe : Continuous ((↑) : 𝕔𝔻 → ℂ) := isEmbedding_coe.continuous
+
+theorem norm_le_one (z : 𝕔𝔻) : ‖(z : ℂ)‖ ≤ 1 :=
+  mem_closedBall_zero_iff.1 z.2
+
+theorem sq_norm_lt_one (z : 𝕔𝔻) : ‖(z : ℂ)‖ ^ 2 ≤ 1 := by
+  rw [sq_le_one_iff_abs_le_one, abs_norm]
+  exact z.norm_le_one
+
+theorem normSq_lt_one (z : 𝕔𝔻) : normSq z ≤ 1 := by
+  rw [← Complex.norm_mul_self_eq_normSq, ← sq]
+  exact z.sq_norm_lt_one
+
+@[simp, norm_cast]
+theorem coe_mul (z w : 𝕔𝔻) : ↑(z * w) = (z * w : ℂ) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_neg (z : 𝕔𝔻) : ↑(-z) = (-z : ℂ) := rfl
+
+/-- A constructor that assumes `‖z‖ < 1` instead of `dist z 0 < 1` and returns an element
+of `𝕔𝔻` instead of `↥Metric.ball (0 : ℂ) 1`. -/
+def mk (z : ℂ) (hz : ‖z‖ ≤ 1) : 𝕔𝔻 :=
+  ⟨z, mem_closedBall_zero_iff.2 hz⟩
+
+instance : CanLift ℂ 𝕔𝔻 (↑) (‖·‖ ≤ 1) where
+  prf z hz := ⟨mk z hz, rfl⟩
+
+/-- A cases eliminator that makes `cases z` use `UnitClosedDisc.mk` instead of `Subtype.mk`. -/
+@[elab_as_elim, cases_eliminator]
+protected def casesOn {motive : 𝕔𝔻 → Sort*} (mk : ∀ z hz, motive (.mk z hz)) (z : 𝕔𝔻) :
+    motive z :=
+  mk z z.norm_le_one
+
+@[simp]
+theorem casesOn_mk {motive : 𝕔𝔻 → Sort*} (mk' : ∀ z hz, motive (.mk z hz)) {z : ℂ} (hz : ‖z‖ ≤ 1) :
+    (mk z hz).casesOn mk' = mk' z hz :=
+  rfl
+
+@[simp]
+theorem coe_mk (z : ℂ) (hz : ‖z‖ ≤ 1) : (mk z hz : ℂ) = z :=
+  rfl
+
+@[simp]
+theorem mk_coe (z : 𝕔𝔻) (hz : ‖(z : ℂ)‖ ≤ 1 := z.norm_le_one) : mk z hz = z :=
+  Subtype.eta _ _
+
+@[simp]
+theorem mk_inj {z w : ℂ} (hz : ‖z‖ ≤ 1) (hw : ‖w‖ ≤ 1) : mk z hz = mk w hw ↔ z = w :=
+  Subtype.mk_eq_mk
+
+protected theorem «forall» {p : 𝕔𝔻 → Prop} : (∀ z, p z) ↔ ∀ z hz, p (mk z hz) :=
+  ⟨fun h z hz ↦ h (mk z hz), fun h z ↦ h z z.norm_le_one⟩
+
+protected theorem «exists» {p : 𝕔𝔻 → Prop} : (∃ z, p z) ↔ ∃ z hz, p (mk z hz) :=
+  ⟨fun ⟨z, hz⟩ ↦ ⟨z, z.norm_le_one, hz⟩, fun ⟨z, hz, h⟩ ↦ ⟨mk z hz, h⟩⟩
+
+@[simp]
+theorem mk_neg (z : ℂ) (hz : ‖-z‖ ≤ 1) : mk (-z) hz = -mk z (norm_neg z ▸ hz) :=
+  rfl
+
+@[simp]
+theorem coe_zero : ((0 : 𝕔𝔻) : ℂ) = 0 :=
+  rfl
+
+@[simp]
+theorem coe_eq_zero {z : 𝕔𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
+  coe_injective.eq_iff' coe_zero
+
+@[simp] theorem mk_zero : mk 0 (by simp) = 0 := rfl
+
+@[simp] theorem mk_eq_zero {z : ℂ} (hz : ‖z‖ ≤ 1) : mk z hz = 0 ↔ z = 0 := by simp [← coe_inj]
+
+@[simp]
+theorem coe_one : ((1 : 𝕔𝔻) : ℂ) = 1 :=
+  rfl
+
+@[simp]
+theorem coe_eq_one {z : 𝕔𝔻} : (z : ℂ) = 1 ↔ z = 1 :=
+  coe_injective.eq_iff' coe_one
+
+@[simp] theorem mk_one : mk 1 (by simp) = 1 := rfl
+
+@[simp] theorem mk_eq_one {z : ℂ} (hz : ‖z‖ ≤ 1) : mk z hz = 1 ↔ z = 1 := by simp [← coe_inj]
+
+instance : Inhabited 𝕔𝔻 :=
+  ⟨0⟩
+
+instance : MulAction Circle 𝕔𝔻 :=
+  inferInstanceAs <| MulAction (sphere _ _) (closedBall _ _)
+
+instance : IsScalarTower Circle Circle 𝕔𝔻 :=
+  inferInstanceAs <| IsScalarTower (sphere _ _) (sphere _ _) (closedBall _ _)
+
+instance : IsScalarTower Circle 𝕔𝔻 𝕔𝔻 :=
+  isScalarTower_sphere_closedBall_closedBall
+
+instance : SMulCommClass Circle 𝕔𝔻 𝕔𝔻 :=
+  instSMulCommClass_sphere_closedBall_closedBall
+
+instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
+  SMulCommClass.symm _ _ _
+
+instance instMulActionClosedBall : MulAction 𝕔𝔻 𝔻 :=
+  inferInstanceAs <| MulAction (closedBall _ _) (ball _ _)
+
+instance instIsScalarTower_closedBall_closedBall :
+    IsScalarTower 𝕔𝔻 𝕔𝔻 𝔻 :=
+  inferInstanceAs <| IsScalarTower (closedBall _ _) (closedBall _ _) (ball _ _)
+
+instance instIsScalarTower_closedBall : IsScalarTower 𝕔𝔻 𝔻 𝔻 :=
+  inferInstanceAs <| IsScalarTower (closedBall _ _) (ball _ _) (ball _ _)
+
+instance instSMulCommClass_closedBall_left : SMulCommClass 𝕔𝔻 𝔻 𝔻 :=
+  ⟨fun _ _ _ => Subtype.ext <| mul_left_comm _ _ _⟩
+
+instance instSMulCommClass_closedBall_right : SMulCommClass 𝔻 𝕔𝔻 𝔻 :=
+  SMulCommClass.symm _ _ _
+
+instance instSMulCommClass_circle_closedBall : SMulCommClass Circle 𝕔𝔻 𝔻 :=
+  inferInstanceAs <| SMulCommClass (sphere _ _) (closedBall _ _) (ball _ _)
+
+instance instSMulCommClass_closedBall_circle : SMulCommClass 𝕔𝔻 Circle 𝔻 :=
+  SMulCommClass.symm _ _ _
+
+@[simp, norm_cast]
+theorem coe_closedBall_smul (z : 𝕔𝔻) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
+  rfl
+
+@[deprecated (since := "2026-01-06")]
+alias coe_smul_closedBall := coe_closedBall_smul
+
+@[simp, norm_cast]
+theorem coe_circle_smul (z : Circle) (w : 𝕔𝔻) : ↑(z • w) = (z * w : ℂ) :=
+  rfl
+
+instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
+  SMulCommClass.symm _ _ _
+
+instance : Pow 𝕔𝔻 ℕ where
+  pow z n := ⟨z ^ n, by simp [pow_le_one₀ (norm_nonneg _) z.norm_le_one]⟩
+
+@[simp, norm_cast]
+theorem coe_pow (z : 𝕔𝔻) (n : ℕ) : ((z ^ n : 𝕔𝔻) : ℂ) = z ^ (n : ℕ) := rfl
+
+@[fun_prop]
+theorem continuous_pow (n : ℕ) : Continuous (· ^ n : 𝕔𝔻 → 𝕔𝔻) := by
+  simp only [isEmbedding_coe.continuous_iff, Function.comp_def, coe_pow]
+  fun_prop
+
+instance : NatPowAssoc 𝕔𝔻 where
+  npow_add m n z := mod_cast pow_add (z : ℂ) m n
+  npow_one z := by simp [← coe_inj]
+  npow_zero z := by simp [← coe_inj]
+
+/-- Real part of a point of the unit disc. -/
+def re (z : 𝕔𝔻) : ℝ :=
+  Complex.re z
+
+/-- Imaginary part of a point of the unit disc. -/
+def im (z : 𝕔𝔻) : ℝ :=
+  Complex.im z
+
+@[simp, norm_cast]
+theorem re_coe (z : 𝕔𝔻) : (z : ℂ).re = z.re :=
+  rfl
+
+@[simp, norm_cast]
+theorem im_coe (z : 𝕔𝔻) : (z : ℂ).im = z.im :=
+  rfl
+
+@[simp]
+theorem re_neg (z : 𝕔𝔻) : (-z).re = -z.re :=
+  rfl
+
+@[simp]
+theorem im_neg (z : 𝕔𝔻) : (-z).im = -z.im :=
+  rfl
+
+@[simp] theorem re_zero : re 0 = 0 := rfl
+@[simp] theorem im_zero : im 0 = 0 := rfl
+
+/-- Conjugate point of the unit disc. -/
+instance : Star 𝕔𝔻 where
+  star z := mk (conj z) <| (norm_conj z).symm ▸ z.norm_le_one
+
+@[simp] theorem coe_star (z : 𝕔𝔻) : (↑(star z) : ℂ) = conj ↑z := rfl
+
+@[simp]
+protected theorem star_eq_zero {z : 𝕔𝔻} : star z = 0 ↔ z = 0 := by
+  simp [← coe_eq_zero]
+
+@[simp]
+protected theorem star_zero : star (0 : 𝕔𝔻) = 0 := by simp
+
+instance : InvolutiveStar 𝕔𝔻 where
+  star_involutive z := by ext; simp
+
+@[simp] protected theorem star_neg (z : 𝕔𝔻) : star (-z) = -(star z) := rfl
+
+@[simp] protected theorem re_star (z : 𝕔𝔻) : (star z).re = z.re := rfl
+
+@[simp] protected theorem im_star (z : 𝕔𝔻) : (star z).im = -z.im := rfl
+
+instance : StarMul 𝕔𝔻 where
+  star_mul z w := coe_injective <| by simp [mul_comm]
+
+end UnitClosedDisc
 
 end Complex

@@ -35,9 +35,12 @@ variable (ι : Type v) (β : ι → Type w)
 /-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
+@[implicit_reducible]
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
-deriving AddCommMonoid, Inhabited, DFunLike, CoeFun
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance CoeFun for DirectSum
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/
@@ -54,14 +57,21 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 --   | `(⨁ ($x:ident) ($y:ident), $p) => `(DirectSum _ (fun $x ↦ fun $y ↦ $p))
 -- end
 
+namespace DirectSum
+
+variable {ι β}
+
+-- This instance exists to avoid nsmul and zsmul diamonds.
+instance {R : Type u} [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
+    SMul R (⨁ i, β i) := inferInstanceAs <| SMul R (Π₀ (i : ι), β i)
+
+deriving instance AddCommMonoid, Inhabited, DFunLike for DirectSum
+
 instance [DecidableEq ι] [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] :
     DecidableEq (DirectSum ι β) :=
   inferInstanceAs <| DecidableEq (Π₀ i, β i)
 
-namespace DirectSum
-
-variable {ι}
-
+variable (β) in
 /-- Coercion from a `DirectSum` to a pi type is an `AddMonoidHom`. -/
 def coeFnAddMonoidHom [∀ i, AddCommMonoid (β i)] : (⨁ i, β i) →+ (Π i, β i) where
   toFun x := x
@@ -78,7 +88,6 @@ variable [∀ i, AddCommGroup (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
-variable {β}
 
 @[simp]
 theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
@@ -95,11 +104,14 @@ variable [∀ i, AddCommMonoid (β i)]
 theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
   rfl
 
-variable {β}
-
 @[simp]
 theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
+
+@[simp]
+theorem sum_apply {α} (s : Finset α) (g : α → ⨁ i, β i) (i : ι) :
+    (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
+  DFinsupp.finsetSum_apply s g i
 
 section DecidableEq
 
@@ -131,14 +143,12 @@ lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq
   DFinsupp.single_apply
 
 theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∈ s) :
-    mk β s f n = f ⟨n, hn⟩ := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
-  rw [dif_pos hn]
+    mk β s f n = f ⟨n, hn⟩ :=
+  DFinsupp.mk_of_mem hn
 
 theorem mk_apply_of_notMem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∉ s) :
-    mk β s f n = 0 := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
-  rw [dif_neg hn]
+    mk β s f n = 0 :=
+  DFinsupp.mk_of_notMem hn
 
 @[simp]
 theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
@@ -147,7 +157,7 @@ theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i
 @[simp]
 theorem support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (i : ι) (x : β i) (h : x ≠ 0) :
     (of _ i x).support = {i} :=
-  DFinsupp.support_single_ne_zero h
+  DFinsupp.support_single h
 
 theorem support_of_subset [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] {i : ι} {b : β i} :
     (of _ i b).support ⊆ {i} :=
@@ -157,11 +167,9 @@ theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i
     (∑ i ∈ x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
     ∑ i ∈ Finset.univ, of β i (x i) = x := by
-  apply DFinsupp.ext (fun i ↦ ?_)
-  rw [DFinsupp.finset_sum_apply]
+  ext i
   simp [of_apply]
 
 theorem mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
@@ -177,6 +185,13 @@ protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β 
   apply DFinsupp.induction x zero
   intro i b f h1 h2 ih
   solve_by_elim
+
+/-- An alternative induction, where the addition assumption is restricted to singles. -/
+@[elab_as_elim]
+protected theorem induction_on' {motive : (⨁ i, β i) → Prop} (f : ⨁ i, β i) (h0 : motive 0)
+    (hadd : ∀ (i b) (f : ⨁ i, β i), f i = 0 → b ≠ 0 → motive f → motive (of β i b + f)) :
+    motive f :=
+  DFinsupp.induction f h0 hadd
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
 then they are equal. -/
@@ -211,12 +226,13 @@ def toAddMonoid : (⨁ i, β i) →+ γ :=
 theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
   DFinsupp.liftAddHom_apply_single φ i x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
-  simp [toAddMonoid, of]
+  intro
+  simp [toAddMonoid]
+  rfl
 
 lemma toAddMonoid_injective : Injective (toAddMonoid : (∀ i, β i →+ γ) → (⨁ i, β i) →+ γ) :=
   DFinsupp.liftAddHom.injective
@@ -356,8 +372,7 @@ theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
     {M S : Type*} [DecidableEq M] [AddCommMonoid M]
     [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
-  simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
-    Equiv.coe_fn_mk]
+  simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk]
   exact DFinsupp.sumAddHom_apply _ x
 
 @[simp]
@@ -390,6 +405,7 @@ theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCom
 
 variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
   intro m
@@ -427,10 +443,10 @@ def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
   DFinsupp.mapRange.addMonoidHom_comp _ _
 
 lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) := by
-  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
 lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) := by
-  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma map_eq_iff (x y : ⨁ i, α i) :
     map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
@@ -446,5 +462,5 @@ and the corresponding finite product. -/
 def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :
     DirectSum ι G ≃+ ((i : ι) → G i) :=
   ⟨DFinsupp.equivFunOnFintype, fun g h ↦ funext fun _ ↦ by
-    simp only [DFinsupp.equivFunOnFintype, Equiv.toFun_as_coe, Equiv.coe_fn_mk, add_apply,
-      Pi.add_apply]⟩
+    simp only [DFinsupp.equivFunOnFintype, Equiv.toFun_as_coe, Equiv.coe_fn_mk,
+      ← DFinsupp.add_apply, Pi.add_apply]⟩

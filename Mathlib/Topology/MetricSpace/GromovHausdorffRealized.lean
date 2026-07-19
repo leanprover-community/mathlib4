@@ -131,29 +131,24 @@ private theorem candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
   fA.1.2 x
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
   grind [candidates_symm, candidates_triangle]
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private theorem candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
     f (inl x, inl y) = dist x y :=
   fA.1.1.1.1.1 x y
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private theorem candidates_dist_inr (fA : f ∈ candidates X Y) (x y : Y) :
     f (inr x, inr y) = dist x y :=
   fA.1.1.1.1.2 x y
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private theorem candidates_le_maxVar (fA : f ∈ candidates X Y) : f (x, y) ≤ maxVar X Y :=
   fA.2 x y
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- candidates are bounded by `maxVar X Y` -/
 private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
     ∀ {x y : X ⊕ Y}, f (x, y) ≤ maxVar X Y * dist x y
@@ -185,7 +180,6 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
       _ ≤ maxVar X Y * dist (inr x) (inr y) := by gcongr; exact one_le_maxVar X Y
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Technical lemma to prove that candidates are Lipschitz -/
 private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=
@@ -237,7 +231,7 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
       ⋂ x, { f : Cb X Y | f (x, x) = 0 }) ∩
       ⋂ (x) (y), { f : Cb X Y | f (x, y) ≤ maxVar X Y } := by
     ext
-    simp only [candidatesB, candidates, mem_inter_iff, mem_iInter, mem_setOf_eq]
+    simp only [candidatesB, candidates, mem_inter_iff, mem_iInter, mem_ofPred_eq]
   rw [this]
   repeat'
     first
@@ -292,7 +286,7 @@ private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
 section Nonempty
 variable [Nonempty X] [Nonempty Y]
 
-/- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
+/-- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
 prove separately inequalities controlling the two terms (relying too heavily on copy-paste...) -/
 private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     (⨆ x, ⨅ y, f (inl x, inr y)) ≤ (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g := by
@@ -395,7 +389,7 @@ set_option backward.privateInPublic true in
 /-- The distance on `X ⊕ Y` is a candidate -/
 private theorem dist_mem_candidates :
     (fun p : (X ⊕ Y) × (X ⊕ Y) => dist p.1 p.2) ∈ candidates X Y := by
-  simp_rw [candidates, Set.mem_setOf_eq, dist_comm, dist_triangle, dist_self, maxVar_bound,
+  simp_rw [candidates, Set.mem_ofPred_eq, dist_comm, dist_triangle, dist_self, maxVar_bound,
     forall_const, and_true]
   exact ⟨fun x y => rfl, fun x y => rfl⟩
 
@@ -446,7 +440,7 @@ section Consequences
 variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y]
 
-/- Now that we have proved that the set of candidates is compact, and that `HD` is continuous,
+/-- Now that we have proved that the set of candidates is compact, and that `HD` is continuous,
 we can finally select a candidate minimizing `HD`. This will be the candidate realizing the
 optimal coupling. -/
 private theorem exists_minimizer : ∃ f ∈ candidatesB X Y, ∀ g ∈ candidatesB X Y, HD f ≤ HD g :=
@@ -483,10 +477,7 @@ attribute [local instance] premetricOptimalGHDist
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
 def OptimalGHCoupling : Type _ :=
   @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
-
-instance : MetricSpace (OptimalGHCoupling X Y) := by
-  unfold OptimalGHCoupling
-  infer_instance
+deriving MetricSpace
 
 /-- Injection of `X` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjl (x : X) : OptimalGHCoupling X Y :=

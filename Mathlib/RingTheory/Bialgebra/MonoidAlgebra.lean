@@ -35,7 +35,6 @@ variable {R A M N O : Type*}
 namespace MonoidAlgebra
 variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M] [Monoid N] [Monoid O]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A M) in
 @[to_additive (dont_translate := R A)]
 instance instBialgebra : Bialgebra R A[M] where
@@ -71,9 +70,11 @@ their monoid algebras. -/
 noncomputable def mapDomainBialgHom (f : M →* N) : R[M] →ₐc[R] R[N] :=
   .ofAlgHom (mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id R R[M] := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
     mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by

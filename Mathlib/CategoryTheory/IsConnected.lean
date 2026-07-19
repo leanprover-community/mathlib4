@@ -45,7 +45,6 @@ category is preserved by the functor `(X × -)`. This appears in `CategoryTheory
 
 @[expose] public section
 
-
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 noncomputable section
@@ -99,6 +98,7 @@ private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
 
 end IsPreconnected.IsoConstantAux
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `J` is connected, any functor `F : J ⥤ Discrete α` is isomorphic to
@@ -297,9 +297,12 @@ def Zag (j₁ j₂ : J) : Prop :=
 
 @[refl] theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
 
-theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
+instance zag_symm : Std.Symm (@Zag J _) where
+  symm _ _ h := h.symm
 
-@[symm] theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
+@[deprecated (since := "2026-06-10")] alias zag_symmetric := zag_symm
+
+@[symm] theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := symm_of _ h
 
 theorem Zag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zag j₁ j₂ := Or.inl ⟨f⟩
 
@@ -311,16 +314,19 @@ morphisms from `j₁` to `j₂`, with backward morphisms allowed.
 def Zigzag : J → J → Prop :=
   Relation.ReflTransGen Zag
 
-theorem zigzag_symmetric : Symmetric (@Zigzag J _) :=
-  Relation.ReflTransGen.symmetric zag_symmetric
+instance zigzag_symm : Std.Symm (@Zigzag J _) :=
+  inferInstanceAs <| Std.Symm <| Relation.ReflTransGen Zag
 
-theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
-  _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
-  (fun h g => Relation.transitive_reflTransGen h g)
+@[deprecated (since := "2026-06-10")] alias zigzag_symmetric := zigzag_symm
+
+theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) where
+  refl := refl_of <| Relation.ReflTransGen _
+  symm := symm_of <| Relation.ReflTransGen _
+  trans := trans_of <| Relation.ReflTransGen _
 
 @[refl] theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
 
-@[symm] theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
+@[symm] theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := symm_of _ h
 
 @[trans] theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) :
     Zigzag j₁ j₃ :=
@@ -365,7 +371,7 @@ theorem Zigzag.of_inv_inv {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₃�
 /-- The setoid given by the equivalence relation `Zigzag`. A quotient for this
 setoid is a connected component of the category.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
   r := Zigzag
   iseqv := zigzag_equivalence
@@ -375,7 +381,7 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
 -/
 theorem zigzag_prefunctor_obj_of_zigzag (F : J ⥤q K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
-  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
+  h.lift F.obj fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
 
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a functor.
@@ -467,6 +473,8 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
 
 variable {C : Type w₂} [Category.{w₁} C]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
 category must be constant.
 This is the key property of connected categories which we use to establish properties about limits.

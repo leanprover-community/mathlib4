@@ -80,7 +80,7 @@ diagram `J ⥤ C` to limit cones, where `J : Type u` with `[Category.{v} J]`. -/
 -- `PreservesLimitsOfSize`, `PreservesColimitsOfSize`, `ReflectsLimitsOfSize`, and
 -- `ReflectsColimitsOfSize` would default to universe output parameters.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesLimitsOfSize (F : C ⥤ D) : Prop where
   preservesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesLimitsOfShape J F := by
     infer_instance
@@ -93,7 +93,7 @@ abbrev PreservesLimits (F : C ⥤ D) :=
 -- This should be used with explicit universe variables.
 /-- `PreservesColimitsOfSize.{v u} F` means that `F` sends all colimit cocones over any
 diagram `J ⥤ C` to colimit cocones, where `J : Type u` with `[Category.{v} J]`. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesColimitsOfSize (F : C ⥤ D) : Prop where
   preservesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesColimitsOfShape J F := by
     infer_instance
@@ -175,6 +175,16 @@ instance [HasLimit K] {F : C ⥤ D} [PreservesLimit K F] : HasLimit (K ⋙ F) wh
 instance [HasColimit K] {F : C ⥤ D} [PreservesColimit K F] : HasColimit (K ⋙ F) where
   exists_colimit := ⟨_, isColimitOfPreserves F (colimit.isColimit K)⟩
 
+/-- To show that `F` preserves the limit of `K`, we may assume that `K` has a limit. -/
+lemma PreservesLimit.mk' {F : C ⥤ D} (h : HasLimit K → PreservesLimit K F) :
+    PreservesLimit K F where
+  preserves hc := (h ⟨_, hc⟩).preserves hc
+
+/-- To show that `F` preserves the colimit of `K`, we may assume that `K` has a colimit. -/
+lemma PreservesColimit.mk' {F : C ⥤ D} (h : HasColimit K → PreservesColimit K F) :
+    PreservesColimit K F where
+  preserves hc := (h ⟨_, hc⟩).preserves hc
+
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
@@ -208,6 +218,11 @@ lemma preservesLimit_of_preserves_limit_cone {F : C ⥤ D} {t : Cone K} (h : IsL
     (hF : IsLimit (F.mapCone t)) : PreservesLimit K F where
   preserves h' := ⟨IsLimit.ofIsoLimit hF (Functor.mapIso _ (IsLimit.uniqueUpToIso h h'))⟩
 
+lemma preservesLimit_iff_isLimit_mapCone {F : C ⥤ D} {t : Cone K} (h : IsLimit t) :
+    PreservesLimit K F ↔ Nonempty (IsLimit (F.mapCone t)) :=
+  ⟨fun _ ↦ ⟨isLimitOfPreserves _ h⟩, fun h' ↦ preservesLimit_of_preserves_limit_cone h h'.some⟩
+
+set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of limits along a natural isomorphism in the diagram. -/
 lemma preservesLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
     [PreservesLimit K₁ F] : PreservesLimit K₂ F where
@@ -217,21 +232,39 @@ lemma preservesLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K�
     apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
     exact Cone.ext (Iso.refl _)⟩
 
+lemma preservesLimit_iff_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) :
+    PreservesLimit K₁ F ↔ PreservesLimit K₂ F :=
+  ⟨fun _ ↦ preservesLimit_of_iso_diagram _ h, fun _ ↦ preservesLimit_of_iso_diagram _ h.symm⟩
+
 /-- Transfer preservation of a limit along a natural isomorphism in the functor. -/
 lemma preservesLimit_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) [PreservesLimit K F] :
     PreservesLimit K G where
   preserves t := ⟨IsLimit.mapConeEquiv h (isLimitOfPreserves F t)⟩
+
+lemma preservesLimit_iff_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesLimit K F ↔ PreservesLimit K G :=
+  ⟨fun _ ↦ preservesLimit_of_natIso _ h, fun _ ↦ preservesLimit_of_natIso _ h.symm⟩
 
 /-- Transfer preservation of limits of shape along a natural isomorphism in the functor. -/
 lemma preservesLimitsOfShape_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J G where
   preservesLimit {K} := preservesLimit_of_natIso K h
 
+lemma preservesLimitsOfShape_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesLimitsOfShape J F ↔ PreservesLimitsOfShape J G :=
+  ⟨fun _ ↦ preservesLimitsOfShape_of_natIso h, fun _ ↦ preservesLimitsOfShape_of_natIso h.symm⟩
+
 /-- Transfer preservation of limits along a natural isomorphism in the functor. -/
 lemma preservesLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOfSize.{w, w'} F] :
     PreservesLimitsOfSize.{w, w'} G where
   preservesLimitsOfShape := preservesLimitsOfShape_of_natIso h
 
+lemma preservesLimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesLimitsOfSize.{w, w'} F ↔ PreservesLimitsOfSize.{w, w'} G :=
+  ⟨fun _ ↦ preservesLimits_of_natIso h, fun _ ↦ preservesLimits_of_natIso h.symm⟩
+
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of limits along an equivalence in the shape. -/
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J' F where
@@ -266,6 +299,12 @@ lemma preservesColimit_of_preserves_colimit_cocone {F : C ⥤ D} {t : Cocone K} 
     (hF : IsColimit (F.mapCocone t)) : PreservesColimit K F :=
   ⟨fun h' => ⟨IsColimit.ofIsoColimit hF (Functor.mapIso _ (IsColimit.uniqueUpToIso h h'))⟩⟩
 
+lemma preservesColimit_iff_isColimit_mapCocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t) :
+    PreservesColimit K F ↔ Nonempty (IsColimit (F.mapCocone t)) :=
+  ⟨fun _ ↦ ⟨isColimitOfPreserves _ h⟩,
+    fun h' ↦ preservesColimit_of_preserves_colimit_cocone h h'.some⟩
+
+set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of colimits along a natural isomorphism in the shape. -/
 lemma preservesColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
     [PreservesColimit K₁ F] :
@@ -276,21 +315,39 @@ lemma preservesColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K
     apply IsColimit.ofIsoColimit (isColimitOfPreserves F this)
     exact Cocone.ext (Iso.refl _)⟩
 
+lemma preservesColimit_iff_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) :
+    PreservesColimit K₁ F ↔ PreservesColimit K₂ F :=
+  ⟨fun _ ↦ preservesColimit_of_iso_diagram _ h, fun _ ↦ preservesColimit_of_iso_diagram _ h.symm⟩
+
 /-- Transfer preservation of a colimit along a natural isomorphism in the functor. -/
 lemma preservesColimit_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) [PreservesColimit K F] :
     PreservesColimit K G where
   preserves t := ⟨IsColimit.mapCoconeEquiv h (isColimitOfPreserves F t)⟩
+
+lemma preservesColimit_iff_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesColimit K F ↔ PreservesColimit K G :=
+  ⟨fun _ ↦ preservesColimit_of_natIso _ h, fun _ ↦ preservesColimit_of_natIso _ h.symm⟩
 
 /-- Transfer preservation of colimits of shape along a natural isomorphism in the functor. -/
 lemma preservesColimitsOfShape_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimitsOfShape J F] :
     PreservesColimitsOfShape J G where
   preservesColimit {K} := preservesColimit_of_natIso K h
 
+lemma preservesColimitsOfShape_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesColimitsOfShape J F ↔ PreservesColimitsOfShape J G :=
+  ⟨fun _ ↦ preservesColimitsOfShape_of_natIso h, fun _ ↦ preservesColimitsOfShape_of_natIso h.symm⟩
+
 /-- Transfer preservation of colimits along a natural isomorphism in the functor. -/
 lemma preservesColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimitsOfSize.{w, w'} F] :
     PreservesColimitsOfSize.{w, w'} G where
   preservesColimitsOfShape {_J} _𝒥₁ := preservesColimitsOfShape_of_natIso h
 
+lemma preservesColimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesColimitsOfSize.{w, w'} F ↔ PreservesColimitsOfSize.{w, w'} G :=
+  ⟨fun _ ↦ preservesColimits_of_natIso h, fun _ ↦ preservesColimits_of_natIso h.symm⟩
+
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of colimits along an equivalence in the shape. -/
 lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J' F where
@@ -360,7 +417,7 @@ whenever the image of a cone over some `K : J ⥤ C` under `F` is a limit cone i
 the cone was already a limit cone in `C`.
 Note that we do not assume a priori that `D` actually has any limits.
 -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsLimitsOfSize (F : C ⥤ D) : Prop where
   reflectsLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsLimitsOfShape J F := by
     infer_instance
@@ -379,7 +436,7 @@ whenever the image of a cocone over some `K : J ⥤ C` under `F` is a colimit co
 the cocone was already a colimit cocone in `C`.
 Note that we do not assume a priori that `D` actually has any colimits.
 -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsColimitsOfSize (F : C ⥤ D) : Prop where
   reflectsColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsColimitsOfShape J F := by
     infer_instance
@@ -515,6 +572,7 @@ lemma preservesLimits_of_reflects_of_preserves [PreservesLimitsOfSize.{w', w} (F
     [ReflectsLimitsOfSize.{w', w} G] : PreservesLimitsOfSize.{w', w} F where
   preservesLimitsOfShape := preservesLimitsOfShape_of_reflects_of_preserves F G
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Transfer reflection of limits along a natural isomorphism in the diagram. -/
 lemma reflectsLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [ReflectsLimit K₁ F] :
     ReflectsLimit K₂ F where
@@ -619,6 +677,7 @@ lemma preservesColimits_of_reflects_of_preserves [PreservesColimitsOfSize.{w', w
     [ReflectsColimitsOfSize.{w', w} G] : PreservesColimitsOfSize.{w', w} F where
   preservesColimitsOfShape := preservesColimitsOfShape_of_reflects_of_preserves F G
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Transfer reflection of colimits along a natural isomorphism in the diagram. -/
 lemma reflectsColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
     [ReflectsColimit K₁ F] :
@@ -709,8 +768,9 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_coconePt_of_preservesColimit
     {C D J : Type*} [Category* C] [Category* D] [Category* J] (K : J ⥤ C) {L L' : C ⥤ D}
     (α : L ⟶ L') [IsIso (whiskerLeft K α)] (c : Cocone K) (hc : IsColimit c)
@@ -718,9 +778,9 @@ lemma isIso_app_coconePt_of_preservesColimit
     IsIso (α.app c.pt) := by
   let e := IsColimit.coconePointsIsoOfNatIso
     (isColimitOfPreserves L hc) (isColimitOfPreserves L' hc) (asIso (whiskerLeft K α))
-  convert inferInstanceAs (IsIso e.hom)
+  convert! (inferInstance : IsIso e.hom)
   apply (isColimitOfPreserves L hc).hom_ext fun j ↦ ?_
-  simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
+  simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.mapCocone_ι_app,
     NatTrans.naturality, IsColimit.coconePointsIsoOfNatIso_hom, asIso_hom, e]
   refine (((isColimitOfPreserves L hc).ι_map (L'.mapCocone c) (whiskerLeft K α) j).trans ?_).symm
   simp
@@ -729,6 +789,7 @@ end
 
 variable (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A fully faithful functor reflects limits. -/
 instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSize.{w, w'} F where
   reflectsLimitsOfShape {J} 𝒥₁ :=
@@ -740,6 +801,7 @@ instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSi
               intro s m
               rw [Functor.map_preimage]
               apply t.uniq_cone_morphism⟩ } }
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A fully faithful functor reflects colimits. -/
 instance fullyFaithful_reflectsColimits [F.Full] [F.Faithful] :
     ReflectsColimitsOfSize.{w, w'} F where

@@ -11,6 +11,7 @@ public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Binomial Power Series
+
 We introduce formal power series of the form `(1 + X) ^ r`, where `r` is an element of a
 commutative binomial ring `R`.
 
@@ -65,7 +66,6 @@ lemma binomialSeries_add [Ring A] [Algebra R A] (r s : R) :
   refine sum_congr rfl fun ab hab => ?_
   rw [mul_comm, mul_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma binomialSeries_nat [Ring A] [Algebra R A] (d : ℕ) :
     binomialSeries A (d : R) = (1 + X) ^ d := by
@@ -80,7 +80,6 @@ lemma binomialSeries_zero [Ring A] [Algebra R A] :
     binomialSeries A (0 : R) = (1 : A⟦X⟧) := by
   simpa using binomialSeries_nat 0
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
     rescale (-1 : A) (invOneSubPow A d) = binomialSeries A (-d : ℤ) := by
   ext n

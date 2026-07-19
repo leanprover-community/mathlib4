@@ -56,6 +56,8 @@ cokernel of `i : A ⟶ B` and `K` a kernel of `p : X ⟶ Y` (see `cocycle₁`). 
 def cocycle₁' : Cocycle B X 1 :=
   Cocycle.mk (δ 0 1 (cochain₀ sq hsq)) 2 (by simp) (by simp [δ_δ])
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     (cocycle₁' sq hsq).1.v n m hnm ≫ p.f m = 0 := by
@@ -64,6 +66,8 @@ lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
   simp [cocycle₁', -HomologicalComplex.Hom.comm,
     ← p.comm, fac_right, reassoc_of% fac_right, b.comm]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma comp_coe_cocyle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     i.f n ≫ (cocycle₁' sq hsq).1.v n m hnm = 0 := by
@@ -71,6 +75,7 @@ lemma comp_coe_cocyle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
   dsimp at fac_left
   simp [cocycle₁', fac_left, reassoc_of% fac_left]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hQ hK in
 lemma exists_hom (n m : ℤ) (hnm : n + 1 = m := by lia) :
@@ -96,14 +101,14 @@ lemma π_f_cochain₁_v_ι_f (n m : ℤ) (hnm : n + 1 = m) :
   (exists_hom sq hsq hQ hK n m hnm).choose_spec
 
 /-- A `1`-cocycle from a cokernel `Q` of `i : A ⟶ B` to a kernel `K` of
-`p : X ⟶ Y`. If this is a coboundary, then the square in `CochainCompplex C ℤ`
+`p : X ⟶ Y`. If this is a coboundary, then the square in `CochainComplex C ℤ`
 has a lifting, see the lemma `hasLift` below. -/
 noncomputable def cocycle₁ : Cocycle Q K 1 :=
   Cocycle.mk (cochain₁ sq hsq hQ hK) 2 (by simp) (by
     have : Epi π := Cofork.IsColimit.epi hQ
     have : Mono ι := Fork.IsLimit.mono hK
     ext n _ rfl
-    have this := Cochain.congr_v ((cocycle₁' sq hsq).δ_eq_zero 2) n _ rfl
+    have := Cochain.congr_v ((cocycle₁' sq hsq).δ_eq_zero 2) n _ rfl
     rw [Cochain.zero_v, δ_v _ _ (by simp) _ _ _ _ (n + 1) _ (by lia) rfl,
       Int.negOnePow_even 2 ⟨1, by simp⟩, one_smul] at this ⊢
     rwa [← cancel_mono (ι.f (n + 2)), ← cancel_epi (π.f n),
@@ -119,6 +124,8 @@ lemma comp_coe_cocycle₁_comp :
   ext n m hnm
   simp [cocycle₁]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 Consider a commutative square in the category `CochainComplex C ℤ`
 where `C` is an abelian category.

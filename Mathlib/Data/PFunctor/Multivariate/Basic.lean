@@ -137,6 +137,7 @@ theorem comp.get_mk (x : P (fun i => Q i α)) : comp.get (comp.mk x) = x := by
 theorem comp.mk_get (x : comp P Q α) : comp.mk (comp.get x) = x := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 lifting predicates and relations
 -/
@@ -152,6 +153,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
   use ⟨a, fun i j => ⟨f i j, pf i j⟩⟩
   rw [xeq]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (f : P.B a ⟹ α) :
     @LiftP.{u} _ P.Obj _ α p ⟨a, f⟩ ↔ ∀ i x, p (f i x) := by
   simp only [liftP_iff]; constructor
@@ -175,17 +177,13 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     intro i j
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
-  dsimp; constructor
-  · rw [xeq]
-    rfl
-  rw [yeq]; rfl
+  exact ⟨⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩, xeq.symm, yeq.symm⟩
 
 open Set
 
 theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
     @supp.{u} _ P.Obj _ α (⟨a, f⟩ : P α) i = f i '' univ := by
-  ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
+  ext x; simp only [supp, image_univ, mem_range, mem_ofPred_eq]
   constructor <;> intro h
   · apply @h fun i x => ∃ y : P.B a i, f i y = x
     rw [liftP_iff']

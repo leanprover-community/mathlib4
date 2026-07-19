@@ -250,6 +250,7 @@ theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) 
   exact test_sorry
 
 -- Test definitional equalities that get broken by rewriting.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -260,6 +261,7 @@ example (b : Bool) (h : true = b)
   exact test_sorry
 
 -- As above.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -272,6 +274,7 @@ example (b : Bool) (h : true = b)
   exact test_sorry
 
 -- As above.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -395,48 +398,48 @@ example (f : ∀ k, Fin k → Nat) (x : Fin m) : P (f m x) := by
 
 -- test tracing for `cleanupCasts`
 /--
-trace: [Tactic.depRewrite.cleanupCasts] P (eq ▸ x) => continue P (eq ▸ x)
-[Tactic.depRewrite.cleanupCasts] Fin m => continue Fin m
-[Tactic.depRewrite.cleanupCasts] m => continue m
-[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
+trace: [Tactic.depRewrite.cleanupCasts] ✅️ P (eq ▸ x) => continue P (eq ▸ x)
+[Tactic.depRewrite.cleanupCasts] ✅️ Fin m => continue Fin m
+[Tactic.depRewrite.cleanupCasts] ✅️ m => continue m
+[Tactic.depRewrite.cleanupCasts] ✅️ eq ▸ x => continue eq ▸ x
   [Tactic.depRewrite.cleanupCasts] found potential cast
         eq ▸ x
   [Tactic.depRewrite.cleanupCasts] lhs
         n
       is not definitionally equal to rhs
         m
-[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
-[Tactic.depRewrite.cleanupCasts] Nat => continue Nat
-[Tactic.depRewrite.cleanupCasts] n => continue n
-[Tactic.depRewrite.cleanupCasts] fun x' h' => Fin x' => continue fun x' h' => Fin x'
-[Tactic.depRewrite.cleanupCasts] n = x' => continue n = x'
-[Tactic.depRewrite.cleanupCasts] x' => continue x'
-[Tactic.depRewrite.cleanupCasts] Fin x' => continue Fin x'
-[Tactic.depRewrite.cleanupCasts] x => continue x
-[Tactic.depRewrite.cleanupCasts] eq => continue eq
+[Tactic.depRewrite.cleanupCasts] ✅️ eq ▸ x => continue eq ▸ x
+[Tactic.depRewrite.cleanupCasts] ✅️ Nat => continue Nat
+[Tactic.depRewrite.cleanupCasts] ✅️ n => continue n
+[Tactic.depRewrite.cleanupCasts] ✅️ fun x' h' => Fin x' => continue fun x' h' => Fin x'
+[Tactic.depRewrite.cleanupCasts] ✅️ n = x' => continue n = x'
+[Tactic.depRewrite.cleanupCasts] ✅️ x' => continue x'
+[Tactic.depRewrite.cleanupCasts] ✅️ Fin x' => continue Fin x'
+[Tactic.depRewrite.cleanupCasts] ✅️ x => continue x
+[Tactic.depRewrite.cleanupCasts] ✅️ eq => continue eq
 ---
-trace: [Tactic.depRewrite.cleanupCasts] Q (⋯ ▸ eq ▸ x) => continue Q (⋯ ▸ eq ▸ x)
-[Tactic.depRewrite.cleanupCasts] Q => continue Q
-[Tactic.depRewrite.cleanupCasts] ⋯ ▸ eq ▸ x => visit eq ▸ x
+trace: [Tactic.depRewrite.cleanupCasts] ✅️ Q (⋯ ▸ eq ▸ x) => continue Q (⋯ ▸ eq ▸ x)
+[Tactic.depRewrite.cleanupCasts] ✅️ Q => continue Q
+[Tactic.depRewrite.cleanupCasts] ✅️ ⋯ ▸ eq ▸ x => visit eq ▸ x
   [Tactic.depRewrite.cleanupCasts] found potential cast
         ⋯ ▸ eq ▸ x
-[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
+[Tactic.depRewrite.cleanupCasts] ✅️ eq ▸ x => continue eq ▸ x
   [Tactic.depRewrite.cleanupCasts] found potential cast
         eq ▸ x
   [Tactic.depRewrite.cleanupCasts] lhs
         n
       is not definitionally equal to rhs
         m
-[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
-[Tactic.depRewrite.cleanupCasts] Nat => continue Nat
-[Tactic.depRewrite.cleanupCasts] n => continue n
-[Tactic.depRewrite.cleanupCasts] fun x' h' => Fin x' => continue fun x' h' => Fin x'
-[Tactic.depRewrite.cleanupCasts] n = x' => continue n = x'
-[Tactic.depRewrite.cleanupCasts] x' => continue x'
-[Tactic.depRewrite.cleanupCasts] Fin x' => continue Fin x'
-[Tactic.depRewrite.cleanupCasts] x => continue x
-[Tactic.depRewrite.cleanupCasts] m => continue m
-[Tactic.depRewrite.cleanupCasts] eq => continue eq
+[Tactic.depRewrite.cleanupCasts] ✅️ eq ▸ x => continue eq ▸ x
+[Tactic.depRewrite.cleanupCasts] ✅️ Nat => continue Nat
+[Tactic.depRewrite.cleanupCasts] ✅️ n => continue n
+[Tactic.depRewrite.cleanupCasts] ✅️ fun x' h' => Fin x' => continue fun x' h' => Fin x'
+[Tactic.depRewrite.cleanupCasts] ✅️ n = x' => continue n = x'
+[Tactic.depRewrite.cleanupCasts] ✅️ x' => continue x'
+[Tactic.depRewrite.cleanupCasts] ✅️ Fin x' => continue Fin x'
+[Tactic.depRewrite.cleanupCasts] ✅️ x => continue x
+[Tactic.depRewrite.cleanupCasts] ✅️ m => continue m
+[Tactic.depRewrite.cleanupCasts] ✅️ eq => continue eq
 -/
 #guard_msgs in
 set_option trace.Tactic.depRewrite.cleanupCasts true in
@@ -452,3 +455,98 @@ example (x : Fin n) : P x := by
 example {x : Bool} (h : x = x) : x = x := by
   rw! [h] at h
   exact h
+
+/-! ## Tests for `conv` mode -/
+
+example (x : Fin n) : P x.1 := by
+  conv =>
+    enter [1]
+    rewrite! (castMode := .all) [eq]
+    guard_target =ₛ (cast% eq ▸ x).1
+  guard_target =ₛ P (cast% eq ▸ x).1
+  exact test_sorry
+
+example (f : ∀ c, Fin c) : P (f n).1 := by
+  conv =>
+    enter [1, 1]
+    rewrite! (castMode := .all) [eq]
+  guard_target =ₛ P (cast% eq.symm ▸ f m).1
+  exact test_sorry
+
+example (x : Fin n) : P x.1 := by
+  conv =>
+    enter [1]
+    rw! (castMode := .all) [eq]
+    guard_target =ₛ (cast% eq ▸ x).1
+  guard_target =ₛ P (cast% eq ▸ x).1
+  exact test_sorry
+
+example (f : ∀ c, Fin c) : P (f n).1 := by
+  conv =>
+    enter [1, 1]
+    rw! (castMode := .all) [eq]
+  guard_target =ₛ P (cast% eq.symm ▸ f m).1
+  exact test_sorry
+
+example (f : Nat → ∀ c, Fin (c + n)) : P (f (f (f m n) (f n m)) n).1 := by
+  conv =>
+    enter [1, 1, 1, 1]
+    rw! (castMode := .all) [eq]
+    guard_target =~ cast% _
+  rw! (castMode := .all) [eq, ← eq]
+  guard_target =ₛ P ((f (f (f n n) (f n n))) n).1
+  exact test_sorry
+
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/conv-mode.20rw.21.20can.20produce.20type-incorrect.20term/near/609501125
+/--
+trace: n m : Nat
+eq : n = m
+B : Nat → Type
+ι : Type u_1
+X : ι → Sort u_2
+f : (i : ι) → X i
+i : ι
+y : X i
+h : (i, 1).fst = i
+| f i
+---
+trace: n m : Nat
+eq : n = m
+B : Nat → Type
+ι : Type u_1
+X : ι → Sort u_2
+f : (i : ι) → X i
+i : ι
+y : X i
+h : (i, 1).fst = i
+⊢ f i = y
+-/
+#guard_msgs in
+example {ι : Type*} {X : ι → Sort*} (f : ∀ i, X i) (i : ι) (y : X i) :
+    f (i, 1).1 = y := by
+  have h : (i, 1).1 = i := rfl
+  conv => lhs; rw! [h]; trace_state
+  trace_state
+  exact test_sorry
+
+def PropOrBool (x : Bool) : Type :=
+  bif x then Prop else Bool
+
+def boolToPropOrBool (x y : Bool) : PropOrBool x :=
+  match x with
+  | true => y = true
+  | false => y
+
+example : let t := true; boolToPropOrBool t t := by
+  intro t
+  have h : t = true := rfl
+  rw! [h]
+  guard_target =ₛ boolToPropOrBool true true
+  rfl
+
+example : let t := true; boolToPropOrBool (t || true) t := by
+  intro t
+  have h : t = false := test_sorry
+  rw! [h]
+  guard_target =ₛ boolToPropOrBool (false || true) false
+  contradiction

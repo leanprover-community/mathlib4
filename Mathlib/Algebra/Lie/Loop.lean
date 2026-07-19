@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
 # Loop Lie algebras and their central extensions
+
 Given a Lie algebra `L`, the loop algebra is the Lie algebra of maps from a circle into `L`. This
 can mean many different things, e.g., continuous maps, smooth maps, polynomial maps. In this file,
 we consider the simplest case of polynomial maps, meaning we take a base change with the ring of
@@ -60,7 +61,6 @@ slightly more general definition which coincides with the Laurent polynomial con
 `A = ℤ` -/
 abbrev loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
 
-set_option backward.isDefEq.respectTransparency false in
 open LaurentPolynomial in
 /-- An Lie algebra isomorphism between the Loop algebra (with `A = ℤ`) and the tensor product with
 Laurent polynomials. -/
@@ -70,7 +70,7 @@ def loopAlgebraEquivLaurent :
 
 namespace LoopAlgebra
 
-open Classical in
+open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
 def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
   TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis A R)
@@ -86,6 +86,7 @@ lemma toFinsupp_single_tmul (c : A) (z : L) :
   simp [← toFinsupp_symm_single]
 
 open Finsupp in
+set_option backward.isDefEq.respectTransparency false in
 /-- The residue pairing on the loop algebra.  When `A = ℤ` and the elements are viewed as Laurent
 polynomials with coefficients in `L`, the pairing is interpreted as `(f, g) ↦ Res f dg`. -/
 @[simps]
@@ -112,7 +113,6 @@ def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]
   map_add' x y := by ext; simp [sum_add]
   map_smul' r x := by ext; simp [-smul_eq_mul, smul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 open LieModule in
 /-- A 2-cochain on a loop algebra given by an invariant bilinear form. When `A = ℤ`, the alternating
 condition amounts to the fact that Res f df = 0. -/
@@ -122,13 +122,13 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
   val := (residuePairing R A L Φ).compr₂ (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm
   property := by
     refine Cohomology.mem_twoCochain_iff.mpr fun f ↦ ?_
-    letI F := toFinsupp R A L
+    let F := toFinsupp R A L
     suffices ((F f).sum fun a v ↦ a • Φ (F f (-a)) v) = 0 by simpa
     classical
     set s := (F f).support ∪ (F f).support.image (Equiv.neg A) with hs
     have hs' : (F f).support ⊆ s := Finset.subset_union_left
     rw [Finsupp.sum_of_support_subset _ hs' _ (by simp)]
-    refine Function.Odd.finset_sum_eq_zero (fun n ↦ by simp [hΦ.eq]) (Finset.map_eq_of_subset ?_)
+    refine Function.Odd.finsetSum_eq_zero (fun n ↦ by simp [hΦ.eq]) (Finset.map_eq_of_subset ?_)
     intro x hx
     rw [Finset.mem_union]
     replace hx : -x ∈ (F f).support ∨ -x ∈ (F f).support.image Neg.neg := by simpa [hs] using hx
@@ -143,7 +143,6 @@ lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebr
       (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm (residuePairing R A L Φ x y) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open LieModule in
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
 @[simps]
@@ -158,7 +157,8 @@ def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
         b • Φ (Finsupp.single (a + c) ⁅x, z⁆ (-b)) y =
         c • Φ (Finsupp.single (a + b) ⁅x, y⁆ (-c)) z +
         a • Φ (Finsupp.single (b + c) ⁅y, z⁆ (-a)) x by
-      simpa [sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add, -LinearEquiv.map_add]
+      simpa [trivial_lie_zero, sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add,
+        -LinearEquiv.map_add]
     by_cases h0 : a + b + c = 0
     · suffices b • Φ ⁅x, z⁆ y = c • Φ ⁅x, y⁆ z + a • Φ ⁅y, z⁆ x by
         simpa only [show a + b = -c by grind, show a + c = -b by grind, show b + c = -a by grind,
