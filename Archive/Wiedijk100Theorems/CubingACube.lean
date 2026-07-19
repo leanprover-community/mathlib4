@@ -183,7 +183,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     (cs i).shiftUp.bottom ⊆ ⋃ i : ι, (cs i).bottom := by
   intro p hp; obtain ⟨hp0, hps⟩ := hp; rw [tail_shiftUp] at hps
   have : p ∈ (unitCube : Cube (n + 1)).toSet := by
-    simp only [toSet, forall_iff_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
+    simp only [toSet, forall_iff_succ, hp0, side_unitCube, mem_ofPred_eq, mem_Ico, head_shiftUp]
     refine ⟨⟨?_, ?_⟩, ?_⟩
     · rw [← zero_add (0 : ℝ)]; apply add_le_add
       · apply zero_le_b h
@@ -223,10 +223,10 @@ variable {c : Cube (n + 1)} (h : Correct cs) (v : Valley cs c)
 theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube := by
   refine ⟨?_, ?_, ?_⟩
   · intro v
-    simp only [bottom, and_imp, mem_iUnion, mem_setOf_eq]
+    simp only [bottom, and_imp, mem_iUnion, mem_ofPred_eq]
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
-      dsimp only [toSet, unitCube, mem_setOf_eq]
+      dsimp only [toSet, unitCube, mem_ofPred_eq]
       rw [forall_iff_succ, h0]; constructor
       · norm_num [side, unitCube]
       · exact hv
@@ -410,7 +410,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   have i'_i'' : i' ≠ i'' := by
     rintro ⟨⟩
     have : (cs i).b ∈ (cs i').toSet := by
-      simp only [toSet, forall_iff_succ, hi.1, bottom_mem_side h2i', true_and, mem_setOf_eq]
+      simp only [toSet, forall_iff_succ, hi.1, bottom_mem_side h2i', true_and, mem_ofPred_eq]
       intro j₂; by_cases hj₂ : j₂ = j
       · simpa [p', side_tail, hj'.symm, hj₂] using hi''.2 j
       · simpa [p, hj₂] using! hi'.2 j₂
@@ -456,7 +456,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     simp only [not_subset, tail_shiftUp] at h2i'
     rcases h2i' with ⟨p1, hp1, h2p1⟩
     have : ∃ p3, p3 ∈ (cs i').tail.toSet ∧ p3 ∉ (cs i).tail.toSet ∧ p3 ∈ c.tail.toSet := by
-      simp only [toSet, not_forall, mem_setOf_eq] at h2p1; obtain ⟨j, hj⟩ := h2p1
+      simp only [toSet, not_forall, mem_ofPred_eq] at h2p1; obtain ⟨j, hj⟩ := h2p1
       rcases Ico_lemma (mi_not_onBoundary' j).1 (by simp [hw]) (mi_not_onBoundary' j).2
           (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
           ⟨hj, hp1 j⟩ with
@@ -465,7 +465,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
       · intro j'; by_cases h : j' = j
         · simp only [if_pos h]; exact h ▸ h3w
         · simp only [if_neg h]; exact hp2 j'
-      · simp only [toSet, not_forall, mem_setOf_eq]; use j; rw [if_pos rfl]; convert! h2w
+      · simp only [toSet, not_forall, mem_ofPred_eq]; use j; rw [if_pos rfl]; convert! h2w
       · intro j'; by_cases h : j' = j
         · simp only [if_pos h, side_tail]; exact h ▸ hw
         · simp only [if_neg h]; apply hi.2; apply h2p2
@@ -483,7 +483,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3
     have hp' : p' ∈ (cs i').toSet := by simpa [i, p', toSet, forall_iff_succ, hi'.symm] using! h1p3
     have h2p' : p' ∈ (cs i'').toSet := by
-      simp only [p', toSet, forall_iff_succ, cons_succ, cons_zero, mem_setOf_eq]
+      simp only [p', toSet, forall_iff_succ, cons_succ, cons_zero, mem_ofPred_eq]
       refine ⟨?_, by simpa [toSet] using! hi''.2⟩
       have : (cs i).b 0 = (cs i'').b 0 := by rw [hi.1, h2i''.1]
       simp [side, hw', xm, this, h3i'']

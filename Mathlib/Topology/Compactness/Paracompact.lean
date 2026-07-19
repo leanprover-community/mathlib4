@@ -87,7 +87,7 @@ theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, 
   · simp only [eq_univ_iff_forall, mem_iUnion]
     exact fun x ↦ ⟨ind (t_inv x), _, rfl, ht_inv _⟩
   · refine fun x ↦ ⟨U x, hxU x, ((hU x).image ind).subset ?_⟩
-    simp only [subset_def, mem_iUnion, mem_setOf_eq, Set.Nonempty, mem_inter_iff]
+    simp only [subset_def, mem_iUnion, mem_ofPred_eq, Set.Nonempty, mem_inter_iff]
     rintro i ⟨y, ⟨a, rfl, hya⟩, hyU⟩
     exact mem_image_of_mem _ ⟨y, hya, hyU⟩
   · simp only [subset_def, mem_iUnion]
@@ -245,7 +245,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
       (finite_le_nat _).biUnion fun k _ ↦ finite_range _
     apply this.subset
     rintro ⟨k, c, hc⟩
-    simp only [mem_iUnion, mem_setOf_eq, Subtype.coe_mk]
+    simp only [mem_iUnion, mem_ofPred_eq, Subtype.coe_mk]
     rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
     refine ⟨k, ?_, ⟨c, hc⟩, rfl⟩
     have := (mem_compl_iff _ _).1 (hr k c hxB)

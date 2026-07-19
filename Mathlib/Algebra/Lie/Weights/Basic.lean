@@ -269,11 +269,13 @@ noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) :=
 set_option backward.isDefEq.respectTransparency.types false in
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
-def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
+def equivSetOfPred : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
   toFun w := ⟨w.1, w.2⟩
   invFun w := ⟨w.1, w.2⟩
   left_inv w := by simp
   right_inv w := by simp
+
+@[deprecated (since := "2026-07-09")] alias equivSetOf := equivSetOfPred
 
 lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
     genWeightSpaceOf M (χ x) x ≠ ⊥ := by
@@ -673,7 +675,7 @@ lemma iSupIndep_genWeightSpace : iSupIndep fun χ : L → R ↦ genWeightSpace M
 
 lemma iSupIndep_genWeightSpace' : iSupIndep fun χ : Weight R L M ↦ genWeightSpace M χ :=
   (iSupIndep_genWeightSpace R L M).comp <|
-    Subtype.val_injective.comp (Weight.equivSetOf R L M).injective
+    Subtype.val_injective.comp (Weight.equivSetOfPred R L M).injective
 
 lemma iSupIndep_genWeightSpaceOf (x : L) : iSupIndep fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [← LieSubmodule.iSupIndep_toSubmodule]
@@ -690,7 +692,7 @@ lemma finite_genWeightSpace_ne_bot [IsNoetherian R M] :
 
 instance Weight.instFinite [IsNoetherian R M] : Finite (Weight R L M) := by
   have : Finite {χ : L → R | genWeightSpace M χ ≠ ⊥} := finite_genWeightSpace_ne_bot R L M
-  exact Finite.of_injective (equivSetOf R L M) (equivSetOf R L M).injective
+  exact Finite.of_injective (equivSetOfPred R L M) (equivSetOfPred R L M).injective
 
 noncomputable instance Weight.instFintype [IsNoetherian R M] : Fintype (Weight R L M) := .ofFinite _
 
@@ -773,7 +775,7 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by
   have := iSup_genWeightSpace_eq_top K L M
-  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
+  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOfPred K L M).iSup_comp] at this
   exact this
 
 lemma eq_iSup_inf_genWeightSpace [IsTriangularizable K L M] (N : LieSubmodule K L M) :

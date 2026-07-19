@@ -70,7 +70,7 @@ theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     exact κ.measurable_coe ((s n).measurableSet_fiber _)
   · rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable f (κ x)
-    · simp only [mem_setOf_eq, hfx, indicator_of_mem, f']
+    · simp only [mem_ofPred_eq, hfx, indicator_of_mem, f']
       apply tendsto_integral_approxOn_of_measurable_of_range_subset _ hfx
       exact subset_rfl
     · simp [f', hfx, integral_undef]
@@ -108,7 +108,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
       simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
-        mem_setOf_eq]
+        mem_ofPred_eq]
       refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
           (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_

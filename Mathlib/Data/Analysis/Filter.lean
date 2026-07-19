@@ -190,7 +190,7 @@ protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).R
       inf_le_left := fun _ _ ↦ image_mono (F.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ image_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
-      simp only [CFilter.toFilter, image_subset_iff, mem_setOf_eq, Filter.mem_sets, mem_map]
+      simp only [CFilter.toFilter, image_subset_iff, mem_ofPred_eq, Filter.mem_sets, mem_map]
       rw [F.mem_sets]⟩
 
 @[simp]
