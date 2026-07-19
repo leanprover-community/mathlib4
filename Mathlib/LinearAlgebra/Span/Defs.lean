@@ -214,9 +214,11 @@ theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = �
       (fun _ _ _ ↦ smul_mem _ _) hx'
 
 @[simp]
-lemma span_setOf_mem_eq_top :
+lemma span_setOfPred_mem_eq_top :
     span R {x : span R s | (x : M) ∈ s} = ⊤ :=
   span_span_coe_preimage
+
+@[deprecated (since := "2026-07-09")] alias span_setOf_mem_eq_top := span_setOfPred_mem_eq_top
 
 theorem span_nat_eq_addSubmonoidClosure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by

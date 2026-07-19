@@ -144,7 +144,8 @@ set_option backward.isDefEq.respectTransparency false in
 order-preserving bijection with the prime ideals contained in I. -/
 @[simps!]
 def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ p ≤ I } :=
-  (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| .setCongr _ _ <| show setOf _ = setOf _
+  (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| .setCongr _ _ <|
+    show Set.ofPred _ = Set.ofPred _
     by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
 
 /-- The prime spectrum of the localization of a commutative ring R at a prime ideal I are in

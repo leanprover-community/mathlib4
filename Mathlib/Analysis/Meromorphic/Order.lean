@@ -79,7 +79,7 @@ lemma meromorphicOrderAt_eq_top_iff :
     filter_upwards [h] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
   · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp h
-    simp only [← hm, ENat.coe_ne_top, false_iff]
+    simp only [← hm, ENat.natCast_ne_top, false_iff]
     contrapose h
     rw [analyticOrderAt_eq_top]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
@@ -110,7 +110,7 @@ lemma meromorphicOrderAt_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : meromor
     rwa [hfz_eq hz, ← mul_smul, smul_eq_zero_iff_right] at hfz
     exact mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz)) (zpow_ne_zero _ (sub_ne_zero.mpr hz))
   · obtain ⟨m, h⟩ := ENat.ne_top_iff_exists.mp h
-    rw [← h, ENat.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
+    rw [← h, ENat.map_natCast, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
     obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := hf.choose_spec.analyticOrderAt_eq_natCast.mp h.symm
     replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
       rw [eventually_nhdsWithin_iff]
@@ -285,7 +285,7 @@ lemma AnalyticAt.meromorphicOrderAt_eq (hf : AnalyticAt 𝕜 f x) :
   cases hn : analyticOrderAt f x
   · rw [ENat.map_top, meromorphicOrderAt_eq_top_iff]
     exact (analyticOrderAt_eq_top.mp hn).filter_mono nhdsWithin_le_nhds
-  · simp_rw [ENat.map_coe, meromorphicOrderAt_eq_int_iff hf.meromorphicAt, zpow_natCast]
+  · simp_rw [ENat.map_natCast, meromorphicOrderAt_eq_int_iff hf.meromorphicAt, zpow_natCast]
     rcases hf.analyticOrderAt_eq_natCast.mp hn with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
 
@@ -680,7 +680,7 @@ variable {U : Set 𝕜}
 
 /-- The set where a meromorphic function has infinite order is clopen in its domain of meromorphy.
 -/
-theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
+theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     IsClopen { u : U | meromorphicOrderAt f u = ⊤ } := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
@@ -708,14 +708,14 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     conv =>
       arg 1; intro; left; right; arg 1; intro
       rw [meromorphicOrderAt_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff]
-    simp only [mem_setOf_eq] at hz
+    simp only [mem_ofPred_eq] at hz
     rw [meromorphicOrderAt_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff] at hz
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
     simp only [mem_compl_iff, mem_singleton_iff, isOpen_induced h₂t', mem_preimage,
       h₃t', and_self, and_true]
     intro w hw
-    simp only [mem_setOf_eq]
+    simp only [mem_ofPred_eq]
     -- Trivial case: w = z
     by_cases h₁w : w = z
     · rw [h₁w]
@@ -726,6 +726,9 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · exact h₂t'.sdiff isClosed_singleton
     · apply (mem_sdiff w).1
       exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+
+@[deprecated (since := "2026-07-09")]
+alias isClopen_setOf_meromorphicOrderAt_eq_top := isClopen_setOfPred_meromorphicOrderAt_eq_top
 
 /--
 On a connected set, there exists a point where a meromorphic function `f` has finite order iff `f`
@@ -740,7 +743,7 @@ theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU
   constructor
   · intro h₂f
     have := isPreconnected_iff_preconnectedSpace.1 hU.isPreconnected
-    rcases isClopen_iff.1 hf.isClopen_setOf_meromorphicOrderAt_eq_top with h | h
+    rcases isClopen_iff.1 hf.isClopen_setOfPred_meromorphicOrderAt_eq_top with h | h
     · intro u
       have : u ∉ (∅ : Set U) := by exact fun a => a
       rw [← h] at this
@@ -806,7 +809,7 @@ theorem analyticAt_mem_codiscreteWithin (hf : MeromorphicOn f U) :
 
 /-- The set where a meromorphic function has zero or infinite
 order is codiscrete within its domain of meromorphicity. -/
-theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f U) :
+theorem codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f U) :
     {u : U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ Filter.codiscrete U := by
   rw [mem_codiscrete_subtype_iff_mem_codiscreteWithin, mem_codiscreteWithin]
   intro x hx
@@ -822,23 +825,31 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
     use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
     exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_sdiff_of_mem h₃t hax⟩
   · filter_upwards [hf.eventually_analyticAt_or_mem_compl hx, h₁f] with a h₁a h'₁a
-    simp only [mem_compl_iff, Set.mem_sdiff, mem_image, mem_setOf_eq, Subtype.exists,
+    simp only [mem_compl_iff, Set.mem_sdiff, mem_image, mem_ofPred_eq, Subtype.exists,
       exists_and_right, exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
     rcases h₁a with h' | h'
     · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
     · exact fun ha ↦ (h' ha).elim
 
+@[deprecated (since := "2026-07-09")]
+alias codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top :=
+  codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
+
 /--
-Variant of `codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top`: The set where a meromorphic
+Variant of `codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top`: The set where a meromorphic
 function has zero or infinite order is codiscrete within its domain of meromorphicity.
 -/
-theorem codiscreteWithin_setOf_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
+theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
     (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
     {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
   convert!
     mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
-      h₁f.codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top
+      h₁f.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
   aesop
+
+@[deprecated (since := "2026-07-09")]
+alias codiscreteWithin_setOf_meromorphicOrderAt_eq_zero_or_top :=
+  codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top
 
 end MeromorphicOn
 
