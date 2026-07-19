@@ -75,7 +75,6 @@ structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `MagmaCat R`. -/
 @[to_additive, ext]
 structure MagmaCat.Hom (A B : MagmaCat.{u}) where
@@ -237,7 +236,6 @@ structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Semigrp R`. -/
 @[to_additive, ext]
 structure Semigrp.Hom (A B : Semigrp.{u}) where
@@ -447,7 +445,8 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
     exact e.toSemigrpIso.isIso_hom
 
 /-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
-@[to_additive]
+@[to_additive /-- Ensure that `forget₂ AddCommMonCat AddMonCat` automatically reflects
+isomorphisms. -/]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
 

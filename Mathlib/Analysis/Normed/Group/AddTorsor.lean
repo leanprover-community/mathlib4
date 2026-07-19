@@ -181,7 +181,7 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
@@ -193,7 +193,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
 
 /-- The distance defines a metric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
@@ -222,9 +222,11 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
     _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 
+@[fun_prop]
 theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=
   (LipschitzWith.prod_fst.vadd LipschitzWith.prod_snd).uniformContinuous
 
+@[fun_prop]
 theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.2 :=
   (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 
