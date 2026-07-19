@@ -256,7 +256,7 @@ def fourierL2 :
     Lp (α := V) (CayleyDickson A) 2 ≃ₗᵢ[ℂ] Lp (α := V) (CayleyDickson A) 2 :=
   Lp.fourierTransformₗᵢ _ _
 
-@[simp] theorem norm_fourierL2_eq (f : Lp (α := V) (CayleyDickson A) 2) :
+theorem norm_fourierL2_eq (f : Lp (α := V) (CayleyDickson A) 2) :
     ‖fourierL2 A V f‖ = ‖f‖ :=
   (fourierL2 A V).norm_map f
 
