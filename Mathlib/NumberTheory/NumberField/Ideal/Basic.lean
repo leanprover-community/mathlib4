@@ -26,7 +26,7 @@ We study results about integral ideals of a number field `K`.
   `torsionOrder K`.
 
 * `NumberField.torsionOrder_dvd_absNorm_sub_one'`: If the prime ideal `P` is unramified over `ℤ`
-  and the norm of the prime of `ℤ` lying under `P` is greater than `2`, then the norm of `P` is
+  and the norm of the prime of `ℤ` lying under `P` is different from `2`, then the norm of `P` is
   congruent to `1` modulo `torsionOrder K`.
 
 -/
@@ -102,6 +102,9 @@ theorem IsPrimitiveRoot.idealQuotient_mk {n : ℕ} [NeZero n] {ζ : (𝓞 K)} (h
 /--
 If the ideal `I` is nontrivial and its norm is coprime with `torsionOrder K`, then the map
 `Ideal.torsionMapQuot` is injective.
+
+See `Ideal.torsionMapQuot_injective'` for a version, with `I` a prime ideal, where this coprimality
+is replaced by `I` being unramified over `ℤ`.
 -/
 theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime (torsionOrder K)) :
@@ -115,6 +118,9 @@ open IntermediateField in
 /--
 If the prime ideal `P` is unramified over `ℤ` and the norm of the prime of `ℤ` lying under `P` is
 greater than `2`, then the map `Ideal.torsionMapQuot` is injective.
+
+See `Ideal.torsionMapQuot_injective` for a version where, instead, the norm of the ideal is
+assumed coprime with `torsionOrder K`.
 -/
 theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
     (hP₁ : Algebra.IsUnramifiedAt ℤ P) (hP₂ : 2 < absNorm (under ℤ P)) :
@@ -136,7 +142,7 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
   rw [← P.pow_inertiaDeg p, Nat.coprime_pow_left_iff (P.inertiaDeg_pos ℤ),
     ← Nat.Prime.dvd_iff_not_coprime hp] at h_cpr
   obtain ⟨c, hc⟩ := h_cpr
-  have hζ_pow := IsPrimitiveRoot.pow (by grind) hζ₃ (by rwa [mul_comm])
+  have hζ_pow := IsPrimitiveRoot.pow (by positivity) hζ₃ (by rwa [mul_comm])
   let F := ℚ⟮(ζ : K) ^ c⟯
   have : IsCyclotomicExtension {p} ℚ F :=
     hζ_pow.intermediateField_adjoin_isCyclotomicExtension ℚ
@@ -148,6 +154,9 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
 /--
 If the norm of the (nonzero) prime ideal `P` is coprime with the order of the torsion of `K`, then
 the norm of `P` is congruent to `1` modulo `torsionOrder K`.
+
+See `NumberField.torsionOrder_dvd_absNorm_sub_one'` for a version where this coprimality is replaced
+by `P` being unramified over `ℤ`.
 -/
 theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀ : P ≠ ⊥)
     (hP₁ : P.IsPrime) (hP₂ : (absNorm P).Coprime (torsionOrder K)) :
@@ -159,20 +168,25 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀
   rwa [Nat.card_units] at h
 
 /--
-If the maximal ideal `P` is unramified over `ℤ` and the norm of the prime of `ℤ` lying under `P` is
+If the prime ideal `P` is unramified over `ℤ` and the norm of the prime of `ℤ` lying under `P` is
 different from `2`, then the norm of `P` is congruent to `1` modulo `torsionOrder K`.
+
+See `NumberField.torsionOrder_dvd_absNorm_sub_one` for a version where, instead, the norm of `P` is
+assumed coprime with `torsionOrder K`.
 -/
-theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP : P.IsMaximal]
+theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
     (hP₁ : Algebra.IsUnramifiedAt ℤ P) (hP₂ : absNorm (under ℤ P) ≠ 2) :
     torsionOrder K ∣ absNorm P - 1 := by
   obtain hP₂ | hP₂ := Nat.lt_or_gt.mp hP₂
-  · obtain  hP₂ | hP₂ := Nat.lt_succ_iff_lt_or_eq.mp hP₂
-    · have hp := Nat.absNorm_under_prime P
-      rw [Nat.lt_one_iff.mp hP₂] at hp
-      exact (Nat.prime_zero_false hp).elim
+  · obtain hP₂ | hP₂ := Nat.lt_succ_iff_lt_or_eq.mp hP₂
+    · have : P.LiesOver (⊥ : Ideal ℤ) := by
+        rwa [liesOver_iff, eq_comm, ← absNorm_eq_zero_iff, ← Nat.lt_one_iff]
+      rw [eq_bot_of_liesOver_bot ℤ P, absNorm_bot, Nat.zero_sub_one]
+      exact Nat.dvd_zero _
     · rw [absNorm_eq_one_iff, comap_eq_top_iff, ← absNorm_eq_one_iff] at hP₂
       simp [hP₂]
   have hP₀ : P ≠ ⊥ := fun h ↦ by simp [h] at hP₂
+  have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP
   let _ := Ideal.Quotient.field P
   have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective' hP₁ hP₂)
   rwa [Nat.card_units] at h
