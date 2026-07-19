@@ -364,6 +364,39 @@ def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   continuous_invFun :=
     (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The homeomorphism between a disjoint union of sets and a disjoint union of the corresponding
+subtypes when each set has a neighbourhood that is disjoint from all other sets.
+
+This condition is the precise condition needed for the bijection to be a homeomorphism:
+see `inducing_sigma`. A weaker condition like any two sets in the family having disjoint
+neighbourhoods is not enough, as the example of infinite collections of singletons in
+Hausdorff spaces shows. -/
+@[simps! symm_apply_coe]
+noncomputable def Set.iUnion {X : Type*} [TopologicalSpace X] {ι : Type*}
+    {s : ι → Set X} (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) :
+    ⋃ i, s i ≃ₜ Σ i, s i := by
+  refine ((Set.unionEqSigmaOfDisjoint fun i j h ↦ ?_).symm.toHomeomorphOfIsInducing ?_).symm
+  · have ⟨u, hu, hu'⟩ := hs i
+    exact (hu' j h.symm).mono_left (subset_of_mem_nhdsSet hu)
+  · refine inducing_sigma.2 ⟨fun i ↦ ?_, fun i ↦ ?_⟩
+    · simp [Function.comp_def, ← IsInducing.subtypeVal.of_comp_iff, IsInducing.subtypeVal]
+    · have ⟨u, hu, hu'⟩ := hs i
+      have ⟨v, hvu, hv, hv'⟩ := mem_nhdsSet.1 hu
+      refine ⟨(↑) ⁻¹' v, hv.preimage_val, fun x ↦ ⟨fun h ↦ ?_, ?_⟩⟩
+      · simp only [Set.mem_preimage, Set.coe_unionEqSigmaOfDisjoint_symm_apply] at h
+        contrapose! h
+        exact Set.notMem_subset hvu <| (hu' _ h).notMem_of_mem_right x.snd.2
+      · intro rfl
+        simpa using hv' x.snd.2
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma Set.iUnion_apply_snd_coe {X : Type*} [TopologicalSpace X] {ι : Type*}
+    {s : ι → Set X} (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) {x : ⋃ i, s i} :
+    ((Homeomorph.Set.iUnion hs x).snd : X) = x := by
+  simp [Homeomorph.Set.iUnion]
+
 section
 
 variable {ι : Type*}
