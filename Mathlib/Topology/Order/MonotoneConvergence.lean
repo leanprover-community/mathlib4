@@ -185,7 +185,7 @@ instance Pi.supConvergenceClass
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine ⟨fun f s h => ?_⟩
   simp only [isLUB_pi, ← range_restrict] at h
-  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
+  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval (α := α) _).restrict _) (h i)
 
 instance Pi.infConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]

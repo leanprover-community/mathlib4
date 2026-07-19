@@ -409,9 +409,9 @@ theorem iUnion_Ioo_of_tendsto [Finite ι] {I : Box ι} {J : ℕ → Box ι} (hJ 
     (hl : Tendsto (lower ∘ J) atTop (𝓝 I.lower)) (hu : Tendsto (upper ∘ J) atTop (𝓝 I.upper)) :
     ⋃ n, Box.Ioo (J n) = Box.Ioo I :=
   have hl' : ∀ i, Antitone fun n ↦ (J n).lower i :=
-    fun i ↦ (monotone_eval i).comp_antitone (antitone_lower.comp_monotone hJ)
+    fun i ↦ (monotone_eval (α := fun _ ↦ ℝ) i).comp_antitone (antitone_lower.comp_monotone hJ)
   have hu' : ∀ i, Monotone fun n ↦ (J n).upper i :=
-    fun i ↦ (monotone_eval i).comp (monotone_upper.comp hJ)
+    fun i ↦ (monotone_eval (α := fun _ ↦ ℝ) i).comp (monotone_upper.comp hJ)
   calc
     ⋃ n, Box.Ioo (J n) = pi univ fun i ↦ ⋃ n, Ioo ((J n).lower i) ((J n).upper i) :=
       iUnion_univ_pi_of_monotone fun i ↦ (hl' i).Ioo (hu' i)

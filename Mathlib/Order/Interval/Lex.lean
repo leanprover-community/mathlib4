@@ -65,10 +65,10 @@ instance [Preorder α] : Preorder (Lex (NonemptyInterval α)) := fast_instance%
   Preorder.lift fun x => toLex (ofLex x).toDualProd
 
 theorem toLex_mono [PartialOrder α] : Monotone (toLex : NonemptyInterval α → _) :=
-  Prod.Lex.toLex_mono.comp toDualProd_mono
+  Prod.Lex.toLex_mono (α := αᵒᵈ) (β := α).comp toDualProd_mono
 
 theorem toLex_strictMono [PartialOrder α] : StrictMono (toLex : NonemptyInterval α → _) :=
-  Prod.Lex.toLex_strictMono.comp toDualProd_strictMono
+  Prod.Lex.toLex_strictMono (α := αᵒᵈ) (β := α).comp toDualProd_strictMono
 
 instance [PartialOrder α] : PartialOrder (Lex (NonemptyInterval α)) := fast_instance%
   PartialOrder.lift (fun x => toLex (ofLex x).toDualProd) <|
