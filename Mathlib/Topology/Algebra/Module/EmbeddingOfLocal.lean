@@ -28,13 +28,79 @@ lemma Filter.comap_inf_congr {α β : Type*} {m₁ m₂ : α → β} {f : Filter
   le_antisymm (comap_inf_congr_aux H) (comap_inf_congr_aux H.symm)
 
 variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
-  [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F]
-  [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
-  [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ]
-  {f : E →ₛₗ[σ] F}
+  [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} {f : E →ₛₗ[σ] F}
 
 /-!
-## First version
+## Third version
+-/
+
+private lemma exists_good_retraction {V : Set E} (V_abs : Absorbent 𝕜₁ V)
+    {c : 𝕜₁} (c_ne : c ≠ 0) (hc₁ : ‖c‖ < 1) :
+    ∃ p : E → E, (∀ x, p x ∈ V) ∧ (∀ x ∈ V, p x = x) ∧ (MapsTo p Vᶜ (c • V)ᶜ) ∧
+      ∀ (_t : TopologicalSpace E), [IsTopologicalAddGroup E] → [ContinuousSMul 𝕜₁ E] →
+        Tendsto p (𝓝 0) (𝓝 0) := by
+  classical
+  have cover : ∀ x : E, ∃ k : ℕ, c ^ k • x ∈ V := by
+    intro x
+    have : Tendsto (fun k : ℕ ↦ c ^ k) atTop (𝓝[≠] 0) :=
+      tendsto_inf.mpr ⟨tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁,
+        tendsto_principal.mpr <| .of_forall fun n ↦ pow_ne_zero _ c_ne⟩
+    exact this.eventually (V_abs.eventually_nhdsNE_zero x) |>.exists
+  set k : E → ℕ := fun x ↦ Nat.find (cover x)
+  set d : E → 𝕜₁ := fun x ↦ c ^ (k x)
+  set p : E → E := fun x ↦ d x • x
+  have norm_d : ∀ x, ‖d x‖ ≤ 1 := fun x ↦ by simpa [d] using pow_le_one₀ (norm_nonneg _) hc₁.le
+  have p_mem : ∀ x, p x ∈ V := fun x ↦ Nat.find_spec (cover x)
+  have k_eqOn_V : ∀ x ∈ V, k x = 0 := fun x ↦ by simp [k]
+  have p_eqOn_V : ∀ x ∈ V, p x = x := fun x hx ↦ by simp [p, d, k_eqOn_V x hx]
+  have p_mapsto : MapsTo p Vᶜ (c • V)ᶜ := by
+    intro x hx₁ hx₂
+    have : c ^ (k x - 1) • x ∈ V := by
+      rwa [pow_sub₀ c c_ne (by simpa [k]), pow_one, mul_comm, mul_smul,
+        ← mem_smul_set_iff_inv_smul_mem₀ c_ne]
+    exact Nat.find_min (cover x) (by simpa [k]) this
+  use p, p_mem, p_eqOn_V, p_mapsto
+  intro t _ _
+  refine IsBoundedUnder.smul_tendsto_zero ?_ tendsto_id
+  exact isBoundedUnder_of ⟨1, fun x ↦ by simpa using norm_d x⟩
+
+#check IsTopologicalAddGroup.ext_iff
+
+lemma foo {t₁ t₂ : TopologicalSpace E} [@IsTopologicalAddGroup E t₁ _]
+    [@IsTopologicalAddGroup E t₂ _] [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
+    {V : Set E} (V_mem : V ∈ @nhds E t₁ 0) (H : @nhds E t₁ 0 ⊓ 𝓟 V = @nhds E t₂ 0 ⊓ 𝓟 V) :
+    t₁ = t₂ := by
+  set 𝓕₁ := @nhds E t₁ 0
+  set 𝓕₂ := @nhds E t₂ 0
+  suffices 𝓕₁ = 𝓕₂ by rwa [IsTopologicalAddGroup.ext_iff] <;> infer_instance
+  suffices 𝓕₂ ≤ 𝓟 V from
+    calc 𝓕₁
+      _ = 𝓕₁ ⊓ 𝓟 V := by simpa
+      _ = 𝓕₂ ⊓ 𝓟 V := H
+      _ = 𝓕₂ := by simpa
+  obtain ⟨c, hc₀, hc₁⟩ := NormedField.exists_norm_lt_one 𝕜₁
+  have c_ne : c ≠ 0 := fun h ↦ by simp [h] at hc₀
+  have V_abs : Absorbent 𝕜₁ V := letI := t₁; absorbent_nhds_zero V_mem
+  have cV_mem : c • V ∈ 𝓕₁ := letI := t₁; set_smul_mem_nhds_zero_iff c_ne |>.mpr V_mem
+  obtain ⟨p, p_mem_V, p_eqOn_V, p_mapsto, p_tendsto⟩ := exists_good_retraction V_abs c_ne hc₁
+  have preimage_p_V : p ⁻¹' V = univ := by simpa [range_subset_iff]
+  have comap_p_eq : comap p 𝓕₁ = comap p 𝓕₂ :=
+    calc comap p 𝓕₁
+      _ = comap p (𝓕₁ ⊓ 𝓟 V) := by simp [preimage_p_V]
+      _ = comap p (𝓕₂ ⊓ 𝓟 V) := by rw [H]
+      _ = comap p 𝓕₂ := by simp [preimage_p_V]
+  calc 𝓕₂
+    _ ≤ comap p 𝓕₂ := tendsto_iff_comap.mp <| p_tendsto t₂
+    _ = comap p 𝓕₁ := by rw [comap_p_eq]
+    _ ≤ 𝓟 V := by
+      grw [le_principal_iff, mem_comap_iff_compl, p_mapsto.image_subset, compl_compl]
+      exact cV_mem
+
+variable [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+  [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] [RingHomIsometric σ]
+
+/-!
+## Second version
 -/
 
 variable (𝕜₁) in
@@ -102,7 +168,7 @@ lemma LinearMap.isInducing_of_restrict_nhds_zero_new {V : Set E}
     _ = 𝓝 0 := by rw [← hp]
 
 /-!
-## Second version
+## First version
 -/
 
 lemma LinearMap.isInducing_of_restrict_nhds_zero_old {V : Set E} (V_mem : V ∈ 𝓝 0)
