@@ -141,3 +141,16 @@ noncomputable instance [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
 noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
 
 end MulOpposite
+
+attribute [local instance] IsUnital.toMulOneClass in
+/-- A unital non-unital C⋆-algebra is a C⋆-algebra. -/
+noncomputable abbrev IsUnital.toCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] [IsUnital A] :
+    CStarAlgebra A where
+  __ := ‹NonUnitalCStarAlgebra A›
+  __ := toSemiring
+  __ := toAlgebra
+
+attribute [local instance] IsUnital.toCStarAlgebra in
+/-- A unital non-unital commutative C⋆-algebra is a commutative C⋆-algebra. -/
+noncomputable abbrev IsUnital.toCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A]
+    [IsUnital A] : CommCStarAlgebra A where
