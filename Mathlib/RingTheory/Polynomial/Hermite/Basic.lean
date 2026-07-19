@@ -114,8 +114,7 @@ theorem coeff_hermite_succ_zero (n : ℕ) :
 theorem coeff_hermite_succ_succ (n k : ℕ) : coeff (hermite R (n + 1)) (k + 1) =
     coeff (hermite R n) k - (k + 2) * coeff (hermite R n) (k + 2) := by
   rw [hermite_succ, coeff_sub, coeff_X_mul, coeff_derivative, mul_comm]
-  push_cast
-  ring
+  norm_cast
 
 theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite R n) k = 0 := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hnk
