@@ -12,6 +12,15 @@ public import Mathlib.FieldTheory.PurelyInseparable.Exponent
 public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
+/-!
+
+# Artin-Schreier theorem
+
+This file proves the Artin-Schreier theorem `isAlgClosed_or_isRealClosed`:
+a field admitting a finite extension which is algebraically closed is either algebraically
+closed or real closed.
+
+-/
 @[expose] public section
 
 universe u
@@ -77,7 +86,7 @@ lemma finite_alg_closure_prime {p : ℕ} (hp : p.Prime) (hr : finrank F K = p) :
   have h : IsGalois F K := inferInstance
   by_contra
   obtain ⟨a, x, ha⟩ := ((isCyclic_charP_tfae hp rfl).out 0 4).mp h
-  have h := artinSchreierExtension_tower hp rfl a x ha
+  have h := irreducible_artinSchreierPoly_tower hp rfl a x ha
   have h := (degree_eq_iff_natDegree_eq_of_pos one_pos).mp (Hac.degree_eq_one_of_irreducible K h)
   rw [(artinSchreierPoly_isMonicOfDegree _ hp.one_lt).1] at h
   simp_all [Nat.not_prime_one]
@@ -187,7 +196,7 @@ end Lemmas
 
 /- The Artin-Schreier theorem: a field admitting a finite extension which is algebraically closed
    is either algebraically closed or real closed. -/
-theorem artin_schreier_thm (F : Type u) (K : Type u) [Field F] [Field K] [Algebra F K]
+theorem isAlgClosed_or_isRealClosed (F : Type u) (K : Type u) [Field F] [Field K] [Algebra F K]
     [IsAlgClosed K] [FiniteDimensional F K] : IsAlgClosed F ∨ IsRealClosed F := by
   open IntermediateField in
   by_cases hF : IsSquare (-1 : F)
