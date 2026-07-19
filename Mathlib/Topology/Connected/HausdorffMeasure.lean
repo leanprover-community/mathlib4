@@ -41,7 +41,7 @@ Hausdorff measure of this set.
 open MeasureTheory Metric Set
 open scoped ENNReal
 
-@[expose] public section
+public section
 
 variable {X : Type*} [EMetricSpace X] {s : Set X} {a b : X}
 
