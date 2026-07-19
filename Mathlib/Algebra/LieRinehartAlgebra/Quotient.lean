@@ -15,7 +15,7 @@ structure of a Lie-Rinehart algebra.
 
 ## Main statements:
 
-* The quotient of a Lie-Rinehart algebra by a strict Lie-Rinehart ideal is a Lie-Rinehart algebra
+* The quotient of a Lie-Rinehart algebra by a strict Lie-Rinehart ideal is a Lie-Rinehart algebra.
 
 * The quotient map `mk'` is a Lie-Rinehart algebra homomorphism.
 
@@ -72,7 +72,7 @@ instance : Bracket (L ⧸ s) A where
   bracket x a := Quotient.liftOn' x (fun x' => ⁅x', a⁆) (by
     intros l l' h
     rw [Submodule.quotientRel_def, mem_toSubmodule] at h
-    rw [← sub_eq_zero, ←sub_lie]
+    rw [← sub_eq_zero, ← sub_lie]
     exact s.isotropic (l - l') a h)
 
 theorem mk_bracket' (x : L) (a : A) : ⁅(mk x : L ⧸ s), a⁆ = ⁅x, a⁆ := rfl
