@@ -103,7 +103,7 @@ theorem projectiveSeminorm_smul_le (a : 𝕜) (x : X ⊗[𝕜] Y) : ‖a • x�
   simp only [norm_def, Real.mul_iInf_of_nonneg (norm_nonneg _)]
   refine le_ciInf fun p ↦ ?_
   simpa [projectiveSeminormAux_smul] using
-    ciInf_le_of_le (bddBelow_projectiveSemiNormAux _) ⟨_, lifts_smul_left p.2 a⟩ (le_refl _)
+    ciInf_le_of_le (bddBelow_projectiveSemiNormAux _) ⟨_, lifts_smul p.2 a⟩ (le_refl _)
 
 /-- The projective seminorm on `X ⊗[𝕜] Y`. It sends an element `x` of `X ⊗[𝕜] Y` to the
 infimum over all expressions of `x` as `∑ j, xⱼ ⊗ₜ[𝕜] yⱼ` (with the `(xⱼ,yⱼ)` ∈ `X × Y`)
