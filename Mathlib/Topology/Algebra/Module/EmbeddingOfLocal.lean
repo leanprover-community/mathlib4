@@ -129,3 +129,7 @@ lemma LinearMap.isInducing_of_restrict_nhds_zero {V : Set E}
   have := continuousSMul_inducedₛₗ f σ.isometry.continuous
   apply bar 𝕜₁ _ (.induced f _) V_mem
   rw [induced_compose, ← restrict_eq, ← H.eq_induced, ← IsInducing.subtypeVal.eq_induced]
+
+lemma LinearMap.isEmbedding_of_restrict_nhds_zero {V : Set E}
+    (V_mem : V ∈ 𝓝 0) (H : IsEmbedding (Set.restrict V f)) : IsEmbedding f := by
+  sorry
