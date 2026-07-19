@@ -225,8 +225,9 @@ nonrec theorem gcd_mul_right {α} [CommMonoidWithZero α] [StrongNormalizedGCDMo
 
 variable (s f) in
 nonrec theorem gcd_mul_left' (a : α) : Associated (s.gcd fun x ↦ a * f x) (a * s.gcd f) := by
-  classical exact s.induction_on (by simp) fun b s hbs h ↦ by
-             simpa using .trans (.gcd .rfl h) (gcd_mul_left' ..)
+  classical
+  exact s.induction_on (by simp) fun b s hbs h ↦ by
+    simpa using .trans (.gcd .rfl h) (gcd_mul_left' ..)
 
 variable (s f) in
 nonrec theorem gcd_mul_right' (a : α) : Associated (s.gcd fun x ↦ f x * a) (s.gcd f * a) := by

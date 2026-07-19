@@ -106,8 +106,8 @@ private theorem slash_mul (k : ℤ) (A B : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
       abs_mul, ofReal_mul, mul_zpow, map_zpow₀]
   _ = σ B (σ A (f (A • B • τ)) * |A.det.val| ^ (k - 1) * (denom A ↑(B • τ) ^ (-k)))
         * |B.det.val| ^ (k - 1) * denom B τ ^ (-k) := by
-     rw [map_mul, map_zpow₀, map_mul, map_zpow₀, σ_ofReal]
-     ring
+    rw [map_mul, map_zpow₀, map_mul, map_zpow₀, σ_ofReal]
+    ring
   _ = ((f ∣[k] A) ∣[k] B) τ := rfl
 
 set_option backward.privateInPublic true in

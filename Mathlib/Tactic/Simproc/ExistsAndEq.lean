@@ -113,7 +113,7 @@ Returns a tuple `(fvars, lctx, P', a')`, where:
   It may contain free variables from `fvars`. -/
 partial def findEq {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) (path : Path) :
     MetaM (List VarQ × LocalContext × Q(Prop) × Q($α)) := do
-   go a P path
+  go a P path
 where
   /-- Recursive part of `findEq`. -/
   go {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) (path : Path) :

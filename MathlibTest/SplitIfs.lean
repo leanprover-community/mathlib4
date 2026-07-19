@@ -49,8 +49,8 @@ example (p : Prop) [Decidable p] (h : (if p then 1 else 2) > 3) : False := by
       case step h => cases h
 
 example (p : Prop) [Decidable p] (x : Nat) (h : (if p then 1 else 2) > x) :
-     x < (if ¬p then 1 else 0) + 1 := by
-   split_ifs at * <;> assumption
+    x < (if ¬p then 1 else 0) + 1 := by
+  split_ifs at * <;> assumption
 
 example (p : Prop) [Decidable p] : if if ¬p then p else True then p else ¬p := by
   split_ifs <;>

@@ -52,18 +52,18 @@ according to the volume measure. -/
 scoped notation "cov[" X ", " Y "]" => cov[X, Y; MeasureTheory.MeasureSpace.volume]
 
 lemma covariance_eq_sub [IsProbabilityMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-     cov[X, Y; μ] = μ[X * Y] - μ[X] * μ[Y] := by
-   simp_rw [covariance, sub_mul, mul_sub]
-   repeat rw [integral_sub]
-   · simp_rw [integral_mul_const, integral_const_mul, integral_const, probReal_univ,
-       one_smul]
-     simp
-   · exact hY.const_mul _ |>.integrable (by simp)
-   · exact integrable_const _
-   · exact hX.integrable_mul hY
-   · exact hX.mul_const _ |>.integrable (by simp)
-   · exact (hX.integrable_mul hY).sub (hX.mul_const _ |>.integrable (by simp))
-   · exact (hY.const_mul _ |>.integrable (by simp)).sub (integrable_const _)
+    cov[X, Y; μ] = μ[X * Y] - μ[X] * μ[Y] := by
+  simp_rw [covariance, sub_mul, mul_sub]
+  repeat rw [integral_sub]
+  · simp_rw [integral_mul_const, integral_const_mul, integral_const, probReal_univ,
+      one_smul]
+    simp
+  · exact hY.const_mul _ |>.integrable (by simp)
+  · exact integrable_const _
+  · exact hX.integrable_mul hY
+  · exact hX.mul_const _ |>.integrable (by simp)
+  · exact (hX.integrable_mul hY).sub (hX.mul_const _ |>.integrable (by simp))
+  · exact (hY.const_mul _ |>.integrable (by simp)).sub (integrable_const _)
 
 @[simp] lemma covariance_zero_left : cov[0, Y; μ] = 0 := by simp [covariance]
 
@@ -322,14 +322,14 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
 end Map
 
 lemma IndepFun.covariance_eq_zero (h : X ⟂ᵢ[μ] Y) (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
-     cov[X, Y; μ] = 0 := by
-   by_cases h' : ∀ᵐ ω ∂μ, X ω = 0
-   · refine integral_eq_zero_of_ae ?_
-     filter_upwards [h'] with ω hω
-     simp [hω, integral_eq_zero_of_ae h']
-   have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
-   rw [covariance_eq_sub hX hY, h.integral_mul_eq_mul_integral
-       hX.aestronglyMeasurable hY.aestronglyMeasurable, sub_self]
+    cov[X, Y; μ] = 0 := by
+  by_cases h' : ∀ᵐ ω ∂μ, X ω = 0
+  · refine integral_eq_zero_of_ae ?_
+    filter_upwards [h'] with ω hω
+    simp [hω, integral_eq_zero_of_ae h']
+  have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
+  rw [covariance_eq_sub hX hY, h.integral_mul_eq_mul_integral
+      hX.aestronglyMeasurable hY.aestronglyMeasurable, sub_self]
 
 section Prod
 

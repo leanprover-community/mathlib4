@@ -267,16 +267,16 @@ def toInductive (mvar : MVarId) (cs : List Name)
                           let mvar'' ← mvar'.tryClear fvars.getLast!
                           pure ⟨mvar'', fvars⟩
         | some (e + 1) => do
-           let (mv', fvars) ← nCasesProd n mv h
-           let lastfv := fvars.getLast!
-           let (mv2, fvars') ← nCasesProd e mv' lastfv
+          let (mv', fvars) ← nCasesProd n mv h
+          let lastfv := fvars.getLast!
+          let (mv2, fvars') ← nCasesProd e mv' lastfv
 
-           /- `fvars'.foldlM subst mv2` fails when we have dependent equalities (`HEq`).
-           `subst` will change the dependent hypotheses, so that the `uniq` local names
-           are wrong afterwards. Instead we revert them and pull them out one-by-one. -/
-           let (_, mv3) ← mv2.revert fvars'.toArray
-           let mv4 ← fvars'.foldlM (fun mv _ ↦ do let ⟨fv, mv'⟩ ← mv.intro1; subst mv' fv) mv3
-           pure (mv4, fvars)
+          /- `fvars'.foldlM subst mv2` fails when we have dependent equalities (`HEq`).
+          `subst` will change the dependent hypotheses, so that the `uniq` local names
+          are wrong afterwards. Instead we revert them and pull them out one-by-one. -/
+          let (_, mv3) ← mv2.revert fvars'.toArray
+          let mv4 ← fvars'.foldlM (fun mv _ ↦ do let ⟨fv, mv'⟩ ← mv.intro1; subst mv' fv) mv3
+          pure (mv4, fvars)
         mvar'.withContext do
           let fvarIds := (← getLCtx).getFVarIds.toList
           let gs := fvarIds.take gs.length

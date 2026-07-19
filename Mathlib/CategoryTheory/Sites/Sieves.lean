@@ -1084,7 +1084,7 @@ theorem functorPullback_comp (R : Sieve ((F ⋙ G).obj X)) :
   rfl
 
 lemma generate_functorPullback_le {X : C} (R : Presieve (F.obj X)) :
-     generate (R.functorPullback F) ≤ functorPullback F (generate R) := by
+    generate (R.functorPullback F) ≤ functorPullback F (generate R) := by
   rw [generate_le_iff]
   intro Z g hg
   exact le_generate _ _ _ hg

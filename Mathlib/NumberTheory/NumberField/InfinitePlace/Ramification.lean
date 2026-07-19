@@ -91,7 +91,7 @@ lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
 
 theorem comap_embedding_of_isReal (f : k →+* K) {w : InfinitePlace K} (h : (w.comap f).IsReal) :
     (w.comap f).embedding = w.embedding.comp f := by
-   rw [← mk_embedding w, comap_mk, mk_embedding, embedding_mk_eq_of_isReal
+  rw [← mk_embedding w, comap_mk, mk_embedding, embedding_mk_eq_of_isReal
     (by rwa [← isReal_mk_iff, ← comap_mk, mk_embedding])]
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by

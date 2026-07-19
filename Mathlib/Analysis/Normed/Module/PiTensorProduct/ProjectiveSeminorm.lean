@@ -133,10 +133,10 @@ theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
 
 theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
     ‖(⨂ₜ[𝕜] i, m i)‖ ≤ ∏ i, ‖m i‖ := by
-   have hle := ciInf_le (bddBelow_projectiveSemiNormAux (⨂ₜ[𝕜] i, m i))
+  have hle := ciInf_le (bddBelow_projectiveSemiNormAux (⨂ₜ[𝕜] i, m i))
     ⟨FreeAddMonoid.of (1, m), by simp [mem_lifts_iff]⟩
-   grw [norm_def, hle]
-   simp [projectiveSeminormAux]
+  grw [norm_def, hle]
+  simp [projectiveSeminormAux]
 
 end NormedField
 

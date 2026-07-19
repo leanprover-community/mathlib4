@@ -735,7 +735,7 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
 @[simp]
 theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
     f.baseChange R A M N = f.toLinearMap.baseChange A :=
-   rfl
+  rfl
 
 @[simp] lemma _root_.LinearEquiv.baseChange_tmul {e : M ≃ₗ[R] N} (a : A) (m : M) :
     e.baseChange R A M N (a ⊗ₜ m) = a ⊗ₜ e m :=

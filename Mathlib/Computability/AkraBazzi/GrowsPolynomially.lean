@@ -313,14 +313,14 @@ protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   case lb => calc
     c₁ * c₃ * (|f x| * |g x|) = (c₁ * |f x|) * (c₃ * |g x|) := by ring
     _ ≤ |f u| * |g u| := by
-           gcongr
-           · exact (hf u hu).1
-           · exact (hg u hu).1
+      gcongr
+      · exact (hf u hu).1
+      · exact (hg u hu).1
   case ub => calc
     |f u| * |g u| ≤ (c₂ * |f x|) * (c₄ * |g x|) := by
-           gcongr
-           · exact (hf u hu).2
-           · exact (hg u hu).2
+      gcongr
+      · exact (hf u hu).2
+      · exact (hg u hu).2
     _ = c₂ * c₄ * (|f x| * |g x|) := by ring
 
 lemma GrowsPolynomially.const_mul {f : ℝ → ℝ} {c : ℝ} (hf : GrowsPolynomially f) :

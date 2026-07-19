@@ -145,9 +145,9 @@ lemma xor_eq_iff_right_eq (a b c : α) :
   rw [xor_comm a, xor_cancel_right]
 
 @[simp] lemma xor_left_eq_self_iff {a b : α} : a ^^^ b = a ↔ b = 0 := by
-   rw [xor_eq_iff_right_eq, xor_self a]
+  rw [xor_eq_iff_right_eq, xor_self a]
 @[simp] lemma xor_right_eq_self_iff {a b : α} : b ^^^ a = a ↔ b = 0 := by
-   rw [xor_eq_iff_left_eq, xor_self a]
+  rw [xor_eq_iff_left_eq, xor_self a]
 
 @[simp] lemma xor_left_eq_id_iff {a : α} : (a ^^^ ·) = id ↔ a = 0 :=
   ⟨((xor_zero a).symm.trans <| congrFun · 0), (· ▸ funext zero_xor)⟩

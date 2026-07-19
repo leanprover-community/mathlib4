@@ -809,14 +809,14 @@ lemma exists_apply_sub_two_eq_of_apply_eq {i j : ℕ} (hi : N' a N + 2 < i) (hij
     simp only [Finset.mem_filter, Finset.mem_range, I, J, Nat.lt_add_one_iff] at *
     refine ⟨hxJ.1, (add_le_add_iff_right 1).mp ?_⟩
     calc a (i - 1) + 1 ≤ a (j - 1) := hi1j1
-       _ ≤ #{u ∈ Finset.range j | a u = x} := hxJ.2
-       _ = #({u ∈ Finset.range i | a u = x} ∪ {u ∈ Finset.Ico i j | a u = x}) := by
-           rw [← Finset.filter_union, hiju]
-       _ ≤ #{u ∈ Finset.range i | a u = x} + #{u ∈ Finset.Ico i j | a u = x} :=
-           Finset.card_union_le _ _
-       _ ≤ #{u ∈ Finset.range i | a u = x} + 1 := by
-           gcongr
-           exact hij1 _ hxJ.1
+      _ ≤ #{u ∈ Finset.range j | a u = x} := hxJ.2
+      _ = #({u ∈ Finset.range i | a u = x} ∪ {u ∈ Finset.Ico i j | a u = x}) := by
+        rw [← Finset.filter_union, hiju]
+      _ ≤ #{u ∈ Finset.range i | a u = x} + #{u ∈ Finset.Ico i j | a u = x} :=
+        Finset.card_union_le _ _
+      _ ≤ #{u ∈ Finset.range i | a u = x} + 1 := by
+        gcongr
+        exact hij1 _ hxJ.1
   simp only [hIJ, J, Finset.mem_filter] at hiI
   have hiI' := hi1j1.trans hiI.2
   rw [hc.apply_eq_card (by lia), show i - 1 - 1 = i - 2 by lia, Nat.add_one_le_iff,

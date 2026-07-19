@@ -49,17 +49,18 @@ lemma eight_mul_le_prod_add_of_pos {p q r : ℝ} (p_pos : 0 < p)
   suffices 0 ≤ ((p + q) * (q + r) * (r + p)) ^ 2 - (8 * p * q * r) ^ 2 from
     le_of_sq_le_sq (le_of_sub_nonneg this) (by positivity)
   calc 0 ≤ (p * (q - r) ^ 2 + q * (r - p) ^ 2 + r * (p - q) ^ 2)
-             * ((p + q) * (q + r) * (r + p) + 8 * p * q * r) := by positivity
-       _ = ((p + q) * (q + r) * (r + p)) ^ 2 - (8 * p * q * r) ^ 2 := by ring
+      * ((p + q) * (q + r) * (r + p) + 8 * p * q * r) := by positivity
+    _ = ((p + q) * (q + r) * (r + p)) ^ 2 - (8 * p * q * r) ^ 2 := by ring
 
 /-- When `p ≤ 0` but `q`, `r > 0` and both pairwise sums are positive, the left side is
 nonpositive so the inequality holds. -/
 lemma eight_mul_le_prod_add_of_nonpos {p q r : ℝ} (p_nonpos : p ≤ 0) (r_pos : 0 < r) (q_pos : 0 < q)
     (p_add_q_pos : 0 < p + q) (r_add_p_pos : 0 < r + p) :
     8 * p * q * r ≤ (p + q) * (r + p) * (q + r) := by
-  calc 8 * p * q * r ≤ 0 := by grw [mul_nonpos_of_nonpos_of_nonneg ?_ (by positivity)]
-                               grw [mul_nonpos_of_nonpos_of_nonneg (by grind) (by positivity)]
-                   _ ≤ (p + q) * (r + p) * (q + r) := by positivity
+  calc 8 * p * q * r ≤ 0 := by
+        grw [mul_nonpos_of_nonpos_of_nonneg ?_ (by positivity)]
+        grw [mul_nonpos_of_nonpos_of_nonneg (by grind) (by positivity)]
+    _ ≤ (p + q) * (r + p) * (q + r) := by positivity
 
 /-- When all three pairwise sums `p + q`, `r + p`, `q + r` are positive, the inequality holds by
 casing on the signs of `p`, `q`, `r`. -/

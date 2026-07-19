@@ -177,10 +177,10 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     rw [map_natCast, hom_bind₁]
     calc
       _ = ghostComponent (n + 1) (verschiebung <| mk p x) := by
-       apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-       funext k
-       simp only [← aeval_verschiebungPoly]
-       exact eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
+        apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
+        funext k
+        simp only [← aeval_verschiebungPoly]
+        exact eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
       _ = _ := by rw [ghostComponent_verschiebung]; rfl
 
 end

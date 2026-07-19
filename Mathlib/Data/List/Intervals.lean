@@ -135,9 +135,9 @@ theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
 
 theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x => x < l) = [] :=
   filter_eq_nil_iff.2 fun k hk => by
-     simp only [decide_eq_true_eq, not_lt]
-     apply le_trans hln
-     exact (mem.1 hk).1
+    simp only [decide_eq_true_eq, not_lt]
+    apply le_trans hln
+    exact (mem.1 hk).1
 
 theorem filter_lt_of_ge {n m l : ℕ} (hlm : l ≤ m) :
     ((Ico n m).filter fun x => x < l) = Ico n l := by

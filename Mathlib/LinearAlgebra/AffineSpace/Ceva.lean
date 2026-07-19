@@ -181,7 +181,7 @@ lemma prod_eq_prod_one_sub_of_mem_line_point_lineMap {t : Triangle k P} {r : Fin
       fin_cases i <;> grind
     have hi1 : c (i + 1) * r (i + 1) = 1 := by simpa [add_assoc, hw'i0] using hc2 (i + 1)
     have hi1' : c (i + 1) * (1 - r (i + 1)) = 0 := by
-     simpa [add_assoc, hw'i2] using hc1 (i + 1)
+      simpa [add_assoc, hw'i2] using hc1 (i + 1)
     have hci1 : c (i + 1) = 1 := by
       suffices c (i + 1) * (r (i + 1) + (1 - r (i + 1))) = 1 + 0 by simpa using this
       rw [mul_add, hi1, hi1']
