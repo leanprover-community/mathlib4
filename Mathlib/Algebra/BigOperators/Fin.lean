@@ -617,6 +617,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
   rintro x hx
   rw [Pi.single_eq_of_ne hx, Fin.val_zero, zero_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
@@ -663,7 +664,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [Fin.val_zero, Fintype.prod_empty, Nat.div_one, mul_one, Fin.cons_zero,
           Fin.prod_univ_succ, Fin.castLE_zero, Fin.cons_zero, ← Nat.div_div_eq_div_mul,
           mul_left_comm (_ % _ : ℕ), ← mul_sum]
-        convert Nat.mod_add_div _ _
+        convert! Nat.mod_add_div _ _
         exact ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq (Fin.prod_univ_succ _)))
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :
@@ -688,6 +689,7 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
       _ ≃ _ := finSumFinEquiv
       _ ≃ _ := finCongr (Fin.sum_univ_castSucc n).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
     (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.2.le i) + k.2 := by
@@ -702,7 +704,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   by_cases him : iv < m
   · conv in Sigma.mk _ _ =>
       equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]
-    simpa using ih _
+    simpa using! ih _
   · replace him := Nat.eq_of_lt_succ_of_not_lt hi him
     subst him
     conv in Sigma.mk _ _ =>
@@ -775,3 +777,28 @@ alias alternatingSum_eq_finset_sum := alternatingSum_eq_finsetSum
 alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
 
 end List
+
+/-- This is a classic "telescoping sum" lemma. It says:
+`r₀ - (r₀ + r₁) + (r₁ + r₂) - (r₂+ r₃) + ⋯ ± (rₙ₋₁ + rₙ) ∓ rₙ = 0`.
+
+The chosen spelling, which gives definitional power over `d`, is influenced by downstream
+applications such as `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. -/
+lemma Fin.sum_neg_one_pow_eq_zero {α : Type*} [AddCommGroup α]
+    {n : ℕ} (d : Fin (n + 2) → α) (r : Fin (n + 1) → α)
+    (h_first : d 0 = r 0)
+    (h_mid : ∀ i : Fin n, d i.succ.castSucc = r i.castSucc + r i.succ)
+    (h_last : d (Fin.last _) = r (Fin.last _)) :
+    ∑ i, (-1) ^ i.val • d i = 0 := by
+  have h₁ : ∑ i : Fin (n + 2), (-1 : ℤ) ^ i.val • d i =
+      d 0 +
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • (d (Fin.castSucc i).succ) +
+      (-1 : ℤ) ^ (n + 1) • d (Fin.last (n + 1)) := by
+    rw [Fin.sum_univ_succ, Fin.sum_univ_castSucc]
+    simp [add_assoc]
+  have h₂ : ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • (r (Fin.castSucc i) + r (Fin.succ i)) =
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • r (Fin.castSucc i) +
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • r (Fin.succ i) := by
+    simp_rw [zsmul_add, Finset.sum_add_distrib]
+  have h₃ := Fin.sum_univ_castSucc fun i ↦ (-1 : ℤ) ^ i.val • r i
+  simp_all [Fin.sum_univ_succ, pow_succ']
+  grind

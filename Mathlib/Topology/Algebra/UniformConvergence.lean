@@ -118,6 +118,32 @@ lemma UniformOnFun.toFun_div [Div β] (f g : α →ᵤ[𝔖] β) :
 lemma UniformOnFun.ofFun_div [Div β] (f g : α → β) : ofFun 𝔖 (f / g) = ofFun 𝔖 f / ofFun 𝔖 g := rfl
 
 @[to_additive]
+instance {M : Type*} [Pow β M] : Pow (α →ᵤ β) M := inferInstanceAs <| Pow (α → β) M
+
+@[to_additive (attr := simp) toFun_smul]
+lemma UniformFun.toFun_pow {M : Type*} [Pow β M] (c : M) (f : α →ᵤ β) :
+    toFun (f ^ c) = toFun f ^ c :=
+  rfl
+
+@[to_additive (attr := simp) ofFun_smul]
+lemma UniformFun.ofFun_pow {M : Type*} [Pow β M] (c : M) (f : α → β) :
+    ofFun (f ^ c) = ofFun f ^ c :=
+  rfl
+
+@[to_additive]
+instance {M : Type*} [Pow β M] : Pow (α →ᵤ[𝔖] β) M := inferInstanceAs <| Pow (α → β) M
+
+@[to_additive (attr := simp) toFun_smul]
+lemma UniformOnFun.toFun_pow {M : Type*} [Pow β M] (c : M) (f : α →ᵤ[𝔖] β) :
+    toFun 𝔖 (f ^ c) = toFun 𝔖 f ^ c :=
+  rfl
+
+@[to_additive (attr := simp) ofFun_smul]
+lemma UniformOnFun.ofFun_pow {M : Type*} [Pow β M] (c : M) (f : α → β) :
+    ofFun 𝔖 (f ^ c) = ofFun 𝔖 f ^ c :=
+  rfl
+
+@[to_additive]
 instance [Monoid β] : Monoid (α →ᵤ β) := inferInstanceAs <| Monoid (α → β)
 
 @[to_additive]
@@ -140,30 +166,6 @@ instance [CommGroup β] : CommGroup (α →ᵤ β) := inferInstanceAs <| CommGro
 
 @[to_additive]
 instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) := inferInstanceAs <| CommGroup (α → β)
-
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := inferInstanceAs <| SMul M (α → β)
-
-@[simp]
-lemma UniformFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ β) :
-    toFun (c • f) = c • toFun f :=
-  rfl
-
-@[simp]
-lemma UniformFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
-    ofFun (c • f) = c • ofFun f :=
-  rfl
-
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := inferInstanceAs <| SMul M (α → β)
-
-@[simp]
-lemma UniformOnFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ[𝔖] β) :
-    toFun 𝔖 (c • f) = c • toFun 𝔖 f :=
-  rfl
-
-@[simp]
-lemma UniformOnFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
-    ofFun 𝔖 (c • f) = c • ofFun 𝔖 f :=
-  rfl
 
 instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ β) :=
@@ -223,7 +225,7 @@ instance : IsUniformGroup (α →ᵤ G) :=
 protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i => { f : α →ᵤ G | ∀ x, toFun f x ∈ b i } := by
-  convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) h.uniformity_of_nhds_one
+  convert! UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) h.uniformity_of_nhds_one
   simp
 
 @[to_additive]
@@ -251,8 +253,9 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, toFun 𝔖 f x ∈ b Si.2 } := by
-  convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ <|
-    h.uniformity_of_nhds_one_swapped
+  convert!
+    UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ <|
+      h.uniformity_of_nhds_one_swapped
   simp [UniformOnFun.gen]
 
 @[to_additive]

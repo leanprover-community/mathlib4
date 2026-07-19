@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Fintype.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
@@ -70,6 +70,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/
+@[wikidata Q438814]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
@@ -174,7 +175,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
   rcases Int.units_eq_one_or (Perm.sign π) with h | h
   · rw [isConj_iff]
     refine ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective ?_⟩
-    simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using hπ
+    simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using! hπ
   · have h2 : 2 ≤ σ.supportᶜ.card := by
       rw [Finset.card_compl, le_tsub_iff_left σ.support.card_le_univ]
       exact hσ
@@ -239,7 +240,7 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
   apply le_antisymm
   · rw [Subgroup.closure_le]
     intro g hg
-    simp only [Set.mem_setOf_eq] at hg
+    simp only [Set.mem_ofPred_eq] at hg
     simp [mem_alternatingGroup, sign_of_cycleType, hg, ← Units.val_inj]
   · rw [← Equiv.Perm.closure_three_cycles_eq_alternating, Subgroup.closure_le]
     intro g hg3
@@ -262,7 +263,7 @@ alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
 theorem cycleType_eq_two_two_subset_alternatingGroup :
     {g : Perm α | g.cycleType = {2, 2}} ⊆ alternatingGroup α := by
   intro g hg
-  rw [Set.mem_setOf_eq] at hg
+  rw [Set.mem_ofPred_eq] at hg
   simp [sign_of_cycleType, hg, ← Units.val_inj]
 
 theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ Nat.card α) :
@@ -303,7 +304,7 @@ theorem eq_bot_of_card_le_two (h2 : Nat.card α ≤ 2) : alternatingGroup α = �
     rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by simp),
       two_mul_nat_card_alternatingGroup, mul_one, Nat.card_perm, hα', Nat.factorial_two]
   refine h2.antisymm ?_
-  simpa [Nat.card_eq_fintype_card] using Fintype.one_lt_card
+  simpa [Nat.card_eq_fintype_card] using! Fintype.one_lt_card
 
 theorem nontrivial_of_three_le_card (h3 : 3 ≤ Nat.card α) : Nontrivial (alternatingGroup α) := by
   have : Nontrivial α := by

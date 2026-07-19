@@ -267,14 +267,20 @@ theorem hasFDerivWithinAt_insert [T1Space E] {y : E} :
 alias ⟨_, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
 
 @[simp]
-theorem hasFDerivWithinAt_diff_singleton_self :
+theorem hasFDerivWithinAt_sdiff_singleton_self :
     HasFDerivWithinAt f f' (s \ {x}) x ↔ HasFDerivWithinAt f f' s x := by
-  rw [← hasFDerivWithinAt_insert_self, insert_diff_singleton, hasFDerivWithinAt_insert_self]
+  rw [← hasFDerivWithinAt_insert_self, insert_sdiff_singleton, hasFDerivWithinAt_insert_self]
+
+@[deprecated (since := "2026-06-03")]
+alias hasFDerivWithinAt_diff_singleton_self := hasFDerivWithinAt_sdiff_singleton_self
 
 @[simp]
-theorem hasFDerivWithinAt_diff_singleton [T1Space E] (y : E) :
+theorem hasFDerivWithinAt_sdiff_singleton [T1Space E] (y : E) :
     HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
-  rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
+  rw [← hasFDerivWithinAt_insert, insert_sdiff_singleton, hasFDerivWithinAt_insert]
+
+@[deprecated (since := "2026-06-03")]
+alias hasFDerivWithinAt_diff_singleton := hasFDerivWithinAt_sdiff_singleton
 
 @[simp]
 protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by
@@ -317,7 +323,7 @@ theorem DifferentiableWithinAt.of_subsingleton [T1Space E] (h : s.Subsingleton) 
 protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
     HasFDerivAt f f' x :=
   .of_isLittleOTVS <| by
-    simpa only using hf.isLittleOTVS.comp_tendsto (tendsto_id.prodMk_nhds tendsto_const_nhds)
+    simpa only using! hf.isLittleOTVS.comp_tendsto (tendsto_id.prodMk_nhds tendsto_const_nhds)
 
 protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f' x) :
     DifferentiableAt 𝕜 f x :=
@@ -362,7 +368,7 @@ as this statement is empty. -/
 theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     HasFDerivWithinAt f f' s x := by
   rw [accPt_principal_iff_nhdsWithin, not_neBot] at h
-  rw [← hasFDerivWithinAt_diff_singleton_self, hasFDerivWithinAt_iff_isLittleOTVS, h]
+  rw [← hasFDerivWithinAt_sdiff_singleton_self, hasFDerivWithinAt_iff_isLittleOTVS, h]
   exact .bot
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
@@ -606,14 +612,14 @@ theorem HasStrictFDerivAt.isBigOTVS_sub (hf : HasStrictFDerivAt f f' x) :
 
 theorem HasFDerivWithinAt.isBigOTVS_sub (h : HasFDerivWithinAt f f' s x) :
     (f · - f x) =O[𝕜; 𝓝[s] x] (· - x) := by
-  simpa using HasFDerivAtFilter.isBigOTVS_sub h
+  simpa using! HasFDerivAtFilter.isBigOTVS_sub h
 
 lemma DifferentiableWithinAt.isBigOTVS_sub (h : DifferentiableWithinAt 𝕜 f s x) :
     (f · - f x) =O[𝕜; 𝓝[s] x] (· - x) :=
   h.hasFDerivWithinAt.isBigOTVS_sub
 
 theorem HasFDerivAt.isBigOTVS_sub (h : HasFDerivAt f f' x) : (f · - f x) =O[𝕜; 𝓝 x] (· - x) := by
-  simpa using HasFDerivAtFilter.isBigOTVS_sub h
+  simpa using! HasFDerivAtFilter.isBigOTVS_sub h
 
 theorem DifferentiableAt.isBigOTVS_sub (h : DifferentiableAt 𝕜 f x) :
     (f · - f x) =O[𝕜; 𝓝 x] (· - x) :=
@@ -632,9 +638,9 @@ theorem HasFDerivAtFilter.tendsto_nhds {L : Filter E} (hL : L ≤ 𝓝 x)
   have : (f · - f x) =o[𝕜; L] (1 : E → 𝕜) := by
     refine h.isBigOTVS_sub |>.comp_tendsto prod_pure.ge |>.trans_isLittleOTVS ?_
     rw [isLittleOTVS_one]
-    simpa [sub_eq_add_neg] using (tendsto_id'.mpr hL).add_const (-x)
+    simpa [sub_eq_add_neg] using! (tendsto_id'.mpr hL).add_const (-x)
   rw [isLittleOTVS_one] at this
-  simpa using this.add_const (f x)
+  simpa using! this.add_const (f x)
 
 theorem HasFDerivWithinAt.continuousWithinAt (h : HasFDerivWithinAt f f' s x) :
     ContinuousWithinAt f s x :=
@@ -687,53 +693,37 @@ theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (.id �
 theorem hasFDerivAt_id (x : E) : HasFDerivAt id (.id 𝕜 E) x :=
   hasFDerivAtFilter_id _
 
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop) differentiableAt_fun_id]
 theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
-/-- Variant with `fun x => x` rather than `id` -/
-@[simp, fun_prop]
-theorem differentiableAt_fun_id : DifferentiableAt 𝕜 (fun x => x) x :=
-  (hasFDerivAt_id x).differentiableAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop) differentiableWithinAt_fun_id]
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
   differentiableAt_id.differentiableWithinAt
 
-/-- Variant with `fun x => x` rather than `id` -/
-@[fun_prop]
-theorem differentiableWithinAt_id' : DifferentiableWithinAt 𝕜 (fun x => x) s x :=
-  differentiableWithinAt_id
+@[deprecated (since := "2026-05-17")]
+alias differentiableWithinAt_id' := differentiableWithinAt_fun_id
 
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop) differentiable_fun_id]
 theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => differentiableAt_id
-
-/-- Variant with `fun x => x` rather than `id` -/
-@[simp, fun_prop]
-theorem differentiable_fun_id : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
 
 @[fun_prop]
 theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
   differentiable_id.differentiableOn
 
-@[simp]
+@[to_fun (attr := simp) fderiv_fun_id]
 theorem fderiv_id [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E] : fderiv 𝕜 id x = .id 𝕜 E :=
   HasFDerivAt.fderiv (hasFDerivAt_id x)
 
-@[simp]
-theorem fderiv_id' [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E] :
-    fderiv 𝕜 (fun x : E => x) x = ContinuousLinearMap.id 𝕜 E :=
-  fderiv_id
+@[deprecated (since := "2026-05-17")] alias fderiv_id' := fderiv_fun_id
 
+@[to_fun fderivWithin_fun_id]
 theorem fderivWithin_id [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E]
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 id s x = .id 𝕜 E := by
   rw [DifferentiableAt.fderivWithin differentiableAt_id hxs]
   exact fderiv_id
 
-theorem fderivWithin_id' [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E]
-    (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x : E => x) s x = ContinuousLinearMap.id 𝕜 E :=
-  fderivWithin_id hxs
+@[deprecated (since := "2026-05-17")] alias fderivWithin_id' := fderivWithin_fun_id
 
 end id
 
@@ -763,21 +753,21 @@ theorem HasFDerivAtFilter.isThetaTVS_sub (hf : HasFDerivAtFilter f f' L)
 
 theorem HasFDerivAt.isEquivalent_sub (hf : HasFDerivAt f f' x) (hf' : Topology.IsInducing f') :
     (f · - f x) ~[𝓝 x] (f' <| · - x) := by
-  simpa using HasFDerivAtFilter.isEquivalent_sub hf hf'
+  simpa using! HasFDerivAtFilter.isEquivalent_sub hf hf'
 
 theorem HasFDerivAt.isThetaTVS_sub (hf : HasFDerivAt f f' x) (hf' : Topology.IsInducing f') :
     (f · - f x) =Θ[𝕜; 𝓝 x] (· - x) := by
-  simpa [IsThetaTVS] using HasFDerivAtFilter.isThetaTVS_sub hf hf'
+  simpa [IsThetaTVS] using! HasFDerivAtFilter.isThetaTVS_sub hf hf'
 
 theorem HasFDerivWithinAt.isEquivalent_sub (hf : HasFDerivWithinAt f f' s x)
     (hf' : Topology.IsInducing f') :
     (f · - f x) ~[𝓝[s] x] (f' <| · - x) := by
-  simpa using HasFDerivAtFilter.isEquivalent_sub hf hf'
+  simpa using! HasFDerivAtFilter.isEquivalent_sub hf hf'
 
 theorem HasFDerivWithinAt.isThetaTVS_sub (hf : HasFDerivWithinAt f f' s x)
     (hf' : Topology.IsInducing f') :
     (f · - f x) =Θ[𝕜; 𝓝[s] x] (· - x) := by
-  simpa [IsThetaTVS] using HasFDerivAtFilter.isThetaTVS_sub hf hf'
+  simpa [IsThetaTVS] using! HasFDerivAtFilter.isThetaTVS_sub hf hf'
 
 theorem HasStrictFDerivAt.isEquivalent_sub (hf : HasStrictFDerivAt f f' x)
     (hf' : Topology.IsInducing f') :

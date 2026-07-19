@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
@@ -90,8 +90,8 @@ instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
-  ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) from
-    by fun_prop⟩
+  ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) by
+    fun_prop⟩
 
 @[to_additive]
 theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Mul α]
@@ -292,15 +292,22 @@ section PointwiseLimits
 variable (M₁ M₂ : Type*) [TopologicalSpace M₂] [T2Space M₂]
 
 @[to_additive]
-theorem isClosed_setOf_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M₂ | f 1 = 1 } :=
+theorem isClosed_setOfPred_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M₂ | f 1 = 1 } :=
   isClosed_eq (continuous_apply 1) continuous_const
 
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_one := isClosed_setOfPred_map_one
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_zero := isClosed_setOfPred_map_zero
+
 @[to_additive]
-theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
+theorem isClosed_setOfPred_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     IsClosed { f : M₁ → M₂ | ∀ x y, f (x * y) = f x * f y } := by
-  simp only [setOf_forall]
+  simp only [ofPred_forall]
   exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦
     isClosed_eq (continuous_apply _) (by fun_prop)
+
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_mul := isClosed_setOfPred_map_mul
+@[deprecated (since := "2026-07-09")] alias isClosed_setOf_map_add := isClosed_setOfPred_map_add
 
 section Semigroup
 
@@ -317,7 +324,8 @@ type of bundled homomorphisms that has an `AddHomClass` instance) to `M₁ → M
 def mulHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →ₙ* M₂ where
   toFun := f
-  map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
+  map_mul' := (isClosed_setOfPred_map_mul M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled semigroup homomorphism from a pointwise limit of semigroup homomorphisms. -/
 @[to_additive (attr := simps! -fullyApplied)
@@ -351,8 +359,10 @@ type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂ where
   toFun := f
-  map_one' := (isClosed_setOf_map_one M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_one) hf
-  map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
+  map_one' := (isClosed_setOfPred_map_one M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_one) hf
+  map_mul' := (isClosed_setOfPred_map_mul M₁ M₂).closure_subset_iff.2
+    (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
 @[to_additive (attr := simps! -fullyApplied)
@@ -540,10 +550,10 @@ theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace 
 theorem tendsto_mul_cofinite_nhds_zero {f : α → M} {g : β → M}
     (hf : Tendsto f cofinite (𝓝 0)) (hg : Tendsto g cofinite (𝓝 0)) :
     Tendsto (fun i : α × β ↦ f i.1 * g i.2) cofinite (𝓝 0) := by
-  letI : TopologicalSpace α := ⊥
-  haveI : DiscreteTopology α := discreteTopology_bot α
-  letI : TopologicalSpace β := ⊥
-  haveI : DiscreteTopology β := discreteTopology_bot β
+  let : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := discreteTopology_bot α
+  let : TopologicalSpace β := ⊥
+  have : DiscreteTopology β := discreteTopology_bot β
   rw [← cocompact_eq_cofinite] at *
   exact tendsto_mul_cocompact_nhds_zero
     continuous_of_discreteTopology continuous_of_discreteTopology hf hg
@@ -574,8 +584,8 @@ variable [TopologicalSpace M] [MulOneClass M] [ContinuousMul M]
 theorem exists_open_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ ∀ v ∈ V, ∀ w ∈ V, v * w ∈ s := by
   have : (fun a : M × M => a.1 * a.2) ⁻¹' s ∈ 𝓝 ((1, 1) : M × M) :=
-    tendsto_mul (by simpa only [one_mul] using hs)
-  simpa only [prod_subset_iff] using exists_nhds_square this
+    tendsto_mul (by simpa only [one_mul] using! hs)
+  simpa only [prod_subset_iff] using! exists_nhds_square this
 
 @[to_additive exists_nhds_zero_half]
 theorem exists_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
@@ -595,7 +605,7 @@ theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
 theorem Filter.HasBasis.mul_self {p : ι → Prop} {s : ι → Set M} (h : (𝓝 1).HasBasis p s) :
     (𝓝 1).HasBasis p fun i => s i * s i := by
   rw [← nhds_mul_nhds_one, ← map₂_mul, ← map_uncurry_prod]
-  simpa only [← image_mul_prod] using h.prod_self.map _
+  simpa only [← image_mul_prod] using! h.prod_self.map _
 
 end MulOneClass
 
@@ -731,7 +741,7 @@ inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
     Filter.Tendsto (fun x : M => a * x) (Filter.cocompact M) (Filter.cocompact M) := by
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_const_mul b))
-  convert Filter.tendsto_id
+  convert! Filter.tendsto_id
   ext x
   simp [← mul_assoc, ha]
 
@@ -809,8 +819,8 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 -- To properly fix this, we should make sure that `continuity` applies its
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
 -- is quite an invasive change.
-@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
-theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
+@[to_fun (attr := to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop))]
+theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous (f ^ n) :=
   (continuous_pow n).comp h
 
 @[to_additive]
@@ -826,19 +836,19 @@ theorem Filter.Tendsto.pow {l : Filter α} {f : α → M} {x : M} (hf : Tendsto 
     Tendsto (fun x => f x ^ n) l (𝓝 (x ^ n)) :=
   (continuousAt_pow _ _).tendsto.comp hf
 
-@[to_additive]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousWithinAt.pow {f : X → M} {x : X} {s : Set X} (hf : ContinuousWithinAt f s x)
-    (n : ℕ) : ContinuousWithinAt (fun x => f x ^ n) s x :=
+    (n : ℕ) : ContinuousWithinAt (f ^ n) s x :=
   Filter.Tendsto.pow hf n
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousAt.pow {f : X → M} {x : X} (hf : ContinuousAt f x) (n : ℕ) :
-    ContinuousAt (fun x => f x ^ n) x :=
+    ContinuousAt (f ^ n) x :=
   Filter.Tendsto.pow hf n
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.pow {f : X → M} {s : Set X} (hf : ContinuousOn f s) (n : ℕ) :
-    ContinuousOn (fun x => f x ^ n) s := fun x hx => (hf x hx).pow n
+    ContinuousOn (f ^ n) s := fun x hx => (hf x hx).pow n
 
 /-- If `R` acts on `A` via `A`, then continuous multiplication implies continuous scalar
 multiplication by constants.
@@ -1054,6 +1064,12 @@ protected def mulRight (x : X) : C(X, X) :=
 theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
   rfl
 
+@[to_additive]
+lemma mulRight_mul {X : Type*} [Semigroup X] [TopologicalSpace X] [SeparatelyContinuousMul X]
+    (x y : X) : ContinuousMap.mulRight (x * y) =
+    (ContinuousMap.mulRight y).comp (ContinuousMap.mulRight x) := by
+  ext; simp [mul_assoc]
+
 /-- The continuous map `fun y => x * y` -/
 @[to_additive /-- The continuous map `fun y => x + y` -/]
 protected def mulLeft (x : X) : C(X, X) :=
@@ -1062,5 +1078,11 @@ protected def mulLeft (x : X) : C(X, X) :=
 @[to_additive (attr := simp)]
 theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
   rfl
+
+@[to_additive]
+lemma mulLeft_mul {X : Type*} [Semigroup X] [TopologicalSpace X] [SeparatelyContinuousMul X]
+    (x y : X) : ContinuousMap.mulLeft (x * y) =
+    (ContinuousMap.mulLeft x).comp (ContinuousMap.mulLeft y) := by
+  ext; simp [mul_assoc]
 
 end ContinuousMap

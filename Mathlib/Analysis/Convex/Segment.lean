@@ -61,12 +61,12 @@ def openSegment (x y : E) : Set E :=
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [segment, image, Prod.exists, mem_setOf_eq, and_assoc]
+  simp only [segment, image, Prod.exists, mem_ofPred_eq, and_assoc]
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [openSegment, image, Prod.exists, mem_setOf_eq, and_assoc]
+  simp only [openSegment, image, Prod.exists, mem_ofPred_eq, and_assoc]
 
 theorem segment_symm (x y : E) : [x -[𝕜] y] = [y -[𝕜] x] :=
   Set.ext fun _ =>
@@ -206,30 +206,34 @@ theorem openSegment_eq_image (x y : E) :
 
 theorem segment_eq_image' (x y : E) :
     [x -[𝕜] y] = (fun θ : 𝕜 => x + θ • (y - x)) '' Icc (0 : 𝕜) 1 := by
-  convert segment_eq_image 𝕜 x y using 2
+  convert! segment_eq_image 𝕜 x y using 2
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
 theorem openSegment_eq_image' (x y : E) :
     openSegment 𝕜 x y = (fun θ : 𝕜 => x + θ • (y - x)) '' Ioo (0 : 𝕜) 1 := by
-  convert openSegment_eq_image 𝕜 x y using 2
+  convert! openSegment_eq_image 𝕜 x y using 2
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
-  convert segment_eq_image 𝕜 x y using 2
+  convert segment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
-  convert openSegment_eq_image 𝕜 x y using 2
+  convert openSegment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
     AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
   openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lineMap_mem_segment (a b : E) {t : 𝕜} (ht : t ∈ Icc 0 1) :
     AffineMap.lineMap a b t ∈ [a -[𝕜] b] :=
   segment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
@@ -251,7 +255,7 @@ theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ [b -[𝕜] c] = [a +ᵥ b -[𝕜] a +ᵥ c] :=
   #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
   we didn't need this `let` statement. -/
-  let : AddTorsor E E := addGroupIsAddTorsor E
+  let : AddTorsor E E := AddGroup.instAddTorsor E
   image_segment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -259,7 +263,7 @@ theorem vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E)
     a +ᵥ openSegment 𝕜 b c = openSegment 𝕜 (a +ᵥ b) (a +ᵥ c) :=
   #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
   we didn't need this `let` statement. -/
-  let : AddTorsor E E := addGroupIsAddTorsor E
+  let : AddTorsor E E := AddGroup.instAddTorsor E
   image_openSegment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -297,7 +301,7 @@ lemma segment_inter_subset_endpoint_of_linearIndependent_sub
   have Hy : y = (y - c) + c := by abel
   rw [Hx, Hy, smul_add, smul_add] at H
   have : c + q • (y - c) = c + p • (x - c) := by
-    convert H using 1 <;> simp [sub_smul]
+    convert! H using 1 <;> simp [sub_smul]
   obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this).symm
   simp
 
@@ -324,7 +328,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
   apply segment_inter_eq_endpoint_of_linearIndependent_sub
   simp only [add_sub_add_left_eq_sub]
   suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
-    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
+    convert! H using 1; simp only [neg_smul, one_smul]; abel_nf
   nontriviality 𝕜
   rw [LinearIndependent.pair_add_smul_add_smul_iff]
   aesop
@@ -343,7 +347,7 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
 
 theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x - y) (x + y) := by
-  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
+  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
 theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
@@ -351,7 +355,7 @@ theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[�
 
 theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x + y) (x - y) := by
-  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
+  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
 
 theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=
@@ -417,6 +421,7 @@ theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (
 
 open AffineMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `z = lineMap x y c` is a point on the line passing through `x` and `y`, then the open
 segment `openSegment 𝕜 x y` is included in the union of the open segments `openSegment 𝕜 x z`,
 `openSegment 𝕜 z y`, and the point `z`. Informally, `(x, y) ⊆ {z} ∪ (x, z) ∪ (z, y)`. -/
@@ -557,13 +562,13 @@ theorem segment_eq_uIcc (x y : 𝕜) : [x -[𝕜] y] = uIcc x y :=
 /-- A point is in an `Icc` iff it can be expressed as a convex combination of the endpoints. -/
 theorem Convex.mem_Icc (h : x ≤ y) :
     z ∈ Icc x y ↔ ∃ a b, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  simp only [← segment_eq_Icc h, segment, mem_setOf_eq, smul_eq_mul, exists_and_left]
+  simp only [← segment_eq_Icc h, segment, mem_ofPred_eq, smul_eq_mul, exists_and_left]
 
 /-- A point is in an `Ioo` iff it can be expressed as a strict convex combination of the endpoints.
 -/
 theorem Convex.mem_Ioo (h : x < y) :
     z ∈ Ioo x y ↔ ∃ a b, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  simp only [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_setOf_eq]
+  simp only [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_ofPred_eq]
 
 /-- A point is in an `Ioc` iff it can be expressed as a semistrict convex combination of the
 endpoints. -/

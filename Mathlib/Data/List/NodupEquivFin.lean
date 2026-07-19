@@ -119,7 +119,6 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   obtain ⟨w, h⟩ := this
   let f' : ℕ ↪o ℕ :=
     OrderEmbedding.ofMapLEIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
-      dsimp only
       rw [Nat.sub_le_sub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
       rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
       exact b.succ_pos
@@ -134,6 +133,7 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   exact List.getElem_mem _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.

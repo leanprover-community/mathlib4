@@ -71,7 +71,7 @@ namespace PiNat
 
 /-! ### The firstDiff function -/
 
-open Classical in
+open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
 irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
@@ -85,10 +85,7 @@ theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
 
 theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff x y) : x n = y n := by
   rw [firstDiff_def] at hn
-  split_ifs at hn with h
-  · convert Nat.find_min (ne_iff.1 h) hn
-    simp
-  · exact (not_lt_zero' hn).elim
+  aesop
 
 theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
   classical
@@ -252,7 +249,7 @@ a `MetricSpace` instance, as other distances may be used on these spaces, but we
 local instances in this section.
 -/
 
-open Classical in
+open scoped Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
 @[instance_reducible]
@@ -405,7 +402,7 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 /-- Metric space structure on `Π (n : ℕ), E n` when the spaces `E n` have the discrete uniformity,
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
     (h : ∀ n, uniformity (E n) = 𝓟 SetRel.id) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
@@ -415,7 +412,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
     eq_of_dist_eq_zero := PiNat.eq_of_dist_eq_zero _ _
     toUniformSpace := Pi.uniformSpace _
     uniformity_dist := by
-      simp only [Pi.uniformity, h, SetRel.id, comap_principal, preimage_setOf_eq]
+      simp only [Pi.uniformity, h, SetRel.id, comap_principal, preimage_ofPred_eq]
       apply le_antisymm
       · simp only [le_iInf_iff, le_principal_iff]
         intro ε εpos
@@ -423,9 +420,9 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
         apply
           @mem_iInf_of_iInter _ _ _ _ _ (Finset.range n).finite_toSet fun i =>
             { p : (∀ n : ℕ, E n) × ∀ n : ℕ, E n | p.fst i = p.snd i }
-        · simp only [mem_principal, setOf_subset_setOf, imp_self, imp_true_iff]
+        · simp only [mem_principal, ofPred_subset_ofPred, imp_self, imp_true_iff]
         · rintro ⟨x, y⟩ hxy
-          simp only [Finset.mem_coe, Finset.mem_range, iInter_coe_set, mem_iInter, mem_setOf_eq]
+          simp only [Finset.mem_coe, Finset.mem_range, iInter_coe_set, mem_iInter, mem_ofPred_eq]
             at hxy
           apply lt_of_le_of_lt _ hn
           rw [← mem_cylinder_iff_dist_le, mem_cylinder_iff]
@@ -434,14 +431,14 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
         intro n
         refine mem_iInf_of_mem ((1 / 2) ^ n : ℝ) ?_
         refine mem_iInf_of_mem (by positivity) ?_
-        simp only [mem_principal, setOf_subset_setOf, Prod.forall]
+        simp only [mem_principal, ofPred_subset_ofPred, Prod.forall]
         intro x y hxy
         exact apply_eq_of_dist_lt hxy le_rfl }
 
 /-- Metric space structure on `ℕ → ℕ` where the distance is given by `dist x y = (1/2)^n`,
 where `n` is the smallest index where `x` and `y` differ.
 Not registered as a global instance by default. -/
-@[implicit_reducible]
+@[instance_reducible]
 def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
   PiNat.metricSpaceOfDiscreteUniformity fun _ => rfl
 
@@ -485,7 +482,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
       exact mem_cylinder_iff_dist_le.1 hy
     _ < infDist x s := hn
 
-open Classical in
+open scoped Classical in
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/
@@ -597,7 +594,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     · rintro x ⟨y, rfl⟩
       by_cases hy : y ∈ s
       · rwa [fs y hy]
-      simpa [f, if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
+      simpa [f, if_neg hy] using! (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
     · intro x hx
       rw [← fs x hx]
       exact mem_range_self _
@@ -705,7 +702,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     balls `closedBall (u xₙ) (1/2^n)` have a nonempty intersection. This set is closed,
     and we define `f x` there to be the unique point in the intersection.
     This function is continuous and surjective by design. -/
-  letI : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
+  let : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
   have I0 : (0 : ℝ) < 1 / 2 := by simp
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
@@ -845,11 +842,10 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
     _ = _ := ENNReal.tsum_add ..
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
-    simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_setOf_eq, comap_principal,
+    simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_ofPred_eq, comap_principal,
       PseudoEMetricSpace.uniformity_edist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
     constructor
     · intro ε hε
-      classical
       obtain ⟨K, hK⟩ : ∃ K : Finset ι, ∑' i : {j // j ∉ K}, 2⁻¹ ^ encode (i : ι) < ε / 2 :=
         ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
           (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
@@ -862,7 +858,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
         refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
         simp only [mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
-        simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_coe] at hxy
+        simp only [mem_iInter, mem_ofPred_eq, SetCoe.forall, Finset.mem_coe] at hxy
         calc
           edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
           _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
@@ -882,7 +878,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
     · intro i ε hε₀
       have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by norm_num) _
       refine mem_iInf_of_mem (min (2⁻¹ ^ encode i) ε) <| mem_iInf_of_mem (by positivity) ?_
-      simp only [and_imp, Prod.forall, setOf_subset_setOf, lt_min_iff, mem_principal]
+      simp only [and_imp, Prod.forall, ofPred_subset_ofPred, lt_min_iff, mem_principal]
       intro x y hn
       exact (edist_le_edist_pi_of_edist_lt hn).trans_lt
 
@@ -936,21 +932,18 @@ lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
 lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
--- TODO: fix two non-terminal simps below; second one uses a long lemma list
-set_option linter.flexible false in
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
 @[instance_reducible]
 protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
-    (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
-      rw [edist_eq_tsum, dist_eq_tsum,
-        ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
-      simp [edist, ENNReal.inv_pow]
-      congr! with a
-      exact PseudoMetricSpace.edist_dist (x a) (y a)
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist (fun x y ↦ by rw [dist_eq_tsum]; positivity)
+  fun x y ↦ by
+    rw [edist_eq_tsum, dist_eq_tsum,
+      ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
+    congr! with a
+    simp [edist, ENNReal.inv_pow, PseudoMetricSpace.edist_dist (x a) (y a)]
 
 end PseudoMetricSpace
 
@@ -962,7 +955,7 @@ variable [∀ i, MetricSpace (F i)]
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
 
@@ -1014,7 +1007,7 @@ noncomputable def embed : PiNatEmbed X Y f → ∀ i, Y i := fun x i ↦ f i x.o
 
 lemma embed_injective (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     Injective (embed X Y f) := by
-  simpa [Pairwise, not_imp_comm (a := _ = _), funext_iff, Function.Injective] using separating_f
+  simpa [Pairwise, not_imp_comm (a := _ = _), funext_iff, Function.Injective] using! separating_f
 
 variable [Encodable ι]
 
@@ -1081,7 +1074,7 @@ variable [TopologicalSpace X] [CompactSpace X]
 lemma isHomeomorph_toPiNat (continuous_f : ∀ i, Continuous (f i))
     (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
     IsHomeomorph (toPiNat : X → PiNatEmbed X Y f) := by
-  letI := emetricSpace separating_f
+  let := emetricSpace separating_f
   rw [isHomeomorph_iff_continuous_bijective]
   exact ⟨continuous_toPiNat continuous_f, (toPiNatEquiv X Y f).bijective⟩
 
@@ -1124,7 +1117,7 @@ lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
   cases isEmpty_or_nonempty X
   · exact continuous_of_discreteTopology
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
-  convert continuous_const (y := denseSeq X n)
+  convert! continuous_const (y := denseSeq X n)
 
 lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
     ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by
@@ -1169,10 +1162,6 @@ theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding 
   let isEmbedding_secondstep : IsEmbedding secondstep :=
       (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding
   exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
-
-@[deprecated "This version is more general as compact metric spaces are separable"
-(since := "2025-11-27")] alias
-exists_closed_embedding_to_hilbert_cube := Metric.PiNatEmbed.exists_embedding_to_hilbert_cube
 
 end MetricSpace
 end PiNatEmbed

@@ -73,7 +73,7 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
-  coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
+  coe_injective μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
 instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
 
@@ -220,7 +220,7 @@ protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose
 @[simp]
 theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose ↔ μ ≤ ν :=
   ⟨fun h => by
-    convert YoungDiagram.le_of_transpose_le h
+    convert! YoungDiagram.le_of_transpose_le h
     simp, fun h => by
     rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
@@ -229,6 +229,7 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
 protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.transpose ≤ ν.transpose :=
   transpose_le_iff.mpr h_le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transposing Young diagrams is an `OrderIso`. -/
 @[simps]
 def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=
@@ -259,6 +260,7 @@ theorem mem_row_iff {μ : YoungDiagram} {i : ℕ} {c : ℕ × ℕ} : c ∈ μ.ro
 
 theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔ (i, j) ∈ μ := by simp [row]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
     Infinite.exists_notMem_finset
@@ -313,7 +315,7 @@ theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.co
 theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔ (i, j) ∈ μ := by simp [col]
 
 protected theorem exists_notMem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
-  convert μ.transpose.exists_notMem_row j using 1
+  convert! μ.transpose.exists_notMem_row j using 1
   simp
 
 /-- Length of a column of a Young diagram -/
@@ -344,7 +346,7 @@ theorem colLen_eq_card (μ : YoungDiagram) {j : ℕ} : μ.colLen j = (μ.col j).
 
 @[gcongr, mono]
 theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colLen j2 ≤ μ.colLen j1 := by
-  convert μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
+  convert! μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
 
 end Columns
 

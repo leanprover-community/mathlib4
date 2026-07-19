@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Covering.Besicovitch
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces
@@ -122,7 +121,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     rintro c hc d hd hcd
     apply ball_disjoint_ball
     rw [dist_eq_norm]
-    convert h c hc d hd hcd
+    convert! h c hc d hd hcd
     norm_num
   have A_subset : A ⊆ ball (0 : E) ρ := by
     refine iUnion₂_subset fun x hx => ?_
@@ -161,7 +160,7 @@ theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
   · refine ⟨5 ^ finrank ℝ E, ?_⟩
     rintro _ ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
-  · simp only [mem_setOf_eq, Ne]
+  · simp only [mem_ofPred_eq, Ne]
     exact ⟨s, rfl, hs, h's⟩
 
 variable (E)
@@ -410,7 +409,7 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       change i = last N at iN
       rw [iN, lastc, norm_zero] at hi
       exact lt_irrefl _ (zero_le_two.trans_lt hi)
-    convert (a.hlast i this).1 using 1
+    convert! (a.hlast i this).1 using 1
     rw [dist_eq_norm, lastc, sub_zero]
   have hj : 2 < ‖a.c j‖ := hi.trans_le hij
   set s := ‖a.c i‖

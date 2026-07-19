@@ -86,7 +86,7 @@ theorem ae_lineDifferentiableAt
   have h's : DifferentiableAt ℝ (fun t ↦ f (p + t • v)) (s + 0) := by simpa using hs
   have : DifferentiableAt ℝ (fun t ↦ s + t) 0 := differentiableAt_id.const_add _
   simp only [LineDifferentiableAt]
-  convert h's.comp 0 this with _ t
+  convert! h's.comp 0 this with _ t
   simp only [add_assoc, Function.comp_apply, add_smul]
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
@@ -109,7 +109,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
   apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ (C * ‖v‖) * ‖g x‖)
   · filter_upwards with t
     apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
-    apply aestronglyMeasurable_const.smul
+    apply aestronglyMeasurable_const.fun_smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
@@ -134,7 +134,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
       (K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖))
   · filter_upwards with t
     apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
-    apply aestronglyMeasurable_const.smul
+    apply aestronglyMeasurable_const.fun_smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
@@ -257,7 +257,7 @@ theorem ae_exists_fderiv_of_countable
   let L : StrongDual ℝ E :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
-  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
+  have J : L v = lineDeriv ℝ f x v := by convert! (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
 omit [MeasurableSpace E] in

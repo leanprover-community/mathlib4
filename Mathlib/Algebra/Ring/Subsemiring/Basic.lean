@@ -390,7 +390,7 @@ theorem closure_eq_of_le {s : Set R} {t : Subsemiring R} (h₁ : s ⊆ t) (h₂ 
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subsemiring R} {x : S} :
     x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K := by
-  convert @Set.mem_image_equiv _ _ (↑K) f.toEquiv x using 1
+  convert! @Set.mem_image_equiv _ _ (↑K) f.toEquiv x using 1
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subsemiring R) :
     K.map (f : R →+* S) = K.comap f.symm :=
@@ -662,6 +662,14 @@ theorem top_prod (s : Subsemiring S) : (⊤ : Subsemiring R).prod s = s.comap (R
 theorem top_prod_top : (⊤ : Subsemiring R).prod (⊤ : Subsemiring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+@[simp]
+theorem _root_.RingHom.rangeS_prodMap (f : R →+* S) (g : S →+* T) :
+    (f.prodMap g).rangeS = Subsemiring.prod f.rangeS g.rangeS :=
+  SetLike.coe_injective Set.range_prodMap
+
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
+
 /-- Product of subsemirings is isomorphic to their product as monoids. -/
 def prodEquiv (s : Subsemiring R) (t : Subsemiring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
@@ -684,7 +692,7 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
 
 theorem mem_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
@@ -695,7 +703,7 @@ theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
     {S : ι → Subsemiring R} [hS : ∀ i, IsMulCommutative (S i)]
     (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Subsemiring R) := by
   simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+    Subsemigroup.coe_iSup_of_directed dir] using! Subsemigroup.isMulCommutative_iSup dir
 
 instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
     {S : ι →o Subsemiring R} [hS : ∀ i, IsMulCommutative (S i)] :
@@ -713,6 +721,7 @@ variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringCl
 open Subsemiring
 
 /-- Restriction of a ring homomorphism to a subsemiring of the codomain. -/
+@[implicit_reducible]
 def codRestrict (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) : R →+* s :=
   { (f : R →* S).codRestrict s h, (f : R →+ S).codRestrict s h with toFun := fun n => ⟨f n, h n⟩ }
 

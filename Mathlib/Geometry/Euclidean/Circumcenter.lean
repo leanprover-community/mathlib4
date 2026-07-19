@@ -56,7 +56,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     (hp : p ∉ s) (hu : ∃! cs : Sphere P, cs.center ∈ s ∧ ps ⊆ (cs : Set P)) :
     ∃! cs₂ : Sphere P,
       cs₂.center ∈ affineSpan ℝ (insert p (s : Set P)) ∧ insert p ps ⊆ (cs₂ : Set P) := by
-  haveI : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
+  have : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
   rcases hu with ⟨⟨cc, cr⟩, ⟨hcc, hcr⟩, hcccru⟩
   simp only at hcc hcr hcccru
   let x := dist cc (orthogonalProjection s p)
@@ -124,7 +124,6 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         (vsub_orthogonalProjection_mem_direction_orthogonal s p),
       Real.norm_eq_abs, abs_mul_abs_self, dist_comm, ← dist_eq_norm_vsub V p,
       Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))] at hcr₃
-    #adaptation_note /-- This was not needed prior to v4.30.0-rc1. -/
     have : t₃ * y = ycc₂ := by grind
     grind
 
@@ -144,7 +143,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
       obtain ⟨i, hi⟩ := hn
-      haveI : Unique ι := ⟨⟨i⟩, hi⟩
+      have : Unique ι := ⟨⟨i⟩, hi⟩
       use ⟨p i, 0⟩
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
       constructor
@@ -163,7 +162,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
             Finset.card_sdiff, Finset.card_univ, hn]
           simp
         · simp
-      haveI : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
+      have : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
       have ha2 : AffineIndependent ℝ fun i2 : ι2 => p i2 := ha.subtype _
       replace hm := hm ha2 _ hc
       have hr : Set.range p = insert (p i) (Set.range fun i2 : ι2 => p i2) := by
@@ -173,7 +172,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
         simp [Classical.em]
       rw [hr, ← affineSpan_insert_affineSpan]
       refine existsUnique_dist_eq_of_insert (Set.range_nonempty _) (subset_affineSpan ℝ _) ?_ hm
-      convert ha.notMem_affineSpan_diff i Set.univ
+      convert! ha.notMem_affineSpan_sdiff i Set.univ
       change (Set.range fun i2 : { x | x ≠ i } => p i2) = _
       rw [← Set.image_eq_range]
       congr 1 with j
@@ -489,7 +488,7 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
   classical
-  convert sum_ite_eq' univ (pointIndex i) (Function.const _ (1 : ℝ)) with j
+  convert! sum_ite_eq' univ (pointIndex i) (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [pointWeightsWithCircumcenter]
   · simp
 
@@ -550,7 +549,7 @@ def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex 
 theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     ∑ i, circumcenterWeightsWithCircumcenter n i = 1 := by
   classical
-  convert sum_ite_eq' univ circumcenterIndex (Function.const _ (1 : ℝ)) with j
+  convert! sum_ite_eq' univ circumcenterIndex (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [circumcenterWeightsWithCircumcenter]
   · simp
 
@@ -606,7 +605,7 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
     centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
     reflectionCircumcenterWeightsWithCircumcenter, ite_smul, zero_smul, sub_zero,
     apply_ite₂ (· + ·), add_zero, ← add_smul, hc, zero_sub, neg_smul, sub_self, add_zero]
-  convert sum_const_zero
+  convert! sum_const_zero
   norm_num
 
 end Simplex
@@ -813,7 +812,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
     rw [hp₁, hp₂, ← hp]
     simp only [true_or, smul_zero, vsub_self]
   · have hz : ⟪p -ᵥ orthogonalProjection span_s p, p -ᵥ orthogonalProjection span_s p⟫ ≠ 0 := by
-      simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
+      simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using! hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁
     rw [hp₁, hp₂]
     rcases hd₁ with hd₁ | hd₁
