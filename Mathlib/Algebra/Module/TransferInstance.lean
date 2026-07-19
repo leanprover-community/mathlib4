@@ -65,13 +65,13 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] :
 
 @[simp]
 lemma linearEquiv_apply (a : α) [AddCommMonoid β] [Module R β] :
-    e.linearEquiv R a = e a := by rfl
+    e.linearEquiv R a = e a := rfl
 
 @[simp]
 lemma linearEquiv_symm_apply (b : β) [AddCommMonoid β] [Module R β] :
     letI := Equiv.addCommMonoid e
     letI := Equiv.module R e
-    (e.linearEquiv R).symm b= e.symm b := by rfl
+    (e.linearEquiv R).symm b = e.symm b := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
