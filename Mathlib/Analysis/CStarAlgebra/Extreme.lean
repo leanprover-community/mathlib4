@@ -97,7 +97,7 @@ theorem star_self_conjugate_eq_self_of_mem_extremePoints_closedUnitBall {a : A}
   let := spectralOrder A
   let := spectralOrderedRing A
   suffices a * abs a = a by rw [mul_assoc, ← abs_mul_abs, ← mul_assoc, this, this]
-  obtain ⟨ha, h⟩ := ha
+  obtain ⟨ha, h⟩ := mem_extremePoints_iff_left.mp ha
   simp only [mem_closedBall, dist_zero_right] at ha h
   refine @h _ ?_ ((2 : ℝ) • a - a * abs a) ?_ ⟨2⁻¹, 2⁻¹, by simp [smul_sub, ← two_mul]⟩
   · grw [norm_mul_le, norm_abs, ha, one_mul, ha]
