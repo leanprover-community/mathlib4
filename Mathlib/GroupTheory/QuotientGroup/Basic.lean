@@ -338,6 +338,7 @@ instance map_normal : (M.map (QuotientGroup.mk' N)).Normal :=
 
 variable (h : N ≤ M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map from the third isomorphism theorem for groups: `(G / N) / (M / N) → G / M`. -/
 @[to_additive /-- The map from the third isomorphism theorem for additive groups:
 `(A / N) / (M / N) → A / M`. -/]
@@ -358,6 +359,7 @@ theorem quotientQuotientEquivQuotientAux_mk_mk (x : G) :
     quotientQuotientEquivQuotientAux N M h (x : G ⧸ N) = x :=
   QuotientGroup.lift_mk' (M.map (mk' N)) _ x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Noether's third isomorphism theorem** for groups: `(G / N) / (M / N) ≃* G / M`. -/
 @[to_additive
 /-- **Noether's third isomorphism theorem** for additive groups: `(A / N) / (M / N) ≃+ A / M`. -/]
@@ -409,7 +411,7 @@ theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := b
 subgroup is the whole additive group. -/]
 theorem subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G ⧸ H)) : H = ⊤ :=
   top_unique fun x _ => by
-    have this : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
+    have : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
     rwa [inv_one, one_mul] at this
 
 end trivial
