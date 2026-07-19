@@ -315,8 +315,7 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
   | .nil, .cons _ _, h => by simp at h
   | .cons _ _, .nil, h => by simp at h
   | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
-    have h₃ : u ≠ v' := by rintro rfl; exact G.loopless.irrefl _ h₂
-    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
+    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₂.ne] using h
     rw [edges_injective h₃]
 
 theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
@@ -464,6 +463,7 @@ theorem ofSupport_cons_cons {l : List V} (hchain : u :: v :: l |>.IsChain G.Adj)
       .cons hchain.rel (.ofSupport (v :: l) (l.cons_ne_nil v) hchain.of_cons) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
     (ofSupport l hne hchain).support = l := by
@@ -499,6 +499,7 @@ theorem ofDarts_cons_cons {d₁ d₂ : G.Dart} {l : List G.Dart}
       .cons (hchain.rel ▸ d₁.adj) (ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem darts_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
     (ofDarts l hne hchain).darts = l := by
