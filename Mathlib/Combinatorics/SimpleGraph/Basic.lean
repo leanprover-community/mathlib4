@@ -799,22 +799,19 @@ theorem neighborSet_ne_univ : G.neighborSet v ≠ .univ :=
   Set.ne_univ_iff_exists_notMem _ |>.mpr ⟨v, G.notMem_neighborSet_self⟩
 
 @[simp]
-theorem neighborSet_bot (v : V) : (⊥ : SimpleGraph V).neighborSet v = ∅ := by
-  ext; simp
-
-@[simp]
-theorem neighborSet_top (v : V) : (⊤ : SimpleGraph V).neighborSet v = {v}ᶜ := by
-  ext; simp [eq_comm]
-
-@[simp]
 theorem neighborSet_sup {G₁ G₂ : SimpleGraph V} (v : V) :
-    (G₁ ⊔ G₂).neighborSet v = G₁.neighborSet v ∪ G₂.neighborSet v := by
-  ext; simp
+    (G₁ ⊔ G₂).neighborSet v = G₁.neighborSet v ∪ G₂.neighborSet v :=
+  rfl
 
 @[simp]
 theorem neighborSet_inf {G₁ G₂ : SimpleGraph V} (v : V) :
-    (G₁ ⊓ G₂).neighborSet v = G₁.neighborSet v ∩ G₂.neighborSet v := by
-  ext; simp
+    (G₁ ⊓ G₂).neighborSet v = G₁.neighborSet v ∩ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_sdiff {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ \ G₂).neighborSet v = G₁.neighborSet v \ G₂.neighborSet v :=
+  rfl
 
 @[simp]
 theorem neighborSet_iSup {s : ι → SimpleGraph V} (v : V) :
@@ -826,10 +823,6 @@ theorem neighborSet_iInf [Nonempty ι] {s : ι → SimpleGraph V} (v : V) :
     (⨅ i, s i).neighborSet v = ⋂ i, (s i).neighborSet v := by
   ext
   simp_rw [Set.mem_iInter, mem_neighborSet, iInf_adj_of_nonempty]
-
-theorem disjoint_neighborSet {G₁ G₂ : SimpleGraph V} {v : V} (h : Disjoint G₁ G₂) :
-    Disjoint (G₁.neighborSet v) (G₂.neighborSet v) := by
-  rw [Set.disjoint_iff_inter_eq_empty, ← neighborSet_inf, h.eq_bot, neighborSet_bot]
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -886,6 +879,10 @@ theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
 
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
   grind [mem_neighborSet, bot_adj]
+
+theorem disjoint_neighborSet {G₁ G₂ : SimpleGraph V} {v : V} (h : Disjoint G₁ G₂) :
+    Disjoint (G₁.neighborSet v) (G₂.neighborSet v) := by
+  rw [Set.disjoint_iff_inter_eq_empty, ← neighborSet_inf, h.eq_bot, neighborSet_bot]
 
 variable {G} in
 theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
