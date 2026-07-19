@@ -15,8 +15,8 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 
 ## Main definitions
 
-This file defines `Polynomial.hermite R n`, the `n`th probabilists' Hermite polynomial,
-with coefficients in an arbitrary commutative ring `R`.
+* `Polynomial.hermite R n`: the `n`th probabilists' Hermite polynomial,
+  with coefficients in an arbitrary commutative ring `R`.
 
 ## Results
 
