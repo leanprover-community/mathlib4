@@ -104,10 +104,13 @@ def toEuclidean :
       EuclideanSpace ℂ (Fin (Module.finrank ℂ (CliffordAlgebra (Q n)))) :=
   (Module.finBasis ℂ _).equivFun.trans (WithLp.linearEquiv 2 ℂ _).symm
 
+/-- The norm induced by the fixed complex Hilbert space structure (`toEuclidean`). -/
 scoped instance instNormedAddCommGroup : NormedAddCommGroup (CliffordAlgebra (Q n)) :=
   NormedAddCommGroup.induced _ _ (toEuclidean n).toLinearMap
     (toEuclidean n).injective
 
+/-- The complex inner product induced by the fixed complex Hilbert space structure
+(`toEuclidean`). -/
 scoped instance instInnerProductSpace : InnerProductSpace ℂ (CliffordAlgebra (Q n)) :=
   InnerProductSpace.induced (toEuclidean n).toLinearMap
 
