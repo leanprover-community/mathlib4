@@ -134,7 +134,6 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite R n) n = 1 := by
     rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, mul_zero, sub_zero]
     simp
 
-variable [Nontrivial R]
 
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite R n).degree = n := by
