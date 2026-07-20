@@ -12,6 +12,7 @@ import Counterexamples.HeawoodUnitDistance
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.InvertibleModuleNotIdeal
 import Counterexamples.IrrationalPowerOfIrrational
+import Counterexamples.JacobianConjecture
 import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
 import Counterexamples.Motzkin
