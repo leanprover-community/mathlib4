@@ -72,6 +72,7 @@ noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
 lemma koszulComplex.X_eq_exteriorPower (i : ℕ) :
     (koszulComplex φ).X i = ModuleCat.of R (⋀[R]^i M) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma koszulComplex.d_eq_aux (i : ℕ) :
     (koszulComplex φ).d (i + 1) i = ModuleCat.ofHom (koszulComplexAux φ i) := by
   simp [koszulComplex]
