@@ -17,7 +17,8 @@ We consider a type `σ` of indeterminates and a commutative semiring `R`
 and a monomial order `m : MonomialOrder σ`.
 
 * `m.degree f` is the degree of `f` for the monomial ordering `m`, where the polynomial `0` has
-  degree `0`.
+  degree `0`. For the variant mapping polynomial `0` to `⊥` which is less than `0`, see
+  `MonomialOrder.withBotDegree`.
 
 * `m.leadingCoeff f` is the leading coefficient of `f` for the monomial ordering `m`.
 
@@ -28,7 +29,8 @@ and a monomial order `m : MonomialOrder σ`.
 * `m.sPolynomial f g` is S-polynomial of `f` and `g`.
 
 * `m.withBotDegree f` is the degree of `f` for the monomial ordering `m`, where the polynomial `0`
-  has degree `⊥`, which is not equal to `0`.
+  has degree `⊥`, which is not equal to `0`. `MonomialOrder.withBotDegree` is to
+  `MonomialOrder.degree` as `Polynomial.degree` is to `Polynomial.natDegree`.
 
 * `m.leadingCoeff_ne_zero_iff f` asserts that this coefficient is nonzero iff `f ≠ 0`.
 
@@ -109,7 +111,8 @@ variable {R : Type*} [CommSemiring R]
 
 variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering, where the
-polynomial `0` has degree `0`. -/
+polynomial `0` has degree `0`. For the variant mapping polynomial `0` to `⊥` which is less than
+`0`, see `MonomialOrder.withBotDegree`. -/
 noncomputable def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
   m.toSyn.symm (f.support.sup m.toSyn)
 
@@ -847,7 +850,8 @@ variable (f g : MvPolynomial σ R)
 
 variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering, where polynomial
-`0` has degree `⊥`, which is not equal to `0`. -/
+`0` has degree `⊥`, which is not equal to `0`. `MonomialOrder.withBotDegree` is to
+`MonomialOrder.degree` as `Polynomial.degree` is to `Polynomial.natDegree`. -/
 noncomputable def withBotDegree : WithBot (σ →₀ ℕ) :=
   f.support.image m.toSyn |>.max.map m.toSyn.symm
 
