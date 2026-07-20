@@ -308,6 +308,7 @@ variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If M and N are both R- and A-modules and their actions on them commute,
 and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
 canonical S-linear map from `M ⊗[A] N` to `M ⊗[R] N`,
