@@ -35,8 +35,9 @@ variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [Nontri
   [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} {f : E →ₛₗ[σ] F}
 
 variable (𝕜₁) in
-lemma foo (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
-    [@IsTopologicalAddGroup E t₂ _] [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
+lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : TopologicalSpace E)
+    [@IsTopologicalAddGroup E t₁ _] [@IsTopologicalAddGroup E t₂ _]
+    [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
     {V : Set E} (V_mem : V ∈ @nhds E t₁ 0) (H : @nhds E t₁ 0 ⊓ 𝓟 V = @nhds E t₂ 0 ⊓ 𝓟 V) :
     t₁ = t₂ := by
   classical
@@ -89,12 +90,13 @@ lemma foo (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
   exact Nat.find_min exists_scale (tsub_lt_self k₀_pos one_pos) this
 
 variable (𝕜₁) in
-lemma bar (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
-    [@IsTopologicalAddGroup E t₂ _] [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
+lemma ContinuousSMul.topology_eq_of_induced_eq (t₁ t₂ : TopologicalSpace E)
+    [@IsTopologicalAddGroup E t₁ _] [@IsTopologicalAddGroup E t₂ _]
+    [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
     {V : Set E} (V_mem : V ∈ @nhds E t₁ 0)
     (H : t₁.induced ((↑) : V → E) = t₂.induced ((↑) : V → E)) :
     t₁ = t₂ := by
-  apply foo 𝕜₁ t₁ t₂ V_mem
+  apply topology_eq_of_nhds_inf_principal_eq 𝕜₁ t₁ t₂ V_mem
   set o : V := ⟨0, letI := t₁; mem_of_mem_nhds V_mem⟩
   simp_rw [← map_comap_setCoe_val, show 0 = (o : E) from rfl, ← nhds_induced]
   congr
@@ -108,7 +110,7 @@ lemma LinearMap.isInducing_of_restrict_nhds_zero {V : Set E}
   rw [isInducing_iff]
   have := topologicalAddGroup_induced f
   have := continuousSMul_inducedₛₗ f σ.isometry.continuous
-  apply bar 𝕜₁ _ (.induced f _) V_mem
+  apply ContinuousSMul.topology_eq_of_induced_eq 𝕜₁ _ (.induced f _) V_mem
   rw [induced_compose, ← restrict_eq, ← H.eq_induced, ← IsInducing.subtypeVal.eq_induced]
 
 lemma LinearMap.isEmbedding_of_restrict_nhds_zero {V : Set E}
