@@ -28,14 +28,8 @@ coincide, is developed in the final section.
 
 The classes are stated with `MulLeftMono` (`a ≤ b → c * a ≤ c * b`) rather than the strict
 `MulLeftStrictMono` (`a < b → c * a < c * b`), and likewise on the right and both sides. The two
-coincide on cancellative structures: in a left-cancellative monoid a `MulLeftMono` order is
-automatically strict (`mulLeftStrictMono_iff_isLeftCancelMul`). Over a group nothing is lost:
-`IsLeftOrderable` can be recast in the strict form
-`isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono`.
-
-Off cancellative structures the non-strict form is strictly weaker, hence a more inclusive notion of
-orderability and a lower bar to establish: for instance the two-element monoid `{0, 1}` with `0`
-absorbing is `MulLeftMono` under `0 < 1` but not `MulLeftStrictMono`, since `0 * 0 = 0 * 1`.
+coincide on cancellative structures (such as groups): in a left-cancellative monoid a
+multiplicative left-order is automatically strict.
 -/
 
 @[expose] public section
@@ -131,8 +125,8 @@ instance [IsBiOrderable G] : IsRightOrderable G := by
   infer_instance
 
 /-- On a left-ordered monoid, strict monotonicity of left multiplication is equivalent to
-left-cancellativity. This is the precise sense in which the non-strict `MulLeftMono` used by
-`IsLeftOrderable` agrees with the strict `MulLeftStrictMono` on cancellative structures such as
+left-cancellativity. This is the precise sense in which the non-strict left-order used by
+left-orderable monoids agrees with the strict left-order on cancellative structures such as
 groups. -/
 @[to_additive /-- On a left-ordered additive monoid, strict monotonicity of left addition is
 equivalent to left-cancellativity. -/]
@@ -148,31 +142,27 @@ theorem mulRightStrictMono_iff_isRightCancelMul [LinearOrder G] [MulRightMono G]
     MulRightStrictMono G ↔ IsRightCancelMul G :=
   ⟨fun _ ↦ MulRightStrictMono.toIsRightCancelMul, fun _ ↦ inferInstance⟩
 
-/-- Over a left-cancellative monoid the defining `MulLeftMono` of `IsLeftOrderable` may be taken
-strict, recovering the formulation `a < b → c * a < c * b`. -/
-@[to_additive /-- Over a left-cancellative additive monoid the defining `AddLeftMono` of
-`IsAddLeftOrderable` may be taken strict, recovering the formulation `a < b → c + a < c + b`. -/]
+/-- Over a left-cancellative monoid the defining left-order may be taken as strict. -/
+@[to_additive /-- Over a left-cancellative additive monoid the defining left-order may be taken as
+strict. -/]
 theorem isLeftOrderable_iff_exists_linearOrder_mulLeftStrictMono [IsLeftCancelMul G] :
     IsLeftOrderable G ↔ ∃ _ : LinearOrder G, MulLeftStrictMono G := by
   refine ⟨fun _ ↦ ?_, fun ⟨_, _⟩ ↦ ⟨‹LinearOrder G›, mulLeftMono_of_mulLeftStrictMono G⟩⟩
   obtain ⟨_, _⟩ := exists_linearOrder_mulLeftMono G
   exact ⟨‹LinearOrder G›, inferInstance⟩
 
-/-- Over a right-cancellative monoid the defining `MulRightMono` of `IsRightOrderable` may be taken
-strict, recovering the formulation `a < b → a * c < b * c`. -/
-@[to_additive /-- Over a right-cancellative additive monoid the defining `AddRightMono` of
-`IsAddRightOrderable` may be taken strict, recovering the formulation `a < b → a + c < b + c`. -/]
+/-- Over a right-cancellative monoid the defining right-order may be taken as strict. -/
+@[to_additive /-- Over a right-cancellative additive monoid the defining right-order may be taken
+as strict. -/]
 theorem isRightOrderable_iff_exists_linearOrder_mulRightStrictMono [IsRightCancelMul G] :
     IsRightOrderable G ↔ ∃ _ : LinearOrder G, MulRightStrictMono G := by
   refine ⟨fun _ ↦ ?_, fun ⟨_, _⟩ ↦ ⟨‹LinearOrder G›, mulRightMono_of_mulRightStrictMono G⟩⟩
   obtain ⟨_, _⟩ := exists_linearOrder_mulRightMono G
   exact ⟨‹LinearOrder G›, inferInstance⟩
 
-/-- Over a cancellative monoid the defining monotonicity of `IsBiOrderable` may be taken strict on
-both sides, recovering the formulations `a < b → c * a < c * b` and `a < b → a * c < b * c`. -/
-@[to_additive /-- Over a cancellative additive monoid the defining monotonicity of
-`IsAddBiOrderable` may be taken strict on both sides, recovering the formulations
-`a < b → c + a < c + b` and `a < b → a + c < b + c`. -/]
+/-- Over a cancellative monoid the defining order may be taken as strict on both sides. -/
+@[to_additive /-- Over a cancellative additive monoid the defining order may be taken as strict on
+both sides. -/]
 theorem isBiOrderable_iff_exists_linearOrder_mulLeftStrictMono_mulRightStrictMono [IsCancelMul G] :
     IsBiOrderable G ↔ ∃ _ : LinearOrder G, MulLeftStrictMono G ∧ MulRightStrictMono G := by
   refine ⟨fun _ ↦ ?_, fun ⟨_, _, _⟩ ↦
@@ -314,22 +304,17 @@ theorem isRightOrderable_mulOpposite_iff_isLeftOrderable :
     IsRightOrderable Gᵐᵒᵖ ↔ IsLeftOrderable G :=
   ⟨fun _ ↦ (MulEquiv.opOp G).isLeftOrderable_congr.mpr inferInstance, fun _ ↦ inferInstance⟩
 
-/-- Bi-orderability of `G` is the same as bi-orderability of the opposite monoid `Gᵐᵒᵖ`, since left
-and right multiplication on `G` are respectively right and left multiplication on `Gᵐᵒᵖ`. -/
+/-- Bi-orderability of `G` is the same as bi-orderability of the opposite monoid `Gᵐᵒᵖ`. -/
 @[to_additive /-- Bi-orderability of `G` is the same as bi-orderability of the opposite additive
-monoid `Gᵃᵒᵖ`, since left and right addition on `G` are respectively right and left addition on
-`Gᵃᵒᵖ`. -/]
+monoid `Gᵃᵒᵖ`. -/]
 theorem isBiOrderable_mulOpposite_iff : IsBiOrderable Gᵐᵒᵖ ↔ IsBiOrderable G :=
   ⟨fun _ ↦ (MulEquiv.opOp G).isBiOrderable_congr.mpr inferInstance, fun _ ↦ inferInstance⟩
 
 section Group
 variable {G : Type*} [Group G]
 
-/-- A group `G` is left-orderable iff it is right-orderable, since inversion `x ↦ x⁻¹` is a
-multiplicative anti-automorphism, realised as the isomorphism `MulEquiv.inv' : G ≃* Gᵐᵒᵖ`. -/
-@[to_additive /-- An additive group `G` is left-orderable iff it is right-orderable, since negation
-`x ↦ -x` is an additive anti-automorphism, realised as the isomorphism
-`AddEquiv.inv' : G ≃+ Gᵃᵒᵖ`. -/]
+/-- A group `G` is left-orderable iff it is right-orderable. -/
+@[to_additive /-- An additive group `G` is left-orderable iff it is right-orderable. -/]
 theorem isLeftOrderable_iff_isRightOrderable : IsLeftOrderable G ↔ IsRightOrderable G :=
   (MulEquiv.inv' G).isLeftOrderable_congr.trans isLeftOrderable_mulOpposite_iff_isRightOrderable
 
