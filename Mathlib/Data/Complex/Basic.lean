@@ -31,6 +31,7 @@ open Set Function
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
+@[wikidata Q11567]
 structure Complex : Type where
   /-- The real part of a complex number. -/
   re : ℝ
@@ -78,7 +79,7 @@ theorem range_im : range im = univ :=
   im_surjective.range_eq
 
 /-- The natural inclusion of the real numbers into the complex numbers. -/
-@[coe, implicit_reducible]
+@[coe, instance_reducible]
 def ofReal (r : ℝ) : ℂ :=
   ⟨r, 0⟩
 instance : Coe ℝ ℂ :=
@@ -271,6 +272,7 @@ theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
 
 theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
   ext <;> simp [Complex.equivRealProd, ofReal]
@@ -286,7 +288,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 /-! ### Commutative ring instance and lemmas -/
 
 
-/- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
+/-- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
 defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
@@ -304,7 +306,7 @@ scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
 
 end SMul
 
-open scoped SMul
+open scoped Complex.SMul
 
 section SMul
 
@@ -323,8 +325,6 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 end SMul
 
 instance addCommGroup : AddCommGroup ℂ where
-  nsmul := (· • ·)
-  zsmul := (· • ·)
   zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
@@ -389,19 +389,34 @@ instance commRing : CommRing ℂ :=
     mul_one := by intros; ext <;> simp
     mul_comm := by intros; ext <;> simp <;> ring }
 
+section computable_shortcuts
+
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
-instance : Ring ℂ := by infer_instance
+instance : Ring ℂ :=
+  delta% inferInstance
+
+/-- This shortcut instance ensures we do not find `NonUnitalCommRing` via the noncomputable
+`instCommCStarAlgebraComplex` instance. -/
+instance : NonUnitalCommRing ℂ :=
+  delta% inferInstance
 
 /-- This shortcut instance ensures we do not find `CommSemiring` via the noncomputable
 `Complex.field` instance. -/
 instance : CommSemiring ℂ :=
-  inferInstance
+  delta% inferInstance
 
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
 instance : Semiring ℂ :=
-  inferInstance
+  delta% inferInstance
+
+/-- This shortcut instance ensures we do not find `AddCommMonoid` via the noncomputable
+`Complex.instNormedField` instance. -/
+instance : AddCommMonoid ℂ :=
+  delta% inferInstance
+
+end computable_shortcuts
 
 /-- The "real part" map, considered as an additive group homomorphism. -/
 def reAddGroupHom : ℂ →+ ℝ where
@@ -575,7 +590,7 @@ theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
   Complex.ext_iff.2 <| by simp [two_mul, ofReal]
 
 /-- The coercion `ℝ → ℂ` as a `RingHom`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofRealHom : ℝ →+* ℂ where
   toFun x := (x : ℂ)
   map_one' := ofReal_one

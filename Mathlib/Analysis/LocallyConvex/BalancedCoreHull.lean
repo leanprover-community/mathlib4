@@ -76,7 +76,7 @@ theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
   eq_empty_of_subset_empty (balancedCore_subset _)
 
 theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
-  simp_rw [balancedCore, mem_sUnion, mem_setOf_eq, and_assoc]
+  simp_rw [balancedCore, mem_sUnion, mem_ofPred_eq, and_assoc]
 
 theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
     a • balancedCore 𝕜 s ⊆ balancedCore 𝕜 s := by
@@ -234,6 +234,17 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
       exact balancedCore_nonempty_iff.mp h
     rw [this]
     exact isClosed_empty
+
+omit [ContinuousSMul 𝕜 E] in
+protected theorem IsOpen.balancedHull [ContinuousConstSMul 𝕜 E] {s : Set E} (hs : IsOpen s)
+    (hzero : 0 ∈ s) : IsOpen (balancedHull 𝕜 s) := by
+  have : (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1), r • s) = (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1 ∧ r ≠ 0), r • s) := by
+    refine subset_antisymm (Set.iUnion₂_mono' fun r hr ↦ ?_) (Set.iUnion₂_mono' (by grind))
+    obtain rfl | hr_ne := eq_or_ne r 0
+    · exact ⟨1, by simp, by simpa [Set.zero_smul_set ⟨0, hzero⟩]⟩
+    · use r
+  rw [balancedHull, this]
+  exact isOpen_biUnion (fun r hr ↦ hs.smul₀ hr.2)
 
 -- We don't have a `NontriviallyNormedDivisionRing`, so we use a `NeBot` assumption instead
 variable [NeBot (𝓝[≠] (0 : 𝕜))]

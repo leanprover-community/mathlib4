@@ -79,10 +79,12 @@ instance {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
 instance : MorphismProperty.IsMultiplicative @UniversallyOpen where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyOpen g] :
     UniversallyOpen (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g hg
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyOpen f] :
     UniversallyOpen (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g hf
@@ -167,7 +169,7 @@ nonrec instance (priority := low) [IsIntegral Y] [Subsingleton Y] :
   obtain ⟨ψ, rfl⟩ := Spec.map_surjective g
   algebraize [φ.hom, ψ.hom]
   refine (MorphismProperty.cancel_left_of_respectsIso _ (pullbackSpecIso K R S).inv _).mp ?_
-  convert_to topologically _ (Spec.map <| CommRingCat.ofHom (algebraMap R (TensorProduct K R S)))
+  convert_to! topologically _ (Spec.map <| CommRingCat.ofHom (algebraMap R (TensorProduct K R S)))
   · exact pullbackSpecIso_inv_fst ..
   let := hK.toField
   exact PrimeSpectrum.isOpenMap_comap_algebraMap_tensorProduct_of_field

@@ -60,6 +60,7 @@ lemma mulSupport (d : 𝕜 → ℤ) :
     use u
     simp_all [zero_zpow_eq_one₀]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Helper Lemma: If the support of `d` is finite, then evaluation of functions commutes with finprod,
 and the function `∏ᶠ u, (· - u) ^ d u` equals `fun x ↦ ∏ᶠ u, (x - u) ^ d u`.
@@ -100,7 +101,8 @@ theorem ne_zero {d : 𝕜 → ℤ} {x : 𝕜} (h : d x = 0) :
     by_cases h₂ : x = z <;> simp_all [zpow_ne_zero, sub_ne_zero]
   · simp [finprod_of_infinite_mulSupport h₁]
 
-open Classical in
+set_option backward.isDefEq.respectTransparency false in
+open scoped Classical in
 /--
 Helper Lemma for Computations: Extract one factor out of a factorized rational function.
 -/
@@ -179,7 +181,7 @@ theorem divisor {U : Set 𝕜} {D : locallyFinsuppWithin U ℤ} (hD : D.support.
   by_cases hz : z ∈ U
   <;> simp [(meromorphicNFOn D U).meromorphicOn, hz, meromorphicOrderAt_eq D hD]
 
-open Classical in
+open scoped Classical in
 private lemma mulSupport_update {d : 𝕜 → ℤ} {x : 𝕜}
     (h : d.support.Finite) :
     (fun u ↦ (x - u) ^ Function.update d x 0 u).mulSupport ⊆ h.toFinset := by
@@ -191,7 +193,8 @@ private lemma mulSupport_update {d : 𝕜 → ℤ} {x : 𝕜}
     simp
   · simp_all
 
-open Classical in
+set_option backward.isDefEq.respectTransparency false in
+open scoped Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.
 -/
@@ -214,6 +217,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational {d : 𝕜 → ℤ} {x : �
     simp_all
   · grind [meromorphicTrailingCoeffAt_id_sub_const]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute the trailing coefficient of the
 factorized rational function associated with `d : 𝕜 → ℤ` at points outside the support of `d`.
@@ -235,6 +239,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational_off_support {d : 𝕜 → 
   by_contra hCon
   simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute log of the norm of the trailing
 coefficient.  The convention that `log 0 = 0` gives a closed formula easier than the one in
@@ -374,7 +379,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
   rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod this]
   simp [log_zpow]
 
-open Classical in
+open scoped Classical in
 /--
 In the setting of `MeromorphicOn.extract_zeros_poles`, compute the trailing
 coefficient of `f` in terms of `divisor f U` and `g x`.
