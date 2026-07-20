@@ -273,9 +273,8 @@ def PartOrd.nerveFunctor : PartOrd.{u} ⥤ SSet.{u} where
   obj X := nerve X
   map f := nerveMap f.hom.monotone.functor
 
-
 section
-variable (C₁ C₂ : Type u) [SmallCategory C₁] [SmallCategory C₂]
+variable (C₁ C₂ : Type u) [Category.{v} C₁] [Category.{v} C₂]
 
 /-- Map a nerve of a product category to product of the nerves. -/
 def nerveProdToProdNerve : nerve (C₁ × C₂) ⟶ (nerve C₁) ⊗ (nerve C₂) := by
@@ -308,8 +307,8 @@ def nerveOfProductIso : nerve (C₁ × C₂) ≅ (nerve C₁) ⊗ (nerve C₂) w
 end
 
 section
-variable {C₁ C₂ : Type u} [SmallCategory C₁] [SmallCategory C₂]
-variable {D₁ D₂ : Type u} [SmallCategory D₁] [SmallCategory D₂]
+variable {C₁ C₂ : Type u} [Category.{v} C₁] [Category.{v} C₂]
+variable {D₁ D₂ : Type u} [Category.{v} D₁] [Category.{v} D₂]
 
 /-- Convert a pair of functors to a map between products of nerves -/
 def nerveOfProdMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
@@ -319,7 +318,7 @@ def nerveOfProdMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
 lemma nerveOfProdMap_prod_nerveMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
     nerveOfProdMap F₁ F₂ = nerveMap F₁ ⊗ₘ nerveMap F₂ := rfl
 
-variable {E₁ E₂ : Type u} [SmallCategory E₁] [SmallCategory E₂]
+variable {E₁ E₂ : Type u} [Category.{v} E₁] [Category.{v} E₂]
 
 lemma nerve_of_product_interchange (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (G₁ : D₁ ⥤ E₁) (G₂ : D₂ ⥤ E₂) :
     (nerveOfProdMap F₁ F₂) ≫ (nerveOfProdMap G₁ G₂)
