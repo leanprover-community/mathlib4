@@ -510,9 +510,7 @@ theorem measurableSet_graph_real (hf : Measurable f) :
 
 @[deprecated measurableSet_graph_real "See also Measurable.measurableSet_graph."
   (since := "2026-07-19")]
-theorem measurableSet_graph (hf : Measurable f) :
-    MeasurableSet { p : α × ℝ | p.snd = f p.fst } :=
-  measurableSet_graph_real hf
+alias measurableSet_graph := measurableSet_graph_real
 
 theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
