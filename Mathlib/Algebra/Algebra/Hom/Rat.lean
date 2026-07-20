@@ -52,8 +52,6 @@ def ringHomEquivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
     (R →+* S) ≃ (R →ₐ[ℚ] S) where
   toFun := RingHom.toRatAlgHom
   invFun := AlgHom.toRingHom
-  left_inv f := RingHom.toRatAlgHom_toRingHom f
-  right_inv f := AlgHom.toRingHom_toRatAlgHom f
 
 @[deprecated (since := "2026-07-18")]
 alias RingHom.equivRatAlgHom := ringHomEquivRatAlgHom
