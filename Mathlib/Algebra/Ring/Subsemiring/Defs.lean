@@ -400,8 +400,10 @@ def domRestrict (f : R →+* S) (s : σR) : s →+* S :=
   f.comp <| SubsemiringClass.subtype s
 
 @[simp]
-theorem restrict_apply (f : R →+* S) {s : σR} (x : s) : f.domRestrict s x = f x :=
+theorem domRestrict_apply (f : R →+* S) {s : σR} (x : s) : f.domRestrict s x = f x :=
   rfl
+
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
 
 /-- The subsemiring of elements `x : R` such that `f x = g x` -/
 def eqLocusS (f g : R →+* S) : Subsemiring R :=

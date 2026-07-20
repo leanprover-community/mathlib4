@@ -387,12 +387,12 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
-    have li : LinearIndependent ℝ (H.restrict e) := by
+    have li : LinearIndependent ℝ (H.domRestrict e) := by
       convert! (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
       rw [(dualBases_e_ε _).coe_basis]
       rfl
     have hdW := rank_span li
-    rw [Set.range_restrict] at hdW
+    rw [Set.range_domRestrict] at hdW
     convert! hdW
     rw [← (dualBases_e_ε _).coe_basis, Cardinal.mk_image_eq (dualBases_e_ε _).basis.injective,
       Cardinal.mk_fintype]
