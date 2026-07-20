@@ -287,6 +287,11 @@ lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
   · simp
   simp [field, pow_add, ← mul_pow]
 
+lemma hasSum_taylorSeries_neg_log' {z : ℂ} (hz : ‖z‖ < 1) :
+    HasSum (fun n : ℕ ↦ z ^ (n + 1) / (n + 1)) (-log (1 - z)) := by
+  rw_mod_cast [hasSum_nat_add_iff 1 (f := fun n ↦ z ^ n / n) (g := -log (1 - z))]
+  simpa using hasSum_taylorSeries_neg_log hz
+
 end Complex
 
 section Limits

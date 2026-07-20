@@ -49,7 +49,7 @@ theorem midpoint_fixed {x y : PE} :
   set z := midpoint ℝ x y
   -- Consider the set of `e : E ≃ᵢ E` such that `e x = x` and `e y = y`
   set s := { e : PE ≃ᵢ PE | e x = x ∧ e y = y }
-  haveI : Nonempty s := ⟨⟨IsometryEquiv.refl PE, rfl, rfl⟩⟩
+  have : Nonempty s := ⟨⟨IsometryEquiv.refl PE, rfl, rfl⟩⟩
   -- On the one hand, `e` cannot send the midpoint `z` of `[x, y]` too far
   have h_bdd : BddAbove (range fun e : s => dist ((e : PE ≃ᵢ PE) z) z) := by
     refine ⟨dist x z + dist x z, forall_mem_range.2 <| Subtype.forall.2 ?_⟩
