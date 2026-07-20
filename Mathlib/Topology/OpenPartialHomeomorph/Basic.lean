@@ -124,7 +124,8 @@ theorem isOpen_image_iff_of_subset_source {s : Set X} (hs : s ⊆ e.source) :
 and open source is an `OpenPartialHomeomorph`. -/
 @[simps! toPartialHomeomorph]
 def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.domRestrict e)) (hs : IsOpen e.source) : OpenPartialHomeomorph X Y where
+    (ho : IsOpenMap (e.source.domRestrict e)) (hs : IsOpen e.source) :
+    OpenPartialHomeomorph X Y where
   toPartialHomeomorph := PartialHomeomorph.ofContinuousOpenRestrict e hc ho
   open_source := hs
   open_target := by simpa [e.image_source_eq_target] using ho.isOpen_range
