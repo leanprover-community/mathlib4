@@ -117,7 +117,8 @@ TODO: generalize to `S`-linear. -/
 
 end
 
-/-- (Implementation): Bilinear map for defining `TensorProduct.piScalarRightHom`. -/
+set_option backward.defeqAttrib.useBackward true in
+/-- Internal implementation detail: we should make this `private`. -/
 def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
   toFun n := LinearMap.compLeft (toSpanSingleton R N n) ι
   map_add' x y := by
@@ -151,6 +152,7 @@ def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
     map_smul' := fun _ _ ↦ rfl
   }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma piScalarRightInv_single (x : N) (i : ι) :
     piScalarRightInv R S N ι (Pi.single i x) = x ⊗ₜ Pi.single i 1 := by

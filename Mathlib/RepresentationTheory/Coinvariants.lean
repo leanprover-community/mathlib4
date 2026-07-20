@@ -40,6 +40,8 @@ left adjoint to the functor equipping a module with the trivial representation.
 
 @[expose] public section
 
+open scoped MonoidAlgebra
+
 universe w w' u u' v v'
 
 namespace Representation
@@ -59,7 +61,7 @@ namespace Coinvariants
 
 instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
 
-instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (V ⧸ Coinvariants.ker ρ)
+instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
 
 instance [Module.Finite k V] : Module.Finite k (Coinvariants ρ) :=
   inferInstanceAs <| Module.Finite k (V ⧸ Coinvariants.ker ρ)
@@ -246,7 +248,7 @@ end Finsupp
 
 section TensorProduct
 
-open TensorProduct Coinvariants Finsupp
+open Coinvariants Finsupp
 
 variable {k G V W : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
   [AddCommGroup W] [Module k W] (ρ : Representation k G V) (τ : Representation k G W)
@@ -267,12 +269,13 @@ lemma Coinvariants.mk_tmul_inv (x : V) (y : W) (g : G) :
 `⟦v ⊗ single g r⟧ ↦ r • ρ(g⁻¹)(v)`. -/
 noncomputable def ofCoinvariantsTprodLeftRegular :
     Coinvariants (ρ.tprod (leftRegular k G)) →ₗ[k] V :=
-  Coinvariants.lift _ (TensorProduct.lift (Finsupp.linearCombination _ fun g => ρ g⁻¹) ∘ₗ
+  Coinvariants.lift _ (TensorProduct.lift ((Finsupp.linearCombination _ fun g => ρ g⁻¹) ∘ₗ
+    (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) ∘ₗ
     (_root_.TensorProduct.comm _ _ _).toLinearMap) fun _ => by ext; simp
 
 @[simp]
 lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
-    ofCoinvariantsTprodLeftRegular ρ (Coinvariants.mk _ (x ⊗ₜ Finsupp.single g r)) = r • ρ g⁻¹ x :=
+    ofCoinvariantsTprodLeftRegular ρ (Coinvariants.mk _ (x ⊗ₜ .single g r)) = r • ρ g⁻¹ x :=
   congr($(Finsupp.linearCombination_single k (v := fun g => ρ g⁻¹) r g) x)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the linear equivalence
@@ -281,7 +284,7 @@ lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
 noncomputable def coinvariantsTprodLeftRegularLEquiv :
     Coinvariants (ρ.tprod (leftRegular k G)) ≃ₗ[k] V :=
   LinearEquiv.ofLinear (ofCoinvariantsTprodLeftRegular ρ)
-    (Coinvariants.mk _ ∘ₗ (TensorProduct.mk k V (G →₀ k)).flip (single 1 1))
+    (Coinvariants.mk _ ∘ₗ (TensorProduct.mk k V k[G]).flip (.single 1 1))
     (by ext; simp) (by ext; simp)
 
 @[simp]
@@ -318,6 +321,7 @@ abbrev toCoinvariantsMkQ : A ⟶ toCoinvariants A S :=
 the coinvariants of `ρ|_S`. -/
 abbrev quotientToCoinvariants : Rep k (G ⧸ S) := Rep.ofQuotient (Rep.toCoinvariants A S) S
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
 `G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map to the
 `S`-coinvariants `A_S`. -/
@@ -343,7 +347,7 @@ end
 variable (k G) [Monoid G] (A B : Rep.{w} k G)
 
 /-- The functor sending a representation to its coinvariants. -/
-@[simps! obj_carrier map_hom]
+@[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.Coinvariants
   map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
@@ -377,7 +381,7 @@ variable (k G)
 instance : (coinvariantsFunctor k G).Additive where
 instance : (coinvariantsFunctor k G).Linear k where
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
 @[simps]
@@ -392,7 +396,7 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleC
     ((coinvariantsMk k G).app X ≫ f).hom := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
     (f : X ⟶ (trivialFunctor k G).obj Y) :
@@ -435,7 +439,6 @@ section
 
 variable (k : Type u) {G : Type v} [CommRing k] [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
 @[simps! obj_V map_hom_toLinearMap]
@@ -452,23 +455,23 @@ section Finsupp
 
 open MonoidalCategory Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (α : Type u) [DecidableEq α]
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u) [DecidableEq α]
+
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(A ⊗ (α →₀ k[G]))_G →ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
 noncomputable def coinvariantsTensorFreeToFinsupp :
-    (A ⊗ free k G α).ρ.Coinvariants →ₗ[k] (α →₀ A) :=
-  (coinvariantsFinsuppLEquiv _ α ≪≫ₗ lcongr (Equiv.refl α)
-    (coinvariantsTprodLeftRegularLEquiv A.ρ)).toLinearMap ∘ₗ
-    ((coinvariantsFunctor k G).map (finsuppTensorRight k G A (leftRegular k G) α).hom).hom
+    (A ⊗ free.{u, u, u} k G α).ρ.Coinvariants.{u, u, u} →ₗ[k] (α →₀ A) :=
+  (coinvariantsFinsuppLEquiv _ α ≪≫ₗ lcongr (Equiv.refl α) (coinvariantsTprodLeftRegularLEquiv
+    A.ρ)).toLinearMap ∘ₗ Coinvariants.map _ _
+    (Representation.finsuppTensorRight _ _ _).toIntertwiningMap
 
 variable {α}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A.V)
-      (coinvariantsTensorFreeToFinsupp A α) (Coinvariants.mk _ (x ⊗ₜ single i (single g r))) =
+      (coinvariantsTensorFreeToFinsupp A α) (Coinvariants.mk _ (x ⊗ₜ single i (.single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
   simp [coinvariantsTensorFreeToFinsupp, Representation.finsuppTensorRight]
 
@@ -478,18 +481,17 @@ variable (α)
 `(α →₀ A) →ₗ[k] (A ⊗ (α →₀ k[G]))_G` sending `single x a ↦ ⟦a ⊗ₜ single x 1⟧.` -/
 noncomputable def finsuppToCoinvariantsTensorFree :
     (α →₀ A) →ₗ[k] Coinvariants (A.ρ.tprod (free k G α).ρ) :=
-  ((coinvariantsFunctor k G).map ((finsuppTensorRight k G A (leftRegular k G) α)).inv).hom ∘ₗ
-    (coinvariantsFinsuppLEquiv _ α ≪≫ₗ
-    lcongr (Equiv.refl α) (coinvariantsTprodLeftRegularLEquiv A.ρ)).symm.toLinearMap
+  Coinvariants.map _ _ (Representation.finsuppTensorRight _ _ _).symm.toIntertwiningMap ∘ₗ
+  (coinvariantsFinsuppLEquiv _ α ≪≫ₗ lcongr (Equiv.refl α)
+    (coinvariantsTprodLeftRegularLEquiv A.ρ)).symm.toLinearMap
 
 variable {A α}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     DFunLike.coe (F := (α →₀ A.V) →ₗ[k] (A.ρ.tprod (Representation.free k G α)).Coinvariants)
       (finsuppToCoinvariantsTensorFree A α) (single i x) =
-      Coinvariants.mk _ (x ⊗ₜ single i (single (1 : G) (1 : k))) := by
+      Coinvariants.mk _ (x ⊗ₜ single i (.single (1 : G) (1 : k))) := by
   simp [finsuppToCoinvariantsTensorFree, Representation.finsuppTensorRight, Equiv.mk_symm]
 
 variable (A α)
@@ -505,7 +507,7 @@ noncomputable abbrev coinvariantsTensorFreeLEquiv :
       simp [finsuppToCoinvariantsTensorFree_single,
         coinvariantsTensorFreeToFinsupp_mk_tmul_single]) <|
     Coinvariants.hom_ext <| TensorProduct.ext <| LinearMap.ext fun a => lhom_ext' fun i =>
-      lhom_ext fun g r => by
+      MonoidAlgebra.lhom_ext' fun g => LinearMap.ext fun r => by
         simp [coinvariantsTensorFreeToFinsupp_mk_tmul_single _,
           finsuppToCoinvariantsTensorFree_single (A := A) i, TensorProduct.smul_tmul]
 
