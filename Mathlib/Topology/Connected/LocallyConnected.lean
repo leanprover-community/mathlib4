@@ -244,8 +244,8 @@ theorem Pi.locallyConnectedSpace_iff [∀ i, TopologicalSpace (X i)] :
     rw [nhds_pi, Filter.mem_pi] at hVn
     obtain ⟨J, hJ, t, ht, htV⟩ := hVn
     refine hJ.subset fun i hi ↦ by_contra fun hiJ ↦ hi ?_
-    suffices himg : Function.eval i '' connectedComponent x = univ by
-      exact ⟨himg ▸ isPreconnected_connectedComponent.image _ (continuous_apply i).continuousOn⟩
+    suffices himg : Function.eval i '' connectedComponent x = univ from 
+      ⟨himg ▸ isPreconnected_connectedComponent.image _ (continuous_apply i).continuousOn⟩
     refine (subset_univ _).antisymm fun z _ ↦
       ⟨Function.update x i z, htV fun j hj ↦ ?_, by simp⟩
     rw [Function.update_of_ne (ne_of_mem_of_not_mem hj hiJ)]
