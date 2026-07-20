@@ -769,6 +769,7 @@ def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dArrowIso₀₁ A)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesIso₀_hom_comp_f :
@@ -795,6 +796,9 @@ end cocyclesIso₀
 
 section isoCocycles₁
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `A --d₀₁--> Fun(G, A) --d₁₂--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
@@ -848,6 +852,9 @@ end isoCocycles₁
 
 section isoCocycles₂
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `Fun(G, A) --d₁₂--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]

@@ -51,6 +51,7 @@ end N
 noncomputable abbrev functorN' : X.N ⥤ SSet.{u} :=
     N.toSemiSimplexCategory X ⋙ SemiSimplexCategory.toSimplexCategory ⋙ SSet.stdSimplex
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism `X.functorN' ≅ X.functorN` for a nonsingular simplicial set `X`. -/
 noncomputable def functorN'Iso : X.functorN' ≅ X.functorN :=
