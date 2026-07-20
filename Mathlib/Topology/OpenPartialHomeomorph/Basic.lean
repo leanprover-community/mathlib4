@@ -124,22 +124,23 @@ theorem isOpen_image_iff_of_subset_source {s : Set X} (hs : s ⊆ e.source) :
 `OpenPartialHomeomorph`. -/
 @[simps toPartialHomeomorph]
 def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : OpenPartialHomeomorph X Y where
+    (ho : IsOpenMap (e.source.domRestrict e)) (hs : IsOpen e.source) :
+    OpenPartialHomeomorph X Y where
   toPartialEquiv := e
   open_source := hs
-  open_target := by simpa only [range_restrict, e.image_source_eq_target] using ho.isOpen_range
+  open_target := by simpa only [range_domRestrict, e.image_source_eq_target] using ho.isOpen_range
   continuousOn_toFun := hc
   continuousOn_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.leftInvOn
 
 @[simp]
 theorem coe_ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) :
+    (ho : IsOpenMap (e.source.domRestrict e)) (hs : IsOpen e.source) :
     ⇑(ofContinuousOpenRestrict e hc ho hs) = e :=
   rfl
 
 @[simp]
 theorem coe_ofContinuousOpenRestrict_symm (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) :
+    (ho : IsOpenMap (e.source.domRestrict e)) (hs : IsOpen e.source) :
     ⇑(ofContinuousOpenRestrict e hc ho hs).symm = e.symm :=
   rfl
 
@@ -148,7 +149,7 @@ theorem coe_ofContinuousOpenRestrict_symm (e : PartialEquiv X Y) (hc : Continuou
 @[simps! toPartialHomeomorph]
 def ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : OpenPartialHomeomorph X Y :=
-  ofContinuousOpenRestrict e hc (ho.restrict hs) hs
+  ofContinuousOpenRestrict e hc (ho.domRestrict hs) hs
 
 @[simp]
 theorem coe_ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
@@ -215,10 +216,10 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
   continuous_invFun := by
     simpa only [continuousOn_univ, h'] using e.continuousOn_symm
 
-theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
+theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.domRestrict e) := by
   refine .of_continuous_injective_isOpenMap (e.continuousOn.comp_continuous
     continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
-  rw [Set.restrict_eq, Set.image_comp]
+  rw [Set.domRestrict_eq, Set.image_comp]
   exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 

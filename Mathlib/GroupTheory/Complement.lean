@@ -225,16 +225,16 @@ lemma isComplement_subgroup_left_iff_existsUnique_quotientMk'' :
 
 @[to_additive]
 lemma isComplement_subgroup_right_iff_bijective :
-    IsComplement S H ↔ Bijective (S.restrict (QuotientGroup.mk : G → G ⧸ H)) :=
+    IsComplement S H ↔ Bijective (S.domRestrict (QuotientGroup.mk : G → G ⧸ H)) :=
   isComplement_subgroup_right_iff_existsUnique_quotientGroupMk.trans
-    (bijective_iff_existsUnique (S.restrict QuotientGroup.mk)).symm
+    (bijective_iff_existsUnique (S.domRestrict QuotientGroup.mk)).symm
 
 @[to_additive]
 lemma isComplement_subgroup_left_iff_bijective :
     IsComplement H T ↔
-      Bijective (T.restrict (Quotient.mk'' : G → Quotient (QuotientGroup.rightRel H))) :=
+      Bijective (T.domRestrict (Quotient.mk'' : G → Quotient (QuotientGroup.rightRel H))) :=
   isComplement_subgroup_left_iff_existsUnique_quotientMk''.trans
-    (bijective_iff_existsUnique (T.restrict Quotient.mk'')).symm
+    (bijective_iff_existsUnique (T.domRestrict Quotient.mk'')).symm
 
 @[to_additive]
 lemma IsComplement.card_left (h : IsComplement S H) : Nat.card S = H.index :=

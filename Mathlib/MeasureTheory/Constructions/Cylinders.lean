@@ -460,7 +460,7 @@ lemma measurable_update_cylinderEvents_left {a : ι} [DecidableEq ι] {x : X a} 
   measurable_update_cylinderEvents'.comp measurable_prodMk_right
 
 lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
-    Measurable[cylinderEvents (X := X) Δ] (restrict Δ) := by
+    Measurable[cylinderEvents (X := X) Δ] (domRestrict Δ) := by
   rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
 
 end cylinderEvents
@@ -468,7 +468,7 @@ end cylinderEvents
 /-- A measurable set from the product sigma-algebra only depends on countably many coordinates. -/
 lemma MeasurableSet.eq_preimage_restrict_countable
     [∀ i, MeasurableSpace (α i)] {s : Set (Π i, α i)} (hs : MeasurableSet s) :
-    ∃ I : Set ι, ∃ t, I.Countable ∧ s = I.restrict ⁻¹' t := by
+    ∃ I : Set ι, ∃ t, I.Countable ∧ s = I.domRestrict ⁻¹' t := by
   refine induction_on_inter generateFrom_squareCylinders.symm
     (isPiSystem_squareCylinders (fun _ ↦ isPiSystem_measurableSet) (by simp))
     ⟨∅, ∅, by simp⟩ ?_ ?_ ?_ s hs
@@ -478,13 +478,13 @@ lemma MeasurableSet.eq_preimage_restrict_countable
     exact ⟨I, tᶜ, hI, by simp⟩
   intro f df mf hf
   choose! I t hI hf using hf
-  refine ⟨⋃ n, I n, ⋃ n, (⋃ k, I k).restrict '' (f n), countable_iUnion hI, ?_⟩
+  refine ⟨⋃ n, I n, ⋃ n, (⋃ k, I k).domRestrict '' (f n), countable_iUnion hI, ?_⟩
   ext x
   simp only [hf, mem_iUnion, mem_preimage, preimage_iUnion, mem_image]
   refine ⟨fun ⟨i, hi⟩ ↦ ⟨i, x, hi, rfl⟩, fun ⟨n, x', hn, hx⟩ ↦ ⟨n, ?_⟩⟩
-  have (x : Π i, α i) : (I n).restrict x =
+  have (x : Π i, α i) : (I n).domRestrict x =
       (fun (x : Π (i : ⋃ k, I k), α i) (i : I n) ↦ x ⟨i.1, subset_iUnion I n i.2⟩)
-      ((⋃ k, I k).restrict x) := rfl
+      ((⋃ k, I k).domRestrict x) := rfl
   rwa [this, ← hx, ← this]
 
 end MeasureTheory

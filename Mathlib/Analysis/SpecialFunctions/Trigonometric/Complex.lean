@@ -219,7 +219,7 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} :=
 
 @[continuity]
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
-  continuousOn_iff_continuous_restrict.1 continuousOn_tan
+  continuousOn_iff_continuous_domRestrict.1 continuousOn_tan
 
 theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
