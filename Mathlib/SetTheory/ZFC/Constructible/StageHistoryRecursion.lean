@@ -24,9 +24,9 @@ noncomputable section
 
 /-- The internal history and top relation constructed at one ordinal. -/
 structure StageHistoryData (ordinal : Ordinal.{u}) where
-/-- The internally represented stage history. -/
+  /-- The internally represented stage history. -/
   history : LCarrier.{u}
-/-- The internally represented top-stage relation. -/
+  /-- The internally represented top-stage relation. -/
   relation : LCarrier.{u}
   valid : ValidStageHistory history (ordinalLCarrier ordinal)
   topEntry : HistoryEntry history (ordinalLCarrier ordinal)
