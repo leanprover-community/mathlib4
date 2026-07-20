@@ -238,16 +238,16 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
           · apply Ideal.ker_le_comap
             simpa [eqx] using xmem
           · apply Ideal.subset_span
-            simp only [Ideal.Quotient.algebraMap_eq, List.mem_map, Set.mem_setOf_eq]
+            simp only [Ideal.Quotient.algebraMap_eq, List.mem_map, Set.mem_ofPred_eq]
             use r
         have max_mem := maximalIdeal_mem_minimalPrimes_of_surjective (Ideal.Quotient.mk p)
           Ideal.Quotient.mk_surjective le mem netop
-        have := Ideal.ofList_height_le_length' (rs'.map (algebraMap R (R ⧸ p))) mem_max
+        have le := Ideal.ofList_height_le_length' (rs'.map (algebraMap R (R ⧸ p))) mem_max
         have coe_eq : ((rs'.length + 1 : ℕ) : WithBot ℕ∞) = ((rs'.length + 1 : ℕ) : ℕ∞) := rfl
         rw [height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ max_mem,
           ← WithBot.coe_le_coe, List.length_map, maximalIdeal_height_eq_ringKrullDim,
-          ← eq, ← dim, List.length_cons, coe_eq, WithBot.coe_le_coe, ENat.coe_le_coe] at this
-        simp at this
+          ← eq, ← dim, List.length_cons, coe_eq, WithBot.coe_le_coe, ENat.natCast_le_natCast] at le
+        simp at le
       simp only [isWeaklyRegular_cons_iff, xreg, true_and]
       have min : maximalIdeal R' ∈ (Ideal.ofList (rs'.map (algebraMap R R'))).minimalPrimes := by
         have le : Ideal.ofList (x :: rs') ≤
@@ -258,7 +258,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
           · apply Ideal.ker_le_comap
             simp [R', eqx, ← Submodule.ideal_span_singleton_smul x]
           · apply Ideal.subset_span
-            simp only [List.mem_map, Set.mem_setOf_eq]
+            simp only [List.mem_map, Set.mem_ofPred_eq]
             use r
         apply maximalIdeal_mem_minimalPrimes_of_surjective (algebraMap R R')
           Ideal.Quotient.mk_surjective le mem
@@ -292,7 +292,7 @@ lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenM
 lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
     I.depth (ModuleCat.of R R) ≤ I.height := by
   simp only [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop (ModuleCat.of R R), exists_prop,
-    sSup_le_iff, Set.mem_setOf_eq, forall_exists_index, and_imp]
+    sSup_le_iff, Set.mem_ofPred_eq, forall_exists_index, and_imp]
   intro n rs reg mem len
   simpa [← len, ← ofList_height_eq_length_of_isWeaklyRegular' rs reg.1
     (fun r hr ↦ le_maximalIdeal netop (mem r hr))] using! Ideal.height_mono (span_le.mpr mem)
