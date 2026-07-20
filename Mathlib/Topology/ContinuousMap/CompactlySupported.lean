@@ -74,7 +74,7 @@ variable [TopologicalSpace β] [Zero β]
 
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -467,7 +467,7 @@ instance semilatticeSup : SemilatticeSup C_c(α, β) := fast_instance%
 
 lemma finsetSup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
-  Finset.comp_sup'_eq_sup'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
+  Finset.apply_sup'_eq_sup'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma coe_finsetSup' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
@@ -493,7 +493,7 @@ instance semilatticeInf : SemilatticeInf C_c(α, β) := fast_instance%
 
 lemma finsetInf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.inf' H f a = s.inf' H fun i ↦ f i a :=
-  Finset.comp_inf'_eq_inf'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
+  Finset.apply_inf'_eq_inf'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma coe_finsetInf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
@@ -667,6 +667,7 @@ open NNReal
 
 namespace CompactlySupportedContinuousMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)),
     f₁ + g = f₂ := by
   refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩
@@ -793,6 +794,7 @@ end toNNRealLinear
 
 section toRealPositiveLinear
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For a positive linear functional `Λ : C_c(α, ℝ≥0) → ℝ≥0`, define a positive `ℝ`-linear map. -/
 noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : C_c(α, ℝ) →ₚ[ℝ] ℝ :=
   PositiveLinearMap.mk₀

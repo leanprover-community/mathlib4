@@ -231,7 +231,7 @@ def specializationPreorder : Preorder X :=
     lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
 
 /-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
@@ -279,6 +279,7 @@ def IsCompact (s : Set X) :=
 variable (X) in
 /-- Type class for compact spaces. Separation is sometimes included in the definition, especially
 in the French literature, but we do not include it here. -/
+@[wikidata Q381892]
 class CompactSpace : Prop where
   /-- In a compact space, `Set.univ` is a compact set. -/
   isCompact_univ : IsCompact (Set.univ : Set X)

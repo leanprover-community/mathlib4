@@ -146,14 +146,14 @@ def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
 
 theorem ne_zero_iff_weightedOrder_finite :
     f ≠ 0 ↔ (f.weightedOrder w).toNat = f.weightedOrder w := by
-  simp only [weightedOrder, ne_eq, coe_toNat_eq_self, dite_eq_left_iff,
-    ENat.coe_ne_top, imp_false, not_not]
+  simp only [weightedOrder, ne_eq, natCast_toNat_eq_self, dite_eq_left_iff,
+    ENat.natCast_ne_top, imp_false, not_not]
 
 /-- The `0` power series is the unique power series with infinite order. -/
 @[simp]
 theorem weightedOrder_eq_top_iff :
     f.weightedOrder w = ⊤ ↔ f = 0 := by
-  rw [← not_iff_not, ← ne_eq, ← ne_eq, ne_zero_iff_weightedOrder_finite w, coe_toNat_eq_self]
+  rw [← not_iff_not, ← ne_eq, ← ne_eq, ne_zero_iff_weightedOrder_finite w, natCast_toNat_eq_self]
 
 /-- If the order of a formal power series `f` is finite,
 then some coefficient of weight equal to the order of `f` is nonzero. -/
@@ -186,7 +186,7 @@ theorem nat_le_weightedOrder {n : ℕ} (h : ∀ d, weight w d < n → coeff d f 
     n ≤ f.weightedOrder w := by
   by_contra! H
   have : (f.weightedOrder w).toNat = f.weightedOrder w := by
-    rw [coe_toNat_eq_self]; exact ne_top_of_lt H
+    rw [natCast_toNat_eq_self]; exact ne_top_of_lt H
   obtain ⟨d, hfd, hd⟩ := exists_coeff_ne_zero_and_weightedOrder w this
   rw [← hd, Nat.cast_lt] at H
   exact hfd (h d H)
@@ -197,9 +197,9 @@ theorem le_weightedOrder {n : ℕ∞} (h : ∀ d : σ →₀ ℕ, weight w d < n
     n ≤ f.weightedOrder w := by
   cases n
   · rw [top_le_iff, weightedOrder_eq_top_iff]
-    ext d; exact h d (ENat.coe_lt_top _)
+    ext d; exact h d (ENat.natCast_lt_top _)
   · apply nat_le_weightedOrder;
-    simpa only [ENat.some_eq_coe, Nat.cast_lt] using h
+    simpa only [ENat.some_eq_natCast, Nat.cast_lt] using h
 
 /-- The order of a formal power series is exactly `n` if and only if some coefficient of weight `n`
 is nonzero, and the `d`th coefficient is `0` for all `d` such that `weight w d < n`. -/
@@ -208,7 +208,7 @@ theorem weightedOrder_eq_nat {n : ℕ} :
       (∃ d, coeff d f ≠ 0 ∧ weight w d = n) ∧ ∀ d, weight w d < n → coeff d f = 0 := by
   constructor
   · intro h
-    obtain ⟨d, hd⟩ := f.exists_coeff_ne_zero_and_weightedOrder w (by simp only [h, toNat_coe])
+    obtain ⟨d, hd⟩ := f.exists_coeff_ne_zero_and_weightedOrder w (by simp only [h, toNat_natCast])
     exact ⟨⟨d, by simpa [h, Nat.cast_inj, ne_eq] using hd⟩,
       fun e he ↦ f.coeff_eq_zero_of_lt_weightedOrder w (by simp only [h, Nat.cast_lt, he])⟩
   · rintro ⟨⟨d, hd', hd⟩, h⟩
@@ -491,7 +491,7 @@ theorem one_le_order_iff_constCoeff_eq_zero :
 
 theorem order_ne_zero_iff_constCoeff_eq_zero :
     f.order ≠ 0 ↔ f.constantCoeff = 0 := by
-  rw [← ENat.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
+  rw [← Order.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
 
 theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : f.constantCoeff = 0) :
     n ≤ (f ^ n).order := by
@@ -585,6 +585,7 @@ protected theorem IsWeightedHomogeneous.mul {f g : MvPowerSeries σ R} {p q : �
   apply hd
   rw [← hx, map_add, hp, hq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The weighted homogeneous components of an `MvPowerSeries f`. -/
 def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R where
   toFun f d := if weight w d = p then coeff d f else 0
@@ -622,7 +623,7 @@ theorem weightedHomogeneousComponent_of_weightedOrder
     {f : MvPowerSeries σ R} {p : ℕ} (hf : p = f.weightedOrder w) :
     f.weightedHomogeneousComponent w p ≠ 0 := by
   intro hf'
-  obtain ⟨d, hd⟩ := f.exists_coeff_ne_zero_and_weightedOrder w (by rw [← hf, toNat_coe])
+  obtain ⟨d, hd⟩ := f.exists_coeff_ne_zero_and_weightedOrder w (by rw [← hf, toNat_natCast])
   simp only [ne_eq, ← hf, Nat.cast_inj] at hd
   apply hd.1
   rw [MvPowerSeries.ext_iff] at hf'
@@ -668,10 +669,10 @@ theorem weightedHomogeneousComponent_mul_of_le_weightedOrder {f g : MvPowerSerie
     rcases trichotomy_of_add_eq_add hd with h | h | h
     · rw [if_pos h.1, if_pos h.2]
     · rw [if_neg (ne_of_lt h), zero_mul]
-      rw [← ENat.coe_lt_coe] at h
+      rw [← ENat.natCast_lt_natCast] at h
       rw [coeff_eq_zero_of_lt_weightedOrder w (lt_of_lt_of_le h hf), zero_mul]
     · rw [if_neg (ne_of_lt h), mul_zero]
-      rw [← ENat.coe_lt_coe] at h
+      rw [← ENat.natCast_lt_natCast] at h
       rw [coeff_eq_zero_of_lt_weightedOrder w (lt_of_lt_of_le h hg), mul_zero]
   · symm
     apply IsWeightedHomogeneous.coeff_eq_zero _ hd

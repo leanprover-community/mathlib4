@@ -177,7 +177,7 @@ theorem TendstoLocallyUniformlyOn.smul₀_of_isBoundedUnder {X ι : Type*} [Topo
   filter_upwards [hF x hx (Metric.dist_mem_uniformity one_pos),
     hG x hx (Metric.dist_mem_uniformity one_pos), tendsto_snd hC] with ⟨n, y⟩ hFn hGn hfg
   simp only [mem_prod, Metric.mem_ball, Prod.dist_eq, Prod.fst_zero, Prod.snd_zero, sup_lt_iff,
-    mem_preimage, mem_setOf] at hFn hGn hfg ⊢
+    mem_preimage, mem_ofPred] at hFn hGn hfg ⊢
   grw [dist_triangle_left (F n y) 0 (f y), dist_triangle_left (G n y) 0 (g y)]
   constructor <;> constructor <;> linarith
 
@@ -262,10 +262,10 @@ instance NNReal.isBoundedSMul : IsBoundedSMul ℝ≥0 ℝ≥0 where
 /-- If a scalar is central, then its right action is bounded when its left action is. -/
 instance IsBoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : IsBoundedSMul αᵐᵒᵖ β where
   dist_smul_pair' :=
-    MulOpposite.rec' fun x y₁ y₂ => by simpa only [op_smul_eq_smul] using dist_smul_pair x y₁ y₂
+    MulOpposite.rec' fun x y₁ y₂ => by simpa only [op_smul_eq_smul] using! dist_smul_pair x y₁ y₂
   dist_pair_smul' :=
     MulOpposite.rec' fun x₁ =>
-      MulOpposite.rec' fun x₂ y => by simpa only [op_smul_eq_smul] using dist_pair_smul x₁ x₂ y
+      MulOpposite.rec' fun x₂ y => by simpa only [op_smul_eq_smul] using! dist_pair_smul x₁ x₂ y
 
 end IsBoundedSMul
 

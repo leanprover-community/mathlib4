@@ -189,18 +189,17 @@ protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ
     simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
       LinearIsometry.map_add]
   map_smul' c f := by
-    simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using
+    simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using!
       (hV.summable_of_lp f).tsum_const_smul c
   norm_map' f := by
-    classical
-      -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`
-      have H : 0 < (2 : ℝ≥0∞).toReal := by simp
-      suffices ‖∑' i : ι, V i (f i)‖ ^ (2 : ℝ≥0∞).toReal = ‖f‖ ^ (2 : ℝ≥0∞).toReal by
-        exact Real.rpow_left_injOn H.ne' (norm_nonneg _) (norm_nonneg _) this
-      refine tendsto_nhds_unique ?_ (lp.hasSum_norm H f)
-      convert! (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
-      ext s
-      exact mod_cast (hV.norm_sum f s).symm
+    -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`
+    have H : 0 < (2 : ℝ≥0∞).toReal := by simp
+    suffices ‖∑' i : ι, V i (f i)‖ ^ (2 : ℝ≥0∞).toReal = ‖f‖ ^ (2 : ℝ≥0∞).toReal by
+      exact Real.rpow_left_injOn H.ne' (norm_nonneg _) (norm_nonneg _) this
+    refine tendsto_nhds_unique ?_ (lp.hasSum_norm H f)
+    convert! (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
+    ext s
+    exact mod_cast (hV.norm_sum f s).symm
 
 protected theorem linearIsometry_apply (f : lp G 2) : hV.linearIsometry f = ∑' i, V i (f i) :=
   rfl
@@ -356,7 +355,7 @@ theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSp
   refine le_trans ?_ (Submodule.le_topologicalClosure _)
   rw [iSup_bool_eq, cond, cond]
   refine Codisjoint.top_le ?_
-  exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection.codisjoint
+  exact K.isCompl_orthogonal.codisjoint
 
 end IsHilbertSum
 
@@ -380,11 +379,11 @@ namespace HilbertBasis
 instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 _)⟩
 
-open Classical in
+open scoped Classical in
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
-  coe_injective'
+  coe_injective
   | ⟨b₁⟩, ⟨b₂⟩, h => by
     congr
     apply LinearIsometryEquiv.symm_bijective.injective
@@ -430,7 +429,7 @@ protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, �
     exact (↑b.repr.symm.toContinuousLinearEquiv : ℓ²(ι, 𝕜) →L[𝕜] E).hasSum this
   ext i
   apply b.repr.injective
-  letI : NormedSpace 𝕜 (lp (fun _i : ι => 𝕜) 2) := by infer_instance
+  let : NormedSpace 𝕜 (lp (fun _i : ι => 𝕜) 2) := by infer_instance
   have : lp.single (E := (fun _ : ι => 𝕜)) 2 i (f i * 1) = f i • lp.single 2 i 1 :=
     lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (f i) (1 : 𝕜)
   rw [mul_one] at this
@@ -443,16 +442,15 @@ protected theorem hasSum_repr (b : HilbertBasis ι 𝕜 E) (x : E) :
 @[simp]
 protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
     (span 𝕜 (Set.range b)).topologicalClosure = ⊤ := by
-  classical
-    rw [eq_top_iff]
-    rintro x -
-    refine mem_closure_of_tendsto (b.hasSum_repr x) (Eventually.of_forall ?_)
-    intro s
-    simp only [SetLike.mem_coe]
-    refine sum_mem ?_
-    rintro i -
-    refine smul_mem _ _ ?_
-    exact subset_span ⟨i, rfl⟩
+  rw [eq_top_iff]
+  rintro x -
+  refine mem_closure_of_tendsto (b.hasSum_repr x) (Eventually.of_forall ?_)
+  intro s
+  simp only [SetLike.mem_coe]
+  refine sum_mem ?_
+  rintro i -
+  refine smul_mem _ _ ?_
+  exact subset_span ⟨i, rfl⟩
 
 protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
@@ -485,11 +483,14 @@ theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
     (b.toOrthonormalBasis : ι → E) = b :=
   OrthonormalBasis.coe_mk _ _
 
-protected theorem hasSum_orthogonalProjection {U : Submodule 𝕜 E} [CompleteSpace U]
+protected theorem hasSum_orthogonalProjectionOnto {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : HilbertBasis ι 𝕜 U) (x : E) :
-    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (U.orthogonalProjection x) := by
-  simpa only [b.repr_apply_apply, inner_orthogonalProjection_eq_of_mem_left] using
-    b.hasSum_repr (U.orthogonalProjection x)
+    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (U.orthogonalProjectionOnto x) := by
+  simpa only [b.repr_apply_apply, inner_orthogonalProjectionOnto_eq_of_mem_left] using
+    b.hasSum_repr (U.orthogonalProjectionOnto x)
+
+@[deprecated (since := "2026-05-05")] alias hasSum_orthogonalProjection :=
+  HilbertBasis.hasSum_orthogonalProjectionOnto
 
 theorem finite_spans_dense [DecidableEq E] (b : HilbertBasis ι 𝕜 E) :
     (⨆ J : Finset ι, span 𝕜 (J.image b : Set E)).topologicalClosure = ⊤ :=
@@ -537,7 +538,7 @@ protected theorem coe_mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = 
 protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     HilbertBasis ι 𝕜 E :=
   HilbertBasis.mk b.orthonormal <| by
-    simpa only [← OrthonormalBasis.coe_toBasis, b.toBasis.span_eq, eq_top_iff] using
+    simpa only [← OrthonormalBasis.coe_toBasis, b.toBasis.span_eq, eq_top_iff] using!
       @subset_closure E _ _
 
 end
@@ -553,7 +554,7 @@ theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
     ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), s ⊆ w ∧ ⇑b = ((↑) : w → E) :=
   let ⟨w, hws, hw_ortho, hw_max⟩ := exists_maximal_orthonormal hs
   ⟨w, HilbertBasis.mkOfOrthogonalEqBot hw_ortho
-    (by simpa only [Subtype.range_coe_subtype, Set.setOf_mem_eq,
+    (by simpa only [Subtype.range_coe_subtype, Set.ofPred_mem_eq,
       maximal_orthonormal_iff_orthogonalComplement_eq_bot hw_ortho] using hw_max),
     hws, HilbertBasis.coe_mkOfOrthogonalEqBot _ _⟩
 

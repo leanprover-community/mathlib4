@@ -247,7 +247,7 @@ protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X �
 lemma fun_zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
     HasSubgaussianMGF (fun _ ↦ 0) 0 κ ν where
   integrable_exp_mul := by simp
-  mgf_le := by simpa using ae_of_all _ fun _ ↦ measureReal_le_one
+  mgf_le := by simp
 
 @[simp]
 lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := fun_zero
@@ -255,7 +255,7 @@ lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 
 @[simp]
 lemma zero_kernel : HasSubgaussianMGF X c (0 : Kernel Ω' Ω) ν := by
   constructor
-  · simp
+  · simp [FunLike.coe_zero]
   · simp [exp_nonneg]
 
 @[simp]
@@ -353,7 +353,7 @@ lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 �
     ∀ᵐ ω' ∂ν, (κ ω') {ω | 0 < X ω} = 0 := by
   have hs : {ω | 0 < X ω} = ⋃ ε : {ε : ℚ // 0 < ε}, {ω | ε ≤ X ω} := by
     ext ω
-    simp only [Set.mem_setOf_eq, Set.mem_iUnion, Subtype.exists, exists_prop]
+    simp only [Set.mem_ofPred_eq, Set.mem_iUnion, Subtype.exists, exists_prop]
     constructor
     · intro hp
       obtain ⟨q, h1, h2⟩ := exists_rat_btwn hp
@@ -469,9 +469,9 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkov
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) (t : ℝ) :
     Integrable (fun ω ↦ exp (t * (X ω.1 + Y ω.2))) ((κ ⊗ₖ η) ∘ₘ ν) := by
   by_cases hκ : IsSFiniteKernel κ
-  swap; · simp [hκ]
+  swap; · simp [FunLike.coe_zero, hκ]
   rcases eq_zero_or_isMarkovKernel η with rfl | hη
-  · simp
+  · simp [FunLike.coe_zero]
   simp_rw [mul_add, exp_add]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
   · have h := hX.memLp_exp_mul t 2
@@ -690,7 +690,7 @@ protected lemma const_mul (h : HasSubgaussianMGF X c μ) (r : ℝ) :
 lemma integrableExpSet_eq_univ (hX : HasSubgaussianMGF X c μ) :
     integrableExpSet X μ = Set.univ := by
   ext t
-  simpa using hX.integrable_exp_mul t
+  simpa using! hX.integrable_exp_mul t
 
 lemma memLp (hX : HasSubgaussianMGF X c μ) (p : ℝ≥0) : MemLp X p μ :=
   memLp_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX]) p
@@ -852,7 +852,7 @@ lemma hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ]
     _ ≤ exp ((‖-a - -b‖₊ / 2) ^ 2 * (-t) ^ 2 / 2) := by
       apply ProbabilityTheory.mgf_le_of_mem_Icc_of_integral_eq_zero (hm.neg)
       · filter_upwards [hb] with ω ⟨hl, hr⟩ using ⟨neg_le_neg_iff.2 hr, neg_le_neg_iff.2 hl⟩
-      · rw [integral_neg, hc, neg_zero]
+      · simp only [Pi.neg_apply]; rw [integral_neg, hc, neg_zero]
       · rwa [Left.neg_pos_iff]
     _ = exp (((‖b - a‖₊ / 2) ^ 2) * t ^ 2 / 2) := by ring_nf
 

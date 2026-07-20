@@ -195,6 +195,7 @@ theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
 
 end Complex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Polarization identity for symmetric linear maps.
 See `inner_map_polarization` for the complex version without the symmetric assumption. -/
 theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x y : E) :
@@ -370,12 +371,8 @@ theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmet
   simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
     inner_zero_right] at hf'
   simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
-    (forall_comm.eq ▸ hf')] using h
+    (forall_comm.eq ▸ hf')] using! h
 
 end LinearMap
-
-@[deprecated (since := "2025-12-28")] alias
-  ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
 
 end Normed

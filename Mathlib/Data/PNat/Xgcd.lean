@@ -135,6 +135,7 @@ def IsSpecial : Prop :=
 def IsSpecial' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   dsimp [IsSpecial, IsSpecial']
   let ⟨wp, x, y, zp, ap, bp⟩ := u
@@ -234,7 +235,9 @@ theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
   have := a.pos
   have := b.pos
-  lia
+  #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+  we need to re-enable model-based theory combination in `lia` for this to go through. -/
+  lia +mbtc
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=

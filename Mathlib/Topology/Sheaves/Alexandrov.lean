@@ -93,6 +93,7 @@ def projSup {ι : Type v} (Us : ι → Opens X) :
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := (ObjectProperty.homMk (homOfLE (principalOpen_le e.right.le))).op
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 /-- This is an auxiliary definition which is only meant to be used in `isLimit` below. -/
@@ -123,6 +124,7 @@ def lowerCone
         (StructuredArrow.proj _ (principals X) ⋙ F) ee).symm
   }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 This is the main construction in this file showing that the right Kan extension
@@ -165,6 +167,7 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
       congr
       apply limit.lift_π
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isSheaf_principalsKanExtension
     {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X] (F : X ⥤ C) :
     Presheaf.IsSheaf (principalsKanExtension F) := by
@@ -177,6 +180,7 @@ end Alexandrov
 
 open Alexandrov
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The main theorem of this file.
 If `X` is a topological space and preorder whose topology is the `UpperSet` topology associated
@@ -196,6 +200,5 @@ theorem Topology.IsUpperSet.isSheaf_of_isRightKanExtension
     @rightKanExtensionUnique _ _ _ _ _ _ _ _ _ _ (by assumption) _ _ (by assumption)
   change TopCat.Presheaf.IsSheaf (X := TopCat.of X) P
   rw [isSheaf_iso_iff this]
-  let _ : Preorder (TopCat.of X) := inferInstanceAs <| Preorder X
   have _ : Topology.IsUpperSet (TopCat.of X) := inferInstanceAs <| Topology.IsUpperSet X
   exact isSheaf_principalsKanExtension (X := TopCat.of X) F

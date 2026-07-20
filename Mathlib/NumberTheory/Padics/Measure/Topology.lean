@@ -11,7 +11,8 @@ public import Mathlib.Topology.ContinuousMap.Compact
 /-!
 # Topologies on spaces of measures
 
-We define the weak and strong topologies on `D(X, E)`.
+We define the weak and strong topologies on `D(X, E)`. These are deliberately not declared as
+instances in order to avoid favouring one topology over the other.
 -/
 
 @[expose] public section
@@ -36,20 +37,13 @@ continuous for all `f`).
 @[reducible] def WeakTopology : TopologicalSpace (AbstractMeasure X R E) :=
   .induced (fun μ f ↦ μ f) inferInstance
 
-scoped [AbstractMeasure.WeakTopology] attribute [instance] WeakTopology
-
 end Weak
 
 variable [CompactSpace X] [NontriviallyNormedField R] [NormedAddCommGroup E] [NormedSpace R E]
 
-noncomputable instance : Norm (AbstractMeasure X R E) :=
-  inferInstanceAs (Norm (C(X, R) →L[R] E))
-
 /-- The strong topology on `AbstractMeasure G R E` (the topology induced by the norm). -/
 @[reducible] def StrongTopology : TopologicalSpace (AbstractMeasure X R E) :=
   inferInstanceAs (TopologicalSpace (C(X, R) →L[R] E))
-
-scoped [AbstractMeasure.StrongTopology] attribute [instance] StrongTopology
 
 end Topology
 

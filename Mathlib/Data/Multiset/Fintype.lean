@@ -78,6 +78,7 @@ protected theorem exists_coe (p : m → Prop) :
     (∃ x : m, p x) ↔ ∃ (x : α) (i : Fin (m.count x)), p ⟨x, i⟩ :=
   Sigma.exists
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
   Fintype.ofFinset
     (m.toFinset.disjiUnion
@@ -86,7 +87,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
     (by
       rintro ⟨x, i⟩
       simp_rw [Finset.mem_disjiUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
-        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_setOf_eq]
+        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_ofPred_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (by lia))
 
@@ -194,6 +195,7 @@ theorem map_univ_comp_coe {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map (f ∘ (fun x : m ↦ (x : α)))) = m.map f := by
   rw [← Multiset.map_map, Multiset.map_univ_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_univ {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
@@ -242,6 +244,7 @@ instance : IsEmpty (0 : Multiset α) := Fintype.card_eq_zero_iff.mp (by simp)
 
 instance : IsEmpty (∅ : Multiset α) := Fintype.card_eq_zero_iff.mp (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 `v ::ₘ m` is equivalent to `Option m` by mapping one `v` to `none` and everything else to `m`.
 -/
@@ -299,7 +302,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 There is some equivalence between `m` and `m.map f` which respects `f`.
 -/
-def mapEquiv_aux (m : Multiset α) (f : α → β) :
+def mapEquivAux (m : Multiset α) (f : α → β) :
     Squash { v : m ≃ m.map f // ∀ a : m, v a = f a} :=
   Quotient.recOnSubsingleton m fun l ↦ .mk <|
     List.recOn l
@@ -310,14 +313,16 @@ def mapEquiv_aux (m : Multiset α) (f : α → β) :
             Equiv.coe_fn_symm_mk]
         split <;> simp_all⟩
 
+@[deprecated (since := "2026-06-06")] alias mapEquiv_aux := mapEquivAux
+
 /--
-One of the possible equivalences from `Multiset.mapEquiv_aux`, selected using choice.
+One of the possible equivalences from `Multiset.mapEquivAux`, selected using choice.
 -/
 noncomputable def mapEquiv (s : Multiset α) (f : α → β) : s ≃ s.map f :=
-  (Multiset.mapEquiv_aux s f).out.1
+  (Multiset.mapEquivAux s f).out.1
 
 @[simp]
 theorem mapEquiv_apply (s : Multiset α) (f : α → β) (v : s) : s.mapEquiv f v = f v :=
-  (Multiset.mapEquiv_aux s f).out.2 v
+  (Multiset.mapEquivAux s f).out.2 v
 
 end Multiset

@@ -36,7 +36,6 @@ variable {D : Type*} [Category* D] (e : C ≌ D) {B : C}
 
 variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.functor.obj (X a) ⟶ W)
     (h : ∀ {Z : D} (a₁ a₂ : α) (g₁ : Z ⟶ e.functor.obj (X a₁)) (g₂ : Z ⟶ e.functor.obj (X a₂)),
       g₁ ≫ e.functor.map (π a₁) = g₂ ≫ e.functor.map (π a₂) → g₁ ≫ ε a₁ = g₂ ≫ ε a₂)
@@ -49,7 +48,6 @@ theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.f
 
 variable [EffectiveEpiFamily X π]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalences preserve effective epimorphic families -/
 def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ e.functor.obj (X a))
     (fun a ↦ e.functor.map (π a)) where
@@ -57,16 +55,18 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       (EffectiveEpiFamily.desc X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h))
   fac ε h a := by
-    simp only [Functor.comp_obj, Adjunction.homEquiv_counit,
+    simp only [Adjunction.homEquiv_counit,
       Equivalence.toAdjunction_counit]
     have := congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map)
       (EffectiveEpiFamily.fac X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h) a)
-    simp only [Functor.id_obj, Functor.comp_obj, Function.comp_apply, Functor.map_comp,
-        Category.assoc, Equivalence.fun_inv_map, Iso.inv_hom_id_app, Category.comp_id] at this
+    simp only [Functor.id_obj, Function.comp_apply, Functor.map_comp,
+        Category.assoc, Equivalence.fun_inv_map,
+        Equivalence.counitIso_inv_hom_id_app, Category.comp_id,
+        Equivalence.functor_unit_comp_assoc] at this
     simp [this]
   uniq ε h m hm := by
-    simp only [Functor.comp_obj, Adjunction.homEquiv_counit,
+    simp only [Adjunction.homEquiv_counit,
       Equivalence.toAdjunction_counit]
     have := EffectiveEpiFamily.uniq X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h)
@@ -110,6 +110,8 @@ instance [IsRegularEpiCategory D] (F : C ⥤ D) [F.PreservesEpimorphisms] [Limit
     rw [← isRegularEpi_iff_effectiveEpi]
     apply IsRegularEpiCategory.regularEpiOfEpi
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 Applying a functor which preserves pullbacks and effective epimorphisms to a regular epi diagram
 of the form `X ×_Y X ⇉ X → Y` gives a regular epi diagram.
@@ -177,15 +179,18 @@ section Composition
 
 variable {E : Type*} [Category* E]
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [PreservesEffectiveEpis F] [PreservesEffectiveEpis G] :
     PreservesEffectiveEpis (F ⋙ G) where
   preserves _ _ := by dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteEffectiveEpiFamilies F]
     [PreservesFiniteEffectiveEpiFamilies G] :
     PreservesFiniteEffectiveEpiFamilies (F ⋙ G) where
   preserves _ _ _ := by dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [PreservesEffectiveEpiFamilies.{u} F]
     [PreservesEffectiveEpiFamilies.{u} G] :
     PreservesEffectiveEpiFamilies.{u} (F ⋙ G) where

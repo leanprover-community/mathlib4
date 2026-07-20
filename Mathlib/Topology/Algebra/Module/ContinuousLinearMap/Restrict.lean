@@ -58,6 +58,14 @@ alias coe_subtypeL' := coe_subtypeL
 
 theorem subtypeL_apply (p : Submodule R M) (x : p) : p.subtypeL x = x := by simp
 
+theorem isEmbedding_subtype (p : Submodule R M) : Topology.IsEmbedding p.subtype := .subtypeVal
+theorem isEmbedding_subtypeL (p : Submodule R M) : Topology.IsEmbedding p.subtypeL := .subtypeVal
+
+theorem isClosedEmbedding_subtype (p : Submodule R M) (hp : IsClosed (p : Set M)) :
+    Topology.IsClosedEmbedding p.subtype := .subtypeVal hp
+theorem isClosedEmbedding_subtypeL (p : Submodule R M) (hp : IsClosed (p : Set M)) :
+    Topology.IsClosedEmbedding p.subtypeL := .subtypeVal hp
+
 @[deprecated range_subtype (since := "2026-05-06")]
 theorem range_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).range = p :=
   Submodule.range_subtype _
@@ -93,7 +101,7 @@ theorem toLinearMap_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R
   rfl
 
 lemma coe_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
-    ⇑(f.domRestrict p) = Set.restrict p f :=
+    ⇑(f.domRestrict p) = Set.domRestrict p f :=
   rfl
 
 /-- Restrict codomain of a continuous linear map. -/
@@ -119,6 +127,11 @@ theorem coe_codRestrict_apply (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R�
 theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
     ker (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = ker (f : M₁ →ₛₗ[σ₁₂] M₂) :=
   f.toLinearMap.ker_codRestrict p h
+
+@[simp]
+theorem subtypeL_comp_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    p.subtypeL ∘SL f.codRestrict p h = f :=
+  rfl
 
 @[simp]
 theorem domRestrict_comp_codRestrict (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
