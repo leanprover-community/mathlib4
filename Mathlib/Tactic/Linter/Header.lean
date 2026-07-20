@@ -445,7 +445,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | _ => ""
   -- Report any errors about the copyright line.
   if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
-    for (stx, m) in copyrightHeaderChecks copyright (linter.style.header.license.get (← getOptions)) do
+    let expectedLicense := linter.style.header.license.get (← getOptions)
+    for (stx, m) in copyrightHeaderChecks copyright expectedLicense do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- Report a missing module doc-string.
   match afterImports with
