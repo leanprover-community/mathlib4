@@ -441,7 +441,10 @@ variable {A : Type*}
 @[simp] lemma not_isNotUnital_iff_isUnital [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
   grind [not_isUnital_iff_isNotUnital]
 
-/-- A unital magma is `MulOneClass`. -/
+/-- A unital magma is `MulOneClass`.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 noncomputable abbrev IsUnital.toMulOneClass [Mul A] [IsUnital A] : MulOneClass A where
   one := isUnital.choose
   one_mul a := (isUnital.choose_spec a).1

@@ -536,30 +536,54 @@ variable {A : Type*}
 
 attribute [local instance] IsUnital.toMulOneClass
 
-/-- A unital non-associative semiring is a non-associative semiring. -/
+/-- A unital non-associative semiring is a non-associative semiring.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 abbrev toNonAssocSemiring [NonUnitalNonAssocSemiring A] [IsUnital A] : NonAssocSemiring A where
 
 /-- A unital non-unital non-associative commutative semiring is a non-associative
-commutative semiring. -/
+commutative semiring.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 abbrev toNonAssocCommSemiring [NonUnitalNonAssocCommSemiring A] [IsUnital A] :
     NonAssocCommSemiring A where
 
-/-- A unital non-unital semiring is a semiring. -/
+/-- A unital non-unital semiring is a semiring.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 abbrev toSemiring [NonUnitalSemiring A] [IsUnital A] : Semiring A where
 
-/-- A unital non-unital commutative semiring is a commutative semiring. -/
+/-- A unital non-unital commutative semiring is a commutative semiring.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 abbrev toCommSemiring [NonUnitalCommSemiring A] [IsUnital A] : CommSemiring A where
 
-/-- A unital non-unital non-associative ring is a non-associative ring. -/
+/-- A unital non-unital non-associative ring is a non-associative ring.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 abbrev toNonAssocRing [NonUnitalNonAssocRing A] [IsUnital A] : NonAssocRing A where
 
-/-- A unital non-unital non-associative commutative ring is a non-associative commutative ring. -/
+/-- A unital non-unital non-associative commutative ring is a non-associative commutative ring.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 abbrev toNonAssocCommRing [NonUnitalNonAssocCommRing A] [IsUnital A] : NonAssocCommRing A where
 
-/-- A unital non-unital ring is a ring. -/
+/-- A unital non-unital ring is a ring.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 abbrev toRing [NonUnitalRing A] [IsUnital A] : Ring A where
 
-/-- A unital non-unital commutative ring is a commutative ring. -/
+/-- A unital non-unital commutative ring is a commutative ring.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (like `1`). -/
 abbrev toCommRing [NonUnitalCommRing A] [IsUnital A] : CommRing A where
 
 end IsUnital
