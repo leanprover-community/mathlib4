@@ -234,6 +234,7 @@ lemma prodEquivProd_mem_exteriorPower (i : ℕ) (x y : ExteriorAlgebra R M) :
 
 end ExteriorAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 open ExteriorAlgebra in
 /-- The `(i+1)`-st exterior power of `M × R` decomposes as the product of the `(i+1)`-st and the
 `i`-th exterior powers of `M`. -/

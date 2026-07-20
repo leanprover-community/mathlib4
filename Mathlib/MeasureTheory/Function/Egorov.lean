@@ -49,7 +49,7 @@ variable {n : ℕ} {j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : 
 
 theorem mem_notConvergentSeq_iff [Preorder ι] {x : α} :
     x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, (n : ℝ≥0∞)⁻¹ < edist (f k x) (g x) := by
-  simp_rw [notConvergentSeq, Set.mem_iUnion, exists_prop, mem_setOf]
+  simp_rw [notConvergentSeq, Set.mem_iUnion, exists_prop, mem_ofPred]
 
 theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g n) :=
   fun _ _ hjk => Set.iUnion₂_mono' fun l hl => ⟨l, le_trans hjk hl, Set.Subset.rfl⟩
