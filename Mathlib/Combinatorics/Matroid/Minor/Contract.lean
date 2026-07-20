@@ -394,7 +394,7 @@ lemma IsNonloop.of_contract (h : (M ／ C).IsNonloop e) : M.IsNonloop e := by
 @[simp]
 lemma contract_isNonloop_iff : (M ／ C).IsNonloop e ↔ e ∈ M.E \ M.closure C := by
   rw [isNonloop_iff_mem_compl_loops, contract_ground, contract_loops_eq]
-  refine ⟨fun ⟨he,heC⟩ ↦ ⟨he.1, fun h ↦ heC ⟨h, he.2⟩⟩,
+  refine ⟨fun ⟨he, heC⟩ ↦ ⟨he.1, fun h ↦ heC ⟨h, he.2⟩⟩,
     fun h ↦ ⟨⟨h.1, fun heC ↦ h.2 ?_⟩, fun h' ↦ h.2 h'.1⟩⟩
   rw [← closure_inter_ground]
   exact (M.subset_closure (C ∩ M.E)) ⟨heC, h.1⟩

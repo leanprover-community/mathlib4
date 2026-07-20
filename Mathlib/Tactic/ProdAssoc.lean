@@ -35,7 +35,7 @@ deriving Repr
 /-- The iterated product corresponding to a `ProdTree`. -/
 def ProdTree.getType : ProdTree → Expr
   | type tp _ => tp
-  | prod fst snd u v => mkAppN (.const ``Prod [u,v]) #[fst.getType, snd.getType]
+  | prod fst snd u v => mkAppN (.const ``Prod [u, v]) #[fst.getType, snd.getType]
 
 /-- The number of types appearing in an iterated product encoded as a `ProdTree`. -/
 def ProdTree.size : ProdTree → Nat
@@ -50,7 +50,7 @@ def ProdTree.components : ProdTree → List Expr
 /-- Make a `ProdTree` out of an `Expr`. -/
 partial def mkProdTree (e : Expr) : MetaM ProdTree :=
   match e.consumeMData with
-    | .app (.app (.const ``Prod [u,v]) X) Y => do
+    | .app (.app (.const ``Prod [u, v]) X) Y => do
         return .prod (← X.mkProdTree) (← Y.mkProdTree) u v
     | X => do
       let some u := (← whnfD <| ← inferType X).type? | throwError "Not a type{indentExpr X}"
@@ -68,8 +68,8 @@ should return `[t.fst.fst, t.fst.snd, t.snd]`.
 def ProdTree.unpack (t : Expr) : ProdTree → MetaM (List Expr)
   | type _ _ => return [t]
   | prod fst snd u v => do
-      let fst' ← fst.unpack <| mkAppN (.const ``Prod.fst [u,v]) #[fst.getType, snd.getType, t]
-      let snd' ← snd.unpack <| mkAppN (.const ``Prod.snd [u,v]) #[fst.getType, snd.getType, t]
+      let fst' ← fst.unpack <| mkAppN (.const ``Prod.fst [u, v]) #[fst.getType, snd.getType, t]
+      let snd' ← snd.unpack <| mkAppN (.const ``Prod.snd [u, v]) #[fst.getType, snd.getType, t]
       return fst' ++ snd'
 
 /-- This function should act as the "reverse" of `ProdTree.unpack`, constructing
@@ -86,7 +86,7 @@ def ProdTree.pack (ts : List Expr) : ProdTree → MetaM Expr
     unless ts.length == fstSize + sndSize do throwError "Failed due to size mismatch."
     let tsfst := ts.toArray[:fstSize] |>.toArray.toList
     let tssnd := ts.toArray[fstSize:] |>.toArray.toList
-    let mk : Expr := mkAppN (.const ``Prod.mk [u,v]) #[fst.getType, snd.getType]
+    let mk : Expr := mkAppN (.const ``Prod.mk [u, v]) #[fst.getType, snd.getType]
     return .app (.app mk (← fst.pack tsfst)) (← snd.pack tssnd)
 
 /-- Converts a term `e` in an iterated product `P1` into a term of an iterated product `P2`.
@@ -102,7 +102,7 @@ def mkProdFun (a b : Expr) : MetaM Expr := do
   let pb ← b.mkProdTree
   unless pa.components.length == pb.components.length do
     throwError "The number of components in{indentD a}\nand{indentD b}\nmust match."
-  for (x,y) in pa.components.zip pb.components do
+  for (x, y) in pa.components.zip pb.components do
     unless ← isDefEq x y do
       throwError "Component{indentD x}\nis not definitionally equal to component{indentD y}."
   withLocalDeclD `t a fun fvar => do

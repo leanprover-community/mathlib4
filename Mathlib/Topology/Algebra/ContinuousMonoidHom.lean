@@ -378,7 +378,7 @@ a homeomorphism which preserves multiplication. -/
 @[to_additive /-- Makes a continuous additive isomorphism from
 a homeomorphism which preserves addition. -/]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
-  ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
+  ⟨⟨f.toEquiv, h⟩, f.continuous_toFun, f.continuous_invFun⟩
 
 set_option linter.docPrime false in -- This is about `ContinuousMulEquiv.mk'`
 @[simp]

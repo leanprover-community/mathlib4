@@ -130,7 +130,7 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
 /-- Get lambda theorems for particular function property `funPropName`. -/
 def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
     CoreM (Array LambdaTheorem) := do
-  return (lambdaTheoremsExt.getState (← getEnv)).theorems.getD (funPropName,type) #[]
+  return (lambdaTheoremsExt.getState (← getEnv)).theorems.getD (funPropName, type) #[]
 
 
 --------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ type of theorem it is. -/
 def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : MetaM Theorem := do
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
-    let some (decl,f) ← getFunProp? b
+    let some (decl, f) ← getFunProp? b
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
     let fData? ←
@@ -354,7 +354,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         form := dec.toTheoremForm
       }
     | .fvar .. =>
-      let (_,_,b') ← forallMetaTelescope info.type
+      let (_, _, b') ← forallMetaTelescope info.type
       let keys ← RefinedDiscrTree.initializeLazyEntryWithEta b'
       let thm : GeneralTheorem := {
         funPropName := funPropName

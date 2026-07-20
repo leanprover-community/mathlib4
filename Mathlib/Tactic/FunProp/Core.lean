@@ -141,9 +141,9 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     let type ← instantiateMVars <| ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
-    for (i,x) in hint do
+    for (i, x) in hint do
       try
-        for (id,v) in hint do
+        for (id, v) in hint do
           xs[id]!.mvarId!.assignIfDefEq v
       catch _ =>
         trace[Debug.Meta.Tactic.fun_prop]
@@ -311,7 +311,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     | true, true =>
       let f ← mkUncurryFun 2 (Expr.lam xName xType (.lam yName yType yBody default) xBi)
       let g := Expr.lam xName xType (binderInfo := default)
-        (mkAppN (← mkConstWithFreshMVarLevels ``Prod.mk) #[xType,yType,.bvar 0, yValue])
+        (mkAppN (← mkConstWithFreshMVarLevels ``Prod.mk) #[xType, yType,.bvar 0, yValue])
       applyCompRule funPropDecl e f g funProp
 
     | true, false =>

@@ -200,7 +200,7 @@ lemma ScottContinuous.sup₂ :
   simp only [IsLUB, IsLeast, upperBounds, mem_image, Prod.exists, forall_exists_index, and_imp]
   have e1 : (p₁, p₂) ∈ lowerBounds {x | ∀ (b₁ b₂ : β), (b₁, b₂) ∈ d → (b₁, b₂) ≤ x} := hdp.2
   simp only [lowerBounds, mem_ofPred_eq, Prod.forall, Prod.mk_le_mk] at e1
-  refine ⟨fun a b₁ b₂ hbd hba => ?_,fun b hb => ?_⟩
+  refine ⟨fun a b₁ b₂ hbd hba => ?_, fun b hb => ?_⟩
   · rw [← hba]
     exact sup_le_sup (hdp.1 _ _ hbd).1 (hdp.1 _ _ hbd).2
   · rw [sup_le_iff]

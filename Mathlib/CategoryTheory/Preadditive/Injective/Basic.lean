@@ -280,7 +280,7 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     Injective (G.obj I) :=
   ⟨fun {X} {Y} f g => by
     intro
-    rcases hI.factors (F.map f ≫ adj.counit.app _) (F.map g) with ⟨w,h⟩
+    rcases hI.factors (F.map f ≫ adj.counit.app _) (F.map g) with ⟨w, h⟩
     use adj.unit.app Y ≫ G.map w
     rw [← unit_naturality_assoc, ← G.map_comp, h]
     simp⟩
@@ -290,7 +290,7 @@ theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
   ⟨fun {X} {Y} f g => by
     intro
     have : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits
-    rcases hI.factors (G.map f) (G.map g) with ⟨w,h⟩
+    rcases hI.factors (G.map f) (G.map g) with ⟨w, h⟩
     use inv (adj.counit.app _) ≫ F.map w ≫ adj.counit.app _
     exact G.map_injective (by simpa)⟩
 

@@ -64,7 +64,7 @@ lemma Real.tendstoLocallyUniformlyOn_rpow_sub_one_log :
     Eventually.filter_mono nhdsWithin_le_nhds <| eventually_le_nhds (by positivity)
   have hcont : ContinuousOn (fun x => ‖log x‖ ^ 2) s := by fun_prop
   have hcont' : ContinuousOn (fun x => ‖log x‖) s := by fun_prop
-  filter_upwards [h₁, h₂] with p ⟨hp₁,hp₂⟩ hp₃
+  filter_upwards [h₁, h₂] with p ⟨hp₁, hp₂⟩ hp₃
   intro x hx
   have hx' : ‖p * log x‖ ≤ 1 := calc
     _ = p * ‖log x‖ := by grind [norm_mul, Real.norm_of_nonneg]

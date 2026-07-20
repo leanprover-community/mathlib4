@@ -596,7 +596,7 @@ representation on `A` induced by the `DistribMulAction`. -/
 @[simps]
 def coboundariesOfIsCoboundary₂ {f : G × G → A} (hf : IsCoboundary₂ f) :
     coboundaries₂ (Rep.ofDistribMulAction k G A) :=
-  ⟨f, hf.choose,funext fun g ↦ hf.choose_spec g.1 g.2⟩
+  ⟨f, hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
 
 theorem isCoboundary₂_of_mem_coboundaries₂
     (f : G × G → A) (hf : f ∈ coboundaries₂ (Rep.ofDistribMulAction k G A)) :

@@ -63,7 +63,7 @@ def mkProdElem (xs : Array Expr) : MetaM Expr := do
   | 0 => return default
   | 1 => return xs[0]
   | n + 1 =>
-    xs[0:n].foldrM (init := xs[n]) fun x p => mkAppM ``Prod.mk #[x,p]
+    xs[0:n].foldrM (init := xs[n]) fun x p => mkAppM ``Prod.mk #[x, p]
 
 /--
 For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.

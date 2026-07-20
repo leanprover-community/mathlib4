@@ -39,7 +39,7 @@ protected lemma TotallyBounded.convexHull (hs : TotallyBounded s) :
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at ⊢ hs
   intro U hU
   obtain ⟨W, hW₁, hW₂⟩ := exists_nhds_zero_half hU
-  obtain ⟨V, hV₁,hV₂, hV₃⟩ := (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp ‹_› W hW₁
+  obtain ⟨V, hV₁, hV₂, hV₃⟩ := (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp ‹_› W hW₁
   obtain ⟨t, htf, hts⟩ := hs _ hV₁
   obtain ⟨t', htf', hts'⟩ := totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp
     (htf.isCompact_convexHull ℝ).totallyBounded _ hV₁

@@ -246,7 +246,7 @@ protected lemma add_posSemidef [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
-    simpa [mul_add,add_mul] using add_pos_of_pos_of_nonneg (hA.2 (x := x) hx) (hB.2 x)⟩
+    simpa [mul_add, add_mul] using add_pos_of_pos_of_nonneg (hA.2 (x := x) hx) (hB.2 x)⟩
 
 protected lemma posSemidef_add [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
@@ -426,7 +426,7 @@ theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
 theorem posDef_iff_dotProduct_mulVec {M : Matrix n n R} :
     M.PosDef ↔ M.IsHermitian ∧ ∀ ⦃x⦄, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x) := by
   have (x : n →₀ R) : x = 0 ↔ Finsupp.equivFunOnFinite x = 0 :=
-    ⟨fun h1 ↦ Finsupp.coe_eq_zero.mpr h1,fun h2 ↦ Finsupp.coe_eq_zero.mp h2⟩
+    ⟨fun h1 ↦ Finsupp.coe_eq_zero.mpr h1, fun h2 ↦ Finsupp.coe_eq_zero.mp h2⟩
   simp [PosDef, ← Finsupp.equivFunOnFinite.forall_congr_right, dotProduct, mulVec,
     Finsupp.sum_fintype, Finset.mul_sum, mul_assoc, this]
 

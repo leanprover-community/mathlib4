@@ -58,7 +58,7 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
       map := fun g => F.map (𝟙 X ×ₘ g)
-      map_id := fun Y => by rw [← prod_id]; exact F.map_id ⟨X,Y⟩
+      map_id := fun Y => by rw [← prod_id]; exact F.map_id ⟨X, Y⟩
       map_comp := fun f g => by simp [← F.map_comp] }
   map f :=
     { app := fun Y => F.map (f ×ₘ 𝟙 Y)

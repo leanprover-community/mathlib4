@@ -78,8 +78,8 @@ lemma Hom.w : φ.left ≫ g.hom = f.hom := Over.w φ
 
 @[ext]
 theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
-  let ⟨_,b,_⟩ := f
-  let ⟨_,e,_⟩ := g
+  let ⟨_, b, _⟩ := f
+  let ⟨_, e, _⟩ := g
   congr
   simp only [eq_iff_true_of_subsingleton]
 
@@ -703,7 +703,7 @@ lemma Hom.w : f.hom ≫ φ.right = g.hom := Under.w φ
 @[ext]
 theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
     f = g := by
-  let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
+  let ⟨_, b, _⟩ := f; let ⟨_, e, _⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 
 @[simp]

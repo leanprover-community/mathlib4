@@ -80,7 +80,7 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
     refine ⟨i, f, ⟨hf₁, hf₂⟩, fun j ↦ ?_⟩
     rw [← union_singleton, preimage_union, preimage_sdiff]
     obtain (rfl | hne) := eq_or_ne i j
-    · simpa only [show ∀ x, {⟨i,x⟩} = Sigma.mk i '' {x} by simp,
+    · simpa only [show ∀ x, {⟨i, x⟩} = Sigma.mk i '' {x} by simp,
         preimage_image_eq _ sigma_mk_injective, union_singleton]
     rw [preimage_singleton_eq_empty.2 (by simpa), preimage_singleton_eq_empty.2 (by simpa),
       sdiff_empty, union_empty]
@@ -133,9 +133,9 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
     apply hI
   · exact fun i ↦ by simpa using preimage_mono (f := Sigma.mk i) h'
   · exact fun ⟨i, x⟩ hx ↦ by simpa using hIX i hx
-  · refine fun J hJ hJX hIJ ↦ hIJ.antisymm fun ⟨i,x⟩ hx ↦ ?_
+  · refine fun J hJ hJX hIJ ↦ hIJ.antisymm fun ⟨i, x⟩ hx ↦ ?_
     simpa using (h' i (hJ i) (preimage_mono hJX) (preimage_mono hIJ)).symm.subset hx
-  exact fun ⟨i,x⟩ hx ↦ by simpa using h'' i hx
+  exact fun ⟨i, x⟩ hx ↦ by simpa using h'' i hx
 
 lemma Finitary.sigma (h : ∀ i, (M i).Finitary) : (Matroid.sigma M).Finitary := by
   refine ⟨fun I hI ↦ ?_⟩

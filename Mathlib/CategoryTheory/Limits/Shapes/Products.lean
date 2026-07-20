@@ -319,7 +319,7 @@ set_option backward.defeqAttrib.useBackward true in
 def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
     {β : α → Type*} {Y : (a : α) → β a → C} (π : (a : α) → (b : β a) → Y a b ⟶ X a)
       (hs : ∀ a, IsColimit (Cofan.mk (X a) (π a))) :
-        IsColimit (Cofan.mk (f := fun ⟨a,b⟩ => Y a b) c.pt
+        IsColimit (Cofan.mk (f := fun ⟨a, b⟩ => Y a b) c.pt
           (fun (⟨a, b⟩ : Σ a, _) ↦ π a b ≫ c.inj a)) := by
   refine Cofan.IsColimit.mk _ ?_ ?_ ?_
   · exact fun t ↦ hc.desc (Cofan.mk _ fun a ↦ (hs a).desc (Cofan.mk t.pt (fun b ↦ t.inj ⟨a, b⟩)))

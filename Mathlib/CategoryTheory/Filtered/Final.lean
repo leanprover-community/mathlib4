@@ -499,7 +499,7 @@ lemma Monotone.initial_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder
   constructor
   · rintro ⟨h, _⟩ j₂
     obtain ⟨j₁, ⟨φ⟩⟩ := h j₂
-    exact ⟨j₁,leOfHom φ⟩
+    exact ⟨j₁, leOfHom φ⟩
   · intro h
     constructor
     · intro j₂

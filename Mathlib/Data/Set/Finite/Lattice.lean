@@ -275,7 +275,7 @@ theorem Infinite.biUnion {ι : Type*} {s : ι → Set α} {a : Set ι} (ha : a.I
     (hs : a.InjOn s) : (⋃ i ∈ a, s i).Infinite := by
   rw [biUnion_eq_iUnion]
   have _ := ha.to_subtype
-  exact infinite_iUnion fun ⟨i,hi⟩ ⟨j,hj⟩ hij ↦ by simp [hs hi hj hij]
+  exact infinite_iUnion fun ⟨i, hi⟩ ⟨j, hj⟩ hij ↦ by simp [hs hi hj hij]
 
 theorem Infinite.sUnion {s : Set (Set α)} (hs : s.Infinite) : (⋃₀ s).Infinite := by
   rw [sUnion_eq_iUnion]

@@ -627,7 +627,7 @@ def inclusion (h : S₁ ≤ S₂) :
   letI := Nonempty.map (Set.inclusion h) ‹_›
   { toFun := Set.inclusion h
     linear := Submodule.inclusion <| AffineSubspace.direction_le h
-    map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl }
+    map_vadd' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl }
 
 @[simp]
 theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
@@ -695,7 +695,7 @@ This is the affine version of `LinearEquiv.ofEq`. -/
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
   toEquiv := Equiv.setCongr <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
-  map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
+  map_vadd' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl
 
 @[simp]
 theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
