@@ -19,7 +19,7 @@ open CategoryTheory
 
 namespace CategoryTheory.prod
 
-open scoped Prod
+open scoped CategoryTheory.Prod
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] (E : Type u₃)
   [Category.{v₃} E]
@@ -76,6 +76,9 @@ def functorProdToProdFunctorAssociator :
           (associativity _ _ _).functor :=
   Iso.refl _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence swapping the second and third categories in `(A × C) × (D × E)`. This follows
 the definition of `MonoidalCategory.tensorμ`. -/
 @[simps!]
