@@ -112,6 +112,11 @@ instance (priority := 10) decidableEq_of_subsingleton [Subsingleton α] : Decida
 instance [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
   ⟨fun ⟨x, _⟩ ⟨y, _⟩ ↦ by cases Subsingleton.elim x y; rfl⟩
 
+theorem Subtype.subsingleton_iff {p : α → Prop} :
+    Subsingleton (Subtype p) ↔ ∀ a b, p a → p b → a = b :=
+  ⟨fun h a b ha hb ↦ congrArg Subtype.val (@Subsingleton.elim _ h ⟨a, ha⟩ ⟨b, hb⟩),
+   fun h ↦ ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ Subtype.ext (h a b ha hb)⟩⟩
+
 theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
     (h₁ : f ≍ g) (h₂ : x ≍ y) : f x = g y := by
   cases h₂; cases h₁; rfl
