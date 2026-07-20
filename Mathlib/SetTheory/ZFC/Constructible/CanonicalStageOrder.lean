@@ -65,8 +65,10 @@ theorem optionPrependRel_isWellOrder {A : Type u}
 
 /-- The mutually dependent canonical orders at one ordinal. -/
 structure CanonicalOrderData (alpha : Ordinal.{u}) where
+  /-- The canonical well-order relation on the stage. -/
   stageRel : LStageCarrier alpha -> LStageCarrier alpha -> Prop
   stage_isWellOrder : IsWellOrder (LStageCarrier alpha) stageRel
+  /-- The canonical well-order relation on the stage's birth layer. -/
   layerRel : BornAt alpha -> BornAt alpha -> Prop
   layer_isWellOrder : IsWellOrder (BornAt alpha) layerRel
 

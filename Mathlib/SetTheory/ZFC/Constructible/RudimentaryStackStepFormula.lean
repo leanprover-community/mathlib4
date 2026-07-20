@@ -31,14 +31,22 @@ open Constructible.Delta0Formula
 
 /-! ## Fixed indices -/
 
+/-- The universe coordinate in the stack-step layout. -/
 def stackStepUniverseIndex : Fin 16 := 0
+/-- The variable-tag coordinate in the stack-step layout. -/
 def stackStepVarTagIndex : Fin 16 := 1
+/-- The application-tag coordinate in the stack-step layout. -/
 def stackStepAppTagIndex : Fin 16 := 2
+/-- The empty-stack coordinate in the stack-step layout. -/
 def stackStepEmptyIndex : Fin 16 := 3
+/-- The token coordinate in the stack-step layout. -/
 def stackStepTokenIndex : Fin 16 := 13
+/-- The input-stack coordinate in the stack-step layout. -/
 def stackStepInputIndex : Fin 16 := 14
+/-- The output-stack coordinate in the stack-step layout. -/
 def stackStepOutputIndex : Fin 16 := 15
 
+/-- The coordinate of the given rudimentary operation in the stack-step layout. -/
 def stackStepOperationIndex (i : Fin 9) : Fin 16 :=
   ⟨4 + i.1, by omega⟩
 
@@ -110,6 +118,7 @@ def operationStackStepBody (i : Fin 9) : FOFormula 21 :=
           (FOFormula.rename stackStepOpGraphRename
             (opGraphFormula i).toFO))))
 
+/-- The stack-step formula for one rudimentary operation. -/
 def operationStackStepFormula (i : Fin 9) : FOFormula 16 :=
   .ex (.ex (.ex (.ex (.ex (operationStackStepBody i)))))
 

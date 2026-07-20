@@ -71,6 +71,7 @@ theorem exists_eliminateSimpleLast {r n : Nat}
     · simp [lastToFirst]
   rw [hassign]
 
+/-- Choose a bounded formula eliminating the final simple-function coordinate. -/
 noncomputable def eliminateSimpleLast {r n : Nat}
     {f : Tuple ZFSet.{u} r → ZFSet.{u}}
     (hf : IsSimpleSetFunction f) (φ : Delta0Formula (n + 1)) :

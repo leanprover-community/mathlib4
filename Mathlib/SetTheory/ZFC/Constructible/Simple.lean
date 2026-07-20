@@ -31,8 +31,11 @@ A finite ambient `Δ₀` definition of the section of `z` over `U`.  Every entry
 of `params` is a genuine member of `U`.
 -/
 structure Delta0Section (U z : ZFSet.{u}) where
+  /-- The number of parameters in the defining formula. -/
   arity : Nat
+  /-- The parameters of the defining formula. -/
   params : Tuple (ZFCarrier U) arity
+  /-- The bounded formula defining the section. -/
   formula : Delta0Formula (arity + 1)
   correct : ∀ q : ZFCarrier U,
     Satisfies (fun x y : ZFSet.{u} => x ∈ y) formula

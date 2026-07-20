@@ -182,6 +182,7 @@ theorem fiber_mem_rudimentaryClosure {U r p : ZFSet.{u}}
 /-- A rudimentary set coding a relation on nonempty tuples over `U`. -/
 structure RelationRep (U : ZFSet.{u}) (n : Nat)
     (P : Tuple (ZFCarrier U) (n + 1) → Prop) where
+  /-- The set coding the represented relation. -/
   set : ZFSet.{u}
   set_mem : set ∈ rudimentaryClosure U
   subset_space : set ⊆ positiveTupleSpace U n

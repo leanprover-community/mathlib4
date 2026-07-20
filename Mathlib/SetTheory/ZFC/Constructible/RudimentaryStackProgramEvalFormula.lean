@@ -38,26 +38,35 @@ Thus the three final indices are `13,14,15`.  The evaluator then quantifies
 `trace, programLength, traceLength, finalStack`, at indices `16,...,19`.
 -/
 
+/-- The omega coordinate in the program-evaluation layout. -/
 def evalOmegaIndex : Fin 16 := 13
+/-- The program coordinate in the program-evaluation layout. -/
 def evalProgramIndex : Fin 16 := 14
+/-- The result coordinate in the program-evaluation layout. -/
 def evalResultIndex : Fin 16 := 15
 
+/-- Select the omega and program coordinates for program validity. -/
 def evalProgramValidityRename : Fin 2 → Fin 16 :=
   ![evalOmegaIndex, evalProgramIndex]
 
+/-- Select the omega and trace coordinates for trace validity. -/
 def evalTraceValidityRename : Fin 2 → Fin 17 :=
   ![(13 : Fin 17), (16 : Fin 17)]
 
+/-- Select the program and its length coordinate. -/
 def evalProgramLengthRename : Fin 2 → Fin 20 :=
   ![(14 : Fin 20), (17 : Fin 20)]
 
+/-- Select the trace and its length coordinate. -/
 def evalTraceLengthRename : Fin 2 → Fin 20 :=
   ![(16 : Fin 20), (18 : Fin 20)]
 
+/-- Select the coordinates describing the initial stack value. -/
 def evalInitialValueRename : Fin 3 → Fin 20 :=
   Fin.cases (16 : Fin 20)
     (fun j => Fin.cases (3 : Fin 20) (fun _ => (3 : Fin 20)) j)
 
+/-- Select the coordinates describing the final stack value. -/
 def evalFinalValueRename : Fin 3 → Fin 20 :=
   ![(16 : Fin 20), (17 : Fin 20), (19 : Fin 20)]
 

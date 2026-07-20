@@ -316,10 +316,12 @@ inductive UnionExpr (n : Nat) where
 
 namespace UnionExpr
 
+/-- Evaluate an internal-union expression in an assignment. -/
 def eval (s : Tuple ZFSet.{u} n) : UnionExpr n → ZFSet.{u}
   | .var i => s i
   | .sUnion i => ZFSet.sUnion (s i)
 
+/-- Rename the variables in an internal-union expression. -/
 def rename (ρ : Fin n → Fin m) : UnionExpr n → UnionExpr m
   | .var i => .var (ρ i)
   | .sUnion i => .sUnion (ρ i)
@@ -431,6 +433,7 @@ theorem satisfies_eqUnionUnionAt {n : Nat} (x y : Fin n)
       rw [← h] at hz
       exact ZFSet.mem_sUnion.mp hz
 
+/-- Compile membership between two internal-union expressions. -/
 def memUnionExpr {n : Nat} : UnionExpr n → UnionExpr n → Delta0Formula n
   | .var a, .var b => .mem a b
   | .var a, .sUnion x =>
@@ -439,6 +442,7 @@ def memUnionExpr {n : Nat} : UnionExpr n → UnionExpr n → Delta0Formula n
   | .sUnion x, .sUnion y =>
       .boundedEx y (memUnionVarAt x.castSucc (Fin.last n))
 
+/-- Compile equality between two internal-union expressions. -/
 def eqUnionExpr {n : Nat} : UnionExpr n → UnionExpr n → Delta0Formula n
   | .var a, .var b => .eq a b
   | .var a, .sUnion x => eqVarUnionAt a x
@@ -461,6 +465,7 @@ theorem satisfies_eqUnionExpr {n : Nat} (left right : UnionExpr n)
   cases left <;> cases right <;>
     simp [eqUnionExpr, UnionExpr.eval, eq_comm]
 
+/-- Lift an internal-union substitution through one binder. -/
 def liftUnionSubst {m n : Nat} (σ : Fin m → UnionExpr n) :
     Fin (m + 1) → UnionExpr (n + 1) :=
   Fin.lastCases (.var (Fin.last n))
@@ -555,6 +560,7 @@ theorem satisfies_compileUnionSubst {m n : Nat}
             · rw [ih]
               simpa only [eval_liftUnionDoubleSubst] using hφ
 
+/-- The substitution placing one internal union before the remaining context. -/
 def unionContextSubst (k : Nat) : Fin (1 + k) → UnionExpr (1 + k) :=
   Fin.addCases
     (fun _ => .sUnion (Fin.castAdd k (0 : Fin 1)))
@@ -589,12 +595,14 @@ theorem isSimpleSetFunction_sUnion :
 
 /-! ## A third complete case: unordered pairing (`F₀`) -/
 
+/-- An expression that is a variable or an unordered pair of variables. -/
 inductive PairExpr (n : Nat) where
   | var (i : Fin n)
   | pair (left right : Fin n)
 
 namespace PairExpr
 
+/-- Evaluate an unordered-pair expression in an assignment. -/
 def eval (s : Tuple ZFSet.{u} n) : PairExpr n → ZFSet.{u}
   | .var i => s i
   | .pair i j => ({s i, s j} : ZFSet.{u})
@@ -618,6 +626,7 @@ theorem satisfies_eqVarPairAt {n : Nat} (a x y : Fin n)
   simpa only [eqVarPairAt, unorderedPairEqAt] using
     (satisfies_unorderedPairEqAt a x y s)
 
+/-- A bounded formula asserting that an unordered pair belongs to a variable. -/
 def memPairVarAt {n : Nat} (x y a : Fin n) : Delta0Formula n :=
   .boundedEx a
     (eqVarPairAt (Fin.last n) x.castSucc y.castSucc)
@@ -635,6 +644,7 @@ theorem satisfies_memPairVarAt {n : Nat} (x y a : Fin n)
   · intro h
     exact ⟨({s x, s y} : ZFSet.{u}), h, rfl⟩
 
+/-- A bounded formula asserting equality of two unordered pairs. -/
 def eqPairPairAt {n : Nat} (x y u v : Fin n) : Delta0Formula n :=
   .conj
     (.conj (.disj (.eq x u) (.eq x v)) (.disj (.eq y u) (.eq y v)))
@@ -674,6 +684,7 @@ theorem satisfies_eqPairPairAt {n : Nat} (x y u v : Fin n)
     exact ⟨⟨ZFSet.mem_pair.mp hx, ZFSet.mem_pair.mp hy⟩,
       ⟨ZFSet.mem_pair.mp hu, ZFSet.mem_pair.mp hv⟩⟩
 
+/-- Compile membership between unordered-pair expressions. -/
 def memPairExpr {n : Nat} : PairExpr n → PairExpr n → Delta0Formula n
   | .var a, .var b => .mem a b
   | .var a, .pair x y => .disj (.eq a x) (.eq a y)
@@ -681,6 +692,7 @@ def memPairExpr {n : Nat} : PairExpr n → PairExpr n → Delta0Formula n
   | .pair x y, .pair u v =>
       .disj (eqVarPairAt u x y) (eqVarPairAt v x y)
 
+/-- Compile equality between unordered-pair expressions. -/
 def eqPairExpr {n : Nat} : PairExpr n → PairExpr n → Delta0Formula n
   | .var a, .var b => .eq a b
   | .var a, .pair x y => eqVarPairAt a x y
@@ -716,6 +728,7 @@ theorem eval_extendPairChoice {m n : Nat} (σ : Fin m → PairExpr n)
   refine Fin.lastCases ?_ (fun j => ?_) i <;>
     simp [extendPairChoice, PairExpr.eval]
 
+/-- Lift an unordered-pair substitution through one binder. -/
 def liftPairSubst {m n : Nat} (σ : Fin m → PairExpr n) :
     Fin (m + 1) → PairExpr (n + 1) :=
   Fin.lastCases (.var (Fin.last n))
@@ -789,6 +802,7 @@ theorem satisfies_compilePairSubst {m n : Nat}
             · exact Or.inl hφ
             · exact Or.inr hφ
 
+/-- The substitution placing one unordered pair before the remaining context. -/
 def pairContextSubst (k : Nat) : Fin (1 + k) → PairExpr (2 + k) :=
   Fin.addCases
     (fun _ => .pair (Fin.castAdd k (0 : Fin 2)) (Fin.castAdd k (1 : Fin 2)))
@@ -1085,6 +1099,7 @@ theorem IsSimpleSetFunction.compTuple {m n : Nat}
   intro args extra
   exact (hresult args extra).trans (hmiddle (inner args) extra)
 
+/-- Extend a coordinate renaming by the untouched extra context. -/
 def projectionRename {m n k : Nat} (ρ : Fin m → Fin n) :
     Fin (m + k) → Fin (n + k) :=
   Fin.addCases

@@ -25,15 +25,19 @@ open Constructible.Delta0Formula
 
 variable {n : Nat}
 
+/-- The pair coordinate in the component-witness layout. -/
 def componentPairIndex (n : Nat) : Fin (n + 5) :=
   (Fin.last n).castSucc.castSucc.castSucc.castSucc
 
+/-- The left-component coordinate in the component-witness layout. -/
 def componentLeftIndex (n : Nat) : Fin (n + 5) :=
   (Fin.last (n + 2)).castSucc.castSucc
 
+/-- The right-component coordinate in the component-witness layout. -/
 def componentRightIndex (n : Nat) : Fin (n + 5) :=
   Fin.last (n + 4)
 
+/-- Select one component and the final witness coordinate. -/
 def componentLastRename (useRight : Bool) (n : Nat) :
     Fin (n + 1) → Fin (n + 5) :=
   Fin.lastCases
@@ -78,6 +82,7 @@ theorem satisfies_f6GeneratedBody (body : Delta0Formula (n + 1))
   rw [componentLastRename_assignment]
   rfl
 
+/-- Eliminate a bounded quantifier over an F6 value. -/
 def f6BoundAt {n : Nat} (x _y : Fin n)
     (body : Delta0Formula (n + 1)) : Delta0Formula n :=
   withBoundedPairComponents x (f6GeneratedBody body)
@@ -103,6 +108,7 @@ theorem satisfies_f6BoundAt {n : Nat} (x y : Fin n)
     · simp [ZFSet.pair]
     · simp
 
+/-- The simple-value specification for F6. -/
 noncomputable def f6Spec : SimpleValueSpec.{u} where
   eval := F6
   memAt := memOpAt 6
@@ -125,6 +131,7 @@ theorem isSimpleSetFunction_F6 :
 
 /-! ## Fibers are simple -/
 
+/-- A bounded formula for membership in a fiber. -/
 def fiberMemAt {n : Nat} (q x z : Fin n) : Delta0Formula n :=
   .boundedEx x
     (kuratowskiPairEqAt (Fin.last n) q.castSucc z.castSucc)
@@ -142,6 +149,7 @@ theorem satisfies_fiberMemAt {n : Nat} (q x z : Fin n)
   · intro hp
     exact ⟨ZFSet.pair (s q) (s z), hp, rfl⟩
 
+/-- The bounded body describing membership in a generated fiber. -/
 def fiberGeneratedBody {n : Nat} (z : Fin n)
     (body : Delta0Formula (n + 1)) : Delta0Formula (n + 5) :=
   .conj
@@ -167,6 +175,7 @@ theorem satisfies_fiberGeneratedBody (z : Fin n)
   rw [componentLastRename_assignment]
   rfl
 
+/-- Eliminate a bounded quantifier over a fiber. -/
 def fiberBoundAt {n : Nat} (x z : Fin n)
     (body : Delta0Formula (n + 1)) : Delta0Formula n :=
   withBoundedPairComponents x (fiberGeneratedBody z body)
@@ -194,6 +203,7 @@ theorem satisfies_fiberBoundAt {n : Nat} (x z : Fin n)
     · simp [ZFSet.pair]
     · simp
 
+/-- The simple-value specification for fibers. -/
 noncomputable def fiberSpec : SimpleValueSpec.{u} where
   eval := fiber
   memAt := fiberMemAt
@@ -216,6 +226,7 @@ theorem isSimpleSetFunction_fiber :
 
 /-! ## F8 is a bounded image by the simple fiber operation -/
 
+/-- Rename the coordinates used when eliminating a fiber witness. -/
 def fiberElimRename {n : Nat} (x : Fin n) :
     Fin (2 + n) → Fin (n + 1) :=
   Fin.addCases
@@ -237,6 +248,7 @@ theorem fiberElimRename_assignment (x : Fin n)
   · intro j
     simp [fiberElimRename]
 
+/-- Eliminate a bounded quantifier over an F8 value. -/
 noncomputable def f8BoundAt {n : Nat} (x y : Fin n)
     (body : Delta0Formula (n + 1)) : Delta0Formula n :=
   .boundedEx y
@@ -262,6 +274,7 @@ theorem satisfies_f8BoundAt {n : Nat} (x y : Fin n)
       satisfies_eliminateSimpleLast.{u}]
     exact hbody
 
+/-- The simple-value specification for F8. -/
 noncomputable def f8Spec : SimpleValueSpec.{u} where
   eval := F8
   memAt := memOpAt 8

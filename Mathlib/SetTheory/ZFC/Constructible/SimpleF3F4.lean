@@ -25,16 +25,19 @@ open Constructible.Delta0Formula
 
 variable {n : Nat}
 
+/-- The two rudimentary operations whose values are sets of triples. -/
 inductive TripleSetKind
   | f3
   | f4
 
 namespace TripleSetKind
 
+/-- The rudimentary-operation index of a triple-set operation. -/
 def index : TripleSetKind → Fin 9
   | .f3 => 3
   | .f4 => 4
 
+/-- Evaluate a triple-set operation. -/
 noncomputable def eval (kind : TripleSetKind)
     (x y : ZFSet.{u}) : ZFSet.{u} :=
   op kind.index x y
@@ -47,15 +50,19 @@ noncomputable def eval (kind : TripleSetKind)
 
 end TripleSetKind
 
+/-- The generated-element coordinate in the common F3/F4 layout. -/
 def f34ZIndex (n : Nat) : Fin (n + 6) :=
   (Fin.last n).castSucc.castSucc.castSucc.castSucc.castSucc
 
+/-- The generated-pair coordinate in the common F3/F4 layout. -/
 def f34PairIndex (n : Nat) : Fin (n + 6) :=
   (Fin.last (n + 1)).castSucc.castSucc.castSucc.castSucc
 
+/-- The left-component coordinate in the common F3/F4 layout. -/
 def f34LeftIndex (n : Nat) : Fin (n + 6) :=
   (Fin.last (n + 3)).castSucc.castSucc
 
+/-- The right-component coordinate in the common F3/F4 layout. -/
 def f34RightIndex (n : Nat) : Fin (n + 6) :=
   Fin.last (n + 5)
 
@@ -114,6 +121,7 @@ theorem f34ElimRename_assignment (kind : TripleSetKind)
       · intro j
         simp [f34ElimRename]
 
+/-- The bounded body describing one generated F3/F4 element. -/
 noncomputable def f34GeneratedBody (kind : TripleSetKind) {n : Nat}
     (body : Delta0Formula (n + 1)) : Delta0Formula (n + 6) :=
   .conj
@@ -142,6 +150,7 @@ theorem satisfies_f34GeneratedBody (kind : TripleSetKind)
   · simp
   · simp
 
+/-- Eliminate a bounded quantifier over an F3/F4 value. -/
 noncomputable def f34BoundAt (kind : TripleSetKind) {n : Nat}
     (x y : Fin n) (body : Delta0Formula (n + 1)) :
     Delta0Formula n :=
@@ -194,6 +203,7 @@ theorem satisfies_f34BoundAt (kind : TripleSetKind) {n : Nat}
         · simp [ZFSet.pair]
         · simp
 
+/-- The simple-value specification for an F3/F4 operation. -/
 noncomputable def f34Spec (kind : TripleSetKind) :
     SimpleValueSpec.{u} where
   eval := kind.eval

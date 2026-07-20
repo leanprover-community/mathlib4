@@ -29,8 +29,11 @@ namespace Constructible.Godel.RudimentaryTerm
 
 /-! ## Fixed coordinates and renamings -/
 
+/-- The program coordinate in the trace-step layout. -/
 def traceStepProgramIndex : Fin 16 := 13
+/-- The trace coordinate in the trace-step layout. -/
 def traceStepTraceIndex : Fin 16 := 14
+/-- The current-index coordinate in the trace-step layout. -/
 def traceStepIndexIndex : Fin 16 := 15
 
 /-- Read `[program,index,token]` in the four-witness context. -/

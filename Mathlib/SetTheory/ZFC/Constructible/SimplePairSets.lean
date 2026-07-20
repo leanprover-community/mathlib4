@@ -188,6 +188,7 @@ theorem exists_eliminateOrderedPairLast {n : Nat}
       Satisfies ZFMem φ (snoc s (ZFSet.pair x y))
   rw [hassign]
 
+/-- Choose a bounded formula eliminating the final ordered-pair coordinate. -/
 noncomputable def eliminateOrderedPairLast {n : Nat}
     (φ : Delta0Formula (n + 1)) : Delta0Formula (2 + n) :=
   Classical.choose (exists_eliminateOrderedPairLast.{u} φ)
@@ -218,16 +219,19 @@ theorem pairFirstToLast_assignment {n : Nat}
 
 /-! ## A shared expression compiler for `F₂` and `F₇` -/
 
+/-- The rudimentary operations producing sets of ordered pairs. -/
 inductive PairSetKind
   | prod
   | memRel
 
 namespace PairSetKind
 
+/-- The rudimentary-operation index of a pair-set operation. -/
 def index : PairSetKind → Fin 9
   | .prod => 2
   | .memRel => 7
 
+/-- Evaluate a pair-set operation. -/
 noncomputable def eval (kind : PairSetKind) (x y : ZFSet.{u}) : ZFSet.{u} :=
   op kind.index x y
 
@@ -241,16 +245,19 @@ theorem eval_memRel (x y : ZFSet.{u}) :
 
 end PairSetKind
 
+/-- An expression that is a variable or the value of a pair-set operation. -/
 inductive PairSetExpr (n : Nat)
   | var (i : Fin n)
   | pairSet (kind : PairSetKind) (left right : Fin n)
 
 namespace PairSetExpr
 
+/-- Evaluate a pair-set expression in an assignment. -/
 noncomputable def eval (s : Tuple ZFSet.{u} n) : PairSetExpr n → ZFSet.{u}
   | .var i => s i
   | .pairSet kind i j => kind.eval (s i) (s j)
 
+/-- Rename the variables in a pair-set expression. -/
 def rename (ρ : Fin n → Fin m) : PairSetExpr n → PairSetExpr m
   | .var i => .var (ρ i)
   | .pairSet kind i j => .pairSet kind (ρ i) (ρ j)
@@ -349,9 +356,11 @@ theorem satisfies_eqVarPairSetAt {n : Nat} (a : Fin n)
   · intro h
     exact ⟨fun q hq => h ▸ hq, fun q hq => h ▸ hq⟩
 
+/-- A bounded contradiction using the given coordinate. -/
 def falseAt {n : Nat} (i : Fin n) : Delta0Formula n :=
   .neg (.eq i i)
 
+/-- Compile membership between compatible pair-set expressions. -/
 def memPairSetExpr {n : Nat} :
     PairSetExpr n → PairSetExpr n → Delta0Formula n
   | .var a, .var b => .mem a b
@@ -361,6 +370,7 @@ def memPairSetExpr {n : Nat} :
         (eqVarPairSetAt (Fin.last n) kind x.castSucc y.castSucc)
   | .pairSet _ x _, .pairSet _ _ _ => falseAt x
 
+/-- Compile equality between compatible pair-set expressions. -/
 def eqPairSetExpr {n : Nat} :
     PairSetExpr n → PairSetExpr n → Delta0Formula n
   | .var a, .var b => .eq a b
@@ -519,6 +529,7 @@ theorem satisfies_pairBody {m n : Nat}
         (snoc (fun i => (σ i).eval s) (ZFSet.pair x y)) := by
       rw [eval_liftPairSetSubst]
 
+/-- The substitution placing one pair-set value before the remaining context. -/
 def pairSetContextSubst (kind : PairSetKind) (k : Nat) :
     Fin (1 + k) → PairSetExpr (2 + k) :=
   Fin.addCases

@@ -364,6 +364,7 @@ theorem successorExtensionFormulaRel_isWellOrder
 /-- The data retained from a coherent successor-stage graph. -/
 structure SuccessorOrderExtension (alpha : Ordinal.{u})
     (relation : LCarrier.{u}) where
+  /-- The relation extending the well-order to the successor stage. -/
   nextRelation : LCarrier.{u}
   wellOrders : InternallyWellOrders nextRelation
     (stageLCarrier (Order.succ alpha))

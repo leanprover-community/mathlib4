@@ -231,6 +231,7 @@ theorem internallyWellOrders_limit_of_coherentFamily
 preceding coherent system. -/
 structure LimitOrderExtension (limit : Ordinal.{u})
     (graphs : Set.Iio limit → LCarrier.{u}) where
+  /-- The relation extending the coherent system to the limit stage. -/
   nextRelation : LCarrier.{u}
   wellOrders : InternallyWellOrders nextRelation (stageLCarrier limit)
   supported : ∀ x y : LCarrier.{u}, GraphRel nextRelation x y →

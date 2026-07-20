@@ -394,44 +394,52 @@ the compared values.  The resulting shortlex formula has layout
 `[token parameters..., omega, leftSequence, rightSequence]`.
 -/
 
+/-- Select the omega and left-sequence coordinates for the validity formula. -/
 def validityLeftRename (parameterCount : Nat) :
     Fin 2 → Fin (parameterCount + 3) :=
   ![(Fin.last parameterCount).castSucc.castSucc,
     (Fin.last (parameterCount + 1)).castSucc]
 
+/-- Select the omega and right-sequence coordinates for the validity formula. -/
 def validityRightRename (parameterCount : Nat) :
     Fin 2 → Fin (parameterCount + 3) :=
   ![(Fin.last parameterCount).castSucc.castSucc,
     Fin.last (parameterCount + 2)]
 
+/-- Select the left sequence and its length coordinate. -/
 def leftLengthRename (parameterCount : Nat) :
     Fin 2 → Fin (parameterCount + 5) :=
   ![(Fin.last (parameterCount + 1)).castSucc.castSucc.castSucc,
     (Fin.last (parameterCount + 3)).castSucc]
 
+/-- Select the right sequence and its length coordinate. -/
 def rightLengthRename (parameterCount : Nat) :
     Fin 2 → Fin (parameterCount + 5) :=
   ![(Fin.last (parameterCount + 2)).castSucc.castSucc,
     Fin.last (parameterCount + 4)]
 
+/-- Select both sequences and the current prefix index. -/
 def prefixRename (parameterCount : Nat) :
     Fin 3 → Fin (parameterCount + 6) :=
   ![(Fin.last (parameterCount + 1)).castSucc.castSucc.castSucc.castSucc,
     (Fin.last (parameterCount + 2)).castSucc.castSucc.castSucc,
     Fin.last (parameterCount + 5)]
 
+/-- Select the left sequence, index, and decoded value. -/
 def leftValueRename (parameterCount : Nat) :
     Fin 3 → Fin (parameterCount + 8) :=
   ![(Fin.last (parameterCount + 1)).castSucc.castSucc.castSucc.castSucc.castSucc.castSucc,
     (Fin.last (parameterCount + 5)).castSucc.castSucc,
     (Fin.last (parameterCount + 6)).castSucc]
 
+/-- Select the right sequence, index, and decoded value. -/
 def rightValueRename (parameterCount : Nat) :
     Fin 3 → Fin (parameterCount + 8) :=
   ![(Fin.last (parameterCount + 2)).castSucc.castSucc.castSucc.castSucc.castSucc,
     (Fin.last (parameterCount + 5)).castSucc.castSucc,
     Fin.last (parameterCount + 7)]
 
+/-- Select the two decoded token values for comparison. -/
 def tokenLtRename (parameterCount : Nat) :
     Fin (parameterCount + 2) → Fin (parameterCount + 8) :=
   Fin.lastCases (Fin.last (parameterCount + 7))

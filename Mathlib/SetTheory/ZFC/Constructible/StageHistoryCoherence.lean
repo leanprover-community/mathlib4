@@ -72,6 +72,7 @@ theorem stageRelationFamily_represents_historyStageGraphs
 relation selected by the history recursion. -/
 structure HistoryStageGraphExtension (ordinal : Ordinal.{u})
     (graphs : Set.Iio ordinal → LCarrier.{u}) where
+/-- The coherent graph extension supplied at this stage. -/
   extension : StageGraphExtension ordinal graphs
   nextRelation_eq : extension.nextRelation =
     (stageHistoryData ordinal).relation

@@ -31,6 +31,7 @@ noncomputable section
 `alpha`. -/
 structure StageGraphExtension (alpha : Ordinal.{u})
     (graphs : Set.Iio alpha → LCarrier.{u}) where
+  /-- The relation adjoined at the new stage. -/
   nextRelation : LCarrier.{u}
   wellOrders : InternallyWellOrders nextRelation (stageLCarrier alpha)
   supported : ∀ x y : LCarrier.{u}, GraphRel nextRelation x y →

@@ -30,9 +30,13 @@ variable {n m k : Nat}
 bounded context.  `boundAt` is the only operation-specific higher-order
 clause; membership and graph formulas handle all atomic occurrences. -/
 structure SimpleValueSpec where
+  /-- The binary set operation represented by this specification. -/
   eval : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}
+  /-- A bounded formula for membership in the operation's value. -/
   memAt : {n : Nat} → Fin n → Fin n → Fin n → Delta0Formula n
+  /-- A bounded formula for equality with the operation's value. -/
   eqAt : {n : Nat} → Fin n → Fin n → Fin n → Delta0Formula n
+  /-- Eliminate a bounded quantifier over the operation's value. -/
   boundAt : {n : Nat} → Fin n → Fin n →
     Delta0Formula (n + 1) → Delta0Formula n
   satisfies_memAt : ∀ {n : Nat} (q x y : Fin n)
@@ -54,11 +58,13 @@ inductive ValueExpr (n : Nat)
 
 namespace ValueExpr
 
+/-- Evaluate a value expression in an assignment. -/
 def eval (spec : SimpleValueSpec.{u}) (s : Tuple ZFSet.{u} n) :
     ValueExpr n → ZFSet.{u}
   | .var i => s i
   | .value i j => spec.eval (s i) (s j)
 
+/-- Rename the variables in a value expression. -/
 def rename (ρ : Fin n → Fin m) : ValueExpr n → ValueExpr m
   | .var i => .var (ρ i)
   | .value i j => .value (ρ i) (ρ j)
@@ -87,9 +93,11 @@ theorem compatible_rename (ρ : Fin n → Fin m)
 
 end ValueExpr
 
+/-- Compatibility of all value expressions in a simultaneous substitution. -/
 def ValueSubstCompatible {m n : Nat} (σ : Fin m → ValueExpr n) : Prop :=
   ∀ i j, (σ i).Compatible (σ j)
 
+/-- Compile membership between two compatible value expressions. -/
 def memValueExpr (spec : SimpleValueSpec.{u}) {n : Nat} :
     ValueExpr n → ValueExpr n → Delta0Formula n
   | .var a, .var b => .mem a b
@@ -98,6 +106,7 @@ def memValueExpr (spec : SimpleValueSpec.{u}) {n : Nat} :
       .boundedEx a (spec.eqAt (Fin.last n) x.castSucc y.castSucc)
   | .value x _, .value _ _ => .neg (.eq x x)
 
+/-- Compile equality between two compatible value expressions. -/
 def eqValueExpr (spec : SimpleValueSpec.{u}) {n : Nat} :
     ValueExpr n → ValueExpr n → Delta0Formula n
   | .var a, .var b => .eq a b
@@ -143,6 +152,7 @@ theorem satisfies_eqValueExpr (spec : SimpleValueSpec.{u}) {n : Nat}
   · rcases h with ⟨rfl, rfl⟩
     simp [eqValueExpr, ValueExpr.eval]
 
+/-- Lift a value-expression substitution through one binder. -/
 def liftValueSubst {m n : Nat} (σ : Fin m → ValueExpr n) :
     Fin (m + 1) → ValueExpr (n + 1) :=
   Fin.lastCases (.var (Fin.last n))
@@ -235,6 +245,7 @@ theorem satisfies_compileValueSubst (spec : SimpleValueSpec.{u})
                 (valueSubstCompatible_lift hσ)]
               simpa only [eval_liftValueSubst] using hφ
 
+/-- The substitution placing one binary value before the remaining context. -/
 def valueContextSubst (k : Nat) : Fin (1 + k) → ValueExpr (2 + k) :=
   Fin.addCases
     (fun _ => .value
