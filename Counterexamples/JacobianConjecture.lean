@@ -12,7 +12,7 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Disproof of the Jacobian conjecture
 
-The Jacobian conjecture asserts that a polynomial self-map of `Kⁿ`, for `K` a field of
+The **Jacobian conjecture** asserts that a polynomial self-map of `Kⁿ`, for `K` a field of
 characteristic zero, whose Jacobian determinant is a nonzero constant is injective. We formalize
 a counterexample in three variables due to Levent Alpöge and Fable, valid over every field.
 
@@ -75,13 +75,13 @@ theorem jacobianDet_F : jacobianDet (F K) = 1 := by
 
 variable {K}
 
-theorem evalMap_F_char_ne_two (h2 : (2 : K) ≠ 0) :
+theorem evalMap_F_of_char_ne_two (h2 : (2 : K) ≠ 0) :
     evalMap (F K) ![1, -(3 / 4), 13 / 4] = evalMap (F K) ![-1, 3 / 4, 13 / 4] := by
   have h4 : (4 : K) ≠ 0 := (by norm_num : (2 : K) * 2 = 4) ▸ mul_ne_zero h2 h2
   funext i
   fin_cases i <;> simp [evalMap, F] <;> field_simp [h4] <;> ring
 
-theorem evalMap_F_char_two (h2 : (2 : K) = 0) :
+theorem evalMap_F_of_char_two (h2 : (2 : K) = 0) :
     evalMap (F K) ![0, 1, 0] = evalMap (F K) ![1, 1, 0] := by
   funext i
   fin_cases i <;>
@@ -97,8 +97,8 @@ variable (K)
 theorem not_injective_evalMap_F : ¬ Injective (evalMap (F K)) := by
   intro h
   by_cases h2 : (2 : K) = 0
-  · exact zero_ne_one (congrFun (h (evalMap_F_char_two h2)) 0)
-  · have h0 : (1 : K) = -1 := congrFun (h (evalMap_F_char_ne_two h2)) 0
+  · exact zero_ne_one (congrFun (h (evalMap_F_of_char_two h2)) 0)
+  · have h0 : (1 : K) = -1 := congrFun (h (evalMap_F_of_char_ne_two h2)) 0
     exact h2 (by linear_combination h0)
 
 /-- The Jacobian conjecture fails over every field `K`: there is a polynomial self-map of `K³`
