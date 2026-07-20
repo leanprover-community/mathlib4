@@ -137,9 +137,13 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
     simp [← preimage_smul_inv, preimage]
 
 @[to_additive]
-theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
-  convert! TotallyBounded.image hs uniformContinuous_inv
-  aesop
+protected lemma TotallyBounded.inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded s⁻¹ := by
+  simpa using hs.image uniformContinuous_inv
+
+@[to_additive (attr := simp)]
+lemma totallyBounded_inv {s : Set α} : TotallyBounded s⁻¹ ↔ TotallyBounded s where
+  mp hs := by simpa using hs.inv
+  mpr := .inv
 
 section UniformConvergence
 
