@@ -46,6 +46,10 @@ section properties
 
 variable [HasFiniteQuotients R]
 
+instance {I : Ideal R} [NeZero I] :
+    Finite (R ⧸ I) :=
+  finiteQuotient (NeZero.ne I)
+
 /-- A nonzero prime ideal of a ring with finite quotients is maximal. -/
 theorem maximalOfPrime {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
     P.IsMaximal :=
