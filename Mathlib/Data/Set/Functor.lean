@@ -122,17 +122,20 @@ theorem mem_coe_of_mem {a : α} (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a �
   ⟨_, ⟨⟨_, rfl⟩, _, ⟨ha', rfl⟩, rfl⟩⟩
 
 theorem coe_subset : (γ : Set α) ⊆ β := by
-  intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert ha
+  intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert! ha
 
 theorem mem_of_mem_coe {a : α} (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
-  rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
+  rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert! ha
 
 theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
 
-theorem image_coe_eq_restrict_image {δ : Type*} {f : α → δ} : f '' γ = β.restrict f '' γ :=
+theorem image_coe_eq_domRestrict_image {δ : Type*} {f : α → δ} : f '' γ = β.domRestrict f '' γ :=
   ext fun _ =>
     ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
+
+@[deprecated (since := "2026-07-19")]
+alias image_coe_eq_restrict_image := image_coe_eq_domRestrict_image
 
 end with_instance
 
@@ -162,8 +165,12 @@ theorem mem_of_mem_image_val (ha : a ∈ (γ : Set α)) : ⟨a, image_val_subset
 theorem eq_univ_of_image_val_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_image_val <| hγ.symm ▸ ha
 
-theorem image_image_val_eq_restrict_image {δ : Type*} {f : α → δ} : f '' γ = β.restrict f '' γ := by
+theorem image_image_val_eq_domRestrict_image {δ : Type*} {f : α → δ} :
+    f '' γ = β.domRestrict f '' γ := by
   ext; simp
+
+@[deprecated (since := "2026-07-19")]
+alias image_image_val_eq_restrict_image := image_image_val_eq_domRestrict_image
 
 end Set
 

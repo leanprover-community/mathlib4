@@ -34,11 +34,11 @@ lemma CommRingCat.epi_iff_epi {R S : Type u} [CommRing R] [CommRing S] [Algebra 
           simp only [Algebra.algebraMap_eq_smul_one, smul_tmul])
     exact RingHom.congr_fun (congrArg Hom.hom this)
   · refine fun H ↦ ⟨fun {T} f g e ↦ ?_⟩
-    letI : Algebra R T := (ofHom (algebraMap R S) ≫ g).hom.toAlgebra
+    let : Algebra R T := (ofHom (algebraMap R S) ≫ g).hom.toAlgebra
     let f' : S →ₐ[R] T := ⟨f.hom, RingHom.congr_fun (congrArg Hom.hom e)⟩
     let g' : S →ₐ[R] T := ⟨g.hom, fun _ ↦ rfl⟩
     ext s
-    simpa using congr(Algebra.TensorProduct.lift f' g' (fun _ _ ↦ .all _ _) $(H s))
+    simpa using! congr(Algebra.TensorProduct.lift f' g' (fun _ _ ↦ .all _ _) $(H s))
 
 @[deprecated (since := "2026-01-13")]
 alias CommRingCat.epi_iff_tmul_eq_tmul := CommRingCat.epi_iff_epi

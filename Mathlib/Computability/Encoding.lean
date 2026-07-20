@@ -14,22 +14,21 @@ public import Mathlib.Tactic.DeriveFintype
 /-!
 # Encodings
 
-This file contains the definition of a (finite) encoding, a map from a type to
+This file contains the definition of an encoding, a map from a type to
 strings in an alphabet, used in defining computability by Turing machines.
 It also contains several examples:
 
 ## Examples
 
-- `finEncodingNatBool`  : a binary encoding of `ℕ` in a simple alphabet.
-- `finEncodingNatΓ'`    : a binary encoding of `ℕ` in the alphabet used for TM's.
-- `unaryFinEncodingNat` : a unary encoding of `ℕ`
-- `finEncodingBoolBool` : an encoding of `Bool`.
-- `finEncodingList`     : an encoding of `List α` in the alphabet `α`.
-- `finEncodingPair`     : an encoding of `α × β` from encodings of `α` and `β`.
+- `encodingNatBool`  : a binary encoding of `ℕ` in a simple alphabet.
+- `encodingNatΓ'`    : a binary encoding of `ℕ` in the alphabet used for TM's.
+- `unaryEncodingNat` : a unary encoding of `ℕ`
+- `encodingBoolBool` : an encoding of `Bool`.
+- `encodingList`     : an encoding of `List α` in the alphabet `α`.
+- `encodingProd`     : an encoding of `α × β` from encodings of `α` and `β`.
 -/
 
 @[expose] public section
-
 
 universe u v
 
@@ -38,9 +37,7 @@ open Cardinal
 namespace Computability
 
 /-- An encoding of a type in a certain alphabet, together with a decoding. -/
-structure Encoding (α : Type u) where
-  /-- The alphabet of the encoding -/
-  Γ : Type v
+structure Encoding (α : Type u) (Γ : Type v) where
   /-- The encoding function -/
   encode : α → List Γ
   /-- The decoding function -/
@@ -50,17 +47,9 @@ structure Encoding (α : Type u) where
 
 attribute [simp] Encoding.decode_encode
 
-theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
+theorem Encoding.encode_injective {α Γ} (e : Encoding α Γ) : Function.Injective e.encode := by
   refine fun _ _ h => Option.some_injective _ ?_
   rw [← e.decode_encode, ← e.decode_encode, h]
-
-/-- An `Encoding` plus a guarantee of finiteness of the alphabet. -/
-structure FinEncoding (α : Type u) extends Encoding.{u, 0} α where
-  /-- The alphabet of the encoding is finite -/
-  ΓFin : Fintype Γ
-
-instance Γ.fintype {α : Type u} (e : FinEncoding α) : Fintype e.toEncoding.Γ :=
-  e.ΓFin
 
 /-- A standard Turing machine alphabet, consisting of blank,bit0,bit1,bra,ket,comma. -/
 inductive Γ'
@@ -141,26 +130,16 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   exact congr_arg ((↑) : Num → ℕ) (decode_encodeNum n)
 
 /-- A binary `Encoding` of `ℕ` in `Bool`. -/
-def encodingNatBool : Encoding ℕ where
-  Γ := Bool
+def encodingNatBool : Encoding ℕ Bool where
   encode := encodeNat
   decode n := some (decodeNat n)
   decode_encode n := congr_arg _ (decode_encodeNat n)
 
-/-- A binary encoding of `ℕ` in `Bool`, as a `FinEncoding`. -/
-def finEncodingNatBool : FinEncoding ℕ :=
-  ⟨encodingNatBool, Bool.fintype⟩
-
 /-- A binary `Encoding` of `ℕ` in `Γ'`. -/
-def encodingNatΓ' : Encoding ℕ where
-  Γ := Γ'
+def encodingNatΓ' : Encoding ℕ Γ' where
   encode x := List.map inclusionBoolΓ' (encodeNat x)
   decode x := some (decodeNat (List.map sectionΓ'Bool x))
   decode_encode x := congr_arg _ <| by simp [Function.comp_def]
-
-/-- A binary `FinEncoding` of `ℕ` in `Γ'`. -/
-def finEncodingNatΓ' : FinEncoding ℕ :=
-  ⟨encodingNatΓ', inferInstanceAs (Fintype Γ')⟩
 
 /-- A unary encoding function of `ℕ` in `Bool`. -/
 def unaryEncodeNat : Nat → List Bool
@@ -174,13 +153,11 @@ def unaryDecodeNat : List Bool → Nat :=
 @[simp] theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
   Nat.rec rfl (fun (_m : ℕ) hm => (congr_arg Nat.succ hm.symm).symm) n
 
-/-- A unary `FinEncoding` of `ℕ` in `Bool`. -/
-def unaryFinEncodingNat : FinEncoding ℕ where
-  Γ := Bool
+/-- A unary `Encoding` of `ℕ` in `Bool`. -/
+def unaryEncodingNat : Encoding ℕ Bool where
   encode := unaryEncodeNat
   decode n := some (unaryDecodeNat n)
   decode_encode n := congr_arg _ (unary_decode_encode_nat n)
-  ΓFin := Bool.fintype
 
 /-- An encoding function of `Bool` in `Bool`. -/
 def encodeBool : Bool → List Bool := pure
@@ -192,53 +169,99 @@ def decodeBool : List Bool → Bool
 
 @[simp] theorem decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
 
-/-- A `FinEncoding` of `Bool` in `Bool`. -/
-def finEncodingBoolBool : FinEncoding Bool where
-  Γ := Bool
+/-- An `Encoding` of `Bool` in `Bool`. -/
+def encodingBoolBool : Encoding Bool Bool where
   encode := encodeBool
   decode x := some (decodeBool x)
   decode_encode x := congr_arg _ (decode_encodeBool x)
-  ΓFin := Bool.fintype
 
-instance inhabitedFinEncoding : Inhabited (FinEncoding Bool) :=
-  ⟨finEncodingBoolBool⟩
+instance inhabitedEncoding : Inhabited (Encoding Bool Bool) :=
+  ⟨encodingBoolBool⟩
 
-instance inhabitedEncoding : Inhabited (Encoding Bool) :=
-  ⟨finEncodingBoolBool.toEncoding⟩
-
-theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
-    Cardinal.lift.{v} #α ≤ Cardinal.lift.{u} #(List e.Γ) :=
+theorem Encoding.card_le_card_list {α : Type u} {Γ : Type v} (e : Encoding α Γ) :
+    Cardinal.lift.{v} #α ≤ Cardinal.lift.{u} #(List Γ) :=
   Cardinal.lift_mk_le'.2 ⟨⟨e.encode, e.encode_injective⟩⟩
 
-theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Countable e.Γ] :
+theorem Encoding.card_le_aleph0 {α Γ} (e : Encoding α Γ) [Countable Γ] :
     #α ≤ ℵ₀ :=
   haveI : Countable α := e.encode_injective.countable
   Cardinal.mk_le_aleph0
 
-theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=
-  e.toEncoding.card_le_aleph0
-
-/-- A `FinEncoding` of a `List α` in (finite) alphabet `α`, encoded directly. -/
-def finEncodingList (α : Type) [Fintype α] : FinEncoding (List α) where
-  Γ := α
+/-- An `Encoding` of a `List α` in alphabet `α`, encoded directly. -/
+def encodingList (α : Type) : Encoding (List α) α where
   encode := id
   decode := Option.some
   decode_encode _ := rfl
-  ΓFin := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /--
-Given `FinEncoding` of `α` and `β`,
-constructs a `FinEncoding` of `α × β` by concatenating the encodings,
+Given an `Encoding` of `α` and `β`,
+constructs an `Encoding` of `α × β` by concatenating the encodings,
 mapping the symbols from the first encoding with `Sum.inl`
 and those from the second with `Sum.inr`.
 -/
-def finEncodingPair {α β : Type*} (ea : FinEncoding α) (eb : FinEncoding β) :
-    FinEncoding (α × β) where
-  Γ := ea.Γ ⊕ eb.Γ
+def encodingProd {α β Γ₁ Γ₂ : Type*} (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :
+    Encoding (α × β) (Γ₁ ⊕ Γ₂) where
   encode x := (ea.encode x.1).map .inl ++ (eb.encode x.2).map .inr
   decode x := Option.map₂ Prod.mk (ea.decode (x.filterMap Sum.getLeft?))
       (eb.decode (x.filterMap Sum.getRight?))
   decode_encode x := by simp
-  ΓFin := inferInstance
+
+/-! ### Deprecated aliases for `FinEncoding` and unbundled `Γ` -/
+
+/-- Deprecated: Use `Encoding α Γ` along with `[Fintype Γ]` instead. -/
+@[reducible, nolint unusedArguments,
+  deprecated "Use `Encoding α Γ` along with `[Fintype Γ]` instead" (since := "2026-05-07")]
+def FinEncoding (α : Type u) {Γ : Type v} [Fintype Γ] := Encoding α Γ
+
+/-- Deprecated: `Γ` is now an explicit parameter of `Encoding`. -/
+@[reducible, nolint unusedArguments,
+  deprecated "Γ is now an explicit parameter of `Encoding`" (since := "2026-05-07")]
+def Encoding.Γ {α : Type u} {Γ : Type v} (_ : Encoding α Γ) : Type v := Γ
+
+/-- Deprecated: Use `inferInstanceAs (Fintype Γ)` instead. -/
+@[reducible, nolint unusedArguments,
+  deprecated "Use `inferInstanceAs (Fintype Γ)` instead" (since := "2026-05-07")]
+def FinEncoding.ΓFin {α : Type u} {Γ : Type v} [h : Fintype Γ]
+    (_ : Encoding α Γ) : Fintype Γ := h
+
+/-- Deprecated: Use the encoding directly. -/
+@[reducible, nolint unusedArguments,
+  deprecated "Use the encoding directly" (since := "2026-05-07")]
+def FinEncoding.toEncoding {α : Type u} {Γ : Type v} [Fintype Γ]
+    (e : Encoding α Γ) : Encoding α Γ := e
+
+/-- Deprecated alias for `encodingNatBool`. -/
+@[deprecated encodingNatBool (since := "2026-05-07")]
+abbrev finEncodingNatBool := encodingNatBool
+
+/-- Deprecated alias for `encodingNatΓ'`. -/
+@[deprecated encodingNatΓ' (since := "2026-05-07")]
+abbrev finEncodingNatΓ' := encodingNatΓ'
+
+/-- Deprecated alias for `unaryEncodingNat`. -/
+@[deprecated unaryEncodingNat (since := "2026-05-07")]
+abbrev unaryFinEncodingNat := unaryEncodingNat
+
+/-- Deprecated alias for `encodingBoolBool`. -/
+@[deprecated encodingBoolBool (since := "2026-05-07")]
+abbrev finEncodingBoolBool := encodingBoolBool
+
+/-- Deprecated alias for `encodingList`. -/
+@[reducible, nolint unusedArguments,
+  deprecated encodingList (since := "2026-05-07")]
+def finEncodingList (α : Type) [Fintype α] := encodingList α
+
+/-- Deprecated alias for `encodingProd`. -/
+@[reducible, nolint unusedArguments,
+  deprecated encodingProd (since := "2026-05-07")]
+def finEncodingPair {α β Γ₁ Γ₂ : Type*} [Fintype Γ₁] [Fintype Γ₂]
+    (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :=
+  encodingProd ea eb
+
+/-- Deprecated alias for `Encoding.card_le_aleph0`. -/
+@[deprecated Encoding.card_le_aleph0 (since := "2026-05-07")]
+theorem FinEncoding.card_le_aleph0 {α Γ} [Countable Γ] (e : Encoding α Γ) : #α ≤ ℵ₀ :=
+  e.card_le_aleph0
 
 end Computability

@@ -5,8 +5,6 @@ Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
@@ -150,10 +148,10 @@ theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_dvd {s : S} {p : R[X]} (h
     have ⟨q, hMul⟩ := isIntegrallyClosed_dvd hInt hp
     suffices q.degree ≤ 0 by simp [degree_le_zero_iff.mp this ▸ hMul, minpoly.monic hInt, mul_comm]
     apply WithBot.le_of_add_le_add_left <| Polynomial.degree_ne_bot.mpr <| minpoly.ne_zero hInt
-    convert pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
+    convert! pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
     · rw [hMul, degree_mul]
     · rw [add_zero]
-  · convert right_ne_zero_of_mul <| hMul ▸ h₀
+  · convert! right_ne_zero_of_mul <| hMul ▸ h₀
     refine IsIntegrallyClosed.minpoly.unique ?_ ?_ ?_ |>.symm
     · have := hMul ▸ leadingCoeff_mul .. |>.symm
       simp only [leadingCoeff_C, ne_eq, leadingCoeff_eq_zero, h₀, not_false_eq_true, mul_eq_left₀]
@@ -230,6 +228,7 @@ def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
 theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
     (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
     (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton x⟩ := by

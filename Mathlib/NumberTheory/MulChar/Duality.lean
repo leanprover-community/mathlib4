@@ -80,14 +80,16 @@ Let `N` be a submonoid of `M` group and let `R` be a ring with enough roots of u
 Then any `R`-value multiplicative character of `N` can be extended to a multiplicative
 character of `M`.
 -/
-theorem restrictHom_surjective (N : Submonoid M) :
-    Function.Surjective (MulChar.restrictHom N R) := by
+theorem domRestrictHom_surjective (N : Submonoid M) :
+    Function.Surjective (MulChar.domRestrictHom N R) := by
   intro χ
-  obtain ⟨ψ, hψ⟩ := (χ.toUnitHom.comp N.unitsEquivUnitsType).restrict_surjective R N.units
+  obtain ⟨ψ, hψ⟩ := (χ.toUnitHom.comp N.unitsEquivUnitsType).domRestrict_surjective R N.units
   refine ⟨MulChar.ofUnitHom ψ, ext fun _ ↦ ?_⟩
-  rw [MonoidHom.restrictHom_apply] at hψ
-  rw [restrictHom_apply, restrict_ofUnitHom]
+  rw [MonoidHom.domRestrictHom_apply] at hψ
+  rw [domRestrictHom_apply, domRestrict_ofUnitHom]
   simp [hψ]
+
+@[deprecated (since := "2026-07-19")] alias restrictHom_surjective := domRestrictHom_surjective
 
 /-- The `MulEquiv` between the double dual `MulChar (MulChar M R) R` of `M` and `Mˣ`.
 The image `m` of `η : MulChar (MulChar M R) R` is such that, for all `R`-valued multiplicative
