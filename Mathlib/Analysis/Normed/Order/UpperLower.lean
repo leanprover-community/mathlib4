@@ -212,7 +212,7 @@ protected lemma IsClosed.lowerClosure_pi (hs : IsClosed s) (hs' : BddAbove s) :
   cases nonempty_fintype ι
   refine IsSeqClosed.isClosed fun f x hf hx ↦ ?_
   choose g hg hfg using hf
-  haveI : BoundedGENhdsClass ℝ := by infer_instance
+  have : BoundedGENhdsClass ℝ := by infer_instance
   obtain ⟨a, ha⟩ := hx.bddBelow_range
   obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddBelow_Ici) fun n ↦
     ⟨hg n, (ha <| mem_range_self _).trans <| hfg _⟩

@@ -189,7 +189,6 @@ variable {G : Type u} [Group G] {n : ℕ}
 
 instance diagonal_succ_projective :
     Projective (diagonal k G (n + 1)) := by
-  classical
   exact Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
 
 instance leftRegular_projective :
