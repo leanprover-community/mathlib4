@@ -152,7 +152,7 @@ lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Convex
   | h, x, hx => by
     obtain ⟨r, hr⟩ := h hx
     obtain ⟨ε, hε, hεD⟩ := Metric.mem_nhds_iff.1 <| Filter.inter_mem (hC.mem_nhds hx) hr
-    simp only [preimage_setOf_eq, Pi.abs_apply, subset_inter_iff, hC.nhdsWithin_eq hx] at hεD ⊢
+    simp only [preimage_ofPred_eq, Pi.abs_apply, subset_inter_iff, hC.nhdsWithin_eq hx] at hεD ⊢
     obtain ⟨K, hK⟩ := exists_lipschitzOnWith_of_isBounded (hf.subset hεD.1 (convex_ball ..))
       (half_lt_self hε) <| isBounded_iff_forall_norm_le.2 ⟨r, by simpa using! hεD.2⟩
     exact ⟨K, _, ball_mem_nhds _ (by simpa), hK⟩
