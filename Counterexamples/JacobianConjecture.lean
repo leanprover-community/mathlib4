@@ -79,11 +79,7 @@ theorem evalMap_F_char_ne_two (h2 : (2 : K) ≠ 0) :
     evalMap (F K) ![1, -(3 / 4), 13 / 4] = evalMap (F K) ![-1, 3 / 4, 13 / 4] := by
   have h4 : (4 : K) ≠ 0 := (by norm_num : (2 : K) * 2 = 4) ▸ mul_ne_zero h2 h2
   funext i
-  fin_cases i <;>
-    simp only [evalMap, F, Fin.zero_eta, Fin.mk_one, Fin.reduceFinMk, cons_val_zero, cons_val_one,
-      cons_val_two, head_cons, tail_cons, map_add, map_mul, map_pow, map_neg, map_one,
-      eval_C, eval_X] <;>
-    field_simp [h4] <;> ring
+  fin_cases i <;> simp [evalMap, F] <;> field_simp [h4] <;> ring
 
 theorem evalMap_F_char_two (h2 : (2 : K) = 0) :
     evalMap (F K) ![0, 1, 0] = evalMap (F K) ![1, 1, 0] := by
