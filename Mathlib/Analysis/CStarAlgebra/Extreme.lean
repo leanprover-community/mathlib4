@@ -215,15 +215,18 @@ theorem CStarAlgebra.ofExtremePtOne_mul {x : A} (hx : x ∈ extremePoints ℝ (c
     (a : A) : (star x * x + x * star x - x * star x * (star x * x)) * a = a := by
   simpa [add_comm] using congr(star $(mul_ofExtremePtOne (x := star x) (by simpa) (star a)))
 
-attribute [local instance] IsUnital.toCStarAlgebra in
 /-- A C⋆-algebra is unital iff there exists an extreme point of the closed unit ball.
 
 To upgrade a non-unital C⋆-algebra to a unital one, use `IsUnital.toCStarAlgebra`. -/
 theorem CStarAlgebra.isUnital_iff :
     IsUnital A ↔ (extremePoints ℝ (closedBall (0 : A) 1)).Nonempty := by
   rw [Set.nonempty_def]
-  refine ⟨fun h ↦ ⟨1, one_mem_extremePoints_unitClosedBall⟩, fun ⟨x, hx⟩ ↦ ?_⟩
-  exact ⟨_, fun y ↦ ⟨ofExtremePtOne_mul hx y, mul_ofExtremePtOne hx y⟩⟩
+  refine ⟨fun h ↦ let := h.toCStarAlgebra; ⟨1, one_mem_extremePoints_unitClosedBall⟩, ?_⟩
+  exact fun ⟨x, hx⟩ ↦ ⟨_, fun y ↦ ⟨ofExtremePtOne_mul hx y, mul_ofExtremePtOne hx y⟩⟩
+
+theorem CStarAlgebra.isNotUnital_iff :
+    IsNotUnital A ↔ extremePoints ℝ (closedBall (0 : A) 1) = ∅ := by
+  simp [← not_isUnital_iff_isNotUnital, isUnital_iff, not_nonempty_iff_eq_empty]
 
 /-- The star projections in a non-unital C⋆-algebra are exactly the extreme points of
 the nonnegative closed unit ball. -/
