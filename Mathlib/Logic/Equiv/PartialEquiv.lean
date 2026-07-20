@@ -285,11 +285,11 @@ protected def toEquiv : e.source ≃ e.target where
   right_inv := fun ⟨_, hy⟩ => Subtype.ext <| e.right_inv hy
 
 lemma toEquiv_eq_codRestrict_restrict :
-    e.toEquiv = codRestrict (e.source.restrict e) e.target (by simp) :=
+    e.toEquiv = codRestrict (e.source.domRestrict e) e.target (by simp) :=
   rfl
 
 lemma toEquiv_symm_eq_codRestrict_restrict :
-    e.toEquiv.symm = codRestrict (e.target.restrict e.invFun) e.source (by simp) := by
+    e.toEquiv.symm = codRestrict (e.target.domRestrict e.invFun) e.source (by simp) := by
   rfl
 
 @[simp, mfld_simps]
