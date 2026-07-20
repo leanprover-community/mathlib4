@@ -78,20 +78,20 @@ theorem omega_mul_algebraMap_mul_mk (n x y : R) :
     (ω : QuadraticAlgebra R a b) * algebraMap _ _ n * ⟨x, y⟩ = ⟨a * n * y, n * x + n * b * y⟩ := by
   ext <;> simp; ring
 
-@[deprecated (since := "2025-12-15")] alias omega_mul_coe_mul_mk := omega_mul_algebraMap_mul_mk
-
 theorem mk_eq_add_smul_omega (x y : R) :
     (⟨x, y⟩ : QuadraticAlgebra R a b) = algebraMap _ _ x + y • ω := by
   ext <;> simp
 
 variable {A : Type*} [Ring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem algHom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
     (h : f ω = g ω) : f = g := by
   ext ⟨x, y⟩
   simp [mk_eq_add_smul_omega, h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unique `AlgHom` from `QuadraticAlgebra R a b` to an `R`-algebra `A`,
 constructed by replacing `ω` with the provided root.
 Conversely, this associates to every algebra morphism `QuadraticAlgebra R a b →ₐ[R] A`
@@ -206,8 +206,6 @@ theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r) = r ^ 2 := by
   simp [norm_def, pow_two]
 
-@[deprecated (since := "2025-12-15")] alias norm_coe := norm_algebraMap
-
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
   simp [norm_def, pow_two]
@@ -219,8 +217,6 @@ theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
 theorem algebraMap_norm_eq_mul_star (z : QuadraticAlgebra R a b) :
     (algebraMap R _ (norm z : R)) = z * star z := by
   ext <;> simp [norm, star, mul_comm] <;> ring
-
-@[deprecated (since := "2025-12-15")] alias coe_norm_eq_mul_star := algebraMap_norm_eq_mul_star
 
 @[simp]
 theorem norm_neg (x : QuadraticAlgebra R a b) : (-x).norm = x.norm := by
@@ -272,9 +268,6 @@ theorem algebraMap_mem_nonZeroDivisors_iff {r : R} :
     rw [QuadraticAlgebra.ext_iff, re_zero, im_zero] at hz
     simp only [re_mul, algebraMap_re, algebraMap_im, mul_zero, add_zero, im_mul, zero_add] at hz
     simp [QuadraticAlgebra.ext_iff, re_zero, im_zero, h _ hz.left, h _ hz.right]
-
-@[deprecated (since := "2025-12-15")]
-alias coe_mem_nonZeroDivisors_iff := algebraMap_mem_nonZeroDivisors_iff
 
 theorem star_mem_nonZeroDivisors {z : QuadraticAlgebra R a b}
     (hz : z ∈ (QuadraticAlgebra R a b)⁰) :

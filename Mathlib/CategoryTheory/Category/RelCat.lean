@@ -46,6 +46,7 @@ structure Hom (X Y : RelCat.{u}) : Type u where
 
 initialize_simps_projections Hom (as_prefix rel)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The category of types with binary relations as morphisms. -/
 instance instLargeCategory : LargeCategory RelCat where
   Hom := Hom
@@ -54,18 +55,24 @@ instance instLargeCategory : LargeCategory RelCat where
 
 namespace Hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[ext] lemma ext (f g : X ⟶ Y) (h : f.rel = g.rel) : f = g := by cases f; cases g; congr
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] protected lemma rel_id (X : RelCat.{u}) : rel (𝟙 X) = .id := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] protected lemma rel_comp (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).rel = f.rel.comp g.rel := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem rel_id_apply₂ (x y : X) : x ~[rel (𝟙 X)] y ↔ x = y := .rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem rel_comp_apply₂ (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
     x ~[(f ≫ g).rel] z ↔ ∃ y, x ~[f.rel] y ∧ y ~[g.rel] z := .rfl
 
 end Hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The essentially surjective faithful embedding
 from the category of types and functions into the category of types and relations. -/
 @[simps obj map_rel]
@@ -73,11 +80,13 @@ def graphFunctor : Type u ⥤ RelCat.{u} where
   obj X := X
   map f := .ofRel (f : _ → _).graph
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance graphFunctor_faithful : graphFunctor.Faithful where
   map_injective h := by
     ext
     simp [Function.graph_injective congr(($h).rel)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
@@ -111,19 +120,23 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
 section Opposite
 open Opposite
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The argument-swap isomorphism from `RelCat` to its opposite. -/
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {_ _} r := .op <| .ofRel r.rel.inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The other direction of `opFunctor`. -/
 def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
   obj X := unop X
   map {_ _} r := .ofRel r.unop.rel.inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem opFunctor_comp_unopFunctor_eq :
     Functor.comp opFunctor unopFunctor = Functor.id _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
@@ -137,10 +150,12 @@ def opEquivalence : RelCat ≌ RelCatᵒᵖ where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : opFunctor.IsEquivalence := by
   change opEquivalence.functor.IsEquivalence
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : unopFunctor.IsEquivalence := by
   change opEquivalence.inverse.IsEquivalence
   infer_instance
