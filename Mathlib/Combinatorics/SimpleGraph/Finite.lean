@@ -185,7 +185,6 @@ theorem neighborFinset_disjoint_singleton : Disjoint (G.neighborFinset v) {v} :=
 theorem singleton_disjoint_neighborFinset : Disjoint {v} (G.neighborFinset v) :=
   Finset.disjoint_singleton_left.mpr <| notMem_neighborFinset_self _ _
 
-@[simp]
 theorem neighborFinset_bot [Fintype ((⊥ : SimpleGraph V).neighborSet v)] :
     (⊥ : SimpleGraph V).neighborFinset v = ∅ := by
   ext; simp
