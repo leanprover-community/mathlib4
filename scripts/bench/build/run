@@ -14,5 +14,5 @@ LAKE_OVERRIDE_LEAN=true \
   lakeprof record lake build --no-cache
 
 # Analyze lakeprof data
-"$BENCH_DIR/build/lakeprof_measurements.py" measurements.jsonl
+"$BENCH_DIR/build/lakeprof_measurements.py" "$OUTPUT_FILE"
 python3 "$BENCH_DIR/build/lakeprof_report_upload.py"
