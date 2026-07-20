@@ -77,9 +77,9 @@ lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
     simp
   | inl h =>
   classical
-  haveI : Fintype V := Fintype.ofFinite V
-  haveI : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
-  haveI : Fintype k := Fintype.ofFinite k
+  have : Fintype V := Fintype.ofFinite V
+  have : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
+  have : Fintype k := Fintype.ofFinite k
   have hV : Fintype.card { v : V // v ≠ 0 } = Fintype.card V - 1 := by simp
   simp_rw [← Fintype.card_eq_nat_card, ← Fintype.card_units (α := k), ← hV]
   rw [Fintype.card_congr (nonZeroEquivProjectivizationProdUnits k V), Fintype.card_prod]

@@ -38,7 +38,7 @@ def invtSubmodule : Sublattice (Submodule R M) where
     ⟨le_trans hp <| Submodule.comap_mono le_sup_left,
     le_trans hq <| Submodule.comap_mono le_sup_right⟩
   infClosed' p hp q hq := by
-    simp only [Set.mem_setOf_eq, Submodule.comap_inf, le_inf_iff]
+    simp only [Set.mem_ofPred_eq, Submodule.comap_inf, le_inf_iff]
     exact ⟨inf_le_of_left_le hp, inf_le_of_right_le hq⟩
 
 lemma mem_invtSubmodule {p : Submodule R M} :
@@ -98,9 +98,11 @@ lemma sup_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.i
 
 variable (f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma top_mem : ⊤ ∈ f.invtSubmodule := by simp [invtSubmodule]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma bot_mem : ⊥ ∈ f.invtSubmodule := by simp [invtSubmodule]
 
@@ -125,10 +127,12 @@ protected lemma one :
     invtSubmodule (1 : End R M) = ⊤ :=
   invtSubmodule.id
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma mk_eq_bot_iff {p : Submodule R M} (hp : p ∈ f.invtSubmodule) :
     (⟨p, hp⟩ : f.invtSubmodule) = ⊥ ↔ p = ⊥ :=
   Subtype.mk_eq_bot_iff (by simp [invtSubmodule]) _
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma mk_eq_top_iff {p : Submodule R M} (hp : p ∈ f.invtSubmodule) :
     (⟨p, hp⟩ : f.invtSubmodule) = ⊤ ↔ p = ⊤ :=
   Subtype.mk_eq_top_iff (by simp [invtSubmodule]) _
@@ -171,6 +175,7 @@ protected lemma isCompl_iff {p q : f.invtSubmodule} :
   obtain ⟨q, hq⟩ := q
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_subtype_mem_of_mem_invtSubmodule {p : Submodule R M} (hp : p ∈ f.invtSubmodule)
     {q : Submodule R p} (hq : q ∈ invtSubmodule (LinearMap.restrict f hp)) :
     Submodule.map p.subtype q ∈ f.invtSubmodule := by

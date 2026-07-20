@@ -113,7 +113,7 @@ theorem condExpL2_indicator_of_measurable (hm : m ≤ m0) (hs : MeasurableSet[m]
     (condExpL2 E 𝕜 hm (indicatorConstLp 2 (hm s hs) hμs c) : α →₂[μ] E) =
       indicatorConstLp 2 (hm s hs) hμs c := by
   rw [condExpL2]
-  haveI : Fact (m ≤ m0) := ⟨hm⟩
+  have : Fact (m ≤ m0) := ⟨hm⟩
   have h_mem : indicatorConstLp 2 (hm s hs) hμs c ∈ lpMeas E 𝕜 m 2 μ :=
     mem_lpMeas_indicatorConstLp hm hs hμs
   let ind := (⟨indicatorConstLp 2 (hm s hs) hμs c, h_mem⟩ : lpMeas E 𝕜 m 2 μ)

@@ -522,7 +522,7 @@ theorem isUniformEmbedding_toProdMulOpposite :
 instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete
-  simp only [range_toProdMulOpposite, Set.setOf_forall]
+  simp only [range_toProdMulOpposite, Set.ofPred_forall]
   exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq (by fun_prop) (by fun_prop)
 
 variable [StarRing A] [CStarRing A]
