@@ -246,8 +246,7 @@ theorem Pi.locallyConnectedSpace_iff [∀ i, TopologicalSpace (X i)] :
     refine hJ.subset fun i hi ↦ by_contra fun hiJ ↦ hi ?_
     suffices himg : Function.eval i '' connectedComponent x = univ from 
       ⟨himg ▸ isPreconnected_connectedComponent.image _ (continuous_apply i).continuousOn⟩
-    refine (subset_univ _).antisymm fun z _ ↦
-      ⟨Function.update x i z, htV fun j hj ↦ ?_, by simp⟩
+    refine (subset_univ _).antisymm fun z _ ↦ ⟨Function.update x i z, htV fun j hj ↦ ?_, by simp⟩
     rw [Function.update_of_ne (ne_of_mem_of_not_mem hj hiJ)]
     exact mem_of_mem_nhds (ht j)
   · rintro (he | ⟨hloc, hfin⟩)
