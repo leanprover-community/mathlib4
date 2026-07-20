@@ -112,7 +112,6 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
     ext X
     exact F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F : D ⥤ E` is fully faithful, then so is
 `(whiskeringRight C D E).obj F : (C ⥤ D) ⥤ C ⥤ E`. -/
 @[simps]
@@ -395,7 +394,6 @@ variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C₁] [Category* C�
   [Category* D₁] [Category* D₂] [Category* D₃] (E : Type*) [Category* E]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The obvious functor `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E)`. -/
 @[simps!, implicit_reducible]
 def whiskeringLeft₂ :

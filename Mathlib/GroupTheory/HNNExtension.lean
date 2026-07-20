@@ -118,7 +118,6 @@ theorem hom_ext {f g : HNNExtension G A B φ →* M}
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.hom_ext hg (MonoidHom.ext_mint ht)
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem induction_on {motive : HNNExtension G A B φ → Prop}
     (x : HNNExtension G A B φ) (of : ∀ g, motive (of g))

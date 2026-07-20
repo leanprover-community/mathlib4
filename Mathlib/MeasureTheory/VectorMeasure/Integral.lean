@@ -191,7 +191,6 @@ instance [IsFiniteMeasure μ.variation] :
     IsFiniteMeasure (μ.transpose B).variation :=
   isFiniteMeasure_of_le _ (variation_transpose_le μ B)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
     (hB : ∀ x y, ‖B x y‖₊ = C * ‖x‖₊ * ‖y‖₊) :
     (μ.transpose B).variation = C • μ.variation := by
@@ -369,7 +368,6 @@ theorem transpose_sub_cbm (μ : VectorMeasure X F) (B C : E →L[ℝ] F →L[ℝ
 
 section Function
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem integral_undef (h : ¬ μ.Integrable f) :
     ∫ᵛ x, f x ∂[B; μ] = 0 := by
   simp [integral, setToFun_undef _ h]
@@ -560,7 +558,6 @@ theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
       Finset.sum_insert] at hf ⊢
     rw [integral_add_vectorMeasure hf.1 (Integrable.finsetSum_vectorMeasure hf.2), ih hf.2]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[integral_simps]
 theorem integral_neg_vectorMeasure :
     ∫ᵛ x, f x ∂[B; -μ] = -∫ᵛ x, f x ∂[B; μ] := by
@@ -600,7 +597,6 @@ theorem integral_finsetSum_cbm {B : ι → E →L[ℝ] F →L[ℝ] G}
     simp only [ha, not_false_eq_true, Finset.sum_insert]
     rw [integral_add_cbm hf, ih]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[integral_simps]
 theorem integral_neg_cbm :
     ∫ᵛ x, f x ∂[-B; μ] = -∫ᵛ x, f x ∂[B; μ] := by

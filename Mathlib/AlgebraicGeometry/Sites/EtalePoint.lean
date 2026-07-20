@@ -111,7 +111,6 @@ instance {Y X : Scheme.{u}} (f : Y ⟶ X) [Etale f] (x : X) :
   dsimp [Hom.fiberToSpecResidueField]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pointSmallEtaleFiberObjToPreimage_surjective (X : S.Etale) :
     Function.Surjective (pointSmallEtaleFiberObjToPreimage s hs₀ (X := X)) := by
   intro y
@@ -123,7 +122,6 @@ lemma pointSmallEtaleFiberObjToPreimage_surjective (X : S.Etale) :
   refine ⟨Over.homMk (l ≫ X.hom.fiberι t) ?_, rfl⟩
   simp [X.hom.fiber_fac, reassoc_of% hl]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isConservative_pointSmallEtale
     {ι : Type*} {S : Scheme.{u}}
     {Ω : ι → Type u} [∀ i, Field (Ω i)] [∀ i, IsSepClosed (Ω i)]

@@ -317,7 +317,6 @@ section DecidablePiExists
 
 variable {s : Finset α}
 
-set_option backward.isDefEq.respectTransparency false in
 instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
     Decidable (∀ (a) (h : a ∈ s), p a h) :=
   Multiset.decidableDforallMultiset
@@ -334,7 +333,6 @@ instance instDecidableLE [DecidableEq α] : DecidableLE (Finset α) :=
 instance instDecidableLT [DecidableEq α] : DecidableLT (Finset α) :=
   instDecidableRelSSubset
 
-set_option backward.isDefEq.respectTransparency false in
 instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
     Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
   Multiset.decidableDexistsMultiset

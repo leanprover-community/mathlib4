@@ -92,7 +92,6 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
         · intro hf
           exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩ }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
 TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/

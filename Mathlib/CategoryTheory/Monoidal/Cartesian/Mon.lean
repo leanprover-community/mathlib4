@@ -126,7 +126,6 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 @[to_additive]
 instance : CartesianMonoidalCategory (Mon C) where
@@ -362,7 +361,6 @@ def yonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (attr := reassoc)]
 lemma yonedaMon_naturality (α : yonedaMonObj M ⟶ yonedaMonObj N) (f : X ⟶ Y) (g : Y ⟶ M) :
       α.app _ (f ≫ g) = f ≫ α.app _ g := congr($(α.naturality f.op) g)
@@ -461,7 +459,6 @@ namespace Hom
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `M` and `N` are isomorphic as monoid objects, then `X ⟶ M` and `X ⟶ N` are isomorphic
 monoids. -/
 @[to_additive (attr := simps!)

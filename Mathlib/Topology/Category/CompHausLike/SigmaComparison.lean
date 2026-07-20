@@ -66,7 +66,6 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   erw [IsColimit.fac]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance isIsoSigmaComparison : IsIso <| sigmaComparison X σ := by
   rw [sigmaComparison_eq_comp_isos]
   infer_instance

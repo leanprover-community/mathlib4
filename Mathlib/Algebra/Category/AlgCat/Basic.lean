@@ -270,7 +270,6 @@ def restrictScalars {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) :
     AlgCat.ofHom (g.hom.restrictScalars _)
 
 -- The option makes `simps` produce the correct lemmas
-set_option backward.isDefEq.respectTransparency false in
 /-- Restricting scalars along the identity is isomorphic to the identity. -/
 @[simps!]
 def restrictScalarsId' {R : Type*} [CommRing R] (f : R →+* R) (hf : f = .id R) :
@@ -281,7 +280,6 @@ def restrictScalarsId' {R : Type*} [CommRing R] (f : R →+* R) (hf : f = .id R)
         ((restrictScalars f).obj A).isAlgebra _ fun _ ↦ by subst hf; rfl
 
 -- The option makes `simps` produce the correct lemmas
-set_option backward.isDefEq.respectTransparency false in
 /-- Restricting scalars along a composition is isomorphic to the composition
 of restriction of scalars. -/
 @[simps!]

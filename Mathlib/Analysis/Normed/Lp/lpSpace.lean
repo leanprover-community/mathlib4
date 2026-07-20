@@ -1279,7 +1279,6 @@ open Filter
 
 open scoped Topology uniformity
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
     UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) :=

@@ -119,7 +119,6 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 variable [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
 variable [HasFiniteProducts.{v} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves the terminal object and binary products, then it preserves products indexed by
 `Fin n` for any `n`.

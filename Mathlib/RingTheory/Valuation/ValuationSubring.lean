@@ -727,7 +727,6 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
       Ideal.Quotient.mk _ (A.unitGroupMulEquiv x : A) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ker_unitGroupToResidueFieldUnits :
     A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
   ext

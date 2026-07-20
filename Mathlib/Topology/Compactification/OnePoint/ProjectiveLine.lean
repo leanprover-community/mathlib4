@@ -60,7 +60,6 @@ instance {S} [DistribSMul S R] [SMulCommClass R S R] :
     SMulCommClass (Matrix (Fin 2) (Fin 2) R) S (R × R) :=
   (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
 lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
@@ -111,7 +110,6 @@ lemma equivProjectivization_apply_coe (t : K) :
     equivProjectivization K t = mk K ![t, 1] (by simp) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma equivProjectivization_symm_apply_mk (v : Fin 2 → K) (h : v ≠ 0) :
     (equivProjectivization K).symm (mk K v h) = if v 1 = 0 then ∞ else (v 1)⁻¹ * v 0 := by

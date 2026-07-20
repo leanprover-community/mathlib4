@@ -272,7 +272,6 @@ noncomputable def homologyData (h : (K.sc' i j k).HomologyData) :
   right := rightHomologyData K e hj' hi hi' hk hk' h.right
   iso := h.iso
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The homology data of `(K.extend e).sc j'` that is deduced
 from a homology data of `K.sc' i j k`. -/
 @[simps!]

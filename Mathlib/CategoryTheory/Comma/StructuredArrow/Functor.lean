@@ -111,7 +111,6 @@ def grothendieckProj : Grothendieck (functor L) ⥤ C :=
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
 @[simps!]
 def ιCompGrothendieckProj (X : D) :
@@ -120,7 +119,6 @@ def ιCompGrothendieckProj (X : D) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Functors between costructured arrow categories induced by morphisms in the base category
 composed with fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
 @[simps!]

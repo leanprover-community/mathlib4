@@ -338,7 +338,6 @@ instance : IsIso (pushoutComparison G f g) := by
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A pushout cocone in `C` is colimit iff it becomes limit
 after the application of `yoneda.obj X` for all `X : C`. -/
 def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :

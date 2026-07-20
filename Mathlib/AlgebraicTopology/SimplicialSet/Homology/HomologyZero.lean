@@ -118,14 +118,12 @@ lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :
 noncomputable def homology₀ε : X.homology R 0 ⟶ R :=
   (X.homology₀Iso R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCycles_ιChainComplex_homologyπ_homology₀ε (x : X _⦋0⦌) :
     (X.chainComplex R).liftCycles (X.ιChainComplex x) 0 (by simp) (by simp) ≫
       (X.chainComplex R).homologyπ 0 ≫ X.homology₀ε R = 𝟙 R := by
   simp [homology₀ε]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [X.IsConnected] : IsIso (X.homology₀ε R) := by
   dsimp [homology₀ε]
   simp only [isIso_comp_left_iff]

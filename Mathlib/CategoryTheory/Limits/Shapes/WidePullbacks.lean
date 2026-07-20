@@ -87,7 +87,6 @@ meta def evalCasesBash : TacticM Unit := do
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
@@ -105,7 +104,6 @@ theorem hom_id (X : WidePullbackShape J) : Hom.id X = 𝟙 X :=
 
 variable {C : Type u} [Category.{v} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a functor out of the wide pullback shape given a J-indexed collection of arrows to a
 fixed object.
 -/
@@ -124,7 +122,6 @@ def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
     F ≅ wideCospan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.term j) :=
   NatIso.ofComponents fun j => eqToIso <| by cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cone over a wide cospan. -/
 @[simps]
@@ -139,7 +136,6 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
         naturality := fun j j' f => by
           cases j <;> cases j' <;> cases f <;> simp [w] } }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
     WidePullbackShape J ≌ WidePullbackShape J' where
@@ -219,7 +215,6 @@ meta def evalCasesBash' : TacticM Unit := do
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
   intro a b
@@ -258,7 +253,6 @@ def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
     F ≅ wideSpan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.init j) :=
   NatIso.ofComponents fun j => eqToIso <| by cases j; repeat rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cocone over a wide span. -/
 @[simps]
@@ -273,7 +267,6 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
         naturality := fun j j' f => by
           cases j <;> cases j' <;> cases f <;> simp [w] } }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)

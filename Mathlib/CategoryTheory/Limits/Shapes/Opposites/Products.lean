@@ -133,7 +133,6 @@ def opCoproductIsoProduct :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opCoproductIsoProduct'_hom_comp_proj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) (i : α) :
@@ -150,7 +149,6 @@ theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
   IsLimit.conePointUniqueUpToIso_inv_comp (Cofan.IsColimit.op hc) hf ⟨b⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem opCoproductIsoProduct'_comp_self {c c' : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hc' : IsColimit c') (hf : IsLimit f) :
     (opCoproductIsoProduct' hc hf).hom ≫ (opCoproductIsoProduct' hc' hf).inv =
@@ -173,7 +171,6 @@ theorem opCoproductIsoProduct_inv_comp_ι [HasCoproduct Z] (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z b).op = Pi.π (op <| Z ·) b :=
   opCoproductIsoProduct'_inv_comp_inj _ _ b
 
-set_option backward.isDefEq.respectTransparency false in
 theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) (c' : Cofan Z) :
     (hc.desc c').op ≫ (opCoproductIsoProduct' hc hf).hom = hf.lift c'.op := by
@@ -183,7 +180,6 @@ theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z 
   erw [opCoproductIsoProduct'_inv_comp_inj, IsLimit.fac]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
@@ -252,7 +248,6 @@ theorem proj_comp_opProductIsoCoproduct'_hom {f : Fan Z} {c : Cofan (op <| Z ·)
     (f.proj b).op ≫ (opProductIsoCoproduct' hf hc).hom = c.inj b :=
   IsColimit.comp_coconePointUniqueUpToIso_hom (Fan.IsLimit.op hf) hc ⟨b⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem opProductIsoCoproduct'_comp_self {f f' : Fan Z} {c : Cofan (op <| Z ·)}
     (hf : IsLimit f) (hf' : IsLimit f') (hc : IsColimit c) :
     (opProductIsoCoproduct' hf hc).hom ≫ (opProductIsoCoproduct' hf' hc).inv =
@@ -274,7 +269,6 @@ theorem π_comp_opProductIsoCoproduct_hom [HasProduct Z] (b : α) :
     (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom = Sigma.ι (op <| Z ·) b :=
   proj_comp_opProductIsoCoproduct'_hom _ _ b
 
-set_option backward.isDefEq.respectTransparency false in
 theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)}
     (hf : IsLimit f) (hc : IsColimit c) (f' : Fan Z) :
     (opProductIsoCoproduct' hf hc).inv ≫ (hf.lift f').op = hc.desc f'.op := by
@@ -327,12 +321,10 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
       apply Quiver.Hom.unop_inj
       simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma fst_opProdIsoCoprod_hom : prod.fst.op ≫ (opProdIsoCoprod A B).hom = coprod.inl := by
   rw [opProdIsoCoprod, ← op_comp, prod.lift_fst, Quiver.Hom.op_unop]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma snd_opProdIsoCoprod_hom : prod.snd.op ≫ (opProdIsoCoprod A B).hom = coprod.inr := by
   rw [opProdIsoCoprod, ← op_comp, prod.lift_snd, Quiver.Hom.op_unop]

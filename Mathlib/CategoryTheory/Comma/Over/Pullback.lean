@@ -93,7 +93,6 @@ instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.map f).IsLeftAdjo
 instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.pullback f).IsRightAdjoint :=
   (Over.mapPullbackAdj f).isRightAdjoint
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pullback along an epi that's preserved under pullbacks is faithful.
 
 This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
@@ -122,7 +121,6 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open pullback in
 /-- If `F` is a left adjoint and its source category has pullbacks, then so is
 `post F : Over Y ⥤ Over (G Y)`.

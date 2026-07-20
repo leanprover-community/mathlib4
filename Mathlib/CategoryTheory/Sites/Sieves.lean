@@ -1453,7 +1453,6 @@ def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C
       rw [shrinkYonedaObjObjEquiv_obj_map, shrinkYonedaObjObjEquiv_symm_comp]
       simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{max w' w} C] :
     (shrinkFunctorUliftFunctorIso.{w, w'} S).inv ≫

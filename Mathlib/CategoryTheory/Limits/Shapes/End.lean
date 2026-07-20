@@ -106,7 +106,6 @@ end Constructor
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma condition (c : Wedge F) {i j : J} (f : i ⟶ j) :
     c.ι i ≫ (F.obj (op i)).map f = c.ι j ≫ (F.map f.op).app j :=
@@ -173,7 +172,6 @@ end Constructor
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma condition (c : Cowedge F) {i j : J} (f : i ⟶ j) :
     (F.map f.op).app i ≫ c.π i = (F.obj (op j)).map f ≫ c.π j :=

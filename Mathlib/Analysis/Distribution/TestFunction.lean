@@ -457,7 +457,6 @@ section Monotone
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 /-- If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
 `𝓓^{n₁}(Ω₁, F)` inside `𝓓^{n₂}(Ω₂, F)`. Otherwise, this is the zero map.
@@ -502,7 +501,6 @@ section FDerivCLM
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 n k) in
 /-- `fderivCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.

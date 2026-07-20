@@ -178,7 +178,6 @@ noncomputable def mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D :=
 
 variable (F : C ⥤ D)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mapSkeleton_obj_toSkeleton (X : C) :
     F.mapSkeleton.obj (toSkeleton X) = toSkeleton (F.obj X) :=
   congr_toSkeleton_of_iso <| F.mapIso <| fromSkeletonToSkeletonIso X
@@ -271,7 +270,6 @@ instance thin : Quiver.IsThin (ThinSkeleton C) := fun _ _ =>
 
 variable {C} {D}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A functor `C ⥤ D` computably lowers to a functor `ThinSkeleton C ⥤ ThinSkeleton D`. -/
 @[simps]
 def map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D where

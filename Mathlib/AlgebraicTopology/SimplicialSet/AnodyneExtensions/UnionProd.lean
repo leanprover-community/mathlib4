@@ -67,14 +67,12 @@ variable {m : ℕ} {k : Fin (m + 1)} {n : ℕ}
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma objEquiv_apply_fst' (hd : x.dim = d) (i : Fin (d + 1)) :
     dsimp% ((objEquiv (x.cast hd).simplex) i).1 = (x.cast hd).simplex.1 i := rfl
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma objEquiv_apply_snd' (hd : x.dim = d) (i : Fin (d + 1)) :
     dsimp% ((objEquiv (x.cast hd).simplex) i).2 = (x.cast hd).simplex.2 i := rfl

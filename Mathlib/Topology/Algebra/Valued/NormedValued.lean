@@ -124,7 +124,6 @@ theorem norm_def {x : L} : v.norm x = hv.hom _ (v.restrict x) := rfl
 
 theorem norm_nonneg (x : L) : 0 ≤ v.norm x := by simp only [norm, NNReal.zero_le_coe]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem norm_add_le (x y : L) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
   simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
   exact le_max_iff.mp (Valuation.map_add_le_max' v.restrict _ _)

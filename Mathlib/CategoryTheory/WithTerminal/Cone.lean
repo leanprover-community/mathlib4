@@ -55,7 +55,6 @@ def commaFromOver : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) 
 @[simps!]
 def liftFromOver : (J ⥤ Over X) ⥤ WithTerminal J ⥤ C := commaFromOver ⋙ equivComma.inverse
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The extension of a functor to over categories behaves well with compositions. -/
 @[simps]
 def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj K ⋙ F where
@@ -127,7 +126,6 @@ lemma coneEquiv_functor_obj_π_app_of (Y : J) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A cone `t` of `K : J ⥤ Over X` is a limit if and only if the corresponding cone
 `coneLift t` of `liftFromOver.obj K : WithTerminal K ⥤ C` is a limit. -/
 @[simps!]
@@ -245,7 +243,6 @@ lemma coconeEquiv_functor_obj_ι_app_of (Y : J) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
 `coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/
 @[simps!]

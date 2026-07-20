@@ -73,7 +73,6 @@ variable (X Y)
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Homeomorphism between the type `C(X, Σ i, Y i)` of continuous maps from a connected topological
 space to the disjoint union of a family of topological spaces and the disjoint union of the types of
 continuous maps `C(X, Y i)`.

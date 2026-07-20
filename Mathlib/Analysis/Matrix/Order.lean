@@ -339,7 +339,6 @@ def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
   InnerProductSpace.ofCore _
 
 open scoped Norms.L2Operator in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
 given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :

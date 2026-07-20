@@ -1345,7 +1345,6 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Over.coprod`. -/
 @[simps]

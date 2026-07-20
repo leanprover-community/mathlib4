@@ -147,7 +147,6 @@ def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.
       cases j
       simp [sum_comp, t.ι_π, comp_dite]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functor f)}
@@ -166,7 +165,6 @@ def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone
       simp_rw [Bicone.toCocone_ι_app, comp_sum, ← Category.assoc, t.ι_π, dite_comp]
       simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfColimitCoconeOfIsColimit {f : J → C} {t : Cocone (Discrete.functor f)}
@@ -282,7 +280,6 @@ theorem biproduct.map_matrix {f : J → C} {g : J → C} {h : K → C} (m : ∀ 
 
 end HasFiniteBiproducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Reindex a categorical biproduct via an equivalence of the index types. -/
 @[simps]
 def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
@@ -492,7 +489,6 @@ lemma biprod.ext_from_iff {f g : X ⊞ Y ⟶ Z} :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every split mono `f` with a cokernel induces a binary bicone with `f` as its `inl` and
 the cokernel map as its `snd`.
 We will show in `isBilimitBinaryBiconeOfIsSplitMonoOfCokernel` that this binary bicone is in
@@ -917,7 +913,6 @@ lemma preservesBiproduct_of_preservesProduct {f : J → C} [PreservesLimit (Disc
             (isLimitOfPreserves F hb.isLimit)) <|
         Cone.ext (Iso.refl _) (by rintro ⟨⟩; simp)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the (product-like) biproduct comparison for `F` and `f` is a monomorphism, then `F`
 preserves the biproduct of `f`. For the converse, see `mapBiproduct`. -/
 lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct f]

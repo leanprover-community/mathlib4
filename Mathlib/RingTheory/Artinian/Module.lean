@@ -606,7 +606,6 @@ instance : Finite (PrimeSpectrum R) :=
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The quotient of a commutative Artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/
 @[simps!]
@@ -618,7 +617,6 @@ noncomputable def quotNilradicalEquivPi :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The quotient of a commutative Artinian ring by a power of its nilradical is isomorphic to
 a finite product of local rings, namely the quotients by the powers of the maximal ideals. -/
 @[simps!]

@@ -819,7 +819,6 @@ theorem ihom_ev_app_hom (A B : Rep k G) :
       LinearMap.id.flip) := by
   ext; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
     ((ihom.coev A).app B).hom.toLinearMap = (TensorProduct.mk k _ _).flip :=
   LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
@@ -1041,7 +1040,6 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 abbrev leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
   homLinearEquiv _ _ ≪≫ₗ Representation.leftRegularMapEquiv A.ρ
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (.single g 1) = A.ρ g x := by
   simp [homEquiv]

@@ -104,35 +104,27 @@ instance : Category.{v} (WithTerminal C) where
   id _ := id _
   comp := comp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma down_id {X : C} : down (𝟙 (of X)) = 𝟙 X := rfl
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma down_comp {X Y Z : C} (f : of X ⟶ of Y) (g : of Y ⟶ of Z) :
     down (f ≫ g) = down f ≫ down g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_from_star {X : C} (f : star ⟶ of X) : False := (f : PEmpty).elim
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion from `C` into `WithTerminal C`. -/
 def incl : C ⥤ WithTerminal C where
   obj := of
   map f := f
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : (incl : C ⥤ _).Full where
   map_surjective f := ⟨f, rfl⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : (incl : C ⥤ _).Faithful where
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Map `WithTerminal` with respect to a functor `F : C ⥤ D`. -/
 @[simps]
 def map {D : Type*} [Category* D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal D where
@@ -165,7 +157,6 @@ def mapComp {D E : Type*} [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithTerminal C ⥤ WithTerminal D`. -/
 @[simps]
@@ -181,7 +172,6 @@ def map₂ {D : Type*} [Category* D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ 
     | star, star, _ => rfl
 
 -- Note: ...
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The prelax functor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[simps]
 def prelaxfunctor : PrelaxFunctor Cat Cat where
@@ -238,7 +228,6 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     · simpa using! (refl _)
     · rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
   default :=
     match X with
@@ -246,12 +235,10 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
     | star => PUnit.unit
   uniq := by cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `WithTerminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
   Limits.IsTerminal.ofUnique _
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : Limits.HasTerminal (WithTerminal C) := Limits.hasTerminal_of_unique star
 
 /-- The isomorphism between star and an abstract terminal object of `WithTerminal C` -/
@@ -259,7 +246,6 @@ instance : Limits.HasTerminal (WithTerminal C) := Limits.hasTerminal_of_unique s
 noncomputable def starIsoTerminal : star ≅ ⊤_ (WithTerminal C) :=
   starTerminal.uniqueUpToIso (Limits.terminalIsTerminal)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift a functor `F : C ⥤ D` to `WithTerminal C ⥤ D`. -/
 @[simps]
 def lift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
@@ -282,7 +268,6 @@ def inclLift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.o
   hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `(lift F _ _).obj WithTerminal.star` with `Z`. -/
 @[simps!]
 def liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
@@ -298,7 +283,6 @@ theorem lift_map_liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : �
   simp
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The uniqueness of `lift`. -/
 @[simp]
 def liftUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
@@ -322,21 +306,18 @@ def liftUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F
         change G.map (𝟙 _) ≫ hG.hom = hG.hom ≫ 𝟙 _
         simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `lift` with `Z` a terminal object. -/
 @[simps!]
 def liftToTerminal {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
     WithTerminal C ⥤ D :=
   lift F (fun _x => hZ.from _) fun _x _y _f => hZ.hom_ext _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `incl_lift` with `Z` a terminal object. -/
 @[simps!]
 def inclLiftToTerminal {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
     incl ⋙ liftToTerminal F hZ ≅ F :=
   inclLift _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `lift_unique` with `Z` a terminal object. -/
 @[simps!]
 def liftToTerminalUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z)
@@ -344,13 +325,11 @@ def liftToTerminalUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : L
   liftUnique F (fun _z => hZ.from _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x =>
     hZ.hom_ext _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a morphism to `star` from `of X`. -/
 @[simp]
 def homFrom (X : C) : incl.obj X ⟶ star :=
   starTerminal.from _
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
   match X with
   | of _X => f.elim
@@ -385,14 +364,12 @@ def mkCommaMorphism {F G : WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject 
   left := Functor.whiskerLeft incl η
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
 functor `WithTerminal C ⥤ D`. -/
 @[simps!]
 def ofCommaObject (c : Comma (𝟭 (C ⥤ D)) (Functor.const C)) : WithTerminal C ⥤ D :=
   lift (Z := c.right) c.left (fun x ↦ c.hom.app x) (fun x y f ↦ by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A morphism in `Comma (𝟭 (C ⥤ D)) (Functor.const C)` gives a morphism between the associated
 functors `WithTerminal C ⥤ D`. -/
@@ -453,7 +430,6 @@ instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)
   · rfl
   · rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 @[simps apply]
@@ -544,35 +520,27 @@ instance : Category.{v} (WithInitial C) where
   id X := id X
   comp f g := comp f g
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma down_id {X : C} : down (𝟙 (of X)) = 𝟙 X := rfl
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma down_comp {X Y Z : C} (f : of X ⟶ of Y) (g : of Y ⟶ of Z) :
     down (f ≫ g) = down f ≫ down g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_to_star {X : C} (f : of X ⟶ star) : False := (f : PEmpty).elim
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion of `C` into `WithInitial C`. -/
 def incl : C ⥤ WithInitial C where
   obj := of
   map f := f
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : (incl : C ⥤ _).Full where
   map_surjective f := ⟨f, rfl⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : (incl : C ⥤ _).Faithful where
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Map `WithInitial` with respect to a functor `F : C ⥤ D`. -/
 @[simps]
 def map {D : Type*} [Category* D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D where
@@ -605,7 +573,6 @@ def mapComp {D E : Type*} [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithInitial C ⥤ WithInitial D`. -/
 @[simps]
@@ -620,7 +587,6 @@ def map₂ {D : Type*} [Category* D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ 
     | star, of x, _ => rfl
     | star, star, _ => rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The prelax functor from `Cat` to `Cat` defined with `WithInitial`. -/
 @[simps]
 def prelaxfunctor : PrelaxFunctor Cat Cat where
@@ -676,7 +642,6 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     · simpa using! (refl _)
     · rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {X : WithInitial C} : Unique (star ⟶ X) where
   default :=
     match X with
@@ -684,12 +649,10 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
     | star => PUnit.unit
   uniq := by cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `WithInitial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=
   Limits.IsInitial.ofUnique _
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
 
 /-- The isomorphism between star and an abstract initial object of `WithInitial C` -/
@@ -697,7 +660,6 @@ instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
 noncomputable def starIsoInitial : star ≅ ⊥_ (WithInitial C) :=
   starInitial.uniqueUpToIso (Limits.initialIsInitial)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift a functor `F : C ⥤ D` to `WithInitial C ⥤ D`. -/
 @[simps]
 def lift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
@@ -727,7 +689,6 @@ def liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z �
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : (lift F M hM).obj star ≅ Z :=
   eqToIso rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem liftStar_lift_map {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) (x : C) :
@@ -762,34 +723,29 @@ def liftUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z
         change G.map (𝟙 _) ≫ hG.hom = hG.hom ≫ 𝟙 _
         simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `lift` with `Z` an initial object. -/
 @[simps!]
 def liftToInitial {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
     WithInitial C ⥤ D :=
   lift F (fun _x => hZ.to _) fun _x _y _f => hZ.hom_ext _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `incl_lift` with `Z` an initial object. -/
 @[simps!]
 def inclLiftToInitial {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
     incl ⋙ liftToInitial F hZ ≅ F :=
   inclLift _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `lift_unique` with `Z` an initial object. -/
 @[simps!]
 def liftToInitialUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z)
     (G : WithInitial C ⥤ D) (h : incl ⋙ G ≅ F) (hG : G.obj star ≅ Z) : G ≅ liftToInitial F hZ :=
   liftUnique F (fun _z => hZ.to _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x => hZ.hom_ext _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a morphism from `star` to `of X`. -/
 @[simp]
 def homTo (X : C) : star ⟶ incl.obj X :=
   starInitial.to _
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
   match X with
   | of _ => f.elim

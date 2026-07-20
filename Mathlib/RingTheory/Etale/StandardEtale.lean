@@ -297,7 +297,6 @@ def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) 
       RingHom.ker_comp_of_injective _ (by exact P.equivMvPolynomialQuotient.symm.injective)]
     simp [Set.pair_comm]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma StandardEtalePresentation.aeval_val_equivMvPolynomial (p : R[X]) :
     MvPolynomial.aeval P.toPresentation.val
     (Bivariate.equivMvPolynomial R (.C p)) = p.aeval P.x := by
@@ -311,7 +310,6 @@ attribute [local simp] Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatri
   Polynomial.Bivariate.pderiv_zero_equivMvPolynomial
   Polynomial.Bivariate.pderiv_one_equivMvPolynomial
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `Algebra.SubmersivePresentation` associated to a standard etale presentation. -/
 @[simps map toPreSubmersivePresentation_toPresentation]
 def StandardEtalePresentation.toSubmersivePresentation :
@@ -321,7 +319,6 @@ def StandardEtalePresentation.toSubmersivePresentation :
   map_inj := Function.injective_id
   jacobian_isUnit := by simp [P.hasMap.2, P.hasMap.isUnit_derivative_f]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma StandardEtalePresentation.toSubmersivePresentation_jacobian :
     P.toSubmersivePresentation.jacobian = aeval P.x P.f.derivative * aeval P.x P.g := by
   simp [StandardEtalePresentation.toSubmersivePresentation]

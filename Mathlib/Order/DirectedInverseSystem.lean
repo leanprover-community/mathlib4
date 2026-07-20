@@ -324,7 +324,6 @@ def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
   right_inv f := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
 

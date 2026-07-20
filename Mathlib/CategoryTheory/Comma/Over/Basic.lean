@@ -239,13 +239,11 @@ better computational properties, when used, for instance, in
 developing the theory of Beck-Chevalley transformations.
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 @[simps!]
 def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Mapping by the identity morphism is just the identity functor. -/
 theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ :=
@@ -260,7 +258,6 @@ theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
 def mapForget {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget Y) ≅ (forget X) := eqToIso (mapForget_eq f)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism arising from `mapComp_eq`. -/
 @[simps!]
@@ -277,14 +274,12 @@ theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (fun _ ↦ by simp [map, Comma.mapRight])
     (fun _ ↦ by ext; simp [eqToHom_left])
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f = g`, then `map f` is naturally isomorphic to `map g`. -/
 @[simps!]
 def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
     map f ≅ map g :=
   NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mapCongr_rfl {X Y : T} (f : X ⟶ Y) :
     mapCongr f f rfl = Iso.refl _ := rfl
@@ -401,7 +396,6 @@ def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
     iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ iteratedSliceForward g :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism relating the functor `Over.map p` to the functor `Over.map p.left`,
 mediated by the underlying functor of the iterated slice equivalence.
@@ -432,7 +426,6 @@ lemma post_forget_eq_forget_comp (F : T ⥤ D) (X : T) :
     post F ⋙ forget (F.obj X) = forget X ⋙ F :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
@@ -481,7 +474,6 @@ instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
 
 instance [F.IsEquivalence] : (Over.post (X := X) F).IsEquivalence where
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is fully faithful, then so is `Over.post F`. -/
 def _root_.CategoryTheory.Functor.FullyFaithful.over (h : F.FullyFaithful) :
@@ -1261,7 +1253,6 @@ def ofDiagEquivalence.functor (X : T × T) :
       (fun f ↦ f.hom.1) (fun g ↦ by simp [← w g])) _ _
     (fun f ↦ f.hom.2) (fun g ↦ by simp [← w g])
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofDiagEquivalence.functor`. -/
 @[simps!]
@@ -1408,7 +1399,6 @@ section CommaFst
 
 variable {C : Type u₃} [Category.{v₃} C] (F : C ⥤ T) (G : D ⥤ T)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor used to define the equivalence `ofCommaFstEquivalence`. -/
 @[simps]

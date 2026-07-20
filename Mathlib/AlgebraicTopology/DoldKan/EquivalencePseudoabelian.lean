@@ -115,7 +115,6 @@ theorem hη :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit isomorphism induced by `N₁Γ₀` -/
 @[simps!]
 def η : Γ ⋙ N ≅ 𝟭 (ChainComplex C ℕ) :=

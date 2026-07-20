@@ -488,7 +488,6 @@ alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_π 
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma iso_inv_hom_left_comp :
     (h.iso m).inv.hom.left ≫ m =

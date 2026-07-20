@@ -297,7 +297,6 @@ lemma germToPullbackStalk_stalkPullbackHom
   simp only [pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk_assoc,
     germ_stalkPullbackHom, germ_res]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma pullbackPushforwardAdjunction_unit_app_app_germToPullbackStalk
@@ -536,7 +535,6 @@ Note that the analogous statement for surjectivity is false: Surjectivity on sta
 imply surjectivity of the components of a sheaf morphism. However it does imply that the morphism
 is an epi, but this fact is not yet formalized.
 -/
-set_option backward.isDefEq.respectTransparency.types false in
 theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X} (f : F.1 ⟶ G)
     (U : Opens X) (h : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f)) :
     Function.Injective (f.app (op U)) := fun s t hst =>
@@ -583,7 +581,6 @@ theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
     Mono f ↔ ∀ x, Mono ((stalkFunctor C x).map f.1) :=
   ⟨fun _ => stalk_mono_of_mono _, fun _ => mono_of_stalk_mono _⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.
 We claim that it suffices to find preimages *locally*. That is, for each `x : U` we construct
 a neighborhood `V ≤ U` and a section `s : F.obj (op V))` such that `f.app (op V) s` and `t`

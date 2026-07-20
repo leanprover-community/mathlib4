@@ -154,7 +154,6 @@ and `m` a monomorphism.
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a regular category, every extremal epimorphism is a regular epimorphism. -/
 noncomputable def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
   have := h.isIso (strongEpiMonoFactorisation f).e (strongEpiMonoFactorisation f).m (by simp)

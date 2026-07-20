@@ -944,7 +944,6 @@ def isLimitIdFork (h : f = g) : IsLimit (idFork h) :=
     convert! h
     exact (Category.comp_id _).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every equalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
 theorem isIso_limit_cone_parallelPair_of_eq (h₀ : f = g) {c : Fork f g} (h : IsLimit c) :
     IsIso c.ι :=
@@ -1164,7 +1163,6 @@ def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
     convert! h
     exact (Category.id_comp _).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every coequalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
 theorem isIso_colimit_cocone_parallelPair_of_eq (h₀ : f = g) {c : Cofork f g} (h : IsColimit c) :
     IsIso c.π :=
@@ -1327,7 +1325,6 @@ def splitMonoOfEqualizer {X Y : C} {f : X ⟶ Y} {r : Y ⟶ X} (hr : f ≫ r ≫
 
 variable {C f g}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fork obtained by postcomposing an equalizer fork with a monomorphism is an equalizer. -/
 def isEqualizerCompMono {c : Fork f g} (i : IsLimit c) {Z : C} (h : Y ⟶ Z) [hm : Mono h] :
     have : Fork.ι c ≫ f ≫ h = Fork.ι c ≫ g ≫ h := by
@@ -1348,7 +1345,6 @@ theorem hasEqualizer_comp_mono [HasEqualizer f g] {Z : C} (h : Y ⟶ Z) [Mono h]
   ⟨⟨{   cone := _
         isLimit := isEqualizerCompMono (limit.isLimit _) h }⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equalizer of an idempotent morphism and the identity is split mono. -/
 @[simps]
 def splitMonoOfIdempotentOfIsLimitFork {X : C} {f : X ⟶ X} (hf : f ≫ f = f) {c : Fork (𝟙 X) f}
@@ -1406,7 +1402,6 @@ def splitEpiOfCoequalizer {X Y : C} {f : X ⟶ Y} {s : Y ⟶ X} (hs : f ≫ s �
 
 variable {C f g}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cofork obtained by precomposing a coequalizer cofork with an epimorphism is
 a coequalizer. -/
 def isCoequalizerEpiComp {c : Cofork f g} (i : IsColimit c) {W : C} (h : W ⟶ X) [hm : Epi h] :
@@ -1428,7 +1423,6 @@ theorem hasCoequalizer_epi_comp [HasCoequalizer f g] {W : C} (h : W ⟶ X) [Epi 
 
 variable (C f g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A coequalizer of an idempotent morphism and the identity is split epi. -/
 @[simps]
 def splitEpiOfIdempotentOfIsColimitCofork {X : C} {f : X ⟶ X} (hf : f ≫ f = f) {c : Cofork (𝟙 X) f}

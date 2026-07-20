@@ -116,7 +116,6 @@ instance (X : Type*) : IsFreeGroup (FreeGroup X) :=
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a free group basis of `G` over `ι`, there is a canonical bijection between maps from `ι`
 to a group `H` and morphisms from `G` to `H`. -/
 @[simps!]

@@ -465,7 +465,6 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp [ModuleCat.hom_whiskerRight]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : MonoidalLinear R (ModuleCat.{u} R) := by
   refine ⟨?_, ?_⟩
   · intros

@@ -191,7 +191,6 @@ instance commShiftOp [CommShift F A] :
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
     rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
     (OppositeShift.functor A F).commShiftIso a = (NatIso.op (F.commShiftIso a)).symm := rfl
 

@@ -138,7 +138,6 @@ theorem of_isLimit' (w : CommSq fst snd f g) (h : Limits.IsLimit w.cone) :
     IsPullback fst snd f g :=
   of_isLimit h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `of_isLimit` for an arbitrary cone on a diagram `WalkingCospan ⥤ C`. -/
 lemma of_isLimit_cone {D : WalkingCospan ⥤ C} {c : Cone D} (hc : IsLimit c) :
     IsPullback (c.π.app .left) (c.π.app .right) (D.map WalkingCospan.Hom.inl)
@@ -279,7 +278,6 @@ theorem of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
     IsPushout f g inl inr :=
   of_isColimit h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `of_isColimit` for an arbitrary cocone on a diagram `WalkingSpan ⥤ C`. -/
 lemma of_isColimit_cocone {D : WalkingSpan ⥤ C} {c : Cocone D} (hc : IsColimit c) :
     IsPushout (D.map WalkingSpan.Hom.fst) (D.map WalkingSpan.Hom.snd)

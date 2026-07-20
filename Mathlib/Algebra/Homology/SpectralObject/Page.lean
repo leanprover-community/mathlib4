@@ -691,7 +691,6 @@ variable {i j : ι} (f : i ⟶ j) {i' j' : ι} (f' : i' ⟶ j')
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An homology data for `X.shortComplex n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)`,
 expressing `H^n₁(f)` as the homology of this short complex,
 see `EIsoH`. -/

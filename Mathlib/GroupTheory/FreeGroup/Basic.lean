@@ -966,7 +966,6 @@ def equivIntOfUnique [Unique α] : FreeGroup α ≃ ℤ where
     | succ x hx => simpa [zpow_add_one] using hx
     | pred x hx => simpa [zpow_sub_one, ← sub_eq_add_neg] using hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between the free group on a unique type and the integers. -/
 def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   toFun := Multiplicative.ofAdd ∘ equivIntOfUnique

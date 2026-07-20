@@ -49,7 +49,6 @@ def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `ULift` functor on `ModuleCat` is compatible with the one defined on categories of types. -/
 @[simps! +dsimpLhs]
 def uliftFunctorForgetIso :

@@ -218,7 +218,6 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
 variable {F G}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
 @[simps]
@@ -243,7 +242,6 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
   map f := { hom := f.hom }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
@@ -577,7 +575,6 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
 variable {F G}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cone over `F ⋙ G`, we can construct a `Cone G` with the same cocone point.
 -/
 @[simps]
@@ -604,7 +601,6 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
             · rw [← Functor.map_comp] } }
   map f := { hom := f.hom }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCone c).π.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
@@ -989,7 +985,6 @@ open CategoryTheory.Functor
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Final functors preserve filteredness.
 
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
@@ -1202,7 +1197,6 @@ end Prod
 
 namespace ObjectProperty
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- For the full subcategory induced by an object property `P` on `C`, to show initiality of
 the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
 theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)

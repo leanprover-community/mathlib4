@@ -114,13 +114,11 @@ variable {S} in
 protected def mk {X : Scheme.{u}} (f : X ⟶ S) [WeaklyEtale f] : S.ProEt :=
   MorphismProperty.Over.mk _ f ‹_›
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor the pro-étale site of `S` to schemes over `S`. -/
 @[simps!]
 protected def forget : S.ProEt ⥤ Over S :=
   MorphismProperty.Over.forget @WeaklyEtale ⊤ S
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from the pro-étale site of `S` to schemes over `S` is fully faithful. -/
 def forgetFullyFaithful : (ProEt.forget S).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
@@ -137,7 +135,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance : PreservesFiniteLimits (ProEt.forget S) :=
   inferInstanceAs <| PreservesFiniteLimits (MorphismProperty.Over.forget _ _ _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : RepresentablyFlat (ProEt.forget S) :=
   flat_of_preservesFiniteLimits _
 
@@ -146,12 +143,10 @@ instance : (ProEt.forget S).LocallyCoverDense (proetaleTopology.over S) := by
   apply MorphismProperty.locallyCoverDense_forget_of_le
   exact proetalePrecoverage_le_precoverage_weaklyEtale
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The pro-étale precoverage on the small pro-étale site. -/
 def precoverage : Precoverage S.ProEt :=
   proetalePrecoverage.comap (ProEt.forget S ⋙ Over.forget S)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The pro-étale topology on the small pro-étale site. -/
 abbrev topology : GrothendieckTopology S.ProEt :=
   (precoverage S).toGrothendieck
@@ -167,11 +162,9 @@ lemma topology_eq_inducedTopology :
   MorphismProperty.toGrothendieck_comap_forget_eq_inducedTopology
     _ proetalePrecoverage_le_precoverage_weaklyEtale
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : (ProEt.forget S ⋙ Over.forget S).IsContinuous (ProEt.topology S) proetaleTopology :=
   Functor.isContinuous_comp _ _ _ (proetaleTopology.over S) _
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : (topology S).Subcanonical :=
   GrothendieckTopology.subcanonical_of_full_of_faithful (ProEt.forget S) _ (proetaleTopology.over S)
 
@@ -188,7 +181,6 @@ lemma bot_mem_topology (X : S.ProEt) [IsEmpty X.left] : ⊥ ∈ topology S X := 
   refine Precoverage.generate_mem_toGrothendieck ?_
   simp [precoverage, proetalePrecoverage, bot_mem_propQCPrecoverage]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma topology_eq_top_of_isEmpty [IsEmpty S] : topology S = ⊤ := by
   rw [GrothendieckTopology.eq_top_iff]
   intro X

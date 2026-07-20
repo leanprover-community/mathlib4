@@ -77,7 +77,6 @@ noncomputable def InjectiveResolution.isoRightDerivedToHomotopyCategoryObj {X : 
     (F.mapHomotopyCategoryFactors _).app I.cocomplex
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)

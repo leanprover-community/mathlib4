@@ -330,7 +330,6 @@ def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
 
 namespace NatIso
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two natural isomorphisms. -/
 @[simps]
@@ -343,7 +342,6 @@ end NatIso
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two equivalences of categories. -/
 @[simps]

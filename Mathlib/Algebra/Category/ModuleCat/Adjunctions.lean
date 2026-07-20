@@ -89,7 +89,6 @@ def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The free-forgetful adjunction for R-modules. -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
@@ -130,11 +129,9 @@ def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
     erw [Finsupp.lapply_apply, Finsupp.lsingle_apply]
     rw [Finsupp.single_eq_same]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma εIso_hom_one : (εIso R).hom 1 = freeMk PUnit.unit := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
   dsimp [εIso, freeMk]
@@ -164,7 +161,6 @@ lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
   erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
 end FreeMonoidal
-set_option backward.isDefEq.respectTransparency.types false in
 open FreeMonoidal in
 /-- The free functor `Type u ⥤ ModuleCat R` is a monoidal functor. -/
 instance : (free R).Monoidal :=
@@ -196,11 +192,9 @@ instance : (free R).Monoidal :=
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma free_ε_one : ε (free R) 1 = freeMk PUnit.unit := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma free_η_freeMk (x : PUnit) : η (free R) (freeMk x) = 1 := by
   apply FreeMonoidal.εIso_inv_freeMk
@@ -260,7 +254,6 @@ namespace Free
 
 section
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
@@ -272,7 +265,6 @@ instance : Preadditive (Free R C) where
     congr; ext r h
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : Linear R (Free R C) where
   homModule _ _ := Finsupp.module _ R
   smul_comp X Y Z r f g := by

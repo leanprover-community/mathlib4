@@ -134,7 +134,6 @@ lemma cartanMatrix_le_zero_of_ne
     b.cartanMatrix i j ≤ 0 :=
   b.pairingIn_le_zero_of_ne (by rwa [ne_eq, ← Subtype.ext_iff]) i.property j.property
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma cartanMatrix_mem_of_ne {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j ∈ ({-3, -2, -1, 0} : Set ℤ) := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
@@ -354,7 +353,6 @@ lemma apply_mem_range_root_of_cartanMatrixEq
     rw [root_reflectionPerm, this, ← hl, ← root_reflectionPerm]
     exact mem_range_self _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A root system is determined by its Cartan matrix. -/
 def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
     (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :

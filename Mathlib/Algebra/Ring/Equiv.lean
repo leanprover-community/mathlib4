@@ -539,7 +539,6 @@ theorem piCongrLeft'_symm {R : Type*} [NonUnitalNonAssocSemiring R] (e : α ≃ 
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport dependent functions through an equivalence of the base space.
 
 This is `Equiv.piCongrLeft` as a `RingEquiv`. -/

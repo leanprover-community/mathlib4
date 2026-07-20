@@ -647,7 +647,6 @@ section EpiPullback
 
 variable [Limits.HasPullbacks C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism.
     Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
 instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
@@ -681,7 +680,6 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
       _ = (biprod.inr ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
       _ = 0 := HasZeroMorphisms.comp_zero _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism. -/
 instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst f g) :=
   -- It will suffice to consider some morphism e : X ⟶ R such that
@@ -714,13 +712,11 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst f g) :=
       _ = (biprod.inl ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
       _ = 0 := HasZeroMorphisms.comp_zero _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.snd := by
   have : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.right) :=
     Abelian.epi_pullback_of_epi_f f g
   apply epi_of_epi_fac (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) hs _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.fst := by
   have : Epi (NatTrans.app (limit.cone (cospan f g)).π WalkingCospan.left) :=
     Abelian.epi_pullback_of_epi_g f g
@@ -740,7 +736,6 @@ section MonoPushout
 
 variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
-set_option backward.isDefEq.respectTransparency false in
 instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift (0 : R ⟶ Y) e
@@ -763,7 +758,6 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [Category.assoc]
       _ = 0 := zero_comp
 
-set_option backward.isDefEq.respectTransparency false in
 instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift e (0 : R ⟶ Z)
@@ -786,14 +780,12 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl f g) :=
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [Category.assoc]
       _ = 0 := zero_comp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mono_inr_of_isColimit [Mono f] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inr := by
   have : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.right) :=
     Abelian.mono_pushout_of_mono_f f g
   apply
     mono_of_mono_fac (IsColimit.comp_coconePointUniqueUpToIso_hom hs (colimit.isColimit _) _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inl := by
   have : Mono (NatTrans.app (colimit.cocone (span f g)).ι WalkingCospan.left) :=
     Abelian.mono_pushout_of_mono_g f g
@@ -860,7 +852,6 @@ attribute [reassoc (attr := simp)] ι_imageπ imageι_π fac
 
 end AbelianStruct
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for abelian categories. We assume that the category `C` is
 preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
 a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`

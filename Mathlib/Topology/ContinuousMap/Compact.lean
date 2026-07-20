@@ -70,7 +70,6 @@ theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoun
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/

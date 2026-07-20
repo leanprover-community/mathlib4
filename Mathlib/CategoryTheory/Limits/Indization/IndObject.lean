@@ -105,7 +105,6 @@ noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical comparison functor between the indexing category of the presentation and the
 comma category `CostructuredArrow yoneda A`. This functor is always final. -/
 @[simps! obj_left obj_right_as obj_hom map_left]

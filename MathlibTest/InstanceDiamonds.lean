@@ -66,7 +66,6 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
       map_add' := fun z w => by simp [add_smul]
       map_smul' := fun r z => by simp [mul_smul] }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
 

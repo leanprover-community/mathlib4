@@ -165,7 +165,6 @@ lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B) [H
   apply equalizer.hom_ext
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An alternative phrasing of the explicit equalizer condition, using more categorical language. -/
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
     ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
@@ -190,7 +189,6 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
     equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open WalkingParallelPair WalkingParallelPairHom in
 theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     (c : PullbackCone π π) (hc : IsLimit c) :

@@ -139,7 +139,6 @@ namespace AtPrime
 
 variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The prime ideals in the localization of a commutative ring at a prime ideal I are in
 order-preserving bijection with the prime ideals contained in I. -/
 @[simps!]
@@ -440,7 +439,6 @@ noncomputable def localAlgHom' (f : S →ₐ[R] P) (h : J = K.comap f) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Isomorphic algebras have isomorphic localizations.
 
 See `localAlgEquiv` for a variant where the base ring is not localized. -/
@@ -458,14 +456,12 @@ section
 variable (q : Ideal R) [q.IsPrime] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
   [IsLocalization.AtPrime S q]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.isPrime_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
     (p.map (algebraMap R S)).IsPrime := by
   have disj : Disjoint (q.primeCompl : Set R) p := by
     simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
   apply IsLocalization.isPrime_of_isPrime_disjoint q.primeCompl _ p (by simpa) disj
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
     (p.map (algebraMap R S)).under R = p := by
   have disj : Disjoint (q.primeCompl : Set R) p := by
