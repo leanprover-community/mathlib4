@@ -311,7 +311,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     | true, true =>
       let f ← mkUncurryFun 2 (Expr.lam xName xType (.lam yName yType yBody default) xBi)
       let g := Expr.lam xName xType (binderInfo := default)
-        (mkAppN (← mkConstWithFreshMVarLevels ``Prod.mk) #[xType, yType,.bvar 0, yValue])
+        (mkAppN (← mkConstWithFreshMVarLevels ``Prod.mk) #[xType, yType, .bvar 0, yValue])
       applyCompRule funPropDecl e f g funProp
 
     | true, false =>

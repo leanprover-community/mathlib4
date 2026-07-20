@@ -145,7 +145,7 @@ lemma Indep.contract_indep_iff (hI : M.Indep I) :
   simp_rw [indep_iff, hI.contract_isBase_iff, union_subset_iff]
   exact ⟨fun ⟨B, ⟨hBI, hdj⟩, hJB⟩ ↦ ⟨disjoint_of_subset_left hJB hdj, _, hBI,
     hJB.trans subset_union_left, subset_union_right⟩,
-    fun ⟨hdj, B, hB, hJB, hIB⟩ ↦ ⟨B \ I,⟨by simpa [union_eq_self_of_subset_right hIB],
+    fun ⟨hdj, B, hB, hJB, hIB⟩ ↦ ⟨B \ I, ⟨by simpa [union_eq_self_of_subset_right hIB],
       disjoint_sdiff_left⟩, subset_sdiff.2 ⟨hJB, hdj⟩ ⟩⟩
 
 lemma IsNonloop.contractElem_indep_iff (he : M.IsNonloop e) :

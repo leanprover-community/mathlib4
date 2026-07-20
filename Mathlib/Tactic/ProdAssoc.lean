@@ -113,7 +113,7 @@ in possibly different ways. -/
 def mkProdEquiv (a b : Expr) : MetaM Expr := do
   let some u := (← whnfD <| ← inferType a).type? | throwError "Not a type{indentExpr a}"
   let some v := (← whnfD <| ← inferType b).type? | throwError "Not a type{indentExpr b}"
-  return mkAppN (.const ``Equiv.mk [.succ u,.succ v])
+  return mkAppN (.const ``Equiv.mk [.succ u, .succ v])
     #[a, b, ← mkProdFun a b, ← mkProdFun b a,
       .app (.const ``rfl [.succ u]) a,
       .app (.const ``rfl [.succ v]) b]

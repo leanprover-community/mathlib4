@@ -180,7 +180,7 @@ match n with
   pure ()
 | n + 1 => do
   let (subgoals, _) ← Term.TermElabM.run <| Tactic.run mvar do
-    Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
+    Tactic.evalTactic (← `(tactic| refine ⟨?_, ?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"
   let (subgoals', _) ← Term.TermElabM.run <| Tactic.run sg1 do
     Tactic.evalTactic (← `(tactic| constructor))

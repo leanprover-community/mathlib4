@@ -401,7 +401,7 @@ instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
   le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
 
 lemma le_def [LE Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
-    D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·),(·)⟩
+    D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·), (·)⟩
 
 lemma single_nonneg [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
     0 ≤ single x y ↔ 0 ≤ y := by
@@ -412,7 +412,7 @@ instance [Preorder Y] [Zero Y] : LT (locallyFinsuppWithin U Y) where
   lt := fun D₁ D₂ ↦ (D₁ : X → Y) < D₂
 
 lemma lt_def [Preorder Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
-    D₁ < D₂ ↔ (D₁ : X → Y) < (D₂ : X → Y) := ⟨(·),(·)⟩
+    D₁ < D₂ ↔ (D₁ : X → Y) < (D₂ : X → Y) := ⟨(·), (·)⟩
 
 lemma single_pos [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
     0 < single x y ↔ 0 < y := by
