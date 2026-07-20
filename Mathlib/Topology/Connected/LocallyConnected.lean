@@ -193,8 +193,7 @@ instance Prod.locallyConnectedSpace [TopologicalSpace β] [LocallyConnectedSpace
 theorem Pi.locallyConnectedSpace_of_finite_nonpreconnected [∀ i, TopologicalSpace (X i)]
     [∀ i, LocallyConnectedSpace (X i)] (hfinite : {i | ¬PreconnectedSpace (X i)}.Finite) :
     LocallyConnectedSpace (∀ i, X i) := by
-  rw [locallyConnectedSpace_iff_connected_subsets]
-  intro x U hU
+  refine locallyConnectedSpace_iff_connected_subsets.2 fun x U hU ↦ ?_
   rw [nhds_pi, Filter.mem_pi] at hU
   obtain ⟨J, hJ, t, ht, htU⟩ := hU
   classical
