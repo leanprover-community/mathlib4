@@ -5701,6 +5701,7 @@ public import Mathlib.ModelTheory.Quotients
 public import Mathlib.ModelTheory.Satisfiability
 public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.SetTheory.Basic
+public import Mathlib.ModelTheory.SetTheory.ZF
 public import Mathlib.ModelTheory.Skolem
 public import Mathlib.ModelTheory.Substructures
 public import Mathlib.ModelTheory.Syntax
