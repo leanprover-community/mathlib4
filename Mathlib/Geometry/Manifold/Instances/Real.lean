@@ -148,7 +148,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
-  simpa only [mem_sdiff, mem_setOf_eq, not_lt] using antisymm_iff
+  simpa only [mem_sdiff, mem_ofPred_eq, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -272,14 +272,14 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
-  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_right,
+  map_source' := by simp only [mem_ofPred_eq, Fin.isValue, sub_lt_sub_iff_right,
     imp_self, implies_true]
   map_target' := by
-    simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
+    simp only [min_lt_iff, mem_ofPred_eq]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
-    simp only [mem_setOf_eq, mem_Icc] at hz h'z
+    simp only [mem_ofPred_eq, mem_Icc] at hz h'z
     simp only [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
@@ -310,6 +310,7 @@ end Fact.Manifold
 
 open Fact.Manifold
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IccLeftChart_extend_bot : (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
   norm_num [IccLeftChart, modelWithCornersEuclideanHalfSpace_zero]
   congr
@@ -325,7 +326,7 @@ lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.v
 lemma IccLeftChart_extend_bot_mem_frontier :
     (IccLeftChart x y).extend (𝓡∂ 1) ⊥ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
-    mem_setOf, PiLp.zero_apply]
+    mem_ofPred, PiLp.zero_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
@@ -338,14 +339,14 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   toFun z := ⟨toLp 2 fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
     ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
-  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_left,
+  map_source' := by simp only [mem_ofPred_eq, Fin.isValue, sub_lt_sub_iff_left,
     imp_self, implies_true]
   map_target' := by
-    simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
+    simp only [lt_max_iff, mem_ofPred_eq]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
-    simp only [mem_setOf_eq, mem_Icc] at hz h'z
+    simp only [mem_ofPred_eq, mem_Icc] at hz h'z
     simp only [Fin.isValue, sub_eq_add_neg, neg_add_rev, neg_neg,
       add_neg_cancel_comm_assoc, hz, sup_of_le_left]
   right_inv' := by
@@ -367,6 +368,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
   norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
@@ -375,7 +377,7 @@ lemma IccRightChart_extend_top :
 lemma IccRightChart_extend_top_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
-    mem_setOf, PiLp.zero_apply]
+    mem_ofPred, PiLp.zero_apply]
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
@@ -444,6 +446,7 @@ lemma boundary_product [I.Boundaryless] :
     (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {⊥, ⊤} := by
   rw [I.boundary_of_boundaryless_left, boundary_Icc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The manifold structure on `[x, y]` is smooth. -/
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
@@ -483,6 +486,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
   · -- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the cross-chart case on `[x,y]`, the tangent coordinate change is `-id` (i.e. `v ↦ -v`). -/
 private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     (hr : r ∈ (chartAt (EuclideanHalfSpace 1) p).source ∩
@@ -503,7 +507,7 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     have hw_mem : extChartAt (𝓡∂ 1) p r ∈ (extChartAt (𝓡∂ 1) p).target :=
       (extChartAt (𝓡∂ 1) p).map_source (by rw [extChartAt_source]; exact hr.1)
     have hEqOn : Set.EqOn ((extChartAt (𝓡∂ 1) q) ∘ (extChartAt (𝓡∂ 1) p).symm)
-        (fun z ↦ (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x) - z)
+        (fun z ↦ toLp 2 (fun _ ↦ y - x) - z)
         (extChartAt (𝓡∂ 1) p).target := by
       rw [extChartAt_target]
       intro z hz
@@ -522,7 +526,7 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     -- Reduce to the derivative of `z ↦ c - z`, which is `-id`, and evaluate it at `v`.
     rw [(hEqOn.eventuallyEq_of_mem
       (extChartAt_target_mem_nhdsWithin_of_mem hw_mem)).fderivWithin_eq (hEqOn hw_mem)]
-    set c : EuclideanSpace ℝ (Fin 1) := (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x)
+    set c : EuclideanSpace ℝ (Fin 1) := toLp 2 (fun _ ↦ y - x)
     have hderiv : fderivWithin ℝ (fun z : EuclideanSpace ℝ (Fin 1) ↦ c - z) (Set.range (𝓡∂ 1))
         (extChartAt (𝓡∂ 1) p r) =
           -(1 : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1)) :=

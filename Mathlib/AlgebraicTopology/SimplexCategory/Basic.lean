@@ -176,6 +176,7 @@ def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using! hii'
   }
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
     ⦋0⦌.const ⦋l⦌ i ≫ subinterval j l hjl =
     ⦋0⦌.const ⦋n⦌ ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
@@ -185,6 +186,7 @@ lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1))
   dsimp [subinterval]
   rw [add_comm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
@@ -193,6 +195,7 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
   ext (i : Fin 2)
   match i with | 0 | 1 => simp; lia
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
@@ -813,10 +816,10 @@ theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i :
     rw [← mono_iff_injective]
     grind [→ le_of_mono])
   use i
-  haveI : Epi (σ i ≫ θ') := by
+  have : Epi (σ i ≫ θ') := by
     rw [← h]
     infer_instance
-  haveI := CategoryTheory.epi_of_epi (σ i) θ'
+  have := CategoryTheory.epi_of_epi (σ i) θ'
   rw [h, eq_id_of_epi θ', Category.comp_id]
 
 theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i : Fin (n + 2), θ = δ i := by
@@ -824,10 +827,10 @@ theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i
     rw [← epi_iff_surjective]
     grind [→ le_of_epi])
   use i
-  haveI : Mono (θ' ≫ δ i) := by
+  have : Mono (θ' ≫ δ i) := by
     rw [← h]
     infer_instance
-  haveI := CategoryTheory.mono_of_mono θ' (δ i)
+  have := CategoryTheory.mono_of_mono θ' (δ i)
   rw [h, eq_id_of_mono θ', Category.id_comp]
 
 theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] (hi' : Δ ≠ Δ') :
@@ -849,14 +852,14 @@ instance (Δ Δ' : SimplexCategory) (θ : Δ ⟶ Δ') : Epi (factorThruImage θ)
 
 theorem image_eq {Δ Δ' Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : Δ ⟶ Δ'} [Epi e] {i : Δ' ⟶ Δ''}
     [Mono i] (fac : e ≫ i = φ) : image φ = Δ' := by
-  haveI := strongEpi_of_epi e
+  have := strongEpi_of_epi e
   let e := image.isoStrongEpiMono e i fac
   ext
   exact le_antisymm (len_le_of_epi e.hom) (len_le_of_mono e.hom)
 
 theorem image_ι_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : Δ ⟶ image φ} [Epi e]
     {i : image φ ⟶ Δ''} [Mono i] (fac : e ≫ i = φ) : image.ι φ = i := by
-  haveI := strongEpi_of_epi e
+  have := strongEpi_of_epi e
   rw [← image.isoStrongEpiMono_hom_comp_ι e i fac,
     SimplexCategory.eq_id_of_isIso (image.isoStrongEpiMono e i fac).hom, Category.id_comp]
 
