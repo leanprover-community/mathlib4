@@ -350,7 +350,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
   have l₁ : (ω f ϕ s ∩ o).Nonempty :=
     ht₂.mono
       (inter_subset_inter_left _
-        ((isInvariant_iff_image _ _).mp (isInvariant_omegaLimit _ _ _ hf) _))
+        ((Set.isInvariant_iff_image _ _).mp (isInvariant_omegaLimit _ _ _ hf) _))
   have l₂ : (closure (image2 ϕ u s) ∩ o).Nonempty :=
     l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_image2 _ _ _ hu hb.1, hb.2⟩
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
