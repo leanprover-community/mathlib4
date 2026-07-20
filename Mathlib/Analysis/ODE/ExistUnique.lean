@@ -368,8 +368,12 @@ theorem IsIntegralCurveOn.eqOn_Icc_right
     (dist_le_zero.2 ha) t ht
   rwa [zero_mul, dist_le_zero] at this
 
-/-- A time-reversed version of `IsIntegralCurveOn.eqOn_Icc_right`. Uniqueness is shown in a
-closed interval `Icc a b`, where `b` is the "initial" time. -/
+/-- There exists only one solution of an ODE $\dot x=v(t, x)$ in a set `s ⊆ ℝ × E` with
+a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
+and we consider only solutions included in `s`.
+
+This version shows uniqueness in a closed interval `Icc a b`, where `b` is the "initial" time.
+It is a time-reversed version of `IsIntegralCurveOn.eqOn_Icc_right`. -/
 theorem IsIntegralCurveOn.eqOn_Icc_left
     (hv : ∀ t ∈ Ioc a b, LipschitzOnWith K (v t) (s t))
     (hf : ContinuousOn f (Icc a b)) (hf' : IsIntegralCurveOn f v (Ioc a b))
