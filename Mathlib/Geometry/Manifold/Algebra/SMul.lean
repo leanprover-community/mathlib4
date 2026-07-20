@@ -191,7 +191,7 @@ instance {n : ℕ∞ω} : ContMDiffSMul 𝓘(𝕜, E →L[𝕜] E) 𝓘(𝕜, E)
 
 section Diffeomorph
 
-variable [Group G] [MulAction G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M]
+variable [Group G] [MulAction G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G)
 
 variable (I I' n) in
 /-- The diffeomorphism given by scalar multiplication by an element of a group `G` acting
@@ -201,26 +201,25 @@ multiplication by `g⁻¹`. -/
 /-- The diffeomorphism given by affine-addition by an element of an additive group `G` acting
 Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is
 addition by `-g`. -/]
-def Diffeomorph.smul (g : G) : M ≃ₘ^n⟮I', I'⟯ M where
+def Diffeomorph.smul : M ≃ₘ^n⟮I', I'⟯ M where
   toEquiv := MulAction.toPerm g
   contMDiff_toFun := ContMDiffSMul.contMDiff_const_smul (I := I) g
   contMDiff_invFun := ContMDiffSMul.contMDiff_const_smul (I := I) g⁻¹
 
 @[to_additive (attr := simp)]
-lemma Diffeomorph.smul_toHomeomorph (g : G) :
+lemma Diffeomorph.smul_toHomeomorph :
     haveI : ContinuousSMul G M := ContMDiffSMul.continuousSMul (I := I) (I' := I') n
     (Diffeomorph.smul I I' n g).toHomeomorph = Homeomorph.smul (α := M) g :=
   rfl
 
 @[to_additive (attr := simp)]
-lemma Diffeomorph.smul_apply (g : G) (x : M) : Diffeomorph.smul I I' n g x = g • x := rfl
+lemma Diffeomorph.smul_apply (x : M) : Diffeomorph.smul I I' n g x = g • x := rfl
 
 @[to_additive (attr := simp)]
-lemma Diffeomorph.smul_symm_apply (g : G) (x : M) : (Diffeomorph.smul I I' n g).symm x = g⁻¹ • x :=
-  rfl
+lemma Diffeomorph.smul_symm_apply (x : M) : (Diffeomorph.smul I I' n g).symm x = g⁻¹ • x := rfl
 
 @[to_additive]
-lemma Diffeomorph.smul_symm (g : G) :
+lemma Diffeomorph.smul_symm :
     (Diffeomorph.smul I I' n g : M ≃ₘ^n⟮I', I'⟯ M).symm = Diffeomorph.smul I I' n g⁻¹ :=
   Diffeomorph.ext fun _ ↦ rfl
 
