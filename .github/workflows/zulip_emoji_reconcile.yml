@@ -1,8 +1,13 @@
-# Periodic safety net that keeps the Zulip emoji reactions on PR-related messages
-# in sync with each PR's actual state (open/closed/merged, labels, CI result).
-# The event-driven zulip_emoji_* workflows react to individual label/close/CI
-# events; this sweep repairs any drift they miss (dropped webhooks, outages,
-# state changes while a workflow was broken). See
+# Keeps the Zulip emoji reactions on PR-related messages in sync with each PR's
+# actual state (open/closed/merged, labels, CI result). One job, fed by three
+# kinds of trigger:
+#   - schedule:            hourly sweep — the self-healing safety net that repairs
+#                          any drift the event triggers miss (dropped webhooks,
+#                          outages, state changes while a run was broken).
+#   - pull_request_target: label/close/merge/reopen changes, reflected in seconds.
+#   - workflow_run:        CI start/finish, so the CI emoji updates promptly.
+# Everything repo-specific lives in .github/zulip-emoji-config.json; the engine
+# and its docs are in mathlib-ci:
 # https://github.com/leanprover-community/mathlib-ci/blob/master/docs/zulip-emoji-reconcile.md
 name: Zulip emoji reconcile
 
@@ -11,12 +16,29 @@ on:
     - cron: "37 * * * *"  # hourly, offset to dodge top-of-hour runner load
   workflow_dispatch:
     inputs:
+      pr:
+        description: PR number(s), space-separated; leave empty to sweep recent messages
+        required: false
+        default: ""
       dry-run:
         description: Log planned reaction changes without modifying Zulip
         type: boolean
         default: false
+  pull_request_target:  # label/close/merge/reopen changes, within seconds
+    types: [labeled, unlabeled, closed, reopened]
+  workflow_run:         # CI start/finish, so the CI emoji updates promptly
+    workflows: ["continuous integration", "continuous integration (mathlib forks)"]
+    types: [requested, completed]
 
 concurrency:
+  # Serialize runs: the reconciler reads live PR state and then writes reactions,
+  # so two interleaved runs could re-assert stale state. GitHub keeps only the
+  # newest queued run per group (earlier pending runs are canceled), which suits a
+  # level-triggered tool — the last run recomputes everything from live state and
+  # converges to the final answer. One *shared* group is deliberate: the same PR
+  # reaches this workflow under different keys (pull_request.number,
+  # workflow_run.head_sha, nothing on a sweep), so per-PR groups would leave
+  # exactly those cross-trigger races open.
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
@@ -29,17 +51,46 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4'
     runs-on: ubuntu-latest
     steps:
+      # On pull_request_target / workflow_run this checks out the *default*
+      # branch, so the config (and everything else in this job) is never
+      # PR-controlled.
       - name: Check out reconcile config
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           sparse-checkout: .github/zulip-emoji-config.json
           sparse-checkout-cone-mode: false
 
+      - name: Determine PR number(s)
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          INPUT_PR: ${{ inputs.pr }}
+          EVENT_PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          case "$EVENT" in
+            workflow_dispatch) pr="$INPUT_PR" ;;
+            pull_request_target) pr="$EVENT_PR" ;;
+            workflow_run)
+              # PR(s) at the CI run's head commit (works for fork PRs too).
+              pr=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls" \
+                     --jq 'map(.number) | join(" ")')
+              ;;
+            *) pr="" ;;  # schedule -> sweep
+          esac
+          echo "pr=${pr}" >> "$GITHUB_OUTPUT"
+
       - name: Reconcile
+        # Skip only a workflow_run whose head commit no longer maps to a PR;
+        # schedule and PR-less dispatches sweep instead.
+        if: steps.target.outputs.pr != '' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@5668fbbccf0fecefdfcddf539b8406db197dfc59
         with:
           config: .github/zulip-emoji-config.json
-          sweep: true
-          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+          pr: ${{ steps.target.outputs.pr }}
+          sweep: ${{ !steps.target.outputs.pr }}
+          dry-run: ${{ inputs.dry-run == true }}
           zulip-api-key: ${{ secrets.ZULIP_API_KEY }}
           github-token: ${{ github.token }}
