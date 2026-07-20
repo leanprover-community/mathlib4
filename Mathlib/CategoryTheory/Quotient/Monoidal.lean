@@ -187,16 +187,8 @@ instance functorMonoidal
     (functor r).Monoidal :=
   letI := monoidalCategory r hl hr
   Functor.CoreMonoidal.toMonoidal (F := functor r)
-  { εIso :=
-      { hom := (functor r).map (𝟙 _)
-        inv := (functor r).map (𝟙 _)
-        hom_inv_id := by simp [functor]; rfl
-        inv_hom_id := by simp [functor] }
-    μIso := fun X Y =>
-      { hom := (functor r).map (𝟙 _)
-        inv := (functor r).map (𝟙 _)
-        hom_inv_id := by simp [functor]; rfl
-        inv_hom_id := by simp [functor] }
+  { εIso := Iso.refl _
+    μIso _ _ := Iso.refl _
     μIso_hom_natural_left {X Y} f X' := by
       change (functor r).map ((f ▷ X') ≫ 𝟙 _) = (functor r).map (𝟙 _ ≫ (f ▷ X'))
       simp
@@ -212,7 +204,8 @@ instance functorMonoidal
       simp
     right_unitality X := by
       change (functor r).map (ρ_ X).hom = (functor r).map ((X ◁ _) ≫ 𝟙 _ ≫ (ρ_ X).hom)
-      simp }
+      rw [Category.id_comp]
+      exact Functor.congr_map (functor r) (whiskerLeft_id_assoc X (𝟙_ C) (ρ_ X).hom).symm}
 
 section Braided
 
