@@ -213,6 +213,7 @@ instance (T : Type v) [CommRing T] (g : R →+* T) :
 
 variable {S : Type (max u v)} [CommRing S] (f : R →+* S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The base change isomorphism for Koszul complex. -/
 noncomputable def baseChangeIso {M : Type u} [AddCommGroup M] [Module R M] (φ : M →ₗ[R] R) :
     letI := f.toAlgebra
