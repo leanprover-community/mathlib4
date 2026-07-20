@@ -175,15 +175,12 @@ The input is the copyright string, the output is an array of `Syntax × String` 
 The linter checks that
 * the first and last line of the copyright are a `("/-", "-/")` pair, each on its own line;
 * the first line is begins with `Copyright (c) 20` and ends with `. All rights reserved.`;
-* the second line equals `expectedLicense` (which the linter reads from the
-  `linter.style.header.license` option, defaulting to
-  `Released under Apache 2.0 license as described in the file LICENSE.`);
+* the second line equals `expectedLicense` (determined by the `linter.style.header.license` option,
+  defaults to the Mathlib default);
 * the remainder of the string begins with `Authors: `, does not end with `.` and
   contains no ` and ` nor a double space, except possibly after a line break.
 -/
-public def copyrightHeaderChecks (copyright : String)
-    (expectedLicense : String :=
-      "Released under Apache 2.0 license as described in the file LICENSE.") :
+public def copyrightHeaderChecks (copyright : String) (expectedLicense : String) :
     Array (Syntax × String) := Id.run do
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
