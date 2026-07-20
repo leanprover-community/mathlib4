@@ -568,9 +568,8 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt_of_meromorphicOrderAt
           * (∏ᶠ i, (w - i) ^ (-divisor f (sphere 0 R)) i))
           • meromorphicTrailingCoeffAt f w := by
   rw [D.eq_smul_meromorphicTrailingCoeffAt h₁w hR]
-  congr
-  · ext x
-    by_cases h₃x : (divisor f (ball 0 R)) x = 0
+  congr! 4 with x x
+  · by_cases h₃x : (divisor f (ball 0 R)) x = 0
     · simp [h₃x]
     have h₁x : x ∈ ball 0 R := (divisor f (ball 0 R)).supportWithinDomain h₃x
     have h₂x : w ≠ x := by
@@ -579,8 +578,7 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt_of_meromorphicOrderAt
     rw [AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero
       (Complex.analyticOnNhd_canonicalFactor R x w h₂x)
       (Complex.canonicalFactor_ne_zero h₁x h₁w h₂x)]
-  · ext x
-    by_cases h : x = w
+  · by_cases h : x = w
     · simp_all [meromorphicTrailingCoeffAt_id_sub_const, divisor_def]
     grind [meromorphicTrailingCoeffAt_id_sub_const]
 
