@@ -153,7 +153,7 @@ theorem card_support_eq_zero {a : FreeAbelianGroup X} : a.support.card = 0 ↔ a
 
 theorem eq_sum_support_coeff_smul_of (a : FreeAbelianGroup X) :
     a = ∑ x ∈ a.support, coeff x a • of x := by
-  conv_lhs => rw [← toFreeAbelianGroup_toFinsupp a]
-  simp [toFreeAbelianGroup, sum, support, coeff]
+  conv_lhs => rw [← toFreeAbelianGroup_toFinsupp a, ← sum_single a.toFinsupp]
+  simp [sum, support, coeff]
 
 end FreeAbelianGroup
