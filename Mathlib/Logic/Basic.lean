@@ -114,7 +114,7 @@ instance [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
 
 theorem Subtype.subsingleton_iff {p : α → Prop} :
     Subsingleton (Subtype p) ↔ ∀ a b, p a → p b → a = b :=
-  ⟨fun h a b ha hb ↦ congrArg Subtype.val (@Subsingleton.elim _ h ⟨a, ha⟩ ⟨b, hb⟩),
+  ⟨fun h a b ha hb ↦ congr_arg val (@Subsingleton.elim _ h ⟨a, ha⟩ ⟨b, hb⟩),
    fun h ↦ ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ Subtype.ext (h a b ha hb)⟩⟩
 
 theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
