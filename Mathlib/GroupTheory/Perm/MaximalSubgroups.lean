@@ -130,8 +130,6 @@ theorem exists_mem_stabilizer_smul_eq :
   classical
   exact ⟨swap a b, swap_mem_stabilizer ha hb, swap_apply_left a b⟩
 
-@[deprecated (since := "2025-12-16")] alias moves_in := exists_mem_stabilizer_smul_eq
-
 theorem stabilizer.surjective_toPerm (s : Set α) :
     Function.Surjective (toPerm : stabilizer (Perm α) s → Perm s) := fun g ↦ by
   classical
@@ -189,7 +187,7 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     exact finite_of_encard_eq_coe hα
   have hα : Nat.card α = 2 := by
     rw [← ENat.card_coe_set_eq, ENat.card_eq_coe_natCard, Nat.card_coe_set_eq, ncard_univ] at hα
-    exact ENat.coe_inj.mp hα
+    exact ENat.natCast_inj.mp hα
   have hα2 : Fact (Nat.card (Perm α)).Prime := by
     apply Fact.mk
     rw [Nat.card_perm, hα, Nat.factorial_two]
@@ -247,10 +245,6 @@ lemma subsingleton_of_ssubset_of_stabilizer_le
       map_smul' _ _ := rfl }
     exact hB.preimage f'
   exact isPreprimitive_stabilizer_of_surjective _ hG
-
-@[deprecated (since := "2025-12-16")]
-alias _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le :=
-  subsingleton_of_ssubset_of_stabilizer_le
 
 lemma subsingleton_of_ssubset_of_stabilizer_Perm_le
     {B : Set α} {G : Subgroup (Perm α)} (hB : IsBlock G B)
@@ -327,10 +321,6 @@ lemma compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
     -- Prove pretransitivity…
     rw [← is_one_pretransitive_iff]
     apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
-
-@[deprecated (since := "2025-12-16")]
-alias _root_.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl :=
-  compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
 
 end MulAction.IsBlock
 

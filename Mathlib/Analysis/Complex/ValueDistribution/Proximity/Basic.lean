@@ -228,8 +228,6 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f
       · exact MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₂ x)
     _ = proximity f₁ ⊤ + proximity f₂ ⊤ := by simp [proximity]
 
-@[deprecated (since := "2025-12-11")] alias proximity_top_mul_le := proximity_mul_top_le
-
 /--
 The proximity function `f * g` at `0` is less than or equal to the sum of the proximity functions of
 `f` and `g`, respectively.
@@ -242,8 +240,6 @@ theorem proximity_mul_zero_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic 
       apply proximity_mul_top_le h₁f₁.inv h₁f₂.inv
     _ = (proximity f₁ 0) + (proximity f₂ 0) := by
       rw [proximity_inv, proximity_inv]
-
-@[deprecated (since := "2025-12-11")] alias proximity_zero_mul_le := proximity_mul_zero_le
 
 /--
 For natural numbers `n`, the proximity function of `f ^ n` at `⊤` equals `n` times the proximity
