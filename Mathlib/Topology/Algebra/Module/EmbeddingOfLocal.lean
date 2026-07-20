@@ -17,6 +17,94 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 open Topology Filter Bornology Set
 open scoped Pointwise
 
+section FinalVersion
+
+variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
+  [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} {f : E →ₛₗ[σ] F}
+
+variable (𝕜₁) in
+lemma foo (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
+    [@IsTopologicalAddGroup E t₂ _] [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
+    {V : Set E} (V_mem : V ∈ @nhds E t₁ 0) (H : @nhds E t₁ 0 ⊓ 𝓟 V = @nhds E t₂ 0 ⊓ 𝓟 V) :
+    t₁ = t₂ := by
+  classical
+  -- For `i = 1, 2`, denote by `𝓕ᵢ` the filter of neighborhoods of `0` for the topology `tᵢ`.
+  set 𝓕₁ := @nhds E t₁ 0
+  set 𝓕₂ := @nhds E t₂ 0
+  -- Note that, because `V ∈ 𝓕₁`, `H` may be rewritten as `𝓕₁ = 𝓕₂ ⊓ 𝓟 V`.
+  replace H : 𝓕₁ = 𝓕₂ ⊓ 𝓟 V := by simpa [← H]
+  -- Because both `t₁` and `t₂` are additive group topologies, we have to show `𝓕₁ = 𝓕₂`.
+  suffices 𝓕₁ = 𝓕₂ by rwa [IsTopologicalAddGroup.ext_iff] <;> infer_instance
+  -- If we can show that `V ∈ 𝓕₂`, we get `𝓕₁ = 𝓕₂ ⊓ 𝓟 V = 𝓕₂`.
+  suffices V ∈ 𝓕₂ by simpa [H]
+  -- Hence, let us show that `V ∈ 𝓕₂`. Fix a scalar `c` with `0 < ‖c‖ < 1`.
+  obtain ⟨c, hc₀, hc₁⟩ := NormedField.exists_norm_lt_one 𝕜₁
+  have c_ne : c ≠ 0 := fun h ↦ by simp [h] at hc₀
+  -- We know that `c • V ∈ 𝓕₁ = 𝓕₂ ⊓ 𝓟 V`.
+  have cV_mem : c • V ∈ 𝓕₂ ⊓ 𝓟 V := by
+    rw [← H]
+    let := t₁
+    simpa [𝓕₁, set_smul_mem_nhds_zero_iff c_ne]
+  -- Furthermore, we know that `𝓕₂` has a basis of balanced sets
+  have basis_𝓕₂ : HasBasis 𝓕₂ (fun (s : Set E) ↦ s ∈ 𝓕₂ ∧ Balanced 𝕜₁ s) id :=
+    let := t₂; nhds_basis_balanced 𝕜₁ E
+  -- Hence, we get a balanced set `W ∈ 𝓕₂` such that `W ∩ V ⊆ c • V`.
+  obtain ⟨W, ⟨W_mem_𝓕₂, W_bal⟩, hW⟩ := basis_𝓕₂.inf_principal V |>.mem_iff.mp cV_mem
+  -- We claim that `W ⊆ V`. This will conclude the proof, since `W ∈ 𝓕₂`.
+  suffices W ⊆ V from mem_of_superset W_mem_𝓕₂ this
+  -- By contradiction, assume that we have a point `w ∈ W \ V`
+  intro w w_in_W
+  by_contra! w_notin_V
+  -- Now, because `V` is absorbent, there exists a natural `k` such that `c ^ k • w ∈ V`.
+  have exists_scale : ∃ k : ℕ, c ^ k • w ∈ V := by
+    have V_abs : Absorbent 𝕜₁ V := let := t₁; absorbent_nhds_zero V_mem
+    have : Tendsto (fun k : ℕ ↦ c ^ k) atTop (𝓝[≠] 0) := by
+      simp [tendsto_nhdsWithin_iff, c_ne, tendsto_pow_atTop_nhds_zero_iff_norm_lt_one, hc₁]
+    exact this.eventually (V_abs.eventually_nhdsNE_zero w) |>.exists
+  -- Denote by `k₀` the *smallest* such `k`.
+  set k₀ := Nat.find exists_scale
+  have k₀_spec : c ^ k₀ • w ∈ V := Nat.find_spec exists_scale
+  -- Note that `1 ≤ k₀` since `w ∉ V`
+  have k₀_pos : 0 < k₀ := pos_iff_ne_zero.mpr fun h ↦ by simp [h, w_notin_V] at k₀_spec
+  -- By definition, `c ^ k₀ • w ∈ V`, and becaus `W` is balanced `c ^ k₀ • w ∈ W`.
+  -- Thus, `c ^ k₀ • w ∈ V ∩ W ⊆ c • V`.
+  have : c ^ k₀ • w ∈ c • V :=
+    hW ⟨W_bal.smul_mem (by simpa using pow_le_one₀ hc₀.le hc₁.le) w_in_W, k₀_spec⟩
+  -- But then, we have `c ^ (k₀ - 1) • w ∈ V`.
+  have : c ^ (k₀ - 1) • w ∈ V := by
+    rwa [pow_sub₀ c c_ne k₀_pos, pow_one, mul_comm, mul_smul, ← mem_smul_set_iff_inv_smul_mem₀ c_ne]
+  -- This contradicts the minimality of `k₀`.
+  exact Nat.find_min exists_scale (tsub_lt_self k₀_pos one_pos) this
+
+variable (𝕜₁) in
+lemma bar (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
+    [@IsTopologicalAddGroup E t₂ _] [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
+    {V : Set E} (V_mem : V ∈ @nhds E t₁ 0)
+    (H : t₁.induced ((↑) : V → E) = t₂.induced ((↑) : V → E)) :
+    t₁ = t₂ := by
+  apply foo 𝕜₁ t₁ t₂ V_mem
+  set o : V := ⟨0, letI := t₁; mem_of_mem_nhds V_mem⟩
+  simp_rw [← map_comap_setCoe_val, show 0 = (o : E) from rfl, ← nhds_induced]
+  congr
+
+variable [TopologicalSpace E] [TopologicalSpace F]
+  [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+  [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] [RingHomIsometric σ]
+
+lemma LinearMap.isInducing_of_restrict_nhds_zero {V : Set E}
+    (V_mem : V ∈ 𝓝 0) (H : IsInducing (Set.restrict V f)) : IsInducing f := by
+  rw [isInducing_iff]
+  have := topologicalAddGroup_induced f
+  have := continuousSMul_inducedₛₗ f σ.isometry.continuous
+  apply bar 𝕜₁ _ (.induced f _) V_mem
+  rw [induced_compose, ← restrict_eq, ← H.eq_induced, ← IsInducing.subtypeVal.eq_induced]
+
+lemma LinearMap.isEmbedding_of_restrict_nhds_zero {V : Set E}
+    (V_mem : V ∈ 𝓝 0) (H : IsEmbedding (Set.restrict V f)) : IsEmbedding f := by
+  sorry
+
+end FinalVersion
+
 private lemma Filter.comap_inf_congr_aux {α β : Type*} {m₁ m₂ : α → β} {f : Filter α} {g : Filter β}
     (H : m₁ =ᶠ[f] m₂) : comap m₁ g ⊓ f ≤ comap m₂ g ⊓ f := by
   refine le_inf ?_ inf_le_right
@@ -71,7 +159,7 @@ private lemma exists_good_retraction {V : Set E} (V_abs : Absorbent 𝕜₁ V)
   exact isBoundedUnder_of ⟨1, fun x ↦ by simpa using pow_le_one₀ (norm_nonneg _) hc₁.le⟩
 
 variable (𝕜₁) in
-lemma foo (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
+lemma foo_old (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
     [@IsTopologicalAddGroup E t₂ _] [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
     {V : Set E} (V_mem : V ∈ @nhds E t₁ 0) (H : @nhds E t₁ 0 ⊓ 𝓟 V = @nhds E t₂ 0 ⊓ 𝓟 V) :
     t₁ = t₂ := by
@@ -115,7 +203,7 @@ lemma foo (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
   simpa using le_inf fact₁ fact₂
 
 variable (𝕜₁) in
-lemma bar (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
+lemma bar_old (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
     [@IsTopologicalAddGroup E t₂ _] [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
     {V : Set E} (V_mem : V ∈ @nhds E t₁ 0)
     (H : t₁.induced ((↑) : V → E) = t₂.induced ((↑) : V → E)) :
@@ -124,19 +212,3 @@ lemma bar (t₁ t₂ : TopologicalSpace E) [@IsTopologicalAddGroup E t₁ _]
   set o : V := ⟨0, letI := t₁; mem_of_mem_nhds V_mem⟩
   simp_rw [← map_comap_setCoe_val, show 0 = (o : E) from rfl, ← nhds_induced]
   congr
-
-variable [TopologicalSpace E] [TopologicalSpace F]
-  [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
-  [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] [RingHomIsometric σ]
-
-lemma LinearMap.isInducing_of_restrict_nhds_zero {V : Set E}
-    (V_mem : V ∈ 𝓝 0) (H : IsInducing (Set.restrict V f)) : IsInducing f := by
-  rw [isInducing_iff]
-  have := topologicalAddGroup_induced f
-  have := continuousSMul_inducedₛₗ f σ.isometry.continuous
-  apply bar 𝕜₁ _ (.induced f _) V_mem
-  rw [induced_compose, ← restrict_eq, ← H.eq_induced, ← IsInducing.subtypeVal.eq_induced]
-
-lemma LinearMap.isEmbedding_of_restrict_nhds_zero {V : Set E}
-    (V_mem : V ∈ 𝓝 0) (H : IsEmbedding (Set.restrict V f)) : IsEmbedding f := by
-  sorry
