@@ -183,7 +183,7 @@ theorem LowerSemicontinuous.isOpen_preimage (hf : LowerSemicontinuous f) (y : β
 
 theorem lowerSemicontinuousOn_iff_preimage_Ioi :
     LowerSemicontinuousOn f s ↔ ∀ b, ∃ u, IsOpen u ∧ s ∩ f ⁻¹' Set.Ioi b = s ∩ u := by
-  simp only [← lowerSemicontinuous_restrict_iff, restrict_eq,
+  simp only [← lowerSemicontinuous_restrict_iff, domRestrict_eq,
     lowerSemicontinuous_iff_isOpen_preimage, preimage_comp, isOpen_induced_iff,
     Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
 
@@ -240,7 +240,7 @@ theorem LowerSemicontinuous.isClosed_preimage {f : α → γ} (hf : LowerSemicon
 
 theorem lowerSemicontinuousOn_iff_preimage_Iic {f : α → γ} :
     LowerSemicontinuousOn f s ↔ ∀ b, ∃ v, IsClosed v ∧ s ∩ f ⁻¹' Set.Iic b = s ∩ v := by
-  simp only [← lowerSemicontinuous_restrict_iff, restrict_eq,
+  simp only [← lowerSemicontinuous_restrict_iff, domRestrict_eq,
       lowerSemicontinuous_iff_isClosed_preimage, preimage_comp,
       isClosed_induced_iff, Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
 
@@ -334,7 +334,7 @@ variable [TopologicalSpace γ] [ClosedIciTopology γ]
 theorem lowerSemicontinuousOn_iff_isClosed_epigraph {f : α → γ} {s : Set α} (hs : IsClosed s) :
     LowerSemicontinuousOn f s ↔ IsClosed {p : α × γ | p.1 ∈ s ∧ f p.1 ≤ p.2} := by
   simp_rw [lowerSemicontinuousOn_iff, lowerSemicontinuousWithinAt_iff,
-    eventually_nhdsWithin_iff, ← isOpen_compl_iff, compl_setOf, isOpen_iff_eventually, mem_setOf,
+    eventually_nhdsWithin_iff, ← isOpen_compl_iff, compl_ofPred, isOpen_iff_eventually, mem_ofPred,
     not_and, not_le]
   constructor
   · intro hf ⟨x, y⟩ h

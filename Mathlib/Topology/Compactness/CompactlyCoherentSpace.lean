@@ -166,7 +166,7 @@ lemma continuous_dom_iff {f : 𝐤X → Y} :
     Continuous f ↔
       (∀ (K : Set X), IsCompact K → ContinuousOn (f ∘ CompactCoherentification.mk X) K) := by
   simp_rw [continuous_coinduced_dom, continuous_iSup_dom, continuous_coinduced_dom,
-    continuousOn_iff_continuous_restrict]
+    continuousOn_iff_continuous_domRestrict]
   rfl
 
 lemma continuous_mk_symm : Continuous (CompactCoherentification.mk X).symm := by
@@ -185,7 +185,7 @@ lemma isOpenMap_mk : IsOpenMap (CompactCoherentification.mk X) := by
 
 lemma continuousOn_isCompact_mk {K : Set X} (hK : IsCompact K) :
     ContinuousOn (CompactCoherentification.mk X) K := by
-  rw [continuousOn_iff_continuous_restrict]
+  rw [continuousOn_iff_continuous_domRestrict]
   exact ⟨fun U hU ↦ isOpen_iff.mp hU K hK⟩
 
 lemma continuousOn_rng_of_isCompact {f : X → 𝐤Y} {K : Set X}
@@ -223,7 +223,7 @@ lemma continuous_mk_comp_iff_of_compactSpace [CompactSpace X] {f : X → Y} :
 
 lemma continuousOn_mk_comp_iff_of_Compact {A : Set X} (hA : IsCompact A) {f : X → Y} :
     ContinuousOn ((CompactCoherentification.mk Y) ∘ f) A ↔ ContinuousOn f A := by
-  simp_rw [continuousOn_iff_continuous_restrict]
+  simp_rw [continuousOn_iff_continuous_domRestrict]
   let := isCompact_iff_compactSpace.1 hA
   exact continuous_mk_comp_iff_of_compactSpace
 
