@@ -580,15 +580,15 @@ section NormalizedGCDMonoid
 variable {R S : Type*} [CommRing R] [NormalizedGCDMonoid R] (M : Submonoid R) [CommRing S]
 variable [Algebra R S] [IsLocalization M S] (p : S[X])
 
-private lemma aux_ne_zero [Nontrivial R] :
-    normalize (integerNormalization M p).primPart ≠ 0 := by
-  rw [ne_eq, normalize_eq_zero]
-  exact primPart_ne_zero (integerNormalization M p)
-
 noncomputable def normalizedPrimPartIntegerNormalization :=
   letI := Classical.decEq S
   if p = 0 then 0 else
   normalize (integerNormalization M p).primPart
+
+private lemma aux_ne_zero [Nontrivial R] :
+    normalize (integerNormalization M p).primPart ≠ 0 := by
+  rw [ne_eq, normalize_eq_zero]
+  exact primPart_ne_zero (integerNormalization M p)
 
 lemma normalizedPrimPartIntegerNormalization_eq_zero_iff [Nontrivial R] :
     normalizedPrimPartIntegerNormalization M p = 0 ↔ p = 0 := by
@@ -642,9 +642,8 @@ theorem normalizedPrimPartIntegerNormalization_C_mul_eq [IsDomain R] (hM : M ≤
 variable {p} in
 theorem normalizedPrimPartIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
     (normalizedPrimPartIntegerNormalization M p).IsPrimitive := by
-  rw [normalizedPrimPartIntegerNormalization, if_neg hp, normalize_apply]
-  apply (integerNormalization M p).isPrimitive_primPart.mul
-  simpa [isPrimitive_iff_content_eq_one] using normalize_eq_one.mpr (normUnit _).isUnit
+  rw [normalizedPrimPartIntegerNormalization, if_neg hp]
+  exact isPrimitive_of_dvd (integerNormalization M p).isPrimitive_primPart (by simp)
 
 theorem normalizedPrimPartIntegerNormalization_dvd' [IsDomain R] :
     ∃ c : S, p = C c * (normalizedPrimPartIntegerNormalization M p).map (algebraMap R S) := by
@@ -684,17 +683,55 @@ lemma normalizedPrimPartIntegerNormalization_degree_eq [IsDomain R]
     degree_eq_natDegree (by grind), natDegree_map_of_leadingCoeff_ne_zero _
     (by simp [map_ne_zero_iff, IsLocalization.injective _ hM, hp])]
 
-theorem normalizedPrimPartIntegerNormalization_irreducible_iff [IsDomain R] (hpirr : Irreducible p):
-    Irreducible (normalizedPrimPartIntegerNormalization M p) := by
-  have hp : p ≠ 0 := by
-    contrapose hpirr
-    simp_all
+variable {p} in
+theorem normalizedPrimPartIntegerNormalization_irreducible (hpdeg : p.natDegree ≠ 0)
+    (hpirr : Irreducible p) : Irreducible (normalizedPrimPartIntegerNormalization M p) := by
+  -- Since `p` is irreducible, it is nonzero.  This makes `S`, and hence `R`, nontrivial;
+  -- the cancellative structure supplied by `NormalizedGCDMonoid R` then makes `R` a domain.
+  have hp := hpirr.ne_zero
+  letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  letI : Nontrivial R := (algebraMap R S).domain_nontrivial
+  letI : IsDomain R := {}
+  -- No element of `M` is zero: its image in the localization is a unit, whereas zero is not.
+  -- Thus the localization map is injective and `S` is also a domain.
+  have hM : M ≤ nonZeroDivisors R := fun m hm ↦ by
+    rw [mem_nonZeroDivisors_iff_ne_zero]
+    rintro rfl
+    have : IsUnit (0 : S) := by simpa using IsLocalization.map_units S ⟨0, hm⟩
+    exact not_isUnit_zero this
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  -- Write `p` as a nonzero constant times the image of its normalized primitive part `q`.
+  let q := normalizedPrimPartIntegerNormalization M p
   obtain ⟨c, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
-  --rw [hc]
-  simp [normalizedPrimPartIntegerNormalization, hp]
-  --rw [hc]
-
-  sorry
+  have hc0 : c ≠ 0 := by grind
+  -- The image of `q` cannot be a unit: otherwise `hc` would force the nonconstant `p`
+  -- to have degree zero.
+  have hmapq : ¬IsUnit (q.map (algebraMap R S)) := by
+    intro h
+    apply hpdeg
+    rw [hc, natDegree_mul (C_ne_zero.mpr hc0) h.ne_zero, natDegree_C,
+      natDegree_eq_zero_of_isUnit h, add_zero]
+  have hinj := IsLocalization.injective S hM
+  refine ⟨fun h ↦ hmapq (h.map (mapRingHom _)), fun a b hab ↦ ?_⟩
+  -- A divisor of the primitive polynomial `q` is primitive.  If its image is a unit, injectivity
+  -- shows that it has degree zero; a primitive constant polynomial is a unit already over `R`.
+  have unit_of_map_unit {a : R[X]} (haq : a ∣ q) (ha : IsUnit (a.map (algebraMap R S))) :
+      IsUnit a := by
+    have haprim := isPrimitive_of_dvd (normalizedPrimPartIntegerNormalization_IsPrimtive M hp) haq
+    have ha0 : a ≠ 0 := fun h ↦ ha.ne_zero (by simp [h])
+    have hadeg := (natDegree_map_of_leadingCoeff_ne_zero (algebraMap R S)
+      (by simpa using hinj.ne (leadingCoeff_ne_zero.mpr ha0))).symm.trans
+        (natDegree_eq_zero_of_isUnit ha)
+    rw [eq_C_of_natDegree_le_zero (p := a) hadeg.le] at haprim ⊢
+    exact isUnit_C.mpr (isPrimitive_iff_isUnit_of_C_dvd.mp haprim _ dvd_rfl)
+  -- The factorization `q = a * b` induces a factorization of `p`.  Irreducibility of `p`
+  -- makes one mapped factor a unit, and `unit_of_map_unit` reflects that fact back to `R[X]`.
+  have hpab : p = (C c * a.map (algebraMap R S)) * b.map (algebraMap R S) := by
+    rw [hc]
+    simp [hab, mul_assoc]
+  rcases hpirr.isUnit_or_isUnit hpab with ha | hb
+  · exact .inl (unit_of_map_unit ⟨b, hab⟩ (IsUnit.mul_iff.mp ha).2)
+  · exact .inr (unit_of_map_unit ⟨a, by grind⟩ hb)
 
 end NormalizedGCDMonoid
 
