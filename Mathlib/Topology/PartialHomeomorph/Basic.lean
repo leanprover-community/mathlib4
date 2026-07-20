@@ -88,19 +88,19 @@ theorem symm_image_target_eq_source : e.symm '' e.target = e.source :=
 `PartialHomeomorph`. -/
 @[simps toPartialEquiv]
 def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) : PartialHomeomorph X Y where
+    (ho : IsOpenMap (e.source.domRestrict e)) : PartialHomeomorph X Y where
   toPartialEquiv := e
   continuousOn_toFun := hc
   continuousOn_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.leftInvOn
 
 @[simp]
 theorem coe_ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) : ⇑(ofContinuousOpenRestrict e hc ho) = e :=
+    (ho : IsOpenMap (e.source.domRestrict e)) : ⇑(ofContinuousOpenRestrict e hc ho) = e :=
   rfl
 
 @[simp]
 theorem coe_ofContinuousOpenRestrict_symm (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) :
+    (ho : IsOpenMap (e.source.domRestrict e)) :
     ⇑(ofContinuousOpenRestrict e hc ho).symm = e.symm :=
   rfl
 
@@ -109,7 +109,7 @@ open source is a `PartialHomeomorph`. -/
 @[simps! toPartialEquiv]
 def ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : PartialHomeomorph X Y :=
-  ofContinuousOpenRestrict e hc (ho.restrict hs)
+  ofContinuousOpenRestrict e hc (ho.domRestrict hs)
 
 @[simp]
 theorem coe_ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
@@ -169,13 +169,13 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
   continuous_invFun := by
     simpa only [continuousOn_univ, h'] using e.continuousOn_symm
 
-theorem isEmbedding_restrict : IsEmbedding (e.source.restrict e.toFun) := by
+theorem isEmbedding_restrict : IsEmbedding (e.source.domRestrict e.toFun) := by
   rw [isEmbedding_iff]
   constructor
   · apply Topology.IsInducing.of_codRestrict (t := e.target) (by simp)
     rw [← PartialEquiv.toEquiv_eq_codRestrict_restrict]
     exact e.toHomeomorphSourceTarget.isInducing
-  · rw [restrict_eq, toFun_eq_coe e, e.injOn.injective_iff e.source (by simp)]
+  · rw [domRestrict_eq, toFun_eq_coe e, e.injOn.injective_iff e.source (by simp)]
     exact Subtype.val_injective
 
 /-- A partial homeomorphism whose source is all of `X` defines an embedding of `X` into
@@ -190,11 +190,11 @@ def ofIsHomeomorphToEquiv (f : PartialEquiv X Y) (h : IsHomeomorph (f.toEquiv)) 
     PartialHomeomorph X Y where
   toPartialEquiv := f
   continuousOn_toFun := by
-    rw [continuousOn_iff_continuous_restrict,
+    rw [continuousOn_iff_continuous_domRestrict,
       ← continuous_codRestrict_iff (s := f.target) (by simp)]
     exact h.continuous
   continuousOn_invFun := by
-    rw [continuousOn_iff_continuous_restrict,
+    rw [continuousOn_iff_continuous_domRestrict,
       ← continuous_codRestrict_iff (s := f.source) (by simp)]
     exact ((Equiv.isHomeomorph_iff _).1 h).2
 
@@ -217,7 +217,7 @@ noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
     refine ⟨?_, Equiv.surjective _⟩
     rw [PartialEquiv.toEquiv_eq_codRestrict_restrict]
     apply IsEmbedding.codRestrict
-    simpa! [restrict_eq] using h.comp subtypeVal)
+    simpa! [domRestrict_eq] using h.comp subtypeVal)
 
 variable [Nonempty X]
 
