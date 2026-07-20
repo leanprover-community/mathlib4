@@ -97,7 +97,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
       have H₁ : (k / (n + 1) : ℂ) = (k / (n + 1) : ℝ) := by push_cast; rfl
       have H₂ : (n + 1) / k < (1 : ℝ) :=
         (div_lt_one <| mod_cast n.succ_pos.trans H).mpr <| mod_cast H
-      simp only [Set.mem_setOf_eq, H, Set.indicator_of_mem, F]
+      simp only [Set.mem_ofPred_eq, H, Set.indicator_of_mem, F]
       conv =>
         enter [1, x]
         rw [div_eq_mul_inv, H₁, ← ofReal_cpow H₀, ← ofReal_inv, ← Real.inv_rpow H₀, inv_div]
@@ -110,7 +110,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   filter_upwards [mem_atTop y] with y' hy' k
   -- it remains to show that `‖F y' k‖ ≤ ‖F y k‖` (for `y' ≥ y`)
   rcases lt_or_ge (n + 1) k with H | H
-  · simp only [Set.mem_setOf_eq, H, Set.indicator_of_mem, norm_div, norm_cpow_real,
+  · simp only [Set.mem_ofPred_eq, H, Set.indicator_of_mem, norm_div, norm_cpow_real,
       Complex.norm_natCast, F]
     rw [← Nat.cast_one, ← Nat.cast_add, Complex.norm_natCast]
     have hkn : 1 ≤ (k / (n + 1 :) : ℝ) :=
