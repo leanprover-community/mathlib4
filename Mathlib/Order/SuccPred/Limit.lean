@@ -106,8 +106,7 @@ structure IsPredLimit (a : α) : Prop where
   /-- Predecessor limits aren't covered by any other elements. -/
   protected isPredPrelimit : IsPredPrelimit a
 
-attribute [to_dual existing]
-  IsSuccLimit.mk IsSuccLimit.not_isMin IsSuccLimit.isSuccPrelimit isSuccLimit_iff
+attribute [to_dual existing] isSuccLimit_iff
 attribute [simp] IsSuccLimit.isSuccPrelimit IsPredLimit.isPredPrelimit
 
 @[to_dual (attr := simp)]
@@ -376,9 +375,6 @@ theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
 @[to_dual isPredPrelimit_of_lt_pred]
 theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b :=
   fun a hab ↦ (H a hab.lt).ne hab.succ_eq
-
-@[deprecated (since := "2025-12-20")]
-alias isPredPrelimit_of_pred_lt := isPredPrelimit_of_lt_pred
 
 @[to_dual lt_pred]
 theorem IsSuccPrelimit.succ_lt (hb : IsSuccPrelimit b) (ha : a < b) : succ a < b := by

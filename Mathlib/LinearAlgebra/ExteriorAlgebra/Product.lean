@@ -81,10 +81,12 @@ noncomputable def prodEquivTensorInverse :
   GradedTensorProduct.lift _ _ (ExteriorAlgebra.map (LinearMap.inl R M N))
     (ExteriorAlgebra.map (LinearMap.inr R M N)) (map_inl_inr_anticomm R)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma prodEquivTensorInverse_ι_tmul_one (m : M) :
     prodEquivTensorInverse R M N (ι R m ᵍ⊗ₜ[R] 1) = ι R (m, 0) := by
   simp [prodEquivTensorInverse]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma prodEquivTensorInverse_one_tmul_ι (n : N) :
     prodEquivTensorInverse R M N (1 ᵍ⊗ₜ[R] ι R n) = ι R (0, n) := by
   simp [prodEquivTensorInverse]
@@ -111,6 +113,7 @@ noncomputable def prodEquivTensor :
   AlgEquiv.ofAlgHom (prodEquivTensorForward R M N) (prodEquivTensorInverse R M N)
     (prodEquivTensor_forward_comp_inverse R M N) (prodEquivTensor_inverse_comp_forward R M N)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma prodEquivTensor_symm_apply_tmul_ιMulti (i j : ℕ) (m : Fin i → M) (n : Fin j → N) :
     (prodEquivTensor R M N).symm (ιMulti R i m ᵍ⊗ₜ[R] ιMulti R j n) =
       ιMulti R (i + j) (Fin.append (LinearMap.inl R M N ∘ m) (LinearMap.inr R M N ∘ n)) := by
