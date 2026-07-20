@@ -160,11 +160,12 @@ noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfH
     rw [← P.span_range_relation_eq_ker, Ideal.span_le]
     rintro a ⟨i, rfl⟩
     simp only [SetLike.mem_coe, RingHom.mem_ker, AlgHom.coe_comp,
-      AlgEquiv.coe_algHom, Function.comp_apply, algebraTensorAlgEquiv_symm_relation]
+      AlgEquiv.coe_toAlgHom, Function.comp_apply, algebraTensorAlgEquiv_symm_relation]
     simp only [TensorProduct.map_tmul, AlgHom.coe_id, id_eq, Ideal.Quotient.mkₐ_eq_mk,
       Ideal.Quotient.mk_span_range, tmul_zero]).comp
     (P.quotientEquiv.restrictScalars R).symm.toAlgHom
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsInv R₀ (MvPolynomial.aeval P.val x) =
@@ -172,6 +173,7 @@ lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
   rw [← MvPolynomial.aeval_map_algebraMap R, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
   simp [tensorModelOfHasCoeffsInv, -quotientEquiv_symm, -quotientEquiv_mk]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma tensorModelOfHasCoeffsHom_comp :
     (P.tensorModelOfHasCoeffsHom R₀).comp (P.tensorModelOfHasCoeffsInv R₀) = AlgHom.id R S := by
   have h : Function.Surjective
@@ -220,12 +222,18 @@ noncomputable def ofHasCoeffs :
   map := P.map
   map_inj := P.map_inj
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF]
+  _root_.Algebra.PreSubmersivePresentation.ofHasCoeffs_algebra_algebraMap_apply
+
 end Algebra.PreSubmersivePresentation
 
 namespace Algebra.SubmersivePresentation
 
 variable [Finite σ] (P : Algebra.SubmersivePresentation R S ι σ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one
     [DecidableEq σ] [Fintype σ] :

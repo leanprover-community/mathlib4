@@ -126,29 +126,8 @@ open LineDeriv
 theorem lineDerivOpCLM_eq (m : E) :
     lineDerivOpCLM 𝕜 𝓢(E, F) m = SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F := rfl
 
-@[deprecated (since := "2025-11-25")]
-alias pderivCLM := lineDerivOpCLM
-
-@[deprecated (since := "2025-11-25")]
-alias pderivCLM_apply := LineDeriv.lineDerivOpCLM_apply
-
 theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineDeriv ℝ f x m :=
   f.differentiableAt.lineDeriv_eq_fderiv.symm
-
-@[deprecated (since := "2025-11-25")]
-alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
-
-@[deprecated (since := "2025-11-25")]
-alias iteratedPDeriv_zero := LineDeriv.iteratedLineDerivOp_zero
-
-@[deprecated (since := "2025-11-25")]
-alias iteratedPDeriv_one := LineDeriv.iteratedLineDerivOp_one
-
-@[deprecated (since := "2025-11-25")]
-alias iteratedPDeriv_succ_left := LineDeriv.iteratedLineDerivOp_succ_left
-
-@[deprecated (since := "2025-11-25")]
-alias iteratedPDeriv_succ_right := LineDeriv.iteratedLineDerivOp_succ_right
 
 theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
     ∂^{m} f x = iteratedFDeriv ℝ n f x m := by
@@ -158,10 +137,7 @@ theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : �
     rw [iteratedLineDerivOp_succ_left, iteratedFDeriv_succ_apply_left,
       ← fderiv_continuousMultilinear_apply_const_apply]
     · simp only [lineDerivOp_apply_eq_fderiv, ← ih]
-    · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.coe_lt_top n) x
-
-@[deprecated (since := "2025-11-25")]
-alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
+    · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.natCast_lt_top n) x
 
 end fderiv
 
@@ -347,7 +323,7 @@ theorem integral_bilinear_laplacian_right_eq_left (f : 𝓢(E, F₁)) (g : 𝓢(
     (L : F₁ →L[ℝ] F₂ →L[ℝ] F₃) :
     ∫ x, L (f x) (Δ g x) ∂μ = ∫ x, L (Δ f x) (g x) ∂μ := by
   simp_rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E), sum_apply, map_sum,
-    ContinuousLinearMap.coe_sum', Finset.sum_apply]
+    _root_.sum_apply]
   rw [MeasureTheory.integral_finsetSum, MeasureTheory.integral_finsetSum]
   · simp [integral_bilinear_lineDerivOp_right_eq_neg_left]
   · exact fun _ _ ↦ (pairing L (∂_{_} <| ∂_{_} f) g).integrable

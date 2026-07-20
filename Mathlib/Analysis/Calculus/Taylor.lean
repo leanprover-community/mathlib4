@@ -152,7 +152,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
         ((k ! : ℝ)⁻¹ * (x - y) ^ k) • iteratedDerivWithin (k + 1) f s y) t y := by
   replace hf :
     HasDerivWithinAt (iteratedDerivWithin (k + 1) f s) (iteratedDerivWithin (k + 2) f s y) t y := by
-    convert! (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
+    convert (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt
     rw [iteratedDerivWithin_succ]
     exact (derivWithin_of_mem_nhdsWithin hs ht hf).symm
   have : HasDerivWithinAt (fun t => ((k + 1 : ℝ) * k !)⁻¹ * (x - t) ^ (k + 1))
@@ -284,7 +284,7 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
     Filter.Tendsto (fun x ↦ (f x - taylorWithinEval f n s x₀ x) / (x - x₀) ^ n)
       (𝓝[s] x₀) (𝓝 0) := by
-  convert! _root_.taylor_tendsto hs hx₀s hf using 2 with x
+  convert _root_.taylor_tendsto hs hx₀s hf with x
   simp [div_eq_inv_mul]
 
 
@@ -472,9 +472,9 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
       iteratedDerivWithin_zero, one_smul, deriv_const', div_one, zero_smul,
       intervalIntegral.integral_zero, sub_zero] at hf
     rw [← hf]
-    apply intervalIntegral.integral_congr_ae
-    filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
-    grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+    refine intervalIntegral.integral_congr_uIoo fun _ ⟨h1, h2⟩ => ?_
+    rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
+    rfl
   | succ n ih =>
     have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
     specialize ih (by grind)
@@ -494,12 +494,12 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
         congr
         field_simp
         grind
-    · apply intervalIntegral.integral_congr_ae
-      filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
+    · refine intervalIntegral.integral_congr_uIoo fun _ ⟨h1, h2⟩ => ?_
       rw [iteratedDerivWithin_succ]
       congr
-      · rw [Nat.factorial]; grind
-      · grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+      · rw [Nat.factorial, Nat.cast_mul, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one]
+      · rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
+        rfl
 
 /-- **Taylor's theorem** with the Integral form of the remainder.
 

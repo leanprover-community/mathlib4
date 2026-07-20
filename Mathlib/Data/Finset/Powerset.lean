@@ -78,6 +78,13 @@ theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → 
   have {z a} (_ : z ⊆ s) (_ : a ∈ s) : a ∈ z ↔ f a ∈ z.image f := by grind [H.eq_iff]
   exact fun _ _ _ _ _ => by grind
 
+/-- Variant of `Finset.image_injOn_powerset_of_injOn` for a family `S` of finsets whose
+union supports an `InjOn` hypothesis, rather than the full powerset of a set. -/
+theorem injOn_image_of_biUnion_injOn {β : Type*} [DecidableEq α] [DecidableEq β]
+    {S : Finset (Finset α)} {f : α → β} (hf : (S.biUnion id : Set α).InjOn f) :
+    (S : Set (Finset α)).InjOn (·.image f) :=
+  (image_injOn_powerset_of_injOn hf).mono (by aesop (add simp Set.subset_def))
+
 /-- `s.biUnion id ⊆ t` iff every member of `s` is a subset of `t`, i.e. `s ⊆ t.powerset`. -/
 lemma biUnion_id_subset_iff_subset_powerset [DecidableEq α] {s : Finset (Finset α)} :
     s.biUnion id ⊆ t ↔ s ⊆ t.powerset := by
@@ -220,7 +227,7 @@ theorem filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
   · rintro ⟨y, ⟨hyt, hyn⟩, rfl⟩
     refine ⟨⟨union_subset (hyt.trans sdiff_subset) hst, ?_⟩, subset_union_right⟩
     rw [card_union_of_disjoint (disjoint_of_subset_left hyt disjoint_sdiff_self_left), hyn]
-    omega
+    lia
 
 /-- The number of `n`-element subsets of `t` containing `s` equals
 `Nat.choose (#t - #s) (n - #s)`. -/
@@ -294,6 +301,7 @@ theorem pairwise_disjoint_powersetCard (s : Finset α) :
   Finset.disjoint_left.mpr fun _x hi hj =>
     hij <| (mem_powersetCard.mp hi).2.symm.trans (mem_powersetCard.mp hj).2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_disjiUnion (s : Finset α) :
     Finset.powerset s =
       (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
@@ -306,6 +314,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
   · rcases mem_disjiUnion.mp ha with ⟨i, _hi, ha⟩
     exact mem_powerset.mpr (mem_powersetCard.mp ha).1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_biUnion [DecidableEq (Finset α)] (s : Finset α) :
     Finset.powerset s = (range (s.card + 1)).biUnion fun i => powersetCard i s := by
   simpa only [disjiUnion_eq_biUnion] using powerset_card_disjiUnion s
@@ -316,7 +325,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
   · simp_rw [Finset.sup_le_iff, mem_powersetCard]
     rintro x ⟨h, -⟩
     exact h
-  · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
+  · rw [sup_eq_biUnion, subset_iff]
     intro x hx
     simp only [mem_biUnion, id]
     obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty.2
@@ -325,12 +334,30 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     rw [← insert_erase hx, powersetCard_succ_insert (notMem_erase _ _)]
     exact mem_union_right _ (mem_image_of_mem _ ht)
 
+/-- The union of all `r`-element subsets of `s` is `s`, provided `1 ≤ r ≤ #s`. -/
+lemma powersetCard_biUnion [DecidableEq α] {r : ℕ} (hr : r ≠ 0) (hrs : r ≤ #s) :
+    (s.powersetCard r).biUnion id = s := by
+  obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hr
+  rw [← sup_eq_biUnion]
+  exact powersetCard_sup _ _ hrs
+
+/-- If two finsets of equal cardinality have the same `r`-element subsets for some `1 ≤ r ≤ #a`,
+they are equal. -/
+lemma eq_of_powersetCard_eq {a b : Finset α} {r : ℕ}
+    (hab : #a = #b) (hr₀ : r ≠ 0) (hra : r ≤ #a)
+    (h : a.powersetCard r = b.powersetCard r) : a = b := by
+  classical
+  simpa [powersetCard_biUnion hr₀, ← hab, hra] using congr(($h).biUnion id)
+
+/-- For `1 ≤ r ≤ q`, the map `powersetCard r` is injective on the finsets of cardinality `q`. -/
+lemma powersetCard_injOn {q r : ℕ} (hr₀ : r ≠ 0) (hrq : r ≤ q) :
+    Set.InjOn (fun a ↦ a.powersetCard r) {a : Finset α | #a = q}
+  | _, rfl, _, hbq, h => eq_of_powersetCard_eq hbq.symm hr₀ hrq h
+
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
   ext fun t => by
-    -- `le_eq_subset` is a dangerous lemma since it turns the type `↪o` into `(· ⊆ ·) ↪r (· ⊆ ·)`,
-    -- which makes `simp` have trouble working with `mapEmbedding_apply`.
-    simp only [mem_powersetCard, mem_map, RelEmbedding.coe_toEmbedding, mapEmbedding_apply]
+    simp only [mem_powersetCard, mem_map]
     constructor
     · classical
       intro h
@@ -338,7 +365,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
-      simp only [map_subset_map, has, card_map, and_self]
+      simp [has]
 
 end powersetCard
 

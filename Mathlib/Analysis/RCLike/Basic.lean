@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -96,7 +96,7 @@ namespace RCLike
 /-- Coercion from `ℝ` to an `RCLike` field. -/
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
 
-/- The priority must be set at 900 to ensure that coercions are tried in the right order.
+/-- The priority must be set at 900 to ensure that coercions are tried in the right order.
 See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
 noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
@@ -577,9 +577,6 @@ instance : StarModule ℝ K where
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 
-@[rclike_simps, norm_cast]
-lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
-
 @[simp, rclike_simps]
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 
@@ -615,6 +612,16 @@ theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofRe
 theorem intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofReal_im]
 
 @[rclike_simps, norm_cast]
+theorem ofReal_nnratCast (n : ℚ≥0) : ((n : ℝ) : K) = n :=
+  map_nnratCast _ n
+
+@[simp, rclike_simps]
+theorem nnratCast_re (q : ℚ≥0) : re (q : K) = q := by rw [← ofReal_nnratCast, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem nnratCast_im (q : ℚ≥0) : im (q : K) = 0 := by rw [← ofReal_nnratCast, ofReal_im]
+
+@[rclike_simps, norm_cast]
 theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
 
@@ -623,6 +630,20 @@ theorem ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofRe
 
 @[simp, rclike_simps, norm_cast]
 theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofReal_im]
+
+open OfScientific (ofScientific)
+
+@[rclike_simps, norm_cast]
+theorem ofReal_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ((ofScientific m s e : ℝ) : K) = ofScientific m s e := ofReal_nnratCast _
+
+@[simp, rclike_simps]
+theorem ofScientific_re (m : ℕ) (s : Bool) (e : ℕ) :
+    re (ofScientific m s e : K) = ofScientific m s e := by rw [← ofReal_ofScientific, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem ofScientific_im (m : ℕ) (s : Bool) (e : ℕ) :
+    im (ofScientific m s e : K) = 0 := by rw [← ofReal_ofScientific, ofReal_im]
 
 /-! ### Norm -/
 
@@ -707,6 +728,9 @@ theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
     I_mul_I_of_nonzero hI, norm_neg, norm_one]
 
+theorem norm_I : ‖(I : K)‖ = if (I : K) ≠ 0 then 1 else 0 := by
+  grind [norm_I_of_ne_zero, norm_eq_zero]
+
 theorem re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
   rw [mul_conj, ← ofReal_pow]; simp [-map_pow]
 
@@ -742,7 +766,22 @@ theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (nor
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
+lemma I_mem_skewAdjoint : I ∈ skewAdjoint K := by simp [skewAdjoint.mem_iff]
+
 end RCLike
+
+section
+variable {A : Type*} [AddCommGroup A] [StarAddMonoid A] [Module K A] [StarModule K A] {a : A}
+
+open RCLike
+
+lemma IsSelfAdjoint.I_smul_mem_skewAdjoint (h : IsSelfAdjoint a) :
+    (I : K) • a ∈ skewAdjoint A := h.smul_mem_skewAdjoint I_mem_skewAdjoint
+
+lemma IsSelfAdjoint.I_smul_of_mem_skewAdjoint (h : a ∈ skewAdjoint A) :
+    IsSelfAdjoint ((I : K) • a) := isSelfAdjoint_smul_of_mem_skewAdjoint I_mem_skewAdjoint h
+
+end
 
 section Instances
 
@@ -776,11 +815,11 @@ include K
 
 variable (K) in
 lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! norm_smul (q : K) x
 
 variable (K) in
 lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnnorm_smul (q : K) x
 
 @[bound]
 lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
@@ -1186,7 +1225,7 @@ open scoped ComplexOrder in
 lemma instOrderClosedTopology : OrderClosedTopology K where
   isClosed_le' := by
     conv in _ ≤ _ => rw [RCLike.le_iff_re_im]
-    simp_rw [Set.setOf_and]
+    simp_rw [Set.ofPred_and]
     refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> fun_prop
 
 scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology
@@ -1262,7 +1301,7 @@ instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedFiel
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
     (h'' : hk = h.toNormedField) : RCLike 𝕜 where
   __ := hk
@@ -1306,7 +1345,7 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
 
 /-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
 structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
     [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
   choose p hp using h.out
@@ -1339,6 +1378,7 @@ theorem symm_smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : W) :
 @[simp] theorem toContinuousLinearEquiv_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
     (α • e).toContinuousLinearEquiv = Unitary.toUnits α • e.toContinuousLinearEquiv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_trans (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
     (α • e).trans f = α • (e.trans f) := by ext; simp
 

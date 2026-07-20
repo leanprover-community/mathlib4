@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.FieldTheory.Galois.GaloisClosure
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+
 /-!
 
 # The Fundamental Theorem of Infinite Galois Theory
@@ -167,7 +168,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
   apply Set.not_subset.mpr
   use h
   simpa only [this, Set.mem_compl_iff, Subsemigroup.mem_carrier, Submonoid.mem_toSubsemigroup,
-    Subgroup.mem_toSubmonoid, not_not, true_and] using mem
+    Subgroup.mem_toSubmonoid, not_not, true_and] using! mem
 
 /-- The Galois correspondence from intermediate fields to closed subgroups. -/
 def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :

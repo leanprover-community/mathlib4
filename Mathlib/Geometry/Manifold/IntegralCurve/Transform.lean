@@ -57,7 +57,7 @@ lemma isMIntegralCurveOn_comp_add {dt : ℝ} :
 
 lemma isMIntegralCurveOn_comp_sub {dt : ℝ} :
     IsMIntegralCurveOn (γ ∘ (· - dt)) v { t | t - dt ∈ s } ↔ IsMIntegralCurveOn γ v s := by
-  simpa using isMIntegralCurveOn_comp_add (dt := -dt)
+  simpa using! isMIntegralCurveOn_comp_add (dt := -dt)
 
 lemma IsMIntegralCurveAt.comp_add (hγ : IsMIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsMIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
@@ -78,7 +78,7 @@ lemma isMIntegralCurveAt_comp_add {dt : ℝ} :
 
 lemma isMIntegralCurveAt_comp_sub {dt : ℝ} :
     IsMIntegralCurveAt (γ ∘ (· - dt)) v (t₀ + dt) ↔ IsMIntegralCurveAt γ v t₀ := by
-  simpa using isMIntegralCurveAt_comp_add (dt := -dt)
+  simpa using! isMIntegralCurveAt_comp_add (dt := -dt)
 
 lemma IsMIntegralCurve.comp_add (hγ : IsMIntegralCurve γ v) (dt : ℝ) :
     IsMIntegralCurve (γ ∘ (· + dt)) v := by
@@ -94,7 +94,7 @@ lemma isMIntegralCurve_comp_add {dt : ℝ} :
 
 lemma isMIntegralCurve_comp_sub {dt : ℝ} :
     IsMIntegralCurve (γ ∘ (· - dt)) v ↔ IsMIntegralCurve γ v := by
-  simpa using isMIntegralCurve_comp_add (dt := -dt)
+  simpa using! isMIntegralCurve_comp_add (dt := -dt)
 
 end Translation
 
@@ -102,11 +102,15 @@ end Translation
 
 section Scaling
 
+open Manifold
+
 lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intro t ht
-  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.one_apply (R₁ := ℝ) a,
-    ← ContinuousLinearMap.smulRight_comp_smulRight]
+  have : (1 : ℝ →L[ℝ] ℝ).smulRight (a • v (γ (t * a))) =
+      (1 : ℝ →L[ℝ] ℝ).smulRight (v (γ (t * a))) ∘SL (1 : ℝ →L[ℝ] ℝ).smulRight a := by
+    simp [ContinuousLinearMap.smulRight_comp_smulRight]
+  rw [comp_apply, Pi.smul_apply, this]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
     ⟨(continuous_mul_const _).continuousWithinAt, ?_⟩ subset_rfl
   simp only [mfld_simps]
@@ -119,7 +123,7 @@ lemma isMIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   · ext t
     simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-  · simp only [mem_setOf_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq]
+  · simp only [mem_ofPred_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, ofPred_mem_eq]
 
 lemma IsMIntegralCurveAt.comp_mul_ne_zero (hγ : IsMIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
     IsMIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
@@ -128,7 +132,7 @@ lemma IsMIntegralCurveAt.comp_mul_ne_zero (hγ : IsMIntegralCurveAt γ v t₀) {
   refine ⟨ε / |a|, by positivity, ?_⟩
   convert! h.comp_mul a
   ext t
-  rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
+  rw [mem_ofPred_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
     lt_div_iff₀ (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
 
 lemma isMIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
