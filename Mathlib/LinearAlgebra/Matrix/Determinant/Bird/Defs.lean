@@ -109,12 +109,12 @@ theorem get_eq (n : ℕ) (A : Array R) (i j : ℕ) :
 
 theorem sumFrom_step (n lo : ℕ) (f : ℕ → R) (h : lo < n) :
     BirdDet.sumFrom n lo f = f lo + BirdDet.sumFrom n (lo + 1) f := by
-  rw [BirdDet.sumFrom.eq_1]
+  rw [BirdDet.sumFrom]
   simp [h]
 
 theorem sumFrom_stop (n lo : ℕ) (f : ℕ → R) (h : ¬ lo < n) :
     BirdDet.sumFrom n lo f = 0 := by
-  rw [BirdDet.sumFrom.eq_1]
+  rw [BirdDet.sumFrom]
   simp [h]
 
 /-- Induction following the recursive structure of `sumFrom`. -/
