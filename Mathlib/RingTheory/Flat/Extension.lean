@@ -173,6 +173,7 @@ noncomputable abbrev adjoinAlgebraicToK (x : K) (int : IsIntegral S x) :
 noncomputable instance (x : K) (int : IsIntegral S x) : Algebra (adjoinAlgebraic K S x int) K :=
   (adjoinAlgebraicToK K S x int).toAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (x : K) (int : IsIntegral S x) :
     IsScalarTower S (adjoinAlgebraic K S x int) K := by
   apply IsScalarTower.of_algebraMap_eq (fun y ↦ ?_)
@@ -180,6 +181,7 @@ noncomputable instance (x : K) (int : IsIntegral S x) :
   simp [RingHom.algebraMap_toAlgebra]
 
 omit [IsLocalRing S] [IsLocalHom (algebraMap S K)] in
+set_option backward.isDefEq.respectTransparency false in
 lemma adjoinAlgebraic_mem_range (x : K) (int : IsIntegral S x) :
     x ∈ (algebraMap (adjoinAlgebraic K S x int) K).range := by
   use Ideal.Quotient.mk _ Polynomial.X
