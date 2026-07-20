@@ -512,6 +512,13 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
       simp_all [← smul_assoc]
     }
 
+private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f : β → α)
+    (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support := by
+  simp only [mulSupport_subset_iff, ne_eq, mem_support]
+  intro
+  contrapose!
+  simp +contextual
+
 /--
 Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
 decomposition, write the function `h` entirely in terms of `f`.
@@ -527,13 +534,15 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
   have h₄f : (divisor f (ball 0 R)).support.Finite := D.meromorphicOn.divisor_ball_support_finite
   have := (D.analyticOnNhd w hw).meromorphicAt
   -- Proof body: Substitute `f` using `h₁f` and compute
+  lift (divisor f (sphere 0 R)).support to Finset ℂ using h₃f with t₁ ht₁
+  lift (divisor f (ball 0 R)).support to Finset ℂ using h₄f with t₂ ht₂
   rw [meromorphicTrailingCoeffAt_congr_nhdsNE
     ((D.meromorphicOn w hw).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
       (by fun_prop) hw _ D.eventuallyEq),
-    finprod_eq_prod_of_mulSupport_subset (s := h₄f.toFinset) _ (by aesop),
-    finprod_eq_prod_of_mulSupport_subset (s := h₃f.toFinset) _ (by aesop),
-    finprod_eq_prod_of_mulSupport_subset (s := h₄f.toFinset) _ (by aesop),
-    finprod_eq_prod_of_mulSupport_subset (s := h₃f.toFinset) _ (by aesop),
+    finprod_eq_prod_of_mulSupport_subset (s := t₂) _ ?η₁,
+    finprod_eq_prod_of_mulSupport_subset (s := t₁) _ ?η₂,
+    finprod_eq_prod_of_mulSupport_subset (s := t₂) _ ?η₃,
+    finprod_eq_prod_of_mulSupport_subset (s := t₁) _ ?η₄,
     MeromorphicAt.meromorphicTrailingCoeffAt_smul (by fun_prop)
       (D.analyticOnNhd w hw).meromorphicAt,
     MeromorphicAt.meromorphicTrailingCoeffAt_mul (by fun_prop) (by fun_prop),
@@ -542,6 +551,7 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
     mul_mul_mul_comm,
     ← Finset.prod_mul_distrib, ← Finset.prod_mul_distrib, Finset.prod_eq_one, Finset.prod_eq_one,
     mul_one, one_smul]
+  case η₁ | η₂ | η₃ | η₄ => simpa [ht₁, ht₂] using mulSupport_pow_subset_support ..
   · intro x hx
     rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop), ← zpow_add₀,
       locallyFinsuppWithin.coe_neg, Pi.neg_apply, neg_add_cancel, zpow_zero]
