@@ -135,7 +135,7 @@ theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ weight w d = n) := by
   simpa using ne_zero_iff_exists_coeff_ne_zero f
 
-/-- The weighted order of a mv_power_series -/
+/-- The weighted order of a `MvPowerSeries`. -/
 def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
   classical
   exact dite (f = 0) (fun _ => ⊤) fun h =>
