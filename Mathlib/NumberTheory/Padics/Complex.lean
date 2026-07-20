@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Algebra.AlgebraicCard
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -150,6 +151,36 @@ instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) := inf
 instance charZero : CharZero (PadicAlgCl p) :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] (PadicAlgCl p)).injective).mp inferInstance
 
+open Polynomial TopologicalSpace in
+/-- `PadicAlgCl p` is a separable topological space. -/
+instance separableSpace : SeparableSpace (PadicAlgCl p) where
+  exists_countable_dense := by
+    refine ⟨{z : PadicAlgCl p | IsAlgebraic ℚ z}, Algebraic.countable ℚ (PadicAlgCl p),
+      Metric.dense_iff.mpr <| fun α ε hε ↦ ?_⟩
+    have hint : IsIntegral ℚ_[p] α := Algebra.IsIntegral.isIntegral α
+    set f := minpoly ℚ_[p] α
+    have hf : Monic f := minpoly.monic hint
+    have hdense : DenseRange (algebraMap ℚ ℚ_[p]) := Padic.denseRange_ratCast p
+    set n := f.natDegree with hn
+    have hnpos : 0 < n := minpoly.natDegree_pos hint
+    set M := max ‖α‖ 1 with hM
+    have hMpos : 0 < M := lt_of_lt_of_le one_pos (le_max_right _ _)
+    set δ := (ε / M) ^ n / (n + 1) with hδ_def
+    have hδpos : 0 < δ := div_pos (pow_pos (div_pos hε hMpos) n) (by positivity)
+    obtain ⟨g, hgm, hdeg, hgcoeff⟩ :=
+      exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt hdense hf hδpos
+    obtain ⟨β, hβroot, hβnorm⟩ := exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt
+      hδpos (f := f) (g := g.map (algebraMap ℚ ℚ_[p])) (minpoly.aeval _ _) hf (hgm.map _)
+      (by rw [natDegree_map_eq_of_injective (algebraMap ℚ ℚ_[p]).injective]; omega)
+      (fun i ↦ by simpa using hgcoeff i) (IsAlgClosed.splits _)
+    refine ⟨β, ?_, ?_⟩
+    · rw [Metric.mem_ball, dist_comm, dist_eq_norm]
+      refine hβnorm.trans_le ?_
+      rw [← hn, ← hM, show (↑n + 1) * δ = (ε / M) ^ n by rw [hδ_def]; field_simp,
+        Real.pow_rpow_inv_natCast (by positivity) hnpos.ne', div_mul_cancel₀ _ hMpos.ne']
+    · rw [mem_aroots, aeval_map_algebraMap] at hβroot
+      exact ⟨g, hgm.ne_zero, hβroot.2⟩
+
 end PadicAlgCl
 
 /-- `ℂ_[p]` is the field of `p`-adic complex numbers, that is, the completion of `PadicAlgCl p` with
@@ -262,6 +293,9 @@ instance charZero : CharZero ℂ_[p] :=
 /-- `ℂ_[p]` is algebraically closed. -/
 instance isAlgClosed : IsAlgClosed ℂ_[p] :=
   IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
+
+/-- `ℂ_[p]` is a separable topological space. -/
+instance separableSpace : TopologicalSpace.SeparableSpace ℂ_[p] := inferInstance
 
 end PadicComplex
 
