@@ -13,13 +13,12 @@ public import Mathlib.GroupTheory.FinitelyPresentedGroup
 `Group.Presentation` packages a chosen presentation of a given group `G`:
 a generating family together with relators (words `r`, each read as `r = 1`) whose
 generated normal subgroup is exactly the kernel of `FreeGroup.lift val : FreeGroup α →* G`.
-This the complementary to `PresentedGroup rels`, which constructs the group presented by a set of
-generators and relations.
+This is complementary to `PresentedGroup rels`, which constructs the group presented by a given set
+of generators and relations.
 
 ## Main definitions
 
-* `Group.Generators G α`: a family `val : α → G`, indexed by `α`, with `FreeGroup.lift val`
-  surjective.
+* `Group.Generators G α`: a family `val : α → G`, indexed by `α`, whose range generates `G`.
 * `Group.Presentation G α ρ`: a presentation `⟨α | rel⟩` of `G`, extending `Group.Generators G α`
 
 ## Main results
@@ -50,42 +49,48 @@ group presentation, generators and relations
 
 variable {G α ρ : Type*} [Group G]
 
-/-- The generators of a group are given by a generating family indexed by `α` such that the induced
-homomorphism `FreeGroup.lift val : FreeGroup α →* G` is surjective. -/
+/-- The generators of a group are given by a generating family indexed by `α` whose range generates
+`G`, or equivalently such that the induced homomorphism `FreeGroup.lift val : FreeGroup α →* G` is
+surjective. -/
 structure Group.Generators (G : Type*) [Group G] (α : Type*) where
-  /-- Identify the generating family `α` with elements of `G` via index set `val`. -/
+  /-- The generating family itself: `val a` is the element of `G` indexed by `a : α`. -/
   val : α → G
-  /-- The induced map from the free group over the identified elements of `G` via `val`,
-  `FreeGroup.lift val` is surjective onto `G`. -/
-  lift_surjective : Function.Surjective (FreeGroup.lift val)
+  /-- The subgroup closure of the generators generate the whole group. -/
+  closure_eq_top : Subgroup.closure (Set.range val) = ⊤
 
 namespace Group.Generators
 
 variable (P : Group.Generators G α)
 
-/-- The generators of a group generate the whole group under subgroup closure. -/
-theorem closure_range_val_eq_top : Subgroup.closure (Set.range P.val) = ⊤ := by
-  rw [← FreeGroup.range_lift_eq_closure, MonoidHom.range_eq_top]
-  exact P.lift_surjective
+/-- The range of the free group over the generators, `FreeGroup.lift val`, is the whole group. -/
+@[simp]
+theorem range_lift_eq_top : (FreeGroup.lift P.val).range = ⊤ := by
+  rw [FreeGroup.range_lift_eq_closure]; exact P.closure_eq_top
 
-/-- Builds a generating set using the index set `val` and a hypothesis that the subgroup closure is
-the whole group. -/
-def ofClosureEqTop (val : α → G) (h : Subgroup.closure (Set.range val) = ⊤) :
+/-- The induced map from the free group over the identified elements of `G` via `val`,
+`FreeGroup.lift val`, is surjective onto `G`. -/
+theorem lift_surjective : Function.Surjective (FreeGroup.lift P.val) :=
+  MonoidHom.range_eq_top.mp P.range_lift_eq_top
+
+/-- Builds a `Group.Generators` from a family `val : α → G` together with a proof that the induced
+map `FreeGroup.lift val` is surjective. -/
+def ofLiftSurjective (val : α → G) (h : Function.Surjective (FreeGroup.lift val)) :
     Group.Generators G α where
   val := val
-  lift_surjective := by rw [← MonoidHom.range_eq_top, FreeGroup.range_lift_eq_closure]; exact h
+  closure_eq_top := by rw [← FreeGroup.range_lift_eq_closure, MonoidHom.range_eq_top]; exact h
 
-/-- The index set built by the generating set `ofClosureEqTop` using `val` is itself. -/
+/-- The generating family underlying `ofLiftSurjective val h` is `val` itself. -/
 @[simp]
-theorem val_ofClosureEqTop (val : α → G) (h : Subgroup.closure (Set.range val) = ⊤) :
-    (ofClosureEqTop val h).val = val := rfl
+theorem val_ofLiftSurjective (val : α → G) (h : Function.Surjective (FreeGroup.lift val)) :
+    (ofLiftSurjective val h).val = val := rfl
 
 /-- `G` as a generating set generates itself via taking `val` as the identity map. -/
-def self (G : Type*) [Group G] : Group.Generators G G :=
-  ofClosureEqTop id (by rw [Set.range_id]; exact Subgroup.closure_univ)
+def self (G : Type*) [Group G] : Group.Generators G G where
+  val := id
+  closure_eq_top := by rw [Set.range_id]; exact Subgroup.closure_univ
 
-/-- The index set `val` given by taking `G` as the generating family for `G` is given by
-the identity map. -/
+/-- The generating family underlying `self G`, taking `G` as its own generating family, is the
+identity map. -/
 @[simp]
 theorem val_self : (self G).val = id := rfl
 
@@ -102,7 +107,7 @@ theorem Group.fg_iff_nonempty_finite_generators :
   constructor
   · rintro ⟨α, hα, φ, hφ⟩
     obtain ⟨v, rfl⟩ := FreeGroup.lift.surjective φ
-    exact ⟨α, hα, ⟨v, hφ⟩⟩
+    exact ⟨α, hα, ⟨Group.Generators.ofLiftSurjective v hφ⟩⟩
   · rintro ⟨α, hα, ⟨P⟩⟩
     exact ⟨α, hα, FreeGroup.lift P.val, P.lift_surjective⟩
 
@@ -193,7 +198,6 @@ theorem Group.isFinitelyPresented_iff_nonempty_finite_presentation :
   obtain ⟨n, φ, hφ, s, hs, hsφ⟩ := h.out
   obtain ⟨v, rfl⟩ := FreeGroup.lift.surjective φ
   exact ⟨Fin n, s, inferInstance, hs.to_subtype,
-    ⟨{ val := v
-       lift_surjective := hφ
+    ⟨{ toGenerators := Group.Generators.ofLiftSurjective v hφ
        rel := Subtype.val
        ker_eq_normalClosure := by rw [Subtype.range_val]; exact hsφ.symm }⟩⟩
