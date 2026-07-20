@@ -45,6 +45,7 @@ def natCodeLtDelta0 : Delta0Formula 2 :=
 def natCodeLtFormula : FOFormula 2 :=
   natCodeLtDelta0.toFO
 
+@[simp, nolint simpNF]
 theorem natCode_mem_natCode_iff (m n : Nat) :
     (natCode m : ZFSet.{u}) ∈ natCode n ↔ m < n := by
   change (m : Ordinal.{u}).toZFSet ∈ (n : Ordinal.{u}).toZFSet ↔ m < n

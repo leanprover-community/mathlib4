@@ -169,6 +169,7 @@ def fromBoundedFormula : {n : Nat} ->
 abbrev toSentence (phi : FOFormula 0) : FirstOrder.Language.setTheory.Sentence :=
   toBoundedFormula phi
 
+@[simp, nolint simpNF]
 theorem snoc_eq_finSnoc {A : Type u} {n : Nat}
     (s : Fin n -> A) (x : A) : snoc s x = Fin.snoc s x := by
   funext i

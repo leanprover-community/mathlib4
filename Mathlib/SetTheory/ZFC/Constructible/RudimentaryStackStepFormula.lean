@@ -366,6 +366,7 @@ theorem empty_ne_zfPair (x y : ZFSet.{u}) :
     (∅ : ZFSet.{u}) ≠ ZFSet.pair x y :=
   (zfPair_ne_empty x y).symm
 
+@[simp, nolint simpNF]
 theorem appTag_ne_varTag : (appTag : ZFSet.{u}) ≠ varTag :=
   varTag_ne_appTag.symm
 
