@@ -87,8 +87,8 @@ lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
     (x y : A ⊗[R] B) : f (x * y) = f x * f y :=
   f.map_mul_iff.2 (by
     -- these instances are needed by the statement of `ext`, but not by the current definition.
-    letI : Algebra R C := .restrictScalars R S C
-    letI : IsScalarTower R S C := .restrictScalars R S C
+    let : Algebra R C := .restrictScalars R S C
+    let : IsScalarTower R S C := .restrictScalars R S C
     ext
     dsimp
     exact hf _ _ _ _) x y
@@ -170,6 +170,7 @@ theorem lift_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commut
     lift f g hfg (a ⊗ₜ b) = f a * g b :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_includeLeft_includeRight :
     lift includeLeft includeRight (fun _ _ => (Commute.one_right _).tmul (Commute.one_left _)) =
@@ -426,6 +427,7 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma commRight_symm_tmul (s : S) (a : A) :
     (commRight R S A).symm (a ⊗ₜ[R] s) = s ⊗ₜ a := rfl
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]
 alias Algebra.TensorProduct.commRight_symm_tmul := commRight_symm_tmul
 
