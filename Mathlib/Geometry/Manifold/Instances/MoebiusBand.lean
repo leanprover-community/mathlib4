@@ -54,7 +54,7 @@ theorem isOpen_U₀ : IsOpen U₀ := isOpen_ne
 theorem isOpen_U₁ : IsOpen U₁ := isOpen_ne
 
 theorem U₀_union_U₁ : U₀ ∪ U₁ = univ := by
-  ext z; simp only [mem_union, mem_setOf_eq, mem_univ, iff_true, U₀, U₁]
+  ext z; simp only [mem_union, mem_ofPred_eq, mem_univ, iff_true, U₀, U₁]
   by_contra h; simp only [not_or, not_not] at h
   exact Circle.one_ne_negOne (h.2.symm ▸ h.1)
 
@@ -662,6 +662,7 @@ private theorem circle_negI_mem_extChartAt_one_source
   have := congr_arg (fun z : Circle => (z : ℂ).im) h
   simp at this
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem extChartAt_one_negI_eq_neg_extChartAt_one_I
     [Fact (Module.finrank ℝ ℂ = 1 + 1)] :
     (extChartAt (𝓡 1) (1 : Circle)) (⟨-Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle) =
@@ -780,6 +781,7 @@ private theorem fderiv_eq_at_neg_of_odd
   simp only [ContinuousLinearMap.comp_neg, ContinuousLinearMap.comp_id] at h1
   exact neg_inj.mp h1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tangent coordinate change on Circle between the two standard stereographic charts
 gives the same linear map at I and -I. This follows from the chart transition being an odd
 function: complex conjugation on the circle (which swaps I ↔ -I) corresponds to negation in
@@ -837,6 +839,7 @@ private theorem chartAt_negOne_eq_stereographic_posOne
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem mem_tangent_triv_overlap_of_proj_ne_endpoints
     [Fact (Module.finrank ℝ ℂ = 1 + 1)]
     (z : MoebiusBand) (hne_neg : z.proj ≠ Circle.negOne) (hne_one : z.proj ≠ (1 : Circle)) :
@@ -987,6 +990,7 @@ private theorem preconnected_univ_tangent_triv_baseSet_of
   convert hsymm using 1
   rw [(trivializationAt ℝ moebiusBundleCore.Fiber p.proj).target_eq, hbs]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem preconnected_univ_tangent_triv_baseSet_at_one
     [Fact (Module.finrank ℝ ℂ = 1 + 1)] :
     IsPreconnected (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ)
@@ -1006,6 +1010,7 @@ private theorem preconnected_univ_tangent_triv_baseSet_at_one
     simp [stereographic'_target]
   simpa using preconnected_univ_tangent_triv_baseSet_of (1 : Circle) hbs he₂t
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem preconnected_univ_tangent_triv_baseSet_at_negOne
     [Fact (Module.finrank ℝ ℂ = 1 + 1)] :
     IsPreconnected (Set.univ : Set ↥(chartAt (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ)
@@ -1134,11 +1139,11 @@ theorem not_orientable :
   -- Each chart-sign is locally constant on its (preconnected) chart domain.
   have hcp : o.chartSign p zU = o.chartSign p zL :=
     ((IsLocallyConstant.iff_continuous _).mpr
-      (o.continuousOn_chartSign p).restrict).apply_eq_of_isPreconnected
+      (o.continuousOn_chartSign p).domRestrict).apply_eq_of_isPreconnected
       (x := ⟨zU, hzU.1⟩) (y := ⟨zL, hzL.1⟩) hpc_p (mem_univ _) (mem_univ _)
   have hcq : o.chartSign q zU = o.chartSign q zL :=
     ((IsLocallyConstant.iff_continuous _).mpr
-      (o.continuousOn_chartSign q).restrict).apply_eq_of_isPreconnected
+      (o.continuousOn_chartSign q).domRestrict).apply_eq_of_isPreconnected
       (x := ⟨zU, hzU.2⟩) (y := ⟨zL, hzL.2⟩) hpc_q (mem_univ _) (mem_univ _)
   exact hL (by rw [← hcp, ← hcq]; exact hU)
 
