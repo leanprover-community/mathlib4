@@ -1269,7 +1269,7 @@ theorem integral_trim (hm : m ≤ m0) {f : β → G} (hf : StronglyMeasurable[m]
   · have hf_int_m : ¬Integrable f (μ.trim hm) := fun hf_int_m =>
       hf_int (integrable_of_integrable_trim hm hf_int_m)
     rw [integral_undef hf_int, integral_undef hf_int_m]
-  haveI : SeparableSpace (range f ∪ {0} : Set G) := hf.separableSpace_range_union_singleton
+  have : SeparableSpace (range f ∪ {0} : Set G) := hf.separableSpace_range_union_singleton
   let f_seq := @SimpleFunc.approxOn G β _ _ _ m _ hf.measurable (range f ∪ {0}) 0 (by simp) _
   have hf_seq_meas : ∀ n, StronglyMeasurable[m] (f_seq n) := fun n =>
     @SimpleFunc.stronglyMeasurable β G m _ (f_seq n)
@@ -1325,7 +1325,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     · exact le_top
     · simp [hr]
     · simp
-  haveI := hμ
+  have := hμ
   rw [integral_eq_integral_pos_part_sub_integral_neg_part hfint, sub_nonneg] at hfint'
   have hposbdd : ∫ ω, max (f ω) 0 ∂μ ≤ μ.real Set.univ • (r : ℝ) := by
     rw [← integral_const]

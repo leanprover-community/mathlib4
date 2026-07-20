@@ -72,7 +72,7 @@ theorem countable_iff_nonempty_encodable {s : Set α} : s.Countable ↔ Nonempty
 alias ⟨Countable.nonempty_encodable, _⟩ := countable_iff_nonempty_encodable
 
 /-- Convert `Set.Countable s` to `Encodable s` (noncomputable). -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def Countable.toEncodable {s : Set α} (hs : s.Countable) : Encodable s :=
   Classical.choice hs.nonempty_encodable
 
@@ -195,7 +195,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
   · rintro ⟨S, hSc, hps, hS⟩
     rcases eq_empty_or_nonempty S with (rfl | hne)
     · rw [sSup_empty] at hS
-      haveI := subsingleton_of_bot_eq_top hS
+      have := subsingleton_of_bot_eq_top hS
       rcases h with ⟨x, hx⟩
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
     · rcases (Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
@@ -270,7 +270,7 @@ theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Co
   (finite_isBot α).countable
 
 /-- The set of finite subsets of a countable set is countable. -/
-theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
+theorem countable_ofPred_finite_subset {s : Set α} (hs : s.Countable) :
     { t | Set.Finite t ∧ t ⊆ s }.Countable := by
   have := hs.to_subtype
   refine (countable_range fun t : Finset s => Subtype.val '' (t : Set s)).mono ?_
@@ -279,9 +279,14 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   lift t to Finset s using ht.of_finite_image Subtype.val_injective.injOn
   exact mem_range_self _
 
+@[deprecated (since := "2026-07-09")]
+alias countable_setOf_finite_subset := countable_ofPred_finite_subset
+
 /-- The set of finite sets in a countable type is countable. -/
-theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
-  simpa using countable_setOf_finite_subset countable_univ
+theorem Countable.ofPred_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
+  simpa using countable_ofPred_finite_subset countable_univ
+
+@[deprecated (since := "2026-07-09")] alias Countable.setOf_finite := Countable.ofPred_finite
 
 /-- If the codomain of a map is countable and the fibres are countable, the domain
 is countable. -/
@@ -309,7 +314,7 @@ theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Co
 
 /-- If a family of disjoint sets is included in a countable set, then only countably many of
 them are nonempty. -/
-theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
+theorem countable_ofPred_nonempty_of_disjoint {f : β → Set α}
     (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
     Set.Countable {t | (f t).Nonempty} := by
   rw [← Set.countable_coe_iff] at hs ⊢
@@ -327,6 +332,9 @@ theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
     by_contra H
     exact not_disjoint_iff_nonempty_inter.2 A (hf H)
   exact Injective.countable A
+
+@[deprecated (since := "2026-07-09")]
+alias countable_setOf_nonempty_of_disjoint := countable_ofPred_nonempty_of_disjoint
 
 end Set
 

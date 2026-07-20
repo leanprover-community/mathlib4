@@ -169,6 +169,11 @@ lemma LSeries_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s 
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
 
+/-- An alternate spelling of `LSeries` as `∑' n, f n / n ^ s` for the case `f 0 = 0`. -/
+lemma LSeries_def₀ {f : ℕ → ℂ} (hf : f 0 = 0) (s : ℂ) :
+    LSeries f s = ∑' n, f n / (n ^ s) := by
+  simp [LSeries, LSeries.term_def₀ hf, cpow_neg, div_eq_mul_inv]
+
 /-- `LSeriesSummable f s` indicates that the L-series of `f` converges absolutely at `s`. -/
 def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
   Summable (term f s)
