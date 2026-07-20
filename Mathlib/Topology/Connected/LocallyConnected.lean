@@ -253,7 +253,6 @@ theorem Pi.locallyConnectedSpace_iff [∀ i, TopologicalSpace (X i)] :
     exact mem_of_mem_nhds (ht j)
   · rintro (he | ⟨hloc, hfin⟩)
     · exact ⟨fun x ↦ he.elim x⟩
-    · haveI := hloc
-      exact Pi.locallyConnectedSpace_of_finite_nonpreconnected hfin
+    · exact locallyConnectedSpace_of_finite_nonpreconnected hfin
 
 end LocallyConnectedSpace
