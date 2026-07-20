@@ -104,7 +104,7 @@ instance : CompleteSemilatticeInf (Face C) where
     · rw [← toPointedCone_le_toPointedCone]
       refine inf_le_of_right_le ?_
       simpa [LE.le] using fun _ xs ↦ xs f fS
-    · simp only [sInf, Set.mem_setOf_eq, Set.iInter_exists, Set.biInter_and',
+    · simp only [sInf, Set.mem_ofPred_eq, Set.iInter_exists, Set.biInter_and',
       Set.iInter_iInter_eq_right, ← toPointedCone_le_toPointedCone, toPointedCone, le_inf_iff]
       refine ⟨f.isFaceOf.le, ?_⟩
       simpa [LE.le] using fun ⦃x⦄ a _ i ↦ (mem_toPointedCone x).mp (fS i a)
