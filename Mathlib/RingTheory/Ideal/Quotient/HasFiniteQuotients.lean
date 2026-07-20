@@ -46,6 +46,7 @@ section properties
 
 variable [HasFiniteQuotients R]
 
+/-- A quotient of a ring with finite quotients by a nonzero ideal is finite. -/
 instance {I : Ideal R} [NeZero I] :
     Finite (R ⧸ I) :=
   finiteQuotient (NeZero.ne I)
