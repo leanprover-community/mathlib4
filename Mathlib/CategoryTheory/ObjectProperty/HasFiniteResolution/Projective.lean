@@ -28,7 +28,7 @@ theorem hasProjectiveDimensionLE (hX : (isProjective A).HasFiniteResolutionOfLen
   | zero X hX => infer_instance
   | succ S n hS h₂ _ ih => exact (hS.hasProjectiveDimensionLT_X₃_iff n h₂).2 ih
 
-theorem iff_hasProjectiveDimensionLE_of_enoughProjectives [EnoughProjectives A] :
+theorem iff_hasProjectiveDimensionLE [EnoughProjectives A] :
     (isProjective A).HasFiniteResolutionOfLength X n ↔ HasProjectiveDimensionLE X n := by
   refine ⟨fun hX ↦ hX.hasProjectiveDimensionLE, fun hX ↦ ?_⟩
   induction n generalizing X with
