@@ -70,6 +70,7 @@ instance : LieModule R L (⨁ i, M i) where
 
 variable (R ι L M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of each component into a direct sum as a morphism of Lie modules. -/
 def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
   { lof R ι M j with
@@ -101,6 +102,7 @@ section Algebras
 variable (L : ι → Type w)
 variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
+set_option backward.isDefEq.respectTransparency false in
 instance lieRing : LieRing (⨁ i, L i) :=
   { (inferInstance : AddCommGroup _) with
     bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0

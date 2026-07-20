@@ -44,7 +44,7 @@ theorem ComponentCompl.supp_injective :
     Function.Injective (ComponentCompl.supp : G.ComponentCompl K → Set V) := by
   refine ConnectedComponent.ind₂ ?_
   rintro ⟨v, hv⟩ ⟨w, hw⟩ h
-  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h ⊢
+  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_ofPred_eq, ComponentCompl.supp] at h ⊢
   exact ((h v).mp ⟨hv, Reachable.refl _⟩).choose_spec
 
 theorem ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔ C = D :=
@@ -185,6 +185,7 @@ theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
   rw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
   change C.map _ = (C.map _).map _
@@ -241,7 +242,7 @@ instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K 
     have : Finite (Set.range touch) := by
       refine @Subtype.finite _ (Set.Finite.to_subtype ?_) _
       apply Set.Finite.ofFinset (K.biUnion (fun v => G.neighborFinset v))
-      simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_setOf_eq, implies_true]
+      simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_ofPred_eq, implies_true]
     -- hence `touch` has a finite domain
     apply Finite.of_injective_finite_range touch_inj
 
@@ -251,6 +252,7 @@ variable (G)
 
 open CategoryTheory
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The functor assigning, to a finite set in `V`, the set of connected components in its complement.
 -/
