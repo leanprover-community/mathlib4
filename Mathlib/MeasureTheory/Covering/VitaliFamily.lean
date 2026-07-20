@@ -209,7 +209,7 @@ def filterAt (x : X) : Filter (Set X) := (𝓝 x).smallSets ⊓ 𝓟 (v.setsAt x
 
 theorem _root_.Filter.HasBasis.vitaliFamily {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {x : X}
     (h : (𝓝 x).HasBasis p s) : (v.filterAt x).HasBasis p (fun i ↦ {t ∈ v.setsAt x | t ⊆ s i}) := by
-  simpa only [← Set.setOf_inter_eq_sep] using! h.smallSets.inf_principal _
+  simpa only [← Set.ofPred_inter_eq_sep] using! h.smallSets.inf_principal _
 
 theorem filterAt_basis_closedBall (x : X) :
     (v.filterAt x).HasBasis (0 < ·) ({t ∈ v.setsAt x | t ⊆ closedBall x ·}) :=
@@ -217,7 +217,7 @@ theorem filterAt_basis_closedBall (x : X) :
 
 theorem mem_filterAt_iff {x : X} {s : Set (Set X)} :
     s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ t ∈ v.setsAt x, t ⊆ closedBall x ε → t ∈ s := by
-  simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp, subset_def, mem_setOf]
+  simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp, subset_def, mem_ofPred]
 
 instance filterAt_neBot (x : X) : (v.filterAt x).NeBot :=
   (v.filterAt_basis_closedBall x).neBot_iff.2 <| v.nontrivial _ _
@@ -244,7 +244,7 @@ theorem eventually_filterAt_measurableSet (x : X) : ∀ᶠ t in v.filterAt x, Me
 
 theorem frequently_filterAt_iff {x : X} {P : Set X → Prop} :
     (∃ᶠ t in v.filterAt x, P t) ↔ ∀ ε > (0 : ℝ), ∃ t ∈ v.setsAt x, t ⊆ closedBall x ε ∧ P t := by
-  simp only [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc, subset_def, mem_setOf]
+  simp only [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc, subset_def, mem_ofPred]
 
 theorem eventually_filterAt_subset_of_nhds {x : X} {o : Set X} (hx : o ∈ 𝓝 x) :
     ∀ᶠ t in v.filterAt x, t ⊆ o :=
