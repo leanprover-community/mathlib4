@@ -715,7 +715,7 @@ theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· �
 theorem map_biInf_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : ι → Prop}
     (h : DirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
     map m (⨅ (i) (_ : p i), f i) = ⨅ (i) (_ : p i), map m (f i) := by
-  haveI := nonempty_subtype.2 ne
+  have := nonempty_subtype.2 ne
   simp only [iInf_subtype']
   exact map_iInf_eq h.directed_val
 

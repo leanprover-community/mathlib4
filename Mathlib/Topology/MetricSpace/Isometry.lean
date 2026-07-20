@@ -234,21 +234,23 @@ theorem diam_range (hf : Isometry f) : Metric.diam (range f) = Metric.diam (univ
   rw [← image_univ]
   exact hf.diam_image univ
 
-theorem preimage_setOf_dist (hf : Isometry f) (x : α) (p : ℝ → Prop) :
+theorem preimage_setOfPred_dist (hf : Isometry f) (x : α) (p : ℝ → Prop) :
     f ⁻¹' { y | p (dist y (f x)) } = { y | p (dist y x) } := by
   simp [hf.dist_eq]
 
+@[deprecated (since := "2026-07-09")] alias preimage_setOf_dist := preimage_setOfPred_dist
+
 theorem preimage_closedBall (hf : Isometry f) (x : α) (r : ℝ) :
     f ⁻¹' Metric.closedBall (f x) r = Metric.closedBall x r :=
-  hf.preimage_setOf_dist x (· ≤ r)
+  hf.preimage_setOfPred_dist x (· ≤ r)
 
 theorem preimage_ball (hf : Isometry f) (x : α) (r : ℝ) :
     f ⁻¹' Metric.ball (f x) r = Metric.ball x r :=
-  hf.preimage_setOf_dist x (· < r)
+  hf.preimage_setOfPred_dist x (· < r)
 
 theorem preimage_sphere (hf : Isometry f) (x : α) (r : ℝ) :
     f ⁻¹' Metric.sphere (f x) r = Metric.sphere x r :=
-  hf.preimage_setOf_dist x (· = r)
+  hf.preimage_setOfPred_dist x (· = r)
 
 theorem mapsTo_ball (hf : Isometry f) (x : α) (r : ℝ) :
     MapsTo f (Metric.ball x r) (Metric.ball (f x) r) :=
@@ -610,6 +612,9 @@ def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
     simp_rw [edist_pi_def, Finset.sup_univ_eq_iSup]
     exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural isometry `∀ i, Y (e i) ≃ᵢ ∀ j, Y j` obtained from a bijection `ι ≃ ι'` of fintypes.
 `Equiv.piCongrLeft` as an `IsometryEquiv`. -/
 @[simps!]
@@ -648,6 +653,9 @@ theorem _root_.Fin.appendIsometry_toHomeomorph (m n : ℕ) :
     (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural `IsometryEquiv` `(Fin m → ℝ) × (Fin l → ℝ) ≃ᵢ (Fin n → ℝ)` when `m + l = n`. -/
 @[simps!]
 def _root_.Fin.appendIsometryOfEq {n m l : ℕ} (hmln : m + l = n) :
