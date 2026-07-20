@@ -59,12 +59,6 @@ end preliminaries
 
 section from_proetale
 
-open CategoryTheory Limits IsLocalRing
-
-variable {J : Type u} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{u}) {c : Cocone F}
-  [h_obj : ∀ (j : J), IsLocalRing (F.obj j)]
-  [h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom]
-
 namespace CommRingCat
 
 variable {R : Type u} [CommRing R]
@@ -173,6 +167,7 @@ noncomputable abbrev adjoinAlgebraicToK (x : K) (int : IsIntegral S x) :
 noncomputable instance (x : K) (int : IsIntegral S x) : Algebra (adjoinAlgebraic K S x int) K :=
   (adjoinAlgebraicToK K S x int).toAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (x : K) (int : IsIntegral S x) :
     IsScalarTower S (adjoinAlgebraic K S x int) K := by
   apply IsScalarTower.of_algebraMap_eq (fun y ↦ ?_)
@@ -180,6 +175,7 @@ noncomputable instance (x : K) (int : IsIntegral S x) :
   simp [RingHom.algebraMap_toAlgebra]
 
 omit [IsLocalRing S] [IsLocalHom (algebraMap S K)] in
+set_option backward.isDefEq.respectTransparency false in
 lemma adjoinAlgebraic_mem_range (x : K) (int : IsIntegral S x) :
     x ∈ (algebraMap (adjoinAlgebraic K S x int) K).range := by
   use Ideal.Quotient.mk _ Polynomial.X
@@ -523,7 +519,7 @@ noncomputable def isColimitCoconeOfCoconeForget (hc : IsColimit c) :
   · let j := Classical.choice ‹IsFiltered J›.2
     set c_ι_app : _ ⟶ c.pt := c.ι.app j
     change RingHom.comp (desc s).hom (c_ι_app.hom.comp (algebraMap R (F.obj j))) = _
-    simp only [← RingHom.comp_assoc, ← CommRingCat.hom_comp, desc, c_ι_app]
+    simp only [← RingHom.comp_assoc, desc, c_ι_app]
     change (i' s j).hom.comp _ = _
     simp only [this]
     exact RingHom.ext fun x ↦ congr($(AlgHom.comp_algebraMap (s.ι.app j).algHom) x)
@@ -571,7 +567,7 @@ lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocal
     let f' := RingEquiv.ofBijective f this
     refine ⟨φtop.Ring, inferInstance, inferInstance, inferInstance, inferInstance,
       φtop.eqmap, ⟨AlgEquiv.ofRingEquiv (f := f'.symm) fun x ↦ f'.injective ?_⟩⟩
-    simp only [RingEquiv.apply_symm_apply, RingEquiv.coe_ofBijective, f', f]
+    simp only [RingEquiv.apply_symm_apply, f', f]
     rw [IsScalarTower.algebraMap_apply R φtop (ResidueField φtop)]
     exact IsScalarTower.algebraMap_apply R φtop K x
   have mono : Monotone φobj := fun a b hab ↦ by
