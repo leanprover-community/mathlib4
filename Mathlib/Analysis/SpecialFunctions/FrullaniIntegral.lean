@@ -93,10 +93,7 @@ lemma norm_integral_inv_smul_sub_le (hf : LocallyIntegrableOn f (Ioi 0)) (ha : 0
             exact mul_le_mul_of_nonneg_left (h x hx) (inv_nonneg.2 hx_pos.le)
         · exact hint_inv
     _ = δ * |log (b / a)| := by
-        have heq : (fun x : ℝ ↦ x⁻¹ * δ) = fun x ↦ δ * x⁻¹ := by
-          funext x
-          ring
-        rw [heq, intervalIntegral.integral_const_mul, integral_inv_of_pos ha hb]
+        simp_rw [mul_comm, intervalIntegral.integral_const_mul, integral_inv_of_pos ha hb]
         exact (abs_mul δ (log (b / a))).trans (by rw [abs_of_nonneg hδ])
 
 lemma tendsto_integral_inv_smul_of_tendsto_uniform (hf : LocallyIntegrableOn f (Ioi 0)) (ha : 0 < a)
@@ -107,24 +104,18 @@ lemma tendsto_integral_inv_smul_of_tendsto_uniform (hf : LocallyIntegrableOn f (
   intro δ hδ
   set C := |log (b / a)| with hC_def
   set δ' := δ / (C + 1)
-  have hδ' : 0 < δ' := div_pos hδ (by positivity)
-  filter_upwards [hpos, huni δ' hδ'] with t ht_pos hbound
-  have haε : 0 < a * t := mul_pos ha ht_pos
-  have hbε : 0 < b * t := mul_pos hb ht_pos
+  filter_upwards [hpos, huni δ' (by positivity)] with t ht_pos hbound
   have hlog_eq : log (b * t / (a * t)) = log (b / a) := by
     rw [mul_div_mul_right b a (ne_of_gt ht_pos)]
   calc dist (∫ x in a * t..b * t, x⁻¹ • f x) (log (b / a) • V)
     _ = ‖(∫ x in a * t..b * t, x⁻¹ • f x) - log (b / a) • V‖ := dist_eq_norm _ _
     _ = ‖(∫ x in a * t..b * t, x⁻¹ • f x) - log (b * t / (a * t)) • V‖ := by rw [hlog_eq]
     _ ≤ δ' * |log (b * t / (a * t))| :=
-        norm_integral_inv_smul_sub_le hf haε hbε hδ'.le hbound
+        norm_integral_inv_smul_sub_le hf (by positivity) (by positivity) (by positivity) hbound
     _ = δ' * C := by rw [hlog_eq]
-    _ < δ := by
-        calc δ' * C
-          _ = δ * (C / (C + 1)) := by ring
-          _ < δ * 1 :=
-            mul_lt_mul_of_pos_left ((div_lt_one (by positivity)).2 (lt_add_one C)) hδ
-          _ = δ := mul_one δ
+    _ = δ * (C / (C + 1)) := by ring
+    _ < δ * 1 := mul_lt_mul_of_pos_left ((div_lt_one (by positivity)).2 (lt_add_one C)) hδ
+    _ = δ := mul_one δ
 
 lemma tendsto_integral_inv_smul_nhdsWithin (hf : LocallyIntegrableOn f (Ioi 0)) (ha : 0 < a)
     (hb : 0 < b) (hL : Tendsto f (𝓝[>] 0) (𝓝 L)) :
@@ -140,9 +131,7 @@ lemma tendsto_integral_inv_smul_nhdsWithin (hf : LocallyIntegrableOn f (Ioi 0)) 
   filter_upwards [self_mem_nhdsWithin,
     nhdsWithin_le_nhds (Iio_mem_nhds (div_pos hη hM))] with t ht_pos ht_bound
   intro x hx
-  have haε : 0 < a * t := mul_pos ha ht_pos
-  have hbε : 0 < b * t := mul_pos hb ht_pos
-  have hx_pos : 0 < x := lt_of_lt_of_le (lt_min haε hbε) (uIoc_subset_uIcc hx).1
+  have hx_pos : 0 < x := (lt_min (by positivity) (by positivity)).trans_le (uIoc_subset_uIcc hx).1
   have hx_lt_η : dist x 0 < η := by
     rw [Real.dist_eq, sub_zero, abs_of_pos hx_pos]
     calc x
@@ -170,8 +159,6 @@ lemma tendsto_integral_inv_smul_atTop (hf : LocallyIntegrableOn f (Ioi 0)) (ha :
   filter_upwards [eventually_atTop.2 ⟨max 1 (N / min a b), fun r hr ↦ hr⟩] with t ht
   intro x hx
   have ht_pos : 0 < t := lt_of_lt_of_le one_pos ((le_max_left 1 _).trans ht)
-  have haε : 0 < a * t := mul_pos ha ht_pos
-  have hbε : 0 < b * t := mul_pos hb ht_pos
   have hNx : N ≤ x :=
     calc N
       _ = min a b * (N / min a b) := by field_simp
