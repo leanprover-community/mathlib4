@@ -55,16 +55,16 @@ structure IsPivot [Zero R] (A : Matrix (Fin m) (Fin n) R) (l : List (Fin n)) : P
 
 theorem IsPivot.rowEchelon [Zero R] {A : Matrix (Fin m) (Fin n) R} {l : List (Fin n)}
     (h : A.IsPivot l) : A.RowEchelon := by
-  intro i₁ i₂ hi₁₂ j₂ hj₂
+  intro i₁ i₂ h₁₂ j₂ hj₂
   have hi₂ : i₂ < l.length :=
     not_le.mp fun hcon => hj₂ (congrFun (h.row_eq_zero_of_length_le i₂ hcon) j₂)
-  have hi₁ : i₁ < l.length := lt_trans hi₁₂ hi₂
+  have hi₁ : i₁ < l.length := lt_trans h₁₂ hi₂
   have hle : l[i₂] ≤ j₂ :=
     not_lt.mp fun hcon => hj₂ (h.apply_eq_zero_of_lt i₂ hi₂ j₂ hcon)
   refine ⟨l[i₁], ?_, h.apply_ne_zero i₁ hi₁⟩
-  exact (h.sortedLT.getElem_lt_getElem_of_lt hi₁₂).trans_le hle
+  exact (h.sortedLT.getElem_lt_getElem_of_lt h₁₂).trans_le hle
 
-protected theorem IsPivot.rank_eq [CommRing R] [IsDomain R] [StrongRankCondition R]
+theorem IsPivot.rank_eq [CommRing R] [IsDomain R] [StrongRankCondition R]
     {A : Matrix (Fin m) (Fin n) R} {l : List (Fin n)} (h : A.IsPivot l) :
     A.rank = l.length := by
   refine le_antisymm ?_ ?_
