@@ -140,6 +140,11 @@ noncomputable def absMulHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : �
     (Height.mulHeight₁ (AdjoinSimple.gen ℚ x)) ^ (Module.finrank ℚ ℚ⟮x⟯ : ℝ)⁻¹
   else 0
 
+/-- The absolute logarithmic height of an algebraic number. This is defined for elements of any
+field of characteristic zero, with a junk value of `0` if the element is not algebraic. -/
+noncomputable def absLogHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : ℝ :=
+  (absMulHeight₁ x).log
+
 variable (K) in
 lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
   simp only [totalWeight]
