@@ -15,7 +15,7 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 @[expose] public section
 
 open Topology Filter Bornology Set
-open scoped Pointwise
+open scoped Pointwise Set.Notation
 
 section Unused
 
@@ -125,4 +125,11 @@ lemma LinearMap.isInducing_of_restrict_nhds_zero {V : Set E}
 
 lemma LinearMap.isEmbedding_of_restrict_nhds_zero {V : Set E}
     (V_mem : V ∈ 𝓝 0) (H : IsEmbedding (Set.restrict V f)) : IsEmbedding f := by
-  sorry
+  refine ⟨isInducing_of_restrict_nhds_zero V_mem H.isInducing, ?_⟩
+  have f_injOn : InjOn f V := by simpa [injOn_iff_injective] using H.injective
+  rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
+  intro x hx
+  obtain ⟨c, hc, c_ne : c ≠ 0⟩ := absorbent_nhds_zero (𝕜 := 𝕜₁) V_mem
+    |>.eventually_nhdsNE_zero x |>.and eventually_mem_nhdsWithin |>.exists
+  rw [← smul_eq_zero_iff_right c_ne, ← f_injOn.eq_iff hc (mem_of_mem_nhds V_mem), map_zero,
+    map_smulₛₗ, hx, smul_zero]
