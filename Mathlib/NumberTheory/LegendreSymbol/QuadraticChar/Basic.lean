@@ -241,6 +241,18 @@ theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticCha
 
 end quadraticChar
 
+/-- In a finite field, a product of two nonzero elements is a square iff the factors are
+both squares or both nonsquares. -/
+theorem FiniteField.isSquare_mul_iff {F : Type*} [Field F] [Finite F] {a b : F}
+    (ha : a ≠ 0) (hb : b ≠ 0) : IsSquare (a * b) ↔ (IsSquare a ↔ IsSquare b) := by
+  cases nonempty_fintype F
+  classical
+  rw [← quadraticChar_one_iff_isSquare ha, ← quadraticChar_one_iff_isSquare hb,
+    ← quadraticChar_one_iff_isSquare (mul_ne_zero ha hb), map_mul]
+  rcases quadraticChar_dichotomy ha with h1 | h1 <;>
+    rcases quadraticChar_dichotomy hb with h2 | h2 <;>
+      rw [h1, h2] <;> norm_num
+
 /-!
 ### Special values of the quadratic character
 
