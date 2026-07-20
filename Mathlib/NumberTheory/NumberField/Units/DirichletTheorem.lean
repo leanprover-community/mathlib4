@@ -12,6 +12,7 @@ public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Dirichlet theorem on the group of units of a number field
+
 This file is devoted to the proof of Dirichlet unit theorem that states that the group of
 units `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number field `K` modulo its torsion
 subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
@@ -139,6 +140,7 @@ theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
   simp_rw [Pi.norm_def, NNReal.coe_le_coe, Finset.sup_le_iff, ← NNReal.coe_le_coe] at h
   exact h w (mem_univ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     (h : ‖logEmbedding K (Additive.ofMul x)‖ ≤ r) (w : InfinitePlace K) :
@@ -308,10 +310,11 @@ theorem exists_unit (w₁ : InfinitePlace K) :
         rw [map_inv₀, mul_inv_lt_iff₀' (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
         exact seq_decreasing K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem (t := {I : Ideal (𝓞 K) | Ideal.absNorm I ≤ B})
-    (fun n ↦ ?_) (Ideal.finite_setOf_absNorm_le B)
-  rw [Set.mem_setOf_eq, Ideal.absNorm_span_singleton]
+    (fun n ↦ ?_) (Ideal.finite_setOfPred_absNorm_le B)
+  rw [Set.mem_ofPred_eq, Ideal.absNorm_span_singleton]
   exact seq_norm_le K w₁ hB n
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unitLattice_span_eq_top :
     Submodule.span ℝ (unitLattice K : Set (logSpace K)) = ⊤ := by
   classical
@@ -407,6 +410,7 @@ theorem logEmbeddingQuot_injective :
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
 def logEmbeddingEquiv :

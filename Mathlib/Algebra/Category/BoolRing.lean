@@ -52,7 +52,6 @@ instance : Inhabited BoolRing :=
   ⟨of PUnit⟩
 
 variable {R} in
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `BoolRing`. -/
 @[ext]
 structure Hom (R S : BoolRing) where

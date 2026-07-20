@@ -192,7 +192,7 @@ theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
-    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq, mem_center_iff]
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_ofPred_eq, mem_center_iff]
   exact forall_congr' fun y => by
     rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 
@@ -201,7 +201,7 @@ theorem _root_.AddSubgroup.upperCentralSeries_one (G : Type*) [AddGroup G] :
   ext
   simp only [AddSubgroup.upperCentralSeries, AddSubgroup.upperCentralSeriesAux,
     AddSubgroup.upperCentralSeriesStep, AddSubgroup.mem_bot, AddSubgroup.mem_mk,
-    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_setOf_eq, AddSubgroup.mem_center_iff]
+    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_ofPred_eq, AddSubgroup.mem_center_iff]
   exact forall_congr' fun y => by
     rw [addCommutatorElement_def, add_neg_eq_zero, add_neg_eq_iff_eq_add, eq_comm]
 
@@ -912,7 +912,7 @@ theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Pr
   obtain ⟨n, h⟩ : ∃ n, Group.nilpotencyClass G = n := ⟨_, rfl⟩
   induction n generalizing G with
   | zero =>
-    haveI := nilpotencyClass_zero_iff_subsingleton.mp h
+    have := nilpotencyClass_zero_iff_subsingleton.mp h
     exact hbase _
   | succ n ih =>
     have hn : Group.nilpotencyClass (G ⧸ center G) = n := by
@@ -962,7 +962,7 @@ theorem CommGroup.nilpotencyClass_le_one {G : Type*} [CommGroup G] :
 
 /-- Groups with nilpotency class at most one are abelian. -/
 @[to_additive /-- Additive groups with nilpotency class at most one are abelian. -/,
-  implicit_reducible]
+  instance_reducible]
 def commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 1) : CommGroup G :=
   Group.commGroupOfCenterEqTop <| by
     rw [← upperCentralSeries_one]
@@ -1158,7 +1158,7 @@ theorem Group.nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
 end FinitePi
 
 /-- A nilpotent subgroup is solvable -/
-instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSolvable G := by
+instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group.IsSolvable G := by
   obtain ⟨n, hn⟩ := nilpotent_iff_lowerCentralSeries.1 h
   use n
   rw [eq_bot_iff, ← hn]
@@ -1231,13 +1231,12 @@ variable [Finite G]
 theorem Group.isNilpotent_of_product_of_sylow_group
     (e : (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G) :
     IsNilpotent G := by
-  classical
-    let ps := (Nat.card G).primeFactors
-    have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
-      intro p P
-      haveI : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
-      exact P.isPGroup'.isNilpotent
-    exact nilpotent_of_mulEquiv e
+  let ps := (Nat.card G).primeFactors
+  have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
+    intro p P
+    have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
+    exact P.isPGroup'.isNilpotent
+  exact nilpotent_of_mulEquiv e
 
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
 normal and iff all Sylow groups are normal and iff the group is the direct product of its Sylow

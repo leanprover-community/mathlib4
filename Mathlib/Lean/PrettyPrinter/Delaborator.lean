@@ -16,7 +16,7 @@ public import Lean.PrettyPrinter.Delaborator.Basic
 
 namespace Lean.PrettyPrinter.Delaborator
 
-open SubExpr
+open Delaborator.SubExpr
 
 /-- Assuming the current expression in a lambda or pi,
 descend into the body using an unused name generated from the binder's name.
