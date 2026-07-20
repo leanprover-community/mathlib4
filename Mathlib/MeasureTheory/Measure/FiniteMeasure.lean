@@ -994,14 +994,14 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
       simp only [null_iff_toMeasure_null, mem_ofPred_eq, toMeasure_map, M]
       rw [Measure.map_apply hf.continuous.measurable hf.isClosed_range.isOpen_compl.measurableSet]
       simp
-    invFun := M.restrict (fun μ ↦ μ.comap f)
+    invFun := M.domRestrict (fun μ ↦ μ.comap f)
     continuous_toFun := by fun_prop
     continuous_invFun := by
-      rw [← continuousOn_iff_continuous_restrict]
+      rw [← continuousOn_iff_continuous_domRestrict]
       exact hf.continuousOn_comap_finiteMeasure
     left_inv μ := by
       ext s hs
-      simp only [Set.restrict_apply, toMeasure_comap, toMeasure_map]
+      simp only [Set.domRestrict_apply, toMeasure_comap, toMeasure_map]
       rw [Measure.comap_apply, Measure.map_apply, preimage_image_eq]
       · exact hf.injective
       · exact hf.continuous.measurable
@@ -1011,7 +1011,7 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
       · exact hs
     right_inv μ := by
       ext s hs
-      simp only [Set.restrict_apply, toMeasure_map]
+      simp only [Set.domRestrict_apply, toMeasure_map]
       rw [Measure.map_apply hf.continuous.measurable hs]
       simp only [toMeasure_comap]
       rw [Measure.comap_apply _ hf.injective, image_preimage_eq_inter_range]
