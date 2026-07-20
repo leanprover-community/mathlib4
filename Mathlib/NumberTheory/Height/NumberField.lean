@@ -138,7 +138,7 @@ noncomputable def absMulHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : �
     haveI : FiniteDimensional ℚ ℚ⟮x⟯ := adjoin.finiteDimensional hx
     haveI : NumberField ℚ⟮x⟯ := {}
     (Height.mulHeight₁ (AdjoinSimple.gen ℚ x)) ^ (Module.finrank ℚ ℚ⟮x⟯ : ℝ)⁻¹
-  else 0
+  else 1
 
 /-- The absolute logarithmic height of an algebraic number. This is defined for elements of any
 field of characteristic zero, with a junk value of `0` if the element is not algebraic. -/
