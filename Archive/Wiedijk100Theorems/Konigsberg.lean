@@ -67,15 +67,17 @@ lemma degree_eq_degree (v : Verts) : graph.degree v = degree v := by cases v <;>
 lemma not_even_degree_iff (w : Verts) : ¬Even (degree w) ↔ w = V1 ∨ w = V2 ∨ w = V3 ∨ w = V4 := by
   cases w <;> decide
 
-lemma setOf_odd_degree_eq :
+lemma setOfPred_odd_degree_eq :
     {v | Odd (graph.degree v)} = {Verts.V1, Verts.V2, Verts.V3, Verts.V4} := by
   ext w
   simp [not_even_degree_iff, ← Nat.not_even_iff_odd]
 
+@[deprecated (since := "2026-07-09")] alias setOf_odd_degree_eq := setOfPred_odd_degree_eq
+
 /-- The Königsberg graph is not Eulerian. -/
 theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False := by
   have h := h.card_odd_degree
-  have h' := setOf_odd_degree_eq
+  have h' := setOfPred_odd_degree_eq
   apply_fun Fintype.card at h'
   rw [h'] at h
   simp at h

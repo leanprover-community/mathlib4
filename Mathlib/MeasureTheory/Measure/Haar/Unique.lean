@@ -741,7 +741,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
     · simp only [iUnion_subset_iff]
       intro a ac x hx
-      simp only [A, subset_def, mem_setOf_eq] at cA
+      simp only [A, subset_def, mem_ofPred_eq] at cA
       exact (cA _ ac).1 x hx
     · rintro x hx y hy hxy
       simp only [mem_iUnion, exists_prop] at hx hy
