@@ -217,7 +217,7 @@ theorem smul_left_def [SMul R T] (x : WithAbs v) (t : T) :
 instance [SMul R T] [FaithfulSMul R T] : FaithfulSMul (WithAbs v) T where
   eq_of_smul_eq_smul h := ofAbs_injective v <| FaithfulSMul.eq_of_smul_eq_smul h
 
-instance [SMul T R] : SMul T (WithAbs v) := (equiv v).smul T
+instance [SMul T R] : SMul T (WithAbs v) := Equiv.smul T { toFun := ofAbs, invFun := toAbs v }
 
 theorem smul_right_def [SMul T R] (t : T) (x : WithAbs v) :
     t • x = toAbs v (t • x.ofAbs) := rfl

@@ -82,6 +82,7 @@ namespace HopfObj
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Morphisms of Hopf monoids intertwine the antipodes. -/
 theorem hom_antipode {A B : C} [HopfObj A] [HopfObj B] (f : A ⟶ B) [IsBimonHom f] :
     f ≫ 𝒮 = 𝒮 ≫ f := by
@@ -255,6 +256,7 @@ theorem antipode_comul₂ (A : C) [HopfObj A] :
   rw [rightUnitor_inv_naturality_assoc, tensorHom_def]
   monoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem antipode_comul (A : C) [HopfObj A] :
     𝒮[A] ≫ Δ[A] = Δ[A] ≫ (β_ _ _).hom ≫ (𝒮[A] ⊗ₘ 𝒮[A]) := by
   -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
@@ -418,6 +420,7 @@ theorem mul_antipode₂ (A : C) [HopfObj A] :
     rw [rightUnitor_naturality]
   monoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mul_antipode (A : C) [HopfObj A] :
     μ[A] ≫ 𝒮[A] = (𝒮[A] ⊗ₘ 𝒮[A]) ≫ (β_ _ _).hom ≫ μ[A] := by
   -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
@@ -440,6 +443,7 @@ theorem mul_antipode (A : C) [HopfObj A] :
     simp only [Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc]
     exact mul_antipode₂ A
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 In a commutative Hopf algebra, the antipode squares to the identity.
 -/
