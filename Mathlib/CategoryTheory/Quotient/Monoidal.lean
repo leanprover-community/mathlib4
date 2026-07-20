@@ -180,7 +180,7 @@ lemma functor_map_rightUnitor_hom
     letI := monoidalCategory r hl hr
     (ρ_ ((functor r).obj X)).hom = (functor r).map (ρ_ X).hom := rfl
 
-instance functor_monoidal
+instance functorMonoidal
     (hl : ∀ (W : C) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (W ◁ f₁) (W ◁ f₂))
     (hr : ∀ (W : C) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (f₁ ▷ W) (f₂ ▷ W)) :
     letI := monoidalCategory r hl hr
@@ -256,7 +256,7 @@ lemma functor_map_braiding_inv
     letI := braidedCategory r hl hr
     (β_ ((functor r).obj X) ((functor r).obj Y)).inv = (functor r).map (β_ X Y).inv := rfl
 
-instance functor_braided
+instance functorBraided
     (hl : ∀ (W : C) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (W ◁ f₁) (W ◁ f₂))
     (hr : ∀ (W : C) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (f₁ ▷ W) (f₂ ▷ W)) :
     letI := monoidalCategory r hl hr
@@ -264,7 +264,6 @@ instance functor_braided
     (functor r).Braided := by
   letI := monoidalCategory r hl hr
   letI := braidedCategory r hl hr
-  letI := functor_monoidal r hl hr
   constructor
   intro _ _
   change (functor r).map (𝟙 _ ≫ (β_ _ _).hom) = (functor r).map ((β_ _ _).hom ≫ 𝟙 _)
