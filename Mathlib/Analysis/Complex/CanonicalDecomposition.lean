@@ -530,40 +530,62 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
           * (∏ᶠ i, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f (sphere 0 R)) i))
           • meromorphicTrailingCoeffAt f w := by
   -- Finiteness properties and side results used throughout the proof
-  have h₃f : (divisor f (sphere 0 R)).support.Finite := divisor_sphere_support_finite
-  have h₄f : (divisor f (ball 0 R)).support.Finite := D.meromorphicOn.divisor_ball_support_finite
+  let B₀R := ball (0 : ℂ) R
+  let S₀R := sphere (0 : ℂ) R
+  lift (divisor f S₀R).support to Finset ℂ using divisor_sphere_support_finite with t₁ ht₁
+  lift (divisor f B₀R).support to Finset ℂ using D.meromorphicOn.divisor_ball_support_finite
+    with t₂ ht₂
   have := (D.analyticOnNhd w hw).meromorphicAt
+  rw [Eq.comm]
   -- Proof body: Substitute `f` using `h₁f` and compute
-  lift (divisor f (sphere 0 R)).support to Finset ℂ using h₃f with t₁ ht₁
-  lift (divisor f (ball 0 R)).support to Finset ℂ using h₄f with t₂ ht₂
-  rw [meromorphicTrailingCoeffAt_congr_nhdsNE
-    ((D.meromorphicOn w hw).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
-      (by fun_prop) hw _ D.eventuallyEq),
-    finprod_eq_prod_of_mulSupport_subset (s := t₂) _ ?η₁,
-    finprod_eq_prod_of_mulSupport_subset (s := t₁) _ ?η₂,
-    finprod_eq_prod_of_mulSupport_subset (s := t₂) _ ?η₃,
-    finprod_eq_prod_of_mulSupport_subset (s := t₁) _ ?η₄,
-    MeromorphicAt.meromorphicTrailingCoeffAt_smul (by fun_prop)
-      (D.analyticOnNhd w hw).meromorphicAt,
-    MeromorphicAt.meromorphicTrailingCoeffAt_mul (by fun_prop) (by fun_prop),
-    meromorphicTrailingCoeffAt_prod (by fun_prop), meromorphicTrailingCoeffAt_prod (by fun_prop),
-    (D.analyticOnNhd w hw).meromorphicTrailingCoeffAt_of_ne_zero (D.ne_zero w hw), smul_smul,
-    mul_mul_mul_comm,
-    ← Finset.prod_mul_distrib, ← Finset.prod_mul_distrib, Finset.prod_eq_one, Finset.prod_eq_one,
-    mul_one, one_smul]
-  case η₁ | η₂ | η₃ | η₄ => simpa [ht₁, ht₂] using mulSupport_pow_subset_support ..
-  · intro x hx
-    rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop), ← zpow_add₀,
-      locallyFinsuppWithin.coe_neg, Pi.neg_apply, neg_add_cancel, zpow_zero]
-    rw [meromorphicTrailingCoeffAt_id_sub_const]
-    grind
-  · intro x hx
-    rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop), ← zpow_add₀, add_neg_cancel,
-      zpow_zero]
-    apply MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (by fun_prop)
-      (meromorphicOrderAt_canonicalFactor_ne_top x hR)
-  · rw [← closure_ball _ hR.ne']
-    exact isOpen_ball.perfect_closure.2
+  calc ((∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
+      * ∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
+      • meromorphicTrailingCoeffAt f w
+    _ = ((∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
+      * ∏ᶠ (i : ℂ), meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
+      • meromorphicTrailingCoeffAt (((∏ᶠ (u : ℂ), canonicalFactor R u ^ (-(divisor f B₀R) u))
+        * ∏ᶠ (v : ℂ), (· - v) ^ (divisor f S₀R) v) • h) w := by
+      rw [meromorphicTrailingCoeffAt_congr_nhdsNE
+        ((D.meromorphicOn w hw).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
+        (by fun_prop) hw ?η₁ D.eventuallyEq)]
+      case η₁ =>
+        rw [← closure_ball _ hR.ne']
+        exact isOpen_ball.perfect_closure.2
+    _ = ((∏ i ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
+      * ∏ i ∈ t₁, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
+      • meromorphicTrailingCoeffAt (((∏ i ∈ t₂, canonicalFactor R i ^ (-(divisor f B₀R) i))
+        * ∏ i ∈ t₁, (· - i) ^ (divisor f S₀R) i) • h) w := by
+      rw [finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
+        finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _,
+        finprod_eq_prod_of_mulSupport_subset (s := t₂) _ _,
+        finprod_eq_prod_of_mulSupport_subset (s := t₁) _ _]
+      <;> simpa [ht₁, ht₂] using mulSupport_pow_subset_support ..
+    _ = ((∏ i ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
+      * ∏ i ∈ t₁, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
+      • ((∏ n ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R n ^ (-(divisor f B₀R) n)) w)
+        * ∏ n ∈ t₁, meromorphicTrailingCoeffAt ((· - n) ^ (divisor f S₀R) n) w)
+      • h w := by
+      rw [MeromorphicAt.meromorphicTrailingCoeffAt_smul (by fun_prop)
+        (D.analyticOnNhd w hw).meromorphicAt,
+        MeromorphicAt.meromorphicTrailingCoeffAt_mul (by fun_prop) (by fun_prop),
+        meromorphicTrailingCoeffAt_prod (by fun_prop),
+        meromorphicTrailingCoeffAt_prod (by fun_prop),
+        (D.analyticOnNhd w hw).meromorphicTrailingCoeffAt_of_ne_zero (D.ne_zero w hw)]
+    _ = h w := by
+      rw [smul_smul, mul_mul_mul_comm, ← Finset.prod_mul_distrib, ← Finset.prod_mul_distrib,
+        Finset.prod_eq_one ?η₁, Finset.prod_eq_one ?η₂, mul_one, one_smul]
+      case η₁ =>
+        intro x hx
+        rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop), ← zpow_add₀,
+          add_neg_cancel, zpow_zero]
+        apply MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (by fun_prop)
+          (meromorphicOrderAt_canonicalFactor_ne_top x hR)
+      case η₂ =>
+        intro x hx
+        rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop), ← zpow_add₀,
+          locallyFinsuppWithin.coe_neg, Pi.neg_apply, neg_add_cancel, zpow_zero]
+        rw [meromorphicTrailingCoeffAt_id_sub_const]
+        grind
 
 /--
 Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
