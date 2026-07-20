@@ -207,6 +207,12 @@ def Diffeomorph.smul (g : G) : M ≃ₘ^n⟮I', I'⟯ M where
   contMDiff_invFun := ContMDiffSMul.contMDiff_const_smul (I := I) g⁻¹
 
 @[to_additive (attr := simp)]
+lemma Diffeomorph.smul_toHomeomorph (g : G) :
+    haveI : ContinuousSMul G M := ContMDiffSMul.continuousSMul (I := I) (I' := I') n
+    (Diffeomorph.smul I I' n g).toHomeomorph = Homeomorph.smul (α := M) g :=
+  rfl
+
+@[to_additive (attr := simp)]
 lemma Diffeomorph.smul_apply (g : G) (x : M) : Diffeomorph.smul I I' n g x = g • x := rfl
 
 @[to_additive (attr := simp)]
