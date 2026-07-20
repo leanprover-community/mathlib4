@@ -9,13 +9,14 @@ import Cache.Query
 /-!
 # Read-time advisories
 
-Two stderr-only notices `cache get` prints before reading:
+Two stderr-only notices around a `cache get` read:
 
-* a security warning when the read is taken off the repo's default trust
-  boundary (a scope, a widened `--cache-from`, or a `--repo` that diverges
-  from the git remote), and
-* a hint pointing an uncached fork HEAD at `cache query` and the SHA-scoped
-  workflow.
+* before reading: a security warning when the read is taken off the repo's
+  default trust boundary (a scope, a widened `--cache-from`, or a `--repo`
+  that diverges from the git remote), and
+* after reading: guidance for files no container served, keyed on the actual
+  misses — a naive fork read is pointed at `cache query` and the SHA-scoped
+  workflow, every other read gets the generic divergence warning.
 -/
 
 namespace Cache.Requests
@@ -170,58 +171,96 @@ def warnIfNonDefaultScope (repoExplicit? detectedRepo? : Option String)
     printNonDefaultScopeWarning resolvedRepo reason
 
 /--
-If the user is on a commit that hasn't been cached for this fork (no marker
-present at `forks/m/{repo}/{HEAD-sha}`), print an informational note
-explaining the new SHA-scoped behavior and pointing at `cache query`.
+Lines for the missing-files warning on a fork checkout whose HEAD has no
+published fork cache: a previous CI build of this fork may hold the missing
+files, so the message points at `cache query` and the SHA-scoped workflow.
+Selected by `forkHintSHA?`.
+-/
+def missingFilesForkLines (repo sha : String) (missing : Nat) : List String := [
+  "",
+  s!"NOTE: {missing} file(s) were not found in any cache for fork {repo}.",
+  s!"CI has not published a fork cache for HEAD ({sha}) — most likely it",
+  "hasn't built this commit yet. The missing files will be built locally",
+  "by `lake build`.",
+  "",
+  "To reuse a previous CI build from this fork instead, find a cached commit:",
+  "    lake exe cache query",
+  "",
+  "then re-run with:",
+  "    lake exe cache get --scope=<that-sha>",
+  "",
+  "Important: using another commit's scope means trusting the artifacts",
+  "produced at that commit. `cache get` will print a security notice",
+  "when you do.",
+  "",
+]
 
-Fires only on naive `cache get` invocations:
-- no `--scope=` / `MATHLIB_CACHE_REPO_SCOPE` set (else the user has already
-  picked a scope and the non-default-scope warning is doing the talking)
-- no `--cache-from` override (else they've already taken explicit
-  responsibility for the lookup chain)
+/--
+Lines for the missing-files warning when the fork-workflow hint does not
+apply (see `forkHintSHA?`): the generic divergence explanation.
+-/
+def missingFilesGenericLines (missing : Nat) : List String := [
+  s!"Warning: {missing} file(s) were not found in the cache.",
+  "This usually means that your local checkout of mathlib4 has diverged from upstream.",
+  "",
+  "  * If you push your commits to a PR to the mathlib4 repository",
+  "    (use a draft PR if it is not ready for review),",
+  "    then CI will build the oleans and they will be available later.",
+  "  * If you have already opened a PR, this may mean",
+  "    the CI build has failed part-way through building.",
+]
+
+/--
+When the missing-files warning should point at the fork workflow (`cache
+query` / `--scope`), return the HEAD SHA it should mention; `none` means the
+generic divergence warning applies.
+
+The fork hint fires only for a naive `cache get` on a fork checkout whose
+HEAD has no published fork cache:
+- not in `--unsafe` mode (that read already walked fork scopes and reported
+  what they served)
+- no `--scope=` / `MATHLIB_CACHE_REPO_SCOPE` set (the user has already picked
+  a scope and the non-default-scope warning did the talking)
+- no `--cache-from` override (the user has taken explicit responsibility for
+  the lookup chain)
 - the repo is a fork, not a first-party repo: the canonical repos don't build
-  into the per-commit `forks` namespace this note checks
-- HEAD is not already an ancestor of `master`. From a personal-fork checkout
-  sitting on `master` (or an undiverged branch), the fork's SHA-scoped marker is
-  structurally absent, but `master` is first in the fork lookup chain and serves
-  every file by hash — there is nothing fork-specific to build, so the note would
-  be a pure false positive.
+  into the per-commit `forks` namespace this hint points at
+- HEAD is not an ancestor of `master`: misses there are master-container lag
+  (CI still building master), which no fork scope can serve
+- the fork marker for HEAD is absent; when it is present the HEAD scope was
+  already read and came up short anyway, so pointing back at it would not help
 
-One HEAD probe per invocation; the message is stderr-only so it doesn't
-mix with `cache get`'s stdout output.
+Guards are ordered cheapest first; the marker probe (one HTTPS round-trip)
+runs only when every local check passes.
 
 `repo` is the already-resolved repo (see `resolveRepo`).
 -/
-def informIfHeadNotBuilt (repo : String) : IO Unit := do
-  if (← getRepoScope).isSome then return
-  if (← cacheFromOverride.get).isSome then return
-  if isCanonicalRepo repo then return
-  -- HEAD already on (an ancestor of) master: master CI builds these commits and
-  -- the master container (first in the fork lookup chain) serves their artifacts
-  -- by hash, so there is nothing fork-specific to build. The forks marker is
-  -- structurally absent here, which would otherwise trigger a misleading note.
-  if (← headIsAncestorOfMaster) then return
-  let sha ← try getGitCommitHash catch _ => return
-  let hasMarker ← probeContainerForSHA Container.forks repo sha
-  if hasMarker then return
-  let lines : List String := [
-    "",
-    s!"NOTE: no cache found for HEAD ({sha}) on fork {repo}.",
-    "This commit hasn't been built by CI for this fork yet. You'll still",
-    "get cache hits for files that match mathlib's master cache; only",
-    "files unique to this PR will need to be rebuilt.",
-    "",
-    "To use a prior CI run from this fork, find a cached commit:",
-    "    lake exe cache query",
-    "",
-    "then re-run with:",
-    "    lake exe cache get --scope=<that-sha>",
-    "",
-    "Important: using another commit's scope means trusting the artifacts",
-    "produced at that commit. `cache get` will print a security notice",
-    "when you do.",
-    "",
-  ]
+def forkHintSHA? (repo : String) (unsafeMode : Bool) : IO (Option String) := do
+  if unsafeMode then return none
+  if (← getRepoScope).isSome then return none
+  if (← cacheFromOverride.get).isSome then return none
+  if isCanonicalRepo repo then return none
+  if (← headIsAncestorOfMaster) then return none
+  let sha ← try getGitCommitHash catch _ => return none
+  if (← probeContainerForSHA Container.forks repo sha) then return none
+  return some sha
+
+/--
+Print guidance for files that no download round served, to stderr.
+
+Keyed on the download's actual outcome rather than an upfront proxy: with
+`missing = 0` nothing is printed. In particular, a fork PR that changes no
+Lean module gets every file from mathlib's master cache and produces no note,
+even though no fork cache exists for its commits — its absence has no
+consequence. When files are missing, reads that `forkHintSHA?` accepts get
+the fork-workflow hint; every other read gets the generic divergence warning.
+-/
+def warnIfMissingFiles (repo : String) (missing : Nat) (unsafeMode : Bool := false) :
+    IO Unit := do
+  if missing == 0 then return
+  let lines ← match ← forkHintSHA? repo unsafeMode with
+    | some sha => pure (missingFilesForkLines repo sha missing)
+    | none => pure (missingFilesGenericLines missing)
   for line in lines do
     IO.eprintln line
 

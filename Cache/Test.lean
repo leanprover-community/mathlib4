@@ -40,6 +40,10 @@ Anything that touches `curl` or the network is left to CI, which exercises the
    collide.
 5. `legacy` stays readable with its mixed layout (flat for the canonical repo,
    prefixed for forks) so older clients keep working.
+6. Missing-file guidance is keyed on the download's outcome, not on upfront
+   proxies: a read fully served by the containers prints nothing, and the
+   fork-workflow hint replaces the generic divergence warning only for naive
+   fork reads whose HEAD has no published fork cache.
 
 ## Running the tests
 
@@ -684,6 +688,89 @@ def test_findRecentSHAsWithCache : IO Unit := do
 
 end NonDefaultScope
 
+section MissingFilesHints
+
+/-- `true` iff `needle` occurs in `haystack`; assertion helper for message pins. -/
+private def containsSub (haystack needle : String) : Bool :=
+  (haystack.splitOn needle).length > 1
+
+/-- The paths `cache query` treats as cache-relevant when explaining why a
+branch has no per-commit fork cache: the three module trees, their root
+modules, and the root-hash inputs count; tooling, docs, and CI config do not
+— builds of those are identical to master's and upload nothing. -/
+def test_pathAffectsCachedBuild : IO Unit := do
+  IO.println "pathAffectsCachedBuild:"
+  assert "a module under Mathlib/ counts"
+    (pathAffectsCachedBuild "Mathlib/Data/Nat/Basic.lean")
+  assert "a module under Archive/ counts"
+    (pathAffectsCachedBuild "Archive/Sensitivity.lean")
+  assert "a module under Counterexamples/ counts"
+    (pathAffectsCachedBuild "Counterexamples/Phillips.lean")
+  assert "the Mathlib root module counts" (pathAffectsCachedBuild "Mathlib.lean")
+  assert "the Archive root module counts" (pathAffectsCachedBuild "Archive.lean")
+  assert "the Counterexamples root module counts"
+    (pathAffectsCachedBuild "Counterexamples.lean")
+  assert "the toolchain counts" (pathAffectsCachedBuild "lean-toolchain")
+  assert "the lakefile counts" (pathAffectsCachedBuild "lakefile.lean")
+  assert "a TOML lakefile counts" (pathAffectsCachedBuild "lakefile.toml")
+  assert "the manifest counts" (pathAffectsCachedBuild "lake-manifest.json")
+  assert "the cache tool does not count" (!pathAffectsCachedBuild "Cache/Requests.lean")
+  assert "CI config does not count" (!pathAffectsCachedBuild ".github/workflows/build.yml")
+  assert "docs do not count" (!pathAffectsCachedBuild "docs/overview.yaml")
+  assert "scripts do not count" (!pathAffectsCachedBuild "scripts/lint-style.py")
+  assert "a MathlibTest file does not count" (!pathAffectsCachedBuild "MathlibTest/Basic.lean")
+
+/-- Content pins for the two missing-files messages: the fork variant names the
+fork, the HEAD SHA, the miss count, and both commands of the scoped workflow;
+the generic variant reports the count. These are user-facing guidance, so a
+rewording must be a deliberate edit to this test. -/
+def test_missingFilesLines : IO Unit := do
+  IO.println "missingFilesLines:"
+  let fork := "\n".intercalate (missingFilesForkLines "alice/mathlib4" "cafe0123" 7)
+  assert "fork hint names the fork" (containsSub fork "alice/mathlib4")
+  assert "fork hint names the HEAD SHA" (containsSub fork "cafe0123")
+  assert "fork hint reports the miss count" (containsSub fork "7 file(s)")
+  assert "fork hint points at cache query" (containsSub fork "lake exe cache query")
+  assert "fork hint points at --scope" (containsSub fork "lake exe cache get --scope=")
+  assert "fork hint states the trust consequence" (containsSub fork "trusting the artifacts")
+  let generic := "\n".intercalate (missingFilesGenericLines 7)
+  assert "generic warning reports the miss count" (containsSub generic "7 file(s)")
+  assert "generic warning explains divergence" (containsSub generic "diverged from upstream")
+
+/-- The fork hint's cheap guards, exercised without touching git or the
+network: `--unsafe` mode, an explicit scope, a `--cache-from` override, and a
+canonical repo each suppress the hint before the marker probe would run. The
+git-dependent guards (ancestor-of-master, HEAD resolution) and the probe
+itself are exercised by the CI integration tests. -/
+def test_forkHintSHA_guards : IO Unit := do
+  IO.println "forkHintSHA? guards:"
+  let savedScope ← scopeOverride.get
+  let savedCacheFrom ← cacheFromOverride.get
+  try
+    scopeOverride.set none
+    cacheFromOverride.set none
+
+    assert "--unsafe mode suppresses the hint"
+      ((← withSuppressedOutput <| forkHintSHA? "alice/mathlib4" true) == none)
+
+    scopeOverride.set (some "cafe0123")
+    assert "an explicit scope suppresses the hint"
+      ((← withSuppressedOutput <| forkHintSHA? "alice/mathlib4" false) == none)
+    scopeOverride.set none
+
+    cacheFromOverride.set (some [Container.master])
+    assert "a --cache-from override suppresses the hint"
+      ((← withSuppressedOutput <| forkHintSHA? "alice/mathlib4" false) == none)
+    cacheFromOverride.set none
+
+    assert "the canonical repo suppresses the hint"
+      ((← withSuppressedOutput <| forkHintSHA? MATHLIBREPO false) == none)
+  finally
+    scopeOverride.set savedScope
+    cacheFromOverride.set savedCacheFrom
+
+end MissingFilesHints
+
 section GitFallback
 
 /-- `getRemoteRepo` and `resolveRepo` must never throw, regardless of git's
@@ -992,6 +1079,9 @@ def runAll : IO Unit := do
   test_getRepoScope
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason
+  test_pathAffectsCachedBuild
+  test_missingFilesLines
+  test_forkHintSHA_guards
   test_findMostRecentSHAWithCache
   test_findRecentSHAsWithCache
   test_getRemoteRepo_gitFallback
