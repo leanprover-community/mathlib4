@@ -178,7 +178,7 @@ lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharact
   refine fun h ↦ (Real.not_summable_indicator_one_div_natCast hN 1) ?_
   refine h.norm.of_nonneg_of_le (fun m ↦ Set.indicator_apply_nonneg (fun _ ↦ by positivity))
     (fun n ↦ ?_)
-  simp only [norm_term_eq, Set.indicator, Set.mem_setOf_eq]
+  simp only [norm_term_eq, Set.indicator, Set.mem_ofPred_eq]
   split_ifs with h₁ h₂
   · simp [h₂]
   · simp [h₁, χ.map_one]

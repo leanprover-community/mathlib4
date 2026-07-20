@@ -30,24 +30,24 @@ open Polynomial
 
 variable {F E : Type*} [Field F] [Field E] [Algebra F E]
 
-theorem gal_zero_isSolvable : IsSolvable (0 : F[X]).Gal := by infer_instance
+theorem gal_zero_isSolvable : Group.IsSolvable (0 : F[X]).Gal := by infer_instance
 
-theorem gal_one_isSolvable : IsSolvable (1 : F[X]).Gal := by infer_instance
+theorem gal_one_isSolvable : Group.IsSolvable (1 : F[X]).Gal := by infer_instance
 
-theorem gal_C_isSolvable (x : F) : IsSolvable (C x).Gal := by infer_instance
+theorem gal_C_isSolvable (x : F) : Group.IsSolvable (C x).Gal := by infer_instance
 
-theorem gal_X_isSolvable : IsSolvable (X : F[X]).Gal := by infer_instance
+theorem gal_X_isSolvable : Group.IsSolvable (X : F[X]).Gal := by infer_instance
 
-theorem gal_X_sub_C_isSolvable (x : F) : IsSolvable (X - C x).Gal := by infer_instance
+theorem gal_X_sub_C_isSolvable (x : F) : Group.IsSolvable (X - C x).Gal := by infer_instance
 
-theorem gal_X_pow_isSolvable (n : ℕ) : IsSolvable (X ^ n : F[X]).Gal := by infer_instance
+theorem gal_X_pow_isSolvable (n : ℕ) : Group.IsSolvable (X ^ n : F[X]).Gal := by infer_instance
 
-theorem gal_mul_isSolvable {p q : F[X]} (_ : IsSolvable p.Gal) (_ : IsSolvable q.Gal) :
-    IsSolvable (p * q).Gal :=
-  solvable_of_solvable_injective (Gal.restrictProd_injective p q)
+theorem gal_mul_isSolvable {p q : F[X]} (_ : Group.IsSolvable p.Gal) (_ : Group.IsSolvable q.Gal) :
+    Group.IsSolvable (p * q).Gal :=
+  Group.isSolvable_of_isSolvable_injective (Gal.restrictProd_injective p q)
 
-theorem gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, IsSolvable (Gal p)) :
-    IsSolvable s.prod.Gal := by
+theorem gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, Group.IsSolvable (Gal p)) :
+    Group.IsSolvable s.prod.Gal := by
   apply Multiset.induction_on' s
   · exact gal_one_isSolvable
   · intro p t hps _ ht
@@ -55,34 +55,35 @@ theorem gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, IsSolvable (G
     exact gal_mul_isSolvable (hs p hps) ht
 
 theorem gal_isSolvable_of_splits {p q : F[X]}
-    (_ : Fact ((p.map (algebraMap F q.SplittingField)).Splits)) (hq : IsSolvable q.Gal) :
-    IsSolvable p.Gal :=
-  haveI : IsSolvable (q.SplittingField ≃ₐ[F] q.SplittingField) := hq
-  solvable_of_surjective (AlgEquiv.restrictNormalHom_surjective q.SplittingField)
+    (_ : Fact ((p.map (algebraMap F q.SplittingField)).Splits)) (hq : Group.IsSolvable q.Gal) :
+    Group.IsSolvable p.Gal :=
+  haveI : Group.IsSolvable (q.SplittingField ≃ₐ[F] q.SplittingField) := hq
+  Group.isSolvable_of_surjective (AlgEquiv.restrictNormalHom_surjective q.SplittingField)
 
 theorem gal_isSolvable_tower (p q : F[X]) (hpq : (p.map (algebraMap F q.SplittingField)).Splits)
-    (hp : IsSolvable p.Gal) (hq : IsSolvable (q.map (algebraMap F p.SplittingField)).Gal) :
-    IsSolvable q.Gal := by
+    (hp : Group.IsSolvable p.Gal)
+    (hq : Group.IsSolvable (q.map (algebraMap F p.SplittingField)).Gal) :
+    Group.IsSolvable q.Gal := by
   let K := p.SplittingField
   let L := q.SplittingField
   have : Fact ((p.map (algebraMap F L)).Splits) := ⟨hpq⟩
   let ϕ : Gal(L/K) ≃* (q.map (algebraMap F K)).Gal :=
     (IsSplittingField.algEquiv L (q.map (algebraMap F K))).autCongr
   have ϕ_inj : Function.Injective ϕ.toMonoidHom := ϕ.injective
-  have : IsSolvable Gal(K/F) := hp
-  have : IsSolvable Gal(L/K) := solvable_of_solvable_injective ϕ_inj
+  have : Group.IsSolvable Gal(K/F) := hp
+  have : Group.IsSolvable Gal(L/K) := Group.isSolvable_of_isSolvable_injective ϕ_inj
   exact isSolvable_of_isScalarTower F p.SplittingField q.SplittingField
 
 section GalXPowSubC
 
 set_option backward.isDefEq.respectTransparency false in
-theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).Gal := by
+theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : Group.IsSolvable (X ^ n - 1 : F[X]).Gal := by
   by_cases hn : n = 0
   · rw [hn, pow_zero, sub_self]
     exact gal_zero_isSolvable
   have hn' : 0 < n := pos_iff_ne_zero.mpr hn
   have hn'' : (X ^ n - 1 : F[X]) ≠ 0 := X_pow_sub_C_ne_zero hn' 1
-  apply isSolvable_of_comm
+  apply Group.isSolvable_of_comm
   intro σ τ
   ext a ha
   simp only [mem_rootSet_of_ne hn'', map_sub, aeval_X_pow, aeval_one, sub_eq_zero] at ha
@@ -96,7 +97,7 @@ theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).G
 
 set_option backward.isDefEq.respectTransparency false in
 theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
-    (h : ((X ^ n - 1 : F[X]).map (RingHom.id F)).Splits) : IsSolvable (X ^ n - C a).Gal := by
+    (h : ((X ^ n - 1 : F[X]).map (RingHom.id F)).Splits) : Group.IsSolvable (X ^ n - C a).Gal := by
   by_cases ha : a = 0
   · rw [ha, C_0, sub_zero]
     exact gal_X_pow_isSolvable n
@@ -114,7 +115,7 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
       (Splits.degree_eq_one_of_irreducible (h.of_dvd (map_ne_zero hn''')
         (minpoly.dvd F c (by rwa [map_id, map_sub, sub_eq_zero, aeval_X_pow, aeval_one])))
           (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))))
-  apply isSolvable_of_comm
+  apply Group.isSolvable_of_comm
   intro σ τ
   ext b hb
   rw [mem_rootSet_of_ne hn'', map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hb
@@ -172,7 +173,7 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
     hs', ← C_pow, hb, ← mul_assoc, C_mul_C, one_mul]
   rfl
 
-theorem gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : IsSolvable (X ^ n - C x).Gal := by
+theorem gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : Group.IsSolvable (X ^ n - C x).Gal := by
   by_cases hx : x = 0
   · rw [hx, C_0, sub_zero]
     exact gal_X_pow_isSolvable n
@@ -259,7 +260,7 @@ protected theorem solvableByRad.induction (motive : ∀ x, x ∈ solvableByRad F
   exact h
 
 private theorem induction_rad {x : E} (hx : x ∈ solvableByRad F E) {n : ℕ} (hn : n ≠ 0)
-    (hα : IsSolvable (minpoly F (x ^ n)).Gal) : IsSolvable (minpoly F x).Gal := by
+    (hα : Group.IsSolvable (minpoly F (x ^ n)).Gal) : Group.IsSolvable (minpoly F x).Gal := by
   let p := minpoly F (x ^ n)
   have hp : p.comp (X ^ n) ≠ 0 := by
     intro h
@@ -288,8 +289,8 @@ open IntermediateField
 
 private theorem induction_step {x y z : E}
     (hx : x ∈ solvableByRad F E) (hy : y ∈ solvableByRad F E) (hz : z ∈ solvableByRad F E)
-    (hx' : IsSolvable (minpoly F x).Gal) (hy' : IsSolvable (minpoly F y).Gal) (hz' : z ∈ F⟮x, y⟯) :
-    IsSolvable (minpoly F z).Gal := by
+    (hx' : Group.IsSolvable (minpoly F x).Gal) (hy' : Group.IsSolvable (minpoly F y).Gal)
+    (hz' : z ∈ F⟮x, y⟯) : Group.IsSolvable (minpoly F z).Gal := by
   let p := minpoly F x
   let q := minpoly F y
   have hpq := SplittingField.splits (p * q)
@@ -313,7 +314,7 @@ private theorem induction_step {x y z : E}
   infer_instance
 
 theorem isSolvable_gal_minpoly {x : E} (hx : x ∈ solvableByRad F E) :
-    IsSolvable (minpoly F x).Gal := by
+    Group.IsSolvable (minpoly F x).Gal := by
   induction hx using solvableByRad.induction with
   | mem y => rw [minpoly.eq_X_sub_C E]; infer_instance
   | add y z hy hz hy' hz' =>
@@ -328,11 +329,11 @@ alias solvableByRad.isSolvable := isSolvable_gal_minpoly
 /-- **Abel-Ruffini Theorem** (one direction): An irreducible polynomial with a `solvableByRad` root
 has a solvable Galois group. -/
 theorem isSolvable_gal_of_irreducible {x : E} (hx : x ∈ solvableByRad F E) {q : F[X]}
-    (q_irred : Irreducible q) (q_aeval : aeval x q = 0) : IsSolvable q.Gal := by
-  have : IsSolvable (q * C q.leadingCoeff⁻¹).Gal := by
+    (q_irred : Irreducible q) (q_aeval : aeval x q = 0) : Group.IsSolvable q.Gal := by
+  have : Group.IsSolvable (q * C q.leadingCoeff⁻¹).Gal := by
     rw [minpoly.eq_of_irreducible q_irred q_aeval]
     exact isSolvable_gal_minpoly hx
-  refine solvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ ?_)
+  refine Group.isSolvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ ?_)
   aesop
 
 @[deprecated (since := "2026-02-28")]

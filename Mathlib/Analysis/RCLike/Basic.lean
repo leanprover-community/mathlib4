@@ -1225,7 +1225,7 @@ open scoped ComplexOrder in
 lemma instOrderClosedTopology : OrderClosedTopology K where
   isClosed_le' := by
     conv in _ ≤ _ => rw [RCLike.le_iff_re_im]
-    simp_rw [Set.setOf_and]
+    simp_rw [Set.ofPred_and]
     refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> fun_prop
 
 scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology

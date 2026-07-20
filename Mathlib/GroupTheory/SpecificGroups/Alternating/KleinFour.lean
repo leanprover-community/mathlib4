@@ -123,7 +123,7 @@ theorem coe_two_sylow_of_card_eq_four
   · -- card (kleinFour α) ≤ card S
     simp_rw [← Nat.card_eq_fintype_card]
     refine (card_two_sylow_of_card_eq_four hα4 S).trans_ge ?_
-    rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_setOf]
+    rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_ofPred]
     apply (Finset.card_union_le _ _).trans
     rw [Finset.card_singleton, AlternatingGroup.card_of_cycleType, ← Nat.card_eq_fintype_card, hα4]
     decide
@@ -212,7 +212,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     refine le_antisymm ?_ comm_le
     intro g hg
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
-      Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hg
+      Set.mem_union, Set.mem_singleton_iff, Set.mem_ofPred_eq] at hg
     rcases hg with ⟨rfl⟩ | hg
     · exact Subgroup.one_mem _
     · rw [← hg, ← Equiv.Perm.isConj_iff_cycleType_eq, isConj_iff] at hk22
@@ -227,7 +227,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
       simp
   have hk2 := comm_le hk
   rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
-    Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hk2
+    Set.mem_union, Set.mem_singleton_iff, Set.mem_ofPred_eq] at hk2
   exact hk2.resolve_left hk'
 
 end alternatingGroup

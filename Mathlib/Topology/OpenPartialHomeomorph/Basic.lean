@@ -15,8 +15,8 @@ public import Mathlib.Topology.PartialHomeomorph.Basic
 ## Main definitions
 
 * `OpenPartialHomeomorph.refl`: the identity open partial homeomorphism
-* `Topology.IsOpenEmbedding.toOpenPartialHomeomorph`: construct a partial homeomorphism from an
-  open embedding
+* `Topology.IsOpenEmbedding.toOpenPartialHomeomorph`: construct an open partial homeomorphism from
+  an open embedding
 -/
 
 @[expose] public section
@@ -124,20 +124,20 @@ theorem isOpen_image_iff_of_subset_source {s : Set X} (hs : s ⊆ e.source) :
 and open source is an `OpenPartialHomeomorph`. -/
 @[simps! toPartialHomeomorph]
 def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : OpenPartialHomeomorph X Y where
+    (ho : IsOpenMap (e.source.domRestrict e)) (hs : IsOpen e.source) : OpenPartialHomeomorph X Y where
   toPartialHomeomorph := PartialHomeomorph.ofContinuousOpenRestrict e hc ho
   open_source := hs
   open_target := by simpa [e.image_source_eq_target] using ho.isOpen_range
 
 @[simp]
 theorem coe_ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) :
+    (ho : IsOpenMap (e.source.domRestrict e)) (hs : IsOpen e.source) :
     ⇑(ofContinuousOpenRestrict e hc ho hs) = e :=
   rfl
 
 @[simp]
 theorem coe_ofContinuousOpenRestrict_symm (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) :
+    (ho : IsOpenMap (e.source.domRestrict e)) (hs : IsOpen e.source) :
     ⇑(ofContinuousOpenRestrict e hc ho hs).symm = e.symm :=
   rfl
 
@@ -146,7 +146,7 @@ open source is an `OpenPartialHomeomorph`. -/
 @[simps! toPartialHomeomorph]
 def ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : OpenPartialHomeomorph X Y :=
-  ofContinuousOpenRestrict e hc (ho.restrict hs) hs
+  ofContinuousOpenRestrict e hc (ho.domRestrict hs) hs
 
 @[simp]
 theorem coe_ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
@@ -191,17 +191,19 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
     X ≃ₜ Y :=
   e.toPartialHomeomorph.toHomeomorphOfSourceEqUnivTargetEqUniv h h'
 
-theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) where
+theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.domRestrict e) where
   toIsEmbedding := e.isEmbedding_restrict
   isOpen_range := by
-    rw [range_restrict, image_source_eq_target]
+    rw [range_domRestrict, image_source_eq_target]
     exact e.open_target
 
 /-- An open partial homeomorphism whose source is all of `X` defines an open embedding of `X` into
 `Y`. The converse is also true; see `IsOpenEmbedding.toOpenPartialHomeomorph`. -/
-theorem to_isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
+theorem isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
   e.isOpenEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.isOpenEmbedding
+
+@[deprecated (since := "2026-07-17")] alias to_isOpenEmbedding := isOpenEmbedding
 
 end OpenPartialHomeomorph
 
@@ -214,7 +216,7 @@ variable (f : X → Y) (h : IsOpenEmbedding f)
 
 /-- An open embedding of `X` into `Y`, with `X` nonempty, defines an open partial homeomorphism
 whose source is all of `X`. The converse is also true; see
-`OpenPartialHomeomorph.to_isOpenEmbedding`. -/
+`OpenPartialHomeomorph.isOpenEmbedding`. -/
 @[simps! (attr := mfld_simps) -fullyApplied apply source target]
 noncomputable def toOpenPartialHomeomorph [Nonempty X] : OpenPartialHomeomorph X Y :=
   OpenPartialHomeomorph.ofContinuousOpen (h.isEmbedding.injective.injOn.toPartialEquiv f univ)
