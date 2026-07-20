@@ -433,13 +433,13 @@ In general you should use `NonUnitalRing`, `Ring`, etc. -/
 @[mk_iff] class IsNotUnital (A : Type*) [Mul A] : Prop where
   isNotUnital : ∀ u : A, ∃ x : A, u * x ≠ x ∨ x * u ≠ x
 
-@[simp] lemma not_isUnital_iff_isNotUnital {A : Type*} [Mul A] : ¬IsUnital A ↔ IsNotUnital A := by
+variable {A : Type*}
+
+@[simp] lemma not_isUnital_iff_isNotUnital [Mul A] : ¬IsUnital A ↔ IsNotUnital A := by
   simp [isUnital_iff, isNotUnital_iff, -not_and, Classical.not_and_iff_not_or_not]
 
-@[simp] lemma not_isNotUnital_iff_isUnital {A : Type*} [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
+@[simp] lemma not_isNotUnital_iff_isUnital [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
   grind [not_isUnital_iff_isNotUnital]
-
-variable {A : Type*}
 
 /-- A unital magma is `MulOneClass`. -/
 noncomputable abbrev IsUnital.toMulOneClass [Mul A] [IsUnital A] : MulOneClass A where
