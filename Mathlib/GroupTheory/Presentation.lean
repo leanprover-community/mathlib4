@@ -64,23 +64,26 @@ variable (P : Group.Generators G α)
 
 @[simp]
 lemma range_lift_eq_top : (FreeGroup.lift P.val).range = ⊤ := by
-  rw [FreeGroup.range_lift_eq_closure]; exact P.closure_eq_top
+  rw [FreeGroup.range_lift_eq_closure, P.closure_eq_top]
 
 lemma lift_surjective : Function.Surjective (FreeGroup.lift P.val) :=
   MonoidHom.range_eq_top.mp P.range_lift_eq_top
 
+/-- Builds a `Group.Generators` from a family `val : α → G` together with a proof that the induced
+map `FreeGroup.lift val` is surjective. -/
 def ofLiftSurjective (val : α → G) (h : Function.Surjective (FreeGroup.lift val)) :
     Group.Generators G α where
   val := val
-  closure_eq_top := by rw [← FreeGroup.range_lift_eq_closure, MonoidHom.range_eq_top]; exact h
+  closure_eq_top := by rw [← FreeGroup.range_lift_eq_closure, MonoidHom.range_eq_top.mpr h]
 
 @[simp]
 lemma val_ofLiftSurjective (val : α → G) (h : Function.Surjective (FreeGroup.lift val)) :
     (ofLiftSurjective val h).val = val := rfl
 
+/-- `G` as a generating set generates itself via taking `val` as the identity map. -/
 def self (G : Type*) [Group G] : Group.Generators G G where
   val := id
-  closure_eq_top := by rw [Set.range_id]; exact Subgroup.closure_univ
+  closure_eq_top := by rw [Set.range_id, Subgroup.closure_univ]
 
 @[simp]
 lemma val_self : (self G).val = id := rfl
@@ -91,16 +94,16 @@ theorem fg [Finite α] (P : Group.Generators G α) : Group.FG G :=
 
 end Group.Generators
 
-/-- A group is finitely generated if and only if it admits a finite generating set. -/
+/-- A group is finitely generated if and only if it admits a generating family indexed by
+a finite generating set, which then indexes itself. -/
 theorem Group.fg_iff_nonempty_finite_generators :
-    Group.FG G ↔ ∃ (α : Type) (_ : Finite α), Nonempty (Group.Generators G α) := by
-  rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
+    Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite), Nonempty (Group.Generators G S) := by
   constructor
-  · rintro ⟨α, hα, φ, hφ⟩
-    obtain ⟨v, rfl⟩ := FreeGroup.lift.surjective φ
-    exact ⟨α, hα, ⟨Group.Generators.ofLiftSurjective v hφ⟩⟩
-  · rintro ⟨α, hα, ⟨P⟩⟩
-    exact ⟨α, hα, FreeGroup.lift P.val, P.lift_surjective⟩
+  · rintro ⟨S, hS⟩
+    exact ⟨S, S.finite_toSet, ⟨⟨Subtype.val, by rwa [Subtype.range_coe]⟩⟩⟩
+  · rintro ⟨S, hS, ⟨P⟩⟩
+    have := hS.to_subtype
+    exact P.fg
 
 /-- A group presentation is given by a generating family (`val : α → G`)
 and a family of relators (`rel : ρ → FreeGroup α`) such that the kernel of the free group over
@@ -144,9 +147,9 @@ instance [Finite ρ] : Finite P.relSet := P.relSet_finite.to_subtype
 lemma ker_lift : P.lift.ker = Subgroup.normalClosure P.relSet := P.ker_eq_normalClosure
 
 lemma lift_eq_one_of_mem_relSet {r : FreeGroup α} (hr : r ∈ P.relSet) : P.lift r = 1 :=
-  MonoidHom.mem_ker.mp (by rw [P.ker_lift]; exact Subgroup.subset_normalClosure hr)
+  MonoidHom.mem_ker.mp (by simpa [P.ker_lift] using Subgroup.subset_normalClosure hr)
 
-lemma lift_rel (r : ρ) : P.lift (P.rel r) = 1 :=
+theorem lift_rel (r : ρ) : P.lift (P.rel r) = 1 :=
   P.lift_eq_one_of_mem_relSet (P.rel_mem_relSet r)
 
 /-- The `G` with presentation `P` is isomorphic to the `PresentedGroup` given by `P.relSet`. -/
@@ -170,10 +173,10 @@ with finitely many generators and finitely many relators. -/
 theorem Group.isFinitelyPresented_iff_nonempty_finite_presentation :
     Group.IsFinitelyPresented G ↔
       ∃ (α ρ : Type) (_ : Finite α) (_ : Finite ρ), Nonempty (Group.Presentation G α ρ) := by
-  refine ⟨fun h => ?_, fun ⟨_, _, _, _, ⟨P⟩⟩ => P.isFinitelyPresented⟩
+  refine ⟨fun h ↦ ?_, fun ⟨_, _, _, _, ⟨P⟩⟩ ↦ P.isFinitelyPresented⟩
   obtain ⟨n, φ, hφ, s, hs, hsφ⟩ := h.out
   obtain ⟨v, rfl⟩ := FreeGroup.lift.surjective φ
   exact ⟨Fin n, s, inferInstance, hs.to_subtype,
     ⟨{ toGenerators := Group.Generators.ofLiftSurjective v hφ
        rel := Subtype.val
-       ker_eq_normalClosure := by rw [Subtype.range_val]; exact hsφ.symm }⟩⟩
+       ker_eq_normalClosure := by rw [Subtype.range_coe]; exact hsφ.symm }⟩⟩
