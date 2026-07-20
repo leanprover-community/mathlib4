@@ -48,13 +48,13 @@ private lemma tendsto_ofComplex_I_mul_atTop_atImInfty :
 
 private lemma continuousOn_ofComplex_I_mul :
     ContinuousOn (fun t : ℝ ↦ ofComplex (I * ↑t)) (Set.Ioi 0) := by
-  have : Continuous (fun t : ℝ ↦ I * ↑t) := by fun_prop
+  have : Continuous (fun t : ℝ ↦ I * t) := by fun_prop
   simp only [ofComplex_apply_eq_ite, I_mul_im, ofReal_re,
     continuousOn_iff_continuous_restrict, continuous_induced_rng]
   exact (this.comp continuous_subtype_val).congr (by simp +contextual)
 
 include F k Γ in -- conclusion doesn't explicitly refer these
-private lemma isBigO_sub_valueAtInfty_comp_ofComplex_I_mul (r : ℝ) :
+private lemma isBigO_comp_ofComplex_I_mul_sub_valueAtInfty (r : ℝ) :
     (fun t : ℝ ↦ f (ofComplex (I * t)) - valueAtInfty f) =O[atTop] (fun t ↦ t ^ r) := by
   obtain ⟨C, hCpos, hCO⟩ := ModularFormClass.exp_decay_sub_atImInfty' f
   refine (hCO.comp_tendsto tendsto_ofComplex_I_mul_atTop_atImInfty).trans ?_
@@ -82,7 +82,7 @@ end asymptotics
     exact (show Continuous _ by fun_prop).comp_continuousOn continuousOn_ofComplex_I_mul
   h_feq t (ht : 0 < t) := by
     rw [coe_translate, slash_def]
-    suffices f (ofComplex (I * (↑t)⁻¹)) = I ^ k * ↑t ^ k *
+    suffices f (ofComplex (I * t⁻¹)) = I ^ k * t ^ k *
         (f ((ModularGroup.S : GL (Fin 2) ℝ) • ofComplex (I * t)) * (ofComplex (I * t)) ^ (-k)) by
       simpa [ModularGroup.S, σ, denom]
     rw [ofComplex_apply_of_im_pos (by simpa), ofComplex_apply_of_im_pos (by simpa),
@@ -161,7 +161,7 @@ private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
         mul_cpow_ofReal_nonneg (by grind) (by positivity), ofReal_mul,
         ← mul_cpow_ofReal_nonneg (by grind) (by grind), div_eq_mul_inv, ofReal_inv, inv_cpow]
       rw [arg_ofReal_of_nonneg Γ.strictWidthInfty_nonneg]
-      positivity
+      exact Real.pi_ne_zero.symm
     rw [this, cpow_neg, cpow_neg]
     have := Gamma_ne_zero_of_re_pos hs
     have := cpow_ne_zero_iff (y := s).mpr (.inl <| ofReal_ne_zero.mpr Γ.strictWidthInfty_pos.ne')
@@ -192,20 +192,17 @@ lemma Λ_eq_mellin : Λ hk f = mellin (fun t ↦ f (ofComplex (I * t))) :=
   (isStrongFEPair hk f).Λ_eq
 
 lemma hasSum_Λ (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
-    HasSum (fun n ↦ π ^ (-s) * Gamma s *
-      (qExpansion (h Γ) f).coeff n / ↑(2 * n / h Γ : ℝ) ^ s) (Λ hk f s) := by
+    HasSum (fun n ↦ π ^ (-s) * Gamma s * (qExpansion (h Γ) f).coeff n / ↑(2 * n / h Γ : ℝ) ^ s)
+      (Λ hk f s) := by
   refine hasSum_Λ_of_qExpansion_isBigO hk f (r := k / 2)
     (by linarith [show (0 : ℝ) < k from mod_cast hk]) hs ?_ ?_
   · simp [Λ_eq_mellin, (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero]
   · simpa using CuspFormClass.qExpansion_isBigO f
 
 lemma differentiable_L : Differentiable ℂ (L hk f) := by
-  refine (differentiable_Λ hk f).mul ?_
-  apply (differentiable_const _).mul ?_
-  simp only [Gammaℂ_def, mul_inv]
-  refine ((differentiable_const _).mul ?_).mul differentiable_one_div_Gamma
-  simp only [cpow_neg, inv_inv]
-  exact differentiable_id.const_cpow (by simp)
+  rw [show L hk f = fun s ↦ L .. from rfl]
+  simp only [L, div_eq_mul_inv]
+  fun_prop
 
 theorem hasSum_L (hs : k / 2 + 1 < s.re) :
     HasSum (fun n ↦ (qExpansion (h Γ) f).coeff n / n ^ s) (h Γ ^ (-s) * L hk f s) :=

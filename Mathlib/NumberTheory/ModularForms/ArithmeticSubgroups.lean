@@ -267,7 +267,7 @@ instance instDiscreteSubgroup_conj {G : Type*} [Group G] [TopologicalSpace G]
     [SeparatelyContinuousMul G] {𝒢 : Subgroup G} (g : ConjAct G) [DiscreteTopology 𝒢] :
     DiscreteTopology ↑(g • 𝒢) := by
   simp only [← SetLike.coe_sort_coe, ← isDiscrete_iff_discreteTopology] at *
-  apply IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
+  refine IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
   apply IsOpenMap.of_inverse (f' := fun x ↦ g⁻¹ • x) (IsTopologicalGroup.continuous_conj _) <;>
   · intro x
     simp
