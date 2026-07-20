@@ -81,7 +81,7 @@ theorem krullTopology_mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
   have hf : f.Nonempty := ⟨⊥, inferInstanceAs (FiniteDimensional K (⊥ : IntermediateField K L))⟩
   refine (Filter.mem_biInf_of_directed ?_ hf).trans (by simp [Set.subset_def, Set.EqOn, f])
   intro E hE F hF
-  simp only [Set.mem_setOf_eq, f] at hE hF ⊢
+  simp only [Set.mem_ofPred, f] at hE hF ⊢
   have hl : E ≤ E ⊔ F := le_sup_left
   have hr : F ≤ E ⊔ F := le_sup_right
   exact ⟨E ⊔ F, inferInstance,
@@ -95,7 +95,6 @@ instance krullTopology : TopologicalSpace Gal(L/K) := inferInstance
 
 open IntermediateField in
 variable (K L) in
-set_option backward.isDefEq.respectTransparency false in
 /-- For a field extension `L/K`, the Krull topology on `Gal(L/K)` makes it a topological group. -/
 @[stacks 0BMJ "We define the Krull topology directly without proving the universal property"]
 instance : IsUniformGroup Gal(L/K) where
@@ -123,7 +122,7 @@ lemma krullTopology_mem_nhds_one_iff {s : Set Gal(L/K)} : s ∈ 𝓝 1 ↔ ∃ E
   rw [nhds_eq_comap_uniformity', ← le_principal_iff, comap_le_iff_le_kernMap,
     kernMap_principal, le_principal_iff, krullTopology_mem_uniformity_iff]
   refine exists_congr fun F => and_congr_right fun hF => ?_
-  rw [← Prod.forall', ← Set.setOf_subset, Set.subset_kernImage_iff]
+  rw [← Prod.forall', ← Set.ofPred_subset, Set.subset_kernImage_iff]
   exact Iff.of_eq congr($(by ext; simp [Set.EqOn]) ⊆ s)
 
 open scoped Topology in
@@ -203,7 +202,6 @@ instance krullTopology_discreteTopology_of_finiteDimensional
     [FiniteDimensional K L] : DiscreteTopology Gal(L/K) := inferInstance
 
 variable (K L) in
-set_option backward.isDefEq.respectTransparency false in
 theorem AlgEquiv.totallyBounded_univ : TotallyBounded (Set.univ : Set Gal(L/K)) := by
   intro U hU
   rw [krullTopology_mem_uniformity_iff] at hU
@@ -218,7 +216,6 @@ theorem AlgEquiv.totallyBounded_univ : TotallyBounded (Set.univ : Set Gal(L/K)) 
 
 variable (K L) in
 open IntermediateField in
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsIntegral K L] : CompactSpace Gal(L/K) where
   isCompact_univ := by
     apply (AlgEquiv.totallyBounded_univ K L).isCompact_of_isComplete
