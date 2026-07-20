@@ -48,7 +48,6 @@ theorem convexCombination_single (x : P) :
 
 theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
     convexCombination (f.map convexCombination) = convexCombination f.join := by
-  classical
   -- Choose a base point
   obtain ⟨b⟩ : Nonempty P := inferInstance
   -- Express both sides using weightedVSubOfPoint with base point b
@@ -130,6 +129,7 @@ theorem iConvexComb_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
     s.weights.sum fun x r ↦ r • (f x -ᵥ p) by simpa
   simp [Finsupp.sum_mapDomain_index, add_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `convexCombPair` in an affine space is the affine line map. -/
 theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
     (h : s + t = 1) (x y : P) :

@@ -67,6 +67,7 @@ namespace Equiv.Perm
 
 variable {α : Type*} [Finite α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Iwasawa structure of `Perm α` acting on `Set.powersetCard α 2`. -/
 def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     IwasawaStructure (Perm α) (Set.powersetCard α 2) where
@@ -167,7 +168,7 @@ def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
   is_generator := by
     rw [eq_top_iff, ← closure_cycleType_eq_two_two_eq_top h5, Subgroup.closure_le]
     intro g hg
-    simp only [Set.mem_setOf_eq] at hg
+    simp only [Set.mem_ofPred_eq] at hg
     apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).support, by simp [← sum_cycleType, hg]⟩
     rw [mem_map_kleinFour_ofSubtype] <;> simp [hg, ← sum_cycleType]
 

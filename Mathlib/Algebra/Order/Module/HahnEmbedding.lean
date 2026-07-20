@@ -209,6 +209,7 @@ theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
   let f' : ⨁ c, seed.stratum' c :=
     f.mapRange (fun c x ↦ (⟨⟨x.val, hxm x⟩, by simp⟩ : seed.stratum' c)) (by simp)
   have hf : f c = (seed.baseDomain.subtype.submoduleComap (seed.stratum c)) (f' c) := by
+    set_option backward.isDefEq.respectTransparency false in
     apply Subtype.ext
     simp [f']
   have hx : x = (decompose seed.stratum').symm f' := by
@@ -515,7 +516,7 @@ extension isn't necessarily linear.
 -/
 noncomputable
 def evalCoeff (x : M) (c : FiniteArchimedeanClass M) : R :=
-  open Classical in
+  open scoped Classical in
   if h : ∃ y : f.val.domain, y.val - x ∈ ball K c then
     (ofLex (f.val h.choose)).coeff c
   else
