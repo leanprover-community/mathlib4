@@ -261,13 +261,3 @@ instance Subgroup.instIsArithmeticAdjoinNegOne {𝒢 : Subgroup (GL (Fin 2) ℝ)
   ⟨(𝒢.commensurable_adjoinNegOne_self).trans IsArithmetic.is_commensurable⟩
 
 end adjoinNeg
-
-open scoped Pointwise in
-instance instDiscreteSubgroup_conj {G : Type*} [Group G] [TopologicalSpace G]
-    [SeparatelyContinuousMul G] {𝒢 : Subgroup G} (g : ConjAct G) [DiscreteTopology 𝒢] :
-    DiscreteTopology ↑(g • 𝒢) := by
-  simp only [← SetLike.coe_sort_coe, ← isDiscrete_iff_discreteTopology] at *
-  refine IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
-  apply IsOpenMap.of_inverse (f' := fun x ↦ g⁻¹ • x) (IsTopologicalGroup.continuous_conj _) <;>
-  · intro x
-    simp

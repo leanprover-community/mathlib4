@@ -186,6 +186,7 @@ lemma hasSum_Λ (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
   · simp [Λ_eq_mellin, (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero]
   · simpa using CuspFormClass.qExpansion_isBigO f
 
+@[fun_prop]
 lemma differentiable_L : Differentiable ℂ (L hk f) := by
   unfold L
   simp only [div_eq_mul_inv]
