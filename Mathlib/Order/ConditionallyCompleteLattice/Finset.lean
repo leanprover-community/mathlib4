@@ -71,7 +71,7 @@ end ConditionallyCompleteLattice
 variable (f : ι → α)
 
 theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x)
-    (h' : (s.image f).Nonempty := by classical exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
+    (h' : (s.image f).Nonempty := by exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
     ⨆ i ∈ s, f i = (s.image f).max' h' := by
   classical
   rw [iSup, ← h'.csSup_eq_max', coe_image]
@@ -89,9 +89,8 @@ theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ �
     simp [hi]
 
 theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sInf ∅)
-    (h' : (s.image f).Nonempty := by classical exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
+    (h' : (s.image f).Nonempty := by exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
     ⨅ i ∈ s, f i = (s.image f).min' h' := by
-  classical
   rw [← OrderDual.toDual_inj, toDual_min', toDual_iInf]
   simp only [toDual_iInf]
   rw [ciSup_eq_max'_image _ h]
