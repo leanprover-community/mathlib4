@@ -322,7 +322,7 @@ theorem sum_apply' [Countable ι] (κ : ι → Kernel α β) (a : α) {s : Set �
 theorem sum_zero [Countable ι] : (Kernel.sum fun _ : ι => (0 : Kernel α β)) = 0 := by
   ext a s hs
   rw [sum_apply' _ a hs]
-  simp only [zero_apply, _root_.zero_apply, tsum_zero]
+  simp only [zero_apply, tsum_zero]
 
 theorem sum_comm [Countable ι] (κ : ι → ι → Kernel α β) :
     (Kernel.sum fun n => Kernel.sum (κ n)) = Kernel.sum fun m => Kernel.sum fun n => κ n m := by
