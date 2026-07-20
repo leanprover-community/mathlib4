@@ -324,8 +324,8 @@ private lemma exists_ball_subset_forall_le_norm_circleMap_sub (hw : w ∈ ball c
 inside the circle, then `w ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • f ζ) 0 R` has
 derivative `circleAverage (fun ζ ↦ (2 * ζ / (ζ - w) ^ 2) • f ζ) 0 R` at `w`.
 -/
-theorem hasDerivAt_circleAverage_herglotzRieszKernel_smul [CompleteSpace E]
-    (hg : CircleIntegrable f 0 R) (hw : w ∈ ball 0 R) :
+theorem hasDerivAt_circleAverage_herglotzRieszKernel_smul (hg : CircleIntegrable f 0 R)
+    (hw : w ∈ ball 0 R) :
     HasDerivAt (fun w ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • f ζ) 0 R)
       (circleAverage (fun ζ ↦ (2 * ζ / (ζ - w) ^ 2) • f ζ) 0 R) w := by
   have hR : 0 < R := pos_of_mem_ball hw
@@ -375,8 +375,7 @@ theorem hasDerivAt_circleAverage_herglotzRieszKernel_smul [CompleteSpace E]
 The Herglotz–Riesz kernel integral of a circle-integrable function is differentiable in the pole
 parameter, throughout the open ball.
 -/
-theorem differentiableOn_circleAverage_herglotzRieszKernel_smul [CompleteSpace E]
-    (hg : CircleIntegrable f 0 R) :
+theorem differentiableOn_circleAverage_herglotzRieszKernel_smul (hg : CircleIntegrable f 0 R) :
     DifferentiableOn ℂ
       (fun w ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • f ζ) 0 R) (ball 0 R) :=
   fun _ hw ↦
