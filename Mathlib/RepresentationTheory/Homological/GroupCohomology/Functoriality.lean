@@ -346,9 +346,6 @@ theorem mapCocycles₁_one (φ : res 1 A ⟶ B) :
   refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y => ?_)
   simp [mapShortComplexH1, shortComplexH1, Pi.zero_apply y]
 
-@[deprecated (since := "2025-6-09")]
-alias H1Map_id := map_id
-
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_map :

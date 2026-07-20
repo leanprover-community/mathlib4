@@ -250,7 +250,6 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 
-set_option backward.privateInPublic true in
 instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
   inf_sSup_le_iSup_inf a s := by
     simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
@@ -261,7 +260,6 @@ instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
 
 instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
 
-set_option backward.privateInPublic true in
 /-- Restrict a nucleus to its range. -/
 @[simps] def restrict (n : Nucleus X) : FrameHom X (range n) where
   toFun := rangeFactorization n
