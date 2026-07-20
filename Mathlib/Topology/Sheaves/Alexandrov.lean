@@ -167,6 +167,7 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
       congr
       apply limit.lift_π
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isSheaf_principalsKanExtension
     {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X] (F : X ⥤ C) :
     Presheaf.IsSheaf (principalsKanExtension F) := by
@@ -179,6 +180,7 @@ end Alexandrov
 
 open Alexandrov
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The main theorem of this file.
 If `X` is a topological space and preorder whose topology is the `UpperSet` topology associated
