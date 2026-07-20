@@ -35,6 +35,11 @@ variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [Nontri
   [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} {f : E →ₛₗ[σ] F}
 
 variable (𝕜₁) in
+/-- Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two topologies
+on `E` which are compatible with the vector space structure.
+
+Assume that there is a `t₁`-neighborhood of zero `V` such that the two topogies induce the
+same filter of neighborhoods of `0` *in the subspace `V`*. Then `t₁ = t₂`. -/
 lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : TopologicalSpace E)
     [@IsTopologicalAddGroup E t₁ _] [@IsTopologicalAddGroup E t₂ _]
     [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
@@ -48,7 +53,7 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   replace H : 𝓕₁ = 𝓕₂ ⊓ 𝓟 V := by simpa [← H]
   -- Because both `t₁` and `t₂` are additive group topologies, we have to show `𝓕₁ = 𝓕₂`.
   suffices 𝓕₁ = 𝓕₂ by rwa [IsTopologicalAddGroup.ext_iff] <;> infer_instance
-  -- If we can show that `V ∈ 𝓕₂`, we get `𝓕₁ = 𝓕₂ ⊓ 𝓟 V = 𝓕₂`.
+  -- If we can show that `V ∈ 𝓕₂` we are done, because then `𝓕₁ = 𝓕₂ ⊓ 𝓟 V = 𝓕₂`.
   suffices V ∈ 𝓕₂ by simpa [H]
   -- Hence, let us show that `V ∈ 𝓕₂`. Fix a scalar `c` with `0 < ‖c‖ < 1`.
   obtain ⟨c, hc₀, hc₁⟩ := NormedField.exists_norm_lt_one 𝕜₁
@@ -90,6 +95,11 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   exact Nat.find_min exists_scale (tsub_lt_self k₀_pos one_pos) this
 
 variable (𝕜₁) in
+/-- Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two topologies
+on `E` which are compatible with the vector space structure.
+
+Assume that there is a `t₁`-neighborhood of zero `V` such that the two topogies induce the
+same topology *on the subspace `V`*. Then `t₁ = t₂`. -/
 lemma ContinuousSMul.topology_eq_of_induced_eq (t₁ t₂ : TopologicalSpace E)
     [@IsTopologicalAddGroup E t₁ _] [@IsTopologicalAddGroup E t₂ _]
     [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
