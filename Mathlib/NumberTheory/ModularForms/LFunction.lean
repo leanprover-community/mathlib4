@@ -46,13 +46,6 @@ private lemma tendsto_ofComplex_I_mul_atTop_atImInfty :
   filter_upwards [eventually_gt_atTop 0] with t ht
   simp [ofComplex_apply_of_im_pos, ht, ← coe_im]
 
-private lemma continuousOn_ofComplex_I_mul :
-    ContinuousOn (fun t : ℝ ↦ ofComplex (I * ↑t)) (Set.Ioi 0) := by
-  have : Continuous (fun t : ℝ ↦ I * t) := by fun_prop
-  simp only [ofComplex_apply_eq_ite, I_mul_im, ofReal_re,
-    continuousOn_iff_continuous_restrict, continuous_induced_rng]
-  exact (this.comp continuous_subtype_val).congr (by simp +contextual)
-
 include F k Γ in -- conclusion doesn't explicitly refer these
 private lemma isBigO_comp_ofComplex_I_mul_sub_valueAtInfty (r : ℝ) :
     (fun t : ℝ ↦ f (ofComplex (I * t)) - valueAtInfty f) =O[atTop] (fun t ↦ t ^ r) := by
@@ -74,17 +67,13 @@ end asymptotics
   hε := zpow_ne_zero _ I_ne_zero
   f₀ := valueAtInfty f
   g₀ := valueAtInfty (translate f ModularGroup.S)
-  hf_int := by
-    apply ContinuousOn.locallyIntegrableOn _ measurableSet_Ioi
-    exact (show Continuous _ by fun_prop).comp_continuousOn continuousOn_ofComplex_I_mul
-  hg_int := by
-    apply ContinuousOn.locallyIntegrableOn _ measurableSet_Ioi
-    exact (show Continuous _ by fun_prop).comp_continuousOn continuousOn_ofComplex_I_mul
+  hf_int := ContinuousOn.locallyIntegrableOn (by fun_prop) measurableSet_Ioi
+  hg_int := ContinuousOn.locallyIntegrableOn (by fun_prop) measurableSet_Ioi
   h_feq t (ht : 0 < t) := by
     rw [coe_translate, slash_def]
     suffices f (ofComplex (I * t⁻¹)) = I ^ k * t ^ k *
-        (f ((ModularGroup.S : GL (Fin 2) ℝ) • ofComplex (I * t)) * (ofComplex (I * t)) ^ (-k)) by
-      simpa [ModularGroup.S, σ, denom]
+        (f ((ModularGroup.S : GL (Fin 2) ℝ) • ofComplex (I * t)) * ofComplex (I * t) ^ (-k)) by
+      simpa [σ, denom]
     rw [ofComplex_apply_of_im_pos (by simpa), ofComplex_apply_of_im_pos (by simpa),
       mul_comm (f _), ← mul_assoc, ← mul_zpow, zpow_neg,
       mul_inv_cancel₀ (zpow_ne_zero _ (by aesop))]
@@ -92,11 +81,11 @@ end asymptotics
     congr 1
     ext
     rw [coe_smul_of_det_pos (by simp)]
-    simp [num, denom, div_eq_mul_inv, mul_comm, ModularGroup.S]
-  hf_top r := by
-    exact isBigO_sub_valueAtInfty_comp_ofComplex_I_mul f r
-  hg_top r := by
-    exact isBigO_sub_valueAtInfty_comp_ofComplex_I_mul (translate f ModularGroup.S) r
+    simp [num, denom, div_eq_mul_inv, mul_comm]
+  hf_top r := by -- `by exact` to hide use of private lemma in @[expose]'d declaration
+    exact isBigO_comp_ofComplex_I_mul_sub_valueAtInfty f r
+  hg_top r := by -- `by exact` to hide use of private lemma in @[expose]'d declaration
+    exact isBigO_comp_ofComplex_I_mul_sub_valueAtInfty (translate f ModularGroup.S) r
 
 /-- The `L`-series of a modular form (including its Archimedean `Γ`-factor). -/
 noncomputable def Λ : ℂ → ℂ := (weakFEPair hk f).Λ
@@ -156,12 +145,9 @@ private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
       ← ofReal_ofNat, mul_cpow_ofReal_nonneg two_pos.le Real.pi_pos.le]
     simp only [ofReal_div, ofReal_mul, ofReal_ofNat, ofReal_natCast]
     have : (2 * n / h Γ : ℂ) ^ s = 2 ^ s * n ^ s / h Γ ^ s := by
-      have := Γ.strictWidthInfty_nonneg
-      rw [← ofReal_ofNat, ← ofReal_natCast, div_eq_mul_inv, ← ofReal_inv, ← ofReal_mul,
-        mul_cpow_ofReal_nonneg (by grind) (by positivity), ofReal_mul,
-        ← mul_cpow_ofReal_nonneg (by grind) (by grind), div_eq_mul_inv, ofReal_inv, inv_cpow]
-      rw [arg_ofReal_of_nonneg Γ.strictWidthInfty_nonneg]
-      exact Real.pi_ne_zero.symm
+      rw [← ofReal_ofNat, ← ofReal_natCast, ← ofReal_mul,
+        div_cpow_ofReal_nonneg (by grind) Γ.strictWidthInfty_nonneg, ofReal_mul,
+        mul_cpow_ofReal_nonneg zero_le_two n.cast_nonneg]
     rw [this, cpow_neg, cpow_neg]
     have := Gamma_ne_zero_of_re_pos hs
     have := cpow_ne_zero_iff (y := s).mpr (.inl <| ofReal_ne_zero.mpr Γ.strictWidthInfty_pos.ne')
@@ -182,9 +168,10 @@ variable [CuspFormClass F Γ k]
 
 /-- For cusp forms the FE-pair is a strong FE-pair. -/
 lemma isStrongFEPair : IsStrongFEPair (weakFEPair hk f) where
-  hf₀ := by exact (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
-  hg₀ := by exact (CuspFormClass.zero_at_infty <| translate f ModularGroup.S).valueAtInfty_eq_zero
+  hf₀ := (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
+  hg₀ := (CuspFormClass.zero_at_infty <| translate f ModularGroup.S).valueAtInfty_eq_zero
 
+@[fun_prop]
 lemma differentiable_Λ : Differentiable ℂ (Λ hk f) :=
   (isStrongFEPair hk f).differentiable_Λ
 
@@ -200,8 +187,8 @@ lemma hasSum_Λ (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
   · simpa using CuspFormClass.qExpansion_isBigO f
 
 lemma differentiable_L : Differentiable ℂ (L hk f) := by
-  rw [show L hk f = fun s ↦ L .. from rfl]
-  simp only [L, div_eq_mul_inv]
+  unfold L
+  simp only [div_eq_mul_inv]
   fun_prop
 
 theorem hasSum_L (hs : k / 2 + 1 < s.re) :
