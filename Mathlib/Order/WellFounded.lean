@@ -95,6 +95,11 @@ theorem subtype_iff' {p : α → Prop} {r : Subtype p → Subtype p → Prop} :
     not_isEmpty_iff, nonempty_subtype]
   refine ⟨fun ⟨f, ha⟩ ↦ ⟨(f ·), ?_⟩, fun ⟨f, ha⟩ ↦ ⟨(⟨f ·, (ha _).snd.fst⟩), ?_⟩⟩ <;> grind
 
+theorem subtype_iff_subtype_map_val {p : α → Prop} {r : Subtype p → Subtype p → Prop} :
+    WellFounded r ↔ WellFounded (Relation.Map r Subtype.val Subtype.val) := by
+  convert subtype_iff'
+  simp [Relation.map_apply]
+
 theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α → β} (hf : f.Injective)
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
   __ := hf.trichotomous_onFun r
