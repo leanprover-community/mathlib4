@@ -486,6 +486,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
   · -- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the cross-chart case on `[x,y]`, the tangent coordinate change is `-id` (i.e. `v ↦ -v`). -/
 private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     (hr : r ∈ (chartAt (EuclideanHalfSpace 1) p).source ∩
@@ -506,7 +507,7 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     have hw_mem : extChartAt (𝓡∂ 1) p r ∈ (extChartAt (𝓡∂ 1) p).target :=
       (extChartAt (𝓡∂ 1) p).map_source (by rw [extChartAt_source]; exact hr.1)
     have hEqOn : Set.EqOn ((extChartAt (𝓡∂ 1) q) ∘ (extChartAt (𝓡∂ 1) p).symm)
-        (fun z ↦ (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x) - z)
+        (fun z ↦ toLp 2 (fun _ ↦ y - x) - z)
         (extChartAt (𝓡∂ 1) p).target := by
       rw [extChartAt_target]
       intro z hz
@@ -525,7 +526,7 @@ private theorem Icc_tangentCoordChange_neg (p q r : Set.Icc x y)
     -- Reduce to the derivative of `z ↦ c - z`, which is `-id`, and evaluate it at `v`.
     rw [(hEqOn.eventuallyEq_of_mem
       (extChartAt_target_mem_nhdsWithin_of_mem hw_mem)).fderivWithin_eq (hEqOn hw_mem)]
-    set c : EuclideanSpace ℝ (Fin 1) := (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x)
+    set c : EuclideanSpace ℝ (Fin 1) := toLp 2 (fun _ ↦ y - x)
     have hderiv : fderivWithin ℝ (fun z : EuclideanSpace ℝ (Fin 1) ↦ c - z) (Set.range (𝓡∂ 1))
         (extChartAt (𝓡∂ 1) p r) =
           -(1 : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1)) :=
