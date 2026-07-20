@@ -14,19 +14,22 @@ In this file we define Cⁿ actions (e.g. by Lie groups or monoids) on manifolds
 `ContMDiffSMul I I' n G M` if `G` acts multiplicatively on `M` and the action map
 `fun p : G × M ↦ p.1 • p.2` is Cⁿ. We also provide API for additive actions using `@[to_additive]`.
 
+We also define `ContMDiffConstSMul I n Γ M`, stating that for each `γ : Γ`, the map
+`fun x : M ↦ γ • x` is Cⁿ. Unlike `ContMDiffSMul`, this requires no topology or charted space
+structure on `Γ`, so it applies for example to actions of discrete groups by Cⁿ maps, such as the
+properly discontinuous actions used to construct quotient manifolds.
+
+TODO: For actions of Lie groups the two classes are close: a continuous action of a Lie group `G` on
+a finite-dimensional manifold `M` is `C^n` provided it is `C^n` in the second variable.)
+
 We also provide `ContMDiffSMul` instances for scalar multiplication in normed spaces and for
 the action of the monoid `E →L[𝕜] E` of continuous linear maps on any normed space `E`.
 
 See also:
 * `ContMDiffMul I n G` for continuous differentiability of multiplication `G × G → G` in a single
   type `G`,
-* `ContinuousSMul G M` for continuity of an action `G × M → M`.
-
-Unlike for continuous actions, we do not currently have a class `ContMDiffConstSMul`. If there are
-interesting examples satisfying `ContMDiffConstSMul` but not `ContMDiffSMul`, this can be added
-later. (Note that such examples may be harder to find: in fact, a continuous action of a
-Lie group `G` on a finite-dimensional manifold `M` is `C^n` provided it is `C^n` in the
-second variable.)
+* `ContinuousSMul G M` for continuity of an action `G × M → M`,
+* `ContinuousConstSMul Γ M` for continuity of `fun x ↦ γ • x` for each `γ : Γ`.
 -/
 
 open scoped Manifold ContDiff
@@ -66,9 +69,37 @@ class ContMDiffSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [T
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [SMul G M] : Prop where
   contMDiff_smul : CMDiff n fun p : G × M ↦ p.1 • p.2
 
+
+/-- Typeclass stating that for each `γ : Γ`, the additive action `fun x : M ↦ γ +ᵥ x` is Cⁿ.
+Unlike `ContMDiffVAdd` (which requires the action to be Cⁿ jointly as a map `Γ × M → M`), no
+topology or manifold structure on `Γ` is required, so this class also covers additive actions of
+discrete groups by Cⁿ maps. -/
+class ContMDiffConstVAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
+    (Γ : Type*) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [VAdd Γ M] : Prop where
+  /-- For each `γ : Γ`, the map `fun x : M ↦ γ +ᵥ x` is Cⁿ. -/
+  contMDiff_const_vadd : ∀ γ : Γ, CMDiff n fun x : M ↦ γ +ᵥ x
+
+/-- Typeclass stating that for each `γ : Γ`, the scalar multiplication `fun x : M ↦ γ • x` is Cⁿ.
+Unlike `ContMDiffSMul` (which requires the action to be Cⁿ jointly as a map `Γ × M → M`), no
+topology or manifold structure on `Γ` is required, so this class also covers actions of discrete
+groups by Cⁿ maps, e.g. the properly discontinuous actions used to construct quotient manifolds. -/
+@[to_additive]
+class ContMDiffConstSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
+    (Γ : Type*) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [SMul Γ M] : Prop where
+  /-- For each `γ : Γ`, the map `fun x : M ↦ γ • x` is Cⁿ. -/
+  contMDiff_const_smul : ∀ γ : Γ, CMDiff n fun x : M ↦ γ • x
+
 export ContMDiffVAdd (contMDiff_vadd)
 
 export ContMDiffSMul (contMDiff_smul)
+
+export ContMDiffConstVAdd (contMDiff_const_vadd)
+
+export ContMDiffConstSMul (contMDiff_const_smul)
+
+section ContMDiffSMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
@@ -179,3 +210,71 @@ instance {n : ℕ∞ω} : ContMDiffSMul 𝓘(𝕜, E →L[𝕜] E) 𝓘(𝕜, E)
         (@id ((E →L[𝕜] E) × E)) := by
       rw [contMDiff_prod_module_iff, ← contMDiff_prod_iff]; exact contMDiff_id
     exact isBoundedBilinearMap_apply.contDiff.contMDiff.comp h
+
+end ContMDiffSMul
+
+section ContMDiffConstSMul
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {I : ModelWithCorners 𝕜 E H}
+  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {I' : ModelWithCorners 𝕜 E' H'}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  {Γ : Type*} [SMul Γ M]
+
+@[to_additive]
+protected theorem ContMDiffConstSMul.of_le {n m : ℕ∞ω} (h : n ≤ m)
+    [ContMDiffConstSMul I m Γ M] : ContMDiffConstSMul I n Γ M  :=
+  ⟨fun γ ↦ (contMDiff_const_smul γ).of_le h⟩
+
+@[to_additive]
+instance {n : ℕ∞ω} [ContMDiffConstSMul I ∞ Γ M] [ENat.LEInfty n] :
+    ContMDiffConstSMul I n Γ M :=
+  .of_le ENat.LEInfty.out
+
+@[to_additive]
+instance {n : ℕ∞ω} [ContMDiffConstSMul I ω Γ M] : ContMDiffConstSMul I n Γ M :=
+  .of_le le_top
+
+@[to_additive]
+instance [ContinuousConstSMul Γ M] : ContMDiffConstSMul I 0 Γ M :=
+  ⟨sorry⟩
+
+/-- If an action is Cⁿ for some `n`, it is also continuous. This has to be a theorem instead of an
+instance because `ContMDiffSMul` depends on parameters `I`, `I'` and `n` that `ContinuousSMul`
+doesn't. -/
+@[to_additive]
+lemma ContMDiffConstSMul.continuousConstSMul (n : ℕ∞ω) [ContMDiffConstSMul I n Γ M] :
+    ContinuousConstSMul Γ M :=
+  ⟨sorry⟩
+
+section
+
+variable {n : ℕ∞ω} [ContMDiffConstSMul I n Γ M] {f : N → M} {s : Set N} {x : N}
+
+/- Let `M` be a charted space being acted on by `Γ : Type*`. Given another charted space `N`, a
+differentiable map `f : N → M`, and `γ : Γ` , then the map `γ • f : N → M` is also differentiable -/
+@[to_additive]
+theorem ContMDiffWithinAt.const_smul (hf : CMDiffAt[s] n f x) (γ : Γ) :
+    CMDiffAt[s] n (γ • f) x :=
+  (contMDiff_const_smul γ).contMDiffAt.comp_contMDiffWithinAt x hf
+
+@[to_additive]
+nonrec theorem ContMDiffAt.const_smul (hf : CMDiffAt n f x) (γ : Γ) :
+    CMDiffAt n (γ • f) x :=
+  hf.const_smul γ
+
+@[to_additive]
+theorem ContMDiffOn.const_smul (hf : CMDiff[s] n f) (γ : Γ) :
+    CMDiff[s] n (γ • f) := fun x hx ↦ (hf x hx).const_smul γ
+
+@[to_additive]
+theorem ContMDiff.smul (hf : CMDiff n f) (hg : CMDiff n g) :
+    CMDiff n (f • g) := fun x ↦ (hf x).smul (hg x)
+
+end
+
+
+end ContMDiffConstSMul
