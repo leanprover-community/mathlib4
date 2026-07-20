@@ -21,7 +21,7 @@ get them as instances.
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
-The entry `MonomialOrder.wf` asserts that `MonomialOrder.syn` is well founded.
+The entry `MonomialOrder.wellFoundedLT_syn` asserts that `MonomialOrder.syn` is well founded.
 
 The terminology comes from commutative algebra and algebraic geometry, especially Gröbner bases,
 where `c : σ →₀ ℕ` are exponents of monomials.
