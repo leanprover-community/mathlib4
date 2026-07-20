@@ -590,19 +590,24 @@ private lemma aux_ne_zero [Nontrivial R] :
   rw [ne_eq, normalize_eq_zero]
   exact primPart_ne_zero (integerNormalization M p)
 
-lemma normalizedPrimPartIntegerNormalization_eq_zero_iff [Nontrivial R] :
+lemma normalizedPrimPartIntegerNormalization_eq_zero_iff :
     normalizedPrimPartIntegerNormalization M p = 0 ↔ p = 0 := by
-  simp [normalizedPrimPartIntegerNormalization, aux_ne_zero M p]
+  by_cases hp : p = 0
+  · simp [normalizedPrimPartIntegerNormalization, hp]
+  letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  letI := (algebraMap R S).domain_nontrivial
+  simp [normalizedPrimPartIntegerNormalization, hp, aux_ne_zero M p]
 
 @[simp]
-lemma normalizedPrimPartIntegerNormalization_ne_zero [Nontrivial R] (hp : p ≠ 0) :
+lemma normalizedPrimPartIntegerNormalization_ne_zero (hp : p ≠ 0) :
     normalizedPrimPartIntegerNormalization M p ≠ 0 := by
   simp [normalizedPrimPartIntegerNormalization_eq_zero_iff, hp]
 
 variable {M} in
-lemma normalizedPrimPartIntegerNormalization_algebraMap [IsDomain R] (hM : M ≤ nonZeroDivisors R)
-    {p : R[X]} (hp : p ≠ 0) :
+lemma normalizedPrimPartIntegerNormalization_algebraMap [Nontrivial S] {p : R[X]} (hp : p ≠ 0) :
     normalizedPrimPartIntegerNormalization M (p.map (algebraMap R S)) = normalize p.primPart := by
+  letI := (algebraMap R S).domain_nontrivial
+  have hM := IsLocalization.le_nonZeroDivisors M S
   have hp' : p.map (algebraMap R S) ≠ 0 := by
     rwa [Polynomial.map_ne_zero_iff <| IsLocalization.injective S hM]
   obtain ⟨b, hbM, h1⟩ := integerNormalization_spec M (p.map (algebraMap R S))
@@ -615,9 +620,12 @@ lemma normalizedPrimPartIntegerNormalization_algebraMap [IsDomain R] (hM : M ≤
     using associated_primPart_C_mul (nonZeroDivisors.ne_zero (hM hbM)) hp
 
 variable {M p} in
-theorem normalizedPrimPartIntegerNormalization_C_mul_eq [IsDomain R] (hM : M ≤ nonZeroDivisors R)
-    (hp : p ≠ 0) {a : S} (ha : a ≠ 0) : normalizedPrimPartIntegerNormalization M (C a * p) =
-    normalizedPrimPartIntegerNormalization M p := by
+theorem normalizedPrimPartIntegerNormalization_C_mul_eq (hp : p ≠ 0) {a : S} (ha : a ≠ 0) :
+    normalizedPrimPartIntegerNormalization M (C a * p) =
+      normalizedPrimPartIntegerNormalization M p := by
+  letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  letI := (algebraMap R S).domain_nontrivial
+  have hM := IsLocalization.le_nonZeroDivisors M S
   letI := isDomain_of_le_nonZeroDivisors S hM
   simp only [normalizedPrimPartIntegerNormalization, hp, mul_ne_zero (C_ne_zero.mpr ha) hp,
     ↓reduceIte, normalize_eq_normalize_iff_associated]
@@ -645,7 +653,7 @@ theorem normalizedPrimPartIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
   rw [normalizedPrimPartIntegerNormalization, if_neg hp]
   exact isPrimitive_of_dvd (integerNormalization M p).isPrimitive_primPart (by simp)
 
-theorem normalizedPrimPartIntegerNormalization_dvd' [IsDomain R] :
+theorem normalizedPrimPartIntegerNormalization_dvd' :
     ∃ c : S, p = C c * (normalizedPrimPartIntegerNormalization M p).map (algebraMap R S) := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · simp [normalizedPrimPartIntegerNormalization]
@@ -665,17 +673,19 @@ theorem normalizedPrimPartIntegerNormalization_dvd' [IsDomain R] :
     map_one]
   simp [mul_assoc]
 
-theorem normalizedPrimPartIntegerNormalization_dvd [IsDomain R] :
+theorem normalizedPrimPartIntegerNormalization_dvd :
     (normalizedPrimPartIntegerNormalization M p).map (algebraMap R S) ∣ p := by
   obtain ⟨c, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
   use C c
   grind
 
-lemma normalizedPrimPartIntegerNormalization_degree_eq [IsDomain R]
-    (hM : M ≤ nonZeroDivisors R) :
+lemma normalizedPrimPartIntegerNormalization_degree_eq :
     (normalizedPrimPartIntegerNormalization M p).degree = p.degree := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · simp [normalizedPrimPartIntegerNormalization]
+  letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  letI := (algebraMap R S).domain_nontrivial
+  have hM := IsLocalization.le_nonZeroDivisors M S
   letI := isDomain_of_le_nonZeroDivisors S hM
   obtain ⟨_, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
   nth_rw 2 [hc]
@@ -690,15 +700,10 @@ theorem normalizedPrimPartIntegerNormalization_irreducible (hpdeg : p.natDegree 
   -- the cancellative structure supplied by `NormalizedGCDMonoid R` then makes `R` a domain.
   have hp := hpirr.ne_zero
   letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
-  letI : Nontrivial R := (algebraMap R S).domain_nontrivial
-  letI : IsDomain R := {}
+  letI := (algebraMap R S).domain_nontrivial
   -- No element of `M` is zero: its image in the localization is a unit, whereas zero is not.
   -- Thus the localization map is injective and `S` is also a domain.
-  have hM : M ≤ nonZeroDivisors R := fun m hm ↦ by
-    rw [mem_nonZeroDivisors_iff_ne_zero]
-    rintro rfl
-    have : IsUnit (0 : S) := by simpa using IsLocalization.map_units S ⟨0, hm⟩
-    exact not_isUnit_zero this
+  have hM := IsLocalization.le_nonZeroDivisors M S
   letI := isDomain_of_le_nonZeroDivisors S hM
   -- Write `p` as a nonzero constant times the image of its normalized primitive part `q`.
   let q := normalizedPrimPartIntegerNormalization M p
