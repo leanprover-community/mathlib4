@@ -607,15 +607,16 @@ then the Cauchy-type integral `fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • g z`
 theorem hasDerivAt_circleIntegral_sub_inv_smul {f : ℂ → E} {R : ℝ} {c w : ℂ}
     (hg : CircleIntegrable f c R) (hw : w ∈ ball c R) :
     HasDerivAt (fun w ↦ ∮ z in C(c, R), (z - w)⁻¹ • f z)
-      (∮ z in C(c, R), ((z - w) ^ 2)⁻¹ • f z) w := by
+      (∮ z in C(c, R), (z - w) ^ (-2 : ℤ) • f z) w := by
   have hR : 0 < R := pos_of_mem_ball hw
   obtain ⟨d, hd, hsub, hdist⟩ := exists_ball_subset_forall_le_norm_circleMap_sub hw
   have hgm : AEStronglyMeasurable (fun θ ↦ f (circleMap c R θ))
       (volume.restrict (uIoc 0 (2 * π))) := (intervalIntegrable_iff.1 hg).aestronglyMeasurable
   simp only [circleIntegral, deriv_circleMap]
   refine (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
-    (F' := fun x θ ↦ (circleMap 0 R θ * I) • ((circleMap c R θ - x) ^ 2)⁻¹ • f (circleMap c R θ))
-    (bound := fun θ ↦ R * (d ^ 2)⁻¹ * ‖f (circleMap c R θ)‖)
+    (F' := fun x θ ↦ (circleMap 0 R θ * I)
+      • (circleMap c R θ - x) ^ (-2 : ℤ) • f (circleMap c R θ))
+    (bound := fun θ ↦ R * d ^ (-2 : ℤ) * ‖f (circleMap c R θ)‖)
     (ball_mem_nhds w hd) ?_ ?_ ?_ ?_ ?_ ?_).2
   · -- Measurability of the integrand, for `x` near `w`
     filter_upwards with x
@@ -637,16 +638,16 @@ theorem hasDerivAt_circleIntegral_sub_inv_smul {f : ℂ → E} {R : ℝ} {c w : 
       ((Measurable.aestronglyMeasurable (by fun_prop)).smul hgm)
   · -- Uniform bound for the differentiated integrand near `w`
     filter_upwards with θ _ x hx
-    rw [norm_smul, norm_smul, norm_inv, norm_pow, norm_mul, Complex.norm_I, mul_one,
-      norm_circleMap_zero, abs_of_pos hR, ← mul_assoc]
+    rw [norm_smul, norm_smul, norm_zpow, norm_mul, Complex.norm_I, mul_one, norm_circleMap_zero,
+      abs_of_pos hR, ← mul_assoc, zpow_neg, zpow_neg, zpow_two, zpow_two]
     gcongr
-    exact hdist x hx θ
+    <;> exact hdist x hx θ
   · -- Integrability of the bound
     exact (IntervalIntegrable.norm hg).const_mul _
   · -- Differentiability of the integrand in `x`, for `x` near `w`
     filter_upwards with θ _ x hx
     apply (HasDerivAt.smul_const _ (f (circleMap c R θ))).const_smul (circleMap 0 R θ * I)
-    rw [show ((circleMap c R θ - x) ^ 2)⁻¹ = -(-1) / (circleMap c R θ - x) ^ 2 by simp]
+    rw [show (circleMap c R θ - x) ^ (-2 : ℤ) = -(-1) / (circleMap c R θ - x) ^ 2 by field]
     apply ((hasDerivAt_id' (x := x)).const_sub (circleMap c R θ)).inv
     exact sub_ne_zero.2 (circleMap_ne_mem_ball (hsub hx) θ)
 
