@@ -40,14 +40,14 @@ namespace FinEnum
 variable {α : Type u} {β : α → Type v}
 
 /-- transport a `FinEnum` instance across an equivalence -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β where
   card := card α
   equiv := h.trans (equiv)
   decEq := (h.trans (equiv)).decidableEq
 
 /-- create a `FinEnum` instance from an exhaustive list without duplicates -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) :
     FinEnum α where
   card := xs.length
@@ -56,7 +56,7 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
       fun i => by ext; simp [h'.idxOf_getElem]⟩
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum α :=
   ofNodupList xs.dedup (by simp [*]) (List.nodup_dedup _)
 
@@ -78,12 +78,12 @@ theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
   simp only [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
 
 /-- create a `FinEnum` instance using a surjection -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofSurjective {β} (f : β → α) [DecidableEq α] [FinEnum β] (h : Surjective f) : FinEnum α :=
   ofList ((toList β).map f) (by intro; simpa using h _)
 
 /-- create a `FinEnum` instance using an injection -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum β] (h : Injective f) :
     FinEnum α :=
   ofList ((toList β).filterMap (partialInv f))
@@ -242,7 +242,7 @@ instance [IsEmpty α] : Unique (FinEnum α) where
 
 /-- An empty type has a trivial enumeration. Not registered as an instance, to make sure that there
 aren't two definitionally differing instances around. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofIsEmpty [IsEmpty α] : FinEnum α := default
 
 instance [Unique α] : Unique (FinEnum α) where
@@ -257,7 +257,7 @@ instance [Unique α] : Unique (FinEnum α) where
 
 /-- A type with unique inhabitant has a trivial enumeration. Not registered as an instance, to make
 sure that there aren't two definitionally differing instances around. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofUnique [Unique α] : FinEnum α := default
 
 instance : FinEnum UInt8 where

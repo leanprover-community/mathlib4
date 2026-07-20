@@ -375,11 +375,12 @@ section localization
 
 variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
     (hM : M ≤ R⁰) [IsLocalization M S] : IsIntegrallyClosed S := by
   let K := FractionRing R
   let g : S →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
-  letI := g.toAlgebra
+  let := g.toAlgebra
   have : IsScalarTower R S K := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
   have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M S K
