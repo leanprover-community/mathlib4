@@ -80,11 +80,13 @@ theorem cardQuot_pos (I : Ideal R) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
   rw [Submodule.cardQuot_apply]
   exact Nat.card_pos
 
-theorem finite_setOf_mem (x : R) (hx : x ≠ 0) : {I : Ideal R | x ∈ I}.Finite := by
+theorem finite_setOfPred_mem (x : R) (hx : x ≠ 0) : {I : Ideal R | x ∈ I}.Finite := by
   have := finiteQuotient (mt Ideal.span_singleton_eq_bot.mp hx)
   have : {I | Ideal.comap (Ideal.Quotient.mk (Ideal.span {x})) ⊥ ≤ I}.Finite :=
     .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
   simpa [← RingHom.ker_eq_comap_bot] using this
+
+@[deprecated (since := "2026-07-09")] alias finite_setOf_mem := finite_setOfPred_mem
 
 open scoped Pointwise in
 /-- For every bound `B`, a ring with finite quotients has only finitely many ideals of norm bounded
@@ -101,10 +103,10 @@ theorem finite_cardQuot_le (B : ℕ) : {I : Ideal R | I.cardQuot ≤ B}.Finite :
   -- in a ring with finite quotients, each nonzero element is contained in only finitely many ideals
   -- so it is enough to show that each ideal `I` of norm at most `B` contains some element of `t`
   suffices {I | Submodule.cardQuot I ≤ B} \ {⊥} ⊆ ⋃ x ∈ t, {I | x ∈ I} from
-    (t.finite_toSet.biUnion fun x hx ↦ finite_setOf_mem x (by grind)).subset this
+    (t.finite_toSet.biUnion fun x hx ↦ finite_setOfPred_mem x (by grind)).subset this
   intro I hI
-  rw [Set.mem_sdiff, Set.mem_setOf, Submodule.cardQuot_apply] at hI
-  simp_rw [Set.mem_iUnion, exists_prop, Set.mem_setOf_eq]
+  rw [Set.mem_sdiff, Set.mem_ofPred, Submodule.cardQuot_apply] at hI
+  simp_rw [Set.mem_iUnion, exists_prop, Set.mem_ofPred_eq]
   -- `s` has cardinality `B + 1`, but the quotient `R ⧸ I` has cardinality at most `B`
   replace hs : (s.image (Ideal.Quotient.mk I)).card < s.card := by
     have := finiteQuotient hI.2

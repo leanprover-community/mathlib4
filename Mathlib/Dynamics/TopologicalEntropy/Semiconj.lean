@@ -211,23 +211,23 @@ lemma coverEntropy_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [U
     (h' : UniformContinuousOn φ G) (hF : F ⊆ G) (hG : MapsTo S G G) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
   rw [← coverEntropy_restrict_subset hF hG]
-  have hφ : Semiconj (G.restrict φ) (hG.restrict S G G) T := by
+  have hφ : Semiconj (G.domRestrict φ) (hG.restrict S G G) T := by
     intro x
-    rw [G.restrict_apply, G.restrict_apply, hG.val_restrict_apply, h.eq x]
+    rw [G.domRestrict_apply, G.domRestrict_apply, hG.val_restrict_apply, h.eq x]
   apply (coverEntropy_image_le_of_uniformContinuous hφ
     (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
-  rw [← image_image_val_eq_restrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
 
 lemma coverEntropyInf_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [UniformSpace Y]
     {S : X → X} {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) {F G : Set X}
     (h' : UniformContinuousOn φ G) (hF : F ⊆ G) (hG : MapsTo S G G) :
     coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by
   rw [← coverEntropyInf_restrict_subset hF hG]
-  have hφ : Semiconj (G.restrict φ) (hG.restrict S G G) T := by
+  have hφ : Semiconj (G.domRestrict φ) (hG.restrict S G G) T := by
     intro a
-    rw [G.restrict_apply, G.restrict_apply, hG.val_restrict_apply, h.eq a]
+    rw [G.domRestrict_apply, G.domRestrict_apply, hG.val_restrict_apply, h.eq a]
   apply (coverEntropyInf_image_le_of_uniformContinuous hφ
     (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
-  rw [← image_image_val_eq_restrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
 
 end Dynamics
