@@ -762,7 +762,6 @@ lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : yonedaEquiv (yoneda.map f
   rw [yonedaEquiv_apply]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma yonedaEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Cᵒᵖ ⥤ Type v₁)
     (x : F.obj ⟨X⟩) : yoneda.map f ≫ yonedaEquiv.symm x = yonedaEquiv.symm ((F.map f.op) x) := by
   apply yonedaEquiv.injective
@@ -881,7 +880,6 @@ def yonedaOpCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ T
     yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
   isoWhiskerRight largeCurriedYonedaLemma ((evaluation _ _).obj P)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
@@ -1198,7 +1196,6 @@ lemma uliftCoyonedaEquiv_uliftCoyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
         uliftCoyonedaEquiv.{w} (uliftCoyoneda.map f) = ULift.up f.unop := by
   simp [uliftCoyonedaEquiv, uliftYoneda]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
 with morphisms `uliftCoyoneda.obj X ⟶ P` agree. -/
 lemma hom_ext_uliftCoyoneda {P Q : C ⥤ Type (max w v₁)} {f g : P ⟶ Q}
@@ -1266,7 +1263,6 @@ section
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A type-level equivalence between sections of a functor and morphisms from a terminal functor
 to it. We use the constant functor on a given singleton type here as a specific choice of terminal
 functor. -/
@@ -1309,7 +1305,6 @@ namespace Functor.FullyFaithful
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps! hom_app inv_app]
 def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFaithful) (X : C) :
@@ -1318,7 +1313,6 @@ def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFai
     (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm))
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps! +dsimpLhs]
 def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}

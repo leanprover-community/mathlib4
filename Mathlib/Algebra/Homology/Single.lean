@@ -233,7 +233,6 @@ noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   left_inv φ := by cat_disch
   right_inv f := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero {C : ChainComplex V ℕ} {X : V}
     (f : C.X 0 ⟶ X) (hf : C.d 1 0 ≫ f = 0) :
@@ -305,7 +304,6 @@ noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
   left_inv φ := by cat_disch
   right_inv := by cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero {C : CochainComplex V ℕ} {X : V}
     (f : X ⟶ C.X 0) (hf : f ≫ C.d 0 1 = 0) :

@@ -51,7 +51,6 @@ variable {R C}
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a chain complex `X` and an object `Y`, this is the cochain complex
 which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
 @[simps! X d]

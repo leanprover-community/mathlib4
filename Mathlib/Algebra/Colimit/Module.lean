@@ -425,14 +425,12 @@ def congr (e : (i : ι) → G i ≃+ G' i)
       simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
     congr e he (of G f i g) = of G' f' i (e i g) :=
   map_apply_of _ he _
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_symm_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :

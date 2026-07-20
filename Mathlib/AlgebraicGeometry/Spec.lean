@@ -158,7 +158,6 @@ theorem Spec.toPresheafedSpace_map (R S : CommRingCat.{u}ᵒᵖ) (f : R ⟶ S) :
     Spec.toPresheafedSpace.map f = (Spec.sheafedSpaceMap f.unop).hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem Spec.toPresheafedSpace_map_op (R S : CommRingCat.{u}) (f : R ⟶ S) :
     Spec.toPresheafedSpace.map f.op = (Spec.sheafedSpaceMap f).hom :=
   rfl
@@ -282,7 +281,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   CommRingCat.ofHom (algebraMap _ _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) :=
   (ConcreteCategory.isIso_iff_bijective _).mpr algebraMap_obj_top_bijective
 
@@ -298,7 +296,6 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
 def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
@@ -357,7 +354,6 @@ theorem algebraMap_pushforward_stalk :
 variable (R S)
 variable [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 This is the `AlgHom` version of `toPushforwardStalk`, which is the map `S ⟶ (f∗ 𝒪ₛ)ₚ` for some
 algebra `R ⟶ S` and some `p : Spec R`.

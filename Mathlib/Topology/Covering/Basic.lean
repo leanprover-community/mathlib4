@@ -96,7 +96,6 @@ noncomputable def toTrivialization {x : X} [Nonempty I] (h : IsEvenlyCovered f x
 theorem mem_toTrivialization_baseSet {x : X} [Nonempty I] (h : IsEvenlyCovered f x I) :
     x ∈ h.toTrivialization.baseSet := h.2.choose_spec.1
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem toTrivialization_apply {x : E} [Nonempty I] (h : IsEvenlyCovered f (f x) I) :
     (h.toTrivialization x).2 = ⟨x, rfl⟩ :=
   h.fiberHomeomorph.symm.injective <| by

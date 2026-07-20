@@ -93,7 +93,6 @@ lemma GrpObj.ofRepresentableBy_yonedaGrpObjRepresentableBy :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 variable (X) in
 /-- If `X` represents a presheaf of groups `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of groups. -/
@@ -121,7 +120,6 @@ def yonedaGrp : Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (attr := reassoc)]
 lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y) (g : Y ⟶ G) :
     α.app _ (f ≫ g) = f ≫ α.app _ g := congr($(α.naturality f.op) g)

@@ -209,13 +209,11 @@ lemma isoOfIsAffine_hom_appTop [IsAffine S] :
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)) := by
   simp [isoOfIsAffine_hom]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isoOfIsAffine_inv_appTop_coord [IsAffine S] (i) :
     (isoOfIsAffine n S).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) :=
   homOfVector_appTop_coord _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma isoOfIsAffine_inv_over [IsAffine S] :
     (isoOfIsAffine n S).inv ≫ 𝔸(n; S) ↘ S = Spec.map (CommRingCat.ofHom C) ≫ S.isoSpec.inv :=

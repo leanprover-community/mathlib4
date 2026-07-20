@@ -153,7 +153,6 @@ noncomputable def isPointwiseLeftKanExtensionOfIsoOfIsLocalization
   (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso'
     (L.objObjPreimageIso Y) (isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization W e _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `L : C ⥤ D` be a localization functor for `W`, if an extension `E`
 of `F : C ⥤ H` along `L` is such that the natural transformation
 `E.hom : F ⟶ L ⋙ E.right` is an isomorphism, then `E` is a pointwise

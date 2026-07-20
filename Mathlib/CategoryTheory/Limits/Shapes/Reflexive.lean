@@ -539,7 +539,6 @@ variable (F : WalkingReflexivePair ⥤ C)
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
 coforks on the underlying parallel pair. -/
 @[simps! functor_obj_pt inverse_obj_pt]

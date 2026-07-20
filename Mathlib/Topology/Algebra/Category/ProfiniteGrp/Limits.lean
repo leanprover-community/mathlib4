@@ -164,14 +164,12 @@ def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).o
       fun_prop
   }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical cone over `diagram P` with point `P`. -/
 @[to_additive (attr := simps) /-- The canonical cone over `diagram P` with point `P`. -/]
 def cone (P : ProfiniteGrp.{u}) : Limits.Cone (diagram P) where
   pt := P
   π := { app := proj }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical cone over `diagram P` is a limit cone. -/
 noncomputable def isLimitCone (P : ProfiniteGrp.{u}) : Limits.IsLimit P.cone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) <| .symm <|

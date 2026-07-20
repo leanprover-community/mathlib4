@@ -282,7 +282,6 @@ lemma isIso_iff₁ {F G : ComposableArrows C 1} (f : F ⟶ G) :
   rw [NatTrans.isIso_iff_isIso_app]
   exact ⟨fun h ↦ ⟨h 0, h 1⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ext₁ {F G : ComposableArrows C 1}
     (left : F.left = G.left) (right : F.right = G.right)
     (w : F.hom = eqToHom left ≫ G.hom ≫ eqToHom right.symm) : F = G :=
@@ -290,7 +289,6 @@ lemma ext₁ {F G : ComposableArrows C 1}
     (fun i => by fin_cases i <;> assumption)
     (fun i => by fin_cases i <;> rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mk₁_surjective (X : ComposableArrows C 1) : ∃ (X₀ X₁ : C) (f : X₀ ⟶ X₁), X = mk₁ f :=
   ⟨_, _, X.map' 0 1, ext₁ rfl rfl (by simp)⟩
 
@@ -996,7 +994,6 @@ end mkOfObjOfMapSucc
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 suppress_compilation in
 variable (C n) in
 /-- The equivalence `(ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n` obtained

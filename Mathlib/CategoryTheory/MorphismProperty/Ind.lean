@@ -102,13 +102,11 @@ lemma underObj_ind_eq_ind_underObj (X : C) :
 
 variable (Q : MorphismProperty C)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.RespectsLeft Q] : P.ind.RespectsLeft Q where
   precomp {X Y Z} i hi f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
     refine ⟨J, ‹_›, ‹_›, D, (Functor.const J).map i ≫ t, s, hs, fun j ↦ ⟨?_, by simp [hst]⟩⟩
     exact RespectsLeft.precomp _ hi _ (hst j).1
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.RespectsIso] : P.ind.RespectsIso where
   postcomp {X Y Z} i (hi : IsIso i) f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
     refine ⟨J, ‹_›, ‹_›, D, t, s ≫ (Functor.const J).map i, ?_, fun j ↦ ⟨(hst j).1, ?_⟩⟩

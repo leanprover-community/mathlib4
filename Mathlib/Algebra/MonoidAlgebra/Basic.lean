@@ -148,7 +148,6 @@ lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
     RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M).symm =
       (uniqueRingEquiv (R := A) M).symm := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R A)
@@ -281,7 +280,6 @@ theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
 @[deprecated (since := "2026-06-18")]
 alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 /-- If `f : M → N` is a monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an algebra
 homomorphism between their monoid algebras. -/
@@ -292,11 +290,9 @@ def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] where
   toRingHom := mapDomainRingHom A f
   commutes' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma mapDomainAlgHom_id : mapDomainAlgHom R A (.id M) = .id R A[M] := by ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma mapDomainAlgHom_comp (f : M →* N) (g : N →* O) :
     mapDomainAlgHom R A (g.comp f) = (mapDomainAlgHom R A g).comp (mapDomainAlgHom R A f) := by
@@ -321,7 +317,6 @@ lemma coeff_domCongr (e : M ≃* N) (f : A[M]) (n : N) :
 @[to_additive]
 theorem domCongr_toAlgHom (e : M ≃* N) : (domCongr R A e).toAlgHom = mapDomainAlgHom R A e := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma domCongr_support (e : M ≃* N) (x : A[M]) :
     (domCongr R A e x).coeff.support = x.coeff.support.map e := by simp [domCongr, equivMapDomain]
@@ -684,7 +679,6 @@ end AddMonoidAlgebra
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A M) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
@@ -693,7 +687,6 @@ def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
   toRingEquiv := AddMonoidAlgebra.toMultiplicative A M
   commutes' r := by simp [AddMonoidAlgebra.toMultiplicative]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/

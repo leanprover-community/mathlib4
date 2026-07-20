@@ -45,7 +45,6 @@ def productEquiv {J K : Type*} : Discrete (J × K) ≌ Discrete J × Discrete K 
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The discrete category on a sum is equivalent to the sum of the
 discrete categories. -/
 @[simps!]

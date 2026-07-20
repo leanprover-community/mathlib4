@@ -133,7 +133,6 @@ def firstMap₃ : functor₂₃₁ C ⟶ functor₂₃₁' C where
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The top right map in the forward hexagon identity. -/
 @[simps!]
 def secondMap₁ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃ C ⟶ functor₂₁₃ C :=
@@ -147,7 +146,6 @@ def secondMap₂ : functor₂₁₃ C ⟶ functor₂₁₃' C where
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The bottom right map in the forward hexagon identity. -/
 @[simps!]
 def secondMap₃ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₂₁₃' C ⟶ functor₂₃₁' C :=
@@ -184,7 +182,6 @@ firstMap₂ |            |secondMap₂            |             |
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The middle left map in the reverse hexagon identity. -/
 @[simps!]
 def firstMap₂ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃ C ⟶ functor₃₁₂' C :=
@@ -199,7 +196,6 @@ def firstMap₃ : functor₃₁₂' C ⟶ functor₃₁₂ C :=
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The top right map in the reverse hexagon identity. -/
 @[simps!]
 def secondMap₁ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃' C ⟶ functor₁₃₂' C :=
@@ -213,7 +209,6 @@ def secondMap₂ : functor₁₃₂' C ⟶ functor₁₃₂ C where
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The bottom right map in the reverse hexagon identity. -/
 @[simps!]
 def secondMap₃ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₃₂ C ⟶ functor₃₁₂ C :=

@@ -304,7 +304,6 @@ instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Sub
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
   smul r x := {
     val := fun n ↦ eval I R n r • eval I M n x
@@ -440,19 +439,16 @@ noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
 theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem of_ofAlgEquiv_symm (x : AdicCompletion I S) :
     of I S ((ofAlgEquiv I).symm x) = x := by
   simp [ofAlgEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofAlgEquiv_symm_of (x : S) :
     (ofAlgEquiv I).symm (of I S x) = x := by
   simp [ofAlgEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mk_smul_top_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n • ⊤) ((ofAlgEquiv I).symm x) = eval I S n x := by
   nth_rw 2 [← of_ofAlgEquiv_symm I x]

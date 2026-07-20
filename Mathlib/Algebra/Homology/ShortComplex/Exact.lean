@@ -345,7 +345,6 @@ lemma RightHomologyData.exact_iff_mono_g' [S.HasHomology] (h : RightHomologyData
     simp only [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_mono h.ι, ← cancel_mono h.g',
       id_comp, h.ι_g', zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an exact short complex `S` and a limit kernel fork `kf` for `S.g`, this is the
 left homology data for `S` with `K := kf.pt` and `H := 0`. -/
 @[simps]
@@ -758,7 +757,6 @@ lemma map_of_mono_of_preservesKernel (hS : S.Exact) (F : C ⥤ D)
     (S.map F).Exact :=
   exact_of_f_is_kernel _ (KernelFork.mapIsLimit _ hS.fIsKernel F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a balanced category, if a short complex `S` is exact and `S.g` is an epi, then
 `S.X₃` is the cokernel of `S.g`. -/
 noncomputable def gIsCokernel (hS : S.Exact) [Epi S.g] :

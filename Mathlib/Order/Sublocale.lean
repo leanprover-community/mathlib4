@@ -121,7 +121,6 @@ private def restrictAux (S : Sublocale X) (a : X) : S := sInf {s : S | a ≤ s}
 
 private lemma le_restrictAux : a ≤ S.restrictAux a := by simp +contextual [restrictAux]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- See `Sublocale.giRestrict` for the public-facing version. -/
 private def giAux (S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
@@ -215,7 +214,6 @@ lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n
 
 end Nucleus
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
 def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where

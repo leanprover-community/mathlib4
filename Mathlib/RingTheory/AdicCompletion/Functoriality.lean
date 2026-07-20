@@ -61,7 +61,6 @@ namespace AdicCompletion
 
 open LinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
     (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ f.reduceModIdeal (I ^ n) =
       (f.reduceModIdeal (I ^ m) : _ →ₗ[R] _) ∘ₗ transitionMap I M hmn := by
@@ -359,7 +358,6 @@ open Submodule
 
 variable {I}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_smodEq_pow_add_one_smul {f : M →ₗ[R] N}
     (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) {y : N} {n : ℕ}
     (hy : y ∈ (I ^ n • ⊤ : Submodule R N)) :

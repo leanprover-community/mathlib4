@@ -143,7 +143,6 @@ theorem str_incl (X : Compactum) (x : X) : X.str (X.incl x) = x := by
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
     f (X.str xs) = Y.str (map f xs) := by
@@ -448,7 +447,6 @@ instance faithful : compactumToCompHaus.Faithful where
     ext
     simpa using! ConcreteCategory.congr_hom h _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where

@@ -626,7 +626,6 @@ theorem powerBasisAux'_repr_apply_to_fun (hg : g.Monic) (f : AdjoinRoot g) (i : 
     (powerBasisAux' hg).repr f i = (modByMonicHom hg f).coeff ↑i :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The power basis `1, root g, ..., root g ^ (d - 1)` for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
 @[simps]
@@ -794,13 +793,11 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
     rw [pb.lift_aeval, aeval_eq, liftAlgHom_mk, Polynomial.aeval_def, Algebra.toRingHom_ofId]
 
 -- This lemma should have the simp tag but this causes a lint issue.
-set_option backward.isDefEq.respectTransparency.types false in
 theorem equiv'_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     (equiv' g pb h₁ h₂).toAlgHom = AdjoinRoot.liftAlgHom g _ pb.gen h₂ :=
   rfl
 
 -- This lemma should have the simp tag but this causes a lint issue.
-set_option backward.isDefEq.respectTransparency.types false in
 theorem equiv'_symm_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0)
     (h₂ : aeval pb.gen g = 0) : (equiv' g pb h₁ h₂).symm.toAlgHom = pb.lift (root g) h₁ :=
   rfl
@@ -846,11 +843,9 @@ def quotMapOfEquivQuotMapCMapMk :
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated (since := "2026-03-02")]
 alias quotMapOfEquivQuotMapCMapSpanMk := quotMapOfEquivQuotMapCMapMk
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
@@ -860,7 +855,6 @@ theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
 alias quotMapOfEquivQuotMapCMapSpanMk_mk := quotMapOfEquivQuotMapCMapMk_mk
 
 --this lemma should have the simp tag but this causes a lint issue
-set_option backward.isDefEq.respectTransparency.types false in
 theorem quotMapOfEquivQuotMapCMapMk_symm_mk (x : AdjoinRoot f) :
     (quotMapOfEquivQuotMapCMapMk I f).symm
         (Ideal.Quotient.mk ((I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span {f}))) x) =
@@ -939,7 +933,6 @@ def quotAdjoinRootEquivQuotPolynomialQuot :
       ((Ideal.quotEquivOfEq (by rw [map_span, Set.image_singleton])).trans
         (Polynomial.quotQuotEquivComm I f).symm))
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
     quotAdjoinRootEquivQuotPolynomialQuot I f (Ideal.Quotient.mk (I.map (of f)) (mk f p)) =
@@ -1033,7 +1026,6 @@ open AdjoinRoot AlgEquiv
 
 variable [CommRing R] [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `α` have minimal polynomial `f` over `R` and `I` be an ideal of `R`,
 then `R[α] / (I) = (R[x] / (f)) / pS = (R/p)[x] / (f mod p)`. -/
 @[simps!]

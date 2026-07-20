@@ -112,7 +112,6 @@ theorem ev_naturality {X Y : C} (f : X ⟶ Y) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem coev_naturality {X Y : C} (f : X ⟶ Y) :
     f ≫ (coev A).app Y = (coev A).app X ≫ (ihom A).map (A ◁ f) :=
@@ -205,11 +204,9 @@ theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟶[C] X) →
 
 variable (A X)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
   simp [uncurry_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
@@ -220,7 +217,6 @@ lemma whiskerLeft_curry_ihom_ev_app (g : A ⊗ Y ⟶ X) :
     A ◁ curry g ≫ (ihom.ev A).app X = g := by
   simp [curry_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem uncurry_ihom_map (g : Y ⟶ Y') :
     uncurry ((ihom A).map g) = (ihom.ev A).app Y ≫ g := by
   apply curry_injective
@@ -298,7 +294,6 @@ instance [MonoidalClosed C] (X : Cᵒᵖ) : (internalHom.obj X).IsRightAdjoint :
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
 and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
 @[simps!]
@@ -415,7 +410,6 @@ The proofs of associativity and unitality use the following outline:
   3. Conclude with simp
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Left unitality of the enriched structure -/
 @[reassoc (attr := simp)]
 lemma id_comp (x y : C) [Closed x] :
@@ -426,7 +420,6 @@ lemma id_comp (x y : C) [Closed x] :
       uncurry_curry, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc,
       uncurry_id_eq_ev _ _]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Right unitality of the enriched structure -/
 @[reassoc (attr := simp)]
 lemma comp_id (x y : C) [Closed x] [Closed y] :
@@ -439,7 +432,6 @@ lemma comp_id (x y : C) [Closed x] [Closed y] :
   rw [← uncurry_natural_left]
   simp [id_eq, uncurry_id_eq_ev]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Associativity of the enriched structure -/
 @[reassoc]
 lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
@@ -505,7 +497,6 @@ lemma whiskerLeft_curry'_ihom_ev_app {X Y : C} [Closed X] (f : X ⟶ Y) :
   dsimp [curry']
   simp only [whiskerLeft_curry_ihom_ev_app]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma curry'_whiskerRight_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) :
     curry' f ▷ _ ≫ comp X Y Z = (λ_ _).hom ≫ (pre f).app Z := by
@@ -516,7 +507,6 @@ lemma curry'_whiskerRight_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) :
     whiskerLeft_curry'_ihom_ev_app, comp_whiskerRight_assoc, triangle_assoc_comp_right_assoc,
     whiskerLeft_inv_hom_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma whiskerLeft_curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : Y ⟶ Z) :
     _ ◁ curry' f ≫ comp X Y Z = (ρ_ _).hom ≫ (ihom X).map f := by

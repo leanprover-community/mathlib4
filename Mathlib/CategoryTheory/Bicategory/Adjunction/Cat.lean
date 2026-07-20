@@ -80,7 +80,6 @@ lemma Adjunction.ofCat_id (C : Cat.{v, u}) :
     Adjunction.ofCat (Adjunction.id C) = CategoryTheory.Adjunction.id :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma Adjunction.ofCat_comp {C D E : Cat.{v, u}}
     {F : C ⟶ D} {G : D ⟶ C} (adj : F ⊣ G)
@@ -133,7 +132,6 @@ lemma right_triangle_components (X : C₂.obj) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma unit_naturality {X Y : C₁.obj} (f : X ⟶ Y) :
     α.adj.unit.toNatTrans.app X ≫ α.r.toFunctor.map (α.l.toFunctor.map f) =
@@ -142,7 +140,6 @@ lemma unit_naturality {X Y : C₁.obj} (f : X ⟶ Y) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma counit_naturality {X Y : C₂.obj} (f : X ⟶ Y) :
     α.l.toFunctor.map (α.r.toFunctor.map f) ≫ α.adj.counit.toNatTrans.app Y =

@@ -422,13 +422,11 @@ def point : Augmented C ⥤ C :=
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma w_app {X Y : Augmented C} (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) :
     dsimp% f.left.app n ≫ Y.hom.app n = X.hom.app n ≫ f.right :=
   congr_app f.w n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor from augmented objects to arrows. -/
 @[simps]
 def toArrow : Augmented C ⥤ Arrow C where
@@ -443,7 +441,6 @@ def toArrow : Augmented C ⥤ Arrow C where
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The compatibility of a morphism with the augmentation, on 0-simplices -/
 @[reassoc]
 theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
@@ -548,7 +545,6 @@ scoped[Simplicial]
   notation3:1000 X " ^⦋" n "⦌" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (CosimplicialObject C) := by
   dsimp [CosimplicialObject]
@@ -557,7 +553,6 @@ instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
 instance [HasLimits C] : HasLimits (CosimplicialObject C) :=
   ⟨inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
     HasColimitsOfShape J (CosimplicialObject C) := by
   dsimp [CosimplicialObject]
@@ -803,7 +798,6 @@ def point : Augmented C ⥤ C :=
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma w_app {X Y : Augmented C} {η : X ⟶ Y} {n : SimplexCategory} :
     dsimp% η.left ≫ Y.hom.app n = X.hom.app n ≫ η.right.app n :=

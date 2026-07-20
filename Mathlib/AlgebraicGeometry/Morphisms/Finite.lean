@@ -80,7 +80,6 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := 900) [IsIso f] : IsFinite f := of_isIso @IsFinite f
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsFinite f] [IsFinite g] : IsFinite (f ≫ g) :=
   IsStableUnderComposition.comp_mem f g ‹IsFinite f› ‹IsFinite g›
 

@@ -178,7 +178,6 @@ lemma presieve₀_reindex {ι : Type w'} (e : ι ≃ E.I₀) : (E.reindex e).pre
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Pairwise intersection of two pre-`0`-hypercovers. -/
 @[simps!]
 noncomputable
@@ -821,7 +820,6 @@ instance : Category (ZeroHypercover.{w} J S) where
   id _ := PreZeroHypercover.Hom.id _
   comp := PreZeroHypercover.Hom.comp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An isomorphism in `0`-hypercovers is an isomorphism of the underlying pre-`0`-hypercovers. -/
 @[simps]
 def isoMk {E F : ZeroHypercover.{w} J S} (e : E.toPreZeroHypercover ≅ F.toPreZeroHypercover) :

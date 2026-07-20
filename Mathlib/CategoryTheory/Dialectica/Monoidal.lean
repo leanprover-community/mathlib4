@@ -84,7 +84,6 @@ def associatorImpl (X Y Z : Dial C) :
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 instance : MonoidalCategoryStruct (Dial C) where
   tensorUnit := tensorUnitImpl

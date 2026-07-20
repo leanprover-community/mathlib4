@@ -287,7 +287,6 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
   simpa using charpoly_units_conj M⁻¹ N
 
-set_option backward.isDefEq.respectTransparency false in
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]

@@ -362,7 +362,6 @@ private noncomputable def lift : s.pt ⟶ G.obj (op X) :=
     congr 2
     rw [map_comp_assoc, map_comp_assoc, (data X).w j])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 private lemma lift_map (i : (data X).I₀) :
     lift hG₀ hG s ≫ G.map ((data X).f i).op = liftAux hG₀ s i :=
@@ -593,7 +592,6 @@ noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     rw [restriction_map (p := p), restriction_map (p := p)]
     all_goals simp_all)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
     presheafMap data G₀ f ≫ presheafObjπ data G₀ X i =
@@ -686,7 +684,6 @@ variable {X₀}
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
@@ -699,7 +696,6 @@ lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (presheafObj_mapPreimage_condition _ _ _ _ _ _ _
       ((Sieve.ofArrows.fac ha).trans fac.symm))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (F.obj X₀)).I₀}
@@ -772,7 +768,6 @@ noncomputable def presheafObjObjIso (X₀ : C₀) :
     dsimp at i b fac ⊢
     simp [presheafObjObjIso.hom_map data G₀ _ b fac, ← IsDenseSubsite.mapPreimage_comp, fac]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
     presheafMap data G₀ ((data X).f i) ≫ (presheafObjObjIso data G₀ ((data X).X i)).hom =
@@ -785,7 +780,6 @@ lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
   apply restriction_eq_of_fac
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma presheafObjObjIso_inv_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
     G₀.obj.map f.op ≫ (presheafObjObjIso data G₀ X₀).inv =
@@ -795,7 +789,6 @@ lemma presheafObjObjIso_inv_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
   simp [presheafObjObjIso, IsDenseSubsite.mapPreimage_comp]
 
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The presheaf `presheaf data G₀` extends `G₀`. -/
 noncomputable def compPresheafIso : F.op ⋙ presheaf data G₀ ≅ G₀.obj :=
   (NatIso.ofComponents (fun _ ↦ (presheafObjObjIso data G₀ _).symm)

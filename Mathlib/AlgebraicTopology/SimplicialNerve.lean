@@ -129,7 +129,6 @@ instance (J : Type*) [LinearOrder J] :
     fun _ _ _ ↦ by simp; rfl⟩
   homEquiv {i j} := nerveEquiv.symm.trans (SSet.unitHomEquiv (nerve (i ⟶ j))).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp] SimplicialThickening.Hom_def
 
 /-- Auxiliary definition for `SimplicialThickening.functor` -/
@@ -184,7 +183,6 @@ lemma functor_comp {J K L : Type u} [LinearOrder J] [LinearOrder K]
 
 end SimplicialThickening
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The simplicial nerve of a simplicial category `C` is defined as the simplicial set whose
 `n`-simplices are given by the set of simplicial functors from the simplicial thickening of

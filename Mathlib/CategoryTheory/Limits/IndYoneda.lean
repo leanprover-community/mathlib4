@@ -48,7 +48,6 @@ noncomputable def coyonedaOpColimitIsoLimitCoyoneda :
     coyoneda.obj (op <| colimit F) ≅ limit (F.op ⋙ coyoneda) :=
   coyoneda.mapIso (limitOpIsoOpColimit F).symm ≪≫ (preservesLimitIso coyoneda F.op)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π (i : I) :
     (coyonedaOpColimitIsoLimitCoyoneda F).hom ≫ limit.π (F.op.comp coyoneda) ⟨i⟩
@@ -57,7 +56,6 @@ lemma coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π (i : I) :
     Iso.trans_hom, Iso.symm_hom, Functor.mapIso_inv, Category.assoc, preservesLimitIso_hom_π,
     ← Functor.map_comp, limitOpIsoOpColimit_inv_comp_π]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coyonedaOpColimitIsoLimitCoyoneda_inv_comp_π (i : I) :
     (coyonedaOpColimitIsoLimitCoyoneda F).inv ≫ coyoneda.map (colimit.ι F i).op =
@@ -81,7 +79,6 @@ lemma colimitHomIsoLimitYoneda_hom_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)
   change ((coyonedaOpColimitIsoLimitCoyoneda F).hom ≫ _).app A = _
   rw [coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π, Functor.flip_map_app]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda_inv_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :

@@ -420,7 +420,6 @@ theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
   dsimp [limitUncurryIsoLimitCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem limitUncurryIsoLimitCompLim_inv_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).inv ≫ limit.π _ (j, k) =
@@ -526,7 +525,6 @@ theorem colimitUncurryIsoColimitCompColim_ι_ι_inv {j} {k} :
     IsColimit.uniqueUpToIso]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 theorem colimitUncurryIsoColimitCompColim_ι_hom {j} {k} :

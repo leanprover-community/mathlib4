@@ -226,7 +226,6 @@ lemma schnirelmannDensity_setOfPred_prime : schnirelmannDensity (Set.ofPred Nat.
 @[deprecated (since := "2026-07-09")]
 alias schnirelmannDensity_setOf_prime := schnirelmannDensity_setOfPred_prime
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
 

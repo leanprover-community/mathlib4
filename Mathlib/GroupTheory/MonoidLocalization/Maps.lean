@@ -281,7 +281,6 @@ theorem map_eq (x) : f.map hy k (f x) = k (g x) :=
 theorem map_comp : (f.map hy k).comp f.toMonoidHom = k.toMonoidHom.comp g :=
   f.lift_comp fun y ↦ k.map_units ⟨g y, hy y⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem map_mk' (x) (y : S) : f.map hy k (f.mk' x y) = k.mk' (g x) ⟨g y, hy y⟩ := by
   rw [map, lift_mk', mul_inv_left]
@@ -329,7 +328,6 @@ theorem map_mul_left (z) : k (g (f.sec z).2) * f.map hy k z = k (g (f.sec z).1) 
 theorem map_id (z : N) : f.map (fun y ↦ show MonoidHom.id M y ∈ S from y.2) f z = z :=
   f.lift_id z
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `CommMonoid` homs `g : M →* P, l : P →* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 @[to_additive

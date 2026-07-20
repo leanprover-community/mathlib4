@@ -84,7 +84,6 @@ noncomputable def colimitLimitToLimitColimit :
               curry_obj_obj_obj, curry_obj_map_app]
             rw [map_id_right_eq_curry_swap_map, limit.w_assoc] } }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Since `colimit_limit_to_limit_colimit` is a morphism from a colimit to a limit,
 this lemma characterises it.
 -/

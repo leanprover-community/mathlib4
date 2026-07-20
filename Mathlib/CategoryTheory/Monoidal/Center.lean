@@ -155,7 +155,6 @@ def tensorObj (X Y : Center C) : Center C :=
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) (U : C) :
@@ -248,7 +247,6 @@ attribute [local simp] Center.associator Center.leftUnitor Center.rightUnitor
 
 attribute [local simp] Center.whiskerLeft Center.whiskerRight Center.tensorHom
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : MonoidalCategory (Center C) where
   tensorObj X Y := tensorObj X Y
@@ -261,12 +259,10 @@ instance : MonoidalCategory (Center C) where
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensor_β (X Y : Center C) (U : C) :
     (X ⊗ Y).2.β U =
@@ -275,54 +271,44 @@ theorem tensor_β (X Y : Center C) (U : C) :
           (whiskerRightIso (X.2.β U) Y.1) ≪≫ α_ _ _ _ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem whiskerLeft_f (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) : (X ◁ f).f = X.1 ◁ f.f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem whiskerRight_f {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) : (f ▷ Y).f = f.f ▷ Y.1 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ₘ g).f = f.f ⊗ₘ g.f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensorUnit_β (U : C) : (𝟙_ (Center C)).2.β U = λ_ U ≪≫ (ρ_ U).symm :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem associator_hom_f (X Y Z : Center C) : Hom.f (α_ X Y Z).hom = (α_ X.1 Y.1 Z.1).hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem associator_inv_f (X Y Z : Center C) : Hom.f (α_ X Y Z).inv = (α_ X.1 Y.1 Z.1).inv := by
   apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
   rw [← associator_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem leftUnitor_hom_f (X : Center C) : Hom.f (λ_ X).hom = (λ_ X.1).hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem leftUnitor_inv_f (X : Center C) : Hom.f (λ_ X).inv = (λ_ X.1).inv := by
   apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
   rw [← leftUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem rightUnitor_hom_f (X : Center C) : Hom.f (ρ_ X).hom = (ρ_ X.1).hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem rightUnitor_inv_f (X : Center C) : Hom.f (ρ_ X).inv = (ρ_ X.1).inv := by
   apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
@@ -346,16 +332,12 @@ instance : (forget C).Monoidal :=
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
 
 variable {C}
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma forget_μ (X Y : Center C) : μ (forget C) X Y = 𝟙 _ := rfl
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma forget_δ (X Y : Center C) : δ (forget C) X Y = 𝟙 _ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
@@ -377,7 +359,6 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
         ← HalfBraiding.naturality_assoc, HalfBraiding.monoidal]
       simp⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
 
@@ -415,16 +396,12 @@ instance : (ofBraided C).Monoidal :=
         { hom := { f := 𝟙 _ }
           inv := { f := 𝟙 _ } } }
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma ofBraided_ε_f : (ε (ofBraided C)).f = 𝟙 _ := rfl
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma ofBraided_η_f : (η (ofBraided C)).f = 𝟙 _ := rfl
 
 variable {C}
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma ofBraided_μ_f (X Y : C) : (μ (ofBraided C) X Y).f = 𝟙 _ := rfl
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma ofBraided_δ_f (X Y : C) : (δ (ofBraided C) X Y).f = 𝟙 _ := rfl
 
 end

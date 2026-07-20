@@ -835,25 +835,21 @@ variable [F.LaxMonoidal] [G.LaxMonoidal]
 instance LaxMonoidal.prod' : (prod' F G).LaxMonoidal :=
   inferInstanceAs (diag C ⋙ prod F G).LaxMonoidal
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_ε_fst : (ε (prod' F G)).1 = ε F := by
   change _ ≫ F.map (𝟙 _) = _
   rw [Functor.map_id, Category.comp_id]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_ε_snd : (ε (prod' F G)).2 = ε G := by
   change _ ≫ G.map (𝟙 _) = _
   rw [Functor.map_id, Category.comp_id]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_μ_fst (X Y : C) : (μ (prod' F G) X Y).1 = μ F X Y := by
   change _ ≫ F.map (𝟙 _) = _
   rw [Functor.map_id, Category.comp_id]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma prod'_μ_snd (X Y : C) : (μ (prod' F G) X Y).2 = μ G X Y := by
   change _ ≫ G.map (𝟙 _) = _
   rw [Functor.map_id, Category.comp_id]

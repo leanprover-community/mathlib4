@@ -227,7 +227,6 @@ theorem limit.existsUnique {F : J ⥤ C} [HasLimit F] (t : Cone F) :
 def limit.isoLimitCone {F : J ⥤ C} [HasLimit F] (t : LimitCone F) : limit F ≅ t.cone.pt :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit F) t.isLimit
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limit.isoLimitCone_hom_π {F : J ⥤ C} [HasLimit F] (t : LimitCone F) (j : J) :
     (limit.isoLimitCone t).hom ≫ t.cone.π.app j = limit.π F j := by
@@ -487,7 +486,6 @@ def lim : (J ⥤ C) ⥤ C where
     apply Limits.limit.hom_ext; intro j
     simp [assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation induced by `limit.π`. -/
 @[simps]
 def lim.π (j : J) : lim ⟶ (evaluation J C).obj j where
@@ -499,13 +497,11 @@ variable {G : J ⥤ C} (α : F ⟶ G)
 
 theorem limMap_eq : limMap α = lim.map α := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (whiskerRight α F) := by
   ext1; simp
@@ -809,7 +805,6 @@ theorem colimit.isoColimitCocone_ι_hom {F : J ⥤ C} [HasColimit F] (t : Colimi
   dsimp [colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.isoColimitCocone_ι_inv {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) (j : J) :
     t.cocone.ι.app j ≫ (colimit.isoColimitCocone t).inv = colimit.ι F j := by
@@ -1074,7 +1069,6 @@ def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation induced by `colimit.ι`. -/
 @[simps]
 def colim.ι (j : J) : (evaluation J C).obj j ⟶ colim where
@@ -1097,14 +1091,12 @@ theorem colimit.map_desc (c : Cocone G) :
   ext j
   simp [colimit.ι_desc, colimit.ι_desc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
     colimit.pre F E ≫ colim.map α = colim.map (whiskerLeft E α) ≫ colimit.pre G E := by
   ext
   rw [← assoc, colimit.ι_pre, colimit.ι_map, ← assoc, colimit.ι_map, assoc, colimit.ι_pre]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     colimit.pre F E₁ = colim.map (whiskerRight α F) ≫ colimit.pre F E₂ := by
   ext1
@@ -1114,7 +1106,6 @@ set_option backward.defeqAttrib.useBackward true in
 theorem colimit.pre_id (F : J ⥤ C) :
     colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.map_post {D : Type u'} [Category.{v'} D] [HasColimitsOfShape J D]
     (H : C ⥤ D) :
     /- H (colimit F) ⟶ H (colimit G) ⟶ colimit (G ⋙ H) vs
@@ -1210,7 +1201,6 @@ end Colimit
 
 section Opposite
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `t : Cone F` is a limit cone, then `t.op : Cocone F.op` is a colimit cocone.
 -/
@@ -1226,7 +1216,6 @@ def IsLimit.op {t : Cone F} (P : IsLimit t) : IsColimit t.op where
       rw [← w]
       rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `t : Cocone F` is a colimit cocone, then `t.op : Cone F.op` is a limit cone.
 -/

@@ -164,7 +164,6 @@ lemma supported_mono (hst : s ⊆ t) : supported R S s ≤ supported R S t := fu
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 @[to_additive (dont_translate := R) (attr := simps!)

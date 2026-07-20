@@ -166,7 +166,6 @@ theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
     Function.Injective (C : R → MvPolynomial σ R) :=
   single_right_injective
 
-set_option backward.isDefEq.respectTransparency false in
 theorem C_surjective {R : Type*} [CommSemiring R] (σ : Type*) [IsEmpty σ] :
     Function.Surjective (C : R → MvPolynomial σ R) :=
   fun p ↦ ⟨p.coeff 0, by apply AddMonoidAlgebra.ext; ext; simp [C_apply, ← single_eq_monomial]⟩
@@ -285,7 +284,6 @@ theorem monomial_sum_one {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ)
     (monomial (∑ i ∈ s, f i) 1 : MvPolynomial σ R) = ∏ i ∈ s, monomial (f i) 1 :=
   map_prod (monomialOneHom R σ) (fun i => Multiplicative.ofAdd (f i)) s
 
-set_option backward.isDefEq.respectTransparency false in
 theorem monomial_sum_index {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) (a : R) :
     monomial (∑ i ∈ s, f i) a = C a * ∏ i ∈ s, monomial (f i) 1 := by
   rw [← monomial_sum_one, C_mul', ← (monomial _).map_smul, smul_eq_mul, mul_one]
@@ -513,7 +511,6 @@ section Coeff
 def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
   @DFunLike.coe ((σ →₀ ℕ) →₀ R) _ _ _ (AddMonoidAlgebra.coeff p) m
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.support ↔ p.coeff m ≠ 0 := by
   simp [support, coeff]
@@ -538,7 +535,6 @@ lemma disjoint_support_monomial {a : σ →₀ ℕ} {p : MvPolynomial σ R} {s :
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   fun h ↦ AddMonoidAlgebra.ext <| by ext; exact h _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) :
     coeff m (p + q) = coeff m p + coeff m q := by simp [coeff, MvPolynomial]
@@ -639,7 +635,6 @@ theorem coeff_X_same (i : σ) :
     coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
   classical rw [coeff_X, if_pos rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a * coeff m p := by
   classical
@@ -762,7 +757,6 @@ theorem X_ne_zero [Nontrivial R] (s : σ) :
   use Finsupp.single s 1
   simp only [coeff_X_same, ne_eq, one_ne_zero, not_false_eq_true]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 := by simp [support]
 
@@ -959,7 +953,6 @@ end ConstantCoeff
 
 section AsSum
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_sum_monomial_coeff (p : MvPolynomial σ R) :
     ∑ v ∈ p.support, monomial v (coeff v p) = p := by
@@ -1049,7 +1042,6 @@ end Module
 section Algebra
 variable [Algebra R S] {M : Submodule R S}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M * coeffsIn σ N := by
   classical
   refine le_antisymm (coeffsIn_le.2 ?_) ?_

@@ -707,7 +707,6 @@ theorem ImageMap.factor_map {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (s
     (m : ImageMap sq) : factorThruImage f.hom ≫ m.map = sq.left ≫ factorThruImage g.hom :=
   (cancel_mono (image.ι g.hom)).1 <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To give an image map for a commutative square with `f` at the top and `g` at the bottom, it
 suffices to give a map between any mono factorisation of `f` and any image factorisation of `g`. -/
 def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)

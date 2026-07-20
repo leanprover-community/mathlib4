@@ -83,7 +83,6 @@ lemma quasiIso_iff_comp_right (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ' :
   · intro
     exact quasiIso_comp φ φ'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ')
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   let α : S₃ ⟶ S₁ := e.inv.left

@@ -397,7 +397,6 @@ variable {F} {G H : B ⥤ᴸ C} (η : StrongTrans F G) (θ : StrongTrans G H)
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Vertical composition of strong natural transformations. -/
 @[simps!]
 def vComp : StrongTrans F H :=

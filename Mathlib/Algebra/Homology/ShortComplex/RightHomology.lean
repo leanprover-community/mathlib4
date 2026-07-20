@@ -64,7 +64,6 @@ initialize_simps_projections RightHomologyData (-hp, -hι)
 
 namespace RightHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The chosen cokernels and kernels of the limits API give a `RightHomologyData` -/
 @[simps]
 noncomputable def ofHasCokernelOfHasKernel
@@ -180,7 +179,6 @@ noncomputable def ofHasKernel [HasKernel S.g] (hf : S.f = 0) : S.RightHomologyDa
 ofIsLimitKernelFork S hf _ (kernelIsKernel _)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When the second map `S.g` is zero, this is the right homology data on `S` given
 by any colimit cokernel cofork of `S.g` -/
 @[simps]

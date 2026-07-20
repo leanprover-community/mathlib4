@@ -352,7 +352,6 @@ lemma restrictScalars_map [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScala
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M) :
     (M'.map f).restrictScalars R = (M'.restrictScalars R).map (f.restrictScalars R) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 
 See also `Submodule.mapIic`. -/

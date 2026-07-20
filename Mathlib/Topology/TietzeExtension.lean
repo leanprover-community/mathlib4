@@ -513,7 +513,6 @@ instance Real.instTietzeExtension : TietzeExtension ℝ where
     f.exists_restrict_eq_forall_mem_of_closed (fun _ => mem_univ _) univ_nonempty hs |>.imp
       fun _ ↦ (And.right ·)
 
-set_option backward.isDefEq.respectTransparency false in
 open NNReal in
 /-- **Tietze extension theorem** for nonnegative real-valued continuous maps.
 `ℝ≥0` is a `TietzeExtension` space. -/
