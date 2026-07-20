@@ -124,6 +124,7 @@ lemma finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
       m ⊗ₜ[R] Finsupp.single i n := by
   simp [LinearEquiv.symm_apply_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
     finsuppLeft R S M N ι (s • t) = s • finsuppLeft R S M N ι t := by
   simp
@@ -189,6 +190,7 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
       m ⊗ₜ[R] (Finsupp.single i 1) := by
   simp [finsuppScalarRight, finsuppRight_symm_apply_single]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finsuppScalarRight_smul (s : S) (t) :
     finsuppScalarRight R S M ι (s • t) = s • finsuppScalarRight R S M ι t := by
   simp

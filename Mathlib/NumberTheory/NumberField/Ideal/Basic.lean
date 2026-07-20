@@ -54,7 +54,7 @@ For `I` an integral ideal of `K`, the group morphism from the group of roots of 
 of order `n` to `(𝓞 K ⧸ I)ˣ`.
 -/
 def Ideal.rootsOfUnityMapQuot (n : ℕ) : (rootsOfUnity n (𝓞 K)) →* ((𝓞 K) ⧸ I)ˣ :=
-  (Units.map (Ideal.Quotient.mk I).toMonoidHom).restrict _
+  (Units.map (Ideal.Quotient.mk I).toMonoidHom).domRestrict _
 
 @[simp]
 theorem Ideal.rootsOfUnityMapQuot_apply (n : ℕ) {x : (𝓞 K)ˣ} (hx : x ∈ rootsOfUnity n (𝓞 K)) :
@@ -64,7 +64,7 @@ theorem Ideal.rootsOfUnityMapQuot_apply (n : ℕ) {x : (𝓞 K)ˣ} (hx : x ∈ r
 For `I` an integral ideal of `K`, the group morphism from the torsion of `K` to `(𝓞 K ⧸ I)ˣ`.
 -/
 def Ideal.torsionMapQuot : (Units.torsion K) →* ((𝓞 K) ⧸ I)ˣ :=
-  (Units.map (Ideal.Quotient.mk I).toMonoidHom).restrict (torsion K)
+  (Units.map (Ideal.Quotient.mk I).toMonoidHom).domRestrict (torsion K)
 
 @[simp]
 theorem Ideal.torsionMapQuot_apply {x : (𝓞 K)ˣ} (hx : x ∈ torsion K) :
@@ -114,7 +114,7 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀
   let _ := Ideal.Quotient.field P
   have hP₃ : absNorm P ≠ 1 := absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP₁
   have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective hP₃ hP₂)
-  rwa [Nat.card_eq_fintype_card, Nat.card_units] at h
+  rwa [Nat.card_units] at h
 
 end torsionMapQuot
 

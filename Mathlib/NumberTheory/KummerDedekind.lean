@@ -97,7 +97,7 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
   simp only [RingEquiv.apply_symm_apply, adjoin.powerBasis'_gen, quotAdjoinEquivQuotMap_apply_mk,
     coe_aeval_mk_apply]
 
-open Classical in
+open scoped Classical in
 /-- The first half of the **Kummer-Dedekind Theorem**, stating that the prime
 factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
 over `R`, taken `mod I`. -/
@@ -115,7 +115,6 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
   · refine (Ideal.normalizedFactorsEquivSpanNormalizedFactors ?_).symm
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
-open Classical in
 /-- The second half of the **Kummer-Dedekind Theorem**, stating that the
 bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem emultiplicity_factors_map_eq_emultiplicity
@@ -125,12 +124,13 @@ theorem emultiplicity_factors_map_eq_emultiplicity
     emultiplicity J (I.map (algebraMap R S)) =
       emultiplicity (↑(normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' ⟨J, hJ⟩))
         (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
+  classical
   rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk, Equiv.coe_trans, Function.comp_apply,
     Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
     IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 /-- The **Kummer-Dedekind Theorem**. -/
 theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
@@ -205,8 +205,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   rw [Multiset.attach_map_val, Multiset.map_singleton, Subtype.coe_mk]
   exact normalizedFactors_irreducible hf
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 open Set Classical in
 /-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
 `mod I`. Then (the reduction of) `Q` corresponds via
@@ -218,19 +217,19 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
     ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm ⟨_, hQ⟩).val =
     span (I.map (algebraMap R S) ∪ {Q.aeval x}) := by
-  dsimp [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk,
-    Ideal.normalizedFactorsEquivSpanNormalizedFactors]
-  rw [IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_symm]
-  dsimp [IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv,
-    IsDedekindDomain.idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
-  simp only [map_span, image_singleton, coe_coe, quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
-  refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
-    ⟨le_comap_of_map_le (by simp), by simp⟩)
-  rw [mem_comap, Ideal.mem_span_singleton] at ha
-  obtain ⟨a', ha'⟩ := ha
-  obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective a'
-  rw [← hb, ← map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
-  rw [union_comm, span_union, span_eq, mem_span_singleton_sup]
-  exact ⟨b, a - Q.aeval x * b, ha', by ring⟩
+  unfold normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
+    Ideal.normalizedFactorsEquivSpanNormalizedFactors
+  rw [Equiv.symm_trans_apply, IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_symm]
+  unfold IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv
+  rw [Equiv.coe_fn_mk, Equiv.symm_symm, Equiv.ofBijective_apply]
+  dsimp only
+  unfold IsDedekindDomain.idealFactorsEquivOfQuotEquiv
+  rw [OrderIso.ofHomInv_apply]
+  erw [IsDedekindDomain.idealFactorsFunOfQuotHom_coe_coe]
+  dsimp only
+  rw [map_span, image_singleton, map_span, image_singleton, coe_coe,
+    quotMapEquivQuotQuotMap_symm_apply, span_union, span_eq, sup_comm,
+    ← image_singleton, ← map_span, Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective,
+    Ideal.mk_ker]
 
 end KummerDedekind
