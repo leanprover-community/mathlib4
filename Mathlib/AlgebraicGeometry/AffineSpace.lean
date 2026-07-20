@@ -325,7 +325,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_map {S T : Scheme.{u}} (f : S ⟶ T) :
     IsPullback (map n f) (𝔸(n; S) ↘ S) (𝔸(n; T) ↘ T) f := by
   refine (IsPullback.paste_horiz_iff (.flip <| .of_hasPullback _ _) (map_over f)).mp ?_
-  simp only [terminal.comp_from, ]
+  simp only [terminal.comp_from]
   convert! (IsPullback.of_hasPullback _ _).flip
   rw [← toSpecMvPoly, ← toSpecMvPoly, map_toSpecMvPoly]
 
