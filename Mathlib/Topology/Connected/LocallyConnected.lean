@@ -198,7 +198,7 @@ theorem Pi.locallyConnectedSpace_of_finite_nonpreconnected [∀ i, TopologicalSp
   rw [nhds_pi, Filter.mem_pi] at hU
   obtain ⟨J, hJ, t, ht, htU⟩ := hU
   classical
-  set K := J ∪ {i | ¬PreconnectedSpace (X i)} with hK
+  let K := J ∪ {i | ¬PreconnectedSpace (X i)}
   refine ⟨K.pi fun i ↦ connectedComponentIn (t i) (x i),
     set_pi_mem_nhds (hJ.union hfinite) fun i _ ↦ connectedComponentIn_mem_nhds (ht i), ?_,
     fun f hf ↦ htU fun i hiJ ↦ connectedComponentIn_subset _ _ (hf i (mem_union_left _ hiJ))⟩
