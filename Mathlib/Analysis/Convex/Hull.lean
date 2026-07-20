@@ -52,6 +52,7 @@ theorem subset_convexHull : s ⊆ convexHull 𝕜 s :=
 
 theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) := (convexHull 𝕜).isClosed_closure s
 
+set_option backward.isDefEq.respectTransparency false in
 theorem convexHull_eq_iInter : convexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t := by
   simp [convexHull, iInter_subtype, iInter_and]
 

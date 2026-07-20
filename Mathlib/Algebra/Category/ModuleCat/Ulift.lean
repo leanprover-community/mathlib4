@@ -47,6 +47,9 @@ def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
   preimage f := ModuleCat.ofHom (ULift.moduleEquiv.toLinearMap.comp
     (f.hom.comp ULift.moduleEquiv.symm.toLinearMap))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `ULift` functor on `ModuleCat` is compatible with the one defined on categories of types. -/
 @[simps! +dsimpLhs]
 def uliftFunctorForgetIso :
