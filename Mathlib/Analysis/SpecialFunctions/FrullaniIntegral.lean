@@ -140,7 +140,7 @@ lemma tendsto_integral_inv_smul_nhdsWithin (hf : LocallyIntegrableOn f (Ioi 0)) 
       _ < M * (η / M) := mul_lt_mul_of_pos_left ht_bound hM
       _ = η := mul_div_cancel₀ η (ne_of_gt hM)
   have := hη_sub ⟨mem_ball.2 hx_lt_η, hx_pos⟩
-  rw [mem_setOf_eq, dist_eq_norm] at this
+  rw [mem_ofPred_eq, dist_eq_norm] at this
   exact le_of_lt this
 
 /-- If `f → R` as `x → +∞` and `f` is locally integrable on `(0, ∞)`, then the weighted integral
@@ -227,7 +227,7 @@ theorem integral_Ioi_eq (hf : LocallyIntegrableOn f (Ioi 0)) (ha : 0 < a) (hb : 
   refine ⟨δ, hδ_pos, ?_⟩
   intro x hx hdist
   specialize hδ x ⟨hdist, hx⟩
-  rw [mem_setOf] at hδ
+  rw [mem_ofPred] at hδ
   have hint' : IntegrableOn g (Ioi x) := hint.mono (by grind) (by simp)
   have htends := intervalIntegral_tendsto_integral_Ioi x hint' tendsto_id
   have hle := le_of_tendsto (htends.dist tendsto_const_nhds) (hδ.mono (fun _ hy ↦ hy.le))
