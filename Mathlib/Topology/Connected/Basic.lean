@@ -493,7 +493,6 @@ theorem isConnected_univ_pi [∀ i, TopologicalSpace (X i)] {s : ∀ i, Set (X i
 
 /-- The connected component of a point is the maximal connected set
 that contains this point. -/
-@[wikidata Q91050456]
 def connectedComponent (x : α) : Set α :=
   ⋃₀ { s : Set α | IsPreconnected s ∧ x ∈ s }
 
