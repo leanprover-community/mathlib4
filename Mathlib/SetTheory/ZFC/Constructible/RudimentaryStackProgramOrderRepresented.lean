@@ -37,7 +37,6 @@ def stackProgramLtCodeAssignment (U relation leftCode rightCode : ZFSet.{u}) :
     leftCode, rightCode]
 
 /-- Ambient Shortlex semantics is independent of the representing graphs. -/
-@[simp]
 theorem satisfies_stackProgramLtFormula_represents_iff
     (U relation leftCode rightCode : ZFSet.{u})
     (left right : List
@@ -150,7 +149,6 @@ theorem satisfies_sequenceValidity_represents_lCarrier
 set_option maxHeartbeats 250000 in
 -- Kernel checking of the three-coordinate subtype assignment needs a small
 -- margin above the default budget; the proof itself is finite-case.
-@[simp]
 theorem satisfies_valueAtFormula_represents_lCarrier_iff
     (sequence : Model.LCarrier.{u}) {xs : List ZFSet.{u}}
     (hrep : Represents sequence.1 xs) (k : Nat)
@@ -202,7 +200,6 @@ private theorem representedLengthGraphCarrier
   refine ⟨graphCarrier, ?_⟩
   simpa only [graphCarrier, hlength] using hcode
 
-@[simp]
 theorem satisfies_hasLengthFormula_represents_lCarrier_iff
     (sequence : Model.LCarrier.{u}) {xs : List ZFSet.{u}}
     (hrep : Represents sequence.1 xs)
@@ -225,7 +222,6 @@ theorem satisfies_hasLengthFormula_represents_lCarrier_iff
     change sequence.1 = ZFSet.pair length.1 graphCarrier.1
     exact hpair
 
-@[simp]
 theorem satisfies_samePrefix_represents_lCarrier_iff
     (leftSequence rightSequence : Model.LCarrier.{u})
     {xs ys : List ZFSet.{u}}
@@ -302,7 +298,6 @@ theorem stackProgramLtCodeLAssignment_val
   funext i
   fin_cases i <;> rfl
 
-@[simp]
 theorem satisfies_stackProgramLtFormula_represents_lCarrier_iff
     (U relation leftCode rightCode : ZFSet.{u})
     (hU : U ∈ L) (hrelation : relation ∈ L)
@@ -535,7 +530,6 @@ theorem satisfies_stackProgramLtFormula_represents_lCarrier_iff
         · simpa only [params, stackProgramLtCodeLAssignment] using hlt
 
 /-- Raw-domain presentation of represented-code program comparison in `L`. -/
-@[simp]
 theorem satisfiesIn_L_stackProgramLtFormula_represents_iff
     (U relation leftCode rightCode : ZFSet.{u})
     (hU : U ∈ L) (hrelation : relation ∈ L)

@@ -38,7 +38,6 @@ Its layout is `(fifteen program parameters, successor domain, output)`. -/
 def canonicalSuccessorOutputFormula : FOFormula 17 :=
   canonicalGraphOutputFormula successorExtensionLtFormula
 
-@[simp]
 theorem satisfies_canonicalSuccessorOutputFormula_iff_eq
     (alpha : Ordinal.{u}) (relation nextRelation : LCarrier.{u}) :
     FOFormula.Satisfies LMem canonicalSuccessorOutputFormula

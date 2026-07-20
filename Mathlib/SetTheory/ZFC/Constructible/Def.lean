@@ -885,7 +885,6 @@ noncomputable def LStageZF (α : Ordinal.{u}) : ZFSet.{u} :=
 theorem LStageZF_zero : LStageZF (0 : Ordinal.{u}) = ∅ := by
   simp [LStageZF]
 
-@[simp]
 theorem LStageZF_succ (α : Ordinal.{u}) :
     LStageZF (Order.succ α) = DefZF (LStageZF α) := by
   change
@@ -987,7 +986,6 @@ abbrev L : Set ZFSet.{u} := ConstructibleUniverse
 def IsConstructible (x : ZFSet.{u}) : Prop :=
   x ∈ L
 
-@[simp]
 theorem mem_constructibleUniverse_iff {x : ZFSet.{u}} :
     x ∈ ConstructibleUniverse ↔ ∃ α : Ordinal.{u}, x ∈ LStageZF α :=
   Iff.rfl

@@ -89,7 +89,6 @@ theorem satisfies_historyEntryAt_components {n : Nat}
   simp only [snoc_last, snoc_castSucc]
 
 /-- Exact arbitrary-context semantics of a history lookup. -/
-@[simp]
 theorem satisfies_historyEntryAt_iff {n : Nat}
     (history index stage relation : Fin n)
     (s : Tuple LCarrier.{u} n) :
@@ -127,7 +126,6 @@ theorem satisfies_historyEntryFormula_components
   rfl
 
 /-- Lookup satisfaction is exactly membership of the canonical triple. -/
-@[simp]
 theorem satisfies_historyEntryFormula_iff
     (history index stage relation : LCarrier.{u}) :
     FOFormula.Satisfies LMem historyEntryFormula
@@ -148,7 +146,6 @@ def HistoryEntry
     (history index stage relation : LCarrier.{u}) : Prop :=
   Godel.triple index.1 stage.1 relation.1 ∈ history.1
 
-@[simp]
 theorem satisfies_historyEntryFormula_iff_historyEntry
     (history index stage relation : LCarrier.{u}) :
     FOFormula.Satisfies LMem historyEntryFormula

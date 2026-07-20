@@ -493,7 +493,6 @@ noncomputable def compilePairSetSubst {m n : Nat}
                   (.mem (Fin.last n).castSucc (Fin.last (n + 1)))
                   pairBody))
 
-@[simp]
 theorem satisfies_pairBody {m n : Nat}
     (σ : Fin m → PairSetExpr n) (φ : Delta0Formula (m + 1))
     (s : Tuple ZFSet.{u} n) (x y : ZFSet.{u})

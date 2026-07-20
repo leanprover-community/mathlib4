@@ -209,7 +209,6 @@ def congr {U : ZFSet.{u}} {n : Nat}
   subset_space := r.subset_space
   correct := fun s => (r.correct s).trans (h s)
 
-@[simp]
 theorem mem_F3_triple_iff {x r a b c : ZFSet.{u}} :
     triple a b c ∈ F3 x r ↔ b ∈ x ∧ ZFSet.pair a c ∈ r := by
   rw [mem_F3_iff]
@@ -221,7 +220,6 @@ theorem mem_F3_triple_iff {x r a b c : ZFSet.{u}} :
   · rintro ⟨hb, hac⟩
     exact ⟨a, b, c, hb, hac, rfl⟩
 
-@[simp]
 theorem mem_F4_triple_iff {x r a b c : ZFSet.{u}} :
     triple a b c ∈ F4 x r ↔ c ∈ x ∧ ZFSet.pair a b ∈ r := by
   rw [mem_F4_iff]
@@ -233,7 +231,6 @@ theorem mem_F4_triple_iff {x r a b c : ZFSet.{u}} :
   · rintro ⟨hc, hab⟩
     exact ⟨a, b, c, hc, hab, rfl⟩
 
-@[simp]
 theorem pair_mem_F7_iff {U a b : ZFSet.{u}} (ha : a ∈ U) (hb : b ∈ U) :
     ZFSet.pair a b ∈ F7 U U ↔ a ∈ b := by
   rw [mem_F7_iff]

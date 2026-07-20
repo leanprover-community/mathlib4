@@ -177,7 +177,6 @@ theorem satisfies_traceStepFormula_components
     comp_traceStepStackStepRename]
 
 /-- Complete raw `ZFSet` normal form of one trace transition. -/
-@[simp]
 theorem satisfies_traceStepFormula
     (U program trace index : ZFSet.{u}) :
     FOFormula.Satisfies Delta0Formula.ZFMem traceStepFormula

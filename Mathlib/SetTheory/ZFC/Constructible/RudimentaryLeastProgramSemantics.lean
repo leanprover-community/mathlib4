@@ -90,7 +90,6 @@ private theorem leastStackProgram_eq_or_stackProgramRel_of_run
 On the definability step, ambient satisfaction of the fixed formula is exactly
 the external least-program order already used to well-order `DefCarrier U`.
 -/
-@[simp]
 theorem satisfies_leastProgramValueLtFormula_iff_defCarrierStackRel
     (U relation : ZFSet.{u}) (x y : DefCarrier U)
     [IsWellOrder (Option (Constructible.ZFCarrier U))

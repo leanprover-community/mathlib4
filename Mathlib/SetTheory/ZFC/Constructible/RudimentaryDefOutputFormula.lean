@@ -231,7 +231,6 @@ theorem exists_internalProgram_iff_mem_rudimentaryClosure
 
 /-- Satisfaction defines precisely the internally represented Gödel
 definability layer. -/
-@[simp]
 theorem satisfies_godelDefOutputFormula_iff
     (U nextU : Model.LCarrier.{u}) :
     FOFormula.Satisfies LMem godelDefOutputFormula

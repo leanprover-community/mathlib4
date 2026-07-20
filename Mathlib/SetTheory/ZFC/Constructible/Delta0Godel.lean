@@ -291,7 +291,6 @@ theorem satisfies_f6MemAt {n : Nat} (q x : Fin n)
     refine ⟨ZFSet.pair w (s q), hw, ({w} : ZFSet.{u}), ?_, w, by simp, rfl⟩
     simp [ZFSet.pair]
 
-@[simp]
 theorem satisfies_f6MemAt_iff_mem {n : Nat} (q x y : Fin n)
     (s : Tuple ZFSet.{u} n) :
     Satisfies ZFMem (f6MemAt q x) s ↔
@@ -555,7 +554,6 @@ theorem satisfies_memOpFormula (i : Fin 9) (q x y : ZFSet.{u}) :
   fin_cases i <;> simp [memOpFormula, op]
 
 /-- The same uniform correctness theorem in the unrestricted `FOFormula` syntax. -/
-@[simp]
 theorem satisfies_toFO_memOpFormula (i : Fin 9) (q x y : ZFSet.{u}) :
     FOFormula.Satisfies ZFMem (memOpFormula i).toFO ![q, x, y] ↔
       q ∈ op i x y := by

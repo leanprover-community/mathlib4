@@ -368,7 +368,6 @@ theorem stageHistoryData_limit {limit : Ordinal.{u}}
   simp only [stageHistoryData,
     Ordinal.limitRecOn_limit _ _ _ _ hl]
 
-@[simp]
 theorem stageHistoryData_relation_zero :
     (stageHistoryData (0 : Ordinal.{u})).relation = emptyLCarrier := by
   rw [stageHistoryData_zero, zeroStageHistoryData_relation]
@@ -381,7 +380,6 @@ theorem stageHistoryData_relation_succ (ordinal : Ordinal.{u}) :
   rw [Order.succ_eq_add_one, stageHistoryData_add_one,
     successorStageHistoryData_relation]
 
-@[simp]
 theorem stageHistoryData_relation_limit {limit : Ordinal.{u}}
     (hl : Order.IsSuccLimit limit) :
     (stageHistoryData limit).relation =

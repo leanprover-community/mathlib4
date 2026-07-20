@@ -130,7 +130,6 @@ noncomputable def f34GeneratedBody (kind : TripleSetKind) {n : Nat}
     (Delta0Formula.rename (f34ElimRename kind n)
       (eliminateSimpleLast.{u} isSimpleSetFunction_triple body))
 
-@[simp]
 theorem satisfies_f34GeneratedBody (kind : TripleSetKind)
     (body : Delta0Formula (n + 1)) (s : Tuple ZFSet.{u} n)
     (z p leftBox u rightBox v : ZFSet.{u}) :

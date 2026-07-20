@@ -43,27 +43,23 @@ def realizes {A : Type u} (E : A -> A -> Prop) {n : Nat}
     FirstOrder.Language.setTheoryStructure E
   phi.Realize Empty.elim s
 
-@[simp]
 theorem realizes_falsum {A : Type u} {E : A -> A -> Prop}
     {n : Nat} {s : Fin n -> A} :
     realizes E (.falsum : FirstOrder.Language.setTheory.BoundedFormula Empty n) s <-> False := by
   rfl
 
-@[simp]
 theorem realizes_not {A : Type u} {E : A -> A -> Prop}
     {n : Nat} {phi : FirstOrder.Language.setTheory.BoundedFormula Empty n}
     {s : Fin n -> A} :
     realizes E phi.not s <-> Not (realizes E phi s) := by
   simp [realizes]
 
-@[simp]
 theorem realizes_and {A : Type u} {E : A -> A -> Prop}
     {n : Nat} {phi psi : FirstOrder.Language.setTheory.BoundedFormula Empty n}
     {s : Fin n -> A} :
     realizes E (phi ⊓ psi) s <-> realizes E phi s /\ realizes E psi s := by
   simp [realizes]
 
-@[simp]
 theorem realizes_imp {A : Type u} {E : A -> A -> Prop}
     {n : Nat} {phi psi : FirstOrder.Language.setTheory.BoundedFormula Empty n}
     {s : Fin n -> A} :
@@ -71,7 +67,6 @@ theorem realizes_imp {A : Type u} {E : A -> A -> Prop}
       (realizes E phi s -> realizes E psi s) := by
   rfl
 
-@[simp]
 theorem realizes_all {A : Type u} {E : A -> A -> Prop}
     {n : Nat} {phi : FirstOrder.Language.setTheory.BoundedFormula Empty (n + 1)}
     {s : Fin n -> A} :
@@ -79,7 +74,6 @@ theorem realizes_all {A : Type u} {E : A -> A -> Prop}
       forall x : A, realizes E phi (Fin.snoc s x) := by
   rfl
 
-@[simp]
 theorem realizes_ex {A : Type u} {E : A -> A -> Prop}
     {n : Nat} {phi : FirstOrder.Language.setTheory.BoundedFormula Empty (n + 1)}
     {s : Fin n -> A} :

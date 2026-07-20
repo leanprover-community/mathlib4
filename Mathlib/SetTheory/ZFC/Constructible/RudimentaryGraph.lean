@@ -86,7 +86,6 @@ def graphFormula {n : Nat} : RudimentaryTerm (Fin n) → FOFormula (n + 1)
             (FOFormula.rename (opGraphRename n) (opGraphFormula op).toFO))))
 
 /-- Correctness of the compiled graph in the ambient universe of ZFC sets. -/
-@[simp]
 theorem satisfies_graphFormula {n : Nat}
     (t : RudimentaryTerm (Fin n))
     (params : Tuple ZFSet.{u} n) (out : ZFSet.{u}) :

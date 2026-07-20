@@ -169,7 +169,6 @@ def fromBoundedFormula : {n : Nat} ->
 abbrev toSentence (phi : FOFormula 0) : FirstOrder.Language.setTheory.Sentence :=
   toBoundedFormula phi
 
-@[simp]
 theorem snoc_eq_finSnoc {A : Type u} {n : Nat}
     (s : Fin n -> A) (x : A) : snoc s x = Fin.snoc s x := by
   funext i
@@ -233,7 +232,6 @@ theorem realize_toBoundedFormula {n : Nat} (phi : FOFormula n)
       exact exists_congr fun x => ih (Fin.snoc s x)
 
 /-- The forward translation stated through the canonical `realizes` wrapper. -/
-@[simp]
 theorem realizes_toBoundedFormula {n : Nat} (phi : FOFormula n)
     (s : Tuple A n) :
     realizes E (toBoundedFormula phi) s <->
@@ -287,7 +285,6 @@ theorem realize_fromBoundedFormula {n : Nat}
       exact forall_congr' fun x => ih (Fin.snoc s x)
 
 /-- Normalizing to `FOFormula` and translating back preserves realization. -/
-@[simp]
 theorem realizes_to_fromBoundedFormula {n : Nat}
     (phi : FirstOrder.Language.setTheory.BoundedFormula Empty n)
     (s : Tuple A n) :

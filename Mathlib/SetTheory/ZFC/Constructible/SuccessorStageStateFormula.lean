@@ -121,7 +121,6 @@ theorem satisfies_successorStageStateFormula_iff
 
 /-- On actual constructible stages, the domain equation is automatic and the
 second output is the previously defined canonical successor relation. -/
-@[simp]
 theorem satisfies_successorStageStateFormula_stage_iff
     (alpha : Ordinal.{u}) (relation nextRelation : LCarrier.{u}) :
     FOFormula.Satisfies LMem successorStageStateFormula

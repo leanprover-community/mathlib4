@@ -80,7 +80,6 @@ private theorem represents_list_unique
   simpa only [ix, iy] using (hysGraph iy).2 (xs.get ix) hmem
 
 /-- Raw codes accepted by the evaluator decode to genuine typed programs. -/
-@[simp]
 theorem satisfies_stackProgramEvalFormula_iff_exists_run
     (U programCode result : ZFSet.{u}) :
     FOFormula.Satisfies Delta0Formula.ZFMem stackProgramEvalFormula
@@ -193,7 +192,6 @@ theorem satisfies_stackProgramEvalFormula_iff_exists_run
       simpa only using hrawSteps ⟨k, hk⟩
 
 /-- Canonical program codes have exactly the intended execution semantics. -/
-@[simp]
 theorem satisfies_stackProgramEvalFormula_iff_run
     (U : ZFSet.{u})
     (program : List

@@ -366,12 +366,10 @@ theorem empty_ne_zfPair (x y : ZFSet.{u}) :
     (∅ : ZFSet.{u}) ≠ ZFSet.pair x y :=
   (zfPair_ne_empty x y).symm
 
-@[simp]
 theorem appTag_ne_varTag : (appTag : ZFSet.{u}) ≠ varTag :=
   varTag_ne_appTag.symm
 
 /-- On genuine token and stack codes, the formula is exactly one machine step. -/
-@[simp]
 theorem satisfies_stackStepFormula_iff_run
     (U : ZFSet.{u})
     (token : StackToken (Option (Constructible.ZFCarrier U)))

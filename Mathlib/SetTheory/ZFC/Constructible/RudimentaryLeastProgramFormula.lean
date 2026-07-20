@@ -176,7 +176,6 @@ theorem comp_leastProgramOrderRename
 The combined formula is exactly the expected relation between the two raw
 evaluator predicates and the raw program-order predicate.
 -/
-@[simp]
 theorem satisfies_leastProgramValueLtFormula
     (U relation left right : ZFSet.{u}) :
     FOFormula.Satisfies Delta0Formula.ZFMem leastProgramValueLtFormula

@@ -336,7 +336,6 @@ theorem satisfies_historySuccessorStateFormula
     insert_self_eq_union_singleton]
 
 /-- Fully normalized semantics of the successor-history rule. -/
-@[simp]
 theorem satisfies_historySuccessorStateFormula_iff_outputs
     (history index stage relation : LCarrier.{u}) :
     FOFormula.Satisfies LMem historySuccessorStateFormula

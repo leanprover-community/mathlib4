@@ -97,7 +97,6 @@ def graphFormula {n : Nat} (phi : FOFormula (n + 2)) :
             (pairIndex n) (leftIndex n) (rightIndex n)).toFO
           (FOFormula.rename predicateRename phi)))))
 
-@[simp]
 theorem satisfies_pairEq_lCarrier {n : Nat}
     (pair x y : Fin n) (s : Tuple Model.LCarrier.{u} n) :
     FOFormula.Satisfies
@@ -108,7 +107,6 @@ theorem satisfies_pairEq_lCarrier {n : Nat}
     Delta0Formula.satisfies_toFO,
     Delta0Formula.satisfies_kuratowskiPairEqAt]
 
-@[simp]
 theorem satisfies_graphFormula {n : Nat} (phi : FOFormula (n + 2))
     (params : Tuple Model.LCarrier.{u} n)
     (domain pair : Model.LCarrier.{u}) :

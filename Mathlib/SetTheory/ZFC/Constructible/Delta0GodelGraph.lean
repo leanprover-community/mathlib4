@@ -508,7 +508,6 @@ theorem satisfies_opGraphFormula (i : Fin 9) (out x y : ZFSet.{u}) :
       out = op i x y := by
   fin_cases i <;> simp [opGraphFormula, op]
 
-@[simp]
 theorem satisfies_toFO_opGraphFormula (i : Fin 9) (out x y : ZFSet.{u}) :
     FOFormula.Satisfies ZFMem (opGraphFormula i).toFO ![out, x, y] ↔
       out = op i x y := by

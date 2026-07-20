@@ -75,7 +75,6 @@ theorem stackProgramLtLAssignment_val (U relation : ZFSet.{u})
 
 local notation "LMem" => Model.lCarrierMem
 
-@[simp]
 theorem satisfies_kuratowskiPairEqAt_lCarrier {n : Nat}
     (pair left right : Fin n) (s : Tuple Model.LCarrier.{u} n) :
     FOFormula.Satisfies LMem
@@ -161,7 +160,6 @@ theorem satisfies_samePrefixFormula_lCarrier
           (![1, 3, 4] i))
       exact hright
 
-@[simp]
 theorem satisfies_samePrefix_sequenceCode_lCarrier_iff
     (xs ys : List ZFSet.{u})
     (hxs : ∀ x ∈ xs, x ∈ L) (hys : ∀ y ∈ ys, y ∈ L)
@@ -399,7 +397,6 @@ theorem satisfies_stackTokenLtFormula_lCarrier_normal
   rfl
 
 /-- Exact token-order semantics with the two payload witnesses restricted to `L`. -/
-@[simp]
 theorem satisfies_stackTokenLtFormula_lCarrier_tokenCodes
     (U relation : ZFSet.{u}) (hU : U ∈ L) (hrelation : relation ∈ L)
     (left right : StackToken (Option (Constructible.ZFCarrier U))) :
@@ -463,7 +460,6 @@ The structural normal form of indexed-sequence shortlex when every unbounded
 quantifier ranges over `LCarrier`.  No absoluteness claim is made about the
 supplied token formula.
 -/
-@[simp]
 theorem satisfies_shortlexFormula_lCarrier {parameterCount : Nat}
     (tokenLt : FOFormula (parameterCount + 2))
     (params : Tuple Model.LCarrier.{u} parameterCount)
@@ -521,7 +517,6 @@ def lCarrierFormulaRel {parameterCount : Nat}
 On canonical indexed codes whose entries lie in `L`, restricted shortlex
 satisfaction is exactly shortlex for the relation induced on their entries.
 -/
-@[simp]
 theorem satisfies_shortlexFormula_sequenceCode_lCarrier_iff
     {parameterCount : Nat}
     (tokenLt : FOFormula (parameterCount + 2))

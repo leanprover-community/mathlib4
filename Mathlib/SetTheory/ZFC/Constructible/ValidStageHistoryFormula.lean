@@ -117,7 +117,6 @@ def HistoryLimitState
           HistoryEntry history earlierIndex earlierStage earlierRelation ∧
             z.1 ∈ earlierRelation.1)
 
-@[simp]
 theorem satisfies_renamed_historyLimitStateFormula
     (history index stage relation : LCarrier.{u}) :
     FOFormula.Satisfies LMem
@@ -372,7 +371,6 @@ def validStageHistoryFormula : FOFormula 15 :=
       validStageHistoryIndexBody)
 
 /-- Exact semantics of the body at one bounded index. -/
-@[simp]
 theorem satisfies_validStageHistoryIndexBody
     (history bound index : LCarrier.{u}) :
     FOFormula.Satisfies LMem validStageHistoryIndexBody
@@ -424,7 +422,6 @@ def ValidStageHistory (history bound : LCarrier.{u}) : Prop :=
             otherStage = stage ∧ otherRelation = relation) ∧
         HistoryLocalState history index stage relation
 
-@[simp]
 theorem satisfies_validStageHistoryFormula_iff
     (history bound : LCarrier.{u}) :
     FOFormula.Satisfies LMem validStageHistoryFormula

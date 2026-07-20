@@ -63,7 +63,6 @@ theorem stageHistoryFixedParameters_last :
 
 /-- Before the final omega coordinate, the fixed history parameters are the
 stack-step prefix with its leading universe coordinate removed. -/
-@[simp]
 theorem stageHistoryFixedParameters_init
     (U : LCarrier.{u}) (i : Fin 12) :
     stageHistoryFixedParameters i.castSucc =

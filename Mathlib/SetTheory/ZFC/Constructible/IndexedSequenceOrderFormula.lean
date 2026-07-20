@@ -133,7 +133,6 @@ theorem satisfies_valueAtFormula (sequence index value : ZFSet.{u}) :
   rw [valueAtFormula, Delta0Formula.satisfies_toFO,
     satisfies_valueAtDelta0]
 
-@[simp]
 theorem satisfies_valueAt_sequenceCode_iff (xs : List ZFSet.{u})
     (k : Nat) (value : ZFSet.{u}) :
     FOFormula.Satisfies Delta0Formula.ZFMem valueAtFormula
@@ -248,7 +247,6 @@ theorem satisfies_samePrefixFormula
           (![1, 3, 4] i))
       exact hright
 
-@[simp]
 theorem satisfies_samePrefix_sequenceCode_iff
     (xs ys : List ZFSet.{u}) (k : Nat) :
     FOFormula.Satisfies Delta0Formula.ZFMem samePrefixFormula
@@ -360,7 +358,6 @@ theorem satisfies_hasLengthFormula (sequence length : ZFSet.{u}) :
       ∃ graph : ZFSet.{u}, sequence = ZFSet.pair length graph := by
   simp [hasLengthFormula]
 
-@[simp]
 theorem satisfies_hasLength_sequenceCode_iff
     (xs : List ZFSet.{u}) (length : ZFSet.{u}) :
     FOFormula.Satisfies Delta0Formula.ZFMem hasLengthFormula
@@ -578,7 +575,6 @@ def shortlexFormula {parameterCount : Nat}
         sequenceValidityFormula)
       (.ex (.ex (shortlexCore tokenLt))))
 
-@[simp]
 theorem satisfies_shortlexFormula {parameterCount : Nat}
     (tokenLt : FOFormula (parameterCount + 2))
     (params : Tuple ZFSet.{u} parameterCount)
@@ -705,7 +701,6 @@ theorem satisfies_shortlexFormula_represents_iff
         · exact (htoken _ _).mpr hrelation
 
 /-- The advertised specialization to the canonical indexed sequence codes. -/
-@[simp]
 theorem satisfies_shortlexFormula_sequenceCode_iff
     {parameterCount : Nat}
     (tokenLt : FOFormula (parameterCount + 2))

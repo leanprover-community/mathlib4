@@ -106,7 +106,6 @@ theorem satisfies_historyHasUniqueStateFormula_expanded
   rfl
 
 /-- Exact semantics: lookup at `(history,index)` has a unique state pair. -/
-@[simp]
 theorem satisfies_historyHasUniqueStateFormula_iff
     (history index : LCarrier.{u}) :
     FOFormula.Satisfies LMem historyHasUniqueStateFormula

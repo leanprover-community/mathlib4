@@ -125,7 +125,6 @@ noncomputable abbrev ClosureTerm.eval {seed : ZFSet.{u}}
     (t : ClosureTerm seed) : ZFSet.{u} :=
   RudimentaryTerm.eval (fun x : Constructible.ZFCarrier seed => x.1) t
 
-@[simp]
 theorem mem_closure_iff_exists_closureTerm {seed z : ZFSet.{u}} :
     z ∈ closure seed ↔ ∃ t : ClosureTerm seed, t.eval = z := by
   apply RudimentaryTerm.mem_closure_iff_exists_term_eval
@@ -166,7 +165,6 @@ theorem mem_rudimentaryClosure_iff_exists_term {U z : ZFSet.{u}} :
     · exact ⟨some ⟨x, hx⟩, rfl⟩
 
 /-- Term-syntax characterization of the Gödel presentation of `Def(U)`. -/
-@[simp]
 theorem mem_godelDef_iff_exists_rudimentaryTerm {U z : ZFSet.{u}} :
     z ∈ godelDef U ↔
       z ⊆ U ∧ ∃ t : RudimentaryClosureTerm U, t.eval = z := by

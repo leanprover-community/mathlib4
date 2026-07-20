@@ -242,7 +242,6 @@ theorem satisfies_sequenceValidityFormula_iff_exists_represents
       exact (hgraph i).2
 
 /-- In particular, every genuine indexed code satisfies validity. -/
-@[simp]
 theorem satisfies_sequenceValidityFormula_sequenceCode
     (xs : List ZFSet.{u}) :
     FOFormula.Satisfies Delta0Formula.ZFMem sequenceValidityFormula

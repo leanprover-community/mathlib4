@@ -31,7 +31,6 @@ theorem ordinalLCarrier_val (alpha : Ordinal.{u}) :
     (ordinalLCarrier alpha).1 = alpha.toZFSet :=
   rfl
 
-@[simp]
 theorem ordinalLCarrier_mem_ordinalLCarrier_iff
     (alpha beta : Ordinal.{u}) :
     (ordinalLCarrier beta).1 ∈ (ordinalLCarrier alpha).1 ↔ beta < alpha := by
@@ -43,7 +42,6 @@ theorem ordinalLCarrier_zero :
   apply Subtype.ext
   exact Ordinal.toZFSet_zero
 
-@[simp]
 theorem ordinalLCarrier_succ_val (alpha : Ordinal.{u}) :
     (ordinalLCarrier (Order.succ alpha)).1 =
       insert (ordinalLCarrier alpha).1 (ordinalLCarrier alpha).1 := by

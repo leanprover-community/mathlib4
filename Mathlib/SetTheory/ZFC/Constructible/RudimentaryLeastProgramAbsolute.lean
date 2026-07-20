@@ -274,7 +274,6 @@ theorem satisfies_leastProgramValueLtFormula_lCarrier_iff_successful
 
 /-- With an internally represented generator order, the restricted formula
 is also the canonical least-program order on `DefCarrier`. -/
-@[simp]
 theorem satisfies_leastProgramValueLtFormula_lCarrier_iff_defCarrierStackRel
     (U relation : Model.LCarrier.{u})
     (hwell : Model.InternallyWellOrders relation U)

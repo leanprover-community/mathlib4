@@ -248,7 +248,6 @@ theorem satisfies_stackStepFormula_lCarrier
     satisfies_anyOperationStackStepFormula_lCarrier]
 
 /-- On constructible stack codes, satisfaction in `LCarrier` is one step. -/
-@[simp]
 theorem satisfies_stackStepFormula_lCarrier_iff_run
     (U : ZFSet.{u}) (hU : U ∈ L)
     (token : StackToken (Option (Constructible.ZFCarrier U)))

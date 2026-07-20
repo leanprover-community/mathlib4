@@ -190,7 +190,6 @@ private theorem evalCoreAssignment_finalStack
       finalStack (19 : Fin 20) = finalStack := by
   rfl
 
-@[simp]
 private theorem evalCoreAssignment_base
     (U program result trace programLength traceLength finalStack : ZFSet.{u})
     (i : Fin 16) :
@@ -255,7 +254,6 @@ theorem comp_evalTraceLengthRename
   funext i
   fin_cases i <;> rfl
 
-@[simp]
 private theorem satisfies_evalInitialValueRename
     (U program result trace programLength traceLength finalStack : ZFSet.{u}) :
     FOFormula.Satisfies Delta0Formula.ZFMem valueAtFormula

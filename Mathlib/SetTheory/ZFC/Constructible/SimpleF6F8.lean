@@ -67,7 +67,6 @@ def f6GeneratedBody {n : Nat} (body : Delta0Formula (n + 1)) :
       (componentLeftIndex n) (componentRightIndex n))
     (Delta0Formula.rename (componentLastRename true n) body)
 
-@[simp]
 theorem satisfies_f6GeneratedBody (body : Delta0Formula (n + 1))
     (s : Tuple ZFSet.{u} n)
     (p leftBox left rightBox right : ZFSet.{u}) :
@@ -160,7 +159,6 @@ def fiberGeneratedBody {n : Nat} (z : Fin n)
         z.castSucc.castSucc.castSucc.castSucc.castSucc)
       (Delta0Formula.rename (componentLastRename false n) body))
 
-@[simp]
 theorem satisfies_fiberGeneratedBody (z : Fin n)
     (body : Delta0Formula (n + 1)) (s : Tuple ZFSet.{u} n)
     (p leftBox left rightBox right : ZFSet.{u}) :
