@@ -327,19 +327,25 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
   gcongr
   exact norm_le_pi_norm (v - u) i
 
-theorem isOpen_setOf_linearIndependent {ι : Type*} [Finite ι] :
+theorem isOpen_setOfPred_linearIndependent {ι : Type*} [Finite ι] :
     IsOpen { f : ι → E | LinearIndependent 𝕜 f } :=
   isOpen_iff_mem_nhds.2 fun _ => LinearIndependent.eventually
 
-theorem isOpen_setOf_nat_le_rank (n : ℕ) :
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_linearIndependent := isOpen_setOfPred_linearIndependent
+
+theorem isOpen_setOfPred_nat_le_rank (n : ℕ) :
     IsOpen { f : E →L[𝕜] F | ↑n ≤ (f : E →ₗ[𝕜] F).rank } := by
-  simp only [LinearMap.le_rank_iff_exists_linearIndependent_finset, setOf_exists, ← exists_prop]
+  simp only [LinearMap.le_rank_iff_exists_linearIndependent_finset, ofPred_exists, ← exists_prop]
   refine isOpen_biUnion fun t _ => ?_
   have : Continuous fun f : E →L[𝕜] F => fun x : (t : Set E) => f x :=
     continuous_pi fun x => (ContinuousLinearMap.apply 𝕜 F (x : E)).continuous
-  exact isOpen_setOf_linearIndependent.preimage this
+  exact isOpen_setOfPred_linearIndependent.preimage this
 
-theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_nat_le_rank := isOpen_setOfPred_nat_le_rank
+
+theorem isOpen_setOfPred_affineIndependent {ι : Type*} [Finite ι] :
     IsOpen {p : ι → E | AffineIndependent 𝕜 p} := by
   classical
   rcases isEmpty_or_nonempty ι with h | ⟨⟨i₀⟩⟩
@@ -350,7 +356,10 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
     have : Fintype ι' := Subtype.fintype _
     convert_to!
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
-    exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
+    exact isOpen_setOfPred_linearIndependent.preimage (by fun_prop)
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_affineIndependent := isOpen_setOfPred_affineIndependent
 
 namespace Module.Basis
 

@@ -349,7 +349,7 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
 lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
     Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
   ext g
-  simp only [Set.mem_range, Set.mem_setOf]
+  simp only [Set.mem_range, Set.mem_ofPred]
   constructor
   · grind
   · intro h
@@ -370,6 +370,10 @@ lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
     Surjective (Finsupp.mapRange (α := α) e he₀) := by
   rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
   simp
+
+lemma mapRange_bijective (e : M → N) (he₀ : e 0 = 0) (he : Bijective e) :
+    Bijective (Finsupp.mapRange (α := α) e he₀) :=
+  ⟨mapRange_injective e he₀ he.1, mapRange_surjective e he₀ he.2⟩
 
 end MapRange
 

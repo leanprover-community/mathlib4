@@ -48,7 +48,7 @@ variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 /-- In a Hausdorff magma with continuous multiplication, the centralizer of any set is closed. -/
 lemma Set.isClosed_centralizer {M : Type*} (s : Set M) [Mul M] [TopologicalSpace M]
     [SeparatelyContinuousMul M] [T2Space M] : IsClosed (centralizer s) := by
-  rw [centralizer, setOf_forall]
+  rw [centralizer, ofPred_forall]
   refine isClosed_sInter ?_
   rintro - ⟨m, ht, rfl⟩
   refine isClosed_imp (by simp) <| isClosed_eq ?_ ?_
@@ -284,10 +284,16 @@ section PointwiseLimits
 variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
 
 @[to_additive]
-theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
+theorem isClosed_setOfPred_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
     IsClosed { f : G₁ → G₂ | ∀ x, f x⁻¹ = (f x)⁻¹ } := by
-  simp only [setOf_forall]
+  simp only [ofPred_forall]
   exact isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_map_inv := isClosed_setOfPred_map_inv
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_map_neg := isClosed_setOfPred_map_neg
 
 end PointwiseLimits
 
@@ -804,7 +810,7 @@ theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → S
 theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
     x ∈ closure s ↔ ∀ U ∈ (𝓝 1 : Filter G), ∃ y ∈ s, y / x ∈ U := by
   rw [mem_closure_iff_nhds_basis ((𝓝 1 : Filter G).basis_sets.nhds_of_one x)]
-  simp_rw [Set.mem_setOf, id]
+  simp_rw [Set.mem_ofPred, id]
 
 /-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`)
 from a topological group to a topological monoid is continuous
@@ -1098,6 +1104,18 @@ theorem tendsto_div_nhds_one_iff {α : Type*} {l : Filter α} {x : G} {u : α �
   haveI A : Tendsto (fun _ : α => x) l (𝓝 x) := tendsto_const_nhds
   ⟨fun h => by simpa using h.mul A, fun h => by simpa using h.div' A⟩
 
+/-- If `f → a` and `g → b` along a nontrivial filter on the domain, valued in a
+Hausdorff topological group, then `f / g → 1` if and only if `a = b`. -/
+@[to_additive]
+theorem tendsto_div_nhds_one_iff_eq {α : Type*} {l : Filter α} [l.NeBot] [T2Space G]
+    {f g : α → G} {a b : G} (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) :
+    Tendsto (fun x ↦ f x / g x) l (𝓝 1) ↔ a = b :=
+  ⟨fun hfg => tendsto_nhds_unique hf <| by simpa using hfg.mul hg,
+   fun h => by subst h; simpa using hf.div' hg⟩
+
+@[to_additive]
+alias ⟨eq_of_tendsto_div_nhds_one, _⟩ := tendsto_div_nhds_one_iff_eq
+
 @[to_additive]
 theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
   simpa only [div_eq_mul_inv] using nhds_translation_mul_inv x
@@ -1182,7 +1200,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       rw [preimage_compl, compl_compl] at H
       convert! H
       ext x
-      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
@@ -1209,7 +1227,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       apply Finite.of_preimage _ (equivOp S).surjective
       convert! H using 1
       ext x
-      simp only [image_smul, mem_setOf_eq, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred_eq, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_nonempty_iff }
 
 end

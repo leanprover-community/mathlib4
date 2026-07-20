@@ -321,7 +321,7 @@ theorem LinearIndepOn.of_comp (f : M →ₗ[R] M') (hfv : LinearIndepOn R (f ∘
 lemma LinearIndependent.of_linearIndependent_subset (s : Set ι') {v : ι → ι' → R}
     (hv : LinearIndependent R fun (i : ι) (j : s) ↦ v i j) :
     LinearIndependent R v :=
-  hv.of_comp ⟨⟨s.restrict, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
+  hv.of_comp ⟨⟨s.domRestrict, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
 
 /-- If `f` is a linear map injective on the span of the range of `v`, then the family `f ∘ v`
 is linearly independent if and only if the family `v` is linearly independent.
@@ -429,10 +429,10 @@ theorem linearDepOn_iffₛ : ¬LinearIndepOn R v s ↔
   linearDepOn_iff'ₛ
 
 theorem linearIndependent_restrict_iff :
-    LinearIndependent R (s.restrict v) ↔ LinearIndepOn R v s := Iff.rfl
+    LinearIndependent R (s.domRestrict v) ↔ LinearIndepOn R v s := Iff.rfl
 
 theorem LinearIndepOn.linearIndependent_restrict (hs : LinearIndepOn R v s) :
-    LinearIndependent R (s.restrict v) :=
+    LinearIndependent R (s.domRestrict v) :=
   hs
 
 theorem linearIndepOn_iff_linearCombinationOnₛ :
@@ -843,7 +843,7 @@ lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι �
   refine ⟨fun h t g hts h0 i hit ↦ ?_, fun h t g h0 i hit ↦ ?_⟩
   · refine h (t.preimage _ Subtype.val_injective.injOn) (fun i ↦ g i) ?_ ⟨i, hts hit⟩ (by simpa)
     rwa [t.sum_preimage ((↑) : s → ι) Subtype.val_injective.injOn (fun i ↦ g i • v i)]
-    simp only [Subtype.range_coe_subtype, setOf_mem_eq]
+    simp only [Subtype.range_coe_subtype, ofPred_mem_eq]
     exact fun x hxt hxs ↦ (hxs (hts hxt)) |>.elim
   replace h : ∀ i (hi : i ∈ s), ⟨i, hi⟩ ∈ t → ∀ (h : i ∈ s), g ⟨i, h⟩ = 0 := by
     simpa [h0] using h (t.image (↑)) (fun i ↦ if hi : i ∈ s then g ⟨i, hi⟩ else 0)

@@ -130,7 +130,7 @@ theorem tendstoUniformlyOn_iff_tendstoUniformly_comp_coe :
   forall₂_congr fun u _ => by simp
 
 lemma tendstoUniformlyOn_iff_restrict {K : Set α} : TendstoUniformlyOn F f p K ↔
-    TendstoUniformly (fun n : ι => K.restrict (F n)) (K.restrict f) p :=
+    TendstoUniformly (fun n : ι => K.domRestrict (F n)) (K.domRestrict f) p :=
   tendstoUniformlyOn_iff_tendstoUniformly_comp_coe
 
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` w.r.t.
