@@ -68,6 +68,7 @@ lemma Algebra.Generators.homOfComm_cotangentSpace_map_eq [Algebra S T] [IsScalar
   exact ((Finsupp.linearCombination_single T _ _).trans (one_smul T _)).symm
 
 variable (R S T) in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Algebra.Generators.homOfComm_cotangentSpace_map_injective_of_injective [Algebra S T]
     [IsScalarTower R S T] (inj : Function.Injective (algebraMap S T)) : Function.Injective
     (Extension.CotangentSpace.map (Generators.HomOfCommSelf R S T).toExtensionHom) := by
@@ -100,6 +101,7 @@ lemma Algebra.Extension.ker_eq_comap_of_subalgebra (S : Subalgebra R T) :
   exact ((RingHom.comap_ker _ _).trans ((congr_arg RingHom.ker algmap_eq).trans
     (RingHom.ker_comp_of_injective _ Subtype.val_injective))).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Algebra.h1Cotangent_subsingleton_of_subalgebra
     (h : ∀ (s : Finset T), ∃ (S : Subalgebra R T),
       (s : Set T) ⊆ S ∧ Subsingleton (H1Cotangent R S)) :

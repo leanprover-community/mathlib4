@@ -81,7 +81,7 @@ noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} 
 
 namespace koszulCocomplex
 
-/-- The differential of `koszulCocomplex R x` is exterior multiplication by `x` in each degree. -/
+set_option backward.isDefEq.respectTransparency false in
 theorem d_eq_aux (x : M) (i : ℕ) :
     (koszulCocomplex R x).d i (i + 1) = ModuleCat.ofHom (koszulCocomplexAux R M x i) := by
   simp [koszulCocomplex]
@@ -218,6 +218,7 @@ instance (T : Type v) [CommRing T] (g : R →+* T) :
 
 variable {S : Type (max u v)} [CommRing S] (f : R →+* S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The base change isomorphism for Koszul cocomplex. -/
 noncomputable def baseChangeIso {M : Type u} [AddCommGroup M] [Module R M] (x : M) :
     letI := f.toAlgebra

@@ -491,7 +491,7 @@ lemma exist_isRegularLocalRing_surjective_of_isAdicComplete [IsAdicComplete (max
       MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing, g, surjg
 
 lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoetherianRing R]
-    [IsLocalRing R] {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
+    [IsLocalRing R] {R' : Type*} [CommRing R'] [IsLocalRing R']
     (f : R →+* R') (surj : Function.Surjective f) (le : RingHom.ker f ≤ (maximalIdeal R) ^ 2) :
     (maximalIdeal R').spanFinrank = (maximalIdeal R).spanFinrank := by
   let := f.toAlgebra

@@ -48,6 +48,7 @@ complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. 
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k`
 when `c.prev j = i` and `c.next j = k`. -/
@@ -910,6 +911,7 @@ noncomputable def homologyIsoSc' : K.homology j ≅ (K.sc' i j k).homology :=
 lemma homology_sc'_eq_homology [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
     (K.sc' (c.prev j) j (c.next j)).homology = K.homology j := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma homologyIsoSc'_eq_refl
     [(K.sc' (c.prev j) j (c.next j)).HasHomology] :

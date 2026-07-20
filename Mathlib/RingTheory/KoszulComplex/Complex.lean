@@ -80,6 +80,7 @@ noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
 lemma koszulComplex.X_eq_exteriorPower (i : ℕ) :
     (koszulComplex φ).X i = ModuleCat.of R (⋀[R]^i M) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma koszulComplex.d_eq_aux (i : ℕ) :
     (koszulComplex φ).d (i + 1) i = ModuleCat.ofHom (koszulComplexAux φ i) := by
   simp [koszulComplex]
@@ -218,6 +219,7 @@ instance (T : Type v) [CommRing T] (g : R →+* T) :
 
 variable {S : Type (max u v)} [CommRing S] (f : R →+* S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The base change isomorphism for Koszul complex. -/
 noncomputable def baseChangeIso {M : Type u} [AddCommGroup M] [Module R M] (φ : M →ₗ[R] R) :
     letI := f.toAlgebra
@@ -410,6 +412,7 @@ noncomputable abbrev toUpOneHom (i : ℕ) :
     (koszulComplex (appendMap φ a)).X (i + 1) ⟶ (upOne φ).X (i + 1) :=
   ModuleCat.ofHom ((LinearMap.snd R _ _).comp (exteriorPowerProdEquivProd R M i).symm.toLinearMap)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma to_self_hom_comm (i : ℕ) :
     toUpOneHom φ a (i + 1) ≫ (koszulComplex φ).d (i + 1) i =
       (koszulComplex (appendMap φ a)).d (i + 1 + 1) (i + 1) ≫ toUpOneHom φ a i := by
@@ -426,6 +429,7 @@ lemma to_self_hom_comm (i : ℕ) :
   rw [h, LinearEquiv.symm_apply_apply]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homomorphism given by projection to the second component
 using `exteriorPowerProdEquivProd`. -/
 noncomputable def toUpOne : koszulComplex (appendMap φ a) ⟶ upOne φ :=
@@ -436,10 +440,7 @@ noncomputable def toUpOne : koszulComplex (appendMap φ a) ⟶ upOne φ :=
       | i + 1 => toUpOneHom φ a i)
     (fun i ↦
       match i with
-      | 0 => by
-        simp only [Nat.reduceAdd, ChainComplex.augment_X_zero, ChainComplex.augment_X_succ,
-          ChainComplex.augment_d_one_zero, comp_zero]
-        exact comp_zero.symm
+      | 0 => by simp
       | i + 1 => to_self_hom_comm φ a i)
 
 lemma toAppendMap_comp_toUpOne_eq_zero : toAppendMap φ a ≫ toUpOne φ a = 0 := by
@@ -634,6 +635,7 @@ noncomputable def ofListIsoOfEq {rs' rs : List R} {a : R} (eq : rs = rs' ++ [a])
     koszulComplex (appendMap (Fintype.linearCombination R rs'.get) a) :=
   isoOfEquiv _ (ofListIsoOfEqAux eq) _ (ofListIsoOfEqAux_comp eq)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exactAt_of_isRegular (rs : List R) (reg : IsRegular R rs)
     (i : ℕ) (ne : i ≠ 0) : (ofList rs).ExactAt i := by
   generalize h : rs.length = n
