@@ -88,7 +88,7 @@ theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} 
     (h : Function.Semiconj g fa fb) {g' : β → α} (hg' : IsOrderRightAdjoint g g') :
     Function.Semiconj g' fb fa := by
   refine fun y => (hg' _).unique ?_
-  rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_setOf_eq]
+  rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_ofPred_eq]
   simp only [h.eq, fb.le_iff_le, fa.isLUB_image'.mpr (hg' _)]
 
 variable {G : Type*}

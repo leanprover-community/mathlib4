@@ -293,6 +293,12 @@ theorem self_trans_symm (e : α ≃ᵐ β) : e.trans e.symm = refl α :=
 theorem trans_symm (e₁ : α ≃ᵐ β) (e₂ : β ≃ᵐ γ) : (e₁.trans e₂).symm = e₂.symm.trans (e₁.symm) :=
   rfl
 
+theorem symm_apply_eq (e : α ≃ᵐ β) {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : α ≃ᵐ β) {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
+
 protected theorem surjective (e : α ≃ᵐ β) : Surjective e :=
   e.toEquiv.surjective
 
@@ -501,6 +507,7 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
     piCongrLeft (fun i' ↦ β i') e x (e i) = x i := by
   rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
 def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
@@ -638,13 +645,27 @@ def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α �
 @[simp] theorem ofInvolutive_symm (f : α → α) (hf : Involutive f) (hf' : Measurable f) :
     (ofInvolutive f hf hf').symm = ofInvolutive f hf hf' := rfl
 
-/-- `setOf` as a `MeasurableEquiv`. -/
+set_option backward.isDefEq.respectTransparency.types false in
+/-- `Set.ofPred` as a `MeasurableEquiv`. -/
 @[simps]
-protected def setOf {α : Type*} : (α → Prop) ≃ᵐ Set α where
+protected def setOfPred {α : Type*} : (α → Prop) ≃ᵐ Set α where
   toFun p := {a | p a}
   invFun s a := a ∈ s
 
-@[simp, norm_cast] lemma coe_setOf {α : Type*} : ⇑MeasurableEquiv.setOf = setOf (α := α) := rfl
+@[deprecated (since := "2026-07-09")]
+protected alias setOf := MeasurableEquiv.setOfPred
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_apply := MeasurableEquiv.setOfPred_apply
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_symm_apply := MeasurableEquiv.setOfPred_symm_apply
+
+@[simp, norm_cast] lemma coe_setOfPred {α : Type*} :
+    ⇑MeasurableEquiv.setOfPred = Set.ofPred (α := α) := rfl
+
+@[deprecated (since := "2026-07-09")]
+alias coe_setOf := coe_setOfPred
 
 end MeasurableEquiv
 
@@ -747,6 +768,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   apply hx
   exact ⟨y, h, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
     hf.equivRange x = ⟨f x, mem_range_self x⟩ := by

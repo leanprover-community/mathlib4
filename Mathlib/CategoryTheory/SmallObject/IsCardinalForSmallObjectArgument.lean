@@ -118,9 +118,9 @@ lemma preservesColimit {A B X Y : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y)
 lemma hasColimitsOfShape_discrete (X Y : C) (p : X ⟶ Y) :
     HasColimitsOfShape
       (Discrete (FunctorObjIndex I.homFamily p)) C := by
-  haveI := locallySmall I κ
-  haveI := isSmall I κ
-  haveI := hasCoproducts I κ
+  have := locallySmall I κ
+  have := isSmall I κ
+  have := hasCoproducts I κ
   exact hasColimitsOfShape_of_equivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm
 
@@ -133,6 +133,7 @@ noncomputable def succStruct : SuccStruct (Arrow C ⥤ Arrow C) :=
   haveI := hasPushouts I κ
   SuccStruct.ofNatTrans (ε I.homFamily)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For the successor structure `succStruct I κ` on `Arrow C ⥤ Arrow C`,
 the morphism from an object to its successor induces
 morphisms in `C` which consists in attaching `I`-cells. -/
@@ -154,13 +155,14 @@ isomorphisms on the right side. -/
 def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
   (coproducts.{w} I).pushouts f.left ∧ (isomorphisms C) f.right
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma succStruct_prop_le_propArrow :
     (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
-  haveI := locallySmall I κ
-  haveI := isSmall I κ
-  haveI := hasColimitsOfShape_discrete I κ
-  haveI := hasPushouts I κ
+  have := locallySmall I κ
+  have := isSmall I κ
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
   intro _ _ _ ⟨F⟩ f
   constructor
   · nth_rw 1 [← I.ofHoms_homFamily]
@@ -217,7 +219,6 @@ instance {j₁ j₂ : κ.ord.ToType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
     IsIso (((iterationFunctor I κ).map φ).app f).right :=
   inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `f : Arrow C`, the object `((iteration I κ).obj f).right`
 identifies to `f.right`. -/
 @[simps! hom]
@@ -233,6 +234,7 @@ noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.ToTyp
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
     (iterationObjRightIso I κ f).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.ToType) :
@@ -261,7 +263,7 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
   Arrow.isoMk (Iso.refl _)
     (((evaluation _ _).obj f).mapIso
       ((succStruct I κ).iterationFunctorObjSuccIso j (not_isMax j))) (by
-    have this := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
+    have := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
     dsimp at this
     dsimp [iterationFunctor]
     rw [id_comp, this, assoc, Iso.inv_hom_id_app, comp_id]
@@ -301,6 +303,7 @@ the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma πObj_ιIteration_app_right :
     πObj I κ f ≫ ((ιIteration I κ).app f).right =
@@ -382,9 +385,9 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
     HasLiftingProperty i (πObj I κ f) := ⟨by
-  haveI := hasColimitsOfShape_discrete I κ
-  haveI := hasPushouts I κ
-  haveI := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  have := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
   intro g b sq
   obtain ⟨j, t, ht⟩ := Types.jointly_surjective _
     (isColimitOfPreserves (coyoneda.obj (Opposite.op A))
@@ -449,6 +452,7 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   rw [← assoc]
   apply comp_id
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functorial factorization `ιObj I κ f ≫ πObj I κ f.hom = f`
 with `ιObj I κ f` in `I.rlp.llp` and `πObj I κ f.hom` in `I.rlp`. -/
