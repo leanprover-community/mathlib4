@@ -226,9 +226,8 @@ theorem factors_zero : (0 : Associates α).factors = ⊤ :=
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
-  classical
-    apply dif_neg
-    apply mt mk_eq_zero.1 h
+  apply dif_neg
+  apply mt mk_eq_zero.1 h
 
 @[simp]
 theorem factors_prod (a : Associates α) : a.factors.prod = a := by
@@ -356,7 +355,7 @@ theorem dvd_of_mem_factors {a p : Associates α} (hm : p ∈ factors a) :
 
 theorem dvd_of_mem_factors' {a : α} {p : Associates α} {hp : Irreducible p} {hz : a ≠ 0}
     (h_mem : Subtype.mk p hp ∈ factors' a) : p ∣ Associates.mk a := by
-  haveI := Classical.decEq (Associates α)
+  have := Classical.decEq (Associates α)
   apply dvd_of_mem_factors
   rw [factors_mk _ hz]
   apply mem_factorSet_some.2 h_mem

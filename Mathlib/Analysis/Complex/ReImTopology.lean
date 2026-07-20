@@ -24,8 +24,8 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
   and is a quotient map;
 * `Complex.interior_preimage_re`, `Complex.closure_preimage_re`, `Complex.frontier_preimage_re`:
   formulas for `interior (Complex.re ⁻¹' s)` etc;
-* `Complex.interior_setOf_re_le` etc: particular cases of the above formulas in the cases when `s`
-  is one of the infinite intervals `Set.Ioi a`, `Set.Ici a`, `Set.Iio a`, and `Set.Iic a`,
+* `Complex.interior_setOfPred_re_le` etc: particular cases of the above formulas in the cases
+  when `s` is one of the infinite intervals `Set.Ioi a`, `Set.Ici a`, `Set.Iio a`, and `Set.Iic a`,
   formulated as `interior {z : ℂ | z.re ≤ a} = {z | z.re < a}` etc.
 
 ## Tags
@@ -80,68 +80,114 @@ theorem frontier_preimage_im (s : Set ℝ) : frontier (im ⁻¹' s) = im ⁻¹' 
   (isOpenMap_im.preimage_frontier_eq_frontier_preimage continuous_im _).symm
 
 @[simp]
-theorem interior_setOf_re_le (a : ℝ) : interior { z : ℂ | z.re ≤ a } = { z | z.re < a } := by
+theorem interior_setOfPred_re_le (a : ℝ) : interior { z : ℂ | z.re ≤ a } = { z | z.re < a } := by
   simpa only [interior_Iic] using! interior_preimage_re (Iic a)
 
+@[deprecated (since := "2026-07-09")]
+alias interior_setOf_re_le := interior_setOfPred_re_le
+
 @[simp]
-theorem interior_setOf_im_le (a : ℝ) : interior { z : ℂ | z.im ≤ a } = { z | z.im < a } := by
+theorem interior_setOfPred_im_le (a : ℝ) : interior { z : ℂ | z.im ≤ a } = { z | z.im < a } := by
   simpa only [interior_Iic] using! interior_preimage_im (Iic a)
 
+@[deprecated (since := "2026-07-09")]
+alias interior_setOf_im_le := interior_setOfPred_im_le
+
 @[simp]
-theorem interior_setOf_le_re (a : ℝ) : interior { z : ℂ | a ≤ z.re } = { z | a < z.re } := by
+theorem interior_setOfPred_le_re (a : ℝ) : interior { z : ℂ | a ≤ z.re } = { z | a < z.re } := by
   simpa only [interior_Ici] using! interior_preimage_re (Ici a)
 
+@[deprecated (since := "2026-07-09")]
+alias interior_setOf_le_re := interior_setOfPred_le_re
+
 @[simp]
-theorem interior_setOf_le_im (a : ℝ) : interior { z : ℂ | a ≤ z.im } = { z | a < z.im } := by
+theorem interior_setOfPred_le_im (a : ℝ) : interior { z : ℂ | a ≤ z.im } = { z | a < z.im } := by
   simpa only [interior_Ici] using! interior_preimage_im (Ici a)
 
+@[deprecated (since := "2026-07-09")]
+alias interior_setOf_le_im := interior_setOfPred_le_im
+
 @[simp]
-theorem closure_setOf_re_lt (a : ℝ) : closure { z : ℂ | z.re < a } = { z | z.re ≤ a } := by
+theorem closure_setOfPred_re_lt (a : ℝ) : closure { z : ℂ | z.re < a } = { z | z.re ≤ a } := by
   simpa only [closure_Iio] using! closure_preimage_re (Iio a)
 
+@[deprecated (since := "2026-07-09")]
+alias closure_setOf_re_lt := closure_setOfPred_re_lt
+
 @[simp]
-theorem closure_setOf_im_lt (a : ℝ) : closure { z : ℂ | z.im < a } = { z | z.im ≤ a } := by
+theorem closure_setOfPred_im_lt (a : ℝ) : closure { z : ℂ | z.im < a } = { z | z.im ≤ a } := by
   simpa only [closure_Iio] using! closure_preimage_im (Iio a)
 
+@[deprecated (since := "2026-07-09")] alias closure_setOf_im_lt := closure_setOfPred_im_lt
+
 @[simp]
-theorem closure_setOf_lt_re (a : ℝ) : closure { z : ℂ | a < z.re } = { z | a ≤ z.re } := by
+theorem closure_setOfPred_lt_re (a : ℝ) : closure { z : ℂ | a < z.re } = { z | a ≤ z.re } := by
   simpa only [closure_Ioi] using! closure_preimage_re (Ioi a)
 
+@[deprecated (since := "2026-07-09")]
+alias closure_setOf_lt_re := closure_setOfPred_lt_re
+
 @[simp]
-theorem closure_setOf_lt_im (a : ℝ) : closure { z : ℂ | a < z.im } = { z | a ≤ z.im } := by
+theorem closure_setOfPred_lt_im (a : ℝ) : closure { z : ℂ | a < z.im } = { z | a ≤ z.im } := by
   simpa only [closure_Ioi] using! closure_preimage_im (Ioi a)
 
+@[deprecated (since := "2026-07-09")] alias closure_setOf_lt_im := closure_setOfPred_lt_im
+
 @[simp]
-theorem frontier_setOf_re_le (a : ℝ) : frontier { z : ℂ | z.re ≤ a } = { z | z.re = a } := by
+theorem frontier_setOfPred_re_le (a : ℝ) : frontier { z : ℂ | z.re ≤ a } = { z | z.re = a } := by
   simpa only [frontier_Iic] using! frontier_preimage_re (Iic a)
 
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_re_le := frontier_setOfPred_re_le
+
 @[simp]
-theorem frontier_setOf_im_le (a : ℝ) : frontier { z : ℂ | z.im ≤ a } = { z | z.im = a } := by
+theorem frontier_setOfPred_im_le (a : ℝ) : frontier { z : ℂ | z.im ≤ a } = { z | z.im = a } := by
   simpa only [frontier_Iic] using! frontier_preimage_im (Iic a)
 
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_im_le := frontier_setOfPred_im_le
+
 @[simp]
-theorem frontier_setOf_le_re (a : ℝ) : frontier { z : ℂ | a ≤ z.re } = { z | z.re = a } := by
+theorem frontier_setOfPred_le_re (a : ℝ) : frontier { z : ℂ | a ≤ z.re } = { z | z.re = a } := by
   simpa only [frontier_Ici] using! frontier_preimage_re (Ici a)
 
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_le_re := frontier_setOfPred_le_re
+
 @[simp]
-theorem frontier_setOf_le_im (a : ℝ) : frontier { z : ℂ | a ≤ z.im } = { z | z.im = a } := by
+theorem frontier_setOfPred_le_im (a : ℝ) : frontier { z : ℂ | a ≤ z.im } = { z | z.im = a } := by
   simpa only [frontier_Ici] using! frontier_preimage_im (Ici a)
 
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_le_im := frontier_setOfPred_le_im
+
 @[simp]
-theorem frontier_setOf_re_lt (a : ℝ) : frontier { z : ℂ | z.re < a } = { z | z.re = a } := by
+theorem frontier_setOfPred_re_lt (a : ℝ) : frontier { z : ℂ | z.re < a } = { z | z.re = a } := by
   simpa only [frontier_Iio] using! frontier_preimage_re (Iio a)
 
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_re_lt := frontier_setOfPred_re_lt
+
 @[simp]
-theorem frontier_setOf_im_lt (a : ℝ) : frontier { z : ℂ | z.im < a } = { z | z.im = a } := by
+theorem frontier_setOfPred_im_lt (a : ℝ) : frontier { z : ℂ | z.im < a } = { z | z.im = a } := by
   simpa only [frontier_Iio] using! frontier_preimage_im (Iio a)
 
-@[simp]
-theorem frontier_setOf_lt_re (a : ℝ) : frontier { z : ℂ | a < z.re } = { z | z.re = a } := by
-  simpa only [frontier_Ioi] using! frontier_preimage_re (Ioi a)
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_im_lt := frontier_setOfPred_im_lt
 
 @[simp]
-theorem frontier_setOf_lt_im (a : ℝ) : frontier { z : ℂ | a < z.im } = { z | z.im = a } := by
+theorem frontier_setOfPred_lt_re (a : ℝ) : frontier { z : ℂ | a < z.re } = { z | z.re = a } := by
+  simpa only [frontier_Ioi] using! frontier_preimage_re (Ioi a)
+
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_lt_re := frontier_setOfPred_lt_re
+
+@[simp]
+theorem frontier_setOfPred_lt_im (a : ℝ) : frontier { z : ℂ | a < z.im } = { z | z.im = a } := by
   simpa only [frontier_Ioi] using! frontier_preimage_im (Ioi a)
+
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_lt_im := frontier_setOfPred_lt_im
 
 theorem closure_reProdIm (s t : Set ℝ) : closure (s ×ℂ t) = closure s ×ℂ closure t := by
   simpa only [← preimage_eq_preimage equivRealProdCLM.symm.toHomeomorph.surjective,
@@ -155,14 +201,20 @@ theorem frontier_reProdIm (s t : Set ℝ) :
   simpa only [← preimage_eq_preimage equivRealProdCLM.symm.toHomeomorph.surjective,
     equivRealProdCLM.symm.toHomeomorph.preimage_frontier] using! frontier_prod_eq s t
 
-theorem frontier_setOf_le_re_and_le_im (a b : ℝ) :
+theorem frontier_setOfPred_le_re_and_le_im (a b : ℝ) :
     frontier { z | a ≤ re z ∧ b ≤ im z } = { z | a ≤ re z ∧ im z = b ∨ re z = a ∧ b ≤ im z } := by
   simpa only [closure_Ici, frontier_Ici] using! frontier_reProdIm (Ici a) (Ici b)
 
-theorem frontier_setOf_le_re_and_im_le (a b : ℝ) :
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_le_re_and_le_im := frontier_setOfPred_le_re_and_le_im
+
+theorem frontier_setOfPred_le_re_and_im_le (a b : ℝ) :
     frontier { z | a ≤ re z ∧ im z ≤ b } = { z | a ≤ re z ∧ im z = b ∨ re z = a ∧ im z ≤ b } := by
   simpa only [closure_Ici, closure_Iic, frontier_Ici, frontier_Iic] using!
     frontier_reProdIm (Ici a) (Iic b)
+
+@[deprecated (since := "2026-07-09")]
+alias frontier_setOf_le_re_and_im_le := frontier_setOfPred_le_re_and_im_le
 
 end Complex
 

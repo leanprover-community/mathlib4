@@ -214,9 +214,11 @@ theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = �
       (fun _ _ _ ↦ smul_mem _ _) hx'
 
 @[simp]
-lemma span_setOf_mem_eq_top :
+lemma span_setOfPred_mem_eq_top :
     span R {x : span R s | (x : M) ∈ s} = ⊤ :=
   span_span_coe_preimage
+
+@[deprecated (since := "2026-07-09")] alias span_setOf_mem_eq_top := span_setOfPred_mem_eq_top
 
 theorem span_nat_eq_addSubmonoidClosure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by
@@ -679,6 +681,7 @@ theorem Module.isPrincipal_submodule_iff {p : Submodule R M} :
     have ⟨r, hr⟩ := mem_span_singleton.mp (ha.le x.2)
     exact mem_span_singleton.mpr ⟨r, Subtype.ext hr⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Module.IsPrincipal.of_surjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f)
     [IsPrincipal R M] : IsPrincipal R M₂ where
   principal := by
