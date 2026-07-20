@@ -52,10 +52,12 @@ theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
 theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   if_neg h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
 
 theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
@@ -83,6 +85,7 @@ theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (ζ * f) x = ∑ i ∈ divisors x, f i :=
   coe_zeta_smul_apply
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (f * ζ) x = ∑ i ∈ divisors x, f i := by
   rw [← coe_zeta_mul_comm, coe_zeta_mul_apply]
@@ -141,6 +144,7 @@ open scoped zeta
 def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
   if h0 : k = 0 then ζ else ⟨fun x ↦ f x ^ k, by simp_rw [map_zero, zero_pow h0]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif_pos rfl]
 
@@ -148,6 +152,7 @@ theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif
 theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by
   ext; simp [ppow]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
   rw [ppow, dif_neg (Nat.ne_of_gt kpos), coe_mk]

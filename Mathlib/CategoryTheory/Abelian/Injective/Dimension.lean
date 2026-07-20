@@ -58,7 +58,7 @@ variable [HasExt.{w} C] (X : C) (n : ℕ)
 
 lemma subsingleton [hX : HasInjectiveDimensionLT X n] (i : ℕ) (hi : n ≤ i) (Y : C) :
     Subsingleton (Ext.{w} Y X i) := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   have := hX.subsingleton' i hi
   exact Ext.chgUniv.{w, max u v}.symm.subsingleton
 
@@ -67,7 +67,7 @@ lemma mk (hX : ∀ (i : ℕ) (_ : n ≤ i) ⦃Y : C⦄, ∀ (e : Ext Y X i), e =
     HasInjectiveDimensionLT X n where
   subsingleton' i hi Y := by
     have : Subsingleton (Ext Y X i) := ⟨fun e₁ e₂ ↦ by simp only [hX i hi]⟩
-    letI := HasExt.standard C
+    let := HasExt.standard C
     exact Ext.chgUniv.{max u v, w}.symm.subsingleton
 
 end HasInjectiveDimensionLT
@@ -90,7 +90,7 @@ lemma hasInjectiveDimensionLT_iff [HasExt.{w} C] :
 variable {X} in
 lemma Limits.IsZero.hasInjectiveDimensionLT_zero (hX : IsZero X) :
     HasInjectiveDimensionLT X 0 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y e
   rw [← e.comp_mk₀_id, hX.eq_zero_of_tgt (𝟙 X), Ext.mk₀_zero, Ext.comp_zero]
@@ -99,7 +99,7 @@ instance : HasInjectiveDimensionLT (0 : C) 0 :=
   (isZero_zero C).hasInjectiveDimensionLT_zero
 
 lemma isZero_of_hasInjectiveDimensionLT_zero [HasInjectiveDimensionLT X 0] : IsZero X := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [IsZero.iff_id_eq_zero]
   apply Ext.homEquiv₀.symm.injective
   simpa only [Ext.homEquiv₀_symm_apply, Ext.mk₀_zero]
@@ -111,7 +111,7 @@ lemma hasInjectiveDimensionLT_zero_iff_isZero : HasInjectiveDimensionLT X 0 ↔ 
 lemma hasInjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
     [HasInjectiveDimensionLT X n] :
     HasInjectiveDimensionLT X m := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y e
   exact e.eq_zero_of_hasInjectiveDimensionLT n (by lia)
@@ -129,7 +129,7 @@ instance [HasInjectiveDimensionLT X n] :
   inferInstanceAs (HasInjectiveDimensionLT X (n + 1))
 
 instance [Injective X] : HasInjectiveDimensionLT X 1 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y e
   obtain _ | i := i
@@ -149,7 +149,7 @@ lemma injective_iff_subsingleton_ext_one [HasExt.{w} C] :
 variable {X} in
 lemma injective_iff_hasInjectiveDimensionLT_one :
     Injective X ↔ HasInjectiveDimensionLT X 1 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ injective_iff_subsingleton_ext_one.2
     (HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
@@ -161,7 +161,7 @@ end
 lemma Retract.hasInjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
     [HasInjectiveDimensionLT Y n] :
     HasInjectiveDimensionLT X n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   intro i hi T x
   rw [← x.comp_mk₀_id, ← h.retract, ← Ext.mk₀_comp_mk₀, ← Ext.comp_assoc_of_second_deg_zero,
@@ -186,7 +186,7 @@ include hS
 lemma hasInjectiveDimensionLT_X₂ (h₁ : HasInjectiveDimensionLT S.X₁ n)
     (h₃ : HasInjectiveDimensionLT S.X₃ n) :
     HasInjectiveDimensionLT S.X₂ n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y x₂
   obtain ⟨x₃, rfl⟩ := Ext.covariant_sequence_exact₂ _ hS x₂
@@ -196,7 +196,7 @@ lemma hasInjectiveDimensionLT_X₂ (h₁ : HasInjectiveDimensionLT S.X₁ n)
 lemma hasInjectiveDimensionLT_X₁ (h₁ : HasInjectiveDimensionLT S.X₃ n)
     (h₂ : HasInjectiveDimensionLT S.X₂ (n + 1)) :
     HasInjectiveDimensionLT S.X₁ (n + 1) := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   rintro (_ | i) hi Y x₃
   · simp at hi
@@ -207,7 +207,7 @@ lemma hasInjectiveDimensionLT_X₁ (h₁ : HasInjectiveDimensionLT S.X₃ n)
 lemma hasInjectiveDimensionLT_X₃ (h₂ : HasInjectiveDimensionLT S.X₂ n)
     (h₃ : HasInjectiveDimensionLT S.X₁ (n + 1)) :
     HasInjectiveDimensionLT S.X₃ n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
   intro i hi Y x₁
   obtain ⟨x₂, rfl⟩ := Ext.covariant_sequence_exact₃ _ hS x₁ (add_comm _ _)
@@ -267,10 +267,11 @@ lemma injectiveDimension_eq_of_iso {X Y : C} (e : X ≅ Y) :
   exact ⟨fun h ↦ hasInjectiveDimensionLT_of_iso e _,
     fun h ↦ hasInjectiveDimensionLT_of_iso e.symm _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Retract.injectiveDimension_le {X Y : C} (h : Retract X Y) :
     injectiveDimension X ≤ injectiveDimension Y :=
   sInf_le_sInf_of_subset_insert_top (fun n hn ↦ by
-    simp only [Set.mem_setOf_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
+    simp only [Set.mem_ofPred_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
       Set.insert_eq_of_mem] at hn ⊢
     intro i hi
     have := hn i hi
@@ -280,7 +281,7 @@ lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
     injectiveDimension X < n ↔ HasInjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
   · have : injectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
-    simp only [Set.mem_setOf_eq] at this
+    simp only [Set.mem_ofPred_eq] at this
     exact this _ h
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasInjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
@@ -314,9 +315,9 @@ lemma injectiveDimension_ne_top_iff (X : C) :
       simp only [WithBot.coe_top, ne_eq, not_true_eq_false, false_and, true_and, false_or] at this
       obtain ⟨n, hn⟩ := this
       rw [← injectiveDimension_le_iff, hd, WithBot.coe_top, top_le_iff] at hn
-      exact ENat.coe_ne_top _ ((WithBot.coe_eq_coe).1 hn)
+      exact ENat.natCast_ne_top _ ((WithBot.coe_eq_coe).1 hn)
     | coe d =>
-      simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
+      simp only [ne_eq, WithBot.coe_eq_top, ENat.natCast_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← injectiveDimension_le_iff] using! hd.le⟩
 
 end CategoryTheory
