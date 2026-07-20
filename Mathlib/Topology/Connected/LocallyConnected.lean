@@ -151,8 +151,7 @@ theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU
     LocallyConnectedSpace U :=
   hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace
 
-/-- The image of a locally connected space under a quotient map (in particular, under an open
-continuous surjection) is locally connected. -/
+/-- The image of a locally connected space under a quotient map is locally connected. -/
 theorem Topology.IsQuotientMap.locallyConnectedSpace [LocallyConnectedSpace α]
     [TopologicalSpace β] {f : α → β} (hf : IsQuotientMap f) : LocallyConnectedSpace β := by
   rw [locallyConnectedSpace_iff_connectedComponentIn_open]
