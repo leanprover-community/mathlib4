@@ -149,7 +149,7 @@ part of the decomposition. -/
 structure _root_.FredholmDecomposition where
   /-- The inessential (i.e. finite dimensional) part of a Fredholm decomposition. -/
   X₀ : Submodule 𝕜 E
-  /-- The essential (i.e. finite co-dimensional) part of a Fredholm decomposition. -/
+  /-- The essential (i.e. finite codimensional) part of a Fredholm decomposition. -/
   X₁ : Submodule 𝕜 E
   isTopCompl : IsTopCompl X₁ X₀
   finite_X₀ : FiniteDimensional 𝕜 X₀
@@ -259,7 +259,7 @@ variable [CompleteSpace 𝕜]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
 
-/-- Assume that `u : E →L[𝕜] F` restricts to an isomorphism between closed finite co-dimension
+/-- Assume that `u : E →L[𝕜] F` restricts to an isomorphism between closed finite codimension
 subspaces `E₁` and `F₁`. Then `u` is Fredholm.
 
 In fact it is enough to assume that the restriction `E₁ →L[𝕜] F₁` is Fredholm, see
