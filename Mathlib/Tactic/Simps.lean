@@ -126,6 +126,5 @@ initialize_simps_projections Singleton
 initialize_simps_projections Sep
 initialize_simps_projections Setoid
 
-initialize_simps_projections Thunk
 initialize_simps_projections Sigma
 initialize_simps_projections PSigma
