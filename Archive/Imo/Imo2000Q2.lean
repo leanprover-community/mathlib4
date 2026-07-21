@@ -30,7 +30,7 @@ When at least one is negative or zero, the inequality is verified by sign analys
 
 - The inequality is reduced via `A = x / y`, `B = y / z`, `C = z / x`, then the substitution
   `x = q + r`, `y = r + p`, `z = p + q`.
-- Helper lemmas prove `8pqr ≤ (p + q)(r + p)(q + r)` by AM-GM when `p, q, r > 0` and by sign
+- Helper lemmas prove `8pqr ≤ (p + q)(q + r)(r + p)` by AM-GM when `p, q, r > 0` and by sign
   analysis otherwise; the main proof closes with `grind`.
 
 ## References
@@ -54,12 +54,12 @@ lemma eight_mul_le_prod_add_of_pos {p q r : ℝ} (p_pos : 0 < p)
 
 /-- When `p ≤ 0` but `q`, `r > 0` and both pairwise sums are positive, the left side is
 nonpositive so the inequality holds. -/
-lemma eight_mul_le_prod_add_of_nonpos {p q r : ℝ} (p_nonpos : p ≤ 0) (r_pos : 0 < r) (q_pos : 0 < q)
+lemma eight_mul_le_prod_add_of_nonpos {p q r : ℝ} (p_nonpos : p ≤ 0) (q_pos : 0 < q) (r_pos : 0 < r)
     (p_add_q_pos : 0 < p + q) (r_add_p_pos : 0 < r + p) :
-    8 * p * q * r ≤ (p + q) * (r + p) * (q + r) := by
+    8 * p * q * r ≤ (p + q) * (q + r) * (r + p) := by
   calc 8 * p * q * r ≤ 0 := by grw [mul_nonpos_of_nonpos_of_nonneg ?_ (by positivity)]
                                grw [mul_nonpos_of_nonpos_of_nonneg (by grind) (by positivity)]
-                   _ ≤ (p + q) * (r + p) * (q + r) := by positivity
+                   _ ≤ (p + q) * (q + r) * (r + p) := by positivity
 
 /-- When all three pairwise sums `p + q`, `r + p`, `q + r` are positive, the inequality holds by
 casing on the signs of `p`, `q`, `r`. -/
@@ -74,12 +74,12 @@ lemma eight_mul_le_prod_add_of_add_pos (p q r : ℝ)
   -- At most one of `p`, `q`, `r` can be negative; otherwise some pairwise sum is nonpositive.
   · exact eight_mul_le_prod_add_of_pos p_pos q_pos r_pos
   · -- `r` is the unique nonpositive variable.
-    convert eight_mul_le_prod_add_of_nonpos r_nonpos q_pos p_pos hrp hqr using 1 <;> ring
+    convert eight_mul_le_prod_add_of_nonpos r_nonpos p_pos q_pos hrp hqr using 1 <;> ring
   · -- `q` is the unique nonpositive variable.
-    convert eight_mul_le_prod_add_of_nonpos q_nonpos p_pos r_pos hqr hpq using 1 <;> ring
+    convert eight_mul_le_prod_add_of_nonpos q_nonpos r_pos p_pos hqr hpq using 1 <;> ring
   · linarith
   · -- `p` is the unique nonpositive variable.
-    convert eight_mul_le_prod_add_of_nonpos p_nonpos r_pos q_pos hpq hrp using 1; ring
+    exact eight_mul_le_prod_add_of_nonpos p_nonpos q_pos r_pos hpq hrp
   · linarith
   · linarith
   · linarith
