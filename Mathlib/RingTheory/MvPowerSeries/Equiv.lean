@@ -43,7 +43,7 @@ open Finsupp Finset Function
 
 namespace MvPowerSeries
 
-section CommSemiRing
+section CommSemiring
 
 variable {σ R : Type*} [CommSemiring R]
 
@@ -230,7 +230,7 @@ instance isNoetherianRing [Finite σ] : IsNoetherianRing (MvPowerSeries σ S) :=
 
 end finSuccEquiv
 
-end CommSemiRing
+end CommSemiring
 
 section toAdicCompletion
 
