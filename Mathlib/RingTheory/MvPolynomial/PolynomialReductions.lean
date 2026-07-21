@@ -236,21 +236,31 @@ namespace ReducesToPoly
 abbrev NormalForm (p f : MvPolynomial σ R) : Prop :=
   Relation.IsNormalForm (m.ReducesToPoly p) f
 
-theorem reducible_iff_exists_add_degree_and_coeff
+/--
+A polynomial is reducible modulo `p` exactly when `p` is nonzero and some
+support exponent `t` satisfies `m.degree p ≤ t`, while `m.leadingCoeff p`
+divides the corresponding coefficient `f.coeff t`.
+-/
+theorem reducible_iff_exists_degree_le_and_leadingCoeff_dvd
     (p f : MvPolynomial σ R) :
     m.Reducible p f ↔
       p ≠ 0 ∧
         ∃ t ∈ f.support,
-          ∃ s : σ →₀ ℕ,
-            s + m.degree p = t ∧
-              ∃ c : R, c * m.leadingCoeff p = f.coeff t := by
+          m.degree p ≤ t ∧
+            m.leadingCoeff p ∣ f.coeff t := by
   constructor
   · rintro ⟨g, t, hp, ht, s, hs, c, hc, hg⟩
-    exact ⟨hp, t, ht, s, hs, c, hc⟩
-  · rintro ⟨hp, t, ht, s, hs, c, hc⟩
-    refine ⟨f - monomial s c * p, t, hp, ht, s, hs, c, hc, rfl⟩
-
-section UnitLeadingCoeff
+    refine ⟨hp, t, ht, ?_, ?_⟩
+    · rw [← hs]
+      exact self_le_add_left _ _
+    · exact ⟨c, by simpa only [mul_comm] using hc.symm⟩
+  · rintro ⟨hp, t, ht, hp_le_t, hp_dvd⟩
+    rcases le_iff_exists_add.mp hp_le_t with ⟨s, hs⟩
+    rcases hp_dvd with ⟨c, hc⟩
+    have hs' : s + m.degree p = t := by
+      simpa only [add_comm] using hs.symm
+    refine ⟨f - monomial s c * p, t, hp, ht, s, hs', c, ?_, rfl⟩
+    simpa only [mul_comm] using hc.symm
 
 /--
 Lemma 5.20(i), unit-leading-coefficient version.
@@ -259,35 +269,25 @@ If the leading coefficient of `p` is a unit, then reducibility modulo `p`
 is equivalent to divisibility of some term of `f` by the leading monomial
 of `p`.
 -/
-theorem reducible_iff_exists_add_degree_of_isUnit
+theorem reducible_iff_exists_degree_le_of_isUnit
     (p f : MvPolynomial σ R)
     (hLC : IsUnit (m.leadingCoeff p)) :
     m.Reducible p f ↔
       p ≠ 0 ∧
         ∃ t ∈ f.support,
-          ∃ s : σ →₀ ℕ,
-            s + m.degree p = t := by
+          m.degree p ≤ t := by
   constructor
   · intro h
     rcases
-      (MonomialOrder.ReducesToPoly.reducible_iff_exists_add_degree_and_coeff
-        m p f).1 h
-      with ⟨hp, t, ht, s, hs, c, hc⟩
-    exact ⟨hp, t, ht, s, hs⟩
-  · rintro ⟨hp, t, ht, s, hs⟩
-    rcases hLC with ⟨u, hu⟩
-    apply
-      (MonomialOrder.ReducesToPoly.reducible_iff_exists_add_degree_and_coeff
-        m p f).2
-    refine ⟨hp, t, ht, s, hs, ((u⁻¹ : Rˣ) : R) * f.coeff t, ?_⟩
-    rw [← hu]
-    simp only [mul_comm, Units.mul_inv_cancel_left]
-
-end UnitLeadingCoeff
+      (MonomialOrder.ReducesToPoly.reducible_iff_exists_degree_le_and_leadingCoeff_dvd
+        m p f).1 h with ⟨hp, t, ht, hp_le_t, _hp_dvd⟩
+    exact ⟨hp, t, ht, hp_le_t⟩
+  · rintro ⟨hp, t, ht, hp_le_t⟩
+    exact
+      (MonomialOrder.ReducesToPoly.reducible_iff_exists_degree_le_and_leadingCoeff_dvd
+        m p f).2 ⟨hp, t, ht, hp_le_t, hLC.dvd⟩
 
 end ReducesToPoly
-
-section UnitLeadingCoeff
 
 private lemma isUnit_leadingCoeff_of_mem_ne
     {P : Set (MvPolynomial σ R)}
@@ -295,32 +295,8 @@ private lemma isUnit_leadingCoeff_of_mem_ne
     {p : MvPolynomial σ R}
     (hpP : p ∈ P)
     (hp : p ≠ 0) :
-    IsUnit (m.leadingCoeff p) := by
-  rcases hP₀ p hpP with hunit | hp0
-  · exact hunit
-  · exact False.elim (hp hp0)
-
-private lemma leadingCoeff_unit_or_zero_singleton
-    {p : MvPolynomial σ R}
-    (hpLC : IsUnit (m.leadingCoeff p)) :
-    ∀ q ∈ ({p} : Set (MvPolynomial σ R)),
-      IsUnit (m.leadingCoeff q) ∨ q = 0 := by
-  intro q hq
-  rw [Set.mem_singleton_iff] at hq
-  subst q
-  exact Or.inl hpLC
-
-end UnitLeadingCoeff
-
-private lemma singleton_subset_of_mem
-    {P : Set (MvPolynomial σ R)}
-    {p : MvPolynomial σ R}
-    (hpP : p ∈ P) :
-    ({p} : Set (MvPolynomial σ R)) ⊆ P := by
-  intro q hq
-  rw [Set.mem_singleton_iff] at hq
-  subst q
-  exact hpP
+    IsUnit (m.leadingCoeff p) :=
+  (hP₀ p hpP).resolve_right hp
 
 namespace ReducesToSet
 
@@ -345,8 +321,8 @@ abbrev NormalForm (P : Set (MvPolynomial σ R)) (f : MvPolynomial σ R) : Prop :
 
 /--
 Without assumptions on leading coefficients, a polynomial is in normal form
-exactly when no term in its support is divisible by both the leading monomial
-and the leading coefficient of a nonzero reducer.
+exactly when there is no support exponent `t` and nonzero reducer `p` such that
+`m.degree p ≤ t` and `m.leadingCoeff p ∣ f.coeff t`.
 -/
 theorem normalForm_iff_forall_not_degree_le_and_dvd
     (P : Set (MvPolynomial σ R))
@@ -371,8 +347,6 @@ theorem normalForm_iff_forall_not_degree_le_and_dvd
       exact self_le_add_left _ _
     · exact ⟨c, by simpa only [mul_comm] using hc.symm⟩
 
-section UnitLeadingCoeff
-
 /--
 If every nonzero reducer has unit leading coefficient, normal forms are exactly
 the polynomials whose support terms are not divisible by the leading monomial
@@ -395,8 +369,6 @@ theorem normalForm_iff_forall_not_degree_le
     exact hnf t ht p hpP hp_ne ⟨hp_le_t, hp_unit.dvd⟩
   · intro hsupport t ht p hpP hp_ne hred
     exact hsupport t ht p hpP hp_ne hred.1
-
-end UnitLeadingCoeff
 
 end ReducesToSet
 
@@ -649,16 +621,15 @@ lemma mul_mem_reducesTo_subLTerm_mul
 /--
 Lemma 5.24(i), regular-leading-coefficient version.
 
-If `f ∈ P` and the leading coefficient of every nonzero element of `P` is a
-non-zero-divisor, then every polynomial multiple of `f` reduces to zero modulo
-`P`.
+If `f ∈ P` and the leading coefficient of `f` is a non-zero-divisor whenever
+`f` is nonzero, then every polynomial multiple of `f` reduces to zero modulo `P`.
 -/
 theorem mul_mem_reflTransGen_zero
     (P : Set (MvPolynomial σ R))
-    (hP : ∀ p ∈ P, p ≠ 0 →
-      m.leadingCoeff p ∈ nonZeroDivisors R)
     {f h : MvPolynomial σ R}
-    (hfP : f ∈ P) :
+    (hfP : f ∈ P)
+    (hLCf : f ≠ 0 →
+      m.leadingCoeff f ∈ nonZeroDivisors R) :
   (h * f) ⟶*[m, P] 0 := by
   by_cases hf : f = 0
   · subst f
@@ -681,7 +652,7 @@ theorem mul_mem_reflTransGen_zero
   · subst h
     simpa only [zero_mul] using (Relation.ReflTransGen.refl : (0 : MvPolynomial σ R) ⟶*[m, P] 0)
   have hstep : (h * f) ⟶[m, P] m.subLTerm h * f :=
-    mul_mem_reducesTo_subLTerm_mul m P hfP (hP f hfP hf) hh
+    mul_mem_reducesTo_subLTerm_mul m P hfP (hLCf hf) hh
   by_cases hdeg : m.degree h = 0
   · have hsub : m.subLTerm h = 0 :=
       subLTerm_eq_zero_of_degree_eq_zero m hdeg
@@ -694,7 +665,7 @@ theorem mul_mem_reflTransGen_zero
 
 end RegularLeadingCoeff
 
-section UnitLeadingCoeff
+section UnitLeadingCoeffTranslation
 
 /-- Helper for the Translation Lemma: single-step translation. -/
 private lemma translation_step
@@ -813,7 +784,7 @@ theorem eqvGen_of_sub_reflTransGen_zero
   exact Relation.Join.to_eqvGen
     (m.join_of_sub_reflTransGen_zero P hP₀ f g hfg)
 
-end UnitLeadingCoeff
+end UnitLeadingCoeffTranslation
 
 /-- One-step reduction does not increase degree. -/
 theorem degree_le_of_reducesToSet
@@ -1064,7 +1035,7 @@ theorem mem_span_of_reflTransGen_zero
     sub_mem_span_of_reflTransGen m P h
   simpa only [sub_zero] using hsub
 
-section UnitLeadingCoeff
+section UnitLeadingCoeffIdealEquivalence
 
 /--
 A polynomial multiple of an element of `P` can be removed up to the
@@ -1077,10 +1048,9 @@ theorem eqvGen_add_mul_mem
     (hpP : p ∈ P) :
     f + h * p ⟷*[m, P] f := by
   have hred : h * p ⟶*[m, P] 0 :=
-    mul_mem_reflTransGen_zero m P
-      (fun q hqP hq_ne =>
-        (isUnit_leadingCoeff_of_mem_ne m hP₀ hqP hq_ne).mem_nonZeroDivisors)
-      hpP
+    mul_mem_reflTransGen_zero m P hpP
+      (fun hp_ne =>
+        (isUnit_leadingCoeff_of_mem_ne m hP₀ hpP hp_ne).mem_nonZeroDivisors)
   have hsub : (f + h * p) - f ⟶*[m, P] 0 := by
     convert hred using 1
     ring
@@ -1142,7 +1112,7 @@ theorem eqvGen_iff_sub_mem_span
       ring
     simpa only [one_mul, add_sub_cancel] using hmain
 
-end UnitLeadingCoeff
+end UnitLeadingCoeffIdealEquivalence
 
 namespace ReducesToSet
 
@@ -1187,7 +1157,39 @@ theorem reflTransGen_reducesToPoly_to_singleton
       (p := m.ReducesToSet ({p} : Set (MvPolynomial σ R)))
       (fun x y hxy => (ReducesToSet.singleton_iff m).2 hxy)) f g h
 
-section UnitLeadingCoeff
+/--
+If `Q ⊆ P`, then finite reductions modulo `Q` are finite reductions modulo `P`.
+-/
+theorem reflTransGen_mono
+    {P Q : Set (MvPolynomial σ R)}
+    (hQP : Q ⊆ P)
+    {f g : MvPolynomial σ R}
+    (h : f ⟶*[m, Q] g) :
+    f ⟶*[m, P] g := by
+  induction h with
+  | refl =>
+      exact Relation.ReflTransGen.refl
+  | tail hfg hstep ih =>
+      exact ih.tail
+        (by
+          rcases hstep with ⟨q, hqQ, hqfg⟩
+          exact ⟨q, hQP hqQ, hqfg⟩)
+
+end ReducesToSet
+
+section UnitLeadingCoeffConfluence
+
+private lemma leadingCoeff_unit_or_zero_singleton
+    {p : MvPolynomial σ R}
+    (hpLC : IsUnit (m.leadingCoeff p)) :
+    ∀ q ∈ ({p} : Set (MvPolynomial σ R)),
+      IsUnit (m.leadingCoeff q) ∨ q = 0 := by
+  intro q hq
+  rw [Set.mem_singleton_iff] at hq
+  subst q
+  exact Or.inl hpLC
+
+namespace ReducesToSet
 
 /--
 Proposition 5.33, singleton-set version.
@@ -1218,25 +1220,21 @@ theorem locallyConfluent_singleton
     leadingCoeff_unit_or_zero_singleton m hpLC
   have hred : (f₁ - f₂) ⟶*[m, ({p} : Set (MvPolynomial σ R))] 0 := by
     rw [hdiff]
-    exact mul_mem_reflTransGen_zero m
+    exact
+      mul_mem_reflTransGen_zero m
       ({p} : Set (MvPolynomial σ R))
-      (fun q hqP hq_ne =>
-        (isUnit_leadingCoeff_of_mem_ne m hP₀_single hqP hq_ne).mem_nonZeroDivisors)
       (f := p)
       (h := m₂ - m₁)
       (by rw [Set.mem_singleton_iff])
+      (fun _ => hpLC.mem_nonZeroDivisors)
   exact m.join_of_sub_reflTransGen_zero
     ({p} : Set (MvPolynomial σ R))
     hP₀_single
     f₁ f₂ hred
 
-end UnitLeadingCoeff
-
 end ReducesToSet
 
 namespace ReducesToPoly
-
-section UnitLeadingCoeff
 
 /--
 Proposition 5.33.
@@ -1262,53 +1260,9 @@ theorem locallyConfluent
     ReducesToSet.reflTransGen_singleton_to_reducesToPoly m hf₁d,
     ReducesToSet.reflTransGen_singleton_to_reducesToPoly m hf₂d⟩
 
-end UnitLeadingCoeff
-
 end ReducesToPoly
 
 namespace ReducesToSet
-
-/--
-If `Q ⊆ P`, then finite reductions modulo `Q` are finite reductions modulo `P`.
--/
-theorem reflTransGen_mono
-    {P Q : Set (MvPolynomial σ R)}
-    (hQP : Q ⊆ P)
-    {f g : MvPolynomial σ R}
-    (h : f ⟶*[m, Q] g) :
-    f ⟶*[m, P] g := by
-  induction h with
-  | refl =>
-      exact Relation.ReflTransGen.refl
-  | tail hfg hstep ih =>
-      exact ih.tail
-        (by
-          rcases hstep with ⟨q, hqQ, hqfg⟩
-          exact ⟨q, hQP hqQ, hqfg⟩)
-
-/--
-If `Q ⊆ P`, then equivalence modulo `Q` implies equivalence modulo `P`.
--/
-theorem eqvGen_mono
-    {P Q : Set (MvPolynomial σ R)}
-    (hQP : Q ⊆ P)
-    {f g : MvPolynomial σ R}
-    (h : f ⟷*[m, Q] g) :
-    f ⟷*[m, P] g := by
-  induction h with
-  | refl x =>
-      exact Relation.EqvGen.refl x
-  | rel x y hxy =>
-      exact Relation.EqvGen.rel x y
-        (by
-          rcases hxy with ⟨q, hqQ, hqxy⟩
-          exact ⟨q, hQP hqQ, hqxy⟩)
-  | symm x y hxy ih =>
-      exact Relation.EqvGen.symm x y ih
-  | trans x y z hxy hyz ihxy ihyz =>
-      exact Relation.EqvGen.trans x y z ihxy ihyz
-
-section UnitLeadingCoeff
 
 /--
 Corollary 5.34.
@@ -1369,17 +1323,17 @@ theorem locallyConfluent_of_span_eq_singleton
   · exact reflTransGen_mono m
       (P := P)
       (Q := ({p} : Set (MvPolynomial σ R)))
-      (singleton_subset_of_mem hpP)
+      (Set.singleton_subset_iff.mpr hpP)
       hf₁d
   · exact reflTransGen_mono m
       (P := P)
       (Q := ({p} : Set (MvPolynomial σ R)))
-      (singleton_subset_of_mem hpP)
+      (Set.singleton_subset_iff.mpr hpP)
       hf₂d
 
-end UnitLeadingCoeff
-
 end ReducesToSet
+
+end UnitLeadingCoeffConfluence
 
 end CommRing
 
