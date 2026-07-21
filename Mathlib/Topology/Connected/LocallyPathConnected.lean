@@ -325,18 +325,18 @@ theorem Pi.locallyPathConnectedSpace_of_finite_nonpathconnected {Z : ι → Type
   path_connected_basis x := hasBasis_self.mpr fun U hU ↦ by
     rw [nhds_pi, Filter.mem_pi] at hU
     obtain ⟨J, hJ, t, ht, htU⟩ := hU
-    classical
-    set K := J ∪ {i | ¬PathConnectedSpace (Z i)} with hK
+    let K := J ∪ {i | ¬PathConnectedSpace (Z i)}
     refine ⟨K.pi fun i ↦ pathComponentIn (t i) (x i),
       set_pi_mem_nhds (hJ.union hfinite) fun i _ ↦ pathComponentIn_mem_nhds (ht i), ?_,
       fun f hf ↦ htU fun i hiJ ↦ pathComponentIn_subset (hf i (mem_union_left _ hiJ))⟩
+    classical
     rw [← univ_pi_piecewise_univ]
     refine .pi fun i ↦ ?_
     by_cases hi : i ∈ K
     · rw [piecewise_eq_of_mem _ _ _ hi]
       exact isPathConnected_pathComponentIn (mem_of_mem_nhds (ht i))
     · rw [piecewise_eq_of_notMem _ _ _ hi]
-      have : PathConnectedSpace (Z i) := not_not.mp fun h ↦ hi (hK ▸ mem_union_right _ h)
+      have : PathConnectedSpace (Z i) := not_not.mp fun h ↦ hi (mem_union_right _ h)
       exact isPathConnected_univ
 
 /-- A finite product of locally path-connected spaces is locally path-connected. -/
@@ -374,16 +374,14 @@ theorem Pi.locallyPathConnectedSpace_iff {Z : ι → Type*} [∀ i, TopologicalS
     rw [nhds_pi, Filter.mem_pi] at hVn
     obtain ⟨J, hJ, t, ht, htV⟩ := hVn
     refine hJ.subset fun i hi ↦ by_contra fun hiJ ↦ hi ?_
-    suffices himg : eval i '' pathComponent x = univ by
-      rw [pathConnectedSpace_iff_univ, ← himg]
-      exact isPathConnected_pathComponent.image (continuous_apply i)
+    suffices himg : eval i '' pathComponent x = univ from pathConnectedSpace_iff_univ.mpr
+      (himg ▸ isPathConnected_pathComponent.image (continuous_apply i))
     refine (subset_univ _).antisymm fun z _ ↦ ⟨update x i z, htV fun j hj ↦ ?_, by simp⟩
     rw [update_of_ne (ne_of_mem_of_not_mem hj hiJ)]
     exact mem_of_mem_nhds (ht j)
   · rintro (he | ⟨hloc, hfin⟩)
     · exact ⟨fun x ↦ he.elim x⟩
-    · haveI := hloc
-      exact Pi.locallyPathConnectedSpace_of_finite_nonpathconnected hfin
+    · exact locallyPathConnectedSpace_of_finite_nonpathconnected hfin
 
 instance AlexandrovDiscrete.locallyPathConnectedSpace [AlexandrovDiscrete X] :
     LocallyPathConnectedSpace X := by

@@ -151,20 +151,17 @@ theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU
     LocallyConnectedSpace U :=
   hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace
 
+/-- Any topology coinduced by a locally connected topology is locally connected. -/
+theorem Topology.IsCoinducing.locallyConnectedSpace [LocallyConnectedSpace α]
+    [TopologicalSpace β] {f : α → β} (hf : IsCoinducing f) : LocallyConnectedSpace β := by
+  refine locallyConnectedSpace_iff_connectedComponentIn_open.2 fun F hF y _ ↦ ?_
+  rw [← hf.isOpen_preimage, hf.continuous.preimage_connectedComponentIn]
+  exact isOpen_biUnion fun x _ ↦ (hF.preimage hf.continuous).connectedComponentIn
+
 /-- The image of a locally connected space under a quotient map is locally connected. -/
 theorem Topology.IsQuotientMap.locallyConnectedSpace [LocallyConnectedSpace α]
-    [TopologicalSpace β] {f : α → β} (hf : IsQuotientMap f) : LocallyConnectedSpace β := by
-  rw [locallyConnectedSpace_iff_connectedComponentIn_open]
-  intro F hF y _
-  rw [← hf.isOpen_preimage, isOpen_iff_mem_nhds]
-  intro x hx
-  have hxF : x ∈ f ⁻¹' F := connectedComponentIn_subset F y hx
-  refine Filter.mem_of_superset
-    ((hF.preimage hf.continuous).connectedComponentIn.mem_nhds (mem_connectedComponentIn hxF))
-    fun z hz ↦ ?_
-  rw [mem_preimage, connectedComponentIn_eq hx]
-  exact connectedComponentIn_mono _ (image_preimage_subset f F)
-    (hf.continuous.mapsTo_connectedComponentIn hxF hz)
+    [TopologicalSpace β] {f : α → β} (hf : IsQuotientMap f) : LocallyConnectedSpace β :=
+  hf.isCoinducing.locallyConnectedSpace
 
 /-- If a space is locally connected, the topology of its connected components is discrete. -/
 instance [LocallyConnectedSpace α] : DiscreteTopology <| ConnectedComponents α := by
