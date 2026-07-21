@@ -270,8 +270,8 @@ theorem lCarrier_modelsChoice_of_internalWellOrdering
     · apply (satisfies_graphLeastMemberPredicate
         (snoc params y)).mpr
       refine ⟨x, ?_, hyx, ?_⟩
-      · simpa [params] using hxfamily
-      · simpa [params] using hymin
+      · simpa [params, snoc_eq_finSnoc] using hxfamily
+      · simpa [params, snoc_eq_finSnoc] using hymin
   · intro z hzx hzchoice
     have hzSelected := (hchoiceSet z).mp hzchoice
     rcases (satisfies_graphLeastMemberPredicate
@@ -280,11 +280,11 @@ theorem lCarrier_modelsChoice_of_internalWellOrdering
     have hxx' : x = x' := by
       by_contra hne
       exact hdisjoint x hxfamily x'
-        (by simpa [params] using hx'family) hne z hzx hzx'
+        (by simpa [params, snoc_eq_finSnoc] using hx'family) hne z hzx hzx'
     subst x'
     apply hyunique z
     refine ⟨hzx, ?_⟩
-    simpa [params] using hzmin
+    simpa [params, snoc_eq_finSnoc] using hzmin
 
 /-- The exact internal well-ordering obligation sufficient for the ZFC theorem. -/
 theorem lCarrier_models_ZFC_of_internalWellOrdering

@@ -356,7 +356,7 @@ theorem satisfies_hasLengthFormula (sequence length : ZFSet.{u}) :
     FOFormula.Satisfies Delta0Formula.ZFMem hasLengthFormula
         ![sequence, length] ↔
       ∃ graph : ZFSet.{u}, sequence = ZFSet.pair length graph := by
-  simp [hasLengthFormula]
+  simp [hasLengthFormula, Model.snoc_eq_finSnoc]
 
 theorem satisfies_hasLength_sequenceCode_iff
     (xs : List ZFSet.{u}) (length : ZFSet.{u}) :

@@ -37,7 +37,7 @@ theorem tupleCons_succ {A : Type u} {n : Nat} (x : A) (s : Tuple A n)
   simp [tupleCons]
 
 /-- Appending a final coordinate commutes with prepending a first one. -/
-@[simp, nolint simpNF]
+@[simp]
 theorem snoc_tupleCons {A : Type u} {n : Nat}
     (head : A) (s : Tuple A n) (last : A) :
     snoc (tupleCons head s) last = tupleCons head (snoc s last) := by
@@ -213,7 +213,7 @@ theorem val_apply {a : ZFSet.{u}} {n : Nat}
   rfl
 
 /-- Taking underlying values commutes with appending one subtype element. -/
-@[simp, nolint simpNF]
+@[simp]
 theorem val_snoc {a : ZFSet.{u}} {n : Nat}
     (s : Tuple (ZFCarrier a) n) (x : ZFCarrier a) :
     val (snoc s x) = snoc (val s) x.1 := by

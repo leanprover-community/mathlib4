@@ -34,7 +34,7 @@ noncomputable def positiveTupleSpace (U : ZFSet.{u}) : Nat → ZFSet.{u}
   | 0 => U
   | n + 1 => F2 U (positiveTupleSpace U n)
 
-@[simp, nolint simpNF]
+@[simp]
 theorem positiveTupleCode_snoc {n : Nat}
     (s : Tuple ZFSet.{u} (n + 1)) (x : ZFSet.{u}) :
     positiveTupleCode (n + 1) (snoc s x) =

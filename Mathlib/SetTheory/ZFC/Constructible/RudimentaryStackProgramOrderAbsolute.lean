@@ -243,7 +243,8 @@ theorem satisfies_uniqueValueAtBody_lCarrier
           ZFSet.pair other.1 index.1 ∈ graph.1 → other.1 = value.1 := by
   simp [IndexedSequenceZF.uniqueValueAtBody,
     IndexedSequenceZF.satisfies_formulaImp,
-    satisfies_functionGraphValueAt_lCarrier, Subtype.ext_iff]
+    satisfies_functionGraphValueAt_lCarrier, Subtype.ext_iff,
+    Model.snoc_eq_finSnoc]
 
 @[simp]
 theorem satisfies_totalFunctionalBody_lCarrier
@@ -258,7 +259,7 @@ theorem satisfies_totalFunctionalBody_lCarrier
                 other.1 = value.1) := by
   simp [IndexedSequenceZF.totalFunctionalBody,
     IndexedSequenceZF.satisfies_formulaImp,
-    satisfies_uniqueValueAtBody_lCarrier]
+    satisfies_uniqueValueAtBody_lCarrier, Model.snoc_eq_finSnoc]
 
 @[simp]
 theorem satisfies_sequenceValidityFormula_lCarrier

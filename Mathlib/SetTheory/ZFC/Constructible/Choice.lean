@@ -115,7 +115,7 @@ theorem lCarrier_modelsChoice_of_formulaHasUniqueMinima
         (fun z w : LCarrier.{u} => z.1 ∈ w.1)
         ltFormula (snoc params y)).mpr
       refine ⟨x, ?_, hyx, hymin⟩
-      simpa [params] using hxa
+      simpa [params, snoc_eq_finSnoc] using hxa
   · intro z hzx hzc
     have hzSelected := (hc z).mp hzc
     have hzPredicate := hzSelected.2
@@ -125,7 +125,8 @@ theorem lCarrier_modelsChoice_of_formulaHasUniqueMinima
       ⟨x', hx'a, hzx', hzmin⟩
     have hxx' : x = x' := by
       by_contra hne
-      have hxdisjoint := hdisjoint x hxa x' (by simpa [params] using hx'a) hne
+      have hxdisjoint := hdisjoint x hxa x'
+        (by simpa [params, snoc_eq_finSnoc] using hx'a) hne
       exact hxdisjoint z hzx hzx'
     subst x'
     exact hyunique z ⟨hzx, hzmin⟩

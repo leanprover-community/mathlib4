@@ -63,7 +63,7 @@ def canonicalGraphOutputFormula {n : Nat}
       (FOFormula.rename canonicalGraphOutputRename
         (DefinableRelationGraph.graphFormula phi)))
 
-@[simp, nolint simpNF]
+@[simp]
 theorem satisfies_canonicalGraphOutputFormula {A : Type u}
     (E : A → A → Prop) {n : Nat} (phi : FOFormula (n + 2))
     (params : Tuple A n) (domain relation : A) :
@@ -175,7 +175,6 @@ theorem eq_canonicalDefinableRelationGraph_of_mem_iff {n : Nat}
 
 /-- The object-language output specification identifies exactly the
 canonical Separation graph. -/
-@[simp, nolint simpNF]
 theorem satisfies_canonicalGraphOutputFormula_iff_eq {n : Nat}
     (phi : FOFormula (n + 2))
     (params : Tuple LCarrier.{u} n) (domain relation : LCarrier.{u}) :

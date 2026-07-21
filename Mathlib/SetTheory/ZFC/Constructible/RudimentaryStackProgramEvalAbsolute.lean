@@ -60,7 +60,7 @@ private theorem satisfies_congr_assignment {A : Type u}
       · simp only [snoc_last]
       · simpa only [snoc_castSucc] using h j
 
-@[simp, nolint simpNF]
+@[simp]
 private theorem subtypeVal_snoc_apply {n : Nat}
     (s : Tuple Model.LCarrier.{u} n) (x : Model.LCarrier.{u})
     (i : Fin (n + 1)) :

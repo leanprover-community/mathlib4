@@ -85,7 +85,7 @@ def replacementRangeFormula {n : Nat}
     (.mem (Fin.last (n + 2)) (Fin.last n).castSucc.castSucc)
     (FOFormula.rename replacementRangeRename phi))
 
-@[simp, nolint simpNF]
+@[simp]
 theorem satisfiesIn_replacementRangeFormula (M : Set ZFSet.{u})
     {n : Nat} (phi : FOFormula (n + 2))
     (params : Tuple ZFSet.{u} n) (a y : ZFSet.{u}) :

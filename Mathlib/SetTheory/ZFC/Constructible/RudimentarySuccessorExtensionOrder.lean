@@ -98,7 +98,8 @@ theorem satisfies_successorExtensionLtFormula
     simp [successorUniverseIndex,
       Godel.RudimentaryTerm.leastProgramValueLtLAssignment,
       Godel.RudimentaryTerm.leastProgramValueLtParametersLAssignment,
-      Godel.RudimentaryTerm.stackStepPrefixLAssignment]
+      Godel.RudimentaryTerm.stackStepPrefixLAssignment,
+      Model.snoc_eq_finSnoc]
   have hleftCoord :
       Godel.RudimentaryTerm.leastProgramValueLtLAssignment
         U relation left right successorLeftIndex = left := by

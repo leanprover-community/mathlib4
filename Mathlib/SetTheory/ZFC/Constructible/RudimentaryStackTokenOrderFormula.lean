@@ -70,7 +70,7 @@ def stackTokenLtAssignment (U r leftCode rightCode : ZFSet.{u}) :
     Tuple ZFSet.{u} 7 :=
   ![U, r, varTag, appTag, ∅, leftCode, rightCode]
 
-@[simp, nolint simpNF]
+@[simp]
 theorem stackTokenLtWitnessAssignment {A : Type u}
     (s : Tuple A 7) (x y : A) :
     snoc (snoc s x) y =

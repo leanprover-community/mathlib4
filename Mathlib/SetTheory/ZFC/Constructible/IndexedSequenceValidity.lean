@@ -150,7 +150,7 @@ theorem satisfies_uniqueValueAtBody
       ZFSet.pair value index ∈ graph ∧
         ∀ other : ZFSet.{u},
           ZFSet.pair other index ∈ graph → other = value := by
-  simp [uniqueValueAtBody]
+  simp [uniqueValueAtBody, Model.snoc_eq_finSnoc]
 
 @[simp]
 theorem satisfies_totalFunctionalBody
@@ -162,7 +162,7 @@ theorem satisfies_totalFunctionalBody
           ZFSet.pair value index ∈ graph ∧
             ∀ other : ZFSet.{u},
               ZFSet.pair other index ∈ graph → other = value) := by
-  simp [totalFunctionalBody]
+  simp [totalFunctionalBody, Model.snoc_eq_finSnoc]
 
 @[simp]
 theorem satisfies_sequenceValidityFormula
@@ -177,7 +177,7 @@ theorem satisfies_sequenceValidityFormula
               ZFSet.pair value index ∈ graph ∧
                 ∀ other : ZFSet.{u},
                   ZFSet.pair other index ∈ graph → other = value := by
-  simp [sequenceValidityFormula]
+  simp [sequenceValidityFormula, Model.snoc_eq_finSnoc]
 
 /-! ## External representation and decoding -/
 
