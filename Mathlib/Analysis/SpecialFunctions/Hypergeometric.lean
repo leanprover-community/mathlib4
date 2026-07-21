@@ -246,38 +246,4 @@ theorem radius_regularizedHGFunSeries_eq_one (a : Fin p → ℂ) (b : Fin q → 
   have := FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto (r := 1) ℂ _ (by simp) this
   simpa
 
-def besselJSeries (a : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
-  .ofScalars ℂ fun n ↦ (-1) ^ n / (n ! * Gamma (a + 1 + n))
-
-@[simp]
-theorem regularizedHGFunSeries_p_eq_zero (a : Fin 0 → ℂ) (b : Fin q → ℂ) :
-    regularizedHGFunSeries a b = .ofScalars ℂ fun n ↦ (n ! * ∏ j : Fin q, Gamma (b j + n))⁻¹ := by
-  unfold regularizedHGFunSeries regularizedHGFunCoeff
-  simp
-
-
-def besselJSeries' (a : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
-  regularizedHGFunSeries (fun (_ : Fin 1) ↦ a) (fun (_ : Fin 0) ↦ 0)
-
-noncomputable def besselJ' (a x : ℂ) := (x / 2) ^ a * (besselJSeries' a).sum (-(x / 2) ^ 2)
-
-def regularizedHGFun (a : Fin p → ℂ) (b : Fin q → ℂ) (z : ℂ) :=
-  (regularizedHGFunSeries a b).sum z
-
-noncomputable def besselJ (a x : ℂ) :=
-  (x / 2) ^ a * regularizedHGFun (fun _ : Fin 0 ↦ 0) (fun _ : Fin 1 ↦ a) (-(x / 2) ^ 2)
-
-theorem besselJ_int_neg (a : ℤ) (x : ℂ) :
-    besselJ a (-x) = (-1) ^ a * besselJ a x := by
-  unfold besselJ
-  simp_rw [cpow_intCast, neg_div, neg_sq, ← mul_assoc, ← mul_zpow, neg_one_mul]
-
-noncomputable def besselI (a x : ℂ) :=
-  (x / 2) ^ a * regularizedHGFun (fun _ : Fin 0 ↦ 0) (fun _ : Fin 1 ↦ a) ((x / 2) ^ 2)
-
-theorem besselI_int_neg (a : ℤ) (x : ℂ) :
-    besselI a (-x) = (-1) ^ a * besselI a x := by
-  unfold besselI
-  simp_rw [cpow_intCast, neg_div, neg_sq, ← mul_assoc, ← mul_zpow, neg_one_mul]
-
 end Complex
