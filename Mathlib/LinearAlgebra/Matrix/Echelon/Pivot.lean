@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 
 /-!
-# Rank from a pivot of a row echelon form
+# Pivots of a matrix
 
 A *pivot* of a matrix lists the leading (leftmost nonzero) columns of the nonzero rows of a
 matrix in row echelon form. Its length is the rank of the matrix, which lets the rank be read
@@ -63,7 +63,7 @@ theorem IsPivot.rowEchelon [Zero R] {A : Matrix (Fin m) (Fin n) R} {l : List (Fi
       (hle.trans_lt (h.sortedLT.getElem_lt_getElem_of_lt h₁₂))
   · exact congrFun (h.row_eq_zero_of_length_le i₂ hi₂) j₂
 
-theorem IsPivot.rank_eq [CommRing R] [IsDomain R] [StrongRankCondition R]
+theorem IsPivot.rank_eq [CommRing R] [IsDomain R]
     {A : Matrix (Fin m) (Fin n) R} {l : List (Fin n)} (h : A.IsPivot l) :
     A.rank = l.length := by
   refine le_antisymm ?_ ?_
@@ -92,7 +92,7 @@ lemma rank_mul_eq_right_of_lowerTriangular [CommRing R] [IsDomain R]
   rw [rank_mul_eq_right_of_det_ne_zero A (B.submatrix σ id) hdet]
   exact rank_submatrix B σ (Equiv.refl (Fin n))
 
-theorem IsPivot.rank_eq_of_lowerTriangular [CommRing R] [IsDomain R] [StrongRankCondition R]
+theorem IsPivot.rank_eq_of_lowerTriangular [CommRing R] [IsDomain R]
     {A : Matrix (Fin m) (Fin m) R} {B : Matrix (Fin m) (Fin n) R} {σ : Equiv.Perm (Fin m)}
     {l : List (Fin n)} (hpiv : (A * B.submatrix σ id).IsPivot l)
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) : B.rank = l.length := by
