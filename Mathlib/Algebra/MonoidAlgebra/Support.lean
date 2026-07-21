@@ -42,6 +42,11 @@ theorem support_coeff_mul_subset [DecidableEq G] (x y : k[G]) :
 
 @[deprecated (since := "2026-06-18")] alias support_single_mul_eq_image := support_coeff_mul_subset
 
+@[to_additive (dont_translate := k) card_support_coeff_mul_le]
+lemma card_support_coeff_mul_le (x y : k[G]) :
+    #(x * y).coeff.support ≤ #x.coeff.support * #y.coeff.support := by
+  classical grw [support_coeff_mul_subset, card_mul_le]
+
 @[to_additive (dont_translate := k) support_coeff_single_mul_subset]
 lemma support_coeff_single_mul_subset [DecidableEq G] (x : k[G]) (r : k) (a : G) :
     (single a r * x).coeff.support ⊆ x.coeff.support.image (a * ·) := by
