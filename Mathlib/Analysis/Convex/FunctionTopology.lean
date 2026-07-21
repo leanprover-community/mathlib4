@@ -14,8 +14,8 @@ import Mathlib.Topology.Algebra.Monoid
 
 We prove the following facts:
 
-* `isClosed_setOf_convexOn` : the set of convex functions on a set is closed
-* `isClosed_setOf_concaveOn` : the set of concave functions on a set is closed
+* `isClosed_setOfPred_convexOn` : the set of convex functions on a set is closed
+* `isClosed_setOfPred_concaveOn` : the set of concave functions on a set is closed
 -/
 
 open scoped Topology
@@ -28,16 +28,22 @@ variable {𝕜 α β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [PartialOrder 
     [ContinuousConstSMul 𝕜 β] [ContinuousAdd β]
 
 /-- The set of convex functions on a set `s` is closed. -/
-public theorem isClosed_setOf_convexOn {s : Set α} :
+public theorem isClosed_setOfPred_convexOn {s : Set α} :
     IsClosed {f : α → β | ConvexOn 𝕜 s f} := by
-  simp only [ConvexOn, setOf_and, setOf_forall]
+  simp only [ConvexOn, ofPred_and, ofPred_forall]
   refine IsClosed.inter isClosed_const ?_
   exact isClosed_iInter fun x => isClosed_iInter fun hx => isClosed_iInter fun y =>
       isClosed_iInter fun hy => isClosed_iInter fun a => isClosed_iInter fun b =>
       isClosed_iInter fun ha => isClosed_iInter fun hb => isClosed_iInter fun hab =>
       isClosed_le (by fun_prop) (by fun_prop)
 
+@[deprecated (since := "2026-07-09")]
+public alias isClosed_setOf_convexOn := isClosed_setOfPred_convexOn
+
 /-- The set of concave functions on a set `s` is closed. -/
-public theorem isClosed_setOf_concaveOn {s : Set α} :
+public theorem isClosed_setOfPred_concaveOn {s : Set α} :
     IsClosed {f : α → β | ConcaveOn 𝕜 s f} :=
-  isClosed_setOf_convexOn (α := α) (β := βᵒᵈ)
+  isClosed_setOfPred_convexOn (α := α) (β := βᵒᵈ)
+
+@[deprecated (since := "2026-07-09")]
+public alias isClosed_setOf_concaveOn := isClosed_setOfPred_concaveOn

@@ -49,13 +49,12 @@ namespace PreGaloisCategory
 
 variable {C : Type u₁} [Category.{u₂} C] {F : C ⥤ FintypeCat.{u₁}}
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable [GaloisCategory C] [FiberFunctor F]
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
 
-set_option backward.privateInPublic true in
 private local instance fintypeQuotient (H : OpenSubgroup (G)) :
     Fintype (G ⧸ (H : Subgroup (G))) :=
   have : Finite (G ⧸ H.toSubgroup) := H.toSubgroup.quotient_finite_of_isOpen H.isOpen'
@@ -67,8 +66,6 @@ private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
     Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
   fintypeQuotient ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
 of quotients of the form `G ⧸ Uᵢ` for open subgroups `(Uᵢ)`. Note that this
 is simply the decomposition into orbits. -/
@@ -77,8 +74,8 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
     ∃ (ι : Type) (_ : Finite ι) (f : ι → OpenSubgroup (G)),
       Nonempty ((∐ fun i ↦ G ⧸ₐ (f i).toSubgroup) ≅ X) := by
   obtain ⟨ι, hf, f, u, hc⟩ := has_decomp_connected_components' X
-  letI (i : ι) : TopologicalSpace (f i).V := ⊥
-  haveI (i : ι) : DiscreteTopology (f i).V := ⟨rfl⟩
+  let (i : ι) : TopologicalSpace (f i).V := ⊥
+  have (i : ι) : DiscreteTopology (f i).V := ⟨rfl⟩
   have (i : ι) : ContinuousSMul G (f i).V := ContinuousSMul.mk <| by
     let r : f i ⟶ X := Sigma.ι f i ≫ u.hom
     let r'' (p : G × (f i).V) : G × X.V := (p.1, r.hom p.2)
@@ -229,8 +226,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
     ∃ (X : C), Nonempty ((functorToAction F).obj X ≅ Aut F ⧸ₐ V.toSubgroup) := by
   obtain ⟨I, hf, hc, hi⟩ := exists_set_ker_evaluation_subset_of_isOpen F (one_mem V) V.isOpen'
-  haveI (X : I) : IsConnected X.val := hc X X.property
-  haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
+  have (X : I) : IsConnected X.val := hc X X.property
+  have (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
   have hn : Nonempty (F.obj <| (∏ᶜ fun X : I => X)) := nonempty_fiber_pi_of_nonempty_of_finite F _
   obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_fiber_nonempty F (∏ᶜ fun X : I => X) hn
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A

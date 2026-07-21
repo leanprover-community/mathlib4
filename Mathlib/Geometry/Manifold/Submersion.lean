@@ -5,10 +5,12 @@ Authors: Michael Rothgang, Samantha Naranjo Guevara
 -/
 module
 
-public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.Notation
 
 /-! # Smooth submersions
 
@@ -46,6 +48,9 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
   the set of points where `IsSubmersionAt(OfComplement)` holds is open.
 * `IsSubmersionAt.prodMap` and `IsSubmersion.prodMap`: the product of two submersions (at a point)
   is a submersion (at the product point).
+* `IsSubmersionAt.contMDiffAt`: if `f` is a submersion at `x`, it is `C^n` at `x`.
+* `IsSubmersion.contMDiff`: if `f` is a submersion, it is automatically `C^n`
+  in the sense of `ContMDiff`.
 
 ## Implementation notes
 
@@ -58,8 +63,6 @@ The implementation strategy is identical to the one for immersions. See the impl
 ## TODO
 * The converse to `IsSubmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the kernel of the differential `mfderiv I J f x`.
-* `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is `C^n` at `x`.
-* `IsSubmersion.contMDiff`: if f is a submersion, it is `C^n`.
 * If `f` is a submersion at `x`, its differential `mfderiv I J f x` admits a continuous right
   inverse, in particular is surjective.
 * If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` having a continuous right
@@ -80,16 +83,15 @@ The implementation strategy is identical to the one for immersions. See the impl
   [schmeding2023]
 * Note that Margelef-Roig and Dominguez have a slightly different definition of submersions.
 
-**Please do not work** on this file without prior discussion with Michael Rothgang.
-This will be the topic of Samantha Naranjo's master's thesis, and it's nice to coordinate.
+**Please talk** to Michael Rothgang before working on this file, to avoid duplicate work.
+The above TODOs are the topic of Samantha Naranjo's master's thesis; it's nicer to coordinate.
 
 -/
 
 public noncomputable section
 
-open scoped Topology ContDiff
-
-open Function Set
+open scoped Topology ContDiff Manifold
+open OpenPartialHomeomorph Function Set
 
 namespace Manifold
 
@@ -142,7 +144,7 @@ NB. We don't know the particular atlasses used for `M` and `N`, so asking for `�
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E''` in `E`:
-being an immersion at `x` includes a choice of linear isomorphism between `E'' × F` and `E`.
+being an submersion at `x` includes a choice of linear isomorphism between `E'' × F` and `E`.
 While the particular choice of complement is often not important, choosing a complement is useful
 in some settings, such as proving that embedded submanifolds are locally given either by an
 immersion or a submersion.
@@ -235,6 +237,10 @@ lemma codChart_mem_maximalAtlas (h : IsSubmersionAtOfComplement F I J n f x) :
 lemma source_subset_preimage_source (h : IsSubmersionAtOfComplement F I J n f x) :
     h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
   LiftSourceTargetPropertyAt.source_subset_preimage_source h
+
+lemma mapsto_domChart_source_codChart_source (h : IsSubmersionAtOfComplement F I J n f x) :
+    MapsTo f h.domChart.source h.codChart.source :=
+  h.source_subset_preimage_source
 
 /-- A linear equivalence `E ≃L[𝕜] E'' × F` which belongs to the data of a submersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
@@ -330,8 +336,8 @@ lemma _root_.isOpen_isSubmersionAtOfComplement :
   exact IsOpen.liftSourceTargetPropertyAt
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'`, respectively,
-then `f × g: M × N → M' × N'` is a submersion at `(x, x')`. -/
+/-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
+then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsSubmersionAtOfComplement F I J n f x)
@@ -352,6 +358,31 @@ lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
     IsSubmersionAt I J n f x := by
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
+
+/-- If `f` is a `C^n` submersion at `x`, then `f` is `C^n` on its domain chart's source,
+in particular on an open neighbourhood of `x`.
+
+Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead. -/
+theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
+    ContMDiffOn I J n f h.domChart.source := by
+  rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
+    h.codChart_mem_maximalAtlas le_rfl h.mapsto_domChart_source_codChart_source,
+    ← h.domChart.extend_target_eq_image_source]
+  have : CMDiff n (Prod.fst ∘ h.equiv) := by
+  -- Note that we cannot use `h₁.comp contMDiff_fst` since `h₁` and `contMDiff_fst` require
+  -- different models with corners on `E'' × F`. The former uses `𝓘(𝕜, E'' × F)` while the latter
+  -- uses `(𝓘(𝕜, E'')).prod (𝓘(𝕜, F)`.
+    have h₁ : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E'' × F) n h.equiv := by
+      rw [contMDiff_iff_contDiff]
+      exact h.equiv.contDiff
+    apply ContMDiff.comp ?_ h₁
+    rw [contMDiff_iff_contDiff]
+    exact contDiff_fst
+  exact this.contMDiffOn.congr h.writtenInCharts
+
+/-- A `C^n` submersion at `x` is `C^n` at `x`. -/
+theorem contMDiffAt (h : IsSubmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
+  h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
 end IsSubmersionAtOfComplement
 
@@ -483,14 +514,25 @@ lemma _root_.isOpen_isSubmersionAt :
     fun y hy ↦ hy.isSubmersionAt,
     isOpen_isSubmersionAtOfComplement, by simp [hx.isSubmersionAtOfComplement_complement]⟩
 
-/-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'`, respectively,
-then `f × g: M × N → M' × N'` is a submersion at `(x, x')`. -/
+/-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
+then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsSubmersionAt I J n f x) (hg : IsSubmersionAt I' J' n g x') :
     IsSubmersionAt (I.prod I') (J.prod J') n (Prod.map f g) (x, x') :=
   hf.isSubmersionAtOfComplement_complement.prodMap hg.isSubmersionAtOfComplement_complement
     |>.isSubmersionAt
+
+/-- If `f` is a submersion at `x`, then `f` is `C^n` on its domain chart's source,
+in particular on an open neighbourhood of `x`.`
+
+Prefer using `IsSubmersionAt.contMDiffAt` instead -/
+theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=
+  h.isSubmersionAtOfComplement_complement.contMDiffOn
+
+/-- A `C^n` submersion at `x` is `C^n` at `x`. -/
+theorem contMDiffAt (h : IsSubmersionAt I J n f x) : CMDiffAt n f x :=
+  h.isSubmersionAtOfComplement_complement.contMDiffAt
 
 end IsSubmersionAt
 
@@ -539,8 +581,8 @@ lemma congr_F (e : F ≃L[𝕜] F') :
     IsSubmersionOfComplement F I J n f ↔ IsSubmersionOfComplement F' I J n f :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
-/-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'` (w.r.t. `F` and `F'`),
-respectively, then `f × g: M × N → M' × N'` is a submersion at `(x, x')` w.r.t. `F × F'`. -/
+/-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'` (w.r.t. `F` and `F'`),
+respectively, then `f × g: M × M' → N × N'` is a submersion at `(x, x')` w.r.t. `F × F'`. -/
 theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (h : IsSubmersionOfComplement F I J n f) (h' : IsSubmersionOfComplement F' I' J' n g) :
@@ -576,6 +618,10 @@ protected lemma id [IsManifold I n M] : IsSubmersionOfComplement PUnit I I n (@i
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
   simpa
 
+/-- A `C^n` submersion is `C^n` -/
+theorem contMDiff (h : IsSubmersionOfComplement F I J n f) : CMDiff n f :=
+  fun x ↦ (h x).contMDiffAt
+
 end IsSubmersionOfComplement
 
 namespace IsSubmersion
@@ -602,8 +648,8 @@ lemma isSubmersionAt (h : IsSubmersion I J n f) (x : M) : IsSubmersionAt I J n f
   use h.complement, by infer_instance, by infer_instance
   exact h.isSubmersionOfComplement_complement x
 
-/-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'`, respectively,
-then `f × g: M × N → M' × N'` is a submersion at `(x, x')`. -/
+/-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
+then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsSubmersion I J n f) (hg : IsSubmersion I' J' n g) :
@@ -615,6 +661,10 @@ theorem prodMap {f : M → N} {g : M' → N'}
 protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) := by
   use PUnit, by infer_instance, by infer_instance
   exact IsSubmersionOfComplement.id
+
+/-- A `C^n` submersion is `C^n` -/
+theorem contMDiff (h : IsSubmersion I J n f) : CMDiff n f :=
+  h.isSubmersionOfComplement_complement.contMDiff
 
 end IsSubmersion
 
