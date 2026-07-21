@@ -10,8 +10,8 @@ public import Mathlib.Algebra.NonAssoc.PreLie.Basic
 # Dendriform (Semi)Rings and Algebras
 
 ## Main definitions
-A nonunital dendriform semiring `M` is a `Semiring` where the associative product can be split into
-two operations `prec : M → M → M` and `succ : M → M → M` satisfying
+A nonunital dendriform semiring `M` is a `NonUnitalSemiring` where the associative product can be
+split into two operations `prec : M → M → M` and `succ : M → M → M` satisfying
 * `prec (prec a b) c = prec a (succ b c + prec b c)`
 * `succ a (prec b c) = prec (succ a b) c`
 * `succ a (succ b c) = succ (succ a b + prec a b) c`
@@ -165,9 +165,9 @@ def preLieLR := a ≻ b - b ≺ a
 /-- The antisymmetrization of `≺` and `≻` yield a pre-Lie product. -/
 def preLieRL := a ≺ b - b ≻ a
 
-/-- The antisymmetrization `a ≻ b - b ≺ a` yields a `NonAssocNonUnitalRing`.
+/-- The antisymmetrization `a ≻ b - b ≺ a` yields a `NonUnitalNonAssocRing`.
 See note [reducible non-instances] -/
-abbrev toNonAssocNonUnitalRingLR : NonUnitalNonAssocRing M where
+abbrev toNonUnitalNonAssocRingLR : NonUnitalNonAssocRing M where
   mul := preLieLR
   left_distrib a b c := by simpa [HMul.hMul, preLieLR] using by abel_nf
   right_distrib a b c := by simpa [HMul.hMul, preLieLR] using by abel_nf
@@ -177,10 +177,10 @@ abbrev toNonAssocNonUnitalRingLR : NonUnitalNonAssocRing M where
 /-- The antisymmetrization `a ≻ b - b ≺ a` yields a `LeftPreLieRing`.
 See note [reducible non-instances] -/
 abbrev toLeftPreLieRing : LeftPreLieRing M where
-  __ := toNonAssocNonUnitalRingLR
+  __ := toNonUnitalNonAssocRingLR
   assoc_symm' x y z := by simpa [associator, HMul.hMul, Mul.mul, preLieLR] using by abel_nf
 
-/-- The antisymmetrization `a ≺ b - b ≻ a` yields a `NonAssocNonUnitalRing`.
+/-- The antisymmetrization `a ≺ b - b ≻ a` yields a `NonUnitalNonAssocRing`.
 See note [reducible non-instances] -/
 abbrev toNonUnitalNonAssocRingRL : NonUnitalNonAssocRing M where
   mul := preLieRL
