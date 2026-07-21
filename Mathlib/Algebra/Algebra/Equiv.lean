@@ -782,54 +782,52 @@ namespace RingEquiv
 variable {R S : Type*}
 
 /-- Reinterpret a `RingEquiv` as an `ℕ`-algebra isomorphism. -/
-def toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) : R ≃ₐ[ℕ] S :=
-  { f with commutes' := fun n ↦ by simp }
+@[simps! apply]
+def toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) : R ≃ₐ[ℕ] S where
+  toEquiv := f
+  __ := f.toRingHom.toNatAlgHom
 
 @[simp]
-lemma coe_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
-    ⇑f.toNatAlgEquiv = ⇑f := rfl
-
-@[simp]
-lemma toNatAlgEquiv_toAlgHom [Semiring R] [Semiring S] (f : R ≃+* S) :
+lemma toAlgHom_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
     f.toNatAlgEquiv.toAlgHom = (f : R →+* S).toNatAlgHom := rfl
 
-lemma toNatAlgEquiv_apply [Semiring R] [Semiring S] (f : R ≃+* S) (x : R) :
-    f.toNatAlgEquiv x = f x := rfl
-
-lemma toNatAlgEquiv_injective [Semiring R] [Semiring S] :
-    Function.Injective (RingEquiv.toNatAlgEquiv : (R ≃+* S) → _) :=
-  fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
+@[simp]
+lemma symm_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
+    f.toNatAlgEquiv.symm = f.symm.toNatAlgEquiv := rfl
 
 /-- The equivalence between `RingEquiv` and `ℕ`-algebra isomorphisms. -/
-@[simps apply symm_apply]
+@[simps apply]
 def _root_.ringEquivEquivNatAlgEquiv [Semiring R] [Semiring S] : (R ≃+* S) ≃ (R ≃ₐ[ℕ] S) where
   toFun := toNatAlgEquiv
   invFun := AlgEquiv.toRingEquiv
 
+lemma toNatAlgEquiv_injective [Semiring R] [Semiring S] :
+    Function.Injective (RingEquiv.toNatAlgEquiv : (R ≃+* S) → _) :=
+  ringEquivEquivNatAlgEquiv.injective
+
 /-- Reinterpret a `RingEquiv` as a `ℤ`-algebra isomorphism. -/
-def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S :=
-  { f with commutes' := fun n ↦ by simp }
+@[simps! apply]
+def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S where
+  toEquiv := f
+  __ := f.toRingHom.toIntAlgHom
 
 @[simp]
-lemma coe_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
-    ⇑f.toIntAlgEquiv = ⇑f := rfl
-
-@[simp]
-lemma toIntAlgEquiv_toAlgHom [Ring R] [Ring S] (f : R ≃+* S) :
+lemma toAlgHom_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
     f.toIntAlgEquiv.toAlgHom = (f : R →+* S).toIntAlgHom := rfl
 
-lemma toIntAlgEquiv_apply [Ring R] [Ring S] (f : R ≃+* S) (x : R) :
-    f.toIntAlgEquiv x = f x := rfl
-
-lemma toIntAlgEquiv_injective [Ring R] [Ring S] :
-    Function.Injective (RingEquiv.toIntAlgEquiv : (R ≃+* S) → _) :=
-  fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
+@[simp]
+lemma symm_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
+    f.toIntAlgEquiv.symm = f.symm.toIntAlgEquiv := rfl
 
 /-- The equivalence between `RingEquiv` and `ℤ`-algebra isomorphisms. -/
-@[simps apply symm_apply]
+@[simps apply]
 def _root_.ringEquivEquivIntAlgEquiv [Ring R] [Ring S] : (R ≃+* S) ≃ (R ≃ₐ[ℤ] S) where
   toFun := toIntAlgEquiv
   invFun := AlgEquiv.toRingEquiv
+
+lemma toIntAlgEquiv_injective [Ring R] [Ring S] :
+    Function.Injective (RingEquiv.toIntAlgEquiv : (R ≃+* S) → _) :=
+  ringEquivEquivIntAlgEquiv.injective
 
 end RingEquiv
 
