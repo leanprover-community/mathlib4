@@ -101,7 +101,7 @@ initialize_simps_projections MonadExcept
 initialize_simps_projections Prod
 initialize_simps_projections PProd
 initialize_simps_projections MProd
-initialize_simps_projections Subtype
+initialize_simps_projections Subtype (val → coe)
 initialize_simps_projections PLift
 initialize_simps_projections ULift
 initialize_simps_projections PULift

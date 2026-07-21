@@ -35,8 +35,6 @@ variable {α β γ : Sort*} {p q : α → Prop}
 
 attribute [coe] Subtype.val
 
-initialize_simps_projections Subtype (val → coe)
-
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
   instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/
 -- This is a leftover from Lean 3: it is identical to `Subtype.property`, and should be deprecated.
