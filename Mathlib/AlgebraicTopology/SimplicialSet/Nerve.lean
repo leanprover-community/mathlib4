@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
@@ -24,7 +25,7 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 @[expose] public section
 
-open CategoryTheory Category Simplicial Opposite
+open CategoryTheory Category Simplicial Opposite MonoidalCategory
 
 universe v u
 
@@ -263,16 +264,6 @@ lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
 
 end
 
-end nerve
-
-end CategoryTheory
-
-/-- The functor `PartOrd ⥤ SSet` which sends a partially ordered type to its nerve. -/
-@[simps]
-def PartOrd.nerveFunctor : PartOrd.{u} ⥤ SSet.{u} where
-  obj X := nerve X
-  map f := nerveMap f.hom.monotone.functor
-
 section
 variable (C₁ C₂ : Type u) [Category.{v} C₁] [Category.{v} C₂]
 
@@ -325,3 +316,13 @@ lemma nerve_of_product_interchange (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     = nerveOfProdMap (F₁ ⋙ G₁) (F₂ ⋙ G₂) := rfl
 
 end
+
+end nerve
+
+end CategoryTheory
+
+/-- The functor `PartOrd ⥤ SSet` which sends a partially ordered type to its nerve. -/
+@[simps]
+def PartOrd.nerveFunctor : PartOrd.{u} ⥤ SSet.{u} where
+  obj X := nerve X
+  map f := nerveMap f.hom.monotone.functor
