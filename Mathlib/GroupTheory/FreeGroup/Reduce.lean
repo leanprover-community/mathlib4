@@ -10,6 +10,8 @@ public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Sublists
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+
 /-!
 # The maximal reduction of a word in a free group
 
@@ -342,6 +344,32 @@ theorem isReduced_toWord {x : FreeGroup α} : IsReduced x.toWord := by
   simp [isReduced_iff_reduce_eq]
 
 end Reduce
+
+@[to_additive]
+theorem not_commute {a b : α} (h : a ≠ b) : ¬Commute (of a) (of b) := by
+  classical
+  simp [commute_iff_eq, ne_of_apply_ne toWord, toWord_mul, h]
+
+@[to_additive]
+private theorem not_isMulCommutative_of_nontrivial [Nontrivial α] :
+    ¬IsMulCommutative (FreeGroup α) := by
+  obtain ⟨a, b, hab⟩ := exists_pair_ne α
+  simp only [isMulCommutative_iff, not_forall]
+  refine ⟨of a, of b, ?_⟩
+  rw [← commute_iff_eq]
+  exact not_commute hab
+
+@[to_additive]
+theorem subsingleton_iff_isCyclic : Subsingleton α ↔ IsCyclic (FreeGroup α) := by
+  refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
+  by_contra! hh
+  exact not_isMulCommutative_of_nontrivial h.isMulCommutative
+
+@[to_additive]
+theorem subsingleton_iff_isMulCommutative : Subsingleton α ↔ IsMulCommutative (FreeGroup α) := by
+  refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
+  by_contra! hh
+  exact not_isMulCommutative_of_nontrivial h
 
 @[to_additive (attr := simp)]
 theorem one_ne_of (a : α) : 1 ≠ of a :=

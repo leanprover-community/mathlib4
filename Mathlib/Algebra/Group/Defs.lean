@@ -226,6 +226,10 @@ with commutative subobjects in a noncommutative algebraic structure. -/ ]
 lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
   IsMulCommutative.is_comm.comm ..
 
+@[to_additive]
+instance (M : Type*) [Mul M] [Subsingleton M] : IsMulCommutative M :=
+  isMulCommutative_iff.mpr (fun m n ↦ by rw [Subsingleton.elim m n])
+
 end IsCommutative
 
 /-- A commutative additive magma is a type with an addition which commutes. -/
@@ -1059,6 +1063,10 @@ class IsCyclic (G : Type u) [Pow G ℤ] : Prop where
 theorem exists_zpow_surjective (G : Type*) [Pow G ℤ] [IsCyclic G] :
     ∃ g : G, Function.Surjective (g ^ · : ℤ → G) :=
   IsCyclic.exists_zpow_surjective
+
+@[to_additive]
+instance (priority := 100) (G : Type*) [Pow G ℤ] [Subsingleton G] [One G] : IsCyclic G where
+  exists_zpow_surjective := ⟨1, fun _ ↦ ⟨0, Subsingleton.elim ..⟩⟩
 
 section DivInvMonoid
 

@@ -49,11 +49,6 @@ protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Su
 instance Subgroup.isCyclic_zpowers [Group G] (g : G) :
     IsCyclic (Subgroup.zpowers g) :=
   (Subgroup.isCyclic_iff_exists_zpowers_eq_top _).mpr ⟨g, rfl⟩
-
-@[to_additive]
-instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
-  ⟨⟨1, fun _ => ⟨0, Subsingleton.elim _ _⟩⟩⟩
-
 @[simp]
 theorem isCyclic_multiplicative_iff [SubNegMonoid α] :
     IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
@@ -97,7 +92,7 @@ variable [Group α] [Group G] [Group G']
 @[to_additive /-- A non-cyclic additive group is non-trivial. -/]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
-  exact isCyclic_of_subsingleton
+  infer_instance
 
 @[to_additive]
 theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
@@ -178,7 +173,8 @@ theorem isCyclic_of_prime_card {p : ℕ} [hp : Fact p.Prime]
 theorem isCyclic_of_card_dvd_prime {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α ∣ p) : IsCyclic α := by
   rcases (Nat.dvd_prime hp.out).mp h with h | h
-  · exact @isCyclic_of_subsingleton α _ (Nat.card_eq_one_iff_unique.mp h).1
+  · have := (Nat.card_eq_one_iff_unique.mp h).1
+    infer_instance
   · exact isCyclic_of_prime_card h
 
 @[to_additive]
