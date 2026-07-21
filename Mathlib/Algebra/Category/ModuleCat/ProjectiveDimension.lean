@@ -40,7 +40,7 @@ public section
 
 universe v v' u u'
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 open CategoryTheory Abelian Module
 
@@ -48,7 +48,7 @@ namespace ModuleCat
 
 section
 
-variable [Small.{v} R] {R' : Type u'} [CommRing R'] [Small.{v'} R'] (e : R ≃+* R')
+variable [Small.{v} R] {R' : Type u'} [Ring R'] [Small.{v'} R'] (e : R ≃+* R')
 
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
 
