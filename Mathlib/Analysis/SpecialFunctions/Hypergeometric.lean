@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
 
+/-! # Generalized hypergeometric function
+
+In this file we define the generalized hypergeometric function.
+
+-/
+
 @[expose] public noncomputable section
 
 namespace Complex
@@ -14,7 +20,8 @@ namespace Complex
 open scoped Nat Real
 open Topology Filter
 
-theorem foo {n : ℕ} (z : ℂ) (hz : ∀ k : ℕ, -z ≠ k) :
+/-- The ascending Pochhammer symbol is given by the ratio of `Γ` functions. -/
+theorem Gamma_nat_add_div_Gamma_eq {n : ℕ} (z : ℂ) (hz : ∀ k : ℕ, -z ≠ k) :
     Gamma (n + z) / Gamma z = (ascPochhammer ℂ n).eval z := by
   induction n generalizing z with
   | zero =>
@@ -37,6 +44,7 @@ variable {p q : ℕ}
 
 variable {a : Fin p → ℂ} {b : Fin q → ℂ}
 
+/-- The coefficients of the regularized hypergeometric series. -/
 def regularizedHGFunCoeff (a : Fin p → ℂ) (b : Fin q → ℂ) (n : ℕ) : ℂ :=
   (∏ i : Fin p, (ascPochhammer ℂ n).eval (a i)) / (n ! * ∏ j : Fin q, Gamma (b j + n))
 
@@ -66,6 +74,9 @@ theorem regularizedHGFunCoeff_eq_zero_left' (a : Fin p → ℂ) (b : Fin q → �
   use j, k, hkn
   simp [hj]
 
+/-- Recursion formula for the coefficients of the hypergeometric series.
+
+This is mainly used to calculate the convergence radius. -/
 theorem regularizedHGFunCoeff_add_one {a : Fin p → ℂ} {b : Fin q → ℂ} {n : ℕ}
     (hb : ∀ j, b j ≠ -n) :
     regularizedHGFunCoeff a b (n + 1) = regularizedHGFunCoeff a b n *
@@ -88,10 +99,13 @@ theorem regularizedHGFunCoeff_add_one {a : Fin p → ℂ} {b : Fin q → ℂ} {n
     simp_rw [div_mul_div_comm, Finset.prod_mul_distrib]
     ring
 
+/-- Recursion formula for the coefficients of the hypergeometric series.
+
+This is mainly used to calculate the convergence radius. -/
 theorem regularizedHGFunCoeff_add_one_div_self {a : Fin p → ℂ} {b : Fin q → ℂ} {n : ℕ}
     (h : regularizedHGFunCoeff a b n ≠ 0) :
     regularizedHGFunCoeff a b (n + 1) / regularizedHGFunCoeff a b n =
-      ((∏ i : Fin p, (a i + n)) / ((∏ i : Fin q, (b i + n)) * (n + 1))) := by
+      (∏ i : Fin p, (a i + n)) / ((∏ i : Fin q, (b i + n)) * (n + 1)) := by
   by_cases! hb : ∀ j, b j ≠ -n
   · rw [regularizedHGFunCoeff_add_one hb]
     field_simp
@@ -100,9 +114,6 @@ theorem regularizedHGFunCoeff_add_one_div_self {a : Fin p → ℂ} {b : Fin q �
       grind [Finset.prod_eq_zero_iff]
     rw [regularizedHGFunCoeff_eq_zero_right a b n (by use j, 0; grind)]
     simp [h₁]
-
--- step 2: factor out the `n` under the hypothesis `n ≠ 0`
-
 
 private theorem prod_eq_pow_mul_prod (a : Fin p → ℂ) {n : ℕ} (hn : n ≠ 0) :
     ∏ i, (a i + n) = n ^ p * ∏ i, (a i / n + 1) := calc
@@ -127,10 +138,27 @@ theorem foobar (a : Fin p → ℂ) (b : Fin q → ℂ) {n : ℕ} (hn : n ≠ 0) 
     _ = _ := by
       ring
 
+/-- The regularized hypergeometric series. -/
 def regularizedHGFunSeries (a : Fin p → ℂ) (b : Fin q → ℂ) :
     FormalMultilinearSeries ℂ ℂ ℂ :=
   .ofScalars ℂ (regularizedHGFunCoeff a b)
 
+@[simp]
+theorem regularizedHGFunSeries_coeff (a : Fin p → ℂ) (b : Fin q → ℂ) :
+    (regularizedHGFunSeries a b).coeff = regularizedHGFunCoeff a b := by
+  unfold regularizedHGFunSeries
+  ext; simp
+
+/-- The regularized hypergeometric function. -/
+def regularizedHGFun (a : Fin p → ℂ) (b : Fin q → ℂ) (z : ℂ) : ℂ :=
+  (regularizedHGFunSeries a b).sum z
+
+/-- The regularized Gaussian hypergeometric function. -/
+def regularizedGaussHGFun (a b c z : ℂ) : ℂ :=
+  regularizedHGFun (fun (k : Fin 2) ↦ if k = 0 then a else b) (fun _ : Fin 1 ↦ c) z
+
+/-- If there exists `j` and `k : ℕ`, such that `a j = -k`, then the hypergeometric series is finite
+and has convergence radius `∞`. -/
 theorem radius_regularizedHGFunSeries_eq_top_of_finite {a : Fin p → ℂ} {b : Fin q → ℂ}
     (ha : ∃ (j : Fin p) (k : ℕ), a j = -k) : (regularizedHGFunSeries a b).radius = ⊤ := by
   obtain ⟨j, k, h⟩ := ha
@@ -143,6 +171,8 @@ theorem radius_regularizedHGFunSeries_eq_top_of_finite {a : Fin p → ℂ} {b : 
   apply regularizedHGFunCoeff_eq_zero_left' a b k j' ⟨_, h⟩
   grind
 
+/-- If for all `j` and `k : ℕ`, `a j ≠ -k`, then the coefficients of the hypergeometric series
+are eventually non-vanishing. -/
 theorem eventually_atTop_regularizedHGFunCoeff_ne_zero {a : Fin p → ℂ} {b : Fin q → ℂ}
     (h : ∀ (j : Fin p) (k : ℕ), a j ≠ -↑k) :
     ∀ᶠ (n : ℕ) in atTop, regularizedHGFunCoeff a b n ≠ 0 := by
@@ -164,23 +194,17 @@ theorem eventually_atTop_regularizedHGFunCoeff_ne_zero {a : Fin p → ℂ} {b : 
 
 variable (a) in
 private theorem blubb : Tendsto (fun n : ℕ ↦ (∏ i, (a i / n + 1))) atTop (𝓝 1) := by
-  have : ∀ i ∈ Finset.univ, Tendsto (fun (n : ℕ) ↦ (a i / n + 1)) atTop
-      (𝓝 <| (fun _ : Fin p ↦ 1) i) := by
-    simp only [Finset.mem_univ, forall_const]
-    intro i
-    have := (tendsto_const_div_atTop_nhds_zero_nat (a i)).add_const 1
-    simp only [zero_add] at this
-    exact this
-  have := tendsto_finsetProd Finset.univ this
-  simp only [Finset.prod_const_one] at this
-  exact this
+  suffices ∀ i ∈ Finset.univ, Tendsto (fun n : ℕ ↦ (a i / n + 1)) atTop (𝓝 <| (fun _ : _ ↦ 1) i) by
+    simpa using tendsto_finsetProd Finset.univ this
+  intro i
+  simpa using (tendsto_const_div_atTop_nhds_zero_nat (a i)).add_const 1
 
 variable (a b) in
 private theorem blubb' :
     Tendsto (fun n : ℕ ↦ (∏ i, (a i / n + 1)) / ((∏ i, (b i / n + 1)) * (1 + (n : ℂ)⁻¹))) atTop
       (𝓝 1) := by
-  have h₃ : Tendsto (fun (n : ℕ) ↦ (n : ℂ)⁻¹) atTop (𝓝 0) := tendsto_inv_atTop_nhds_zero_nat
-  have := (blubb a).div ((blubb b).mul <| h₃.const_add 1) (by simp)
+  have h : Tendsto (fun n : ℕ ↦ (n : ℂ)⁻¹) atTop (𝓝 0) := tendsto_inv_atTop_nhds_zero_nat
+  have := (blubb a).div ((blubb b).mul <| h.const_add 1) (by simp)
   simp only [add_zero, mul_one, ne_eq, one_ne_zero, not_false_eq_true, div_self] at this
   apply this.congr
   simp
