@@ -146,6 +146,24 @@ theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
   have := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card, gt_iff_lt] using Fintype.card_subtype_lt hx
 
+/-- A custom induction principle for finite types, by strong induction on `Nat.card`:
+the base case is a subsingleton type, and the induction step is for nontrivial types,
+where one can assume the hypothesis for all types of smaller cardinality. -/
+@[elab_as_elim]
+theorem induction_subsingleton_or_nontrivial {P : Type* → Prop} (α) [Finite α]
+    (hbase : ∀ (α) [Finite α] [Subsingleton α], P α)
+    (hstep : ∀ (α) [Finite α] [Nontrivial α],
+      (∀ (β) [Finite β], Nat.card β < Nat.card α → P β) → P α) :
+    P α := by
+  obtain ⟨n, hn⟩ : ∃ n, Nat.card α = n := ⟨Nat.card α, rfl⟩
+  induction n using Nat.strong_induction_on generalizing α with | _ n ih
+  rcases subsingleton_or_nontrivial α with hsing | hnontriv
+  · apply hbase
+  · apply hstep
+    intro β _ hlt
+    rw [hn] at hlt
+    exact ih (Nat.card β) hlt _ rfl
+
 end Finite
 
 namespace ENat
