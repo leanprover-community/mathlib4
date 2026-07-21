@@ -492,7 +492,7 @@ lemma MeromorphicAt.meromorphicOrderAt_nonneg_iff_analyticAt_toMeromorphicNFAt
   simp [← meromorphicNFAt_toMeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt, hf]
 
 @[gcongr]
-lemma toMeromorphicNFAt_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
+lemma toMeromorphicNFAt_eventuallyEq_nhds_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
     toMeromorphicNFAt f x =ᶠ[𝓝 x] toMeromorphicNFAt g x := by
   by_cases hf : MeromorphicAt f x
   · exact meromorphicNFAt_toMeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds
@@ -501,13 +501,13 @@ lemma toMeromorphicNFAt_congr {f g : 𝕜 → E} (hfg : f =ᶠ[𝓝[≠] x] g) :
   · simp [hf, MeromorphicAt.meromorphicAt_congr hfg |>.not.mp]
 
 @[simp]
-lemma MeromorphicAt.toMeromorphicNFAt_eventuallyEq_iff {f g : 𝕜 → E} (hf : MeromorphicAt f x)
+lemma MeromorphicAt.toMeromorphicNFAt_eventuallyEq_nhds_iff {f g : 𝕜 → E} (hf : MeromorphicAt f x)
     (hg : MeromorphicAt g x) :
     toMeromorphicNFAt f x =ᶠ[𝓝 x] toMeromorphicNFAt g x ↔ f =ᶠ[𝓝[≠] x] g where
   mp h :=
     hf.eq_nhdsNE_toMeromorphicNFAt.trans (h.filter_mono nhdsWithin_le_nhds)
       |>.trans hg.eq_nhdsNE_toMeromorphicNFAt.symm
-  mpr := toMeromorphicNFAt_congr
+  mpr := toMeromorphicNFAt_eventuallyEq_nhds_congr
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 @[simp] theorem toMeromorphicNFAt_eq_self :
