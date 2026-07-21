@@ -180,7 +180,7 @@ section restr
 This is sometimes hard to use, but it has the advantage that when it can be used then its
 `PartialEquiv` is defeq to `PartialEquiv.restr`. -/
 @[simps! -fullyApplied apply symm_apply,
-  simps!? (attr := grind =) -isSimp source target]
+  simps! (attr := grind =) -isSimp source target]
 protected def restr (s : Set X) : PartialHomeomorph X Y :=
   (@IsImage.of_symm_preimage_eq X Y _ _ e s (e.symm ⁻¹' s) rfl).restr
 
