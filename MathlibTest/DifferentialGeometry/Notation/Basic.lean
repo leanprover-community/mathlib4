@@ -1004,32 +1004,32 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {f : M → M'} {s : Set M}
 
-/-- info: setOf fun x ↦ MDifferentiableAt I I' f x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableAt I I' f x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt f x}
 
-/-- info: setOf fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt[s] f x}
 
-/-- info: setOf fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ⊤ f x}
 
-/-- info: setOf fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt[s] 2 f x}
 
 open ContDiff in -- for the ∞ notation
-/-- info: setOf fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ∞ f x}
 
-/-- info: setOf fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
 #guard_msgs in
 #check {x | Function.Injective (mfderiv% f x) }
 
-/-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
 
@@ -1470,10 +1470,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
       `Unit` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize instance of type class
+      failed to synthesize
         NontriviallyNormedField Unit
       ⏎
-      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 [Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `Unit` among local instances.

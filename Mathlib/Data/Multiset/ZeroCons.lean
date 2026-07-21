@@ -218,7 +218,7 @@ theorem cons_ne_zero {a : α} {m : Multiset α} : a ::ₘ m ≠ 0 :=
 
 theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
     a ::ₘ as = b ::ₘ bs ↔ a = b ∧ as = bs ∨ a ≠ b ∧ ∃ cs, as = b ::ₘ cs ∧ bs = a ::ₘ cs := by
-  haveI : DecidableEq α := Classical.decEq α
+  have : DecidableEq α := Classical.decEq α
   constructor
   · intro eq
     by_cases h : a = b
@@ -308,7 +308,8 @@ theorem eq_zero_of_subset_zero {s : Multiset α} (h : s ⊆ 0) : s = 0 :=
 @[simp] lemma subset_zero : s ⊆ 0 ↔ s = 0 :=
   ⟨eq_zero_of_subset_zero, fun xeq => xeq.symm ▸ Subset.refl 0⟩
 
-@[simp] lemma zero_ssubset : 0 ⊂ s ↔ s ≠ 0 := by simp [ssubset_iff_subset_not_subset]
+@[simp] lemma zero_ssubset : 0 ⊂ s ↔ s ≠ 0 := by
+  simp [(right_iff_left_not_left : 0 ⊂ s ↔ 0 ⊆ s ∧ ¬s ⊆ 0)]
 
 @[simp] lemma singleton_subset : {a} ⊆ s ↔ a ∈ s := by simp [subset_iff]
 

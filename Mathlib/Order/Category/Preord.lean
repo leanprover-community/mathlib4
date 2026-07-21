@@ -43,7 +43,6 @@ instance : CoeSort Preord (Type u) :=
 
 attribute [coe] Preord.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where

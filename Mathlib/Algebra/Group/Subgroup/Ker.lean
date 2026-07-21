@@ -82,6 +82,11 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
 
+@[to_additive (attr := simp)]
+theorem comap_range_self (f : G →* N) : f.range.comap f = ⊤ := by
+  ext
+  simp
+
 @[to_additive]
 instance _root_.Subgroup.range_isMulCommutative {G : Type*} [Group G] [IsMulCommutative G]
     {N : Type*} [Group N] (f : G →* N) :
@@ -89,9 +94,13 @@ instance _root_.Subgroup.range_isMulCommutative {G : Type*} [Group G] [IsMulComm
   range_eq_map f ▸ Subgroup.map_isMulCommutative ⊤ f
 
 @[to_additive (attr := simp)]
-theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
-  simp_rw [SetLike.ext_iff, mem_range, mem_map, restrict_apply, SetLike.exists,
+theorem domRestrict_range (f : G →* N) : (f.domRestrict K).range = K.map f := by
+  simp_rw [SetLike.ext_iff, mem_range, mem_map, domRestrict_apply, SetLike.exists,
     exists_prop, forall_const]
+
+@[deprecated (since := "2026-07-19")] alias restrict_range := domRestrict_range
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.restrict_range := _root_.AddMonoidHom.domRestrict_range
 
 /-- The canonical surjective group homomorphism `G →* f(G)` induced by a group
 homomorphism `G →* N`. -/
@@ -270,9 +279,17 @@ theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
 theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
   rfl
 
+@[to_additive]
+theorem ker_le_comap (f : G →* N) (H : Subgroup N) : f.ker ≤ H.comap f :=
+  comap_mono bot_le
+
 @[to_additive (attr := simp)]
-theorem ker_restrict (f : G →* M) : (f.restrict K).ker = f.ker.subgroupOf K :=
+theorem ker_domRestrict (f : G →* M) : (f.domRestrict K).ker = f.ker.subgroupOf K :=
   rfl
+
+@[deprecated (since := "2026-07-19")] alias ker_restrict := ker_domRestrict
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddMonoidHom.ker_restrict := _root_.AddMonoidHom.ker_domRestrict
 
 @[to_additive (attr := simp)]
 theorem ker_codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : G →* N) (s : S)
@@ -291,6 +308,7 @@ theorem ker_one : (1 : G →* M).ker = ⊤ :=
 theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
   simp [ker, ← top_le_iff, SetLike.le_def, f.ext_iff]
 
@@ -401,6 +419,10 @@ theorem map_eq_bot_iff {f : G →* N} : H.map f = ⊥ ↔ H ≤ f.ker :=
 theorem map_eq_bot_iff_of_injective {f : G →* N} (hf : Function.Injective f) :
     H.map f = ⊥ ↔ H = ⊥ := by rw [map_eq_bot_iff, f.ker_eq_bot hf, le_bot_iff]
 
+@[to_additive (attr := simp)]
+theorem map_ker_self (f : G →* N) : f.ker.map f = ⊥ := by
+  rw [map_eq_bot_iff]
+
 open MonoidHom
 
 variable (f : G →* N)
@@ -458,6 +480,15 @@ theorem comap_lt_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Fun
 theorem comap_injective {f : G →* N} (h : Function.Surjective f) : Function.Injective (comap f) :=
   fun K L => by simp only [le_antisymm_iff, comap_le_comap_of_surjective h, imp_self]
 
+@[to_additive (attr := simp)]
+theorem comap_eq_ker {f : G →* N} {H : Subgroup N} : H.comap f = f.ker ↔ Disjoint H f.range := by
+  rw [← H.ker_le_comap f |>.ge_iff_eq', ← map_eq_bot_iff, map_comap_eq, disjoint_iff, inf_comm]
+
+@[to_additive]
+theorem comap_eq_ker_of_surjective {f : G →* N} (hf : Surjective f) {H : Subgroup N} :
+    H.comap f = f.ker ↔ H = ⊥ := by
+  rw [comap_eq_ker, f.range_eq_top_of_surjective hf, disjoint_top]
+
 @[to_additive]
 theorem comap_map_eq_self {f : G →* N} {H : Subgroup G} (h : f.ker ≤ H) :
     comap f (map f H) = H := by
@@ -495,6 +526,7 @@ theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
   map_le_map_iff_of_injective G'.subtype_injective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Subgroups of the subgroup `H` are considered as subgroups that are less than or equal to
 `H`. -/
 @[to_additive (attr := simps apply_coe) /-- Additive subgroups of the subgroup `H` are considered as
