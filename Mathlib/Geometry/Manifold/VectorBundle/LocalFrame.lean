@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 
 /-!
 # Local frames in a vector bundle
@@ -367,11 +367,11 @@ lemma isLocalFrameOn_localFrame_baseSet : IsLocalFrameOn I F n (e.localFrame b) 
   contMDiffOn i := e.contMDiffOn_localFrame_baseSet _ b i
   linearIndependent := by
     intro x hx
-    convert (e.basisAt b hx).linearIndependent
+    convert! (e.basisAt b hx).linearIndependent
     simp [hx, basisAt]
   generating := by
     intro x hx
-    convert (e.basisAt b hx).span_eq.ge
+    convert! (e.basisAt b hx).span_eq.ge
     simp [hx, basisAt]
 
 lemma _root_.contMDiffAt_localFrame_of_mem (i : ι) (hx : x ∈ e.baseSet) :
@@ -425,7 +425,7 @@ variable (e b) in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
     e.localFrame_coeff I b i x (s x) = e.localFrame_coeff I b i x (s' x) := by
-  simpa using (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
+  simpa using! (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
 
 variable {n}
 
@@ -474,7 +474,7 @@ lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% 
     { toFun v := b.repr v i
       map_add' m m' := by simp
       map_smul' m x := by simp }
-  have : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k breprl.toContinuousLinearMap (e ((T% s) x)).2 :=
+  have : CMDiffAt k breprl.toContinuousLinearMap (e ((T% s) x)).2 :=
     contMDiffAt_iff_contDiffAt.mpr <| by fun_prop
   exact this.comp x h₁
 

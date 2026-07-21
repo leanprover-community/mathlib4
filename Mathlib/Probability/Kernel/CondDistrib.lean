@@ -155,7 +155,7 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd_of_measurable
   rw [heq, condDistrib]
   symm
   refine eq_condKernel_of_measure_eq_compProd _ ?_
-  convert hκ
+  convert! hκ
   exact heq.symm
 
 /-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of
@@ -202,7 +202,7 @@ lemma condDistrib_comp_self (X : α → β) {f : β → Ω} (hf : Measurable f) 
   simp [Function.comp_def]
 
 lemma condDistrib_self (Y : α → Ω) : condDistrib Y Y μ =ᵐ[μ.map Y] Kernel.id := by
-  simpa using condDistrib_comp_self Y measurable_id
+  simpa using! condDistrib_comp_self Y measurable_id
 
 lemma condDistrib_const (X : α → β) (c : Ω) :
     condDistrib (fun _ ↦ c) X μ =ᵐ[μ.map X]

@@ -107,8 +107,6 @@ theorem toFinset_subset [Fintype s] {t : Finset α} : s.toFinset ⊆ t ↔ s ⊆
 @[gcongr]
 alias ⟨_, toFinset_mono⟩ := toFinset_subset_toFinset
 
-@[deprecated (since := "2025-10-25")] alias toFinset_subset_toFinset_of_subset := toFinset_mono
-
 alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 
 @[simp]
@@ -137,9 +135,11 @@ theorem toFinset_union [Fintype (s ∪ t : Set _)] : (s ∪ t).toFinset = s.toFi
   simp
 
 @[simp]
-theorem toFinset_diff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset \ t.toFinset := by
+theorem toFinset_sdiff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset \ t.toFinset := by
   ext
   simp
+
+@[deprecated (since := "2026-06-03")] alias toFinset_diff := toFinset_sdiff
 
 open scoped symmDiff in
 @[simp]
@@ -155,15 +155,11 @@ theorem toFinset_compl [Fintype α] [Fintype (sᶜ : Set _)] : sᶜ.toFinset = s
 
 end DecidableEq
 
--- TODO The `↥` circumvents an elaboration bug. See comment on `Set.toFinset_univ`.
 @[simp]
 theorem toFinset_empty [Fintype (∅ : Set α)] : (∅ : Set α).toFinset = ∅ := by
   ext
   simp
 
-/- TODO Without the coercion arrow (`↥`) there is an elaboration bug in the following two;
-it essentially infers `Fintype.{v} (Set.univ.{u} : Set α)` with `v` and `u` distinct.
-Reported in https://github.com/leanprover-community/lean/issues/672 -/
 @[simp]
 theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
     (Set.univ : Set α).toFinset = Finset.univ := by
@@ -277,7 +273,7 @@ sets on a finite type are finite.) -/
 noncomputable def finsetEquivSet : Finset α ≃ Set α where
   toFun := (↑)
   invFun := by classical exact fun s => s.toFinset
-  left_inv s := by convert Finset.toFinset_coe s
+  left_inv s := by convert! Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 
 @[simp, norm_cast] lemma coe_finsetEquivSet : ⇑finsetEquivSet = ((↑) : Finset α → Set α) := rfl

@@ -5,8 +5,10 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.Data.Sign.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
 
 /-!
 # Projective general linear group
@@ -39,13 +41,25 @@ namespace ProjGenLinGroup
 variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
 
 /-- The natural projection from `GL n R` to `PGL n R`. -/
-def mk : GL n R →* PGL(n, R) := QuotientGroup.mk' _
+def mk : GL n R →* PGL(n, R) := QuotientGroup.mk' (Subgroup.center (GL n R))
 
 theorem mk_surjective : Function.Surjective (mk : GL n R → PGL(n, R)) :=
   Quotient.mk_surjective
 
+lemma mk_eq_mk_iff' {g₁ g₂ : GL n R} :
+    mk g₁ = mk g₂ ↔ ∃ z ∈ Subgroup.center (GL n R), g₁ * z = g₂ :=
+  QuotientGroup.mk'_eq_mk' (Subgroup.center (GL n R))
+
+lemma mk_eq_mk_iff {g₁ g₂ : GL n R} :
+    mk g₁ = mk g₂ ↔ ∃ u : Rˣ, g₁ * .scalar n u = g₂ := by
+  simp [mk_eq_mk_iff', Matrix.GeneralLinearGroup.center_eq_range_scalar]
+
 @[simp]
 theorem ker_mk : mk.ker = Subgroup.center (GL n R) := QuotientGroup.ker_mk' _
+
+@[simp]
+theorem mk_eq_one {g : GL n R} : mk g = 1 ↔ g ∈ Subgroup.center (GL n R) := by
+  rw [← MonoidHom.mem_ker, ker_mk]
 
 @[simp]
 theorem mk_scalar (u : Rˣ) : mk (.scalar n u) = 1 := by
@@ -56,6 +70,93 @@ theorem mk_scalar (u : Rˣ) : mk (.scalar n u) = 1 := by
 theorem induction_on {motive : PGL(n, R) → Prop} (g : PGL(n, R))
     (mk : ∀ g : GL n R, motive (ProjGenLinGroup.mk g)) : motive g :=
   Quotient.inductionOn g mk
+
+section isoPSL
+
+open Matrix.SpecialLinearGroup
+
+/-- The natural inclusion map from `PSL(n, R)` to `PGL(n, R)` induced by the inclusion
+  map from `SL(n, R)` to `GL(n, R)`. -/
+@[expose]
+def _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL :
+    ProjectiveSpecialLinearGroup n R →* PGL(n, R) :=
+  QuotientGroup.lift _ (mk.comp toGL) fun x hx ↦ by
+    simp only [mem_center_iff, scalar_apply, MonoidHom.mem_ker, MonoidHom.coe_comp,
+      Function.comp_apply, mk_eq_one, GeneralLinearGroup.mem_center_iff_val_mem_range_scalar,
+      coe_GL_coe_matrix, Set.mem_range] at hx ⊢
+    exact ⟨hx.choose, hx.choose_spec.2⟩
+
+@[simp]
+lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_mk (g : SpecialLinearGroup n R) :
+    ProjectiveSpecialLinearGroup.toPGL g = mk (toGL g) := rfl
+
+lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_injective :
+    Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun x y h ↦ by
+  induction x using QuotientGroup.induction_on with | H x =>
+  induction y using QuotientGroup.induction_on with | H y =>
+  simp only [ProjectiveSpecialLinearGroup.toPGL_mk, mk_eq_mk_iff] at h
+  rw [← QuotientGroup.mk'_apply, ← QuotientGroup.mk'_apply]
+  simp only [QuotientGroup.mk'_eq_mk', mem_center_iff]
+  obtain ⟨u, hu'⟩ := h
+  have hu : u.1 ^ Fintype.card n = 1 := by
+    simpa [Units.ext_iff] using congr(Matrix.GeneralLinearGroup.det $hu')
+  set z : SpecialLinearGroup n R := ⟨scalar n u.1, by simpa using hu⟩ with hz_eq
+  have hz : (GeneralLinearGroup.scalar n) u = toGL z := by ext; simp [hz_eq]
+  refine ⟨z, ⟨u.1, hu, by simp [hz_eq]⟩, ?_⟩
+  rwa [hz, ← map_mul, toGL_inj] at hu'
+
+lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots
+    (hR : ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r) :
+    Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun g ↦ by
+  induction g using Matrix.ProjGenLinGroup.induction_on with | mk g =>
+  obtain ⟨r, hr⟩ : ∃ r : Rˣ, r ^ Fintype.card n * g.det = 1 := by
+    obtain ⟨r, hr⟩ := hR g.det⁻¹
+    exact ⟨r, by simpa [mul_eq_one_iff_eq_inv] using hr⟩
+  simp only [Units.ext_iff, Units.val_mul, Units.val_pow_eq_pow_val,
+    GeneralLinearGroup.val_det_apply, ← Matrix.det_smul g.1 r.1, Units.val_one] at hr
+  use QuotientGroup.mk ⟨r.1 • g.1, hr⟩
+  simp only [ProjectiveSpecialLinearGroup.toPGL_mk, mk_eq_mk_iff]
+  refine ⟨r⁻¹, Units.ext ?_⟩
+  simp only [Units.val_mul, coe_GL_coe_matrix,GeneralLinearGroup.val_scalar_apply]
+  simp [← Matrix.mul_smul, ← Matrix.diagonal_smul, Pi.smul_def, smul_eq_mul]
+
+lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_iff [Nonempty n] :
+    Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) ↔
+      ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r := by
+  refine ⟨fun h r ↦ ?_, ProjectiveSpecialLinearGroup.toPGL_surj_of_roots⟩
+  obtain ⟨A, hA⟩ := GeneralLinearGroup.det_surjective (n := n) r
+  obtain ⟨X, hX⟩ := h (.mk A)
+  induction X using QuotientGroup.induction_on with | H X =>
+  obtain ⟨u, hu⟩ : ∃ u, toGL X * (GeneralLinearGroup.scalar n) u = A := by
+    simpa [mk_eq_mk_iff] using hX
+  exact ⟨u, by simpa [hA] using congr(Matrix.GeneralLinearGroup.det $hu)⟩
+
+open Polynomial in
+/-- An isomorphism between `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field
+  induced from the natural inclusion map. -/
+noncomputable def isoPSLOfAlgClosedOfNonempty [Nonempty n] {F : Type*} [Field F] [IsAlgClosed F] :
+    PGL(n, F) ≃* ProjectiveSpecialLinearGroup n F :=
+  MulEquiv.symm (MulEquiv.ofBijective Matrix.ProjectiveSpecialLinearGroup.toPGL
+    ⟨Matrix.ProjectiveSpecialLinearGroup.toPGL_injective,
+    Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots fun r => by
+  obtain ⟨x, hx⟩ := IsAlgClosed.exists_root (X ^ Fintype.card n - C r.1 : F[X]) (by
+    simp [Polynomial.degree_X_pow_sub_C Fintype.card_pos])
+  have hx' : x ≠ 0 := by aesop
+  exact ⟨⟨x, x⁻¹, mul_inv_cancel₀ hx', inv_mul_cancel₀ hx'⟩, by
+    simpa [Units.ext_iff, sub_eq_zero] using hx⟩⟩)
+
+/-- An isomorphism between `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field
+  induced from the natural inclusion map where when `n` is empty it gives a junk isomorphism. -/
+noncomputable def isoPSLOfAlgClosed {F : Type*} [Field F] [IsAlgClosed F] :
+    PGL(n, F) ≃* ProjectiveSpecialLinearGroup n F :=
+  open scoped Classical in
+  if h : Nonempty n then isoPSLOfAlgClosedOfNonempty else
+  have : IsEmpty n := by simpa using h
+  have : Subsingleton (PGL(n, F)) := mk_surjective.subsingleton
+  MulEquiv.symm (MulEquiv.ofBijective Matrix.ProjectiveSpecialLinearGroup.toPGL
+    ⟨Matrix.ProjectiveSpecialLinearGroup.toPGL_injective, Function.surjective_to_subsingleton _⟩)
+
+end isoPSL
 
 variable {M : Type*} [Monoid M]
 

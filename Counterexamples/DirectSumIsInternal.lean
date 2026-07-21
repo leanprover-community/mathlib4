@@ -19,7 +19,6 @@ This file demonstrates why `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_
 take `Ring R` and not `Semiring R`.
 -/
 
-
 namespace Counterexample
 
 theorem UnitsInt.one_ne_neg_one : (1 : ℤˣ) ≠ -1 := by decide
@@ -57,9 +56,8 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
     · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
     · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 
-def withSign.independent : iSupIndep withSign := by
-  apply
-    (iSupIndep_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
+lemma withSign.independent : iSupIndep withSign := by
+  apply (iSupIndep_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
   intro i
   fin_cases i <;> simp
 
