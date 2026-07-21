@@ -1361,3 +1361,17 @@ set_option pp.explicit true in
 /-- info: zero_n : @Eq MyNat zero.n MyNat.zero -/
 #guard_msgs in
 #check zero_n
+
+section SMul
+/-! Check that we have initialized `simps` correctly for `smul`/`vadd`. -/
+@[simps] instance smul_bool : SMul Bool Bool where
+  smul _ b := b
+
+example (b₁ b₂ : Bool) : b₁ • b₂ = b₂ := by simp
+
+@[simps] instance vadd_bool : VAdd Bool Bool where
+  vadd b _ := b
+
+example (b₁ b₂ : Bool) : b₁ +ᵥ b₂ = b₁ := by simp
+
+end SMul
