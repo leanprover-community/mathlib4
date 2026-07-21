@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.IsoCat
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.SuppressCompilation
@@ -1046,5 +1047,24 @@ def Functor.mapComposableArrowsOpIso :
   Iso.refl _
 
 end
+
+namespace ComposableArrows
+
+section
+variable (D : Type*) [Category* D] (n : ℕ)
+
+def prodEquivalence : ComposableArrows (C × D) n ≌ ComposableArrows C n × ComposableArrows D n :=
+  (functorProdFunctorEquiv (Fin (n + 1)) C D).symm
+
+def prodIsoCat : IsoCat (ComposableArrows (C × D) n)
+                        (ComposableArrows C n × ComposableArrows D n) where
+  functor := (prodEquivalence C D n).functor
+  inverse := (prodEquivalence C D n).inverse
+  unit_eq := rfl
+  counit_eq := rfl
+
+end
+
+end ComposableArrows
 
 end CategoryTheory

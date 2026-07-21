@@ -26,27 +26,12 @@ section
 variable (C₁ C₂ : Type u) [Category.{v} C₁] [Category.{v} C₂]
 
 /-- Map a nerve of a product category to product of the nerves. -/
-def nerveProdToProdNerve : nerve (C₁ × C₂) ⟶ (nerve C₁) ⊗ (nerve C₂) := by
-  let app (n : SimplexCategoryᵒᵖ) : (nerve (C₁ × C₂)).obj n ⟶ (nerve C₁ ⊗ nerve C₂).obj n := by
-    constructor
-    exact ⟨fun γ ↦ ⟨γ ⋙ (CategoryTheory.Prod.fst C₁ C₂), γ ⋙ (CategoryTheory.Prod.snd C₁ C₂)⟩⟩
-  constructor
-  · intro m n d
-    exact Eq.symm
-          (CartesianMonoidalCategory.hom_ext (app m ≫ ((nerve C₁).map d ⊗ₘ (nerve C₂).map d))
-            ((nerve (C₁ × C₂)).map d ≫ app n) rfl rfl)
+def nerveProdToProdNerve : nerve (C₁ × C₂) ⟶ (nerve C₁) ⊗ (nerve C₂) where
+  app n := ↾(ComposableArrows.prodEquivalence C₁ C₂ n.unop.len).functor.obj
 
 /-- Map a product of nerves to the nerve of the product category. -/
-def prodNerveToNerveProd : (nerve C₁) ⊗ (nerve C₂) ⟶ nerve (C₁ × C₂) := by
-  let app (n : SimplexCategoryᵒᵖ) : (nerve C₁ ⊗ nerve C₂).obj n ⟶ (nerve (C₁ × C₂)).obj n := by
-    constructor
-    exact ⟨fun ⟨γ₁,γ₂⟩ ↦ γ₁.prod' γ₂⟩
-  constructor
-  · intro m n f
-    exact Eq.symm (eq_of_comp_right_eq'
-                    (app m ≫ (nerve (C₁ × C₂)).map f)
-                    ((nerve C₁ ⊗ nerve C₂).map f ≫ app n)
-                    rfl)
+def prodNerveToNerveProd : (nerve C₁) ⊗ (nerve C₂) ⟶ nerve (C₁ × C₂) where
+  app n := ↾(ComposableArrows.prodEquivalence C₁ C₂ n.unop.len).inverse.obj
 
 /-- nerve preserves products. -/
 def nerveOfProductIso : nerve (C₁ × C₂) ≅ (nerve C₁) ⊗ (nerve C₂) where
