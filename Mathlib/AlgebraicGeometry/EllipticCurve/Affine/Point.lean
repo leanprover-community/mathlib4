@@ -111,6 +111,9 @@ variable (W') in
 noncomputable abbrev mk : R[X][Y] →+* W'.CoordinateRing :=
   AdjoinRoot.mk W'.polynomial
 
+lemma algebraMap_eq_comp :
+    algebraMap R W'.CoordinateRing = (CoordinateRing.mk _).comp (algebraMap ..) := rfl
+
 open scoped Classical in
 variable (W') in
 /-- The power basis `{1, Y}` for `R[W]` over `R[X]`. -/
@@ -138,6 +141,40 @@ lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1,
   ext n
   fin_cases n
   exacts [basis_zero, basis_one]
+
+instance : Module.Free R[X] W'.CoordinateRing := .of_basis (CoordinateRing.basis W')
+
+instance : Module.Free R W'.CoordinateRing := .trans (S := R[X])
+
+instance [Nontrivial R] : Nontrivial W'.CoordinateRing :=
+  ⟨_, _, (CoordinateRing.basis W').ne_zero 0⟩
+
+instance : FaithfulSMul R[X] W'.CoordinateRing := by nontriviality R; infer_instance
+
+instance : FaithfulSMul R W'.CoordinateRing := .trans R R[X] _
+
+end CoordinateRing
+
+namespace FunctionField
+
+variable (W') in
+/-- The natural ring homomorphism mapping `R[X][Y]` to `R(W)`. -/
+protected noncomputable abbrev mk : R[X][Y] →+* W'.FunctionField :=
+  (algebraMap ..).comp (CoordinateRing.mk W')
+
+lemma mk_apply (p : R[X][Y]) : FunctionField.mk W' p = algebraMap _ _ (CoordinateRing.mk W' p) :=
+  rfl
+
+lemma algebraMap_eq_comp :
+    algebraMap R W'.FunctionField = (FunctionField.mk W').comp (algebraMap ..) := rfl
+
+instance : FaithfulSMul R[X] W'.FunctionField := .trans _ W'.CoordinateRing _
+
+instance : FaithfulSMul R W'.FunctionField := .trans _ W'.CoordinateRing _
+
+end FunctionField
+
+namespace CoordinateRing
 
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm

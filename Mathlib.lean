@@ -1377,6 +1377,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Reduction
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Universal
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 public import Mathlib.AlgebraicGeometry.Fiber
