@@ -37,7 +37,7 @@ We define the multiset of roots of a polynomial, and prove basic results about i
 
 assert_not_exists Ideal
 
-open Multiset Finset
+open AddMonoidAlgebra Multiset Finset
 
 noncomputable section
 

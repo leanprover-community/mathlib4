@@ -120,7 +120,7 @@ theorem smul_charpoly (b : B) (g : G) : g • (charpoly G b) = charpoly G b := b
 
 theorem smul_coeff_charpoly (b : B) (n : ℕ) (g : G) :
     g • (charpoly G b).coeff n = (charpoly G b).coeff n := by
-  rw [← coeff_smul, smul_charpoly]
+  rw [← AddMonoidAlgebra.coeff_smul_apply, smul_charpoly]
 
 end MulSemiringAction
 

@@ -507,12 +507,12 @@ and denote `n := nilRank φ`.
 An element `x : L` is *nil-regular* with respect to `φ`
 if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero. -/
 def IsNilRegular (x : L) : Prop :=
-  Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0
+  (φ x).charpoly.coeff (nilRank φ) ≠ 0
 
 variable (x : L)
 
 lemma isNilRegular_def :
-    IsNilRegular φ x ↔ (Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0) := Iff.rfl
+    IsNilRegular φ x ↔ ((φ x).charpoly.coeff (nilRank φ) ≠ 0) := Iff.rfl
 
 lemma isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero :
     IsNilRegular φ x ↔

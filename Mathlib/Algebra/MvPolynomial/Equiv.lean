@@ -106,7 +106,7 @@ theorem coeff_uniqueAlgEquiv [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
   induction P using induction_on' with
   | monomial d r =>
       rw [uniqueAlgEquiv_monomial, Finsupp.unique_single d]
-      simp [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial]
+      simp [Finsupp.single_apply, MvPolynomial.coeff_monomial]
   | add P Q hP hQ =>
       simpa using congrArg₂ (· + ·) hP hQ
 
@@ -508,7 +508,7 @@ lemma optionEquivLeft_symm_X :
 equals the coefficient of `n` in `f` -/
 theorem optionEquivLeft_coeff_some_coeff_none
     (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
-    (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)).coeff n.some = f.coeff n := by
+    ((optionEquivLeft R S₁ f).coeff (n none)).coeff n.some = f.coeff n := by
   induction f using MvPolynomial.induction_on' generalizing n with
   | monomial j r =>
     rw [optionEquivLeft_monomial]
@@ -524,7 +524,7 @@ theorem optionEquivLeft_coeff_some_coeff_none
       simp only [Finsupp.ext_iff, Option.forall, hj_none, true_and]
       simpa only [Finsupp.ext_iff] using! hj_some
   | add p q hp hq =>
-    simp only [map_add, Polynomial.coeff_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
+    simp only [map_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
 
 theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Option S₁) R) :
     eval (fun x ↦ Option.elim x y s) f =
@@ -686,10 +686,10 @@ theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = Polynomi
 /-- The coefficient of `m` in the `i`-th coefficient of `finSuccEquiv R n f` equals the
     coefficient of `Finsupp.cons i m` in `f`. -/
 theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ) :
-    (Polynomial.coeff (finSuccEquiv R n f) i).coeff m = f.coeff (m.cons i) := by
+    ((finSuccEquiv R n f).coeff i).coeff m = f.coeff (m.cons i) := by
   induction f using MvPolynomial.induction_on' generalizing i m with
   | add p q hp hq =>
-    simp only [map_add, Polynomial.coeff_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
+    simp only [map_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
   | monomial j r =>
     simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
       Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
@@ -731,7 +731,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
     implies_true, and_self, φ]
 
 theorem coeff_eval_eq_eval_coeff (s' : S₁ → R) (f : Polynomial (MvPolynomial S₁ R))
-    (i : ℕ) : Polynomial.coeff (Polynomial.map (eval s') f) i = eval s' (Polynomial.coeff f i) := by
+    (i : ℕ) : (Polynomial.map (eval s') f).coeff i = eval s' (f.coeff i) := by
   simp only [Polynomial.coeff_map]
 
 theorem mem_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {m : Fin n →₀ ℕ} :
@@ -832,7 +832,7 @@ lemma degreeOf_eq_natDegree [DecidableEq σ] (a : σ) (p : MvPolynomial σ R) :
   rw [Equiv.optionSubtypeNe_symm_apply, dite_eq_left rfl]
 
 theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin n) (i : ℕ) :
-    degreeOf j (Polynomial.coeff (finSuccEquiv R n p) i) ≤ degreeOf j.succ p := by
+    degreeOf j ((finSuccEquiv R n p).coeff i) ≤ degreeOf j.succ p := by
   rw [degreeOf_eq_sup, degreeOf_eq_sup, Finset.sup_le_iff]
   intro m hm
   rw [← Finsupp.cons_succ j i m]
