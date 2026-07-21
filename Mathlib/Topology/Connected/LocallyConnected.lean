@@ -207,7 +207,7 @@ theorem Pi.locallyConnectedSpace_of_finite_nonpreconnected [∀ i, TopologicalSp
   · rw [piecewise_eq_of_mem _ _ _ hi]
     exact isPreconnected_connectedComponentIn
   · rw [piecewise_eq_of_notMem _ _ _ hi]
-    have : PreconnectedSpace (X i) := not_not.mp fun h ↦ hi (hK ▸ mem_union_right _ h)
+    have : PreconnectedSpace (X i) := not_not.mp fun h ↦ hi (mem_union_right _ h)
     exact isPreconnected_univ
 
 /-- A finite product of locally connected spaces is locally connected. -/
