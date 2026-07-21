@@ -1109,8 +1109,8 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
       throwError "Invalid `simps` attribute. Target {str} is not a structure"
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
       let firstTodo := todoNext.head!.1
-      throwError "Invalid simp lemma {nm.update firstTodo false |>.toName}.\nProjection \
-        {(splitOnNotNumber firstTodo "_")[1]!} doesn't exist, \
+      throwError "Invalid simp lemma {nm.update (dropLast firstTodo) false |>.toName}.\n\
+        Projection {(splitOnNotNumber firstTodo "_")[1]!} doesn't exist, \
         because target {str} is not a structure."
     if cfg.fullyApplied then
       addProjection stxProj univs nm.toName tgt lhsAp rhsAp newArgs cfg
@@ -1166,8 +1166,8 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
       throwError "Invalid `simps` attribute. The body is not a constructor application:\
         {indentExpr rhsWhnf}"
     if !todoNext.isEmpty then
-      throwError "Invalid simp lemma {nm.update todoNext.head!.1 false |>.toName}.\n\
-        The given definition is not a constructor application:{indentExpr rhsWhnf}"
+      throwError "Invalid simp lemma {nm.update (dropLast todoNext.head!.1) false |>.toName}.\
+        \nThe given definition is not a constructor application:{indentExpr rhsWhnf}"
     if !addThisProjection then
       if cfg.fullyApplied then
         addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg
@@ -1196,7 +1196,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
   -- check whether all elements in `todo` have a projection as prefix
   if let some (x, _) := todo.find? fun (x, _) ↦ projs.all
     fun proj ↦ !isPrefixOfAndNotNumber (proj.lastComponentAsString ++ "_") x then
-    let simpLemma := nm.update x |>.toName
+    let simpLemma := nm.update (dropLast x) |>.toName
     let neededProj := (splitOnNotNumber x "_")[0]!
     throwError "Invalid simp lemma {simpLemma}. \
       Structure {str} does not have projection {neededProj}.\n\
@@ -1218,6 +1218,10 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
     addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
   return if addThisProjection then nms.push nm.toName else nms
+where
+  /-- Drop the last character of a string (the trailing underscore in a "todo"). -/
+  dropLast (todo : String) : String :=
+    todo.dropEnd 1 |>.copy
 
 end Simps
 open Simps
