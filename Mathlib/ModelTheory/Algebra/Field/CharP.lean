@@ -56,7 +56,7 @@ instance model_hasChar_of_charP [Field K] [CompatibleRing K] [CharP K p] :
     simp [hp.ne_zero, hp, Sentence.Realize]
   | inr hp =>
     subst hp
-    simp only [ite_true, Theory.model_iff, Set.mem_image, Set.mem_setOf_eq,
+    simp only [ite_true, Theory.model_iff, Set.mem_image, Set.mem_ofPred_eq,
       Sentence.Realize, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K
@@ -67,7 +67,7 @@ theorem charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
     (show (Theory.field.Model K) by infer_instance), true_and]
   split_ifs with hp0 hp
   · subst hp0
-    simp only [Theory.model_iff, Set.mem_image, Set.mem_setOf_eq, Sentence.Realize,
+    simp only [Theory.model_iff, Set.mem_image, Set.mem_ofPred_eq, Sentence.Realize,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Formula.realize_not,
       realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact ⟨fun _ => CharP.ofCharZero _, fun _ => CharP.charP_to_charZero K⟩

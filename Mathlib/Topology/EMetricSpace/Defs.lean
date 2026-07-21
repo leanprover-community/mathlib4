@@ -43,7 +43,7 @@ in terms of the elements of the uniformity. -/
 theorem uniformity_dist_of_mem_uniformity [LT β] {U : Filter (α × α)} (z : β)
     (D : α → α → β) (H : ∀ s, s ∈ U ↔ ∃ ε > z, ∀ {a b : α}, D a b < ε → (a, b) ∈ s) :
     U = ⨅ ε > z, 𝓟 { p : α × α | D p.1 p.2 < ε } :=
-  HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
+  HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_ofPred]⟩
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
@@ -392,7 +392,7 @@ instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
     max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
       (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
   uniformity_edist := uniformity_prod.trans <| by
-    simp [PseudoEMetricSpace.uniformity_edist, ← iInf_inf_eq, setOf_and]
+    simp [PseudoEMetricSpace.uniformity_edist, ← iInf_inf_eq, ofPred_and]
   toUniformSpace := inferInstance
 
 theorem Prod.edist_eq [PseudoEMetricSpace β] (x y : α × β) :
@@ -416,7 +416,7 @@ theorem mem_closedEBall' : y ∈ closedEBall x ε ↔ edist x y ≤ ε := by
 
 @[simp]
 theorem closedEBall_top (x : α) : closedEBall x ∞ = univ :=
-  eq_univ_of_forall fun _ => mem_setOf.2 le_top
+  eq_univ_of_forall fun _ => mem_ofPred.2 le_top
 
 theorem eball_subset_closedEBall : eball x ε ⊆ closedEBall x ε := fun _ h => le_of_lt h.out
 
@@ -464,12 +464,19 @@ theorem eball_eq_empty_iff : eball x ε = ∅ ↔ ε = 0 :=
     ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_eball_self ε0)), fun ε0 _ h =>
       not_lt_of_ge (le_of_eq ε0) (pos_of_mem_eball h)⟩
 
-theorem ordConnected_setOf_closedEBall_subset (x : α) (s : Set α) :
+theorem ordConnected_setOfPred_closedEBall_subset (x : α) (s : Set α) :
     OrdConnected { r | closedEBall x r ⊆ s } :=
   ⟨fun _ _ _ h₁ _ h₂ => (closedEBall_subset_closedEBall h₂.2).trans h₁⟩
 
-theorem ordConnected_setOf_eball_subset (x : α) (s : Set α) : OrdConnected { r | eball x r ⊆ s } :=
+@[deprecated (since := "2026-07-09")]
+alias ordConnected_setOf_closedEBall_subset := ordConnected_setOfPred_closedEBall_subset
+
+theorem ordConnected_setOfPred_eball_subset (x : α) (s : Set α) :
+    OrdConnected { r | eball x r ⊆ s } :=
   ⟨fun _ _ _ h₁ _ h₂ => (eball_subset_eball h₂.2).trans h₁⟩
+
+@[deprecated (since := "2026-07-09")]
+alias ordConnected_setOf_eball_subset := ordConnected_setOfPred_eball_subset
 
 /-- Relation “two points are at a finite edistance” is an equivalence relation. -/
 @[instance_reducible]
@@ -652,10 +659,10 @@ alias closedBall_subset_closedBall := closedEBall_subset_closedEBall
 @[deprecated (since := "2026-01-24")] alias ball_eq_empty_iff := eball_eq_empty_iff
 
 @[deprecated (since := "2026-01-24")]
-alias ordConnected_setOf_closedBall_subset := ordConnected_setOf_closedEBall_subset
+alias ordConnected_setOf_closedBall_subset := ordConnected_setOfPred_closedEBall_subset
 
 @[deprecated (since := "2026-01-24")]
-alias ordConnected_setOf_ball_subset := ordConnected_setOf_eball_subset
+alias ordConnected_setOf_ball_subset := ordConnected_setOfPred_eball_subset
 
 @[deprecated (since := "2026-01-24")] alias edistLtTopSetoid := edistLtTopSetoid
 @[deprecated (since := "2026-01-24")] alias ball_zero := eball_zero
