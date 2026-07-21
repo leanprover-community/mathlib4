@@ -46,19 +46,24 @@ IsCompact.inter_right : IsCompact s → IsClosed t → IsCompact (s ∩ t)
 ```
 
 We will tag transition theorems, e.g. `Set.Finite.isCompact : Finite s → IsCompact s` should be
-tagged `@[compactness .]`, even if `compactness` will contain lemmas about finite sets.
+tagged `@[compactness .]`, even if `compactness` won't contain lemmas about finite sets.
 The advantages of this are that we can use local finiteness hypotheses, and this will ensure that
 the different grind sets will interact well with each other. For the same reason we tag lemmas
 that involve other properties, e.g. `IsCompact.inter_left`
 
 ## To do
 
-* Implement other grind sets, e.g. `openness`, `boundedness`, `countability`,
-`connectedness`, ...
+* Implement other grind sets, e.g. `boundedness`, `countability`, `connectedness`, ...
 
 -/
 
 open Lean Parser Tactic
+
+/-- A hash set of the grind attributes in Mathlib.
+
+When adding a new grind attribute, manually add it to this hash set as well. -/
+def Mathlib.grindAttrs : Std.HashSet Name :=
+ {`compactness, `closedness}
 
 /-- The `compactness` attribute is a custom grind-set specialized to prove that sets are compact.
 It is called by the `compactness` tactic. -/
@@ -68,20 +73,23 @@ register_grind_attr compactness
 `compactness` is a simple tactic that tries various lemmas to prove that a set is compact.
 It is implemented using `grind`, and has the same configuration options as `grind`.
 
-Use `grind only [compactness, closedness]` if you want to prove that the closure of sets are
+Use `grind only [compactness, closedness]` instead if you want to prove that the closure of sets are
 compact.
 
-It also exists as a grind attribute, and can be combined with other grind attributes, using
+It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [compactness, ...]`.
 -/
-macro "compactness" config:optConfig : tactic =>
+macro (name := compactnessTac) "compactness" config:optConfig : tactic =>
   -- note: directly giving `compactness` as argument in the syntax quotation below is treated
   -- as an unknown identifier by the hygiene system.
-  let attr : Ident := mkIdent `compactness
-  `(tactic|grind $config only [$attr:term])
+  `(tactic|grind $config only [$(mkIdent `compactness):term])
 
-/-- The `closedness` attribute is a custom grind-set specialized to prove that sets are compact.
-It is called by the `compactness` tactic. -/
+@[inherit_doc compactnessTac]
+macro "compactness?" config:optConfig : tactic =>
+    `(tactic|grind? $config only [$(mkIdent `compactness):term])
+
+/-- The `closedness` attribute is a custom grind-set specialized to prove that sets are closed.
+It is called by the `closedness` tactic. -/
 register_grind_attr closedness
 
 /--
@@ -89,11 +97,14 @@ register_grind_attr closedness
 and reasoning about the closure of sets.
 It is implemented using `grind`, and has the same configuration options as `grind`.
 
-It also exists as a grind attribute, and can be combined with other grind attributes, using
+It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [closedness, ...]`.
 -/
-macro "closedness" config:optConfig : tactic =>
+macro (name := closednessTac) "closedness" config:optConfig : tactic =>
   -- note: directly giving `closedness` as argument in the syntax quotation below is treated
   -- as an unknown identifier by the hygiene system.
-  let attr : Ident := mkIdent `closedness
-  `(tactic|grind $config only [$attr:term])
+  `(tactic|grind $config only [$(mkIdent `closedness):term])
+
+@[inherit_doc closednessTac]
+macro "closedness?" config:optConfig : tactic =>
+    `(tactic|grind? $config only [$(mkIdent `closedness):term])

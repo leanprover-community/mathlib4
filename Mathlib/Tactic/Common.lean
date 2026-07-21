@@ -42,6 +42,7 @@ public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.ClearExcept
 public import Mathlib.Tactic.Clear_
+public import Mathlib.Tactic.ClickSuggestions
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.CongrExclamation
 public import Mathlib.Tactic.CongrM
@@ -109,7 +110,6 @@ public import Mathlib.Tactic.TermCongr
 public import Mathlib.Tactic.ToExpr
 public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
-public import Mathlib.Tactic.TypeCheck
 public import Mathlib.Tactic.UnsetOption
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.Variable
@@ -122,6 +122,8 @@ public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
+
+public import Lean.Elab.Tactic.Try
 
 /-!
 # Common tactics, linters, and utilities

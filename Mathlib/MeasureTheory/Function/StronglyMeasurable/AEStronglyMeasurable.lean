@@ -135,6 +135,30 @@ theorem aestronglyMeasurable_zero_measure (f : α → β) :
 theorem SimpleFunc.aestronglyMeasurable (f : α →ₛ β) : AEStronglyMeasurable f μ :=
   f.stronglyMeasurable.aestronglyMeasurable
 
+/-- In a pseudometrizable space, if a measure `μ` is supported on
+a separable set then the identity function is `AEStronglyMeasurable` with respect to `μ`. -/
+lemma aestronglyMeasurable_id_of_isSeparable [TopologicalSpace α]
+    [TopologicalSpace.PseudoMetrizableSpace α] [OpensMeasurableSpace α]
+    {s : Set α} (h1 : TopologicalSpace.IsSeparable s) (h2 : μ sᶜ = 0) :
+    AEStronglyMeasurable id μ := by
+  nontriviality α
+  obtain ⟨a, -⟩ := exists_pair_ne α
+  classical
+  refine ⟨(closure s).piecewise id (fun _ ↦ a), ?_,
+    Filter.mem_of_superset h2 (fun x hx ↦ by simp [subset_closure hx])⟩
+  have h : StronglyMeasurable ((↑) : closure s → α) := by
+    have := h1.closure.secondCountableTopology
+    exact continuous_subtype_val.stronglyMeasurable
+  have : (closure s).piecewise id (fun _ ↦ a) =
+      ((↑) : closure s → α).extend ((↑) : closure s → α) (fun _ ↦ a) := by
+    ext x
+    by_cases hx : x ∈ closure s
+    · simp [Function.extend_val_apply, hx]
+    · simp [hx]
+  rw [this]
+  exact (MeasurableEmbedding.subtype_coe isClosed_closure.measurableSet).stronglyMeasurable_extend
+    h stronglyMeasurable_const
+
 namespace AEStronglyMeasurable
 
 @[fun_prop]
@@ -272,7 +296,7 @@ lemma of_measurableSpace_le_on {m' m₀ : MeasurableSpace α} {μ : Measure[m₀
 
 section Arithmetic
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 protected theorem mul [Mul β] [ContinuousMul β] (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f * g) μ :=
   ⟨hf.mk f * hg.mk g, by fun_prop, hf.ae_eq_mk.mul hg.ae_eq_mk⟩
@@ -287,20 +311,24 @@ protected theorem const_mul [Mul β] [ContinuousMul β] (hf : AEStronglyMeasurab
     AEStronglyMeasurable[m] (fun x => c * f x) μ :=
   aestronglyMeasurable_const.mul hf
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] f⁻¹ μ :=
   ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv, hf.ae_eq_mk.inv⟩
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := fun_prop)]
+theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpace β]
+    (hf : AEStronglyMeasurable[m] f μ) : AEStronglyMeasurable[m] f⁻¹ μ :=
+  ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv₀, hf.ae_eq_mk.inv⟩
+
+@[to_fun (attr := to_additive (attr := fun_prop))]
 protected theorem div [Group β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f / g) μ :=
   ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div' hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.div hg.ae_eq_mk⟩
 
 @[fun_prop]
-theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [PseudoMetrizableSpace β]
-    [MeasurableSpace β] [BorelSpace β] [MeasurableSingletonClass β]
+theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [MetrizableSpace β]
     (hf : AEStronglyMeasurable[m] f μ) (hg : AEStronglyMeasurable[m] g μ) :
     AEStronglyMeasurable[m] (f / g) μ :=
   ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div hg.stronglyMeasurable_mk,
@@ -317,26 +345,27 @@ theorem mul_iff_left [CommGroup β] [IsTopologicalGroup β] (hf : AEStronglyMeas
     AEStronglyMeasurable[m] (g * f) μ ↔ AEStronglyMeasurable[m] g μ :=
   mul_comm g f ▸ AEStronglyMeasurable.mul_iff_right hf
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 protected theorem smul {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [ContinuousSMul 𝕜 β] {f : α → 𝕜}
     {g : α → β} (hf : AEStronglyMeasurable[m] f μ) (hg : AEStronglyMeasurable[m] g μ) :
-    AEStronglyMeasurable[m] (fun x => f x • g x) μ :=
+    AEStronglyMeasurable[m] (f • g) μ :=
   continuous_smul.comp_aestronglyMeasurable (hf.prodMk hg)
 
-@[to_additive (attr := fun_prop) const_nsmul]
+@[to_additive (attr := to_fun (attr := fun_prop)) const_nsmul]
 protected theorem pow [Monoid β] [ContinuousMul β] (hf : AEStronglyMeasurable[m] f μ) (n : ℕ) :
     AEStronglyMeasurable[m] (f ^ n) μ :=
   ⟨hf.mk f ^ n, hf.stronglyMeasurable_mk.pow _, hf.ae_eq_mk.pow_const _⟩
 
-@[to_additive (attr := fun_prop)]
+@[to_additive (attr := to_fun (attr := fun_prop))]
 protected theorem const_smul {𝕜} [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β]
     (hf : AEStronglyMeasurable[m] f μ) (c : 𝕜) : AEStronglyMeasurable[m] (c • f) μ :=
   ⟨c • hf.mk f, hf.stronglyMeasurable_mk.const_smul c, hf.ae_eq_mk.const_smul c⟩
 
-@[to_additive (attr := fun_prop)]
-protected theorem const_smul' {𝕜} [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β]
-    (hf : AEStronglyMeasurable[m] f μ) (c : 𝕜) : AEStronglyMeasurable[m] (fun x => c • f x) μ :=
-  hf.const_smul c
+@[deprecated (since := "2026-06-26")]
+alias const_smul' := AEStronglyMeasurable.fun_const_smul
+
+@[deprecated (since := "2026-06-26")]
+alias const_vadd' := AEStronglyMeasurable.fun_const_vadd
 
 @[to_additive (attr := fun_prop)]
 protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [ContinuousSMul 𝕜 β] {f : α → 𝕜}
@@ -356,17 +385,29 @@ end Star
 
 section Order
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 protected theorem sup [SemilatticeSup β] [ContinuousSup β] (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) : AEStronglyMeasurable (f ⊔ g) μ :=
   ⟨hf.mk f ⊔ hg.mk g, hf.stronglyMeasurable_mk.sup hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.sup hg.ae_eq_mk⟩
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 protected theorem inf [SemilatticeInf β] [ContinuousInf β] (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) : AEStronglyMeasurable (f ⊓ g) μ :=
   ⟨hf.mk f ⊓ hg.mk g, hf.stronglyMeasurable_mk.inf hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.inf hg.ae_eq_mk⟩
+
+@[to_additive (attr := fun_prop)]
+protected theorem oneLePart [Group β] [Lattice β] [ContinuousSup β]
+    (hf : AEStronglyMeasurable f μ) :
+    AEStronglyMeasurable (fun x ↦ oneLePart (f x)) μ :=
+  hf.sup aestronglyMeasurable_const
+
+@[to_additive (attr := fun_prop)]
+protected theorem leOnePart [Group β] [Lattice β] [ContinuousSup β] [ContinuousInv β]
+    (hf : AEStronglyMeasurable f μ) :
+    AEStronglyMeasurable (fun x ↦ leOnePart (f x)) μ :=
+  hf.inv.sup aestronglyMeasurable_const
 
 end Order
 
@@ -585,6 +626,17 @@ theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
   filter_upwards [hf.ae_eq_mk] with x hx
   simp [hx]
 
+/-- If `μ : Measure α` and `f : α → β` is `AEStronglyMeasurable` where `β` is a pseudometrizable
+space and a Borel space, then the identity is a.e.-strongly measurable w.r.t. `μ.map f`. -/
+lemma aestronglyMeasurable_id_map {mβ : MeasurableSpace β}
+    [TopologicalSpace.PseudoMetrizableSpace β] [BorelSpace β]
+    {f : α → β} (hf : AEStronglyMeasurable f μ) :
+    AEStronglyMeasurable id (μ.map f) := by
+  obtain ⟨t, ht1, ht2⟩ := hf.isSeparable_ae_range
+  refine aestronglyMeasurable_id_of_isSeparable ht1.closure ?_
+  refine ae_map_iff hf.aemeasurable isClosed_closure.measurableSet |>.2 ?_
+  filter_upwards [ht2] with ω hω using subset_closure hω
+
 /-- A function is almost everywhere strongly measurable if and only if it is almost everywhere
 measurable, and up to a zero measure set its range is contained in a separable set. -/
 theorem _root_.aestronglyMeasurable_iff_aemeasurable_separable [PseudoMetrizableSpace β]
@@ -622,7 +674,7 @@ theorem _root_.MeasurableEmbedding.aestronglyMeasurable_map_iff {γ : Type*}
 theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β]
     [PseudoMetrizableSpace γ] {g : β → γ} {f : α → β} (hg : IsEmbedding g) :
     AEStronglyMeasurable (fun x => g (f x)) μ ↔ AEStronglyMeasurable f μ := by
-  letI := pseudoMetrizableSpacePseudoMetric γ
+  let := pseudoMetrizableSpacePseudoMetric γ
   borelize β γ
   refine
     ⟨fun H => aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨?_, ?_⟩, fun H =>
@@ -684,11 +736,11 @@ lemma exists_stronglyMeasurable_range_subset {α β : Type*}
   case meas => exact hf'.piecewise (hf'.measurable hs) stronglyMeasurable_const
   case subset =>
     rw [← Set.range_subset_iff]
-    simpa [Set.range_piecewise] using fun _ _ ↦ h_nonempty.some_mem
+    simpa [Set.range_piecewise] using! fun _ _ ↦ h_nonempty.some_mem
   case ae_eq =>
     apply hff'.trans
     filter_upwards [h_mem, hff'] with x hx hx'
-    exact Eq.symm <| (f' ⁻¹' s).piecewise_eq_of_mem f' _ (by simpa [hx'] using hx)
+    exact Eq.symm <| (f' ⁻¹' s).piecewise_eq_of_mem f' _ (by simpa [hx'] using! hx)
 
 theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
     (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (μ.restrict s))
@@ -785,7 +837,7 @@ variable [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
 
 theorem _root_.aestronglyMeasurable_const_smul_iff (c : G) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
-  ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
+  ⟨fun h => by simpa only [inv_smul_smul] using h.fun_const_smul c⁻¹, fun h => h.const_smul c⟩
 
 nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=

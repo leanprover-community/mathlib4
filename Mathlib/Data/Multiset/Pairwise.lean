@@ -21,9 +21,9 @@ namespace Multiset
 
 variable {α : Type*} {r : α → α → Prop} {s : Multiset α}
 
-theorem Pairwise.forall (H : Symmetric r) (hs : Pairwise r s) :
+theorem Pairwise.forall [Std.Symm r] (hs : Pairwise r s) :
     ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ≠ b → r a b :=
   let ⟨_, hl₁, hl₂⟩ := hs
-  hl₁.symm ▸ hl₂.forall H
+  hl₁.symm ▸ hl₂.forall
 
 end Multiset

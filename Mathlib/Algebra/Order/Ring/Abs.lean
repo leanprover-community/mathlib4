@@ -66,6 +66,9 @@ lemma pow_abs (a : α) (n : ℕ) : |a| ^ n = |a ^ n| := (abs_pow a n).symm
 lemma Even.pow_abs (hn : Even n) (a : α) : |a| ^ n = a ^ n := by
   rw [← abs_pow, abs_eq_self]; exact hn.pow_nonneg _
 
+lemma pow_abs_two_mul (a : α) : |a| ^ (2 * n) = a ^ (2 * n) :=
+  Even.pow_abs ⟨n, two_mul n⟩ a
+
 lemma abs_neg_one_pow (n : ℕ) : |(-1 : α) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 
 omit [IsOrderedRing α] in
@@ -89,7 +92,7 @@ section LinearStrictOrderedRing
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {n : ℕ} {a b : α}
 
 lemma abs_pow_eq_one (a : α) (h : n ≠ 0) : |a ^ n| = 1 ↔ |a| = 1 := by
-  convert pow_left_inj₀ (abs_nonneg a) zero_le_one h
+  convert! pow_left_inj₀ (abs_nonneg a) zero_le_one h
   exacts [(pow_abs _ _).symm, (one_pow _).symm]
 
 lemma abs_eq_iff_mul_self_eq : |a| = |b| ↔ a * a = b * b := by

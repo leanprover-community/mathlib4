@@ -160,7 +160,7 @@ variable [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
 instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 @[simp]
 theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
@@ -183,7 +183,7 @@ theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (�
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
-  coe_injective' := coe_injective
+  coe_injective := coe_injective
 
 instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
   map_add f := f.map_add'
@@ -317,6 +317,7 @@ theorem coe_inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A) (h₁ : Function.
     (h₂ : Function.RightInverse g f) : (inverse f g h₁ h₂ : B₁ → A) = g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a bijective morphism is a morphism. -/
 def inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
     (k : Function.RightInverse φ' φ)
@@ -348,7 +349,7 @@ variable (R A B)
 variable [DistribMulAction R B]
 
 /-- The first projection of a product is a non-unital algebra homomorphism. -/
-@[simps]
+@[simps toFun]
 def fst : A × B →ₙₐ[R] A where
   toFun := Prod.fst
   map_zero' := rfl
@@ -357,7 +358,7 @@ def fst : A × B →ₙₐ[R] A where
   map_mul' _ _ := rfl
 
 /-- The second projection of a product is a non-unital algebra homomorphism. -/
-@[simps]
+@[simps toFun]
 def snd : A × B →ₙₐ[R] B where
   toFun := Prod.snd
   map_zero' := rfl
@@ -368,8 +369,9 @@ def snd : A × B →ₙₐ[R] B where
 variable {R A B}
 variable [DistribMulAction R C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The prod of two morphisms is a morphism. -/
-@[simps]
+@[simps toFun]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
   toFun := Function.prod f g
   map_zero' := by simp only [Function.prod_apply, Prod.mk_zero_zero, map_zero]

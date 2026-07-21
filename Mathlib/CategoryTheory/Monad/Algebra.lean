@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Monad.Basic
-public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
@@ -22,6 +21,8 @@ cofree functors, respectively from and to the original category.
 ## References
 * [Riehl, *Category theory in context*, Section 5.2.4][riehl2017]
 -/
+
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -131,7 +132,6 @@ def forget : Algebra T ⥤ C where
   obj A := A.A
   map f := f.f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The free functor from the Eilenberg-Moore category, constructing an algebra for any object. -/
 @[simps]
 def free : C ⥤ Algebra T where
@@ -146,6 +146,7 @@ def free : C ⥤ Algebra T where
 instance [Inhabited C] : Inhabited (Algebra T) :=
   ⟨(free T).obj default⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
@@ -190,7 +191,6 @@ theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mo
 instance : T.forget.IsRightAdjoint :=
   ⟨T.free, ⟨T.adj⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras of `T₁` to algebras of
 `T₂`.
@@ -204,6 +204,8 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
       assoc := by simp [A.assoc] }
   map f := { f := f.f }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
@@ -211,6 +213,8 @@ The identity monad morphism induces the identity functor from the category of al
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
 @[simps (rhsMd := .default)]
@@ -218,6 +222,7 @@ def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) 
     algebraFunctorOfMonadHom (f ≫ g) ≅ algebraFunctorOfMonadHom g ⋙ algebraFunctorOfMonadHom f :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` and `g` are two equal morphisms of monads, then the functors of algebras induced by them
 are isomorphic.
 We define it like this as opposed to using `eqToIso` so that the components are nicer to prove
@@ -228,6 +233,8 @@ def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : 
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphic monads give equivalent categories of algebras. Furthermore, they are equivalent as
 categories over `C`, that is, we have `algebraEquivOfIsoMonads h ⋙ forget = forget`.
 -/
@@ -343,7 +350,6 @@ def forget : Coalgebra G ⥤ C where
   obj A := A.A
   map f := f.f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cofree functor from the Eilenberg-Moore category, constructing a coalgebra for any
 object. -/
 @[simps]

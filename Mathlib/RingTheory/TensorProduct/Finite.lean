@@ -161,7 +161,7 @@ private lemma RingHom.Finite.tensorProductMap_id
     [Algebra R S] [Algebra R T] [Algebra R S']
     {f : S →ₐ[R] S'} (Hf : f.Finite) :
     (Algebra.TensorProduct.map f (AlgHom.id R T)).toRingHom.Finite := by
-  letI := f.toRingHom.toAlgebra
+  let := f.toRingHom.toAlgebra
   have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   have : Module.Finite S S' := finite_algebraMap.mp Hf
   change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).Finite
@@ -176,10 +176,11 @@ lemma RingHom.Finite.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
     (Algebra.TensorProduct.map f g).toRingHom.Finite := by
-  convert RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
-    RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
+  convert!
+    RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
+      (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
+        RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
+          (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
   simp only [AlgHom.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
   congr

@@ -157,12 +157,14 @@ instance : (Functor.whiskeringRight C D E).Additive where
 omit [Preadditive C] [Preadditive D] in
 instance (F : C ⥤ D) : ((Functor.whiskeringLeft C D E).obj F).Additive where
 
+set_option backward.defeqAttrib.useBackward true in
 omit [Preadditive D] in
 instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E ⥤ E')
     [F.Additive] [G.Additive] : ((Functor.postcompose₂.obj F).obj G).Additive := by
   dsimp [Functor.postcompose₂]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 universe w in
 instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
@@ -216,6 +218,12 @@ instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
     PreservesFiniteProducts F where
   preserves _ := preservesProductsOfShape_of_preservesBiproductsOfShape F
 
+lemma hasFiniteProducts_of_additive_of_essSurj [HasFiniteProducts C] [Additive F]
+    [EssSurj F] : HasFiniteProducts D :=
+  ⟨fun _ ↦ ⟨fun K ↦ hasLimit_of_iso
+    (F := Discrete.functor (fun i ↦ F.objPreimage (K.obj ⟨i⟩)) ⋙ F)
+      (Discrete.natIso (fun _ ↦ F.objObjPreimageIso _))⟩⟩
+
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
   map_add {X Y f g} := by
@@ -240,6 +248,7 @@ namespace Equivalence
 
 variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
+set_option backward.defeqAttrib.useBackward true in
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
 
@@ -374,13 +383,6 @@ theorem AdditiveFunctor.ofRightExact_map_hom {F G : C ⥤ᵣ D} (α : F ⟶ G) :
 theorem AdditiveFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
-
-@[deprecated (since := "2025-12-18")]
-alias AdditiveFunctor.ofLeftExact_map := AdditiveFunctor.ofLeftExact_map_hom
-@[deprecated (since := "2025-12-18")]
-alias AdditiveFunctor.ofRightExact_map := AdditiveFunctor.ofRightExact_map_hom
-@[deprecated (since := "2025-12-18")]
-alias AdditiveFunctor.ofExact_map := AdditiveFunctor.ofExact_map_hom
 
 end Exact
 

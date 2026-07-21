@@ -32,7 +32,7 @@ def MonovaryOrder (i j : ι) : Prop :=
 
 instance : IsStrictTotalOrder ι (MonovaryOrder f g) where
   toTrichotomous := Std.trichotomous_of_rel_or_eq_or_rel_swap fun {a b} ↦ by
-    convert trichotomous_of (Prod.Lex (· < ·) <| Prod.Lex (· < ·) WellOrderingRel) _ _
+    convert! trichotomous_of (Prod.Lex (· < ·) <| Prod.Lex (· < ·) WellOrderingRel) _ _
     · simp only [Prod.ext_iff, ← and_assoc, imp_and, iff_and_self]
       exact ⟨congr_arg _, congr_arg _⟩
     · infer_instance
@@ -44,7 +44,7 @@ variable {f g}
 lemma monovaryOn_iff_exists_monotoneOn :
     MonovaryOn f g s ↔ ∃ (_ : LinearOrder ι), MonotoneOn f s ∧ MonotoneOn g s := by
   classical
-  letI := linearOrderOfSTO (MonovaryOrder f g)
+  let := linearOrderOfSTO (MonovaryOrder f g)
   refine ⟨fun hfg => ⟨‹_›, monotoneOn_iff_forall_lt.2 fun i hi j hj hij => ?_,
     monotoneOn_iff_forall_lt.2 fun i hi j hj hij => ?_⟩, ?_⟩
   · obtain h | ⟨h, -⟩ := Prod.lex_iff.1 hij <;> exact h.le

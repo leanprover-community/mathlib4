@@ -211,7 +211,7 @@ theorem map' (H : A.LinearDisjoint L) (K : Type*) [Field K] [Algebra F K] [Algeb
   rw [linearDisjoint_iff] at H ⊢
   have := H.map (IsScalarTower.toAlgHom F E K) (RingHom.injective _)
   rw [← AlgHom.range_comp] at this
-  convert this
+  convert! this
   ext; exact IsScalarTower.algebraMap_apply L E K _
 
 /-- Linear disjointness is preserved by algebra homomorphism. -/
@@ -225,7 +225,7 @@ theorem map'' {L' : Type*} [Field L'] [Algebra F L'] [Algebra L' E] [IsScalarTow
   have := H.map (IsScalarTower.toAlgHom F E K) (RingHom.injective _)
   simp_rw [AlgHom.fieldRange_toSubalgebra, ← AlgHom.range_comp] at this
   rw [AlgHom.fieldRange_toSubalgebra]
-  convert this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
+  convert! this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
 
 variable (A) in
 theorem self_right : A.LinearDisjoint F := Subalgebra.LinearDisjoint.bot_right _
@@ -370,7 +370,7 @@ theorem of_le_right' (H : A.LinearDisjoint L) (L' : Type*) [Field L']
     [Algebra F L'] [Algebra L' L] [IsScalarTower F L' L]
     [Algebra L' E] [IsScalarTower F L' E] [IsScalarTower L' L E] : A.LinearDisjoint L' := by
   refine Subalgebra.LinearDisjoint.of_le_right_of_flat H ?_
-  convert AlgHom.range_comp_le_range (IsScalarTower.toAlgHom F L' L) (IsScalarTower.toAlgHom F L E)
+  convert! AlgHom.range_comp_le_range (IsScalarTower.toAlgHom F L' L) (IsScalarTower.toAlgHom F L E)
   ext; exact IsScalarTower.algebraMap_apply L' L E _
 
 /-- If `A` and `B` are linearly disjoint, `A'` and `B'` are contained in `A` and `B`,
@@ -410,7 +410,7 @@ theorem rank_sup (H : A.LinearDisjoint B) :
 /-- If `A` and `B` are linearly disjoint over `F`, then the `Module.finrank` of
 `A ⊔ B` is equal to the product of that of `A` and `B`. -/
 theorem finrank_sup (H : A.LinearDisjoint B) : finrank F ↥(A ⊔ B) = finrank F A * finrank F B := by
-  simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup))
+  simpa only [map_mul] using! congr(Cardinal.toNat $(H.rank_sup))
 
 /-- If `A` and `B` are finite extensions of `F`,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
@@ -630,10 +630,10 @@ theorem isDomain' {A B : Type*} [Field A] [Algebra F A] [Field B] [Algebra F B]
 theorem of_isField (H : IsField (A ⊗[F] L)) : A.LinearDisjoint L := by
   apply Subalgebra.LinearDisjoint.of_isField
   -- need these otherwise the `exact` will stuck at typeclass
-  haveI : SMulCommClass F A A := SMulCommClass.of_commMonoid F A A
-  haveI : SMulCommClass F A.toSubalgebra A.toSubalgebra := ‹SMulCommClass F A A›
-  letI : Mul (A ⊗[F] L) := Algebra.TensorProduct.instMul
-  letI : Mul (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) :=
+  have : SMulCommClass F A A := SMulCommClass.of_commMonoid F A A
+  have : SMulCommClass F A.toSubalgebra A.toSubalgebra := ‹SMulCommClass F A A›
+  let : Mul (A ⊗[F] L) := Algebra.TensorProduct.instMul
+  let : Mul (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) :=
     Algebra.TensorProduct.instMul
   exact Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
     (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))
@@ -674,7 +674,7 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
   obtain ⟨M, hM⟩ := Ideal.exists_maximal (A ⊗[F] B)
   apply not_imp_not.1 (Ring.ne_bot_of_isMaximal_of_not_isField hM)
   let K : Type (max v w) := A ⊗[F] B ⧸ M
-  letI : Field K := Ideal.Quotient.field _
+  let : Field K := Ideal.Quotient.field _
   let i := IsScalarTower.toAlgHom F (A ⊗[F] B) K
   let fa := i.comp (Algebra.TensorProduct.includeLeft : A →ₐ[F] _)
   let fb := i.comp (Algebra.TensorProduct.includeRight : B →ₐ[F] _)
@@ -685,7 +685,7 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
       (AlgEquiv.ofInjective fa fa.injective) (AlgEquiv.ofInjective fb fb.injective)) := by
     ext <;> simp [fa, fb]
   replace H : Function.Injective i := by simpa only
-    [hi, AlgHom.coe_comp, AlgEquiv.coe_algHom, EquivLike.injective_comp, fa, this, K, fb]
+    [hi, AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EquivLike.injective_comp, fa, this, K, fb]
   change Function.Injective (Ideal.Quotient.mk M) at H
   rwa [RingHom.injective_iff_ker_eq_bot, Ideal.mk_ker] at H
 
