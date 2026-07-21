@@ -23,13 +23,13 @@ namespace PowerSeries
 open Filter
 open scoped Topology Pointwise
 
-variable {R : Type*} [NormedRing R]
+variable {R : Type*} [NormedRing R] (c : ℝ) (f : PowerSeries R)
 
 /-- Predicate for when `f` is a restricted power series. -/
-abbrev IsRestricted (c : ℝ) (f : PowerSeries R) :=
+abbrev IsRestricted :=
   MvPowerSeries.IsRestricted (σ := Unit) (fun _ ↦ c) f
 
-private lemma isRestricted_comp_uniqueEquiv (c : ℝ) (f : PowerSeries R) :
+private lemma isRestricted_comp_uniqueEquiv :
     (fun (t : Unit →₀ ℕ) ↦ ‖MvPowerSeries.coeff t f‖ * t.prod (fun _ x ↦ c ^ x)) =
     (fun (n : ℕ) ↦ ‖coeff n f‖ * c ^ n) ∘ Finsupp.uniqueEquiv () := by
   funext t
@@ -37,39 +37,39 @@ private lemma isRestricted_comp_uniqueEquiv (c : ℝ) (f : PowerSeries R) :
     Finsupp.prod_pow, Finset.univ_unique, Finset.prod_singleton, coeff,
     show (Finsupp.single () (t ())) = t by grind]
 
-lemma isRestricted_iff (c : ℝ) (f : PowerSeries R) :
-    IsRestricted c f ↔ Tendsto (fun (t : ℕ) ↦ ‖coeff t f‖ * c ^ t) cofinite (𝓝 0) := by
+lemma isRestricted_iff : IsRestricted c f ↔
+    Tendsto (fun (t : ℕ) ↦ ‖coeff t f‖ * c ^ t) cofinite (𝓝 0) := by
   rw [IsRestricted, MvPowerSeries.IsRestricted, isRestricted_comp_uniqueEquiv]
-  exact ⟨fun H => (H.comp (Finsupp.uniqueEquiv ()).symm.injective.tendsto_cofinite).congr fun n =>
-    by simp, fun H => H.comp (Finsupp.uniqueEquiv ()).injective.tendsto_cofinite⟩
+  exact ⟨fun H ↦ (H.comp (Finsupp.uniqueEquiv ()).symm.injective.tendsto_cofinite).congr fun n ↦
+    by simp, fun H ↦ H.comp (Finsupp.uniqueEquiv ()).injective.tendsto_cofinite⟩
 
-lemma isRestricted_iff' (c : ℝ) (f : PowerSeries R) :
-    IsRestricted c f ↔ Tendsto (fun (t : ℕ) ↦ ‖coeff t f‖ * c ^ t) atTop (𝓝 0) := by
+lemma isRestricted_iff' : IsRestricted c f ↔
+    Tendsto (fun (t : ℕ) ↦ ‖coeff t f‖ * c ^ t) atTop (𝓝 0) := by
   simp_rw [isRestricted_iff, Nat.cofinite_eq_atTop]
 
 @[simp]
-lemma isRestricted_abs_iff (c : ℝ) (f : PowerSeries R) :
-    IsRestricted |c| f ↔ IsRestricted c f :=
+lemma isRestricted_abs_iff : IsRestricted |c| f ↔ IsRestricted c f :=
   MvPowerSeries.isRestricted_abs_iff (fun _ ↦ c) f
 
-lemma isRestricted_zero (c : ℝ) : IsRestricted c (0 : PowerSeries R) :=
+lemma isRestricted_zero : IsRestricted c (0 : PowerSeries R) :=
  MvPowerSeries.isRestricted_zero (fun _ ↦ c)
 
-lemma isRestricted_monomial (c : ℝ) (n : ℕ) (a : R) : IsRestricted c (monomial n a) :=
+lemma isRestricted_monomial (n : ℕ) (a : R) : IsRestricted c (monomial n a) :=
   MvPowerSeries.isRestricted_monomial (fun _ ↦ c) ((Finsupp.single () n)) a
 
-lemma isRestricted_one (c : ℝ) : IsRestricted c (1 : PowerSeries R) :=
+lemma isRestricted_one : IsRestricted c (1 : PowerSeries R) :=
   MvPowerSeries.isRestricted_monomial (fun _ ↦ c) 0 1
 
-lemma isRestricted_C (c : ℝ) (a : R) : IsRestricted c (C a) :=
+lemma isRestricted_C (a : R) : IsRestricted c (C a) :=
   MvPowerSeries.isRestricted_C (fun _ ↦ c) a
 
-lemma isRestricted.add (c : ℝ) {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g)
-    : IsRestricted c (f + g) :=
+variable {f} in
+lemma isRestricted.add {g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
+    IsRestricted c (f + g) :=
   MvPowerSeries.isRestricted.add (fun _ ↦ c) hf hg
 
-lemma isRestricted.neg (c : ℝ) {f : PowerSeries R} (hf : IsRestricted c f) :
-    IsRestricted c (-f) :=
+variable {f} in
+lemma isRestricted.neg (hf : IsRestricted c f) : IsRestricted c (-f) :=
   MvPowerSeries.isRestricted.neg (fun _ ↦ c) hf
 
 lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
@@ -79,18 +79,13 @@ lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
 namespace IsRestricted
 
 /-- Restricted power series as an additive subgroup of `PowerSeries R`. -/
-def addSubgroup (c : ℝ) : AddSubgroup (PowerSeries R) where
-  carrier := IsRestricted c
-  zero_mem' := isRestricted_zero c
-  add_mem' := isRestricted.add c
-  neg_mem' := isRestricted.neg c
+def addSubgroup (c : ℝ) : AddSubgroup (PowerSeries R) :=
+  MvPowerSeries.IsRestricted.addSubgroup (fun _ ↦ c)
 
 variable [IsUltrametricDist R]
 
 /-- Restricted power series as an subring of `PowerSeries R`. -/
-def subring (c : ℝ) :  Subring (PowerSeries R) where
-  __ := IsRestricted.addSubgroup c
-  one_mem' := isRestricted_one c
-  mul_mem' := isRestricted.mul c
+def subring (c : ℝ) :  Subring (PowerSeries R) :=
+  MvPowerSeries.IsRestricted.subring (fun _ ↦ c)
 
 end PowerSeries.IsRestricted
