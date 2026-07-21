@@ -30,6 +30,7 @@ variable (a b c : ℕ)
 
 namespace Nat
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range'⟩
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩

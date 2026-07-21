@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Kim Morrison
 module
 
 public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Data.Multiset.Find
 
 /-!
 # Type of functions with finite support
@@ -348,7 +349,7 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
 lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
     Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
   ext g
-  simp only [Set.mem_range, Set.mem_setOf]
+  simp only [Set.mem_range, Set.mem_ofPred]
   constructor
   · grind
   · intro h
@@ -370,6 +371,10 @@ lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
   rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
   simp
 
+lemma mapRange_bijective (e : M → N) (he₀ : e 0 = 0) (he : Bijective e) :
+    Bijective (Finsupp.mapRange (α := α) e he₀) :=
+  ⟨mapRange_injective e he₀ he.1, mapRange_surjective e he₀ he.2⟩
+
 end MapRange
 
 section Equiv
@@ -383,6 +388,7 @@ def mapRange.equiv (e : M ≃ N) (hf : e 0 = 0) : (ι →₀ M) ≃ (ι →₀ N
   left_inv x := by ext; simp
   right_inv x := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mapRange.equiv_refl : mapRange.equiv (.refl M) rfl = .refl (ι →₀ M) := by ext; simp
 
 lemma mapRange.equiv_trans (e : M ≃ N) (hf) (f₂ : N ≃ O) (hf₂) :
@@ -407,22 +413,12 @@ is the finitely supported function whose value at `f a : β` is `v a`.
 For a `b : β` outside the range of `f`, it is zero. -/
 def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   support := v.support.map f
-  toFun a₂ :=
+  toFun b :=
     haveI := Classical.decEq β
-    if h : a₂ ∈ v.support.map f then
-      v
-        (v.support.choose (fun a₁ => f a₁ = a₂)
-          (by
-            rcases Finset.mem_map.1 h with ⟨a, ha, rfl⟩
-            exact ExistsUnique.intro a ⟨ha, rfl⟩ fun b ⟨_, hb⟩ => f.injective hb))
-    else 0
-  mem_support_toFun a₂ := by
-    dsimp
-    split_ifs with h
-    · simp only [h, true_iff]
-      rw [← notMem_support_iff, not_not]
-      classical apply Finset.choose_mem
-    · simp only [h, not_true_eq_false]
+    match v.support.1.find? (fun a => f a = b) (by intro x; grind) with
+    | some a => v a
+    | none => 0
+  mem_support_toFun a₂ := by grind
 
 @[simp]
 theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).support = v.support.map f :=
@@ -432,26 +428,24 @@ theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).su
 theorem embDomain_zero (f : α ↪ β) : (embDomain f 0 : β →₀ M) = 0 :=
   rfl
 
-open Classical in
+open scoped Classical in
 @[grind =]
 theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (b : β) :
     embDomain f v b = if h : ∃ a, f a = b then v h.choose else 0 := by
-  simp only [embDomain, mem_map, mem_support_iff, coe_mk]
+  simp only [embDomain, coe_mk]
   -- TODO: investigate why `grind` needs `split_ifs` first; this should never happen.
   split_ifs <;> grind
 
 @[simp, grind =]
 theorem embDomain_apply_self (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f v (f a) = v a := by
-  classical
-    simp_rw [embDomain, coe_mk, mem_map']
-    split_ifs with h
-    · refine congr_arg (v : α → M) (f.inj' ?_)
-      exact Finset.choose_property (fun a₁ => f a₁ = f a) _ _
-    · exact (notMem_support_iff.1 h).symm
+  simp_rw [embDomain, coe_mk]
+  grind
 
 @[grind =>]
-theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
+theorem embDomain_of_notMem_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by grind [embDomain]
+
+@[deprecated (since := "2026-07-15")] alias embDomain_notin_range := embDomain_of_notMem_range
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
   fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply_self] using DFunLike.ext_iff.1 h (f a)

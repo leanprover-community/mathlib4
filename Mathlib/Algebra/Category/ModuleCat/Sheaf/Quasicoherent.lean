@@ -36,7 +36,6 @@ namespace SheafOfModules
 section
 
 variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 /-- A global presentation of a sheaf of modules `M` consists of a family `generators.s`
 of sections `s` which generate `M`, and a family of sections which generate
@@ -66,7 +65,7 @@ noncomputable section
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
   [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
-  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)] {ι σ : Type u}
+  {ι σ : Type u}
 
 /-- Given two morphisms of sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain
@@ -137,6 +136,7 @@ noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N
 
 @[deprecated (since := "2026-04-15")] alias Presentation.of_isIso := Presentation.ofIsIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.Presentation) [σ.IsFinite] : (σ.ofIsIso f).IsFinite where
   isFiniteType_generators := inferInstanceAs (σ.generators.ofEpi _).IsFiniteType
@@ -144,7 +144,6 @@ instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
-  [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
 variable {M : SheafOfModules.{u} R} (P : Presentation M)
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
@@ -172,6 +171,7 @@ theorem Presentation.mapRelations_mapGenerators :
   simp only [mapRelations, GeneratingSections.mapFreeHom, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
@@ -194,8 +194,7 @@ end
 
 section
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
+variable [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 /-- This structure contains the data of a family of objects `X i` which cover
@@ -289,11 +288,8 @@ section map
 
 variable {D : Type u₂} [Category.{v₂, u₂} D] {K : GrothendieckTopology D}
   {S : Sheaf K RingCat.{u}} [∀ (X : D), (K.over X).WEqualsLocallyBijective AddCommGrpCat]
-  [∀ (X : D), (K.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
-variable [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [K.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat.{u}]
+variable [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ (X : D), HasSheafify (K.over X) AddCommGrpCat.{u}]
 
 variable (G : D ⥤ C) [G.IsContinuous K J] [G.IsCocontinuous K J]
@@ -368,10 +364,8 @@ open CategoryTheory Limits
 
 variable {C : Type u₁} [Category.{v₁} C] [HasBinaryProducts C] {J : GrothendieckTopology C}
   {R : Sheaf J RingCat.{u}} [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
-  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [∀ X, HasSheafify (J.over X) AddCommGrpCat]
+variable [∀ X, HasSheafify (J.over X) AddCommGrpCat]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat]
 
 /-- Given a sheaf of `R`-modules `M` and a `Presentation M`, we may construct the quasi-coherent
@@ -406,6 +400,7 @@ instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
     intro ⟨⟨q⟩⟩
     exact ⟨⟨q.ofIsIso e.hom⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
     [σ.IsFinitePresentation] : (σ.ofIsIso f).IsFinitePresentation where
@@ -422,10 +417,8 @@ end
 
 section bind
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+variable [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
   [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
@@ -454,7 +447,7 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
     IsQuasicoherent.nonempty_quasicoherentData.some).isQuasicoherent
 
 set_option backward.isDefEq.respectTransparency false in
-lemma isQuasicoherent_over [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+lemma isQuasicoherent_over
     [HasPullbacks C] [HasBinaryProducts C] (M : SheafOfModules.{u} R) (X : C) [IsQuasicoherent M] :
     IsQuasicoherent (M.over X) :=
   isQuasicoherent_pushforward_of_isLeftAdjoint _ _ (Iso.refl _)

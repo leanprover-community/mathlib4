@@ -93,6 +93,7 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   rw [LinearMap.range_eq_map]
   exact Module.Finite.fg_top.map f
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
@@ -192,31 +193,30 @@ theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
 theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ IsCompactElement s := by
-  classical
-    -- Introduce shorthand for span of an element
-    let sp : M → Submodule R M := fun a => span R {a}
-    -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
-    have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
-    constructor
-    · rintro ⟨t, rfl⟩
-      rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← t.sup_eq_iSup sp]
-      apply CompleteLattice.isCompactElement_finsetSup
-      exact fun n _ => singleton_span_isCompactElement n
-    · intro h
-      rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
-      -- s is the Sup of the spans of its elements.
-      have sSup' : s = sSup (sp '' ↑s) := by
-        rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
-      -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
-      obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup')
-      have ssup : s = u.sup id := by
-        suffices u.sup id ≤ s from le_antisymm husup this
-        rw [sSup', Finset.sup_id_eq_sSup]
-        exact sSup_le_sSup huspan
-      obtain ⟨t, -, rfl⟩ := Finset.subset_set_image_iff.mp huspan
-      rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw,
-        ← span_eq_iSup_of_singleton_spans, eq_comm] at ssup
-      exact ⟨t, ssup⟩
+  -- Introduce shorthand for span of an element
+  let sp : M → Submodule R M := fun a => span R {a}
+  -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
+  have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
+  constructor
+  · rintro ⟨t, rfl⟩
+    rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← t.sup_eq_iSup sp]
+    apply CompleteLattice.isCompactElement_finsetSup
+    exact fun n _ => singleton_span_isCompactElement n
+  · intro h
+    rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
+    -- s is the Sup of the spans of its elements.
+    have sSup' : s = sSup (sp '' ↑s) := by
+      rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
+    -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
+    obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup')
+    have ssup : s = u.sup id := by
+      suffices u.sup id ≤ s from le_antisymm husup this
+      rw [sSup', Finset.sup_id_eq_sSup]
+      exact sSup_le_sSup huspan
+    obtain ⟨t, -, rfl⟩ := Finset.subset_set_image_iff.mp huspan
+    rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw,
+      ← span_eq_iSup_of_singleton_spans, eq_comm] at ssup
+    exact ⟨t, ssup⟩
 
 end Submodule
 
@@ -324,6 +324,7 @@ universe u in
 instance shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
   Module.Finite.equiv (Shrink.linearEquiv R M).symm
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-04-18")] alias Module.finite_shrink := shrink
 
 /-- A submodule is finite as a module iff it is finitely generated. -/
@@ -381,15 +382,15 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemi
     (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
     [Module.Finite A₁ B₁] : Module.Finite A₂ B₂ := by
-  letI := e₁.toRingHom.toAlgebra
-  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
-  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
+  let := e₁.toRingHom.toAlgebra
+  let := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
+  have : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
     (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun r ↦ by
         simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
-  haveI := of_restrictScalars_finite A₁ A₂ B₁
+  have := of_restrictScalars_finite A₁ A₂ B₁
   exact equiv e.toLinearEquiv
 
 end Algebra
