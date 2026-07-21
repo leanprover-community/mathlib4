@@ -288,7 +288,7 @@ theorem polar_def (s : Set M) : polar 𝕜 s = { f : WeakDual 𝕜 M | ∀ x ∈
 is used. -/
 theorem isClosed_polar (s : Set M) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
-  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (eval_continuous x).norm
+  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (continuous_eval continuous_id x).norm
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
 theorem isBounded_polar {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) : IsBounded (polar 𝕜 s) :=
@@ -330,7 +330,7 @@ lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 E) → 𝕜
     (∀ n, Continuous (gs n)) ∧ (∀ ⦃x y⦄, x ≠ y → ∃ n, gs n x ≠ gs n y) := by
   use (fun n φ ↦ φ (denseSeq E n))
   constructor
-  · exact fun _ ↦ eval_continuous _
+  · fun_prop
   · intro w y w_ne_y
     contrapose! w_ne_y
     exact DFunLike.ext'_iff.mpr <| (map_continuous w).ext_on
