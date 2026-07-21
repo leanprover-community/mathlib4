@@ -97,7 +97,7 @@ partial def PrettyTree.prettyAux (bars : String) : PrettyTree → MessageData
     {bars}└{prettyAux s!"{bars} " last}"
   | .opaque n => m!"{.ofConstName n} {Lean.crossEmoji} (opaque)"
   | .axiom n  => m!"{.ofConstName n} {Lean.crossEmoji} (axiom)"
-  | .repeatedNode n => m!"{.ofConstName n}\n{bars}└(⋯)"
+  | .repeatedNode n => m!"{.ofConstName n}\n{bars}└(⋯) {Lean.crossEmoji}"
 
 instance : ToMessageData PrettyTree where
   toMessageData t := t.prettyAux ""
@@ -303,6 +303,12 @@ public def ensureConstructiveVerbose (id : Ident) (ignoring : Array Ident) (verb
     return true
   match ← getConstInfo n with
   | .defnInfo { value .. } => do
+    if ← Meta.isProof value then
+      if verbose then
+        logWarning m!"`{.ofConstName n}` is a proof, and thus automatically constructive in Lean."
+    else if ← Meta.isType value then
+      if verbose then
+        logWarning m!"`{.ofConstName n}` is a type, and thus automatically constructive in Lean."
     let (_, { toViolations := vs, .. }) ← (visit (← instantiateMVars value)).run { nesting := [n] }
     for (id, ignored) in ignoring do
       unless vs.map.contains ignored do
@@ -335,6 +341,10 @@ public def ensureConstructiveVerbose (id : Ident) (ignoring : Array Ident) (verb
       if verbose then
         logWarning m!"`{.ofConstName n}` is a proof, and thus automatically constructive in Lean."
       return true
+    else if (← whnfD type).isSort then
+      if verbose then
+        logWarning m!"`{.ofConstName n}` is a type, and thus automatically constructive in Lean."
+      return true
     else
       if verbose then
         logError m!"`{.ofConstName n}` is an axiom, and so not constructive."
@@ -348,7 +358,7 @@ public def ensureConstructiveVerbose (id : Ident) (ignoring : Array Ident) (verb
       if verbose then
         logError m!"`{.ofConstName n}` is opaque, and so not constructive."
       return false
-  | _ => return true
+  | _ => return true -- TODO: explain
 
 initialize registerTraceClass `EnsureConstructive
 
