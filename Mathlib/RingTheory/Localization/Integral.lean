@@ -585,23 +585,27 @@ noncomputable def normalizedPrimPartIntegerNormalization :=
   if p = 0 then 0 else
   normalize (integerNormalization M p).primPart
 
+@[simp]
+lemma normalizedPrimPartIntegerNormalization_zero :
+    normalizedPrimPartIntegerNormalization M (0 : S[X]) = 0 := by
+  simp [normalizedPrimPartIntegerNormalization]
+
 private lemma aux_ne_zero [Nontrivial R] :
     normalize (integerNormalization M p).primPart ≠ 0 := by
-  rw [ne_eq, normalize_eq_zero]
-  exact primPart_ne_zero (integerNormalization M p)
+  simp [primPart_ne_zero]
 
+@[simp]
 lemma normalizedPrimPartIntegerNormalization_eq_zero_iff :
     normalizedPrimPartIntegerNormalization M p = 0 ↔ p = 0 := by
   by_cases hp : p = 0
-  · simp [normalizedPrimPartIntegerNormalization, hp]
-  letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  · simp [hp]
+  letI := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
   letI := (algebraMap R S).domain_nontrivial
   simp [normalizedPrimPartIntegerNormalization, hp, aux_ne_zero M p]
 
 @[simp]
 lemma normalizedPrimPartIntegerNormalization_ne_zero (hp : p ≠ 0) :
-    normalizedPrimPartIntegerNormalization M p ≠ 0 := by
-  simp [normalizedPrimPartIntegerNormalization_eq_zero_iff, hp]
+    normalizedPrimPartIntegerNormalization M p ≠ 0 := by simp [hp]
 
 variable {M} in
 lemma normalizedPrimPartIntegerNormalization_algebraMap [Nontrivial S] {p : R[X]} (hp : p ≠ 0) :
@@ -611,13 +615,11 @@ lemma normalizedPrimPartIntegerNormalization_algebraMap [Nontrivial S] {p : R[X]
   have hp' : p.map (algebraMap R S) ≠ 0 := by
     rwa [Polynomial.map_ne_zero_iff <| IsLocalization.injective S hM]
   obtain ⟨b, hbM, h1⟩ := integerNormalization_spec M (p.map (algebraMap R S))
-  have h_integerNormalization :
-      integerNormalization M (p.map (algebraMap R S)) = C b * p := by
+  have : integerNormalization M (p.map (algebraMap R S)) = C b * p := by
     apply Polynomial.map_injective _ (IsLocalization.injective S hM)
     simp [← smul_eq_C_mul, h1]
-  simpa [normalizedPrimPartIntegerNormalization, hp', h_integerNormalization,
-    normalize_eq_normalize_iff_associated]
-    using associated_primPart_C_mul (nonZeroDivisors.ne_zero (hM hbM)) hp
+  grind [normalizedPrimPartIntegerNormalization, normalize_eq_normalize_iff_associated,
+    associated_primPart_C_mul, nonZeroDivisors.ne_zero (hM hbM)]
 
 variable {M p} in
 theorem normalizedPrimPartIntegerNormalization_C_mul_eq (hp : p ≠ 0) {a : S} (ha : a ≠ 0) :
