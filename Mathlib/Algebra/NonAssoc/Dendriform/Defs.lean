@@ -156,7 +156,6 @@ lemma right_one {a : M} (ha : a ≠ 1) : a ≻ 1 = 0 := right_id_one a ha
 @[simp]
 lemma one_mul_one_eq_one : (1 : M) ≻ 1 + 1 ≺ 1 = 1 := one_mul_one_eq_one'
 
-
 instance : Semiring M where
   one_mul a := by
     rcases eq_or_ne a 1 with (rfl | ha)
