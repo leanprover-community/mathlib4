@@ -169,8 +169,8 @@ a continuous linear equivalence `equiv : decDom.X₁ ≃L[𝕜] decCodom.X₁` b
 $$\begin{pmatrix} \texttt{equiv} & 0 \cr 0 & 0 \end{pmatrix}$$
 
 We will show in `isFredholm_tfae` that an operator is Fredholm if and only if it admits
-a Fredholm package. In practice, the condition that `u` is Fredholm is always easier to
-prove, so if you need a Fredholm package you should probably get it from
+a Fredholm package. In practice, the condition that `u` is Fredholm (`IsFredholm`) is always easier
+to prove, so if you need a Fredholm package you should probably get it from
 `IsFredholm.nonempty_fredholmPackage` or `IsFredholm.fredholmPackage`. -/
 structure FredholmPackage (u : E →L[𝕜] F) where
   /-- A `FredholmDecomposition` of the domain. -/
