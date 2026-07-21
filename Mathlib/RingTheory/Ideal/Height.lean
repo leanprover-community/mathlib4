@@ -36,6 +36,7 @@ private noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
 noncomputable def Ideal.height : ℕ∞ :=
   ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J ‹J ∈ I.minimalPrimes›.isPrime
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For a prime ideal, its height equals its prime height. -/
 private lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
   simp [height, primeHeight, Ideal.minimalPrimes_eq_subsingleton_self]
@@ -51,7 +52,7 @@ lemma Ideal.height_eq_inf_minimalPrimes : I.height = ⨅ J ∈ I.minimalPrimes, 
 
 lemma Ideal.exists_isPrime_height_eq {I : Ideal R} {n : ℕ} (hI : I.height = n) :
     ∃ (p : Ideal R) (_ : p.IsPrime) (_  : I ≤ p), p.height = n := by
-  simp only [Ideal.height, ENat.iInf_eq_coe_iff] at hI
+  simp only [Ideal.height, ENat.iInf_eq_natCast_iff] at hI
   rcases hI with ⟨⟨p, ⟨⟨⟨hpp, hIp⟩, _⟩, h⟩, -⟩, -⟩
   exact ⟨p, hpp, hIp, h ▸ p.height_eq_primeHeight⟩
 
@@ -93,15 +94,13 @@ private lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top ‹I.IsPrime›.ne_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.FiniteHeight] :
     ∃ (l : LTSeries (PrimeSpectrum R)),
       RelSeries.last l = ⟨p, inferInstance⟩ ∧ l.length = p.height := by
-  obtain ⟨n, hn⟩ := Option.ne_none_iff_exists'.mp (p.height_ne_top (IsPrime.ne_top ‹_›))
+  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp (p.height_ne_top (IsPrime.ne_top ‹_›))
   rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at hn ⊢
-  obtain ⟨l, last, len⟩ := Order.exists_series_of_height_eq_coe (⟨p, ‹_›⟩ : PrimeSpectrum R) hn
-  rw [hn]
-  exact ⟨l, last, by rw [len, WithTop.some_eq_coe, ENat.some_eq_coe]⟩
+  obtain ⟨l, last, len⟩ := Order.exists_series_of_height_eq_coe (⟨p, ‹_›⟩ : PrimeSpectrum R) hn.symm
+  exact ⟨l, last, len ▸ hn⟩
 
 private lemma Ideal.height_mono_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
     I.height ≤ J.height := by
