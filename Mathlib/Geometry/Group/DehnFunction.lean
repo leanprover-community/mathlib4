@@ -86,28 +86,54 @@ variable {w : FreeGroup α} {l : List (FreeGroup α)} {n : ℕ}
 
 /-- Writing `w` as a product of conjugates witnesses that its area is at most that product's
 length. -/
-theorem IsConjRelDecomp.area_le (h : P.IsConjRelDecomp w l) : P.area w ≤ l.length :=
+lemma IsConjRelDecomp.area_le (h : P.IsConjRelDecomp w l) : P.area w ≤ l.length :=
   sInf_le ⟨l, h, rfl⟩
 
-/-- `n ≤ area w` exactly when every decomposition of `w` into conjugates uses at least `n` of
-them. -/
-theorem coe_le_area_iff :
-    (n : ℕ∞) ≤ P.area w ↔ ∀ l, P.IsConjRelDecomp w l → n ≤ l.length := by
-  simp [area, le_sInf_iff]
+/-- A word admitting a decomposition into conjugates of relators evaluates to the identity in
+`G`. -/
+lemma IsConjRelDecomp.lift_eq_one (h : P.IsConjRelDecomp w l) : P.lift w = 1 := by
+  obtain ⟨hmem, rfl⟩ := h
+  rw [← List.prod_hom l P.lift]
+  refine List.prod_eq_one fun x hx => ?_
+  obtain ⟨y, hy, rfl⟩ := List.mem_map.mp hx
+  exact P.lift_eq_one_of_mem_conjugatesOfSet_symmRelSet (hmem y hy)
 
-/-- The Galois connection between `area` and products of conjugates: `area w ≤ n` exactly when `w`
-is a product of at most `n` conjugates of relators and inverse relators. This is the workhorse for
-reasoning about `area`. -/
-theorem area_le_iff : P.area w ≤ n ↔ ∃ l, P.IsConjRelDecomp w l ∧ l.length ≤ n := by
-  refine ⟨fun h => ?_, fun ⟨l, hpc, hl⟩ => hpc.area_le.trans (by exact_mod_cast hl)⟩
-  by_contra hn
-  have hle : (↑(n + 1) : ℕ∞) ≤ P.area w :=
-    P.coe_le_area_iff.mpr fun l hpc => by
-      have : n + 1 ≤ l.length := by
-        by_contra hlen
-        exact hn ⟨l, hpc, by omega⟩
-      exact_mod_cast this
-  exact absurd h (not_le.mpr (lt_of_lt_of_le (by exact_mod_cast Nat.lt_succ_self n) hle))
+/-- A word is a product of conjugates of relators and inverse relators exactly when it evaluates to
+the identity in `G`. -/
+lemma exists_isConjRelDecomp_iff_mem_ker :
+    (∃ l, P.IsConjRelDecomp w l) ↔ w ∈ P.lift.ker := by
+  refine ⟨fun ⟨l, hl⟩ => hl.lift_eq_one, fun hw => ?_⟩
+  rw [P.ker_lift, Subgroup.normalClosure, ← Subgroup.mem_toSubmonoid,
+    Subgroup.closure_toSubmonoid] at hw
+  obtain ⟨l, hmem, rfl⟩ := Submonoid.exists_list_of_mem_closure hw
+  refine ⟨l, fun x hx => ?_, rfl⟩
+  have hsub := Group.conjugatesOfSet_mono P.relSet_subset_symmRelSet
+  rcases hmem x hx with h | h
+  · exact hsub h
+  · simpa using P.inv_mem_conjugatesOfSet_symmRelSet (hsub (Set.mem_inv.mp h))
+
+/-- A word has finite area exactly when it evaluates to the identity in `G`. -/
+theorem area_ne_top_iff : P.area w ≠ ⊤ ↔ w ∈ P.lift.ker := by
+  rw [← P.exists_isConjRelDecomp_iff_mem_ker]
+  refine ⟨fun h => ?_, fun ⟨l, hl⟩ => (hl.area_le.trans_lt (by simp)).ne⟩
+  by_contra hw
+  have hempty : {l : List (FreeGroup α) | P.IsConjRelDecomp w l} = ∅ :=
+    Set.eq_empty_iff_forall_notMem.2 fun l hl => hw ⟨l, hl⟩
+  exact h (by rw [area, hempty, Set.image_empty, sInf_empty])
+
+/-- A word has area `⊤` exactly when it does not evaluate to the identity of `G`: there is then no
+product of conjugates of relators equal to it, so the infimum defining `area` is over the empty
+set. -/
+theorem area_eq_top_iff : P.area w = ⊤ ↔ w ∉ P.lift.ker := by
+  rw [← P.area_ne_top_iff, not_ne_iff]
+
+/-- A word has area `⊤` exactly when it does not evaluate to the identity of `G`. -/
+theorem area_eq_top_iff_lift_ne_one : P.area w = ⊤ ↔ P.lift w ≠ 1 := by
+  rw [P.area_eq_top_iff, MonoidHom.mem_ker]
+
+/-- A word has finite area exactly when it evaluates to the identity of `G`. -/
+theorem area_lt_top_iff : P.area w < ⊤ ↔ w ∈ P.lift.ker := by
+  rw [lt_top_iff_ne_top, P.area_ne_top_iff]
 
 section Dehn
 
