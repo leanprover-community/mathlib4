@@ -10,9 +10,7 @@ public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Choose.Central
 
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Tactic.Field
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 
 /-!

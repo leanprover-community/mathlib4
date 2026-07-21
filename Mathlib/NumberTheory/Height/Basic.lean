@@ -9,7 +9,6 @@ public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.FiniteSupport.Basic
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
 import Mathlib.RingTheory.Nilpotent.Defs

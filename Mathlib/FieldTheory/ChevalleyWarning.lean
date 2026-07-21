@@ -6,6 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # The Chevalley–Warning theorem

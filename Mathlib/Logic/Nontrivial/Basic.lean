@@ -11,7 +11,6 @@ public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Logic.Unique
 public import Mathlib.Order.Defs.LinearOrder
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Nontrivial types

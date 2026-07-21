@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # `sigmaConst.obj` preserves colimits

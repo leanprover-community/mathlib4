@@ -6,7 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
-public import Mathlib.RingTheory.RamificationInertia.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 

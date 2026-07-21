@@ -7,8 +7,7 @@ module
 
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.Data.NNReal.Defs
-public import Mathlib.Topology.Defs.Filter
-public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Tactic.Continuity
 
 /-!
 

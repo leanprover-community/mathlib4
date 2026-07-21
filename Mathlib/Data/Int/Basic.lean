@@ -10,7 +10,6 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
-public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.OfNat
 
 /-!

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.RelClasses
 public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Bounded and unbounded sets

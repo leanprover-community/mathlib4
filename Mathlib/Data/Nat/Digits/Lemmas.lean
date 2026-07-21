@@ -12,6 +12,7 @@ public import Mathlib.Data.Nat.Bits
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Data.Nat.Digits.Defs
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Digits of a natural number

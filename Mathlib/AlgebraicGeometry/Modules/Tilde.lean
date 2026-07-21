@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.Algebra.Module.LocalizedModule.Away
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.Data.Fintype.Order
+public import Mathlib.AlgebraicGeometry.AffineScheme
 
 /-!
 

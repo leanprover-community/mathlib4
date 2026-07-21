@@ -9,7 +9,7 @@ public import Batteries.Tactic.Alias
 public import Batteries.Util.ExtendedBinder
 public import Mathlib.Tactic.SetNotationForOrder
 
-import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Sets

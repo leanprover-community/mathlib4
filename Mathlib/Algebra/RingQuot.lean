@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
-public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
 

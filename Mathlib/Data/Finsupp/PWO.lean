@@ -6,7 +6,7 @@ Authors: Alex J. Best
 module
 
 public import Mathlib.Order.Preorder.Finsupp
-public import Mathlib.Order.WellFoundedSet
+public import Mathlib.Order.WellQuasiOrder
 
 /-!
 # Partial well ordering on finsupps
