@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Hang Lu Su. All rights reserved.
+Copyright (c) 2026 Hang Lu Su, Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Hang Lu Su
+Authors: Hang Lu Su, Justus Springer
 -/
 module
 
@@ -13,32 +13,17 @@ public import Mathlib.GroupTheory.Presentation
 /-!
 # Dehn functions
 
-For a presentation `P = ⟨α | rel⟩` of a group `G` and a word `w : FreeGroup α` that evaluates to
-the identity in `G`, the *area* of `w` is the least number of conjugates of relators (and of
-inverse relators) whose product is `w`. The *Dehn function* of `P` is
-`n ↦ max {area w | w = 1 in G, ‖w‖ ≤ n}`.
-
-This is the combinatorial definition; the area of `w` is equally the least number of `2`-cells in a
-van Kampen diagram with boundary word `w`. Expressing `w` as a product of conjugates of relators and
-inverse relators is the algebraic shadow of such a diagram — a *filling* of the loop `w`.
+For a presentation `P` of a group `G` and a word `w : FreeGroup α` that evaluates to
+the identity in `G`, the *area* of `w` is the least number of conjugates of relators and of
+inverse relators whose product is `w`. The *Dehn function* of `P` is given by
+`n ↦ max {area w | w = 1 in G, ‖w‖ ≤ n}`, where `‖w‖` is the length of `w`.
 
 ## Main definitions
 
-* `Group.Presentation.IsConjRelDecomp P w l`: the list `l` exhibits `w` as a product of
-  conjugates of relators and inverse relators.
-* `Group.Presentation.IsConjRelProduct P w`: `w` is a product of conjugates of relators and inverse
-  relators, i.e. it admits such a decomposition.
-* `Group.Presentation.area`: the least length of such a decomposition, valued in `ℕ∞` (`⊤` when
-  there is none).
-* `Group.Presentation.IsMinimalConjRelDecomp P w l`: `l` is a decomposition of `w` of least
-  possible length, i.e. of length `P.area w`.
-* `Group.Presentation.kerBall`: the words of length at most `n` that evaluate to the identity
-  in `G`.
-* `Group.Presentation.dehn`: the Dehn function.
-
-The theory of these definitions — that `area` is finite exactly on the words that evaluate to the
-identity in `G`, that the Dehn function is monotone, and that its growth type is an invariant of
-the finitely presented group — is developed downstream of this file.
+* `Group.Presentation.IsConjRelDecomp P w l`:
+* `Group.Presentation.area`:
+* `Group.Presentation.kerBall`:
+* `Group.Presentation.dehn`:
 
 ## Design notes
 
@@ -49,8 +34,6 @@ the finitely presented group — is developed downstream of this file.
 * `area` takes values in `ℕ∞`; it is `⊤` exactly when `w` does not evaluate to the identity in `G`
   (there is then no product of conjugates equal to `w`), and finite otherwise. This mirrors
   `SimpleGraph.edist`, and keeps `area w = 0 ↔ w = 1` rather than colliding with the junk value.
-* `dehn` is defined by `sSup`, and is junk unless `[Finite α]` makes the relevant set of words
-  finite.
 * `FreeGroup.norm` needs `[DecidableEq α]`, so `kerBall` and `dehn` do too.
 
 ## Tags
@@ -71,21 +54,27 @@ variable (P : Group.Presentation G α ρ)
 /-- A list `l` of elements of the free group is a decomposition of `w` into conjugates of relators
 of `P` if every entry of `l` is a conjugate of a relator or of an inverse relator, and the product
 of `l` is `w`. -/
-def IsConjRelDecomp (w : FreeGroup α) (l : List (FreeGroup α)) : Prop :=
-  (∀ x ∈ l, x ∈ Group.conjugatesOfSet P.symmRelSet) ∧ l.prod = w
+structure IsConjRelDecomp (w : FreeGroup α) (l : List (FreeGroup α)) : Prop where
+  mem_conjugatesOfSet : ∀ x ∈ l, x ∈ Group.conjugatesOfSet P.symmRelSet
+  prod_eq : l.prod = w
+
+attribute [simp] IsConjRelDecomp.prod_eq
+
+lemma isConjRelDecomp_one_nil : P.IsConjRelDecomp (1 : FreeGroup α) [] where
+  mem_conjugatesOfSet := by simp
+  prod_eq := by simp
 
 /-- The area of a word `w` over the presentation `P` is the least length of a decomposition
-`l` of `w` into conjugates of elements of the symmetric relator set.
-It is valued in `ℕ∞`: it is finite when a decomposition `l` exists, and `⊤` when `w` is not the
-identity of `G`, since then no such decomposition exists and the infimum is taken over the empty
-set. -/
+`l` of `w` into conjugates of elements of the symmetric relator set. It is valued in `ℕ∞`
+so that it returns a finite number when `l` exists, and the junk value `⊤` when
+`w` is not the identity of `G`, since then no such decomposition exists and
+the infimum is taken over the empty set. -/
 noncomputable def area (w : FreeGroup α) : ℕ∞ :=
-  sInf ((fun l : List (FreeGroup α) => (l.length : ℕ∞)) '' {l | P.IsConjRelDecomp w l})
+  sInf ((fun l : List (FreeGroup α) ↦ (l.length : ℕ∞)) '' {l | P.IsConjRelDecomp w l})
 
 variable {w : FreeGroup α} {l : List (FreeGroup α)} {n : ℕ}
 
-/-- Writing `w` as a product of conjugates witnesses that its area is at most that product's
-length. -/
+/-- The area  of `w` is less or equal than the length of a conjugate decomposition. -/
 lemma IsConjRelDecomp.area_le (h : P.IsConjRelDecomp w l) : P.area w ≤ l.length :=
   sInf_le ⟨l, h, rfl⟩
 
@@ -97,6 +86,20 @@ lemma IsConjRelDecomp.lift_eq_one (h : P.IsConjRelDecomp w l) : P.lift w = 1 := 
   refine List.prod_eq_one fun x hx => ?_
   obtain ⟨y, hy, rfl⟩ := List.mem_map.mp hx
   exact P.lift_eq_one_of_mem_conjugatesOfSet_symmRelSet (hmem y hy)
+
+lemma area_eq_foo : P.area w = n → ∃ (l : List (FreeGroup α)), P.IsConjRelDecomp w l := by
+  sorry
+
+@[simp]
+lemma area_one_eq_zero : P.area (1 : FreeGroup α) = 0 := by
+  simpa using IsConjRelDecomp.area_le P (isConjRelDecomp_one_nil P)
+
+lemma area_eq_zero_iff : P.area w = 0 ↔ w = (1 : FreeGroup α) := by
+  constructor
+  · intro h
+    contrapose h
+    sorry
+  · intro h ; simp [h]
 
 /-- A word is a product of conjugates of relators and inverse relators exactly when it evaluates to
 the identity in `G`. -/
@@ -150,6 +153,8 @@ This is junk unless the generating set is finite; the relevant lemmas assume `[F
 areas involved are all finite (the words evaluate to the identity in `G`), so truncating the
 `ℕ∞`-valued supremum back to `ℕ` with `ENat.toNat` loses nothing. -/
 noncomputable def dehn (n : ℕ) : ℕ := (sSup (P.area '' P.kerBall n)).toNat
+
+-- TODO add little lemmas about Dehn functions.
 
 end Dehn
 
