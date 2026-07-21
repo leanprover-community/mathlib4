@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
-public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 
 /-!
 # Girth of a simple graph
@@ -16,7 +16,6 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 
 ## TODO
 
-- Prove that `G.egirth ≤ 2 * G.ediam + 1` when `G` is not acyclic
 - Prove that `G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero
 
 -/
@@ -89,6 +88,22 @@ theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 
       support_nodup := by aesop }
   grw [egirth_le_length this]
   simp [hw]
+
+open Walk in
+lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
+  obtain ⟨u, w, _, hwl⟩ := exists_egirth_eq_length.mpr h
+  have half_g_le_edist : ↑(w.length / 2) ≤ G.edist u (w.getVert (w.length / 2)) := by
+    have ⟨p, _⟩ := ((w.take (w.length / 2)).reachable).exists_walk_length_eq_edist
+    by_contra! hlt; classical
+    have := p.bypass_isPath.exists_isCycle_length_le_add_of_ne
+      (w.drop (w.length / 2)).reverse.bypass_isPath <| by grind [take_length, length_reverse,
+      length_append, length_bypass_le_length, ENat.coe_lt_coe, length_eq_zero_iff,
+      append_take_drop_eq, IsCycle.isPath_of_append_right, IsPath.reverse]
+    grind [ENat.coe_lt_coe, length_bypass_le_length, length_reverse, egirth_le_length,
+      ENat.coe_le_coe, length_append, take_length, append_take_drop_eq]
+  calc
+    G.egirth ≤ 2 * ↑(w.length / 2) + 1 := by rw [hwl]; norm_cast; grind
+    _  ≤ 2 * G.ediam + 1 := by grw [half_g_le_edist, edist_le_ediam]
 
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
