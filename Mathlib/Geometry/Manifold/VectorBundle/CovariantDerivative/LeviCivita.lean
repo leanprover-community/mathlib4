@@ -208,16 +208,33 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
   simp (disch := fun_prop) [real_inner_comm, inner_sub_right, torsion_apply] at *
   linear_combination - (eq1a + eq1b + eq2a + eq2b - eq3a - eq3b) / 2
 
+/-- Auxiliary lemma towards the uniqueness of the Levi-Civita connection: expressing the term
+`⟨∇ X Y, Z⟩` for all differentiable vector fields `Y` and `Z`, without reference to `∇`.
+
+Version of `IsLeviCivitaConnection.apply_eq` which does not require the vector field we are
+differentiating to be differentiable. -/
+public lemma IsLeviCivitaConnection.apply_eq' [FiniteDimensional ℝ E]
+    (h : cov.IsLeviCivitaConnection) {x : M}
+    (X₀ : TangentSpace I x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    inner ℝ (cov Y x X₀) (Z x) =
+      (d% ⟪Y, Z⟫ x X₀ + d% ⟪Z, extend E X₀⟫ x (Y x) - d% ⟪extend E X₀, Y⟫ x (Z x)
+      - ⟪Y, VectorField.mlieBracket I (extend E X₀) Z⟫ x
+      - ⟪Z, VectorField.mlieBracket I Y (extend E X₀)⟫ x
+      + inner ℝ X₀ (VectorField.mlieBracket I Z Y x)) / 2 := by
+  nth_rw 1 [← FiberBundle.extend_apply_self E X₀]
+  simp_rw [h.apply_eq _ (mdifferentiableAt_extend _ _ X₀) hY hZ]
+  simp
+
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
 
-Note that the differentiability hypotheses are required, since `CovariantDerivative` objects are
-unconstrained in their behaviour on non-differentiable vector fields. -/
+Note that the differentiability hypothesis on `Y` is required, since `CovariantDerivative` objects
+are unconstrained in their behaviour on non-differentiable vector fields. -/
 public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
-    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
-    ∇ X Y x = ∇' X Y x := by
+    (hY : MDiffAt (T% Y) x) :
+    cov Y x (X x) = cov' Y x (X x) := by
   apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-  exact (hcov.apply_eq I hX hY hZ).trans <| hcov'.apply_eq I hX hY hZ |>.symm
+  exact (hcov.apply_eq' I (X x) hY hZ).trans <| hcov'.apply_eq' I (X x) hY hZ |>.symm
 
 end uniqueness
 
