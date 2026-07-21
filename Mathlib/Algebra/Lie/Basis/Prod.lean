@@ -237,12 +237,14 @@ lemma prod_lt_top [Nontrivial L₂] :
   `LieAlgebra.Basis.isCartanSubalgebra`. The argument is essentially: if `b₁.prod eι b₂` is not
   proper then it's Cartan subalgebra contains `H₁ × H₂` which is absurd since it
   `LieAlgebra.Basis.prodCartanEquiv` tells us it is equivalent to `H₁`. -/
-  have : H₁.IsCartanSubalgebra := letI := Fintype.ofFinite ι₁; b₁.isCartanSubalgebra
-  have : H₂.IsCartanSubalgebra := letI := Fintype.ofFinite ι₂; b₂.isCartanSubalgebra
+  have := Fintype.ofFinite ι₁
+  have := Fintype.ofFinite ι₂
+  have := b₁.isCartanSubalgebra
+  have := b₂.isCartanSubalgebra
+  have := (basisProd eι b₁ b₂ hA).isCartanSubalgebra
   rw [lt_top_iff_ne_top]
   intro contra
   have (x : H₁ × H₂) (hx) : ⟨(x.1, x.2), hx⟩ ∈ prodCartan eι b₁ b₂ := by
-    have := letI := Fintype.ofFinite ι₁; (basisProd eι b₁ b₂ hA).isCartanSubalgebra
     rw [← mem_toLieSubmodule, ← rootSpace_zero_eq, LieModule.mem_genWeightSpace]
     refine fun ⟨y, hy⟩ ↦ ⟨1, ?_⟩
     simpa [Subtype.ext_iff] using ⟨lie_fst_eq_zero_of_mem_prodCartan eι b₁ b₂ hy x.fst,
@@ -253,13 +255,10 @@ lemma prod_lt_top [Nontrivial L₂] :
       map_smul' := by simp }
   have f_inj : Injective f := fun x y h ↦ by simpa [Prod.ext_iff, f] using h
   let g : H₁ × H₂ →ₗ[K] H₁ := (prodCartanEquiv eι b₁ b₂) ∘ₗ f
-  have g_inj : Injective g := by simpa [g]
-  replace contra : Module.finrank K (H₁ × H₂) ≤ Module.finrank K H₁ :=
-    LinearMap.finrank_le_finrank_of_injective g_inj
-  replace contra : Subsingleton H₂ := by
-    rwa [Module.finrank_prod, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
-      Module.finrank_eq_zero_iff_of_free] at contra
-  exact false_of_nontrivial_of_subsingleton H₂
+  have hg₁ : Injective g := by simpa [g]
+  obtain ⟨x₂ : H₂, hx₂ : x₂ ≠ 0⟩ := exists_ne (0 : H₂)
+  have hg₂ : g (0, x₂) = g (0, 0) := rfl
+  aesop
 
 variable [IsSimple K L₁] [IsSimple K L₂]
 
