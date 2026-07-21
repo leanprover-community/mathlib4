@@ -5,10 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Set.Finite.Sigma
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Data.Set.Finite.Sigma
 
 /-!
 ### Locally finite families of sets
