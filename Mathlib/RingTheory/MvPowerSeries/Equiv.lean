@@ -62,26 +62,15 @@ end isEmptyEquiv
 
 section optionEquivLeft
 
-private theorem image_optionElim_product_antidiagonal [DecidableEq σ]
-    {x : σ →₀ ℕ} {n : ℕ} : image (fun ((x, y), z, w) ↦
-      (z.optionElim x, w.optionElim y)) (antidiagonal n ×ˢ antidiagonal x) =
-    antidiagonal (x.optionElim n) := by
-  symm; ext ⟨u, v⟩
-  simp only [HasAntidiagonal.mem_antidiagonal, mem_image, mem_product, Prod.mk.injEq, Prod.exists]
-  refine ⟨fun h ↦ ⟨u none, v none, u.some, v.some, ⟨?_, ?_⟩, by simp⟩,
-    fun ⟨a, b, i, j, h1, h2, h3⟩ ↦ ?_⟩
-  · rw [← Finsupp.add_apply, h, optionElim_apply_none]
-  · rw [← some_add, h, some_optionElim]
-  · rw [← h2, ← h3, ← optionElim_add, h1.left, h1.right]
-
 variable (R σ) in
 /-- Implementation detail for `optionEquivLeft`. Use `MvPowerSeries.optionEquivLeft` instead. -/
-def optionFunLeft (p : MvPowerSeries (Option σ) R) : PowerSeries (MvPowerSeries σ R) :=
+private def optionFunLeft (p : MvPowerSeries (Option σ) R) : PowerSeries (MvPowerSeries σ R) :=
   .mk fun n ↦ fun x ↦ p.coeff (x.optionElim n)
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma coeff_coeff_optionFunLeft (p : MvPowerSeries (Option σ) R) (n : ℕ) (x : σ →₀ ℕ) :
     coeff x (PowerSeries.coeff n (optionFunLeft σ R p)) = coeff (x.optionElim n) p := by
-  rw [optionFunLeft, PowerSeries.coeff_mk, coeff]
+  rw [optionFunLeft, PowerSeries.coeff_mk]
   exact LinearMap.proj_apply ..
 
 private theorem optionFunLeft_monomial (x : Option σ →₀ ℕ) (r : R) :
@@ -90,31 +79,38 @@ private theorem optionFunLeft_monomial (x : Option σ →₀ ℕ) (r : R) :
   ext n y
   rw [PowerSeries.coeff_monomial, coeff_coeff_optionFunLeft, coeff_monomial]
   split_ifs with h1 h2 h3
-  · rw [← h1]; simp
+  · simp [← h1]
   · absurd h2
     rw [← optionElim_apply_none n, h1]
   · replace h1 : ¬ y = x.some := fun h ↦ by
-      absurd h1; ext u; cases u
-      · simpa
-      · simpa using DFunLike.congr_fun h _
+      absurd h1; ext u
+      cases u <;> simp_all
     rw [coeff_monomial, if_neg h1]
   · rw [coeff_zero]
 
 private lemma optionFunLeft_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunLeft σ R (p * q) = optionFunLeft σ R p * optionFunLeft σ R q := by
   classical
-  ext
-  simpa [coeff_coeff_optionFunLeft, coeff_mul, PowerSeries.coeff_mul, ← sum_product',
-    ← image_optionElim_product_antidiagonal] using sum_image
-      (LeftInverse.injective (g := fun (x, y) ↦ ((x none, y none), x.some, y.some))
-      (fun _ ↦ by simp)).injOn
+  ext k x
+  simp only [coeff_coeff_optionFunLeft, coeff_mul, PowerSeries.coeff_mul, map_sum, sum_sigma']
+  refine sum_bij (fun y _ ↦ ⟨(y.1 none, y.2 none), (y.1.some, y.2.some)⟩) ?_ ?_ ?_ ?_
+  · intros; simp_all [Finsupp.ext_iff]
+  · intros; ext t <;> cases t
+    all_goals simp_all [Finsupp.ext_iff]
+  · rintro ⟨⟨m, n⟩, ⟨u, v⟩⟩ h
+    suffices ∃ a b, (a none = m ∧ b none = n) ∧ a.some = u ∧ a + b = optionElim k x ∧
+      b.some = v by simpa
+    use u.optionElim m, v.optionElim n
+    suffices optionElim m u + optionElim n v = optionElim k x by simp_all
+    ext t; cases t <;> simp_all [Finsupp.ext_iff]
+  · intros; simp_all [Finsupp.ext_iff]
 
 variable (R σ) in
 /-- An inverse function of `optionFunLeft`. -/
-def optionInvFunLeft (p : PowerSeries (MvPowerSeries σ R)) : MvPowerSeries (Option σ) R :=
-  fun x ↦ (p.coeff (x none)).coeff x.some
+private def optionInvFunLeft (p : PowerSeries (MvPowerSeries σ R)) :
+    MvPowerSeries (Option σ) R := fun x ↦ (p.coeff (x none)).coeff x.some
 
-lemma coeff_optionInvFunLeft (p : PowerSeries (MvPowerSeries σ R)) (x : Option σ →₀ ℕ) :
+private lemma coeff_optionInvFunLeft (p : PowerSeries (MvPowerSeries σ R)) (x : Option σ →₀ ℕ) :
     coeff x (optionInvFunLeft σ R p) = (p.coeff (x none)).coeff x.some := rfl
 
 variable (R σ) in
@@ -218,7 +214,7 @@ theorem finSuccEquiv_comp_C : (MvPowerSeries.finSuccEquiv R n).symm.toRingHom.co
 
 variable (S : Type*) [CommRing S] [IsNoetherianRing S]
 
-theorem isNoetherianRing_fin (n : ℕ) : IsNoetherianRing (MvPowerSeries (Fin n) S) := by
+private lemma isNoetherianRing_fin (n : ℕ) : IsNoetherianRing (MvPowerSeries (Fin n) S) := by
   induction n with
   | zero =>
     exact isNoetherianRing_of_ringEquiv S (isEmptyEquiv (Fin 0) S).toRingEquiv.symm
