@@ -92,7 +92,7 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   suffices V ∈ 𝓕₂ by simpa [H]
   -- Hence, let us show that `V ∈ 𝓕₂`. Fix a scalar `c` with `0 < ‖c‖ < 1`.
   obtain ⟨c, hc₀, hc₁⟩ := NormedField.exists_norm_lt_one 𝕜₁
-  have c_ne : c ≠ 0 := norm_pos_iff.mp hc₀ 
+  have c_ne : c ≠ 0 := norm_pos_iff.mp hc₀
   -- We know that `c • V ∈ 𝓕₁ = 𝓕₂ ⊓ 𝓟 V`.
   have cV_mem : c • V ∈ 𝓕₂ ⊓ 𝓟 V := by
     simpa [← H, 𝓕₁, set_smul_mem_nhds_zero_iff c_ne]
