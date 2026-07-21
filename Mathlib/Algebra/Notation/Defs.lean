@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToAdditive
 
 /-!
@@ -71,7 +71,6 @@ class SDiv (G : outParam Type*) (P : Type*) where
 attribute [to_additive existing] SMul HSMul
 attribute [to_additive (attr := default_instance)] instHSMul
 
-initialize_simps_projections SMul
 initialize_simps_projections VAdd
 
 attribute [ext] SMul VAdd

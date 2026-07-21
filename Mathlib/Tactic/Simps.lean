@@ -1,0 +1,111 @@
+/-
+Copyright (c) 2022 Floris van Doorn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris van Doorn
+-/
+module
+
+public import Mathlib.Tactic.Simps.Basic
+
+/-!
+# Simps attribute
+
+This file initializes notation classes and `simps`-projections for structures defined in the core
+library.
+
+For documentation about `simps`, see `Mathlib.Tactic.Simps.Basic`.
+-/
+
+attribute [notation_class add] HAdd
+attribute [notation_class mul] HMul
+attribute [notation_class sub] HSub
+attribute [notation_class div] HDiv
+attribute [notation_class mod] HMod
+attribute [notation_class append] HAppend
+attribute [notation_class andThen] HAndThen
+attribute [notation_class orElse] HOrElse
+attribute [notation_class and] HAnd
+attribute [notation_class xor] HXor
+attribute [notation_class or] HOr
+attribute [notation_class shiftLeft] HShiftLeft
+attribute [notation_class shiftRight] HShiftRight
+attribute [notation_class] Neg Inv Dvd LE LT HasEquiv HasSubset HasSSubset Union Inter SDiff Insert
+  Singleton Sep Membership EmptyCollection
+attribute [notation_class pow Simps.copyFirst] HPow
+attribute [notation_class one Simps.findOneArgs] OfNat
+attribute [notation_class zero Simps.findZeroArgs] OfNat
+attribute [notation_class smul Simps.copySecond] HSMul
+attribute [notation_class nsmul Simps.nsmulArgs] HSMul
+attribute [notation_class zsmul Simps.zsmulArgs] HSMul
+
+initialize_simps_projections BEq
+initialize_simps_projections OfNat
+initialize_simps_projections LE
+initialize_simps_projections LT
+initialize_simps_projections Max
+initialize_simps_projections Min
+initialize_simps_projections Trans
+initialize_simps_projections HAdd
+initialize_simps_projections HSub
+initialize_simps_projections HMul
+initialize_simps_projections HDiv
+initialize_simps_projections HMod
+initialize_simps_projections HPow
+initialize_simps_projections HSMul
+initialize_simps_projections HAppend
+initialize_simps_projections HOrElse
+initialize_simps_projections HAndThen
+initialize_simps_projections HAnd
+initialize_simps_projections HXor
+initialize_simps_projections HOr
+initialize_simps_projections HShiftLeft
+initialize_simps_projections HShiftRight
+initialize_simps_projections Zero
+initialize_simps_projections One
+initialize_simps_projections Add
+initialize_simps_projections Sub
+initialize_simps_projections Mul
+initialize_simps_projections Neg
+initialize_simps_projections Div
+initialize_simps_projections Inv
+initialize_simps_projections Mod
+initialize_simps_projections Dvd
+initialize_simps_projections Pow
+initialize_simps_projections NatPow
+initialize_simps_projections SMul
+initialize_simps_projections Append
+initialize_simps_projections OrElse
+initialize_simps_projections AndThen
+initialize_simps_projections AndOp
+initialize_simps_projections XorOp
+initialize_simps_projections OrOp
+initialize_simps_projections Complement
+initialize_simps_projections ShiftLeft
+initialize_simps_projections ShiftRight
+initialize_simps_projections Membership
+initialize_simps_projections Bind
+initialize_simps_projections Pure
+initialize_simps_projections Functor
+initialize_simps_projections Seq
+initialize_simps_projections SeqLeft
+initialize_simps_projections SeqRight
+initialize_simps_projections Applicative
+initialize_simps_projections Monad
+initialize_simps_projections MonadLift
+initialize_simps_projections MonadLiftT
+initialize_simps_projections MonadFunctor
+initialize_simps_projections MonadFunctorT
+initialize_simps_projections MonadExceptOf
+initialize_simps_projections MonadExcept
+
+initialize_simps_projections HasEquiv
+initialize_simps_projections HasSubset
+initialize_simps_projections HasSSubset
+initialize_simps_projections Union
+initialize_simps_projections Inter
+initialize_simps_projections SDiff
+initialize_simps_projections EmptyCollection
+initialize_simps_projections Insert
+initialize_simps_projections Singleton
+initialize_simps_projections Sep
+initialize_simps_projections Setoid
