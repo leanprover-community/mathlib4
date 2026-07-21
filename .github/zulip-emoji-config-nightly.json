@@ -1,9 +1,8 @@
 {
-  "_comment": "Config for the zulip-emoji-reconcile action (see .github/workflows/zulip_emoji_reconcile.yml) as it runs on the leanprover-community/mathlib4-nightly-testing repo, keeping Zulip emoji reactions in sync with that repo's adaptation-PR state. This is the mathlib4 config (.github/zulip-emoji-config.json) with exactly two fields changed -- github_repo and channels.pr_reviews -- so keep the emoji table, CI checks, and Zulip realm in sync with that file; only those two fields should ever differ. Format and semantics: https://github.com/leanprover-community/mathlib-ci/blob/master/docs/zulip-emoji-reconcile.md",
+  "_comment": "The mathlib4 config (.github/zulip-emoji-config.json) retargeted at the leanprover-community/mathlib4-nightly-testing repo and its 'nightly-testing-mathlib' channel (where adaptation PRs are announced, one topic per PR), with the unused 'maintainer-merge' state and 'reviewers' channel dropped. Keep otherwise in sync with that file. Docs: https://github.com/leanprover-community/mathlib-ci/blob/master/docs/zulip-emoji-reconcile.md",
 
   "github_repo": "leanprover-community/mathlib4-nightly-testing",
 
-  "_merged_comment": "bors merges by rebasing a PR's commits onto the target branch, so GitHub reports the PR as CLOSED (not merged) and renames its title to start with '[Merged by Bors] -'. Treat such closed PRs as merged so they get the 'merge' emoji rather than 'closed-pr'.",
   "merged_title_prefix": "[Merged by Bors] -",
 
   "zulip": {
@@ -11,15 +10,12 @@
     "email": "github-mathlib4-bot@leanprover.zulipchat.com"
   },
 
-  "_channels_comment": "Adaptation PRs are announced by scripts/nightly/create-adaptation-pr.sh into the 'nightly-testing-mathlib' channel, one topic per PR ('nightly#<n> adaptations ...'); the reconcile engine reacts to each topic's opener. This is the only field other than github_repo that differs from the mathlib4 config.",
   "channels": {
     "pr_reviews": "nightly-testing-mathlib",
-    "reviewers": "mathlib reviewers",
     "rss_allow": ["mathlib bors notifications"]
   },
 
   "ci": {
-    "_comment": "Case-insensitive substring match against check-run name, workflow name, or status context. The first three select the gating jobs of 'continuous integration' / 'continuous integration (mathlib forks)' -- their check runs are named 'ci / Build', 'ci (fork) / Build', etc. -- while leaving auxiliary jobs (Upload to cache, Post-CI job) out of the emoji. 'Check workflows' is the actionlint workflow: it runs only on PRs touching .github/**, so it contributes nothing on ordinary PRs and becomes the CI signal on workflows-only PRs where the main CI never triggers.",
     "check_names": ["Build", "Lint style", "Post-Build Step", "Check workflows"]
   },
 
@@ -51,11 +47,6 @@
     {"name": "ci-success", "group": "ci", "source": {"ci": "success"}, "emoji": "check"},
     {"name": "ci-failure", "group": "ci", "source": {"ci": "failure"}, "emoji": "cross_mark"},
 
-    {
-      "name": "maintainer-merge", "group": null,
-      "source": {"label": "maintainer-merge"}, "emoji": "hammer",
-      "suppress_in": {"channel": "reviewers", "subject_prefix": "maintainer merge"}
-    },
     {
       "name": "migrated", "group": null, "sticky": true,
       "source": {"label": "migrated-from-branch"}, "emoji": "skip_forward"
