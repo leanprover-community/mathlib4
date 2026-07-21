@@ -158,7 +158,7 @@ theorem subsingleton_iff_isEmpty_or_unique (α : Sort u) :
   · by_cases h' : Nonempty α
     · exact Or.inr <| nonempty_unique α
     · exact Or.inl <| isEmpty_iff.mpr fun a ↦ not_nonempty_iff_imp_false.mp h' a
-  · rcases h with _ | ⟨⟨h'⟩⟩ <;> infer_instance
+  · rcases h with _ | ⟨⟨_⟩⟩ <;> infer_instance
 
 variable {α : Sort*}
 
