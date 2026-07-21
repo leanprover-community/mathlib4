@@ -199,9 +199,9 @@ variable (I I' n) in
 Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is scalar
 multiplication by `g⁻¹`. -/
 @[expose, to_additive
-/-- The diffeomorphism given by affine-addition by an element of an additive group `G` acting
+/-- The diffeomorphism given by affine-addition of an element of an additive group `G` acting
 Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is
-addition by `-g`. -/]
+addition of `-g`. -/]
 def Diffeomorph.smul : M ≃ₘ^n⟮I', I'⟯ M where
   toEquiv := MulAction.toPerm g
   contMDiff_toFun := ContMDiffSMul.contMDiff_const_smul (I := I) g
