@@ -15,9 +15,8 @@ This file defines the row echelon form of matrices.
 
 ## Main definitions
 
-- `Matrix.RowEchelon` expresses that `M` is in row echelon form: every
-  nonzero entry of a lower row is preceded, in any higher row, by a nonzero entry
-  strictly to its left.
+- `Matrix.RowEchelon` expresses that `M` is in row echelon form: an entry of a lower row
+  vanishes whenever a higher row is zero at every column strictly to its left.
 
 ## Tags
 
@@ -42,10 +41,10 @@ section Zero
 
 variable [Zero R]
 
-/-- `M` is in row echelon form: for any rows `i₁ < i₂`, every nonzero entry of the
-lower row `i₂` lies strictly to the right of some nonzero entry of the upper row `i₁`. -/
+/-- `M` is in row echelon form: for rows `i₁ < i₂`, if the higher row `i₁` is zero at every
+column strictly left of `j₂`, then the lower row `i₂` is zero at `j₂`. -/
 def RowEchelon (M : Matrix m n R) : Prop :=
-  ∀ ⦃i₁ i₂⦄, i₁ < i₂ → ∀ ⦃j₂⦄, M i₂ j₂ ≠ 0 → ∃ j₁ < j₂, M i₁ j₁ ≠ 0
+  ∀ ⦃i₁ i₂⦄, i₁ < i₂ → ∀ ⦃j₂⦄, (∀ j₁ < j₂, M i₁ j₁ = 0) → M i₂ j₂ = 0
 
 end Zero
 

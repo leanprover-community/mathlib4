@@ -55,14 +55,13 @@ structure IsPivot [Zero R] (A : Matrix (Fin m) (Fin n) R) (l : List (Fin n)) : P
 
 theorem IsPivot.rowEchelon [Zero R] {A : Matrix (Fin m) (Fin n) R} {l : List (Fin n)}
     (h : A.IsPivot l) : A.RowEchelon := by
-  intro i₁ i₂ h₁₂ j₂ hj₂
-  have hi₂ : i₂ < l.length :=
-    not_le.mp fun hcon => hj₂ (congrFun (h.row_eq_zero_of_length_le i₂ hcon) j₂)
-  have hi₁ : i₁ < l.length := lt_trans h₁₂ hi₂
-  have hle : l[i₂] ≤ j₂ :=
-    not_lt.mp fun hcon => hj₂ (h.apply_eq_zero_of_lt i₂ hi₂ j₂ hcon)
-  refine ⟨l[i₁], ?_, h.apply_ne_zero i₁ hi₁⟩
-  exact (h.sortedLT.getElem_lt_getElem_of_lt h₁₂).trans_le hle
+  intro i₁ i₂ h₁₂ j₂ hz
+  rcases lt_or_ge (i₂ : ℕ) l.length with hi₂ | hi₂
+  · have hi₁ : i₁ < l.length := lt_trans h₁₂ hi₂
+    have hjle : j₂ ≤ l[i₁] := not_lt.mp fun hlt => h.apply_ne_zero i₁ hi₁ (hz _ hlt)
+    exact h.apply_eq_zero_of_lt i₂ hi₂ j₂
+      (hjle.trans_lt (h.sortedLT.getElem_lt_getElem_of_lt h₁₂))
+  · exact congrFun (h.row_eq_zero_of_length_le i₂ hi₂) j₂
 
 theorem IsPivot.rank_eq [CommRing R] [IsDomain R] [StrongRankCondition R]
     {A : Matrix (Fin m) (Fin n) R} {l : List (Fin n)} (h : A.IsPivot l) :
