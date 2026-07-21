@@ -43,6 +43,8 @@ A vector-valued inequality variant of the second mean value theorem
 * [V. A. Zorich, *Mathematical Analysis I*][zorich2016],
     Thm. 5 (First mean-value theorem for the integral).
 * <https://proofwiki.org/wiki/Mean_Value_Theorem_for_Integrals/Generalization>
+* [E. T. Whittaker, G. N. Watson, *A Course of Modern Analysis*, 5th edition][WW21]
+    p. 63
 
 ## Tags
 
@@ -113,6 +115,7 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
     (hab : a ≤ b) (hf : 0 ≤ f b)
     (hf_mon : AntitoneOn f (Icc a b)) (hg : IntervalIntegrable g volume a b) : ∃ ξ ∈ Icc a b,
     ∫ x in a..b, f x * g x = f a * ∫ x in a..ξ, g x := by
+  -- The first step is to write `f x` as layercake integral and use Fubini.
   have hsub : Ι a b ⊆ Icc a b := uIcc_of_le hab ▸ uIoc_subset_uIcc
   have hf_nonneg x (hx : x ∈ Icc a b) : 0 ≤ f x := hf.trans (hf_mon.mapsTo_Icc hx).1
   let H := fun r ↦ ∫ x in a..b, ({x | r ≤ f x}.indicator g) x
@@ -129,8 +132,10 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
         ⟨hf_nonneg x (hsub hx), (hf_mon.mapsTo_Icc (hsub hx)).2⟩).symm]
     apply intervalIntegral_intervalIntegral_swap
     rwa [IntegrableOn, Measure.volume_eq_prod ℝ ℝ, ← Measure.prod_restrict]
+  -- The case `f a = 0` is trivial because then `f` is zero on the whole interval
   rcases (hf_nonneg a ⟨le_rfl, hab⟩).eq_or_lt with hfa | hfa
   · exact ⟨a, ⟨le_rfl, hab⟩, by simpa [hfa.symm] using hfub⟩
+  -- We will use the intermediate value theorem on the following function
   let G := fun x ↦ ∫ t in a..x, g t
   have hGcont := uIcc_of_le hab ▸ continuousOn_primitive_interval' hg left_mem_uIcc
   obtain ⟨ξmin, hξmin, hmin⟩ := isCompact_Icc.exists_isMinOn (nonempty_Icc.2 hab) hGcont
@@ -139,11 +144,13 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
     rw [intervalIntegrable_iff, IntegrableOn]
     simp_rw [H, intervalIntegral_eq_integral_uIoc]
     exact (h_int.swap.integral_prod_left).const_mul _
+  -- Since `f` is nonincreasing, the superlevel sets are intervals and `H r` is in the range of `G`.
   have hH_bounds r (hr : r ∈ Icc 0 (f a)) : G ξmin ≤ H r ∧ H r ≤ G ξmax := by
     let S := {x | x ∈ Icc a b ∧ r ≤ f x}
     have hS := isLUB_csSup (s := S) ⟨a, ⟨⟨le_rfl, hab⟩, hr.2⟩⟩ ⟨b, fun _ h ↦ h.1.2⟩
     have hc : sSup S ∈ Icc a b :=
       ⟨hS.1 ⟨⟨le_rfl, hab⟩, hr.2⟩, hS.2 fun _ h ↦ h.1.2⟩
+    -- We use a.e. here because `f` may have a jump discontinuity at the interval endpoint `sSup S`
     have hc_eq : ∀ᵐ x ∂volume.restrict (Ι a b), (r ≤ f x ↔ x ≤ sSup S) := by
       filter_upwards [Measure.ae_ne _ _, ae_restrict_mem measurableSet_uIoc] with x hxne hxI
       have hxIcc := hsub hxI
@@ -155,6 +162,7 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg_of_antitoneOn
       (intervalIntegral.integral_congr_ae_restrict <|
         indicator_ae_eq_of_ae_eq_set (hc_eq.mono fun _ ↦ propext)).trans
         (intervalIntegral.integral_indicator hc)] using ⟨hmin hc, hmax hc⟩
+  -- Finally, integrate over `r`, divide by `f a` and apply the intermediate value theorem
   have hy_mem : (∫ x in a..b, f x * g x) / f a ∈ Icc (G ξmin) (G ξmax) := by
     rw [mem_Icc, le_div_iff₀ hfa, div_le_iff₀ hfa, hfub]
     constructor
@@ -181,11 +189,12 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
 variable {g : ℝ → E}
 
 /-- An inequality version of the second mean value theorem for interval integrals
-for Banach-space-valued. - -/
+for Banach-space-valued functions. -/
 theorem exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_antitoneOn
     (hab : a ≤ b) (hf : 0 ≤ f b) (hf_mon : AntitoneOn f (Icc a b))
     (hg : IntervalIntegrable g volume a b) : ∃ ξ ∈ Icc a b,
     ‖∫ x in a..b, f x • g x‖ ≤ f a * ‖∫ x in a..ξ, g x‖ := by
+  -- Reduce to the scalar-valued theorem by applying a linear functional witnessing the norm
   have hfa := hf.trans (hf_mon.mapsTo_Icc ⟨le_rfl, hab⟩).1
   obtain ⟨L, hL_norm, hLI⟩ := exists_dual_vector'' ℝ (∫ x in a..b, f x • g x)
   obtain ⟨ξ, hξ, hξ_eq⟩ :=
