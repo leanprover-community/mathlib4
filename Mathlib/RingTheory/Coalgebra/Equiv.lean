@@ -246,6 +246,9 @@ theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm :=
 
 variable {e₁₂ : A ≃ₗc[R] B} {e₂₃ : B ≃ₗc[R] C}
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Coalgebra equivalences are transitive. -/
 @[trans, simps!]
 def trans (e₁₂ : A ≃ₗc[R] B) (e₂₃ : B ≃ₗc[R] C) : A ≃ₗc[R] C :=
