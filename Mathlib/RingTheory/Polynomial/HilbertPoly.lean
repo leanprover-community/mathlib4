@@ -78,7 +78,7 @@ lemma coeff_preHilbertPoly_self [CharZero F] (d k : ℕ) :
   nth_rw 3 [heq]
   calc
   _ = (d ! : F)⁻¹ • ((ascPochhammer F d).comp (X - C ((k : F) - 1))).leadingCoeff := by
-    simp only [sub_add, ← C_1, ← map_sub, coeff_smul, coeff_natDegree]
+    simp only [sub_add, ← C_1, ← map_sub, AddMonoidAlgebra.coeff_smul_apply, coeff_natDegree]
   _ = (d ! : F)⁻¹ := by
     simp only [leadingCoeff_comp (ne_of_eq_of_ne (natDegree_X_sub_C _) one_ne_zero), Monic.def.1
       (monic_ascPochhammer _ _), leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
@@ -266,10 +266,10 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     apply le_trans (natDegree_smul_le _ _)
     rw [natDegree_preHilbertPoly]
   · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp only [one_pow, mul_one]
-    simp only [finsetSum_coeff, coeff_smul, smul_eq_mul, coeff_preHilbertPoly_self,
-      ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum, eval_mul, eval_pow,
-      eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq,
-      false_and, or_false, inv_eq_zero, cast_eq_zero, not_or]
+    simp only [finsetSum_coeff, AddMonoidAlgebra.coeff_smul_apply, smul_eq_mul,
+      coeff_preHilbertPoly_self, ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum,
+      eval_mul, eval_pow, eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero,
+      one_ne_zero, ne_eq, false_and, or_false, inv_eq_zero, cast_eq_zero, not_or]
     exact ⟨(not_iff_not.2 dvd_iff_isRoot).1 hq2, factorial_ne_zero _⟩
 
 theorem natDegree_hilbertPoly_of_ne_zero

@@ -23,7 +23,7 @@ coefficients of `f` and `g` do not multiply to zero.
 
 namespace Polynomial
 
-open Finsupp Finset
+open AddMonoidAlgebra Finsupp Finset
 
 open scoped Polynomial
 
@@ -86,19 +86,20 @@ In practice, `reflect` is only used when `N` is at least as large as the degree 
 
 Eventually, it will be used with `N` exactly equal to the degree of `f`. -/
 noncomputable def reflect (N : ℕ) : R[X] → R[X]
-  | ⟨f⟩ => ⟨.ofCoeff <| f.coeff.embDomain (revAt N)⟩
+  | ⟨f⟩ => .ofCoeff <| f.embDomain (revAt N)
 
 theorem reflect_support (N : ℕ) (f : R[X]) :
-    (reflect N f).support = Finset.image (revAt N) f.support := by cases f; ext1; simp [reflect]
+    (reflect N f).support = Finset.image (revAt N) f.support := by
+  cases f; ext1; simp [reflect, support]
 
 @[simp, grind =]
 theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f.coeff (revAt N i) := by
   rcases f with ⟨f⟩
-  simp only [reflect, coeff]
+  simp only [reflect]
   calc
-    f.coeff.embDomain (revAt N) i
-      = f.coeff.embDomain (revAt N) (revAt N (revAt N i)) := by rw [revAt_invol]
-    _ = f.coeff (revAt N i) := Finsupp.embDomain_apply_self _ _ _
+    f.embDomain (revAt N) i
+      = f.embDomain (revAt N) (revAt N (revAt N i)) := by rw [revAt_invol]
+    _ = f (revAt N i) := Finsupp.embDomain_apply_self _ _ _
 
 @[simp] lemma reflect_reflect {N : ℕ} {p : R[X]} : (p.reflect N).reflect N = p := by ext; simp
 
