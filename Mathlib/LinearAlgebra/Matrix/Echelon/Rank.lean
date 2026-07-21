@@ -68,11 +68,11 @@ theorem IsPivot.rank_eq [CommRing R] [IsDomain R] [StrongRankCondition R]
     {A : Matrix (Fin m) (Fin n) R} {l : List (Fin n)} (h : A.IsPivot l) :
     A.rank = l.length := by
   refine le_antisymm ?_ ?_
-  · let S : Matrix (Fin m) (Fin l.length) R :=
+  · let B : Matrix (Fin m) (Fin l.length) R :=
       Matrix.of fun i a => if (a : ℕ) = (i : ℕ) then (1 : R) else 0
-    have hS : S * A.submatrix (Fin.castLE h.length_le) id = A := by
+    have hB : B * A.submatrix (Fin.castLE h.length_le) id = A := by
       ext i j
-      simp only [S, mul_apply, of_apply, submatrix_apply, id_eq]
+      simp only [B, mul_apply, of_apply, submatrix_apply, id_eq]
       rcases lt_or_ge (i : ℕ) l.length with hi | hi
       · rw [Fintype.sum_eq_single (⟨(i : ℕ), hi⟩ : Fin l.length)
           fun b hb => by rw [if_neg fun he => hb (Fin.ext he), zero_mul],
@@ -80,7 +80,7 @@ theorem IsPivot.rank_eq [CommRing R] [IsDomain R] [StrongRankCondition R]
       · rw [congrFun (h.row_eq_zero_of_length_le i hi) j]
         refine Finset.sum_eq_zero fun a _ => ?_
         rw [if_neg (a.2.trans_le hi).ne, zero_mul]
-    calc A.rank = (S * A.submatrix (Fin.castLE h.length_le) id).rank := by rw [hS]
+    calc A.rank = (B * A.submatrix (Fin.castLE h.length_le) id).rank := by rw [hB]
       _ ≤ (A.submatrix (Fin.castLE h.length_le) id).rank := rank_mul_le_right _ _
       _ ≤ Fintype.card (Fin l.length) := rank_le_card_height _
       _ = l.length := Fintype.card_fin _
