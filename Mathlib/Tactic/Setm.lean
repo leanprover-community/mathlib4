@@ -124,15 +124,21 @@ elab_rules : tactic
       if let some loc := loc then
         -- TODO: more robust implementation with `kabstract` and `withReverted`
         -- Write as reusable API
-        for (name, fvar) in holes do
+        for fvar in holes.values do
           let some expr ← fvar.getValue? | continue
-          let eq ← `(show $(← Term.exprToSyntax expr) = $(mkIdent name) from rfl)
-          withLocation (expandLocation loc)
-            -- Want to ignore rewrites that failed due to no occurrences,
-            -- but this also ignores motive-is-not-type-correct errors that we could avoid
-            -- with a different implementation.
-            (discard <| tryTactic <| rewriteLocalDecl eq (symm := false) ·)
-            (discard <| tryTactic <| rewriteTarget eq (symm := false))
+          let rewrite (loc : Option FVarId) :=
+            liftMetaTactic fun goal ↦ do
+              let tgt ← loc.elim goal.getType (·.getType)
+              let tgt ← kabstract (← instantiateMVars tgt) (← instantiateMVars expr)
+              if tgt.hasLooseBVars then
+                let tgt := tgt.instantiate1 (.fvar fvar)
+                if let some loc := loc then
+                  return [← goal.changeLocalDecl loc tgt (checkDefEq := false)]
+                else
+                  return [← goal.replaceTargetDefEq tgt]
+              else
+                return [goal]
+          withLocation (expandLocation loc) (rewrite ∘ .some) (rewrite none)
             (fun goal ↦ throwTacticEx `setm goal "Rewriting failed")
       let unassignedMVars ← (newMVars ++ newPatMVars).filterM (notM ·.isAssigned)
       if ← logUnassignedUsingErrorInfos unassignedMVars then

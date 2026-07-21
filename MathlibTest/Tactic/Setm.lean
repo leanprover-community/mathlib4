@@ -134,7 +134,15 @@ example (h : AOrB) : 1 + 2 = 3 := by
 
 /- Test for `.synthetic` metavariables created during elaboration of the pattern that should be
 synthesized "later". Here it is the hypothesis `h` that `i < l.length`. -/
-
 example {i : Nat} {l : List Nat} (h) : l[i] = l[i] := by
   setm l[i] = _
+  trivial
+
+/- The `at` syntax also supports places that `rw` would fail due to `motive is not type correct`.
+  -/
+example {i : Nat} {l : List Nat} (h) (heq : i = 2) : l[i] = l[i] := by
+  setm ?j = 2 using heq at ⊢
+  guard_hyp j :=ₛ i
+  guard_hyp heq :ₛ j = 2
+  guard_target =ₛ l[j] = l[j]
   trivial
