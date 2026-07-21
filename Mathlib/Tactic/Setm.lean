@@ -38,8 +38,8 @@ structure SetMReplaceState where
   goal : MVarId
   /-- Newly created local declaration names for synthetic holes and their fvars. -/
   holes : NameMap FVarId := {}
-  /-- New metavariables created for the values of new free variables. We ensure all of these are assigned
-  by the end of `setm`, or else log an error. -/
+  /-- New metavariables created for the values of new free variables. We ensure all of these are
+    assigned by the end of `setm`, or else log an error. -/
   newMVars : Array MVarId := #[]
 
 abbrev SetMReplaceM := StateT SetMReplaceState TermElabM
@@ -87,7 +87,7 @@ def replaceWithLDecls (stx : Syntax) : SetMReplaceM Syntax :=
 syntax (name := setM) "setm " term (" using " ident)? (Parser.Tactic.location)? : tactic
 
 def defeqOrError (goal : MVarId) (p e : Expr) : MetaM Unit :=
-  unless ← withReducible <| isDefEq p e do
+  unless ← withReducible <| withAssignableSyntheticOpaque <| isDefEq p e do
     throwTacticEx `setm goal <| MessageData.ofLazyM (es := #[p, e]) do
       let (p, tgt) ← addPPExplicitToExposeDiff p e
       return m!"Pattern{indentExpr p}\nis not definitionally equal \

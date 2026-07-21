@@ -204,7 +204,7 @@ example (h : AOrB) : 1 + 2 = 3 := by
 /- Test for `.synthetic` metavariables created during elaboration of the pattern that should be
 synthesized "later". Here it is the hypothesis `h` that `i < l.length`. -/
 example {i : Nat} {l : List Nat} (h) : l[i] = l[i] := by
-  setm l[i] = _
+  setm l[?j] = _
   trivial
 
 /- The `at` syntax also supports places that `rw` would fail due to `motive is not type correct`.
@@ -236,3 +236,19 @@ example (h : 1 + 1 = 2) : 1 + 1 = 2 := by
   guard_hyp h :ₛ a + a = 2
   guard_target =ₛ b + a = 2
   exact h
+
+/- The setm tactic should unify as much as possible with the target expression even if some
+arguments elaborate as `.opaque` metavariables. -/
+/--
+warning: 'setm l[i] = l[i]' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example {i : Nat} {l : List Nat} (h) : l[i] = l[i] := by
+  setm l[i] = l[i]
+  rfl
+
+/- This test fails, and may be considered a bug. -/
+example (x : True) (k : True → Type) : k x := by
+  setm k ?a
