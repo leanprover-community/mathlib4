@@ -5,6 +5,7 @@ Authors: Hang Lu Su, Valerio Proietti
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.GroupTheory.FinitelyPresentedGroup
 
 /-!
@@ -20,6 +21,7 @@ of generators and relations.
 
 * `Group.Generators G α`: a family `val : α → G`, indexed by `α`, whose range generates `G`.
 * `Group.Presentation G α ρ`: a presentation `⟨α | rel⟩` of `G`, extending `Group.Generators G α`
+* `Group.Presentation.symmRelSet`: the relators of `P` together with their inverses.
 
 ## Main results
 
@@ -33,6 +35,9 @@ of generators and relations.
 
 * Finiteness is expressed by instance arguments rather than bundled fields: a generating family is
   finite when `[Finite α]`, a presentation when `[Finite α] [Finite ρ]`.
+* `Group.Presentation.symmRelSet` symmetrises the relators, and both signs are genuinely needed:
+  the conjugates of `relSet` alone generate only a submonoid of `FreeGroup α`, whereas the kernel
+  `Subgroup.normalClosure P.relSet` that they must exhaust is a subgroup.
 * This file is multiplicative only: `PresentedGroup` has no additive counterpart and there is no
 `to_additive`-generated `AddGroup.Presentation` so far.
 
@@ -46,6 +51,8 @@ group presentation, generators and relations
 -/
 
 @[expose] public section
+
+open scoped Pointwise
 
 variable {G α ρ : Type*} [Group G]
 
@@ -152,6 +159,39 @@ lemma lift_eq_one_of_mem_relSet {r : FreeGroup α} (hr : r ∈ P.relSet) : P.lif
 
 theorem lift_rel (r : ρ) : P.lift (P.rel r) = 1 :=
   P.lift_eq_one_of_mem_relSet (P.rel_mem_relSet r)
+
+/-- The symmetric relator set is the set of relators of `P` together with their inverses. -/
+def symmRelSet : Set (FreeGroup α) := P.relSet ∪ P.relSet⁻¹
+
+lemma relSet_subset_symmRelSet : P.relSet ⊆ P.symmRelSet := Set.subset_union_left
+
+/-- The symmetric relator set is closed under inversion. -/
+lemma inv_mem_symmRelSet {x : FreeGroup α} (hx : x ∈ P.symmRelSet) : x⁻¹ ∈ P.symmRelSet := by
+  simp only [symmRelSet, Set.mem_union, Set.mem_inv, inv_inv] at hx ⊢
+  tauto
+
+/-- The conjugates of relators and inverse relators are closed under inversion. -/
+lemma inv_mem_conjugatesOfSet_symmRelSet {x : FreeGroup α}
+    (hx : x ∈ Group.conjugatesOfSet P.symmRelSet) :
+    x⁻¹ ∈ Group.conjugatesOfSet P.symmRelSet := by
+  rw [Group.mem_conjugatesOfSet_iff] at hx ⊢
+  obtain ⟨r, hr, hconj⟩ := hx
+  obtain ⟨c, rfl⟩ := isConj_iff.mp hconj
+  exact ⟨r⁻¹, P.inv_mem_symmRelSet hr, isConj_iff.mpr ⟨c, by group⟩⟩
+
+/-- Every relator and every inverse relator evaluates to the identity in `G`. -/
+lemma lift_eq_one_of_mem_symmRelSet {x : FreeGroup α} (hx : x ∈ P.symmRelSet) : P.lift x = 1 := by
+  rcases hx with h | h
+  · exact P.lift_eq_one_of_mem_relSet h
+  · simpa using P.lift_eq_one_of_mem_relSet (Set.mem_inv.mp h)
+
+/-- Every conjugate of a relator or of an inverse relator evaluates to the identity in `G`. -/
+lemma lift_eq_one_of_mem_conjugatesOfSet_symmRelSet {x : FreeGroup α}
+    (hx : x ∈ Group.conjugatesOfSet P.symmRelSet) : P.lift x = 1 := by
+  rw [Group.mem_conjugatesOfSet_iff] at hx
+  obtain ⟨r, hr, hconj⟩ := hx
+  obtain ⟨c, rfl⟩ := isConj_iff.mp hconj
+  simp [P.lift_eq_one_of_mem_symmRelSet hr]
 
 /-- The `G` with presentation `P` is isomorphic to the `PresentedGroup` given by `P.relSet`. -/
 noncomputable def presentedGroupEquiv : PresentedGroup P.relSet ≃* G :=
