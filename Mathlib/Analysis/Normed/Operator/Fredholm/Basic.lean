@@ -55,7 +55,7 @@ in order to conveniently use the full strength of Fredholmness.
 
 ## Main statements
 
-### Equivalent criterions
+### Equivalent criteria
 
 * `ContinuousLinearMap.isFredholm_tfae`: the equivalence between conditions 1, 2, 3 and 4 above.
   In practice, most of the interesting directions should be covered by specific API lemmas.
@@ -81,7 +81,7 @@ Here are some notable changes :
   from the finiteness assumption if Hahn-Banach is available), we generalize the beginning of the
   theory to topological vector spaces over any complete nontrivially normed field. In particular,
   our theory naturally captures p-adic Fredholm operators.
-* Bourbaki choses the existence of a continuous quasi-inverse as the definition of being Fredholm.
+* Bourbaki chooses the existence of a continuous quasi-inverse as the definition of being Fredholm.
   Our choice differs for a very practical reason: it is much simpler to spell out formally
   "`u` has a continuous quasi-inverse" than "`u` is strict, its range is closed and has finite
   codimension, and its kernel is complemented and has finite dimension". Hence we prefer to give
@@ -229,7 +229,7 @@ section TFAE
 end TFAE
 
 variable [T2Space E] [T2Space F] in
-/-- Assume that `u : E →L[𝕜] F` has a continuous quasi-invers. Then there are closed
+/-- Assume that `u : E →L[𝕜] F` has a continuous quasi-inverse. Then there are closed
 subspaces of finite codimensions `E₁` and `F₁` between which `u` induces an isomorphism.
 
 This statement is private because it is superseded by later results: using `isFredholm_tfae`,
@@ -335,7 +335,7 @@ variable [T2Space E] [T2Space F]
 
 /--
 Let `E`, `F` be two Hausdorff topological vector spaces over a complete `NontriviallyNormedField`
-denoted `𝕜`, and `u : E →L[𝕜] F` a continuous linear map. The followng conditions are equivalent:
+denoted `𝕜`, and `u : E →L[𝕜] F` a continuous linear map. The following conditions are equivalent:
 
 1. `T` is a **Fredholm operator**, in the sense of `ContinuousLinearMap.IsFredholm`.
 2. `T` admits a continuous **quasi-inverse**, in the sense of `LinearMap.IsQuasiInverse`.
