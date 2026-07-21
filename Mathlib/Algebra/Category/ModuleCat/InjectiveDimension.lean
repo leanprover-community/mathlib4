@@ -27,11 +27,7 @@ open CategoryTheory Abelian
 
 namespace ModuleCat
 
-section
-
-variable [Small.{v} R] {R' : Type u'} [CommRing R'] (e : R ≃+* R')
-
-lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux
+lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux [Small.{v} R]
     {M : ModuleCat.{v} R} {N : ModuleCat.{max v v'} R}
     (e : M ≃ₗ[R] N) (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
   have : Small.{max v v'} R := small_lift R
@@ -59,6 +55,10 @@ lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux
     have := exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance
     apply (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
       ((ih e).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
+
+section SemiLinear
+
+variable [Small.{v} R] {R' : Type u'} [CommRing R'] (e : R ≃+* R')
 
 set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
@@ -136,16 +136,12 @@ lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v'} R']
       simp only [injectiveDimension_le_iff]
       exact hasInjectiveDimensionLE_iff_of_semiLinearEquiv e e' n
 
-end
-
-section
+end SemiLinear
 
 variable [Small.{v} R] [Small.{v'} R] {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
 
 lemma injectiveDimension_eq_of_linearEquiv (e : M ≃ₗ[R] N) :
     injectiveDimension M = injectiveDimension N :=
   injectiveDimension_eq_of_semiLinearEquiv.{v, v'} (M := M) (N := N) (RingEquiv.refl R) e
-
-end
 
 end ModuleCat
