@@ -70,8 +70,8 @@ variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [Nontri
   [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} {f : E →ₛₗ[σ] F}
 
 variable (𝕜₁) in
-/-- Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two topologies
-on `E` which are compatible with the vector space structure.
+/-- Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two
+vector space topologies on `E`.
 
 Assume that there is a `t₁`-neighborhood of zero `V` such that the two topogies induce the
 same filter of neighborhoods of `0` *in the subspace `V`*. Then `t₁ = t₂`. -/
@@ -103,29 +103,28 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   obtain ⟨W, ⟨W_mem_𝓕₂, W_bal⟩, hW⟩ := basis_𝓕₂.inf_principal V |>.mem_iff.mp cV_mem
   -- We claim that `W ⊆ V`. This will conclude the proof, since `W ∈ 𝓕₂`.
   suffices W ⊆ V from mem_of_superset W_mem_𝓕₂ this
-  -- By contradiction, assume that we have a point `w ∈ W \ V`
+  -- Let `w ∈ W` be arbitrary.
   intro w w_in_W
-  by_contra! w_notin_V
-  -- Now, because `V` is absorbent, there exists a natural `k` such that `c ^ k • w ∈ V`.
-  have exists_scale : ∃ k : ℕ, c ^ k • w ∈ V := by
+  -- Because `V` is a `t₁`-neighborhood of `0`, we have `c ^ n • w ∈ V` for some natural number `n`.
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, c ^ n • w ∈ V := by
     let := t₁
     have : Tendsto (fun k : ℕ ↦ c ^ k • w) atTop (𝓝 0) :=
       zero_smul 𝕜₁ w ▸ (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁).smul_const w
     exact this.eventually_mem V_mem |>.exists
-  -- Denote by `k₀` the *smallest* such `k`.
-  set k₀ := Nat.find exists_scale
-  have k₀_spec : c ^ k₀ • w ∈ V := Nat.find_spec exists_scale
-  -- Note that `1 ≤ k₀` since `w ∉ V`
-  have k₀_pos : 0 < k₀ := pos_iff_ne_zero.mpr fun h ↦ by simp [h, w_notin_V] at k₀_spec
-  -- By definition, `c ^ k₀ • w ∈ V`, and because `W` is balanced `c ^ k₀ • w ∈ W`.
-  -- Thus, `c ^ k₀ • w ∈ V ∩ W ⊆ c • V`.
-  have : c ^ k₀ • w ∈ c • V :=
-    hW ⟨W_bal.smul_mem (by simpa using pow_le_one₀ hc₀.le hc₁.le) w_in_W, k₀_spec⟩
-  -- But then, we have `c ^ (k₀ - 1) • w ∈ V`.
-  have : c ^ (k₀ - 1) • w ∈ V := by
-    rwa [pow_sub₀ c c_ne k₀_pos, pow_one, mul_comm, mul_smul, ← mem_smul_set_iff_inv_smul_mem₀ c_ne]
-  -- This contradicts the minimality of `k₀`.
-  exact Nat.find_min exists_scale (tsub_lt_self k₀_pos one_pos) this
+  -- Observe that the inclusion `W ∩ V ⊆ c • V` has the following consequence:
+  -- for any `x ∈ W`, if `c • x ∈ V`, then because `W` is balanced
+  -- we have `c • x ∈ W ∩ V ⊆ c • V`, hence in fact `x ∈ V`.
+  replace key : ∀ x ∈ W, c • x ∈ V → x ∈ V := fun x x_in_W cx_in_V ↦
+    smul_mem_smul_set_iff₀ c_ne V x |>.mp <| hW ⟨W_bal.smul_mem hc₁.le x_in_W, cx_in_V⟩
+  -- Using this observation repeatedly on `c ^ n • w ∈ W`, which is legal because `c ^ k • w ∈ W`
+  -- for every `k : ℕ`, we obtain that in fact `c ^ 0 • w ∈ V`.
+  have : c ^ 0 • w ∈ V := by
+    apply Nat.decreasingInduction (motive := fun (k : ℕ) _ ↦ c^k • w ∈ V) ?_ hn n.zero_le
+    intro k _
+    rw [pow_add, pow_one, mul_comm, mul_smul]
+    exact key _ <| W_bal.smul_mem (by grw [norm_pow, hc₁.le, one_pow]) w_in_W
+  -- Hence `w ∈ V` as we claimed.
+  simpa using this
 
 variable (𝕜₁) in
 /-- Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two topologies
