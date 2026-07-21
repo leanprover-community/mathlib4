@@ -10,8 +10,6 @@ public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Sublists
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
-import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
-
 /-!
 # The maximal reduction of a word in a free group
 

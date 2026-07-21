@@ -64,14 +64,6 @@ theorem isAddCyclic_additive_iff [DivInvMonoid α] : IsAddCyclic (Additive α) �
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance
 
-@[to_additive]
-instance IsCyclic.isMulCommutative [Group α] [IsCyclic α] : IsMulCommutative α where
-  is_comm.comm x y :=
-    let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
-    let ⟨_, hx⟩ := hg x
-    let ⟨_, hy⟩ := hg y
-    hy ▸ hx ▸ zpow_mul_comm ..
-
 @[deprecated (since := "2026-04-09")]
 alias IsAddCyclic.commutative := IsAddCyclic.isAddCommutative
 @[to_additive existing, deprecated (since := "2026-04-09")]
