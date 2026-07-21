@@ -52,16 +52,16 @@ lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux [Small.{v} R]
       f'.exact_map_mkQ_range injf' (Submodule.mkQ_surjective _)
     let eCoker : ModuleCat.of R (I ⧸ f.hom.range) ≃ₗ[R] ModuleCat.of R (I' ⧸ f'.range) :=
       Submodule.Quotient.equiv _ _ ULift.moduleEquiv.symm (by simp [f', LinearMap.range_comp])
-    have := exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance
-    apply (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
+    exact (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
       ((ih eCoker).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
 
 section SemiLinear
 
 variable [Small.{v} R] {R' : Type u'} [CommRing R'] (eR : R ≃+* R')
 
+attribute [local instance] RingHomInvPair.of_ringEquiv
+
 set_option backward.isDefEq.respectTransparency.types false in
-attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N)
     (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
@@ -108,7 +108,7 @@ lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
       ((ih eCoker).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
 
 set_option backward.isDefEq.respectTransparency.types false in
-attribute [local instance] RingHomInvPair.of_ringEquiv in
+attribute [local instance] small_lift in
 lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N)
     (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
@@ -116,11 +116,8 @@ lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv [Small.{v'} R']
   let eN : N ≃ₗ[R'] ModuleCat.of R' (ULift.{v} N) := ULift.moduleEquiv.symm
   rw [hasInjectiveDimensionLE_iff_of_linearEquiv_aux eM,
     hasInjectiveDimensionLE_iff_of_linearEquiv_aux eN]
-  have : Small.{max v v'} R := small_lift R
-  have : Small.{max v v'} R' := small_lift R'
   exact hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux eR ((eM.symm.trans e).trans eN) n
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N) :
     injectiveDimension M = injectiveDimension N := by
@@ -132,9 +129,7 @@ lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v'} R']
     induction n with
     | top => simp
     | coe n =>
-      norm_cast
-      simp only [injectiveDimension_le_iff]
-      exact hasInjectiveDimensionLE_iff_of_semiLinearEquiv eR e n
+      simp [injectiveDimension_le_iff, hasInjectiveDimensionLE_iff_of_semiLinearEquiv eR e n]
 
 end SemiLinear
 
