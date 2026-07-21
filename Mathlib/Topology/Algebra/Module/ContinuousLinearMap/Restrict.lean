@@ -101,7 +101,7 @@ theorem toLinearMap_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R
   rfl
 
 lemma coe_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
-    ⇑(f.domRestrict p) = Set.restrict p f :=
+    ⇑(f.domRestrict p) = Set.domRestrict p f :=
   rfl
 
 /-- Restrict codomain of a continuous linear map. -/
