@@ -829,11 +829,13 @@ def S : SL(2, ℤ) :=
 def T : SL(2, ℤ) :=
   ⟨!![1, 1; 0, 1], by simp [Matrix.det_fin_two_of]⟩
 
+@[simp]
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
 
 lemma S_inv : S⁻¹ = -S := by decide
 
+@[simp]
 theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl
 

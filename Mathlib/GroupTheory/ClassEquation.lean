@@ -67,7 +67,7 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
   rw [Finset.card_eq_sum_ones]
   refine Finset.sum_congr rfl ?_
   rintro ⟨g⟩ hg
-  simp only [noncenter, Set.toFinset_setOf, Finset.mem_univ, true_and,
+  simp only [noncenter, Set.toFinset_ofPred, Finset.mem_univ, true_and,
              Finset.mem_sdiff, Finset.mem_filter, Set.not_nontrivial_iff] at hg
   rw [eq_comm, ← Set.toFinset_card, Finset.card_eq_one]
   exact ⟨g, Finset.coe_injective <| by simpa using hg.eq_singleton_of_mem mem_carrier_mk⟩
