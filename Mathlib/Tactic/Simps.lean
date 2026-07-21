@@ -98,6 +98,22 @@ initialize_simps_projections MonadFunctorT
 initialize_simps_projections MonadExceptOf
 initialize_simps_projections MonadExcept
 
+initialize_simps_projections Prod
+initialize_simps_projections PProd
+initialize_simps_projections MProd
+initialize_simps_projections Subtype
+initialize_simps_projections PLift
+initialize_simps_projections ULift
+initialize_simps_projections PULift
+initialize_simps_projections Fin
+initialize_simps_projections BitVec
+initialize_simps_projections UInt8
+initialize_simps_projections UInt16
+initialize_simps_projections UInt32
+initialize_simps_projections UInt64
+initialize_simps_projections USize
+initialize_simps_projections Char
+
 initialize_simps_projections HasEquiv
 initialize_simps_projections HasSubset
 initialize_simps_projections HasSSubset
@@ -109,3 +125,7 @@ initialize_simps_projections Insert
 initialize_simps_projections Singleton
 initialize_simps_projections Sep
 initialize_simps_projections Setoid
+
+initialize_simps_projections Thunk
+initialize_simps_projections Sigma
+initialize_simps_projections PSigma
