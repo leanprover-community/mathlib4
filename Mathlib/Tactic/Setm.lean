@@ -38,7 +38,7 @@ structure SetMReplaceState where
   goal : MVarId
   /-- Newly created local declaration names for synthetic holes and their fvars. -/
   holes : NameMap FVarId := {}
-  /-- New metavariables created for the values of new free variables. We ensure all of these are assigned 
+  /-- New metavariables created for the values of new free variables. We ensure all of these are assigned
   by the end of `setm`, or else log an error. -/
   newMVars : Array MVarId := #[]
 
