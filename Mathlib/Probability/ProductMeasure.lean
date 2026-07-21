@@ -414,11 +414,11 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
 theorem infinitePi_map_restrict' {I : Set ι} :
-    (infinitePi μ).map I.restrict = infinitePi fun i : I ↦ μ i := by
+    (infinitePi μ).map I.domRestrict = infinitePi fun i : I ↦ μ i := by
   apply eq_infinitePi
   intro s t ht
   classical
-  rw [map_apply (by fun_prop), restrict_preimage, infinitePi_pi _ (by measurability)]
+  rw [map_apply (by fun_prop), domRestrict_preimage, infinitePi_pi _ (by measurability)]
   · simp
   · exact .pi s.countable_toSet (by measurability)
 
@@ -432,7 +432,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
   · conv in ∏ _ ∈ _, _ =>
       rw [← infinitePi_pi _ (by measurability), ← infinitePi_map_restrict', map_apply
         (by fun_prop) (by apply MeasurableSet.pi (countable_toSet _) (by measurability)),
-        restrict_preimage]
+        domRestrict_preimage]
       simp only [coe_image, dite_eq_ite]
     have : s.pi t
       = ⋂ s' : Finset s,
