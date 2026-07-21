@@ -40,7 +40,7 @@ the following four equivalent conditions:
   dimensional.
 * `ContinuousLinearMap.FredholmPackage`: a **Fredholm package** for `u : E →L[𝕜] F` is the data of
   Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
-  a continuous linear equivalence `equiv : decDom.X₁ ≃ₗ[𝕜] decCodom.X₁` between the "essential"
+  a continuous linear equivalence `equiv : decDom.X₁ ≃L[𝕜] decCodom.X₁` between the "essential"
   (i.e. finite codimension) parts of these decompositions, such that `u` equals the composition
   `decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj`.
 
@@ -162,7 +162,7 @@ abbrev _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
 
 /-- Let `u : E →L[𝕜] F` be a continuous linear map. A **Fredholm package** for `u` is the data of
 Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
-a continuous linear equivalence `equiv : decDom.X₁ ≃ₗ[𝕜] decCodom.X₁` between the "essential"
+a continuous linear equivalence `equiv : decDom.X₁ ≃L[𝕜] decCodom.X₁` between the "essential"
 (i.e. finite codimension) parts of these decompositions, such that `u` equals the composition
 `decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj`. In other words, in these
 "essential ⊕ inessential" decompositions, the matrix of `u` is
