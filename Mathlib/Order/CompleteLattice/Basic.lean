@@ -292,7 +292,13 @@ theorem iSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
 @[to_dual iInf₂_eq_iInf_diagonal]
 theorem iSup₂_eq_iSup_diagonal {α : Type*} {ι : Sort*} [CompleteLattice α]
     (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
-    (⨆ i, ⨆ j, f i j) = ⨆ k, f k k
+    (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
+  apply le_antisymm
+  · refine iSup_le fun i ↦ iSup_le fun j ↦ ?_
+    obtain ⟨k, hk⟩ := h i j
+    exact hk.trans (le_iSup_of_le k (le_iSup_of_le k le_rfl))
+  · exact iSup_le fun k ↦
+      le_iSup_of_le k (le_iSup_of_le k le_rfl)
 
 @[to_dual none]
 theorem iSup_iInf_le_iInf_iSup (f : ι → ι' → α) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
