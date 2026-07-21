@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.Padics.WithVal
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
@@ -34,14 +35,12 @@ v.adicCompletion ℚ  <--------------->   ℚ_[p]
 ```
 
 ## Main definitions
-- `Rat.HeightOneSpectrum.primesEquiv` : the equivalence between height-one prime ideals of
-  `R` and prime numbers in `ℕ`.
 - `Rat.HeightOneSpectrum.padicEquiv v` : the continuous `ℚ`-algebra isomorphism
   `v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v]`.
 - `Padic.adicCompletionEquiv p` : the continuous `ℚ`-algebra isomorphism
   `ℚ_[p] ≃A[ℚ] (primesEquiv.symm p).adicCompletion ℚ`.
 - `Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv v` : the continuous `ℤ`-algebra
-  isomorphism `v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[natGenerator v]`.
+  isomorphism `v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v]`.
 - `PadicInt.adicCompletionIntegersEquiv p` : the continuous `ℤ`-algebra isomorphism
   `ℤ_[p] ≃A[ℤ] (primesEquiv.symm p).adicCompletionIntegers ℚ`.
 
@@ -53,17 +52,20 @@ equivalent. It is best to do this after `Valued` has been refactored, or at leas
 
 @[expose] public section
 
-open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
+open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum UniformSpace.Completion NumberField
+open PadicInt
 
 local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
 
 variable (R : Type*) [CommRing R] [Algebra R ℚ]
 
+@[deprecated RingHom.injective_int (since := "2026-07-20")]
 theorem Rat.int_algebraMap_injective : Function.Injective (algebraMap ℤ R) :=
   .of_comp (IsScalarTower.algebraMap_eq ℤ R ℚ ▸ RingHom.injective_int (algebraMap ℤ ℚ))
 
 variable [IsIntegralClosure R ℤ ℚ]
 
+@[deprecated "Use `(IsIntegralClosure.equiv ℤ R ℚ ℤ).surjective`." (since := "2026-07-20")]
 theorem Rat.int_algebraMap_surjective [IsFractionRing R ℚ] :
     Function.Surjective (algebraMap ℤ R) := by
   intro x
@@ -73,10 +75,11 @@ theorem Rat.int_algebraMap_surjective [IsFractionRing R ℚ] :
 
 /-- If `R` has field of fractions `ℚ` and is the integral closure of `ℤ` in `ℚ` then it is
 isomorphic to `ℤ`. -/
+@[deprecated IsIntegralClosure.equiv (since := "2026-07-20")]
 noncomputable def Rat.IsIntegralClosure.intEquiv : R ≃+* ℤ :=
   (NumberField.RingOfIntegers.equiv R).symm.trans ringOfIntegersEquiv
 
-@[simp]
+@[deprecated "No replacement." (since := "2026-07-20")]
 theorem Rat.IsIntegralClosure.intEquiv_apply_eq_ringOfIntegersEquiv (x : 𝓞 ℚ) :
     intEquiv (𝓞 ℚ) x = ringOfIntegersEquiv x := by
   simp [intEquiv, RingOfIntegers.equiv, IsIntegralClosure.equiv, IsIntegralClosure.lift,
@@ -88,54 +91,44 @@ variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsIntegralClosure R ℤ ℚ]
 
 /-- If `v : HeightOneSpectrum R` then `natGenerator v` is the generator in `ℕ` of the corresponding
 ideal in `ℤ`. -/
+@[deprecated "No replacement." (since := "2026-07-20")]
 noncomputable def natGenerator (v : HeightOneSpectrum R) : ℕ :=
-  Submodule.IsPrincipal.generator (v.asIdeal.map <| IsIntegralClosure.intEquiv R) |>.natAbs
+  Submodule.IsPrincipal.generator
+    (v.asIdeal.map (IsIntegralClosure.equiv ℤ R ℚ ℤ).toRingEquiv) |>.natAbs
 
+@[deprecated "No replacement." (since := "2026-07-20")]
 theorem span_natGenerator (v : HeightOneSpectrum R) :
-    Ideal.span {(natGenerator v : ℤ)} = v.asIdeal.map (IsIntegralClosure.intEquiv R) := by
+    Ideal.span {(natGenerator v : ℤ)} =
+      v.asIdeal.map (IsIntegralClosure.equiv ℤ R ℚ ℤ).toRingEquiv := by
   simp [natGenerator]
 
+@[deprecated "No replacement." (since := "2026-07-20")]
 theorem natGenerator_dvd_iff (v : HeightOneSpectrum R) {n : ℕ} :
-    natGenerator v ∣ n ↔ ↑n ∈ v.asIdeal.map (IsIntegralClosure.intEquiv R) := by
+    natGenerator v ∣ n ↔ ↑n ∈ v.asIdeal.map (IsIntegralClosure.equiv ℤ R ℚ ℤ).toRingEquiv := by
   rw [← span_natGenerator, Ideal.mem_span_singleton]
   exact Int.ofNat_dvd.symm
 
+@[deprecated "No replacement." (since := "2026-07-20")]
 theorem prime_natGenerator (v : HeightOneSpectrum R) : Nat.Prime (natGenerator v) :=
   Int.prime_iff_natAbs_prime.1 <| Submodule.IsPrincipal.prime_generator_of_isPrime _
-    ((Ideal.map_eq_bot_iff_of_injective (IsIntegralClosure.intEquiv R).injective).not.2 v.ne_bot)
+    ((Ideal.map_eq_bot_iff_of_injective
+      (IsIntegralClosure.equiv ℤ R ℚ ℤ).toRingEquiv.injective).not.2 v.ne_bot)
 
 variable [IsDedekindDomain R] [IsFractionRing R ℚ]
 
-/-- The equivalence between height-one prime ideals of `R` and primes in `ℕ`. -/
-noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
-  toFun v := ⟨natGenerator v, prime_natGenerator v⟩
-  invFun p :=
-    have h : Prime ((Ideal.span {(p.1 : ℤ)}).map (IsIntegralClosure.intEquiv R).symm) :=
-      Ideal.map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.2]) (by simp [p.2.ne_zero])
-    .ofPrime h
-  left_inv v := by
-    simp only [Ideal.map_symm]
-    congr
-    rw [← v.asIdeal.comap_map_of_bijective _ (IsIntegralClosure.intEquiv R).bijective,
-      ← span_natGenerator]
-  right_inv p := by
-    simp only [Ideal.map_symm, natGenerator, HeightOneSpectrum.ofPrime_asIdeal]
-    congr
-    simp [Ideal.map_comap_of_surjective _ (IsIntegralClosure.intEquiv R).surjective,
-      Int.associated_iff_natAbs.1 (Submodule.IsPrincipal.associated_generator_span_self _)]
-
-set_option backward.isDefEq.respectTransparency.types false in
 theorem valuation_equiv_padicValuation (v : HeightOneSpectrum R) :
     (v.valuation ℚ).IsEquiv (padicValuation (primesEquiv v)) := by
-  simp [primesEquiv, Valuation.isEquiv_iff_val_le_one, valuation_le_one_iff_den,
-    padicValuation_le_one_iff, natGenerator_dvd_iff,
-    map_natCast (IsIntegralClosure.intEquiv R) _ ▸ Ideal.apply_mem_of_equiv_iff]
+  simp only [Valuation.isEquiv_iff_val_le_one, valuation_le_one_iff_den,
+    Rat.padicValuation_le_one_iff, primesEquiv_apply_coe, not_iff_not]
+  intro x
+  rw [show ((x.den : ℕ) : R) = ((x.den : ℤ) : R) by push_cast; rfl, Int.cast_mem_ideal_iff,
+    Int.natCast_dvd_natCast]
 
 open Valuation
 
 /-- The uniform space isomorphism `ℚ ≃ᵤ ℚ`, where the LHS has the uniformity from
 `HeightOneSpectrum.valuation ℚ v` and the RHS has uniformity from
-`Rat.padicValuation (natGenerator v)`, for a height-one prime ideal
+`Rat.padicValuation (primesEquiv v)`, for a height-one prime ideal
 `v : HeightOneSpectrum R`. -/
 noncomputable def withValEquiv (v : HeightOneSpectrum R) :
     WithVal (v.valuation ℚ) ≃ᵤ WithVal (padicValuation (primesEquiv v)) :=

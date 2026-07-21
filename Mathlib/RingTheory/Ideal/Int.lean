@@ -29,9 +29,15 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 
 * `Nat.absNorm_under_prime`: If `P` is a prime ideal, then `absNorm (under ℤ P)` is a prime number.
 
+* `IsDedekindDomain.HeightOneSpectrum.primesEquiv`: the equivalence `HeightOneSpectrum R ≃
+  Nat.Primes`, sending `v` to `absNorm (v.asIdeal.under ℤ)`, when `R` is the integral closure of
+  `ℤ` in `ℚ`.
+
 -/
 
 public section
+
+open Ideal
 
 theorem Int.card_ideal_quot (n : ℕ) : Nat.card (ℤ ⧸ (Ideal.span {(n : ℤ)})) = n := by
   simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
@@ -47,7 +53,6 @@ theorem Int.ringChar_idealQuot (n : ℕ) : ringChar (ℤ ⧸ Ideal.span {(n : �
   rw [Ideal.Quotient.eq_zero_iff_mem, ← Int.cast_natCast, Ideal.mem_span_singleton,
     Int.cast_natCast, Int.natCast_dvd_natCast]
 
-open Ideal
 
 variable {R : Type*}
 
@@ -117,6 +122,26 @@ section CommRing
 
 variable [CommRing R] [IsDomain R] [Algebra.IsIntegral ℤ R]
 
+variable (R)
+
+/-- If `ℤ` is integrally closed in `R` (e.g. `R` is a ring of integers), the ideal below
+`span {(n : R)}` is `span {n}`. -/
+theorem Int.under_span_natCast [CharZero R] (n : ℤ) :
+    (span {(n : R)}).under ℤ = span {n} := by
+  ext d
+  rw [under_def, mem_comap, mem_span_singleton, mem_span_singleton,
+    show (n : R) = algebraMap ℤ R n by rw [eq_intCast],
+    IsIntegrallyClosed.algebraMap_dvd_algebraMap_iff]
+
+/-- If `ℤ` is integrally closed in `R` (e.g. `R` is a ring of integers), The norm of the ideal
+below `span {(n : R)}` is `n`. -/
+theorem Int.absNorm_under_span_natCast [CharZero R] (n : ℕ) :
+    absNorm ((span {(n : R)}).under ℤ) = n := by
+  rw [← Int.cast_natCast, Int.under_span_natCast R n]
+  simp
+
+variable {R}
+
 theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] :
     (absNorm (under ℤ P)).Prime := by
   rw [Nat.prime_iff_prime_int, ← span_singleton_prime, Int.ideal_span_absNorm_eq_self]
@@ -127,3 +152,40 @@ theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] :
     exact eq_bot_of_comap_eq_bot this
 
 end CommRing
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsIntegralClosure R ℤ ℚ]
+
+/-- The equivalence between height-one prime ideals of `ℤ` and prime numbers, via the absolute
+norm. -/
+@[expose, simps]
+noncomputable def primesEquivInt : HeightOneSpectrum ℤ ≃ Nat.Primes where
+  toFun v := ⟨absNorm v.asIdeal, Nat.absNorm_under_prime v.asIdeal⟩
+  invFun p := ofPrime (prime_span_singleton_iff.mpr (Nat.prime_iff_prime_int.mp p.prop))
+  left_inv v := HeightOneSpectrum.ext (by simp [Int.ideal_span_absNorm_eq_self v.asIdeal])
+  right_inv p := Subtype.ext (by simp [ofPrime_asIdeal, Ideal.absNorm_span_singleton])
+
+/-- The equivalence between height-one prime ideals of `R` and prime numbers, transported from `ℤ`
+along the isomorphism `R ≃+* ℤ` given by `IsIntegralClosure.equiv`. -/
+@[expose]
+noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes :=
+  (equivOfRingEquiv (IsIntegralClosure.equiv ℤ R ℚ ℤ).toRingEquiv).trans primesEquivInt
+
+@[simp]
+theorem primesEquiv_apply_coe (v : HeightOneSpectrum R) :
+    (primesEquiv v : ℕ) = absNorm (v.asIdeal.under ℤ) := by
+  simp only [primesEquiv, Equiv.trans_apply, equivOfRingEquiv_apply, RingEquiv.symm_mk,
+    AlgEquiv.toEquiv_eq_coe, AlgEquiv.symm_toEquiv_eq_symm, primesEquivInt_apply_coe, comap_asIdeal,
+    under_def, algebraMap_int_eq]
+  rw [RingHom.ext_int (Int.castRingHom R)]
+
+@[simp]
+theorem primesEquiv_symm_apply_asIdeal (p : Nat.Primes) :
+    (primesEquiv.symm p).asIdeal = span {(p : R)} := by
+  simp only [primesEquiv, Equiv.symm_trans, Equiv.trans_apply, primesEquivInt_symm_apply,
+    equivOfRingEquiv_symm_apply, AlgEquiv.toRingEquiv_toRingHom, comap_asIdeal, ofPrime_asIdeal]
+  rw [← AlgEquiv.toRingEquiv_toRingHom, comap_coe, ← Ideal.map_symm, Ideal.map_span]
+  simp
+
+end IsDedekindDomain.HeightOneSpectrum

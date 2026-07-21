@@ -501,6 +501,9 @@ variable (v : HeightOneSpectrum R) {R}
 
 namespace HeightOneSpectrum
 
+omit [IsDedekindDomain R] in
+instance : NeZero v.asIdeal := ⟨v.ne_bot⟩
+
 instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
