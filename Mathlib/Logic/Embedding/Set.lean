@@ -30,7 +30,7 @@ variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
 @[simp]
 theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
-    Set.range e.asEmbedding = setOf p :=
+    Set.range e.asEmbedding = Set.ofPred p :=
   Set.ext fun x ↦ ⟨fun ⟨y, h⟩ ↦ h ▸ Subtype.coe_prop (e y), fun hs ↦ ⟨e.symm ⟨x, hs⟩, by simp⟩⟩
 
 end Equiv

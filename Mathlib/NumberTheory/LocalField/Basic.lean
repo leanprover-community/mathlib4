@@ -81,7 +81,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
     · obtain ⟨r, rfl⟩ := ValuativeRel.valuation_surjective r
       simp only [ne_eq, map_eq_zero] at hr
       refine ⟨r ^ 2, by simpa using hr, by simpa [pow_two], fun x hx ↦ hrs ?_⟩
-      simp only [map_pow, Set.mem_setOf_eq] at hx ⊢
+      simp only [map_pow, Set.mem_ofPred_eq] at hx ⊢
       exact hx.trans_lt (by simpa [pow_two, hr])
     · refine ⟨r', hr', hr, .trans ?_ hrs⟩
       intro x hx
@@ -93,8 +93,8 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
       (Homeomorph.mulLeft₀ (γ / r) (by simp [hr, div_eq_zero_iff, hγ])).continuous using 1
   refine .trans ?_ (Equiv.image_eq_preimage_symm _ _).symm
   ext x
-  simp only [Set.mem_setOf_eq, Homeomorph.coe_symm_toEquiv, Homeomorph.mulLeft₀_symm_apply, inv_div,
-    Set.preimage_setOf_eq, map_mul, map_div₀, Valuation.restrict_le_iff]
+  simp only [Set.mem_ofPred_eq, Homeomorph.coe_symm_toEquiv, Homeomorph.mulLeft₀_symm_apply,
+    inv_div, Set.preimage_ofPred_eq, map_mul, map_div₀, Valuation.restrict_le_iff]
   rw [div_mul_eq_mul_div, div_le_iff₀ (by simp [hγ])]
   simp only [IsValuativeTopology.v_eq_valuation, ← map_mul, Valuation.restrict_le_iff]
   simp [hr]
