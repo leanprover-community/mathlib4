@@ -444,7 +444,7 @@ variable {A : Type*}
 /-- A unital magma is `MulOneClass`.
 
 This constructor is primarily intended to be used within proofs since they create bad definitional
-equalities (like `1`). -/
+equalities (for example, the `1`'s would not be defeq). -/
 noncomputable abbrev IsUnital.toMulOneClass [Mul A] [IsUnital A] : MulOneClass A where
   one := isUnital.choose
   one_mul a := (isUnital.choose_spec a).1
