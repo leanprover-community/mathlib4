@@ -59,6 +59,7 @@ theorem Algebra.IsAlgebraic.separableSpace_of_denseRange {K : Type*} [Field K] [
   letI : NormedField E := spectralNorm.normedField L E
   letI : NormedAlgebra L E := spectralNorm.normedAlgebra L E
   haveI hEsep : SeparableSpace E := by
+    -- `k`-algebraic elements in `E` are countable, and are dense in `E` by continuity of roots.
     refine ⟨{z : E | IsAlgebraic K z}, Algebraic.countable K E,
       Metric.dense_iff.mpr <| fun α ε hε ↦ ?_⟩
     have hα : IsIntegral L α := Algebra.IsIntegral.isIntegral α
@@ -83,6 +84,7 @@ theorem Algebra.IsAlgebraic.separableSpace_of_denseRange {K : Type*} [Field K] [
         Real.pow_rpow_inv_natCast (by positivity) hnpos.ne', div_mul_cancel₀ _ hMpos]
     · rw [mem_aroots, aeval_map_algebraMap] at hβroot
       exact ⟨g, hgm.ne_zero, hβroot.2⟩
+  -- Embed `F` into `E` and use the fact that subspace of a separable space is separable.
   let e : F →ₐ[L] E := IsAlgClosed.lift
   have he_inj : Function.Injective e := (e : F →+* E).injective
   have he_isom : Isometry e := AddMonoidHomClass.isometry_of_norm e fun x ↦ by
