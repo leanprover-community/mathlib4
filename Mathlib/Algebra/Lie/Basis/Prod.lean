@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.Basis.Basic
 public import Mathlib.Algebra.Lie.Prod
+public import Mathlib.Algebra.Lie.Semisimple.Basic
 
 /-!
 # Products of bases Lie algebras
