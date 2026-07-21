@@ -1219,7 +1219,8 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
   return if addThisProjection then nms.push nm.toName else nms
 where
-  /-- Drop the last character of a string (the trailing underscore in a "todo"). -/
+  /-- Drop the last character of a string, used to remove the interal trailing underscore in the
+  variable `todo`. -/
   dropLast (todo : String) : String :=
     todo.dropEnd 1 |>.copy
 
