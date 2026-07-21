@@ -318,28 +318,23 @@ instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
 
 @[to_additive]
 instance characteristic_sup [hH : H.Characteristic] [hK : K.Characteristic] :
-    (H ⊔ K).Characteristic :=
-  characteristic_iff_map_eq.mpr fun ϕ => by
-    rw [map_sup, characteristic_iff_map_eq.mp hH, characteristic_iff_map_eq.mp hK]
+    (H ⊔ K).Characteristic := by
+  simp_all [characteristic_iff_map_eq, map_sup]
 
 @[to_additive]
 instance characteristic_iSup {ι : Sort*} {H : ι → Subgroup G} [h : ∀ i, (H i).Characteristic] :
-    (⨆ i, H i).Characteristic :=
-  characteristic_iff_map_eq.mpr fun ϕ => by
-    rw [map_iSup]
-    exact iSup_congr fun i => characteristic_iff_map_eq.mp (h i) ϕ
+    (⨆ i, H i).Characteristic := by
+  simp_all [characteristic_iff_map_eq, map_iSup]
 
 @[to_additive]
 theorem characteristic_biSup {ι : Type*} (s : Set ι) (H : ι → Subgroup G)
     (h : ∀ i ∈ s, (H i).Characteristic) : (⨆ i ∈ s, H i).Characteristic := by
-  rw [← iSup_subtype'']
-  exact characteristic_iSup (h := fun i => h i i.property)
+  simp [← iSup_subtype'', characteristic_iSup, h]
 
 @[to_additive]
 theorem characteristic_sSup {Hs : Set (Subgroup G)} (h : ∀ H ∈ Hs, H.Characteristic) :
     (sSup Hs).Characteristic := by
-  rw [sSup_eq_iSup]
-  exact characteristic_biSup Hs id h
+  simp [sSup_eq_iSup', characteristic_iSup, h]
 
 /-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
 automorphism of `H`. -/
