@@ -155,8 +155,8 @@ def Homeomorph.inv₀ : {g : G₀ // g ≠ 0} ≃ₜ {g : G₀ // g ≠ 0} where
   invFun g := ⟨g⁻¹, inv_ne_zero g.2⟩
   left_inv _ := by simp
   right_inv _ := by simp
-  continuous_toFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
-  continuous_invFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
+  continuous_toFun := continuous_induced_rng.mpr continuousOn_inv₀.domRestrict
+  continuous_invFun := continuous_induced_rng.mpr continuousOn_inv₀.domRestrict
 
 end GroupWithZero
 
@@ -191,6 +191,18 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] [C
 theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 a))
     (hg : Tendsto g l (𝓝 b)) (hy : b ≠ 0) : Tendsto (f / g) l (𝓝 (a / b)) := by
   simpa only [div_eq_mul_inv] using! hf.mul (hg.inv₀ hy)
+
+/-- If `f → a` and `g → b` along a nontrivial filter, valued in a Hausdorff
+`GroupWithZero` with continuous multiplication and `ContinuousInv₀`, and `b ≠ 0`,
+then `f / g → 1` if and only if `a = b`. -/
+theorem tendsto_div_nhds_one_iff_eq₀
+    {l : Filter α} [l.NeBot] [T2Space G₀] {a b : G₀}
+    (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) (hb : b ≠ 0) :
+    Tendsto (fun x ↦ f x / g x) l (𝓝 1) ↔ a = b :=
+  ⟨fun hfg => (div_eq_one_iff_eq hb).mp (tendsto_nhds_unique (hf.div hg hb) hfg),
+   fun hab => (div_eq_one_iff_eq hb).mpr hab ▸ hf.div hg hb⟩
+
+alias ⟨eq_of_tendsto_div_nhds_one₀, _⟩ := tendsto_div_nhds_one_iff_eq₀
 
 theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : Filter α} {x y : G₀}
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :

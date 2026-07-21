@@ -692,7 +692,7 @@ open Set in
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
     Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y⁻¹ * x‖ := by
-  simp [NormedGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_setOf, eventually_iff]
+  simp [NormedGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_ofPred, eventually_iff]
 
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds_one (f : Filter E) :
