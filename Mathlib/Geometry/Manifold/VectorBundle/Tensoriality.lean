@@ -287,32 +287,4 @@ theorem mkHom₂_apply_eq_extend
     mkHom₂ Φ x hΦ₁ hΦ₂ σ τ = Φ (extend F σ) (extend F' τ) :=
   rfl
 
-theorem mkHom₂_apply_eq_extend_left
-    {Φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
-    (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
-    (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x)
-    {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) (τ : V' x) :
-    mkHom₂ Φ x hΦ₁ hΦ₂ (σ x) τ = Φ σ (extend F' τ) := by
-  rw [mkHom₂_apply_eq_extend]
-  --apply (hΦ₂ _ hσ).pointwise
-  rw [(hΦ₂ _ hσ).pointwise]
-  rotate_left
-  · apply mdifferentiableAt_extend ..
-  · apply mdifferentiableAt_extend ..
-    exact τ
-  · simp
-  -- apply TensorialAt.pointwise₂ hΦ₁ hΦ₂ (mdifferentiableAt_extend ..) hσ (mdifferentiableAt_extend ..) --(mdiffererentiableAt_extend ..)
-  -- · sorry
-  -- · simp
-  -- · simp
-  sorry
-
-theorem mkHom₂_apply_eq_extend_right
-    {Φ : (Π x : M, V x) → (Π x : M, V' x) → A} {x}
-    (hΦ₁ : ∀ τ, MDiffAt (T% τ) x → TensorialAt I F (Φ · τ) x)
-    (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x)
-    (σ : V x)  {τ : Π x : M, V' x} (hτ : MDiffAt (T% τ) x) :
-    mkHom₂ Φ x hΦ₁ hΦ₂ σ (τ x) = Φ (extend F σ) τ := by
-  sorry -- should be analogous
-
 end TensorialAt

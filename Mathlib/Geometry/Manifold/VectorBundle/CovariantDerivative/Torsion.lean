@@ -133,20 +133,6 @@ lemma torsion_apply_eq_extend (X₀ Y₀ : TangentSpace I x) :
   unfold torsion IsCovariantDerivativeOn.torsion
   apply TensorialAt.mkHom₂_apply_eq_extend
 
-lemma torsion_apply_eq_extend_left (hX : MDiffAt (T% X) x) (Y₀ : TangentSpace I x) :
-    cov.torsion x (X x) Y₀ =
-      cov (extend E Y₀) x (X x) - cov X x (extend E Y₀ x) -
-        mlieBracket I X (extend E Y₀) x := by
-  unfold torsion IsCovariantDerivativeOn.torsion
-  apply TensorialAt.mkHom₂_apply_eq_extend_left _ _ hX
-
-lemma torsion_apply_eq_extend_right (hY : MDiffAt (T% Y) x) (X₀ : TangentSpace I x) :
-    cov.torsion x X₀ (Y x) =
-      cov Y x (extend E X₀ x) - cov (extend E X₀) x (Y x) -
-        mlieBracket I (extend E X₀) Y x := by
-  unfold torsion IsCovariantDerivativeOn.torsion
-  apply TensorialAt.mkHom₂_apply_eq_extend_right _ _ _ hY
-
 @[simp]
 lemma torsion_self (X₀ : TangentSpace I x) : cov.torsion x X₀ X₀ = 0 :=
   cov.isCovariantDerivativeOn.torsion_self ..
