@@ -288,7 +288,7 @@ theorem IsFredholm.of_isInvertible_restrict {u : E →L[𝕜] F}
   · exact .of_disjoint_of_finiteDimensional_quotient E₁_closed disj.symm
 
 omit [ContinuousSMul 𝕜 E] in
-/-- Let `u : E →L[𝕜] F` be a Fredholm operator. Given `dom₁` (resp. `codom₀`) be an arbitrary
+/-- Let `u : E →L[𝕜] F` be a Fredholm operator. Given `dom₁` (resp. `codom₀`) an arbitrary
 topological complement of `u.ker` (resp. `u.range`), we get a `FredholmPackage` for `u`
 by considering the decompositions `E = dom₁ ⊕ u.ker`, `F = u.range ⊕ codom₀`, and the isomorphism
 `dom₁ ≃L[𝕜] u.range` induced by `u`.
