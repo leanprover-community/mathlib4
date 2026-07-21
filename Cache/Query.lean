@@ -182,42 +182,6 @@ def cacheQuerySingle (repo sha : String) : IO Unit := do
     IO.Process.exit 1
 
 /--
-`true` iff a change to `path` can alter the set of files `cache get` serves.
-
-Covers the three cached module trees and their root modules, plus the files
-that feed the root hash (`lean-toolchain`, the lakefiles, `lake-manifest.json`)
-— a change there re-keys every cache entry, so a CI build of it has a full
-fork cache to upload. Everything else (docs, scripts, CI config, the cache
-tool itself) builds identically to master, so CI uploads nothing to the fork
-namespace. A `rootHashGeneration` bump inside `Cache/` also re-keys
-everything, but accompanies a `lean-toolchain` change, which this predicate
-already catches.
--/
-def pathAffectsCachedBuild (path : String) : Bool :=
-  path.startsWith "Mathlib/" || path.startsWith "Archive/" ||
-    path.startsWith "Counterexamples/" ||
-    path == "Mathlib.lean" || path == "Archive.lean" || path == "Counterexamples.lean" ||
-    path == "lean-toolchain" || path == "lakefile.lean" || path == "lakefile.toml" ||
-    path == "lake-manifest.json"
-
-/--
-Files changed between `baseRef` and `HEAD`, as repo-relative paths.
-
-Returns `none` when the diff cannot be computed (unknown ref, git
-unavailable), so callers can distinguish "no changes" from "could not tell" —
-never-throw, matching the rest of the read path.
--/
-def gitChangedFilesFromBase (baseRef : String) (cwd : FilePath := ".") :
-    IO (Option (List String)) := do
-  try
-    let out ← IO.Process.output
-      {cmd := "git", args := #["diff", "--name-only", baseRef, "HEAD"], cwd := cwd}
-    if out.exitCode != 0 then return none
-    return some (out.stdout.trimAscii.toString.splitOn "\n" |>.filter (· ≠ ""))
-  catch _ =>
-    return none
-
-/--
 Implement the `cache query` subcommand.
 
 Walks git log backwards from HEAD, stopping at the merge base with `master`
@@ -255,24 +219,10 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
     IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
     IO.println s!"No cached CI build found for fork {repo} within the last {cap} commits on this branch."
-    -- Distinguish "CI hasn't built these commits" from "CI built them but had
-    -- nothing fork-specific to upload": a branch with no cache-relevant
-    -- changes gets a 100% hit from the master container, so its CI builds
-    -- stage no files and publish no per-commit marker.
-    let changed? ← match mergeBase? with
-      | some base => gitChangedFilesFromBase base cwd
-      | none => pure none
-    match changed? with
-    | some changed =>
-      if changed.all (fun p => !pathAffectsCachedBuild p) then
-        IO.println "However, this branch changes no file that feeds the cache (Mathlib/, Archive/,"
-        IO.println "Counterexamples/, toolchain, or lakefile), so CI builds of it have nothing"
-        IO.println "fork-specific to upload and publish no per-commit cache. A plain"
-        IO.println "`lake exe cache get` already serves every file from mathlib's master cache."
-      else
-        IO.println "This usually means CI hasn't built any of these commits yet."
-    | none =>
-      IO.println "This usually means CI hasn't built any of these commits yet."
+    IO.println "Either CI hasn't built any of these commits yet, or their builds had nothing"
+    IO.println "fork-specific to upload: a branch that changes no Lean module is fully served"
+    IO.println "by mathlib's master cache, so CI publishes no per-commit cache for it and a"
+    IO.println "plain `lake exe cache get` already gets everything."
 
 /--
 Discover the SHA scopes `cache get --unsafe` should try, most recent first.

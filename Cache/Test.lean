@@ -694,32 +694,6 @@ section MissingFilesHints
 private def containsSub (haystack needle : String) : Bool :=
   (haystack.splitOn needle).length > 1
 
-/-- The paths `cache query` treats as cache-relevant when explaining why a
-branch has no per-commit fork cache: the three module trees, their root
-modules, and the root-hash inputs count; tooling, docs, and CI config do not
-— builds of those are identical to master's and upload nothing. -/
-def test_pathAffectsCachedBuild : IO Unit := do
-  IO.println "pathAffectsCachedBuild:"
-  assert "a module under Mathlib/ counts"
-    (pathAffectsCachedBuild "Mathlib/Data/Nat/Basic.lean")
-  assert "a module under Archive/ counts"
-    (pathAffectsCachedBuild "Archive/Sensitivity.lean")
-  assert "a module under Counterexamples/ counts"
-    (pathAffectsCachedBuild "Counterexamples/Phillips.lean")
-  assert "the Mathlib root module counts" (pathAffectsCachedBuild "Mathlib.lean")
-  assert "the Archive root module counts" (pathAffectsCachedBuild "Archive.lean")
-  assert "the Counterexamples root module counts"
-    (pathAffectsCachedBuild "Counterexamples.lean")
-  assert "the toolchain counts" (pathAffectsCachedBuild "lean-toolchain")
-  assert "the lakefile counts" (pathAffectsCachedBuild "lakefile.lean")
-  assert "a TOML lakefile counts" (pathAffectsCachedBuild "lakefile.toml")
-  assert "the manifest counts" (pathAffectsCachedBuild "lake-manifest.json")
-  assert "the cache tool does not count" (!pathAffectsCachedBuild "Cache/Requests.lean")
-  assert "CI config does not count" (!pathAffectsCachedBuild ".github/workflows/build.yml")
-  assert "docs do not count" (!pathAffectsCachedBuild "docs/overview.yaml")
-  assert "scripts do not count" (!pathAffectsCachedBuild "scripts/lint-style.py")
-  assert "a MathlibTest file does not count" (!pathAffectsCachedBuild "MathlibTest/Basic.lean")
-
 /-- Content pins for the two missing-files messages: the fork variant names the
 fork, the HEAD SHA, the miss count, and both commands of the scoped workflow;
 the generic variant reports the count. These are user-facing guidance, so a
@@ -1079,7 +1053,6 @@ def runAll : IO Unit := do
   test_getRepoScope
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason
-  test_pathAffectsCachedBuild
   test_missingFilesLines
   test_forkHintSHA_guards
   test_findMostRecentSHAWithCache
