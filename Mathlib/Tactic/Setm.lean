@@ -15,32 +15,39 @@ This module defines the `setm` tactic.
 
 The `setm` tactic matches a pattern containing named holes to the type of a target, and creates
 local declarations for the hole names whose values are the assigned expressions. By default, the
-target is the goal, but it can be selected to be a local declaration via the `using` syntax.
+pattern is matched against the goal, but a local declaration can be matched instead via the `using`
+syntax.
 Optionally, with the syntax `at loc`, it also rewrites at locations `loc` to replace the occurrences
 of the matched expressions with the newly-introduced local declarations.
 
-
-## Todo
+## TODO
 
 It would be nice if the tactic was be made to work for non-constants under binders (by adding forall
 binders to the local declarations).
-
 -/
 
 meta section
 
 open Lean Mathlib Elab Tactic Meta Term Syntax
 
+namespace Mathlib.Tactic.SetM
+
+/-- The state updated during replacement of synthetic hole syntax with local declarations. -/
 structure SetMReplaceState where
+  /-- The modified goal. Invariant: the `FVarId`s in `holes` are in this goal's local context. -/
   goal : MVarId
-  /-- Created names and their fvars, in the order they appear in the pattern. -/
+  /-- Newly created local declaration names for synthetic holes and their fvars. -/
   holes : NameMap FVarId := {}
-  /-- New metavariables for the values of new free variables. -/
+  /-- New metavariables created for the values of new free variables. We ensure all of these are assigned 
+  by the end of `setm`, or else log an error. -/
   newMVars : Array MVarId := #[]
 
 abbrev SetMReplaceM := StateT SetMReplaceState TermElabM
 
-/-- Traverse all synthetic holes, creating local declarations for them. -/
+/-- Traverse all synthetic holes, creating local declarations for them.
+
+A synthetic hole of the form `?n` leads to a local declaration of the form `n := ?m.1`, with the
+new metavariable natural and recorded in the state. -/
 def replaceWithLDecls (stx : Syntax) : SetMReplaceM Syntax :=
   stx.replaceM fun stx ↦ do
     let fvar ←
@@ -86,12 +93,16 @@ def defeqOrError (goal : MVarId) (p e : Expr) : MetaM Unit :=
       return m!"Pattern{indentExpr p}\nis not definitionally equal \
         to the target{indentExpr tgt}"
 
--- TODO: move to Mathlib.Lean
+/-- Runs `x`, and if `x` throws an exception, rewinds the tactic state *except* for the `InfoState`
+and `Messages`. This means that hovers and error messages created within `x` are preserved.
+
+Note: `x` is run under `withSaveInfoContext` in order to propagate hovers and messages correctly.
+This means that pre-existing infotrees are not accessible from within `x`. -/
 def commitIfNoExPreservingInfoAndMessages {α} (x : TacticM α) : TacticM α := do
   let saved ← saveState
   Tactic.tryCatch (withSaveInfoContext x) fun ex => do
     let saved := { saved with
-      term.meta.core.infoState := (← getInfoState)
+      term.meta.core.infoState := ← getInfoState
       term.meta.core.messages := (← getThe Core.State).messages }
     restoreState saved
     throw ex
@@ -101,7 +112,6 @@ elab_rules : tactic
   withMainContext do commitIfNoExPreservingInfoAndMessages do
     let origGoal ← getMainGoal
     let (pat, { goal, holes, newMVars }) ← (replaceWithLDecls pat).run { goal := origGoal }
-    -- TODO: comment? Bigger question: just reducible?
     goal.withContext do
       let (pat, newPatMVars) ← collectFreshMVars <| Tactic.elabTerm pat none (mayPostpone := true)
       if let some place := usingArg.map getId then
