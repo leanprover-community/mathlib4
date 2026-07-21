@@ -146,8 +146,12 @@ variable [TopologicalSpace E] [TopologicalSpace F]
 lemma LinearMap.isInducing_of_restrict_nhds_zero {V : Set E}
     (V_mem : V ∈ 𝓝 0) (H : IsInducing (Set.domRestrict V f)) : IsInducing f := by
   rw [isInducing_iff]
+  -- Call `t₁` the original topology on `E`, and `t₂` the topology induced by `f`. Because
+  -- `f` is linear, `t₂` is also a vector space topology.
   have := topologicalAddGroup_induced f
   have := continuousSMul_inducedₛₗ f σ.isometry.continuous
+  -- Because `Set.domRestrict V f` is an inducing, `t₁` and `t₂` induce the same topology
+  -- on `V`, so we get `t₁ = t₂` from the lemmas above.
   apply ContinuousSMul.topology_eq_of_induced_eq 𝕜₁ _ (.induced f _) V_mem
   rw [induced_compose, ← domRestrict_eq, ← H.eq_induced, ← IsInducing.subtypeVal.eq_induced]
 
