@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Data.List.Chain
 
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+
 /-!
 # Free groups
 
@@ -969,10 +971,6 @@ def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   right_inv _ := by simp
   map_mul' _ _ := by simp [equivIntOfUnique]
 
-/-- A free group over one generator is an instance of a cyclic group. -/
-instance [Unique α] : IsCyclic (FreeGroup α) :=
-  ⟨of default, fun x => ⟨equivIntOfUnique x, equivIntOfUnique.left_inv x⟩⟩
-
 /-- The isomorphism between the free additive group on a unique type and the integers. -/
 def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ ℤ where
   toFun x := FreeAddGroup.sum (FreeAddGroup.map 1 x)
@@ -986,10 +984,21 @@ def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ �
   right_inv x := by induction x <;> simp
   map_add' x y := by simp
 
-/-- A free additive group over one generator is an instance of a cyclic group. -/
-instance [Unique α] : IsAddCyclic (FreeAddGroup α) :=
-  ⟨FreeAddGroup.of default, fun x =>
-  ⟨_root_.FreeAddGroup.addEquivIntOfUnique x, _root_.FreeAddGroup.addEquivIntOfUnique.left_inv x⟩⟩
+/-- A free additive group on `≤ 1` generators is an instance of a cyclic group.
+Note: this instance is named explicitly to match what @[to_additive existing] on the multiplicative
+instance below expects. -/
+instance _root_.FreeAddGroup.instIsAddCyclicOfSubsingleton [Subsingleton α] :
+    IsAddCyclic (FreeAddGroup α) := by
+  rcases (subsingleton_iff_isEmpty_or_unique _).mp ‹_› with _ | ⟨⟨_⟩⟩
+  · infer_instance
+  · exact _root_.FreeAddGroup.addEquivIntOfUnique.isAddCyclic.mpr inferInstance
+
+/-- A free group on `≤ 1` generators is an instance of a cyclic group. -/
+@[to_additive existing]
+instance [Subsingleton α] : IsCyclic (FreeGroup α) := by
+  rcases (subsingleton_iff_isEmpty_or_unique _).mp ‹_› with _ | ⟨⟨_⟩⟩
+  · infer_instance
+  · exact mulEquivIntOfUnique.isCyclic.mpr inferInstance
 
 section Category
 
