@@ -120,7 +120,7 @@ theorem lt_length'_iff {s : Seq α} {n : ℕ} :
     n < s.length' ↔ ∃ a, a ∈ s.get? n := by
   by_cases h : s.Terminates
   · simpa [length'_of_terminates h] using lt_length_iff
-  · simp only [length'_of_not_terminates h, ENat.coe_lt_top, Option.mem_def, true_iff]
+  · simp only [length'_of_not_terminates h, ENat.natCast_lt_top, Option.mem_def, true_iff]
     rw [not_terminates_iff] at h
     rw [← Option.isSome_iff_exists]
     exact h n
