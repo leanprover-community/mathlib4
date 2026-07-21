@@ -141,6 +141,7 @@ theorem ContMDiffOn.smul (hf : CMDiff[s] n f) (hg : CMDiff[s] n g) :
 theorem ContMDiff.smul (hf : CMDiff n f) (hg : CMDiff n g) :
     CMDiff n (f • g) := fun x ↦ (hf x).smul (hg x)
 
+-- TODO: after #41534 is merged, weaken the hypothesis to `ContMDiffConstSMul`
 @[to_additive]
 theorem ContMDiffSMul.contMDiff_const_smul {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G) :
     CMDiff n fun x : M ↦ g • x :=
