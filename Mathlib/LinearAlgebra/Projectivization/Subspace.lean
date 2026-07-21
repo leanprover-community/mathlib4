@@ -226,7 +226,7 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
       rw [Projectivization.mk_eq_mk_iff']
       exact ⟨c, rfl⟩ }
   invFun s :=
-  { carrier := setOf <| Projectivization.lift (↑· ∈ s) <| by
+  { carrier := Set.ofPred <| Projectivization.lift (↑· ∈ s) <| by
       rintro ⟨-, h⟩ ⟨y, -⟩ c rfl
       exact Iff.eq <| s.smul_mem_iff <| left_ne_zero_of_smul h
     mem_add' _ _ _ _ _ h₁ h₂ := s.add_mem h₁ h₂ }

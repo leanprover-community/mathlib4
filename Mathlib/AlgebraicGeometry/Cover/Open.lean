@@ -300,6 +300,7 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
   congr
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem affineBasisCover_is_basis (X : Scheme.{u}) :
     TopologicalSpace.IsTopologicalBasis
       {x : Set X |
