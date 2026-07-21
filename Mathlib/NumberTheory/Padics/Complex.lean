@@ -134,8 +134,7 @@ instance denselyNormedField : DenselyNormedField (PadicAlgCl p) where
     obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hp_pos ((div_lt_one hb).2 hab)
     have hn0 : n ≠ 0 := by
       rintro rfl
-      rw [pow_zero] at hn
-      exact hn.asymm hp_lt_one
+      simpa [pow_zero] using hn.asymm hp_lt_one
     obtain ⟨z, hz⟩ := IsAlgClosed.exists_pow_nat_eq (p : PadicAlgCl p) (Nat.pos_of_ne_zero hn0)
     have hzn : ‖z‖ ^ n = ‖(p : PadicAlgCl p)‖ := by rw [← norm_pow, hz]
     have hza : a / b < ‖z‖ := lt_of_pow_lt_pow_left₀ n (norm_nonneg z) (hn.trans_eq hzn.symm)
@@ -164,20 +163,20 @@ instance separableSpace : SeparableSpace (PadicAlgCl p) where
     set n := f.natDegree with hn
     have hnpos : 0 < n := minpoly.natDegree_pos hint
     set M := max ‖α‖ 1 with hM
-    have hMpos : 0 < M := lt_of_lt_of_le one_pos (le_max_right _ _)
+    have hMpos : M ≠ 0 := by positivity
     set δ := (ε / M) ^ n / (n + 1) with hδ_def
-    have hδpos : 0 < δ := div_pos (pow_pos (div_pos hε hMpos) n) (by positivity)
+    have hδpos : 0 < δ := by positivity
     obtain ⟨g, hgm, hdeg, hgcoeff⟩ :=
       exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt hdense hf hδpos
     obtain ⟨β, hβroot, hβnorm⟩ := exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt
-      hδpos (f := f) (g := g.map (algebraMap ℚ ℚ_[p])) (minpoly.aeval _ _) hf (hgm.map _)
+      hδpos (f := f) (minpoly.aeval _ _) hf (hgm.map _)
       (by rw [natDegree_map_eq_of_injective (algebraMap ℚ ℚ_[p]).injective]; omega)
       (fun i ↦ by simpa using hgcoeff i) (IsAlgClosed.splits _)
     refine ⟨β, ?_, ?_⟩
     · rw [Metric.mem_ball, dist_comm, dist_eq_norm]
       refine hβnorm.trans_le ?_
       rw [← hn, ← hM, show (↑n + 1) * δ = (ε / M) ^ n by rw [hδ_def]; field_simp,
-        Real.pow_rpow_inv_natCast (by positivity) hnpos.ne', div_mul_cancel₀ _ hMpos.ne']
+        Real.pow_rpow_inv_natCast (by positivity) hnpos.ne', div_mul_cancel₀ _ hMpos]
     · rw [mem_aroots, aeval_map_algebraMap] at hβroot
       exact ⟨g, hgm.ne_zero, hβroot.2⟩
 
