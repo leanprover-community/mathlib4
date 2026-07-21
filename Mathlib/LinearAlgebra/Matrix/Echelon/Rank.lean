@@ -63,27 +63,6 @@ theorem IsPivot.rowEchelon [Zero R] {A : Matrix (Fin m) (Fin n) R} {l : List (Fi
       (hle.trans_lt (h.sortedLT.getElem_lt_getElem_of_lt h₁₂))
   · exact congrFun (h.row_eq_zero_of_length_le i₂ hi₂) j₂
 
-/-- If every row of `A` outside a finset `s` is zero, then its rank is at most `#s`. -/
-theorem rank_le_card_of_row_eq_zero {m n R : Type*} [Fintype n]
-    [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R) (s : Finset m)
-    (hz : ∀ i ∉ s, A i = 0) : A.rank ≤ s.card := by
-  classical
-  set B : Matrix m {x // x ∈ s} R := Matrix.of fun i a => if (a : m) = i then 1 else 0 with hBdef
-  have hB : B * A.submatrix Subtype.val id = A := by
-    ext i j
-    simp only [hBdef, mul_apply, of_apply, submatrix_apply, id_eq]
-    by_cases hi : i ∈ s
-    · rw [Fintype.sum_eq_single (⟨i, hi⟩ : {x // x ∈ s})
-        fun a ha => by rw [if_neg fun he => ha (Subtype.ext he), zero_mul], if_pos rfl, one_mul]
-    · rw [congrFun (hz i hi) j]
-      refine Finset.sum_eq_zero fun a _ => ?_
-      have hne : (a : m) ≠ i := fun he => hi (he ▸ a.2)
-      rw [if_neg hne, zero_mul]
-  calc A.rank = (B * A.submatrix Subtype.val id).rank := by rw [hB]
-    _ ≤ (A.submatrix Subtype.val id).rank := rank_mul_le_right _ _
-    _ ≤ Fintype.card {x // x ∈ s} := rank_le_card_height _
-    _ = s.card := Fintype.card_coe s
-
 theorem IsPivot.rank_eq [CommRing R] [IsDomain R] [StrongRankCondition R]
     {A : Matrix (Fin m) (Fin n) R} {l : List (Fin n)} (h : A.IsPivot l) :
     A.rank = l.length := by
@@ -197,10 +176,5 @@ instance decidableIsPivot [Zero R] [DecidableEq R] (A : Matrix (Fin m) (Fin n) R
     (l : List (Fin n)) : Decidable (A.IsPivot l) :=
   decidable_of_iff _ (isPivotB_iff A l)
 -/
-
-instance decidableBlockTriangular [Zero R] [DecidableEq R] {m α : Type*} [Fintype m] [LT α]
-    [DecidableLT α] (M : Matrix m m R) (b : m → α) : Decidable (M.BlockTriangular b) :=
-  decidable_of_iff (∀ ij : m × m, b ij.2 < b ij.1 → M ij.1 ij.2 = 0)
-    ⟨fun h i j hij => h (i, j) hij, fun h _ hij => h hij⟩
 
 end Matrix

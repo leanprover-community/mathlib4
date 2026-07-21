@@ -85,6 +85,11 @@ protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
 @[simp]
 theorem blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
 
+instance decidableBlockTriangular [DecidableEq R] [Fintype m] [DecidableLT α] :
+    Decidable (M.BlockTriangular b) :=
+  decidable_of_iff (∀ ij : m × m, b ij.2 < b ij.1 → M ij.1 ij.2 = 0)
+    ⟨fun h i j hij => h (i, j) hij, fun h _ hij => h hij⟩
+
 end Zero
 
 protected theorem BlockTriangular.neg [NegZeroClass R] {M : Matrix m m R}
