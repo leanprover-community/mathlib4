@@ -136,6 +136,7 @@ protected theorem Set.Finite.multipliable {s : Set β} (hs : s.Finite) (f : β �
   have := hs.toFinset.multipliable f
   rwa [hs.coe_toFinset] at this
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem multipliable_of_hasFiniteMulSupport [L.HasSupport] (h : HasFiniteMulSupport f) :
     Multipliable f L := by
@@ -163,8 +164,8 @@ lemma hasProd_unique [Unique β] (f : β → α) (L := unconditional β) [L.LeAt
   hasProd_single default (fun _ hb ↦ False.elim <| hb <| Unique.uniq ..) L
 
 @[to_additive (attr := simp)]
-lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).restrict f) (f m) :=
-  hasProd_unique (Set.restrict {m} f)
+lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).domRestrict f) (f m) :=
+  hasProd_unique (Set.domRestrict {m} f)
 
 @[to_additive]
 theorem hasProd_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
@@ -779,11 +780,24 @@ lemma hasProd_zero_of_exists_eq_zero (hf : ∃ b, f b = 0) [L.LeAtTop] : HasProd
   filter_upwards [(eventually_ge_atTop {b}).filter_mono L.le_atTop] with s hs
   exact (Finset.prod_eq_zero (Finset.singleton_subset_iff.mp hs) hb).symm
 
+lemma hasProd_zero_zero [Nonempty β] [L.LeAtTop] : HasProd (fun _ ↦ 0 : β → α) 0 L := by
+  obtain ⟨b⟩ := ‹Nonempty β›
+  exact hasProd_zero_of_exists_eq_zero ⟨b, by simp⟩
+
 lemma multipliable_of_exists_eq_zero (hf : ∃ b, f b = 0) [L.LeAtTop] : Multipliable f L :=
   ⟨0, hasProd_zero_of_exists_eq_zero hf⟩
+
+lemma multipliable_zero [L.LeAtTop] : Multipliable (fun _ ↦ 0 : β → α) L := by
+  obtain hβ | hβ := isEmpty_or_nonempty β
+  · simp
+  · exact ⟨0, hasProd_zero_zero⟩
 
 lemma tprod_of_exists_eq_zero [T2Space α] [L.NeBot] [L.LeAtTop] (hf : ∃ b, f b = 0) :
     ∏'[L] b, f b = 0 :=
   (hasProd_zero_of_exists_eq_zero hf).tprod_eq
+
+@[simp] lemma tprod_zero [T2Space α] [Nonempty β] [L.NeBot] [L.LeAtTop] :
+    ∏'[L] _, (0 : α) = 0 :=
+  hasProd_zero_zero.tprod_eq
 
 end CommMonoidWithZero

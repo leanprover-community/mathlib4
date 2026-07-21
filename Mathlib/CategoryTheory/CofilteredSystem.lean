@@ -67,9 +67,9 @@ theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCa
     [IsCofilteredOrEmpty J] (F : J ⥤ Type u) [hf : ∀ j, Finite (F.obj j)]
     [hne : ∀ j, Nonempty (F.obj j)] : F.sections.Nonempty := by
   let F' : J ⥤ TopCat := F ⋙ TopCat.discrete
-  haveI : ∀ j, DiscreteTopology (F'.obj j) := fun _ => ⟨rfl⟩
-  haveI : ∀ j, Finite (F'.obj j) := hf
-  haveI : ∀ j, Nonempty (F'.obj j) := hne
+  have : ∀ j, DiscreteTopology (F'.obj j) := fun _ => ⟨rfl⟩
+  have : ∀ j, Finite (F'.obj j) := hf
+  have : ∀ j, Nonempty (F'.obj j) := hne
   obtain ⟨⟨u, hu⟩⟩ := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u} F'
   exact ⟨u, hu⟩
 
@@ -83,18 +83,18 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   let J' : Type max w v u := AsSmall.{max w v} J
   let down : J' ⥤ J := AsSmall.down
   let F' : J' ⥤ Type (max u v w) := down ⋙ F ⋙ uliftFunctor.{max u w, v}
-  haveI : ∀ i, Nonempty (F'.obj i) := fun i => ⟨⟨Classical.arbitrary (F.obj (down.obj i))⟩⟩
-  haveI : ∀ i, Finite (F'.obj i) := fun i => Finite.of_equiv (F.obj (down.obj i)) Equiv.ulift.symm
+  have : ∀ i, Nonempty (F'.obj i) := fun i => ⟨⟨Classical.arbitrary (F.obj (down.obj i))⟩⟩
+  have : ∀ i, Finite (F'.obj i) := fun i => Finite.of_equiv (F.obj (down.obj i)) Equiv.ulift.symm
   -- Step 2: apply the bootstrap theorem
   cases isEmpty_or_nonempty J
   · fconstructor <;> apply isEmptyElim
-  haveI : IsCofiltered J := ⟨⟩
+  have : IsCofiltered J := ⟨⟩
   obtain ⟨u, hu⟩ := nonempty_sections_of_finite_cofiltered_system.init F'
   -- Step 3: interpret the results
   use fun j => (u ⟨j⟩).down
   intro j j' f
   have h := @hu (⟨j⟩ : J') (⟨j'⟩ : J') (ULift.up f)
-  simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map] at h
+  simp only [F', down, AsSmall.down] at h
   simp_rw [← h]
   rfl
 
@@ -239,7 +239,7 @@ theorem isMittagLeffler_of_exists_finite_range
   rintro _ ⟨⟨k', g'⟩, rfl⟩ hl
   refine (eq_of_le_of_not_lt hl ?_).ge
   have := hmin _ ⟨k', g', (m.finite_toSet.subset <| hm.substr hl).coe_toFinset⟩
-  rwa [Finset.lt_iff_ssubset, ← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
+  rwa [← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
 
 /-- The subfunctor of `F` obtained by restricting to the eventual range at each index. -/
 @[simps obj map]
@@ -307,11 +307,12 @@ variable [∀ j : J, Nonempty (F.obj j)] [∀ j : J, Finite (F.obj j)]
   (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f))
 include Fsur
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem eval_section_surjective_of_surjective (i : J) :
     (fun s : F.sections => s.val i).Surjective := fun x => by
   let s : Set (F.obj i) := {x}
-  haveI := F.toPreimages_nonempty_of_surjective s Fsur (singleton_nonempty x)
+  have := F.toPreimages_nonempty_of_surjective s Fsur (singleton_nonempty x)
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)
   refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using! h jk⟩, ?_⟩
   · have := (sec i).prop
@@ -321,8 +322,8 @@ theorem eval_section_surjective_of_surjective (i : J) :
 
 theorem eventually_injective [Nonempty J] [Finite F.sections] :
     ∃ j, ∀ (i) (f : i ⟶ j), Function.Injective (F.map f) := by
-  haveI : ∀ j, Fintype (F.obj j) := fun j => Fintype.ofFinite (F.obj j)
-  haveI : Fintype F.sections := Fintype.ofFinite F.sections
+  have : ∀ j, Fintype (F.obj j) := fun j => Fintype.ofFinite (F.obj j)
+  have : Fintype F.sections := Fintype.ofFinite F.sections
   have card_le : ∀ j, Fintype.card (F.obj j) ≤ Fintype.card F.sections :=
     fun j => Fintype.card_le_of_surjective _ (F.eval_section_surjective_of_surjective Fsur j)
   let fn j := Fintype.card F.sections - Fintype.card (F.obj j)

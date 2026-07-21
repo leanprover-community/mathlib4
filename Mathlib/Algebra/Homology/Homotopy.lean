@@ -248,7 +248,7 @@ def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
     rw [dNext_eq hom hij, prevD_eq hom hij, Preadditive.comp_add, Preadditive.add_comp, eq1, eq2,
       add_zero, zero_add, assoc]
 
-open Classical in
+open scoped Classical in
 /-- Variant of `nullHomotopicMap` where the input consists only of the
 relevant maps `C_i ⟶ D_j` such that `c.Rel j i`. -/
 def nullHomotopicMap' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : C ⟶ D :=
@@ -330,7 +330,7 @@ def nullHomotopy (hom : ∀ i j, C.X i ⟶ D.X j) (zero : ∀ i j, ¬c.Rel j i �
       rw [HomologicalComplex.zero_f_apply, add_zero]
       rfl }
 
-open Classical in
+open scoped Classical in
 /-- Homotopy to zero for maps constructed with `nullHomotopicMap'` -/
 @[simps!]
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
@@ -483,6 +483,7 @@ def mkInductiveAux₁ :
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary construction for `mkInductive`.
 -/
 def mkInductiveAux₂ :
@@ -493,23 +494,27 @@ def mkInductiveAux₂ :
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using! I.2.2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem mkInductiveAux₂_zero :
     mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
       ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem mkInductiveAux₂_add_one (n) :
     mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
       letI I := mkInductiveAux₁ e zero one comm_one succ n
       ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using! I.2.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom =
       (P.xNextIso h).inv ≫ (mkInductiveAux₂ e zero comm_zero one comm_one succ j).1 := by
   subst j
   rcases i with (_ | _ | i) <;> simp [mkInductiveAux₂]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed chain complexes,
 working by induction.
@@ -613,6 +618,7 @@ def mkCoinductiveAux₁ :
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary construction for `mkInductive`.
 -/
 def mkCoinductiveAux₂ :
@@ -622,23 +628,27 @@ def mkCoinductiveAux₂ :
     let I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using! I.2.2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem mkCoinductiveAux₂_zero :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =
       ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using comm_zero⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem mkCoinductiveAux₂_add_one (n) :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
       letI I := mkCoinductiveAux₁ e zero one comm_one succ n
       ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using! I.2.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.1 =
       (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).1 ≫ (Q.xPrevIso h).hom := by
   subst j
   rcases i with (_ | _ | i) <;> simp [mkCoinductiveAux₂]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed cochain complexes,
 working by induction.

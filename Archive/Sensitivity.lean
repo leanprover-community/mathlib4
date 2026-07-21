@@ -140,7 +140,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
 
 @[symm]
 theorem adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
-  simp only [adjacent, ne_comm, Set.mem_setOf_eq]
+  simp only [adjacent, ne_comm, Set.mem_ofPred_eq]
 
 end Q
 
@@ -195,7 +195,6 @@ noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
 variable {n : ℕ}
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction n with
   | zero => simp [Subsingleton.elim (α := Q 0) p q, ε, e]
@@ -225,7 +224,6 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
 
 open Module
 
-open Classical in
 /-- `e` and `ε` are dual families of vectors. It implies that `e` is indeed a basis
 and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
@@ -240,11 +238,9 @@ since this cardinal is finite, as a natural number in `finrank_V` -/
 
 theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
   have : Module.rank ℝ (V n) = (2 ^ n : ℕ) := by
-    classical
     rw [rank_eq_card_basis (dualBases_e_ε _).basis, Q.card]
   assumption_mod_cast
 
-open Classical in
 instance : FiniteDimensional ℝ (V n) :=
   (dualBases_e_ε _).basis.finiteDimensional_of_finite
 
@@ -293,7 +289,7 @@ theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
 `q` the column index). -/
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction n with
   | zero =>
@@ -372,7 +368,7 @@ local notation "Card " X:70 => #(Set.toFinset X)
 equipped with their subspace structures. The notations come from the general
 theory of lattices, with inf and sup (also known as meet and join). -/
 
-open Classical in
+open scoped Classical in
 /-- If a subset `H` of `Q (m+1)` has cardinal at least `2^m + 1` then the
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
@@ -391,12 +387,12 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
-    have li : LinearIndependent ℝ (H.restrict e) := by
+    have li : LinearIndependent ℝ (H.domRestrict e) := by
       convert! (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
       rw [(dualBases_e_ε _).coe_basis]
       rfl
     have hdW := rank_span li
-    rw [Set.range_restrict] at hdW
+    rw [Set.range_domRestrict] at hdW
     convert! hdW
     rw [← (dualBases_e_ε _).coe_basis, Cardinal.mk_image_eq (dualBases_e_ε _).basis.injective,
       Cardinal.mk_fintype]
@@ -407,7 +403,8 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   rw [Set.toFinset_card] at hH
   linarith
 
-open Classical in
+set_option backward.isDefEq.respectTransparency false in
+open scoped Classical in
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     ∃ q, q ∈ H ∧ √(m + 1) ≤ Card H ∩ q.adjacent := by
