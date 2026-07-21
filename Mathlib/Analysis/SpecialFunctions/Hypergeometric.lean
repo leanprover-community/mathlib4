@@ -132,12 +132,9 @@ theorem foobar (a : Fin p → ℂ) (b : Fin q → ℂ) (hn : n ≠ 0) :
   calc
     _ = n * n ^ q * n ^ (p - q - (1 : ℤ)) * ∏ x, (a x + n) / n := by
       congr 1
-      rw [← pow_succ']
-      simp_rw [← zpow_natCast]
-      rw [← zpow_add' (by left; norm_cast)]
+      rw [← pow_succ', ← zpow_natCast, ← zpow_natCast, ← zpow_add' (by left; norm_cast)]
       grind
-    _ = _ := by
-      ring
+    _ = _ := by ring
 
 /-- The regularized hypergeometric series. -/
 def regularizedHGFunSeries (a : Fin p → ℂ) (b : Fin q → ℂ) :
@@ -216,27 +213,13 @@ theorem radius_regularizedHGFunSeries_eq_top (a : Fin p → ℂ) (b : Fin q → 
   · apply eventually_atTop_regularizedHGFunCoeff_ne_zero ha
   · simp only [Nat.succ_eq_add_one]
     have h₁ : Tendsto (fun (n : ℕ) ↦ (n : ℂ) ^ (p - (q : ℤ) - 1)) atTop (𝓝 0) := by
-      rw [NormedAddCommGroup.tendsto_atTop']
-      obtain ⟨j, hj⟩ := Nat.exists_eq_add_of_lt h
-      simp only [Nat.add_right_cancel_iff] at hj
-      rw [hj]
-      simp only [Nat.cast_add, sub_add_cancel_left, sub_zero, norm_zpow, RCLike.norm_natCast]
-      intro ε hε
-      use 1 + ⌈ε ^ (-(j : ℝ) - 1)⁻¹⌉₊
-      intro n hn
-      have hn₁ : 0 < n := lt_of_le_of_lt (by simp) hn
-      have hn₂ : ε ^ (-(j : ℝ) - 1)⁻¹ < n := calc
-        _ < 1 + ε ^ (-(j : ℝ) - 1)⁻¹ := by grind
-        _ ≤ 1 + (⌈ε ^ (-(j : ℝ) - 1)⁻¹⌉₊ : ℝ) := by
-          gcongr
-          apply Nat.le_ceil
-        _ < n := by
-          norm_cast
-          push_cast
-          apply hn
-      rw [← Real.rpow_intCast]
-      push_cast
-      rwa [← Real.rpow_inv_lt_iff_of_neg hε (by norm_cast) (by grind)]
+      have := (tendsto_one_div_atTop_nhds_zero_nat (𝕜 := ℂ)).pow (q + 1 - p)
+      rw [zero_pow (by grind)] at this
+      apply this.congr
+      intro n
+      rw [one_div, inv_pow, ← zpow_natCast, ← zpow_neg, Int.ofNat_sub (by grind),
+        Int.natCast_add_one]
+      ring_nf
     have := (h₁.mul (blubb' a b)).norm
     simp only [mul_one, norm_zero] at this
     apply this.congr'
