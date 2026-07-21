@@ -87,7 +87,7 @@ lemma latticeClosure_constructibleTopologySubbasis [CompactSpace X] [QuasiSepara
     latticeClosure (constructibleTopologySubbasis X) = { s | IsConstructible s } := by
   rw [← BooleanSubalgebra.closure_eq_latticeClosure (empty_mem_constructibleTopologySubbasis X)
       compl_image_constructibleTopologySubbasis]
-  dsimp only [IsConstructible, SetLike.setOf_mem_eq]
+  dsimp only [IsConstructible, SetLike.setOfPred_mem_eq]
   congr 1
   refine le_antisymm ?_ (BooleanSubalgebra.closure_mono ?_)
   · rw [BooleanSubalgebra.closure_le]
