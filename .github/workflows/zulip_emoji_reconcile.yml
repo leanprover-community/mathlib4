@@ -112,6 +112,14 @@ jobs:
           echo "pr=${pr}" >> "$GITHUB_OUTPUT"
 
       - name: Reconcile
+        # Emoji reactions are cosmetic: a Zulip or API hiccup must never put a
+        # red X (or send a failure email) on a contributor's PR or a CI run. So
+        # the two contributor-facing event triggers swallow failures, matching
+        # the `continue-on-error` the retired event-driven workflows carried.
+        # The hourly `schedule` sweep and manual `workflow_dispatch` runs stay
+        # loud: the sweep is the health signal for the reconciler itself, and a
+        # manual run is someone actively debugging who wants to see the error.
+        continue-on-error: ${{ github.event_name == 'pull_request_target' || github.event_name == 'workflow_run' }}
         # Skip when no config is present (nightly, pre-sync), and skip only a
         # workflow_run whose head commit no longer maps to a PR; schedule and
         # PR-less dispatches sweep instead.
