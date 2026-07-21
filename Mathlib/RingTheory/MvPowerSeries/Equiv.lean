@@ -571,7 +571,7 @@ section optionEquivRight
 
 variable (R σ) in
 /-- Implementation detail for `optionEquivRight`. Use `MvPowerSeries.optionEquivRight` instead. -/
-def optionFunRight (p : MvPowerSeries (Option σ) R) : MvPowerSeries σ (PowerSeries R) :=
+private def optionFunRight (p : MvPowerSeries (Option σ) R) : MvPowerSeries σ (PowerSeries R) :=
   fun x ↦ .mk fun n ↦ p.coeff (x.optionElim n)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -597,18 +597,26 @@ private theorem optionFunRight_monomial (x : Option σ →₀ ℕ) (r : R) :
 private lemma optionFunRight_mul (p q : MvPowerSeries (Option σ) R) :
     optionFunRight σ R (p * q) = optionFunRight σ R p * optionFunRight σ R q := by
   classical
-  ext
-  simpa [coeff_coeff_optionFunRight, coeff_mul, ← image_optionElim_product_antidiagonal,
-    PowerSeries.coeff_mul, ← sum_product_right'] using sum_image
-      (LeftInverse.injective (g := fun (x, y) ↦ ((x none, y none), x.some, y.some))
-      (fun _ ↦ by simp)).injOn
+  ext x k
+  simp only [coeff_coeff_optionFunRight, coeff_mul, PowerSeries.coeff_mul, map_sum, sum_sigma']
+  refine sum_bij (fun y _ ↦ ⟨(y.1.some, y.2.some), (y.1 none, y.2 none)⟩) ?_ ?_ ?_ ?_
+  · intros; simp_all [Finsupp.ext_iff]
+  · intros; ext t <;> cases t
+    all_goals simp_all [Finsupp.ext_iff]
+  · rintro ⟨⟨u, v⟩, ⟨m, n⟩⟩ h
+    suffices ∃ a b, (a.some = u ∧ b.some = v) ∧ a none = m ∧ a + b = optionElim k x ∧
+      b none = n by simpa
+    use u.optionElim m, v.optionElim n
+    suffices optionElim m u + optionElim n v = optionElim k x by simp_all
+    ext t; cases t <;> simp_all [Finsupp.ext_iff]
+  · intros; simp_all [Finsupp.ext_iff]
 
 variable (R σ) in
 /-- An inverse function of `optionFunRight`. -/
-def optionInvFunRight (p : MvPowerSeries σ (PowerSeries R)) : MvPowerSeries (Option σ) R :=
+private def optionInvFunRight (p : MvPowerSeries σ (PowerSeries R)) : MvPowerSeries (Option σ) R :=
   fun x ↦ (p.coeff x.some).coeff (x none)
 
-lemma coeff_optionInvFunRight (p : MvPowerSeries σ (PowerSeries R)) (x : Option σ →₀ ℕ) :
+private lemma coeff_optionInvFunRight (p : MvPowerSeries σ (PowerSeries R)) (x : Option σ →₀ ℕ) :
     coeff x (optionInvFunRight σ R p) = (p.coeff x.some).coeff (x none) := rfl
 
 variable (R σ) in
