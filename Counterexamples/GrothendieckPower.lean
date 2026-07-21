@@ -20,7 +20,7 @@ Grothendieck asked whether a finite locally free group scheme of order `n` is ki
 Deligne proved that this holds for commutative group schemes.  This file formalizes a
 counterexample in the non-commutative case: an affine group scheme, finite free of rank four
 over the base ring `R = ℤ[a, b] / (a³, b³, a²b + 2)`, whose fourth power map is not trivial.
-Note that `R` is a finite ring of size `2^{10}` satisfying `4 = 0` but `2 ≠ 0`.
+Note that `R` is a finite ring of size `2^9` satisfying `4 = 0` but `2 ≠ 0`.
 
 The coordinate Hopf algebra of the counterexample is `A = R[U, V] / (U² - abU + b²V, V² - a²V)`,
 built as a `QuadraticAlgebra` over the `QuadraticAlgebra` `B := R[V] / (V² - a²V)`.
