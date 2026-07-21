@@ -22,9 +22,13 @@ syntax "ensure_constructive " ident (&" up_to " ident,+)? : command
 elab_rules : command
 | `(ensure_constructive $id $[up_to $ignored,*]?) => runTermElabM fun _ => do
   let n ← realizeGlobalConstNoOverloadWithInfo id
-  let allowed ← ignored.elim #[] (·.getElems) |>.mapM (realizeGlobalConstNoOverloadWithInfo ·.raw)
+  let ignored := ignored.elim #[] (·.getElems)
+  let allowed ← ignored.mapM (realizeGlobalConstNoOverloadWithInfo ·.raw)
   let constructiveBasic ← isConstructive n (constructiveAxioms ++ allowed)
-  let constructive ← ensureConstructiveVerbose id (ignored.elim #[] (·.getElems))
+  -- Only need to run `ensureConstructiveVerbose` for errors or to detect unnecessary `up_to`
+  if constructiveBasic && ignored.isEmpty then
+    return
+  let constructive ← ensureConstructiveVerbose id ignored
   if !constructive && !(← MonadLog.hasErrors) then
     throwErrorAt id "`{id}` is not constructive, but no errors were logged. \
       This is an internal error."
