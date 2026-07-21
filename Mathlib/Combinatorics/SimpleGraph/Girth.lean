@@ -86,7 +86,7 @@ lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.
        (w.drop (w.length / 2)).reverse.bypass_isPath <| by grind [take_length,
       length_reverse, length_append, length_bypass_le_length, ENat.coe_lt_coe,
       length_eq_zero_iff,
-      append_take_drop_eq, IsCycle.isPath_of_append_right, IsPath.reverse])
+      append_take_drop_eq, IsCycle.isPath_of_append_right, IsPath.reverse]
     grind [ENat.coe_lt_coe, length_bypass_le_length, length_reverse, egirth_le_length,
       ENat.coe_le_coe, length_append, take_length, append_take_drop_eq]
   calc
