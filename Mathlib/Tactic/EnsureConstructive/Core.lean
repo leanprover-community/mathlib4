@@ -7,7 +7,11 @@ module
 
 public import Lean.Meta.Basic
 public import Lean.Elab.Term.TermElabM
+import Mathlib.Init
 
+/-!
+# Core functionality of `ensure_constructive`
+-/
 namespace Mathlib.Tactic.EnsureConstructive
 
 open Lean Meta
@@ -27,7 +31,7 @@ def Path.push (p : Path) (const : Name) : Path where
   nesting := const :: p.nesting
 
 structure ViolationKind where
-  isAxiom  : Bool := false
+  isAxiom : Bool := false
   isOpaque : Bool := false
 deriving Ord, Repr, Inhabited
 
@@ -117,7 +121,8 @@ def Violations.prettyPaths (vs : Violations) (root : Name) : MessageData :=
   m!"{vs.toPrettyTree root}"
 
 /-- Assumes `next` is already in `vs` if specified. -/
-def Violations.addPath (vs : Violations) (nesting : List Name) (next? : Option Name := none) : Violations :=
+def Violations.addPath (vs : Violations) (nesting : List Name) (next? : Option Name := none) :
+    Violations :=
   match nesting with
   | [] => vs
   | current :: nesting =>
@@ -145,7 +150,7 @@ namespace Perf
 
 structure PerfState where
   -- TODO: unsafe
-  visited       : ExprSet := ∅
+  visited : ExprSet := ∅
   visitedConsts : NameHashSet := {}
 
 abbrev VisitM := ReaderT (Array Name) <| StateT PerfState MetaM
@@ -196,8 +201,7 @@ where
 
 end Perf
 
-public def isConstructiveExpr (e : Expr) (allowedConstants := constructiveAxioms) :
-    MetaM Bool := do
+public def isConstructiveExpr (e : Expr) (allowedConstants := constructiveAxioms) : MetaM Bool := do
   unless !(← getEnv).header.isModule do
     throwError "Constructivity can only be determined in a non-module file."
   Perf.visit e allowedConstants |>.run' {}
@@ -209,7 +213,8 @@ public def isConstructive (n : Name) (allowedConstants := constructiveAxioms) : 
 
 -- TODO: change to fold over all violations in arbitrary monad, record violations there?
 partial def visit (e : Expr) : VisitM Unit := do
-  -- TODO: need to keep track of each *expr's* violations-with-paths...or else give up the performance boost.
+  -- TODO: need to keep track of each *expr's* violations-with-paths...or else give up the
+  -- performance boost.
   -- if (← get).visited.contains e then
   --   return
   -- Don't visit proofs or types
@@ -346,3 +351,5 @@ public def ensureConstructiveVerbose (id : Ident) (ignoring : Array Ident) (verb
   | _ => return true
 
 initialize registerTraceClass `EnsureConstructive
+
+end Mathlib.Tactic.EnsureConstructive

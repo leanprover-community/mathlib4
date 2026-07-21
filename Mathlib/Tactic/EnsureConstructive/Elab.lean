@@ -8,6 +8,10 @@ module
 public meta import Mathlib.Tactic.EnsureConstructive.Core
 public meta import Lean.Elab.Command
 
+/-!
+# Syntax and elaboration of `ensure_constructive`
+-/
+
 open Lean Elab Command Mathlib.Tactic.EnsureConstructive
 
 /--
