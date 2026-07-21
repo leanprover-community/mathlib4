@@ -269,19 +269,46 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
   rw [norm_mul, ← one_mul r]
   exact mul_lt_mul' ha hyr (norm_nonneg y) one_pos
 
-variable (𝕜 E)
-
+variable (𝕜 E) in
 theorem nhds_basis_balanced :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ Balanced 𝕜 s) id :=
   Filter.hasBasis_self.mpr fun s hs =>
     ⟨balancedCore 𝕜 s, balancedCore_mem_nhds_zero hs, balancedCore_balanced s,
       balancedCore_subset s⟩
 
+variable (𝕜 E) in
 theorem nhds_basis_closed_balanced [RegularSpace E] :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ Balanced 𝕜 s) id := by
   refine
     (closed_nhds_basis 0).to_hasBasis (fun s hs => ?_) fun s hs => ⟨s, ⟨hs.1, hs.2.1⟩, rfl.subset⟩
   refine ⟨balancedCore 𝕜 s, ⟨balancedCore_mem_nhds_zero hs.1, ?_⟩, balancedCore_subset s⟩
   exact ⟨hs.2.balancedCore, balancedCore_balanced s⟩
+
+section NontriviallyNormedField
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+
+private theorem smul_tendsto_zero_of_norm_left_le_one {ι : Type*} {f : ι → 𝕜} {g : ι → E}
+    {l : Filter ι} (hf : ∀ᶠ i in l, ‖f i‖ ≤ 1) (hg : Tendsto g l (𝓝 0)) :
+    Tendsto (fun x => f x • g x) l (𝓝 0) := by
+  refine (nhds_basis_balanced 𝕜 E).tendsto_right_iff.mpr fun V ⟨V_mem, V_bal⟩ ↦ ?_
+  filter_upwards [hg.eventually_mem V_mem, hf] with x hgx hfx
+  exact V_bal.smul_mem hfx hgx
+
+theorem Filter.IsBoundedUnder.smul_tendsto_zero {ι : Type*} {f : ι → 𝕜} {g : ι → E}
+    {l : Filter ι} (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
+    Tendsto (fun x => f x • g x) l (𝓝 0) := by
+  obtain ⟨R, hR⟩ := hf.eventually_le
+  obtain ⟨c, hc⟩ := NormedField.exists_lt_norm 𝕜 (max 0 R)
+  have c_ne : c ≠ 0 := norm_pos_iff.mp <| (le_max_left 0 R).trans_lt hc
+  replace hc : R ≤ ‖c‖ := (le_max_right 0 R).trans hc.le
+  have hf' : ∀ᶠ i in l, ‖f i * c⁻¹‖ ≤ 1 := by
+    filter_upwards [hR] with x hx
+    rw [norm_mul, norm_inv]
+    exact mul_inv_le_one_of_le₀ (hx.trans hc) (norm_nonneg _)
+  have hg' : Tendsto (fun x ↦ c • g x) l (𝓝 0) := by simpa using hg.const_smul c
+  exact smul_tendsto_zero_of_norm_left_le_one hf' hg' |>.congr fun x ↦ by simp [← mul_smul, c_ne]
+
+end NontriviallyNormedField
 
 end Topology

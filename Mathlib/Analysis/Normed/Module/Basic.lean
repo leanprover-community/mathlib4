@@ -87,7 +87,7 @@ theorem Filter.Tendsto.zero_smul_isBoundedUnder_le {f : α → 𝕜} {g : α →
     Tendsto (fun x => f x • g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· • ·) norm_smul_le
 
-theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E} {l : Filter α}
+theorem Filter.IsBoundedUnder.smul_tendsto_zero_normedSpace {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x => f x • g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· • ·)) fun x y =>
