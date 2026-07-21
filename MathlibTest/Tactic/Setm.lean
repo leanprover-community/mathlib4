@@ -226,3 +226,13 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 example : True := by
   setm _
   trivial
+
+/- If different holes resolve to identical expressions, occurrences of the expression will be
+replaced by the first hole in alphabetical order. -/
+example (h : 1 + 1 = 2) : 1 + 1 = 2 := by
+  setm ?b + ?a = _ at h
+  guard_hyp a :=ₛ 1
+  guard_hyp b :=ₛ 1
+  guard_hyp h :ₛ a + a = 2
+  guard_target =ₛ b + a = 2
+  exact h
