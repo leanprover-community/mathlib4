@@ -43,16 +43,16 @@ class NonUnitalDendriformSemiring (M) extends AddCommMonoid M where
   left : M → M → M
   /-- The right operation splitting the associative product -/
   right : M → M → M
-  left_add_id a b c : left (a + b) c = left a c + left b c
-  left_id_add a b c : left a (b + c) = left a b + left a c
-  right_add_id a b c : right (a + b) c = right a c + right b c
-  right_id_add a b c : right a (b + c) = right a b + right a c
-  left_id_zero a : left a 0 = 0
-  left_zero_id a : left 0 a = 0
-  right_id_zero a : right a 0 = 0
-  right_zero_id a : right 0 a = 0
+  add_left' a b c : left (a + b) c = left a c + left b c
+  left_add' a b c : left a (b + c) = left a b + left a c
+  add_right' a b c : right (a + b) c = right a c + right b c
+  right_add' a b c : right a (b + c) = right a b + right a c
+  left_zero' a : left a 0 = 0
+  zero_left' a : left 0 a = 0
+  right_zero' a : right a 0 = 0
+  zero_right' a : right 0 a = 0
   right_right_eq_mul_right' a b c : right a (right b c) = right (right a b + left a b) c
-  right_left_assoc' a b c : right a (left b c) = left (right a b) c
+  right_left_assoc' a b c : left (right a b) c = right a (left b c) 
   left_mul_eq_left_left' a b c : left a (right b c + left b c) = left (left a b) c
 
 /-- Notation for the right operation. The symbol points right. -/
@@ -96,37 +96,37 @@ instance : Mul M where
 @[simp]
 lemma mul_def : a * b = a ≻ b + a ≺ b := rfl
 @[simp]
-lemma right_zero : a ≻ 0 = (0 : M) := right_id_zero a
+lemma right_zero : a ≻ 0 = (0 : M) := right_zero' a
 
 @[simp]
-lemma zero_right : 0 ≻ a = (0 : M) := right_zero_id a
+lemma zero_right : 0 ≻ a = (0 : M) := zero_right' a
 
 @[simp]
-lemma left_zero : a ≺ 0 = (0 : M) := left_id_zero a
+lemma left_zero : a ≺ 0 = (0 : M) := left_zero' a
 
 @[simp]
-lemma zero_left : 0 ≺ a = (0 : M) := left_zero_id a
+lemma zero_left : 0 ≺ a = (0 : M) := zero_left' a
 
 @[simp]
-lemma add_right : (a + b) ≻ c = a ≻ c + b ≻ c := right_add_id a b c
+lemma add_right : (a + b) ≻ c = a ≻ c + b ≻ c := add_right' a b c
 
 @[simp]
-lemma right_add : a ≻ (b + c) = a ≻ b + a ≻ c := right_id_add a b c
+lemma right_add : a ≻ (b + c) = a ≻ b + a ≻ c := right_add' a b c
 
 @[simp]
-lemma add_left : (a + b) ≺ c = a ≺ c + b ≺ c := left_add_id a b c
+lemma add_left : (a + b) ≺ c = a ≺ c + b ≺ c := add_left' a b c
 
 @[simp]
-lemma left_add : a ≺ (b + c) = a ≺ b + a ≺ c := left_id_add a b c
+lemma left_add : a ≺ (b + c) = a ≺ b + a ≺ c := left_add' a b c
 
 @[simp]
-lemma right_left_assoc : a ≻ b ≺ c = (a ≻ b) ≺ c := right_left_assoc' a b c
+lemma right_left_assoc : (a ≻ b) ≺ c = a ≻ b ≺ c := right_left_assoc' a b c
 
 @[simp]
-lemma right_right_eq_mul_right : (a ≺ b) ≺ c = a ≺ (b * c) := by simp [← left_mul_eq_left_left']
+lemma left_left_eq_left_mul : (a ≺ b) ≺ c = a ≺ (b * c) := by simp [← left_mul_eq_left_left']
 
 @[simp]
-lemma left_mul_eq_left_left : a ≻ (b ≻ c) = (a * b) ≻ c := by simp [right_right_eq_mul_right']
+lemma right_right_eq_mul_right : a ≻ (b ≻ c) = (a * b) ≻ c := by simp [right_right_eq_mul_right']
 
 instance : NonUnitalSemiring M where
   left_distrib a b c := by simpa using by abel_nf
@@ -200,40 +200,40 @@ lemma right_sub : a ≻ (b - c) = a ≻ b - a ≻ c := by simp [sub_eq_add_neg]
 instance : Ring M where
 
 /-- The antisymmetrization of `≻` and `≺` yield a pre-Lie product. -/
-def prelie_lr := a ≻ b - b ≺ a
+def preLieLR := a ≻ b - b ≺ a
 
 /-- The antisymmetrization of `≺` and `≻` yield a pre-Lie product. -/
-def prelie_rl := a ≺ b - b ≻ a
+def preLieRL := a ≺ b - b ≻ a
 
 /-- The antisymmetrization `a ≻ b - b ≺ a` yields a `NonAssocNonUnitalRing`.
 See note [reducible non-instances] -/
 abbrev toNonAssocNonUnitalRingLR : NonUnitalNonAssocRing M where
-  mul := prelie_lr
-  left_distrib a b c := by simpa [HMul.hMul, prelie_lr] using by abel_nf
-  right_distrib a b c := by simpa [HMul.hMul, prelie_lr] using by abel_nf
-  zero_mul a := by simp [HMul.hMul, prelie_lr]
-  mul_zero a := by simp [HMul.hMul, prelie_lr]
+  mul := preLieLR
+  left_distrib a b c := by simpa [HMul.hMul, preLieLR] using by abel_nf
+  right_distrib a b c := by simpa [HMul.hMul, preLieLR] using by abel_nf
+  zero_mul a := by simp [HMul.hMul, preLieLR]
+  mul_zero a := by simp [HMul.hMul, preLieLR]
 
 /-- The antisymmetrization `a ≻ b - b ≺ a` yields a `LeftPreLieRing`.
 See note [reducible non-instances] -/
 abbrev toLeftPreLieRing : LeftPreLieRing M where
   __ := toNonAssocNonUnitalRingLR
-  assoc_symm' x y z := by simpa [associator, HMul.hMul, Mul.mul, prelie_lr] using by abel_nf
+  assoc_symm' x y z := by simpa [associator, HMul.hMul, Mul.mul, preLieLR] using by abel_nf
 
 /-- The antisymmetrization `a ≺ b - b ≻ a` yields a `NonAssocNonUnitalRing`.
 See note [reducible non-instances] -/
-abbrev toNonAssocNonUnitalRingRL : NonUnitalNonAssocRing M where
-  mul := prelie_rl
-  left_distrib a b c := by simpa [HMul.hMul, prelie_rl] using by abel_nf
-  right_distrib a b c := by simpa [HMul.hMul, prelie_rl] using by abel_nf
-  zero_mul a := by simp [HMul.hMul, prelie_rl]
-  mul_zero a := by simp [HMul.hMul, prelie_rl]
+abbrev toNonUnitalNonAssocRingRL : NonUnitalNonAssocRing M where
+  mul := preLieRL
+  left_distrib a b c := by simpa [HMul.hMul, preLieRL] using by abel_nf
+  right_distrib a b c := by simpa [HMul.hMul, preLieRL] using by abel_nf
+  zero_mul a := by simp [HMul.hMul, preLieRL]
+  mul_zero a := by simp [HMul.hMul, preLieRL]
 
 /-- The antisymmetrization `a ≻ b - b ≺ a` yields a `RightPreLieRing`.
 See note [reducible non-instances] -/
 abbrev toRightPreLieRing : RightPreLieRing M where
-  __ := toNonAssocNonUnitalRingRL
-  assoc_symm' x y z := by simpa [associator_apply, HMul.hMul, Mul.mul, prelie_rl] using by abel_nf
+  __ := toNonUnitalNonAssocRingRL
+  assoc_symm' x y z := by simpa [associator_apply, HMul.hMul, Mul.mul, preLieRL] using by abel_nf
 
 scoped[DendriformLR] attribute [instance] DendriformRing.toLeftPreLieRing
 scoped[DendriformRL] attribute [instance] DendriformRing.toRightPreLieRing
