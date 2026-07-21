@@ -24,7 +24,7 @@ namespace NumberField.LiesOver
 open InfinitePlace InfinitePlace.Completion
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] {v : InfinitePlace K} {w : InfinitePlace L}
-variable [w.1.LiesOver v.1]
+variable [w.LiesOver v]
 
 /-- The ring homomorphism `v.Completion →+* w.Completion` induced by `algebraMap K L`, when `w`
 lies over `v`. -/
