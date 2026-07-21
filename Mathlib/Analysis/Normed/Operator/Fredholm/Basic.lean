@@ -41,7 +41,7 @@ the following four equivalent conditions:
 * `ContinuousLinearMap.FredholmPackage`: a **Fredholm package** for `u : E →L[𝕜] F` is the data of
   Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
   a continuous linear equivalence `equiv : decDom.X₁ ≃ₗ[𝕜] decCodom.X₁` between the "essential"
-  (i.e finite codimension) parts of these decompositions, such that `u` equals the composition
+  (i.e. finite codimension) parts of these decompositions, such that `u` equals the composition
   `decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj`.
 
 Note that the data of a `FredholmPackage` for an operator is morally the strongest of the
@@ -144,12 +144,12 @@ variable (𝕜 E) in
 /-- A **Fredholm decomposition** of a topological vector space `E` is the data of two subspaces
 `X₀` and `X₁` which are topological complements, and where `X₀` is finite dimensional.
 
-Note that we purposefully use the index `₀` for the "inessential" (i.e finite dimensional)
+Note that we purposefully use the index `₀` for the "inessential" (i.e. finite dimensional)
 part of the decomposition. -/
 structure _root_.FredholmDecomposition where
-  /-- The inessential (i.e finite dimensional) part of a Fredholm decomposition. -/
+  /-- The inessential (i.e. finite dimensional) part of a Fredholm decomposition. -/
   X₀ : Submodule 𝕜 E
-  /-- The essential (i.e finite co-dimensional) part of a Fredholm decomposition. -/
+  /-- The essential (i.e. finite co-dimensional) part of a Fredholm decomposition. -/
   X₁ : Submodule 𝕜 E
   isTopCompl : IsTopCompl X₁ X₀
   finite_X₀ : FiniteDimensional 𝕜 X₀
@@ -163,7 +163,7 @@ abbrev _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
 /-- Let `u : E →L[𝕜] F` be a continuous linear map. A **Fredholm package** for `u` is the data of
 Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
 a continuous linear equivalence `equiv : decDom.X₁ ≃ₗ[𝕜] decCodom.X₁` between the "essential"
-(i.e finite codimension) parts of these decompositions, such that `u` equals the composition
+(i.e. finite codimension) parts of these decompositions, such that `u` equals the composition
 `decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj`. In other words, in these
 "essential ⊕ inessential" decompositions, the matrix of `u` is
 $$\begin{pmatrix} \texttt{equiv} & 0 \cr 0 & 0 \end{pmatrix}$$
