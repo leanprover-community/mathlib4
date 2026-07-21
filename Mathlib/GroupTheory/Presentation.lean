@@ -159,7 +159,7 @@ noncomputable def presentedGroupEquiv : PresentedGroup P.relSet ≃* G :=
     (QuotientGroup.quotientKerEquivOfSurjective P.lift P.lift_surjective')
 
 @[simp]
-lemma presentedGroupEquiv_of (a : α) :
+theorem presentedGroupEquiv_of (a : α) :
     P.presentedGroupEquiv (PresentedGroup.of a) = P.val a := P.lift_of a
 
 /-- A finite presentation is finitely presented. -/
