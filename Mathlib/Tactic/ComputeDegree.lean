@@ -83,7 +83,7 @@ The leaves of the process are
 
 public meta section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Mathlib.Tactic.ComputeDegree
 
@@ -109,7 +109,7 @@ theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
 theorem coeff_add_of_eq {n : ℕ} {a b : R} {f g : R[X]}
     (h_add_left : f.coeff n = a) (h_add_right : g.coeff n = b) :
-    (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply coeff_add
+    (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply Polynomial.coeff_add
 
 theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g : R[X]}
     (h_mul_left : natDegree f ≤ df) (h_mul_right : natDegree g ≤ dg)
@@ -197,7 +197,7 @@ variable [Ring R]
 theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_intCast _).le
 
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
-    (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
+    (f - g).coeff n = a - b := by subst hf hg; apply Polynomial.coeff_sub
 
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
   simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
@@ -245,7 +245,8 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
     -- `Finsupp` `coeff p` applied to `n`.
     | (``DFunLike.coe, #[_, _, _, _, cf, c]) =>
       match cf.getAppFnArgs with
-        | (``Polynomial.coeff, #[_, _, pol]) => (``Polynomial.coeff, pol, [rhs.isMVar, c.isMVar])
+        | (``AddMonoidAlgebra.coeff, #[_, _, _, pol]) =>
+          (``AddMonoidAlgebra.coeff, pol, [rhs.isMVar, c.isMVar])
         | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
     | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
   let head := match pol.numeral? with
@@ -339,7 +340,7 @@ def dispatchLemma
           dbg_trace f!"{lem.lastComponentAsString}\n{msg}"
         lem
       match head with
-        | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``coeff_zero
+        | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``Polynomial.coeff_zero
         | .inl `one  => π ``natDegree_one_le ``degree_one_le ``coeff_one
         | .inl `many => π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inl .anonymous => π ``le_rfl ``le_rfl ``rfl
@@ -352,7 +353,7 @@ def dispatchLemma
         | .inr ``HPow.hPow =>
           π ``natDegree_pow_le_of_le ``degree_pow_le_of_le ``coeff_pow_of_natDegree_le_of_eq_ite'
         | .inr ``Neg.neg =>
-          π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg
+          π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``Polynomial.coeff_neg
         | .inr ``Polynomial.X =>
           π ``natDegree_X_le ``degree_X_le ``coeff_X
         | .inr ``Nat.cast =>

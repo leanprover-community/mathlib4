@@ -66,16 +66,16 @@ theorem toFunLinear_tmul_apply (a : A) (p : R[X]) :
 -- We apparently need to provide the decidable instance here
 -- in order to successfully rewrite by this lemma.
 theorem toFunLinear_mul_tmul_mul_aux_1 (p : R[X]) (k : ℕ) (h : Decidable ¬p.coeff k = 0) (a : A) :
-    ite (¬coeff p k = 0) (a * (algebraMap R A) (coeff p k)) 0 =
-    a * (algebraMap R A) (coeff p k) := by split_ifs <;> simp [*]
+    ite (¬p.coeff k = 0) (a * (algebraMap R A) (p.coeff k)) 0 =
+    a * (algebraMap R A) (p.coeff k) := by split_ifs <;> simp [*]
 
 theorem toFunLinear_mul_tmul_mul_aux_2 (k : ℕ) (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     a₁ * a₂ * (algebraMap R A) ((p₁ * p₂).coeff k) =
       (Finset.antidiagonal k).sum fun x =>
-        a₁ * (algebraMap R A) (coeff p₁ x.1) * (a₂ * (algebraMap R A) (coeff p₂ x.2)) := by
+        a₁ * (algebraMap R A) (p₁.coeff x.1) * (a₂ * (algebraMap R A) (p₂.coeff x.2)) := by
   simp_rw [mul_assoc, Algebra.commutes, ← Finset.mul_sum, mul_assoc, ← Finset.mul_sum]
   congr
-  simp_rw [Algebra.commutes (coeff p₂ _), coeff_mul, map_sum, map_mul]
+  simp_rw [Algebra.commutes (p₂.coeff _), coeff_mul, map_sum, map_mul]
 
 theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     (toFunLinear R A) ((a₁ * a₂) ⊗ₜ[R] (p₁ * p₂)) =
@@ -87,8 +87,8 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     conv_rhs => rw [coeff_mul]
     simp_rw [finsetSum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne, mul_ite,
       mul_zero, ite_mul, zero_mul]
-    simp_rw [← ite_zero_mul (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
-    simp_rw [← mul_ite_zero (¬coeff p₂ _ = 0) _ (_ * _)]
+    simp_rw [← ite_zero_mul (¬p₁.coeff _ = 0) (a₁ * (algebraMap R A) (p₁.coeff _))]
+    simp_rw [← mul_ite_zero (¬p₂.coeff _ = 0) _ (_ * _)]
     simp_rw [toFunLinear_mul_tmul_mul_aux_1, toFunLinear_mul_tmul_mul_aux_2]
 
 theorem toFunLinear_one_tmul_one :
