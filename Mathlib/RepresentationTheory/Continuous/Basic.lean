@@ -18,16 +18,25 @@ related basic results.
 ## Main Results
 
 * `ContRepresentation R G V` is the type of continuous representations of a monoid `G` on a
-  `R`-module `V` which is a topological addgroup (where the action of `G` on `V` is
-  *not* assumed to be continuous). The reason for this more general definition is that it allows us
-  to define the coinduced representation of a continuous representation as also a continuous
-  representation without any restriction on the topology on `G`.
+  `R`-module `V` which is a topological addgroup. The monoid `G` is not assumed to have a topology,
+  but for each element of `G`, the action on `V` is a continuous linear map.
 
 * `ContIntertwiningMap π₁ π₂` is the type of continuous intertwining maps between two continuous
   representations `π₁` and `π₂`.
 
-* `ContRepresentation.coind₁ π` is the coinduced continuous representation on the space of
-  continuous functions from `G` to `V` for a continuous representation `π`.
+* `ContRepresentation.coind φ π`. If `G`and `H` are topological groups and `φ : G →ₜ* H` is
+  and `π` is a continuous representation of `G`, then `π.coind φ` is the induced continuous
+  representation of `H`.
+
+* `ContRepresentation.coind₁ π`. If `π` is a continuous representation of a topological group `G` on
+  `V` then `π.coind₁` is the continuous representation of `G` on `C(G,V)`, in which the action of
+  `G` is by conjugation. The functor `coind₁` is used to construct a resolution of `π` of the form
+  `0 → π → π.coind₁ → π.coind₁.coind₁ → π.coind₁.coind₁.coind₁ → ...`, which is used in the
+  definition of `continuousCohomology`.
+
+* `ContRepresentation.coind₁Equivcoind`. In the case that the action `G × V → V` is continuous,
+  `π.coind₁` is isomorphic to the coinduced representation of the trivial representation of the
+  trivial group on `V`.
 
 * `ContIntertwiningMap.mapInvariantsOfRes φ f` is the continuous linear map
   `π.invariants →L[R] π'.invariants` induced by a monoid homomorphism `φ : H →* G` and a
@@ -435,6 +444,10 @@ def trivial : ContRepresentation R G V := ofMonoidHom 1
 @[simp]
 lemma trivial_apply (g : G) (v : V) : trivial R G V g v = v := rfl
 
+lemma apply_apply (π : ContRepresentation R G V) (g h : G) (v : V) :
+    π g (π h v) = π (g * h) v := by
+  rw [map_mul]; rfl
+
 /-- The restriction of a continuous representation along a monoid homomorphism. -/
 @[implicit_reducible]
 def restrict {H : Type*} [Monoid H] (π : ContRepresentation R G V) (φ : H →* G) :
@@ -544,11 +557,10 @@ lemma mem_coindV (f : C(H, V)) : f ∈ π.coindV φ ↔ ∀ g h, f (φ g * h) = 
 instance : ContinuousSMul R (π.coindV φ) where
   continuous_smul := by continuity
 
-variable [IsTopologicalGroup G] [IsTopologicalGroup H]
+variable [IsTopologicalGroup H]
 
 /-- The coinduced continuous representation where the action of `H` is defined by
   `h ↦ f ↦ f ∘ (· * h)`. -/
-@[simps]
 def coind (π : ContRepresentation R G V) : ContRepresentation R H (π.coindV φ) where
   toMonoidHom.toFun h := {
     toFun | ⟨f, hf⟩ => ⟨f.comp (ContinuousMap.mulRight h), by simp [mul_assoc, hf _]⟩
@@ -559,14 +571,18 @@ def coind (π : ContRepresentation R G V) : ContRepresentation R H (π.coindV φ
   toMonoidHom.map_one' := by ext; simp
   toMonoidHom.map_mul' h1 h2 := by ext; simp [ContinuousMap.mulRight_mul]
 
+@[simp] lemma coind_apply_coe (h : H) (f : π.coindV φ) :
+    ↑(coind φ π h f) = (f : C(H, V)).comp (ContinuousMap.mulRight h) := rfl
+
 open ContinuousMap
+variable [IsTopologicalGroup G]
 
 /-- Given a continuous representation `π` of `G` on `V`,
 this defines a Continuous representation `π.coind₁` of `G` on the function space `C(G,V)`.
 The action of an element `g : G` is defined by `f ↦ (x ↦ π g (f (g⁻¹ * x)))`.
-This new representation of `G` is isomorphic to the continuous coinduction
-of the trivial representation of the trivial subgroup of `G`, but the action has been
-twisted so that the map `const : V → C(G,V)` is an intertwining map. -/
+This new representation of `G` is isomorphic (assuming that the map `G × V → V` is continuous)
+to the continuous coinduction of the trivial representation of the trivial subgroup of `G`,
+but the action has been twisted so that the map `const : V → C(G,V)` is an intertwining map. -/
 def coind₁ (π : ContRepresentation R G V) :
     ContRepresentation R G C(G, V) where
   toMonoidHom.toFun g := {
@@ -592,7 +608,7 @@ def coind₁Map {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R
   isIntertwining' g := by ext; simp [f.isIntertwining]
   cont := continuous_postcomp _
 
-/-- The naturality of the transformation from `𝟭 ⟶ coind₁`. -/
+/-- The natural transformation `𝟭 ⟶ coind₁`. -/
 @[simps]
 def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
   toFun := ContinuousMap.const G
@@ -601,12 +617,48 @@ def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
   isIntertwining' := by aesop
   cont := continuous_const'
 
-/-- The equivalence between `coind₁` and `coind` of the trivial representation of trivial
-  subgroup of `G`. -/
-def coind₁Equivcoind : (coind₁ (.trivial R (⊥ : Subgroup G) V)).Equiv
-  (coind 1 (.trivial R G V)) := .mk (Submodule.topContEquiv.symm.trans <|
-    ContinuousLinearEquiv.ofEq _ _ (by simp [SetLike.ext_iff])) <| fun g ↦ by
-    simp [Subsingleton.elim g 1, ContinuousLinearMap.one_def]
+omit [IsTopologicalGroup G] in
+lemma mem_coindV_one_trivial (f : C(G, V)) :
+    f ∈ (trivial R Unit V).coindV (1 : Unit →ₜ* G) := fun u h ↦ by simp
+
+omit [TopologicalSpace R] in
+/-- Continuity of the twist `f ↦ fun g ↦ π g (f g⁻¹)` underlying `coind₁Equivcoind`. -/
+lemma continuous_coind₁Equivcoind_aux (π : ContRepresentation R G V)
+    (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
+    Continuous fun F : C(G, V) ↦ ContinuousMap.mk (fun g ↦ π g (F g⁻¹))
+      (hπ.comp <| continuous_id.prodMk <| F.continuous.comp continuous_inv) :=
+  (((continuous_postcomp ⟨_, hπ⟩).comp <| (ContinuousMap.continuous_prodMk.comp <|
+    (continuous_const (y := ContinuousMap.id G)).prodMk continuous_id).comp <|
+      continuous_precomp (⟨Inv.inv, continuous_inv⟩ : C(G, G))).congr fun _ ↦ rfl)
+
+/-- If the action map `G × V → V`, `(g, v) ↦ π g v` is (jointly) continuous, then `π.coind₁` is
+equivalent to the coinduced representation along `Unit →ₜ* G` of the trivial representation of
+the trivial group on `V`. The underlying equivalence of `C(G, V)` is given in both directions
+by the twist `f ↦ fun g ↦ π g (f g⁻¹)`. -/
+def coind₁Equivcoind (π : ContRepresentation R G V)
+    (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
+    ((trivial R Unit V).coind (1 : Unit →ₜ* G)).Equiv π.coind₁ :=
+  .mk {
+    toFun f := ⟨fun g ↦ π g (f.1 g⁻¹),
+      hπ.comp <| continuous_id.prodMk <| f.1.continuous.comp continuous_inv⟩
+    invFun f' := ⟨⟨fun g ↦ π g (f' g⁻¹),
+      hπ.comp <| continuous_id.prodMk <| f'.continuous.comp continuous_inv⟩,
+      mem_coindV_one_trivial _⟩
+    left_inv _ := Subtype.ext <| ContinuousMap.ext fun g ↦ by simp [apply_apply]
+    right_inv _ := ContinuousMap.ext fun g ↦ by simp [apply_apply]
+    map_add' _ _ := by ext; simp
+    map_smul' _ _ := by ext; simp
+    continuous_toFun := (continuous_coind₁Equivcoind_aux π hπ).comp continuous_subtype_val
+    continuous_invFun := (continuous_coind₁Equivcoind_aux π hπ).subtype_mk fun _ ↦
+      mem_coindV_one_trivial _ }
+  fun g ↦ by
+    ext
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe,
+      ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk,
+      coind_apply_coe, comp_apply, coe_mulRight, coe_mk, coind₁_apply_apply, map_mul, mul_inv_rev,
+      inv_inv, mul_apply_eq_comp]
+    simp_rw [apply_apply]
+    simp
 
 section coind₁ResMap
 

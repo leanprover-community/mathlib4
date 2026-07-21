@@ -190,6 +190,32 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
   rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
   exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
 
+/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is continuous for the compact-open
+topologies, provided that `Y` and `Z` are regular spaces. In particular no local compactness
+of `X` is required. -/
+theorem continuous_prodMk [RegularSpace Y] [RegularSpace Z] :
+    Continuous fun p : C(X, Y) × C(X, Z) ↦ p.1.prodMk p.2 := by
+  simp_rw [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen]
+  rintro ⟨f, F⟩ K hK U hU H
+  choose V W hVo hWo hfV hFW hVWU using fun x (hx : x ∈ K) ↦
+    isOpen_prod_iff.mp hU (f x) (F x) (H hx)
+  choose S hS hSc hSV using fun x hx ↦
+    exists_mem_nhds_isClosed_subset ((hVo x hx).mem_nhds (hfV x hx))
+  choose L hL hLc hLW using fun x hx ↦
+    exists_mem_nhds_isClosed_subset ((hWo x hx).mem_nhds (hFW x hx))
+  obtain ⟨t, hKt⟩ := hK.elim_nhds_subcover' (fun x hx ↦ f ⁻¹' S x hx ∩ F ⁻¹' L x hx) fun x hx ↦
+    inter_mem (f.continuous.tendsto x (hS x hx)) (F.continuous.tendsto x (hL x hx))
+  have hcpt (i : K) : IsCompact (K ∩ (f ⁻¹' S i i.2 ∩ F ⁻¹' L i i.2)) :=
+    hK.inter_right (((hSc i i.2).preimage f.continuous).inter ((hLc i i.2).preimage F.continuous))
+  rw [nhds_prod_eq]
+  filter_upwards [prod_mem_prod
+    ((eventually_all_finset t).2 fun i _ ↦
+      eventually_mapsTo (hcpt i) (hVo i i.2) fun x hx ↦ hSV i i.2 hx.2.1)
+    ((eventually_all_finset t).2 fun i _ ↦
+      eventually_mapsTo (hcpt i) (hWo i i.2) fun x hx ↦ hLW i i.2 hx.2.2)] with p hp x hx
+  obtain ⟨i, hi, hxi⟩ := mem_iUnion₂.mp (hKt hx)
+  exact hVWU i i.2 ⟨hp.1 i hi ⟨hx, hxi⟩, hp.2 i hi ⟨hx, hxi⟩⟩
+
 variable [LocallyCompactPair Y Z]
 
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
