@@ -115,7 +115,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
   ]
 
 /-- Is this a syntax kind that contains intentionally unused tactic subterms? -/
-def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
+public def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
   k.components.contains `Conv ||
   "slice".isPrefixOf k.toString ||
   k matches .str _ "quot" ||
@@ -125,7 +125,7 @@ def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : 
 Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.
 This should be called from an `initialize` block.
 -/
-def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
+public def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
   ignoreTacticKindsRef.modify (·.insert kind)
 
 variable (ignoreTacticKinds : NameHashSet) (isTacKind : SyntaxNodeKind → Bool) in
