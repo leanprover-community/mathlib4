@@ -15,11 +15,32 @@ example : 1 + 2 = 3 := by
   guard_hyp b :=ₛ 2
   trivial
 
+/- We don't replace identical expressions unless the pattern requires it. -/
+example : 1 + 1 = 2 := by
+  setm ?a + _ = _
+  guard_hyp a :=ₛ 1
+  guard_target =ₛ a + 1 = 2
+  trivial
+
+/- However `at ⊢` will replace the identical expressions. -/
+example : 1 + 1 = 2 := by
+  setm ?a + _ = _ at ⊢
+  guard_hyp a :=ₛ 1
+  guard_target =ₛ a + a = 2
+  trivial
+
 /- Assignment of a constant under a binder. -/
 example : (fun x ↦ x + 2) = (fun y ↦ y + 1 + 1) := by
   setm (fun x ↦ x + ?b) = _
   guard_target =ₛ (fun x ↦ x + b) = (fun y ↦ y + 1 + 1)
   guard_hyp b :=ₛ 2
+  trivial
+
+/- If the name conflicts with a binder, the bound name is renamed. -/
+example : id = fun n : Nat ↦ n + 0 := by
+  setm _ = fun n ↦ n + ?n
+  guard_hyp n :=ₛ 0
+  guard_target =ₛ id = fun n_1 ↦ n_1 + n
   trivial
 
 /- Usage with `using` and `at` keywords -/
@@ -33,6 +54,17 @@ example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
   guard_hyp h3 :ₛ a + 2 = b
   trivial
 
+/- `at *` replaces all occurrences of the matched expressions, ignoring hypotheses that don't
+include any of them. -/
+example {m n : Nat} (h₁ : 1 = 1) (hmn : m = n) (hn : n = 1) : m = 1 := by
+  setm ?one = 1 using h₁ at *
+  guard_hyp one :=ₛ 1
+  guard_hyp h₁ :ₛ one = one
+  guard_hyp hmn :ₛ m = n
+  guard_hyp hn :ₛ n = one
+  guard_target =ₛ m = one
+  rw [hmn, hn]
+
 /- Conflict with a previously defined local declaration name. (The previous one gets ignored.) -/
 example : 1 + 2 = 3 := by
   let a := "foo"
@@ -41,6 +73,43 @@ example : 1 + 2 = 3 := by
   guard_hyp a :=ₛ 1
   guard_hyp b :=ₛ 2
   trivial
+
+/--
+error: Tactic `setm` failed: Pattern
+  ?m.3 = ?m.5
+is not definitionally equal to the target
+  True
+
+⊢ True
+-/
+#guard_msgs in
+example : True := by
+  setm _ = _
+
+/--
+error: Tactic `setm` failed: Pattern
+  a + a = 3
+is not definitionally equal to the target
+  1 + 2 = 3
+
+⊢ 1 + 2 = 3
+-/
+#guard_msgs in
+example : 1 + 2 = 3 := by
+  setm ?a + ?a = 3
+
+/- Expressions containing bound variables cannot be matched against. -/
+/--
+error: Tactic `setm` failed: Pattern
+  (fun n => a) = ?m.12
+is not definitionally equal to the target
+  id = fun n => n
+
+⊢ id = fun n => n
+-/
+#guard_msgs in
+example : @id Nat = fun n ↦ n := by
+  setm (fun n ↦ ?a) = _
 
 -- TODO:
 -- -- set_option pp.raw true
@@ -145,4 +214,15 @@ example {i : Nat} {l : List Nat} (h) (heq : i = 2) : l[i] = l[i] := by
   guard_hyp j :=ₛ i
   guard_hyp heq :ₛ j = 2
   guard_target =ₛ l[j] = l[j]
+  trivial
+
+/- A pattern with no holes triggers the `unusedTactic` linter. -/
+/--
+warning: 'setm _' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True := by
+  setm _
   trivial
