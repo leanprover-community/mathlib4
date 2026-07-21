@@ -245,7 +245,7 @@ This corresponds to 5.8 (i) in the [hollom2025].
 -/
 lemma ordConnected_level {n : ℕ} : (level n).OrdConnected := by
   rw [Set.ordConnected_iff]
-  simp only [level_eq, Set.mem_setOf_eq, Set.subset_def, Set.mem_Icc, and_imp, Hollom.forall,
+  simp only [level_eq, Set.mem_ofPred_eq, Set.subset_def, Set.mem_Icc, and_imp, Hollom.forall,
     Prod.forall, forall_eq, toHollom_le_toHollom_iff_fixed_right]
   intro a b c d ac bd e f g h1 h2
   exact le_antisymm (le_of_toHollom_le_toHollom h1) (le_of_toHollom_le_toHollom h2)
@@ -417,7 +417,7 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
   -- In fact, we only need it to be nonempty, and find a point.
   obtain ⟨x, hxy⟩ := this.nonempty
   induction hxy.1.2 using induction_on_level with | h x y =>
-  simp only [Set.mem_sdiff, Set.mem_inter_iff, toHollom_mem_level_iff, and_true, Set.mem_setOf_eq,
+  simp only [Set.mem_sdiff, Set.mem_inter_iff, toHollom_mem_level_iff, and_true, Set.mem_ofPred_eq,
     not_le, D] at hxy
   -- Take the point `(x, y, n + 1)` in `C` that avoids `D`. As `(u, v, n)` is also in the chain `C`,
   -- they must be comparable.
@@ -843,7 +843,7 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   simp +contextual only [sup_le_iff, embed, RelEmbedding.coe_mk,
     Function.Embedding.coeFn_mk, Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff,
     Prod.forall, Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk,
-    Set.mem_setOf_eq, forall_exists_index, Prod.mk.injEq,
+    Set.mem_ofPred_eq, forall_exists_index, Prod.mk.injEq,
     toHollom_le_toHollom_iff_fixed_right, Set.mem_sdiff, and_true, ← max_add_add_right,
     Hollom.ext_iff]
   -- After simplifying, direct calculations show the subset relation as required.
@@ -961,7 +961,7 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     rw [eventually_atTop, level_eq]
     refine ⟨max b c, ?_⟩
     simp only [sup_le_iff, embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
-      Set.mem_inter_iff, Set.mem_setOf_eq, and_imp, «forall», Prod.forall,
+      Set.mem_inter_iff, Set.mem_ofPred_eq, and_imp, «forall», Prod.forall,
       Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, forall_exists_index,
       Prod.mk.injEq, Hollom.ext_iff]
     rintro d hbd hcd _ _ _ e f hde hdf rfl rfl rfl g h _ hgh rfl
@@ -1032,18 +1032,18 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
   cases (C ∩ level (n + 1)).finite_or_infinite
   -- In the case that `C ∩ level (n + 1)` is finite, this is immediate from the definition of `S`.
   case inl h =>
-    rw [S, if_pos h, Set.mem_setOf_eq] at hx
+    rw [S, if_pos h, Set.mem_ofPred_eq] at hx
     intro hy
     refine f.incomp_apply ?_ (hx.2 _ hy).symm
     have := R_subset_level hx.1
-    simp only [level_eq, Set.mem_setOf_eq] at this
+    simp only [level_eq, Set.mem_ofPred_eq] at this
     intro h
     simp [level_eq, h, this] at hy
   -- So suppose it is infinite
   case inr h =>
     -- Write `(x, y, n)` for our given point, and set `(a, b, n + 1) := f(x, y, n)`
     induction S_subset_level hx using induction_on_level with | h x y =>
-    simp only [S, if_neg h, Set.mem_setOf_eq] at hx
+    simp only [S, if_neg h, Set.mem_ofPred_eq] at hx
     intro hp
     set fp := f h(x, y, n) with hfp
     clear_value fp
