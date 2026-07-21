@@ -102,6 +102,10 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+/-- The norm of `p : PadicAlgCl p` is `p⁻¹`. -/
+theorem norm_p (p : ℕ) [Fact p.Prime] : ‖(p : PadicAlgCl p)‖ = (p : ℝ)⁻¹ := by
+  rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p)), norm_extends, Padic.norm_p]
+
 open MonoidWithZeroHom.ValueGroup₀
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
@@ -124,11 +128,9 @@ instance denselyNormedField : DenselyNormedField (PadicAlgCl p) where
   lt_norm_lt a b ha hab := by
     have hb : 0 < b := ha.trans_lt hab
     have hp1 : (1 : ℝ) < p := Nat.one_lt_cast.2 hp.out.one_lt
-    have hnorm : ‖(p : PadicAlgCl p)‖ = (p : ℝ)⁻¹ := by
-      rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p)), norm_extends, Padic.norm_p]
-    have hp_pos : 0 < ‖(p : PadicAlgCl p)‖ := hnorm ▸ inv_pos.2 (zero_lt_one.trans hp1)
+    have hp_pos : 0 < ‖(p : PadicAlgCl p)‖ := (norm_p p) ▸ inv_pos.2 (zero_lt_one.trans hp1)
     have hp_lt_one : ‖(p : PadicAlgCl p)‖ < 1 :=
-      hnorm ▸ (inv_lt_one₀ (zero_lt_one.trans hp1)).2 hp1
+      (norm_p p) ▸ (inv_lt_one₀ (zero_lt_one.trans hp1)).2 hp1
     -- Choose `n` with `(a / b) ^ n < ‖p‖`. An `n`-th root `z` of `p` then satisfies
     -- `a / b < ‖z‖ < 1`, so some integer power of `z` has norm strictly between `a` and `b`.
     obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hp_pos ((div_lt_one hb).2 hab)
