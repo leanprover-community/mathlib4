@@ -149,6 +149,24 @@ public theorem derivMetricTensor_apply_eq_extend [FiniteDimensional ℝ F]
   simp [derivMetricTensor, TensorialAt.mkHom₂_apply_eq_extend]
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
+public theorem derivMetricTensor_apply_eq_extend_left [FiniteDimensional ℝ F]
+    (X₀ : TangentSpace I x) (hσ : MDiffAt (T% σ) x) (τ₀ : V x) :
+    cov.derivMetricTensor x (σ x) τ₀ X₀ =
+      d% ⟪σ, (FiberBundle.extend F τ₀)⟫ x X₀
+        - inner ℝ (cov σ x X₀) τ₀
+        - inner ℝ (σ x) (cov (FiberBundle.extend F τ₀) x X₀) := by
+  simp [derivMetricTensor, TensorialAt.mkHom₂_apply_eq_extend_left _ _ hσ]
+
+variable {I} [ContMDiffVectorBundle 1 F V I] in
+public theorem derivMetricTensor_apply_eq_extend_right [FiniteDimensional ℝ F]
+    (X₀ : TangentSpace I x) (hτ : MDiffAt (T% τ) x) (σ₀ : V x) :
+    cov.derivMetricTensor x σ₀ (τ x) X₀ =
+      d% ⟪(FiberBundle.extend F σ₀), τ⟫ x X₀
+        - inner ℝ (cov (FiberBundle.extend F σ₀) x X₀) (τ x)
+        - inner ℝ σ₀ (cov τ x X₀) := by
+  simp [derivMetricTensor, TensorialAt.mkHom₂_apply_eq_extend_right _ _ _ hτ]
+
+variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- Predicate saying that a connection `∇` on a Riemannian bundle `(V, g)` is compatible with the
 ambient metric, i.e. for all differentiable vector fields `X` on `M` and sections `σ` and `τ` of
 `V`, we have `X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`. -/
@@ -164,6 +182,27 @@ public lemma IsMetricCompatible.mvfderiv_inner_eq [FiniteDimensional ℝ F]
   have H := congr($hcov x (σ x) (τ x) (X x))
   simp [derivMetricTensor_apply _ _ hσ hτ] at H
   linear_combination H
+
+variable {cov} in
+public lemma IsMetricCompatible.mvfderiv_inner_eq' [FiniteDimensional ℝ F]
+    (hcov : cov.IsMetricCompatible) {x : M} (X : Π x, TangentSpace I x) {σ : (x : M) → V x}
+    (hσ : MDiffAt (T% σ) x) (τ₀ : V x) :
+    d% ⟪σ, FiberBundle.extend F τ₀⟫ x (X x) =
+      ⟪∇ X σ, FiberBundle.extend F τ₀⟫ x + ⟪σ, ∇ X (FiberBundle.extend F τ₀)⟫ x := by
+  have H := congr($hcov x (σ x) τ₀ (X x))
+  simp [derivMetricTensor_apply_eq_extend_left _ _ hσ] at H
+  simp only [FiberBundle.extend_apply_self]
+  linear_combination H
+
+variable {cov} in
+public lemma IsMetricCompatible.mvfderiv_inner_eq'' [FiniteDimensional ℝ F]
+    (hcov : cov.IsMetricCompatible) {x : M} (X : Π x, TangentSpace I x) {σ : (x : M) → V x}
+    (hσ : MDiffAt (T% σ) x) (τ₀ : V x) :
+    d% ⟪FiberBundle.extend F τ₀, σ⟫ x (X x) =
+      ⟪∇ X σ, FiberBundle.extend F τ₀⟫ x + ⟪σ, ∇ X (FiberBundle.extend F τ₀)⟫ x := by
+  rw [← hcov.mvfderiv_inner_eq' _ hσ]
+  congr with x
+  exact real_inner_comm (σ x) (FiberBundle.extend F τ₀ x)
 
 variable [IsManifold I 1 M]
 
