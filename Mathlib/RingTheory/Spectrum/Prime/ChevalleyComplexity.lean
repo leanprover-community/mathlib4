@@ -75,7 +75,7 @@ namespace ChevalleyThm
 
 namespace PolynomialC
 
-local notation3 "coeff("p")" => Set.range (Polynomial.coeff p)
+local notation3 "coeff("p")" => Set.range (AddMonoidAlgebra.coeff p)
 
 variable (n) in
 /-- The codomain of the measure that will decrease during the induction in the `C : R → R[X]` case

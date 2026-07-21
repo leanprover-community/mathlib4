@@ -21,7 +21,7 @@ public section
 
 noncomputable section
 
-open Finsupp Finset
+open AddMonoidAlgebra Finsupp Finset
 
 open Polynomial
 
@@ -35,13 +35,14 @@ section Semiring
 
 variable [Semiring R] {p : R[X]}
 
-theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
+theorem supDegree_eq_natDegree (p : R[X]) : p.supDegree id = p.natDegree := by
   obtain rfl | h := eq_or_ne p 0
   · simp
   apply WithBot.coe_injective
   rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,
     degree_eq_natDegree h, Nat.cast_withBot]
-  rwa [support_toFinsupp, nonempty_iff_ne_empty, Ne, support_eq_empty]
+  change p.support.Nonempty
+  rwa [nonempty_iff_ne_empty, Ne, support_eq_empty]
 
 theorem le_natDegree_of_mem_supp (a : ℕ) : a ∈ p.support → a ≤ natDegree p :=
   le_natDegree_of_ne_zero ∘ mem_support_iff.mp
@@ -64,7 +65,7 @@ for any `n` satisfying `p.natDegree < n`.
 theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) (n : ℕ)
     (hn : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
   have := supp_subset_range hn
-  simp only [Polynomial.sum, support, coeff] at this ⊢
+  simp only [Polynomial.sum, support] at this ⊢
   exact Finsupp.sum_of_support_subset _ this _ fun n _hn => h n
 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.

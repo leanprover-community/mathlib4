@@ -240,7 +240,7 @@ section Degree
 @[simps]
 def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   toFun P := ⟨P.toPoly, degree_cubic_le⟩
-  invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
+  invFun f := ⟨f.1.coeff 3, f.1.coeff 2, f.1.coeff 1, f.1.coeff 0⟩
   left_inv P := by ext <;> simp only [coeffs]
   right_inv f := by
     ext n

@@ -18,7 +18,7 @@ namespace Ideal
 
 section Polynomial
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 variable {R : Type*} [CommRing R]
 

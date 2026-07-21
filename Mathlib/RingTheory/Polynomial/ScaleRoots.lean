@@ -19,6 +19,8 @@ be the polynomial with root `r * s` for each root `r` of `p` and proves some bas
 
 variable {R S A K : Type*}
 
+open AddMonoidAlgebra
+
 namespace Polynomial
 
 section Semiring
@@ -32,7 +34,7 @@ noncomputable def scaleRoots (p : R[X]) (s : R) : R[X] :=
 @[simp]
 theorem coeff_scaleRoots (p : R[X]) (s : R) (i : ℕ) :
     (scaleRoots p s).coeff i = coeff p i * s ^ (p.natDegree - i) := by
-  simp +contextual [scaleRoots, coeff_monomial]
+  simp +contextual [scaleRoots, Finsupp.single_apply]
 
 theorem coeff_scaleRoots_natDegree (p : R[X]) (s : R) :
     (scaleRoots p s).coeff p.natDegree = p.leadingCoeff := by
@@ -104,7 +106,7 @@ lemma scaleRoots_zero (p : R[X]) :
     p.scaleRoots 0 = p.leadingCoeff • X ^ p.natDegree := by
   ext n
   simp only [coeff_scaleRoots, tsub_eq_zero_iff_le, zero_pow_eq, mul_ite,
-    mul_one, mul_zero, coeff_smul, coeff_X_pow, smul_eq_mul]
+    mul_one, mul_zero, coeff_smul_apply, coeff_X_pow, smul_eq_mul]
   split_ifs with h₁ h₂ h₂
   · subst h₂; rfl
   · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne h₁ (Ne.symm h₂))
@@ -193,7 +195,7 @@ assume that the product of the leading coeffs does not vanish. See `Polynomial.m
 lemma mul_scaleRoots (p q : R[X]) (r : R) :
     r ^ (natDegree p + natDegree q - natDegree (p * q)) • (p * q).scaleRoots r =
       p.scaleRoots r * q.scaleRoots r := by
-  ext n; simp only [coeff_scaleRoots, coeff_smul, smul_eq_mul]
+  ext n; simp only [coeff_scaleRoots, coeff_smul_apply, smul_eq_mul]
   trans (∑ x ∈ Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
     r ^ (natDegree p + natDegree q - n)
   · rw [← coeff_mul]
@@ -246,7 +248,7 @@ lemma pow_scaleRoots_of_isReduced [IsReduced R] (p : R[X]) (r : R) (n : ℕ) :
 lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = natDegree q) :
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
-  ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
+  ext n; simp only [coeff_smul_apply, coeff_scaleRoots, coeff_add, smul_eq_mul,
     mul_comm (r ^ _), ← h, ← add_mul]
   #adaptation_note /-- v4.7.0-rc1
   Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
