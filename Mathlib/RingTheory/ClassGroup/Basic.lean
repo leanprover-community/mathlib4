@@ -373,8 +373,8 @@ theorem FractionalIdeal.isPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDom
   by_cases hI0 : I = 0
   · simp [hI0, bot_isPrincipal]
   rw [← Ne, ← isUnit_iff_ne_zero] at hI0
-  change Submodule.IsPrincipal ((hI0.unit' : FractionalIdeal R⁰ K) : Submodule R K)
-  rw [← ClassGroup.mk_eq_one_iff, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
+rw [← hI0.val_unit', ← ClassGroup.mk_eq_one_iff, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn,
+    Nat.dvd_gcd_iff]
   refine ⟨?_, orderOf_dvd_card⟩
   rw [orderOf_dvd_iff_pow_eq_one, ← map_pow, ClassGroup.mk_eq_one_iff]
   simp only [Units.val_pow_eq_pow_val, IsUnit.val_unit', hI]
