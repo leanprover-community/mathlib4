@@ -92,7 +92,7 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   suffices V ∈ 𝓕₂ by simpa [H]
   -- Hence, let us show that `V ∈ 𝓕₂`. Fix a scalar `c` with `0 < ‖c‖ < 1`.
   obtain ⟨c, hc₀, hc₁⟩ := NormedField.exists_norm_lt_one 𝕜₁
-  have c_ne : c ≠ 0 := norm_pos_iff.mp hc₀ 
+  have c_ne : c ≠ 0 := norm_pos_iff.mp hc₀
   -- We know that `c • V ∈ 𝓕₁ = 𝓕₂ ⊓ 𝓟 V`.
   have cV_mem : c • V ∈ 𝓕₂ ⊓ 𝓟 V := by
     simpa [← H, 𝓕₁, set_smul_mem_nhds_zero_iff c_ne]
@@ -108,10 +108,10 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   by_contra! w_notin_V
   -- Now, because `V` is absorbent, there exists a natural `k` such that `c ^ k • w ∈ V`.
   have exists_scale : ∃ k : ℕ, c ^ k • w ∈ V := by
-    have V_abs : Absorbent 𝕜₁ V := let := t₁; absorbent_nhds_zero V_mem
-    have : Tendsto (fun k : ℕ ↦ c ^ k) atTop (𝓝[≠] 0) := by
-      simp [tendsto_nhdsWithin_iff, c_ne, tendsto_pow_atTop_nhds_zero_iff_norm_lt_one, hc₁]
-    exact this.eventually (V_abs.eventually_nhdsNE_zero w) |>.exists
+    let := t₁
+    have : Tendsto (fun k : ℕ ↦ c ^ k • w) atTop (𝓝 0) :=
+      zero_smul 𝕜₁ w ▸ (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁).smul_const w
+    exact this.eventually_mem V_mem |>.exists
   -- Denote by `k₀` the *smallest* such `k`.
   set k₀ := Nat.find exists_scale
   have k₀_spec : c ^ k₀ • w ∈ V := Nat.find_spec exists_scale
