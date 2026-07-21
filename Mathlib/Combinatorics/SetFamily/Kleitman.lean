@@ -64,7 +64,7 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   refine (card_le_card <| biUnion_mono fun j hj ↦ (hf₁ _ hj).1).trans ?_
   nth_rw 1 [cons_eq_insert i]
   rw [biUnion_insert]
-  refine (card_mono <| @le_sup_sdiff _ _ _ <| f' i).trans ((card_union_le _ _).trans ?_)
+  refine (card_mono <| @le_sup_sdiff _ _ (f' i) _).trans ((card_union_le _ _).trans ?_)
   rw [union_sdiff_left, sdiff_eq_inter_compl]
   refine le_of_mul_le_mul_left ?_ (pow_pos (zero_lt_two' ℕ) <| Fintype.card α + 1)
   rw [pow_succ, mul_add, mul_assoc, mul_comm _ 2, mul_assoc]

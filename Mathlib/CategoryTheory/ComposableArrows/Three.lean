@@ -35,6 +35,7 @@ variable {C : Type u} [Category.{v} C]
   {i j k l : C} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
   (f₁₂ : i ⟶ k) (f₂₃ : j ⟶ l)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃` when `f₂ ≫ f₃ = f₂₃`. -/
 def threeδ₃Toδ₂ (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) :
@@ -55,14 +56,17 @@ def threeδ₁Toδ₀ (h₁₂ : f₁ ≫ f₂ = f₁₂ := by cat_disch) :
 
 variable (h₁₂ : f₁ ≫ f₂ = f₁₂) (h₂₃ : f₂ ≫ f₃ = f₂₃)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma threeδ₃Toδ₂_app_zero :
     (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 0 = 𝟙 _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma threeδ₃Toδ₂_app_one :
     (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 1 = 𝟙 _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma threeδ₃Toδ₂_app_two :
     (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 2 = f₃ := rfl
@@ -98,6 +102,7 @@ section
 variable {ι : Type*} [Preorder ι]
     (i₀ i₁ i₂ i₃ : ι) (hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Variant of `threeδ₃Toδ₂` for preorders. -/
 abbrev threeδ₃Toδ₂' :
     mk₂ (homOfLE hi₀₁) (homOfLE hi₁₂) ⟶

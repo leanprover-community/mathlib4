@@ -126,7 +126,7 @@ theorem tan_add {x y : ℂ}
       add_div, sub_div]
     simp only [← div_mul_div_comm, tan, mul_one, one_mul, div_self (cos_ne_zero_iff.mpr h1),
       div_self (cos_ne_zero_iff.mpr h2)]
-  · haveI t := tan_int_mul_pi_div_two
+  · have t := tan_int_mul_pi_div_two
     obtain ⟨hx, hy, hxy⟩ := t (2 * k + 1), t (2 * l + 1), t (2 * k + 1 + (2 * l + 1))
     simp only [Int.cast_add, Int.cast_two, Int.cast_mul, Int.cast_one] at hx hy hxy
     rw [hx, hy, add_zero, zero_div, mul_div_assoc, mul_div_assoc, ←
@@ -219,7 +219,7 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} :=
 
 @[continuity]
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
-  continuousOn_iff_continuous_restrict.1 continuousOn_tan
+  continuousOn_iff_continuous_domRestrict.1 continuousOn_tan
 
 theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by

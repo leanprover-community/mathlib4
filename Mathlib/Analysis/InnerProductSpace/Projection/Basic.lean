@@ -82,7 +82,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjec
 instance : (⊤ : Submodule 𝕜 E).HasOrthogonalProjection := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 
 instance (K : ClosedSubmodule 𝕜 E) [CompleteSpace E] : K.HasOrthogonalProjection := by
-  letI := K.isClosed'
+  let := K.isClosed'
   infer_instance
 
 /-- If `K` admits an orthogonal projection, `K` and `Kᗮ` are complements of each other. -/
@@ -109,7 +109,7 @@ section orthogonalProjection
 
 variable [K.HasOrthogonalProjection]
 
-/-- The orthogonal projection onto a complete subspace. -/
+/-- The orthogonal projection onto a subspace. -/
 def orthogonalProjectionOnto : E →L[𝕜] K := K.projectionOntoL Kᗮ K.isTopCompl_orthogonal
 
 /-- The orthogonal projection onto a subspace. -/
