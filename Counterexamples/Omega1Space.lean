@@ -20,51 +20,33 @@ open scoped Cardinal Ordinal
 
 namespace Omega1Space
 
-private abbrev A₁ : Type := (ℵ₁).ord.ToType
-
-/-- The closure $\overline{S_Ω}$, as a type. -/
-@[reducible] def SΩC : Type := WithTop A₁
-
 /-- The greatest element `Ω`. -/
-def Ω : SΩC := ⊤
+noncomputable abbrev Ω : Ordinal := ω₁
+
+/-- The set $S_Ω$ -/
+abbrev SΩ : Set Ordinal := Set.Iio Ω
+
+/-- The set $\overline{S_Ω}$. -/
+abbrev SΩC : Set Ordinal := Set.Iic Ω
 
 /-- The section below an element. -/
-def sec : SΩC → Set SΩC := Set.Iio
+abbrev sec : Ordinal → Set Ordinal := Set.Iio
 
-/-- $S_Ω$, as a set. -/
-def SΩ_ : Set SΩC := sec Ω
 
-/-- $S_Ω$, as a type. -/
-@[reducible] def SΩ : Type := SΩ_
-
-private noncomputable def A₁_emb : A₁ ↪o SΩC := WithTop.coeOrderHom
-private lemma A₁_emb_range : Set.range A₁_emb = SΩ_ := by
-  rw [A₁_emb]
-  exact WithTop.range_coe
-
-private noncomputable def A₁OrderIsoSΩ : A₁ ≃o SΩ :=
-  OrderEmbedding.orderIso.trans (OrderIso.setCongr _ _ A₁_emb_range)
-
-private lemma mk_A₁ : #A₁ = ℵ₁ := Cardinal.mk_ord_toType _
-
-instance : Uncountable A₁ :=
-  Cardinal.aleph0_lt_mk_iff.mp <| by rw [mk_A₁]; exact Cardinal.aleph0_lt_aleph_one
-
-instance : Uncountable SΩ := A₁OrderIsoSΩ.injective.uncountable
+private lemma countable_section_iff_lt_omega (x : Ordinal) : (sec x).Countable <-> x < Ω := by
+  rw [<- Cardinal.le_aleph0_iff_set_countable]
+  simp [-Ordinal.lift_card, Cardinal.lt_omega_iff_card_lt]
 
 /-- $S_Ω$ is uncountable. -/
-theorem uncountable_section : ¬ SΩ_.Countable := not_countable (α := SΩ)
+theorem uncountable_section : ¬ SΩ.Countable := by
+  grind only [!countable_section_iff_lt_omega]
 
-private lemma A₁_Iio_countable (i : A₁) : (Set.Iio i).Countable := by
-  rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff]
-  have hord : Cardinal.ord #A₁ = typeLT A₁ := by rw [mk_A₁, Ordinal.type_toType]
-  have h := Cardinal.mk_Iio_lt i hord
-  rwa [mk_A₁] at h
+instance : Uncountable SΩ := by
+  rw [uncountable_iff_not_countable]
+  exact uncountable_section
 
 /-- Each proper section of $S_Ω$ is countable. -/
-theorem countable_section (x : SΩC) (hx : x < Ω) : (sec x).Countable := by
-  lift x to A₁ using hx.ne with i
-  simp only [sec, WithTop.Iio_coe]
-  exact (A₁_Iio_countable i).image _
+theorem countable_section (x : SΩ) : (sec x).Countable := by
+  grind only [= Set.mem_Iio, !countable_section_iff_lt_omega]
 
 end Omega1Space
