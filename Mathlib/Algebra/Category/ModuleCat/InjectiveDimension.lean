@@ -15,6 +15,24 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 
 # Injective Dimension in ModuleCat
 
+This file deals with preservation of `injectiveDimension` in (semi) linear equivalences.
+Previously we only know this for linear equivalence within same universe level, now it works with
+all universe level where the ring `R` is small.
+
+## Main Results
+
+* `ModuleCat.hasInjectiveDimensionLE_iff_of_linearEquiv`: `HasInjectiveDimensionLE` is preserved
+  under arbitrary linear equivalence.
+
+* `ModuleCat.hasInjectiveDimensionLE_iff_of_semiLinearEquiv`: `HasInjectiveDimensionLE` is preserved
+  under arbitrary semi-linear equivalence.
+
+* `ModuleCat.injectiveDimension_eq_of_semiLinearEquiv`: `injectiveDimension` is preserved
+  under arbitrary semi-linear equivalence.
+
+* `ModuleCat.injectiveDimension_eq_of_linearEquiv`: `injectiveDimension` is preserved
+  under arbitrary linear equivalence.
+
 -/
 
 public section
