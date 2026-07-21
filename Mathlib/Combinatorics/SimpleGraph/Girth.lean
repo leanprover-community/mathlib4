@@ -97,10 +97,10 @@ lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.
     by_contra! hlt; classical
     have := p.bypass_isPath.exists_isCycle_length_le_add_of_ne
       (w.drop (w.length / 2)).reverse.bypass_isPath <| by grind [take_length, length_reverse,
-      length_append, length_bypass_le_length, ENat.coe_lt_coe, length_eq_zero_iff,
+      length_append, length_bypass_le_length, ENat.natCast_lt_natCast, length_eq_zero_iff,
       append_take_drop_eq, IsCycle.isPath_of_append_right, IsPath.reverse]
-    grind [ENat.coe_lt_coe, length_bypass_le_length, length_reverse, egirth_le_length,
-      ENat.coe_le_coe, length_append, take_length, append_take_drop_eq]
+    grind [ENat.natCast_lt_natCast, length_bypass_le_length, length_reverse, egirth_le_length,
+      ENat.natCast_le_natCast, length_append, take_length, append_take_drop_eq]
   calc
     G.egirth ≤ 2 * ↑(w.length / 2) + 1 := by rw [hwl]; norm_cast; grind
     _  ≤ 2 * G.ediam + 1 := by grw [half_g_le_edist, edist_le_ediam]
