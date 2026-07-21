@@ -52,7 +52,7 @@ sets being connected.
 Nevertheless, we are able to adapt their arguments to arbitrary nontrivially normed fields.
 The key argument, replacing the fact that a connected set cannot be covered nontrivially by
 disjoint open sets, is that a balanced set `W` cannot intersect nontrivially both `c • V`
-and `Vᶜ`, when `V` is a neighborhood of `0` and `0 < ‖c‖ < 1`. We refer to the (highly commented !)
+and `Vᶜ`, when `V` is a neighborhood of `0` and `0 < ‖c‖ < 1`. We refer to the (highly commented!)
 proof for more precision.
 
 ## References
@@ -92,12 +92,10 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   suffices V ∈ 𝓕₂ by simpa [H]
   -- Hence, let us show that `V ∈ 𝓕₂`. Fix a scalar `c` with `0 < ‖c‖ < 1`.
   obtain ⟨c, hc₀, hc₁⟩ := NormedField.exists_norm_lt_one 𝕜₁
-  have c_ne : c ≠ 0 := fun h ↦ by simp [h] at hc₀
+  have c_ne : c ≠ 0 := norm_pos_iff.mp hc₀ 
   -- We know that `c • V ∈ 𝓕₁ = 𝓕₂ ⊓ 𝓟 V`.
   have cV_mem : c • V ∈ 𝓕₂ ⊓ 𝓟 V := by
-    rw [← H]
-    let := t₁
-    simpa [𝓕₁, set_smul_mem_nhds_zero_iff c_ne]
+    simpa [← H, 𝓕₁, set_smul_mem_nhds_zero_iff c_ne]
   -- Furthermore, we know that `𝓕₂` has a basis of balanced sets
   have basis_𝓕₂ : HasBasis 𝓕₂ (fun (s : Set E) ↦ s ∈ 𝓕₂ ∧ Balanced 𝕜₁ s) id :=
     let := t₂; nhds_basis_balanced 𝕜₁ E
@@ -119,7 +117,7 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   have k₀_spec : c ^ k₀ • w ∈ V := Nat.find_spec exists_scale
   -- Note that `1 ≤ k₀` since `w ∉ V`
   have k₀_pos : 0 < k₀ := pos_iff_ne_zero.mpr fun h ↦ by simp [h, w_notin_V] at k₀_spec
-  -- By definition, `c ^ k₀ • w ∈ V`, and becaus `W` is balanced `c ^ k₀ • w ∈ W`.
+  -- By definition, `c ^ k₀ • w ∈ V`, and because `W` is balanced `c ^ k₀ • w ∈ W`.
   -- Thus, `c ^ k₀ • w ∈ V ∩ W ⊆ c • V`.
   have : c ^ k₀ • w ∈ c • V :=
     hW ⟨W_bal.smul_mem (by simpa using pow_le_one₀ hc₀.le hc₁.le) w_in_W, k₀_spec⟩
@@ -144,7 +142,7 @@ lemma ContinuousSMul.topology_eq_of_induced_eq (t₁ t₂ : TopologicalSpace E)
   apply topology_eq_of_nhds_inf_principal_eq 𝕜₁ t₁ t₂ V_mem
   set o : V := ⟨0, letI := t₁; mem_of_mem_nhds V_mem⟩
   simp_rw [← map_comap_setCoe_val, show 0 = (o : E) from rfl, ← nhds_induced]
-  congr
+  rw [H]
 
 variable [TopologicalSpace E] [TopologicalSpace F]
   [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
@@ -161,7 +159,7 @@ lemma LinearMap.isInducing_of_restrict_nhds_zero {V : Set E}
 lemma LinearMap.isEmbedding_of_restrict_nhds_zero {V : Set E}
     (V_mem : V ∈ 𝓝 0) (H : IsEmbedding (Set.domRestrict V f)) : IsEmbedding f := by
   refine ⟨isInducing_of_restrict_nhds_zero V_mem H.isInducing, ?_⟩
-  have f_injOn : InjOn f V := by simpa [injOn_iff_injective] using H.injective
+  have f_injOn : InjOn f V := injOn_iff_injective.2 H.injective
   rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
   intro x hx
   obtain ⟨c, hc, c_ne : c ≠ 0⟩ := absorbent_nhds_zero (𝕜 := 𝕜₁) V_mem
