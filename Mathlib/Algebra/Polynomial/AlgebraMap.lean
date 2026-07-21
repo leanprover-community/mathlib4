@@ -51,31 +51,19 @@ section CommSemiring
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p q r : R[X]}
 
-/-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X] where
-  smul_def' r p :=
-    toFinsupp_injective <| by
-      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
-      rw [toFinsupp_smul, toFinsupp_mul, toFinsupp_C]
-      exact Algebra.smul_def' _ _
-  commutes' r p :=
-    toFinsupp_injective <| by
-      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
-      simp_rw [toFinsupp_mul, toFinsupp_C]
-      convert! Algebra.commutes' r p.toFinsupp
-  algebraMap := C.comp (algebraMap R A)
-
 @[simp]
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
   rfl
 
-@[simp]
+@[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
   show toFinsupp (C (algebraMap _ _ r)) = _ by
     rw [toFinsupp_C]
     rfl
 
-theorem ofFinsupp_algebraMap (r : R) : (⟨algebraMap R _ r⟩ : A[X]) = algebraMap R A[X] r :=
+@[deprecated "Now a tautology" (since := "2026-07-18")]
+theorem ofFinsupp_algebraMap (r : R) :
+    (ofFinsupp (algebraMap R _ r) : A[X]) = algebraMap R A[X] r :=
   toFinsupp_injective (toFinsupp_algebraMap _).symm
 
 /-- When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[X]`.
@@ -98,7 +86,10 @@ def CAlgHom : A →ₐ[R] A[X] where
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
-@[ext 1100]
+-- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.algHom_ext'` also  applies
+-- to equalities in `R[X]`. We make this ext lemma have higher priority to qvoid exposing
+-- `AddMonoidAlgebra.single`.
+@[ext high + 1]
 theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hC : f.comp CAlgHom = g.comp CAlgHom)
     (hX : f X = g X) : f = g :=
@@ -109,11 +100,13 @@ variable (R) in
 open AddMonoidAlgebra in
 /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
-@[simps!]
+@[deprecated "Now a tautology" (since := "2026-07-18"), simps! -isSimp apply symm_apply]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
-    commutes' := fun r => by
-      dsimp }
+    commutes' := fun _ => rfl }
+
+attribute [deprecated "Now a tautology" (since := "2026-07-18")]
+  toFinsuppIsoAlg_apply toFinsuppIsoAlg_symm_apply
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
@@ -265,7 +258,8 @@ def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S]
     R[X] →ₐ[R] S[X] :=
   @aeval _ S[X] _ _ _ (X : S[X])
 
-@[ext 1200]
+-- We want this lemma to have higher priority than `algHom_ext'`.
+@[ext high + 2]
 theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
     f = g :=
   algHom_ext' (Subsingleton.elim ..) hX
@@ -677,11 +671,11 @@ lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   let _ := invertibleOne (α := R)
-  simpa using! dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
+  simpa [sub_eq_add_neg] using! dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
 
 lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
-  simpa using! dvd_comp_X_sub_C_iff p q (-a)
+  simpa [sub_eq_add_neg] using! dvd_comp_X_sub_C_iff p q (-a)
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)

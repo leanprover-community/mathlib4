@@ -238,8 +238,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
 set_option backward.isDefEq.respectTransparency false in
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
-  toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans
-    (toFinsuppIso R).symm.toAddEquiv
+  toAddEquiv := coeffAddEquiv.trans AddMonoidAlgebra.coeffAddEquiv.symm
   map_smul' r x := by
     dsimp
     induction x using induction_linear with
@@ -248,8 +247,9 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
     | single n a =>
     ext i
     simp only [coeffAddEquiv_apply, AddMonoidAlgebra.coeffAddEquiv_symm_apply,
-      toFinsuppIso_symm_apply, coeff_ofFinsupp, smul_single_apply, smul_eq_mul, coeff_single,
-      AddMonoidAlgebra.ofCoeff_single, ofFinsupp_single]
+      Polynomial.coeff_ofCoeff, smul_single_apply, smul_eq_mul, coeff_single,
+      AddMonoidAlgebra.ofCoeff_single]
+    rw [show (AddMonoidAlgebra.single n a : R[X]) = monomial n a from rfl]
     split_ifs with hn
     · rw [show i = (i - n) + n by lia, Polynomial.coeff_mul_monomial]
       simp
@@ -259,8 +259,7 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
 def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] : PolynomialModule R S ≃ₗ[R] S[X] where
-  toAddEquiv := coeffAddEquiv.trans <| AddMonoidAlgebra.coeffAddEquiv.symm.trans
-    (toFinsuppIso _).symm.toAddEquiv
+  toAddEquiv := coeffAddEquiv.trans AddMonoidAlgebra.coeffAddEquiv.symm
   map_smul' _ _ := rfl
 
 @[simp]

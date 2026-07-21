@@ -100,7 +100,7 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
     simp_rw [Set.mem_range, Set.mem_image, Finset.mem_coe, Finset.mem_range]
     exact ⟨fun ⟨⟨i, hi⟩, hy⟩ => ⟨i, hi, hy⟩, fun ⟨i, hi, hy⟩ => ⟨⟨i, hi⟩, hy⟩⟩
   simp [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero, eq_comm,
-    exists_iff_exists_finsupp, coeff, aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported',
+    coeff, aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported', Polynomial.support_ofCoeff,
     Finsupp.sum, linearCombination, Algebra.smul_def, AddMonoidAlgebra.coeffEquiv.exists_congr_left]
 
 theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :

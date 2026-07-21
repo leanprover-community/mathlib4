@@ -27,10 +27,9 @@ namespace Polynomial
 /-- The monomials form a basis on `R[X]`. To get the rank of a polynomial ring,
 use this and `Basis.mk_eq_rank`. -/
 def basisMonomials : Basis ℕ R R[X] :=
-  .ofRepr <| (toFinsuppIsoLinear R).trans <| AddMonoidAlgebra.coeffLinearEquiv _
+  .ofRepr <| AddMonoidAlgebra.coeffLinearEquiv _
 
 @[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
-  funext fun _ => ofFinsupp_single _ _
+theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 := rfl
 
 end Polynomial

@@ -35,7 +35,7 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 section
 
-attribute [local instance 2000] Polynomial.isScalarTower Algebra.toSMul IsScalarTower.right
+attribute [local instance 2000] Algebra.toSMul IsScalarTower.right
 
 open MvPolynomial
 open scoped IntermediateField

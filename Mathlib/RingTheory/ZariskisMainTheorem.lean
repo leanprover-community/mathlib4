@@ -171,7 +171,10 @@ lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
     rw [AlgHom.toRingHom_eq_coe, eval₂_map, ← map_zero (algebraMap S St), ← hq',
       hom_eval₂]
     congr 1
-    ext <;> simp [-Polynomial.algebraMap_apply, ← algebraMap_eq, ← IsScalarTower.algebraMap_apply]
+    refine ringHom_ext (fun a ↦ ?_) ?_
+    · simp only [RingHom.comp_apply, RingHom.coe_coe, AlgHom.toRingHom_eq_coe, ← algebraMap_eq,
+        AlgHom.commutes, ← IsScalarTower.algebraMap_apply]
+    · simp
   simpa using IsLocalization.Away.isIntegral_of_isIntegral_map t
     (isIntegral_of_isIntegral_adjoin_of_mul_eq_one _ _ ht't this)
 
@@ -201,7 +204,7 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
   have ha : IsUnit (algebraMap R R' a) := IsLocalization.Away.algebraMap_isUnit a
   have H : (aeval ((algebraMap S S') (φ X))).toRingHom.comp (mapRingHom (algebraMap R R')) =
     (algebraMap S S').comp φ := by ext <;>
-      simp [-Polynomial.algebraMap_apply, ← Polynomial.algebraMap_eq, ← algebraMap_apply]
+      simp [-Polynomial.algebraMap_apply, ← Polynomial.algebraMap_eq]
   obtain ⟨q, hq⟩ := exists_isIntegral_sub_of_isIntegralElem_of_mul_mem_range (R := R')
     (aeval (algebraMap S S' (φ X))) (algebraMap S S' t) (C ha.unit⁻¹.1 * p.map (algebraMap _ _)) (by
       obtain ⟨q, hqm, hq⟩ := ht
@@ -242,7 +245,10 @@ lemma exists_leadingCoeff_pow_smul_mem_conductor
       exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_range φ _ p
         (hφ.to_isIntegral (t * x)) (by convert! this using 1; ring)
     obtain ⟨r, hr : algebraMap _ _ r = _⟩ := hRS.le hn
-    exact ⟨n, (C r + q), by simp [← Polynomial.algebraMap_eq, -Polynomial.algebraMap_apply, hr]⟩
+    refine ⟨n, C r + q, ?_⟩
+    rw [map_add, ← Polynomial.algebraMap_eq]
+    change φ (algebraMap R R[X] r) + φ q = _
+    rw [AlgHom.commutes, hr]; abel
   choose n hn using this
   obtain ⟨s, hs⟩ := Module.Finite.fg_top (R := R[X]) (M := S)
   refine ⟨s.sup n, fun x ↦ ?_⟩
