@@ -647,12 +647,12 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
   · intro hJ
     refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
-      rw [mem_setOf, map_add]
+      rw [mem_ofPred, map_add]
       exact J.val.add_mem ha hb
-    · rw [mem_setOf, map_zero]
+    · rw [mem_ofPred, map_zero]
       exact J.zero_mem
     · intro c x hx
-      rw [smul_eq_mul, mem_setOf, map_mul, ← Algebra.smul_def]
+      rw [smul_eq_mul, mem_ofPred, map_mul, ← Algebra.smul_def]
       exact J.val.smul_mem c hx
     · ext x
       constructor
@@ -660,7 +660,7 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
         rwa [← eq_y]
       · intro hx
         obtain ⟨y, rfl⟩ := (mem_one_iff S).mp (hJ hx)
-        exact mem_setOf.mpr ⟨y, hx, rfl⟩
+        exact mem_ofPred.mpr ⟨y, hx, rfl⟩
   · rintro ⟨I, hI⟩
     rw [← hI]
     apply coeIdeal_le_one

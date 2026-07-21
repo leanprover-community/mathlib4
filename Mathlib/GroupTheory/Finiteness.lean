@@ -587,18 +587,18 @@ theorem Submonoid.fg_of_divisive {P : Submonoid M} (hP : ∀ x ∈ P, ∀ y, x *
     P.FG := by
   have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 1 }
   rw [fg_iff]
-  refine ⟨_, ?_, (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
-    (hpwo.mono (setOf_minimal_subset _))⟩
+  refine ⟨_, ?_, (setOfPred_minimal_antichain _).finite_of_partiallyWellOrderedOn
+    (hpwo.mono (setOfPred_minimal_subset _))⟩
   ext x
   constructor
   · intro hx
     rw [← P.closure_eq]
-    exact closure_mono ((setOf_minimal_subset _).trans fun _ => And.left) hx
+    exact closure_mono ((setOfPred_minimal_subset _).trans fun _ => And.left) hx
   · intro hx₁
     by_cases hx₂ : x = 1
     · simp [hx₂]
     refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih => ?_
-    simp only [Set.mem_setOf_eq, and_imp] at ih
+    simp only [Set.mem_ofPred_eq, and_imp] at ih
     by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 1 }) y
     · exact mem_closure_of_mem hy₃
     rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩
