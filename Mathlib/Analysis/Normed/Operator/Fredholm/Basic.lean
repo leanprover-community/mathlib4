@@ -23,8 +23,8 @@ the following four equivalent conditions:
 1. `T` is strict, its range is closed and has finite codimension, and its kernel is (topologically)
   complemented and has finite dimension. This is chosen as the definition, see `IsFredholm`.
 2. `T` admits a continuous **quasi-inverse**, in the sense of `LinearMap.IsQuasiInverse`.
-3. There are finite-codimension subspaces `E₁` and `F₁` of `E` and `F` between which `T` induces
-  an isomorphism.
+3. There are closed finite-codimension subspaces `E₁` and `F₁` of `E` and `F` between which `T`
+  induces an isomorphism.
 4. `T` admits a `FredholmPackage`: there are topological decompositions `E = E₁ ⊕ E₀`,
   `F = F₁ ⊕ F₀`, where `E₀` and `F₀` are finite dimensional, and an isomorphism `Φ : E₁ ≃L[𝕜] F₁`
   such that `T` is zero on `E₀` and coincides with `Φ` on `E₁`; in other words, in these
@@ -337,11 +337,11 @@ variable [T2Space E] [T2Space F]
 Let `E`, `F` be two Hausdorff topological vector spaces over a complete `NontriviallyNormedField`
 denoted `𝕜`, and `u : E →L[𝕜] F` a continuous linear map. The following conditions are equivalent:
 
-1. `T` is a **Fredholm operator**, in the sense of `ContinuousLinearMap.IsFredholm`.
-2. `T` admits a continuous **quasi-inverse**, in the sense of `LinearMap.IsQuasiInverse`.
-3. There are finite-codimension subspaces `E₁` and `F₁` of `E` and `F` between which `T` induces
-  an isomorphism.
-4. `T` admits a `FredholmPackage`.
+1. `u` is a **Fredholm operator**, in the sense of `ContinuousLinearMap.IsFredholm`.
+2. `u` admits a continuous **quasi-inverse**, in the sense of `LinearMap.IsQuasiInverse`.
+3. There are closed finite-codimension subspaces `E₁` and `F₁` of `E` and `F` between which `u`
+  induces an isomorphism.
+4. `u` admits a `FredholmPackage`.
 
 In practice, condition `4` is the "strongest", so you should probably not use it to *prove* that an
 operator is Fredholm.
