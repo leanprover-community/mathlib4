@@ -40,7 +40,7 @@ A vector-valued inequality variant of the second mean value theorem
 
 ## References
 
-* [V. A. Zorich, *Mathematical Analysis I*][zorich2016],
+* [V. A. Zorich, *Mathematical Analysis I*][zorich2015],
     Thm. 5 (First mean-value theorem for the integral).
 * <https://proofwiki.org/wiki/Mean_Value_Theorem_for_Integrals/Generalization>
 * [E. T. Whittaker, G. N. Watson, *A Course of Modern Analysis*, 5th edition][WW21]
