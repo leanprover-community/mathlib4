@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
-public import Mathlib.Algebra.AlgebraicCard
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -26,6 +25,8 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 ## Main Results
 
+* `Padic.separableSpace_of_isAlgebraic` : every algebraic normed field extension of `ℚ_[p]` is a
+  separable space.
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
 * `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
@@ -152,35 +153,23 @@ instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) := inf
 instance charZero : CharZero (PadicAlgCl p) :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] (PadicAlgCl p)).injective).mp inferInstance
 
-open Polynomial TopologicalSpace in
-/-- `PadicAlgCl p` is a separable topological space. -/
-instance separableSpace : SeparableSpace (PadicAlgCl p) where
-  exists_countable_dense := by
-    refine ⟨{z : PadicAlgCl p | IsAlgebraic ℚ z}, Algebraic.countable ℚ (PadicAlgCl p),
-      Metric.dense_iff.mpr <| fun α ε hε ↦ ?_⟩
-    have hint : IsIntegral ℚ_[p] α := Algebra.IsIntegral.isIntegral α
-    set f := minpoly ℚ_[p] α
-    have hf : Monic f := minpoly.monic hint
-    have hdense : DenseRange (algebraMap ℚ ℚ_[p]) := Padic.denseRange_ratCast p
-    set n := f.natDegree with hn
-    have hnpos : 0 < n := minpoly.natDegree_pos hint
-    set M := max ‖α‖ 1 with hM
-    have hMpos : M ≠ 0 := by positivity
-    set δ := (ε / M) ^ n / (n + 1) with hδ_def
-    have hδpos : 0 < δ := by positivity
-    obtain ⟨g, hgm, hdeg, hgcoeff⟩ :=
-      exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt hdense hf hδpos
-    obtain ⟨β, hβroot, hβnorm⟩ := exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt
-      hδpos (f := f) (minpoly.aeval _ _) hf (hgm.map _)
-      (by rw [natDegree_map_eq_of_injective (algebraMap ℚ ℚ_[p]).injective]; omega)
-      (fun i ↦ by simpa using hgcoeff i) (IsAlgClosed.splits _)
-    refine ⟨β, ?_, ?_⟩
-    · rw [Metric.mem_ball, dist_comm, dist_eq_norm]
-      refine hβnorm.trans_le ?_
-      rw [← hn, ← hM, show (↑n + 1) * δ = (ε / M) ^ n by rw [hδ_def]; field_simp,
-        Real.pow_rpow_inv_natCast (by positivity) hnpos.ne', div_mul_cancel₀ _ hMpos]
-    · rw [mem_aroots, aeval_map_algebraMap] at hβroot
-      exact ⟨g, hgm.ne_zero, hβroot.2⟩
+end PadicAlgCl
+
+namespace Padic
+
+/-- Every algebraic normed field extension of `ℚ_[p]` is a separable space. -/
+theorem separableSpace_of_isAlgebraic (K : Type*) [NormedField K] [NormedAlgebra ℚ_[p] K]
+    [Algebra.IsAlgebraic ℚ_[p] K] :
+    TopologicalSpace.SeparableSpace K :=
+  Algebra.IsAlgebraic.separableSpace_of_denseRange (Padic.denseRange_ratCast p) _
+
+end Padic
+
+namespace PadicAlgCl
+
+/-- `PadicAlgCl p` is a separable space. -/
+instance separableSpace : TopologicalSpace.SeparableSpace (PadicAlgCl p) :=
+  Padic.separableSpace_of_isAlgebraic p (PadicAlgCl p)
 
 end PadicAlgCl
 
