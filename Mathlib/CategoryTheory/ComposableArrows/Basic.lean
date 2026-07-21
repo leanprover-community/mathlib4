@@ -1053,9 +1053,11 @@ namespace ComposableArrows
 section
 variable (D : Type*) [Category* D] (n : ℕ)
 
+/-- `ComposableArrows` preserves products, up to equivalence of categories. -/
 def prodEquivalence : ComposableArrows (C × D) n ≌ ComposableArrows C n × ComposableArrows D n :=
   (functorProdFunctorEquiv (Fin (n + 1)) C D).symm
 
+/-- `ComposableArrows` preserves products, up to isomorphism of categories. -/
 def prodIsoCat : IsoCat (ComposableArrows (C × D) n)
                         (ComposableArrows C n × ComposableArrows D n) where
   functor := (prodEquivalence C D n).functor

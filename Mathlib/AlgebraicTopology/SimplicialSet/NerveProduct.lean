@@ -33,7 +33,7 @@ def nerveProdToProdNerve : nerve (C₁ × C₂) ⟶ (nerve C₁) ⊗ (nerve C₂
 def prodNerveToNerveProd : (nerve C₁) ⊗ (nerve C₂) ⟶ nerve (C₁ × C₂) where
   app n := ↾(ComposableArrows.prodEquivalence C₁ C₂ n.unop.len).inverse.obj
 
-/-- nerve preserves products. -/
+/-- `nerve` preserves products. -/
 def nerveOfProductIso : nerve (C₁ × C₂) ≅ (nerve C₁) ⊗ (nerve C₂) where
   hom := nerveProdToProdNerve C₁ C₂
   inv := prodNerveToNerveProd C₁ C₂
