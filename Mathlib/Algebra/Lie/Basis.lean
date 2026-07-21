@@ -84,7 +84,7 @@ variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L]
     rw [sub_smul, ofNat_smul_eq_nsmul, ← (b.sl2 i).lie_h_e_nsmul, b.lie_h_e i i]; abel
   rwa [IsAddTorsionFree.zsmul_eq_zero_iff_left (b.sl2 i).e_ne_zero, sub_eq_zero] at aux
 
-@[simp] lemma coe_cartan_eq_span :
+lemma coe_cartan_eq_span :
     H = Submodule.span R (range b.h) := by
   conv_lhs => rw [b.cartan_eq_lieSpan]
   apply coe_lieSpan_eq_span_of_forall_lie_eq_zero
