@@ -135,6 +135,7 @@ elab_rules : tactic
             (discard <| tryTactic <| rewriteTarget eq (symm := false))
             (fun goal ↦ throwTacticEx `setm goal "Rewriting failed")
       let unassignedMVars ← (newMVars ++ newPatMVars).filterM (notM ·.isAssigned)
-      unless unassignedMVars.isEmpty do
-        discard <| logUnassignedUsingErrorInfos unassignedMVars
+      if ← logUnassignedUsingErrorInfos unassignedMVars then
         throwAbortTactic
+
+end Mathlib.Tactic.SetM

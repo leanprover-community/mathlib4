@@ -131,3 +131,10 @@ example (h : AOrB) : 1 + 2 = 3 := by
     guard_hyp B :=ₛ 2
     trivial
   trivial
+
+/- Test for `.synthetic` metavariables created during elaboration of the pattern that should be
+synthesized "later". Here it is the hypothesis `h` that `i < l.length`. -/
+
+example {i : Nat} {l : List Nat} (h) : l[i] = l[i] := by
+  setm l[i] = _
+  trivial
