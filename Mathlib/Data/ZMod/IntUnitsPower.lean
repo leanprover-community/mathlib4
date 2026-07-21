@@ -55,6 +55,12 @@ instance : Module (ZMod 2) (Additive ℤˣ) where
 section CommSemiring
 variable {R : Type*} [CommSemiring R] [Module R (Additive ℤˣ)]
 
+instance glou : AddCommMonoid (Additive ℤˣ) := inferInstance
+
+#print glou
+
+#print Additive.addMonoid
+
 /-- There is a canonical power operation on `ℤˣ` by `R` if `Additive ℤˣ` is an `R`-module.
 
 In lemma names, this operation is called `uzpow` to match `zpow`.
@@ -63,9 +69,39 @@ Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
 instance Int.instUnitsPow : Pow ℤˣ R where
   pow u r := (r • Additive.ofMul u).toMul
 
+instance glouk : NPow ℤˣ  := inferInstance
+
+#print glouk
+
+attribute [local implicit_reducible] Additive.ofMul Additive.toMul
+
+#check Units.instMonoid
+
 -- The above instances form no typeclass diamonds with the standard power operators
 -- but we will need `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
-example : Int.instUnitsPow = NPow.toPow := rfl
+example : (Int.instUnitsPow : Pow ℤˣ ℕ) = Units.instMonoid.toNPow.toPow := by
+  with_reducible_and_instances rfl
+
+lemma foo (n : ℕ) (a : ℤˣ) : Units.instMonoid.toNPow.toPow.pow a n =
+    { val := a ^ n
+      inv := a⁻¹ ^ n
+      val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
+      inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp } := by
+  with_reducible_and_instances rfl
+
+lemma bar (n : ℕ) (a : ℤˣ) : (Int.instUnitsPow : Pow ℤˣ ℕ).pow a n =
+    (n • Additive.ofMul a).toMul := by
+  with_reducible_and_instances rfl
+
+
+#exit
+
+fun n a ↦
+      { val := a ^ n
+        inv := a⁻¹ ^ n
+        val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
+        inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
+
 example : Int.instUnitsPow = ZPow.toPow := rfl
 
 @[simp] lemma ofMul_uzpow (u : ℤˣ) (r : R) : Additive.ofMul (u ^ r) = r • Additive.ofMul u := rfl
