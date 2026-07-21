@@ -355,7 +355,7 @@ theorem paracompactSpace_TFAE_of_regular (X : Type v) [TopologicalSpace X] [Regu
       obtain ⟨u, hux, hu⟩ := ht n x
       refine ⟨u ∩ w n, inter_mem hux <| (isOpen_iUnion (hto n)).mem_nhds (disjointed_subset w n hn),
         (finite_Iic n).subset fun i hi ↦ ?_⟩
-      rw [mem_setOf_eq, disjointed_eq_inter_compl] at hi
+      rw [mem_ofPred_eq, disjointed_eq_inter_compl] at hi
       obtain ⟨y, ⟨_, hyi⟩, _, hyn⟩ := hi
       by_contra hin
       rw [mem_Iic, not_le] at hin
