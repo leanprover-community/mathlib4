@@ -21,7 +21,7 @@ public section
 
 universe v v' u u'
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 open CategoryTheory Abelian
 
@@ -57,7 +57,7 @@ lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux [Small.{v} R]
 
 section SemiLinear
 
-variable [Small.{v} R] {R' : Type u'} [CommRing R'] (eR : R ≃+* R')
+variable [Small.{v} R] {R' : Type u'} [Ring R'] (eR : R ≃+* R')
 
 attribute [local instance] RingHomInvPair.of_ringEquiv
 
