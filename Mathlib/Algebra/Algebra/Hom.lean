@@ -422,9 +422,10 @@ lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
 lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     f.toNatAlgHom x = f x := rfl
 
+variable (R) (S) in
 /-- Ring homomorphisms are the same as `ℕ`-algebra homomorphisms. -/
 @[simps]
-def _root_.ringHomEquivNatAlgHom [Semiring R] [Semiring S] : (R →+* S) ≃ (R →ₐ[ℕ] S) where
+def equivNatAlgHom [Semiring R] [Semiring S] : (R →+* S) ≃ (R →ₐ[ℕ] S) where
   toFun := RingHom.toNatAlgHom
   invFun := AlgHom.toRingHom
 
@@ -443,9 +444,10 @@ lemma toIntAlgHom_injective [Ring R] [Ring S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 
+variable (R) (S) in
 /-- Ring homomorphisms are the same as `ℤ`-algebra homomorphisms. -/
 @[simps]
-def _root_.ringHomEquivIntAlgHom [Ring R] [Ring S] : (R →+* S) ≃ (R →ₐ[ℤ] S) where
+def equivIntAlgHom [Ring R] [Ring S] : (R →+* S) ≃ (R →ₐ[ℤ] S) where
   toFun := RingHom.toIntAlgHom
   invFun := AlgHom.toRingHom
 
