@@ -135,6 +135,7 @@ theorem realize_substFunc [L'.Structure M] {c : {n : ℕ} → L.Functions n → 
   | var => simp
   | func f ts ih => simp [← ih, ← hc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
     (t.restrictVar f).realize v = t.realize v' := by
@@ -150,6 +151,7 @@ theorem realize_restrictVar' [DecidableEq α] {t : L.Term α} {s : Set α} (h : 
     {v : α → M} : (t.restrictVar (Set.inclusion h)).realize (v ∘ (↑)) = t.realize v :=
   realize_restrictVar _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (α ⊕ γ)}
     {f : t.varFinsetLeft → β}
     {xs : β ⊕ γ → M} (xs' : α → M) (hxs' : ∀ a, xs (Sum.inl (f a)) = xs' a) :
@@ -437,6 +439,7 @@ theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : 
       · rfl)
     (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n}
     {f : φ.freeVarFinset → β} {v : β → M} {xs : Fin n → M}
     (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
@@ -611,10 +614,14 @@ theorem LHom.realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansi
   φ.realize_onBoundedFormula ψ
 
 @[simp]
-theorem LHom.setOf_realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
-    (ψ : L.Formula α) : (setOf (φ.onFormula ψ).Realize : Set (α → M)) = setOf ψ.Realize := by
+theorem LHom.setOfPred_realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
+    (ψ : L.Formula α) :
+    (Set.ofPred (φ.onFormula ψ).Realize : Set (α → M)) = Set.ofPred ψ.Realize := by
   ext
   simp
+
+@[deprecated (since := "2026-07-09")]
+alias LHom.setOf_realize_onFormula := LHom.setOfPred_realize_onFormula
 
 variable (M)
 
@@ -716,7 +723,7 @@ theorem mem_completeTheory {φ : Sentence L} : φ ∈ L.completeTheory M ↔ M �
   Iff.rfl
 
 theorem elementarilyEquivalent_iff : M ≅[L] N ↔ ∀ φ : L.Sentence, M ⊨ φ ↔ N ⊨ φ := by
-  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_setOf_eq]
+  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_ofPred_eq]
 
 variable (M)
 
@@ -961,7 +968,6 @@ theorem exists_realize_equivSentence_iff_realize_exClosure
         (by simpa [Formula.Realize]
           using (realize_equivSentence_symm M (Formula.equivSentence φ) v).2 hv)⟩
   · intro h
-    classical
     obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
     let v' := fun a => if hmem : a ∈ φ.freeVarFinset
       then v ⟨a, hmem⟩ else Classical.choice inferInstance
