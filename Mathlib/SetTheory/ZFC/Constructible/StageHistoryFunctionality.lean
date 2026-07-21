@@ -51,14 +51,14 @@ def historyHasUniqueStateFormula : FOFormula 2 :=
         (0 : Fin 4) (1 : Fin 4) (2 : Fin 4) (3 : Fin 4))
       historyStateUniqueBody))
 
-@[simp] private lemma historyStateUniqueWitnessAssignment
+@[simp, nolint simpNF] private lemma historyStateUniqueWitnessAssignment
     (history index stage relation otherStage otherRelation : LCarrier.{u}) :
     snoc (snoc ![history, index, stage, relation] otherStage) otherRelation =
       ![history, index, stage, relation, otherStage, otherRelation] := by
   funext i
   fin_cases i <;> rfl
 
-@[simp] private lemma historyUniqueStateWitnessAssignment
+@[simp, nolint simpNF] private lemma historyUniqueStateWitnessAssignment
     (history index stage relation : LCarrier.{u}) :
     snoc (snoc ![history, index] stage) relation =
       ![history, index, stage, relation] := by

@@ -226,7 +226,7 @@ theorem satisfies_rename {A : Type u} (E : A → A → Prop)
 def weaken {n : Nat} (φ : FOFormula n) : FOFormula (n + 1) :=
   rename Fin.castSucc φ
 
-@[simp]
+@[simp, nolint simpNF]
 theorem satisfies_weaken {A : Type u} (E : A → A → Prop)
     {n : Nat} (φ : FOFormula n) (s : Tuple A n) (x : A) :
     Satisfies E (weaken φ) (snoc s x) ↔ Satisfies E φ s := by

@@ -254,7 +254,7 @@ def stageEntryAtLAssignment
     (index entry : LCarrier.{u}) : Tuple LCarrier.{u} 15 :=
   snoc (snoc stageHistoryFixedParameters index) entry
 
-@[simp] private lemma stageEntryWitness_index
+@[simp, nolint simpNF] private lemma stageEntryWitness_index
     (index entry stage relation : LCarrier.{u}) :
     snoc (snoc (stageEntryAtLAssignment index entry) stage) relation
         (13 : Fin 17) = index := by
@@ -267,7 +267,7 @@ def stageEntryAtLAssignment
     rfl]
   simp only [snoc_castSucc, snoc_last]
 
-@[simp] private lemma stageEntryWitness_entry
+@[simp, nolint simpNF] private lemma stageEntryWitness_entry
     (index entry stage relation : LCarrier.{u}) :
     snoc (snoc (stageEntryAtLAssignment index entry) stage) relation
         (14 : Fin 17) = entry := by
@@ -276,7 +276,7 @@ def stageEntryAtLAssignment
     rfl]
   simp only [snoc_castSucc, stageEntryAtLAssignment, snoc_last]
 
-@[simp] private lemma stageEntryWitness_stage
+@[simp, nolint simpNF] private lemma stageEntryWitness_stage
     (index entry stage relation : LCarrier.{u}) :
     snoc (snoc (stageEntryAtLAssignment index entry) stage) relation
         (15 : Fin 17) = stage := by
@@ -285,7 +285,7 @@ def stageEntryAtLAssignment
     rfl]
   simp only [snoc_castSucc, snoc_last]
 
-@[simp] private lemma stageEntryWitness_relation
+@[simp, nolint simpNF] private lemma stageEntryWitness_relation
     (index entry stage relation : LCarrier.{u}) :
     snoc (snoc (stageEntryAtLAssignment index entry) stage) relation
         (16 : Fin 17) = relation := by

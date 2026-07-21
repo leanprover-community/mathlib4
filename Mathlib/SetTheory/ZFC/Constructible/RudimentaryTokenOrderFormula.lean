@@ -98,7 +98,7 @@ def generatorTokenLtFormula : FOFormula 5 :=
   .ex (.ex generatorTokenLtBody.toFO)
 
 /-- The two decoded witnesses occupy coordinates five and six. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem generatorTokenWitnessAssignment {A : Type u}
     (s : Tuple A 5) (x y : A) :
     snoc (snoc s x) y = ![s 0, s 1, s 2, s 3, s 4, x, y] := by
