@@ -218,6 +218,7 @@ theorem cycleRange_mk_zero (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 :=
   have : NeZero n := .of_pos h
   cycleRange_zero n
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_cycleRange (i : Fin n) : Perm.sign (cycleRange i) = (-1) ^ (i : ℕ) := by
   simp [cycleRange]
@@ -272,6 +273,12 @@ theorem insertNth_comp_cycleRange_symm {α : Type*} (p : Fin (n + 1)) (a : α) (
   ext j
   simp
 
+theorem cons_removeNth_eq_comp_cycleRange_symm {α : Type*}
+    (x : Fin (n + 1) → α) (p : Fin (n + 1)) :
+    Fin.cons (x p) (p.removeNth x) = x ∘ p.cycleRange.symm := by
+  ext i
+  cases i using Fin.cons <;> simp [Fin.removeNth_apply]
+
 @[simp]
 theorem cons_apply_cycleRange {α : Type*} (a : α) (x : Fin n → α) (p j : Fin (n + 1)) :
     (Fin.cons a x : _ → α) (p.cycleRange j) = (p.insertNth a x : _ → α) j := by
@@ -288,6 +295,7 @@ theorem isCycle_cycleRange [NeZero n] (h0 : i ≠ 0) : IsCycle (cycleRange i) :=
   · exact (h0 rfl).elim
   exact isCycle_finRotate.extendDomain _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cycleType_cycleRange [NeZero n] (h0 : i ≠ 0) :
     cycleType (cycleRange i) = {(i + 1 : ℕ)} := by

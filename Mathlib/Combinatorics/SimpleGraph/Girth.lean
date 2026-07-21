@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
-public import Mathlib.Combinatorics.SimpleGraph.Diam
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Girth of a simple graph
@@ -16,6 +16,7 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 
 ## TODO
 
+- Prove that `G.egirth ≤ 2 * G.ediam + 1` when `G` is not acyclic
 - Prove that `G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero
 
 -/
@@ -67,31 +68,14 @@ lemma exists_egirth_eq_length :
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, w, hw, _⟩ hG
     exact hG _ hw
-  · simp_rw [← egirth_eq_top, ← Ne.eq_def, egirth, iInf_subtype', iInf_sigma', ENat.iInf_coe_ne_top,
-      ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
+  · simp_rw [← egirth_eq_top, ← Ne.eq_def, egirth, iInf_subtype', iInf_sigma',
+      ENat.iInf_natCast_ne_top, ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
     exact ciInf_mem _
 
 lemma three_le_egirth : 3 ≤ G.egirth := by
   simpa using fun _ _ h ↦ h.three_le_length
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
-
-open Walk in
-lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
-  obtain ⟨u, w, _, hwl⟩ := exists_egirth_eq_length.mpr h
-  have half_g_le_edist : ↑(w.length / 2) ≤ G.edist u (w.getVert (w.length / 2)) := by
-    have ⟨p, _⟩ := ((w.take (w.length / 2)).reachable).exists_walk_length_eq_edist
-    by_contra! hlt; classical
-    have := p.bypass_isPath.exists_isCycle_length_le_add_of_ne
-       (w.drop (w.length / 2)).reverse.bypass_isPath <| by grind [take_length,
-      length_reverse, length_append, length_bypass_le_length, ENat.coe_lt_coe,
-      length_eq_zero_iff,
-      append_take_drop_eq, IsCycle.isPath_of_append_right, IsPath.reverse]
-    grind [ENat.coe_lt_coe, length_bypass_le_length, length_reverse, egirth_le_length,
-      ENat.coe_le_coe, length_append, take_length, append_take_drop_eq]
-  calc
-    G.egirth ≤ 2 * ↑(w.length / 2) + 1 := by rw [hwl]; norm_cast; grind
-    _  ≤ 2 * G.ediam + 1 := by grw [half_g_le_edist, edist_le_ediam]
 
 theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
   classical
@@ -131,7 +115,7 @@ noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
 
 lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
-  ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans <| egirth_le_length h
+  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| egirth_le_length h
 
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
@@ -146,13 +130,13 @@ lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G
 
 lemma Walk.IsCircuit.girth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
     G.girth ≤ w.length :=
-  ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans <| hwc.egirth_le_length
+  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| hwc.egirth_le_length
 
 lemma exists_girth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
   refine ⟨by tauto, fun h ↦ ?_⟩
   obtain ⟨_, _, _⟩ := exists_egirth_eq_length.mpr h
-  simp_all only [girth, ENat.toNat_coe]
+  simp_all only [girth, ENat.toNat_natCast]
   tauto
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
