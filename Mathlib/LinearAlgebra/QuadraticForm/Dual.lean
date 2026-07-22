@@ -48,9 +48,9 @@ section Ring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem separatingLeft_dualProd :
     (dualProd R M).SeparatingLeft ↔ Function.Injective (Module.Dual.eval R M) := by
-  classical
   rw [separatingLeft_iff_ker_eq_bot, ker_eq_bot]
   let e := LinearEquiv.prodComm R _ _ ≪≫ₗ Module.dualProdDualEquivDual R (Module.Dual R M) M
   let h_d := e.symm.toLinearMap.comp (dualProd R M)
@@ -141,7 +141,8 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
     dsimp only [LinearMap.smul_apply, LinearMap.coe_mk, AddHom.coe_mk, AddHom.toFun_eq_coe,
       LinearMap.coe_toAddHom, LinearMap.prod_apply, Function.prod_apply, LinearMap.add_apply,
       LinearMap.coe_comp, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply,
-      LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
+      LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, QuadraticMap.prod_apply,
+      QuadraticMap.neg_apply]
     simp only [polar_sub_right, polar_self, nsmul_eq_mul, Nat.cast_ofNat, polar_comm _ x.1 x.2,
       smul_sub, Module.End.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
     rw [← map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]

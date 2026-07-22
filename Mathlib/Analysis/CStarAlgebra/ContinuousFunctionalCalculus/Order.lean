@@ -299,7 +299,6 @@ lemma CFC.conjugate_rpow_neg_one_half (a : A) (ha : IsStrictlyPositive a := by c
   norm_num
   exact rpow_zero _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a unital C⋆-algebra, if `a` is strictly positive, and `a ≤ b`, then `b` is
 invertible. -/
 lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
@@ -483,11 +482,12 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.isClosed_iff_image_isClosed]
     convert! this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
-    simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
+    simp only [Set.mem_image, Set.mem_ofPred_eq, Set.mem_inter_iff, Set.mem_range,
+      ← exists_and_left]
     congr! 2 with x
     exact and_congr_left fun h ↦ by simp [← h]
   simp only [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
-    and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and]
+    and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.ofPred_and]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
 

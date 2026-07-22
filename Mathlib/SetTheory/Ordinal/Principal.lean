@@ -23,7 +23,7 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 * `IsPrincipal`: A principal (or indecomposable) ordinal under some binary operation. We include `0`
   and other typically excluded edge cases for simplicity.
-* `not_bddAbove_setOf_isPrincipal`: Principal ordinals (under any operation) are unbounded.
+* `not_bddAbove_setOfPred_isPrincipal`: Principal ordinals (under any operation) are unbounded.
 * `isPrincipal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are
   `0` and the ordinal powers of `ω`.
 * `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
@@ -177,13 +177,16 @@ private theorem isPrincipal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o :
       ⟨_, Set.mk_mem_prod ha (hb.trans_le h)⟩
 
 /-- Principal ordinals under any operation are unbounded. -/
-theorem not_bddAbove_setOf_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
+theorem not_bddAbove_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
     ¬ BddAbove { o | IsPrincipal op o } := by
   rintro ⟨a, ha⟩
   exact ((le_nfp _ _).trans (ha (isPrincipal_nfp_iSup op (succ a)))).not_gt (lt_succ a)
 
+@[deprecated (since := "2026-07-09")]
+alias not_bddAbove_setOf_isPrincipal := not_bddAbove_setOfPred_isPrincipal
+
 @[deprecated (since := "2026-03-17")]
-alias not_bddAbove_principal := not_bddAbove_setOf_isPrincipal
+alias not_bddAbove_principal := not_bddAbove_setOfPred_isPrincipal
 
 /-! ### Additive principal ordinals -/
 
@@ -280,7 +283,7 @@ theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ 
     obtain ⟨c, hc, m, hm⟩ := (lt_omega0_opow ha').1 ha
     apply (add_lt_add_of_le_of_lt hm.le hm).trans_le
     rw [← mul_add, ← Nat.cast_add]
-    exact (omega0_opow_mul_nat_lt hc _).le
+    exact (opow_mul_lt_opow (natCast_lt_omega0 _) hc).le
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
@@ -293,6 +296,13 @@ theorem add_of_omega0_opow_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c 
 
 @[deprecated (since := "2026-03-18")]
 alias add_absorp := add_of_omega0_opow_le
+
+/-- For `a ≠ 0`, the largest power of `ω` which is less or equal to it is also the smallest ordinal
+`b` with `a - b < a`. -/
+theorem isLeast_sub_lt_omega0_opow_log (h : a ≠ 0) : IsLeast {b | a - b < a} (ω ^ log ω a) := by
+  refine ⟨sub_omega0_opow_log_lt h, fun c (hc : a - _ < _) ↦ ?_⟩
+  contrapose! hc
+  exact le_sub_of_add_le (add_of_omega0_opow_le hc (opow_log_le_self ω h)).le
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :

@@ -89,6 +89,7 @@ def Cover.pullbackCoverOver : W.Cover (precoverage P) where
 instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver S f).X j).Over S where
   hom := (pullback (f.asOver S) ((𝒰.f j).asOver S)).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (𝒰.pullbackCoverOver S f).Over S where
   isOver_map j := { comp_over := by exact Over.w (pullback.fst (f.asOver S) ((𝒰.f j).asOver S)) }
 
@@ -115,6 +116,7 @@ def Cover.pullbackCoverOver' : W.Cover (precoverage P) where
 instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver' S f).X j).Over S where
   hom := (pullback ((𝒰.f j).asOver S) (f.asOver S)).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (𝒰.pullbackCoverOver' S f).Over S where
   isOver_map j := { comp_over := by exact Over.w (pullback.snd ((𝒰.f j).asOver S) (f.asOver S)) }
 
@@ -153,6 +155,7 @@ instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp S f hX hW hQ).X j).Over 
   hom := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
     ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
   isOver_map j :=
     { comp_over := by exact (pullback.fst (f.asOverProp S) ((𝒰.f j).asOverProp S)).w }
@@ -185,6 +188,7 @@ instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp' S f hX hW hQ).X j).Over
   hom := (pullback ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)
     (f.asOverProp (hX := hW) (hY := hX) S)).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (𝒰.pullbackCoverOverProp' S f hX hW hQ).Over S where
   isOver_map j :=
     { comp_over := by exact (pullback.snd ((𝒰.f j).asOverProp S) (f.asOverProp S)).w }
@@ -198,6 +202,7 @@ variable {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.
 instance (j : (𝒰.bind 𝒱).I₀) : ((𝒰.bind 𝒱).X j).Over S :=
   inferInstanceAs <| ((𝒱 j.1).X j.2).Over S
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
     [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S] : Cover.Over S (𝒰.bind 𝒱) where
