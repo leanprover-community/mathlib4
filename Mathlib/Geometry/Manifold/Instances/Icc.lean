@@ -16,15 +16,15 @@ public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 The manifold structure on real intervals is defined in `Mathlib.Geometry.Manifold.Instances.Real`.
 We relate it to the manifold structure on the real line, by showing that the inclusion
-(`contMDiff_subtype_coe_Icc`) and projection (`contMDiffOn_projIcc`) are smooth, and showing that
+(`contMDiff_subtypeVal_Icc`) and projection (`contMDiffOn_projIcc`) are smooth, and showing that
 a function defined on the interval is smooth iff its composition with the projection is smooth on
 the interval in `ℝ` (see `contMDiffOn_comp_projIcc_iff` and friends).
 
 We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the real line.
 
-- `isSmoothEmbedding_subtype_coe_Icc`: the inclusion `Icc x y → ℝ` is a smooth embedding,
-  and in particular smooth (`contMDiff_subtype_coe_Icc`)
-- `contMDiff_iff_comp_subtype_coe_Icc`: a function `f : M → Icc x y` is smooth iff
+- `isSmoothEmbedding_subtypeVal_Icc`: the inclusion `Icc x y → ℝ` is a smooth embedding,
+  and in particular smooth (`contMDiff_subtypeVal_Icc`)
+- `contMDiff_iff_comp_subtypeVal_Icc`: a function `f : M → Icc x y` is smooth iff
   its composition with the inclusion into `ℝ` is smooth
 
 ## TODO
@@ -53,7 +53,7 @@ instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
 
 /-- Unit vector in the tangent space to a segment, as the image of the unit vector in the real line
 under the canonical projection. It is also mapped to the unit vector in the real line through
-the canonical injection, see `mfderiv_subtype_coe_Icc_one`.
+the canonical injection, see `mfderiv_subtypeVal_Icc_one`.
 
 Note that one cannot abuse defeqs for this definition: this is *not* the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
@@ -72,9 +72,8 @@ open Manifold IsManifold
 -- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
 
 /-- The inclusion map from a closed segment to `ℝ` is a smooth immersion -/
-lemma isImmersionOfComplement_subtype_coe_Icc :
-    IsImmersionOfComplement Unit (𝓡∂ 1) 𝓘(ℝ) n
-      (fun (z : Icc x y) ↦ (z : ℝ)) := by
+lemma isImmersionOfComplement_subtypeVal_Icc :
+    IsImmersionOfComplement Unit (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
   letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin 1)) Unit
   let φ : (EuclideanSpace ℝ (Fin 1) × Unit) ≃L[ℝ] ℝ :=
@@ -126,19 +125,22 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
       linarith
 
 /-- The inclusion map from a closed segment to `ℝ` is a smooth embedding -/
-lemma isSmoothEmbedding_subtype_coe_Icc :
+lemma isSmoothEmbedding_subtypeVal_Icc :
     IsSmoothEmbedding (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) :=
-  ⟨isImmersionOfComplement_subtype_coe_Icc.isImmersion, Topology.IsEmbedding.subtypeVal⟩
+  ⟨isImmersionOfComplement_subtypeVal_Icc.isImmersion, Topology.IsEmbedding.subtypeVal⟩
 
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
-lemma contMDiff_subtype_coe_Icc : CMDiff n (fun (z : Icc x y) ↦ (z : ℝ)) :=
-  isImmersionOfComplement_subtype_coe_Icc.contMDiff.of_le (OrderTop.le_top n)
+lemma contMDiff_subtypeVal_Icc : CMDiff n (fun (z : Icc x y) ↦ (z : ℝ)) :=
+  isImmersionOfComplement_subtypeVal_Icc.contMDiff.of_le (OrderTop.le_top n)
+
+@[deprecated (since := "2026-07-22")]
+alias contMDiff_subtype_coe_Icc := contMDiff_subtypeVal_Icc
 
 /-- A function `f : M → Icc x y` is smooth iff its composition with the inclusion
 into `ℝ` is smooth. -/
-lemma contMDiff_iff_comp_subtype_coe_Icc {f : M → Icc x y} :
+lemma contMDiff_iff_comp_subtypeVal_Icc {f : M → Icc x y} :
     CMDiff n f ↔ Continuous f ∧ CMDiff n ((fun (z : Icc x y) ↦ (z : ℝ)) ∘ f) := by
-  rw [← ContMDiff.iff_comp_isImmersionOfComplement isImmersionOfComplement_subtype_coe_Icc]
+  rw [← ContMDiff.iff_comp_isImmersionOfComplement isImmersionOfComplement_subtypeVal_Icc]
 
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
 lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
@@ -176,7 +178,7 @@ lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
 lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
     CMDiff[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) ↔ CMDiff n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
-  convert! hf.comp_contMDiff (contMDiff_subtype_coe_Icc (x := x) (y := y)) (fun z ↦ z.2)
+  convert! hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
   ext z
   simp
 
@@ -184,7 +186,7 @@ lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
     CMDiffAt[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) w ↔ CMDiffAt n f w := by
   refine ⟨fun hf ↦ ?_,
     fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.2) (by simp)⟩
-  have A := contMDiff_subtype_coe_Icc (x := x) (y := y) (n := n) w
+  have A := contMDiff_subtypeVal_Icc (x := x) (y := y) (n := n) w
   rw [← contMDiffWithinAt_univ] at A ⊢
   convert! hf.comp _ A (fun z hz ↦ z.2)
   ext z
@@ -193,7 +195,7 @@ lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
 lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
     MDiffAt[Icc x y] (f ∘ (Set.projIcc x y h.out.le)) w ↔ MDiffAt f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) w).mdifferentiableAt one_ne_zero
+  · have A := (contMDiff_subtypeVal_Icc (x := x) (y := y) w).mdifferentiableAt one_ne_zero
     rw [← mdifferentiableWithinAt_univ] at A ⊢
     convert! hf.comp _ A (fun z hz ↦ z.2)
     ext z
@@ -225,7 +227,7 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
   congr 1
   convert! mfderivWithin_projIcc_one w.2
 
-lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
+lemma mfderiv_subtypeVal_Icc_one (z : Icc x y) :
     mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by
   have A : mfderiv[Icc x y] (Subtype.val ∘ (projIcc x y h.out.le)) z 1
       = mfderiv[Icc x y] (@id ℝ) z 1 := by
@@ -237,3 +239,6 @@ lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
   simp only [id_eq, mfderivWithin_eq_fderivWithin]
   rw [fderivWithin_id (uniqueDiffOn_Icc h.out _ z.2)]
   rfl
+
+@[deprecated (since := "2026-07-22")]
+alias mfderiv_subtype_coe_Icc_one := mfderiv_subtypeVal_Icc_one
