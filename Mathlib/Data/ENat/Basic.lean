@@ -273,7 +273,7 @@ alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
 
 @[simp] lemma le_natCast_toNat_self_iff : n ≤ n.toNat ↔ n ≠ ⊤ where
   mp := by rintro hn rfl; simp at hn
-  mpr hn := by rw [coe_toNat hn]
+  mpr hn := by rw [natCast_toNat hn]
 
 @[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
     n.toNat = m ↔ n = m := by
