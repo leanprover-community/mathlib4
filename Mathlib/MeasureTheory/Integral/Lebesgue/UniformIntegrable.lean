@@ -8,36 +8,31 @@ module
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
 /-!
-# Hitting time and hitting map in measured dynamical systems
-In this file, we define first hitting maps in measured dynamical systems.
+# Uniform integrability
+
+This file contains the definitions for uniform integrability of `ℝ≥0∞`-valued functions.
 
 ## Main definitions
-- `HitTime`: given a map `f : α → α` and a set `s`, the first positive time at which an iteration of
-  `f` hits `s`. Its value is `0` if no iteration hits `s`.
-- `HitMap`: given a map `f : α → α` and a set `s`, the point at which an iteration of `f` first hits
-  `s`.
-- `ExcursionSum` : given a map `f : α → α` a set `s` and an `ℝ≥0∞`-valued function `w` on `α`, the
-  sum of `w` on an orbit until this orbit first hits `s`.
 
-## Implementation notes
-The hitting time of a set `s` for a point `x` under a transformation `f` is defined as the `sInf`
-of all positive times `n` such that `f^[n] x ∈ s`. By default, `sInf ∅ = 0`. Hence, if the orbit
-starting from `x` never returns to `s`, then `HitTime f s x = 0`. This convention differs from the
-usual convention on the subject, for which `HitTime f s x = +∞` if the orbit starting from `x`
-never returns to `s`. The convention adopted therein has some upsides (e.g. `HitMap` is defined
-everywhere, `s` is stable under `HitMap`), but also some limitations one should keep in mind
-(e.g. `HitTime f s` is not antitone in `s`).
+* `MeasureTheory.UnifLIntegrable`: uniform integrability in the measure theory sense.
+  A family of functions `F` is uniformly integrable if for all `ε > 0`, there
+  exists some `δ > 0` such that for all sets `s` of smaller measure than `δ`, for all `i`,
+  the integral of `F i` restricted to `s` is smaller than `ε`.
+* `MeasureTheory.UniformLIntegrable`: a sequence of measurable functions `F` is uniformly
+  integrable in this sense if the integrals `∫⁻ x in F i ⁻¹' Ici a, F i x ∂μ` decay to `0` as `a`
+  tends to `∞`, uniformly in `i`.
+* `MeasureTheory.UniformTail`: a sequence of measurable functions `F` has uniform tails
+  if the tails `μ (F i ⁻¹' Ici a)` decay to `0` as `a` tends to `∞`, uniformly in `i`. This notion
+  is useful to relate precisely `UnifLIntegrable` and `UniformLIntegrable`.
 
-## TODO
-Prove:
-- That `HitMap f s` is measure-preserving if `f` is measure-preserving and `s` recurrent.
-- If possible, remove the hypothesis that `s` has finite measure in the previous theorem.
-- Kac's lemma (or rather, its generalization for nonnegative functions): if `f` is
-measure-preserving and `s` recurrent, then
-`∫⁻ x in (⋃ n, f^[n] ⁻¹' s), w x ∂μ = ∫⁻ x in s, ExcursionSum f s x ∂μ`.
+## Main results
+
+* `MeasureTheory.uniformLIntegrable_iff_unifLIntegrable_uniformTail`: the equivalence between
+  `UniformLIntegrable` on the one hand, and `UnifLIntegrable` together with `UniformTail` on the
+  other hand.
 
 ## Tags
-hitting time, hitting map, induction, recurrent set
+uniformly integrable, equi-integrable, Lebesgue integral
 -/
 
 public section
@@ -46,9 +41,7 @@ noncomputable section
 
 namespace MeasureTheory
 
-open ENNReal Filter Function Measure Set Topology
-
-@[instance] theorem _root_.ENNReal.NeZero.top : NeZero ∞ := { out := zero_ne_top.symm }
+open ENNReal Filter Set Topology
 
 variable {α ι : Type*} [MeasurableSpace α] {F G : ι → α → ℝ≥0∞} {μ : Measure α}
 
@@ -101,7 +94,7 @@ lemma UnifLIntegrable.tendsto_comp_set {A : ι → Set α} {l : Filter ι} (h : 
   have key := h.comp h'
   rw [← bot_eq_zero] at key ⊢
   refine tendsto_nhds_bot_mono' key (fun i ↦ ?_)
-  simp only [comp_apply]
+  simp only [Function.comp_apply]
   apply (le_iSup _ i).trans'
   apply (le_iSup _ (A i)).trans'
   simp
@@ -317,13 +310,15 @@ lemma UniformLIntegrable.uniformTail (h : ∀ i, AEMeasurable (F i) μ) (h' : Un
 lemma UnifLIntegrable.uniformLIntegrable (h : UnifLIntegrable F μ) (h' : UniformTail F μ) :
     UniformLIntegrable F μ := by
   refine tendsto_nhds_bot_mono' (h.comp h') fun a ↦ ?_
-  simp only [comp_apply, iSup_le_iff]
+  simp only [Function.comp_apply, iSup_le_iff]
   intro i
   apply (le_iSup _ i).trans'
   apply (le_iSup _ ((F i) ⁻¹' Ici a)).trans'
   rw [iSup_pos]
   exact le_iSup (α := ℝ≥0∞) _ i
 
+/-- Equivalence between `UniformLIntegrable` on the one hand, and `UnifLIntegrable` together with
+  `UniformTail` on the other hand. -/
 lemma uniformLIntegrable_iff_unifLIntegrable_uniformTail (h : ∀ i, AEMeasurable (F i) μ) :
     UniformLIntegrable F μ ↔ UnifLIntegrable F μ ∧ UniformTail F μ :=
   ⟨fun h' ↦ ⟨h'.unifLIntegrable, h'.uniformTail h⟩, fun h' ↦ h'.1.uniformLIntegrable h'.2⟩

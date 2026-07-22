@@ -363,6 +363,8 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 
 @[simp] theorem top_ne_zero : ∞ ≠ 0 := top_ne_coe
 
+@[instance] theorem NeZero.top : NeZero ∞ := { out := top_ne_zero }
+
 @[simp, aesop (rule_sets := [finiteness]) safe apply] theorem one_ne_top : 1 ≠ ∞ := coe_ne_top
 
 @[simp] theorem top_ne_one : ∞ ≠ 1 := top_ne_coe
