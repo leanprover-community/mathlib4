@@ -240,12 +240,12 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
-lemma modelWithCornersEuclideanHalfSpace_toFun (n : ℕ) [NeZero n] :
-    (𝓡∂ n : _ → _) = Subtype.val := by rfl
+@[simp] lemma modelWithCornersEuclideanHalfSpace_toFun (n : ℕ) [NeZero n] :
+    (𝓡∂ n : _ → _) = Subtype.val := rfl
 
 lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
     (x : EuclideanSpace ℝ (Fin n)) :
-    (𝓡∂ n).symm x = ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩ := by rfl
+    (𝓡∂ n).symm x = ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩ := rfl
 
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
@@ -306,12 +306,12 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
 
-lemma IccLeftChart_apply (x y : ℝ) [h : Fact (x < y)] (z : Icc x y) :
-    IccLeftChart x y z = ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩ := by
+lemma IccLeftChart_apply (x y : ℝ) [Fact (x < y)] (z : Icc x y) :
+    IccLeftChart x y z = ⟨toLp 2 fun _ ↦ z.val - x, by aesop⟩ :=
   rfl
 
 lemma IccLeftChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
-    (IccLeftChart x y).symm z = ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩ := by
+    (IccLeftChart x y).symm z = ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩ :=
   rfl
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
