@@ -132,7 +132,7 @@ theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
 
 /-- Composition of inverse and coercion from the subtype of the target. -/
 def setSymm : e.target → Z :=
-  e.target.restrict e.toPartialEquiv.symm
+  e.target.domRestrict e.toPartialEquiv.symm
 
 theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
