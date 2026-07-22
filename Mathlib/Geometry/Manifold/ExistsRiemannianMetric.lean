@@ -52,7 +52,7 @@ noncomputable section
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F]
+  [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
   [∀ x, NormedSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
@@ -65,24 +65,44 @@ def g_bilin (i b : B) :
         (fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i).symm b (innerSL ℝ)⟩
 
 variable (F) in
-def g_bilin_aux (i p : B) : E p →L[ℝ] (E p →L[ℝ] ℝ) :=
-  letI χ := trivializationAt F E i
-  (innerSL ℝ).comp (χ.continuousLinearMapAt ℝ p) |>.flip.comp (χ.continuousLinearMapAt ℝ p)
+noncomputable
+def g_bilin_aux (i p : B) : E p →L[ℝ] (E p →L[ℝ] ℝ) := by
+  let χ := trivializationAt F E i
+  let φ := χ.continuousLinearMapAt ℝ p
+  let bilinear : E p →ₗ[ℝ] E p →ₗ[ℝ] ℝ :=
+    LinearMap.compl₁₂ (innerSL ℝ).toLinearMap₁₂ φ.toLinearMap φ.toLinearMap
+  by_cases hp : p ∈ χ.baseSet
+  · let bar : E p ≃ₗ[ℝ] F := Trivialization.linearEquivAt ℝ χ p hp
+    haveI : FiniteDimensional ℝ (E p) := bar.symm.finiteDimensional
+    haveI : IsTopologicalAddGroup (E p) := by infer_instance
+    haveI : ContinuousSMul ℝ (E p) := by infer_instance
+    haveI : T2Space (E p) := by infer_instance
+    let bilinear_cont_inner : E p →ₗ[ℝ] E p →L[ℝ] ℝ := {
+      toFun := fun u => LinearMap.toContinuousLinearMap (bilinear u)
+      map_add' := by simp only [map_add, implies_true]
+      map_smul' := by simp only [map_smul, RingHom.id_apply, implies_true]
+    }
+    exact LinearMap.toContinuousLinearMap bilinear_cont_inner
+  · exact 0
 
 lemma g_nonneg {j b : B} (v : E b) :
     0 ≤ ((g_bilin_aux F j b).toFun v).toFun v := by
   unfold g_bilin_aux
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+  simp only
+  split_ifs
   · exact inner_self_nonneg (𝕜 := ℝ)
+  · simp
 
 lemma g_pos {i b : B}
     (hb : b ∈ (trivializationAt F E i).baseSet ∩ (chartAt HB i).source)
     (v : E b) (hv : v ≠ 0) :
     0 < ((g_bilin_aux F i b).toFun v).toFun v := by
   unfold g_bilin_aux
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
-  letI χ := trivializationAt F E i
-  have h1 : (continuousLinearMapAt ℝ χ b) v ≠ 0 := by
+  simp only
+  rw [dif_pos hb.1]
+  let χ := trivializationAt F E i
+  let φ := χ.continuousLinearMapAt ℝ b
+  have h1 : φ v ≠ 0 := by
     rw [← coe_continuousLinearEquivAt_eq χ hb.1]
     exact AddEquivClass.map_ne_zero_iff.mpr hv
   exact Std.lt_of_le_of_ne (inner_self_nonneg (𝕜 := ℝ))
@@ -92,9 +112,10 @@ theorem g_bilin_symm_aux (i p : B) (v w : E p) :
     ((g_bilin_aux F i p).toFun v).toFun w =
     ((g_bilin_aux F i p).toFun w).toFun v := by
   unfold g_bilin_aux
-  simp only [ContinuousLinearMap.coe_comp, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-    ContinuousLinearMap.coe_coe]
-  exact real_inner_comm _ _
+  simp only
+  split_ifs
+  · exact real_inner_comm _ _
+  · rfl
 
 end
 
@@ -103,7 +124,7 @@ noncomputable section
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F]
+  [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
   [∀ x, NormedSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 
@@ -270,10 +291,11 @@ section
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F]
+  [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
   [∀ x, NormedSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 
+omit [FiniteDimensional ℝ F] in
 lemma inCoordinates_apply_eq₂_spec
     {x₀ x : B} {ϕ : E x →L[ℝ] E x →L[ℝ] ℝ} {v w : F}
     (h₁x : x ∈ (trivializationAt F E x₀).baseSet) :
@@ -282,6 +304,7 @@ lemma inCoordinates_apply_eq₂_spec
   rw [inCoordinates_apply_eq₂ h₁x h₁x (by simp [Trivial.fiberBundle_trivializationAt'])]
   simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
 
+omit [FiniteDimensional ℝ F] in
 lemma inCoordinates_apply_eq₂_spec_symm
     (x₀ x : B) (hb : x ∈ (trivializationAt F E x₀).baseSet)
     (ϕ : F →L[ℝ] F →L[ℝ] ℝ) (u v : E x) :
@@ -339,9 +362,10 @@ lemma g_global_bilin_eq
       simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       congr 1
       unfold g_bilin g_bilin_aux
-      simp only [ContinuousLinearMap.coe_coe]
+      simp only
+      rw [dif_pos hsupp.1]
       conv_lhs => rw [inCoordinates_apply_eq₂_spec_symm j p hsupp.1 (innerSL ℝ) u v]
-      exact real_inner_comm _ _
+      rfl
   rw [this]
 
 lemma riemannian_metric_symm
@@ -376,7 +400,7 @@ section
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F]
+  [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
   [∀ x, NormedSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
