@@ -25,8 +25,6 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 * `Int.absNorm_under_eq_sInf`: the predicate that the `absNorm (under ℤ I)` is the smallest
   positive integer in `I`.
 
-* `Int.absNorm_under_dvd_absNorm`: `absNorm (under ℤ I)` divides the norm of `I`.
-
 * `Nat.absNorm_under_prime`: If `P` is a prime ideal, then `absNorm (under ℤ P)` is a prime number.
 
 * `IsDedekindDomain.HeightOneSpectrum.primesEquiv`: the equivalence `HeightOneSpectrum R ≃
@@ -94,19 +92,11 @@ theorem absNorm_under_eq_sInf :
     rw [← cast_natCast, cast_mem_ideal_iff, natCast_dvd_natCast] at h₂
     exact lt_iff_not_ge.mp h₀ <| Nat.le_of_dvd (Nat.sInf_mem (Set.nonempty_of_mem h₁)).1 h₂
 
+@[deprecated Ideal.absNorm_under_dvd_absNorm (since := "2026-07-22")]
 theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
     (I : Ideal S) :
-    absNorm (under ℤ I) ∣ absNorm I := by
-  cases finite_or_infinite (S ⧸ I)
-  · have : Fintype (S ⧸ I) := Fintype.ofFinite (S ⧸ I)
-    have h_main {d : ℕ} : (d : S) ∈ I ↔ ∀ (x : S ⧸ I), d • x = 0 := by
-      simp_rw [nsmul_eq_mul, ← map_natCast (Ideal.Quotient.mk I), ← Quotient.eq_zero_iff_mem]
-      exact ⟨fun h _ ↦ by simp [h], fun h ↦ by simpa using h 1⟩
-    rw [Ideal.absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_fintype_card]
-    simp_rw [absNorm_under_eq_sInf, h_main, ← AddMonoid.exponent_eq_sInf]
-    exact AddGroup.exponent_dvd_card (G := S ⧸ I)
-  · rw [absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_zero_of_infinite]
-    exact Nat.dvd_zero _
+    absNorm (under ℤ I) ∣ absNorm I :=
+  Ideal.absNorm_under_dvd_absNorm I
 
 theorem _root_.Ideal.ringChar_quot {S : Type*} [CommRing S] (I : Ideal S) :
     ringChar (S ⧸ I) = absNorm (under ℤ I) := by

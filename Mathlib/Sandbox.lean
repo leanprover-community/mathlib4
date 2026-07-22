@@ -48,13 +48,6 @@ theorem ncard_primesOver_le [IsDomain A] [Module.Finite A B] [Module.Flat A B] {
   exact Finset.sum_le_sum fun q _ ↦
     one_le_mul_of_one_le_of_one_le (ramificationIdx_pos q.1 A) (inertiaDeg_pos q.1 A)
 
-/-- The norm of `I.under A` divides the norm of `I`. -/
-theorem absNorm_under_dvd_absNorm [IsDedekindDomain A] [IsDedekindDomain B] [Module.Free ℤ A]
-    [Module.Free ℤ B] (I : Ideal B) : absNorm (I.under A) ∣ absNorm I := by
-  rw [absNorm_apply, absNorm_apply, Submodule.cardQuot_apply, Submodule.cardQuot_apply]
-  exact AddSubgroup.card_dvd_of_injective (quotientMap I (algebraMap A B) le_rfl)
-    quotientMap_injective
-
 end Ideal
 
 namespace IsDedekindDomain.HeightOneSpectrum
