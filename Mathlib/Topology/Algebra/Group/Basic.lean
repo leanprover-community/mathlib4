@@ -434,6 +434,16 @@ instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
     [ContinuousMul M] : ContinuousConstSMul (ConjAct Mˣ) M :=
   ⟨fun _ => (continuous_const.mul continuous_id).mul continuous_const⟩
 
+open scoped Pointwise in
+instance [Group G] [Group H] [TopologicalSpace G] [MulDistribMulAction H G]
+    [ContinuousConstSMul H G] {𝒢 : Subgroup G} (h : H) [DiscreteTopology 𝒢] :
+    DiscreteTopology ↑(h • 𝒢) := by
+  simp only [← SetLike.coe_sort_coe, ← isDiscrete_iff_discreteTopology] at *
+  refine IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
+  apply IsOpenMap.of_inverse (f' := fun x ↦ h⁻¹ • x) (continuous_const_smul _) <;>
+  · intro x
+    simp
+
 variable [TopologicalSpace G] [Inv G] [Mul G]
 
 /-- Conjugation is jointly continuous on `G × G` when both `mul` and `inv` are continuous. -/
@@ -449,6 +459,10 @@ theorem IsTopologicalGroup.continuous_conj_prod [ContinuousMul G] [ContinuousInv
 theorem IsTopologicalGroup.continuous_conj [SeparatelyContinuousMul G] (g : G) :
     Continuous fun h : G => g * h * g⁻¹ :=
   (continuous_mul_const g⁻¹).comp (continuous_const_mul g)
+
+instance {G : Type*} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G] :
+    ContinuousConstSMul (ConjAct G) G where
+  continuous_const_smul h := IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct h)
 
 /-- Conjugation acting on fixed element of the group is continuous when both `mul` and
 `inv` are continuous. -/
@@ -1062,7 +1076,6 @@ lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter �
 
 @[deprecated (since := "2026-02-03")]
 alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
-
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)
