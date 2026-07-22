@@ -6,6 +6,7 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!

@@ -59,7 +59,7 @@ namespace Topology
 /-- Topology whose open sets are upper sets.
 
 Note: In general the upper set topology does not coincide with the upper topology. -/
-@[instance_reducible]
+@[implicit_reducible]
 def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsUpperSet
   isOpen_univ := isUpperSet_univ
@@ -69,7 +69,7 @@ def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
 /-- Topology whose open sets are lower sets.
 
 Note: In general the lower set topology does not coincide with the lower topology. -/
-@[instance_reducible]
+@[implicit_reducible]
 def lowerSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsLowerSet
   isOpen_univ := isLowerSet_univ
@@ -197,7 +197,7 @@ attribute [nolint docBlame] IsUpperSet.topology_eq_upperSetTopology
 instance [Preorder α] : Topology.IsUpperSet (WithUpperSet α) := ⟨rfl⟩
 
 instance [Preorder α] : @Topology.IsUpperSet α (upperSet α) _ := by
-  let := upperSet α
+  letI := upperSet α
   exact ⟨rfl⟩
 
 /--
@@ -212,7 +212,7 @@ attribute [nolint docBlame] IsLowerSet.topology_eq_lowerSetTopology
 instance [Preorder α] : Topology.IsLowerSet (WithLowerSet α) := ⟨rfl⟩
 
 instance [Preorder α] : @Topology.IsLowerSet α (lowerSet α) _ := by
-  let := lowerSet α
+  letI := lowerSet α
   exact ⟨rfl⟩
 
 namespace IsUpperSet

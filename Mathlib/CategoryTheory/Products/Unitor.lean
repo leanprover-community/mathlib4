@@ -20,7 +20,7 @@ open CategoryTheory
 
 namespace CategoryTheory.prod
 
-open scoped CategoryTheory.Prod
+open scoped Prod
 
 variable (C : Type u) [Category.{v} C]
 

@@ -71,7 +71,6 @@ def functorObj (A : C ⥤ D) [MonObj A] : C ⥤ Mon D where
   map_id X := by ext; dsimp; rw [CategoryTheory.Functor.map_id]
   map_comp f g := by ext; dsimp; rw [Functor.map_comp]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Functor translating a monoid object in a functor category
 to a functor into the category of monoid objects.
@@ -107,7 +106,6 @@ def inverse : (C ⥤ Mon D) ⥤ Mon (C ⥤ D) where
     { app := fun X => (α.app X).hom
       naturality := fun _ _ f => congr_arg Mon.Hom.hom (α.naturality f) }
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The unit for the equivalence `Mon (C ⥤ D) ≌ C ⥤ Mon D`.
 -/
@@ -129,7 +127,6 @@ end MonFunctorCategoryEquivalence
 
 open MonFunctorCategoryEquivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When `D` is a monoidal category,
 monoid objects in `C ⥤ D` are the same thing
@@ -173,8 +170,8 @@ def functorObj (A : (C ⥤ D)) [ComonObj A] : C ⥤ Comon D where
   map_id X := by ext; dsimp; rw [CategoryTheory.Functor.map_id]
   map_comp f g := by ext; dsimp; rw [Functor.map_comp]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.privateInPublic true in
 /-- Functor translating a comonoid object in a functor category
 to a functor into the category of comonoid objects.
 -/
@@ -212,7 +209,6 @@ private def inverse : (C ⥤ Comon D) ⥤ Comon (C ⥤ D) where
       isComonHom_hom.hom_counit := by ext x; dsimp; rw [IsComonHom.hom_counit (α.app x).hom]
       isComonHom_hom.hom_comul := by ext x; dsimp; rw [IsComonHom.hom_comul (α.app x).hom] }
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 /-- The unit for the equivalence `Comon (C ⥤ D) ≌ C ⥤ Comon D`.
@@ -238,7 +234,6 @@ end ComonFunctorCategoryEquivalence
 
 open ComonFunctorCategoryEquivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -259,7 +254,6 @@ namespace CommMonFunctorCategoryEquivalence
 
 variable {C D}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Functor translating a commutative monoid object in a functor category
 to a functor into the category of commutative monoid objects.
@@ -287,14 +281,12 @@ def inverse : (C ⥤ CommMon D) ⥤ CommMon (C ⥤ D) where
   map α :=
     CommMon.homMk ((monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit for the equivalence `CommMon (C ⥤ D) ≌ C ⥤ CommMon D`.
 -/
 @[simps!]
 def unitIso : 𝟭 (CommMon (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A => CommMon.mkIso (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit for the equivalence `CommMon (C ⥤ D) ≌ C ⥤ CommMon D`.
 -/
 @[simps!]
@@ -305,7 +297,6 @@ end CommMonFunctorCategoryEquivalence
 
 open CommMonFunctorCategoryEquivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When `D` is a braided monoidal category,
 commutative monoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the commutative monoid objects of `D`.

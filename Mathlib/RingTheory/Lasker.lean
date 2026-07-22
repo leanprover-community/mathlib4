@@ -63,6 +63,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     {s : Finset (Submodule R M)} (hs : s.inf id = N) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Submodule R M), t.inf id = N ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical) := by
+  classical
   refine ⟨(s.image fun J ↦ {I ∈ s | (I.colon .univ).radical = (J.colon .univ).radical}).image
     fun t ↦ t.inf id, ?_, ?_, ?_⟩
   · ext
@@ -196,7 +197,7 @@ lemma comap_localized₀_eq_ite
     simp_rw [mem_localized₀, IsLocalizedModule.mk'_eq_iff, ← LinearMap.map_smul_of_tower]
     exact ⟨y • x, hy1 (Set.smul_mem_smul_set (Set.mem_univ x)), ⟨y, hy2⟩, rfl⟩
 
-open LocalizedModule Submodule.IsLocalizedModule in
+open LocalizedModule IsLocalizedModule in
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
 lemma comap_localized₀_eq_iInf
     {t : Finset (Submodule R M)} (ht : N.IsMinimalPrimaryDecomposition t)

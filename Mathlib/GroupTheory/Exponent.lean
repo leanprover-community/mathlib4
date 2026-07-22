@@ -84,7 +84,6 @@ theorem _root_.AddMonoid.exponent_additive :
 theorem exponent_multiplicative {G : Type*} [AddMonoid G] :
     exponent (Multiplicative G) = AddMonoid.exponent G := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open MulOpposite in
 @[to_additive (attr := simp)]
 theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
@@ -100,7 +99,6 @@ theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrde
 theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf g :=
   h.isOfFinOrder.orderOf_pos
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
   rw [exponent]
@@ -238,7 +236,7 @@ theorem lcm_orderOf_dvd_exponent [Fintype G] :
 @[to_additive exists_addOrderOf_eq_pow_padic_val_nat_add_exponent]
 theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} (hp : p.Prime) :
     ∃ g : G, orderOf g = p ^ (exponent G).factorization p := by
-  have := Fact.mk hp
+  haveI := Fact.mk hp
   rcases eq_or_ne ((exponent G).factorization p) 0 with (h | h)
   · refine ⟨1, by rw [h, pow_zero, orderOf_one]⟩
   have he : 0 < exponent G :=
@@ -508,7 +506,6 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid G]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by

@@ -192,6 +192,7 @@ attribute [local instance] MvPolynomial.algebraMvPolynomial in
 attribute [-simp] AlgEquiv.symm_toRingEquiv in
 theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPolynomial σ S} :
     IsIntegral (MvPolynomial σ R) f ↔ ∀ n, IsIntegral R (f.coeff n) := by
+  classical
   refine ⟨fun H n ↦ ?mp, fun H ↦ ?mpr⟩
   case mpr =>
     rw [← f.support_sum_monomial_coeff]
@@ -231,7 +232,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
       (isEmptyAlgEquiv _ PEmpty).symm.injective
       (.of_comp (f := (isEmptyAlgEquiv _ PEmpty).toRingHom) ?_)
     convert! H
-    · ext r m <;> simp [Subsingleton.elim m 0, C, X, monomial, coeff, map]
+    · aesop (add simp MvPolynomial.isEmptyAlgEquiv)
     · obtain rfl := Subsingleton.elim n 0
       have : constantCoeff = (isEmptyAlgEquiv S PEmpty).toRingHom := by aesop
       simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using!

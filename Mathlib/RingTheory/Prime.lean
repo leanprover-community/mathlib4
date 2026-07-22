@@ -13,7 +13,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Prime elements in rings
-
 This file contains lemmas about prime elements of commutative rings.
 -/
 

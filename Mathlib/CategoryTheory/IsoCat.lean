@@ -31,7 +31,7 @@ to be preferred.
 
 namespace CategoryTheory
 
-open CategoryTheory.Functor NatIso Category
+open Functor NatIso Category
 
 variable {C : Type*} {D : Type*} {E : Type*} [Category* C] [Category* D] [Category* E]
 variable (F : C ⥤ D) (G : D ⥤ E)
@@ -124,7 +124,6 @@ noncomputable def strictInv : D ⥤ C where
   map f := F.preimage (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
   map_comp _ _ := by simp [← preimage_comp]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor that is an isomorphism of categories assembles into an `IsoCat`,
 with `Functor.strictInv` as its inverse. -/

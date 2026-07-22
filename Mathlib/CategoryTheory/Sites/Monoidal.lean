@@ -174,7 +174,7 @@ attribute [local instance] monoidalCategory
 
 /-- The monoidal category structure on `Sheaf J A` obtained in `Sheaf.monoidalCategory` is
 braided when `A` is braided. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def braidedCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
     [BraidedCategory A] : BraidedCategory (Sheaf J A) :=
   inferInstanceAs (BraidedCategory
@@ -182,7 +182,7 @@ noncomputable def braidedCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J
 
 /-- The monoidal category structure on `Sheaf J A` obtained in `Sheaf.monoidalCategory` is
 symmetric when `A` is symmetric. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def symmetricCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
     [SymmetricCategory A] :
     SymmetricCategory (Sheaf J A) :=

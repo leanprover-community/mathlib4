@@ -139,7 +139,6 @@ lemma functor_map {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁)
     {y₀ y₁ : Y _⦋0⦌₂} (e' : Edge y₀ y₁) :
     (functor X Y).map (homMk (e.tensor e')) = (homMk e, homMk e') := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (X Y) in
 /-- The functor `X.HomotopyCategory ⥤ Y.HomotopyCategory ⥤ (X ⊗ Y).HomotopyCategory`
 when `X` and `Y` are `2`-truncated simplicial sets. -/
@@ -153,34 +152,28 @@ def curriedInverse : X.HomotopyCategory ⥤ Y.HomotopyCategory ⥤ (X ⊗ Y).Hom
       obtain ⟨y, rfl⟩ := mk_surjective y
       simpa using homMk_comp_homMk (h.tensor (.idCompId y)))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (X Y) in
 /-- The functor `X.HomotopyCategory × Y.HomotopyCategory ⥤ (X ⊗ Y).HomotopyCategory`
 when `X` and `Y` are `2`-truncated simplicial sets. -/
 def inverse : X.HomotopyCategory × Y.HomotopyCategory ⥤ (X ⊗ Y).HomotopyCategory :=
   Functor.uncurry.obj (curriedInverse X Y)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma inverse_obj (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) : (inverse X Y).obj (mk x, mk y) = mk (x, y) := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma inverse_map_mkHom_homMk_id {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁) (y : Y _⦋0⦌₂) :
     (inverse X Y).map (Prod.mkHom (homMk e) (𝟙 (mk y))) = homMk (e.tensor (.id y)) := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma inverse_map_mkHom_id_homMk (x : X _⦋0⦌₂) {y₀ y₁ : Y _⦋0⦌₂} (e : Edge y₀ y₁) :
     (inverse X Y).map (Prod.mkHom (𝟙 (mk x)) (homMk e)) = homMk ((Edge.id x).tensor e) := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma inverse_map_mkHom_homMk_homMk {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁)
     {y₀ y₁ : Y _⦋0⦌₂} (e' : Edge y₀ y₁) :
     (inverse X Y).map (Prod.mkHom (homMk e) (homMk e')) = homMk (e.tensor e') :=
   homMk_comp_homMk ((Edge.CompStruct.compId e).tensor (Edge.CompStruct.idComp e'))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (X Y) in
 /-- Auxiliary definition for `equivalence`. -/
@@ -191,17 +184,14 @@ def functorCompInverseIso : functor X Y ⋙ inverse X Y ≅ 𝟭 _ :=
     dsimp
     rw [Category.comp_id, Category.id_comp, inverse_map_mkHom_homMk_homMk])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma functorCompInverseIso_hom_app (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) :
     (functorCompInverseIso X Y).hom.app (mk (x, y)) = 𝟙 _ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma functorCompInverseIso_inv_app (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) :
     (functorCompInverseIso X Y).inv.app (mk (x, y)) = 𝟙 _ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (X Y) in
 /-- Auxiliary definition for `equivalence`. -/
 def inverseCompFunctorIso : inverse X Y ⋙ functor X Y ≅ 𝟭 _ :=
@@ -212,27 +202,22 @@ def inverseCompFunctorIso : inverse X Y ⋙ functor X Y ≅ 𝟭 _ :=
         obtain ⟨y, rfl⟩ := y.mk_surjective
         cat_disch))
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma inverseCompFunctorIso_hom_app (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) :
     (inverseCompFunctorIso X Y).hom.app (mk x, mk y) = 𝟙 _ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma inverseCompFunctorIso_inv_app (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) :
     (inverseCompFunctorIso X Y).inv.app (mk x, mk y) = 𝟙 _ := rfl
 
 variable (X Y)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma functor_comp_inverse : functor X Y ⋙ inverse X Y = 𝟭 _ :=
   Functor.ext_of_iso (functorCompInverseIso X Y) (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma inverse_comp_functor : inverse X Y ⋙ functor X Y = 𝟭 _ :=
   Functor.ext_of_iso (inverseCompFunctorIso X Y) (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `(X ⊗ Y).HomotopyCategory ≌ X.HomotopyCategory ⥤ Y.HomotopyCategory`
 when `X` and `Y` are `2`-truncated simplicial sets. -/
 def equivalence :
@@ -242,7 +227,6 @@ def equivalence :
   unitIso := (functorCompInverseIso X Y).symm
   counitIso := inverseCompFunctorIso X Y
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism of categories between
 `(X ⊗ Y).HomotopyCategory` and `X.HomotopyCategory ⥤ Y.HomotopyCategory`. -/
 @[simps]
@@ -253,7 +237,6 @@ def iso :
   hom_inv_id := by ext; exact functor_comp_inverse X Y
   inv_hom_id := by ext; exact inverse_comp_functor X Y
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {X} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the first variable. -/
@@ -267,7 +250,6 @@ def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
       simp
       rfl))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {Y} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second variable. -/
@@ -281,14 +263,12 @@ def idProdMapHomotopyCategoryCompInverseIso (g : Y ⟶ Y') :
       simp
       rfl))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {X} in
 lemma mapHomotopyCategory_prod_id_comp_inverse (f : X ⟶ X') :
     (mapHomotopyCategory f).prod (𝟭 _) ⋙ inverse X' Y =
       inverse X Y ⋙ mapHomotopyCategory (f ▷ Y) :=
   Functor.ext_of_iso (mapHomotopyCategoryProdIdCompInverseIso _ _) (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {Y} in
 lemma id_prod_mapHomotopyCategory_comp_inverse (g : Y ⟶ Y') :
     Functor.prod (𝟭 _) (mapHomotopyCategory g) ⋙ inverse X Y' =
@@ -310,7 +290,6 @@ def inverseCompMapHomotopyCategoryFstIso :
       obtain ⟨y, rfl⟩ := y.mk_surjective
       simp))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second projection. -/
@@ -324,12 +303,10 @@ def inverseCompMapHomotopyCategorySndIso :
       simp only [Category.comp_id]
       exact homMk_id y))
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma inverse_comp_mapHomotopyCategory_fst :
     inverse X Y ⋙ mapHomotopyCategory (fst _ _) = CategoryTheory.Prod.fst _ _ :=
   Functor.ext_of_iso (inverseCompMapHomotopyCategoryFstIso _ _) (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma inverse_comp_mapHomotopyCategory_snd :
     inverse X Y ⋙ mapHomotopyCategory (snd _ _) = CategoryTheory.Prod.snd _ _ :=
   Functor.ext_of_iso (inverseCompMapHomotopyCategorySndIso _ _) (fun _ ↦ rfl)
@@ -379,7 +356,6 @@ def associativity'Iso :
         simp only [Category.comp_id, Category.id_comp, ← prod_id',
           CategoryTheory.Functor.map_id, inverse_obj, inverse_map_mkHom_homMk_id]))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {X Y Z} in
 lemma associativity'Iso_hom_app (xyz) :
     (associativity'Iso X Y Z).hom.app xyz = 𝟙 _ := by
@@ -387,7 +363,6 @@ lemma associativity'Iso_hom_app (xyz) :
   rw [Category.id_comp, Category.comp_id]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 open Functor in
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to associators. -/
@@ -411,7 +386,6 @@ lemma associativityIso_hom_app (xyz) :
     Category.comp_id, ← prod_id, CategoryTheory.Functor.map_id,
     CategoryTheory.Functor.map_id]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma associativity :
     (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙ mapHomotopyCategory (α_ _ _ _).hom =
     (prod.associativity _ _ _).functor ⋙ Functor.prod (𝟭 _) (inverse Y Z) ⋙
@@ -422,7 +396,6 @@ end BinaryProduct
 
 end HomotopyCategory
 
-set_option backward.isDefEq.respectTransparency.types false in
 open HomotopyCategory.BinaryProduct in
 instance : hoFunctor₂.{u}.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
@@ -434,7 +407,6 @@ instance : hoFunctor₂.{u}.Monoidal :=
       right_unitality X := by ext; apply right_unitality
       associativity _ _ _ := by ext; apply associativity }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
 instance hoFunctor.monoidal : hoFunctor.{u}.Monoidal :=
   inferInstanceAs (truncation 2 ⋙ hoFunctor₂).Monoidal
@@ -448,7 +420,6 @@ def hoFunctor.unitHomEquiv (X : SSet.{u}) :
   (SSet.unitHomEquiv X).trans <|
     (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
     hoFunctor.unitHomEquiv X x =
       (Functor.LaxMonoidal.ε hoFunctor.{u}).toFunctor ⋙ (hoFunctor.map x).toFunctor :=

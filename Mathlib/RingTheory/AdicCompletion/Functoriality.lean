@@ -61,7 +61,6 @@ namespace AdicCompletion
 
 open LinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
     (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ f.reduceModIdeal (I ^ n) =
       (f.reduceModIdeal (I ^ m) : _ →ₗ[R] _) ∘ₗ transitionMap I M hmn := by
@@ -70,7 +69,6 @@ theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
 
 namespace AdicCauchySequence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear map induces a linear map on adic Cauchy sequences. -/
 @[simps]
 def map (f : M →ₗ[R] N) : AdicCauchySequence I M →ₗ[R] AdicCauchySequence I N where
@@ -359,7 +357,6 @@ open Submodule
 
 variable {I}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_smodEq_pow_add_one_smul {f : M →ₗ[R] N}
     (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) {y : N} {n : ℕ}
     (hy : y ∈ (I ^ n • ⊤ : Submodule R N)) :
@@ -404,7 +401,6 @@ theorem exists_smodEq_pow_smul_top_and_mkQ_eq {f : M →ₗ[R] N}
   use x', hxx'
   rwa [mkQ_apply, hx'y0]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
     (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) : Function.Surjective (map I f) := by
   intro y

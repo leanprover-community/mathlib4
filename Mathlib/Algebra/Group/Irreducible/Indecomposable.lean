@@ -111,6 +111,10 @@ lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
   replace hjk : v i ∈ closure (v '' t) := hjk ▸ mul_mem hj' hk'
   exact hi₁ hjk
 
+@[deprecated (since := "2025-12-30")]
+alias Submonoid.closure_image_one_lt_and_isMulIndecomposable :=
+  Submonoid.closure_image_isMulIndecomposable_baseOf
+
 @[to_additive]
 lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveInv ι]
     [CommGroup S] [IsOrderedMonoid S]

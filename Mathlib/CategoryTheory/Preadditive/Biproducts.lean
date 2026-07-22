@@ -147,7 +147,6 @@ def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.
       cases j
       simp [sum_comp, t.ι_π, comp_dite]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functor f)}
@@ -166,7 +165,6 @@ def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone
       simp_rw [Bicone.toCocone_ι_app, comp_sum, ← Category.assoc, t.ι_π, dite_comp]
       simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfColimitCoconeOfIsColimit {f : J → C} {t : Cocone (Discrete.functor f)}
@@ -303,7 +301,6 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
       simp [Preadditive.sum_comp, biproduct.lift_desc, biproduct.ι_π, comp_dite,
         Equiv.apply_eq_iff_eq_symm_apply, h]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
 any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.X`.
@@ -422,7 +419,6 @@ def isBinaryBilimitOfIsColimit {X Y : C} (t : BinaryBicone X Y) (ht : IsColimit 
   isBinaryBilimitOfTotal _ <| by
     refine BinaryCofan.IsColimit.hom_ext ht ?_ ?_ <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any colimit cocone over a pair into a bilimit bicone. -/
 def binaryBiconeIsBilimitOfColimitCoconeOfIsColimit {X Y : C} {t : Cocone (pair X Y)}
@@ -517,7 +513,7 @@ def binaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f] 
     rw [splitEpiOfIdempotentOfIsColimitCofork_section_,
       isColimitCoforkOfCokernelCofork_desc, isCokernelEpiComp_desc]
     dsimp only [cokernelCoforkOfCofork_ofπ]
-    let := epi_of_isColimit_cofork i
+    letI := epi_of_isColimit_cofork i
     apply zero_of_epi_comp c.π
     simp only [sub_comp, comp_sub, Category.comp_id, Category.assoc, IsSplitMono.id, sub_self,
       Cofork.IsColimit.π_desc_assoc, CokernelCofork.π_ofπ, IsSplitMono.id_assoc]
@@ -631,7 +627,7 @@ def binaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f] {c :
       rw [splitMonoOfIdempotentOfIsLimitFork_retraction, isLimitForkOfKernelFork_lift,
         isKernelCompMono_lift]
       dsimp only [kernelForkOfFork_ι]
-      let := mono_of_isLimit_fork i
+      letI := mono_of_isLimit_fork i
       apply zero_of_comp_mono c.ι
       simp only [comp_sub, Category.comp_id, Category.assoc, sub_self, Fork.IsLimit.lift_ι,
         Fork.ι_ofι, IsSplitEpi.id_assoc]
@@ -782,7 +778,7 @@ via Gaussian elimination.
 def Biprod.gaussian (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) [IsIso (biprod.inl ≫ f ≫ biprod.fst)] :
     Σ' (L : X₁ ⊞ X₂ ≅ X₁ ⊞ X₂) (R : Y₁ ⊞ Y₂ ≅ Y₁ ⊞ Y₂) (g₂₂ : X₂ ⟶ Y₂),
       L.hom ≫ f ≫ R.hom = biprod.map (biprod.inl ≫ f ≫ biprod.fst) g₂₂ := by
-  let :=
+  let this :=
     Biprod.gaussian' (biprod.inl ≫ f ≫ biprod.fst) (biprod.inl ≫ f ≫ biprod.snd)
       (biprod.inr ≫ f ≫ biprod.fst) (biprod.inr ≫ f ≫ biprod.snd)
   rwa [Biprod.ofComponents_eq] at this
@@ -878,7 +874,6 @@ section Finite
 
 variable {J : Type*} [Finite J]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
 preserves finite products. -/
@@ -903,7 +898,6 @@ lemma preservesProductsOfShape_of_preservesBiproductsOfShape [PreservesBiproduct
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite products
 preserves finite biproducts. -/
@@ -922,7 +916,7 @@ set_option backward.isDefEq.respectTransparency false in
 preserves the biproduct of `f`. For the converse, see `mapBiproduct`. -/
 lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Mono (biproductComparison F f)] : PreservesBiproduct f F := by
-  have : HasProduct fun b => F.obj (f b) := by
+  haveI : HasProduct fun b => F.obj (f b) := by
     change HasProduct (F.obj ∘ f)
     infer_instance
   have that : piComparison F f =
@@ -930,19 +924,19 @@ lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct
         biproductComparison F f ≫ (biproduct.isoProduct _).hom := by
     ext j
     convert! piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
-  have : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
-  have : IsIso (piComparison F f) := by
+  haveI : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
+  haveI : IsIso (piComparison F f) := by
     rw [that]
     infer_instance
-  have := PreservesProduct.of_iso_comparison F f
+  haveI := PreservesProduct.of_iso_comparison F f
   apply preservesBiproduct_of_preservesProduct
 
 /-- If the (coproduct-like) biproduct comparison for `F` and `f` is an epimorphism, then `F`
 preserves the biproduct of `F` and `f`. For the converse, see `mapBiproduct`. -/
 lemma preservesBiproduct_of_epi_biproductComparison' {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Epi (biproductComparison' F f)] : PreservesBiproduct f F := by
-  have : Epi (splitEpiBiproductComparison F f).section_ := by simpa
-  have : IsIso (biproductComparison F f) :=
+  haveI : Epi (splitEpiBiproductComparison F f).section_ := by simpa
+  haveI : IsIso (biproductComparison F f) :=
     IsIso.of_epi_section' (splitEpiBiproductComparison F f)
   apply preservesBiproduct_of_mono_biproductComparison
 
@@ -953,7 +947,6 @@ lemma preservesBiproductsOfShape_of_preservesProductsOfShape
     PreservesBiproductsOfShape J F where
   preserves {_} := preservesBiproduct_of_preservesProduct F
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
 preserves finite coproducts. -/
@@ -978,7 +971,6 @@ lemma preservesCoproductsOfShape_of_preservesBiproductsOfShape [PreservesBiprodu
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite coproducts
 preserves finite biproducts. -/
@@ -1002,7 +994,6 @@ lemma preservesBiproductsOfShape_of_preservesCoproductsOfShape
 
 end Finite
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
 preserves binary products. -/
@@ -1027,7 +1018,6 @@ lemma preservesBinaryProducts_of_preservesBinaryBiproducts [PreservesBinaryBipro
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary products
 preserves binary biproducts. -/
@@ -1049,11 +1039,11 @@ lemma preservesBinaryBiproduct_of_mono_biprodComparison {X Y : C} [HasBinaryBipr
     prodComparison F X Y =
       (F.mapIso (biprod.isoProd X Y)).inv ≫ biprodComparison F X Y ≫ (biprod.isoProd _ _).hom := by
     ext <;> simp [← Functor.map_comp]
-  have : IsIso (biprodComparison F X Y) := isIso_of_mono_of_isSplitEpi _
-  have : IsIso (prodComparison F X Y) := by
+  haveI : IsIso (biprodComparison F X Y) := isIso_of_mono_of_isSplitEpi _
+  haveI : IsIso (prodComparison F X Y) := by
     rw [that]
     infer_instance
-  have := PreservesLimitPair.of_iso_prod_comparison F X Y
+  haveI := PreservesLimitPair.of_iso_prod_comparison F X Y
   apply preservesBinaryBiproduct_of_preservesBinaryProduct
 
 /-- If the (coproduct-like) biproduct comparison for `F`, `X` and `Y` is an epimorphism, then
@@ -1061,8 +1051,8 @@ lemma preservesBinaryBiproduct_of_mono_biprodComparison {X Y : C} [HasBinaryBipr
 lemma preservesBinaryBiproduct_of_epi_biprodComparison' {X Y : C} [HasBinaryBiproduct X Y]
     [HasBinaryBiproduct (F.obj X) (F.obj Y)] [Epi (biprodComparison' F X Y)] :
     PreservesBinaryBiproduct X Y F := by
-  have : Epi (splitEpiBiprodComparison F X Y).section_ := by simpa
-  have : IsIso (biprodComparison F X Y) :=
+  haveI : Epi (splitEpiBiprodComparison F X Y).section_ := by simpa
+  haveI : IsIso (biprodComparison F X Y) :=
     IsIso.of_epi_section' (splitEpiBiprodComparison F X Y)
   apply preservesBinaryBiproduct_of_mono_biprodComparison
 
@@ -1072,7 +1062,6 @@ lemma preservesBinaryBiproducts_of_preservesBinaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) F] : PreservesBinaryBiproducts F where
   preserves {_} {_} := preservesBinaryBiproduct_of_preservesBinaryProduct F
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
 preserves binary coproducts. -/
@@ -1099,7 +1088,6 @@ lemma preservesBinaryCoproducts_of_preservesBinaryBiproducts [PreservesBinaryBip
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary coproducts
 preserves binary biproducts. -/

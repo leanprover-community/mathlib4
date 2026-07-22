@@ -41,7 +41,7 @@ open MonoidalOpposite
 
 /-- Define a left action of `C` on `D` from a right action of `Cᴹᵒᵖ` on `D` via
 the formula `c ⊙ₗ d := d ⊙ᵣ (mop c)`. -/
-@[simps -isSimp, instance_reducible]
+@[simps -isSimp, implicit_reducible]
 def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
     MonoidalLeftAction C D where
   actionObj c d := d ⊙ᵣ mop c
@@ -135,7 +135,7 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
   actionAssocIso_hom_naturality
     | op f, op g, op h => by
         apply Quiver.Hom.unop_inj
-        have := (αₗ (unop _) (unop _) (unop _)).inv ≫=
+        haveI := (αₗ (unop _) (unop _) (unop _)).inv ≫=
           MonoidalLeftAction.actionAssocIso_hom_naturality f g h
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
@@ -175,7 +175,7 @@ def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
       MonoidalLeftAction.actionHom_def f.op g.op
   actionAssocIso_hom_naturality f g h := by
     apply Quiver.Hom.op_inj
-    have := (αₗ (op _) (op _) (op _)).inv ≫=
+    haveI := (αₗ (op _) (op _) (op _)).inv ≫=
       MonoidalLeftAction.actionAssocIso_hom_naturality f.op g.op h.op
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]
@@ -257,7 +257,7 @@ open MonoidalOpposite
 
 /-- Define a right action of `C` on `D` from a left action of `Cᴹᵒᵖ` on `D` via
 the formula `d ⊙ᵣ c := (mop c) ⊙ₗ d`. -/
-@[simps -isSimp, instance_reducible]
+@[simps -isSimp, implicit_reducible]
 def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
     MonoidalRightAction C D where
   actionObj d c := mop c ⊙ₗ d
@@ -347,7 +347,7 @@ def oppositeRightAction [MonoidalRightAction C D] :
   actionAssocIso_hom_naturality
     | op f, op g, op h => by
         apply Quiver.Hom.unop_inj
-        have := (αᵣ (unop _) (unop _) (unop _)).inv ≫=
+        haveI := (αᵣ (unop _) (unop _) (unop _)).inv ≫=
           MonoidalRightAction.actionAssocIso_hom_naturality f g h
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
@@ -387,7 +387,7 @@ def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
       MonoidalRightAction.actionHom_def f.op g.op
   actionAssocIso_hom_naturality f g h := by
     apply Quiver.Hom.op_inj
-    have := (αᵣ (op _) (op _) (op _)).inv ≫=
+    haveI := (αᵣ (op _) (op _) (op _)).inv ≫=
       MonoidalRightAction.actionAssocIso_hom_naturality f.op g.op h.op
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]

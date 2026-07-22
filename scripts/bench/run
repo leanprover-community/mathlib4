@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export ROOT_DIR="$(realpath .)"
-export BENCH_DIR="$ROOT_DIR/scripts/bench"
-export OUTPUT_FILE="$ROOT_DIR/measurements.jsonl"
+BENCH="scripts/bench"
 
 echo "Running benchmark: build"
-"$BENCH_DIR/build/run"
+"$BENCH/build/run"
 
 echo "Running benchmark: lint"
-"$BENCH_DIR/lint/run"
+"$BENCH/lint/run"
 
 echo "Running benchmark: open-mathlib"
-"$BENCH_DIR/open-mathlib/run"
+"$BENCH/open-mathlib/run"
 
 echo "Running benchmark: size"
-"$BENCH_DIR/size/run"
+"$BENCH/size/run"

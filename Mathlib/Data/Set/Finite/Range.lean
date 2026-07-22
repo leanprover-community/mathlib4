@@ -63,7 +63,7 @@ namespace Finite.Set
 
 instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := by
   classical
-  have := Fintype.ofFinite (PLift ι)
+  haveI := Fintype.ofFinite (PLift ι)
   infer_instance
 
 instance finite_replacement [Finite α] (f : α → β) :

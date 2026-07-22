@@ -49,7 +49,7 @@ variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditi
 
 namespace Pretriangulated
 
-open Pretriangulated.Opposite
+open Opposite
 
 namespace Opposite
 

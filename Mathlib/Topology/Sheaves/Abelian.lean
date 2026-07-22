@@ -13,7 +13,6 @@ public import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
 # Sheaves over Abelian categories
-
 We provide instances for categories of sheaves over Abelian categories.
 
 ## Main Results

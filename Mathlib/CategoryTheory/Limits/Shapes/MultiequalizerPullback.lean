@@ -29,7 +29,7 @@ namespace isPushout
 
 variable (s : PushoutCocone (I.fst default) (I.snd default))
 
-open scoped Classical in
+open Classical in
 /-- Given a multispan shape `J` which is essentially `.ofLinearOrder ι`
 (where `ι` has exactly two elements), this is the multicofork
 deduced from a pushout cocone. -/

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Relative Algebraic Closure

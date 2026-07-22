@@ -163,9 +163,6 @@ meta def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
     processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back.2
       (start := processed.size - 1)
 
-/-- A `with`-clause in a big operator. Example usage: `∑ i < 100 with Even i, f i`. -/
-syntax BigOpWith := " with " atomic(binderIdent " : ")? term
-
 /--
 - `∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,
   where `x` ranges over the finite domain of `f`.
@@ -178,7 +175,8 @@ syntax BigOpWith := " with " atomic(binderIdent " : ")? term
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∑" bigOpBinders* (" with" (ident ":")? term)? "," term` -/
-syntax (name := bigsum) "∑ " bigOpBinders BigOpWith ? ", " term:67 : term
+syntax (name := bigsum)
+  "∑ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -193,7 +191,8 @@ syntax (name := bigsum) "∑ " bigOpBinders BigOpWith ? ", " term:67 : term
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∏" bigOpBinders* ("with" (ident ":")? term)? "," term` -/
-syntax (name := bigprod) "∏ " bigOpBinders BigOpWith ? ", " term:67 : term
+syntax (name := bigprod)
+  "∏ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 macro_rules (kind := bigsum)
   | `(∑ $bs:bigOpBinders $[with $[$hx??:binderIdent :]? $p?:term]?, $v) => do
@@ -227,51 +226,23 @@ open scoped Batteries.ExtendedBinder
 /-- The possibilities we distinguish to delaborate the finset indexing a big operator:
 * `finset s` corresponds to `∑ x ∈ s, f x`
 * `univ` corresponds to `∑ x, f x`
-* `Iio n`/`Iic n`/`Ioi n`/`Ici n` corresponds to the intervals that are elaborated by sums.
+* `filter s p` corresponds to `∑ x ∈ s with p x, f x`
+* `filterUniv p` corresponds to `∑ x with p x, f x`
 -/
 private inductive FinsetResult where
   | finset (s : Term)
   | univ
-  | Iio (n : Term)
-  | Iic (n : Term)
-  | Ioi (n : Term)
-  | Ici (n : Term)
+  | filter (s : Term) (p : Term)
+  | filterUniv (p : Term)
 
-/-- The possibilities we distinguish to delaborate the finset indexing a big operator, including
-filters.
-* `{finset := s, filter = none}` represents `∑ x ∈ s, f x`;
-* `{finset := s, filter = some p}` represents `∑ x ∈ s with p, f x`.
--/
-private structure FinsetFilterResult where
-  finset : FinsetResult
-  filter : Option Term
-
-/-- Delaborates a finset indexing a big operator. -/
-private meta def delabFinsetResult : DelabM FinsetResult := do
+/-- Delaborates a finset indexing a big operator. In case it is a `Finset.filter`, `i` is used for
+the binder name. -/
+private meta def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
   let s ← getExpr
   if s.isAppOfArity ``Finset.univ 2 then
     return .univ
-  else if s.isAppOfArity `Finset.Iio 4 then
-    let ss ← withNaryArg 3 delab
-    return .Iio ss
-  else if s.isAppOfArity `Finset.Iic 4 then
-    let ss ← withNaryArg 3 delab
-    return .Iic ss
-  else if s.isAppOfArity `Finset.Ioi 4 then
-    let ss ← withNaryArg 3 delab
-    return .Ioi ss
-  else if s.isAppOfArity `Finset.Ici 4 then
-    let ss ← withNaryArg 3 delab
-    return .Ici ss
-  else
-    let ss ← delab
-    return .finset ss
-
-/-- Delaborates a finset indexing a big operator. In case the finset involves a filter,
-`i` is used for the binder name. -/
-private meta def delabFinsetArg (i : Ident) : DelabM FinsetFilterResult := do
-  let s ← getExpr
-  if s.isAppOfArity ``Finset.filter 4 then
+  else if s.isAppOfArity ``Finset.filter 4 then
+    let #[_, _, _, t] := s.getAppArgs | failure
     let p ←
       withNaryArg 1 do
         if (← getExpr).isLambda then
@@ -279,11 +250,14 @@ private meta def delabFinsetArg (i : Ident) : DelabM FinsetFilterResult := do
         else
           let p ← delab
           return (← `($p $i))
-    let r ← withNaryArg 3 delabFinsetResult
-    return ⟨r, some p⟩
+    if t.isAppOfArity ``Finset.univ 2 then
+      return .filterUniv p
+    else
+      let ss ← withNaryArg 3 delab
+      return .filter ss p
   else
-    let r ← delabFinsetResult
-    return ⟨r, none⟩
+    let ss ← delab
+    return .finset ss
 
 /-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
@@ -293,25 +267,28 @@ to show the domain type when the product is over `Finset.univ`. -/
   guard f.isLambda
   let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
-    return ((⟨i⟩ : Ident), ← delab)
-  let ⟨res, p⟩ ← withNaryArg 3 <| delabFinsetArg i
-  let withClause? : Option (TSyntax `BigOperators.BigOpWith) ← (match p with
-    | .some pp => return some (← `(BigOpWith|with $pp:term))
-    | .none => return none)
+    return (⟨i⟩, ← delab)
+  let res ← withNaryArg 3 <| delabFinsetArg i
   match res with
-  | .finset ss => `(∏ $i:ident ∈ $ss $[$withClause?]?, $body)
+  | .finset ss => `(∏ $i:ident ∈ $ss, $body)
   | .univ =>
+    let binder ←
+      if ppDomain then
+        let ty ← withNaryArg 0 delab
+        `(bigOpBinder| $i:ident : $ty)
+      else
+        `(bigOpBinder| $i:ident)
+    `(∏ $binder:bigOpBinder, $body)
+  | .filter ss p =>
+    `(∏ $i:ident ∈ $ss with $p, $body)
+  | .filterUniv p =>
     let binder ←
     if ppDomain then
       let ty ← withNaryArg 0 delab
       `(bigOpBinder| $i:ident : $ty)
     else
       `(bigOpBinder| $i:ident)
-    `(∏ $binder:bigOpBinder $[$withClause?]?, $body)
-  | .Iio ss => `(∏ $i:ident < $ss $[$withClause?]?, $body)
-  | .Iic ss => `(∏ $i:ident ≤ $ss $[$withClause?]?, $body)
-  | .Ioi ss => `(∏ $i:ident > $ss $[$withClause?]?, $body)
-  | .Ici ss => `(∏ $i:ident ≥ $ss $[$withClause?]?, $body)
+    `(∏ $binder:bigOpBinder with $p, $body)
 
 /-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
@@ -322,12 +299,9 @@ to show the domain type when the sum is over `Finset.univ`. -/
   let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return ((⟨i⟩ : Ident), ← delab)
-  let ⟨res, p⟩ ← withNaryArg 3 <| delabFinsetArg i
-  let withClause? : Option (TSyntax `BigOperators.BigOpWith) ← (match p with
-    | .some pp => return some (← `(BigOpWith|with $pp:term))
-    | .none => return none)
+  let res ← withNaryArg 3 <| delabFinsetArg i
   match res with
-  | .finset ss => `(∑ $i:ident ∈ $ss $[$withClause?]?, $body)
+  | .finset ss => `(∑ $i:ident ∈ $ss, $body)
   | .univ =>
     let binder ←
     if ppDomain then
@@ -335,11 +309,17 @@ to show the domain type when the sum is over `Finset.univ`. -/
       `(bigOpBinder| $i:ident : $ty)
     else
       `(bigOpBinder| $i:ident)
-    `(∑ $binder:bigOpBinder $[$withClause?]?, $body)
-  | .Iio ss => `(∑ $i:ident < $ss $[$withClause?]?, $body)
-  | .Iic ss => `(∑ $i:ident ≤ $ss $[$withClause?]?, $body)
-  | .Ioi ss => `(∑ $i:ident > $ss $[$withClause?]?, $body)
-  | .Ici ss => `(∑ $i:ident ≥ $ss $[$withClause?]?, $body)
+    `(∑ $binder:bigOpBinder, $body)
+  | .filter ss p =>
+    `(∑ $i:ident ∈ $ss with $p, $body)
+  | .filterUniv p =>
+    let binder ←
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
+    `(∑ $binder:bigOpBinder with $p, $body)
 
 end BigOperators
 

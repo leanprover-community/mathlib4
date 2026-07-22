@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.FieldTheory.Perfect
 
 /-!

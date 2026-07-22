@@ -88,7 +88,7 @@ def refl (ι : Type*) : ComplexShape ι where
 
 /-- The reverse of a `ComplexShape`.
 -/
-@[simps, implicit_reducible]
+@[simps]
 def symm (c : ComplexShape ι) : ComplexShape ι where
   Rel i j := c.Rel j i
   next_eq w w' := c.prev_eq w w'
@@ -96,7 +96,7 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
 
 /-- If `c : ComplexShape α` is such that `c.Rel` is decidable, it is also the
 case of `c.symm.Rel`. -/
-@[instance_reducible]
+@[implicit_reducible]
 def decidableRelSymm {α : Type*} (c : ComplexShape α) [DecidableRel c.Rel] :
     DecidableRel c.symm.Rel :=
   fun a b ↦ decidable_of_iff (c.Rel b a) Iff.rfl
@@ -133,7 +133,7 @@ instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // 
   congr
   exact c.next_eq rij rik
 
-open scoped Classical in
+open Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/

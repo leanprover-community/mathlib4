@@ -20,7 +20,7 @@ We show that `Grp C` has limits.
 
 namespace CategoryTheory
 
-open CategoryTheory.Functor Grp Limits MonObj
+open Functor Grp Limits MonObj
 
 universe w v
 

@@ -258,7 +258,7 @@ lemma RingHom.HoldsForLocalization.isLocalizationMap
     {f : R →+* S} (hy : M ≤ Submonoid.comap f T) (hf : P f) :
     P (IsLocalization.map (S := R') S' f hy) := by
   have hle : Submonoid.map f M ≤ T := by simpa [Submonoid.map_le_iff_le_comap]
-  let : Algebra (Localization (M.map f)) S' :=
+  letI : Algebra (Localization (M.map f)) S' :=
     IsLocalization.localizationAlgebraOfSubmonoidLe _ _ (M.map f) T hle
   have : IsScalarTower S (Localization (Submonoid.map f M)) S' :=
     IsLocalization.localization_isScalarTower_of_submonoid_le _ _ _ _ _
@@ -286,7 +286,7 @@ end HoldsForLocalization
 theorem RingHom.HoldsForLocalizationAway.of_bijective
     (H : RingHom.HoldsForLocalizationAway P) (hf : Function.Bijective f) :
     P f := by
-  let := f.toAlgebra
+  letI := f.toAlgebra
   have := IsLocalization.of_le_isUnit (S := .powers (1 : R)) (by simp)
   have := IsLocalization.isLocalization_of_algEquiv (.powers (1 : R))
     (AlgEquiv.ofBijective (Algebra.ofId R S) hf)
@@ -312,7 +312,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
     (hP : LocalizationAwayPreserves P) :
     RespectsIso P where
   left {R S T} _ _ _ f e hf := by
-    let := e.toRingHom.toAlgebra
+    letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : R) R :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one (Equiv.refl _).bijective
     have : IsLocalization.Away (f 1) T :=
@@ -322,7 +322,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
     · rw [IsLocalization.Away.map, IsLocalization.map_comp]; rfl
     · rfl
   right {R S T} _ _ _ f e hf := by
-    let := e.symm.toRingHom.toAlgebra
+    letI := e.symm.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : S) R :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.symm.bijective
     have : IsLocalization.Away (f 1) T :=
@@ -338,12 +338,12 @@ lemma RingHom.StableUnderCompositionWithLocalizationAway.respectsIso
     (hP : StableUnderCompositionWithLocalizationAway P) :
     RespectsIso P where
   left {R S T} _ _ _ f e hf := by
-    let := e.toRingHom.toAlgebra
+    letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : S) T :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
     exact hP.right T (1 : S) f hf
   right {R S T} _ _ _ f e hf := by
-    let := e.toRingHom.toAlgebra
+    letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : R) S :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
     exact hP.left S (1 : R) f hf
@@ -423,7 +423,6 @@ lemma RingHom.OfLocalizationSpan.ofIsLocalization'
   exact ⟨Rᵣ, Sᵣ, inferInstance, inferInstance, inferInstance, inferInstance,
     inferInstance, inferInstance, IsLocalization.Away.map Rᵣ Sᵣ f r, IsLocalization.map_comp _, hf⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
     {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (hs : Ideal.span s = ⊤)
@@ -501,9 +500,9 @@ lemma RingHom.IsStableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLo
     P (IsLocalization.map Sᵣ f M.le_comap_map : Rᵣ →+* Sᵣ) := by
   algebraize [f, IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map,
     (IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map).comp (algebraMap R Rᵣ)]
-  have : IsScalarTower R S Sᵣ := IsScalarTower.of_algebraMap_eq'
+  haveI : IsScalarTower R S Sᵣ := IsScalarTower.of_algebraMap_eq'
     (IsLocalization.map_comp M.le_comap_map)
-  have : IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ :=
+  haveI : IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ :=
     inferInstanceAs <| IsLocalization (M.map f) Sᵣ
   apply hP.of_isLocalization M hf
 

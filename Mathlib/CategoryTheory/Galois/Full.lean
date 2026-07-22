@@ -36,7 +36,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits CategoryTheory.Functor
+open Limits Functor
 
 variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
 

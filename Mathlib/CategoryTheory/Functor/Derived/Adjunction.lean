@@ -44,9 +44,10 @@ variable {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Catego
 
 namespace Adjunction
 
-open CategoryTheory.Functor
+open Functor
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `Adjunction.derived`. -/
 @[simps]
 def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
@@ -132,6 +133,7 @@ lemma derivedε_fac_app (X₂ : C₂) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction between functors induces an adjunction between the
 corresponding left/right derived functors, when these derived
 functors are *absolute*, i.e. they remain derived functors

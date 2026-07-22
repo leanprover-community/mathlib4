@@ -58,7 +58,6 @@ In this section, we define the antidiagonals in `Fin d → μ` by recursion on `
 computationally efficient, although probably not as efficient as `Finset.Nat.antidiagonalTuple`.
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary construction for `finAntidiagonal` that bundles a proof of lawfulness
 (`mem_finAntidiagonal`), as this is needed to invoke `disjiUnion`. Using `Finset.disjiUnion` makes
 this computationally much more efficient than using `Finset.biUnion`. -/
@@ -92,7 +91,6 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
         · intro hf
           exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩ }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
 TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
@@ -109,7 +107,6 @@ choosing an identification `s ≃ Fin s.card` and proving that the end result do
 choice.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The finset of functions `ι → μ` with support contained in `s` and sum `n`. -/
 def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   refine (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s).lift
@@ -126,7 +123,6 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
 
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
   rw [piAntidiag]
   induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e

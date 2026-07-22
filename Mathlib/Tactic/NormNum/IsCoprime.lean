@@ -18,7 +18,7 @@ it does not correspond to the usual notion of coprime.)
 
 public meta section
 
-namespace Mathlib.Meta
+namespace Tactic
 
 namespace NormNum
 
@@ -64,4 +64,4 @@ def evalIntIsCoprime : NormNumExt where eval {_ _} e := do
 
 end NormNum
 
-end Mathlib.Meta
+end Tactic

@@ -22,16 +22,15 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
--- See note [instance transfer via equivalence]
 /-- Transfer a `Dist` across an `Equiv` -/
-protected abbrev dist (e : α ≃ β) [Dist β] : Dist α := ⟨fun x y ↦ dist (e.toFun x) (e.toFun y)⟩
+protected abbrev dist (e : α ≃ β) [Dist β] : Dist α := ⟨fun x y ↦ dist (e x) (e y)⟩
 
 /-- Transfer a `PseudoMetricSpace` across an `Equiv` -/
 protected abbrev pseudometricSpace [PseudoMetricSpace β] (e : α ≃ β) : PseudoMetricSpace α :=
-  .induced e.toFun ‹_›
+  .induced e ‹_›
 
 /-- Transfer a `MetricSpace` across an `Equiv` -/
 protected abbrev metricSpace [MetricSpace β] (e : α ≃ β) : MetricSpace α :=
-  .induced e.toFun e.injective ‹_›
+  .induced e e.injective ‹_›
 
 end Equiv

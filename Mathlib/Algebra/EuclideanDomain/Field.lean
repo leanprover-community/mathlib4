@@ -11,7 +11,6 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Instances for Euclidean domains
-
 * `Field.toEuclideanDomain`: shows that any field is a Euclidean domain.
 -/
 

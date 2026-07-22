@@ -520,7 +520,12 @@ lemma disjoint_of_coprime_natCard (h : Nat.card H |>.Coprime <| Nat.card K) : Di
   disjoint_iff.mpr <| card_eq_one.mp <| Nat.eq_one_of_dvd_coprimes h
     (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
 
-@[to_additive (attr := deprecated disjoint_of_coprime_natCard (since := "2026-05-28"))]
+@[deprecated AddSubgroup.disjoint_of_coprime_natCard (since := "2026-05-28")]
+lemma _root_.AddSubgroup.inf_eq_bot_of_coprime {G : Type*} [AddGroup G] {H K : AddSubgroup G}
+    (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
+  disjoint_iff.mp <| AddSubgroup.disjoint_of_coprime_natCard h
+
+@[to_additive existing (attr := deprecated disjoint_of_coprime_natCard (since := "2026-05-28"))]
 lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
   disjoint_iff.mp <| disjoint_of_coprime_natCard h
 
@@ -531,7 +536,7 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   exact Nat.card_pos.ne'
 
 /-- Finite index implies finite quotient. -/
-@[to_additive (attr := instance_reducible) /-- Finite index implies finite quotient. -/]
+@[to_additive (attr := implicit_reducible) /-- Finite index implies finite quotient. -/]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
   @Fintype.ofFinite _ (Nat.finite_of_card_ne_zero hH)
 
@@ -561,7 +566,6 @@ lemma finite_quotient_of_pretransitive_of_index_ne_zero {X : Type*} [MulAction G
   have := (MulAction.pretransitive_iff_subsingleton_quotient G X).1 inferInstance
   exact finite_quotient_of_finite_quotient_of_index_ne_zero hi
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by
@@ -708,7 +712,7 @@ lemma isFiniteRelIndex_top_iff : H.IsFiniteRelIndex ⊤ ↔ H.FiniteIndex := by
   rw [finiteIndex_iff, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_top_right]
 
 /-- A finite index subgroup has finite quotient. -/
-@[to_additive (attr := instance_reducible) /-- A finite index subgroup has finite quotient -/]
+@[to_additive (attr := implicit_reducible) /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
   fintypeOfIndexNeZero FiniteIndex.index_ne_zero
 
@@ -844,13 +848,11 @@ variable {G H : Type*} [Group H] (h : H)
 -- NB: `to_additive` does not work to generate the second lemma from the first here, because it
 -- would need to additivize `G`, but not `H`.
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Subgroup.relIndex_pointwise_smul [Group G] [MulDistribMulAction H G] (J K : Subgroup G) :
     (h • J).relIndex (h • K) = J.relIndex K := by
   rw [pointwise_smul_def K, ← relIndex_comap, pointwise_smul_def,
     comap_map_eq_self_of_injective (by intro a b; simp)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AddSubgroup.relIndex_pointwise_smul [AddGroup G] [DistribMulAction H G]
     (J K : AddSubgroup G) : (h • J).relIndex (h • K) = J.relIndex K := by
   rw [pointwise_smul_def K, ← relIndex_comap, pointwise_smul_def,

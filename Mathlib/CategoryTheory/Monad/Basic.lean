@@ -135,6 +135,7 @@ lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.a
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   ComonadHom.ext h
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Category (Monad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
@@ -143,6 +144,7 @@ instance : Category (Monad C) where
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance : Category (Comonad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
@@ -174,6 +176,7 @@ theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T�
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a monad isomorphism from a natural isomorphism of functors where the forward
 direction is a monad morphism. -/
 @[simps]
@@ -194,6 +197,7 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
           NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc]
         simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a comonad isomorphism from a natural isomorphism of functors where the forward
 direction is a comonad morphism. -/
 @[simps]
@@ -297,13 +301,14 @@ instance : Inhabited (Comonad C) :=
 
 end Comonad
 
-open Iso CategoryTheory.Functor
+open Iso Functor
 
 variable {C}
 
 namespace Monad
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport a monad structure on a functor along an isomorphism of functors. -/
 def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C where
   toFunctor := F
@@ -336,6 +341,7 @@ end Monad
 
 namespace Comonad
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport a comonad structure on a functor along an isomorphism of functors. -/
 def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad C where
   toFunctor := F
@@ -362,10 +368,12 @@ end Comonad
 
 namespace Monad
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_unit_app (T : Monad C) (X : C) [IsIso T.μ] :
     T.map (T.η.app X) = T.η.app (T.obj X) := by
   simp [← cancel_mono (T.μ.app _)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSplitMono_iff_isIso_unit (T : Monad C) (X : C) [IsIso T.μ] :
     IsSplitMono (T.η.app X) ↔ IsIso (T.η.app X) := by
   refine ⟨fun _ ↦ ⟨retraction (T.η.app X), by simp, ?_⟩, fun _ ↦ inferInstance⟩
@@ -376,10 +384,12 @@ end Monad
 
 namespace Comonad
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_counit_app (T : Comonad C) (X : C) [IsIso T.δ] :
     T.map (T.ε.app X) = T.ε.app (T.obj X) := by
   simp [← cancel_epi (T.δ.app _)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_iff_isIso_counit (T : Comonad C) (X : C) [IsIso T.δ] :
     IsSplitEpi (T.ε.app X) ↔ IsIso (T.ε.app X) := by
   refine ⟨fun _ ↦ ⟨section_ (T.ε.app X), ?_, by simp⟩, fun _ ↦ inferInstance⟩

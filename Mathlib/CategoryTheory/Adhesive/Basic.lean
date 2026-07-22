@@ -480,9 +480,9 @@ theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
     [PreservesColimitsOfShape WalkingSpan F]
     [F.ReflectsIsomorphisms] :
     Adhesive C := by
-  have : ReflectsLimitsOfShape WalkingCospan F :=
+  haveI : ReflectsLimitsOfShape WalkingCospan F :=
     reflectsLimitsOfShape_of_reflectsIsomorphisms
-  have : ReflectsColimitsOfShape WalkingSpan F :=
+  haveI : ReflectsColimitsOfShape WalkingSpan F :=
     reflectsColimitsOfShape_of_reflectsIsomorphisms
   exact adhesive_of_preserves_and_reflects F
 

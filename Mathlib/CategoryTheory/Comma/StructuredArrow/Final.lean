@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-open Limits CostructuredArrow
+open Limits Functor CostructuredArrow
 
 section Small
 

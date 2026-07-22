@@ -61,7 +61,6 @@ lemma tensorCotangentHom_tmul (t : T) (x : I) :
         ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ := by
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma tensorCotangentHom_surjective :
     Function.Surjective (I.tensorCotangentHom R T) := by
   let a : S →+* T ⊗[R] S := Algebra.TensorProduct.includeRight.toRingHom
@@ -81,7 +80,6 @@ lemma tensorCotangentHom_surjective :
     simp [-AlgHom.toRingHom_eq_coe, tensorCotangentHom_tmul, Algebra.smul_def,
       ← Ideal.Quotient.mk_algebraMap, ← map_mul]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `T` is a flat `R`-module, the canonical map `tensorCotangentHom R T I` is injective. -/
 lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :

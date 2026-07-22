@@ -29,9 +29,11 @@ open scoped Polynomial
 /-- Given a polynomial in `K[X]` such that all coefficients belong to the subring `R`,
   `Polynomial.int` is the corresponding polynomial in `R[X]`. -/
 def Polynomial.int (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R) : R[X] where
-  toFinsupp.coeff.toFun n := ⟨P.coeff n, hP n⟩
-  toFinsupp.coeff.support := P.support
-  toFinsupp.coeff.mem_support_toFun n := by rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff]
+  toFinsupp :=
+  { support := P.support
+    toFun := fun n => ⟨P.coeff n, hP n⟩
+    mem_support_toFun := fun n => by
+      rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff] }
 
 namespace Polynomial
 

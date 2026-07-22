@@ -27,8 +27,7 @@ universe u
 
 namespace CategoryTheory
 
-open CategoryTheory MonoidalCategory CategoryTheory.Functor MonoidalCategory.Functor Monoidal
-open LaxMonoidal OplaxMonoidal
+open CategoryTheory MonoidalCategory Functor Monoidal LaxMonoidal OplaxMonoidal
 
 namespace Localization.Monoidal
 
@@ -56,7 +55,6 @@ noncomputable def curriedTensorPreIsoPost : curriedTensorPre F ≅ curriedTensor
   lift₂NatIso L L W W (curriedTensorPre G) (curriedTensorPost G) _ _
     (Functor.curriedTensorPreIsoPost G)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
@@ -85,7 +83,7 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     tensorHom_comp_tensorHom, Iso.inv_hom_id, Iso.inv_hom_id, tensorHom_id, id_whiskerRight,
     Category.comp_id]
 
-set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.isDefEq.respectTransparency false in
 /--
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
@@ -132,7 +130,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
 -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
   (functorCoreMonoidalOfComp L W F G).toMonoidal
 
@@ -149,6 +147,7 @@ lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
         F.map (δ L _ _) := by
   simp [Functor.CoreMonoidal.toLaxMonoidal_μ, curriedTensorPreIsoPost_hom_app_app]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When `F` is given the monoidal structure `functorMonoidalOfComp` that is obtained by lifting along
 a monoidal localization functor `L`, then the lifting isomorphism is a monoidal natural
@@ -157,7 +156,7 @@ transformation.
 instance lifting_isMonoidal :
     letI : F.Monoidal := functorMonoidalOfComp L W F G
     (Lifting.iso L W G F).hom.IsMonoidal := by
-  let : F.Monoidal := functorMonoidalOfComp L W F G
+  letI : F.Monoidal := functorMonoidalOfComp L W F G
   refine ⟨?_, fun _ _ ↦ ?_⟩
   · simp [functorMonoidalOfComp_ε]
   · simp [functorMonoidalOfComp_μ]

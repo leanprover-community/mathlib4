@@ -6,7 +6,7 @@ Authors: Nailin Guan
 
 module
 
-public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
 /-!
 

@@ -98,7 +98,6 @@ section
 
 attribute [local simp] Hom.id Hom.comp
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
@@ -281,7 +280,6 @@ end Functor
 
 namespace Mat_
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The embedding of `C` into `Mat_ C` as one-by-one matrices.
 (We index the summands by `PUnit`.) -/
 @[simps]
@@ -357,7 +355,6 @@ def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C)
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=
   F.mapIso (isoBiproductEmbedding M) ≪≫ F.mapBiproduct _
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
@@ -424,7 +421,6 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An additive functor `C ⥤ D` factors through its lift to `Mat_ C ⥤ D`. -/
 @[simps!]
@@ -434,8 +430,8 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- `Mat_.lift F` is the unique additive functor `L : Mat_ C ⥤ D` such that `F ≅ embedding C ⋙ L`.
 -/
 def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Additive L]
@@ -516,7 +512,6 @@ instance (R : Type u) : CoeSort (Mat R) (Type u) :=
 
 open Matrix
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] FintypeCat.fintype in
 open scoped Classical in
 instance (R : Type u) [Semiring R] : Category (Mat R) where
@@ -552,13 +547,11 @@ theorem id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := b
 theorem id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
   simp [id_apply, h]
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] FintypeCat.fintype in
 theorem comp_def {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) :
     f ≫ g = fun i k => ∑ j : N, f i j * g j k :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
@@ -574,7 +567,6 @@ variable (R : Type) [Ring R]
 
 open Opposite
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `CategoryTheory.Mat.equivalenceSingleObj`. -/
 @[simps]
 def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
@@ -599,7 +591,6 @@ instance : (equivalenceSingleObjInverse R).Faithful where
 instance : (equivalenceSingleObjInverse R).Full where
   map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] FintypeCat.fintype in
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=

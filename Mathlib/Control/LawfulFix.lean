@@ -113,7 +113,7 @@ theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
 
 end Fix
 
-open Part.Fix
+open Fix
 
 variable {α : Type*}
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)

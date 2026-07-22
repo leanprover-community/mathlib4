@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Norm.Defs
-
 /-!
 # Irreducibility of X ^ p - a
 

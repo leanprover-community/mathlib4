@@ -121,7 +121,6 @@ lemma map_mono {I J : TwoSidedIdeal R} (h : I ≤ J) :
 
 variable [NonUnitalRingHomClass F R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Preimage of a two-sided ideal, as a two-sided ideal. -/
 def comap : TwoSidedIdeal S →o TwoSidedIdeal R where
@@ -137,7 +136,6 @@ lemma comap_le_comap {I J : TwoSidedIdeal S} (h : I ≤ J) :
     comap f I ≤ comap f J :=
   (comap f).monotone h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by
   simp [comap, RingCon.comap, mem_iff]
@@ -321,7 +319,6 @@ def fromIdeal : Ideal R →o TwoSidedIdeal R where
   toFun I := span I
   monotone' _ _ := span_mono
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_fromIdeal {I : Ideal R} {x : R} :
     x ∈ fromIdeal I ↔ x ∈ span I := by simp [fromIdeal]
 
@@ -334,12 +331,10 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
     smul_mem' := fun r x hx => I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma gc : GaloisConnection fromIdeal (asIdeal (R := R)) :=
   fun I J => ⟨fun h x hx ↦ h <| mem_span_iff.2 fun _ H ↦ H hx, fun h x hx ↦ by
     simp only [fromIdeal, OrderHom.coe_mk, mem_span_iff] at hx
@@ -419,7 +414,6 @@ instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal (·.IsTwoSi
 
 end Ideal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A two-sided ideal is simply a left ideal that is two-sided. -/
 @[simps] def TwoSidedIdeal.orderIsoIsTwoSided {R : Type*} [Ring R] :
     TwoSidedIdeal R ≃o {I : Ideal R // I.IsTwoSided} where

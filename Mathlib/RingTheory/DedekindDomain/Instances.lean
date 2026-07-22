@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Instances for Dedekind domains
-
 This file contains various instances to work with localization of a ring extension.
 
 A very common situation in number theory is to have an extension of (say) Dedekind domains `R` and

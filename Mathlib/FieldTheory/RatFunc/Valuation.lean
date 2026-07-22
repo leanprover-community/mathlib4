@@ -114,7 +114,7 @@ instance : Valuation.IsTrivialOn F (inftyValuation F) :=
   ⟨fun _ hx ↦ by simp [inftyValuation.C _ hx]⟩
 
 /-- The valued field `F(t)` with the valuation at infinity. -/
-@[instance_reducible]
+@[implicit_reducible]
 def inftyValued : Valued (RatFunc F) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation F
 

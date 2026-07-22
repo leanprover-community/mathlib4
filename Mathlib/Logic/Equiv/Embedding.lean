@@ -81,7 +81,6 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Embeddings from a single-member type are equivalent to members of the target type. -/
 def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
     (α ↪ β) ≃ β where

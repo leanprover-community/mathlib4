@@ -108,7 +108,6 @@ where finally
 
 variable (f : M →ₗ[R] A)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma lift_ι_apply (a : M) : lift f (ι R M a) = f a := by
   simp [lift, ι, algHom, RingCon.liftₐEquiv]

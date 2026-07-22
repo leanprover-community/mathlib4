@@ -66,6 +66,8 @@ abbrev ofHom {X Y : Type u} [Nonempty X] [LinearOrder X] [Fintype X]
 @[simp]
 lemma hom_hom_id {X : NonemptyFinLinOrd} : (𝟙 X : X ⟶ X).hom.hom = OrderHom.id := rfl
 
+@[deprecated (since := "2025-12-18")] alias hom_id := hom_hom_id
+
 /- Provided for rewriting. -/
 lemma id_apply (X : NonemptyFinLinOrd) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
@@ -73,6 +75,8 @@ lemma id_apply (X : NonemptyFinLinOrd) (x : X) :
 @[simp]
 lemma hom_hom_comp {X Y Z : NonemptyFinLinOrd} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom.hom = g.hom.hom.comp f.hom.hom := rfl
+
+@[deprecated (since := "2025-12-18")] alias hom_comp := hom_hom_comp
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : NonemptyFinLinOrd} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -86,6 +90,8 @@ lemma hom_ext {X Y : NonemptyFinLinOrd} {f g : X ⟶ Y} (hf : f.hom.hom = g.hom.
 lemma hom_hom_ofHom {X Y : Type u} [Nonempty X] [LinearOrder X] [Fintype X] [Nonempty Y]
     [LinearOrder Y] [Fintype Y] (f : X →o Y) :
   (ofHom f).hom.hom = f := rfl
+
+@[deprecated (since := "2025-12-18")] alias hom_ofHom := hom_hom_ofHom
 
 @[simp]
 lemma ofHom_hom {X Y : NonemptyFinLinOrd} (f : X ⟶ Y) :
@@ -136,7 +142,6 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
   rw [cancel_mono] at eq
   rw [eq]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Epi f ↔ Function.Surjective f := by
   constructor
@@ -205,12 +210,12 @@ instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
     let I := of (Set.image f ⊤)
     let e : X ⟶ I := ofHom ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.hom.hom.monotone h⟩
     let m : I ⟶ Y := ofHom ⟨fun y => y.1, by tauto⟩
-    have : Epi e := by
+    haveI : Epi e := by
       rw [epi_iff_surjective]
       rintro ⟨_, y, h, rfl⟩
       exact ⟨y, rfl⟩
-    have : StrongEpi e := strongEpi_of_epi e
-    have : Mono m := ConcreteCategory.mono_of_injective _ (fun x y h => Subtype.ext h)
+    haveI : StrongEpi e := strongEpi_of_epi e
+    haveI : Mono m := ConcreteCategory.mono_of_injective _ (fun x y h => Subtype.ext h)
     exact ⟨⟨I, m, e, rfl⟩⟩⟩
 
 end NonemptyFinLinOrd

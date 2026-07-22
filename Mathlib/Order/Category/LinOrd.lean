@@ -22,6 +22,7 @@ universe u
 
 namespace LinOrd
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]
 structure Hom (X Y : LinOrd.{u}) where

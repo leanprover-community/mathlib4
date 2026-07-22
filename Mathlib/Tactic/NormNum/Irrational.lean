@@ -30,7 +30,7 @@ Disprove `Irrational x` for rational `x`.
 
 public meta section
 
-namespace Mathlib.Meta
+namespace Tactic
 
 namespace NormNum
 
@@ -321,4 +321,4 @@ def evalIrrationalSqrt : NormNumExt where eval {u α} e := do
 
 end NormNum
 
-end Mathlib.Meta
+end Tactic

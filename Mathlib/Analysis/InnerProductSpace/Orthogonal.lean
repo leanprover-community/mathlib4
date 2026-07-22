@@ -221,6 +221,9 @@ theorem orthogonalBilin_innerₗ {E} [NormedAddCommGroup E] [InnerProductSpace �
     (K : Submodule ℝ E) : K.orthogonalBilin (innerₗ E) = Kᗮ :=
   rfl
 
+@[deprecated (since := "2025-12-26")]
+alias bilinFormOfRealInner_orthogonal := orthogonalBilin_innerₗ
+
 /-!
 ### Orthogonality of submodules
 

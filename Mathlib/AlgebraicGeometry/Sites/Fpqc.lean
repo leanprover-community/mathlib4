@@ -34,7 +34,6 @@ open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The fppf precoverage on the category of schemes. The covering families are jointly-surjective
 families of flat morphisms, locally of finite presentation. -/
 def fppfPrecoverage : Precoverage Scheme.{u} :=
@@ -53,7 +52,6 @@ lemma fppfPrecoverage_eq_inf :
 abbrev fppfTopology : GrothendieckTopology Scheme.{u} :=
   fppfPrecoverage.toGrothendieck
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The fpqc precoverage on the category of schemes is the quasi-compact precoverage
 on flat morphisms. The covering families are jointly-surjective, quasi-compact families of
 flat morphisms. -/
@@ -62,7 +60,6 @@ def fpqcPrecoverage : Precoverage Scheme.{u} :=
   deriving Precoverage.HasIsos, Precoverage.IsStableUnderBaseChange,
     Precoverage.IsStableUnderComposition
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma fppfPrecoverage_le_fpqcPrecoverage : fppfPrecoverage ≤ fpqcPrecoverage := by
   rw [fpqcPrecoverage, propQCPrecoverage, le_inf_iff]
   refine ⟨?_, precoverage_mono fun X Y f ⟨hf, _⟩ ↦ inferInstance⟩
@@ -83,7 +80,6 @@ lemma zariskiTopology_le_fpqcTopology : zariskiTopology ≤ fpqcTopology :=
 lemma fppfTopology_le_fpqcTopology : fppfTopology ≤ fpqcTopology :=
   Precoverage.toGrothendieck_mono fppfPrecoverage_le_fpqcPrecoverage
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : fpqcTopology.Subcanonical := by
   refine GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ fun X ↦ ?_
   rw [fpqcTopology_eq_propQCTopology, isSheaf_type_propQCTopology_iff]

@@ -24,7 +24,7 @@ instance : MyInv Nat where
 def MyNat : Type := Nat
 
 -- `inferInstanceAs` leaks the source type `Nat` as the carrier
-@[instance_reducible]
+@[implicit_reducible]
 def myNatInv_leaky : MyInv MyNat :=
   inferInstanceAs (MyInv Nat)
 
@@ -34,7 +34,7 @@ instance myNatInv_fixed : MyInv MyNat :=
 
 -- The binder type is `MyNat`:
 /--
-info: @[instance_reducible] def myNatInv_fixed : MyInv MyNat :=
+info: @[implicit_reducible] def myNatInv_fixed : MyInv MyNat :=
 { myInv := fun (a : MyNat) => (Nat.add a 0).succ }
 -/
 #guard_msgs in
@@ -75,7 +75,7 @@ instance : TestField Nat where
 def TestNat := Nat
 
 -- Direct instance: all lambda domains correctly use TestNat
-@[instance_reducible]
+@[implicit_reducible]
 def testField_direct : TestField TestNat where
   inv n := n
   mul := Nat.mul
@@ -83,11 +83,11 @@ def testField_direct : TestField TestNat where
   neg n := n
 
 -- Leaky: internal lambda domains use Nat instead of TestNat
-@[instance_reducible]
+@[implicit_reducible]
 def testField_leaky : TestField TestNat := inferInstanceAs (TestField Nat)
 
 -- Fixed: inferInstanceAs% patches lambda domains to use TestNat
-@[instance_reducible]
+@[implicit_reducible]
 def testField_fixed : TestField TestNat := inferInstanceAs% (TestField Nat)
 
 -- All three are defeq at default transparency (Nat = TestNat at this level).

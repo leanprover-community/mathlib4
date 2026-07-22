@@ -32,7 +32,6 @@ section order
 
 variable {n : ℕ} {I : Type*} [LinearOrder I]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism of `OrderEmbedding`s from `Fin n` into `I` with `Set.powersetCard I n`
 when `I` is linearly ordered. -/
 def ofFinEmbEquiv : (Fin n ↪o I) ≃ powersetCard I n where
@@ -53,7 +52,6 @@ lemma mem_ofFinEmbEquiv_iff_mem_range (f : Fin n ↪o I) (i : I) :
     i ∈ ofFinEmbEquiv f ↔ i ∈ range f := by
   simp [ofFinEmbEquiv_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_range_ofFinEmbEquiv_symm_iff_mem (s : powersetCard I n) (i : I) :
     i ∈ range (ofFinEmbEquiv.symm s) ↔ i ∈ s := by
   simp [ofFinEmbEquiv_symm_apply]

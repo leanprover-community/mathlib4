@@ -276,6 +276,7 @@ namespace Adjunction
 
 variable {D : Type*} [Category* D] {F : C ⥤ D} {G : D ⥤ C}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
   ⟨fun {X} {Y} f g => by
@@ -285,11 +286,12 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     rw [← unit_naturality_assoc, ← G.map_comp, h]
     simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
   ⟨fun {X} {Y} f g => by
     intro
-    have : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits
+    haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits
     rcases hI.factors (G.map f) (G.map g) with ⟨w,h⟩
     use inv (adj.counit.app _) ≫ F.map w ≫ adj.counit.app _
     exact G.map_injective (by simpa)⟩
@@ -302,7 +304,7 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
   injective := adj.map_injective _ I.injective
   f := G.map I.f
   mono := by
-    have : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits; infer_instance
+    haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits; infer_instance
 
 /-- Given an adjunction `F ⊣ G` such that `F` preserves monomorphisms and is faithful,
   then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.

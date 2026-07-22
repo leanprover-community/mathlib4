@@ -40,7 +40,7 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
   {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
   {κ : Kernel α β} {η : Kernel γ δ} {x : α × γ}
 
-open scoped Classical in
+open Classical in
 /-- Parallel product of two kernels. -/
 noncomputable
 irreducible_def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=

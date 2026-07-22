@@ -226,7 +226,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def createsLimitsOfShapeOfCreatesEqualizersAndProducts :
     CreatesLimitsOfShape J G where
   CreatesLimit {K} :=
@@ -247,7 +247,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts [HasEqualizers D]
     [HasFiniteProducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape WalkingParallelPair G]
@@ -260,7 +260,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def createsLimitsOfSizeOfCreatesEqualizersAndProducts [HasEqualizers D]
     [HasProducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape WalkingParallelPair G] [∀ J, CreatesLimitsOfShape (Discrete.{w} J) G] :
@@ -294,7 +294,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating limits" in the literature, and whether or not the condition can be dropped seems to depend
 on the specific definition that is used. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def createsFiniteLimitsOfCreatesTerminalAndPullbacks [HasTerminal D]
     [HasPullbacks D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesLimitsOfShape (Discrete.{0} PEmpty) G] [CreatesLimitsOfShape WalkingCospan G] :
@@ -401,7 +401,6 @@ noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J �
   have := hasFiniteColimits_of_hasColimitsOfSize C
   coequalizer.π _ _ ≫ (colimit.isoColimitCocone (colimitCoconeOfCoequalizerAndCoproduct F)).inv
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
@@ -503,7 +502,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts :
     CreatesColimitsOfShape J G where
   CreatesColimit {K} :=
@@ -524,7 +523,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def createsFiniteColimitsOfCreatesCoequalizersAndFiniteCoproducts [HasCoequalizers D]
     [HasFiniteCoproducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape WalkingParallelPair G]
@@ -537,7 +536,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def createsColimitsOfSizeOfCreatesCoequalizersAndCoproducts [HasCoequalizers D]
     [HasCoproducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape WalkingParallelPair G]
@@ -556,10 +555,10 @@ theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts
 lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
     [HasPushouts C] (G : C ⥤ D) [PreservesColimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesFiniteColimits G := by
-  have : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts
-  have : PreservesColimitsOfShape (Discrete WalkingPair) G :=
+  haveI : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts
+  haveI : PreservesColimitsOfShape (Discrete WalkingPair) G :=
     preservesBinaryCoproducts_of_preservesInitial_and_pushouts G
-  have : PreservesColimitsOfShape (WalkingParallelPair) G :=
+  haveI : PreservesColimitsOfShape (WalkingParallelPair) G :=
       (preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts G)
   refine
     @preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts _ _ _ _ _ _ G _ ?_
@@ -573,7 +572,7 @@ We additionally require the rather strong condition that the functor reflects is
 unclear whether the statement remains true without this condition. There are various definitions of
 "creating colimits" in the literature, and whether or not the condition can be dropped seems to
 depend on the specific definition that is used. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def createsFiniteColimitsOfCreatesInitialAndPushouts [HasInitial D]
     [HasPushouts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
     [CreatesColimitsOfShape (Discrete.{0} PEmpty) G] [CreatesColimitsOfShape WalkingSpan G] :

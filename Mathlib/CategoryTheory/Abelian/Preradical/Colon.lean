@@ -89,10 +89,12 @@ of the canonical projection `Φ.π : 𝟭 C ⟶ Φ.quotient`. -/
 noncomputable def isLimitKernelFork : IsLimit (KernelFork.ofι _ Φ.ι_π) :=
   Φ.shortExact_shortComplex.fIsKernel
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_π_app (X : C) : Φ.ι.app X ≫ Φ.π.app X = 0 := by
   simp [← NatTrans.comp_app]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `X : C`, the short complex `Φ.r.obj X ⟶ X ⟶ Φ.quotient.obj X` obtained by evaluating
 `Φ.shortComplex` at `X`. -/
 @[simps]
@@ -100,8 +102,10 @@ noncomputable def shortComplexObj (X : C) : ShortComplex C where
   f := Φ.ι.app X
   g := Φ.π.app X
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : Mono (Φ.shortComplexObj X).f := by dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : Epi (Φ.shortComplexObj X).g := by dsimp; infer_instance
 
 lemma shortExact_shortComplexObj (X : C) : (Φ.shortComplexObj X).ShortExact where
@@ -119,7 +123,7 @@ noncomputable def isColimitCokernelCoforkObj (X : C) :
     IsColimit (CokernelCofork.ofπ _ (Φ.ι_π_app X)) :=
   (Φ.shortExact_shortComplexObj X).gIsCokernel
 
-open CategoryTheory.Functor
+open Functor
 
 /-- The colon preradical from Stenström, defined as the pullback of `Φ.π : 𝟭 C ⟶ Φ.quotient` along
 `Φ.quotient.whiskerLeft Ψ.ι ≫ Φ.quotient.rightUnitor.hom : Φ.quotient ⋙ Ψ.r ⟶ Φ.quotient` -/
@@ -155,7 +159,6 @@ via `Φ.ι : Φ.r X ⟶ 𝟭 C` and the zero morphism `Φ.r ⟶  Φ.quotient ⋙
 noncomputable def toColon : Φ ⟶ Φ.colon Ψ :=
   MonoOver.homMk ((isPullback_colon Φ Ψ).lift Φ.ι 0 (by simp))
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_colonπ :
     (toColon Φ Ψ).hom.left ≫ colonπ Φ Ψ = 0 := by

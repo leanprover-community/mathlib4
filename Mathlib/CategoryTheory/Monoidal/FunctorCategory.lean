@@ -167,7 +167,6 @@ open CategoryTheory.BraidedCategory
 
 variable [BraidedCategory.{v₂} D]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When `C` is any category, and `D` is a braided monoidal category,
 the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
@@ -177,7 +176,6 @@ instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
   hexagon_forward F G H := by ext X; apply hexagon_forward
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
 
-set_option backward.isDefEq.respectTransparency.types false in
 example : BraidedCategory (C ⥤ D) :=
   CategoryTheory.Monoidal.functorCategoryBraided
 
@@ -189,7 +187,6 @@ open CategoryTheory.SymmetricCategory
 
 variable [SymmetricCategory.{v₂} D]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When `C` is any category, and `D` is a symmetric monoidal category,
 the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also symmetric.
@@ -221,13 +218,20 @@ instance Functor.OplaxMonoidal.whiskeringRight
   oplax_left_unitality := by aesop
   oplax_right_unitality := by aesop
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
-set_option backward.isDefEq.respectTransparency.types false in
+@[deprecated (since := "2025-11-06")] alias instLaxMonoidalFunctorObjWhiskeringRight :=
+  Functor.LaxMonoidal.whiskeringRight
+@[deprecated (since := "2025-11-06")] alias instOplaxMonoidalFunctorObjWhiskeringRight :=
+  Functor.OplaxMonoidal.whiskeringRight
+@[deprecated (since := "2025-11-06")] alias ε_app := Functor.LaxMonoidal.whiskeringRight_ε_app
+@[deprecated (since := "2025-11-06")] alias μ_app := Functor.LaxMonoidal.whiskeringRight_μ_app
+@[deprecated (since := "2025-11-06")] alias η_app := Functor.OplaxMonoidal.whiskeringRight_η_app
+@[deprecated (since := "2025-11-06")] alias δ_app := Functor.OplaxMonoidal.whiskeringRight_δ_app
+
 set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance Functor.Monoidal.whiskeringLeft

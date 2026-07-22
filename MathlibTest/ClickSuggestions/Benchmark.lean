@@ -32,8 +32,7 @@ def measureImport (choice : Choice) : MetaM (Nat × PreDiscrTrees) := do
 
 run_meta
   let (all, _) ← measureImport { rw := true, grw := true, app := true, appAt := true }
-  -- Generous limit: wall-clock time is heavily inflated on loaded CI machines.
-  guard (all < 60_000)
+  guard (all < 20_000)
 
 def measureEach : MetaM MessageData := do
   let (rw, _) ← measureImport { rw := true, grw := false, app := false, appAt := false }

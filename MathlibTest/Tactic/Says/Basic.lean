@@ -97,11 +97,12 @@ example : True := by
 -- Check that verification works even with multi-line suggestions, as produced by aesop
 def P : Prop := True
 def Q : Prop := True
+set_option linter.defProp false in
 @[simp]
-theorem very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ => trivial
-
+def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ => trivial
+set_option linter.defProp false in
 @[simp]
-theorem very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
+def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
 /--
 info: Try this:
   [apply] aesop? says

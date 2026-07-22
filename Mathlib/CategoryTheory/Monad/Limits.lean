@@ -32,7 +32,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open Category CategoryTheory.Functor
+open Category Functor
 
 open CategoryTheory.Limits
 
@@ -194,7 +194,6 @@ noncomputable def coconePoint : Algebra T where
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
     apply (D.obj j).assoc_assoc _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) Construct the lifted cocone in `Algebra T` which will be colimiting. -/
 @[simps]
 noncomputable def liftedCocone : Cocone D where
@@ -231,7 +230,6 @@ end ForgetCreatesColimits
 open ForgetCreatesColimits
 
 -- TODO: the converse of this is true as well
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from the Eilenberg-Moore category for a monad creates any colimit
 which the monad itself preserves.
 -/
@@ -279,7 +277,7 @@ instance comp_comparison_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoi
   Monad.hasLimit_of_comp_forget_hasLimit (F ⋙ Monad.comparison (monadicAdjunction R))
 
 /-- Any monadic functor creates limits. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def monadicCreatesLimits (R : D ⥤ C) [MonadicRightAdjoint R] :
     CreatesLimitsOfSize.{v, u} R :=
   createsLimitsOfNatIso (Monad.comparisonForget (monadicAdjunction R))
@@ -287,7 +285,7 @@ noncomputable def monadicCreatesLimits (R : D ⥤ C) [MonadicRightAdjoint R] :
 /-- The forgetful functor from the Eilenberg-Moore category for a monad creates any colimit
 which the monad itself preserves.
 -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J ⥤ D)
     [MonadicRightAdjoint R] [PreservesColimit (K ⋙ R) (monadicLeftAdjoint R ⋙ R)]
     [PreservesColimit ((K ⋙ R) ⋙ monadicLeftAdjoint R ⋙ R) (monadicLeftAdjoint R ⋙ R)] :
@@ -316,7 +314,7 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
   apply createsColimitOfNatIso e
 
 /-- A monadic functor creates any colimits of shapes it preserves. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D ⥤ C)
     [MonadicRightAdjoint R] [PreservesColimitsOfShape J R] : CreatesColimitsOfShape J R :=
   letI : PreservesColimitsOfShape J (monadicLeftAdjoint R) := by
@@ -326,7 +324,7 @@ noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D
   ⟨monadicCreatesColimitOfPreservesColimit _ _⟩
 
 /-- A monadic functor creates colimits if it preserves colimits. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def monadicCreatesColimitsOfPreservesColimits (R : D ⥤ C) [MonadicRightAdjoint R]
     [PreservesColimitsOfSize.{v, u} R] : CreatesColimitsOfSize.{v, u} R where
   CreatesColimitsOfShape :=
@@ -354,7 +352,7 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
     HasColimitsOfShape J D where
   has_colimit := fun F => by
       let c := (monadicLeftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
-      let : PreservesColimitsOfShape J _ :=
+      letI : PreservesColimitsOfShape J _ :=
         (monadicAdjunction R).leftAdjoint_preservesColimits.1
       let t : IsColimit c := isColimitOfPreserves (monadicLeftAdjoint R) (colimit.isColimit _)
       apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
@@ -373,11 +371,11 @@ lemma leftAdjoint_preservesTerminal_of_reflective (R : D ⥤ C) [Reflective R] :
     PreservesLimitsOfShape (Discrete.{v} PEmpty) (monadicLeftAdjoint R) where
   preservesLimit {K} := by
     let F := Functor.empty.{v} D
-    let : PreservesLimit (F ⋙ R) (monadicLeftAdjoint R) := by
+    letI : PreservesLimit (F ⋙ R) (monadicLeftAdjoint R) := by
       constructor
       intro c h
-      have : HasLimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
-      have : HasLimit F := hasLimit_of_reflective F R
+      haveI : HasLimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
+      haveI : HasLimit F := hasLimit_of_reflective F R
       constructor
       apply isLimitChangeEmptyCone D (limit.isLimit F)
       apply (asIso ((monadicAdjunction R).counit.app _)).symm.trans
@@ -529,7 +527,6 @@ noncomputable def conePoint : Coalgebra T where
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
     rw [(D.obj j).coassoc, ← assoc, ← assoc, commuting]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) Construct the lifted cone in `Coalgebra T` which will be limiting. -/
 @[simps]
 noncomputable def liftedCone : Cone D where
@@ -567,7 +564,6 @@ end ForgetCreatesLimits'
 open ForgetCreatesLimits'
 
 -- TODO: the converse of this is true as well
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from the Eilenberg-Moore category for a comonad creates any limit
 which the comonad itself preserves.
 -/
@@ -612,7 +608,7 @@ instance comp_comparison_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAd
   Comonad.hasColimit_of_comp_forget_hasColimit (F ⋙ Comonad.comparison (comonadicAdjunction R))
 
 /-- Any comonadic functor creates colimits. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def comonadicCreatesColimits (R : D ⥤ C) [ComonadicLeftAdjoint R] :
     CreatesColimitsOfSize.{v, u} R :=
   createsColimitsOfNatIso (Comonad.comparisonForget (comonadicAdjunction R))
@@ -620,7 +616,7 @@ noncomputable def comonadicCreatesColimits (R : D ⥤ C) [ComonadicLeftAdjoint R
 /-- The forgetful functor from the Eilenberg-Moore category for a comonad creates any limit
 which the comonad itself preserves.
 -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def comonadicCreatesLimitOfPreservesLimit (R : D ⥤ C) (K : J ⥤ D)
     [ComonadicLeftAdjoint R] [PreservesLimit (K ⋙ R) (comonadicRightAdjoint R ⋙ R)]
     [PreservesLimit ((K ⋙ R) ⋙ comonadicRightAdjoint R ⋙ R) (comonadicRightAdjoint R ⋙ R)] :
@@ -647,7 +643,7 @@ noncomputable def comonadicCreatesLimitOfPreservesLimit (R : D ⥤ C) (K : J ⥤
   apply createsLimitOfNatIso e
 
 /-- A comonadic functor creates any limits of shapes it preserves. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def comonadicCreatesLimitsOfShapeOfPreservesLimitsOfShape (R : D ⥤ C)
     [ComonadicLeftAdjoint R] [PreservesLimitsOfShape J R] : CreatesLimitsOfShape J R :=
   letI : PreservesLimitsOfShape J (comonadicRightAdjoint R) := by
@@ -657,7 +653,7 @@ noncomputable def comonadicCreatesLimitsOfShapeOfPreservesLimitsOfShape (R : D �
   ⟨comonadicCreatesLimitOfPreservesLimit _ _⟩
 
 /-- A comonadic functor creates limits if it preserves limits. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def comonadicCreatesLimitsOfPreservesLimits (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [PreservesLimitsOfSize.{v, u} R] : CreatesLimitsOfSize.{v, u} R where
   CreatesLimitsOfShape :=
@@ -685,7 +681,7 @@ theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimi
     HasLimitsOfShape J D where
   has_limit := fun F => by
       let c := (comonadicRightAdjoint R).mapCone (limit.cone (F ⋙ R))
-      let : PreservesLimitsOfShape J _ :=
+      letI : PreservesLimitsOfShape J _ :=
         (comonadicAdjunction R).rightAdjoint_preservesLimits.1
       let t : IsLimit c := isLimitOfPreserves (comonadicRightAdjoint R) (limit.isLimit _)
       apply HasLimit.mk ⟨_, (IsLimit.postcomposeHomEquiv _ _).symm t⟩
@@ -704,11 +700,11 @@ lemma rightAdjoint_preservesInitial_of_coreflective (R : D ⥤ C) [Coreflective 
     PreservesColimitsOfShape (Discrete.{v} PEmpty) (comonadicRightAdjoint R) where
   preservesColimit {K} := by
     let F := Functor.empty.{v} D
-    let : PreservesColimit (F ⋙ R) (comonadicRightAdjoint R) := by
+    letI : PreservesColimit (F ⋙ R) (comonadicRightAdjoint R) := by
       constructor
       intro c h
-      have : HasColimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
-      have : HasColimit F := hasColimit_of_coreflective F R
+      haveI : HasColimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
+      haveI : HasColimit F := hasColimit_of_coreflective F R
       constructor
       apply isColimitChangeEmptyCocone D (colimit.isColimit F)
       apply (asIso ((comonadicAdjunction R).unit.app _)).trans

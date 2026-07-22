@@ -298,7 +298,7 @@ section Subgroups
 
 namespace Equiv.Perm
 
-open Equiv
+open Equiv Set
 
 variable {α : Type*}
 

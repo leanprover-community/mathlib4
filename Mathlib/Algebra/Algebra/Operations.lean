@@ -729,7 +729,6 @@ noncomputable def span.ringHom : SetSemiring A →+* Submodule R A where
   map_add' := span_union
   map_mul' s t := by simp_rw [SetSemiring.down_mul, span_mul_span]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- `(span R {·})` as a `MonoidWithZeroHom`. -/
 noncomputable def spanSingleton : A →*₀ Submodule R A where
@@ -807,7 +806,7 @@ instance : IdemCommSemiring (Submodule R A) :=
 
 theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
     (∏ i ∈ s, Submodule.span R (M i)) = Submodule.span R (∏ i ∈ s, M i) := by
-  let := Classical.decEq ι
+  letI := Classical.decEq ι
   refine Finset.induction_on s ?_ ?_
   · simp [one_eq_span, Set.singleton_one]
   · intro _ _ H ih

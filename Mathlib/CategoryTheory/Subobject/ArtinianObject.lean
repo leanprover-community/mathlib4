@@ -86,7 +86,6 @@ lemma not_strictAnti_of_isArtinianObject
     ¬ StrictAnti f :=
   (isArtinianObject_iff_not_strictAnti X).1 inferInstance f
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isArtinianObject_iff_isEventuallyConstant :
     IsArtinianObject X ↔ ∀ (F : ℕ ⥤ (MonoOver X)ᵒᵖ),

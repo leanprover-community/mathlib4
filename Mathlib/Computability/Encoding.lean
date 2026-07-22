@@ -193,7 +193,6 @@ def encodingList (α : Type) : Encoding (List α) α where
   decode := Option.some
   decode_encode _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given an `Encoding` of `α` and `β`,
 constructs an `Encoding` of `α × β` by concatenating the encodings,

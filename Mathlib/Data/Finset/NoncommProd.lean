@@ -82,7 +82,6 @@ def noncommFold (s : Multiset α) (comm : { x | x ∈ s }.Pairwise fun x y => op
     α → α :=
   noncommFoldr op s fun x hx y hy h b => by rw [← assoc.assoc, comm hx hy h, assoc.assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem noncommFold_coe (l : List α) (comm) (a : α) :
     noncommFold op (l : Multiset α) comm a = l.foldr op a := by simp [noncommFold]
@@ -113,7 +112,6 @@ on all elements `x ∈ s`. -/
 def noncommProd (s : Multiset α) (comm : { x | x ∈ s }.Pairwise Commute) : α :=
   s.noncommFold (· * ·) comm 1
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem noncommProd_coe (l : List α) (comm) : noncommProd (l : Multiset α) comm = l.prod := by
   rw [noncommProd]
@@ -291,7 +289,6 @@ theorem noncommProd_cons' (s : Finset α) (a : α) (f : α → β)
       noncommProd s f (comm.mono fun _ => Finset.mem_cons.2 ∘ .inr) * f a := by
   simp_rw [noncommProd, Finset.cons_val, Multiset.map_cons, Multiset.noncommProd_cons']
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
@@ -299,7 +296,6 @@ theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (
       f a * noncommProd s f (comm.mono fun _ => mem_insert_of_mem) := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
@@ -353,7 +349,6 @@ theorem noncommProd_erase_mul [DecidableEq α] (s : Finset α) {a : α} (h : a �
   simpa only [← Multiset.map_erase_of_mem _ _ h] using!
     Multiset.noncommProd_erase_mul (s.1.map f) (Multiset.mem_map_of_mem f h) _
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α → β) :
     (noncommProd s f fun _ _ _ _ _ => Commute.all _ _) = s.prod f := by
@@ -386,7 +381,6 @@ theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → 
   · exact comm_gf hx hy h
   · exact comm_gg.of_refl hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The non-commutative version of `Finset.prod_mul_distrib` -/
 @[to_additive /-- The non-commutative version of `Finset.sum_add_distrib` -/]
 theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) (comm_ff comm_gg comm_gf) :
@@ -405,7 +399,6 @@ section FinitePi
 
 variable {M : ι → Type*} [∀ i, Monoid (M i)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
@@ -425,7 +418,12 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     · simp only [Pi.mulSingle_eq_same]
     · simpa using fun _ a ↦ Pi.mulSingle_eq_of_ne (a ·.symm) _
 
-set_option backward.isDefEq.respectTransparency false in
+@[deprecated noncommProd_mulSingle (since := "2025-11-25")]
+alias noncommProd_mul_single := noncommProd_mulSingle
+
+@[deprecated (since := "2025-12-09")]
+alias noncommSum_add_single := noncommSum_single
+
 @[to_additive]
 theorem _root_.MonoidHom.pi_ext [Finite ι] [DecidableEq ι] {f g : (∀ i, M i) →* γ}
     (h : ∀ i x, f (Pi.mulSingle i x) = g (Pi.mulSingle i x)) : f = g := by

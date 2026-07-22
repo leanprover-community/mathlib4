@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Category.Basic
 
 /-!
 # The category of root pairings
-
 This file defines the category of root pairings, following the definition of category of root data
 given in SGA III Exp. 21 Section 6.
 

@@ -32,23 +32,15 @@ lemma Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime {I J : Ideal R} [I.IsP
   rwa [mem_minimalPrimes_iff, and_iff_right]
 
 variable (R) in
-lemma Ring.KrullDimLE.minimalPrimes_eq_setOfPred_isPrime :
+lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :
     minimalPrimes R = { I | I.IsPrime } := by
   ext
   exact Ideal.mem_minimalPrimes_iff_isPrime
 
-@[deprecated (since := "2026-07-09")]
-alias Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :=
-  Ring.KrullDimLE.minimalPrimes_eq_setOfPred_isPrime
-
 variable (R) in
-lemma Ring.KrullDimLE.minimalPrimes_eq_setOfPred_isMaximal :
+lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :
     minimalPrimes R = { I | I.IsMaximal } := by
-  ext; simp [minimalPrimes_eq_setOfPred_isPrime, Ideal.isMaximal_iff_isPrime]
-
-@[deprecated (since := "2026-07-09")]
-alias Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :=
-  Ring.KrullDimLE.minimalPrimes_eq_setOfPred_isMaximal
+  ext; simp [minimalPrimes_eq_setOf_isPrime, Ideal.isMaximal_iff_isPrime]
 
 /-- Note that the `ringKrullDim` of the trivial ring is `⊥` and not `0`. -/
 example [Subsingleton R] : Ring.KrullDimLE 0 R := inferInstance

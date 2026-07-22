@@ -100,6 +100,12 @@ def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
 
 variable (C)
 
+/-- The functor from a groupoid `C` to its opposite sending every morphism to its inverse. -/
+@[simps, deprecated "Use Groupoid.invEquivalence.functor" (since := "2025-12-31")]
+def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
+  obj := Opposite.op
+  map {_ _} f := (inv f).op
+
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence from a groupoid `C` to its opposite sending every morphism to its inverse. -/
 @[simps]
@@ -126,19 +132,19 @@ noncomputable instance {C : Type u} [Groupoid.{v} C] : IsGroupoid C where
 variable {C : Type u} [Category.{v} C]
 
 /-- Promote (noncomputably) an `IsGroupoid` to a `Groupoid` structure. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
 
 /-- A category where every morphism `IsIso` is a groupoid. -/
-@[instance_reducible]
+@[implicit_reducible]
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
-@[instance_reducible]
+@[implicit_reducible]
 def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C where
   inv _ := all_unique.default
 
@@ -150,7 +156,7 @@ lemma isGroupoid_of_reflects_iso {C D : Type*} [Category* C] [Category* D]
   all_isIso _ := isIso_of_reflects_iso _ F
 
 /-- A category equipped with a fully faithful functor to a groupoid is fully faithful -/
-@[instance_reducible]
+@[implicit_reducible]
 def Groupoid.ofFullyFaithfulToGroupoid {C : Type*} [𝒞 : Category C] {D : Type u} [Groupoid.{v} D]
     (F : C ⥤ D) (h : F.FullyFaithful) : Groupoid C :=
   { 𝒞 with

@@ -307,7 +307,6 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
@@ -328,7 +327,6 @@ theorem corec_nil (f : β → Option (α × β)) (b : β)
   apply destruct_eq_none
   simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem corec_cons {f : β → Option (α × β)} {b : β} {x : α} {s : β}
     (h : f b = .some (x, s)) : corec f b = cons x (corec f s) := by
   apply destruct_eq_cons
@@ -459,7 +457,7 @@ def Terminates (s : Seq α) : Prop :=
 def length (s : Seq α) (h : s.Terminates) : ℕ :=
   Nat.find h
 
-open scoped Classical in
+open Classical in
 /-- The `ENat`-valued length of a sequence. For non-terminating sequences, it is `⊤`. -/
 noncomputable def length' (s : Seq α) : ℕ∞ :=
   if h : s.Terminates then s.length h else ⊤

@@ -1,6 +1,5 @@
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 set_option autoImplicit true
 
@@ -232,20 +231,5 @@ example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a 
   rw [w]
 
 end ConcreteCategory
-
-section AlreadyDeclared
-
-open CategoryTheory.Limits
-
--- Regression test: regenerating an `_apply` lemma that was already generated in an imported
--- module (here `Mathlib.CategoryTheory.ConcreteCategory.Elementwise`) must error via
--- `checkNotAlreadyDeclared` instead of panicking in `addDeclarationRangesFromSyntax`.
-/--
-error: `CategoryTheory.Limits.limit.w_apply` has already been declared
--/
-#guard_msgs in
-attribute [elementwise] limit.w
-
-end AlreadyDeclared
 
 end ElementwiseTest

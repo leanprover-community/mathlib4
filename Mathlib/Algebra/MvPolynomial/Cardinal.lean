@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Data.Finsupp.Fintype
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-
-import Mathlib.Algebra.MonoidAlgebra.Cardinal
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Cardinality of Multivariate Polynomial Ring

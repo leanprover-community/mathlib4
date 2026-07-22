@@ -11,15 +11,11 @@ section
 set_option linter.style.setOption true
 
 /--
-warning: `linter.style.commandStart` has been deprecated: use the `linter.style.whitespace` option instead
+warning: The `linter.style.commandStart` option is deprecated, use `linter.style.whitespace` instead.
 -/
 #guard_msgs in
 set_option linter.style.commandStart true
 
-/--
-warning: `linter.style.commandStart` has been deprecated: use the `linter.style.whitespace` option instead
--/
-#guard_msgs in
 set_option linter.style.commandStart true in
 example : Nat := 0
 
@@ -466,8 +462,7 @@ example  {a :Nat} : a = a := rfl
 /--
 warning: Variable name `b` is not explicitly referenced.
 
-Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
-  [apply] _b
+The binding can be removed (if unused) or named `_` (if used implicitly).
 
 Note: This linter can be disabled with `set_option linter.unusedVariables false`
 ---

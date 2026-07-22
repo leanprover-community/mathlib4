@@ -177,7 +177,6 @@ instance : TensorSigns (ComplexShape.down ℕ) where
 @[simp]
 lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
@@ -276,7 +275,7 @@ end ComplexShape
 
 /-- The total complex shape for `c₂`, `c₁` and `c₁₂` that is deduced
 from a total complex shape for `c₁`, `c₂` and `c₁₂`. -/
-@[instance_reducible]
+@[implicit_reducible]
 def TotalComplexShape.symm [TotalComplexShape c₁ c₂ c₁₂] :
     TotalComplexShape c₂ c₁ c₁₂ where
   π := fun ⟨i₂, i₁⟩ ↦ ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
@@ -302,7 +301,7 @@ class TotalComplexShapeSymmetry [TotalComplexShape c₁ c₂ c₁₂] [TotalComp
 
 /-- The symmetry between the total complex shape for `c₁`, `c₂` and `c₁₂`,
 and its symmetric total complex shape. -/
-@[instance_reducible]
+@[implicit_reducible]
 def TotalComplexShape.symmSymmetry [TotalComplexShape c₁ c₂ c₁₂] :
     letI := TotalComplexShape.symm c₁ c₂ c₁₂
     TotalComplexShapeSymmetry c₁ c₂ c₁₂ :=
@@ -343,7 +342,6 @@ lemma σ_ε₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
     σ c₁ c₂ c₁₂ i₁ i₂ * ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ε₁ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ c₁ c₂ c₁₂ i₁ i₂' :=
   TotalComplexShapeSymmetry.σ_ε₂ i₁ h₂
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simps]
 instance : TotalComplexShapeSymmetry (up ℤ) (up ℤ) (up ℤ) where
   symm p q := add_comm q p
@@ -362,7 +360,7 @@ end ComplexShape
 
 /-- The obvious `TotalComplexShapeSymmetry c₂ c₁ c₁₂` deduced from a
 `TotalComplexShapeSymmetry c₁ c₂ c₁₂`. -/
-@[instance_reducible]
+@[implicit_reducible]
 def TotalComplexShapeSymmetry.symmetry [TotalComplexShape c₁ c₂ c₁₂]
     [TotalComplexShape c₂ c₁ c₁₂] [TotalComplexShapeSymmetry c₁ c₂ c₁₂] :
     TotalComplexShapeSymmetry c₂ c₁ c₁₂ where

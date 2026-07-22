@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.PowerSeries.Binomial
 
 /-!
 # Binomial expansions of powers of Hahn Series
-
 We introduce binomial expansions using `embDomain`.
 
 ## Main Definitions

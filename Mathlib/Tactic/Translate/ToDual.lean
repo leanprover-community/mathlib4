@@ -258,9 +258,6 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
-  -- `Set.ofPred` is not dual to `Set.ofSucc`
-  ("ofSucc", "OfPred"),
-  ("setOfSucc", "SetOfPred"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]

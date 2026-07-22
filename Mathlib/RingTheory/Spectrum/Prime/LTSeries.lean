@@ -28,7 +28,6 @@ open Ideal IsLocalRing
 
 namespace PrimeSpectrum
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpectrum R}
     (h₀ : p₀ < p₁) (h₁ : p₁ < closedPoint R) {x : R} (hx : x ∈ 𝔪) :
     ∃ q : PrimeSpectrum R, x ∈ q.asIdeal ∧ p₀ < q ∧ q.asIdeal < 𝔪 := by
@@ -51,7 +50,6 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   refine not_lt_zero (a := (e ⟨p₀, le_refl p₀⟩).1.height) (height_le_iff.mp hph _ inferInstance ?_)
   simpa using h₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.asIdeal) :
     ∃ q : (PrimeSpectrum R), x ∈ q.asIdeal ∧ p₀ < q ∧ q < p₂ := by

@@ -74,7 +74,8 @@ theorem eq_of_forall_π_app_eq (a b : C)
   ext i
   specialize h ({i} : Finset ι)
   rw [Subtype.ext_iff] at h
-  simp only [π_app, ContinuousMap.precomp, ContinuousMap.coe_mk] at h
+  simp only [π_app, ContinuousMap.precomp, ContinuousMap.coe_mk,
+    Set.MapsTo.val_restrict_apply] at h
   exact congr_fun h ⟨i, Finset.mem_singleton.mpr rfl⟩
 
 end IndexFunctor
@@ -99,7 +100,6 @@ def indexCone (hC : IsCompact C) : Cone (indexFunctor hC) where
 
 variable (hC : IsCompact C)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]

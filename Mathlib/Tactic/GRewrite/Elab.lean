@@ -120,7 +120,8 @@ declare_config_elab elabGRewriteConfig GRewrite.Config
 /--
 `grewrite [e₁, ..., eₙ]` uses each expression `eᵢ : Rᵢ aᵢ bᵢ` (where `Rᵢ` is any two-argument
 relation) as a generalized rewrite rule on the main goal, replacing occurrences of `aᵢ` with `bᵢ`.
-Use `grewrite [← eᵢ]` to rewrite in the other direction, replacing occurrences of `bᵢ` with `aᵢ`.
+Occurrences of `bᵢ` are not rewritten, even if logically possible. Use `grewrite [← eᵢ]` to rewrite
+in the other direction, replacing occurrences of `bᵢ` with `aᵢ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`. If `e` has parameters, the tactic will try to
@@ -130,12 +131,13 @@ after unification will create side goals.
 
 To be able to use `grewrite`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
-
-Rewriting with a strict inequality `a < b` may change a constant in the goal,
-such as changing `<` to `≤`. If this is not possible, then `a < b` is treated the same as `a ≤ b`.
+The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b` to rewrite with it.
+A future version of `grewrite` may get special support for making better use of strict inequalities.
 
 `grw` is like `grewrite` but tries to close the goal afterwards by "cheap" (reducible) `rfl`.
 To rewrite only in the `n`-th position, use `nth_grewrite n`.
+This is useful when `grewrite` tries to rewrite in a position that is not valid for the given
+relation.
 `apply_rewrite [e₁, ..., eₙ]` is a shorthand for `grewrite +implicationHyp [e₁, ..., eₙ]`: it
 interprets `· → ·` as a relation instead of adding the hypothesis as a side condition.
 
@@ -164,7 +166,8 @@ public def evalGRewriteSeq : Tactic := fun stx => do
 `grw [e₁, ..., eₙ]` uses each expression `eᵢ : Rᵢ aᵢ bᵢ` (where `Rᵢ` is any two-argument
 relation) as a generalized rewrite rule on the main goal, replacing occurrences of `aᵢ` with `bᵢ`,
 then tries to close the main goal by "cheap" (reducible) `rfl`.
-Use `grw [← eᵢ]` to rewrite in the other direction, replacing occurrences of `bᵢ` with `aᵢ`.
+Occurrences of `bᵢ` are not rewritten, even if logically possible. Use `grw [← eᵢ]` to rewrite
+in the other direction, replacing occurrences of `bᵢ` with `aᵢ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`. If `e` has parameters, the tactic will try to
@@ -174,14 +177,14 @@ after unification will create side goals.
 
 To be able to use `grw`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
-
-Rewriting with a strict inequality `a < b` may change the goal, such as changing `<` to `≤`.
-If this is not possible, then `a < b` is treated the same as `a ≤ b`.
+The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b` to rewrite with it.
+A future version of `grw` may get special support for making better use of strict inequalities.
 
 `grewrite` is like `grw` but does not try to apply `rfl` afterwards.
 To rewrite only in the `n`-th position, use `nth_grw n`.
-`apply_rw [e₁, ..., eₙ]` is a shorthand for `grw +implicationHyp [e₁, ..., eₙ]`: it interprets
-`· → ·` as a relation instead of adding the hypothesis as a side condition.
+This is useful when `grw` tries to rewrite in a position that is not valid for the given relation.
+`apply_rw [rules]` is a shorthand for `grw +implicationHyp [rules]`: it interprets `· → ·` as a
+relation instead of adding the hypothesis as a side condition.
 
 * `grw [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing occurrences
   of `b` with `a`.
@@ -189,7 +192,7 @@ To rewrite only in the `n`-th position, use `nth_grw n`.
   details.
   * To let `grw` unfold more aggressively, as in `erw`, use
     `grw (transparency := default) [e₁, ..., eₙ]`.
-  * `grw +implicationHyp [e₁, ..., eₙ]` interprets `· → ·` as a relation (see `apply_rw`).
+  * `grw +implicationHyp [e₁, ..., e\_n]` interprets `· → ·` as a relation (see `apply_rw`).
 * `grw [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 
 Examples:
@@ -260,7 +263,8 @@ macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? :
 /--
 `nth_grewrite n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grewrite` that for each expression
 `eᵢ : R aᵢ bᵢ` only replaces the `n₁, ..., nₖ`th occurrence of `aᵢ` with `bᵢ`.
-Use `nth_grewrite n₁ ... nₖ [← eᵢ]` to rewrite in the other direction, replacing occurrences of `bᵢ`
+Occurrences of `bᵢ` are not rewritten, even if logically possible. Use
+`nth_grewrite n₁ ... nₖ [← eᵢ]` to rewrite in the other direction, replacing occurrences of `bᵢ`
 with `aᵢ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
@@ -271,8 +275,9 @@ after unification will create side goals.
 
 To be able to use `nth_grewrite`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
-Rewriting with a strict inequality `a < b` may change the strictness of the goal,
-replacing a goal `_ < _` by `_ ≤ _`. If this is not possible, then `a < b` is treated as `a ≤ b`.
+The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b` to rewrite with it.
+A future version of `nth_grewrite` may get special support for making better use of strict
+inequalities.
 
 * `nth_grewrite n₁ ... nₖ [← e]` applies the rewrite rule `e : R a b` in the reverse direction,
   replacing the `n₁, ..., nₖ`th occurrences of `b` with `a`.
@@ -289,8 +294,9 @@ macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)?
 
 /--
 `nth_grw n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grw` that for each expression `eᵢ : R aᵢ bᵢ` only
-replaces the `n₁, ..., nₖ`th occurrence of `aᵢ` with `bᵢ`. Use `nth_grw n₁ ... nₖ [← eᵢ]` to rewrite
-in the other direction, replacing occurrences of `bᵢ` with `aᵢ`.
+replaces the `n₁, ..., nₖ`th occurrence of `aᵢ` with `bᵢ`. Occurrences of `bᵢ` are not rewritten,
+even if logically possible. Use `nth_grw n₁ ... nₖ [← eᵢ]` to rewrite in the other direction,
+replacing occurrences of `bᵢ` with `aᵢ`.
 
 If an expression `e` is a defined constant, then the equational theorems associated with `e` are
 used. This provides a convenient way to unfold `e`. If `e` has parameters, the tactic will try to
@@ -300,8 +306,9 @@ after unification will create side goals.
 
 To be able to use `nth_grw`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
-Rewriting with a strict inequality `a < b` may change the strictness of the goal,
-replacing a goal `_ < _` by `_ ≤ _`. If this is not possible, then `a < b` is treated as `a ≤ b`.
+The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b` to rewrite with it.
+A future version of `nth_grw` may get special support for making better use of strict
+inequalities.
 
 * `nth_grw n₁ ... nₖ [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing
   the `n₁, ..., nₖ`th occurrences of `b` with `a`.

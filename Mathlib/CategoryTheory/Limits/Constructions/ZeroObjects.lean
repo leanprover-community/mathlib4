@@ -34,7 +34,6 @@ open ZeroObject
 def binaryFanZeroLeft (X : C) : BinaryFan (0 : C) X :=
   BinaryFan.mk 0 (𝟙 X)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The limit cone for the product with a zero object is limiting. -/
 def binaryFanZeroLeftIsLimit (X : C) : IsLimit (binaryFanZeroLeft X) :=
   BinaryFan.isLimitMk (fun s => BinaryFan.snd s) (by cat_disch) (by simp)
@@ -61,7 +60,6 @@ theorem zeroProdIso_inv_snd (X : C) : (zeroProdIso X).inv ≫ prod.snd = 𝟙 X 
 def binaryFanZeroRight (X : C) : BinaryFan X (0 : C) :=
   BinaryFan.mk (𝟙 X) 0
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The limit cone for the product with a zero object is limiting. -/
 def binaryFanZeroRightIsLimit (X : C) : IsLimit (binaryFanZeroRight X) :=
   BinaryFan.isLimitMk (fun s => BinaryFan.fst s) (by simp) (by cat_disch)
@@ -88,7 +86,6 @@ theorem prodZeroIso_iso_inv_snd (X : C) : (prodZeroIso X).inv ≫ prod.fst = �
 def binaryCofanZeroLeft (X : C) : BinaryCofan (0 : C) X :=
   BinaryCofan.mk 0 (𝟙 X)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The colimit cocone for the coproduct with a zero object is colimiting. -/
 def binaryCofanZeroLeftIsColimit (X : C) : IsColimit (binaryCofanZeroLeft X) :=
   BinaryCofan.isColimitMk (fun s => BinaryCofan.inr s) (by cat_disch) (by simp)
@@ -115,7 +112,6 @@ theorem zeroCoprodIso_inv (X : C) : (zeroCoprodIso X).inv = coprod.inr :=
 def binaryCofanZeroRight (X : C) : BinaryCofan X (0 : C) :=
   BinaryCofan.mk (𝟙 X) 0
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The colimit cocone for the coproduct with a zero object is colimiting. -/
 def binaryCofanZeroRightIsColimit (X : C) : IsColimit (binaryCofanZeroRight X) :=
   BinaryCofan.isColimitMk (fun s => BinaryCofan.inl s) (by simp) (by cat_disch)

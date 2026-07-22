@@ -35,7 +35,7 @@ universe u v
   is a family of pre-sets indexed by a type in `Type u`.
   The ZFC universe is defined as a quotient of this
   to ensure extensionality. -/
-@[pp_with_univ, use_set_notation_for_order]
+@[pp_with_univ]
 inductive PSet : Type (u + 1)
   | mk (α : Type u) (A : α → PSet) : PSet
 
@@ -117,15 +117,17 @@ equivalent to some element of the second family. -/
 protected def Subset (x y : PSet) : Prop :=
   ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
 
-instance : LE PSet :=
+instance : HasSubset PSet :=
   ⟨PSet.Subset⟩
 
-instance : Preorder PSet where
-  le_refl _ a := ⟨a, Equiv.refl _⟩
-  le_trans x y z hxy hyz a := by
+instance : @Std.Refl PSet (· ⊆ ·) :=
+  ⟨fun _ a => ⟨a, Equiv.refl _⟩⟩
+
+instance : IsTrans PSet (· ⊆ ·) :=
+  ⟨fun x y z hxy hyz a => by
     obtain ⟨b, hb⟩ := hxy a
     obtain ⟨c, hc⟩ := hyz b
-    exact ⟨c, hb.trans hc⟩
+    exact ⟨c, hb.trans hc⟩⟩
 
 theorem Equiv.ext : ∀ x y : PSet, Equiv x y ↔ x ⊆ y ∧ y ⊆ x
   | ⟨_, _⟩, ⟨_, _⟩ =>
@@ -160,13 +162,23 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
+instance : Preorder PSet where
+  le := (· ⊆ ·)
+  le_refl := refl_of (· ⊆ ·)
+  le_trans _ _ _ := trans_of (· ⊆ ·)
+
+instance : HasSSubset PSet := ⟨(· < ·)⟩
+
+@[simp]
 theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
   Iff.rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
+@[simp]
 theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
   Iff.rfl
+
+instance : IsNonstrictStrictOrder PSet (· ⊆ ·) (· ⊂ ·) :=
+  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=

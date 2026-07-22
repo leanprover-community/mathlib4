@@ -82,7 +82,7 @@ noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton
 
 end Skeleton
 
-open CategoryTheory.Functor
+open Functor
 
 noncomputable instance : (skeletonEquivalence C).functor.Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse.Monoidal

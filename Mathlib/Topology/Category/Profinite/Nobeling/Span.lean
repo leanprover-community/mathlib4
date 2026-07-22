@@ -50,7 +50,8 @@ def πJ : LocallyConstant (π C (· ∈ s)) ℤ →ₗ[ℤ] LocallyConstant C �
 theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
     l.eval C = πJ C s (l.eval (π C (· ∈ s))) := by
   ext f
-  simp only [πJ, LocallyConstant.comapₗ]
+  simp only [πJ, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
+    LocallyConstant.coe_comap, Function.comp_apply]
   exact (congr_fun (Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood C (· ∈ s) hl)) _).symm
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/
@@ -73,6 +74,7 @@ def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ w
     haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
     IsLocallyConstant.of_discrete _
 
+open scoped Classical in
 theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C s)) := by
   intro f _
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
@@ -210,7 +212,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
         apply Submodule.smul_mem
         apply Submodule.subset_span
         refine ⟨m, ⟨?_, rfl⟩⟩
-        simp only [Set.mem_ofPred_eq]
+        simp only [Set.mem_setOf_eq]
         have hmas : m.val ≤ as :=
           hc (by simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm)
         refine le_trans hmas ?_

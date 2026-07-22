@@ -29,7 +29,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 namespace CategoryTheory
 
-open MonoidalCategory ComonObj
+open MonoidalCategory ComonObj Functor
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 

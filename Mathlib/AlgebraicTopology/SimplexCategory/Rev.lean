@@ -23,7 +23,6 @@ open CategoryTheory
 
 namespace SimplexCategory
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The covariant involution `rev : SimplexCategory ⥤ SimplexCategory` which,
 via the equivalence between the simplex category and the
 category of nonempty finite linearly ordered types, corresponds to
@@ -75,7 +74,6 @@ lemma rev_map_rev_map {n m : SimplexCategory} (f : n ⟶ m) :
     rev.map (rev.map f) = f := by
   aesop
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`
 as an equivalence of category. -/

@@ -50,7 +50,6 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
       dsimp
       grw [max_mul_mul_right, v.map_add a b] }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Valuation.extendToLocalization_mk' (x : A) (y : S) :
     (v.extendToLocalization hS B) (IsLocalization.mk' _ x y) =

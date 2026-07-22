@@ -197,7 +197,7 @@ theorem dimH_iUnion {ι : Sort*} [Countable ι] (s : ι → Set X) :
 @[simp]
 theorem dimH_bUnion {s : Set ι} (hs : s.Countable) (t : ι → Set X) :
     dimH (⋃ i ∈ s, t i) = ⨆ i ∈ s, dimH (t i) := by
-  have := hs.toEncodable
+  haveI := hs.toEncodable
   rw [biUnion_eq_iUnion, dimH_iUnion, ← iSup_subtype'']
 
 @[simp]

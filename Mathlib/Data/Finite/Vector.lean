@@ -16,9 +16,10 @@ public section
 variable {α : Type*}
 
 instance List.Vector.finite [Finite α] {n : ℕ} : Finite (Vector α n) := by
-  have := Fintype.ofFinite α
+  haveI := Fintype.ofFinite α
   infer_instance
 
 instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
-  have := Fintype.ofFinite α
+  classical
+  haveI := Fintype.ofFinite α
   infer_instance

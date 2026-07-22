@@ -42,7 +42,6 @@ def PullbackCone.combine (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f
     { app X := (c X).snd }
     (by ext; simp [(c _).condition])
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The pullback cone `combinePullbackCones` is limiting.

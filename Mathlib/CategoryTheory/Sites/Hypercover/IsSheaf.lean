@@ -154,7 +154,6 @@ end OneHypercoverFamily
 abbrev IsGeneratedByOneHypercovers : Prop :=
   OneHypercoverFamily.IsGenerating.{w} (J := J) ⊤
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : IsGeneratedByOneHypercovers.{max u v} J where
   le S hS := ⟨Cover.oneHypercover ⟨S, hS⟩, by simp, by simp⟩
 

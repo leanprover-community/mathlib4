@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 /-!

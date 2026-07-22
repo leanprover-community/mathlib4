@@ -39,7 +39,7 @@ of the coefficients.
 def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
   __ := (PolynomialModule.map A d.toLinearMap).comp
     PolynomialModule.equivPolynomial.symm.toLinearMap
-  map_one_eq_zero' := by simp
+  map_one_eq_zero' := show (Finsupp.single 0 1).mapRange (d : A → M) d.map_zero = 0 by simp
   leibniz' p q := by
     dsimp
     induction p using Polynomial.induction_on' with
@@ -47,20 +47,34 @@ def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
     | monomial n a =>
       induction q using Polynomial.induction_on' with
       | add => simp only [mul_add, map_add, add_smul, smul_add, add_add_add_comm, *]
-      | monomial m b => ext; simp [Polynomial.monomial_mul_monomial, add_comm]
+      | monomial m b =>
+        refine Finsupp.ext fun i ↦ ?_
+        dsimp [PolynomialModule.equivPolynomial, PolynomialModule.map]
+        simp only [toFinsupp_mul, toFinsupp_monomial, AddMonoidAlgebra.single_mul_single]
+        change d _ = _ + _
+        -- TODO: copy more `Finsupp` API to `PolynomialModule`.
+        -- We have to do a bit of work to go through the identification
+        -- `PolynomialModule A M = ℕ →₀ M`...
+        dsimp only [PolynomialModule, Finsupp.mapRange.linearMap_apply, coeFn_coe]
+        rw [Finsupp.mapRange_single, Finsupp.mapRange_single]
+        -- ... and here we go back through the identification.
+        change _ = (_ • PolynomialModule.single A _ _) _ + (_ • PolynomialModule.single A _ _) i
+        simp only [PolynomialModule.monomial_smul_single, AddMonoidAlgebra.single_apply,
+          apply_ite d, leibniz, map_zero, PolynomialModule.single_apply, ite_add_zero,
+          add_comm m n]
 
 @[simp]
-lemma mapCoeffs_apply (p : A[X]) (i) : (d.mapCoeffs p).coeff i = d (coeff p i) := rfl
+lemma mapCoeffs_apply (p : A[X]) (i) :
+    d.mapCoeffs p i = d (coeff p i) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapCoeffs_monomial (n : ℕ) (x : A) :
-    d.mapCoeffs (monomial n x) = .single A n (d x) := by
-  ext; simp [coeff_monomial, apply_ite d, Finsupp.single_apply]
+    d.mapCoeffs (monomial n x) = .single A n (d x) := Finsupp.ext fun _ ↦ by
+  simp [coeff_monomial, apply_ite d, PolynomialModule.single_apply]
 
 @[simp]
-lemma mapCoeffs_X : d.mapCoeffs (X : A[X]) = 0 := by
-  simp [← monomial_one_one_eq_X, PolynomialModule.single]
+lemma mapCoeffs_X :
+    d.mapCoeffs (X : A[X]) = 0 := by simp [← monomial_one_one_eq_X]
 
 @[simp]
 lemma mapCoeffs_C (x : A) :
@@ -81,18 +95,21 @@ theorem apply_aeval_eq' (d' : Derivation R B M') (f : M →ₗ[A] M')
       _root_.map_natCast, h]
     rw [add_comm, ← smul_smul, ← smul_smul, Nat.cast_smul_eq_nsmul]
 
-set_option backward.isDefEq.respectTransparency.types false in
+
 theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivation R B M')
     (x : B) (p : A[X]) :
-    d (aeval x p) =
-      (((d.compAlgebraMap A).mapCoeffs p).map B .id).eval x + aeval x (derivative p) • d x :=
-  apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id (fun _a ↦ rfl) x p
+    d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).mapCoeffs p) +
+      aeval x (derivative p) • d x := by
+  convert! apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
+  · apply Finsupp.ext
+    intro x
+    rfl
+  · intro a
+    rfl
 
 theorem apply_eval_eq (x : A) (p : A[X]) :
-    d (eval x p) = PolynomialModule.eval x (d.mapCoeffs p) + eval x (derivative p) • d x := by
-  convert! apply_aeval_eq d x p
-  ext
-  rfl
+    d (eval x p) = PolynomialModule.eval x (d.mapCoeffs p) + eval x (derivative p) • d x :=
+  apply_aeval_eq d x p
 
 end Derivation
 
@@ -111,7 +128,6 @@ def mapCoeffs : Derivation ℤ A[X] A[X] :=
 lemma coeff_mapCoeffs (p : A[X]) (i) :
     coeff (mapCoeffs p) i = (coeff p i)′ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mapCoeffs_monomial (n : ℕ) (x : A) :
     mapCoeffs (monomial n x) = monomial n x′ := by
@@ -127,7 +143,6 @@ lemma mapCoeffs_C (x : A) :
 
 variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAlgebra A R]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem deriv_aeval_eq (x : R) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
   convert! Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..

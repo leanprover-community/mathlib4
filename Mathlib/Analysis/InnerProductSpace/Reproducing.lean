@@ -37,8 +37,7 @@ positive semidefinite matrices.
 
 public noncomputable section
 
-open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate Filter
-open scoped Topology
+open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate
 
 /--
 A reproducing kernel Hilbert space is a Hilbert space with an
@@ -151,31 +150,6 @@ bounded by `‖f‖` times the square root of the kernel diagonal `‖kernel H x
 lemma norm_apply_le (f : H) (x : X) : ‖f x‖ ≤ ‖f‖ * √‖kernel H x x‖ := by
   grw [← adjoint_kerFun, le_opNorm, norm_map, norm_kerFun_eq_sqrt_norm_kernel, mul_comm]
 
-variable {H} in
-/-- If the kernel functions are uniformly bounded on a set `s` (`‖kerFun H x‖ ≤ C` for `x ∈ s`),
-then convergence in `H`-norm implies uniform convergence of the underlying functions on `s`. -/
-theorem tendstoUniformlyOn_of_norm_kerFun_le {C : ℝ} {s : Set X}
-    (hC : ∀ x ∈ s, ‖kerFun H x‖ ≤ C)
-    {ι : Type*} {l : Filter ι} {F : ι → H} {f : H} (h : Tendsto F l (𝓝 f)) :
-    TendstoUniformlyOn (fun n => ⇑(F n)) (⇑f) l s := by
-  rw [Metric.tendstoUniformlyOn_iff]
-  intro ε hε
-  have hnorm := (tendsto_iff_norm_sub_tendsto_zero.mp h).mul_const C
-  rw [zero_mul] at hnorm
-  filter_upwards [hnorm.eventually (gt_mem_nhds hε)] with n hn x hx
-  rw [dist_eq_norm', ← Pi.sub_apply, ← coe_sub]
-  grw [norm_apply_le, ← norm_kerFun_eq_sqrt_norm_kernel, hC x hx, hn]
-
-variable {H} in
-/-- If the kernel functions are uniformly bounded (`‖kerFun H x‖ ≤ C` for all `x`), then
-convergence in `H`-norm implies uniform convergence of the underlying functions. -/
-theorem tendstoUniformly_of_norm_kerFun_le {C : ℝ} (hC : ∀ x, ‖kerFun H x‖ ≤ C)
-    {ι : Type*} {l : Filter ι} {F : ι → H} {f : H} (h : Tendsto F l (𝓝 f)) :
-    TendstoUniformly (fun n => ⇑(F n)) (⇑f) l := by
-  rw [← tendstoUniformlyOn_univ]
-  exact tendstoUniformlyOn_of_norm_kerFun_le (fun x _ => hC x) h
-
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
   refine (orthogonal_eq_bot_iff.mp ((Submodule.eq_bot_iff _).mpr fun f fin ↦ DFunLike.ext f 0 ?_))

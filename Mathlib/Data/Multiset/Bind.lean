@@ -153,7 +153,6 @@ theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s
 @[simp]
 theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 
-@[congr]
 theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
 
@@ -343,7 +342,6 @@ variable {s t}
 protected theorem Nodup.product : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_swap_product (s : Multiset α) (t : Multiset β) :
     (s ×ˢ t).map Prod.swap = t ×ˢ s := by
   induction s using Multiset.induction <;> simp_all

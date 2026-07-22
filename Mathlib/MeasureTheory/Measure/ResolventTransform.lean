@@ -55,7 +55,6 @@ section resolvent
 
 variable [NontriviallyNormedField 𝕜] [MeasurableSpace 𝕜]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[fun_prop]
 theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
     [CompleteSpace A] [MeasurableSpace A] [BorelSpace A] :
@@ -64,7 +63,7 @@ theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] 
   have h1 : ContinuousOn (resolvent (R := 𝕜) a) (resolventSet 𝕜 a) :=
     HasDerivAt.continuousOn (fun _ hx ↦ hasDerivAt_resolvent_const_left hx)
   have h2 : ContinuousOn (resolvent (R := 𝕜) a) (resolventSet 𝕜 a)ᶜ := by
-    rw [continuousOn_iff_continuous_domRestrict]
+    rw [continuousOn_iff_continuous_restrict]
     convert continuous_const (y := (0 : A)) with x
     simp
   have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet a).measurableSet

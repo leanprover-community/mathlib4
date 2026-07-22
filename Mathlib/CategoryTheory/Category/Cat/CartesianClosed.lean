@@ -30,7 +30,7 @@ universe v u v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open CategoryTheory.Functor Cat
+open Functor Cat
 
 namespace Cat
 

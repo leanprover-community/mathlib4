@@ -21,20 +21,20 @@ The notation `- ⊠ -` is scoped to `MonoidalCategory.ExternalProduct`.
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory
-open CategoryTheory.Functor
+open Functor
 
 variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
     [Category.{v₁} J₁] [Category.{v₂} J₂] [Category.{v₃} C] [MonoidalCategory C]
 
 /-- The (curried version of the) external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `j₁ ↦ j₂ ↦ K₁ j₁ ⊗ K₂ j₂`. -/
-@[simps!, implicit_reducible]
+@[simps!]
 def externalProductBifunctorCurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤ J₂ ⥤ C :=
   (Functor.postcompose₂.obj <| (evaluation _ _).obj <| curriedTensor C).obj <| whiskeringLeft₂ C
 
 /-- The external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `(j₁, j₂) ↦ K₁ j₁ ⊗ K₂ j₂`. -/
-@[simps!, implicit_reducible]
+@[simps!]
 def externalProductBifunctor : ((J₁ ⥤ C) × (J₂ ⥤ C)) ⥤ J₁ × J₂ ⥤ C :=
   uncurry.obj <| (Functor.postcompose₂.obj <| uncurry).obj <|
     externalProductBifunctorCurried J₁ J₂ C
@@ -56,7 +56,6 @@ open scoped ExternalProduct
 
 variable (J₁ J₂ C)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When both diagrams have the same source category, composing the external product with
 the diagonal gives the pointwise functor tensor product.
@@ -70,7 +69,6 @@ def externalProductCompDiagIso :
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [tensorHom_def]))
     (fun _ ↦ by ext; simp [tensorHom_def])
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When `C` is braided, there is an isomorphism `Prod.swap _ _ ⋙ F₁ ⊠ F₂ ≅ F₂ ⊠ F₁`, natural
 in both `F₁` and `F₂`.
@@ -84,7 +82,6 @@ def externalProductSwap [BraidedCategory C] :
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [whisker_exchange]))
     (fun _ ↦ by ext; simp [whisker_exchange])
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A version of `externalProductSwap` phrased in terms of the curried functors. -/
 @[simps!]

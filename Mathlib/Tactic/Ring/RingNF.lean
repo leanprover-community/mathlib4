@@ -26,7 +26,7 @@ namespace Mathlib.Tactic
 open Lean Meta Qq
 
 namespace RingNF
-open Mathlib.Tactic.Ring
+open Ring
 
 /-- The normalization style for `ring_nf`. -/
 inductive RingMode where

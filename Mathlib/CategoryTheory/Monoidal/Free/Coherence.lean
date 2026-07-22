@@ -41,7 +41,7 @@ universe u
 
 namespace CategoryTheory
 
-open MonoidalCategory CategoryTheory.Functor
+open MonoidalCategory Functor
 
 namespace FreeMonoidalCategory
 
@@ -225,7 +225,6 @@ theorem normalizeIsoApp_tensor (X Y : F C) (n : N C) :
 theorem normalizeIsoApp_unitor (n : N C) : normalizeIsoApp C (𝟙_ (F C)) n = ρ_ _ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `normalizeIso`. -/
 @[simps!]
 def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
@@ -256,7 +255,6 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
       simp [congr_fun ih₁ n, congr_fun ih₂ (normalizeObj Y n)]
   | _ => funext; rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
     inclusionObj n ◁ f ≫ (normalizeIsoApp' C Y n).hom =
@@ -282,7 +280,6 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
 naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
@@ -294,7 +291,6 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     convert! normalize_naturality n f using 1
     any_goals dsimp; rw [normalizeIsoApp_eq]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=

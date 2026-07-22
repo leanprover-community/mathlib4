@@ -80,7 +80,7 @@ def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
         Algebra.TensorProduct.piRight_tmul]
     · simp_all
 
-open scoped Classical in
+open Classical in
 /-- The fan on `i ↦ S ⊗[R] P i` given by `S ⊗[R] ∀ i, P i` is limiting if `ι` is finite. -/
 def tensorProductFanIsLimit [Finite ι] : IsLimit (tensorProductFan S P) :=
   letI : Fintype ι := Fintype.ofFinite ι

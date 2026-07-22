@@ -413,7 +413,8 @@ theorem _root_.TendstoUniformlyOn.tendsto_circleIntegral_of_continuousOn
     intro ε hε
     rcases exists_pos_mul_lt hε R with ⟨δ, hδ₀, hRδ⟩
     refine (h δ hδ₀).mono fun i hi x hx ↦ ?_
-    grw [← hRδ, hi (circleMap c R x) (by simp [hR])]
+    grw [hi (circleMap c R x) (by simp [hR])]
+    exact hRδ
 
 namespace circleIntegral
 

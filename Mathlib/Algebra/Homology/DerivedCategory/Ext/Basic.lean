@@ -56,6 +56,7 @@ abbrev HasExt : Prop :=
   ∀ (X Y : C), HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ
     ((CochainComplex.singleFunctor C 0).obj X) ((CochainComplex.singleFunctor C 0).obj Y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasExt_iff [HasDerivedCategory.{w'} C] :
     HasExt.{w} C ↔ ∀ (X Y : C) (n : ℤ) (_ : 0 ≤ n), Small.{w}
       ((singleFunctor C 0).obj X ⟶
@@ -90,9 +91,10 @@ lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := 
   infer_instance
 
 lemma HasExt.standard : HasExt.{max u v} C := by
-  let := HasDerivedCategory.standard
+  letI := HasDerivedCategory.standard
   exact hasExt_of_hasDerivedCategory _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasExt.{w} C] (X Y : C) (a b : ℤ) [HasDerivedCategory.{w'} C] :
     Small.{w} ((singleFunctor C a).obj X ⟶ (singleFunctor C b).obj Y) := by
   have (a b : ℤ) :
@@ -190,7 +192,7 @@ lemma mk₀_hom [HasDerivedCategory.{w'} C] (f : X ⟶ Y) :
 @[simp]
 lemma mk₀_comp_mk₀ (f : X ⟶ Y) (g : Y ⟶ Z) :
     (mk₀ f).comp (mk₀ g) (zero_add 0) = mk₀ (f ≫ g) := by
-  let := HasDerivedCategory.standard C; ext; simp
+  letI := HasDerivedCategory.standard C; ext; simp
 
 @[simp]
 lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T n) :
@@ -202,7 +204,7 @@ lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T
 
 variable (X Y) in
 lemma mk₀_bijective : Function.Bijective (mk₀ (X := X) (Y := Y)) := by
-  let := HasDerivedCategory.standard C
+  letI := HasDerivedCategory.standard C
   have h : (singleFunctor C 0).FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
   let e : (X ⟶ Y) ≃ Ext X Y 0 :=
     (h.homEquiv.trans (ShiftedHom.homEquiv _ (by simp))).trans homEquiv.symm
@@ -266,51 +268,51 @@ private lemma zero_hom' : (0 : Ext X Y n).hom' = 0 :=
 @[simp]
 lemma add_comp (α₁ α₂ : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
     (α₁ + α₂).comp β h = α₁.comp β h + α₂.comp β h := by
-  let := HasDerivedCategory.standard C; ext; simp [this, add_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, add_hom']
 
 @[simp]
 lemma comp_add (α : Ext X Y n) {m : ℕ} (β₁ β₂ : Ext Y Z m) {p : ℕ} (h : n + m = p) :
     α.comp (β₁ + β₂) h = α.comp β₁ h + α.comp β₂ h := by
-  let := HasDerivedCategory.standard C; ext; simp [this, add_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, add_hom']
 
 @[simp]
 lemma neg_comp (α : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
     (-α).comp β h = -α.comp β h := by
-  let := HasDerivedCategory.standard C; ext; simp [this, neg_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, neg_hom']
 
 @[simp]
 lemma comp_neg (α : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
     α.comp (-β) h = -α.comp β h := by
-  let := HasDerivedCategory.standard C; ext; simp [this, neg_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, neg_hom']
 
 variable (X n) in
 @[simp]
 lemma zero_comp {m : ℕ} (β : Ext Y Z m) (p : ℕ) (h : n + m = p) :
     (0 : Ext X Y n).comp β h = 0 := by
-  let := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
 
 @[simp]
 lemma comp_zero (α : Ext X Y n) (Z : C) (m : ℕ) (p : ℕ) (h : n + m = p) :
     α.comp (0 : Ext Y Z m) h = 0 := by
-  let := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
 
 @[simp]
 lemma mk₀_id_comp (α : Ext X Y n) :
     (mk₀ (𝟙 X)).comp α (zero_add n) = α := by
-  let := HasDerivedCategory.standard C; ext; simp
+  letI := HasDerivedCategory.standard C; ext; simp
 
 @[simp]
 lemma comp_mk₀_id (α : Ext X Y n) :
     α.comp (mk₀ (𝟙 Y)) (add_zero n) = α := by
-  let := HasDerivedCategory.standard C; ext; simp
+  letI := HasDerivedCategory.standard C; ext; simp
 
 variable (X Y) in
 @[simp]
 lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
-  let := HasDerivedCategory.standard C; ext; simp [zero_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
 
 lemma mk₀_add (f g : X ⟶ Y) : mk₀ (f + g) = mk₀ f + mk₀ g := by
-  let := HasDerivedCategory.standard C; ext; simp [add_hom', ShiftedHom.mk₀]
+  letI := HasDerivedCategory.standard C; ext; simp [add_hom', ShiftedHom.mk₀]
 
 /-- The additive bijection `Ext X Y 0 ≃+ (X ⟶ Y)`. -/
 @[simps! symm_apply]
@@ -331,7 +333,7 @@ lemma mk₀_eq_zero_iff {M N : C} (f : M ⟶ N) :
 @[simp]
 lemma mk₀_neg (f : X ⟶ Y) :
     mk₀ (-f) = -mk₀ f := by
-  let := HasDerivedCategory.standard C; ext; simp [neg_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [neg_hom']
 
 section
 
@@ -340,7 +342,7 @@ lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
     (h₁ : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n))
     (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :
     α = β := by
-  let := HasDerivedCategory.standard C
+  letI := HasDerivedCategory.standard C
   rw [Ext.ext_iff] at h₁ h₂ ⊢
   simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp] at h₁ h₂
   apply BinaryCofan.IsColimit.hom_ext
@@ -555,7 +557,7 @@ open Abelian
 variable (C) in
 lemma hasExt_iff_small_ext :
     HasExt.{w'} C ↔ ∀ (X Y : C) (n : ℕ), Small.{w'} (Ext.{w} X Y n) := by
-  let := HasDerivedCategory.standard C
+  letI := HasDerivedCategory.standard C
   simp only [hasExt_iff, small_congr Ext.homEquiv]
   constructor
   · intro h X Y n

@@ -204,7 +204,6 @@ theorem complexConj_eq_self_iff (x : K) :
   · rw [IsGalois.fixedField_top, IntermediateField.mem_bot]
     aesop
 
-set_option backward.isDefEq.respectTransparency.types false in
 protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
     complexConj K x = x ↔ ∃ y : 𝓞 K⁺, algebraMap (𝓞 K⁺) K y = x := by
   rw [complexConj_eq_self_iff]
@@ -257,7 +256,7 @@ end complexConj
 
 section units
 
-open NumberField.Units
+open Units
 
 /--
 The complex conjugation as an isomorphism of the units of `K`. -/
@@ -329,7 +328,7 @@ The action of `unitsMulComplexConjInv` of the torsion is the same as the 2-power
 -/
 theorem map_unitsMulComplexConjInv_torsion :
     Subgroup.map (unitsMulComplexConjInv K) (torsion K) = (powMonoidHom 2).range := by
-  rw [← MonoidHom.domRestrict_range]
+  rw [← MonoidHom.restrict_range]
   exact congr_arg (MonoidHom.range ·) (MonoidHom.ext fun ζ ↦ by simp)
 
 /--

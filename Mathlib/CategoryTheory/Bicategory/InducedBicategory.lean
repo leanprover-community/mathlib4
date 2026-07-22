@@ -46,6 +46,7 @@ variable {C F}
 instance hasCoeToSort {α : Sort*} [CoeSort C α] : CoeSort (InducedBicategory C F) α :=
   ⟨fun c => F c⟩
 
+set_option backward.privateInPublic true in
 /-- `InducedBicategory.Hom X Y` is a type-alias for morphisms between `X Y : B` viewed as objects
 of `B` with the induced bicategory structure. This is given a `CategoryStruct` instance below,
 where the identity and composition is induced from `C`. -/

@@ -14,7 +14,7 @@ This module defines a `norm_num` extension for `Real.sqrt` and `NNReal.sqrt`.
 
 public meta section
 
-namespace Mathlib.Meta.NormNum
+namespace Tactic.NormNum
 
 open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum NNReal
 
@@ -124,4 +124,4 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
     | .isNegNNRat sℝ eq en ed pf => failure
   | _ => failure
 
-end Mathlib.Meta.NormNum
+end Tactic.NormNum

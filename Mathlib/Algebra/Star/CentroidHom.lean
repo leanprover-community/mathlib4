@@ -117,7 +117,6 @@ section NonAssocStarSemiring
 
 variable [NonAssocSemiring α] [StarRing α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α where
   __ := starCenterToCentroid

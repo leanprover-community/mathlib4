@@ -86,7 +86,6 @@ protected def initialHom (d : Factorisation f) :
     Factorisation.Hom (Factorisation.initial : Factorisation f) d where
   h := d.ι
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : Unique ((Factorisation.initial : Factorisation f) ⟶ d) where
   default := Factorisation.initialHom d
@@ -106,7 +105,6 @@ protected def terminalHom (d : Factorisation f) :
     Factorisation.Hom d (Factorisation.terminal : Factorisation f) where
   h := d.π
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : Unique (d ⟶ (Factorisation.terminal : Factorisation f)) where
   default := Factorisation.terminalHom d

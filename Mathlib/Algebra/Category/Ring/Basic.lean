@@ -63,6 +63,7 @@ lemma coe_of (R : Type u) [Semiring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : SemiRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `SemiRingCat`. -/
 @[ext]
@@ -228,6 +229,7 @@ lemma coe_of (R : Type u) [Ring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : RingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `RingCat`. -/
 @[ext]
@@ -402,6 +404,7 @@ lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : CommSemiRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `CommSemiRingCat`. -/
 @[ext]
@@ -574,6 +577,7 @@ lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : CommRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `CommRingCat`. -/
 @[ext]

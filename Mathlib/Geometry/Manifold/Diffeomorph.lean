@@ -10,7 +10,6 @@ public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 
 /-!
 # Diffeomorphisms
-
 This file implements diffeomorphisms.
 
 ## Definitions
@@ -403,9 +402,9 @@ def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
     · simp only [PartialEquiv.coe_trans, Equiv.toPartialEquiv_apply, LinearEquiv.coe_toEquiv,
       ContinuousLinearEquiv.coe_toLinearEquiv, toPartialEquiv_coe]
       rw [range_comp]
-      let := h.rclike
-      let := NormedSpace.restrictScalars ℝ 𝕜 E
-      let := NormedSpace.restrictScalars ℝ 𝕜 E'
+      letI := h.rclike
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E'
       let eR : E →L[ℝ] E' := ContinuousLinearMap.restrictScalars ℝ (e : E →L[𝕜] E')
       change Convex ℝ (⇑eR '' range ↑I)
       apply I.convex_range.linear_image

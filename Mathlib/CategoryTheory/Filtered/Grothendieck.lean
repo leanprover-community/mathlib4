@@ -25,7 +25,6 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ Cat)
 
 open IsFiltered
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [IsFilteredOrEmpty C] [∀ c, IsFilteredOrEmpty (F.obj c)] :
     IsFilteredOrEmpty (Grothendieck F) := by
   refine ⟨?_, ?_⟩
@@ -39,8 +38,7 @@ instance [IsFilteredOrEmpty C] [∀ c, IsFilteredOrEmpty (F.obj c)] :
           ⟨coeqHom u v, coeqHom _ _⟩, ?_⟩
     · conv_rhs => rw [← Cat.Hom.comp_obj, ← F.map_comp, coeq_condition, F.map_comp,
         Cat.Hom.comp_obj]
-    · set_option backward.isDefEq.respectTransparency.types false in
-      apply Grothendieck.ext _ _ (coeq_condition u v)
+    · apply Grothendieck.ext _ _ (coeq_condition u v)
       refine Eq.trans ?_ (eqToHom _ ≫= coeq_condition _ _)
       simp
 

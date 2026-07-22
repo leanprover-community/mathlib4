@@ -93,6 +93,7 @@ theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) 
 @[gcongr]
 theorem sum {ι} {s : Finset ι} {x y : ι → M}
     (hxy : ∀ i ∈ s, x i ≡ y i [SMOD U]) : ∑ i ∈ s, x i ≡ ∑ i ∈ s, y i [SMOD U] := by
+  classical
   induction s using Finset.cons_induction with
   | empty => simp [SModEq.rfl]
   | cons i s _ ih =>
@@ -123,6 +124,7 @@ theorem mul {I : Ideal A} {x₁ x₂ y₁ y₂ : A} (hxy₁ : x₁ ≡ y₁ [SMO
 @[gcongr]
 theorem prod {I : Ideal A} {ι} {s : Finset ι} {x y : ι → A}
     (hxy : ∀ i ∈ s, x i ≡ y i [SMOD I]) : ∏ i ∈ s, x i ≡ ∏ i ∈ s, y i [SMOD I] := by
+  classical
   induction s using Finset.cons_induction with
   | empty => simp [SModEq.rfl]
   | cons i s _ ih =>
