@@ -97,7 +97,6 @@ lemma eval_def (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := coe_inj.mp rfl
 lemma eval_apply (x : X) (f : H) : eval H x f = f x := by
   simp
 
-@[deprecated "Use `(eval H x).continuous` instead." (since := "2026-06-29")]
 lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := (eval H x).continuous
 
 variable (H) [CompleteSpace H] [CompleteSpace V]
