@@ -63,16 +63,16 @@ namespace Matrix
 
 namespace SpecialLinearGroup
 
-variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
+variable {n : Type*} [Fintype n] [DecidableEq n] [Nonempty n] {R : Type*} [CommRing R]
 
-theorem card_SL_mul [Nonempty n] :
+theorem card_SL_mul :
   Nat.card (SpecialLinearGroup n R) * Nat.card Rˣ = Nat.card (GL n R) := by
   simpa [Subgroup.index_ker, MonoidHom.range_eq_top.mpr (GeneralLinearGroup.det_surjective),
     Subgroup.card_top, Nat.card_congr (toGLKerEquiv).toEquiv]
     using (Subgroup.card_mul_index (GeneralLinearGroup.det : GL n R →* Rˣ).ker)
 
 /-- The cardinal of the special linear group for a commutative ring -/
-theorem card_SL [Nonempty n] [Finite Rˣ] :
+theorem card_SL [Finite Rˣ] :
   Nat.card (SpecialLinearGroup n R) = Nat.card (GL n R) / Nat.card Rˣ :=
   Nat.eq_div_of_mul_eq_right (Nat.card_ne_zero.mpr ⟨instNonemptyOfInhabited, by grind⟩)
     (by simpa [mul_comm] using card_SL_mul)
