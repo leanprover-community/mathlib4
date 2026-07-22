@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 
 /-!
 # Pullback of a measure
