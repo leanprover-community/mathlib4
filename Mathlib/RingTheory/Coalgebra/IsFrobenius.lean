@@ -136,7 +136,7 @@ end Coalgebra.IsFrobenius
 
 /-! ## Bialgebras and the Frobenius equations
 
-When a bialgebra `A` over `R` satisfies the Frobenius equations, then `A` is
+If a bialgebra `A` over `R` satisfies the Frobenius equations, then `A` is
 isomorphic to the underlying ring `R` (see `algebraMap_bijective_of_isFrobenius`). -/
 
 namespace Bialgebra
