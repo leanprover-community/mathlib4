@@ -131,7 +131,7 @@ lemma mem_center_iff {A}
     · intros
       exact ⟨h.2 _ _, h.3 _ _⟩
   · intro h
-    rw [center, mem_setOf_eq]
+    rw [center, mem_ofPred_eq]
     constructor
     case comm =>
       intro y

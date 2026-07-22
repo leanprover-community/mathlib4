@@ -171,7 +171,7 @@ theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
 them. -/
 def AlgHom.mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S) :
     integralClosure R A →ₐ[R] integralClosure R S :=
-  (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
+  (f.domRestrict (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
 
 @[simp]
 theorem AlgHom.coe_mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S)

@@ -225,10 +225,10 @@ lemma Unitary.continuousOn_argSelfAdjoint :
   apply ContinuousOn.image_comp_continuous ?_ continuous_subtype_val
   apply continuousOn_cfc A (s := sphere 0 1 ∩ {z | 2 * (1 - z.re) ≤ ε}) ?_ _ ?_ |>.mono
   · rintro - ⟨v, hv, rfl⟩
-    simp only [Set.subset_inter_iff, Set.mem_setOf_eq]
+    simp only [Set.subset_inter_iff, Set.mem_ofPred_eq]
     refine ⟨inferInstance, spectrum_subset_circle v, ?_⟩
     intro z hz
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     trans ‖(v - 1 : A)‖ ^ 2
     · exact two_mul_one_sub_le_norm_sub_one_sq v.2 hz
     · refine Real.le_sqrt (by positivity) (by positivity) |>.mp ?_

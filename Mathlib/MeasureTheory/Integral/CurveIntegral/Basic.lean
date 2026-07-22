@@ -523,7 +523,7 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
   intro ε hε
   obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > 0,
       ball a δ ∩ s ⊆ {z | ContinuousWithinAt ω s z ∧ dist (ω z) (ω a) ≤ ε} := by
-    rw [← Metric.mem_nhdsWithin_iff, setOf_and, inter_mem_iff]
+    rw [← Metric.mem_nhdsWithin_iff, ofPred_and, inter_mem_iff]
     exact ⟨hω, (hω.self_of_nhdsWithin ha).eventually <| closedBall_mem_nhds _ hε⟩
   rw [eventually_nhdsWithin_iff]
   filter_upwards [Metric.ball_mem_nhds _ hδ₀] with b hb hbs
