@@ -221,10 +221,6 @@ lemma FredholmPackage.isQuasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage
 
 end FredholmPackage
 
-section TFAE
-
-end TFAE
-
 variable [T2Space E] [T2Space F] in
 /-- Assume that `u : E →L[𝕜] F` has a continuous quasi-inverse. Then there are closed
 subspaces of finite codimensions `E₁` and `F₁` between which `u` induces an isomorphism.
