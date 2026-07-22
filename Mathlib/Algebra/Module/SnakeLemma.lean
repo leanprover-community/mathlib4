@@ -82,6 +82,7 @@ lemma SnakeLemma.eq_of_eq (x : K₃)
   rw [← sub_eq_zero, ← map_sub, hz₁, hπ₁]
   exact ⟨_, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 **Snake Lemma**
 Suppose we have an exact commutative diagram
@@ -151,8 +152,8 @@ such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is in
 lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F)
     (h : Injective ι₃) :
     Exact F (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) := by
-  haveI H₁ : ∀ x, f₂ (σ x) = x := congr_fun hσ
-  haveI H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
+  have H₁ : ∀ x, f₂ (σ x) = x := congr_fun hσ
+  have H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
   intro x
   constructor
   · intro H
@@ -189,7 +190,7 @@ such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is in
 -/
 lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :
     Exact (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) G := by
-  haveI H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
+  have H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
   intro x
   constructor
   · intro H

@@ -5,8 +5,9 @@ Authors: Michael Stoll, Ralf Stephan
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.Height.Basic
+public import Mathlib.NumberTheory.Height.Northcott
+public import Mathlib.NumberTheory.NumberField.ProductFormula
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Hom.Lattice
@@ -18,6 +19,14 @@ import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
 We provide an instance of `Height.AdmissibleAbsValues` for algebraic number fields
 and set up some API.
+
+## Main results
+
+* Heights on number fields satisfy the **Northcott property**: If `K` is a number field,
+  then the set of elements of `K` of bounded (multiplicative or logarithmic) height is finite;
+  see `NumberField.finite_setOfPred_mulHeight₁_le` and `NumberField.finite_setOfPred_logHeight₁_le`.
+  We also provide instances for `Northcott (mulHeight₁ (K := K))` (which automatically leads
+  also to `Northcott (logHeight₁ (K := K))`).
 
 ## TODO
 
@@ -54,6 +63,7 @@ lemma count_multisetInfinitePlace_eq_mult [DecidableEq (AbsoluteValue K ℝ)] (v
   simpa only [multisetInfinitePlace, Multiset.count_bind, Finset.sum_map_val,
     Multiset.count_replicate, ← Subtype.ext_iff] using Fintype.sum_ite_eq' v ..
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- For the user-facing version, see `prod_archAbsVal_eq` below.
 private lemma prod_multisetInfinitePlace_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
     ((multisetInfinitePlace K).map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult := by
@@ -81,6 +91,7 @@ lemma prod_nonarchAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ 
     (∏ᶠ v : nonarchAbsVal, f v.val) = ∏ᶠ v : FinitePlace K, f v.val :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Finset Multiset in
 lemma sum_archAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ → M) :
     (archAbsVal.map f).sum = ∑ v : InfinitePlace K, v.mult • f v.val := by
@@ -95,7 +106,6 @@ lemma sum_archAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ �
 lemma sum_nonarchAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ → M) :
     (∑ᶠ v : nonarchAbsVal, f v.val) = ∑ᶠ v : FinitePlace K, f v.val :=
   rfl
-
 
 /-- This is the familiar definition of the multiplicative height on a number field. -/
 lemma mulHeight₁_eq (x : K) :
@@ -119,6 +129,21 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
       (∏ v : InfinitePlace K, (⨆ i, v (x i)) ^ v.mult) * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) := by
   simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight_eq hx,
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ ⨆ i, v (x i)]
+
+open Classical IntermediateField in
+/-- The absolute multiplicative height of an algebraic number. This is defined for elements of any
+field of characteristic zero, with a junk value of `0` if the element is not algebraic. -/
+noncomputable def absMulHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : ℝ :=
+  if hx : IsIntegral ℚ x then
+    haveI : FiniteDimensional ℚ ℚ⟮x⟯ := adjoin.finiteDimensional hx
+    haveI : NumberField ℚ⟮x⟯ := {}
+    (Height.mulHeight₁ (AdjoinSimple.gen ℚ x)) ^ (Module.finrank ℚ ℚ⟮x⟯ : ℝ)⁻¹
+  else 1
+
+/-- The absolute logarithmic height of an algebraic number. This is defined for elements of any
+field of characteristic zero, with a junk value of `0` if the element is not algebraic. -/
+noncomputable def absLogHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : ℝ :=
+  (absMulHeight₁ x).log
 
 variable (K) in
 lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
@@ -161,13 +186,13 @@ private lemma absNorm_mul_finprod_finitePlace_eq_one_aux [Nonempty ι] (hx : ∀
   rw [multiplicity_iSup _ H, map_pow, mul_eq_one_iff_inv_eq₀ h.ne',
     map_iInf_of_monotone (fun _ ↦ multiplicity ..) (pow_right_monotone <| by lia),
     map_iInf_of_monotone _ Nat.mono_cast,
-    map_iInf_of_antitoneOn antitoneOn_inv_pos fun _ ↦ Set.mem_setOf.mpr h]
+    map_iInf_of_antitoneOn antitoneOn_inv_pos fun _ ↦ Set.mem_ofPred.mpr h]
   refine iSup_congr fun i ↦ ?_
   rw [← mul_eq_one_iff_inv_eq₀ h.ne', mul_comm, Nat.cast_pow]
   exact apply_mul_absNorm_pow_eq_one v (hx i)
 
 -- TODO: Generalize the following to integral closures of `ℤ` in `K` in place of `𝓞 K`.
-open Ideal RingOfIntegers in
+open Ideal in
 /-- This statement is equivalent to the fact that the "finite part" of the multiplicative
 height of a (non-zero) tuple `x` is the inverse of the absolute norm of the ideal generated
 by the values of `x`. We state it in a way that avoids taking an inverse. -/
@@ -183,6 +208,230 @@ lemma absNorm_mul_finprod_finitePlace_eq_one (hx : x ≠ 0) :
   exact absNorm_mul_finprod_finitePlace_eq_one_aux fun j ↦ mod_cast j.prop
 
 end NumberField
+
+/-!
+### The Northcott property for heights on number fields
+
+We show that a number field `K` has the **Northcott property** with respect to the multiplicative
+and with respect to the logarithmic height, i.e., for any `B : ℝ` the set of elements `x : K`
+such that `mulHeight₁ x ≤ B` (resp., `logHeight₁ x ≤ B`) is finite.
+See `NumberField.finite_setOfPred_mulHeight₁_le` and `NumberField.finite_setOfPred_logHeight₁_le`.
+
+The main idea of the proof is as follows. We show that for every `x : K` there is `n : ℕ` such that
+`n * x` is an algebraic integer and `n ≤ mulHeight₁ x`; see `NumberField.exists_nat_le_mulHeight₁`.
+We also show that the set of `a : 𝓞 K` such that `mulHeight₁ (a / n)` is bounded is finite;
+see `NumberField.finite_setOfPred_prod_infinitePlace_iSup_le`. The result for the multiplicative
+height follows by combining these two ingredients, and the result for the logarithmic height follows
+from that for any field with a family of admissible absolute values
+(see `Mathlib.NumberTheory.Height.Northcott`).
+-/
+
+section Northcott
+
+namespace NumberField
+
+variable {K : Type*} [Field K] [NumberField K]
+
+section withIdeal
+
+open Ideal
+
+private lemma relIndex_span_span_nat_mul (m : ℕ) {n : ℕ} (hn : n ≠ 0) (a : 𝓞 K) :
+    (span {(m : 𝓞 K)}).toAddSubgroup.relIndex (span {↑m, a}).toAddSubgroup =
+      (span {(n * m : 𝓞 K)}).toAddSubgroup.relIndex (span {↑(n * m), n * a}).toAddSubgroup := by
+  let f : 𝓞 K →ₗ[𝓞 K] 𝓞 K := .mulLeft _ n
+  have hf : Function.Injective (f : 𝓞 K →+ 𝓞 K) :=
+    (injective_iff_map_eq_zero f).mpr fun _ _ ↦ by simp_all [f]
+  have H₁ : span {(n * m : 𝓞 K)} = Submodule.map f (span {↑m}) := by
+    simp [LinearMap.map_span, f]
+  have H₂ : span {↑(n * m), n * a} = Submodule.map f (span {↑m, a}) := by
+    simp [LinearMap.map_span, f, Set.image_pair]
+  rw [H₁, H₂]
+  exact AddSubgroup.relIndex_map_map_of_injective _ _ hf |>.symm
+
+private lemma relIndex_span_span_eq_relIndex_span_span {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0)
+    {a b : 𝓞 K} (h : n * a = m * b) :
+    (span {(m : 𝓞 K)}).toAddSubgroup.relIndex (span {↑m, a}).toAddSubgroup =
+      (span {(n : 𝓞 K)}).toAddSubgroup.relIndex (span {↑n, b}).toAddSubgroup := by
+  refine (relIndex_span_span_nat_mul m hn a).trans ?_
+  rw [mul_comm, mul_comm n, h]
+  exact (relIndex_span_span_nat_mul n hm b).symm
+
+open Module AddSubgroup LinearMap in
+lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
+    ∃ n : ℕ, n ≠ 0 ∧ ∃ a : 𝓞 K, n * x = a ∧
+      (span {(n : 𝓞 K), a}).absNorm = n ^ (Module.finrank ℚ K - 1) := by
+  have hx : IsAlgebraic ℤ x := IsFractionRing.isAlgebraic_iff ℤ _ _ |>.mpr (.of_finite ℚ x)
+  obtain ⟨m, r, hm, hmr⟩ := hx.exists_nsmul_eq (𝓞 K)
+  rw [← RingOfIntegers.coe_eq_algebraMap r] at hmr
+  set n := (span {(m : 𝓞 K)}).toAddSubgroup.relIndex (span {(m : 𝓞 K), r}).toAddSubgroup with hndef
+  have hn : n ≠ 0 := isFiniteRelIndex (by simp [hm]) _ |>.relIndex_ne_zero
+  obtain ⟨a, ha'⟩ : ∃ a, m * a = n * r := by
+    have : n • r ∈ span {(m : 𝓞 K)} :=
+      (span {(m : 𝓞 K)}).toAddSubgroup.nsmul_relIndex_mem <| Submodule.mem_span_of_mem <| by grind
+    simpa [mem_span_singleton', mul_comm] using this
+  have ha : n * x = a := by
+    refine mul_left_cancel₀ (mod_cast hm : (m : K) ≠ 0) ?_
+    rw [mul_left_comm, ← nsmul_eq_mul m, hmr]
+    exact_mod_cast ha'.symm
+  refine ⟨n, hn, a, ha, mul_left_cancel₀ hn ?_⟩
+  nth_rewrite 1 [hndef]
+  rw [absNorm_eq_index, mul_pow_sub_one finrank_pos.ne', ← RingOfIntegers.rank,
+    ← absNorm_span_natCast, absNorm_eq_index, ← relIndex_span_span_eq_relIndex_span_span hn hm ha']
+  exact relIndex_mul_index <| Submodule.toAddSubgroup_mono <| span_mono <| by grind
+
+open Height in
+private lemma one_le_pow_totalWeight_mul_finprod {n : ℕ} (hn : n ≠ 0) (a : 𝓞 K) :
+    1 ≤ (n ^ totalWeight K : ℝ) * ∏ᶠ (v : FinitePlace K), ⨆ i, v (![↑a, ↑n] i) := by
+  have Hw : (0 : ℝ) < n ^ totalWeight K := by positivity
+  rw_mod_cast [totalWeight_eq_finrank, ← RingOfIntegers.rank, ← absNorm_span_natCast] at Hw ⊢
+  rw [← absNorm_mul_finprod_finitePlace_eq_one (show ![a, n] ≠ 0 by simp [hn])]
+  gcongr
+  · exact finprod_nonneg fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
+  · exact Nat.le_of_dvd Hw <| absNorm_dvd_absNorm_of_le <| span_mono <| by simp
+  · apply le_of_eq; congr; ext; congr; ext i; fin_cases i <;> simp
+
+end withIdeal
+
+open Height
+
+section withFinset
+
+open Finset
+
+/-- If `x : K` (for a number field `K`), then we can find a nonzero `n : ℕ` such that
+`n ≤ mulHeight₁ x` and `n * x` is integral. I.e., the denominator of `x` can be bounded by
+its multplicative height. -/
+-- TODO: Use this to show `natDenominator x ≤ mulHeight₁ x` once #39872 is merged.
+lemma exists_nat_le_mulHeight₁ (x : K) :
+    ∃ n : ℕ, n ≠ 0 ∧ n ≤ mulHeight₁ x ∧ IsIntegral ℤ (n * x) := by
+  obtain ⟨n, hn, a, ha₁, ha₂⟩ := exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow x
+  refine ⟨n, hn, ?_, ha₁ ▸ a.isIntegral_coe⟩
+  rw [← totalWeight_eq_finrank] at ha₂
+  have hv (i : Fin 2) : (![a, n] i : K) = ![(a : K), n] i := by fin_cases i <;> rfl
+  rw [← mul_div_cancel_left₀ x (mod_cast hn : (n : K) ≠ 0), ha₁, mulHeight₁_div_eq_mulHeight,
+    mulHeight_eq (by simp [hn])]
+  refine le_of_mul_le_mul_left ?_ (show (0 : ℝ) < n ^ (totalWeight K - 1) by positivity)
+  have : n ^ (totalWeight K - 1) * ∏ᶠ (v : FinitePlace K), ⨆ i, v (![(a : K), n] i) = 1 := by
+    simpa [ha₂, hv] using absNorm_mul_finprod_finitePlace_eq_one (show ![a, n] ≠ 0 by simp [hn])
+  rw [pow_sub_one_mul (totalWeight_pos K).ne', mul_left_comm, this, mul_one,
+    totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum univ]
+  gcongr
+  exact Finite.le_ciSup_of_le 1 <| by simp
+
+private lemma pow_totalWeight_sub_one_eq [DecidableEq (InfinitePlace K)] {n : ℕ} (hn : n ≠ 0)
+    (v : InfinitePlace K) :
+    (n ^ (totalWeight K - 1) : ℝ) = (∏ w ∈ univ.erase v, (n ^ w.mult : ℝ)) * n ^ (v.mult - 1) := by
+  refine mul_right_cancel₀ (b := (n : ℝ)) (mod_cast hn) ?_
+  rw [pow_sub_one_mul (totalWeight_pos K).ne', totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum,
+    ← prod_erase_mul _ _ (mem_univ v), ← pow_sub_one_mul v.mult_ne_zero, ← mul_assoc]
+
+private lemma infinitePlace_apply_le_of_prod_le {n : ℕ} (hn : n ≠ 0) (B : ℝ) {x : 𝓞 K}
+    (h : ∏ v : InfinitePlace K, (⨆ i, v (![(x : K), n] i)) ^ v.mult ≤ B) (v : InfinitePlace K) :
+    v x ≤ B / n ^ (totalWeight K - 1) := by
+  classical
+  rw [le_div_iff₀' (by positivity)]
+  calc
+    _ ≤ n ^ (totalWeight K - 1) * ⨆ i, v (![(x : K), n] i) := by
+      gcongr; exact Finite.le_ciSup_of_le 0 le_rfl
+    _ ≤ (∏ v' ∈ univ.erase v, (⨆ i, v' (![↑x, ↑n] i)) ^ v'.mult) *
+         (⨆ i, v (![↑x, ↑n] i)) ^ (v.mult - 1) * ⨆ i, v (![(x : K), n] i) := by
+      rw [pow_totalWeight_sub_one_eq hn]
+      gcongr
+      · exact Real.iSup_nonneg_of_nonnegHomClass ..
+      · exact prod_nonneg fun _ _ ↦ pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass ..) _
+      all_goals exact Finite.le_ciSup_of_le 1 <| by simp
+    _ ≤ B := by
+      rwa [mul_assoc, pow_sub_one_mul v.mult_ne_zero, prod_erase_mul _ _ (mem_univ v)]
+
+end withFinset
+
+lemma finite_setOfPred_prod_infinitePlace_iSup_le {n : ℕ} (hn : n ≠ 0) (B : ℝ) :
+    {x : 𝓞 K | ∏ v : InfinitePlace K, (⨆ i, v (![(x : K), n] i)) ^ v.mult ≤ B}.Finite := by
+  set B' := B / n ^ (totalWeight K - 1)
+  suffices Set.BijOn ((↑) : 𝓞 K → K) {x | ∀ (v : InfinitePlace K), v x ≤ B'}
+      {x | IsIntegral ℤ x ∧ ∀ (φ : K →+* ℂ), ‖φ x‖ ≤ B'} from
+    this.finite_iff_finite.mpr (Embeddings.finite_of_norm_le K ℂ B') |>.subset
+      fun _ _ ↦ by grind [infinitePlace_apply_le_of_prod_le hn B]
+  refine .mk (fun x hx ↦ ?_) (fun _ _ _ _ ↦ RingOfIntegers.ext) fun a ha ↦ ?_ <;>
+    simp only [Set.mem_image, Set.mem_ofPred_eq] at *
+  · exact ⟨x.isIntegral_coe, fun φ ↦ hx <| .mk φ⟩
+  · rw [← mem_integralClosure_iff ℤ K] at ha
+    exact ⟨⟨a, ha.1⟩, fun v ↦ v.norm_embedding_eq a ▸ ha.2 v.embedding, rfl⟩
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_prod_infinitePlace_iSup_le := finite_setOfPred_prod_infinitePlace_iSup_le
+
+/-- The set of `a : 𝓞 K` such that `mulHeight₁ (a / n) = mulHeight ![a, n]` is bounded
+(for some given nonzero `n : ℕ`) is finite. -/
+lemma finite_setOfPred_mulHeight_nat_le {n : ℕ} (hn : n ≠ 0) (B : ℝ) :
+    {a : 𝓞 K | mulHeight ![(a : K), n] ≤ B}.Finite := by
+  suffices {a : 𝓞 K | mulHeight ![(a : K), n] ≤ B} ⊆
+      {a | ∏ v : InfinitePlace K, (⨆ i, v (![(a : K), n] i)) ^ v.mult ≤ n ^ totalWeight K * B} from
+    (finite_setOfPred_prod_infinitePlace_iSup_le hn _).subset this
+  refine Set.ofPred_subset_ofPred_of_imp fun a ha ↦ ?_
+  rw [mulHeight_eq <| by simp [hn], mul_comm] at ha
+  grw [← ha, ← mul_assoc, ← one_le_pow_totalWeight_mul_finprod hn, one_mul]
+  -- nonnegativity side goal
+  exact Finset.prod_nonneg fun _ _ ↦ pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass ..) _
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_mulHeight_nat_le := finite_setOfPred_mulHeight_nat_le
+
+variable (K) in
+/- The set of `x : K` such that `mulHeight₁ x` is bounded and `n * x` is integral
+(for some given nonzero `n : ℕ`) is finite.
+This is a stepping stone for the proof of the next result, which is strictly stronger. -/
+private lemma finite_setOfPred_isIntegral_nat_mul_and_mulHeight₁_le {n : ℕ} (hn : n ≠ 0) (B : ℝ) :
+    {x : K | IsIntegral ℤ (n * x) ∧ mulHeight₁ x ≤ B}.Finite := by
+  have hn' : (n : K) ≠ 0 := mod_cast hn
+  suffices Set.BijOn (fun a : 𝓞 K ↦ (a / n : K)) {a | mulHeight ![(a : K), n] ≤ B}
+      {x | IsIntegral ℤ (n * x) ∧ mulHeight₁ x ≤ B} from
+    this.finite_iff_finite.mp <| finite_setOfPred_mulHeight_nat_le hn B
+  refine .mk (fun a ha ↦ ?_) (fun a _ b _ h ↦ ?_) fun x ⟨hx₁, hx₂⟩ ↦ ?_
+  · simp only [Set.mem_ofPred_eq] at ha ⊢
+    rw [mul_div_cancel₀ (a : K) hn', mulHeight₁_div_eq_mulHeight]
+    exact ⟨a.isIntegral_coe, ha⟩
+  · rwa [div_left_inj' hn', RingOfIntegers.eq_iff] at h
+  · simp only [Set.mem_ofPred_eq, Set.mem_image]
+    obtain ⟨a, ha⟩ : ∃ a : 𝓞 K, n * x = a := ⟨⟨_, hx₁⟩, rfl⟩
+    refine ⟨a, ?_, (EuclideanDomain.eq_div_of_mul_eq_right hn' ha).symm⟩
+    rwa [← ha, ← mulHeight₁_div_eq_mulHeight, mul_div_cancel_left₀ x hn']
+
+variable (K) in
+/-- A number field `K` satisfies the **Northcott property**:
+The set of elements of bounded multiplicative height is finite. -/
+theorem finite_setOfPred_mulHeight₁_le (B : ℝ) : {x : K | mulHeight₁ x ≤ B}.Finite := by
+  have H : {x : K | mulHeight₁ x ≤ B} =
+      ⋃ n : Fin ⌊B⌋₊, {x : K | IsIntegral ℤ ((n + 1) * x) ∧ mulHeight₁ x ≤ B} := by
+    ext x : 1
+    obtain ⟨n, hn₀, hn₁, hn⟩ := exists_nat_le_mulHeight₁ x
+    simp only [Set.mem_ofPred_eq, Set.mem_iUnion, exists_and_right, iff_and_self]
+    refine fun h ↦ ⟨⟨n - 1, by grind [Nat.le_floor <| hn₁.trans h]⟩, ?_⟩
+    rwa [← Nat.cast_add_one, Nat.sub_one_add_one hn₀]
+  rw [H]
+  exact Set.finite_iUnion fun n ↦
+    mod_cast finite_setOfPred_isIntegral_nat_mul_and_mulHeight₁_le K (Nat.zero_ne_add_one n).symm B
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_mulHeight₁_le := finite_setOfPred_mulHeight₁_le
+
+instance : Northcott (mulHeight₁ (K := K)) where
+  finite_le := finite_setOfPred_mulHeight₁_le K
+
+variable (K) in
+/-- A number field `K` satisfies the **Northcott property**:
+The set of elements of bounded logarithmic height is finite. -/
+theorem finite_setOfPred_logHeight₁_le (B : ℝ) :
+    {x : K | logHeight₁ x ≤ B}.Finite :=
+  Northcott.finite_le B
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_logHeight₁_le := finite_setOfPred_logHeight₁_le
+
+end NumberField
+
+end Northcott
 
 /-!
 ### Positivity extension for totalWeight on number fields
