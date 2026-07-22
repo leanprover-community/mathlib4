@@ -12,12 +12,12 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 /-!
 # Dirichlet density of a set of prime ideals
 
-Let `K` be a number field and let `S` be a set of nonzero prime ideals of `𝓞 K`, that is a set of
-elements of `IsDedekindDomain.HeightOneSpectrum (𝓞 K)`. The Dirichlet density of `S` is
-
-  δ(S) = lim_{s → 1⁺} Σ_{𝔭 ∈ S} N𝔭 ^ (-s) / Σ_𝔭 N𝔭 ^ (-s),
-
-when this limit exists, the sum in the denominator running over all nonzero prime ideals.
+Let `K` be a number field. Given a set `S` of nonzero prime ideals of `𝓞 K`, its Dirichlet density
+is
+```
+  δ(S) = lim_{s → 1⁺} (Σ_{𝔭 ∈ S} N𝔭 ^ (-s)) / (Σ_𝔭 N𝔭 ^ (-s)),
+```
+when this limit exists. The sum in the denominator runs over all nonzero prime ideals of `𝓞 K`.
 
 ## Main definitions
 
@@ -58,14 +58,10 @@ variable {S} in
 by the number of elements of `S`. -/
 theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 ≤ s) :
     primeIdealZetaSum S s ≤ S.ncard := by
-  let : Fintype S := @Fintype.ofFinite _ hS.to_subtype
-  rw [primeIdealZetaSum_def, tsum_fintype, ← Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
-  calc ∑ 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
-      ≤ ∑ 𝔭 : S, 1 := by
-        refine Finset.sum_le_sum fun 𝔭 _ ↦ Real.rpow_le_one_of_one_le_of_nonpos ?_ (by linarith)
-        exact_mod_cast Nat.one_le_iff_ne_zero.mpr
-          (by rw [Ne, Ideal.absNorm_eq_zero_iff]; exact 𝔭.1.ne_bot)
-    _ = Fintype.card S := by rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_one]
+  replace hS := hS.to_subtype
+  grw [primeIdealZetaSum_def, Real.rpow_le_one_of_one_le_of_nonpos] <;>
+  simp [Summable.of_finite, Nat.one_le_iff_ne_zero,
+    Ideal.absNorm_eq_zero_iff, hs, HeightOneSpectrum.ne_bot]
 
 /-- `S` has Dirichlet density `δ` when the ratio `∑_{𝔭 ∈ S} N𝔭 ^ (-s) / ∑_𝔭 N𝔭 ^ (-s)`, of the
 partial sum over `S` to the sum over all nonzero prime ideals, tends to `δ` as `s ↓ 1`. -/
@@ -82,6 +78,7 @@ theorem HasDirichletDensity.unique {δ₁ δ₂ : ℝ} (h₁ : HasDirichletDensi
   tendsto_nhds_unique h₁ h₂
 
 /-- The Dirichlet density of the empty set is `0`. -/
+@[simp]
 theorem hasDirichletDensity_empty :
     HasDirichletDensity (∅ : Set (HeightOneSpectrum (𝓞 K))) 0 := by
   simp [HasDirichletDensity, primeIdealZetaSum_def]
