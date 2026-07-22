@@ -319,7 +319,7 @@ This is the primary way to get a `FredholmPackage` if you don't need control of 
 If you do, see `IsFredholm.fredholmPackage`. -/
 theorem IsFredholm.nonempty_fredholmPackage {u : E →L[𝕜] F}
     (u_fred : IsFredholm u) : Nonempty (FredholmPackage u) := by
-  obtain ⟨codom₂, h_codom⟩ := u_fred.closedComplemented_range.exists_isTopCompl
+  obtain ⟨codom₀, h_codom⟩ := u_fred.closedComplemented_range.exists_isTopCompl
   obtain ⟨dom₁, h_dom⟩ := u_fred.closedComplemented_ker.exists_isTopCompl
   exact ⟨u_fred.fredholmPackage h_dom h_codom⟩
 
