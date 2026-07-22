@@ -95,7 +95,7 @@ theorem uniformContinuous_algebraMap_liesOver :
   let γK := σvV.symm (σK.symm (σv.symm (exp (m.log / e))))
   have hγK : γK ≠ 0 := by simp [γK, EmbeddingLike.map_eq_zero_iff (f := σK.symm)]
   use .mk0 _ hγK
-  simp only [Units.val_mk0, Set.mem_setOf_eq, true_and]
+  simp only [Units.val_mk0, Set.mem_ofPred_eq, true_and]
   intro x hx
   rcases eq_or_ne x 0 with rfl | hx₀; · simp
   rw [σvV.lt_symm_apply, σK.lt_symm_apply, σv.lt_symm_apply,

@@ -70,6 +70,7 @@ def limitCone (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c)
   π.app j := .mk' (c.π.app j)
   π.naturality j j' f := Hom.ext' (c.π.naturality f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The image of the proposed limit cone for `F : J ⥤ Mon C` under the forgetful functor
 `forget C : Mon C ⥤ C` is isomorphic to the limit cone of `F ⋙ forget C`.

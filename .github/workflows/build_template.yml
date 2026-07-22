@@ -686,12 +686,18 @@ jobs:
       # Sparse-checkout master's `.github/actions/` so the trust dispatch
       # below loads from a trust-rooted source, not from PR-branch-controlled
       # content. Mirrors the `Checkout local actions` step in the `build` job.
-      - name: Checkout local actions
+      # Also check out the cache tool (`Cache/`) at this ref. The verify step
+      # below compares it against the PR branch's `Cache/` to classify a cache
+      # miss. `github.workflow_sha` is the base ref the workflow runs from,
+      # master for fork PRs, whose `cache` binary wrote the cache.
+      - name: Checkout local actions and Cache baseline
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          sparse-checkout: .github/actions
+          sparse-checkout: |
+            .github/actions
+            Cache
           path: workflow-actions
 
       # Sets MATHLIB_CACHE_FROM in env so the `cache get` calls below pick
@@ -730,16 +736,60 @@ jobs:
           lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
+        # Verify the cache reconstitutes this commit's oleans. This job reads
+        # the cache with the PR branch's own `lake exe cache get`. The write
+        # path uses master's `cache` binary for fork PRs and the PR branch's
+        # binary for every other build. So a fork PR whose `Cache/` differs
+        # from master reads a different `.ltar` key space (say, after a
+        # `rootHashGeneration` bump) and misses every file. That is an expected
+        # invalidation: warn and continue. Any other build reads and writes
+        # with the same binary, so a miss there is a real gap and is fatal.
+        env:
+          # GitHub sets this from the event payload; it is empty for pushes
+          # (master, bors), so those fail closed below.
+          HEAD_REPO_IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
         run: |
-          echo "::group::{verify Mathlib cache}"
-          lake build --no-build --rehash -v Mathlib
-          echo "::endgroup::"
-          echo "::group::{verify Archive cache}"
-          lake build --no-build --rehash -v Archive
-          echo "::endgroup::"
-          echo "::group::{verify Counterexamples cache}"
-          lake build --no-build --rehash -v Counterexamples
-          echo "::endgroup::"
+          set +e
+          fail=0
+          for target in Mathlib Archive Counterexamples; do
+            echo "::group::{verify ${target} cache}"
+            lake build --no-build --rehash -v "${target}" || fail=1
+            echo "::endgroup::"
+          done
+          if [ "${fail}" -eq 0 ]; then
+            exit 0
+          fi
+
+          # Only fork PRs read and write the cache with different binaries.
+          # Every other build (master, bors, dev branches) uses one binary, so
+          # a miss is a real gap.
+          if [ "${HEAD_REPO_IS_FORK}" != "true" ]; then
+            echo "::error::Cache verification failed on an in-repo build; the uploaded cache is incomplete."
+            exit 1
+          fi
+
+          # `workflow-actions/Cache` is master's cache tool at
+          # `github.workflow_sha`; `Cache` is the PR branch's. Matching source
+          # means the key spaces agree, so the miss is a real gap. Differing
+          # source means the PR changed the key space, so the miss is expected.
+          # The cache writer is master's binary at upload time, which can be
+          # newer than `workflow_sha` when a `Cache/` change lands on master
+          # mid-build; that skew can only hard-fail like an unguarded verify
+          # or soft-pass a key space that genuinely diverged.
+          dout=$(diff -rq workflow-actions/Cache Cache 2>&1)
+          dstat=$?
+          if [ "${dstat}" -eq 0 ]; then
+            echo "::error::Cache verification failed and this PR's Cache/ matches master's, so the key spaces agree: the uploaded cache is incomplete."
+            exit 1
+          elif [ "${dstat}" -eq 1 ]; then
+            echo "::warning::Cache verification incomplete, but this PR's Cache/ differs from master's. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
+            echo "${dout}"
+            exit 0
+          else
+            echo "::error::Cache verification failed and master's Cache/ baseline could not be compared (diff status ${dstat}); treating as a failure."
+            echo "${dout}"
+            exit 1
+          fi
 
       - name: check declarations in db files
         run: |
@@ -801,6 +851,9 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
+          # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
+          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
+          lake env lean scripts/export_crossrefs.lean
           lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything

@@ -159,7 +159,7 @@ lemma inf_sq_eq_mul_div_mabs_div (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ
 @[to_additive]
 lemma mabs_div_sup_mul_mabs_div_inf (a b c : α) :
     |(a ⊔ c) / (b ⊔ c)|ₘ * |(a ⊓ c) / (b ⊓ c)|ₘ = |a / b|ₘ := by
-  letI : DistribLattice α := CommGroup.toDistribLattice α
+  let : DistribLattice α := CommGroup.toDistribLattice α
   calc
     |(a ⊔ c) / (b ⊔ c)|ₘ * |(a ⊓ c) / (b ⊓ c)|ₘ =
         (b ⊔ c ⊔ (a ⊔ c)) / ((b ⊔ c) ⊓ (a ⊔ c)) * |(a ⊓ c) / (b ⊓ c)|ₘ := by

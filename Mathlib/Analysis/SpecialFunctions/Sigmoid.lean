@@ -189,7 +189,7 @@ lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f
 
 @[fun_prop]
 lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
-   contDiff_sigmoid.of_le le_top |>.differentiable_one
+  contDiff_sigmoid.of_le le_top |>.differentiable_one
 
 @[fun_prop]
 lemma Differentiable.sigmoid (hf : Differentiable ℝ f) : Differentiable ℝ (sigmoid ∘ f) :=
@@ -252,6 +252,7 @@ lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
   exact Real.sigmoid_neg x
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma range_sigmoid : range unitInterval.sigmoid = Ioo 0 1 := by
   rw [sigmoid, Subtype.range_coind, Real.range_sigmoid]
