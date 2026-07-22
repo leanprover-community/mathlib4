@@ -115,7 +115,7 @@ theorem card_GL_field :
 
 /-- The cardinal of the special linear group over a finite field. -/
 theorem card_SL_field [NeZero n] :
-  Nat.card (SpecialLinearGroup (Fin n)  𝔽) = (∏ i : Fin n, (q ^ n - q ^ (i : ℕ))) / (q - 1) := by
+    Nat.card (SpecialLinearGroup (Fin n)  𝔽) = (∏ i : Fin n, (q ^ n - q ^ (i : ℕ))) / (q - 1) := by
   simp [card_SL, card_GL_field, Nat.card_units]
 
 end field
