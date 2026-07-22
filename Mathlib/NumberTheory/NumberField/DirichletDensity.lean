@@ -12,17 +12,16 @@ public import Mathlib.Sandbox
 /-!
 # Dirichlet density of a set of prime ideals
 
-Let `K` be a number field and let `S` be a set of nonzero prime ideals of `𝓞 K`, that is a set of
-elements of `IsDedekindDomain.HeightOneSpectrum (𝓞 K)`. The Dirichlet density of `S` is
+Let `K` be a number field. Given a set `S` of nonzero prime ideals of `𝓞 K`, its Dirichlet density
+is
+```
+  δ(S) = lim_{s → 1⁺} Σ_{𝔭 ∈ S} N𝔭 ^ (-s) / Σ_𝔭 N𝔭 ^ (-s),
+```
+when this limit exists. The sum in the denominator runs over all nonzero prime ideals of `𝓞 K`.
 
-  δ(S) = lim_{s → 1⁺} Σ_{𝔭 ∈ S} N 𝔭 ^ (-s) / Σ_𝔭 N 𝔭 ^ (-s),
-
-when this limit exists, the sum in the denominator running over all nonzero prime ideals.
-
-## Main definitions
-
-* `NumberField.primeIdealZetaSum` — the partial Dirichlet series `Σ_{𝔭 ∈ S} N 𝔭 ^ (-s)`.
-* `NumberField.HasDirichletDensity` — `S` has Dirichlet density `δ`.
+This is captured by the predicate `HasDirichletDensity S δ`, stating that the ratio tends to `δ`,
+and by the def `dirichletDensity S`, the density as a real number, taking an unspecified junk value
+when the limit does not exist.
 
 ## Main results
 
@@ -93,14 +92,10 @@ variable {S} in
 by the number of elements of `S`. -/
 theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 ≤ s) :
     primeIdealZetaSum S s ≤ S.ncard := by
-  let : Fintype S := @Fintype.ofFinite _ hS.to_subtype
-  rw [primeIdealZetaSum_def, tsum_fintype, ← Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
-  calc ∑ 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
-      ≤ ∑ 𝔭 : S, 1 := by
-        refine Finset.sum_le_sum fun 𝔭 _ ↦ Real.rpow_le_one_of_one_le_of_nonpos ?_ (by linarith)
-        exact_mod_cast Nat.one_le_iff_ne_zero.mpr
-          (by rw [Ne, Ideal.absNorm_eq_zero_iff]; exact 𝔭.1.ne_bot)
-    _ = Fintype.card S := by rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_one]
+  replace hS := hS.to_subtype
+  grw [primeIdealZetaSum_def, Real.rpow_le_one_of_one_le_of_nonpos] <;>
+  simp [Summable.of_finite, Nat.one_le_iff_ne_zero,
+    Ideal.absNorm_eq_zero_iff, hs, HeightOneSpectrum.ne_bot]
 
 /-- `S` has Dirichlet density `δ` when the ratio `∑_{𝔭 ∈ S} N𝔭 ^ (-s) / ∑_𝔭 N𝔭 ^ (-s)`, of the
 partial sum over `S` to the sum over all nonzero prime ideals, tends to `δ` as `s ↓ 1`. -/
@@ -108,18 +103,36 @@ def HasDirichletDensity (δ : ℝ) : Prop :=
   Tendsto (fun s : ℝ ↦ primeIdealZetaSum S s /
     primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) (𝓝 δ)
 
+/-- The Dirichlet density of `S`, the limit as `s ↓ 1` of the ratio
+`∑_{𝔭 ∈ S} N𝔭 ^ (-s) / ∑_𝔭 N𝔭 ^ (-s)`. When this limit does not exist, the value is an
+unspecified junk value. -/
+def dirichletDensity : ℝ :=
+  limUnder (𝓝[>] 1) fun s : ℝ ↦
+    primeIdealZetaSum S s / primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s
+
 variable {S}
+
+/-- If `S` has Dirichlet density `δ`, then `dirichletDensity S = δ`. -/
+theorem HasDirichletDensity.dirichletDensity_eq {δ : ℝ} (h : HasDirichletDensity S δ) :
+    dirichletDensity S = δ :=
+  Tendsto.limUnder_eq h
 
 /-- The Dirichlet density of `S`, when it exists, is unique. -/
 theorem HasDirichletDensity.unique {δ₁ δ₂ : ℝ} (h₁ : HasDirichletDensity S δ₁)
     (h₂ : HasDirichletDensity S δ₂) :
     δ₁ = δ₂ :=
-  tendsto_nhds_unique h₁ h₂
+  h₁.dirichletDensity_eq.symm.trans h₂.dirichletDensity_eq
 
 /-- The Dirichlet density of the empty set is `0`. -/
 theorem hasDirichletDensity_empty :
     HasDirichletDensity (∅ : Set (HeightOneSpectrum (𝓞 K))) 0 := by
   simp [HasDirichletDensity, primeIdealZetaSum_def]
+
+/-- The Dirichlet density of the empty set is `0`. -/
+@[simp]
+theorem dirichletDensity_empty :
+    dirichletDensity (∅ : Set (HeightOneSpectrum (𝓞 K))) = 0 :=
+  hasDirichletDensity_empty.dirichletDensity_eq
 
 /-- The Dirichlet density is nonnegative. -/
 theorem HasDirichletDensity.nonneg {δ : ℝ} (h : HasDirichletDensity S δ) :
