@@ -5,21 +5,18 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
-public import Mathlib.RingTheory.Coalgebra.Basic
+public import Mathlib.RingTheory.Bialgebra.Basic
 
 import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
 /-!
-# Frobenius algebras
+# Frobenius equations
 
-This file defines `FrobeniusAlgebra` and shows some elementary results.
+This file defines `Coalgebra.IsFrobenius` and shows some elementary results.
 
-A Frobenius algebra `A` over a commutative semiring `R` is a semiring with both `Algebra R A` and
-`Coalgebra R A` structures such that
-`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`
-(the Frobenius equation).
+A coalgebra with an algebra structure is said to be `Frobenius` when the Frobenius equation
+is satisfied:
+`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`.
 
 This file shows that it suffices to have
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)` in order to have the
@@ -42,7 +39,8 @@ local notation "rT" => rTensor
 local notation "lT" => lTensor
 
 omit [Coalgebra R A] in
-theorem LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module R M]
+-- TODO: move earlier
+lemma LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] (f : M →ₗ[R] R ⊗[R] A) (g : N →ₗ[R] _) :
     μ[R] ∘ₗ ((λ ∘ₗ f) ⊗ₘ g) = λ ∘ₗ lT R μ ∘ₗ α ∘ₗ (f ⊗ₘ g) := by
   trans μ[R] ∘ₗ (rT _ λ) ∘ₗ (f ⊗ₘ g)
@@ -52,7 +50,7 @@ theorem LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module
 
 /-- If `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 then `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul`. -/
-theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
+lemma LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     (h : lT A μ ∘ₗ α ∘ₗ rT A δ = rT A μ ∘ₗ α⁻¹ ∘ₗ lT A δ) :
     lT A μ ∘ₗ α ∘ₗ rT A δ = δ ∘ₗ μ := by
   simp only [lTensor, rTensor] at h ⊢
@@ -67,39 +65,46 @@ theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     _ = δ ∘ₗ μ := by simp only [coassoc_simps, CoassocSimps.map_counit_comp_comul_left]
 
 variable (R A) in
-/-- A semiring with both algebra and coalgebra structures is a Frobenius algebra when
+/-- A coalgebra with an algebra structure is said to be `Frobenius` when
 the Frobenius equation is satisfied:
 
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`. -/
-class FrobeniusAlgebra : Prop where
+class Coalgebra.IsFrobenius : Prop where
   /-- The Frobenius equation. -/
-  lTensor_mul'_comp_assoc_comp_rTensor_comul : lT A μ[R] ∘ₗ α ∘ₗ rT A δ = rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ
+  eq : lT A μ[R] ∘ₗ α ∘ₗ rT A δ = rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ
 
-namespace FrobeniusAlgebra
-variable [FrobeniusAlgebra R A]
+namespace Coalgebra.IsFrobenius
+variable [IsFrobenius R A]
 
-theorem lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul' :
+lemma lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul' :
     lT A μ[R] ∘ₗ α ∘ₗ rT A δ = δ ∘ₗ μ[R] :=
-  lTensor_mul'_comp_assoc_comp_rTensor_comul_of lTensor_mul'_comp_assoc_comp_rTensor_comul
+  lTensor_mul'_comp_assoc_comp_rTensor_comul_of eq
 
-theorem rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul :
+lemma rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul' :
     rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ = δ ∘ₗ μ[R] :=
-  lTensor_mul'_comp_assoc_comp_rTensor_comul (R := R) (A := A) ▸
-    lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul'
+  eq (R := R) (A := A) ▸ lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul'
 
 section Algebra
-variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [FrobeniusAlgebra R A]
+variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [IsFrobenius R A]
 
-/-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`. -/
-theorem rTensor_counit_comp_mul'_assoc_symm_comp_lTensor_comul_comp_algebraLinearMap :
+/-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`.
+See `lTensor_counit_comp_mul'_comp_assoc_comp_rTensor_comul_comp_algebraLinearMap` for when we
+compose it on the other side of the tensor.
+
+(This is sometimes known as the snake equation.) -/
+lemma rTensor_counit_comp_mul'_assoc_symm_comp_lTensor_comul_comp_algebraLinearMap :
     rT A (ε ∘ₗ μ[R]) ∘ₗ α⁻¹ ∘ₗ lT A (δ ∘ₗ η[R]) = (TensorProduct.comm _ _ _).toLinearMap := by
   simp_rw [lTensor_comp, ← comp_assoc (lT A η), rTensor_comp, comp_assoc _ (rT _ _),
-    rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul, ← comp_assoc,
+    rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul', ← comp_assoc,
     rTensor_counit_comp_comul]
   ext; simp
 
-/-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`. -/
-theorem lTensor_counit_comp_mul_comp_assoc_comp_rTensor_comul_comp_algebraLinearMap :
+/-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`.
+See `rTensor_counit_comp_mul'_assoc_symm_comp_lTensor_comul_comp_algebraLinearMap` for when we
+compose it on the other side of the tensor.
+
+(This is sometimes known as the snake equation.) -/
+lemma lTensor_counit_comp_mul'_comp_assoc_comp_rTensor_comul_comp_algebraLinearMap :
     lT A (ε ∘ₗ μ[R]) ∘ₗ α ∘ₗ rT A (δ ∘ₗ η[R]) = (TensorProduct.comm _ _ _).toLinearMap := by
   simp_rw [rTensor_comp, ← comp_assoc (rT A η), lTensor_comp, comp_assoc _ (lT _ _),
     lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul', ← comp_assoc,
@@ -108,4 +113,22 @@ theorem lTensor_counit_comp_mul_comp_assoc_comp_rTensor_comul_comp_algebraLinear
 
 end Algebra
 
-end FrobeniusAlgebra
+end Coalgebra.IsFrobenius
+
+namespace Bialgebra
+variable {A : Type*} [Semiring A] [Bialgebra R A]
+
+lemma comul_eq_of_isFrobenius [IsFrobenius R A] : δ = (TensorProduct.mk R A A).flip 1 := calc
+  .id ∘ₗ δ = (lT A μ ∘ₗ α ∘ₗ (TensorProduct.mk R _ _).flip 1) ∘ₗ δ := by congr; ext; simp
+  _ = (lT A μ ∘ₗ α ∘ₗ rT A δ) ∘ₗ (TensorProduct.mk R A A).flip 1 := by ext; simp
+  _ = _ := by ext; simp [IsFrobenius.eq, Algebra.TensorProduct.one_def]
+
+@[simp] lemma algebraMap_counit_of_isFrobenius [IsFrobenius R A] (a : A) :
+    algebraMap R A (ε a) = a := by
+  simpa [comul_eq_of_isFrobenius, Algebra.algebraMap_eq_smul_one] using
+    congr(TensorProduct.lid R A ($rTensor_counit_comp_comul a))
+
+lemma algebraMap_bijective_of_isFrobenius [IsFrobenius R A] :
+    Function.Bijective (algebraMap R A) := ⟨algebraMap_injective A, fun a ↦ ⟨ε a, by simp⟩⟩
+
+end Bialgebra
