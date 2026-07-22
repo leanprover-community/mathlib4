@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kevin Buzzard
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Group.ConjFinite
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Not all complementary decompositions of a module over a semiring make up a direct sum
@@ -18,6 +20,8 @@ do not form a decomposition into a direct sum.
 This file demonstrates why `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top` must
 take `Ring R` and not `Semiring R`.
 -/
+
+public noncomputable section
 
 namespace Counterexample
 
