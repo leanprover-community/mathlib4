@@ -393,7 +393,7 @@ lemma fderivWithin_extChartAt_comp_extChartAt_symm_range :
 
 /-- The manifold derivative of `extChartAt` at the basepoint is the identity. -/
 lemma mfderiv_extChartAt_self :
-    mfderiv I 𝓘(𝕜, E) (extChartAt I x) x = ContinuousLinearMap.id 𝕜 _ := by
+    mfderiv% (extChartAt I x) x = ContinuousLinearMap.id 𝕜 _ := by
   rw [← TangentBundle.continuousLinearMapAt_trivializationAt (by simp),
     TangentBundle.continuousLinearMapAt_trivializationAt_eq_core (by simp)]
   ext v
@@ -404,8 +404,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The manifold derivative within `range I` of `(extChartAt I x).symm` at the chart point is
 the identity. -/
 lemma mfderivWithin_range_extChartAt_symm :
-    mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x) =
-      ContinuousLinearMap.id 𝕜 _ := by
+    mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) = ContinuousLinearMap.id 𝕜 _ := by
   have hcomp := mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (I := I)
     (mem_extChartAt_source x)
   rw [mfderiv_extChartAt_self, ContinuousLinearMap.comp_id] at hcomp
@@ -415,7 +414,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,
 applied to a tangent vector, gives back the tangent vector. -/
 lemma mfderivWithin_extChartAt_symm_inverse_apply (v : TangentSpace I x) :
-    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x)).inverse v = v := by
+    (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse v = v := by
   rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
   exact ContinuousLinearMap.id_apply ..
 

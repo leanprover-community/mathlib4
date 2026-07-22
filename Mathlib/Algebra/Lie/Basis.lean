@@ -51,7 +51,8 @@ namespace LieAlgebra
 /-- A basis for a semisimple Lie algebra distinguishes a natural Cartan subalgebra and a base
 for the associated root system. -/
 @[ext]
-structure Basis (ι R L : Type*) [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L] where
+structure Basis (ι : Type*) {R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+    (H : LieSubalgebra R L) where
   /-- The Cartan matrix. -/
   A : Matrix ι ι ℤ
   /-- The basis for the Cartan subalgebra. -/
@@ -60,9 +61,7 @@ structure Basis (ι R L : Type*) [Finite ι] [CommRing R] [LieRing L] [LieAlgebr
   e : ι → L
   /-- The generators of the lower Borel subalgebra. -/
   f : ι → L
-  /-- The span of the `h`, included to give definitional control. -/
-  cartan : LieSubalgebra R L
-  cartan_eq_lieSpan : cartan = lieSpan R L (range h)
+  cartan_eq_lieSpan : H = lieSpan R L (range h)
   span_ef : lieSpan R L (range e ∪ range f) = ⊤
   linInd : LinearIndependent R h
   nondegen : A.Nondegenerate
@@ -76,7 +75,8 @@ namespace Basis
 
 section CommRing
 
-variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L] (b : Basis ι R L)
+variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L]
+  {H : LieSubalgebra R L} (b : Basis ι H)
 
 @[simp] lemma A_diag_eq_two [IsAddTorsionFree L] (i : ι) : b.A i i = 2 := by
   have : NoZeroSMulDivisors ℤ L := IsAddTorsionFree.to_noZeroSMulDivisors_int
@@ -84,26 +84,26 @@ variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L] 
     rw [sub_smul, ofNat_smul_eq_nsmul, ← (b.sl2 i).lie_h_e_nsmul, b.lie_h_e i i]; abel
   rwa [IsAddTorsionFree.zsmul_eq_zero_iff_left (b.sl2 i).e_ne_zero, sub_eq_zero] at aux
 
-@[simp] lemma coe_cartan_eq_span :
-    b.cartan = Submodule.span R (range b.h) := by
-  rw [b.cartan_eq_lieSpan]
+lemma coe_cartan_eq_span :
+    H = Submodule.span R (range b.h) := by
+  conv_lhs => rw [b.cartan_eq_lieSpan]
   apply coe_lieSpan_eq_span_of_forall_lie_eq_zero
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   exact b.lie_h_h i j
 
-instance : IsLieAbelian b.cartan := by
-  rw [cartan_eq_lieSpan, isLieAbelian_lieSpan_iff]
+include b in
+theorem isLieAbelian_cartan : IsLieAbelian H := by
+  rw [b.cartan_eq_lieSpan, isLieAbelian_lieSpan_iff]
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   exact b.lie_h_h i j
 
 /-- A basis has a natural involution obtained by interchanging the roles of `e` and `f` and
 negating `h`. -/
-@[simps -fullyApplied] def symm : Basis ι R L where
+@[simps -fullyApplied] def symm : Basis ι H where
   A := b.A
   h := -b.h
   e := b.f
   f := b.e
-  cartan := b.cartan
   cartan_eq_lieSpan := by
     rw [← neg_range', lieSpan_neg]
     exact b.cartan_eq_lieSpan
@@ -119,17 +119,17 @@ negating `h`. -/
 @[simp] lemma symm_symm : b.symm.symm = b := by aesop
 
 /-- As shown in `LieAlgebra.Basis.coroot_eq_h'` this is a coroot. -/
-def h' (i : ι) : b.cartan := ⟨b.h i, b.cartan_eq_lieSpan ▸ subset_lieSpan <| mem_range_self i⟩
+def h' (i : ι) : H := ⟨b.h i, b.cartan_eq_lieSpan ▸ subset_lieSpan <| mem_range_self i⟩
 
 @[simp] lemma symm_h' (i : ι) : (b.symm.h' i) = -b.h' i := rfl
 
 private lemma cartan_lie_mem_lieSpan_e {x y : L}
-    (hx : x ∈ b.cartan) (hy : y ∈ lieSpan R L (range b.e)) :
+    (hx : x ∈ H) (hy : y ∈ lieSpan R L (range b.e)) :
     ⁅x, y⁆ ∈ lieSpan R L (range b.e) := by
   induction hy using lieSpan_induction with
   | mem u hu =>
     obtain ⟨i, rfl⟩ := hu
-    rw [← mem_toSubmodule, coe_cartan_eq_span] at hx
+    rw [← mem_toSubmodule, b.coe_cartan_eq_span] at hx
     induction hx using Submodule.span_induction with
     | mem v hv =>
       obtain ⟨j, rfl⟩ := hv
@@ -146,38 +146,38 @@ private lemma cartan_lie_mem_lieSpan_e {x y : L}
     exact sub_mem (LieSubalgebra.lie_mem _ hu hv') (LieSubalgebra.lie_mem _ hv hu')
 
 /-- The nilpotent part of the "upper" Borel subalgebra associated to a basis. -/
-def borelUpper : LieSubmodule R b.cartan L where
+def borelUpper : LieSubmodule R H L where
   __ := lieSpan R L <| range b.e
   lie_mem {x y} hy := by
     obtain ⟨x, hx⟩ := x
     simpa using b.cartan_lie_mem_lieSpan_e hx hy
 
 /-- The nilpotent part of the "lower" Borel subalgebra associated to a basis. -/
-def borelLower : LieSubmodule R b.cartan L where
+def borelLower : LieSubmodule R H L where
   __ := lieSpan R L <| range b.f
   lie_mem := b.symm.borelUpper.lie_mem
 
 private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
     {y z : L} (hy : y ∈ lieSpan R L (range b.e)) (hz : z ∈ lieSpan R L (range b.f)) :
-    ⁅y, z⁆ ∈ b.cartan.toLieSubmodule ⊔ b.borelLower ⊔ b.borelUpper := by
+    ⁅y, z⁆ ∈ H.toLieSubmodule ⊔ b.borelLower ⊔ b.borelUpper := by
   have (i : ι) (x : L) (hx : x ∈ lieSpan R L (range b.f)) :
-      ⁅b.e i, x⁆ ∈ b.cartan.toLieSubmodule ⊔ b.borelLower := by
+      ⁅b.e i, x⁆ ∈ H.toLieSubmodule ⊔ b.borelLower := by
     induction hx using LieSubalgebra.lieSpan_induction with
     | mem u hu =>
       obtain ⟨j, rfl⟩ := hu
       rcases eq_or_ne i j with rfl | hij
       · rw [(b.sl2 i).lie_e_f]
         apply LieSubmodule.mem_sup_left
-        rw [b.cartan_eq_lieSpan, mem_toLieSubmodule]
+        nth_rw 1 [mem_toLieSubmodule, b.cartan_eq_lieSpan]
         exact LieSubalgebra.subset_lieSpan <| mem_range_self i
       · simp [b.lie_e_f_ne _ _ hij]
     | zero => simp
     | add u v _ _ hu hv => rw [lie_add]; exact add_mem hu hv
     | smul t u _ hu => rw [lie_smul]; exact SMulMemClass.smul_mem t hu
     | lie u v hu hv hu' hv' =>
-      obtain ⟨w₁, hw₁, w₂, hw₂, hwu⟩ : ∃ y ∈ b.cartan, ∃ z ∈ b.borelLower, y + z = ⁅b.e i, u⁆ := by
+      obtain ⟨w₁, hw₁, w₂, hw₂, hwu⟩ : ∃ y ∈ H, ∃ z ∈ b.borelLower, y + z = ⁅b.e i, u⁆ := by
         simpa only [LieSubmodule.mem_sup] using! hu'
-      obtain ⟨w₃, hw₃, w₄, hw₄, hwv⟩ : ∃ y ∈ b.cartan, ∃ z ∈ b.borelLower, y + z = ⁅b.e i, v⁆ := by
+      obtain ⟨w₃, hw₃, w₄, hw₄, hwv⟩ : ∃ y ∈ H, ∃ z ∈ b.borelLower, y + z = ⁅b.e i, v⁆ := by
         simpa only [LieSubmodule.mem_sup] using! hv'
       rw [leibniz_lie, ← hwu, ← hwv, lie_add, add_lie, ← add_assoc]
       repeat apply add_mem
@@ -198,7 +198,7 @@ private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
     rw [lie_lie]
     apply sub_mem
     · obtain ⟨yc, hyc, yl, hyl, yu, hyu, aux⟩ :
-        ∃ᵉ (yc ∈ b.cartan) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
+        ∃ᵉ (yc ∈ H) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
         yc + yl + yu = ⁅v, z⁆ := by simpa [LieSubmodule.mem_sup] using! hv' hz
       simp only [← aux, lie_add]
       repeat apply add_mem
@@ -208,7 +208,7 @@ private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
       · rw [← lie_skew, neg_mem_iff]
         exact LieSubmodule.mem_sup_right <| LieSubalgebra.lie_mem _ hyu hu
     · obtain ⟨yc, hyc, yl, hyl, yu, hyu, aux⟩ :
-        ∃ᵉ (yc ∈ b.cartan) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
+        ∃ᵉ (yc ∈ H) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
         yc + yl + yu = ⁅u, z⁆ := by simpa [LieSubmodule.mem_sup] using! hu' hz
       simp only [← aux, lie_add]
       repeat apply add_mem
@@ -220,8 +220,8 @@ private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
 
 /-- Lemma 4.5 from [Geck](Geck2017). -/
 lemma iSup_cartan_borelLower_borelUpper_eq_top :
-    iSup ![b.cartan.toLieSubmodule, b.borelLower, b.borelUpper] = ⊤ := by
-  suffices b.cartan.toLieSubmodule ⊔ b.borelLower ⊔ b.borelUpper = ⊤ by simpa
+    iSup ![H.toLieSubmodule, b.borelLower, b.borelUpper] = ⊤ := by
+  suffices H.toLieSubmodule ⊔ b.borelLower ⊔ b.borelUpper = ⊤ by simpa
   refine eq_top_iff.mpr fun x hx ↦ ?_
   replace hx : x ∈ lieSpan R L (range b.e ∪ range b.f) := by simp [b.span_ef]
   induction hx using lieSpan_induction with
@@ -234,10 +234,10 @@ lemma iSup_cartan_borelLower_borelUpper_eq_top :
   | smul t u _ hu => exact SMulMemClass.smul_mem t hu
   | lie u v _ _ hu hv =>
     obtain ⟨yc, hyc, yl, hyl, yu, hyu, rfl⟩ :
-        ∃ᵉ (yc ∈ b.cartan) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
+        ∃ᵉ (yc ∈ H) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
           yc + yl + yu = u := by simpa [LieSubmodule.mem_sup] using! hu
     obtain ⟨zc, hzc, zl, hzl, zu, hzu, rfl⟩ :
-        ∃ᵉ (zc ∈ b.cartan) (zl ∈ lieSpan R L (range b.f)) (zu ∈ lieSpan R L (range b.e)),
+        ∃ᵉ (zc ∈ H) (zl ∈ lieSpan R L (range b.f)) (zu ∈ lieSpan R L (range b.e)),
           zc + zl + zu = v := by simpa [LieSubmodule.mem_sup] using! hv
     simp only [lie_add, add_lie, ← add_assoc]
     repeat apply add_mem
@@ -260,7 +260,7 @@ variable [Fintype ι]
 
 /-- These elements constitute a base for the root system of the Lie algebra relative to the
 associated Cartan subalgebra. -/
-def baseSupp (i : ι) : Dual R b.cartan :=
+def baseSupp (i : ι) : Dual R H :=
   ∑ j, b.A i j •
     ((Basis.span b.linInd).map (LinearEquiv.ofEq _ _ b.coe_cartan_eq_span).symm).coord j
 
@@ -280,9 +280,9 @@ def baseSupp (i : ι) : Dual R b.cartan :=
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma symm_baseSupp :
     b.symm.baseSupp = -b.baseSupp := by
-  let b₁ : Module.Basis ι R b.cartan :=
+  let b₁ : Module.Basis ι R H :=
     (Basis.span b.linInd).map (LinearEquiv.ofEq _ _ b.coe_cartan_eq_span).symm
-  let b₂ : Module.Basis ι R b.cartan :=
+  let b₂ : Module.Basis ι R H :=
     (Basis.span b.linInd.neg).map (LinearEquiv.ofEq _ _ b.symm.coe_cartan_eq_span).symm
   suffices b₁.coord = -b₂.coord by
     ext1 i
@@ -297,17 +297,17 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
   have : ((Int.castRingHom R).mapMatrix b.A).Nondegenerate := by
     rw [Matrix.nondegenerate_iff_det_ne_zero, ← RingHom.map_det]
     simpa using! b.nondegen.det_ne_zero
-  let v : ι → Dual R b.cartan :=
+  let v : ι → Dual R H :=
     ((Basis.span b.linInd).map (LinearEquiv.ofEq _ _ b.coe_cartan_eq_span).symm).coord
   have hv : LinearIndependent R v := Basis.linearIndependent_coord _
   simpa [Int.cast_smul_eq_zsmul] using! hv.sum_smul_of_nondegenerate this
 
-@[simp] lemma baseSupp_apply_smul_e (i : ι) (x : b.cartan) :
+@[simp] lemma baseSupp_apply_smul_e (i : ι) (x : H) :
     b.baseSupp i x • b.e i = ⁅x, b.e i⁆ := by
   obtain ⟨x, hx⟩ := x
   simp only [coe_bracket_of_module]
   have hx' : x ∈ Submodule.span R (range b.h) := by
-    rwa [← LieSubalgebra.mem_toSubmodule, coe_cartan_eq_span] at hx
+    rwa [← LieSubalgebra.mem_toSubmodule, b.coe_cartan_eq_span] at hx
   induction hx' using Submodule.span_induction with
   | mem u hu =>
     obtain ⟨j, rfl⟩ := hu
@@ -323,7 +323,7 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
     rw [← coe_cartan_eq_span, LieSubalgebra.mem_toSubmodule] at hu
     rw [← SetLike.mk_smul_mk _ t u hu, map_smul, smul_assoc, hv', smul_lie]
 
-@[simp] lemma baseSupp_apply_smul_f (i : ι) (x : b.cartan) :
+@[simp] lemma baseSupp_apply_smul_f (i : ι) (x : H) :
     b.baseSupp i x • b.f i = -⁅x, b.f i⁆ := by
   rw [← neg_eq_iff_eq_neg, ← neg_smul, ← LinearMap.neg_apply]
   have := b.symm.baseSupp_apply_smul_e i x
@@ -335,7 +335,9 @@ variable [IsDomain R] [CharZero R]
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Lemma 4.4 from [Geck](Geck2017). -/
 lemma borelUpper_le_biSup :
-    b.borelUpper ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i) := by
+    letI := b.isLieAbelian_cartan
+    b.borelUpper ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i) := by
+  let := b.isLieAbelian_cartan
   classical
   intro x hx
   replace hx : x ∈ lieSpan R L (range b.e) := by simpa [borelUpper] using hx
@@ -351,7 +353,7 @@ lemma borelUpper_le_biSup :
   | add _ _ _ _ hu hv => exact add_mem hu hv
   | smul t _ _ hu => exact SMulMemClass.smul_mem t hu
   | lie u v _ _ hu hv =>
-    let s : Set (b.cartan → R) := {χ | ∃ n : ι → ℕ, n ≠ 0 ∧ χ = ∑ i, n i • b.baseSupp i}
+    let s : Set (H → R) := {χ | ∃ n : ι → ℕ, n ≠ 0 ∧ χ = ∑ i, n i • b.baseSupp i}
     have hs : ∀ χ₁ ∈ s, ∀ χ₂ ∈ s, χ₁ + χ₂ ∈ s := by
       rintro - ⟨n₁, hn₁, rfl⟩ - ⟨n₂, hn₂, rfl⟩
       refine ⟨n₁ + n₂, by simp [hn₁], ?_⟩
@@ -368,25 +370,28 @@ lemma borelUpper_le_biSup :
       · use ⟨χ.property.choose, χ.property.choose_spec.1⟩
         ext i
         simpa using congr_fun χ.property.choose_spec.2.symm i
-    replace hu : u ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace b.cartan χ := by
+    replace hu : u ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ := by
       convert! hu; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
-    replace hv : v ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace b.cartan χ := by
+    replace hv : v ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ := by
       convert! hv; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
     convert! mem_biSup_genWeightSpace_of hs hu hv
     rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
 
 /-- Lemma 4.4 from [Geck](Geck2017). -/
 lemma borelLower_le_biSup :
-    b.borelLower ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i) := by
+    letI := b.isLieAbelian_cartan
+    b.borelLower ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i) := by
   simpa only [symm_baseSupp] using! b.symm.borelUpper_le_biSup
 
 private lemma cartan_borelLower_borelUpper_le :
-    letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i)
-    letI V := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i)
-    ![b.cartan.toLieSubmodule, b.borelLower, b.borelUpper] ≤ ![rootSpace b.cartan 0, U, V] := by
+    letI := b.isLieAbelian_cartan
+    letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i)
+    letI V := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i)
+    ![H.toLieSubmodule, b.borelLower, b.borelUpper] ≤ ![rootSpace H 0, U, V] := by
+  let := b.isLieAbelian_cartan
   intro i
   fin_cases i
-  · exact toLieSubmodule_le_rootSpace_zero R L b.cartan
+  · exact toLieSubmodule_le_rootSpace_zero R L H
   · exact b.borelLower_le_biSup
   · exact b.borelUpper_le_biSup
 
@@ -394,20 +399,22 @@ variable [IsTorsionFree R L]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma iSupIndep_rootSpace :
-    letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i)
-    letI V := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i)
-    iSupIndep ![rootSpace b.cartan 0, U, V] := by
-  set U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i) with hU
-  set V := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i) with hV
-  set s0 : Set (b.cartan → R) := {0} with hs0
-  set sU : Set (b.cartan → R) := {f | ∃ n : ι → ℕ, n ≠ 0 ∧ f = ∑ i, n i • (-b.baseSupp) i} with hsU
-  set sV : Set (b.cartan → R) := {f | ∃ n : ι → ℕ, n ≠ 0 ∧ f = ∑ i, n i • b.baseSupp i} with hsV
-  have hs0' : rootSpace b.cartan 0 = ⨆ i ∈ s0, LieModule.genWeightSpace L i := by simp [hs0]
+    letI := b.isLieAbelian_cartan
+    letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i)
+    letI V := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i)
+    iSupIndep ![rootSpace H 0, U, V] := by
+  let := b.isLieAbelian_cartan
+  set U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i) with hU
+  set V := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i) with hV
+  set s0 : Set (H → R) := {0} with hs0
+  set sU : Set (H → R) := {f | ∃ n : ι → ℕ, n ≠ 0 ∧ f = ∑ i, n i • (-b.baseSupp) i} with hsU
+  set sV : Set (H → R) := {f | ∃ n : ι → ℕ, n ≠ 0 ∧ f = ∑ i, n i • b.baseSupp i} with hsV
+  have hs0' : rootSpace H 0 = ⨆ i ∈ s0, LieModule.genWeightSpace L i := by simp [hs0]
   have hsU' : U = ⨆ i ∈ sU, LieModule.genWeightSpace L i := by
-    simp only [hU, hsU, mem_ofPred_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → R),
+    simp only [hU, hsU, mem_ofPred_eq, iSup_exists, iSup_and, iSup_comm (ι := H → R),
       iSup_iSup_eq_left, LinearMap.coe_sum, LinearMap.coe_smul]
   have hsV' : V = ⨆ i ∈ sV, LieModule.genWeightSpace L i := by
-    simp only [hV, hsV, mem_ofPred_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → R),
+    simp only [hV, hsV, mem_ofPred_eq, iSup_exists, iSup_and, iSup_comm (ι := H → R),
       iSup_iSup_eq_left, LinearMap.coe_sum, LinearMap.coe_smul]
   have hU0 : Disjoint s0 sU := by
     suffices ∀ g ∈ sU, g ≠ 0 by
@@ -451,36 +458,41 @@ lemma iSupIndep_rootSpace :
     specialize this i
     rw [comp_apply, Nat.cast_eq_zero, Pi.add_apply, Nat.add_eq_zero_iff] at this
     simpa using this.2
-  have key := LieModule.iSupIndep_genWeightSpace R b.cartan L
-  have h₀ : Disjoint (rootSpace b.cartan 0) (U ⊔ V) := by
+  have key := LieModule.iSupIndep_genWeightSpace R H L
+  have h₀ : Disjoint (rootSpace H 0) (U ⊔ V) := by
     convert! key.disjoint_biSup_biSup (hU0.union_right hV0)
     rw [iSup_union, hsU', hsV']
-  have h₁ : Disjoint U (V ⊔ rootSpace b.cartan 0) := by
+  have h₁ : Disjoint U (V ⊔ rootSpace H 0) := by
     convert! key.disjoint_biSup_biSup (hUV.union_right hU0.symm)
     rw [iSup_union, hs0', hsV']
-  have h₂ : Disjoint V (rootSpace b.cartan 0 ⊔ U) := by
+  have h₂ : Disjoint V (rootSpace H 0 ⊔ U) := by
     convert! key.disjoint_biSup_biSup (Disjoint.union_left hV0 hUV).symm
     rw [iSup_union, hs0', hsU']
   simp [iSupIndep_fin_three, h₀, h₁, h₂]
 
 set_option linter.unusedFintypeInType false in
 lemma cartan_eq :
-    b.cartan.toLieSubmodule = rootSpace b.cartan 0 :=
+    letI := b.isLieAbelian_cartan
+    H.toLieSubmodule = rootSpace H 0 :=
   congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
     b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 0
 
 lemma borelLower_eq :
-    b.borelLower = ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • (-b.baseSupp) i) :=
+    letI := b.isLieAbelian_cartan
+    b.borelLower = ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i) :=
   congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
     b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 1
 
 lemma borelUpper_eq :
-    b.borelUpper = ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace b.cartan (∑ i, n i • b.baseSupp i) :=
+    letI := b.isLieAbelian_cartan
+    b.borelUpper = ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i) :=
   congr_fun ((b.iSupIndep_rootSpace.le_iff_eq_of_iSup_eq_top
     b.iSup_cartan_borelLower_borelUpper_eq_top).mp b.cartan_borelLower_borelUpper_le) 2
 
 set_option linter.unusedFintypeInType false in
-instance [IsNoetherian R L] : b.cartan.IsCartanSubalgebra := by
+include b in
+lemma isCartanSubalgebra [IsNoetherian R L] : H.IsCartanSubalgebra := by
+  let := b.isLieAbelian_cartan
   rw [← eq_rootSpace_zero_iff_isCartan, b.cartan_eq]
 
 end CommRing
@@ -488,10 +500,13 @@ end CommRing
 open AddSubmonoid IsKilling LieModule Matrix
 
 variable {ι K L : Type*} [Fintype ι] [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
-  [FiniteDimensional K L] (b : Basis ι K L)
+  [FiniteDimensional K L] {H : LieSubalgebra K L} (b : Basis ι H)
 
 /-- The elements `LieAlgebra.Basis.baseSupp` as roots in the sense of `LieSubalgebra.root`. -/
-def baseSupp' (i : ι) : b.cartan.root := by
+def baseSupp' (i : ι) :
+    letI := b.isCartanSubalgebra
+    H.root := by
+  let := b.isCartanSubalgebra
   refine ⟨⟨b.baseSupp i, ?_⟩, ?_⟩
   · simp only [LieSubmodule.eq_bot_iff, ne_eq, not_forall]
     exact ⟨b.e i, (mem_genWeightSpace _ _ _).mpr fun x ↦ ⟨1, by simp⟩, (b.sl2 i).e_ne_zero⟩
@@ -499,34 +514,37 @@ def baseSupp' (i : ι) : b.cartan.root := by
 
 @[simp] lemma coe_linearMap_baseSupp' (i : ι) : b.baseSupp' i = b.baseSupp i := rfl
 
-variable [IsTriangularizable K b.cartan L] [IsKilling K L]
+variable [IsTriangularizable K H L] [IsKilling K L]
 
 lemma linearIndepOn_root_baseSupp :
-    LinearIndepOn K (rootSystem b.cartan).root (range b.baseSupp') := by
+    letI := b.isCartanSubalgebra
+    LinearIndepOn K (rootSystem H).root (range b.baseSupp') := by
   let e : ι ≃ range b.baseSupp' := Equiv.ofInjective _ <| fun i j hij ↦
     b.linearIndependent_baseSupp.injective <| by simpa [baseSupp'] using hij
   rw [LinearIndepOn, ← linearIndependent_equiv e]
   exact b.linearIndependent_baseSupp
 
-lemma root_mem_or_mem_neg (χ : b.cartan.root) :
-     (rootSystem b.cartan).root χ ∈ closure ((rootSystem b.cartan).root '' range b.baseSupp') ∨
-    -(rootSystem b.cartan).root χ ∈ closure ((rootSystem b.cartan).root '' range b.baseSupp') := by
+lemma root_mem_or_mem_neg (χ : letI := b.isCartanSubalgebra; H.root) :
+    letI := b.isCartanSubalgebra
+    ( (rootSystem H).root χ ∈ closure ((rootSystem H).root '' range b.baseSupp') ∨
+     -(rootSystem H).root χ ∈ closure ((rootSystem H).root '' range b.baseSupp')) := by
+  let := b.isCartanSubalgebra
   have (n : ι → ℕ) :
-      ∑ i, n i • b.baseSupp i ∈ closure (⇑(rootSystem b.cartan).root '' range b.baseSupp') := by
+      ∑ i, n i • b.baseSupp i ∈ closure (⇑(rootSystem H).root '' range b.baseSupp') := by
     simp_rw [← Submodule.span_nat_eq_addSubmonoidClosure, Submodule.mem_toAddSubmonoid]
     exact Submodule.sum_smul_mem _ _ fun i _ ↦ Submodule.subset_span <| by simp
-  let s : Set (b.cartan → K) := {0} ∪
+  let s : Set (H → K) := {0} ∪
     {f | ∃ n : ι → ℕ, n ≠ 0 ∧ f = -∑ i, n i • b.baseSupp i} ∪
     {f | ∃ n : ι → ℕ, n ≠ 0 ∧ f =  ∑ i, n i • b.baseSupp i}
-  have hs : ⨆ α ∈ s, rootSpace b.cartan α = ⊤ := by
+  have hs : ⨆ α ∈ s, rootSpace H α = ⊤ := by
     have := b.iSup_cartan_borelLower_borelUpper_eq_top
-    rw [borelLower_eq, borelUpper_eq, cartan_eq] at this
+    rw [borelLower_eq, borelUpper_eq, b.cartan_eq] at this
     rw [iSup_union, iSup_union]
-    simpa [iSup_and, iSup_comm (ι := b.cartan → K)] using this
+    simpa [iSup_and, iSup_comm (ι := H → K)] using this
   obtain ⟨χ, hχ⟩ := χ
   change χ.toLinear ∈ _ ∨ -χ.toLinear ∈ _
   replace hs : ⇑χ ∈ s :=
-    (iSupIndep_genWeightSpace K b.cartan L).mem_of_biSup_eq_top hs χ.genWeightSpace_ne_bot
+    (iSupIndep_genWeightSpace K H L).mem_of_biSup_eq_top hs χ.genWeightSpace_ne_bot
   replace hs : (∃ n : ι → ℕ, n ≠ 0 ∧ χ.toLinear = -∑ i, n i • b.baseSupp i) ∨
                (∃ n : ι → ℕ, n ≠ 0 ∧ χ.toLinear = ∑ i, n i • b.baseSupp i) := by
     have hχ' : ¬ χ.IsZero := by simpa using hχ
@@ -536,8 +554,11 @@ lemma root_mem_or_mem_neg (χ : b.cartan.root) :
   refine hs.symm.imp (fun ⟨n, hn₀, hn⟩ ↦ ?_) (fun ⟨n, hn₀, hn⟩ ↦ ?_) <;> simpa [hn] using this n
 
 /-- The distinguished root system base associated to a basis. -/
-def base : RootPairing.Base (rootSystem b.cartan) :=
-  .mk' (rootSystem b.cartan) (range b.baseSupp') b.linearIndepOn_root_baseSupp b.root_mem_or_mem_neg
+def base :
+    letI := b.isCartanSubalgebra
+    RootPairing.Base (rootSystem H) :=
+  letI := b.isCartanSubalgebra
+  .mk' (rootSystem H) (range b.baseSupp') b.linearIndepOn_root_baseSupp b.root_mem_or_mem_neg
 
 /-- The support of `LieAlgebra.Basis.base` is in one-to-one correspondence with the indexing
 set of the basis. -/
@@ -549,18 +570,20 @@ def baseSupportEquiv : ι ≃ b.base.support :=
 @[simp] lemma coe_baseSupportEquiv_apply (i : ι) : b.baseSupportEquiv i = b.baseSupp i := rfl
 
 @[simp] lemma coroot_eq_h' (i : ι) :
+    letI := b.isCartanSubalgebra
     coroot (b.baseSupportEquiv i) = b.h' i := by
+  let := b.isCartanSubalgebra
   suffices b.h' i ∈ corootSpace (b.baseSupp' i) by
     have _i : IsAddTorsionFree L := .of_isTorsionFree K L
     exact (eq_coroot_of_mem_corootSpace_of_two (b.baseSupp' i).val this (by simp [baseSupp'])).symm
-  have h_mem : ⁅b.e i, b.f i⁆ ∈ b.cartan := by
-    rw [(b.sl2 i).lie_e_f, b.cartan_eq_lieSpan]
+  have h_mem : ⁅b.e i, b.f i⁆ ∈ H := by
+    nth_rw 1 [(b.sl2 i).lie_e_f, b.cartan_eq_lieSpan]
     exact subset_lieSpan <| mem_range_self i
   have h_eq : b.h' i = ⟨⁅b.e i, b.f i⁆, h_mem⟩ := by simp [(b.sl2 i).lie_e_f, h']
   rw [h_eq]
-  have he : b.e i ∈ rootSpace b.cartan (b.baseSupp i) :=
+  have he : b.e i ∈ rootSpace H (b.baseSupp i) :=
     (mem_genWeightSpace _ _ _).mpr fun ⟨z, hz⟩ ↦ ⟨1, by simp⟩
-  have hf : b.f i ∈ rootSpace b.cartan (-b.baseSupp i) :=
+  have hf : b.f i ∈ rootSpace H (-b.baseSupp i) :=
     (mem_genWeightSpace _ _ _).mpr fun ⟨z, hz⟩ ↦ ⟨1, by simp [← eq_neg_iff_add_eq_zero]⟩
   exact (mem_corootSpace _).mpr <| Submodule.subset_span ⟨b.e i, he, b.f i, hf, rfl⟩
 
