@@ -352,18 +352,9 @@ end
 
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
 and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
-@[simps apply]
 def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
     (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map (f : M →ₗ[R] N) = Q) : (M ⧸ P) ≃ₗ[R] N ⧸ Q :=
-  { P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx with
-    toFun := P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx
-    invFun :=
-      Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx => by
-        rw [← hf, Submodule.mem_map] at hx
-        obtain ⟨y, hy, rfl⟩ := hx
-        simpa
-    left_inv := fun x => Submodule.Quotient.induction_on _ x (by simp)
-    right_inv := fun x => Submodule.Quotient.induction_on _ x (by simp) }
+  Quotient.equiv' (RingHom.id R) P Q f hf
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
@@ -382,7 +373,7 @@ theorem Quotient.equiv_trans {N O : Type*} [AddCommGroup N] [Module R N] [AddCom
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
   ext
   -- `simp` can deal with `hef` depending on `e` and `f`
-  simp only [Quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
+  simp only [Quotient.equiv, Quotient.equiv'_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
   -- `rw` can deal with `mapQ_comp` needing extra hypotheses coming from the RHS
   rw [mapQ_comp, LinearMap.comp_apply]
 
