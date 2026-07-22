@@ -328,35 +328,17 @@ section Mercer
 
 open MeasureTheory
 
-variable [TopologicalSpace X] [CompactSpace X] [MeasurableSpace X] [BorelSpace X]
-variable (μ : Measure X) [IsFiniteMeasure μ]
+omit [CompleteSpace V] [Fact K.PosSemidef]
 
-variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) [MeasurableSpace V]
-variable [BorelSpace V]
--- These should be inferred:
-variable [MeasurableEq V] [MeasurableAdd₂ V] [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)]
-
-omit [CompleteSpace V] [TopologicalSpace X] [CompactSpace X] [BorelSpace X] [IsFiniteMeasure μ]
-  [MeasurableEq V] [MeasurableAdd₂ V] in
-private lemma meas_fst (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.1 :=
-  (f : X →ₘ[μ] V).measurable.comp measurable_fst
-
-omit [CompleteSpace V] [TopologicalSpace X] [CompactSpace X] [BorelSpace X] [IsFiniteMeasure μ]
-  [MeasurableEq V] [MeasurableAdd₂ V] in
-private lemma meas_snd (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.2 :=
-  (f : X →ₘ[μ] V).measurable.comp measurable_snd
-
-omit [CompleteSpace V] [MeasurableSpace V] [BorelSpace V] [MeasurableEq V] [MeasurableAdd₂ V]
-  [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] in
 lemma enorm_inner_le_enorm (f g : V) : ‖⟪f, g⟫_𝕜‖ₑ ≤  ‖f‖ₑ * ‖g‖ₑ := by
   grw [← ofReal_norm, norm_inner_le_norm]
   simp [ENNReal.ofReal_mul, ofReal_norm]
 
-omit [CompleteSpace V] [Fact K.PosSemidef] [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
-  [MeasurableSpace V] [BorelSpace V] [MeasurableEq V] [MeasurableAdd₂ V]
-  [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] in
-private lemma eLpNorm_mul_enorm_mul_enorm_le_top {μ} (hK : MemLp (fun p : X × X => K p.1 p.2) 2
-    (μ.prod μ)) (f g : Lp V 2 μ) :
+variable [MeasurableSpace X] (μ : Measure X)
+variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+
+private lemma eLpNorm_mul_enorm_mul_enorm_le_top {μ}
+    (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) (f g : Lp V 2 μ) :
     eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ) * ‖f‖ₑ * ‖g‖ₑ < ⊤ := by
   apply ENNReal.mul_lt_top
   apply ENNReal.mul_lt_top
@@ -364,8 +346,20 @@ private lemma eLpNorm_mul_enorm_mul_enorm_le_top {μ} (hK : MemLp (fun p : X × 
   · exact enorm_lt_top
   · exact enorm_lt_top
 
-omit [CompleteSpace V] [Fact K.PosSemidef] [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
-  [IsFiniteMeasure μ] [MeasurableEq V] [MeasurableAdd₂ V] in
+variable [MeasurableSpace V] [BorelSpace V]
+
+/-- This expression appears multiple times in the proofs below. This was introduced to shorten the
+proofs a little. -/
+private lemma meas_fst (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.1 :=
+  (f : X →ₘ[μ] V).measurable.comp measurable_fst
+
+/-- This expression appears multiple times in the proofs below. This was introduced to shorten the
+proofs a little. -/
+private lemma meas_snd (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.2 :=
+  (f : X →ₘ[μ] V).measurable.comp measurable_snd
+
+variable [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)]
+
 private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
     (f g : Lp V 2 μ) : ∫⁻  (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
       (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
@@ -398,8 +392,6 @@ private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 
       simp [Lp.enorm_def, eLpNorm_eq_lintegral_rpow_enorm_toReal (Ne.symm (NeZero.ne' 2))
         (ENNReal.ofNat_ne_top), mul_assoc]
 
-omit [CompleteSpace V] [Fact K.PosSemidef] [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
-  [IsFiniteMeasure μ] [MeasurableEq V] [MeasurableAdd₂ V] in
 private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
     (f g : Lp V 2 μ) : Integrable (fun p ↦ ⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜) (μ.prod μ) := by
   constructor
@@ -411,6 +403,10 @@ private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 
     exact continuous_inner.comp_aestronglyMeasurable (h1.prodMk h2)
   · grw [hasFiniteIntegral_def, lintegral_norm_inner_le μ hK f g]
     exact eLpNorm_mul_enorm_mul_enorm_le_top hK f g
+
+variable [IsFiniteMeasure μ]
+variable [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
+variable [MeasurableEq V] [MeasurableAdd₂ V]
 
 def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
