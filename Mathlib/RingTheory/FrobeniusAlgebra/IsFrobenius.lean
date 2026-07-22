@@ -65,7 +65,7 @@ lemma LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     _ = δ ∘ₗ μ := by simp only [coassoc_simps, CoassocSimps.map_counit_comp_comul_left]
 
 variable (R A) in
-/-- A coalgebra with an algebra structure is said to be `Frobenius` when
+/-- A coalgebra with an algebra structure is said to be Frobenius when
 the Frobenius equation is satisfied:
 
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`. -/
