@@ -492,7 +492,7 @@ variable [CommRing A] [IsDomain A] [IsIntegrallyClosed A] [IsDomain B]
   [Algebra B L] [IsFractionRing B L] [SMulDistribClass Gal(L/K) B L]
   [Algebra A K] [IsFractionRing A K] [Algebra A B] [Algebra A L]
   [IsScalarTower A K L] [IsScalarTower A B L]
-  [Algebra.IsIntegral A B] [Module.Finite A B] [Module.Flat A B]
+  [Module.Finite A B] [Module.Flat A B]
   [FiniteDimensional K L] [IsGalois K L]
   (p : Ideal A) [P.LiesOver p] [P.IsMaximal] [p.IsMaximal] [PerfectField p.ResidueField]
 
@@ -741,34 +741,60 @@ end arithmetic
 
 section compositum
 
-variable [CommRing A] [IsDedekindDomain A] [Ring.HasFiniteQuotients A] [Algebra A K]
-  [IsFractionRing A K] [Algebra A L] [IsScalarTower A K L] [Algebra A B] [IsDedekindDomain B]
-  [Ring.HasFiniteQuotients B] {p : Ideal A}
-  (C : Type*) [CommRing C] [IsDedekindDomain C] [Algebra A C] [Module.Finite A C]
-  [Module.IsTorsionFree A C] [Algebra B C] [FaithfulSMul B C] [IsScalarTower A B C]
-  (F₁ F₂ : IntermediateField K L) {B₁ B₂ : Type*} [CommRing B₁] [CommRing B₂] [IsDedekindDomain B₁]
-  [IsDedekindDomain B₂] [Ring.HasFiniteQuotients B₁] [Ring.HasFiniteQuotients B₂] [Algebra A B₁]
-  [Algebra A B₂] [Algebra B₁ C] [FaithfulSMul B₁ C] [Algebra B₂ C] [FaithfulSMul B₂ C]
-  [Algebra B ↥(F₁ ⊔ F₂)] [IsFractionRing B ↥(F₁ ⊔ F₂)] [Algebra B₁ F₁] [IsFractionRing B₁ F₁]
-  [Algebra B₂ F₂] [IsFractionRing B₂ F₂] [Algebra B₁ B] [Algebra B₂ B] [IsScalarTower A B₁ C]
-  [IsScalarTower B₁ B C] [IsScalarTower B₂ B C] [IsScalarTower A B₂ C]
-  {P₁ : Ideal B₁} {P₂ : Ideal B₂} [P.IsMaximal] [P.LiesOver p] [P.LiesOver P₁] [P.LiesOver P₂]
+variable [CommRing A] [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K]
+  [Algebra A L] [IsScalarTower A K L] [Algebra A B] [IsScalarTower A B L] [IsDedekindDomain B]
   [FiniteDimensional K L] [IsGalois K L]
+  {p : Ideal A} [p.IsMaximal] [P.IsMaximal] [P.LiesOver p]
+  (F₁ F₂ : IntermediateField K L) {B₁ B₂ : Type*}
+  [CommRing B₁] [IsDedekindDomain B₁] [Algebra A B₁] [Algebra B₁ F₁] [IsFractionRing B₁ F₁]
+  [Algebra B₁ B] [Algebra B₁ L] [IsScalarTower B₁ F₁ L] [IsScalarTower B₁ B L]
+  [IsScalarTower A B₁ B] [Module.Flat B₁ B]
+  [CommRing B₂] [IsDedekindDomain B₂] [Algebra A B₂] [Algebra B₂ F₂] [IsFractionRing B₂ F₂]
+  [Algebra B₂ B] [Algebra B₂ L] [IsScalarTower B₂ F₂ L] [IsScalarTower B₂ B L]
+  [IsScalarTower A B₂ B] [Module.Flat B₂ B]
+  {P₁ : Ideal B₁} {P₂ : Ideal B₂} [P.LiesOver P₁] [P.LiesOver P₂] [P₁.LiesOver p] [P₂.LiesOver p]
+  (C : Type*) [CommRing C] [IsIntegrallyClosed C] [Algebra A C] [Algebra C B] [Algebra C L]
+  [IsScalarTower C B L] [IsScalarTower A C B] [Algebra C ↑(F₁ ⊔ F₂)] [IsFractionRing C ↑(F₁ ⊔ F₂)]
+  [IsScalarTower C ↑(F₁ ⊔ F₂) L]
+  (𝓟 : Ideal C) [P.LiesOver 𝓟] [𝓟.LiesOver p]
+  [MulSemiringAction Gal(L/F₁) B] [SMulDistribClass Gal(L/F₁) B L]
+  [MulSemiringAction Gal(L/F₂) B] [SMulDistribClass Gal(L/F₂) B L]
+  [MulSemiringAction Gal(L/↑(F₁ ⊔ F₂)) B] [SMulDistribClass Gal(L/↑(F₁ ⊔ F₂)) B L]
+  [Module.Finite A B] [Module.Flat C B] [PerfectField p.ResidueField]
 
-include F₁ F₂ C in
+include F₁ F₂ P p in
 /-- If `p` is unramified in both `F₁/K` and `F₂/K`, then `p` is unramified in `(F₁ ⊔ F₂)/K`,
 assuming `L/K` is Galois. -/
 theorem ramificationIdx_sup_eq_one_of_isGalois
-    (h₁ : P₁.ramificationIdx A = 1) (h₂ : P₂.ramificationIdx A = 1) (hp : p ≠ ⊥) :
-    P.ramificationIdx A = 1 := sorry
+    (h₁ : P₁.ramificationIdx A = 1) (h₂ : P₂.ramificationIdx A = 1) :
+    𝓟.ramificationIdx A = 1 := by
+  have : FaithfulSMul A L := FaithfulSMul.trans A K L
+  have : FaithfulSMul A B := FaithfulSMul.tower_bot A B L
+  have : Algebra.IsIntegral B₁ B := Algebra.IsIntegral.tower_top A
+  have : Algebra.IsIntegral B₂ B := Algebra.IsIntegral.tower_top A
+  have : Algebra.IsIntegral C B := Algebra.IsIntegral.tower_top A
+  rw [← le_inertiaField_iff_ramificationIdx_eq_one A K L P F₁ P₁ p] at h₁
+  rw [← le_inertiaField_iff_ramificationIdx_eq_one A K L P F₂ P₂ p] at h₂
+  rw [← le_inertiaField_iff_ramificationIdx_eq_one A K L P (F₁ ⊔ F₂) 𝓟 p]
+  exact sup_le h₁ h₂
 
-include F₁ F₂ C in
+include F₁ F₂ P p in
 /-- If `p` totally splits in both `F₁/K` and `F₂/K`, then `p` totally splits in `(F₁ ⊔ F₂)/K`,
 assuming `L/K` is Galois. -/
-theorem ramificationIdx_inertiaDeg_sup_eq_one_of_isGalois [Algebra.IsIntegral A B]
+theorem ramificationIdx_inertiaDeg_sup_eq_one_of_isGalois [IsDomain C]
     (h₁ : P₁.ramificationIdx A = 1 ∧ P₁.inertiaDeg A = 1)
-    (h₂ : P₂.ramificationIdx A = 1 ∧ P₂.inertiaDeg A = 1) (hp : p ≠ ⊥) :
-    P.ramificationIdx A = 1 ∧ P.inertiaDeg A = 1 := sorry
+    (h₂ : P₂.ramificationIdx A = 1 ∧ P₂.inertiaDeg A = 1) :
+    𝓟.ramificationIdx A = 1 ∧ 𝓟.inertiaDeg A = 1 := by
+  have : FaithfulSMul A L := FaithfulSMul.trans A K L
+  have : FaithfulSMul A B := FaithfulSMul.tower_bot A B L
+  have : Algebra.IsIntegral B₁ B := Algebra.IsIntegral.tower_top A
+  have : Algebra.IsIntegral B₂ B := Algebra.IsIntegral.tower_top A
+  have : Algebra.IsIntegral C B := Algebra.IsIntegral.tower_top A
+  rw [← le_decompositionField_iff_ramificationIdx_inertiaDeg_eq_one A K L P F₁ P₁ p] at h₁
+  rw [← le_decompositionField_iff_ramificationIdx_inertiaDeg_eq_one A K L P F₂ P₂ p] at h₂
+  rw [← le_decompositionField_iff_ramificationIdx_inertiaDeg_eq_one A K L P (F₁ ⊔ F₂) 𝓟 p]
+  exact sup_le h₁ h₂
+
 
 end compositum
 
