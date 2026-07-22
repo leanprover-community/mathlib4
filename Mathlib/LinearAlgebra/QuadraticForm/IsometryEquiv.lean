@@ -102,6 +102,14 @@ def toIsometry (g : Q₁.IsometryEquiv Q₂) : Q₁ →qᵢ Q₂ where
 @[simp] lemma symm_apply_apply (f : Q₁.IsometryEquiv Q₂) (x : M₁) : f.symm (f x) = x :=
   f.toEquiv.symm_apply_apply x
 
+theorem symm_apply_eq (f : Q₁.IsometryEquiv Q₂) {x y} :
+    f.symm x = y ↔ x = f y :=
+  f.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (f : Q₁.IsometryEquiv Q₂) {x y} :
+    y = f.symm x ↔ f y = x :=
+  f.toEquiv.eq_symm_apply
+
 @[simp] lemma coe_symm_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : f.toLinearEquiv.symm = f.symm :=
   rfl
 

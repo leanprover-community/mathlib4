@@ -151,7 +151,7 @@ lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
 
 variable {X : C}
 
-open Classical in
+open scoped Classical in
 /-- Assuming `G : C` is a generator, `X : C`, and `A : Subobject X`,
 this is a subobject of `X` which is `⊤` if `A = ⊤`, and otherwise
 it is a larger subobject given by the lemma `exists_larger_subobject`.
@@ -242,6 +242,7 @@ instance : (functor hG A₀ J).IsWellOrderContinuous where
     simp only [Subobject.mk_arrow]
     exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {J} in
 /-- For any `j`, the map `(functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)`
