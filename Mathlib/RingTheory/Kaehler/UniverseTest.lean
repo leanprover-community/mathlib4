@@ -30,21 +30,18 @@ suppress_compilation
 
 section MvPolynomial
 
-set_option trace.profiler.useHeartbeats true
-set_option trace.profiler.threshold 1
-set_option trace.profiler true
-
 /-- Mathlib version
 
 [Elab.command] [110108964.000000]
 
 [Elab.async] [54944425.000000] Lean.addDecl ▼
-  [Kernel] [54944372.000000] ✅️ typechecking declarations [KaehlerDifferential.mvPolynomialEquiv1._proof_2]
+  [Kernel] [54944372.000000] ✅️ typechecking declarations
+    [KaehlerDifferential.mvPolynomialEquiv1._proof_2]
 [Elab.async] [57170005.000000] Lean.addDecl ▼
-  [Kernel] [57169938.000000] ✅️ typechecking declarations [KaehlerDifferential.mvPolynomialEquiv1._proof_1]
+  [Kernel] [57169938.000000] ✅️ typechecking declarations
+    [KaehlerDifferential.mvPolynomialEquiv1._proof_1]
 
 Summary: elaboration 110M, typechecking 111M.
-
 -/
 def KaehlerDifferential.mvPolynomialEquiv1 (σ : Type*) :
     Ω[MvPolynomial σ R⁄R] ≃ₗ[MvPolynomial σ R] σ →₀ MvPolynomial σ R where
@@ -211,7 +208,6 @@ def KaehlerDifferential.mvPolynomialBasis21 (σ) :
 
 [Elab.async] [23088.000000] Lean.addDecl ▼
   [Kernel] [23026.000000] ✅️ typechecking declarations [KaehlerDifferential.mvPolynomialBasis22]
-
 -/
 def KaehlerDifferential.mvPolynomialBasis22 (σ : Type t) :
     Basis σ (MvPolynomial σ R) Ω[MvPolynomial σ R⁄R] :=
