@@ -88,12 +88,13 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
         simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ, Homeomorph.addLeft]
     intro z' hz'
     have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
-    simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte, IccLeftChart,
-      modelWithCornersEuclideanHalfSpace, PartialEquiv.coe_trans_symm, PartialEquiv.coe_symm_mk,
-      Function.comp_apply, Function.update_self]
+    dsimp
+    simp only [hz, ↓reduceIte, Homeomorph.toOpenPartialHomeomorph_apply, Homeomorph.coe_addLeft]
+    rw [IccLeftChart_symm_apply, modelWithCornersEuclideanHalfSpace_symm_apply]
+    dsimp only [Fin.isValue]
     rw [min_eq_left, max_eq_left this]
     · simp [φ, φ₀, add_comm]
-    · simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
+    · simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace_symm_apply]
       linarith
   · -- At the right boundary point, the correct codomain chart is mapping `a` to `y - a`.
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
@@ -107,16 +108,16 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
         simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ]
     intro z' hz'
     have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
-    simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte, IccRightChart,
-      modelWithCornersEuclideanHalfSpace, PartialEquiv.coe_trans_symm,
-      PartialEquiv.coe_symm_mk, Function.comp_apply, Function.update_self]
+    simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte,
+      PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_toPartialEquiv_symm,
+      OpenPartialHomeomorph.coe_toPartialHomeomorph_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+      Function.comp_apply, IccRightChart_symm_apply]
+    rw [modelWithCornersEuclideanHalfSpace_symm_apply]
+    dsimp
     rw [max_eq_left, max_eq_left this]
     · simp [φ, φ₀, Equiv.pointReflection]
       ring_nf
-    · simp only [Icc_chartedSpaceChartAt, hz, IccRightChart] at hz'
-      replace hz' := hz'.2
-      simp [modelWithCornersEuclideanHalfSpace] at hz'
-      rw [max_eq_left this]
+    · simp [hz, modelWithCornersEuclideanHalfSpace_symm_apply, IccRightChart,max_eq_left this] at *
       linarith
 
 /-- The inclusion map from a closed segment to `ℝ` is a smooth embedding -/
