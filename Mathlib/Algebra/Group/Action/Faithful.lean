@@ -51,7 +51,7 @@ class FaithfulSMul (M : Type*) (α : Type*) [SMul M α] : Prop where
 export FaithfulSMul (eq_of_smul_eq_smul)
 export FaithfulVAdd (eq_of_vadd_eq_vadd)
 
-@[to_additive] instance [SMul M α] [Subsingleton M] : FaithfulSMul M α :=
+@[to_additive] instance (priority := low) [SMul M α] [Subsingleton M] : FaithfulSMul M α :=
   ⟨fun _ ↦ Subsingleton.elim ..⟩
 
 @[to_additive]
