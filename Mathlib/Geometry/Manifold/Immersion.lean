@@ -9,7 +9,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-public import Mathlib.Geometry.Manifold.Diffeomorph -- TODO: remove once Immersion.comp is proven!
+public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
 public import Mathlib.Topology.Algebra.Module.TransferInstance
@@ -502,9 +502,9 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
   refine ⟨hf.continuousWithinAt, ?_⟩
   exact aux hφ h' ht hxt
 
--- A future PR will show that diffeomorphisms are immersions, and compositions are also immersions
--- (possibly under additional hypotheses on `𝕜`). The next lemma may be golfed accordingly in the
--- future.
+-- Special case of "the composition of immersions is an immersion", for post-composing
+-- with a diffeomorphism: unlike the former (which requires Banach manifolds and some conditions
+-- on the boundary behaviour), this statement is always true.
 /-- Post-composing an immersion at `x` with a diffeomorphism still yields an immersion at `x`. -/
 lemma comp_diffeomorph
     {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
