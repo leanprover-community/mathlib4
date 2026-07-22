@@ -14,7 +14,6 @@ public import Mathlib.Tactic.Monotonicity.Attr
 
 import Mathlib.Data.Set.Function
 public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas on the monotone multiplication typeclasses

@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
+public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Stirling Numbers

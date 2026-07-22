@@ -5,9 +5,10 @@ Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
 module
 
+public import Batteries.Data.List.Basic
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Logic.Lemmas
-public import Batteries.Data.List.Basic
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Paths in quivers
