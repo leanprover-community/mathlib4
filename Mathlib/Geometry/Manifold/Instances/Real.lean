@@ -240,6 +240,13 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
+lemma modelWithCornersEuclideanHalfSpace_toFun (n : ℕ) [NeZero n] :
+    (𝓡∂ n : _ → _) = Subtype.val := by rfl
+
+lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
+    (x : EuclideanSpace ℝ (Fin n)) :
+    (𝓡∂ n).symm x = ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩ := by rfl
+
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
@@ -298,6 +305,14 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     exact this.preimage continuous_subtype_val
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
+
+lemma IccLeftChart_apply (x y : ℝ) [h : Fact (x < y)] (z : Icc x y) :
+    IccLeftChart x y z = ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩ := by
+  rfl
+
+lemma IccLeftChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
+    (IccLeftChart x y).symm z = ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩ := by
+  rfl
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
@@ -366,6 +381,15 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     exact this.preimage continuous_subtype_val
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
+
+lemma IccRightChart_apply (x y : ℝ) [h : Fact (x < y)] (z : Icc x y) :
+    IccRightChart x y z = ⟨toLp 2 fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩ := by
+  rfl
+
+lemma IccRightChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
+    (IccRightChart x y).symm z =
+      ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩ := by
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma IccRightChart_extend_top :
