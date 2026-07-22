@@ -53,7 +53,7 @@ Nevertheless, we are able to adapt their proof to arbitrary nontrivially normed 
 The key argument, replacing the fact that a connected set cannot be covered nontrivially by
 disjoint open sets, is that a balanced set `W` cannot intersect nontrivially both `c • V`
 and `Vᶜ`, when `V` is a neighborhood of `0` and `0 < ‖c‖ < 1`. We refer to the (highly commented!)
-proof for more precision.
+proof for more details.
 
 ## References
 
