@@ -330,6 +330,7 @@ open MeasureTheory
 
 omit [CompleteSpace V] [Fact K.PosSemidef]
 
+/-- ToDo: Move to right spot in other file. -/
 lemma enorm_inner_le_enorm (f g : V) : ‖⟪f, g⟫_𝕜‖ₑ ≤  ‖f‖ₑ * ‖g‖ₑ := by
   grw [← ofReal_norm, norm_inner_le_norm]
   simp [ENNReal.ofReal_mul, ofReal_norm]
@@ -485,11 +486,15 @@ def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
   }
   (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
   (fun f ↦ by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, norm_map]
-    unfold mercerForm
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, norm_map, mercerForm]
     grw [le_opNorm, LinearMap.mkContinuous₂_norm_le]
     exact ENNReal.toReal_nonneg
   )
+
+omit [BorelSpace X] in
+theorem integralOperator_inner_right_eq_mercerForm [CompleteSpace V] (f g : Lp V 2 μ) :
+    ⟪integralOperator μ hK f, g⟫_𝕜 = mercerForm μ hK f g := by
+  simp [mercerForm, integralOperator]
 
 end Mercer
 
