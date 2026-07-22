@@ -324,29 +324,35 @@ theorem hasDerivAt_circleAverage_herglotzRieszKernel_smul (hg : CircleIntegrable
   refine (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (F' := fun x θ ↦ (2 * circleMap 0 R θ / (circleMap 0 R θ - x) ^ 2) • f (circleMap 0 R θ))
     (bound := fun θ ↦ 2 * R * (d ^ 2)⁻¹ * ‖f (circleMap 0 R θ)‖)
-    (ball_mem_nhds w hd) ?_ ?_ ?_ ?_ ?_ ?_).2
+    (ball_mem_nhds w hd) ?meas1 ?int ?meas2 ?bound ?int_bound ?diff).2
   -- Measurability of the integrand, for `x` near `w`
-  · filter_upwards with x
+  case meas1 =>
+    filter_upwards with x
     apply AEStronglyMeasurable.smul _ hgm
     simp only [herglotzRieszKernel_def, sub_zero]
     exact Measurable.aestronglyMeasurable (by fun_prop)
   -- Integrability of the integrand at `w`
-  · have h₁ : CircleIntegrable (herglotzRieszKernel 0 w • f) 0 R :=
+  case int =>
+    have h₁ : CircleIntegrable (herglotzRieszKernel 0 w • f) 0 R :=
       hg.smul_of_continuousOn (continuousOn_herglotzRieszKernel_sphere hw)
     simpa only [CircleIntegrable, Pi.smul_apply'] using h₁
   -- Measurability of the differentiated integrand
-  · exact (Measurable.aestronglyMeasurable (by fun_prop)).smul hgm
+  case meas2 =>
+    exact (Measurable.aestronglyMeasurable (by fun_prop)).smul hgm
   -- Uniform bound for the differentiated integrand near `w`
-  · filter_upwards with θ _ x hx
+  case bound =>
+    filter_upwards with θ _ x hx
     have h₁ : ‖(2 : ℂ)‖ = 2 := by norm_num
     rw [norm_smul, norm_div, norm_mul, norm_circleMap_zero, abs_of_pos hR, norm_pow,
       div_eq_mul_inv, h₁]
     gcongr
     exact hdist x hx θ
   -- Integrability of the bound
-  · exact (IntervalIntegrable.norm hg).const_mul _
+  case int_bound =>
+    exact (IntervalIntegrable.norm hg).const_mul _
   -- Differentiability of the integrand in `x`, for `x` near `w`
-  · filter_upwards with θ _ x hx
+  case diff =>
+    filter_upwards with θ _ x hx
     have h₁ : circleMap 0 R θ - x ≠ 0 := sub_ne_zero.2 (circleMap_ne_mem_ball (hsub hx) θ)
     have h₂ : HasDerivAt (fun x ↦ herglotzRieszKernel 0 x (circleMap 0 R θ))
         (2 * circleMap 0 R θ / (circleMap 0 R θ - x) ^ 2) x := by
