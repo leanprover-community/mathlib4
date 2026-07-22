@@ -275,9 +275,11 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Testing, `Mathlib.Util),
 ]
 
+/-- Remove all comment lines (starts with `//`) from `input`. -/
 def extractNonComments (input : String) : String :=
   "\n".intercalate <| (input.splitOn "\n").filter fun l ↦ !l.trimAsciiStart.startsWith "//"
 
+/-- Read a JSON file at `path` ignoring comment lines starting with `//`. -/
 def readJsonFileWithComments (α) [FromJson α] (path : System.FilePath) : IO α := do
   let json ← IO.ofExcept <| Json.parse <| extractNonComments (← IO.FS.readFile path)
   IO.ofExcept <| fromJson? json
@@ -306,10 +308,10 @@ This relation is read at runtime from `scripts/forbiddenDirs.json`, so that upda
 configuration does not require recompiling this linter (and everything importing it).
 -/
 def forbiddenImportDirs : IO NamePrefixRel := do
-  if let some rel := ← forbiddenImportDirsCache.get then
+  if let some rel ← forbiddenImportDirsCache.get then
     return rel
   let entries ← readJsonFileWithComments (Std.TreeMap String (Array String)) forbiddenDirsPath
-  let rel : NamePrefixRel := .ofArray <|
+  let rel := NamePrefixRel.ofArray <|
     entries.toArray.flatMap fun (n₁, ns) ↦ ns.map fun n₂ ↦ (n₁.toName, n₂.toName)
   forbiddenImportDirsCache.set (some rel)
   return rel
