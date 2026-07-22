@@ -436,14 +436,99 @@ end attempt1
 section attempt2
 
 variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) [MeasurableSpace V]
+variable [BorelSpace V]
+-- These should be inferred:
+variable [MeasurableEq V] [MeasurableAdd₂ V] [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)]
 
-def mercerForm : Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
+omit [CompleteSpace V] [TopologicalSpace X] [CompactSpace X] [BorelSpace X] [IsFiniteMeasure μ]
+  [MeasurableEq V] [MeasurableAdd₂ V] in
+private lemma meas_fst (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.1 :=
+  (f : X →ₘ[μ] V).measurable.comp measurable_fst
+
+omit [CompleteSpace V] [TopologicalSpace X] [CompactSpace X] [BorelSpace X] [IsFiniteMeasure μ]
+  [MeasurableEq V] [MeasurableAdd₂ V] in
+private lemma meas_snd (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.2 :=
+  (f : X →ₘ[μ] V).measurable.comp measurable_snd
+
+omit [CompleteSpace V] [MeasurableSpace V] [BorelSpace V] [MeasurableEq V] [MeasurableAdd₂ V]
+  [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] in
+lemma enorm_inner_le_enorm (f g : V) : ‖⟪f, g⟫_𝕜‖ₑ ≤  ‖f‖ₑ * ‖g‖ₑ := by
+  grw [← ofReal_norm, norm_inner_le_norm]
+  simp [ENNReal.ofReal_mul, ofReal_norm]
+
+
+omit [CompleteSpace V] [Fact K.PosSemidef] [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
+  [MeasurableSpace V] [BorelSpace V] [MeasurableEq V] [MeasurableAdd₂ V]
+  [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] in
+private lemma eLpNorm_mul_enorm_mul_enorm_le_top {μ} (hK : MemLp (fun p : X × X => K p.1 p.2) 2
+    (μ.prod μ)) (f g : Lp V 2 μ) :
+    eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ) * ‖f‖ₑ * ‖g‖ₑ < ⊤ := by
+  apply ENNReal.mul_lt_top
+  apply ENNReal.mul_lt_top
+  · exact hK.eLpNorm_lt_top
+  · exact enorm_lt_top
+  · exact enorm_lt_top
+
+private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+    (f g : Lp V 2 μ) : ∫⁻  (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
+      (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
+  calc
+    ∫⁻ (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
+        ∫⁻ (p : X × X), ‖K p.1 p.2‖ₑ * (‖f p.2‖ₑ * ‖g p.1‖ₑ) ∂μ.prod μ := by
+      grw [enorm_inner_le_enorm]
+      grw [ContinuousLinearMap.le_opENorm]
+      simp [mul_assoc]
+    _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ *
+          (∫⁻ (a : X × X), ‖f a.2‖ₑ ^ 2 * ‖g a.1‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ := by
+      have := ENNReal.lintegral_mul_le_Lp_mul_Lq (μ.prod μ) Real.HolderConjugate.two_two
+        hK.aemeasurable.enorm ((meas_snd μ f).enorm.mul (meas_fst μ g).enorm).aemeasurable
+      simp only [Pi.mul_apply, ENNReal.rpow_ofNat, one_div] at this
+      grw [this]
+      simp [mul_pow]
+    _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ * ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) *
+          ∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹ := by
+      have h : (∫⁻ (x : X), ∫⁻ (y : X), ‖f y‖ₑ ^ 2 * ‖g x‖ₑ ^ 2 ∂μ ∂μ)
+          = ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) * ∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ) := by
+        rw [← lintegral_const_mul _ ((g : X →ₘ[μ] V).measurable.enorm.pow_const 2)]
+        congr 1
+        ext x
+        exact lintegral_mul_const _ ((f : X →ₘ[μ] V).measurable.enorm.pow_const 2)
+      grw [lintegral_prod_le (fun (p:X× X)↦ ‖f p.2‖ₑ ^ 2 * ‖g p.1‖ₑ ^ 2)]
+      simp [h]
+    _ ≤ (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
+      rw [ENNReal.mul_rpow_of_nonneg (∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) (∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ)
+        (by simp)]
+      simp [Lp.enorm_def, eLpNorm_eq_lintegral_rpow_enorm_toReal (Ne.symm (NeZero.ne' 2))
+        (ENNReal.ofNat_ne_top), mul_assoc]
+
+private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+    (f g : Lp V 2 μ) : Integrable (fun p ↦ ⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜) (μ.prod μ) := by
+  constructor
+  · have h1 : AEStronglyMeasurable (fun p : X × X ↦ (K p.1 p.2) (f p.2 : V)) (μ.prod μ) :=
+      isBoundedBilinearMap_apply.continuous.comp_aestronglyMeasurable
+        (hK.aestronglyMeasurable.prodMk ((Lp.aestronglyMeasurable f).comp_snd (μ := μ)))
+    have h2 : AEStronglyMeasurable (fun p : X × X ↦ (g p.1 : V)) (μ.prod μ) :=
+      (Lp.aestronglyMeasurable g).comp_fst (μ := μ)
+    exact continuous_inner.comp_aestronglyMeasurable (h1.prodMk h2)
+  · grw [hasFiniteIntegral_def, lintegral_norm_inner_le μ hK f g]
+    exact eLpNorm_mul_enorm_mul_enorm_le_top hK f g
+
+def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
+    Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
   (LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
     (fun (f : Lp V 2 μ) (g : Lp V 2 μ) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ))
     (fun f₁ f₂ g ↦ by
-      simp_rw [← integral_add (by sorry) (by sorry), ← inner_add_left, ← map_add]
+      simp_rw [← integral_add (mercerForm_integrable μ hK f₁ g)
+        (mercerForm_integrable μ hK f₂ g), ← inner_add_left, ← map_add]
       have hf : ∀ᵐ p ∂(μ.prod μ), (f₁ + f₂) p.2 = f₁ p.2 + f₂ p.2 := by
-        rw [Measure.ae_prod_iff_ae_ae (by sorry), Measure.ae_ae_comm (by sorry)]
+        rw [Measure.ae_prod_iff_ae_ae (by
+          rw [measurableSet_setOfPred, AddSubgroup.coe_add]
+          refine Measurable.eq (meas_snd μ (f₁+f₂)) ((meas_snd μ f₁).add (meas_snd μ f₂)))
+          ]
+        rw [Measure.ae_ae_comm (by
+          rw [measurableSet_setOfPred, AddSubgroup.coe_add]
+          refine Measurable.eq (meas_snd μ (f₁+f₂)) ((meas_snd μ f₁).add (meas_snd μ f₂)))
+          ]
         filter_upwards [Lp.coeFn_add f₁ f₂] with p hp
         exact ae_of_all μ fun a ↦ hp
       apply integral_congr_ae
@@ -453,7 +538,13 @@ def mercerForm : Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.
     (fun c f g ↦ by
       simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul, ← map_smul]
       have hf : ∀ᵐ p ∂(μ.prod μ), (c • f) p.2 = c • f p.2 := by
-        rw [Measure.ae_prod_iff_ae_ae (by sorry), Measure.ae_ae_comm (by sorry)]
+        rw [Measure.ae_prod_iff_ae_ae (by
+          rw [measurableSet_setOfPred]
+          refine Measurable.eq (meas_snd μ (c • f)) ((meas_snd μ f).const_smul c))
+          ]
+        rw [Measure.ae_ae_comm (by
+          rw [measurableSet_setOfPred]
+          refine Measurable.eq (meas_snd μ (c • f)) ((meas_snd μ f).const_smul c))]
         filter_upwards [Lp.coeFn_smul c f] with p hp
         exact ae_of_all μ fun a ↦ hp
       apply integral_congr_ae
@@ -461,10 +552,13 @@ def mercerForm : Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.
       rw [hf]
     )
     (fun f g₁ g₂ ↦ by
-      rw [← integral_add (by sorry) (by sorry)]
+      rw [← integral_add (mercerForm_integrable μ hK f g₁) (mercerForm_integrable μ hK f g₂)]
       simp_rw [← inner_add_right]
       have hf : ∀ᵐ p ∂(μ.prod μ), (g₁ + g₂) p.1 = g₁ p.1 + g₂ p.1 := by
-        rw [Measure.ae_prod_iff_ae_ae (by sorry)]
+        rw [Measure.ae_prod_iff_ae_ae (by
+          rw [measurableSet_setOfPred, AddSubgroup.coe_add]
+          refine Measurable.eq (meas_fst μ (g₁+g₂)) ((meas_fst μ g₁).add (meas_fst μ g₂)))
+          ]
         filter_upwards [Lp.coeFn_add g₁ g₂] with p hp
         exact ae_of_all μ fun a ↦ hp
       apply integral_congr_ae
@@ -474,7 +568,10 @@ def mercerForm : Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.
     (fun c f g ↦ by
       simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply]
       have hf : ∀ᵐ p ∂(μ.prod μ), (c • g) p.1 = c • g p.1 := by
-        rw [Measure.ae_prod_iff_ae_ae (by sorry)]
+        rw [Measure.ae_prod_iff_ae_ae (by
+          rw [measurableSet_setOfPred]
+          refine Measurable.eq (meas_fst μ (c • g)) ((meas_fst μ g).const_smul c))
+          ]
         filter_upwards [Lp.coeFn_smul c g] with p hp
         exact ae_of_all μ fun a ↦ hp
       apply integral_congr_ae
@@ -484,15 +581,14 @@ def mercerForm : Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.
   )
   (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
   (fun f g ↦ by
-    simp
-    have := hK
-    grw [norm_integral_le_lintegral_norm, norm_inner_le_norm, le_opNorm]
-    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (Ne.symm (NeZero.ne' 2)) (ENNReal.ofNat_ne_top)]
-    simp_rw [mul_assoc]
--- , ENNReal.ofReal_mul (norm_nonneg)
-    sorry
-    sorry
-    sorry)
+    simp only [LinearMap.mk₂'ₛₗ_apply]
+    grw [norm_integral_le_lintegral_norm]
+    simp_rw [ofReal_norm]
+    grw [lintegral_norm_inner_le μ hK f g]
+    · simp
+    rw [← lt_top_iff_ne_top]
+    exact eLpNorm_mul_enorm_mul_enorm_le_top hK f g
+    )
 
 def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
   {
