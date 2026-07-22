@@ -86,11 +86,8 @@ instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
 @[to_additive]
-instance instSubsingleton [IsEmpty α] : Subsingleton (WithOne α) := by
-  constructor
-  intro a b
-  induction a <;> induction b <;>
-  · first | exact isEmptyElim (‹_› : α) | simp_all
+instance [IsEmpty α] : Subsingleton (WithOne α) :=
+  inferInstanceAs <| Subsingleton (Option α)
 
 /-- The canonical map from `α` into `WithOne α` -/
 @[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
