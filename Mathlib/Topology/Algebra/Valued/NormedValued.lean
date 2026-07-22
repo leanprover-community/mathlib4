@@ -62,7 +62,7 @@ instance : RankLeOne (valuation (K := K)) where
   hom' := embedding
   strictMono' := embedding_strictMono
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
@@ -76,7 +76,7 @@ def toValued : Valued K ℝ≥0 :=
         rcases RankLeOne.exists_val_lt (valuation (K := K)) with H | H
         · use Units.mk0 (valuation.restrict 1) (by simp)
           intro x hx
-          simp only [Units.val_mk0, mem_setOf_eq, map_one] at hx
+          simp only [Units.val_mk0, mem_ofPred_eq, map_one] at hx
           by_cases hx0 : x = 0
           · exact h (hx0 ▸ Metric.mem_ball_self hε)
           · exfalso
@@ -85,19 +85,19 @@ def toValued : Valued K ℝ≥0 :=
             apply le_of_eq
             rw [eq_comm]
             simpa only [Units.ext_iff, hx0.unit_spec, Units.val_one,
-              Submonoid.mk_eq_one] using H.elim hx0.unit 1
+              Submonoid.mk_eq_one] using! H.elim hx0.unit 1
         · obtain ⟨x, hx, hxy⟩ := H (γ := ⟨ε, le_of_lt hε⟩) (pos_iff_ne_zero.mp hε)
           use Units.mk0 (valuation.restrict x) (by simp [Valuation.restrict_def, hx])
           intro y hy
           apply h
           simp only [Metric.mem_ball, dist_zero_right]
-          simp only [Units.val_mk0, mem_setOf_eq, restrict_lt_iff, ← NNReal.coe_lt_coe] at hy
+          simp only [Units.val_mk0, mem_ofPred_eq, restrict_lt_iff, ← NNReal.coe_lt_coe] at hy
           apply lt_trans hy
-          simpa [RankLeOne.hom', valuation.restrict_def] using hxy
+          simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
         refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
         · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
-        · simpa [restrict_lt_iff_lt_embedding] using (mem_ball_zero_iff.mp hx) }
+        · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
@@ -124,6 +124,7 @@ theorem norm_def {x : L} : v.norm x = hv.hom _ (v.restrict x) := rfl
 
 theorem norm_nonneg (x : L) : 0 ≤ v.norm x := by simp only [norm, NNReal.zero_le_coe]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem norm_add_le (x y : L) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
   simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
   exact le_max_iff.mp (Valuation.map_add_le_max' v.restrict _ _)
@@ -131,7 +132,6 @@ theorem norm_add_le (x y : L) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := 
 theorem norm_eq_zero {x : L} (hx : v.norm x = 0) : x = 0 := by
   simpa [v.restrict_def, norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_pos_iff_valuation_pos {x : L} : 0 < v.norm x ↔ (0 : Γ₀) < v x := by
   rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom v),
     StrictMono.lt_iff_lt (RankOne.strictMono v)]
@@ -146,7 +146,6 @@ variable (L : Type*) [Field L] (Γ₀ : Type*) [LinearOrderedCommGroupWithZero �
 
 open Valuation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normed field structure determined by a rank one valuation. -/
 @[instance_reducible]
 def toNormedField : NormedField L :=
@@ -167,7 +166,7 @@ def toNormedField : NormedField L :=
     norm_mul := fun x y => by simp only [Valuation.norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
-      haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
+      have : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
       · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
@@ -179,23 +178,23 @@ def toNormedField : NormedField L :=
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
-          simp only [mem_setOf_eq, Valuation.norm, hδ, NNReal.coe_lt_coe] at hx
-          rw [mem_setOf, ← neg_sub, Valuation.map_neg]
+          simp only [mem_ofPred_eq, Valuation.norm, hδ, NNReal.coe_lt_coe] at hx
+          rw [mem_ofPred, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
-        · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
+        · have : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
             ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
           obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
           use u
           apply subset_trans _ hr
           intro x hx
-          simp only [Valuation.norm, mem_setOf_eq]
+          simp only [Valuation.norm, mem_ofPred_eq]
           apply lt_trans _ hu
           rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
       · simp only [Directed]
         intro x y
         use min x y
-        simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]
+        simp only [le_principal_iff, mem_principal, ofPred_subset_ofPred, Prod.forall]
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
@@ -229,13 +228,11 @@ variable {x x' : L}
 
 theorem norm_def : ‖x‖ = hv.hom _ (Valued.v.restrict x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_le_iff : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' := by
   rw [← v.restrict_le_iff, ← (Valuation.RankOne.strictMono val.v).le_iff_le]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_lt_iff : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' := by
   rw [← v.restrict_lt_iff, ← (Valuation.RankOne.strictMono val.v).lt_iff_lt]
@@ -244,27 +241,30 @@ theorem norm_lt_iff : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' := by
 @[simp]
 theorem norm_le_one_iff : ‖x‖ ≤ 1 ↔ val.v x ≤ 1 := by
   rw [← map_one val.v, ← v.restrict_le_iff]
-  simpa only [map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (b := 1)
+  simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).le_iff_le (b := 1)
 
 @[simp]
 theorem norm_lt_one_iff : ‖x‖ < 1 ↔ val.v x < 1 := by
   rw [← map_one val.v, ← v.restrict_lt_iff]
-  simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (b := 1)
+  simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).lt_iff_lt (b := 1)
 
 @[simp]
 theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
   rw [← map_one val.v, ← v.restrict_le_iff]
-  simpa only [map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (a := 1)
+  simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).le_iff_le (a := 1)
 
 @[simp]
 theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
   rw [← map_one val.v, ← v.restrict_lt_iff]
-  simpa only [map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
+  simpa only [map_one] using! (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
 
-lemma setOf_mem_integer_eq_closedBall :
+lemma setOfPred_mem_integer_eq_closedBall :
     { x : L | x ∈ Valued.v.integer } = Metric.closedBall 0 1 := by
   ext x
   simp [mem_integer_iff]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_mem_integer_eq_closedBall := setOfPred_mem_integer_eq_closedBall
 
 end toNormedField
 

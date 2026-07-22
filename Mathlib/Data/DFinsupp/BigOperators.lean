@@ -83,6 +83,35 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
     (g : ∀ i, β i → γ) : γ :=
   ∏ i ∈ f.support, g i (f i)
 
+@[to_additive]
+theorem prod_of_support_subset [∀ i, Zero (β i)]
+    [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
+    {f : Π₀ i, β i} {g : (i : ι) → β i → γ} {s : Finset ι}
+    (hs : f.support ⊆ s) (map_zero : ∀ i ∈ s, g i 0 = 1) :
+    f.prod g = ∏ i ∈ s, g i (f i) := by
+  simp only [DFinsupp.prod]
+  apply Finset.prod_subset hs
+  intro i hi hi'
+  simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at hi'
+  rw [hi', map_zero]
+  exact hi
+
+/-- The product over two dfinsupps agree if the functions agree and are well-behaved within the
+shared support. -/
+@[to_additive (attr := gcongr only)
+/-- The sum over two dfinsupps agree if the functions agree and are well-behaved within the
+shared support. -/]
+theorem prod_congr_of_eq_on_union
+    [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
+    {f1 f2 : Π₀ i, β i} {g1 g2 : (i : ι) → β i → γ}
+    (h : ∀ x ∈ f1.support ∪ f2.support, g1 x (f1 x) = g2 x (f2 x))
+    (h1 : ∀ x ∈ f1.support ∪ f2.support, g1 x 0 = 1)
+    (h2 : ∀ x ∈ f1.support ∪ f2.support, g2 x 0 = 1) :
+    f1.prod g1 = f2.prod g2 := by
+  rw [prod_of_support_subset Finset.subset_union_left h1,
+    prod_of_support_subset Finset.subset_union_right h2]
+  exact Finset.prod_congr rfl h
+
 @[to_additive (attr := simp)]
 theorem _root_.map_dfinsuppProd
     {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
@@ -238,14 +267,14 @@ def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β 
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
-        convert map_zero (φ i)
+        convert! map_zero (φ i)
         exact (hy i).resolve_left (mt (And.intro H1) H2)
       · intro i _
         rfl
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
-        convert map_zero (φ i)
+        convert! map_zero (φ i)
         exact (hx i).resolve_left (mt (fun H3 => And.intro H3 H1) H2)
   map_zero' := by
     simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
@@ -256,6 +285,7 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
   dsimp [sumZeroHom, single, Trunc.lift_mk]
   rw [Multiset.toFinset_singleton, Finset.sum_singleton, Pi.single_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
     sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl } := by
@@ -279,6 +309,7 @@ theorem sumZeroHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decid
   · rfl
   · rw [not_not.mp h, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When summing over an `AddMonoidHom`, the decidability assumption is not needed, and the result is
 also an `AddMonoidHom`.
@@ -316,7 +347,7 @@ theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : �
 theorem sumAddHom_piSingle [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (i) (φ : β i →+ γ) :
     sumAddHom (Pi.single i φ) = φ.comp (evalAddMonoidHom i) :=
   AddMonoidHom.toZeroHom_injective <| by
-    convert sumZeroHom_piSingle i φ.toZeroHom using 1
+    convert! sumZeroHom_piSingle i φ.toZeroHom using 1
     rw [DFinsupp.sumAddHom_toZeroHom]
     conv_lhs =>
       enter [1, i]

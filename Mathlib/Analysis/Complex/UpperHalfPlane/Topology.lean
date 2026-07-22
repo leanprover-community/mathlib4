@@ -69,13 +69,13 @@ instance : ContractibleSpace ℍ := by
   rw [isEmbedding_coe.toHomeomorph.trans (.setCongr range_coe) |>.contractibleSpace_iff]
   exact (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
-instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
+instance : LocallyPathConnectedSpace ℍ := isOpenEmbedding_coe.locallyPathConnectedSpace
 
 instance : NoncompactSpace ℍ where
   noncompact_univ h := by
     have : IsCompact (Complex.im ⁻¹' Ioi 0) := by
-      simpa [isEmbedding_coe.isCompact_iff] using h
-    simpa [closure_preimage_im] using congr(0 ∈ $this.isClosed.closure_eq)
+      simpa [isEmbedding_coe.isCompact_iff] using! h
+    simpa [closure_preimage_im] using! congr(0 ∈ $this.isClosed.closure_eq)
 
 instance : LocallyCompactSpace ℍ :=
   isOpenEmbedding_coe.locallyCompactSpace
@@ -185,6 +185,14 @@ lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
   simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
+
+@[fun_prop]
+lemma continuousOn_ofComplex_I_mul :
+    ContinuousOn (fun t : ℝ ↦ ofComplex (I * t)) (Set.Ioi 0) := by
+  simp only [ofComplex_apply_eq_ite, continuousOn_iff_continuous_domRestrict,
+    continuous_induced_rng]
+  have : Continuous (fun t : ℝ ↦ Complex.I * t) := by fun_prop
+  exact (this.comp continuous_subtype_val).congr (by simp +contextual)
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext

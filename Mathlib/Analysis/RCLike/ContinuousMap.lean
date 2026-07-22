@@ -32,6 +32,7 @@ variable {X : Type*} (𝕜 : Type*) [TopologicalSpace X] [RCLike 𝕜]
 
 open ComplexOrder
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (X) in
 /-- `ContinuousMap.realToRCLike` as an order embedding. -/
 @[simps] def realToRCLikeOrderEmbedding : C(X, ℝ) ↪o C(X, 𝕜) where
@@ -73,7 +74,7 @@ variable (X) in
 
 variable (X) in
 /-- `ContinuousMap.realToRCLike` as a ⋆-algebra map. -/
-@[simps!] noncomputable def realToRCLikeStarAlgHom : C(X, ℝ) →⋆ₐ[ℝ] C(X, 𝕜) :=
+noncomputable def realToRCLikeStarAlgHom : C(X, ℝ) →⋆ₐ[ℝ] C(X, 𝕜) :=
   compStarAlgHom X (RCLike.ofRealStarAlgHom 𝕜) RCLike.continuous_ofReal
 
 @[simp] lemma realToRCLikeStarAlgHom_apply (f : C(X, ℝ)) :

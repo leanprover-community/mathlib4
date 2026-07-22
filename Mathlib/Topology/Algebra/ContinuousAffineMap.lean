@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Affine
 
 /-!
@@ -56,7 +56,7 @@ theorem toAffineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (
 
 instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
-  coe_injective' _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
+  coe_injective _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
 
 instance : ContinuousMapClass (P →ᴬ[R] Q) P Q where
   map_continuous := cont
@@ -149,6 +149,7 @@ theorem comp_id (f : P →ᴬ[R] Q) : f.comp (id R P) = f :=
 theorem id_comp (f : P →ᴬ[R] Q) : (id R Q).comp f = f :=
   ext fun _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Applying a `ContinuousAffineMap` commutes with `AffineMap.lineMap`. -/
 @[simp]
 theorem apply_lineMap (f : P →ᴬ[R] Q) (p₀ p₁ : P) (c : R) :
@@ -165,10 +166,12 @@ def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     (lineMap p₀ p₁).toAffineMap = AffineMap.lineMap (k := R) p₀ p₁ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_lineMap_eq (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     ⇑(ContinuousAffineMap.lineMap p₀ p₁) = ⇑(AffineMap.lineMap (k := R) p₀ p₁) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Applying a `ContinuousAffineMap` commutes with `ContinuousAffineMap.lineMap`. -/
 @[simp]
 theorem apply_lineMap' [TopologicalSpace R] [TopologicalSpace V] [TopologicalSpace W]
@@ -367,6 +370,7 @@ instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
     (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Interpolating between `ContinuousAffineMap`s with `AffineMap.lineMap` commutes with
 evaluation. -/
 @[simp]
@@ -400,7 +404,7 @@ def prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : P₁ →ᴬ[k] P�
   __ := AffineMap.prod f g
   cont := by eta_expand; dsimp; fun_prop
 
-theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]
@@ -498,7 +502,7 @@ def decompEquiv : (V →ᴬ[R] Q) ≃ Q × (V →L[R] W) where
     simp_rw [vadd_apply, f.contLinear.coe_toContinuousAffineMap, coe_const, Function.const_apply,
       ← f.map_vadd, vadd_eq_add, add_zero]
   right_inv := by
-    haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+    have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
     rintro ⟨v, f⟩; ext <;> simp
 
 @[simp]
@@ -516,10 +520,11 @@ theorem decompEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
     (decompEquiv R V Q).symm p x = p.2 x +ᵥ p.1 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
     ((decompEquiv R V Q).symm p).contLinear = p.2 := by
-  haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+  have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
   ext; simp [decompEquiv]
 
 end
@@ -551,6 +556,7 @@ theorem decompLinearEquiv_symm_apply (p : W × (V →L[R] W)) (x : V) :
     (decompLinearEquiv R S V W).symm p x = p.2 x + p.1 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem decompLinearEquiv_symm_contLinear (p : W × (V →L[R] W)) :
     ((decompLinearEquiv R S V W).symm p).contLinear = p.2 := by

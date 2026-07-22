@@ -66,7 +66,7 @@ theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) 
 
 @[simp]
 theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree p := by
-  haveI := Classical.propDecidable
+  have := Classical.propDecidable
   by_cases hp : p = 0
   · rw [hp, zero_scaleRoots]
   refine le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree ?_)
@@ -136,7 +136,7 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
       simp [eval₂_eq_sum, sum_def]
     _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
       (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' => by
-        let this : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
+        let : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
         simp [this])
     _ = p.support.sum fun i : ℕ => f (p.coeff i) * f s ^ (p.natDegree - i + i) * a ^ i :=
       (Finset.sum_congr rfl fun i _hi => by
@@ -169,7 +169,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
   -- if we don't specify the type with `(_ : S)`, the proof is much slower
   nontriviality S using Subsingleton.eq_zero (_ : S)
-  convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
+  convert! @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 
@@ -307,8 +307,6 @@ lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
         exact (monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).ne_zero
   · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
     simpa
-
-@[deprecated (since := "2025-12-09")] alias Factors.scaleRoots := Splits.scaleRoots
 
 end CommSemiring
 

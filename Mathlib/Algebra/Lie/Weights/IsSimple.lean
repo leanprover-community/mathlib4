@@ -139,6 +139,7 @@ lemma rootSet_apply_coroot_eq_zero_of_notMem_rootSet (I : LieIdeal K L)
     LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker, LinearMap.mem_ker]
   exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker (Submodule.mem_span_singleton_self _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The intersection of a Lie ideal and a Cartan subalgebra is the span of the coroots whose roots
 have root spaces in the ideal. -/
 lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
@@ -259,7 +260,7 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
     have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) := by
       apply toLieSubmodule_le_rootSpace_zero
       exact y.property
-    convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
+    convert! lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
     ext h; simp
   have h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
       genWeightSpace L (χ.toLinear + α.toLinear) ⊔
@@ -324,7 +325,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     rw [hi] at h_equiv
     exact h_chi_not_in_q (h_equiv.mpr (by
       rw [hj, Weight.toLinear_neg]
-      convert q.smul_mem (-1) hαq using 1
+      convert q.smul_mem (-1) hαq
       rw [neg_smul, one_smul]))
   obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α hα₀
@@ -375,6 +376,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hq hx_χ hαq in
 private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot hα₀) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
@@ -413,7 +415,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
   by_cases w_chi : χ.toLinear = 0
   · have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
       rw [← rootSpace_zero_eq K L H]
-      convert hx_χ; ext h; simp only [Pi.zero_apply]
+      convert! hx_χ; ext h; simp only [Pi.zero_apply]
       have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi, LinearMap.zero_apply]
       exact h_apply.symm
     apply LieSubmodule.mem_iSup_of_mem ⟨α, hαq, hα₀⟩

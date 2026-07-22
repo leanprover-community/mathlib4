@@ -122,7 +122,6 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
     (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : (LinearMap.ker l).FG) :
     Module.FinitePresentation R N := by
-  classical
   let b := Module.Free.chooseBasis R M
   let π : Free.ChooseBasisIndex R M → (Set.finite_range (l ∘ b)).toFinset :=
     fun i ↦ ⟨l (b i), by simp⟩
@@ -137,7 +136,7 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
     by simpa [Set.range_comp, LinearMap.range_eq_top], ?_⟩
   let f : M →ₗ[R] (Set.finite_range (l ∘ b)).toFinset →₀ R :=
     Finsupp.lmapDomain _ _ π ∘ₗ b.repr.toLinearMap
-  convert hl'.map f
+  convert! hl'.map f
   ext x; simp only [LinearMap.mem_ker, Submodule.mem_map]
   constructor
   · intro hx
@@ -184,7 +183,6 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
 lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     [h : Module.FinitePresentation R N] (l : M →ₗ[R] N) (hl : Function.Surjective l) :
     (LinearMap.ker l).FG := by
-  classical
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
     LinearMap.range_eq_top.mp
@@ -331,7 +329,6 @@ lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
 open TensorProduct in
 instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
     Module.FinitePresentation A (A ⊗[R] M) := by
-  classical
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
   have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
   apply Module.finitePresentation_of_surjective (f.baseChange A)
@@ -384,7 +381,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     · simp only [smul_zero]
     apply IsLocalizedModule.exists_of_eq (S := S) (f := f)
     rw [← LinearMap.comp_apply, map_zero, hi, LinearMap.comp_apply]
-    convert map_zero (s₀ • g)
+    convert! map_zero (s₀ • g)
     rw [← LinearMap.mem_ker, ← hτ]
     exact Submodule.subset_span x.prop
   choose s' hs' using this
@@ -395,7 +392,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     simp only [s₁]
     rw [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.smul_apply,
       ← Finset.prod_erase_mul _ _ (Finset.mem_univ ⟨x, hxσ⟩), mul_smul]
-    convert smul_zero _
+    convert! smul_zero _
     exact hs' ⟨x, hxσ⟩
   refine ⟨Submodule.liftQ _ _ this ∘ₗ
     (LinearMap.quotKerEquivOfSurjective _ hπ).symm.toLinearMap, s₁ * s₀, ?_⟩
@@ -404,6 +401,23 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   rw [← LinearMap.comp_apply, ← LinearMap.comp_apply, mul_smul, LinearMap.smul_comp, ← hi,
     ← LinearMap.comp_smul, LinearMap.comp_assoc, LinearMap.comp_assoc]
   simp
+
+/-- Let `M` be a finitely presented `R`-module, `N` be an `R`-module, `S` be a submonoid of `R`,
+`Mₚ` be the localization of `M` at `S`, `Nₚ` be the localization of `N` at `S`. Then any surjective
+linear map `ϕ : Mₚ →ₗ[R] Nₚ` lifts to a linear map `φ : M →ₗ[R] N` that is surjective after
+localization at `S`. -/
+lemma Module.exists_localizedMap_surjective_of_surjective [Module.FinitePresentation R M]
+    (S : Submonoid R) {Mₚ : Type*} [AddCommGroup Mₚ] [Module R Mₚ]
+    (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f] {Nₚ : Type*} [AddCommGroup Nₚ] [Module R Nₚ]
+    (g : N →ₗ[R] Nₚ) [IsLocalizedModule S g] {ϕ : Mₚ →ₗ[R] Nₚ} (hϕ : Function.Surjective ϕ) :
+    ∃ (φ : M →ₗ[R] N) (s : S) (_ : IsLocalizedModule.map S f g φ = s • ϕ),
+      Function.Surjective (IsLocalizedModule.map S f g φ) := by
+  obtain ⟨φ, s, hφ⟩ := FinitePresentation.exists_lift_of_isLocalizedModule S g (ϕ ∘ₗ f)
+  have hmap : IsLocalizedModule.map S f g φ = s • ϕ := by
+    apply IsLocalizedModule.linearMap_ext S f g
+    simp [IsLocalizedModule.map_comp, hφ, LinearMap.smul_comp]
+  refine ⟨φ, s, hmap, ?_⟩
+  simpa only [hmap] using! ((End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).2.comp hϕ
 
 lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
     [hM : Module.Finite R M] (g₁ g₂ : M →ₗ[R] N) (h : f.comp g₁ = f.comp g₂) :
@@ -475,7 +489,7 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     ext x
     have : s₁.1 • l (l' x) = s₁.1 • s₀.1 • x := congr($hs₁ x)
     simp [lₛ, lₛ', LocalizedModule.smul'_mk, this]
-  let eₛ : LocalizedModule (.powers t) M ≃ₗ[Rₛ] LocalizedModule (.powers t) N :=
+  let eₛ : LocalizedModule.Away t M ≃ₗ[Rₛ] LocalizedModule.Away t N :=
     { __ := lₛ,
       invFun := ((hu₀.unit⁻¹).1 • lₛ'),
       left_inv := fun x ↦ congr($H_left x),
@@ -505,8 +519,8 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     [Module.FinitePresentation R M] [Module.FinitePresentation R N]
     (l : M' ≃ₗ[R] N') :
     ∃ (r : R) (hr : r ∈ S)
-      (l' : LocalizedModule (.powers r) M ≃ₗ[Localization (.powers r)]
-        LocalizedModule (.powers r) N),
+      (l' : LocalizedModule.Away r M ≃ₗ[Localization (.powers r)]
+        LocalizedModule.Away r N),
       (LocalizedModule.lift (.powers r) g fun s ↦ map_units g ⟨s.1, SetLike.le_def.mp
         (Submonoid.powers_le.mpr hr) s.2⟩) ∘ₗ l'.toLinearMap =
         l ∘ₗ (LocalizedModule.lift (.powers r) f fun s ↦ map_units f ⟨s.1, SetLike.le_def.mp
@@ -581,12 +595,12 @@ instance [Module.FinitePresentation R M] :
 is finitely presented, then `Mₛ = M[1/r]` for some `r ∈ S`. -/
 lemma IsLocalizedModule.exists_isLocalizedModule_powers_of_finitePresentation
     [Module.Finite R M] [Module.FinitePresentation R M'] :
-    ∃ r ∈ S, IsLocalizedModule (.powers r) f := by
+    ∃ r ∈ S, IsLocalizedModule.Away r f := by
   have : IsLocalizedModule S (.id (R := R) (M := M')) :=
     ⟨IsLocalizedModule.map_units f, fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simpa using ⟨1, S.one_mem⟩⟩
   obtain ⟨r, hrp, H⟩ := exists_bijective_map_powers S
       f (.id (R := R) (M := M')) f <| by
-    convert show Function.Bijective LinearMap.id from Function.bijective_id
+    convert! show Function.Bijective LinearMap.id from Function.bijective_id
     apply IsLocalizedModule.ext S f
     · exact IsLocalizedModule.map_units f
     · simp [IsLocalizedModule.map_comp]

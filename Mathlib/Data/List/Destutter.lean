@@ -105,8 +105,6 @@ theorem destutter'_of_isChain_cons (h : (a :: l).IsChain R) : l.destutter' R a =
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ (a :: l).IsChain R :=
   ⟨fun h => by
-    suffices IsChain R (a::l) by
-      assumption
     rw [← h]
     exact l.isChain_destutter' R a, destutter'_of_isChain_cons _ _⟩
 
@@ -254,12 +252,12 @@ lemma IsChain.length_le_length_destutter [IsEquiv α Rᶜ] :
   -- `l₁ := a :: l₁`, `l₂ := a :: b :: l₂`
   | _, _, .cons_cons a <| .cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
     by_cases hab : R a b
-    · simpa [destutter_cons_cons, hab] using hl₁.tail.length_le_length_destutter (hl.cons _)
-    · simpa [destutter_cons_cons, hab] using hl₁.length_le_length_destutter (hl.cons_cons _)
+    · simpa [destutter_cons_cons, hab] using! hl₁.tail.length_le_length_destutter (hl.cons _)
+    · simpa [destutter_cons_cons, hab] using! hl₁.length_le_length_destutter (hl.cons_cons _)
   -- `l₁ := a :: b :: l₁`, `l₂ := a :: b :: l₂`
   | _, _, .cons_cons a <| .cons_cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
     simpa [destutter_cons_cons, rel_of_isChain_cons_cons hl₁]
-      using hl₁.tail.length_le_length_destutter (hl.cons_cons _)
+      using! hl₁.tail.length_le_length_destutter (hl.cons_cons _)
 
 /-- `destutter` of `≠` gives a list of maximal length over any chain.
 
