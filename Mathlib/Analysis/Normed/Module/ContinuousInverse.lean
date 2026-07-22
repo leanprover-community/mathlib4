@@ -202,6 +202,7 @@ variable {R E E' F F' G : Type*} [Ring R]
   [TopologicalSpace E] [AddCommGroup E] [Module R E]
   [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has a continuous left inverse, its range admits a closed complement. -/
 lemma closedComplemented_range (hf : f.HasLeftInverse) : Submodule.ClosedComplemented f.range := by
   -- Idea of proof: let g be a left inverse for f. Then ker g is a closed subspace of F,

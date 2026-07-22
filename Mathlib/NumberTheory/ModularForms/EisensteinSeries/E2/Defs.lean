@@ -98,6 +98,7 @@ lemma D2_T : D2 ModularGroup.T = 0 := by
   ext z
   simp [D2, ModularGroup.T]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma D2_S (z : ℍ) : D2 ModularGroup.S z = 2 * π * I / z := by
   simp [D2, ModularGroup.S, ModularGroup.denom_apply]
 

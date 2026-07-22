@@ -167,7 +167,7 @@ lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
 
 lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
     {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
-  letI := hs.1
+  let := hs.1
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 
@@ -468,7 +468,7 @@ alias finite_diff_of_mem_codiscreteWithin := finite_sdiff_of_mem_codiscreteWithi
 theorem cofinite_inf_le_codiscreteWithin (hK : IsCompact K) :
     cofinite ⊓ 𝓟 K ≤ codiscreteWithin K := by
   intro s hs
-  simpa [mem_inf_principal, compl_setOf] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
+  simpa [mem_inf_principal, compl_ofPred] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
 
 theorem codiscreteWithin_eq [T1Space X] (hK : IsCompact K) :
     codiscreteWithin K = cofinite ⊓ 𝓟 K := by
@@ -538,8 +538,5 @@ theorem discreteTopology_iUnion_finite {ι : Type*} [Finite ι] {s : ι → Set 
     DiscreteTopology (⋃ i, s i) := by
   simp only [← isDiscrete_iff_discreteTopology] at *
   exact .iUnion hs hs'
-
-@[deprecated (since := "2025-11-28")]
-alias discreteTopology_iUnion_fintype := discreteTopology_iUnion_finite
 
 end discrete_union
