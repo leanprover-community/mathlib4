@@ -97,8 +97,8 @@ open Topology Submodule LinearMap
 open Set (MapsTo)
 open LinearMap.FiniteRangeSetoid
 
-section TVS
 namespace ContinuousLinearMap
+section TVS
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
     [Module 𝕜 E] [Module 𝕜 F] [TopologicalSpace E] [TopologicalSpace F]
@@ -371,7 +371,7 @@ theorem IsFredholm.of_isQuasiInverse {u : E →L[𝕜] F} {v : F →L[𝕜] E} (
 
 end DefTFAE
 
-end ContinuousLinearMap
 end TVS
+end ContinuousLinearMap
 
 end
