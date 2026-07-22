@@ -69,8 +69,6 @@ variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
 open Manifold IsManifold
 
--- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
-
 /-- The inclusion map from a closed segment to `ℝ` is a smooth immersion -/
 lemma isImmersionOfComplement_subtypeVal_Icc :
     IsImmersionOfComplement Unit (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
