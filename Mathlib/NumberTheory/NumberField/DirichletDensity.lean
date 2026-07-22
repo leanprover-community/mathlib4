@@ -86,7 +86,7 @@ theorem HasDirichletDensity.dirichletDensity_eq {δ : ℝ} (h : HasDirichletDens
 theorem HasDirichletDensity.unique {δ₁ δ₂ : ℝ} (h₁ : HasDirichletDensity S δ₁)
     (h₂ : HasDirichletDensity S δ₂) :
     δ₁ = δ₂ :=
-  h₁.dirichletDensity_eq.symm.trans h₂.dirichletDensity_eq
+  tendsto_nhds_unique h₁ h₂
 
 /-- The Dirichlet density of the empty set is `0`. -/
 theorem hasDirichletDensity_empty :
