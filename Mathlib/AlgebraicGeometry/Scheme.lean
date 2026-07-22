@@ -490,7 +490,7 @@ theorem Spec.map_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
   Scheme.Hom.ext' <| Spec.locallyRingedSpaceMap_comp f g
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes. -/
-@[simps]
+@[simps, implicit_reducible]
 protected def Scheme.Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := Spec (unop R)
   map f := Spec.map f.unop
