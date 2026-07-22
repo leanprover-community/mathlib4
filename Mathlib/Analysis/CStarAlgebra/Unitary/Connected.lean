@@ -215,7 +215,7 @@ lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
 lemma Unitary.continuousOn_argSelfAdjoint :
     ContinuousOn (argSelfAdjoint : unitary A → selfAdjoint A) (ball (1 : unitary A) 2) := by
   rw [Topology.IsInducing.subtypeVal.continuousOn_iff]
-  simp only [SetLike.coe_sort_coe, Function.comp_def, argSelfAdjoint_coe]
+  simp only [Function.comp_def, argSelfAdjoint_coe]
   rw [isOpen_ball.continuousOn_iff]
   intro u (hu : dist u 1 < 2)
   obtain ⟨ε, huε, hε2⟩ := exists_between (sq_lt_sq₀ (by positivity) (by positivity) |>.mpr hu)
@@ -225,10 +225,10 @@ lemma Unitary.continuousOn_argSelfAdjoint :
   apply ContinuousOn.image_comp_continuous ?_ continuous_subtype_val
   apply continuousOn_cfc A (s := sphere 0 1 ∩ {z | 2 * (1 - z.re) ≤ ε}) ?_ _ ?_ |>.mono
   · rintro - ⟨v, hv, rfl⟩
-    simp only [Set.subset_inter_iff, Set.mem_setOf_eq]
+    simp only [Set.subset_inter_iff, Set.mem_ofPred_eq]
     refine ⟨inferInstance, spectrum_subset_circle v, ?_⟩
     intro z hz
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     trans ‖(v - 1 : A)‖ ^ 2
     · exact two_mul_one_sub_le_norm_sub_one_sq v.2 hz
     · refine Real.le_sqrt (by positivity) (by positivity) |>.mp ?_
@@ -350,6 +350,3 @@ lemma Unitary.mem_pathComponentOne_iff {u : unitary A} :
     induction l with
     | nil => simp
     | cons x xs ih => simpa using! (joined_one_expUnitary x).mul ih
-
-@[deprecated (since := "2025-10-29")] alias unitary.mem_pathComponentOne_iff :=
-  Unitary.mem_pathComponentOne_iff

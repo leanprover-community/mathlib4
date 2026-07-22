@@ -542,6 +542,7 @@ theorem domain_supSpanSingleton (f : E →ₛₗ.[σ] F) (x : E) (y : F) (hx : x
     (f.supSpanSingleton x y hx).domain = f.domain ⊔ K ∙ x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem supSpanSingleton_apply_mk (f : E →ₛₗ.[σ] F) (x : E) (y : F) (hx : x ∉ f.domain) (x' : E)
     (hx' : x' ∈ f.domain) (c : K) :
@@ -565,6 +566,7 @@ theorem supSpanSingleton_apply_self (f : E →ₛₗ.[σ] F) {x : E} (y : F) (hx
     f.supSpanSingleton x y hx ⟨x, mem_sup_right <| mem_span_singleton_self _⟩ = y := by
   simpa using supSpanSingleton_apply_smul_self f y hx 1
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem supSpanSingleton_apply_of_mem (f : E →ₛₗ.[σ] F) {x : E} (y : F) (hx : x ∉ f.domain)
     (x' : (f.supSpanSingleton x y hx).domain) (hx' : (x' : E) ∈ f.domain) :
     f.supSpanSingleton x y hx x' = f ⟨x', hx'⟩ := by
@@ -965,6 +967,7 @@ theorem mem_graph_toLinearPMap {g : Submodule R (E × F)}
   rw [toLinearPMap_apply_aux hg]
   exact valFromGraph_mem hg x.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :

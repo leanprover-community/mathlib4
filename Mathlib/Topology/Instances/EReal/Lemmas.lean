@@ -74,7 +74,7 @@ theorem continuousOn_toReal : ContinuousOn EReal.toReal ({⊥, ⊤}ᶜ : Set ERe
 /-- The set of finite `EReal` numbers is homeomorphic to `ℝ`. -/
 def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
   toEquiv := neTopBotEquivReal
-  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_toReal
+  continuous_toFun := continuousOn_iff_continuous_domRestrict.1 continuousOn_toReal
   continuous_invFun := continuous_coe_real_ereal.subtype_mk _
 
 /-! ### ENNReal coercion -/

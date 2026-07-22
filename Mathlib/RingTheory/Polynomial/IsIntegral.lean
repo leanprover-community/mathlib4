@@ -192,7 +192,6 @@ attribute [local instance] MvPolynomial.algebraMvPolynomial in
 attribute [-simp] AlgEquiv.symm_toRingEquiv in
 theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPolynomial σ S} :
     IsIntegral (MvPolynomial σ R) f ↔ ∀ n, IsIntegral R (f.coeff n) := by
-  classical
   refine ⟨fun H n ↦ ?mp, fun H ↦ ?mpr⟩
   case mpr =>
     rw [← f.support_sum_monomial_coeff]
