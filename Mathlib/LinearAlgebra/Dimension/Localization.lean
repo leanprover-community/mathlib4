@@ -115,17 +115,15 @@ theorem IsFractionRing.finrank_right_eq : finrank S N = finrank R N :=
 
 end
 
+variable (R) in
 open IsLocalization in
 /-- Given `IsScalarTower R S A`, if `A` is the fraction ring of `S`, then the finrank `finrank R S`
 of the left part of the tower equals the finrank `finrank R A` of the whole tower.
 
 See `IsFractionRing.finrank_right_eq` for the right version.
 See `IsFractionRing.finrank_eq` for the simultaneous version. -/
-theorem IsFractionRing.finrank_left_eq (R S A : Type*)
-    [CommRing R] [CommRing S] [CommRing A]
-    [Algebra R S] [Algebra S A] [Algebra R A]
-    [IsScalarTower R S A] [IsFractionRing S A] :
-    Module.finrank R S = Module.finrank R A := by
+theorem IsFractionRing.finrank_left_eq (A : Type*) [CommRing A] [Algebra S A] [Algebra R A]
+    [IsScalarTower R S A] [IsFractionRing S A] : Module.finrank R S = Module.finrank R A := by
   nontriviality R
   classical
   apply Cardinal.toNat_eq_of_forall_le_iff
