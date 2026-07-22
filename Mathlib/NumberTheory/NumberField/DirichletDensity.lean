@@ -56,7 +56,22 @@ private theorem sum_fiber_le {s : ℝ} (hs : 0 ≤ s) (v : HeightOneSpectrum ℤ
     ∑' 𝔭 : {𝔭 : HeightOneSpectrum (𝓞 K) // 𝔭.under ℤ = v}, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
         ≤ (Module.finrank ℤ (𝓞 K) : ℝ) * (Ideal.absNorm v.asIdeal : ℝ) ^ (-s) := by
   have := Fintype.ofFinite {𝔭 : HeightOneSpectrum (𝓞 K) // 𝔭.under ℤ = v}
-  rw [tsum_fintype]
+  rw [tsum_fintype, ← nsmul_eq_mul]
+  refine (Finset.univ.sum_le_card_nsmul _ _ fun 𝔭 _ ↦
+    Real.rpow_le_rpow_of_nonpos ?_ ?_ (by rwa [neg_nonpos])).trans <|
+      nsmul_le_nsmul_left (by positivity) ?_
+  · rw [Nat.cast_pos]
+    apply Nat.pos_of_ne_zero
+    rw [HeightOneSpectrum.absNorm_asIdeal]
+    sorry
+  · sorry
+  · rw [Finset.card_univ, ← Nat.card_eq_fintype_card, Nat.card_congr (primesOverEquiv v)]
+    exact Ideal.ncard_primesOver_le v.asIdeal (𝓞 K)
+
+
+#exit
+  sorry
+  refine nsmul_le_nsmul_left ?_ ?_
   refine le_trans (Finset.univ.sum_le_card_nsmul _ ((Ideal.absNorm v.asIdeal : ℝ) ^ (-s)) ?_) ?_
   · intro 𝔭 _
     refine Real.rpow_le_rpow_of_nonpos ?_ (by
@@ -75,17 +90,12 @@ private theorem sum_fiber_le {s : ℝ} (hs : 0 ≤ s) (v : HeightOneSpectrum ℤ
 /-- The prime-ideal zeta sum converges for real `s > 1`. -/
 theorem summable_primeIdealZetaSum {s : ℝ} (hs : 1 < s) :
     Summable (fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ (Ideal.absNorm 𝔭.asIdeal : ℝ) ^ (-s)) := by
-  have hbase : Summable (fun v : HeightOneSpectrum ℤ ↦ (Ideal.absNorm v.asIdeal : ℝ) ^ (-s)) := by
-    rw [← primesEquiv.symm.summable_iff]
-    simp only [Function.comp_def, primesEquiv_symm_apply_asIdeal, Ideal.absNorm_span_singleton,
-      Algebra.norm_self, MonoidHom.id_apply, Int.natAbs_natCast]
-    exact Nat.Primes.summable_rpow.mpr <| by rwa [neg_lt_neg_iff]
-  rw [← (Equiv.sigmaFiberEquiv (fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ 𝔭.under ℤ)).summable_iff]
-  simp only [Function.comp_def]
-  rw [summable_sigma_of_nonneg (fun _ ↦ by positivity)]
-  refine ⟨fun _ ↦ .of_finite, ?_⟩
-  exact Summable.of_nonneg_of_le (fun v ↦ tsum_nonneg fun _ ↦ by positivity)
-    (fun v ↦ sum_fiber_le (by linarith) v) (hbase.mul_left _)
+  simp only [← (Equiv.sigmaFiberEquiv (fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ 𝔭.under ℤ)).summable_iff,
+    Function.comp_def, Equiv.sigmaFiberEquiv_apply]
+  refine (summable_sigma_of_nonneg (fun _ ↦ by positivity)).mpr ⟨fun _ ↦ .of_finite, ?_⟩
+  refine .of_nonneg_of_le (fun _ ↦ by positivity) (sum_fiber_le (by linarith)) (.mul_left _ ?_)
+  rw [← primesEquiv.symm.summable_iff]
+  simpa [Function.comp_def] using Nat.Primes.summable_rpow.mpr <| by rwa [neg_lt_neg_iff]
 
 variable {S} in
 /-- For a finite set `S` of prime ideals, the partial sum `∑_{𝔭 ∈ S} N𝔭 ^ (-s)` is bounded above

@@ -134,6 +134,18 @@ theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain R] [Module.Free �
     {p : IsDedekindDomain.HeightOneSpectrum R | p.asIdeal.absNorm ≤ B}.Finite :=
   finite_cardQuot_heightOneSpectrum_le B
 
+/-- The norm of a nonzero prime ideal is `> 1`. -/
+lemma _root_.Ideal.one_lt_absNorm [IsDedekindDomain R] [Module.Free ℤ R] {I : Ideal R}
+    [hp : I.IsPrime] (hI : I ≠ ⊥) : 1 < I.absNorm := by
+  have : I.absNorm ≠ 0 := (Ideal.absNorm_ne_zero_iff I).mpr (finiteQuotient hI)
+  have : I.absNorm ≠ 1 := fun h ↦ hp.ne_top (Ideal.absNorm_eq_one_iff.mp h)
+  omega
+
+/-- The norm of a prime of the height-one spectrum is `≠ 0`. -/
+lemma _root_.IsDedekindDomain.HeightOneSpectrum.absNorm_ne_zero [IsDedekindDomain R]
+    [Module.Free ℤ R] (v : IsDedekindDomain.HeightOneSpectrum R) : v.asIdeal.absNorm ≠ 0 :=
+  ne_zero_of_lt (Ideal.one_lt_absNorm v.ne_bot)
+
 instance : Northcott fun p : Ideal R ↦ p.cardQuot :=
   ⟨Ring.HasFiniteQuotients.finite_cardQuot_le⟩
 
