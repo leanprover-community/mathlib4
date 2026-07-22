@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
 This file defines `Coalgebra.IsFrobenius` and shows some elementary results.
 
-A coalgebra with an algebra structure is said to be `Frobenius` when the Frobenius equation
+A coalgebra with an algebra structure is said to be Frobenius when the Frobenius equation
 is satisfied:
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`.
 
