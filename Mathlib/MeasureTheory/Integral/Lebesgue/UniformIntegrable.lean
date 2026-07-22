@@ -18,10 +18,10 @@ This file contains the definitions for uniform integrability of `ℝ≥0∞`-val
   A family of functions `F` is uniformly integrable if for all `ε > 0`, there
   exists some `δ > 0` such that for all sets `s` of smaller measure than `δ`, for all `i`,
   the integral of `F i` restricted to `s` is smaller than `ε`.
-* `MeasureTheory.UniformLIntegrable`: a sequence of measurable functions `F` is uniformly
-  integrable in this sense if the integrals `∫⁻ x in F i ⁻¹' Ici a, F i x ∂μ` decay to `0` as `a`
+* `MeasureTheory.UniformLIntegrable`: a family of functions `F` is uniformly integrable
+  in this sense if the integrals `∫⁻ x in F i ⁻¹' Ici a, F i x ∂μ` decay to `0` as `a`
   tends to `∞`, uniformly in `i`.
-* `MeasureTheory.UniformTail`: a sequence of measurable functions `F` has uniform tails
+* `MeasureTheory.UniformTail`: a family of functions `F` has uniform tails
   if the tails `μ (F i ⁻¹' Ici a)` decay to `0` as `a` tends to `∞`, uniformly in `i`. This notion
   is useful to relate precisely `UnifLIntegrable` and `UniformLIntegrable`.
 
@@ -47,6 +47,9 @@ variable {α ι : Type*} [MeasurableSpace α] {F G : ι → α → ℝ≥0∞} {
 
 /-! ### Uniform integrability -/
 
+/-- A family of functions `F` is `UnifLIntegrable` if for all `ε > 0`, there
+  exists some `δ > 0` such that for all sets `s` of smaller measure than `δ`, for all `i`,
+  the integral of `F i` restricted to `s` is smaller than `ε`. -/
 def UnifLIntegrable (F : ι → α → ℝ≥0∞) (μ : Measure α) :=
   Tendsto (fun ε ↦ ⨆ (i : ι) (A : Set α) (_ : μ A ≤ ε), ∫⁻ x in A, F i x ∂μ) (𝓝 0) (𝓝 0)
 
@@ -68,9 +71,9 @@ lemma unifLIntegrable_mk :
 
 lemma UnifLIntegrable.mono_ae (hG : UnifLIntegrable G μ) (h : ∀ i, F i ≤ᵐ[μ] G i) :
     UnifLIntegrable F μ := by
-  rw [unifLIntegrable_mk] at hG ⊢
+  rw [unifLIntegrable_def] at hG ⊢
   refine tendsto_nhds_bot_mono hG (Eventually.of_forall fun a ↦ ?_)
-  apply iSup_mono fun i ↦ iSup_mono fun A ↦ iSup_mono fun hA ↦ iSup_mono fun hAμ ↦ ?_
+  apply iSup_mono fun i ↦ iSup_mono fun A ↦ iSup_mono fun _ ↦ ?_
   exact lintegral_mono_ae (Eventually.filter_mono ae_restrict_le (h i))
 
 lemma unifLIntegrable_congr_ae (h : ∀ i, F i =ᵐ[μ] G i) :
@@ -140,6 +143,8 @@ lemma UnifLIntegrable.add (h : ∀ i, AEMeasurable (G i) μ) (hF : UnifLIntegrab
 
 /-! ### Uniform tails -/
 
+/-- A family of functions `F` has uniform tails if the tails `μ (F i ⁻¹' Ici a)` decay to `0`
+  as `a` tends to `∞`, uniformly in `i`. -/
 def UniformTail (F : ι → α → ℝ≥0∞) (μ : Measure α) :=
   Tendsto (fun a ↦ ⨆ i, μ (F i ⁻¹' Ici a)) (𝓝 ∞) (𝓝 0)
 
@@ -227,6 +232,8 @@ lemma UniformTail.add (hF : UniformTail F μ) (hG : UniformTail G μ) :
 
 /-! ### Equi-integrability -/
 
+/-- A family of functions `F` is `UniformLIntegrable` if the integrals
+  `∫⁻ x in F i ⁻¹' Ici a, F i x ∂μ` decay to `0` as `a` tends to `∞`, uniformly in `i`. -/
 def UniformLIntegrable (F : ι → α → ℝ≥0∞) (μ : Measure α) :=
   Tendsto (fun a ↦ ⨆ i, ∫⁻ x in F i ⁻¹' Ici a, F i x ∂μ) (𝓝 ∞) (𝓝 0)
 
