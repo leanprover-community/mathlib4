@@ -352,7 +352,6 @@ lemma enorm_inner_le_enorm (f g : V) : ‖⟪f, g⟫_𝕜‖ₑ ≤  ‖f‖ₑ 
   grw [← ofReal_norm, norm_inner_le_norm]
   simp [ENNReal.ofReal_mul, ofReal_norm]
 
-
 omit [CompleteSpace V] [Fact K.PosSemidef] [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
   [MeasurableSpace V] [BorelSpace V] [MeasurableEq V] [MeasurableAdd₂ V]
   [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)] in
@@ -365,6 +364,8 @@ private lemma eLpNorm_mul_enorm_mul_enorm_le_top {μ} (hK : MemLp (fun p : X × 
   · exact enorm_lt_top
   · exact enorm_lt_top
 
+omit [CompleteSpace V] [Fact K.PosSemidef] [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
+  [IsFiniteMeasure μ] [MeasurableEq V] [MeasurableAdd₂ V] in
 private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
     (f g : Lp V 2 μ) : ∫⁻  (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
       (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
@@ -397,6 +398,8 @@ private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 
       simp [Lp.enorm_def, eLpNorm_eq_lintegral_rpow_enorm_toReal (Ne.symm (NeZero.ne' 2))
         (ENNReal.ofNat_ne_top), mul_assoc]
 
+omit [CompleteSpace V] [Fact K.PosSemidef] [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
+  [IsFiniteMeasure μ] [MeasurableEq V] [MeasurableAdd₂ V] in
 private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
     (f g : Lp V 2 μ) : Integrable (fun p ↦ ⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜) (μ.prod μ) := by
   constructor
