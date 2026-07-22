@@ -64,8 +64,8 @@ instance Int.instUnitsPow : Pow ℤˣ R where
   pow u r := (r • Additive.ofMul u).toMul
 
 -- The above instances form no typeclass diamonds with the standard power operators
-example : Int.instUnitsPow = NPow.toPow := with_implicit rfl
-example : Int.instUnitsPow = ZPow.toPow := with_implicit rfl
+example : Int.instUnitsPow = NPow.toPow := by with_implicit rfl
+example : Int.instUnitsPow = ZPow.toPow := by with_implicit rfl
 
 @[simp] lemma ofMul_uzpow (u : ℤˣ) (r : R) : Additive.ofMul (u ^ r) = r • Additive.ofMul u := rfl
 
