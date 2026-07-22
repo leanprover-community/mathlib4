@@ -237,14 +237,14 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
   set M := adjoin F ((· ^ q ^ n) '' S)
   have := expChar_of_injective_algebraMap (algebraMap F M).injective q
   refine le_antisymm (adjoin_le_iff.2 fun x hx ↦ ?_) (adjoin_le_iff.2 ?_)
-  · have : Algebra.IsSeparable M (adjoin M {x}) :=
+  · have : Algebra.IsSeparable M M⟮x⟯ :=
       (isSeparable_adjoin_simple_iff_isSeparable M E).2 <|
         ((isSeparable_adjoin_iff_isSeparable F E).1 inferInstance x hx).tower_top M
-    have : IsPurelyInseparable M (adjoin M {x}) :=
+    have : IsPurelyInseparable M M⟮x⟯ :=
       (isPurelyInseparable_adjoin_simple_iff_pow_mem M E q).2
         ⟨n, ⟨x ^ q ^ n, subset_adjoin F _ ⟨x, hx, rfl⟩⟩, rfl⟩
     have hx' := mem_adjoin_simple_self M x
-    rw [(adjoin M {x}).eq_bot_of_isPurelyInseparable_of_isSeparable, mem_bot] at hx'
+    rw [M⟮x⟯.eq_bot_of_isPurelyInseparable_of_isSeparable, mem_bot] at hx'
     obtain ⟨y, rfl⟩ := hx'
     exact y.2
   · rintro _ ⟨y, hy, rfl⟩
