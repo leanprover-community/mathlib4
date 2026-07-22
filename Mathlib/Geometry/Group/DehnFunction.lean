@@ -38,10 +38,10 @@ inverse relators whose product is `w`. The *Dehn function* of `P` is given by
 
 ## Design notes
 
-* The factors of the product range over `Group.conjugatesOfSet P.symmRelSet`, the conjugates of
-  relators *and* of inverse relators. Both signs are needed: the conjugates of `P.relSet` alone
+* The factors of the product range over `Group.conjugatesOfSet P.symmRel`, the conjugates of
+  relators *and* of inverse relators. Both signs are needed: the conjugates of `P.rel` alone
   generate only a submonoid, whereas the products must realise every element of the kernel
-  `Subgroup.normalClosure P.relSet`, a subgroup.
+  `Subgroup.normalClosure P.rel`, a subgroup.
 * `area` takes values in `ℕ∞`; it is `⊤` exactly when `w` does not evaluate to the identity in `G`
   (there is then no product of conjugates equal to `w`), and finite otherwise. This mirrors
   `SimpleGraph.edist`, and keeps `area w = 0 ↔ w = 1` rather than colliding with the junk value.
@@ -66,17 +66,17 @@ lemma FreeGroup.finite_setOf_norm_le (α : Type*) [DecidableEq α] [Finite α] (
     ((List.finite_length_le (α × Bool) n).subset (by rintro _ ⟨w, hw, rfl⟩; exact hw))
     FreeGroup.toWord_injective.injOn
 
-variable {G α ρ : Type*} [Group G]
+variable {G α : Type*} [Group G]
 
 namespace Group.Presentation
 
-variable (P : Group.Presentation G α ρ)
+variable (P : Group.Presentation G α)
 
 /-- A list `l` of elements of the free group is a decomposition of `w` into conjugates of relators
 of `P` if every entry of `l` is a conjugate of a relator or of an inverse relator, and the product
 of `l` is `w`. -/
 structure IsConjRelDecomp (w : FreeGroup α) (l : List (FreeGroup α)) : Prop where
-  mem_conjugatesOfSet : ∀ x ∈ l, x ∈ Group.conjugatesOfSet P.symmRelSet
+  mem_conjugatesOfSet : ∀ x ∈ l, x ∈ Group.conjugatesOfSet P.symmRel
   prod_eq : l.prod = w
 
 attribute [simp] IsConjRelDecomp.prod_eq
@@ -86,7 +86,7 @@ lemma isConjRelDecomp_one_nil : P.IsConjRelDecomp (1 : FreeGroup α) [] where
   prod_eq := by simp
 
 /-- A conjugate of a relator or of an inverse relator is a one-term decomposition of itself. -/
-lemma isConjRelDecomp_singleton {x : FreeGroup α} (hx : x ∈ Group.conjugatesOfSet P.symmRelSet) :
+lemma isConjRelDecomp_singleton {x : FreeGroup α} (hx : x ∈ Group.conjugatesOfSet P.symmRel) :
     P.IsConjRelDecomp x [x] where
   mem_conjugatesOfSet := by simpa using hx
   prod_eq := by simp
@@ -106,7 +106,7 @@ lemma IsConjRelDecomp.inv {w : FreeGroup α} {l : List (FreeGroup α)}
   mem_conjugatesOfSet x hx := by
     simp only [List.mem_reverse, List.mem_map] at hx
     obtain ⟨y, hy, rfl⟩ := hx
-    exact P.inv_mem_conjugatesOfSet_symmRelSet (h.mem_conjugatesOfSet y hy)
+    exact P.inv_mem_conjugatesOfSet_symmRel (h.mem_conjugatesOfSet y hy)
   prod_eq := by rw [← List.prod_inv_reverse, h.prod_eq]
 
 /-- Conjugating a decomposition of `w` entrywise decomposes the conjugate `u * w * u⁻¹`. -/
@@ -141,7 +141,7 @@ lemma IsConjRelDecomp.lift_eq_one (h : P.IsConjRelDecomp w l) : P.lift w = 1 := 
   rw [← List.prod_hom l P.lift]
   refine List.prod_eq_one fun x hx => ?_
   obtain ⟨y, hy, rfl⟩ := List.mem_map.mp hx
-  exact P.lift_eq_one_of_mem_conjugatesOfSet_symmRelSet (hmem y hy)
+  exact P.lift_eq_one_of_mem_conjugatesOfSet_symmRel (hmem y hy)
 
 lemma area_eq_foo : P.area w = n → ∃ (l : List (FreeGroup α)), P.IsConjRelDecomp w l := by
   sorry
@@ -166,10 +166,10 @@ lemma exists_isConjRelDecomp_iff_mem_ker :
     Subgroup.closure_toSubmonoid] at hw
   obtain ⟨l, hmem, rfl⟩ := Submonoid.exists_list_of_mem_closure hw
   refine ⟨l, fun x hx => ?_, rfl⟩
-  have hsub := Group.conjugatesOfSet_mono P.relSet_subset_symmRelSet
+  have hsub := Group.conjugatesOfSet_mono P.rel_subset_symmRel
   rcases hmem x hx with h | h
   · exact hsub h
-  · simpa using P.inv_mem_conjugatesOfSet_symmRelSet (hsub (Set.mem_inv.mp h))
+  · simpa using P.inv_mem_conjugatesOfSet_symmRel (hsub (Set.mem_inv.mp h))
 
 /-- A word has finite area exactly when it evaluates to the identity in `G`. -/
 theorem area_ne_top_iff : P.area w ≠ ⊤ ↔ w ∈ P.lift.ker := by
@@ -190,17 +190,17 @@ lemma area_eq_iInf (w : FreeGroup α) :
   sInf_image
 
 /-- A conjugate of a relator or of an inverse relator has area at most one. -/
-lemma area_le_one_of_mem_conjugatesOfSet_symmRelSet {x : FreeGroup α}
-    (hx : x ∈ Group.conjugatesOfSet P.symmRelSet) : P.area x ≤ 1 := by
+lemma area_le_one_of_mem_conjugatesOfSet_symmRel {x : FreeGroup α}
+    (hx : x ∈ Group.conjugatesOfSet P.symmRel) : P.area x ≤ 1 := by
   simpa using (P.isConjRelDecomp_singleton hx).area_le
 
 /-- A relator or inverse relator has area at most one. -/
-lemma area_le_one_of_mem_symmRelSet {x : FreeGroup α} (hx : x ∈ P.symmRelSet) : P.area x ≤ 1 :=
-  P.area_le_one_of_mem_conjugatesOfSet_symmRelSet (Group.subset_conjugatesOfSet hx)
+lemma area_le_one_of_mem_symmRel {x : FreeGroup α} (hx : x ∈ P.symmRel) : P.area x ≤ 1 :=
+  P.area_le_one_of_mem_conjugatesOfSet_symmRel (Group.subset_conjugatesOfSet hx)
 
 /-- Every relator has area at most one. -/
-lemma area_rel_le_one (r : ρ) : P.area (P.rel r) ≤ 1 :=
-  P.area_le_one_of_mem_symmRelSet (P.relSet_subset_symmRelSet (P.rel_mem_relSet r))
+lemma area_le_one_of_mem_rel {x : FreeGroup α} (hx : x ∈ P.rel) : P.area x ≤ 1 :=
+  P.area_le_one_of_mem_symmRel (P.rel_subset_symmRel hx)
 
 /-- Area is subadditive: concatenating decompositions of `w₁` and of `w₂` decomposes `w₁ * w₂`. -/
 lemma area_mul_le (w₁ w₂ : FreeGroup α) : P.area (w₁ * w₂) ≤ P.area w₁ + P.area w₂ := by
