@@ -880,7 +880,7 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
-@[implicit_reducible]
+@[instance_reducible]
 def totalSpaceTopology (a : VectorPrebundle R F E) : TopologicalSpace (TotalSpace F E) :=
   a.toFiberPrebundle.totalSpaceTopology
 
@@ -916,10 +916,11 @@ theorem continuous_totalSpaceMk (b : B) :
 
 /-- Make a `FiberBundle` from a `VectorPrebundle`; auxiliary construction for
 `VectorPrebundle.toVectorBundle`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology _ :=
   a.toFiberPrebundle.toFiberBundle
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Make a `VectorBundle` from a `VectorPrebundle`.  Concretely this means
 that, given a `VectorPrebundle` structure for a sigma-type `E` -- which consists of a
 number of "pretrivializations" identifying parts of `E` with product spaces `U × F` -- one
@@ -935,8 +936,8 @@ theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology 
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.continuousOn_coordChange he he').congr fun b hb ↦ ?_
       ext v
-      haveI h₁ := a.linear_trivializationOfMemPretrivializationAtlas he
-      haveI h₂ := a.linear_trivializationOfMemPretrivializationAtlas he'
+      have h₁ := a.linear_trivializationOfMemPretrivializationAtlas he
+      have h₂ := a.linear_trivializationOfMemPretrivializationAtlas he'
       rw [trivializationOfMemPretrivializationAtlas] at h₁ h₂
       rw [a.coordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,
         Trivialization.coordChangeL_apply]

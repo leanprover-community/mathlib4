@@ -253,7 +253,7 @@ theorem nodup_theFourteen_fourteenSet : (theFourteen fourteenSet).Nodup :=
 
 /-- The number of distinct sets obtainable from `fourteenSet` is exactly 14. -/
 theorem ncard_isObtainable_fourteenSet : {t | IsObtainable fourteenSet t}.ncard = 14 := by
-  classical rw [← card_theFourteen fourteenSet, ← Multiset.toFinset_card_of_nodup
+  rw [← card_theFourteen fourteenSet, ← Multiset.toFinset_card_of_nodup
     nodup_theFourteen_fourteenSet, ← Set.ncard_coe_finset]
   congr; ext; simp [mem_theFourteen_iff_isObtainable]
 

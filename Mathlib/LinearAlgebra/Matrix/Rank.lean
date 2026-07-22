@@ -67,6 +67,7 @@ theorem cRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.cRank = 1 :=
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range A.col)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     lift.{um} (A.submatrix r c).cRank ≤ lift.{um₀} A.cRank := by
   have h : ((A.submatrix r id).submatrix id c).cRank ≤ (A.submatrix r id).cRank :=
@@ -118,7 +119,6 @@ lemma eRank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.eRank �
   exact A.cRank_le_card_width
 
 lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card m := by
-  classical
   wlog hfin : Finite m
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite m
@@ -137,6 +137,7 @@ noncomputable def rank [CommSemiring R] (A : Matrix m n R) : ℕ :=
 theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
   finrank_subsingleton
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
@@ -292,6 +293,7 @@ theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
   eRank_submatrix ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The rank of a matrix equals the dimension of the range of the corresponding linear map,
 and is therefore independent of the choice of bases. -/
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [CommSemiring R]
@@ -381,6 +383,7 @@ theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
   refine congrArg _ (funext fun i ↦ ?_)
   split_ifs with hi <;> simp [he, hi]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by
   classical

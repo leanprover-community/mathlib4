@@ -2,25 +2,29 @@
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-NAME = "build"
-REPO = Path()
-BENCH = REPO / "scripts" / "bench"
-OUTFILE = REPO / "measurements.jsonl"
+# Global paths
+BENCH_DIR = Path(os.environ["BENCH_DIR"])
+WRAPPER_OUT = Path(os.environ["WRAPPER_OUT"])
+WRAPPER_PREFIX = Path(os.environ["WRAPPER_PREFIX"])
 
-sys.path.append(str(BENCH))
+# Other config
+BENCHMARK = "build"
+
+sys.path.append(str(BENCH_DIR))
 import measure  # noqa: E402
 
 
-def save_result(metric: str, value: float, unit: str | None = None) -> None:
+def save_measurement(metric: str, value: float, unit: str | None = None) -> None:
     data = {"metric": metric, "value": value}
     if unit is not None:
         data["unit"] = unit
-    with open(OUTFILE, "a+") as f:
+    with open(WRAPPER_OUT, "a") as f:
         f.write(f"{json.dumps(data)}\n")
 
 
@@ -38,33 +42,33 @@ def get_module(setup: Path) -> str:
 def count_lines(module: str, path: Path) -> None:
     with open(path) as f:
         lines = sum(1 for _ in f)
-    save_result(f"{NAME}/module/{module}//lines", lines)
+    save_measurement(f"{BENCHMARK}/module/{module}//lines", lines)
 
 
 def run_lean(module: str) -> None:
     _, stderr = measure.main(
         cmd=["lean", "--profile", "-Dprofiler.threshold=9999999", *sys.argv[1:]],
-        output=OUTFILE,
-        topics=[f"{NAME}/module/{module}"],
+        output=WRAPPER_OUT,
+        topics=[f"{BENCHMARK}/module/{module}"],
         metrics={"instructions"},
         append=True,
         capture=True,
     )
 
+    # Output of `lean --profile`
+    # See timeit.cpp for the time format
     for line in stderr.splitlines():
-        # Output of `lean --profile`
-        # See timeit.cpp for the time format
         if match := re.fullmatch(r"\t(.*) ([\d.]+)(m?s)", line):
             name = match.group(1)
             seconds = float(match.group(2))
             if match.group(3) == "ms":
                 seconds = seconds / 1000
-            save_result(f"{NAME}/profile/{name}//wall-clock", seconds, "s")
+            save_measurement(f"{BENCHMARK}/profile/{name}//wall-clock", seconds, "s")
 
 
 def main() -> None:
     if sys.argv[1:] == ["--print-prefix"]:
-        print(Path(__file__).resolve().parent.parent)
+        print(WRAPPER_PREFIX)
         return
 
     if sys.argv[1:] == ["--githash"]:
