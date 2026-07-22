@@ -321,17 +321,34 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
   rw [hk, ← LinearMap.map_le_map_iff, map_span, map_comap_eq, Set.image_preimage_eq_of_subset h₁]
   exact inf_le_right
 
+section
+
+variable {R' : Type*} [Ring R'] (σ : R →+* R') {σ' : R' →+* R}
+  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+
+variable {N : Type*} [AddCommGroup N] [Module R' N] (P : Submodule R M) (Q : Submodule R' N)
+
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
 and `f : M ≃ₛₗ[σ] N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
-def Quotient.equiv' {R' : Type*} [Ring R'] (σ : R →+* R') {σ' : R' →+* R}
-    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] {N : Type*} [AddCommGroup N] [Module R' N]
-    (P : Submodule R M) (Q : Submodule R' N) (f : M ≃ₛₗ[σ] N) (hf : P.map (f : M →ₛₗ[σ] N) = Q) :
+def Quotient.equiv' (f : M ≃ₛₗ[σ] N) (hf : P.map (f : M →ₛₗ[σ] N) = Q) :
     (M ⧸ P) ≃ₛₗ[σ] N ⧸ Q where
-  __ := Submodule.mapQ _ _ f (by simp [← hf, ← Submodule.map_le_iff_le_comap])
-  invFun := Submodule.mapQ _ _ f.symm.toLinearMap
+  __ := Submodule.mapQ _ _ (f : M →ₛₗ[σ] N) (by simp [← hf, ← Submodule.map_le_iff_le_comap])
+  invFun := Submodule.mapQ _ _ (f.symm : N →ₛₗ[σ'] M)
     (by simp [← hf, Submodule.map_equiv_eq_comap_symm])
   left_inv x := Submodule.Quotient.induction_on _ x (by simp)
   right_inv x := Submodule.Quotient.induction_on _ x (by simp)
+
+lemma Quotient.equiv'_apply (f : M ≃ₛₗ[σ] N) (hf : P.map (f : M →ₛₗ[σ] N) = Q) (a : M ⧸ P) :
+    (equiv' σ P Q f hf) a =
+      (P.mapQ Q (f : M →ₛₗ[σ] N) (by simp [← hf, ← Submodule.map_le_iff_le_comap])) a :=
+  rfl
+
+lemma Quotient.equiv'_symm (f : M ≃ₛₗ[σ] N) (hf : P.map (f : M →ₛₗ[σ] N) = Q) :
+    (Quotient.equiv' σ P Q f hf).symm =
+      Quotient.equiv' σ' Q P f.symm ((Submodule.map_symm_eq_iff f).mpr hf) :=
+  rfl
+
+end
 
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
 and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
