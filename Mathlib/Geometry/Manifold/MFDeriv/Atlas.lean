@@ -89,47 +89,29 @@ end ModelWithCorners
 
 section Charts
 
-variable [IsManifold I 1 M] [IsManifold I' 1 M']
-  [IsManifold I'' 1 M''] {e : OpenPartialHomeomorph M H}
+variable {e : OpenPartialHomeomorph M H}
 
-theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) : MDiffAt e x := by
-  rw [mdifferentiableAt_iff]
-  refine ⟨(e.continuousOn x hx).continuousAt (e.open_source.mem_nhds hx), ?_⟩
-  have mem :
-    I ((chartAt H x : M → H) x) ∈ I.symm ⁻¹' ((chartAt H x).symm ≫ₕ e).source ∩ range I := by
-    simp only [hx, mfld_simps]
-  have : (chartAt H x).symm.trans e ∈ contDiffGroupoid 1 I :=
-    HasGroupoid.compatible (chart_mem_atlas H x) h
-  have A :
-    ContDiffOn 𝕜 1 (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
-      (I.symm ⁻¹' ((chartAt H x).symm.trans e).source ∩ range I) :=
-    this.1
-  have B := A.differentiableOn one_ne_zero (I ((chartAt H x : M → H) x)) mem
-  simp only [mfld_simps] at B
-  rw [inter_comm, differentiableWithinAt_inter] at B
-  · simpa only [mfld_simps]
-  · apply IsOpen.mem_nhds ((OpenPartialHomeomorph.open_source _).preimage I.continuous_symm) mem.1
+theorem mdifferentiableAt_of_mem_maximalAtlas
+    (h : e ∈ IsManifold.maximalAtlas I 1 M) {x : M} (hx : x ∈ e.source) : MDiffAt e x :=
+  (contMDiffAt_of_mem_maximalAtlas h hx).mdifferentiableAt one_ne_zero
+
+lemma mdifferentiableAt_symm_of_mem_maximalAtlas
+    (h : e ∈ IsManifold.maximalAtlas I 1 M) {x : H} (hx : x ∈ e.target) :
+    MDiffAt e.symm x :=
+  contMDiffAt_symm_of_mem_maximalAtlas h hx |>.mdifferentiableAt one_ne_zero
+
+variable [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold I'' 1 M'']
+
+theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) : MDiffAt e x :=
+  contMDiffAt_of_mem_maximalAtlas (IsManifold.subset_maximalAtlas h) hx
+    |>.mdifferentiableAt one_ne_zero
 
 theorem mdifferentiableOn_atlas (h : e ∈ atlas H M) : MDiff[e.source] e :=
   fun _x hx => (mdifferentiableAt_atlas h hx).mdifferentiableWithinAt
 
 theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e.target) :
-    MDiffAt e.symm x := by
-  rw [mdifferentiableAt_iff]
-  refine ⟨(e.continuousOn_symm x hx).continuousAt (e.open_target.mem_nhds hx), ?_⟩
-  have mem : I x ∈ I.symm ⁻¹' (e.symm ≫ₕ chartAt H (e.symm x)).source ∩ range I := by
-    simp only [hx, mfld_simps]
-  have : e.symm.trans (chartAt H (e.symm x)) ∈ contDiffGroupoid 1 I :=
-    HasGroupoid.compatible h (chart_mem_atlas H _)
-  have A :
-    ContDiffOn 𝕜 1 (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
-      (I.symm ⁻¹' (e.symm.trans (chartAt H (e.symm x))).source ∩ range I) :=
-    this.1
-  have B := A.differentiableOn one_ne_zero (I x) mem
-  simp only [mfld_simps] at B
-  rw [inter_comm, differentiableWithinAt_inter] at B
-  · simpa only [mfld_simps]
-  · apply IsOpen.mem_nhds ((OpenPartialHomeomorph.open_source _).preimage I.continuous_symm) mem.1
+    MDiffAt e.symm x :=
+  mdifferentiableAt_symm_of_mem_maximalAtlas (IsManifold.subset_maximalAtlas h) hx
 
 theorem mdifferentiableOn_atlas_symm (h : e ∈ atlas H M) : MDiff[e.target] e.symm :=
   fun _x hx => (mdifferentiableAt_atlas_symm h hx).mdifferentiableWithinAt
@@ -393,7 +375,7 @@ lemma fderivWithin_extChartAt_comp_extChartAt_symm_range :
 
 /-- The manifold derivative of `extChartAt` at the basepoint is the identity. -/
 lemma mfderiv_extChartAt_self :
-    mfderiv I 𝓘(𝕜, E) (extChartAt I x) x = ContinuousLinearMap.id 𝕜 _ := by
+    mfderiv% (extChartAt I x) x = ContinuousLinearMap.id 𝕜 _ := by
   rw [← TangentBundle.continuousLinearMapAt_trivializationAt (by simp),
     TangentBundle.continuousLinearMapAt_trivializationAt_eq_core (by simp)]
   ext v
@@ -404,8 +386,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The manifold derivative within `range I` of `(extChartAt I x).symm` at the chart point is
 the identity. -/
 lemma mfderivWithin_range_extChartAt_symm :
-    mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x) =
-      ContinuousLinearMap.id 𝕜 _ := by
+    mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) = ContinuousLinearMap.id 𝕜 _ := by
   have hcomp := mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (I := I)
     (mem_extChartAt_source x)
   rw [mfderiv_extChartAt_self, ContinuousLinearMap.comp_id] at hcomp
@@ -415,7 +396,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,
 applied to a tangent vector, gives back the tangent vector. -/
 lemma mfderivWithin_extChartAt_symm_inverse_apply (v : TangentSpace I x) :
-    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x x)).inverse v = v := by
+    (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse v = v := by
   rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
   exact ContinuousLinearMap.id_apply ..
 

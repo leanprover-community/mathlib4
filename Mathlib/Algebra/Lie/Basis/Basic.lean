@@ -3,7 +3,7 @@ Copyright (c) 2026 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Weights.Cartan
