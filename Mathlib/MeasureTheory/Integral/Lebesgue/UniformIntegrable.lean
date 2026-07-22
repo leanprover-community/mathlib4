@@ -255,7 +255,7 @@ lemma UniformLIntegrable.restrict (s : Set α) (h : UniformLIntegrable F μ) :
 -- Auxiliary lemma to prove that `UniformLIntegrable` families are `UnifLIntegrable`.
 private lemma setLIntegral_le_add_lintegral (f : α → ℝ≥0∞) (A : Set α) (a : ℝ≥0∞) :
     ∫⁻ x in A, f x ∂μ ≤ a * μ A + ∫⁻ x in f ⁻¹' Ici a, f x ∂μ := by
-  -- Without loss of generality, `A` can be assumed measurable.
+  -- Without loss of generality, `A` can be assumed measurable.
   obtain ⟨B, hAB, hB, hBμ⟩ := exists_measurable_superset μ A
   apply (lintegral_mono_set hAB).trans
   rw [← hBμ]; clear hBμ hAB A
