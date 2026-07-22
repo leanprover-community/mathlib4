@@ -81,7 +81,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
     refine zorn_subset _ fun U UT hU => ?_
     refine ⟨⋃₀ U, ?_, fun s hs => subset_sUnion_of_mem hs⟩
     simp only [T, Set.sUnion_subset_iff, and_imp, forall_exists_index, mem_sUnion,
-      Set.mem_setOf_eq]
+      Set.mem_ofPred_eq]
     refine
       ⟨fun u hu => (UT hu).1, (pairwiseDisjoint_sUnion hU.directedOn).2 fun u hu => (UT hu).2.1,
         fun a hat b u uU hbu hab => ?_⟩

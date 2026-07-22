@@ -403,6 +403,7 @@ theorem _root_.Function.Commute.finset_image [DecidableEq α] {f g : α → α}
     (h : Function.Commute f g) : Function.Commute (image f) (image g) :=
   Function.Semiconj.finset_image h
 
+@[gcongr]
 theorem image_subset_image {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₁.image f ⊆ s₂.image f := by
   simp only [subset_def, image_val, subset_dedup', dedup_subset', Multiset.map_subset_map h]
 
@@ -611,7 +612,7 @@ theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a 
 
 @[simp, norm_cast]
 theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
-  Set.ext (by simp only [mem_coe, mem_filterMap, Set.mem_setOf_eq, implies_true])
+  Set.ext (by simp only [mem_coe, mem_filterMap, Set.mem_ofPred_eq, implies_true])
 
 @[simp]
 theorem filterMap_some : s.filterMap some (by simp) = s :=

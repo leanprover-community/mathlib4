@@ -506,7 +506,7 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
   refine (integral_sub_average (μ.restrict s) f).not_gt ?_
   refine (setIntegral_pos_iff_support_of_nonneg_ae ?_ ?_).2 ?_
   · refine measure_mono_null (fun x hx ↦ ?_) H
-    simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_setOf_eq, not_le] at hx
+    simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_ofPred_eq, not_le] at hx
     exact hx.le
   · exact hf.sub (integrableOn_const hμ₁)
   · rwa [pos_iff_ne_zero, inter_comm, ← sdiff_compl, ← sdiff_inter_self_eq_sdiff,
@@ -628,9 +628,9 @@ theorem measure_le_setLAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   obtain h | h := eq_or_ne (∫⁻ a in s, f a ∂μ) ∞
   · simpa [mul_top, hμ₁, laverage, h, top_div_of_ne_top hμ₁, pos_iff_ne_zero] using hμ
   have := measure_le_setAverage_pos hμ hμ₁ (integrable_toReal_of_lintegral_ne_top hf h)
-  rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀
+  rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const)]
-  rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀
+  rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
     ← measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
   refine this.trans_le (measure_mono ?_)
@@ -651,8 +651,8 @@ theorem measure_setLAverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   rw [hfg] at hint
   have :=
     measure_setAverage_le_pos hμ hμ₁ (integrable_toReal_of_lintegral_ne_top hg.aemeasurable hint)
-  simp_rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
-  rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
+  simp_rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
+  rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
     measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
   refine this.trans_le (measure_mono ?_)
   rintro x ⟨hfx, hx⟩

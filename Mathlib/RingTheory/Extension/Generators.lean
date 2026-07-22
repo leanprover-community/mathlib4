@@ -162,7 +162,7 @@ noncomputable
 def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S s := by
   refine ofSurjective (Subtype.val : s → S) ?_
   rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
-    Subtype.range_coe_subtype, Set.setOf_mem_eq]
+    Subtype.range_coe_subtype, Set.ofPred_mem_eq]
 
 variable (R S) in
 /-- The `Generators` containing the whole algebra, which induces the canonical map  `R[S] → S`. -/
