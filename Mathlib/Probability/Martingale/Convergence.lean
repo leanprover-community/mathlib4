@@ -202,7 +202,7 @@ theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : S
   rw [ae_iff, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
   · exact MeasurableSet.compl <| measurableSet_exists_tendsto
-      fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl
+      fun n => (hf.stronglyMeasurable n).measurable.mono (le_iSup _ n) le_rfl
 
 /-- **Almost everywhere martingale convergence theorem**: An L¹-bounded submartingale converges
 almost everywhere to a `⨆ n, ℱ n`-measurable function. -/

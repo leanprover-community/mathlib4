@@ -308,8 +308,8 @@ inductive CardinalGenerateSets : Set α → Prop
 /-- Assuming `2 < c`, `Filter.cardinalGenerate c g` is the greatest `CardinalInterFilter c`
 containing `g`. -/
 def cardinalGenerate (hc : 2 < c) : Filter α :=
-  ofCardinalInter (CardinalGenerateSets g) hc (fun _ => CardinalGenerateSets.sInter) fun _ _ =>
-    CardinalGenerateSets.superset
+  ofCardinalInter {s | CardinalGenerateSets g s} hc (fun _ => CardinalGenerateSets.sInter)
+    fun _ _ => CardinalGenerateSets.superset
 
 lemma cardinalInter_ofCardinalGenerate (hc : 2 < c) :
     CardinalInterFilter (cardinalGenerate g hc) c := by

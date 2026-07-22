@@ -124,7 +124,8 @@ theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
   mpr h t _ := measure_inter_null_of_null_left t h
 
 theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α)}
-    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    (hC : IsCountablySpanning C) (hm : C ⊆ {t | MeasurableSet t})
+    (ht : ∀ t ∈ C, μ.restrict t s = 0) :
     μ s = 0 := by
   rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
   intro t htc
@@ -616,7 +617,9 @@ theorem ae_restrict_iff {p : α → Prop} (hp : MeasurableSet { x | p x }) :
 theorem ae_imp_of_ae_restrict {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ.restrict s, p x) :
     ∀ᵐ x ∂μ, x ∈ s → p x := by
   simp only [ae_iff] at h ⊢
-  simpa [ofPred_and, inter_comm] using measure_inter_eq_zero_of_restrict h
+  convert measure_inter_eq_zero_of_restrict h using 2
+  ext a
+  simp [and_comm]
 
 theorem ae_restrict_iff'₀ {p : α → Prop} (hs : NullMeasurableSet s μ) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x := by
@@ -1139,7 +1142,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       · simp [hPC]
       have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
-        (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
+        (encard_mono (b := {i | x ∈ s i}) (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left zero_le <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm

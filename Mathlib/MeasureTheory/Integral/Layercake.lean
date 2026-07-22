@@ -370,7 +370,9 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       apply setLIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
       rw [Measure.restrict_apply (measurableSet_le measurable_const f_mble)]
       congr 3
-      exact (inter_eq_left.2 (fun a ha ↦ (mem_Ioi.1 ht).trans_le ha)).symm
+      funext a
+      simp only [eq_iff_iff, mem_ofPred_eq, iff_self_and]
+      exact fun h ↦ (mem_Ioi.1 ht).trans_le h
     have I : Ioi (0 : ℝ) = Ioc (0 : ℝ) M ∪ Ioi M := (Ioc_union_Ioi_eq_Ioi M_nonneg).symm
     have J : Disjoint (Ioc 0 M) (Ioi M) := Ioc_disjoint_Ioi le_rfl
     rw [I, lintegral_union measurableSet_Ioi J, lintegral_union measurableSet_Ioi J, B1, B2]

@@ -95,7 +95,7 @@ theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
 
 theorem borel_comap {f : α → β} {t : TopologicalSpace β} :
     @borel α (t.induced f) = (@borel β t).comap f :=
-  comap_generateFrom.symm
+  (comap_generateFrom (s := {s | IsOpen[t] s})).symm
 
 theorem Continuous.borel_measurable [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
     (hf : Continuous f) : @Measurable α β (borel α) (borel β) f :=

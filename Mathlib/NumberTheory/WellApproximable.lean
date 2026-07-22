@@ -190,7 +190,7 @@ local notation "𝕊" => AddCircle T
 set_option backward.isDefEq.respectTransparency.types false in
 /-- **Gallagher's ergodic theorem** on Diophantine approximation. -/
 theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto δ atTop (𝓝 0)) :
-    (∀ᵐ x, ¬addWellApproximable 𝕊 δ x) ∨ ∀ᵐ x, addWellApproximable 𝕊 δ x := by
+    (∀ᵐ x, x ∉ addWellApproximable 𝕊 δ) ∨ ∀ᵐ x, x ∈ addWellApproximable 𝕊 δ := by
   /- Sketch of proof:
 
     Let `E := addWellApproximable 𝕊 δ`. For each prime `p : ℕ`, we can partition `E` into three

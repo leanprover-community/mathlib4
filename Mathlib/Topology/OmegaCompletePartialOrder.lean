@@ -59,7 +59,9 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
 set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
-  convert! CompleteLattice.ωScottContinuous.sSup hs
+  have := CompleteLattice.ωScottContinuous.sSup (s := (fun t x => x ∈ t) '' s)
+    (fun f hf => by obtain ⟨t, ht, rfl⟩ := hf; exact hs t ht)
+  convert! this
   aesop
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone

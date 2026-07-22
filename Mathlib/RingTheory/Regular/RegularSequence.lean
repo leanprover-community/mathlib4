@@ -686,6 +686,7 @@ lemma RingTheory.Sequence.IsRegular.of_isWeaklyRegular_of_mem_maximalIdeal {rs :
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (reg : IsWeaklyRegular L rs) :
     IsRegular L rs :=
   ⟨reg, Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-    ((Ideal.span_le.mpr mem).trans (maximalIdeal_le_jacobson _))⟩
+    (((Ideal.span_le (s := {r | r ∈ rs})).mpr fun r hr => mem r hr).trans
+      (maximalIdeal_le_jacobson _))⟩
 
 end IsLocalRing

@@ -177,7 +177,11 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
     ‖Padic.withValUniformEquiv x‖ ≤ 1 ↔ Valued.v x ≤ 1 := by
   induction x using UniformSpace.Completion.induction_on with
   | hp =>
-    rw [Set.ext fun _ ↦ Iff.comm]
+    have : {x : (Rat.padicValuation p).Completion |
+          ‖Padic.withValUniformEquiv x‖ ≤ 1 ↔ Valued.v x ≤ 1} =
+        {x | Valued.v x ≤ 1 ↔ ‖Padic.withValUniformEquiv x‖ ≤ 1} :=
+      Set.ext fun _ ↦ Iff.comm
+    rw [this]
     simp_rw [← Valuation.restrict_le_one_iff Valued.v]
     apply withValUniformEquiv.toHomeomorph.isClosed_setOfPred_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)

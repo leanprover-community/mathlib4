@@ -78,9 +78,6 @@ structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X whe
 
 namespace DiscreteQuotient
 
-@[deprecated (since := "2026-07-03")] protected alias isOpen_setOf_rel :=
-  DiscreteQuotient.isOpen_ofPred_rel
-
 variable (S : DiscreteQuotient X)
 
 @[deprecated (since := "2026-07-09")]
@@ -240,7 +237,8 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
       isOpen_setOfPred_rel := fun x => by
         convert! isOpen_connectedComponent (x := x)
         ext y
-        simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using! eq_comm }
+        simpa only [connectedComponentSetoid, Set.mem_iff_mem,
+          ← connectedComponent_eq_iff_mem] using! eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
     (S.isClopen_setOfPred_rel x).connectedComponent_subset (S.refl _) <|
       h.symm ▸ mem_connectedComponent
@@ -414,7 +412,7 @@ variable (f : LocallyConstant X α)
 /-- Any locally constant function induces a discrete quotient. -/
 def discreteQuotient : DiscreteQuotient X where
   toSetoid := .comap f ⊥
-  isOpen_setOfPred_rel _ := f.isLocallyConstant _
+  isOpen_setOfPred_rel x := f.isLocallyConstant {y | f x = y}
 
 /-- The (locally constant) function from the discrete quotient associated to a locally constant
 function. -/

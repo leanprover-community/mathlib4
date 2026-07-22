@@ -179,7 +179,8 @@ theorem Ideal.IsMaximal.mem_associatedPrimes_of_isFractionRing [IsFractionRing A
 /-- A commutative Noetherian total ring of fractions is semilocal. -/
 instance [IsFractionRing A A] : Finite (MaximalSpectrum A) :=
   (MaximalSpectrum.equivSubtype A).finite_iff.mpr <| Set.finite_coe_iff.mpr <|
-    (associatedPrimes.finite A A).subset fun _ ↦ (·.mem_associatedPrimes_of_isFractionRing)
+    (associatedPrimes.finite A A).subset (t := {I : Ideal A | I.IsMaximal})
+      fun _ hp ↦ hp.mem_associatedPrimes_of_isFractionRing
 
 variable {A}
 

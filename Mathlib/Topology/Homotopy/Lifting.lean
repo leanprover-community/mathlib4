@@ -106,10 +106,12 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     rw [(q e).right_inv this, ← hpq e]; exact congr($g'_lifts ta)
   · rw [closure_le_eq continuous_fst continuous_const] at ht
     exact ⟨⟨hta.1.1, ht⟩, hta.2.2.1⟩
-  · simp_rw [not_le]; exact (ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
+  · simp_rw [not_le]
+    refine ContinuousOn.mono ?_
+      (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
+    exact ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
       fun _ h ↦ huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩)
-      fun _ h ↦ if_pos <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩).mono
-        (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
+      fun _ h ↦ if_pos <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩
   · ext ta; rw [Function.comp_apply]; split_ifs with _ hv
     · exact congr($g'_lifts ta)
     · rw [hpq e, (q e).right_inv hv]
@@ -462,7 +464,8 @@ lemma injective_path_homotopic_map (e₀ e₁ : E) :
   simp only [Path.Homotopic.Quotient.mk''_eq_mk]
   simp_rw [← Path.Homotopic.Quotient.mk_map]
   iterate 2 rw [Path.Homotopic.Quotient.eq]
-  exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
+  exact (cov.homotopicRel_iff_comp (S := {0, 1})
+    ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift

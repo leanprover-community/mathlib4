@@ -771,8 +771,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
     · have := (exists_lb_coeff_ne hℱ).choose_spec
       rw [Filter.eventually_iff] at this
       convert! this
-      ext
-      simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
+      simp only [Set.mem_iff_mem, Set.mem_iInter]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
       intro i _
       apply (coeff_tendsto hℱ _).eventually

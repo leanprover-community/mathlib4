@@ -508,9 +508,12 @@ theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
         IsUnit.isQuotientMap_zsmul (M := ℝ) (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ)))
           isQuotientMap_quotient_mk' n hn
     ext; simp [zpowGroupHom, e, homeomorphCircle_apply, toCircle_zsmul]
-  · convert! finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
-    ext
-    simp [e, homeomorphCircle_apply, ← toCircle_zsmul, ← (injective_toCircle one_ne_zero).eq_iff]
+  · have key : ⇑e ⁻¹' ((zpowGroupHom (α := Circle) n).ker : Set Circle) =
+        {x : AddCircle 1 | n • x = 0} := by
+      ext
+      simp [e, homeomorphCircle_apply, ← toCircle_zsmul,
+        ← (injective_toCircle one_ne_zero).eq_iff]
+    exact key ▸ finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
 
 theorem Circle.isQuotientCoveringMap_npow (n : ℕ) [NeZero n] :
     IsQuotientCoveringMap (· ^ n : Circle → _) (powMonoidHom (α := Circle) n).ker :=

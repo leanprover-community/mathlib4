@@ -189,15 +189,20 @@ theorem iff_adjoin_image (s : Set ι) :
   classical apply algebraicIndependent_equiv' ((Equiv.sumComm ..).trans (Equiv.Set.sumCompl ..))
   ext (_ | _) <;> rfl
 
+set_option maxHeartbeats 800000 in
+-- The `convert!` needs to see through heavy `Set`/subtype defeq since `Set` became a structure.
 theorem iff_adjoin_image_compl (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
       AlgebraicIndepOn (adjoin R (x '' sᶜ)) x s := by
   convert! ← iff_adjoin_image _; apply compl_compl
 
+set_option maxHeartbeats 800000 in
+-- The `and_congr_right` needs to see through heavy `Set`/subtype defeq since `Set` became a
+-- structure.
 theorem iff_transcendental_adjoin_image (i : ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧
       Transcendental (adjoin R (x '' {i}ᶜ)) (x i) :=
-  (iff_adjoin_image_compl _).trans <| and_congr_right
+  (iff_adjoin_image_compl {i}).trans <| and_congr_right
     fun _ ↦ algebraicIndependent_unique_type_iff (ι := {j // j = i})
 
 variable (hx : AlgebraicIndependent R x)

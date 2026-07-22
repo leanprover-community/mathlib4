@@ -607,9 +607,6 @@ def setOfPredMinimalIsoSetOfPredMaximal (f : s ≃o tᵒᵈ) :
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapOfPredMinimal x).2⟩
       __ := (show s ≃o ofDual ⁻¹' t from f).mapOfPredMinimal
 
-@[deprecated (since := "2026-07-03")] alias setOfMinimalIsoSetOfMaximal :=
-  ofPredMinimalIsoOfPredMaximal
-
 @[deprecated (since := "2026-07-09")]
 alias setOfMinimalIsoSetOfMaximal := setOfPredMinimalIsoSetOfPredMaximal
 @[deprecated (since := "2026-07-09")]

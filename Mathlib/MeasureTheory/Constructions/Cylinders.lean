@@ -322,7 +322,7 @@ theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
   classical
   refine ⟨s₁ ∪ s₂,
     Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
-      {f | Finset.restrict₂ Finset.subset_union_right f ∈ S₂}, ?_, ?_⟩
+      Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂, ?_, ?_⟩
   · refine MeasurableSet.inter ?_ ?_
     · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₁
     · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₂
@@ -371,7 +371,8 @@ theorem generateFrom_measurableCylinders :
     simp only [singleton_pi, mem_image, mem_pi, mem_univ, mem_ofPred_eq,
       forall_true_left, mem_measurableCylinders, forall_exists_index, and_imp]
     rintro t ht rfl
-    refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i}, measurable_pi_apply _ (ht i), ?_⟩
+    refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i},
+      measurable_pi_apply (⟨i, Finset.mem_singleton_self i⟩ : ({i} : Finset ι)) (ht i), ?_⟩
     ext1 x
     simp only [mem_preimage, Function.eval, mem_cylinder, mem_ofPred_eq, Finset.restrict]
 
