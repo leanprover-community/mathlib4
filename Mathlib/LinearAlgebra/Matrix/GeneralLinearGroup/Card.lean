@@ -61,21 +61,24 @@ end LinearIndependent
 
 namespace Matrix
 
-namespace SpecialLinearGroup
+section SpecialLinearGroup
 
 variable {n : Type*} [Fintype n] [DecidableEq n] [Nonempty n] {R : Type*} [CommRing R]
 
-theorem card_SL_mul :
-  Nat.card (SpecialLinearGroup n R) * Nat.card Rˣ = Nat.card (GL n R) := by
-  simpa [Subgroup.index_ker, MonoidHom.range_eq_top.mpr (GeneralLinearGroup.det_surjective),
-    Subgroup.card_top, Nat.card_congr (toGLKerEquiv).toEquiv]
-    using (Subgroup.card_mul_index (GeneralLinearGroup.det : GL n R →* Rˣ).ker)
+/-- The cardinal of the special linear group times the cardinal of the unit group is the
+cardinal of the general linear group. -/
+theorem card_SL_mul_card_units :
+    Nat.card (SpecialLinearGroup n R) * Nat.card Rˣ = Nat.card (GL n R) := by
+  simpa [Subgroup.index_ker, MonoidHom.range_eq_top.mpr GeneralLinearGroup.det_surjective,
+    Subgroup.card_top, Nat.card_congr SpecialLinearGroup.toGLKerEquiv.toEquiv]
+    using Subgroup.card_mul_index (GeneralLinearGroup.det : GL n R →* Rˣ).ker
 
-/-- The cardinal of the special linear group for a commutative ring -/
+/-- The cardinal of the special linear group over a commutative ring with finitely many
+units. -/
 theorem card_SL [Finite Rˣ] :
-  Nat.card (SpecialLinearGroup n R) = Nat.card (GL n R) / Nat.card Rˣ :=
-  Nat.eq_div_of_mul_eq_right (Nat.card_ne_zero.mpr ⟨instNonemptyOfInhabited, by grind⟩)
-    (by simpa [mul_comm] using card_SL_mul)
+    Nat.card (SpecialLinearGroup n R) = Nat.card (GL n R) / Nat.card Rˣ :=
+  Nat.eq_div_of_mul_eq_right Nat.card_pos.ne'
+    (by simpa [mul_comm] using card_SL_mul_card_units)
 
 end SpecialLinearGroup
 
