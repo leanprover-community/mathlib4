@@ -374,7 +374,7 @@ theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (
 
 @[fun_prop, deprecated
   "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
- (since := "2026-04-30")]
+  (since := "2026-04-30")]
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
@@ -551,7 +551,7 @@ theorem exists_spanning_measurableSet_le {f : α → ℝ≥0} (hf : Measurable f
   · have :
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
       refine Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => ?_
-      simp only [norm_sets, Set.mem_setOf_eq]
+      simp only [norm_sets, Set.mem_ofPred_eq]
       refine fun hif => hif.trans ?_
       exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]

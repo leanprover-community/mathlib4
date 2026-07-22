@@ -106,7 +106,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
       μ (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1)) := fun t ht ↦ by
     congr 1
     ext x
-    simp only [mem_setOf_eq, mem_closedBall_zero_iff]
+    simp only [mem_ofPred_eq, mem_closedBall_zero_iff]
     exact le_rpow_one_add_norm_iff_norm_le hr (mem_Ioi.mp ht) x
   rw [setLIntegral_congr_fun measurableSet_Ioi h_int]
   set f := fun t : ℝ ↦ μ (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1))

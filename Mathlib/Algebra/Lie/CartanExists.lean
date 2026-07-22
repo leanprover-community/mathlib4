@@ -112,7 +112,6 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
-  classical
   rw [← mul_one j, lieCharpoly, coeff_map]
   apply MvPolynomial.aeval_natDegree_le
   · apply (polyCharpoly_coeff_isHomogeneous φ (chooseBasis R L) _ _ hij).totalDegree_le

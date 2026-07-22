@@ -301,6 +301,7 @@ theorem pairwise_disjoint_powersetCard (s : Finset α) :
   Finset.disjoint_left.mpr fun _x hi hj =>
     hij <| (mem_powersetCard.mp hi).2.symm.trans (mem_powersetCard.mp hj).2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_disjiUnion (s : Finset α) :
     Finset.powerset s =
       (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
@@ -313,6 +314,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
   · rcases mem_disjiUnion.mp ha with ⟨i, _hi, ha⟩
     exact mem_powerset.mpr (mem_powersetCard.mp ha).1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_biUnion [DecidableEq (Finset α)] (s : Finset α) :
     Finset.powerset s = (range (s.card + 1)).biUnion fun i => powersetCard i s := by
   simpa only [disjiUnion_eq_biUnion] using powerset_card_disjiUnion s
@@ -323,7 +325,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
   · simp_rw [Finset.sup_le_iff, mem_powersetCard]
     rintro x ⟨h, -⟩
     exact h
-  · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
+  · rw [sup_eq_biUnion, subset_iff]
     intro x hx
     simp only [mem_biUnion, id]
     obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty.2
@@ -355,9 +357,7 @@ lemma powersetCard_injOn {q r : ℕ} (hr₀ : r ≠ 0) (hrq : r ≤ q) :
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
   ext fun t => by
-    -- `le_eq_subset` is a dangerous lemma since it turns the type `↪o` into `(· ⊆ ·) ↪r (· ⊆ ·)`,
-    -- which makes `simp` have trouble working with `mapEmbedding_apply`.
-    simp only [mem_powersetCard, mem_map, RelEmbedding.coe_toEmbedding, mapEmbedding_apply]
+    simp only [mem_powersetCard, mem_map]
     constructor
     · classical
       intro h
@@ -365,7 +365,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
-      simp only [map_subset_map, has, card_map, and_self]
+      simp [has]
 
 end powersetCard
 

@@ -103,11 +103,14 @@ lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
   fun a ha ↦ ⟨a, hst ha, le_rfl⟩
 
 @[to_dual]
-alias HasSubset.Subset.isCofinalFor := IsCofinalFor.of_subset
+alias LE.le.isCofinalFor := IsCofinalFor.of_subset
 
-@[deprecated HasSubset.Subset.isCofinalFor (since := "2026-01-08")]
+@[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCofinalFor := LE.le.isCofinalFor
+@[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCoinitialFor := LE.le.isCoinitialFor
+
+@[deprecated LE.le.isCofinalFor (since := "2026-01-08")]
 alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
-@[deprecated HasSubset.Subset.isCoinitialFor (since := "2026-01-08")]
+@[deprecated LE.le.isCoinitialFor (since := "2026-01-08")]
 alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
 
 @[to_dual (attr := refl)]
@@ -221,6 +224,14 @@ theorem upperBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a �
 @[to_dual (attr := gcongr) /-- If `s ⊆ t` and `t` is bounded below, then so is `s`. -/]
 theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
   Nonempty.mono <| upperBounds_mono_set h
+
+/-- If the range of a function `g` is bounded above, then `g ∘ f` is bounded above for all functions
+`f`. -/
+@[to_dual /-- If the range of a function `g` is bounded below, then `g ∘ f` is bounded below for all
+functions `f`. -/]
+theorem BddAbove.range_comp_right (f : γ → β) {g : β → α}
+    (hg : BddAbove (Set.range g)) : BddAbove (Set.range (g ∘ f)) :=
+  hg.mono (range_comp_subset_range f g)
 
 /-- If `a` is a least upper bound for sets `s` and `p`, then it is a least upper bound for any
 set `t`, `s ⊆ t ⊆ p`. -/
@@ -631,7 +642,7 @@ theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by sim
 
 @[to_dual (attr := simp)]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, forall_mem_empty, forall_true_iff]
+  simp only [upperBounds, eq_univ_iff_forall, mem_ofPred_eq, forall_mem_empty, forall_true_iff]
 
 @[to_dual (attr := simp)]
 theorem bddAbove_empty [Nonempty α] : BddAbove (∅ : Set α) := by
@@ -891,7 +902,7 @@ instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p]
     simp [mem_lowerBounds, @imp_not_comm _ (p _)]
 
 /-- An alternative constructor for `SemilatticeSup` using `IsLUB`. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- An alternative constructor for `SemilatticeInf` using `IsGLB`. -/]
 def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
     (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) :
@@ -902,7 +913,7 @@ def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
   sup_le a b _ hac hbc := (isLUB_pair a b).2 (forall_insert_of_forall (forall_eq.mpr hbc) hac)
 
 /-- An alternative constructor for `Lattice` using `IsLUB` and `IsGLB`. -/
-@[implicit_reducible, to_dual self (reorder := 3 4, 5 6)]
+@[instance_reducible, to_dual self (reorder := 3 4, 5 6)]
 def Lattice.ofIsLUBofIsGLB [PartialOrder α] (sup inf : α → α → α)
     (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) (isGLB_pair : ∀ a b, IsGLB {a, b} (inf a b)) :
     Lattice α where

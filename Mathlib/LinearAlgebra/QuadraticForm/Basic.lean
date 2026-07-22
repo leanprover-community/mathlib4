@@ -573,6 +573,7 @@ section Comp
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Compose the quadratic map with a linear function on the right. -/
 def comp (Q : QuadraticMap R N P) (f : M →ₗ[R] N) : QuadraticMap R M P where
   toFun x := Q (f x)
@@ -585,6 +586,7 @@ def comp (Q : QuadraticMap R N P) (f : M →ₗ[R] N) : QuadraticMap R M P where
 theorem comp_apply (Q : QuadraticMap R N P) (f : M →ₗ[R] N) (x : M) : (Q.comp f) x = Q (f x) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps +simpRhs]
 def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M N) :
@@ -708,6 +710,7 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
   toFun x := B x x
@@ -1065,7 +1068,7 @@ alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm) :
     B.toQuadraticMap.IsOrtho x y ↔ B x y = 0 := by
-  letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstance : AddCommMonoid R) with }
+  let : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstance : AddCommMonoid R) with }
   simp_rw [isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
   rw [add_eq_left (a := B x x + B y y), ← h.eq, RingHom.id_apply, add_self_eq_zero]
@@ -1245,7 +1248,7 @@ theorem toMatrix'_comp (Q : QuadraticForm R (m → R)) (f : (n → R) →ₗ[R] 
 end Rn
 section Basis
 
-open Module QuadraticMap
+open Module
 
 variable [AddCommGroup N] [Module R N] (b : Basis n R N) (Q : QuadraticForm R N)
 
