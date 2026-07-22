@@ -105,10 +105,10 @@ theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=
 
 end TwoP
 
-@[simp]
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem TwoP_swap_comp_forget_to_Bipointed :
-    TwoP.swap ⋙ forget₂ TwoP Bipointed (CC := fun X ↦ X.X) =
-      forget₂ TwoP Bipointed ⋙ Bipointed.swap :=
+    TwoP.swap ⋙ forget₂ TwoP Bipointed = forget₂ TwoP Bipointed ⋙ Bipointed.swap :=
   rfl
 
 /-- The functor from `Pointed` to `TwoP` which adds a second point. -/
@@ -137,14 +137,16 @@ theorem pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToT
 theorem pointedToTwoPSnd_comp_swap : pointedToTwoPSnd ⋙ TwoP.swap = pointedToTwoPFst :=
   rfl
 
-@[simp]
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem pointedToTwoPFst_comp_forget_to_bipointed :
-    pointedToTwoPFst ⋙ forget₂ TwoP Bipointed (CC := fun X ↦ X.X) = pointedToBipointedFst :=
+    pointedToTwoPFst ⋙ forget₂ TwoP Bipointed = pointedToBipointedFst :=
   rfl
 
-@[simp]
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp, nolint simpNF] -- mathlib builds without this simp attribute
 theorem pointedToTwoPSnd_comp_forget_to_bipointed :
-    pointedToTwoPSnd ⋙ forget₂ TwoP Bipointed (CC := fun X ↦ X.X) = pointedToBipointedSnd :=
+    pointedToTwoPSnd ⋙ forget₂ TwoP Bipointed = pointedToBipointedSnd :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
