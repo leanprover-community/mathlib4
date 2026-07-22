@@ -82,11 +82,10 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
       (chartAt (EuclideanHalfSpace 1) z) (Homeomorph.addLeft (-x)).toOpenPartialHomeomorph
       (mem_chart_source _ z) (by simp [Homeomorph.addLeft]) (chart_mem_maximalAtlas _) ?_; swap
     · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
-      · suffices ContDiffOn ℝ n (fun y ↦ -x + y) univ by simpa [contMDiffOn_iff_contDiffOn]
-        fun_prop
-      · suffices ContDiffOn ℝ n (fun y ↦ x + y) univ by
-          simpa [contMDiffOn_iff_contDiffOn, Homeomorph.addLeft]
-        fun_prop
+      · have : ContDiff ℝ n (fun y ↦ -x + y) := by fun_prop
+        simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ]
+      · have : ContDiff ℝ n (fun y ↦ x + y) := by fun_prop
+        simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ, Homeomorph.addLeft]
     intro z' hz'
     have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
     simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte, IccLeftChart,
@@ -102,12 +101,10 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
       (Homeomorph.pointReflection (y / 2)).toOpenPartialHomeomorph (mem_chart_source _ z)
       (by simp [Homeomorph.pointReflection]) (chart_mem_maximalAtlas _) ?_; swap
     · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
-      · suffices ContDiffOn ℝ n ((fun v ↦ v + y / 2) ∘ fun x ↦ y / 2 - x) univ by
-          simpa [contMDiffOn_iff_contDiffOn]
-        fun_prop
-      · suffices ContDiffOn ℝ n ((fun v ↦ -v + y / 2) ∘ fun p' ↦ p' - y / 2) univ by
-          simpa [contMDiffOn_iff_contDiffOn]
-        fun_prop
+      · have : ContDiff ℝ n ((fun v ↦ v + y / 2) ∘ fun x ↦ y / 2 - x) := by fun_prop
+        simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ]
+      · have : ContDiff ℝ n ((fun v ↦ -v + y / 2) ∘ fun p' ↦ p' - y / 2) := by fun_prop
+        simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ]
     intro z' hz'
     have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
     simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte, IccRightChart,
