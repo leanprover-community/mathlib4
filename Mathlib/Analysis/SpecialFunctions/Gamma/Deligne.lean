@@ -85,12 +85,19 @@ lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by
 
 section analyticity
 
+@[fun_prop]
 lemma differentiable_Gammaℝ_inv : Differentiable ℂ (fun s ↦ (Gammaℝ s)⁻¹) := by
   conv => enter [2, s]; rw [Gammaℝ, mul_inv]
-  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp [pi_ne_zero])) ?_
+  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp)) ?_
   · refine ((differentiableAt_id.neg.div_const (2 : ℂ)).const_cpow ?_)
     exact Or.inl (ofReal_ne_zero.mpr pi_ne_zero)
   · exact differentiable_one_div_Gamma.comp (differentiable_id.div_const _)
+
+@[fun_prop]
+lemma differentiable_Gammaℂ_inv : Differentiable ℂ (fun s ↦ (Gammaℂ s)⁻¹) := by
+  conv => enter [2, s]; rw [Gammaℂ, mul_inv]
+  refine (Differentiable.inv ?_ (by simp)).mul differentiable_one_div_Gamma
+  exact (differentiable_neg.const_cpow (by simp)).const_mul _
 
 lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (𝓝 2) := by
   have h : Tendsto (fun z : ℂ ↦ z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by

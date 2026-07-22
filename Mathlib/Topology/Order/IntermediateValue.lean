@@ -95,14 +95,14 @@ theorem IsPreconnected.intermediate_value₂ {s : Set X} (hs : IsPreconnected s)
     (ha' : f a ≤ g a) (hb' : g b ≤ f b) : ∃ x ∈ s, f x = g x :=
   let ⟨x, hx⟩ :=
     @intermediate_value_univ₂ s α _ _ _ _ (Subtype.preconnectedSpace hs) ⟨a, ha⟩ ⟨b, hb⟩ _ _
-      (continuousOn_iff_continuous_restrict.1 hf) (continuousOn_iff_continuous_restrict.1 hg) ha'
-      hb'
+      (continuousOn_iff_continuous_domRestrict.1 hf)
+      (continuousOn_iff_continuous_domRestrict.1 hg) ha' hb'
   ⟨x, x.2, hx⟩
 
 theorem IsPreconnected.intermediate_value₂_eventually₁ {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f g : X → α} (hf : ContinuousOn f s)
     (hg : ContinuousOn g s) (ha' : f a ≤ g a) (he : g ≤ᶠ[l] f) : ∃ x ∈ s, f x = g x := by
-  rw [continuousOn_iff_continuous_restrict] at hf hg
+  rw [continuousOn_iff_continuous_domRestrict] at hf hg
   obtain ⟨b, h⟩ :=
     @intermediate_value_univ₂_eventually₁ _ _ _ _ _ _ (Subtype.preconnectedSpace hs) ⟨a, ha⟩ _
       (comap_coe_neBot_of_le_principal hl) _ _ hf hg ha' (he.comap _)
@@ -112,7 +112,7 @@ theorem IsPreconnected.intermediate_value₂_eventually₂ {s : Set X} (hs : IsP
     {l₁ l₂ : Filter X} [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f g : X → α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) (he₁ : f ≤ᶠ[l₁] g) (he₂ : g ≤ᶠ[l₂] f) :
     ∃ x ∈ s, f x = g x := by
-  rw [continuousOn_iff_continuous_restrict] at hf hg
+  rw [continuousOn_iff_continuous_domRestrict] at hf hg
   obtain ⟨b, h⟩ :=
     @intermediate_value_univ₂_eventually₂ _ _ _ _ _ _ (Subtype.preconnectedSpace hs) _ _
       (comap_coe_neBot_of_le_principal hl₁) (comap_coe_neBot_of_le_principal hl₂) _ _ hf hg
@@ -288,7 +288,7 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
 `Iic`, `Iio`, or `univ`, or `∅`. The converse statement requires `α` to be densely ordered. Though
 one can represent `∅` as `(Inf ∅, Inf ∅)`, we include it into the list of possible cases to improve
 readability. -/
-theorem setOf_isPreconnected_subset_of_ordered :
+theorem setOfPred_isPreconnected_subset_of_ordered :
     { s : Set α | IsPreconnected s } ⊆
       -- bounded intervals
       (range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo)) ∪
@@ -298,6 +298,9 @@ theorem setOf_isPreconnected_subset_of_ordered :
   rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs) <;> rw [hs] <;>
     simp only [union_insert, union_singleton, mem_insert_iff, mem_union, mem_range, Prod.exists,
       uncurry_apply_pair, exists_apply_eq_apply, true_or, or_true, exists_apply_eq_apply2]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isPreconnected_subset_of_ordered := setOfPred_isPreconnected_subset_of_ordered
 
 /-!
 ### Intervals are connected
@@ -511,18 +514,21 @@ instance (priority := 100) ordered_connected_space : PreconnectedSpace α :=
 the set of the intervals `Icc`, `Ico`, `Ioc`, `Ioo`, `Ici`, `Ioi`, `Iic`, `Iio`, `(-∞, +∞)`,
 or `∅`. Though one can represent `∅` as `(sInf s, sInf s)`, we include it into the list of
 possible cases to improve readability. -/
-theorem setOf_isPreconnected_eq_of_ordered :
+theorem setOfPred_isPreconnected_eq_of_ordered :
     { s : Set α | IsPreconnected s } =
       -- bounded intervals
       range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo) ∪
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
-  refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
+  refine Subset.antisymm setOfPred_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
-    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
+    mem_ofPred_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isPreconnected_eq_of_ordered := setOfPred_isPreconnected_eq_of_ordered
 
 /-- This lemma characterizes when a subset `s` of a densely ordered conditionally complete linear
 order is totally disconnected with respect to the order topology: between any two distinct points
@@ -587,6 +593,25 @@ theorem exists_mem_Icc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : Cont
     (hle : a ≤ b) (hmaps : MapsTo f (Icc a b) (Icc a b)) : ∃ c ∈ Icc a b, IsFixedPt f c :=
   exists_mem_Icc_isFixedPt hf hle (hmaps <| left_mem_Icc.2 hle).1 (hmaps <| right_mem_Icc.2 hle).2
 
+/-- Version of `exists_mem_Icc_isFixedPt_of_mapsTo` using `Set.uIcc` -/
+theorem exists_mem_uIcc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : ContinuousOn f (uIcc a b))
+    (hmaps : MapsTo f (uIcc a b) (uIcc a b)) : ∃ c ∈ uIcc a b, IsFixedPt f c :=
+  exists_mem_Icc_isFixedPt_of_mapsTo hf inf_left_le_sup_left hmaps
+
+/-- If a closed interval is contained in its own image under a continuous map `f : α → α`,
+then this map has a fixed point on this interval. -/
+theorem exists_mem_Icc_isFixedPt_of_surjOn {a b : α} {f : α → α} (hf : ContinuousOn f (Icc a b))
+    (hle : a ≤ b) (h_surj : SurjOn f (Icc a b) (Icc a b)) : ∃ c ∈ Icc a b, IsFixedPt f c :=
+  have ⟨x₀, hx₀⟩ := h_surj (left_mem_Icc.mpr hle)
+  have ⟨x₁, hx₁⟩ := h_surj (right_mem_Icc.mpr hle)
+  isPreconnected_Icc.intermediate_value₂
+    hx₀.1 hx₁.1 hf continuousOn_id (by grind) (by grind)
+
+/-- Version of `exists_mem_Icc_isFixedPt_of_surjOn` using `Set.uIcc` -/
+theorem exists_mem_uIcc_isFixedPt_of_surjOn {a b : α} {f : α → α} (hf : ContinuousOn f (uIcc a b))
+    (h_surj : SurjOn f (uIcc a b) (uIcc a b)) : ∃ c ∈ uIcc a b, IsFixedPt f c :=
+  exists_mem_Icc_isFixedPt_of_surjOn hf inf_left_le_sup_left h_surj
+
 theorem intermediate_value_Ico {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ico (f a) (f b) ⊆ f '' Ico a b :=
   Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_ge (he ▸ h.1))) fun hlt =>
@@ -633,6 +658,50 @@ theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
       ((hf.continuousWithinAt ⟨hab, refl b⟩).mono Ioo_subset_Icc_self)
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioo_subset_Icc_self)
 
+theorem intermediate_value_Ici {a : α} {f : α → δ} (hf : ContinuousOn f (Ici a))
+    (htop : Tendsto f atTop atTop) : Ici (f a) ⊆ f '' Ici a :=
+  isPreconnected_Ici.intermediate_value_Ici self_mem_Ici
+    (le_principal_iff.mpr (Ici_mem_atTop a)) hf htop
+
+theorem intermediate_value_Ici' {a : α} {f : α → δ} (hf : ContinuousOn f (Ici a))
+    (htop : Tendsto f atTop atBot) : Iic (f a) ⊆ f '' Ici a :=
+  isPreconnected_Ici.intermediate_value_Iic self_mem_Ici
+    (le_principal_iff.mpr (Ici_mem_atTop a)) hf htop
+
+theorem intermediate_value_Iic {a : α} {f : α → δ} (hf : ContinuousOn f (Iic a))
+    (hbot : Tendsto f atBot atBot) : Iic (f a) ⊆ f '' Iic a :=
+  isPreconnected_Iic.intermediate_value_Iic self_mem_Iic
+    (le_principal_iff.mpr (Iic_mem_atBot a)) hf hbot
+
+theorem intermediate_value_Iic' {a : α} {f : α → δ} (hf : ContinuousOn f (Iic a))
+    (hbot : Tendsto f atBot atTop) : Ici (f a) ⊆ f '' Iic a :=
+  isPreconnected_Iic.intermediate_value_Ici self_mem_Iic
+    (le_principal_iff.mpr (Iic_mem_atBot a)) hf hbot
+
+theorem intermediate_value_Ioi {a : α} {f : α → δ} (hf : ContinuousOn f (Ici a))
+    (htop : Tendsto f atTop atTop) : Ioi (f a) ⊆ f '' Ioi a := by
+  intro y hy
+  have := intermediate_value_Ici hf htop (mem_Ici_of_Ioi hy)
+  grind
+
+theorem intermediate_value_Ioi' {a : α} {f : α → δ} (hf : ContinuousOn f (Ici a))
+    (htop : Tendsto f atTop atBot) : Iio (f a) ⊆ f '' Ioi a := by
+  intro y hy
+  have := intermediate_value_Ici' hf htop (mem_Iic_of_Iio hy)
+  grind
+
+theorem intermediate_value_Iio {a : α} {f : α → δ} (hf : ContinuousOn f (Iic a))
+    (hbot : Tendsto f atBot atBot) : Iio (f a) ⊆ f '' Iio a := by
+  intro y hy
+  have := intermediate_value_Iic hf hbot (mem_Iic_of_Iio hy)
+  grind
+
+theorem intermediate_value_Iio' {a : α} {f : α → δ} (hf : ContinuousOn f (Iic a))
+    (hbot : Tendsto f atBot atTop) : Ioi (f a) ⊆ f '' Iio a := by
+  intro y hy
+  have := intermediate_value_Iic' hf hbot (mem_Ici_of_Ioi hy)
+  grind
+
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
 `b` are two points of this set, then `f` sends `s` to a superset of `Icc (f a) (f b)`. -/
 theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → δ}
@@ -667,7 +736,7 @@ theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnecte
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atBot)
     (htop : Tendsto (fun x : s => f x) atTop atTop) : SurjOn f s univ :=
   haveI := Classical.inhabited_of_nonempty hs.to_subtype
-  surjOn_iff_surjective.2 <| hf.restrict.surjective htop hbot
+  surjOn_iff_surjective.2 <| hf.domRestrict.surjective htop hbot
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`
 tends to `Filter.atTop : Filter β` along `Filter.atBot : Filter ↥s` and tends to
@@ -677,6 +746,10 @@ theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnect
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atTop)
     (htop : Tendsto (fun x : s => f x) atTop atBot) : SurjOn f s univ :=
   ContinuousOn.surjOn_of_tendsto (δ := δᵒᵈ) hs hf hbot htop
+
+/-!
+### Monotonicity of injective continuous functions
+-/
 
 theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → δ}
     (hf_c : Continuous f) (hf : f ⊥ ≤ f ⊤) (hf_i : Injective f) : StrictMono f := by
@@ -719,9 +792,9 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   have hbt : b ≤ t := le_max_left b y
   have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
     have : Fact (s ≤ t) := ⟨hsa.trans <| hbt.trans' hab.le⟩
-    have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)
-      hf_c.continuousOn.restrict hf_i.injOn.injective
-    exact this.imp strictMono_restrict.mp strictAntiOn_iff_strictAnti.mpr
+    have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.domRestrict (Icc s t) f)
+      hf_c.continuousOn.domRestrict hf_i.injOn.injective
+    exact this.imp strictMono_domRestrict.mp strictAntiOn_iff_strictAnti.mpr
   have (h : StrictAntiOn f (Icc s t)) : False := by
     have : Icc a b ⊆ Icc s t := Icc_subset_Icc hsa hbt
     replace : StrictAntiOn f (Icc a b) := StrictAntiOn.mono h this
@@ -742,10 +815,10 @@ theorem ContinuousOn.strictMonoOn_of_injOn_Icc {a b : α} {f : α → δ}
     (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
     StrictMonoOn f (Icc a b) := by
   have : Fact (a ≤ b) := ⟨hab⟩
-  refine StrictMono.of_restrict ?_
-  set g : Icc a b → δ := Set.restrict (Icc a b) f
+  refine StrictMono.of_domRestrict ?_
+  set g : Icc a b → δ := Set.domRestrict (Icc a b) f
   have hgab : g ⊥ ≤ g ⊤ := by aesop
-  exact Continuous.strictMono_of_inj_boundedOrder (f := g) hf_c.restrict hgab hf_i.injective
+  exact Continuous.strictMono_of_inj_boundedOrder (f := g) hf_c.domRestrict hgab hf_i.injective
 
 /-- Suppose `f : [a, b] → δ` is
 continuous and injective. Then `f` is strictly antitone (decreasing) if `f(b) ≤ f(a)`. -/
@@ -782,8 +855,117 @@ or antitone (increasing or decreasing). -/
 theorem ContinuousOn.strictMonoOn_of_injOn_Ioo {a b : α} {f : α → δ} (hab : a < b)
     (hf_c : ContinuousOn f (Ioo a b)) (hf_i : InjOn f (Ioo a b)) :
     StrictMonoOn f (Ioo a b) ∨ StrictAntiOn f (Ioo a b) := by
-  haveI : Inhabited (Ioo a b) := Classical.inhabited_of_nonempty (nonempty_Ioo_subtype hab)
-  let g : Ioo a b → δ := Set.restrict (Ioo a b) f
+  have : Inhabited (Ioo a b) := Classical.inhabited_of_nonempty (nonempty_Ioo_subtype hab)
+  let g : Ioo a b → δ := Set.domRestrict (Ioo a b) f
   have : StrictMono g ∨ StrictAnti g :=
-    Continuous.strictMono_of_inj hf_c.restrict hf_i.injective
-  exact this.imp strictMono_restrict.mp strictAntiOn_iff_strictAnti.mpr
+    Continuous.strictMono_of_inj hf_c.domRestrict hf_i.injective
+  exact this.imp strictMono_domRestrict.mp strictAntiOn_iff_strictAnti.mpr
+
+/-!
+### Images of continuous monotone functions
+-/
+
+variable {a b : α} {f : α → δ}
+
+theorem ContinuousOn.image_Icc_of_monotoneOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
+    (hmono : MonotoneOn f (Icc a b)) : f '' Icc a b = Icc (f a) (f b) :=
+  subset_antisymm (hmono.image_Icc_subset) (intermediate_value_Icc hab hf)
+
+theorem ContinuousOn.image_Icc_of_antitoneOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
+    (hmono : AntitoneOn f (Icc a b)) : f '' Icc a b = Icc (f b) (f a) :=
+  subset_antisymm (hmono.image_Icc_subset) (intermediate_value_Icc' hab hf)
+
+theorem ContinuousOn.image_Ico_of_strictMonoOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
+    (hmono : StrictMonoOn f (Icc a b)) : f '' Ico a b = Ico (f a) (f b) :=
+  subset_antisymm (hmono.image_Ico_subset) (intermediate_value_Ico hab hf)
+
+theorem ContinuousOn.image_Ico_of_strictAntiOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
+    (hmono : StrictAntiOn f (Icc a b)) : f '' Ico a b = Ioc (f b) (f a) :=
+  subset_antisymm (hmono.image_Ico_subset) (intermediate_value_Ico' hab hf)
+
+theorem ContinuousOn.image_Ioc_of_strictMonoOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
+    (hmono : StrictMonoOn f (Icc a b)) : f '' Ioc a b = Ioc (f a) (f b) :=
+  subset_antisymm (hmono.image_Ioc_subset) (intermediate_value_Ioc hab hf)
+
+theorem ContinuousOn.image_Ioc_of_strictAntiOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
+    (hmono : StrictAntiOn f (Icc a b)) : f '' Ioc a b = Ico (f b) (f a) :=
+  subset_antisymm (hmono.image_Ioc_subset) (intermediate_value_Ioc' hab hf)
+
+theorem ContinuousOn.image_Ioo_of_strictMonoOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
+    (hmono : StrictMonoOn f (Icc a b)) : f '' Ioo a b = Ioo (f a) (f b) :=
+  subset_antisymm (hmono.image_Ioo_subset) (intermediate_value_Ioo hab hf)
+
+theorem ContinuousOn.image_Ioo_of_strictAntiOn (hab : a ≤ b) (hf : ContinuousOn f (Icc a b))
+    (hmono : StrictAntiOn f (Icc a b)) : f '' Ioo a b = Ioo (f b) (f a) :=
+  subset_antisymm (hmono.image_Ioo_subset) (intermediate_value_Ioo' hab hf)
+
+theorem ContinuousOn.image_uIcc_of_monotoneOn (hf : ContinuousOn f [[a, b]])
+    (hmono : MonotoneOn f [[a, b]]) : f '' [[a, b]] = [[f a, f b]] :=
+  subset_antisymm (hmono.image_uIcc_subset) (intermediate_value_uIcc hf)
+
+theorem ContinuousOn.image_uIcc_of_antitoneOn (hf : ContinuousOn f [[a, b]])
+    (hmono : AntitoneOn f [[a, b]]) : f '' [[a, b]] = [[f a, f b]] :=
+  subset_antisymm (hmono.image_uIcc_subset) (intermediate_value_uIcc hf)
+
+theorem ContinuousOn.image_Ici_of_monotoneOn (hf : ContinuousOn f (Ici a))
+    (hmono : MonotoneOn f (Ici a)) (htop : Tendsto f atTop atTop) : f '' Ici a = Ici (f a) :=
+  subset_antisymm (hmono.image_Ici_subset) (intermediate_value_Ici hf htop)
+
+theorem ContinuousOn.image_Ici_of_antitoneOn (hf : ContinuousOn f (Ici a))
+    (hmono : AntitoneOn f (Ici a)) (htop : Tendsto f atTop atBot) : f '' Ici a = Iic (f a) :=
+  subset_antisymm (hmono.image_Ici_subset) (intermediate_value_Ici' hf htop)
+
+theorem ContinuousOn.image_Iic_of_monotoneOn (hf : ContinuousOn f (Iic a))
+    (hmono : MonotoneOn f (Iic a)) (hbot : Tendsto f atBot atBot) : f '' Iic a = Iic (f a) :=
+  subset_antisymm (hmono.image_Iic_subset) (intermediate_value_Iic hf hbot)
+
+theorem ContinuousOn.image_Iic_of_antitoneOn (hf : ContinuousOn f (Iic a))
+    (hmono : AntitoneOn f (Iic a)) (hbot : Tendsto f atBot atTop) : f '' Iic a = Ici (f a) :=
+  subset_antisymm (hmono.image_Iic_subset) (intermediate_value_Iic' hf hbot)
+
+theorem ContinuousOn.image_Ioi_of_strictMonoOn (hf : ContinuousOn f (Ici a))
+    (hmono : StrictMonoOn f (Ici a)) (htop : Tendsto f atTop atTop) : f '' Ioi a = Ioi (f a) :=
+  subset_antisymm (hmono.image_Ioi_subset) (intermediate_value_Ioi hf htop)
+
+theorem ContinuousOn.image_Ioi_of_strictAntiOn (hf : ContinuousOn f (Ici a))
+    (hmono : StrictAntiOn f (Ici a)) (htop : Tendsto f atTop atBot) : f '' Ioi a = Iio (f a) :=
+  subset_antisymm (hmono.image_Ioi_subset) (intermediate_value_Ioi' hf htop)
+
+theorem ContinuousOn.image_Iio_of_strictMonoOn (hf : ContinuousOn f (Iic a))
+    (hmono : StrictMonoOn f (Iic a)) (hbot : Tendsto f atBot atBot) : f '' Iio a = Iio (f a) :=
+  subset_antisymm (hmono.image_Iio_subset) (intermediate_value_Iio hf hbot)
+
+theorem ContinuousOn.image_Iio_of_strictAntiOn (hf : ContinuousOn f (Iic a))
+    (hmono : StrictAntiOn f (Iic a)) (hbot : Tendsto f atBot atTop) : f '' Iio a = Ioi (f a) :=
+  subset_antisymm (hmono.image_Iio_subset) (intermediate_value_Iio' hf hbot)
+
+/-!
+### Order-agnostic images under continuous strictly monotone maps
+
+If `f` is *globally* continuous and strictly monotone, each interval maps to the interval of its
+endpoint images with no `a ≤ b` hypothesis: when `a > b`, both sides are empty (since `f a > f b`).
+-/
+
+theorem Continuous.image_Icc_of_strictMono (hf_c : Continuous f) (hf : StrictMono f) :
+    f '' Icc a b = Icc (f a) (f b) := by
+  rcases le_or_gt a b with hab | hab
+  · exact hf_c.continuousOn.image_Icc_of_monotoneOn hab (hf.monotone.monotoneOn _)
+  · simp [not_le.mpr hab, not_le.mpr (hf hab)]
+
+theorem Continuous.image_Ico_of_strictMono (hf_c : Continuous f) (hf : StrictMono f) :
+    f '' Ico a b = Ico (f a) (f b) := by
+  rcases le_or_gt a b with hab | hab
+  · exact hf_c.continuousOn.image_Ico_of_strictMonoOn hab (hf.strictMonoOn _)
+  · simp [lt_asymm hab, lt_asymm (hf hab)]
+
+theorem Continuous.image_Ioc_of_strictMono (hf_c : Continuous f) (hf : StrictMono f) :
+    f '' Ioc a b = Ioc (f a) (f b) := by
+  rcases le_or_gt a b with hab | hab
+  · exact hf_c.continuousOn.image_Ioc_of_strictMonoOn hab (hf.strictMonoOn _)
+  · simp [lt_asymm hab, lt_asymm (hf hab)]
+
+theorem Continuous.image_Ioo_of_strictMono (hf_c : Continuous f) (hf : StrictMono f) :
+    f '' Ioo a b = Ioo (f a) (f b) := by
+  rcases le_or_gt a b with hab | hab
+  · exact hf_c.continuousOn.image_Ioo_of_strictMonoOn hab (hf.strictMonoOn _)
+  · simp [lt_asymm hab, lt_asymm (hf hab)]
