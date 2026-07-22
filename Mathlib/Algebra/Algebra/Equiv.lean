@@ -782,6 +782,7 @@ namespace RingEquiv
 variable {R S : Type*}
 
 /-- Reinterpret a `RingEquiv` as an `ℕ`-algebra isomorphism. -/
+@[simps! -isSimp apply]
 def toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) : R ≃ₐ[ℕ] S where
   toEquiv := f
   __ := f.toRingHom.toNatAlgHom
@@ -789,9 +790,6 @@ def toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) : R ≃ₐ[ℕ] S wh
 @[simp]
 lemma toNatAlgEquiv_coe [Semiring R] [Semiring S] (f : R ≃+* S) :
     ⇑f.toNatAlgEquiv = ⇑f := rfl
-
-lemma toNatAlgEquiv_apply [Semiring R] [Semiring S] (f : R ≃+* S) (x : R) :
-    f.toNatAlgEquiv x = f x := rfl
 
 @[simp]
 lemma toAlgHom_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
@@ -812,6 +810,7 @@ lemma toNatAlgEquiv_injective [Semiring R] [Semiring S] :
   equivNatAlgEquiv.injective
 
 /-- Reinterpret a `RingEquiv` as a `ℤ`-algebra isomorphism. -/
+@[simps! -isSimp apply]
 def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S where
   toEquiv := f
   __ := f.toRingHom.toIntAlgHom
@@ -819,9 +818,6 @@ def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S where
 @[simp]
 lemma toIntAlgEquiv_coe [Ring R] [Ring S] (f : R ≃+* S) :
     ⇑f.toIntAlgEquiv = ⇑f := rfl
-
-lemma toIntAlgEquiv_apply [Ring R] [Ring S] (f : R ≃+* S) (x : R) :
-    f.toIntAlgEquiv x = f x := rfl
 
 @[simp]
 lemma toAlgHom_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
