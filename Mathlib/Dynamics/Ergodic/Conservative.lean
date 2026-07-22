@@ -192,7 +192,7 @@ theorem IsRecurrent.ae_mem_imp_frequently_image_mem (hf : QuasiMeasurePreserving
     (hs.frequently_measure_inter_ne_zero hf (t := s ∩ ⋂ m ≥ n, f^[m] ⁻¹' sᶜ) inter_subset_left)
   simp only [Set.preimage_compl, not_ne_iff, eventually_atTop]
   refine ⟨n, fun m n_m ↦ ae_eq_empty.1 (Eq.eventuallyEq ?_)⟩
-  suffices h : (⋂ k ≥ n, (f^[k] ⁻¹' s)ᶜ) ∩ f^[m] ⁻¹' s = ∅ by simp [inter_assoc, h]
+  suffices h : (⋂ k ≥ n, (f^[k] ⁻¹' s)ᶜ) ∩ f^[m] ⁻¹' s = ∅ by simp [inter_assoc, h]; rfl
   rw [iInter_inter]
   apply iInter_eq_empty_of_eq_empty (i := m)
   simp [n_m]
@@ -338,7 +338,7 @@ theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ ({ x ∈ s | ∀ m ≥ n, f^[m] x ∉ s }) = 0 := by
   apply measure_mono_null _ (ae_iff.1 (hf.ae_mem_imp_frequently_image_mem hs))
-  simp only [Classical.not_imp, not_frequently, eventually_atTop, setOf_subset_setOf, and_imp]
+  simp only [Classical.not_imp, not_frequently, eventually_atTop, ofPred_subset_ofPred, and_imp]
   exact fun x xs hx ↦ ⟨xs, n, fun m mn ↦ hx m mn⟩
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
