@@ -179,8 +179,9 @@ variable {x : M}
 if it is torsion-free and compatible with `g`.
 Note that the bundle metric on `TM` is implicitly hidden in this definition.
 -/
-@[expose] public def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop :=
-  cov.IsMetricCompatible (M := M) (V := TangentSpace I) ∧ cov.torsion = 0
+public structure IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop where
+  isMetricCompatible : cov.IsMetricCompatible (M := M) (V := TangentSpace I)
+  torsion : cov.torsion = 0
 
 section uniqueness
 
@@ -197,9 +198,9 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
       - ⟪Z, VectorField.mlieBracket I Y X⟫ x
       + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2 := by
   -- use the compatibility in three ways
-  have eq1a := h.1.mvfderiv_inner_eq X hY hZ
-  have eq2a := h.1.mvfderiv_inner_eq Y hZ hX
-  have eq3a := h.1.mvfderiv_inner_eq Z hX hY
+  have eq1a := h.isMetricCompatible.mvfderiv_inner_eq X hY hZ
+  have eq2a := h.isMetricCompatible.mvfderiv_inner_eq Y hZ hX
+  have eq3a := h.isMetricCompatible.mvfderiv_inner_eq Z hX hY
   -- use the torsion-freeness in three ways
   have eq1b := congr(inner ℝ (Y x) ($(h.2) x (X x) (Z x)))
   have eq2b := congr(inner ℝ (Z x) ($(h.2) x (Y x) (X x)))
