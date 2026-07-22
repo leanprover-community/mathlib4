@@ -96,7 +96,7 @@ lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachab
     (huv : u ≠ v) : k ≤ G.degree u := by
   classical
   by_contra! hh
-  rw [← card_incidenceSet_eq_degree, ← ENat.coe_lt_coe, Set.coe_fintypeCard] at hh
+  rw [← card_incidenceSet_eq_degree, ← ENat.natCast_lt_natCast, Set.coe_fintypeCard] at hh
   obtain ⟨w, _⟩ := h hh |>.exists_isPath
   simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
@@ -134,7 +134,7 @@ lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
   refine ⟨fun h ↦ h.not_isEdgeReachable_two, fun hc hr ↦ hc fun s hs₂ ↦ ?_⟩
   by_cases! hs₁ : s.encard ≠ (1 : ℕ)
   · apply G.isEdgeReachable_one.mpr huv.reachable
-    exact lt_of_le_of_ne (ENat.lt_coe_add_one_iff.mp hs₂) hs₁
+    exact lt_of_le_of_ne (ENat.lt_natCast_add_one_iff.mp hs₂) hs₁
   obtain ⟨x, rfl⟩ := s.encard_eq_one.mp hs₁
   obtain rfl | hx := eq_or_ne s(u, v) x
   · exact hr

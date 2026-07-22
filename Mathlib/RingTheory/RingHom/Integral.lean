@@ -44,12 +44,12 @@ open Polynomial in
 theorem isIntegral_ofLocalizationSpan :
     OfLocalizationSpan (RingHom.IsIntegral ·) := by
   introv R hs H r
-  letI := f.toAlgebra
+  let := f.toAlgebra
   change r ∈ (integralClosure R S).toSubmodule
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ s hs
   rintro ⟨t, ht⟩
-  letI := (Localization.awayMap f t).toAlgebra
-  haveI : IsScalarTower R (Localization.Away t) (Localization.Away (f t)) := .of_algebraMap_eq'
+  let := (Localization.awayMap f t).toAlgebra
+  have : IsScalarTower R (Localization.Away t) (Localization.Away (f t)) := .of_algebraMap_eq'
     (IsLocalization.lift_comp _).symm
   have : _root_.IsIntegral (Localization.Away t) (algebraMap S (Localization.Away (f t)) r) :=
     H ⟨t, ht⟩ (algebraMap _ _ r)

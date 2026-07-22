@@ -6,6 +6,8 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 module
 
 public import Mathlib.Algebra.Module.Pi
+public import Batteries.Data.Fin.Lemmas
+public import Mathlib.Data.Fin.Basic
 public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 
@@ -94,6 +96,20 @@ theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
 theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
 
+/-- Construct a matrix from an array in row-major ordering. -/
+def ofArray {m n : ℕ} (A : Array R) (hA : A.size = m * n) : Matrix (Fin m) (Fin n) R :=
+  fun i j => A[Fin.mkDivMod i j]
+
+@[simp]
+theorem ofArray_apply {m n : ℕ} (A : Array R) (hA : A.size = m * n) (i : Fin m) (j : Fin n) :
+    ofArray A hA i j = A[Fin.mkDivMod i j] := rfl
+
+lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
+    ofArray A hA = .of fun i j ↦ A.getD (n * i.val + j.val) 0 := by
+  ext i j
+  have : n * i.val + j.val < m * n := (Fin.mkDivMod i j).isLt
+  simp [ofArray, hA, this]
+
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
 This is available in bundled forms as:
@@ -135,7 +151,16 @@ theorem map_injective {f : α → β} (hf : Function.Injective f) :
 theorem map_involutive {f : α → α} (hf : Function.Involutive f) :
     Function.Involutive fun M : Matrix m n α ↦ M.map f := by intro; simp [hf]
 
-/-- The transpose of a matrix. -/
+/-- The transpose of a matrix.
+
+This is available in bundled forms as:
+* `Matrix.transposeAddEquiv`
+* `Matrix.transposeLinearEquiv`
+* `Matrix.transposeRingEquiv`
+* `Matrix.transposeAlgEquiv`
+* `RingEquiv.mopMatrix`
+* `AlgEquiv.mopMatrix`
+-/
 def transpose (M : Matrix m n α) : Matrix n m α :=
   of fun x y => M y x
 
@@ -257,6 +282,9 @@ section
 
 @[simp]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
+
+@[simp]
+theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := rfl
 
 @[simp]
 theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :

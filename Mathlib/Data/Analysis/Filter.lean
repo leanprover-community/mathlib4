@@ -190,7 +190,7 @@ protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).R
       inf_le_left := fun _ _ ↦ image_mono (F.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ image_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
-      simp only [CFilter.toFilter, image_subset_iff, mem_setOf_eq, Filter.mem_sets, mem_map]
+      simp only [CFilter.toFilter, image_subset_iff, mem_ofPred_eq, Filter.mem_sets, mem_map]
       rw [F.mem_sets]⟩
 
 @[simp]
@@ -214,6 +214,7 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
       exact ⟨fun ⟨s, h⟩ ↦ ⟨_, ⟨s, Subset.refl _⟩, h⟩,
         fun ⟨_, ⟨s, h⟩, h₂⟩ ↦ ⟨s, Subset.trans (preimage_mono h) h₂⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a realizer for the sup of two filters -/
 protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g).Realizer :=
   ⟨F.σ × G.σ,
@@ -242,6 +243,7 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
       · rintro ⟨_, ⟨a, ha⟩, _, ⟨b, hb⟩, rfl⟩
         exact ⟨a, b, inter_subset_inter ha hb⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a realizer for the cofinite filter -/
 protected def cofinite [DecidableEq α] : (@cofinite α).Realizer :=
   ⟨Finset α,
