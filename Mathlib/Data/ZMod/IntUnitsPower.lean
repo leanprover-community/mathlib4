@@ -89,12 +89,22 @@ lemma foo (n : ℕ) (a : ℤˣ) : Units.instMonoid.toNPow.toPow.pow a n =
       inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp } := by
   with_reducible_and_instances rfl
 
+lemma gloups (a : ℤˣ) : (Additive.ofMul a).toMul = a := by
+  with_reducible_and_instances rfl
+
 lemma bar (n : ℕ) (a : ℤˣ) : (Int.instUnitsPow : Pow ℤˣ ℕ).pow a n =
     (n • Additive.ofMul a).toMul := by
   with_reducible_and_instances rfl
 
+lemma bar2 (n : ℕ) (a : ℤˣ) : (Int.instUnitsPow : Pow ℤˣ ℕ).pow a n =
+    Additive.toMul (Additive.ofMul ((Additive.toMul (Additive.ofMul a)) ^ n)) := by
+  with_reducible_and_instances rfl
+
+
 
 #exit
+
+ofMul (h.zpow n a.toMul)
 
 fun n a ↦
       { val := a ^ n
