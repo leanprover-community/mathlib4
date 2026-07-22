@@ -244,7 +244,7 @@ private lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : �
     rcases eq_or_ne r 0 with rfl | hr'
     · simp
     · lift r to NNReal using hr.ne_top
-      letI : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
+      let : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
       apply FormalMultilinearSeries.le_radius_of_summable
       simpa [smul_eq_mul, norm_mul, mul_comm, mul_left_comm, mul_assoc] using
         (hasSum_cuspFunction_of_hasSum_punctured hh hf (q := r) (by simpa using hr)
@@ -659,6 +659,13 @@ lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     qExpansion h ((((DirectSum.of _ k f)) ^ n) (n * k)) = (qExpansion h f) ^ n := by
   have := (qExpansionRingHom h hh hΓ).map_pow (DirectSum.of _ k f) n
   simpa [DirectSum.ofPow]
+
+/-- Specialized version of `UpperHalfPlane.hasSum_qExpansion` for modular forms, with many
+arguments filled in automatically. -/
+lemma hasSum_qExpansion (hh : 0 < h) {k : ℤ} [ModularFormClass F Γ k]
+    [Fact (IsCusp .infty Γ)] (hΓ : h ∈ Γ.strictPeriods) (τ : ℍ) :
+    HasSum (fun m ↦ (qExpansion h f).coeff m * 𝕢 h τ ^ m) (f τ) :=
+  τ.hasSum_qExpansion hh (periodic_comp_ofComplex f hΓ) (holo f) (bdd_at_infty f)
 
 end ModularForm
 
