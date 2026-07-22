@@ -88,4 +88,40 @@ variable [IsUltrametricDist R]
 def subring (c : ℝ) :  Subring (PowerSeries R) :=
   MvPowerSeries.IsRestricted.subring (fun _ ↦ c)
 
+variable (f : subring (R := R) c) (g : MvPowerSeries.IsRestricted.subring (R := R) (fun _ ↦ c))
+
+#check f * g
+
+variable (R) in
+def MvRestricted {σ : Type*} (c : σ → ℝ) : Type _ := MvPowerSeries.IsRestricted.subring (R := R) c
+
+/-- Ring structure on `Restricted R c`. -/
+noncomputable
+instance {σ : Type*} (c : σ → ℝ) : Ring (MvRestricted R c) :=
+  Subring.toRing (MvPowerSeries.IsRestricted.subring c)
+
+variable (f : PowerSeries R) (hf : IsRestricted c f)
+
+/-
+-- This gives an error in the final check
+variable (R) in
+/-- The type of restricted `PowerSeries σ R`. -/
+abbrev Restricted (c : ℝ) : Type _ := subring (R := R) c
+-/
+
+
+variable (R) in
+/-- The type of restricted `PowerSeries σ R`. -/
+abbrev Restricted (c : ℝ) : Type _ := MvRestricted R (σ := Unit) (fun _ ↦ c)
+
+#check (⟨f, hf⟩ : Restricted R c)
+
+/-- Ring structure on `Restricted R c`. -/
+noncomputable
+instance (c : ℝ) : Ring (Restricted R c) := inferInstance
+
+variable (f : Restricted R c) (g : MvRestricted R (fun _ ↦ c))
+
+#check f - g
+
 end PowerSeries.IsRestricted
