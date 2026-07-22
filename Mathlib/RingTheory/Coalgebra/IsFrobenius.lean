@@ -86,6 +86,16 @@ lemma rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul' :
 
 lemma _root_.Coalgebra.isFrobenius_self : IsFrobenius R R where eq := by ext; simp
 
+/-- When a coalgebra with an algebra structure satisfies the Frobenius equations, it is finite. -/
+instance {A : Type*} [NonAssocSemiring A] [Module R A] [Coalgebra R A] [SMulCommClass R A A]
+    [IsScalarTower R A A] [IsFrobenius R A] : Module.Finite R A := by
+  have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
+  classical
+  refine Module.finite_def.mpr ⟨S.image Prod.snd, top_le_iff.mp fun a _ ↦ ?_⟩
+  have := by simpa [hS, tmul_sum] using congr(β (rT A ε
+    ($rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul' (a ⊗ₜ[R] 1))))
+  exact this ▸ sum_mem fun _ _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span (by grind))
+
 section Algebra
 variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [IsFrobenius R A]
 
@@ -112,15 +122,6 @@ lemma lTensor_counit_comp_mul'_comp_assoc_comp_rTensor_comul_comp_algebraLinearM
     lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul', ← comp_assoc,
     lTensor_counit_comp_comul]
   ext; simp
-
-/-- When a coalgebra with an algebra structure satisfies the Frobenius equations, it is finite. -/
-instance : Module.Finite R A := by
-  have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
-  classical
-  refine Module.finite_def.mpr ⟨S.image Prod.snd, top_le_iff.mp fun a _ ↦ ?_⟩
-  have := by simpa [hS, tmul_sum] using congr(β (rT A ε
-    ($rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul' (a ⊗ₜ[R] 1))))
-  exact this ▸ sum_mem fun _ _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span (by grind))
 
 end Algebra
 
