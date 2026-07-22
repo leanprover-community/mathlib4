@@ -271,9 +271,7 @@ theorem IsFredholm.of_isInvertible_restrict {u : E →L[𝕜] F}
   have disj : Disjoint E₁ u.ker := by
     rw [disjoint_iff_comap_eq_bot, ← LinearMap.ker_domRestrict, eqₗ,
       LinearMap.ker_comp, ker_subtype, comap_bot, LinearEquiv.ker]
-  constructor
-  · exact h.1
-  · exact h.2
+  refine ⟨h.1, h.2, ?_, ?_, ?_⟩
   · rw [← Submodule.fg_iff_finiteDimensional]
     exact E₁_coFG.fg_of_disjoint disj.symm
   · refine F₁_coFG.of_le (le_trans ?_ (u.range_domRestrict_le_range E₁))
@@ -292,16 +290,16 @@ def IsFredholm.fredholmPackage {u : E →L[𝕜] F}
     (u_fred : IsFredholm u) {dom₁ : Submodule 𝕜 E} {codom₀ : Submodule 𝕜 F}
     (h_dom : IsTopCompl u.ker dom₁) (h_codom : IsTopCompl u.range codom₀) :
     FredholmPackage u where
-  decDom := {
-    X₀ := u.ker
-    X₁ := dom₁
-    isTopCompl := h_dom.symm
-    finite_X₀ := u_fred.finite_ker }
-  decCodom := {
-    X₀ := codom₀
-    X₁ := u.range
-    isTopCompl := h_codom
-    finite_X₀ := .of_fg <| u_fred.finite_coker.fg_of_isCompl h_codom.isCompl  }
+  decDom :=
+    { X₀ := u.ker
+      X₁ := dom₁
+      isTopCompl := h_dom.symm
+      finite_X₀ := u_fred.finite_ker }
+  decCodom :=
+    { X₀ := codom₀
+      X₁ := u.range
+      isTopCompl := h_codom
+      finite_X₀ := .of_fg <| u_fred.finite_coker.fg_of_isCompl h_codom.isCompl }
   equiv :=
     letI Φ : dom₁ ≃L[𝕜] E ⧸ u.ker := u.ker.quotientEquivOfIsTopCompl dom₁ h_dom |>.symm
     letI Ψ : (E ⧸ u.ker) ≃L[𝕜] u.range := .quotKerEquivRange u_fred.isStrictMap
@@ -339,16 +337,14 @@ denoted `𝕜`, and `u : E →L[𝕜] F` a continuous linear map. The following 
 In practice, condition `4` is the "strongest", so you should probably not use it to *prove* that an
 operator is Fredholm.
 -/
-theorem isFredholm_tfae (u : E →L[𝕜] F) : List.TFAE
-    [
-      IsFredholm u,
+theorem isFredholm_tfae (u : E →L[𝕜] F) :
+    [ IsFredholm u,
       ∃ v : F →L[𝕜] E, v.IsQuasiInverse u,
       ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F),
         IsClosed (E₁ : Set E) ∧ IsClosed (F₁ : Set F) ∧
         E₁.CoFG ∧ F₁.CoFG ∧
         ∃ h : MapsTo u E₁ F₁, (u.restrict h).IsInvertible,
-      Nonempty (FredholmPackage u)
-    ] := by
+      Nonempty (FredholmPackage u) ].TFAE := by
   tfae_have 1 → 4 := IsFredholm.nonempty_fredholmPackage
   tfae_have 4 → 2 := by
     rintro ⟨dec⟩
