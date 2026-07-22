@@ -336,7 +336,7 @@ lemma IsLeftQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V�
 lemma IsRightQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     (h : u.IsRightQuasiInverse v) : v ∘ₗ u ≈ .id := h
 
-lemma _root_.LinearEquiv.isQuasiInverse {e : V ≃ₗ[K] V₂} :
+lemma _root_.LinearEquiv.isQuasiInverse (e : V ≃ₗ[K] V₂) :
     e.symm.IsQuasiInverse e := by
   simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]
 

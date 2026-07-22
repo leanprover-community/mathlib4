@@ -216,11 +216,8 @@ lemma FredholmPackage.isQuasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage
   have hcodom : IsQuasiInverse pkg.decCodom.X₁.subtype pkg.decCodom.proj :=
     have := pkg.decCodom.finite_X₀
     isQuasiInverse_subtype_projectionOnto _
-  have hequiv : IsQuasiInverse pkg.equiv.symm.toLinearMap
-      pkg.equiv.toLinearMap := by
-    simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]
   -- For some reason `exact` and `refine` are slow here!
-  apply hdom.comp (hequiv.comp hcodom.symm)
+  apply hdom.comp (pkg.equiv.isQuasiInverse.comp hcodom.symm)
 
 end FredholmPackage
 
