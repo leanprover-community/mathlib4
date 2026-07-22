@@ -5,8 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
-public import Mathlib.MeasureTheory.Measure.Comap
 public import Mathlib.MeasureTheory.Measure.Restrict
 public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
