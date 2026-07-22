@@ -5,8 +5,8 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Birational.Birational
 public import Mathlib.AlgebraicGeometry.Birational.Composition
+
 /-!
 
 # Birational maps between schemes
@@ -144,38 +144,6 @@ def birationalAutOver (S : Scheme.{u}) [X.Over S] : Subgroup (X.BirationalMap X)
   one_mem' := inferInstanceAs ((RationalMap.id X).IsOver S)
   mul_mem' {f g} (_ : f.IsOver S) (_ : g.IsOver S) := inferInstanceAs ((f.hom.comp g.hom).IsOver S)
   inv_mem' {f} (_ : f.IsOver S) := inferInstanceAs (f.inv.IsOver S)
-
-set_option backward.isDefEq.respectTransparency.types false in
-lemma PartialIso.toPartialMap_comp_symm (f : X.PartialIso Y) :
-    f.toPartialMap.comp f.symm.toPartialMap =
-      (PartialMap.id X).restrict f.source f.dense_source le_top := by
-  ext1
-  · -- This change seems hard to remove
-    change f.source.ι ''ᵁ f.iso.hom ⁻¹ᵁ f.target.ι ⁻¹ᵁ f.target = f.source
-    rw [Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
-  · -- This change seems hard to remove
-    change (f.source.ι.isoImage (f.iso.hom ⁻¹ᵁ f.target.ι ⁻¹ᵁ f.target)).inv ≫
-      (f.iso.hom ≫ f.target.ι) ∣_ f.target ≫ f.iso.inv ≫ f.source.ι = _
-    simp_rw [morphismRestrict_comp, Opens.morphismRestrict_ι, homOfLE_ι,
-      morphismRestrict_ι, Category.assoc, Iso.hom_inv_id_assoc, Hom.isoImage_inv_ι, isoOfEq_hom,
-      PartialMap.restrict_hom, PartialMap.id_domain, PartialMap.id_hom, topIso_hom, homOfLE_ι]
-    exact (X.homOfLE_ι _).symm
-
-set_option backward.isDefEq.respectTransparency.types false in
-lemma PartialIso.symm_toPartialMap_comp (f : X.PartialIso Y) :
-    f.symm.toPartialMap.comp f.toPartialMap =
-      (PartialMap.id Y).restrict f.target f.dense_target le_top := by
-  ext1
-  · -- This change seems hard to remove
-    change f.target.ι ''ᵁ f.iso.inv ⁻¹ᵁ f.source.ι ⁻¹ᵁ f.source = f.target
-    rw [Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
-  · -- This change seems hard to remove
-    change (f.target.ι.isoImage (f.iso.inv ⁻¹ᵁ f.source.ι ⁻¹ᵁ f.source)).inv ≫
-      (f.iso.inv ≫ f.source.ι) ∣_ f.source ≫ f.iso.hom ≫ f.target.ι = _
-    simp_rw [morphismRestrict_comp, Opens.morphismRestrict_ι, homOfLE_ι,
-      morphismRestrict_ι, Category.assoc, Iso.inv_hom_id_assoc, Hom.isoImage_inv_ι, isoOfEq_hom,
-      PartialMap.restrict_hom, PartialMap.id_domain, PartialMap.id_hom, topIso_hom, homOfLE_ι]
-    exact (Y.homOfLE_ι _).symm
 
 /-- A partial isomorphism gives rise to a birational map. -/
 @[simps, stacks 0BAA "(1) 'if' part"]
