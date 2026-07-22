@@ -306,6 +306,58 @@ end
 
 section
 
+variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
+
+variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
+
+/-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the left, if
+it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
+`DiscreteTopology`.) -/
+@[to_additive
+  /-- A subgroup `S` of an additive topological group `G` acts on `G` properly
+  discontinuously on the left, if it is discrete in the sense that `S ∩ K` is finite for all compact
+  `K`. (See also `DiscreteTopology`.) -/]
+theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
+    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S G :=
+  { finite_disjoint_inter_image := by
+      intro K L hK hL
+      have H : Set.Finite _ := hS ((hL.prod hK).image continuous_div').compl_mem_cocompact
+      rw [preimage_compl, compl_compl] at H
+      convert! H
+      simp only [image_smul, mem_iff_mem, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      exact Set.smul_inter_nonempty_iff' }
+
+/-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
+it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
+`DiscreteTopology`.)
+
+If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousSMul_of_t2Space`
+to show that the quotient group `G ⧸ S` is Hausdorff. -/
+@[to_additive
+  /-- A subgroup `S` of an additive topological group `G` acts on `G` properly discontinuously
+  on the right, if it is discrete in the sense that `S ∩ K` is finite for all compact `K`.
+  (See also `DiscreteTopology`.)
+
+  If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
+  to show that the quotient group `G ⧸ S` is Hausdorff. -/]
+theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
+    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
+  { finite_disjoint_inter_image := by
+      intro K L hK hL
+      have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prodMap continuous_id
+      have H : Set.Finite _ :=
+        hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
+      simp only [preimage_compl, compl_compl, coe_subtype, comp_apply] at H
+      apply Finite.of_preimage _ (equivOp S).surjective
+      convert! H using 1
+      ext x
+      simp only [image_smul, mem_ofPred_eq, mem_preimage, mem_image, Prod.exists]
+      exact Set.op_smul_inter_nonempty_iff }
+
+end
+
+section
+
 /-! Some results about an open set containing the product of two sets in a topological group. -/
 
 variable [TopologicalSpace G] [MulOneClass G] [ContinuousMul G]

@@ -117,11 +117,11 @@ theorem Definable.inter {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
 @[simp]
 theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.Definable L g) :
     A.Definable L (f ∪ g) := by
-  rcases hf with ⟨φ, hφ⟩
-  rcases hg with ⟨θ, hθ⟩
+  rcases hf with ⟨φ, rfl⟩
+  rcases hg with ⟨θ, rfl⟩
   refine ⟨φ ⊔ θ, ?_⟩
   ext
-  rw [hφ, hθ, mem_ofPred_eq, Formula.realize_sup, mem_union, mem_ofPred_eq, mem_ofPred_eq]
+  simp
 
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by

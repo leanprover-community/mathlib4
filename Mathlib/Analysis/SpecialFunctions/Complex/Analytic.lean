@@ -153,8 +153,9 @@ lemma AnalyticOnNhd.log (fs : AnalyticOnNhd ℝ f s) (m : ∀ x ∈ s, 0 < f x) 
   fun z n ↦ (analyticAt_log (m z n)).comp (fs z n)
 
 lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
-    AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
-  fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
+    AnalyticOn ℝ (fun z ↦ Real.log (f z)) s := by
+  have hm : MapsTo f s {y | 0 < y} := m
+  exact fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) hm
 
 theorem iteratedDeriv_succ_log {n : ℕ} {x : ℂ} (hx : x ∈ slitPlane) :
     iteratedDeriv (n + 1) log x = (-1 : ℂ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) := by
