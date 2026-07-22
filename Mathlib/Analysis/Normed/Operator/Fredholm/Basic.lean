@@ -1,5 +1,6 @@
 /-
-Copyright (c) 2026 Filippo A. E. Nuccio. All rights reserved.
+Copyright (c) 2026 Jon Bannon, Anatole Dedecker, Yongxi Lin, Patrick Massot, Oliver Nash,
+Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Anatole Dedecker, Yongxi Lin, Patrick Massot, Oliver Nash, Filippo A. E. Nuccio
 -/
