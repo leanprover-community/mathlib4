@@ -143,7 +143,8 @@ lemma _root_.Ideal.one_lt_absNorm [IsDedekindDomain R] [Module.Free ℤ R] {I : 
 
 /-- The norm of a prime of the height-one spectrum is `≠ 0`. -/
 lemma _root_.IsDedekindDomain.HeightOneSpectrum.absNorm_ne_zero [IsDedekindDomain R]
-    [Module.Free ℤ R] (v : IsDedekindDomain.HeightOneSpectrum R) : v.asIdeal.absNorm ≠ 0 :=
+    [Module.Free ℤ R] (v : IsDedekindDomain.HeightOneSpectrum R) :
+    v.asIdeal.absNorm ≠ 0 :=
   ne_zero_of_lt (Ideal.one_lt_absNorm v.ne_bot)
 
 instance : Northcott fun p : Ideal R ↦ p.cardQuot :=

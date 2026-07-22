@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
 # Dirichlet density of a set of prime ideals
@@ -58,34 +59,14 @@ private theorem sum_fiber_le {s : ℝ} (hs : 0 ≤ s) (v : HeightOneSpectrum ℤ
   have := Fintype.ofFinite {𝔭 : HeightOneSpectrum (𝓞 K) // 𝔭.under ℤ = v}
   rw [tsum_fintype, ← nsmul_eq_mul]
   refine (Finset.univ.sum_le_card_nsmul _ _ fun 𝔭 _ ↦
-    Real.rpow_le_rpow_of_nonpos ?_ ?_ (by rwa [neg_nonpos])).trans <|
-      nsmul_le_nsmul_left (by positivity) ?_
-  · rw [Nat.cast_pos]
-    apply Nat.pos_of_ne_zero
-    rw [HeightOneSpectrum.absNorm_asIdeal]
-    sorry
-  · sorry
+    Real.rpow_le_rpow_of_nonpos ?_ (Nat.cast_le.mpr <| Nat.le_of_dvd ?_ ?_)
+      (by rwa [neg_nonpos])).trans <| nsmul_le_nsmul_left (by positivity) ?_
+  · exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero v.absNorm_ne_zero
+  · exact Nat.pos_of_ne_zero 𝔭.1.absNorm_ne_zero
+  · nth_rewrite 1 [← 𝔭.prop]
+    exact Ideal.absNorm_under_dvd_absNorm _
   · rw [Finset.card_univ, ← Nat.card_eq_fintype_card, Nat.card_congr (primesOverEquiv v)]
     exact Ideal.ncard_primesOver_le v.asIdeal (𝓞 K)
-
-
-#exit
-  sorry
-  refine nsmul_le_nsmul_left ?_ ?_
-  refine le_trans (Finset.univ.sum_le_card_nsmul _ ((Ideal.absNorm v.asIdeal : ℝ) ^ (-s)) ?_) ?_
-  · intro 𝔭 _
-    refine Real.rpow_le_rpow_of_nonpos ?_ (by
-      exact_mod_cast Nat.le_of_dvd (Nat.pos_of_ne_zero fun h ↦ 𝔭.1.ne_bot
-        (Ideal.absNorm_eq_zero_iff.mp h))
-        (by rw [show v.asIdeal = 𝔭.1.asIdeal.under ℤ by rw [← under_asIdeal, 𝔭.2]]
-            exact Ideal.absNorm_under_dvd_absNorm 𝔭.1.asIdeal)) (by simpa)
-    exact_mod_cast Nat.pos_of_ne_zero fun h ↦ v.ne_bot (Ideal.absNorm_eq_zero_iff.mp h)
-  · rw [Finset.card_univ, ← Nat.card_eq_fintype_card, nsmul_eq_mul]
-    gcongr
-    exact_mod_cast show Nat.card {𝔭 : HeightOneSpectrum (𝓞 K) // 𝔭.under ℤ = v} ≤
-        Module.finrank ℤ (𝓞 K) by
-      rw [Nat.card_congr (primesOverEquiv v), Nat.card_coe_set_eq]
-      exact Ideal.ncard_primesOver_le v.asIdeal (𝓞 K)
 
 /-- The prime-ideal zeta sum converges for real `s > 1`. -/
 theorem summable_primeIdealZetaSum {s : ℝ} (hs : 1 < s) :
