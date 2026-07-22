@@ -321,67 +321,47 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
   rw [hk, ← LinearMap.map_le_map_iff, map_span, map_comap_eq, Set.image_preimage_eq_of_subset h₁]
   exact inf_le_right
 
-section
+variable {R₂ : Type*} [Ring R₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
-variable {R' : Type*} [Ring R'] (σ : R →+* R') {σ' : R' →+* R}
-  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-
-variable {N : Type*} [AddCommGroup N] [Module R' N] (P : Submodule R M) (Q : Submodule R' N)
+variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R₂ N]
+  (P : Submodule R M) (Q : Submodule R₂ N)
 
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
 and `f : M ≃ₛₗ[σ] N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
-def Quotient.equiv' (f : M ≃ₛₗ[σ] N) (hf : P.map (f : M →ₛₗ[σ] N) = Q) :
-    (M ⧸ P) ≃ₛₗ[σ] N ⧸ Q where
-  __ := Submodule.mapQ _ _ (f : M →ₛₗ[σ] N) (by simp [← hf, ← Submodule.map_le_iff_le_comap])
-  invFun := Submodule.mapQ _ _ (f.symm : N →ₛₗ[σ'] M)
+def Quotient.equiv (f : M ≃ₛₗ[σ₁₂] N) (hf : P.map (f : M →ₛₗ[σ₁₂] N) = Q) :
+    (M ⧸ P) ≃ₛₗ[σ₁₂] N ⧸ Q where
+  __ := Submodule.mapQ _ _ (f : M →ₛₗ[σ₁₂] N) (by simp [← hf, ← Submodule.map_le_iff_le_comap])
+  invFun := Submodule.mapQ _ _ (f.symm : N →ₛₗ[σ₂₁] M)
     (by simp [← hf, Submodule.map_equiv_eq_comap_symm])
   left_inv x := Submodule.Quotient.induction_on _ x (by simp)
   right_inv x := Submodule.Quotient.induction_on _ x (by simp)
 
-lemma Quotient.equiv'_apply (f : M ≃ₛₗ[σ] N) (hf : P.map (f : M →ₛₗ[σ] N) = Q) (a : M ⧸ P) :
-    (equiv' σ P Q f hf) a =
-      (P.mapQ Q (f : M →ₛₗ[σ] N) (by simp [← hf, ← Submodule.map_le_iff_le_comap])) a :=
-  rfl
-
-lemma Quotient.equiv'_symm (f : M ≃ₛₗ[σ] N) (hf : P.map (f : M →ₛₗ[σ] N) = Q) :
-    (Quotient.equiv' σ P Q f hf).symm =
-      Quotient.equiv' σ' Q P f.symm ((Submodule.map_symm_eq_iff f).mpr hf) :=
-  rfl
-
-end
-
-/-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
-and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
-def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
-    (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map (f : M →ₗ[R] N) = Q) : (M ⧸ P) ≃ₗ[R] N ⧸ Q :=
-  Quotient.equiv' (RingHom.id R) P Q f hf
-
 @[simp]
-theorem Quotient.equiv_apply {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N)
-    (hf : P.map (f : M →ₗ[R] N) = Q) (a : M ⧸ P) :
-    Quotient.equiv P Q f hf a =
-      Submodule.mapQ _ _ (f : M →ₗ[R] N) (by simp [← hf, ← Submodule.map_le_iff_le_comap]) a :=
+lemma Quotient.equiv_apply (f : M ≃ₛₗ[σ₁₂] N) (hf : P.map (f : M →ₛₗ[σ₁₂] N) = Q) (a : M ⧸ P) :
+    (equiv P Q f hf) a =
+      (P.mapQ Q (f : M →ₛₗ[σ₁₂] N) (by simp [← hf, ← Submodule.map_le_iff_le_comap])) a :=
   rfl
 
 @[simp]
-theorem Quotient.equiv_symm {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N)
-    (hf : P.map (f : M →ₗ[R] N) = Q) :
+lemma Quotient.equiv_symm (f : M ≃ₛₗ[σ₁₂] N) (hf : P.map (f : M →ₛₗ[σ₁₂] N) = Q) :
     (Quotient.equiv P Q f hf).symm =
       Quotient.equiv Q P f.symm ((Submodule.map_symm_eq_iff f).mpr hf) :=
   rfl
 
-@[simp]
-theorem Quotient.equiv_trans {N O : Type*} [AddCommGroup N] [Module R N] [AddCommGroup O]
-    [Module R O] (P : Submodule R M) (Q : Submodule R N) (S : Submodule R O) (e : M ≃ₗ[R] N)
-    (f : N ≃ₗ[R] O) (he : P.map (e : M →ₗ[R] N) = Q) (hf : Q.map (f : N →ₗ[R] O) = S)
-    (hef : P.map (e.trans f : M →ₗ[R] O) = S) :
+theorem Quotient.equiv_trans {R₃ : Type*} {O : Type*} [Ring R₃] [AddCommGroup O] [Module R₃ O]
+    {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} {σ₁₃ : R →+* R₃} {σ₃₁ : R₃ →+* R}
+    [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
+    [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
+    [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
+    (S : Submodule R₃ O) (e : M ≃ₛₗ[σ₁₂] N) (f : N ≃ₛₗ[σ₂₃] O)
+    (he : P.map (e : M →ₛₗ[σ₁₂] N) = Q) (hf : Q.map (f : N →ₛₗ[σ₂₃] O) = S)
+    (hef : P.map ((e.trans f : M ≃ₛₗ[σ₁₃] O) : M →ₛₗ[σ₁₃] O) = S) :
     Quotient.equiv P S (e.trans f) hef =
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
   ext
   -- `simp` can deal with `hef` depending on `e` and `f`
-  simp only [Quotient.equiv, Quotient.equiv'_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
+  simp only [Quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
   -- `rw` can deal with `mapQ_comp` needing extra hypotheses coming from the RHS
   rw [mapQ_comp, LinearMap.comp_apply]
 
