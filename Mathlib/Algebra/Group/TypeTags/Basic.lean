@@ -48,10 +48,12 @@ def Multiplicative (α : Type*) := α
 namespace Additive
 
 /-- Reinterpret `x : α` as an element of `Additive α`. -/
+@[implicit_reducible]
 def ofMul : α ≃ Additive α :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `x : Additive α` as an element of `α`. -/
+@[implicit_reducible]
 def toMul : Additive α ≃ α := ofMul.symm
 
 @[simp]
@@ -80,10 +82,12 @@ end Additive
 namespace Multiplicative
 
 /-- Reinterpret `x : α` as an element of `Multiplicative α`. -/
+@[implicit_reducible]
 def ofAdd : α ≃ Multiplicative α :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `x : Multiplicative α` as an element of `α`. -/
+@[implicit_reducible]
 def toAdd : Multiplicative α ≃ α := ofAdd.symm
 
 @[simp]
