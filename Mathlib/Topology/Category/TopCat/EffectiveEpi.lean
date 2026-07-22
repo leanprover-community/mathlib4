@@ -52,7 +52,7 @@ def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : IsQ
           (ofHom ⟨fun _ ↦ a, continuous_const⟩)
           (ofHom ⟨fun _ ↦ b, continuous_const⟩)
           (by ext; exact hab))
-        a⟩) by assumption
+        a⟩) from this
     apply hom_ext
     rw [hom_ofHom, ← Equiv.symm_apply_eq hπ.liftEquiv]
     ext

@@ -208,7 +208,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
     have hx_sq : x * x ∈ A := by
       rw [← hA.inv_eq_self]
       simpa using hx' (smul_mem_smul_set (mul_mem_mul hx_inv hA.one_mem))
-    calc A * A ⊆ x • A := by assumption
+    calc A * A ⊆ x • A := hx
       _ = x⁻¹ • (x * x) • A := by simp [smul_smul]
       _ ⊆ x⁻¹ • (A • A) := smul_set_mono (smul_set_subset_smul hx_sq)
       _ ⊆ A := hx'

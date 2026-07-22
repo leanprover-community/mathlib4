@@ -493,7 +493,7 @@ lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N
     simp only [mfld_simps]
     rw [range_prodMap, I.toPartialEquiv.prod_symm, (chartAt H p.1).toPartialEquiv.prod_symm]
     intro p₀ ⟨hp₀, ⟨hp₁₁, hp₁₂⟩⟩
-    exact ⟨⟨by simp_all; grind, by assumption⟩, ⟨by simp_all; grind, by assumption⟩⟩
+    exact ⟨⟨by simp_all; grind, hp₁₁⟩, ⟨by simp_all; grind, hp₁₂⟩⟩
   rw [writtenInExtChartAt_prod]
   apply HasFDerivWithinAt.mono ?_ better
   apply HasFDerivWithinAt.prodMap

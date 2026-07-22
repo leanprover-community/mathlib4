@@ -329,7 +329,7 @@ lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_resi
     CompactSpace 𝒪[K] ↔ CompleteSpace 𝒪[K] ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
   refine ⟨fun h ↦ ?_, fun ⟨_, _, h⟩ ↦ ⟨?_⟩⟩
   · have : IsDiscreteValuationRing 𝒪[K] := isDiscreteValuationRing_of_compactSpace
-    refine ⟨complete_of_compact, by assumption, ?_⟩
+    refine ⟨complete_of_compact, this, ?_⟩
     rw [← isCompact_univ_iff, isCompact_iff_totallyBounded_isComplete,
         totallyBounded_iff_finite_residueField] at h
     exact h.left
