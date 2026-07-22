@@ -20,6 +20,21 @@ Any two such connections are equal (on differentiable vector fields), which is w
 We construct a Levi-Civita connection and prove that is defines a compatible torsion-free
 connection.
 
+Mathematically, there are two main approaches to this construction.
+The first one notes that the uniqueness proof provides an expression (the Koszul formula) for the
+Levi-Civita connection, so can be used to define a connection. This passage, however, involves an
+auxiliary choice (say, of a local frame near each point), and requires proving independence of this
+choice. For this reason, we use a different argument, using the so-called *musical isomorphism*.
+
+A Riemannian metric `g` on `M` induces so-called **musical isomorphisms** between the tangent and
+cotangent bundles of `M` (and, more generally, tensor fields of orders `(k+d, l)` and `(k, l+d)`
+for `k, l, d : ℕ`), by associating to a tangent vector `X \in T_pM` the cotangent vector `g(X, ·)`.
+Non-degeneracy of the metric `g` implies that this induces an isomorphism `T_pM → (T_pM)*` at each
+point, which combines to a bundle isomorphism `TM → T*M`.
+Similarly, a `(2,0)`-tensor (i.e., a map `T_pM × T_pM → ℝ` at each point) induces a `(1,1)`-tensor
+(i.e., a map `T_pM → (T_pM)*` at each point).
+We apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z p`, to obtain a `(1,1)`-tensor `∇ Y`.
+
 
 ## Main definitions and results
 
@@ -27,7 +42,7 @@ connection.
   Levi-Civita connection if and only if it is both torsion-free and compatible with `g`
 
 * `CovariantDerivative.IsLeviCivitaConnection.uniqueness`: a Levi-Civita connection on `(M, g)` is
-  uniquely determined on differentiable vector fields.
+  uniquely determined on differentiable vector fields (this is known as the **Koszul formula**).
 
 * `CovariantDerivative.leviCivitaConnection`: a choice of Levi-Civita connection on the tangent
   bundle `TM` of a Riemannian manifold `(M, g)`: this is unique up to the value on
@@ -41,6 +56,10 @@ connection.
 
 * construction of LC using a tensoriality argument, and the musical isomorphism
   (avoids the use of local frames and trivialisations)
+
+## Tags
+
+Levi-Civita connection, metric, torsion-free, Koszul formula, musical isomorphism
 
 -/
 
@@ -226,7 +245,8 @@ public lemma IsLeviCivitaConnection.apply_eq' [FiniteDimensional ℝ E]
   simp_rw [h.apply_eq _ (mdifferentiableAt_extend _ _ X₀) hY hZ]
   simp
 
-/-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
+/-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields:
+this is known as the **Koszul formula**.
 
 Note that the differentiability hypothesis on `Y` is required, since `CovariantDerivative` objects
 are unconstrained in their behaviour on non-differentiable vector fields. -/
