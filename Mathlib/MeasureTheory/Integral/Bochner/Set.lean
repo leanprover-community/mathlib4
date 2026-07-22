@@ -74,7 +74,7 @@ theorem setIntegral_congr_fun (hs : MeasurableSet s) (h : EqOn f g s) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
   setIntegral_congr_ae hs <| Eventually.of_forall h
 
-theorem setIntegral_congr_set (hst : s =ᵐˢ[μ] t) : ∫ x in s, f x ∂μ = ∫ x in t, f x ∂μ := by
+theorem setIntegral_congr_set (hst : s =ᵐ[μ] t) : ∫ x in s, f x ∂μ = ∫ x in t, f x ∂μ := by
   rw [Measure.restrict_congr_set hst]
 
 theorem setIntegral_union₀ (hst : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
@@ -737,7 +737,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [PartialOrder E]
     {μ : Measure X} {f g : X → E} {s t : Set X}
 
 theorem setIntegral_mono_set [OrderClosedTopology E] (hfi : IntegrableOn f t μ)
-    (hf : 0 ≤ᵐ[μ.restrict t] f) (hst : s ⊆ᵐ[μ] t) :
+    (hf : 0 ≤ᵐ[μ.restrict t] f) (hst : s ≤ᵐ[μ] t) :
     ∫ x in s, f x ∂μ ≤ ∫ x in t, f x ∂μ :=
   integral_mono_measure (Measure.restrict_mono_ae hst) hf hfi
 

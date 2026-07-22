@@ -279,7 +279,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
   obtain ⟨T, hT, h⟩ := isPreLocalizingSequence_of_isLocalizingSequence_aux' hτ hσ
   choose nk hnk using h
   refine ⟨mkStrictMonoAux nk, T, mkStrictMonoAux_strictMono nk, hT,
-    fun n ↦ le_trans (EventuallyLE.measure_le ?_) (hnk n)⟩
+    fun n ↦ le_trans (EventuallySubset.measure_le ?_) (hnk n)⟩
   filter_upwards [(hσ n).mono] with ω hω
   specialize hω (le_mkStrictMonoAux nk n)
   simp

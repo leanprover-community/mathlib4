@@ -111,7 +111,7 @@ then we see that the a.e. stabilizer of a set is a closed set. -/
 theorem isClosed_setOfPred_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
     (hfm : ∀ z, MeasurePreserving (f z) μ ν) (s : Set X)
     {t : Set Y} (htm : NullMeasurableSet t ν) (ht : ν t ≠ ∞) :
-    IsClosed {z | f z ⁻¹' t =ᵐˢ[μ] s} := by
+    IsClosed {z | f z ⁻¹' t =ᵐ[μ] s} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro z hz
   replace hz : ∀ᶠ ε : ℝ≥0∞ in 𝓝 0, ε < μ ((f z ⁻¹' t) ∆ s) := by
@@ -119,7 +119,7 @@ theorem isClosed_setOfPred_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f
     rwa [pos_iff_ne_zero, ne_eq, measure_symmDiff_eq_zero_iff]
   filter_upwards [(tendsto_measure_symmDiff_preimage_nhds_zero (hf.tendsto z)
     (.of_forall hfm) (hfm z) htm ht).eventually hz] with w hw
-  intro (hw' : f w ⁻¹' t =ᵐˢ[μ] s)
+  intro (hw' : f w ⁻¹' t =ᵐ[μ] s)
   rw [measure_congr (hw'.symmDiff (ae_eq_refl (· ∈ ⇑(f z) ⁻¹' t))), symmDiff_comm] at hw
   exact hw.false
 

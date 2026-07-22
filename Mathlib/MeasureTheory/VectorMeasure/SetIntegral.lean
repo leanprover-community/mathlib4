@@ -189,7 +189,7 @@ theorem setIntegral_indicator (hs : MeasurableSet s) (ht : MeasurableSet t) :
   rw [integral_indicator ht, μ.restrict_restrict ht hs, Set.inter_comm]
 
 theorem setIntegral_congr_set
-    (hs : MeasurableSet s) (ht : MeasurableSet t) (hst : s =ᵐˢ[μ.variation] t) :
+    (hs : MeasurableSet s) (ht : MeasurableSet t) (hst : s =ᵐ[μ.variation] t) :
     ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x in t, f x ∂[B; μ] := by
   rw [← integral_indicator hs, ← integral_indicator ht]
   apply integral_congr_ae

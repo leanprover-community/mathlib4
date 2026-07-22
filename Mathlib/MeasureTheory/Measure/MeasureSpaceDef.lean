@@ -321,10 +321,10 @@ any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
 This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example
 σ-finite); see `measure_toMeasurable_inter_of_sFinite`.
 If `s` is a null measurable set, then
-we also have `t =ᵐˢ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
+we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
 irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
-  if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐˢ[μ] s then h.choose else
+  if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
     if h' : ∃ t, t ⊇ s ∧ MeasurableSet t ∧
       ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
     else (exists_measurable_superset μ s).choose
@@ -333,7 +333,7 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
   rw [toMeasurable_def]; split_ifs with hs h's
   exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 
-theorem ae_le_toMeasurable : s ⊆ᵐ[μ] toMeasurable μ s :=
+theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
   LE.le.eventuallyLE (subset_toMeasurable _ _)
 
 @[simp]

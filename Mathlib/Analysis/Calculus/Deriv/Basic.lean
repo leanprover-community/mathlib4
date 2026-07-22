@@ -324,11 +324,11 @@ theorem HasDerivAtFilter.isBigO_sub_rev (hf : HasDerivAtFilter f f' L) (hf' : f'
 theorem HasStrictDerivAt.hasDerivAt (h : HasStrictDerivAt f f' x) : HasDerivAt f f' x :=
   h.hasStrictFDerivAt.hasFDerivAt
 
-theorem hasDerivWithinAt_congr_set' {s t : Set 𝕜} (y : 𝕜) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
+theorem hasDerivWithinAt_congr_set' {s t : Set 𝕜} (y : 𝕜) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     HasDerivWithinAt f f' s x ↔ HasDerivWithinAt f f' t x :=
   hasFDerivWithinAt_congr_set' y h
 
-theorem hasDerivWithinAt_congr_set {s t : Set 𝕜} (h : s =ᶠˢ[𝓝 x] t) :
+theorem hasDerivWithinAt_congr_set {s t : Set 𝕜} (h : s =ᶠ[𝓝 x] t) :
     HasDerivWithinAt f f' s x ↔ HasDerivWithinAt f f' t x :=
   hasFDerivWithinAt_congr_set h
 
@@ -488,10 +488,10 @@ theorem derivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : derivWithin f s x = derivWithin f t x :=
   ((DifferentiableWithinAt.hasDerivWithinAt h).mono st).derivWithin ht
 
-theorem derivWithin_congr_set' (y : 𝕜) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
+theorem derivWithin_congr_set' (y : 𝕜) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     derivWithin f s x = derivWithin f t x := by simp only [derivWithin, fderivWithin_congr_set' y h]
 
-theorem derivWithin_congr_set (h : s =ᶠˢ[𝓝 x] t) : derivWithin f s x = derivWithin f t x := by
+theorem derivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : derivWithin f s x = derivWithin f t x := by
   simp only [derivWithin, fderivWithin_congr_set h]
 
 @[simp]

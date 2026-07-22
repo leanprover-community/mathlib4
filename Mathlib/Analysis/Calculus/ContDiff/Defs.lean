@@ -302,11 +302,11 @@ theorem ContDiffWithinAt.congr_mono
   (h.mono h₁).congr h' hx
 
 theorem ContDiffWithinAt.congr_set (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E}
-    (hst : s =ᶠˢ[𝓝 x] t) : ContDiffWithinAt 𝕜 n f t x := by
+    (hst : s =ᶠ[𝓝 x] t) : ContDiffWithinAt 𝕜 n f t x := by
   rw [← nhdsWithin_eq_iff_eventuallyEq] at hst
   apply h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
 
-theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠˢ[𝓝 x] t) :
+theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠ[𝓝 x] t) :
     ContDiffWithinAt 𝕜 n f s x ↔ ContDiffWithinAt 𝕜 n f t x :=
   ⟨fun h => h.congr_set hst, fun h => h.congr_set hst.symm⟩
 
@@ -793,7 +793,7 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
   rcases h.contDiffOn' (ENat.add_one_natCast_le_withTop_of_lt hmn) (by simp [this])
     with ⟨u, uo, xu, hu⟩
   set t := insert x s ∩ u
-  have A : t =ᶠˢ[𝓝[≠] x] s := by
+  have A : t =ᶠ[𝓝[≠] x] s := by
     simp only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter']
     rw [← inter_assoc, nhdsWithin_inter_of_mem', ← sdiff_eq_compl_inter, insert_sdiff_of_mem,
       sdiff_eq_compl_inter]

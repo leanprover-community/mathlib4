@@ -78,7 +78,7 @@ include hG
 
 namespace LocalInvariantProp
 
-theorem congr_set {s t : Set H} {x : H} {f : H → H'} (hu : s =ᶠˢ[𝓝 x] t) : P f s x ↔ P f t x := by
+theorem congr_set {s t : Set H} {x : H} {f : H → H'} (hu : s =ᶠ[𝓝 x] t) : P f s x ↔ P f t x := by
   obtain ⟨o, host, ho, hxo⟩ := mem_nhds_iff.mp hu.mem_iff
   simp_rw [subset_def, mem_ofPred, ← and_congr_left_iff, ← mem_inter_iff, ← Set.ext_iff] at host
   rw [hG.is_local ho hxo, host, ← hG.is_local ho hxo]
@@ -109,7 +109,7 @@ theorem congr {s : Set H} {x : H} {f g : H → H'} (h : f =ᶠ[𝓝 x] g) (hP : 
 theorem congr' {s : Set H} {x : H} {f g : H → H'} (h : f =ᶠ[𝓝 x] g) (hP : P g s x) : P f s x :=
   hG.congr h.symm hP
 
-theorem congr_set_fun {s t : Set H} {x : H} {f g : H → H'} (hu : s =ᶠˢ[𝓝 x] t) (h : f =ᶠ[𝓝 x] g) :
+theorem congr_set_fun {s t : Set H} {x : H} {f g : H → H'} (hu : s =ᶠ[𝓝 x] t) (h : f =ᶠ[𝓝 x] g) :
     P f s x ↔ P g t x := by
   rw [hG.congr_iff h, hG.congr_set hu]
 
@@ -372,7 +372,7 @@ theorem liftPropWithinAt_inter (ht : t ∈ 𝓝 x) :
     LiftPropWithinAt P g (s ∩ t) x ↔ LiftPropWithinAt P g s x :=
   hG.liftPropWithinAt_inter' (mem_nhdsWithin_of_mem_nhds ht)
 
-theorem liftPropWithinAt_congr_set (hu : s =ᶠˢ[𝓝 x] t) :
+theorem liftPropWithinAt_congr_set (hu : s =ᶠ[𝓝 x] t) :
     LiftPropWithinAt P g s x ↔ LiftPropWithinAt P g t x := by
   rw [← hG.liftPropWithinAt_inter (s := s) hu, ← hG.liftPropWithinAt_inter (s := t) hu,
     ← eq_iff_iff]
