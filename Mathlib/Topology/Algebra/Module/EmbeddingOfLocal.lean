@@ -49,7 +49,7 @@ The content of this file is essentially (variations of)
 Bourbaki's proof is very specific to `𝕜 = ℝ` or `𝕜 = ℂ`, since it relies crucially on balanced
 sets being connected.
 
-Nevertheless, we are able to adapt their arguments to arbitrary nontrivially normed fields.
+Nevertheless, we are able to adapt their proof to arbitrary nontrivially normed fields.
 The key argument, replacing the fact that a connected set cannot be covered nontrivially by
 disjoint open sets, is that a balanced set `W` cannot intersect nontrivially both `c • V`
 and `Vᶜ`, when `V` is a neighborhood of `0` and `0 < ‖c‖ < 1`. We refer to the (highly commented!)
