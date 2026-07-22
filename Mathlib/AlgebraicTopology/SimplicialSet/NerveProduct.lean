@@ -56,6 +56,7 @@ lemma nerve_of_product_interchange (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     = nerveMap (F₁ ⋙ G₁) ⊗ₘ nerveMap (F₂ ⋙ G₂) := rfl
 end
 
+/-- The nerve of the terminal category is the terminal simplicial set. -/
 def nerveOfTerminal : nerve (𝟙_ Cat.{v,u}) ≅ 𝟙_ SSet where
   hom := SemiCartesianMonoidalCategory.toUnit _
   inv := {
