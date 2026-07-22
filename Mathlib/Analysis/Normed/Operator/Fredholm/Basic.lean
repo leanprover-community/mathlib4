@@ -6,11 +6,7 @@ Authors: Jon Bannon, Anatole Dedecker, Yongxi Lin, Patrick Massot, Oliver Nash, 
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Quotient
-public import Mathlib.Analysis.Normed.Module.HahnBanach
-public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
-public import Mathlib.Algebra.Module.LinearMap.Index
 
 /-!
 # Fredholm operators between topological vector spaces
