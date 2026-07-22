@@ -444,6 +444,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     rw [← Complex.Gamma_mul_Gamma_one_sub s, mul_ne_zero_iff] at A
     exact A.1
 
+@[grind =]
 theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
   constructor
   · contrapose!; exact Gamma_ne_zero
