@@ -36,7 +36,7 @@ def commented_pattern(option: str, value: str = "false") -> re.Pattern:
 
 def is_annotated(lines: list[str], idx: int) -> bool:
     """Check whether line `idx` is immediately preceded by a `--` comment
-    or by a (possibly multi-line) `/-- ... -/` doc comment.
+    or by a (possibly multi-line) `/-- ... -/` doc comment or `/- ... -/` block comment.
     """
     if idx == 0:
         return False
