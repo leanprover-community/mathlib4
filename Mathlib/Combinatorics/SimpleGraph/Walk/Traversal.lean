@@ -129,6 +129,14 @@ theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p
   rw [p.length_darts] at h
   ext <;> simp [p.getVert_eq_support_getElem (le_of_lt h), p.getVert_eq_support_getElem h]
 
+theorem getElem_edges {p : G.Walk u v} {i : ℕ} (h : i < p.edges.length) :
+    p.edges[i] = s(p.getVert i, p.getVert (i + 1)) := by
+  simp [getElem_edges_eq_edge_getElem_darts, darts_getElem_eq_getVert]
+
+theorem mk_mem_edges_iff_exists {u' v' : V} (p : G.Walk u v) :
+    s(u', v') ∈ p.edges ↔ ∃ i < p.length, s(p.getVert i, p.getVert (i + 1)) = s(u', v') := by
+  constructor <;> grind [getElem_edges, List.mem_iff_getElem]
+
 theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.support) :
     G.Adj u' v' := by
   have ⟨k, hk, h⟩ := List.infix_iff_getElem?.mp h
@@ -231,11 +239,6 @@ theorem firstDart_eq_head_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
     p.firstDart hnil = p.darts.head (darts_eq_nil.not.mpr hnil) :=
   head_darts_eq_firstDart _ |>.symm
 
-@[deprecated "Use `head_darts_eq_firstDart`" (since := "2025-12-10")]
-theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.head hp).fst = a := by
-  simp
-
 @[simp]
 theorem firstDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil ∈ p.darts :=
   p.firstDart_eq_head_darts _ ▸ List.head_mem _
@@ -248,11 +251,6 @@ theorem getLast_darts_eq_lastDart {p : G.Walk v w} (hnil : p.darts ≠ []) :
 theorem lastDart_eq_getLast_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
     p.lastDart hnil = p.darts.getLast (darts_eq_nil.not.mpr hnil) := by
   grind [lastDart_eq, not_nil_iff_lt_length]
-
-@[deprecated "Use `getLast_darts_eq_lastDart`" (since := "2025-12-10")]
-theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.getLast hp).snd = b := by
-  simp
 
 @[simp]
 theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil ∈ p.darts :=
