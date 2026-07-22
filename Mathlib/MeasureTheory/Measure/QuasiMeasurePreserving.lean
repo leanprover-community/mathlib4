@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Restrict
+public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
@@ -242,6 +242,11 @@ open Measure
 theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht : AEDisjoint ν s t)
     (hf : QuasiMeasurePreserving f μ ν) : AEDisjoint μ (f ⁻¹' s) (f ⁻¹' t) :=
   hf.preimage_null ht
+
+@[fun_prop]
+theorem comp_quasiMeasurePreserving [MeasurableSpace δ] {ν : Measure δ} {f : α → δ} {g : δ → β}
+    (hg : AEMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
+  (AEMeasurable.mono' hg hf.absolutelyContinuous).comp_measurable hf.measurable
 
 theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
     {f : α → β} {g : β → γ} (hg : NullMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) :
