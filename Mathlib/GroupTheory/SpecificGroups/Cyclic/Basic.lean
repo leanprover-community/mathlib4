@@ -84,7 +84,7 @@ variable [Group α] [Group G] [Group G']
 @[to_additive /-- A non-cyclic additive group is non-trivial. -/]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
-  infer_instance
+  exact isCyclic_of_subsingleton
 
 @[to_additive]
 theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
@@ -166,7 +166,7 @@ theorem isCyclic_of_card_dvd_prime {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α ∣ p) : IsCyclic α := by
   rcases (Nat.dvd_prime hp.out).mp h with h | h
   · have := (Nat.card_eq_one_iff_unique.mp h).1
-    infer_instance
+    exact isCyclic_of_subsingleton
   · exact isCyclic_of_prime_card h
 
 @[to_additive]
