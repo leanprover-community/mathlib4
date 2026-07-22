@@ -357,6 +357,14 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
   Quotient.equiv' (RingHom.id R) P Q f hf
 
 @[simp]
+theorem Quotient.equiv_apply {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N)
+    (hf : P.map (f : M →ₗ[R] N) = Q) (a : M ⧸ P) :
+    Quotient.equiv P Q f hf a =
+      Submodule.mapQ _ _ (f : M →ₗ[R] N) (by simp [← hf, ← Submodule.map_le_iff_le_comap]) a :=
+  rfl
+
+@[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N)
     (hf : P.map (f : M →ₗ[R] N) = Q) :
