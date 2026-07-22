@@ -69,6 +69,7 @@ theorem ContinuousMap.exists_restrict_eq (hs : IsClosed s) (f : C(s, Y)) :
     ∃ (g : C(X, Y)), g.restrict s = f :=
   TietzeExtension.exists_restrict_eq' s hs f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
 nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
@@ -278,10 +279,13 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding (f : X →ᵇ ℝ) {e : X 
 set. If `f` is a bounded continuous real-valued function defined on a closed set in a normal
 topological space, then it can be extended to a bounded continuous function of the same norm defined
 on the whole space. -/
-theorem exists_norm_eq_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs : IsClosed s) :
-    ∃ g : Y →ᵇ ℝ, ‖g‖ = ‖f‖ ∧ g.restrict s = f :=
+theorem exists_norm_eq_domRestrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs : IsClosed s) :
+    ∃ g : Y →ᵇ ℝ, ‖g‖ = ‖f‖ ∧ g.domRestrict s = f :=
   exists_extension_norm_eq_of_isClosedEmbedding' f ((ContinuousMap.id _).restrict s)
     hs.isClosedEmbedding_subtypeVal
+
+@[deprecated (since := "2026-07-19")]
+alias exists_norm_eq_restrict_eq_of_closed := exists_norm_eq_domRestrict_eq_of_closed
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 embedding and a bounded continuous function that takes values in a non-trivial closed interval.
@@ -439,13 +443,16 @@ set. Let `s` be a closed set in a normal topological space `Y`. Let `f` be a bou
 real-valued function on `s`. Let `t` be a nonempty convex set of real numbers (we use
 `OrdConnected` instead of `Convex` to automatically deduce this argument by typeclass search) such
 that `f x ∈ t` for all `x : s`. Then there exists a bounded continuous real-valued function
-`g : Y →ᵇ ℝ` such that `g y ∈ t` for all `y` and `g.restrict s = f`. -/
-theorem exists_forall_mem_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs : IsClosed s)
+`g : Y →ᵇ ℝ` such that `g y ∈ t` for all `y` and `g.domRestrict s = f`. -/
+theorem exists_forall_mem_domRestrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (hs : IsClosed s)
     {t : Set ℝ} [OrdConnected t] (hf : ∀ x, f x ∈ t) (hne : t.Nonempty) :
-    ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g.restrict s = f := by
+    ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g.domRestrict s = f := by
   obtain ⟨g, hg, hgf⟩ :=
     exists_extension_forall_mem_of_isClosedEmbedding f hf hne hs.isClosedEmbedding_subtypeVal
   exact ⟨g, hg, DFunLike.coe_injective hgf⟩
+
+@[deprecated (since := "2026-07-19")]
+alias exists_forall_mem_restrict_eq_of_closed := exists_forall_mem_domRestrict_eq_of_closed
 
 end BoundedContinuousFunction
 
@@ -512,6 +519,7 @@ instance Real.instTietzeExtension : TietzeExtension ℝ where
     f.exists_restrict_eq_forall_mem_of_closed (fun _ => mem_univ _) univ_nonempty hs |>.imp
       fun _ ↦ (And.right ·)
 
+set_option backward.isDefEq.respectTransparency false in
 open NNReal in
 /-- **Tietze extension theorem** for nonnegative real-valued continuous maps.
 `ℝ≥0` is a `TietzeExtension` space. -/
