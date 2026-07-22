@@ -98,7 +98,6 @@ instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 
 set_option linter.translate.warnInvalid false in
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
-set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
   {α : Type _} → {β : Type _} → [self : my_has_scalar β α] → α → β → α
@@ -107,7 +106,6 @@ but 'Test.my_has_scalar.smul' has type
 -/
 #guard_msgs in
 attribute [to_additive existing smul] my_has_pow.pow
-set_option pp.mvars.anonymous false in
 /--
 error: `to_additive` validation failed: expected
   {β : Type _} → {α : Type _} → [self : my_has_scalar β α] → α → β → α
