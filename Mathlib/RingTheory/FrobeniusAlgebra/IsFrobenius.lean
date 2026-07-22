@@ -84,6 +84,8 @@ lemma rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul' :
     rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ = δ ∘ₗ μ[R] :=
   eq (R := R) (A := A) ▸ lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul'
 
+lemma _root_.Coalgebra.isFrobenius_self : IsFrobenius R R where eq := by ext; simp
+
 section Algebra
 variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [IsFrobenius R A]
 
