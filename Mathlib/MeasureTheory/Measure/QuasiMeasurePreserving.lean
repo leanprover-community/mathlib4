@@ -244,8 +244,9 @@ theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht
   hf.preimage_null ht
 
 @[fun_prop]
-theorem comp_quasiMeasurePreserving [MeasurableSpace δ] {ν : Measure δ} {f : α → δ} {g : δ → β}
-    (hg : AEMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
+theorem _root_.MeasureTheory.Measure.AEMeasurable.comp_quasiMeasurePreserving [MeasurableSpace δ]
+    {ν : Measure δ} {f : α → δ} {g : δ → β} (hg : AEMeasurable g ν)
+    (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
   (AEMeasurable.mono' hg hf.absolutelyContinuous).comp_measurable hf.measurable
 
 theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
