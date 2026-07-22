@@ -164,8 +164,7 @@ theorem tendstoUniformlyOn_of_norm_kerFun_le {C : ℝ} {s : Set X}
   rw [zero_mul] at hnorm
   filter_upwards [hnorm.eventually (gt_mem_nhds hε)] with n hn x hx
   rw [dist_eq_norm', ← Pi.sub_apply, ← coe_sub]
-  grw [norm_apply_le (F n - f) x, ← norm_kerFun_eq_sqrt_norm_kernel, hC x hx]
-  exact hn
+  grw [norm_apply_le, ← norm_kerFun_eq_sqrt_norm_kernel, hC x hx, hn]
 
 variable {H} in
 open Filter Topology in
