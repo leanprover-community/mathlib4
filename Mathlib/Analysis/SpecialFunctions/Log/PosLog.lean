@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # The Positive Part of the Logarithm
@@ -92,6 +93,13 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
   · simp [hn, posLog]
   · simp [posLog_eq_log, Nat.one_le_iff_ne_zero.2 hn]
 
+/-- Presentation of `|log|` in terms of the positive part of the logarithm. -/
+theorem abs_log_eq_posLog_add_posLog_inv (x : ℝ) : |log x| = log⁺ x + log⁺ x⁻¹ := by
+  have h₁ := half_mul_log_add_log_abs (x := x)
+  have h₂ := half_mul_log_add_log_abs (x := x⁻¹)
+  rw [log_inv, abs_neg] at h₂
+  linarith
+
 /-- The function `log⁺` equals `log (max 1 _)` for non-negative real numbers. -/
 theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
   grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_apply]
@@ -121,6 +129,14 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   have : 1 ≤ |x ^ n| := by simp_all [one_le_pow₀, hx.le]
   simp [posLog_eq_log this, posLog_eq_log hx.le]
 
+/-- The function `log⁺` commutes with real powers with nonnegative base and exponent. -/
+@[simp] theorem posLog_rpow {x α : ℝ} (hx : 0 ≤ x) (hα : 0 ≤ α) : log⁺ (x ^ α) = α * log⁺ x := by
+  rcases hx.eq_or_lt with rfl | h₁x
+  · rcases eq_or_ne α 0 with rfl | h₁α
+    · simp
+    · simp [zero_rpow h₁α]
+  · rw [posLog_apply, posLog_apply, log_rpow h₁x, mul_max_of_nonneg _ _ hα, mul_zero]
+
 /-- The function `log⁺` is continuous. -/
 @[fun_prop] theorem continuous_posLog : Continuous log⁺ := by
   rw [continuous_iff_continuousAt]
@@ -132,6 +148,39 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
     simp_all [le_of_lt]
   rw [posLog_def]
   fun_prop
+
+/-!
+## Trivial Estimates
+-/
+
+/-- For nonnegative `x`, the positive part of the logarithm is bounded by `log (1 + x)`. -/
+lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ Real.log (1 + x) := by
+  rw [posLog_apply]
+  apply max_le (Real.log_nonneg (by linarith))
+  rcases hx.eq_or_lt with rfl | hx'
+  · simp
+  · exact Real.log_le_log hx' (by linarith)
+
+/-- Converse to `posLog_le_log_one_add` up to the additive constant `log 2`. -/
+lemma log_one_add_le_posLog {x : ℝ} (hx : 0 ≤ x) :
+    Real.log (1 + x) ≤ log⁺ x + Real.log 2 := by
+  rw [posLog_eq_log_max_one hx]
+  have h₁ : (1 : ℝ) + x ≤ max 1 x * 2 := by
+    rcases le_total x 1 with h | h
+    · rw [max_eq_left h]; linarith
+    · rw [max_eq_right h]; linarith
+  calc Real.log (1 + x)
+      ≤ Real.log (max 1 x * 2) := Real.log_le_log (by linarith) h₁
+    _ = Real.log (max 1 x) + Real.log 2 :=
+        Real.log_mul (by positivity) two_ne_zero
+
+/-- The positive part of the logarithm is bounded by the absolute value: `log⁺ x ≤ |x|`. -/
+lemma posLog_le_abs (x : ℝ) : log⁺ x ≤ |x| := by
+  rcases le_or_gt |x| 1 with h | h
+  · rw [(posLog_eq_zero_iff x).2 h]
+    exact abs_nonneg x
+  · rw [← posLog_abs, posLog_eq_log (by rw [abs_abs]; exact h.le)]
+    linarith [Real.log_le_sub_one_of_pos (lt_trans one_pos h : (0:ℝ) < |x|)]
 
 /-!
 ## Estimates for Products
