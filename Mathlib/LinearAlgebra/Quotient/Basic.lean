@@ -322,6 +322,18 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
   exact inf_le_right
 
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
+and `f : M ≃ₛₗ[σ] N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
+def Quotient.equiv' {R' : Type*} [Ring R'] (σ : R →+* R') {σ' : R' →+* R}
+    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] {N : Type*} [AddCommGroup N] [Module R' N]
+    (P : Submodule R M) (Q : Submodule R' N) (f : M ≃ₛₗ[σ] N) (hf : P.map (f : M →ₛₗ[σ] N) = Q) :
+    (M ⧸ P) ≃ₛₗ[σ] N ⧸ Q where
+  __ := Submodule.mapQ _ _ f (by simp [← hf, ← Submodule.map_le_iff_le_comap])
+  invFun := Submodule.mapQ _ _ f.symm.toLinearMap
+    (by simp [← hf, Submodule.map_equiv_eq_comap_symm])
+  left_inv x := Submodule.Quotient.induction_on _ x (by simp)
+  right_inv x := Submodule.Quotient.induction_on _ x (by simp)
+
+/-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
 and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
 @[simps apply]
 def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
