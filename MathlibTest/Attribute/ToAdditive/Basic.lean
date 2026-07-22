@@ -592,7 +592,7 @@ lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 /--
 error: `to_additive` validation failed: expected
-  ∀ {α : Type ?u.1} [inst : Zero α], 0 = 0
+  ∀ {α : Type _} [inst : Zero α], 0 = 0
 but 'Eq.trans' has type
   ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
 -/
