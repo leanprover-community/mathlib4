@@ -308,7 +308,6 @@ lemma mfderivWithin_extend_symm_comp_mfderiv_extend'
     {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ e.source) :
     (mfderiv[range I] (e.extend I).symm (e.extend I y)) ∘L (mfderiv% (e.extend I) y)
       = ContinuousLinearMap.id _ _ := by
-  have : y = (e.extend I).symm (e.extend I y) := ((e.extend I).left_inv (by simpa using hy)).symm
   convert! mfderivWithin_extend_symm_comp_mfderiv_extend he
     ((e.extend I).map_source (by simpa using hy))
   rw [(e.extend I).left_inv (by simpa using hy)]
@@ -326,8 +325,7 @@ lemma isInvertible_mfderiv_extend {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : 
   have Z := ContinuousLinearMap.IsInvertible.of_inverse
     (mfderiv_extend_comp_mfderivWithin_extend_symm he h'y)
     (mfderivWithin_extend_symm_comp_mfderiv_extend he h'y)
-  have : (e.extend I).symm ((e.extend I) y) = y := (e.extend I).left_inv (by simpa using hy)
-  rwa [this] at Z
+  rwa [(e.extend I).left_inv (by simpa using hy)] at Z
 
 end
 
