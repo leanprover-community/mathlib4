@@ -289,7 +289,7 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
         by_contra! hne
         absurd K.isCompleteBetween p₁.prop p₂.prop
           (Subtype.ext_iff.ne.mp hne) (hy₁'.left hv) (hy₂'.left hv)
-        exact G.loopless.irrefl v
+        exact G.loopless v
       · simp_rw [card_map, card_univ, card_coe]
         exact .inl (K.card_parts.resolve_right ht'_pos.ne')
       · simp_rw [univ_eq_attach, Finset.mem_map, mem_attach,
