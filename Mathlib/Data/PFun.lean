@@ -66,26 +66,34 @@ structure PFun (α β : Type*) where
 /-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`. -/
 infixr:25 " →. " => PFun
 
+/-- `fun x ↦. f x` is notation for `PFun.mk fun x ↦ f x`.
+A type ascription, as in `fun x : α ↦. f x`, is also supported. -/
+macro:max "fun " xs:Lean.Parser.Term.funBinder+ " ↦. " b:term : term =>
+  `(PFun.mk fun $xs* ↦ $b)
+
+macro:max "fun " xs:Lean.Parser.Term.funBinder+ " : " type:term " ↦. " b:term : term =>
+  `(PFun.mk fun $xs* : $type ↦ $b)
+
 namespace PFun
 
 variable {α β γ δ ε ι : Type*}
 
 instance inhabited : Inhabited (α →. β) :=
-  ⟨PFun.mk fun _ => Part.none⟩
+  ⟨fun _ ↦. Part.none⟩
 
 instance : FunLike (α →. β) α (Part β) where
-  coe := PFun.toFun
-  coe_injective _ _ := congrArg PFun.mk
+  coe := toFun
+  coe_injective _ _ := congrArg mk
 
 initialize_simps_projections PFun (toFun → apply)
 
-@[simp] theorem coe_mk (f : α → Part β) : ⇑(PFun.mk f) = f := rfl
+@[simp] theorem coe_mk (f : α → Part β) : ⇑(mk f) = f := rfl
 
 @[simp] theorem toFun_eq_coe (f : α →. β) : f.toFun = ⇑f := rfl
 
-@[simp] theorem mk_apply (f : α → Part β) (x : α) : PFun.mk f x = f x := rfl
+@[simp] theorem mk_apply (f : α → Part β) (x : α) : mk f x = f x := rfl
 
-@[simp] theorem mk_coe (f : α →. β) : PFun.mk ⇑f = f := rfl
+@[simp] theorem mk_coe (f : α →. β) : mk ⇑f = f := rfl
 
 /-- The domain of a partial function -/
 def Dom (f : α →. β) : Set α :=
@@ -96,7 +104,7 @@ theorem mem_dom (f : α →. β) (x : α) : x ∈ Dom f ↔ ∃ y, y ∈ f x := 
 
 @[simp]
 theorem dom_mk (p : α → Prop) (f : ∀ a, p a → β) :
-    PFun.Dom (PFun.mk fun x => ⟨p x, f x⟩) = { x | p x } :=
+    PFun.Dom (fun x ↦. ⟨p x, f x⟩) = { x | p x } :=
   rfl
 
 theorem dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=
@@ -114,14 +122,15 @@ theorem fn_apply (f : α →. β) (a : α) : f.fn a = (f a).get :=
 def evalOpt (f : α →. β) [D : DecidablePred (· ∈ Dom f)] (x : α) : Option β :=
   @Part.toOption _ _ (D x)
 
-/-- Partial function extensionality -/
-theorem ext' {f g : α →. β} (H1 : ∀ a, a ∈ Dom f ↔ a ∈ Dom g) (H2 : ∀ a p q, f.fn a p = g.fn a q) :
-    f = g :=
-  DFunLike.ext f g fun a => Part.ext' (H1 a) (H2 a)
-
 @[ext]
 theorem ext {f g : α →. β} (H : ∀ a b, b ∈ f a ↔ b ∈ g a) : f = g :=
   DFunLike.ext f g fun a => Part.ext (H a)
+
+/-- Partial function extensionality -/
+theorem ext' {f g : α →. β} (H1 : ∀ a, a ∈ Dom f ↔ a ∈ Dom g) (H2 : ∀ a p q, f.fn a p = g.fn a q) :
+    f = g := by
+  ext a b
+  rw [Part.ext' (H1 a) (H2 a)]
 
 /-- Turns a partial function into a function out of its domain. -/
 def asSubtype (f : α →. β) (s : f.Dom) : β :=
@@ -131,7 +140,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σ p : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩,
-   fun f => PFun.mk fun x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩,
+   fun f => fun x ↦. ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩,
    fun _ => DFunLike.ext _ _ fun _ => Part.eta _,
    fun ⟨p, f⟩ => by dsimp; congr⟩
 
@@ -141,7 +150,7 @@ theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x)
 
 /-- Turn a total function into a partial function. -/
 @[coe]
-protected def lift (f : α → β) : α →. β := PFun.mk fun a => Part.some (f a)
+protected def lift (f : α → β) : α →. β := fun a ↦. Part.some (f a)
 
 @[simp]
 theorem lift_apply (f : α → β) (x : α) : PFun.lift f x = Part.some (f x) :=
@@ -177,7 +186,7 @@ def ran (f : α →. β) : Set β :=
 
 /-- Restrict a partial function to a smaller domain. -/
 def restrict (f : α →. β) {p : Set α} (H : p ⊆ f.Dom) : α →. β :=
-  PFun.mk fun x => (f x).restrict (x ∈ p) (@H x)
+  fun x ↦. (f x).restrict (x ∈ p) (@H x)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -202,17 +211,17 @@ theorem lift_graph {f : α → β} {a b} : (a, b) ∈ (f : α →. β).graph ↔
   show (∃ _ : True, f a = b) ↔ f a = b by simp
 
 /-- The monad `pure` function, the total constant `x` function -/
-protected def pure (x : β) : α →. β := PFun.mk fun _ => Part.some x
+protected def pure (x : β) : α →. β := fun _ ↦. Part.some x
 
 /-- The monad `bind` function, pointwise `Part.bind` -/
-def bind (f : α →. β) (g : β → α →. γ) : α →. γ := PFun.mk fun a => (f a).bind fun b => g b a
+def bind (f : α →. β) (g : β → α →. γ) : α →. γ := fun a ↦. (f a).bind fun b => g b a
 
 @[simp]
 theorem bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g a = (f a).bind fun b => g b a :=
   rfl
 
 /-- The monad `map` function, pointwise `Part.map` -/
-def map (f : β → γ) (g : α →. β) : α →. γ := PFun.mk fun a => (g a).map f
+def map (f : β → γ) (g : α →. β) : α →. γ := fun a ↦. (g a).map f
 
 instance monad : Monad (PFun α) where
   pure := PFun.pure
@@ -239,7 +248,7 @@ exists. By abusing notation to illustrate, either `f a` is in the `β` part of `
 case `f.fix a` returns `f a`), or it is undefined (in which case `f.fix a` is undefined as well), or
 it is in the `α` part of `β ⊕ α` (in which case we repeat the procedure, so `f.fix a` will return
 `f.fix (f a)`). -/
-def fix (f : α →. β ⊕ α) : α →. β := PFun.mk fun a =>
+def fix (f : α →. β ⊕ α) : α →. β := fun a ↦.
   Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) fun h =>
     WellFounded.fixF
       (fun a IH =>
@@ -467,7 +476,7 @@ theorem preimage_asSubtype (f : α →. β) (s : Set β) :
 
 /-- Turns a function into a partial function to a subtype. -/
 def toSubtype (p : β → Prop) (f : α → β) : α →. Subtype p :=
-  PFun.mk fun a => ⟨p (f a), Subtype.mk _⟩
+  fun a ↦. ⟨p (f a), Subtype.mk _⟩
 
 @[simp]
 theorem dom_toSubtype (p : β → Prop) (f : α → β) : (toSubtype p f).Dom = { a | p (f a) } :=
@@ -488,7 +497,7 @@ theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtyp
 
 /-- The identity as a partial function -/
 protected def id (α : Type*) : α →. α :=
-  PFun.mk Part.some
+  mk Part.some
 
 @[simp, norm_cast]
 theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
@@ -499,7 +508,7 @@ theorem id_apply (a : α) : PFun.id α a = Part.some a :=
   rfl
 
 /-- Composition of partial functions as a partial function. -/
-def comp (f : β →. γ) (g : α →. β) : α →. γ := PFun.mk fun a => (g a).bind f
+def comp (f : β →. γ) (g : α →. β) : α →. γ := fun a ↦. (g a).bind f
 
 @[simp, grind =]
 theorem comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
@@ -543,7 +552,7 @@ theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α �
   ext fun _ _ => by simp only [coe_val, comp_apply, Function.comp, Part.bind_some]
 
 /-- Product of partial functions. -/
-def prodLift (f : α →. β) (g : α →. γ) : α →. β × γ := PFun.mk fun x =>
+def prodLift (f : α →. β) (g : α →. γ) : α →. β × γ := fun x ↦.
   ⟨(f x).Dom ∧ (g x).Dom, fun h => ((f x).get h.1, (g x).get h.2)⟩
 
 @[simp]
@@ -567,7 +576,7 @@ theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 /-- Product of partial functions. -/
-def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := PFun.mk fun x =>
+def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := fun x ↦.
   ⟨(f x.1).Dom ∧ (g x.2).Dom, fun h => ((f x.1).get h.1, (g x.2).get h.2)⟩
 
 @[simp]

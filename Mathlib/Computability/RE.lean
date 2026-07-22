@@ -29,7 +29,7 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
       ∀ a, (∀ x ∈ h a, x ∈ f a ∨ x ∈ g a) ∧ ((h a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
   obtain ⟨cf, rfl⟩ := Code.exists_code.1 hf
   obtain ⟨cg, rfl⟩ := Code.exists_code.1 hg
-  have h_partrec : Nat.Partrec (PFun.mk fun n => Nat.rfindOpt fun k =>
+  have h_partrec : Nat.Partrec (fun n ↦. Nat.rfindOpt fun k =>
       cf.evaln k n <|> cg.evaln k n) :=
     Partrec.nat_iff.1
       (Partrec.rfindOpt <|
@@ -71,7 +71,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
     ∃ k : α →. σ,
       Partrec k ∧ ∀ a, (∀ x ∈ k a, x ∈ f a ∨ x ∈ g a) ∧ ((k a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
   let ⟨k, hk, H⟩ := Nat.Partrec.merge' (bind_decode₂_iff.1 hf) (bind_decode₂_iff.1 hg)
-  let k' : α →. σ := PFun.mk fun a => (k (encode a)).bind fun n => (decode (α := σ) n : Part σ)
+  let k' : α →. σ := fun a ↦. (k (encode a)).bind fun n => (decode (α := σ) n : Part σ)
   refine
     ⟨k', ((nat_iff.2 hk).comp Computable.encode).bind (Computable.decode.ofOption.comp snd).to₂,
       fun a => ?_⟩
@@ -111,7 +111,7 @@ theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
       · exact mem_unique h' h⟩⟩
 
 theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computable c) (hf : Partrec f)
-    (hg : Partrec g) : Partrec (PFun.mk fun a => cond (c a) (f a) (g a)) :=
+    (hg : Partrec g) : Partrec (fun a ↦. cond (c a) (f a) (g a)) :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   let ⟨cg, eg⟩ := exists_code.1 hg
   ((eval_part.comp (Computable.cond hc (const cf) (const cg)) Computable.encode).bind
@@ -120,7 +120,7 @@ theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computabl
 
 nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ →. σ} (hf : Computable f)
     (hg : Partrec₂ g) (hh : Partrec₂ h) :
-    @Partrec _ σ _ _ (PFun.mk fun a => Sum.casesOn (f a) (g a) (h a)) :=
+    @Partrec _ σ _ _ (fun a ↦. Sum.casesOn (f a) (g a) (h a)) :=
   option_some_iff.1 <|
     (cond (sumCasesOn hf (const true).to₂ (const false).to₂)
           (sumCasesOn_left hf (option_some_iff.2 hg).to₂ (const Option.none).to₂)
@@ -159,7 +159,7 @@ end decide
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
 -/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
-  Partrec (PFun.mk fun a => Part.assert (p a) fun _ => Part.some ())
+  Partrec (fun a ↦. Part.assert (p a) fun _ => Part.some ())
 
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
@@ -184,7 +184,7 @@ lemma find {α : Type*} [Primcodable α] {P : α → ℕ → Prop} [DecidableRel
     (hP_comp : ComputablePred (fun p : α × ℕ => P p.1 p.2)) (hP_ex : ∀ x, ∃ n, P x n) :
     Computable (fun x => Nat.find (hP_ex x)) := by
   have hP_decide : Computable₂ (fun x n => decide (P x n)) := hP_comp.decide
-  have h : Partrec (PFun.mk fun x ↦ Nat.rfind (PFun.mk fun n => Part.some (decide (P x n)))) :=
+  have h : Partrec (fun x ↦. Nat.rfind (fun n ↦. Part.some (decide (P x n)))) :=
     Partrec.rfind hP_decide.partrec₂
   refine h.of_eq_tot fun x ↦ ?_
   simp +contextual [Nat.find_spec]

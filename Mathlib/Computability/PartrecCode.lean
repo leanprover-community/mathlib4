@@ -51,14 +51,14 @@ namespace Nat.Partrec
 theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
     Nat.Partrec
       (PFun.mk <| Nat.unpaired fun a m =>
-        (Nat.rfind (PFun.mk fun n =>
+        (Nat.rfind (fun n ↦.
           (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)) :=
   Partrec₂.unpaired'.mpr <| by
     let G : ℕ → ℕ → Part ℕ := fun x y =>
       f (Nat.pair (Nat.unpair x).1 (y + (Nat.unpair x).2))
     have h1 :
-        Partrec₂ (fun a => PFun.mk fun b =>
-          Nat.rfind (PFun.mk fun n =>
+        Partrec₂ (fun a => fun b ↦.
+          Nat.rfind (fun n ↦.
             (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))) :=
       have hpair : Computable (fun p : ℕ × ℕ =>
           Nat.pair (Nat.unpair p.1).1 (p.2 + (Nat.unpair p.1).2)) :=
@@ -470,8 +470,8 @@ def eval : Code → ℕ →. ℕ
   | succ => PFun.lift Nat.succ
   | left => PFun.lift fun n => n.unpair.1
   | right => PFun.lift fun n => n.unpair.2
-  | pair cf cg => PFun.mk fun n => Nat.pair <$> eval cf n <*> eval cg n
-  | comp cf cg => PFun.mk fun n => eval cg n >>= eval cf
+  | pair cf cg => fun n ↦. Nat.pair <$> eval cf n <*> eval cg n
+  | comp cf cg => fun n ↦. eval cg n >>= eval cf
   | prec cf cg =>
     PFun.mk <| Nat.unpaired fun a n =>
       n.rec (eval cf a) fun y IH => do
@@ -479,7 +479,7 @@ def eval : Code → ℕ →. ℕ
         eval cg (Nat.pair a (Nat.pair y i))
   | rfind' cf =>
     PFun.mk <| Nat.unpaired fun a m =>
-      (Nat.rfind (PFun.mk fun n =>
+      (Nat.rfind (fun n ↦.
         (fun x => decide (x = 0)) <$> eval cf (Nat.pair a (n + m)))).map (· + m)
 
 /-- Helper lemma for the evaluation of `prec` in the base case. -/
@@ -1009,7 +1009,7 @@ That is, under the interpretation given by `Nat.Partrec.Code.eval`, there is a c
 such that `c` and `f c` have the same evaluation.
 -/
 theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval (f c) = eval c :=
-  let g : ℕ → ℕ →. ℕ := fun x => PFun.mk fun y =>
+  let g : ℕ → ℕ →. ℕ := fun x => fun y ↦.
     eval (ofNat Code x) x >>= fun b => eval (ofNat Code b) y
   have : Partrec₂ g :=
     (eval_part.comp ((Computable.ofNat _).comp fst) fst).bind

@@ -65,24 +65,24 @@ protected inductive RecursiveIn (O : Set (ℕ →. ℕ)) : (ℕ →. ℕ) → Pr
   | right : Nat.RecursiveIn O (PFun.lift fun n => (Nat.unpair n).2)
   | oracle : ∀ g ∈ O, Nat.RecursiveIn O g
   | pair {f h : ℕ →. ℕ} (hf : Nat.RecursiveIn O f) (hh : Nat.RecursiveIn O h) :
-      Nat.RecursiveIn O (PFun.mk fun n => (Nat.pair <$> f n <*> h n))
+      Nat.RecursiveIn O (fun n ↦. (Nat.pair <$> f n <*> h n))
   | comp {f h : ℕ →. ℕ} (hf : Nat.RecursiveIn O f) (hh : Nat.RecursiveIn O h) :
-      Nat.RecursiveIn O (PFun.mk fun n => h n >>= f)
+      Nat.RecursiveIn O (fun n ↦. h n >>= f)
   | prec {f h : ℕ →. ℕ} (hf : Nat.RecursiveIn O f) (hh : Nat.RecursiveIn O h) :
       Nat.RecursiveIn O (PFun.mk <| Nat.unpaired fun a n =>
         n.rec (f a) fun y IH => do
           let i ← IH
           h (Nat.pair a (Nat.pair y i)))
   | rfind {f : ℕ →. ℕ} (hf : Nat.RecursiveIn O f) :
-      Nat.RecursiveIn O (PFun.mk fun a =>
-        Nat.rfind (PFun.mk fun n => (fun m => decide (m = 0)) <$> f (Nat.pair a n)))
+      Nat.RecursiveIn O (fun a ↦.
+        Nat.rfind (fun n ↦. (fun m => decide (m = 0)) <$> f (Nat.pair a n)))
 
 end Nat
 
 /-- A partial function `f : α →. σ` between `Primcodable` types is recursive in a set of oracles
 `O` if its encoding as a function `ℕ →. ℕ` is `Nat.RecursiveIn O`. -/
 def RecursiveIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ)) (f : α →. σ) : Prop :=
-  Nat.RecursiveIn O (PFun.mk fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode)
+  Nat.RecursiveIn O (fun n ↦. Part.bind (decode (α := α) n) fun a => (f a).map encode)
 
 lemma RecursiveIn.iff_nat {f : ℕ →. ℕ} {O} : RecursiveIn O f ↔ Nat.RecursiveIn O f := by
   simp [RecursiveIn, Part.map_id']
@@ -90,7 +90,7 @@ lemma RecursiveIn.iff_nat {f : ℕ →. ℕ} {O} : RecursiveIn O f ↔ Nat.Recur
 /-- A binary partial function is recursive in `O` if the curried form is. -/
 def RecursiveIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
     (O : Set (ℕ →. ℕ)) (f : α → β →. σ) : Prop :=
-  RecursiveIn O (PFun.mk fun p : α × β => f p.1 p.2)
+  RecursiveIn O (fun p : α × β ↦. f p.1 p.2)
 
 /-- A total function is computable in `O` if its constant lift is recursive in `O`. -/
 def ComputableIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ)) (f : α → σ) : Prop :=
@@ -197,7 +197,7 @@ lemma oracle : ∀ g ∈ O, RecursiveIn O g :=
 protected theorem some : RecursiveIn O (PFun.id α) :=
   Partrec.some.recursiveIn
 
-protected theorem none : RecursiveIn O (PFun.mk fun _ : α => @Part.none σ) :=
+protected theorem none : RecursiveIn O (fun _ : α ↦. @Part.none σ) :=
   Partrec.none.recursiveIn
 
 /-- If every element of `O` is `RecursiveIn O'`, then any function which is
@@ -218,7 +218,7 @@ theorem partrec_of_oracle
   Nat.RecursiveIn.partrec_of_oracle (by simpa only [Partrec.nat_iff] using hO) hf
 
 /-- If a function is recursive in a constant partial function, then it is partial recursive. -/
-lemma partrec_of_const {s : Part ℕ} (hf : RecursiveIn {PFun.mk fun _ => s} f) : Partrec f :=
+lemma partrec_of_const {s : Part ℕ} (hf : RecursiveIn {fun _ ↦. s} f) : Partrec f :=
   hf.partrec_of_oracle (by rintro g rfl; exact .const' s)
 
 end RecursiveIn
@@ -232,7 +232,7 @@ lemma recursiveIn_empty_iff :
 every partial function `g`. -/
 theorem partrec_iff_forall_recursiveIn_singleton :
     Partrec f ↔ ∀ g, RecursiveIn {g} f :=
-  ⟨fun hf _ => hf.recursiveIn, fun hf => (hf (PFun.mk fun _ => Part.none)).partrec_of_const⟩
+  ⟨fun hf _ => hf.recursiveIn, fun hf => (hf (fun _ ↦. Part.none)).partrec_of_const⟩
 
 namespace ComputableIn
 
