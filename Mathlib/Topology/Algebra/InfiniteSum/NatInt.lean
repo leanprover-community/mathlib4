@@ -375,7 +375,7 @@ lemma tprod_of_nat_of_neg_add_one [T2Space M] {f : ℤ → M}
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have products `a`, `b` respectively, then
 the `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) has
-product `a + b`. -/
+product `a * b`. -/
 @[to_additive /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have sums `a`, `b` respectively, then
 the `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) has
 sum `a + b`. -/]

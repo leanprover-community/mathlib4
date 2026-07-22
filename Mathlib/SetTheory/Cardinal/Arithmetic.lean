@@ -643,7 +643,7 @@ theorem mk_surjective_eq_zero_iff_lift :
   contrapose! +distrib
   rw [lift_mk_le', and_comm]
   simp_rw [mk_ne_zero_iff, mk_eq_zero_iff, nonempty_coe_sort,
-    Set.Nonempty, mem_setOf, exists_surjective_iff, nonempty_fun]
+    Set.Nonempty, mem_ofPred, exists_surjective_iff, nonempty_fun]
 
 theorem mk_surjective_eq_zero_iff :
     #{f : α → β | Surjective f} = 0 ↔ #α < #β ∨ (#α ≠ 0 ∧ #β = 0) := by
