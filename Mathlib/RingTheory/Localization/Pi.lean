@@ -5,12 +5,7 @@ Authors: Madison Crim
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.Divisibility.Prod
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.RingTheory.KrullDimension.Zero
 

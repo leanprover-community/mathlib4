@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Data.Pi.Interval
-public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
 
 /-!
 # Siegel's Lemma

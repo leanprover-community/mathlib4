@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.Analysis.LocallyConvex.HahnBanach
-public import Mathlib.Analysis.Normed.Module.Span
 
 /-!
 # Hahn-Banach extension theorem

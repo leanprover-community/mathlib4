@@ -5,9 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Finiteness of support

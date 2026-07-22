@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Cones
 public import Mathlib.CategoryTheory.FinCategory.Basic
-public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Bicones

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Sheaves.SheafOfFunctions
 public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Functions satisfying a local predicate form a sheaf.

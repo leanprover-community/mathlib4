@@ -5,7 +5,6 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!

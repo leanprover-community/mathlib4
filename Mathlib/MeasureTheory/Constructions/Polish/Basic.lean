@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
 

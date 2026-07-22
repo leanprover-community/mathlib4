@@ -6,7 +6,6 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
-public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!

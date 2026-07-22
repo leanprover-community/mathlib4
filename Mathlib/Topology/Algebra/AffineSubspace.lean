@@ -5,9 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Restrict
-public import Mathlib.Topology.Algebra.ContinuousAffineMap
 public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!

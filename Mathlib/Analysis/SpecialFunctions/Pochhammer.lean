@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Convex.Deriv
 public import Mathlib.Analysis.Convex.Piecewise
-public import Mathlib.Analysis.Convex.Jensen
 
 /-!
 # Pochhammer polynomials

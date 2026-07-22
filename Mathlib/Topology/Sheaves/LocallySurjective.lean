@@ -5,10 +5,7 @@ Authors: Sam van Gool, Jake Levinson
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
 public import Mathlib.CategoryTheory.Sites.EpiMono
 
 /-!

@@ -6,8 +6,6 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
-public import Mathlib.CategoryTheory.Comma.Over.Basic
-public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Filtered.Final
 
 /-!

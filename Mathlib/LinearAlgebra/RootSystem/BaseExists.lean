@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Module.Submodule.Union
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.QuadraticForm.Dual
 public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Existence of bases for crystallographic root systems

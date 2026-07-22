@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.LinearMap

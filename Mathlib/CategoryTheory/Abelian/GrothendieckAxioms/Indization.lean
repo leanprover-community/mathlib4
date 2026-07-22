@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Abelian.Indization
-public import Mathlib.CategoryTheory.Limits.Indization.Category
 public import Mathlib.CategoryTheory.Generator.Indization
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 

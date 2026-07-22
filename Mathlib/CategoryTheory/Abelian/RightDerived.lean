@@ -5,7 +5,6 @@ Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!

@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
-public import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 
 /-!
 # Kullback-Leibler divergence

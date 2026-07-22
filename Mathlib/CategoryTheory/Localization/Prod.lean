@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Localization.Predicate
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Localization of product categories

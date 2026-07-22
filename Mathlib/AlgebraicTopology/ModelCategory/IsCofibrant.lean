@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Fibrant and cofibrant objects in a model category

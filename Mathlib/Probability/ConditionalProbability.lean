@@ -6,7 +6,6 @@ Authors: Rishikesh Vaishnav
 module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Conditional Probability

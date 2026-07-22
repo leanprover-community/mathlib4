@@ -5,7 +5,6 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Order.Filter.Cofinite  -- shake: keep (used in notation only)

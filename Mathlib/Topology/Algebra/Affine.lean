@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis, Attila Gáspár
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.Topology.Algebra.Group.Torsor
 

@@ -5,11 +5,9 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
 module
 
-public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.ChineseRemainder
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Pairing
-public import Mathlib.Order.Fin.Basic
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Nat.Factorial.Basic

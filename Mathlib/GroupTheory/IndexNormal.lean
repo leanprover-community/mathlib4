@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Nat.Prime.Factorial
-public import Mathlib.GroupTheory.Index
 
 /-! # Subgroups of small index are normal
 

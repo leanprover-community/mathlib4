@@ -6,7 +6,6 @@ Authors: Junyan Xu, Andrew Yang
 module
 
 public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.RingTheory.Jacobson.Ring
 
 /-!
 # Artinian rings over Jacobson rings

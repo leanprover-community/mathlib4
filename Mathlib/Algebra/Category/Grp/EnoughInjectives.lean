@@ -6,9 +6,7 @@ Authors: Jujian Zhang, Junyan Xu
 module
 
 public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 public import Mathlib.Algebra.Category.Grp.EpiMono
-public import Mathlib.Algebra.Category.Grp.Injective
 
 /-!
 

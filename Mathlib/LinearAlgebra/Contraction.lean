@@ -6,7 +6,6 @@ Authors: Oliver Nash, Antoine Labelle
 module
 
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!

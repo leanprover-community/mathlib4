@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Presentation of a direct sum

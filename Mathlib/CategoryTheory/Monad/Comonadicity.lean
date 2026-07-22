@@ -6,7 +6,6 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Monad.Equalizer
 public import Mathlib.CategoryTheory.Monad.Limits
 
