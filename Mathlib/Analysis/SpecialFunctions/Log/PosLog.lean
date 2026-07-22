@@ -154,7 +154,7 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
 -/
 
 /-- For nonnegative `x`, the positive part of the logarithm is bounded by `log (1 + x)`. -/
-lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ Real.log (1 + x) := by
+lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ log (1 + x) := by
   rw [posLog_apply]
   apply max_le (Real.log_nonneg (by linarith))
   rcases hx.eq_or_lt with rfl | hx'
@@ -163,15 +163,17 @@ lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ Real.log (1 
 
 /-- Converse to `posLog_le_log_one_add` up to the additive constant `log 2`. -/
 lemma log_one_add_le_posLog {x : ℝ} (hx : 0 ≤ x) :
-    Real.log (1 + x) ≤ log⁺ x + Real.log 2 := by
+    log (1 + x) ≤ log⁺ x + log 2 := by
   rw [posLog_eq_log_max_one hx]
-  have h₁ : (1 : ℝ) + x ≤ max 1 x * 2 := by
-    rcases le_total x 1 with h | h
-    · rw [max_eq_left h]; linarith
-    · rw [max_eq_right h]; linarith
-  calc Real.log (1 + x)
-      ≤ Real.log (max 1 x * 2) := Real.log_le_log (by linarith) h₁
-    _ = Real.log (max 1 x) + Real.log 2 :=
+  calc
+    _ ≤ log (max 1 x * 2) := by
+        apply Real.log_le_log (by linarith)
+        rcases le_total x 1 with h | h
+        · rw [max_eq_left h]
+          linarith
+        · rw [max_eq_right h]
+          linarith
+    _ = log (max 1 x) + log 2 :=
         Real.log_mul (by positivity) two_ne_zero
 
 /-- The positive part of the logarithm is bounded by the absolute value: `log⁺ x ≤ |x|`. -/
