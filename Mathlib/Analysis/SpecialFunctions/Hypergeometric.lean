@@ -103,8 +103,7 @@ theorem regularizedHGFunCoeff_eq_zero_left' (a : Fin p → ℂ) (b : Fin q → �
 /-- Recursion formula for the coefficients of the hypergeometric series.
 
 This is mainly used to calculate the convergence radius. -/
-theorem regularizedHGFunCoeff_add_one {a : Fin p → ℂ} {b : Fin q → ℂ} {n : ℕ}
-    (hb : ∀ j, b j ≠ -n) :
+theorem regularizedHGFunCoeff_add_one (hb : ∀ j, b j ≠ -n) :
     regularizedHGFunCoeff a b (n + 1) = regularizedHGFunCoeff a b n *
       ((∏ i : Fin p, (a i + n)) / ((∏ i : Fin q, (b i + n)) * (n + 1))) := calc
   _ = (∏ i : Fin p, ((ascPochhammer ℂ n).eval (a i)) * (a i + n)) /
@@ -126,8 +125,7 @@ theorem regularizedHGFunCoeff_add_one {a : Fin p → ℂ} {b : Fin q → ℂ} {n
 /-- Recursion formula for the coefficients of the hypergeometric series.
 
 This is mainly used to calculate the convergence radius. -/
-theorem regularizedHGFunCoeff_add_one_div_self
-    (h : regularizedHGFunCoeff a b n ≠ 0) :
+theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n ≠ 0) :
     regularizedHGFunCoeff a b (n + 1) / regularizedHGFunCoeff a b n =
       (∏ i : Fin p, (a i + n)) / ((∏ i : Fin q, (b i + n)) * (n + 1)) := by
   by_cases! hb : ∀ j, b j ≠ -n
@@ -182,8 +180,8 @@ def regularizedHGFun (a : Fin p → ℂ) (b : Fin q → ℂ) (z : ℂ) : ℂ :=
 
 /-- If there exists `j` and `k : ℕ`, such that `a j = -k`, then the hypergeometric series is finite
 and has convergence radius `∞`. -/
-theorem radius_regularizedHGFunSeries_eq_top_of_finite
-    (ha : ∃ (j : Fin p) (k : ℕ), a j = -k) : (regularizedHGFunSeries a b).radius = ⊤ := by
+theorem radius_regularizedHGFunSeries_eq_top_of_finite (ha : ∃ (j : Fin p) (k : ℕ), a j = -k) :
+    (regularizedHGFunSeries a b).radius = ⊤ := by
   obtain ⟨j, k, h⟩ := ha
   apply FormalMultilinearSeries.radius_eq_top_of_eventually_eq_zero
   apply eventually_atTop.mpr
@@ -192,8 +190,7 @@ theorem radius_regularizedHGFunSeries_eq_top_of_finite
 
 /-- If for all `j` and `k : ℕ`, `a j ≠ -k`, then the coefficients of the hypergeometric series
 are eventually non-vanishing. -/
-theorem eventually_atTop_regularizedHGFunCoeff_ne_zero
-    (h : ∀ (j : Fin p) (k : ℕ), a j ≠ -↑k) :
+theorem eventually_atTop_regularizedHGFunCoeff_ne_zero (h : ∀ (j : Fin p) (k : ℕ), a j ≠ -↑k) :
     ∀ᶠ (n : ℕ) in atTop, regularizedHGFunCoeff a b n ≠ 0 := by
   rw [Filter.eventually_atTop]
   use ⌈iSup (-re ∘ b)⌉₊ + 1
