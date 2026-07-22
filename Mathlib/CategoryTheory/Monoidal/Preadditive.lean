@@ -62,11 +62,9 @@ theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ₘ (g + h
 theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ₘ h = f ⊗ₘ h + g ⊗ₘ h := by
   simp [tensorHom_def]
 
-@[simp]
 theorem whiskerLeft_sub {X Y : C} (f g : X ⟶ Y) {W : C} : W ◁ (f - g) = W ◁ f - W ◁ g := by
   simp only [sub_eq_add_neg, eq_add_neg_iff_add_eq, ← whiskerLeft_add, neg_add_cancel_right]
 
-@[simp]
 theorem sub_whiskerRight {X Y : C} (f g : X ⟶ Y) {W : C} : (f - g) ▷ W = f ▷ W - g ▷ W := by
   simp only [sub_eq_add_neg, eq_add_neg_iff_add_eq, ← add_whiskerRight, neg_add_cancel_right]
 
