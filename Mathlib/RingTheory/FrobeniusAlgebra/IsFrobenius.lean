@@ -33,8 +33,8 @@ variable {R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R 
 
 local notation3 "α" => (TensorProduct.assoc R _ _ _).toLinearMap
 local notation3 "α⁻¹" => (TensorProduct.assoc R _ _ _).symm.toLinearMap
-local notation3 "λ" => (TensorProduct.lid R _).toLinearMap
-local notation3 "λ⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
+local notation3 "σ" => (TensorProduct.lid R _).toLinearMap
+local notation3 "σ⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
 local notation "rT" => rTensor
 local notation "lT" => lTensor
 
@@ -42,8 +42,8 @@ omit [Coalgebra R A] in
 -- TODO: move earlier
 lemma LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] (f : M →ₗ[R] R ⊗[R] A) (g : N →ₗ[R] _) :
-    μ[R] ∘ₗ ((λ ∘ₗ f) ⊗ₘ g) = λ ∘ₗ lT R μ ∘ₗ α ∘ₗ (f ⊗ₘ g) := by
-  trans μ[R] ∘ₗ (rT _ λ) ∘ₗ (f ⊗ₘ g)
+    μ[R] ∘ₗ ((σ ∘ₗ f) ⊗ₘ g) = σ ∘ₗ lT R μ ∘ₗ α ∘ₗ (f ⊗ₘ g) := by
+  trans μ[R] ∘ₗ (rT _ σ) ∘ₗ (f ⊗ₘ g)
   · ext; simp
   simp only [← comp_assoc]
   congr 1; ext; simp
@@ -55,13 +55,13 @@ lemma LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     lT A μ ∘ₗ α ∘ₗ rT A δ = δ ∘ₗ μ := by
   simp only [lTensor, rTensor] at h ⊢
   calc
-    _ = rT A μ ∘ₗ α⁻¹ ∘ₗ ((λ ∘ₗ rT A ε ∘ₗ δ) ⊗ₘ δ) := by
+    _ = rT A μ ∘ₗ α⁻¹ ∘ₗ ((σ ∘ₗ rT A ε ∘ₗ δ) ⊗ₘ δ) := by
       simp only [h, CoassocSimps.map_counit_comp_comul_left, coassoc_simps]
-    _ = λ ∘ₗ rT (A ⊗[R] A) ε ∘ₗ α ∘ₗ rT A (rT A μ ∘ₗ α⁻¹ ∘ₗ lT A δ) ∘ₗ α⁻¹ ∘ₗ lT A δ := by
+    _ = σ ∘ₗ rT (A ⊗[R] A) ε ∘ₗ α ∘ₗ rT A (rT A μ ∘ₗ α⁻¹ ∘ₗ lT A δ) ∘ₗ α⁻¹ ∘ₗ lT A δ := by
       simp only [rTensor, lTensor, ← h, lid_tensor]
       simp only [coassoc_simps, mul'_comp_map_lid_comp]
-    _ = λ ∘ₗ (ε ⊗ₘ δ) ∘ₗ lT A μ ∘ₗ α ∘ₗ rT A δ := by simp only [assoc_tensor, h, coassoc_simps]
-    _ = λ ∘ₗ lT R (δ ∘ₗ μ) ∘ₗ α ∘ₗ rT A (rT A ε ∘ₗ δ) := by simp only [coassoc_simps]
+    _ = σ ∘ₗ (ε ⊗ₘ δ) ∘ₗ lT A μ ∘ₗ α ∘ₗ rT A δ := by simp only [assoc_tensor, h, coassoc_simps]
+    _ = σ ∘ₗ lT R (δ ∘ₗ μ) ∘ₗ α ∘ₗ rT A (rT A ε ∘ₗ δ) := by simp only [coassoc_simps]
     _ = δ ∘ₗ μ := by simp only [coassoc_simps, CoassocSimps.map_counit_comp_comul_left]
 
 variable (R A) in
@@ -126,7 +126,7 @@ lemma comul_eq_of_isFrobenius [IsFrobenius R A] : δ = (TensorProduct.mk R A A).
 @[simp] lemma algebraMap_counit_of_isFrobenius [IsFrobenius R A] (a : A) :
     algebraMap R A (ε a) = a := by
   simpa [comul_eq_of_isFrobenius, Algebra.algebraMap_eq_smul_one] using
-    congr(TensorProduct.lid R A ($rTensor_counit_comp_comul a))
+     congr(σ ($rTensor_counit_comp_comul a))
 
 lemma algebraMap_bijective_of_isFrobenius [IsFrobenius R A] :
     Function.Bijective (algebraMap R A) := ⟨algebraMap_injective A, fun a ↦ ⟨ε a, by simp⟩⟩
