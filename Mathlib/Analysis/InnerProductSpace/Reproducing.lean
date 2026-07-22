@@ -37,7 +37,8 @@ positive semidefinite matrices.
 
 public noncomputable section
 
-open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate
+open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate Filter
+open scoped Topology
 
 /--
 A reproducing kernel Hilbert space is a Hilbert space with an
@@ -151,7 +152,6 @@ lemma norm_apply_le (f : H) (x : X) : ‖f x‖ ≤ ‖f‖ * √‖kernel H x x
   grw [← adjoint_kerFun, le_opNorm, norm_map, norm_kerFun_eq_sqrt_norm_kernel, mul_comm]
 
 variable {H} in
-open Filter Topology in
 /-- If the kernel functions are uniformly bounded on a set `s` (`‖kerFun H x‖ ≤ C` for `x ∈ s`),
 then convergence in `H`-norm implies uniform convergence of the underlying functions on `s`. -/
 theorem tendstoUniformlyOn_of_norm_kerFun_le {C : ℝ} {s : Set X}
@@ -167,7 +167,6 @@ theorem tendstoUniformlyOn_of_norm_kerFun_le {C : ℝ} {s : Set X}
   grw [norm_apply_le, ← norm_kerFun_eq_sqrt_norm_kernel, hC x hx, hn]
 
 variable {H} in
-open Filter Topology in
 /-- If the kernel functions are uniformly bounded (`‖kerFun H x‖ ≤ C` for all `x`), then
 convergence in `H`-norm implies uniform convergence of the underlying functions. -/
 theorem tendstoUniformly_of_norm_kerFun_le {C : ℝ} (hC : ∀ x, ‖kerFun H x‖ ≤ C)
