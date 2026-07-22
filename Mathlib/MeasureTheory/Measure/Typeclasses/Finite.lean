@@ -185,8 +185,9 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     {Es : ℕ → Set X} (Es_mble : ∀ i, NullMeasurableSet (Es i) μ)
     (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
     Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
-  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
-    fun n m hnm ↦ biUnion_mono (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
+  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i := fun n m hnm ↦
+    biUnion_mono (s := {i | i ≥ n}) (s' := {i | i ≥ m})
+      (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
   have nothing : ⋂ n, ⋃ i ≥ n, Es i = ∅ := by
     apply subset_antisymm _ (empty_subset _)
     intro x hx

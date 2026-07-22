@@ -283,7 +283,8 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
     -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,
     -- we have that `μ ((T n) ∩ s) ⟶ μ s`.
     have mono : Monotone (fun n ↦ (T n) ∩ s) := fun m n hmn ↦ inter_subset_inter_left s
-        (biUnion_subset_biUnion_left fun k hkm ↦ Nat.le_trans hkm hmn)
+        (biUnion_subset_biUnion_left (s := {k | k ≤ m}) (s' := {k | k ≤ n})
+          fun k hkm ↦ Nat.le_trans hkm hmn)
     have := tendsto_measure_iUnion_atTop (μ := μ) mono
     rw [← tendsto_toReal_iff] at this
     · -- We can therefore choose `N` such that `μ s - μ ((S N) ∩ s) < ε/2`.
@@ -368,7 +369,8 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
     · rw [← hgen]
       exact generateFrom_mono <| le_trans self_subset_generateSetAlgebra <|
         generateSetAlgebra_mono <| subset_union_left ..
-    · induction hs with
+    · replace hs : GenerateSetAlgebra _ s := hs
+      induction hs with
       | base t t_mem =>
         rcases t_mem with t_mem | ⟨n, rfl⟩
         · exact hgen ▸ measurableSet_generateFrom t_mem
