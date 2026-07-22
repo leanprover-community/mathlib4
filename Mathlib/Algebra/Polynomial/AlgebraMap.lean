@@ -87,7 +87,7 @@ def CAlgHom : A →ₐ[R] A[X] where
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
 -- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.algHom_ext'` also  applies
--- to equalities in `R[X]`. We make this ext lemma have higher priority to qvoid exposing
+-- to equalities in `R[X]`. We make this ext lemma have higher priority to avoid exposing
 -- `AddMonoidAlgebra.single`.
 @[ext high + 1]
 theorem algHom_ext' {f g : A[X] →ₐ[R] B}

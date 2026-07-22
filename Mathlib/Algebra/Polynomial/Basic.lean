@@ -602,7 +602,7 @@ theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   simp [AddMonoidAlgebra.ext_iff, DFunLike.ext_iff, coeff]
 
 -- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.ext` also  applies to
--- equalities in `R[X]`. We make this ext lemma have higher priority to qvoid exposing
+-- equalities in `R[X]`. We make this ext lemma have higher priority to avoid exposing
 -- `AddMonoidAlgebra.coeff`. Once it is unified with `Polynomial.coeff`, this won't be necessary.`
 @[ext high]
 theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=
@@ -617,7 +617,7 @@ theorem addSubmonoid_closure_setOfPred_eq_monomial :
 alias addSubmonoid_closure_setOf_eq_monomial := addSubmonoid_closure_setOfPred_eq_monomial
 
 -- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.addHom_ext` also  applies to
--- equalities in `R[X]`. We make this ext lemma have higher priority to qvoid exposing
+-- equalities in `R[X]`. We make this ext lemma have higher priority to avoid exposing
 -- `AddMonoidAlgebra.single`. Once it is unified with `Polynomial.monomial`, this won't be necessary
 @[ext high + 1]
 theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
@@ -627,7 +627,7 @@ theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     exact h n a
 
 -- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.addHom_ext` also  applies to
--- equalities in `R[X]`. We make this ext lemma have higher priority to qvoid exposing
+-- equalities in `R[X]`. We make this ext lemma have higher priority to avoid exposing
 -- `AddMonoidAlgebra.single`. Once it is unified with `Polynomial.monomial`, this won't be necessary
 @[ext high + 1]
 theorem addHom_ext' {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
@@ -635,7 +635,7 @@ theorem addHom_ext' {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
   addHom_ext fun n ↦ DFunLike.congr_fun (h n)
 
 -- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.addHom_ext` also  applies to
--- equalities in `R[X]`. We make this ext lemma have higher priority to qvoid exposing
+-- equalities in `R[X]`. We make this ext lemma have higher priority to avoid exposing
 -- `AddMonoidAlgebra.single`. Once it is unified with `Polynomial.monomial`, this won't be necessary
 @[ext high + 1]
 theorem lhom_ext' {M : Type*} [AddCommMonoid M] [Module R M] {f g : R[X] →ₗ[R] M}
