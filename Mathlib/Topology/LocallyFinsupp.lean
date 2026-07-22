@@ -80,7 +80,7 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : 
     f =ᶠ[codiscreteWithin U] 0 ↔ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support) := by
   have : f.support = (U \ {x | f x = (0 : X → Y) x}) := by
     ext x
-    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_sdiff, mem_setOf_eq, iff_and_self]
+    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_sdiff, mem_ofPred_eq, iff_and_self]
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
 
@@ -169,7 +169,6 @@ Simplifier lemma: `single x y` takes the value `y` at `x` and is zero otherwise.
 -/
 @[simp] lemma single_apply [DecidableEq X] [Zero Y] {x₁ x₂ : X} {y : Y} :
     single x₁ y x₂ = if x₂ = x₁ then y else 0 := by
-  classical
   simp_rw [DFunLike.coe, single, Pi.single_apply]
 
 /--
@@ -207,7 +206,7 @@ theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin 
   apply codiscreteWithin_iff_locallyFiniteComplementWithin.2
   have : D.support = (U \ {x | D x = (0 : X → Y) x}) := by
     ext x
-    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_sdiff, Set.mem_setOf_eq, iff_and_self]
+    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_sdiff, Set.mem_ofPred_eq, iff_and_self]
     exact (support_subset_iff.1 D.supportWithinDomain) x
   rw [← this]
   exact D.supportLocallyFiniteWithinDomain
@@ -222,7 +221,7 @@ theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
     constructor
     · exact fun hx ↦ ⟨by tauto, D.supportWithinDomain hx⟩
     · intro hx
-      rw [mem_inter_iff, mem_compl_iff, mem_setOf_eq] at hx
+      rw [mem_inter_iff, mem_compl_iff, mem_ofPred_eq] at hx
       tauto
   rw [this]
   apply isDiscrete_of_codiscreteWithin
@@ -272,7 +271,7 @@ Functions with locally finite support within `U` form an additive submonoid of f
 protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
   carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
   zero_mem' := by
-    simp only [support_subset_iff, ne_eq, mem_setOf_eq, Pi.zero_apply, not_true_eq_false,
+    simp only [support_subset_iff, ne_eq, mem_ofPred_eq, Pi.zero_apply, not_true_eq_false,
       IsEmpty.forall_iff, implies_true, support_zero, inter_empty, finite_empty, and_true,
       true_and]
     exact fun _ _ ↦ ⟨⊤, univ_mem⟩
@@ -287,7 +286,7 @@ protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
       use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
       apply Set.Finite.subset (s := (t₁ ∩ f.support) ∪ (t₂ ∩ g.support)) (ht₁.2.union ht₂.2)
       intro a ha
-      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq,
+      simp_all only [support_subset_iff, ne_eq, mem_ofPred_eq,
         mem_inter_iff, mem_support, Pi.add_apply, mem_union, true_and]
       by_contra! hCon
       simp_all
@@ -598,7 +597,7 @@ noncomputable def restrict [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (
     intro _ _
     simp_all
 
-open Classical in
+open scoped Classical in
 lemma restrict_apply [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) (z : X) :
     (D.restrict h) z = if z ∈ V then D z else 0 := rfl
 
@@ -691,5 +690,19 @@ lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U
   ext x
   simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
   aesop
+
+lemma disjoint_nhdsWithin_cofinite_of_mem [Zero Y]
+    (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
+    Disjoint (𝓝[f.support] p) cofinite := by
+  rw [disjoint_cofinite_right]
+  obtain ⟨t, h₁t, h₂t⟩ := f.supportLocallyFiniteWithinDomain p hp
+  refine ⟨t ∩ f.support, ?_, h₂t⟩
+  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
+  grind
+
+lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
+    [Zero Y] (f : locallyFinsupp X Y) (p : X) :
+    Disjoint (𝓝[f.support] p) cofinite :=
+  disjoint_nhdsWithin_cofinite_of_mem f p (mem_univ _)
 
 end Function.locallyFinsuppWithin

@@ -37,6 +37,7 @@ theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
         ← Finsupp.range_linearCombination]
   simp [@eq_comm _ x, Function.comp, Finsupp.linearCombination_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the submodule `P` has a finite basis,
 `x ∈ P` iff it is a linear combination of basis vectors. -/
 theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {x : M} :
@@ -130,7 +131,7 @@ lemma mem_center_iff {A}
     · intros
       exact ⟨h.2 _ _, h.3 _ _⟩
   · intro h
-    rw [center, mem_setOf_eq]
+    rw [center, mem_ofPred_eq]
     constructor
     case comm =>
       intro y

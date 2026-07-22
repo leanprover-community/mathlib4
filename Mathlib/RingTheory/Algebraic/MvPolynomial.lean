@@ -26,6 +26,7 @@ namespace MvPolynomial
 
 variable {σ : Type*} (R : Type*) [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
     {f : R[X]} (hf : Transcendental R f) :
     Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
@@ -44,7 +45,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
       (Polynomial.mapAlgEquiv (supportedEquivMvPolynomial s).symm).toAlgHom
   replace hf : Function.Injective u := by
     simp only [AlgHom.coe_comp, Subalgebra.coe_val,
-      AlgEquiv.coe_algHom, AlgEquiv.coe_trans, Function.comp_assoc, u]
+      AlgEquiv.coe_toAlgHom, AlgEquiv.coe_trans, Function.comp_assoc, u]
     apply Subtype.val_injective.comp
     simp only [EquivLike.comp_injective]
     apply hf.comp
@@ -59,7 +60,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
     · ext1
       simp [Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq, optionEquivLeft_symm_apply]
     · simp [Set.subtypeInsertEquivOption, h1, optionEquivLeft_symm_apply]
-  simpa only [h2, v, AlgHom.coe_comp, AlgEquiv.coe_algHom,
+  simpa only [h2, v, AlgHom.coe_comp, AlgEquiv.coe_toAlgHom,
     EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hf
 
 theorem transcendental_polynomial_aeval_X (i : σ) {f : R[X]} (hf : Transcendental R f) :
