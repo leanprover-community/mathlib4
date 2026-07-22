@@ -74,12 +74,11 @@ open Manifold IsManifold
 set_option linter.flexible false in
 /-- The inclusion map from a closed segment to `ℝ` is a smooth immersion -/
 lemma isImmersionOfComplement_subtype_coe_Icc :
-    IsImmersionOfComplement (EuclideanSpace ℝ (Fin 0)) (𝓡∂ 1) 𝓘(ℝ) n
+    IsImmersionOfComplement Unit (𝓡∂ 1) 𝓘(ℝ) n
       (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
-  letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ
-    (EuclideanSpace ℝ (Fin 1)) (EuclideanSpace ℝ (Fin 0))
-  let φ : (EuclideanSpace ℝ (Fin 1) × EuclideanSpace ℝ (Fin 0)) ≃L[ℝ] ℝ :=
+  letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin 1)) Unit
+  let φ : (EuclideanSpace ℝ (Fin 1) × Unit) ≃L[ℝ] ℝ :=
     φ₀.trans (PiLp.equivOfUnique 2 ℝ (fun (_ : Fin 1) ↦ ℝ))
   by_cases hz : ↑z < y
   · -- At all points but `y`, the correct codomain chart maps `a` to `a + x`.
