@@ -149,16 +149,16 @@ theorem ae_eq (h : μ ≪ ν) {f g : α → δ} (h' : f =ᵐ[ν] g) : f =ᵐ[μ]
 
 end AbsolutelyContinuous
 
-open Measure
-
-theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
+theorem _root_.MeasureTheory.NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
     NullMeasurableSet s ν := by
   obtain ⟨t, ht, htμ⟩ := h
   exact ⟨t, ht, hle.ae_eq htμ⟩
 
-theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) :
+theorem _root_.MeasureTheory.NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) :
     NullMeasurableSet s ν :=
-  NullMeasurableSet.mono_ac h hle.absolutelyContinuous
+  h.mono_ac hle.absolutelyContinuous
+
+open Measure
 
 @[simp]
 lemma absolutelyContinuous_zero_iff : μ ≪ 0 ↔ μ = 0 :=
@@ -189,14 +189,14 @@ lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • �
 lemma AbsolutelyContinuous.smul_right (hμν : μ ≪ ν) {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • ν :=
   (absolutelyContinuous_smul hc).trans (hμν.smul c)
 
-lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
+lemma _root_.MeasureTheory.NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
     NullMeasurableSet s (c • μ) :=
-  NullMeasurableSet.mono_ac h (Measure.AbsolutelyContinuous.rfl.smul_left c)
+  h.mono_ac (Measure.AbsolutelyContinuous.rfl.smul_left c)
 
 lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
     NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ :=
-  ⟨fun h ↦ NullMeasurableSet.mono_ac h (Measure.absolutelyContinuous_smul hc),
-    fun h ↦  NullMeasurableSet.smul_measure h c⟩
+  ⟨fun h ↦ h.mono_ac (Measure.absolutelyContinuous_smul hc),
+    fun h ↦  h.smul_measure c⟩
 
 end Measure
 
