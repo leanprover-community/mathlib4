@@ -496,28 +496,38 @@ theorem TendstoUniformlyOn.lowerHemicontinuousOn (htendsto : TendstoUniformlyOn 
   exact ⟨v, hvf, hWsub <| hU₁comp
     ⟨w, hUcomp ⟨z₀, hz₀y₀, hU'sub hwball⟩, hU_le_U₁ (hUsym.symm _ _ hvw)⟩⟩
 
-/-- A net of upper hemicontinuous compact-valued set-valued functions converging uniformly on `s`
-(along a filter `l`) in the Hausdorff uniformity has an upper hemicontinuous limit on `s` -/
+/-- If a net of upper hemicontinuous set-valued functions converges uniformly
+(along a filter `l`) in the Hausdorff uniformity to a set-valued function `f` with
+compact values, then `f` is upper hemicontinuous -/
 theorem TendstoUniformlyOn.upperHemicontinuousOn (htendsto : TendstoUniformlyOn F f l s)
-    (hF : ∀ n, UpperHemicontinuousOn (F n) s) (hf_compact : ∀ x ∈ s, IsCompact (f x)) :
+      (hF : ∀ n, UpperHemicontinuousOn (F n) s) (hf_compact : ∀ x ∈ s, IsCompact (f x)) :
     UpperHemicontinuousOn f s := by
+  -- A function `f` is upper hemicontinuous at `x₀` if for all open `u` with `f x₀ ⊆ u`, then
+  -- `f x ⊆ u` for all `x` near `x₀`
   rw [upperHemicontinuousOn_iff_forall_isOpen]
   intro x₀ hx₀s u hu hx₀u
+  -- Find an open entourage `U` such that `U ○ U.symm ⊆ u`
   obtain ⟨W, hW, _, hWu⟩ := lebesgue_number_of_compact_open (hf_compact x₀ hx₀s) hu hx₀u
-  obtain ⟨V₁, hV₁, hV₁sym, hV₁comp⟩ := comp_symm_mem_uniformity_sets hW
-  obtain ⟨U', ⟨hU'mem, hU'open⟩, hU'sub⟩ := uniformity_hasBasis_open.mem_iff.mp hV₁
-  have hHU' : hausdorffEntourage U' ∈ @uniformity _ (UniformSpace.hausdorff (α := β)) :=
-    (mem_lift'_sets monotone_hausdorffEntourage).mpr ⟨U', hU'mem, le_refl _⟩
-  obtain ⟨N, hN⟩ := (htendsto (hausdorffEntourage U') hHU').exists
-  have hFN_image := ((mem_hausdorffEntourage U' (f x₀) (F N x₀)).mp (hN x₀ hx₀s)).2
+  obtain ⟨V, hV, hVsym, hVcomp⟩ := comp_symm_mem_uniformity_sets hW
+  obtain ⟨U, ⟨hUmem, hUopen⟩, hUsub⟩ := uniformity_hasBasis_open.mem_iff.mp hV
+  -- Then choose a sufficiently large `N` such that `⟨f x, F N x⟩ ∈ hausdorffEntourage U`
+  -- for all `x ∈ s`
+  have hHU : hausdorffEntourage U ∈ @uniformity _ (UniformSpace.hausdorff (α := β)) :=
+    (mem_lift'_sets monotone_hausdorffEntourage).mpr ⟨U, hUmem, le_refl _⟩
+  obtain ⟨N, hN⟩ := (htendsto (hausdorffEntourage U) hHU).exists
+  have hFN_image : F N x₀ ⊆ U.image (f x₀) := ((mem_hausdorffEntourage ..).mp (hN x₀ hx₀s)).2
+  -- Upper hemicontinuity implies `F N x ⊆ U.image (f x₀)` for `x` near `x₀`
   simp_rw [upperHemicontinuousOn_iff] at hF
-  have hFN_uhc : ∀ᶠ x in 𝓝[s] x₀, F N x ⊆ U'.image (f x₀) :=
-    (hF N x₀ hx₀s).forall_isOpen _ hU'open.relImage hFN_image
+  have hFN_uhc : ∀ᶠ x in 𝓝[s] x₀, F N x ⊆ U.image (f x₀) :=
+    (hF N x₀ hx₀s).forall_isOpen _ hUopen.relImage hFN_image
+  -- For such a nearby `x`, show `f x ⊆ u` by taking `y ∈ f x`,
   filter_upwards [hFN_uhc, self_mem_nhdsWithin] with x hFNx hx_s
   intro y hy
-  obtain ⟨z, hzFN, hyz⟩ := ((mem_hausdorffEntourage U' (f x) (F N x)).mp (hN x hx_s)).1 hy
+  -- finding a `z ∈ F N x` such that `(y, z) ∈ U` and then some `y₀ ∈ f x₀` such that `⟨y₀, z⟩ ∈ U`
+  obtain ⟨z, hzFN, hyz⟩ := ((mem_hausdorffEntourage U (f x) (F N x)).mp (hN x hx_s)).1 hy
   obtain ⟨y₀, hy₀f, hy₀z⟩ := hFNx hzFN
-  exact hWu y₀ hy₀f (hV₁comp ⟨z, hU'sub hy₀z, hV₁sym.symm _ _ (hU'sub hyz)⟩)
+  -- then use that `U ○ U.symm ⊆ u` to conclude
+  exact hWu y₀ hy₀f (hVcomp ⟨z, hUsub hy₀z, hVsym.symm _ _ (hUsub hyz)⟩)
 
 /-- A net of lower hemicontinuous set-valued functions converging uniformly (along a
 filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit -/
@@ -526,8 +536,9 @@ theorem TendstoUniformly.lowerHemicontinuous (htendsto : TendstoUniformly F f l)
   rw [← lowerHemicontinuousOn_univ_iff]
   exact htendsto.tendstoUniformlyOn.lowerHemicontinuousOn (fun n ↦ (hF n).lowerHemicontinuousOn _)
 
-/-- A net of upper hemicontinuous compact-valued set-valued functions converging uniformly
-(along a filter `l`) in the Hausdorff uniformity has an upper hemicontinuous limit -/
+/-- If a net of upper hemicontinuous set-valued functions converges uniformly
+(along a filter `l`) in the Hausdorff uniformity to a set-valued function `f` with
+compact values, then `f` is upper hemicontinuous -/
 theorem TendstoUniformly.upperHemicontinuous (htendsto : TendstoUniformly F f l)
     (hF : ∀ n, UpperHemicontinuous (F n)) (hf_compact : ∀ x, IsCompact (f x)) :
     UpperHemicontinuous f := by
