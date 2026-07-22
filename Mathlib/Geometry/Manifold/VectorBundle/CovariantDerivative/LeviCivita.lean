@@ -233,7 +233,7 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
 
 Version of `IsLeviCivitaConnection.apply_eq` which does not require the vector field we are
 differentiating to be differentiable. -/
-public lemma IsLeviCivitaConnection.apply_eq' [FiniteDimensional ℝ E]
+public lemma IsLeviCivitaConnection.apply_eq_extend [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection) {x : M}
     (X₀ : TangentSpace I x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     inner ℝ (cov Y x X₀) (Z x) =
@@ -255,7 +255,7 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hY : MDiffAt (T% Y) x) :
     cov Y x (X x) = cov' Y x (X x) := by
   apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
-  exact (hcov.apply_eq' I (X x) hY hZ).trans <| hcov'.apply_eq' I (X x) hY hZ |>.symm
+  exact (hcov.apply_eq_extend I (X x) hY hZ).trans <| hcov'.apply_eq_extend I (X x) hY hZ |>.symm
 
 end uniqueness
 
