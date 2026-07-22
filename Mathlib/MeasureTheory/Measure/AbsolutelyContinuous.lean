@@ -134,20 +134,21 @@ lemma pos_mono {μ ν : Measure α} (hμν : μ ≪ ν) ⦃t : Set α⦄
   contrapose! ht
   simp_all [hμν.null_mono]
 
+end AbsolutelyContinuous
+
 theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
   ⟨fun h s => by
     rw [measure_eq_zero_iff_ae_notMem, measure_eq_zero_iff_ae_notMem]
     exact fun hs => h hs, fun h _ hs => h hs⟩
 
-alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, ae_le⟩ :=
+alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=
   ae_le_iff_absolutelyContinuous
 
 alias ae_mono' := AbsolutelyContinuous.ae_le
 
-theorem ae_eq (h : μ ≪ ν) {f g : α → δ} (h' : f =ᵐ[ν] g) : f =ᵐ[μ] g :=
+theorem _root_.MeasureTheory.Measure.AbsolutelyContinuous.ae_eq (h : μ ≪ ν) {f g : α → δ}
+    (h' : f =ᵐ[ν] g) : f =ᵐ[μ] g :=
   h.ae_le h'
-
-end AbsolutelyContinuous
 
 theorem _root_.MeasureTheory.NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
     NullMeasurableSet s ν := by
