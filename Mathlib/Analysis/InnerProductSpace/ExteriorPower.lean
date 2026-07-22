@@ -5,12 +5,8 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
-public import Mathlib.LinearAlgebra.ExteriorPower.Basis
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Matrix.PosDef
+public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
 /-!
 # Inner product space structure on exterior powers
