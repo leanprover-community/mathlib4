@@ -117,24 +117,29 @@ lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     rw [mem_inv_smul_set_iff₀ ha, smul_eq_mul, mul_comm]
     rfl
   refine ⟨fun hγ ↦ ?_, heq ▸ fun hγ ↦ hγ.comp_mul a⟩
-  convert! hγ.comp_mul a⁻¹
+  have hs : {t | t * a⁻¹ ∈ a⁻¹ • s} = s := by
+    ext t
+    rw [mem_ofPred_eq, mul_comm _ a⁻¹, ← smul_eq_mul, mem_inv_smul_set_iff₀ ha,
+      smul_inv_smul₀ ha]
+  have h2 := hγ.comp_mul a⁻¹
+  rw [hs] at h2
+  convert! h2
   · ext t
     simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · ext t
     simp only [comp_apply, Pi.smul_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one,
       smul_smul, one_smul]
-  · simp only [mul_comm _ a⁻¹, ← smul_eq_mul, mem_inv_smul_set_iff₀ ha, smul_inv_smul₀ ha,
-      ofPred_mem_eq]
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt (γ ∘ (· * a)) (a • v ∘ (· * a)) (t₀ / a) := by
   rw [isIntegralCurveAt_iff_exists_pos] at *
   obtain ⟨ε, hε, h⟩ := hγ
   refine ⟨ε / |a|, by positivity, ?_⟩
-  convert! h.comp_mul a
-  ext t
-  rw [mem_ofPred_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
-    lt_div_iff₀ (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
+  have hs : {t | t * a ∈ Metric.ball t₀ ε} = Metric.ball (t₀ / a) (ε / |a|) := by
+    ext t
+    rw [mem_ofPred_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
+      lt_div_iff₀ (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
+  exact hs ▸ h.comp_mul a
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt (γ ∘ (· * a)) (a • v ∘ (· * a)) (t₀ / a) ↔ IsIntegralCurveAt γ v t₀ := by

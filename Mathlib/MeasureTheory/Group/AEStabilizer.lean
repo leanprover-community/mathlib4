@@ -72,7 +72,7 @@ lemma aestabilizer_congr (h : s =ᵐ[μ] t) : aestabilizer G μ s = aestabilizer
   ext g
   rw [mem_aestabilizer, mem_aestabilizer, h.congr_right, ((smul_set_ae_eq g).2 h).congr_left]
 
-lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G μ s = ⊤ := by
+lemma aestabilizer_of_aeconst (hs : EventuallyConst (· ∈ s) (ae μ)) : aestabilizer G μ s = ⊤ := by
   refine top_unique fun g _ ↦ ?_
   cases eventuallyConst_set'.mp hs with
   | inl h => simp [aestabilizer_congr h]

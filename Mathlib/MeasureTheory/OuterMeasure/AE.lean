@@ -45,7 +45,7 @@ variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 
 /-- The “almost everywhere” filter of co-null sets. -/
 def ae (μ : F) : Filter α :=
-  .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
+  .ofCountableUnion {s | μ s = 0} (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht
 deriving CountableInterFilter
 

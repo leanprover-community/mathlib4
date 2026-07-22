@@ -150,14 +150,16 @@ lemma map_ncard_setBernoulli_singleton {u : Set ι} (hu : u.Finite) (p : I) (k :
 
 @[simp]
 lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
+  have key : setBer((∅ : Set ι), p) {∅} = 1 := by
+    rw [show ({∅} : Set (Set ι)) = {s ∈ Set.univ | s ⊆ ∅} by ext; simp [Set.subset_empty_iff],
+      ← setBernoulli_apply_eq_apply_subsets, measure_univ]
   ext s hs
-  rw [setBernoulli_apply_eq_apply_subsets]
+  rw [setBernoulli_apply_eq_apply_subsets, dirac_apply' _ hs]
   by_cases h : ∅ ∈ s
-  · have : {t | t ∈ s ∧ t ⊆ ∅} = {∅} := by grind
-    simp_all
-  · have : {t | t ∈ s ∧ t ⊆ ∅} = ∅ := by grind
-    rw [this]
-    simp_all
+  · rw [show {t ∈ s | t ⊆ ∅} = ({∅} : Set (Set ι)) by grind, key,
+      Set.indicator_of_mem h, Pi.one_apply]
+  · rw [show {t ∈ s | t ⊆ ∅} = (∅ : Set (Set ι)) by grind, measure_empty,
+      Set.indicator_of_notMem h]
 
 end Countable
 

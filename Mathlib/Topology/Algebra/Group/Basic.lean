@@ -1212,8 +1212,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       have H : Set.Finite _ := hS ((hL.prod hK).image continuous_div').compl_mem_cocompact
       rw [preimage_compl, compl_compl] at H
       convert! H
-      ext x
-      simp only [image_smul, mem_ofPred_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_iff_mem, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if

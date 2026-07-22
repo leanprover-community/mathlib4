@@ -623,7 +623,7 @@ def toMeasurableSpace (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.
     rw [← iUnion_disjointed]
     exact
       d.has_iUnion (disjoint_disjointed _) fun n =>
-        disjointedRec (fun (t : Set α) i h => h_inter _ _ h <| d.has_compl <| hf i) (hf n)
+        disjointedRec (p := d.Has) (fun t i h => h_inter _ _ h <| d.has_compl <| hf i) (hf n)
 
 theorem ofMeasurableSpace_toMeasurableSpace
     (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.Has (s₁ ∩ s₂)) :

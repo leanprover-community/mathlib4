@@ -84,7 +84,8 @@ lemma Topology.IsOpenEmbedding.prespectralSpace [PrespectralSpace Y]
     {f : X → Y} (hf : IsOpenEmbedding f) :
     PrespectralSpace X where
   isTopologicalBasis := by
-    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x U hx hU ↦ ?_
+    apply isTopologicalBasis_of_isOpen_of_nhds (s := {U : Set X | IsOpen U ∧ IsCompact U})
+      (fun U hU ↦ hU.1) <| fun x U hx hU ↦ ?_
     obtain ⟨V, ⟨hoV, hcV⟩, hfx, hVf⟩ : ∃ V ∈ {V | IsOpen V ∧ IsCompact V}, f x ∈ V ∧ V ⊆ f '' U :=
       (PrespectralSpace.isTopologicalBasis (X := Y)).isOpen_iff.mp
         (hf.isOpen_iff_image_isOpen.mp hU) (f x) ⟨x, hx, rfl⟩
@@ -103,7 +104,9 @@ variable (X) in
 lemma PrespectralSpace.isBasis_opens [PrespectralSpace X] :
     TopologicalSpace.Opens.IsBasis { U : Opens X | IsCompact (U : Set X) } := by
   dsimp only [TopologicalSpace.Opens.IsBasis]
-  convert! isTopologicalBasis (X := X)
+  suffices h : SetLike.coe '' {U : Opens X | IsCompact (U : Set X)} =
+      {U : Set X | IsOpen U ∧ IsCompact U} by
+    rw [h]; exact isTopologicalBasis (X := X)
   ext s
   exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.2, hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
 

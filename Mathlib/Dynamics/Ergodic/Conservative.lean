@@ -146,7 +146,7 @@ theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
   by_contra H
   have : NullMeasurableSet (s ∩ { x | ∀ m ≥ n, f^[m] x ∉ s }) μ := by
     simp only [ofPred_forall, ← compl_ofPred]
-    exact hs.inter <| .biInter (to_countable _) fun m _ ↦
+    exact hs.inter <| .biInter (s := {m | m ≥ n}) (to_countable _) fun m _ ↦
       (hs.preimage <| hf.toQuasiMeasurePreserving.iterate m).compl
   rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
