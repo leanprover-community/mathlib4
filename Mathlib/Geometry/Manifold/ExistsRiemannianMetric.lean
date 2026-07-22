@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
+public import Mathlib.Analysis.LocallyConvex.BilinearFormBounded
 
 /-! ## Existence of a Riemannian bundle metric
 
@@ -18,7 +19,7 @@ The idea is that there are two equivalent ways of defining a bilinear positive d
   2) push forward vectors and then apply the inner product on ℝ^n
 
 It turns out that using (1) makes proving smoothness straightforward and
-`g_bilin_smooth_on_chart` proves that locally `g_bilini` is smooth (the trick is to make
+`g_bilin_smooth_on_chart` proves that locally `g_bilin i` is smooth (the trick is to make
 the set on which this is true small enough hence the intersection:
 `((trivializationAt F E i).baseSet ∩ (chartAt HB i).source)`).
 This can then be used to prove global smoothness via a partition of unity.
@@ -40,196 +41,6 @@ open Set Bundle ContDiff Manifold Trivialization SmoothPartitionOfUnity
 variable {B : Type*}
   {E : B → Type*}
   [∀ x, NormedAddCommGroup (E x)]
-
-section tangentSpaceEquiv
-
-variable [∀ x, NormedSpace ℝ (E x)]
-
-/-- `VectorSpaceAux x φ hpos hsymm hdef` is a copy of the fiber `E x` equipped with the norm
-induced by the positive definite bilinear form `φ`.
-
-Mathlib's type class system doesn't support having multiple norm structures on the same type.
-
-As the Mathlib documentation states (`Mathlib.Analysis.Normed.Module.FiniteDimension`):
-> "The fact that all norms are equivalent is not written explicitly, as it would mean having
-> two norms on a single space, which is not the way type classes work. However, if one has a
-> finite-dimensional vector space `E` with a norm, and a copy `E'` of this type with another
-> norm, then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
-> `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence."
-> (https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Module/FiniteDimension.html)
-
-It is well known that all norms on a finite-dimensional space are equivalent.
-In Mathlib, making this work requires explicit construction and proof. -/
-structure VectorSpaceAux
-  (x : B) (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-  (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) where
-  val : E x
-
-lemma VectorSpaceAux.ext_iff {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
-    (u v : VectorSpaceAux x φ hpos hsymm hdef) :
-  u = v ↔ u.val = (v.val : E x) := by
-  cases u; cases v; simp
-
-instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  Zero (VectorSpaceAux x φ hpos hsymm hdef) where
-  zero := ⟨0⟩
-
-instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  Add (VectorSpaceAux x φ hpos hsymm hdef) where
-  add u v := ⟨u.val + v.val⟩
-
-instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  Neg (VectorSpaceAux x φ hpos hsymm hdef) where
-  neg u := ⟨-u.val⟩
-
-instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  Sub (VectorSpaceAux x φ hpos hsymm hdef) where
-  sub u v := ⟨u.val - v.val⟩
-
-instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  SMul ℝ (VectorSpaceAux x φ hpos hsymm hdef) where
-  smul a u := ⟨a • u.val⟩
-
-noncomputable def seminormOfBilinearForm {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ)
-    (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  Seminorm ℝ (E x) where
-  toFun v := Real.sqrt (φ v v)
-  map_zero' := by simp
-  add_le' r s := by
-    rw [Real.sqrt_le_iff]
-    · have h0 : ((φ r) s) * ((φ s) r) ≤ ((φ r) r) * ((φ s) s) :=
-        LinearMap.BilinForm.apply_mul_apply_le_of_forall_zero_le φ.toLinearMap₁₂ hpos r s
-      have h1 : φ (r + s) (r + s) ≤ (Real.sqrt ((φ r) r) + Real.sqrt ((φ s) s)) ^ 2 := by
-        calc φ (r + s) (r + s)
-          = (φ r) r + (φ r) s + (φ s) r + (φ s) s := by
-              simp only [map_add, ContinuousLinearMap.add_apply]
-              ring
-        _ = (φ r) r + 2 * (φ r) s + (φ s) s := by
-              rw [hsymm r s]
-              ring
-        _ ≤ (φ r) r + 2 * √((φ r) r * (φ s) s) + (φ s) s := by
-              gcongr
-              have h2 : ((φ r) s) ^ 2 ≤ ((φ r) r * (φ s) s) := by
-                have : ((φ r) s) ^ 2 = (φ r) s * (φ s) r := by rw [sq, hsymm r s]
-                linarith [h0]
-              exact Real.le_sqrt_of_sq_le h2
-        _ = (√((φ r) r) + √((φ s) s)) ^ 2 := by
-                rw [add_sq, Real.sq_sqrt (hpos r), Real.sq_sqrt (hpos s),
-                    Real.sqrt_mul (hpos r) ((φ s) s)]
-                ring
-      exact ⟨by positivity, h1⟩
-  neg' r := by simp
-  smul' a v := by simp [← mul_assoc, ← Real.sqrt_mul_self_eq_abs, Real.sqrt_mul (mul_self_nonneg a)]
-
-noncomputable instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  Norm (VectorSpaceAux x φ hpos hsymm hdef) where
-  norm v := seminormOfBilinearForm φ hpos hsymm v.val
-
-lemma seminormOfBilinearForm_sub_self {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
-    (v : VectorSpaceAux x φ hpos hsymm hdef) :
-  seminormOfBilinearForm φ hpos hsymm (v.val - v.val) = 0 := by
-  unfold seminormOfBilinearForm
-  simp
-
-lemma seminormOfBilinearForm_sub_comm {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
-    (u v : VectorSpaceAux x φ hpos hsymm hdef) :
-    seminormOfBilinearForm φ hpos hsymm (u.val - v.val) =
-    seminormOfBilinearForm φ hpos hsymm (v.val - u.val) := by
-  change √((φ (u.val - v.val)) (u.val - v.val)) = √((φ (v.val - u.val)) (v.val - u.val))
-  simp only [map_sub, ContinuousLinearMap.coe_sub', Pi.sub_apply]
-  ring_nf
-
-lemma my_eq_of_dist_eq_zero {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
-    {u v : VectorSpaceAux x φ hpos hsymm hdef} :
-    (seminormOfBilinearForm φ hpos hsymm) (u.val - v.val) = 0 → u = v := by
-    intro h
-    rw [seminormOfBilinearForm] at h
-    have h1 : u.val - v.val = 0 := hdef (u.val - v.val)
-      ((Real.sqrt_eq_zero (hpos (u.val - v.val))).mp h)
-    apply (VectorSpaceAux.ext_iff φ hpos hsymm hdef u v).mpr
-    exact sub_eq_zero.mp h1
-
-lemma my_dist_triangle {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  ∀ (x_1 y z : VectorSpaceAux x φ hpos hsymm hdef),
-    (seminormOfBilinearForm φ hpos hsymm) (x_1.val - z.val) ≤
-      (seminormOfBilinearForm φ hpos hsymm) (x_1.val - y.val) +
-      (seminormOfBilinearForm φ hpos hsymm) (y.val - z.val) := by
-  intro u v w
-  simpa [sub_add_sub_cancel] using
-    (seminormOfBilinearForm φ hpos hsymm).add_le' (u.val - v.val) (v.val - w.val)
-
-noncomputable instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  NormedAddCommGroup (VectorSpaceAux x φ hpos hsymm hdef) where
-  norm v := seminormOfBilinearForm φ hpos hsymm v.val
-  dist_eq := by
-    intros x y
-    simp only [Neg.neg, Add.add, HAdd.hAdd]
-    have : Add.add (-x.val) y.val = y.val - x.val := by
-      rw [Add.add_eq_hAdd]
-      exact neg_add_eq_sub x.val y.val
-    rw [show Add.add (-x.val) y.val = y.val - x.val from this]
-    exact seminormOfBilinearForm_sub_comm φ hpos hsymm hdef x y
-  add_assoc u v w := VectorSpaceAux.ext_iff _ _ _ _ _ _|>.mpr (add_assoc u.val v.val w.val)
-  zero_add u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (zero_add u.val)
-  add_zero u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (add_zero u.val)
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-  neg_add_cancel u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (neg_add_cancel u.val)
-  add_comm u v := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (add_comm u.val v.val)
-  sub_eq_add_neg u v := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (sub_eq_add_neg u.val v.val)
-  dist_self := seminormOfBilinearForm_sub_self φ hpos hsymm hdef
-  dist_comm := seminormOfBilinearForm_sub_comm φ hpos hsymm hdef
-  dist_triangle := my_dist_triangle φ hpos hsymm hdef
-  eq_of_dist_eq_zero := my_eq_of_dist_eq_zero φ hpos hsymm hdef
-
-instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  Module ℝ (VectorSpaceAux x φ hpos hsymm hdef) where
-  one_smul u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (one_smul ℝ u.val)
-  mul_smul a b u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (mul_smul a b u.val)
-  smul_add a u v := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (smul_add a u.val v.val)
-  smul_zero a := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (smul_zero a)
-  zero_smul u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (zero_smul ℝ u.val)
-  add_smul a b u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (add_smul a b u.val)
-
-instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  NormedSpace ℝ (VectorSpaceAux x φ hpos hsymm hdef) where
-  norm_smul_le := by
-    intro a u
-    have h1 : (φ (a • u.val)) (a • u.val) = a * (φ u.val) (a • u.val) := by
-      rw [φ.map_smul a u.val]
-      rfl
-    have h2 : (φ u.val) (a • u.val) = a * (φ u.val u.val) :=
-      (φ u.val).map_smul a u.val
-    have h3 : φ (a • u.val) (a • u.val) = a * a * φ u.val u.val := by grind
-    apply le_of_eq
-    change Real.sqrt (φ (a • u.val) (a • u.val)) = |a| * Real.sqrt (φ u.val u.val)
-    rw [h3, Real.sqrt_mul' (a * a) (hpos u.val), Real.sqrt_mul_self_eq_abs a]
-
-def tangentSpaceEquiv {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  E x ≃ₗ[ℝ] VectorSpaceAux x φ hpos hsymm hdef where
-  toFun v := ⟨v⟩
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-  invFun u := u.val
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-end tangentSpaceEquiv
 
 variable
   {EB : Type*} [NormedAddCommGroup EB] [InnerProductSpace ℝ EB]
@@ -284,84 +95,6 @@ theorem g_bilin_symm_aux (i p : B) (v w : E p) :
   simp only [ContinuousLinearMap.coe_comp, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
     ContinuousLinearMap.coe_coe]
   exact real_inner_comm _ _
-
-instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
-    (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
-    [FiniteDimensional ℝ (E x)] :
-    FiniteDimensional ℝ (VectorSpaceAux x φ hpos hsymm hdef) := by
-  exact LinearEquiv.finiteDimensional (tangentSpaceEquiv φ hpos hsymm hdef)
-
-end
-
-section
-
-variable
-  {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
-  [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-  [TopologicalSpace (TotalSpace F E)]
-  [∀ x, NormedSpace ℝ (E x)]
-
-lemma withSeminormsOfBilinearForm {x : B}
-  (φ : E x →L[ℝ] E x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v)
-  (hsymm : ∀ u v, φ u v = φ v u)
-  (hdef : ∀ v, φ v v = 0 → v = 0)
-  [FiniteDimensional ℝ (E x)] :
-  WithSeminorms (Function.const (Fin 1) (seminormOfBilinearForm φ hpos hsymm)) := by
-    apply WithSeminorms.congr (norm_withSeminorms ℝ (E x))
-    · have h1 : IsBoundedLinearMap ℝ (tangentSpaceEquiv φ hpos hsymm hdef).toLinearMap := by
-        rw [← IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap]
-        exact ⟨LinearMap.isLinear _, LinearMap.continuous_of_finiteDimensional _⟩
-      obtain ⟨C, hC⟩ := h1.bound
-      intro i
-      use {0}, ⟨max C 1, by positivity⟩
-      intro v
-      simp only [Seminorm.comp_id, Fin.isValue, Finset.sup_singleton, Seminorm.smul_apply,
-                 coe_normSeminorm]
-      calc
-        seminormOfBilinearForm φ hpos hsymm v =
-        ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ := rfl
-        _ ≤ C * ‖v‖ := hC.2 v
-        _ ≤ max C 1 * ‖v‖ := by gcongr; exact le_max_left C 1
-    · have h1 : IsBoundedLinearMap ℝ (tangentSpaceEquiv φ hpos hsymm hdef).symm.toLinearMap := by
-        rw [← IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap]
-        exact ⟨LinearMap.isLinear _, LinearMap.continuous_of_finiteDimensional _⟩
-      obtain ⟨C, hC⟩ := h1.bound
-      intro j
-      use {0}, ⟨max C 1, by positivity⟩
-      intro v
-      simp only [Seminorm.comp_id, Fin.isValue, Finset.sup_singleton, Seminorm.smul_apply,
-                 coe_normSeminorm, ]
-      calc ‖v‖ ≤ C * seminormOfBilinearForm φ hpos hsymm v := hC.2 ⟨v⟩
-        _ ≤ max C 1 * seminormOfBilinearForm φ hpos hsymm v := by
-          gcongr; exact le_max_left C 1
-        _ = max C 1 * seminormOfBilinearForm φ hpos hsymm v := rfl
-
-lemma aux_tvs {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ)
-   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
-   [FiniteDimensional ℝ (E x)] :
-    Bornology.IsVonNBounded ℝ {v | (φ v) v < 1} := by
-  rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded
-        (p := Function.const (Fin 1) (seminormOfBilinearForm φ hpos hsymm))
-        (withSeminormsOfBilinearForm φ hpos hsymm hdef)]
-  intro I
-  letI J : Finset (Fin 1) := {1}
-  suffices ∃ r > 0, ∀ x ∈ {v | (φ v) v < 1},
-    (J.sup (Function.const (Fin 1) (seminormOfBilinearForm φ hpos hsymm))) x < r by
-    obtain (rfl | h) : I = ∅ ∨ I = {default} := by
-      by_cases h : I = ∅
-      · simp only [Fin.default_eq_zero, Fin.isValue]
-        exact Or.symm (Or.inr h)
-      · rw [Finset.eq_singleton_iff_nonempty_unique_mem]
-        refine Or.inr ⟨Finset.nonempty_iff_ne_empty.mpr h, fun x hx ↦ Unique.uniq _ _⟩
-    · use 1; simp
-    · convert this
-  simp only [Set.mem_setOf_eq, Finset.sup_singleton, J]
-  refine ⟨1, by norm_num, fun x h ↦ ?_⟩
-  simp only [seminormOfBilinearForm]
-  change Real.sqrt (φ x x) < 1
-  rw [Real.sqrt_lt' (by norm_num)]
-  simp [h]
 
 end
 
@@ -455,7 +188,7 @@ lemma riemannian_unit_ball_bounded_aux (f : SmoothPartitionOfUnity B IB B)
   (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
   [∀ x, FiniteDimensional ℝ (E x)] (b : B) :
     Bornology.IsVonNBounded ℝ {v : E b | g_global_bilin_aux (F := F) f b v v < 1} :=
-  aux_tvs (g_global_bilin_aux f b)
+  isVonNBounded_of_posDef (g_global_bilin_aux f b)
     (fun v => by
       rcases eq_or_ne v 0 with rfl | hv
       · simp
