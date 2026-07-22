@@ -137,6 +137,7 @@ lemma contMDiff_iff_comp_subtypeVal_Icc {f : M → Icc x y} :
     CMDiff n f ↔ Continuous f ∧ CMDiff n ((fun (z : Icc x y) ↦ (z : ℝ)) ∘ f) := by
   rw [← ContMDiff.iff_comp_isImmersionOfComplement isImmersionOfComplement_subtypeVal_Icc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
 lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
   intro z hz
