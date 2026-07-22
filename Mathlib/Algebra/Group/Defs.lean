@@ -1060,11 +1060,6 @@ theorem exists_zpow_surjective (G : Type*) [Pow G ℤ] [IsCyclic G] :
     ∃ g : G, Function.Surjective (g ^ · : ℤ → G) :=
   IsCyclic.exists_zpow_surjective
 
-@[to_additive]
-instance (priority := 100) isCyclic_of_subsingleton {G : Type*} [Pow G ℤ] [Subsingleton G] [One G] :
-    IsCyclic G where
-  exists_zpow_surjective := ⟨1, fun _ ↦ ⟨0, Subsingleton.elim ..⟩⟩
-
 section DivInvMonoid
 
 variable [DivInvMonoid G]
@@ -1295,6 +1290,10 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
     rw [← mul_inv_cancel_right b a, show b * a = c * a from h, mul_inv_cancel_right]
   mul_left_cancel := fun a {b c} h ↦ by
     rw [← inv_mul_cancel_left a b, show a * b = a * c from h, inv_mul_cancel_left]
+
+@[to_additive]
+instance (priority := 100) isCyclic_of_subsingleton [Subsingleton G] : IsCyclic G where
+  exists_zpow_surjective := ⟨1, fun _ ↦ ⟨0, Subsingleton.elim ..⟩⟩
 
 end Group
 
