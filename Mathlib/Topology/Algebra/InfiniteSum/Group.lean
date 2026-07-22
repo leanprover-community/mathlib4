@@ -469,10 +469,33 @@ theorem HasProd.inv₀ {a : K} [ContinuousInv₀ K] (h : HasProd f a L) (ha : a 
   exact Tendsto.inv₀ h ha
 
 omit [SeparatelyContinuousMul K] in
+theorem Multipliable.inv₀ [ContinuousInv₀ K] (h : Multipliable f L) (ne_zero : ∏'[L] x, f x ≠ 0) :
+    Multipliable (fun x ↦ (f x)⁻¹) L :=
+  h.hasProd.inv₀ ne_zero|>.multipliable
+
+omit [SeparatelyContinuousMul K] in
+theorem Multipliable.tprod_inv₀ [ContinuousInv₀ K] [T2Space K] [L.NeBot]
+    (h : Multipliable f L) (ne_zero : ∏'[L] x, f x ≠ 0) :
+    ∏'[L] x, (f x)⁻¹ = (∏'[L] x, f x )⁻¹ :=
+  h.hasProd.inv₀ ne_zero|>.tprod_eq
+
+omit [SeparatelyContinuousMul K] in
 theorem HasProd.div₀ [ContinuousInv₀ K] [ContinuousMul K] {a b : K}
     (hf : HasProd f a L) (hg : HasProd g b L) (hb : b ≠ 0) :
     HasProd (fun x ↦ f x / g x) (a / b) L := by
   simp only [div_eq_mul_inv]
   exact hf.mul <| hg.inv₀ hb
+
+omit [SeparatelyContinuousMul K] in
+theorem Multipliable.div₀ [ContinuousInv₀ K] [ContinuousMul K]
+    (hf : Multipliable f L) (hg : Multipliable g L) (ne_zero : ∏'[L] x, g x ≠ 0) :
+    Multipliable (fun x ↦ f x / g x) L :=
+  hf.hasProd.div₀ hg.hasProd ne_zero|>.multipliable
+
+omit [SeparatelyContinuousMul K] in
+theorem Multipliable.tprod_div₀ [ContinuousInv₀ K] [ContinuousMul K] [T2Space K] [L.NeBot]
+    (hf : Multipliable f L) (hg : Multipliable g L) (ne_zero : ∏'[L] x, g x ≠ 0) :
+    (∏'[L] x, f x / g x) = (∏'[L] x, f x) / (∏'[L] x, g x) :=
+  hf.hasProd.div₀ hg.hasProd ne_zero|>.tprod_eq
 
 end CommGroupWithZero
