@@ -45,7 +45,7 @@ instance : Uncountable SΩ := by
   exact uncountable_section
 
 /-- Each proper section of $S_Ω$ is countable. -/
-theorem countable_section (x : SΩ) : (sec x).Countable := by
+theorem countable_section (x : SΩ) : (sec x).Countable :=
   (countable_section_iff_lt_omega x).mpr x.2
 
 end Omega1Space
