@@ -5,9 +5,9 @@ Authors: Chris Birkbeck, Riccardo Brasca, Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.Sandbox
+public import Mathlib.NumberTheory.SumPrimeReciprocals
+public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
 # Dirichlet density of a set of prime ideals
@@ -70,7 +70,7 @@ private theorem sum_fiber_le {s : ℝ} (hs : 0 ≤ s) (v : HeightOneSpectrum ℤ
     exact_mod_cast show Nat.card {𝔭 : HeightOneSpectrum (𝓞 K) // 𝔭.under ℤ = v} ≤
         Module.finrank ℤ (𝓞 K) by
       rw [Nat.card_congr (primesOverEquiv v), Nat.card_coe_set_eq]
-      exact Ideal.ncard_primesOver_le
+      exact Ideal.ncard_primesOver_le v.asIdeal (𝓞 K)
 
 /-- The prime-ideal zeta sum converges for real `s > 1`. -/
 theorem summable_primeIdealZetaSum {s : ℝ} (hs : 1 < s) :

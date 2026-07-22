@@ -74,6 +74,15 @@ theorem sum_ramification_inertia_eq_finrank
     ∑ q : p.primesOver S, q.1.ramificationIdx R * q.1.inertiaDeg R = Module.finrank R S := by
   rw [sum_ramification_inertia_eq_finrank_fiber, finrank_fiber_eq_finrank]
 
+/-- The number of primes of `S` lying over a prime `p` of `R` is at most `finrank R S`. -/
+theorem ncard_primesOver_le [IsDomain R] [Module.Finite R S] [Module.Flat R S]
+    [Finite (p.primesOver S)] : (p.primesOver S).ncard ≤ Module.finrank R S := by
+  have : Fintype (p.primesOver S) := Fintype.ofFinite _
+  rw [← Nat.card_coe_set_eq, Nat.card_eq_fintype_card, ← Finset.card_univ, Finset.card_eq_sum_ones,
+    ← sum_ramification_inertia_eq_finrank p S]
+  exact Finset.sum_le_sum fun q _ ↦
+    one_le_mul_of_one_le_of_one_le (ramificationIdx_pos q.1 R) (inertiaDeg_pos q.1 R)
+
 /-- Let `S/R` be a finite flat extension of integral domains, and let `p` be prime ideal of `R`.
 Assume that `R` is the invariant subring of a finite group `G` acting on `S`. Then the sum over
 all prime ideals `q` of `S` lying over `p` of the ramification index of `q` times the inertia

@@ -1273,3 +1273,33 @@ lemma Algebra.IsIntegral.nontrivial_heightOneSpectrum [IsDomain A] [Algebra R A]
     obtain ⟨P, hP, rfl⟩ := p.exists_ideal_over_prime_of_isIntegral_of_isDomain (S := A) (by simp)
     exact ⟨⟨P, hP, by aesop⟩, rfl⟩
   exact this.nontrivial
+
+section HeightOneSpectrumFiber
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] [Algebra.IsIntegral A B]
+
+/-- The prime `w` of `B` lies over `v` iff `w.under A = v`. -/
+theorem under_eq_iff [IsDomain A] [IsDomain B] {w : HeightOneSpectrum B} {v : HeightOneSpectrum A} :
+    w.under A = v ↔ w.asIdeal ∈ v.asIdeal.primesOver B := by
+  refine ⟨fun h ↦ ⟨w.isPrime, ?_⟩, fun h ↦ HeightOneSpectrum.ext ?_⟩
+  · rw [Ideal.liesOver_iff, ← under_asIdeal, h]
+  · rw [under_asIdeal, ← h.2.over]
+
+/-- The fiber of `under A` over `v` is equivalent, via `asIdeal`, to the prime ideals of `B`
+above `v`. -/
+def primesOverEquiv [IsDomain A] [IsDomain B] [IsTorsionFree A B] (v : HeightOneSpectrum A) :
+    {w : HeightOneSpectrum B // w.under A = v} ≃ v.asIdeal.primesOver B where
+  toFun w := ⟨w.1.asIdeal, under_eq_iff.mp w.2⟩
+  invFun I := ⟨⟨I.1, I.2.1, fun h ↦ v.ne_bot <| by
+    have hb := I.2.2.over; rwa [h, Ideal.under_bot] at hb⟩, under_eq_iff.mpr I.2⟩
+
+/-- The fiber of `under A` over `v` is finite (it is the set of primes above `v`). -/
+instance [IsDedekindDomain A] [IsDedekindDomain B] [Module.IsTorsionFree A B]
+    (v : HeightOneSpectrum A) : Finite {w : HeightOneSpectrum B // w.under A = v} :=
+  Finite.of_equiv _ (primesOverEquiv v).symm
+
+end IsDedekindDomain.HeightOneSpectrum
+
+end HeightOneSpectrumFiber
