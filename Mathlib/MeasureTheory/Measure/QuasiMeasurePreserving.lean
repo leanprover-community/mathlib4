@@ -249,7 +249,7 @@ theorem _root_.MeasureTheory.Measure.AEMeasurable.comp_quasiMeasurePreserving [M
     (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
   (AEMeasurable.mono' hg hf.absolutelyContinuous).comp_measurable hf.measurable
 
-theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
+theorem _root_.MeasureTheory.Measure.NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
     {f : α → β} {g : β → γ} (hg : NullMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) :
     NullMeasurable (g ∘ f) μ := fun _s hs ↦ (hg hs).preimage hf
 
