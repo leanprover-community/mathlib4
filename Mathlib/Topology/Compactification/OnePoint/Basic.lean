@@ -82,11 +82,8 @@ instance : CoeTC X (OnePoint X) := ⟨some⟩
 
 instance : Inhabited (OnePoint X) := ⟨∞⟩
 
-instance [IsEmpty X] : Subsingleton (OnePoint X) := by
-  constructor
-  intro a b
-  induction a <;> induction b <;>
-  · first | exact isEmptyElim (‹_› : X) | simp_all
+instance [IsEmpty α] : Subsingleton (OnePoint α) :=
+  inferInstanceAs <| Subsingleton (Option α)
 
 protected lemma «forall» {p : OnePoint X → Prop} :
     (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p x :=
