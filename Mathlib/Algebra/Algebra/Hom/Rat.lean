@@ -52,7 +52,7 @@ def RingHom.equivRatAlgHom : (R →+* S) ≃ (R →ₐ[ℚ] S) where
 namespace RingEquiv
 
 /-- Reinterpret a `RingEquiv` as a `ℚ`-algebra isomorphism. This actually yields an
-equivalence, see `ringEquivEquivRatAlgEquiv`. -/
+equivalence, see `RingEquiv.equivRatAlgEquiv`. -/
 def toRatAlgEquiv (f : R ≃+* S) : R ≃ₐ[ℚ] S where
   toEquiv := f
   __ := f.toRingHom.toRatAlgHom
@@ -85,6 +85,6 @@ theorem AlgEquiv.toRatAlgEquiv_toRingEquiv (f : R ≃ₐ[ℚ] S) : (f : R ≃+* 
 
 /-- The equivalence between `RingEquiv` and `ℚ`-algebra isomorphisms. -/
 @[simps apply]
-def ringEquivEquivRatAlgEquiv : (R ≃+* S) ≃ (R ≃ₐ[ℚ] S) where
+def RingEquiv.equivRatAlgEquiv : (R ≃+* S) ≃ (R ≃ₐ[ℚ] S) where
   toFun := RingEquiv.toRatAlgEquiv
   invFun := AlgEquiv.toRingEquiv
