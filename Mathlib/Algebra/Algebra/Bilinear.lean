@@ -162,9 +162,6 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 theorem toSpanSingleton_one_eq_algebraLinearMap :
     toSpanSingleton R A 1 = Algebra.linearMap R A := by ext; simp
 
-@[deprecated (since := "2025-12-30")] alias toSpanSingleton_eq_algebra_linearMap :=
-  toSpanSingleton_one_eq_algebraLinearMap
-
 variable (R A) in
 /-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
 @[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
@@ -175,9 +172,7 @@ variable (R A) in
 end Semiring
 
 section CommSemiring
--- TODO: Generalise to `NonUnitalNonAssocCommSemiring`. This can't currently be done
--- because there is no instance **to** `NonUnitalNonAssocCommSemiring`.
-variable [CommSemiring R] [NonUnitalCommSemiring A]
+variable [CommSemiring R] [NonUnitalNonAssocCommSemiring A]
   [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
 @[simp] lemma flip_mul : (mul R A).flip = mul R A := by ext; simp [mul_comm]
@@ -195,7 +190,7 @@ open scoped RingTheory.LinearMap
 
 namespace NonUnitalAlgHom
 variable [CommSemiring R]
-  [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+  [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
   [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 lemma comp_mul' (f : A →ₙₐ[R] B) : (f : A →ₗ[R] B) ∘ₗ μ = μ[R] ∘ₗ (f ⊗ₘ f) :=
