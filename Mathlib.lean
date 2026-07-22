@@ -717,6 +717,7 @@ public import Mathlib.Algebra.Lie.AdjointAction.Derivation
 public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
 public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.Lie.Basis
 public import Mathlib.Algebra.Lie.Basis.Base
 public import Mathlib.Algebra.Lie.Basis.Basic
 public import Mathlib.Algebra.Lie.CartanCriterion
