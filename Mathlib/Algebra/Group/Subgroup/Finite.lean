@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Group.Submonoid.Finite
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Subgroups
@@ -170,6 +170,11 @@ theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
     Nat.card (map K.subtype L) = Nat.card L :=
   card_map_of_injective K.subtype_injective
 
+@[to_additive]
+theorem card_mapSubgroup {G' : Type*} [Group G'] (e : G ≃* G') :
+    Nat.card (e.mapSubgroup H) = Nat.card H :=
+  Subgroup.card_map_of_injective e.injective
+
 end Subgroup
 
 namespace Subgroup
@@ -212,7 +217,7 @@ section Normalizer
 
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
     x ∈ Subgroup.normalizer S := by
-  haveI := Classical.propDecidable; cases nonempty_fintype S
+  have := Classical.propDecidable; cases nonempty_fintype S
   exact fun n =>
     ⟨h n, fun h₁ =>
       have heq : (fun n => x * n * x⁻¹) '' S = S :=

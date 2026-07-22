@@ -28,11 +28,11 @@ theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLoc
   obtain ⟨x', y', hx', hy', hu⟩ := extract_gcd x y
   use x', y', hu
   rw [mul_comm, IsLocalization.mul_mk'_eq_mk'_of_mul]
-  convert IsLocalization.mk'_mul_cancel_left (M := M) (S := A) _ _ using 2
+  convert! IsLocalization.mk'_mul_cancel_left (M := M) (S := A) _ _ using 2
   grind
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
-    [h : Nonempty (GCDMonoid R)] : IsIntegrallyClosed R :=
+    [h : IsGCDMonoid R] : IsIntegrallyClosed R :=
   (isIntegrallyClosed_iff (FractionRing R)).mpr fun {X} ⟨p, hp₁, hp₂⟩ => by
     cases h
     obtain ⟨x, y, hg, he⟩ := IsLocalization.surj_of_gcd_domain (nonZeroDivisors R) X

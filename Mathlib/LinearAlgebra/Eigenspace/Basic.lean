@@ -74,6 +74,7 @@ def genEigenspace (f : End R M) (μ : R) : ℕ∞ →o Submodule R M where
   toFun k := ⨆ l : ℕ, ⨆ _ : l ≤ k, LinearMap.ker ((f - μ • 1) ^ l)
   monotone' _ _ hkl := biSup_mono fun _ hi ↦ hi.trans hkl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_genEigenspace {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
     x ∈ f.genEigenspace μ k ↔ ∃ l : ℕ, l ≤ k ∧ x ∈ LinearMap.ker ((f - μ • 1) ^ l) := by
   have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le⟩⟩
@@ -105,6 +106,7 @@ lemma genEigenspace_nat {f : End R M} {μ : R} {k : ℕ} :
     f.genEigenspace μ k = LinearMap.ker ((f - μ • 1) ^ k) := by
   ext; simp [mem_genEigenspace_nat]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma genEigenspace_eq_iSup_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ∞) :
     f.genEigenspace μ k = ⨆ l : {l : ℕ // l ≤ k}, f.genEigenspace μ l := by
   simp_rw [genEigenspace_nat, genEigenspace, OrderHom.coe_mk, iSup_subtype]
@@ -274,13 +276,14 @@ meaningful. -/
 noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
   monotonicSequenceLimitIndex <| (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
 lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M) (μ : R) :
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
     (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
-  convert this using 1
+  convert! this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
@@ -372,6 +375,7 @@ lemma mapsTo_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k
   rw [← LinearMap.comp_apply, ← Module.End.mul_eq_comp, h.eq, Module.End.mul_eq_comp,
     LinearMap.comp_apply, hx, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ)
     (h : MapsTo (f - μ • (1 : End R M))
@@ -624,6 +628,7 @@ lemma isNilpotent_restrict_maxGenEigenspace_sub_algebraMap [IsNoetherian R M] (f
     _ (isNilpotent_restrict_genEigenspace_nat f μ (maxUnifEigenspaceIndex f μ))
   rw [maxGenEigenspace_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_genEigenspace [IsDomain R] [IsTorsionFree R M]
     (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ∞) :
     Disjoint (f.genEigenspace μ₁ k) (f.genEigenspace μ₂ l) := by
@@ -735,6 +740,7 @@ theorem eigenvectors_linearIndependent [IsDomain R] [IsTorsionFree R M]
     (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
   f.eigenvectors_linearIndependent' (fun μ : μs ↦ μ) Subtype.coe_injective _ h_eigenvec
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
 of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
 theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (μ : R)
@@ -747,14 +753,10 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
     simp_rw [mem_genEigenspace, ← mem_genEigenspace_nat, this,
       Submodule.mem_comap, mem_genEigenspace (k := k), mem_genEigenspace_nat]
   intro l
-  simp only [genEigenspace_nat, ← LinearMap.ker_comp]
-  induction l with
-  | zero =>
-    rw [pow_zero, pow_zero, Module.End.one_eq_id]
-    apply (Submodule.ker_subtype _).symm
-  | succ l ih =>
-    erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
-      LinearMap.comp_assoc]
+  rw [genEigenspace_nat, genEigenspace_nat, ← LinearMap.restrict_smul_one μ,
+    LinearMap.restrict_sub hfp, Module.End.pow_restrict _,
+    ← LinearMap.ker_comp_of_ker_eq_bot _ (Submodule.ker_subtype p),
+    LinearMap.subtype_comp_restrict, LinearMap.domRestrict, ← LinearMap.ker_comp]
 
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ∞} {μ : R}
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
@@ -762,6 +764,7 @@ lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : 
       (genEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
   rw [f.genEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
     {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ₁ μ₂ : R}
     (h : MapsTo f (g.maxGenEigenspace μ₁) (g.maxGenEigenspace μ₂)) :
@@ -888,6 +891,36 @@ lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [IsDomain R] [IsTorsionFre
   apply Disjoint.mono_left (genEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) k k (h x y))
   simp only [g, map_add]
   exact disjoint_genEigenspace (f x + f y) (Ne.symm contra) _ k
+
+section Arithmetic
+
+variable {f : End R M} {μ ρ : R}
+
+lemma hasEigenvalue_neg_iff :
+    HasEigenvalue (-f) μ ↔ HasEigenvalue f (-μ) := by
+  simp only [hasEigenvalue_iff, eigenspace_def]
+  rw [← LinearMap.ker_neg]
+  simp [add_comm]
+
+lemma hasEigenvalue_add_iff :
+    HasEigenvalue (f + ρ • .id) μ ↔ HasEigenvalue f (μ - ρ) := by
+  have aux : f + ρ • .id - μ • 1 = f - (μ - ρ) • 1 := by module
+  simp only [hasEigenvalue_iff, eigenspace_def, aux]
+
+lemma hasEigenvalue_add'_iff :
+    HasEigenvalue (ρ • .id + f) μ ↔ HasEigenvalue f (μ - ρ) := by
+  have aux : ρ • .id + f - μ • 1 = f - (μ - ρ) • 1 := by module
+  simp only [hasEigenvalue_iff, eigenspace_def, aux]
+
+lemma hasEigenvalue_sub_iff :
+    HasEigenvalue (f - ρ • .id) μ ↔ HasEigenvalue f (μ + ρ) := by
+  rw [sub_eq_add_neg, ← neg_smul, hasEigenvalue_add_iff, sub_neg_eq_add]
+
+lemma hasEigenvalue_sub'_iff :
+    HasEigenvalue (ρ • .id - f) μ ↔ HasEigenvalue f (ρ - μ) := by
+  rw [sub_eq_add_neg, hasEigenvalue_add'_iff, hasEigenvalue_neg_iff, neg_sub]
+
+end Arithmetic
 
 end End
 

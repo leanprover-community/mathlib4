@@ -50,7 +50,7 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
 ### Operations on `MulHom`s
 
 * `MulHom.srange`: range of a semigroup homomorphism as a subsemigroup of the codomain;
-* `MulHom.restrict`: restrict a semigroup homomorphism to a subsemigroup;
+* `MulHom.domRestrict`: restrict a semigroup homomorphism to a subsemigroup of its domain;
 * `MulHom.codRestrict`: restrict the codomain of a semigroup homomorphism to a subsemigroup;
 * `MulHom.srangeRestrict`: restrict a semigroup homomorphism to its range;
 
@@ -551,17 +551,14 @@ theorem coe_srange (f : M →ₙ* N) : (f.srange : Set N) = Set.range f :=
 theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y :=
   Iff.rfl
 
-set_option backward.privateInPublic true in
 @[to_additive]
 private theorem srange_mk_aux_mul {f : M → N} (hf : ∀ (x y : M), f (x * y) = f x * f y)
     {x y : N} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
     x * y ∈ Set.range f :=
   (srange ⟨f, hf⟩).mul_mem hx hy
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive (attr := simp)] theorem srange_mk (f : M → N) (hf) :
-    srange ⟨f, hf⟩ = ⟨Set.range f, srange_mk_aux_mul hf⟩ := rfl
+    srange ⟨f, hf⟩ = ⟨Set.range f, by exact srange_mk_aux_mul hf⟩ := rfl
 
 @[to_additive]
 theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map f :=
@@ -598,13 +595,20 @@ theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure
 
 /-- Restriction of a semigroup hom to a subsemigroup of the domain. -/
 @[to_additive /-- Restriction of an AddSemigroup hom to an `AddSubsemigroup` of the domain. -/]
-def restrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) (S : σ) : S →ₙ* N :=
+def domRestrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N)
+    (S : σ) : S →ₙ* N :=
   f.comp (MulMemClass.subtype S)
 
 @[to_additive (attr := simp)]
-theorem restrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) {S : σ}
-    (x : S) : f.restrict S x = f x :=
+theorem domRestrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M]
+    (f : M →ₙ* N) {S : σ} (x : S) : f.domRestrict S x = f x :=
   rfl
+
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias _root_.AddHom.restrict := _root_.AddHom.domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddHom.restrict_apply := _root_.AddHom.domRestrict_apply
 
 /-- Restriction of a semigroup hom to a subsemigroup of the codomain. -/
 @[to_additive (attr := simps)

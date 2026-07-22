@@ -84,24 +84,24 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
     (∀ x ∈ b, f' x = 0) ∧ (∀ x ∈ c, 0 ≤ f' x) ∧ InjOn f c := by
   let a := {x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥} ∪ {x ∈ s | 𝓝[s ∩ Iio x] x = ⊥}
   have a_count : a.Countable :=
-    countable_setOf_isolated_right_within.union countable_setOf_isolated_left_within
+    countable_setOfPred_isolated_right_within.union countable_setOfPred_isolated_left_within
   let s₁ := s \ a
   have hs₁ : MeasurableSet s₁ := hs.diff a_count.measurableSet
   let u : Set ℝ := {c | ∃ x y, x ∈ s₁ ∧ y ∈ s₁ ∧ x < y ∧ f x = c ∧ f y = c}
-  have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages (hf.mono diff_subset)
+  have hu : Set.Countable u := MonotoneOn.countable_setOfPred_two_preimages (hf.mono sdiff_subset)
   let b := s₁ ∩ f ⁻¹' u
   have hb : MeasurableSet b := by
     have : b = ⋃ z ∈ u, s₁ ∩ f ⁻¹' {z} := by ext; simp [b]
     rw [this]
     apply MeasurableSet.biUnion hu (fun z hz ↦ ?_)
     obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ (s \ a) ∩ f ⁻¹' {z} = (s \ a) ∩ v :=
-      ordConnected_singleton.preimage_monotoneOn (hf.mono diff_subset)
+      ordConnected_singleton.preimage_monotoneOn (hf.mono sdiff_subset)
     exact tv ▸ (hs.diff a_count.measurableSet).inter hv.measurableSet
   let c := s₁ \ b
   have hc : MeasurableSet c := hs₁.diff hb
   refine ⟨a, b, c, ?_, a_count.measurableSet, hb, hc, ?_, ?_, a_count, ?_, ?_, ?_, ?_⟩
   · ext x
-    simp only [diff_self_inter, inter_union_diff, union_diff_self, mem_union, mem_setOf_eq,
+    simp only [sdiff_self_inter, inter_union_sdiff, union_sdiff_self, mem_union, mem_ofPred_eq,
       or_iff_right_iff_imp, a, b, s₁, c]
     tauto
   · simpa [b, c, s₁] using disjoint_sdiff_right
@@ -135,7 +135,7 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
       have J2 : 𝓝[s ∩ Ioo p x] x = 𝓝[s ∩ Iio x] x := by
         simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsLT px]
       rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
-      simp only [mem_inter_iff, mem_diff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or,
+      simp only [mem_inter_iff, Set.mem_sdiff, hx.1.1, mem_union, mem_ofPred_eq, true_and, not_or,
         mem_preimage, b, s₁, a] at hx
       exact neBot_iff.2 hx.1.2
     · have K : HasDerivWithinAt f 0 (s ∩ Ioo x p) x := by
@@ -153,14 +153,14 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
       have J2 : 𝓝[s ∩ Ioo x p] x = 𝓝[s ∩ Ioi x] x := by
         simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsGT px]
       rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
-      simp only [mem_inter_iff, mem_diff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or,
+      simp only [mem_inter_iff, Set.mem_sdiff, hx.1.1, mem_union, mem_ofPred_eq, true_and, not_or,
         mem_preimage, b, s₁, a] at hx
       exact neBot_iff.2 hx.1.1
   · /- We have to show that the derivative is nonnegative at points of `c`. As these points are
     not isolated in `s`, this follows from the fact that `f` is monotone on `s`. -/
     intro x hx
     apply (hf' x hx.1.1).nonneg_of_monotoneOn _ hf
-    simp only [mem_diff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or, c, s₁, a, b] at hx
+    simp only [Set.mem_sdiff, hx.1.1, mem_union, mem_ofPred_eq, true_and, not_or, c, s₁, a, b] at hx
     rw [accPt_principal_iff_nhdsWithin]
     have : (𝓝[s ∩ Iio x] x).NeBot := neBot_iff.2 hx.1.2
     apply this.mono
@@ -175,7 +175,7 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
     refine fun h ↦ hx.2 ⟨hx.1, ?_⟩
     exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
 
-/- Change of variable formula for differentiable functions: if a real function `f` is
+/-- Change of variable formula for differentiable functions: if a real function `f` is
 monotone and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `u : ℝ → ℝ≥0∞` on `f '' s` coincides with the integral of `(f' x) * u ∘ f` on `s`.
 Note that the measurability of `f '' s` is given by `MeasurableSet.image_of_monotoneOn`. -/
@@ -210,7 +210,7 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn (hs : MeasurableSet
       = ∫⁻ x in c, ENNReal.ofReal (|(F' x).det|) * u (f x) := by
     apply setLIntegral_congr_fun hc (fun x hx ↦ ?_)
     simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
-      ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, F']
+      one_apply_eq_self, smul_eq_mul, one_mul, F']
     rw [abs_of_nonneg (deriv_c x hx)]
   rw [this]
   exact lintegral_image_eq_lintegral_abs_det_fderiv_mul _ hc hf' inj_c _
@@ -257,7 +257,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
   rw [integrableOn_image_iff_integrableOn_abs_det_fderiv_smul _ hc hF' inj_c]
   apply integrableOn_congr_fun (fun x hx ↦ ?_) hc
   simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
-    ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, F']
+    one_apply_eq_self, smul_eq_mul, one_mul, F']
   rw [abs_of_nonneg (deriv_c x hx)]
 
 /-- Change of variable formula for differentiable functions: if a real function `f` is
@@ -268,7 +268,7 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
     ∫ x in f '' s, g x = ∫ x in s, f' x • g (f x) := by
   by_cases H : IntegrableOn g (f '' s); swap
   · rw [integral_undef H, integral_undef]
-    simpa [integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf] using H
+    simpa [integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf] using! H
   have H' : IntegrableOn (fun x ↦ (f' x) • g (f x)) s :=
     (integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hf' hf g).1 H
   rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt hs hf hf' with
@@ -301,7 +301,7 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
   have : ∫ x in c, f' x • g (f x) = ∫ x in c, |(F' x).det| • g (f x) := by
     apply setIntegral_congr_fun hc (fun x hx ↦ ?_)
     simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
-      ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, F']
+      one_apply_eq_self, smul_eq_mul, one_mul, F']
     rw [abs_of_nonneg (deriv_c x hx)]
   rw [this]
   exact integral_image_eq_integral_abs_det_fderiv_smul _ hc hF' inj_c _
@@ -354,7 +354,7 @@ theorem integrableOn_Icc_deriv_smul_iff_of_deriv_nonneg {a b : ℝ} {g : ℝ →
   · exact fun z hz ↦ (hff' z hz).hasDerivWithinAt
   · exact M.mono Ioo_subset_Icc_self
 
-/- Change of variable formula for differentiable functions: if a real function `f` is
+/-- Change of variable formula for differentiable functions: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `u : ℝ → ℝ≥0∞` on `f '' s` coincides with the integral of `(-f' x) * u ∘ f` on `s`.
 Note that the measurability of `f '' s` is given by `MeasurableSet.image_of_antitoneOn`. -/
@@ -371,7 +371,7 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn (hs : MeasurableSet
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, ENNReal.ofReal_one, one_mul] at B
   rw [A, ← image_comp] at B
-  convert B using 4 with x hx x <;> simp [n, e]
+  convert! B using 4 with x hx x <;> simp [n, e]
 
 /-- Change of variable formula for differentiable functions, set version: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the measure of `f '' s` is given by the
@@ -399,7 +399,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn (hs : Measu
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, one_smul] at B
   rw [A, ← image_comp] at B
-  convert B using 3 with x hx x <;> simp [n, e]
+  convert! B using 3 with x hx x <;> simp [n, e]
 
 /-- Change of variable formula for differentiable functions: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the Bochner integral of a function
@@ -417,7 +417,7 @@ theorem integral_image_eq_integral_deriv_smul_of_antitoneOn (hs : MeasurableSet 
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, one_smul] at B
   rw [A, ← image_comp] at B
-  convert B using 3 with x hx x <;> simp [n, e]
+  convert! B using 3 with x hx x <;> simp [n, e]
 
 @[deprecated (since := "2026-03-19")] alias integral_image_eq_integral_deriv_smul_of_antitone :=
   integral_image_eq_integral_deriv_smul_of_antitoneOn

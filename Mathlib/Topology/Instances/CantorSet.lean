@@ -89,7 +89,6 @@ theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_pre
 
 theorem preCantorSet_antitone : Antitone preCantorSet := by
   refine antitone_nat_of_succ_le fun m ↦ ?_
-  simp only [Set.le_eq_subset]
   induction m with grind [preCantorSet_zero, preCantorSet_succ]
 
 lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 1 := by
@@ -115,6 +114,7 @@ theorem cantorSet_eq_union_halves :
     Function.comp_def, ← preCantorSet_succ]
   exact (preCantorSet_antitone.iInter_nat_add _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The preCantor sets are closed. -/
 lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
   let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by simp)
@@ -272,7 +272,7 @@ theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : �
   rw [cantorSequence_eq_self_sub_sum_cantorToTernary x n] at h_mem
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
-  simpa using h_mem.left
+  simpa using! h_mem.left
 
 theorem le_ofDigits_cantorToTernary_sum {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     x - (3⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i := by
