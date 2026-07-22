@@ -71,7 +71,6 @@ open Manifold IsManifold
 
 -- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
 
-set_option linter.flexible false in
 /-- The inclusion map from a closed segment to `ℝ` is a smooth immersion -/
 lemma isImmersionOfComplement_subtype_coe_Icc :
     IsImmersionOfComplement Unit (𝓡∂ 1) 𝓘(ℝ) n
@@ -93,7 +92,9 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
         fun_prop
     intro z' hz'
     have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
-    simp [hz, IccLeftChart, modelWithCornersEuclideanHalfSpace]
+    simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte, IccLeftChart,
+      modelWithCornersEuclideanHalfSpace, PartialEquiv.coe_trans_symm, PartialEquiv.coe_symm_mk,
+      Function.comp_apply, Function.update_self]
     rw [min_eq_left, max_eq_left this]
     · simp [φ, φ₀, add_comm]
     · simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
@@ -112,11 +113,13 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
         fun_prop
     intro z' hz'
     have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
-    simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
+    simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte, IccRightChart,
+      modelWithCornersEuclideanHalfSpace, PartialEquiv.coe_trans_symm,
+      PartialEquiv.coe_symm_mk, Function.comp_apply, Function.update_self]
     rw [max_eq_left, max_eq_left this]
     · simp [φ, φ₀, Equiv.pointReflection]
       ring_nf
-    · simp [hz, IccRightChart] at hz'
+    · simp only [Icc_chartedSpaceChartAt, hz, IccRightChart] at hz'
       replace hz' := hz'.2
       simp [modelWithCornersEuclideanHalfSpace] at hz'
       rw [max_eq_left this]
