@@ -38,7 +38,7 @@ theorem measurable_exp : Measurable exp :=
 
 theorem measurable_log : Measurable log :=
   measurable_of_measurable_on_compl_singleton 0 <|
-    Continuous.measurable <| continuousOn_iff_continuous_restrict.1 continuousOn_log
+    Continuous.measurable <| continuousOn_iff_continuous_domRestrict.1 continuousOn_log
 
 lemma measurable_of_measurable_exp (hf : Measurable (fun x ↦ exp (f x))) :
     Measurable f := by
@@ -56,7 +56,7 @@ lemma aemeasurable_of_aemeasurable_exp_mul {t : ℝ}
     (ht : t ≠ 0) (hf : AEMeasurable (fun x ↦ exp (t * f x)) μ) :
     AEMeasurable f μ := by
   simpa only [mul_div_cancel_left₀ _ ht]
-    using (aemeasurable_of_aemeasurable_exp hf).div (aemeasurable_const (b := t))
+    using (aemeasurable_of_aemeasurable_exp hf).fun_div (aemeasurable_const (b := t))
 
 theorem measurable_sin : Measurable sin :=
   continuous_sin.measurable

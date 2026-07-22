@@ -149,6 +149,7 @@ lemma iff_of_equiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
 instance shrink [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
   Module.Free.of_equiv (Shrink.linearEquiv R M).symm
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-04-18")] alias Module.free_shrink := shrink
 
 variable (R M N)
@@ -178,6 +179,7 @@ open Finset
 
 variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 /-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
 each `r : R` gets represented as `s • B i` as an element of `S`. -/

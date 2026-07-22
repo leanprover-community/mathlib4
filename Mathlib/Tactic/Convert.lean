@@ -81,7 +81,6 @@ structure Convert.CheapConfig extends Congr!.Config where
   -/
   preTransparency := .instances
   postTransparency := .reducible
-  partialApp := false
   sameFun := true
 
 /-- Internal elaborator for `Convert.CheapConfig`: use `Convert.elabConfig` instead. -/

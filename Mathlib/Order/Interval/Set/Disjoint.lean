@@ -149,6 +149,11 @@ theorem iUnion_Ioc_eq_Ioi_self_iff {f : ι → α} {a : α} :
     ⋃ i, Ioc a (f i) = Ioi a ↔ ∀ x, a < x → ∃ i, x ≤ f i := by
   simp [← Ioi_inter_Iic, ← inter_iUnion, subset_def]
 
+@[to_dual (attr := simp)]
+theorem iUnion_Icc_eq_Ici_self_iff {f : ι → α} {a : α} :
+    ⋃ i, Icc a (f i) = Ici a ↔ ∀ x ≥ a, ∃ i, x ≤ f i := by
+  simp [← Ici_inter_Iic, ← inter_iUnion, subset_def]
+
 @[simp]
 theorem biUnion_Ico_eq_Iio_self_iff {p : ι → Prop} {f : ∀ i, p i → α} {a : α} :
     ⋃ (i) (hi : p i), Ico (f i hi) a = Iio a ↔ ∀ x < a, ∃ i hi, f i hi ≤ x := by
@@ -181,6 +186,14 @@ theorem IsLUB.biUnion_Iio_eq (h : IsLUB s a) : ⋃ x ∈ s, Iio x = Iio a :=
 
 theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :=
   h.dual.iUnion_Ioi_eq
+
+theorem iUnion_Ioi_eq_Ioi_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R} :
+    ⋃ i : ι, Ioi (f i) = Ioi (⨅ i, f i) :=
+  isGLB_iInf.iUnion_Ioi_eq
+
+theorem iUnion_Iio_eq_Iio_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R} :
+    ⋃ i : ι, Iio (f i) = Iio (⨆ i, f i) :=
+  isLUB_iSup.iUnion_Iio_eq
 
 theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
