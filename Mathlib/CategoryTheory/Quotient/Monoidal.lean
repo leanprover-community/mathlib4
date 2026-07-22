@@ -92,6 +92,7 @@ def monoidalCategoryStruct
   leftUnitor X := (functor r).mapIso (λ_ X.as)
   rightUnitor X := (functor r).mapIso (ρ_ X.as)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The monoidal category structure on `Quotient r` induced by a monoidal category structure
 on `C`. -/
 @[implicit_reducible]
