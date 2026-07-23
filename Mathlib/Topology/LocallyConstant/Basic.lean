@@ -245,6 +245,28 @@ theorem coe_inj {f g : LocallyConstant X Y} : (f : X → Y) = g ↔ f = g :=
 theorem ext ⦃f g : LocallyConstant X Y⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
+/-- On a locally connected space, locally constant functions correspond to arbitrary functions on
+the connected components. -/
+noncomputable def equivConnectedComponents [LocallyConnectedSpace X] :
+    LocallyConstant X Y ≃ (ConnectedComponents X → Y) where
+  toFun f := Quotient.lift (fun x : X ↦ f x) (by
+    intro x y hxy
+    exact f.isLocallyConstant.apply_eq_of_isPreconnected
+      isConnected_connectedComponent.isPreconnected
+      mem_connectedComponent (by
+        simpa [hxy.symm] using (mem_connectedComponent : y ∈ connectedComponent y)))
+  invFun g :=
+    ⟨fun x ↦ g x,
+      IsLocallyConstant.of_constant_on_connected_components fun x y hy ↦
+        congrArg g (ConnectedComponents.coe_eq_coe'.2 hy)⟩
+  left_inv f := by
+    ext x
+    rfl
+  right_inv g := by
+    funext c
+    obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c
+    rfl
+
 section CodomainTopologicalSpace
 
 variable [TopologicalSpace Y] (f : LocallyConstant X Y)

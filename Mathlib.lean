@@ -4690,6 +4690,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 public import Mathlib.Geometry.Manifold.Metrizable
 public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.Orientation
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 public import Mathlib.Geometry.Manifold.PoincareConjecture
 public import Mathlib.Geometry.Manifold.Riemannian.Basic
