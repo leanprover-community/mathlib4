@@ -70,6 +70,8 @@ instance : LinearOrder (Lex R⟦Γ⟧) where
       · exact Or.inl (le_of_lt ⟨i, hji, hi⟩)
       · exact Or.inr (le_of_lt ⟨i, fun j hj ↦ (hji j hj).symm, hi⟩)
   toDecidableLE := Classical.decRel _
+  toDecidableEq := @decidableEqOfDecidableLE _ _ <| Classical.decRel _
+  toDecidableLT := @decidableLTOfDecidableLE _ _ <| Classical.decRel _
 
 @[simp]
 theorem leadingCoeff_pos_iff {x : Lex R⟦Γ⟧} : 0 < (ofLex x).leadingCoeff ↔ 0 < x := by

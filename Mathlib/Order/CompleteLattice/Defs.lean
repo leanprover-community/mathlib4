@@ -246,11 +246,11 @@ class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlge
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  toDecidableLE : DecidableLE α
+  [toDecidableLE : DecidableLE α]
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
+  [toDecidableEq : DecidableEq α]
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
+  [toDecidableLT : DecidableLT α]
   compare a b := compareOfLessAndEq a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by

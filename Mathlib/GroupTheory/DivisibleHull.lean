@@ -271,7 +271,11 @@ theorem mk_le_mk {m m' : M} {s s' : ℕ+} :
     mk m s ≤ mk m' s' ↔ s'.val • m ≤ s.val • m' := by rfl
 
 set_option backward.isDefEq.respectTransparency false in
-instance : LinearOrder (DivisibleHull M) where
+instance : DecidableLE (DivisibleHull M) := by
+  unfold DecidableLE LE.le instLE liftOn₂ LocalizedModule.liftOn₂
+  infer_instance
+
+instance : PartialOrder (DivisibleHull M) where
   le_refl a := by
     induction a with | mk m s
     simp
@@ -290,14 +294,15 @@ instance : LinearOrder (DivisibleHull M) where
     rw [mk_le_mk] at h h'
     rw [mk_eq_mk_iff_smul_eq_smul]
     exact le_antisymm h h'
+
+instance : LinearOrder (DivisibleHull M) where
   le_total a b := by
     induction a with | mk ma sa
     induction b with | mk mb sb
     simp_rw [mk_le_mk]
     exact le_total _ _
-  toDecidableLE := by
-    unfold DecidableLE LE.le instLE liftOn₂ LocalizedModule.liftOn₂
-    infer_instance
+  toDecidableEq := @decidableEqOfDecidableLE _ _ inferInstance
+  toDecidableLT := @decidableLTOfDecidableLE _ _ inferInstance
 
 @[simp]
 theorem mk_lt_mk {m m' : M} {s s' : ℕ+} : mk m s < mk m' s' ↔ s'.val • m < s.val • m' := by

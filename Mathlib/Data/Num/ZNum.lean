@@ -385,28 +385,19 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance linearOrder : LinearOrder ZNum where
-  lt_iff_le_not_ge := by
-    intro a b
+  lt_iff_le_not_ge a b := by
     transfer_rw
     apply lt_iff_le_not_ge
   le_refl := by transfer
-  le_trans := by
-    intro a b c
+  le_trans a b c := by
     transfer_rw
     apply le_trans
-  le_antisymm := by
-    intro a b
+  le_antisymm a b := by
     transfer_rw
     apply le_antisymm
-  le_total := by
-    intro a b
+  le_total a b := by
     transfer_rw
     apply le_total
-  -- This is relying on an automatically generated instance name, generated in a `deriving` handler.
-  -- See https://github.com/leanprover/lean4/issues/2343
-  toDecidableEq := instDecidableEqZNum
-  toDecidableLE := ZNum.decidableLE
-  toDecidableLT := ZNum.decidableLT
 
 instance addMonoid : AddMonoid ZNum where
   add_assoc := by transfer

@@ -246,18 +246,14 @@ theorem trop_inf (x y : R) : trop (x ⊓ y) = trop x + trop y :=
 theorem trop_add_def (x y : Tropical R) : x + y = trop (min (untrop x) (untrop y)) :=
   rfl
 
-instance instLinearOrderTropical : LinearOrder (Tropical R) :=
-  { instPartialOrderTropical with
-    le_total := fun a b => le_total (untrop a) (untrop b)
-    toDecidableLE := Tropical.decidableLE
-    toDecidableEq := Tropical.instDecidableEq
-    toDecidableLT := Tropical.decidableLT
-    max := fun a b => trop (max (untrop a) (untrop b))
-    max_def := fun a b => untrop_injective (by
-      simp only [max_def, untrop_le_iff, untrop_trop]; split_ifs <;> simp)
-    min := (· + ·)
-    min_def := fun a b => untrop_injective (by
-      simp only [untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp) }
+instance instLinearOrderTropical : LinearOrder (Tropical R) where
+  le_total a b := le_total (untrop a) (untrop b)
+  max a b := trop <| max (untrop a) (untrop b)
+  max_def a b := untrop_injective <| by
+    simp only [max_def, untrop_le_iff, untrop_trop]; split_ifs <;> simp
+  min := (· + ·)
+  min_def a b := untrop_injective <| by
+    simp only [untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp
 
 @[simp]
 theorem untrop_sup (x y : Tropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=

@@ -63,7 +63,7 @@ lemma finite_iff_of_finite [Finite k] : Finite (ℙ k V) ↔ Finite V := by
 (for silly reasons the formula also holds when `k` and `V` are infinite).
 See `Projectivization.card'` and `Projectivization.card''` for other spellings of the formula. -/
 lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
-  nontriviality V
+  nontriviality V using Nat.card_unique, Nat.card_of_isEmpty
   cases finite_or_infinite k with
   | inr h =>
     have : Infinite V := Module.Free.infinite k V

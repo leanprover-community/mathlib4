@@ -238,6 +238,8 @@ def IsChain.linearOrder [PartialOrder α] [DecidableLE α] {s : Set α} (hs : Is
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     exact hs.total ha hb
   toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
+  toDecidableEq := @decidableEqOfDecidableLE _ _ (inferInstanceAs <| Decidable <| ·.1 ≤ ·.1)
+  toDecidableLT := @decidableLTOfDecidableLE _ _ (inferInstanceAs <| Decidable <| ·.1 ≤ ·.1)
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
@@ -422,12 +424,8 @@ variable [PartialOrder α]
 
 theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
 
-instance [DecidableLE α] [DecidableLT α] [DecidableEq α] (s : Flag α) : LinearOrder s :=
-  { Subtype.partialOrder _ with
-    le_total := fun a b => s.le_or_le a.2 b.2
-    toDecidableLE := Subtype.decidableLE
-    toDecidableLT := Subtype.decidableLT
-    toDecidableEq := Subtype.instDecidableEq }
+instance [DecidableLE α] [DecidableLT α] [DecidableEq α] (s : Flag α) : LinearOrder s where
+  le_total a b := s.le_or_le a.property b.property
 
 end PartialOrder
 

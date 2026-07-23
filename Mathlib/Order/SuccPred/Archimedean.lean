@@ -126,9 +126,6 @@ abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
     le_total_of_codirected ha hb
-  toDecidableEq := inferInstance
-  toDecidableLE := inferInstance
-  toDecidableLT := inferInstance
 
 /--
 This isn't an instance due to a loop with `LinearOrder`.
