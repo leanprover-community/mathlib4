@@ -117,7 +117,9 @@ theorem exists_reference_channel_of_nonzero_face_seed
         (fun s : ↥F ↦ GMC2FaceDictionary.exponentB s)
         lambda i = delta := by
     intro i hi hri
-    simpa using hface i i.property
+    simpa [GMC2FrobeniusFace.tiltedHeight, GMC2FrobeniusFace.charge,
+      GMC2FaceDictionary.exponentA, GMC2FaceDictionary.exponentB,
+      GMC2.radialExponentQ, GMC2.chargeQ, GMC2.charge] using hface i i.property
   exact ⟨r0, A0, hr0, hmass, hcharge, hbalanced, rfl,
     hheight, hsupport, hterm⟩
 

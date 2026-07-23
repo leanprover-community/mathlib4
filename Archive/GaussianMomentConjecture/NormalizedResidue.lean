@@ -266,9 +266,10 @@ theorem faceChannels_eq_filter {p m0 : ℕ} (hp : 0 < p) (F : Finset ι) :
     faceChannels p hp F m0 =
       (fullChannels p m0).filter
         (fun r ↦ SupportedOn F r ∧ ∀ i, i ∈ F → p ∣ r i) := by
-  simpa [faceChannels, fullChannels, SupportedOn] using
-      (GMC2ChannelDilation.map_piAntidiag_dilation
-      (ι := ι) (m := m0) hp F)
+  classical
+  simp only [faceChannels, fullChannels, SupportedOn]
+  convert GMC2ChannelDilation.map_piAntidiag_dilation (ι := ι) (m := m0) hp F using 2
+  exact Finset.filter_congr_decidable _ _ _
 
 theorem faceChannels_subset_dilated {p m0 : ℕ} (hp : 0 < p)
     (F : Finset ι) :
@@ -418,7 +419,7 @@ theorem normalizedTerm_eq_face_frobenius_term
           (fullDilate p t) : R) =
         (Nat.multinomial Finset.univ t : R) := by
       apply (CharP.cast_eq_iff_mod_eq R p).2
-      simpa [fullDilate] using
+      simpa [Nat.ModEq, show fullDilate p t = fun i ↦ p * t i from rfl] using
         (GMC2.multinomial_dilate_modEq p
           (Finset.univ : Finset ι) t)
     have htargetProduct :
