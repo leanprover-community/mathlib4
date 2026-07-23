@@ -157,7 +157,7 @@ theorem not_isRoot_and_isRoot_succ [Nontrivial R] (hb : ∀ n, IsUnit (T.b (n + 
 
 /-- The probabilists' Hermite recurrence `Heₙ₊₂ = X * Heₙ₊₁ - (n + 1) * Heₙ`, as a
 `ThreeTermRecurrence`: the diagonal coefficients vanish and `b n = n`. -/
-noncomputable def hermite (K : Type*) [Field K] [CharZero K] : ThreeTermRecurrence K where
+noncomputable def hermite (K : Type*) [Field K] : ThreeTermRecurrence K where
   a := fun _ => 0
   b := fun n => (n : K)
 
