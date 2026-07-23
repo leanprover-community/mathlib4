@@ -191,7 +191,6 @@ protected theorem Filter.Tendsto.const_smul_zero {g : β → α} {l : Filter β}
 
 end SMulZeroClass
 
-
 section Monoid
 
 variable [TopologicalSpace α]
