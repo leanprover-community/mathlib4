@@ -454,11 +454,15 @@ noncomputable def mvfderiv (g : M → F) :
 
 namespace Manifold
 open scoped Bundle Manifold ContDiff
-
 open Lean Meta Elab Tactic
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I J f s x`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf mfderivWithin}
+-/
 scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let e ← ensureIsFunction <| ← Term.elabTerm t none
@@ -466,7 +470,9 @@ scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   mkAppM ``mvfderivWithin #[srcI, e, es]
 
 /-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf mvfderiv} -/
 scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, _tgtI) ← findModels e none

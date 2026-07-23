@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Lean.Elab.DocString
+-- Import the doc-strings for `mfderiv` etc., so we can mention them in the doc-strings of the
+-- elaborators we're writing.
+meta import all Mathlib.Geometry.Manifold.ContMDiff.Defs
+meta import all Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-!
 # Elaborators for differential geometry
@@ -386,6 +391,7 @@ This implementation is not maximally robust yet.
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
 partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
+  if let some m ← tryStrategy "instance assumption" fromAssumption      then return some m
   if let some m ← tryStrategy "TotalSpace"          fromTotalSpace      then return some m
   if let some m ← tryStrategy "TangentBundle"       fromTangentBundle   then return some m
   if let some m ← tryStrategy "NormedSpace"         fromNormedSpace     then return some m
@@ -405,6 +411,19 @@ partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
+  /-- Attempt to find a model with corners on `M` by looking for an `IsManifold I _ M` hypothesis
+  in the local context. -/
+  fromAssumption : TermElabM FindModelResult := do
+    let some I ← findSomeLocalInstanceOf? ``IsManifold fun inst type ↦ do
+        match_expr type with
+        | IsManifold _k _ _E _ _ _H _ I _n M _ _ =>
+          trace[Elab.DiffGeo.MDiff] "trying `IsManifold` instance `{inst}` of type `{type}`"
+          if ← withReducible (pureIsDefEq M e) then return some I
+          else return none
+        | _ => return none
+      | throwError "Couldn't find an `IsManifold` hypothesis involving `{e}` among local instances."
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a manifold over the model with corners `{I}`"
+    return { model := I }
   /-- Attempt to find a model from a `TotalSpace` first by seeing if it is the total space of a
   tangent bundle, and otherwise by finding a model with corners on its base. -/
   fromTotalSpace : TermElabM FindModelResult := do
@@ -822,20 +841,46 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
 
 end Elab
 
+-- TODO: is there a better location for this?
+open Doc in
+/-- Writing `{insertDocstringOf foo}` inside a verso doc-string inserts the doc-string of
+declaration `foo` in the current environment, as a separate paragraph.
+If `foo` does not exist or has no doc-string, it throws an error.
+-/
+@[doc_command] meta def _root_.insertDocstringOf (n : Ident) :
+    DocM <| Block ElabInline ElabBlock := do
+  let doc ← realizeGlobalConstNoOverloadWithInfo n
+  let some docStr ← findDocString? (← getEnv) doc
+    | throwError "No doc-string for `{.ofConstName doc}`"
+  -- Future: once there is a better auto-converter between markdown and verso doc-strings,
+  -- rewrite this code accordingly!
+  -- Perhaps, it could be nice to write .verso here.
+  return .para #[.text docStr]
+
 open Elab
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf MDifferentiableWithinAt}
+-/
 scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← ensureIsFunction <| ← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
 trying to determine `I` and `J` from the local context.
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf MDifferentiableAt}
+-/
 scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
@@ -860,16 +905,26 @@ scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
 --     else
 --       throwErrorAt t "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f s`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf MDifferentiableOn}
+-/
 scoped elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let et ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels et es
   mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf MDifferentiable}
+-/
 scoped elab:max "MDiff" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
@@ -880,10 +935,15 @@ scoped elab:max "MDiff" ppSpace t:term:arg : term => do
 -- TODO: provide better error messages if just `n` is forgotten (say, by making `n` optional in
 -- the parser and erroring later in the elaborator); currently, this yields just a parser error.
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf ContMDiffWithinAt}
+-/
 scoped elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
@@ -891,19 +951,29 @@ scoped elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : 
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `CMDiffAt n f x` elaborates to `ContMDiffAt I J n f x`
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf ContMDiffAt}
+-/
 scoped elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`,
 trying to determine `I` and `J` from the local context.
-`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
+`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
+
+{insertDocstringOf ContMDiffOn}
+-/
 scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
@@ -911,32 +981,52 @@ scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : te
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `CMDiff n f` elaborates to `ContMDiff I J n f`,
 trying to determine `I` and `J` from the local context.
-`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
+`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
+
+{insertDocstringOf ContMDiff}
+-/
 scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let e ← ensureIsFunction <| ← Term.elabTerm f none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f u x`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf mfderivWithin}
+-/
 scoped elab:max "mfderiv[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e es
   mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf mfderiv}
+-/
 scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``mfderiv #[srcI, tgtI, e]
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `HasMFDerivAt[s] f x f'` elaborates to `HasMFDerivWithinAt I J f s x f'`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf HasMFDerivWithinAt}
+-/
 scoped elab:max "HasMFDerivAt[" s:term "]" ppSpace
     f:term:arg ppSpace x:term:arg ppSpace f':term:arg : term => do
   let es ← Term.elabTerm s none
@@ -946,8 +1036,13 @@ scoped elab:max "HasMFDerivAt[" s:term "]" ppSpace
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``HasMFDerivWithinAt #[srcI, tgtI, ef, es, ex, ef']
 
+set_option doc.verso true in
+set_option doc.verso.suggestions false in
 /-- `HasMFDerivAt% f x f'` elaborates to `HasMFDerivAt I J f x f'`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf HasMFDerivAt}
+-/
 scoped elab:max "HasMFDerivAt%" ppSpace
     f:term:arg ppSpace x:term:arg ppSpace f':term:arg : term => do
   let ef ← ensureIsFunction <|← Term.elabTerm f none
