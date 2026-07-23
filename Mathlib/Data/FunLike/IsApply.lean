@@ -232,6 +232,8 @@ theorem coe_smul [SMul M F] [SMul M β] [IsSMulApply M F α β] (n : M) (f : F) 
     ↑(n • f) = n • (f : α → β) := by
   ext; simp
 
+@[deprecated (since := "2026-07-23")] alias coe_smul' := coe_smul
+
 @[simp, norm_cast, to_additive existing coe_smul]
 theorem coe_pow [Pow F M] [Pow β M] [IsPowApply M F α β] (f : F) (n : M) :
     ↑(f ^ n) = (f : α → β) ^ n := by
