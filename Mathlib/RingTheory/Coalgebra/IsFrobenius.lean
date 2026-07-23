@@ -16,7 +16,17 @@ This file defines `Coalgebra.IsFrobenius` and shows some elementary results.
 
 A coalgebra with an algebra structure is said to be Frobenius when the Frobenius equation
 is satisfied:
-`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`.
+`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
+which in diagrams looks like
+```
+|    |            |            |    |
+|    μ            μ            μ    |
+|   / \          / \          / \   |
+ \ /   |    =    \ /    =    |   \ /
+  δ    |          δ          |    δ
+  |    |          |          |    |
+```
+where `μ` stands for multiplication and `δ` for comultiplication.
 
 This file shows that it suffices to have
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)` in order to have the
