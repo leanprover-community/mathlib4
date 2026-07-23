@@ -580,6 +580,7 @@ theorem eq_span_singleton_of_mem_of_finrank_eq_one {S : Submodule K V} {w : V}
   exact Eq.symm <| eq_of_le_of_finrank_le (by simpa)
     (by rw [hS, finrank_span_singleton hw0])
 
+@[gcongr]
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
     s.finrank K ≤ t.finrank K :=
   Submodule.finrank_mono (span_mono h)
