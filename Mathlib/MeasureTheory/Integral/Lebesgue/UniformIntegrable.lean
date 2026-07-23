@@ -7,6 +7,10 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
+
+
+
+
 /-!
 # Uniform integrability
 
@@ -71,7 +75,6 @@ lemma unifLIntegrable_mk :
 
 lemma UnifLIntegrable.mono_ae (hG : UnifLIntegrable G μ) (h : ∀ i, F i ≤ᵐ[μ] G i) :
     UnifLIntegrable F μ := by
-  rw [unifLIntegrable_def] at hG ⊢
   refine tendsto_nhds_bot_mono hG (Eventually.of_forall fun a ↦ ?_)
   apply iSup_mono fun i ↦ iSup_mono fun A ↦ iSup_mono fun _ ↦ ?_
   exact lintegral_mono_ae (Eventually.filter_mono ae_restrict_le (h i))
@@ -82,7 +85,7 @@ lemma unifLIntegrable_congr_ae (h : ∀ i, F i =ᵐ[μ] G i) :
 
 lemma UnifLIntegrable.restrict (s : Set α) (h : UnifLIntegrable F μ) :
     UnifLIntegrable F (μ.restrict s) := by
-  rw [unifLIntegrable_mk] at ⊢
+  rw [unifLIntegrable_mk]
   refine tendsto_nhds_bot_mono h (Eventually.of_forall fun a ↦ iSup_mono fun i ↦ ?_)
   simp only [iSup_le_iff]
   intro A hA hAμ
