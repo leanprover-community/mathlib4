@@ -619,7 +619,9 @@ lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : HasFiniteMulSupp
     finprod_eq_finsetProd_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod fun i _ ↦ h i
 
-@[deprecated (since := "2026-05-22")] alias finprod_le_finprod' := finprod_le_finprod
+@[deprecated (since := "2026-07-23")] alias finprod_le_finprod' := finprod_le_finprod
+
+@[deprecated (since := "2026-07-23")] alias finsum_le_finsum' := finsum_le_finsum
 
 /-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
 `M` is an ordered `CommMonoid`. -/
