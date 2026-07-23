@@ -181,6 +181,15 @@ def unitEmbedding : Kˣ →* (FiniteAdeleRing R K)ˣ := Units.map (algebraMap K 
 theorem unitEmbedding_apply (k : Kˣ) :
     unitEmbedding R K k = algebraMap K (FiniteAdeleRing R K) k := rfl
 
+variable {R}
+
+variable (K) in
+/-- The embedding of the completion `Kᵥ` at a finite place `v` into the finite adele ring. -/
+@[simps!]
+def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* FiniteAdeleRing R K :=
+  letI := Classical.decEq (HeightOneSpectrum R)
+  RestrictedProduct.mulSingleMonoidHom (fun w ↦ w.adicCompletionIntegers K) v
+
 end Units
 
 end FiniteAdeleRing
