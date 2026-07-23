@@ -23,9 +23,9 @@ Main statements:
 
 @[expose] public section
 
-open Filter Set
+open Filter Metric Set
 
-open scoped Topology
+open scoped Pointwise Topology
 
 variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
   [NormedAlgebra 𝕜 𝕜'] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -457,6 +457,23 @@ lemma meromorphicAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero �
   refine (hf.comp_analyticAt hra).congr (.filter_mono ?_ nhdsWithin_le_nhds)
   exact EventuallyEq.fun_comp (HasStrictDerivAt.eventually_right_inverse ..) f
 
+/-- `MeromorphicAt` is invariant under translation. -/
+@[to_fun meromorphicAt_fun_comp_add_const_iff_meromorphicAt]
+theorem meromorphicAt_comp_add_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicAt (f ∘ (· + c)) x ↔ MeromorphicAt f (x + c) := by
+  constructor
+  · intro h
+    rw [show f = ((f ∘ fun x ↦ x + c) ∘ fun z ↦ z - c) by aesop]
+    rw [show x = (x + c) - c by ring] at h
+    exact h.comp_analyticAt (g := fun z ↦ z - c) (by fun_prop)
+  · exact (·.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop))
+
+/-- `MeromorphicAt` is invariant under translation. -/
+@[to_fun meromorphicAt_fun_comp_sub_const_iff_meromorphicAt]
+theorem meromorphicAt_comp_sub_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicAt (f ∘ (· - c)) x ↔ MeromorphicAt f (x - c) := by
+  simp_rw [sub_eq_add_neg, meromorphicAt_comp_add_const_iff_meromorphicAt]
+
 end composition
 
 
@@ -608,6 +625,42 @@ include hf in
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
 
+/-- `MeromorphicOn` is invariant under translation. -/
+@[to_fun meromorphicOn_fun_comp_add_const_iff_meromorphicOn]
+theorem meromorphicOn_comp_add_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
+    MeromorphicOn (f ∘ (· + c)) U ↔ MeromorphicOn f (U + {c}) := by
+  constructor
+  <;> intro h y hy
+  · rw [add_singleton, mem_image] at hy
+    obtain ⟨x, h₁x, h₂x⟩ := hy
+    simpa [← h₂x, ← meromorphicAt_comp_add_const_iff_meromorphicAt] using h x h₁x
+  · rw [meromorphicAt_comp_add_const_iff_meromorphicAt]
+    aesop
+
+/-- `MeromorphicOn` is invariant under translation. -/
+@[to_fun meromorphicOn_fun_comp_sub_const_iff_meromorphicOn]
+theorem meromorphicOn_comp_sub_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
+    MeromorphicOn (f ∘ (· - c)) U ↔ MeromorphicOn f (U - {c}) := by
+  simp_rw [sub_eq_add_neg, meromorphicOn_comp_add_const_iff_meromorphicOn, neg_singleton]
+
+/-- `MeromorphicOn` is invariant under translation, special case where the set is a ball. -/
+@[to_fun (attr := simp) meromorphicOn_ball_fun_comp_sub_const_iff_meromorphicOn_ball]
+theorem meromorphicOn_ball_comp_sub_const_iff_meromorphicOn_ball {c : 𝕜} {R : ℝ} :
+    MeromorphicOn (f ∘ (· - c)) (ball c R) ↔ MeromorphicOn f (ball 0 R) := by
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, ball_sub_singleton, sub_self]
+
+/-- `MeromorphicOn` is invariant under translation, special case where the set is a closed ball. -/
+@[to_fun (attr := simp) meromorphicOn_closedBall_fun_comp_sub_const_iff_meromorphicOn_closedBall]
+theorem meromorphicOn_closedBall_comp_sub_const_iff_meromorphicOn_closedBall {c : 𝕜} {R : ℝ} :
+    MeromorphicOn (f ∘ (· - c)) (closedBall c R) ↔ MeromorphicOn f (closedBall 0 R) := by
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, closedBall_sub_singleton, sub_self]
+
+/-- `MeromorphicOn` is invariant under translation, special case where the set is a sphere. -/
+@[to_fun (attr := simp) meromorphicOn_sphere_fun_comp_sub_const_iff_meromorphicOn_sphere]
+theorem meromorphicOn_sphere_comp_sub_const_iff_meromorphicOn_sphere {c : 𝕜} {R : ℝ} :
+    MeromorphicOn (f ∘ (· - c)) (sphere c R) ↔ MeromorphicOn f (sphere 0 R) := by
+  rw [meromorphicOn_comp_sub_const_iff_meromorphicOn, sphere_sub_singleton, sub_self]
+
 end arithmetic
 
 include hf in
@@ -756,5 +809,27 @@ Meromorphic functions are measurable.
   have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
   exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
     (by simp [-mem_compl_iff]) h₃.domRestrict.measurable (measurable_of_countable _)
+
+/-- `Meromorphic` is invariant under translation. -/
+@[simp] theorem meromorphic_comp_add_const_iff_meromorphic {c : 𝕜} :
+    Meromorphic (f ∘ (· + c)) ↔ Meromorphic f := by
+  rw [Meromorphic, Meromorphic, (Equiv.subRight c).surjective.forall]
+  simp [meromorphicAt_comp_add_const_iff_meromorphicAt]
+
+/-- `Meromorphic` is invariant under translation. -/
+@[simp] theorem meromorphic_fun_comp_add_const_iff_meromorphic {c : 𝕜} :
+    Meromorphic (fun z ↦ f (z + c)) ↔ Meromorphic f :=
+  meromorphic_comp_add_const_iff_meromorphic
+
+/-- `Meromorphic` is invariant under translation. -/
+@[simp] theorem meromorphic_comp_sub_const_iff_meromorphic {c : 𝕜} :
+    Meromorphic (f ∘ (· - c)) ↔ Meromorphic f := by
+  nth_rw 2 [← meromorphic_comp_add_const_iff_meromorphic (c := -c)]
+  simp_rw [sub_eq_add_neg]
+
+/-- `Meromorphic` is invariant under translation. -/
+@[simp] theorem meromorphic_fun_comp_sub_const_iff_meromorphic {c : 𝕜} :
+    Meromorphic (fun z ↦ f (z - c)) ↔ Meromorphic f :=
+  meromorphic_comp_sub_const_iff_meromorphic
 
 end Meromorphic
