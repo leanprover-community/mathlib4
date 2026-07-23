@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
+public import Mathlib.CategoryTheory.RegularCategory.Basic
 
 /-!
 # Abelian categories
@@ -483,6 +484,46 @@ def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
     IsLimit (KernelFork.ofι f (CokernelCofork.condition s)) :=
   NonPreadditiveAbelian.monoIsKernelOfCokernel s h
 
+/-- If `f : X ⟶ Y` is a monomorphism in an abelian category, then `X ≅ kernel (cokernel.π f)`. -/
+def isoKernelCokernel {X Y : C} (f : X ⟶ Y) [Mono f] :
+    X ≅ kernel (cokernel.π f) :=
+  IsLimit.conePointUniqueUpToIso
+    (t := KernelFork.ofι (kernel.ι (cokernel.π f)) (kernel.condition (cokernel.π f)))
+    (monoIsKernelOfCokernel
+      (CokernelCofork.ofπ (cokernel.π f) (cokernel.condition f)) (cokernelIsCokernel f))
+    (kernelIsKernel (cokernel.π f))
+
+/-- If `f : X ⟶ Y` is an epimorphism in an abelian category, then `X ≅ cokernel (kernel.ι f)`. -/
+def isoCokernelKernel {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Y ≅ cokernel (kernel.ι f) :=
+  IsColimit.coconePointUniqueUpToIso
+    (t := CokernelCofork.ofπ (cokernel.π (kernel.ι f)) (cokernel.condition (kernel.ι f)))
+    (epiIsCokernelOfKernel
+      (KernelFork.ofι (kernel.ι f) (kernel.condition f)) (kernelIsKernel f))
+    (cokernelIsCokernel (kernel.ι f))
+
+@[simp]
+lemma isoKernelCokernel_hom_comp {X Y : C} (f : X ⟶ Y) [Mono f] :
+    (isoKernelCokernel f).hom ≫ kernel.ι (cokernel.π f) = f :=
+  (IsLimit.conePointUniqueUpToIso_hom_comp _ _) WalkingParallelPair.zero
+
+@[simp]
+lemma isoKernelCokernel_inv_comp {X Y : C} (f : X ⟶ Y) [Mono f] :
+    (isoKernelCokernel f).inv ≫ f = kernel.ι (cokernel.π f) :=
+  (IsLimit.conePointUniqueUpToIso_inv_comp _ _) WalkingParallelPair.zero
+
+@[simp]
+lemma comp_isoCokernelKernel_hom {X Y : C} (f : X ⟶ Y) [Epi f] :
+    f ≫ (isoCokernelKernel f).hom = cokernel.π (kernel.ι f) :=
+  (IsColimit.comp_coconePointUniqueUpToIso_hom
+    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
+
+@[simp]
+lemma comp_isoCokernelKernel_inv {X Y : C} (f : X ⟶ Y) [Epi f] :
+    cokernel.π (kernel.ι f) ≫ (isoCokernelKernel f).inv = f :=
+  (IsColimit.comp_coconePointUniqueUpToIso_inv
+    (epiIsCokernelOfKernel _ (kernelIsKernel f)) (cokernelIsCokernel _)) WalkingParallelPair.one
+
 variable (f)
 
 /-- In an abelian category, any morphism that turns to zero when precomposed with the kernel of an
@@ -505,6 +546,40 @@ theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f =
     monoLift f g hg ≫ f = g :=
   (monoIsKernelOfCokernel _ (colimit.isColimit _)).fac (KernelFork.ofι _ hg)
     WalkingParallelPair.zero
+
+section PullbackKernel
+
+variable {P X' Y' Z : C} {fst : P ⟶ X'} {snd : P ⟶ Y'} {i : X' ⟶ Z} {j : Y' ⟶ Z}
+
+/-- In an abelian category, the pullback of a monomorphism `i` along `j` is a kernel of
+`j ≫ cokernel.π i`. -/
+noncomputable def isLimitKernelForkOfIsPullback
+    (sq : IsPullback fst snd i j) [Mono i] :
+    IsLimit (KernelFork.ofι (f := j ≫ cokernel.π i) snd (by simp [← sq.w_assoc])) := by
+  let : Mono snd := PullbackCone.mono_snd_of_is_pullback_of_mono sq.isLimit
+  apply KernelFork.IsLimit.ofι'
+  intro T k hk
+  exact ⟨sq.lift (monoLift i (k ≫ j) (by rwa [← Category.assoc] at hk)) k (by simp), by simp⟩
+
+/-- In an abelian category, the pullback of a monomorphism `i` along `j` is isomorphic to the
+kernel of `j ≫ cokernel.π i`. -/
+noncomputable def isoKernelOfIsPullback (sq : IsPullback fst snd i j) [Mono i] :
+    P ≅ kernel (j ≫ cokernel.π i) :=
+  IsLimit.conePointUniqueUpToIso
+    (t := KernelFork.ofι (kernel.ι (j ≫ cokernel.π i)) (kernel.condition (j ≫ cokernel.π i)))
+    (isLimitKernelForkOfIsPullback sq) (kernelIsKernel (j ≫ cokernel.π i))
+
+@[simp]
+lemma isoKernelOfIsPullback_hom_comp (sq : IsPullback fst snd i j) [Mono i] :
+    (isoKernelOfIsPullback sq).hom ≫ kernel.ι (j ≫ cokernel.π i) = snd :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingParallelPair.zero
+
+@[simp]
+lemma isoKernelOfIsPullback_inv_comp (sq : IsPullback fst snd i j) [Mono i] :
+    (isoKernelOfIsPullback sq).inv ≫ snd = kernel.ι (j ≫ cokernel.π i) :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingParallelPair.zero
+
+end PullbackKernel
 
 section
 
@@ -733,6 +808,12 @@ theorem epi_fst_of_factor_thru_epi_mono_factorization (g₁ : Y ⟶ W) [Epi g₁
     (hg : g₁ ≫ g₂ = g) (f' : X ⟶ W) (hf : f' ≫ g₂ = f) (t : PullbackCone f g) (ht : IsLimit t) :
     Epi t.fst := by
   apply epi_fst_of_isLimit _ _ (PullbackCone.isLimitOfFactors f g g₂ f' g₁ hf hg t ht)
+
+instance (priority := 100) abelianRegular : Regular C where
+  hasCoequalizer_of_isKernelPair := inferInstance
+  regularEpiIsStableUnderBaseChange := .mk' (fun _ _ _ _ g _ hg ↦ by
+    rw [MorphismProperty.regularEpi_iff] at hg ⊢
+    exact IsRegularEpiCategory.regularEpiOfEpi _)
 
 end EpiPullback
 
