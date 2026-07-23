@@ -379,6 +379,17 @@ noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finr
     simp [← (LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one d1 _).choose_spec.2 c]
   right_inv u := ((u.existsUnique_eq_smul_id_of_finrank_eq_one d1).choose_spec.1).symm
 
+lemma finrank_eq_one_iff_algebraMap_bijective
+    {R S : Type*} [CommSemiring R] [CommSemiring S] [StrongRankCondition R] [Algebra R S]
+    [Module.Free R S] :
+    Module.finrank R S = 1 ↔ Function.Bijective (algebraMap R S) := by
+  constructor
+  · intro H
+    let := (Module.basisUnique Unit H).repr ≪≫ₗ Finsupp.uniqueLinearEquiv _ _ .unit
+    exact (LinearEquiv.algEquivOfRing this.symm).bijective
+  · intro H
+    rw [← (AlgEquiv.ofBijective (Algebra.ofId R S) H).toLinearEquiv.finrank_eq, finrank_self]
+
 end Module
 
 end StrongRankCondition
