@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+public import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
 
@@ -17,7 +17,9 @@ We say that a topological monoid `M` has open units (`IsOpenUnits`) if `Mˣ` is 
 has the subspace topology (i.e. inverse is continuous).
 
 Typical examples include monoids with discrete topology, topological groups (or fields),
-and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)` (`IsOpenUnits.of_isAdic`).
+complete normed rings (for example the ring `E →L[𝕜] E` of continuous linear endomorphisms of any
+Banach space `E`), and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)`
+(`IsOpenUnits.of_isAdic`).
 
 A non-example is `𝔸ₖ`, because the topology on ideles is not the induced topology from adeles.
 
@@ -34,11 +36,74 @@ We say that a topological monoid `M` has open units if `Mˣ` is open in `M` and
 has the subspace topology (i.e. inverse is continuous).
 
 Typical examples include monoids with discrete topology, topological groups (or fields),
-and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)`.
+complete normed rings, and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)`.
 -/
 @[mk_iff]
 class IsOpenUnits (M : Type*) [Monoid M] [TopologicalSpace M] : Prop where
   isOpenEmbedding_unitsVal : IsOpenEmbedding (Units.val : Mˣ → M)
+
+namespace Units
+
+variable {M : Type*} [Monoid M] [TopologicalSpace M] [IsOpenUnits M]
+
+lemma isOpenEmbedding_val : IsOpenEmbedding (Units.val : Mˣ → M) :=
+  IsOpenUnits.isOpenEmbedding_unitsVal
+
+lemma isOpenMap_val : IsOpenMap (Units.val : Mˣ → M) := isOpenEmbedding_val.isOpenMap
+
+lemma isEmbedding_val : IsEmbedding (Units.val : Mˣ → M) := isOpenEmbedding_val.isEmbedding
+
+lemma isInducing_val : IsInducing (Units.val : Mˣ → M) := isOpenEmbedding_val.isInducing
+
+protected theorem isOpen : IsOpen { a : M | IsUnit a } :=
+  isOpenEmbedding_val.isOpen_range
+
+protected theorem nhds (a : Mˣ) : { a : M | IsUnit a } ∈ 𝓝 (a : M) :=
+  IsOpen.mem_nhds Units.isOpen a.isUnit
+
+protected theorem _root_.nonunits.isClosed : IsClosed (nonunits M) :=
+  Units.isOpen.isClosed_compl
+
+end Units
+
+/-- In rings `R` with open units, `Ring.inverse : R → R` is continuous on the set of units. -/
+lemma Ring.inverse_continuousOn {M₀ : Type*} [MonoidWithZero M₀] [TopologicalSpace M₀]
+    [IsOpenUnits M₀] : ContinuousOn Ring.inverse { a : M₀ | IsUnit a} := by
+  refine (Set.image_univ ▸ Units.isInducing_val.continuousOn_image_iff).2 <| continuousOn_univ.2 ?_
+  simpa [Function.comp_def] using Units.continuous_coe_inv
+
+/-- In rings `R` with open units, `Ring.inverse : R → R` is continuous at every unit `a : Rˣ`. -/
+lemma Ring.inverse_continuousAt {M₀ : Type*} [MonoidWithZero M₀] [TopologicalSpace M₀]
+    [IsOpenUnits M₀] (a : M₀ˣ) : ContinuousAt Ring.inverse (a : M₀) :=
+  Ring.inverse_continuousOn.continuousAt (Units.nhds a)
+
+namespace Ideal
+
+variable {R : Type*} [Ring R] [TopologicalSpace R] [IsTopologicalRing R] [IsOpenUnits R]
+
+/-- The `Ideal.closure` of a proper ideal in ring with open units is proper. -/
+theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
+  have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
+  simpa only [I.closure.eq_top_iff_one, Ne] using! mt (@h 1) one_notMem_nonunits
+
+/-- The `Ideal.closure` of a maximal ideal in a ring with open units is the ideal itself. -/
+theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
+  (hI.eq_of_le (I.closure_ne_top hI.ne_top) subset_closure).symm
+
+/-- Maximal ideals in rings with open units are closed. -/
+instance IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set R) :=
+  isClosed_of_closure_subset <| Eq.subset <| congr_arg ((↑) : Ideal R → Set R) hI.closure_eq
+
+end Ideal
+
+/-- Transport an `IsOpenUnits`-instance along an isomorphism. -/
+lemma ContinuousMulEquiv.isOpenUnits {M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
+    [Monoid M] [Monoid N] (e : M ≃ₜ* N) [IsOpenUnits N] : IsOpenUnits M where
+  isOpenEmbedding_unitsVal := by
+    convert e.symm.isOpenEmbedding.comp <| IsOpenUnits.isOpenEmbedding_unitsVal.comp <|
+      e.isOpenEmbedding.units_map (f := e.toMonoidHom)
+    ext m
+    exact (e.symm_apply_apply m).symm
 
 instance (priority := 900) (M : Type*) [Monoid M] [TopologicalSpace M] [DiscreteTopology M] :
     IsOpenUnits M where
@@ -58,40 +123,3 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
     ext
     simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
     exact isUnit_iff_ne_zero
-
-/-- If `R` has the `I`-adic topology where `I` is contained in the Jacobson radical
-(e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
-lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
-    {I : Ideal R}
-    (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
-    IsOpenUnits R := by
-  refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective ?_⟩
-  refine (IsTopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
-  rw [nhds_induced, nhds_prod_eq]
-  simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one]
-  intro s hs
-  have H := hR ▸ Ideal.hasBasis_nhds_adic I 1
-  have := (H.prod (H.comap MulOpposite.opHomeomorph.symm))
-  simp only [Homeomorph.comap_nhds_eq, Homeomorph.symm_symm, MulOpposite.opHomeomorph_apply,
-    MulOpposite.op_one, and_self, Set.image_add_left] at this
-  have : ∃ n₁ n₂, ∀ (u : Rˣ), (-1 + u : R) ∈ I ^ n₁ → (-1 + u⁻¹ : R) ∈ I ^ n₂ → ↑u ∈ s := by
-    simpa [Set.subset_def, forall_comm (β := Rˣ), forall_comm (β := _ = _)] using
-      (((this.comap (Units.embedProduct R)).map (Units.coeHom R)).1 _).mp hs
-  obtain ⟨n, hn, hn'⟩ : ∃ n ≠ 0, ∀ (u : Rˣ), (-1 + u : R) ∈ I ^ n →
-      (-1 + u⁻¹ : R) ∈ I ^ n → ↑u ∈ s := by
-    obtain ⟨n₁, n₂, H⟩ := this
-    exact ⟨n₁ ⊔ n₂ ⊔ 1, by simp, fun u h₁ h₂ ↦ H u
-      (Ideal.pow_le_pow_right (by simp) h₁)
-      (Ideal.pow_le_pow_right (by simp) h₂)⟩
-  rw [H.1]
-  refine ⟨n, trivial, ?_⟩
-  rintro _ ⟨x, hx, rfl⟩
-  have := Ideal.mem_jacobson_bot.mp (hI (Ideal.pow_le_self hn hx)) 1
-  rw [mul_one, add_comm] at this
-  refine hn' this.unit (by simpa using hx) ?_
-  have : -1 + ↑this.unit⁻¹ = -this.unit⁻¹ * x := by
-    trans this.unit⁻¹ * (-(1 + x) + 1)
-    · rw [mul_add, mul_neg, IsUnit.val_inv_mul, mul_one]
-    · simp
-  rw [this]
-  exact Ideal.mul_mem_left _ _ hx
