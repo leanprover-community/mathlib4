@@ -13,8 +13,6 @@ import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NormNum.Prime
-import Mathlib.Tactic.Order
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 /-!
@@ -50,10 +48,8 @@ private lemma choose_three_add_choose_three (n : ℕ) :
 private def natPellSolution {x y d : ℕ}
     (hxy : x ^ 2 = 1 + d * y ^ 2) :
     Pell.Solution₁ (d : ℤ) :=
-  Pell.Solution₁.mk (x : ℤ) (y : ℤ) <| by
-    have hxy' : (x : ℤ) ^ 2 = 1 + (d : ℤ) * (y : ℤ) ^ 2 := by
-      exact_mod_cast hxy
-    linarith
+  Pell.Solution₁.mk (x : ℤ) (y : ℤ) <|
+    sub_eq_iff_eq_add.mpr (by exact_mod_cast hxy)
 
 @[simp] private lemma natPellSolution_x {x y d : ℕ}
     (hxy : x ^ 2 = 1 + d * y ^ 2) :
@@ -62,6 +58,21 @@ private def natPellSolution {x y d : ℕ}
 @[simp] private lemma natPellSolution_y {x y d : ℕ}
     (hxy : x ^ 2 = 1 + d * y ^ 2) :
     (natPellSolution hxy).y = (y : ℤ) := rfl
+
+private lemma not_isSquare_parameter_of_nat_pell
+    {x y d : ℕ}
+    (hx : 1 < x)
+    (hxy : x ^ 2 = 1 + d * y ^ 2) :
+    ¬IsSquare (d : ℤ) := by
+  apply Pell.Solution₁.d_nonsquare_of_one_lt_x
+    (a := natPellSolution hxy)
+  simpa using Int.ofNat_lt.mpr hx
+
+private lemma parameter_dvd_sq_sub_one_of_nat_pell {x y d : ℕ}
+    (hxy : x ^ 2 = 1 + d * y ^ 2) :
+    (d : ℤ) ∣ (x : ℤ) ^ 2 - 1 := by
+  refine ⟨(y : ℤ) ^ 2, sub_eq_iff_eq_add.mpr ?_⟩
+  exact_mod_cast (by simpa [add_comm] using hxy)
 
 /-- The Lucas coefficient occurring in the `y`-coordinate of powers of a Pell solution. -/
 def pellY (x : ℤ) : ℕ → ℤ
@@ -185,46 +196,26 @@ lemma pellY_eq_second_order (x : ℤ) (n : ℕ) :
       by_cases hsmall : n < 3
       · interval_cases n <;>
           refine ⟨0, by norm_num [pellY_add_two, Nat.choose] <;> ring⟩
-      · have hx2 : x * x ^ (n - 2) = x ^ (n - 1) := by
-          rw [mul_comm, ← pow_succ]
-          congr 1
-          omega
-        have hx0 : x * x ^ n = x ^ (n + 1) := by
-          rw [mul_comm, ← pow_succ]
-        have hx4 : x ^ 3 * x ^ (n - 2) = x ^ (n + 1) := by
-          rw [← pow_add]
-          congr 1
-          omega
-        have hx5 : x ^ 2 * x ^ (n - 3) = x ^ (n - 1) := by
-          rw [← pow_add]
-          congr 1
-          omega
-        have hx6 : x ^ 4 * x ^ (n - 3) = x ^ (n + 1) := by
-          rw [← pow_add]
-          congr 1
-          omega
-        have hx7 : x ^ 2 * x ^ (n - 1) = x ^ (n + 1) := by
-          rw [← pow_add]
-          congr 1
-          omega
+      · obtain ⟨k, rfl⟩ : ∃ k : ℕ, n = k + 3 :=
+          ⟨n - 3, by omega⟩
         have hc :
-            (n : ℤ) + 2 * ((n + 1).choose 3 : ℤ) =
-              (n.choose 3 : ℤ) + ((n + 2).choose 3 : ℤ) := by
-          have h := choose_three_add_choose_three n |>.symm
+            (k : ℤ) + 3 + 2 * ((k + 3 + 1).choose 3 : ℤ) =
+              ((k + 3).choose 3 : ℤ) + ((k + 3 + 2).choose 3 : ℤ) := by
+          have h := choose_three_add_choose_three (k + 3) |>.symm
           exact_mod_cast (by simpa [add_comm] using h)
         have hc' :
-            (n : ℤ) + 2 * ((1 + n).choose 3 : ℤ) =
-              (n.choose 3 : ℤ) + ((2 + n).choose 3 : ℤ) := by
+            (k : ℤ) + 3 + 2 * ((1 + (k + 3)).choose 3 : ℤ) =
+              ((k + 3).choose 3 : ℤ) + ((2 + (k + 3)).choose 3 : ℤ) := by
           simpa only [add_comm] using hc
         refine
-          ⟨2 * x * z1 - z + (n.choose 3 : ℤ) * x ^ (n - 3), ?_⟩
+          ⟨2 * x * z1 - z + ((k + 3).choose 3 : ℤ) * x ^ k, ?_⟩
         rw [pellY_add_two, hz1, hz]
         push_cast
+        simp only [pow_add, pow_one]
         ring_nf
-        rw [hx0, hx2, hx4, hx5, hx6]
-        rw [← hx7]
         have hcm := congrArg
-          (fun t : ℤ ↦ t * x ^ (n - 1) * (x ^ 2 - 1)) hc'
+          (fun t : ℤ ↦ t * x ^ (k + 2) * (x ^ 2 - 1)) hc'
+        simp only [pow_add] at hcm ⊢
         ring_nf at hcm ⊢
         linarith [hcm]
 
@@ -232,35 +223,18 @@ lemma pellY_eq_second_order (x : ℤ) (n : ℕ) :
 lemma pellY_eq_add_sq_sub_one_mul (x : ℤ) (n : ℕ) :
     ∃ z : ℤ, pellY x n =
       (n : ℤ) * x ^ (n - 1) + (x ^ 2 - 1) * z := by
-  induction n using Nat.twoStepInduction with
-  | zero => exact ⟨0, by simp⟩
-  | one => exact ⟨0, by simp⟩
-  | more n hn hn1 =>
-      rcases hn with ⟨z, hz⟩
-      rcases hn1 with ⟨z1, hz1⟩
-      cases n with
-      | zero =>
-          exact ⟨0, by simp [pellY_add_two]⟩
-      | succ n =>
-          refine ⟨2 * x * z1 - z + (n + 1 : ℕ) * x ^ n, ?_⟩
-          rw [pellY_add_two, hz1, hz]
-          push_cast
-          simp only [pow_succ]
-          ring
+  obtain ⟨z, hz⟩ := pellY_eq_second_order x n
+  refine
+    ⟨(n.choose 3 : ℤ) * x ^ (n - 3) +
+      (x ^ 2 - 1) * z, ?_⟩
+  rw [hz]
+  ring
 
 lemma pellY_modEq_of_dvd_sq_sub_one {x m : ℤ} (n : ℕ)
     (hm : m ∣ x ^ 2 - 1) :
     Int.ModEq m (pellY x n) ((n : ℤ) * x ^ (n - 1)) := by
-  rw [Int.modEq_iff_dvd]
-  obtain ⟨z, hz⟩ := pellY_eq_add_sq_sub_one_mul x n
-  rw [hz]
-  have heq :
-      (n : ℤ) * x ^ (n - 1) -
-          ((n : ℤ) * x ^ (n - 1) + (x ^ 2 - 1) * z) =
-        -((x ^ 2 - 1) * z) := by
-    ring
-  rw [heq]
-  exact dvd_neg.mpr (dvd_mul_of_dvd_left hm z)
+  exact (Int.ModEq.of_dvd hm
+    (Int.modEq_iff_add_fac.mpr (pellY_eq_add_sq_sub_one_mul x n))).symm
 
 lemma coprime_x_parameter {x y d : ℕ}
     (h : x ^ 2 = 1 + d * y ^ 2) :
@@ -274,17 +248,15 @@ lemma prime_eq_of_dvd_parameter_and_pellY
     (hp : p.Prime) (hq : q.Prime) (hqd : q ∣ d)
     (hqc : (q : ℤ) ∣ pellY (x : ℤ) p) :
     q = p := by
-  have hdvd : (d : ℤ) ∣ (x : ℤ) ^ 2 - 1 := by
-    refine ⟨(y : ℤ) ^ 2, ?_⟩
-    linarith
   have hqd' : (q : ℤ) ∣ (d : ℤ) := by exact_mod_cast hqd
   have hmod := pellY_modEq_of_dvd_sq_sub_one
-    (x := (x : ℤ)) (m := (q : ℤ)) p (hqd'.trans hdvd)
+    (x := (x : ℤ)) (m := (q : ℤ)) p
+      (hqd'.trans (parameter_dvd_sq_sub_one_of_nat_pell hxy))
   have hprod' : (q : ℤ) ∣ (p : ℤ) * (x : ℤ) ^ (p - 1) :=
-    Int.modEq_zero_iff_dvd.mp (hmod.symm.trans hqc.modEq_zero_int)
+    hmod.dvd_iff.mp hqc
   have hprod : q ∣ p * x ^ (p - 1) := by exact_mod_cast hprod'
   rcases hq.dvd_mul.mp hprod with hqp | hqx
-  · exact (Nat.dvd_prime hp).mp hqp |>.resolve_left hq.ne_one
+  · exact (Nat.prime_dvd_prime_iff_eq hq hp).mp hqp
   · have hqx' : q ∣ x := hq.dvd_of_dvd_pow hqx
     exact False.elim
       (hq.ne_one
@@ -301,7 +273,7 @@ lemma pellY_natAbs_eq_prime_pow
   intro q hq hqc
   apply prime_eq_of_dvd_parameter_and_pellY hxy hp hq
     (hsmooth q hq hqc)
-  exact Int.natAbs_dvd_natAbs.mp hqc
+  exact Int.natCast_dvd.mpr hqc
 
 /--
 For a prime at least five dividing `x ^ 2 - 1` but not `x`, the
@@ -313,39 +285,23 @@ lemma prime_sq_not_dvd_pellY
     ¬(p : ℤ) ^ 2 ∣ pellY (x : ℤ) p := by
   intro hsq
   obtain ⟨z, hz⟩ := pellY_eq_second_order (x : ℤ) p
-  have hpchooseNat : p ∣ p.choose 3 :=
-    hp.dvd_choose_self (by omega) (by omega)
   have hpchoose : (p : ℤ) ∣ (p.choose 3 : ℤ) := by
-    exact_mod_cast hpchooseNat
-  rcases hpchoose with ⟨u, hu⟩
-  rcases hpm with ⟨v, hv⟩
+    exact_mod_cast hp.dvd_choose_self (by omega) (by omega)
   have hsecond :
       (p : ℤ) ^ 2 ∣
         (p.choose 3 : ℤ) * (x : ℤ) ^ (p - 3) *
           ((x : ℤ) ^ 2 - 1) := by
-    refine ⟨u * (x : ℤ) ^ (p - 3) * v, ?_⟩
-    rw [hu, hv]
-    ring
+    simpa [pow_two, mul_assoc, mul_left_comm, mul_comm] using
+      dvd_mul_of_dvd_left (mul_dvd_mul hpchoose hpm)
+        ((x : ℤ) ^ (p - 3))
   have hthird :
-      (p : ℤ) ^ 2 ∣ (((x : ℤ) ^ 2 - 1) ^ 2 * z) := by
-    refine ⟨v ^ 2 * z, ?_⟩
-    rw [hv]
-    ring
-  rcases hsq with ⟨w, hw⟩
-  rcases hsecond with ⟨s, hs⟩
-  rcases hthird with ⟨t, ht⟩
+      (p : ℤ) ^ 2 ∣ (((x : ℤ) ^ 2 - 1) ^ 2 * z) :=
+    dvd_mul_of_dvd_left (pow_dvd_pow_of_dvd hpm 2) z
   have hfirst :
       (p : ℤ) ^ 2 ∣ (p : ℤ) * (x : ℤ) ^ (p - 1) := by
-    refine ⟨w - s - t, ?_⟩
-    calc
-      (p : ℤ) * (x : ℤ) ^ (p - 1) =
-          pellY (x : ℤ) p -
-              (p.choose 3 : ℤ) * (x : ℤ) ^ (p - 3) *
-                ((x : ℤ) ^ 2 - 1) -
-                (((x : ℤ) ^ 2 - 1) ^ 2 * z) := by rw [hz]; ring
-      _ = (p : ℤ) ^ 2 * w - (p : ℤ) ^ 2 * s -
-          (p : ℤ) ^ 2 * t := by rw [hw, hs, ht]
-      _ = (p : ℤ) ^ 2 * (w - s - t) := by ring
+    rw [hz] at hsq
+    convert Int.dvd_sub (Int.dvd_sub hsq hsecond) hthird using 1
+    ring
   have hfirstNat : p ^ 2 ∣ p * x ^ (p - 1) := by
     exact_mod_cast hfirst
   have hpdvdPow : p ∣ x ^ (p - 1) := by
@@ -366,18 +322,7 @@ lemma pellY_pos_of_pell
       (by simpa [a] using hx) (by simpa [a] using hy) k
   rw [pell_y_pow_eq_mul_pellY] at hpow
   simpa only [a, natPellSolution_x, natPellSolution_y] using
-    (pos_of_mul_pos_right hpow (by positivity : (0 : ℤ) ≤ (y : ℤ)))
-
-private lemma two_le_of_prime_pow_lt {p k c : ℕ} (hp : 1 < p)
-    (hc : c = p ^ k) (hpc : p < c) :
-    2 ≤ k := by
-  subst c
-  cases k with
-  | zero => simp at hpc; omega
-  | succ k =>
-      cases k with
-      | zero => simp at hpc
-      | succ k => omega
+    (pos_of_mul_pos_right hpow (Int.natCast_nonneg y))
 
 /--
 A prime-index Pell/Lucas coefficient always has a prime factor outside the
@@ -394,7 +339,7 @@ theorem exists_prime_dvd_pellY_not_dvd_parameter
         q.Prime → q ∣ (pellY (x : ℤ) p).natAbs → q ∣ d := by
     intro q hq hqc
     by_contra hqd
-    exact h ⟨q, hq, Int.natAbs_dvd_natAbs.mp hqc, hqd⟩
+    exact h ⟨q, hq, Int.natCast_dvd.mpr hqc, hqd⟩
   have hy : 0 < y := by
     apply Nat.pos_of_ne_zero
     intro hy
@@ -412,8 +357,10 @@ theorem exists_prime_dvd_pellY_not_dvd_parameter
     rw [hceq]
     exact natCast_lt_pellY (by exact_mod_cast hx) hp.one_lt
   have hcgt : p < c := by exact_mod_cast hcgtInt
-  have hk2 : 2 ≤ k := two_le_of_prime_pow_lt hp.one_lt hk hcgt
   have hcdef : c = p ^ k := by simpa only [c] using hk
+  have hk2 : 2 ≤ k := by
+    apply (Nat.pow_lt_pow_iff_right hp.one_lt).mp
+    simpa only [pow_one, ← hcdef] using hcgt
   have hpsqNat : p ^ 2 ∣ c := by
     rw [hcdef]
     exact pow_dvd_pow p hk2
@@ -424,22 +371,15 @@ theorem exists_prime_dvd_pellY_not_dvd_parameter
     rw [hcdef]
     exact dvd_pow_self p (by omega)
   have hpd : p ∣ d := hsmooth p hp hpdvdC
-  have hpx : ¬p ∣ x := by
-    intro hpx
-    exact hp.ne_one
-      (Nat.eq_one_of_dvd_coprimes
-        (coprime_x_parameter hxy) hpx hpd)
+  have hpx : ¬p ∣ x :=
+    hp.coprime_iff_not_dvd.mp
+      ((coprime_x_parameter hxy).of_dvd_right hpd).symm
   by_cases hp5 : 5 ≤ p
   · exact (prime_sq_not_dvd_pellY hp hp5
       (by
-        have hxy' :
-            (x : ℤ) ^ 2 = 1 + (d : ℤ) * (y : ℤ) ^ 2 := by
-          exact_mod_cast hxy
-        have hdvd : (d : ℤ) ∣ (x : ℤ) ^ 2 - 1 := by
-          refine ⟨(y : ℤ) ^ 2, ?_⟩
-          linarith
         exact
-          (by exact_mod_cast hpd : (p : ℤ) ∣ (d : ℤ)).trans hdvd)
+          (by exact_mod_cast hpd : (p : ℤ) ∣ (d : ℤ)).trans
+            (parameter_dvd_sq_sub_one_of_nat_pell hxy))
       hpx) hpsqInt
   · have hp_lt : p < 5 := by omega
     have hp2 : 2 ≤ p := hp.two_le
@@ -465,26 +405,14 @@ theorem exists_prime_dvd_pellY_not_dvd_parameter
       have hB : 2 * x + 1 ∣ 3 ^ k := by
         rw [← hcdef, ← hAB]
         exact dvd_mul_left _ _
-      obtain ⟨i, -, hi⟩ :=
-        (Nat.dvd_prime_pow (by decide : Nat.Prime 3)).mp hA
-      obtain ⟨j, -, hj⟩ :=
-        (Nat.dvd_prime_pow (by decide : Nat.Prime 3)).mp hB
-      have hi0 : i ≠ 0 := by
-        intro hi0
-        subst i
-        simp at hi
-        omega
-      have hj0 : j ≠ 0 := by
-        intro hj0
-        subst j
-        simp at hj
-        omega
-      have hdvdA : 3 ∣ 2 * x - 1 := by
-        rw [hi]
-        exact dvd_pow_self 3 hi0
-      have hdvdB : 3 ∣ 2 * x + 1 := by
-        rw [hj]
-        exact dvd_pow_self 3 hj0
+      have hdiv3 {a : ℕ} (ha1 : a ≠ 1) (ha : a ∣ 3 ^ k) : 3 ∣ a := by
+        obtain ⟨q, hq, hqa⟩ := Nat.exists_prime_and_dvd ha1
+        have hq3 : q = 3 :=
+          (Nat.prime_dvd_prime_iff_eq hq (by decide)).mp
+            (hq.dvd_of_dvd_pow (hqa.trans ha))
+        simpa only [hq3] using hqa
+      have hdvdA : 3 ∣ 2 * x - 1 := hdiv3 (by omega) hA
+      have hdvdB : 3 ∣ 2 * x + 1 := hdiv3 (by omega) hB
       have : 3 ∣ 2 := by
         convert Nat.dvd_sub hdvdB hdvdA using 1
         omega
@@ -586,19 +514,14 @@ theorem pell_smooth_x_unique
     x₁ = x₂ := by
   have hsol : natPellSolution hxy₁ = natPellSolution hxy₂ := by
     apply eq_of_primeFactors_y_subset_parameter
-    · simpa only [natPellSolution_x] using
-        (show (1 : ℤ) < (x₁ : ℤ) by exact_mod_cast hx₁)
-    · simpa only [natPellSolution_y] using
-        (show (0 : ℤ) < (y₁ : ℤ) by exact_mod_cast hy₁)
-    · simpa only [natPellSolution_x] using
-        (show (1 : ℤ) < (x₂ : ℤ) by exact_mod_cast hx₂)
-    · simpa only [natPellSolution_y] using
-        (show (0 : ℤ) < (y₂ : ℤ) by exact_mod_cast hy₂)
+    · simpa using Int.ofNat_lt.mpr hx₁
+    · simpa using Int.ofNat_lt.mpr hy₁
+    · simpa using Int.ofNat_lt.mpr hx₂
+    · simpa using Int.ofNat_lt.mpr hy₂
     · simpa only [natPellSolution_y, Int.natAbs_natCast] using hsmooth₁
     · simpa only [natPellSolution_y, Int.natAbs_natCast] using hsmooth₂
-  exact_mod_cast
-    (show (x₁ : ℤ) = (x₂ : ℤ) by
-      simpa only [natPellSolution_x] using congrArg Pell.Solution₁.x hsol)
+  exact Int.ofNat_inj.mp (by
+    simpa only [natPellSolution_x] using congrArg Pell.Solution₁.x hsol)
 
 /--
 The exponent of a prime retained in the Pell parameter in Størmer's
@@ -758,19 +681,12 @@ lemma pellSquareFactor_pos_of_consecutive
     (h2 : 2 ∈ s) (hn : n ∈ factoredNumbers s)
     (hn1 : n + 1 ∈ factoredNumbers s) :
     0 < pellSquareFactor s (consecutivePellNumber n) := by
-  have hdecomp :=
-    consecutivePellNumber_eq_pellParameter_mul_sq h2 hn hn1
-  have hnpos : 0 < n := Nat.pos_of_ne_zero hn.1
-  have hmpos : 0 < consecutivePellNumber n := by
-    simp only [consecutivePellNumber]
-    positivity
-  have hmulpos :
-      0 < pellParameter s (consecutivePellNumber n) *
-        pellSquareFactor s (consecutivePellNumber n) ^ 2 := by
-    rwa [← hdecomp]
-  have hy2pos : 0 < pellSquareFactor s (consecutivePellNumber n) ^ 2 :=
-    pos_of_mul_pos_right hmulpos (Nat.zero_le _)
-  exact (pow_pos_iff (by omega)).mp hy2pos
+  apply Nat.pos_of_ne_zero
+  intro hzero
+  apply ne_zero_of_mem_factoredNumbers
+    (consecutivePellNumber_mem_factoredNumbers h2 hn hn1)
+  rw [consecutivePellNumber_eq_pellParameter_mul_sq h2 hn hn1, hzero]
+  simp
 
 /--
 Størmer's three-valued exponent code is injective on consecutive
@@ -839,12 +755,10 @@ lemma card_admissibleCode (s : Finset ℕ) :
         apply Fintype.card_congr
         simpa only [P] using nonAdmissibleCodeEquiv s
       _ = 2 ^ s.card := by simp
-  have hcompl := Fintype.card_subtype_compl P
-  have hle := Fintype.card_subtype_le P
-  change Fintype.card {f : s → Fin 3 // P f} =
-    3 ^ s.card - 2 ^ s.card
-  simp only [Fintype.card_fun, Fintype.card_fin, Fintype.card_coe] at hcompl hle
-  omega
+  change Fintype.card {f : s → Fin 3 // P f} = 3 ^ s.card - 2 ^ s.card
+  simpa only [not_not, Fintype.card_fun, Fintype.card_fin,
+    Fintype.card_coe, hcomp] using
+      Fintype.card_subtype_compl (fun f : s → Fin 3 ↦ ¬P f)
 
 /--
 The exponent code of a positive pair of consecutive `s`-factored numbers
@@ -878,18 +792,12 @@ lemma consecutiveCode_admissible
     interval_cases hred :
       reducedExponent ((consecutivePellNumber n).factorization p) <;>
       simp_all
-  have hsquareInt :
-      IsSquare (pellParameter s (consecutivePellNumber n) : ℤ) :=
-    hsquareNat.map (Nat.castRingHom ℤ)
-  let a : Pell.Solution₁
-      (pellParameter s (consecutivePellNumber n) : ℤ) :=
-    natPellSolution (consecutive_pell_equation h2 hn hn1)
-  have hax : 1 < a.x := by
-    simp only [a, natPellSolution_x]
-    exact_mod_cast (show 1 < 2 * n + 1 by
+  apply not_isSquare_parameter_of_nat_pell
+    (show 1 < 2 * n + 1 by
       have := Nat.pos_of_ne_zero hn.1
       omega)
-  exact (Pell.Solution₁.d_nonsquare_of_one_lt_x hax) hsquareInt
+    (consecutive_pell_equation h2 hn hn1)
+  exact hsquareNat.map (Nat.castRingHom ℤ)
 
 /--
 Refined Størmer bound: among the `3 ^ s.card` exponent codes, the
@@ -910,11 +818,8 @@ theorem card_consecutive_factoredNumbers_le_sub
       (hA m m.2).1 (hA m m.2).2
       (hA n n.2).1 (hA n n.2).2
       (congrArg Subtype.val hmn)
-  calc
-    A.card = Fintype.card A := by simp
-    _ ≤ Fintype.card (AdmissibleCode s) :=
-      Fintype.card_le_of_injective encode hinjective
-    _ = 3 ^ s.card - 2 ^ s.card := card_admissibleCode s
+  simpa only [Fintype.card_coe, card_admissibleCode] using
+    Fintype.card_le_of_injective encode hinjective
 
 /--
 A finite collection of positive consecutive `s`-factored pairs has
