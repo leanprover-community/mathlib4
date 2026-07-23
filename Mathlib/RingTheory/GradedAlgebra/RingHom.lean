@@ -295,7 +295,8 @@ lemma map_directSumDecompose (f : F) {x : A} {i : ι} :
     f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i := by
   simp [DirectSum.decompose_map 𝒜]
 
-@[simp] lemma GradedRingHom.map_directSumDecompose (f : 𝒜 →+*ᵍ ℬ) {x : A} {i : ι} :
+variable {𝒜 ℬ} in
+@[simp] lemma GradedRingHom.map_directSumDecompose (f : 𝒜 →+*ᵍ ℬ) (x : A) (i : ι) :
     f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i :=
   _root_.map_directSumDecompose ..
 
