@@ -127,9 +127,17 @@ instance [Inhabited α] : Inhabited (GenContFract α) :=
 def partNums (g : GenContFract α) : Stream'.Seq α :=
   g.s.map Pair.a
 
+/-- Returns the partial numerators `aᵢ` of `g`, padding with `0` when `g` terminates. -/
+def partNums! [Zero α] (g : GenContFract α) : Stream' α :=
+  fun i => g.partNums.get? i |>.getD 0
+
 /-- Returns the sequence of partial denominators `bᵢ` of `g`. -/
 def partDens (g : GenContFract α) : Stream'.Seq α :=
   g.s.map Pair.b
+
+/-- Returns the partial denominators `bᵢ` of `g`, padding with `1` when `g` terminates. -/
+def partDens! [One α] (g : GenContFract α) : Stream' α :=
+  fun i => g.partDens.get? i |>.getD 1
 
 /-- A gcf terminated at position `n` if its sequence terminates at position `n`. -/
 def TerminatedAt (g : GenContFract α) (n : ℕ) : Prop :=
