@@ -71,7 +71,7 @@ def supportOuterMeasure {X : Type*} [TopologicalSpace X]
   {x | ∀ U ∈ 𝓝 x, 0 < μ U}
 
 
-/-! 
+/-!
 ## Basic facts about regular outer measures
 -/
 
