@@ -7,11 +7,23 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Topology.Sheaves.Abelian
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.ExactSequences
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
 /-!
 # Sheaves of abelian groups.
 
 Results for sheaves of abelian groups on topological spaces.
+
+## Main definitions
+
+* `TopCat.Sheaf.H`: The cohomology of a sheaf of abelian groups in degree `n`
+
+* `TopCat.Sheaf.H.map`: Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology
+  `H 𝓕 n ⟶ H 𝓖 n`
+
+* `TopCat.Sheaf.H.equiv₀`: The equivalence between `H F 0` and the global sections of `F`. This is
+  shown to be natural in `TopCat.Sheaf.H.equiv₀_comp`.
 
 -/
 
@@ -49,4 +61,31 @@ lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V 
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
 
-end TopCat
+namespace Sheaf
+
+noncomputable section
+
+/-- The documention for `HasExt` says to be very careful about making instances of it so we only
+make this instance for `AddCommGrpCat`. -/
+instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{u}) :=
+  hasExt_of_enoughInjectives _
+
+/-- The cohomology of a sheaf of abelian groups in degree `n`. -/
+abbrev H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
+
+/-- Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology `H 𝓕 n ⟶ H 𝓖 n` -/
+abbrev H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n →+ H G n :=
+    CategoryTheory.Sheaf.H.map f n
+
+set_option backward.isDefEq.respectTransparency false in
+instance (F : Sheaf AddCommGrpCat X) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
+  inferInstanceAs <| Subsingleton (CategoryTheory.Sheaf.H F (n + 1))
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `H F 0` is equivalent to taking global sections. -/
+abbrev H.equiv₀ (F : (Sheaf AddCommGrpCat X)) : H F 0 ≃+ F.obj.obj (op ⊤) :=
+    CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
+
+end
+
+end TopCat.Sheaf
