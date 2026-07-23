@@ -350,6 +350,7 @@ public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
+public import Mathlib.Algebra.GCDMonoid.Lattice
 public import Mathlib.Algebra.GCDMonoid.Multiset
 public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.GCDMonoid.PUnit
@@ -6171,6 +6172,7 @@ public import Mathlib.Order.KonigLemma
 public import Mathlib.Order.KrullDimension
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lattice.Congruence
+public import Mathlib.Order.Lattice.Constructor
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.Lex
