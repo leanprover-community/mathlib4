@@ -75,6 +75,18 @@ All linters imported here have no bulk imports;
 
 public section
 
+section test
+
+open Lean Elab Command
+
+/-- Does nothing. -/
+def Mathlib.Init.nullLinter : Linter where
+  run := withSetOptionIn fun cmd => pure ()
+
+initialize addLinter Mathlib.Init.nullLinter
+
+end test
+
 /-- Define a linter set of all mathlib syntax linters which are enabled by default.
 
 Projects depending on mathlib can use `set_option linter.mathlibStandardSet true` to enable
