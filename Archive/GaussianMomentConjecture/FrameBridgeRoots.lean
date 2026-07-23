@@ -3,7 +3,7 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib.FieldTheory.RatFunc.Defs
+import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 
 set_option linter.minImports true

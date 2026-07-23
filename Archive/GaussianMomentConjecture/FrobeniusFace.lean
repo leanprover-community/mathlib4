@@ -99,7 +99,7 @@ theorem balanced_height_strict_of_off_face [DecidableEq ι]
     intro i hi
     calc
       delta * (r i : ℚ) ≤ tiltedHeight a b lambda i * (r i : ℚ) :=
-        mul_le_mul_of_nonneg_right (hlower i hi) (by positivity)
+        mul_le_mul_of_nonneg_right (hlower i hi) (Nat.cast_nonneg _)
       _ = (r i : ℚ) * (a i : ℚ) -
           lambda * ((r i : ℚ) * (charge a b i : ℚ)) := by
             unfold tiltedHeight

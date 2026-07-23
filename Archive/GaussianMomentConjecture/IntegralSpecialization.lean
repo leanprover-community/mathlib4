@@ -86,7 +86,8 @@ theorem int_jacobson_bot :
   letI : Fact p.Prime := ⟨hp⟩
   have hxSpan : x ∈ Ideal.span {(p : ℤ)} := by
     rw [Ideal.jacobson, Ideal.mem_sInf] at hx
-    exact hx ⟨bot_le, inferInstance⟩
+    exact hx ⟨bot_le, PrincipalIdealRing.isMaximal_of_irreducible
+      (Int.prime_iff_natAbs_prime.mpr (by simpa using hp)).irreducible⟩
   rw [Ideal.mem_span_singleton] at hxSpan
   have hpAbs : p ∣ x.natAbs := Int.natCast_dvd.mp hxSpan
   have hxAbsPos : 0 < x.natAbs := Int.natAbs_pos.mpr hx0
