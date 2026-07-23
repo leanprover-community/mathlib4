@@ -53,6 +53,16 @@ theorem ContinuousNeg.of_continuousConstSMul [ContinuousConstSMul R M] : Continu
 
 end
 
+section Submodule
+
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+  [ContinuousConstSMul R M]
+
+instance Submodule.continuousConstSMul (S : Submodule R M) : ContinuousConstSMul R S :=
+  IsInducing.subtypeVal.continuousConstSMul id fun {_} {_} => rfl
+
+end Submodule
+
 section
 
 variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
