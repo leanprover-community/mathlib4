@@ -148,6 +148,11 @@ theorem Balanced.sub (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced �
 
 theorem balanced_zero : Balanced 𝕜 (0 : Set E) := fun _a _ha => (smul_zero _).subset
 
+theorem Balanced.linear_image [AddCommGroup F] [Module 𝕜 F] (hs : Balanced 𝕜 s)
+    (f : E →ₗ[𝕜] F) : Balanced 𝕜 (f '' s) := by
+  rintro a ha _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩
+  exact ⟨a • x, hs a ha (smul_mem_smul_set hx), by rw [map_smul]⟩
+
 end Module
 
 end SeminormedRing
