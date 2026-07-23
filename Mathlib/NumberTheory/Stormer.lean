@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alexander Benjamin Worth Burns. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Benjamin Worth Burns
+Authors: Alexander Benjamin Worth Burns, Ravi Bajaj
 -/
 module
 
