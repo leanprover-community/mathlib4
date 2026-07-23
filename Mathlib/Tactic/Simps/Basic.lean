@@ -1029,7 +1029,26 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       levelParams := univs
       type := declType
       value := declValue }
-  inferDefEqAttr declName
+  -- A hand-written `theorem ... := rfl` is implicitly tagged `@[defeq]` by
+  -- `Lean.Elab.DefView.markDefEq`, with the equality validated at *default* transparency.
+  -- The auto-inference `Lean.inferDefEqAttr` (used for equation lemmas) is stricter: it grants
+  -- `@[defeq]` only when the equality holds at reducible+instances transparency, tagging merely
+  -- `@[backward_defeq]` otherwise. As a result a `@[simps]`-generated rfl-lemma and the
+  -- corresponding hand-written one are treated differently by `dsimp`. To put them on the same
+  -- footing, we mirror `markDefEq` here: when the projection proof is `rfl`, tag `@[defeq]`
+  -- using the same lenient (default-transparency, module-aware) validation. We fall back to just
+  -- `@[backward_defeq]` -- rather than erroring, as the bare `@[defeq]` attribute would -- when
+  -- validation fails (e.g. under the module system when the projected definition is not exposed).
+  if prf.isAppOf ``Eq.refl then
+    let valid ←
+      try
+        withExporting (isExporting := !isPrivateName declName) do validateDefEqAttr declName
+        pure true
+      catch _ => pure false
+    if valid then defeqAttr.setTag declName
+    backwardDefeqAttr.setTag declName
+  else
+    inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
   addTermInfo' ref (← mkConstWithLevelParams declName) (isBinder := true) |>.run'
