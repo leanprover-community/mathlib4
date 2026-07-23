@@ -673,6 +673,75 @@ theorem vonStaudt_clausen (k : ℕ) :
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
     exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd
 
+section Valuation
+
+variable {k p : ℕ} [Fact p.Prime]
+
+private lemma padicValuation_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    Rat.padicValuation p (bernoulli (2 * k)) = Rat.padicValuation p (1 / (p : ℚ)) := by
+  have hkey := not_dvd_den_bernoulli_add_indicator (k := k) (p := p) hk
+  rw [show vonStaudtIndicator (2 * k) p = 1 by simp [vonStaudtIndicator, hpk]] at hkey
+  have hvp : 1 < Rat.padicValuation p (1 / (p : ℚ)) := by
+    rw [← not_le, Rat.padicValuation_le_one_iff, not_not]
+    simp [(Fact.out : p.Prime).ne_zero]
+  simpa using (Rat.padicValuation p).map_sub_eq_of_lt_right
+    (lt_of_le_of_lt (Rat.padicValuation_le_one_iff.mpr hkey) hvp)
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then the `p`-adic valuation of the Bernoulli
+number `B₂ₖ` is `-1`. -/
+theorem padicValRat_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    padicValRat p (bernoulli (2 * k)) = -1 := by
+  have hpne : (p : ℚ) ≠ 0 := by exact_mod_cast (Fact.out : p.Prime).ne_zero
+  have unfold_val : ∀ x : ℚ, x ≠ 0 →
+      Rat.padicValuation p x = WithZero.exp (-padicValRat p x) := fun x hx => by
+    simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+      if_neg hx]
+  have hval := padicValuation_bernoulli hk hpk
+  rw [one_div] at hval
+  have hbne : bernoulli (2 * k) ≠ 0 := by
+    intro h
+    rw [h, map_zero, eq_comm, Rat.padicValuation_eq_zero_iff, _root_.inv_eq_zero] at hval
+    exact hpne hval
+  rw [unfold_val _ hbne, unfold_val _ (inv_ne_zero hpne), WithZero.exp_inj, neg_inj,
+    padicValRat.inv, padicValRat.self (Fact.out : p.Prime).one_lt] at hval
+  exact hval
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` divides the denominator of the
+Bernoulli number `B₂ₖ`. -/
+theorem dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) : p ∣ (bernoulli (2 * k)).den := by
+  have hvp : 1 < Rat.padicValuation p (1 / (p : ℚ)) := by
+    rw [← not_le, Rat.padicValuation_le_one_iff, not_not]
+    simp [(Fact.out : p.Prime).ne_zero]
+  by_contra hcon
+  exact absurd (padicValuation_bernoulli hk hpk ▸ Rat.padicValuation_le_one_iff.mpr hcon)
+    (not_le.mpr hvp)
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
+Bernoulli number `B₂ₖ`. -/
+theorem not_dvd_num_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    ¬ (p : ℤ) ∣ (bernoulli (2 * k)).num := by
+  rw [Int.natCast_dvd]
+  exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
+    (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p ^ 2` does not divide the denominator of
+the Bernoulli number `B₂ₖ`: each prime occurs in the denominator with multiplicity one. -/
+theorem not_sq_dvd_den_bernoulli {k p : ℕ} (hk : 0 < k) [Hp : Fact p.Prime]
+    (hpk : p - 1 ∣ 2 * k) : ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
+  have hv : Rat.padicValuation p ((p : ℚ) * bernoulli (2 * k)) = 1 := by
+    rw [map_mul, padicValuation_bernoulli hk hpk, ← map_mul, mul_one_div,
+      div_self (by exact_mod_cast Hp.out.ne_zero), map_one]
+  have h1 : ¬ p ∣ ((p : ℚ) * bernoulli (2 * k)).den := Rat.padicValuation_le_one_iff.mp hv.le
+  have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
+    have hd := Rat.mul_den_dvd (1 / (p : ℚ)) ((p : ℚ) * bernoulli (2 * k))
+    rwa [one_div, inv_mul_cancel_left₀ (by exact_mod_cast Hp.out.ne_zero),
+      show ((p : ℚ)⁻¹).den = p by simp [Hp.out.ne_zero]] at hd
+  intro hsq
+  rw [pow_two] at hsq
+  exact h1 ((Nat.mul_dvd_mul_iff_left Hp.out.pos).mp (hsq.trans h2))
+
+end Valuation
+
 end Bernoulli
 
 end vonStaudtClausen
