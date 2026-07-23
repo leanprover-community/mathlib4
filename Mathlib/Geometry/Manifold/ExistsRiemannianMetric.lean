@@ -164,7 +164,7 @@ lemma riemannian_metric_symm_aux (f : SmoothPartitionOfUnity B IB B) (b : B)
       ((∑ j ∈ h1.toFinset, (f j) b • g_bilin_aux F j b).toFun u).toFun v := by
     intros u v
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
-    rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
+    rw [sum_apply, sum_apply]
   calc ((∑ j ∈ h1.toFinset, (f j) b • g_bilin_aux F j b).toFun v).toFun w
       = ∑ j ∈ h1.toFinset, (((f j) b • g_bilin_aux F j b).toFun v).toFun w := (h3 v w).symm
     _ = ∑ᶠ (j : B), (((f j) b • g_bilin_aux F j b).toFun v).toFun w :=
@@ -188,7 +188,7 @@ lemma riemannian_metric_pos_def_aux (f : SmoothPartitionOfUnity B IB B)
   have h2 : ∑ j ∈ h1.toFinset, (((f j) b • g_bilin_aux F j b).toFun v).toFun v =
             ((∑ j ∈ h1.toFinset, (f j) b • g_bilin_aux F j b).toFun v).toFun v := by
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
-    rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
+    rw [sum_apply, sum_apply]
   let h : (j : B) → (E b →L[ℝ] (E b →L[ℝ] ℝ)) := fun j ↦ (f j) b • g_bilin_aux F j b
   let h' x := f x b * ((g_bilin_aux F x b).toFun v).toFun v
   have h3 : (Function.support h) ⊆ h1.toFinset := Set.Finite.toFinset_subset.mp fun ⦃a⦄ a ↦ a
@@ -343,14 +343,16 @@ lemma inCoordinates_apply_eq₂_spec_symm
   have h2 : ∀ u v, ϕ u v = w (χ.symm x u) (χ.symm x v) := fun u v => by
     rw [← h1, continuousLinearMapAt_apply, linearMapAt_apply, hom_trivializationAt_apply,
       if_pos hc, ← inCoordinates_apply_eq₂_spec hb]
-    simp only [symmL_apply]
-    exact DFunLike.congr_fun rfl v
-  have h3 : χ.symm x (χ.continuousLinearMapAt ℝ x u) = u :=
-    symmL_continuousLinearMapAt (trivializationAt F E x₀) hb u
-  have h4 : χ.symm x (χ.continuousLinearMapAt ℝ x v) = v :=
-    symmL_continuousLinearMapAt (trivializationAt F E x₀) hb v
-  rw [show w u v = ϕ (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v) from by
-    rw [h2 (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v), h3, h4]]
+    rw [symmL_apply]
+    exact hc
+  have h3 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb u
+  rw [symmL_apply] at h3
+  · have h4 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb v
+    rw [symmL_apply] at h4
+    · rw [show w u v = ϕ (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v) from by
+        rw [h2 (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v), h3, h4]]
+    · exact hb
+  · exact hb
 
 lemma g_global_bilin_eq
     (f : SmoothPartitionOfUnity B IB B)
@@ -376,7 +378,7 @@ lemma g_global_bilin_eq
         exact subset_closure h
       have hsupp : p ∈ (trivializationAt F E j).baseSet ∩ (chartAt HB j).source :=
         hf j hp
-      simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
+      simp only [FunLike.coe_smul, Pi.smul_apply, smul_eq_mul]
       congr 1
       unfold g_bilin g_bilin_aux
       simp only

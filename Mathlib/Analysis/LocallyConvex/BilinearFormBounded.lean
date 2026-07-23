@@ -41,6 +41,7 @@ structure W
   (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) where
   val : V
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [T2Space V] in
 lemma W.ext_iff (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
     (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
     (u v : W φ hpos hsymm hdef) :
@@ -84,7 +85,7 @@ noncomputable def seminormOfBilinearForm (φ : V →L[ℝ] V →L[ℝ] ℝ)
       have h1 : φ (r + s) (r + s) ≤ (Real.sqrt ((φ r) r) + Real.sqrt ((φ s) s)) ^ 2 := by
         calc φ (r + s) (r + s)
           = (φ r) r + (φ r) s + (φ s) r + (φ s) s := by
-              simp only [map_add, ContinuousLinearMap.add_apply]
+              simp only [map_add, add_apply]
               ring
         _ = (φ r) r + 2 * (φ r) s + (φ s) s := by
               rw [hsymm r s]
@@ -108,6 +109,7 @@ noncomputable instance (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ �
   Norm (W φ hpos hsymm hdef) where
   norm v := seminormOfBilinearForm φ hpos hsymm v.val
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [T2Space V] in
 lemma seminormOfBilinearForm_sub_self (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
     (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
     (v : W φ hpos hsymm hdef) :
@@ -115,15 +117,17 @@ lemma seminormOfBilinearForm_sub_self (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos :
   unfold seminormOfBilinearForm
   simp
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [T2Space V] in
 lemma seminormOfBilinearForm_sub_comm (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
     (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
     (u v : W φ hpos hsymm hdef) :
     seminormOfBilinearForm φ hpos hsymm (u.val - v.val) =
     seminormOfBilinearForm φ hpos hsymm (v.val - u.val) := by
   change √((φ (u.val - v.val)) (u.val - v.val)) = √((φ (v.val - u.val)) (v.val - u.val))
-  simp only [map_sub, ContinuousLinearMap.coe_sub', Pi.sub_apply]
+  simp only [map_sub, FunLike.coe_sub, Pi.sub_apply]
   ring_nf
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [T2Space V] in
 lemma eq_of_dist_eq_zero_aux (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
     (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
     {u v : W φ hpos hsymm hdef} :
@@ -135,6 +139,7 @@ lemma eq_of_dist_eq_zero_aux (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0
     apply (W.ext_iff φ hpos hsymm hdef u v).mpr
     exact sub_eq_zero.mp h1
 
+omit [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [T2Space V] in
 lemma dist_triangle_aux (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
     (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
   ∀ (x y z : W φ hpos hsymm hdef),
@@ -143,7 +148,7 @@ lemma dist_triangle_aux (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ 
       (seminormOfBilinearForm φ hpos hsymm) (y.val - z.val) := by
   intro u v w
   simpa [sub_add_sub_cancel] using
-    (seminormOfBilinearForm φ hpos hsymm).add_le' (u.val - v.val) (v.val - w.val)
+    map_add_le_add (seminormOfBilinearForm φ hpos hsymm) (u.val - v.val) (v.val - w.val)
 
 noncomputable instance (φ : V →L[ℝ] V →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
     (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
@@ -222,10 +227,14 @@ lemma withSeminormsOfBilinearForm
   WithSeminorms (Function.const (Fin 1) (seminormOfBilinearForm φ hpos hsymm)) := by
   let e : V ≃L[ℝ] W φ hpos hsymm hdef :=
     (W.equiv φ hpos hsymm hdef).toContinuousLinearEquiv
-  simpa [e, SeminormFamily.comp, seminormOfBilinearForm] using
-    e.toHomeomorph.isInducing.withSeminorms
-      (norm_withSeminorms ℝ (W φ hpos hsymm hdef))
-
+  have hfam : SeminormFamily.comp
+      (fun _ : Fin 1 ↦ normSeminorm ℝ (W φ hpos hsymm hdef))
+      (W.equiv φ hpos hsymm hdef).toLinearMap
+      = Function.const (Fin 1) (seminormOfBilinearForm φ hpos hsymm) := by
+    ext i v
+    rfl
+  rw [← hfam]
+  exact e.toHomeomorph.isInducing.withSeminorms (norm_withSeminorms ℝ _)
 
 lemma isVonNBounded_of_posDef (φ : V →L[ℝ] V →L[ℝ] ℝ)
    (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
@@ -245,8 +254,9 @@ lemma isVonNBounded_of_posDef (φ : V →L[ℝ] V →L[ℝ] ℝ)
       · rw [Finset.eq_singleton_iff_nonempty_unique_mem]
         refine Or.inr ⟨Finset.nonempty_iff_ne_empty.mpr h, fun x hx ↦ Unique.uniq _ _⟩
     · use 1; simp
-    · convert this
-  simp only [Set.mem_setOf_eq, Finset.sup_singleton, J]
+    · rw [h]
+      congr 1
+  simp only [Set.mem_ofPred_eq, Finset.sup_singleton, J]
   refine ⟨1, by norm_num, fun x h ↦ ?_⟩
   simp only [seminormOfBilinearForm]
   change Real.sqrt (φ x x) < 1
