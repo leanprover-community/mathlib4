@@ -193,10 +193,10 @@ theorem mk_of_inl (x : M) : (mk (of (.inl x)) : M ∗ N) = inl x := rfl
 theorem mk_of_inr (x : N) : (mk (of (.inr x)) : M ∗ N) = inr x := rfl
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
-    (one : C 1)
-    (inl_mul : ∀ m x, C x → C (inl m * x))
-    (inr_mul : ∀ n x, C x → C (inr n * x)) : C m := by
+theorem induction_on' {motive : M ∗ N → Prop} (m : M ∗ N)
+    (one : motive 1)
+    (inl_mul : ∀ m x, motive x → motive (inl m * x))
+    (inr_mul : ∀ n x, motive x → motive (inr n * x)) : motive m := by
   rcases mk_surjective m with ⟨x, rfl⟩
   induction x using FreeMonoid.inductionOn' with
   | one => exact one
@@ -206,8 +206,9 @@ theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
     | inr n => simpa using inr_mul n _ ih
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N)
-    (inl : ∀ m, C (inl m)) (inr : ∀ n, C (inr n)) (mul : ∀ x y, C x → C y → C (x * y)) : C m :=
+theorem induction_on {motive : M ∗ N → Prop} (m : M ∗ N)
+    (inl : ∀ m, motive (inl m)) (inr : ∀ n, motive (inr n))
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m :=
   induction_on' m (by simpa using inl 1) (fun _ _ ↦ mul _ _ (inl _)) fun _ _ ↦ mul _ _ (inr _)
 
 /-- Lift a monoid homomorphism `FreeMonoid (M ⊕ N) →* P` satisfying additional properties to
