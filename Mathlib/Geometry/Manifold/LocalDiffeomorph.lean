@@ -42,8 +42,6 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
-* if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
-  `f` is a local diffeomorphism at `x` (using the inverse function theorem).
 
 ## Implementation notes
 
@@ -153,7 +151,7 @@ variable {M N}
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism at `x`** iff there exist
 open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
-def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
+@[expose] def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
 lemma PartialDiffeomorph.isLocalDiffeomorphAt (φ : PartialDiffeomorph I J M N n)
