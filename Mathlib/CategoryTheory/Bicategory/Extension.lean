@@ -159,6 +159,37 @@ set_option backward.defeqAttrib.useBackward true in
 def whiskerOfCompIdIsoSelf (t : LeftExtension f g) : (t.whisker (𝟙 c)).ofCompId ≅ t :=
   StructuredArrow.isoMk (ρ_ (t.extension))
 
+section OfIso
+
+variable {f f' : a ⟶ b} (ef : f ≅ f') {g g' : a ⟶ c} (eg : g ≅ g')
+
+/-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
+categories of left extensions. -/
+def mapIso : LeftExtension f g ≌ LeftExtension f' g' :=
+  (StructuredArrow.mapNatIso ((precomposing a b c).mapIso ef)).trans (StructuredArrow.mapIso eg)
+
+/-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, and a left extension
+`t : LeftExtension f g`, the induced left extension `t.ofIso : LeftExtension f' g'`. -/
+def ofIso (t : LeftExtension f g) : LeftExtension f' g' :=
+  (mapIso ef eg).functor.obj t
+
+@[simp]
+theorem ofIso_extension (t : LeftExtension f g) :
+    (t.ofIso ef eg).extension = t.extension :=
+  rfl
+
+@[simp]
+theorem ofIso_unit (t : LeftExtension f g) :
+    (t.ofIso ef eg).unit = eg.inv ≫ t.unit ≫ ef.hom ▷ t.extension :=
+  rfl
+
+/-- Whiskering commutes with `LeftExtension.ofIso`. -/
+def whiskerOfIso (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
+    (t.whisker h).ofIso ef (whiskerRightIso eg h) ≅ (t.ofIso ef eg).whisker h :=
+  StructuredArrow.isoMk (Iso.refl _) <| by simp [precomp]
+
+end OfIso
+
 end LeftExtension
 
 /-- Triangle diagrams for (left) lifts.
@@ -283,6 +314,37 @@ set_option backward.defeqAttrib.useBackward true in
 def whiskerOfIdCompIsoSelf (t : LeftLift f g) : (t.whisker (𝟙 c)).ofIdComp ≅ t :=
   StructuredArrow.isoMk (λ_ (lift t))
 
+section OfIso
+
+variable {f f' : b ⟶ a} (ef : f ≅ f') {g g' : c ⟶ a} (eg : g ≅ g')
+
+/-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
+categories of left lifts. -/
+def mapIso : LeftLift f g ≌ LeftLift f' g' :=
+  (StructuredArrow.mapNatIso ((postcomposing c b a).mapIso ef)).trans (StructuredArrow.mapIso eg)
+
+/-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, and a left lift `t : LeftLift f g`, the
+induced left lift `t.ofIso : LeftLift f' g'`. -/
+def ofIso (t : LeftLift f g) : LeftLift f' g' :=
+  (mapIso ef eg).functor.obj t
+
+@[simp]
+theorem ofIso_lift (t : LeftLift f g) :
+    (t.ofIso ef eg).lift = t.lift :=
+  rfl
+
+@[simp]
+theorem ofIso_unit (t : LeftLift f g) :
+    (t.ofIso ef eg).unit = eg.inv ≫ t.unit ≫ t.lift ◁ ef.hom :=
+  rfl
+
+/-- Whiskering commutes with `LeftLift.ofIso`. -/
+def whiskerOfIso (t : LeftLift f g) {x : B} (h : x ⟶ c) :
+    (t.whisker h).ofIso ef (whiskerLeftIso h eg) ≅ (t.ofIso ef eg).whisker h :=
+  StructuredArrow.isoMk (Iso.refl _) <| by simp [postcomp]
+
+end OfIso
+
 end LeftLift
 
 /-- Triangle diagrams for (right) extensions.
@@ -312,21 +374,128 @@ abbrev counit (t : RightExtension f g) : f ≫ t.extension ⟶ g := t.hom
 abbrev mk (h : b ⟶ c) (counit : f ≫ h ⟶ g) : RightExtension f g :=
   CostructuredArrow.mk counit
 
+variable {s t : RightExtension f g}
+
 /-- To construct a morphism between right extensions, we need a 2-morphism between the extensions,
 and to check that it is compatible with the counits. -/
-abbrev homMk {s t : RightExtension f g} (η : s.extension ⟶ t.extension)
+abbrev homMk (η : s.extension ⟶ t.extension)
     (w : f ◁ η ≫ t.counit = s.counit := by cat_disch) : s ⟶ t :=
   CostructuredArrow.homMk η w
 
 @[reassoc (attr := simp)]
-theorem w {s t : RightExtension f g} (η : s ⟶ t) :
-    f ◁ η.left ≫ t.counit = s.counit :=
+theorem w (η : s ⟶ t) : f ◁ η.left ≫ t.counit = s.counit :=
   CostructuredArrow.w η
 
 /-- The right extension along the identity. -/
 def alongId (g : a ⟶ c) : RightExtension (𝟙 a) g := .mk _ (λ_ g).hom
 
 instance : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
+
+/-- Construct a right extension of `g : a ⟶ c` from a right extension of `g ≫ 𝟙 c`. -/
+@[simps!]
+def ofCompId (t : RightExtension f (g ≫ 𝟙 c)) : RightExtension f g :=
+  mk (extension t) (counit t ≫ (ρ_ g).hom)
+
+/-- Whisker a 1-morphism to an extension.
+```
+  b
+  △ \
+  |   \ extension  | counit
+f |     \          ▽
+  |       ◿
+  a - - - ▷ c - - - ▷ x
+      g         h
+```
+-/
+def whisker (t : RightExtension f g) {x : B} (h : c ⟶ x) : RightExtension f (g ≫ h) :=
+  .mk _ <| (α_ f t.extension h).inv ≫ t.counit ▷ h
+
+@[simp]
+theorem whisker_extension (t : RightExtension f g) {x : B} (h : c ⟶ x) :
+    (t.whisker h).extension = t.extension ≫ h :=
+  rfl
+
+@[simp]
+theorem whisker_counit (t : RightExtension f g) {x : B} (h : c ⟶ x) :
+    (t.whisker h).counit = (α_ f t.extension h).inv ≫ t.counit ▷ h :=
+  rfl
+
+/-- Whiskering a 1-morphism is a functor. -/
+@[simps]
+def whiskering {x : B} (h : c ⟶ x) : RightExtension f g ⥤ RightExtension f (g ≫ h) where
+  obj t := t.whisker h
+  map η := RightExtension.homMk (η.left ▷ h) <| by
+    simp [-RightExtension.w, ← RightExtension.w η]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Define a morphism between right extensions by cancelling the whiskered identities. -/
+@[simps! left]
+def whiskerIdCancel
+    (t : RightExtension f (g ≫ 𝟙 c)) {s : RightExtension f g} (τ : s.whisker (𝟙 c) ⟶ t) :
+    s ⟶ t.ofCompId :=
+  RightExtension.homMk ((ρ_ _).inv ≫ τ.left)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Construct a morphism between whiskered extensions. -/
+@[simps! left]
+def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
+    s.whisker h ⟶ t.whisker h :=
+  CostructuredArrow.homMk (i.left ▷ h) <| by
+    rw [← cancel_epi (α_ f s.extension h).hom]
+    calc
+      _ = (f ◁ i.left ≫ t.counit) ▷ h := by simp [-RightExtension.w]
+      _ = s.counit ▷ h := congrArg (· ▷ h) (RightExtension.w i)
+      _ = _ := by simp
+
+/-- Construct an isomorphism between whiskered extensions. -/
+def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
+    s.whisker h ≅ t.whisker h :=
+  Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
+    (CostructuredArrow.hom_ext _ _ <|
+      calc
+        _ = (i.hom ≫ i.inv).left ▷ h := by simp [-Iso.hom_inv_id]
+        _ = 𝟙 _ := by simp [Iso.hom_inv_id])
+    (CostructuredArrow.hom_ext _ _ <|
+      calc
+        _ = (i.inv ≫ i.hom).left ▷ h := by simp [-Iso.inv_hom_id]
+        _ = 𝟙 _ := by simp [Iso.inv_hom_id])
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The isomorphism between right extensions induced by a right unitor. -/
+@[simps! hom_left inv_left]
+def whiskerOfCompIdIsoSelf (t : RightExtension f g) : (t.whisker (𝟙 c)).ofCompId ≅ t :=
+  CostructuredArrow.isoMk (ρ_ (t.extension))
+
+section OfIso
+
+variable {f f' : a ⟶ b} (ef : f ≅ f') {g g' : a ⟶ c} (eg : g ≅ g')
+
+/-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
+categories of right extensions. -/
+def mapIso : RightExtension f g ≌ RightExtension f' g' :=
+  (CostructuredArrow.mapNatIso ((precomposing a b c).mapIso ef)).trans (CostructuredArrow.mapIso eg)
+
+/-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, and a right extension
+`t : RightExtension f g`, the induced right extension `t.ofIso : RightExtension f' g'`. -/
+def ofIso (t : RightExtension f g) : RightExtension f' g' :=
+  (mapIso ef eg).functor.obj t
+
+@[simp]
+theorem ofIso_extension (t : RightExtension f g) :
+    (t.ofIso ef eg).extension = t.extension :=
+  rfl
+
+@[simp]
+theorem ofIso_counit (t : RightExtension f g) :
+    (t.ofIso ef eg).counit = ef.inv ▷ t.extension ≫ t.counit ≫ eg.hom := by
+  rw [← Category.assoc]; rfl
+
+/-- Whiskering commutes with `RightExtension.ofIso`. -/
+def whiskerOfIso (t : RightExtension f g) {x : B} (h : c ⟶ x) :
+    (t.whisker h).ofIso ef (whiskerRightIso eg h) ≅ (t.ofIso ef eg).whisker h :=
+  CostructuredArrow.isoMk (Iso.refl _) <| by simp [precomp]
+
+end OfIso
 
 end RightExtension
 
@@ -451,6 +620,38 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps! hom_left inv_left]
 def whiskerOfIdCompIsoSelf (t : RightLift f g) : (t.whisker (𝟙 c)).ofIdComp ≅ t :=
   CostructuredArrow.isoMk (λ_ (lift t))
+
+section OfIso
+
+variable {f f' : b ⟶ a} (ef : f ≅ f') {g g' : c ⟶ a} (eg : g ≅ g')
+
+/-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
+categories of right lifts. -/
+def mapIso : RightLift f g ≌ RightLift f' g' :=
+  (CostructuredArrow.mapNatIso ((postcomposing c b a).mapIso ef)).trans
+    (CostructuredArrow.mapIso eg)
+
+/-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, and a right lift `t : RightLift f g`, the
+induced right lift `t.ofIso : RightLift f' g'`. -/
+def ofIso (t : RightLift f g) : RightLift f' g' :=
+  (mapIso ef eg).functor.obj t
+
+@[simp]
+theorem ofIso_lift (t : RightLift f g) :
+    (t.ofIso ef eg).lift = t.lift :=
+  rfl
+
+@[simp]
+theorem ofIso_counit (t : RightLift f g) :
+    (t.ofIso ef eg).counit = t.lift ◁ ef.inv ≫ t.counit ≫ eg.hom := by
+  rw [← Category.assoc]; rfl
+
+/-- Whiskering commutes with `RightLift.ofIso`. -/
+def whiskerOfIso (t : RightLift f g) {x : B} (h : x ⟶ c) :
+    (t.whisker h).ofIso ef (whiskerLeftIso h eg) ≅ (t.ofIso ef eg).whisker h :=
+  CostructuredArrow.isoMk (Iso.refl _) <| by simp [postcomp]
+
+end OfIso
 
 end RightLift
 
