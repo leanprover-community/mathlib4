@@ -8,9 +8,12 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
 /-!
 # Eigenvalues are characteristic polynomial roots.
+
+## Main results
 
 In fields we show that:
 
@@ -21,6 +24,8 @@ In fields we show that:
   of the matrix.
 * `Matrix.trace_eq_sum_roots_charpoly_of_splits`: the trace is the sum of the roots of the
   characteristic polynomial if the polynomial splits in the field of the matrix.
+* `Matrix.spectrum_transpose`: a matrix and its transpose have the same spectrum
+  (`Matrix.spectralRadius_transpose` is in `Analysis.Matrix.Spectrum`).
 
 In an algebraically closed field we show that:
 
@@ -79,6 +84,11 @@ The weaker direction is true in nontrivial rings (see `Matrix.mem_spectrum_of_is
 -/
 theorem mem_spectrum_iff_isRoot_charpoly {r : K} : r ∈ spectrum K A ↔ IsRoot A.charpoly r := by
   simp [mem_spectrum_iff_not_isUnit_eval_charpoly]
+
+/-- A matrix and its transpose have the same spectrum. -/
+theorem spectrum_transpose (A : Matrix n n K) : spectrum K A.transpose = spectrum K A := by
+  ext μ
+  rw [mem_spectrum_iff_isRoot_charpoly, mem_spectrum_iff_isRoot_charpoly, charpoly_transpose]
 
 theorem det_eq_prod_roots_charpoly_of_splits [IsDomain R] (hAps : B.charpoly.Splits) :
     B.det = (Matrix.charpoly B).roots.prod := by
