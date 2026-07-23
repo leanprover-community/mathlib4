@@ -133,7 +133,7 @@ def toSimpleGraphOfSimpleGraphIso (G : SimpleGraph α) :
     (toSimpleGraph (ofSimpleGraph G)) ≃g G := by
   use Equiv.Set.univ α
   refine ⟨fun h ↦ ⟨fun h' ↦ h.ne (congrArg Subtype.val h'), ?_⟩, fun ⟨_, h⟩ ↦ ?_⟩ <;>
-    revert h <;> simp only [← Equiv.Set.univ_apply, ofSimpleGraph_adj_iff] <;> exact id
+    revert h <;> rw [ofSimpleGraph_adj_iff] <;> exact id
 
 end toSimpleGraph
 
