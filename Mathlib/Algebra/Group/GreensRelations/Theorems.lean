@@ -25,6 +25,28 @@ variable {S : Type*} [Semigroup S]
 
 open MulSeq
 
+section MonotonicityAndCommutativity
+
+/-- Right multiplication preserves Green's `L`-relation. -/
+theorem isGreenL_mul_right {a b c : S} (h : IsGreenL a b) :
+IsGreenL (a * c) (b * c) := IsGreenL.mul_right c h
+
+/-- Left multiplication preserves Green's `R`-relation. -/
+theorem isGreenR_mul_left {a b c : S} (h : IsGreenR a b) :
+    IsGreenR (c * a) (c * b) := IsGreenR.mul_left c h
+
+/-- Equivalence of `L ∘ R` and `R ∘ L` compositions in the definition of Green's `D`-relation. -/
+theorem isGreenD_commutes_L_R {a b : S} :
+    (∃ c, IsGreenL a c ∧ IsGreenR c b) ↔ (∃ c', IsGreenR a c' ∧ IsGreenL c' b) :=
+  ⟨fun ⟨_, hL, hR⟩ ↦ isGreenL_commutes_isGreenR hL hR,
+   fun ⟨_, hR, hL⟩ ↦ by
+     obtain ⟨z, hRz, hLz⟩ := isGreenL_commutes_isGreenR hL.symm hR.symm
+     exact ⟨z, hLz.symm, hRz.symm⟩⟩
+
+end MonotonicityAndCommutativity
+
+section RegularDClassesCharacterizations
+
 /-- A `D`-class is regular if and only if it contains an idempotent. -/
 theorem isRegularDClass_iff_exists_idempotent (D : Set S) (hD : ∃ x, D = IsGreenD.eqvClass x) :
     IsRegularDClass D ↔ ∃ e ∈ D, e * e = e := by
@@ -51,6 +73,50 @@ theorem isRegularDClass_iff_exists_idempotent (D : Set S) (hD : ∃ x, D = IsGre
     rcases hL_yz.right with rfl | ⟨q, rfl⟩
     · exact ⟨u, hy_uz⟩
     · exact ⟨u * q, by simpa [mul_assoc] using hy_uz⟩
+
+/-- A `D`-class is regular if and only if every `L`-class inside it contains an idempotent. -/
+theorem isRegularDClass_iff_forall_LClass_has_idempotent
+    (D : Set S) (hD : ∃ x, D = IsGreenD.eqvClass x) :
+    IsRegularDClass D ↔ ∀ L : Set S, (∃ x ∈ D, L = IsGreenL.eqvClass x) → ∃ e ∈ L, e * e = e := by
+  obtain ⟨x₀, rfl⟩ := hD
+  constructor
+  · rintro hReg L ⟨x, hx, rfl⟩
+    exact exists_idempotent_in_greenL_of_regular (hReg x hx)
+  · intro H x hx
+    obtain ⟨e, he, he_idem⟩ := H (IsGreenL.eqvClass x) ⟨x, hx, rfl⟩
+    obtain ⟨u, hu⟩ : ∃ u, e = u * x := by
+      rcases he.left with h | ⟨u, hu⟩
+      · exact ⟨e, by exact h ▸ he_idem.symm⟩
+      · exact ⟨u, hu⟩
+    obtain ⟨v, hv⟩ : ∃ v, x = v * e := by
+      rcases he.right with h | ⟨v, hv⟩
+      · exact ⟨e, by exact h ▸ he_idem.symm⟩
+      · exact ⟨v, hv⟩
+    exact ⟨u, by rw [mul_assoc, ← hu, hv, mul_assoc, he_idem]⟩
+
+/-- A `D`-class is regular if and only if every `R`-class inside it contains an idempotent. -/
+theorem isRegularDClass_iff_forall_RClass_has_idempotent
+    (D : Set S) (hD : ∃ x, D = IsGreenD.eqvClass x) :
+    IsRegularDClass D ↔ ∀ R : Set S, (∃ x ∈ D, R = IsGreenR.eqvClass x) → ∃ e ∈ R, e * e = e := by
+  obtain ⟨x₀, rfl⟩ := hD
+  constructor
+  · rintro hReg R ⟨x, hx, rfl⟩
+    exact exists_idempotent_in_greenR_of_regular (hReg x hx)
+  · intro H x hx
+    obtain ⟨e, he, he_idem⟩ := H (IsGreenR.eqvClass x) ⟨x, hx, rfl⟩
+    obtain ⟨u, hu⟩ : ∃ u, e = x * u := by
+      rcases he.left with h | ⟨u, hu⟩
+      · exact ⟨e, by exact h ▸ he_idem.symm⟩
+      · exact ⟨u, hu⟩
+    obtain ⟨v, hv⟩ : ∃ v, x = e * v := by
+      rcases he.right with h | ⟨v, hv⟩
+      · exact ⟨e, by exact h ▸ he_idem.symm⟩
+      · exact ⟨v, hv⟩
+    exact ⟨u, by rw [← hu, hv, ← mul_assoc, he_idem]⟩
+
+end RegularDClassesCharacterizations
+
+section BijectionsAndCardinalities
 
 /-- A bijection between the `H`-classes of two `L`-related elements. -/
 noncomputable def equivHClassOfIsGreenL {a b : S} (h_L_ab : IsGreenL a b) :
@@ -177,6 +243,20 @@ theorem mul_mem_isGreenD_eqvClass_properties
         exact ⟨v * a, IsGreenD.trans ⟨a, IsGreenL.symm hLae, IsGreenR.refl a⟩ ha, by grind,
           hLae, ⟨Or.inr ⟨b, by grind⟩, Or.inr ⟨u, h_va_eq_bu⟩⟩⟩
 
+/-- A `D`-class is regular if and only if there exist
+two elements in it whose product is also in the `D`-class. -/
+theorem isRegularDClass_iff_exists_mul_mem
+    [Finite S] (D : Set S) (hD : ∃ x, D = IsGreenD.eqvClass x) :
+    IsRegularDClass D ↔ ∃ a ∈ D, ∃ b ∈ D, a * b ∈ D := by
+  constructor
+  · intro hReg
+    obtain ⟨e, heD, he_idem⟩ := (isRegularDClass_iff_exists_idempotent D hD).mp hReg
+    exact ⟨e, heD, e, heD, by rwa [he_idem]⟩
+  · rintro ⟨a, ha, b, hb, hab⟩
+    obtain ⟨_, h_exists⟩ := mul_mem_isGreenD_eqvClass_properties hD a b ha hb hab
+    rcases h_exists with ⟨e, heD, he_idem, _⟩
+    exact (isRegularDClass_iff_exists_idempotent D hD).mpr ⟨e, heD, he_idem⟩
+
 /-- A predicate stating that a set `H : Set S` forms a group under
     the semigroup multiplication restricted to `H`. -/
 def IsGroup (H : Set S) : Prop := Nonempty (Group H)
@@ -258,3 +338,5 @@ theorem isGreenH_eqvClass_dichotomy
     exact h_disj
   · right
     exact ⟨h_closed, isGreenH_eqvClass_isGroup_of_idempotent hH heH he_idem⟩
+
+end BijectionsAndCardinalities
