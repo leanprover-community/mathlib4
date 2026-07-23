@@ -67,7 +67,7 @@ theorem isOpen_Ici (a : ℝₗ) : IsOpen (Ici a) :=
 
 theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := by
   rw [TopologicalSpace.nhds_generateFrom]
-  haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
+  have : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
     refine (IsLeast.isGLB ?_).iInf_eq
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
@@ -312,7 +312,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
 /-- Topology on the Sorgenfrey line is not metrizable. -/
 theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
   intro
-  letI := metrizableSpaceMetric ℝₗ
+  let := metrizableSpaceMetric ℝₗ
   exact not_normalSpace_prod inferInstance
 
 /-- Topology on the Sorgenfrey line is not second countable. -/

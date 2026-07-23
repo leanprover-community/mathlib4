@@ -242,8 +242,8 @@ example : ¬UniqueProds ℕ := by
 
 /-- Some Types that do not have `UniqueSums`. -/
 example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
-  haveI : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
-  haveI : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
+  have : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
+  have : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
   rintro ⟨h⟩
   refine not_not.mpr (h Finset.univ_nonempty Finset.univ_nonempty) ?_
   suffices ∀ x y : ZMod n, ∃ x' y' : ZMod n, x' + y' = x + y ∧ (x' = x → ¬y' = y) by

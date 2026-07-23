@@ -247,7 +247,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   -- convenient to formalize the inductive construction.
   let A : Set (Set α) := {t | t.Countable}
   let empty : A := ⟨∅, countable_empty⟩
-  haveI : Nonempty A := ⟨empty⟩
+  have : Nonempty A := ⟨empty⟩
   -- given a countable set `s`, one can find a set `t` in its complement with measure close to
   -- maximal.
   have : ∀ s : A, ∃ t : A, ∀ u : A, f (↑u \ ↑s) ≤ 2 * f (↑t \ ↑s) := by
