@@ -103,6 +103,8 @@ structure Convert.ExpensiveConfig extends Convert.CheapConfig where
   -- TODO: also enable this in the future?
   -- preTransparency := .default
   -- transparency := .default
+  postTransparency := .default
+  sameFun := false
 
 /-- Internal elaborator for `Convert.ExpensiveConfig`: use `Convert.elabConfig` instead. -/
 declare_config_elab Convert.elabExpensiveConfig Convert.ExpensiveConfig
