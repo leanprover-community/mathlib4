@@ -24,7 +24,7 @@ class BorelOuterMeasure {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [Bo
   measurable_le_caratheodory : ‹MeasurableSpace X› ≤ μ.caratheodory
 
 
-/- **TODO (Theo): regular** outer measure: an outer measure `μ` on a space `X` is regular if
+/- **Regular** outer measure: an outer measure `μ` on a space `X` is regular if
 for every set `E`, there exists a `μ`-measurable set `F ⊇ E` with `μ E = μ F`. -/
 class RegularOuterMeasure {X : Type*}
     (μ : OuterMeasure X) : Prop where
@@ -46,7 +46,7 @@ class BorelRegularOuterMeasure {X : Type*} [TopologicalSpace X] [MeasurableSpace
       E ⊆ F ∧
       μ E = μ F
 
-/- **TODO:** describe what this instance is -/
+/- Borel regular outer measures are regular -/
 instance BorelRegularOuterMeasure.to_regularOuterMeasure {X : Type*} [TopologicalSpace X]
     [MeasurableSpace X] [BorelSpace X] (μ : OuterMeasure X) [BorelRegularOuterMeasure μ] :
     RegularOuterMeasure μ where
