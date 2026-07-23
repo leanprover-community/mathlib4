@@ -40,8 +40,10 @@ class ProperSpace (α : Type u) [PseudoMetricSpace α] : Prop where
   isCompact_closedBall : ∀ x : α, ∀ r, IsCompact (closedBall x r)
 
 export ProperSpace (isCompact_closedBall)
+attribute [compactness .] isCompact_closedBall
 
 /-- In a proper pseudometric space, all spheres are compact. -/
+@[compactness .]
 theorem isCompact_sphere {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
     IsCompact (sphere x r) :=
   (isCompact_closedBall x r).of_isClosed_subset isClosed_sphere sphere_subset_closedBall
