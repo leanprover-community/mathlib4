@@ -59,14 +59,14 @@ open Function OrderDual
 
 variable {ι α β : Type*} {π : ι → Type*}
 
+to_dual_name_hint Compl HNot, SDiff HImp
+
 /-- The symmetric difference operator on a type with `⊔` and `\` is `(A \ B) ⊔ (B \ A)`. -/
+@[to_dual
+/-- The Heyting bi-implication is `(b ⇨ a) ⊓ (a ⇨ b)`. This generalizes equivalence of
+propositions. -/]
 def symmDiff [Max α] [SDiff α] (a b : α) : α :=
   a \ b ⊔ b \ a
-
-/-- The Heyting bi-implication is `(b ⇨ a) ⊓ (a ⇨ b)`. This generalizes equivalence of
-propositions. -/
-def bihimp [Min α] [HImp α] (a b : α) : α :=
-  (b ⇨ a) ⊓ (a ⇨ b)
 
 /-- Notation for symmDiff -/
 scoped[symmDiff] infixl:100 " ∆ " => symmDiff
@@ -76,10 +76,8 @@ scoped[symmDiff] infixl:100 " ⇔ " => bihimp
 
 open scoped symmDiff
 
+@[to_dual]
 theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
-  rfl
-
-theorem bihimp_def [Min α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 
 theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor p q :=
@@ -98,73 +96,82 @@ section GeneralizedCoheytingAlgebra
 
 variable [GeneralizedCoheytingAlgebra α] (a b c : α)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem toDual_symmDiff : toDual (a ∆ b) = toDual a ⇔ toDual b :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp) ofDual_symmDiff]
 theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual b :=
   rfl
 
+@[to_dual]
 theorem symmDiff_comm : a ∆ b = b ∆ a := by simp only [symmDiff, sup_comm]
 
+@[to_dual]
 instance symmDiff_isCommutative : Std.Commutative (α := α) (· ∆ ·) :=
   ⟨symmDiff_comm⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_self : a ∆ a = ⊥ := by rw [symmDiff, sup_idem, sdiff_self]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_bot : a ∆ ⊥ = a := by rw [symmDiff, sdiff_bot, bot_sdiff, sup_bot_eq]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem bot_symmDiff : ⊥ ∆ a = a := by rw [symmDiff_comm, symmDiff_bot]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_eq_bot {a b : α} : a ∆ b = ⊥ ↔ a = b := by
   simp_rw [symmDiff, sup_eq_bot_iff, sdiff_eq_bot_iff, le_antisymm_iff]
 
+@[to_dual]
 theorem symmDiff_of_le {a b : α} (h : a ≤ b) : a ∆ b = b \ a := by
   rw [symmDiff, sdiff_eq_bot_iff.2 h, bot_sup_eq]
 
+@[to_dual]
 theorem symmDiff_of_ge {a b : α} (h : b ≤ a) : a ∆ b = a \ b := by
   rw [symmDiff, sdiff_eq_bot_iff.2 h, sup_bot_eq]
 
+@[to_dual le_bihimp]
 theorem symmDiff_le {a b c : α} (ha : a ≤ b ⊔ c) (hb : b ≤ a ⊔ c) : a ∆ b ≤ c :=
   sup_le (sdiff_le_iff.2 ha) <| sdiff_le_iff.2 hb
 
+@[to_dual le_bihimp_iff]
 theorem symmDiff_le_iff {a b c : α} : a ∆ b ≤ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c := by
   simp_rw [symmDiff, sup_le_iff, sdiff_le_iff]
 
-@[simp]
+@[to_dual (attr := simp) inf_le_bihimp]
 theorem symmDiff_le_sup {a b : α} : a ∆ b ≤ a ⊔ b :=
   sup_le_sup sdiff_le sdiff_le
 
+@[to_dual bihimp_eq_sup_himp_inf]
 theorem symmDiff_eq_sup_sdiff_inf : a ∆ b = (a ⊔ b) \ (a ⊓ b) := by simp [sup_sdiff, symmDiff]
 
+@[to_dual]
 theorem Disjoint.symmDiff_eq_sup {a b : α} (h : Disjoint a b) : a ∆ b = a ⊔ b := by
   rw [symmDiff, h.sdiff_eq_left, h.sdiff_eq_right]
 
+@[to_dual himp_bihimp]
 theorem symmDiff_sdiff : a ∆ b \ c = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) := by
   rw [symmDiff, sup_sdiff_distrib, sdiff_sdiff_left, sdiff_sdiff_left]
 
-@[simp]
+@[to_dual (attr := simp) sup_himp_bihimp]
 theorem symmDiff_sdiff_inf : a ∆ b \ (a ⊓ b) = a ∆ b := by
   rw [symmDiff_sdiff]
   simp [symmDiff]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_sdiff_eq_sup : a ∆ (b \ a) = a ⊔ b := by
   rw [symmDiff, sdiff_idem]
   exact
     le_antisymm (sup_le_sup sdiff_le sdiff_le)
       (sup_le le_sdiff_sup <| le_sdiff_sup.trans <| sup_le le_sup_right le_sdiff_sup)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem sdiff_symmDiff_eq_sup : (a \ b) ∆ b = a ⊔ b := by
   rw [symmDiff_comm, symmDiff_sdiff_eq_sup, sup_comm]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_sup_inf : a ∆ b ⊔ a ⊓ b = a ⊔ b := by
   refine le_antisymm (sup_le symmDiff_le_sup inf_le_sup) ?_
   rw [sup_inf_left, symmDiff]
@@ -174,162 +181,57 @@ theorem symmDiff_sup_inf : a ∆ b ⊔ a ⊓ b = a ⊔ b := by
   · rw [sup_assoc]
     exact le_sup_of_le_right le_sdiff_sup
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem inf_sup_symmDiff : a ⊓ b ⊔ a ∆ b = a ⊔ b := by rw [sup_comm, symmDiff_sup_inf]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_symmDiff_inf : a ∆ b ∆ (a ⊓ b) = a ⊔ b := by
   rw [← symmDiff_sdiff_inf a, sdiff_symmDiff_eq_sup, symmDiff_sup_inf]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem inf_symmDiff_symmDiff : (a ⊓ b) ∆ (a ∆ b) = a ⊔ b := by
   rw [symmDiff_comm, symmDiff_symmDiff_inf]
 
+@[to_dual]
 theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
   refine (sup_le_sup (sdiff_triangle a b c) <| sdiff_triangle _ b _).trans_eq ?_
   rw [sup_comm (c \ b), sup_sup_sup_comm, symmDiff, symmDiff]
 
+@[to_dual]
 theorem le_symmDiff_sup_right (a b : α) : a ≤ (a ∆ b) ⊔ b := by
   convert! symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
 
+@[to_dual]
 theorem le_symmDiff_sup_left (a b : α) : b ≤ (a ∆ b) ⊔ a :=
   symmDiff_comm a b ▸ le_symmDiff_sup_right ..
 
 end GeneralizedCoheytingAlgebra
 
-section GeneralizedHeytingAlgebra
-
-variable [GeneralizedHeytingAlgebra α] (a b c : α)
-
-@[simp]
-theorem toDual_bihimp : toDual (a ⇔ b) = toDual a ∆ toDual b :=
-  rfl
-
-@[simp]
-theorem ofDual_symmDiff (a b : αᵒᵈ) : ofDual (a ∆ b) = ofDual a ⇔ ofDual b :=
-  rfl
-
-theorem bihimp_comm : a ⇔ b = b ⇔ a := by simp only [(· ⇔ ·), inf_comm]
-
-instance bihimp_isCommutative : Std.Commutative (α := α) (· ⇔ ·) :=
-  ⟨bihimp_comm⟩
-
-@[simp]
-theorem bihimp_self : a ⇔ a = ⊤ := by rw [bihimp, inf_idem, himp_self]
-
-@[simp]
-theorem bihimp_top : a ⇔ ⊤ = a := by rw [bihimp, himp_top, top_himp, inf_top_eq]
-
-@[simp]
-theorem top_bihimp : ⊤ ⇔ a = a := by rw [bihimp_comm, bihimp_top]
-
-@[simp]
-theorem bihimp_eq_top {a b : α} : a ⇔ b = ⊤ ↔ a = b :=
-  @symmDiff_eq_bot αᵒᵈ _ _ _
-
-theorem bihimp_of_le {a b : α} (h : a ≤ b) : a ⇔ b = b ⇨ a := by
-  rw [bihimp, himp_eq_top_iff.2 h, inf_top_eq]
-
-theorem bihimp_of_ge {a b : α} (h : b ≤ a) : a ⇔ b = a ⇨ b := by
-  rw [bihimp, himp_eq_top_iff.2 h, top_inf_eq]
-
-theorem le_bihimp {a b c : α} (hb : a ⊓ b ≤ c) (hc : a ⊓ c ≤ b) : a ≤ b ⇔ c :=
-  le_inf (le_himp_iff.2 hc) <| le_himp_iff.2 hb
-
-theorem le_bihimp_iff {a b c : α} : a ≤ b ⇔ c ↔ a ⊓ b ≤ c ∧ a ⊓ c ≤ b := by
-  simp_rw [bihimp, le_inf_iff, le_himp_iff, and_comm]
-
-@[simp]
-theorem inf_le_bihimp {a b : α} : a ⊓ b ≤ a ⇔ b :=
-  inf_le_inf le_himp le_himp
-
-theorem bihimp_eq_sup_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
-
-theorem Codisjoint.bihimp_eq_inf {a b : α} (h : Codisjoint a b) : a ⇔ b = a ⊓ b := by
-  rw [bihimp, h.himp_eq_left, h.himp_eq_right]
-
-theorem himp_bihimp : a ⇨ b ⇔ c = (a ⊓ c ⇨ b) ⊓ (a ⊓ b ⇨ c) := by
-  rw [bihimp, himp_inf_distrib, himp_himp, himp_himp]
-
-@[simp]
-theorem sup_himp_bihimp : a ⊔ b ⇨ a ⇔ b = a ⇔ b := by
-  rw [himp_bihimp]
-  simp [bihimp]
-
-@[simp]
-theorem bihimp_himp_eq_inf : a ⇔ (a ⇨ b) = a ⊓ b :=
-  @symmDiff_sdiff_eq_sup αᵒᵈ _ _ _
-
-@[simp]
-theorem himp_bihimp_eq_inf : (b ⇨ a) ⇔ b = a ⊓ b :=
-  @sdiff_symmDiff_eq_sup αᵒᵈ _ _ _
-
-@[simp]
-theorem bihimp_inf_sup : a ⇔ b ⊓ (a ⊔ b) = a ⊓ b :=
-  @symmDiff_sup_inf αᵒᵈ _ _ _
-
-@[simp]
-theorem sup_inf_bihimp : (a ⊔ b) ⊓ a ⇔ b = a ⊓ b :=
-  @inf_sup_symmDiff αᵒᵈ _ _ _
-
-@[simp]
-theorem bihimp_bihimp_sup : a ⇔ b ⇔ (a ⊔ b) = a ⊓ b :=
-  @symmDiff_symmDiff_inf αᵒᵈ _ _ _
-
-@[simp]
-theorem sup_bihimp_bihimp : (a ⊔ b) ⇔ (a ⇔ b) = a ⊓ b :=
-  @inf_symmDiff_symmDiff αᵒᵈ _ _ _
-
-theorem bihimp_triangle : a ⇔ b ⊓ b ⇔ c ≤ a ⇔ c :=
-  @symmDiff_triangle αᵒᵈ _ _ _ _
-
-end GeneralizedHeytingAlgebra
-
 section CoheytingAlgebra
 
 variable [CoheytingAlgebra α] (a : α)
 
-@[simp]
+@[to_dual (attr := simp) bihimp_bot]
 theorem symmDiff_top' : a ∆ ⊤ = ￢a := by simp [symmDiff]
 
-@[simp]
+@[to_dual (attr := simp) bot_bihimp]
 theorem top_symmDiff' : ⊤ ∆ a = ￢a := by simp [symmDiff]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem hnot_symmDiff_self : (￢a) ∆ a = ⊤ := by
   rw [eq_top_iff, symmDiff, hnot_sdiff, sup_sdiff_self]
   exact Codisjoint.top_le codisjoint_hnot_left
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_hnot_self : a ∆ (￢a) = ⊤ := by rw [symmDiff_comm, hnot_symmDiff_self]
 
+@[deprecated (since := "2026-07-15")] alias bihimp_hnot_self := bihimp_compl_self
+
+@[to_dual]
 theorem IsCompl.symmDiff_eq_top {a b : α} (h : IsCompl a b) : a ∆ b = ⊤ := by
   rw [h.eq_hnot, hnot_symmDiff_self]
 
 end CoheytingAlgebra
-
-section HeytingAlgebra
-
-variable [HeytingAlgebra α] (a : α)
-
-@[simp]
-theorem bihimp_bot : a ⇔ ⊥ = aᶜ := by simp [bihimp]
-
-@[simp]
-theorem bot_bihimp : ⊥ ⇔ a = aᶜ := by simp [bihimp]
-
-@[simp]
-theorem compl_bihimp_self : aᶜ ⇔ a = ⊥ :=
-  @hnot_symmDiff_self αᵒᵈ _ _
-
-@[simp]
-theorem bihimp_hnot_self : a ⇔ aᶜ = ⊥ :=
-  @symmDiff_hnot_self αᵒᵈ _ _
-
-theorem IsCompl.bihimp_eq_bot {a b : α} (h : IsCompl a b) : a ⇔ b = ⊥ := by
-  rw [h.eq_compl, compl_bihimp_self]
-
-end HeytingAlgebra
 
 section GeneralizedBooleanAlgebra
 
@@ -676,24 +578,14 @@ end BooleanAlgebra
 
 section Prod
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_fst [GeneralizedCoheytingAlgebra α] [GeneralizedCoheytingAlgebra β]
     (a b : α × β) : (a ∆ b).1 = a.1 ∆ b.1 :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_snd [GeneralizedCoheytingAlgebra α] [GeneralizedCoheytingAlgebra β]
     (a b : α × β) : (a ∆ b).2 = a.2 ∆ b.2 :=
-  rfl
-
-@[simp]
-theorem bihimp_fst [GeneralizedHeytingAlgebra α] [GeneralizedHeytingAlgebra β] (a b : α × β) :
-    (a ⇔ b).1 = a.1 ⇔ b.1 :=
-  rfl
-
-@[simp]
-theorem bihimp_snd [GeneralizedHeytingAlgebra α] [GeneralizedHeytingAlgebra β] (a b : α × β) :
-    (a ⇔ b).2 = a.2 ⇔ b.2 :=
   rfl
 
 end Prod
@@ -703,24 +595,14 @@ end Prod
 
 namespace Pi
 
-@[push ←]
+@[to_dual (attr := push ←)]
 theorem symmDiff_def [∀ i, GeneralizedCoheytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ∆ b = fun i => a i ∆ b i :=
   rfl
 
-@[push ←]
-theorem bihimp_def [∀ i, GeneralizedHeytingAlgebra (π i)] (a b : ∀ i, π i) :
-    a ⇔ b = fun i => a i ⇔ b i :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem symmDiff_apply [∀ i, GeneralizedCoheytingAlgebra (π i)] (a b : ∀ i, π i) (i : ι) :
     (a ∆ b) i = a i ∆ b i :=
-  rfl
-
-@[simp]
-theorem bihimp_apply [∀ i, GeneralizedHeytingAlgebra (π i)] (a b : ∀ i, π i) (i : ι) :
-    (a ⇔ b) i = a i ⇔ b i :=
   rfl
 
 end Pi

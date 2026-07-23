@@ -195,6 +195,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("coframe", ["Frame"]),
   ("epigraph", ["Hypograph"]),
   ("hypograph", ["Epigraph"]),
+  ("bihimp", ["Symm", "Diff"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -255,6 +256,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("galoisCoinsertion", "GaloisInsertion"),
   ("leftOrdContinuous", "RightOrdContinuous"),
   ("rightOrdContinuous", "LeftOrdContinuous"),
+  ("symmDiff", "Bihimp"),
 
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
