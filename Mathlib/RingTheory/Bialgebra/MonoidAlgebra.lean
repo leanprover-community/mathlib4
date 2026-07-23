@@ -101,6 +101,11 @@ def toMultiplicativeBialgEquiv : A[M] ≃ₐc[R] MonoidAlgebra A (Multiplicative
     · simp [Algebra.TensorProduct.one_def]
     · simp [← (Coalgebra.Repr.arbitrary R a).eq]
 
+@[simp]
+lemma toMultiplicativeBialgEquiv_single (m : M) (a : A) :
+    toMultiplicativeBialgEquiv R A M (single m a) = .single (.ofAdd m) a := by
+  simp [toMultiplicativeBialgEquiv]
+
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
@@ -116,6 +121,11 @@ def toAdditiveBialgEquiv : A[M] ≃ₐc[R] AddMonoidAlgebra A (Additive M) :=
     ext a
     · simp [Algebra.TensorProduct.one_def]
     · simp [← (Coalgebra.Repr.arbitrary R a).eq]
+
+@[simp]
+lemma toAdditiveBialgEquiv_single (m : M) (a : A) :
+    toAdditiveBialgEquiv R A M (single m a) = .single (.ofMul m) a := by
+  simp [toAdditiveBialgEquiv]
 
 end MonoidAlgebra
 

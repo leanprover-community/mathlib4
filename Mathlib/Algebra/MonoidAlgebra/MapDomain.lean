@@ -493,6 +493,7 @@ set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 /-- The equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative` -/
+@[simps]
 def toMultiplicative : AddMonoidAlgebra R M ≃+* MonoidAlgebra R (Multiplicative M) where
   toFun x := .ofCoeff <| x.coeff.mapDomain .ofAdd
   invFun x := .ofCoeff <| x.coeff.mapDomain Multiplicative.toAdd
