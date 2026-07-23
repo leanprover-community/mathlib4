@@ -63,6 +63,22 @@ example (n : ℤ) (a b : G) :
 
 example (x y : G) : -((-x) + (x + y) + (-y)) = 0 := by add_group
 
+/- The next three example check that `add_group at h` does not loop forever when there's
+an integer subtraction. `sub_eq_add_neg` is applied only as a preprocessing step
+in `add_group` (rather than in the main loop) to ensure that these work. -/
+
+example (n k : ℤ) (x : G) (h : (k - n) • x = 0) : (k - n) • x = 0 := by
+  add_group at h
+  exact h
+
+example (n k : ℤ) (x : G) (h : (k - n) • x + 0 = 0) : (k - n) • x = 0 := by
+  add_group at h
+  exact h
+
+example (m k : ℤ) (x : G) (h : k • (m • x + -(k • x)) = 0) : k • (m • x + -(k • x)) = 0 := by
+  add_group at h ⊢
+  exact h
+
 /--
 error: `add_group` made no progress
 G : Type

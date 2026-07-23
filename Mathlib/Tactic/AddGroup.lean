@@ -25,6 +25,15 @@ an `AddGroup`). Instead, we handle negation via `neg_add_rev` to distribute nega
 `zsmul` terms. We also use `neg_one_zsmul` in the forward direction to normalize `(-1) • b`
 to `-b`.
 
+For the same reason (`ℤ` is itself an `AddGroup`), `sub_eq_add_neg` is applied once as a
+preprocessing step rather than being part of the main simp set: inside the loop it would also
+rewrite the subtractions that `ring_nf` reintroduces in `ℤ` scalars (e.g. `k - n` in
+`(k - n) • a`), and the two would undo each other forever. That cycle is harmless in goal mode,
+where `fail_if_no_progress` compares goal types, but rewriting a hypothesis allocates a fresh
+`fvarId` each round, which counts as progress, so `add_group at h` would never terminate.
+Preprocessing loses no proving power because nothing in the loop ever creates a new subtraction
+of group elements.
+
 Other than this issue, the strategy parallels Thomas Browning and Patrick Massot's `group`
 tactic.
 
@@ -99,25 +108,26 @@ syntax (name := addGroup) "add_group" (location)? : tactic
 macro_rules
 | `(tactic| add_group $[$loc]?) =>
   `(tactic| first
-    | repeat1 fail_if_no_progress
-        (simp -decide -failIfUnchanged only
-          [addCommutatorElement_def, add_zero, zero_add,
-            neg_add_rev, neg_zero, zsmul_neg, ← neg_zsmul,
-            ← natCast_zsmul, ← mul_zsmul',
-            Int.natCast_add, Int.natCast_mul, neg_neg,
-            zsmul_zero, zero_zsmul, one_zsmul, neg_one_zsmul,
-            ← add_assoc,
-            ← add_zsmul, ← add_one_zsmul, ← one_add_zsmul,
-            Mathlib.Tactic.Group._zsmul_trick,
-            Mathlib.Tactic.Group._zsmul_trick_one,
-            Mathlib.Tactic.Group._zsmul_trick_one',
-            _zsmul_neg_trick, _neg_zsmul_trick, _neg_neg_trick,
-            _add_zsmul_neg_trick, _add_neg_zsmul_trick, _add_neg_neg_trick,
-            add_neg_cancel_right, neg_add_cancel_right,
-            sub_eq_add_neg,
-            tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
-          $[$loc]?
-        <;> ring_nf (ifUnchanged := .silent) $[$loc]?)
+    | fail_if_no_progress
+        (simp -decide -failIfUnchanged only [sub_eq_add_neg] $[$loc]?
+        <;> repeat fail_if_no_progress
+          (simp -decide -failIfUnchanged only
+            [addCommutatorElement_def, add_zero, zero_add,
+              neg_add_rev, neg_zero, zsmul_neg, ← neg_zsmul,
+              ← natCast_zsmul, ← mul_zsmul',
+              Int.natCast_add, Int.natCast_mul, neg_neg,
+              zsmul_zero, zero_zsmul, one_zsmul, neg_one_zsmul,
+              ← add_assoc,
+              ← add_zsmul, ← add_one_zsmul, ← one_add_zsmul,
+              Mathlib.Tactic.Group._zsmul_trick,
+              Mathlib.Tactic.Group._zsmul_trick_one,
+              Mathlib.Tactic.Group._zsmul_trick_one',
+              _zsmul_neg_trick, _neg_zsmul_trick, _neg_neg_trick,
+              _add_zsmul_neg_trick, _add_neg_zsmul_trick, _add_neg_neg_trick,
+              add_neg_cancel_right, neg_add_cancel_right,
+              tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
+            $[$loc]?
+          <;> ring_nf (ifUnchanged := .silent) $[$loc]?))
     | fail "`add_group` made no progress")
 
 end Mathlib.Tactic.AddGroup
