@@ -20,11 +20,21 @@ Any two such connections are equal (on differentiable vector fields), which is w
 We construct a Levi-Civita connection and prove that is defines a compatible torsion-free
 connection.
 
-Mathematically, there are two main approaches to this construction.
-The first one notes that the uniqueness proof provides an expression (the Koszul formula) for the
-Levi-Civita connection, so can be used to define a connection. This passage, however, involves an
-auxiliary choice (say, of a local frame near each point), and requires proving independence of this
-choice. For this reason, we use a different argument, using the so-called *musical isomorphism*.
+The starting observation to the construction of the Levi-Civita is the Koszul formula, expressing
+a term `⟪∇ X Y, Z⟫` (for differentiable vector fields `X`, `Y` and `Z`) without reference to the
+Levi-Civita connection. This implies uniqueness; there are several approaches to turning this into
+a construction.
+One recovers `∇ X Y` from expressions `⟪∇ X Y, Z⟫` via an orthonormal frame: the coefficients of
+`∇ X Y` w.r.t. an orthonormal frame `{sⁱ}` are precisely `⟪∇ X Y, sⁱ⟫`. This approach is non-ideal
+as it only works locally: in general, orthonormal frames only exist locally near each point.
+It also requires auxiliary choices: choosing a chart and an ordered basis for the model space `E`
+of the manifold induces an orthonormal frame, but there is no such canonical choice in general.
+One could also abstract away this correspondence, via a lemma "there exists a unique vector field W
+such that `⟪W, Z⟫ = ⟪∇ X Y, Z⟫` for all `Z`" (and prove all connection properties by verifying
+that such witnesses are linear by uniqueness). As a side effect, this would lose any definitional
+control about the resulting connection.
+A more elegant approach uses an explicit formula, but avoiding auxiliary choices. Instead, we make
+use of the so-called *musical isomorphism*.
 
 A Riemannian metric `g` on `M` induces so-called **musical isomorphisms** between the tangent and
 cotangent bundles of `M` (and, more generally, tensor fields of orders `(k+d, l)` and `(k, l+d)`
@@ -34,7 +44,6 @@ point, which combines to a bundle isomorphism `TM → T*M`.
 Similarly, a `(2,0)`-tensor (i.e., a map `T_pM × T_pM → ℝ` at each point) induces a `(1,1)`-tensor
 (i.e., a map `T_pM → (T_pM)*` at each point).
 We apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z p`, to obtain a `(1,1)`-tensor `∇ Y`.
-
 
 ## Main definitions and results
 
