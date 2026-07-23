@@ -1,0 +1,149 @@
+/-
+Copyright (c) 2025 Edwin Fernando. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Edwin Fernando, Bhavik Mehta
+-/
+module
+
+public import Mathlib.Topology.Order.ScottTopology
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.CompletePartialOrder
+
+/-!
+# Scott Complete Partial Order
+
+Properties of Scott topologies over Pointed (Directed) `CompletePartialOrder`, and Algebraic DCPOs.
+
+## Main Definitions
+- `AlgebraicDCPO`: an extension of pointed `CompletePartialOrder` which is additionally "algebraic".
+  Pointed is just `OrderBot`.
+  Algebraicity has a correspondence with the 'inaccessibility of directed joins'
+  property of Scott topologies, which can be seen in some of the proofs below.
+
+## Main Statements
+- `specialization_iff_ge`: The original order and the specialization order induced by the Scott
+  topology, correspond. Prop 3.5.2 in [renata2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994].
+- `isTopologicalBasis_Ici_image_compactSet`: The upward closures of compact elements form a
+  topological basis under the Scott Topology. Prop 3.5.2 in [renata2024].
+
+## Ideas
+Brief primer to domain theory (please see [renata2024] or [abramsky_gabbay_maibaum_1994] for more
+detail):
+- The order structures we consider, `CompletePartialOrder` and `AlgebraicDCPO` should be thought
+  of as containing the semantics of imperative programs, more concretely a partial function on
+  some state denoted `Σ ⇀ Σ`. Note that non-terminating computations are modelled by the partiality
+  (lack of an end state).
+- From a computational perspective we would like even the infinite computations to be expressible as
+  the limit of a sequence of finite computations.
+- We take Directed sets to be a generalisation of a such a sequence of computations. The supremum of
+  such a set is a possibly infinite computation (thought of as limit of a sequence).
+- Compact elements model finite computations, since the computation in question is always
+  reached before (is contained in the directed set) before reaching the supremum.
+- An `AlgebraicDCPO` models all finitely generated computations. Every element is the supremum of
+  a set of compact elements.
+
+## Notation
+* `e` `c` : elements in the a set, usually of an open set, often compact.
+* `e'` : upwards closures of point.
+
+## Implementation notes
+The namespaces of this file aims to match `Mathlib.Topology.Order.ScottTopology`.
+
+## References
+Statements and proofs match the first source. Exact or equivalent statements in the 2nd source are
+stated.
+
+* [Renata, *Duality in Domain Theory*][renata2024]
+* [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
+
+## Tags
+
+Scott topology, Algebraic DCPO, Stone Duality
+-/
+
+@[expose] public section
+
+/-- An algebraic directed complete partial order is a `CompletePartialOrder` with 1) a least
+element and 2) every element is given by the supremum of a set of compact elements (algebraic). -/
+class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α where
+  directedOn_isCompactElement_le (x : α) : DirectedOn (· ≤ ·) {y : α | IsCompactElement y ∧ y ≤ x}
+  isLUB_isCompactElement_le (x : α) : IsLUB {y : α | IsCompactElement y ∧ y ≤ x} x
+
+export AlgebraicDCPO (directedOn_isCompactElement_le isLUB_isCompactElement_le)
+
+namespace Topology
+namespace IsScott
+open Topology.IsScott TopologicalSpace Set Topology CompletePartialOrder
+section CompletePartialOrder
+
+variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α] [IsScott α univ]
+
+/-- The order from `CompletePartialOrder` and the specialization order induced by the Scott
+topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`.
+Prop 3.5.2 in [renata2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]. -/
+lemma specialization_iff_ge {x y : α} : y ⤳ x ↔ x ≤ y := by
+  rw [specializes_iff_forall_closed]
+  constructor
+  · intro h
+    simpa using h (Iic y) isClosed_Iic (by simp)
+  · intro hxy s hs hys
+    exact isLowerSet_of_isClosed hs hxy hys
+
+/-- The upward closure of a compact element (`Ici e`) is an open set. -/
+lemma IsCompactElement.isOpen_Ici (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := by
+  rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ]
+  constructor
+  · grind [IsUpperSet]
+  · rw [dirSupInaccOn_univ]
+    intro d nonempty hd x hx hx'
+    exact he₀ d x nonempty hd hx hx'
+
+/-- The upwards closure of a compact element forms an open set.
+In this version the data is implicit. -/
+abbrev IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
+  ⟨Ici c, IsCompactElement.isOpen_Ici c hc⟩
+
+/-- A compact element as a subtype. -/
+abbrev CompactElement (α : Type*) [PartialOrder α] := {c : α // IsCompactElement c}
+
+/-- The upwards closure of a compact element forms an open set. -/
+abbrev CompactElement.toOpen (c : CompactElement α) : Opens α :=
+  ⟨Ici c.val, IsCompactElement.isOpen_Ici c.val c.prop⟩
+
+end CompletePartialOrder
+
+section AlgebraicDCPO
+
+/-- Given any point `x` in `D` in a set which is 'inaccessible by directed suprema', there exists
+an upward closure of a compact element below `x` in the set. -/
+lemma DirSupInaccOn.exists_le_isCompactElement {D : Type*} [AlgebraicDCPO D]
+    (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : DirSupInaccOn univ u)
+    : ∃ c ≤ x, IsCompactElement c ∧ c ∈ u := by
+  have := hu (mem_univ _) ⟨⊥, by simp⟩
+    (directedOn_isCompactElement_le x) (isLUB_isCompactElement_le x) x_in_u
+  simp [inter_nonempty] at this
+  grind
+
+open Opens
+variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D univ]
+
+/-- The upward closures of compact elements form a topological
+basis under the Scott Topology. Prop 3.5.2 in [renata2024] -/
+theorem isTopologicalBasis_Ici_image_compactSet
+    : IsBasis (CompactElement.toOpen '' (@Set.univ (CompactElement D))) := by
+  apply isTopologicalBasis_of_isOpen_of_nhds
+  · grind [IsCompactElement.isOpen_Ici, coe_mk]
+  · intro x u x_in_u hu
+    -- there exists an upward closure of a compact element (`Ici c`), within `u` which contains `x`
+    have : ∃ c, IsCompactElement c ∧ x ∈ Ici c ∧ Ici c ⊆ u := by
+      rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at hu
+      obtain ⟨upper, dirSupInaccOn⟩ := hu
+      grind [upper.Ici_subset, dirSupInaccOn.exists_le_isCompactElement x u x_in_u]
+    grind [Subtype.exists, coe_mk]
+
+
+
+end AlgebraicDCPO
+end IsScott
+end Topology
