@@ -126,17 +126,17 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace% x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖ = ‖letI V : F := v; V‖ := by
+    ‖v‖ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
+  rfl
 
 lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖₊ = ‖letI V : F := v; V‖₊ := by
+    ‖v‖₊ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖₊ := by
   simp [nnnorm, norm_tangentSpace_vectorSpace]
 
 lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖ₑ = ‖letI V : F := v; V‖ₑ := by
+    ‖v‖ₑ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖ₑ := by
   simp [enorm, nnnorm_tangentSpace_vectorSpace]
 
 open MeasureTheory Measure
@@ -238,19 +238,18 @@ attribute [local instance] normedSpaceTangentSpaceVectorSpace
 
 variable (I)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
-    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ < C := by
+    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖d% (extChartAt I x) y‖ < C := by
   rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace% x) x
     with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
   have hx : (chartAt H x).source ∈ 𝓝 x := chart_source_mem_nhds H x
   filter_upwards [hC, hx] with y hy h'y
+  rw [mvfderiv, NormedSpace.fromTangentSpace]
   rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
-    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ₑ < C := by
+    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖d% (extChartAt I x) y‖ₑ < C := by
   rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
@@ -384,7 +383,6 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
 lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
@@ -411,7 +409,7 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set
   rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
-      ∧ u ⊆ {y | ‖mfderiv% (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
+      ∧ u ⊆ {y | ‖d% (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
     have := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
     rcases exists_mem_nhds_isClosed_subset this with ⟨u, u_mem, u_closed, hu⟩
     simp only [subset_inter_iff] at hu

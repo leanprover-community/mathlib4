@@ -158,7 +158,6 @@ theorem mfderivWithin_id (hxs : UniqueMDiffAt[s] x) :
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_id hxs]
   exact mfderiv_id
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem tangentMap_id : tangentMap% (@id M) = id := by ext1 ⟨x, v⟩; simp [tangentMap]
 
@@ -479,7 +478,6 @@ theorem MDifferentiableOn.prodMap (hf : MDiff[s] f) (hg : MDiff[r] g) :
 theorem MDifferentiable.prodMap (hf : MDiff f) (hg : MDiff g) : MDiff (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace% p.1 →L[𝕜] TangentSpace% (f p.1)}
     (hf : HasMFDerivAt[Prod.fst '' s] f p.1 df)
@@ -548,7 +546,6 @@ theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod 
 -- Kept as an alias for discoverability.
 alias MDifferentiableAt.mfderiv_prod := mfderiv_prodMk
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv% (fun (x : M) ↦ (x, y₀)) x₀ =
       ContinuousLinearMap.inl 𝕜 (TangentSpace% x₀) (TangentSpace% y₀) := by
@@ -561,7 +558,6 @@ theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
   simp only [tangentMap, mfderiv_prod_left]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv% (fun (y : M') ↦ (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace% x₀) (TangentSpace% y₀) := by
