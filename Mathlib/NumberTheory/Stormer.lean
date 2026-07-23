@@ -47,6 +47,22 @@ private lemma choose_three_add_choose_three (n : ℕ) :
   norm_num
   omega
 
+private def natPellSolution {x y d : ℕ}
+    (hxy : x ^ 2 = 1 + d * y ^ 2) :
+    Pell.Solution₁ (d : ℤ) :=
+  Pell.Solution₁.mk (x : ℤ) (y : ℤ) <| by
+    have hxy' : (x : ℤ) ^ 2 = 1 + (d : ℤ) * (y : ℤ) ^ 2 := by
+      exact_mod_cast hxy
+    linarith
+
+@[simp] private lemma natPellSolution_x {x y d : ℕ}
+    (hxy : x ^ 2 = 1 + d * y ^ 2) :
+    (natPellSolution hxy).x = (x : ℤ) := rfl
+
+@[simp] private lemma natPellSolution_y {x y d : ℕ}
+    (hxy : x ^ 2 = 1 + d * y ^ 2) :
+    (natPellSolution hxy).y = (y : ℤ) := rfl
+
 /-- The Lucas coefficient occurring in the `y`-coordinate of powers of a Pell solution. -/
 def pellY (x : ℤ) : ℕ → ℤ
   | 0 => 0
@@ -169,17 +185,8 @@ lemma pellY_eq_second_order (x : ℤ) (n : ℕ) :
       by_cases hsmall : n < 3
       · interval_cases n <;>
           refine ⟨0, by norm_num [pellY_add_two, Nat.choose] <;> ring⟩
-      · have hn3 : 3 ≤ n := by omega
-        have hx1 : x ^ (n + 1) = x ^ (n - 1) * x ^ 2 := by
-          rw [← pow_add]
-          congr 1
-          omega
-        have hx2 : x * x ^ (n - 2) = x ^ (n - 1) := by
+      · have hx2 : x * x ^ (n - 2) = x ^ (n - 1) := by
           rw [mul_comm, ← pow_succ]
-          congr 1
-          omega
-        have hx3 : x ^ (n - 3) * x ^ 2 = x ^ (n - 1) := by
-          rw [← pow_add]
           congr 1
           omega
         have hx0 : x * x ^ n = x ^ (n + 1) := by
@@ -267,8 +274,6 @@ lemma prime_eq_of_dvd_parameter_and_pellY
     (hp : p.Prime) (hq : q.Prime) (hqd : q ∣ d)
     (hqc : (q : ℤ) ∣ pellY (x : ℤ) p) :
     q = p := by
-  have hxy' : (x : ℤ) ^ 2 = 1 + (d : ℤ) * (y : ℤ) ^ 2 := by
-    exact_mod_cast hxy
   have hdvd : (d : ℤ) ∣ (x : ℤ) ^ 2 - 1 := by
     refine ⟨(y : ℤ) ^ 2, ?_⟩
     linarith
@@ -353,20 +358,14 @@ lemma pellY_pos_of_pell
     {x y d n : ℕ} (hxy : x ^ 2 = 1 + d * y ^ 2)
     (hx : 0 < x) (hy : 0 < y) (hn : n ≠ 0) :
     0 < pellY (x : ℤ) n := by
-  have hprop :
-      (x : ℤ) ^ 2 - (d : ℤ) * (y : ℤ) ^ 2 = 1 := by
-    have hxy' :
-        (x : ℤ) ^ 2 = 1 + (d : ℤ) * (y : ℤ) ^ 2 := by
-      exact_mod_cast hxy
-    linarith
   let a : Pell.Solution₁ (d : ℤ) :=
-    Pell.Solution₁.mk (x : ℤ) (y : ℤ) hprop
+    natPellSolution hxy
   obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
   have hpow : 0 < (a ^ k.succ).y :=
     Pell.Solution₁.y_pow_succ_pos
       (by simpa [a] using hx) (by simpa [a] using hy) k
   rw [pell_y_pow_eq_mul_pellY] at hpow
-  simpa only [a, Pell.Solution₁.x_mk, Pell.Solution₁.y_mk] using
+  simpa only [a, natPellSolution_x, natPellSolution_y] using
     (pos_of_mul_pos_right hpow (by positivity : (0 : ℤ) ≤ (y : ℤ)))
 
 private lemma two_le_of_prime_pow_lt {p k c : ℕ} (hp : 1 < p)
@@ -530,12 +529,6 @@ theorem eq_fundamental_of_primeFactors_y_subset_parameter
       ∀ q : ℕ, q.Prime → q ∣ b.y.natAbs → q ∣ d.natAbs) :
     b = a := by
   obtain ⟨n, hbpow⟩ := ha.eq_pow_of_nonneg (by omega) hby.le
-  have hn0 : n ≠ 0 := by
-    intro hn
-    subst n
-    simp at hbpow
-    subst b
-    simp at hbx
   have hn1 : n = 1 := by
     by_contra hn1
     obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd hn1
@@ -556,6 +549,29 @@ theorem eq_fundamental_of_primeFactors_y_subset_parameter
   simpa using hbpow
 
 /--
+Two positive Pell solutions coincide if all prime factors of both
+`y`-coordinates divide the Pell parameter.
+-/
+theorem eq_of_primeFactors_y_subset_parameter
+    {d : ℤ} {a b : Pell.Solution₁ d}
+    (hax : 1 < a.x) (hay : 0 < a.y)
+    (hbx : 1 < b.x) (hby : 0 < b.y)
+    (haSmooth :
+      ∀ q : ℕ, q.Prime → q ∣ a.y.natAbs → q ∣ d.natAbs)
+    (hbSmooth :
+      ∀ q : ℕ, q.Prime → q ∣ b.y.natAbs → q ∣ d.natAbs) :
+    a = b := by
+  obtain ⟨f, hf⟩ :=
+    Pell.IsFundamental.exists_of_not_isSquare
+      (Pell.Solution₁.d_pos_of_one_lt_x hax)
+      (Pell.Solution₁.d_nonsquare_of_one_lt_x hax)
+  exact
+    (eq_fundamental_of_primeFactors_y_subset_parameter
+      hf hax hay haSmooth).trans
+    (eq_fundamental_of_primeFactors_y_subset_parameter
+      hf hbx hby hbSmooth).symm
+
+/--
 Two positive natural-number solutions of the same Pell equation coincide if
 all prime factors of both `y`-coordinates divide the Pell parameter.
 -/
@@ -568,52 +584,21 @@ theorem pell_smooth_x_unique
     (hxy₂ : x₂ ^ 2 = 1 + d * y₂ ^ 2)
     (hsmooth₂ : ∀ p : ℕ, p.Prime → p ∣ y₂ → p ∣ d) :
     x₁ = x₂ := by
-  have hprop₁ :
-      (x₁ : ℤ) ^ 2 - (d : ℤ) * (y₁ : ℤ) ^ 2 = 1 := by
-    have hxy₁' :
-        (x₁ : ℤ) ^ 2 = 1 + (d : ℤ) * (y₁ : ℤ) ^ 2 := by
-      exact_mod_cast hxy₁
-    linarith
-  have hprop₂ :
-      (x₂ : ℤ) ^ 2 - (d : ℤ) * (y₂ : ℤ) ^ 2 = 1 := by
-    have hxy₂' :
-        (x₂ : ℤ) ^ 2 = 1 + (d : ℤ) * (y₂ : ℤ) ^ 2 := by
-      exact_mod_cast hxy₂
-    linarith
-  let a₁ : Pell.Solution₁ (d : ℤ) :=
-    Pell.Solution₁.mk (x₁ : ℤ) (y₁ : ℤ) hprop₁
-  let a₂ : Pell.Solution₁ (d : ℤ) :=
-    Pell.Solution₁.mk (x₂ : ℤ) (y₂ : ℤ) hprop₂
-  have hax₁ : 1 < a₁.x := by
-    simpa only [a₁, Pell.Solution₁.x_mk] using
-      (show (1 : ℤ) < (x₁ : ℤ) by exact_mod_cast hx₁)
-  have hay₁ : 0 < a₁.y := by
-    simpa only [a₁, Pell.Solution₁.y_mk] using
-      (show (0 : ℤ) < (y₁ : ℤ) by exact_mod_cast hy₁)
-  have hax₂ : 1 < a₂.x := by
-    simpa only [a₂, Pell.Solution₁.x_mk] using
-      (show (1 : ℤ) < (x₂ : ℤ) by exact_mod_cast hx₂)
-  have hay₂ : 0 < a₂.y := by
-    simpa only [a₂, Pell.Solution₁.y_mk] using
-      (show (0 : ℤ) < (y₂ : ℤ) by exact_mod_cast hy₂)
-  obtain ⟨f, hf⟩ :=
-    Pell.IsFundamental.exists_of_not_isSquare
-      (Pell.Solution₁.d_pos_of_one_lt_x hax₁)
-      (Pell.Solution₁.d_nonsquare_of_one_lt_x hax₁)
-  have ha₁f : a₁ = f := by
-    apply eq_fundamental_of_primeFactors_y_subset_parameter hf hax₁ hay₁
-    intro p hp hpdvd
-    simpa only [a₁, Pell.Solution₁.y_mk, Int.natAbs_natCast] using
-      hsmooth₁ p hp hpdvd
-  have ha₂f : a₂ = f := by
-    apply eq_fundamental_of_primeFactors_y_subset_parameter hf hax₂ hay₂
-    intro p hp hpdvd
-    simpa only [a₂, Pell.Solution₁.y_mk, Int.natAbs_natCast] using
-      hsmooth₂ p hp hpdvd
-  have hxa := congrArg Pell.Solution₁.x (ha₁f.trans ha₂f.symm)
+  have hsol : natPellSolution hxy₁ = natPellSolution hxy₂ := by
+    apply eq_of_primeFactors_y_subset_parameter
+    · simpa only [natPellSolution_x] using
+        (show (1 : ℤ) < (x₁ : ℤ) by exact_mod_cast hx₁)
+    · simpa only [natPellSolution_y] using
+        (show (0 : ℤ) < (y₁ : ℤ) by exact_mod_cast hy₁)
+    · simpa only [natPellSolution_x] using
+        (show (1 : ℤ) < (x₂ : ℤ) by exact_mod_cast hx₂)
+    · simpa only [natPellSolution_y] using
+        (show (0 : ℤ) < (y₂ : ℤ) by exact_mod_cast hy₂)
+    · simpa only [natPellSolution_y, Int.natAbs_natCast] using hsmooth₁
+    · simpa only [natPellSolution_y, Int.natAbs_natCast] using hsmooth₂
   exact_mod_cast
     (show (x₁ : ℤ) = (x₂ : ℤ) by
-      simpa only [a₁, a₂, Pell.Solution₁.x_mk] using hxa)
+      simpa only [natPellSolution_x] using congrArg Pell.Solution₁.x hsol)
 
 /--
 The exponent of a prime retained in the Pell parameter in Størmer's
@@ -896,22 +881,11 @@ lemma consecutiveCode_admissible
   have hsquareInt :
       IsSquare (pellParameter s (consecutivePellNumber n) : ℤ) :=
     hsquareNat.map (Nat.castRingHom ℤ)
-  have hprop :
-      (2 * n + 1 : ℤ) ^ 2 -
-          (pellParameter s (consecutivePellNumber n) : ℤ) *
-            (pellSquareFactor s (consecutivePellNumber n) : ℤ) ^ 2 = 1 := by
-    have hpell :
-        (2 * n + 1 : ℤ) ^ 2 =
-          1 + (pellParameter s (consecutivePellNumber n) : ℤ) *
-            (pellSquareFactor s (consecutivePellNumber n) : ℤ) ^ 2 := by
-      exact_mod_cast consecutive_pell_equation h2 hn hn1
-    linarith
   let a : Pell.Solution₁
       (pellParameter s (consecutivePellNumber n) : ℤ) :=
-    Pell.Solution₁.mk (2 * n + 1 : ℤ)
-      (pellSquareFactor s (consecutivePellNumber n) : ℤ) hprop
+    natPellSolution (consecutive_pell_equation h2 hn hn1)
   have hax : 1 < a.x := by
-    dsimp only [a, Pell.Solution₁.x_mk]
+    simp only [a, natPellSolution_x]
     exact_mod_cast (show 1 < 2 * n + 1 by
       have := Nat.pos_of_ne_zero hn.1
       omega)
