@@ -146,19 +146,6 @@ lemma pellY_nonneg_and_lt_succ {x : ℤ} (hx : 1 < x) (n : ℕ) :
       · exact hnextpos.le
       · nlinarith
 
-lemma pellY_lt_of_lt {x : ℤ} (hx : 1 < x) {m n : ℕ} (hmn : m < n) :
-    pellY x m < pellY x n := by
-  exact (strictMono_nat_of_lt_succ fun k ↦ (pellY_nonneg_and_lt_succ hx k).2) hmn
-
-lemma natCast_le_pellY {x : ℤ} (hx : 1 < x) (n : ℕ) :
-    (n : ℤ) ≤ pellY x n := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-      have hstep := (pellY_nonneg_and_lt_succ hx n).2
-      push_cast
-      omega
-
 lemma natCast_lt_pellY {x : ℤ} (hx : 1 < x) {n : ℕ} (hn : 1 < n) :
     (n : ℤ) < pellY x n := by
   induction n with
@@ -484,9 +471,9 @@ theorem eq_of_primeFactors_y_subset_parameter
     {d : ℤ} {a b : Pell.Solution₁ d}
     (hax : 1 < a.x) (hay : 0 < a.y)
     (hbx : 1 < b.x) (hby : 0 < b.y)
-    (haSmooth :
+    (hsmooth_a :
       ∀ q : ℕ, q.Prime → q ∣ a.y.natAbs → q ∣ d.natAbs)
-    (hbSmooth :
+    (hsmooth_b :
       ∀ q : ℕ, q.Prime → q ∣ b.y.natAbs → q ∣ d.natAbs) :
     a = b := by
   obtain ⟨f, hf⟩ :=
@@ -495,9 +482,9 @@ theorem eq_of_primeFactors_y_subset_parameter
       (Pell.Solution₁.d_nonsquare_of_one_lt_x hax)
   exact
     (eq_fundamental_of_primeFactors_y_subset_parameter
-      hf hax hay haSmooth).trans
+      hf hax hay hsmooth_a).trans
     (eq_fundamental_of_primeFactors_y_subset_parameter
-      hf hbx hby hbSmooth).symm
+      hf hbx hby hsmooth_b).symm
 
 /--
 Two positive natural-number solutions of the same Pell equation coincide if
@@ -534,14 +521,6 @@ def reducedExponent (e : ℕ) : ℕ :=
 lemma reducedExponent_lt_three (e : ℕ) : reducedExponent e < 3 := by
   simp only [reducedExponent]
   split_ifs <;> omega
-
-lemma reducedExponent_le (e : ℕ) : reducedExponent e ≤ e := by
-  simp only [reducedExponent]
-  split_ifs with hzero hodd
-  · omega
-  · omega
-  · have hmod : e % 2 < 2 := Nat.mod_lt e (by omega)
-    omega
 
 lemma reducedExponent_eq_zero_iff (e : ℕ) :
     reducedExponent e = 0 ↔ e = 0 := by
