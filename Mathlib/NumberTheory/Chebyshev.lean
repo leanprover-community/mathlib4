@@ -632,6 +632,7 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
   have : x * log x ^ 2 ≠ 0 := mul_ne_zero this <| by simp; grind
   fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
@@ -639,7 +640,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero, sum_filter]
   push_cast
-  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ log n)
+  let a : ℕ → ℝ := Set.indicator (Set.ofPred Nat.Prime) (fun n ↦ log n)
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * a n
   · refine sum_congr rfl fun n hn ↦ ?_
     split_ifs with h
@@ -669,12 +670,13 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
     exact ContinuousAt.continuousWithinAt <| by fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Expresses the Chebyshev theta function `ϑ` in terms of `π` by using Abel summation. -/
 theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
     θ x = π ⌊x⌋₊ * log x - ∫ t in 2..x, π ⌊t⌋₊ / t := by
   -- Rewrite in a form to which Abel summation can be applied
   rw [theta_eq_sum_Icc, sum_filter]
-  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ 1)
+  let a : ℕ → ℝ := Set.indicator (Set.ofPred Nat.Prime) (fun n ↦ 1)
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, log n * a n
   · refine sum_congr rfl fun n _ ↦ ?_
     split_ifs with h <;> simp [a, h]

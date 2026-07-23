@@ -288,13 +288,13 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [u, not_exists, mem_iUnion, mem_sdiff]
       tauto
     · congr 1
-      simp only [G, s, Function.iterate_succ', Subtype.coe_mk, union_sdiff_left, Function.comp]
+      simp only [G, s, Function.iterate_succ', union_sdiff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction n with
     | zero =>
       simp only [s, empty, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
-        Function.iterate_zero, Subtype.coe_mk, le_rfl]
+        Function.iterate_zero, le_rfl]
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_sdiff_self]
@@ -460,7 +460,7 @@ We need the continuum hypothesis to construct it.
 theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   obtain ⟨r, hr₁, hr₂⟩ := Cardinal.exists_rel_mk_fibers_lt ℝ
-  refine ⟨fun x ↦ setOf (r x), ?_, ?_⟩
+  refine ⟨fun x ↦ Set.ofPred (r x), ?_, ?_⟩
   · simpa [Hcont, ← Set.compl_eq_univ_sdiff] using! hr₁
   · simpa [Hcont] using hr₂
 
@@ -512,7 +512,7 @@ theorem countable_ne (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ)
     {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)} ⊆
       {x | (φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x).Nonempty} := by
     intro x hx
-    simp only [mem_setOf] at *
+    simp only [mem_ofPred] at *
     contrapose! hx
     exact apply_f_eq_continuousPart Hcont φ x hx |>.symm
   have B :
@@ -520,7 +520,7 @@ theorem countable_ne (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ)
       ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by
     intro x hx
     dsimp at hx
-    simp only [exists_prop, mem_iUnion, mem_setOf_eq]
+    simp only [exists_prop, mem_iUnion, mem_ofPred_eq]
     exact hx
   apply Countable.mono (Subset.trans A B)
   exact Countable.biUnion (countable_discreteSupport _) fun a _ => countable_spf_mem Hcont a
@@ -531,7 +531,7 @@ theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ 
   apply ae_restrict_of_ae
   refine measure_mono_null ?_ ((countable_ne Hcont φ).measure_zero _)
   intro x
-  simp only [imp_self, mem_setOf_eq, mem_compl_iff]
+  simp only [imp_self, mem_ofPred_eq, mem_compl_iff]
 
 theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by

@@ -76,6 +76,7 @@ private lemma binomial_sum_eq (h : n < m) :
   have : (m - i : ℚ) ≠ 0 := sub_ne_zero_of_ne (cast_lt.mpr h₂).ne'
   simp [field, *]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma Fintype.sum_div_mul_card_choose_card :
     ∑ s : Finset α, (card α / ((card α - #s) * (card α).choose #s) : ℚ) =
       card α * ∑ k ∈ range (card α), (↑k)⁻¹ + 1 := by

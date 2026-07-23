@@ -380,7 +380,6 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
     (hA₁ : #(A⁻¹ * A) ≤ K * #A) (hA₂ : #(A * A⁻¹) ≤ K * #A) :
     ∃ (H : Subgroup G) (_ : Fintype H) (Z : Finset G),
       #Z ≤ (2 - K) * K / ((φ - K) * (K - ψ)) ∧ (H : Set G) * Z = A * A⁻¹ := by
-  classical
   -- Some useful initial calculations
   have K_pos : 0 < K := by positivity
   have hK₀ : 0 < K := by positivity
