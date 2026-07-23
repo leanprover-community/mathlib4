@@ -393,6 +393,24 @@ theorem liftIoc_comp_mk_eq_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) :
     liftIoc p a f ∘ QuotientAddGroup.mk = f := by
   ext; apply liftIoc_coe_apply_of_periodic hf
 
+/-- If `f` has period `p`, then every lift of `f` to `AddCircle p` is the same. -/
+theorem liftIco_eq_liftIco {f : 𝕜 → B} {a' : 𝕜} (hf : f.Periodic p) :
+    liftIco p a f = liftIco p a' f :=
+  funext fun q ↦ QuotientAddGroup.induction_on q fun _ ↦ by
+    simp_rw [liftIco_coe_apply_of_periodic hf]
+
+/-- If `f` has period `p`, then every lift of `f` to `AddCircle p` is the same. -/
+theorem liftIoc_eq_liftIoc {f : 𝕜 → B} {a' : 𝕜} (hf : f.Periodic p) :
+    liftIoc p a f = liftIoc p a' f :=
+  funext fun q ↦ QuotientAddGroup.induction_on q fun _ ↦ by
+    simp_rw [liftIoc_coe_apply_of_periodic hf]
+
+/-- If `f` has period `p`, then every lift of `f` to `AddCircle p` is the same. -/
+theorem liftIco_eq_liftIoc {f : 𝕜 → B} {a' : 𝕜} (hf : f.Periodic p) :
+    liftIco p a f = liftIoc p a' f :=
+  funext fun q ↦ QuotientAddGroup.induction_on q fun _ ↦ by
+    rw [liftIco_coe_apply_of_periodic hf, liftIoc_coe_apply_of_periodic hf]
+
 theorem liftIoc_eq_liftIco_of_ne {f : 𝕜 → B} {x : AddCircle p}
     (x_ne_a : x ≠ a) : liftIoc p a f x = liftIco p a f x := by
   have x_eq_b : x = ↑(equivIco p a x) := coe_equivIco.symm
