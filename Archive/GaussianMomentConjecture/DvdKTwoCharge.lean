@@ -52,7 +52,7 @@ lemma balanced_unique (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
   simp only [Fin.sum_univ_two] at hsum
   simp only [GMC2.ConstantTermRelations.totalCharge, pairQ, Fin.sum_univ_two,
     Matrix.cons_val_zero, Matrix.cons_val_one] at hbal
-  -- hsum : r 0 + r 1 = p + n ; hbal : r0*p - r1*n = 0
+  -- hsum : r 0 + r 1 = p + n; hbal : r0*p - r1*n = 0
   have h0 : (r 0 : ℤ) * p = (r 1 : ℤ) * n := by linarith
   have hr0 : (r 0 : ℤ) = n := by
     have hcast : (r 0 : ℤ) + (r 1 : ℤ) = (p : ℤ) + n := by exact_mod_cast hsum

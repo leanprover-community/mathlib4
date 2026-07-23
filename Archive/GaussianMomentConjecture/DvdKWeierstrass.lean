@@ -113,7 +113,7 @@ theorem constantCoeff_Phi (R : Polynomial F) (M : ℕ) (hM : 1 ≤ M) :
 From `Φ = P·h` (Weierstrass), taking the `x`-constant term gives
 `P.coeff 0 · h(0) = −t·r₀`, where `h(0) := constantCoeff h` is a unit of `F[[t]]` (`= 1 mod t`).
 Hence the small-root product `Π = (−1)^M·P.coeff 0` satisfies `Π · h(0) = c·t` with
-`c = (−1)^{M+1} r₀`, so **`Π = c·t ⟺ h(0,t) = 1`**.  This isolates the sole remaining analytic
+`c = (−1)^{M+1} r₀`, so **`Π = c·t ↔ h(0,t) = 1`**.  This isolates the sole remaining analytic
 input as exactly `h(0,t) = 1` under `D_m = 0` (equivalently `h(0,t) = exp(−∑ D_m tᵐ/m)`). -/
 theorem coeff_zero_smallRootFactor_mul_unit (R : Polynomial F) (M : ℕ) (hM : 1 ≤ M) :
     (smallRootFactor R M).coeff 0
