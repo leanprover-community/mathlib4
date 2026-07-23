@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
+public import Mathlib.CategoryTheory.Subfunctor.Basic
 
 /-!
 # Submodules of presheaves of modules
@@ -98,6 +99,15 @@ instance (N₁ N₂ : M.Submodule) (hle : N₁ ≤ N₂) : Mono (homOfLE hle) :=
 
 @[reassoc (attr := simp)]
 lemma homOfLE_ι {N₁ N₂ : M.Submodule} (hle : N₁ ≤ N₂) : homOfLE hle ≫ N₂.ι = N₁.ι := rfl
+
+/-- The subfunctor of the underlying type-valued presheaf of `M` induced by a submodule `N`. -/
+def toSubfunctor : Subfunctor (M.presheaf ⋙ CategoryTheory.forget AddCommGrpCat.{v}) where
+  obj X := {r : M.obj X | r ∈ N.obj X}
+  map := fun {_ _} f _ hr ↦ N.map_mem f hr
+
+@[simp]
+lemma mem_toSubfunctor_obj {X : Cᵒᵖ} (r : M.obj X) :
+    r ∈ N.toSubfunctor.obj X ↔ r ∈ N.obj X := Iff.rfl
 
 @[simps sup_obj inf_obj sSup_obj sInf_obj top_obj bot_obj]
 instance : CompleteLattice M.Submodule where
