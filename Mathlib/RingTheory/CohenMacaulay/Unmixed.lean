@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.CohenMacaulay.Catenary
 
 @[expose] public section
 
-
 universe u
 
 variable {R : Type u} [CommRing R]
@@ -23,15 +22,15 @@ variable {R : Type u} [CommRing R]
 open RingTheory.Sequence IsLocalRing Module.associatedPrimes
 
 /-- An ideal `I` is unmixed if every associated prime of `I` has height equal to `I.height`. -/
-class Ideal.IsUnmixed (I : Ideal R) : Prop where
-  height_eq : ∀ {p : Ideal R}, p ∈ associatedPrimes R (R ⧸ I) → p.height = I.height
+def Ideal.IsUnmixed (I : Ideal R) : Prop :=
+  ∀ {p : Ideal R}, p ∈ associatedPrimes R (R ⧸ I) → p.height = I.height
 
 lemma associatedPrimes_eq_minimalPrimes_of_isUnmixed [IsNoetherianRing R] {I : Ideal R}
     (unmix : I.IsUnmixed) : associatedPrimes R (R ⧸ I) = I.minimalPrimes := by
   apply le_antisymm
   · intro p hp
     have := IsAssociatedPrime.isPrime hp
-    apply Ideal.mem_minimalPrimes_of_height_eq _ (le_of_eq (unmix.1 hp))
+    apply Ideal.mem_minimalPrimes_of_height_eq _ (le_of_eq (unmix hp))
     rw [← Ideal.annihilator_quotient (I := I), ← Submodule.annihilator_top]
     exact IsAssociatedPrime.annihilator_le hp
   · nth_rw 1 [← Ideal.annihilator_quotient (I := I)]
@@ -41,7 +40,7 @@ lemma Ideal.ofList_isUnmixed_of_associatedPrimes_eq_minimalPrimes [IsNoetherianR
     (h : (Ideal.ofList l).height = l.length)
     (ass : associatedPrimes R (R ⧸ Ideal.ofList l) ⊆ (Ideal.ofList l).minimalPrimes) :
     (Ideal.ofList l).IsUnmixed := by
-  refine ⟨fun {p} hp ↦ le_antisymm ?_ (Ideal.height_mono (ass hp).1.2)⟩
+  refine fun {p} hp ↦ le_antisymm ?_ (Ideal.height_mono (ass hp).1.2)
   have := IsAssociatedPrime.isPrime hp
   rw [h, Ideal.height_le_iff_exists_minimalPrimes]
   use Ideal.ofList l
@@ -82,7 +81,7 @@ lemma isCohenMacaulayRing_of_unmixed
           rw [biUnion_associatedPrimes_eq_compl_regular R (R ⧸ Ideal.ofList rs)]
           exact fun r hr ↦ h r hr
         have := Ideal.height_mono le
-        rw [(unmix rs ht).1 qass, ht, len] at this
+        rw [unmix rs ht qass, ht, len] at this
         exact this.not_gt lt
       use rs.concat r
       simp only [List.concat_eq_append, List.mem_append, List.mem_cons, List.not_mem_nil, or_false,
@@ -127,7 +126,7 @@ lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type*} [CommRin
 
 theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     ∀ (l : List R), (Ideal.ofList l).height = l.length → (Ideal.ofList l).IsUnmixed := by
-  refine ⟨fun ⟨cm⟩ l ht ↦ ⟨fun {p} hp ↦ ?_⟩, fun h ↦ isCohenMacaulayRing_of_unmixed h⟩
+  refine ⟨fun ⟨cm⟩ l ht {p} hp ↦ ?_, fun h ↦ isCohenMacaulayRing_of_unmixed h⟩
   have netop : Ideal.ofList l ≠ ⊤ := by
     by_contra eq
     simp [eq] at ht
