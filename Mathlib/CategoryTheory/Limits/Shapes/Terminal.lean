@@ -358,6 +358,57 @@ instance isIso_ι_initial [HasInitial J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶
     IsIso (colimit.ι F (⊥_ J)) :=
   isIso_ι_of_isInitial initialIsInitial F
 
+variable (C) in
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- If `J` has an initial object, `lim : (J ⥤ C) ⥤ C` is isomorphic to evaluation. -/
+noncomputable def limIsoEvaluation [HasLimitsOfShape J C] {X : J} (h : IsInitial X) :
+    lim ≅ (evaluation J C).obj X :=
+  NatIso.ofComponents (fun D ↦ ((limitOfDiagramInitial h _).conePointUniqueUpToIso
+    (limit.isLimit _)).symm) <| fun _ ↦ by
+      dsimp
+      rw [Iso.comp_inv_eq]
+      apply limit.hom_ext
+      simp [Iso.eq_inv_comp]
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+lemma limIsoEvaluation_inv_π [HasLimitsOfShape J C] {X : J} (h : IsInitial X) :
+    (limIsoEvaluation C h).inv ≫ lim.π X = 𝟙 _ := by
+  ext
+  simp [limIsoEvaluation]
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+lemma limIsoEvaluation_inv_app_π [HasLimitsOfShape J C] {X : J} (h : IsInitial X) (D : J ⥤ C) :
+    (limIsoEvaluation C h).inv.app D ≫ limit.π _ X = 𝟙 _ :=
+  congr($(limIsoEvaluation_inv_π _).app _)
+
+variable (C) in
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- If `J` has a terminal object, `colim : (J ⥤ C) ⥤ C` is isomorphic to evaluation. -/
+noncomputable def colimIsoEvaluation [HasColimitsOfShape J C] {X : J} (h : IsTerminal X) :
+    colim ≅ (evaluation J C).obj X :=
+  NatIso.ofComponents fun D ↦ ((colimitOfDiagramTerminal h _).coconePointUniqueUpToIso
+    (colimit.isColimit _)).symm
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc (attr := simp)]
+lemma ι_colimIsoEvaluation_hom [HasColimitsOfShape J C] {X : J} (h : IsTerminal X) :
+    colim.ι _ ≫ (colimIsoEvaluation C h).hom = 𝟙 _ := by
+  ext
+  simp [colimIsoEvaluation]
+
+@[reassoc (attr := simp)]
+lemma ι_colimIsoEvaluation_hom_app [HasColimitsOfShape J C] {X : J} (h : IsTerminal X)
+    (D : J ⥤ C) :
+    colimit.ι _ _ ≫ (colimIsoEvaluation C h).hom.app D = 𝟙 _ :=
+  congr($(ι_colimIsoEvaluation_hom h).app _)
+
 end
 
 end CategoryTheory.Limits

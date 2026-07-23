@@ -71,6 +71,9 @@ instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   nth_rw 1 [this]
   infer_instance
 
+instance : e.inverse.IsDenseSubsite K (e.functor.inducedTopology K) :=
+  inferInstanceAs <| e.symm.functor.IsDenseSubsite K (e.symm.inverse.inducedTopology K)
+
 lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
     K = e.inverse.inducedTopology J := by
   ext
@@ -192,6 +195,17 @@ theorem hasSheafCompose : J.HasSheafCompose F where
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
 
 end Equivalence
+
+lemma Presheaf.IsSheaf.iff_of_equivalence (F : C ≌ D) (P : Cᵒᵖ ⥤ A) (J : GrothendieckTopology D) :
+    Presheaf.IsSheaf (F.functor.inducedTopology J) P ↔ Presheaf.IsSheaf J (F.inverse.op ⋙ P) := by
+  refine ⟨fun hP ↦ Functor.op_comp_isSheaf_of_isSheaf _ _ (F.functor.inducedTopology J) _ hP,
+      fun hP ↦ ?_⟩
+  let e : P ≅ F.functor.op ⋙ F.inverse.op ⋙ P :=
+    (Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight
+      ((Functor.opId _).symm ≪≫ NatIso.op F.unitIso.symm ≪≫ Functor.opComp _ _) _ ≪≫
+      Functor.associator _ _ _
+  rw [Presheaf.isSheaf_of_iso_iff e]
+  exact Functor.op_comp_isSheaf_of_isSheaf _ _ _ _ hP
 
 variable (B : Type u₄) [Category.{v₄} B] (F : A ⥤ B)
 
