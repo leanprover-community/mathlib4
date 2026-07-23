@@ -400,6 +400,7 @@ variable [IsFiniteMeasure μ]
 variable [TopologicalSpace X] [CompactSpace X] [BorelSpace X]
 variable [MeasurableEq V] [MeasurableAdd₂ V]
 
+/-- The bilinear map `(f,g) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ)`. -/
 def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
   (LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
@@ -478,6 +479,14 @@ def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     refine ENNReal.mul_lt_top hK.eLpNorm_lt_top enorm_lt_top
     )
 
+omit [BorelSpace X] in
+@[simp]
+lemma mercerForm_apply (f g : Lp V 2 μ) :
+    mercerForm μ hK f g = ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ) := by
+  rfl
+
+/-- The integral operator `f ↦ ∫ ∫ (y : X), K · y (f y) ∂μ` defined through the Riesz representer
+associated to the bilinear form `mercerForm`. -/
 def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
   {
     toFun := fun (f : Lp V 2 μ) ↦ (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm μ hK f)
@@ -490,6 +499,12 @@ def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
     grw [le_opNorm, LinearMap.mkContinuous₂_norm_le]
     exact ENNReal.toReal_nonneg
   )
+
+omit [BorelSpace X] in
+@[simp]
+lemma integralOperator_apply [CompleteSpace V] (f : Lp V 2 μ) :
+    integralOperator μ hK f = (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm μ hK f) := by
+  rfl
 
 omit [BorelSpace X] in
 theorem integralOperator_inner_right_eq_mercerForm [CompleteSpace V] (f g : Lp V 2 μ) :
