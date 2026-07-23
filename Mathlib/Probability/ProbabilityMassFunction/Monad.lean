@@ -59,8 +59,17 @@ theorem pure_apply_self : pure a a = 1 :=
 theorem pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
   if_neg h
 
+lemma pure_injective : Function.Injective (pure (α := α)) := by
+  intro a a' h
+  apply_fun PMF.support at h
+  simpa using h
+
+instance [Nontrivial α] : Nontrivial (PMF α) := pure_injective.nontrivial
+
 instance [Inhabited α] : Inhabited (PMF α) :=
   ⟨pure default⟩
+
+instance [Unique α] : Unique (PMF α) := Unique.mk' (PMF α)
 
 section Measure
 
