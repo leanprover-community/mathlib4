@@ -1291,6 +1291,16 @@ instance uniqueUnits : Unique (Ideal R)ˣ where
   default := 1
   uniq u := Units.ext (show (u : Ideal R) = 1 by rw [isUnit_iff.mp u.isUnit, one_eq_top])
 
+/-- `span {a}` divides `span {b}` if and only if `a` divides `b`. -/
+theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
+    span {a} ∣ span ({b} : Set R) ↔ a ∣ b :=
+  ⟨fun ⟨K, hK⟩ => mem_span_singleton.mp (mul_le_left
+    (show b ∈ K * span {a} from mul_comm (span {a}) K ▸ hK ▸ mem_span_singleton.mpr dvd_rfl)),
+   fun ⟨c, hc⟩ => ⟨span {c}, hc ▸ (span_singleton_mul_span_singleton a c).symm⟩⟩
+
+@[deprecated (since := "2026-04-16")]
+alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
+
 end Dvd
 
 end MulAndRadical
