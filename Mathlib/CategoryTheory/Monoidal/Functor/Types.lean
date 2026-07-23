@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Control.Basic
 
 /-!

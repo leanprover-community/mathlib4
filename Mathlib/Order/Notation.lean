@@ -7,7 +7,7 @@ module
 
 public import Qq
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
-public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
 public import Lean.PrettyPrinter.Delaborator.Builtins
 
@@ -57,6 +57,9 @@ attribute [deprecated Compl.compl (since := "2026-01-04")] HasCompl.compl
 
 @[inherit_doc]
 postfix:1024 "ᶜ" => compl
+
+initialize_simps_projections Compl
+initialize_simps_projections HasCompl
 
 /-! ### `Sup` and `Inf` -/
 
@@ -176,6 +179,8 @@ infixr:60 " ⇨ " => himp
 /-- Heyting negation -/
 prefix:72 "￢" => hnot
 
+initialize_simps_projections HImp
+initialize_simps_projections HNot
 
 /-- Typeclass for the `⊤` (`\top`) notation -/
 @[notation_class, ext]
