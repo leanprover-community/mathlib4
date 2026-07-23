@@ -560,6 +560,11 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
   rw [hzero] at heq
   exact neg_inj.mp (Eq.symm heq)
 
+@[simp]
+lemma cyclotomic_prime_coeff {R : Type*} [Ring R] {p i : ℕ} [Fact p.Prime] :
+    (cyclotomic p R).coeff i = if i < p then 1 else 0 := by
+  simp [cyclotomic_prime]
+
 /-- If `(a : ℕ)` is a root of `cyclotomic n (ZMod p)`, where `p` is a prime, then `a` and `p` are
 coprime. -/
 theorem coprime_of_root_cyclotomic {n : ℕ} (hpos : 0 < n) {p : ℕ} [hprime : Fact p.Prime] {a : ℕ}
