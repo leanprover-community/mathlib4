@@ -42,14 +42,13 @@ namespace exteriorPower
 
 open RealInnerProductSpace Matrix
 
+variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
 /-- The inner product on `⋀[ℝ]^n E` as a bilinear map. This is an implementation detail
 for constructing the `InnerProductSpace` instance and should not be used directly.
 Use `⟪·, ·⟫` instead. -/
-def innerProductForm {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] {n : ℕ} :
-    ⋀[ℝ]^n E →ₗ[ℝ] ⋀[ℝ]^n E →ₗ[ℝ] ℝ :=
+def innerProductForm : ⋀[ℝ]^n E →ₗ[ℝ] ⋀[ℝ]^n E →ₗ[ℝ] ℝ :=
   pairingDual ℝ E n ∘ₗ map n (innerₗ E)
-
-variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 lemma innerProductForm_ιMulti_ιMulti (x y : Fin n → E) :
     innerProductForm (ιMulti ℝ n x) (ιMulti ℝ n y) = det (of fun i j ↦ ⟪x j, y i⟫) := by
