@@ -270,7 +270,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
       map_smul, AlgHom.restrictScalars_apply, eval0, smul_zero]
   exact restrictScalars_of_isIntegral _ this
 
-theorem _root_.IsIntegral.trans_isAlgebraic [alg : Algebra.IsAlgebraic R S]
+theorem _root_.IsIntegral.trans_isAlgebraic [Algebra.IsAlgebraic R S]
     {a : A} (h : IsIntegral S a) : IsAlgebraic R a := by
   cases subsingleton_or_nontrivial A
   · have := Algebra.IsAlgebraic.nontrivial R S
@@ -507,14 +507,44 @@ namespace Algebra.IsAlgebraic
 section IsFractionRing
 
 variable (R S) (R' S' : Type*) [CommRing S'] [FaithfulSMul R S] [alg : Algebra.IsAlgebraic R S]
-  [NoZeroDivisors S] [Algebra S S'] [IsFractionRing S S']
+  [NoZeroDivisors S] [Algebra S S']
 
-instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
+section Iff
+
+theorem isLocalization_iff_isFractionRing :
+    IsLocalization (algebraMapSubmonoid S R⁰) S' ↔ IsFractionRing S S' :=
   have := (FaithfulSMul.algebraMap_injective R S).noZeroDivisors _ (map_zero _) (map_mul _)
-  (IsLocalization.iff_of_le_of_exists_dvd _ S⁰
+  IsLocalization.iff_of_le_of_exists_dvd _ S⁰
     (map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective ..) le_rfl)
     fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.1 s).exists_nonzero_dvd hs
-    ⟨_, ⟨r, mem_nonZeroDivisors_of_ne_zero ne, rfl⟩, eq⟩).mpr inferInstance
+    ⟨_, ⟨r, mem_nonZeroDivisors_of_ne_zero ne, rfl⟩, eq⟩
+
+variable [Algebra R S'] [IsScalarTower R S S']
+
+theorem isLocalizedModule_iff_isFractionRing :
+    IsLocalizedModule R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap ↔ IsFractionRing S S' :=
+  isLocalizedModule_iff_isLocalization.trans (isLocalization_iff_isFractionRing ..)
+
+variable [CommRing R'] [Algebra R R'] [IsFractionRing R R']
+
+theorem isBaseChange_iff_isFractionRing [Module R' S'] [IsScalarTower R R' S'] :
+    IsBaseChange R' (IsScalarTower.toAlgHom R S S').toLinearMap ↔ IsFractionRing S S' :=
+  (isLocalizedModule_iff_isBaseChange R⁰ ..).symm.trans (isLocalizedModule_iff_isFractionRing ..)
+
+variable [Algebra R' S'] [IsScalarTower R R' S']
+
+theorem isPushout_iff_isFractionRing : IsPushout R R' S S' ↔ IsFractionRing S S' :=
+  (isPushout_iff ..).trans <| isBaseChange_iff_isFractionRing ..
+
+theorem isPushout'_iff_isFractionRing : IsPushout R S R' S' ↔ IsFractionRing S S' :=
+  (IsPushout.comm ..).trans <| isPushout_iff_isFractionRing ..
+
+end Iff
+
+variable [IsFractionRing S S']
+
+instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
+  (isLocalization_iff_isFractionRing ..).mpr ‹_›
 
 variable [Algebra R S'] [IsScalarTower R S S']
 
