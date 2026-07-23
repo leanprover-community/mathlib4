@@ -128,7 +128,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
 lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs : IsIrreducible s) :
     ∃ u ∈ irreducibleComponents X, s ⊆ u := by
   obtain ⟨u, hu⟩ := exists_preirreducible s hs.isPreirreducible
-  use u, ⟨⟨hs.left.mono hu.right.left,hu.left⟩,fun _ h hl => (hu.right.right _ h.right hl).le⟩
+  use u, ⟨⟨hs.left.mono hu.right.left, hu.left⟩, fun _ h hl => (hu.right.right _ h.right hl).le⟩
   exact hu.right.left
 
 /-- A maximal irreducible set that contains a given point. -/

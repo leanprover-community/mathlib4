@@ -507,7 +507,7 @@ theorem _root_.FirstOrder.Language.definableFun_const {A : Set M} {a : M}
     (γ : Type*) (ha : a ∈ A) :
     A.DefinableFun L (fun _ : γ → M => a) := by
   rw [definableFun_iff_empty_definableFun_with_params]
-  exact ((L.con (⟨a,ha⟩ : ↑A)).term).definableFun_realize
+  exact ((L.con (⟨a, ha⟩ : ↑A)).term).definableFun_realize
 
 variable {L}
 

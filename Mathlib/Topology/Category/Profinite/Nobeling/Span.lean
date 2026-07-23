@@ -186,7 +186,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   | nil =>
     intro _
     apply Submodule.subset_span
-    exact ⟨⟨[], List.isChain_nil⟩,⟨Or.inl rfl, rfl⟩⟩
+    exact ⟨⟨[], List.isChain_nil⟩, ⟨Or.inl rfl, rfl⟩⟩
   | cons a as ih =>
     rw [List.map_cons, List.prod_cons]
     intro ha

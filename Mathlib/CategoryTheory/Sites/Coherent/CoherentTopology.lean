@@ -54,7 +54,7 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α 
       (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst) := by
   rw [← Sieve.effectiveEpimorphic_family]
   suffices h₂ : (Sieve.generate (Presieve.ofArrows (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
-        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ (coherentTopology C) X by
+        (fun ⟨a, b⟩ => π_n a b ≫ π a))) ∈ (coherentTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
     exact fun W => coherentTopology.isSheaf_yoneda_obj W _ h₂
@@ -101,7 +101,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
     | transitive Y R S _ _ a b =>
       obtain ⟨α, w, Y₁, π, ⟨h₁, h₂⟩⟩ := a
       choose β _ Y_n π_n H using fun a => b (h₂ a)
-      exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
+      exact ⟨(Σ a, β a), inferInstance, fun ⟨a, b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
         EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a => (H a).1),
         fun c => (H c.fst).2 c.snd⟩
   · exact coherentTopology.mem_sieves_of_hasEffectiveEpiFamily S

@@ -71,7 +71,7 @@ variable {F R : Type*} [CommRing F] [Nontrivial F] [Fintype F] [DecidableEq F] [
 /-- The Jacobi sum of two multiplicative characters on a nontrivial finite commutative ring `F`
 can be written as a sum over `F \ {0,1}`. -/
 lemma jacobiSum_eq_sum_sdiff (χ ψ : MulChar F R) :
-    jacobiSum χ ψ = ∑ x ∈ univ \ {0,1}, χ x * ψ (1 - x) := by
+    jacobiSum χ ψ = ∑ x ∈ univ \ {0, 1}, χ x * ψ (1 - x) := by
   simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, left_eq_add,
     neg_eq_zero]
   apply sum_eq_zero

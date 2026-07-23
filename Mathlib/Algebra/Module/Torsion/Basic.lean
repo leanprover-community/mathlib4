@@ -190,7 +190,7 @@ def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S 
     Submodule R M where
   carrier := { x | ∃ a : S, a • x = 0 }
   add_mem' := by
-    intro x y ⟨a,hx⟩ ⟨b,hy⟩
+    intro x y ⟨a, hx⟩ ⟨b, hy⟩
     use b * a
     rw [smul_add, mul_smul, mul_comm, mul_smul, hx, hy, smul_zero, smul_zero, add_zero]
   zero_mem' := ⟨1, smul_zero 1⟩

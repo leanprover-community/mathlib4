@@ -199,7 +199,7 @@ lemma restrict_isCircuit_iff (hR : R ⊆ M.E := by aesop_mat) :
     (M ↾ R).IsCircuit C ↔ M.IsCircuit C ∧ C ⊆ R := by
   refine ⟨?_, fun h ↦ h.1.isCircuit_restrict_of_subset h.2⟩
   simp_rw [isCircuit_iff, restrict_dep_iff, and_imp, dep_iff]
-  exact fun hC hCR h ↦ ⟨⟨⟨hC,hCR.trans hR⟩,fun I hI hIC ↦ h hI.1 (hIC.trans hCR) hIC⟩,hCR⟩
+  exact fun hC hCR h ↦ ⟨⟨⟨hC, hCR.trans hR⟩, fun I hI hIC ↦ h hI.1 (hIC.trans hCR) hIC⟩, hCR⟩
 
 /-! ### Fundamental IsCircuits -/
 
@@ -527,7 +527,7 @@ lemma IsCircuit.finite [Finitary M] (hC : M.IsCircuit C) : C.Finite := by
 
 lemma finitary_iff_forall_isCircuit_finite : M.Finitary ↔ ∀ C, M.IsCircuit C → C.Finite := by
   refine ⟨fun _ _ ↦ IsCircuit.finite, fun h ↦
-    ⟨fun I hI ↦ indep_iff_not_dep.2 ⟨fun hd ↦ ?_,fun x hx ↦ ?_⟩⟩⟩
+    ⟨fun I hI ↦ indep_iff_not_dep.2 ⟨fun hd ↦ ?_, fun x hx ↦ ?_⟩⟩⟩
   · obtain ⟨C, hCI, hC⟩ := hd.exists_isCircuit_subset
     exact hC.dep.not_indep <| hI _ hCI (h C hC)
   simpa using (hI {x} (by simpa) (finite_singleton _)).subset_ground

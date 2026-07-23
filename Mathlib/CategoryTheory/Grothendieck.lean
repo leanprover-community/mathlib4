@@ -205,7 +205,7 @@ def isoMk {X Y : Grothendieck F} (e₁ : X.base ≅ Y.base)
     X ≅ Y where
   hom := ⟨e₁.hom, e₂.hom⟩
   inv := ⟨e₁.inv, (F.map e₁.inv).toFunctor.map e₂.inv ≫ eqToHom (by
-    rw [← Cat.Hom.comp_obj, ← F.map_comp,e₁.hom_inv_id,F.map_id,Cat.Hom.id_obj])⟩
+    rw [← Cat.Hom.comp_obj, ← F.map_comp, e₁.hom_inv_id, F.map_id, Cat.Hom.id_obj])⟩
   hom_inv_id := Grothendieck.ext _ _ (by simp) (by simp)
   inv_hom_id := Grothendieck.ext _ _ (by simp) (by
     have := Functor.congr_hom congr($((F.mapIso e₁).inv_hom_id).toFunctor) e₂.inv

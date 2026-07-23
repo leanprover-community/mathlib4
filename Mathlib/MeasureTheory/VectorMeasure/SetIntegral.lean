@@ -466,7 +466,7 @@ theorem enorm_setIntegral_le_lintegral_enorm :
 
 theorem enorm_setIntegral_le_lintegral_enorm_transpose :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂(μ.transpose B).variation := by
-  grw [enorm_integral_le_lintegral_enorm_transpose, transpose_restrict,variation_restrict_le]
+  grw [enorm_integral_le_lintegral_enorm_transpose, transpose_restrict, variation_restrict_le]
 
 private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))

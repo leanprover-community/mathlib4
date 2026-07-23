@@ -469,7 +469,7 @@ instance {β : α → Type*} [Infinite α] [∀ a, Nonempty (β a)] : Infinite (
 
 theorem sigma_of_right {β : α → Type*} {a : α} [Infinite (β a)] :
     Infinite ((a : α) × β a) :=
-  Infinite.of_injective (f := fun x ↦ ⟨a,x⟩) fun _ _ ↦ by simp
+  Infinite.of_injective (f := fun x ↦ ⟨a, x⟩) fun _ _ ↦ by simp
 
 instance {β : α → Type*} [Nonempty α] [∀ a, Infinite (β a)] : Infinite ((a : α) × β a) :=
   Infinite.sigma_of_right (a := Classical.arbitrary α)

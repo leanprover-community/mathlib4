@@ -452,8 +452,8 @@ def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
     { obj := fun X ↦ ⟨op X.unop.1, op X.unop.2⟩,
       map := fun f ↦ f.unop.1.op ×ₘ f.unop.2.op }
   inverse :=
-    { obj := fun ⟨X,Y⟩ ↦ op ⟨X.unop, Y.unop⟩,
-      map := fun ⟨f,g⟩ ↦ op (f.unop ×ₘ g.unop) }
+    { obj := fun ⟨X, Y⟩ ↦ op ⟨X.unop, Y.unop⟩,
+      map := fun ⟨f, g⟩ ↦ op (f.unop ×ₘ g.unop) }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

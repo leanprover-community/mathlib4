@@ -183,7 +183,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
     apply (mem_fixingSubgroup_iff Gal(K/k)).mpr
     intro y hy
     simp only [AlgEquiv.smul_def, AlgEquiv.mul_apply]
-    have : ((restrictNormalHom L') h ⟨y,hy⟩).1 = ((restrictNormalHom L') σ ⟨y,hy⟩).1 := by rw [eq]
+    have : ((restrictNormalHom L') h ⟨y, hy⟩).1 = ((restrictNormalHom L') σ ⟨y, hy⟩).1 := by rw [eq]
     rw [restrictNormalHom_apply L'.1 h ⟨y, hy⟩, restrictNormalHom_apply L'.1 σ ⟨y, hy⟩] at this
     simp only [this, ← AlgEquiv.mul_apply, inv_mul_cancel, one_apply]
   absurd compl

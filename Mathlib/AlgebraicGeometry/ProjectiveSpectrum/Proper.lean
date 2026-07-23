@@ -59,12 +59,12 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
       · contradiction
       · simp; ring⟩
     den := ⟨f ^ (j * (e + 1)), by convert SetLike.pow_mem_graded _ hf; ring⟩
-    den_mem := ⟨_,rfl⟩ }
+    den_mem := ⟨_, rfl⟩ }
   let y0 : NumDenSameDeg 𝒜 (.powers g) :=
   { deg := j * (d * e)
     num := ⟨f ^ (j * e), by convert SetLike.pow_mem_graded _ hf; ring⟩
     den := ⟨g ^ (j * d), by convert SetLike.pow_mem_graded _ hg; ring⟩
-    den_mem := ⟨_,rfl⟩ }
+    den_mem := ⟨_, rfl⟩ }
   use mk x0 ⊗ₜ mk y0
   ext
   simp only [Algebra.TensorProduct.lift_tmul, awayMapₐ_apply, val_mul,

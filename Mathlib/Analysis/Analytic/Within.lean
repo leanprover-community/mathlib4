@@ -118,7 +118,7 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
   constructor
   · intro h
     refine ⟨fun y ↦ p.sum (y - x), ?_, ?_⟩
-    · intro y ⟨ys,yb⟩
+    · intro y ⟨ys, yb⟩
       simp only [mem_eball, edist_eq_enorm_sub] at yb
       have e0 := p.hasSum (x := y - x) ?_
       · have e1 := (h.hasSum (y := y - x) ?_ ?_)

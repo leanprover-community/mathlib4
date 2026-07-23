@@ -163,12 +163,12 @@ theorem swapTrue_mem_C1 (f : π (C1 C ho) (ord I · < o)) :
     exact ⟨hsC, Order.succ_le_of_lt (h'.lt_of_ne' h)⟩
 
 /-- The first way to map `C'` into `C`. -/
-def CC'₀ : C' C ho → C := fun g ↦ ⟨g.val,g.prop.1.1⟩
+def CC'₀ : C' C ho → C := fun g ↦ ⟨g.val, g.prop.1.1⟩
 
 /-- The second way to map `C'` into `C`. -/
 noncomputable
 def CC'₁ : C' C ho → C :=
-  fun g ↦ ⟨SwapTrue o g.val, (swapTrue_mem_C1 C hsC ho ⟨g.val,g.prop.2⟩).1⟩
+  fun g ↦ ⟨SwapTrue o g.val, (swapTrue_mem_C1 C hsC ho ⟨g.val, g.prop.2⟩).1⟩
 
 theorem continuous_CC'₀ : Continuous (CC'₀ C ho) := Continuous.subtype_mk continuous_subtype_val _
 
@@ -324,7 +324,7 @@ def sum_to : (GoodProducts (π C (ord I · < o))) ⊕ (MaxProducts C ho) → Pro
 
 theorem injective_sum_to : Function.Injective (sum_to C ho) := by
   refine Function.Injective.sumElim Subtype.val_injective Subtype.val_injective
-    (fun ⟨a,ha⟩ ⟨b,hb⟩ ↦ (fun (hab : a = b) ↦ ?_))
+    (fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ (fun (hab : a = b) ↦ ?_))
   rw [← hab] at hb
   have ha' := Products.prop_of_isGood C _ ha (term I ho) hb.2
   simp only [ord_term_aux, lt_self_iff_false] at ha'
@@ -447,8 +447,8 @@ theorem GoodProducts.max_eq_o_cons_tail (l : MaxProducts C ho) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem Products.evalCons {I} [LinearOrder I] {C : Set (I → Bool)} {l : List I} {a : I}
-    (hla : (a::l).IsChain (· > ·)) : Products.eval C ⟨a::l,hla⟩ =
-    (e C a) * Products.eval C ⟨l,List.IsChain.sublist hla (List.tail_sublist (a::l))⟩ := by
+    (hla : (a::l).IsChain (· > ·)) : Products.eval C ⟨a::l, hla⟩ =
+    (e C a) * Products.eval C ⟨l, List.IsChain.sublist hla (List.tail_sublist (a::l))⟩ := by
   simp only [eval.eq_1, List.map, List.prod_cons]
 
 set_option backward.isDefEq.respectTransparency.types false in

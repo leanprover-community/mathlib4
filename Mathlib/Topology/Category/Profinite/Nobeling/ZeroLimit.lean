@@ -88,7 +88,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     apply (List.lex_nil_or_eq_nil l (r := (· < ·))).resolve_left
     intro _
     apply hll
-    have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩} := by
+    have he : {Products.nil} ⊆ {m | m < ⟨l, hl⟩} := by
       simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_ofPred_eq]
     grw [← he]
     rw [Products.span_nil_eq_top]

@@ -293,7 +293,7 @@ lemma isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ E) (J : GrothendieckTopol
     Functor.IsContinuous (F₁ ⋙ F₂) J L where
   op_comp_isSheaf_of_types G :=
     F₁.op_comp_isSheaf_of_types J K
-      ⟨_,(isSheaf_iff_isSheaf_of_type _ _).2 (F₂.op_comp_isSheaf_of_types K L G)⟩
+      ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (F₂.op_comp_isSheaf_of_types K L G)⟩
 
 lemma isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
     (e : F₁ ⋙ F₂ ≅ F₁₂) (J : GrothendieckTopology C)

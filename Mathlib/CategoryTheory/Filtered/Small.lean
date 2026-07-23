@@ -260,7 +260,7 @@ theorem small_fullSubcategory_cofilteredClosure :
   rintro ⟨j, h⟩
   induction h with
   | base x =>
-    refine ⟨⟨0, ?_⟩,?_⟩
+    refine ⟨⟨0, ?_⟩, ?_⟩
     · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
     · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization,

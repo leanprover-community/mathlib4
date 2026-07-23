@@ -227,7 +227,7 @@ theorem coe_ofMatrix_eq_relationMap [DecidableEq n] {c : RingCon (Matrix n n R)}
   ext x y
   constructor
   · intro h
-    refine ⟨_,_, h i j, ?_⟩
+    refine ⟨_, _, h i j, ?_⟩
     simp
   · rintro ⟨X, Y, h, rfl, rfl⟩ i' j'
     simpa using c.mul (c.mul (c.refl <| single i' i 1) h) (c.refl <| single j j' 1)

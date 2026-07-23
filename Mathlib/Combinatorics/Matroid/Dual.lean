@@ -146,7 +146,7 @@ theorem setOfPred_dual_isBase_eq : {B | M✶.IsBase B} = (fun X ↦ M.E \ X) '' 
   ext B
   simp only [mem_ofPred_eq, mem_image, dual_isBase_iff']
   refine ⟨fun h ↦ ⟨_, h.1, sdiff_sdiff_cancel_left h.2⟩,
-    fun ⟨B', hB', h⟩ ↦ ⟨?_,h.symm.trans_subset sdiff_subset⟩⟩
+    fun ⟨B', hB', h⟩ ↦ ⟨?_, h.symm.trans_subset sdiff_subset⟩⟩
   rwa [← h, sdiff_sdiff_cancel_left hB'.subset_ground]
 
 @[deprecated (since := "2026-07-09")] alias setOf_dual_isBase_eq := setOfPred_dual_isBase_eq

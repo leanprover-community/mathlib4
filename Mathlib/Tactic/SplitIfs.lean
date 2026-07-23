@@ -121,7 +121,7 @@ private partial def splitIfsCore
     (loc : Location)
     (hNames : IO.Ref (List (TSyntax `Lean.binderIdent))) :
     List Expr → TacticM Unit := fun done ↦ withMainContext do
-  let some (_,cond) ← findIfCondAt loc
+  let some (_, cond) ← findIfCondAt loc
       | Meta.throwTacticEx `split_ifs (← getMainGoal) "no if-then-else conditions to split"
 
   -- If `cond` is `¬p` then use `p` instead.

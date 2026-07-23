@@ -351,8 +351,8 @@ def sumSigmaDistrib {α β} (t : α ⊕ β → Type*) :
     | .mk (.inl x) y => .inl ⟨x, y⟩
     | .mk (.inr x) y => .inr ⟨x, y⟩),
   Sum.elim (fun a ↦ ⟨.inl a.1, a.2⟩) (fun b ↦ ⟨.inr b.1, b.2⟩),
-  by rintro ⟨x|x,y⟩ <;> simp,
-  by rintro (⟨x,y⟩|⟨x,y⟩) <;> simp⟩
+  by rintro ⟨x|x, y⟩ <;> simp,
+  by rintro (⟨x, y⟩|⟨x, y⟩) <;> simp⟩
 
 end
 

@@ -119,7 +119,7 @@ instance : P.isoModSerre.HasRightCalculusOfFractions where
     refine ⟨_, kernel.ι (f₁ - f₂), ?_, ?_⟩
     · rw [isoModSerre_iff_of_mono]
       exact P.prop_of_iso (Abelian.coimageIsoImage (f₁ - f₂)).symm
-        ((exists_comp_isoModSerre_eq_zero_iff P _).1 ⟨_ ,s, hs, by simpa [sub_eq_zero]⟩)
+        ((exists_comp_isoModSerre_eq_zero_iff P _).1 ⟨_ , s, hs, by simpa [sub_eq_zero]⟩)
     · simpa only [Preadditive.comp_sub, sub_eq_zero] using kernel.condition (f₁ - f₂)
 
 noncomputable example : Preadditive P.isoModSerre.Localization := inferInstance
