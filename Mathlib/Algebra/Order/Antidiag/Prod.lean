@@ -60,8 +60,8 @@ open Function
 
 namespace Finset
 
-/-- The class of additive monoids with an antidiagonal. -/
-class HasAntidiagonal (A : Type*) [AddMonoid A] where
+/-- The class of additive magmas with an antidiagonal. -/
+class HasAntidiagonal (A : Type*) [Add A] where
   /-- The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i + j = n`. -/
   antidiagonal : A → Finset (A × A)
@@ -72,8 +72,8 @@ export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
 attribute [simp] mem_antidiagonal
 
-/-- The class of (multiplicative) monoids with a mulAntidiagonal. -/
-class HasMulAntidiagonal (A : Type*) [Monoid A] where
+/-- The class of (multiplicative) magmas with a mulAntidiagonal. -/
+class HasMulAntidiagonal (A : Type*) [Mul A] where
   /-- The mulAntidiagonal of an element `n` is the finset of pairs `(i, j)` such that
   `i * j = n`. -/
   mulAntidiagonal : A → Finset (A × A)
@@ -92,14 +92,14 @@ namespace HasMulAntidiagonal
 
 /-- All `HasMulAntidiagonal` instances are equal -/
 @[to_additive /-- All `HasAntidiagonal` instances are equal -/]
-instance [Monoid A] : Subsingleton (HasMulAntidiagonal A) where
+instance [Mul A] : Subsingleton (HasMulAntidiagonal A) where
   allEq := by
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     congr with n xy
     rw [ha, hb]
 
 @[to_additive]
-lemma nonempty_antidiagonal {M : Type*} [Monoid M] [Finset.HasMulAntidiagonal M] (a : M) :
+lemma nonempty_antidiagonal {M : Type*} [MulOneClass M] [Finset.HasMulAntidiagonal M] (a : M) :
     (Finset.mulAntidiagonal a).Nonempty :=
   ⟨(1, a), by simp⟩
 
@@ -107,23 +107,22 @@ lemma nonempty_antidiagonal {M : Type*} [Monoid M] [Finset.HasMulAntidiagonal M]
 -- when the decidability instances obfuscate Lean
 set_option linter.overlappingInstances false in
 @[to_additive]
-lemma congr (A : Type*) [Monoid A]
-    [H1 : HasMulAntidiagonal A] [H2 : HasMulAntidiagonal A] :
+lemma congr (A : Type*) [Mul A] [H1 : HasMulAntidiagonal A] [H2 : HasMulAntidiagonal A] :
     H1.mulAntidiagonal = H2.mulAntidiagonal := by congr!; subsingleton
 
 @[to_additive]
-theorem swap_mem_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
+theorem swap_mem_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
     xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
   simp [mul_comm]
 
 @[to_additive (attr := simp) map_prodComm_antidiagonal]
-theorem map_prodComm_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
+theorem map_prodComm_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map (Equiv.prodComm A A) = mulAntidiagonal n :=
   Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
 
 /-- See also `Finset.map_prodComm_mulAntidiagonal`. -/
 @[to_additive (attr := simp)]
-theorem map_swap_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
+theorem map_swap_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
   map_prodComm_mulAntidiagonal
 
@@ -232,7 +231,7 @@ namespace HasMulAntidiagonal
 @[to_additive (attr := simps) sigmaAntidiagonalEquivProd
 /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the
   product `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/]
-def sigmaMulAntidiagonalEquivProd [Monoid A] [HasMulAntidiagonal A] :
+def sigmaMulAntidiagonalEquivProd [Mul A] [HasMulAntidiagonal A] :
     (Σ n : A, mulAntidiagonal n) ≃ A × A where
   toFun x := x.2
   invFun x := ⟨x.1 * x.2, x, mem_mulAntidiagonal.mpr rfl⟩
@@ -244,15 +243,15 @@ def sigmaMulAntidiagonalEquivProd [Monoid A] [HasMulAntidiagonal A] :
 section
 
 variable {A : Type*}
-  [CommMonoid A] [PartialOrder A] [CanonicallyOrderedMul A]
+  [CommMagma A] [PartialOrder A] [CanonicallyOrderedMul A]
   [LocallyFiniteOrderBot A] [DecidableEq A]
 
-/-- In a canonically ordered multiplicative monoid, the mulAntidiagonal can be constructed by
+/-- In a canonically ordered multiplicative magma, the mulAntidiagonal can be constructed by
 filtering.
 
 Note that this is not an instance, as for sometimes a more efficient algorithm is available. -/
 @[to_additive
-/-- In a canonically ordered additive monoid, the antidiagonal can be construct by filtering.
+/-- In a canonically ordered additive magma, the antidiagonal can be construct by filtering.
 
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/]
 abbrev mulAntidiagonalOfLocallyFinite : HasMulAntidiagonal A where
@@ -268,7 +267,7 @@ section Multiplicative
 
 open Multiplicative
 
-variable {A : Type*} [AddMonoid A] [HasAntidiagonal A]
+variable {A : Type*} [Add A] [HasAntidiagonal A]
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance : HasMulAntidiagonal (Multiplicative A) where
