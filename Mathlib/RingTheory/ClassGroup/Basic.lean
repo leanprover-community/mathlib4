@@ -406,7 +406,7 @@ theorem Ideal.IsPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDomain R]
     {I : Ideal R} (hI : (I ^ n).IsPrincipal) : I.IsPrincipal := by
   by_cases hI0 : I = 0
   · simp [hI0, bot_isPrincipal]
-  rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero (pow_ne_zero n hI0))] at hI
+  rw [← ClassGroup.mk0_eq_one_iff (pow_mem (mem_nonZeroDivisors_of_ne_zero hI0) n)] at hI
   rw [← ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_of_ne_zero hI0), ← orderOf_eq_one_iff,
     ← Nat.dvd_one, ← hn, Nat.dvd_gcd_iff]
   refine ⟨?_, orderOf_dvd_card⟩
