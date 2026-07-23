@@ -3207,6 +3207,8 @@ public import Mathlib.CategoryTheory.MorphismProperty.Representable
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.MorphismProperty.TrivialBundles
+public import Mathlib.CategoryTheory.MorphismProperty.TrivialBundlesGluing
 public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.NatTrans

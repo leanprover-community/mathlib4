@@ -217,6 +217,21 @@ theorem isoPullback_inv_fst (h : IsPullback fst snd f g) [HasPullback f g] :
 theorem isoPullback_inv_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.inv ≫ snd = pullback.snd _ _ := by simp [Iso.inv_comp_eq]
 
+lemma exists_iso_of_isos
+    (sq : IsPullback fst snd f g) {P' X' Y' Z' : C} {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
+    {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'} (sq' : IsPullback fst' snd' f' g')
+    (e₂ : X ≅ X') (e₃ : Y ≅ Y') (e₄ : Z ≅ Z')
+    (commf : f ≫ e₄.hom = e₂.hom ≫ f' := by cat_disch)
+    (commg : g ≫ e₄.hom = e₃.hom ≫ g' := by cat_disch) :
+    ∃ (e₁ : P ≅ P'), fst ≫ e₂.hom = e₁.hom ≫ fst' ∧ snd ≫ e₃.hom = e₁.hom ≫ snd' :=
+  ⟨{hom :=
+      sq'.lift (fst ≫ e₂.hom) (snd ≫ e₃.hom) (by simp [← commf, ← commg, sq.w])
+    inv :=
+      sq.lift (fst' ≫ e₂.inv) (snd' ≫ e₃.inv)
+        (by simp [← cancel_mono e₄.hom, commf, sq'.w, commg])
+    hom_inv_id := sq.hom_ext (by simp) (by simp)
+    inv_hom_id := sq'.hom_ext (by simp) (by simp) }, by simp⟩
+
 end IsPullback
 
 namespace IsPushout
@@ -354,6 +369,22 @@ theorem inl_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
 @[reassoc (attr := simp)]
 theorem inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
     inr ≫ h.isoPushout.hom = pushout.inr _ _ := by simp [← Iso.eq_comp_inv]
+
+lemma exists_iso_of_isos
+    (sq : IsPushout f g inl inr) {P' X' Y' Z' : C} {f' : Z' ⟶ X'} {g' : Z' ⟶ Y'}
+    {inl' : X' ⟶ P'} {inr' : Y' ⟶ P'} (sq' : IsPushout f' g' inl' inr')
+    (e₁ : Z ≅ Z') (e₂ : X ≅ X') (e₃ : Y ≅ Y')
+    (commf : f ≫ e₂.hom = e₁.hom ≫ f' := by cat_disch)
+    (commg : g ≫ e₃.hom = e₁.hom ≫ g' := by cat_disch) :
+    ∃ (e₄ : P ≅ P'), inl ≫ e₄.hom = e₂.hom ≫ inl' ∧ inr ≫ e₄.hom = e₃.hom ≫ inr' :=
+  ⟨{hom :=
+      sq.desc (e₂.hom ≫ inl') (e₃.hom ≫ inr')
+        (by simp [reassoc_of% commf, sq'.w, reassoc_of% commg])
+    inv :=
+      sq'.desc (e₂.inv ≫ inl) (e₃.inv ≫ inr) (by
+        simp [← cancel_epi e₁.hom, ← reassoc_of% commg, ← reassoc_of% commf, sq.w])
+    hom_inv_id := sq.hom_ext (by simp) (by simp)
+    inv_hom_id := sq'.hom_ext (by simp) (by simp) }, by simp⟩
 
 end IsPushout
 
