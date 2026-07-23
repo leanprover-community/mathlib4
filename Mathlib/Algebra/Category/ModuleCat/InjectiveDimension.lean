@@ -119,16 +119,10 @@ private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
       ModuleCat.shortComplexOfCompEqZero _ _ f.exact_map_mkQ_range.linearMap_comp_eq_zero
     have exactS := ModuleCat.shortComplex_shortExact S
       f.exact_map_mkQ_range injf (Submodule.mkQ_surjective _)
-    have eqmap : f'.hom.range.map eI.symm.toLinearMap = f.range := by
-      simp [f, LinearMap.range_comp]
     let eCoker : ModuleCat.of R (I ⧸ f.range) ≃ₛₗ[RingHomClass.toRingHom eR]
-      ModuleCat.of R' (I' ⧸ f'.hom.range) := {
-        __ := Submodule.mapQ _ _ eI.toLinearMap
-          (by simp [← eqmap, Submodule.map_equiv_eq_comap_symm])
-        invFun := Submodule.mapQ _ _ eI.symm.toLinearMap
-          (by simp [← eqmap, ← Submodule.map_le_iff_le_comap])
-        left_inv x := Submodule.Quotient.induction_on _ x (by simp)
-        right_inv x := Submodule.Quotient.induction_on _ x (by simp) }
+      ModuleCat.of R' (I' ⧸ f'.hom.range) :=
+      Submodule.Quotient.equiv _ _ eI
+        (by simp [f, ← Submodule.map_symm_eq_iff eI, LinearMap.range_comp])
     exact (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
       ((ih eCoker).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
 
