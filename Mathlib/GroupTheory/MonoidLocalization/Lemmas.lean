@@ -34,7 +34,7 @@ open Finset in
 @[to_additive] protected theorem pi {ι : Type*} {M N : ι → Type*}
     [∀ i, CommMonoid (M i)] [∀ i, CommMonoid (N i)] (S : Π i, Submonoid (M i))
     {f : Π i, M i → N i} (hf : ∀ i, IsLocalizationMap (S i) (f i)) :
-    IsLocalizationMap (Submonoid.pi .univ S) (Pi.map f) where
+    IsLocalizationMap (Submonoid.pi .univ S) (Function.map f) where
   map_units m := Pi.isUnit_iff.mpr fun i ↦ (hf i).map_units ⟨_, m.2 i ⟨⟩⟩
   surj z := by
     choose x hx using fun i ↦ (hf i).surj

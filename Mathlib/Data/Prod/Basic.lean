@@ -231,7 +231,7 @@ theorem Bijective.prodMap (hf : Bijective f) (hg : Bijective g) : Bijective (map
 
 theorem LeftInverse.prodMap (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) :
     LeftInverse (map f₁ g₁) (map f₂ g₂) :=
-  fun a ↦ by rw [Prod.map_map, hf.comp_eq_id, hg.comp_eq_id, map_id, id]
+  fun a ↦ by rw [Prod.map_map, hf.comp_eq_id, hg.comp_eq_id, Prod.map_id, id]
 
 theorem RightInverse.prodMap :
     RightInverse f₁ f₂ → RightInverse g₁ g₂ → RightInverse (map f₁ g₁) (map f₂ g₂) :=

@@ -522,18 +522,18 @@ section Pi
 variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i} {n : ℕ}
 
 @[simp]
-theorem isFixedPt_piMap : IsFixedPt (Pi.map f) x ↔ ∀ i, IsFixedPt (f i) (x i) :=
+theorem isFixedPt_piMap : IsFixedPt (Function.map f) x ↔ ∀ i, IsFixedPt (f i) (x i) :=
   funext_iff
 
-theorem IsFixedPt.piMap (h : ∀ i, IsFixedPt (f i) (x i)) : IsFixedPt (Pi.map f) x :=
+theorem IsFixedPt.piMap (h : ∀ i, IsFixedPt (f i) (x i)) : IsFixedPt (Function.map f) x :=
   isFixedPt_piMap.mpr h
 
 @[simp]
-theorem isPeriodicPt_piMap : IsPeriodicPt (Pi.map f) n x ↔ ∀ i, IsPeriodicPt (f i) n (x i) := by
-  simp [IsPeriodicPt]
+theorem isPeriodicPt_piMap : IsPeriodicPt (Function.map f) n x ↔
+    ∀ i, IsPeriodicPt (f i) n (x i) := by simp [IsPeriodicPt]
 
-theorem IsPeriodicPt.piMap (h : ∀ i, IsPeriodicPt (f i) n (x i)) : IsPeriodicPt (Pi.map f) n x :=
-  isPeriodicPt_piMap.mpr h
+theorem IsPeriodicPt.piMap (h : ∀ i, IsPeriodicPt (f i) n (x i)) :
+    IsPeriodicPt (Function.map f) n x := isPeriodicPt_piMap.mpr h
 
 end Pi
 

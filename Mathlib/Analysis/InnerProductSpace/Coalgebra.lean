@@ -39,9 +39,9 @@ open EuclideanSpace in
 /-- The comultiplication on `n → 𝕜` corresponds to the Euclidean space adjoint of the
 multiplication map. -/
 theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
-    comul = map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap ∘ₗ
+    comul = TensorProduct.map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap ∘ₗ
       ((equiv n 𝕜).symm.toLinearMap ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ
-        map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
+        TensorProduct.map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
       (equiv n 𝕜).symm.toLinearMap := by
   ext
   simp only [comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe, ← LinearEquiv.symm_apply_eq]
