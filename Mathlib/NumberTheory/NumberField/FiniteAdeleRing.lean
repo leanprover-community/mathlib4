@@ -48,7 +48,7 @@ private theorem hasProd_zero_subset_one_lt_valued {x : FiniteAdeleRing (𝓞 K) 
     (hx₀ : ∀ v, x v ≠ 0) : HasProd (fun v : {v | Valued.v (x v) < 1} ↦ ‖x v‖) 0 :=
   have hx := infinite_valued_ne_one_of_not_isUnit (by simpa using hx₀) hx
   have hx_prop : {v | 1 < Valued.v (x v)}.Finite := finite_valued_one_lt x
-  have hx_inf : {v | Valued.v (x v) < 1}.Infinite := (hx.diff hx_prop).mono (by grind)
+  have hx_inf : {v | Valued.v (x v) < 1}.Infinite := (hx.sdiff hx_prop).mono (by grind)
   have : atTop.Tendsto (fun s : Finset {v | Valued.v (x v) < 1} ↦ (∏ v ∈ s, ‖x v‖)⁻¹) atTop := by
     have h_le (S : Finset {v | Valued.v (x v) < 1}) : 2 ^ S.card ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
       have (v : _) (h : v ∈ S) : 2 ≤ ‖(x v)⁻¹‖  := by
@@ -69,7 +69,7 @@ theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUn
   have h : HasProd (fun v : {v | Valued.v (x v) = 1} ↦ ‖x.1 v‖) 1 := by
     convert hasProd_one; aesop (add simp [Valued.toNormedField.norm_eq_one_iff])
   have := HasProd.mul_disjoint (by grind) (hasProd_subset_valued_lt_one x) h (f := fun v ↦ ‖x v‖)
-  simpa using this.mul_isCompl ⟨by grind, fun _ _ _ ↦ by simp_all; grind⟩ hT
+  simpa using this.mul_isCompl ⟨by grind, fun _ _ _ _ _ ↦ by grind [lt_trichotomy]⟩ hT
 
 theorem tprod_norm_of_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : IsUnit x) :
     ∏' v, ‖x.1 v‖ = ∏ᶠ v, ‖x.1 v‖ := by
