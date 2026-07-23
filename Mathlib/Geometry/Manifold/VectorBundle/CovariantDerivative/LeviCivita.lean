@@ -41,8 +41,11 @@ We apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z p`, to obtain a `(1,1)
 * `CovariantDerivative.IsLeviCivitaConnection`: a covariant derivative `∇` on `(M, g)` is a
   Levi-Civita connection if and only if it is both torsion-free and compatible with `g`
 
+* `CovariantDerivative.IsLeviCivitaConnection.apply_eq`: the **Koszul formula**, expressing the term
+  `⟨∇ X Y, Z⟩` for all differentiable vector fields `X`, `Y` and `Z`, without reference to `∇`.
+
 * `CovariantDerivative.IsLeviCivitaConnection.uniqueness`: a Levi-Civita connection on `(M, g)` is
-  uniquely determined on differentiable vector fields (this is known as the **Koszul formula**).
+  uniquely determined on differentiable vector fields
 
 * `CovariantDerivative.leviCivitaConnection`: a choice of Levi-Civita connection on the tangent
   bundle `TM` of a Riemannian manifold `(M, g)`: this is unique up to the value on
@@ -210,8 +213,9 @@ section uniqueness
 
 variable {cov cov'}
 
-/-- Auxiliary lemma towards the uniqueness of the Levi-Civita connection: expressing the term
-`⟨∇ X Y, Z⟩` for all differentiable vector fields `X`, `Y` and `Z`, without reference to `∇`. -/
+/-- The **Koszul formula**, expressing the term `⟨∇ X Y, Z⟩` for all differentiable vector fields
+`X`, `Y` and `Z`, without reference to `∇`.
+This is the key insight to prove uniqueness of the Levi-Civita connection. -/
 public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -232,10 +236,10 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
   simp (disch := fun_prop) [real_inner_comm, inner_sub_right, torsion_apply] at *
   linear_combination - (eq1a + eq1b + eq2a + eq2b - eq3a - eq3b) / 2
 
-/-- Auxiliary lemma towards the uniqueness of the Levi-Civita connection: expressing the term
-`⟨∇ X Y, Z⟩` for all differentiable vector fields `Y` and `Z`, without reference to `∇`.
-
-Version of `IsLeviCivitaConnection.apply_eq` which does not require the vector field we are
+/-- The **Koszul formula**, expressing the term `⟨∇ X Y, Z⟩` for all differentiable vector fields
+`X`, `Y` and `Z`, without reference to `∇`.
+This is the key insight to prove uniqueness of the Levi-Civita connection.
+This version of `IsLeviCivitaConnection.apply_eq` does not require the vector field we are
 differentiating to be differentiable. -/
 public lemma IsLeviCivitaConnection.apply_eq_extend [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection) {x : M}
@@ -249,8 +253,7 @@ public lemma IsLeviCivitaConnection.apply_eq_extend [FiniteDimensional ℝ E]
   simp_rw [h.apply_eq _ (mdifferentiableAt_extend _ _ X₀) hY hZ]
   simp
 
-/-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields:
-this is known as the **Koszul formula**.
+/-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
 
 Note that the differentiability hypothesis on `Y` is required, since `CovariantDerivative` objects
 are unconstrained in their behaviour on non-differentiable vector fields. -/
