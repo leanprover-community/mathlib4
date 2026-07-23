@@ -13,6 +13,7 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # The standard simplex
@@ -50,7 +51,7 @@ namespace stdSimplex
 
 open Finset Opposite SimplexCategory
 
-/-- The functor `stdSimplex : SimplexCategory ⥤ SSet` is fully faithful; -/
+/-- The functor `stdSimplex : SimplexCategory ⥤ SSet` is fully faithful. -/
 abbrev fullyFaithful : stdSimplex.{u}.FullyFaithful :=
   ULiftYoneda.fullyFaithful SimplexCategory
 
@@ -271,7 +272,7 @@ attribute [local simp] image_subset_iff
 as a subcomplex. -/
 @[simps -isSimp obj]
 def face {n : ℕ} (S : Finset (Fin (n + 1))) : (Δ[n] : SSet.{u}).Subcomplex where
-  obj U := setOf (fun f ↦ Finset.image (objEquiv f).toOrderHom ⊤ ≤ S)
+  obj U := Set.ofPred (fun f ↦ Finset.image (objEquiv f).toOrderHom ⊤ ≤ S)
   map {U V} i := by aesop
 
 attribute [local simp] face_obj
@@ -604,7 +605,7 @@ private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     obtain ⟨f₂, rfl⟩ := objEquiv.symm.surjective x₂
     simp only [mem_nonDegenerate_iff_mono, Equiv.apply_symm_apply,
       SimplexCategory.mono_iff_injective, SimplexCategory.len_mk] at h₁ h₂
-    simp only [Set.mem_setOf_eq, SimplexCategory.len_mk, Equiv.apply_symm_apply,
+    simp only [Set.mem_ofPred_eq, SimplexCategory.len_mk, Equiv.apply_symm_apply,
       Subtype.mk.injEq, EmbeddingLike.apply_eq_iff_eq] at h₃ ⊢
     apply SimplexCategory.Hom.ext
     rw [← OrderHom.range_eq_iff h₁ h₂]
@@ -630,6 +631,7 @@ lemma nonDegenerateEquiv'_iff {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate 
   unfold nonDegenerateEquiv'
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `x` is a nondegenerate `d`-simplex of `Δ[n]`, this is the order isomorphism
 between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinality `d + 1`. -/
@@ -785,6 +787,7 @@ end Examples
 
 namespace Augmented
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
@@ -818,6 +821,7 @@ lemma yonedaEquiv_toOfSimplex :
     yonedaEquiv (toOfSimplex x) = ⟨x, mem_ofSimplex_obj x⟩ :=
   yonedaEquiv.symm.injective (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : Epi (toOfSimplex x) := by
   rw [← range_eq_top_iff]

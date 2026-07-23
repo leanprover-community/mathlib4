@@ -62,6 +62,7 @@ theorem LinearEquiv.finsuppUnique_apply (α : Type*) [Unique α] (f : α →₀ 
     LinearEquiv.finsuppUnique R M α f = f default :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated uniqueLinearEquiv_symm_apply (since := "2026-05-06")]
 theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
