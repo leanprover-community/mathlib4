@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Ring.Action.Pointwise.Set
-public import Mathlib.Topology.Bornology.Basic
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Absorption of sets
@@ -44,16 +44,16 @@ absorbs, absorbent
 assert_not_exists Real
 
 open Set Bornology Filter
-open scoped Pointwise
+open scoped Pointwise Topology
 
 section Defs
 
-variable (M : Type*) {α : Type*} [Bornology M] [SMul M α]
+variable (M : Type*) {α : Type*} [Zero M] [SMul M α] [TopologicalSpace M]
 
 /-- A set `s` absorbs another set `t` if `t` is contained in all scalings of `s`
 by all but a bounded set of elements. -/
 def Absorbs (s t : Set α) : Prop :=
-  ∀ᶠ a in cobounded M, t ⊆ a • s
+  ∀ᶠ a in 𝓝[≠] (0 : M), MapsTo (a • ·) t s
 
 /-- A set is *absorbent* if it absorbs every singleton. -/
 def Absorbent (s : Set α) : Prop :=
@@ -65,19 +65,32 @@ namespace Absorbs
 
 section SMul
 
-variable {M α : Type*} [Bornology M] [SMul M α] {s s₁ s₂ t t₁ t₂ : Set α} {S T : Set (Set α)}
+variable {M α : Type*} [TopologicalSpace M] [Zero M] [SMul M α] {s s₁ s₂ t t₁ t₂ : Set α}
+  {S T : Set (Set α)}
 
-protected lemma empty : Absorbs M s ∅ := by simp [Absorbs]
+protected lemma empty : Absorbs M s ∅ := by simp [Absorbs, mapsTo_empty]
 
-protected lemma eventually (h : Absorbs M s t) : ∀ᶠ a in cobounded M, t ⊆ a • s := h
+theorem _root_.absorbs_iff_eventually_nhdsNE_zero :
+    Absorbs M s t ↔ ∀ᶠ c : M in 𝓝[≠] 0, MapsTo (c • ·) t s := .rfl
 
-@[simp] lemma of_boundedSpace [BoundedSpace M] : Absorbs M s t := by simp [Absorbs]
+protected alias ⟨eventually_nhdsNE_zero, _⟩ := absorbs_iff_eventually_nhdsNE_zero
+
+protected alias eventually := Absorbs.eventually_nhdsNE_zero
+
+-- TODO: deprecation
+--@[simp] lemma of_boundedSpace [BoundedSpace M] : Absorbs M s t := by simp [Absorbs]
+
+@[simp] lemma of_discreteTopology [DiscreteTopology M] : Absorbs M s t := by
+  -- Should exist somewhere
+  have : 𝓝[≠] (0 : M) = ⊥ := by simp_rw [nhdsWithin, nhds_discrete, ← principal_singleton,
+    inf_principal, inter_compl_self, principal_empty]
+  simp [Absorbs, this]
 
 lemma mono_left (h : Absorbs M s₁ t) (hs : s₁ ⊆ s₂) : Absorbs M s₂ t :=
-  h.mono fun _a ha ↦ ha.trans <| smul_set_mono hs
+  h.mono fun _a ha ↦ ha.mono_right hs
 
 lemma mono_right (h : Absorbs M s t₁) (ht : t₂ ⊆ t₁) : Absorbs M s t₂ :=
-  h.mono fun _ ↦ ht.trans
+  h.mono fun _a ha ↦ ha.mono_left ht
 
 lemma mono (h : Absorbs M s₁ t₁) (hs : s₁ ⊆ s₂) (ht : t₂ ⊆ t₁) : Absorbs M s₂ t₂ :=
   (h.mono_left hs).mono_right ht
@@ -117,105 +130,125 @@ lemma _root_.absorbs_biUnion_finset {ι : Type*} {t : ι → Set α} {I : Finset
 
 protected alias ⟨_, biUnion_finset⟩ := absorbs_biUnion_finset
 
-end SMul
-
-section AddZero
-
-variable {M E : Type*} [Bornology M] {s₁ s₂ t₁ t₂ : Set E}
-
-protected lemma add [AddZeroClass E] [DistribSMul M E]
-    (h₁ : Absorbs M s₁ t₁) (h₂ : Absorbs M s₂ t₂) : Absorbs M (s₁ + s₂) (t₁ + t₂) :=
-  h₂.mp <| h₁.eventually.mono fun x hx₁ hx₂ ↦ by rw [smul_add]; exact add_subset_add hx₁ hx₂
-
-protected lemma zero [Zero E] [SMulZeroClass M E] {s : Set E} (hs : 0 ∈ s) : Absorbs M s 0 :=
-  Eventually.of_forall fun _ ↦ zero_subset.2 <| zero_mem_smul_set hs
-
-end AddZero
-
-end Absorbs
-
-section GroupWithZero
-
-variable {G₀ α : Type*} [GroupWithZero G₀] [Bornology G₀] [MulAction G₀ α]
-  {s t u : Set α} {S : Set (Set α)}
+@[simp]
+protected lemma univ : Absorbs M univ s := by
+  simp [Absorbs]
 
 @[simp]
-protected lemma Absorbs.univ : Absorbs G₀ univ s :=
-  (eventually_ne_cobounded 0).mono fun a ha ↦ by rw [smul_set_univ₀ ha]; apply subset_univ
+lemma _root_.absorbs_inter : Absorbs M (s₁ ∩ s₂) t ↔ Absorbs M s₁ t ∧ Absorbs M s₂ t := by
+  simp [Absorbs]
 
-lemma absorbs_iff_eventually_cobounded_mapsTo :
-    Absorbs G₀ s t ↔ ∀ᶠ c in cobounded G₀, MapsTo (c⁻¹ • ·) t s :=
-  eventually_congr <| (eventually_ne_cobounded 0).mono fun c hc ↦ by
-    rw [← preimage_smul_inv₀ hc]; rfl
-
-alias ⟨eventually_cobounded_mapsTo, _⟩ := absorbs_iff_eventually_cobounded_mapsTo
-
-@[simp]
-lemma absorbs_inter : Absorbs G₀ (s ∩ t) u ↔ Absorbs G₀ s u ∧ Absorbs G₀ t u := by
-  simp only [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_inter, eventually_and]
-
-protected lemma Absorbs.inter (hs : Absorbs G₀ s u) (ht : Absorbs G₀ t u) : Absorbs G₀ (s ∩ t) u :=
+protected lemma inter (hs : Absorbs M s₁ t) (ht : Absorbs M s₂ t) : Absorbs M (s₁ ∩ s₂) t :=
   absorbs_inter.2 ⟨hs, ht⟩
 
-variable (G₀ u) in
+variable (M t) in
 /-- The filter of sets that absorb `u`. -/
-def Filter.absorbing : Filter α where
-  sets := {s | Absorbs G₀ s u}
+def _root_.Filter.absorbing : Filter α where
+  sets := {s | Absorbs M s t}
   univ_sets := .univ
   sets_of_superset h := h.mono_left
   inter_sets := .inter
 
 @[simp]
-lemma Filter.mem_absorbing : s ∈ absorbing G₀ u ↔ Absorbs G₀ s u := .rfl
+lemma _root_.Filter.mem_absorbing : s ∈ absorbing M t ↔ Absorbs M s t := .rfl
 
-lemma Set.Finite.absorbs_sInter (hS : S.Finite) :
-    Absorbs G₀ (⋂₀ S) t ↔ ∀ s ∈ S, Absorbs G₀ s t :=
-  sInter_mem (f := absorbing G₀ t) hS
+lemma _root_.Set.Finite.absorbs_sInter (hS : S.Finite) :
+    Absorbs M (⋂₀ S) t ↔ ∀ s ∈ S, Absorbs M s t :=
+  sInter_mem (f := absorbing M t) hS
 
-protected alias ⟨_, Absorbs.sInter⟩ := Set.Finite.absorbs_sInter
-
-@[simp]
-lemma absorbs_iInter {ι : Sort*} [Finite ι] {s : ι → Set α} :
-    Absorbs G₀ (⋂ i, s i) t ↔ ∀ i, Absorbs G₀ (s i) t :=
-  iInter_mem (f := absorbing G₀ t)
-
-protected alias ⟨_, Absorbs.iInter⟩ := absorbs_iInter
-
-lemma Set.Finite.absorbs_biInter {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set α} :
-    Absorbs G₀ (⋂ i ∈ I, s i) t ↔ ∀ i ∈ I, Absorbs G₀ (s i) t :=
-  biInter_mem (f := absorbing G₀ t) hI
-
-protected alias ⟨_, Absorbs.biInter⟩ := Set.Finite.absorbs_biInter
+protected alias ⟨_, sInter⟩ := Set.Finite.absorbs_sInter
 
 @[simp]
-lemma absorbs_zero_iff [NeBot (cobounded G₀)]
-    {E : Type*} [AddMonoid E] [DistribMulAction G₀ E] {s : Set E} :
-    Absorbs G₀ s 0 ↔ 0 ∈ s := by
-  simp only [absorbs_iff_eventually_cobounded_mapsTo, ← singleton_zero,
-    mapsTo_singleton, smul_zero, eventually_const]
+lemma _root_.absorbs_iInter {ι : Sort*} [Finite ι] {s : ι → Set α} :
+    Absorbs M (⋂ i, s i) t ↔ ∀ i, Absorbs M (s i) t :=
+  iInter_mem (f := absorbing M t)
 
-end GroupWithZero
+protected alias ⟨_, iInter⟩ := absorbs_iInter
 
-section AddGroup
+lemma _root_.Set.Finite.absorbs_biInter {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set α} :
+    Absorbs M (⋂ i ∈ I, s i) t ↔ ∀ i ∈ I, Absorbs M (s i) t :=
+  biInter_mem (f := absorbing M t) hI
 
-variable {M E : Type*} [Monoid M] [AddGroup E] [DistribMulAction M E] [Bornology M]
+protected alias ⟨_, biInter⟩ := Set.Finite.absorbs_biInter
+
+end SMul
+
+section AddZeroNeg
+
+variable {M E : Type*} [TopologicalSpace M] [Zero M] {s t s₁ s₂ t₁ t₂ : Set E}
+
+theorem _root_.absorbs_iff_eventually_nhds_zero [Zero E] [SMulWithZero M E] (h₀ : 0 ∈ s) :
+    Absorbs M s t ↔ ∀ᶠ c : M in 𝓝 0, MapsTo (c • ·) t s := by
+  rw [← nhdsNE_sup_pure, eventually_sup, eventually_pure,
+    ← absorbs_iff_eventually_nhdsNE_zero, and_iff_left]
+  intro x _
+  simpa only [zero_smul]
+
+theorem eventually_nhds_zero [Zero E] [SMulWithZero M E] (h : Absorbs M s t) (h₀ : 0 ∈ s) :
+    ∀ᶠ c : M in 𝓝 0, MapsTo (c • ·) t s :=
+  (absorbs_iff_eventually_nhds_zero h₀).1 h
+
+protected lemma add [AddZeroClass E] [DistribSMul M E]
+    (h₁ : Absorbs M s₁ t₁) (h₂ : Absorbs M s₂ t₂) : Absorbs M (s₁ + s₂) (t₁ + t₂) :=
+  h₂.mp <| h₁.eventually.mono fun x hx₁ hx₂ ↦ by
+    simp_rw [mapsTo_iff_image_subset, image_smul, smul_add] at hx₁ hx₂ ⊢
+    exact add_subset_add hx₁ hx₂
+
+protected lemma zero [Zero E] [SMulZeroClass M E] {s : Set E} (hs : 0 ∈ s) : Absorbs M s 0 :=
+  Eventually.of_forall fun _ ↦ by simp [mapsTo_iff_image_subset, hs]
 
 @[simp]
-lemma absorbs_neg_neg {s t : Set E} : Absorbs M (-s) (-t) ↔ Absorbs M s t := by simp [Absorbs]
+lemma _root_.absorbs_zero_iff [NeBot (𝓝[≠] (0 : M))] [Zero E] [SMulZeroClass M E] {s : Set E} :
+    Absorbs M s 0 ↔ 0 ∈ s := by
+  simp [Absorbs, mapsTo_iff_image_subset]
 
-alias ⟨Absorbs.of_neg_neg, Absorbs.neg_neg⟩ := absorbs_neg_neg
+@[simp]
+lemma _root_.absorbs_neg_neg [AddGroup E] [DistribSMul M E] :
+    Absorbs M (-s) (-t) ↔ Absorbs M s t := by
+  simp [Absorbs, mapsTo_iff_image_subset]
 
-lemma Absorbs.sub {s₁ s₂ t₁ t₂ : Set E} (h₁ : Absorbs M s₁ t₁) (h₂ : Absorbs M s₂ t₂) :
-    Absorbs M (s₁ - s₂) (t₁ - t₂) := by
+alias ⟨of_neg_neg, neg_neg⟩ := absorbs_neg_neg
+
+protected lemma sub [AddGroup E] [DistribSMul M E]
+    (h₁ : Absorbs M s₁ t₁) (h₂ : Absorbs M s₂ t₂) : Absorbs M (s₁ - s₂) (t₁ - t₂) := by
   simpa only [sub_eq_add_neg] using h₁.add h₂.neg_neg
 
-end AddGroup
+end AddZeroNeg
+
+protected theorem restrict_scalars
+    {M N α : Type*} [Zero M] [Zero N] [Monoid N] [SMul M N] [SMul M α] [MulAction N α]
+    [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
+    {s t : Set α} (h : Absorbs N s t) (h_tendsto : Tendsto (· • 1 : M → N) (𝓝[≠] 0) (𝓝[≠] 0)) :
+    Absorbs M s t :=
+  (h_tendsto.eventually h).mono <| fun x hx ↦ by simpa using hx
+
+end Absorbs
+
+section GroupWithZero
+
+variable {G₀ α : Type*} [GroupWithZero G₀] [TopologicalSpace G₀] [MulAction G₀ α]
+  {s t u : Set α} {S : Set (Set α)}
+
+-- lemma absorbs_iff_eventually_cobounded_mapsTo :
+--     Absorbs G₀ s t ↔ ∀ᶠ c in cobounded G₀, MapsTo (c⁻¹ • ·) t s :=
+--   eventually_congr <| (eventually_ne_cobounded 0).mono fun c hc ↦ by
+--     rw [← preimage_smul_inv₀ hc]; rfl
+
+-- alias ⟨eventually_cobounded_mapsTo, _⟩ := absorbs_iff_eventually_cobounded_mapsTo
+
+end GroupWithZero
 
 namespace Absorbent
 
 section SMul
 
-variable {M α : Type*} [Bornology M] [SMul M α] {s t : Set α}
+variable {M α : Type*} [Zero M] [SMul M α] [TopologicalSpace M] {s t : Set α}
+
+theorem _root_.absorbent_iff_eventually_nhdsNE_zero :
+    Absorbent M s ↔ ∀ x : α, ∀ᶠ c : M in 𝓝[≠] 0, c • x ∈ s :=
+  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
+
+alias ⟨eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
 protected theorem mono (ht : Absorbent M s) (hsub : s ⊆ t) : Absorbent M t := fun x ↦
   (ht x).mono_left hsub
@@ -228,12 +261,34 @@ theorem absorbs_finite (hs : Absorbent M s) (ht : t.Finite) : Absorbs M s t := b
   rw [← Set.biUnion_of_singleton t]
   exact .biUnion ht fun _ _ => hs.absorbs
 
+lemma _root_.absorbent_univ : Absorbent M (univ : Set α) := fun _ ↦ .univ
+
 end SMul
 
-theorem vadd_absorbs {M E : Type*} [Bornology M] [AddZeroClass E] [DistribSMul M E]
+section AddZeroNeg
+
+variable {M E : Type*} [TopologicalSpace M] [Zero M] {s t s₁ s₂ t₁ t₂ : Set E}
+
+lemma zero_mem [NeBot (𝓝[≠] (0 : M))] [Zero E] [SMulZeroClass M E]
+    {s : Set E} (hs : Absorbent M s) : (0 : E) ∈ s :=
+  absorbs_zero_iff.1 (hs 0)
+
+theorem vadd_absorbs [AddZeroClass E] [DistribSMul M E]
     {s₁ s₂ t : Set E} {x : E} (h₁ : Absorbent M s₁) (h₂ : Absorbs M s₂ t) :
     Absorbs M (s₁ + s₂) (x +ᵥ t) := by
   rw [← singleton_vadd]; exact (h₁ x).add h₂
+
+/-- Every neighbourhood of the origin is absorbent. -/
+theorem _root_.absorbent_nhds_zero [Zero E] [SMulWithZero M E] [TopologicalSpace E]
+    [ContinuousSMul M E] (hs : s ∈ 𝓝 (0 : E)) :
+    Absorbent M s := by
+  rw [absorbent_iff_eventually_nhdsNE_zero]
+  intro x
+  have : Tendsto (· • x) (𝓝 (0 : M)) (𝓝 0) :=
+    continuous_id.smul continuous_const |>.tendsto' _ _ (zero_smul _ _)
+  exact this.mono_left nhdsWithin_le_nhds hs
+
+end AddZeroNeg
 
 end Absorbent
 
@@ -241,21 +296,9 @@ section GroupWithZero
 
 variable {G₀ α E : Type*} [GroupWithZero G₀] [Bornology G₀] [MulAction G₀ α]
 
-lemma absorbent_univ : Absorbent G₀ (univ : Set α) := fun _ ↦ .univ
-
-lemma absorbent_iff_inv_smul {s : Set α} :
-    Absorbent G₀ s ↔ ∀ x, ∀ᶠ c in cobounded G₀, c⁻¹ • x ∈ s :=
-  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_singleton]
-
-lemma Absorbent.zero_mem [NeBot (cobounded G₀)] [AddMonoid E] [DistribMulAction G₀ E]
-    {s : Set E} (hs : Absorbent G₀ s) : (0 : E) ∈ s :=
-  absorbs_zero_iff.1 (hs 0)
+-- lemma absorbent_iff_inv_smul {s : Set α} :
+--     Absorbent G₀ s ↔ ∀ x, ∀ᶠ c in cobounded G₀, c⁻¹ • x ∈ s :=
+--   forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_singleton]
+--
 
 end GroupWithZero
-
-protected theorem Absorbs.restrict_scalars
-    {M N α : Type*} [Monoid N] [SMul M N] [SMul M α] [MulAction N α]
-    [IsScalarTower M N α] [Bornology M] [Bornology N] {s t : Set α} (h : Absorbs N s t)
-    (hbdd : Tendsto (· • 1 : M → N) (cobounded M) (cobounded N)) :
-    Absorbs M s t :=
-  (hbdd.eventually h).mono <| fun x hx ↦ by rwa [smul_one_smul N x s] at hx
