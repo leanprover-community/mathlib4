@@ -47,13 +47,13 @@ theorem xCoeff0_logDeriv_eq_zero (u : PowerSeries (LaurentSeries F)) (hu : IsUni
       have hmul := congrArg (coeff (R := LaurentSeries F) k) hLu
       rw [PowerSeries.coeff_mul, coeff_derivative] at hmul
       -- isolate the (k,0) diagonal term (= coeff k (logDeriv u) since coeff 0 u = 1)
-      have hmem : (k, 0) ∈ Finset.antidiagonal k := by simp [Finset.mem_antidiagonal]
+      have hmem : (k, 0) ∈ Finset.HasAntidiagonal.antidiagonal k := by simp [Finset.HasAntidiagonal.mem_antidiagonal]
       rw [← Finset.add_sum_erase _ _ hmem] at hmul
       simp only [h0, mul_one] at hmul
       -- solve for coeff k (logDeriv u)
       have hsolve : coeff (R := LaurentSeries F) k (logDeriv u)
           = coeff (R := LaurentSeries F) (k + 1) u * (↑k + 1)
-            - ∑ p ∈ (Finset.antidiagonal k).erase (k, 0),
+            - ∑ p ∈ (Finset.HasAntidiagonal.antidiagonal k).erase (k, 0),
                 coeff (R := LaurentSeries F) p.1 (logDeriv u) * coeff (R := LaurentSeries F) p.2 u := by
         linear_combination hmul
       rw [hsolve]
@@ -72,9 +72,9 @@ theorem xCoeff0_logDeriv_eq_zero (u : PowerSeries (LaurentSeries F)) (hu : IsUni
           (fun a b ha hb => (HahnSeries.support_add_subset a b).trans (Set.union_subset ha hb))
           (by simp) ?_
         intro p hp
-        have hp0 : p ∈ Finset.antidiagonal k := Finset.mem_of_mem_erase hp
+        have hp0 : p ∈ Finset.HasAntidiagonal.antidiagonal k := Finset.mem_of_mem_erase hp
         have hpne : p ≠ (k, 0) := Finset.ne_of_mem_erase hp
-        rw [Finset.mem_antidiagonal] at hp0
+        rw [Finset.HasAntidiagonal.mem_antidiagonal] at hp0
         have hb1 : 1 ≤ p.2 := by
           rcases Nat.eq_zero_or_pos p.2 with h | h
           · exact absurd (Prod.ext (by omega) h) hpne
