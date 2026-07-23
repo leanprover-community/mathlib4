@@ -190,7 +190,7 @@ def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
   map_one' := Pi.one_apply i
   map_mul' _ _ := Pi.mul_apply _ _ i
 
-@[simp, norm_cast]
+@[to_additive (attr := simp, norm_cast)]
 lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i := rfl
 
 /-- A family of monoid homomorphisms `f i : M i →* N i` defines a monoid homomorphism
@@ -203,6 +203,10 @@ given by `MonoidHom.piMap f x i = f i x`. This is `Pi.map` for `MonoidHom`s. -/
 def MonoidHom.piMap [Π i, MulOneClass (M i)] [Π i, MulOneClass (N i)] (g : Π i, M i →* N i) :
     (Π i, M i) →* (Π i, N i) :=
   .pi fun i ↦ (g i).comp (Pi.evalMonoidHom M i)
+
+@[to_additive (attr := simp)]
+lemma MonoidHom.coe_piMap [Π i, MulOneClass (M i)] [Π i, MulOneClass (N i)] (g : Π i, M i →* N i) :
+    ⇑(piMap g) = Pi.map (fun i ↦ g i) := rfl
 
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive (attr := simps) /-- `Function.const` as an `AddMonoidHom`. -/]

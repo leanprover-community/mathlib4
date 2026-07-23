@@ -162,9 +162,9 @@ def prodEquiv (H : Subgroup G) (K : Subgroup N) : H.prod K ≃* H × K :=
 
 section Pi
 
-variable {η : Type*} {f : η → Type*}
+variable {ι : Type*} {G : ι → Type*}
 
-variable [∀ i, Group (f i)]
+variable [Π i, Group (G i)]
 
 /-- A version of `Set.pi` for subgroups. Given an index set `I` and a family of submodules
 `s : Π i, Subgroup f i`, `pi I s` is the subgroup of dependent functions `f : Π i, f i` such that
@@ -173,46 +173,58 @@ variable [∀ i, Group (f i)]
       /-- A version of `Set.pi` for `AddSubgroup`s. Given an index set `I` and a family
       of submodules `s : Π i, AddSubgroup f i`, `pi I s` is the `AddSubgroup` of dependent functions
       `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
-def pi (I : Set η) (H : ∀ i, Subgroup (f i)) : Subgroup (∀ i, f i) :=
+def pi (I : Set ι) (H : Π i, Subgroup (G i)) : Subgroup (Π i, G i) :=
   { Submonoid.pi I fun i => (H i).toSubmonoid with
     inv_mem' := fun hp i hI => (H i).inv_mem (hp i hI) }
 
 @[to_additive]
-theorem coe_pi (I : Set η) (H : ∀ i, Subgroup (f i)) :
-    (pi I H : Set (∀ i, f i)) = Set.pi I fun i => (H i : Set (f i)) :=
+theorem coe_pi (I : Set ι) (H : Π i, Subgroup (G i)) :
+    (pi I H : Set (∀ i, G i)) = Set.pi I fun i => (H i : Set (G i)) :=
   rfl
 
 @[to_additive]
-theorem mem_pi (I : Set η) {H : ∀ i, Subgroup (f i)} {p : ∀ i, f i} :
-    p ∈ pi I H ↔ ∀ i : η, i ∈ I → p i ∈ H i :=
+theorem mem_pi (I : Set ι) {H : Π i, Subgroup (G i)} {p : Π i, G i} :
+    p ∈ pi I H ↔ ∀ i : ι, i ∈ I → p i ∈ H i :=
   Iff.rfl
 
 @[to_additive]
-theorem pi_top (I : Set η) : (pi I fun i => (⊤ : Subgroup (f i))) = ⊤ :=
+theorem pi_top (I : Set ι) : (pi I fun i => (⊤ : Subgroup (G i))) = ⊤ :=
   ext fun x => by simp [mem_pi]
 
 @[to_additive]
-theorem pi_empty (H : ∀ i, Subgroup (f i)) : pi ∅ H = ⊤ :=
+theorem pi_empty (H : Π i, Subgroup (G i)) : pi ∅ H = ⊤ :=
   ext fun x => by simp [mem_pi]
 
 @[to_additive]
-theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (f i))) = ⊥ :=
+theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (G i))) = ⊥ :=
   ext fun x => by simp [mem_pi, funext_iff]
 
 @[to_additive]
-theorem le_pi_iff {I : Set η} {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i, f i)} :
-    J ≤ pi I H ↔ ∀ i ∈ I, J ≤ comap (Pi.evalMonoidHom f i) (H i) :=
+theorem le_pi_iff {I : Set ι} {H : Π i, Subgroup (G i)} {J : Subgroup (Π i, G i)} :
+    J ≤ pi I H ↔ ∀ i ∈ I, J ≤ comap (Pi.evalMonoidHom G i) (H i) :=
   Set.subset_pi_iff
 
 @[to_additive (attr := simp)]
-theorem mulSingle_mem_pi [DecidableEq η] {I : Set η} {H : ∀ i, Subgroup (f i)} (i : η) (x : f i) :
+theorem mulSingle_mem_pi [DecidableEq ι] {I : Set ι} {H : Π i, Subgroup (G i)} (i : ι) (x : G i) :
     Pi.mulSingle i x ∈ pi I H ↔ i ∈ I → x ∈ H i :=
   Set.update_mem_pi_iff_of_mem (one_mem (pi I H))
 
 @[to_additive]
-theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ i, H i = ⊥ := by
+theorem pi_eq_bot_iff (H : Π i, Subgroup (G i)) : pi Set.univ H = ⊥ ↔ ∀ i, H i = ⊥ := by
   simp_rw [SetLike.ext'_iff]
   exact Set.univ_pi_eq_singleton_iff
+
+@[to_additive (attr := simp)]
+lemma comap_piMap_pi {H : ι → Type*} [Π i, Group (H i)] {J : Set ι}
+    {S : Π i, Subgroup (H i)} (f : Π i, G i →* H i) :
+    comap (MonoidHom.piMap f) (pi J S) = pi J (fun i ↦ comap (f i) (S i)) := by
+  ext; simp [mem_pi]
+
+@[to_additive]
+lemma map_piMap_univ_pi {H : ι → Type*} [Π i, Group (H i)] {S : Π i, Subgroup (G i)}
+    (f : Π i, G i →* H i) :
+    map (MonoidHom.piMap f) (pi Set.univ S) = pi Set.univ (fun i ↦ map (f i) (S i)) :=
+  SetLike.coe_injective <| Set.piMap_image_univ_pi _ _
 
 end Pi
 
@@ -731,10 +743,6 @@ variable {N : Type*} {P : Type*} [Group N] [Group P] (K : Subgroup G)
 
 open Subgroup
 
-section Ker
-
-variable {M : Type*} [MulOneClass M]
-
 @[to_additive prodMap_comap_prod]
 theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N)
     (g : G' →* N') (S : Subgroup N) (S' : Subgroup N') :
@@ -752,12 +760,22 @@ lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (iff_of_e
 @[to_additive (attr := simp)]
 lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_eq (true_and _)).symm
 
-end Ker
-
 @[to_additive (attr := simp) range_prodMap]
 lemma range_prodMap {G' N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G' →* N') :
     (f.prodMap g).range = f.range.prod g.range :=
   SetLike.coe_injective Set.range_prodMap
+
+@[to_additive (attr := simp)]
+lemma ker_piMap {ι : Type*} {G H : ι → Type*} [Π i, Group (G i)] [Π i, Group (H i)]
+    (f : Π i, G i →* H i) :
+    (piMap f).ker = .pi Set.univ (fun i ↦ (f i).ker) := by
+  ext; simp [funext_iff, mem_pi]
+
+@[to_additive (attr := simp)]
+lemma range_piMap {ι : Type*} {G H : ι → Type*} [Π i, Group (G i)] [Π i, Group (H i)]
+    (f : Π i, G i →* H i) :
+    (piMap f).range = .pi Set.univ (fun i ↦ (f i).range) :=
+  SetLike.coe_injective <| Set.range_piMap _
 
 end MonoidHom
 

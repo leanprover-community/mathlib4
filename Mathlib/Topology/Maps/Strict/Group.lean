@@ -99,6 +99,28 @@ protected lemma isStrictMap_prodMap (hf : IsStrictMap f)
     (hg : IsStrictMap g) : IsStrictMap (f.prodMap g) :=
   MonoidHom.isStrictMap_prodMap_iff.mpr ⟨hf, hg⟩
 
+section Pi
+
+variable {ι : Type*} {G H : ι → Type*} [∀ i, Group (G i)] [∀ i, Group (H i)]
+  [∀ i, TopologicalSpace (G i)] [∀ i, TopologicalSpace (H i)]
+  [∀ i, IsTopologicalGroup (G i)] [∀ i, IsTopologicalGroup (H i)]
+  {f : ∀ i, G i →* H i}
+
+/-- The product (in the sense of `MonoidHom.prodMap`) of group homomorphisms is strict if and only if each
+of the homomorphisms is strict. -/
+@[to_additive isStrictMap_piMap_iff /-- The product (in the sense of `Prod.map`) of additive group
+homomorphisms is strict if and only if each of the homomorphisms is strict. -/]
+protected lemma isStrictMap_piMap_iff :
+    IsStrictMap (piMap f) ↔ ∀ i, IsStrictMap (f i) := by
+  simp_rw [MonoidHom.isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
+  let Φ : (piMap f).range ≃ₜ Π i, (f i).range :=
+    (Homeomorph.setCongr (by simp [Subgroup.coe_pi])).trans (Homeomorph.Set.univPi _)
+  have eq : Φ ∘ (piMap f).rangeRestrict = piMap (fun i ↦ (f i).rangeRestrict) := rfl
+  rw [← Φ.comp_isOpenQuotientMap_iff, eq, MonoidHom.piMap]
+  sorry
+
+end Pi
+
 -- TODO: Add the lemma `isStrictMap_piMap` once `MonoidHom.piMap` has been defined.
 
 end MonoidHom
