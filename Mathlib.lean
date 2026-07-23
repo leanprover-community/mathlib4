@@ -5599,6 +5599,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
 public import Mathlib.MeasureTheory.Measure.Hausdorff
+public import Mathlib.MeasureTheory.Measure.Hellinger
 public import Mathlib.MeasureTheory.Measure.IntegralCharFun
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
