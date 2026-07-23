@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
 public import Mathlib.Data.List.OffDiag
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Finsets in product types
@@ -365,6 +366,16 @@ theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   ext
   simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm
+
+/-- The number of strictly ordered pairs `(a, b)` with `a, b ∈ s` is `(#s).choose 2`. -/
+lemma card_product_filter_lt [LinearOrder α] :
+    #{x ∈ s ×ˢ s | x.1 < x.2} = (#s).choose 2 := by
+  set u : Finset (α × α) := {x ∈ s ×ˢ s | x.1 < x.2}
+  set v : Finset (α × α) := {x ∈ s ×ˢ s | x.2 < x.1}
+  have disj : Disjoint u v := by grind [disjoint_left]
+  have union : u.disjUnion v disj = s.offDiag := by grind
+  have swap : #u = #v := Finset.card_equiv (Equiv.prodComm α α) (by grind)
+  grind [Nat.mul_sub_one, offDiag_card, Nat.choose_two_right]
 
 end Diag
 
