@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.PicardGroup
 References: https://math.stackexchange.com/a/5090562 or https://mathoverflow.net/a/499258
 -/
 
-public noncomputable section
+public section
 
 variable (R : Type*) [CommRing R]
 

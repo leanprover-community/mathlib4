@@ -15,7 +15,7 @@ This file proves the existence of a Peano curve -- a continuous surjective map f
 `[0, 1]` onto the square `[0, 1] × [0, 1]`.
 -/
 
-public noncomputable section
+public section
 
 open scoped unitInterval
 
