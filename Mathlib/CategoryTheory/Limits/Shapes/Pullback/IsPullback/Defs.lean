@@ -157,8 +157,6 @@ theorem of_hasPullback (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
 
 section
 
-variable (X Y)
-
 variable {P' : C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
 
 /-- Any object at the top left of a pullback square is isomorphic to the object at the top left
@@ -169,22 +167,22 @@ noncomputable def isoIsPullback (h : IsPullback fst snd f g) (h' : IsPullback fs
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_hom_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback _ _ h').hom ≫ fst' = fst :=
+    (h.isoIsPullback h').hom ≫ fst' = fst :=
   IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.left
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_hom_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback _ _ h').hom ≫ snd' = snd :=
+    (h.isoIsPullback h').hom ≫ snd' = snd :=
   IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.right
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_inv_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback _ _ h').inv ≫ fst = fst' := by
+    (h.isoIsPullback h').inv ≫ fst = fst' := by
   simp only [Iso.inv_comp_eq, isoIsPullback_hom_fst]
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_inv_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback _ _ h').inv ≫ snd = snd' := by
+    (h.isoIsPullback h').inv ≫ snd = snd' := by
   simp only [Iso.inv_comp_eq, isoIsPullback_hom_snd]
 
 end
@@ -297,7 +295,6 @@ theorem of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :
 
 section
 
-variable (X Y)
 variable {P' : C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
 
 /-- Any object at the bottom right of a pushout square is isomorphic to the object at the bottom
@@ -308,22 +305,22 @@ noncomputable def isoIsPushout (h : IsPushout f g inl inr) (h' : IsPushout f g i
 
 @[reassoc (attr := simp)]
 theorem inl_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
-    inl ≫ (h.isoIsPushout _ _ h').hom = inl' :=
+    inl ≫ (h.isoIsPushout h').hom = inl' :=
   IsColimit.comp_coconePointUniqueUpToIso_hom h.isColimit h'.isColimit WalkingSpan.left
 
 @[reassoc (attr := simp)]
 theorem inr_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
-    inr ≫ (h.isoIsPushout _ _ h').hom = inr' :=
+    inr ≫ (h.isoIsPushout h').hom = inr' :=
   IsColimit.comp_coconePointUniqueUpToIso_hom h.isColimit h'.isColimit WalkingSpan.right
 
 @[reassoc (attr := simp)]
 theorem inl_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
-    inl' ≫ (h.isoIsPushout _ _ h').inv = inl := by
+    inl' ≫ (h.isoIsPushout h').inv = inl := by
   simp only [Iso.comp_inv_eq, inl_isoIsPushout_hom]
 
 @[reassoc (attr := simp)]
 theorem inr_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
-    inr' ≫ (h.isoIsPushout _ _ h').inv = inr := by
+    inr' ≫ (h.isoIsPushout h').inv = inr := by
   simp only [Iso.comp_inv_eq, inr_isoIsPushout_hom]
 
 end

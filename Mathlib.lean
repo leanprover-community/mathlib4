@@ -1527,6 +1527,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureFibra
 public import Mathlib.AlgebraicTopology.ModelCategory.FibrantObjectHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.HomotopyCartesian
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick
@@ -1534,6 +1535,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Opposite
 public import Mathlib.AlgebraicTopology.ModelCategory.Over
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
+public import Mathlib.AlgebraicTopology.ModelCategory.Proper
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Transport
 public import Mathlib.AlgebraicTopology.MooreComplex

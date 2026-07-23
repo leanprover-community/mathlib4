@@ -545,7 +545,7 @@ instance (priority := low) [FinitaryExtensive C] {ι : Type*} [Finite ι] :
   coproductDisjoint X := by
     refine ⟨fun {c} hc i j e s hs ↦ ?_, fun hc i ↦ FinitaryExtensive.mono_ι hc ⟨i⟩⟩
     exact ⟨initialIsInitial.ofIso ((FinitaryExtensive.isPullback_initial_to hc ⟨i⟩ ⟨j⟩
-      (by simpa)).isoIsPullback _ _ (IsPullback.of_isLimit hs))⟩
+      (by simpa)).isoIsPullback (IsPullback.of_isLimit hs))⟩
 
 instance FinitaryPreExtensive.hasPullbacks_of_inclusions [FinitaryPreExtensive C] {X Z : C}
     {α : Type*} (f : X ⟶ Z) {Y : (a : α) → C} (i : (a : α) → Y a ⟶ Z) [Finite α]
