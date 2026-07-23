@@ -293,6 +293,10 @@ theorem mem_pathComponent_of_mem (h : x ∈ pathComponent y) : y ∈ pathCompone
 theorem pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
   ⟨fun h => mem_pathComponent_of_mem h, fun h => mem_pathComponent_of_mem h⟩
 
+theorem Continuous.mapsTo_pathComponent {f : X → Y} (hf : Continuous f) (x : X) :
+    MapsTo f (pathComponent x) (pathComponent (f x)) :=
+  fun _ hy ↦ ⟨(Joined.somePath hy).map hf⟩
+
 theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
   ext z
   constructor
@@ -458,6 +462,17 @@ theorem Homeomorph.isPathConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
     IsPathConnected (h ⁻¹' s) ↔ IsPathConnected s := by
   rw [← Homeomorph.image_symm]; exact h.symm.isPathConnected_image
 
+/-- A homeomorphism maps path components onto path components. -/
+theorem Homeomorph.image_pathComponent (h : X ≃ₜ Y) (x : X) :
+    h '' pathComponent x = pathComponent (h x) :=
+  (h.continuous.mapsTo_pathComponent x).image_subset.antisymm fun y hy ↦
+    ⟨h.symm y, by simpa using h.symm.continuous.mapsTo_pathComponent (h x) hy,
+      h.apply_symm_apply y⟩
+
+theorem Homeomorph.preimage_pathComponent (h : X ≃ₜ Y) (y : Y) :
+    h ⁻¹' pathComponent y = pathComponent (h.symm y) := by
+  rw [← h.symm.image_pathComponent, h.image_symm]
+
 theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) (y_in : y ∈ F) :
     y ∈ pathComponent x :=
   (h.joinedIn x x_in y y_in).joined
@@ -590,6 +605,10 @@ theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
     {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
   rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
+
+theorem Homeomorph.pathConnectedSpace [PathConnectedSpace Y] (h : X ≃ₜ Y) :
+    PathConnectedSpace X :=
+  h.symm.surjective.pathConnectedSpace h.symm.continuous
 
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
