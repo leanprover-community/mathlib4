@@ -33,6 +33,7 @@ formula which is an important input in functional equations of (un-completed) Di
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex
+open scoped ComplexConjugate
 
 namespace Complex
 
@@ -72,6 +73,19 @@ lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 :=
 
 lemma Gammaℝ_eq_zero_iff {s : ℂ} : Gammaℝ s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
   simp [Gammaℝ_def, Complex.Gamma_eq_zero_iff, pi_ne_zero, div_eq_iff (two_ne_zero' ℂ), mul_comm]
+
+/-- The archimedean Gamma factor `Γ_ℝ` commutes with complex conjugation:
+`Γ_ℝ (conj s) = conj (Γ_ℝ s)`. -/
+lemma Gammaℝ_conj (s : ℂ) : Gammaℝ (conj s) = conj (Gammaℝ s) := by
+  rw [Gammaℝ_def, Gammaℝ_def, map_mul]
+  have harg : (π : ℂ).arg ≠ π := by
+    rw [arg_ofReal_of_nonneg Real.pi_pos.le]; exact Real.pi_pos.ne
+  have hΓ : Gamma (conj s / 2) = conj (Gamma (s / 2)) := by
+    rw [← Gamma_conj, map_div₀, map_ofNat]
+  have hpow : (π : ℂ) ^ (-conj s / 2) = conj ((π : ℂ) ^ (-s / 2)) := by
+    rw [show (-conj s / 2 : ℂ) = conj (-s / 2) by rw [map_div₀, map_neg, map_ofNat],
+      cpow_conj _ _ harg, conj_ofReal]
+  rw [hpow, hΓ]
 
 @[simp]
 lemma Gammaℝ_one : Gammaℝ 1 = 1 := by

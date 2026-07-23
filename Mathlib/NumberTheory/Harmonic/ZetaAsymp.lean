@@ -481,6 +481,50 @@ theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s)
           ((isOpen_lt continuous_const continuous_re).mem_nhds (by norm_num)) hgz)
     simpa using congrArg (starRingEnd ℂ) (heq hs)
 
+/-- **Conjugation symmetry of the entire completed zeta function**: `Λ₀ (conj s) = conj (Λ₀ s)`.
+
+Both `conj ∘ Λ₀ ∘ conj` and `Λ₀` are entire, and they agree on the half-plane `1 < re s`, where
+`Λ = Γ_ℝ · ζ` and both factors satisfy conjugation symmetry (`Complex.Gammaℝ_conj` and
+`riemannZeta_conj`); the identity principle then propagates the equality to all of `ℂ`. -/
+@[simp]
+theorem completedRiemannZeta₀_conj (s : ℂ) :
+    completedRiemannZeta₀ (conj s) = conj (completedRiemannZeta₀ s) := by
+  have hg_an : AnalyticOnNhd ℂ (fun z ↦ conj (completedRiemannZeta₀ (conj z))) univ :=
+    analyticOnNhd_univ_iff_differentiable.mpr fun z ↦
+      differentiableAt_conj_conj_iff.mpr (differentiable_completedZeta₀ (conj z))
+  have hgz (z : ℂ) (hz : 1 < z.re) :
+      conj (completedRiemannZeta₀ (conj z)) = completedRiemannZeta₀ z := by
+    have hpos : 0 < z.re := one_pos.trans hz
+    have hz0 : z ≠ 0 := fun h ↦ by simp [h] at hpos
+    have hcz0 : conj z ≠ 0 := by
+      rw [ne_eq, ← map_zero (starRingEnd ℂ), (starRingEnd ℂ).injective.eq_iff]; exact hz0
+    -- `Λ = Γ_ℝ · ζ` on the region where `Γ_ℝ` is non-vanishing
+    have hΛ : ∀ w : ℂ, w ≠ 0 → 0 < w.re →
+        completedRiemannZeta w = Gammaℝ w * riemannZeta w := fun w hw hw' ↦ by
+      rw [riemannZeta_def_of_ne_zero hw, mul_comm, div_mul_cancel₀ _ (Gammaℝ_ne_zero_of_re_pos hw')]
+    have hΛ₀ : ∀ w : ℂ,
+        completedRiemannZeta₀ w = completedRiemannZeta w + 1 / w + 1 / (1 - w) := fun w ↦ by
+      linear_combination -(completedRiemannZeta_eq w)
+    rw [hΛ₀ (conj z), hΛ₀ z, hΛ (conj z) hcz0 (by rwa [conj_re]), hΛ z hz0 hpos]
+    simp only [map_add, map_mul, map_div₀, map_one, map_sub, Complex.Gammaℝ_conj, riemannZeta_conj,
+      Complex.conj_conj]
+  simpa [Complex.conj_conj] using congrArg (starRingEnd ℂ)
+    (congrFun (hg_an.eq_of_eventuallyEq
+      (analyticOnNhd_univ_iff_differentiable.mpr differentiable_completedZeta₀)
+      (eventuallyEq_of_mem
+        ((isOpen_lt continuous_const continuous_re).mem_nhds (by norm_num : (1 : ℝ) < (2 : ℂ).re))
+        hgz)) s)
+
+/-- **Conjugation symmetry of the completed Riemann zeta function**: `Λ (conj s) = conj (Λ s)`.
+
+Obtained from `completedRiemannZeta₀_conj` by subtracting the conjugation-symmetric poles `1 / s`
+and `1 / (1 - s)`. -/
+@[simp]
+theorem completedRiemannZeta_conj (s : ℂ) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  rw [completedRiemannZeta_eq, completedRiemannZeta_eq, map_sub, map_sub,
+    completedRiemannZeta₀_conj, map_div₀, map_div₀, map_one, map_sub, map_one]
+
 lemma riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
   filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
   grind [riemannZeta_one_ne_zero]
