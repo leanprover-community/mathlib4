@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Pfaffelhuber
+Authors: Peter Pfaffelhuber, Jon Crall
 -/
 module
 
@@ -9,11 +9,13 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.Analysis.Matrix.Order
+import Mathlib.LinearAlgebra.Isomorphisms
 
 /-! # Gram Matrices
 
-This file defines Gram matrices and proves their positive semidefiniteness.
-Results require `RCLike 𝕜`.
+This file defines Gram matrices and proves their positive semidefiniteness. It also
+shows that a pair of equal Gram matrices induces a linear isometry. Results require
+`RCLike 𝕜`.
 
 ## Main definition
 
@@ -25,6 +27,24 @@ Results require `RCLike 𝕜`.
 * `Matrix.posSemidef_gram`: Gram matrices are positive semidefinite.
 * `Matrix.posDef_gram_iff_linearIndependent`: Linear independence of `v` is
   equivalent to positive definiteness of `gram 𝕜 v`.
+* `LinearMap.rangeEquivOfInnerEq`: the isometric first isomorphism theorem — two linear
+  maps `S`, `T` out of a common module with equal pullback inner products
+  `⟪S x, S y⟫ = ⟪T x, T y⟫` have canonically isometric ranges, via `S x ↦ T x`.
+* `linearIsometryEquivSpanOfInnerEq`: two families `φ`, `ψ` (in possibly different
+  inner product spaces) with equal pairwise inner products are related by a linear
+  isometry equivalence of their spans, `span 𝕜 (range φ) ≃ₗᵢ span 𝕜 (range ψ)`,
+  sending `φ i` to `ψ i`.
+* `exists_linearIsometryEquiv_map_eq_of_inner_eq`: in finite dimension, this
+  extends to a linear isometry equivalence of the ambient space.
+* `Matrix.gram_eq_gram_iff_exists_linearIsometryEquiv_map_eq`: in finite
+  dimension, two families have equal Gram matrices iff a linear isometry
+  equivalence of the ambient space maps one to the other.
+
+## References
+
+* [R. A. Horn, C. R. Johnson, *Matrix Analysis*][horn_johnson_2013]
+* [T.-Y. Chien, S. Waldron, *A Characterization of Projective Unitary Equivalence
+  of Finite Frames and Applications*][chien_waldron_2016]
 -/
 
 @[expose] public section
@@ -158,3 +178,145 @@ theorem posSemidef_opNorm_smul_gram_sub_gram {F} [NormedAddCommGroup F] [InnerPr
 end NormedInnerProductSpace
 
 end Matrix
+
+/-! ### Isometries from equal inner products
+
+Two families of vectors with equal pairwise inner products are related by a linear
+isometry.  The engine is `LinearMap.rangeEquivOfInnerEq`, an isometric form of the first
+isomorphism theorem: two linear maps out of a common module whose pullback inner products
+agree have equal kernels and canonically isometric ranges.  Applying it to the two
+linear-combination maps of families `φ`, `ψ` turns equality of Gram data into an isometry
+of their spans (`linearIsometryEquivSpanOfInnerEq`); in finite dimension this extends to a
+linear isometry equivalence of the ambient space
+(`exists_linearIsometryEquiv_map_eq_of_inner_eq`), and the hypothesis can be packaged as
+equality of `Matrix.gram` matrices
+(`Matrix.gram_eq_gram_iff_exists_linearIsometryEquiv_map_eq`). -/
+
+section Rigidity
+
+variable {F M ι : Type*} [RCLike 𝕜]
+  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+  [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+
+namespace LinearMap
+
+variable [AddCommGroup M] [Module 𝕜 M]
+variable (S : M →ₗ[𝕜] E) (T : M →ₗ[𝕜] F) (h : ∀ x y, ⟪S x, S y⟫_𝕜 = ⟪T x, T y⟫_𝕜)
+include h
+
+/-- Linear maps with equal pullback inner products have equal kernels: `S x = 0` iff
+`⟪S x, S x⟫ = 0` iff `⟪T x, T x⟫ = 0` iff `T x = 0`. -/
+theorem ker_eq_ker_of_inner_eq : ker S = ker T := by
+  ext x
+  rw [mem_ker, mem_ker, ← inner_self_eq_zero (𝕜 := 𝕜), h x x, inner_self_eq_zero]
+
+/-- **Isometric first isomorphism theorem.**  Two linear maps `S`, `T` out of a common
+module with equal pullback inner products, `⟪S x, S y⟫ = ⟪T x, T y⟫`, have canonically
+isometric ranges, via `S x ↦ T x`.  This is well defined because both ranges are
+first-isomorphism-theorem images of the common coimage `M ⧸ ker S = M ⧸ ker T`
+(`ker_eq_ker_of_inner_eq`), and isometric because the hypothesis says exactly that the
+two inner products induced on the coimage agree. -/
+noncomputable def rangeEquivOfInnerEq : range S ≃ₗᵢ[𝕜] range T :=
+  (S.quotKerEquivRange.symm.trans <| (Submodule.quotEquivOfEq _ _
+      (ker_eq_ker_of_inner_eq S T h)).trans T.quotKerEquivRange).isometryOfInner fun x y => by
+    obtain ⟨-, x, rfl⟩ := x
+    obtain ⟨-, y, rfl⟩ := y
+    simp [h x y]
+
+@[simp]
+theorem rangeEquivOfInnerEq_apply (x : M) (hx : S x ∈ range S) :
+    (rangeEquivOfInnerEq S T h ⟨S x, hx⟩ : F) = T x := by
+  simp [rangeEquivOfInnerEq]
+
+end LinearMap
+
+section
+variable {φ : ι → E} {ψ : ι → F} (h : ∀ i j, ⟪φ i, φ j⟫_𝕜 = ⟪ψ i, ψ j⟫_𝕜)
+include h
+
+/-- For families `φ`, `ψ` with equal pairwise inner products, the maps of linear combinations
+`∑ cᵢ • φ i` and `∑ cᵢ • ψ i` have equal pairwise inner products. -/
+theorem inner_linearCombination_eq_of_inner_eq (c c' : ι →₀ 𝕜) :
+    ⟪Finsupp.linearCombination 𝕜 φ c, Finsupp.linearCombination 𝕜 φ c'⟫_𝕜
+      = ⟪Finsupp.linearCombination 𝕜 ψ c, Finsupp.linearCombination 𝕜 ψ c'⟫_𝕜 := by
+  simp [inner_linearCombination_linearCombination, h]
+
+/-- Families with equal pairwise inner products have linear-combination maps with equal kernels:
+`∑ cᵢ • φ i = 0 ↔ ∑ cᵢ • ψ i = 0`. -/
+theorem ker_linearCombination_eq_of_inner_eq :
+    LinearMap.ker (Finsupp.linearCombination 𝕜 φ)
+      = LinearMap.ker (Finsupp.linearCombination 𝕜 ψ) :=
+  LinearMap.ker_eq_ker_of_inner_eq _ _ (inner_linearCombination_eq_of_inner_eq h)
+
+variable (φ ψ)
+
+/-- A linear isometry equivalence `span 𝕜 (range φ) ≃ₗᵢ span 𝕜 (range ψ)` sending each
+`φ i` to `ψ i`, when the families `φ`, `ψ` (in possibly different inner product spaces over `𝕜`)
+have equal pairwise inner products.  It is the isometric first isomorphism theorem
+`LinearMap.rangeEquivOfInnerEq` applied to the two linear-combination maps, whose ranges are
+the spans (`Finsupp.range_linearCombination`).  No finiteness is required, and the ambient
+spaces need not coincide.
+
+Such an isometry is determined on the spanning family `φ` (`LinearMap.eqOn_span`), hence unique;
+this uniqueness is not separately formalized here. -/
+noncomputable def linearIsometryEquivSpanOfInnerEq :
+    (Submodule.span 𝕜 (Set.range φ)) ≃ₗᵢ[𝕜] (Submodule.span 𝕜 (Set.range ψ)) :=
+  (LinearIsometryEquiv.ofEq _ _ (Finsupp.range_linearCombination 𝕜).symm).trans
+    ((LinearMap.rangeEquivOfInnerEq _ _ (inner_linearCombination_eq_of_inner_eq h)).trans
+      (LinearIsometryEquiv.ofEq _ _ (Finsupp.range_linearCombination 𝕜)))
+
+/-- `linearIsometryEquivSpanOfInnerEq` sends the linear combination `∑ cᵢ • φ i` to
+`∑ cᵢ • ψ i`. -/
+@[simp]
+theorem linearIsometryEquivSpanOfInnerEq_apply_linearCombination (c : ι →₀ 𝕜)
+    (hc : Finsupp.linearCombination 𝕜 φ c ∈ Submodule.span 𝕜 (Set.range φ)) :
+    (linearIsometryEquivSpanOfInnerEq φ ψ h ⟨Finsupp.linearCombination 𝕜 φ c, hc⟩ : F)
+      = Finsupp.linearCombination 𝕜 ψ c := by
+  simp [linearIsometryEquivSpanOfInnerEq]
+
+/-- `linearIsometryEquivSpanOfInnerEq` sends each generator `φ i` to `ψ i`: the
+`c = Finsupp.single i 1` case of `linearIsometryEquivSpanOfInnerEq_apply_linearCombination`. -/
+@[simp]
+theorem linearIsometryEquivSpanOfInnerEq_apply (i : ι)
+    (hi : φ i ∈ Submodule.span 𝕜 (Set.range φ)) :
+    (linearIsometryEquivSpanOfInnerEq φ ψ h ⟨φ i, hi⟩ : F) = ψ i := by
+  simpa using linearIsometryEquivSpanOfInnerEq_apply_linearCombination φ ψ h
+    (Finsupp.single i 1) (by simpa using Submodule.subset_span (Set.mem_range_self (f := φ) i))
+
+end
+
+/-- If two families `φ ψ : ι → E` in a
+finite-dimensional inner product space have equal pairwise inner products, then
+there is a linear isometry equivalence `W` of `E` with `W (φ i) = ψ i` for every
+`i`. The span-level equivalence `linearIsometryEquivSpanOfInnerEq` is extended to the
+whole space by `LinearIsometry.extend` and bundled as an equivalence by finite
+dimensionality (`LinearIsometry.toLinearIsometryEquiv`). -/
+theorem exists_linearIsometryEquiv_map_eq_of_inner_eq [FiniteDimensional 𝕜 E] {φ ψ : ι → E}
+    (h : ∀ i j, ⟪φ i, φ j⟫_𝕜 = ⟪ψ i, ψ j⟫_𝕜) :
+    ∃ W : E ≃ₗᵢ[𝕜] E, ∀ i, W (φ i) = ψ i := by
+  -- Extend the span-to-span isometry to `E`, then bundle it as an equivalence.
+  let L : (Submodule.span 𝕜 (Set.range φ)) →ₗᵢ[𝕜] E :=
+    (Submodule.span 𝕜 (Set.range ψ)).subtypeₗᵢ.comp
+      (linearIsometryEquivSpanOfInnerEq φ ψ h).toLinearIsometry
+  exact ⟨L.extend.toLinearIsometryEquiv rfl, fun i => by
+    simpa [L] using L.extend_apply ⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩⟩
+
+namespace Matrix
+
+/-- Two families of vectors in a
+finite-dimensional inner product space have equal Gram matrices if and only if a
+linear isometry equivalence of the ambient space maps one family to the other. -/
+theorem gram_eq_gram_iff_exists_linearIsometryEquiv_map_eq [FiniteDimensional 𝕜 E]
+    {φ ψ : ι → E} :
+    gram 𝕜 φ = gram 𝕜 ψ ↔ ∃ W : E ≃ₗᵢ[𝕜] E, ∀ i, W (φ i) = ψ i := by
+  constructor
+  · intro hg
+    exact exists_linearIsometryEquiv_map_eq_of_inner_eq fun i j => by
+      simpa only [gram_apply] using congrFun₂ hg i j
+  · rintro ⟨W, hW⟩
+    ext i j
+    simp [gram_apply, ← hW i, ← hW j, LinearIsometryEquiv.inner_map_map]
+
+end Matrix
+
+end Rigidity
