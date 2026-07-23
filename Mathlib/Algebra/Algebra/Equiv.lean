@@ -799,15 +799,16 @@ lemma toAlgHom_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
 lemma symm_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
     f.toNatAlgEquiv.symm = f.symm.toNatAlgEquiv := rfl
 
+variable (R) (S) in
 /-- The equivalence between `RingEquiv` and `ℕ`-algebra isomorphisms. -/
-@[simps apply]
+@[simps apply symm_apply]
 def equivNatAlgEquiv [Semiring R] [Semiring S] : (R ≃+* S) ≃ (R ≃ₐ[ℕ] S) where
   toFun := toNatAlgEquiv
   invFun := AlgEquiv.toRingEquiv
 
 lemma toNatAlgEquiv_injective [Semiring R] [Semiring S] :
     Function.Injective (RingEquiv.toNatAlgEquiv : (R ≃+* S) → _) :=
-  equivNatAlgEquiv.injective
+  (equivNatAlgEquiv R S).injective
 
 /-- Reinterpret a `RingEquiv` as a `ℤ`-algebra isomorphism. -/
 @[simps! -isSimp apply]
@@ -827,15 +828,16 @@ lemma toAlgHom_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
 lemma symm_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
     f.toIntAlgEquiv.symm = f.symm.toIntAlgEquiv := rfl
 
+variable (R) (S) in
 /-- The equivalence between `RingEquiv` and `ℤ`-algebra isomorphisms. -/
-@[simps apply]
+@[simps apply symm_apply]
 def equivIntAlgEquiv [Ring R] [Ring S] : (R ≃+* S) ≃ (R ≃ₐ[ℤ] S) where
   toFun := toIntAlgEquiv
   invFun := AlgEquiv.toRingEquiv
 
 lemma toIntAlgEquiv_injective [Ring R] [Ring S] :
     Function.Injective (RingEquiv.toIntAlgEquiv : (R ≃+* S) → _) :=
-  equivIntAlgEquiv.injective
+  (equivIntAlgEquiv R S).injective
 
 end RingEquiv
 

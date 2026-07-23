@@ -81,8 +81,9 @@ end RingEquiv
 theorem AlgEquiv.toRatAlgEquiv_toRingEquiv (f : R ≃ₐ[ℚ] S) : (f : R ≃+* S).toRatAlgEquiv = f :=
   rfl
 
+variable (R) (S) in
 /-- The equivalence between `RingEquiv` and `ℚ`-algebra isomorphisms. -/
-@[simps apply]
+@[simps apply symm_apply]
 def RingEquiv.equivRatAlgEquiv : (R ≃+* S) ≃ (R ≃ₐ[ℚ] S) where
   toFun := RingEquiv.toRatAlgEquiv
   invFun := AlgEquiv.toRingEquiv
