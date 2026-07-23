@@ -227,7 +227,7 @@ theorem h_apply_infinity (x : B) (hx : x ∈ f.hom.range) : (h x) ∞ = ∞ := b
   change ((τ).symm.trans (g x)).trans τ _ = _
   simp only [Equiv.coe_trans, Function.comp_apply]
   rw [τ_symm_apply_infinity, g_apply_fromCoset]
-  simpa only using τ_apply_fromCoset' f x hx
+  exact τ_apply_fromCoset' f x hx
 
 theorem h_apply_fromCoset (x : B) :
     (h x) (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) =

@@ -282,10 +282,10 @@ theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Dis
   simp [compl_eq_sSup_disjoint]
 
 theorem interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
-  simp [←himp_bot, himp_def]
+  simp [← himp_bot, himp_def]
 
 theorem coe_compl_eq_interior_compl {U : Opens α} : ↑(Uᶜ) = interior (U : Set α)ᶜ := by
-  rw [←interior_compl, coe_interior]
+  rw [← interior_compl, coe_interior]
 
 /-- The coercion from open sets to sets as a `FrameHom`. -/
 @[simps] protected def frameHom : FrameHom (Opens α) (Set α) where

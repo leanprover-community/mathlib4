@@ -1216,7 +1216,13 @@ theorem Function.LeftInverse.cast_eq {γ : β → Sort v} {f : α → β} {g : �
 /-- A set of functions "separates points"
 if for each pair of distinct points there is a function taking different values on them. -/
 def Set.SeparatesPoints {α β : Type*} (A : Set (α → β)) : Prop :=
-  ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
+  ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, f x ≠ f y
+
+theorem Set.separatesPoints_mono {α β : Type*} {A B : Set (α → β)} (hAB : A ⊆ B)
+    (hA : Set.SeparatesPoints A) : Set.SeparatesPoints B := by
+  intro x y hne
+  obtain ⟨f, hfA, hne'⟩ := hA hne
+  exact ⟨f, hAB hfA, hne'⟩
 
 theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β)
     (h : Equivalence r) : Equivalence (InvImage r f) :=

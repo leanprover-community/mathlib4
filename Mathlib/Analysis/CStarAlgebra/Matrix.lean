@@ -5,6 +5,7 @@ Authors: Hans Parshall
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.RCLike.Basic
@@ -288,6 +289,12 @@ lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
   norm_mul_self_le M := le_of_eq <| Eq.symm <| l2_opNorm_conjTranspose_mul_self M
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
+
+/-- The matrices `Matrix n n ℂ` with the L2 operator norm form a `CStarAlgebra`. -/
+@[instance_reducible] noncomputable def instCStarAlgebra {n : Type*} [Fintype n] [DecidableEq n] :
+    CStarAlgebra (Matrix n n ℂ) where
+
+scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarAlgebra
 
 end Matrix
 
