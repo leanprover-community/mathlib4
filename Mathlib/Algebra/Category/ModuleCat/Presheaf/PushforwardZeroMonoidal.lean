@@ -29,12 +29,21 @@ namespace PresheafOfModules
 variable {C D : Type*} [Category* C] [Category* D]
   (F : C ⥤ D) (R : Dᵒᵖ ⥤ CommRingCat.{u})
 
-set_option backward.isDefEq.respectTransparency false in
+open ModuleCat.MonoidalCategory in
 noncomputable instance : (pushforward₀OfCommRingCat F R).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso _ _ := Iso.refl _
-      left_unitality _ := by rw [← cancel_epi (λ_ _).inv]; cat_disch
-      right_unitality _ := by rw [← cancel_epi (ρ_ _).inv]; cat_disch }
+      -- using `Iso.refl _` for `μIso` directly hurts kernel typechecking
+      μIso _ _ := isoMk (fun _ ↦ Iso.refl _) (fun _ _ _ ↦ tensor_ext fun _ _ ↦ rfl)
+      associativity _ _ _ := by
+        ext1 x
+        exact tensor_ext₃' fun m₁ m₂ m₃ ↦ rfl
+      left_unitality _ := by
+        ext1 x
+        exact tensor_ext fun m₁ m₂ ↦ rfl
+      right_unitality _ := by
+        ext1 x
+        exact tensor_ext fun m₁ m₂ ↦ rfl
+    }
 
 end PresheafOfModules
