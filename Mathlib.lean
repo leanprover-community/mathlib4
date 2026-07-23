@@ -6035,6 +6035,7 @@ public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.Directed
+public import Mathlib.Order.DirectedCompletePartialOrder.Defs
 public import Mathlib.Order.DirectedInverseSystem
 public import Mathlib.Order.Disjoint
 public import Mathlib.Order.Disjointed
