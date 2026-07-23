@@ -370,14 +370,13 @@ theorem FractionalIdeal.isPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDom
     [Fintype (ClassGroup R)] {n : ℕ} (hn : n.Coprime (Fintype.card (ClassGroup R)))
     (I : FractionalIdeal R⁰ K) (hI : ((I ^ n : FractionalIdeal R⁰ K) : Submodule R K).IsPrincipal) :
     (I : Submodule R K).IsPrincipal := by
-  by_cases hI0 : I = 0
-  · simp [hI0, bot_isPrincipal]
-  rw [← Ne, ← isUnit_iff_ne_zero] at hI0
-  rw [← hI0.val_unit', ← ClassGroup.mk_eq_one_iff, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn,
+  obtain (rfl | ⟨u, rfl⟩) := GroupWithZero.eq_zero_or_unit I
+  · simp [bot_isPrincipal]
+  rw [← ClassGroup.mk_eq_one_iff, ← orderOf_eq_one_iff, ← Nat.dvd_one, ← hn,
     Nat.dvd_gcd_iff]
   refine ⟨?_, orderOf_dvd_card⟩
   rw [orderOf_dvd_iff_pow_eq_one, ← map_pow, ClassGroup.mk_eq_one_iff]
-  simp only [Units.val_pow_eq_pow_val, IsUnit.val_unit', hI]
+  exact_mod_cast hI
 
 /-- If the class group is trivial, any unit fractional ideal is principal. -/
 theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup R)]
