@@ -132,6 +132,47 @@ info:
 
 end LMFDB
 
+namespace Pibase
+
+@[pibase P000001]
+theorem p : True := .intro
+
+@[pibase S000023]
+theorem s : True := .intro
+
+@[pibase T000001]
+theorem t : True := .intro
+
+/--
+info: some ([π-Base P000001](https://topology.pi-base.org/properties/P000001))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `Pibase.p}"
+
+/--
+info:
+[π-Base P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration 'p'.
+[π-Base S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration 's'.
+[π-Base T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration 't'.
+-/
+#guard_msgs in
+#pibase_tags
+
+/-- error: <input>:1:3: π-Base ids must have exactly six digits after P/S/T. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P42"
+
+/-- error: <input>:1:7: π-Base ids must consist of P, S, or T followed by six digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P00001X"
+
+/-- error: <input>:1:7: π-Base ids must start with P, S, or T. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "Q000001"
+
+/-- info: S000023 -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "S000023"
+
+end Pibase
+
 section errors
 
 open Lean Parser Mathlib.CrossRef
