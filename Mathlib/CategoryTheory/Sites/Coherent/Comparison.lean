@@ -82,7 +82,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         (fun (_ : Unit) ↦ (∐ fun (i : I) => X i)) (fun (_ : Unit) ↦ Sigma.desc f)))
       · apply Coverage.Saturate.of
         simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
-          Set.mem_setOf_eq]
+          Set.mem_ofPred_eq]
         exact Or.inr ⟨_, Sigma.desc f, ⟨rfl, inferInstance⟩⟩
       · rintro R g ⟨W, ψ, σ, ⟨⟩, rfl⟩
         change _ ∈ ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck R

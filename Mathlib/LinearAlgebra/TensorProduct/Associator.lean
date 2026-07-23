@@ -92,10 +92,18 @@ theorem comm_trans_lid :
     TensorProduct.comm R M R ≪≫ₗ TensorProduct.lid R M = TensorProduct.rid R M :=
   LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
 
+@[simp] lemma lid_comm (x) :
+    TensorProduct.lid R M (TensorProduct.comm R M R x) = TensorProduct.rid R M x :=
+  congr($comm_trans_lid _)
+
 @[simp]
 theorem comm_trans_rid :
     TensorProduct.comm R R M ≪≫ₗ TensorProduct.rid R M = TensorProduct.lid R M :=
   LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
+
+@[simp] lemma rid_comm (x) :
+    TensorProduct.rid R M (TensorProduct.comm R R M x) = TensorProduct.lid R M x :=
+  congr($comm_trans_rid _)
 
 variable (R) in
 theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=

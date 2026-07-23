@@ -116,7 +116,7 @@ instance : Epi (Abelian.factorThruImage f) :=
   _ fun R (g : I ⟶ R) (hpg : p ≫ g = 0) => by
   -- Since C is abelian, u := ker g ≫ i is the kernel of some morphism h.
   let u := kernel.ι g ≫ i
-  haveI hu := normalMonoOfMono u
+  have hu := normalMonoOfMono u
   let h := hu.g
   -- By hypothesis, p factors through the kernel of g via some t.
   obtain ⟨t, ht⟩ := kernel.lift' g p hpg
@@ -137,7 +137,7 @@ instance : Epi (Abelian.factorThruImage f) :=
   -- i factors through u = ker h via some s.
   obtain ⟨s, hs⟩ := NormalMono.lift' u i hih
   have hs' : (s ≫ kernel.ι g) ≫ i = 𝟙 I ≫ i := by rw [Category.assoc, hs, Category.id_comp]
-  haveI : Epi (kernel.ι g) := epi_of_epi_fac ((cancel_mono _).1 hs')
+  have : Epi (kernel.ι g) := epi_of_epi_fac ((cancel_mono _).1 hs')
   -- ker g is an epimorphism, but ker g ≫ g = 0 = ker g ≫ 0, so g = 0 as required.
   exact zero_of_epi_comp _ (kernel.condition g)
 
@@ -152,7 +152,7 @@ instance : Mono (Abelian.factorThruCoimage f) :=
   NormalEpiCategory.mono_of_cancel_zero _ fun R (g : R ⟶ I) (hgi : g ≫ i = 0) => by
     -- Since C is abelian, u := p ≫ coker g is the cokernel of some morphism h.
     let u := p ≫ cokernel.π g
-    haveI hu := normalEpiOfEpi u
+    have hu := normalEpiOfEpi u
     let h := hu.g
     -- By hypothesis, i factors through the cokernel of g via some t.
     obtain ⟨t, ht⟩ := cokernel.desc' g i hgi
@@ -173,7 +173,7 @@ instance : Mono (Abelian.factorThruCoimage f) :=
     -- p factors through u = coker h via some s.
     obtain ⟨s, hs⟩ := NormalEpi.desc' u p hhp
     have hs' : p ≫ cokernel.π g ≫ s = p ≫ 𝟙 I := by rw [← Category.assoc, hs, Category.comp_id]
-    haveI : Mono (cokernel.π g) := mono_of_mono_fac ((cancel_epi _).1 hs')
+    have : Mono (cokernel.π g) := mono_of_mono_fac ((cancel_epi _).1 hs')
     -- coker g is a monomorphism, but g ≫ coker g = 0 = 0 ≫ coker g, so g = 0 as required.
     exact zero_of_comp_mono _ (cokernel.condition g)
 
@@ -220,6 +220,7 @@ abbrev r (A : C) : A ⟶ cokernel (diag A) :=
 instance mono_Δ {A : C} : Mono (diag A) :=
   mono_of_mono_fac <| prod.lift_fst _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance mono_r {A : C} : Mono (r A) := by
   let hl : IsLimit (KernelFork.ofι (diag A) (cokernel.condition (diag A))) :=
     monoIsKernelOfCokernel _ (colimit.isColimit _)
@@ -232,7 +233,7 @@ instance mono_r {A : C} : Mono (r A) := by
   have hyy : y = 0 := by
     erw [← Category.comp_id y, ← Limits.prod.lift_snd (𝟙 A) (𝟙 A), ← Category.assoc, hy,
       Category.assoc, prod.lift_snd, HasZeroMorphisms.comp_zero]
-  haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
+  have : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
   apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
   rw [← hy, hyy, zero_comp, zero_comp]
 
@@ -245,7 +246,7 @@ instance epi_r {A : C} : Epi (r A) := by
     · intro s
       apply Limits.prod.hom_ext <;> simp
     · intro s m h
-      haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
+      have : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
       convert! h
       apply Limits.prod.hom_ext <;> simp
@@ -409,7 +410,7 @@ theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f �
   rw [add_def, sub_comp, neg_def, sub_comp, zero_comp, add_def, neg_def]
 
 /-- Every `NonPreadditiveAbelian` category is preadditive. -/
-@[implicit_reducible]
+@[instance_reducible]
 def preadditive : Preadditive C where
   homGroup X Y :=
     { add_assoc := add_assoc

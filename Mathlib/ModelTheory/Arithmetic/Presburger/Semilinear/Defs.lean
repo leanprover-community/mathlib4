@@ -207,6 +207,7 @@ theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F M N] [AddEquivClass F
     simp [image_image]
   · exact h.image f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Semilinear sets are closed under projection (from `ι ⊕ κ → M` to `ι → M` by taking `Sum.inl` on
 the index). It is a special case of `IsSemilinearSet.image`. -/
 theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s) :
@@ -433,12 +434,12 @@ theorem Nat.isSemilinearSet_iff_ultimately_periodic {s : Set ℕ} :
       clear hpt
       induction m with grind [Finset.sup_le_iff]
   · intro ⟨k, p, hp, hs⟩
-    have h₁ : {x ∈ s | x < k}.Finite := (Set.finite_lt_nat k).subset (sep_subset_setOf _ _)
+    have h₁ : {x ∈ s | x < k}.Finite := (Set.finite_lt_nat k).subset (sep_subset_ofPred _ _)
     have h₂ : {x ∈ s | k ≤ x ∧ x < k + p}.Finite :=
-      (Set.finite_Ico k (k + p)).subset (sep_subset_setOf _ _)
+      (Set.finite_Ico k (k + p)).subset (sep_subset_ofPred _ _)
     convert! (IsSemilinearSet.of_finite h₁).union (.add (.of_finite h₂) (.closure_finset { p }))
     ext x
-    simp only [sep_and, Finset.coe_singleton, mem_union, mem_setOf_eq, mem_add, mem_inter_iff,
+    simp only [sep_and, Finset.coe_singleton, mem_union, mem_ofPred_eq, mem_add, mem_inter_iff,
       SetLike.mem_coe, AddSubmonoid.mem_closure_singleton, smul_eq_mul, exists_exists_eq_and]
     constructor
     · intro hx
