@@ -295,6 +295,7 @@ public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.DirectSum.Finsupp
 public import Mathlib.Algebra.DirectSum.Idempotents
 public import Mathlib.Algebra.DirectSum.Internal
+public import Mathlib.Algebra.DirectSum.IsPureHomogeneous
 public import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.DirectSum.Ring
