@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 
 /-!
 # Classification of elements of `GL (Fin 2) R`
@@ -82,6 +82,19 @@ lemma isParabolic_iff_of_upperTriangular [IsReduced R] (hm : m 1 0 = 0) :
       fin_cases i <;> fin_cases j <;> simp [h, h', hm]
   tauto
 
+/-- Parabolicity is preserved under mapping by an injective ring homomorphism. -/
+lemma IsParabolic.map (hmp : m.IsParabolic) {S : Type*} [CommRing S]
+    (f : R →+* S) (hf : Function.Injective f) :
+    (m.map f).IsParabolic := by
+  constructor
+  · rintro ⟨a, ha⟩
+    obtain rfl : a = f (m 0 0) := congr_arg (· 0 0) ha
+    apply hmp.1
+    use m 0 0
+    simpa [← (map_injective hf).eq_iff] using ha
+  · convert (map_eq_zero_iff _ hf).mpr hmp.2
+    simp [discr_fin_two, AddMonoidHom.map_trace, map_ofNat, RingHom.map_det]
+
 end CommRing
 
 section Field
@@ -140,6 +153,24 @@ def IsHyperbolic : Prop := 0 < m.discr
 def IsElliptic : Prop := m.discr < 0
 
 variable {m}
+
+lemma IsParabolic.not_isHyperbolic (hm : IsParabolic m) : ¬IsHyperbolic m :=
+  hm.2.not_gt
+
+lemma IsParabolic.not_isElliptic (hm : IsParabolic m) : ¬IsElliptic m :=
+  hm.2.not_lt
+
+lemma IsHyperbolic.not_isParabolic (hm : IsHyperbolic m) : ¬IsParabolic m :=
+  not_and_of_not_right _ hm.ne'
+
+lemma IsHyperbolic.not_isElliptic (hm : IsHyperbolic m) : ¬IsElliptic m :=
+  hm.not_gt
+
+lemma IsElliptic.not_isParabolic (hm : IsElliptic m) : ¬IsParabolic m :=
+  not_and_of_not_right _ hm.ne
+
+lemma IsElliptic.not_isHyperbolic (hm : IsElliptic m) : ¬IsHyperbolic m :=
+  hm.not_gt
 
 lemma isHyperbolic_conj_iff : (g.val * m * g.val⁻¹).IsHyperbolic ↔ m.IsHyperbolic := by
   simp [IsHyperbolic]
@@ -217,11 +248,33 @@ abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
     IsParabolic (g⁻¹ * h * g) ↔ IsParabolic h := by
   simp [IsParabolic]
 
+/-- Parabolicity is preserved under mapping by an injective ring homomorphism. -/
+lemma IsParabolic.map {g : GL (Fin 2) R} (hgp : g.IsParabolic)
+    {S : Type*} [CommRing S] (f : R →+* S) (hf : Function.Injective f) :
+    (g.map f).IsParabolic :=
+  Matrix.IsParabolic.map hgp f hf
+
+lemma IsParabolic.not_mem_center {g : GL (Fin 2) R} (hgp : g.IsParabolic) :
+    g ∉ Subgroup.center _ :=
+  mem_center_iff_val_mem_range_scalar.not.mpr hgp.1
+
 /-- Synonym of `Matrix.IsElliptic`, for dot-notation. -/
 abbrev IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
 
+lemma IsElliptic.not_mem_center [Preorder R] {g : GL (Fin 2) R} (hgp : g.IsElliptic) :
+    g ∉ Subgroup.center _ := by
+  refine mem_center_iff_val_mem_range_scalar.not.mpr (fun ⟨x, hx⟩ ↦ Eq.not_lt ?_ hgp)
+  simp [← hx, discr_fin_two]
+  grind
+
 /-- Synonym of `Matrix.IsHyperbolic`, for dot-notation. -/
 abbrev IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
+
+lemma IsHyperbolic.not_mem_center [Preorder R] {g : GL (Fin 2) R} (hgp : g.IsHyperbolic) :
+    g ∉ Subgroup.center _ := by
+  refine mem_center_iff_val_mem_range_scalar.not.mpr (fun ⟨x, hx⟩ ↦ Eq.not_gt ?_ hgp)
+  simp [← hx, discr_fin_two]
+  grind
 
 /-- Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation.
 
@@ -303,5 +356,25 @@ lemma isParabolic_iff_of_upperTriangular_of_det [LinearOrder K] [IsStrictOrdered
     simpa using hx
 
 end GeneralLinearGroup
+
+section OrderedRing
+
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+
+lemma IsParabolic.det_nonneg {m : Matrix (Fin 2) (Fin 2) R} (hm : m.IsParabolic) : 0 ≤ m.det := by
+  rw [IsParabolic, discr_fin_two] at hm
+  nlinarith
+
+lemma IsElliptic.det_pos {m : Matrix (Fin 2) (Fin 2) R} (hm : m.IsElliptic) : 0 < m.det := by
+  rw [IsElliptic, discr_fin_two] at hm
+  nlinarith
+
+lemma GeneralLinearGroup.IsParabolic.val_det_pos
+    {g : GL (Fin 2) R} (hm : g.IsParabolic) : 0 < g.det.val := by
+  apply lt_of_le_of_ne'
+  · exact hm.det_nonneg
+  · exact NeZero.ne _
+
+end OrderedRing
 
 end Matrix

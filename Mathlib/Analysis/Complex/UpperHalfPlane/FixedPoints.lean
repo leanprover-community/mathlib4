@@ -142,6 +142,11 @@ def fixedPt (g : GL (Fin 2) ℝ) (hell : g.IsElliptic) : ℍ :=
   ⟨(g 0 0 - g 1 1) / (2 * g 1 0) + .I * (√(-g.val.discr) / (2 * |g 1 0|)), by
     simpa [div_pos, Complex.div_re, Complex.div_im, hell.c_ne_zero]⟩
 
+@[simp] lemma coe_fixedPt {g : GL (Fin 2) ℝ} (hell : g.IsElliptic) :
+    letI a := g 0 0; letI c := g 1 0; letI d := g 1 1
+    (fixedPt g hell : ℂ) = (a - d) / (2 * c) + .I * (√(-g.val.discr) / (2 * |c|)) :=
+  (rfl)
+
 @[simp]
 theorem fixedPt_neg (hg : (-g).IsElliptic) :
     fixedPt (-g) hg = fixedPt g (isElliptic_neg_iff.mp hg) := by
@@ -151,18 +156,18 @@ theorem fixedPt_neg (hg : (-g).IsElliptic) :
 
 /-- The action of an elliptic orientation preserving matrix on `ℍ`
 has a unique fixed point given by `fixedPt`. -/
-theorem gl_smul_eq_self_iff_eq_fixedPt (hpos : 0 < g.val.det) (hell : g.IsElliptic) :
+theorem gl_smul_eq_self_iff_eq_fixedPt (hell : g.IsElliptic) :
     g • z = z ↔ z = fixedPt g hell := by
   wlog hc : 0 < g 1 0 generalizing g
   · replace hc := hell.c_ne_zero.lt_or_gt.resolve_right hc
-    simpa using @this (-g) (by simpa [Matrix.det_neg]) hell.neg (by simpa)
+    simpa using @this (-g) hell.neg (by simpa)
   have hd : discrim (g 1 0 : ℂ) (g 1 1 - g 0 0) (-g 0 1) = (.I * √(-g.val.discr)) ^ 2 := by
     rw [mul_pow, ← Complex.ofReal_pow, Real.sq_sqrt]
     · simp [discrim, Matrix.discr_fin_two, Matrix.trace_fin_two, Matrix.det_fin_two]
       grind
     · simpa using hell.le
-  rw [gl_smul_eq_self_iff_quadratic hpos, quadratic_eq_zero_iff (mod_cast hell.c_ne_zero)
-    (hd.trans (pow_two _))]
+  rw [gl_smul_eq_self_iff_quadratic hell.det_pos,
+    quadratic_eq_zero_iff (mod_cast hell.c_ne_zero) (hd.trans (pow_two _))]
   rw [or_iff_left]
   · simp [fixedPt, UpperHalfPlane.ext_iff, abs_of_pos hc, field]
   · intro h
@@ -200,7 +205,7 @@ theorem forall_smul_eq_self_iff_mem_center {g : GL (Fin 2) ℝ} :
           at hg
     · have := isElliptic_of_exists_smul_eq_self hgt hgc ⟨.I, hg _⟩
       contrapose! hg
-      simp [gl_smul_eq_self_iff_eq_fixedPt hgt this, exists_ne]
+      simp [gl_smul_eq_self_iff_eq_fixedPt this, exists_ne]
   · aesop (add simp GeneralLinearGroup.center_eq_range_scalar)
 
 end GLAction
