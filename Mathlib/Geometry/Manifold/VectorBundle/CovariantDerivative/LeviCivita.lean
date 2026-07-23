@@ -91,29 +91,33 @@ variable
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
-  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
+  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E]
 
 variable (IB F E) in
 /-- A vector in `E x` is uniquely determined by its scalar product with sections that
 are differentiable at `x` -/
-public lemma injective_inner_mdifferentiableAt_section [CompleteSpace F] (x : B) :
+public lemma injective_inner_mdifferentiableAt_section  (x : B) :
     Function.Injective
       (fun X₀ : E x ↦
         fun (Z : Π x, E x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
-  have := VectorBundle.completeSpace ℝ F E
-  set Φ := InnerProductSpace.toDual ℝ (E x)
-  exact (VectorBundle.injective_eval_mdifferentiableAt_sec ..).comp Φ.injective
+  intro X₀ Y₀ h
+  suffices ⟪X₀, X₀ - Y₀⟫ = ⟪Y₀, X₀ - Y₀⟫ by
+    rw [← sub_eq_zero, ← inner_self_eq_zero (𝕜 := ℝ), inner_sub_left, sub_eq_zero]
+    exact this
+  simpa using congr($h _ (mdifferentiableAt_extend _ _ (X₀ - Y₀)))
 
 variable (IB F E) in
 /-- A vector in `E x` is uniquely determined by its scalar product with sections that
 are `C^n` at `x` -/
-public lemma injective_inner_contMDiffAt_section [CompleteSpace F] (n : ℕ∞ω) (x : B) :
+public lemma injective_inner_contMDiffAt_section (n : ℕ∞ω) (x : B) :
     Function.Injective
       (fun X₀ : E x ↦
         fun (Z : Π x, E x) (_ : CMDiffAt n (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
-  have := VectorBundle.completeSpace ℝ F E
-  set Φ := InnerProductSpace.toDual ℝ (E x)
-  exact (VectorBundle.injective_eval_contMDiffAt_sec ..).comp Φ.injective
+  intro X₀ Y₀ h
+  suffices ⟪X₀, X₀ - Y₀⟫ = ⟪Y₀, X₀ - Y₀⟫ by
+    rw [← sub_eq_zero, ← inner_self_eq_zero (𝕜 := ℝ), inner_sub_left, sub_eq_zero]
+    exact this
+  simpa using congr($h _ (contMDiffAt_extend _ _ (X₀ - Y₀)))
 
 end
 
@@ -127,14 +131,14 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- A tangent vector at `x` is uniquely determined by its scalar product with differentiable
 vector fields -/
-lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
+lemma injective_inner_mdifferentiableAt_vectorField (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) :=
   injective_inner_mdifferentiableAt_section (E := TangentSpace I) I E x
 
 /-- A tangent vector at `x` is uniquely determined by its scalar product with `C^n` vector fields -/
-lemma injective_inner_contMDiffAt_vectorField {n : ℕ∞ω} [CompleteSpace E] (x : M) :
+lemma injective_inner_contMDiffAt_vectorField {n : ℕ∞ω} (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
         fun (Z : Π x, TangentSpace I x) (_ : CMDiffAt n (T% Z) x) ↦ (⟪X₀, Z x⟫)) :=
