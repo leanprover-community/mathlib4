@@ -104,6 +104,13 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
   coe a := a.1
   coe_injective _ _ := Subtype.ext
 
+variable {R K} in
+theorem finite_valued_one_lt (a : FiniteAdeleRing R K) : {v | 1 < Valued.v (a v)}.Finite := by
+  have := a.2
+  simp only [SetLike.mem_coe, mem_adicCompletionIntegers, Filter.eventually_cofinite,
+    not_le] at this
+  exact this
+
 namespace FiniteAdeleRing
 
 /--
