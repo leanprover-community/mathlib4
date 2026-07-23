@@ -258,7 +258,7 @@ variable [Semiring A] [Algebra R A] [AddCommMonoid B] [Module R B] [Coalgebra R 
 /-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution algebras. -/
 @[simps]
 def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (B →ₗ[R] A) where
-  toFun f := toConv (f.ofConv.comp h.toLinearMap)
+  toFun f := toConv (f.ofConv.comp (h : B →ₗ[R] C))
   map_one' := WithConv.ext (convOne_comp_coalgHom h)
   map_mul' f g := WithConv.ext (convMul_comp_coalgHom_distrib f g h)
   map_zero' := WithConv.ext (by ext; simp)
