@@ -126,6 +126,12 @@ theorem symm_refl : (PEquiv.refl α).symm = PEquiv.refl α :=
 @[simp]
 theorem symm_symm (f : α ≃. β) : f.symm.symm = f := rfl
 
+theorem symm_apply_eq (f : α ≃. β) {x : β} {y : α} : f.symm x = y ↔ x = f y := by
+  rw [eq_some_iff, eq_comm]
+
+theorem eq_symm_apply (f : α ≃. β) {x : β} {y : α} : y = f.symm x ↔ f y = x := by
+  rw [← eq_some_iff, eq_comm]
+
 theorem symm_bijective : Function.Bijective (PEquiv.symm : (α ≃. β) → β ≃. α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
@@ -154,6 +160,7 @@ theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
 theorem refl_trans (f : α ≃. β) : (PEquiv.refl α).trans f = f := by
   ext; dsimp [PEquiv.trans]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trans_refl (f : α ≃. β) : f.trans (PEquiv.refl β) = f := by
   ext; dsimp [PEquiv.trans]; simp
@@ -234,6 +241,7 @@ end OfSet
 theorem symm_trans_rev (f : α ≃. β) (g : β ≃. γ) : (f.trans g).symm = g.symm.trans f.symm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
   ext
   dsimp [PEquiv.trans]

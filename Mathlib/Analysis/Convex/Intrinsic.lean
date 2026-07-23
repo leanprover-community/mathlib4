@@ -117,7 +117,7 @@ alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := in
 @[simp]
 theorem intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by
   simp only [intrinsicInterior, preimage_coe_affineSpan_singleton, interior_univ, image_univ,
-    Subtype.range_coe_subtype, mem_affineSpan_singleton, setOf_eq_eq_singleton]
+    Subtype.range_coe_subtype, mem_affineSpan_singleton, ofPred_eq_eq_singleton]
 
 @[simp]
 theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set P) = ∅ := by
@@ -126,7 +126,7 @@ theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set 
 @[simp]
 theorem intrinsicClosure_singleton (x : P) : intrinsicClosure 𝕜 ({x} : Set P) = {x} := by
   simp only [intrinsicClosure, preimage_coe_affineSpan_singleton, closure_univ, image_univ,
-    Subtype.range_coe_subtype, mem_affineSpan_singleton, setOf_eq_eq_singleton]
+    Subtype.range_coe_subtype, mem_affineSpan_singleton, ofPred_eq_eq_singleton]
 
 /-!
 Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
@@ -232,6 +232,7 @@ section ImageOfHomeomorphAffineSpan
 variable [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q] [AddTorsor W Q]
   {f : P → Q} {s : Set P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` agrees with a homeomorphism between the affine spans of `s` and `f '' s`, then pulling
 `f '' s` back to the affine span of `s` recovers `s` itself. -/
 private theorem preimage_image_eq_of_homeomorph_affineSpan

@@ -37,7 +37,7 @@ def stdSimplex : Set (ι → 𝕜) :=
 
 theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | ∑ x, f x = 1 } := by
   ext f
-  simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_setOf_eq]
+  simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
 
 theorem convex_stdSimplex [IsOrderedRing 𝕜] : Convex 𝕜 (stdSimplex 𝕜 ι) := by
   refine fun f hf g hg a b ha hb hab => ⟨fun x => ?_, ?_⟩
@@ -301,7 +301,7 @@ variable [IsOrderedRing S]
 @[simp]
 lemma le_one (s : stdSimplex S X) (x : X) : s x ≤ 1 := by
   rw [← sum_eq_one s]
-  simpa only using Finset.single_le_sum (by simp) (by simp)
+  exact Finset.single_le_sum (by simp) (by simp)
 
 lemma image_linearMap (f : X → Y) :
     Set.image (FunOnFinite.linearMap S S f) (stdSimplex S X) ⊆ stdSimplex S Y := by

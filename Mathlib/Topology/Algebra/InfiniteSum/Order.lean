@@ -84,7 +84,7 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
     (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
   apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
-    (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
+    (by simp only [Subtype.range_coe_subtype, Set.ofPred_mem_eq, h, implies_true])
     (by simp only [le_refl, implies_true])
     (by apply hf.subtype)
   apply hf
