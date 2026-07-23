@@ -169,8 +169,6 @@ lemma exists_countable_generateFrom_Ioi_Iio
   refine ⟨a '' t, t_count.image _, ?_⟩
   apply le_antisymm
   · apply le_generateFrom_iff_subset_isOpen.2
-    simp only [mem_image, exists_exists_and_eq_and, ofPred_subset_ofPred, forall_exists_index,
-      and_imp]
     grind [isOpen_Iio', isOpen_Ioi']
   · rw [ht]
     apply generateFrom_anti

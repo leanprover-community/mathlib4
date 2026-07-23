@@ -506,7 +506,6 @@ protected lemma Ioc [LinearOrder α] [Nonempty α] :
     rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
     refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
     intro a ha b hb hab
-    simp [Function.onFun]
     grind
 
 end IsSetSemiring
