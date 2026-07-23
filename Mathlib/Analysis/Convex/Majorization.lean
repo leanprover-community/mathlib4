@@ -15,13 +15,13 @@ public import Mathlib.Order.SuccPred.LinearLocallyFinite
 /-!
 # Majorization
 
-The majorization preorder on `Fin n → ℝ`. We say `a ≺ b` ("`a` is majorized by `b`") when the two
-tuples have equal total sum and, after sorting both in decreasing order, every prefix sum of `a` is
-bounded by the corresponding prefix sum of `b`.
+The majorization preorder on `ι → ℝ` for a finite type `ι`. We say `a ≺ b` ("`a` is majorized by
+`b`") when the two tuples have equal total sum and, for every `k`, the sum of the `k` largest
+coordinates of `a` is at most that of `b`.
 
 ## Main definitions
 
-* `Majorizes a b` (notation `a ≺ b`): the majorization relation.
+* `Majorizes a b` (notation `a ≺ b`): the majorization relation on `ι → ℝ`, via `maxSubsetSum`.
 * `TTransform b a k l lambda` and `RelatedByTTransform b a`: a single T-transform (Robin Hood
   transfer) pulling the coordinates `a k > a l` toward each other while fixing their sum and the
   other coordinates.
@@ -31,8 +31,10 @@ bounded by the corresponding prefix sum of `b`.
 ## Main statements
 
 * `Majorizes.refl`, `Majorizes.trans`, the `Trans` instance: `≺` is a preorder.
-* `majorizes_iff_reflTransGen_relatedByTTransform`: `a ≺ b` iff the decreasing rearrangement of
-  `a` is reachable from that of `b` by a finite chain of T-transforms (both directions).
+* `majorizes_iff_descPrefixSum`: `a ≺ b` iff, after transporting to `Fin (card ι)`, the two tuples
+  have equal total sum and every descending prefix sum of `a` is bounded by that of `b`.
+* `majorizes_iff_reflTransGen_relatedByTTransform`: `a ≺ b` iff the decreasing rearrangement of `a`
+  is reachable from that of `b` by a finite chain of T-transforms.
 
 ## Notation
 
@@ -71,16 +73,36 @@ lemma antitone_comp_sortDesc : Antitone (f ∘ sortDesc f) := by
 noncomputable def partialSum (i : Fin n) (a : Fin n → ℝ) (σ : Equiv.Perm (Fin n)) : ℝ :=
   ∑ x < i, (a ∘ σ) x
 
+/-- The `i`-th descending prefix sum of `a`: the sum of its `i` largest coordinates, obtained as the
+prefix sum of `a` after sorting into decreasing order. -/
+noncomputable def descPrefixSum (i : Fin n) (a : Fin n → ℝ) : ℝ := partialSum i a (sortDesc a)
+
+/-- The maximal sum over `i`-element subsets of the coordinates of `a` (equivalently, the sum of its
+`i` largest coordinates). -/
+noncomputable def maxSubsetSum
+  {ι} [Fintype ι] (i : Fin (Fintype.card ι)) (a : ι → ℝ) : ℝ :=
+  (Finset.univ.powersetCard i).sup'
+    (Finset.powersetCard_nonempty.mpr (by rw [Finset.card_univ]; exact i.isLt.le))
+    (fun s => ∑ idx ∈ s, a idx)
+
 /-! ### The majorization relation `≺` -/
 
 /-- `a1` is majorized by `a2` (notation `a1 ≺ a2`): the two tuples have equal total sum, and
 every prefix sum of the decreasing rearrangement of `a1` is at most the corresponding prefix sum
 of `a2`. -/
-structure Majorizes (a1 a2 : Fin n → ℝ) : Prop where
+private structure MajorizesFin (a1 a2 : Fin n → ℝ) : Prop where
   /-- The two tuples have equal total sum. -/
   sum : ∑ x : Fin n, a1 x = ∑ x : Fin n, a2 x
   /-- Every prefix sum of the decreasing rearrangement of `a1` is at most that of `a2`. -/
-  sums : ∀ i : Fin n, partialSum i a1 (sortDesc a1) ≤ partialSum i a2 (sortDesc a2)
+  sums : ∀ i : Fin n, descPrefixSum i a1 ≤ descPrefixSum i a2
+
+/-- `a1` is majorized by `a2` (notation `a1 ≺ a2`): the two tuples have equal total sum, and for
+every `i` the maximal sum over `i`-element subsets of `a1` is at most that of `a2`. -/
+structure Majorizes {ι} [Fintype ι] (a1 a2 : ι → ℝ) : Prop where
+  /-- The two tuples have equal total sum. -/
+  sum : ∑ x : ι, a1 x = ∑ x : ι, a2 x
+  /-- For every `i`, the maximal sum over `i`-element subsets of `a1` is at most that of `a2`. -/
+  sums : ∀ i : Fin (Fintype.card ι), maxSubsetSum i a1 ≤ maxSubsetSum i a2
 
 @[inherit_doc] scoped infix:50 " ≺ " => Majorizes
 
@@ -107,50 +129,51 @@ lemma partialSum_comp_perm {a : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} {i : Fi
   unfold partialSum
   rw [comp_perm_comp_sortDesc]
 
-lemma comp_perm_majorizes_iff {a b : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} :
-    a ∘ σ ≺ b ↔ a ≺ b := by
+private lemma comp_perm_majorizesFin_iff {a b : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} :
+    MajorizesFin (a ∘ σ) b ↔ MajorizesFin a b := by
   constructor <;> rintro ⟨hsum, hsums⟩ <;>
     exact ⟨by simpa only [sum_comp_perm] using hsum,
-           fun i ↦ by simpa only [partialSum_comp_perm] using hsums i⟩
+           fun i ↦ by simpa only [descPrefixSum, partialSum_comp_perm] using hsums i⟩
 
-lemma majorizes_comp_perm_iff {a b : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} :
-    a ≺ b ∘ σ ↔ a ≺ b := by
+private lemma majorizesFin_comp_perm_iff {a b : Fin n → ℝ} {σ : Equiv.Perm (Fin n)} :
+    MajorizesFin a (b ∘ σ) ↔ MajorizesFin a b := by
   constructor <;> rintro ⟨hsum, hsums⟩ <;>
     exact ⟨by simpa only [sum_comp_perm] using hsum,
-           fun i ↦ by simpa only [partialSum_comp_perm] using hsums i⟩
+           fun i ↦ by simpa only [descPrefixSum, partialSum_comp_perm] using hsums i⟩
 
-lemma Majorizes.refl (a : Fin n → ℝ) : a ≺ a :=
+private lemma MajorizesFin.refl (a : Fin n → ℝ) : MajorizesFin a a :=
   ⟨rfl, fun _ ↦ le_rfl⟩
 
-lemma Majorizes.trans {a b c : Fin n → ℝ} (h1 : a ≺ b) (h2 : b ≺ c) : a ≺ c :=
+private lemma MajorizesFin.trans {a b c : Fin n → ℝ}
+    (h1 : MajorizesFin a b) (h2 : MajorizesFin b c) : MajorizesFin a c :=
   ⟨h1.sum.trans h2.sum, fun i ↦ (h1.sums i).trans (h2.sums i)⟩
 
-instance : Trans (@Majorizes n) (@Majorizes n) (@Majorizes n) where
-  trans := Majorizes.trans
+private instance : Trans (@MajorizesFin n) (@MajorizesFin n) (@MajorizesFin n) where
+  trans := MajorizesFin.trans
 
 /-! ### T-transforms and discrepancy -/
 
 /-- `TTransform b a k l lambda`: `b` is a single T-transform (Robin Hood transfer) of `a` at
 coordinates `k`, `l` with parameter `lambda ∈ (0, 1)`, pulling `a k > a l` toward each other while
 fixing their sum and every other coordinate. -/
-structure TTransform {n} (b a : Fin n → ℝ) (k l : Fin n) (lambda : ℝ) : Prop where
+structure TTransform {ι : Type*} (b a : ι → ℝ) (k l : ι) (lambda : ℝ) : Prop where
   /-- The transfer parameter lies strictly between `0` and `1`. -/
   lambda_0_1 : 0 < lambda ∧ lambda < 1
   /-- The coordinate `k` dominates the coordinate `l` in `a`. -/
   ak_gt_al : a k > a l
   /-- `b` agrees with `a` away from `k` and `l`. -/
-  other_unchanged : ∀ (i : Fin n), i ≠ k ∧ i ≠ l → a i = b i
+  other_unchanged : ∀ (i : ι), i ≠ k ∧ i ≠ l → a i = b i
   /-- `b k` moves `a k` toward `a l` by a `lambda`-fraction of their gap. -/
   bk : b k = a k + (a l - a k) * lambda
   /-- `b l` moves `a l` toward `a k` by the same amount, keeping `b k + b l = a k + a l`. -/
   bl : b l = a l - (a l - a k) * lambda
 
 /-- `b` is obtained from `a` by some single T-transform. -/
-def RelatedByTTransform {n} (b a : Fin n → ℝ) : Prop :=
-  ∃ k l : Fin n, ∃ lambda : ℝ, TTransform b a k l lambda
+def RelatedByTTransform {ι : Type*} (b a : ι → ℝ) : Prop :=
+  ∃ k l : ι, ∃ lambda : ℝ, TTransform b a k l lambda
 
 /-- The number of coordinates at which `a` and `b` differ. -/
-noncomputable def discrepancy (a b : Fin n → ℝ) : Nat := #{i | a i ≠ b i}
+noncomputable def discrepancy {ι : Type*} [Fintype ι] (a b : ι → ℝ) : Nat := #{i | a i ≠ b i}
 
 lemma exists_sub_ne_zero_of_discrepancy_ne_zero {a b : Fin n → ℝ} :
   discrepancy a b ≠ 0 → ∃ k : Fin n, a k - b k ≠ 0 := by
@@ -220,6 +243,115 @@ lemma subset_sum_le_sum_greatest {n} {a : Fin n → ℝ} {i : Fin n} {t : Finset
       rw [Finset.image_image, Equiv.self_comp_symm, Finset.image_id]
     rw [ht_image, Finset.sum_image hinj]
     exact sum_le_sum_Iio_of_antitone (antitone_comp_sortDesc a) (hcard.trans hs)
+
+lemma sum_image_sortDesc_Iio {n} {a : Fin n → ℝ} {i : Fin n} {t : Finset (Fin n)}
+    (ht : t = (Finset.Iio i).image (sortDesc a)) :
+    (∑ x ∈ t, a x) = ∑ x < i, (a ∘ sortDesc a) x := by
+  rw [ht]
+  simp only [coe_Iio, EmbeddingLike.apply_eq_iff_eq, implies_true, Set.injOn_of_eq_iff_eq,
+    sum_image, Function.comp_apply]
+
+/-- The maximal sum over `i`-element subsets is attained by the `i` greatest coordinates: it equals
+the sum over the image of `Iio i` under the decreasing sort. -/
+lemma sup'_powersetCard_eq_sum_image_sortDesc {n} (a : Fin n → ℝ) (i : Fin n) :
+    (Finset.univ.powersetCard i).sup'
+        (Finset.powersetCard_nonempty.mpr
+          (by rw [Finset.card_univ, Fintype.card_fin]; exact i.isLt.le))
+        (fun s => ∑ idx ∈ s, a idx)
+      = ∑ x ∈ (Finset.Iio i).image (sortDesc a), a x := by
+  set t₀ := (Finset.Iio i).image (sortDesc a) with ht₀
+  have hcard : #t₀ = (i : ℕ) := by
+    rw [ht₀, Finset.card_image_of_injective _ (sortDesc a).injective, Fin.card_Iio]
+  apply le_antisymm
+  · apply Finset.sup'_le
+    intro u hu
+    have hu_card : #u = (i : ℕ) := (Finset.mem_powersetCard.mp hu).2
+    calc ∑ x ∈ u, a x
+        ≤ ∑ x < i, (a ∘ sortDesc a) x := subset_sum_le_sum_greatest hu_card
+      _ = ∑ x ∈ t₀, a x := (sum_image_sortDesc_Iio ht₀).symm
+  · exact Finset.le_sup' (fun s => ∑ idx ∈ s, a idx)
+      (Finset.mem_powersetCard.mpr ⟨Finset.subset_univ _, hcard⟩)
+
+private lemma sup'_powersetCard_comp {ι κ} [Fintype ι] [Fintype κ]
+    (f : ι → ℝ) (e : ι ≃ κ) (k : ℕ)
+    (hι : (Finset.univ.powersetCard k : Finset (Finset ι)).Nonempty)
+    (hκ : (Finset.univ.powersetCard k : Finset (Finset κ)).Nonempty) :
+    (Finset.univ.powersetCard k).sup' hι (fun s => ∑ x ∈ s, f x)
+      = (Finset.univ.powersetCard k).sup' hκ (fun s => ∑ x ∈ s, f (e.symm x)) := by
+  have hfin : (Finset.univ.powersetCard k : Finset (Finset κ))
+      = (Finset.univ.powersetCard k : Finset (Finset ι)).map
+          (Finset.mapEmbedding e.toEmbedding).toEmbedding := by
+    rw [← Finset.map_univ_equiv e, Finset.powersetCard_map]
+  rw [Finset.sup'_congr hκ hfin fun _ _ => rfl, Finset.sup'_map]
+  refine Finset.sup'_congr hι rfl fun s _ => ?_
+  simp [Finset.mapEmbedding_apply, Finset.sum_map]
+
+private lemma maxSubsetSum_comp_symm {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι))
+    (a : ι → ℝ) (i : Fin (Fintype.card ι)) :
+    maxSubsetSum i a = (Finset.univ.powersetCard i).sup'
+        (Finset.powersetCard_nonempty.mpr
+          (by rw [Finset.card_univ, Fintype.card_fin]; exact i.isLt.le))
+        (fun s => ∑ idx ∈ s, (a ∘ e.symm) idx) := by
+  unfold maxSubsetSum
+  exact sup'_powersetCard_comp a e _ _ _
+
+lemma maxSubsetSum_eq_descPrefixSum_comp_symm {ι} [Fintype ι]
+    (i : Fin (Fintype.card ι)) (a : ι → ℝ) (equiv : ι ≃ Fin (Fintype.card ι)) :
+    maxSubsetSum i a = descPrefixSum i (a ∘ equiv.symm) := by
+  rw [maxSubsetSum_comp_symm equiv a i, sup'_powersetCard_eq_sum_image_sortDesc]
+  exact sum_image_sortDesc_Iio rfl
+
+/-- Bridge to the sorted world:
+`Majorizes a b` holds iff the two vectors, transported to `Fin (card ι)` along `e`,
+satisfy the `Fin`-level majorization relation `MajorizesFin`.
+This reduces every `Majorizes` question to the `Fin n` T-transform theory. -/
+private lemma majorizes_iff_majorizesFin_comp_symm {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι))
+    (a b : ι → ℝ) : Majorizes a b ↔ MajorizesFin (a ∘ e.symm) (b ∘ e.symm) := by
+  constructor
+  · rintro ⟨hsum, hsums⟩
+    refine ⟨by simpa only [Function.comp_apply, Equiv.sum_comp] using hsum, fun i => ?_⟩
+    rw [← maxSubsetSum_eq_descPrefixSum_comp_symm i a e,
+        ← maxSubsetSum_eq_descPrefixSum_comp_symm i b e]
+    exact hsums i
+  · rintro ⟨hsum, hsums⟩
+    refine ⟨by simpa only [Function.comp_apply, Equiv.sum_comp] using hsum, fun i => ?_⟩
+    rw [maxSubsetSum_eq_descPrefixSum_comp_symm i a e,
+        maxSubsetSum_eq_descPrefixSum_comp_symm i b e]
+    exact hsums i
+
+lemma majorizes_iff_descPrefixSum {ι} [Fintype ι] (e : ι ≃ Fin (Fintype.card ι)) (a b : ι → ℝ) :
+    Majorizes a b ↔ (∑ x, a x = ∑ x, b x) ∧
+      ∀ i, descPrefixSum i (a ∘ e.symm) ≤ descPrefixSum i (b ∘ e.symm) :=
+  (majorizes_iff_majorizesFin_comp_symm e a b).trans
+    ⟨fun h => ⟨by simpa only [Function.comp_apply, Equiv.sum_comp] using h.sum, h.sums⟩,
+     fun h => ⟨by simpa only [Function.comp_apply, Equiv.sum_comp] using h.1, h.2⟩⟩
+
+lemma Majorizes.refl {ι} [Fintype ι] (a : ι → ℝ) : Majorizes a a :=
+  ⟨rfl, fun _ => le_rfl⟩
+
+lemma Majorizes.trans {ι} [Fintype ι] {a b c : ι → ℝ}
+    (h1 : Majorizes a b) (h2 : Majorizes b c) : Majorizes a c :=
+  ⟨h1.sum.trans h2.sum, fun i => (h1.sums i).trans (h2.sums i)⟩
+
+instance {ι} [Fintype ι] : Trans (@Majorizes ι _) (@Majorizes ι _) (@Majorizes ι _) where
+  trans := Majorizes.trans
+
+lemma maxSubsetSum_comp_equiv {ι} [Fintype ι] (σ : ι ≃ ι) (a : ι → ℝ)
+    (i : Fin (Fintype.card ι)) : maxSubsetSum i (a ∘ σ) = maxSubsetSum i a := by
+  unfold maxSubsetSum
+  exact (sup'_powersetCard_comp a σ.symm _ _ _).symm
+
+lemma comp_perm_majorizes_iff {ι} [Fintype ι] {a b : ι → ℝ} {σ : Equiv.Perm ι} :
+    Majorizes (a ∘ σ) b ↔ Majorizes a b := by
+  constructor <;> rintro ⟨hsum, hsums⟩ <;>
+    exact ⟨by simpa [Equiv.sum_comp] using hsum,
+           fun i => by simpa [maxSubsetSum_comp_equiv] using hsums i⟩
+
+lemma majorizes_comp_perm_iff {ι} [Fintype ι] {a b : ι → ℝ} {σ : Equiv.Perm ι} :
+    Majorizes a (b ∘ σ) ↔ Majorizes a b := by
+  constructor <;> rintro ⟨hsum, hsums⟩ <;>
+    exact ⟨by simpa [Equiv.sum_comp] using hsum,
+           fun i => by simpa [maxSubsetSum_comp_equiv] using hsums i⟩
 
 private lemma exists_subset_sum_le_of_relatedByTTransform {n} {a b : Fin n → ℝ}
     {s : Finset (Fin n)} (t : RelatedByTTransform a b) :
@@ -296,8 +428,8 @@ lemma partialSum_domination {n} i {a b : Fin n → ℝ}
         _ ≤ ∑ x ∈ t2, b x := to_rewrite2
         _ ≤ ∑ x < i, (b ∘ (sortDesc b)) x := subset_sum_le_sum_greatest (a := b) (teqs.trans teqi)
 
-lemma majorizes_of_relatedByTTransform {a b : Fin n → ℝ} :
-  RelatedByTTransform a b → a ≺ b := by
+private lemma majorizesFin_of_relatedByTTransform {a b : Fin n → ℝ} :
+  RelatedByTTransform a b → MajorizesFin a b := by
   rintro ⟨k, l, lambda, tt⟩
   have l_ne_k : l ≠ k := fun h ↦ ne_of_gt tt.ak_gt_al (congrArg b h).symm
   refine ⟨?_, fun i ↦ partialSum_domination i ⟨k, l, lambda, tt⟩⟩
@@ -306,12 +438,12 @@ lemma majorizes_of_relatedByTTransform {a b : Fin n → ℝ} :
   rw [sum_split_two l_ne_k a, sum_split_two l_ne_k b, hrest, tt.bk, tt.bl]
   ring
 
-lemma majorizes_of_reflTransGen_relatedByTTransform {a b : Fin n → ℝ}
-  (r : Relation.ReflTransGen RelatedByTTransform a b) : a ≺ b := by
+private lemma majorizesFin_of_reflTransGen_relatedByTTransform {a b : Fin n → ℝ}
+  (r : Relation.ReflTransGen RelatedByTTransform a b) : MajorizesFin a b := by
   induction r
-  case refl => exact Majorizes.refl a
+  case refl => exact MajorizesFin.refl a
   case tail _ _ _ related_by_ttransform majorizes =>
-    exact majorizes.trans (majorizes_of_relatedByTTransform related_by_ttransform)
+    exact majorizes.trans (majorizesFin_of_relatedByTTransform related_by_ttransform)
 
 
 
@@ -325,7 +457,7 @@ lemma partialSum_eq_of_antitone {g : Fin n → ℝ} (hg : Antitone g) (j : Fin n
   simp
 
 private lemma tTransform_candidates {n} {a b : Fin n → ℝ} (ha : Antitone a) (hb : Antitone b)
-  (majorizes : a ≺ b) (h : discrepancy a b ≠ 0) :
+  (majorizes : MajorizesFin a b) (h : discrepancy a b ≠ 0) :
   ∃ k l : Fin n,
       k < l
     ∧ a k < b k
@@ -341,6 +473,7 @@ private lemma tTransform_candidates {n} {a b : Fin n → ℝ} (ha : Antitone a) 
   -- Majorization prefix sums, rewritten via antitonicity into honest prefix sums.
   have hpref : ∀ j : Fin n, ∑ x < j, a x ≤ ∑ x < j, b x := fun j ↦ by
     have hsums_j := majorizes.sums j
+    unfold descPrefixSum at hsums_j
     rwa [partialSum_eq_of_antitone ha, partialSum_eq_of_antitone hb] at hsums_j
   -- `l` : the smallest index where `a` overtakes `b`; below it, minimality forces `a ≤ b`.
   -- (Extracted as an opaque index; keeping `min'` behind a `let` triggers `isDefEq` timeouts.)
@@ -395,10 +528,10 @@ private lemma tTransform_candidates {n} {a b : Fin n → ℝ} (ha : Antitone a) 
 /-- One step of the T-transform decomposition: from `a ≺ b` (both antitone) with `a ≠ b`,
 build a single T-transform `c` of `b` that is still majorized by `a`, is antitone, and is
 strictly closer to `a` (measured by `discrepancy`). This is the non-recursive core; the
-well-founded recursion lives in `reflTransGen_relatedByTTransform_of_majorizes`. -/
+well-founded recursion lives in `reflTransGen_relatedByTTransform_of_majorizesFin`. -/
 private lemma tTransform_step {a b : Fin n → ℝ} (ha : Antitone a) (hb : Antitone b)
-    (majorizes : a ≺ b) (h : discrepancy a b ≠ 0) :
-    ∃ c : Fin n → ℝ, RelatedByTTransform c b ∧ a ≺ c ∧ Antitone c ∧
+    (majorizes : MajorizesFin a b) (h : discrepancy a b ≠ 0) :
+    ∃ c : Fin n → ℝ, RelatedByTTransform c b ∧ MajorizesFin a c ∧ Antitone c ∧
       discrepancy a c < discrepancy a b := by
     obtain ⟨k, l, k_leq_l, a_k_leq_b_k, a_l_geq_b_k, equal_inbetween⟩ :=
       tTransform_candidates ha hb majorizes h
@@ -528,12 +661,14 @@ private lemma tTransform_step {a b : Fin n → ℝ} (ha : Antitone a) (hb : Anti
       · -- `i` and `succ i` off `{k, l}`: plain antitonicity of `b`.
         rw [hci (Order.succ i) hsk hsl, hci i hik hil]
         exact hb (le_of_lt hi_lt_succ)
-    have a_majorized_by_c : a ≺ c := by
-      have hcb : c ≺ b := majorizes_of_relatedByTTransform c_b_related_by_ttransform
+    have a_majorized_by_c : MajorizesFin a c := by
+      have hcb : MajorizesFin c b := majorizesFin_of_relatedByTTransform c_b_related_by_ttransform
       refine ⟨majorizes.sum.trans hcb.sum.symm, fun i ↦ ?_⟩
+      unfold descPrefixSum
       rw [partialSum_eq_of_antitone ha, partialSum_eq_of_antitone hc]
       have hab : ∀ j, ∑ x < j, a x ≤ ∑ x < j, b x := fun j ↦ by
         have := majorizes.sums j
+        unfold descPrefixSum at this
         rwa [partialSum_eq_of_antitone ha, partialSum_eq_of_antitone hb] at this
       -- Flat 3-way split on the position of `i` relative to `k`, `l` (no nesting).
       rcases (by omega : i ≤ k ∨ (k < i ∧ i ≤ l) ∨ l < i) with hik | ⟨hik, hil⟩ | hil
@@ -586,8 +721,8 @@ private lemma tTransform_step {a b : Fin n → ℝ} (ha : Antitone a) (hb : Anti
 /-- `a ≺ b` (both antitone) implies `a` is reachable from `b` by a finite chain of
 T-transforms. Decreasing recursion on `discrepancy a b`, one step supplied by
 `tTransform_step`. -/
-lemma reflTransGen_relatedByTTransform_of_majorizes
-  {a b : Fin n → ℝ} (ha : Antitone a) (hb : Antitone b) (majorizes : a ≺ b) :
+private lemma reflTransGen_relatedByTTransform_of_majorizesFin
+  {a b : Fin n → ℝ} (ha : Antitone a) (hb : Antitone b) (majorizes : MajorizesFin a b) :
   Relation.ReflTransGen RelatedByTTransform a b := by
   if h : discrepancy a b = 0 then
     have := discrepancy_zero_iff_eq.mpr h
@@ -595,21 +730,31 @@ lemma reflTransGen_relatedByTTransform_of_majorizes
   else
     obtain ⟨c, hcb, hac, hcAnti, hlt⟩ := tTransform_step ha hb majorizes h
     exact Relation.ReflTransGen.tail
-      (reflTransGen_relatedByTTransform_of_majorizes ha hcAnti hac) hcb
+      (reflTransGen_relatedByTTransform_of_majorizesFin ha hcAnti hac) hcb
   termination_by discrepancy a b
 
 /-- Majorization characterised by T-transforms: `a ≺ b` iff the decreasing rearrangement of `a`
 is reachable from that of `b` by a finite chain of T-transforms. -/
-lemma majorizes_iff_reflTransGen_relatedByTTransform {a b : Fin n → ℝ} :
-  a ≺ b ↔ Relation.ReflTransGen RelatedByTTransform (a ∘ sortDesc a) (b ∘ sortDesc b) :=
+private lemma majorizesFin_iff_reflTransGen_relatedByTTransform {a b : Fin n → ℝ} :
+  MajorizesFin a b ↔ Relation.ReflTransGen RelatedByTTransform (a ∘ sortDesc a) (b ∘ sortDesc b) :=
     ⟨ by
-        have hchain := reflTransGen_relatedByTTransform_of_majorizes
+        have hchain := reflTransGen_relatedByTTransform_of_majorizesFin
           (antitone_comp_sortDesc a) (antitone_comp_sortDesc b)
-        rw [show (a ∘ sortDesc a ≺ b ∘ sortDesc b) = (a ≺ b) from
-              propext (comp_perm_majorizes_iff.trans majorizes_comp_perm_iff)] at hchain
+        rw [show (MajorizesFin (a ∘ sortDesc a) (b ∘ sortDesc b)) = (MajorizesFin a b) from
+              propext (comp_perm_majorizesFin_iff.trans majorizesFin_comp_perm_iff)] at hchain
         exact hchain
-    , fun h ↦ (comp_perm_majorizes_iff.trans majorizes_comp_perm_iff).mp
-        (majorizes_of_reflTransGen_relatedByTTransform h)
+    , fun h ↦ (comp_perm_majorizesFin_iff.trans majorizesFin_comp_perm_iff).mp
+        (majorizesFin_of_reflTransGen_relatedByTTransform h)
     ⟩
+
+/-- Majorization (`Fintype` version) characterised by T-transforms: `Majorizes a b` iff the
+decreasing rearrangement of `a` (transported to `Fin (card ι)` along `e`) is reachable from that
+of `b` by a finite chain of T-transforms. Derived from the `Fin n` theorem via the bridge. -/
+lemma majorizes_iff_reflTransGen_relatedByTTransform {ι} [Fintype ι]
+    (e : ι ≃ Fin (Fintype.card ι)) (a b : ι → ℝ) :
+    Majorizes a b ↔ Relation.ReflTransGen RelatedByTTransform
+      ((a ∘ e.symm) ∘ sortDesc (a ∘ e.symm)) ((b ∘ e.symm) ∘ sortDesc (b ∘ e.symm)) :=
+  (majorizes_iff_majorizesFin_comp_symm e a b).trans
+    majorizesFin_iff_reflTransGen_relatedByTTransform
 
 end Majorization
