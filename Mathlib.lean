@@ -4409,6 +4409,7 @@ public import Mathlib.Data.Set.Sups
 public import Mathlib.Data.Set.SymmDiff
 public import Mathlib.Data.Set.UnionLift
 public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.SetLike.Concrete
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Data.Setoid.Partition

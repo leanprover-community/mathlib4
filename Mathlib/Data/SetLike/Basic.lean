@@ -8,6 +8,7 @@ module
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.SetLike
 public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -211,6 +212,9 @@ lemma exists_not_mem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
 
 end SetLike
 
+/- TODO: move `IsConcreteLE` to `Concrete.lean`. This is postponed since it requires to touch
+a lot of files. -/
+
 /-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving.
 
 An instance of this class is automatically available on any partial order defined as
@@ -295,6 +299,15 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
+
+theorem not_le_iff_exists_mem_notMem : ¬p ≤ q ↔ ∃ x, x ∈ p ∧ x ∉ q := by
+  simpa only [← coe_subset_coe] using! Set.not_subset_iff_exists_mem_notMem
+
+theorem lt_of_mem_notMem {x : B} (hst : p ≤ q) (hat : x ∈ q) (has : x ∉ p) :
+    p < q := by
+  rw [← coe_subset_coe] at hst
+  rw [← coe_ssubset_coe]
+  exact HasSubset.Subset.ssubset_of_mem_notMem hst hat has
 
 /-- membership is inherited from `Set X` -/
 abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
