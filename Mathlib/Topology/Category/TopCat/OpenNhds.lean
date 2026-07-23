@@ -141,6 +141,14 @@ theorem inclusionMapIso_hom (x : X) : (inclusionMapIso f x).hom = 𝟙 _ :=
 theorem inclusionMapIso_inv (x : X) : (inclusionMapIso f x).inv = 𝟙 _ :=
   rfl
 
+instance [IndiscreteTopology X] (x : X) : Unique (OpenNhds x) where
+  default := ⊤
+  uniq
+    | ⟨U, hU⟩ => by
+      obtain (rfl | rfl) := TopologicalSpace.Opens.eq_bot_or_top U <;>
+      simp at hU ⊢
+      rfl
+
 end OpenNhds
 
 end TopologicalSpace
