@@ -147,6 +147,19 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
     simp_all [zpow_ne_zero, sub_ne_zero]
   · simp_all [meromorphicOrderAt_eq_top_iff, Eventually.frequently]
 
+/--
+A function meromorphic on `U`, with meromorphic order nowhere `⊤`, is nonvanishing away from a
+codiscrete subset of `U`.
+-/
+theorem MeromorphicOn.ne_zero_mem_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E} (hf : MeromorphicOn f U)
+    (h'f : ∀ x ∈ U, meromorphicOrderAt f x ≠ ⊤) :
+    {x | f x ≠ 0} ∈ codiscreteWithin U := by
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right]
+  intro x hx
+  filter_upwards [(meromorphicOrderAt_ne_top_iff_eventually_ne_zero (hf x hx)).1 (h'f x hx)]
+    with y hy
+  simp [hy]
+
 /-- If the order of a meromorphic function is negative, then this function converges to infinity
 at this point. See also the iff version `tendsto_cobounded_iff_meromorphicOrderAt_neg`. -/
 lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x < 0) :
@@ -957,5 +970,34 @@ lemma meromorphicOrderAt_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} {n 
     (hn : (↑(n + 1) : 𝕜) ≠ 0) (hf : meromorphicOrderAt f x = ↑(n + 1)) :
     meromorphicOrderAt (deriv f) x = ↑n := by
   simpa using meromorphicOrderAt_deriv_eq_sub_one hn hf
+variable [CompleteSpace 𝕜] {f : 𝕜 → 𝕜}
+
+/--
+At zeros and poles of a meromorphic function `f`, the logarithmic derivative has a simple pole: its
+meromorphic order equals `-1`.
+-/
+theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜] (hf : MeromorphicAt f x)
+    (h₁ : meromorphicOrderAt f x ≠ 0) (h₂ : meromorphicOrderAt f x ≠ ⊤) :
+    meromorphicOrderAt (logDeriv f) x = -1 := by
+  lift meromorphicOrderAt f x to ℤ using h₂ with n hn
+  rw [logDeriv, meromorphicOrderAt_div hf.deriv hf,
+    meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (by exact_mod_cast h₁)) hn.symm,
+    ← hn]
+  norm_cast
+  simp
+
+/--
+At points where a meromorphic function has order zero, the meromorphic order of the logarithmic
+derivative is nonnegative.
+-/
+theorem meromorphicOrderAt_logDeriv_nonneg (hf : MeromorphicAt f x)
+    (h : meromorphicOrderAt f x = 0) :
+    0 ≤ meromorphicOrderAt (logDeriv f) x := by
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ :=
+    (meromorphicOrderAt_eq_int_iff (n := 0) hf).1 (by exact_mod_cast h)
+  have h₄ : f =ᶠ[𝓝[≠] x] g := by
+    filter_upwards [h₃g] with z hz using by simpa using hz
+  rw [meromorphicOrderAt_congr (logDeriv_congr_nhdsNE h₄)]
+  exact (h₁g.deriv.div h₁g h₂g).meromorphicOrderAt_nonneg
 
 end deriv
