@@ -147,6 +147,30 @@ def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
 theorem fromIter_apply {g : α → α} (h : Continuous g) (n : ℕ) (x : α) :
     fromIter h n x = g^[n] x := rfl
 
+/-- The discrete flow `ℤ → α → α` induced by a homeomorphism `f : α → α`. -/
+protected def _root_.Homeomorph.flow (f : α ≃ₜ α) : Flow ℤ α where
+  toFun n x := (f ^ n) x
+  cont' := by
+    rw [continuous_prod_of_discrete_left]
+    intro n
+    simp only [Function.uncurry_apply_pair]
+    fun_prop
+  map_add' n₁ n₂ := by simp [← Homeomorph.mul_apply, zpow_add]
+  map_zero' x := by simp
+
+@[simp]
+theorem _root_.Homeomorph.flow_apply {f : α ≃ₜ α} {n : ℤ} {x : α} :
+    f.flow n x = (f ^ n) x := by rfl
+
+variable (α) in
+@[simp]
+theorem _root_.Homeomorph.one_flow : (1 : α ≃ₜ α).flow = Flow.id ℤ α := by
+  ext; simp
+
+@[simp]
+theorem _root_.Homeomorph.inv_flow {f : α ≃ₜ α} {n : ℤ} : f⁻¹.flow n = f.flow (-n) := by
+  ext; simp
+
 /-- Restriction of a flow onto an invariant set. -/
 def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ s where
   toFun t := (h t).restrict _ _ _
@@ -282,6 +306,11 @@ theorem toHomeomorph_apply (t : τ) (x : α) : ϕ.toHomeomorph t x = ϕ t x := r
 
 @[simp]
 theorem toHomeomorph_symm_apply (t : τ) (x : α) : (ϕ.toHomeomorph t).symm x = ϕ (-t) x := rfl
+
+@[simp]
+theorem _root_.Homeomorph.toHomeomorph_flow_eq {f : α ≃ₜ α} {n : ℤ} :
+    f.flow.toHomeomorph n = f ^ n := by
+  ext; simp
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
   (isInvariant_iff_image _ _).trans
