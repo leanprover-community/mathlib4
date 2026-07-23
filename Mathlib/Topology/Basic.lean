@@ -106,6 +106,10 @@ theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpe
     IsOpen (⋂ i, s i) :=
   (finite_range _).isOpen_sInter (forall_mem_range.2 h)
 
+lemma IsOpen.iInter_of_finite_ne_univ {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsOpen (s i))
+    (hs_nonempty : {i | s i ≠ univ}.Finite) : IsOpen (⋂ i, s i) := by
+  simpa using hs_nonempty.isOpen_biInter (f := s) fun _ _ ↦ hs _
+
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
   s.finite_toSet.isOpen_biInter h
@@ -182,6 +186,10 @@ theorem isClosed_iUnion_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsC
     IsClosed (⋃ i, s i) := by
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact isOpen_iInter_of_finite h
+
+lemma IsClosed.iUnion_of_finite_nonempty {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsClosed (s i))
+    (hs_nonempty : {i | (s i).Nonempty}.Finite) : IsClosed (⋃ i, s i) := by
+  simpa using hs_nonempty.isClosed_biUnion (f := s) fun _ _ ↦ hs _
 
 theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :
     IsClosed { x | p x → q x } := by
