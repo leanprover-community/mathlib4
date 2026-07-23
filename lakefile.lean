@@ -57,6 +57,7 @@ package mathlib where
   platformIndependent := true
   -- Mathlib currently expects artifacts to be in the build directory.
   restoreAllArtifacts := true
+  requiresModuleSystem := true
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
