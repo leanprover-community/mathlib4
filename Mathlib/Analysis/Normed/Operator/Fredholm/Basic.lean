@@ -70,7 +70,7 @@ in order to conveniently use the full strength of Fredholmness.
 
 We largely follow [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 2][bourbaki2023],
 in particular for the proof of equivalence of the four conditions above.
-Here are some notable changes :
+Here are some notable changes:
 
 * Bourbaki restricts itself to locally convex spaces over `ℝ` or `ℂ`. Yet, under close inspection,
   this assumption plays very little role in the beginning of the theory. In fact, at the very mild
@@ -84,11 +84,9 @@ Here are some notable changes :
   codimension, and its kernel is complemented and has finite dimension". Hence we prefer to give
   a name to the latter.
 
-
 ## References
 
 * [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 2][bourbaki2023]
-
 -/
 
 @[expose] public noncomputable section
