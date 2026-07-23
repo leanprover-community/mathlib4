@@ -88,9 +88,11 @@ noncomputable instance [NonUnitalCStarAlgebra A] (x : A) :
   NonUnitalStarSubalgebra.nonUnitalCStarAlgebra _
     (h_closed := NonUnitalStarAlgebra.elemental.isClosed ℂ x)
 
+open scoped IsMulCommutative in
 noncomputable instance [CStarAlgebra A] (x : A) [IsStarNormal x] :
     CommCStarAlgebra (StarAlgebra.elemental ℂ x) where
 
+open scoped IsMulCommutative in
 noncomputable instance [NonUnitalCStarAlgebra A] (x : A) [IsStarNormal x] :
     NonUnitalCommCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) where
 

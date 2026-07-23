@@ -148,6 +148,8 @@ instance : IsMulCommutative (H ⧸ focalSubgroupOf H) :=
 
 open scoped IsMulCommutative
 
+open scoped IsMulCommutative
+
 /-- The transfer homomorphism `V : G → H/H*` from `G` the abelian quotient `H/H*`. -/
 @[to_additive /-- The transfer homomorphism `V : G → H/H*` from `G` the abelian quotient `H/H*`. -/]
 noncomputable def transferFocal [H.FiniteIndex] : G →* H ⧸ focalSubgroupOf H :=

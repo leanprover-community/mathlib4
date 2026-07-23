@@ -252,7 +252,6 @@ lemma norm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
   have hcomm₂ := hb.commute_star_right hcomm
   have : IsMulCommutative (adjoin ℂ {a, b}) :=
     isMulCommutative_adjoin ℂ (by grind) (by grind [commute_star_comm])
-  let _ : NonUnitalCommRing S := (adjoin ℂ {a, b}).nonUnitalCommRingTopologicalClosure mul_comm
   let _ : NonUnitalCommCStarAlgebra S := { }
   refine CommCStarAlgebra.norm_add_eq_max (A := S) (a := ⟨a, ?_⟩) (b := ⟨b, ?_⟩) (by ext; simpa)
   all_goals apply le_topologicalClosure; aesop

@@ -63,13 +63,22 @@ theorem topologicalClosure_mono {s t : NonUnitalSubalgebra R A} (h : s ≤ t) :
     s.topologicalClosure ≤ t.topologicalClosure :=
   closure_mono h
 
+
+instance isMulCommutative_topologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
+  s.toSubsemigroup.isMulCommutative_topologicalClosure
+
+open scoped IsMulCommutative in
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  fast_instance% s.toNonUnitalSubsemiring.nonUnitalCommSemiringTopologicalClosure hs
+  fast_instance%
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 variable [TopologicalSpace B] [NonUnitalSemiring B] [Module R B] [IsTopologicalSemiring B]
     [ContinuousConstSMul R B] (s : NonUnitalSubalgebra R A) {φ : A →ₙₐ[R] B}
@@ -111,13 +120,16 @@ instance instIsSemitopologicalRing [IsSemitopologicalRing A] (s : NonUnitalSubal
 
 variable [IsSemitopologicalRing A]
 
+open scoped IsMulCommutative in
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/
+@[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
-  { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
+  inferInstance
 
 end Ring
 
@@ -154,15 +166,8 @@ theorem le_iff_mem {x : A} {s : NonUnitalSubalgebra R A} (hs : IsClosed (s : Set
 instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
-open scoped IsMulCommutative in
-instance [T2Space A] {x : A} : NonUnitalCommSemiring (elemental R x) :=
-  fast_instance% nonUnitalCommSemiringTopologicalClosure _ mul_comm
-
-instance {R A : Type*} [CommRing R] [NonUnitalRing A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-    [TopologicalSpace A] [IsSemitopologicalRing A] [ContinuousConstSMul R A]
-    [T2Space A] {x : A} : NonUnitalCommRing (elemental R x) where
-  mul_comm := mul_comm
+instance [T2Space A] {x : A} : IsMulCommutative (elemental R x) :=
+  isMulCommutative_topologicalClosure _
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [NonUnitalSemiring A]
     [IsSemitopologicalSemiring A] [Module R A] [IsScalarTower R A A]
