@@ -1553,6 +1553,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 public import Mathlib.AlgebraicTopology.SimplexCategory.DeltaZeroIter
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
+public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Equivalence
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.NormalForms
 public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 public import Mathlib.AlgebraicTopology.SimplexCategory.Rev
