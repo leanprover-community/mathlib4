@@ -240,8 +240,8 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
     cat_disch
 
-attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
-attribute [simp, grind _=_] Category.assoc
+attribute [to_dual existing (attr := simp) id_comp] Category.comp_id
+attribute [simp] Category.assoc
 
 initialize_simps_projections Category (-Hom)
 
@@ -393,6 +393,13 @@ variable (C : Type u)
 variable [Category.{v} C]
 
 universe u'
+
+-- The propagator in `Mathlib/CategoryTheory/Tactic/GrindCatNorm.lean` is loaded
+-- only *after* this file, so the `cat_disch` autoparam in `uliftCategory` below
+-- cannot rely on it. We make the relevant equational lemmas available to
+-- `grind` locally for the rest of this file.
+attribute [local grind =] Category.id_comp Category.comp_id
+attribute [local grind _=_] Category.assoc
 
 /-- The category structure on `ULift C` that is induced from the category
 structure on `C`. This is not made a global instance because of a diamond
