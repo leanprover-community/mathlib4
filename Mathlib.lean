@@ -3554,6 +3554,7 @@ public import Mathlib.Combinatorics.Derangements.Basic
 public import Mathlib.Combinatorics.Derangements.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
 public import Mathlib.Combinatorics.Digraph.Basic
+public import Mathlib.Combinatorics.Digraph.GraphLike
 public import Mathlib.Combinatorics.Digraph.Orientation
 public import Mathlib.Combinatorics.Enumerative.Bell
 public import Mathlib.Combinatorics.Enumerative.Catalan
@@ -3579,6 +3580,7 @@ public import Mathlib.Combinatorics.Graph.Delete
 public import Mathlib.Combinatorics.Graph.Lattice
 public import Mathlib.Combinatorics.Graph.Maps
 public import Mathlib.Combinatorics.Graph.Subgraph
+public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
