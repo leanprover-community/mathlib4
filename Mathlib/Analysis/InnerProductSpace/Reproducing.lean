@@ -328,7 +328,7 @@ section Mercer
 
 open MeasureTheory
 
-omit [CompleteSpace V] [Fact K.PosSemidef]
+omit [CompleteSpace V]
 
 /-- ToDo: Move to right spot in other file. -/
 lemma enorm_inner_le_enorm (f g : V) : ‖⟪f, g⟫_𝕜‖ₑ ≤  ‖f‖ₑ * ‖g‖ₑ := by
@@ -484,6 +484,18 @@ omit [BorelSpace X] in
 lemma mercerForm_apply (f g : Lp V 2 μ) :
     mercerForm μ hK f g = ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ) := by
   rfl
+
+omit [BorelSpace X] in
+theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef] (f g : Lp V 2 μ) :
+    starRingEnd 𝕜 (mercerForm μ hK f g) = mercerForm μ hK g f := by
+  have h := (Fact.out : K.PosSemidef).1
+  rw [Matrix.IsHermitian.ext_iff] at h
+  simp_rw [mercerForm_apply]
+  rw [← integral_conj, ← integral_prod_swap]
+  congr
+  ext x
+  rw [← ContinuousLinearMap.adjoint_inner_right, ← conj_inner_symm, ← star_eq_adjoint, h]
+  simp
 
 /-- The integral operator `f ↦ ∫ ∫ (y : X), K · y (f y) ∂μ` defined through the Riesz representer
 associated to the bilinear form `mercerForm`. -/
