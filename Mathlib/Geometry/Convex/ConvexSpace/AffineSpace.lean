@@ -158,3 +158,32 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
   simp [vsub_self]
 
 end AddTorsor
+
+section
+
+namespace AffineMap
+
+open Finset AddTorsor
+
+attribute [local instance] AddTorsor.toConvexSpace
+
+lemma of_apply_affineCombination
+    {k : Type u_1} {V P V₂ P₂ : Type*} [PartialOrder k] [Ring k] [IsStrictOrderedRing k]
+    [AddCommGroup V] [Module k V] [S : AffineSpace V P]
+  [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂] (f : P → P₂)
+  (H : ∀ {ι : Type u_6} (s : Finset ι) (p : ι → P) (w : ι → k),
+      ∑ i ∈ s, w i = 1 →
+      f ((affineCombination k s p) w) = (affineCombination k s (f ∘ p)) w) :
+  IsAffineMap k f where
+  map_sConvexComb s := by
+    rw [sConvexComb_eq_affineCombination, H s.weights.support _root_.id s.weights s.total,
+      ←iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
+
+lemma isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AffineSpace V2 P2]
+    (f : P →ᵃ[R] P2) : IsAffineMap R f := by
+    apply of_apply_affineCombination
+    grind [map_affineCombination]
+
+end AffineMap
+
+end
