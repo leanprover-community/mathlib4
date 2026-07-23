@@ -4664,6 +4664,7 @@ public import Mathlib.Geometry.Manifold.DerivationBundle
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.GroupLieAlgebra
 public import Mathlib.Geometry.Manifold.HasGroupoid
+public import Mathlib.Geometry.Manifold.ImmersedPoint
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.Geometry.Manifold.Instances.Quotient
@@ -4674,6 +4675,7 @@ public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 public import Mathlib.Geometry.Manifold.IntegralCurve.UniformTime
+public import Mathlib.Geometry.Manifold.InverseFunctionTheorem
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
