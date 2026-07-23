@@ -190,9 +190,7 @@ noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
       simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
       convert! map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
-    continuous_toFun := by
-      -- term mode gives "unknown free variable" error.
-      exact Continuous.subtype_mk (by fun_prop) _ }
+    continuous_toFun := by fun_prop }
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
     (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u + 1}))))

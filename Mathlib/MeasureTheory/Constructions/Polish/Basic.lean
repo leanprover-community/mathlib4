@@ -576,7 +576,7 @@ if and only if the set is measurable in `Set.range f`. -/
 theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparated (range f)]
     (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
-  have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
+  have hf' : Measurable (rangeFactorization f) := by fun_prop
   hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s)
     rangeFactorization_surjective
 
