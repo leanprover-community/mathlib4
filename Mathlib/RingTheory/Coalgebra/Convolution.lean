@@ -252,7 +252,7 @@ variable [Semiring A] [Algebra R A] [AddCommMonoid B] [Module R B] [Coalgebra R 
 
 /-- Pre-composition by a coalgebra homomorphism preserves the convolution unit. -/
 @[simp] lemma _root_.LinearMap.convOne_comp_coalgHom (h : B →ₗc[R] C) :
-    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ h.toLinearMap = (1 : WithConv (B →ₗ[R] A)).ofConv := by
+    (1 : WithConv (C →ₗ[R] A)).ofConv ∘ₗ (h : B →ₗ[R] C) = (1 : WithConv (B →ₗ[R] A)).ofConv := by
   ext; simp
 
 /-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution algebras. -/
