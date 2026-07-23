@@ -164,6 +164,33 @@ namespace DirectLimit
 
 variable [IsDirectedOrder ι] [DirectedSystem G fun i j h => f i j h]
 
+open scoped Cardinal
+
+/-- The cardinality of a direct limit is at most the cardinality of the sigma type of its
+components. -/
+theorem mk_le_mk_sigma :
+    #(DirectLimit G f) ≤ #(Σ i, G i) :=
+  Cardinal.mk_quotient_le
+
+/-- The cardinality of a direct limit is at most the cardinality of the index type times the
+supremum of the cardinalities of its components. -/
+theorem mk_le_lift_mk_mul_iSup_lift_mk :
+    #(DirectLimit G f) ≤
+      Cardinal.lift.{w} #ι * ⨆ i, Cardinal.lift.{v} #(G i) := by
+  apply (mk_le_mk_sigma G f).trans
+  rw [Cardinal.mk_sigma]
+  exact Cardinal.sum_le_lift_mk_mul_iSup_lift _
+
+/-- If the index type and all components have cardinality at most an infinite cardinal `κ`, then
+so does the direct limit. -/
+theorem mk_le_of_lift_mk_le {κ : Cardinal.{max v w}}
+    (hκ : ℵ₀ ≤ κ) (hι : Cardinal.lift.{w} #ι ≤ κ)
+    (hG : ∀ i, Cardinal.lift.{v} #(G i) ≤ κ) :
+    #(DirectLimit G f) ≤ κ := by
+  apply (mk_le_lift_mk_mul_iSup_lift_mk G f).trans
+  apply (mul_le_mul' hι (ciSup_le' hG)).trans
+  rw [Cardinal.mul_eq_self hκ]
+
 theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
     x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 := by
   cases x
