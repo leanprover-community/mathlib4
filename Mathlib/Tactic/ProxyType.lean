@@ -168,9 +168,10 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
         forallBoundedTelescope ctorType ctorInfo.numFields fun xs _itype => do
           let names ← xs.mapM (fun _ => mkFreshUserName `a)
           let (ty, ppatt) ← config.mkCtorProxyType (xs.zip names).toList
-          let places := .replicate ctorInfo.numParams (← `(term| _))
+          let lctx ← getLCtx
+          let paramNames := params.map fun x => mkIdent <| (lctx.getFVar! x).userName
           let argNames := names.map mkIdent
-          let cpatt ← `(term| @$(mkIdent ctorName) $places* $argNames*)
+          let cpatt ← `(term| @$(mkIdent ctorName) $paramNames* $argNames*)
           return (ctorName, ty, ppatt, cpatt)
     let (ctype, ppatts, pf) ← config.mkProxyType <|
       cdata.map (fun (ctorName, ty, ppatt, _) => (ctorName, ty, ppatt))
