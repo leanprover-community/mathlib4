@@ -145,6 +145,8 @@ lemma hφ₀ (B : Set X) (hB : HasCardinalLT B κ₂) {T : Type w} (f : T → B)
 
 open scoped Classical in
 /-- This coincides with `φ₀` when `HasCardinalLT B κ₂` holds. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def φ (B : Set X) : Set X :=
   if hB : HasCardinalLT B κ₂ then φ₀ Y m B hB else B
 

@@ -103,6 +103,8 @@ variable (c : ComplexShape ι) [c.EulerCharSigns]
 
 /-- The support of a graded object with respect to finite rank:
 the set of indices where the rank is nonzero. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def finrankSupport (X : CategoryTheory.GradedObject ι (ModuleCat R)) : Set ι :=
   Function.support (fun i => Module.finrank R (X i))
 

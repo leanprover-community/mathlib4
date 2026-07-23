@@ -116,6 +116,8 @@ theorem ordConnectedProj_eq {x y : s} :
 
 /-- A set that intersects each order connected component of a set by a single point. Defined as the
 range of `Set.ordConnectedProj s`. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def ordConnectedSection (s : Set α) : Set α :=
   range <| ordConnectedProj s
 
@@ -165,6 +167,8 @@ theorem dual_ordSeparatingSet :
 
 /-- An auxiliary neighborhood that will be used in the proof of
 `OrderTopology.CompletelyNormalSpace`. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 

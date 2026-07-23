@@ -476,6 +476,8 @@ def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action. -/
 @[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
 group action. -/]
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>

@@ -117,6 +117,8 @@ theorem exists_disjoint_covering_ae :
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
 covering of almost every `s`. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 protected noncomputable def index : Set (X × Set X) :=
   h.exists_disjoint_covering_ae.choose
 

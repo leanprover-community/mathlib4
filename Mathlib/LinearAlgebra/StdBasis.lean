@@ -136,6 +136,8 @@ theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :
 variable {η}
 
 /-- The `R`-submodule of `η → R` consisting of functions supported in the subset `s`. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def spanSubset (s : Set η) : Submodule R (η → R) :=
   .span R (Pi.basisFun R η '' s)
 

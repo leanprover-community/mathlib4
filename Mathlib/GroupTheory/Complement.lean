@@ -608,10 +608,14 @@ theorem smul_apply_eq_smul_apply_inv_smul (f : F) (S : H.LeftTransversal) (q : G
 end Action
 
 @[to_additive]
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable instance : Inhabited H.LeftTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_left Quotient.out_eq'⟩⟩
 
 @[to_additive]
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable instance : Inhabited H.RightTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_right Quotient.out_eq'⟩⟩
 

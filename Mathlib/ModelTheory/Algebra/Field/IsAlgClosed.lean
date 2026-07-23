@@ -79,6 +79,8 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
 the language of rings -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
   Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 

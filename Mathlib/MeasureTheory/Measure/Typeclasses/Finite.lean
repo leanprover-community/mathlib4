@@ -563,6 +563,8 @@ theorem isFiniteMeasure_iff_isFiniteMeasureOnCompacts_of_compactSpace [Topologic
 
 /-- Compact covering of a `σ`-compact topological space as
 `MeasureTheory.Measure.FiniteSpanningSetsIn`. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def MeasureTheory.Measure.finiteSpanningSetsInCompact
     [TopologicalSpace α] [SigmaCompactSpace α]
     {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
@@ -574,6 +576,8 @@ noncomputable def MeasureTheory.Measure.finiteSpanningSetsInCompact
 
 /-- A locally finite measure on a `σ`-compact topological space admits a finite spanning sequence
 of open sets. -/
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def MeasureTheory.Measure.finiteSpanningSetsInOpen
     [TopologicalSpace α] [SigmaCompactSpace α]
     {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
