@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Growth estimates on `x ^ y` for complex `x`, `y`

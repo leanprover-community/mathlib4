@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.GroupTheory.GroupAction.Basic
-public import Mathlib.GroupTheory.GroupAction.FixedPoints
+import Mathlib.GroupTheory.GroupAction.FixedPoints
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.Data.Set.Finite.Basic
 

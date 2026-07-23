@@ -6,7 +6,7 @@ Authors: David Wärn
 module
 
 public import Mathlib.Data.Stream.Init
-public import Mathlib.Topology.Algebra.Semigroup
+import Mathlib.Topology.Algebra.Semigroup
 public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 

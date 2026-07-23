@@ -5,9 +5,9 @@ Authors: Gaëtan Serré, Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.Topology.Algebra.Module.ModuleTopology

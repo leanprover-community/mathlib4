@@ -5,10 +5,10 @@ Authors: Chris Birkbeck, Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Deriv
+import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.Deriv.Shift
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!

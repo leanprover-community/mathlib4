@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.MeasureTheory.Measure.Support
 
 import Mathlib.Analysis.Normed.Algebra.GelfandFormula

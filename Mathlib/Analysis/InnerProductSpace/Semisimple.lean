@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.LinearAlgebra.Semisimple
 
 /-!

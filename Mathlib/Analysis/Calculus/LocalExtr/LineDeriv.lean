@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+import Mathlib.Analysis.Calculus.LocalExtr.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!

@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.Algebra.Module.LocalizedModule.Exact
+import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.LinearAlgebra.Dimension.Finite

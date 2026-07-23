@@ -6,7 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
-public import Mathlib.MeasureTheory.Integral.IntervalAverage
+import Mathlib.MeasureTheory.Integral.IntervalAverage
 
 /-!
 # Circle Averages

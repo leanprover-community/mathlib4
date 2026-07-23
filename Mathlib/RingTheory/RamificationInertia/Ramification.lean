@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.LocalRing.Length
+import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing

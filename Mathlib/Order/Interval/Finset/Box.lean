@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Disjointed
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Zify
 
 /-!

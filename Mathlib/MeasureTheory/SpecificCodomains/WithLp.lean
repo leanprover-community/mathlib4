@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Analysis.Normed.Lp.PiLp
-public import Mathlib.MeasureTheory.SpecificCodomains.Pi
+import Mathlib.MeasureTheory.SpecificCodomains.Pi
 
 /-!
 # Integrability in `WithLp`

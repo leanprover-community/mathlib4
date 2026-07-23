@@ -5,9 +5,9 @@ Authors: Martin Zinkevich, Vincent Beffara, Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Pi
-public import Mathlib.Probability.Independence.Integrable
-public import Mathlib.Probability.Notation
+import Mathlib.MeasureTheory.Integral.Pi
+import Mathlib.Probability.Independence.Integrable
+import Mathlib.Probability.Notation
 
 /-!
 # Integration in Probability Theory

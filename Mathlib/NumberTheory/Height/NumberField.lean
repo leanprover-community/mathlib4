@@ -7,7 +7,7 @@ module
 
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.Northcott
-public import Mathlib.NumberTheory.NumberField.ProductFormula
+import Mathlib.NumberTheory.NumberField.ProductFormula
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Hom.Lattice

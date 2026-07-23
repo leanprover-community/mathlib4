@@ -5,7 +5,7 @@ Authors: Hanting Zhang
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-! # The Wallis formula for Pi
 

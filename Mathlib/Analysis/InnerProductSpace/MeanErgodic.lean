@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 
 /-!
 # Von Neumann Mean Ergodic Theorem in a Hilbert Space

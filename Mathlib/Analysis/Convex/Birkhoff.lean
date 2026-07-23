@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 public import Mathlib.Logic.Function.Basic
 
 /-!

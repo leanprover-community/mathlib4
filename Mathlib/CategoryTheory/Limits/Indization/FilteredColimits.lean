@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+import Mathlib.CategoryTheory.Limits.FunctorToTypes
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 public import Mathlib.Logic.Small.Set
 

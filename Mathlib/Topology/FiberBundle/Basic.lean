@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Topology.FiberBundle.Trivialization
-public import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Fiber bundles

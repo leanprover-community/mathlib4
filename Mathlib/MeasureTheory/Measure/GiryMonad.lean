@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
 # The Giry monad

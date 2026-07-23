@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Irreducible.Indecomposable
 public import Mathlib.Algebra.Module.LinearMap.Rat
-public import Mathlib.Algebra.Module.Submodule.Union
+import Mathlib.Algebra.Module.Submodule.Union
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.QuadraticForm.Dual
 public import Mathlib.LinearAlgebra.RootSystem.Base

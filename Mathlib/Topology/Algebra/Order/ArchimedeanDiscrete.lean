@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.ArchimedeanDensely
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-public import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!

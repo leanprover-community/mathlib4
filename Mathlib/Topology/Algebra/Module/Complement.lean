@@ -5,7 +5,7 @@ Authors: Anatole Dedecker, Sharvil Kesarwani
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Quotient
 public import Mathlib.Topology.Algebra.Module.Equiv
 

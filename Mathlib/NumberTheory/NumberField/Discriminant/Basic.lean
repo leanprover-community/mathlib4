@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Covolume
-public import Mathlib.Analysis.Real.Pi.Bounds
+import Mathlib.Analysis.Real.Pi.Bounds
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.EquivReindex

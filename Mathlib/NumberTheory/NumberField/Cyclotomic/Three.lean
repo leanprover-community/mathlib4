@@ -5,10 +5,10 @@ Authors: Riccardo Brasca, Pietro Monticone
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-public import Mathlib.RingTheory.Fintype
+import Mathlib.RingTheory.Fintype
 
 /-!
 # Third Cyclotomic Field

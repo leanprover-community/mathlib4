@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.MeasureTheory.Covering.OneDim
-public import Mathlib.Order.Monotone.Extension
+import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.MeasureTheory.Covering.OneDim
+import Mathlib.Order.Monotone.Extension
 
 /-!
 # Differentiability of monotone functions

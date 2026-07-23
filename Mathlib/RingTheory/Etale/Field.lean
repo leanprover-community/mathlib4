@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Pi
-public import Mathlib.RingTheory.Unramified.Field
+import Mathlib.RingTheory.Unramified.Field
 
 /-!
 # Étale algebras over fields

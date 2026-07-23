@@ -6,8 +6,8 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.NumberTheory.ModularForms.Basic
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 
 /-!
 # Eisenstein series are Modular Forms

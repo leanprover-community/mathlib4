@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian

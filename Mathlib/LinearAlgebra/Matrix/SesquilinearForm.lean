@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-public import Mathlib.LinearAlgebra.Basis.Bilinear
+import Mathlib.LinearAlgebra.Basis.Bilinear
 
 /-!
 # Sesquilinear form

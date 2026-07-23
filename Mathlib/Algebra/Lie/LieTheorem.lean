@@ -6,7 +6,7 @@ Authors: Lucas Whitfield, Johan Commelin
 module
 
 public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Lie's theorem for Solvable Lie algebras.

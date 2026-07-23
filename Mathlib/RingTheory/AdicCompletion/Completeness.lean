@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.AdicCompletion.Exactness
-public import Mathlib.RingTheory.Finiteness.Ideal
+import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.PowerSeries.Basic
 

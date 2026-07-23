@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 
 /-!
 # The colon construction on preradicals

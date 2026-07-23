@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Bochner integrals of convolutions

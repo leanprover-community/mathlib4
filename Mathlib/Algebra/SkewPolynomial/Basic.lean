@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.SkewMonoidAlgebra.Single
-public import Mathlib.Algebra.SkewMonoidAlgebra.Support
+import Mathlib.Algebra.SkewMonoidAlgebra.Support
 /-!
 # Univariate skew polynomials
 

@@ -6,7 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
-public import Mathlib.ModelTheory.Algebra.Ring.Definability
+import Mathlib.ModelTheory.Algebra.Ring.Definability
 
 /-!
 # Ax-Grothendieck

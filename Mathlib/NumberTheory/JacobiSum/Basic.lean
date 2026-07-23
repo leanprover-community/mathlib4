@@ -7,7 +7,7 @@ module
 
 public import Mathlib.NumberTheory.GaussSum
 public import Mathlib.NumberTheory.MulChar.Lemmas
-public import Mathlib.RingTheory.RootsOfUnity.Lemmas
+import Mathlib.RingTheory.RootsOfUnity.Lemmas
 
 /-!
 # Jacobi Sums

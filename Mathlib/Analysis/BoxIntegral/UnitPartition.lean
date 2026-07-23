@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Basic
-public import Mathlib.Analysis.BoxIntegral.Integrability
+import Mathlib.Analysis.BoxIntegral.Integrability
 public import Mathlib.Analysis.BoxIntegral.Partition.Measure
 public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 

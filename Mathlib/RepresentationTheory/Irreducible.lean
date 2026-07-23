@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RepresentationTheory.Subrepresentation
 public import Mathlib.RepresentationTheory.Intertwining
-public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
+import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
 
 /-!
 # Irreducible representations

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 public import Mathlib.Topology.Instances.Irrational
 

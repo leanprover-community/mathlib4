@@ -6,7 +6,7 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Logic.Equiv.Embedding
 

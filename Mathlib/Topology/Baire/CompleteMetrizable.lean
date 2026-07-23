@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Tactic.Finiteness
+import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!

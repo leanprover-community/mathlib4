@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Primes congruent to one

@@ -5,12 +5,12 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
-public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
-public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 
 /-!
 # Fundamental Theorem of Calculus

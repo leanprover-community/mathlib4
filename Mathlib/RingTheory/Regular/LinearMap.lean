@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
-public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.Regular.IsSMulRegular
+import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Support
 
 /-!

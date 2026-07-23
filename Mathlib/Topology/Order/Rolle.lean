@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.ExtendFrom
+import Mathlib.Topology.Order.ExtendFrom
 public import Mathlib.Topology.Order.Compact
 public import Mathlib.Topology.Order.LocalExtr
 public import Mathlib.Topology.Order.T5

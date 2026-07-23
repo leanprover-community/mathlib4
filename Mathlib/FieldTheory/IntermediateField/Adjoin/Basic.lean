@@ -6,10 +6,10 @@ Authors: Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Directed
-public import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
+import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
 public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
-public import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.SetTheory.Cardinal.Subfield
 

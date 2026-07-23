@@ -7,7 +7,7 @@ module
 
 public import Mathlib.NumberTheory.NumberField.ClassNumber
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.

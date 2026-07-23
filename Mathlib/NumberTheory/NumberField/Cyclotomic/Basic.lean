@@ -6,11 +6,11 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-public import Mathlib.NumberTheory.Cyclotomic.Discriminant
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.Cyclotomic.Discriminant
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
-public import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-public import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
+import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of cyclotomic fields

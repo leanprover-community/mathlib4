@@ -6,7 +6,7 @@ Authors: Alex Kontorovich, Heather Macbeth
 module
 
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Haar quotient measure

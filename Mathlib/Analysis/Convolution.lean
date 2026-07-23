@@ -5,9 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
-public import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Group.Prod
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 

@@ -6,7 +6,7 @@ Authors: Janos Wolosz
 module
 
 public import Mathlib.Algebra.Lie.AdjointAction.Basic
-public import Mathlib.LinearAlgebra.JordanChevalley
+import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
 # Jordan–Chevalley decomposition and the adjoint action

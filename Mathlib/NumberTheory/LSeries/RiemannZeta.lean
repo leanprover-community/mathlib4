@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
-public import Mathlib.Analysis.PSeriesComplex
+import Mathlib.Analysis.PSeriesComplex
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!

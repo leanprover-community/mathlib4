@@ -6,7 +6,7 @@ Authors: Michael R. Douglas
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 
 /-!
 # Absolutely monotone functions

@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.CharP.CharAndCard
+import Mathlib.Algebra.CharP.CharAndCard
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots

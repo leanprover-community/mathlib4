@@ -6,11 +6,11 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.Calculus.FDeriv.Extend
-public import Mathlib.Analysis.Calculus.Deriv.Prod
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.Calculus.FDeriv.Extend
+import Mathlib.Analysis.Calculus.Deriv.Prod
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 

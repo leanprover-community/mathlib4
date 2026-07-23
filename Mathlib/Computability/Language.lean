@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages

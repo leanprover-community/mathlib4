@@ -5,7 +5,7 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.Notation
 
 /-!

@@ -5,7 +5,7 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.SetTheory.Cardinal.Finite
 

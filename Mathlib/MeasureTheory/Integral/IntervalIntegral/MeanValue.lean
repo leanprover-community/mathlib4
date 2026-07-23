@@ -6,7 +6,7 @@ Authors: Louis (Yiyang) Liu
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.MeanValue
+import Mathlib.MeasureTheory.Integral.MeanValue
 
 /-!
 # First mean value theorem for interval integrals

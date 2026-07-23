@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Star.Prod
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 

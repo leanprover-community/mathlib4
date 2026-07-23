@@ -8,8 +8,8 @@ module
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Injective objects in abelian categories

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.Algebra.CharP.LinearMaps
 public import Mathlib.Algebra.CharP.Subring
-public import Mathlib.Algebra.GroupWithZero.Conj
+import Mathlib.Algebra.GroupWithZero.Conj
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 

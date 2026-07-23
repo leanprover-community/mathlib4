@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.LinearAlgebra.TensorProduct.Tower

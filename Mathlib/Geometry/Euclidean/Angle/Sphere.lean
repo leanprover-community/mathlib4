@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
+import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 

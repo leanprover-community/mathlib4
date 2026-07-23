@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Invariant.Basic
-public import Mathlib.Topology.Algebra.ClopenNhdofOne
+import Mathlib.Topology.Algebra.ClopenNhdofOne
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 public import Mathlib.CategoryTheory.CofilteredSystem
 

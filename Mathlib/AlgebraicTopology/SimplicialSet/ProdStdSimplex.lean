@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 import Mathlib.Order.Preorder.Finite
 
 /-!

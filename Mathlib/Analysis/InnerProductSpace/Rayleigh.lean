@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
-public import Mathlib.Analysis.Calculus.LagrangeMultipliers
+import Mathlib.Analysis.Calculus.LagrangeMultipliers
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!

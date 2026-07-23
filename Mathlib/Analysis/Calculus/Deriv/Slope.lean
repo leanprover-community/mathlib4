@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.LinearAlgebra.AffineSpace.Slope
 public import Mathlib.Topology.Algebra.Module.PerfectSpace
 

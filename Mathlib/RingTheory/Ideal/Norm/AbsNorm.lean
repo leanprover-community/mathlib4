@@ -5,15 +5,15 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.CharP.Quotient
+import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.FreeModule.Determinant
-public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+import Mathlib.LinearAlgebra.FreeModule.Determinant
+import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Ideal.Basis
-public import Mathlib.RingTheory.Norm.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 

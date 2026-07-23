@@ -5,7 +5,7 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 /-!

@@ -5,12 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Prod
-public import Mathlib.Analysis.Calculus.DiffContOnCl
+import Mathlib.Analysis.Calculus.Deriv.Prod
+import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.Topology.Homotopy.Affine
 
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap

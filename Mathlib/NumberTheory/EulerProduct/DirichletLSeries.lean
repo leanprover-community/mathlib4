@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.EulerProduct.ExpLog
-public import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.EulerProduct.ExpLog
+import Mathlib.NumberTheory.LSeries.Dirichlet
 
 /-!
 # The Euler Product for the Riemann Zeta Function and Dirichlet L-Series

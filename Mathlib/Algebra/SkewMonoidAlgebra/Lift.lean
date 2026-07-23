@@ -6,7 +6,7 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 module
 
 public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
-public import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Algebra.Equiv
 
 /-!

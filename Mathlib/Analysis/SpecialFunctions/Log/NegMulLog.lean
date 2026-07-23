@@ -5,9 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-public import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.Convex.Deriv
 
 /-!
 # The functions `x ↦ x * log x` and `x ↦ - x * log x`

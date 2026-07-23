@@ -6,7 +6,7 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-public import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 
 /-!

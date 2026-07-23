@@ -6,10 +6,10 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Continuous
-public import Mathlib.Analysis.Normed.Module.HahnBanach
-public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Module.HahnBanach
+import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.Order.Filter.Ring
 
 /-! # From equality of integrals to equality of functions

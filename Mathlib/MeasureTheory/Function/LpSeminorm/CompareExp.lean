@@ -5,8 +5,8 @@ Authors: Rémy Degenne, Eric Wieser
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
-public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
+import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
+import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 /-!

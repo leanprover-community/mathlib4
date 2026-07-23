@@ -6,7 +6,7 @@ Authors: Kim Morrison, Bhavik Mehta, Daniel Carranza, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Adjunction.Parametrized

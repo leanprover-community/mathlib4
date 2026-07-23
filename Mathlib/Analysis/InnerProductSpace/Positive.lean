@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.Analysis.Matrix.Hermitian
+import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.LinearAlgebra.Trace
 

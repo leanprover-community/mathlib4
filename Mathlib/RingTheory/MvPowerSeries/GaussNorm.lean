@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 
-public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # Gauss norm for multivariate power series

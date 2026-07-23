@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Edge labelings

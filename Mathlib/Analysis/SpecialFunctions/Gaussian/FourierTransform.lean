@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.MeasureTheory.Integral.Pi
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.Analysis.Fourier.FourierTransform
 
 /-!

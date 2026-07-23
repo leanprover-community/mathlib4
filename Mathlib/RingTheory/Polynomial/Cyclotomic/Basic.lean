@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
-public import Mathlib.RingTheory.RootsOfUnity.Complex
+import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Cyclotomic polynomials.

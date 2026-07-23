@@ -5,9 +5,9 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.Harmonic.Analytic
-public import Mathlib.Analysis.Complex.MeanValue
-public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
+import Mathlib.Analysis.Complex.Harmonic.Analytic
+import Mathlib.Analysis.Complex.MeanValue
+import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 
 /-!
 # The Mean Value Property of Harmonic Functions on the Complex Plane

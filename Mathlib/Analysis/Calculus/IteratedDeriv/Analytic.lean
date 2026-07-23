@@ -5,9 +5,9 @@ Authors: Michail Karatarakis
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 
 /-!
 # Iterated derivatives of analytic functions with power factors

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
+import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 import Mathlib.LinearAlgebra.FreeModule.PID

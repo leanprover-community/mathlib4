@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
+import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 
 /-!
 # Condition for two kernels to be equal almost everywhere

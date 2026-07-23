@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.Interval.Set.IsoIoo
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
-public import Mathlib.Topology.UrysohnsBounded
+import Mathlib.Topology.UrysohnsBounded
 
 /-!
 # Tietze extension theorem

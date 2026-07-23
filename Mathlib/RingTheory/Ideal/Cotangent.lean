@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Nakayama
 
 /-!
 # The module `I ⧸ I ^ 2`

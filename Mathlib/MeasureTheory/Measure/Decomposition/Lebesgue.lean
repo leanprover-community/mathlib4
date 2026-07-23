@@ -5,8 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
-public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.MeasureTheory.Measure.Sub
 
 /-!

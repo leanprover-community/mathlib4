@@ -6,7 +6,7 @@ Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
-public import Mathlib.Data.List.Indexes
+import Mathlib.Data.List.Indexes
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Noether normalization lemma

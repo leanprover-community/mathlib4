@@ -6,7 +6,7 @@ Authors: Matteo Cipollina, Stefan Kebekus
 
 module
 
-public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
+import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 
 /-!

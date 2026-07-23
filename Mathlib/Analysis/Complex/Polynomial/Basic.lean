@@ -5,11 +5,11 @@ Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
-public import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # The fundamental theorem of algebra

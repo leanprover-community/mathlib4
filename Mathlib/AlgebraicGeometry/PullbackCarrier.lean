@@ -5,7 +5,7 @@ Authors: Qi Ge, Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.LinearAlgebra
+import Mathlib.Algebra.Category.Ring.LinearAlgebra
 public import Mathlib.AlgebraicGeometry.ResidueField
 
 /-!

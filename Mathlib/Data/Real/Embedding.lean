@@ -6,7 +6,7 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Module.Defs
 

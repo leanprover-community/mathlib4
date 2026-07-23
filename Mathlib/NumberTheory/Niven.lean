@@ -5,13 +5,13 @@ Authors: Alex Meiburg, Snir Broshi
 -/
 module
 
-public import Mathlib.Analysis.Complex.IsIntegral
+import Mathlib.Analysis.Complex.IsIntegral
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
+import Mathlib.Tactic.Qify
 
 /-! # Niven's Theorem
 

@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-! # The groupoid of `C^n`, fiberwise-linear maps
 

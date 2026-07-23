@@ -6,7 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.NumberTheory.EulerProduct.Basic
 

@@ -5,9 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Tannery
+import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.NumberTheory.LSeries.Convergence
-public import Mathlib.NumberTheory.LSeries.Linearity
+import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # A converging L-series determines its coefficients

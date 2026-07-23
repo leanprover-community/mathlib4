@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
-public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
+import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
 
 import Mathlib.Probability.Distributions.Gaussian.CharFun

@@ -5,7 +5,7 @@ Authors: Emilie Burgun
 -/
 module
 
-public import Mathlib.Dynamics.PeriodicPts.Lemmas
+import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.GroupAction.Basic
 

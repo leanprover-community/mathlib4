@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Multiset.Defs
 
 /-!

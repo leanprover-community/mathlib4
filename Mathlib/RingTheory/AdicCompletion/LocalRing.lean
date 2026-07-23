@@ -5,7 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.SpanRankOperations
+import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.AdicCompletion.Completeness
 
 /-!

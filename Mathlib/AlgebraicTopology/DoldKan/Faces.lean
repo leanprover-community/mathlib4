@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Homotopies
-public import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring
 
 /-!
 

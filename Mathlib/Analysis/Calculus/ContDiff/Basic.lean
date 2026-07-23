@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
-public import Mathlib.Analysis.Calculus.FDeriv.Affine
+import Mathlib.Analysis.Calculus.FDeriv.Affine
 
 /-!
 # Basic properties of continuously-differentiable functions

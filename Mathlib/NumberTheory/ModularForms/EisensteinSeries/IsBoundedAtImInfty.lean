@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-public import Mathlib.NumberTheory.ModularForms.Identities
+import Mathlib.NumberTheory.ModularForms.Identities
 
 /-!
 # Boundedness of Eisenstein series

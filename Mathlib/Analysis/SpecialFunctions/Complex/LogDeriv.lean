@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Differentiability of the complex `log` function

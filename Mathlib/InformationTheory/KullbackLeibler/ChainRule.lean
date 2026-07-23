@@ -7,7 +7,7 @@ module
 
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
-public import Mathlib.Probability.Notation
+import Mathlib.Probability.Notation
 
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Composition.RadonNikodym

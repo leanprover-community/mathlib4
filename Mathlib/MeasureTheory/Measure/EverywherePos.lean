@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.Tactic.Group
+import Mathlib.Tactic.Group
 public import Mathlib.Topology.UrysohnsLemma
 
 /-!

@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
-public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
-public import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.RingTheory.Polynomial.Vieta
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!

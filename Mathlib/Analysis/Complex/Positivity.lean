@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.Analysis.Complex.TaylorSeries
 
 /-!
 # Nonnegativity of values of holomorphic functions

@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
-public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
+import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-public import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Class numbers of global fields

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Analysis.InnerProductSpace.Affine
+import Mathlib.Analysis.InnerProductSpace.Affine
 
 /-!
 # Altitudes of a simplex

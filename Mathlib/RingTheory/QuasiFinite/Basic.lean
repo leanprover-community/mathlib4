@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Finiteness.NilpotentKer
+import Mathlib.RingTheory.Finiteness.NilpotentKer
 public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Localization.InvSubmonoid

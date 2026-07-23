@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Limits related to polynomial and rational functions

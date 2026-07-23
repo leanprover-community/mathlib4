@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Fourier.FourierTransformDeriv
-public import Mathlib.Analysis.Fourier.Inversion
+import Mathlib.Analysis.Fourier.Inversion
 
 /-!
 # Fourier transform on Schwartz functions

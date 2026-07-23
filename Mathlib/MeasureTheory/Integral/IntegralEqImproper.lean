@@ -5,8 +5,8 @@ Authors: Anatole Dedecker, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 

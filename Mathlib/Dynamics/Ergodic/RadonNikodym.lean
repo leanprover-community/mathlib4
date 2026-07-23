@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.Topology.Order.CountableSeparating
 
 /-!

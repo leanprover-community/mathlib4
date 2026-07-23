@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Order.Filter.ENNReal
+import Mathlib.Order.Filter.ENNReal
 public import Mathlib.Probability.UniformOn
 
 /-!

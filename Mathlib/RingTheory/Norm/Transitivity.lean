@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.PolynomialAlgebra
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-public import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.FieldTheory.Galois.Basic
 
 /-!

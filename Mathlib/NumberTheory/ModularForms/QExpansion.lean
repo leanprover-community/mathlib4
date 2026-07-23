@@ -5,10 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
-public import Mathlib.NumberTheory.ModularForms.Identities
+import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!

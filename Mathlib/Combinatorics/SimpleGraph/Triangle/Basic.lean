@@ -10,9 +10,9 @@ public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Data.Finset.Sym
-public import Mathlib.Data.Nat.Choose.Bounds
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Positivity
+import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Positivity
 
 /-!
 # Triangles in graphs

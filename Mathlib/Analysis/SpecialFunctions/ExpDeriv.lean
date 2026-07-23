@@ -5,11 +5,11 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.RCLike
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
-public import Mathlib.Analysis.Complex.RealDeriv
+import Mathlib.Analysis.Calculus.ContDiff.RCLike
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.SpecialFunctions.Exp
-public import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Complex and real exponential

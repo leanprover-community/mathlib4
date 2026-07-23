@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Group.ForwardDiff
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.NumberTheory.Padics.ProperSpace
 public import Mathlib.RingTheory.Binomial
-public import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
-public import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
+import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 public import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 

@@ -6,7 +6,7 @@ Authors: Raphael Douglas Giles
 
 module
 
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.OrderOfVanishing.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.TFAE

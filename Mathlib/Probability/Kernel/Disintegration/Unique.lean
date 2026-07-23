@@ -5,7 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Kernel.Disintegration.Integral
+import Mathlib.Probability.Kernel.Disintegration.Integral
 
 /-!
 # Uniqueness of the conditional kernel

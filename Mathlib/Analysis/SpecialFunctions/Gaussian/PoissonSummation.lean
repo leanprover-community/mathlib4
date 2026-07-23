@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Fourier.PoissonSummation
+import Mathlib.Analysis.Fourier.PoissonSummation
 
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 

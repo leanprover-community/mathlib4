@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Kummer Extensions

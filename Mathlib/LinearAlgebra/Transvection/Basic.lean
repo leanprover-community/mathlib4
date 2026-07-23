@@ -7,7 +7,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FixedSubmodule

@@ -5,15 +5,15 @@ Authors: Heather Macbeth, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Analysis.InnerProductSpace.l2Space
-public import Mathlib.MeasureTheory.Function.ContinuousMapDense
+import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 

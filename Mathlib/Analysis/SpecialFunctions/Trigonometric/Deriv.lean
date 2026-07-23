@@ -6,7 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.Calculus.LogDeriv
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Differentiability of trigonometric functions

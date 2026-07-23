@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-public import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form

@@ -6,7 +6,7 @@ Authors: Kevin H. Wilson
 module
 
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 public import Mathlib.Order.Filter.Curry
 
 /-!

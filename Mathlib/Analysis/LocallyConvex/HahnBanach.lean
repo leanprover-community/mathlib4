@@ -5,7 +5,7 @@ Authors: Yongxi Lin
 -/
 module
 
-public import Mathlib.Analysis.Convex.Cone.Extension
+import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
 public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend

@@ -6,7 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 

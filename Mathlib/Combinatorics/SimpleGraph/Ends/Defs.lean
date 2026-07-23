@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Data.Finite.Set
+import Mathlib.Data.Finite.Set
 
 /-!
 # Ends

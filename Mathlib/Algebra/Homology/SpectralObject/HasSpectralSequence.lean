@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
-public import Mathlib.Order.Fin.Clamp
+import Mathlib.Order.Fin.Clamp
 public import Mathlib.Order.WithBotTop
 
 /-!

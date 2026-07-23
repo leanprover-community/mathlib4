@@ -5,9 +5,9 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 module
 
-public import Mathlib.Analysis.Convex.Continuous
-public import Mathlib.Analysis.Convex.Integral
-public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+import Mathlib.Analysis.Convex.Continuous
+import Mathlib.Analysis.Convex.Integral
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 import Mathlib.Analysis.Convex.Approximation

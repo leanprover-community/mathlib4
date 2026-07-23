@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Star
+import Mathlib.Analysis.Calculus.FDeriv.Star
 
 /-!
 # Star operations on derivatives

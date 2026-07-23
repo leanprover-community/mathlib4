@@ -5,7 +5,7 @@ Authors: Snir Broshi
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.RingTheory.ZMod.UnitsCyclic
 

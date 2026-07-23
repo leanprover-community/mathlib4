@@ -5,12 +5,12 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.DirichletCharacter.Bounds
+import Mathlib.NumberTheory.DirichletCharacter.Bounds
 public import Mathlib.NumberTheory.LSeries.Convolution
 public import Mathlib.NumberTheory.LSeries.Deriv
-public import Mathlib.NumberTheory.LSeries.Positivity
+import Mathlib.NumberTheory.LSeries.Positivity
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
-public import Mathlib.NumberTheory.SumPrimeReciprocals
+import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 /-!

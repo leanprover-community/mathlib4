@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.DiffContOnCl
+import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 

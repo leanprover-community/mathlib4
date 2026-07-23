@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.GroupTheory.Index
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp

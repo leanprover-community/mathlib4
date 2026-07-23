@@ -7,7 +7,7 @@ module
 
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.Data.List.GetD
-public import Mathlib.Tactic.Group
+import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences

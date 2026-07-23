@@ -6,7 +6,7 @@ Authors: Yongle Hu, Jiedong Jiang
 module
 
 public import Mathlib.RingTheory.Invariant.Galois
-public import Mathlib.RingTheory.RamificationInertia.Basic
+import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
 # Ramification theory in Galois extensions of Dedekind domains

@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-public import Mathlib.MeasureTheory.Integral.ExpDecay
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.MeasureTheory.Integral.ExpDecay
 
 /-!
 # The Gamma function

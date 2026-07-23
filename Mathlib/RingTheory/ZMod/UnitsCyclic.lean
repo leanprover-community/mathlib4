@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Data.Nat.Choose.Dvd
+import Mathlib.Data.Nat.Choose.Dvd
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.FieldTheory.Finite.Basic
 

@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Kalle Kytölä, Kin Yau James Wong
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.CompNotation
+import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!
 # Proper kernels

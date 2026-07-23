@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 public import Mathlib.Geometry.Manifold.Notation
 
 /-!

@@ -6,8 +6,8 @@ Authors: David Loeffler, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Analytic.Order
-public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Calculus.Deriv.ZPow
+import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!

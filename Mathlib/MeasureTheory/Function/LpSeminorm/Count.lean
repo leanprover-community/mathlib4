@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
+import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 
 /-!
 # `L^p`-seminorms on `count` and `dirac`

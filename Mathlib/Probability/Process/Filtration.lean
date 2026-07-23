@@ -6,8 +6,8 @@ Authors: Kexing Ying, Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Constructions.Cylinders
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
-public import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
 
 /-!
 # Filtrations

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic

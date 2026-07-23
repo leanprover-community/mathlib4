@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Sites.AffineEtale
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 public import Mathlib.CategoryTheory.Limits.Elements
-public import Mathlib.CategoryTheory.Sites.Point.Conservative
+import Mathlib.CategoryTheory.Sites.Point.Conservative
 
 public import Mathlib.FieldTheory.SeparableClosure
 

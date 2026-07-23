@@ -5,7 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
+import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.List.Lex
 public import Mathlib.Order.RelClasses
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum
 
 /-!
 # Shortlex ordering of lists.

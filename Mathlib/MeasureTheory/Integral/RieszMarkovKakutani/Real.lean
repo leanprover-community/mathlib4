@@ -8,7 +8,7 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.Order.Interval.Set.Union
+import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals

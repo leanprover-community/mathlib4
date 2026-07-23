@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.ZPow
+import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Calculus.MeanValue
 
 import Mathlib.Analysis.Analytic.IsolatedZeros

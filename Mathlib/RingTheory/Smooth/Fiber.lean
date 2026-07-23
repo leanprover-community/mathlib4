@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.Kaehler.TensorProduct
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Smooth.Local
+import Mathlib.RingTheory.Smooth.Local
 public import Mathlib.RingTheory.Etale.Locus
 
 /-!

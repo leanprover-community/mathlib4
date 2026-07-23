@@ -6,7 +6,7 @@ Authors: David Loeffler
 
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional

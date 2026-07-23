@@ -10,7 +10,7 @@ public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Analysis.SpecificLimits.Normed
 

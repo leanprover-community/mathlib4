@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Order.Ring.Int

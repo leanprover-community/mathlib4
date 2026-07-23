@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.LocalRing.Module
 
 /-!
 # Span rank under operations

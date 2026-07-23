@@ -5,10 +5,10 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Real
-public import Mathlib.Order.Filter.IndicatorFunction
+import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
 # Indicator of a set as an element of `Lp`

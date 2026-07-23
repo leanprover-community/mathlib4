@@ -8,9 +8,9 @@ module
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
+import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 public import Mathlib.NumberTheory.LSeries.Basic
-public import Mathlib.Analysis.Complex.RemovableSingularity
+import Mathlib.Analysis.Complex.RemovableSingularity
 
 /-!
 # Even Hurwitz zeta functions

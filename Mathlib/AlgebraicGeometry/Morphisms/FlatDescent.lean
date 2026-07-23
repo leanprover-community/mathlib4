@@ -5,11 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Descent
+import Mathlib.AlgebraicGeometry.Morphisms.Descent
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 
 /-!
 # Properties of morphisms satisfying fpqc descent

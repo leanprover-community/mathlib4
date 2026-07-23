@@ -8,9 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
-public import Mathlib.Data.Set.Card.Arithmetic
+import Mathlib.Data.Set.Card.Arithmetic
 public import Mathlib.Data.Set.Functor
 
 /-!

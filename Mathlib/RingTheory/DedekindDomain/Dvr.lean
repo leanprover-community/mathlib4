@@ -6,7 +6,7 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio, Yongle Hu
 module
 
 public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
-public import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
+import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
 
 /-!
 # Dedekind domains

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Instances.AddCircle.Defs
-public import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Order.Archimedean
 
 /-!
 # Irrational rotation is minimal

@@ -6,7 +6,7 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 

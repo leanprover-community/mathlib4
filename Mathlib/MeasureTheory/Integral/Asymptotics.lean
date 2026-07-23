@@ -5,7 +5,7 @@ Authors: Lawrence Wu
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Bounding of integrals by asymptotics

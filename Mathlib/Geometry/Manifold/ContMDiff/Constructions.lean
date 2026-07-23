@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiff.Basic
+import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 /-!
 ## Smoothness of standard maps associated to the product of manifolds

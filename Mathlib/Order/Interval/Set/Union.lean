@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Set.Lattice
-public import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Extra lemmas about unions of intervals

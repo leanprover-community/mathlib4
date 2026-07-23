@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.FiniteSpan
+import Mathlib.LinearAlgebra.FiniteSpan
 public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.Tactic.Module
 

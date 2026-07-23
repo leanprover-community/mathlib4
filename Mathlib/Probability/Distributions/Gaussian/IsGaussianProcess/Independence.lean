@@ -5,7 +5,7 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
+import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence

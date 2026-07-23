@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.UniformConvergence
-public import Mathlib.Order.Filter.AtTopBot.Finset
+import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Infinite sum and products that converge uniformly

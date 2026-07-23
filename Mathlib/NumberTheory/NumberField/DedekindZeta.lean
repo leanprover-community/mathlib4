@@ -5,8 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Nat
-public import Mathlib.NumberTheory.LSeries.SumCoeff
+import Mathlib.Algebra.BigOperators.Ring.Nat
+import Mathlib.NumberTheory.LSeries.SumCoeff
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 
 /-!

@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Data.Num.Lemmas
 

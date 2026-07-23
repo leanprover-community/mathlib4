@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Convex.StrictConvexSpace
-public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.MeasureTheory.Integral.Average
 
 /-!

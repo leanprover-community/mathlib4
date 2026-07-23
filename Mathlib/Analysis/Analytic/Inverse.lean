@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Linear
-public import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity
 
 /-!
 

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.MeasureTheory.Measure.Hausdorff
 import Mathlib.Analysis.Convex.Intrinsic
 

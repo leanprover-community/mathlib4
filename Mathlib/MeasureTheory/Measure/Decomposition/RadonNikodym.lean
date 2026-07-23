@@ -5,7 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 /-!

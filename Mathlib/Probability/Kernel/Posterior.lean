@@ -5,8 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Kernel.CompProdEqIff
-public import Mathlib.Probability.Kernel.Composition.Lemmas
+import Mathlib.Probability.Kernel.CompProdEqIff
+import Mathlib.Probability.Kernel.Composition.Lemmas
 public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 public import Mathlib.Probability.Kernel.Deterministic
 

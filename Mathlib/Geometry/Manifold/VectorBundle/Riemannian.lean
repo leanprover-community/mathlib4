@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.VectorBundle.Riemannian
 
 /-! # Riemannian vector bundles

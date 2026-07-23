@@ -5,10 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.Bound.Init
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 public import Mathlib.Tactic.SetLike
 public import Mathlib.Util.CompileInductive
 

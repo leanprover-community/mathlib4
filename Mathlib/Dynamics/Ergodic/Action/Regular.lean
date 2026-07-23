@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.Action.Basic
+import Mathlib.Dynamics.Ergodic.Action.Basic
 public import Mathlib.MeasureTheory.Group.Prod
 
 /-!

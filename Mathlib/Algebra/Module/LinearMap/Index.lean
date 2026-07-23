@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Exact.Sequence
+import Mathlib.Algebra.Exact.Sequence
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas

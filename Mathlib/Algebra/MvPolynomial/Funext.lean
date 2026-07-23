@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Algebra.MvPolynomial.CommRing
-public import Mathlib.Algebra.MvPolynomial.Polynomial
+import Mathlib.Algebra.MvPolynomial.Polynomial
 public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!

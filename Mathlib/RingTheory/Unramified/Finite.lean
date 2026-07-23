@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Unramified.Basic
 public import Mathlib.RingTheory.Flat.Stability
 

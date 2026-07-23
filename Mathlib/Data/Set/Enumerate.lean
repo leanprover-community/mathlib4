@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.Common
+import Mathlib.Tactic.Common
 public import Mathlib.Data.Set.Insert
 
 /-!

@@ -5,7 +5,7 @@ Authors: Dennj Osele
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Discrete Grönwall inequality

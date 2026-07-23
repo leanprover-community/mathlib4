@@ -5,7 +5,7 @@ Authors: Moritz Firsching
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.ZMod.Basic
 
 /-!

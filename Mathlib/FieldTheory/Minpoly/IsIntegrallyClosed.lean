@@ -5,7 +5,7 @@ Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.GaussLemma
+import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Minimal polynomials over a GCD monoid

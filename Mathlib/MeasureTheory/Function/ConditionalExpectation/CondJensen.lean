@@ -5,7 +5,7 @@ Authors: Yongxi Lin, Thomas Zhu
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 
 import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Analysis.Convex.Continuous

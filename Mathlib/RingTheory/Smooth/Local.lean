@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Smooth.Basic
 public import Mathlib.RingTheory.TensorProduct.Free
 

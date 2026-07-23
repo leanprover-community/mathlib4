@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LocalExtr.Basic
-public import Mathlib.Topology.Order.Rolle
+import Mathlib.Analysis.Calculus.LocalExtr.Basic
+import Mathlib.Topology.Order.Rolle
 
 /-!
 # Rolle's Theorem

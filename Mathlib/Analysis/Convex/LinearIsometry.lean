@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Convex.ContinuousLinearEquiv
+import Mathlib.Analysis.Convex.ContinuousLinearEquiv
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 

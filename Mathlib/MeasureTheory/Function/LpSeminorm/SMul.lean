@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Monotonicity
+import Mathlib.MeasureTheory.Function.LpSeminorm.Monotonicity
 
 /-!
 # Scalar multiplication on ℒp space

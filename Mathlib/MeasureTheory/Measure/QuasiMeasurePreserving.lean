@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
-public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
+import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
 # Quasi-Measure-Preserving Functions

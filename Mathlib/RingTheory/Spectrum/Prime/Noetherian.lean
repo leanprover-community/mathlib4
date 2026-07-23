@@ -6,7 +6,7 @@ Authors: Filippo A. E. Nuccio, Andrew Yang
 module
 
 public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.NoetherianSpace
 

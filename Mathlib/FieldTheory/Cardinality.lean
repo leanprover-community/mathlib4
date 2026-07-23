@@ -6,10 +6,10 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.FieldTheory.Finite.GaloisField
-public import Mathlib.RingTheory.Localization.Cardinality
+import Mathlib.RingTheory.Localization.Cardinality
 public import Mathlib.SetTheory.Cardinal.Divisibility
 
 /-!

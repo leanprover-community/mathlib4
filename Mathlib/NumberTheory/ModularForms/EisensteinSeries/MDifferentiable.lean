@@ -5,10 +5,10 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.Notation
 
 /-!

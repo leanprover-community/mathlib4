@@ -6,9 +6,9 @@ Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.LinearAlgebra.Eigenspace.Pi
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-public import Mathlib.Analysis.InnerProductSpace.Semisimple
+import Mathlib.LinearAlgebra.Eigenspace.Pi
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+import Mathlib.Analysis.InnerProductSpace.Semisimple
 
 /-! # Joint eigenspaces of commuting symmetric operators
 

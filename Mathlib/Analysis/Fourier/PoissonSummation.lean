@@ -9,8 +9,8 @@ public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
-public import Mathlib.Topology.ContinuousMap.Periodic
+import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib.Topology.ContinuousMap.Periodic
 
 /-!
 # Poisson's summation formula

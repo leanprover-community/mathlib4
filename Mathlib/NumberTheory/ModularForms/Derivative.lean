@@ -5,7 +5,7 @@ Authors: Seewoo Lee
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
 /-!

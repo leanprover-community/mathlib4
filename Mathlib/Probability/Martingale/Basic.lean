@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
 public import Mathlib.Probability.Process.Predictable
 public import Mathlib.Probability.Process.Stopping
 

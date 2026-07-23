@@ -6,7 +6,7 @@ Authors: Riccardo Brasca, Eric Rodriguez
 module
 
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.RingTheory.Localization.NormTrace
+import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!

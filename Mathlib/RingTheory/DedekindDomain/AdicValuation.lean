@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Data.Int.WithZero
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas

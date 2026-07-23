@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Finite
+import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.FieldTheory.PrimitiveElement
 

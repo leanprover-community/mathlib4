@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.LocalProperties.Exactness
+import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
 # Meta properties of bijective ring homomorphisms

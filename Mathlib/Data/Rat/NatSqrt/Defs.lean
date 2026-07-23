@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity
 public import Mathlib.Algebra.Order.Field.Basic
 
 /-!

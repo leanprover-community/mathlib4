@@ -6,7 +6,7 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.GroupTheory.Commutator.Basic
-public import Mathlib.Tactic.Group
+import Mathlib.Tactic.Group
 public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!

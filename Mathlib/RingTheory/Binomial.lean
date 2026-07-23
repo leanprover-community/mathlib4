@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Data.NNRat.Order
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.Polynomial.Pochhammer
-public import Mathlib.Tactic.Field
+import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Module
 
 /-!

@@ -5,7 +5,7 @@ Authors: Lawrence Wu
 -/
 module
 
-public import Mathlib.Analysis.Fourier.Inversion
+import Mathlib.Analysis.Fourier.Inversion
 public import Mathlib.Analysis.MellinTransform
 
 /-!

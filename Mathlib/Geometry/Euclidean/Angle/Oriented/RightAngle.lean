@@ -6,7 +6,7 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
 /-!
 # Oriented angles in right-angled triangles.

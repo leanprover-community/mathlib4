@@ -6,7 +6,7 @@ Authors: Maksym Radziwill
 
 module
 
-public import Mathlib.Analysis.Complex.Schwarz
+import Mathlib.Analysis.Complex.Schwarz
 
 /-!
 # Borel-Carathéodory theorem

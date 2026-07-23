@@ -6,7 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-public import Mathlib.RingTheory.MvPolynomial.Tower
+import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.Data.Finsupp.Notation
 public import Mathlib.Data.Finsupp.WellFounded
 

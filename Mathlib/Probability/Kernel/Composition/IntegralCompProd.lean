@@ -6,7 +6,7 @@ Authors: Rémy Degenne, Etienne Marion
 module
 
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
-public import Mathlib.Probability.Kernel.MeasurableIntegral
+import Mathlib.Probability.Kernel.MeasurableIntegral
 
 /-!
 # Bochner integral of a function against the composition and the composition-products of two kernels

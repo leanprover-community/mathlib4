@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.RingTheory.LocalProperties.Submodule
+import Mathlib.RingTheory.LocalProperties.Submodule
 
 /-!
 

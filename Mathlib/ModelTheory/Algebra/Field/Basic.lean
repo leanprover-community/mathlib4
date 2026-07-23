@@ -9,7 +9,7 @@ public import Mathlib.ModelTheory.Syntax
 public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.Algebra.Field.MinimalAxioms
-public import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # The First-Order Theory of Fields

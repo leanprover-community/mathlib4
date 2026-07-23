@@ -5,12 +5,12 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Analysis.Complex.SummableUniformlyOn
+import Mathlib.Analysis.Complex.SummableUniformlyOn
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
-public import Mathlib.NumberTheory.LSeries.Dirichlet
-public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
+import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
+import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 import Mathlib.Topology.EMetricSpace.Paracompact
 

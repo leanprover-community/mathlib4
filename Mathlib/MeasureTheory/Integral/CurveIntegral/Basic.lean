@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Pointwise
-public import Mathlib.Analysis.Calculus.ContDiff.Deriv
-public import Mathlib.Analysis.Calculus.Deriv.AffineMap
-public import Mathlib.Analysis.Calculus.Deriv.Shift
+import Mathlib.Algebra.Order.Field.Pointwise
+import Mathlib.Analysis.Calculus.ContDiff.Deriv
+import Mathlib.Analysis.Calculus.Deriv.AffineMap
+import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!

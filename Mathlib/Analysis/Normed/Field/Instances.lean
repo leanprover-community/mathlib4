@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Order.Filter.IsBounded
+import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Topology.Algebra.UniformField
 
 /-!

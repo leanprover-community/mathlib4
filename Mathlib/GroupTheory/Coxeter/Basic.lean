@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.GroupTheory.Coxeter.Matrix
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.Tactic.NormNum.DivMod
-public import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Use
 
 /-!

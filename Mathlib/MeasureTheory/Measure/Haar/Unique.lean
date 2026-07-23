@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Measure.EverywherePos
 public import Mathlib.Topology.Metrizable.Urysohn
 public import Mathlib.Topology.ContinuousMap.Ordered

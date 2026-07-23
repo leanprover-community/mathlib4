@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!

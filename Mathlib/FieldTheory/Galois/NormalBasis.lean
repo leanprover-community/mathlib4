@@ -5,8 +5,8 @@ Authors: Madison Crim, Aaron Liu, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Module.PID
-public import Mathlib.Algebra.MvPolynomial.Funext
+import Mathlib.Algebra.Module.PID
+import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.LinearAlgebra.AnnihilatingPolynomial

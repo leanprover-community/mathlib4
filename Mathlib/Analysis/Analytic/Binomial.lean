@@ -5,11 +5,11 @@ Authors: Vasilii Nesterov, Andrew Yang
 -/
 module
 
-public import Mathlib.Analysis.Calculus.IteratedDeriv.ConvergenceOnBall
-public import Mathlib.Analysis.Complex.OperatorNorm
-public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+import Mathlib.Analysis.Calculus.IteratedDeriv.ConvergenceOnBall
+import Mathlib.Analysis.Complex.OperatorNorm
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.RingTheory.Binomial
 
 /-!

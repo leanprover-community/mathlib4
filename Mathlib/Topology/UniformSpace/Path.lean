@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Path
 public import Mathlib.Topology.UniformSpace.CompactConvergence
-public import Mathlib.Topology.UniformSpace.HeineCantor
+import Mathlib.Topology.UniformSpace.HeineCantor
 public import Mathlib.Topology.MetricSpace.Lipschitz
 public import Mathlib.Topology.ContinuousMap.Interval
 

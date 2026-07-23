@@ -9,7 +9,7 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
-public import Mathlib.RingTheory.Unramified.Dedekind
+import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
 # Every number field has a ramified prime over `ℚ`

@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.BooleanSubalgebra
-public import Mathlib.Topology.Compactness.Bases
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.Compactness.Bases
+import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.QuasiSeparated
 public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral

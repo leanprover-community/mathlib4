@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Kim Morrison
 module
 
 public import Batteries.Control.AlternativeMonad
-public import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Multiset.Functor
 

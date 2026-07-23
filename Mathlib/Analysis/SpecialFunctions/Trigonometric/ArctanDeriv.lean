@@ -6,7 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 
 /-!
 # Derivatives of the `tan` and `arctan` functions.

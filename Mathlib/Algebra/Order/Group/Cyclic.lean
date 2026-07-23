@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!

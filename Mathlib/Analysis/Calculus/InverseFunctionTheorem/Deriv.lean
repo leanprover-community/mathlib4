@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Inverse
+import Mathlib.Analysis.Calculus.Deriv.Inverse
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 /-!

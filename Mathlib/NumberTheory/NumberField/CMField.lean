@@ -8,7 +8,7 @@ module
 public import Mathlib.FieldTheory.Galois.Abelian
 public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 /-!

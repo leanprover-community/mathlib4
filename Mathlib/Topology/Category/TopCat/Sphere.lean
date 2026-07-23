@@ -6,7 +6,7 @@ Authors: Jiazhen Xia, Elliot Dean Young
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Topology.Category.TopCat.EpiMono
+import Mathlib.Topology.Category.TopCat.EpiMono
 
 /-!
 # Euclidean spheres

@@ -5,8 +5,8 @@ Authors: Jakob Stiefel
 -/
 module
 
-public import Mathlib.Analysis.RCLike.BoundedContinuous
-public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
+import Mathlib.Analysis.RCLike.BoundedContinuous
+import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 /-!

@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 module -- shake: keep-all
 
-public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
+import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 
 deprecated_module "Use `Mathlib.NumberTheory.ModularForms.LevelOne.Basic` instead."
   (since := "2026-05-06")

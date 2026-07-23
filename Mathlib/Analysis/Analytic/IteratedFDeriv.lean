@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
+import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 public import Mathlib.Data.Fintype.Perm
 
 /-!

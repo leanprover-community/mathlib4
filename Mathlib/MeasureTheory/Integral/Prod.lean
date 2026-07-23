@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
 /-!
 # Integration with respect to the product measure

@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-public import Mathlib.Order.Interval.Set.OrdConnectedLinear
+import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!
 # Chains of roots

@@ -6,8 +6,8 @@ Authors: Francisco Silva
 module
 
 public import Mathlib.Algebra.Group.PUnit
-public import Mathlib.Data.Finite.Perm
-public import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Data.Finite.Perm
+import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.GroupTheory.Sylow
 
 /-!

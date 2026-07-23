@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Sheaves.Limits
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # `PresheafedSpace C` has colimits.

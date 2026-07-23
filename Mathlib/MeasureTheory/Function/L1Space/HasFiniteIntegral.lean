@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
+import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
 public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!

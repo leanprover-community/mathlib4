@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.UniformSpace.Defs
-public import Mathlib.Tactic.TautoSet
+import Mathlib.Tactic.TautoSet
 
 /-!
 # Compact separated uniform spaces

@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Composition.MapComap
-public import Mathlib.Probability.Martingale.Convergence
+import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Process.PartitionFiltration
 
 /-!

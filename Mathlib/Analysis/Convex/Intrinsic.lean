@@ -5,7 +5,7 @@ Authors: Paul Reichert, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Intrinsic frontier and interior

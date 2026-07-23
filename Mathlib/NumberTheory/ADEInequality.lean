@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Interval
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.FinCases
 
 /-!

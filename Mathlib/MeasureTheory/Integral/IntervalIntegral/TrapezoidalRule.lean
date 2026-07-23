@@ -5,9 +5,9 @@ Authors: P. Michael Kielstra
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.Field
+import Mathlib.Tactic.Field
 
 /-!
 # The trapezoidal rule

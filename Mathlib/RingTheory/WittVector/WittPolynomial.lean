@@ -10,7 +10,7 @@ public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.ZMod.Basic
 
 /-!

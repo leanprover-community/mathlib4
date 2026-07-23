@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.EffectiveEpi
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
-public import Mathlib.AlgebraicGeometry.Sites.SheafQuasiCompact
+import Mathlib.AlgebraicGeometry.Sites.SheafQuasiCompact
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 /-!

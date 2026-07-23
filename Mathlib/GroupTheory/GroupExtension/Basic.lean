@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.GroupExtension.Defs
 public import Mathlib.GroupTheory.SemidirectProduct
 public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.Tactic.Group
+import Mathlib.Tactic.Group
 
 /-!
 # Basic lemmas about group extensions

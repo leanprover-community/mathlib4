@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Lie.Derivation.Killing
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Weights.Chain
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-public import Mathlib.LinearAlgebra.JordanChevalley
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
 # Roots of Lie algebras with non-degenerate Killing forms

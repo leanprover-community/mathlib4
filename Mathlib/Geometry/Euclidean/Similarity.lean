@@ -5,7 +5,7 @@ Authors: Chu Zheng
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Triangle
+import Mathlib.Geometry.Euclidean.Triangle
 public import Mathlib.Topology.MetricSpace.Similarity
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Analysis.Asymptotics.Theta
 
 /-!

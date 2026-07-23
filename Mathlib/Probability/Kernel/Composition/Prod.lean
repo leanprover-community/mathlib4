@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.CompMap
+import Mathlib.Probability.Kernel.Composition.CompMap
 public import Mathlib.Probability.Kernel.Composition.ParallelComp
 
 /-!

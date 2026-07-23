@@ -6,7 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Polynomial.GroupRingAction
-public import Mathlib.Algebra.Ring.Action.Field
+import Mathlib.Algebra.Ring.Action.Field
 public import Mathlib.Algebra.Ring.Action.Invariant
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Normal.Defs

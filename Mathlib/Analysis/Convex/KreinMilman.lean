@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Analysis.Convex.Exposed
-public import Mathlib.Analysis.LocallyConvex.Separation
+import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!

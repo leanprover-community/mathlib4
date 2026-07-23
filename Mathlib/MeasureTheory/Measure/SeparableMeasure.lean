@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-public import Mathlib.MeasureTheory.SetAlgebra
+import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # Separable measure

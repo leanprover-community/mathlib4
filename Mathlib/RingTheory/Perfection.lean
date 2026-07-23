@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Frobenius
 public import Mathlib.Algebra.CharP.Pi
-public import Mathlib.Algebra.CharP.Quotient
+import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.Algebra.CharP.Subring
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.FieldTheory.Perfect

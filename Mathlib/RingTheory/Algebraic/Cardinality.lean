@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Cardinal
+import Mathlib.Algebra.Polynomial.Cardinal
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.Algebraic.Defs
 

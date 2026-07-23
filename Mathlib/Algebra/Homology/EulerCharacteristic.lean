@@ -6,7 +6,7 @@ Authors: Jesse Alama
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.Algebra.GroupWithZero.Indicator
+import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.LinearAlgebra.Dimension.Finrank

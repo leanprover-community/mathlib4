@@ -5,7 +5,7 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit

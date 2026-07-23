@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 /-!

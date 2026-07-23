@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!

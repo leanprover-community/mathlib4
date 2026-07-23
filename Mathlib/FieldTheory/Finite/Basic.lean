@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Field.ZMod
-public import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.ValMinAbs
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.FieldTheory.Finiteness

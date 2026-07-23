@@ -5,8 +5,8 @@ Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger, Aristotle AI
 -/
 module
 
-public import Mathlib.Analysis.Complex.MeanValue
-public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
+import Mathlib.Analysis.Complex.MeanValue
+import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 
 /-!
 # Poisson Integral Formula

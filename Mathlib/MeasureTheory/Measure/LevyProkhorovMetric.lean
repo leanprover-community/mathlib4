@@ -5,9 +5,9 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Portmanteau
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.MeasureTheory.Measure.Portmanteau
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.Layercake
 
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures

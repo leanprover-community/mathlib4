@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # Convergence of Taylor series of holomorphic functions

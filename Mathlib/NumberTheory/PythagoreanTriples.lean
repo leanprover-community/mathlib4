@@ -5,10 +5,10 @@ Authors: Paul van Wamelen
 -/
 module
 
-public import Mathlib.Data.Int.NatPrime
+import Mathlib.Data.Int.NatPrime
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.Tactic.Field
+import Mathlib.Tactic.Field
 
 /-!
 # Pythagorean Triples

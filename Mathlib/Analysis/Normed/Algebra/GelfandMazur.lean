@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Polynomial.Factorization
+import Mathlib.Analysis.Polynomial.Factorization
 
 /-!
 # A (new?) proof of the Gelfand-Mazur Theorem

@@ -6,7 +6,7 @@ Authors: A Tucker
 module
 
 public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
-public import Mathlib.Analysis.Calculus.FDeriv.Partial
+import Mathlib.Analysis.Calculus.FDeriv.Partial
 
 /-!
 # Implicit function theorem — curried bivariate

@@ -7,7 +7,7 @@ Authors: Chris Birkbeck, David Loeffler
 module
 
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 
 /-!
 # Summability of E2

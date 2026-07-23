@@ -5,8 +5,8 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-public import Mathlib.RingTheory.Spectrum.Prime.Module
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.Spectrum.Prime.Module
 
 /-!
 

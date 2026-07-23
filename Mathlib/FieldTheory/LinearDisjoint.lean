@@ -6,7 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
+import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 public import Mathlib.RingTheory.LinearDisjoint
 
 /-!

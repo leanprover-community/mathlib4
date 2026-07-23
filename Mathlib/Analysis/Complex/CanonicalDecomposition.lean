@@ -5,8 +5,8 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.FactorizedRational
-public import Mathlib.Analysis.Meromorphic.RCLike
+import Mathlib.Analysis.Meromorphic.FactorizedRational
+import Mathlib.Analysis.Meromorphic.RCLike
 public import Mathlib.Analysis.Normed.Module.Connected
 
 /-!

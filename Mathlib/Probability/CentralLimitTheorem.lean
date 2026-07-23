@@ -6,7 +6,7 @@ Authors: Thomas Zhu, Etienne Marion
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.Real
-public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
+import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 import Mathlib.MeasureTheory.Measure.LevyConvergence

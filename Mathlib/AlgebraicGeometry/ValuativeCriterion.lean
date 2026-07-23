@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
-public import Mathlib.RingTheory.RingHom.Injective
+import Mathlib.RingTheory.RingHom.Injective
 public import Mathlib.RingTheory.Valuation.LocalSubring
 
 /-!

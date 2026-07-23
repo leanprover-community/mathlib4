@@ -5,7 +5,7 @@ Authors: Pierre-Alexandre Bazin
 -/
 module
 
-public import Mathlib.Algebra.Module.DedekindDomain
+import Mathlib.Algebra.Module.DedekindDomain
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts

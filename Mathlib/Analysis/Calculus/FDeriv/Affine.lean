@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 

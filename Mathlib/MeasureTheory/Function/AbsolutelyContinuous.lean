@@ -5,10 +5,10 @@ Authors: Yizheng Zhu
 -/
 module
 
-public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.Order.SuccPred.IntervalSucc
+import Mathlib.Analysis.BoundedVariation
+import Mathlib.Order.SuccPred.IntervalSucc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+import Mathlib.Analysis.Calculus.ContDiff.RCLike
 
 /-!
 # Absolutely Continuous Functions

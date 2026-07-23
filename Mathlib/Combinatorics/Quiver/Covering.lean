@@ -10,7 +10,7 @@ public import Mathlib.Combinatorics.Quiver.Symmetric
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Sum
-public import Mathlib.Tactic.Common
+import Mathlib.Tactic.Common
 
 /-!
 # Covering

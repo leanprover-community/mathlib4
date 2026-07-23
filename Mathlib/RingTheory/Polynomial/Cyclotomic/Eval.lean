@@ -7,9 +7,9 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.Tactic.ByContra
-public import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
-public import Mathlib.Analysis.Complex.Arg
+import Mathlib.Analysis.Complex.Arg
 
 /-!
 # Evaluating cyclotomic polynomials

@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.MetricSpace.Gluing
 public import Mathlib.Topology.MetricSpace.HausdorffDistance

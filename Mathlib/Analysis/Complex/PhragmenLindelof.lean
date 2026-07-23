@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 
 /-!

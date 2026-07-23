@@ -10,7 +10,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Circulant
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
-public import Mathlib.Data.Fin.Parity
+import Mathlib.Data.Fin.Parity
 
 /-!
 # Concrete colorings of common graphs

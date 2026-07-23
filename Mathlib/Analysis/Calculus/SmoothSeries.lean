@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Smoothness of series

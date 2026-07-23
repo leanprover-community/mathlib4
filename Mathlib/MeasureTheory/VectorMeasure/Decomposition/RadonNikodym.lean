@@ -5,7 +5,7 @@ Authors: Kexing Ying, Thomas Zhu
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 
 /-!

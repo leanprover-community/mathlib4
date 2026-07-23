@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Data.List.Chain
-public import Mathlib.Data.List.Flatten
+import Mathlib.Data.List.Flatten
 
 /-!
 # Split a list into contiguous runs of elements which pairwise satisfy a relation.

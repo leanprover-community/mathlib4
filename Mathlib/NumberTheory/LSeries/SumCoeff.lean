@@ -5,10 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-public import Mathlib.NumberTheory.AbelSummation
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!

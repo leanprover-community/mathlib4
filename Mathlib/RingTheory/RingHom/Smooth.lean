@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.FinitePresentation
+import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.Smooth.Locus
 
 /-!

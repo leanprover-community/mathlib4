@@ -6,7 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 /-!

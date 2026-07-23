@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Nat
+import Mathlib.Algebra.BigOperators.Ring.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.Data.Set.Card

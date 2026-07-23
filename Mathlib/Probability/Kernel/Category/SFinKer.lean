@@ -6,7 +6,7 @@ Authors: Gaëtan Serré
 module
 
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
-public import Mathlib.Probability.Kernel.Composition.KernelLemmas
+import Mathlib.Probability.Kernel.Composition.KernelLemmas
 public import Mathlib.Probability.Kernel.Deterministic
 
 /-!

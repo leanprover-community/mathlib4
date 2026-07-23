@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.Algebra.Field.ZMod
-public import Mathlib.Algebra.MvPolynomial.Cardinal
+import Mathlib.Algebra.MvPolynomial.Cardinal
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.Algebraic.Cardinality
+import Mathlib.RingTheory.Algebraic.Cardinality
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!

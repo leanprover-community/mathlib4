@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.FieldTheory.KummerPolynomial
+import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Separable
 
 /-!

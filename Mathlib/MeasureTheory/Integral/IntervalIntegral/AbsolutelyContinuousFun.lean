@@ -5,9 +5,9 @@ Authors: Yizheng Zhu
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 
 /-!
 # Fundamental theorem of calculus and integration by parts for absolutely continuous functions

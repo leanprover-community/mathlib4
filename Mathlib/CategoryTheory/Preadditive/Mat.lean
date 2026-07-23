@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Ring.Opposite

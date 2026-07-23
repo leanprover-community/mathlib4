@@ -5,7 +5,7 @@ Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger, Aristotle AI
 -/
 module
 
-public import Mathlib.Analysis.Complex.Harmonic.MeanValue
+import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.Complex.Poisson
 
 /-!

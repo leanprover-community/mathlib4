@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Zichen Wang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Affine.Convex
+import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Convex functions are continuous

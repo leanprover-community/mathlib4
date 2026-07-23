@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.KrullDimension.PID
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Krull dimension of polynomial ring

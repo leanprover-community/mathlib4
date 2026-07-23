@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Convex.Contractible
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
-public import Mathlib.Topology.Algebra.Module.Cardinality
+import Mathlib.Topology.Algebra.Module.Cardinality
 
 /-!
 # Connectedness of subsets of vector spaces

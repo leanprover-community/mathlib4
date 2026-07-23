@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Order.Preorder.Finite
 public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.Tactic.Positivity.Finset
 

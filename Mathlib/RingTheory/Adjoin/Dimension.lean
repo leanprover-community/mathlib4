@@ -5,9 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Some results on dimensions of algebra adjoin

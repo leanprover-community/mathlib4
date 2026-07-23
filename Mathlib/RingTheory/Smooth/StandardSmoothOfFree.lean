@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Extension.Cotangent.Basis
-public import Mathlib.RingTheory.Extension.Cotangent.Free
+import Mathlib.RingTheory.Extension.Cotangent.Free
 public import Mathlib.RingTheory.Smooth.Locus
 
 /-!

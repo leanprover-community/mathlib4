@@ -6,7 +6,7 @@ Authors: Eric Wieser, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Trigonometric functions as sums of infinite series

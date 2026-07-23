@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
-public import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Algebra.Order.Ring.Finset
 
 /-!
 ## Expand multivariate polynomials

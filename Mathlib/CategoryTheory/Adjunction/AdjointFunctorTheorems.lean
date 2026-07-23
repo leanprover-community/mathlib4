@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
+import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 public import Mathlib.CategoryTheory.Subobject.Comma
 
 /-!

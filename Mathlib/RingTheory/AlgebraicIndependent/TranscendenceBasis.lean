@@ -8,7 +8,7 @@ module
 public import Mathlib.Combinatorics.Matroid.IndepAxioms
 public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
 # Transcendence basis

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Data.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
-public import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic

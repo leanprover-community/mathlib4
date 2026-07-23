@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integration by parts for line derivatives

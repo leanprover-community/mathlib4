@@ -5,7 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
+import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.FinMeasAdditive
 public import Mathlib.Analysis.Normed.Operator.Extend
 

@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # A collection of specific asymptotic results

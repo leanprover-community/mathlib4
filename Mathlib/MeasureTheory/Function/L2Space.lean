@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-! # `L^2` space
 

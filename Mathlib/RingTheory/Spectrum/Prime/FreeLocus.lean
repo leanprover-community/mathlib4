@@ -7,9 +7,9 @@ module
 
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.LocalProperties.Projective
-public import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Localization.Free
+import Mathlib.RingTheory.Localization.Free
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.LocallyConstant.Basic

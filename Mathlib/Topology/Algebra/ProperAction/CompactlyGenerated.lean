@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # When a proper action is properly discontinuous
