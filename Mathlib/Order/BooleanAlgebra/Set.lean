@@ -40,7 +40,7 @@ instance : HImp (Set α) where
 @[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := .rfl
 
 instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
-  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
+  fast_instance% toProp α |>.booleanAlgebra
 
 theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq
 
@@ -200,7 +200,7 @@ lemma mem_compl_singleton_iff : a ∈ ({b} : Set α)ᶜ ↔ a ≠ b := .rfl
 lemma compl_singleton_eq (a : α) : {a}ᶜ = {x | x ≠ a} := rfl
 
 @[simp]
-lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
+lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl {a}
 
 @[simp]
 lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff
