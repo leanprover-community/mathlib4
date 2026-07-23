@@ -99,7 +99,7 @@ example the following call runs at `.instances` transparency.
 convert! (postTransparency := .instances)
 ```
 -/
-structure Convert.ExpensiveConfig extends Congr!.Config where
+structure Convert.ExpensiveConfig extends Convert.CheapConfig where
   -- TODO: also enable this in the future?
   -- preTransparency := .default
   -- transparency := .default
