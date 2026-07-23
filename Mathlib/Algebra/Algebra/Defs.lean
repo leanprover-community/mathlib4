@@ -421,3 +421,12 @@ theorem algebraMap.smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass 
     algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul' _ _ _
 
 end algebraMap
+
+attribute [local instance] IsUnital.toSemiring in
+/-- A unital non-unital algebra is an algebra.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities (for example, the `1`'s would not be defeq). -/
+noncomputable abbrev IsUnital.toAlgebra {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
+    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [IsUnital A] : Algebra R A :=
+  .ofModule smul_mul_assoc mul_smul_comm
