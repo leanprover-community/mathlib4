@@ -80,7 +80,7 @@ lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder �
   simp only [ιMulti_family]
   split_ifs with h
   · subst h
-    simp [gram_orthonormal (hv.comp _ (RelEmbedding.injective _))]
+    simp [gram_eq_one_iff_orthonormal.mpr (hv.comp _ (RelEmbedding.injective _))]
   · rw [innerProductForm_ιMulti_ιMulti]
     have : ¬t.1 ⊆ s.1 := fun H ↦ Ne.symm h <|
       Subtype.val_injective (Finset.eq_of_subset_of_card_le H (s.2.le.trans t.2.ge))
