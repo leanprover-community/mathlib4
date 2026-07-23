@@ -397,6 +397,7 @@ solves this problem. -/
 
 /-- Same thing as `H × H'`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
+@[implicit_reducible]
 def ModelProd (H : Type*) (H' : Type*) :=
   H × H'
 
@@ -459,7 +460,6 @@ theorem prodChartedSpace_chartAt :
     chartAt (ModelProd H H') x = (chartAt H x.fst).prod (chartAt H' x.snd) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by
   ext1
   · simp [atlas, ChartedSpace.atlas]
