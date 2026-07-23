@@ -17,6 +17,8 @@ example : I ^ (4 : ℤ) = 1 := by simp
 example : I ^ (5 : ℤ) = I := by simp
 example : I ^ (-4 : ℤ) = 1 := by simp
 example : I ^ (-5 : ℤ) = -I := by simp
+example : I ^ (-6 : ℤ) = -1 := by simp
+example : I ^ (-7 : ℤ) = I := by simp
 example : I ^ (-100 : ℤ) = 1 := by simp
 
 /-- error: `simp` made no progress -/
