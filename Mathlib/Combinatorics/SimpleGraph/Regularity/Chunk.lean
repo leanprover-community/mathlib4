@@ -94,18 +94,17 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     nonuniformWitness_mem_nonuniformWitnesses h₂ hV hUV
   have q : G.nonuniformWitness ε U V \ (star hP G ε hU V).biUnion id ⊆
       {B ∈ (atomise U <| P.nonuniformWitnesses G ε U).parts |
-        B ⊆ G.nonuniformWitness ε U V ∧ B.Nonempty}.biUnion
+        B ⊆ G.nonuniformWitness ε U V}.biUnion
         fun B => B \ {A ∈ (chunk hP G ε hU).parts | A ⊆ B}.biUnion id := by
     intro x hx
-    rw [← biUnion_filter_atomise hX (G.nonuniformWitness_subset h₂), star, mem_sdiff,
-      mem_biUnion] at hx
+    rw [← sup_filter_atomise hX (G.nonuniformWitness_subset h₂), star, mem_sdiff, mem_sup] at hx
     simp only [not_exists, mem_biUnion, and_imp, mem_filter,
       not_and, mem_sdiff, id, mem_sdiff] at hx ⊢
     obtain ⟨⟨B, hB₁, hB₂⟩, hx⟩ := hx
-    exact ⟨B, hB₁, hB₂, fun A hA AB => hx A hA <| AB.trans hB₁.2.1⟩
+    exact ⟨B, hB₁, hB₂, fun A hA AB => hx A hA <| AB.trans hB₁.2⟩
   apply (card_le_card q).trans (card_biUnion_le.trans _)
   trans ∑ B ∈ (atomise U <| P.nonuniformWitnesses G ε U).parts with
-    B ⊆ G.nonuniformWitness ε U V ∧ B.Nonempty, m
+    B ⊆ G.nonuniformWitness ε U V, m
   · suffices ∀ B ∈ (atomise U <| P.nonuniformWitnesses G ε U).parts,
         #(B \ {A ∈ (chunk hP G ε hU).parts | A ⊆ B}.biUnion id) ≤ m by
       gcongr with B hB
@@ -115,6 +114,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     split_ifs with h₁
     · convert! card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
     · convert! card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
+  simp_rw [← le_iff_subset]
   grw [sum_const, smul_eq_mul, card_filter_atomise_le_two_pow (s := U) hX,
     Finpartition.card_nonuniformWitnesses_le, filter_subset] <;> simp
 

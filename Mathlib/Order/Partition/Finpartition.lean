@@ -12,6 +12,8 @@ public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.SupIndep
+-- TODO: importing this privately breaks `simps`
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Finite partitions
@@ -447,6 +449,39 @@ def restrict (P : Finpartition a) (hb : b ≤ a) : Finpartition b where
     rw [this, inf_eq_right.mpr hb]
   bot_notMem := notMem_erase _ _
 
+@[simp]
+theorem parts_restrict (P : Finpartition a) (hb : b ≤ a) :
+    (P.restrict hb).parts = (P.parts.image (· ⊓ b)).erase ⊥ :=
+  rfl
+
+@[gcongr]
+theorem restrict_mono {P Q : Finpartition a} (hb : b ≤ a) (hPQ : P ≤ Q) :
+    P.restrict hb ≤ Q.restrict hb := by
+  intro x hx
+  simp_rw [parts_restrict, mem_erase, mem_image] at hx ⊢
+  obtain ⟨h, x, hx, rfl⟩ := hx
+  obtain ⟨y, hy, hxy⟩ := hPQ hx
+  exact ⟨y ⊓ b, ⟨ne_bot_of_le_ne_bot h (by gcongr), y, hy, rfl⟩, by gcongr⟩
+
+@[simp]
+theorem restrict_top (hb : b ≤ a) : restrict ⊤ hb = ⊤ := by
+  simp_rw [Top.top]
+  rcases eq_or_ne b ⊥ with rfl | hb'
+  · exact Subsingleton.elim ..
+  rw [dif_neg (ne_bot_of_le_ne_bot hb' hb), dif_neg hb']
+  ext1
+  simp_rw [parts_restrict, indiscrete_parts, image_singleton, inf_eq_right.mpr hb,
+    erase_eq_of_notMem (mem_singleton.not.mpr hb'.symm)]
+
+theorem restrict_inf (P Q : Finpartition a) (hb : b ≤ a) :
+    (P ⊓ Q).restrict hb = P.restrict hb ⊓ Q.restrict hb := by
+  refine le_antisymm (Monotone.map_inf_le (fun _ _ => restrict_mono hb) _ _) (fun x => ?_)
+  simp only [parts_inf, parts_restrict, mem_erase, mem_image, mem_product, Prod.exists]
+  rintro ⟨h, -, -, ⟨⟨-, y, hy, rfl⟩, ⟨-, z, hz, rfl⟩⟩, rfl⟩
+  exact ⟨y ⊓ z ⊓ b, ⟨by ac_nf at h ⊢, y ⊓ z,
+    ⟨ne_bot_of_le_ne_bot h <| inf_le_inf inf_le_left inf_le_left, y, z, ⟨hy, hz⟩, rfl⟩, rfl⟩,
+    by ac_nf⟩
+
 /-- The sum of a set-valued function over restricted partition parts equals the sum over original
 parts with `f (· ⊓ b)`, provided `f ⊥ = 0` (so bottom terms don't contribute). -/
 lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoid M]
@@ -463,7 +498,7 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
   have hz : ∑ x ∈ P.parts.filter (¬ · ⊓ b ≠ ⊥), f (x ⊓ b) = 0 := Finset.sum_eq_zero fun x hx => by
     simp only [ne_eq, Decidable.not_not, Finset.mem_filter] at hx
     rw [hx.2, hf]
-  simp only [restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
+  simp only [parts_restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
     Finset.sum_image hinj, add_zero]
 
 /-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
@@ -855,55 +890,145 @@ end Setoid
 
 section Atomise
 
-/-- Cuts `s` along the finsets in `F`: Two elements of `s` will be in the same part if they are
-in the same finsets of `F`. -/
-def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
-  ofErase (F.powerset.image fun Q ↦ {i ∈ s | ∀ t ∈ F, t ∈ Q ↔ i ∈ t})
-    (Set.PairwiseDisjoint.supIndep fun x hx y hy h ↦
-      disjoint_left.mpr fun z hz1 hz2 ↦
-        h (by
-            rw [mem_coe, mem_image] at hx hy
-            obtain ⟨Q, hQ, rfl⟩ := hx
-            obtain ⟨R, hR, rfl⟩ := hy
-            suffices h' : Q = R by
-              subst h'
-              exact of_eq_true (eq_self {i ∈ s | ∀ t ∈ F, t ∈ Q ↔ i ∈ t})
-            rw [id, mem_filter] at hz1 hz2
-            rw [mem_powerset] at hQ hR
-            ext i
-            refine ⟨fun hi ↦ ?_, fun hi ↦ ?_⟩
-            · rwa [hz2.2 _ (hQ hi), ← hz1.2 _ (hQ hi)]
-            · rwa [hz1.2 _ (hR hi), ← hz2.2 _ (hR hi)]))
+variable {s t x y : α} {F F₁ F₂ : Finset α} [GeneralizedBooleanAlgebra α]
+
+variable (s F) in
+/-- Cuts `s` along the elements in `F`. In the special case of sets, two elements of `s` will be in
+the same part if they are in the same sets of `F`. -/
+def atomise : Finpartition s :=
+  F.inf <| fun x => ofErase {s ⊓ x, s \ x}
     (by
-      refine (Finset.sup_le fun t ht ↦ ?_).antisymm fun a ha ↦ ?_
-      · rw [mem_image] at ht
-        obtain ⟨A, _, rfl⟩ := ht
-        exact s.filter_subset _
-      · rw [mem_sup]
-        refine
-          ⟨{i ∈ s | ∀ t ∈ F, t ∈ {u ∈ F | a ∈ u} ↔ i ∈ t},
-            mem_image_of_mem _ (mem_powerset.2 <| filter_subset _ _),
-            mem_filter.2 ⟨ha, fun t ht ↦ ?_⟩⟩
-        rw [mem_filter]
-        exact and_iff_right ht)
+      refine (supIndep_singleton _ _).insert ?_
+      rw [sup_singleton]
+      exact disjoint_inf_sdiff)
+    (by
+      rw [sup_insert, sup_singleton]
+      exact sup_inf_sdiff _ _)
 
-variable {F : Finset (Finset α)}
+@[simp]
+theorem atomise_empty_eq_top : atomise s ∅ = ⊤ :=
+  rfl
 
-theorem mem_atomise :
+theorem atomise_empty (hs : s ≠ ⊥) : (atomise s ∅).parts = {s} := by
+  simp_rw [atomise_empty_eq_top, Top.top, dif_neg hs, indiscrete_parts]
+
+@[gcongr]
+theorem atomise_mono (h : F₂ ⊆ F₁) : atomise s F₁ ≤ atomise s F₂ :=
+  Finset.inf_mono h
+
+theorem atomise_union : atomise s (F₁ ∪ F₂) = atomise s F₁ ⊓ atomise s F₂ :=
+  inf_union
+
+theorem le_or_disjoint_of_mem_parts_atomise (hx : x ∈ (atomise s F).parts) (hy : y ∈ F) :
+    x ≤ y ∨ Disjoint x y := by
+  have : atomise s F ≤ _ := F.inf_le hy
+  obtain ⟨t, h⟩ := this hx
+  grw [ofErase_parts, erase_subset, mem_insert, mem_singleton] at h
+  rcases h with ⟨rfl | rfl, h⟩
+  · exact .inl <| h.trans inf_le_right
+  · exact .inr <| (le_sdiff.mp h).2
+
+theorem parts_atomise_singleton : (atomise s {x}).parts = .erase {s ⊓ x, s \ x} ⊥ := by
+  rw [atomise, inf_singleton, ofErase_parts]
+
+theorem parts_atomise_insert : (atomise s (insert x F)).parts =
+    ((atomise s F).parts.image (· ⊓ x) ∪ (atomise s F).parts.image (· \ x)).erase ⊥ := by
+  rw [insert_eq, atomise_union, inf_comm, parts_inf, parts_atomise_singleton]
+  ext y
+  simp only [mem_erase, mem_union, mem_image, mem_product, mem_insert, mem_singleton,
+    Prod.exists, ← exists_or, ← and_or_left, and_assoc, exists_and_left]
+  refine and_congr_right fun hy => exists_congr fun a => and_congr_right fun ha => ?_
+  replace ha := (atomise s F).le ha
+  constructor
+  · rintro ⟨b, hb, rfl | rfl, rfl⟩
+    · left
+      rw [← inf_assoc, inf_eq_left.mpr ha]
+    · right
+      rw [← inf_sdiff_assoc, inf_eq_left.mpr ha]
+  · rintro (rfl | rfl)
+    · refine ⟨_, ne_bot_of_le_ne_bot hy (by gcongr), .inl rfl, ?_⟩
+      rw [← inf_assoc, inf_eq_left.mpr ha]
+    · refine ⟨_, ne_bot_of_le_ne_bot hy (by gcongr), .inr rfl, ?_⟩
+      rw [← inf_sdiff_assoc, inf_eq_left.mpr ha]
+
+theorem restrict_atomise (hts : t ≤ s) : (atomise s F).restrict hts = atomise t F := by
+  unfold atomise
+  rw [Finset.apply_inf_eq_inf_comp (restrict · hts) (fun _ _ => restrict_inf ..) (restrict_top _),
+    Function.comp_def]
+  congr with x y
+  simp only [parts_restrict, ofErase_parts, mem_erase, mem_image, and_congr_right_iff, mem_insert,
+    mem_singleton]
+  refine fun hy => ⟨?_, ?_⟩
+  · rintro ⟨-, ⟨-, rfl | rfl⟩, rfl⟩
+    · left
+      rw [← inf_rotate, inf_eq_left.mpr hts]
+    · right
+      rw [inf_comm, ← inf_sdiff_assoc, inf_eq_left.mpr hts]
+  · rintro (rfl | rfl)
+    · refine ⟨s ⊓ x, ⟨ne_bot_of_le_ne_bot hy (by gcongr), .inl rfl⟩, ?_⟩
+      rw [← inf_rotate, inf_eq_left.mpr hts]
+    · refine ⟨s \ x, ⟨ne_bot_of_le_ne_bot hy (by gcongr), .inr rfl⟩, ?_⟩
+      rw [inf_comm, ← inf_sdiff_assoc, inf_eq_left.mpr hts]
+
+theorem card_atomise_le : #(atomise s F).parts ≤ 2 ^ #F := by
+  induction F using Finset.induction with
+  | empty => grw [atomise_empty_eq_top, parts_top_subset]; simp
+  | insert x F ha ih =>
+    grw [parts_atomise_insert, erase_subset, card_union_le, card_image_le, ih, card_image_le, ih,
+      card_insert_of_notMem ha, Nat.pow_add_one, Nat.mul_two]
+
+variable [DecidableLE α]
+
+theorem sup_filter_atomise (ht : t ∈ F) (hts : t ≤ s) :
+    {u ∈ (atomise s F).parts | u ≤ t}.sup id = t := by
+  refine le_antisymm (Finset.sup_le fun _ h => (mem_filter.mp h).2) ?_
+  nth_rw 1 [← (atomise t F).sup_parts, ← restrict_atomise hts]
+  gcongr
+  intro x hx
+  simp_rw [parts_restrict, mem_erase, mem_image] at hx
+  obtain ⟨hx, x, hx', rfl⟩ := hx
+  rcases le_or_disjoint_of_mem_parts_atomise hx' ht with h | h
+  · rw [(inf_eq_left.mpr h), mem_filter]
+    trivial
+  · cases hx h.eq_bot
+
+theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
+    #{u ∈ (atomise s F).parts | u ≤ t} ≤ 2 ^ (#F - 1) := by
+  suffices h : {u ∈ (atomise s F).parts | u ≤ t} ⊆ (atomise (s ⊓ t) (F.erase t)).parts by
+    grw [h, card_atomise_le, card_erase_of_mem ht]
+  nth_rw 1 [← insert_erase ht]
+  simp_rw [parts_atomise_insert, ← restrict_atomise inf_le_left, parts_restrict, subset_iff,
+    mem_filter, mem_erase, mem_union, mem_image]
+  rintro - ⟨⟨h₁, ⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩⟩, h₂⟩
+  · refine ⟨h₁, x, hx, ?_⟩
+    rw [← inf_assoc, inf_eq_left.mpr (Finpartition.le _ hx)]
+  · absurd h₁
+    rw [sdiff_eq_bot_iff.mpr <| sdiff_le_iff_left.mp h₂]
+
+end Atomise
+
+theorem mem_atomise {F : Finset (Finset α)} :
     t ∈ (atomise s F).parts ↔
       t.Nonempty ∧ ∃ Q ⊆ F, {i ∈ s | ∀ u ∈ F, u ∈ Q ↔ i ∈ u} = t := by
-  simp only [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, nonempty_iff_ne_empty,
-    mem_powerset]
+  induction F using Finset.induction generalizing t with
+  | empty =>
+    simp_rw [atomise_empty_eq_top, Top.top, subset_empty, exists_eq_left, forall_mem_empty_iff,
+      filter_true]
+    grind [= copy_parts, = empty_parts, = indiscrete_parts]
+  | insert x F _ ih =>
+    simp_rw [parts_atomise_insert, mem_erase, bot_eq_empty, ← nonempty_iff_ne_empty, mem_union,
+      mem_image, ← exists_or, ← and_or_left, ih]
+    refine and_congr_right fun ht => ?_
+    constructor
+    · rintro ⟨-, ⟨-, Q, hQ, rfl⟩, rfl | rfl⟩
+      · exact ⟨insert x Q, by grind⟩
+      · exact ⟨Q, by grind⟩
+    · rintro ⟨Q, hQ, rfl⟩
+      refine ⟨_, ⟨ht.mono (by grind), Q.erase x, by grind, rfl⟩, ?_⟩
+      by_cases x ∈ Q <;> [left; right] <;> grind
 
-theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
-  simp only [atomise, powerset_empty, image_singleton, notMem_empty, IsEmpty.forall_iff,
-    imp_true_iff, filter_true]
-  exact erase_eq_of_notMem (notMem_singleton.2 hs.ne_empty.symm)
-
-theorem card_atomise_le : #(atomise s F).parts ≤ 2 ^ #F :=
-  (card_le_card <| erase_subset _ _).trans <| Finset.card_image_le.trans (card_powerset _).le
-
-theorem biUnion_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
+@[deprecated sup_filter_atomise (since := "2026-06-10")]
+theorem biUnion_filter_atomise {F : Finset (Finset α)} (ht : t ∈ F) (hts : t ⊆ s) :
     {u ∈ (atomise s F).parts | u ⊆ t ∧ u.Nonempty}.biUnion id = t := by
   ext a
   refine mem_biUnion.trans ⟨fun ⟨u, hu, ha⟩ ↦ (mem_filter.1 hu).2.1 ha, fun ha ↦ ?_⟩
@@ -912,21 +1037,5 @@ theorem biUnion_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
   obtain ⟨Q, _hQ, rfl⟩ := (mem_atomise.1 hu).2
   rw [mem_filter] at hau hb
   rwa [← hb.2 _ ht, hau.2 _ ht]
-
-theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
-    #{u ∈ (atomise s F).parts | u ⊆ t ∧ u.Nonempty} ≤ 2 ^ (#F - 1) := by
-  suffices h :
-    {u ∈ (atomise s F).parts | u ⊆ t ∧ u.Nonempty} ⊆
-      (F.erase t).powerset.image fun P ↦ {i ∈ s | ∀ x ∈ F, x ∈ insert t P ↔ i ∈ x} by
-    refine (card_le_card h).trans (card_image_le.trans ?_)
-    rw [card_powerset, card_erase_of_mem ht]
-  rw [subset_iff]
-  simp_rw [mem_image, mem_powerset, mem_filter, and_imp, Finset.Nonempty, exists_imp, mem_atomise,
-    and_imp, Finset.Nonempty, exists_imp, and_imp]
-  rintro P' i hi P PQ rfl hy₂ j _hj
-  refine ⟨P.erase t, erase_subset_erase _ PQ, ?_⟩
-  simp only [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi)]
-
-end Atomise
 
 end Finpartition
