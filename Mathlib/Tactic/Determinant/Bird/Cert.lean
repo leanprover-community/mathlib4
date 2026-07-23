@@ -12,7 +12,7 @@ public meta import Mathlib.Tactic.Ring
 
 # Certificate-chain evaluator for `BirdDet.birdDet`
 
-This file contains an evaulator that computes the ring tactic normal form of
+This file contains an evaluator that computes the ring tactic normal form of
 `Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs.birdDet` via iteratively
 unfolding its definition, using the ring tactic for ring operations, and caching
 intermediate certificates.
@@ -31,23 +31,24 @@ certBirdDet (birdDet n A)
       = ring normal form of 1 -- via certEval
   n = k + 1:
     birdDet n A
-      = (-1)^k * iter n A k (get n A) 0 0 -- via BirdDet.birdDet_eq
-      = ring normal form of the product -- certMul (certBirdSign k) (certIter k 0 0)
+      = (-1)^k * (stepEntry n A)^[k] (get n A) 0 0 -- via BirdDet.birdDet_eq
+      = ring normal form of the product -- certMul (certBirdSign k) (certIterStepEntry k 0 0)
 ```
 
-The `iter n A k (get n A) i j` function branches on k, (k=0, k=t+1) and
-therefore the `certIter` function has two branches:
+The `(stepEntry n A)^[k] (get n A) i j` expression branches on `k`, so
+`certIterStepEntry` has two branches:
 
 ```
-certIter k i j
+certIterStepEntry k i j
   k = 0:
-    iter n A 0 F i j = F i j -- via BirdDet.iter_zero
-                     = ring normal form of A[i][j] -- via certEntry i j
+    (stepEntry n A)^[0] F i j
+      = F i j -- via Function.iterate_zero_apply
+      = ring normal form of A[i][j] -- via certEntry i j
   k = t + 1:
-    iter n A (t + 1) F i j
-      = -(sumFrom n (i + 1) fun k => iter n A t F k k) * get n A i j
-          + sumFrom n (i + 1) fun k => iter n A t F i k * get n A k j
-        -- via BirdDet.iter_succ
+    (stepEntry n A)^[t + 1] F i j
+      = -(sumFrom n (i + 1) fun k => (stepEntry n A)^[t] F k k) * get n A i j
+          + sumFrom n (i + 1) fun k => (stepEntry n A)^[t] F i k * get n A k j
+        -- via Function.iterate_succ_apply'
       = normal form of the first summand + normal form of the second summand
         -- via certAdd
                  (certMul (certNeg (certDiag t (i + 1))) (certEntry i j))
@@ -57,15 +58,16 @@ certIter k i j
 Then the `certDiag` and `certTail` functions certify the two kinds of `sumFrom`
 expressions.
 
-The evaulator also memoizes the `certIter`, `certDiag` and `certEntry` functions
-to improve performance.
+The evaluator also memoizes `certIterStepEntry`, `certDiag` and `certEntry` to
+improve performance.
 
 ## Main definitions
 
 - `certEntry` certifies `BirdDet.get`.
-- `certSumFromStop` and `certSumFromStep` certifies `BirdDet.sumFrom_stop` and
+- `certSumFromStop` and `certSumFromStep` certify `BirdDet.sumFrom_stop` and
   `BirdDet.sumFrom_step`.
-- `certIter` certifies `BirdDet.iter_zero` and `BirdDet.iter_succ`.
+- `certIterStepEntry` certifies entries of
+  `(BirdDet.stepEntry n A)^[t] (BirdDet.get n A)`.
 - `certBirdDet` certifies `BirdDet.birdDet_zero` and `BirdDet.birdDet_eq`.
 -/
 
@@ -90,11 +92,11 @@ abbrev CertResult {u : Level} {α : Q(Type u)}
 
 namespace Ctx
 
-/-- Return an expression for the partially applied function `iter n A t (get n A)` -/
-def iterP (ctx : Ctx rα) (t : ℕ) : Q(ℕ → ℕ → $α) :=
+/-- Return the expression `(stepEntry n A)^[t] (get n A)`. -/
+def iterStepEntry (ctx : Ctx rα) (t : ℕ) : Q(ℕ → ℕ → $α) :=
   let dim : Q(ℕ) := ctx.dimensionLit
   let A : Q(Array $α) := ctx.arrayExpr
-  q(BirdDet.iter $dim $A $t (BirdDet.get $dim $A))
+  q((BirdDet.stepEntry $dim $A)^[$t] (BirdDet.get $dim $A))
 
 /-- Return an expression `sumFrom n lo f` -/
 def sumFrom (ctx : Ctx rα) (lo : ℕ) (f : Q(ℕ → $α)) : Q($α) :=
@@ -151,8 +153,8 @@ end Cert
 structure CertCache {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
   /-- Cache for entry certificates, keyed by matrix indices. -/
   entryCache : Std.HashMap (ℕ × ℕ) (Cert rα) := {}
-  /-- Cache for `iter` certificates, keyed by recursion index and matrix indices. -/
-  iterCache : Std.HashMap (ℕ × ℕ × ℕ) (Cert rα) := {}
+  /-- Cache for iterated `stepEntry` certificates, keyed by step and matrix indices. -/
+  iterStepEntryCache : Std.HashMap (ℕ × ℕ × ℕ) (Cert rα) := {}
   /-- Cache for diagonal-tail certificates, keyed by recursion index and lower bound. -/
   diagCache : Std.HashMap (ℕ × ℕ) (Cert rα) := {}
 
@@ -230,7 +232,7 @@ def certEntry (i j : ℕ) : CertM rα (Cert rα) := do
   let {dimension := dim, dimensionLit := dimLit, arrayExpr := A, arrayEntries, ..} := ctx
   let lhs : Q($α) := q(BirdDet.get $dimLit $A $i $j)
   -- The index of the matrix entry (i, j) in arrayEntries
-  let idx := i * dim + j
+  let idx := dim * i + j
   let entry := arrayEntries.getD idx q(0)
   let ce ← certEval entry
   have : $lhs =Q $entry := ⟨⟩
@@ -280,23 +282,25 @@ def certSumFromStep
 
 mutual
 
-/-- Certify a `BirdDet.iter` call. -/
-partial def certIter (t i j : ℕ) : CertM rα (Cert rα) := do
-  if let some c := (← get).iterCache[(t, i, j)]? then
+/-- Certify an entry of `(BirdDet.stepEntry n A)^[t] (BirdDet.get n A)`. -/
+partial def certIterStepEntry (t i j : ℕ) : CertM rα (Cert rα) := do
+  if let some c := (← get).iterStepEntryCache[(t, i, j)]? then
     return c
   let ctx ← read
   let {dimensionLit := dimLit, arrayExpr := A, ..} := ctx
   let cert ← match t with
-    -- The t=0 branch of `BirdDet.iter`, unfold using `BirdDet.iter_zero`
+    -- The `t = 0` branch of `Function.iterate`.
     | 0 => do
       let ce ← certEntry i j
-      let h := q(BirdDet.iter_zero $dimLit $A (BirdDet.get $dimLit $A) $i $j)
+      let hIter := q(Function.iterate_zero_apply
+        (BirdDet.stepEntry $dimLit $A) (BirdDet.get $dimLit $A))
+      let h := q(congrArg (fun F : ℕ → ℕ → $α => F $i $j) $hIter)
       pure (ce.chainProof h)
-    -- The t=t+1 branch of `BirdDet.iter`, unfold using `BirdDet.iter_succ`
+    -- The `t = t' + 1` branch of `Function.iterate`.
     | t' + 1 => do
-      -- First summand in `BirdDet.iter_succ`:
+      -- First summand in one `BirdDet.stepEntry` application:
       --   -(sumFrom n (i + 1) fun k => F_t k k) * get n A i j
-      let diagSummand := q(fun k => $(ctx.iterP t') k k)
+      let diagSummand := q(fun k => $(ctx.iterStepEntry t') k k)
       let negDiagSum := q(-$(ctx.sumFrom (i + 1) diagSummand))
       let entryCert ← certEntry i j
       let diagProdCert ←
@@ -308,31 +312,34 @@ partial def certIter (t i j : ℕ) : CertM rα (Cert rα) := do
           let diagSumCert ← certDiag t' (i + 1)
           let negDiagSumCert ← certNeg diagSumCert
           certMul negDiagSumCert entryCert
-      -- Second summand in `BirdDet.iter_succ`:
+      -- Second summand in one `BirdDet.stepEntry` application:
       --   sumFrom n (i + 1) fun k => F_t i k * get n A k j
       let tailSumCert ← certTail t' i j (i + 1)
       let rhsCert ← certAdd diagProdCert tailSumCert
-      let h := q(BirdDet.iter_succ $dimLit $A $t' (BirdDet.get $dimLit $A) $i $j)
+      let hIter := q(Function.iterate_succ_apply'
+        (BirdDet.stepEntry $dimLit $A) $t' (BirdDet.get $dimLit $A))
+      let h := q(congrArg (fun F : ℕ → ℕ → $α ↦ F $i $j) $hIter)
       pure (rhsCert.chainProof h)
-  modify fun s => {s with iterCache := s.iterCache.insert (t, i, j) cert}
+  modify fun s =>
+    {s with iterStepEntryCache := s.iterStepEntryCache.insert (t, i, j) cert}
   return cert
 
 
-/-- Certify the diagonal tail sum from `BirdDet.iter_succ`:
+/-- Certify the diagonal tail sum in one `BirdDet.stepEntry` application:
 
 ```
-sumFrom n (i + 1) fun k => iter n A t F k k)
+sumFrom n (i + 1) fun k => (stepEntry n A)^[t] F k k)
 ```
 -/
 partial def certDiag (t lo : ℕ) : CertM rα (Cert rα) := do
   if let some c := (← get).diagCache[(t, lo)]? then
     return c
   let ctx ← read
-  let diagonalSummand := q(fun k => $(ctx.iterP t) k k)
+  let diagonalSummand := q(fun k => $(ctx.iterStepEntry t) k k)
   let cert ←
     if lo < ctx.dimension
     then do
-      let headCert := certIter t lo lo
+      let headCert := certIterStepEntry t lo lo
       let tailCert := certDiag t (lo + 1)
       certSumFromStep
         lo
@@ -344,10 +351,10 @@ partial def certDiag (t lo : ℕ) : CertM rα (Cert rα) := do
   modify fun s => {s with diagCache := s.diagCache.insert (t, lo) cert}
   return cert
 
-/-- Certify the upper-tail sum from `BirdDet.iter_succ`:
+/-- Certify the upper-tail sum in one `BirdDet.stepEntry` application:
 
 ```
-sumFrom n (i + 1) fun k => iter n A t F i k * get n A k j
+sumFrom n (i + 1) fun k => (stepEntry n A)^[t] F i k * get n A k j
 ```
 -/
 partial def certTail (t i j lo : ℕ) : CertM rα (Cert rα) := do
@@ -355,23 +362,23 @@ partial def certTail (t i j lo : ℕ) : CertM rα (Cert rα) := do
   let {dimensionLit := dimLit, arrayExpr := A, ..} := ctx
   let tailSummand :=
     q(fun k =>
-      $(ctx.iterP t) $i k *
+      $(ctx.iterStepEntry t) $i k *
         BirdDet.get $dimLit $A k $j)
   if lo < ctx.dimension
   then do
-    -- headCert certifies `iter n A t F i lo * get n A lo j`
+    -- headCert certifies `(stepEntry n A)^[t] F i lo * get n A lo j`
     let headCert := do
       let entryCert ← certEntry lo j
       -- If `get n A lo j = 0` then we can skip computation of
-      --  `iter n A t F i lo`
+      --  `(stepEntry n A)^[t] F i lo`
       if entryCert.isZero
       then
         zeroProdCert
-          q($(ctx.iterP t) $i $lo)
+          q($(ctx.iterStepEntry t) $i $lo)
           entryCert
       else do
-        let iterCert ← certIter t i lo
-        certMul iterCert entryCert
+        let iterateCert ← certIterStepEntry t i lo
+        certMul iterateCert entryCert
     let tailCert := certTail t i j (lo + 1)
     certSumFromStep
       lo
@@ -399,7 +406,7 @@ def certBirdDet : CertM rα (Cert rα) := do
     -- so we set k := `ctx.dimension - 1`.
     let k := dim - 1
     let cs ← certBirdSign k
-    let ci ← certIter k 0 0
+    let ci ← certIterStepEntry k 0 0
     let cm ← certMul cs ci
     have kLit := mkNatLitQ k
     have : $dimLit =Q $kLit + 1 := ⟨⟩
