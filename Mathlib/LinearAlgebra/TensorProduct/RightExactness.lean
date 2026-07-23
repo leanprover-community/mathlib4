@@ -185,6 +185,15 @@ theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g 
   rw [← lTensor_comp_rTensor, coe_comp]
   exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
 
+theorem TensorProduct.map_range_eq :
+    (TensorProduct.map f g).range = (TensorProduct.map f.range.subtype g.range.subtype).range := by
+  conv_lhs => rw [← subtype_comp_rangeRestrict f, ← subtype_comp_rangeRestrict g]
+  rw [TensorProduct.map_comp]
+  apply range_comp_of_range_eq_top
+  rw [range_eq_top]
+  exact TensorProduct.map_surjective (surjective_rangeRestrict f)
+    (surjective_rangeRestrict g)
+
 end Semiring
 
 variable {R M N P : Type*} [CommRing R]
