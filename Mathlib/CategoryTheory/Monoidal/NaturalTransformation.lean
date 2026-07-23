@@ -140,12 +140,12 @@ set_option backward.defeqAttrib.useBackward true in
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
     dsimp
-    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.map_η_ε]
+    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.η_ε_map]
     dsimp
     rw [comp_id]
   tensor X Y := by
     dsimp
-    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.map_δ_μ, comp_id]
+    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.δ_μ_map, comp_id]
 
 instance : NatTrans.IsMonoidal adj.counit where
   unit := by
