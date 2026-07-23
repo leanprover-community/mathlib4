@@ -53,7 +53,7 @@ theorem rational_face_seed_ne_zero
             (fun s : ↥F ↦ GMC2.charge s) m0) ≠ 0 := by
     have h := hseedComplexInt
     rw [GMC2.IntegralFaceSeedDescent.aeval_liftedFaceSeedInt] at h
-    simpa only [GMC2.FaceSeedDescent.faceToSupport, Function.comp_apply] using h
+    exact h
   simpa only [GMC2.IntegralRelations.aeval_constantTermRelationInt_eq_rat]
     using hseedFaceInt
 
