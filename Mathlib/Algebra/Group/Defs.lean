@@ -1291,6 +1291,10 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
   mul_left_cancel := fun a {b c} h ↦ by
     rw [← inv_mul_cancel_left a b, show a * b = a * c from h, inv_mul_cancel_left]
 
+@[to_additive]
+instance (priority := 100) isCyclic_of_subsingleton [Subsingleton G] : IsCyclic G where
+  exists_zpow_surjective := ⟨1, fun _ ↦ ⟨0, Subsingleton.elim ..⟩⟩
+
 end Group
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
