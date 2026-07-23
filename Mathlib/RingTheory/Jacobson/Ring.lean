@@ -183,25 +183,25 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
       have : J ≤ I.map (algebraMap R S) := map_under (Submonoid.powers y) S J ▸ map_mono hJI
       exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
   · simp only [Ideal.mem_comap, and_imp]
-    exact (fun _ _ ↦ IsMaximal.of_isLocalization_of_disjoint (powers y))
+    exact (fun _ _ ↦ isMaximal_of_isMaximal_under (powers y) S J)
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
 This lemma gives the correspondence in the particular case of an ideal and its map.
 See `le_relIso_of_maximal` for the more general statement, and the reverse of this implication -/
-theorem IsLocalization.isMaximal_of_isMaximal_disjoint
+theorem IsLocalization.isMaximal_of_isMaximal_notMem
     [IsJacobsonRing R] (I : Ideal R) (hI : I.IsMaximal)
-    (hy : y ∉ I) : (I.map (algebraMap R S)).IsMaximal := by
-  rw [isMaximal_iff_isMaximal_disjoint S y, under_map_of_isPrime_disjoint (powers y) S hI.isPrime]
-  · exact ⟨hI, hy⟩
-  · rwa [disjoint_powers_iff_notMem_of_isPrime]
+    (hy : y ∉ I) : (I.map (algebraMap R S)).IsMaximal :=
+  isMaximal_of_isMaximal_disjoint (powers y) S I
+    ((disjoint_powers_iff_notMem_of_isPrime y).mpr hy)
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y` -/
 def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
     { p : Ideal S // p.IsMaximal } ≃o { p : Ideal R // p.IsMaximal ∧ y ∉ p } where
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isMaximal_iff_isMaximal_disjoint S y p.1).1 p.2⟩
-  invFun p := ⟨Ideal.map (algebraMap R S) p.1, isMaximal_of_isMaximal_disjoint y p.1 p.2.1 p.2.2⟩
+  invFun p := ⟨Ideal.map (algebraMap R S) p.1,
+    isMaximal_of_isMaximal_notMem y p.1 p.2.1 p.2.2⟩
   left_inv J := Subtype.ext (map_under (powers y) S J)
   right_inv := fun ⟨_, hIm, hI⟩ ↦ Subtype.ext <| under_map_of_isPrime_disjoint _ S hIm.isPrime
     ((disjoint_powers_iff_notMem_of_isPrime y).2 hI)
@@ -236,7 +236,7 @@ theorem isJacobsonRing_localization [H : IsJacobsonRing R] : IsJacobsonRing S :=
   rw [Ideal.jacobson, under_def, comap_sInf', sInf_eq_iInf]
   refine iInf_le_iInf_of_subset fun I ⟨hI, hIm, hyI⟩ => ⟨map (algebraMap R S) I, ⟨?_, ?_⟩⟩
   · exact ⟨le_trans (IsLocalization.map_under (powers y) S P').symm.le (map_mono hI),
-      isMaximal_of_isMaximal_disjoint y I hIm hyI⟩
+      isMaximal_of_isMaximal_notMem y I hIm hyI⟩
   · exact IsLocalization.under_map_of_isPrime_disjoint _ S hIm.isPrime <|
       (disjoint_powers_iff_notMem_of_isPrime y).2 hyI
 

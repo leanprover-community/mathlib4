@@ -229,6 +229,15 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   rw [isPrime_iff_isPrime_disjoint M S, under_map_of_isPrime_disjoint M S hp hd]
   exact ⟨hp, hd⟩
 
+include M S in
+lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal := by
+  exact ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
+
+theorem isMaximal_of_isMaximal_disjoint (I : Ideal R) [hI : I.IsMaximal]
+    (h : Disjoint (M : Set R) (I : Set R)) : (I.map (algebraMap R S)).IsMaximal := by
+  rw [← IsLocalization.under_map_of_isPrime_disjoint M S hI.isPrime h] at hI
+  exact isMaximal_of_isMaximal_under M S (I.map (algebraMap R S))
+
 theorem disjoint_under_iff (J : Ideal S) :
     Disjoint (M : Set R) (J.under R) ↔ J ≠ ⊤ := by
   rw [← iff_not_comm, Set.not_disjoint_iff]
