@@ -1,0 +1,299 @@
+/-
+Copyright (c) 2025 Heather Macbeth. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Heather Macbeth, Yunzhou Xie, Sidharth Hariharan, Eric Wieser
+-/
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Complex.Basic
+
+/-!
+## `norm_num` extension for complex numbers
+
+This file provides a `norm_num` extension for complex numbers, allowing the computation of
+additions, multiplications, inversions, conjugates, and powers of complex numbers.
+
+-/
+
+public meta section
+
+open Lean Meta Elab Qq Tactic Complex Mathlib.Tactic
+open ComplexConjugate
+
+namespace Mathlib.Meta.NormNumI
+
+/-- The result of `norm_num` running on an expression `a : ℂ`. -/
+structure ResultI (a : Q(ℂ)) where
+  /-- The result of `norm_num` running on the real part of `a`. -/
+  re : NormNum.Result q(RCLike.re $a)
+  /-- The result of `norm_num` running on the imaginary part of `a`. -/
+  im : NormNum.Result q(RCLike.im $a)
+
+instance (a : Q(ℂ)) : ToMessageData (ResultI a) where
+  toMessageData r := MessageData.group <|
+    m!"\{ re := " ++ MessageData.nest 7 m!"{r.re}" ++ Format.line
+    ++ "  im := " ++ MessageData.nest 7 m!"{r.im}" ++ " }"
+
+/-- ResultI made from two Results on real and imaginary parts. -/
+def ResultI.mk' {z : Q(ℂ)} {p1 p2 : Q(ℝ)} (h1 : NormNum.Result q($p1))
+    (h2 : NormNum.Result q($p2)) (pf₁ : Q(RCLike.re $z = $p1)) (pf₂ : Q(RCLike.im $z = $p2)) :
+    ResultI z where
+  re := h1.eqTrans pf₁
+  im := h2.eqTrans pf₂
+
+/-- ResultI induced by equality -/
+def ResultI.eqTrans {a b : Q(ℂ)} (eq : Q($a = $b)) (r : ResultI b) : ResultI a :=
+  .mk' r.re r.im q(congr_arg RCLike.re $eq) q(congr_arg RCLike.im $eq)
+
+/-- ResultI induced by addition -/
+def ResultI.add {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
+    MetaM (ResultI q($a + $b)) := do
+  return .mk' (← ha.re.add hb.re q(inferInstance)) (← ha.im.add hb.im q(inferInstance))
+    q(map_add RCLike.re $a $b) q(map_add RCLike.im $a $b)
+
+/-- ResultI induced by negation -/
+def ResultI.neg {z : Q(ℂ)} (ha : ResultI q($z)) :
+    MetaM (ResultI q(-$z)) := do
+  return .mk' (← ha.re.neg q(inferInstance)) (← ha.im.neg q(inferInstance))
+    q(map_neg RCLike.re $z) q(map_neg RCLike.im $z)
+
+/-- ResultI induced by subtraction -/
+def ResultI.sub {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
+    MetaM (ResultI q($a - $b)) := do
+  return .mk' (← ha.re.sub hb.re q(inferInstance)) (← ha.im.sub hb.im q(inferInstance))
+    q(map_sub RCLike.re $a $b) q(map_sub RCLike.im $a $b)
+
+/-- ResultI induced by multiplication -/
+def ResultI.mul {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
+    MetaM (ResultI q($a * $b)) := do
+  return .mk'
+    (← (← ha.re.mul hb.re q(inferInstance)).sub (← ha.im.mul hb.im q(inferInstance))
+      q(inferInstance))
+    (← (← ha.re.mul hb.im q(inferInstance)).add (← ha.im.mul hb.re q(inferInstance))
+      q(inferInstance))
+    q(RCLike.mul_re $a $b) q(RCLike.mul_im $a $b)
+
+/-- ResultI induced by conjugation -/
+def ResultI.conj {z : Q(ℂ)} (hz : ResultI q($z)) :
+    MetaM (ResultI q(conj $z)) := do
+  return .mk' hz.re (← hz.im.neg q(inferInstance))
+    q(RCLike.conj_re $z) q(RCLike.conj_im $z)
+
+/-- ResultI induced by taking inverse -/
+def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
+    MetaM (ResultI q($z⁻¹)) := do
+  let den ←
+      (← (← hz.re.mul hz.re q(inferInstance)).add (← hz.im.mul hz.im q(inferInstance))
+      q(inferInstance)).inv q(inferInstance) (Option.some q(inferInstance))
+  return .mk'
+    (← den.mul hz.re q(inferInstance))
+    (← (← den.mul hz.im q(inferInstance)).neg q(inferInstance))
+    q(by rw [RCLike.inv_re, div_eq_mul_inv, mul_comm, RCLike.normSq_apply])
+    q(by rw [RCLike.inv_im, div_eq_mul_inv, mul_comm, RCLike.normSq_apply, mul_neg])
+
+theorem eq_of_eq_of_eq {z w : ℂ}
+    (ha : (RCLike.re z = RCLike.re w))
+    (hb : (RCLike.im z = RCLike.im w)) : z = w := by
+  apply RCLike.ext <;> simp_all
+
+theorem ne_of_re_ne {z w : ℂ} (h : (RCLike.re z ≠ RCLike.re w)) :
+    z ≠ w := by
+  rintro rfl
+  simp_all
+
+theorem ne_of_im_ne {z w : ℂ} (h : (RCLike.im z ≠ RCLike.im w)) :
+    z ≠ w := by
+  rintro rfl
+  simp_all
+
+theorem of_pow_negSucc (w : ℂ) {n : ℕ} {k' : ℤ} (hk : NormNum.IsInt k' (Int.negSucc n)) :
+    (w ^ (k' : ℤ)) = (w ^ (n + 1))⁻¹ := by
+  rw [hk.out, Int.cast_id, zpow_negSucc]
+
+theorem of_pow_ofNat (w : ℂ) {k : ℤ} {n : ℕ} (hkk' : NormNum.IsInt k n) :
+    w ^ k = w ^ n := by
+  simp [hkk'.out]
+
+theorem re_pow_zero (z : ℂ) : NormNum.IsNat (re (z ^ 0)) 1 := ⟨by simp⟩
+theorem im_pow_zero (z : ℂ) : NormNum.IsNat (im (z ^ 0)) 0 := ⟨by simp⟩
+
+theorem pow_bit_false (z : ℂ) (m : ℕ) : z ^ Nat.bit false m = z ^ m * z ^ m := by
+  rw [Nat.bit, cond, pow_mul', sq]
+
+theorem pow_bit_true (z : ℂ) (m : ℕ) : z ^ Nat.bit true m = z ^ m * z ^ m * z := by
+  rw [Nat.bit, cond, pow_add, pow_mul', pow_one, sq]
+
+/-- Using fast exponentiation to handle nat powers of complexes. -/
+partial def ResultI.pow (n' : ℕ) :
+    (z : Q(ℂ)) → (n : Q(ℕ)) → Q(NormNum.IsNat $n $n') → (r : ResultI z) →
+    MetaM (ResultI q($z ^ $n)) :=
+  n'.binaryRec'
+    (fun z n _ _ => do
+      have : $n =Q 0 := ⟨⟩
+      return ⟨.isNat q(inferInstance) q(nat_lit 1) q(re_pow_zero $z),
+        .isNat q(inferInstance) q(nat_lit 0) q(im_pow_zero $z)⟩)
+    (fun bit (m : ℕ) _ rec z n _ hz => do
+      let rm ← rec q($z) q($m) q(⟨rfl⟩) hz
+      let rm2 ← rm.mul rm
+      match bit with
+      | true =>
+        have : $n =Q Nat.bit true $m := ⟨⟩
+        return (← rm2.mul hz).eqTrans q(pow_bit_true $z $m)
+      | false =>
+        have : $n =Q Nat.bit false $m := ⟨⟩
+        return rm2.eqTrans q(pow_bit_false $z $m))
+
+/-- Parsing all the basic calculation in complex. -/
+partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
+  withTraceNode `Tactic.norm_num
+    (fun e : Except Exception _ =>
+      return m!"NormNumI.parse: parsing {z}" ++ match e with | .ok v => m!" => {v}" | _ => m!"") do
+  match z with
+  | ~q($z₁ + $z₂) =>
+    let r1 ← parse z₁
+    let r2 ← parse z₂
+    return (← r1.add r2).eqTrans q(rfl)
+  | ~q($z₁ * $z₂) =>
+    let r1 ← parse z₁
+    let r2 ← parse z₂
+    return (← r1.mul r2).eqTrans q(rfl)
+  | ~q($z⁻¹) =>
+    let r ← parse z
+    return (← r.inv).eqTrans q(rfl)
+  | ~q($z₁ / $z₂) => do
+    let r ← parse q($z₁ * $z₂⁻¹)
+    return r.eqTrans q(rfl)
+  | ~q(-$w) => do
+    let r ← parse w
+    return (← r.neg).eqTrans q(rfl)
+  | ~q($z₁ - $z₂) =>
+    let r1 ← parse z₁
+    let r2 ← parse z₂
+    return (← r1.sub r2).eqTrans q(rfl)
+  | ~q(conj $w) =>
+    let r ← parse w
+    return (← r.conj).eqTrans q(rfl)
+  | ~q($w ^ ($n' : ℕ)) =>
+    let rw ← parse w
+    let ⟨n, hn⟩ ← NormNum.deriveNat q($n') q(inferInstance)
+    return (← rw.pow n.natLit! _ _ hn).eqTrans q(rfl)
+  | ~q($w ^ ($k : ℤ)) =>
+    let ⟨k', hm⟩ ← NormNum.deriveInt q($k) q(inferInstance)
+    match k'.intLit! with
+    | Int.ofNat n =>
+      let r ← parse q($w ^ $n)
+      let _i : $k' =Q $n := ⟨⟩
+      return r.eqTrans q(of_pow_ofNat $w $hm)
+    | Int.negSucc n =>
+      let r ← parse q(($w ^ ($n + 1))⁻¹)
+      let _i : $k' =Q Int.negSucc $n := ⟨⟩
+      return r.eqTrans q(of_pow_negSucc $w $hm)
+  | ~q(Complex.I) =>
+    let re ← NormNum.derive q(0 : ℝ)
+    let im ← NormNum.derive q(1 : ℝ)
+    return ResultI.mk (re.eqTrans q(I_re)) (im.eqTrans q(I_im))
+  -- real values
+  | ~q(0) =>
+    let z ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (z.eqTrans q(zero_re)) (z.eqTrans q(zero_im))
+  | ~q(1) =>
+    let re ← NormNum.derive q(1 : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(one_re)) (im.eqTrans q(one_im))
+  | ~q(.ofReal $r) =>
+    let re ← NormNum.derive q($r : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(ofReal_re $r)) (im.eqTrans q(ofReal_im $r))
+  | ~q(Nat.cast $n) =>
+    let re ← NormNum.derive q(Nat.cast $n : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(natCast_re $n)) (im.eqTrans q(natCast_im $n))
+  | ~q(Int.cast $n) =>
+    let re ← NormNum.derive q(Int.cast $n : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(intCast_re $n)) (im.eqTrans q(intCast_im $n))
+  | ~q(NNRat.cast $q) =>
+    let re ← NormNum.derive q(NNRat.cast $q : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(re_nnratCast $q)) (im.eqTrans q(im_nnratCast $q))
+  | ~q(Rat.cast $q) =>
+    let re ← NormNum.derive q(Rat.cast $q : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(ratCast_re $q)) (im.eqTrans q(ratCast_im $q))
+  | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
+    let re ← NormNum.derive q(OfNat.ofNat $en : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(re_ofNat $en)) (im.eqTrans q(im_ofNat $en))
+  | ~q(OfScientific.ofScientific $em $ex $eexp) =>
+    let re ← NormNum.derive q(OfScientific.ofScientific $em $ex $eexp : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk
+      (re.eqTrans q(re_ofScientific _ _ _))
+      (im.eqTrans q(im_ofScientific $em $ex $eexp))
+  | _ => throwError "found the atom {z} which is not a numeral"
+
+-- TODO : get rid of cast in `$a = $x + Complex.I * $y`.
+-- also try replace `getD` with `get!`
+/-- when obtained a result `a` in `ResultI`, one could get `x y : ℝ` such that `a = x + yi`. -/
+def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) :
+    MetaM (Σ x y : Q(ℝ), Q($a = $x + Complex.I * $y)) := do
+  let ⟨(x : Q(ℝ)), pf1, _⟩ ← r.re.toSimpResult
+  let ⟨(y : Q(ℝ)), pf2, _⟩ ← r.im.toSimpResult
+  let pf1' : Q(Complex.re $a = $x) := pf1.getD q(rfl : $x = _)
+  let pf2' : Q(Complex.im $a = $y) := pf2.getD q(rfl : $y = _)
+  return ⟨x, y, q(Complex.ext (by simpa using $pf1') (by simpa using $pf2'))⟩
+
+/-- Create the `NormNumI` tactic in `conv` mode. -/
+elab "norm_numI" : conv => do
+  let z ← Conv.getLhs
+  let ⟨1, ~q(ℂ), z⟩ ← inferTypeQ z | throwError "{z} is not a complex number"
+  let r1 ← parse z
+  let ⟨_, _, pf⟩ ← r1.eqeq
+  let r : Simp.ResultQ q($z) := .mk _ <| .some q(($pf))
+  Conv.applySimpResult r
+
+def ResultI.eq {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
+    MetaM (NormNum.Result q($a = $b)) := do
+  let some ⟨eq1, h1⟩ := (← ha.re.eq hb.re).toBool | failure
+  let some ⟨eq2, h2⟩ := (← ha.im.eq hb.im).toBool | failure
+  match eq1, eq2 with
+  | true, true => return .isTrue q(NormNumI.eq_of_eq_of_eq $h1 $h2)
+  | true, false => return .isFalse q(NormNumI.ne_of_im_ne $h2)
+  | false, _ => return .isFalse q(NormNumI.ne_of_re_ne $h1)
+
+end NormNumI
+
+namespace NormNum
+
+/-- The `norm_num` extension which identifies expressions of the form `(z : ℂ) = (w : ℂ)`,
+such that `norm_num` successfully recognises both the real and imaginary parts of both `z` and `w`.
+-/
+@[norm_num (_ : ℂ) = _] def evalComplexEq : NormNumExt where eval {v β} e := do
+  trace[debug] "trigger norm_num instance for {e}"
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
+  let ~q(($z : ℂ) = $w) := e | failure
+  haveI' : $e =Q ($z = $w) := ⟨⟩
+  let hz ← NormNumI.parse z
+  let hw ← NormNumI.parse w
+  hz.eq hw
+
+/-- The `norm_num` extension which identifies expressions of the form `Complex.re (z : ℂ)`,
+such that `norm_num` successfully recognises the real part of `z`.
+-/
+@[norm_num Complex.re _] def evalRe : NormNumExt where eval {v β} e := do
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q ℝ := ⟨⟩
+  let ~q(Complex.re $z) := e | failure
+  return (← NormNumI.parse z).re
+
+/-- The `norm_num` extension which identifies expressions of the form `Complex.im (z : ℂ)`,
+such that `norm_num` successfully recognises the imaginary part of `z`.
+-/
+@[norm_num Complex.im _] def evalIm : NormNumExt where eval {v β} e := do
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q ℝ := ⟨⟩
+  let ~q(Complex.im $z) := e | failure
+  return (← NormNumI.parse z).im
+
+end NormNum
+
+end Mathlib.Meta
