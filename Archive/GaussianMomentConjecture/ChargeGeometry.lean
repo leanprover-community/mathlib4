@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.Reduction
-import Mathlib
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Data.Complex.Basic
 
 set_option linter.minImports true
 
@@ -87,7 +88,7 @@ theorem not_chargeOneSided_iff_straddlesZero
   · intro h hn
     exact hn h
 
-/-- Compatibility form of the the lowest-balanced-face theorem contrapositive: failure of strict
+/-- Compatibility form of the lowest-balanced-face theorem contrapositive: failure of strict
 one-sidedness is equivalent to witnesses on both weak sides of zero. -/
 theorem not_chargeOneSided_iff (P : MvPolynomial (Fin 2) ℂ) :
     ¬ChargeOneSided P ↔

@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.DvdKOmegaWiring
-import Mathlib
+import Mathlib.Analysis.AperiodicOrder.Delone.Basic
+import Mathlib.Data.Complex.Basic
+import Mathlib.RingTheory.LaurentSeries
+import Mathlib.SetTheory.ZFC.PSet
 
 set_option linter.minImports true
 
@@ -55,7 +58,7 @@ power `E (P ^ m)` vanishes for `m ≥ 1`, then `E (Q * P ^ m)` vanishes for all 
 theorem gmc2 (P Q : MvPolynomial (Fin 2) ℂ)
     (hnull : ∀ m : ℕ, 1 ≤ m → E (P ^ m) = 0) :
     ∃ N : ℕ, ∀ m ≥ N, E (Q * P ^ m) = 0 :=
-  GMC2DvdKOmegaWiring.gmc2_unconditional P Q hnull
+  GMC2.DvdKOmegaWiring.gmc2_unconditional P Q hnull
 
 end GMC2
 

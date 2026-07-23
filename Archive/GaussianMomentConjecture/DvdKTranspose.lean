@@ -3,31 +3,31 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.RingTheory.LaurentSeries
 
 set_option linter.minImports true
 
 /-!
-# The transpose hom `φ : (PowerSeries F)⟦X⟧ → PowerSeries (LaurentSeries F)` (the shared GMC(2) glue)
+# The transpose hom `φ : (PowerSeries F)⟦X⟧ → PowerSeries (LaurentSeries F)`
 
 The sole remaining glue of the whole GMC(2)/hderiv formalization is mapping the Weierstrass factors
 `P, h` of `Φ = xᴹ − t·R` (living in `F⟦t⟧⟦x⟧`) into frame `(F⸨x⸩)⟦t⟧`.  This module
 builds that ring hom from scratch (no Mathlib nested-power-series curry iso exists):
 
 * **`tau`** — the swap of nested power-series variables `F⟦t⟧⟦x⟧ → F⟦x⟧⟦t⟧`, `(τf)`'s `(t^a,x^b)`
-  coefficient is `f`'s `(x^b,t^a)` coefficient.  It is a ring hom; multiplicativity is the double-sum
+  coefficient is `f`'s `(x^b,t^a)` coefficient. It is a ring hom; multiplicativity is the double-sum
   reorder `Finset.sum_comm` on the two convolution antidiagonals (`tau_mul`).
 * **`phi := map (HahnSeries.ofPowerSeries) ∘ tauHom`** — post-composing the coefficient inclusion
   `F⟦x⟧ ↪ F⸨x⸩` lands in the frame.  `phi X = C(single 1 1)` = the frame's `x` (`phi_X`).
 
-Because `phi` sends the `x`-power-series `h` into the `x`-support-`≥0` part of the frame with the right
-`x⁰`-coefficient, it supplies exactly the `Φ = P·h` factorization and `xCoeff0(h)=unitCoeff0` that
-`GMC2DvdKHderiv.hderiv_of_frame`'s `(a)` needs.
+Because `phi` sends the `x`-power-series `h` into the `x`-support-`≥0` part of the frame with the
+right `x⁰`-coefficient, it supplies exactly the `Φ = P·h` factorization and `xCoeff0(h)=unitCoeff0`
+that `GMC2.DvdKHderiv.hderiv_of_frame`'s `(a)` needs.
 -/
 
 open PowerSeries
 
-namespace GMC2DvdKTranspose
+namespace GMC2.DvdKTranspose
 
 variable {F : Type*} [Field F]
 
@@ -116,5 +116,5 @@ theorem phi_C_C (a : F) :
     = PowerSeries.C (PowerSeries.C a) from htau, PowerSeries.map_C]
   exact congrArg PowerSeries.C (HahnSeries.ofPowerSeries_C a)
 
-end GMC2DvdKTranspose
+end GMC2.DvdKTranspose
 

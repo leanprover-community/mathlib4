@@ -5,7 +5,8 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.ChargeGeometry
 import Archive.GaussianMomentConjecture.LowestFaceExistence
-import Mathlib
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Data.Complex.Basic
 
 set_option linter.minImports true
 
@@ -31,7 +32,7 @@ def chargeQ (s : Fin 2 →₀ ℕ) : ℚ := charge s
 consumed by the lowest-face existence theorem. -/
 theorem chargesStraddleZero_of_chargeStraddlesZero
     (P : MvPolynomial (Fin 2) ℂ) (h : ChargeStraddlesZero P) :
-    GMC2LowestFaceExistence.ChargesStraddleZero P.support chargeQ := by
+    GMC2.LowestFaceExistence.ChargesStraddleZero P.support chargeQ := by
   rcases h with hzero | ⟨hminus, hplus⟩
   · left
     obtain ⟨s, hs, hq⟩ := hzero
@@ -62,7 +63,7 @@ theorem exists_rational_lowest_face_of_not_chargeOneSided
           chargeQ s < 0 ∧ 0 < chargeQ t ∧
           radialExponentQ s - lambda * chargeQ s = delta ∧
           radialExponentQ t - lambda * chargeQ t = delta) := by
-  apply GMC2LowestFaceExistence.exists_rational_lowest_balanced_face
+  apply GMC2.LowestFaceExistence.exists_rational_lowest_balanced_face
   exact chargesStraddleZero_of_chargeStraddlesZero P
     ((not_chargeOneSided_iff_straddlesZero P).mp hP)
 

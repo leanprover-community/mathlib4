@@ -3,7 +3,9 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Data.Nat.Prime.Defs
 
 set_option linter.minImports true
 
@@ -25,7 +27,7 @@ hypothesis needed for cancellation.
 
 open Finset
 
-namespace GMC2ChannelDilation
+namespace GMC2.ChannelDilation
 
 variable {ι : Type*} [DecidableEq ι]
 
@@ -282,5 +284,5 @@ theorem sum_map_dilation {A : Type*} [AddCommMonoid A]
         g (dilate p F s) := by
   exact Finset.sum_map _ _ _
 
-end GMC2ChannelDilation
+end GMC2.ChannelDilation
 

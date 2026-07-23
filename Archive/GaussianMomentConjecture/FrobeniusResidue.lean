@@ -3,7 +3,10 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Algebra.MvPolynomial.Coeff
+import Mathlib.Data.Nat.Choose.Lucas
+import Mathlib.Data.Nat.Prime.Factorial
+import Mathlib.RingTheory.MvPolynomial.Expand
 
 set_option linter.minImports true
 
@@ -30,7 +33,7 @@ outside the `p`-divisible lattice are zero.
 
 open Finset
 
-namespace GMC2FrobeniusResidue
+namespace GMC2.FrobeniusResidue
 
 /-- Frobenius fixes natural-number coefficients and distributes over a finite
 weighted sum.  This is the final `Q ↦ Q^p` step of the whole-face residue. -/
@@ -94,7 +97,7 @@ theorem multinomial_dilate_modEq
 
 /-- If `A ≥ A₀+1`, then the normalized factorial `(pA)!/(pA₀)!` contains a
 factor `p`.  This is the strict off-face vanishing step after the integral
-height gap supplied by `GMC2FrobeniusFace.off_face_integer_gap`. -/
+height gap supplied by `GMC2.FrobeniusFace.off_face_integer_gap`. -/
 theorem prime_dvd_normalized_factorial_of_gap
     (p A0 A : ℕ) (hp : p.Prime) (hgap : A0 + 1 ≤ A) :
     p ∣ Nat.factorial (p * A) / Nat.factorial (p * A0) := by
@@ -114,7 +117,7 @@ theorem prime_dvd_normalized_factorial_of_gap
     simpa only [Nat.mul_one] using Nat.mul_le_mul_left p hdiff
   exact (hp.dvd_factorial.mpr hk).trans (Nat.factorial_dvd_ascFactorial _ _)
 
-end GMC2FrobeniusResidue
+end GMC2.FrobeniusResidue
 
 /-! The concurrent arithmetic-engine development used the shorter
 `GMC2.multinomial_dilate_modEq` name in the historical root module.  Retain
@@ -127,7 +130,7 @@ theorem multinomial_dilate_modEq
     {ι : Type*} [DecidableEq ι] (p : ℕ) [Fact p.Prime]
     (S : Finset ι) (r : ι → ℕ) :
     Nat.multinomial S (fun i => p * r i) ≡ Nat.multinomial S r [MOD p] :=
-  GMC2FrobeniusResidue.multinomial_dilate_modEq p S r
+  GMC2.FrobeniusResidue.multinomial_dilate_modEq p S r
 
 /-- Elementary absorption lemma used by the concurrent no-carry proof. -/
 theorem dvd_choose_of_dvd {p : ℕ} (hp : p.Prime) {n k : ℕ}
@@ -200,7 +203,7 @@ theorem face_sum_frobenius
     ∑ t ∈ T, (Nat.multinomial S (fun i => p * s t i) : F) * (h t) ^ p =
       (∑ t ∈ T, (Nat.multinomial S (s t) : F) * h t) ^ p := by
   haveI : ExpChar F p := ExpChar.prime Fact.out
-  rw [GMC2FrobeniusResidue.weighted_sum_pow_char]
+  rw [GMC2.FrobeniusResidue.weighted_sum_pow_char]
   apply Finset.sum_congr rfl
   intro t ht
   congr 1

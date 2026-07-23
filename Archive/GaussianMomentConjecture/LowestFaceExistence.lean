@@ -3,7 +3,12 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Prod
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
 
 set_option linter.minImports true
 
@@ -29,7 +34,7 @@ the theorem starts with rational heights and charges and returns rational
 
 open Finset
 
-namespace GMC2LowestFaceExistence
+namespace GMC2.LowestFaceExistence
 
 variable {ι : Type*}
 
@@ -276,5 +281,5 @@ theorem exists_rational_lowest_balanced_face
         rw [this, div_mul_cancel₀ _ hqp]
         ring
 
-end GMC2LowestFaceExistence
+end GMC2.LowestFaceExistence
 

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.AlgebraicDescent
-import Mathlib
+import Mathlib.Data.Complex.Basic
+import Mathlib.RingTheory.FiniteType
 
 set_option linter.minImports true
 
@@ -22,7 +23,7 @@ The relation family itself may be arbitrary; only the variable type must be
 finite.
 -/
 
-namespace GMC2TorusDescent
+namespace GMC2.TorusDescent
 
 universe u v
 
@@ -73,7 +74,7 @@ theorem exists_numberField_torus_point_of_complex_relations
     simpa [c] using hrelation k
 
   exact
-    GMC2AlgebraicDescent.exists_numberField_torus_point_of_relations
+    GMC2.AlgebraicDescent.exists_numberField_torus_point_of_relations
       c hc relation hrelationA
 
 /-- A complex torus point can be specialized to a number field while
@@ -159,7 +160,7 @@ theorem exists_numberField_torus_point_preserving_nonzero_of_complex_relations
     | some i => exact hc i
 
   obtain ⟨K, fieldK, algebraK, hfinite, φ, hunitK, hrelationK⟩ :=
-    GMC2AlgebraicDescent.exists_numberField_specialization
+    GMC2.AlgebraicDescent.exists_numberField_specialization
       units hunits (fun k ↦ MvPolynomial.aeval c (relation k)) hrelationA
   letI : Field K := fieldK
   letI : Algebra ℚ K := algebraK
@@ -174,5 +175,5 @@ theorem exists_numberField_torus_point_preserving_nonzero_of_complex_relations
 
 end
 
-end GMC2TorusDescent
+end GMC2.TorusDescent
 

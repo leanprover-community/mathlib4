@@ -21,7 +21,7 @@ quotient without first choosing a number field prime.
 
 open MvPolynomial Finset
 
-namespace GMC2IntegralRelations
+namespace GMC2.IntegralRelations
 
 variable {ι R : Type*} [Fintype ι] [DecidableEq ι]
 
@@ -29,18 +29,18 @@ variable {ι R : Type*} [Fintype ι] [DecidableEq ι]
 noncomputable def momentRelationInt
     (exponent : ι → Fin 2 →₀ ℕ) (m : ℕ) : MvPolynomial ι ℤ :=
   ∑ r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m,
-    if (GMC2MomentRelations.channelExponent exponent r) 0 =
-        (GMC2MomentRelations.channelExponent exponent r) 1 then
+    if (GMC2.MomentRelations.channelExponent exponent r) 0 =
+        (GMC2.MomentRelations.channelExponent exponent r) 1 then
       MvPolynomial.monomial (Finsupp.equivFunOnFinite.symm r)
         ((Nat.multinomial Finset.univ r : ℤ) *
-          Nat.factorial ((GMC2MomentRelations.channelExponent exponent r) 0))
+          Nat.factorial ((GMC2.MomentRelations.channelExponent exponent r) 0))
     else 0
 
 /-- Integral universal face constant-term relation. -/
 noncomputable def constantTermRelationInt
     (q : ι → ℤ) (m : ℕ) : MvPolynomial ι ℤ :=
   ∑ r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m,
-    if GMC2ConstantTermRelations.totalCharge q r = 0 then
+    if GMC2.ConstantTermRelations.totalCharge q r = 0 then
       MvPolynomial.monomial (Finsupp.equivFunOnFinite.symm r)
         (Nat.multinomial Finset.univ r : ℤ)
     else 0
@@ -50,12 +50,12 @@ theorem aeval_momentRelationInt
     (exponent : ι → Fin 2 →₀ ℕ) (c : ι → R) (m : ℕ) :
     MvPolynomial.aeval c (momentRelationInt exponent m) =
       ∑ r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m,
-        if (GMC2MomentRelations.channelExponent exponent r) 0 =
-            (GMC2MomentRelations.channelExponent exponent r) 1 then
+        if (GMC2.MomentRelations.channelExponent exponent r) 0 =
+            (GMC2.MomentRelations.channelExponent exponent r) 1 then
           (Nat.multinomial Finset.univ r : R) *
             (∏ i, c i ^ r i) *
               (Nat.factorial
-                ((GMC2MomentRelations.channelExponent exponent r) 0) : R)
+                ((GMC2.MomentRelations.channelExponent exponent r) 0) : R)
         else 0 := by
   classical
   simp only [momentRelationInt, map_sum, MvPolynomial.aeval_def]
@@ -76,7 +76,7 @@ theorem aeval_constantTermRelationInt
     (q : ι → ℤ) (c : ι → R) (m : ℕ) :
     MvPolynomial.aeval c (constantTermRelationInt q m) =
       ∑ r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m,
-        if GMC2ConstantTermRelations.totalCharge q r = 0 then
+        if GMC2.ConstantTermRelations.totalCharge q r = 0 then
           (Nat.multinomial Finset.univ r : R) * ∏ i, c i ^ r i
         else 0 := by
   classical
@@ -99,30 +99,30 @@ theorem aeval_constantTermRelationInt_eq_rat
     (q : ι → ℤ) (c : ι → ℂ) (m : ℕ) :
     MvPolynomial.aeval c (constantTermRelationInt q m) =
       MvPolynomial.aeval c
-        (GMC2ConstantTermRelations.constantTermRelation q m) := by
+        (GMC2.ConstantTermRelations.constantTermRelation q m) := by
   rw [aeval_constantTermRelationInt,
-    GMC2ConstantTermRelations.aeval_constantTermRelation]
+    GMC2.ConstantTermRelations.aeval_constantTermRelation]
 
 /-- The complex Gaussian moment is also the evaluation of the integral
 universal moment polynomial. -/
 theorem E_indexedPolynomial_pow_eq_aeval_momentRelationInt
     (exponent : ι → Fin 2 →₀ ℕ) (coefficient : ι → ℂ) (m : ℕ) :
-    GMC2.E ((GMC2MomentTransport.indexedPolynomial exponent coefficient) ^ m) =
+    GMC2.E ((GMC2.MomentTransport.indexedPolynomial exponent coefficient) ^ m) =
       MvPolynomial.aeval coefficient (momentRelationInt exponent m) := by
   rw [aeval_momentRelationInt]
-  unfold GMC2MomentTransport.indexedPolynomial
+  unfold GMC2.MomentTransport.indexedPolynomial
   rw [Finset.sum_pow_eq_sum_piAntidiag, GMC2.E_finset_sum]
   apply Finset.sum_congr rfl
   intro r hr
-  rw [GMC2MomentTransport.prod_indexed_monomial_pow]
+  rw [GMC2.MomentTransport.prod_indexed_monomial_pow]
   change GMC2.E
       ((Nat.multinomial Finset.univ r : MvPolynomial (Fin 2) ℂ) *
         MvPolynomial.monomial
-          (GMC2MomentRelations.channelExponent exponent r)
+          (GMC2.MomentRelations.channelExponent exponent r)
           (∏ i, coefficient i ^ r i)) = _
   rw [GMC2.natCast_mul_monomial, GMC2.E_monomial]
   unfold GMC2.wt
   split_ifs <;> simp
 
-end GMC2IntegralRelations
+end GMC2.IntegralRelations
 

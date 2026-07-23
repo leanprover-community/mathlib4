@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.LowestFaceBridge
-import Mathlib
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Data.Complex.Basic
 
 set_option linter.minImports true
 
@@ -31,7 +32,7 @@ theorem exists_rational_lowest_face_finset
         delta ≤ radialExponentQ s - lambda * chargeQ s) ∧
       (∀ s, s ∈ F ↔ s ∈ P.support ∧
         radialExponentQ s - lambda * chargeQ s = delta) ∧
-      GMC2LowestFaceExistence.ChargesStraddleZero F chargeQ := by
+      GMC2.LowestFaceExistence.ChargesStraddleZero F chargeQ := by
   obtain ⟨lambda, delta, hlower, hwitness⟩ :=
     exists_rational_lowest_face_of_not_chargeOneSided P hP
   let F : Finset (Fin 2 →₀ ℕ) :=

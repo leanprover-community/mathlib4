@@ -3,18 +3,21 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Data.Complex.Basic
+import Mathlib.RingTheory.AdicCompletion.Completeness
+import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 
 set_option linter.minImports true
 
 /-!
 # Obstacle (ii) of the small-root product identity via Mathlib's Weierstrass preparation
 
-The last gap in the GMC(2)/DvdK proof (the orbit-product argument route) is the small-root product identity, whose obstacle (ii)
- is the construction of the **small-root factor** of
-`Φ = x^M − t·R(x)` — the degree-`M` distinguished polynomial `P` (`P ≡ x^M mod t`) with
-`Φ = P · h`, `h` a unit.  This was originally estimated as manual monic-M-th-root Hensel + a
-`(t)`-adic fixed-point iteration ("the next substantial piece", months-scale).
+The last gap in the GMC(2)/DvdK proof (the orbit-product argument route) is the small-root product
+identity, whose obstacle (ii) is the construction of the **small-root factor** of `Φ = x^M − t·R(x)`
+— the degree-`M` distinguished polynomial `P` (`P ≡ x^M mod t`) with `Φ = P · h`, `h` a unit. This
+was originally estimated as manual monic-M-th-root Hensel + a `(t)`-adic fixed-point iteration ("the
+next substantial piece", months-scale).
 
 **This file shows Mathlib already has it.**  View `Φ` as a power series in `x` over the
 complete local ring `A = F[[t]]`; its residue image is `x^M ≠ 0`, so
@@ -32,7 +35,7 @@ is a power series in `x = X` (outer).  `Φ = x^M − t·R(x)` with `R : F[X]` em
 
 open PowerSeries
 
-namespace GMC2DvdKWeierstrass
+namespace GMC2.DvdKWeierstrass
 
 noncomputable section
 
@@ -129,4 +132,4 @@ theorem coeff_zero_smallRootFactor_mul_unit (R : Polynomial F) (M : ℕ) (hM : 1
 end
 
 
-end GMC2DvdKWeierstrass
+end GMC2.DvdKWeierstrass

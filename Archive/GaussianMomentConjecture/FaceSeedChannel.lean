@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.ConstantTermRelations
-import Mathlib
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.LinearAlgebra.CliffordAlgebra.Equivs
 
 set_option linter.minImports true
 
@@ -19,7 +21,7 @@ extraction explicit.
 
 open MvPolynomial Finset
 
-namespace GMC2FaceSeedChannel
+namespace GMC2.FaceSeedChannel
 
 /-- A nonzero evaluated constant-term relation contains a nonzero balanced
 summand.  In particular, it supplies a concrete mass-`m` reference channel
@@ -28,18 +30,18 @@ theorem exists_nonzero_balanced_channel
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (q : ι → ℤ) (c : ι → ℂ) (m : ℕ)
     (hseed : MvPolynomial.aeval c
-      (GMC2ConstantTermRelations.constantTermRelation q m) ≠ 0) :
+      (GMC2.ConstantTermRelations.constantTermRelation q m) ≠ 0) :
     ∃ r : ι → ℕ,
       r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m ∧
-      GMC2ConstantTermRelations.totalCharge q r = 0 ∧
+      GMC2.ConstantTermRelations.totalCharge q r = 0 ∧
       (Nat.multinomial Finset.univ r : ℂ) * ∏ i, c i ^ r i ≠ 0 := by
-  rw [GMC2ConstantTermRelations.aeval_constantTermRelation] at hseed
+  rw [GMC2.ConstantTermRelations.aeval_constantTermRelation] at hseed
   obtain ⟨r, hr, hterm⟩ := Finset.exists_ne_zero_of_sum_ne_zero hseed
-  by_cases hbalanced : GMC2ConstantTermRelations.totalCharge q r = 0
+  by_cases hbalanced : GMC2.ConstantTermRelations.totalCharge q r = 0
   · refine ⟨r, hr, hbalanced, ?_⟩
     simpa only [if_pos hbalanced] using hterm
   · simp only [if_neg hbalanced] at hterm
     exact (hterm rfl).elim
 
-end GMC2FaceSeedChannel
+end GMC2.FaceSeedChannel
 

@@ -3,7 +3,8 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.GroupTheory.FiniteAbelian.Basic
+import Mathlib.RingTheory.Jacobson.Ring
 
 set_option linter.minImports true
 
@@ -23,16 +24,16 @@ units (and hence remain nonzero).
 
 open Finset
 
-namespace GMC2IntegralSpecialization
+namespace GMC2.IntegralSpecialization
 
 universe u
 
 /-- The algebraic data of a finite-field specialization of `A`.
 
-The field structure is exposed separately by `Data.fieldStructure`, so the
+The field structure is exposed separately by `ResidueData.fieldStructure`, so the
 structure stores only proof data and does not install a global noncomputable
 instance. -/
-structure Data (A : Type u) [CommRing A] where
+structure ResidueData (A : Type u) [CommRing A] where
   point : MaximalSpectrum A
   p : ℕ
   prime : p.Prime
@@ -40,34 +41,34 @@ structure Data (A : Type u) [CommRing A] where
   finiteOverInt : Module.Finite ℤ (A ⧸ point.asIdeal)
   finiteResidue : Finite (A ⧸ point.asIdeal)
 
-namespace Data
+namespace ResidueData
 
 variable {A : Type u} [CommRing A]
 
 /-- The residue type attached to a specialization. -/
-abbrev ResidueField (D : Data A) := A ⧸ D.point.asIdeal
+abbrev ResidueField (D : ResidueData A) := A ⧸ D.point.asIdeal
 
 /-- The quotient field structure attached to the maximal ideal.  Consumers
 may install it locally with `letI := D.fieldStructure`. -/
-@[reducible] noncomputable def fieldStructure (D : Data A) : Field D.ResidueField :=
+@[reducible] noncomputable def fieldStructure (D : ResidueData A) : Field D.ResidueField :=
   Ideal.Quotient.field D.point.asIdeal
 
 /-- The specialization homomorphism `A → A/P`. -/
-def map (D : Data A) : A →+* D.ResidueField :=
+def map (D : ResidueData A) : A →+* D.ResidueField :=
   Ideal.Quotient.mk D.point.asIdeal
 
 /-- Every zero relation is preserved by specialization. -/
-theorem map_eq_zero_of_eq_zero (D : Data A) {x : A} (hx : x = 0) :
+theorem map_eq_zero_of_eq_zero (D : ResidueData A) {x : A} (hx : x = 0) :
     D.map x = 0 := by
   rw [hx, map_zero]
 
 /-- Finite sums that vanish before specialization also vanish afterward. -/
-theorem map_sum_eq_zero (D : Data A) {ι : Type*} (S : Finset ι) (f : ι → A)
+theorem map_sum_eq_zero (D : ResidueData A) {ι : Type*} (S : Finset ι) (f : ι → A)
     (h : ∑ i ∈ S, f i = 0) :
     ∑ i ∈ S, D.map (f i) = 0 := by
   rw [← map_sum, h, map_zero]
 
-end Data
+end ResidueData
 
 /-- The Jacobson radical of the zero ideal of `ℤ` is zero.
 
@@ -115,7 +116,7 @@ theorem exists_preserving_units
     {A ι : Type*} [CommRing A] [Nontrivial A]
     [Algebra.FiniteType ℤ A]
     (S : Finset ι) (u : ι → A) (hu : ∀ i ∈ S, IsUnit (u i)) :
-    ∃ D : Data A,
+    ∃ D : ResidueData A,
       (∀ i ∈ S, IsUnit (D.map (u i))) ∧
       ∀ i ∈ S, D.map (u i) ≠ 0 := by
   classical
@@ -147,7 +148,7 @@ theorem exists_preserving_units
     AddMonoid.isTorsion_iff_isTorsion_int.mp htorsionAdd
   have hfinite : Finite (A ⧸ P.asIdeal) :=
     Module.finite_of_fg_torsion (A ⧸ P.asIdeal) htorsion
-  let D : Data A :=
+  let D : ResidueData A :=
     { point := P
       p := ringChar (A ⧸ P.asIdeal)
       prime := hp
@@ -160,5 +161,5 @@ theorem exists_preserving_units
   · intro i hiS
     exact ((hu i hiS).map D.map).ne_zero
 
-end GMC2IntegralSpecialization
+end GMC2.IntegralSpecialization
 

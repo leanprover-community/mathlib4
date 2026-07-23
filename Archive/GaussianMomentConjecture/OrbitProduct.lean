@@ -3,17 +3,19 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.Group.Action.Pretransitive
+import Mathlib.GroupTheory.GroupAction.Defs
 
 set_option linter.minImports true
 
 /-!
 # The orbit-product identity: the gap-independent core of the orbit-product argument (general DvdK1)
 
-the orbit-product argument (the Galois orbit-product proof of one-variable Duistermaat–van der Kallen, the sole
-remaining input to the GMC(2) formalization once `HeightWitnessSupplier` is discharged) rests on a
-purely group-theoretic fact: for a finite group `G` acting **transitively** on a finite set `Ω`, and
-any `f : Ω → A` into a commutative monoid,
+the orbit-product argument (the Galois orbit-product proof of one-variable Duistermaat–van der
+Kallen, the sole remaining input to the GMC(2) formalization once `HeightWitnessSupplier` is
+discharged) rests on a purely group-theoretic fact: for a finite group `G` acting **transitively**
+on a finite set `Ω`, and any `f : Ω → A` into a commutative monoid,
 
   `∏_{g ∈ G} f (g • x) = (∏_{α ∈ Ω} f α) ^ |Stab_G x|`.
 
@@ -22,14 +24,14 @@ Its field corollary (a proper root-subset product `p = ∏_{β∈S} β` lying in
 the orbit-product argument: with `v(∏_Ω) = 0` and `v(p) = 1` (`p = c·t`), `|Ω| = 0`, absurd.
 
 This module proves the group-theoretic core, gap-free and kernel-pure — the orbit-product target.
-The one genuinely valued-field piece (the small-root product identity, the small-root product, an unramified Hensel lift)
-is separate.
+The one genuinely valued-field piece (the small-root product identity, the small-root product, an
+unramified Hensel lift) is separate.
 -/
 
 open scoped BigOperators
 open MulAction Finset
 
-namespace GMC2OrbitProduct
+namespace GMC2.OrbitProduct
 
 variable {G Ω A : Type*} [Group G] [Fintype G] [MulAction G Ω] [Fintype Ω] [DecidableEq Ω]
 
@@ -78,15 +80,15 @@ theorem card_stabilizer_eq_card_stabilizer [IsPretransitive G Ω] (x y : Ω) :
   · intro s; ext; simp [mul_assoc]
   · intro t; ext; simp [mul_assoc]
 
-/-- **Orbit-product equation — the abstract core of the orbit-product argument.**  If `A` carries a distributive
-`G`-action, `f` is `G`-equivariant, and the subset product `p = ∏_{β∈S} f β` is `G`-fixed (it lies in
-the base field of a Galois extension), then
+/-- **Orbit-product equation — the abstract core of the orbit-product argument.** If `A` carries a
+distributive `G`-action, `f` is `G`-equivariant, and the subset product `p = ∏_{β∈S} f β` is
+`G`-fixed (it lies in the base field of a Galois extension), then
 
   `p ^ |G| = (∏_{α∈Ω} f α) ^ (|S| · |Stab_G x|)`.
 
-Taking any additive valuation `v` gives `|G|·v(p) = |S|·|Stab|·v(C)`, and with `|G| = |Ω|·|Stab|` this
-is `|Ω|·v(p) = |S|·v(C)` — the valuation identity that closes the orbit-product argument (`v(C)=0`, `v(p)=1` ⟹
-`|Ω|=0`, absurd). -/
+Taking any additive valuation `v` gives `|G|·v(p) = |S|·|Stab|·v(C)`, and with `|G| = |Ω|·|Stab|`
+this is `|Ω|·v(p) = |S|·v(C)` — the valuation identity that closes the orbit-product argument
+(`v(C)=0`, `v(p)=1` ⟹ `|Ω|=0`, absurd). -/
 theorem prod_pow_card_group_eq [IsPretransitive G Ω] [CommMonoid A] [MulDistribMulAction G A]
     (f : Ω → A) (S : Finset Ω) (x : Ω)
     (hf : ∀ (g : G) (β : Ω), f (g • β) = g • f β)
@@ -113,11 +115,12 @@ theorem prod_pow_card_group_eq [IsPretransitive G Ω] [CommMonoid A] [MulDistrib
     _ = (∏ α : Ω, f α) ^ (S.card * Fintype.card (stabilizer G x)) := by
           rw [Finset.prod_const, ← pow_mul, Nat.mul_comm]
 
-/-- **The valuation contradiction engine of the orbit-product argument.**  For any additive valuation `v` (a map
-turning products into sums), the orbit-product equation forces the `G`-fixed subset product `p` to
-have the *same-signed* valuation as the full product `C`: if `v(C) = 0` then `v(p) = 0`.  the orbit-product argument
-applies this with `C = ∏ Ω = (−1)^d r_0/r_d` (valuation `0` at `t = 0`) and `p = c·t` (valuation `1`),
-so the hypothesis `v(p) = 1 ≠ 0` contradicts the conclusion `v(p) = 0`, proving some `CT(Λ^m) ≠ 0`. -/
+/-- **The valuation contradiction engine of the orbit-product argument.** For any additive valuation
+`v` (a map turning products into sums), the orbit-product equation forces the `G`-fixed subset
+product `p` to have the *same-signed* valuation as the full product `C`: if `v(C) = 0` then
+`v(p) = 0`. The orbit-product argument applies this with `C = ∏ Ω = (−1)^d r_0/r_d` (valuation `0`
+at `t = 0`) and `p = c·t` (valuation `1`), so the hypothesis `v(p) = 1 ≠ 0` contradicts the
+conclusion `v(p) = 0`, proving some `CT(Λ^m) ≠ 0`. -/
 theorem valuation_zero_of_prod_fixed [IsPretransitive G Ω] [CommMonoid A] [MulDistribMulAction G A]
     (f : Ω → A) (S : Finset Ω) (x : Ω)
     (hf : ∀ (g : G) (β : Ω), f (g • β) = g • f β)
@@ -141,11 +144,12 @@ theorem valuation_zero_of_prod_fixed [IsPretransitive G Ω] [CommMonoid A] [MulD
   · exact absurd h (ne_of_gt hGpos)
   · exact h
 
-/-- **the orbit-product argument abstract contradiction capstone.**  Packaging `valuation_zero_of_prod_fixed` with the
-hypothesis that the fixed subset product has *nonzero* valuation: the two are contradictory.  In the
-DvdK instantiation `v(∏_Ω f) = v(C_Φ) = 0` (Vieta, a constant) while `v(∏_S f) = v(c·t) = 1 ≠ 0`
-(the small-root product identity), so the assumption "all `CT(Λ^m) = 0`" (which produces the fixed small-root product) is
-refuted — some `CT(Λ^m) ≠ 0`. -/
+/-- **The orbit-product abstract contradiction capstone.** Packaging
+`valuation_zero_of_prod_fixed` with the hypothesis that the fixed subset product has *nonzero*
+valuation: the two are contradictory. In the DvdK instantiation `v(∏_Ω f) = v(C_Φ) = 0` (Vieta, a
+constant) while `v(∏_S f) = v(c·t) = 1 ≠ 0` (the small-root product identity), so the assumption
+"all `CT(Λ^m) = 0`" (which produces the fixed small-root product) is refuted — some `CT(Λ^m) ≠ 0`.
+-/
 theorem orbit_product_contradiction [IsPretransitive G Ω] [CommMonoid A] [MulDistribMulAction G A]
     (f : Ω → A) (S : Finset Ω) (x : Ω)
     (hf : ∀ (g : G) (β : Ω), f (g • β) = g • f β)
@@ -156,5 +160,5 @@ theorem orbit_product_contradiction [IsPretransitive G Ω] [CommMonoid A] [MulDi
     (hG : 0 < Fintype.card G) : False :=
   hp (valuation_zero_of_prod_fixed f S x hf hfix v hv hC hG)
 
-end GMC2OrbitProduct
+end GMC2.OrbitProduct
 

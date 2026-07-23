@@ -6,21 +6,22 @@ Authors: Eliott Cassidy
 import Archive.GaussianMomentConjecture.DvdKFrame
 import Archive.GaussianMomentConjecture.DvdKTranspose
 import Archive.GaussianMomentConjecture.DvdKWeierstrass
-import Mathlib
+import Mathlib.Data.Complex.Basic
+import Mathlib.RingTheory.LaurentSeries
 
 set_option linter.minImports true
 
 /-!
 # The connector `φ(Φ_weier) = PhiFrame` — the transpose meets the frame
 
-The transpose `φ` (GMC2DvdKTranspose) carries the Weierstrass world `F⟦t⟧⟦x⟧` into frame
+The transpose `φ` (GMC2.DvdKTranspose) carries the Weierstrass world `F⟦t⟧⟦x⟧` into frame
 `(F⸨x⸩)⟦t⟧`.  This module proves it carries `Φ_weier = xᴹ − t·R` to `PhiFrame`, so that `φ(Φ = P·h)`
-gives the frame factorization `PhiFrame = φ(P)·φ(h)` feeding `GMC2DvdKHderiv.hderiv_of_frame`.
+gives the frame factorization `PhiFrame = φ(P)·φ(h)` feeding `GMC2.DvdKHderiv.hderiv_of_frame`.
 -/
 
-open PowerSeries GMC2DvdKTranspose GMC2DvdKFrame
+open PowerSeries GMC2.DvdKTranspose GMC2.DvdKFrame
 
-namespace GMC2DvdKConnector
+namespace GMC2.DvdKConnector
 
 variable {F : Type*} [Field F]
 
@@ -47,15 +48,16 @@ theorem phi_R_map (R : Polynomial F) :
 
 /-- **The connector: `φ(Φ_weier) = PhiFrame`.** -/
 theorem phi_Phi (R : Polynomial F) (M : ℕ) :
-    phi (GMC2DvdKWeierstrass.Phi R M)
+    phi (GMC2.DvdKWeierstrass.Phi R M)
       = PhiFrame (Polynomial.aeval (HahnSeries.single (1 : ℤ) (1 : F)) R) M := by
-  rw [GMC2DvdKWeierstrass.Phi, PhiFrame, map_sub, map_pow, phi_X, map_mul, phi_C_X, phi_R_map,
+  rw [GMC2.DvdKWeierstrass.Phi, PhiFrame, map_sub, map_pow, phi_X, map_mul, phi_C_X, phi_R_map,
     ← map_pow, HahnSeries.single_pow, one_pow]
 
-/-- **Rl-canonicalization.**  The two frame representations of `R` coincide: mapping the polynomial `R`
-into `LaurentSeries F` through `F⟦t⟧` (`ofPowerSeries ∘ coe`, `Rl R`) equals evaluating at the
-Laurent variable `single 1 1` (`aeval`, this connector's form).  Both are `∑ Rₙ · (single 1 1)ⁿ`.  So the
-two `phi_Phi` proofs (`GMC2DvdKConnector.phi_Phi`, `GMC2DvdKTransposeAssembly.phi_Phi`) are one statement. -/
+/-- **Rl-canonicalization.** The two frame representations of `R` coincide: mapping the polynomial
+`R` into `LaurentSeries F` through `F⟦t⟧` (`ofPowerSeries ∘ coe`, `Rl R`) equals evaluating at the
+Laurent variable `single 1 1` (`aeval`, this connector's form). Both are `∑ Rₙ · (single 1 1)ⁿ`. So
+the two `phi_Phi` proofs (`GMC2.DvdKConnector.phi_Phi`, `GMC2.DvdKTransposeAssembly.phi_Phi`) are
+one statement. -/
 theorem ofPowerSeries_coe_eq_aeval (R : Polynomial F) :
     HahnSeries.ofPowerSeries ℤ F (R : PowerSeries F)
       = Polynomial.aeval (HahnSeries.single (1 : ℤ) (1 : F)) R := by
@@ -69,5 +71,5 @@ theorem ofPowerSeries_coe_eq_aeval (R : Polynomial F) :
     · simp [Polynomial.coeToPowerSeries.ringHom, HahnSeries.ofPowerSeries_X]
   simpa [Polynomial.coeToPowerSeries.ringHom] using RingHom.congr_fun hext R
 
-end GMC2DvdKConnector
+end GMC2.DvdKConnector
 

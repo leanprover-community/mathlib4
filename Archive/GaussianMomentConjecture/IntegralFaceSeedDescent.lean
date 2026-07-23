@@ -6,7 +6,8 @@ Authors: Eliott Cassidy
 import Archive.GaussianMomentConjecture.FaceSeedDescent
 import Archive.GaussianMomentConjecture.IntegralRelations
 import Archive.GaussianMomentConjecture.IntegralTorusSpecialization
-import Mathlib
+import Mathlib.Data.Complex.Basic
+import Mathlib.FieldTheory.Finite.Polynomial
 
 set_option linter.minImports true
 
@@ -23,7 +24,7 @@ nonzero.
 
 open MvPolynomial Finset
 
-namespace GMC2IntegralFaceSeedDescent
+namespace GMC2.IntegralFaceSeedDescent
 
 noncomputable section
 
@@ -33,8 +34,8 @@ def liftedFaceSeedInt
     (P : MvPolynomial (Fin 2) ℂ) (F : Finset (Fin 2 →₀ ℕ))
     (hsubset : F ⊆ P.support) (m0 : ℕ) :
     MvPolynomial ↥P.support ℤ :=
-  MvPolynomial.rename (GMC2FaceSeedDescent.faceToSupport hsubset)
-    (GMC2IntegralRelations.constantTermRelationInt
+  MvPolynomial.rename (GMC2.FaceSeedDescent.faceToSupport hsubset)
+    (GMC2.IntegralRelations.constantTermRelationInt
       (fun s : ↥F ↦ GMC2.charge s) m0)
 
 /-- Evaluation of the integral lifted seed is evaluation of the face seed on
@@ -46,8 +47,8 @@ theorem aeval_liftedFaceSeedInt
     (coefficient : ↥P.support → R) :
     MvPolynomial.aeval coefficient (liftedFaceSeedInt P F hsubset m0) =
       MvPolynomial.aeval
-        (coefficient ∘ GMC2FaceSeedDescent.faceToSupport hsubset)
-        (GMC2IntegralRelations.constantTermRelationInt
+        (coefficient ∘ GMC2.FaceSeedDescent.faceToSupport hsubset)
+        (GMC2.IntegralRelations.constantTermRelationInt
           (fun s : ↥F ↦ GMC2.charge s) m0) := by
   exact MvPolynomial.aeval_rename _ _ _
 
@@ -59,8 +60,8 @@ torus point on its exact support.  The point has prime characteristic, all
 coordinates remain nonzero, every integral zero relation of the original
 complex coefficient point is preserved, every positive integral moment
 relation vanishes, and the integral lifted face seed remains nonzero. -/
-theorem exists_finite_field_moment_point_preserving_integral_lowest_face_seed
-    (hDvdK : GMC2DvdKInterface.DvdK1)
+theorem exists_finite_field_moment_point_seed
+    (hDvdK : GMC2.DvdKInterface.DvdK1)
     (P : MvPolynomial (Fin 2) ℂ)
     (hnull : ∀ m : ℕ, 1 ≤ m → GMC2.E (P ^ m) = 0)
     (hP : ¬GMC2.ChargeOneSided P) :
@@ -71,7 +72,7 @@ theorem exists_finite_field_moment_point_preserving_integral_lowest_face_seed
           delta ≤ GMC2.radialExponentQ s - lambda * GMC2.chargeQ s) ∧
         (∀ s, s ∈ F ↔ s ∈ P.support ∧
           GMC2.radialExponentQ s - lambda * GMC2.chargeQ s = delta) ∧
-        ∃ (A : Subalgebra ℤ ℂ) (D : GMC2IntegralSpecialization.Data A)
+        ∃ (A : Subalgebra ℤ ℂ) (D : GMC2.IntegralSpecialization.ResidueData A)
           (w : ↥P.support → D.ResidueField),
           D.p.Prime ∧
           CharP D.ResidueField D.p ∧
@@ -84,45 +85,45 @@ theorem exists_finite_field_moment_point_preserving_integral_lowest_face_seed
               MvPolynomial.aeval w f = 0) ∧
           (∀ m : ℕ, 1 ≤ m →
             MvPolynomial.aeval w
-              (GMC2IntegralRelations.momentRelationInt
+              (GMC2.IntegralRelations.momentRelationInt
                 (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ)) m) = 0) ∧
           MvPolynomial.aeval w (liftedFaceSeedInt P F hsubset m0) ≠ 0 := by
   classical
   obtain ⟨lambda, delta, F, m0, hm0, hsubset, hlower, hface, hseed⟩ :=
-    GMC2FaceSeed.exists_nonzero_lowest_face_seed hDvdK P hP
+    GMC2.FaceSeed.exists_nonzero_lowest_face_seed hDvdK P hP
   let coefficient : ↥P.support → ℂ := fun s ↦ P.coeff s
   have hcoefficient : ∀ s, coefficient s ≠ 0 := by
     intro s
     simpa only [coefficient, MvPolynomial.mem_support_iff] using s.property
   have hfaceModelBridge :
       MvPolynomial.aeval
-          (coefficient ∘ GMC2FaceSeedDescent.faceToSupport hsubset)
-          (GMC2IntegralRelations.constantTermRelationInt
+          (coefficient ∘ GMC2.FaceSeedDescent.faceToSupport hsubset)
+          (GMC2.IntegralRelations.constantTermRelationInt
             (fun s : ↥F ↦ GMC2.charge s) m0) =
         MvPolynomial.aeval
-          (coefficient ∘ GMC2FaceSeedDescent.faceToSupport hsubset)
-          (GMC2ConstantTermRelations.constantTermRelation
+          (coefficient ∘ GMC2.FaceSeedDescent.faceToSupport hsubset)
+          (GMC2.ConstantTermRelations.constantTermRelation
             (fun s : ↥F ↦ GMC2.charge s) m0) := by
-    rw [GMC2IntegralRelations.aeval_constantTermRelationInt,
-      GMC2ConstantTermRelations.aeval_constantTermRelation]
+    rw [GMC2.IntegralRelations.aeval_constantTermRelationInt,
+      GMC2.ConstantTermRelations.aeval_constantTermRelation]
   have hseedInt :
       MvPolynomial.aeval coefficient
         (liftedFaceSeedInt P F hsubset m0) ≠ 0 := by
     rw [aeval_liftedFaceSeedInt]
     rw [hfaceModelBridge]
-    simpa [coefficient, GMC2FaceSeedDescent.faceToSupport,
+    simpa [coefficient, GMC2.FaceSeedDescent.faceToSupport,
       Function.comp_def] using hseed
   have hmomentInt : ∀ m : ℕ, 1 ≤ m →
       MvPolynomial.aeval coefficient
-        (GMC2IntegralRelations.momentRelationInt
+        (GMC2.IntegralRelations.momentRelationInt
           (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ)) m) = 0 := by
     intro m hm
-    rw [← GMC2IntegralRelations.E_indexedPolynomial_pow_eq_aeval_momentRelationInt]
-    rw [GMC2SupportDescent.indexedPolynomial_support_eq]
+    rw [← GMC2.IntegralRelations.E_indexedPolynomial_pow_eq_aeval_momentRelationInt]
+    rw [GMC2.SupportDescent.indexedPolynomial_support_eq]
     exact hnull m hm
   obtain ⟨A, D, w, hp, hchar, hfinite, hfield,
       hunit, hnonzero, huniversal, hseedFinite⟩ :=
-    GMC2IntegralTorusSpecialization.exists_finite_field_torus_specialization
+    GMC2.IntegralTorusSpecialization.exists_finite_field_torus_specialization
       coefficient hcoefficient (liftedFaceSeedInt P F hsubset m0) hseedInt
   refine ⟨lambda, delta, F, m0, hsubset, hm0, hlower, hface,
     A, D, w, hp, hchar, hfinite, hfield, hunit, hnonzero, ?_, ?_, hseedFinite⟩
@@ -133,5 +134,5 @@ theorem exists_finite_field_moment_point_preserving_integral_lowest_face_seed
 
 end
 
-end GMC2IntegralFaceSeedDescent
+end GMC2.IntegralFaceSeedDescent
 

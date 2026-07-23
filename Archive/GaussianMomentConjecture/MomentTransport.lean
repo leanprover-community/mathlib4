@@ -21,7 +21,7 @@ the algebraic descent over `ℚ`.
 
 open MvPolynomial Finset
 
-namespace GMC2MomentTransport
+namespace GMC2.MomentTransport
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
@@ -56,9 +56,9 @@ theorem E_indexedPolynomial_pow_eq_aeval_momentRelation
     (exponent : ι → Fin 2 →₀ ℕ) (coefficient : ι → ℂ) (m : ℕ) :
     GMC2.E ((indexedPolynomial exponent coefficient) ^ m) =
       MvPolynomial.aeval coefficient
-        (GMC2MomentRelations.momentRelation exponent m) := by
+        (GMC2.MomentRelations.momentRelation exponent m) := by
   classical
-  rw [GMC2MomentRelations.aeval_momentRelation]
+  rw [GMC2.MomentRelations.aeval_momentRelation]
   unfold indexedPolynomial
   rw [Finset.sum_pow_eq_sum_piAntidiag]
   rw [GMC2.E_finset_sum]
@@ -68,11 +68,11 @@ theorem E_indexedPolynomial_pow_eq_aeval_momentRelation
   change GMC2.E
       ((Nat.multinomial Finset.univ r : MvPolynomial (Fin 2) ℂ) *
         MvPolynomial.monomial
-          (GMC2MomentRelations.channelExponent exponent r)
+          (GMC2.MomentRelations.channelExponent exponent r)
           (∏ i, coefficient i ^ r i)) = _
   rw [GMC2.natCast_mul_monomial, GMC2.E_monomial]
   unfold GMC2.wt
   split_ifs <;> simp <;> ring
 
-end GMC2MomentTransport
+end GMC2.MomentTransport
 

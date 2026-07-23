@@ -3,7 +3,7 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.RingTheory.Jacobson.Ring
 
 set_option linter.minImports true
 
@@ -22,7 +22,7 @@ the localized moment coordinate ring or prove it nontrivial from a complex
 point; those remain the explicit front-end interface.
 -/
 
-namespace GMC2AlgebraicDescent
+namespace GMC2.AlgebraicDescent
 
 universe u v w
 
@@ -126,5 +126,5 @@ theorem exists_numberField_torus_point_of_relations
     rw [← MvPolynomial.comp_aeval_apply (f := c) φ (relation k),
       hrelation k, map_zero]
 
-end GMC2AlgebraicDescent
+end GMC2.AlgebraicDescent
 

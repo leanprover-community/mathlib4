@@ -5,7 +5,10 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.ConstantTermRelations
 import Archive.GaussianMomentConjecture.OrbitProduct
-import Mathlib
+import Mathlib.Algebra.Polynomial.Laurent
+import Mathlib.Computability.Reduce
+import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.LinearAlgebra.Lagrange
 
 set_option linter.minImports true
 
@@ -25,7 +28,7 @@ semiring makes the bridge independent of the later complex/Galois argument.
 open Polynomial
 open scoped BigOperators
 
-namespace GMC2LaurentShiftCheckA
+namespace GMC2.LaurentShiftCheckA
 
 open LaurentPolynomial
 
@@ -42,7 +45,7 @@ theorem coeff_mul_T (f : LaurentPolynomial A) (s k : ℤ) :
 
 The left side uses evaluation at exponent `0` because a Laurent polynomial is
 implemented as a finitely supported function `ℤ → A`; the right side is the
-ordinary polynomial coefficient API consumed by the the orbit-product argument generating
+ordinary polynomial coefficient API consumed by the orbit-product argument generating
 polynomial `Φ(X) = X^M - t R(X)`. -/
 theorem constantCoeff_shifted_pow_eq_coeff_pow (R : A[X]) (M m : ℕ) :
     ((Polynomial.toLaurent R * (T (-(M : ℤ)) : LaurentPolynomial A)) ^ m).coeff 0 =
@@ -72,23 +75,23 @@ theorem prod_monomial_eq {ι : Type*} (s : Finset ι) (q : ι → ℤ) (c : ι �
 /-- The universal relation in `ConstantTermRelations` really is the
 constant coefficient of the corresponding finite Laurent polynomial power.
 This is the semantic half of Check A and fixes the exact interface to
-`GMC2DvdKInterface.DvdK1`. -/
+`GMC2.DvdKInterface.DvdK1`. -/
 theorem constantCoeff_pow_eq_aeval_constantTermRelation
     {ι : Type*} [Fintype ι] [DecidableEq ι] [Algebra ℚ A]
     (q : ι → ℤ) (c : ι → A) (m : ℕ) :
     (((∑ i : ι, LaurentPolynomial.C (c i) * T (q i)) ^ m :
         LaurentPolynomial A)).coeff 0 =
       MvPolynomial.aeval c
-        (GMC2ConstantTermRelations.constantTermRelation q m) := by
+        (GMC2.ConstantTermRelations.constantTermRelation q m) := by
   classical
   have haeval :
       MvPolynomial.aeval c
-          (GMC2ConstantTermRelations.constantTermRelation q m) =
+          (GMC2.ConstantTermRelations.constantTermRelation q m) =
         ∑ r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m,
-          if GMC2ConstantTermRelations.totalCharge q r = 0 then
+          if GMC2.ConstantTermRelations.totalCharge q r = 0 then
             (Nat.multinomial Finset.univ r : A) * ∏ i, c i ^ r i
           else 0 := by
-    simp only [GMC2ConstantTermRelations.constantTermRelation, map_sum,
+    simp only [GMC2.ConstantTermRelations.constantTermRelation, map_sum,
       MvPolynomial.aeval_def]
     apply Finset.sum_congr rfl
     intro r hr
@@ -120,12 +123,12 @@ theorem constantCoeff_pow_eq_aeval_constantTermRelation
           ((Nat.multinomial Finset.univ r : A) * ∏ i, c i ^ r i) := by
     simp only [map_mul, map_natCast]
   rw [hconst]
-  by_cases hq : GMC2ConstantTermRelations.totalCharge q r = 0
+  by_cases hq : GMC2.ConstantTermRelations.totalCharge q r = 0
   · have hsum : ∑ i, (r i : ℤ) * q i = 0 := by
-      simpa only [GMC2ConstantTermRelations.totalCharge] using hq
+      simpa only [GMC2.ConstantTermRelations.totalCharge] using hq
     simp only [LaurentPolynomial.C_apply, hsum, zero_sub, neg_zero, hq, if_pos]
   · have hsum : ¬(∑ i, (r i : ℤ) * q i) = 0 := by
-      simpa only [GMC2ConstantTermRelations.totalCharge] using hq
+      simpa only [GMC2.ConstantTermRelations.totalCharge] using hq
     simp only [LaurentPolynomial.C_apply, zero_sub, neg_eq_zero, hsum, hq, if_false]
 
 /-- Shift every Laurent exponent upward by `M` and regard the result as an
@@ -167,22 +170,22 @@ theorem coeff_shiftedPolynomial_pow_eq_aeval_constantTermRelation
     (hM : ∀ i, -(M : ℤ) ≤ q i) :
     ((shiftedPolynomial q c M) ^ m).coeff (M * m) =
       MvPolynomial.aeval c
-        (GMC2ConstantTermRelations.constantTermRelation q m) := by
+        (GMC2.ConstantTermRelations.constantTermRelation q m) := by
   rw [← constantCoeff_shifted_pow_eq_coeff_pow]
   rw [toLaurent_shiftedPolynomial_mul_T q c M hM]
   exact constantCoeff_pow_eq_aeval_constantTermRelation q c m
 
-end GMC2LaurentShiftCheckA
+end GMC2.LaurentShiftCheckA
 
 
-namespace GMC2AdditiveOrbitSum
+namespace GMC2.AdditiveOrbitSum
 
 open Finset MulAction
 
 variable {G Ω B : Type*} [Group G] [Fintype G] [MulAction G Ω]
   [Fintype Ω] [DecidableEq Ω]
 
-/-- Additive companion to `GMC2OrbitProduct.prod_smul_eq_prod_pow_card_stabilizer`.
+/-- Additive companion to `GMC2.OrbitProduct.prod_smul_eq_prod_pow_card_stabilizer`.
 For a transitive finite action, summing a function along one group orbit
 counts every point with the cardinality of a stabilizer. -/
 theorem sum_smul_eq_card_stabilizer_nsmul [IsPretransitive G Ω] [AddCommMonoid B]
@@ -195,7 +198,7 @@ theorem sum_smul_eq_card_stabilizer_nsmul [IsPretransitive G Ω] [AddCommMonoid 
         Fintype.card (stabilizer G x) • f y := by
     intro y
     rw [Finset.sum_congr rfl (fun i _ ↦ congrArg f i.2)]
-    simp [GMC2OrbitProduct.card_fiber_smul_eq_card_stabilizer x y]
+    simp [GMC2.OrbitProduct.card_fiber_smul_eq_card_stabilizer x y]
   rw [Finset.sum_congr rfl (fun y _ ↦ key y), Finset.smul_sum]
 
 /-- Uniform incidence identity for a subset all of whose group translates
@@ -217,7 +220,7 @@ theorem card_nsmul_translateSum_eq [IsPretransitive G Ω] [AddCommMonoid B]
       apply Finset.sum_congr rfl
       intro β hβ
       rw [sum_smul_eq_card_stabilizer_nsmul f β,
-        GMC2OrbitProduct.card_stabilizer_eq_card_stabilizer β x]
+        GMC2.OrbitProduct.card_stabilizer_eq_card_stabilizer β x]
     _ = (S.card * Fintype.card (stabilizer G x)) • ∑ α : Ω, f α := by
       rw [Finset.sum_const]
       exact (mul_nsmul' (∑ α : Ω, f α) S.card
@@ -227,7 +230,7 @@ theorem card_nsmul_translateSum_eq [IsPretransitive G Ω] [AddCommMonoid B]
 subset can have every translate of its weighted sum equal to `1` while the
 full-orbit weighted sum is `0`.
 
-In the proposed the orbit-product argument route, `f(α)=α^(M-1)/Φ'(α)`, `S` is the small-root
+In the proposed orbit-product route, `f(α)=α^(M-1)/Φ'(α)`, `S` is the small-root
 subset, the germ identity gives every translated sum as `1`, and Lagrange
 interpolation gives the full-root sum as `0`.
 -/
@@ -241,17 +244,17 @@ theorem translateSum_one_ne_fullSum_zero
   have hcast : (Fintype.card G : K) = 0 := by simpa using h
   exact (Nat.cast_ne_zero.mpr Fintype.card_ne_zero) hcast
 
-end GMC2AdditiveOrbitSum
+end GMC2.AdditiveOrbitSum
 
 
-namespace GMC2FullRootLagrange
+namespace GMC2.FullRootLagrange
 
 open Polynomial
 open scoped BigOperators
 
 /-- Lagrange's top-coefficient identity specialized below the top degree:
 for `k+1 < |s|`, the sum of `α^k` divided by the nodal derivative is zero.
-This is the residue-at-infinity identity needed by the additive the orbit-product argument
+This is the residue-at-infinity identity needed by the additive orbit-product argument
 route, stated directly for a finite set of distinct roots. -/
 theorem sum_pow_div_derivative_nodal_eq_zero
     {K : Type*} [Field K] (s : Finset K) (k : ℕ)
@@ -295,5 +298,5 @@ theorem sum_pow_pred_div_derivative_nodal_eq_zero
   apply sum_pow_div_derivative_nodal_eq_zero s (M - 1)
   omega
 
-end GMC2FullRootLagrange
+end GMC2.FullRootLagrange
 

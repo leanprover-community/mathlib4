@@ -3,7 +3,8 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.FieldTheory.Minpoly.IsConjRoot
+import Mathlib.RingTheory.PowerSeries.Basic
 
 set_option linter.minImports true
 
@@ -12,15 +13,16 @@ set_option linter.minImports true
 
 To instantiate the abstract orbit-product wrapper (`Thm2067Wrapper`) at an actual polynomial, we
 need the Galois group `L ≃ₐ[K] L` acting on the roots of an irreducible `Φ ∈ K[X]` (splitting in a
-normal `L`), **transitively**, with the root inclusion **equivariant**.  Using the *direct* action
+normal `L`), **transitively**, with the root inclusion **equivariant**. Using the *direct* action
 `σ • x = σ x` (rather than Mathlib's `galAction`, whose equivariance routes through the finicky
 `rootsEquivRoots`), equivariance is tautological, and transitivity comes from `IsConjRoot`: any two
-roots of the same irreducible are conjugate, so `IsConjRoot.exists_algEquiv` supplies the automorphism.
+roots of the same irreducible are conjugate, so `IsConjRoot.exists_algEquiv` supplies the
+automorphism.
 -/
 
 open Polynomial
 
-namespace GMC2GalRootAction
+namespace GMC2.GalRootAction
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
@@ -69,5 +71,5 @@ theorem isPretransitive_rootAction [Normal K L] (Φ : K[X]) (hΦ : Irreducible �
   obtain ⟨σ, hσ⟩ := hconj.exists_algEquiv
   exact ⟨σ, Subtype.ext (by rw [coe_smul]; exact hσ)⟩
 
-end GMC2GalRootAction
+end GMC2.GalRootAction
 

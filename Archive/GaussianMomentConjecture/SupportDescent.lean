@@ -19,16 +19,16 @@ needed beyond the definition of support.
 
 open MvPolynomial Finset
 
-namespace GMC2SupportDescent
+namespace GMC2.SupportDescent
 
 /-- Re-expanding a polynomial over its support as an indexed monomial sum
 recovers the polynomial exactly. -/
 theorem indexedPolynomial_support_eq (P : MvPolynomial (Fin 2) ℂ) :
-    GMC2MomentTransport.indexedPolynomial
+    GMC2.MomentTransport.indexedPolynomial
       (fun s : ↥P.support => (s : Fin 2 →₀ ℕ))
       (fun s : ↥P.support => P.coeff s) = P := by
   classical
-  unfold GMC2MomentTransport.indexedPolynomial
+  unfold GMC2.MomentTransport.indexedPolynomial
   rw [Finset.univ_eq_attach]
   calc
     (∑ i ∈ P.support.attach,
@@ -51,9 +51,9 @@ theorem exists_numberField_moment_null_point_of_polynomial
           (∀ i, coefficientK i ≠ 0) ∧
             ∀ m : ℕ,
               MvPolynomial.aeval coefficientK
-                (GMC2MomentRelations.momentRelation
+                (GMC2.MomentRelations.momentRelation
                   (fun s : ↥P.support => (s : Fin 2 →₀ ℕ)) (m + 1)) = 0 := by
-  apply GMC2NullconeDescent.exists_numberField_moment_null_point
+  apply GMC2.NullconeDescent.exists_numberField_moment_null_point
     (fun s : ↥P.support => (s : Fin 2 →₀ ℕ))
     (fun s : ↥P.support => P.coeff s)
   · intro s
@@ -62,5 +62,5 @@ theorem exists_numberField_moment_null_point_of_polynomial
     rw [indexedPolynomial_support_eq]
     exact hnull m hm
 
-end GMC2SupportDescent
+end GMC2.SupportDescent
 

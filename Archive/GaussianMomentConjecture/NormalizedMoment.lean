@@ -24,7 +24,7 @@ integral relation to vanish as well.
 
 open MvPolynomial Finset
 
-namespace GMC2NormalizedMoment
+namespace GMC2.NormalizedMoment
 
 variable {ι R : Type*} [Fintype ι] [DecidableEq ι]
 
@@ -36,13 +36,13 @@ def normalizedFactorial (A0 A : ℕ) : ℕ :=
 /-- The accumulated Wick height of an indexed channel. -/
 noncomputable def channelHeight (exponent : ι → Fin 2 →₀ ℕ)
     (r : ι → ℕ) : ℕ :=
-  (GMC2MomentRelations.channelExponent exponent r) 0
+  (GMC2.MomentRelations.channelExponent exponent r) 0
 
 /-- The exact balance predicate for an indexed Wick channel. -/
 noncomputable def IsBalanced (exponent : ι → Fin 2 →₀ ℕ)
     (r : ι → ℕ) : Prop :=
-  (GMC2MomentRelations.channelExponent exponent r) 0 =
-    (GMC2MomentRelations.channelExponent exponent r) 1
+  (GMC2.MomentRelations.channelExponent exponent r) 0 =
+    (GMC2.MomentRelations.channelExponent exponent r) 1
 
 /-- Balance is an equality of natural exponents, hence decidable. -/
 noncomputable instance instDecidableIsBalanced
@@ -107,9 +107,9 @@ theorem factorial_mul_aeval_normalized_eq_aeval_momentRelationInt
     (Nat.factorial A0 : R) *
         MvPolynomial.aeval c (normalizedMomentRelationInt exponent m A0) =
       MvPolynomial.aeval c
-        (GMC2IntegralRelations.momentRelationInt exponent m) := by
+        (GMC2.IntegralRelations.momentRelationInt exponent m) := by
   rw [aeval_normalizedMomentRelationInt]
-  rw [GMC2IntegralRelations.aeval_momentRelationInt]
+  rw [GMC2.IntegralRelations.aeval_momentRelationInt]
   rw [Finset.mul_sum]
   apply Finset.sum_congr rfl
   intro r hr
@@ -130,15 +130,15 @@ theorem factorial_mul_aeval_normalized_eq_aeval_momentRelationInt
       (Nat.factorial A0 : R) *
           ((Nat.multinomial Finset.univ r : R) * (∏ i, c i ^ r i) *
             (normalizedFactorial A0
-              ((GMC2MomentRelations.channelExponent exponent r) 0) : R)) =
+              ((GMC2.MomentRelations.channelExponent exponent r) 0) : R)) =
           (Nat.multinomial Finset.univ r : R) * (∏ i, c i ^ r i) *
             ((Nat.factorial A0 : R) *
               (normalizedFactorial A0
-                ((GMC2MomentRelations.channelExponent exponent r) 0) : R)) := by
+                ((GMC2.MomentRelations.channelExponent exponent r) 0) : R)) := by
             ring
       _ = (Nat.multinomial Finset.univ r : R) * (∏ i, c i ^ r i) *
             (Nat.factorial
-              ((GMC2MomentRelations.channelExponent exponent r) 0) : R) := by
+              ((GMC2.MomentRelations.channelExponent exponent r) 0) : R) := by
             rw [hfacR]
   · simp only [if_neg hbalanced, mul_zero]
     unfold IsBalanced at hbalanced
@@ -154,11 +154,11 @@ theorem factorial_mul_aeval_normalized_eq_E
         MvPolynomial.aeval coefficient
           (normalizedMomentRelationInt exponent m A0) =
       GMC2.E
-        ((GMC2MomentTransport.indexedPolynomial exponent coefficient) ^ m) := by
+        ((GMC2.MomentTransport.indexedPolynomial exponent coefficient) ^ m) := by
   rw [factorial_mul_aeval_normalized_eq_aeval_momentRelationInt
     exponent coefficient m A0 hmin]
   exact
-    (GMC2IntegralRelations.E_indexedPolynomial_pow_eq_aeval_momentRelationInt
+    (GMC2.IntegralRelations.E_indexedPolynomial_pow_eq_aeval_momentRelationInt
       exponent coefficient m).symm
 
 /-- Complex cancellation layer: if every balanced mass-`m` channel has
@@ -169,7 +169,7 @@ theorem aeval_normalized_eq_zero_of_E_pow_eq_zero
     (hmin : ∀ r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m,
       IsBalanced exponent r → A0 ≤ channelHeight exponent r)
     (hraw : GMC2.E
-      ((GMC2MomentTransport.indexedPolynomial exponent coefficient) ^ m) = 0) :
+      ((GMC2.MomentTransport.indexedPolynomial exponent coefficient) ^ m) = 0) :
     MvPolynomial.aeval coefficient
       (normalizedMomentRelationInt exponent m A0) = 0 := by
   have hfactor := factorial_mul_aeval_normalized_eq_E
@@ -178,5 +178,5 @@ theorem aeval_normalized_eq_zero_of_E_pow_eq_zero
   exact (mul_eq_zero.mp hfactor).resolve_left (by
     exact_mod_cast Nat.factorial_ne_zero A0)
 
-end GMC2NormalizedMoment
+end GMC2.NormalizedMoment
 

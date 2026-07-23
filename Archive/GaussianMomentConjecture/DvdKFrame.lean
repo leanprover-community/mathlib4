@@ -3,7 +3,9 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.RingTheory.PowerSeries.LogDeriv
+import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.PowerSeries.Substitution
 
 set_option linter.minImports true
 
@@ -11,7 +13,8 @@ set_option linter.minImports true
 # The unified `(LaurentSeries F)⟦t⟧` frame for the DvdK log-derivative identity (`hderiv`)
 
 The last open lemma of the whole GMC(2) formalization is `hderiv`: `d_t(h(0,t)) = 0` under the DvdK
-vanishing `D_m = 0`, where `h` is the Weierstrass unit of `Φ = xᴹ − t·R` over `F⟦t⟧`.  flagged the obstacle as *"taking `[x⁰]` consistently across two completions"* — `h(0,t)` is `x`-adic
+vanishing `D_m = 0`, where `h` is the Weierstrass unit of `Φ = xᴹ − t·R` over `F⟦t⟧`. flagged the
+obstacle as *"taking `[x⁰]` consistently across two completions"* — `h(0,t)` is `x`-adic
 (`h ∈ F⟦t⟧⟦x⟧`), while the generating function `F(t) = [x⁰](xᴹ/Φ)` is `t`-adic.
 
 **This module supplies the resolution: work in the single ring `PowerSeries (LaurentSeries F)`
@@ -22,14 +25,14 @@ coeff `1`) are **all units in one ring** — no fraction field, honest division,
 embeds here (its `x`-support is bounded below).  The two completions collapse to one.
 
 The `[x⁰]` extraction is then the `F⟦t⟧`-additive map `xCoeff0 : (F⸨x⸩)⟦t⟧ →+ F⟦t⟧` reading the `x⁰`
-Hahn-coefficient of each `t`-coefficient.  In this frame the `hderiv` identity is
-`xCoeff0 (−R/Φ) = xCoeff0 (P_t/P) + xCoeff0 (h_t/h)`, with `xCoeff0 (P_t/P) = 0` (P monic of `x`-degree
-`M`, `P_t` of `x`-degree `< M`) and `xCoeff0 (h_t/h) = d_t(h(0,t))/h(0,t)`.
+Hahn-coefficient of each `t`-coefficient. In this frame the `hderiv` identity is
+`xCoeff0 (−R/Φ) = xCoeff0 (P_t/P) + xCoeff0 (h_t/h)`, with `xCoeff0 (P_t/P) = 0` (P monic of
+`x`-degree `M`, `P_t` of `x`-degree `< M`) and `xCoeff0 (h_t/h) = d_t(h(0,t))/h(0,t)`.
 -/
 
 open PowerSeries
 
-namespace GMC2DvdKFrame
+namespace GMC2.DvdKFrame
 
 variable {F : Type*} [Field F]
 
@@ -49,7 +52,7 @@ theorem constantCoeff_PhiFrame (Rl : LaurentSeries F) (M : ℕ) :
       = (HahnSeries.single (1 : ℤ) (1 : F)) ^ M := by
   simp [PhiFrame]
 
-/-- **`Φ` is a unit in `(LaurentSeries F)⟦t⟧`.**  (`xᴹ = single 1 1 ^ M ≠ 0` in the field `F⸨x⸩`.) -/
+/-- **`Φ` is a unit in `(LaurentSeries F)⟦t⟧`.** (`xᴹ = single 1 1 ^ M ≠ 0` in the field `F⸨x⸩`.) -/
 theorem isUnit_PhiFrame (Rl : LaurentSeries F) (M : ℕ) : IsUnit (PhiFrame Rl M) := by
   rw [isUnit_iff_constantCoeff_ne_zero, constantCoeff_PhiFrame]
   exact pow_ne_zero M (by simp)
@@ -117,19 +120,19 @@ The one structural fact behind the `hderiv` identity is that `PowerSeries.logDer
 products of units: `Φ = P * h` gives `logDeriv Φ = logDeriv P + logDeriv h`, i.e.
 `-R/Φ = P_t/P + h_t/h`. -/
 
-/-- **The `hderiv` identity assembles for free in the frame.**  For `Φ = φ·ψ` with `φ, ψ` units in
+/-- **The `hderiv` identity assembles for free in the frame.** For `Φ = φ·ψ` with `φ, ψ` units in
 `(LaurentSeries F)⟦t⟧`, the `[x⁰]` of the log-derivative splits additively:
-`[x⁰](logDeriv Φ) = [x⁰](logDeriv φ) + [x⁰](logDeriv ψ)` — immediate from `logDeriv_mul` (Stage 2) plus
-additivity of `xCoeff0` (Stage 1).  Instantiated at the Weierstrass `Φ = P·h`, the left side is
+`[x⁰](logDeriv Φ) = [x⁰](logDeriv φ) + [x⁰](logDeriv ψ)` — immediate from `logDeriv_mul` (Stage 2)
+plus additivity of `xCoeff0` (Stage 1). Instantiated at the Weierstrass `Φ = P·h`, the left side is
 `[x⁰](−R/Φ) = −∑_{m≥1} D_m t^{m-1}` (the generating function) and the right side is
-`[x⁰](P_t/P) + [x⁰](h_t/h) = 0 + d_t(h(0,t))/h(0,t)` — so under `D_m = 0`, `d_t(h(0,t)) = 0 = hderiv`.
-The three remaining inputs are all frame-local: `[x⁰](logDeriv P) = 0` (P monic of x-degree M),
-`[x⁰](−R/Φ) = −∑ D_m t^{m-1}` (geometric series), and the transpose embedding
-`F⟦t⟧⟦x⟧ ↪ (F⸨x⸩)⟦t⟧` carrying the Weierstrass `P, h`. -/
+`[x⁰](P_t/P) + [x⁰](h_t/h) = 0 + d_t(h(0,t))/h(0,t)` — so under `D_m = 0`,
+`d_t(h(0,t)) = 0 = hderiv`. The three remaining inputs are all frame-local: `[x⁰](logDeriv P) = 0`
+(P monic of x-degree M), `[x⁰](−R/Φ) = −∑ D_m t^{m-1}` (geometric series), and the transpose
+embedding `F⟦t⟧⟦x⟧ ↪ (F⸨x⸩)⟦t⟧` carrying the Weierstrass `P, h`. -/
 theorem xCoeff0_logDeriv_mul {φ ψ : PowerSeries (LaurentSeries F)}
     (hφ : IsUnit φ) (hψ : IsUnit ψ) :
     xCoeff0 (logDeriv (φ * ψ)) = xCoeff0 (logDeriv φ) + xCoeff0 (logDeriv ψ) := by
   rw [logDeriv_mul hφ hψ, map_add]
 
-end GMC2DvdKFrame
+end GMC2.DvdKFrame
 

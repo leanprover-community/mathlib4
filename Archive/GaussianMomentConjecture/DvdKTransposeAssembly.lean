@@ -17,10 +17,10 @@ set_option linter.minImports true
 /-!
 # Transpose glue: the concrete data feeding kps's `hderiv_via_transpose`
 
-transpose `GMC2DvdKTranspose.phi : F⟦t⟧⟦x⟧ →+* (F⸨x⸩)⟦t⟧` (the swap `τ` followed by
-`F⟦x⟧ ↪ F⸨x⸩`) and kps's `GMC2DvdKHderivAssembly.hderiv_via_transpose` (which supplies the h-side (a)
-and the `F = 1` extraction internally) leave exactly the **concrete transpose glue** open — the piece
-flagged as "`phi_Phi` connector remaining".  This module provides it:
+transpose `GMC2.DvdKTranspose.phi : F⟦t⟧⟦x⟧ →+* (F⸨x⸩)⟦t⟧` (the swap `τ` followed by `F⟦x⟧ ↪ F⸨x⸩`)
+and kps's `GMC2.DvdKHderivAssembly.hderiv_via_transpose` (which supplies the h-side (a) and the
+`F = 1` extraction internally) leave exactly the **concrete transpose glue** open — the piece
+flagged as "`phi_Phi` connector remaining". This module provides it:
 
 * `phi_Phi` : `φ(Φ) = PhiFrame (Rl R) M` — the frame factorization (`hfact` via `map_mul`);
 * `coeff0_Pfr` / `coeff_Pfr_support` : `φP` is monic of `x`-degree `M`, higher `t`-coeffs of degree
@@ -30,17 +30,18 @@ flagged as "`phi_Phi` connector remaining".  This module provides it:
   frame (`hvanish`).
 
 Payload `hderiv_final` : `d_t(unitCoeff0) = 0` under the DvdK vanishing, which makes
-`GMC2DvdKMultiplicativeClosing.smallRootFactor_coeff0_eq_of_derivative_vanishes` unconditional —
+`GMC2.DvdKMultiplicativeClosing.smallRootFactor_coeff0_eq_of_derivative_vanishes` unconditional —
 `P.coeff 0 = c·t`, the last analytic gap of the multiplicative DvdK route.
 -/
 
-open PowerSeries HahnSeries GMC2DvdKFrame GMC2DvdKTranspose GMC2DvdKWeierstrass
+open PowerSeries HahnSeries GMC2.DvdKFrame GMC2.DvdKTranspose GMC2.DvdKWeierstrass
 
-namespace GMC2DvdKTransposeAssembly
+namespace GMC2.DvdKTransposeAssembly
 
 variable {F : Type*} [Field F]
 
-/-- The frame `R`: the Laurent image of `R`'s power series (`φ` sends the `Φ`-coefficient `R` here). -/
+/-- The frame `R`: the Laurent image of `R`'s power series (`φ` sends the `Φ`-coefficient `R` here).
+-/
 noncomputable def Rl (R : Polynomial F) : LaurentSeries F :=
   HahnSeries.ofPowerSeries ℤ F (R : PowerSeries F)
 
@@ -78,7 +79,7 @@ theorem phi_Rcoe (R : Polynomial F) :
 `PhiFrame (Rl R) M`. -/
 theorem phi_Phi (R : Polynomial F) (M : ℕ) :
     phi (Phi R M) = PhiFrame (Rl R) M := by
-  rw [GMC2DvdKWeierstrass.Phi, map_sub, map_mul, phi_C_X, phi_Rcoe, PhiFrame]
+  rw [GMC2.DvdKWeierstrass.Phi, map_sub, map_mul, phi_C_X, phi_Rcoe, PhiFrame]
   congr 1
   rw [map_pow, phi_X, ← map_pow]
 
@@ -86,14 +87,14 @@ theorem phi_Phi (R : Polynomial F) (M : ℕ) :
 transported Weierstrass unit recovers exactly its `x`-constant term. -/
 theorem xCoeff0_phi_unit (R : Polynomial F) (M : ℕ) :
     xCoeff0 (phi (PowerSeries.weierstrassUnit (Phi R M) (phi_residue_ne_zero R M)))
-      = GMC2DvdKMultiplicativeClosing.unitCoeff0 R M := by
+      = GMC2.DvdKMultiplicativeClosing.unitCoeff0 R M := by
   have hmap : phi (PowerSeries.weierstrassUnit (Phi R M) (phi_residue_ne_zero R M))
       = PowerSeries.map (HahnSeries.ofPowerSeries ℤ F)
           (tau (PowerSeries.weierstrassUnit (Phi R M) (phi_residue_ne_zero R M))) := rfl
-  rw [hmap, GMC2DvdKFrameHSide.xCoeff0_map_ofPowerSeries]
+  rw [hmap, GMC2.DvdKFrameHSide.xCoeff0_map_ofPowerSeries]
   ext a
   rw [coeff_map, ← PowerSeries.coeff_zero_eq_constantCoeff, coeff_coeff_tau,
-    GMC2DvdKMultiplicativeClosing.unitCoeff0, ← PowerSeries.coeff_zero_eq_constantCoeff]
+    GMC2.DvdKMultiplicativeClosing.unitCoeff0, ← PowerSeries.coeff_zero_eq_constantCoeff]
 
 /-- If a power series `g` vanishes in degrees `≥ M`, its Laurent image is supported below `M`. -/
 theorem support_ofPowerSeries_subset {g : PowerSeries F} {M : ℕ}
@@ -108,13 +109,14 @@ theorem support_ofPowerSeries_subset {g : PowerSeries F} {M : ℕ}
   rw [LaurentSeries.coeff_coe_powerSeries] at hz
   exact hz (hg k (by exact_mod_cast hznot))
 
-/-- The `t⁰`-coefficient of `τ P` is `xᴹ` (`P ≡ xᴹ mod t`, the distinguished-polynomial property). -/
+/-- The `t⁰`-coefficient of `τ P` is `xᴹ` (`P ≡ xᴹ mod t`, the distinguished-polynomial property).
+-/
 theorem tau_smallRootFactor_coeff0 (R : Polynomial F) (M : ℕ) :
     PowerSeries.coeff (R := PowerSeries F) 0 (tau ((smallRootFactor R M : (PowerSeries F)⟦X⟧)))
       = PowerSeries.X ^ M := by
   ext b
   rw [coeff_coeff_tau, PowerSeries.coeff_zero_eq_constantCoeff, ← PowerSeries.coeff_map,
-    GMC2DvdKUnitOrigin.map_constantCoeff_smallRootFactor]
+    GMC2.DvdKUnitOrigin.map_constantCoeff_smallRootFactor]
 
 /-- `φP`'s constant-in-`t` term is `xᴹ = single M 1` — feeds the degree lemma's `h0`. -/
 theorem coeff0_Pfr (R : Polynomial F) (M : ℕ) :
@@ -153,15 +155,15 @@ theorem isUnit_Pfr (R : Polynomial F) (M : ℕ) :
 theorem isUnit_xCoeff0_phi_unit (R : Polynomial F) (M : ℕ) :
     IsUnit (xCoeff0 (phi (PowerSeries.weierstrassUnit (Phi R M) (phi_residue_ne_zero R M)))) := by
   rw [xCoeff0_phi_unit, PowerSeries.isUnit_iff_constantCoeff,
-    GMC2DvdKUnitOrigin.unitCoeff0_constantCoeff_eq_one]
+    GMC2.DvdKUnitOrigin.unitCoeff0_constantCoeff_eq_one]
   exact isUnit_one
 
-/-- **`hderiv`, delivered from the transpose glue.**  Under the DvdK vanishing of every central power
+/-- **`hderiv`, delivered from the transpose glue.** Under the DvdK vanishing of every central power
 coefficient `(Rᵐ).coeff(M·m)` (`m ≥ 1`), the `t`-derivative of `h(0,t) = unitCoeff0 R M` vanishes.
 This wires the concrete glue of this module into kps's `hderiv_of_transpose_glue`. -/
 theorem hderiv_final (R : Polynomial F) (M : ℕ)
     (hvanish : ∀ m : ℕ, 1 ≤ m → (R ^ m).coeff (M * m) = 0) :
-    PowerSeries.derivative _ (GMC2DvdKMultiplicativeClosing.unitCoeff0 R M) = 0 := by
+    PowerSeries.derivative _ (GMC2.DvdKMultiplicativeClosing.unitCoeff0 R M) = 0 := by
   have H := PowerSeries.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
     (phi_residue_ne_zero R M)
   have hfact : PhiFrame (Rl R) M
@@ -171,15 +173,15 @@ theorem hderiv_final (R : Polynomial F) (M : ℕ)
       show (smallRootFactor R M : (PowerSeries F)⟦X⟧)
           * PowerSeries.weierstrassUnit (Phi R M) (phi_residue_ne_zero R M) = Phi R M
         from H.eq_mul.symm, phi_Phi]
-  exact GMC2DvdKHderivAssembly.hderiv_of_transpose_glue (Rl R) M
+  exact GMC2.DvdKHderivAssembly.hderiv_of_transpose_glue (Rl R) M
     (PowerSeries.weierstrassUnit (Phi R M) (phi_residue_ne_zero R M)) H.isUnit
     (phi (smallRootFactor R M : (PowerSeries F)⟦X⟧))
     hfact (isUnit_Pfr R M)
-    (GMC2DvdKFrameDegree.xCoeff0_logDeriv_eq_zero_of_monic _ (isUnit_Pfr R M) M
+    (GMC2.DvdKFrameDegree.xCoeff0_logDeriv_eq_zero_of_monic _ (isUnit_Pfr R M) M
       (coeff0_Pfr R M) (coeff_Pfr_support R M))
     (isUnit_xCoeff0_phi_unit R M)
     (fun m hm => by rw [Rl_pow_coeff]; exact hvanish m hm)
-    (GMC2DvdKMultiplicativeClosing.unitCoeff0 R M)
+    (GMC2.DvdKMultiplicativeClosing.unitCoeff0 R M)
     (xCoeff0_phi_unit R M)
 
 /-- **The multiplicative crux, unconditional (given the vanishing).**  `hderiv_final` + the origin
@@ -189,9 +191,9 @@ theorem smallRootFactor_coeff0_of_vanish [CharZero F] (R : Polynomial F) (M : �
     (hvanish : ∀ m : ℕ, 1 ≤ m → (R ^ m).coeff (M * m) = 0) :
     (smallRootFactor R M).coeff 0
       = - PowerSeries.X * (algebraMap F (PowerSeries F)) (R.coeff 0) :=
-  GMC2DvdKMultiplicativeClosing.smallRootFactor_coeff0_eq_of_derivative_vanishes R M hM
-    (GMC2DvdKUnitOrigin.unitCoeff0_constantCoeff_eq_one R M)
+  GMC2.DvdKMultiplicativeClosing.smallRootFactor_coeff0_eq_of_derivative_vanishes R M hM
+    (GMC2.DvdKUnitOrigin.unitCoeff0_constantCoeff_eq_one R M)
     (hderiv_final R M hvanish)
 
-end GMC2DvdKTransposeAssembly
+end GMC2.DvdKTransposeAssembly
 

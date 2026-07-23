@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.FrameBridgeRoots
-import Mathlib
+import Mathlib.FieldTheory.RatFunc.Defs
+import Mathlib.FieldTheory.SplittingField.Construction
 
 set_option linter.minImports true
 
@@ -16,19 +17,19 @@ distinguished factor as a polynomial `Pω` over the Laurent frame `Ω` dividing 
 `S` — the roots of `Φ` in the splitting field whose `ψ`-image is a root of `Pω` — has
 `ψ(∏_{β∈S} β) = ∏(Pω.roots)`.  Combined with Vieta (`∏(Pω.roots) = (-1)ᴹ Pω.coeff 0`) and the
 Weierstrass value (`= c·t` under `hderiv`), this discharges the frame-side identity of
-`GMC2FrameBridge.hS_of_splits` — with **no** valuation, purely by the root bijection `ψ` supplies.
+`GMC2.FrameBridge.hS_of_splits` — with **no** valuation, purely by the root bijection `ψ` supplies.
 -/
 
 open Polynomial
 
-namespace GMC2FrameBridgePacket
+namespace GMC2.FrameBridgePacket
 
 variable {F : Type*} [Field F]
 
-/-- **The packet product.**  For any `RatFunc F`-embedding `ψ` of the splitting field of `Φ ≠ 0` into a
-field `Ω`, and any polynomial `Pω` over `Ω` with distinct roots dividing `Φ` over `Ω`, there is a set
-`S` of splitting-field roots of `Φ` whose product maps under `ψ` to the product of the roots of `Pω`.
-`S` is the roots landing on `Pω`; the root-transport bijection (`aroots_map_embedding`) makes
+/-- **The packet product.** For any `RatFunc F`-embedding `ψ` of the splitting field of `Φ ≠ 0` into
+a field `Ω`, and any polynomial `Pω` over `Ω` with distinct roots dividing `Φ` over `Ω`, there is a
+set `S` of splitting-field roots of `Φ` whose product maps under `ψ` to the product of the roots of
+`Pω`. `S` is the roots landing on `Pω`; the root-transport bijection (`aroots_map_embedding`) makes
 `β ↦ ψ β` a bijection from `S` onto `Pω`'s roots. -/
 theorem exists_packet_prod_eq (Φ : (RatFunc F)[X]) (hΦ0 : Φ ≠ 0)
     {Ω : Type*} [Field Ω] [Algebra (RatFunc F) Ω]
@@ -44,7 +45,7 @@ theorem exists_packet_prod_eq (Φ : (RatFunc F)[X]) (hΦ0 : Φ ≠ 0)
   have hle : Pω.roots ≤ Φ.aroots Ω := by
     rw [Polynomial.aroots_def]; exact Polynomial.roots.le_of_dvd hΦΩ0 hdvd
   have htrans : Φ.aroots Ω = (Φ.aroots Φ.SplittingField).map ψ :=
-    (GMC2FrameBridgeRoots.aroots_map_embedding Φ ψ).symm
+    (GMC2.FrameBridgeRoots.aroots_map_embedding Φ ψ).symm
   -- product over the deduplicated roots of `Pω` is the multiset product
   have key : ∏ α ∈ Pω.roots.toFinset, (α : Ω) = Pω.roots.prod := by
     show (Pω.roots.toFinset.val.map (fun α => α)).prod = Pω.roots.prod
@@ -77,5 +78,5 @@ theorem exists_packet_prod_eq (Φ : (RatFunc F)[X]) (hΦ0 : Φ ≠ 0)
   · -- values agree
     intro β _; rfl
 
-end GMC2FrameBridgePacket
+end GMC2.FrameBridgePacket
 

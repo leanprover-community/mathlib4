@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.DvdKFrame
-import Mathlib
+import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.PowerSeries.LogDeriv
 
 set_option linter.minImports true
 
@@ -14,21 +15,22 @@ set_option linter.minImports true
 Building on `DvdKFrame`, this closes the DvdK log-derivative lemma `hderiv` (`d_t(h(0,t)) = 0`
 under `D_m = 0`) up to two frame-local inputs.  The whole thing rests on:
 
-* **`master_identity`** (pure frame algebra, NO hypotheses): `t · xCoeff0(logDeriv Φ) = 1 − F`, where
-  `F := xCoeff0(x^M/Φ)` is the DvdK generating function.  Proof: `d_t Φ = −R`, so `logDeriv Φ = −R/Φ`,
-  and `x^M = Φ + t·R` gives `t·xCoeff0(−R/Φ) = 1 − F` (`xCoeff0_xM_div_PhiFrame`).
+* **`master_identity`** (pure frame algebra, NO hypotheses): `t · xCoeff0(logDeriv Φ) = 1 − F`,
+  where `F := xCoeff0(x^M/Φ)` is the DvdK generating function. Proof: `d_t Φ = −R`, so
+  `logDeriv Φ = −R/Φ`, and `x^M = Φ + t·R` gives `t·xCoeff0(−R/Φ) = 1 − F`
+  (`xCoeff0_xM_div_PhiFrame`).
 * **`hderiv_of_frame`**: with `Φ = P·h` (units), `xCoeff0(logDeriv P) = 0` (the degree lemma (c)),
   `xCoeff0(logDeriv h) = g'/g` for `g := xCoeff0 h` a unit (the h-side (a)), and `F = 1` (the DvdK
   vanishing, `generatingFunction_eq_one`), the master identity forces `t·g' = 0`, hence
   `g' = 0` (`t` a non-zero-divisor) — i.e. `hderiv` (with `g = xCoeff0 h = unitCoeff0`).
 
-So `hderiv` is now reduced to exactly: the frame factorization `Φ = P·h`, the degree lemma (c), and the
-h-side (a) — all frame-local, no residues/Puiseux/valued fields.
+So `hderiv` is now reduced to exactly: the frame factorization `Φ = P·h`, the degree lemma (c), and
+the h-side (a) — all frame-local, no residues/Puiseux/valued fields.
 -/
 
-open PowerSeries GMC2DvdKFrame
+open PowerSeries GMC2.DvdKFrame
 
-namespace GMC2DvdKHderiv
+namespace GMC2.DvdKHderiv
 
 variable {F : Type*} [Field F]
 
@@ -85,5 +87,5 @@ theorem hderiv_of_frame (Rl : LaurentSeries F) (M : ℕ)
   rw [mul_assoc, mul_assoc, Ring.inverse_mul_cancel _ hg, mul_one] at hg1
   exact (mul_eq_zero.mp hg1).resolve_left PowerSeries.X_ne_zero
 
-end GMC2DvdKHderiv
+end GMC2.DvdKHderiv
 

@@ -19,7 +19,7 @@ formalizes Section 2 of `the lowest-balanced-face theorem` without a hidden coor
 
 open MvPolynomial
 
-namespace GMC2NullconeDescent
+namespace GMC2.NullconeDescent
 
 /-- A complex indexed polynomial with nonzero coefficients and all positive
 Gaussian moments zero yields a torus point over a number field at which every
@@ -30,26 +30,26 @@ theorem exists_numberField_moment_null_point
     (hcoefficient : ∀ i, coefficient i ≠ 0)
     (hnull : ∀ m : ℕ, 1 ≤ m →
       GMC2.E
-        ((GMC2MomentTransport.indexedPolynomial exponent coefficient) ^ m) = 0) :
+        ((GMC2.MomentTransport.indexedPolynomial exponent coefficient) ^ m) = 0) :
     ∃ (K : Type) (_ : Field K) (_ : Algebra ℚ K),
       Module.Finite ℚ K ∧
         ∃ coefficientK : ι → K,
           (∀ i, coefficientK i ≠ 0) ∧
             ∀ m : ℕ,
               MvPolynomial.aeval coefficientK
-                (GMC2MomentRelations.momentRelation exponent (m + 1)) = 0 := by
-  apply GMC2TorusDescent.exists_numberField_torus_point_of_complex_relations
-    (fun m => GMC2MomentRelations.momentRelation exponent (m + 1))
+                (GMC2.MomentRelations.momentRelation exponent (m + 1)) = 0 := by
+  apply GMC2.TorusDescent.exists_numberField_torus_point_of_complex_relations
+    (fun m => GMC2.MomentRelations.momentRelation exponent (m + 1))
     coefficient hcoefficient
   intro m
   calc
     MvPolynomial.aeval coefficient
-        (GMC2MomentRelations.momentRelation exponent (m + 1)) =
+        (GMC2.MomentRelations.momentRelation exponent (m + 1)) =
       GMC2.E
-        ((GMC2MomentTransport.indexedPolynomial exponent coefficient) ^ (m + 1)) :=
-      (GMC2MomentTransport.E_indexedPolynomial_pow_eq_aeval_momentRelation
+        ((GMC2.MomentTransport.indexedPolynomial exponent coefficient) ^ (m + 1)) :=
+      (GMC2.MomentTransport.E_indexedPolynomial_pow_eq_aeval_momentRelation
         exponent coefficient (m + 1)).symm
     _ = 0 := hnull (m + 1) (by omega)
 
-end GMC2NullconeDescent
+end GMC2.NullconeDescent
 

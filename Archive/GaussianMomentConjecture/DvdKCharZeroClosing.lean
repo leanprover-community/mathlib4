@@ -3,7 +3,7 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.RingTheory.PowerSeries.Derivative
 
 set_option linter.minImports true
 
@@ -32,7 +32,7 @@ hypothesis, so it composes with the `[X⁰]`-Laurent frame and touches no Weiers
 
 open PowerSeries
 
-namespace GMC2DvdKCharZeroClosing
+namespace GMC2.DvdKCharZeroClosing
 
 variable {F : Type*} [Field F] [CharZero F]
 
@@ -58,5 +58,5 @@ theorem factorCoeff0_eq_of_unit_eq_one {P₀ g rhs : PowerSeries F}
     (hg : g = 1) (hfact : P₀ * g = rhs) : P₀ = rhs := by
   rwa [hg, mul_one] at hfact
 
-end GMC2DvdKCharZeroClosing
+end GMC2.DvdKCharZeroClosing
 

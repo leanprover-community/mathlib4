@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.FrobeniusResidue
-import Mathlib
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.CharP.Defs
 
 set_option linter.minImports true
 
@@ -25,7 +26,7 @@ data; that construction is deliberately not assumed here.
 
 open Finset
 
-namespace GMC2ResidueAssembly
+namespace GMC2.ResidueAssembly
 
 /-- The three residue cases assemble to the normalized identity (15): all
 non-dilated and dilated-off-face channels vanish, while the face layer is the
@@ -61,7 +62,7 @@ theorem three_case_sum_eq_frobenius
           exact honFace i hi
     _ = (∑ i ∈ face, (weight i : R) * coefficient i) ^ p := by
           symm
-          exact GMC2FrobeniusResidue.weighted_sum_pow_char
+          exact GMC2.FrobeniusResidue.weighted_sum_pow_char
             p face weight coefficient
 
 /-- If the undilated face sum is nonzero in a domain, then the assembled
@@ -83,5 +84,5 @@ theorem three_case_sum_ne_zero
     hface_dilated hdilated_channels hnondilated hoffFace honFace]
   exact pow_ne_zero p hfaceSum
 
-end GMC2ResidueAssembly
+end GMC2.ResidueAssembly
 

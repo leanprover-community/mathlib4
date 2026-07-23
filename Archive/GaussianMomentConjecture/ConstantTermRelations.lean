@@ -3,7 +3,8 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.FieldTheory.Finite.Polynomial
 
 set_option linter.minImports true
 
@@ -18,7 +19,7 @@ Duistermaat--van der Kallen theorem.
 
 open MvPolynomial Finset
 
-namespace GMC2ConstantTermRelations
+namespace GMC2.ConstantTermRelations
 
 variable {ι R : Type*} [Fintype ι] [DecidableEq ι]
 
@@ -58,5 +59,5 @@ theorem aeval_constantTermRelation
       simp
   · simp
 
-end GMC2ConstantTermRelations
+end GMC2.ConstantTermRelations
 

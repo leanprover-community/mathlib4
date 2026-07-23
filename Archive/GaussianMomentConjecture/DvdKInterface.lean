@@ -5,7 +5,8 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.ConstantTermRelations
 import Archive.GaussianMomentConjecture.LowestFaceExistence
-import Mathlib
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.LinearAlgebra.CliffordAlgebra.Equivs
 
 set_option linter.minImports true
 
@@ -17,7 +18,7 @@ axiom, this module records the exact proposition consumed by the GMC(2)
 formalization.  All downstream theorems take a proof of `DvdK1` explicitly.
 -/
 
-namespace GMC2DvdKInterface
+namespace GMC2.DvdKInterface
 
 /-- One-variable DvdK in the finite exact-support form needed here: an
 injectively indexed Laurent polynomial with nonzero coefficients and charge
@@ -28,11 +29,11 @@ def DvdK1 : Prop :=
     (q : ι → ℤ) (c : ι → ℂ),
     Function.Injective q →
     (∀ i, c i ≠ 0) →
-    GMC2LowestFaceExistence.ChargesStraddleZero Finset.univ
+    GMC2.LowestFaceExistence.ChargesStraddleZero Finset.univ
       (fun i => (q i : ℚ)) →
     ∃ m : ℕ, 1 ≤ m ∧
       MvPolynomial.aeval c
-        (GMC2ConstantTermRelations.constantTermRelation q m) ≠ 0
+        (GMC2.ConstantTermRelations.constantTermRelation q m) ≠ 0
 
 /-- Named elimination rule for the external input. -/
 theorem exists_nonzero_face_seed
@@ -42,12 +43,12 @@ theorem exists_nonzero_face_seed
     (hq : Function.Injective q)
     (hc : ∀ i, c i ≠ 0)
     (hstraddle :
-      GMC2LowestFaceExistence.ChargesStraddleZero Finset.univ
+      GMC2.LowestFaceExistence.ChargesStraddleZero Finset.univ
         (fun i => (q i : ℚ))) :
     ∃ m : ℕ, 1 ≤ m ∧
       MvPolynomial.aeval c
-        (GMC2ConstantTermRelations.constantTermRelation q m) ≠ 0 :=
+        (GMC2.ConstantTermRelations.constantTermRelation q m) ≠ 0 :=
   hDvdK ι q c hq hc hstraddle
 
-end GMC2DvdKInterface
+end GMC2.DvdKInterface
 

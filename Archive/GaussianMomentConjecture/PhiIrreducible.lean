@@ -3,12 +3,14 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Algebra.Polynomial.Bivariate
+import Mathlib.FieldTheory.RatFunc.Basic
+import Mathlib.RingTheory.Polynomial.GaussLemma
 
 set_option linter.minImports true
 
 /-!
-# Irreducibility of `Φ = X^M − t·R(X)` over `F(t)` — the transitivity input to the orbit-product argument
+# Irreducibility of `Φ = X^M − t·R(X)` over `F(t)`
 
 For `R ∈ F[X]` with `R(0) ≠ 0`, the polynomial `Φ = X^M − t·R(X)` is irreducible over `F(t)`, so its
 Galois group acts transitively on its roots (`Polynomial.Gal.galAction_isPretransitive`) — the input
@@ -22,7 +24,7 @@ first step (`phi_t_irreducible`); the transport across the `F[X][t] ≅ F[t][X]`
 
 open Polynomial
 
-namespace GMC2PhiIrreducible
+namespace GMC2.PhiIrreducible
 
 variable {F : Type*} [Field F]
 
@@ -33,7 +35,7 @@ theorem isRelPrime_X_pow_R (R : F[X]) (M : ℕ) (hR0 : R.coeff 0 ≠ 0) :
     (prime_X.coprime_iff_not_dvd).mpr (by rw [Polynomial.X_dvd_iff]; exact hR0)
   exact (hXR.pow_left).isRelPrime
 
-/-- **`Φ` is irreducible as a linear polynomial in `t` over `F[X]`.**  Here the outer variable `X` of
+/-- **`Φ` is irreducible as a linear polynomial in `t` over `F[X]`.** Here the outer variable `X` of
 `F[X][t]` plays the role of `t`; `Φ = C(Xᴹ) − C(R)·t`. -/
 theorem phi_t_irreducible (R : F[X]) (M : ℕ) (hR0 : R.coeff 0 ≠ 0) :
     Irreducible
@@ -68,10 +70,11 @@ theorem swap_phi_eq (R : F[X]) (M : ℕ) :
   rw [map_sub, map_mul, Polynomial.Bivariate.swap_C, Polynomial.Bivariate.swap_C,
     Polynomial.Bivariate.swap_Y]
 
-/-- **`Φ = X^M − t·R(X)` is irreducible over `F(t)`.**  Gauss: `swap Φ` is primitive over `F[t]` (its
+/-- **`Φ = X^M − t·R(X)` is irreducible over `F(t)`.** Gauss: `swap Φ` is primitive over `F[t]` (its
 `Yᴹ`-coefficient `1 − C(r_M)·t` and `Y⁰`-coefficient `−C(r₀)·t` are coprime, since `r₀ ≠ 0` and `t`
 is coprime to `1 − C(r_M)·t`), and irreducible (transported from `phi_t_irreducible`); so its image
-over `F(t)` is irreducible.  This is the transitivity input to `Polynomial.Gal.galAction_isPretransitive`. -/
+over `F(t)` is irreducible. This is the transitivity input to
+`Polynomial.Gal.galAction_isPretransitive`. -/
 theorem phi_irreducible_ratfunc (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR0 : R.coeff 0 ≠ 0) :
     Irreducible (Polynomial.map (algebraMap (Polynomial F) (RatFunc F))
       (Polynomial.Bivariate.swap
@@ -95,7 +98,8 @@ theorem phi_irreducible_ratfunc (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR0 : R.coe
       zero_sub]
   -- primitivity
   have hprim : (Polynomial.Bivariate.swap
-      (Polynomial.C ((X : F[X]) ^ M) - Polynomial.C R * X : Polynomial (Polynomial F))).IsPrimitive := by
+      (Polynomial.C ((X : F[X]) ^ M) - Polynomial.C R * X :
+        Polynomial (Polynomial F))).IsPrimitive := by
     intro r hr
     rw [Polynomial.C_dvd_iff_dvd_coeff] at hr
     have hrM : r ∣ (1 - Polynomial.C (R.coeff M) * X) := cM ▸ hr M
@@ -113,5 +117,5 @@ theorem phi_irreducible_ratfunc (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR0 : R.coe
     exact isUnit_of_dvd_one hr1
   exact (hprim.irreducible_iff_irreducible_map_fraction_map).mp hirr_swap
 
-end GMC2PhiIrreducible
+end GMC2.PhiIrreducible
 

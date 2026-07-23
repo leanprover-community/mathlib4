@@ -3,7 +3,14 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Data.Rat.Star
+import Mathlib.GroupTheory.Finiteness
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring.RingNF
 
 set_option linter.minImports true
 
@@ -26,7 +33,7 @@ this small kernel.  There are no analytic or asymptotic assumptions here.
 
 open Finset
 
-namespace GMC2FrobeniusFace
+namespace GMC2.FrobeniusFace
 
 variable {ι : Type*}
 
@@ -179,5 +186,5 @@ theorem charge_injective_on_face [DecidableEq ι]
   exact exponent_pair_eq_of_same_charge_on_face a b lambda delta
     (hface i i.property) (hface j j.property) hq
 
-end GMC2FrobeniusFace
+end GMC2.FrobeniusFace
 

@@ -6,7 +6,10 @@ Authors: Eliott Cassidy
 import Archive.GaussianMomentConjecture.ConstantTermRelations
 import Archive.GaussianMomentConjecture.DvdKInterface
 import Archive.GaussianMomentConjecture.DvdKUniqueChannel
-import Mathlib
+import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Data.Complex.Basic
+import Mathlib.Tactic.NormNum
 
 set_option linter.minImports true
 
@@ -20,9 +23,9 @@ single composition supported at that index is the *unique* balanced channel, so 
 to be established on the second disjunct (both signs, no zero charge).
 -/
 
-namespace GMC2DvdKZeroCharge
+namespace GMC2.DvdKZeroCharge
 
-open GMC2ConstantTermRelations
+open GMC2.ConstantTermRelations
 
 /-- A `ℕ`-valued function on a fintype summing to `1` is a single unit mass. -/
 theorem eq_single_of_sum_eq_one {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -41,7 +44,7 @@ theorem eq_single_of_sum_eq_one {ι : Type*} [Fintype ι] [DecidableEq ι]
     have : r i = 0 := (Finset.sum_eq_zero_iff.mp hrest) i hmem
     simp [hi, this]
 
-/-- **`DvdK1` when a zero charge is present.**  If `q i₀ = 0` (with `q` injective, `c` nonvanishing),
+/-- **`DvdK1` when a zero charge is present.** If `q i₀ = 0` (with `q` injective, `c` nonvanishing),
 then `[z⁰] f¹ = c i₀ ≠ 0`; formally, the constant-term relation is nonzero at `m = 1`. -/
 theorem dvdK1_of_zero_mem {ι : Type*} [Fintype ι] [DecidableEq ι]
     (q : ι → ℤ) (c : ι → ℂ) (hq : Function.Injective q) (hc : ∀ i, c i ≠ 0)
@@ -82,7 +85,7 @@ theorem dvdK1_of_zero_mem {ι : Type*} [Fintype ι] [DecidableEq ι]
     have hji0 : j = i0 := hq (by rw [hqj, hi0])
     funext i
     rw [hrj i, hr0def, hji0]
-  exact GMC2DvdKUniqueChannel.ct_ne_zero_of_unique_balanced q c hc 1 r0 hr0mem hbal huniq
+  exact GMC2.DvdKUniqueChannel.ct_ne_zero_of_unique_balanced q c hc 1 r0 hr0mem hbal huniq
 
 /-- The one-variable DvdK input, restricted to the **both-signs (no-zero) case**: a strictly
 negative and a strictly positive charge are present. -/
@@ -91,13 +94,14 @@ def DvdK1BothSigns : Prop :=
     Function.Injective q → (∀ i, c i ≠ 0) →
     (∃ i, q i < 0) → (∃ j, 0 < q j) →
     ∃ m : ℕ, 1 ≤ m ∧
-      MvPolynomial.aeval c (GMC2ConstantTermRelations.constantTermRelation q m) ≠ 0
+      MvPolynomial.aeval c (GMC2.ConstantTermRelations.constantTermRelation q m) ≠ 0
 
-/-- **Reduction of `DvdK1` to the both-signs case.**  Since `ChargesStraddleZero` is
+/-- **Reduction of `DvdK1` to the both-signs case.** Since `ChargesStraddleZero` is
 `(a zero charge) ∨ (both signs)` and the zero-charge disjunct is elementary (`dvdK1_of_zero_mem`),
-the full one-variable Duistermaat–van der Kallen input follows from its both-signs restriction.  This
-isolates the genuinely hard case handled by the Galois orbit-product route (the orbit-product argument). -/
-theorem dvdK1_of_bothSigns (h : DvdK1BothSigns) : GMC2DvdKInterface.DvdK1 := by
+the full one-variable Duistermaat–van der Kallen input follows from its both-signs restriction. This
+isolates the genuinely hard case handled by the Galois orbit-product route (the orbit-product
+argument). -/
+theorem dvdK1_of_bothSigns (h : DvdK1BothSigns) : GMC2.DvdKInterface.DvdK1 := by
   intro ι _ _ q c hq hc hstraddle
   rcases hstraddle with ⟨i0, _, hi0⟩ | ⟨⟨i, _, hi⟩, ⟨j, _, hj⟩⟩
   · have h0 : ((q i0 : ℤ) : ℚ) = 0 := hi0
@@ -106,10 +110,10 @@ theorem dvdK1_of_bothSigns (h : DvdK1BothSigns) : GMC2DvdKInterface.DvdK1 := by
     have hjp : (0 : ℚ) < ((q j : ℤ) : ℚ) := hj
     exact h ι q c hq hc ⟨i, by exact_mod_cast hin⟩ ⟨j, by exact_mod_cast hjp⟩
 
-/-- **Rescaling invariance.**  The constant-term relation depends on the charges only through which
+/-- **Rescaling invariance.** The constant-term relation depends on the charges only through which
 compositions are balanced, so it is unchanged when all charges are rescaled by a nonzero common
-factor `g` (`q₁ = g·q₂`).  Hence `DvdK1` for `q₁` and for `q₂` coincide — the hard case may assume the
-charges have gcd `1`. -/
+factor `g` (`q₁ = g·q₂`). Hence `DvdK1` for `q₁` and for `q₂` coincide — the hard case may assume
+the charges have gcd `1`. -/
 theorem constantTermRelation_scale {ι : Type*} [Fintype ι] [DecidableEq ι]
     (q1 q2 : ι → ℤ) (g : ℤ) (hg : g ≠ 0) (hscale : ∀ i, q1 i = g * q2 i) (m : ℕ) :
     constantTermRelation q1 m = constantTermRelation q2 m := by
@@ -123,5 +127,5 @@ theorem constantTermRelation_scale {ι : Type*} [Fintype ι] [DecidableEq ι]
   · rw [if_pos hbal, if_pos (by rw [hchg, hbal, mul_zero])]
   · rw [if_neg hbal, if_neg (by rw [hchg]; exact mul_ne_zero hg hbal)]
 
-end GMC2DvdKZeroCharge
+end GMC2.DvdKZeroCharge
 

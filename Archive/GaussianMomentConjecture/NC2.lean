@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.SupportFaceBridge
-import Mathlib
+import Mathlib.Data.Complex.Basic
+import Mathlib.FieldTheory.Finite.Polynomial
 
 set_option linter.minImports true
 
@@ -22,7 +23,7 @@ remaining composition boundary is exposed honestly as `HeightWitnessSupplier`.
 
 open MvPolynomial Finset
 
-namespace GMC2NC2
+namespace GMC2.NC2
 
 noncomputable section
 
@@ -36,24 +37,24 @@ theorem rational_face_seed_ne_zero
       MvPolynomial.aeval (fun s : ↥P.support ↦ P.coeff s) f = 0 →
         MvPolynomial.aeval w f = 0)
     (hseedSpecial : MvPolynomial.aeval w
-      (GMC2IntegralFaceSeedDescent.liftedFaceSeedInt P F hsubset m0) ≠ 0) :
+      (GMC2.IntegralFaceSeedDescent.liftedFaceSeedInt P F hsubset m0) ≠ 0) :
     MvPolynomial.aeval (fun s : ↥F ↦ P.coeff s)
-      (GMC2ConstantTermRelations.constantTermRelation
+      (GMC2.ConstantTermRelations.constantTermRelation
         (fun s : ↥F ↦ GMC2.charge s) m0) ≠ 0 := by
   have hseedComplexInt :
       MvPolynomial.aeval (fun s : ↥P.support ↦ P.coeff s)
-          (GMC2IntegralFaceSeedDescent.liftedFaceSeedInt
+          (GMC2.IntegralFaceSeedDescent.liftedFaceSeedInt
             P F hsubset m0) ≠ 0 := by
     intro hzero
     exact hseedSpecial (huniversal _ hzero)
   have hseedFaceInt :
       MvPolynomial.aeval (fun s : ↥F ↦ P.coeff s)
-          (GMC2IntegralRelations.constantTermRelationInt
+          (GMC2.IntegralRelations.constantTermRelationInt
             (fun s : ↥F ↦ GMC2.charge s) m0) ≠ 0 := by
     have h := hseedComplexInt
-    rw [GMC2IntegralFaceSeedDescent.aeval_liftedFaceSeedInt] at h
-    simpa only [GMC2FaceSeedDescent.faceToSupport, Function.comp_apply] using h
-  simpa only [GMC2IntegralRelations.aeval_constantTermRelationInt_eq_rat]
+    rw [GMC2.IntegralFaceSeedDescent.aeval_liftedFaceSeedInt] at h
+    simpa only [GMC2.FaceSeedDescent.faceToSupport, Function.comp_apply] using h
+  simpa only [GMC2.IntegralRelations.aeval_constantTermRelationInt_eq_rat]
     using hseedFaceInt
 
 /-- The three normalized-residue height inputs, already transported from the
@@ -62,29 +63,29 @@ structure NormalizedHeightPackage
     (P : MvPolynomial (Fin 2) ℂ) (F : Finset (Fin 2 →₀ ℕ))
     (m0 A0 : ℕ) : Prop where
   scaledFloor : ∀ p : ℕ, ∀ r ∈
-      GMC2NormalizedResidue.fullChannels p m0,
-      GMC2NormalizedMoment.IsBalanced
+      GMC2.NormalizedResidue.fullChannels p m0,
+      GMC2.NormalizedMoment.IsBalanced
           (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ)) r →
-      p * A0 ≤ GMC2NormalizedMoment.channelHeight
+      p * A0 ≤ GMC2.NormalizedMoment.channelHeight
           (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ)) r
   faceHeight : ∀ s ∈ Finset.piAntidiag
       (Finset.univ : Finset
-        ↥(GMC2SupportFaceBridge.supportFace P F)) m0,
-      GMC2NormalizedMoment.IsBalanced
+        ↥(GMC2.SupportFaceBridge.supportFace P F)) m0,
+      GMC2.NormalizedMoment.IsBalanced
           (fun t : ↥P.support ↦ (t : Fin 2 →₀ ℕ))
-          (GMC2ChannelDilation.extendByZero
-            (GMC2SupportFaceBridge.supportFace P F) s) →
-      GMC2NormalizedMoment.channelHeight
+          (GMC2.ChannelDilation.extendByZero
+            (GMC2.SupportFaceBridge.supportFace P F) s) →
+      GMC2.NormalizedMoment.channelHeight
           (fun t : ↥P.support ↦ (t : Fin 2 →₀ ℕ))
-          (GMC2ChannelDilation.extendByZero
-            (GMC2SupportFaceBridge.supportFace P F) s) = A0
+          (GMC2.ChannelDilation.extendByZero
+            (GMC2.SupportFaceBridge.supportFace P F) s) = A0
   offHeight : ∀ r ∈ Finset.piAntidiag
       (Finset.univ : Finset ↥P.support) m0,
-      GMC2NormalizedMoment.IsBalanced
+      GMC2.NormalizedMoment.IsBalanced
           (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ)) r →
-      ¬ GMC2NormalizedResidue.SupportedOn
-          (GMC2SupportFaceBridge.supportFace P F) r →
-      A0 + 1 ≤ GMC2NormalizedMoment.channelHeight
+      ¬ GMC2.NormalizedResidue.SupportedOn
+          (GMC2.SupportFaceBridge.supportFace P F) r →
+      A0 + 1 ≤ GMC2.NormalizedMoment.channelHeight
           (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ)) r
 
 /-- Convert the three full-support height statements into the exact shapes
@@ -92,24 +93,24 @@ consumed by normalized residue assembly. -/
 theorem normalized_height_package_of_base
     (P : MvPolynomial (Fin 2) ℂ) (F : Finset (Fin 2 →₀ ℕ))
     (m0 A0 : ℕ)
-    (H : GMC2SupportFaceBridge.ReferenceHeightObligations P F m0 A0) :
+    (H : GMC2.SupportFaceBridge.ReferenceHeightObligations P F m0 A0) :
     NormalizedHeightPackage P F m0 A0 := by
   refine ⟨?_, ?_, ?_⟩
   · intro p r hr hbalanced
     apply H.scaledFullFloor p r
-    · simpa only [GMC2NormalizedResidue.fullChannels] using hr
+    · simpa only [GMC2.NormalizedResidue.fullChannels] using hr
     · exact hbalanced
   · intro s hs hbalanced
     apply H.faceBaseHeight
-      (GMC2ChannelDilation.extendByZero
-        (GMC2SupportFaceBridge.supportFace P F) s)
-    · exact GMC2NormalizedResidue.extendByZero_mem_piAntidiag
-        (GMC2SupportFaceBridge.supportFace P F) s hs
+      (GMC2.ChannelDilation.extendByZero
+        (GMC2.SupportFaceBridge.supportFace P F) s)
+    · exact GMC2.NormalizedResidue.extendByZero_mem_piAntidiag
+        (GMC2.SupportFaceBridge.supportFace P F) s hs
     · exact hbalanced
     · intro i hi
       by_contra hiFace
-      exact hi (GMC2ChannelDilation.extendByZero_of_notMem
-        (GMC2SupportFaceBridge.supportFace P F) s hiFace)
+      exact hi (GMC2.ChannelDilation.extendByZero_of_notMem
+        (GMC2.SupportFaceBridge.supportFace P F) s hiFace)
   · intro r hr hbalanced hnotSupported
     apply H.offFaceGap r hr hbalanced
     by_contra hnoOffFace
@@ -131,13 +132,13 @@ theorem normalized_specialization_contradiction
       MvPolynomial.aeval (fun s : ↥P.support ↦ P.coeff s) f = 0 →
         MvPolynomial.aeval w f = 0)
     (hseedSpecial : MvPolynomial.aeval w
-      (GMC2IntegralFaceSeedDescent.liftedFaceSeedInt P F hsubset m0) ≠ 0)
+      (GMC2.IntegralFaceSeedDescent.liftedFaceSeedInt P F hsubset m0) ≠ 0)
     (H : NormalizedHeightPackage P F m0 A0) : False := by
   have hfaceSpecial :
-      GMC2NormalizedResidue.faceConstantTerm
+      GMC2.NormalizedResidue.faceConstantTerm
           (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ)) w
-          (GMC2SupportFaceBridge.supportFace P F) m0 ≠ 0 := by
-    rw [← GMC2SupportFaceBridge.aeval_liftedFaceSeedInt_eq_faceConstantTerm
+          (GMC2.SupportFaceBridge.supportFace P F) m0 ≠ 0 := by
+    rw [← GMC2.SupportFaceBridge.aeval_liftedFaceSeedInt_eq_faceConstantTerm
       P F hsubset m0 w]
     exact hseedSpecial
   have hpMass : 1 ≤ p * m0 := by
@@ -146,30 +147,30 @@ theorem normalized_specialization_contradiction
     exact Nat.mul_pos hpPos hm0Pos
   have hnormalizedComplex :
       MvPolynomial.aeval (fun s : ↥P.support ↦ P.coeff s)
-          (GMC2NormalizedMoment.normalizedMomentRelationInt
+          (GMC2.NormalizedMoment.normalizedMomentRelationInt
             (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ))
             (p * m0) (p * A0)) = 0 := by
-    apply GMC2NormalizedMoment.aeval_normalized_eq_zero_of_E_pow_eq_zero
+    apply GMC2.NormalizedMoment.aeval_normalized_eq_zero_of_E_pow_eq_zero
     · intro r hr hbalanced
       apply H.scaledFloor p r
-      · simpa only [GMC2NormalizedResidue.fullChannels] using hr
+      · simpa only [GMC2.NormalizedResidue.fullChannels] using hr
       · exact hbalanced
-    · rw [GMC2SupportDescent.indexedPolynomial_support_eq]
+    · rw [GMC2.SupportDescent.indexedPolynomial_support_eq]
       exact hnull (p * m0) hpMass
   have hnormalizedSpecial :
       MvPolynomial.aeval w
-          (GMC2NormalizedMoment.normalizedMomentRelationInt
+          (GMC2.NormalizedMoment.normalizedMomentRelationInt
             (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ))
             (p * m0) (p * A0)) = 0 :=
     huniversal _ hnormalizedComplex
   have hnormalizedSpecialNe :
       MvPolynomial.aeval w
-          (GMC2NormalizedMoment.normalizedMomentRelationInt
+          (GMC2.NormalizedMoment.normalizedMomentRelationInt
             (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ))
             (p * m0) (p * A0)) ≠ 0 :=
-    GMC2NormalizedResidue.aeval_normalizedMoment_ne_zero
+    GMC2.NormalizedResidue.aeval_normalizedMoment_ne_zero
       p m0 A0 (fun s : ↥P.support ↦ (s : Fin 2 →₀ ℕ)) w
-      (GMC2SupportFaceBridge.supportFace P F)
+      (GMC2.SupportFaceBridge.supportFace P F)
       (H.scaledFloor p) H.faceHeight H.offHeight hfaceSpecial
   exact hnormalizedSpecialNe hnormalizedSpecial
 
@@ -184,21 +185,21 @@ structure HeightWitnessSupplier : Prop where
     (∀ s, s ∈ F ↔ s ∈ P.support ∧
       GMC2.radialExponentQ s - lambda * GMC2.chargeQ s = delta) →
     MvPolynomial.aeval (fun s : ↥F ↦ P.coeff s)
-      (GMC2ConstantTermRelations.constantTermRelation
+      (GMC2.ConstantTermRelations.constantTermRelation
         (fun s : ↥F ↦ GMC2.charge s) m0) ≠ 0 →
     ∃ A0, NormalizedHeightPackage P F m0 A0
 
 /-- The one-variable DvdK input and the compact height-package supplier imply
 the two-variable nullcone classification `NC2`. -/
 theorem nc2_of_dvdK1_of_heightWitnessSupplier
-    (hDvdK : GMC2DvdKInterface.DvdK1)
+    (hDvdK : GMC2.DvdKInterface.DvdK1)
     (hHeight : HeightWitnessSupplier) : GMC2.NC2 := by
   intro P hnull
   by_contra hP
   obtain ⟨lambda, delta, F, m0, hsubset, hm0, hlower, hface,
       A, D, w, hp, hchar, _hfinite, _hfield, _hunit, _hnonzero,
       huniversal, _hmomentFinite, hseedSpecial⟩ :=
-    GMC2IntegralFaceSeedDescent.exists_finite_field_moment_point_preserving_integral_lowest_face_seed
+    GMC2.IntegralFaceSeedDescent.exists_finite_field_moment_point_seed
       hDvdK P hnull hP
   have hseed := rational_face_seed_ne_zero
     P F hsubset m0 w huniversal hseedSpecial
@@ -214,7 +215,7 @@ theorem nc2_of_dvdK1_of_heightWitnessSupplier
 /-- Direct GMC(2) endpoint obtained by composing the conditional nullcone
 classification with the elementary charge reduction. -/
 theorem gmc2_of_dvdK1_of_heightWitnessSupplier
-    (hDvdK : GMC2DvdKInterface.DvdK1)
+    (hDvdK : GMC2.DvdKInterface.DvdK1)
     (hHeight : HeightWitnessSupplier)
     (P Q : MvPolynomial (Fin 2) ℂ)
     (hnull : ∀ m : ℕ, 1 ≤ m → GMC2.E (P ^ m) = 0) :
@@ -224,5 +225,5 @@ theorem gmc2_of_dvdK1_of_heightWitnessSupplier
 
 end
 
-end GMC2NC2
+end GMC2.NC2
 

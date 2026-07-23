@@ -3,7 +3,8 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.FieldTheory.Finite.Polynomial
 
 set_option linter.minImports true
 
@@ -19,7 +20,7 @@ object used by the algebraic-torus descent.
 
 open MvPolynomial Finset
 
-namespace GMC2MomentRelations
+namespace GMC2.MomentRelations
 
 variable {ι R : Type*} [Fintype ι] [DecidableEq ι]
 
@@ -64,5 +65,5 @@ theorem aeval_momentRelation
       simp
   · simp
 
-end GMC2MomentRelations
+end GMC2.MomentRelations
 

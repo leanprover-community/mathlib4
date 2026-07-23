@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.ConstantTermRelations
-import Mathlib
+import Mathlib.Algebra.MvPolynomial.Funext
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Data.Nat.Choose.Multinomial
+import Mathlib.LinearAlgebra.CliffordAlgebra.Equivs
 
 set_option linter.minImports true
 
@@ -20,7 +23,7 @@ composition `r = (n, p)` at `m = p+n`, so no cancellation can occur.
 
 open MvPolynomial Finset
 
-namespace GMC2DvdKTwoCharge
+namespace GMC2.DvdKTwoCharge
 
 /-- The pair charge vector. -/
 def pairQ (p n : ℕ) : Fin 2 → ℤ := ![(p : ℤ), -(n : ℤ)]
@@ -36,20 +39,20 @@ lemma pairR_mem (p n : ℕ) :
   simp [pairR, Fin.sum_univ_two, Nat.add_comm]
 
 lemma pairR_balanced (p n : ℕ) :
-    GMC2ConstantTermRelations.totalCharge (pairQ p n) (pairR p n) = 0 := by
-  simp [GMC2ConstantTermRelations.totalCharge, pairQ, pairR, Fin.sum_univ_two]
+    GMC2.ConstantTermRelations.totalCharge (pairQ p n) (pairR p n) = 0 := by
+  simp [GMC2.ConstantTermRelations.totalCharge, pairQ, pairR, Fin.sum_univ_two]
   ring
 
 /-- Uniqueness: the only balanced composition of size `p+n` is `pairR`. -/
 lemma balanced_unique (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
     (r : Fin 2 → ℕ)
     (hr : r ∈ Finset.piAntidiag (Finset.univ : Finset (Fin 2)) (p + n))
-    (hbal : GMC2ConstantTermRelations.totalCharge (pairQ p n) r = 0) :
+    (hbal : GMC2.ConstantTermRelations.totalCharge (pairQ p n) r = 0) :
     r = pairR p n := by
   rw [Finset.mem_piAntidiag] at hr
   obtain ⟨hsum, -⟩ := hr
   simp only [Fin.sum_univ_two] at hsum
-  simp only [GMC2ConstantTermRelations.totalCharge, pairQ, Fin.sum_univ_two,
+  simp only [GMC2.ConstantTermRelations.totalCharge, pairQ, Fin.sum_univ_two,
     Matrix.cons_val_zero, Matrix.cons_val_one] at hbal
   -- hsum : r 0 + r 1 = p + n ; hbal : r0*p - r1*n = 0
   have h0 : (r 0 : ℤ) * p = (r 1 : ℤ) * n := by linarith
@@ -69,8 +72,8 @@ constant term of the `(p+n)`-th power of `c₀ zᵖ + c₁ z⁻ⁿ` is nonzero. 
 theorem exists_nonzero_ct_pair (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
     (c : Fin 2 → ℂ) (hc : ∀ i, c i ≠ 0) :
     MvPolynomial.aeval c
-      (GMC2ConstantTermRelations.constantTermRelation (pairQ p n) (p + n)) ≠ 0 := by
-  rw [GMC2ConstantTermRelations.aeval_constantTermRelation]
+      (GMC2.ConstantTermRelations.constantTermRelation (pairQ p n) (p + n)) ≠ 0 := by
+  rw [GMC2.ConstantTermRelations.aeval_constantTermRelation]
   rw [Finset.sum_eq_single (pairR p n)]
   · rw [if_pos (pairR_balanced p n)]
     have hmult : (Nat.multinomial Finset.univ (pairR p n) : ℂ) ≠ 0 := by
@@ -91,7 +94,7 @@ theorem dvdk1_pair (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
     (c : Fin 2 → ℂ) (hc : ∀ i, c i ≠ 0) :
     ∃ m, 1 ≤ m ∧
       MvPolynomial.aeval c
-        (GMC2ConstantTermRelations.constantTermRelation (pairQ p n) m) ≠ 0 :=
+        (GMC2.ConstantTermRelations.constantTermRelation (pairQ p n) m) ≠ 0 :=
   ⟨p + n, by omega, exists_nonzero_ct_pair p n hp hn c hc⟩
 
 /-- Swapped orientation: index 0 carries the NEGATIVE charge `-n`, index 1 the `+p`. -/
@@ -106,18 +109,18 @@ lemma pairR'_mem (p n : ℕ) :
   exact ⟨by simp [pairR', Fin.sum_univ_two], by intro i _; exact Finset.mem_univ i⟩
 
 lemma pairR'_balanced (p n : ℕ) :
-    GMC2ConstantTermRelations.totalCharge (pairQ' p n) (pairR' p n) = 0 := by
-  simp [GMC2ConstantTermRelations.totalCharge, pairQ', pairR', Fin.sum_univ_two]; ring
+    GMC2.ConstantTermRelations.totalCharge (pairQ' p n) (pairR' p n) = 0 := by
+  simp [GMC2.ConstantTermRelations.totalCharge, pairQ', pairR', Fin.sum_univ_two]; ring
 
 lemma balanced_unique' (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
     (r : Fin 2 → ℕ)
     (hr : r ∈ Finset.piAntidiag (Finset.univ : Finset (Fin 2)) (p + n))
-    (hbal : GMC2ConstantTermRelations.totalCharge (pairQ' p n) r = 0) :
+    (hbal : GMC2.ConstantTermRelations.totalCharge (pairQ' p n) r = 0) :
     r = pairR' p n := by
   rw [Finset.mem_piAntidiag] at hr
   obtain ⟨hsum, -⟩ := hr
   simp only [Fin.sum_univ_two] at hsum
-  simp only [GMC2ConstantTermRelations.totalCharge, pairQ', Fin.sum_univ_two,
+  simp only [GMC2.ConstantTermRelations.totalCharge, pairQ', Fin.sum_univ_two,
     Matrix.cons_val_zero, Matrix.cons_val_one] at hbal
   have h0 : (r 1 : ℤ) * p = (r 0 : ℤ) * n := by linarith
   have hcast : (r 0 : ℤ) + (r 1 : ℤ) = (p : ℤ) + n := by exact_mod_cast hsum
@@ -131,8 +134,8 @@ lemma balanced_unique' (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
 theorem exists_nonzero_ct_pair' (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
     (c : Fin 2 → ℂ) (hc : ∀ i, c i ≠ 0) :
     MvPolynomial.aeval c
-      (GMC2ConstantTermRelations.constantTermRelation (pairQ' p n) (p + n)) ≠ 0 := by
-  rw [GMC2ConstantTermRelations.aeval_constantTermRelation]
+      (GMC2.ConstantTermRelations.constantTermRelation (pairQ' p n) (p + n)) ≠ 0 := by
+  rw [GMC2.ConstantTermRelations.aeval_constantTermRelation]
   rw [Finset.sum_eq_single (pairR' p n)]
   · rw [if_pos (pairR'_balanced p n)]
     have hmult : (Nat.multinomial Finset.univ (pairR' p n) : ℂ) ≠ 0 := by
@@ -143,5 +146,5 @@ theorem exists_nonzero_ct_pair' (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
     exact if_neg (fun hbal => hne (balanced_unique' p n hp hn r hr hbal))
   · intro h; exact absurd (pairR'_mem p n) h
 
-end GMC2DvdKTwoCharge
+end GMC2.DvdKTwoCharge
 

@@ -3,28 +3,30 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Mathlib
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 set_option linter.minImports true
 
 /-!
-# Vieta valuation-0 input for the the orbit-product argument wrapper
+# Vieta valuation-0 input for the orbit-product wrapper
 
-`GMC2Thm2067Wrapper.thm2067_contradiction` consumes two number-theoretic inputs about the roots of
+`GMC2.Thm2067Wrapper.thm2067_contradiction` consumes two number-theoretic inputs about the roots of
 `Φ(X) = Xᴹ − t·R(X)` over `F(t)`:
 
-* `hS` (the small-root product identity): the small-root product equals `c·t` (`t`-adic valuation 1) — the deep analytic gap;
+* `hS` (the small-root product identity): the small-root product equals `c·t` (`t`-adic valuation 1)
+  — the deep analytic gap;
 * `hΩ` (**Vieta**): the full-root product is a nonzero *constant* `d ∈ F` (`t`-adic valuation 0).
 
-This module supplies the number-theoretic content of the second input.  By Vieta's formula the product
-of the roots of `Φ` (over a splitting field) is `(−1)^{deg} · Φ.coeff 0 / Φ.leadingCoeff`, so the point
-is that this ratio is *constant in `t`*: `Φ.coeff 0 = −t·r₀` and `Φ.leadingCoeff = −t·lc(R)`, and the
-`t` cancels, leaving `r₀/lc(R) ∈ F`.  Hence the root product has `t`-adic valuation `0`.
+This module supplies the number-theoretic content of the second input. By Vieta's formula the
+product of the roots of `Φ` (over a splitting field) is `(−1)^{deg} · Φ.coeff 0 / Φ.leadingCoeff`,
+so the point is that this ratio is *constant in `t`*: `Φ.coeff 0 = −t·r₀` and
+`Φ.leadingCoeff = −t·lc(R)`, and the `t` cancels, leaving `r₀/lc(R) ∈ F`. Hence the root product has
+`t`-adic valuation `0`.
 -/
 
 open Polynomial
 
-namespace GMC2PhiVieta
+namespace GMC2.PhiVieta
 
 variable {F : Type*} [Field F]
 
@@ -61,9 +63,9 @@ theorem leadingCoeff_Phi (R : F[X]) (M : ℕ) (hMd : M < R.natDegree) :
   rw [Polynomial.coeff_sub, Polynomial.coeff_X_pow, if_neg (by omega),
     Polynomial.coeff_C_mul, Polynomial.coeff_map]; ring
 
-/-- **The Vieta core (valuation-0 fact).**  `Φ.coeff 0 / Φ.leadingCoeff = r₀/lc(R)` is the image of a
-CONSTANT of `F` (the `t` cancels), so the product of the roots of `Φ` (= `±` this ratio) has `t`-adic
-valuation `0` — the `hΩ` input of `GMC2Thm2067Wrapper.thm2067_contradiction`. -/
+/-- **The Vieta core (valuation-0 fact).** `Φ.coeff 0 / Φ.leadingCoeff = r₀/lc(R)` is the image of a
+CONSTANT of `F` (the `t` cancels), so the product of the roots of `Φ` (= `±` this ratio) has
+`t`-adic valuation `0` — the `hΩ` input of `GMC2.Thm2067Wrapper.thm2067_contradiction`. -/
 theorem coeff_ratio_Phi_eq_const (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR : R ≠ 0)
     (hMd : M < R.natDegree) :
     (Phi R M).coeff 0 / (Phi R M).leadingCoeff
@@ -75,9 +77,10 @@ theorem coeff_ratio_Phi_eq_const (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR : R ≠
     exact Polynomial.leadingCoeff_ne_zero.mpr hR
   field_simp
 
-/-- **Vieta: the product of the roots of `Φ` is a constant** (`t`-adic valuation 0).  Over any field
-`E` where `Φ` splits, `∏ roots = (−1)^d · (r₀/lc R)`, the image of a constant of `F`.  This is the `hΩ`
-input of `GMC2Thm2067Wrapper.thm2067_contradiction` (the full-root product is a nonzero constant). -/
+/-- **Vieta: the product of the roots of `Φ` is a constant** (`t`-adic valuation 0). Over any field
+`E` where `Φ` splits, `∏ roots = (−1)^d · (r₀/lc R)`, the image of a constant of `F`. This is the
+`hΩ` input of `GMC2.Thm2067Wrapper.thm2067_contradiction` (the full-root product is a nonzero
+constant). -/
 theorem prod_roots_Phi (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hMd : M < R.natDegree)
     {E : Type*} [Field E] [Algebra (RatFunc F) E]
     (hsplit : Splits ((Phi R M).map (algebraMap (RatFunc F) E))) :
@@ -103,21 +106,24 @@ theorem prod_roots_Phi (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hMd : M < R.natDegre
     rw [hcd]; exact coeff_ratio_Phi_eq_const R M hM hR hMd
   have hP : ((Phi R M).map (algebraMap (RatFunc F) E)).roots.prod
       = (algebraMap (RatFunc F) E) ((Phi R M).coeff 0)
-        / (((-1 : E) ^ R.natDegree) * (algebraMap (RatFunc F) E) ((Phi R M).coeff R.natDegree)) := by
+        / (((-1 : E) ^ R.natDegree)
+            * (algebraMap (RatFunc F) E) ((Phi R M).coeff R.natDegree)) := by
     rw [eq_div_iff (mul_ne_zero hsign hB)]; linear_combination -hkey
   rw [hP, mul_comm ((-1 : E) ^ R.natDegree), ← div_div, ← map_div₀, hratio, div_eq_mul_inv]
   rw [mul_comm]; congr 1
   rw [← inv_pow, inv_neg_one]
 
-/-- **Vieta, rootSet form (the `hΩ` input of `GMC2Thm2067Concrete.thm2067_contradiction_concrete`).**
-Over the splitting field of `Φ = Xᴹ − t·R`, the product of the *distinct* roots (the `rootSet`) is the
-image of the single constant `d = (−1)^{deg R}·(r₀/lc R) ∈ F`.  Separability turns the product over the
-`rootSet` subtype into the multiset root product, to which `prod_roots_Phi` applies; the sign and the
-nested `algebraMap`/`RatFunc.C` then fold into `RatFunc.C d` (`t`-adic valuation `0`).
+/-- **Vieta, rootSet form (the `hΩ` input of
+`GMC2.Thm2067Concrete.thm2067_contradiction_concrete`).** Over the splitting field of
+`Φ = Xᴹ − t·R`, the product of the *distinct* roots (the `rootSet`) is the image of the single
+constant `d = (−1)^{deg R}·(r₀/lc R) ∈ F`. Separability turns the product over the `rootSet` subtype
+into the multiset root product, to which `prod_roots_Phi` applies; the sign and the nested
+`algebraMap`/`RatFunc.C` then fold into `RatFunc.C d` (`t`-adic valuation `0`).
 
-This is exactly the shape concrete the orbit-product argument wrapper takes as `hΩ` (with
-`d := (−1)^{R.natDegree}·(R.coeff 0 / R.leadingCoeff)`), so together with `irreducible_Phi` (`hΦ`) it
-reduces the concrete the orbit-product argument contradiction to the single deep analytic input `hS` (the small-root product identity). -/
+This is exactly the shape the concrete orbit-product wrapper takes as `hΩ` (with
+`d := (−1)^{R.natDegree}·(R.coeff 0 / R.leadingCoeff)`), so together with `irreducible_Phi` (`hΦ`)
+it reduces the concrete orbit-product contradiction to the single deep analytic input
+`hS` (the small-root product identity). -/
 theorem prod_rootSet_Phi (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hMd : M < R.natDegree)
     (hsep : Separable ((Phi R M).map (algebraMap (RatFunc F) (Phi R M).SplittingField))) :
     (∏ α : (Phi R M).rootSet (Phi R M).SplittingField, (α : (Phi R M).SplittingField))
@@ -146,5 +152,5 @@ theorem prod_rootSet_Phi (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hMd : M < R.natDeg
   | rfl
   | rw [RatFunc.algebraMap_eq_C]
 
-end GMC2PhiVieta
+end GMC2.PhiVieta
 

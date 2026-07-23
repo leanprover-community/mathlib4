@@ -5,15 +5,19 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.DvdKMultiplicativeClosing
 import Archive.GaussianMomentConjecture.DvdKWeierstrass
-import Mathlib
+import Mathlib.Data.Complex.Basic
+import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.PowerSeries.Derivative
+import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 
 set_option linter.minImports true
 
 /-!
 # `hconst` discharged: the Weierstrass unit of `Φ = Xᴹ − t·R` is `1` at the origin
 
-`GMC2DvdKMultiplicativeClosing.smallRootFactor_coeff0_eq_of_derivative_vanishes` closes the
-multiplicative the small-root product identity crux (`Π = c·t`) modulo two hypotheses on the Weierstrass unit `h`:
+`GMC2.DvdKMultiplicativeClosing.smallRootFactor_coeff0_eq_of_derivative_vanishes` closes the
+multiplicative the small-root product identity crux (`Π = c·t`) modulo two hypotheses on the
+Weierstrass unit `h`:
 
 * `hconst : constantCoeff_t(h(0,t)) = 1` — the origin normalization, and
 * `hderiv : d_t(h(0,t)) = 0` — the deep `[x⁰]`-Laurent log-derivative identity under `D_m = 0`.
@@ -27,9 +31,9 @@ Consequently the entire multiplicative route is kernel-pure **modulo exactly `hd
 remaining analytic input (the `[x⁰]` derivative identity), the shared valuation crux.
 -/
 
-open PowerSeries GMC2DvdKWeierstrass
+open PowerSeries GMC2.DvdKWeierstrass
 
-namespace GMC2DvdKUnitOrigin
+namespace GMC2.DvdKUnitOrigin
 
 variable {F : Type*} [Field F]
 
@@ -73,7 +77,7 @@ theorem map_constantCoeff_smallRootFactor (R : Polynomial F) (M : ℕ) :
 domain `F⟦x⟧`. -/
 theorem unitCoeff0_constantCoeff_eq_one (R : Polynomial F) (M : ℕ) :
     PowerSeries.constantCoeff (R := F)
-        (GMC2DvdKMultiplicativeClosing.unitCoeff0 R M) = 1 := by
+        (GMC2.DvdKMultiplicativeClosing.unitCoeff0 R M) = 1 := by
   have H := PowerSeries.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
     (phi_residue_ne_zero R M)
   have hEq : Phi R M = (smallRootFactor R M : (PowerSeries F)⟦X⟧)
@@ -84,24 +88,25 @@ theorem unitCoeff0_constantCoeff_eq_one (R : Polynomial F) (M : ℕ) :
   have hΨh : PowerSeries.map (PowerSeries.constantCoeff (R := F))
       (PowerSeries.weierstrassUnit (Phi R M) (phi_residue_ne_zero R M)) = 1 :=
     (mul_left_cancel₀ hXne (by rw [mul_one]; exact hmul)).symm
-  calc PowerSeries.constantCoeff (R := F) (GMC2DvdKMultiplicativeClosing.unitCoeff0 R M)
+  calc PowerSeries.constantCoeff (R := F) (GMC2.DvdKMultiplicativeClosing.unitCoeff0 R M)
       = PowerSeries.coeff (R := F) 0 (PowerSeries.map (PowerSeries.constantCoeff (R := F))
           (PowerSeries.weierstrassUnit (Phi R M) (phi_residue_ne_zero R M))) := by
-        rw [GMC2DvdKMultiplicativeClosing.unitCoeff0, PowerSeries.coeff_map,
+        rw [GMC2.DvdKMultiplicativeClosing.unitCoeff0, PowerSeries.coeff_map,
           PowerSeries.coeff_zero_eq_constantCoeff]
     _ = 1 := by rw [hΨh]; simp
 
-/-- **The multiplicative the small-root product identity crux, reduced to `hderiv` alone.**  With `hconst` now discharged
-(`unitCoeff0_constantCoeff_eq_one`), the small-root factor's constant coefficient is `−t·r₀`, hence
-`Π = (−1)ᴹ P.coeff 0 = c·t`, given only the log-derivative identity `d_t(h(0,t)) = 0` (`hderiv`).  So
-the entire multiplicative route is kernel-pure modulo exactly `hderiv`. -/
+/-- **The multiplicative the small-root product identity crux, reduced to `hderiv` alone.** With
+`hconst` now discharged (`unitCoeff0_constantCoeff_eq_one`), the small-root factor's constant
+coefficient is `−t·r₀`, hence `Π = (−1)ᴹ P.coeff 0 = c·t`, given only the log-derivative identity
+`d_t(h(0,t)) = 0` (`hderiv`). So the entire multiplicative route is kernel-pure modulo exactly
+`hderiv`. -/
 theorem smallRootFactor_coeff0_eq_of_derivative_vanishes' [CharZero F]
     (R : Polynomial F) (M : ℕ) (hM : 1 ≤ M)
-    (hderiv : PowerSeries.derivative _ (GMC2DvdKMultiplicativeClosing.unitCoeff0 R M) = 0) :
+    (hderiv : PowerSeries.derivative _ (GMC2.DvdKMultiplicativeClosing.unitCoeff0 R M) = 0) :
     (smallRootFactor R M).coeff 0
       = - PowerSeries.X * (algebraMap F (PowerSeries F)) (R.coeff 0) :=
-  GMC2DvdKMultiplicativeClosing.smallRootFactor_coeff0_eq_of_derivative_vanishes R M hM
+  GMC2.DvdKMultiplicativeClosing.smallRootFactor_coeff0_eq_of_derivative_vanishes R M hM
     (unitCoeff0_constantCoeff_eq_one R M) hderiv
 
-end GMC2DvdKUnitOrigin
+end GMC2.DvdKUnitOrigin
 
