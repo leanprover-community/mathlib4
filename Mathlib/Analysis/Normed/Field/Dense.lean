@@ -5,19 +5,24 @@ Authors: Jiedong Jiang
 -/
 module
 
+public import Mathlib.Algebra.AlgebraicCard
 public import Mathlib.Analysis.Normed.Field.Approximation
 public import Mathlib.Analysis.Normed.Field.Krasner
 
 /-!
-# Transfer algebraic properties from dense subfields
+# Transfer properties from dense subfields
 
-In this file, we prove that algebraically closedness of a complete normed field of characteristic
-zero can be inherited from its dense subfields. Let `K` be a dense subfield of a complete normed
-field `L`.
+In this file, we prove that algebraic normed field extensions of a complete nontrivially normed
+nonarchimedean field with a countable dense subfield are separable. We also prove that algebraic
+closedness of a complete normed field of characteristic zero can be inherited from a dense
+algebraically closed subfield.
 
 ## Main results
-- `IsAlgClosed.of_denseRange` : If `K` is an algebraically closed dense subfield of a complete
-nonarchimedean normed field `L` of characteristic zero, then `L` is also algebraically closed.
+
+- `Algebra.IsAlgebraic.separableSpace_of_denseRange`: Every algebraic normed field extension of a
+  complete nontrivially normed nonarchimedean field with a countable dense subfield is separable.
+- `IsAlgClosed.of_denseRange`: If `K` is an algebraically closed dense subfield of a complete
+  nonarchimedean normed field `L` of characteristic zero, then `L` is also algebraically closed.
 
 ## TODO
 Show that
@@ -29,16 +34,65 @@ algebraically closed.
 2 and 3 will be easy to implement once we establish the result that every polynomial can be
 approximated by a *separable* polynomial.
 
-## Reference
+## References
+
 [Notes](https://math.stanford.edu/%7Econrad/248APage/handouts/algclosurecomp.pdf) by Brian Conrad.
 
 ## Tags
-Normed field, algebraically closedness
+
+normed field, algebraically closedness, separable space, dense subfield
 -/
 
 public section
 
 open Polynomial
+
+open TopologicalSpace in
+/-- Every algebraic normed field extension of a complete nontrivially normed nonarchimedean field
+with a countable dense subfield is a separable space. -/
+theorem Algebra.IsAlgebraic.separableSpace_of_denseRange {K : Type*} [Field K] [Countable K]
+    {L : Type*} [NontriviallyNormedField L] [IsUltrametricDist L] [CompleteSpace L]
+    [Algebra K L] (hden : DenseRange (algebraMap K L))
+    (F : Type*) [NormedField F] [NormedAlgebra L F] [Algebra.IsAlgebraic L F] :
+    SeparableSpace F := by
+  let E := AlgebraicClosure L
+  letI : NormedField E := spectralNorm.normedField L E
+  letI : NormedAlgebra L E := spectralNorm.normedAlgebra L E
+  haveI hEsep : SeparableSpace E := by
+    -- `k`-algebraic elements in `E` are countable, and are dense in `E` by continuity of roots.
+    refine ⟨{z : E | IsAlgebraic K z}, Algebraic.countable K E,
+      Metric.dense_iff.mpr <| fun α ε hε ↦ ?_⟩
+    have hα : IsIntegral L α := Algebra.IsIntegral.isIntegral α
+    set f := minpoly L α
+    have hf : Monic f := minpoly.monic hα
+    set n := f.natDegree with hn
+    have hnpos : 0 < n := minpoly.natDegree_pos hα
+    set M := max ‖α‖ 1 with hM
+    have hMpos : M ≠ 0 := by positivity
+    set δ := (ε / M) ^ n / (n + 1) with hδ_def
+    have hδpos : 0 < δ := by positivity
+    obtain ⟨g, hgm, hdeg, hgcoeff⟩ :=
+      exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt hden hf hδpos
+    obtain ⟨β, hβroot, hβnorm⟩ := exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt
+      hδpos (f := f) (minpoly.aeval _ _) hf (hgm.map _)
+      (by rw [natDegree_map_eq_of_injective (algebraMap K L).injective]; omega)
+      (fun i ↦ by simpa using hgcoeff i) (IsAlgClosed.splits _)
+    refine ⟨β, ?_, ?_⟩
+    · rw [Metric.mem_ball, dist_comm, dist_eq_norm]
+      refine hβnorm.trans_le ?_
+      rw [← hn, ← hM, show (↑n + 1) * δ = (ε / M) ^ n by rw [hδ_def]; field_simp,
+        Real.pow_rpow_inv_natCast (by positivity) hnpos.ne', div_mul_cancel₀ _ hMpos]
+    · rw [mem_aroots, aeval_map_algebraMap] at hβroot
+      exact ⟨g, hgm.ne_zero, hβroot.2⟩
+  -- Embed `F` into `E` and use the fact that subspace of a separable space is separable.
+  let e : F →ₐ[L] E := IsAlgClosed.lift
+  have he_inj : Function.Injective e := (e : F →+* E).injective
+  have he_isom : Isometry e := AddMonoidHomClass.isometry_of_norm e fun x ↦ by
+    rw [NormedAlgebra.norm_eq_spectralNorm L, NormedAlgebra.norm_eq_spectralNorm L]
+    rw [spectralNorm, spectralNorm, minpoly.algHom_eq e he_inj]
+  have hsep := he_isom.isEmbedding.isSeparable_preimage
+    (IsSeparable.of_separableSpace (Set.univ : Set E))
+  simpa [Set.preimage_univ] using isSeparable_univ_iff.mp hsep
 
 /-- If `K` is an algebraically closed dense subfield of a complete nonarchimedean normed field `L`
 of characteristic zero, then `L` is also algebraically closed. -/

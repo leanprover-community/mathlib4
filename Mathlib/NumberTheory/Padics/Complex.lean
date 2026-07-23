@@ -25,6 +25,8 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 ## Main Results
 
+* `Padic.separableSpace_of_isAlgebraic` : every algebraic normed field extension of `ℚ_[p]` is a
+  separable space.
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
 * `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
@@ -101,6 +103,10 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+/-- The norm of `p : PadicAlgCl p` is `p⁻¹`. -/
+theorem norm_p (p : ℕ) [Fact p.Prime] : ‖(p : PadicAlgCl p)‖ = (p : ℝ)⁻¹ := by
+  rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p)), norm_extends, Padic.norm_p]
+
 open MonoidWithZeroHom.ValueGroup₀
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
@@ -118,17 +124,52 @@ instance : RankOne (PadicAlgCl.valued p).v where
 instance : UniformContinuousConstSMul ℚ_[p] (PadicAlgCl p) :=
   uniformContinuousConstSMul_of_continuousConstSMul ℚ_[p] (PadicAlgCl p)
 
+/-- `PadicAlgCl p` is a densely normed field. -/
+instance denselyNormedField : DenselyNormedField (PadicAlgCl p) where
+  lt_norm_lt a b ha hab := by
+    have hb : 0 < b := ha.trans_lt hab
+    have hp1 : (1 : ℝ) < p := Nat.one_lt_cast.2 hp.out.one_lt
+    have hp_pos : 0 < ‖(p : PadicAlgCl p)‖ := (norm_p p) ▸ inv_pos.2 (zero_lt_one.trans hp1)
+    have hp_lt_one : ‖(p : PadicAlgCl p)‖ < 1 :=
+      (norm_p p) ▸ (inv_lt_one₀ (zero_lt_one.trans hp1)).2 hp1
+    -- Choose `n` with `(a / b) ^ n < ‖p‖`. An `n`-th root `z` of `p` then satisfies
+    -- `a / b < ‖z‖ < 1`, so some integer power of `z` has norm strictly between `a` and `b`.
+    obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hp_pos ((div_lt_one hb).2 hab)
+    have hn0 : n ≠ 0 := by
+      rintro rfl
+      simpa [pow_zero] using hn.asymm hp_lt_one
+    obtain ⟨z, hz⟩ := IsAlgClosed.exists_pow_nat_eq (p : PadicAlgCl p) (Nat.pos_of_ne_zero hn0)
+    have hzn : ‖z‖ ^ n = ‖(p : PadicAlgCl p)‖ := by rw [← norm_pow, hz]
+    have hza : a / b < ‖z‖ := lt_of_pow_lt_pow_left₀ n (norm_nonneg z) (hn.trans_eq hzn.symm)
+    obtain ⟨m, hm, hm'⟩ := exists_zpow_btwn_of_lt_mul ((div_lt_iff₀' hb).mp hza) hb
+      ((div_nonneg ha hb.le).trans_lt hza)
+      ((pow_lt_one_iff_of_nonneg (norm_nonneg z) hn0).mp (hzn.trans_lt hp_lt_one))
+    exact ⟨z ^ m, by rwa [norm_zpow], by rwa [norm_zpow]⟩
+
 /-- The norm on `PadicAlgCl p` is nontrivial. -/
-instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) where
-  non_trivial := by
-    choose x hx using NontriviallyNormedField.non_trivial (α := ℚ_[p])
-    use x
-    rw [PadicAlgCl.norm_extends]
-    exact hx
+instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) := inferInstance
 
 /-- `PadicAlgCl p` has characteristic zero. -/
 instance charZero : CharZero (PadicAlgCl p) :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] (PadicAlgCl p)).injective).mp inferInstance
+
+end PadicAlgCl
+
+namespace Padic
+
+/-- Every algebraic normed field extension of `ℚ_[p]` is a separable space. -/
+theorem separableSpace_of_isAlgebraic (K : Type*) [NormedField K] [NormedAlgebra ℚ_[p] K]
+    [Algebra.IsAlgebraic ℚ_[p] K] :
+    TopologicalSpace.SeparableSpace K :=
+  Algebra.IsAlgebraic.separableSpace_of_denseRange (Padic.denseRange_ratCast p) _
+
+end Padic
+
+namespace PadicAlgCl
+
+/-- `PadicAlgCl p` is a separable space. -/
+instance separableSpace : TopologicalSpace.SeparableSpace (PadicAlgCl p) :=
+  Padic.separableSpace_of_isAlgebraic p (PadicAlgCl p)
 
 end PadicAlgCl
 
@@ -229,12 +270,11 @@ theorem nnnorm_extends' (x : ℚ_[p]) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := b
   ext
   simp
 
+/-- `ℂ_[p]` is a densely normed field. -/
+instance denselyNormedField : DenselyNormedField ℂ_[p] := inferInstance
+
 /-- The norm on `ℂ_[p]` is nontrivial. -/
-instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
-  non_trivial := by
-    choose x hx using NontriviallyNormedField.non_trivial (α := ℚ_[p])
-    use x
-    simpa only [norm_extends']
+instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] := inferInstance
 
 /-- `ℂ_[p]` has characteristic zero. -/
 instance charZero : CharZero ℂ_[p] :=
@@ -243,6 +283,9 @@ instance charZero : CharZero ℂ_[p] :=
 /-- `ℂ_[p]` is algebraically closed. -/
 instance isAlgClosed : IsAlgClosed ℂ_[p] :=
   IsAlgClosed.of_denseRange UniformSpace.Completion.denseRange_coe
+
+/-- `ℂ_[p]` is a separable topological space. -/
+instance separableSpace : TopologicalSpace.SeparableSpace ℂ_[p] := inferInstance
 
 end PadicComplex
 
