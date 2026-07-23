@@ -41,12 +41,16 @@ public meta section
 
 open Lean Meta Qq
 
+namespace Mathlib.Tactic.Positivity
+
 /-- The `auto_positivity` attribute. Tag a lemma whose conclusion has the form `0 < f …`,
 `0 ≤ f …`, `f … ≠ 0` or `0 ≠ f …` to generate a `positivity` extension for expressions
 matching `f …`. Hypotheses of the lemma must be instance arguments, positivity-shaped facts
 (recursively dischargeable by `positivity`), or side conditions available verbatim in the
 local context. -/
 syntax (name := auto_positivity) "auto_positivity" : attr
+
+end Mathlib.Tactic.Positivity
 
 namespace Mathlib.Meta.Positivity
 
