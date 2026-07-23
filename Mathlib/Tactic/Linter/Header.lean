@@ -322,10 +322,13 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
           please do not use it in mathlib."
     | modName =>
       if modName.getRoot == `Lake then
-      Linter.logLint linter.style.header i
-        "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
-        (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
-        make sure to benchmark it. If this is fine, feel free to silence this linter."
+        Linter.logLint linter.style.header i
+          "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
+          (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
+          make sure to benchmark it. If this is fine, feel free to silence this linter."
+      else if modName.getRoot == `Init then
+        Linter.logLint linter.style.header i
+          "Importing anything from `Init` is redundant, because it is already imported by default."
 
 /-- Collect all atom values from a syntax tree. -/
 partial def collectAtoms (s : Syntax) : Array String :=
