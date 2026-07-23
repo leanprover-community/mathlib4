@@ -147,6 +147,10 @@ public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.GrpWithZero
 public import Mathlib.Algebra.Category.HopfAlgCat.Basic
 public import Mathlib.Algebra.Category.HopfAlgCat.Monoidal
+public import Mathlib.Algebra.Category.LocExtCat.BaseCat
+public import Mathlib.Algebra.Category.LocExtCat.Basic
+public import Mathlib.Algebra.Category.LocExtCat.Cotangent
+public import Mathlib.Algebra.Category.LocExtCat.Defs
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
@@ -6775,6 +6779,7 @@ public import Mathlib.RingTheory.LocalProperties.ProjectiveDimension
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.LocalProperties.Semilocal
 public import Mathlib.RingTheory.LocalProperties.Submodule
+public import Mathlib.RingTheory.LocalRing.AdjoinRoot
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.LocalRing.Etale
