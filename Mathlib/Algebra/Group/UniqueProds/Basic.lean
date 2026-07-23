@@ -360,7 +360,12 @@ open MulOpposite in
   a group, then we only need to check this when `A = B`.
   Here we generalize the result to cancellative semigroups.
   Non-cancellative counterexample: the AddMonoid `{0,1}` with 1+1=1. -/
-@[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
+@[to_additive /-- `UniqueSums G` says that for any two nonempty `Finset`s `A` and `B` in `G`,
+  `A × B` contains a unique pair with the `UniqueAdd` property. Strojnowski showed that if `G` is
+  an additive group, then we only need to check this when `A = B`.
+  Here we generalize the result to cancellative additive semigroups.
+  Non-cancellative counterexample: the AddMonoid `{0,1}` with 1+1=1. -/]
+theorem of_same {G} [Semigroup G] [IsCancelMul G]
     (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
     UniqueProds G where
   uniqueMul_of_nonempty {A B} hA hB := by
@@ -377,7 +382,11 @@ open MulOpposite in
   For an example of a semigroup `G` embeddable into a group that has `UniqueProds`
   but not `TwoUniqueProds`, see Example 10.13 in
   [J. Okniński, *Semigroup Algebras*][Okninski1991]. -/
-@[to_additive] theorem toTwoUniqueProds_of_group {G}
+@[to_additive /-- If an additive group has `UniqueSums`, then it actually has `TwoUniqueSums`.
+  For an example of an additive semigroup `G` embeddable into an additive group that has
+  `UniqueSums` but not `TwoUniqueSums`, see Example 10.13 in
+  [J. Okniński, *Semigroup Algebras*][Okninski1991]. -/]
+theorem toTwoUniqueProds_of_group {G}
     [Group G] [UniqueProds G] : TwoUniqueProds G where
   uniqueMul_of_one_lt_card {A B} hc := by
     simp_rw [Nat.one_lt_mul_iff, card_pos] at hc

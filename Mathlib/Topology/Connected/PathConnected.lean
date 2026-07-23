@@ -378,7 +378,7 @@ def Subgroup.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G] [IsTopo
   inv_mem' {g} hg := by simpa using! hg.inv
 
 /-- The path component of the identity in a topological group is normal. -/
-@[to_additive]
+@[to_additive /-- The path component of zero in an additive topological group is normal. -/]
 instance Subgroup.Normal.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] : (Subgroup.pathComponentOne G).Normal where
   conj_mem _ := fun ⟨γ⟩ g ↦ ⟨⟨⟨(g * γ · * g⁻¹), by fun_prop⟩, by simp, by simp⟩⟩

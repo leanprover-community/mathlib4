@@ -351,7 +351,8 @@ protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := b
   rw [IsAddCyclic.exponent_eq_card, Nat.card_zmod]
 
 /-- A group of order `p ^ 2` is not cyclic if and only if its exponent is `p`. -/
-@[to_additive]
+@[to_additive /-- An additive group of order `p ^ 2` is not cyclic if and only if its exponent is
+`p`. -/]
 lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
     (hα : Nat.card α = p ^ 2) : ¬ IsCyclic α ↔ Monoid.exponent α = p := by
   -- G is a nontrivial fintype of cardinality `p ^ 2`

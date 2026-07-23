@@ -44,7 +44,8 @@ variable {M : Type*} [TopologicalSpace M]
 
 /-- The induced charted space structure on the quotient of a charted space by a free, properly
 discontinuous group action. -/
-@[to_additive]
+@[to_additive /-- The induced charted space structure on the quotient of a charted space by a free,
+properly discontinuous additive group action. -/]
 instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpace Quotient.mk_surjective

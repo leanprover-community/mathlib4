@@ -64,7 +64,9 @@ lemma compHom_smul_def
 
 /-- If an action is transitive, then composing this action with a surjective homomorphism gives
 again a transitive action. -/
-@[to_additive]
+@[to_additive
+/-- If an action is transitive, then composing this action with a surjective homomorphism gives
+again a transitive action. -/]
 lemma isPretransitive_compHom {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G]
     [IsPretransitive F G] {f : E →* F} (hf : Surjective f) :
     letI : MulAction E G := MulAction.compHom _ f
