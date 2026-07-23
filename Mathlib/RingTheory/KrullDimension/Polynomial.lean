@@ -91,7 +91,7 @@ lemma height_eq_height_add_one (p : Ideal R)
     rwa [SetLike.mem_coe, LiesOver.over (P := P) (p := p), mem_comap, algebraMap_eq, hb.2]
   have eq := under_map_of_isPrime_disjoint _ Rₚ[X] ‹P.IsMaximal›.isPrime disj
   have : (P'.under R[X]).IsMaximal := eq.symm ▸ ‹P.IsMaximal›
-  have : P'.IsMaximal := .of_isLocalization_of_disjoint (p.primeCompl.map C)
+  have : P'.IsMaximal := IsLocalization.isMaximal_of_isMaximal_under (p.primeCompl.map C) Rₚ[X] P'
   have : P'.LiesOver p' := liesOver_of_isPrime_of_disjoint p.primeCompl _ _ disj
   have eq1 : p.height = p'.height := by
     rw [height_map_of_disjoint p.primeCompl]
