@@ -5,7 +5,6 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.FrobeniusFace
 import Archive.GaussianMomentConjecture.LowestFacePackage
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.Data.Finsupp.Defs
 
 /-!

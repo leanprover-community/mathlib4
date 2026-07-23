@@ -9,7 +9,6 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 
