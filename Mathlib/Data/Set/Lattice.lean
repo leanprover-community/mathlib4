@@ -730,7 +730,7 @@ theorem biUnion_self (s : Set α) : ⋃ x ∈ s, s = s :=
 theorem iUnion_nonempty_self (s : Set α) : ⋃ _ : s.Nonempty, s = s := by
   rw [iUnion_nonempty_index, biUnion_self]
 
-@[simp] lemma iInter_ne_univ_self (s : Set α) : ⋂ _ : s ≠ univ, s = s := 
+@[simp] lemma iInter_ne_univ_self (s : Set α) : ⋂ _ : s ≠ univ, s = s :=
   compl_injective <| by simp [← nonempty_compl]
 
 theorem biInter_singleton (a : α) (s : α → Set β) : ⋂ x ∈ ({a} : Set α), s x = s a :=
