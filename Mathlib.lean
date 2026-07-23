@@ -4434,6 +4434,7 @@ public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Card
 public import Mathlib.Data.Sym.NatCard
 public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Data.Sym.Sym2.Card
 public import Mathlib.Data.Sym.Sym2.Finsupp
 public import Mathlib.Data.Sym.Sym2.Init
 public import Mathlib.Data.Sym.Sym2.Order
