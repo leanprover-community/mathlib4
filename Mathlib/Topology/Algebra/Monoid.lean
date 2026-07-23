@@ -13,6 +13,7 @@ public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Order.Closure
 
 /-!
 # Theory of topological monoids
@@ -701,10 +702,12 @@ theorem Submonoid.top_closure_mul_self_eq (s : Submonoid M) :
 itself a submonoid. -/
 @[to_additive /-- The (topological-space) closure of an additive submonoid of a space `M` with
 `ContinuousAdd` is itself an additive submonoid. -/]
-def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
-  carrier := _root_.closure (s : Set M)
-  one_mem' := _root_.subset_closure s.one_mem
-  mul_mem' ha hb := s.top_closure_mul_self_subset ⟨_, ha, _, hb, rfl⟩
+def Submonoid.topologicalClosure : ClosureOperator (Submonoid M) := .mk₂
+  (fun s ↦ { carrier := _root_.closure s
+             one_mem' := _root_.subset_closure s.one_mem
+             mul_mem' ha hb := s.top_closure_mul_self_subset ⟨_, ha, _, hb, rfl⟩})
+  (fun _ ↦ _root_.subset_closure)
+  (fun _ _ h ↦ closure_minimal h isClosed_closure)
 
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
