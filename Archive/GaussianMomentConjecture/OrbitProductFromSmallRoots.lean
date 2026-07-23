@@ -3,14 +3,14 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
-import Archive.GaussianMomentConjecture.Thm2067Reduced
+import Archive.GaussianMomentConjecture.OrbitProductReduced
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 /-!
 # The orbit-product argument reduced to `hS` alone (the small-root product `= c·t`)
 
-`GMC2.Thm2067Reduced.thm2067_reduced_to_thm1550` still carried two auxiliary hypotheses beyond the
+`GMC2.OrbitProductReduced.orbit_product_contradiction_of_hS_and_fixed` still carried two auxiliary hypotheses beyond the
 deep analytic input `hS` (the small-root product is `c·t`): separability (`hsep`) of `Φ = Phi R M`
 over its splitting field, and Galois-fixedness (`hfix`) of the small-root packet product.  Over a
 characteristic-zero base field, **both are free**:
@@ -30,7 +30,7 @@ sole remaining input to GMC(2) on the multiplicative route.
 
 open Polynomial
 
-namespace GMC2.Thm2067HSonly
+namespace GMC2.OrbitProductFromSmallRoots
 
 variable {F : Type*} [Field F] [CharZero F]
 
@@ -39,7 +39,7 @@ variable {F : Type*} [Field F] [CharZero F]
 only* remaining input is `hS`: a small-root packet `S` whose product equals `c·t` (`c ≠ 0`).
 Separability and Galois-fixedness are discharged internally. Given `hS`, a contradiction follows —
 so, reading `hS` as "all constant terms vanish", some constant term is nonzero: DvdK. -/
-theorem thm2067_reduced_to_hS
+theorem orbit_product_contradiction_of_hS
     (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hMd : M < R.natDegree) (hR0 : R.coeff 0 ≠ 0)
     (S : Finset ((GMC2.PhiVieta.Phi R M).rootSet (GMC2.PhiVieta.Phi R M).SplittingField))
     (x0 : (GMC2.PhiVieta.Phi R M).rootSet (GMC2.PhiVieta.Phi R M).SplittingField)
@@ -62,7 +62,7 @@ theorem thm2067_reduced_to_hS
     -- base field
     rw [hS]
     exact AlgHomClass.commutes σ (RatFunc.C c * RatFunc.X)
-  exact GMC2.Thm2067Reduced.thm2067_reduced_to_thm1550 R M hM hMd hR0 hsep S x0 c hc hfix hS
+  exact GMC2.OrbitProductReduced.orbit_product_contradiction_of_hS_and_fixed R M hM hMd hR0 hsep S x0 c hc hfix hS
 
-end GMC2.Thm2067HSonly
+end GMC2.OrbitProductFromSmallRoots
 

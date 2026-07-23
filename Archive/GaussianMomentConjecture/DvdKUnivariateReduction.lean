@@ -5,8 +5,8 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.DvdKZeroCharge
 import Archive.GaussianMomentConjecture.HeightWitness
-import Archive.GaussianMomentConjecture.LaurentShiftCheckA
-import Archive.GaussianMomentConjecture.Thm2067HSonly
+import Archive.GaussianMomentConjecture.LaurentConstantTerm
+import Archive.GaussianMomentConjecture.OrbitProductFromSmallRoots
 import Mathlib.Computability.Reduce
 import Mathlib.Data.Complex.Basic
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
@@ -19,7 +19,7 @@ This is the **top-level integration** connecting the one-variable Duistermaat–
 arbitrary both-signs charge support) to the concrete Galois orbit-product route on a single
 polynomial `Φ = Phi R M = Xᴹ − t·R`.
 
-The bridge is Check A (`LaurentShiftCheckA`): shifting the finite charge support upward by `M`
+The bridge is Check A (`LaurentConstantTerm`): shifting the finite charge support upward by `M`
 produces an ordinary polynomial `R = shiftedPolynomial q c M` whose central power coefficients are
 exactly the evaluated constant-term relations,
 `(Rᵐ).coeff (M·m) = aeval c (constantTermRelation q m)` (`= D_m`). A both-signs support determines a
@@ -28,12 +28,12 @@ canonical shift `M = −min_i q_i ≥ 1` for which `R.coeff 0 ≠ 0` (the unique
 
 So *assuming* the single-polynomial crux — for `Φ = Phi R M`, if every `D_m` (`m ≥ 1`) vanishes then
 the small-root packet product is `c·t` (`hS`) — the sharpened orbit-product contradiction
-`GMC2.Thm2067HSonly.thm2067_reduced_to_hS` closes, giving `DvdK1BothSigns`. Every step except that
+`GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS` closes, giving `DvdK1BothSigns`. Every step except that
 one crux (the Weierstrass small-root identity, `= h(0,t) = 1`, the analytic lane) is discharged here
 kernel-pure.
 -/
 
-open Polynomial GMC2.LaurentShiftCheckA
+open Polynomial GMC2.LaurentConstantTerm
 
 namespace GMC2.DvdKUnivariateReduction
 
@@ -90,7 +90,7 @@ support.
 The proof: negate the conclusion (so *all* `aeval c (constantTermRelation q m) = 0`, `m ≥ 1`), build
 `R = shiftedPolynomial q c M` with `M = −min_i q_i`, verify `1 ≤ M`, `M < R.natDegree`,
 `R.coeff 0 ≠ 0` (from the unique minimal/maximal charges and injectivity), pass the vanishing
-through Check A to feed the crux, and close with `thm2067_reduced_to_hS`. -/
+through Check A to feed the crux, and close with `orbit_product_contradiction_of_hS`. -/
 theorem dvdK1_bothSigns_of_crux (crux : SinglePolyCrux) :
     GMC2.DvdKZeroCharge.DvdK1BothSigns := by
   classical
@@ -138,7 +138,7 @@ theorem dvdK1_bothSigns_of_crux (crux : SinglePolyCrux) :
     exact hcon' m hm
   -- feed the crux, then close with the sharpened orbit-product contradiction
   obtain ⟨S, x0, cc, hcc, hS⟩ := crux (shiftedPolynomial q c M) M hM1 hMd hR0 hDvanish
-  exact GMC2.Thm2067HSonly.thm2067_reduced_to_hS (shiftedPolynomial q c M) M hM1 hMd hR0 S x0 cc
+  exact GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS (shiftedPolynomial q c M) M hM1 hMd hR0 S x0 cc
     hcc hS
 
 /-- **`DvdK1` from the single-polynomial crux.**  Assembling the univariate reduction with the

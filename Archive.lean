@@ -50,7 +50,7 @@ import Archive.GaussianMomentConjecture.IntegralFaceSeedDescent
 import Archive.GaussianMomentConjecture.IntegralRelations
 import Archive.GaussianMomentConjecture.IntegralSpecialization
 import Archive.GaussianMomentConjecture.IntegralTorusSpecialization
-import Archive.GaussianMomentConjecture.LaurentShiftCheckA
+import Archive.GaussianMomentConjecture.LaurentConstantTerm
 import Archive.GaussianMomentConjecture.LowestFaceBridge
 import Archive.GaussianMomentConjecture.LowestFaceExistence
 import Archive.GaussianMomentConjecture.LowestFacePackage
@@ -62,6 +62,10 @@ import Archive.GaussianMomentConjecture.NormalizedMoment
 import Archive.GaussianMomentConjecture.NormalizedResidue
 import Archive.GaussianMomentConjecture.NullconeDescent
 import Archive.GaussianMomentConjecture.OrbitProduct
+import Archive.GaussianMomentConjecture.OrbitProductConcrete
+import Archive.GaussianMomentConjecture.OrbitProductFromSmallRoots
+import Archive.GaussianMomentConjecture.OrbitProductReduced
+import Archive.GaussianMomentConjecture.OrbitProductWrapper
 import Archive.GaussianMomentConjecture.PhiIrreducible
 import Archive.GaussianMomentConjecture.PhiVieta
 import Archive.GaussianMomentConjecture.RatFuncClosing
@@ -69,10 +73,6 @@ import Archive.GaussianMomentConjecture.Reduction
 import Archive.GaussianMomentConjecture.ResidueAssembly
 import Archive.GaussianMomentConjecture.SupportDescent
 import Archive.GaussianMomentConjecture.SupportFaceBridge
-import Archive.GaussianMomentConjecture.Thm2067Concrete
-import Archive.GaussianMomentConjecture.Thm2067HSonly
-import Archive.GaussianMomentConjecture.Thm2067Reduced
-import Archive.GaussianMomentConjecture.Thm2067Wrapper
 import Archive.GaussianMomentConjecture.TorusDescent
 import Archive.GaussianMomentConjecture.WickChannels
 import Archive.Hairer

@@ -27,7 +27,7 @@ semiring makes the bridge independent of the later complex/Galois argument.
 open Polynomial
 open scoped BigOperators
 
-namespace GMC2.LaurentShiftCheckA
+namespace GMC2.LaurentConstantTerm
 
 open LaurentPolynomial
 
@@ -174,7 +174,7 @@ theorem coeff_shiftedPolynomial_pow_eq_aeval_constantTermRelation
   rw [toLaurent_shiftedPolynomial_mul_T q c M hM]
   exact constantCoeff_pow_eq_aeval_constantTermRelation q c m
 
-end GMC2.LaurentShiftCheckA
+end GMC2.LaurentConstantTerm
 
 
 namespace GMC2.AdditiveOrbitSum

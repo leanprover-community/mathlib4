@@ -33,7 +33,7 @@ gap.
 open scoped BigOperators
 open MulAction Finset
 
-namespace GMC2.Thm2067Wrapper
+namespace GMC2.OrbitProductWrapper
 
 variable {F : Type*} [Field F]
 
@@ -53,7 +53,7 @@ Galois-type action on the roots (embedded `G`-equivariantly by `f` into a field 
 the small-root product equal to `c·t` and Galois-fixed (the small-root product identity), and the
 full product a nonzero constant `d` (Vieta), a contradiction follows. This is the complete the
 orbit-product argument modulo those two inputs. -/
-theorem thm2067_contradiction
+theorem orbit_product_contradiction_abstract
     {E : Type*} [Field E] [Algebra (RatFunc F) E]
     {G Ω : Type*} [Group G] [Finite G] [MulAction G Ω] [Fintype Ω]
     [IsPretransitive G Ω] [MulDistribMulAction G E]
@@ -79,5 +79,5 @@ theorem thm2067_contradiction
   have hG : 1 ≤ Fintype.card G := Fintype.card_pos
   exact pow_monomial_eq_const_absurd c d hc _ _ hG heq
 
-end GMC2.Thm2067Wrapper
+end GMC2.OrbitProductWrapper
 

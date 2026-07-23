@@ -9,7 +9,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 /-!
 # The transitive Galois action on the roots — the concrete instantiation of the orbit-product core
 
-To instantiate the abstract orbit-product wrapper (`Thm2067Wrapper`) at an actual polynomial, we
+To instantiate the abstract orbit-product wrapper (`OrbitProductWrapper`) at an actual polynomial, we
 need the Galois group `L ≃ₐ[K] L` acting on the roots of an irreducible `Φ ∈ K[X]` (splitting in a
 normal `L`), **transitively**, with the root inclusion **equivariant**. Using the *direct* action
 `σ • x = σ x` (rather than Mathlib's `galAction`, whose equivariance routes through the finicky
