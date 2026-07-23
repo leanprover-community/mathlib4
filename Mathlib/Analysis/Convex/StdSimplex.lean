@@ -300,7 +300,7 @@ variable [IsOrderedRing S]
 @[simp]
 lemma le_one (s : stdSimplex S X) (x : X) : s x ≤ 1 := by
   rw [← sum_eq_one s]
-  simpa only using Finset.single_le_sum (by simp) (by simp)
+  exact Finset.single_le_sum (by simp) (by simp)
 
 lemma image_linearMap (f : X → Y) :
     Set.image (FunOnFinite.linearMap S S f) (stdSimplex S X) ⊆ stdSimplex S Y := by
