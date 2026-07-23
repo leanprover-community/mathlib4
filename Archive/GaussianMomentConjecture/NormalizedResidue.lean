@@ -32,7 +32,7 @@ Frobenius power of the balanced integral face sum.
 
 open Finset MvPolynomial
 
-namespace GMC2NormalizedResidue
+namespace GMC2.NormalizedResidue
 
 variable {ι R : Type*} [Fintype ι] [DecidableEq ι]
 
@@ -70,8 +70,8 @@ omit [Fintype ι] [DecidableEq ι] in
 omit [Fintype ι] in
 @[simp] theorem faceDilationEmbedding_apply (p : ℕ) (hp : 0 < p)
     (F : Finset ι) (s : ↥F → ℕ) :
-    GMC2ChannelDilation.dilationEmbedding p hp F s =
-      GMC2ChannelDilation.dilate p F s :=
+    GMC2.ChannelDilation.dilationEmbedding p hp F s =
+      GMC2.ChannelDilation.dilate p F s :=
   rfl
 
 /-- All channels of the amplified mass `p*m0`. -/
@@ -90,7 +90,7 @@ separate pieces of structure. -/
 noncomputable def faceChannels (p : ℕ) (hp : 0 < p)
     (F : Finset ι) (m0 : ℕ) : Finset (ι → ℕ) :=
   (Finset.piAntidiag (Finset.univ : Finset ↥F) m0).map
-    (GMC2ChannelDilation.dilationEmbedding p hp F)
+    (GMC2.ChannelDilation.dilationEmbedding p hp F)
 
 /-- Balanced undilated face channels, the index set of the integral face
 constant-term sum. -/
@@ -98,25 +98,25 @@ noncomputable def balancedFaceChannels
     (exponent : ι → Fin 2 →₀ ℕ) (F : Finset ι) (m0 : ℕ) :
     Finset (↥F → ℕ) :=
   (Finset.piAntidiag (Finset.univ : Finset ↥F) m0).filter
-    (fun s ↦ GMC2NormalizedMoment.IsBalanced exponent
-      (GMC2ChannelDilation.extendByZero F s))
+    (fun s ↦ GMC2.NormalizedMoment.IsBalanced exponent
+      (GMC2.ChannelDilation.extendByZero F s))
 
 /-- One summand of the evaluated normalized moment relation. -/
 noncomputable def normalizedTerm [CommRing R]
     (exponent : ι → Fin 2 →₀ ℕ) (coefficient : ι → R)
     (Amin : ℕ) (r : ι → ℕ) : R :=
-  if GMC2NormalizedMoment.IsBalanced exponent r then
+  if GMC2.NormalizedMoment.IsBalanced exponent r then
     (Nat.multinomial Finset.univ r : R) *
       (∏ i, coefficient i ^ r i) *
-        (GMC2NormalizedMoment.normalizedFactorial Amin
-          (GMC2NormalizedMoment.channelHeight exponent r) : R)
+        (GMC2.NormalizedMoment.normalizedFactorial Amin
+          (GMC2.NormalizedMoment.channelHeight exponent r) : R)
   else 0
 
 /-- The undilated balanced multinomial weight attached to a dilated channel.
 It is zero on unbalanced channels. -/
 noncomputable def residueWeight (p : ℕ)
     (exponent : ι → Fin 2 →₀ ℕ) (r : ι → ℕ) : ℕ :=
-  if GMC2NormalizedMoment.IsBalanced exponent (undilate p r) then
+  if GMC2.NormalizedMoment.IsBalanced exponent (undilate p r) then
     Nat.multinomial Finset.univ (undilate p r)
   else 0
 
@@ -137,7 +137,7 @@ noncomputable def faceConstantTerm [CommRing R]
     (F : Finset ι) (m0 : ℕ) : R :=
   ∑ s ∈ balancedFaceChannels exponent F m0,
     (Nat.multinomial Finset.univ
-        (GMC2ChannelDilation.extendByZero F s) : R) *
+        (GMC2.ChannelDilation.extendByZero F s) : R) *
       faceMonomial coefficient s
 
 omit [Fintype ι] [DecidableEq ι] in
@@ -148,8 +148,8 @@ omit [Fintype ι] [DecidableEq ι] in
 
 omit [Fintype ι] in
 theorem faceDilate_eq_fullDilate (p : ℕ) (F : Finset ι) (s : ↥F → ℕ) :
-    GMC2ChannelDilation.dilate p F s =
-      fullDilate p (GMC2ChannelDilation.extendByZero F s) :=
+    GMC2.ChannelDilation.dilate p F s =
+      fullDilate p (GMC2.ChannelDilation.extendByZero F s) :=
   rfl
 
 omit [DecidableEq ι] in
@@ -163,9 +163,9 @@ omit [DecidableEq ι] in
 /-- Exact accumulated bidegree scaling for a full channel. -/
 theorem channelExponent_fullDilate
     (p : ℕ) (exponent : ι → Fin 2 →₀ ℕ) (r : ι → ℕ) :
-    GMC2MomentRelations.channelExponent exponent (fullDilate p r) =
-      p • GMC2MomentRelations.channelExponent exponent r := by
-  unfold GMC2MomentRelations.channelExponent
+    GMC2.MomentRelations.channelExponent exponent (fullDilate p r) =
+      p • GMC2.MomentRelations.channelExponent exponent r := by
+  unfold GMC2.MomentRelations.channelExponent
   calc
     ∑ i, (fullDilate p r i) • exponent i =
         ∑ i, p • ((r i) • exponent i) := by
@@ -180,19 +180,19 @@ omit [DecidableEq ι] in
 by `p` as well. -/
 theorem channelHeight_fullDilate
     (p : ℕ) (exponent : ι → Fin 2 →₀ ℕ) (r : ι → ℕ) :
-    GMC2NormalizedMoment.channelHeight exponent (fullDilate p r) =
-      p * GMC2NormalizedMoment.channelHeight exponent r := by
+    GMC2.NormalizedMoment.channelHeight exponent (fullDilate p r) =
+      p * GMC2.NormalizedMoment.channelHeight exponent r := by
   have h := congrArg (fun e : Fin 2 →₀ ℕ ↦ e 0)
     (channelExponent_fullDilate p exponent r)
-  simpa [GMC2NormalizedMoment.channelHeight, nsmul_eq_mul] using h
+  simpa [GMC2.NormalizedMoment.channelHeight, nsmul_eq_mul] using h
 
 omit [DecidableEq ι] in
 /-- Positive dilation preserves and reflects balance. -/
 theorem isBalanced_fullDilate_iff {p : ℕ} (hp : 0 < p)
     (exponent : ι → Fin 2 →₀ ℕ) (r : ι → ℕ) :
-    GMC2NormalizedMoment.IsBalanced exponent (fullDilate p r) ↔
-      GMC2NormalizedMoment.IsBalanced exponent r := by
-  unfold GMC2NormalizedMoment.IsBalanced
+    GMC2.NormalizedMoment.IsBalanced exponent (fullDilate p r) ↔
+      GMC2.NormalizedMoment.IsBalanced exponent r := by
+  unfold GMC2.NormalizedMoment.IsBalanced
   rw [channelExponent_fullDilate]
   constructor
   · intro h
@@ -206,14 +206,14 @@ antidiagonal of the same mass. -/
 theorem extendByZero_mem_piAntidiag {m0 : ℕ}
     (F : Finset ι) (s : ↥F → ℕ)
     (hs : s ∈ Finset.piAntidiag (Finset.univ : Finset ↥F) m0) :
-    GMC2ChannelDilation.extendByZero F s ∈
+    GMC2.ChannelDilation.extendByZero F s ∈
       Finset.piAntidiag (Finset.univ : Finset ι) m0 := by
   rw [Finset.mem_piAntidiag] at hs ⊢
   constructor
   · calc
-      ∑ i, GMC2ChannelDilation.extendByZero F s i =
+      ∑ i, GMC2.ChannelDilation.extendByZero F s i =
           ∑ i : ↥F, s i := by
-            exact GMC2ChannelDilation.sum_extendByZero F s
+            exact GMC2.ChannelDilation.sum_extendByZero F s
               (fun _ n ↦ n) (fun _ ↦ rfl)
       _ = m0 := hs.1
   · simp
@@ -268,7 +268,7 @@ theorem faceChannels_eq_filter {p m0 : ℕ} (hp : 0 < p) (F : Finset ι) :
         (fun r ↦ SupportedOn F r ∧ ∀ i, i ∈ F → p ∣ r i) := by
   classical
   simp only [faceChannels, fullChannels, SupportedOn]
-  convert GMC2ChannelDilation.map_piAntidiag_dilation (ι := ι) (m := m0) hp F using 2
+  convert GMC2.ChannelDilation.map_piAntidiag_dilation (ι := ι) (m := m0) hp F using 2
   exact Finset.filter_congr_decidable _ _ _
 
 theorem faceChannels_subset_dilated {p m0 : ℕ} (hp : 0 < p)
@@ -320,7 +320,7 @@ theorem normalizedTerm_eq_zero_of_not_dilated
     (r : ι → ℕ) (hr : r ∈ fullChannels p m0)
     (hrNot : r ∉ dilatedChannels p hp m0) :
     normalizedTerm exponent coefficient Amin r = 0 := by
-  by_cases hbalanced : GMC2NormalizedMoment.IsBalanced exponent r
+  by_cases hbalanced : GMC2.NormalizedMoment.IsBalanced exponent r
   · have hdvd := prime_dvd_multinomial_of_not_mem_dilated hp r hr hrNot
     have hcast : (Nat.multinomial Finset.univ r : R) = 0 :=
       (CharP.cast_eq_zero_iff R p _).2 hdvd
@@ -334,9 +334,9 @@ theorem normalizedTerm_eq_zero_of_dilated_not_face
     (hp : 0 < p) (exponent : ι → Fin 2 →₀ ℕ) (coefficient : ι → R)
     (F : Finset ι)
     (hoffHeight : ∀ r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m0,
-      GMC2NormalizedMoment.IsBalanced exponent r →
+      GMC2.NormalizedMoment.IsBalanced exponent r →
       ¬ SupportedOn F r →
-      A0 + 1 ≤ GMC2NormalizedMoment.channelHeight exponent r)
+      A0 + 1 ≤ GMC2.NormalizedMoment.channelHeight exponent r)
     (r : ι → ℕ) (hr : r ∈ dilatedChannels p hp m0)
     (hrNotFace : r ∉ faceChannels p hp F m0) :
     normalizedTerm exponent coefficient (p * A0) r = 0 := by
@@ -345,8 +345,8 @@ theorem normalizedTerm_eq_zero_of_dilated_not_face
   change fullDilate p s = r at hsr
   subst r
   by_cases hbalanced :
-      GMC2NormalizedMoment.IsBalanced exponent (fullDilate p s)
-  · have hsBalanced : GMC2NormalizedMoment.IsBalanced exponent s :=
+      GMC2.NormalizedMoment.IsBalanced exponent (fullDilate p s)
+  · have hsBalanced : GMC2.NormalizedMoment.IsBalanced exponent s :=
       (isBalanced_fullDilate_iff hp exponent s).1 hbalanced
     have hsNotSupported : ¬ SupportedOn F s := by
       intro hsSupported
@@ -356,17 +356,17 @@ theorem normalizedTerm_eq_zero_of_dilated_not_face
       intro i hi
       simp [fullDilate, hsSupported i hi]
     have hgap := hoffHeight s hs hsBalanced hsNotSupported
-    have hdvd : p ∣ GMC2NormalizedMoment.normalizedFactorial
+    have hdvd : p ∣ GMC2.NormalizedMoment.normalizedFactorial
         (p * A0)
-        (GMC2NormalizedMoment.channelHeight exponent (fullDilate p s)) := by
+        (GMC2.NormalizedMoment.channelHeight exponent (fullDilate p s)) := by
       rw [channelHeight_fullDilate]
-      simpa [GMC2NormalizedMoment.normalizedFactorial] using
-        (GMC2FrobeniusResidue.prime_dvd_normalized_factorial_of_gap
-          p A0 (GMC2NormalizedMoment.channelHeight exponent s)
+      simpa [GMC2.NormalizedMoment.normalizedFactorial] using
+        (GMC2.FrobeniusResidue.prime_dvd_normalized_factorial_of_gap
+          p A0 (GMC2.NormalizedMoment.channelHeight exponent s)
           (Fact.out : Nat.Prime p) hgap)
     have hcast :
-        (GMC2NormalizedMoment.normalizedFactorial (p * A0)
-          (GMC2NormalizedMoment.channelHeight exponent (fullDilate p s)) : R) = 0 :=
+        (GMC2.NormalizedMoment.normalizedFactorial (p * A0)
+          (GMC2.NormalizedMoment.channelHeight exponent (fullDilate p s)) : R) = 0 :=
       (CharP.cast_eq_zero_iff R p _).2 hdvd
     simp [normalizedTerm, hbalanced, hcast]
   · simp [normalizedTerm, hbalanced]
@@ -380,37 +380,37 @@ theorem normalizedTerm_eq_face_frobenius_term
     (F : Finset ι)
     (hfaceHeight : ∀ s ∈
         Finset.piAntidiag (Finset.univ : Finset ↥F) m0,
-      GMC2NormalizedMoment.IsBalanced exponent
-        (GMC2ChannelDilation.extendByZero F s) →
-      GMC2NormalizedMoment.channelHeight exponent
-        (GMC2ChannelDilation.extendByZero F s) = A0)
+      GMC2.NormalizedMoment.IsBalanced exponent
+        (GMC2.ChannelDilation.extendByZero F s) →
+      GMC2.NormalizedMoment.channelHeight exponent
+        (GMC2.ChannelDilation.extendByZero F s) = A0)
     (r : ι → ℕ) (hr : r ∈ faceChannels p hp F m0) :
     normalizedTerm exponent coefficient (p * A0) r =
       (residueWeight p exponent r : R) *
         (residueCoefficient p coefficient r) ^ p := by
   rw [faceChannels, Finset.mem_map] at hr
   obtain ⟨s, hs, hsr⟩ := hr
-  change GMC2ChannelDilation.dilate p F s = r at hsr
+  change GMC2.ChannelDilation.dilate p F s = r at hsr
   subst r
-  let t : ι → ℕ := GMC2ChannelDilation.extendByZero F s
+  let t : ι → ℕ := GMC2.ChannelDilation.extendByZero F s
   change normalizedTerm exponent coefficient (p * A0) (fullDilate p t) =
     (residueWeight p exponent (fullDilate p t) : R) *
       residueCoefficient p coefficient (fullDilate p t) ^ p
-  by_cases hsBalanced : GMC2NormalizedMoment.IsBalanced exponent t
-  · have hdilatedBalanced : GMC2NormalizedMoment.IsBalanced exponent
+  by_cases hsBalanced : GMC2.NormalizedMoment.IsBalanced exponent t
+  · have hdilatedBalanced : GMC2.NormalizedMoment.IsBalanced exponent
         (fullDilate p t) :=
       (isBalanced_fullDilate_iff hp exponent t).2 hsBalanced
-    have hsBalanced' : GMC2NormalizedMoment.IsBalanced exponent
-        (GMC2ChannelDilation.extendByZero F s) := by
+    have hsBalanced' : GMC2.NormalizedMoment.IsBalanced exponent
+        (GMC2.ChannelDilation.extendByZero F s) := by
       simpa [t] using hsBalanced
-    have hheight : GMC2NormalizedMoment.channelHeight exponent
+    have hheight : GMC2.NormalizedMoment.channelHeight exponent
         (fullDilate p t) = p * A0 := by
       rw [channelHeight_fullDilate]
       simpa [t] using congrArg (fun n ↦ p * n)
         (hfaceHeight s hs hsBalanced')
-    have hfactorial : GMC2NormalizedMoment.normalizedFactorial
+    have hfactorial : GMC2.NormalizedMoment.normalizedFactorial
         (p * A0)
-        (GMC2NormalizedMoment.channelHeight exponent
+        (GMC2.NormalizedMoment.channelHeight exponent
           (fullDilate p t)) = 1 := by
       rw [hheight]
       exact Nat.div_self (Nat.factorial_pos _)
@@ -437,7 +437,7 @@ theorem normalizedTerm_eq_face_frobenius_term
     rw [hfactorial, Nat.cast_one, mul_one, hmultinomial, htargetProduct]
     simp [residueWeight, residueCoefficient, undilate_fullDilate hp,
       hsBalanced]
-  · have hdilatedNotBalanced : ¬ GMC2NormalizedMoment.IsBalanced exponent
+  · have hdilatedNotBalanced : ¬ GMC2.NormalizedMoment.IsBalanced exponent
         (fullDilate p t) := fun h ↦
       hsBalanced ((isBalanced_fullDilate_iff hp exponent t).1 h)
     simp [normalizedTerm, hdilatedNotBalanced, residueWeight,
@@ -455,20 +455,20 @@ theorem face_base_sum_reindex
       faceConstantTerm exponent coefficient F m0 := by
   classical
   rw [faceChannels]
-  rw [GMC2ChannelDilation.sum_map_dilation hp F]
+  rw [GMC2.ChannelDilation.sum_map_dilation hp F]
   rw [faceConstantTerm, balancedFaceChannels, Finset.sum_filter]
   apply Finset.sum_congr rfl
   intro s hs
-  by_cases hbalanced : GMC2NormalizedMoment.IsBalanced exponent
-      (GMC2ChannelDilation.extendByZero F s)
+  by_cases hbalanced : GMC2.NormalizedMoment.IsBalanced exponent
+      (GMC2.ChannelDilation.extendByZero F s)
   · have hproduct :
         residueCoefficient p coefficient
-          (fullDilate p (GMC2ChannelDilation.extendByZero F s)) =
+          (fullDilate p (GMC2.ChannelDilation.extendByZero F s)) =
           faceMonomial coefficient s := by
       rw [residueCoefficient]
       simp only [undilate_fullDilate hp]
       simpa [faceMonomial] using
-        (GMC2ChannelDilation.prod_extendByZero F s
+        (GMC2.ChannelDilation.prod_extendByZero F s
           (fun i n ↦ coefficient i ^ n) (fun _ ↦ pow_zero _))
     simp only [residueWeight, faceDilate_eq_fullDilate,
       undilate_fullDilate hp, if_pos hbalanced]
@@ -483,14 +483,14 @@ theorem balancedFace_sum_frobenius
     (F : Finset ι) (m0 : ℕ) :
     ∑ s ∈ balancedFaceChannels exponent F m0,
         (Nat.multinomial Finset.univ
-          (fun i ↦ p * GMC2ChannelDilation.extendByZero F s i) : R) *
+          (fun i ↦ p * GMC2.ChannelDilation.extendByZero F s i) : R) *
           (faceMonomial coefficient s) ^ p =
       (faceConstantTerm exponent coefficient F m0) ^ p := by
   unfold faceConstantTerm
   exact GMC2.face_sum_frobenius p
     (Finset.univ : Finset ι)
     (balancedFaceChannels exponent F m0)
-    (fun s ↦ GMC2ChannelDilation.extendByZero F s)
+    (fun s ↦ GMC2.ChannelDilation.extendByZero F s)
     (fun s ↦ faceMonomial coefficient s)
 
 /-- Concrete three-case normalized residue identity on an indexed face. -/
@@ -499,25 +499,25 @@ theorem aeval_normalizedMoment_eq_faceConstantTerm_pow
     (exponent : ι → Fin 2 →₀ ℕ) (coefficient : ι → R)
     (F : Finset ι)
     (_hfullFloor : ∀ r ∈ fullChannels p m0,
-      GMC2NormalizedMoment.IsBalanced exponent r →
-      p * A0 ≤ GMC2NormalizedMoment.channelHeight exponent r)
+      GMC2.NormalizedMoment.IsBalanced exponent r →
+      p * A0 ≤ GMC2.NormalizedMoment.channelHeight exponent r)
     (hfaceHeight : ∀ s ∈
         Finset.piAntidiag (Finset.univ : Finset ↥F) m0,
-      GMC2NormalizedMoment.IsBalanced exponent
-        (GMC2ChannelDilation.extendByZero F s) →
-      GMC2NormalizedMoment.channelHeight exponent
-        (GMC2ChannelDilation.extendByZero F s) = A0)
+      GMC2.NormalizedMoment.IsBalanced exponent
+        (GMC2.ChannelDilation.extendByZero F s) →
+      GMC2.NormalizedMoment.channelHeight exponent
+        (GMC2.ChannelDilation.extendByZero F s) = A0)
     (hoffHeight : ∀ r ∈ Finset.piAntidiag
         (Finset.univ : Finset ι) m0,
-      GMC2NormalizedMoment.IsBalanced exponent r →
+      GMC2.NormalizedMoment.IsBalanced exponent r →
       ¬ SupportedOn F r →
-      A0 + 1 ≤ GMC2NormalizedMoment.channelHeight exponent r) :
+      A0 + 1 ≤ GMC2.NormalizedMoment.channelHeight exponent r) :
     MvPolynomial.aeval coefficient
-        (GMC2NormalizedMoment.normalizedMomentRelationInt
+        (GMC2.NormalizedMoment.normalizedMomentRelationInt
           exponent (p * m0) (p * A0)) =
       (faceConstantTerm exponent coefficient F m0) ^ p := by
   letI : ExpChar R p := ExpChar.prime Fact.out
-  rw [GMC2NormalizedMoment.aeval_normalizedMomentRelationInt]
+  rw [GMC2.NormalizedMoment.aeval_normalizedMomentRelationInt]
   change
     (∑ r ∈ fullChannels p m0,
       normalizedTerm exponent coefficient (p * A0) r) = _
@@ -528,7 +528,7 @@ theorem aeval_normalizedMoment_eq_faceConstantTerm_pow
       (∑ r ∈ faceChannels p hp F m0,
         (residueWeight p exponent r : R) *
           residueCoefficient p coefficient r) ^ p := by
-      exact GMC2ResidueAssembly.three_case_sum_eq_frobenius
+      exact GMC2.ResidueAssembly.three_case_sum_eq_frobenius
         p (fullChannels p m0) (dilatedChannels p hp m0)
         (faceChannels p hp F m0)
         (normalizedTerm exponent coefficient (p * A0))
@@ -554,26 +554,26 @@ theorem aeval_normalizedMoment_ne_zero
     (exponent : ι → Fin 2 →₀ ℕ) (coefficient : ι → R)
     (F : Finset ι)
     (hfullFloor : ∀ r ∈ fullChannels p m0,
-      GMC2NormalizedMoment.IsBalanced exponent r →
-      p * A0 ≤ GMC2NormalizedMoment.channelHeight exponent r)
+      GMC2.NormalizedMoment.IsBalanced exponent r →
+      p * A0 ≤ GMC2.NormalizedMoment.channelHeight exponent r)
     (hfaceHeight : ∀ s ∈
         Finset.piAntidiag (Finset.univ : Finset ↥F) m0,
-      GMC2NormalizedMoment.IsBalanced exponent
-        (GMC2ChannelDilation.extendByZero F s) →
-      GMC2NormalizedMoment.channelHeight exponent
-        (GMC2ChannelDilation.extendByZero F s) = A0)
+      GMC2.NormalizedMoment.IsBalanced exponent
+        (GMC2.ChannelDilation.extendByZero F s) →
+      GMC2.NormalizedMoment.channelHeight exponent
+        (GMC2.ChannelDilation.extendByZero F s) = A0)
     (hoffHeight : ∀ r ∈ Finset.piAntidiag
         (Finset.univ : Finset ι) m0,
-      GMC2NormalizedMoment.IsBalanced exponent r →
+      GMC2.NormalizedMoment.IsBalanced exponent r →
       ¬ SupportedOn F r →
-      A0 + 1 ≤ GMC2NormalizedMoment.channelHeight exponent r)
+      A0 + 1 ≤ GMC2.NormalizedMoment.channelHeight exponent r)
     (hfaceNonzero : faceConstantTerm exponent coefficient F m0 ≠ 0) :
     MvPolynomial.aeval coefficient
-        (GMC2NormalizedMoment.normalizedMomentRelationInt
+        (GMC2.NormalizedMoment.normalizedMomentRelationInt
           exponent (p * m0) (p * A0)) ≠ 0 := by
   rw [aeval_normalizedMoment_eq_faceConstantTerm_pow
     p m0 A0 exponent coefficient F hfullFloor hfaceHeight hoffHeight]
   exact pow_ne_zero p hfaceNonzero
 
-end GMC2NormalizedResidue
+end GMC2.NormalizedResidue
 

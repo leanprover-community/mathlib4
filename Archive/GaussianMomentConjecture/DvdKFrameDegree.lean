@@ -21,14 +21,14 @@ statement that `[x⁰] (P_t / P) = 0`, which is what lets the disk/annulus split
 the `h`-side contribution `d_t h(0, t) / h(0, t)`.
 -/
 
-open PowerSeries HahnSeries GMC2DvdKFrame
+open PowerSeries HahnSeries GMC2.DvdKFrame
 open scoped Pointwise
 
-namespace GMC2DvdKFrameDegree
+namespace GMC2.DvdKFrameDegree
 
 variable {F : Type*} [Field F]
 
-/-- **(c) the degree lemma.**  If `u : (LaurentSeries F)⟦t⟧` is a unit with `u.coeff 0 = 1` and every
+/-- **(c) the degree lemma.** If `u : (LaurentSeries F)⟦t⟧` is a unit with `u.coeff 0 = 1` and every
 higher `t`-coefficient supported on strictly negative `x`-degrees, then `xCoeff0 (logDeriv u) = 0`.
 Proof: `logDeriv u · u = ∂u` (`logDeriv_mul_self`); strong induction on the `t`-order gives every
 `t`-coefficient of `logDeriv u` a strictly-negative `x`-support, so its `x⁰` coefficient is `0`. -/
@@ -47,14 +47,16 @@ theorem xCoeff0_logDeriv_eq_zero (u : PowerSeries (LaurentSeries F)) (hu : IsUni
       have hmul := congrArg (coeff (R := LaurentSeries F) k) hLu
       rw [PowerSeries.coeff_mul, coeff_derivative] at hmul
       -- isolate the (k,0) diagonal term (= coeff k (logDeriv u) since coeff 0 u = 1)
-      have hmem : (k, 0) ∈ Finset.HasAntidiagonal.antidiagonal k := by simp [Finset.HasAntidiagonal.mem_antidiagonal]
+      have hmem : (k, 0) ∈ Finset.HasAntidiagonal.antidiagonal k := by
+        simp [Finset.HasAntidiagonal.mem_antidiagonal]
       rw [← Finset.add_sum_erase _ _ hmem] at hmul
       simp only [h0, mul_one] at hmul
       -- solve for coeff k (logDeriv u)
       have hsolve : coeff (R := LaurentSeries F) k (logDeriv u)
           = coeff (R := LaurentSeries F) (k + 1) u * (↑k + 1)
             - ∑ p ∈ (Finset.HasAntidiagonal.antidiagonal k).erase (k, 0),
-                coeff (R := LaurentSeries F) p.1 (logDeriv u) * coeff (R := LaurentSeries F) p.2 u := by
+                coeff (R := LaurentSeries F) p.1 (logDeriv u)
+                  * coeff (R := LaurentSeries F) p.2 u := by
         linear_combination hmul
       rw [hsolve]
       have hnc : ((↑k + 1 : LaurentSeries F)).support ⊆ {0} := by
@@ -88,17 +90,19 @@ theorem xCoeff0_logDeriv_eq_zero (u : PowerSeries (LaurentSeries F)) (hu : IsUni
   by_contra hne
   exact absurd (key k (by rw [HahnSeries.mem_support]; exact hne)) (by simp)
 
-/-- **(c), the frame-local degree lemma for a monic-degree-`M` factor.**  If `φ` is a unit in
+/-- **(c), the frame-local degree lemma for a monic-degree-`M` factor.** If `φ` is a unit in
 `(LaurentSeries F)⟦t⟧` with `φ.coeff 0 = xᴹ` (`= single M 1`) and every higher `t`-coefficient of
-`x`-degree `< M`, then `xCoeff0 (logDeriv φ) = 0`.  This is `[x⁰](logDeriv P) = 0` for the Weierstrass
-distinguished factor `P` (monic of `x`-degree `M`, `P_t` of `x`-degree `< M`), the remaining input to
-`hderiv` — via `φ = xᴹ·u` with `logDeriv xᴹ = 0` and `u` of the previous lemma's shape. -/
+`x`-degree `< M`, then `xCoeff0 (logDeriv φ) = 0`. This is `[x⁰](logDeriv P) = 0` for the
+Weierstrass distinguished factor `P` (monic of `x`-degree `M`, `P_t` of `x`-degree `< M`), the
+remaining input to `hderiv` — via `φ = xᴹ·u` with `logDeriv xᴹ = 0` and `u` of the previous lemma's
+shape. -/
 theorem xCoeff0_logDeriv_eq_zero_of_monic (φ : PowerSeries (LaurentSeries F)) (hφ : IsUnit φ)
     (M : ℕ) (h0 : coeff (R := LaurentSeries F) 0 φ = HahnSeries.single (M : ℤ) 1)
     (hlt : ∀ n, 1 ≤ n → (coeff (R := LaurentSeries F) n φ).support ⊆ Set.Iio (M : ℤ)) :
     xCoeff0 (logDeriv φ) = 0 := by
   set xM : PowerSeries (LaurentSeries F) := PowerSeries.C (HahnSeries.single (M : ℤ) 1) with hxM
-  set xnM : PowerSeries (LaurentSeries F) := PowerSeries.C (HahnSeries.single (-(M : ℤ)) 1) with hxnM
+  set xnM : PowerSeries (LaurentSeries F) := PowerSeries.C (HahnSeries.single (-(M : ℤ)) 1)
+    with hxnM
   have hxMxnM : xM * xnM = 1 := by
     rw [hxM, hxnM, ← map_mul, HahnSeries.single_mul_single, add_neg_cancel, mul_one,
       ← HahnSeries.C_apply, HahnSeries.C_one, map_one]
@@ -126,4 +130,4 @@ theorem xCoeff0_logDeriv_eq_zero_of_monic (φ : PowerSeries (LaurentSeries F)) (
   exact xCoeff0_logDeriv_eq_zero u huunit hu0 huneg
 
 
-end GMC2DvdKFrameDegree
+end GMC2.DvdKFrameDegree
