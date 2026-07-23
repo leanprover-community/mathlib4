@@ -136,6 +136,31 @@ lemma pos_mono {μ ν : Measure α} (hμν : μ ≪ ν) ⦃t : Set α⦄
 
 end AbsolutelyContinuous
 
+theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
+  ⟨fun h s => by
+    rw [measure_eq_zero_iff_ae_notMem, measure_eq_zero_iff_ae_notMem]
+    exact fun hs => h hs, fun h _ hs => h hs⟩
+
+alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=
+  ae_le_iff_absolutelyContinuous
+
+alias ae_mono' := AbsolutelyContinuous.ae_le
+
+theorem _root_.MeasureTheory.Measure.AbsolutelyContinuous.ae_eq (h : μ ≪ ν) {f g : α → δ}
+    (h' : f =ᵐ[ν] g) : f =ᵐ[μ] g :=
+  h.ae_le h'
+
+theorem _root_.MeasureTheory.NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
+    NullMeasurableSet s ν := by
+  obtain ⟨t, ht, htμ⟩ := h
+  exact ⟨t, ht, hle.ae_eq htμ⟩
+
+theorem _root_.MeasureTheory.NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) :
+    NullMeasurableSet s ν :=
+  h.mono_ac hle.absolutelyContinuous
+
+open Measure
+
 @[simp]
 lemma absolutelyContinuous_zero_iff : μ ≪ 0 ↔ μ = 0 :=
   ⟨fun h ↦ measure_univ_eq_zero.mp (h rfl), fun h ↦ h.symm ▸ AbsolutelyContinuous.zero _⟩
@@ -165,18 +190,14 @@ lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • �
 lemma AbsolutelyContinuous.smul_right (hμν : μ ≪ ν) {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • ν :=
   (absolutelyContinuous_smul hc).trans (hμν.smul c)
 
-theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
-  ⟨fun h s => by
-    rw [measure_eq_zero_iff_ae_notMem, measure_eq_zero_iff_ae_notMem]
-    exact fun hs => h hs, fun h _ hs => h hs⟩
+lemma _root_.MeasureTheory.NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
+    NullMeasurableSet s (c • μ) :=
+  h.mono_ac (Measure.AbsolutelyContinuous.rfl.smul_left c)
 
-alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=
-  ae_le_iff_absolutelyContinuous
-
-alias ae_mono' := AbsolutelyContinuous.ae_le
-
-theorem AbsolutelyContinuous.ae_eq (h : μ ≪ ν) {f g : α → δ} (h' : f =ᵐ[ν] g) : f =ᵐ[μ] g :=
-  h.ae_le h'
+lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
+    NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ :=
+  ⟨fun h ↦ h.mono_ac (Measure.absolutelyContinuous_smul hc),
+    fun h ↦  h.smul_measure c⟩
 
 end Measure
 

@@ -417,20 +417,6 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
   rw [← μ.restrict_apply_self, ← frequently_ae_mem_iff] at hs
   exact (hs.and_eventually hp).exists
 
-/-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
-then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
-theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
-    (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
-    QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where
-  measurable := hf.measurable
-  absolutelyContinuous := by
-    refine AbsolutelyContinuous.mk fun u hum ↦ ?_
-    suffices ν (u ∩ t) = 0 → μ (f ⁻¹' u ∩ s) = 0 by simpa [hum, hf.measurable, hf.measurable hum]
-    refine fun hu ↦ measure_mono_null ?_ (hf.preimage_null hu)
-    rw [preimage_inter]
-    gcongr
-    assumption
-
 /-! ### Extensionality results -/
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
@@ -628,11 +614,8 @@ theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
   ae_restrict_iff'₀ hs.nullMeasurableSet
 
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
-    f =ᵐ[μ.restrict s] g := by
-  -- note that we cannot use `ae_restrict_iff` since we do not require measurability
-  refine hfg.filter_mono ?_
-  rw [Measure.ae_le_iff_absolutelyContinuous]
-  exact absolutelyContinuous_restrict
+    f =ᵐ[μ.restrict s] g :=
+  hfg.filter_mono (ae_mono restrict_le_self)
 
 theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
   (ae_restrict_iff'₀ hs).2 (Filter.Eventually.of_forall fun _ => id)
@@ -681,10 +664,6 @@ theorem mem_map_restrict_ae_iff {β} {s : Set α} {t : Set β} {f : α → β} (
 theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
     (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=
   (tendsto_ae_map hf).mono_right h2.ae_le h
-
-theorem Measure.QuasiMeasurePreserving.ae_eq_comp {ν : Measure β} {f : α → β} {g g' : β → δ}
-    (hf : QuasiMeasurePreserving f μ ν) (h : g =ᵐ[ν] g') : g ∘ f =ᵐ[μ] g' ∘ f :=
-  ae_eq_comp' hf.aemeasurable h hf.absolutelyContinuous
 
 theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (h : g =ᵐ[μ.map f] g') :
     g ∘ f =ᵐ[μ] g' ∘ f :=

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
@@ -142,6 +142,24 @@ theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePr
     rw [iterate_succ, preimage_comp]
     exact EventuallyEq.trans (hf.preimage_ae_eq ih) hs
 
+/-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
+then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
+theorem restrict {ν : Measure β} {f : α → β}
+    (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
+    QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where
+  measurable := hf.measurable
+  absolutelyContinuous := by
+    refine AbsolutelyContinuous.mk fun u hum ↦ ?_
+    suffices ν (u ∩ t) = 0 → μ (f ⁻¹' u ∩ s) = 0 by simpa [hum, hf.measurable, hf.measurable hum]
+    refine fun hu ↦ measure_mono_null ?_ (hf.preimage_null hu)
+    rw [preimage_inter]
+    gcongr
+    assumption
+
+theorem ae_eq_comp {ν : Measure β} {f : α → β} {g g' : β → δ}
+    (hf : QuasiMeasurePreserving f μ ν) (h : g =ᵐ[ν] g') : g ∘ f =ᵐ[μ] g' ∘ f :=
+  ae_eq_comp' hf.aemeasurable h hf.absolutelyContinuous
+
 theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreserving e μ μ)
     (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s =ᵐ[μ] s) :
     (⇑(e ^ k)) '' s =ᵐ[μ] s := by
@@ -221,28 +239,19 @@ end Measure
 
 open Measure
 
-theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
-    {f : α → β} {g : β → γ} (hg : NullMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) :
-    NullMeasurable (g ∘ f) μ := fun _s hs ↦ (hg hs).preimage hf
-
-theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
-    NullMeasurableSet s ν :=
-  h.preimage <| (QuasiMeasurePreserving.id μ).mono_left hle
-
-theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) : NullMeasurableSet s ν :=
-  h.mono_ac hle.absolutelyContinuous
-
-lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
-    NullMeasurableSet s (c • μ) :=
-  h.mono_ac (Measure.AbsolutelyContinuous.rfl.smul_left c)
-
-lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
-    NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ :=
-  ⟨fun h ↦ h.mono_ac (Measure.absolutelyContinuous_smul hc), fun h ↦ h.smul_measure c⟩
-
 theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht : AEDisjoint ν s t)
     (hf : QuasiMeasurePreserving f μ ν) : AEDisjoint μ (f ⁻¹' s) (f ⁻¹' t) :=
   hf.preimage_null ht
+
+@[fun_prop]
+theorem _root_.AEMeasurable.comp_quasiMeasurePreserving [MeasurableSpace δ]
+    {ν : Measure δ} {f : α → δ} {g : δ → β} (hg : AEMeasurable g ν)
+    (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
+  (AEMeasurable.mono' hg hf.absolutelyContinuous).comp_measurable hf.measurable
+
+theorem _root_.MeasureTheory.NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
+    {f : α → β} {g : β → γ} (hg : NullMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) :
+    NullMeasurable (g ∘ f) μ := fun _s hs ↦ (hg hs).preimage hf
 
 end MeasureTheory
 

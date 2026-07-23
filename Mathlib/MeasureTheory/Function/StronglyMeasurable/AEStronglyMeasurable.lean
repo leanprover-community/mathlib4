@@ -6,6 +6,8 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
