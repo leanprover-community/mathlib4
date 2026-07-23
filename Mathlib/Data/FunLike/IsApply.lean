@@ -232,8 +232,7 @@ theorem coe_smul [SMul M F] [SMul M β] [IsSMulApply M F α β] (n : M) (f : F) 
     ↑(n • f) = n • (f : α → β) := by
   ext; simp
 
--- `to_additive` on this creates a copy of `coe_smul` but with the arguments in the wrong order
-@[simp, norm_cast]
+@[simp, norm_cast, to_additive existing coe_smul]
 theorem coe_pow [Pow F M] [Pow β M] [IsPowApply M F α β] (f : F) (n : M) :
     ↑(f ^ n) = (f : α → β) ^ n := by
   ext; simp
