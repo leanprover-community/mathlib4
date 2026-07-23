@@ -586,8 +586,8 @@ protected lemma smul_sum {T : Type*} [DistribSMul T S] (p : SkewPolynomial R) (b
 end Sum
 
 @[simp]
-lemma coeff_add (p q : SkewPolynomial R) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n :=
-  by simp [coeff]
+lemma coeff_add (p q : SkewPolynomial R) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
+  simp [coeff]
 
 end Semiring
 
