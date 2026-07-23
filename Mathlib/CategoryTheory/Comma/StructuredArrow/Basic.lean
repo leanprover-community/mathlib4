@@ -83,6 +83,14 @@ end
 def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
 
+set_option backward.defeqAttrib.useBackward true in
+/-- The `hom` field of structured arrows in `StructuredArrow S T`,
+as a natural transformation `(Functor.const _).obj T ⟶ proj S T ⋙ S`. -/
+@[implicit_reducible, simps]
+def ι (S : D) (T : C ⥤ D) :
+    (Functor.const _).obj S ⟶ proj S T ⋙ T where
+  app X := X.hom
+
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
 @[ext]
@@ -560,6 +568,14 @@ end
 @[simps!]
 def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
   Comma.fst _ _
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The `hom` field of costructured arrows in `CostructuredArrow S T`,
+as a natural transformation `proj S T ⋙ S ⟶ (Functor.const _).obj T`. -/
+@[implicit_reducible, simps]
+def ι (S : C ⥤ D) (T : D) :
+    proj S T ⋙ S ⟶ (Functor.const _).obj T where
+  app X := X.hom
 
 variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
 
