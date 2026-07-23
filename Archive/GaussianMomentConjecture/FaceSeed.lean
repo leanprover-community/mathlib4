@@ -5,9 +5,7 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.DvdKInterface
 import Archive.GaussianMomentConjecture.FaceDictionary
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Nonzero DvdK seed on the rational lowest face

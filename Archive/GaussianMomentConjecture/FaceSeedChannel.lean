@@ -8,8 +8,6 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.LinearAlgebra.CliffordAlgebra.Equivs
 
-set_option linter.minImports true
-
 /-!
 # Extracting a concrete balanced channel from a nonzero face seed
 

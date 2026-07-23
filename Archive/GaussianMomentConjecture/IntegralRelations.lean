@@ -5,9 +5,8 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.ConstantTermRelations
 import Archive.GaussianMomentConjecture.MomentTransport
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Data.Fintype.Defs
 
 /-!
 # Integral models of the Wick-moment and face constant-term relations

@@ -9,8 +9,6 @@ import Archive.GaussianMomentConjecture.Thm2067Concrete
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # The orbit-product argument, concrete, reduced to the small-root product identity alone
 

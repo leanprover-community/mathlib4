@@ -6,8 +6,6 @@ Authors: Eliott Cassidy
 import Mathlib.Data.Complex.Basic
 import Mathlib.FieldTheory.Finite.Polynomial
 
-set_option linter.minImports true
-
 /-!
 # The charge reduction: one-sided charge support implies the Mathieu–Zhao property
 

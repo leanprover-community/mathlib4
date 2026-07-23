@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.FrobeniusFace
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Data.Finset.Defs
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Height floors from a rational lowest face

@@ -8,8 +8,6 @@ import Mathlib.Data.Nat.Choose.Lucas
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.RingTheory.MvPolynomial.Expand
 
-set_option linter.minImports true
-
 /-!
 # Frobenius residue arithmetic for the GMC(2) lowest-face proof
 

@@ -5,8 +5,6 @@ Authors: Eliott Cassidy
 -/
 import Mathlib.RingTheory.PowerSeries.Derivative
 
-set_option linter.minImports true
-
 /-!
 # Closing the DvdK identity in characteristic zero
 

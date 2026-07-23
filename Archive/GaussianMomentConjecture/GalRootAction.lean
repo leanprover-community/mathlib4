@@ -6,8 +6,6 @@ Authors: Eliott Cassidy
 import Mathlib.FieldTheory.Minpoly.IsConjRoot
 import Mathlib.RingTheory.PowerSeries.Basic
 
-set_option linter.minImports true
-
 /-!
 # The transitive Galois action on the roots — the concrete instantiation of the orbit-product core
 

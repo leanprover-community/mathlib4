@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.DvdKFrame
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
-set_option linter.minImports true
-
 /-!
 # DvdK `hderiv`, leg (c): the coefficient-extraction `xCoeff0(logDeriv Φ)`
 

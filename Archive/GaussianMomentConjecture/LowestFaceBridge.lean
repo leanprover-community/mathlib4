@@ -8,8 +8,6 @@ import Archive.GaussianMomentConjecture.LowestFaceExistence
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Complex.Basic
 
-set_option linter.minImports true
-
 /-!
 # Polynomial-support bridge to the rational lowest face
 

@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.SupportFaceBridge
 import Mathlib.Data.Complex.Basic
 import Mathlib.FieldTheory.Finite.Polynomial
 
-set_option linter.minImports true
-
 /-!
 # NC2 from the one-variable Duistermaat--van der Kallen input
 

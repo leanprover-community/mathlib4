@@ -9,8 +9,6 @@ import Archive.GaussianMomentConjecture.IntegralTorusSpecialization
 import Mathlib.Data.Complex.Basic
 import Mathlib.FieldTheory.Finite.Polynomial
 
-set_option linter.minImports true
-
 /-!
 # Integral lowest-face seed descent to finite characteristic
 

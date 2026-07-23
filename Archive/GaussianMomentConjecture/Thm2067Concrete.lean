@@ -8,8 +8,6 @@ import Archive.GaussianMomentConjecture.Thm2067Wrapper
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # The orbit-product contradiction for an irreducible `Φ` over `F(t)`
 

@@ -8,8 +8,6 @@ import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 
-set_option linter.minImports true
-
 /-!
 # The unique-balanced-channel DvdK, and the cancellation dichotomy
 

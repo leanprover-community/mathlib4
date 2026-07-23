@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.Thm2067Reduced
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # The orbit-product argument reduced to `hS` alone (the small-root product `= c·t`)
 

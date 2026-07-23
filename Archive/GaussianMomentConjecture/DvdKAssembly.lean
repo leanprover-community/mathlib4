@@ -8,8 +8,6 @@ import Archive.GaussianMomentConjecture.PhiVieta
 import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # Assembly bridge: the swapped-mapped `Φ` is the clean `Phi R M`
 

@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.DvdKFrame
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.LogDeriv
 
-set_option linter.minImports true
-
 /-!
 # The `hderiv` assembly in the frame: reduced to the degree lemma (c) + the h-side (a)
 

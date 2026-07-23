@@ -8,8 +8,6 @@ import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 
-set_option linter.minImports true
-
 /-!
 # The bridge divisibility: the Weierstrass distinguished factor divides `Φ` in the polynomial ring
 

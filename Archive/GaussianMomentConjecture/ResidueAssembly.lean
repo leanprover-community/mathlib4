@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.FrobeniusResidue
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 import Mathlib.Algebra.CharP.Defs
 
-set_option linter.minImports true
-
 /-!
 # Three-case residue assembly for the GMC(2) Frobenius proof
 

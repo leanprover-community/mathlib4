@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.LowestFaceBridge
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Complex.Basic
 
-set_option linter.minImports true
-
 /-!
 # Packaged equality face on an exact polynomial support
 

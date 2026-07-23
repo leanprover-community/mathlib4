@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.Reduction
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Complex.Basic
 
-set_option linter.minImports true
-
 /-!
 # One-dimensional charge geometry for NC2
 

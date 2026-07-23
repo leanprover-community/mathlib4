@@ -13,8 +13,6 @@ import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.LogDeriv
 
-set_option linter.minImports true
-
 /-!
 # `hderiv` assembly through the transpose: plugging in the frame-leg lemmas
 

@@ -4,9 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.Reduction
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Nat.Choose.Multinomial
 
 /-!
 # Exact Wick-channel expansion for GMC(2)

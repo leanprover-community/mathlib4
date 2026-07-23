@@ -6,8 +6,6 @@ Authors: Eliott Cassidy
 import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 
-set_option linter.minImports true
-
 /-!
 # Root transport under the splitting-field embedding
 

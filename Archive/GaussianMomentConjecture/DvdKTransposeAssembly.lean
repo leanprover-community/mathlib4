@@ -10,9 +10,11 @@ import Archive.GaussianMomentConjecture.DvdKHderivAssembly
 import Archive.GaussianMomentConjecture.DvdKMultiplicativeClosing
 import Archive.GaussianMomentConjecture.DvdKTranspose
 import Archive.GaussianMomentConjecture.DvdKUnitOrigin
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Int.ConditionallyCompleteOrder
+import Mathlib.RingTheory.HahnSeries.Basic
+import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Transpose glue: the concrete data feeding kps's `hderiv_via_transpose`

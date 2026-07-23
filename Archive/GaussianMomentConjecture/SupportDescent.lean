@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.NullconeDescent
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Exact-support specialization of the GMC(2) nullcone descent

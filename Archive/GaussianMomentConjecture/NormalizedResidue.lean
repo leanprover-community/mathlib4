@@ -7,9 +7,14 @@ import Archive.GaussianMomentConjecture.ChannelDilation
 import Archive.GaussianMomentConjecture.FrobeniusResidue
 import Archive.GaussianMomentConjecture.NormalizedMoment
 import Archive.GaussianMomentConjecture.ResidueAssembly
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Data.Finset.Defs
+import Mathlib.Data.Fintype.Defs
+import Mathlib.Data.Nat.Notation
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Normalized GMC(2) residue on an indexed lowest face

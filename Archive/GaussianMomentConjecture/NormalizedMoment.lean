@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.IntegralRelations
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Data.Fintype.Defs
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Integral normalization of a Wick-moment relation

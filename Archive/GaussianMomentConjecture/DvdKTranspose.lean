@@ -5,8 +5,6 @@ Authors: Eliott Cassidy
 -/
 import Mathlib.RingTheory.LaurentSeries
 
-set_option linter.minImports true
-
 /-!
 # The transpose hom `φ : (PowerSeries F)⟦X⟧ → PowerSeries (LaurentSeries F)`
 

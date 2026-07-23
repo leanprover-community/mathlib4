@@ -7,9 +7,7 @@ import Archive.GaussianMomentConjecture.FaceDictionary
 import Archive.GaussianMomentConjecture.FaceHeightFloor
 import Archive.GaussianMomentConjecture.FaceSeedChannel
 import Archive.GaussianMomentConjecture.NormalizedMoment
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # A concrete reference channel from a nonzero lowest-face seed

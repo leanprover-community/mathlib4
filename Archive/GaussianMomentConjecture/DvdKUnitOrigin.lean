@@ -10,8 +10,6 @@ import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.Derivative
 import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 
-set_option linter.minImports true
-
 /-!
 # `hconst` discharged: the Weierstrass unit of `Φ = Xᴹ − t·R` is `1` at the origin
 

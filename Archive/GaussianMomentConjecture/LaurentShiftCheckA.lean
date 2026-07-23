@@ -5,12 +5,11 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.ConstantTermRelations
 import Archive.GaussianMomentConjecture.OrbitProduct
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.Computability.Reduce
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.LinearAlgebra.Lagrange
-
-set_option linter.minImports true
 
 /-!
 # Check A for the orbit-product argument: a Laurent constant term is an ordinary coefficient

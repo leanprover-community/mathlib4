@@ -5,8 +5,6 @@ Authors: Eliott Cassidy
 -/
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # Frame-bridge pullback: transporting the small-root product identity to the splitting field
 

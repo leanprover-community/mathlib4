@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.IntegralSpecialization
 import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.FiniteType
 
-set_option linter.minImports true
-
 /-!
 # Integral torus specialization for GMC(2)
 

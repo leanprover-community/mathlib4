@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.Data.Nat.Prime.Defs
 
-set_option linter.minImports true
-
 /-!
 # Dilation of multiplicity channels supported on a face
 

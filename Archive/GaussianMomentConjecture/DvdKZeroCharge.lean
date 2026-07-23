@@ -11,8 +11,6 @@ import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.Data.Complex.Basic
 import Mathlib.Tactic.NormNum
 
-set_option linter.minImports true
-
 /-!
 # `DvdK1` for supports containing a zero charge
 

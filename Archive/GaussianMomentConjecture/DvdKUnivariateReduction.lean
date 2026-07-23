@@ -11,8 +11,6 @@ import Mathlib.Computability.Reduce
 import Mathlib.Data.Complex.Basic
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # The univariate reduction: `DvdK1BothSigns` from the single-polynomial crux
 

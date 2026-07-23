@@ -6,8 +6,6 @@ Authors: Eliott Cassidy
 import Mathlib.GroupTheory.FiniteAbelian.Basic
 import Mathlib.RingTheory.Jacobson.Ring
 
-set_option linter.minImports true
-
 /-!
 # Direct integral specialization for GMC(2)
 

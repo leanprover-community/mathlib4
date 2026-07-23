@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.AlgebraicDescent
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.FiniteType
-
-set_option linter.minImports true
 
 /-!
 # Descent of a complex torus point to a number field

@@ -14,8 +14,6 @@ import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.SetTheory.ZFC.PSet
 
-set_option linter.minImports true
-
 /-!
 # The Omega-wiring: discharging `SinglePolyCrux`, hence unconditional GMC(2)
 

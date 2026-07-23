@@ -5,8 +5,6 @@ Authors: Eliott Cassidy
 -/
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # Vieta valuation-0 input for the orbit-product wrapper
 

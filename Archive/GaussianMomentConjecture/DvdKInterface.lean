@@ -8,8 +8,6 @@ import Archive.GaussianMomentConjecture.LowestFaceExistence
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Equivs
 
-set_option linter.minImports true
-
 /-!
 # Narrow interface to the one-variable Duistermaat--van der Kallen theorem
 

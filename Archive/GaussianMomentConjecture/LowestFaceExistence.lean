@@ -10,8 +10,6 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
 
-set_option linter.minImports true
-
 /-!
 # Existence of a rational lowest balanced face in one charge dimension
 

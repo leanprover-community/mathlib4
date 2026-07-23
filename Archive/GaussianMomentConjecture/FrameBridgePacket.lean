@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.FrameBridgeRoots
 import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.FieldTheory.SplittingField.Construction
 
-set_option linter.minImports true
-
 /-!
 # The packet construction: the small-root packet product = the Weierstrass factor's root product
 

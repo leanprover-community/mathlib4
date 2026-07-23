@@ -8,8 +8,6 @@ import Archive.GaussianMomentConjecture.FrameBridgePacket
 import Archive.GaussianMomentConjecture.Thm2067HSonly
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # Frame-bridge assembly: `hS` from divisibility + the Weierstrass factor's constant coefficient
 

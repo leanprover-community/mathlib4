@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.OrbitProduct
 import Archive.GaussianMomentConjecture.RatFuncClosing
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # The orbit-product wrapper: orbit-product ⇒ contradiction
 

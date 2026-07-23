@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.NC2
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Complex.Basic
 
-set_option linter.minImports true
-
 /-!
 # Discharging `HeightWitnessSupplier`: the clean `DvdK1 -> NC2` endpoint
 

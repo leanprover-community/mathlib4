@@ -7,8 +7,6 @@ import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.RingTheory.Polynomial.GaussLemma
 
-set_option linter.minImports true
-
 /-!
 # Irreducibility of `Φ = X^M − t·R(X)` over `F(t)`
 

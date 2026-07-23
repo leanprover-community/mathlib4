@@ -5,9 +5,10 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.MomentRelations
 import Archive.GaussianMomentConjecture.WickChannels
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Fintype.Defs
 
 /-!
 # Transport between Gaussian moments and universal rational relations

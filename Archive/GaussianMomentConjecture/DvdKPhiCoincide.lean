@@ -8,8 +8,6 @@ import Archive.GaussianMomentConjecture.PhiVieta
 import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.LaurentSeries
 
-set_option linter.minImports true
-
 /-!
 # The Φ-coincidence connector: `PhiPoly` and `GMC2.PhiVieta.Phi` agree over `LaurentSeries F`
 

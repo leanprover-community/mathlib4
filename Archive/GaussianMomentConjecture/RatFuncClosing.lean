@@ -5,8 +5,6 @@ Authors: Eliott Cassidy
 -/
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option linter.minImports true
-
 /-!
 # The t-adic closing of the orbit-product argument over `F(t)`
 

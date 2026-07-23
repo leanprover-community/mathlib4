@@ -13,8 +13,6 @@ import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.FieldTheory.Finite.Polynomial
 
-set_option linter.minImports true
-
 /-!
 # Transporting a geometric face into exact-support channel coordinates
 

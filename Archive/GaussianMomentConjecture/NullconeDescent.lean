@@ -5,9 +5,8 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.MomentTransport
 import Archive.GaussianMomentConjecture.TorusDescent
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # End-to-end algebraic descent of the indexed GMC(2) nullcone

@@ -3,10 +3,9 @@ Copyright (c) 2026 Eliott Cassidy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.FieldTheory.Finite.Polynomial
-
-set_option linter.minImports true
 
 /-!
 # Universal rational constant-term relations on a charge face

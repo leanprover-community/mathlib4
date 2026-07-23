@@ -6,10 +6,9 @@ Authors: Eliott Cassidy
 import Archive.GaussianMomentConjecture.FaceSeed
 import Archive.GaussianMomentConjecture.SupportDescent
 import Archive.GaussianMomentConjecture.TorusDescent
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Complex.Basic
 import Mathlib.FieldTheory.Finite.Polynomial
-
-set_option linter.minImports true
 
 /-!
 # Number-field descent preserving a nonzero lowest-face seed

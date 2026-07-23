@@ -10,8 +10,6 @@ import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.Derivative
 import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 
-set_option linter.minImports true
-
 /-!
 # The small-root product identity on the Weierstrass objects
 

@@ -8,8 +8,6 @@ import Mathlib.RingTheory.AdicCompletion.Completeness
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 
-set_option linter.minImports true
-
 /-!
 # Obstacle (ii) of the small-root product identity via Mathlib's Weierstrass preparation
 

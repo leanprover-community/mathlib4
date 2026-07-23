@@ -7,8 +7,6 @@ import Mathlib.RingTheory.PowerSeries.LogDeriv
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.PowerSeries.Substitution
 
-set_option linter.minImports true
-
 /-!
 # The unified `(LaurentSeries F)⟦t⟧` frame for the DvdK log-derivative identity (`hderiv`)
 

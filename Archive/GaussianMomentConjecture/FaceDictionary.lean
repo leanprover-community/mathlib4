@@ -5,9 +5,8 @@ Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.FrobeniusFace
 import Archive.GaussianMomentConjecture.LowestFacePackage
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Dictionary between polynomial bidegrees and Frobenius-face coordinates

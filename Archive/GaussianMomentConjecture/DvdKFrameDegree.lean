@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eliott Cassidy
 -/
 import Archive.GaussianMomentConjecture.DvdKFrame
-import Mathlib
-
-set_option linter.minImports true
+import Mathlib.Algebra.Field.Defs
+import Mathlib.RingTheory.HahnSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # The degree leg of `hderiv`: the small-root factor contributes nothing to `[x⁰]`

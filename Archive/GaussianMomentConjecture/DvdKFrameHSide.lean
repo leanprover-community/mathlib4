@@ -7,8 +7,6 @@ import Archive.GaussianMomentConjecture.DvdKFrame
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.PowerSeries.LogDeriv
 
-set_option linter.minImports true
-
 /-!
 # The `hderiv` h-side (a): `[x⁰](h_t/h) = g_t/g` on the disk
 

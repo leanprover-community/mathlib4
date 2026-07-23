@@ -7,8 +7,6 @@ import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.Group.Action.Pretransitive
 import Mathlib.GroupTheory.GroupAction.Defs
 
-set_option linter.minImports true
-
 /-!
 # The orbit-product identity: the gap-independent core of the orbit-product argument (general DvdK1)
 

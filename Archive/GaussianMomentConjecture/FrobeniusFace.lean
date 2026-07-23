@@ -12,8 +12,6 @@ import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring.RingNF
 
-set_option linter.minImports true
-
 /-!
 # Lowest-balanced-face arithmetic for GMC(2)
 

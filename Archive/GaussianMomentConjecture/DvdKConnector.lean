@@ -9,8 +9,6 @@ import Archive.GaussianMomentConjecture.DvdKWeierstrass
 import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.LaurentSeries
 
-set_option linter.minImports true
-
 /-!
 # The connector `φ(Φ_weier) = PhiFrame` — the transpose meets the frame
 

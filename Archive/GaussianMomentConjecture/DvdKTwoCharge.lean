@@ -9,8 +9,6 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.LinearAlgebra.CliffordAlgebra.Equivs
 
-set_option linter.minImports true
-
 /-!
 # Elementary single-character (two-charge) DvdK, DvdK-premise-free
 
