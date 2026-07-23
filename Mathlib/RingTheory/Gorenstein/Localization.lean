@@ -44,7 +44,7 @@ lemma isGoresteinLocalRing_localization [IsGorensteinLocalRing R] [IsNoetherianR
 
 variable {R} in
 lemma isGoresteinLocalRing_of_isLocalizationAtPrime [IsGorensteinLocalRing R] [IsNoetherianRing R]
-    (p : Ideal R) [p.IsPrime] (Rₚ : Type u) [CommRing Rₚ] [Algebra R Rₚ]
+    (p : Ideal R) [p.IsPrime] (Rₚ : Type v) [CommRing Rₚ] [Algebra R Rₚ]
     [IsLocalization.AtPrime Rₚ p] : IsGorensteinLocalRing Rₚ :=
   have := isGoresteinLocalRing_localization p
   IsGorensteinLocalRing.of_ringEquiv
