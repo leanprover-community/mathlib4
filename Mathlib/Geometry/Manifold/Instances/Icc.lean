@@ -106,18 +106,15 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
       · have : ContDiff ℝ n ((fun v ↦ -v + y / 2) ∘ fun p' ↦ p' - y / 2) := by fun_prop
         simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ]
     intro z' hz'
-    have : 0 ≤ z' 0 := by simp_all [modelWithCornersEuclideanHalfSpace]
-    simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte,
-      PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_toPartialEquiv_symm,
-      OpenPartialHomeomorph.coe_toPartialHomeomorph_symm, ModelWithCorners.toPartialEquiv_coe_symm,
-      Function.comp_apply, IccRightChart_symm_apply]
-    rw [modelWithCornersEuclideanHalfSpace_symm_apply]
-    dsimp
-    rw [max_eq_left, max_eq_left this]
-    · simp [φ, φ₀, Equiv.pointReflection]
-      ring_nf
-    · simp [hz, modelWithCornersEuclideanHalfSpace_symm_apply, IccRightChart,max_eq_left this] at *
-      linarith
+    obtain ⟨⟨u, rfl⟩, hu⟩ :
+        (∃ y, ⇑(𝓡∂ 1) y = z') ∧ ⇑(𝓡∂ 1).symm z' ∈ (IccRightChart x y).target := by
+      simpa [hz] using! hz'
+    replace hu : ofLp u.val 0 ≤ y - x := by
+      apply le_of_lt
+      simpa [modelWithCornersEuclideanHalfSpace_symm_apply, max_eq_left u.property] using! hu
+    simp [hz, φ, φ₀, modelWithCornersEuclideanHalfSpace_symm_apply, u.property,
+      IccRightChart_symm_apply_of_le hu, Equiv.pointReflection_apply]
+    linarith
 
 /-- The inclusion map from a closed segment to `ℝ` is a smooth embedding -/
 lemma isSmoothEmbedding_subtypeVal_Icc :
