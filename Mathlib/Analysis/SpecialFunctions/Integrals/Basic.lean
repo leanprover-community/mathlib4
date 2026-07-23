@@ -52,6 +52,7 @@ variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d :
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 section
 
+
 @[simp]
 theorem mul_integral_comp_mul_right : (c * ∫ x in a..b, f (x * c)) = ∫ x in a * c..b * c, f x :=
   smul_integral_comp_mul_right f c
