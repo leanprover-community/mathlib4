@@ -28,36 +28,21 @@ open Filter
 
 variable [Preorder α] [Preorder β]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem comap_atTop (e : α ≃o β) : comap e atTop = atTop := by
-  simp [atTop, ← e.surjective.iInf_comp]
+  unfold atTop; rw [← e.surjective.iInf_comp]; simp
 
-@[simp]
-theorem comap_atBot (e : α ≃o β) : comap e atBot = atBot :=
-  e.dual.comap_atTop
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem map_atTop (e : α ≃o β) : map (e : α → β) atTop = atTop := by
   rw [← e.comap_atTop, map_comap_of_surjective e.surjective]
 
-@[simp]
-theorem map_atBot (e : α ≃o β) : map (e : α → β) atBot = atBot :=
-  e.dual.map_atTop
-
+@[to_dual]
 theorem tendsto_atTop (e : α ≃o β) : Tendsto e atTop atTop :=
   e.map_atTop.le
 
-theorem tendsto_atBot (e : α ≃o β) : Tendsto e atBot atBot :=
-  e.map_atBot.le
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem tendsto_atTop_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
     Tendsto (fun x => e (f x)) l atTop ↔ Tendsto f l atTop := by
   rw [← e.comap_atTop, tendsto_comap_iff, Function.comp_def]
-
-@[simp]
-theorem tendsto_atBot_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
-    Tendsto (fun x => e (f x)) l atBot ↔ Tendsto f l atBot :=
-  e.dual.tendsto_atTop_iff
 
 end OrderIso
