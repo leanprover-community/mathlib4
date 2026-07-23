@@ -247,13 +247,15 @@ lemma affine_combination (hcov : IsCovariantDerivativeOn F cov s)
 
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
 lemma _root_.ContMDiffCovariantDerivativeOn.affine_combination [IsManifold I 1 M]
-    [VectorBundle 𝕜 F V]
+    {n : ℕ∞ω} [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I] [IsManifold I (n + 1) M]
     {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
-    {u : Set M} {f : M → 𝕜} {n : ℕ∞ω} (hf : CMDiff[u] n f)
+    {u : Set M} {f : M → 𝕜} (hf : CMDiff[u] n f)
     (Hcov : ContMDiffCovariantDerivativeOn (F := F) n cov u)
     (Hcov' : ContMDiffCovariantDerivativeOn (F := F) n cov' u) :
     ContMDiffCovariantDerivativeOn F n (fun σ ↦ (f • (cov σ)) + (1 - f) • (cov' σ)) u where
   contMDiff hσ := by
+    have : ContMDiffVectorBundle n E (TangentSpace I) (B := M) I :=
+      TangentBundle.contMDiffVectorBundle
     apply ContMDiffOn.add_section
     · exact hf.smul_section <| Hcov.contMDiff hσ
     · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hσ
@@ -281,12 +283,15 @@ lemma finite_affine_combination {ι : Type*} {s : Finset ι}
 
 /-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
 lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifold I 1 M]
-    {n : ℕ∞ω} [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
+    {n : ℕ∞ω} [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I] [IsManifold I (n + 1) M]
+    {ι : Type*} {s : Finset ι} {u : Set M}
     {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivativeOn F n (cov i) u)
     {f : ι → M → 𝕜} (hf : ∀ i ∈ s, CMDiff[u] n (f i)) :
     ContMDiffCovariantDerivativeOn F n (fun σ x ↦ ∑ i ∈ s, (f i x) • (cov i) σ x) u where
   contMDiff {σ} hσ := by
+    have : ContMDiffVectorBundle n E (TangentSpace I) (B := M) I :=
+      TangentBundle.contMDiffVectorBundle
     simpa using ContMDiffOn.sum_section
       (fun i hi ↦ (hf i hi).smul_section <| (hcov i hi).contMDiff hσ)
 
@@ -448,18 +453,20 @@ def finite_affine_combination {ι : Type*} {s : Finset ι}
     (fun i ↦ (cov i).isCovariantDerivativeOn) hf
 
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
-lemma ContMDiffCovariantDerivative.affine_combination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+lemma ContMDiffCovariantDerivative.affine_combination {n : ℕ∞ω} [IsManifold I 1 M]
+  [IsManifold I (n + 1) M] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
   (cov cov' : CovariantDerivative I F V)
-    {f : M → 𝕜} {n : ℕ∞ω} (hf : CMDiff n f)
+    {f : M → 𝕜} (hf : CMDiff n f)
     (hcov : ContMDiffCovariantDerivative cov n) (hcov' : ContMDiffCovariantDerivative cov' n) :
     ContMDiffCovariantDerivative (affine_combination cov cov' f) n where
   contMDiff :=
     ContMDiffCovariantDerivativeOn.affine_combination hf.contMDiffOn hcov.contMDiff hcov'.contMDiff
 
 /-- An affine combination of finitely many `C^k` connections is a `C^k` connection. -/
-lemma ContMDiffCovariantDerivative.finite_affine_combination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
+lemma ContMDiffCovariantDerivative.finite_affine_combination {n : ℕ∞ω} [IsManifold I 1 M]
+    [IsManifold I (n + 1) M] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
     {ι : Type*} {s : Finset ι} (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜}
-    (hf : ∑ i ∈ s, f i = 1) {n : ℕ∞ω} (hf' : ∀ i ∈ s, CMDiff n (f i))
+    (hf : ∑ i ∈ s, f i = 1) (hf' : ∀ i ∈ s, CMDiff n (f i))
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivative (cov i) n) :
     ContMDiffCovariantDerivative (finite_affine_combination cov hf) n where
   contMDiff :=
