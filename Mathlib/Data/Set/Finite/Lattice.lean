@@ -380,7 +380,7 @@ theorem _root_.iInf_iSup_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.
   intro ι κ _ f
   induction ι using Finite.induction_empty_option with
   | of_equiv e h => simp [← e.iInf_comp, ← e.piCongrLeft κ |>.iSup_comp, h]
-  | h_empty => simp [iInf_of_empty, iSup_const]
+  | h_empty => simp [iSup_const]
   | h_option h =>
     simp only [iInf_option, h, ← (Equiv.piOptionEquivProd (β := κ)).symm.iSup_comp,
       Equiv.piOptionEquivProd_symm_apply, iSup_prod, ← inf_iSup_eq, ← iSup_inf_eq]
