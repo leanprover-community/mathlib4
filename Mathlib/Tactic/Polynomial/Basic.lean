@@ -14,22 +14,23 @@ public import Mathlib.Tactic.Polynomial.Core
 
 /-!
 # Polynomial
+
 An extensible tactic for proving equality of polynomial expressions implemented using `algebra`.
 To add support for a new polynomial-like type, one needs to do three things:
 * Implement a polynomial extension that lets `polynomial` infer the base ring from the algebraic
   type. For example:
-```
-@[polynomial_infer_base]
-def polynomialInferBase : PolynomialExt where
-  infer e := do
-  match_expr e with
-  | Polynomial R _ => pure R
-  | _ => failure
-```
+  ```
+  @[polynomial_infer_base]
+  def polynomialInferBase : PolynomialExt where
+    infer e := do
+    match_expr e with
+    | Polynomial R _ => pure R
+    | _ => failure
+  ```
 * Tag any preprocessing lemmas with @[polynomial_pre]. This would include a lemma saying that
-`C = algebraMap _ _` so that `algebra` knows how to normalize it.
+  `C = algebraMap _ _` so that `algebra` knows how to normalize it.
 * Tag any postprocessing lemmas with @[polynomial_post], so that `polynomial_nf` produces a pretty
-expression.
+  expression.
 -/
 
 open Lean Mathlib.Tactic Mathlib.Tactic.Algebra Parser.Tactic Elab Meta Qq

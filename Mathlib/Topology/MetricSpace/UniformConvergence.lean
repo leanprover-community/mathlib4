@@ -36,9 +36,9 @@ uniformity.
 There are a few advantages of equipping this space with this metric structure.
 
 1. A function `f : X → α →ᵤ β` is Lipschitz in this metric if and only if for every `a : α` it is
-  Lipschitz in the first variable with the same Lipschitz constant.
+   Lipschitz in the first variable with the same Lipschitz constant.
 2. It provides a natural setting in which one can talk about the metrics on `α →ᵇ β` or, when
-  `α` is compact, `C(α, β)`, relative to their underlying bare functions.
+   `α` is compact, `C(α, β)`, relative to their underlying bare functions.
 -/
 
 public section

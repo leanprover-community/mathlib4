@@ -19,6 +19,7 @@ Let `X` and `Y` be convex subsets of topological vector spaces `E` and `F`,
 and let `f : X × Y → ℝ` be a function such that
 - for all `x ∈ X`, `f(x, ⬝)` is upper semicontinuous and quasiconcave
 - for all `y ∈ Y`, `f(⬝, y)` is lower semicontinuous and quasiconvex
+
 Then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
 
 The classical case of the theorem assumes that `f` is continuous,
@@ -32,14 +33,14 @@ We follow the proof of [Komiya (1988)][Komiya-1988].
 ## Remark on implementation
 
   * The essential part of the proof holds for a function
-  `f : X → Y → β`, where `β` is a complete dense linear order.
+    `f : X → Y → β`, where `β` is a complete dense linear order.
   * We have written part of it for just a dense linear order,
 
   * On the other hand, if the theorem holds for such `β`,
-  it must hold for any linear order, for the reason that
-  any linear order embeds into a complete dense linear order.
-  Although one can construct such an embedding using the Dedekind-Mac Neille completion,
-  this result does not seem to be known to Mathlib.
+    it must hold for any linear order, for the reason that
+    any linear order embeds into a complete dense linear order.
+    Although one can construct such an embedding using the Dedekind-Mac Neille completion,
+    this result does not seem to be known to Mathlib.
 
   * When `β` is `ℝ`, one can use `Real.toEReal` and one gets a proof for `ℝ`.
 

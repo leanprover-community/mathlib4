@@ -22,19 +22,19 @@ The Bochner integral is defined through the extension process described in the f
 `Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s • x`.
-  `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
-  (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
+   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
+   (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
 2. Define the integral on simple functions of the type `SimpleFunc α E` (notation : `α →ₛ E`)
-  where `E` is a real normed space. (See `SimpleFunc.integral` for details.)
+   where `E` is a real normed space. (See `SimpleFunc.integral` for details.)
 
 3. Transfer this definition to define the integral on `L1.simpleFunc α E` (notation :
-  `α →₁ₛ[μ] E`), see `L1.simpleFunc.integral`. Show that this integral is a continuous linear
-  map from `α →₁ₛ[μ] E` to `E`.
+   `α →₁ₛ[μ] E`), see `L1.simpleFunc.integral`. Show that this integral is a continuous linear
+   map from `α →₁ₛ[μ] E` to `E`.
 
 4. Define the Bochner integral on L1 functions by extending the integral on integrable simple
-  functions `α →₁ₛ[μ] E` using `ContinuousLinearMap.extend` and the fact that the embedding of
-  `α →₁ₛ[μ] E` into `α →₁[μ] E` is dense.
+   functions `α →₁ₛ[μ] E` using `ContinuousLinearMap.extend` and the fact that the embedding of
+   `α →₁ₛ[μ] E` into `α →₁[μ] E` is dense.
 
 ## Notation
 

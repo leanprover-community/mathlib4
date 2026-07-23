@@ -32,9 +32,9 @@ Lemma names carry modifiers:
 This file comes across as confusing to those who haven't yet used it, so here is a detailed
 walkthrough:
 1. Know what relation on which type/set you're looking for. See Variants above. You can discharge
-  some conditions to Zorn's lemma directly using a `_nonempty` variant.
+   some conditions to Zorn's lemma directly using a `_nonempty` variant.
 2. Write down the definition of your type/set, put a `suffices ∃ m, ∀ a, m ≺ a → a ≺ m by ...`
-  (or whatever you actually need) followed by an `apply some_version_of_zorn`.
+   (or whatever you actually need) followed by an `apply some_version_of_zorn`.
 3. Fill in the details. This is where you start talking about chains.
 
 A typical proof using Zorn could look like this
