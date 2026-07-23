@@ -1007,14 +1007,14 @@ in `Over X`. -/
 noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     (h : IsPullback fst snd f g) :
     Over.mk fst ≅ Over.mk (pullback.fst f g) :=
-  Over.isoMk (h.isoIsPullback _ _ (IsPullback.of_hasPullback f g)) (by simp)
+  Over.isoMk (h.isoIsPullback (IsPullback.of_hasPullback f g)) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma isoOverPullback_hom_left_comp_snd {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     (h : IsPullback fst snd f g) :
     dsimp% h.isoOverPullback.hom.left ≫ pullback.snd f g = snd :=
-  h.isoIsPullback_hom_snd _ _ (IsPullback.of_hasPullback f g)
+  h.isoIsPullback_hom_snd (IsPullback.of_hasPullback f g)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- An isomorphism `Over.mk p ≅ Over.mk (pullback.fst f g)` in `Over X` yields
