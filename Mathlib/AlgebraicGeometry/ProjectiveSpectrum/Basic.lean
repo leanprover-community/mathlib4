@@ -531,4 +531,70 @@ lemma fromOfGlobalSections_toSpecZero
 
 end ofGlobalSection
 
+section nonvanishingLocus
+
+open _root_.ProjectiveSpectrum
+
+/-- Given a subset `s : Set A`, the non-vanishing locus of `s` is the set of points whose
+corresponding prime ideal does not fully contain `s`. In other words, where not all elements of `s`
+vanish. -/
+def nonvanishingLocus (s : Set A) : (Proj 𝒜).Opens :=
+  ⟨(zeroLocus 𝒜 s)ᶜ, (isClosed_zeroLocus 𝒜 s).isOpen_compl⟩
+
+lemma mem_nonvanishingLocus_iff_not_subset {s : Set A} {x : Proj 𝒜} :
+    x ∈ nonvanishingLocus 𝒜 s ↔ ¬s ⊆ x.asHomogeneousIdeal :=
+  Iff.rfl
+
+lemma mem_nonvanishingLocus_iff {s : Set A} {x : Proj 𝒜} :
+    x ∈ nonvanishingLocus 𝒜 s ↔ ∃ r ∈ s, r ∉ x.asHomogeneousIdeal := by
+  simp_rw [mem_nonvanishingLocus_iff_not_subset, Set.not_subset, SetLike.mem_coe]
+
+-- #30334
+@[simp] lemma coe_toIdeal (I : HomogeneousIdeal 𝒜) : (I.toIdeal : Set A) = I := rfl
+
+lemma nonvanishingLocus_span (s : Set A) :
+    nonvanishingLocus 𝒜 (Ideal.span s) = nonvanishingLocus 𝒜 s := by
+  ext; simp [← coe_toIdeal, mem_nonvanishingLocus_iff_not_subset, Ideal.span_le]
+
+lemma nonvanishingLocus_homogeneousHull (I : Ideal A) :
+    nonvanishingLocus 𝒜 (I.homogeneousHull 𝒜) = nonvanishingLocus 𝒜 I := by
+  ext; simp_rw [SetLike.mem_coe, mem_nonvanishingLocus_iff_not_subset, SetLike.coe_subset_coe,
+    ← coe_toIdeal, SetLike.coe_subset_coe, (Ideal.homogeneousHull.gc 𝒜).le_iff_le]
+
+@[simp] lemma nonvanishingLocus_empty : nonvanishingLocus 𝒜 ∅ = ⊥ := by
+  ext; simp [mem_nonvanishingLocus_iff]
+
+@[simp] lemma nonvanishingLocus_univ : nonvanishingLocus 𝒜 .univ = ⊤ := by
+  ext; simpa [mem_nonvanishingLocus_iff] using ⟨1, Ideal.one_notMem _⟩
+
+@[simp] lemma nonvanishingLocus_singleton (f : A) :
+    nonvanishingLocus 𝒜 {f} = basicOpen 𝒜 f := by
+  ext; simp [mem_nonvanishingLocus_iff]
+
+@[simp] lemma nonvanishingLocus_sUnion (s : Set (Set A)) :
+    nonvanishingLocus 𝒜 (⋃₀ s) = ⨆ t ∈ s, nonvanishingLocus 𝒜 t := by
+  ext; simpa [mem_nonvanishingLocus_iff] using by tauto
+
+@[simp] lemma nonvanishingLocus_iUnion {ι : Sort*} (s : ι → Set A) :
+    nonvanishingLocus 𝒜 (⋃ i, s i) = ⨆ i, nonvanishingLocus 𝒜 (s i) := by
+  ext; simpa [mem_nonvanishingLocus_iff] using by tauto
+
+lemma nonvanishingLocus_eq_iSup_basicOpen (s : Set A) :
+    nonvanishingLocus 𝒜 s = ⨆ f ∈ s, basicOpen 𝒜 f := by
+  nth_rw 1 [← s.biUnion_of_singleton]
+  simp only [nonvanishingLocus_iUnion, nonvanishingLocus_singleton]
+
+open Pointwise in
+lemma nonvanishingLocus_mul (s t : Set A) :
+    nonvanishingLocus 𝒜 (s * t) = nonvanishingLocus 𝒜 s ⊓ nonvanishingLocus 𝒜 t := by
+  simp only [nonvanishingLocus_eq_iSup_basicOpen]
+  ext; simpa [Set.mem_mul, -mem_basicOpen, basicOpen_mul] using by tauto
+
+lemma exists_nonvanishingLocus_eq (U : (Proj 𝒜).Opens) :
+    ∃ s : Set A, nonvanishingLocus 𝒜 s = U := by
+  obtain ⟨s, hs⟩ := (isOpen_iff 𝒜 U.1).mp U.2
+  exact ⟨s, by ext; simp [nonvanishingLocus, ← hs]⟩
+
+end nonvanishingLocus
+
 end AlgebraicGeometry.Proj
