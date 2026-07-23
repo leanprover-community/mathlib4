@@ -21,8 +21,6 @@ public import Mathlib.SetTheory.Cardinal.Subfield
 
 public section
 
-noncomputable section
-
 universe u v
 
 variable {K : Type u}

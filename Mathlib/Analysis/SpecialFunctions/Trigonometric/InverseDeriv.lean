@@ -16,8 +16,6 @@ Derivatives of `arcsin` and `arccos`.
 
 public section
 
-noncomputable section
-
 open scoped Topology Filter Real ContDiff
 open Set
 

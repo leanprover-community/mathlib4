@@ -30,8 +30,6 @@ This file proves some results regarding the conditional expectation of real-valu
 public section
 
 
-noncomputable section
-
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
 
 open scoped NNReal ENNReal Topology MeasureTheory

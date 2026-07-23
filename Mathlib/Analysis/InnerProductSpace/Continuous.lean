@@ -21,8 +21,6 @@ inner product space, Hilbert space, norm
 
 public section
 
-noncomputable section
-
 open RCLike Real Filter Topology ComplexConjugate Finsupp
 open LinearMap renaming BilinForm → BilinForm
 
