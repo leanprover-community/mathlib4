@@ -4642,6 +4642,7 @@ public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Geometry.Euclidean.Triangle
 public import Mathlib.Geometry.Euclidean.Volume.Measure
+public import Mathlib.Geometry.Group.DehnFunction
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
@@ -4860,6 +4861,7 @@ public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.GroupTheory.Perm.Subgroup
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
+public import Mathlib.GroupTheory.Presentation
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.PushoutI
 public import Mathlib.GroupTheory.QuotientGroup.Basic
