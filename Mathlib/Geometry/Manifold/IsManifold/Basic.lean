@@ -990,6 +990,29 @@ end DisjointUnion
 
 end IsManifold
 
+namespace Homeomorph
+
+variable {𝕜 E H M N : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  [TopologicalSpace M] [ChartedSpace H M] {n : ℕ∞ω}
+  [IsManifold I n M] [TopologicalSpace N]
+
+open IsManifold OpenPartialHomeomorph in
+lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N)
+    (e : OpenPartialHomeomorph N H) (he : letI := φ.chartedSpace (H := H); e ∈ atlas H N) :
+    φ.transOpenPartialHomeomorph e ∈ maximalAtlas I n M := by
+  rcases he with ⟨q, he⟩
+  rw [← he, transOpenPartialHomeomorph_eq_trans, ← OpenPartialHomeomorph.trans_assoc]
+  -- Composing φ with its local inverse at a point is equal to the identity (on some open set).
+  refine StructureGroupoid.mem_maximalAtlas_of_eqOnSource (Setoid.trans
+      ((φ.toOpenPartialHomeomorph_trans_localInverseAt _).trans'
+      (OpenPartialHomeomorph.eqOnSource_refl _)) (by rw [ofSet_trans])) ?_
+  -- The composition of a chart with the identity on some open set is equal of the restriction of
+  -- the chart of that set. This restriction of a chart is also a member of the maximal atlas.
+  exact restr_mem_maximalAtlas _ (chart_mem_maximalAtlas _) (by simpa using open_source _)
+
+end Homeomorph
+
 theorem OpenPartialHomeomorph.isManifold_singleton
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
