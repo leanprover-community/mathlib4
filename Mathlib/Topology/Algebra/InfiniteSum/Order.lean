@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Quantale
+public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.Order.MonotoneConvergence
@@ -268,6 +270,233 @@ theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 
 end CanonicallyOrderedMul
+
+section CompleteLattice
+
+variable [AddCommMonoid α] [CompleteLattice α] [CanonicallyOrderedAdd α] [TopologicalSpace α]
+  [SupConvergenceClass α] {ι' : Type*} {f g : ι → α} {s t : Set ι} {x : α} {i j : ι}
+
+theorem CompleteLattice.hasSum : HasSum f (⨆ s : Finset ι, ∑ a ∈ s, f a) :=
+  tendsto_atTop_iSup fun _ _ ↦ Finset.sum_le_sum_of_subset
+
+theorem CompleteLattice.summable : Summable f := ⟨_, CompleteLattice.hasSum⟩
+
+open CompleteLattice Set
+
+variable [T2Space α]
+
+theorem tsum_eq_iSup_sum : ∑' x, f x = ⨆ s : Finset ι, ∑ a ∈ s, f a :=
+  CompleteLattice.hasSum.tsum_eq
+
+theorem tsum_eq_iSup_sum' (s : ι' → Finset ι) (hs : ∀ t, ∃ i, t ⊆ s i) :
+    ∑' a, f a = ⨆ i, ∑ a ∈ s i, f a := by
+  simpa [tsum_eq_iSup_sum] using ((Finset.sum_mono_set f).iSup_comp_eq hs).symm
+
+variable [ContinuousAdd α]
+
+/-- See also `Summable.tsum_add` for more general result without `CompleteLattice` assumption. -/
+theorem tsum_add : ∑' a, (f a + g a) = (∑' a, f a) + ∑' a, g a :=
+  summable.tsum_add summable
+
+/-- See also `Summable.tsum_union_of_disjoint` for more general result without `CompleteLattice`
+assumption. -/
+theorem tsum_union_of_disjoint (hd : Disjoint s t) :
+    ∑' (x : ↑(s ∪ t)), f x = (∑' (x : s), f x) + ∑' (x : t), f x :=
+  summable.tsum_union_of_disjoint hd summable
+
+theorem tsum_le_of_subset (h : s ⊆ t) : ∑' (x : s), f x ≤ ∑' (x : t), f x := by
+  rw [← sdiff_union_of_subset h, tsum_union_of_disjoint disjoint_sdiff_left]
+  exact le_add_self
+
+theorem tsum_union_le (f : ι → α) (s t : Set ι) :
+    ∑' (x : ↑(s ∪ t)), f x ≤ (∑' (x : s), f x) + ∑' (x : t), f x := by
+  rw [← sdiff_union_self, tsum_union_of_disjoint disjoint_sdiff_left]
+  exact add_le_add_left (tsum_le_of_subset sdiff_subset) _
+
+theorem tsum_insert (h : i ∉ s) : ∑' (x : ↑(insert i s)), f x = f i + ∑' (x : s), f x := by
+  rw [← singleton_union, tsum_union_of_disjoint, tsum_singleton]
+  rwa [Set.disjoint_singleton_left]
+
+theorem singleton_add_tsum_ne : f i + (∑' (x : {x // x ≠ i}), f x) = ∑' x, f x := by
+  rw [eq_comm, ← tsum_univ, show univ = insert i {i}ᶜ by ext; simp [em]]
+  exact tsum_insert (by simp)
+
+open Classical in
+theorem tsum_eq_add_tsum_ite {f : ι' → α} (b : ι') :
+    ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
+  summable.tsum_eq_add_tsum_ite' b
+
+omit [T2Space α]
+variable [T3Space α]
+
+theorem tsum_fiberwise {ι''} (f : ι' → α) (g : ι' → ι'') :
+    ∑' x, ∑' b : g ⁻¹' {x}, f b = ∑' i, f i := by
+  apply HasSum.tsum_eq
+  let equiv := Equiv.sigmaFiberEquiv g
+  apply (equiv.hasSum_iff.mpr summable.hasSum).sigma
+  exact fun _ ↦ summable.hasSum_iff.mpr rfl
+
+/-- See also `Summable.tsum_comm'` for more general result without `CompleteLattice` assumption. -/
+theorem tsum_comm {f : ι → ι' → α} : ∑' (a) (b), f a b = ∑' (b) (a), f a b :=
+  summable.tsum_comm' (fun _ ↦ summable) fun _ ↦ summable
+
+/-- See also `Summable.tsum_prod'` for more general result without `CompleteLattice` assumption. -/
+theorem tsum_prod {f : ι → ι' → α} : ∑' p : ι × ι', f p.1 p.2 = ∑' (a) (b), f a b :=
+  summable.tsum_prod' fun _ ↦ summable
+
+/-- See also `Summable.tsum_prod'` for more general result without `CompleteLattice` assumption. -/
+theorem tsum_prod' {f : ι × ι' → α} : ∑' p : ι × ι', f p = ∑' (a) (b), f (a, b) :=
+  summable.tsum_prod' fun _ => summable
+
+/-- See also `Summable.tsum_sigma'` for more general result without `CompleteLattice` assumption. -/
+theorem tsum_sigma {β : ι → Type*} (f : ∀ a, β a → α) :
+    ∑' p : Σ i, β i, f p.1 p.2 = ∑' (i) (j), f i j :=
+  summable.tsum_sigma' (fun _ ↦ summable)
+
+/-- See also `Summable.tsum_sigma'` for more general result without `CompleteLattice` assumption. -/
+theorem tsum_sigma' {β : ι → Type*} (f : (Σ i, β i) → α) :
+    ∑' p : Σ i, β i, f p = ∑' (i) (j), f ⟨i, j⟩ :=
+  summable.tsum_sigma' (fun _ ↦ summable)
+
+theorem tsum_biUnion' {S : Set ι'} {t : ι' → Set ι} (h : S.PairwiseDisjoint t) :
+    ∑' x : ⋃ i ∈ S, t i, f x = ∑' (i : S), ∑' (x : t i), f x := by
+  simp [← tsum_sigma, ← (Set.biUnionEqSigmaOfDisjoint h).tsum_eq]
+
+theorem tsum_biUnion {t : ι' → Set ι} (h : Set.univ.PairwiseDisjoint t) :
+    ∑' x : ⋃ i, t i, f x = ∑' (i) (x : t i), f x := by
+  nth_rw 2 [← tsum_univ]
+  rw [← tsum_biUnion' h, Set.biUnion_univ]
+
+omit [ContinuousAdd α] [T3Space α]
+variable [IsOrderedAddMonoid α] [OrderClosedTopology α]
+
+/-- See also `Summable.tsum_le_tsum` for more general result without `CompleteLattice`
+assumption. -/
+theorem tsum_le_tsum (h : f ≤ g) : ∑' a, f a ≤ ∑' a, g a :=
+  summable.tsum_le_tsum h summable
+
+/-- See also `Summable.sum_le_tsum` for more general result without `CompleteLattice` assumption. -/
+theorem sum_le_tsum (s : Finset ι) : ∑ x ∈ s, f x ≤ ∑' x, f x :=
+  summable.sum_le_tsum s (fun _ _ ↦ zero_le)
+
+/-- See also `Summable.le_tsum'` for more general result without `CompleteLattice` assumption. -/
+theorem le_tsum (f : ι → α) (a : ι) : f a ≤ ∑' a, f a := summable.le_tsum' a
+
+theorem le_tsum_of_mem (hi : i ∈ s) : f i ≤ ∑' x : s, f x := by
+  exact le_tsum (f ∘ (↑)) (⟨i, hi⟩ : s)
+
+/-- See also `Summable.tsum_eq_zero_iff` for more general result without `CompleteLattice`
+assumption. -/
+@[simp] theorem tsum_eq_zero_iff : ∑' i, f i = 0 ↔ ∀ i, f i = 0 :=
+  summable.tsum_eq_zero_iff
+
+theorem tsum_eq_top_of_eq_top : (∃ a, f a = ⊤) → ∑' a, f a = ⊤
+  | ⟨a, ha⟩ => top_unique <| ha ▸ le_tsum f a
+
+theorem tsum_subtype_eq_top_of_eq_top (h : ∃ a ∈ s, f a = ⊤) : ∑' a : s, f a = ⊤ :=
+  let ⟨a, ha, has⟩ := h
+  tsum_eq_top_of_eq_top ⟨⟨a, ha⟩, has⟩
+
+/-- See also `Summable.tsum_le_tsum_of_inj` for more general result without `CompleteLattice`
+assumption. -/
+theorem tsum_comp_le_tsum_of_injective {f : ι → ι'} (hf : Injective f) (g : ι' → α) :
+    ∑' x, g (f x) ≤ ∑' y, g y :=
+  summable.tsum_le_tsum_of_inj f hf (fun _ _ ↦ zero_le) (fun _ ↦ le_rfl) summable
+
+theorem tsum_le_tsum_comp_of_surjective {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
+    ∑' y, g y ≤ ∑' x, g (f x) :=
+  calc ∑' y, g y = ∑' y, g (f (surjInv hf y)) := by simp only [surjInv_eq hf]
+    _ ≤ ∑' x, g (f x) := tsum_comp_le_tsum_of_injective (injective_surjInv hf) (g ∘ f)
+
+theorem tsum_comp_eq_tsum_of_bijective {f : ι → ι'} (hf : f.Bijective) (g : ι' → α) :
+    ∑' x, g (f x) = ∑' y, g y :=
+  (tsum_comp_le_tsum_of_injective hf.injective g).antisymm
+    (tsum_le_tsum_comp_of_surjective hf.surjective g)
+
+theorem tsum_range_le_tsum_comp (f : ι → α) (g : ι' → ι) :
+    ∑' (x : range g), f x ≤ ∑' x, f (g x) :=
+  tsum_le_tsum_comp_of_surjective rangeFactorization_surjective _
+
+theorem tsum_comp_eq_tsum_of_equiv (e : ι ≃ ι') (g : ι' → α) : ∑' x, g (e x) = ∑' y, g y := by
+  rw [tsum_comp_eq_tsum_of_bijective e.bijective]
+
+theorem tsum_image_le_tsum_comp (f : ι → α) (g : ι' → ι) (s : Set ι') :
+    ∑' x : (g '' s), f x ≤ ∑' x : s, f (g x) :=
+  tsum_le_tsum_comp_of_surjective imageFactorization_surjective _
+
+theorem tsum_mono_subtype (f : ι → α) (h : s ⊆ t) : ∑' x : s, f x ≤ ∑' x : t, f x :=
+  tsum_comp_le_tsum_of_injective (inclusion_injective h) (f ∘ (↑))
+
+@[simp] theorem tsum_top [Nonempty α] : ∑' _ : α, (⊤ : α) = ⊤ :=
+  let ⟨a⟩ := ‹Nonempty α›
+  tsum_eq_top_of_eq_top ⟨a, rfl⟩
+
+theorem ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ⊤) (i : ι) : f i ≠ ⊤ :=
+  fun hi => h <| tsum_eq_top_of_eq_top ⟨i, hi⟩
+
+variable [ContinuousAdd α] [T3Space α]
+
+theorem tsum_iUnion_le_tsum (f : ι → α) (t : ι' → Set ι) :
+    ∑' x : ⋃ i, t i, f x ≤ ∑' i, ∑' x : (t i), f x :=
+  calc ∑' x : ⋃ i, t i, f x ≤ ∑' x : Σ i, t i, f x.2 :=
+    tsum_le_tsum_comp_of_surjective (sigmaToiUnion_surjective t) _
+  _ = ∑' i, ∑' x : t i, f x := tsum_sigma' _
+
+theorem tsum_biUnion_le_tsum (f : ι → α) (s : Set ι') (t : ι' → Set ι) :
+    ∑' x : ⋃ i ∈ s , t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
+  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := by rw [tsum_congr_subtype]; simp
+  _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_iUnion_le_tsum _ _
+
+theorem tsum_biUnion_le (f : ι → α) (s : Finset ι') (t : ι' → Set ι) :
+    ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑ i ∈ s, ∑' x : t i, f x :=
+  (tsum_biUnion_le_tsum f (↑s) t).trans_eq (Finset.tsum_subtype s fun i ↦ ∑' x : t i, f x)
+
+theorem tsum_iUnion_le [Fintype ι'] (f : ι → α) (t : ι' → Set ι) :
+    ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
+  convert tsum_iUnion_le_tsum f t
+  exact (tsum_fintype fun b ↦ ∑' (x : ↑(t b)), f ↑x).symm
+
+theorem tsum_iUnion_eq_tsum (f : ι → α) (t : ι' → Set ι) (ht : Pairwise (Disjoint on t)) :
+    ∑' x : ⋃ i, t i, f x = ∑' i, ∑' x : t i, f x := by
+  calc ∑' x : ⋃ i, t i, f x = ∑' x : Σ i, t i, f x.2 :=
+    (tsum_comp_eq_tsum_of_bijective (sigmaToiUnion_bijective t (fun _ _ hij ↦ ht hij)) _).symm
+    _ = _ := tsum_sigma' _
+
+omit [IsOrderedAddMonoid α] [T3Space α] in
+lemma sum_add_tsum_compl (s : Finset ι') (f : ι' → α) :
+    (∑ i ∈ s, f i) + ∑' i : ↥(s : Set ι')ᶜ, f i = ∑' i, f i := by
+  rw [_root_.tsum_subtype, sum_eq_tsum_indicator]
+  simp [← tsum_add]
+
+theorem tsum_iUnion_le_sum [Fintype ι'] (f : ι → α) (t : ι' → Set ι) :
+    ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
+  convert tsum_iUnion_le_tsum f t
+  exact (tsum_fintype fun b ↦ ∑' (x : ↑(t b)), f ↑x).symm
+
+theorem tsum_subtype_eq_tsum_support (s : Set ι) (f : ι → α) :
+    ∑' (x : s), f x = ∑' (x : {x | x ∈ s ∧ f x ≠ 0}), f x := by
+  have hu : s = {i | i ∈ s ∧ f i ≠ 0} ∪ {i | i ∈ s ∧ f i = 0} := by
+    simp only [Set.ext_iff, ne_eq, mem_union, mem_setOf_eq]
+    grind
+  have hrw : ∑' i : {i | i ∈ s ∧ f i = 0}, f i = 0 := by simp
+  rw [hu, tsum_union_of_disjoint (by grind), hrw, add_zero, ← hu]
+
+end CompleteLattice
+
+section CompleteLatticeRing
+
+variable {R : Type*} [Semiring R] [CompleteLattice R] [IsQuantale R] [TopologicalSpace R]
+    [CanonicallyOrderedAdd R] [SupConvergenceClass R] [T2Space R]
+
+theorem mul_tsum (c : R) (f : α → R) : c * (∑' a, f a) = ∑' a, (c * f a) := by
+  rw [tsum_eq_iSup_sum, tsum_eq_iSup_sum, Quantale.mul_iSup_distrib,
+    iSup_congr (fun _ ↦ Finset.mul_sum ..)]
+
+theorem tsum_mul (c : R) (f : α → R) : (∑' a, f a) * c = ∑' a, (f a * c) := by
+  rw [tsum_eq_iSup_sum, tsum_eq_iSup_sum, Quantale.iSup_mul_distrib,
+    iSup_congr (fun _ ↦ Finset.sum_mul ..)]
+
+end CompleteLatticeRing
 
 section LinearOrder
 
