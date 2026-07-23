@@ -1300,6 +1300,9 @@ end Group
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
+-- addition is commutative in groups 99.9% of the time in mathematics.
+attribute [instance 1100] AddCommGroup.toAddGroup
+
 /-- A commutative group is a group with commutative `(*)`. -/
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
 @[to_additive (attr := wikidata Q181296)]
