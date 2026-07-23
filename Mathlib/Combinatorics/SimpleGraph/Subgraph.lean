@@ -875,7 +875,7 @@ theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
 lemma degree_toSubgraph (G H : SimpleGraph V) (h : H ≤ G) {v : V}
     [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
     (toSubgraph H h).degree v = H.degree v := by
-  simp [Subgraph.degree, card_neighborSet_toSubgraph]
+  simp [Subgraph.degree, card_neighborSet_toSubgraph, -Set.fintypeCard_eq_ncard]
 
 section MkProperties
 
