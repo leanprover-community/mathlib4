@@ -59,8 +59,7 @@ lemma innerProductForm_ιMulti_self (x : Fin n → E) :
     innerProductForm (ιMulti ℝ n x) (ιMulti ℝ n x) = det (gram ℝ x) := by
   simp [gram, innerProductForm_ιMulti_ιMulti, real_inner_comm]
 
-lemma flip_innerProductForm :
-    LinearMap.flip (innerProductForm (E := E) (n := n)) = innerProductForm := by
+lemma flip_innerProductForm : (innerProductForm (E := E) (n := n)).flip = innerProductForm := by
   apply linearMap_ext
   ext
   simp only [LinearMap.compAlternatingMap_apply, LinearMap.flip_apply,
