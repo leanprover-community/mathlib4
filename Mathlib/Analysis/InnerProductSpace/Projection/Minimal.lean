@@ -34,7 +34,7 @@ Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖
 theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h₁ : IsComplete K)
     (h₂ : Convex ℝ K) : ∀ u : F, ∃ v ∈ K, ‖u - v‖ = ⨅ w : K, ‖u - w‖ := fun u => by
   let δ := ⨅ w : K, ‖u - w‖
-  letI : Nonempty K := ne.to_subtype
+  let : Nonempty K := ne.to_subtype
   have zero_le_δ : 0 ≤ δ := le_ciInf fun _ => norm_nonneg _
   have δ_le : ∀ w : K, δ ≤ ‖u - w‖ := ciInf_le ⟨0, Set.forall_mem_range.2 fun _ => norm_nonneg _⟩
   have δ_le' : ∀ w ∈ K, δ ≤ ‖u - w‖ := fun w hw => δ_le ⟨w, hw⟩
@@ -51,7 +51,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 δ) := by
     have h : Tendsto (fun _ : ℕ => δ) atTop (𝓝 δ) := tendsto_const_nhds
     have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (𝓝 δ) := by
-      convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
+      convert! h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
@@ -78,8 +78,9 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
           2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) :=
         calc
           4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ + ‖wp - wq‖ * ‖wp - wq‖ =
-              2 * ‖u - half • (wq + wp)‖ * (2 * ‖u - half • (wq + wp)‖) + ‖wp - wq‖ * ‖wp - wq‖ :=
-            by ring
+              2 * ‖u - half • (wq + wp)‖ * (2 * ‖u - half • (wq + wp)‖) +
+              ‖wp - wq‖ * ‖wp - wq‖ := by
+            ring
           _ =
               absR 2 * ‖u - half • (wq + wp)‖ * (absR 2 * ‖u - half • (wq + wp)‖) +
                 ‖wp - wq‖ * ‖wp - wq‖ := by
@@ -130,14 +131,14 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   use v, hv
   have h_cont : Continuous fun v => ‖u - v‖ := by fun_prop
   have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
-    convert Tendsto.comp h_cont.continuousAt w_tendsto
+    convert! Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
 
 /-- Characterization of minimizers for the projection on a convex set in a real inner product
 space. -/
 theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : F} {v : F}
     (hv : v ∈ K) : (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0 := by
-  letI : Nonempty K := ⟨⟨v, hv⟩⟩
+  let : Nonempty K := ⟨⟨v, hv⟩⟩
   constructor
   · intro eq w hw
     let δ := ⨅ w : K, ‖u - w‖
@@ -229,7 +230,7 @@ This point `v` is usually called the orthogonal projection of `u` onto `K`.
 -/
 theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E)) :
     ∀ u : E, ∃ v ∈ K, ‖u - v‖ = ⨅ w : (K : Set E), ‖u - w‖ := by
-  letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
+  let : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   let K' : Submodule ℝ E := Submodule.restrictScalars ℝ K
   exact exists_norm_eq_iInf_of_complete_convex ⟨0, K'.zero_mem⟩ h K'.convex
 
@@ -284,7 +285,7 @@ for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subs
 -/
 theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
     (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w⟫ = 0 := by
-  letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
+  let : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   let K' : Submodule ℝ E := K.restrictScalars ℝ
   constructor
   · intro H

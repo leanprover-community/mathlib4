@@ -148,7 +148,7 @@ theorem LinearIndepOn.injOn [Nontrivial R] (hv : LinearIndepOn R v s) : InjOn v 
   injOn_iff_injective.2 <| LinearIndependent.injective hv
 
 theorem LinearIndependent.smul_left_injective (hv : LinearIndependent R v) (i : ι) :
-    Injective fun r : R ↦ r • v i := by convert hv.comp (Finsupp.single_injective i); simp
+    Injective fun r : R ↦ r • v i := by convert! hv.comp (Finsupp.single_injective i); simp
 
 theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
     v i ≠ 0 := by
@@ -202,7 +202,7 @@ theorem linearIndependent_comp_subtype_iff :
 linearly independent family. -/
 theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
     LinearIndependent R (v ∘ f) := by
-  simpa [comp_def] using Injective.comp h (Finsupp.mapDomain_injective hf)
+  simpa [comp_def] using! Injective.comp h (Finsupp.mapDomain_injective hf)
 
 lemma LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
     LinearIndepOn R v t := hs.comp _ <| Set.inclusion_injective h
@@ -251,7 +251,7 @@ theorem linearIndependent_iff''ₛ :
   exact linearIndependent_iff'ₛ.trans
     ⟨fun H s f g eq hv i ↦ if his : i ∈ s then H s f g hv i his else eq i his,
       fun H s f g eq i hi ↦ by
-      convert
+      convert!
         H s (fun j ↦ if j ∈ s then f j else 0) (fun j ↦ if j ∈ s then g j else 0)
           (fun j hj ↦ (if_neg hj).trans (if_neg hj).symm)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, eq]) i <;>
@@ -296,8 +296,9 @@ theorem linearIndependent_iff_finset_linearIndependent :
     LinearIndependent R v ↔ ∀ (s : Finset ι), LinearIndependent R (v ∘ (Subtype.val : s → ι)) :=
   ⟨fun H _ ↦ H.comp _ Subtype.val_injective, fun H ↦ linearIndependent_iff'ₛ.2 fun s f g eq i hi ↦
     Fintype.linearIndependent_iffₛ.1 (H s) (f ∘ Subtype.val) (g ∘ Subtype.val)
-      (by simpa only [← s.sum_coe_sort] using eq) ⟨i, hi⟩⟩
+      (by simpa only [← s.sum_coe_sort] using! eq) ⟨i, hi⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_iff_linearIndepOn_finset :
     LinearIndepOn R v s ↔ ∀ t : Finset ι, ↑t ⊆ s → LinearIndepOn R v t where
   mp hv t hts := hv.mono hts
@@ -320,7 +321,7 @@ theorem LinearIndepOn.of_comp (f : M →ₗ[R] M') (hfv : LinearIndepOn R (f ∘
 lemma LinearIndependent.of_linearIndependent_subset (s : Set ι') {v : ι → ι' → R}
     (hv : LinearIndependent R fun (i : ι) (j : s) ↦ v i j) :
     LinearIndependent R v :=
-  hv.of_comp ⟨⟨s.restrict, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
+  hv.of_comp ⟨⟨s.domRestrict, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
 
 /-- If `f` is a linear map injective on the span of the range of `v`, then the family `f ∘ v`
 is linearly independent if and only if the family `v` is linearly independent.
@@ -390,7 +391,7 @@ alias ⟨LinearIndependent.of_linearIndepOn_id_range, _⟩ := linearIndepOn_id_r
 
 theorem LinearIndependent.linearIndepOn_id (i : LinearIndependent R v) :
     LinearIndepOn R id (range v) := by
-  simpa using i.comp _ (rangeSplitting_injective v)
+  simpa using! i.comp _ (rangeSplitting_injective v)
 
 /-- A version of `LinearIndependent.linearIndepOn_id` with the set range equality as a hypothesis.
 -/
@@ -428,10 +429,10 @@ theorem linearDepOn_iffₛ : ¬LinearIndepOn R v s ↔
   linearDepOn_iff'ₛ
 
 theorem linearIndependent_restrict_iff :
-    LinearIndependent R (s.restrict v) ↔ LinearIndepOn R v s := Iff.rfl
+    LinearIndependent R (s.domRestrict v) ↔ LinearIndepOn R v s := Iff.rfl
 
 theorem LinearIndepOn.linearIndependent_restrict (hs : LinearIndepOn R v s) :
-    LinearIndependent R (s.restrict v) :=
+    LinearIndependent R (s.domRestrict v) :=
   hs
 
 theorem linearIndepOn_iff_linearCombinationOnₛ :
@@ -518,22 +519,22 @@ theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) 
   rcases ha with ⟨l, hl, e⟩
   rw [linearIndependent_iffₛ.1 hv l (Finsupp.single i a) (by simp [e])] at hl
   by_contra hn
-  exact (notMem_of_mem_diff (hl <| by simp [hn])) (mem_singleton _)
+  exact (notMem_of_mem_sdiff (hl <| by simp [hn])) (mem_singleton _)
 
 nonrec lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) (a : R)
     (ha : a • v i ∈ span R (v '' (s \ {i}))) : a = 0 :=
   hv.eq_zero_of_smul_mem_span ⟨i, hi⟩ _ <| by
-    simpa [← comp_def, image_comp, image_diff Subtype.val_injective]
+    simpa [← comp_def, image_comp, image_sdiff Subtype.val_injective]
 
 variable [Nontrivial R]
 
 lemma LinearIndependent.notMem_span (hv : LinearIndependent R v) (i : ι) :
     v i ∉ span R (v '' {i}ᶜ) := fun hi ↦
-  one_ne_zero <| hv.eq_zero_of_smul_mem_span i 1 <| by simpa [Set.compl_eq_univ_diff] using hi
+  one_ne_zero <| hv.eq_zero_of_smul_mem_span i 1 <| by simpa [Set.compl_eq_univ_sdiff] using hi
 
 lemma LinearIndepOn.notMem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
     v i ∉ span R (v '' (s \ {i})) := fun hi' ↦
-  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by simpa [Set.compl_eq_univ_diff] using hi'
+  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by simpa [Set.compl_eq_univ_sdiff] using hi'
 
 lemma LinearIndepOn.notMem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
     v i ∉ span R (v '' s) := by simpa [hi] using hv.notMem_span <| mem_insert ..
@@ -572,7 +573,6 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
           ext
           simp)
     have q := congr_arg (fun s => ((↑) : w → M) '' s) p.range_eq
-    dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
 
@@ -594,8 +594,8 @@ theorem linearIndependent_iffₒₛ :
       ∀ (s t : Finset ι) (f : ι → R), Disjoint s t →
         ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i → (∀ i ∈ s, f i = 0) ∧ ∀ i ∈ t, f i = 0 := by
   classical
-  letI : Sub R := CanonicallyOrderedAdd.toSub
-  haveI : OrderedSub R := CanonicallyOrderedAdd.toOrderedSub
+  let : Sub R := CanonicallyOrderedAdd.toSub
+  have : OrderedSub R := CanonicallyOrderedAdd.toOrderedSub
   rw [linearIndependent_iff'ₛ]
   refine ⟨fun h s t f hst heq => ?_, fun h s f g heq => ?_⟩
   · specialize h (s ∪ t) (fun i => if i ∈ s then f i else 0) (fun i => if i ∈ t then f i else 0) ?_
@@ -611,7 +611,7 @@ theorem linearIndependent_iffₒₛ :
         (a := ∑ i ∈ s with g i ≤ f i, g i • v i + ∑ i ∈ s with f i < g i, f i • v i)]
       conv_lhs => rw [← add_assoc, ← Finset.sum_add_distrib]
       conv_rhs => rw [add_left_comm, ← Finset.sum_add_distrib]
-      convert heq
+      convert! heq
         <;> simp_rw [← Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
         <;> congr! 2 with i hi
         <;> simp only [Finset.mem_filter] at hi
@@ -648,7 +648,7 @@ nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι]
     · exact h.2 i (Finset.mem_compl.2 hi)
   · specialize h t₁ (fun i => if i ∈ t₁ ∨ i ∈ t₂ then f i else 0) ?_
     · rw [← Finset.sum_subset ht₁t₂.le_compl_left]
-      · convert heq using 2 with i hi i hi <;> simp [hi]
+      · convert! heq using 2 with i hi i hi <;> simp [hi]
       · intro i hi hi'
         simp [Finset.mem_compl.1 hi, hi']
     refine ⟨fun i hi => ?_, fun i hi => ?_⟩ <;> simpa [hi] using h i
@@ -664,6 +664,7 @@ theorem Fintype.not_linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
   · refine ⟨tᶜ, f, ?_, i, Finset.mem_compl.2 hi', hfi⟩
     simp [heq]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_finset_iffₒₛ [DecidableEq ι] {s : Finset ι} :
     LinearIndepOn R v s ↔ ∀ t ⊆ s, ∀ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, f i • v i → ∀ i ∈ s, f i = 0 := by
@@ -732,9 +733,9 @@ theorem linearIndependent_iff' :
       ∀ s : Finset ι, ∀ g : ι → R, ∑ i ∈ s, g i • v i = 0 → ∀ i ∈ s, g i = 0 := by
   rw [linearIndependent_iff'ₛ]
   refine ⟨fun h s f ↦ ?_, fun h s f g ↦ ?_⟩
-  · convert h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
+  · convert! h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
-    convert h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
+    convert! h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
 
 /-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
 of a function with support contained in the `Finset`. -/
@@ -744,7 +745,7 @@ theorem linearIndependent_iff'' :
   classical
   exact linearIndependent_iff'.trans
     ⟨fun H s g hg hv i => if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi => by
-      convert
+      convert!
         H s (fun j => if j ∈ s then g j else 0) (fun j hj => if_neg hj)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
       exact (if_pos hi).symm⟩
@@ -842,7 +843,7 @@ lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι �
   refine ⟨fun h t g hts h0 i hit ↦ ?_, fun h t g h0 i hit ↦ ?_⟩
   · refine h (t.preimage _ Subtype.val_injective.injOn) (fun i ↦ g i) ?_ ⟨i, hts hit⟩ (by simpa)
     rwa [t.sum_preimage ((↑) : s → ι) Subtype.val_injective.injOn (fun i ↦ g i • v i)]
-    simp only [Subtype.range_coe_subtype, setOf_mem_eq]
+    simp only [Subtype.range_coe_subtype, ofPred_mem_eq]
     exact fun x hxt hxs ↦ (hxs (hts hxt)) |>.elim
   replace h : ∀ i (hi : i ∈ s), ⟨i, hi⟩ ∈ t → ∀ (h : i ∈ s), g ⟨i, h⟩ = 0 := by
     simpa [h0] using h (t.image (↑)) (fun i ↦ if hi : i ∈ s then g ⟨i, hi⟩ else 0)
@@ -872,7 +873,7 @@ theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
         intro j hj
         have hij : j = i :=
           Classical.not_not.1 fun hij : j ≠ i =>
-            hj ((mem_diff _).2 ⟨mem_univ _, fun h => hij (eq_of_mem_singleton h)⟩)
+            hj ((mem_sdiff _).2 ⟨mem_univ _, fun h => hij (eq_of_mem_singleton h)⟩)
         simp [hij]
       · simp [hl]⟩
 
@@ -881,7 +882,7 @@ lemma LinearIndependent.of_subsingleton' [Subsingleton ι] (i : ι)
     (hi : ∀ r : R, r • v i = 0 → r = 0) : LinearIndependent R v := by
   let := uniqueOfSubsingleton i
   simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
-    Unique.forall_iff] using fun _ ↦ hi _
+    Unique.forall_iff] using! fun _ ↦ hi _
 
 /-- Version of `LinearIndepOn.singleton` that works for the zero ring. -/
 @[simp]
@@ -894,10 +895,6 @@ lemma LinearIndependent.of_subsingleton [Subsingleton ι] (i : ι) (hi : v i ≠
     LinearIndependent R v := .of_subsingleton' i (by simp [hi])
 
 lemma LinearIndepOn.singleton (hi : v i ≠ 0) : LinearIndepOn R v {i} := by simp [hi]
-
-variable (R) in
-@[deprecated LinearIndepOn.singleton (since := "2025-11-11")]
-lemma LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} := .singleton hx
 
 end Module
 
@@ -929,6 +926,6 @@ lemma linearIndepOn_iff_notMem_span :
     LinearIndepOn K v s ↔ ∀ i ∈ s, v i ∉ span K (v '' (s \ {i})) := by
   rw [LinearIndepOn, linearIndependent_iff_notMem_span, ← Function.comp_def]
   simp_rw [Set.image_comp]
-  simp [Set.image_diff Subtype.val_injective]
+  simp [Set.image_sdiff Subtype.val_injective]
 
 end Module

@@ -74,7 +74,7 @@ For a version with stronger assumptions which in practice are often easier to ve
 `integrable_cfc`. -/
 lemma integrable_cfc' (f : X → 𝕜 → 𝕜) (a : A)
     (hf : Integrable
-      (fun x : X => mkD ((spectrum 𝕜 a).restrict (f x)) 0) μ)
+      (fun x : X => mkD ((spectrum 𝕜 a).domRestrict (f x)) 0) μ)
     (ha : p a := by cfc_tac) :
     Integrable (fun x => cfc (f x) a) μ := by
   conv in cfc _ _ => rw [cfc_eq_cfcL_mkD _ a]
@@ -85,7 +85,7 @@ For a version with stronger assumptions which in practice are often easier to ve
 `integrableOn_cfc`. -/
 lemma integrableOn_cfc' {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
     (hf : IntegrableOn
-      (fun x : X => mkD ((spectrum 𝕜 a).restrict (f x)) 0) s μ)
+      (fun x : X => mkD ((spectrum 𝕜 a).domRestrict (f x)) 0) s μ)
     (ha : p a := by cfc_tac) :
     IntegrableOn (fun x => cfc (f x) a) s μ := by
   exact integrable_cfc' _ _ hf ha
@@ -130,21 +130,21 @@ For a version with stronger assumptions which in practice are often easier to ve
 lemma cfc_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     (hf₁ : ∀ᵐ x ∂μ, ContinuousOn (f x) (spectrum 𝕜 a))
     (hf₂ : Integrable
-      (fun x : X => mkD ((spectrum 𝕜 a).restrict (f x)) 0) μ)
+      (fun x : X => mkD ((spectrum 𝕜 a).domRestrict (f x)) 0) μ)
     (ha : p a := by cfc_tac) :
     cfc (fun z => ∫ x, f x z ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
   have key₁ (z : spectrum 𝕜 a) :
-      ∫ x, f x z ∂μ = (∫ x, mkD ((spectrum 𝕜 a).restrict (f x)) 0 ∂μ) z := by
+      ∫ x, f x z ∂μ = (∫ x, mkD ((spectrum 𝕜 a).domRestrict (f x)) 0 ∂μ) z := by
     rw [integral_apply hf₂]
     refine integral_congr_ae ?_
     filter_upwards [hf₁] with x cont_x
     rw [mkD_apply_of_continuousOn cont_x]
   have key₂ (z : spectrum 𝕜 a) :
-      ∫ x, f x z ∂μ = mkD ((spectrum 𝕜 a).restrict (fun z ↦ ∫ x, f x z ∂μ)) 0 z := by
+      ∫ x, f x z ∂μ = mkD ((spectrum 𝕜 a).domRestrict (fun z ↦ ∫ x, f x z ∂μ)) 0 z := by
     rw [mkD_apply_of_continuousOn]
-    rw [continuousOn_iff_continuous_restrict]
+    rw [continuousOn_iff_continuous_domRestrict]
     refine continuous_congr key₁ |>.mpr ?_
-    exact map_continuous (∫ x, mkD ((spectrum 𝕜 a).restrict (f x)) 0 ∂μ)
+    exact map_continuous (∫ x, mkD ((spectrum 𝕜 a).domRestrict (f x)) 0 ∂μ)
   simp_rw [cfc_eq_cfcL_mkD _ a, cfcL_integral a _ hf₂ ha]
   congr
   ext z
@@ -157,7 +157,7 @@ For a version with stronger assumptions which in practice are often easier to ve
 lemma cfc_setIntegral' {s : Set X} [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     (hf₁ : ∀ᵐ x ∂(μ.restrict s), ContinuousOn (f x) (spectrum 𝕜 a))
     (hf₂ : IntegrableOn
-      (fun x : X => mkD ((spectrum 𝕜 a).restrict (f x)) 0) s μ)
+      (fun x : X => mkD ((spectrum 𝕜 a).domRestrict (f x)) 0) s μ)
     (ha : p a := by cfc_tac) :
     cfc (fun z => ∫ x in s, f x z ∂μ) a = ∫ x in s, cfc (f x) a ∂μ :=
   cfc_integral' _ _ hf₁ hf₂ ha
@@ -208,43 +208,38 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
   [CompleteSpace A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙL_integral [NormedSpace ℝ A] (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀)
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
     ∫ x, cfcₙL (a := a) ha (f x) ∂μ = cfcₙL (a := a) ha (∫ x, f x ∂μ) := by
   rw [ContinuousLinearMap.integral_comp_comm _ hf₁]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙHom_integral [NormedSpace ℝ A] (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀)
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
     ∫ x, cfcₙHom (a := a) ha (f x) ∂μ = cfcₙHom (a := a) ha (∫ x, f x ∂μ) :=
   cfcₙL_integral a f hf₁ ha
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙL_integrable (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀)
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
     Integrable (fun x ↦ cfcₙL (a := a) ha (f x)) μ :=
   ContinuousLinearMap.integrable_comp _ hf₁
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An integrability criterion for the continuous functional calculus.
 For a version with stronger assumptions which in practice are often easier to verify, see
 `integrable_cfcₙ`. -/
 lemma integrable_cfcₙ' (f : X → 𝕜 → 𝕜) (a : A)
     (hf : Integrable
-      (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) μ)
+      (fun x : X => mkD ((quasispectrum 𝕜 a).domRestrict (f x)) 0) μ)
     (ha : p a := by cfc_tac) :
     Integrable (fun x => cfcₙ (f x) a) μ := by
   conv in cfcₙ _ _ => rw [cfcₙ_eq_cfcₙL_mkD _ a]
   exact cfcₙL_integrable _ _ hf ha
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An integrability criterion for the continuous functional calculus.
 For a version with stronger assumptions which in practice are often easier to verify, see
 `integrableOn_cfcₙ`. -/
 lemma integrableOn_cfcₙ' {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
     (hf : IntegrableOn
-      (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) s μ)
+      (fun x : X => mkD ((quasispectrum 𝕜 a).domRestrict (f x)) 0) s μ)
     (ha : p a := by cfc_tac) :
     IntegrableOn (fun x => cfcₙ (f x) a) s μ := by
   exact integrable_cfcₙ' _ _ hf ha
@@ -285,7 +280,6 @@ lemma integrableOn_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set
     exact ae_restrict_of_forall_mem hs fun x hx ↦
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- The continuous functional calculus commutes with integration.
 For a version with stronger assumptions which in practice are often easier to verify, see
@@ -294,28 +288,27 @@ lemma cfcₙ_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     (hf₁ : ∀ᵐ x ∂μ, ContinuousOn (f x) (quasispectrum 𝕜 a))
     (hf₂ : ∀ᵐ x ∂μ, f x 0 = 0)
     (hf₃ : Integrable
-      (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) μ)
+      (fun x : X => mkD ((quasispectrum 𝕜 a).domRestrict (f x)) 0) μ)
     (ha : p a := by cfc_tac) :
     cfcₙ (fun z => ∫ x, f x z ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
   have key₁ (z : quasispectrum 𝕜 a) :
-      ∫ x, f x z ∂μ = (∫ x, mkD ((quasispectrum 𝕜 a).restrict (f x)) 0 ∂μ) z := by
+      ∫ x, f x z ∂μ = (∫ x, mkD ((quasispectrum 𝕜 a).domRestrict (f x)) 0 ∂μ) z := by
     rw [integral_apply hf₃]
     refine integral_congr_ae ?_
     filter_upwards [hf₁, hf₂] with x cont_x zero_x
     rw [mkD_apply_of_continuousOn cont_x zero_x]
   have key₂ (z : quasispectrum 𝕜 a) :
-      ∫ x, f x z ∂μ = mkD ((quasispectrum 𝕜 a).restrict (fun z ↦ ∫ x, f x z ∂μ)) 0 z := by
+      ∫ x, f x z ∂μ = mkD ((quasispectrum 𝕜 a).domRestrict (fun z ↦ ∫ x, f x z ∂μ)) 0 z := by
     rw [mkD_apply_of_continuousOn]
-    · rw [continuousOn_iff_continuous_restrict]
+    · rw [continuousOn_iff_continuous_domRestrict]
       refine continuous_congr key₁ |>.mpr ?_
-      exact map_continuous (∫ x, mkD ((quasispectrum 𝕜 a).restrict (f x)) 0 ∂μ)
+      exact map_continuous (∫ x, mkD ((quasispectrum 𝕜 a).domRestrict (f x)) 0 ∂μ)
     · exact integral_eq_zero_of_ae hf₂
   simp_rw [cfcₙ_eq_cfcₙL_mkD _ a, cfcₙL_integral a _ hf₃ ha]
   congr
   ext z
   rw [← key₁, key₂]
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- The continuous functional calculus commutes with integration.
 For a version with stronger assumptions which in practice are often easier to verify, see
@@ -324,7 +317,7 @@ lemma cfcₙ_setIntegral' {s : Set X} [NormedSpace ℝ A] (f : X → 𝕜 → �
     (hf₁ : ∀ᵐ x ∂(μ.restrict s), ContinuousOn (f x) (quasispectrum 𝕜 a))
     (hf₂ : ∀ᵐ x ∂(μ.restrict s), f x 0 = 0)
     (hf₃ : IntegrableOn
-      (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) s μ)
+      (fun x : X => mkD ((quasispectrum 𝕜 a).domRestrict (f x)) 0) s μ)
     (ha : p a := by cfc_tac) :
     cfcₙ (fun z => ∫ x in s, f x z ∂μ) a = ∫ x in s, cfcₙ (f x) a ∂μ :=
   cfcₙ_integral' _ _ hf₁ hf₂ hf₃ ha

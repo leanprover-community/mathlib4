@@ -82,6 +82,7 @@ theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     Quiver.Path.reverse_comp, Quiver.reverse_reverse, Quiver.Path.reverse_toPath,
     Quiver.Path.comp_assoc] using this
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Relation in
 theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@HomRel.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
@@ -158,6 +159,7 @@ theorem lift_spec (φ : V ⥤q V') : of V ⋙q (lift φ).toPrefunctor = φ := by
   dsimp [lift]
   rw [Quotient.lift_spec, Paths.lift_spec, Quiver.Symmetrify.lift_spec]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   apply Quotient.lift_unique
@@ -170,7 +172,7 @@ theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
     change Φ.map (Groupoid.inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
       Groupoid.inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
-    convert this <;> simp only [Groupoid.inv_eq_inv]
+    convert! this <;> simp only [Groupoid.inv_eq_inv]
 
 end UniversalProperty
 

@@ -9,6 +9,7 @@ public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
+
 Consider two dynamical systems `(X, S)` and `(Y, T)` together with a semiconjugacy `φ`:
 
 
@@ -74,7 +75,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
     ∃ s : Finset X, IsDynCoverOf S F ((map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
   rcases isEmpty_or_nonempty X with _ | _
-  · exact ⟨∅, eq_empty_of_isEmpty F ▸ ⟨isDynCoverOf_empty, Finset.card_empty ▸ zero_le t.card⟩⟩
+  · exact ⟨∅, eq_empty_of_isEmpty F ▸ ⟨isDynCoverOf_empty, Finset.card_empty ▸ zero_le⟩⟩
   -- If `t` is a dynamical cover of `φ '' F`, then we want to choose one preimage by `φ` for each
   -- element of `t`. This is complicated by the fact that `t` may not be a subset of `φ '' F`,
   -- and may not even be in the range of `φ`. Hence, we first modify `t` to make it a subset
@@ -195,7 +196,7 @@ theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpac
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
   rw [coverEntropy_image_of_comap _ h F]
-  exact coverEntropy_antitone S F (uniformContinuous_iff.1 h')
+  exact coverEntropy_antitone S F (uniformContinuous_iff_le_comap.1 h')
 
 /-- The entropy of `φ '' F` is at most the entropy of `F` if `φ` is uniformly continuous. This
   version uses a `liminf`. -/
@@ -203,30 +204,30 @@ theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformS
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by
   rw [coverEntropyInf_image_of_comap _ h F]
-  exact coverEntropyInf_antitone S F (uniformContinuous_iff.1 h')
+  exact coverEntropyInf_antitone S F (uniformContinuous_iff_le_comap.1 h')
 
 lemma coverEntropy_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [UniformSpace Y]
     {S : X → X} {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) {F G : Set X}
     (h' : UniformContinuousOn φ G) (hF : F ⊆ G) (hG : MapsTo S G G) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
   rw [← coverEntropy_restrict_subset hF hG]
-  have hφ : Semiconj (G.restrict φ) (hG.restrict S G G) T := by
+  have hφ : Semiconj (G.domRestrict φ) (hG.restrict S G G) T := by
     intro x
-    rw [G.restrict_apply, G.restrict_apply, hG.val_restrict_apply, h.eq x]
+    rw [G.domRestrict_apply, G.domRestrict_apply, hG.val_restrict_apply, h.eq x]
   apply (coverEntropy_image_le_of_uniformContinuous hφ
     (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
-  rw [← image_image_val_eq_restrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
 
 lemma coverEntropyInf_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [UniformSpace Y]
     {S : X → X} {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) {F G : Set X}
     (h' : UniformContinuousOn φ G) (hF : F ⊆ G) (hG : MapsTo S G G) :
     coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by
   rw [← coverEntropyInf_restrict_subset hF hG]
-  have hφ : Semiconj (G.restrict φ) (hG.restrict S G G) T := by
+  have hφ : Semiconj (G.domRestrict φ) (hG.restrict S G G) T := by
     intro a
-    rw [G.restrict_apply, G.restrict_apply, hG.val_restrict_apply, h.eq a]
+    rw [G.domRestrict_apply, G.domRestrict_apply, hG.val_restrict_apply, h.eq a]
   apply (coverEntropyInf_image_le_of_uniformContinuous hφ
     (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
-  rw [← image_image_val_eq_restrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
 
 end Dynamics

@@ -5,7 +5,7 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
@@ -83,36 +83,19 @@ lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
   simp only [map_iterate, _root_.ball_preimage]
   exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance isRefl_dynEntourage [U.IsRefl] : (dynEntourage T U n).IsRefl := by
-  simp [dynEntourage]; infer_instance
+  simp only [dynEntourage, map_iterate]
+  infer_instance
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance isSymm_dynEntourage [U.IsSymm] : (dynEntourage T U n).IsSymm := by
-  simp [dynEntourage]; infer_instance
-
-set_option linter.deprecated false in
-@[deprecated isRefl_dynEntourage (since := "2025-10-17")]
-lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
-    idRel ⊆ (dynEntourage T U n) := by
-  simp only [dynEntourage, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]
-  exact fun _ _ _ ↦ h rfl
-
-set_option linter.deprecated false in
-@[deprecated isSymm_dynEntourage (since := "2025-10-17")]
-lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)}
-    (h : IsSymmetricRel U) (n : ℕ) :
-    IsSymmetricRel (dynEntourage T U n) := by
-  ext xy
-  simp only [Dynamics.dynEntourage, map_iterate, mem_preimage, mem_iInter]
-  refine forall₂_congr fun k _ ↦ ?_
-  exact map_apply' _ _ _ ▸ IsSymmetricRel.mk_mem_comm h
+  simp only [dynEntourage, map_iterate]
+  infer_instance
 
 lemma dynEntourage_comp_subset (T : X → X) (U V : SetRel X X) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff]
   intro k k_n xy xy_comp
-  simp only [SetRel.comp, mem_iInter, mem_preimage, map_apply, mem_setOf_eq] at xy_comp ⊢
+  simp only [SetRel.comp, mem_iInter, mem_preimage, map_apply, mem_ofPred_eq] at xy_comp ⊢
   rcases xy_comp with ⟨z, hz1, hz2⟩
   exact mem_ball_comp (hz1 k k_n) (hz2 k k_n)
 

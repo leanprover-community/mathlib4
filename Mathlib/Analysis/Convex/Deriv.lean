@@ -238,7 +238,7 @@ lemma convexOn_of_hasDerivWithinAt2_nonneg {D : Set ℝ} (hD : Convex ℝ D) {f 
   · rw [differentiableOn_congr this]
     exact fun x hx ↦ (hf'' _ hx).differentiableWithinAt
   · rintro x hx
-    convert hf''₀ _ hx using 1
+    convert hf''₀ _ hx
     dsimp
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
     exact (hf'' _ hy).congr this <| by rw [this hy]
@@ -254,7 +254,7 @@ lemma concaveOn_of_hasDerivWithinAt2_nonpos {D : Set ℝ} (hD : Convex ℝ D) {f
   · rw [differentiableOn_congr this]
     exact fun x hx ↦ (hf'' _ hx).differentiableWithinAt
   · rintro x hx
-    convert hf''₀ _ hx using 1
+    convert hf''₀ _ hx
     dsimp
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
     exact (hf'' _ hy).congr this <| by rw [this hy]
@@ -365,8 +365,8 @@ variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing �
 /-- If `f : 𝕜 → 𝕜` is convex on `s`, then for any point `x ∈ s` the slope of the secant line of `f`
 through `x` is monotone on `s \ {x}`. -/
 lemma ConvexOn.slope_mono (hfc : ConvexOn 𝕜 s f) (hx : x ∈ s) : MonotoneOn (slope f x) (s \ {x}) :=
-  (slope_fun_def_field f _).symm ▸ fun _ hy _ hz hz' ↦ hfc.secant_mono hx (mem_of_mem_diff hy)
-    (mem_of_mem_diff hz) (notMem_of_mem_diff hy :) (notMem_of_mem_diff hz :) hz'
+  (slope_fun_def_field f _).symm ▸ fun _ hy _ hz hz' ↦ hfc.secant_mono hx (mem_of_mem_sdiff hy)
+    (mem_of_mem_sdiff hz) (notMem_of_mem_sdiff hy :) (notMem_of_mem_sdiff hz :) hz'
 
 lemma ConvexOn.monotoneOn_slope_gt (hfc : ConvexOn 𝕜 s f) (hxs : x ∈ s) :
     MonotoneOn (slope f x) {y ∈ s | x < y} :=
@@ -431,7 +431,7 @@ lemma hasDerivWithinAt_sInf_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs 
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hxs'
   obtain ⟨a, b, hxab, habs⟩ := hxs'
   simp_rw [hasDerivWithinAt_iff_tendsto_slope]
-  simp only [mem_Ioi, lt_self_iff_false, not_false_eq_true, diff_singleton_eq_self]
+  simp only [mem_Ioi, lt_self_iff_false, not_false_eq_true, sdiff_singleton_eq_self]
   have h : Ioo x b ⊆ {y | y ∈ S ∧ x < y} := fun z hz ↦ ⟨habs ⟨hxab.1.trans hz.1, hz.2⟩, hz.1⟩
   have h_Ioo : Tendsto (slope f x) (𝓝[>] x) (𝓝 (sInf (slope f x '' Ioo x b))) :=
     ((monotoneOn_slope_gt hfc (habs hxab)).mono h).tendsto_nhdsWithin_Ioo_right
@@ -449,7 +449,7 @@ lemma hasDerivWithinAt_sSup_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs 
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hxs'
   obtain ⟨a, b, hxab, habs⟩ := hxs'
   simp_rw [hasDerivWithinAt_iff_tendsto_slope]
-  simp only [mem_Iio, lt_self_iff_false, not_false_eq_true, diff_singleton_eq_self]
+  simp only [mem_Iio, lt_self_iff_false, not_false_eq_true, sdiff_singleton_eq_self]
   have h : Ioo a x ⊆ {y | y ∈ S ∧ y < x} := fun z hz ↦ ⟨habs ⟨hz.1, hz.2.trans hxab.2⟩, hz.2⟩
   have h_Ioo : Tendsto (slope f x) (𝓝[<] x) (𝓝 (sSup (slope f x '' Ioo a x))) :=
     ((monotoneOn_slope_lt hfc (habs hxab)).mono h).tendsto_nhdsWithin_Ioo_left
@@ -492,7 +492,7 @@ lemma monotoneOn_rightDeriv (hfc : ConvexOn ℝ S f) :
   simp_rw [hfc.rightDeriv_eq_sInf_slope_of_mem_interior hxs,
     hfc.rightDeriv_eq_sInf_slope_of_mem_interior hys]
   refine csInf_le_of_le (b := slope f x y) (bddBelow_slope_lt_of_mem_interior hfc hxs)
-    ⟨y, by simp only [mem_setOf_eq, hxy, and_true]; exact interior_subset hys⟩
+    ⟨y, by simp only [mem_ofPred_eq, hxy, and_true]; exact interior_subset hys⟩
     (le_csInf ?_ ?_)
   · have hys' := hys
     rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hys'
@@ -512,7 +512,7 @@ lemma monotoneOn_leftDeriv (hfc : ConvexOn ℝ S f) :
   simp_rw [hfc.leftDeriv_eq_sSup_slope_of_mem_interior hxs,
     hfc.leftDeriv_eq_sSup_slope_of_mem_interior hys]
   refine le_csSup_of_le (b := slope f x y) (bddAbove_slope_gt_of_mem_interior hfc hys)
-    ⟨x, by simp only [slope_comm, mem_setOf_eq, hxy, and_true]; exact interior_subset hxs⟩
+    ⟨x, by simp only [slope_comm, mem_ofPred_eq, hxy, and_true]; exact interior_subset hxs⟩
     (csSup_le ?_ ?_)
   · have hxs' := hxs
     rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hxs'

@@ -45,16 +45,18 @@ namespace FiniteField
 
 /-- Given a finite field `k` of characteristic `p`, we have a non-canonically chosen extension
 of any given degree `n > 0`. -/
-def Extension [CharP k p] : Type :=
+def Extension : Type :=
   letI := ZMod.algebra k p
   GaloisField p (Module.finrank (ZMod p) k * n)
   deriving Field, Finite, Algebra (ZMod p), FiniteDimensional (ZMod p)
 
 theorem finrank_zmod_extension [Algebra (ZMod p) k] :
     Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
-  letI := ZMod.algebra k p
-  convert GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
-    mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n using 4
+  let := ZMod.algebra k p
+  unfold Extension
+  convert!
+    GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
+      mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n
   subsingleton
 
 theorem nonempty_algHom_extension [Algebra (ZMod p) k] :
@@ -73,7 +75,7 @@ instance [Algebra (ZMod p) k] : IsScalarTower (ZMod p) k (Extension k p n) :=
   .of_algebraMap_eq' <| Subsingleton.elim _ _
 
 theorem natCard_extension : Nat.card (Extension k p n) = Nat.card k ^ n := by
-  letI := ZMod.algebra k p
+  let := ZMod.algebra k p
   rw [← pow_finrank_eq_natCard p, ← pow_finrank_eq_natCard p, finrank_zmod_extension, pow_mul]
 
 theorem finrank_extension : Module.finrank k (Extension k p n) = n := by
@@ -82,7 +84,7 @@ theorem finrank_extension : Module.finrank k (Extension k p n) = n := by
 
 instance : IsSplittingField k (Extension k p n) (X ^ Nat.card k ^ n - X) := by
   have := Fintype.ofFinite (Extension k p n)
-  convert FiniteField.isSplittingField_sub (Extension k p n) k
+  convert! FiniteField.isSplittingField_sub (Extension k p n) k
   · rw [Fintype.card_eq_nat_card, natCard_extension]
 
 example : IsGalois k (Extension k p n) :=

@@ -9,12 +9,12 @@ public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Real.Basic
 
 /-!
-# The real numbers are a `*`-ring, with the trivial `*`-structure
+# The real numbers are a \*-ring, with the trivial \*-structure
 -/
 
-@[expose] public section
+public section
 
-/-- The real numbers are a `*`-ring, with the trivial `*`-structure. -/
+/-- The real numbers are a \*-ring, with the trivial \*-structure. -/
 instance : StarRing ℝ :=
   starRingOfComm
 

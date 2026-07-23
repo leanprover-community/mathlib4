@@ -19,7 +19,7 @@ of presheaves which become isomorphisms after applying the sheafification functo
 
 universe w
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -43,9 +43,6 @@ lemma W_eq_isLocal_range_sheafToPresheaf_obj :
     exact ⟨⟨P, hP⟩, rfl⟩
   · rintro ⟨F, rfl⟩
     exact F.property
-
-@[deprecated (since := "2025-11-20")] alias W_eq_W_range_sheafToPresheaf_obj :=
-  W_eq_isLocal_range_sheafToPresheaf_obj
 
 lemma W_sheafToPresheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (φ : F₁ ⟶ F₂) :
     J.W ((sheafToPresheaf J A).map φ) ↔ IsIso φ := by

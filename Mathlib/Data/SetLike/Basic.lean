@@ -107,13 +107,15 @@ class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
-  protected coe_injective' : Function.Injective coe
+  coe_injective : Function.Injective coe
 
 attribute [coe] SetLike.coe
 
 namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
+
+@[deprecated (since := "2026-06-04")] alias coe_injective' := coe_injective
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
@@ -154,9 +156,6 @@ protected theorem «exists» {q : p → Prop} : (∃ x, q x) ↔ ∃ (x : B) (h 
 protected theorem «forall» {q : p → Prop} : (∀ x, q x) ↔ ∀ (x : B) (h : x ∈ p), q ⟨x, ‹_›⟩ :=
   SetCoe.forall
 
-theorem coe_injective : Function.Injective (SetLike.coe : A → Set B) := fun _ _ h =>
-  SetLike.coe_injective' h
-
 @[simp, norm_cast]
 theorem coe_set_eq : (p : Set B) = q ↔ p = q :=
   coe_injective.eq_iff
@@ -194,7 +193,9 @@ lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p 
 @[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 
-@[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
+@[simp] lemma setOfPred_mem_eq (a : A) : {b | b ∈ a} = a := rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem_eq := setOfPred_mem_eq
 
 @[nontriviality]
 lemma mem_of_subsingleton [Subsingleton B] (S : A) [h : Nonempty S] {b : B} : b ∈ S := by
@@ -223,9 +224,16 @@ section default
 
 variable (A B : Type*) [SetLike A B]
 
-/-- The order induced from a `SetLike` instance by inclusion. -/
+/-- The order induced from a `SetLike` instance by inclusion.
+
+An order defined as `.ofSetLike` will automatically make available an instance
+of `IsConcreteLE`.
+-/
 @[reducible] def LE.ofSetLike : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
+
+instance : letI := LE.ofSetLike A B; IsConcreteLE A B :=
+  letI := LE.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
 
@@ -234,10 +242,8 @@ of `IsConcreteLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike : PartialOrder A where
   __ := LE.ofSetLike A B
+  lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
-
-instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=
-  letI := PartialOrder.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
 
 end default
 
@@ -261,7 +267,7 @@ alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 @[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
-  simpa [← coe_subset_coe] using Set.not_subset
+  simpa [← coe_subset_coe] using! Set.not_subset
 
 end LE
 
@@ -269,7 +275,7 @@ section Preorder
 
 variable [Preorder A] [IsConcreteLE A B] {p q : A}
 
-@[mono]
+@[gcongr, mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 
 end Preorder
@@ -281,11 +287,11 @@ variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 @[simp, norm_cast, gcongr] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
 
-@[mono]
+@[gcongr, mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
 theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
-  simpa [← coe_ssubset_coe] using Set.exists_of_ssubset
+  simpa [← coe_ssubset_coe] using! Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
@@ -293,12 +299,12 @@ theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
 /-- membership is inherited from `Set X` -/
 abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
   coe := (↑)
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 /-- membership is inherited from `S` -/
 abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
   coe := (↑)
-  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
+  coe_injective := SetLike.coe_injective.comp Subtype.val_injective
 
 section
 

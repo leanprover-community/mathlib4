@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 module
 
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Order.Antichain
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
@@ -149,7 +148,7 @@ theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.s
 
 @[simp]
 theorem sum_card_slice : ∑ r ∈ Iic (Fintype.card α), #(𝒜 # r) = #𝒜 := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)
 

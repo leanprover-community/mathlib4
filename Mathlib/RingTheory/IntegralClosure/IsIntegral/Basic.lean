@@ -82,7 +82,7 @@ theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x
 
 end
 
-open Classical in
+open scoped Classical in
 theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
     {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
     span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
@@ -162,7 +162,7 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
   let ⟨p, hp, hpx⟩ := hx
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 
-/- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
+/-- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
 a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
 over `T`. -/
 theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing T]
@@ -170,15 +170,15 @@ theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing
     (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
     IsIntegral R a ↔ IsIntegral T a := by
   constructor <;> intro ha
-  · letI : Algebra R T := φ.toRingHom.toAlgebra
-    letI : IsScalarTower R T S :=
+  · let : Algebra R T := φ.toRingHom.toAlgebra
+    let : IsScalarTower R T S :=
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, ← h, mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
   · have h' : (algebraMap T S) = (algebraMap R S).comp φ.symm.toRingHom := by
-      simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm,
-        RingHomCompTriple.comp_eq]
-    letI : Algebra T R := φ.symm.toRingHom.toAlgebra
-    letI : IsScalarTower T R S :=
+      have : RingHomInvPair (φ : R →+* T) φ.symm := RingHomInvPair.of_ringEquiv _
+      simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
+    let : Algebra T R := φ.symm.toRingHom.toAlgebra
+    let : IsScalarTower T R S :=
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, h', mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
 

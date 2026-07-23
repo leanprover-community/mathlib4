@@ -70,6 +70,7 @@ instance : LieModule R L (⨁ i, M i) where
 
 variable (R ι L M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of each component into a direct sum as a morphism of Lie modules. -/
 def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
   { lof R ι M j with
@@ -101,6 +102,7 @@ section Algebras
 variable (L : ι → Type w)
 variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
+set_option backward.isDefEq.respectTransparency false in
 instance lieRing : LieRing (⨁ i, L i) :=
   { (inferInstance : AddCommGroup _) with
     bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
@@ -217,8 +219,7 @@ section Ideals
 variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 
 /-- The fact that this instance is necessary seems to be a bug in typeclass inference. See
-[this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
-Typeclass.20resolution.20under.20binders/near/245151099). -/
+[this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
   DirectSum.lieRing fun i => ↥(I i)
 
