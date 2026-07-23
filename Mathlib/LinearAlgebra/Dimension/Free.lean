@@ -219,14 +219,11 @@ theorem FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq [Module.Finite R M
     [Module.Finite R M'] : Nonempty (M ≃ₗ[R] M') ↔ finrank R M = finrank R M' :=
   ⟨fun ⟨h⟩ => h.finrank_eq, fun h => nonempty_linearEquiv_of_finrank_eq h⟩
 
-variable (M M')
-
+variable (M M') in
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M']
     (cond : finrank R M = finrank R M') : M ≃ₗ[R] M' :=
   Classical.choice <| FiniteDimensional.nonempty_linearEquiv_of_finrank_eq cond
-
-variable {M M'}
 
 namespace Module
 
@@ -286,6 +283,23 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
     · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
+theorem nonempty_linearEquiv_iff_rank_eq_one :
+    Nonempty (R ≃ₗ[R] M) ↔ Module.rank R M = 1 := by
+  simp [nonempty_linearEquiv_iff_lift_rank_eq, eq_comm]
+
+theorem nonempty_linearEquiv_iff_finrank_eq_one :
+    Nonempty (R ≃ₗ[R] M) ↔ finrank R M = 1 := by
+  simp [nonempty_linearEquiv_iff_rank_eq_one, finrank]
+
+alias ⟨_, nonempty_linearEquiv_of_finrank_eq_one⟩ := nonempty_linearEquiv_iff_finrank_eq_one
+
+theorem nonempty_algEquiv_iff_finrank_eq_one
+    {R S : Type*} [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
+    [Free R S] : Nonempty (R ≃ₐ[R] S) ↔ finrank R S = 1 := by
+  rw [← nonempty_linearEquiv_iff_finrank_eq_one]
+  exact ⟨fun ⟨e⟩ ↦ ⟨e⟩, fun ⟨e⟩ ↦
+    ⟨.ofBijective (Algebra.ofId R S) (bijective_algebraMap_of_linearEquiv e)⟩⟩
+
 variable (R M)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R M)`. -/
@@ -319,12 +333,6 @@ theorem Basis.nonempty_unique_index_of_finrank_eq_one
   have : Finite ι := Module.Finite.finite_basis b
   have : Fintype ι := Fintype.ofFinite ι
   rwa [Module.finrank_eq_card_basis b, Fintype.card_eq_one_iff_nonempty_unique] at d1
-
-theorem nonempty_linearEquiv_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
-    Nonempty (R ≃ₗ[R] M) := by
-  let ⟨ι, b⟩ := (Module.Free.exists_basis R M).some
-  have : Unique ι := (b.nonempty_unique_index_of_finrank_eq_one d1).some
-  exact ⟨((b.equivFun).trans (LinearEquiv.funUnique ι R R)).symm⟩
 
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
