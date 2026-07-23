@@ -295,6 +295,7 @@ public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.DirectSum.Finsupp
 public import Mathlib.Algebra.DirectSum.Idempotents
 public import Mathlib.Algebra.DirectSum.Internal
+public import Mathlib.Algebra.DirectSum.IsPureHomogeneous
 public import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.DirectSum.Ring
@@ -6634,6 +6635,7 @@ public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Maps
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Quotient
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Subsemiring
 public import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
