@@ -39,6 +39,8 @@ public import ImportGraph.Tools
 public import Mathlib.Tactic.Linter.Lint
 -- This import makes the `#min_imports in` command available globally.
 public import Mathlib.Tactic.MinImports
+-- This import makes the binder plicity code action available globally
+public import Mathlib.Util.CodeActions
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
