@@ -968,7 +968,7 @@ lemma Function.Surjective.compactSpace {f : X → Y} (hf : Continuous f) [Compac
     exact isCompact_range hf
 
 theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
-  @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
+  @range_diagMap X ▸ isCompact_range (continuous_id.prodMk continuous_id)
 
 theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
