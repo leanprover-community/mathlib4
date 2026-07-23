@@ -871,6 +871,13 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
 
+variable {G} in
+@[to_additive]
+theorem index_centralizer_eq_ncard (g : G) :
+    (Subgroup.centralizer {g}).index = (conjugatesOf g).ncard := by
+  rw [← stabilizer_comap_conj_eq_centralizer_singleton, Subgroup.index_comap, Subgroup.relIndex,
+    stabilizer_subgroupOf, index_stabilizer, orbit_range_conj_eq_conjugatesOf]
+
 end MulAction
 
 namespace MonoidHom
