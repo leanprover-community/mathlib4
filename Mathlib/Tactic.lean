@@ -68,6 +68,9 @@ public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import Mathlib.Tactic.ClickSuggestions.Util
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.ComputablePolynomial.Basic
+public import Mathlib.Tactic.ComputablePolynomial.OfList
+public import Mathlib.Tactic.ComputablePolynomial.Ring
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
