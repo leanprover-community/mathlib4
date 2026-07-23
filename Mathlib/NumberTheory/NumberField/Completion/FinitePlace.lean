@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+public import Mathlib.NumberTheory.RamificationInertia.Valuation
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.Valuation.Archimedean
@@ -88,8 +89,8 @@ end DVR
 
 namespace NumberField
 
-variable {K : Type*} [Field K] {R : Type*} [CommRing R] [Algebra R K] [IsDedekindDomain R]
-  [IsFractionRing R K] (v : HeightOneSpectrum R)
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] {R : Type*} [CommRing R] [Algebra R K]
+  [IsDedekindDomain R] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- The embedding of a field inside its `adicCompletion` with respect to `v`. -/
 noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
@@ -343,7 +344,7 @@ lemma isFinitePlace_iff [NumberField K] (v : AbsoluteValue K ℝ) :
 
 namespace FinitePlace
 
-variable [NumberField K]
+variable [NumberField K] [NumberField L]
 
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
@@ -469,6 +470,24 @@ alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
 @[deprecated (since := "2026-03-11")]
 alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
 
+-- todo: restate in terms of finite places once we get ramification theory for finite places
+lemma equivHeightOneSpectrum_symm_apply_algebraMap
+    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.1.LiesOver v.1] (x : K) :
+    FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
+      FinitePlace.equivHeightOneSpectrum.symm v x ^
+        (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+  by_cases hx : x = 0
+  · rw [hx, map_zero, map_zero, map_zero, zero_pow]
+    exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K)) (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
+  simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply,
+    FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
+  rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
+    Ideal.ramificationIdx'_eq_ramificationIdx v.1 w.1 v.ne_bot,
+    WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
+    ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
+  simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]
+  grind
+
 lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ ⊥) :
     ∏ᶠ v : FinitePlace K, v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I = I := by
   conv_rhs => rw [← finprod_heightOneSpectrum_pow_multiplicity hI]
@@ -486,7 +505,7 @@ section LiesOver
 
 namespace HeightOneSpectrum
 
-variable {L : Type*} [NumberField K] [Field L] [NumberField L] [Algebra K L]
+variable [NumberField K] [NumberField L]
 variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
