@@ -355,29 +355,43 @@ run_cmd liftTermElabM do
     #[`specify.specify4_snd_snd, `specify.specify4_snd]
   guard <| simpsAttr.getParam? env `specify.specify5 ==
     #[`specify.specify5_fst, `specify.specify5_snd]
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("fst_fst", .missing)]
---     "Invalid simp lemma specify.specify1_fst_fst.
--- Projection fst doesn't exist, because target is not a structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("foo_fst", .missing)]
---     "Invalid simp lemma specify.specify1_foo_fst. Structure prod does not have projection foo.
--- The known projections are:
---   [fst, snd]
--- You can also see this information by running
---   `initialize_simps_projections? prod`.
--- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("snd_bar", .missing)]
---     "Invalid simp lemma specify.specify1_snd_bar. Structure prod does not have projection bar.
--- The known projections are:
---   [fst, snd]
--- You can also see this information by running
---   `initialize_simps_projections? prod`.
--- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify5 { rhsMd := .default, simpRhs := true }
-    [("snd_snd", .missing)]
---     "Invalid simp lemma specify.specify5_snd_snd.
--- The given definition is not a constructor application:
---   Classical.choice specify.specify5._proof_1"
 
+/--
+error: Invalid simp lemma failure1_fst_fst.
+Projection  doesn't exist, because target Nat is not a structure.
+-/
+#guard_msgs in
+@[simps fst_fst] def failure1 : ℕ × ℕ × ℕ := (1, 2, 3)
+
+/--
+error: Invalid simp lemma failure2_foo_fst. Structure Prod does not have projection foo.
+The known projections are:
+  [fst, snd]
+You can also see this information by running
+  `initialize_simps_projections? Prod`.
+Note: these projection names might be customly defined for `simps`, and could differ from the projection names of the structure.
+-/
+#guard_msgs in
+@[simps foo_fst] def failure2 : ℕ × ℕ × ℕ := (1, 2, 3)
+
+/--
+error: Invalid simp lemma failure3_snd_bar. Structure Prod does not have projection bar.
+The known projections are:
+  [fst, snd]
+You can also see this information by running
+  `initialize_simps_projections? Prod`.
+Note: these projection names might be customly defined for `simps`, and could differ from the projection names of the structure.
+-/
+#guard_msgs in
+@[simps snd_bar] def failure3 : ℕ × ℕ × ℕ := (1, 2, 3)
+
+/--
+error: Invalid simp lemma specify5_snd_snd.
+The given definition is not a constructor application:
+  Classical.choice specify.specify5._proof_1
+-/
+#guard_msgs in
+@[simps! snd_snd] noncomputable def specify5 : ℕ × ℕ × ℕ := (1, Classical.choice ⟨(2, 3)⟩)
 
 /- We also eta-reduce if we explicitly specify the projection. -/
 attribute [simps extra] test
