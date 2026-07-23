@@ -3633,6 +3633,7 @@ public import Mathlib.Combinatorics.SetFamily.Intersecting
 public import Mathlib.Combinatorics.SetFamily.Kleitman
 public import Mathlib.Combinatorics.SetFamily.KruskalKatona
 public import Mathlib.Combinatorics.SetFamily.LYM
+public import Mathlib.Combinatorics.SetFamily.Lindstrom
 public import Mathlib.Combinatorics.SetFamily.Shadow
 public import Mathlib.Combinatorics.SetFamily.Shatter
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
