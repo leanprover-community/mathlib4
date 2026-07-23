@@ -5845,6 +5845,7 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 public import Mathlib.NumberTheory.ModularForms.LevelOne.GradedRing
+public import Mathlib.NumberTheory.ModularForms.LevelOne.HeckeOperators
 public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.Petersson
 public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
