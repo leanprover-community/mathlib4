@@ -84,6 +84,13 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
   ∏ i ∈ f.support, g i (f i)
 
 @[to_additive]
+theorem prod_congr
+    [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
+    {f : Π₀ i, β i} (g₁ g₂ : ∀ i, β i → γ) (h : ∀ x ∈ f.support, g₁ x (f x) = g₂ x (f x)) :
+    f.prod g₁ = f.prod g₂ :=
+  Finset.prod_congr rfl h
+
+@[to_additive]
 theorem prod_of_support_subset [∀ i, Zero (β i)]
     [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {f : Π₀ i, β i} {g : (i : ι) → β i → γ} {s : Finset ι}
