@@ -93,10 +93,8 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
     replace hu : ofLp u.val 0 ≤ y - x := by
       apply le_of_lt
       simpa [modelWithCornersEuclideanHalfSpace_symm_apply, max_eq_left u.property] using! hu
-    have hu' : ((𝓡∂ 1).symm u.val).val.ofLp 0 ≤ y - x := by
-      simp [modelWithCornersEuclideanHalfSpace_symm_apply, h.out.le, hu]
-    simp [hz, φ, φ₀, IccLeftChart_symm_apply_of_le hu']
-    simpa [modelWithCornersEuclideanHalfSpace_symm_apply] using u.property
+    simp [hz, φ, φ₀, modelWithCornersEuclideanHalfSpace_symm_apply, u.property,
+      IccLeftChart_symm_apply_of_le hu]
   · -- At the right boundary point, the correct codomain chart is mapping `a` to `y - a`.
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
       (chartAt (EuclideanHalfSpace 1) z)
