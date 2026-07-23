@@ -969,3 +969,25 @@ theorem Continuous.image_Ioo_of_strictMono (hf_c : Continuous f) (hf : StrictMon
   rcases le_or_gt a b with hab | hab
   · exact hf_c.continuousOn.image_Ioo_of_strictMonoOn hab (hf.strictMonoOn _)
   · simp [lt_asymm hab, lt_asymm (hf hab)]
+
+section Group
+
+variable {α β : Type*}
+variable [TopologicalSpace α]
+variable [LinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] [Group β] [MulLeftMono β]
+
+/-- On a preconnected set, if a continuous map has multiplicative absolute value bounded
+below by `L > 1`, then it is either `≥ L` everywhere or its inverse is `≥ L` everywhere. -/
+@[to_additive
+/-- On a preconnected set, if a continuous map has absolute value bounded below by `L > 0`,
+then it is either `≥ L` everywhere or its negative is `≥ L` everywhere. -/]
+theorem IsPreconnected.forall_le_or_forall_le_of_forall_le_mabs {s : Set α}
+    (hs : IsPreconnected s) {L : β} (hL : 1 < L) {f : α → β}
+    (hfcont : ContinuousOn f s) (hf : ∀ x ∈ s, L ≤ |f x|ₘ) :
+    (∀ x ∈ s, L ≤ f x) ∨ (∀ x ∈ s, L ≤ (f x)⁻¹) := by
+  obtain (h | h) := hs.mapsTo_Ioi_or_Iio (b := 1) hfcont (fun x hx h ↦
+    not_le_of_gt hL <| by simpa [mabs_one, h] using hf x hx)
+  · grind [MapsTo, mabs_of_one_lt]
+  · grind [MapsTo, mabs_of_lt_one]
+
+end Group
