@@ -1337,6 +1337,7 @@ public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Algebra.Symmetrized
 public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.Algebra.Torsor.Defs
+public import Mathlib.Algebra.TotalMonoidAlgebra.Defs
 public import Mathlib.Algebra.TrivSqZeroExt
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Algebra.TrivSqZeroExt.Ideal
