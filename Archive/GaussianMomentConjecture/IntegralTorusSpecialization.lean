@@ -38,7 +38,7 @@ nonzero.  The universal relation clause is intentionally stronger than a
 preselected family: it permits choosing a relation after the residue
 characteristic is known. -/
 theorem exists_finite_field_torus_specialization
-    {ι : Type u} [Fintype ι]
+    {ι : Type u} [Finite ι]
     (z : ι → ℂ) (hz : ∀ i, z i ≠ 0)
     (seed : MvPolynomial ι ℤ)
     (hseed : MvPolynomial.aeval z seed ≠ 0) :
@@ -54,6 +54,7 @@ theorem exists_finite_field_torus_specialization
         MvPolynomial.aeval z f = 0 → MvPolynomial.aeval w f = 0) ∧
       MvPolynomial.aeval w seed ≠ 0 := by
   classical
+  have : Fintype ι := Fintype.ofFinite ι
   let seedValue : ℂ := MvPolynomial.aeval z seed
   let gens : Finset ℂ :=
     (Finset.univ.image z ∪ Finset.univ.image fun i => (z i)⁻¹) ∪

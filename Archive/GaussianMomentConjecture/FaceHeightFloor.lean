@@ -42,7 +42,7 @@ theorem massQ_eq_natCast_channelMass
   simp [GMC2.FrobeniusFace.massQ, channelMass]
 
 /-- Weighted tilted height is radial height minus slope times total charge. -/
-theorem weightedTiltedHeightQ_eq_radial_sub_charge [DecidableEq ι]
+theorem weightedTiltedHeightQ_eq_radial_sub_charge
     (a b : ι → ℤ) (lambda : ℚ) (F : Finset ι) (r : ι → ℕ) :
     weightedTiltedHeightQ a b lambda F r =
       GMC2.FrobeniusFace.radialHeightQ a F r -
@@ -64,7 +64,7 @@ theorem weightedTiltedHeightQ_eq_radial_sub_charge [DecidableEq ι]
 
 /-- A global tilted-height lower bound gives the common rational radial floor
 for every balanced channel. -/
-theorem balanced_radialHeight_floor [DecidableEq ι]
+theorem balanced_radialHeight_floor
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι) (r : ι → ℕ)
     (hlower : ∀ i ∈ F,
       delta ≤ GMC2.FrobeniusFace.tiltedHeight a b lambda i)
@@ -89,7 +89,7 @@ theorem balanced_radialHeight_floor [DecidableEq ι]
       ring
 
 /-- Consumer form of the floor for a channel of specified natural mass `m`. -/
-theorem balanced_radialHeight_floor_of_mass [DecidableEq ι]
+theorem balanced_radialHeight_floor_of_mass
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι) (r : ι → ℕ) (m : ℕ)
     (hlower : ∀ i ∈ F,
       delta ≤ GMC2.FrobeniusFace.tiltedHeight a b lambda i)
@@ -103,7 +103,7 @@ theorem balanced_radialHeight_floor_of_mass [DecidableEq ι]
 
 /-- If every index used with nonzero multiplicity lies on the equality face,
 a balanced channel attains the radial floor exactly. -/
-theorem balanced_radialHeight_eq_of_supported_on_face [DecidableEq ι]
+theorem balanced_radialHeight_eq_of_supported_on_face
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι) (r : ι → ℕ)
     (hsupport : ∀ i ∈ F, r i ≠ 0 →
       GMC2.FrobeniusFace.tiltedHeight a b lambda i = delta)
@@ -135,7 +135,7 @@ theorem balanced_radialHeight_eq_of_supported_on_face [DecidableEq ι]
     _ = delta * GMC2.FrobeniusFace.massQ F r := hweighted
 
 /-- A balanced equality-face channel of natural mass `m` attains `m * delta`. -/
-theorem balanced_radialHeight_eq_floor_of_mass [DecidableEq ι]
+theorem balanced_radialHeight_eq_floor_of_mass
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι) (r : ι → ℕ) (m : ℕ)
     (hsupport : ∀ i ∈ F, r i ≠ 0 →
       GMC2.FrobeniusFace.tiltedHeight a b lambda i = delta)
@@ -151,7 +151,7 @@ theorem balanced_radialHeight_eq_floor_of_mass [DecidableEq ι]
 `A0` with any balanced mass-`p*m0` channel of natural height `A` gives the
 height floor `p*A0 ≤ A`.  The explicit cast equalities are the interface for
 identifying these radial sums with `GMC2.NormalizedMoment.channelHeight`. -/
-theorem balanced_natural_height_floor_of_reference [DecidableEq ι]
+theorem balanced_natural_height_floor_of_reference
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι)
     (r0 r : ι → ℕ) (m0 p A0 A : ℕ)
     (hlower : ∀ i ∈ F,
@@ -187,7 +187,7 @@ theorem balanced_natural_height_floor_of_reference [DecidableEq ι]
 mass as the reference gives `A0+1 ≤ A`.  This is exactly the gap hypothesis
 consumed after dilation by
 `GMC2.FrobeniusResidue.prime_dvd_normalized_factorial_of_gap`. -/
-theorem off_face_base_channel_natural_height_gap [DecidableEq ι]
+theorem off_face_base_channel_natural_height_gap
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι)
     (r0 r : ι → ℕ) (m0 A0 A : ℕ)
     (hlower : ∀ i ∈ F,

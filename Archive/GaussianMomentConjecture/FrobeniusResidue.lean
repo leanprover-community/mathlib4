@@ -53,11 +53,13 @@ then the corresponding multinomial coefficient is divisible by `p`.
 This is the Kummer-isolation conclusion needed by `the lowest-balanced-face theorem`, obtained from
 `MvPolynomial.expand` and Frobenius rather than an explicit carry count. -/
 theorem prime_dvd_multinomial_of_sum_eq_mul_of_not_dvd
-    {σ : Type*} [Fintype σ] [DecidableEq σ]
+    {σ : Type*} [Finite σ]
     (p m : ℕ) [hp : Fact p.Prime] (r : σ →₀ ℕ)
     (hsum : r.sum (fun _ e => e) = p * m)
     {i : σ} (hi : ¬p ∣ r i) :
     p ∣ r.multinomial := by
+  classical
+  have : Fintype σ := Fintype.ofFinite σ
   rw [← ZMod.natCast_eq_zero_iff]
   let P : MvPolynomial σ (ZMod p) := ∑ i, MvPolynomial.X i
   let phi : MvPolynomial σ (ZMod p) := P ^ m
@@ -75,9 +77,10 @@ theorem prime_dvd_multinomial_of_sum_eq_mul_of_not_dvd
 multinomial coefficient modulo `p`.  This is multinomial Lucas for the exact
 dilated channels that survive the Kummer/Frobenius filter. -/
 theorem multinomial_dilate_modEq
-    {ι : Type*} [DecidableEq ι] (p : ℕ) [Fact p.Prime]
+    {ι : Type*} (p : ℕ) [Fact p.Prime]
     (S : Finset ι) (r : ι → ℕ) :
     Nat.multinomial S (fun i => p * r i) ≡ Nat.multinomial S r [MOD p] := by
+  classical
   induction S using Finset.induction_on with
   | empty =>
       simp only [Nat.multinomial_empty]
@@ -125,7 +128,7 @@ namespace. -/
 namespace GMC2
 
 theorem multinomial_dilate_modEq
-    {ι : Type*} [DecidableEq ι] (p : ℕ) [Fact p.Prime]
+    {ι : Type*} (p : ℕ) [Fact p.Prime]
     (S : Finset ι) (r : ι → ℕ) :
     Nat.multinomial S (fun i => p * r i) ≡ Nat.multinomial S r [MOD p] :=
   GMC2.FrobeniusResidue.multinomial_dilate_modEq p S r
@@ -146,7 +149,7 @@ theorem dvd_choose_of_dvd {p : ℕ} (hp : p.Prime) {n k : ℕ}
 /-- If the total mass is divisible by `p` but one part is not, the
 multinomial coefficient is divisible by `p`. -/
 theorem multinomial_dvd_of_exists_not_dvd
-    {α : Type*} [DecidableEq α] {p : ℕ} (hp : p.Prime)
+    {α : Type*} {p : ℕ} (hp : p.Prime)
     (S : Finset α) (r : α → ℕ) (hsum : p ∣ ∑ i ∈ S, r i)
     (hex : ∃ i ∈ S, ¬ p ∣ r i) : p ∣ Nat.multinomial S r := by
   classical
@@ -196,10 +199,11 @@ theorem factorial_dilate_dvd {p : ℕ} (hp : 1 ≤ p) {A0 A : ℕ}
 the `p`-th power of its undilated constant-term sum. -/
 theorem face_sum_frobenius
     {F : Type*} [CommRing F] (p : ℕ) [Fact p.Prime] [CharP F p]
-    {α : Type*} [DecidableEq α] (S : Finset α)
+    {α : Type*} (S : Finset α)
     {ι : Type*} (T : Finset ι) (s : ι → α → ℕ) (h : ι → F) :
     ∑ t ∈ T, (Nat.multinomial S (fun i => p * s t i) : F) * (h t) ^ p =
       (∑ t ∈ T, (Nat.multinomial S (s t) : F) * h t) ^ p := by
+  classical
   haveI : ExpChar F p := ExpChar.prime Fact.out
   rw [GMC2.FrobeniusResidue.weighted_sum_pow_char]
   apply Finset.sum_congr rfl
@@ -212,10 +216,11 @@ theorem face_sum_frobenius
 prime characteristic. -/
 theorem face_sum_ne_zero
     {F : Type*} [Field F] (p : ℕ) [Fact p.Prime] [CharP F p]
-    {α : Type*} [DecidableEq α] (S : Finset α)
+    {α : Type*} (S : Finset α)
     {ι : Type*} (T : Finset ι) (s : ι → α → ℕ) (h : ι → F)
     (hQ : (∑ t ∈ T, (Nat.multinomial S (s t) : F) * h t) ≠ 0) :
     ∑ t ∈ T, (Nat.multinomial S (fun i => p * s t i) : F) * (h t) ^ p ≠ 0 := by
+  classical
   rw [face_sum_frobenius]
   exact pow_ne_zero p hQ
 

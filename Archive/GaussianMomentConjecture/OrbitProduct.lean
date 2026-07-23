@@ -33,6 +33,7 @@ namespace GMC2.OrbitProduct
 
 variable {G Ω A : Type*} [Group G] [Fintype G] [MulAction G Ω] [Fintype Ω] [DecidableEq Ω]
 
+omit [Fintype Ω] in
 /-- For a transitive action the fibers of `g ↦ g • x` all have the cardinality of the stabilizer. -/
 theorem card_fiber_smul_eq_card_stabilizer [IsPretransitive G Ω] (x y : Ω) :
     Fintype.card {g : G // g • x = y} = Fintype.card (stabilizer G x) := by
@@ -62,6 +63,7 @@ theorem prod_smul_eq_prod_pow_card_stabilizer [IsPretransitive G Ω] [CommMonoid
     rw [Finset.prod_const, Finset.card_univ, card_fiber_smul_eq_card_stabilizer]
   rw [Finset.prod_congr rfl (fun y _ => key y), Finset.prod_pow]
 
+omit [Fintype Ω] in
 /-- All stabilizers of a transitive action have equal order (they are conjugate; here via the
 explicit conjugation bijection `s ↦ g₀⁻¹ s g₀` where `g₀ • x = y`). -/
 theorem card_stabilizer_eq_card_stabilizer [IsPretransitive G Ω] (x y : Ω) :
@@ -113,6 +115,7 @@ theorem prod_pow_card_group_eq [IsPretransitive G Ω] [CommMonoid A] [MulDistrib
     _ = (∏ α : Ω, f α) ^ (S.card * Fintype.card (stabilizer G x)) := by
           rw [Finset.prod_const, ← pow_mul, Nat.mul_comm]
 
+omit [DecidableEq Ω] in
 /-- **The valuation contradiction engine of the orbit-product argument.** For any additive valuation
 `v` (a map turning products into sums), the orbit-product equation forces the `G`-fixed subset
 product `p` to have the *same-signed* valuation as the full product `C`: if `v(C) = 0` then
@@ -127,6 +130,7 @@ theorem valuation_zero_of_prod_fixed [IsPretransitive G Ω] [CommMonoid A] [MulD
     (hC : v (∏ α : Ω, f α) = 0)
     (hG : 0 < Fintype.card G) :
     v (∏ β ∈ S, f β) = 0 := by
+  classical
   have h1 : v (1 : A) = 0 := by have := hv 1 1; simp only [mul_one] at this; omega
   have hpow : ∀ (a : A) (n : ℕ), v (a ^ n) = (n : ℤ) * v a := by
     intro a n
@@ -142,6 +146,7 @@ theorem valuation_zero_of_prod_fixed [IsPretransitive G Ω] [CommMonoid A] [MulD
   · exact absurd h (ne_of_gt hGpos)
   · exact h
 
+omit [DecidableEq Ω] in
 /-- **The orbit-product abstract contradiction capstone.** Packaging
 `valuation_zero_of_prod_fixed` with the hypothesis that the fixed subset product has *nonzero*
 valuation: the two are contradictory. In the DvdK instantiation `v(∏_Ω f) = v(C_Φ) = 0` (Vieta, a

@@ -32,6 +32,7 @@ noncomputable def indexedPolynomial
     MvPolynomial (Fin 2) ℂ :=
   ∑ i, MvPolynomial.monomial (exponent i) (coefficient i)
 
+omit [Fintype ι] [DecidableEq ι] in
 /-- Product arithmetic for one indexed multinomial channel. -/
 theorem prod_indexed_monomial_pow
     (S : Finset ι) (exponent : ι → Fin 2 →₀ ℕ)

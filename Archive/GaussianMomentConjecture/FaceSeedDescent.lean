@@ -88,12 +88,10 @@ theorem exists_numberField_moment_point_preserving_lowest_face_seed
                 (liftedFaceSeed P F hsubset m0) ≠ 0 := by
   obtain ⟨lambda, delta, F, m0, hm0, hsubset, hlower, hface, hseed⟩ :=
     GMC2.FaceSeed.exists_nonzero_lowest_face_seed hDvdK P hP
-
   let coefficient : ↥P.support → ℂ := fun s ↦ P.coeff s
   have hcoefficient : ∀ s, coefficient s ≠ 0 := by
     intro s
     simpa only [coefficient, MvPolynomial.mem_support_iff] using s.property
-
   have hmoment : ∀ m : ℕ,
       MvPolynomial.aeval coefficient
         (GMC2.MomentRelations.momentRelation
@@ -111,13 +109,11 @@ theorem exists_numberField_moment_point_preserving_lowest_face_seed
       _ = GMC2.E (P ^ (m + 1)) := by
         rw [GMC2.SupportDescent.indexedPolynomial_support_eq]
       _ = 0 := hnull (m + 1) (by omega)
-
   have hseedLifted :
       MvPolynomial.aeval coefficient (liftedFaceSeed P F hsubset m0) ≠ 0 := by
     rw [aeval_liftedFaceSeed]
     simp only [coefficient, faceToSupport, Function.comp_def]
     convert hseed using 2; rfl
-
   obtain ⟨K, fieldK, algebraK, hfinite, coefficientK,
       hcoefficientK, hmomentK, hseedK⟩ :=
     GMC2.TorusDescent.exists_numberField_torus_point_preserving_nonzero_of_complex_relations

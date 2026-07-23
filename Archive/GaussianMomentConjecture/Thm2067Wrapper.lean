@@ -55,7 +55,7 @@ full product a nonzero constant `d` (Vieta), a contradiction follows. This is th
 orbit-product argument modulo those two inputs. -/
 theorem thm2067_contradiction
     {E : Type*} [Field E] [Algebra (RatFunc F) E]
-    {G Ω : Type*} [Group G] [Fintype G] [MulAction G Ω] [Fintype Ω] [DecidableEq Ω]
+    {G Ω : Type*} [Group G] [Finite G] [MulAction G Ω] [Fintype Ω]
     [IsPretransitive G Ω] [MulDistribMulAction G E]
     (f : Ω → E) (S : Finset Ω) (x : Ω)
     (hf : ∀ (g : G) (β : Ω), f (g • β) = g • f β)
@@ -65,6 +65,8 @@ theorem thm2067_contradiction
         = algebraMap (RatFunc F) E (RatFunc.C c * RatFunc.X))
     (hΩ : (∏ α : Ω, f α) = algebraMap (RatFunc F) E (RatFunc.C d)) :
     False := by
+  classical
+  haveI : Fintype G := Fintype.ofFinite G
   -- the orbit-product equation in E
   have heqE := GMC2.OrbitProduct.prod_pow_card_group_eq f S x hf hfix
   rw [hS, hΩ, ← map_pow, ← map_pow] at heqE

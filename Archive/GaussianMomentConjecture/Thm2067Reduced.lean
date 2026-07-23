@@ -43,6 +43,8 @@ open GMC2.PhiVieta
 variable {F : Type*} [Field F]
 
 set_option maxHeartbeats 1000000 in
+-- This assembly instantiates several large algebraic bridges at once; elaborating the
+-- composite term exceeds the default heartbeat budget.
 /-- **The concrete orbit-product contradiction, reduced to the small-root product
 identity.** For `Φ = Phi R M` (`= Xᴹ − t·R`, `1 ≤ M < deg R`, `R(0) ≠ 0`), separable over its
 splitting field, the irreducibility (`hΦ`) and Vieta (`hΩ`) inputs of

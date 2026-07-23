@@ -140,7 +140,7 @@ noncomputable def shiftedPolynomial
 /-- Shifting `shiftedPolynomial` back down by `M` recovers the original
 Laurent polynomial, provided every shifted exponent is nonnegative. -/
 theorem toLaurent_shiftedPolynomial_mul_T
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {ι : Type*} [Fintype ι]
     (q : ι → ℤ) (c : ι → A) (M : ℕ)
     (hM : ∀ i, -(M : ℤ) ≤ q i) :
     Polynomial.toLaurent (shiftedPolynomial q c M) * T (-(M : ℤ)) =
@@ -225,6 +225,7 @@ theorem card_nsmul_translateSum_eq [IsPretransitive G Ω] [AddCommMonoid B]
       exact (mul_nsmul' (∑ α : Ω, f α) S.card
         (Fintype.card (stabilizer G x))).symm
 
+omit [DecidableEq Ω] [Fintype G] in
 /-- **Additive orbit contradiction.**  Over a characteristic-zero field, no
 subset can have every translate of its weighted sum equal to `1` while the
 full-orbit weighted sum is `0`.
@@ -234,10 +235,12 @@ subset, the germ identity gives every translated sum as `1`, and Lagrange
 interpolation gives the full-root sum as `0`.
 -/
 theorem translateSum_one_ne_fullSum_zero
-    [IsPretransitive G Ω] {K : Type*} [Field K] [CharZero K]
+    [IsPretransitive G Ω] [Finite G] {K : Type*} [Field K] [CharZero K]
     (f : Ω → K) (S : Finset Ω) (x : Ω)
     (htranslate : ∀ g : G, ∑ β ∈ S, f (g • β) = 1)
     (hfull : ∑ α : Ω, f α = 0) : False := by
+  classical
+  haveI : Fintype G := Fintype.ofFinite G
   have h := card_nsmul_translateSum_eq f S x 1 htranslate
   rw [hfull, nsmul_zero] at h
   have hcast : (Fintype.card G : K) = 0 := by simp at h

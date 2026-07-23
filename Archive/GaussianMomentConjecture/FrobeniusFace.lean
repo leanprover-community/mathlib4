@@ -57,7 +57,7 @@ def radialHeightQ (a : ι → ℤ) (F : Finset ι) (r : ι → ℕ) : ℚ :=
 
 /-- A balanced channel supported on one tilted face has height `delta` times
 its mass.  Thus all face channels of a fixed mass have one common Wick height. -/
-theorem balanced_height_eq_on_face [DecidableEq ι]
+theorem balanced_height_eq_on_face
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι) (r : ι → ℕ)
     (hface : ∀ i ∈ F, tiltedHeight a b lambda i = delta)
     (hbalanced : totalChargeQ a b F r = 0) :
@@ -83,7 +83,7 @@ theorem balanced_height_eq_on_face [DecidableEq ι]
 /-- If every support point lies on or above the tilted face and a channel uses
 a positive multiplicity of one strictly off-face point, its balanced radial
 height is strictly larger than the face height at the same mass. -/
-theorem balanced_height_strict_of_off_face [DecidableEq ι]
+theorem balanced_height_strict_of_off_face
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι) (r : ι → ℕ)
     (hlower : ∀ i ∈ F, delta ≤ tiltedHeight a b lambda i)
     (hbalanced : totalChargeQ a b F r = 0)
@@ -135,7 +135,7 @@ theorem integer_gap_of_strict_height {A0 A : ℤ}
 
 /-- Consumer form of the off-face lemma when the reference and channel
 heights have already been identified with integers `A0` and `A`. -/
-theorem off_face_integer_gap [DecidableEq ι]
+theorem off_face_integer_gap
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι) (r : ι → ℕ)
     (hlower : ∀ i ∈ F, delta ≤ tiltedHeight a b lambda i)
     (hbalanced : totalChargeQ a b F r = 0)
@@ -173,7 +173,7 @@ theorem exponent_pair_eq_of_same_charge_on_face
 
 /-- Collision-free projection statement for an exact monomial support:
 restriction of charge to a tilted face is injective. -/
-theorem charge_injective_on_face [DecidableEq ι]
+theorem charge_injective_on_face
     (a b : ι → ℤ) (lambda delta : ℚ) (F : Finset ι)
     (hexact : Function.Injective (fun i => (a i, b i)))
     (hface : ∀ i ∈ F, tiltedHeight a b lambda i = delta) :
