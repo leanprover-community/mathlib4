@@ -44,6 +44,7 @@ abbrev combPairHoms : (i : ι₁ ⊕ ι₂) → bc.pt ⟶ Sum.elim f₁ f₂ i
 
 variable {c₁ c₂ bc}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `c₁` and `c₂` are limit fans and `bc` is a limit binary fan on their cone
 points, then the fan constructed from `combPairHoms` is a limit cone. -/
@@ -53,15 +54,11 @@ def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
       cases i
       · exact Fan.IsLimit.lift h₁ (fun a ↦ s.proj (.inl a))
       · exact Fan.IsLimit.lift h₂ (fun a ↦ s.proj (.inr a)))
-    (fun s w ↦ by
-      cases w <;>
-      · simp only [fan_mk_proj, combPairHoms]
-        erw [← Category.assoc, h.fac]
-        simp only [pair_obj_left, mk_π_app, IsLimit.fac])
+    (fun s w ↦ by cases w <;> exact (h.fac_assoc ..).trans (by simp))
     (fun s m hm ↦ Fan.IsLimit.hom_ext h _ _ <| fun w ↦ by
       cases w
-      · refine Fan.IsLimit.hom_ext h₁ _ _ (fun a ↦ by aesop)
-      · refine Fan.IsLimit.hom_ext h₂ _ _ (fun a ↦ by aesop))
+      · exact Fan.IsLimit.hom_ext h₁ _ _ (fun a ↦ by aesop)
+      · exact Fan.IsLimit.hom_ext h₂ _ _ (fun a ↦ by aesop))
 
 end Fan
 
