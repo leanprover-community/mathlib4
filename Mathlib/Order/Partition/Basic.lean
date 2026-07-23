@@ -338,9 +338,12 @@ lemma rel_le_iff_le : P.Rel ≤ Q.Rel ↔ P ≤ Q := by
   obtain ⟨t', ht', htt'⟩ := h ht
   use t', ht', htt' ha, htt' hb
 
-lemma ext_rel_iff (P Q : Partition u) : (∀ x y, P.Rel x y ↔ Q.Rel x y) ↔ P = Q := by
+lemma ext_rel_iff : (∀ x y, P.Rel x y ↔ Q.Rel x y) ↔ P = Q := by
   rw [le_antisymm_iff, ← rel_le_iff_le, ← rel_le_iff_le, ← le_antisymm_iff]
   exact ⟨fun h ↦ funext₂ fun x y ↦ iff_eq_eq ▸ h x y, fun h ↦ by simp [h]⟩
+
+lemma ext_rel (h : ∀ x y, P.Rel x y ↔ Q.Rel x y) : P = Q :=
+  ext_rel_iff.mp h
 
 @[simp, grind =]
 lemma rel_copy {h : u = u'} : (P.copy h).Rel x y ↔ P.Rel x y := by simp [Rel]
@@ -371,10 +374,12 @@ lemma rel_comm : P.Rel x y ↔ P.Rel y x := ⟨Rel.symm, Rel.symm⟩
 
 lemma Rel.trans (hxy : P.Rel x y) (hyz : P.Rel y z) : P.Rel x z := trans_of P.Rel hxy hyz
 
+@[grind →]
 lemma Rel.left_mem (h : P.Rel x y) : x ∈ u := by
   obtain ⟨t, htP, hxt, -⟩ := h
   exact subset_of_mem htP hxt
 
+@[grind →]
 lemma Rel.right_mem (h : P.Rel x y) : y ∈ u := h.symm.left_mem
 
 /-- Any element of a part is related to the representative of that part. -/
@@ -438,8 +443,9 @@ variable {u : Set α}
 
 /-- A transitive, symmetric binary relation `r` induces a partition of the set of elements on
 which it is reflexive. -/
-def ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] : Partition {x | r x x} where
-  parts := ({a | r · a}) '' {x | r x x}
+def ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] (u : Set α) (hu : u ⊆ {x | r x x}) :
+    Partition u where
+  parts := ({a | r · a} ∩ u) '' u
   sSupIndep' := by
     rintro s ⟨x, hx, rfl⟩
     simp only [sSup_eq_sUnion, disjoint_sUnion_right, mem_sdiff, mem_image, mem_singleton_iff,
@@ -447,20 +453,30 @@ def ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] : Partition {x | 
     exact fun y hy ↦ Not.imp_symm fun hdj ↦ by grind [trans_of r, symm_of r]
   bot_notMem' := by
     simp only [bot_eq_empty, mem_image, not_exists, not_and, ← ne_eq, ← nonempty_iff_ne_empty]
-    exact (⟨·, ·⟩)
+    exact fun x hxu ↦ ⟨x, hu hxu, hxu⟩
   sSup_eq' := by grind [trans_of r, symm_of r, sSup_eq_sUnion, sUnion_image, mem_iUnion]
 
-@[simp]
-lemma rel_ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] : (ofRel r).Rel x y ↔ r x y := by
+@[simp, grind =]
+lemma rel_ofRel_of_subset (r : α → α → Prop) [Std.Symm r] [IsTrans α r] (hu : u ⊆ {x | r x x}) :
+    (ofRel r u hu).Rel x y ↔ x ∈ u ∧ y ∈ u ∧ r x y := by
+  refine ⟨fun ⟨t, ht, hx, hy⟩ ↦ ?_, fun ⟨hx, hy, hxy⟩ ↦ ⟨{a | r y a} ∩ u, ?_, ⟨symm hxy, hx⟩,
+    trans_of r (symm hxy) hxy, hy⟩⟩
+  · obtain ⟨z, hzu, rfl⟩ := ht
+    grind [trans_of r, symm_of r]
+  use y, hy
+
+lemma rel_ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] :
+    (ofRel r {x | r x x} subset_rfl).Rel x y ↔ r x y := by
   refine ⟨fun ⟨t, ht, hx, hy⟩ ↦ ?_, fun hxy ↦ ⟨{a | r y a}, ?_, symm hxy,
     trans_of r (symm hxy) hxy⟩⟩
   · obtain ⟨z, hzu, rfl⟩ := ht
     grind [trans_of r, symm_of r]
-  use y, trans_of r (symm hxy) hxy
+  use y, trans_of r (symm hxy) hxy, inter_eq_left.mpr fun z hz ↦ trans_of r (symm hz) hz
 
 @[simp]
-lemma ofRel_rel (P : Partition u) : (ofRel P.Rel).copy (Set.ext fun _ ↦ P.rel_rfl_iff) = P := by
-  simp [← ext_rel_iff]
+lemma ofRel_rel (P : Partition u) : (ofRel P.Rel u (by simp)) = P := by
+  rw [← ext_rel_iff]
+  grind
 
 end ofRel
 
