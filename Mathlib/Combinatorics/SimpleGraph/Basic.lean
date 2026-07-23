@@ -822,6 +822,32 @@ theorem disjoint_neighborSet :
   simp_rw [← disjoint_edgeSet, Set.disjoint_left, mem_neighborSet, Sym2.forall, mem_edgeSet]
 
 @[simp]
+theorem neighborSet_sup {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊔ G₂).neighborSet v = G₁.neighborSet v ∪ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_inf {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊓ G₂).neighborSet v = G₁.neighborSet v ∩ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_sdiff {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ \ G₂).neighborSet v = G₁.neighborSet v \ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_iSup {s : ι → SimpleGraph V} (v : V) :
+    (⨆ i, s i).neighborSet v = ⋃ i, (s i).neighborSet v := by
+  ext; simp
+
+@[simp]
+theorem neighborSet_iInf [Nonempty ι] {s : ι → SimpleGraph V} (v : V) :
+    (⨅ i, s i).neighborSet v = ⋂ i, (s i).neighborSet v := by
+  ext
+  simp_rw [Set.mem_iInter, mem_neighborSet, iInf_adj_of_nonempty]
+
+@[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
   simp [incidenceSet]
 
@@ -876,6 +902,10 @@ theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
 
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
   grind [mem_neighborSet, bot_adj]
+
+theorem disjoint_neighborSet {G₁ G₂ : SimpleGraph V} {v : V} (h : Disjoint G₁ G₂) :
+    Disjoint (G₁.neighborSet v) (G₂.neighborSet v) := by
+  rw [Set.disjoint_iff_inter_eq_empty, ← neighborSet_inf, h.eq_bot, neighborSet_bot]
 
 variable {G} in
 theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
