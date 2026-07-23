@@ -69,7 +69,7 @@ theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUn
   have h : HasProd (fun v : {v | Valued.v (x v) = 1} ↦ ‖x.1 v‖) 1 := by
     convert hasProd_one; aesop (add simp [Valued.toNormedField.norm_eq_one_iff])
   have := HasProd.mul_disjoint (by grind) (hasProd_subset_valued_lt_one x) h (f := fun v ↦ ‖x v‖)
-  simpa using this.mul_isCompl ⟨by grind, fun _ _ _ _ _ ↦ by grind [lt_trichotomy]⟩ hT
+  simpa using this.mul_isCompl ⟨by grind, fun _ _ _ ↦ by grind⟩ hT
 
 theorem tprod_norm_of_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : IsUnit x) :
     ∏' v, ‖x.1 v‖ = ∏ᶠ v, ‖x.1 v‖ := by
