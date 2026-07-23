@@ -607,21 +607,25 @@ alias finsum_pos' := finsum_pos
 @[to_additive existing finsum_pos', deprecated (since := "2026-01-03")]
 alias one_lt_finprod' := one_lt_finprod
 
-/-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
+/-- Monotonicity of `finprod`. See `finprod_le_finprod₀` for a variant where
 `M` is a `CommMonoidWithZero`. -/
 @[to_additive /-- Monotonicity of `finsum.` -/]
-lemma finprod_le_finprod' [PartialOrder M] [MulLeftMono M] (hf : HasFiniteMulSupport f)
+lemma finprod_le_finprod [PartialOrder M] [MulLeftMono M] (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) (h : f ≤ g) :
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
   have : Fintype ↑(f.mulSupport ∪ g.mulSupport) := (hf.union hg).fintype
   let s := (f.mulSupport ∪ g.mulSupport).toFinset
   rw [finprod_eq_finsetProd_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
     finprod_eq_finsetProd_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
-  exact Finset.prod_le_prod' fun i _ ↦ h i
+  exact Finset.prod_le_prod fun i _ ↦ h i
 
-/-- Monotonicity of `finprod`. See `finprod_le_finprod'` for a variant where
+@[deprecated (since := "2026-07-23")] alias finprod_le_finprod' := finprod_le_finprod
+
+@[deprecated (since := "2026-07-23")] alias finsum_le_finsum' := finsum_le_finsum
+
+/-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
 `M` is an ordered `CommMonoid`. -/
-lemma finprod_le_finprod {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [ZeroLEOneClass M]
+lemma finprod_le_finprod₀ {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [ZeroLEOneClass M]
     [PosMulMono M] {f g : α → M} (hf : HasFiniteMulSupport f) (hf₀ : ∀ a, 0 ≤ f a)
     (hg : HasFiniteMulSupport g) (h : f ≤ g) :
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
@@ -629,14 +633,14 @@ lemma finprod_le_finprod {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [Ze
   let s := (f.mulSupport ∪ g.mulSupport).toFinset
   rw [finprod_eq_finsetProd_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
     finprod_eq_finsetProd_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
-  exact Finset.prod_le_prod (fun i _ ↦ hf₀ i) fun i _ ↦ h i
+  exact Finset.prod_le_prod₀ (fun i _ ↦ hf₀ i) fun i _ ↦ h i
 
 lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
     [ZeroLEOneClass M] [PosMulMono M] :
     ∏ᶠ _ : α, (0 : M) ≤ 1 := by
   rw [← finprod_one (α := α)]
   by_cases H : (fun _ : α ↦ (0 : M)).HasFiniteMulSupport
-  · exact finprod_le_finprod H (fun _ ↦ le_rfl) (by fun_prop) fun _ ↦ zero_le_one
+  · exact finprod_le_finprod₀ H (fun _ ↦ le_rfl) (by fun_prop) fun _ ↦ zero_le_one
   · rw [finprod_of_not_hasFiniteMulSupport H]
     exact finprod_one.symm.le
 
@@ -1159,7 +1163,7 @@ theorem single_le_finprod {M : Type*} [CommMonoid M] [Preorder M] [IsOrderedMono
     (hf : HasFiniteMulSupport f) (h : ∀ j, 1 ≤ f j) : f i ≤ ∏ᶠ j, f j := by
   classical calc
       f i ≤ ∏ j ∈ insert i hf.toFinset, f j :=
-        Finset.single_le_prod' (fun j _ => h j) (Finset.mem_insert_self _ _)
+        Finset.single_le_prod (fun j _ => h j) (Finset.mem_insert_self _ _)
       _ = ∏ᶠ j, f j :=
         (finprod_eq_prod_of_mulSupport_toFinset_subset _ hf (Finset.subset_insert _ _)).symm
 

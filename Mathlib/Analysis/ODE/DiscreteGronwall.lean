@@ -84,7 +84,8 @@ theorem discrete_gronwall {n₀ : ℕ} (hun₀ : 0 ≤ u n₀)
     _ = (u n₀ + ∑ k ∈ Ico n₀ n, b k) * ∏ i ∈ Ico n₀ n, (1 + c i) := by rw [add_mul, sum_mul]
     _ ≤ (u n₀ + ∑ k ∈ Ico n₀ n, b k) * exp (∑ i ∈ Ico n₀ n, c i) := by
         gcongr <;> try exact add_nonneg hun₀ <| sum_nonneg <| by grind
-        simpa [exp_sum] using prod_le_prod (by grind) (by grind [add_one_le_exp])
+        rw [exp_sum]
+        exact prod_le_prod₀ (by grind) (by grind [add_one_le_exp])
 
 /-- Discrete Grönwall inequality, uniform bound: a single bound holding for all `n ∈ [n₀, n₁)`. -/
 theorem discrete_gronwall_Ico {n₀ n₁ : ℕ} (hun₀ : 0 ≤ u n₀)
