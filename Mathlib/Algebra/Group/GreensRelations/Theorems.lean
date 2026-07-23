@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Card
 # Main Theorems of Green's Relations
 
 This file proves the major structural theorems regarding Green's relations,
-including Green's Lemma (bijections between H-classes), the equivalence of D and J
+including Green's theorem (bijections between H-classes), the equivalence of D and J
 in finite semigroups, and conditions for H-classes to be subgroups.
 ## References
 
@@ -91,7 +91,7 @@ theorem card_greenHClass_eq_of_isGreenD [Fintype S] {a b : S} (h : IsGreenD a b)
     (Fintype.card_congr (equivHClassOfIsGreenR hR))
 
 /-- If `a` and `b` are `J`-related in a finite semigroup, they are also `D`-related. -/
-lemma isGreenD_of_isGreenJ [Finite S] {a b : S} (h : IsGreenJ a b) : IsGreenD a b :=
+theorem isGreenD_of_isGreenJ [Finite S] {a b : S} (h : IsGreenJ a b) : IsGreenD a b :=
   match h.left, h.right with
   | .of_eq h1, _ => h1 ▸ IsGreenD.refl a
   | _, .of_eq h2 => h2.symm ▸ IsGreenD.refl b
@@ -106,7 +106,7 @@ lemma isGreenD_of_isGreenJ [Finite S] {a b : S} (h : IsGreenJ a b) : IsGreenD a 
   | .mul_both _ _ huv1, .mul_both _ _ huv2 => isGreenD_of_JRel_both huv1 huv2
 
 /-- If `a` and `b` are `D`-related, they satisfy the basic `J`-relation step. -/
-lemma isGreenJRel_of_isGreenD {a b : S} (h : IsGreenD a b) : IsGreenJRel a b :=
+theorem isGreenJRel_of_isGreenD {a b : S} (h : IsGreenD a b) : IsGreenJRel a b :=
   let ⟨z, hL, hR⟩ := h
   match hL.left, hR.left with
   | .inl rfl, .inl rfl => .of_eq rfl
@@ -115,7 +115,7 @@ lemma isGreenJRel_of_isGreenD {a b : S} (h : IsGreenD a b) : IsGreenJRel a b :=
   | .inr ⟨u, hu⟩, .inr ⟨v, hv⟩ => .mul_both u v (hu ▸ hv ▸ (mul_assoc u b v).symm)
 
 /-- If `a` and `b` are `D`-related, they are also `J`-related. -/
-lemma isGreenJ_of_isGreenD {a b : S} (h : IsGreenD a b) : IsGreenJ a b :=
+theorem isGreenJ_of_isGreenD {a b : S} (h : IsGreenD a b) : IsGreenJ a b :=
   ⟨isGreenJRel_of_isGreenD h, isGreenJRel_of_isGreenD h.symm⟩
 
 /-- In a finite semigroup, Green's `D` relation and Green's `J` relation are equal. -/
@@ -124,7 +124,7 @@ theorem isGreenD_eq_isGreenJ_of_finite [Finite S] : (IsGreenD : S → S → Prop
 
 open MulOpposite in
 /-- If `b` and `a * b` are `D`-related in a finite semigroup, they are `L`-related. -/
-lemma isGreenL_sl_of_isGreenD_sl [Finite S] {a b : S} (h : IsGreenD b (a * b)) :
+theorem isGreenL_sl_of_isGreenD_sl [Finite S] {a b : S} (h : IsGreenD b (a * b)) :
     IsGreenL b (a * b) := by
   constructor
   · rcases h with ⟨z', hL_bz', hR_z'ab⟩
@@ -140,7 +140,7 @@ lemma isGreenL_sl_of_isGreenD_sl [Finite S] {a b : S} (h : IsGreenD b (a * b)) :
 
 open MulOpposite in
 /-- If `a` and `a * b` are `D`-related in a finite semigroup, they are `R`-related. -/
-lemma isGreenR_sr_of_isGreenD_sr [Finite S] {a b : S} (h : IsGreenD a (a * b)) :
+theorem isGreenR_sr_of_isGreenD_sr [Finite S] {a b : S} (h : IsGreenD a (a * b)) :
     IsGreenR a (a * b) := by
   rw [isGreenR_iff_isGreenL_op, op_mul]
   apply isGreenL_sl_of_isGreenD_sl
@@ -177,9 +177,13 @@ theorem mul_mem_isGreenD_eqvClass_properties
         exact ⟨v * a, IsGreenD.trans ⟨a, IsGreenL.symm hLae, IsGreenR.refl a⟩ ha, by grind,
           hLae, ⟨Or.inr ⟨b, by grind⟩, Or.inr ⟨u, h_va_eq_bu⟩⟩⟩
 
-/-- An `H`-class is either a group or contains no idempotents
-    and is not closed under multiplication. -/
-lemma isGroup_isGreenH_eqvClass_iff_idempotent
+/-- A predicate stating that a set `H : Set S` forms a group under
+    the semigroup multiplication restricted to `H`. -/
+def IsGroup (H : Set S) : Prop := Nonempty (Group H)
+
+/-- An `H`-class either contains no idempotents and is not closed under multiplication,
+    or contains an idempotent and is closed under multiplication. -/
+theorem isGreenH_eqvClass_disjoint_or_exists_idempotent
     [Finite S] (H : Set S) (hH : ∃ a, H = IsGreenH.eqvClass a) :
     (∀ x y, x ∈ H → y ∈ H → x * y ∉ H) ∨
     (∃ e ∈ H, e * e = e ∧ ∀ x y, x ∈ H → y ∈ H → x * y ∈ H) := by
@@ -202,3 +206,55 @@ lemma isGroup_isGreenH_eqvClass_iff_idempotent
        IsGreenR.trans (by
           simpa [MulSeq.mul_eq_self_of_isGreenH_idempotent (huH.trans heH.symm) he_idem]
             using IsGreenR.mul_left u (hvH.trans heH.symm).2) huH.2⟩⟩
+
+/-- An `H`-class containing an idempotent forms a group. -/
+theorem isGreenH_eqvClass_isGroup_of_idempotent
+    [Finite S] {H : Set S} (hH : ∃ a, H = IsGreenH.eqvClass a)
+    {e : S} (heH : e ∈ H) (he_idem : e * e = e) :
+    IsGroup H := by
+  obtain ⟨a, rfl⟩ := hH
+  have h_closed : ∀ x y, x ∈ IsGreenH.eqvClass a → y ∈ IsGreenH.eqvClass a →
+      x * y ∈ IsGreenH.eqvClass a := fun u v hu hv ↦ ⟨
+    IsGreenL.trans (by
+      simpa [MulSeq.mul_eq_self_of_isGreenH_idempotent (hv.trans heH.symm) he_idem]
+        using IsGreenL.mul_right v (hu.trans heH.symm).1) hv.1,
+    IsGreenR.trans (by
+      simpa [MulSeq.mul_eq_self_of_isGreenH_idempotent (hu.trans heH.symm) he_idem]
+        using IsGreenR.mul_left u (hv.trans heH.symm).2) hu.2⟩
+  have h_inj : ∀ x : IsGreenH.eqvClass a, Function.Injective (fun u : IsGreenH.eqvClass a ↦
+    (⟨u.1 * x.1, h_closed u.1 x.1 u.2 x.2⟩ : IsGreenH.eqvClass a)) :=
+      fun x u v h ↦ Subtype.ext <| by
+    have h1 : u.1 * x.1 = v.1 * x.1 := Subtype.ext_iff.mp h
+    rcases (x.2.trans heH.symm).right.right with rfl | ⟨k, hk⟩
+    · exact (MulSeq.mul_eq_self_of_isGreenH_idempotent (u.2.trans heH.symm) he_idem).1.symm.trans <|
+        h1.trans (MulSeq.mul_eq_self_of_isGreenH_idempotent (v.2.trans heH.symm) he_idem).1
+    · have h2 : u.1 * x.1 * k = v.1 * x.1 * k := by rw [h1]
+      simp only [mul_assoc, ← hk] at h2
+      exact (MulSeq.mul_eq_self_of_isGreenH_idempotent (u.2.trans heH.symm) he_idem).1.symm.trans <|
+        h2.trans (MulSeq.mul_eq_self_of_isGreenH_idempotent (v.2.trans heH.symm) he_idem).1
+  refine ⟨{
+    mul := fun x y ↦ ⟨x.1 * y.1, h_closed x.1 y.1 x.2 y.2⟩
+    mul_assoc := fun x y z ↦ Subtype.ext (mul_assoc x.1 y.1 z.1)
+    one := ⟨e, heH⟩
+    one_mul := fun x ↦ Subtype.ext (MulSeq.mul_eq_self_of_isGreenH_idempotent
+      (x.2.trans heH.symm) he_idem).2
+    mul_one := fun x ↦ Subtype.ext (MulSeq.mul_eq_self_of_isGreenH_idempotent
+      (x.2.trans heH.symm) he_idem).1
+    inv := fun x ↦ Classical.choose
+      (Finite.injective_iff_bijective.mp (h_inj x) |>.surjective ⟨e, heH⟩)
+    inv_mul_cancel := fun x ↦ Subtype.ext
+      (Subtype.ext_iff.mp (Classical.choose_spec
+        (Finite.injective_iff_bijective.mp (h_inj x) |>.surjective ⟨e, heH⟩)))
+  }⟩
+
+/-- An `H`-class is either never closed under multiplication or forms a group. -/
+theorem isGreenH_eqvClass_dichotomy
+    [Finite S] (H : Set S) (hH : ∃ a, H = IsGreenH.eqvClass a) :
+    (∀ x y, x ∈ H → y ∈ H → x * y ∉ H) ∨
+    ((∀ x y, x ∈ H → y ∈ H → x * y ∈ H) ∧ IsGroup H) := by
+  rcases isGreenH_eqvClass_disjoint_or_exists_idempotent H hH with
+    h_disj | ⟨e, heH, he_idem, h_closed⟩
+  · left
+    exact h_disj
+  · right
+    exact ⟨h_closed, isGreenH_eqvClass_isGroup_of_idempotent hH heH he_idem⟩
