@@ -5938,6 +5938,7 @@ public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.NumberTheory.SelbergSieve
 public import Mathlib.NumberTheory.SiegelsLemma
 public import Mathlib.NumberTheory.SmoothNumbers
+public import Mathlib.NumberTheory.Stormer
 public import Mathlib.NumberTheory.SumFourSquares
 public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.NumberTheory.SumTwoSquares
