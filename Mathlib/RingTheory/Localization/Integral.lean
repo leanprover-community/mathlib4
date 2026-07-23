@@ -84,6 +84,7 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
   rfl
 
 variable {M} in
+@[simp]
 theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
     integerNormalization M p = 0 ↔ p = 0 := by
   obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
@@ -571,3 +572,174 @@ lemma isAlgebraic_of_isFractionRing (R S K L) [CommRing R] [CommRing S] [Field K
     apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
     exact Algebra.IsIntegral.isIntegral (s : S)
+
+namespace IsLocalization
+
+section NormalizedGCDMonoid
+
+variable {R S : Type*} [CommRing R] [NormalizedGCDMonoid R] (M : Submonoid R) [CommRing S]
+variable [Algebra R S] [IsLocalization M S] (p : S[X])
+
+noncomputable def normalizedPrimPartIntegerNormalization :=
+  letI := Classical.decEq S
+  if p = 0 then 0 else
+  normalize (integerNormalization M p).primPart
+
+@[simp]
+lemma normalizedPrimPartIntegerNormalization_zero :
+    normalizedPrimPartIntegerNormalization M (0 : S[X]) = 0 := by
+  simp [normalizedPrimPartIntegerNormalization]
+
+private lemma aux_ne_zero [Nontrivial R] :
+    normalize (integerNormalization M p).primPart ≠ 0 := by
+  simp [primPart_ne_zero]
+
+@[simp]
+lemma normalizedPrimPartIntegerNormalization_eq_zero_iff :
+    normalizedPrimPartIntegerNormalization M p = 0 ↔ p = 0 := by
+  by_cases hp : p = 0
+  · simp [hp]
+  letI := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  letI := (algebraMap R S).domain_nontrivial
+  simp [normalizedPrimPartIntegerNormalization, hp, aux_ne_zero M p]
+
+@[simp]
+lemma normalizedPrimPartIntegerNormalization_ne_zero (hp : p ≠ 0) :
+    normalizedPrimPartIntegerNormalization M p ≠ 0 := by simp [hp]
+
+variable {M} in
+lemma normalizedPrimPartIntegerNormalization_algebraMap [Nontrivial S] {p : R[X]} (hp : p ≠ 0) :
+    normalizedPrimPartIntegerNormalization M (p.map (algebraMap R S)) = normalize p.primPart := by
+  letI := (algebraMap R S).domain_nontrivial
+  have hM := IsLocalization.le_nonZeroDivisors M S
+  have hp' : p.map (algebraMap R S) ≠ 0 := by
+    rwa [Polynomial.map_ne_zero_iff <| IsLocalization.injective S hM]
+  obtain ⟨b, hbM, h1⟩ := integerNormalization_spec M (p.map (algebraMap R S))
+  have : integerNormalization M (p.map (algebraMap R S)) = C b * p := by
+    apply Polynomial.map_injective _ (IsLocalization.injective S hM)
+    simp [← smul_eq_C_mul, h1]
+  grind [normalizedPrimPartIntegerNormalization, normalize_eq_normalize_iff_associated,
+    associated_primPart_C_mul, nonZeroDivisors.ne_zero (hM hbM)]
+
+variable {M p} in
+theorem normalizedPrimPartIntegerNormalization_C_mul_eq (hp : p ≠ 0) {a : S} (ha : a ≠ 0) :
+    normalizedPrimPartIntegerNormalization M (C a * p) =
+      normalizedPrimPartIntegerNormalization M p := by
+  letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  letI := (algebraMap R S).domain_nontrivial
+  have hM := IsLocalization.le_nonZeroDivisors M S
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  simp only [normalizedPrimPartIntegerNormalization, hp, mul_ne_zero (C_ne_zero.mpr ha) hp,
+    ↓reduceIte, normalize_eq_normalize_iff_associated]
+  obtain ⟨b, hbM, hb⟩ := integerNormalization_spec M p
+  obtain ⟨c, hcM, hc⟩ := integerNormalization_spec M (C a * p)
+  let y := (sec M a).2
+  let z := (sec M a).1
+  have : b * y ≠ 0 := mul_ne_zero (nonZeroDivisors.ne_zero (hM hbM))
+    (nonZeroDivisors.ne_zero (hM y.2))
+  apply (associated_primPart_C_mul this (by simp_all)).symm.trans
+  have : Associated (C (b * (y : R)) * integerNormalization M (C a * p)).primPart
+      (C (c * z) * integerNormalization M p).primPart := by
+    apply Associated.of_eq <| congr_arg primPart
+      <| map_injective _ (IsLocalization.injective S hM) _
+    simp only [Polynomial.map_mul, map_C, hc, hb, map_mul, y, z, sec_spec' M a,
+      ← algebraMap_smul S c, ← algebraMap_smul S b, smul_eq_C_mul]
+    ring
+  apply this.trans
+  have : c * z ≠ 0 := mul_ne_zero (nonZeroDivisors.ne_zero (hM hcM)) (sec_fst_ne_zero ha)
+  exact associated_primPart_C_mul this (by simp_all)
+
+variable {p} in
+theorem normalizedPrimPartIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
+    (normalizedPrimPartIntegerNormalization M p).IsPrimitive := by
+  rw [normalizedPrimPartIntegerNormalization, if_neg hp]
+  exact isPrimitive_of_dvd (integerNormalization M p).isPrimitive_primPart (by simp)
+
+theorem normalizedPrimPartIntegerNormalization_dvd' :
+    ∃ c : S, p = C c * (normalizedPrimPartIntegerNormalization M p).map (algebraMap R S) := by
+  rcases eq_or_ne p 0 with (rfl | hp)
+  · simp [normalizedPrimPartIntegerNormalization]
+  obtain ⟨b, hb1, hb2⟩ := integerNormalization_spec M p
+  obtain ⟨u, hu⟩ := IsLocalization.map_units S ⟨b, hb1⟩
+  have : p = (u⁻¹).val • (integerNormalization M p).map (algebraMap R S) := by
+    rw [hb2, ← invOf_smul_eq_iff, invOf_units, inv_inv, hu, algebraMap_smul]
+  nth_rw 1 [this]
+  rw [eq_C_content_mul_primPart (integerNormalization M p), smul_eq_C_mul]
+  simp only [Polynomial.map_mul, map_C, normalizedPrimPartIntegerNormalization, hp, ↓reduceIte,
+    normalize_apply, coe_normUnit]
+  let v := (normUnit (integerNormalization M p).primPart.leadingCoeff)⁻¹
+  use (u⁻¹).val * ((algebraMap R S) (integerNormalization M p).content) * algebraMap R S v
+  simp only [map_mul, v]
+  conv => enter [2]; rw [mul_assoc]
+  conv => enter [2,2]; rw [mul_comm, mul_assoc, ← map_mul, ← map_mul, Units.mul_inv,
+    map_one]
+  simp [mul_assoc]
+
+theorem normalizedPrimPartIntegerNormalization_dvd :
+    (normalizedPrimPartIntegerNormalization M p).map (algebraMap R S) ∣ p := by
+  obtain ⟨c, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
+  use C c
+  grind
+
+lemma normalizedPrimPartIntegerNormalization_degree_eq :
+    (normalizedPrimPartIntegerNormalization M p).degree = p.degree := by
+  rcases eq_or_ne p 0 with (rfl | hp)
+  · simp [normalizedPrimPartIntegerNormalization]
+  letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  letI := (algebraMap R S).domain_nontrivial
+  have hM := IsLocalization.le_nonZeroDivisors M S
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  obtain ⟨_, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
+  nth_rw 2 [hc]
+  rw [degree_mul, degree_C (by grind), zero_add, degree_eq_natDegree (by simp [hp]),
+    degree_eq_natDegree (by grind), natDegree_map_of_leadingCoeff_ne_zero _
+    (by simp [map_ne_zero_iff, IsLocalization.injective _ hM, hp])]
+
+variable {p} in
+theorem normalizedPrimPartIntegerNormalization_irreducible (hpdeg : p.natDegree ≠ 0)
+    (hpirr : Irreducible p) : Irreducible (normalizedPrimPartIntegerNormalization M p) := by
+  -- Since `p` is irreducible, it is nonzero.  This makes `S`, and hence `R`, nontrivial;
+  -- the cancellative structure supplied by `NormalizedGCDMonoid R` then makes `R` a domain.
+  have hp := hpirr.ne_zero
+  letI : Nontrivial S := Polynomial.nontrivial_iff.mp ⟨⟨p, 0, hp⟩⟩
+  letI := (algebraMap R S).domain_nontrivial
+  -- No element of `M` is zero: its image in the localization is a unit, whereas zero is not.
+  -- Thus the localization map is injective and `S` is also a domain.
+  have hM := IsLocalization.le_nonZeroDivisors M S
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  -- Write `p` as a nonzero constant times the image of its normalized primitive part `q`.
+  let q := normalizedPrimPartIntegerNormalization M p
+  obtain ⟨c, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
+  have hc0 : c ≠ 0 := by grind
+  -- The image of `q` cannot be a unit: otherwise `hc` would force the nonconstant `p`
+  -- to have degree zero.
+  have hmapq : ¬IsUnit (q.map (algebraMap R S)) := by
+    intro h
+    apply hpdeg
+    rw [hc, natDegree_mul (C_ne_zero.mpr hc0) h.ne_zero, natDegree_C,
+      natDegree_eq_zero_of_isUnit h, add_zero]
+  have hinj := IsLocalization.injective S hM
+  refine ⟨fun h ↦ hmapq (h.map (mapRingHom _)), fun a b hab ↦ ?_⟩
+  -- A divisor of the primitive polynomial `q` is primitive.  If its image is a unit, injectivity
+  -- shows that it has degree zero; a primitive constant polynomial is a unit already over `R`.
+  have unit_of_map_unit {a : R[X]} (haq : a ∣ q) (ha : IsUnit (a.map (algebraMap R S))) :
+      IsUnit a := by
+    have haprim := isPrimitive_of_dvd (normalizedPrimPartIntegerNormalization_IsPrimtive M hp) haq
+    have ha0 : a ≠ 0 := fun h ↦ ha.ne_zero (by simp [h])
+    have hadeg := (natDegree_map_of_leadingCoeff_ne_zero (algebraMap R S)
+      (by simpa using hinj.ne (leadingCoeff_ne_zero.mpr ha0))).symm.trans
+        (natDegree_eq_zero_of_isUnit ha)
+    rw [eq_C_of_natDegree_le_zero (p := a) hadeg.le] at haprim ⊢
+    exact isUnit_C.mpr (isPrimitive_iff_isUnit_of_C_dvd.mp haprim _ dvd_rfl)
+  -- The factorization `q = a * b` induces a factorization of `p`.  Irreducibility of `p`
+  -- makes one mapped factor a unit, and `unit_of_map_unit` reflects that fact back to `R[X]`.
+  have hpab : p = (C c * a.map (algebraMap R S)) * b.map (algebraMap R S) := by
+    rw [hc]
+    simp [hab, mul_assoc]
+  rcases hpirr.isUnit_or_isUnit hpab with ha | hb
+  · exact .inl (unit_of_map_unit ⟨b, hab⟩ (IsUnit.mul_iff.mp ha).2)
+  · exact .inr (unit_of_map_unit ⟨a, by grind⟩ hb)
+
+end NormalizedGCDMonoid
+
+end IsLocalization
