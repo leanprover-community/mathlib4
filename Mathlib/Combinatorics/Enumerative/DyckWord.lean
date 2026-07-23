@@ -155,7 +155,7 @@ def drop (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) 
     rw [← take_append_drop i p.toList, count_append, count_append] at this
     lia
   count_D_le_count_U k := by
-    rw [show i = min i (i + k) by omega, ← take_take] at hi
+    rw [show i = min i (i + k) by simp, ← take_take] at hi
     rw [take_drop, ← add_le_add_iff_left (((p.toList.take (i + k)).take i).count U),
       ← count_append, hi, ← count_append, take_append_drop]
     exact p.count_D_le_count_U _
@@ -211,7 +211,7 @@ def denest (hn : p.IsNested) : DyckWord where
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
       (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos_iff.mpr h).ne'))
-    have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by rw [min_def]; lia
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,

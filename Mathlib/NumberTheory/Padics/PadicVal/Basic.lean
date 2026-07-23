@@ -323,9 +323,8 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
   have h1 := min_le_padicValRat_add (p := p) hqr
   have h2 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right q r) hq)
   have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
-  rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
-  rw [add_comm] at h3
-  omega
+  simp [min_def, add_comm] at h1 h2 h3 ⊢
+  lia
 
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
     (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :

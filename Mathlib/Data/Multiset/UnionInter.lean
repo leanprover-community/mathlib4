@@ -244,7 +244,8 @@ theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h 
   have h0 : M.count x + N.count x = P.count x + Q.count x := by
     rw [Multiset.ext] at h
     simp_all only [Multiset.count_add]
-  omega
+  simp [min_def]
+  lia
 
 /-! ### Disjoint multisets -/
 

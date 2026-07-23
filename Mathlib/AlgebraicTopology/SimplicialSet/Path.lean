@@ -324,7 +324,8 @@ lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
-    |>.spine_map_vertex n (by omega) Δ m (by omega) (InducedCategory.homMk φ) i
+    |>.spine_map_vertex n (by rw [max_def]; lia) Δ m (by rw [max_def]; lia)
+    (InducedCategory.homMk φ) i
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=

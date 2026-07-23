@@ -163,9 +163,9 @@ variable {n a : ℕ}
 
 lemma valMinAbs_natAbs_eq_min [hpos : NeZero n] (a : ZMod n) :
     a.valMinAbs.natAbs = min a.val (n - a.val) := by
-  rw [valMinAbs_def_pos]
+  rw [valMinAbs_def_pos, min_def]
   have := a.val_lt
-  omega
+  lia
 
 set_option backward.isDefEq.respectTransparency false in
 lemma valMinAbs_natCast_of_le_half (ha : a ≤ n / 2) : (a : ZMod n).valMinAbs = a := by

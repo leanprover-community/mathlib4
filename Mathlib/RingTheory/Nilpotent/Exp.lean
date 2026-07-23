@@ -83,8 +83,9 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
   obtain ⟨n₁, hn₁⟩ := h₂
   obtain ⟨n₂, hn₂⟩ := h₃
   let N := n₁ ⊔ n₂
-  have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₁
-  have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₂
+  have : N = if n₁ ≤ n₂ then n₂ else n₁ := by simp [N, max_def]
+  have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le (by lia) hn₁
+  have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le (by lia) hn₂
   rw [exp_eq_sum (k := 2 * N + 1)
     (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by lia)),
     exp_eq_sum h₄, exp_eq_sum h₅]
@@ -226,8 +227,9 @@ theorem commute_exp_left_of_commute
   obtain ⟨k, hfM⟩ := hfM
   obtain ⟨l, hfN⟩ := hfN
   let kl := max k l
-  replace hfM : fM ^ kl = 0 := pow_eq_zero_of_le (by omega) hfM
-  replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by omega) hfN
+  have : kl = if k ≤ l then l else k := by simp [kl, max_def]
+  replace hfM : fM ^ kl = 0 := pow_eq_zero_of_le (by lia) hfM
+  replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by lia) hfN
   have (i : ℕ) : (fN ^ i) (g m) = g ((fM ^ i) m) := by
     simpa using LinearMap.congr_fun (Module.End.commute_pow_left_of_commute h i) m
   simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_rat_smul]
