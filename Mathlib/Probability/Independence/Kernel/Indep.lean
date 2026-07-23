@@ -618,6 +618,39 @@ theorem indep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
   · exact isPiSystem_piiUnionInter _ (fun n => @isPiSystem_measurableSet Ω (m n)) _
   · exact indepSets_piiUnionInter_of_disjoint (h_indep.congr η_eq) hST
 
+/-- Grouping an independent family of σ-algebras into pairwise disjoint sets of indices yields
+an independent family: if `m : ι → MeasurableSpace Ω` is an independent family and the sets
+`G i'` are pairwise disjoint, then `fun i' ↦ ⨆ j ∈ G i', m j` is an independent family.
+This is the indexed-family version of `indep_iSup_of_disjoint`. -/
+theorem iIndep_iSup_of_disjoint {ι' : Type*} {m : ι → MeasurableSpace Ω}
+    (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m κ μ) {G : ι' → Set ι}
+    (hG : Pairwise (Function.onFun Disjoint G)) :
+    iIndep (fun i' ↦ ⨆ j ∈ G i', m j) κ μ := by
+  classical
+  intro s
+  induction s using Finset.induction_on with
+  | empty =>
+    intro f _
+    filter_upwards [h_indep.ae_isProbabilityMeasure] with a ha
+    haveI := ha
+    simp
+  | @insert a s' ha ih =>
+    intro f hf
+    have hA : MeasurableSet[⨆ j ∈ G a, m j] (f a) := hf a (Finset.mem_insert_self a s')
+    have hB : MeasurableSet[⨆ j ∈ ⋃ i ∈ s', G i, m j] (⋂ i ∈ s', f i) := by
+      refine Finset.measurableSet_biInter s' fun i hi ↦ ?_
+      have hle : (⨆ j ∈ G i, m j) ≤ ⨆ j ∈ ⋃ i ∈ s', G i, m j :=
+        biSup_mono fun j hj ↦ Set.mem_biUnion hi hj
+      exact hle _ (hf i (Finset.mem_insert_of_mem hi))
+    have h_disj : Disjoint (G a) (⋃ i ∈ s', G i) := by
+      refine Set.disjoint_iUnion_right.mpr fun i ↦ Set.disjoint_iUnion_right.mpr fun hi ↦
+        hG fun h : a = i ↦ ha ?_
+      rw [h]
+      exact hi
+    filter_upwards [indep_iSup_of_disjoint h_le h_indep h_disj (f a) (⋂ i ∈ s', f i) hA hB,
+      ih fun i hi ↦ hf i (Finset.mem_insert_of_mem hi)] with x h1 h2
+    rw [Finset.set_biInter_insert, Finset.prod_insert ha, h1, h2]
+
 theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} [IsZeroOrMarkovKernel κ] (h_indep : ∀ i, Indep (m i) m' κ μ)
     (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0) (hm : Directed (· ≤ ·) m) :
