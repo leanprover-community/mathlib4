@@ -53,10 +53,9 @@ noncomputable instance instDecidableIsBalanced
 /-- Integral normalized Wick-moment polynomial.  Its balanced channel of
 height `A` has coefficient `multinomial * (A! / A0!)`. -/
 noncomputable def normalizedMomentRelationInt
-    (exponent : ι → Fin 2 →₀ ℕ) (m A0 : ℕ) : MvPolynomial ι ℤ :=
-  by
-    classical
-    exact
+    (exponent : ι → Fin 2 →₀ ℕ) (m A0 : ℕ) : MvPolynomial ι ℤ := by
+  classical
+  exact
       ∑ r ∈ Finset.piAntidiag (Finset.univ : Finset ι) m,
         if IsBalanced exponent r then
           MvPolynomial.monomial (Finsupp.equivFunOnFinite.symm r)

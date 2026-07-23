@@ -13,7 +13,7 @@ import Mathlib.Algebra.MvPolynomial.Basic
 
 This module composes the universal rational moment relations, their exact
 complex Gaussian interpretation, and the torus-to-number-field theorem.  It
-formalizes Section 2 of `the lowest-balanced-face theorem` without a hidden coordinate-ring axiom.
+formalizes Section 2 of the lowest-balanced-face theorem without a hidden coordinate-ring axiom.
 -/
 
 open MvPolynomial

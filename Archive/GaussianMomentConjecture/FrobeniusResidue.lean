@@ -11,7 +11,7 @@ import Mathlib.RingTheory.MvPolynomial.Expand
 /-!
 # Frobenius residue arithmetic for the GMC(2) lowest-face proof
 
-This module formalizes the characteristic-`p` arithmetic core of `the lowest-balanced-face theorem`.
+This module formalizes the characteristic-`p` arithmetic core of the lowest-balanced-face theorem.
 It deliberately avoids number fields and prime-ideal existence: after reduction
 to any residue ring of prime characteristic, it proves the three identities
 used by the lowest-balanced-face argument.
@@ -50,7 +50,7 @@ theorem weighted_sum_pow_char
 /-- If the total degree is a multiple of a prime `p` but one exponent is not,
 then the corresponding multinomial coefficient is divisible by `p`.
 
-This is the Kummer-isolation conclusion needed by `the lowest-balanced-face theorem`, obtained from
+This is the Kummer-isolation conclusion needed by the lowest-balanced-face theorem, obtained from
 `MvPolynomial.expand` and Frobenius rather than an explicit carry count. -/
 theorem prime_dvd_multinomial_of_sum_eq_mul_of_not_dvd
     {σ : Type*} [Finite σ]
@@ -118,22 +118,7 @@ theorem prime_dvd_normalized_factorial_of_gap
     simpa only [Nat.mul_one] using Nat.mul_le_mul_left p hdiff
   exact (hp.dvd_factorial.mpr hk).trans (Nat.factorial_dvd_ascFactorial _ _)
 
-end GMC2.FrobeniusResidue
-
-/-! The concurrent arithmetic-engine development used the shorter
-`GMC2.multinomial_dilate_modEq` name in the historical root module.  Retain
-that API as a theorem alias while keeping the residue lemmas in their focused
-namespace. -/
-
-namespace GMC2
-
-theorem multinomial_dilate_modEq
-    {ι : Type*} (p : ℕ) [Fact p.Prime]
-    (S : Finset ι) (r : ι → ℕ) :
-    Nat.multinomial S (fun i => p * r i) ≡ Nat.multinomial S r [MOD p] :=
-  GMC2.FrobeniusResidue.multinomial_dilate_modEq p S r
-
-/-- Elementary absorption lemma used by the concurrent no-carry proof. -/
+/-- Elementary absorption lemma for the no-carry argument. -/
 theorem dvd_choose_of_dvd {p : ℕ} (hp : p.Prime) {n k : ℕ}
     (hn : p ∣ n) (hk : ¬ p ∣ k) (hkn : k ≤ n) : p ∣ n.choose k := by
   have hk1 : 1 ≤ k := Nat.one_le_iff_ne_zero.mpr
@@ -174,27 +159,6 @@ theorem multinomial_dvd_of_exists_not_dvd
       · exact dvd_mul_of_dvd_left
           (dvd_choose_of_dvd hp hsum hra (Nat.le_add_right _ _)) _
 
-/-- Strict base-height growth makes the dilated factorial ratio contain a
-factor `p`; compatibility form of the original arithmetic-engine lemma. -/
-theorem factorial_dilate_dvd {p : ℕ} (hp : 1 ≤ p) {A0 A : ℕ}
-    (h : A0 < A) :
-    p * (p * A0).factorial ∣ (p * A).factorial := by
-  have h1 : p * (A0 + 1) ≤ p * A := Nat.mul_le_mul le_rfl (by omega)
-  have hdvd1 : (p * (A0 + 1)).factorial ∣ (p * A).factorial :=
-    Nat.factorial_dvd_factorial h1
-  have heq : p * (A0 + 1) = p * A0 + p := by ring
-  rw [heq] at hdvd1
-  have hpdvd : p ∣ (p * A0 + 1).ascFactorial p :=
-    dvd_trans (Nat.dvd_factorial hp le_rfl)
-      (Nat.factorial_dvd_ascFactorial _ _)
-  calc
-    p * (p * A0).factorial ∣
-        (p * A0).factorial * (p * A0 + 1).ascFactorial p := by
-      rw [mul_comm p]
-      exact mul_dvd_mul_left _ hpdvd
-    _ = (p * A0 + p).factorial := Nat.factorial_mul_ascFactorial _ _
-    _ ∣ (p * A).factorial := hdvd1
-
 /-- Compatibility form of the lowest-balanced-face theorem (15): the complete dilated face sum is
 the `p`-th power of its undilated constant-term sum. -/
 theorem face_sum_frobenius
@@ -224,5 +188,5 @@ theorem face_sum_ne_zero
   rw [face_sum_frobenius]
   exact pow_ne_zero p hQ
 
-end GMC2
+end GMC2.FrobeniusResidue
 

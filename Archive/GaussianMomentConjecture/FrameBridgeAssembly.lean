@@ -23,8 +23,8 @@ in the Laurent frame `Ω`):
   determined by the Weierstrass computation (`= ±c·t` under `hderiv`).
 
 Then `∏_{β∈S} β = algebraMap ((-1)^{deg Pω}·v)`, exactly the `hS` fed to
-`GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS`. This is the whole bridge modulo those two frame-side
-facts — kernel-pure, no valuation.
+`GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS`. This is the whole bridge modulo
+those two frame-side facts — kernel-pure, no valuation.
 -/
 
 open Polynomial
@@ -56,11 +56,11 @@ theorem hS_of_dvd_value (Φ : (RatFunc F)[X]) (hΦ0 : Φ ≠ 0)
       pow_mul, neg_one_sq, one_pow, one_mul]
   rw [hvieta, hval, map_mul, map_pow, map_neg, map_one]
 
-/-- **The frame bridge, completed into the DvdK contradiction.** For the concrete `Φ = Phi R M`
-(`1 ≤ M < deg R`, `R(0) ≠ 0`) over a characteristic-zero field, given the two frame-side facts —
-`Pω ∣ Φ` over `Ω` (the transpose of the Weierstrass factorization) and
-`Pω.coeff 0 = algebraMap ((-1)^{deg Pω}·(c·t))` (the Weierstrass value under `hderiv`) — the
-orbit-product contradiction `GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS` closes: `False`. This is
+/-- **The frame bridge, completed into the DvdK contradiction.** For the concrete `Φ = Phi R M` (`1
+≤ M < deg R`, `R(0) ≠ 0`) over a characteristic-zero field, given the two frame-side facts — `Pω ∣
+Φ` over `Ω` (the transpose of the Weierstrass factorization) and `Pω.coeff 0 = algebraMap ((-1)^{deg
+Pω}·(c·t))` (the Weierstrass value under `hderiv`) — the orbit-product contradiction
+`GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS` closes: `False`. This is
 `SinglePolyCrux`'s contradiction reduced to **exactly** the transpose-provided divisibility and the
 `hderiv`-provided value; everything else is kernel-pure and valuation-free. (The value is packaged
 so that `(-1)^{deg Pω}` cancels, giving the `hS` shape `∏_{β∈S} β = algebraMap (c·t)` directly.) -/
@@ -81,7 +81,8 @@ theorem false_of_frame_data [CharZero F] (R : Polynomial F) (M : ℕ)
   rw [show (-1 : RatFunc F) ^ Pω.natDegree * ((-1) ^ Pω.natDegree * (RatFunc.C c * RatFunc.X))
         = RatFunc.C c * RatFunc.X by
       rw [← mul_assoc, ← pow_add, ← two_mul, pow_mul, neg_one_sq, one_pow, one_mul]] at hS
-  exact GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS R M hM hMd hR0 S x0 c hc hS
+  exact GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS
+    R M hM hMd hR0 S x0 c hc hS
 
 end GMC2.FrameBridgeAssembly
 

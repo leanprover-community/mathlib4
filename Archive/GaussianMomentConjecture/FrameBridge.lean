@@ -8,18 +8,19 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 /-!
 # Frame-bridge pullback: transporting the small-root product identity to the splitting field
 
-The orbit-product contradiction (`GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS`) consumes `hS`, the
-identity `∏_{β∈S} β = algebraMap (RatFunc F) SF (c·t)` in the **splitting field** of `Φ = Phi R M`
-over `RatFunc F`. The Weierstrass small-root product `Π = (−1)ᴹ (smallRootFactor R M).coeff 0 = c·t`
+The orbit-product contradiction
+(`GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS`) consumes `hS`, the identity
+`∏_{β∈S} β = algebraMap (RatFunc F) SF (c·t)` in the **splitting field** of `Φ = Phi R M` over
+`RatFunc F`. The Weierstrass small-root product `Π = (−1)ᴹ (smallRootFactor R M).coeff 0 = c·t`
 lives in the **power-series/Laurent frame**. This module supplies the elementary but essential
 *pullback*: any `RatFunc F`-algebra embedding `ψ` of the splitting field into a larger field `Ω` is
 injective and fixes the base field, so an identity `ψ(∏_S β) = algebraMap v` proved in `Ω`
 transports verbatim to the splitting field.
 
 **Why this matters (the reframe):** `orbit_product_contradiction_of_hS`'s orbit-product equation
-(`GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract` via `prod_pow_card_group_eq`) holds for an
-**arbitrary** finset `S` — it needs only that `∏_{β∈S} β` be Galois-fixed, which `hS` (a base-field
-value) supplies. So `S` need **not** be the valuation-positive packet; it may be defined
+(`GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract` via `prod_pow_card_group_eq`) holds
+for an **arbitrary** finset `S` — it needs only that `∏_{β∈S} β` be Galois-fixed, which `hS` (a
+base-field value) supplies. So `S` need **not** be the valuation-positive packet; it may be defined
 *algebraically* as the roots of the Weierstrass distinguished factor `P` (via `P ∣ Φ`), and its
 product is `(−1)ᴹ P.coeff 0 = c·t` by Vieta. Hence the frame bridge needs **no** extension of the
 Laurent valuation to the algebraic closure (the months-long `SpectralNorm`/Krasner prerequisite):
@@ -47,9 +48,10 @@ theorem prod_eq_algebraMap_of_embedding (Φ : (RatFunc F)[X])
   rw [hψ, AlgHom.commutes]
 
 /-- Specialisation to the `hS` shape (`v = C c · X`, i.e. the small-root product `c·t`): the exact
-hypothesis `GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS` consumes. Constructing the embedding `ψ` (into
-the algebraic closure of `LaurentSeries F`) and proving the `Ω`-side identity `ψ(∏_S β) = c·t` (via
-`P ∣ Φ` + Vieta on the Weierstrass distinguished factor) is the remaining algebraic bridge work. -/
+hypothesis `GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS` consumes.
+Constructing the embedding `ψ` (into the algebraic closure of `LaurentSeries F`) and proving the
+`Ω`-side identity `ψ(∏_S β) = c·t` (via `P ∣ Φ` + Vieta on the Weierstrass distinguished factor) is
+the remaining algebraic bridge work. -/
 theorem hS_of_embedding (Φ : (RatFunc F)[X])
     {Ω : Type*} [Field Ω] [Algebra (RatFunc F) Ω]
     (ψ : Φ.SplittingField →ₐ[RatFunc F] Ω)

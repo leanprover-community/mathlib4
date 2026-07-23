@@ -19,7 +19,7 @@ functional `a - λ q` which is minimized on a face whose charges still contain
 zero or values of both signs.
 
 This is the finite, one-dimensional linear-programming input used by the
-lowest-balanced-face argument for `the lowest-balanced-face theorem`.  The proof is elementary: the
+lowest-balanced-face argument for the lowest-balanced-face theorem.  The proof is elementary: the
 possible height at charge zero is attained either by a neutral point or by the
 intersection of the segment joining a negative and a positive point.  We take
 the least of those finitely many rational heights and construct a supporting

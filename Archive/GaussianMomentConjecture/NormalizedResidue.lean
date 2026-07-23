@@ -311,7 +311,7 @@ theorem prime_dvd_multinomial_of_not_mem_dilated
     exact hrNot ((mem_dilatedChannels_iff (ι := ι) hp r).2 ⟨hr, hdvd⟩)
   push Not at hnotAll
   obtain ⟨i, hi⟩ := hnotAll
-  apply GMC2.multinomial_dvd_of_exists_not_dvd
+  apply GMC2.FrobeniusResidue.multinomial_dvd_of_exists_not_dvd
     (Fact.out : Nat.Prime p) Finset.univ r
   · rw [(Finset.mem_piAntidiag.mp hr).1]
     exact dvd_mul_right p m0
@@ -425,7 +425,7 @@ theorem normalizedTerm_eq_face_frobenius_term
         (Nat.multinomial Finset.univ t : R) := by
       apply (CharP.cast_eq_iff_mod_eq R p).2
       simpa [Nat.ModEq, show fullDilate p t = fun i ↦ p * t i from rfl] using
-        (GMC2.multinomial_dilate_modEq p
+        (GMC2.FrobeniusResidue.multinomial_dilate_modEq p
           (Finset.univ : Finset ι) t)
     have htargetProduct :
         (∏ i, coefficient i ^ fullDilate p t i) =
@@ -492,7 +492,7 @@ theorem balancedFace_sum_frobenius
           (faceMonomial coefficient s) ^ p =
       (faceConstantTerm exponent coefficient F m0) ^ p := by
   unfold faceConstantTerm
-  exact GMC2.face_sum_frobenius p
+  exact GMC2.FrobeniusResidue.face_sum_frobenius p
     (Finset.univ : Finset ι)
     (balancedFaceChannels exponent F m0)
     (fun s ↦ GMC2.ChannelDilation.extendByZero F s)

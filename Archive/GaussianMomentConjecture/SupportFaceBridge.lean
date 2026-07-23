@@ -110,7 +110,8 @@ variable {α β R : Type*} [Fintype α] [Fintype β]
   [DecidableEq α] [DecidableEq β]
 
 /-- Reindex multiplicity functions contravariantly along an equivalence. -/
-def reindexChannelEquiv (e : α ≃ β) : (α → ℕ) ≃ (β → ℕ) where
+def reindexChannelEquiv (e : α ≃ β) :
+    (α → ℕ) ≃ (β → ℕ) where
   toFun r := r ∘ e.symm
   invFun s := s ∘ e
   left_inv r := by

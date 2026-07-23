@@ -16,7 +16,7 @@ import Mathlib.Tactic.Ring.RingNF
 # Lowest-balanced-face arithmetic for GMC(2)
 
 This module formalizes three finite-dimensional algebraic steps from the
-lowest-balanced-face proof of `the lowest-balanced-face theorem`:
+lowest-balanced-face proof of the lowest-balanced-face theorem:
 
 * every balanced multiplicity vector supported on one tilted face has the
   same radial height at fixed mass;

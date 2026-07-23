@@ -12,8 +12,9 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 /-!
 # The orbit-product argument, concrete, reduced to the small-root product identity alone
 
-`GMC2.OrbitProductConcrete.orbit_product_contradiction_concrete` is the whole orbit-product argument for the
-one-variable DvdK theorem, on an *abstract* irreducible `Φ` over `F(t)`, taking three inputs:
+`GMC2.OrbitProductConcrete.orbit_product_contradiction_concrete` is the whole orbit-product argument
+for the one-variable DvdK theorem, on an *abstract* irreducible `Φ` over `F(t)`, taking three
+inputs:
 
 * `hΦ`  — `Φ` is irreducible over `F(t)`;
 * `hΩ`  — Vieta: the full product of the (distinct) roots of `Φ` is a constant `d ∈ F`;
@@ -45,11 +46,11 @@ variable {F : Type*} [Field F]
 set_option maxHeartbeats 1000000 in
 -- This assembly instantiates several large algebraic bridges at once; elaborating the
 -- composite term exceeds the default heartbeat budget.
-/-- **The concrete orbit-product contradiction, reduced to the small-root product
-identity.** For `Φ = Phi R M` (`= Xᴹ − t·R`, `1 ≤ M < deg R`, `R(0) ≠ 0`), separable over its
-splitting field, the irreducibility (`hΦ`) and Vieta (`hΩ`) inputs of
-`GMC2.OrbitProductConcrete.orbit_product_contradiction_concrete` are discharged in-repo. What remains is
-precisely the small-root product identity data: a Galois-fixed small-root packet `S` whose
+/-- **The concrete orbit-product contradiction, reduced to the small-root product identity.** For `Φ
+= Phi R M` (`= Xᴹ − t·R`, `1 ≤ M < deg R`, `R(0) ≠ 0`), separable over its splitting field, the
+irreducibility (`hΦ`) and Vieta (`hΩ`) inputs of
+`GMC2.OrbitProductConcrete.orbit_product_contradiction_concrete` are discharged here. What remains
+is precisely the small-root product identity data: a Galois-fixed small-root packet `S` whose
 product is `c·t`. Given that, the orbit-product argument closes. This isolates the one deep analytic
 gap. -/
 theorem orbit_product_contradiction_of_hS_and_fixed

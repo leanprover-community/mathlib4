@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Jacobson.Ring
 /-!
 # Number-field specialization backbone for the NC2 algebraic descent
 
-`the lowest-balanced-face theorem` first replaces a hypothetical complex torus zero by a torus zero
+the lowest-balanced-face theorem first replaces a hypothetical complex torus zero by a torus zero
 over a number field.  Once its localized coordinate algebra `A` is known to
 be nontrivial and of finite type over `ℚ`, the remaining commutative-algebra
 step is Zariski's lemma: choose a maximal ideal and pass to `A ⧸ m`, which is

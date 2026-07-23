@@ -16,7 +16,7 @@ import Mathlib.Data.Nat.Choose.Multinomial
 # Exact Wick-channel expansion for GMC(2)
 
 This module connects the `MvPolynomial` expectation `GMC2.E` to the exact
-finite-support multinomial channels used in `the lowest-balanced-face theorem`.  For a multiplicity
+finite-support multinomial channels used in the lowest-balanced-face theorem.  For a multiplicity
 function `r` on `P.support`, its channel exponent is
 
 `sum_s r(s) • s`.
@@ -78,13 +78,6 @@ theorem E_finset_sum {α : Type*} (S : Finset α)
   | empty => simp [E]
   | @insert i S hi ih => simp [hi, E_add, ih]
 
-/-- Compatibility name for finite additivity used by the historical
-arithmetic-engine module. -/
-theorem E_sum {α : Type*} (S : Finset α)
-    (f : α → MvPolynomial (Fin 2) ℂ) :
-    E (∑ i ∈ S, f i) = ∑ i ∈ S, E (f i) :=
-  E_finset_sum S f
-
 /-- Wick evaluation of one exact monomial. -/
 @[simp] theorem E_monomial (s : Fin 2 →₀ ℕ) (c : ℂ) :
     E (monomial s c) = c * wt s := by
@@ -107,8 +100,8 @@ theorem prod_monomial_pow (S : Finset (Fin 2 →₀ ℕ))
       simp [hs, channelExponent, MvPolynomial.monomial_pow,
         MvPolynomial.monomial_mul]
 
-/-- Generic unpowered monomial product, retained under the compatibility
-name used by the concurrent `the lowest-balanced-face theorem` arithmetic engine. -/
+/-- A product of exact monomials is a monomial, with exponent the sum and coefficient
+the product.  This is the unpowered form of `prod_monomial_pow`. -/
 theorem prod_monomial {α : Type*} (S : Finset α)
     (e : α → Fin 2 →₀ ℕ) (c : α → ℂ) :
     ∏ i ∈ S, (monomial (e i) (c i) : MvPolynomial (Fin 2) ℂ) =
@@ -146,10 +139,8 @@ theorem E_pow_eq_channel_sum (P : MvPolynomial (Fin 2) ℂ) (m : ℕ) :
   rw [E_monomial]
   simp only [channelCoefficient]
 
-/-- Compatibility name for the exact Wick expansion used by the concurrent
-`the lowest-balanced-face theorem` development.  Keeping the theorem here makes the modular library
-module the single source of truth while the historical root file remains a
-thin import shim. -/
+/-- The exact Wick expansion of `E (P ^ m)`, with `channelCoefficient` and
+`channelExponent` unfolded.  This is the form the lowest-balanced-face argument consumes. -/
 theorem wick_expansion (P : MvPolynomial (Fin 2) ℂ) (m : ℕ) :
     E (P ^ m) = ∑ r ∈ P.support.piAntidiag m,
       (Nat.multinomial P.support r : ℂ) *
@@ -158,7 +149,7 @@ theorem wick_expansion (P : MvPolynomial (Fin 2) ℂ) (m : ℕ) :
   simpa only [channelCoefficient, channelExponent] using
     E_pow_eq_channel_sum P m
 
-/-- Equation (1) of `the lowest-balanced-face theorem` in its explicit balanced-factorial form.
+/-- Equation (1) of the lowest-balanced-face theorem in its explicit balanced-factorial form.
 Unbalanced channels vanish; a balanced channel has Wick weight `A!`, where
 `A` is either (equal) accumulated exponent. -/
 theorem E_pow_eq_balanced_channel_sum (P : MvPolynomial (Fin 2) ℂ) (m : ℕ) :

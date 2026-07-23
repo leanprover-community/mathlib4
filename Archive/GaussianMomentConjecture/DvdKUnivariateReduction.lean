@@ -28,9 +28,9 @@ canonical shift `M = −min_i q_i ≥ 1` for which `R.coeff 0 ≠ 0` (the unique
 
 So *assuming* the single-polynomial crux — for `Φ = Phi R M`, if every `D_m` (`m ≥ 1`) vanishes then
 the small-root packet product is `c·t` (`hS`) — the sharpened orbit-product contradiction
-`GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS` closes, giving `DvdK1BothSigns`. Every step except that
-one crux (the Weierstrass small-root identity, `= h(0,t) = 1`, the analytic lane) is discharged here
-kernel-pure.
+`GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS` closes, giving `DvdK1BothSigns`.
+Every step except that one crux (the Weierstrass small-root identity, `= h(0,t) = 1`, the analytic
+lane) is discharged here kernel-pure.
 -/
 
 open Polynomial GMC2.LaurentConstantTerm
@@ -138,8 +138,8 @@ theorem dvdK1_bothSigns_of_crux (crux : SinglePolyCrux) :
     exact hcon' m hm
   -- feed the crux, then close with the sharpened orbit-product contradiction
   obtain ⟨S, x0, cc, hcc, hS⟩ := crux (shiftedPolynomial q c M) M hM1 hMd hR0 hDvanish
-  exact GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS (shiftedPolynomial q c M) M hM1 hMd hR0 S x0 cc
-    hcc hS
+  exact GMC2.OrbitProductFromSmallRoots.orbit_product_contradiction_of_hS
+    (shiftedPolynomial q c M) M hM1 hMd hR0 S x0 cc hcc hS
 
 /-- **`DvdK1` from the single-polynomial crux.**  Assembling the univariate reduction with the
 zero-charge disjunct (`GMC2.DvdKZeroCharge.dvdK1_of_bothSigns`): the full published one-variable

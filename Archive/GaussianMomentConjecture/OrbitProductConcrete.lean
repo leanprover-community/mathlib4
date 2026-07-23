@@ -11,12 +11,12 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 /-!
 # The orbit-product contradiction for an irreducible `Φ` over `F(t)`
 
-Instantiating the abstract wrapper (`GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract`) at `Φ.Gal` acting
-on `Φ.rootSet Φ.SplittingField` via the direct action (`GalRootAction`). Transitivity comes from
-`Φ`'s irreducibility (`isPretransitive_rootAction`), equivariance is tautological (`coe_smul`), and
-the two number-theoretic inputs — the small-root product identity (`hS`, `hfix`: the small-root
-product is `c·t` and Galois-fixed) and Vieta (`hΩ`: the full product is a constant `d`) — remain as
-hypotheses.
+Instantiating the abstract wrapper (`GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract`)
+at `Φ.Gal` acting on `Φ.rootSet Φ.SplittingField` via the direct action (`GalRootAction`).
+Transitivity comes from `Φ`'s irreducibility (`isPretransitive_rootAction`), equivariance is
+tautological (`coe_smul`), and the two number-theoretic inputs — the small-root product identity
+(`hS`, `hfix`: the small-root product is `c·t` and Galois-fixed) and Vieta (`hΩ`: the full product
+is a constant `d`) — remain as hypotheses.
 -/
 
 open Polynomial

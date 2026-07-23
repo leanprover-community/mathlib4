@@ -10,10 +10,10 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 /-!
 # The orbit-product argument reduced to `hS` alone (the small-root product `= c·t`)
 
-`GMC2.OrbitProductReduced.orbit_product_contradiction_of_hS_and_fixed` still carried two auxiliary hypotheses beyond the
-deep analytic input `hS` (the small-root product is `c·t`): separability (`hsep`) of `Φ = Phi R M`
-over its splitting field, and Galois-fixedness (`hfix`) of the small-root packet product.  Over a
-characteristic-zero base field, **both are free**:
+`GMC2.OrbitProductReduced.orbit_product_contradiction_of_hS_and_fixed` still carried two auxiliary
+hypotheses beyond the deep analytic input `hS` (the small-root product is `c·t`): separability
+(`hsep`) of `Φ = Phi R M` over its splitting field, and Galois-fixedness (`hfix`) of the small-root
+packet product. Over a characteristic-zero base field, **both are free**:
 
 * `hsep` — `Phi R M` is irreducible over `F(t)` (`GMC2.DvdKAssembly.irreducible_Phi`), and `F(t)` is
   a characteristic-zero, hence perfect, field (`CharZero (RatFunc F)` → `PerfectField (RatFunc F)`
@@ -62,7 +62,8 @@ theorem orbit_product_contradiction_of_hS
     -- base field
     rw [hS]
     exact AlgHomClass.commutes σ (RatFunc.C c * RatFunc.X)
-  exact GMC2.OrbitProductReduced.orbit_product_contradiction_of_hS_and_fixed R M hM hMd hR0 hsep S x0 c hc hfix hS
+  exact GMC2.OrbitProductReduced.orbit_product_contradiction_of_hS_and_fixed
+    R M hM hMd hR0 hsep S x0 c hc hfix hS
 
 end GMC2.OrbitProductFromSmallRoots
 

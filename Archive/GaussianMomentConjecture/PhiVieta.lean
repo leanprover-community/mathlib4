@@ -8,8 +8,8 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 /-!
 # Vieta valuation-0 input for the orbit-product wrapper
 
-`GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract` consumes two number-theoretic inputs about the roots of
-`Φ(X) = Xᴹ − t·R(X)` over `F(t)`:
+`GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract` consumes two number-theoretic inputs
+about the roots of `Φ(X) = Xᴹ − t·R(X)` over `F(t)`:
 
 * `hS` (the small-root product identity): the small-root product equals `c·t` (`t`-adic valuation 1)
   — the deep analytic gap;
@@ -63,7 +63,8 @@ theorem leadingCoeff_Phi (R : F[X]) (M : ℕ) (hMd : M < R.natDegree) :
 
 /-- **The Vieta core (valuation-0 fact).** `Φ.coeff 0 / Φ.leadingCoeff = r₀/lc(R)` is the image of a
 CONSTANT of `F` (the `t` cancels), so the product of the roots of `Φ` (= `±` this ratio) has
-`t`-adic valuation `0` — the `hΩ` input of `GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract`. -/
+`t`-adic valuation `0` — the `hΩ` input of
+`GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract`. -/
 theorem coeff_ratio_Phi_eq_const (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR : R ≠ 0)
     (hMd : M < R.natDegree) :
     (Phi R M).coeff 0 / (Phi R M).leadingCoeff
@@ -77,8 +78,8 @@ theorem coeff_ratio_Phi_eq_const (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR : R ≠
 
 /-- **Vieta: the product of the roots of `Φ` is a constant** (`t`-adic valuation 0). Over any field
 `E` where `Φ` splits, `∏ roots = (−1)^d · (r₀/lc R)`, the image of a constant of `F`. This is the
-`hΩ` input of `GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract` (the full-root product is a nonzero
-constant). -/
+`hΩ` input of `GMC2.OrbitProductWrapper.orbit_product_contradiction_abstract` (the full-root product
+is a nonzero constant). -/
 theorem prod_roots_Phi (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hMd : M < R.natDegree)
     {E : Type*} [Field E] [Algebra (RatFunc F) E]
     (hsplit : Splits ((Phi R M).map (algebraMap (RatFunc F) E))) :
