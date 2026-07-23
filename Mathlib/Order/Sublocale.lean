@@ -218,25 +218,67 @@ end Nucleus
 set_option backward.isDefEq.respectTransparency false in
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
-def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
+@[simps] def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   toFun n := n.ofDual.toSublocale
   invFun s := .toDual s.toNucleus
   left_inv := by simp [Function.LeftInverse, Nucleus.ext_iff]
   right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
   map_rel_iff' := by simp
 
-lemma nucleusIsoSublocale.eq_toSublocale : Nucleus.toSublocale = @nucleusIsoSublocale X _ := rfl
-lemma nucleusIsoSublocale.symm_eq_toNucleus :
-  Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
+lemma toSublocale_eq_nucleusIsoSublocale {n : Nucleus X} :
+  n.toSublocale = nucleusIsoSublocale (OrderDual.toDual n) := rfl
 
 instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
 set_option backward.isDefEq.respectTransparency false in
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
-  iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
-    nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
-    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
+  iInf_sup_le_sup_sInf a s := by
+    rw [← toNucleus_le_toNucleus, ← OrderDual.toDual_le_toDual,
+    ← nucleusIsoSublocale_symm_apply, ← nucleusIsoSublocale_symm_apply]
+    simp only [map_iInf, map_sup, nucleusIsoSublocale_symm_apply, map_sInf, sup_sInf_eq, iInf_image]
+    rfl
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
+
+section Open
+
+/--
+The open `Nucleus` corresponding to an element of the frame `X`.
+-/
+abbrev Nucleus.Open (U : X) : Nucleus X where
+  toFun x := U ⇨ x
+  map_inf' _ _ := himp_inf_distrib _ _ _
+  idempotent' _ := le_of_eq himp_idem
+  le_apply' _ := le_himp
+
+/--
+The corresponding open Sublocale for an element of a Frame `X`.
+-/
+def Sublocale.Open : FrameHom X (Sublocale X) where
+  toFun U := Nucleus.Open U |>.toSublocale
+  map_inf' a b := by
+    simp_rw [toSublocale_eq_nucleusIsoSublocale, ← map_inf, ← toDual_sup]
+    refine congrArg _ <| congrArg _ <| le_antisymm (fun i ↦ ?_) ?_
+    · rw [← sSup_pair, ← sInf_upperBounds_eq_sSup, Nucleus.sInf_apply]
+      simp only [Nucleus.coe_mk, InfHom.coe_mk, upperBounds_insert, upperBounds_singleton,
+        Ici_inter_Ici, mem_Ici, sup_le_iff, le_iInf_iff, and_imp]
+      intro n h1 h2
+      rw [← himp_himp, ← @n.idempotent _ _ i]
+      exact le_trans (h1 _) (le_trans n.map_himp_le (h2 (n i)))
+    · have h {x y : X} : Nucleus.Open x ≤ Nucleus.Open (x ⊓ y) := fun i ↦ by
+        simpa using le_trans (inf_le_inf (by rfl) inf_le_left) himp_inf_le
+      exact sup_le h (by rw [inf_comm]; exact h)
+  map_top' := by simpa [Nucleus.Open] using by rfl
+  map_sSup' s := by
+    have h : sSup ((fun a ↦ nucleusIsoSublocale (OrderDual.toDual (Nucleus.Open a))) '' s) =
+        nucleusIsoSublocale (OrderDual.toDual (sInf (Nucleus.Open '' s))) := by
+      simp only [nucleusIsoSublocale_apply, OrderDual.ofDual_toDual, toDual_sInf, map_sSup]
+      congr 1
+      simp [Set.ext_iff]
+    simp_rw [toSublocale_eq_nucleusIsoSublocale, h]
+    congr
+    ext i
+    simp only [Nucleus.coe_mk, himp_eq_sSup, InfHom.coe_mk, Nucleus.sInf_apply, le_antisymm_iff]
+    simp_all [inf_sSup_eq, iInf_le_iff, le_sSup_iff, upperBounds, inf_sSup_eq]
