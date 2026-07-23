@@ -49,9 +49,12 @@ theorem continuousOn_univ {f : α → β} : ContinuousOn f univ ↔ Continuous f
   simp [continuous_iff_continuousAt, ContinuousOn, ContinuousAt, ContinuousWithinAt,
     nhdsWithin_univ]
 
-theorem continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
-    ContinuousWithinAt f s x ↔ ContinuousAt (s.restrict f) ⟨x, h⟩ :=
+theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α} {s : Set α}
+    (h : x ∈ s) : ContinuousWithinAt f s x ↔ ContinuousAt (s.domRestrict f) ⟨x, h⟩ :=
   tendsto_nhdsWithin_iff_subtype h f _
+
+@[deprecated (since := "2026-07-19")] alias continuousWithinAt_iff_continuousAt_restrict :=
+  continuousWithinAt_iff_continuousAt_domRestrict
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : MapsTo f s t) :
@@ -99,30 +102,35 @@ theorem ContinuousOn.continuousWithinAt (hf : ContinuousOn f s) (hx : x ∈ s) :
     ContinuousWithinAt f s x :=
   hf x hx
 
-theorem continuousOn_iff_continuous_restrict :
-    ContinuousOn f s ↔ Continuous (s.restrict f) := by
+theorem continuousOn_iff_continuous_domRestrict :
+    ContinuousOn f s ↔ Continuous (s.domRestrict f) := by
   rw [ContinuousOn, continuous_iff_continuousAt]; constructor
   · rintro h ⟨x, xs⟩
-    exact (continuousWithinAt_iff_continuousAt_restrict f xs).mp (h x xs)
+    exact (continuousWithinAt_iff_continuousAt_domRestrict f xs).mp (h x xs)
   intro h x xs
-  exact (continuousWithinAt_iff_continuousAt_restrict f xs).mpr (h ⟨x, xs⟩)
+  exact (continuousWithinAt_iff_continuousAt_domRestrict f xs).mpr (h ⟨x, xs⟩)
 
-alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
+alias ⟨ContinuousOn.domRestrict, _⟩ := continuousOn_iff_continuous_domRestrict
+
+@[deprecated (since := "2026-07-19")]
+alias continuousOn_iff_continuous_restrict := continuousOn_iff_continuous_domRestrict
+@[deprecated (since := "2026-07-19")]
+alias ContinuousOn.restrict := ContinuousOn.domRestrict
 
 theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : MapsTo f s t) :
     Continuous (ht.restrict f s t) :=
-  hf.restrict.codRestrict _
+  hf.domRestrict.codRestrict _
 
 theorem continuousOn_iff' :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  have : ∀ t, IsOpen (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
+  have : ∀ t, IsOpen (s.domRestrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
-    rw [isOpen_induced_iff, Set.restrict_eq, Set.preimage_comp]
+    rw [isOpen_induced_iff, Set.domRestrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff]
     constructor <;>
       · rintro ⟨u, ou, useq⟩
         exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
-  rw [continuousOn_iff_continuous_restrict, continuous_def]; simp only [this]
+  rw [continuousOn_iff_continuous_domRestrict, continuous_def]; simp only [this]
 
 /-- If a function is continuous on a set for some topologies, then it is
 continuous on the same set with respect to any finer topology on the source space. -/
@@ -140,11 +148,11 @@ theorem ContinuousOn.mono_rng {α β : Type*} {t₁ : TopologicalSpace α} {t₂
 
 theorem continuousOn_iff_isClosed :
     ContinuousOn f s ↔ ∀ t : Set β, IsClosed t → ∃ u, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  have : ∀ t, IsClosed (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
+  have : ∀ t, IsClosed (s.domRestrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
-    rw [isClosed_induced_iff, Set.restrict_eq, Set.preimage_comp]
+    rw [isClosed_induced_iff, Set.domRestrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm, Set.inter_comm s]
-  rw [continuousOn_iff_continuous_restrict, continuous_iff_isClosed]; simp only [this]
+  rw [continuousOn_iff_continuous_domRestrict, continuous_iff_isClosed]; simp only [this]
 
 theorem continuous_of_cover_nhds {ι : Sort*} {s : ι → Set α}
     (hs : ∀ x : α, ∃ i, s i ∈ 𝓝 x) (hf : ∀ i, ContinuousOn f (s i)) :
@@ -842,21 +850,21 @@ theorem Topology.IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf 
 
 theorem Topology.IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : IsQuotientMap f)
     {s : Set β} (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by
-  simp only [continuousOn_iff_continuous_restrict, (h.restrictPreimage_isOpen hs).continuous_iff]
+  simp only [continuousOn_iff_continuous_domRestrict, (h.restrictPreimage_isOpen hs).continuous_iff]
   rfl
 
 theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
-    (h : IsOpenMap (s.restrict f)) {finv : β → α} (hleft : LeftInvOn finv f s) :
+    (h : IsOpenMap (s.domRestrict f)) {finv : β → α} (hleft : LeftInvOn finv f s) :
     ContinuousOn finv (f '' s) := by
   refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
-  · rw [← image_restrict]
+  · rw [← image_domRestrict]
     exact h _ (ht.preimage continuous_subtype_val)
   · rw [inter_eq_self_of_subset_left (image_mono inter_subset_right), hleft.image_inter']
 
 theorem IsOpenMap.continuousOn_range_of_leftInverse {f : α → β} (hf : IsOpenMap f) {finv : β → α}
     (hleft : Function.LeftInverse finv f) : ContinuousOn finv (range f) := by
   rw [← image_univ]
-  exact (hf.restrict isOpen_univ).continuousOn_image_of_leftInvOn fun x _ => hleft x
+  exact (hf.domRestrict isOpen_univ).continuousOn_image_of_leftInvOn fun x _ => hleft x
 
 /-- If `f` is continuous on an open set `s` and continuous at each point of another
 set `t` then `f` is continuous on `s ∪ t`. -/
