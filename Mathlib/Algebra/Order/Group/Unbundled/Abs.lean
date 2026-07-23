@@ -204,7 +204,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 @[to_additive] lemma lt_mabs : a < |b|ₘ ↔ a < b ∨ a < b⁻¹ := lt_max_iff
 
 @[to_additive] lemma mabs_by_cases (P : α → Prop) (h1 : P a) (h2 : P a⁻¹) : P |a|ₘ :=
-  sup_ind _ _ h1 h2
+  max_ind (motive := P) (fun _ ↦ h1) (fun _ ↦ h2)
 
 @[to_additive] lemma eq_or_eq_inv_of_mabs_eq (h : |a|ₘ = b) : a = b ∨ a = b⁻¹ := by
   simpa only [← h, eq_comm (a := |a|ₘ), inv_eq_iff_eq_inv] using mabs_choice a

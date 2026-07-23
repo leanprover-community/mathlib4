@@ -99,7 +99,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
     ⟨h3.differentiableOn.mono ball_subset_closedBall,
       (closure_ball z₀ hρ.lt.ne.symm).symm ▸ h3.continuousOn⟩
   let r := ρ ⊓ R
-  have hr : 0 < r := lt_inf_iff.mpr ⟨hρ, hR⟩
+  have hr : 0 < r := lt_min_iff.mpr ⟨hρ, hR⟩
   have h5 : closedBall z₀ r ⊆ closedBall z₀ ρ := closedBall_subset_closedBall inf_le_left
   have h6 : DiffContOnCl ℂ f (ball z₀ r) := h3.mono (ball_subset_ball inf_le_left)
   have h7 : ∀ z ∈ sphere z₀ r, f z ≠ f z₀ := fun z hz =>

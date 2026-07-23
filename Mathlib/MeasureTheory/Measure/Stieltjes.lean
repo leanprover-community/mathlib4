@@ -462,7 +462,7 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
       sub_add_sub_cancel, le_refl,
       max_eq_right]
   · simp only [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_sdiff_Ioi,
-      f.length_empty, zero_add, or_true, le_sup_iff, f.length_Ioc, not_lt]
+      f.length_empty, zero_add, or_true, le_max_iff, f.length_Ioc, not_lt]
   · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_sdiff_Ioi, f.length_Ioc, min_eq_right,
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 
