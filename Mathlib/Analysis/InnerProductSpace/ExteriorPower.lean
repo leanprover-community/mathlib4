@@ -82,8 +82,7 @@ lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder �
   · subst h
     simp [gram_eq_one_iff_orthonormal.mpr (hv.comp _ (RelEmbedding.injective _))]
   · rw [innerProductForm_ιMulti_ιMulti]
-    have : ¬t.1 ⊆ s.1 := fun H ↦ Ne.symm h <|
-      Subtype.val_injective (Finset.eq_of_subset_of_card_le H (s.2.le.trans t.2.ge))
+    have : ¬t.1 ⊆ s.1 := Set.powersetCard.eq_iff_subset.not.mp (Ne.symm h)
     rw [Finset.not_subset] at this
     obtain ⟨x, hxt, hxs⟩ := this
     simp only [Set.powersetCard.mem_coe_iff, Set.mem_range, not_exists,
