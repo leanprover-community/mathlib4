@@ -58,9 +58,10 @@ lemma mk_surjective (s : A.N) :
       (hx' : x ∉ A.obj _), s = mk x hx hx' :=
   ⟨s.dim, s.simplex, s.nonDegenerate, s.notMem, rfl⟩
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 lemma ext_iff (x y : A.N) :
     x = y ↔ x.toN = y.toN := by
-  grind [cases SSet.Subcomplex.N]
+  grind only [cases SSet.Subcomplex.N]
 
 variable (A) in
 @[elab_as_elim]
