@@ -1039,6 +1039,14 @@ variable {p q}
 theorem coe_ofEq_apply (h : p = q) (x : p) : (ofEq p q h x : E) = x :=
   rfl
 
+/-- `ofEq` in `Subtype.mk` form: `coe_ofEq_apply` rewrites under the ambient coercion, whereas
+this keeps the result a subtype element, so `simp` can push `ofEq` through an explicit
+`⟨x, hx⟩` when the value is fed to a further map. -/
+@[simp]
+theorem ofEq_apply_mk (h : p = q) (x : E) (hx : x ∈ p) :
+    ofEq p q h ⟨x, hx⟩ = ⟨x, h ▸ hx⟩ :=
+  rfl
+
 @[simp]
 theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
   rfl
