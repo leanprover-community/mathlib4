@@ -108,7 +108,7 @@ theorem fold_insert_idem [DecidableEq α] [hi : Std.IdempotentOp op] :
     (insert a s).fold op b f = f a * s.fold op b f := by
   by_cases h : a ∈ s
   · rw [← insert_erase h]
-    simp [← ha.assoc, hi.idempotent]
+    simp [-insert_erase_eq_insert, ← ha.assoc, hi.idempotent]
   · apply fold_insert h
 
 theorem fold_image_idem [DecidableEq α] {g : γ → α} {s : Finset γ} [hi : Std.IdempotentOp op] :
