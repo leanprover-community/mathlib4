@@ -38,6 +38,10 @@ but are independent of that choice. The `..._iff` lemmas express this independen
 Often, definitions assume that Dedekind domains are not fields. We found it more practical
 to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
+To obtain `IsMulTorsionFree (Ideal A)` for a Dedekind domain `A` (and consequently
+`IsMulTorsionFree (FractionalIdeal A⁰ K)` for the field of fractions `K`), one needs to import
+`Mathlib.Algebra.GroupWithZero.Torsion`.
+
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
