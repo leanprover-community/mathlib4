@@ -38,7 +38,7 @@ theorem measurable_exp : Measurable exp :=
 
 theorem measurable_log : Measurable log :=
   measurable_of_measurable_on_compl_singleton 0 <|
-    Continuous.measurable <| continuousOn_iff_continuous_restrict.1 continuousOn_log
+    Continuous.measurable <| continuousOn_iff_continuous_domRestrict.1 continuousOn_log
 
 lemma measurable_of_measurable_exp (hf : Measurable (fun x ↦ exp (f x))) :
     Measurable f := by
