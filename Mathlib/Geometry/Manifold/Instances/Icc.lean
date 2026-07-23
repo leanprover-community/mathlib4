@@ -87,13 +87,16 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
       · have : ContDiff ℝ n (fun y ↦ x + y) := by fun_prop
         simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ, Homeomorph.addLeft]
     intro z' hz'
-    have : 0 ≤ z' 0 := by simp_all [modelWithCornersEuclideanHalfSpace]
-    dsimp
-    simp only [hz, ↓reduceIte, Homeomorph.toOpenPartialHomeomorph_apply, Homeomorph.coe_addLeft]
-    rw [IccLeftChart_symm_apply_of_le]
-    · simpa [φ, φ₀, add_comm, modelWithCornersEuclideanHalfSpace_symm_apply]
-    · simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace_symm_apply]
-      linarith
+    obtain ⟨⟨u, rfl⟩, hu⟩ :
+        (∃ y, ⇑(𝓡∂ 1) y = z') ∧ ⇑(𝓡∂ 1).symm z' ∈ (IccLeftChart x y).target := by
+      simpa [hz] using! hz'
+    replace hu : ofLp u.val 0 ≤ y - x := by
+      apply le_of_lt
+      simpa [modelWithCornersEuclideanHalfSpace_symm_apply, max_eq_left u.property] using! hu
+    have hu' : ((𝓡∂ 1).symm u.val).val.ofLp 0 ≤ y - x := by
+      simp [modelWithCornersEuclideanHalfSpace_symm_apply, h.out.le, hu]
+    simp [hz, φ, φ₀, IccLeftChart_symm_apply_of_le hu']
+    simpa [modelWithCornersEuclideanHalfSpace_symm_apply] using u.property
   · -- At the right boundary point, the correct codomain chart is mapping `a` to `y - a`.
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
       (chartAt (EuclideanHalfSpace 1) z)
