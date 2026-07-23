@@ -136,8 +136,8 @@ theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasi
 
 omit [Finite n] in
 @[simp]
-lemma gram_orthonormal [DecidableEq n] {v : n → E} (h : Orthonormal 𝕜 v) : gram 𝕜 v = 1 := by
-  ext; simp [orthonormal_iff_ite.mp h, Matrix.one_apply]
+lemma gram_eq_one_iff_orthonormal [DecidableEq n] {v : n → E} : gram 𝕜 v = 1 ↔ Orthonormal 𝕜 v := by
+  simp [← Matrix.ext_iff, orthonormal_iff_ite, Matrix.one_apply]
 
 omit [Finite n] in
 /-- Inequality `‖f x‖ ≤ ‖f‖ * ‖x‖` lifted to Gram matrices. -/
