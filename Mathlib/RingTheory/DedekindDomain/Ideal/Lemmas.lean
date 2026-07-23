@@ -1300,6 +1300,16 @@ instance [IsDedekindDomain A] [IsDedekindDomain B] [Module.IsTorsionFree A B]
     (v : HeightOneSpectrum A) : Finite {w : HeightOneSpectrum B // w.under A = v} :=
   Finite.of_equiv _ (primesOverEquiv v).symm
 
+/-- If `B` is a faithful integral `A`-algebra, then the height-one spectrum of `B` is infinite
+whenever that of `A` is (the map `under A` is surjective). -/
+theorem infinite_of_isIntegral [IsDomain B] [FaithfulSMul A B] [Infinite (HeightOneSpectrum A)] :
+    Infinite (HeightOneSpectrum B) := by
+  have : IsDomain A := .of_faithfulSMul A B
+  refine Infinite.of_surjective (under A) fun w ↦ ?_
+  obtain ⟨⟨Q, hQp, hQlo⟩⟩ := w.asIdeal.nonempty_primesOver (S := B)
+  exact ⟨⟨Q, hQp, Ideal.ne_bot_of_mem_primesOver w.ne_bot ⟨hQp, hQlo⟩⟩,
+    HeightOneSpectrum.ext (by simpa using hQlo.over.symm)⟩
+
 end IsDedekindDomain.HeightOneSpectrum
 
 end HeightOneSpectrumFiber

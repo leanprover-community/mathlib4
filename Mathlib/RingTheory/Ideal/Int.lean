@@ -156,6 +156,8 @@ noncomputable def primesEquivInt : HeightOneSpectrum ℤ ≃ Nat.Primes where
   left_inv v := HeightOneSpectrum.ext (by simp [Int.ideal_span_absNorm_eq_self v.asIdeal])
   right_inv p := Subtype.ext (by simp [ofPrime_asIdeal, Ideal.absNorm_span_singleton])
 
+instance : Infinite (HeightOneSpectrum ℤ) := primesEquivInt.infinite_iff.mpr inferInstance
+
 /-- The equivalence between height-one prime ideals of `R` and prime numbers, transported from `ℤ`
 along the isomorphism `R ≃+* ℤ` given by `IsIntegralClosure.equiv`. -/
 @[expose]

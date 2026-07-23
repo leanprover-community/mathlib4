@@ -9,6 +9,7 @@ public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 
 /-!
 # Dirichlet density of a set of prime ideals
@@ -79,6 +80,15 @@ theorem summable_primeIdealZetaSum {s : ℝ} (hs : 1 < s) :
   simpa [Function.comp_def] using Nat.Primes.summable_rpow.mpr <| by rwa [neg_lt_neg_iff]
 
 variable {S} in
+/-- For `s > 1`, the partial sum `∑_{𝔭 ∈ S} N𝔭 ^ (-s)` over a nonempty set `S` is positive. -/
+theorem primeIdealZetaSum_pos (hS : S.Nonempty) {s : ℝ} (hs : 1 < s) :
+    0 < primeIdealZetaSum S s := by
+  obtain ⟨v, hv⟩ := hS
+  refine Summable.tsum_pos ((summable_primeIdealZetaSum hs).comp_injective Subtype.coe_injective)
+    (fun _ ↦ by positivity) ⟨v, hv⟩ ?_
+  exact Real.rpow_pos_of_pos (by exact_mod_cast Nat.pos_of_ne_zero v.absNorm_ne_zero) _
+
+variable {S} in
 /-- For a finite set `S` of prime ideals, the partial sum `∑_{𝔭 ∈ S} N𝔭 ^ (-s)` is bounded above
 by the number of elements of `S`. -/
 theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 ≤ s) :
@@ -103,6 +113,12 @@ def dirichletDensity : ℝ :=
 
 variable {S}
 
+/-- The Dirichlet density is nonnegative. -/
+theorem HasDirichletDensity.nonneg {δ : ℝ} (h : HasDirichletDensity S δ) :
+    0 ≤ δ :=
+  ge_of_tendsto h <| Eventually.of_forall fun s ↦
+    div_nonneg (primeIdealZetaSum_nonneg S s) (primeIdealZetaSum_nonneg univ s)
+
 /-- If `S` has Dirichlet density `δ`, then `dirichletDensity S = δ`. -/
 theorem HasDirichletDensity.dirichletDensity_eq {δ : ℝ} (h : HasDirichletDensity S δ) :
     dirichletDensity S = δ :=
@@ -114,10 +130,17 @@ theorem HasDirichletDensity.unique {δ₁ δ₂ : ℝ} (h₁ : HasDirichletDensi
     δ₁ = δ₂ :=
   tendsto_nhds_unique h₁ h₂
 
-/-- The Dirichlet density of the empty set is `0`. -/
+/-- The empty set has Dirichlet density `0`. -/
 theorem hasDirichletDensity_empty :
     HasDirichletDensity (∅ : Set (HeightOneSpectrum (𝓞 K))) 0 := by
   simp [HasDirichletDensity, primeIdealZetaSum_def]
+
+/-- The set of all nonzero prime ideals has Dirichlet density `1`. -/
+theorem hasDirichletDensity_univ :
+    HasDirichletDensity (univ : Set (HeightOneSpectrum (𝓞 K))) 1 := by
+  refine tendsto_const_nhds.congr' ?_
+  filter_upwards [self_mem_nhdsWithin] with s (hs : 1 < s)
+  exact (div_self (ne_of_gt (primeIdealZetaSum_pos univ_nonempty hs))).symm
 
 /-- The Dirichlet density of the empty set is `0`. -/
 @[simp]
@@ -125,10 +148,10 @@ theorem dirichletDensity_empty :
     dirichletDensity (∅ : Set (HeightOneSpectrum (𝓞 K))) = 0 :=
   hasDirichletDensity_empty.dirichletDensity_eq
 
-/-- The Dirichlet density is nonnegative. -/
-theorem HasDirichletDensity.nonneg {δ : ℝ} (h : HasDirichletDensity S δ) :
-    0 ≤ δ :=
-  ge_of_tendsto h <| Eventually.of_forall fun s ↦
-    div_nonneg (primeIdealZetaSum_nonneg S s) (primeIdealZetaSum_nonneg univ s)
+/-- The Dirichlet density of the set of all nonzero prime ideals is `1`. -/
+@[simp]
+theorem dirichletDensity_univ :
+    dirichletDensity (univ : Set (HeightOneSpectrum (𝓞 K))) = 1 :=
+  hasDirichletDensity_univ.dirichletDensity_eq
 
 end NumberField
