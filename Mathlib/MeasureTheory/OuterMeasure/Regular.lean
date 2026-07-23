@@ -79,9 +79,7 @@ def supportOuterMeasure {X : Type*} [TopologicalSpace X]
 `A⊆X`, then `A` is `μ`-measurable if and only if `μ(A)+μ(X∖A)=μ(X)`.
 Reference: Bogachev - Measure Theory I, Proposition 1.11.7-/
 
-/- Preliminary lemma 1: sets with zero outer measure are Caratheodory measurable (I'm surprised
-this is not in mathlib, we should double-check. If that is the case, this should probably go
-in a different file) -/
+/- Preliminary lemma 1: sets with zero outer measure are Caratheodory measurable -/
 lemma isCaratheodory_of_measure_eq_zero {X : Type*} {μ : OuterMeasure X} {A : Set X}
     (hA : μ A = 0) : μ.IsCaratheodory A := by
   rw [OuterMeasure.isCaratheodory_iff_le']; intro T
