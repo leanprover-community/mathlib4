@@ -350,19 +350,40 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
 
+variable (X) in
 /-- `Set.univ X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
-def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
+protected def Set.univ : (univ : Set X) ≃ₜ X where
   toEquiv := Equiv.Set.univ X
+
+@[simp]
+lemma Set.toEquiv_univ :
+    Homeomorph.Set.univ X = Equiv.Set.univ X :=
+  rfl
 
 /-- `s ×ˢ t` is homeomorphic to `s × t`. -/
 @[simps!]
-def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
+protected def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   toEquiv := Equiv.Set.prod s t
-  continuous_toFun :=
-    (continuous_subtype_val.fst.subtype_mk _).prodMk (continuous_subtype_val.snd.subtype_mk _)
-  continuous_invFun :=
-    (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
+
+@[simp]
+lemma Set.toEquiv_prod {s : Set X} {t : Set Y} :
+    Homeomorph.Set.prod s t = Equiv.Set.prod s t :=
+  rfl
+
+/-- `Set.pi univ s` is homeomorphic to `Π i, s i`. -/
+@[simps!]
+protected def Set.univPi {ι : Type*} {X : ι → Type*} [Π i, TopologicalSpace (X i)]
+    (s : Π i, Set (X i)) : univ.pi s ≃ₜ Π i, s i where
+  toEquiv := Equiv.Set.univPi s
+  continuous_toFun := continuous_pi fun i ↦
+    continuous_apply i |>.comp continuous_subtype_val |>.subtype_mk _
+
+@[simp]
+lemma Set.toEquiv_univPi {ι : Type*} {X : ι → Type*} [Π i, TopologicalSpace (X i)]
+    {s : Π i, Set (X i)} :
+    Homeomorph.Set.univPi s = Equiv.Set.univPi s :=
+  rfl
 
 section
 
