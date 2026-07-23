@@ -74,6 +74,16 @@ lemma restrict_nullSet (h : μ ⟂ₘ ν) : μ.restrict h.nullSet = 0 := by simp
 lemma restrict_compl_nullSet (h : μ ⟂ₘ ν) : ν.restrict h.nullSetᶜ = 0 := by simp
 
 @[simp]
+lemma restrict_nullSet' (h : μ ⟂ₘ ν) : ν.restrict h.nullSet = ν := by
+  conv_rhs => rw [← restrict_add_restrict_compl (μ := ν) h.measurableSet_nullSet]
+  simp
+
+@[simp]
+lemma restrict_compl_nullSet' (h : μ ⟂ₘ ν) : μ.restrict h.nullSetᶜ = μ := by
+  conv_rhs => rw [← restrict_add_restrict_compl (μ := μ) h.measurableSet_nullSet]
+  simp
+
+@[simp]
 theorem zero_right : μ ⟂ₘ 0 :=
   ⟨∅, MeasurableSet.empty, measure_empty, rfl⟩
 

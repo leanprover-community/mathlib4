@@ -484,6 +484,7 @@ theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFinit
     (h : μ = ν) : μ.toSignedMeasure = ν.toSignedMeasure := by
   congr
 
+@[simp]
 theorem toSignedMeasure_eq_toSignedMeasure_iff {μ ν : Measure α} [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] : μ.toSignedMeasure = ν.toSignedMeasure ↔ μ = ν := by
   refine ⟨fun h => ?_, fun h => ?_⟩
