@@ -115,6 +115,20 @@ instance IsStandardSmoothOfRelativeDimension.id :
     IsStandardSmoothOfRelativeDimension 0 R R :=
   IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
 
+variable (R) in
+/-- The polynomial algebra `MvPolynomial ι R` is standard smooth over `R` of relative
+dimension `Nat.card ι`. -/
+lemma IsStandardSmoothOfRelativeDimension.mvPolynomial [Finite ι] :
+    IsStandardSmoothOfRelativeDimension (Nat.card ι) R (MvPolynomial ι R) :=
+  (SubmersivePresentation.mvPolynomial.{0} R ι).isStandardSmoothOfRelativeDimension
+    (Presentation.dimension_mvPolynomial)
+
+/-- The polynomial algebra `MvPolynomial (Fin n) R` is standard smooth over `R` of relative
+dimension `n`. -/
+instance IsStandardSmoothOfRelativeDimension.mvPolynomial_fin {n : ℕ} :
+    IsStandardSmoothOfRelativeDimension n R (MvPolynomial (Fin n) R) := by
+  simpa using IsStandardSmoothOfRelativeDimension.mvPolynomial R (Fin n)
+
 instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
     FinitePresentation R S := by
   obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
