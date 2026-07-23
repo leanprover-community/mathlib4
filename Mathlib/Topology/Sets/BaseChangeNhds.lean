@@ -7,6 +7,8 @@ Authors: Yannis Monbru Carcelero
 module
 
 public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.Topology.Maps.Proper.Basic
 public import Mathlib.Topology.Sets.Compacts
 
 /-!
@@ -91,6 +93,46 @@ instance {K : Compacts α} [T2Space α] : K.openRcNhdsToCompactNhds_mono.functor
   have h3 : closure (U : Set α) ⊆ L := (IsClosed.closure_subset_iff
     (IsCompact.isClosed L.1.isCompact') ).2 h2
   exact ⟨⟨U, ⟨ IsCompact.of_isClosed_subset L.1.isCompact' isClosed_closure h3, h1⟩⟩, h3⟩
+
+variable {β : Type u_1} [TopologicalSpace β] {f : α → β} (proper_f : IsProperMap f)
+
+/-- The preimage of a compact by a proper map as a compact -/
+@[simps]
+def properPreimage (K : Compacts β) : Compacts α :=
+  ⟨f ⁻¹' K.carrier, IsProperMap.isCompact_preimage proper_f K.isCompact'⟩
+
+lemma properPreimage_mono : Monotone (properPreimage proper_f) :=
+  fun _ _ h ↦ preimage_mono (f := f) h
+
+/-- The base change of compactNhds induced by `properPreimage` -/
+@[simps]
+def baseChangeCompactNhdsOfProperMap (K : Compacts β) (L : K.compactNhds) :
+    (properPreimage proper_f K).compactNhds :=
+  ⟨properPreimage proper_f L,
+  by
+    obtain ⟨U, hU1, hU2⟩ := exists_open_set_nhds_of_compactsNhds L
+    exact (compactNhdsMkOfOpens _
+      ((Opens.map (TopCat.ofHom ( ContinuousMap.mk f proper_f.toContinuous))).obj U)
+      (preimage_mono (f := f) hU1)
+      (preimage_mono (f := f) hU2)).property⟩
+
+lemma baseChangeCompactNhdsOfProperMap_mono (K : Compacts β) :
+    Monotone (baseChangeCompactNhdsOfProperMap proper_f K) :=
+  fun _ _ h ↦ properPreimage_mono proper_f h
+
+instance [T2Space β] [LocallyCompactSpace β] (K : Compacts β) :
+    (baseChangeCompactNhdsOfProperMap_mono proper_f K).functor.Initial := by
+  rw [Monotone.initial_functor_iff]
+  intro L
+  obtain ⟨U, hU1, hU2⟩ := exists_open_set_nhds_of_compactsNhds L
+  obtain ⟨M, hM1, hM2, hM3⟩ :=
+    exists_compact_between K.isCompact'
+    (IsClosedMap.isOpen_kernImage (IsProperMap.isClosedMap proper_f) U.isOpen)
+    (Set.subset_kernImage_iff.2 hU1)
+  use ⟨⟨M, hM1⟩,
+    (compactNhdsMkOfOpens _ ⟨interior M, isOpen_interior⟩
+    hM2 interior_subset).property⟩
+  exact (Set.subset_kernImage_iff.1 hM3).trans hU2
 
 end Compacts
 
