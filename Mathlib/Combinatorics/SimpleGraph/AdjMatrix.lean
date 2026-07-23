@@ -107,8 +107,9 @@ theorem _root_.Matrix.isAdjMatrix_reindex_iff [Zero α] [One α] {f : V ≃ W} :
 @[simps]
 def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V where
   Adj i j := A i j = 1
-  symm i j hij := by simp only; rwa [h.symm.apply i j]
+  symm.symm i j hij := by rwa [h.symm.apply i j]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
     DecidableRel h.toGraph.Adj := by
   simp only [toGraph]
@@ -417,7 +418,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
       rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
-      simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk] at hp
+      simp only [inf_eq_inter, mem_inter, mem_map] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy

@@ -131,7 +131,7 @@ namespace CircleDeg1Lift
 
 instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
-  coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
+  coe_injective | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
 
 instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
   map_rel f _ _ h := f.monotone' h
@@ -193,6 +193,7 @@ theorem units_inv_apply_apply (f : CircleDeg1Liftˣ) (x : ℝ) :
 theorem units_apply_inv_apply (f : CircleDeg1Liftˣ) (x : ℝ) :
     f ((f⁻¹ : CircleDeg1Liftˣ) x) = x := by simp only [← mul_apply, f.mul_inv, coe_one, id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a lift of a circle map is bijective, then it is an order automorphism of the line. -/
 def toOrderIso : CircleDeg1Liftˣ →* ℝ ≃o ℝ where
   toFun f :=

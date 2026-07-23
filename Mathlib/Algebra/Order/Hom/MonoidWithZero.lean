@@ -92,7 +92,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulZeroOneClas
 
 instance : FunLike (α →*₀o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
@@ -269,6 +269,7 @@ end LinearOrderedCommMonoidWithZero
 
 end OrderMonoidWithZeroHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any ordered group is isomorphic to the units of itself adjoined with `0`. -/
 @[simps! -isSimp]
 def OrderMonoidIso.unitsWithZero {α : Type*} [Group α] [Preorder α] : (WithZero α)ˣ ≃*o α where

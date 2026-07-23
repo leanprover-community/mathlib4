@@ -125,7 +125,7 @@ noncomputable def latticeBasis [NumberField K] :
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
-      RingHom.equivRatAlgHom
+      (RingHom.equivRatAlgHom K ℂ)
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert!
@@ -133,7 +133,7 @@ noncomputable def latticeBasis [NumberField K] :
         (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-      (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
+      (fun i => integralBasis K (e i)) (RingHom.equivRatAlgHom K ℂ)).symm
 
 @[simp]
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
@@ -160,6 +160,7 @@ theorem mem_rat_span_latticeBasis [NumberField K] (x : K) :
   rw [← latticeBasis_apply]
   exact Set.mem_range_self i
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     (latticeBasis K).repr (canonicalEmbedding K x) i = (integralBasis K).repr x i := by
   rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
@@ -226,22 +227,24 @@ open MeasureTheory.Measure MeasureTheory
 
 variable [NumberField K]
 
-open Classical in
+open scoped Classical in
 instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) :=
   prod.instIsAddHaarMeasure volume volume
 
-open Classical in
-instance : NoAtoms (volume : Measure (mixedSpace K)) := by
+open scoped Classical in
+instance : NullSingletonClass (volume : Measure (mixedSpace K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
-  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) := pi_noAtoms ⟨w, hw⟩
-    exact prod.instNoAtoms_fst
-  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
-      pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
-    exact prod.instNoAtoms_snd
+  · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) :=
+      pi_nullSingletonClass ⟨w, hw⟩
+    exact prod.instNullSingletonClass_fst
+  · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
+      pi_nullSingletonClass ⟨w, not_isReal_iff_isComplex.mp hw⟩
+    exact prod.instNullSingletonClass_snd
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {K} in
-open Classical in
+open scoped Classical in
 /-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
 volume zero. -/
 theorem volume_eq_zero (w : {w // IsReal w}) :
@@ -604,15 +607,15 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
     rcases c with ⟨w, j⟩
     fin_cases j
     · simp only [Fin.zero_eta, Fin.isValue, stdBasis_apply_isComplex_fst, re_eq_add_conj,
-        mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
-        submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, ite_mul, cons_val_one, sum_add_distrib, sum_ite_eq,
-        mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
+        mul_neg, fromBlocks_apply₂₁, Matrix.zero_apply, zero_mul, sum_const_zero,
+        fromBlocks_apply₂₂, submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply,
+        cons_val', cons_val_zero, empty_val', cons_val_fin_one, ite_mul, cons_val_one,
+        sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring
     · simp only [Fin.mk_one, Fin.isValue, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
-        mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
-        submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
+        mul_neg, fromBlocks_apply₂₁, Matrix.zero_apply, zero_mul, sum_const_zero,
+        fromBlocks_apply₂₂, submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply,
+        cons_val', cons_val_zero, empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
         sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring_nf; simp [field]
 
@@ -674,12 +677,12 @@ instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
   rw [← span_latticeBasis]
   infer_instance
 
-open Classical in
+open scoped Classical in
 instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
   simp_rw [← span_latticeBasis]
   infer_instance
 
-open Classical in
+open scoped Classical in
 theorem fundamentalDomain_integerLattice :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.integerLattice K)
       (ZSpan.fundamentalDomain (latticeBasis K)) := by
@@ -694,6 +697,7 @@ theorem mem_rat_span_latticeBasis (x : K) :
   rw [← latticeBasis_apply]
   exact Set.mem_range_self i
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
     (latticeBasis K).repr (mixedEmbedding K x) i = (integralBasis K).repr x i := by
   rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
@@ -787,12 +791,12 @@ instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
   rw [← span_idealLatticeBasis]
   infer_instance
 
-open Classical in
+open scoped Classical in
 instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
   simp_rw [← span_idealLatticeBasis]
   infer_instance
 
-open Classical in
+open scoped Classical in
 theorem fundamentalDomain_idealLattice :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.idealLattice K I)
       (ZSpan.fundamentalDomain (fractionalIdealLatticeBasis K I)) := by
@@ -819,7 +823,7 @@ instance : Ring (euclidean.mixedSpace K) :=
 
 variable [NumberField K]
 
-open Classical in
+open scoped Classical in
 /-- The continuous linear equivalence between the Euclidean mixed space and the mixed space. -/
 def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
   (WithLp.linearEquiv _ _ _).trans
@@ -831,19 +835,19 @@ protected theorem finrank :
     finrank ℝ (euclidean.mixedSpace K) = finrank ℚ K := by
   rw [LinearEquiv.finrank_eq (toMixed K).toLinearEquiv, mixedEmbedding.finrank]
 
-open Classical in
+open scoped Classical in
 /-- An orthonormal basis of the Euclidean mixed space. -/
 def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
   OrthonormalBasis.prod (EuclideanSpace.basisFun _ ℝ)
     ((Pi.orthonormalBasis fun _ ↦ Complex.orthonormalBasisOneI).reindex (Equiv.sigmaEquivProd _ _))
 
-open Classical in
+open scoped Classical in
 theorem stdOrthonormalBasis_map_eq :
     (euclidean.stdOrthonormalBasis K).toBasis.map (toMixed K).toLinearEquiv =
       mixedEmbedding.stdBasis K := by
   ext <;> rfl
 
-open Classical in
+open scoped Classical in
 theorem volumePreserving_toMixed :
     MeasurePreserving (toMixed K) where
   measurable := (toMixed K).continuous.measurable
@@ -853,23 +857,22 @@ theorem volumePreserving_toMixed :
       ← measure_congr (ZSpan.fundamentalDomain_ae_parallelepiped (stdBasis K) volume),
       volume_fundamentalDomain_stdBasis K]
 
-open Classical in
+open scoped Classical in
 theorem volumePreserving_toMixed_symm :
     MeasurePreserving (toMixed K).symm := by
   have : MeasurePreserving (toMixed K).toHomeomorph.toMeasurableEquiv := volumePreserving_toMixed K
   exact this.symm
 
-open Classical in
+open scoped Classical in
 /-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
   ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
 
 instance : DiscreteTopology (euclidean.integerLattice K) := by
-  classical
   rw [euclidean.integerLattice]
   infer_instance
 
-open Classical in
+open scoped Classical in
 instance : IsZLattice ℝ (euclidean.integerLattice K) := by
   simp_rw [euclidean.integerLattice]
   infer_instance
@@ -884,7 +887,7 @@ open ContinuousLinearEquiv
 
 variable {K} (s : Set {w : InfinitePlace K // IsReal w})
 
-open Classical in
+open scoped Classical in
 /-- Let `s` be a set of real places, define the continuous linear equiv of the mixed space that
 swaps sign at places in `s` and leaves the rest unchanged. -/
 def negAt :
@@ -952,7 +955,7 @@ theorem negAt_symm :
   · by_cases hw : w ∈ s
     · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
         prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
-        neg_apply]
+        ContinuousLinearEquiv.neg_apply]
     · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
         prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
         refl_apply]
@@ -1048,7 +1051,7 @@ open MeasureTheory
 variable [NumberField K]
 
 include hA in
-open Classical in
+open scoped Classical in
 theorem iUnion_negAt_plusPart_ae :
     ⋃ s, negAt s '' (plusPart A) =ᵐ[volume] A := by
   nth_rewrite 2 [← iUnion_negAt_plusPart_union A hA]
@@ -1071,7 +1074,7 @@ theorem measurableSet_negAt_plusPart (hm : MeasurableSet A) :
 
 variable {A}
 
-open Classical in
+open scoped Classical in
 /-- The image of the `plusPart` of `A` by `negAt` have all the same volume as `plusPart A`. -/
 theorem volume_negAt_plusPart (hm : MeasurableSet A) :
     volume (negAt s '' (plusPart A)) = volume (plusPart A) := by
@@ -1079,7 +1082,7 @@ theorem volume_negAt_plusPart (hm : MeasurableSet A) :
     volume_preserving_negAt.measure_preimage (measurableSet_plusPart hm).nullMeasurableSet]
 
 include hA in
-open Classical in
+open scoped Classical in
 /-- If a subset `A` of the `mixedSpace` is symmetric at real places, then its volume is
 `2^ nrRealPlaces K` times the volume of its `plusPart`. -/
 theorem volume_eq_two_pow_mul_volume_plusPart (hm : MeasurableSet A) :
@@ -1103,6 +1106,7 @@ abbrev realSpace := InfinitePlace K → ℝ
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The set of points in the `realSpace` that are equal to `0` at a fixed place has volume zero. -/
 theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
     volume ({x : realSpace K | x w = 0}) = 0 := by

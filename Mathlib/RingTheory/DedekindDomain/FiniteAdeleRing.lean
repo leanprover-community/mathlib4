@@ -12,6 +12,7 @@ public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 
 /-!
 # The finite adèle ring of a Dedekind domain
+
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
@@ -56,7 +57,7 @@ lemma HeightOneSpectrum.Support.finite (k : K) : (Support R k).Finite := by
     intro v hv
     apply_fun v.valuation K at hk
     simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
-    rw [Set.mem_setOf_eq, valuation_of_algebraMap]
+    rw [Set.mem_ofPred_eq, valuation_of_algebraMap]
     have := intValuation_le_one v n
     contrapose! this
     rw [← hk, mul_comm]
@@ -101,7 +102,7 @@ instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
 
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
   coe a := a.1
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 variable {R K} in
 theorem finite_valued_one_lt (a : FiniteAdeleRing R K) : {v | 1 < Valued.v (a v)}.Finite := by
@@ -121,12 +122,12 @@ all but finitely many places, which is `IsDedekindDomain.HeightOneSpectrum.Suppo
 protected def algebraMap : K →+* FiniteAdeleRing R K where
   toFun k := ⟨fun i ↦ k, by
     simp only [Filter.eventually_cofinite, SetLike.mem_coe, mem_adicCompletionIntegers R K,
-     adicCompletion, Valued.valuedCompletion_apply, not_le]
+     valuedAdicCompletion_eq_valuation', not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
-  map_one' := rfl
-  map_mul' x y := Subtype.ext <| funext fun _ ↦ UniformSpace.Completion.coe_mul _ _
-  map_zero' := rfl
-  map_add' x y := Subtype.ext <| funext fun _ ↦ UniformSpace.Completion.coe_add _ _
+  map_one' := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_one ..
+  map_mul' x y := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_mul ..
+  map_zero' := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_zero ..
+  map_add' x y := Subtype.ext <| funext fun _ ↦ adicCompletion.coe_add ..
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
@@ -163,7 +164,7 @@ theorem isUnit_iff {a : FiniteAdeleRing R K} :
     IsUnit a ↔ (∀ v, a v ≠ 0) ∧ ∀ᶠ v in Filter.cofinite, Valued.v (a v) = 1 := by
   rw [RestrictedProduct.isUnit_iff]
   simp only [isUnit_iff_ne_zero, adicCompletionIntegers.isUnit_iff_valued_eq_one, exists_prop,
-    Filter.eventually_cofinite, not_and_or, Set.setOf_or]
+    Filter.eventually_cofinite, not_and_or, Set.ofPred_or]
   simpa using! fun _ _ ↦ a.2
 
 theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
