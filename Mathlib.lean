@@ -1905,6 +1905,7 @@ public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
 public import Mathlib.Analysis.Complex.Positivity
 public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Analysis.Complex.RealDeriv
+public import Mathlib.Analysis.Complex.RectangleResidue
 public import Mathlib.Analysis.Complex.RemovableSingularity
 public import Mathlib.Analysis.Complex.RiemannMapping
 public import Mathlib.Analysis.Complex.Schwarz
