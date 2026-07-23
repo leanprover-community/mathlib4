@@ -150,6 +150,11 @@ variable (X) in
 /-- The identity partial map. -/
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 
+lemma id_domain : (PartialMap.id X).domain = ⊤ := rfl
+
+lemma id_hom : (PartialMap.id X).hom = X.topIso.hom := by
+  rw [Hom.toPartialMap_hom, Category.comp_id]
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := by
@@ -296,6 +301,16 @@ lemma restrict_equiv (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : (f.restrict U hU hU').equiv f :=
   ⟨U, hU, le_rfl, hU', by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
+lemma equiv_id_iff (f : X.PartialMap X) :
+    f.equiv (PartialMap.id X) ↔ ∃ (U : Opens X) (hU₁ : Dense (U : Set X)) (hU₂ : U ≤ f.domain),
+      (f.restrict U hU₁ hU₂).hom = U.ι := by
+  constructor
+  · intro ⟨U, hU₁, hU₂, w, e⟩
+    exact ⟨U, hU₁, hU₂, by simpa using homOfLE_ι X w ▸ e⟩
+  · intro ⟨U, hU₁, hU₂, e⟩
+    refine ⟨U, hU₁, hU₂, le_top, by simpa using (homOfLE_ι X le_top).symm ▸ e⟩
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
@@ -391,6 +406,10 @@ variable (S) in
 /-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
+
+instance RationalMap.isOver_toRationalMap [X.Over S] [Y.Over S] (f : PartialMap X Y) [f.IsOver S] :
+    f.toRationalMap.IsOver S where
+  exists_partialMap_over := ⟨f, inferInstance, rfl⟩
 
 lemma PartialMap.toRationalMap_surjective : Function.Surjective (@toRationalMap X Y) :=
   Quotient.exists_rep

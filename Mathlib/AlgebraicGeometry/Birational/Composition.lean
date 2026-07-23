@@ -5,6 +5,7 @@ Authors: Justus Springer
 -/
 module
 
+public import Mathlib.AlgebraicGeometry.Birational.Birational
 public import Mathlib.AlgebraicGeometry.Birational.Dominant
 
 /-!
@@ -116,7 +117,7 @@ instance isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Part
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
-@[simp]
+@[simp, grind _=_]
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f : X₁.PartialMap X₂) [IsDominant f.hom] (g : X₂.PartialMap X₃)
     [IsDominant g.hom] (h : X₃.PartialMap Y) :
@@ -142,7 +143,7 @@ lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
   · simp_rw [comp_hom, Hom.toPartialMap_domain, Hom.toPartialMap_hom, compHom_hom, topIso_hom,
       morphismRestrict_ι_assoc, f.domain.isoImage_ι_inv_ι_assoc, isoOfEq_hom]
 
-set_option backward.defeqAttrib.useBackward true in
+@[grind =]
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] : f.comp (PartialMap.id Y) = f := by simp
 
 end PartialMap
@@ -167,7 +168,7 @@ lemma toRationalMap_comp (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialM
   rw [RationalMap.comp_def, PartialMap.toRationalMap_eq_iff]
   exact PartialMap.comp_equiv_of_equiv_left f.representative_toRationalMap_equiv _
 
-@[simp]
+@[simp, grind =]
 lemma comp_id (f : X ⤏ Y) [f.IsDominant] : f.comp (RationalMap.id Y) = f := by
   simp [RationalMap.comp_def]
 
@@ -202,7 +203,7 @@ end RationalMap
 end PreirreducibleSpace
 
 set_option backward.defeqAttrib.useBackward true in
-@[simp]
+@[simp, grind =]
 lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialMap Y) :
     (PartialMap.id X).comp f = f := by
   ext1
@@ -218,5 +219,37 @@ lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialM
 lemma RationalMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X ⤏ Y) :
     (RationalMap.id X).comp f = f := by
   rw [← f.toRationalMap_representative, toRationalMap_comp, PartialMap.id_comp]
+
+set_option backward.isDefEq.respectTransparency.types false in
+lemma PartialIso.toPartialMap_comp_symm [PreirreducibleSpace X] [Nonempty Y] (f : X.PartialIso Y) :
+    f.toPartialMap.comp f.symm.toPartialMap =
+      (PartialMap.id X).restrict f.source f.dense_source le_top := by
+  ext1
+  · -- This change seems hard to remove
+    change f.source.ι ''ᵁ f.iso.hom ⁻¹ᵁ f.target.ι ⁻¹ᵁ f.target = f.source
+    rw [Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
+  · -- This change seems hard to remove
+    change (f.source.ι.isoImage (f.iso.hom ⁻¹ᵁ f.target.ι ⁻¹ᵁ f.target)).inv ≫
+      (f.iso.hom ≫ f.target.ι) ∣_ f.target ≫ f.iso.inv ≫ f.source.ι = _
+    simp_rw [morphismRestrict_comp, Opens.morphismRestrict_ι, homOfLE_ι,
+      morphismRestrict_ι, Category.assoc, Iso.hom_inv_id_assoc, Hom.isoImage_inv_ι, isoOfEq_hom,
+      PartialMap.restrict_hom, PartialMap.id_domain, PartialMap.id_hom, topIso_hom, homOfLE_ι]
+    exact (X.homOfLE_ι _).symm
+
+set_option backward.isDefEq.respectTransparency.types false in
+lemma PartialIso.symm_toPartialMap_comp [Nonempty X] [PreirreducibleSpace Y] (f : X.PartialIso Y) :
+    f.symm.toPartialMap.comp f.toPartialMap =
+      (PartialMap.id Y).restrict f.target f.dense_target le_top := by
+  ext1
+  · -- This change seems hard to remove
+    change f.target.ι ''ᵁ f.iso.inv ⁻¹ᵁ f.source.ι ⁻¹ᵁ f.source = f.target
+    rw [Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
+  · -- This change seems hard to remove
+    change (f.target.ι.isoImage (f.iso.inv ⁻¹ᵁ f.source.ι ⁻¹ᵁ f.source)).inv ≫
+      (f.iso.inv ≫ f.source.ι) ∣_ f.source ≫ f.iso.hom ≫ f.target.ι = _
+    simp_rw [morphismRestrict_comp, Opens.morphismRestrict_ι, homOfLE_ι,
+      morphismRestrict_ι, Category.assoc, Iso.inv_hom_id_assoc, Hom.isoImage_inv_ι, isoOfEq_hom,
+      PartialMap.restrict_hom, PartialMap.id_domain, PartialMap.id_hom, topIso_hom, homOfLE_ι]
+    exact (Y.homOfLE_ι _).symm
 
 end AlgebraicGeometry.Scheme
