@@ -50,7 +50,7 @@ noncomputable instance instMonoidalCategoryStruct :
 `CoalgCat.instMonoidalCategoryStruct` and the forgetful functor to modules. -/
 @[simps]
 noncomputable def MonoidalCategory.inducingFunctorData :
-    Monoidal.InducingFunctorData (forget₂ (CoalgCat R) (ModuleCat R)) where
+    Monoidal.InducingFunctorData (forget₂ (CoalgCat R) (ModuleCat.{u} R)) where
   μIso _ _ := Iso.refl _
   whiskerLeft_eq X Y Z f := by ext; rfl
   whiskerRight_eq X f := by ext; rfl

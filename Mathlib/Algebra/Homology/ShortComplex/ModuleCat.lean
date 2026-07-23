@@ -117,14 +117,14 @@ lemma moduleCatLeftHomologyData_f'_hom :
     S.moduleCatLeftHomologyData.f'.hom = S.moduleCatToCycles := rfl
 
 @[simp]
-lemma moduleCatLeftHomologyData_descH_hom {M : ModuleCat R}
+lemma moduleCatLeftHomologyData_descH_hom {M : ModuleCat.{v} R}
     (φ : S.moduleCatLeftHomologyData.K ⟶ M) (h : S.moduleCatLeftHomologyData.f' ≫ φ = 0) :
     (S.moduleCatLeftHomologyData.descH φ h).hom =
       (LinearMap.range <| ModuleCat.Hom.hom _).liftQ
          φ.hom (LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.1 h) := rfl
 
 @[simp]
-lemma moduleCatLeftHomologyData_liftK_hom {M : ModuleCat R} (φ : M ⟶ S.X₂) (h : φ ≫ S.g = 0) :
+lemma moduleCatLeftHomologyData_liftK_hom {M : ModuleCat.{v} R} (φ : M ⟶ S.X₂) (h : φ ≫ S.g = 0) :
     (S.moduleCatLeftHomologyData.liftK φ h).hom =
       φ.hom.codRestrict (LinearMap.ker S.g.hom) (fun m => congr($h m)) := rfl
 

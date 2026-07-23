@@ -84,11 +84,11 @@ def isColimitCokernelCofork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.ho
 end
 
 /-- The category of R-modules has kernels, given by the inclusion of the kernel submodule. -/
-theorem hasKernels_moduleCat : HasKernels (ModuleCat R) :=
+theorem hasKernels_moduleCat : HasKernels (ModuleCat.{v} R) :=
   ⟨fun f => HasLimit.mk ⟨_, kernelIsLimit f⟩⟩
 
 /-- The category of R-modules has cokernels, given by the projection onto the quotient. -/
-theorem hasCokernels_moduleCat : HasCokernels (ModuleCat R) :=
+theorem hasCokernels_moduleCat : HasCokernels (ModuleCat.{v} R) :=
   ⟨fun f => HasColimit.mk ⟨_, cokernelIsColimit f⟩⟩
 
 open ModuleCat

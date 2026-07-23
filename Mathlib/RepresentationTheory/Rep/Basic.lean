@@ -444,7 +444,7 @@ def trivialFunctor : ModuleCat.{w} k ⥤ Rep.{w} k G where
 /-- A predicate for representations that fix every element. -/
 abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
 
-instance (X : ModuleCat k) : ((trivialFunctor k G).obj X).IsTrivial where
+instance (X : ModuleCat.{w} k) : ((trivialFunctor k G).obj X).IsTrivial where
 
 instance {V : Type w} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
@@ -528,15 +528,15 @@ instance : (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)).Additive where
 
 /-- Forgetting `Rep` to `ModuleCat` is the same as first map to `Action`
   then forget to `ModuleCat`. -/
-abbrev forgetNatIsoActionForget : forget₂ (Rep.{w} k G) (ModuleCat k) ≅ (RepToAction k G) ⋙
-    Action.forget (ModuleCat k) G := .refl _
+abbrev forgetNatIsoActionForget : forget₂ (Rep.{w} k G) (ModuleCat.{w} k) ≅ (RepToAction k G) ⋙
+    Action.forget (ModuleCat.{w} k) G := .refl _
 
 instance preservesLimits_forget :
-    Limits.PreservesLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+    Limits.PreservesLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) :=
   Limits.preservesLimits_of_natIso (forgetNatIsoActionForget k G).symm
 
 instance preservesColimits_forget :
-    Limits.PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+    Limits.PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) :=
   Limits.preservesColimits_of_natIso (forgetNatIsoActionForget k G).symm
 
 instance : Limits.HasBinaryBiproducts (Rep.{w} k G) where
@@ -564,10 +564,10 @@ instance : Limits.HasLimits (Rep.{w} k G) :=
 instance : Limits.HasColimits (Rep.{w} k G) :=
   Adjunction.has_colimits_of_equivalence (repIsoAction k G).functor
 
-instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) :=
   Limits.reflectsLimits_of_reflectsIsomorphisms
 
-instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) :=
   Limits.reflectsColimits_of_reflectsIsomorphisms
 
 variable {k G} in

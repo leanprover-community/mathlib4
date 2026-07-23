@@ -31,12 +31,12 @@ namespace ModuleCat
 variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
 
 @[simp]
-lemma extendsScalars_map_leftUnitor_inv_one_tmul (M : ModuleCat R) (m : M) :
+lemma extendsScalars_map_leftUnitor_inv_one_tmul (M : ModuleCat.{u} R) (m : M) :
     letI := f.toAlgebra
     (extendScalars f).map (λ_ M).inv ((1 : S) ⊗ₜ[R] m) = (1 : S) ⊗ₜ[R] (1 ⊗ₜ m) := rfl
 
 @[simp]
-lemma extendsScalars_map_rightUnitor_inv_one_tmul (M : ModuleCat R) (m : M) :
+lemma extendsScalars_map_rightUnitor_inv_one_tmul (M : ModuleCat.{u} R) (m : M) :
     letI := f.toAlgebra
     (extendScalars f).map (ρ_ M).inv ((1 : S) ⊗ₜ[R] m) = (1 : S) ⊗ₜ[R] (m ⊗ₜ 1) := rfl
 
@@ -90,7 +90,7 @@ lemma extendScalars_η :
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-lemma extendScalars_μ (M₁ M₂ : ModuleCat R) :
+lemma extendScalars_μ (M₁ M₂ : ModuleCat.{u} R) :
     letI := f.toAlgebra
     dsimp% μ (extendScalars f) M₁ M₂ =
       (AlgebraTensorModule.distribBaseChange R S M₁ M₂).toModuleIso.inv :=
@@ -98,7 +98,7 @@ lemma extendScalars_μ (M₁ M₂ : ModuleCat R) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-lemma extendScalars_δ (M₁ M₂ : ModuleCat R) :
+lemma extendScalars_δ (M₁ M₂ : ModuleCat.{u} R) :
     letI := f.toAlgebra
     dsimp% δ (extendScalars f) M₁ M₂ =
       (AlgebraTensorModule.distribBaseChange R S M₁ M₂).toModuleIso.hom :=
@@ -106,7 +106,7 @@ lemma extendScalars_δ (M₁ M₂ : ModuleCat R) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-lemma extendScalars_δ_tmul (M₁ M₂ : ModuleCat R) (m₁ : M₁) (m₂ : M₂) :
+lemma extendScalars_δ_tmul (M₁ M₂ : ModuleCat.{u} R) (m₁ : M₁) (m₂ : M₂) :
     letI := f.toAlgebra
     dsimp% δ (extendScalars f) M₁ M₂ (((1 : S) ⊗ₜ[R] (m₁ ⊗ₜ[R] m₂) :)) =
       ((1 : S) ⊗ₜ[R] m₁) ⊗ₜ[S] ((1 : S) ⊗ₜ[R] m₂) := rfl
@@ -127,7 +127,7 @@ lemma restrictScalars_η (r : R) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma restrictScalars_μ_tmul (M₁ M₂ : ModuleCat S) (m₁ : M₁) (m₂ : M₂) :
+lemma restrictScalars_μ_tmul (M₁ M₂ : ModuleCat.{u} S) (m₁ : M₁) (m₂ : M₂) :
     dsimp% μ (restrictScalars f) M₁ M₂ (m₁ ⊗ₜ m₂) = m₁ ⊗ₜ m₂ := by
   dsimp [Adjunction.rightAdjointLaxMonoidal_μ]
   rw [extendRestrictScalarsAdj_homEquiv_apply]

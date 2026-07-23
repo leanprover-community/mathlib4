@@ -70,7 +70,7 @@ def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
 
 set_option backward.defeqAttrib.useBackward true in
 theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
-    (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
+    (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat.{max v u} R)) x y) :
     colimitSMulAux F r x = colimitSMulAux F r y := by
   apply M.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
