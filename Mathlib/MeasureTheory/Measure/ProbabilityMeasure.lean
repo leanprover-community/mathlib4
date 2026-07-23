@@ -103,9 +103,18 @@ probability measures (i.e., their total mass is one). -/
 def ProbabilityMeasure (Ω : Type*) [MeasurableSpace Ω] : Type _ :=
   { μ : Measure Ω // IsProbabilityMeasure μ }
 
-namespace ProbabilityMeasure
-
 variable {Ω : Type*} [MeasurableSpace Ω]
+
+/-- Type conversion from `Measure` to `ProbabilityMeasure`. -/
+def Measure.toProbabilityMeasure (μ : Measure Ω) [IsProbabilityMeasure μ] :
+    ProbabilityMeasure Ω := ⟨μ, inferInstance⟩
+
+theorem Measure.toProbabilityMeasure_inj (μ ν : Measure Ω)
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    μ.toProbabilityMeasure = ν.toProbabilityMeasure ↔ μ = ν :=
+  ⟨fun h ↦ congrArg Subtype.val h, fun h ↦ Subtype.ext h⟩
+
+namespace ProbabilityMeasure
 
 instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
   ⟨⟨Measure.dirac default, Measure.dirac.isProbabilityMeasure⟩⟩
@@ -124,6 +133,15 @@ instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :
 
 @[simp]
 theorem val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure Ω) := rfl
+
+@[simp]
+theorem _root_.MeasureTheory.Measure.coe_toProbabilityMeasure (μ : Measure Ω)
+    [IsProbabilityMeasure μ] :
+  μ.toProbabilityMeasure = μ := rfl
+
+@[simp]
+theorem toProbabilityMeasure_coe (ν : ProbabilityMeasure Ω) :
+    (↑ν : Measure Ω).toProbabilityMeasure = ν := rfl
 
 theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω → Measure Ω) :=
   Subtype.coe_injective
