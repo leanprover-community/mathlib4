@@ -40,8 +40,9 @@ def channelCoefficient (P : MvPolynomial (Fin 2) ℂ)
 /-- Rewrite the support-sum definition as the native `Finsupp.sum` over the coefficient
 finitely-supported function. -/
 theorem E_eq_finsupp_sum (P : MvPolynomial (Fin 2) ℂ) :
-    E P = (AddMonoidAlgebra.coeff P).sum (fun s c => c * wt s) :=
-  MvPolynomial.sum_def.symm
+    E P = (AddMonoidAlgebra.coeff P).sum (fun s c => c * wt s) := by
+  rw [MvPolynomial.sum_def]
+  rfl
 
 /-- `E P` may be summed over any finite superset of `P.support`; terms
 outside the exact support have zero coefficient. -/

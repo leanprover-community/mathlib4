@@ -34,10 +34,9 @@ variable {A : Type*} [CommSemiring A]
 /-- Multiplying a Laurent polynomial by `T^s` translates its coefficient at
 `k` to the old coefficient at `k-s`. -/
 theorem coeff_mul_T (f : LaurentPolynomial A) (s k : ℤ) :
-    (f * (T s : LaurentPolynomial A)) k = f (k - s) := by
-  change (f * AddMonoidAlgebra.single s (1 : A)) k = f (k - s)
-  rw [AddMonoidAlgebra.mul_single_apply]
-  simp [sub_eq_add_neg]
+    (f * (T s : LaurentPolynomial A)).coeff k = f.coeff (k - s) := by
+  rw [show (T s : LaurentPolynomial A) = AddMonoidAlgebra.single s (1 : A) from rfl,
+    AddMonoidAlgebra.coeff_mul_single_eq_coeff_mul (m₂ := k - s) (fun m' _ => by omega), mul_one]
 
 /-- **Check A.**  For `Λ = R(T) T^{-M}`, `CT(Λ^m) = [X^{Mm}]R^m`.
 
@@ -46,22 +45,18 @@ implemented as a finitely supported function `ℤ → A`; the right side is the
 ordinary polynomial coefficient API consumed by the the orbit-product argument generating
 polynomial `Φ(X) = X^M - t R(X)`. -/
 theorem constantCoeff_shifted_pow_eq_coeff_pow (R : A[X]) (M m : ℕ) :
-  ((Polynomial.toLaurent R * (T (-(M : ℤ)) : LaurentPolynomial A)) ^ m) 0 =
+    ((Polynomial.toLaurent R * (T (-(M : ℤ)) : LaurentPolynomial A)) ^ m).coeff 0 =
       (R ^ m).coeff (M * m) := by
   rw [mul_pow, ← map_pow, T_pow, coeff_mul_T]
   have hindex : (0 - (m : ℤ) * -(M : ℤ)) = ((M * m : ℕ) : ℤ) := by
     push_cast
     ring
-  rw [hindex, Polynomial.toLaurent_apply]
-  change (Finsupp.mapDomain ((↑) : ℕ → ℤ) (R ^ m).toFinsupp) ((M * m : ℕ) : ℤ) =
-    (R ^ m).coeff (M * m)
-  have hinj : Function.Injective ((↑) : ℕ → ℤ) := Int.ofNat_injective
-  rw [Finsupp.mapDomain_apply hinj,
-    Polynomial.toFinsupp_apply]
+  rw [hindex, coeff_toLaurent]
+  exact Finsupp.mapDomain_apply (Nat.castEmbedding (R := ℤ)).injective _ _
 
 /-- A product of Laurent monomials retains exactly two coordinates: the
 product of coefficients and the sum of exponents. -/
-theorem prod_monomial_eq (s : Finset ι) (q : ι → ℤ) (c : ι → A) (r : ι → ℕ) :
+theorem prod_monomial_eq {ι : Type*} (s : Finset ι) (q : ι → ℤ) (c : ι → A) (r : ι → ℕ) :
     ∏ i ∈ s, (LaurentPolynomial.C (c i) * T (q i)) ^ r i =
       LaurentPolynomial.C (∏ i ∈ s, c i ^ r i) * T (∑ i ∈ s, (r i : ℤ) * q i) := by
   classical
@@ -82,7 +77,7 @@ theorem constantCoeff_pow_eq_aeval_constantTermRelation
     {ι : Type*} [Fintype ι] [DecidableEq ι] [Algebra ℚ A]
     (q : ι → ℤ) (c : ι → A) (m : ℕ) :
     (((∑ i : ι, LaurentPolynomial.C (c i) * T (q i)) ^ m :
-        LaurentPolynomial A)) 0 =
+        LaurentPolynomial A)).coeff 0 =
       MvPolynomial.aeval c
         (GMC2ConstantTermRelations.constantTermRelation q m) := by
   classical
@@ -116,7 +111,7 @@ theorem constantCoeff_pow_eq_aeval_constantTermRelation
   rw [prod_monomial_eq]
   change (((Nat.multinomial Finset.univ r : LaurentPolynomial A) *
       (LaurentPolynomial.C (∏ i, c i ^ r i) *
-        T (∑ i, (r i : ℤ) * q i)) : LaurentPolynomial A)) 0 = _
+        T (∑ i, (r i : ℤ) * q i)) : LaurentPolynomial A)).coeff 0 = _
   rw [← mul_assoc, coeff_mul_T]
   have hconst :
       (Nat.multinomial Finset.univ r : LaurentPolynomial A) *
