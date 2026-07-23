@@ -66,11 +66,11 @@ structure PFun (α β : Type*) where
 /-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`. -/
 infixr:25 " →. " => PFun
 
-/-- `fun x ↦. f x` is notation for `PFun.mk fun x ↦ f x`.
-A type ascription, as in `fun x : α ↦. f x`, is also supported. -/
+/-- `fun x ↦. f x` is notation for `PFun.mk fun x ↦ f x`. -/
 macro:max "fun " xs:Lean.Parser.Term.funBinder+ " ↦. " b:term : term =>
   `(PFun.mk fun $xs* ↦ $b)
 
+/-- `fun x : α ↦. f x` is notation for `PFun.mk fun x : α ↦ f x`. -/
 macro:max "fun " xs:Lean.Parser.Term.funBinder+ " : " type:term " ↦. " b:term : term =>
   `(PFun.mk fun $xs* : $type ↦ $b)
 
