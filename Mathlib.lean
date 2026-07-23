@@ -170,6 +170,7 @@ public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.Algebra.Category.ModuleCat.Free
 public import Mathlib.Algebra.Category.ModuleCat.Images
 public import Mathlib.Algebra.Category.ModuleCat.Injective
+public import Mathlib.Algebra.Category.ModuleCat.InjectiveDimension
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
 public import Mathlib.Algebra.Category.ModuleCat.LeftResolution
 public import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -3577,6 +3578,7 @@ public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Combinatorics.Graph.Delete
 public import Mathlib.Combinatorics.Graph.Lattice
 public import Mathlib.Combinatorics.Graph.Maps
+public import Mathlib.Combinatorics.Graph.Simple
 public import Mathlib.Combinatorics.Graph.Subgraph
 public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
