@@ -87,13 +87,11 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
       · have : ContDiff ℝ n (fun y ↦ x + y) := by fun_prop
         simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ, Homeomorph.addLeft]
     intro z' hz'
-    have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
+    have : 0 ≤ z' 0 := by simp_all [modelWithCornersEuclideanHalfSpace]
     dsimp
     simp only [hz, ↓reduceIte, Homeomorph.toOpenPartialHomeomorph_apply, Homeomorph.coe_addLeft]
-    rw [IccLeftChart_symm_apply, modelWithCornersEuclideanHalfSpace_symm_apply]
-    dsimp only [Fin.isValue]
-    rw [min_eq_left, max_eq_left this]
-    · simp [φ, φ₀, add_comm]
+    rw [IccLeftChart_symm_apply_of_le]
+    · simpa [φ, φ₀, add_comm, modelWithCornersEuclideanHalfSpace_symm_apply]
     · simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace_symm_apply]
       linarith
   · -- At the right boundary point, the correct codomain chart is mapping `a` to `y - a`.
@@ -107,7 +105,7 @@ lemma isImmersionOfComplement_subtypeVal_Icc :
       · have : ContDiff ℝ n ((fun v ↦ -v + y / 2) ∘ fun p' ↦ p' - y / 2) := by fun_prop
         simpa [contMDiffOn_iff_contDiffOn, contDiffOn_univ]
     intro z' hz'
-    have : 0 ≤ z' 0 := by simp_all [IccLeftChart, modelWithCornersEuclideanHalfSpace]
+    have : 0 ≤ z' 0 := by simp_all [modelWithCornersEuclideanHalfSpace]
     simp only [OpenPartialHomeomorph.extend, Icc_chartedSpaceChartAt, hz, ↓reduceIte,
       PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_toPartialEquiv_symm,
       OpenPartialHomeomorph.coe_toPartialHomeomorph_symm, ModelWithCorners.toPartialEquiv_coe_symm,
