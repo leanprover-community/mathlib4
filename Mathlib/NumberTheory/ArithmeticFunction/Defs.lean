@@ -187,6 +187,7 @@ instance instAddMonoid : AddMonoid (ArithmeticFunction R) where
 
 end AddMonoid
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) where
   natCast n := ⟨fun x ↦ if x = 1 then (n : R) else 0, by simp⟩
   natCast_zero := by ext; simp
@@ -260,6 +261,7 @@ theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
   apply sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l * j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i * k, l), (i, k)⟩) <;> aesop (add simp mul_assoc)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b = b := by
   ext x
   simp_all [← map_div_right_divisors, sum_eq_single 1]
@@ -270,6 +272,7 @@ section Semiring
 
 variable [Semiring R]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance instMonoid : Monoid (ArithmeticFunction R) where
   one_mul := one_smul'
   mul_one f := by
@@ -294,7 +297,6 @@ instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) where
 instance [CommRing R] : CommRing (ArithmeticFunction R) where
   neg_add_cancel := neg_add_cancel
   mul_comm := mul_comm
-  zsmul n f := n • f
 
 instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
     Module R (ArithmeticFunction S) where
@@ -379,6 +381,7 @@ theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
 def dirichletInverse : ArithmeticFunction R :=
   ⟨dirichletInverseFun f hf, dirichletInverseFun_apply_zero f hf⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem self_mul_dirichletInverse (f : ArithmeticFunction R) (hf : Invertible (f 1)) :
     f * dirichletInverse f hf = 1 := by
   ext n
@@ -443,7 +446,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     induction s using Finset.induction_on with
     | empty => simp [hf]
     | insert _ _ has ih =>
-      rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
+      rw [coe_insert, Set.pairwise_insert_of_symm] at hs
       rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
       exact Coprime.prod_right fun i hi => hs.2 _ hi (hi.ne_of_notMem has).symm
 
