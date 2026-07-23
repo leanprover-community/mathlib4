@@ -378,22 +378,28 @@ noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
 The restriction of a `MulChar` to a submonoid.
 -/
 @[simps! apply]
-noncomputable def restrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+noncomputable def domRestrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
     (χ : MulChar R R') : MulChar T R' :=
   ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
+
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
 
 /--
 The restriction of a `MulChar` to a submonoid as an homomorphism.
 -/
 @[simps]
-noncomputable def restrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+noncomputable def domRestrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
     (R'' : Type*) [CommMonoidWithZero R''] :
     (MulChar R R'') →* MulChar T R'' where
-  toFun := restrict T
+  toFun := domRestrict T
   map_one' := by
     ext x
-    rw [restrict_apply, if_pos x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
+    rw [domRestrict_apply, if_pos x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
   map_mul' x y := by ext; simp
+
+@[deprecated (since := "2026-07-19")] alias restrictHom := domRestrictHom
+@[deprecated (since := "2026-07-19")] alias restrictHom_apply := domRestrictHom_apply
 
 end Group
 
@@ -419,9 +425,11 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
 
-theorem restrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
-    {χ : MulChar R R'} : χ.restrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
+theorem domRestrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
+    {χ : MulChar R R'} : χ.domRestrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
   simp [eq_one_iff]
+
+@[deprecated (since := "2026-07-19")] alias restrict_eq_one_iff := domRestrict_eq_one_iff
 
 end nontrivial
 
