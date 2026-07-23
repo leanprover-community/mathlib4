@@ -346,8 +346,8 @@ theorem iSupIndep_def' : iSupIndep t ↔ ∀ i, Disjoint (t i) (sSup (t '' { j |
 
 theorem iSupIndep_def'' :
     iSupIndep t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ j ≠ i, t j = a }) := by
-  rw [iSupIndep_def']
-  aesop
+  simp_rw [iSupIndep_def', ne_eq]
+  rfl
 
 @[simp]
 theorem iSupIndep_subsingleton [Subsingleton ι] (t : ι → α) : iSupIndep t :=
