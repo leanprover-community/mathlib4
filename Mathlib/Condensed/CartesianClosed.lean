@@ -5,10 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Types
-public import Mathlib.CategoryTheory.Sites.CartesianClosed
-public import Mathlib.Condensed.Basic
-public import Mathlib.CategoryTheory.Sites.LeftExact
 /-!
 
 # Condensed sets form a Cartesian closed category
