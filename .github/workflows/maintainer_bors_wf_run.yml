@@ -110,8 +110,8 @@ jobs:
       # The `ready-to-merge` / `delegated` lifecycle labels are managed by bors
       # itself (see the `[labels]` table in bors.toml); this workflow no longer
       # adds or removes them. It still removes the `awaiting-author` and
-      # `maintainer-merge` labels and updates the Zulip emoji on a merge/delegate
-      # command.
+      # `maintainer-merge` labels on a merge/delegate command. (Zulip emoji
+      # reactions are now kept in sync by the `zulip_emoji_reconcile` workflow.)
       - if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.inputs.outputs.bot == 'true' ) }}
@@ -125,47 +125,3 @@ jobs:
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.inputs.outputs.pr_number }}/labels/${label}" \
               --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
-
-      - name: Checkout local actions
-        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.inputs.outputs.bot == 'true' ) }}
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          ref: ${{ github.workflow_sha }}
-          fetch-depth: 1
-          sparse-checkout: .github/actions
-          path: workflow-actions
-      - name: Get mathlib-ci
-        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.inputs.outputs.bot == 'true' ) }}
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
-
-      - name: Set up Python
-        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.inputs.outputs.bot == 'true' ) }}
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.inputs.outputs.bot == 'true' ) }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
-
-      - name: update zulip emoji reactions
-        if: ${{ ! steps.inputs.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.inputs.outputs.bot == 'true' ) }}
-        continue-on-error: true
-        env:
-          ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
-          ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
-          ZULIP_SITE: https://leanprover.zulipchat.com
-        run: |
-          python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.inputs.outputs.mOrD }}" "${{ steps.inputs.outputs.mOrD }}" "${{ steps.inputs.outputs.pr_number }}"
