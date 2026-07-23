@@ -89,47 +89,29 @@ end ModelWithCorners
 
 section Charts
 
-variable [IsManifold I 1 M] [IsManifold I' 1 M']
-  [IsManifold I'' 1 M''] {e : OpenPartialHomeomorph M H}
+variable {e : OpenPartialHomeomorph M H}
 
-theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) : MDiffAt e x := by
-  rw [mdifferentiableAt_iff]
-  refine ⟨(e.continuousOn x hx).continuousAt (e.open_source.mem_nhds hx), ?_⟩
-  have mem :
-    I ((chartAt H x : M → H) x) ∈ I.symm ⁻¹' ((chartAt H x).symm ≫ₕ e).source ∩ range I := by
-    simp only [hx, mfld_simps]
-  have : (chartAt H x).symm.trans e ∈ contDiffGroupoid 1 I :=
-    HasGroupoid.compatible (chart_mem_atlas H x) h
-  have A :
-    ContDiffOn 𝕜 1 (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
-      (I.symm ⁻¹' ((chartAt H x).symm.trans e).source ∩ range I) :=
-    this.1
-  have B := A.differentiableOn one_ne_zero (I ((chartAt H x : M → H) x)) mem
-  simp only [mfld_simps] at B
-  rw [inter_comm, differentiableWithinAt_inter] at B
-  · simpa only [mfld_simps]
-  · apply IsOpen.mem_nhds ((OpenPartialHomeomorph.open_source _).preimage I.continuous_symm) mem.1
+theorem mdifferentiableAt_of_mem_maximalAtlas
+    (h : e ∈ IsManifold.maximalAtlas I 1 M) {x : M} (hx : x ∈ e.source) : MDiffAt e x :=
+  (contMDiffAt_of_mem_maximalAtlas h hx).mdifferentiableAt one_ne_zero
+
+lemma mdifferentiableAt_symm_of_mem_maximalAtlas
+    (h : e ∈ IsManifold.maximalAtlas I 1 M) {x : H} (hx : x ∈ e.target) :
+    MDiffAt e.symm x :=
+  contMDiffAt_symm_of_mem_maximalAtlas h hx |>.mdifferentiableAt one_ne_zero
+
+variable [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold I'' 1 M'']
+
+theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) : MDiffAt e x :=
+  contMDiffAt_of_mem_maximalAtlas (IsManifold.subset_maximalAtlas h) hx
+    |>.mdifferentiableAt one_ne_zero
 
 theorem mdifferentiableOn_atlas (h : e ∈ atlas H M) : MDiff[e.source] e :=
   fun _x hx => (mdifferentiableAt_atlas h hx).mdifferentiableWithinAt
 
 theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e.target) :
-    MDiffAt e.symm x := by
-  rw [mdifferentiableAt_iff]
-  refine ⟨(e.continuousOn_symm x hx).continuousAt (e.open_target.mem_nhds hx), ?_⟩
-  have mem : I x ∈ I.symm ⁻¹' (e.symm ≫ₕ chartAt H (e.symm x)).source ∩ range I := by
-    simp only [hx, mfld_simps]
-  have : e.symm.trans (chartAt H (e.symm x)) ∈ contDiffGroupoid 1 I :=
-    HasGroupoid.compatible h (chart_mem_atlas H _)
-  have A :
-    ContDiffOn 𝕜 1 (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
-      (I.symm ⁻¹' (e.symm.trans (chartAt H (e.symm x))).source ∩ range I) :=
-    this.1
-  have B := A.differentiableOn one_ne_zero (I x) mem
-  simp only [mfld_simps] at B
-  rw [inter_comm, differentiableWithinAt_inter] at B
-  · simpa only [mfld_simps]
-  · apply IsOpen.mem_nhds ((OpenPartialHomeomorph.open_source _).preimage I.continuous_symm) mem.1
+    MDiffAt e.symm x :=
+  mdifferentiableAt_symm_of_mem_maximalAtlas (IsManifold.subset_maximalAtlas h) hx
 
 theorem mdifferentiableOn_atlas_symm (h : e ∈ atlas H M) : MDiff[e.target] e.symm :=
   fun _x hx => (mdifferentiableAt_atlas_symm h hx).mdifferentiableWithinAt
@@ -327,7 +309,6 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
     simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I x) hz, id_eq]
   · simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the derivative of the inverse of `extChartAt` with the derivative of
 `extChartAt` gives the identity.
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
@@ -337,6 +318,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
       = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
   convert! mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
+  rw [(extChartAt I x).left_inv (by simpa using hy)]
 
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv[range I] (extChartAt I x).symm y).IsInvertible :=
