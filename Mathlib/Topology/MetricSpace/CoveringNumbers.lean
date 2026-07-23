@@ -165,6 +165,39 @@ lemma externalCoveringNumber_mono_set (h : A ⊆ B) :
   simp only [externalCoveringNumber, le_iInf_iff]
   exact fun C hC ↦ iInf_le_of_le C <| iInf_le_of_le (hC.anti h) le_rfl
 
+/-- There exists an `ε`-cover of `A` realising the external covering number. No finiteness
+assumption is needed: if `externalCoveringNumber ε A = ⊤` then `A` itself is such a cover. -/
+lemma exists_isCover_encard_eq_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
+    ∃ C : Set X, IsCover ε A C ∧ C.encard = externalCoveringNumber ε A := by
+  have : Nonempty {C : Set X // IsCover ε A C} := ⟨A, .rfl⟩
+  obtain ⟨C, hC⟩ := ENat.exists_eq_iInf fun C : {C : Set X // IsCover ε A C} ↦ (C : Set X).encard
+  refine ⟨C, C.2, ?_⟩
+  rw [hC, externalCoveringNumber, iInf_subtype]
+
+/-- The external covering number is subadditive with respect to unions. -/
+lemma externalCoveringNumber_union_le (ε : ℝ≥0) (A B : Set X) :
+    externalCoveringNumber ε (A ∪ B) ≤ externalCoveringNumber ε A + externalCoveringNumber ε B := by
+  obtain ⟨C₁, hC₁, hC₁_encard⟩ := exists_isCover_encard_eq_externalCoveringNumber ε A
+  obtain ⟨C₂, hC₂, hC₂_encard⟩ := exists_isCover_encard_eq_externalCoveringNumber ε B
+  calc externalCoveringNumber ε (A ∪ B)
+      ≤ (C₁ ∪ C₂).encard := (hC₁.union hC₂).externalCoveringNumber_le_encard
+    _ ≤ C₁.encard + C₂.encard := encard_union_le _ _
+    _ = _ := by rw [hC₁_encard, hC₂_encard]
+
+/-- A set and its closure have the same external covering number, since covers are by closed
+balls. -/
+@[simp]
+lemma externalCoveringNumber_closure (ε : ℝ≥0) (A : Set X) :
+    externalCoveringNumber ε (closure A) = externalCoveringNumber ε A := by
+  refine le_antisymm (le_iInf₂ fun C hC ↦ ?_) (externalCoveringNumber_mono_set subset_closure)
+  rcases C.finite_or_infinite with hC_fin | hC_inf
+  · refine IsCover.externalCoveringNumber_le_encard ?_
+    rw [isCover_iff_subset_iUnion_closedEBall] at hC ⊢
+    exact (IsClosed.closure_subset_iff
+      (hC_fin.isClosed_biUnion fun y _ ↦ isClosed_closedEBall)).2 hC
+  · simp [hC_inf.encard_eq]
+
+
 @[simp]
 lemma externalCoveringNumber_zero {E : Type*} [EMetricSpace E] (A : Set E) :
     externalCoveringNumber 0 A = A.encard := by
