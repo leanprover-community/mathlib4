@@ -43,7 +43,7 @@ a function from `M` to its tangent bundle through a coercion, as in:
 @[expose] public section
 
 open Set Function Filter
-open scoped Topology Manifold ContDiff
+open scoped Topology Bundle Manifold ContDiff
 
 noncomputable section
 
