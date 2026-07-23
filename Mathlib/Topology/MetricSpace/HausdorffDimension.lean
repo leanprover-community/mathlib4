@@ -531,39 +531,75 @@ theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E)
   exact dimH_mono he
 
 /-!
-### Hausdorff dimension and `C¹`-smooth maps
+### Hausdorff dimension and differentiable maps
 
-`C¹`-smooth maps are locally Lipschitz continuous, hence they do not increase the Hausdorff
-dimension of sets.
+Differentiable maps (in particular `C¹`-smooth maps) do not increase Hausdorff dimension.
 -/
 
 
-/-- Let `f` be a function defined on a finite-dimensional real normed space. If `f` is `C¹`-smooth
-on a convex set `s`, then the Hausdorff dimension of `f '' s` is less than or equal to the Hausdorff
-dimension of `s`.
+/-- If `f` is differentiable on a set `s` in a finite-dimensional real normed space, then
+`dimH (f '' t) ≤ dimH t` for any `t ⊆ s`. -/
+theorem DifferentiableOn.dimH_image_le {f : E → F} {s t : Set E} (hf : DifferentiableOn ℝ f s)
+    (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t := by
+  -- `P (n, k)` collects the points of `t` near which `f` grows at rate at most `n` at scale
+  -- `(n + 1)⁻¹`, intersected with the ball of radius `(n + 1)⁻¹ / 2` around the `k`-th point of
+  -- a dense sequence. Then `f` is `n`-Lipschitz on each piece, and the pieces cover `t`.
+  set P : ℕ × ℕ → Set E := fun (n, k) ↦
+    {x ∈ t | ∀ y ∈ t, dist y x ≤ (n + 1 : ℝ)⁻¹ → dist (f y) (f x) ≤ n * dist y x} ∩
+      Metric.ball (denseSeq E k) ((n + 1 : ℝ)⁻¹ / 2)
+  have hcover : t ⊆ ⋃ i, P i := by
+    intro x hx
+    obtain ⟨C, -, hC⟩ := (hf.mono ht x hx).hasFDerivWithinAt.isBigO_sub.exists_pos
+    rw [Asymptotics.isBigOWith_iff, Metric.nhdsWithin_basis_ball.eventually_iff] at hC
+    obtain ⟨δ, hδ₀, hδ⟩ := hC
+    obtain ⟨n, hn⟩ := exists_nat_gt (max C δ⁻¹)
+    have hnδ : (n + 1 : ℝ)⁻¹ < δ := by
+      rw [inv_lt_comm₀ (by positivity) hδ₀]
+      exact ((le_max_right _ _).trans_lt hn).trans (lt_add_one _)
+    obtain ⟨k, hk⟩ := (denseRange_denseSeq E).exists_dist_lt x
+      (by positivity : (0 : ℝ) < (n + 1 : ℝ)⁻¹ / 2)
+    refine mem_iUnion.2 ⟨⟨n, k⟩, ⟨hx, fun y hy hyx ↦ ?_⟩, Metric.mem_ball.2 hk⟩
+    calc dist (f y) (f x) = ‖f y - f x‖ := dist_eq_norm _ _
+      _ ≤ C * ‖y - x‖ := hδ ⟨Metric.mem_ball.2 (hyx.trans_lt hnδ), hy⟩
+      _ ≤ n * dist y x := by
+        rw [← dist_eq_norm]
+        gcongr
+        exact ((le_max_left _ _).trans_lt hn).le
+  have hlip : ∀ i : ℕ × ℕ, LipschitzOnWith i.1 f (P i) := by
+    rintro ⟨n, k⟩
+    refine LipschitzOnWith.of_dist_le_mul ?_
+    rintro y ⟨⟨hyt, -⟩, hyb⟩ z ⟨⟨-, hzP⟩, hzb⟩
+    exact hzP y hyt <| by
+      linarith [dist_triangle_right y z (denseSeq E k), Metric.mem_ball.1 hyb,
+        Metric.mem_ball.1 hzb]
+  calc dimH (f '' t) ≤ dimH (f '' ⋃ i, P i) := dimH_mono (image_mono hcover)
+    _ = ⨆ i, dimH (f '' P i) := by rw [image_iUnion, dimH_iUnion]
+    _ ≤ ⨆ i, dimH (P i) := iSup_mono fun i ↦ (hlip i).dimH_image_le
+    _ ≤ dimH t := iSup_le fun i ↦ dimH_mono fun x hx ↦ hx.1.1
 
-TODO: do we actually need `Convex ℝ s`? -/
+/-- Let `f` be a function defined on a finite-dimensional real normed space. If `f` is `C¹`-smooth
+on a set `s`, then the Hausdorff dimension of `f '' s` is less than or equal to the Hausdorff
+dimension of `s`. -/
 theorem ContDiffOn.dimH_image_le {f : E → F} {s t : Set E} (hf : ContDiffOn ℝ 1 f s)
-    (hc : Convex ℝ s) (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t :=
-  dimH_image_le_of_locally_lipschitzOn fun x hx =>
-    let ⟨C, u, hu, hf⟩ := (hf x (ht hx)).exists_lipschitzOnWith hc
-    ⟨C, u, nhdsWithin_mono _ ht hu, hf⟩
+    (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t :=
+  (hf.differentiableOn one_ne_zero).dimH_image_le ht
 
 /-- The Hausdorff dimension of the range of a `C¹`-smooth function defined on a finite-dimensional
 real normed space is at most the dimension of its domain as a vector space over `ℝ`. -/
 theorem ContDiff.dimH_range_le {f : E → F} (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
   calc
     dimH (range f) = dimH (f '' univ) := by rw [image_univ]
-    _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le convex_univ Subset.rfl
+    _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le Subset.rfl
     _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
 
 /-- A particular case of Sard's Theorem. Let `f : E → F` be a map between finite-dimensional real
-vector spaces. Suppose that `f` is `C¹` smooth on a convex set `s` of Hausdorff dimension strictly
+vector spaces. Suppose that `f` is `C¹` smooth on a set `s` of Hausdorff dimension strictly
 less than the dimension of `F`. Then the complement of the image `f '' s` is dense in `F`. -/
 theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
-    {s t : Set E} (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
+    {s t : Set E} (h : ContDiffOn ℝ 1 f s) (ht : t ⊆ s)
     (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
-  dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le hc ht).trans_lt htF
+  dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le ht).trans_lt htF
+
 
 /-- A particular case of Sard's Theorem. If `f` is a `C¹` smooth map from a real vector space to a
 real vector space `F` of strictly larger dimension, then the complement of the range of `f` is dense
