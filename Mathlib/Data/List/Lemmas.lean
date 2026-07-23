@@ -20,17 +20,19 @@ variable {α β γ : Type*}
 namespace List
 
 @[simp]
-theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
+theorem setOfPred_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
   Set.eq_empty_iff_forall_notMem.trans eq_nil_iff_forall_not_mem.symm
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem_eq_empty_iff := setOfPred_mem_eq_empty_iff
 
 theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
   intro n hn m hm h
   induction l generalizing n m with
   | nil =>
-    simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
+    simp_all [Set.mem_singleton_iff, Set.ofPred_eq_eq_singleton, length]
   | cons hd tl IH =>
-    simp only [length, Set.mem_setOf_eq] at hn hm
+    simp only [length, Set.mem_ofPred_eq] at hn hm
     simp only [mem_cons, not_or] at hx
     cases n <;> cases m
     · rfl

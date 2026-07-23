@@ -53,13 +53,13 @@ variable [NumberField K]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
-  Fintype.ofEquiv (K →ₐ[ℚ] A) RingHom.equivRatAlgHom.symm
+  Fintype.ofEquiv (K →ₐ[ℚ] A) (RingHom.equivRatAlgHom K A).symm
 
 variable [IsAlgClosed A]
 
 /-- The number of embeddings of a number field is equal to its finrank. -/
 theorem card : Fintype.card (K →+* A) = finrank ℚ K := by
-  rw [Fintype.ofEquiv_card RingHom.equivRatAlgHom.symm, AlgHom.card]
+  rw [Fintype.ofEquiv_card (RingHom.equivRatAlgHom K A).symm, AlgHom.card]
 
 instance : Nonempty (K →+* A) := by
   rw [← Fintype.card_pos_iff, NumberField.Embeddings.card K A]
@@ -125,7 +125,7 @@ theorem pow_eq_one_of_norm_le_one {x : K} (hx₀ : x ≠ 0) (hxi : IsIntegral �
     (hx : ∀ φ : K →+* A, ‖φ x‖ ≤ 1) : ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
     Set.Infinite.exists_ne_map_eq_of_mapsTo (f := (x ^ · : ℕ → K)) Set.infinite_univ
-      (fun a _ => mem_setOf.mpr <|
+      (fun a _ => mem_ofPred.mpr <|
         ⟨hxi.pow a, fun φ => by simp [pow_le_one₀ (norm_nonneg (φ x)) <| hx φ]⟩)
       (finite_of_norm_le K A (1 : ℝ))
   wlog hlt : b < a
@@ -178,7 +178,7 @@ noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ
 theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (lift K φ).comp (algebraMap k K) = φ := by
   unfold lift
-  letI := φ.toAlgebra
+  let := φ.toAlgebra
   rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra']
 
 @[simp]
@@ -243,8 +243,8 @@ lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
 lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
     ∃ σ : Gal(K/k), φ.comp σ.symm = ψ := by
-  letI := (φ.comp (algebraMap k K)).toAlgebra
-  letI := φ.toAlgebra
+  let := (φ.comp (algebraMap k K)).toAlgebra
+  let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
   let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ (RingHom.congr_fun h r).symm }
   use (AlgHom.restrictNormal' ψ' K).symm
@@ -375,7 +375,7 @@ theorem disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver :
 theorem union_unmixedEmbeddingsOver_mixedEmbeddingsOver :
     (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) =
       { φ | ComplexEmbedding.LiesOver φ ψ } := by
-  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
+  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.ofPred_or]
 
 end Extension
 
