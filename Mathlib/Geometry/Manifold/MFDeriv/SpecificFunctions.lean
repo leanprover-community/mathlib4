@@ -158,7 +158,6 @@ theorem mfderivWithin_id (hxs : UniqueMDiffAt[s] x) :
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_id hxs]
   exact mfderiv_id
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem tangentMap_id : tangentMap% (@id M) = id := by ext1 ⟨x, v⟩; simp [tangentMap]
 
@@ -548,7 +547,6 @@ theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod 
 -- Kept as an alias for discoverability.
 alias MDifferentiableAt.mfderiv_prod := mfderiv_prodMk
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv% (fun (x : M) ↦ (x, y₀)) x₀ =
       ContinuousLinearMap.inl 𝕜 (TangentSpace% x₀) (TangentSpace% y₀) := by
@@ -561,7 +559,6 @@ theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
   simp only [tangentMap, mfderiv_prod_left]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv% (fun (y : M') ↦ (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace% x₀) (TangentSpace% y₀) := by
