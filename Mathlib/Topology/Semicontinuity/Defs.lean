@@ -148,10 +148,10 @@ theorem semicontinuousOn_univ_iff : SemicontinuousOn r univ ↔ Semicontinuous r
   simp [SemicontinuousOn, Semicontinuous, semicontinuousWithinAt_univ_iff]
 
 @[simp] theorem semicontinuous_restrict_iff :
-    Semicontinuous (s.restrict r) ↔ SemicontinuousOn r s := by
+    Semicontinuous (s.domRestrict r) ↔ SemicontinuousOn r s := by
   rw [SemicontinuousOn, Semicontinuous, SetCoe.forall]
   refine forall₂_congr fun a ha ↦ forall₂_congr fun b _ ↦ ?_
-  simp only [nhdsWithin_eq_map_subtype_coe ha, eventually_map, restrict]
+  simp only [nhdsWithin_eq_map_subtype_coe ha, eventually_map, domRestrict]
 
 theorem Semicontinuous.semicontinuousAt (h : Semicontinuous r) (x : α) :
     SemicontinuousAt r x :=
@@ -389,7 +389,7 @@ theorem lowerSemicontinuousOn_univ_iff : LowerSemicontinuousOn f univ ↔ LowerS
   semicontinuousOn_univ_iff
 
 @[simp] theorem lowerSemicontinuous_restrict_iff :
-    LowerSemicontinuous (s.restrict f) ↔ LowerSemicontinuousOn f s :=
+    LowerSemicontinuous (s.domRestrict f) ↔ LowerSemicontinuousOn f s :=
   semicontinuous_restrict_iff (r := (f · > ·))
 
 theorem LowerSemicontinuous.lowerSemicontinuousAt (h : LowerSemicontinuous f) (x : α) :
@@ -468,7 +468,7 @@ theorem upperSemicontinuousWithinAt_univ_iff :
   semicontinuousWithinAt_univ_iff
 
 @[simp] theorem upperSemicontinuousOn_iff_restrict {s : Set α} :
-    UpperSemicontinuous (s.restrict f) ↔ UpperSemicontinuousOn f s :=
+    UpperSemicontinuous (s.domRestrict f) ↔ UpperSemicontinuousOn f s :=
   lowerSemicontinuous_restrict_iff (β := βᵒᵈ)
 
 theorem UpperSemicontinuousAt.upperSemicontinuousWithinAt (s : Set α)
@@ -735,7 +735,7 @@ theorem lowerHemicontinuousOn_univ_iff : LowerHemicontinuousOn f univ ↔ LowerH
   semicontinuousOn_univ_iff
 
 @[simp] theorem lowerHemicontinuous_restrict_iff :
-    LowerHemicontinuous (s.restrict f) ↔ LowerHemicontinuousOn f s :=
+    LowerHemicontinuous (s.domRestrict f) ↔ LowerHemicontinuousOn f s :=
   semicontinuous_restrict_iff (r := (fun x t ↦ IsOpen t ∧ ((f x) ∩ t).Nonempty))
 
 theorem LowerHemicontinuous.lowerHemicontinuousAt (h : LowerHemicontinuous f) (x : α) :
@@ -849,7 +849,7 @@ theorem upperHemicontinuousWithinAt_univ_iff :
   semicontinuousWithinAt_univ_iff
 
 @[simp] theorem upperHemicontinuousOn_iff_restrict {s : Set α} :
-    UpperHemicontinuous (s.restrict f) ↔ UpperHemicontinuousOn f s :=
+    UpperHemicontinuous (s.domRestrict f) ↔ UpperHemicontinuousOn f s :=
   semicontinuous_restrict_iff (r := (fun x t ↦ t ∈ 𝓝ˢ (f x)))
 
 theorem UpperHemicontinuousAt.upperHemicontinuousWithinAt (s : Set α)
@@ -991,7 +991,7 @@ theorem hasOpenLowerSectionsOn_univ_iff :
   semicontinuousOn_univ_iff
 
 @[simp] theorem hasOpenLowerSections_restrict_iff :
-    HasOpenLowerSections (s.restrict f) ↔ HasOpenLowerSectionsOn f s :=
+    HasOpenLowerSections (s.domRestrict f) ↔ HasOpenLowerSectionsOn f s :=
   semicontinuous_restrict_iff (r := (fun x b ↦ b ∈ f x))
 
 theorem HasOpenLowerSections.hasOpenLowerSectionsOn (h : HasOpenLowerSections f) (s : Set α) :
