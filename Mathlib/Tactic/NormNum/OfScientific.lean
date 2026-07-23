@@ -44,7 +44,7 @@ to rat casts if the scientific notation is inherited from the one for rationals.
   let mkApp3 f (m : Q(ℕ)) (b : Q(Bool)) (exp : Q(ℕ)) ← whnfR e | failure
   let dα ← inferDivisionSemiring α
   guard <|← withNewMCtxDepth <| isDefEq f q(OfScientific.ofScientific (α := $α))
-  haveI' : $e =Q OfScientific.ofScientific $m $b $exp := ⟨⟩
+  have : $e =Q OfScientific.ofScientific $m $b $exp := ⟨⟩
   match b with
   | ~q(true) =>
     let rme ← derive (q(NNRat.divNat $m (10 ^ $exp)) : Q($α))

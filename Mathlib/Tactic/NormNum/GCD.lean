@@ -133,8 +133,8 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
 @[norm_num Nat.gcd _ _]
 def evalNatGCD : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q Nat.gcd $x $y := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q Nat.gcd $x $y := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, q⟩ ← deriveNat y sℕ
@@ -162,8 +162,8 @@ def proveNatLCM (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.lcm $ex $ey = $ed) :=
 @[norm_num Nat.lcm _ _]
 def evalNatLCM : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q Nat.lcm $x $y := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q Nat.lcm $x $y := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, q⟩ ← deriveNat y sℕ
@@ -184,8 +184,8 @@ def evalIntGCD : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℤ))) (y : Q(ℤ)) ← Meta.whnfR e | failure
   let ⟨ex, p⟩ ← deriveInt x _
   let ⟨ey, q⟩ ← deriveInt y _
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q Int.gcd $x $y := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q Int.gcd $x $y := ⟨⟩
   let ⟨ed, pf⟩ := proveIntGCD ex ey
   return .isNat _ ed q(isInt_gcd $p $q $pf)
 
@@ -203,8 +203,8 @@ def evalIntLCM : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℤ))) (y : Q(ℤ)) ← Meta.whnfR e | failure
   let ⟨ex, p⟩ ← deriveInt x _
   let ⟨ey, q⟩ ← deriveInt y _
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q Int.lcm $x $y := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q Int.lcm $x $y := ⟨⟩
   let ⟨ed, pf⟩ := proveIntLCM ex ey
   return .isNat _ ed q(isInt_lcm $p $q $pf)
 
