@@ -362,8 +362,8 @@ theorem mapDomain_finsetSum {f : α → β} {s : Finset ι} {v : ι → α →�
 
 @[deprecated (since := "2026-04-08")] alias mapDomain_finset_sum := mapDomain_finsetSum
 
-theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
-    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
+theorem mapDomain_sum [Zero N] {f : α → β} {s : ι →₀ N} {v : ι → N → α →₀ M} :
+    mapDomain f (s.sum v) = s.sum fun i n ↦ mapDomain f (v i n) :=
   map_finsuppSum (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M) _ _
 
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :

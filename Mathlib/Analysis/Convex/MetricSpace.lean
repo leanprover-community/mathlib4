@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Lp.Finsupp
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 
-/-!
+import Mathlib.Tactic.Positivity.Finset
 
+/-!
 # Convex spaces with compatible metric structure
 
 A convex space has a compatible metric structure if `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`.
@@ -44,6 +46,7 @@ public section
 namespace Convexity
 
 open ConvexSpace
+open scoped NNReal
 
 variable {I X : Type*}
 
@@ -286,4 +289,36 @@ instance IsConvexDist.submodule {F M : Type*} [AddCommGroup M] [MetricSpace M]
     [SetLike F M] [AddSubmonoidClass F M] [SMulMemClass F ℝ M] {S : F} :
     IsConvexDist S := .subtype _ _
 
-end Convexity
+namespace StdSimplex
+variable {R : Type*} [PartialOrder R] [Semiring R]
+
+noncomputable instance instPseudoEMetricSpace [PseudoEMetricSpace R] :
+    PseudoEMetricSpace (StdSimplex R I) :=
+  .induced (WithLp.toLp (1 : ℝ≥0) ∘ weights) <|
+    have : Fact ((1 : ℝ≥0) ≤ 1) := ⟨le_rfl⟩; inferInstance
+
+lemma edist_def [PseudoEMetricSpace R] (w₁ w₂ : StdSimplex R I) :
+    edist w₁ w₂ = (w₁.weights.zipWith edist (edist_self _) w₂.weights).sum fun _i r ↦ r := by
+  simp [edist]
+
+noncomputable instance instEMetricSpace [EMetricSpace R] : EMetricSpace (StdSimplex R I) :=
+  .induced (WithLp.toLp (1 : ℝ≥0) ∘ weights) ((WithLp.toLp_injective _).comp weights_injective) <|
+    have : Fact ((1 : ℝ≥0) ≤ 1) := ⟨le_rfl⟩; inferInstance
+
+noncomputable instance [PseudoMetricSpace R] : PseudoMetricSpace (StdSimplex R I) :=
+  .induced (WithLp.toLp (1 : ℝ≥0) ∘ weights) <|
+    have : Fact ((1 : ℝ≥0) ≤ 1) := ⟨le_rfl⟩; inferInstance
+
+lemma dist_def [PseudoMetricSpace R] (w₁ w₂ : StdSimplex R I) :
+    dist w₁ w₂ = (w₁.weights.zipWith dist (dist_self _) w₂.weights).sum fun _i r ↦ r := by
+  simp [dist]
+
+lemma nndist_def [PseudoMetricSpace R] (w₁ w₂ : StdSimplex R I) :
+    nndist w₁ w₂ = (w₁.weights.zipWith nndist (nndist_self _) w₂.weights).sum fun _i r ↦ r := by
+  have : Fact ((1 : ℝ≥0) ≤ 1) := ⟨le_rfl⟩; rw [nndist_induced, Finsupp.nndist_def]; simp
+
+noncomputable instance [MetricSpace R] : MetricSpace (StdSimplex R I) :=
+  .induced (WithLp.toLp (1 : ℝ≥0) ∘ weights) ((WithLp.toLp_injective _).comp weights_injective) <|
+    have : Fact ((1 : ℝ≥0) ≤ 1) := ⟨le_rfl⟩; inferInstance
+
+end Convexity.StdSimplex

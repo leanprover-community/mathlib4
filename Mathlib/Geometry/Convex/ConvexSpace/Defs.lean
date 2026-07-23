@@ -76,8 +76,10 @@ lemma support_weights_nonempty [Nontrivial R] (w : StdSimplex R M) :
 lemma nonempty [Nontrivial R] (w : StdSimplex R M) : Nonempty M :=
   w.support_weights_nonempty.to_type
 
-@[simp] lemma weights_inj {f g : StdSimplex R M} : f.weights = g.weights ↔ f = g := by
-  cases f; cases g; simp
+lemma weights_injective : (weights : StdSimplex R M → M →₀ R).Injective := by rintro ⟨f⟩ ⟨g⟩; simp
+
+@[simp] lemma weights_inj {f g : StdSimplex R M} : f.weights = g.weights ↔ f = g :=
+  weights_injective.eq_iff
 
 @[ext] alias ⟨ext, _⟩ := weights_inj
 

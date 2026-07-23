@@ -37,6 +37,11 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
     simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_ofPred]
 
+omit [PseudoMetricSpace α] in
+lemma nndist_induced (f : α → β) (m : PseudoMetricSpace β) (x y : α) :
+    haveI := m.induced f
+    nndist x y = nndist (f x) (f y) := rfl
+
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
