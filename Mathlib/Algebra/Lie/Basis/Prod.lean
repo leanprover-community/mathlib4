@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Lie.Semisimple.Basic
 # Products of bases Lie algebras
 
 Given two finite-dimensional simple Lie algebras, if they admit bases with matching Cartan matrices,
-they must be equivalent. This file provides a proof of this as `LieAlgebra.Basis.equivOfReindex`.
+they must be isomorphic. This file provides a proof of this as `LieAlgebra.Basis.equivOfReindex`.
 
 -/
 
@@ -299,7 +299,7 @@ def prodEquivRight :
     b₁.prod eι b₂ ≃ₗ⁅K⁆ L₂ :=
   (prodSymmEquiv eι b₁ b₂).symm.trans (prodEquivLeft eι.symm b₂ b₁ <| by simp [← hA])
 
-/-- Simple Lie algebras with equivalence bases are equivalent. -/
+/-- Simple Lie algebras with equivalent bases are equivalent. -/
 public def equivOfReindex :
     L₁ ≃ₗ⁅K⁆ L₂ :=
   (prodEquivLeft eι b₁ b₂ hA).symm.trans (prodEquivRight eι b₁ b₂ hA)
