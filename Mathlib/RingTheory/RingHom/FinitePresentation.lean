@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 
 /-!
-
 # The meta properties of finitely-presented ring homomorphisms.
 
 The main result is `RingHom.finitePresentation_isLocal`.

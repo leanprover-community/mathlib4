@@ -11,7 +11,6 @@ public import Mathlib.Condensed.Functors
 public import Mathlib.Condensed.Limits  -- shake: keep (compHausToCondensed.PreservesEffectiveEpis), cf. lean#13417
 
 /-!
-
 # The functor from compact Hausdorff spaces to condensed sets preserves effective epimorphisms
 -/
 

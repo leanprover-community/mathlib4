@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
-
 # Characteristic polynomial
 
 ## Main result

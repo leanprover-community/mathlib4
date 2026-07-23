@@ -9,7 +9,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 
 /-!
-
 # Computing limits of monomials
 
 In this file we define the `Monomial` structure, representing monomials in a basis, i.e.

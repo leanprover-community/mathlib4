@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
-
 # Comparison with the normalized Moore complex functor
 
 In this file, we show that when the category `A` is abelian,

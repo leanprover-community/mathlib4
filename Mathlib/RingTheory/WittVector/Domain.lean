@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.WittVector.Identities
 
 /-!
-
 # Witt vectors over a domain
 
 This file builds to the proof `WittVector.instIsDomain`,

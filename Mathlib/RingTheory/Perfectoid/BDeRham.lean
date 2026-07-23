@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 
 /-!
-
 # The de Rham Period Ring $\mathbb{B}_{dR}^+$ and $\mathbb{B}_{dR}$
 
 In this file, we define the de Rham period ring $\mathbb{B}_{dR}^+$ and

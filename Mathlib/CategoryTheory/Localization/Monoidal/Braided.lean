@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 
 /-!
-
 # Localization of symmetric monoidal categories
 
 Let `C` be a monoidal category equipped with a class of morphisms `W` which

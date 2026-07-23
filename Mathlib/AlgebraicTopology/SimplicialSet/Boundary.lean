@@ -20,7 +20,6 @@ As an example, we should have a function that constructs
 from a non-surjective order-preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
-
 -/
 
 @[expose] public section

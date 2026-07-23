@@ -13,7 +13,6 @@ public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Data.Set.Constructions
 
 /-!
-
 # Compacta and Compact Hausdorff Spaces
 
 Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
-
 # The plus construction for presheaves.
 
 This file contains the construction of `P⁺`, for a presheaf `P : Cᵒᵖ ⥤ D`

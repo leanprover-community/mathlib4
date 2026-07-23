@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Module
 /-!
-
 # Epimorphisms of condensed objects
 
 This file characterises epimorphisms of condensed sets and condensed `R`-modules for any ring `R`,

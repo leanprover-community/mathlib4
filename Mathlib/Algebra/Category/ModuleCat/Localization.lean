@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.RingTheory.Localization.Module
 
 /-!
-
 # Localized Module in ModuleCat
 
 For a ring `R` satisfying `[Small.{v} R]` and a submonoid `S` of `R`,

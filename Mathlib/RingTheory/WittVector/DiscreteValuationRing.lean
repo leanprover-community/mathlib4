@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.Tactic.LinearCombination
 
 /-!
-
 # Witt vectors over a perfect ring
 
 This file establishes that Witt vectors over a perfect field are a discrete valuation ring.

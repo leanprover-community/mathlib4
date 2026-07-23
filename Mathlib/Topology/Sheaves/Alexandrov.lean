@@ -10,7 +10,6 @@ public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
-
 Let `X` be a preorder `≤`, and consider the associated Alexandrov topology on `X`.
 Given a functor `F : X ⥤ C` to a complete category, we can extend `F` to a
 presheaf on (the topological space) `X` by taking the right Kan extension along the canonical

@@ -11,7 +11,6 @@ public import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalStopping
 
 /-!
-
 # Generalized Borel-Cantelli lemma
 
 This file proves Lévy's generalized Borel-Cantelli lemma which is a generalization of the

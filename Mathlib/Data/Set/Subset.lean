@@ -29,7 +29,6 @@ This notation, (together with the `↑` notation for `Set.CoeHead`)
 is defined in `Mathlib/Data/Set/Notation.lean` and is scoped to the `Set.Notation` namespace.
 To enable it, use `open Set.Notation`.
 
-
 ## Naming conventions
 
 Theorem names refer to `↓∩` as `preimage_val`.

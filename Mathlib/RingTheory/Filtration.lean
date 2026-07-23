@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.ReesAlgebra
 
 /-!
-
 # `I`-filtrations of modules
 
 This file contains the definitions and basic results around (stable) `I`-filtrations of modules.

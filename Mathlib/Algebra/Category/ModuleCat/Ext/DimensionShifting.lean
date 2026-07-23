@@ -13,7 +13,6 @@ public import Mathlib.Data.Rat.Floor
 public import Mathlib.Tactic.Continuity
 
 /-!
-
 # Dimension Shifting
 
 -/

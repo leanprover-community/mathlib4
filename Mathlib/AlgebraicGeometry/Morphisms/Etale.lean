@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
-
 # Étale morphisms
 
 A morphism of schemes `f : X ⟶ Y` is étale if for each affine `U ⊆ Y`

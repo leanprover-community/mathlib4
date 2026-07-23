@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 /-!
-
 # Forgetful functor from `Over X` preserves cofiltered limits
 
 Note that `Over.forget X : Over X ⥤ C` already preserves all colimits because it is a left adjoint.

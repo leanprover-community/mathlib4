@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
-
 # `WithInitial` and `WithTerminal`
 
 Given a category `C`, this file constructs two objects:

@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.MorphismProperty
 public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
-
 # Sites on `P.Over ⊤ X`
 
 We provide some API for proving properties of `P.Over ⊤ X` in relation to precoverages. Consider

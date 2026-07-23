@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 
 /-!
-
 # Separable closure
 
 This file contains basics about the (relative) separable closure of a field extension.

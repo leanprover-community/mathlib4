@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 /-!
-
 # Effective epimorphisms in `TopCat`
 
 This file proves the result `TopCat.effectiveEpi_iff_isQuotientMap`:

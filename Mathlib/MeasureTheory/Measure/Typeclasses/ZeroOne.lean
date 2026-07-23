@@ -10,7 +10,6 @@ public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Measure.Dirac
 
 /-!
-
 We introduce the typeclass `IsZeroOneMeasure` for measures that only take the values `0` and `1`.
 
 ## Main definitions

@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.FinitePresentation
 
 /-!
-
 # Finitely presentable objects in `Under R` with `R : CommRingCat`
 
 In this file, we show that finitely presented algebras are finitely presentable in `Under R`,

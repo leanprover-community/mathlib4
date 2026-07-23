@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-
 # Restriction of scalars for submodules
 
 If semiring `S` acts on a semiring `R` and `M` is a module over both (compatibly with this action)

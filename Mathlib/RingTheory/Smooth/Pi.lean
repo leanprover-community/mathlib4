@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Smooth.Basic
 
 /-!
-
 # Formal-smoothness of finite products of rings
 
 ## Main result

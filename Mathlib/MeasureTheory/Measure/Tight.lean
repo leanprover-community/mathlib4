@@ -30,7 +30,6 @@ measures in the set, the complement of `K` has measure at most `ε`.
 * `isTightMeasureSet_singleton_of_innerRegularWRT`: every finite, inner-regular measure is tight.
 * `isTightMeasureSet_of_isCompact_closure`: every relatively compact set of measures is tight.
 
-
 -/
 
 @[expose] public section

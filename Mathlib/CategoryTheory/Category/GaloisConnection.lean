@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
-
 # Galois connections between preorders are adjunctions.
 
 * `GaloisConnection.adjunction` is the adjunction associated to a Galois connection.

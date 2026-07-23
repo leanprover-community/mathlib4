@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
-
 # Linear maps involving submodules of a module
 
 In this file we define a number of linear maps involving submodules of a module.

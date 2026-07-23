@@ -516,7 +516,6 @@ theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
 alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 
 /-!
-
 ### Universal set.
 
 In Lean `@univ α` (or `univ : Set α`) is the set that contains all elements of type `α`.

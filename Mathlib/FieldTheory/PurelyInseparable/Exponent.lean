@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
-
 # The exponent of purely inseparable extensions
 
 This file defines the exponent of a purely inseparable extension (if one exists) and

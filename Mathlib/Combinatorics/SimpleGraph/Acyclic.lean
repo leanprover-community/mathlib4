@@ -13,7 +13,6 @@ public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
-
 # Acyclic graphs and trees
 
 This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.

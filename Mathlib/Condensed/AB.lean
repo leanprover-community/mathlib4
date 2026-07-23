@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Limits
 /-!
-
 # AB axioms in condensed modules
 
 This file proves that the category of condensed modules over a ring satisfies Grothendieck's axioms

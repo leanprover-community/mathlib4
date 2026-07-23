@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.RingTheory.Discriminant
 
 /-!
-
 # Field/algebra norm / trace and localization
 
 This file contains results on the combination of `IsLocalization` and `Algebra.norm`,

@@ -21,7 +21,6 @@ generated, similarly to other finitely-generated objects in the algebra library.
 - `FirstOrder.Language.Substructure.CG` indicates that a substructure is countably generated.
 - `FirstOrder.Language.Structure.CG` indicates that a structure is countably generated.
 
-
 ## TODO
 
 Develop a more unified definition of finite generation using the theory of closure operators, or use

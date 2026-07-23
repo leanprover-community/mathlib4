@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
-
 # Strong rank condition for commutative rings
 
 We provide a shortcut instance for the fact that any nontrivial commutative ring satisfies

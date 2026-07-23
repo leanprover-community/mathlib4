@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
 /-!
-
 # The small affine Zariski site
 
 `X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open

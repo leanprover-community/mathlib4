@@ -12,7 +12,6 @@ public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
-
 # Almost everywhere equal functions
 
 We build a space of equivalence classes of functions, where two functions are treated as identical
@@ -62,7 +61,6 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
                  target space to be second countable).
 * `comp₂`:       Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
                  For example, `[f + g]` is `comp₂ (+)`
-
 
 ## Tags
 

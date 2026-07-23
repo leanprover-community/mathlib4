@@ -32,7 +32,6 @@ We develop further preliminaries required for the theorem, up to the sum transfo
   namely `n^p (1 + ∑ g(u) / u^(p+1))`, together with positivity statements along the branches
   `r i n`.
 
-
 ## References
 
 * Mohamad Akra and Louay Bazzi, On the solution of linear recurrence equations

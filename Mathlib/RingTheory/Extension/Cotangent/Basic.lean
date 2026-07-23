@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
-
 # Naive cotangent complex associated to a presentation.
 
 Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently a closed embedding `S ↪ Aⁿ`

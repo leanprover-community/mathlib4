@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Stalk
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 
 /-!
-
 # Residue fields of points
 
 ## Main definitions
@@ -24,7 +23,6 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 - `AlgebraicGeometry.Scheme.fromSpecResidueField`: The canonical map `Spec κ(x) ⟶ X`.
 - `AlgebraicGeometry.Scheme.SpecToEquivOfField`: morphisms `Spec K ⟶ X` for a field `K` correspond
   to pairs of `x : X` with embedding `κ(x) ⟶ K`.
-
 
 -/
 

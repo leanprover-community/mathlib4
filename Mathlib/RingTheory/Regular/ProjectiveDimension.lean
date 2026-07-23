@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
-
 # ProjectiveDimension of quotient by regular element
 
 For `M` a finitely generated module over Noetherian local ring `R` and an `M`-regular element `x`

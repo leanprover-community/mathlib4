@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 public import Mathlib.Tactic.Ring
 
 /-!
-
 # Study of face maps for the Dold-Kan correspondence
 
 In this file, we obtain the technical lemmas that are used in the file

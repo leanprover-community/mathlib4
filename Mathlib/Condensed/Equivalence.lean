@@ -10,7 +10,6 @@ public import Mathlib.Topology.Category.Stonean.EffectiveEpi
 public import Mathlib.Condensed.Basic
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 /-!
-
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
 
 The forgetful functor from extremally disconnected spaces `Stonean` to compact

@@ -11,7 +11,6 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
-
 # Tropicalization of finitary operations
 
 This file provides the "big-op" or notation-based finitary operations on tropicalized types.

@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 
 /-!
-
 # Formal-étaleness of finite products of rings
 
 ## Main result

@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
-
 # Length of modules
 
 ## Main results

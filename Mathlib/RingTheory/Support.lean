@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.Basic
 public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
-
 # Support of a module
 
 ## Main results

@@ -60,7 +60,6 @@ expectation.
 * `condDistrib_trajMeasure`: a regular conditional probability distribution of the point at time
   `a + 1` given the trajectory up to time `a` corresponds to the kernel `κ a`.
 
-
 ## Implementation notes
 
 The kernel `traj κ a` is built using the Carathéodory extension theorem. First we build a projective

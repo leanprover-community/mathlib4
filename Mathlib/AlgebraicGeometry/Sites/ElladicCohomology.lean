@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 
 /-!
-
 # `ℓ`-adic cohomology of a scheme
 
 Let `X` be a scheme and `ℓ` be a prime number. In this file we define the sheaf

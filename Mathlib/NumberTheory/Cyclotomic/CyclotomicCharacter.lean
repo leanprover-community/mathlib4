@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.RootsOfUnity.Minpoly
 public import Mathlib.FieldTheory.KrullTopology
 
 /-!
-
 # The cyclotomic character
 
 Let `L` be an integral domain and let `n : ℕ+` be a positive integer. If `μₙ` is the

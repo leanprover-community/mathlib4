@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
-
 # Interaction between Quotients and Tensor Products
 
 This file contains constructions that relate quotients and tensor products. This file is also a home

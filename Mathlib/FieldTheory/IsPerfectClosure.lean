@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.FieldTheory.PerfectClosure
 
 /-!
-
 # `IsPerfectClosure` predicate
 
 This file contains `IsPerfectClosure` which asserts that `L` is a perfect closure of `K` under a

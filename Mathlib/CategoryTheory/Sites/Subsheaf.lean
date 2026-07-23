@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subfunctor.Sieves
 
 /-!
-
 # Subsheaf of types
 
 We define the subsheaf of a type-valued presheaf.

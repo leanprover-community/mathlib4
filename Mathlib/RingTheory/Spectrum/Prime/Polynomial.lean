@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
-
 # Prime spectrum of (multivariate) polynomials
 
 Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary schemes.

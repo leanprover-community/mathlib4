@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
-
 # Some results on free modules over rings satisfying strong rank condition
 
 This file contains some results on free modules over rings satisfying strong rank condition.

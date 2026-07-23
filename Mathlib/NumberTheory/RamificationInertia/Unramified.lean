@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
-
 # Unramified and ramification index
 
 We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate of `IsUnramifiedAt`.

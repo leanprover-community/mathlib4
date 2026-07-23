@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
-
 # Compact submodules
 
 -/

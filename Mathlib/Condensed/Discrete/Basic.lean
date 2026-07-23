@@ -11,7 +11,6 @@ public import Mathlib.Condensed.Basic
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
 /-!
-
 # Discrete-underlying adjunction
 
 Given a category `C` with sheafification with respect to the coherent topology on compact Hausdorff

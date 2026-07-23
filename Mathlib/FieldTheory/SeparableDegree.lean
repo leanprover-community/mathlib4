@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
 
 /-!
-
 # Separable degree
 
 This file contains basics about the separable degree of a field extension.

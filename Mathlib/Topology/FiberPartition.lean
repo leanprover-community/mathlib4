@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Logic.Function.FiberPartition
 /-!
-
 This file provides some API surrounding `Function.Fiber` (see
 `Mathlib/Logic/Function/FiberPartition.lean`) in the presence of a topology on the domain of the
 function.

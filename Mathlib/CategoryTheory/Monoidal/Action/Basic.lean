@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
-
 # Actions from a monoidal category on a category
 
 Given a monoidal category `C`, and a category `D`, we define a left action of
@@ -20,7 +19,6 @@ a bifunctor, along with structure natural isomorphisms
 We also define right actions, for these, the notation for the action of `c`
 on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 `- ⊙ᵣ (- ⊗ -) ≅ (- ⊙ᵣ -) ⊙ᵣ -` and `- ⊙ₗ 𝟙_ C ≅ -`.
-
 
 ## References
 * [Janelidze, G, and Kelly, G.M., *A note on actions of a monoidal category*][JanelidzeKelly2001]

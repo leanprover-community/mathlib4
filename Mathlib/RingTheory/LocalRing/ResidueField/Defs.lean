@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
-
 # Residue Field of local rings
 
 ## Main definitions

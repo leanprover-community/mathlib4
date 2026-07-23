@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
-
 # Categories of coherent sheaves
 
 Given a fully faithful functor `F : C ⥤ D` into a precoherent category, which preserves and reflects

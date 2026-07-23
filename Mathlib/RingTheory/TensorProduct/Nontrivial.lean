@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
-
 # Nontriviality of tensor product of algebras
 
 This file contains some more results on nontriviality of tensor product of algebras.

@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
-
 This file contains a proof that the radical of any homogeneous ideal is a homogeneous ideal
 
 ## Main statements

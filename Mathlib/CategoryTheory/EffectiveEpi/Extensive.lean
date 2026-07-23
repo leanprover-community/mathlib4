@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
 public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
-
 # Preserving and reflecting effective epis on extensive categories
 
 We prove that a functor between `FinitaryPreExtensive` categories preserves (resp. reflects) finite

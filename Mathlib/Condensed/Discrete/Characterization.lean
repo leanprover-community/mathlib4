@@ -8,7 +8,6 @@ module
 public import Mathlib.Condensed.Discrete.Colimit
 public import Mathlib.Condensed.Discrete.Module
 /-!
-
 # Characterizing discrete condensed sets and `R`-modules.
 
 This file proves a characterization of discrete condensed sets, discrete condensed `R`-modules over

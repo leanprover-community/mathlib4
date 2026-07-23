@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Group.Basic
 
 /-!
-
 # Localization over left Ore sets.
 
 This file defines the localization of a monoid over a left Ore set and proves its universal
@@ -28,7 +27,6 @@ a denominator `s : S`.
 
 * <https://ncatlab.org/nlab/show/Ore+localization>
 * [Zoran Škoda, *Noncommutative localization in noncommutative geometry*][skoda2006]
-
 
 ## Tags
 localization, Ore, non-commutative

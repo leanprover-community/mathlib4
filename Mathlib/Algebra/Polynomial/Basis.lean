@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
-
 # Basis of a polynomial ring
 
 -/

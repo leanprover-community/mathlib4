@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
-
 # Elliptic curves with same j-invariants are isomorphic
 
 ## Main results

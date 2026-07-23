@@ -10,7 +10,6 @@ public import Mathlib.Condensed.Light.Epi
 public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Monoidal
 /-!
-
 # Characterization of internal projectivity in light condensed modules
 
 This file gives an explicit condition on light condensed modules over a ring `R` to be internally

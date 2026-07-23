@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Spectrum.Prime.Module
 
 /-!
-
 # Krull Dimension of Module
 
 In this file we define `Module.supportDim R M` for an `R`-module `M` as

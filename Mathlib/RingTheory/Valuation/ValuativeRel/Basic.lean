@@ -11,7 +11,6 @@ public import Mathlib.Topology.Defs.Filter
 public import Mathlib.Order.Filter.Bases.Basic
 
 /-!
-
 # Valuative Relations
 
 In this file we introduce a class called `ValuativeRel R` for a ring `R`.
@@ -36,7 +35,6 @@ saying that `R` is endowed with an equivalence class of valuations.
 - Given `[ValuativeRel A]`, `[ValuativeRel B]` and `[Algebra A B]`, the class
   `[ValuativeExtension A B]` ensures that the algebra map `A → B` is compatible with the valuations
   on `A` and `B`. For example, this can be used to talk about extensions of valued fields.
-
 
 ## Remark
 

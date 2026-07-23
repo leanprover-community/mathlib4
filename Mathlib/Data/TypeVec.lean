@@ -10,7 +10,6 @@ public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Common
 
 /-!
-
 # Tuples of types, and their categorical structure.
 
 ## Features

@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.Order.RelClasses
 
 /-!
-
 # Injectivity of light profinite spaces
 
 This file establishes that non-empty light profinite sets are injective in the

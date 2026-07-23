@@ -37,7 +37,6 @@ It is also useful to consider the following stronger conditions:
   states that for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
   from a submodule `N` of `M` to `M` is injective.
 
-
 ## Instances
 
 - `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian/Orzech.lean`) :
@@ -62,7 +61,6 @@ More generally, every commutative ring satisfies the Orzech property,
 hence the strong rank condition, which is proved in `Mathlib/RingTheory/FiniteType.lean`.
 We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
-
 ## Counterexamples to converse results
 
 The following examples can be found in the book of Lam [lam_1999]
@@ -73,7 +71,6 @@ The following examples can be found in the book of Lam [lam_1999]
 - The free (non-commutative) algebra `ℚ⟨a, b, c, d⟩` quotient by the
   two-sided ideal `(ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
   but not the rank condition.
-
 
 ## Future work
 

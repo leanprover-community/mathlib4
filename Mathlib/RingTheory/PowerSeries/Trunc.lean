@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
-
 # Formal power series in one variable - Truncation
 
 `PowerSeries.trunc n φ` truncates a (univariate) formal power series

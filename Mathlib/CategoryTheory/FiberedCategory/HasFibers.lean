@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.FiberedCategory.Fiber
 public import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 /-!
-
 # Fibers of functors
 
 In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ 𝒮`, consisting of:

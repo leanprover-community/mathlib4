@@ -53,7 +53,6 @@ for the inverse of `e`).
 
 ## Main definitions
 
-
 * `IndepMatroid α` is a matroid structure on `α` described in terms of its independent sets
   in full generality, using infinite versions of the axioms.
 

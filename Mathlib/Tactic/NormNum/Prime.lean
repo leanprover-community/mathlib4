@@ -16,7 +16,6 @@ public meta import Mathlib.Tactic.NormNum.Result
 This file provides a `norm_num` extension to prove that natural numbers are prime and compute
 its minimal factor. Todo: compute the list of all factors.
 
-
 ## Implementation Notes
 
 For numbers larger than 25 bits, the primality proof produced by `norm_num` is an expression

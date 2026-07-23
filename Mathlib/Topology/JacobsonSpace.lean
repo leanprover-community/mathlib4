@@ -10,7 +10,6 @@ public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
-
 # Jacobson spaces
 
 ## Main results

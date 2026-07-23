@@ -12,7 +12,6 @@ public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 Consider two dynamical systems `(X, S)` and `(Y, T)` together with a semiconjugacy `φ`:
 
-
 ```
 X ---S--> X
 |         |

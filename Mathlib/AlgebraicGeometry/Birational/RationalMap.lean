@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.SpreadingOut
 public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 /-!
-
 # Rational maps between schemes
 
 ## Main definitions

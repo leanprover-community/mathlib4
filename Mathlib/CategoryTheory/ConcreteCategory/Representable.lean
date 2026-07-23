@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Yoneda
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
-
 # Representable functors in concrete categories
 
 This file provides some API for the situation `(F ⋙ forget D).RepresentableBy Y`.

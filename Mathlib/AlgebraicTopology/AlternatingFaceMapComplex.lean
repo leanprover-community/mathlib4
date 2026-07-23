@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
-
 # The alternating face map complex of a simplicial object in a preadditive category
 
 We construct the alternating face map complex, as a

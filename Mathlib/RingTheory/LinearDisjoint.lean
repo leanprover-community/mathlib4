@@ -19,7 +19,6 @@ public import Mathlib.RingTheory.TensorProduct.Nontrivial
 public import Mathlib.RingTheory.Trace.Defs
 
 /-!
-
 # Linearly disjoint subalgebras
 
 This file contains basics about linearly disjoint subalgebras.

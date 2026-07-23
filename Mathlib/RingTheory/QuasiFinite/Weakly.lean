@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
-
 # Weakly Quasi-finite primes
 
 The definition `Algebra.QuasiFiniteAt` is equivalent to the usual definition "isolated in fibers"

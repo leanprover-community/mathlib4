@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 public import Mathlib.CategoryTheory.Sites.Continuous
 /-!
-
 # Subcanonical Grothendieck topologies
 
 This file provides some API for the Yoneda embedding into the category of sheaves for a

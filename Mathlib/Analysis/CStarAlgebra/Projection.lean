@@ -11,7 +11,6 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Projection
 
 /-!
-
 # Projections in C⋆-algebras
 
 Here we collect results about projections specific to C⋆-algebras.

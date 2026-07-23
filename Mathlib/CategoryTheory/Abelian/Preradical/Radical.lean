@@ -21,7 +21,6 @@ We encode this as the property that the natural transformation `toColon Φ Φ : 
 is an isomorphism, and we prove a basic characterization of radicals in terms
 of the vanishing of `Φ.r` on `Φ.quotient`.
 
-
 ## Main definitions
 
 * `Preradical.IsRadical` :

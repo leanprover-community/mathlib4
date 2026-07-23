@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
-
 # Locally Finite Linearly Ordered Abelian Groups
 
 ## Main results

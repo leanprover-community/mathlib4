@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
-
 # Nilpotent groups
 
 An API for nilpotent groups, that is, groups for which the upper central series
@@ -63,7 +62,6 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * The `Group.nilpotencyClass` of `G ⧸ center G` is given explicitly, and an induction principle
   is derived from that.
 * `IsNilpotent.to_isSolvable`: If `G` is nilpotent, it is solvable.
-
 
 ## Warning
 

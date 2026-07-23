@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Tactic.Positivity
 
 /-!
-
 # Inverse of analytic functions
 
 We construct the left and right inverse of a formal multilinear series with invertible linear term,

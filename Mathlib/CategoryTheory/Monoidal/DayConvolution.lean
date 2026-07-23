@@ -33,7 +33,6 @@ the latter were to have the Day convolution monoidal structure. The definition
 assumptions on `V`) a `LawfulDayConvolutionMonoidalCategoryStruct C V D` to
 a monoidal structure.
 
-
 ## References
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
 

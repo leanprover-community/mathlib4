@@ -10,7 +10,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 
 /-!
-
 # Multiseries definitions
 
 In this file, we define the multiseries and its main properties: sortedness and approximation.

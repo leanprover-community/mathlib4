@@ -22,7 +22,6 @@ This file defines the lattice structure on submodules, `Submodule.CompleteLattic
 defined as `{0}` and `⊓` defined as intersection of the underlying carrier.
 If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 
-
 ## Implementation notes
 
 This structure should match the `AddSubmonoid.CompleteLattice` structure, and we should try

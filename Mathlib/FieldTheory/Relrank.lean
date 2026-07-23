@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
-
 # Relative rank of subfields and intermediate fields
 
 This file contains basics about the relative rank of subfields and intermediate fields.

@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.WittVector.Identities
 public import Mathlib.NumberTheory.Padics.RingHoms
 
 /-!
-
 # Comparison isomorphism between `WittVector p (ZMod p)` and `ℤ_[p]`
 
 We construct a ring isomorphism between `WittVector p (ZMod p)` and `ℤ_[p]`.

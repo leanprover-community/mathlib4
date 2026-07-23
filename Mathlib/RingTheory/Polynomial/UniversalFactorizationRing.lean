@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 
 /-!
-
 # Universal factorization ring
 
 Let `R` be a commutative ring and `p : R[X]` be monic of degree `n` and let `n = m + k`.

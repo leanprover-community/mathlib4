@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 /-!
-
 # Reflecting the property of being precoherent
 
 We prove that given a fully faithful functor `F : C ⥤ D` which preserves and reflects finite

@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Smooth.Local
 public import Mathlib.RingTheory.Etale.Locus
 
 /-!
-
 # Flat and smooth fibers imply smooth
 
 ## Main results

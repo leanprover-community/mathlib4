@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Localization.InvSubmonoid
 public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
-
 # The meta properties of finite-type ring homomorphisms.
 
 ## Main results

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Ring.Subring.MulOpposite
 
 /-!
-
 # Subalgebras of opposite rings
 
 For every ring `A` over a commutative ring `R`, we construct an equivalence between

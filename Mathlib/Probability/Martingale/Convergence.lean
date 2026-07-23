@@ -10,7 +10,6 @@ public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.Probability.Martingale.Upcrossing
 
 /-!
-
 # Martingale convergence theorems
 
 The martingale convergence theorems are a collection of theorems characterizing the convergence
@@ -58,7 +57,6 @@ variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 section AeConvergence
 
 /-!
-
 ### Almost everywhere martingale convergence theorem
 
 We will now prove the almost everywhere martingale convergence theorem.
@@ -243,7 +241,6 @@ section L1Convergence
 variable [IsFiniteMeasure μ] {g : Ω → ℝ}
 
 /-!
-
 ### L¹ martingale convergence theorem
 
 We will now prove the L¹ martingale convergence theorems.

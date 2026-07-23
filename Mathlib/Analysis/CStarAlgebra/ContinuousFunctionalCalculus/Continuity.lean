@@ -39,7 +39,6 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
 
 ## Main results
 
-
 + `tendsto_cfc_fun`: If `F : X → R → R` tends to `f : R → R` uniformly on the spectrum of `a`, and
   all these functions are continuous on the spectrum, then `fun x ↦ cfc (F x) a` tends
   to `cfc f a`.

@@ -9,7 +9,6 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
-
 # Residue fields of points
 
 Any point `x` of a locally ringed space `X` comes with a natural residue field, namely the residue

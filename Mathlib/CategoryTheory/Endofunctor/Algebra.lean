@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
-
 # Algebras of endofunctors
 
 This file defines (co)algebras of an endofunctor, and provides the category instance for them.

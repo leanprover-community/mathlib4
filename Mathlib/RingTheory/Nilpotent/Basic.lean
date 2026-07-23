@@ -22,7 +22,6 @@ nilpotent elements are closed under many operations.
 
 For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
-
 ## Main definitions
 
   * `isNilpotent_neg_iff`

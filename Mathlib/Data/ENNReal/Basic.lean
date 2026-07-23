@@ -31,7 +31,6 @@ making it into a `DivInvOneMonoid`.
 As a consequence of being a `DivInvOneMonoid`, `ℝ≥0∞` inherits a power operation with integer
 exponent: this and other properties is shown in `Data.ENNReal.Inv`.
 
-
 ## Main definitions
 
 * `ℝ≥0∞`: the extended nonnegative real numbers `[0, ∞]`; defined as `WithTop ℝ≥0`; it is
