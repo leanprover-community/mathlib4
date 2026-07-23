@@ -6492,6 +6492,7 @@ public import Mathlib.RingTheory.Bezout
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.Convolution
 public import Mathlib.RingTheory.Bialgebra.Equiv
+public import Mathlib.RingTheory.Bialgebra.Graded
 public import Mathlib.RingTheory.Bialgebra.GroupLike
 public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
@@ -6507,6 +6508,7 @@ public import Mathlib.RingTheory.Coalgebra.Basic
 public import Mathlib.RingTheory.Coalgebra.CoassocSimps
 public import Mathlib.RingTheory.Coalgebra.Convolution
 public import Mathlib.RingTheory.Coalgebra.Equiv
+public import Mathlib.RingTheory.Coalgebra.Graded
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
@@ -6631,6 +6633,7 @@ public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
 public import Mathlib.RingTheory.GradedAlgebra.AlgHom
 public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Connected
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Maps
@@ -6656,6 +6659,7 @@ public import Mathlib.RingTheory.HahnSeries.Valuation
 public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
+public import Mathlib.RingTheory.HopfAlgebra.Graded
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
 public import Mathlib.RingTheory.HopfAlgebra.Quotient
