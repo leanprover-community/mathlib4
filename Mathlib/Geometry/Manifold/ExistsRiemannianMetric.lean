@@ -40,7 +40,7 @@ open Set Bundle ContDiff Manifold Trivialization SmoothPartitionOfUnity
 
 variable {B : Type*}
   {E : B → Type*}
-  [∀ x, NormedAddCommGroup (E x)]
+  [∀ x, TopologicalSpace (E x)] [∀ x, AddCommGroup (E x)]
 
 variable
   {EB : Type*} [NormedAddCommGroup EB] [InnerProductSpace ℝ EB]
@@ -53,10 +53,11 @@ variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
   [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [∀ x, NormedSpace ℝ (E x)]
+  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
   [FiniteDimensional ℝ EB]
+  [∀ x, T2Space (E x)]
 
 def g_bilin (i b : B) :
  (TotalSpace (F →L[ℝ] F →L[ℝ] ℝ)
@@ -125,8 +126,9 @@ variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
   [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [∀ x, NormedSpace ℝ (E x)]
+  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
+  [∀ x, T2Space (E x)]
 
 def g_global_bilin_aux (f : SmoothPartitionOfUnity B IB B) (p : B) :
     E p →L[ℝ] (E p →L[ℝ] ℝ) :=
@@ -144,6 +146,8 @@ private lemma g_global_bilin_aux_support_finite (f : SmoothPartitionOfUnity B IB
   (f.locallyFinite'.point_finite b).subset (fun i hi => by
     simp only [Function.mem_support, ne_eq, smul_eq_zero, not_or] at hi; exact hi.1)
 
+set_option maxHeartbeats 800000 in
+-- It times out otherwise
 lemma riemannian_metric_symm_aux (f : SmoothPartitionOfUnity B IB B) (b : B)
   (v w : E b) :
   ((g_global_bilin_aux (F := F) f b).toFun v).toFun w
@@ -172,6 +176,8 @@ lemma riemannian_metric_symm_aux (f : SmoothPartitionOfUnity B IB B) (b : B)
           map_finsum_of_support_subset (evalAt b w v) (f := h) (s := h1.toFinset) h2
     _ = ((∑ j ∈ h1.toFinset, (f j) b • g_bilin_aux F j b).toFun w).toFun v := h3 w v
 
+set_option maxHeartbeats 800000 in
+-- It times out otherwise
 lemma riemannian_metric_pos_def_aux (f : SmoothPartitionOfUnity B IB B)
   (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
   (b : B) {v : E b} (hv : v ≠ 0) :
@@ -209,9 +215,9 @@ lemma riemannian_unit_ball_bounded_aux (f : SmoothPartitionOfUnity B IB B)
   (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
   [∀ x, FiniteDimensional ℝ (E x)] (b : B) :
     Bornology.IsVonNBounded ℝ {v : E b | g_global_bilin_aux (F := F) f b v v < 1} :=
-  isVonNBounded_of_posDef (g_global_bilin_aux f b)
+  isVonNBounded_of_posDef (g_global_bilin_aux (F := F) f b)
     (fun v => by
-      rcases eq_or_ne v 0 with rfl | hv
+      rcases eq_or_ne v (0 : E b) with rfl | hv
       · simp
       · exact le_of_lt (riemannian_metric_pos_def_aux f hf b hv))
     (riemannian_metric_symm_aux f b)
@@ -227,10 +233,13 @@ variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
   [InnerProductSpace ℝ F]
-  [∀ x, NormedSpace ℝ (E x)]
+  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
   [ContMDiffVectorBundle ω F E IB]
+  [∀ x, T2Space (E x)]
 
+omit [∀ (x : B),
+  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] [∀ (x : B), T2Space (E x)] in
 lemma g_bilin_smooth_on_chart (i : B) :
   ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
     (g_bilin (F := F) (E := E) i)
@@ -268,21 +277,24 @@ noncomputable def g_global_bilin (f : SmoothPartitionOfUnity B IB B) (p : B) :
     E p →L[ℝ] (E p →L[ℝ] ℝ) :=
       ∑ᶠ (j : B), (f j) p • (g_bilin (F := F) j p).snd
 
+omit [∀ (x : B),
+  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] [∀ (x : B), T2Space (E x)] in
 lemma g_global_bilin_smooth (f : SmoothPartitionOfUnity B IB B)
-  (h_sub : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source)) :
-  ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
-    (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (g_global_bilin (F := F) (E := E) f x)) :=
-  contMDiff_totalSpace_weighted_sum_of_local_sections
-    (V := fun b => E b →L[ℝ] (E b →L[ℝ] Trivial B ℝ b))
-    (F_fiber := F →L[ℝ] (F →L[ℝ] ℝ))
-    (s_loc := fun (i b : B) => (g_bilin (F := F) i b).snd)
-    (U := fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source)
-    (hU_isOpen := fun i => ((trivializationAt F E i).open_baseSet.inter (chartAt HB i).open_source))
-    (hρ_subord := h_sub)
-    (h_smooth_s_loc := fun i =>
-      (g_bilin_smooth_on_chart i).congr (by
-        unfold g_bilin
-        simp only [Set.mem_inter_iff, implies_true]))
+    (h_sub : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source)) :
+    ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
+      (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (g_global_bilin (F := F) (E := E) f x)) := by
+  let s_loc : (i : B) → (b : B) → (E b →L[ℝ] (E b →L[ℝ] Trivial B ℝ b)) :=
+    fun i b => (g_bilin (F := F) (E := E) i b).snd
+  have hj (j : B) : ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
+      (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x ((f j x) • s_loc j x)) := by
+    refine ContMDiffOn.smul_section_of_tsupport ?_
+      ((trivializationAt F E j).open_baseSet.inter (chartAt HB j).open_source) (h_sub j)
+      (g_bilin_smooth_on_chart j)   -- may need `.congr` as before
+    exact ((f j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
+  unfold g_global_bilin
+  apply ContMDiff.finsum_section_of_locallyFinite ?_ hj
+  apply f.locallyFinite.subset fun i x hx ↦ ?_
+  exact left_ne_zero_of_smul hx
 
 end smooth
 
@@ -292,9 +304,12 @@ variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
   [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [∀ x, NormedSpace ℝ (E x)]
+  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
+  [∀ x, T2Space (E x)]
 
+omit [∀ (x : B),
+  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] [∀ (x : B), T2Space (E x)] in
 omit [FiniteDimensional ℝ F] in
 lemma inCoordinates_apply_eq₂_spec
     {x₀ x : B} {ϕ : E x →L[ℝ] E x →L[ℝ] ℝ} {v w : F}
@@ -304,6 +319,8 @@ lemma inCoordinates_apply_eq₂_spec
   rw [inCoordinates_apply_eq₂ h₁x h₁x (by simp [Trivial.fiberBundle_trivializationAt'])]
   simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
 
+omit [∀ (x : B),
+  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] [∀ (x : B), T2Space (E x)] in
 omit [FiniteDimensional ℝ F] in
 lemma inCoordinates_apply_eq₂_spec_symm
     (x₀ x : B) (hb : x ∈ (trivializationAt F E x₀).baseSet)
@@ -401,10 +418,12 @@ variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   [TopologicalSpace B] [ChartedSpace HB B]
   [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [∀ x, NormedSpace ℝ (E x)]
+  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
   [FiniteDimensional ℝ EB] [SigmaCompactSpace B] [T2Space B]
+  [∀ x, T2Space (E x)]
+
 
 /--
 Existence of a smooth Riemannian metric on a manifold.

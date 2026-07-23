@@ -16,7 +16,8 @@ establishes the boundedness properties needed for locally convex spaces.
 
 @[expose] public section
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable {V : Type*} [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
+  [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [T2Space V]
 
 section
 
@@ -219,34 +220,12 @@ lemma withSeminormsOfBilinearForm
   (hdef : ∀ v, φ v v = 0 → v = 0)
   [FiniteDimensional ℝ (V)] :
   WithSeminorms (Function.const (Fin 1) (seminormOfBilinearForm φ hpos hsymm)) := by
-    apply WithSeminorms.congr (norm_withSeminorms ℝ (V))
-    · have h1 : IsBoundedLinearMap ℝ (W.equiv φ hpos hsymm hdef).toLinearMap := by
-        rw [← IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap]
-        exact ⟨LinearMap.isLinear _, LinearMap.continuous_of_finiteDimensional _⟩
-      obtain ⟨C, hC⟩ := h1.bound
-      intro i
-      use {0}, ⟨max C 1, by positivity⟩
-      intro v
-      simp only [Seminorm.comp_id, Fin.isValue, Finset.sup_singleton, Seminorm.smul_apply,
-                 coe_normSeminorm]
-      calc
-        seminormOfBilinearForm φ hpos hsymm v =
-        ‖W.equiv φ hpos hsymm hdef v‖ := rfl
-        _ ≤ C * ‖v‖ := hC.2 v
-        _ ≤ max C 1 * ‖v‖ := by gcongr; exact le_max_left C 1
-    · have h1 : IsBoundedLinearMap ℝ (W.equiv φ hpos hsymm hdef).symm.toLinearMap := by
-        rw [← IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap]
-        exact ⟨LinearMap.isLinear _, LinearMap.continuous_of_finiteDimensional _⟩
-      obtain ⟨C, hC⟩ := h1.bound
-      intro j
-      use {0}, ⟨max C 1, by positivity⟩
-      intro v
-      simp only [Seminorm.comp_id, Fin.isValue, Finset.sup_singleton, Seminorm.smul_apply,
-                 coe_normSeminorm, ]
-      calc ‖v‖ ≤ C * seminormOfBilinearForm φ hpos hsymm v := hC.2 ⟨v⟩
-        _ ≤ max C 1 * seminormOfBilinearForm φ hpos hsymm v := by
-          gcongr; exact le_max_left C 1
-        _ = max C 1 * seminormOfBilinearForm φ hpos hsymm v := rfl
+  let e : V ≃L[ℝ] W φ hpos hsymm hdef :=
+    (W.equiv φ hpos hsymm hdef).toContinuousLinearEquiv
+  simpa [e, SeminormFamily.comp, seminormOfBilinearForm] using
+    e.toHomeomorph.isInducing.withSeminorms
+      (norm_withSeminorms ℝ (W φ hpos hsymm hdef))
+
 
 lemma isVonNBounded_of_posDef (φ : V →L[ℝ] V →L[ℝ] ℝ)
    (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
