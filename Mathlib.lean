@@ -3566,6 +3566,7 @@ public import Mathlib.Combinatorics.Enumerative.DyckWord
 public import Mathlib.Combinatorics.Enumerative.IncidenceAlgebra
 public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Combinatorics.Enumerative.Partition.EulerComb
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
 public import Mathlib.Combinatorics.Enumerative.Pentagonal
