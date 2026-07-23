@@ -94,7 +94,6 @@ theorem unit_pullbackId_hom (X : C) [ChosenPullbacksAlong (𝟙 X)] :
 theorem pullbackId_hom_counit (X : C) [ChosenPullbacksAlong (𝟙 X)] :
     Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
       (mapPullbackAdj (𝟙 X)).counit := by
-  have := Adjunction.rightAdjointUniq_hom_counit (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
   rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
 
 set_option backward.defeqAttrib.useBackward true in

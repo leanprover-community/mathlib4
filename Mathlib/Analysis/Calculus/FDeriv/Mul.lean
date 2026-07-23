@@ -426,7 +426,6 @@ theorem hasFDerivAt_list_prod' [Finite ι] {l : List ι} {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (∑ i : Fin l.length, ((l.take i).map x).prod •
         proj l[i] <• ((l.drop (.succ i)).map x).prod) x :=
-  have := Fintype.ofFinite ι
   hasStrictFDerivAt_list_prod'.hasFDerivAt
 
 @[fun_prop]
@@ -453,7 +452,6 @@ For `NormedCommRing 𝔸'`, can rewrite as `Multiset` using `Multiset.prod_coe`.
 theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Finite ι] {l : List ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (l.map fun i ↦ ((l.erase i).map x).prod • proj i).sum x := by
-  have := Fintype.ofFinite ι
   refine hasStrictFDerivAt_list_prod'.congr_fderiv ?_
   conv_rhs => arg 1; arg 2; rw [← List.map_get_finRange l]
   simp only [List.map_map, ← List.sum_toFinset _ (List.nodup_finRange _), List.toFinset_finRange,
@@ -466,14 +464,12 @@ theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Finite ι] {l : List ι} {
 theorem hasStrictFDerivAt_multiset_prod [DecidableEq ι] [Finite ι] {u : Multiset ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (u.map x).prod)
       (u.map (fun i ↦ ((u.erase i).map x).prod • proj i)).sum x :=
-  have := Fintype.ofFinite ι
   u.inductionOn fun l ↦ by simpa using hasStrictFDerivAt_list_prod
 
 @[fun_prop]
 theorem hasFDerivAt_multiset_prod [DecidableEq ι] [Finite ι] {u : Multiset ι} {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (u.map x).prod)
       (Multiset.sum (u.map (fun i ↦ ((u.erase i).map x).prod • proj i))) x :=
-  have := Fintype.ofFinite ι
   hasStrictFDerivAt_multiset_prod.hasFDerivAt
 
 theorem hasStrictFDerivAt_finsetProd [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
@@ -486,7 +482,6 @@ alias hasStrictFDerivAt_finset_prod := hasStrictFDerivAt_finsetProd
 
 theorem hasFDerivAt_finsetProd [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x :=
-  have := Fintype.ofFinite ι
   hasStrictFDerivAt_finsetProd.hasFDerivAt
 
 @[deprecated (since := "2026-04-08")] alias hasFDerivAt_finset_prod := hasFDerivAt_finsetProd

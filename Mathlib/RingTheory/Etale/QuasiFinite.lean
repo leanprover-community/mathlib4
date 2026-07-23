@@ -135,8 +135,6 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
     refine IsLocalization.ringHom_ext (.powers r) (RingHom.ext fun x ↦ ?_)
     simp [Localization.awayMap, IsLocalization.Away.map, ← IsScalarTower.algebraMap_apply R T]
   · algebraize [(Localization.awayMapₐ (Algebra.ofId R T) r).toRingHom]
-    have := IsScalarTower.of_algebraMap_eq'
-      (Localization.awayMapₐ (Algebra.ofId R T) r).comp_algebraMap.symm
     refine RingHom.finiteType_algebraMap.mpr ?_
     exact .of_restrictScalars_finiteType R _ _
 

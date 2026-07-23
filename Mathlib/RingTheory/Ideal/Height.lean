@@ -337,7 +337,6 @@ private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R 
     (p : Ideal S) [p.IsPrime] : (p.comap e).height = p.height := by
   rw [height_eq_primeHeight, height_eq_primeHeight, primeHeight, primeHeight,
     ← Order.height_orderIso (PrimeSpectrum.comapEquiv e.symm) ⟨p, ‹_›⟩]
-  have := p.map_comap_of_equiv e.symm
   congr
 
 @[simp]

@@ -228,11 +228,9 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
           ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n.succ)) =
         (2 * n + 1) / (2 * n + 2) * B by
       rw [this, Complex.ofReal_mul, Complex.ofReal_div]
-      have : (C : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (integral_cos_pow_pos _).ne'
       have : 2 * (n : ℂ) + 1 ≠ 0 := by
         convert! (Nat.cast_add_one_ne_zero (2 * n) : (↑(2 * n) + 1 : ℂ) ≠ 0)
         simp
-      have : (n : ℂ) + 1 ≠ 0 := Nat.cast_add_one_ne_zero n
       simp [field]
     convert! integral_cos_mul_cos_pow_even n hz
     rw [Nat.cast_succ]

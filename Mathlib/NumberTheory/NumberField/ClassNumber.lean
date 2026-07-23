@@ -159,15 +159,11 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     rcases abs_choice p with h | h <;> simp [h]
   have hple : p.natAbs ^ P.inertiaDeg ℤ ≤ ⌊(M K)⌋₊ := by
     refine le_floor ?_
-    have : P.IsMaximal := hP.isMaximal (by simpa using HP.2)
-    have : (span {p}).IsMaximal := (hpprime (.under ℤ P)).isMaximal_span_singleton
     simpa only [hspan, ← cast_pow, ← natAbs_pow_inertiaDeg p P] using hPN
   have hpabsprime := Int.prime_iff_natAbs_prime.mp (hpprime (hP.under _))
   refine h _ ?_ hpabsprime _ ⟨hP, ?_⟩ hple
   · suffices 0 < P.inertiaDeg ℤ by
       exact Finset.mem_Icc.mpr ⟨hpabsprime.one_le, le_trans (le_pow this) hple⟩
-    have := (isPrime_of_prime (prime_span_singleton_iff.mpr <|
-      hpprime (hP.under _))).isMaximal <| by simp [((hpprime (hP.under _))).ne_zero]
     exact inertiaDeg_pos ..
   · exact hspan ▸ hlies
 
@@ -189,8 +185,6 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOv
   refine isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc
     (fun p hpmem hp P ⟨hP1, hP2⟩ hple ↦ ?_)
   obtain ⟨Q, ⟨hQ1, hQ2⟩, H⟩ := h p hpmem hp
-  have := (isPrime_of_prime (prime_span_singleton_iff.mpr (prime_iff_prime_int.mp hp))).isMaximal
-    (by simp [hp.ne_zero])
   by_cases h : ⌊(M K)⌋₊ < p ^ P.inertiaDeg ℤ
   · linarith
   rw [inertiaDeg_eq_of_isGaloisGroup (span {↑p}) Q P (K ≃ₐ[ℚ] K)] at H

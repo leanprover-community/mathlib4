@@ -203,7 +203,6 @@ lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
       obtain ⟨kb, hkb⟩ := exists_zpow_uniformizingPolynomial hle (f := b) (by aesop)
       rw [MonoidWithZeroHom.coe_ofClass, hka, hkb] at hab
       use kb - ka
-      have : v ↑πᵥ ^ ka ≠ 0 := zpow_ne_zero _ h0
       simp [zpow_sub, ← Units.val_inj, ← coePolynomial_eq_algebraMap, field, ← hab]
 
 lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDiscrete v] :

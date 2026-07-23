@@ -162,7 +162,6 @@ private lemma RingHom.Finite.tensorProductMap_id
     {f : S →ₐ[R] S'} (Hf : f.Finite) :
     (Algebra.TensorProduct.map f (AlgHom.id R T)).toRingHom.Finite := by
   let := f.toRingHom.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   have : Module.Finite S S' := finite_algebraMap.mp Hf
   change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).Finite
   convert_to (((Algebra.TensorProduct.comm _ _ _).trans

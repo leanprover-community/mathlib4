@@ -396,7 +396,6 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
     rw [← Nat.card_eq_fintype_card, Nat.card_perm]
     refine le_trans (Nat.factorial_le hα3) ?_
     rw [Nat.factorial_two]
-    have : Nonempty G := One.instNonempty
     apply Nat.le_of_dvd Fintype.card_pos
     rw [← h2g.orderOf, orderOf_submonoid ⟨g, hg⟩]
     exact orderOf_dvd_card

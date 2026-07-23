@@ -253,7 +253,6 @@ protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc (a b : α) :
     have ⟨j, hj, hij, hjc⟩ := hsc.exists_between hic
     filter_upwards [f.compl_mem_iff_notMem.mpr hj.2, hfab]; grind
   have ⟨x, hx, hxf⟩ : ∃ x, c < x ∧ Iio x ∉ f := by simpa [nhds_eq_order, eq_true this] using hf c hc
-  have : Icc a c ∉ f := mt (mem_of_superset · (by grind)) hxf
   have : x ∈ Icc a b := ⟨by grind, le_of_not_gt fun h ↦ hxf (mem_of_superset hfab (by grind))⟩
   have : Icc a x ∈ f := by simpa [s, this.1, this.2] using notMem_of_csSup_lt hx ⟨b, hsb⟩
   exact hpt _ ‹_› (by filter_upwards [f.compl_mem_iff_notMem.mpr hxf, this]; grind)

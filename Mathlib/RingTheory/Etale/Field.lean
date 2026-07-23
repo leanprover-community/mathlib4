@@ -106,7 +106,6 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
   have : ∀ k : L, ∃! g : K⟮k⟯ →ₐ[K] B,
       (Ideal.Quotient.mkₐ K I).comp g = f.comp (IsScalarTower.toAlgHom K _ L) := by
     intro k
-    have := IsSeparable.of_algHom _ _ (IsScalarTower.toAlgHom K (K⟮k⟯) L)
     have := IntermediateField.adjoin.finiteDimensional
       (Algebra.IsSeparable.isSeparable K k).isIntegral
     have := FormallyEtale.of_isSeparable_aux K (K⟮k⟯)
@@ -129,7 +128,6 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     have : FiniteDimensional K K⟮x, y⟯ := by
       apply IntermediateField.finiteDimensional_adjoin
       intro x _; exact (Algebra.IsSeparable.isSeparable K x).isIntegral
-    have := IsSeparable.of_algHom _ _ (IsScalarTower.toAlgHom K (K⟮x, y⟯) L)
     obtain ⟨⟨α, hα⟩, e⟩ := Field.exists_primitive_element K K⟮x, y⟯
     apply_fun (IntermediateField.map (IntermediateField.val _)) at e
     rw [IntermediateField.adjoin_map, ← AlgHom.fieldRange_eq_map] at e

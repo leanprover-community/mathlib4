@@ -624,7 +624,6 @@ theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
 
 lemma measure_Iio {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iio x) = ofReal (leftLim f x - l) := by
-  have : Nonempty R := ⟨x⟩
   rw [← Iic_sdiff_right, measure_sdiff _ (nullMeasurableSet_singleton x), measure_singleton,
     f.measure_Iic hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
     <;> simp
@@ -670,7 +669,6 @@ lemma measure_Iic_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
 
 lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
     f.measure (Iio x) = ∞ := by
-  have : Nonempty R := ⟨x⟩
   cases botOrderOrNoBotOrder R
   · rw [atBot_eq_pure_of_isBot isBot_bot] at hf
     simpa using (tendsto_pure_left.1 hf) _ (Iio_mem_atBot (f ⊥))

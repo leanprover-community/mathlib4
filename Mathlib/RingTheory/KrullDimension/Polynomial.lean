@@ -64,7 +64,6 @@ private lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] 
     refine .map_of_surjective_of_ker_le Quotient.mk_surjective ?_
     rw [mk_ker, LiesOver.over (P := P) (p := p)]
     exact map_comap_le
-  have : P'.IsMaximal := map_isMaximal_of_equiv e
   have : P'.height = 1 := IsPrincipalIdealRing.height_eq_one_of_isMaximal P' polynomial_not_isField
   rwa [← e.height_map <| P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))]
 
@@ -82,9 +81,6 @@ lemma height_eq_height_add_one (p : Ideal R)
   have : p.IsPrime := by rw [P.over_def p]; infer_instance
   let Rₚ := Localization.AtPrime p
   set p' : Ideal Rₚ := p.map (algebraMap R Rₚ) with p'_def
-  have : p'.IsMaximal := by
-    rw [p'_def, Localization.AtPrime.map_eq_maximalIdeal]
-    exact IsLocalRing.maximalIdeal.isMaximal Rₚ
   let P' : Ideal Rₚ[X] := P.map (algebraMap R[X] Rₚ[X])
   have disj : Disjoint (p.primeCompl.map C : Set R[X]) P := by
     refine Set.disjoint_left.mpr fun a ⟨b, hb⟩ ha ↦ hb.1 ?_

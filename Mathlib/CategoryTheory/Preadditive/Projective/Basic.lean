@@ -140,10 +140,9 @@ instance {β : Type v} (g : β → C) [HasZeroMorphisms C] [HasBiproduct g] [∀
 
 theorem projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
     Projective P ↔ (coyoneda.obj (op P)).PreservesEpimorphisms :=
-  ⟨fun hP =>
+  ⟨fun _ =>
     ⟨fun f _ =>
       (epi_iff_surjective _).2 fun g =>
-        have : Projective (unop (op P)) := hP
         ⟨factorThru g f, factorThru_comp _ _⟩⟩,
     fun _ =>
     ⟨fun f e _ =>

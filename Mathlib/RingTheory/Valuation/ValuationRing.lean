@@ -440,7 +440,6 @@ lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_inje
     (h : ∀ (x : K), ∃ a : 𝒪, x = algebraMap 𝒪 K a ∨ x⁻¹ = algebraMap 𝒪 K a)
     (hinj : Function.Injective (algebraMap 𝒪 K)) :
     IsFractionRing 𝒪 K := by
-  have : IsDomain 𝒪 := hinj.isDomain
   have := (faithfulSMul_iff_algebraMap_injective ..).2 hinj
   have := IsDomain.of_faithfulSMul 𝒪 K
   refine ⟨by simp, ?_, fun hab ↦ ⟨1, by simpa using hab⟩⟩

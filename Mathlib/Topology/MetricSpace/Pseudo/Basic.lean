@@ -217,7 +217,6 @@ protected lemma IsInducing.isSeparable_preimage {α : Type*} [TopologicalSpace �
   let : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
   have := pseudoMetrizableSpaceUniformity_countably_generated
   have : SeparableSpace s := hs.separableSpace
-  have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _
   have : IsInducing ((mapsTo_preimage f s).restrict _ _ _) :=
     (hf.comp IsInducing.subtypeVal).codRestrict _
   have := this.secondCountableTopology

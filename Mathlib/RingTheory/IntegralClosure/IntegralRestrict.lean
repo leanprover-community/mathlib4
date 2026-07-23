@@ -135,8 +135,6 @@ theorem galLift_galRestrict' (σ : L →ₐ[K] L₂) :
 @[simp]
 theorem galRestrict'_galLift (σ : B →ₐ[A] B₂) :
     galRestrict' A B B₂ (galLift K L L₂ σ) = σ :=
-  have := (IsFractionRing.injective A K).isDomain
-  have := IsIntegralClosure.isLocalization A K L B
   AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective B₂ A L₂
     (by simp)
 
@@ -334,13 +332,9 @@ lemma Algebra.intTrace_eq_of_isLocalization
   replace hM : M ≤ A⁰ := fun x hx ↦ mem_nonZeroDivisors_iff_ne_zero.mpr (fun e ↦ hM (e ▸ hx))
   let K := FractionRing A
   let L := FractionRing B
-  have : IsIntegralClosure B A L :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
   have : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
     isAlgebraic_of_isFractionRing A B ..
-  have : IsLocalization (algebraMapSubmonoid B A⁰) L :=
-    IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   let f : Aₘ →+* K := IsLocalization.map _ (T := A⁰) (RingHom.id A) hM
   let := f.toAlgebra
   have : IsScalarTower A Aₘ K := IsScalarTower.of_algebraMap_eq'
@@ -363,9 +357,6 @@ lemma Algebra.intTrace_eq_of_isLocalization
       RingHom.comp_id, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
   let := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
     (algebraMapSubmonoid B M) Bₘ L
-  have : FiniteDimensional K L := .of_isLocalization A B A⁰
-  have : IsIntegralClosure Bₘ Aₘ L :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   apply IsFractionRing.injective Aₘ K
   rw [← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intTrace_fractionRing,
     Algebra.algebraMap_intTrace (L := L), ← IsScalarTower.algebraMap_apply]
@@ -508,8 +499,6 @@ lemma Algebra.intNorm_eq_of_isLocalization [FiniteDimensional (FractionRing A) (
       RingHom.comp_id, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
   let := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
     (algebraMapSubmonoid B M) Bₘ L
-  have : IsIntegralClosure Bₘ Aₘ L :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   apply IsFractionRing.injective Aₘ K
   rw [← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm_fractionRing,
     Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply]

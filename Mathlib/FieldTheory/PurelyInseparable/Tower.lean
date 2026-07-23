@@ -272,7 +272,6 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   have hsep' := IsSeparable.tower_top E hsep
   have := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   have := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
-  have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
     ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,
     finSepDegree_eq, finSepDegree_eq,

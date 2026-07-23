@@ -70,10 +70,6 @@ lemma toGrothendieck_comap_forget_eq_restrictedTopology
     (H : K ≤ P.precoverage) :
     (K.comap (MorphismProperty.Over.forget P ⊤ _ ⋙ CategoryTheory.Over.forget S)).toGrothendieck =
       (MorphismProperty.Over.forget P ⊤ _).restrictedTopology (K.toGrothendieck.over S) := by
-  have : (Over.forget P ⊤ S).LocallyCoverDense
-      (K.comap (CategoryTheory.Over.forget S)).toGrothendieck := by
-    rw [← over_toGrothendieck_eq_toGrothendieck_comap_forget]
-    exact MorphismProperty.locallyCoverDense_forget_of_le (S := S) K H
   rw [Precoverage.comap_comp]
   simp_rw [over_toGrothendieck_eq_toGrothendieck_comap_forget]
   apply Precoverage.toGrothendieck_comap_eq_restrictedTopology

@@ -126,8 +126,6 @@ lemma singularChainComplexFunctor_exactAt_of_totallyDisconnectedSpace
 lemma isZero_singularHomologyFunctor_of_totallyDisconnectedSpace
     [CategoryWithHomology C] (hn : n ≠ 0) :
     IsZero (((singularHomologyFunctor C n).obj R).obj X) :=
-  have := hasCoproducts_shrink.{0, w} (C := C)
-  have : HasZeroObject C := ⟨_, initialIsInitial.isZero⟩
   (singularChainComplexFunctor_exactAt_of_totallyDisconnectedSpace C n R X hn).isZero_homology
 
 /-- The zeroth singular homology of a totally disconnected space is the

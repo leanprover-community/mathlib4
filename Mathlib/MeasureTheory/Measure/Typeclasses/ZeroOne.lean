@@ -69,7 +69,6 @@ lemma measure_univ {s : Set α} (hμs : μ s = 1) : μ univ = 1 :=
 
 lemma measure_inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by
-  have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
   rcases μ.zero_one s with (_ | hμs)
     <;> rcases μ.zero_one t with (_ | hμt)

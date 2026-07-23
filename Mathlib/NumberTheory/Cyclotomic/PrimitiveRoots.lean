@@ -253,7 +253,6 @@ theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
   obtain ⟨k, hkpos, hkn⟩ := isOfFinOrder_iff_pow_eq_one.1 hx
   obtain ⟨l, hl, hlroot⟩ := (isRoot_of_unity_iff hkpos _).1 hkn
   have hlzero : NeZero l := ⟨fun h ↦ by simp [h] at hl⟩
-  have : NeZero (l : K) := ⟨NeZero.natCast_ne l K⟩
   rw [isRoot_cyclotomic_iff] at hlroot
   obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.1
   replace hlroot : x ^ (2 * n) = 1 := by rw [ha, pow_mul, hlroot.pow_eq_one, one_pow]
@@ -420,8 +419,6 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     apply coe_submonoidClass_iff.1
     convert! hη using 1
     rw [Nat.sub_add_comm hs]
-  have := IsCyclotomicExtension.finiteDimensional {p ^ (k + 1)} K L
-  have := IsCyclotomicExtension.isGalois {p ^ (k + 1)} K L
   rw [norm_eq_norm_adjoin K]
   have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
   swap; · exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)

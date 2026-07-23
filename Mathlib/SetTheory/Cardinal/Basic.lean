@@ -1011,7 +1011,6 @@ theorem exists_notMem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length <
     _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
 
 theorem exists_ne_ne_of_three_le {α : Type*} (h : 3 ≤ #α) (x y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
-  have : ↑(3 : ℕ) ≤ #α := by simpa using h
   have : ↑(2 : ℕ) < #α := by rwa [← natCast_add_one_le_iff, ← Nat.cast_add_one]
   have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this

@@ -603,7 +603,6 @@ lemma HasLimitsOfShape.of_small
     [HasLimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
     [Small.{u₁} J] [LocallySmall.{v₁} J] :
     HasLimitsOfShape J C := by
-  have := HasLimitsOfSize.has_limits_of_shape (C := C) (ShrinkHoms (Shrink.{u₁} J))
   exact hasLimitsOfShape_of_equivalence
     ((ShrinkHoms.equivalence _).symm.trans (Shrink.equivalence _).symm)
 
@@ -1179,7 +1178,6 @@ lemma HasColimitsOfShape.of_small
     [HasColimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
     [Small.{u₁} J] [LocallySmall.{v₁} J] :
     HasColimitsOfShape J C := by
-  have := HasColimitsOfSize.has_colimits_of_shape (C := C) (ShrinkHoms (Shrink.{u₁} J))
   exact hasColimitsOfShape_of_equivalence
     ((ShrinkHoms.equivalence _).symm.trans (Shrink.equivalence _).symm)
 

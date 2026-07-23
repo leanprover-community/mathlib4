@@ -187,7 +187,6 @@ instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotal
 theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
   mp h := by
-    have : Algebra.IsIntegral (⊤ : Subfield K) K := Algebra.IsIntegral.tower_top ℚ
     rw [← isTotallyReal_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h]
   mpr _ := IsTotallyReal.maximalRealSubfield_eq_top
 

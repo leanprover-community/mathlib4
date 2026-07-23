@@ -167,8 +167,6 @@ lemma iIndepFun_uncurry {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j} (mX : 
   have := h1.isProbabilityMeasure
   have : ∀ i j, IsProbabilityMeasure (P.map (X i j)) :=
     fun i j ↦ isProbabilityMeasure_map (mX i j).aemeasurable
-  have : ∀ i, IsProbabilityMeasure (P.map (fun ω ↦ (X i · ω))) :=
-    fun i ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
   have : (MeasurableEquiv.piCurry 𝓧) ∘ (fun ω p ↦ X p.1 p.2 ω) = fun ω i j ↦ X i j ω := by
     ext; simp [Sigma.curry]
   rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop),

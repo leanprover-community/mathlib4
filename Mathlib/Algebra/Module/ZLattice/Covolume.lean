@@ -83,7 +83,6 @@ variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
 set_option backward.privateInPublic true in
 theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalDomain L F μ) :
     covolume L μ = μ.real F := by
-  have : MeasurableVAdd L E := (inferInstance : MeasurableVAdd L.toAddSubgroup E)
   have : VAddInvariantMeasure L E μ := (inferInstance : VAddInvariantMeasure L.toAddSubgroup E μ)
   exact congr_arg ENNReal.toReal (h.covolume_eq_volume μ)
 

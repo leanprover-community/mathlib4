@@ -167,7 +167,6 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
     · rw [abs_of_nonneg (by simpa using (lt_seq hb0' _ _).le), seq]
       grw [Int.floor_le]
       apply le_of_eq
-      have : b ^ m ≠ (0 : ℝ) := by simp [hb0]
       field_simp
       ring
     · rw [le_add_iff_nonneg_right]

@@ -126,7 +126,6 @@ theorem inertiaDeg_tower [r.LiesOver q] :
     r.inertiaDeg R = q.inertiaDeg R * r.inertiaDeg S := by
   by_cases hr : r.IsPrime
   · have : q.IsPrime := isPrime_of_liesOver r q
-    have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
     let := Localization.AtPrime.algebraOfLiesOver (r.under R) r
     let := Localization.AtPrime.algebraOfLiesOver (r.under R) q
     let := Localization.AtPrime.algebraOfLiesOver q r

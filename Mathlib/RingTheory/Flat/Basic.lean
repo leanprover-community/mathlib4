@@ -123,7 +123,6 @@ theorem rTensor_preserves_injective_linearMap [Flat R M] (f : N →ₗ[R] P)
   rw [← Finite.iff_fg] at Nfg Pfg
   have := Finite.small R P
   let se := (Shrink.linearEquiv R P).symm
-  have := Module.Finite.equiv se
   rw [rTensor_injective_iff_subtype (fun _ _ ↦ (Subtype.ext <| hf <| Subtype.ext_iff.mp ·)) se]
   exact (flat_iff R M).mp ‹_› _ (Finite.iff_fg.mp inferInstance)
 

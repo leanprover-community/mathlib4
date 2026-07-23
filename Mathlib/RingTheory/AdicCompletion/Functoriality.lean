@@ -450,9 +450,6 @@ theorem surjective_of_mk_map_comp_surjective [IsPrecomplete I R] [haus : IsHausd
   let _ := f.toAlgebra
   let fₗ := (Algebra.ofId R S).toLinearMap
   change Function.Surjective ((restrictScalars R (I.map f)).mkQ ∘ₗ fₗ) at h
-  have : I • ⊤ = restrictScalars R (Ideal.map f I) := by
-    simp only [Ideal.smul_top_eq_map, restrictScalars_inj]
-    rfl
   have _ := IsHausdorff.map_algebraMap_iff.mp haus
   apply surjective_of_mkQ_comp_surjective (I := I) (f := fₗ)
   rwa [Ideal.smul_top_eq_map]
