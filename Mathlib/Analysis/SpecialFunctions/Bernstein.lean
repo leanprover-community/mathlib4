@@ -74,19 +74,7 @@ theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
   have h₂ : (0 : ℝ) ≤ 1 - x := by unit_interval
   positivity
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension of the `positivity` tactic for Bernstein polynomials: they are always non-negative. -/
-@[positivity DFunLike.coe (bernstein _ _) _]
-meta def evalBernstein : PositivityExt where eval {_ _} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
-  let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
-  pure (.nonnegative p)
-
-end Mathlib.Meta.Positivity
+attribute [auto_positivity] bernstein_nonneg
 
 /-!
 We now give a slight reformulation of `bernsteinPolynomial.variance`.

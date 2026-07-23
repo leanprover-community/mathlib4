@@ -492,6 +492,8 @@ example (n : ℕ) : 0 ≤ ArithmeticFunction.vonMangoldt n := by positivity
 example (x : ℝ) : 0 ≤ Chebyshev.theta x := by positivity
 example (x : ℝ) : 0 ≤ Chebyshev.psi x := by positivity
 
+example : 0 < Real.pi := by positivity
+
 end SpecialFunctions
 
 /-! ### `sqrt` on `ℝ` and `ℝ≥0` -/

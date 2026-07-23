@@ -745,15 +745,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq
 
-/-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
-@[positivity ENNReal.toReal _]
-meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
-    assertInstancesCommute
-    pure (.nonnegative q(ENNReal.toReal_nonneg))
-  | _, _, _ => throwError "not ENNReal.toReal"
+attribute [auto_positivity] ENNReal.toReal_nonneg
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]

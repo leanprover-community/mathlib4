@@ -267,6 +267,7 @@ public import Mathlib.Tactic.Polynomial.Basic
 public import Mathlib.Tactic.Polynomial.Core
 public import Mathlib.Tactic.Polyrith
 public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Positivity.Auto
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Positivity.Finset

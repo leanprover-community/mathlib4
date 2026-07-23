@@ -417,15 +417,7 @@ meta def evalRealArctan : PositivityExt where eval {u α} z p e :=
     | .none => return .none
   | _ => throwError "not Real.arctan"
 
-/-- Extension for `Real.cos (Real.arctan _)`. -/
-@[positivity Real.cos (Real.arctan _)]
-meta def evalRealCosArctan : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.cos (Real.arctan $a)) =>
-    assumeInstancesCommute
-    return .positive q(Real.cos_arctan_pos _)
-  | _ => throwError "not Real.cos (Real.arctan _)"
+attribute [auto_positivity] Real.cos_arctan_pos
 
 /-- Extension for `Real.sin (Real.arctan _)`. -/
 @[positivity Real.sin (Real.arctan _)]

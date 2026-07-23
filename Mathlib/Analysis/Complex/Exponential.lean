@@ -689,20 +689,7 @@ theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
 
 end Real
 
-namespace Mathlib.Meta.Positivity
-open Lean.Meta Qq
-
-/-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
-@[positivity Real.exp _]
-meta def evalExp : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.exp $a) =>
-    assertInstancesCommute
-    pure (.positive q(Real.exp_pos $a))
-  | _, _, _ => throwError "not Real.exp"
-
-end Mathlib.Meta.Positivity
+attribute [auto_positivity] Real.exp_pos
 
 namespace Complex
 
