@@ -149,10 +149,11 @@ lemma pos : 0 < p := zero_lt_one.trans_le (one_le p q)
 include q in
 lemma ne_zero : p ≠ 0 := pos p q |>.ne'
 
-lemma inv_add_inv_eq_one : p⁻¹ + q⁻¹ = 1 := @inv_one ℝ≥0∞ _ ▸ HolderTriple.inv_add_inv_eq_inv p q 1
+lemma inv_add_inv_eq_one : p⁻¹ + q⁻¹ = 1 :=
+  inv_one (G := ℝ≥0∞) ▸ HolderTriple.inv_add_inv_eq_inv p q 1
 
 lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ :=
-  @inv_one ℝ≥0∞ _ ▸ HolderTriple.inv_sub_inv_eq_inv q p one_ne_zero
+  inv_one (G := ℝ≥0∞) ▸ HolderTriple.inv_sub_inv_eq_inv q p one_ne_zero
 
 lemma unique (q' : ℝ≥0∞) [hq' : HolderConjugate p q'] : q = q' :=
   HolderTriple.unique_of_ne_zero p q q' one_ne_zero

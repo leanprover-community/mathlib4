@@ -187,8 +187,8 @@ theorem self_eq_neg_iff {a : SignType} : a = -a ↔ a = 0 := by decide +revert
 @[simp]
 theorem neg_eq_self_iff {a : SignType} : -a = a ↔ a = 0 := by decide +revert
 
-@[simp]
-theorem neg_eq_zero_iff {a : SignType} : -a = 0 ↔ a = 0 := by decide +revert
+@[deprecated neg_eq_zero (since := "2026-07-18")]
+theorem neg_eq_zero_iff {a : SignType} : -a = 0 ↔ a = 0 := neg_eq_zero
 
 @[simp]
 theorem neg_one_lt_one : (-1 : SignType) < 1 :=

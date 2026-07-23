@@ -307,7 +307,7 @@ theorem Antiperiodic.neg_eq [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f
     f (-c) = -f 0 := by
   simpa only [zero_add] using h.neg 0
 
-theorem Antiperiodic.nat_mul_eq_of_eq_zero [NonAssocSemiring α] [NegZeroClass β]
+theorem Antiperiodic.nat_mul_eq_of_eq_zero [NonAssocSemiring α] [Zero β] [Neg β] [NegZeroClass β]
     (h : Antiperiodic f c) (hi : f 0 = 0) : ∀ n : ℕ, f (n * c) = 0
   | 0 => by rwa [Nat.cast_zero, zero_mul]
   | n + 1 => by simp [add_mul, h _, Antiperiodic.nat_mul_eq_of_eq_zero h hi n]
