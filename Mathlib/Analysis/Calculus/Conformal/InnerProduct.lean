@@ -5,6 +5,7 @@ Authors: Yourong Zang
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 

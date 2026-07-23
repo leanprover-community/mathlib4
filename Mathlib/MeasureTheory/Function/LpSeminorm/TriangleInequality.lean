@@ -5,6 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
 

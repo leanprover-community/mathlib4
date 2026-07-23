@@ -5,8 +5,9 @@ Authors: Yourong Zang
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Normed.Operator.Conformal
 
 /-!

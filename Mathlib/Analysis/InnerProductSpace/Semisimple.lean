@@ -5,6 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.LinearAlgebra.Semisimple
 

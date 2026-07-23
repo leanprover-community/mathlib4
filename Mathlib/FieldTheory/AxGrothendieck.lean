@@ -5,6 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
+public import Mathlib.RingTheory.Nullstellensatz
 public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 

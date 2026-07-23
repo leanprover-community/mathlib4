@@ -5,6 +5,7 @@ Authors: Ashvni Narayanan, David Loeffler
 -/
 module
 
+import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast

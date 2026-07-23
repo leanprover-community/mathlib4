@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
 # Fréchet Derivative of `f x ^ n`, `n : ℕ`

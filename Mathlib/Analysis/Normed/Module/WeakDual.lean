@@ -5,7 +5,7 @@ Authors: Kalle Kytölä, Yury Kudryashov, Michał Świętek
 -/
 module
 
-import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual

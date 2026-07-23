@@ -5,6 +5,8 @@ Authors: Stepan Nesterov
 -/
 module
 
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.RepresentationTheory.Subrepresentation
 public import Mathlib.RepresentationTheory.Intertwining
 import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic

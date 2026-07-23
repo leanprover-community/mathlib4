@@ -5,6 +5,7 @@ Authors: Suzuka Yu, Oliver Nash
 -/
 module
 
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 

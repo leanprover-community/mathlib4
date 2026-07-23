@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.LinearAlgebra.Complex.Determinant
+public import Mathlib.LinearAlgebra.Complex.Determinant
 
 /-! # The basic continuous linear maps associated to `ℂ`
 

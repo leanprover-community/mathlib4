@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.Jacobson.Ring
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 

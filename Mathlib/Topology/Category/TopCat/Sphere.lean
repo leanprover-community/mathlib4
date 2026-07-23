@@ -5,6 +5,11 @@ Authors: Jiazhen Xia, Elliot Dean Young
 -/
 module
 
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Combinatorics.Quiver.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Category.TopCat.EpiMono
+
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Topology.Category.TopCat.EpiMono
 

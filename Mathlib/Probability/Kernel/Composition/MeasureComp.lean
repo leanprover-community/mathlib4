@@ -5,6 +5,10 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 module
 
+public import Mathlib.Probability.Kernel.Composition.CompMap
+
+public import Mathlib.Probability.Kernel.Composition.Prod
+
 import Mathlib.Probability.Kernel.Composition.CompNotation
 import Mathlib.Probability.Kernel.Composition.KernelLemmas
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd

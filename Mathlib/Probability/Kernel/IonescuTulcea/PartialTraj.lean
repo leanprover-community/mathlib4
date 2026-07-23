@@ -5,7 +5,9 @@ Authors: Etienne Marion
 -/
 module
 
-import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
+import Mathlib.Probability.Kernel.Composition.Comp
+import Mathlib.Probability.Kernel.Composition.CompMap
+public import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
 public import Mathlib.Probability.Kernel.Composition.Prod
 public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
 

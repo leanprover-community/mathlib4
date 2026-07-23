@@ -5,10 +5,11 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
+public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
 public import Mathlib.Analysis.InnerProductSpace.Symmetric
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Topology.Algebra.Module.Complement
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 /-!
 # The orthogonal projection

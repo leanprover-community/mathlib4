@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.RingTheory.Finiteness.Projective
 
 /-!
 # Contractions

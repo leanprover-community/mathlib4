@@ -7,7 +7,7 @@ module
 
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Calculus.FDeriv.Const
 
 /-!
 # Additive operations on derivatives

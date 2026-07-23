@@ -2,42 +2,110 @@
 
 ## Current state
 
-- The working tree changes `public import` to `import` for modules initially selected as containing
-  none of `def`, `abbrev`, `irreducible_def`, or `instance`.
-- Directories `Mathlib/Tactic/` and `Mathlib/Util/` were restored, as requested.
-- The build exposed public-API and tactic-syntax dependencies.  Required original re-export edges
-  have been restored iteratively; no new imports were introduced.
-- Current diff: 3,057 insertions and 3,057 deletions in 2,115 files. `git diff --check` passes.
+- The original mass change demoted public imports of modules selected for containing no literal
+  `def`, `abbrev`, `irreducible_def`, or `instance`. `Mathlib/Tactic/` and
+  `Mathlib/Util/` remain restored as requested.
+- All edits are in the working tree; do **not** use `git restore` or reset. The Git index is
+  read-only in this environment, so no commit checkpoint was made.
+- `git diff --check` passes.
 
-## Validation status
+## Last completed validation
 
-`lake build` was stopped by the user while still running. It had reached target 8,336 of 8,677.
-At that point the current log at `/tmp/public-import-removal-build.log` contained 25 failures.
-Those diagnostics must be treated as incomplete, because the build had not finished.
+1. The first 54 full-build failures were reduced using compiler-suggested public imports and
+   direct imports.
+2. The final nine in that batch all compiled successfully after:
+   - private imports for tangent-cone, derivative-composition, ideal-big-operator, Euclidean,
+     and similar APIs;
+   - four necessary public boundaries where exported declarations required them.
+3. A subsequent full build was recorded in:
+
+   `/tmp/mathlib-full-after-private-repair.log`
+
+   It completed with **41** failures. The repaired nine did not fail.
+
+## Current in-progress batch: 41 failures
+
+### Completed first reduction: compiler-suggested public imports
+
+- Applied the 21 explicit `consider adding public import` suggestions from the 41-failure log.
+- Rebuilt all 41 targets, recorded in:
+
+  `/tmp/mathlib-41-public-round1.log`
+
+- This reduced the target set to **36** failures.
+- Applied the one additional public suggestion:
+
+  `Mathlib/RingTheory/Etale/Field.lean` → `Mathlib.RingTheory.Spectrum.Prime.RingHom`.
+
+### In-progress second reduction: direct private imports
+
+Immediately before stopping, 30 ordinary imports were added from locally located definitions.
+They have **not yet been validated**. The pending target/import pairs are:
+
+- `InverseFunctionTheorem/Deriv` → `FDeriv.Equiv`
+- `CartanCriterion` → `LinearAlgebra.JordanChevalley`
+- `Finite/GaloisField`, `IntegralClosure/IntegralRestrict` → `NumberTheory.NumberField.Norm`
+- `Normed/Module/DoubleDual` → `Normed.Module.HahnBanach`
+- `PurelyInseparable/Exponent` → `FieldTheory.Minpoly.MinpolyDiv`
+- `FDeriv/Measurable` → `TangentCone.Real`
+- `Calculus/Implicit` → `FDeriv.Comp`
+- `Sphere/OrthRadius`, `InnerProductSpace/PiL2` → `LinearAlgebra.BilinearForm.Orthogonal`
+- `Sphere/SecondInter`, `Euclidean/MongePoint` → `Geometry.Euclidean.Basic`
+- `Lie/Weights/Killing` → `LinearAlgebra.Trace`
+- `Lie/LieTheorem` → `LinearAlgebra.Eigenspace.Basic`
+- `BernoulliPolynomials` → `Algebra.BigOperators.Field`
+- `SeparablyGenerated` → `RingTheory.Algebraic.Integral`
+- `Kernel/Composition/KernelLemmas` → `Kernel.Composition.CompProd`
+- `Kernel/Deterministic` → `Kernel.Composition.CompMap`
+- `Kernel/IonescuTulcea/PartialTraj` → `Kernel.Composition.Comp`
+- `Padics/Complex` → `Analysis.Normed.Algebra.Ultra`
+- `NumberField/Basic` → `Algebra.Ring.Int.Field`
+- `Ideal/Height`, `KrullDimension/Zero` → `Ideal.MinimalPrime.Localization`
+- `CStarAlgebra/ContinuousFunctionalCalculus/Instances` → `InnerProductSpace.StarOrder`
+- `Spectrum/Prime/Chevalley` → `RingTheory.Adjoin.FGBaseChange`
+- `WittVector/Verschiebung` → `Algebra.MvPolynomial.Funext`
+- `Smooth/StandardSmoothCotangent` → `Ideal.BigOperators`
+- `Spectrum/Prime/FreeLocus` → `Algebra.Module.LocalizedModule.AtPrime`
+- `Teichmuller` → `Algebra.CharP.Quotient`
+- `Unramified/LocalRing` → `RingTheory.Nakayama`
+- `Etale/StandardEtale` → `Ideal.Quotient.Nilpotent`
 
 ## Resume procedure
 
-1. Run the full build and wait for it to finish:
+1. Validate the 36 targets from the first reduction log after the pending edits:
 
    ```bash
-   lake build > /tmp/public-import-removal-build.log 2>&1
+   rg '^✖ \\[' /tmp/mathlib-41-public-round1.log |
+     sed -E 's/^✖ \\[[0-9]+\\/[0-9]+\\] Building ([^ ]+).*/\\1/' |
+     sort -u | xargs lake build > /tmp/mathlib-41-private-round1.log 2>&1
    ```
 
-2. Extract every failed target, then inspect each target and the modules it `public import`s for
-   changed import lines. Restore only those original lines from `import X` to `public import X`.
-   This preserves the existing public-import graph instead of adding a new direct dependency.
-
-3. Repeat until `lake build` succeeds. Useful diagnostics:
+2. For compiler suggestions, add the exact `public import` reported by Lean, rebuilding the
+   affected targets after each batch.
+3. For remaining unknown constants/identifiers, locate the declaration with `rg -n` (Loogle
+   fallback) and add the defining module as an ordinary `import`; rebuild the target.
+4. Once this target batch is clean, run a full build to find the next layer:
 
    ```bash
-   rg '^✖ \[' /tmp/public-import-removal-build.log
-   rg 'consider adding `public(?: meta)? import' /tmp/public-import-removal-build.log
-   git diff --check
+   lake build > /tmp/mathlib-full-next.log 2>&1
    ```
 
-## Important caveat
+5. Always finish a batch with `git diff --check`.
 
-The initial syntactic criterion is not sufficient to decide whether an import may be private.
-For example, a module defining only a class, notation, syntax, or theorem can still be needed by
-a public declaration in an importing module. Lean's build diagnostics are the authority for the
-remaining required public re-exports.
+## Checkpoint: 41-failure batch repaired
+
+The full iterative reduction has now completed for this batch.  The final target pass is logged
+in `/tmp/mathlib-41-private-round5.log`; its three remaining targets were repaired and validated
+individually:
+
+- `AlgebraicIndependent/RankAndCardinality`: direct `MvPolynomial.Cardinal` import.
+- `ClassNumber/Finite`: restored the required public imports for absolute values, admissibility,
+  and norms.
+- `Lebesgue/EqHaar`: direct `MeasureTheory.Group.Pointwise` import.
+
+The last direct validation log is `/tmp/mathlib-rank-round10.log`, and `git diff --check` passes.
+The next step is a new complete build:
+
+```bash
+lake build > /tmp/mathlib-full-next.log 2>&1
+```

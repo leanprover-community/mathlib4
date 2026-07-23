@@ -5,6 +5,8 @@ Authors: Salvatore Mercuri
 -/
 module
 
+import Mathlib.Algebra.CharZero.AddMonoidHom
+
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.Algebra.Order.Hom.Units

@@ -5,6 +5,14 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 module
 
+import Mathlib.Analysis.Calculus.FDeriv.Add
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.LinearAlgebra.AffineSpace.Slope
+
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Mul

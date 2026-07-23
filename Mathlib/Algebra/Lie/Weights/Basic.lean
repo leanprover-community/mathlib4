@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.Algebra.Lie.Nilpotent
 public import Mathlib.Algebra.Lie.Engel

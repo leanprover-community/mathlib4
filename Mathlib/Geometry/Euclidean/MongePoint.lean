@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
+import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Circumcenter
 

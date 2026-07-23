@@ -5,6 +5,8 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 module
 
+import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Normed.Lp.PiLp

@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition

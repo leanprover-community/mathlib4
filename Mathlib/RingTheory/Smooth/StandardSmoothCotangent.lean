@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 module
 
+import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.LinearAlgebra.Basis.Exact
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Smooth.StandardSmooth

@@ -5,6 +5,7 @@ Authors: Janos Wolosz
 -/
 module
 
+import Mathlib.LinearAlgebra.JordanChevalley
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
 public import Mathlib.Algebra.Lie.Killing

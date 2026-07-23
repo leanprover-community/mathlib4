@@ -5,6 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
+import Mathlib.Data.ZMod.QuotientRing
+
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 

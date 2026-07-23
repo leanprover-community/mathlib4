@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Basic
 public import Mathlib.Analysis.BoxIntegral.Partition.Additive
-import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Divergence integral for Henstock-Kurzweil integral

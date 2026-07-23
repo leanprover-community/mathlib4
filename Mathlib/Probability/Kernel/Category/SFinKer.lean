@@ -5,6 +5,8 @@ Authors: Gaëtan Serré
 -/
 module
 
+public import Mathlib.Probability.Kernel.Composition.CompMap
+
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
 import Mathlib.Probability.Kernel.Composition.KernelLemmas
 public import Mathlib.Probability.Kernel.Deterministic

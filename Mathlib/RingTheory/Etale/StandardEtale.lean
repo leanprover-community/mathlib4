@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.Etale.Basic

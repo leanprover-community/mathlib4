@@ -5,6 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Order.Northcott
+
 public import Mathlib.Data.ZMod.QuotientRing
 import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.DedekindDomain.Basic

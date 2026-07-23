@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+import Mathlib.Analysis.Normed.Field.ProperSpace
 import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact

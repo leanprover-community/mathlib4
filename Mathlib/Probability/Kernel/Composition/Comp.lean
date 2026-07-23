@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 module
 
-import Mathlib.Probability.Kernel.MeasurableLIntegral
+public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 # Composition of kernels

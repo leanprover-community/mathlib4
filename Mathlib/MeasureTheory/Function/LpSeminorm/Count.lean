@@ -5,6 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.Analysis.Normed.Group.Defs
+public import Mathlib.Topology.Defs.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 
 /-!

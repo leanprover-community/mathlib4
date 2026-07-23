@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # Monotonicity and ℒp seminorms

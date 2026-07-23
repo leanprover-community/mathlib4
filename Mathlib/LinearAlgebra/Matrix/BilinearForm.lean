@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+import Mathlib.LinearAlgebra.Basis.Bilinear
 
 /-!
 # Bilinear form

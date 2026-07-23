@@ -5,6 +5,9 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
+import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 

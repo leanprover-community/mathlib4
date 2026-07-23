@@ -5,6 +5,8 @@ Authors: Stefan Kebekus
 -/
 module
 
+import Mathlib.Analysis.Calculus.FDeriv.Comp
+
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 

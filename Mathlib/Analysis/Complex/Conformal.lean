@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Complex.Isometry
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional

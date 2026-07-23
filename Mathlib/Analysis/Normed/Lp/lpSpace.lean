@@ -5,7 +5,7 @@ Authors: Heather Macbeth, Jireh Loreaux
 -/
 module
 
-import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Data.Set.Image

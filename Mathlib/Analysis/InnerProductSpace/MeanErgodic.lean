@@ -5,6 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 

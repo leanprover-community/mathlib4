@@ -8,7 +8,7 @@ module
 import Mathlib.Algebra.Group.Submonoid.Finsupp
 public import Mathlib.Order.Filter.AtTopBot.Defs
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.GradedAlgebra.FiniteType
+public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.RingHom
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic

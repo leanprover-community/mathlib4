@@ -5,7 +5,7 @@ Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Calculus.FDeriv.Const
 import Mathlib.Analysis.Calculus.TangentCone.DimOne
 import Mathlib.Analysis.Calculus.TangentCone.Real
 public import Mathlib.Analysis.Normed.Operator.Bilinear

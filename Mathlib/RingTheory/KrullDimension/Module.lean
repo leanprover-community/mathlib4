@@ -5,6 +5,19 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.RingTheory.Support
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Order.KrullDimension
+public import Mathlib.Order.Notation
+public import Mathlib.Order.TypeTags
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.LocalRing.Defs
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Defs
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.Spectrum.Prime.Module
 

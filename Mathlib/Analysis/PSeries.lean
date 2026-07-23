@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.SumOverResidueClass
 
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics

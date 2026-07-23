@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat

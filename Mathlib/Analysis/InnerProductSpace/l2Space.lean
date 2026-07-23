@@ -5,6 +5,8 @@ Authors: Heather Macbeth
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
 public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.InnerProductSpace.PiL2

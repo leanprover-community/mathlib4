@@ -5,6 +5,8 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
+
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Real

@@ -5,8 +5,12 @@ Authors: Yiming Fu
 -/
 module
 
+public import Mathlib.RingTheory.LocalProperties.Submodule
+
 public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.KrullDimension.PID
+
+import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
 
 /-!
 # Local properties for semilocal rings

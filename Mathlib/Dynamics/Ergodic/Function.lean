@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.MeasureTheory.Function.AEEqFun
 
 /-!

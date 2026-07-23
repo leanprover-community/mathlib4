@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
 public import Mathlib.MeasureTheory.Group.Convolution
 public import Mathlib.Analysis.LConvolution
+import Mathlib.MeasureTheory.Group.LIntegral
 
 /-!
 # Measure with a given density with respect to another measure

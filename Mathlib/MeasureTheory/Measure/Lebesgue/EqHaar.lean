@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 -/
 module
 
+import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!

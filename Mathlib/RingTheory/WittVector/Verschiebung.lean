@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
+import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 

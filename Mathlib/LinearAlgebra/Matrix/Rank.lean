@@ -9,8 +9,8 @@ public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.LinearAlgebra.Matrix.DotProduct
+public import Mathlib.LinearAlgebra.Matrix.Diagonal
+public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 

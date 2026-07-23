@@ -5,6 +5,7 @@ Authors: Lucas Whitfield, Johan Commelin
 -/
 module
 
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 public import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.RingTheory.Finiteness.Nilpotent
 

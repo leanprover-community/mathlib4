@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.LocalProperties.Projective
 import Mathlib.RingTheory.LocalRing.Module

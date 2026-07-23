@@ -5,6 +5,10 @@ Authors: Kexing Ying
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+public import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.MeasureTheory.Measure.Sub

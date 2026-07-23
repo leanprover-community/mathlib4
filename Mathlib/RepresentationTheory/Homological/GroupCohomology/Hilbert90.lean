@@ -5,6 +5,8 @@ Authors: Riccardo Brasca, Amelia Livingston
 -/
 module
 
+import Mathlib.RingTheory.Norm.Basic
+
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 

@@ -5,12 +5,13 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-import Mathlib.Algebra.Order.GroupWithZero.Bounds
+public import Mathlib.Algebra.Order.GroupWithZero.Bounds
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Topology.MetricSpace.Sequences
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Topology.MetricSpace.Sequences
 public import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+public import Mathlib.Topology.Algebra.Order.LiminfLimsup
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # smoothingSeminorm

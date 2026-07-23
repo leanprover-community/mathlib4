@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
-import Mathlib.RingTheory.Flat.Tensor
+public import Mathlib.RingTheory.Flat.Tensor
 
 /-! # The equational criterion for flatness
 

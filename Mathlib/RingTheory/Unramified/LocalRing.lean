@@ -5,9 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
+import Mathlib.RingTheory.Nakayama
+public import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Unramified.Field
+public import Mathlib.RingTheory.Unramified.Field
 public import Mathlib.RingTheory.Unramified.Locus
 
 /-!

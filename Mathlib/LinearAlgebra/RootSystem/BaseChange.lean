@@ -5,6 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
+
 public import Mathlib.Algebra.Algebra.Rat
 import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn

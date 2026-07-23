@@ -5,6 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Normed.Algebra.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
+
+public import Mathlib.Analysis.Normed.Field.Basic
+
 import Mathlib.Analysis.Calculus.FDeriv.Pow
 
 /-!

@@ -5,7 +5,7 @@ Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 -/
 module
 
-import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!

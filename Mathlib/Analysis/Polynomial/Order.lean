@@ -5,8 +5,9 @@ Authors: Yuval Filmus
 -/
 module
 
-import Mathlib.Analysis.Polynomial.Basic
-import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Analysis.Polynomial.Basic
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Eventual sign of polynomials

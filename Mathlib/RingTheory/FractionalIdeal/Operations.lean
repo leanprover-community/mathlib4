@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.Field

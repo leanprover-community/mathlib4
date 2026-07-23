@@ -5,6 +5,7 @@ Authors: Heather Macbeth, Michał Świętek
 -/
 module
 
+import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.LocallyConvex.WeakSpace
 public import Mathlib.Analysis.Normed.Module.WeakDual
 

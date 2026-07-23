@@ -5,6 +5,8 @@ Authors: Daniel Roca González
 -/
 module
 
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+
 public import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!

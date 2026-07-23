@@ -5,8 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.RingTheory.Support
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.RegularSequence

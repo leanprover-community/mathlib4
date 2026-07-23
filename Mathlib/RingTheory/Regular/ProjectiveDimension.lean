@@ -9,9 +9,10 @@ public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.RegularSequence
+import Mathlib.RingTheory.Nakayama
 
 /-!
 

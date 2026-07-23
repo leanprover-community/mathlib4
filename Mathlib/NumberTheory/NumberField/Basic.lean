@@ -5,6 +5,7 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 module
 
+import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.Algebra.Ring.Int.Parity

@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 public import Mathlib.RingTheory.TensorProduct.Finite

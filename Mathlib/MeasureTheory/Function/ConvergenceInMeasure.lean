@@ -5,8 +5,12 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 module
 
+public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
+
 public import Mathlib.MeasureTheory.Function.Egorov
 public import Mathlib.MeasureTheory.Function.LpSpace.Complete
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Convergence in measure

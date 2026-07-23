@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van
 -/
 module
 
+import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Norm.Transitivity

@@ -5,7 +5,7 @@ Authors: Edison Xie
 -/
 module
 
-import Mathlib.GroupTheory.GroupAction.Iwasawa
+public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 

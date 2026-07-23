@@ -5,6 +5,9 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
+import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Prod
+
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM

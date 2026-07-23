@@ -5,6 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.RingTheory.Discriminant
+
 public import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Localization.NormTrace
 

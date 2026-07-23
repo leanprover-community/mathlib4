@@ -5,6 +5,7 @@ Authors: Michal Staromiejski
 -/
 module
 
+import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.Topology.Separation.DisjointCover
 public import Mathlib.Tactic.DepRewrite
 
 /-!

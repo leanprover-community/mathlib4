@@ -5,6 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Data.ZMod.Defs
 import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.Multiset.Fintype
 import Mathlib.FieldTheory.ChevalleyWarning

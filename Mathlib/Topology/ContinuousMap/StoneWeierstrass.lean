@@ -12,7 +12,7 @@ public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
-import Mathlib.Topology.ContinuousMap.Weierstrass
+public import Mathlib.Topology.ContinuousMap.Weierstrass
 import Mathlib.Algebra.Order.Module.Basic
 
 /-!

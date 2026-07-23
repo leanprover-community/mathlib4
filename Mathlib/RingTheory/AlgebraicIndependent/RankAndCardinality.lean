@@ -6,10 +6,11 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.FieldTheory.MvRatFunc.Rank
-import Mathlib.RingTheory.Algebraic.Cardinality
+import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.FieldTheory.MvRatFunc.Rank
+public import Mathlib.RingTheory.Algebraic.Cardinality
 public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!

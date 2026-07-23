@@ -5,6 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+
+public import Mathlib.RingTheory.Unramified.Basic
+
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.Unramified.Field

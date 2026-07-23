@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
 # Regular sequences and weakly regular sequences

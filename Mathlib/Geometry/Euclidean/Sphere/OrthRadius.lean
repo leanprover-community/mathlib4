@@ -5,6 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
+import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.Sphere.Basic

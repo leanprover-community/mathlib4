@@ -5,6 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
+import Mathlib.RingTheory.Adjoin.FGBaseChange
+import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity

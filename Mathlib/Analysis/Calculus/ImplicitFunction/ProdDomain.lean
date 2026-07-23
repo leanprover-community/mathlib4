@@ -5,6 +5,8 @@ Authors: A Tucker
 -/
 module
 
+import Mathlib.Analysis.Calculus.FDeriv.Prod
+
 public import Mathlib.Analysis.Calculus.Implicit
 
 /-!

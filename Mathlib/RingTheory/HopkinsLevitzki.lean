@@ -5,6 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
+import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.Noetherian.Nilpotent

@@ -5,6 +5,8 @@ Authors: Christian Merten
 -/
 module
 
+import Mathlib.RingTheory.Nakayama
+
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway

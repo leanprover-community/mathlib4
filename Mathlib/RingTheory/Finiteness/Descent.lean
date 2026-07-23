@@ -5,6 +5,11 @@ Authors: Christian Merten
 -/
 module
 
+import Mathlib.RingTheory.RingHom.FiniteType
+import Mathlib.RingTheory.RingHom.Finite
+
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.RingHom.FinitePresentation

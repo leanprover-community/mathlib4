@@ -5,6 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
+import Mathlib.RingTheory.LocalRing.Module
+
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 public import Mathlib.RingTheory.Support

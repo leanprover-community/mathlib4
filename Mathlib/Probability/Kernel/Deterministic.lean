@@ -6,6 +6,7 @@ Authors: Gaëtan Serré
 
 module
 
+import Mathlib.Probability.Kernel.Composition.CompMap
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.Probability.Kernel.Composition.Prod

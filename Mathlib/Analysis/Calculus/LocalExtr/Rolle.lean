@@ -5,6 +5,10 @@ Authors: Yury Kudryashov, Anatole Dedecker
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Topology.Defs.Filter
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Topology.Order.Rolle
 

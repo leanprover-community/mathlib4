@@ -7,7 +7,7 @@ module
 
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Derivative of the Cartesian product of functions

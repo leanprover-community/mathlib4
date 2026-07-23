@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # ℒp spaces and products

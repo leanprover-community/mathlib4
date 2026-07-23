@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
+import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Analysis.Convex.Side
 import Mathlib.Analysis.Convex.StrictCombination
 public import Mathlib.Geometry.Euclidean.Sphere.Basic

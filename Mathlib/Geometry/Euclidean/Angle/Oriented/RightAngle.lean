@@ -5,6 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 

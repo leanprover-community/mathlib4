@@ -5,6 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Order.Interval.Set.Defs
+
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.LocalExtr.Basic

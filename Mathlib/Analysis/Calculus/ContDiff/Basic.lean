@@ -6,7 +6,12 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Analysis.Calculus.FDeriv.Affine
+public import Mathlib.Analysis.Calculus.FDeriv.Affine
+import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Basic properties of continuously-differentiable functions

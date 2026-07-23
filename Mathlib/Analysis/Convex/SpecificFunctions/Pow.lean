@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!

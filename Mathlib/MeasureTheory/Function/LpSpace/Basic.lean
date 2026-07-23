@@ -5,11 +5,22 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.AEEqFun
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.MeasureTheory.OuterMeasure.AE
 public import Mathlib.Analysis.Normed.Operator.Bilinear
-import Mathlib.Analysis.Normed.Operator.NNNorm
-import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
-import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
-import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.Analysis.Normed.Operator.NNNorm
+public import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
+public import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
+public import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
+import Mathlib.MeasureTheory.Function.LpSeminorm.Monotonicity
+public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
 
 /-!
 # Lp space

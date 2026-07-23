@@ -5,6 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.FieldTheory.IsSepClosed
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.Unramified.Finite
 public import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.Unramified.Field
 

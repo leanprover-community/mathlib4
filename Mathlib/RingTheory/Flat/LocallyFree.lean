@@ -5,6 +5,10 @@ Authors: Yongle Hu
 -/
 module
 
+import Mathlib.RingTheory.LocalProperties.Exactness
+
+import Mathlib.RingTheory.LocalRing.Module
+
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!

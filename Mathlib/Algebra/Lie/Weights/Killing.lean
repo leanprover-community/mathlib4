@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.Lie.Derivation.Killing
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.Sl2

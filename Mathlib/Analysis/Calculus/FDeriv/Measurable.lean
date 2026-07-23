@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
+import Mathlib.Analysis.Calculus.TangentCone.Real
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Slope
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps

@@ -5,6 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
+import Mathlib.Analysis.Calculus.TangentCone.DimOne
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.LinearAlgebra.AffineSpace.Slope
 public import Mathlib.Topology.Algebra.Module.PerfectSpace

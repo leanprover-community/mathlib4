@@ -6,7 +6,7 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Analysis.Convex.Between
-import Mathlib.Data.List.Triplewise
+public import Mathlib.Data.List.Triplewise
 
 /-!
 # Betweenness for lists of points.

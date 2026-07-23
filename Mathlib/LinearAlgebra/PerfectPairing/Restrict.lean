@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.LinearAlgebra.Matrix.BaseChange
+public import Mathlib.LinearAlgebra.Matrix.BaseChange
+import Mathlib.Algebra.Field.Subfield.Basic
 
 /-!
 # Restriction to submodules and restriction of scalars for perfect pairings.

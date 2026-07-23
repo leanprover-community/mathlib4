@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Analysis.Real.Spectrum
 import Mathlib.Analysis.Complex.Spectrum
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique

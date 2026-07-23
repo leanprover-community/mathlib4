@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 public import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.TensorProduct.Nontrivial

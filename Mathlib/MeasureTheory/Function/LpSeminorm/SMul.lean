@@ -5,6 +5,17 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Analysis.Normed.Group.Defs
+public import Mathlib.Data.ENNReal.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.MeasureTheory.Function.LpSeminorm.Monotonicity
 
 /-!

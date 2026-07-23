@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.MeasureTheory.Group.Defs
 public import Mathlib.MeasureTheory.Function.AEEqFun
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 /-!
 # Action of `DomMulAct` and `DomAddAct` on `α →ₘ[μ] β`
 

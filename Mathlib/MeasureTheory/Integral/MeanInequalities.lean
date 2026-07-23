@@ -5,10 +5,11 @@ Authors: Rémy Degenne
 -/
 module
 
-import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+import Mathlib.Algebra.BigOperators.Field
 
 /-!
 # Mean value inequalities for integrals

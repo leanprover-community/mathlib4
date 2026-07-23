@@ -5,6 +5,16 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+
+public import Mathlib.Analysis.Normed.Field.Basic
+
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 

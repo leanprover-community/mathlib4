@@ -5,6 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
+import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
 public import Mathlib.LinearAlgebra.Contraction

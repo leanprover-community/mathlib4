@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Star
 

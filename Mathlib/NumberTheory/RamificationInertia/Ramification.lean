@@ -5,6 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
+import Mathlib.RingTheory.Nakayama
+
 public import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas

@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Analytic.CPolynomial
+import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Analytic.Inverse
 import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.Deriv.Basic

@@ -5,6 +5,12 @@ Authors: Henry Swanson, Patrick Massot
 -/
 module
 
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.Topology.Defs.Filter
+
+public import Mathlib.Order.Filter.Defs
+
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite

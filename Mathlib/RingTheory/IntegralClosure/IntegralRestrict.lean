@@ -5,6 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.RingHom.Finite
 public import Mathlib.RingTheory.Localization.LocalizationLocalization

@@ -5,8 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 /-!

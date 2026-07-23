@@ -5,6 +5,8 @@ Authors: Andrew Yang, Christian Merten, Junyan Xu
 -/
 module
 
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
 import Mathlib.Algebra.MvPolynomial.NoZeroDivisors

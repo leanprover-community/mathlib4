@@ -5,6 +5,8 @@ Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 -/
 module
 
+import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix

@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Finitely strongly measurable functions with value in ENNReal

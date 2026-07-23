@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Analysis.Convex.Cone.Basic
-import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 

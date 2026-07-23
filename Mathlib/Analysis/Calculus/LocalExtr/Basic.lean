@@ -5,6 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
+import Mathlib.Analysis.Calculus.TangentCone.Real
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Analysis.Normed.Group.Defs
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Topology.Order.LocalExtr
 import Mathlib.Analysis.Calculus.Deriv.Add
 
 /-!

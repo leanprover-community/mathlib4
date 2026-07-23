@@ -6,7 +6,8 @@ Authors: Gabriel Ebner, Anatole Dedecker, Yury Kudryashov
 module
 
 import Mathlib.Analysis.Calculus.Deriv.Support
-import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 

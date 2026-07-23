@@ -5,7 +5,7 @@ Authors: Yongxi Lin
 -/
 module
 
-import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Analysis.LocallyConvex.Separation
 
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Normed.Order.Lattice

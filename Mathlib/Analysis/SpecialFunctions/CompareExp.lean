@@ -7,7 +7,7 @@ module
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Growth estimates on `x ^ y` for complex `x`, `y`

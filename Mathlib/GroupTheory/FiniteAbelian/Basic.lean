@@ -5,6 +5,8 @@ Authors: Pierre-Alexandre Bazin
 -/
 module
 
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.GroupTheory.Torsion
 import Mathlib.Algebra.Module.PID
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Data.ZMod.QuotientRing

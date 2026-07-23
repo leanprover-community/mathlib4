@@ -6,8 +6,9 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Linear
+import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
 # The derivative of a linear equivalence

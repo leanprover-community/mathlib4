@@ -5,6 +5,8 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.RingTheory.FinitePresentation
+
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Properties

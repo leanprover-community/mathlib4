@@ -7,7 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Fixed
 public import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Invariant.Defs
+public import Mathlib.RingTheory.Invariant.Defs
 
 /-!
 # Invariant Extensions of Rings

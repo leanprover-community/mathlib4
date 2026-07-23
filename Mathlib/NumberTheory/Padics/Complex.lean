@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
+import Mathlib.Analysis.Normed.Algebra.Ultra
 public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.NumberTheory.Padics.PadicNumbers

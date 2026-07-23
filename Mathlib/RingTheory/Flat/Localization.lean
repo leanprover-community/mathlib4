@@ -6,7 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.LocalProperties.Exactness
+public import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
 # Flatness and localization

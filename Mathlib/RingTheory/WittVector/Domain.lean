@@ -5,6 +5,11 @@ Authors: Robert Y. Lewis
 -/
 module
 
+public import Mathlib.RingTheory.WittVector.Verschiebung
+
+public import Mathlib.Logic.Basic
+public import Mathlib.RingTheory.WittVector.Defs
+
 import Mathlib.RingTheory.WittVector.Identities
 
 /-!

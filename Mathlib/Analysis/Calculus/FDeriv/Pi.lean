@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Calculus.FDeriv.Const
 
 /-!
 # Derivatives on pi-types.

@@ -5,8 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 public import Mathlib.SetTheory.Cardinal.NatCard
 

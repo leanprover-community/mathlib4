@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
+import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.LinearAlgebra.SModEq.Basic
 import Mathlib.LinearAlgebra.SModEq.Pow
 public import Mathlib.RingTheory.AdicCompletion.Basic
