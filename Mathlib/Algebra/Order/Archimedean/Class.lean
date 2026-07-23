@@ -751,6 +751,12 @@ instance [MulArchimedean M] : Subsingleton (FiniteMulArchimedeanClass M) where
     induction B using ind with | mk b hb
     simpa [mk] using MulArchimedeanClass.mk_eq_mk_of_mulArchimedean ha hb
 
+@[to_additive] lemma subsingleton_iff_mulArchimedean :
+    Subsingleton (FiniteMulArchimedeanClass M) ↔ MulArchimedean M where
+  mp s := MulArchimedeanClass.mulArchimedean_of_mk_eq_mk
+    fun a ha b hb ↦ congr_arg Subtype.val (s.elim (.mk a ha) (.mk b hb))
+  mpr _ := inferInstance
+
 @[to_additive]
 instance [Nontrivial M] : Nonempty (FiniteMulArchimedeanClass M) := by
   obtain ⟨x, hx⟩ := exists_ne (1 : M)
