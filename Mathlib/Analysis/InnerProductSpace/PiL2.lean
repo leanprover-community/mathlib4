@@ -1046,15 +1046,16 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
 
 theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type*} [Fintype ι]
     (card_ι : finrank 𝕜 E = Fintype.card ι) {v : ι → E} {s : Set ι}
-    (hv : Orthonormal 𝕜 (s.restrict v)) : ∃ b : OrthonormalBasis ι 𝕜 E, ∀ i ∈ s, b i = v i := by
-  have hsv : Injective (s.restrict v) := hv.linearIndependent.injective
-  have hX : Orthonormal 𝕜 ((↑) : Set.range (s.restrict v) → E) := by
+    (hv : Orthonormal 𝕜 (s.domRestrict v)) :
+    ∃ b : OrthonormalBasis ι 𝕜 E, ∀ i ∈ s, b i = v i := by
+  have hsv : Injective (s.domRestrict v) := hv.linearIndependent.injective
+  have hX : Orthonormal 𝕜 ((↑) : Set.range (s.domRestrict v) → E) := by
     rwa [orthonormal_subtype_range hsv]
   obtain ⟨Y, b₀, hX, hb₀⟩ := hX.exists_orthonormalBasis_extension
   have hιY : Fintype.card ι = Y.card := by
     refine card_ι.symm.trans ?_
     exact Module.finrank_eq_card_finset_basis b₀.toBasis
-  have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_restrict])
+  have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_domRestrict])
   have hsv' : Set.InjOn v s := by
     rw [Set.injOn_iff_injective]
     exact hsv
