@@ -361,9 +361,9 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive G X]
     intro y₁ y₂ h
     rw [orbitRel_apply] at h
     rw [Quotient.eq'', leftRel_eq]
-    dsimp only
+    beta_reduce
     rcases h with ⟨g, rfl⟩
-    dsimp only
+    beta_reduce
     suffices (exists_smul_eq G (g • y₂) x).choose = (exists_smul_eq G y₂ x).choose * g⁻¹ by
       simp [this]
     refine IsCancelSMul.right_cancel _ _ (g • y₂) ?_
@@ -384,7 +384,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive G X]
     cases g using Quotient.inductionOn' with | _ g
     simp only [Quotient.liftOn'_mk'', QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
-    simp only
+    beta_reduce
     convert! one_mem H
     rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot,
         ← IsCancelSMul.stabilizer_eq_bot (g⁻¹ • x), mem_stabilizer_iff, mul_smul,

@@ -672,7 +672,7 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
   rcases exists_normalWord_prod_eq φ d w₁ with ⟨w₁', hw₁'1, hw₁'2, hw₁'3⟩
   rcases exists_normalWord_prod_eq φ d w₂ with ⟨w₂', hw₂'1, hw₂'2, hw₂'3⟩
   have : w₁' = w₂' :=
-    NormalWord.prod_injective φ d (by dsimp only; rw [hw₁'1, hw₂'1, hprod])
+    NormalWord.prod_injective φ d (by beta_reduce; rw [hw₁'1, hw₂'1, hprod])
   subst this
   refine ⟨by rw [← hw₁'2, hw₂'2], ?_⟩
   simp only [← leftCoset_eq_iff] at *

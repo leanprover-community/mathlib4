@@ -98,7 +98,7 @@ theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp :
     instantiation order leads to a term with a beta redex.
     https://github.com/leanprover/lean4/pull/13762
     This will be removed once app elaboration itself does beta reduction. -/
-    dsimp only
+    beta_reduce
     rw [← mul_assoc, mul_rpow, mul_rpow, ← rpow_mul (z := p), neg_mul, neg_mul, inv_mul_cancel₀,
       rpow_neg_one, mul_inv_cancel_left₀]
     all_goals linarith [mem_Ioi.mp hx]

@@ -242,7 +242,7 @@ lemma termTSum_of_lt {s : ℝ} (hs : 1 < s) :
       · intro n
         positivity
       · intro n
-        dsimp only
+        beta_reduce
         transitivity (n + 1) / (n + 1) ^ s
         · gcongr
           linarith

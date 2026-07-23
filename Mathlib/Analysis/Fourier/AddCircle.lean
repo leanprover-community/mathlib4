@@ -231,7 +231,7 @@ separates points. -/
 theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoints := by
   intro x y hxy
   refine ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, ?_⟩
-  dsimp only; rw [fourier_one, fourier_one]
+  beta_reduce; rw [fourier_one, fourier_one]
   contrapose hxy
   rw [Subtype.coe_inj] at hxy
   exact injective_toCircle hT.elim.ne' hxy

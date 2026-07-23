@@ -785,7 +785,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
         smul_eq_mul, mul_one]
       congr
       aesop
-    · simp only
+    · beta_reduce
       intro x y hx hy
       rw [map_add, add_smul, hx, hy]
   right_inv t := by simp

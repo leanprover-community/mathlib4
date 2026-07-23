@@ -270,11 +270,11 @@ theorem submodule_span_prod_dp_eq_top (hv : span R (Set.range v) = ⊤) :
       | zero => simp
       | mem x hx =>
         obtain ⟨n, rfl⟩ := hx
-        simp only
+        beta_reduce
         rw [← n.mul_prod_erase' i _ (fun i ↦ dp_zero (m := v i)), mul_comm,
           ← mul_assoc, dp_mul, nsmul_eq_mul, mul_assoc, ← nsmul_eq_mul]
         refine smul_of_tower_mem _ _ (mem_span_of_mem ⟨Finsupp.single i k + n, ?_⟩)
-        simp only
+        beta_reduce
         rw [← (Finsupp.single i k + n).mul_prod_erase' i _ (fun i ↦ dp_zero (m := v i))]
         simp
       | add x y hxmem hymem hx hy =>

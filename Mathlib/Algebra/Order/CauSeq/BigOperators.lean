@@ -42,7 +42,7 @@ lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
   clear this hi₂ hi₁ hi ε0 ε hg sub_le
   rw [tsub_eq_iff_eq_add_of_le ji] at hk
   rw [hk]
-  dsimp only
+  beta_reduce
   clear hk ji j
   induction k with
   | zero => simp [abv_zero abv]

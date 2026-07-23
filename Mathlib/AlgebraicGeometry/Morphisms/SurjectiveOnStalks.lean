@@ -183,7 +183,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     refine ⟨(pullbackFstFstIso _ _ _ _ _ _ (𝒰.f i.1) ?_ ?_).hom z, ?_⟩
     · simp [pullback.condition]
     · simp [pullback.condition]
-    · dsimp only
+    · beta_reduce
       rw [← hx₁', ← hz, ← Scheme.Hom.comp_apply]
       erw [← Scheme.Hom.comp_apply]
       congr 5

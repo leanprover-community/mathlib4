@@ -498,7 +498,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
       Classical.not_not] at hfi
     have : ∫⁻ a : α, ENNReal.ofReal (f a) ∂μ = ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ := by
       refine lintegral_congr_ae (hf.mono fun a h => ?_)
-      dsimp only
+      beta_reduce
       rw [Real.norm_eq_abs, abs_of_nonneg h]
     rw [this, hfi, toReal_top]
 

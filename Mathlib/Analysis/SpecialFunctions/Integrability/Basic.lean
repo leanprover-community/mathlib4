@@ -146,7 +146,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
       · rw [← intervalIntegrable_iff]; exact intervalIntegral.intervalIntegrable_rpow' h
       · intro x hx
         rw [uIoc_of_le hc] at hx
-        dsimp only
+        beta_reduce
         rw [Complex.norm_cpow_eq_rpow_re_of_pos hx.1]
       · exact measurableSet_uIoc
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_uIoc
@@ -165,7 +165,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
     instantiation order leads to a term with a beta redex.
     https://github.com/leanprover/lean4/pull/13762
     This will be removed once app elaboration itself does beta reduction. -/
-    dsimp only
+    beta_reduce
     have : -x ≤ 0 := by linarith [hx.1]
     rw [Complex.ofReal_cpow_of_nonpos this, mul_comm]
     simp

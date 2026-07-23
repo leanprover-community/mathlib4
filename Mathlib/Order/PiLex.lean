@@ -307,7 +307,7 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
     classical
       refine ⟨Function.update a₂ _ a, ⟨i, fun j hj => ?_, ?_⟩, i, fun j hj => ?_, ?_⟩
       · rw [h j hj]
-        dsimp only at hj
+        beta_reduce at hj
         rw [Function.update_of_ne hj.ne a]
       · rwa [Function.update_self i a]
       · rw [Function.update_of_ne hj.ne a]

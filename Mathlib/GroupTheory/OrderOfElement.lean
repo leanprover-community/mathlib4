@@ -836,7 +836,7 @@ attribute [to_additive existing] smul_eq_self_of_mem_zpowers
 lemma IsOfFinOrder.mem_powers_iff_mem_zpowers (hx : IsOfFinOrder x) :
     y ∈ powers x ↔ y ∈ zpowers x :=
   ⟨fun ⟨n, hn⟩ ↦ ⟨n, by simp_all⟩, fun ⟨i, hi⟩ ↦ ⟨(i % orderOf x).natAbs, by
-    dsimp only
+    beta_reduce
     rwa [← zpow_natCast, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <|
       Int.natCast_ne_zero_iff_pos.2 <| hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
 

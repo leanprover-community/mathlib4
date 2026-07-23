@@ -186,7 +186,7 @@ theorem factorization_div {d n : ℕ} (h : d ∣ n) :
   rcases eq_or_ne d 0 with (rfl | hd); · simp [zero_dvd_iff.mp h]
   rcases eq_or_ne n 0 with (rfl | hn); · simp [tsub_eq_zero_of_le]
   apply add_left_injective d.factorization
-  simp only
+  beta_reduce
   rw [tsub_add_cancel_of_le <| (Nat.factorization_le_iff_dvd hd hn).mpr h, ←
     Nat.factorization_mul (Nat.div_pos (Nat.le_of_dvd hn.bot_lt h) hd.bot_lt).ne' hd,
     Nat.div_mul_cancel h]

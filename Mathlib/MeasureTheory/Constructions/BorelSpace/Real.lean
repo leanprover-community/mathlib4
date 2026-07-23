@@ -73,7 +73,7 @@ theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
   rw [borel_eq_generateFrom_Ioi_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_) <;>
   rintro _ ⟨q, rfl⟩ <;>
-  dsimp only <;>
+  beta_reduce <;>
   [rw [← compl_Iic]; rw [← compl_Ioi]] <;>
   exact MeasurableSet.compl (GenerateMeasurable.basic _ (mem_range_self q))
 
@@ -81,7 +81,7 @@ theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
   rw [borel_eq_generateFrom_Iio_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_) <;>
   rintro _ ⟨q, rfl⟩ <;>
-  dsimp only <;>
+  beta_reduce <;>
   [rw [← compl_Ici]; rw [← compl_Iio]] <;>
   exact MeasurableSet.compl (GenerateMeasurable.basic _ (mem_range_self q))
 

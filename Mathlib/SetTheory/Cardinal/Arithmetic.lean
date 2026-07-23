@@ -778,7 +778,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
   apply Subtype.ext; ext x
   constructor
   · rintro ⟨y, h⟩
-    dsimp only at h
+    beta_reduce at h
     by_cases h' : ∃ z : s, g z = y
     · rw [dif_pos h'] at h
       cases Sum.inl.inj h
@@ -788,7 +788,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
   · intro h
     have : ∃ z : s, g z = g ⟨x, h⟩ := ⟨⟨x, h⟩, rfl⟩
     use g ⟨x, h⟩
-    dsimp only
+    beta_reduce
     rw [dif_pos this]
     congr
     suffices Classical.choose this = ⟨x, h⟩ from congr_arg Subtype.val this

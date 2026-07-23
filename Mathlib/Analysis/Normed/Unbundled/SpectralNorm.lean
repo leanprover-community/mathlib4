@@ -353,7 +353,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
         use f y
         intro r hr
         obtain ⟨z, hz⟩ := Set.mem_range.mpr hr
-        simp only at hz
+        beta_reduce at hz
         rw [← hz]
         split_ifs with h
         · exact hy_max _ h

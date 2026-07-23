@@ -719,7 +719,7 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
     { toFun := fun x => s • (g x : Y)
       map_add' := by
         intros
-        dsimp only
+        beta_reduce
         rw [map_add, smul_add] }
     (by
       intro r x

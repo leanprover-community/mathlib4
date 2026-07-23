@@ -434,7 +434,7 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ * A).rank = A.rank := by
   dsimp only [rank]
   refine add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) ?_
-  dsimp only
+  beta_reduce
   trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ * A)) } +
     finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ * A)) }
   · rw [ker_mulVecLin_conjTranspose_mul_self]
@@ -474,7 +474,7 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
 theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank := by
   dsimp only [rank]
   refine add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) ?_
-  dsimp only
+  beta_reduce
   trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᵀ * A)) } +
     finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᵀ * A)) }
   · rw [ker_mulVecLin_transpose_mul_self]

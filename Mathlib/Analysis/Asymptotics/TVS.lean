@@ -334,7 +334,7 @@ protected theorem _root_.Filter.HasBasis.isLittleOTVS_iff
   · rintro s t hsub ⟨V, hV₀, hV⟩
     exact ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
   · refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
-    simp only
+    beta_reduce
     gcongr
 
 protected theorem _root_.Filter.HasBasis.isBigOTVS_iff
@@ -367,7 +367,7 @@ theorem IsBigOTVS.of_egauge_le_mul [ContinuousConstSMul 𝕜 F] {ι} {p : ι →
   have hc₀ : c ≠ 0 := by rintro rfl; simp at hc
   refine ⟨c⁻¹ • V, (set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hV₀, ?_⟩
   refine hV.trans <| .of_forall fun x ↦ ?_
-  simp only
+  beta_reduce
   grw [hc]
   simp [egauge_smul_left, hc₀, enorm_eq_nnnorm, ENNReal.div_eq_inv_mul]
 
@@ -666,7 +666,7 @@ protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜; l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜; l] (fun x ↦ c x • g x) := by
   simp only [isLittleOTVS_iff] at *
   peel h with U hU V hV ε hε x hx
-  simp only at *
+  beta_reduce at *
   rw [egauge_smul_right, egauge_smul_right, mul_left_comm]
   · gcongr
   all_goals exact fun _ ↦ Filter.nonempty_of_mem ‹_›

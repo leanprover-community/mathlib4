@@ -492,7 +492,7 @@ consists of measurable sets depending only on coordinates `≤ i`. -/
 def piLE : @Filtration (Π i, X i) ι _ pi where
   seq i := pi.comap (restrictLe i)
   mono' i j hij := by
-    simp only
+    beta_reduce
     rw [← restrictLe₂_comp_restrictLe hij, ← comap_comp]
     exact comap_mono (measurable_restrictLe₂ _).comap_le
   le' i := (measurable_restrictLe i).comap_le
@@ -521,7 +521,7 @@ coordinates in `s`, where `s : Finset ι`. -/
 def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   seq s := pi.comap s.restrict
   mono' s t hst := by
-    simp only
+    beta_reduce
     rw [← restrict₂_comp_restrict hst, ← comap_comp]
     exact comap_mono (measurable_restrict₂ hst).comap_le
   le' s := s.measurable_restrict.comap_le

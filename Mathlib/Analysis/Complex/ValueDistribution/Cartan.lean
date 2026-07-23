@@ -125,7 +125,7 @@ theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_
   rw [circleAverage_congr_sphere (f₂ := fun _ ↦ log ‖meromorphicTrailingCoeffAt f 0‖),
     circleAverage_const]
   intro a ha
-  simp only
+  beta_reduce
   congr 2
   rw [(MeromorphicAt.const a 0).meromorphicTrailingCoeffAt_fun_sub_eq_left_of_lt]
   rw [meromorphicOrderAt_const]

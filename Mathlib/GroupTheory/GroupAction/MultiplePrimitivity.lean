@@ -197,7 +197,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
       rw [hst, isPreprimitive_fixingSubgroup_insert_iff]
       apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup _ n
       apply ENat.add_left_injective_of_ne_top ENat.one_ne_top
-      simp only
+      beta_reduce
       rw [← Nat.cast_one, ← Nat.cast_add, ← hs]
       apply congr_arg₂ _ _ rfl
       rw [show s = g⁻¹ • s' by simp [hs'],

@@ -155,7 +155,7 @@ theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
       else 0 := by
   rw [mul_eq_dfinsuppSum]
   iterate 2 rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]; congr; ext
-  dsimp only
+  beta_reduce
   split_ifs with h
   · subst h
     rw [of_eq_same]

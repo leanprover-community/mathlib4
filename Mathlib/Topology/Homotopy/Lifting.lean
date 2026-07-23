@@ -253,7 +253,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
     exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
     exacts [eqOn ⟨hs.1, h⟩, q.proj_symm_apply' (t_sub ⟨le_of_not_ge h, hs.2⟩)]
-  · dsimp only; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]
+  · beta_reduce; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]
 
 /-- The lift of a path to a covering space given a lift of the left endpoint. -/
 def liftPath : C(I, E) := (cov.exists_path_lifts γ e γ_0).choose
@@ -458,7 +458,7 @@ theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
 lemma injective_path_homotopic_map (e₀ e₁ : E) :
     Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.map ⟨p, cov.continuous⟩ := by
   refine Quotient.ind₂ fun γ₀ γ₁ ↦ ?_
-  dsimp only
+  beta_reduce
   simp only [Path.Homotopic.Quotient.mk''_eq_mk]
   simp_rw [← Path.Homotopic.Quotient.mk_map]
   iterate 2 rw [Path.Homotopic.Quotient.eq]

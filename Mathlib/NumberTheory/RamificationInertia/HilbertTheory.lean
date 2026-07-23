@@ -193,7 +193,7 @@ theorem IsDecompositionField.rank_right [IsGalois K L] [Algebra K D] [IsScalarTo
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
   have : FiniteDimensional D L := FiniteDimensional.right K D L
   refine mul_left_injective₀ (b := Module.finrank D L) Module.finrank_pos.ne' ?_
-  dsimp only
+  beta_reduce
   rw [Module.finrank_mul_finrank, rank_left A K L P D hp,
     ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B Gal(L/K),
     IsGaloisGroup.card_eq_finrank Gal(L/K) K L]
@@ -218,7 +218,7 @@ theorem IsInertiaField.rank_right [IsGalois K L] [Algebra K E] [IsScalarTower K 
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
   have : FiniteDimensional E L := FiniteDimensional.right K E L
   refine mul_left_injective₀ (b := Module.finrank E L) Module.finrank_pos.ne' ?_
-  dsimp only
+  beta_reduce
   rw [Module.finrank_mul_finrank, rank_left A K L P E hp, mul_assoc, mul_comm (p.inertiaDegIn B),
     ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B Gal(L/K),
     IsGaloisGroup.card_eq_finrank Gal(L/K) K L]

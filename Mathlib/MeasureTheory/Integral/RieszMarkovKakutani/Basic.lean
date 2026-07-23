@@ -335,7 +335,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
   apply le_trans _ hg.2.le
   apply monotone_of_nnreal Λ
   intro x
-  simp only
+  beta_reduce
   by_cases hx : x ∈ tsupport f
   · exact le_trans (hf x) (hg.1 x (Set.mem_of_subset_of_mem h hx))
   · rw [image_eq_zero_of_notMem_tsupport hx]

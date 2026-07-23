@@ -528,7 +528,7 @@ theorem of_forall_isConj [IsGalois ℚ K] {σ : Gal(K/ℚ)}
   let L := (FixedPoints.intermediateField (Subgroup.zpowers σ) : IntermediateField ℚ K)
   have : IsTotallyReal L := ⟨fun w ↦ by
     obtain ⟨W, rfl⟩ := w.comap_surjective (K := K)
-    dsimp only
+    beta_reduce
     rw [← mk_embedding W, comap_mk, isReal_mk_iff]
     exact ComplexEmbedding.IsConj.isReal_comp
      (σ := IsGaloisGroup.mulEquivAlgEquiv (Subgroup.zpowers σ) L K ⟨σ, Subgroup.mem_zpowers σ⟩)
