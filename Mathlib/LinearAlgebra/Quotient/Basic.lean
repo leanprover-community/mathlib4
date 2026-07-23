@@ -330,14 +330,14 @@ variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R�
 and `f : M ≃ₛₗ[σ] N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
 def Quotient.equiv (f : M ≃ₛₗ[σ₁₂] N) (hf : P.map (f : M →ₛₗ[σ₁₂] N) = Q) :
     (M ⧸ P) ≃ₛₗ[σ₁₂] N ⧸ Q where
-  __ := P.mapQ Q (f : M →ₛₗ[σ₁₂] N) (by simp [← hf, ← map_le_iff_le_comap])
-  invFun := Q.mapQ P (f.symm : N →ₛₗ[σ₂₁] M) (by simp [← hf, map_equiv_eq_comap_symm])
+  __ := P.mapQ Q (f : M →ₛₗ[σ₁₂] N) (map_le_iff_le_comap.mp hf.le)
+  invFun := Q.mapQ P (f.symm : N →ₛₗ[σ₂₁] M) (hf.symm.trans (map_equiv_eq_comap_symm f _)).le
   left_inv x := Quotient.induction_on _ x (by simp)
   right_inv x := Quotient.induction_on _ x (by simp)
 
 @[simp]
 lemma Quotient.equiv_apply (f : M ≃ₛₗ[σ₁₂] N) (hf : P.map (f : M →ₛₗ[σ₁₂] N) = Q) (a : M ⧸ P) :
-    equiv P Q f hf a = P.mapQ Q (f : M →ₛₗ[σ₁₂] N) (by simp [← hf, ← map_le_iff_le_comap]) a :=
+    equiv P Q f hf a = P.mapQ Q (f : M →ₛₗ[σ₁₂] N) (map_le_iff_le_comap.mp hf.le) a :=
   rfl
 
 @[simp]
