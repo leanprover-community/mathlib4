@@ -1897,6 +1897,7 @@ public import Mathlib.Analysis.Complex.OpenMapping
 public import Mathlib.Analysis.Complex.OperatorNorm
 public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.Complex.Periodic
+public import Mathlib.Analysis.Complex.TriangleEquality
 public import Mathlib.Analysis.Complex.PhragmenLindelof
 public import Mathlib.Analysis.Complex.Poisson
 public import Mathlib.Analysis.Complex.Polynomial.Basic
