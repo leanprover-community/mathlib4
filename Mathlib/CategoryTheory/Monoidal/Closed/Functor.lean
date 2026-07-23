@@ -139,7 +139,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     conjugateEquiv (h.comp (ihom.adjunction A)) ((ihom.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A).natTrans = (expComparison F A).natTrans := by
-  unfold expComparison frobeniusMorphism
+  unfold frobeniusMorphism
   have conjeq := iterated_mateEquiv_conjugateEquiv h h
     (ihom.adjunction (F.obj A)) (ihom.adjunction A)
     (prodComparisonNatTrans L (F.obj A) ≫
