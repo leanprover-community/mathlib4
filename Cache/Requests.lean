@@ -6,7 +6,9 @@ Authors: Arthur Paulino, Marcelo Lynch
 
 import Cache.Hashing
 import Cache.Infra
+import Cache.TerminalSize
 import Lake.Load.Manifest
+import Init.Data.List.Basic
 
 namespace Cache.Requests
 
@@ -539,12 +541,42 @@ the upload path skips it, reads don't.
 def isAlreadyPresentStatus (httpCode : Nat) : Bool :=
   httpCode == 409 || httpCode == 412
 
+/-- Cause clearing of the last `n` lines in a terminal, by appending the corresponding ANSI
+control sequences to `msg`. This will only have the desired effect if the string is written to
+a terminal supporting these.
+
+This will leave the cursor at the beginning of the current line. -/
+def clear_last_lines (n : Nat) (msg : String) : String := Id.run do
+  let mut out := msg
+  -- Move the cursor up by `n` lines.
+  out := out ++ s!"\x1b[{n}A"
+  -- Then, `n` times, clear the current line and move the cursor down one line.
+  for _ in List.range n do
+    out := out ++ "\x1b[2K\x1b[1B"
+  -- Move the cursor up by `n` lines: otherwise, the terminal will accumulate blank lines.
+  out := out ++ s!"\x1b[{n}A"
+  return out
+
+def aux (n : Nat) (msg : String) : String :=
+  -- Move the cursor up by n positions.
+  -- Then, `n` times, clear the current line and move the cursor down one line.
+  ((List.range n).map (fun _ ↦ "\x1b[2K\x1b[1B") |>.foldl String.append (msg ++ s!"\x1b[{n}A")) ++ s!"\x1b[{n}A"
+#guard aux 1 "foo" == clear_last_lines 1 "foo"
+#guard aux 37 "bar" == clear_last_lines 37 "bar"
+
 def monitorCurl (args : Array String) (size : Nat)
     (caption : String) (speedVar : String) (removeOnError := false)
     (decompConfig : Option DecompConfig := none)
     (treatForbiddenAsMiss : Bool := false)
     (treatExistsAsSkip : Bool := false) : IO (TransferState × Std.HashSet UInt64) := do
   let useAnsi := (← IO.getEnv "TERM").isSome
+  let terminalSize? ← getWindowSize
+  if terminalSize? == .none then
+    IO.println "warning: no terminal detected (stdin isn't a tty, or stty is missing)\
+      If cache output lines are longer than this terminal, output will only be partially cleared"
+  let terminalWidth : Option Nat := match terminalSize? with
+    | some (w, _h) => w
+    | none        => none
   -- Hashes of the files this pass fetched, used to decide what the next
   -- container in the chain still needs to retry.
   let servedRef ← IO.mkRef (∅ : Std.HashSet UInt64)
@@ -561,8 +593,13 @@ def monitorCurl (args : Array String) (size : Nat)
         msg := msg ++ s!" ({s.decompFailed} failed)"
     if s.failed != 0 then
       msg := msg ++ s!", {s.failed} download failed"
-    -- Clear to end of line to avoid remnants from longer previous messages
+    -- Clear to end of line to avoid remnants from longer previous messages.
     if useAnsi then
+      -- If the current line is longer than the terminal width, we overflowed onto several lines:
+      -- also clear previous lines.
+      if let some w := terminalWidth then
+        if msg.length >= w - 1 then -- TODO check for off-by-two or so!
+          msg := clear_last_lines ((msg.length)/ w) msg
       msg := msg ++ "\x1b[K"
     return msg
   let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
