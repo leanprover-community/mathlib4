@@ -10,6 +10,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Data.Set.MulAntidiagonal
 
 /-!
@@ -34,6 +35,8 @@ The `mul/add` distinction refers to the index monoid `M`: multiplicative sums ov
 * `mulFiber x`: the fiber of multiplication at `x`, all pairs `(a, b)` with `a * b = x`.
 * `convolution L f g`: the discrete convolution
   `(f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1) (g ab.2)`.
+* `delta e`: the function supported at the identity with value `e` there.
+* `ringConvolution f g`: convolution using multiplication to combine the values of `f` and `g`.
 * `ConvolutionExistsAt L f g x`: the convolution sum is summable at `x`.
 * `ConvolutionExists L f g`: the convolution sum is summable at every point.
 
@@ -45,6 +48,12 @@ The `mul/add` distinction refers to the index monoid `M`: multiplicative sums ov
 * `ConvolutionExistsAt.smul_convolution`, `ConvolutionExistsAt.convolution_smul`:
   scalar multiplication
 * `convolution_comm`: commutativity for symmetric bilinear maps over commutative monoids
+* `convolution_eq_sum_mulAntidiagonal`: finite-sum formula when the index monoid has
+  `Finset.HasMulAntidiagonal`
+* `delta_ringConvolution`, `ringConvolution_delta`: identity laws for multiplication convolution
+* `ringConvolution_add`, `add_ringConvolution`: distributivity over addition
+* `smul_ringConvolution`, `ringConvolution_smul`: external scalar multiplication
+* `ringConvolution_comm`: commutativity when both the indices and values are commutative
 
 ## Notation
 
@@ -52,6 +61,8 @@ The `mul/add` distinction refers to the index monoid `M`: multiplicative sums ov
 |--------------|-------------------------------------------------|
 | `f ⋆[L] g`   | `∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)`   |
 | `f ⋆₊[L] g`  | `∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2)`   |
+| `f ⋆ᵣ g`     | `ringConvolution f g`                           |
+| `f ⋆ᵣ₊ g`    | `addRingConvolution f g`                        |
 
 Precedence design: `f:68` and `g:67` gives right associativity (`f ⋆ g ⋆ h` parses as
 `f ⋆ (g ⋆ h)`), matching function composition `∘` and `MeasureTheory.convolution`.
@@ -152,16 +163,23 @@ variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCo
 variable [Module S E] [Module S E'] [Module S F]
 variable [TopologicalSpace F]
 
-/-- The convolution of `f` and `g` with bilinear map `L` exists at `x` when the sum over
-the fiber is summable. -/
+/-- The fiber sum defining the convolution of `f` and `g` with bilinear map `L` at `x` is
+summable. -/
 @[to_additive (dont_translate := S E E' F) AddConvolutionExistsAt
-  /-- Additive convolution exists at `x` when the fiber sum is summable. -/]
+  /-- The fiber sum defining the additive convolution of `f` and `g` with bilinear map `L` at `x`
+  is summable. -/]
 def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) : Prop :=
   Summable fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2)
 
-/-- The convolution of `f` and `g` with bilinear map `L` exists when it exists at every point. -/
+/-- The fiber sum defining the convolution of `f` and `g` with bilinear map `L` is summable at
+every point.
+
+This does not assert that the resulting function `convolution L f g` is summable over `M`. -/
 @[to_additive (dont_translate := S E E' F) AddConvolutionExists
-  /-- Additive convolution exists when it exists at every point. -/]
+  /-- The fiber sum defining the additive convolution of `f` and `g` with bilinear map `L` is
+  summable at every point.
+
+  This does not assert that the resulting function `addConvolution L f g` is summable over `M`. -/]
 def ConvolutionExists (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : Prop :=
   ∀ x, ConvolutionExistsAt L f g x
 
@@ -210,6 +228,51 @@ lemma ConvolutionExistsAt.convolution_smul {c : S} {f : M → E} {g : M → E'} 
 
 end ExistenceProperties
 
+/-! ### Finite Multiplication Fibers -/
+
+section HasMulAntidiagonal
+
+variable [Monoid M] [Finset.HasMulAntidiagonal M]
+
+@[to_additive]
+private lemma mulFiber_eq_mulAntidiagonal (x : M) :
+    mulFiber x = ↑(Finset.mulAntidiagonal x) := by
+  ext ab
+  simp only [Finset.mem_coe, Finset.mem_mulAntidiagonal, mem_mulFiber]
+
+/-- Multiplication fibers are finite when the index monoid has finite mulAntidiagonals. -/
+@[to_additive
+  /-- Addition fibers are finite when the index monoid has finite antidiagonals. -/]
+lemma mulFiber_finite (x : M) : (mulFiber x).Finite := by
+  rw [mulFiber_eq_mulAntidiagonal]
+  exact Finset.finite_toSet _
+
+variable [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Module S E] [Module S E'] [Module S F] [TopologicalSpace F]
+
+/-- Convolution is a finite sum when the index monoid has finite mulAntidiagonals. -/
+@[to_additive (dont_translate := S E E' F) addConvolution_eq_sum_antidiagonal
+  /-- Additive convolution is a finite sum when the index monoid has finite antidiagonals. -/]
+lemma convolution_eq_sum_mulAntidiagonal
+    (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
+    (f ⋆[L] g) x = ∑ ab ∈ Finset.mulAntidiagonal x, L (f ab.1) (g ab.2) := by
+  rw [convolution, ← Finset.tsum_subtype]
+  exact (Equiv.setCongr (mulFiber_eq_mulAntidiagonal x)).tsum_eq
+    (fun ab => L (f ab.1.1) (g ab.1.2))
+
+/-- Convolution exists whenever the index monoid has finite mulAntidiagonals. -/
+@[to_additive (dont_translate := S E E' F) addConvolutionExists_of_hasAntidiagonal
+  /-- Additive convolution exists whenever the index monoid has finite antidiagonals. -/]
+lemma convolutionExists_of_hasMulAntidiagonal
+    (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') :
+    ConvolutionExists L f g := by
+  intro x
+  change Summable (fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2))
+  simpa only [Function.comp_def] using
+    (mulFiber_finite x).summable (fun ab : M × M => L (f ab.1) (g ab.2))
+
+end HasMulAntidiagonal
+
 /-! ### Commutativity -/
 
 section CommMonoid
@@ -231,6 +294,160 @@ theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : �
   congr 1; funext ⟨⟨a, b⟩, _⟩; exact hL (f b) (g a)
 
 end CommMonoid
+
+/-! ### Delta Functions -/
+
+section Delta
+
+variable [One M] [Zero E]
+
+/-- The function supported at the multiplicative identity with value `e` there. -/
+@[to_additive addDelta
+  /-- The function supported at the additive identity with value `e` there. -/]
+def delta (e : E) : M → E :=
+  Set.indicator {1} fun _ => e
+
+end Delta
+
+/-! ### Convolution with Multiplication -/
+
+section RingConvolution
+
+variable [NonUnitalNonAssocSemiring R]
+
+/-- Multiplication as an `ℕ`-bilinear map. -/
+def mulLinearMap : R →ₗ[ℕ] R →ₗ[ℕ] R :=
+  LinearMap.mk₂ ℕ (· * ·) add_mul
+    (fun n a b => by simpa using (AddMonoidHom.mulRight b).map_nsmul n a)
+    mul_add
+    (fun n a b => by simpa using (AddMonoidHom.mulLeft a).map_nsmul n b)
+
+@[simp]
+lemma mulLinearMap_apply (a b : R) : mulLinearMap a b = a * b := rfl
+
+variable [Monoid M] [TopologicalSpace R]
+
+/-- The discrete convolution of two functions using multiplication to combine their values. -/
+@[to_additive (dont_translate := R) addRingConvolution
+  /-- The additive-index convolution using multiplication to combine values. -/]
+def ringConvolution (f g : M → R) : M → R :=
+  convolution mulLinearMap f g
+
+/-- Notation for convolution using multiplication to combine values. -/
+scoped notation:67 f:68 " ⋆ᵣ " g:67 => ringConvolution f g
+
+/-- Notation for additive-index convolution using multiplication to combine values. -/
+scoped notation:67 f:68 " ⋆ᵣ₊ " g:67 => addRingConvolution f g
+
+@[to_additive (dont_translate := R) (attr := simp) addRingConvolution_apply]
+lemma ringConvolution_apply (f g : M → R) (x : M) :
+    ringConvolution f g x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
+
+@[to_additive (dont_translate := R) (attr := simp) zero_addRingConvolution]
+lemma zero_ringConvolution (f : M → R) :
+    ringConvolution (0 : M → R) f = 0 := by
+  simpa only [ringConvolution] using zero_convolution mulLinearMap f
+
+@[to_additive (dont_translate := R) (attr := simp) addRingConvolution_zero]
+lemma ringConvolution_zero (f : M → R) :
+    ringConvolution f (0 : M → R) = 0 := by
+  simpa only [ringConvolution] using convolution_zero mulLinearMap f
+
+end RingConvolution
+
+section RingConvolutionIdentity
+
+variable [Monoid M] [NonAssocSemiring R] [TopologicalSpace R]
+
+@[to_additive (dont_translate := R) (attr := simp) addDelta_addRingConvolution]
+lemma delta_ringConvolution (f : M → R) :
+    ringConvolution (delta 1) f = f := by
+  simpa only [ringConvolution, delta] using
+    convolution_indicator_one_left mulLinearMap (1 : R) f
+      (fun y => by simp only [mulLinearMap_apply, one_mul])
+
+@[to_additive (dont_translate := R) (attr := simp) addRingConvolution_addDelta]
+lemma ringConvolution_delta (f : M → R) :
+    ringConvolution f (delta 1) = f := by
+  simpa only [ringConvolution, delta] using
+    convolution_indicator_one_right mulLinearMap f (1 : R)
+      (fun y => by simp only [mulLinearMap_apply, mul_one])
+
+end RingConvolutionIdentity
+
+section RingConvolutionDistributivity
+
+variable [Monoid M] [NonUnitalNonAssocSemiring R]
+variable [TopologicalSpace R] [T2Space R] [ContinuousAdd R]
+
+@[to_additive (dont_translate := R) addRingConvolution_add]
+lemma ringConvolution_add (f g h : M → R)
+    (hfg : ConvolutionExists mulLinearMap f g) (hfh : ConvolutionExists mulLinearMap f h) :
+    ringConvolution f (g + h) = ringConvolution f g + ringConvolution f h := by
+  simpa only [ringConvolution] using hfg.distrib_add mulLinearMap hfh
+
+@[to_additive (dont_translate := R) add_addRingConvolution]
+lemma add_ringConvolution (f g h : M → R)
+    (hfh : ConvolutionExists mulLinearMap f h) (hgh : ConvolutionExists mulLinearMap g h) :
+    ringConvolution (f + g) h = ringConvolution f h + ringConvolution g h := by
+  simpa only [ringConvolution] using hfh.add_distrib mulLinearMap hgh
+
+end RingConvolutionDistributivity
+
+section RingConvolutionScalar
+
+variable [Monoid M] [NonUnitalNonAssocSemiring R] [DistribSMul S R]
+variable [TopologicalSpace R] [T2Space R] [ContinuousConstSMul S R]
+
+/-- External scalar multiplication in the first factor commutes with convolution. -/
+@[to_additive (dont_translate := S R) smul_addRingConvolution]
+lemma smul_ringConvolution [IsScalarTower S R R] (c : S) (f g : M → R)
+    (hfg : ConvolutionExists mulLinearMap f g) :
+    ringConvolution (c • f) g = c • ringConvolution f g := by
+  ext x
+  simp only [ringConvolution_apply, Pi.smul_apply]
+  simp_rw [smul_mul_assoc]
+  simpa only [mulLinearMap_apply] using (hfg x).tsum_const_smul c
+
+/-- External scalar multiplication in the second factor commutes with convolution. -/
+@[to_additive (dont_translate := S R) addRingConvolution_smul]
+lemma ringConvolution_smul [SMulCommClass S R R] (c : S) (f g : M → R)
+    (hfg : ConvolutionExists mulLinearMap f g) :
+    ringConvolution f (c • g) = c • ringConvolution f g := by
+  ext x
+  simp only [ringConvolution_apply, Pi.smul_apply]
+  simp_rw [mul_smul_comm]
+  simpa only [mulLinearMap_apply] using (hfg x).tsum_const_smul c
+
+end RingConvolutionScalar
+
+section RingConvolutionCommutativity
+
+variable [CommMonoid M] [NonUnitalNonAssocCommSemiring R] [TopologicalSpace R]
+
+@[to_additive (dont_translate := R) addRingConvolution_comm]
+lemma ringConvolution_comm (f g : M → R) :
+    ringConvolution f g = ringConvolution g f := by
+  simpa only [ringConvolution] using
+    convolution_comm mulLinearMap f g
+      (fun x y => by simp only [mulLinearMap_apply, mul_comm])
+
+end RingConvolutionCommutativity
+
+section RingConvolutionFinite
+
+variable [Monoid M] [NonUnitalNonAssocSemiring R] [TopologicalSpace R]
+variable [Finset.HasMulAntidiagonal M]
+
+/-- Multiplication convolution as a finite sum over the mulAntidiagonal. -/
+@[to_additive (dont_translate := R) addRingConvolution_eq_sum_antidiagonal
+  /-- Additive-index multiplication convolution as a finite sum over the antidiagonal. -/]
+lemma ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
+    ringConvolution f g x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 := by
+  simpa only [ringConvolution, mulLinearMap_apply] using
+    convolution_eq_sum_mulAntidiagonal mulLinearMap f g x
+
+end RingConvolutionFinite
 
 end DiscreteConvolution
 
