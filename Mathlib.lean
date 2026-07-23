@@ -822,6 +822,7 @@ public import Mathlib.Algebra.Module.Presentation.Differentials
 public import Mathlib.Algebra.Module.Presentation.DirectSum
 public import Mathlib.Algebra.Module.Presentation.Finite
 public import Mathlib.Algebra.Module.Presentation.Free
+public import Mathlib.Algebra.Module.Presentation.PiTensor
 public import Mathlib.Algebra.Module.Presentation.RestrictScalars
 public import Mathlib.Algebra.Module.Presentation.Tautological
 public import Mathlib.Algebra.Module.Presentation.Tensor
