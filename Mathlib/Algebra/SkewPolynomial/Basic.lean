@@ -139,15 +139,15 @@ lemma notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 /-- `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`. -/
 def sum {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) : S :=
-  SkewMonoidAlgebra.sum p (fun n r ↦ f (toAdd n : ℕ) r)
+  (SkewMonoidAlgebra.coeff p).sum fun n r ↦ f (toAdd n : ℕ) r
 
-/-- For a skew polynomial `p`, `p.sum f` can be written in terms of `SkewMonoidAlgebra.sum p`. -/
+/-- For a skew polynomial `p`, `p.sum f` can be written in terms of `Finsupp.sum`. -/
 lemma sum_def' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
-    p.sum f = SkewMonoidAlgebra.sum p (fun n r ↦ f (toAdd n : ℕ) r) := rfl
+    p.sum f = (SkewMonoidAlgebra.coeff p).sum fun n r ↦ f (toAdd n : ℕ) r := rfl
 
 lemma sum_def {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) := by
-  simp only [sum_def', SkewMonoidAlgebra.sum_def, Finsupp.sum]
+  simp only [sum_def', Finsupp.sum]
   apply Finset.sum_of_injOn (toAdd) (Injective.injOn fun ⦃a₁ a₂⦄ a ↦ a) (fun _ ↦ ?_) <;>
   simp +contextual [coeff]
 
@@ -156,13 +156,12 @@ lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']
     (h_zero : ∀ (a : ℕ), h a 0 = 0)
     (h_add : ∀ (a : ℕ) (b₁ b₂ : R'), h a (b₁ + b₂) = h a b₁ + h a b₂) :
     sum (sum f g) h = sum f fun (a : ℕ) (b : R) ↦ sum (g a b) h := by
-  simp only [sum_def', SkewMonoidAlgebra.sum_sum_index (fun a ↦ h_zero (toAdd a))
-    (fun a ↦ h_add (toAdd a))]
+  simp [sum_def', Finsupp.sum_sum_index, h_zero, h_add]
 
 @[simp]
 lemma sum_zero {N : Type*} [AddCommMonoid N] {f : SkewPolynomial R} :
     (f.sum fun (_ : ℕ) _ ↦ (0 : N)) = 0 :=
-  SkewMonoidAlgebra.sum_zero
+  Finsupp.sum_fun_zero _
 
 section Monomial
 
@@ -186,12 +185,11 @@ lemma smul_monomial {S} [Semiring S] [Module S R] (a : S) (b : R) :
 
 @[simp]
 lemma sum_monomial (f : SkewPolynomial R) : f.sum (fun (a : ℕ) ↦ monomial a) = f :=
-  SkewMonoidAlgebra.sum_single _
+  sum_coeff_single _
 
 @[simp]
 lemma sum_monomial_index {N} [AddCommMonoid N] {n : ℕ} {b : R} {h : ℕ → R → N}
-    (h_zero : h n 0 = 0) : (monomial n b).sum h = h n b :=
-  SkewMonoidAlgebra.sum_single_index h_zero
+    (h_zero : h n 0 = 0) : (monomial n b).sum h = h n b := by simp [sum, monomial, lsingle, *]
 
 lemma monomial_injective : Function.Injective (monomial n : R → SkewPolynomial R) :=
   single_injective (ofAdd n)
@@ -240,8 +238,7 @@ lemma monomial_mul_monomial [MulSemiringAction (Multiplicative ℕ) R] (n m : �
 lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R] : f * g =
     f.sum fun (a₁ : ℕ) b₁ ↦ g.sum fun (a₂ : ℕ) b₂ ↦ monomial (a₁ + a₂) (b₁ * φ^[a₁] b₂) := by
   ext
-  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, SkewMonoidAlgebra.coeff_sum']
-  simp [SkewMonoidAlgebra.sum, Finsupp.single_apply]
+  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, Finsupp.single_apply]
 
 section Constant
 
@@ -259,8 +256,8 @@ lemma C_add : C (a + b) = C a + C b := C.map_add a b
 lemma C_1 : C (1 : R) = 1 := rfl
 
 @[simp]
-lemma sum_C_index {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) :
-  (C a).sum f = f 0 a := sum_single_index h
+lemma sum_C_index {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) : (C a).sum f = f 0 a := by
+  simp [C, sum, h]
 
 section RingHom
 
@@ -555,8 +552,8 @@ lemma sum_X_index {f : ℕ → R → S} (hf : f 1 0 = 0) : (X : SkewPolynomial R
 lemma sum_add_index (p q : SkewPolynomial R) (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0)
     (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
     (p + q).sum f = p.sum f + q.sum f := by
-  simp only [sum_def']
-  exact SkewMonoidAlgebra.sum_add_index (fun n _ ↦ hf (toAdd n)) (fun n _ ↦ h_add (toAdd n))
+  simp only [sum_def', coeff_add]
+  exact Finsupp.sum_add_index (fun n _ ↦ hf (toAdd n)) (fun n _ ↦ h_add (toAdd n))
 
 /-- See also `SkewPolynomial.sum_add`. -/
 @[simp]
