@@ -5,6 +5,7 @@ Authors: Chris Hughes, Thomas Browning, Snir Broshi
 -/
 module
 
+public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
@@ -50,15 +51,37 @@ theorem of_card_dvd_pow {n : ℕ} (hG : Nat.card G ∣ p ^ n) : IsPGroup p G := 
   refine fun g ↦ ⟨n, ?_⟩
   grw [← orderOf_dvd_iff_pow_eq_one, ← hG, orderOf_dvd_natCard]
 
+theorem _root_.isPGroup_iff_exists_orderOf_dvd_pow [Finite G] :
+    IsPGroup p G ↔ ∃ k, ∀ g : G, orderOf g ∣ p ^ k := by
+  refine isPGroup_iff_orderOf_dvd_pow.trans ⟨fun h ↦ ?_, fun ⟨k, hk⟩ ↦ fun g ↦ ⟨k, hk g⟩⟩
+  choose k hk using h
+  obtain ⟨g₀, hg₀⟩ := Finite.exists_max k
+  exact ⟨k g₀, fun g ↦ (hk g).trans (pow_dvd_pow p (hg₀ g))⟩
+
+theorem _root_.isPGroup_iff_exists_pow_pow_eq_one [Finite G] :
+    IsPGroup p G ↔ ∃ k, ∀ g : G, g ^ p ^ k = 1 := by
+  simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, orderOf_dvd_iff_pow_eq_one]
+
+theorem of_exponent_dvd_pow {n : ℕ} (h : Monoid.exponent G ∣ p ^ n) : IsPGroup p G :=
+  fun g ↦ ⟨n, Monoid.exponent_dvd_iff_forall_pow_eq_one.mp h g⟩
+
+theorem _root_.isPGroup_iff_exponent_dvd_pow [Finite G] :
+    IsPGroup p G ↔ ∃ n, Monoid.exponent G ∣ p ^ n := by
+  simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, Monoid.exponent_dvd]
+
+alias ⟨exists_exponent_dvd_pow, _⟩ := isPGroup_iff_exponent_dvd_pow
+
+theorem _root_.isPGroup_iff_exponent_eq_pow [Finite G] [Fact p.Prime] :
+    IsPGroup p G ↔ ∃ n, Monoid.exponent G = p ^ n := by
+  simp_rw [isPGroup_iff_exponent_dvd_pow, Nat.dvd_prime_pow Fact.out]
+  exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
+
+alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_iff_exponent_eq_pow
+
 theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
-  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card_dvd_pow hn⟩
-  rcases eq_or_ne p 0 with rfl | hp
-  · exact ⟨1, by simp⟩
-  refine ⟨Nat.card G, Nat.dvd_pow_self_iff NeZero.out hp |>.mpr fun q hq ↦ ?_⟩
-  have ⟨hqp, hqdvd, _⟩ := Nat.mem_primeFactors.mp hq
-  have ⟨g, hg⟩ := exists_prime_orderOf_dvd_card' q (hp := ⟨hqp⟩) hqdvd
-  have ⟨k, hk⟩ := h.exists_orderOf_dvd_pow g
-  exact Nat.mem_primeFactors.mpr ⟨hqp, hqp.dvd_of_dvd_pow <| hg ▸ hk, hp⟩
+  rw [isPGroup_iff_exponent_dvd_pow]
+  refine ⟨fun ⟨n, h⟩ ↦ ⟨n * Nat.card G, ?_⟩, .imp fun _ ↦ Group.exponent_dvd_nat_card.trans⟩
+  grw [Group.card_dvd_exponent_pow G, h, pow_mul]
 
 alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
 
@@ -104,36 +127,6 @@ theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.c
   exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
 
 alias ⟨exists_card_eq, _⟩ := iff_card
-
-theorem _root_.isPGroup_iff_exists_orderOf_dvd_pow [Finite G] :
-    IsPGroup p G ↔ ∃ k, ∀ g : G, orderOf g ∣ p ^ k := by
-  refine isPGroup_iff_orderOf_dvd_pow.trans ⟨fun h ↦ ?_, fun ⟨k, hk⟩ ↦ fun g ↦ ⟨k, hk g⟩⟩
-  choose k hk using h
-  have := Fintype.ofFinite G
-  have ⟨g, _, hg⟩ := Finset.exists_max_image .univ k Finset.univ_nonempty
-  refine ⟨k g, fun g' ↦ ?_⟩
-  grw [← Nat.pow_dvd_pow p <| hg g' <| Finset.mem_univ g']
-  exact hk g'
-
-theorem _root_.isPGroup_iff_exists_pow_pow_eq_one [Finite G] :
-    IsPGroup p G ↔ ∃ k, ∀ g : G, g ^ p ^ k = 1 := by
-  simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, orderOf_dvd_iff_pow_eq_one]
-
-theorem of_exponent_dvd_pow {n : ℕ} (h : Monoid.exponent G ∣ p ^ n) : IsPGroup p G :=
-  fun g ↦ ⟨n, Monoid.exponent_dvd_iff_forall_pow_eq_one.mp h g⟩
-
-theorem _root_.isPGroup_iff_exponent_dvd_pow [Finite G] :
-    IsPGroup p G ↔ ∃ n, Monoid.exponent G ∣ p ^ n := by
-  simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, Monoid.exponent_dvd]
-
-alias ⟨exists_exponent_dvd_pow, _⟩ := isPGroup_iff_exponent_dvd_pow
-
-theorem _root_.isPGroup_iff_exponent_eq_pow [Finite G] [Fact p.Prime] :
-    IsPGroup p G ↔ ∃ n, Monoid.exponent G = p ^ n := by
-  simp_rw [isPGroup_iff_exponent_dvd_pow, Nat.dvd_prime_pow Fact.out]
-  exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
-
-alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_iff_exponent_eq_pow
 
 theorem _root_.isPGroup_iff_isPGroup_prod_primeFactors (h : p ≠ 0) :
     IsPGroup p G ↔ IsPGroup (p.primeFactors.prod id) G :=
