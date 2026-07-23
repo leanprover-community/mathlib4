@@ -130,7 +130,7 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
   have : Fintype (SL(2, ℤ) ⧸ Γ) := Subgroup.fintypeQuotientOfFiniteIndex
   -- Now the conclusion is very simple.
   obtain ⟨C, hC⟩ := exists_bound_of_invariant_of_isBigO (by fun_prop) ht
-    (.sum fun i _ ↦ (hf'_infty i).norm_left)
+    (.fun_sum fun i _ ↦ (hf'_infty i).norm_left)
     (fun g τ ↦ (Fintype.sum_equiv (MulAction.toPerm g) _ _ (by simp [-sl_moeb, hf'_inv])).symm)
   refine ⟨C, fun τ ↦ le_trans ?_ (hC τ)⟩
   simpa [Real.norm_of_nonneg <| show 0 ≤ ∑ γ, ‖f' τ γ‖ by positivity, -sl_moeb, f'] using
