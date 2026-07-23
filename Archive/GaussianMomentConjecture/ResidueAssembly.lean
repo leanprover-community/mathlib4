@@ -83,4 +83,3 @@ theorem three_case_sum_ne_zero
   exact pow_ne_zero p hfaceSum
 
 end GMC2.ResidueAssembly
-

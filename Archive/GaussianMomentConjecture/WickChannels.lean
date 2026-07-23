@@ -202,4 +202,3 @@ theorem wick_expansion_balanced (P : MvPolynomial (Fin 2) ℂ) (m : ℕ) :
   rw [wt_of_charge_ne (hnot hr), mul_zero]
 
 end GMC2
-

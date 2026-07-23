@@ -164,4 +164,3 @@ theorem gmc2_of_crux (crux : SinglePolyCrux)
   GMC2.NC2.gmc2_of_dvdK1 (dvdK1_of_crux crux) P Q hnull
 
 end GMC2.DvdKUnivariateReduction
-

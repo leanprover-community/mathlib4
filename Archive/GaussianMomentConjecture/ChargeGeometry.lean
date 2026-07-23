@@ -101,4 +101,3 @@ theorem not_chargeOneSided_iff (P : MvPolynomial (Fin 2) ℂ) :
     exact ⟨⟨s, hs, by omega⟩, ⟨t, ht, by omega⟩⟩
 
 end GMC2
-

@@ -52,4 +52,3 @@ theorem monomial_pow_ne_const (a b : F) (ha : a ≠ 0) (N : ℕ) (hN : 1 ≤ N) 
   omega
 
 end GMC2.RatFuncClosing
-

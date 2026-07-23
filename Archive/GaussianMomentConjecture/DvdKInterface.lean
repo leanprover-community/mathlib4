@@ -49,4 +49,3 @@ theorem exists_nonzero_face_seed
   hDvdK ι q c hq hc hstraddle
 
 end GMC2.DvdKInterface
-

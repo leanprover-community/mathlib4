@@ -51,4 +51,3 @@ theorem exists_numberField_moment_null_point
     _ = 0 := hnull (m + 1) (by omega)
 
 end GMC2.NullconeDescent
-

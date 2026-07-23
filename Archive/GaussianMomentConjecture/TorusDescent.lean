@@ -167,4 +167,3 @@ theorem exists_numberField_torus_point_preserving_nonzero_of_complex_relations
 end
 
 end GMC2.TorusDescent
-

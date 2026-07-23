@@ -116,4 +116,3 @@ theorem gmc2_unconditional (P Q : MvPolynomial (Fin 2) ℂ)
   GMC2.DvdKUnivariateReduction.gmc2_of_crux singlePolyCrux_holds P Q hnull
 
 end GMC2.DvdKOmegaWiring
-

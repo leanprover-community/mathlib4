@@ -131,4 +131,3 @@ theorem exists_numberField_moment_point_preserving_lowest_face_seed
 end
 
 end GMC2.FaceSeedDescent
-

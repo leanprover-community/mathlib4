@@ -185,4 +185,3 @@ theorem charge_injective_on_face
     (hface i i.property) (hface j j.property) hq
 
 end GMC2.FrobeniusFace
-

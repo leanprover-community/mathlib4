@@ -80,4 +80,3 @@ theorem orbit_product_contradiction_abstract
   exact pow_monomial_eq_const_absurd c d hc _ _ hG heq
 
 end GMC2.OrbitProductWrapper
-

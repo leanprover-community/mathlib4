@@ -220,4 +220,3 @@ theorem off_face_base_channel_natural_height_gap
   omega
 
 end GMC2.FaceHeightFloor
-

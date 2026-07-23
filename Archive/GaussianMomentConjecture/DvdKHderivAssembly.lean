@@ -106,4 +106,3 @@ supplies the polynomial vanishing `D_m = 0`. This is a pure HahnSeries-single co
 analysis), left to the transpose owner to match the frame's exact coercion conventions. -/
 
 end GMC2.DvdKHderivAssembly
-

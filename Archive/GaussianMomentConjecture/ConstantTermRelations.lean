@@ -59,4 +59,3 @@ theorem aeval_constantTermRelation
   · simp
 
 end GMC2.ConstantTermRelations
-

@@ -283,4 +283,3 @@ theorem sum_map_dilation {A : Type*} [AddCommMonoid A]
   exact Finset.sum_map _ _ _
 
 end GMC2.ChannelDilation
-

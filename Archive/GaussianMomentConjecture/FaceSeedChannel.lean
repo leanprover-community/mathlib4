@@ -42,4 +42,3 @@ theorem exists_nonzero_balanced_channel
     exact (hterm rfl).elim
 
 end GMC2.FaceSeedChannel
-

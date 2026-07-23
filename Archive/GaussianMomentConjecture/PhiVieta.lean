@@ -148,4 +148,3 @@ theorem prod_rootSet_Phi (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hMd : M < R.natDeg
   rfl
 
 end GMC2.PhiVieta
-

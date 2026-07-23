@@ -164,4 +164,3 @@ theorem orbit_product_contradiction [IsPretransitive G Ω] [CommMonoid A] [MulDi
   hp (valuation_zero_of_prod_fixed f S x hf hfix v hv hC hG)
 
 end GMC2.OrbitProduct
-

@@ -104,4 +104,3 @@ theorem exists_nonzero_lowest_face_seed
   exact ⟨lambda, delta, F, m0, hm0, hsubset, hlower, hface, hseed⟩
 
 end GMC2.FaceSeed
-

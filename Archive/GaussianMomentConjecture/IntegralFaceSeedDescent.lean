@@ -133,4 +133,3 @@ theorem exists_finite_field_moment_point_seed
 end
 
 end GMC2.IntegralFaceSeedDescent
-

@@ -133,4 +133,3 @@ theorem xCoeff0_logDeriv_mul {φ ψ : PowerSeries (LaurentSeries F)}
   rw [logDeriv_mul hφ hψ, map_add]
 
 end GMC2.DvdKFrame
-

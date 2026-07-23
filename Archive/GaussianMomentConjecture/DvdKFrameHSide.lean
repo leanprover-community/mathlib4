@@ -69,4 +69,3 @@ theorem xCoeff0_logDeriv_map_ofPowerSeries {H : PowerSeries (PowerSeries F)} (hH
 end Disk
 
 end GMC2.DvdKFrameHSide
-

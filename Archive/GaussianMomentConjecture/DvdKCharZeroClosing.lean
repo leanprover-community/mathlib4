@@ -57,4 +57,3 @@ theorem factorCoeff0_eq_of_unit_eq_one {P₀ g rhs : PowerSeries F}
   rwa [hg, mul_one] at hfact
 
 end GMC2.DvdKCharZeroClosing
-

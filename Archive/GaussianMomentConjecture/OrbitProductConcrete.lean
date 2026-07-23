@@ -55,4 +55,3 @@ theorem orbit_product_contradiction_concrete
     (c := c) (d := d) (hc := hc) (hS := hS) (hΩ := hΩ)
 
 end GMC2.OrbitProductConcrete
-

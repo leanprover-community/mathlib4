@@ -163,4 +163,3 @@ theorem exists_preserving_units
     exact ((hu i hiS).map D.map).ne_zero
 
 end GMC2.IntegralSpecialization
-

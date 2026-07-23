@@ -70,4 +70,3 @@ theorem isPretransitive_rootAction [Normal K L] (Φ : K[X]) (hΦ : Irreducible �
   exact ⟨σ, Subtype.ext (by rw [coe_smul]; exact hσ)⟩
 
 end GMC2.GalRootAction
-

@@ -126,4 +126,3 @@ theorem constantTermRelation_scale {ι : Type*} [Fintype ι] [DecidableEq ι]
   · rw [if_neg hbal, if_neg (by rw [hchg]; exact mul_ne_zero hg hbal)]
 
 end GMC2.DvdKZeroCharge
-

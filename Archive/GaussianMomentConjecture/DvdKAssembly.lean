@@ -47,4 +47,3 @@ theorem irreducible_Phi (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR0 : R.coeff 0 ≠
   exact GMC2.PhiIrreducible.phi_irreducible_ratfunc R M hM hR0
 
 end GMC2.DvdKAssembly
-

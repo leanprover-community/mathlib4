@@ -116,4 +116,3 @@ theorem phi_irreducible_ratfunc (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hR0 : R.coe
   exact (hprim.irreducible_iff_irreducible_map_fraction_map).mp hirr_swap
 
 end GMC2.PhiIrreducible
-

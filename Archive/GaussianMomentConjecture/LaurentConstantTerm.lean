@@ -301,4 +301,3 @@ theorem sum_pow_pred_div_derivative_nodal_eq_zero
   omega
 
 end GMC2.FullRootLagrange
-

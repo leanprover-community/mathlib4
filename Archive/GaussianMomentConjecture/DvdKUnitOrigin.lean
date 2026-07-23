@@ -107,4 +107,3 @@ theorem smallRootFactor_coeff0_eq_of_derivative_vanishes' [CharZero F]
     (unitCoeff0_constantCoeff_eq_one R M) hderiv
 
 end GMC2.DvdKUnitOrigin
-

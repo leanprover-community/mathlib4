@@ -70,4 +70,3 @@ theorem ofPowerSeries_coe_eq_aeval (R : Polynomial F) :
   simpa [Polynomial.coeToPowerSeries.ringHom] using RingHom.congr_fun hext R
 
 end GMC2.DvdKConnector
-

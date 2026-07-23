@@ -77,4 +77,3 @@ theorem E_indexedPolynomial_pow_eq_aeval_momentRelation
   split_ifs <;> simp
 
 end GMC2.MomentTransport
-

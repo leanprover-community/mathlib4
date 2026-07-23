@@ -115,4 +115,3 @@ theorem phi_C_C (a : F) :
   exact congrArg PowerSeries.C (HahnSeries.ofPowerSeries_C a)
 
 end GMC2.DvdKTranspose
-

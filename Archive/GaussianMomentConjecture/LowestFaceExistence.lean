@@ -282,4 +282,3 @@ theorem exists_rational_lowest_balanced_face
         ring
 
 end GMC2.LowestFaceExistence
-

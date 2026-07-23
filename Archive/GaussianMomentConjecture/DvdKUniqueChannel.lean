@@ -150,4 +150,3 @@ theorem two_charge_via_unique (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
     (fun r hr hbal => GMC2.DvdKTwoCharge.balanced_unique p n hp hn r hr hbal)
 
 end GMC2.DvdKUniqueChannel
-

@@ -70,4 +70,3 @@ theorem orbit_product_contradiction_of_hS_and_fixed
   exact GMC2.PhiVieta.prod_rootSet_Phi R M hM hMd hsep
 
 end GMC2.OrbitProductReduced
-

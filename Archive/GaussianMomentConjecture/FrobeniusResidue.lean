@@ -189,4 +189,3 @@ theorem face_sum_ne_zero
   exact pow_ne_zero p hQ
 
 end GMC2.FrobeniusResidue
-

@@ -198,4 +198,3 @@ theorem smallRootFactor_coeff0_of_vanish [CharZero F] (R : Polynomial F) (M : â„
     (hderiv_final R M hvanish)
 
 end GMC2.DvdKTransposeAssembly
-

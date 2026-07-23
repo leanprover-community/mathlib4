@@ -80,4 +80,3 @@ theorem gmc2_of_dvdK1 (hDvdK : GMC2.DvdKInterface.DvdK1)
 end
 
 end GMC2.NC2
-

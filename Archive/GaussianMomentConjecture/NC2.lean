@@ -224,4 +224,3 @@ theorem gmc2_of_dvdK1_of_heightWitnessSupplier
 end
 
 end GMC2.NC2
-

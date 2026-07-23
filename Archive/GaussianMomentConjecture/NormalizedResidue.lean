@@ -581,4 +581,3 @@ theorem aeval_normalizedMoment_ne_zero
   exact pow_ne_zero p hfaceNonzero
 
 end GMC2.NormalizedResidue
-

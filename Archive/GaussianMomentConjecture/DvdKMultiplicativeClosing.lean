@@ -66,4 +66,3 @@ theorem smallRootFactor_coeff0_eq_of_derivative_vanishes
     (coeff_zero_smallRootFactor_mul_unit R M hM)
 
 end GMC2.DvdKMultiplicativeClosing
-

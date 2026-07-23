@@ -35,4 +35,3 @@ def exponentB (s : Fin 2 →₀ ℕ) : ℤ := s 1
   norm_cast
 
 end GMC2.FaceDictionary
-

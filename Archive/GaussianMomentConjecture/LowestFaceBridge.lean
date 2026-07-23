@@ -67,4 +67,3 @@ theorem exists_rational_lowest_face_of_not_chargeOneSided
     ((not_chargeOneSided_iff_straddlesZero P).mp hP)
 
 end GMC2
-

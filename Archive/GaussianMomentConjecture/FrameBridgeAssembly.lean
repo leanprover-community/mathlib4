@@ -85,4 +85,3 @@ theorem false_of_frame_data [CharZero F] (R : Polynomial F) (M : ℕ)
     R M hM hMd hR0 S x0 c hc hS
 
 end GMC2.FrameBridgeAssembly
-

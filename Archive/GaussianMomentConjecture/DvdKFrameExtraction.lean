@@ -122,4 +122,3 @@ theorem xCoeff0_xM_div_PhiFrame_eq_one_of_vanish (Rl : LaurentSeries F) (M : ℕ
 end FrameExtraction
 
 end GMC2.DvdKFrameExtraction
-

@@ -145,4 +145,3 @@ theorem exists_nonzero_ct_pair' (p n : ℕ) (hp : 0 < p) (hn : 0 < n)
   · intro h; exact absurd (pairR'_mem p n) h
 
 end GMC2.DvdKTwoCharge
-

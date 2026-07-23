@@ -624,4 +624,3 @@ theorem normalized_height_obligations_of_face_reference
 end
 
 end GMC2.SupportFaceBridge
-

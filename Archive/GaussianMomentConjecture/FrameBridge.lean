@@ -81,4 +81,3 @@ theorem hS_of_splits (Φ : (RatFunc F)[X])
   hS_of_embedding Φ (Polynomial.IsSplittingField.lift Φ.SplittingField Φ hsplit) S c hψ
 
 end GMC2.FrameBridge
-

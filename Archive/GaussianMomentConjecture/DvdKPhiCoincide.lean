@@ -94,4 +94,3 @@ theorem smallRootFactor_map_dvd_phiVieta_map (R : Polynomial F) (M : ℕ) :
   exact ⟨c.map (HahnSeries.ofPowerSeries ℤ F), by rw [← Polynomial.map_mul, ← hc]⟩
 
 end GMC2.DvdKPhiCoincide
-

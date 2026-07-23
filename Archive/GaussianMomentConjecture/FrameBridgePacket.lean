@@ -77,4 +77,3 @@ theorem exists_packet_prod_eq (Φ : (RatFunc F)[X]) (hΦ0 : Φ ≠ 0)
     intro β _; rfl
 
 end GMC2.FrameBridgePacket
-

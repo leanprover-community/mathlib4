@@ -84,4 +84,3 @@ theorem smallRootFactor_dvd_PhiPoly (R : Polynomial F) (M : ℕ) :
   exact (Polynomial.modByMonic_eq_zero_iff_dvd hPmonic).mp huniq.2.symm
 
 end GMC2.FrameBridgeDvd
-

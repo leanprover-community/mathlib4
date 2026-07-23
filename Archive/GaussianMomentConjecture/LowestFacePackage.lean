@@ -53,4 +53,3 @@ theorem exists_rational_lowest_face_finset
       · exact ⟨t, Finset.mem_filter.mpr ⟨ht, htheight⟩, htpos⟩
 
 end GMC2
-

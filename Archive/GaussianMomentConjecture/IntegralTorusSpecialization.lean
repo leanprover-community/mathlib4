@@ -137,4 +137,3 @@ theorem exists_finite_field_torus_specialization
     simpa [seedA, units] using hnonzeroD none (Finset.mem_univ _)
 
 end GMC2.IntegralTorusSpecialization
-

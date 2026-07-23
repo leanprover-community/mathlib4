@@ -38,4 +38,3 @@ theorem aroots_map_embedding (Φ : (RatFunc F)[X])
   rfl
 
 end GMC2.FrameBridgeRoots
-

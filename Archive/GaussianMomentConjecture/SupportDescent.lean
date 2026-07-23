@@ -62,4 +62,3 @@ theorem exists_numberField_moment_null_point_of_polynomial
     exact hnull m hm
 
 end GMC2.SupportDescent
-

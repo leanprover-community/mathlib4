@@ -86,4 +86,3 @@ theorem hderiv_of_frame (Rl : LaurentSeries F) (M : ℕ)
   exact (mul_eq_zero.mp hg1).resolve_left PowerSeries.X_ne_zero
 
 end GMC2.DvdKHderiv
-

@@ -66,4 +66,3 @@ theorem orbit_product_contradiction_of_hS
     R M hM hMd hR0 hsep S x0 c hc hfix hS
 
 end GMC2.OrbitProductFromSmallRoots
-

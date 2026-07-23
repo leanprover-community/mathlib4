@@ -126,4 +126,3 @@ theorem exists_numberField_torus_point_of_relations
       hrelation k, map_zero]
 
 end GMC2.AlgebraicDescent
-

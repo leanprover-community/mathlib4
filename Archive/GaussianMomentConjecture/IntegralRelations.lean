@@ -124,4 +124,3 @@ theorem E_indexedPolynomial_pow_eq_aeval_momentRelationInt
   split_ifs <;> simp
 
 end GMC2.IntegralRelations
-

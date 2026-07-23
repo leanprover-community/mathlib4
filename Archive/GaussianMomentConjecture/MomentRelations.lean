@@ -65,4 +65,3 @@ theorem aeval_momentRelation
   · simp
 
 end GMC2.MomentRelations
-

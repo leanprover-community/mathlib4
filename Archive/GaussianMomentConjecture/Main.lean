@@ -59,4 +59,3 @@ theorem gmc2 (P Q : MvPolynomial (Fin 2) ℂ)
   GMC2.DvdKOmegaWiring.gmc2_unconditional P Q hnull
 
 end GMC2
-

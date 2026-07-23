@@ -178,4 +178,3 @@ theorem aeval_normalized_eq_zero_of_E_pow_eq_zero
     exact_mod_cast Nat.factorial_ne_zero A0)
 
 end GMC2.NormalizedMoment
-
