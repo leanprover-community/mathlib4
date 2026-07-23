@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.FieldTheory.IntermediateField.ExtendRight
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
@@ -741,10 +742,10 @@ end arithmetic
 
 section compositum
 
-variable [CommRing A] [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K]
-  [Algebra A L] [IsScalarTower A K L] [Algebra A B] [IsScalarTower A B L] [IsDedekindDomain B]
-  [FiniteDimensional K L] [IsGalois K L]
-  {p : Ideal A} [p.IsMaximal] [P.IsMaximal] [P.LiesOver p]
+variable [CommRing A] [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K] [Algebra A L]
+  [IsScalarTower A K L] [Algebra A B] [IsScalarTower A B L] [IsDedekindDomain B]
+  [FiniteDimensional K L] [Module.Finite A B]
+  {p : Ideal A} [p.IsMaximal] [P.IsMaximal] [P.LiesOver p] [PerfectField p.ResidueField]
   (F₁ F₂ : IntermediateField K L) {B₁ B₂ : Type*}
   [CommRing B₁] [IsDedekindDomain B₁] [Algebra A B₁] [Algebra B₁ F₁] [IsFractionRing B₁ F₁]
   [Algebra B₁ B] [Algebra B₁ L] [IsScalarTower B₁ F₁ L] [IsScalarTower B₁ B L]
@@ -755,12 +756,15 @@ variable [CommRing A] [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K]
   {P₁ : Ideal B₁} {P₂ : Ideal B₂} [P.LiesOver P₁] [P.LiesOver P₂] [P₁.LiesOver p] [P₂.LiesOver p]
   (C : Type*) [CommRing C] [IsIntegrallyClosed C] [Algebra A C] [Algebra C B] [Algebra C L]
   [IsScalarTower C B L] [IsScalarTower A C B] [Algebra C ↑(F₁ ⊔ F₂)] [IsFractionRing C ↑(F₁ ⊔ F₂)]
-  [IsScalarTower C ↑(F₁ ⊔ F₂) L]
+  [IsScalarTower C ↑(F₁ ⊔ F₂) L] [Module.Flat C B]
   (𝓟 : Ideal C) [P.LiesOver 𝓟] [𝓟.LiesOver p]
+
+section Galois
+
+variable [IsGalois K L]
   [MulSemiringAction Gal(L/F₁) B] [SMulDistribClass Gal(L/F₁) B L]
   [MulSemiringAction Gal(L/F₂) B] [SMulDistribClass Gal(L/F₂) B L]
   [MulSemiringAction Gal(L/↑(F₁ ⊔ F₂)) B] [SMulDistribClass Gal(L/↑(F₁ ⊔ F₂)) B L]
-  [Module.Finite A B] [Module.Flat C B] [PerfectField p.ResidueField]
 
 include F₁ F₂ P p in
 /-- If `p` is unramified in both `F₁/K` and `F₂/K`, then `p` is unramified in `(F₁ ⊔ F₂)/K`,
@@ -795,7 +799,19 @@ theorem ramificationIdx_inertiaDeg_sup_eq_one_of_isGalois [IsDomain C]
   rw [← le_decompositionField_iff_ramificationIdx_inertiaDeg_eq_one A K L P (F₁ ⊔ F₂) 𝓟 p]
   exact sup_le h₁ h₂
 
+end Galois
 
+include F₁ F₂ P p in
+/-- If `p` is unramified in both `F₁/K` and `F₂/K`, then `p` is unramified in `(F₁ ⊔ F₂)/K`. -/
+theorem ramificationIdx_sup_eq_one (h₁ : P₁.ramificationIdx A = 1)
+    (h₂ : P₂.ramificationIdx A = 1) :
+    𝓟.ramificationIdx A = 1 := by
+  -- Construct the normal closure `N` of `L/K` inside an algebraic closure of `L`, and view
+  -- `F₁`, `F₂` as intermediate fields of `N/K` via `extendRight`.
+  let N := normalClosure K L (AlgebraicClosure L)
+  let F₁' := F₁.extendRight N
+  let F₂' := F₂.extendRight N
+  sorry
 end compositum
 
 end IntermediateField
