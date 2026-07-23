@@ -80,6 +80,7 @@
   "Mathlib.Tactic.Clean",
   "Mathlib.Tactic.ClearExcept",
   "Mathlib.Tactic.ClearExclamation",
+  "Mathlib.Tactic.ClearUnneeded",
   "Mathlib.Tactic.Clear_",
   "Mathlib.Tactic.Coe",
   "Mathlib.Tactic.Common",
