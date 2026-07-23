@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Group.Defs
 
+import Mathlib.Topology.Algebra.Group.Pointwise
+
 /-!
 # Topological torsors of groups
 
@@ -106,6 +108,17 @@ def Homeomorph.constSDiv (p : P) : P ≃ₜ V where
   continuous_invFun := by
     have := IsTopologicalTorsor.to_isTopologicalGroup V P
     fun_prop
+
+@[to_additive]
+instance (priority := 100) IsTopologicalTorsor.t0Space [T0Space V] : T0Space P :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  (Homeomorph.smulConst p).t0Space
+
+@[to_additive]
+instance (priority := 100) IsTopologicalTorsor.regularSpace : RegularSpace P :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  have := IsTopologicalTorsor.to_isTopologicalGroup V P
+  (Homeomorph.smulConst p).symm.isInducing.regularSpace
 
 /-- `Equiv.pointReflection` as a homeomorphism -/
 def Homeomorph.pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]
