@@ -279,55 +279,217 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   apply lt_of_le_of_lt _ (htS i)
   simp [← hpq, hq]
 
+/-- Division of `f` by the monic linear polynomial `X i - C r`: there exist a quotient `g`
+and a remainder `h` not involving `X i`. -/
+private lemma Alon.exists_eq_mul_X_sub_C_add [Nontrivial R]
+    (f : MvPolynomial σ R) (i : σ) (r : R) :
+    ∃ g h : MvPolynomial σ R, f = g * (X i - C r) + h ∧ h.degreeOf i = 0 := by
+  classical
+  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  obtain ⟨g, rem, hf, -, hrem⟩ := degLex.div (b := fun _ : Unit ↦ X i - C r)
+    (fun _ ↦ by rw [(degLex.monic_X_sub_C i r).leadingCoeff_eq_one]; exact isUnit_one) f
+  refine ⟨g default, rem, ?_, ?_⟩
+  · rw [hf, Finsupp.linearCombination_unique, smul_eq_mul]
+  · rw [← Nat.lt_one_iff, degreeOf_lt_iff Nat.one_pos]
+    intro m hm
+    rw [Nat.lt_one_iff]
+    have hc := hrem m hm ()
+    rw [degLex.degree_X_sub_C i r, Finsupp.single_le_iff] at hc
+    omega
+
+omit [Finite σ] in
+/-- Key recurrence for the coefficients of the quotient `g` in `f = g * (X i - C r) + h`
+where `h` does not involve `X i`. -/
+private lemma Alon.coeff_recurrence {i : σ} {r : R} {g h f : MvPolynomial σ R}
+    (hfgh : f = g * (X i - C r) + h) (hdeg : h.degreeOf i = 0) (m : σ →₀ ℕ) :
+    f.coeff (m + single i 1) = g.coeff m - r * g.coeff (m + single i 1) := by
+  have hh : h.coeff (m + single i 1) = 0 := by
+    by_contra hne
+    have hle := monomial_le_degreeOf i (MvPolynomial.mem_support_iff.mpr hne)
+    rw [hdeg] at hle
+    simp only [Finsupp.add_apply, Finsupp.single_eq_same] at hle
+    omega
+  rw [hfgh, coeff_add, hh, add_zero, mul_sub, coeff_sub, coeff_mul_X, mul_comm g (C r), coeff_C_mul]
+
+omit [Finite σ] in
+/-- If `f.coeff (m + single i c) = 0` for all `c > 0`, then `g.coeff m = 0`, where `g` is the
+quotient in `f = g * (X i - C r) + h` and `h` does not involve `X i`. -/
+private lemma Alon.coeff_quotient_eq_zero {i : σ} {r : R} {g h f : MvPolynomial σ R}
+    (hfgh : f = g * (X i - C r) + h) (hdeg : h.degreeOf i = 0)
+    (m : σ →₀ ℕ) (hm : ∀ c, 0 < c → f.coeff (m + single i c) = 0) :
+    g.coeff m = 0 := by
+  have key : ∀ N : ℕ, g.coeff m = r ^ N * g.coeff (m + single i N) := by
+    intro N
+    induction N with
+    | zero => simp
+    | succ N ihN =>
+      have hrec := Alon.coeff_recurrence hfgh hdeg (m + single i N)
+      have he : m + single i N + single i 1 = m + single i (N + 1) := by
+        rw [add_assoc, ← single_add]
+      rw [he, hm (N + 1) N.succ_pos] at hrec
+      have hstep : g.coeff (m + single i N) = r * g.coeff (m + single i (N + 1)) := by
+        rw [eq_comm, sub_eq_zero] at hrec; exact hrec
+      rw [ihN, hstep]; ring
+  rw [key (g.totalDegree + 1)]
+  apply mul_eq_zero_of_right
+  apply coeff_eq_zero_of_totalDegree_lt
+  have hDi : (m + single i (g.totalDegree + 1)) i = m i + (g.totalDegree + 1) := by
+    simp [Finsupp.add_apply, Finsupp.single_eq_same]
+  have hmem : i ∈ (m + single i (g.totalDegree + 1)).support := by
+    rw [Finsupp.mem_support_iff, hDi]; omega
+  refine lt_of_lt_of_le ?_
+    (Finset.single_le_sum (f := fun j ↦ (m + single i (g.totalDegree + 1)) j)
+      (fun j _ ↦ Nat.zero_le _) hmem)
+  rw [hDi]; omega
+
+omit [Finite σ] in
+/-- Evaluating a polynomial not involving `X i` is unaffected by updating the `i`-th coordinate. -/
+private lemma Alon.eval_update_of_degreeOf_eq_zero [DecidableEq σ]
+    (h : MvPolynomial σ R) (i : σ) (r : R) (x : σ → R) (hdeg : h.degreeOf i = 0) :
+    eval (Function.update x i r) h = eval x h := by
+  rw [eval_eq, eval_eq]
+  refine Finset.sum_congr rfl fun d hd ↦ ?_
+  congr 1
+  refine Finset.prod_congr rfl fun j hj ↦ ?_
+  have hji : j ≠ i := by
+    rintro rfl
+    rw [Finsupp.mem_support_iff] at hj
+    apply hj
+    have hle := monomial_le_degreeOf j hd
+    rw [hdeg] at hle
+    omega
+  rw [Function.update_of_ne hji]
+
 /--
 Michał Lasoń, A generalization of Combinatorial Nullstellensatz, 2013, Theorem 2
 -/
 theorem generalized_combinatorial_nullstellensatz
     [IsDomain R] (f : MvPolynomial σ R) (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0)
-    (ht' : ∀ t' : σ →₀ ℕ, t < t' → f.coeff t' = 0) 
+    (ht' : ∀ t' : σ →₀ ℕ, t < t' → f.coeff t' = 0)
     (S : σ → Finset R) (htS : ∀ ⦃i⦄, t i < #(S i)) :
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
+  classical
   haveI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  induction hn : ∑ᶠ i, t i using Nat.strong_induction_on
-  case h n ih =>
-    match n with
-    | 0 =>
-      clear ih
-      have ht₀ : t = 0 := by
-        ext i
-        by_contra h'
-        simp_rw [coe_zero, Pi.zero_apply, ← pos_iff_ne_zero] at h'
-        have : 0 < (∑ᶠ i, t i) := finsum_pos (by simp) ⟨i, h'⟩ (hasFiniteSupport t)
-        simp_rw [hn, lt_self_iff_false] at this
-      subst ht₀
-      clear hn
-      have hf₁ : f = C f.constantCoeff := by
-        simp only [coe_zero, Pi.zero_apply, Finset.card_pos] at htS
-        ext t'
-        by_cases ht'₀ : t' = 0
-        · subst ht'₀
-          simp [constantCoeff_eq]
-        · have : 0 < t' := by constructor <;> simp [ht'₀]
-          simp only [ht' t' this, coeff_C, right_eq_ite_iff]
-          rintro rfl
-          simp_rw [lt_self_iff_false] at this
-      have hf₂ : f.constantCoeff ≠ 0 := by tauto
-      rw [hf₁]
-      simp only [coe_zero, Pi.zero_apply, Finset.card_pos] at htS
-      use fun i ↦ (@htS i).exists_mem.choose
-      simp only [Exists.choose_spec, implies_true, eval_C, ne_eq, hf₂, not_false_eq_true, and_self]
-    | n + 1 =>
-      haveI instσ : Nonempty σ := by
-        by_contra! hσ
-        simp [finsum_of_isEmpty t] at hn
-      obtain ⟨i, hi⟩ : ∃ i, 0 < t i := by
-        by_contra! h₀
-        simp_all
-      have hS : ∀ i, (S i).Nonempty := (Finset.card_pos.mp <| Nat.zero_lt_of_lt <| @htS ·)
-      let r : R := (hS i).exists_mem.choose
-      let x : MvPolynomial σ R := .X i - .C r
-      have : ∃! g, ∃! h, f = g * x + h ∧ h.degreeOf i = 0 := by
-        sorry
-      sorry
+  -- Generalize over `f`, `t` and `S` so that the induction hypothesis is usable.
+  suffices H : ∀ (n : ℕ) (f : MvPolynomial σ R) (t : σ →₀ ℕ), t.degree = n →
+      f.coeff t ≠ 0 → (∀ t' : σ →₀ ℕ, t < t' → f.coeff t' = 0) →
+      ∀ (S : σ → Finset R), (∀ i, t i < #(S i)) →
+      ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 by
+    exact H t.degree f t rfl ht ht' S fun i ↦ @htS i
+  clear ht ht' htS f t S
+  -- A pointwise comparison for `Finsupp`, used repeatedly below.
+  have coord_le : ∀ (a b : σ →₀ ℕ), a ≤ b → ∀ j, a j ≤ b j := fun a b hab j ↦ by
+    by_cases hj : j ∈ a.support
+    · exact (Finsupp.le_iff a b).mp hab j hj
+    · rw [Finsupp.notMem_support_iff.mp hj]; exact Nat.zero_le _
+  intro n
+  induction n with
+  | zero =>
+    intro f t htn htc htmax S hScard
+    rw [Finsupp.degree_eq_zero_iff] at htn
+    subst htn
+    have hf₁ : f = C f.constantCoeff := by
+      simp only [coe_zero, Pi.zero_apply, Finset.card_pos] at hScard
+      ext t'
+      by_cases ht'₀ : t' = 0
+      · subst ht'₀
+        simp [constantCoeff_eq]
+      · have h₀ : 0 < t' := by constructor <;> simp [ht'₀]
+        simp only [htmax t' h₀, coeff_C, right_eq_ite_iff]
+        rintro rfl
+        contradiction
+    have hf₂ : f.constantCoeff ≠ 0 := by tauto
+    rw [hf₁]
+    simp only [coe_zero, Pi.zero_apply, Finset.card_pos] at hScard
+    use (hScard · |>.exists_mem.choose)
+    simp only [Exists.choose_spec, implies_true, eval_C, ne_eq, hf₂, not_false_eq_true, and_self]
+  | succ n ih =>
+    intro f t htn htc htmax S hScard
+    have htne : t ≠ 0 := by
+      rintro rfl
+      exact n.succ_ne_zero htn.symm
+    obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr htne
+    rw [Finsupp.mem_support_iff] at hi
+    have hSne : ∀ j, (S j).Nonempty := fun j ↦
+      Finset.card_pos.mp (Nat.zero_lt_of_lt (hScard j))
+    obtain ⟨r, hr⟩ := hSne i
+    obtain ⟨g, h, hfgh, hdeg⟩ := Alon.exists_eq_mul_X_sub_C_add f i r
+    by_cases Hh : ∃ y : σ → R, (∀ j, y j ∈ S j) ∧ eval y h ≠ 0
+    · obtain ⟨y, hy, hyh⟩ := Hh
+      refine ⟨Function.update y i r, ?_, ?_⟩
+      · intro j
+        by_cases hji : j = i
+        · rw [hji, Function.update_self]
+          exact hr
+        · rw [Function.update_of_ne hji]
+          exact hy j
+      · rw [hfgh, map_add, map_mul, map_sub, eval_X, eval_C, Function.update_self, sub_self,
+          mul_zero, zero_add, Alon.eval_update_of_degreeOf_eq_zero h i r y hdeg]
+        exact hyh
+    · simp only [not_exists, not_and, not_not] at Hh
+      set t₀ := t - single i 1 with ht₀def
+      have hcancel : t₀ + single i 1 = t := ht₀def ▸ Finsupp.sub_add_single_one_cancel hi
+      have hdeg₀ : t₀.degree = n := by
+        have h2 : t.degree = t₀.degree + 1 := by rw [← hcancel, map_add, Finsupp.degree_single]
+        grind only
+      have hB : g.coeff t₀ = f.coeff t := by
+        have hrec := Alon.coeff_recurrence hfgh hdeg t₀
+        have hgt : g.coeff t = 0 := by
+          refine Alon.coeff_quotient_eq_zero hfgh hdeg t fun c hc ↦ htmax _ ?_
+          refine lt_of_le_of_ne le_self_add fun heq ↦ ?_
+          have hcoord := congrArg (fun z : σ →₀ ℕ ↦ z i) heq
+          simp only [Finsupp.add_apply, Finsupp.single_eq_same] at hcoord
+          grind only
+        rw [hcancel, hgt, mul_zero, sub_zero] at hrec
+        exact hrec.symm
+      have hgmax : ∀ u, t₀ < u → g.coeff u = 0 := by
+        intro u hu
+        refine Alon.coeff_quotient_eq_zero hfgh hdeg u fun c hc ↦ htmax _ ?_
+        obtain ⟨hle, hne⟩ := lt_iff_le_and_ne.mp hu
+        obtain ⟨j, hjne⟩ := Finsupp.ne_iff.mp hne
+        have hj : t₀ j < u j := lt_of_le_of_ne (coord_le _ _ hle j) hjne
+        refine lt_of_le_of_ne ?_ fun heq ↦ ?_
+        · rw [← hcancel]; exact add_le_add hle (Finsupp.single_le_single.mpr hc)
+        · have hcoord : t j = (u + single i c) j := by rw [heq]
+          rw [Finsupp.add_apply] at hcoord
+          have htj : t j = t₀ j + (single i 1) j := by rw [← hcancel, Finsupp.add_apply]
+          rw [htj] at hcoord
+          have hsingle : (single i 1 : σ →₀ ℕ) j ≤ (single i c : σ →₀ ℕ) j := by
+            rcases eq_or_ne j i with hji | hji
+            · subst hji; simp only [Finsupp.single_eq_same]; omega
+            · simp only [Finsupp.single_eq_of_ne hji, le_refl]
+          omega
+      set S' : σ → Finset R := Function.update S i ((S i).erase r) with hS'def
+      have hScard' : ∀ j, t₀ j < #(S' j) := by
+        intro j
+        by_cases hji : j = i
+        · rw [hji, hS'def, Function.update_self, Finset.card_erase_of_mem hr]
+          have ht0i : t₀ i = t i - 1 := by
+            rw [ht₀def, Finsupp.tsub_apply, Finsupp.single_eq_same]
+          rw [ht0i]
+          have := hScard i
+          omega
+        · rw [hS'def, Function.update_of_ne hji]
+          have ht0j : t₀ j = t j := by
+            rw [ht₀def, Finsupp.tsub_apply, Finsupp.single_eq_of_ne hji, Nat.sub_zero]
+          rw [ht0j]; exact hScard j
+      obtain ⟨s, hs, hsg⟩ := ih g t₀ hdeg₀ (hB ▸ htc) hgmax S' hScard'
+      have hsS : ∀ j, s j ∈ S j := by
+        intro j
+        by_cases hji : j = i
+        · rw [hji]
+          have hmem := hs i
+          rw [hS'def, Function.update_self] at hmem
+          exact Finset.mem_of_mem_erase hmem
+        · have hmem := hs j
+          rw [hS'def, Function.update_of_ne hji] at hmem
+          exact hmem
+      have hsi : s i ≠ r := by
+        have hmem := hS'def ▸ hs i
+        rw [Function.update_self] at hmem
+        exact (Finset.mem_erase.mp hmem).1
+      refine ⟨s, hsS, ?_⟩
+      rw [hfgh, map_add, map_mul, map_sub, eval_X, eval_C, Hh s hsS, add_zero]
+      exact mul_ne_zero hsg (sub_ne_zero.mpr hsi)
 
 end MvPolynomial
