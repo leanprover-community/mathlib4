@@ -192,6 +192,47 @@ instance (r : α → α → Prop) (s : β → β → Prop) (q₁ : Quot r) (q₂
     Decidable (Quot.liftOn₂ q₁ q₂ f ha hb) :=
   Quot.lift₂.decidablePred _ _ _ _ _ _ _
 
+variable {α : Type*} {r : α → α → Prop}
+
+/-- The set corresponding to an equivalence class. -/
+def toSet (q : Quot r) : Set α :=
+  { x | ⟦x⟧ = q }
+
+theorem mem_toSet_mk_self (x : α) : x ∈ toSet (r := r) ⟦x⟧ :=
+  rfl
+
+theorem nonempty_toSet (q : Quot r) : q.toSet.Nonempty :=
+  exists_rep q
+
+theorem toSet_injective : toSet (r := r) |>.Injective :=
+  (Quot.induction_on₂ · · fun x _ h ↦ (h ▸ mem_toSet_mk_self x :))
+
+/-- The equivalence class of an element. -/
+def equivClassOf (x : α) : Set α :=
+  { y | (⟦y⟧ : Quot r) = ⟦x⟧ }
+
+theorem mem_equivClassOf_self (x : α) : x ∈ equivClassOf (r := r) x :=
+  rfl
+
+theorem equivClassOf_eq_of_r {x y : α} (h : r x y) :
+    equivClassOf (r := r) x = equivClassOf (r := r) y :=
+  Set.ext fun _ ↦ ⟨fun h' ↦ (h' ▸ sound h :), fun h' ↦ h' ▸ sound h |>.symm⟩
+
+theorem equivClassOf_eq_iff_mk_eq (x y : α) :
+    equivClassOf (r := r) x = equivClassOf (r := r) y ↔ (⟦x⟧ : Quot r) = ⟦y⟧ := by
+  unfold equivClassOf
+  exact ⟨fun h ↦ (h ▸ rfl : x ∈ {z | _ = _}), fun h ↦ Set.ext fun _ ↦ ⟨(h ▸ ·), (h ▸ ·)⟩⟩
+
+theorem nonempty_equivClassOf (x : α) : equivClassOf (r := r) x |>.Nonempty :=
+  ⟨x, mem_equivClassOf_self x⟩
+
+theorem toSet_mk_eq_equivClassOf (x : α) : ⟦x⟧.toSet (r := r) = equivClassOf (r := r) x :=
+  rfl
+
+theorem lift_equivClassOf_eq_toSet :
+    lift equivClassOf (fun _ _ ↦ equivClassOf_eq_of_r) = toSet (r := r) :=
+  funext <| ind (toSet_mk_eq_equivClassOf · |>.symm)
+
 end Quot
 
 namespace Quotient
@@ -773,6 +814,51 @@ instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
     [∀ a, DecidablePred (f a)] :
     Decidable (Quotient.liftOn₂' q₁ q₂ f h) :=
   Quotient.lift₂.decidablePred _ h _ _
+
+variable {α : Type*} {s : Setoid α}
+
+/-- The set corresponding to an equivalence class. -/
+def toSet (q : Quotient s) : Set α :=
+  { x | ⟦x⟧ = q }
+
+theorem mem_toSet_mk_self (x : α) : x ∈ toSet (s := s) ⟦x⟧ :=
+  rfl
+
+theorem nonempty_toSet (q : Quotient s) : q.toSet.Nonempty :=
+  exists_rep q
+
+theorem toSet_injective : toSet (s := s) |>.Injective :=
+  (Quotient.inductionOn₂ · · fun x _ h ↦ (h ▸ mem_toSet_mk_self x :))
+
+/-- The equivalence class of an element. -/
+def equivClassOf (x : α) : Set α :=
+  { y | y ≈ x }
+
+theorem mem_equivClassOf_self (x : α) : x ∈ equivClassOf (s := s) x :=
+  s.refl x
+
+theorem equivClassOf_eq_iff_apply (x y : α) :
+    equivClassOf (s := s) x = equivClassOf (s := s) y ↔ s x y :=
+  ⟨fun h ↦ (h ▸ mem_equivClassOf_self x :),
+    fun h ↦ Set.ext fun _ ↦ ⟨(s.trans · h), (s.trans · <| s.symm h)⟩⟩
+
+theorem equivClassOf_eq_iff_equiv (x y : α) :
+    equivClassOf (s := s) x = equivClassOf (s := s) y ↔ x ≈ y :=
+  equivClassOf_eq_iff_apply x y
+
+theorem equivClassOf_eq_iff_mk_eq (x y : α) :
+    equivClassOf (s := s) x = equivClassOf (s := s) y ↔ (⟦x⟧ : Quotient s) = ⟦y⟧ :=
+  equivClassOf_eq_iff_apply x y |>.trans eq.symm
+
+theorem nonempty_equivClassOf (x : α) : equivClassOf (s := s) x |>.Nonempty :=
+  ⟨x, mem_equivClassOf_self x⟩
+
+theorem toSet_mk_eq_equivClassOf (x : α) : ⟦x⟧.toSet (s := s) = equivClassOf (s := s) x :=
+  Set.ext fun _ ↦ Quotient.eq_iff_equiv
+
+theorem lift_equivClassOf_eq_toSet :
+    Quotient.lift equivClassOf (equivClassOf_eq_iff_apply · · |>.mpr) = toSet (s := s) :=
+  funext <| Quotient.ind (toSet_mk_eq_equivClassOf · |>.symm)
 
 end Quotient
 
