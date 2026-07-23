@@ -38,7 +38,7 @@ variable [Semiring R] {p q : R[X]}
 /-- `divX p` returns a polynomial `q` such that `q * X + C (p.coeff 0) = p`.
   It can be used in a semiring where the usual division algorithm is not possible -/
 def divX (p : R[X]) : R[X] :=
-  ⟨AddMonoidAlgebra.divOf p.toFinsupp 1⟩
+  AddMonoidAlgebra.divOf p 1
 
 @[simp]
 theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by

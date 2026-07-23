@@ -467,10 +467,10 @@ theorem iterate_derivative_interpolate (hvs : Set.InjOn v s) {k : ℕ} (hk : k <
   calc
     derivative^[k] (∏ j ∈ s.erase i, (X - C (v j))) =
     derivative^[k] (∏ vj ∈ (s.erase i).image v, (X - C vj)) := by rw [Finset.prod_image hvs']
-    _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powersetCard (#s - (k + 1)),
+    _ = ↑(k.factorial) * ∑ t ∈ ((s.erase i).image v).powersetCard (#s - (k + 1)),
           ∏ va ∈ t, (X - C va) := by
         grind [iterate_derivative_prod_X_sub_C]
-    _ = k.factorial * ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (X - C (v a)) := by
+    _ = ↑(k.factorial) * ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (X - C (v a)) := by
         rw [powersetCard_eq_filter, powerset_image, eq_comm]
         congrm k.factorial * ?_
         refine sum_nbij (·.image v) (fun a ha ↦ ?hi) ?i_inj (fun t ht ↦ ?i_surj) fun a ha ↦ ?h

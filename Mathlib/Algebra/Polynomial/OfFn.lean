@@ -43,17 +43,9 @@ variable {R : Type*} [Semiring R] [DecidableEq R]
 set_option backward.isDefEq.respectTransparency false in
 /-- `ofFn n v` is the polynomial whose coefficients are the entries of the vector `v`. -/
 def ofFn (n : ℕ) : (Fin n → R) →ₗ[R] R[X] where
-  toFun v := ⟨.ofCoeff (List.ofFn v).toFinsupp⟩
-  map_add' x y := by
-    ext i
-    by_cases h : i < n
-    · simp [h]
-    · simp [h]
-  map_smul' x p := by
-    ext i
-    by_cases h : i < n
-    · simp [h]
-    · simp [h]
+  toFun v := .ofCoeff (List.ofFn v).toFinsupp
+  map_add' x y := by ext i; by_cases h : i < n <;> simp [coeff, h]
+  map_smul' x p := by ext i; by_cases h : i < n <;> simp [coeff, h]
 
 theorem ofFn_zero (n : ℕ) : ofFn n (0 : Fin n → R) = 0 := by simp
 
@@ -70,14 +62,14 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofFn_coeff_eq_val_of_lt {n i : ℕ} (v : Fin n → R) (hi : i < n) :
     (ofFn n v).coeff i = v ⟨i, hi⟩ := by
-  simp [ofFn, hi]
+  simp [ofFn, coeff, hi]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `n ≤ i` the `i`-th coefficient of `ofFn n v` is `0`. -/
 @[simp]
 theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) :
     (ofFn n v).coeff i = 0 := by
-  simp [ofFn, Nat.not_lt_of_ge hi]
+  simp [ofFn, coeff, Nat.not_lt_of_ge hi]
 
 /-- `ofFn n v` has `natDegree` smaller than `n`. -/
 theorem ofFn_natDegree_lt {n : ℕ} (h : 1 ≤ n) (v : Fin n → R) : (ofFn n v).natDegree < n := by
@@ -102,7 +94,7 @@ theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toFn_comp_ofFn_eq_id (n : ℕ) (v : Fin n → R) : toFn n (ofFn n v) = v := by
-  simp [toFn, ofFn, LinearMap.pi]
+  simp [toFn, ofFn, LinearMap.pi, coeff]
 
 theorem injective_ofFn (n : ℕ) : Function.Injective (ofFn (R := R) n) :=
   Function.LeftInverse.injective <| toFn_comp_ofFn_eq_id n
