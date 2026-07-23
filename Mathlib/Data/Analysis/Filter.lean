@@ -70,8 +70,7 @@ def ofEquiv (E : σ ≃ τ) : CFilter α σ → CFilter α τ
       inf_le_right := fun a b ↦ by simpa using h₂ (E.symm a) (E.symm b) }
 
 @[simp]
-theorem ofEquiv_val (E : σ ≃ τ) (F : CFilter α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
-  cases F; rfl
+theorem ofEquiv_val (E : σ ≃ τ) (F : CFilter α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := rfl
 
 end
 
