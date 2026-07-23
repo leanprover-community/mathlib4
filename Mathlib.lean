@@ -6821,6 +6821,7 @@ public import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.RingTheory.Localization.Pi
 public import Mathlib.RingTheory.Localization.Rat
+public import Mathlib.RingTheory.Localization.Saturation
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.MatrixAlgebra
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
