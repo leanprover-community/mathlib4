@@ -653,7 +653,7 @@ protected theorem measurable' [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     Measurable τ := hτ.measurable.mono (measurableSpace_le hτ) le_rfl
 
-protected theorem measurable'' [TopologicalSpace ι]
+protected theorem measurable_iSup [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     Measurable[⨆ t, f t] τ := hτ.measurable.mono (measurableSpace_le' hτ) le_rfl
 
@@ -665,7 +665,7 @@ protected lemma measurableSet_eq_top [TopologicalSpace ι]
 protected lemma measurableSet_eq_top' [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     MeasurableSet[⨆ t, f t] {ω | τ ω = ⊤} :=
-  (measurableSet_singleton _).preimage hτ.measurable''
+  (measurableSet_singleton _).preimage hτ.measurable_iSup
 
 protected theorem measurable_of_le [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) {i : ι}
@@ -711,7 +711,7 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
     ext ω
     by_cases hτi : τ ω ≤ i <;> grind
   simp_rw [h_eq]
-  refine ⟨hs.1.inter (measurableSet_le hτ.measurable'' hπ.measurable''), fun i ↦ ?_⟩
+  refine ⟨hs.1.inter (measurableSet_le hτ.measurable_iSup hπ.measurable_iSup), fun i ↦ ?_⟩
   refine ((hs.2 i).inter ((hτ.min hπ) i)).inter ?_
   apply @measurableSet_le _ _ _ _ _ (Filtration.seq f i) _ _ _ _ _ ?_ ?_
   · exact (hτ.min_const i).measurable_of_le fun _ => min_le_right _ _
@@ -743,7 +743,7 @@ theorem measurableSet_le_stopping_time [TopologicalSpace ι] [SecondCountableTop
     [OrderTopology ι] (hτ : IsStoppingTime f τ)
     (hπ : IsStoppingTime f π) : MeasurableSet[hτ.measurableSpace] {ω | τ ω ≤ π ω} := by
   rw [hτ.measurableSet]
-  refine ⟨measurableSet_le hτ.measurable'' hπ.measurable'', fun j ↦ ?_⟩
+  refine ⟨measurableSet_le hτ.measurable_iSup hπ.measurable_iSup, fun j ↦ ?_⟩
   have : {ω | τ ω ≤ π ω} ∩ {ω | τ ω ≤ j} = {ω | min (τ ω) j ≤ min (π ω) j} ∩ {ω | τ ω ≤ j} := by
     ext
     simpa using fun a b ↦ Std.IsPreorder.le_trans _ _ _ a b
