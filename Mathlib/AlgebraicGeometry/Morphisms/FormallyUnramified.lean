@@ -72,6 +72,7 @@ instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified whe
 instance : MorphismProperty.IsStableUnderComposition @FormallyUnramified :=
   HasRingHomProperty.stableUnderComposition RingHom.FormallyUnramified.stableUnderComposition
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `f : X ⟶ S` is formally unramified if `X ⟶ X ×ₛ X` is an open immersion.
 In particular, monomorphisms (e.g. immersions) are formally unramified.
 The converse is true if `f` is locally of finite type. -/
@@ -119,6 +120,7 @@ instance : MorphismProperty.IsMultiplicative @FormallyUnramified where
 instance : MorphismProperty.IsStableUnderBaseChange @FormallyUnramified :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.FormallyUnramified.isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 open MorphismProperty in
 /-- The diagonal of a formally unramified morphism of finite type is an open immersion. -/
 instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f] :
@@ -175,6 +177,7 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     exact stalkMap f x
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given any commuting diagram
 ```
@@ -212,7 +215,7 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
       Scheme.Hom.appLE_comp_appLE]⟩
   let ψ₂ : Γ(X, V) →ₐ[Γ(Y, U)] Γ(Z, W) := ⟨(g₂.appLE _ _ (hWV.trans inf_le_right)).hom, fun r ↦ by
     simp [RingHom.algebraMap_toAlgebra, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp,
-      Scheme.Hom.appLE_comp_appLE, hgf, - Scheme.Hom.comp_appLE]⟩
+      Scheme.Hom.appLE_comp_appLE, hgf, -Scheme.Hom.comp_appLE]⟩
   suffices ψ₁ = ψ₂ by
     simpa [ψ₁, ψ₂, -Iso.cancel_iso_hom_left, IsAffineOpen.isoSpec_hom] using
       congr(hW.isoSpec.hom ≫ Spec.map (CommRingCat.ofHom ($this).toRingHom) ≫ hV.fromSpec)
@@ -220,7 +223,7 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
   · obtain ⟨n, hn⟩ := hi
     exact ⟨n, by simpa using congr(($hn).ideal ⟨W, hW⟩)⟩
   · simp [ψ₁, ψ₂, ← CategoryTheory.comp_apply, -CommRingCat.hom_comp, hig,
-      Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE, - Scheme.Hom.comp_appLE]
+      Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
 
 /--
 To show that `f : X ⟶ Y` is formally unramified,
@@ -240,7 +243,7 @@ protected lemma of_hom_ext (f : X ⟶ Y)
       (_ : Spec.map φ ≫ g₁ = Spec.map φ ≫ g₂) (_ : g₁ ≫ f = g₂ ≫ f), g₁ = g₂) :
     FormallyUnramified f := by
   refine ⟨fun {U hU V hV hVU} ↦ ?_⟩
-  letI := (f.appLE U V hVU).hom.toAlgebra
+  let := (f.appLE U V hVU).hom.toAlgebra
   refine Algebra.FormallyUnramified.iff_comp_injective.mpr fun R _ _ I hI g₁ g₂ hg₁g₂ ↦ ?_
   have hg₁ : f.appLE U V hVU ≫ CommRingCat.ofHom g₁ = CommRingCat.ofHom (algebraMap _ R) :=
     CommRingCat.hom_ext g₁.comp_algebraMap

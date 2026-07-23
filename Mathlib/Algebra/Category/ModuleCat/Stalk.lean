@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-
 # Module structure on stalks
+
 Let `M` be a presheaf of `R`-modules on a topological space. We endow `M.presheaf.stalk x` with
 an `R.stalk x`-module structure.
 
@@ -36,7 +36,6 @@ variable {C : Type*} [SmallCategory C] [IsFiltered C] (R : C ⥤ RingCat) (M : C
     [∀ i, Module (R.obj i) (M.obj i)]
     (H : ∀ {i j} (f : i ⟶ j) r m, M.map f (r • m) = R.map f r • M.map f m)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The scalar multiplication function on `ColimitType`. -/
 protected noncomputable
 def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).ColimitType) :
@@ -58,10 +57,8 @@ def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).Colimi
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
     simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
 
-#adaptation_note /-- As of nightly-2026-02-10, we need to increase the maxHeartbeats limits here. -/
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 40000 in --
 /-- (Implementation). The module structure on `AddCommGrpCat.FilteredColimits.colimit`. -/
 noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.colimit R)
     (AddCommGrpCat.FilteredColimits.colimit M) where
@@ -97,7 +94,12 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
       (rightToMax V₁ V₂ ≫ rightToMax U (max V₁ V₂))
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ β α ?_
     dsimp
-    simp only [*, ← ConcreteCategory.comp_apply, ← Functor.map_comp, map_add, smul_add]
+    -- We use this pattern instead of a single `simp` to avoid heatbeat modifications
+    rw [H, H, H]
+    simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp]
+    simp only [map_add, ← ConcreteCategory.comp_apply, ← Functor.map_comp, h₁, h₂, h₃, h₄, H]
+    simp only [Functor.map_comp, RingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
+      Category.assoc, AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, smul_add]
   add_smul r s m := Quot.induction_on₃ r s m <| by
     rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩
     obtain ⟨s, α, β, h₁, h₂, h₃, h₄⟩ := crown₄
@@ -114,7 +116,7 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
     rintro ⟨V, b⟩
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _) (leftToMax _ _) ?_
     dsimp
-    simp only [map_zero, zero_smul, *]
+    simp only [map_zero, zero_smul]
 
 /-- Given a cofiltered diagram of rings `R`, and a module `M` over `R`,
 this is the `colim R`-module structure of `colim M`. -/
@@ -136,7 +138,7 @@ lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
     letI := IsColimit.module R M H hcR hcM
     cM.ι.app i (r • m) =
       HSMul.hSMul (α := cR.pt) (β := cM.pt) (cR.ι.app i r) (cM.ι.app i m) := by
-  letI := filteredColimitsModule R M H
+  let := filteredColimitsModule R M H
   let α := IsColimit.coconePointUniqueUpToIso hcM
     (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit M)
   let β := IsColimit.coconePointUniqueUpToIso hcR

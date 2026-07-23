@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 # The canonical measure on the unit interval
 
 This file provides a `MeasureTheory.MeasureSpace` instance on `unitInterval`,
-and shows it is a probability measure with no atoms.
+and shows it is a probability measure with value zero on singletons.
 
 It also contains some basic results on the volume of various interval sets.
 -/
@@ -43,12 +43,13 @@ lemma volume_apply {s : Set I} : volume s = volume (Subtype.val '' s) :=
 lemma measurePreserving_coe : MeasurePreserving ((↑) : I → ℝ) volume (volume.restrict I) :=
   measurePreserving_subtype_coe measurableSet_Icc
 
-instance : NoAtoms (volume : Measure I) where
+instance : NullSingletonClass (volume : Measure I) where
   measure_singleton x := by simp [volume_apply]
 
 @[fun_prop]
 theorem measurable_symm : Measurable σ := continuous_symm.measurable
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `unitInterval.symm` bundled as a measurable equivalence. -/
 @[simps apply]
 def symmMeasurableEquiv : I ≃ᵐ I where
@@ -57,12 +58,15 @@ def symmMeasurableEquiv : I ≃ᵐ I where
   left_inv := symm_symm
   right_inv := symm_symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma symm_symmMeasurableEquiv : symmMeasurableEquiv.symm = symmMeasurableEquiv := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma coe_symmMeasurableEquiv : symmMeasurableEquiv = σ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma measurePreserving_symm : MeasurePreserving symm volume volume where
   measurable := measurable_symm
   map_eq := by
