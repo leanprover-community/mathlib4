@@ -403,6 +403,7 @@ def ModelProd (H : Type*) (H' : Type*) :=
 
 /-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
+@[implicit_reducible]
 def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 

@@ -478,7 +478,6 @@ theorem MDifferentiableOn.prodMap (hf : MDiff[s] f) (hg : MDiff[r] g) :
 theorem MDifferentiable.prodMap (hf : MDiff f) (hg : MDiff g) : MDiff (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace% p.1 →L[𝕜] TangentSpace% (f p.1)}
     (hf : HasMFDerivAt[Prod.fst '' s] f p.1 df)
