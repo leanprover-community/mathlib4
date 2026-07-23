@@ -218,8 +218,8 @@ theorem aeval_liftedFaceSeedInt_eq_supportFace
           (fun t : ↥(supportFace P F) ↦
             GMC2.charge ((t.1 : ↥P.support) : Fin 2 →₀ ℕ)) m0) := by
   rw [GMC2.IntegralFaceSeedDescent.aeval_liftedFaceSeedInt]
-  simpa only [Function.comp_apply, coefficient_faceEquivSupportFace,
-    charge_faceEquivSupportFace] using
+  simpa only [Function.comp_def, Function.comp_apply, coefficient_faceEquivSupportFace,
+    charge_faceEquivSupportFace, GMC2.FaceSeedDescent.faceToSupport] using
     (aeval_constantTermRelationInt_equiv
       (faceEquivSupportFace P F hsubset)
       (fun t : ↥(supportFace P F) ↦
@@ -403,7 +403,9 @@ theorem support_tiltedHeight_lower
         (fun s : ↥P.support ↦ GMC2.FaceDictionary.exponentB s)
         lambda i := by
   intro i hi
-  simpa only [GMC2.FaceDictionary.tiltedHeight_eq] using hlower i i.property
+  simpa [GMC2.FrobeniusFace.tiltedHeight, GMC2.FrobeniusFace.charge,
+      GMC2.FaceDictionary.exponentA, GMC2.FaceDictionary.exponentB,
+      GMC2.radialExponentQ, GMC2.chargeQ, GMC2.charge] using hlower i i.property
 
 /-- The exact equality locus of the supporting line is precisely
 `supportFace P F`. -/
@@ -421,11 +423,15 @@ theorem mem_supportFace_iff_tiltedHeight_eq
   rw [mem_supportFace]
   constructor
   · intro hi
-    simpa only [GMC2.FaceDictionary.tiltedHeight_eq] using (hface i).1 hi |>.2
+    simpa [GMC2.FrobeniusFace.tiltedHeight, GMC2.FrobeniusFace.charge,
+      GMC2.FaceDictionary.exponentA, GMC2.FaceDictionary.exponentB,
+      GMC2.radialExponentQ, GMC2.chargeQ, GMC2.charge] using (hface i).1 hi |>.2
   · intro hi
     apply (hface i).2
     refine ⟨i.property, ?_⟩
-    simpa only [GMC2.FaceDictionary.tiltedHeight_eq] using hi
+    simpa [GMC2.FrobeniusFace.tiltedHeight, GMC2.FrobeniusFace.charge,
+      GMC2.FaceDictionary.exponentA, GMC2.FaceDictionary.exponentB,
+      GMC2.radialExponentQ, GMC2.chargeQ, GMC2.charge] using hi
 
 section DilationSemantics
 
@@ -530,7 +536,9 @@ theorem normalized_height_obligations_of_face_reference
         lambda i = delta := by
     intro i hi hri
     have hiFace := (hface i).1 i.property
-    simpa only [GMC2.FaceDictionary.tiltedHeight_eq] using hiFace.2
+    simpa [GMC2.FrobeniusFace.tiltedHeight, GMC2.FrobeniusFace.charge,
+      GMC2.FaceDictionary.exponentA, GMC2.FaceDictionary.exponentB,
+      GMC2.radialExponentQ, GMC2.chargeQ, GMC2.charge] using hiFace.2
   have hrefFloor := GMC2.FaceHeightFloor.balanced_radialHeight_eq_floor_of_mass
     (fun s : ↥F ↦ GMC2.FaceDictionary.exponentA s)
     (fun s : ↥F ↦ GMC2.FaceDictionary.exponentB s)
