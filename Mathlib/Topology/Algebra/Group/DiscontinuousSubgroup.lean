@@ -81,8 +81,8 @@ lemma Subgroup.Commensurable.properlyDiscontinuousSMul_iff
     [MulAction Γ α] [ContinuousConstSMul Γ α]
     {G H : Subgroup Γ} (h : G.Commensurable H) :
     ProperlyDiscontinuousSMul G α ↔ ProperlyDiscontinuousSMul H α := by
-  have : IsFiniteRelIndex (G ⊓ H) H := ⟨Subgroup.inf_relIndex_right G H ▸ h.1⟩
-  have : IsFiniteRelIndex (G ⊓ H) G := ⟨Subgroup.inf_relIndex_left G H ▸ h.2⟩
+  have : IsFiniteRelIndex (G ⊓ H) H := ⟨Subgroup.inf_relIndex_right G H ▸ h.1.relIndex_ne_zero⟩
+  have : IsFiniteRelIndex (G ⊓ H) G := ⟨Subgroup.inf_relIndex_left G H ▸ h.2.relIndex_ne_zero⟩
   calc ProperlyDiscontinuousSMul G α ↔ ProperlyDiscontinuousSMul ↑(G ⊓ H) α :=
     (properlyDiscontinuousSMul_iff_of_isFiniteRelIndex inf_le_left).symm
   _ ↔ ProperlyDiscontinuousSMul H α :=
