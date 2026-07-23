@@ -8048,6 +8048,7 @@ public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Kuratowski
 public import Mathlib.Topology.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.MetricSeparated
+public import Mathlib.Topology.MetricSpace.MinkowskiDimension
 public import Mathlib.Topology.MetricSpace.PartitionOfUnity
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.MetricSpace.PiNat
