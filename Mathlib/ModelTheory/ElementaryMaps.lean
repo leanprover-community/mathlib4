@@ -145,7 +145,7 @@ theorem encard_realizations_eq_coe_iff [Finite α] (e : M ↪ₑ[L] N)
       {x : α → M | φ.Realize (Sum.elim b x)}.encard = n := by
   simp only [← Formula.realize_iExsExactly, map_formula]
 
-/-- The infititude of a definable set is preserved under an elementary embedding. -/
+/-- The infinitude of a definable set is preserved under an elementary embedding. -/
 theorem infinite_realizations_iff [Finite α] (e : M ↪ₑ[L] N)
     (φ : L.Formula (β ⊕ α)) (b : β → M) :
     Set.Infinite {x : α → N | φ.Realize (Sum.elim (e ∘ b) x)} ↔
