@@ -5,6 +5,7 @@ Authors: Beibei Xiong, Yu Shao, Weijie Jiang, Zhengfeng Yang
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Tactic.NormNum.Inv
@@ -32,6 +33,12 @@ The Stirling numbers of the second kind, represent the number of ways to partiti
   cycles, defined by the recursive relationship it satisfies.
 * `Nat.stirlingSecond`: the number of ways to partition `n` distinct elements into `k` non-empty
   subsets, defined by the recursive relationship it satisfies.
+
+## Main results
+
+* `Nat.pow_eq_sum_stirlingSecond_mul_descFactorial`: every power `n ^ k` is a linear combination
+  of the descending factorials `Nat.descFactorial` with the Stirling numbers of the second kind
+  as coefficients.
 
 ## References
 
@@ -168,5 +175,26 @@ theorem stirlingSecond_succ_self_left (n : ℕ) :
   | succ n ih =>
     rw [stirlingSecond_succ_succ, ih, stirlingSecond_self, mul_one,
       Nat.choose_succ_succ (n + 1), Nat.choose_one_right]
+
+/-- Every power `n ^ k` is a linear combination of the descending factorials `n.descFactorial j`
+with the Stirling numbers of the second kind `stirlingSecond k j` as coefficients. -/
+theorem pow_eq_sum_stirlingSecond_mul_descFactorial (n k : ℕ) :
+    n ^ k = ∑ j ∈ Finset.range (k + 1), stirlingSecond k j * n.descFactorial j := by
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    have : ∑ j ∈ Finset.range (k + 1), stirlingSecond k j * (j * n.descFactorial j)
+        = ∑ j ∈ Finset.range (k + 1),
+            (j + 1) * (stirlingSecond k (j + 1) * n.descFactorial (j + 1)) := by
+      rw [Finset.sum_range_succ' (fun j ↦ stirlingSecond k j * (j * n.descFactorial j)) k,
+        Finset.sum_range_succ (fun j ↦ (j + 1) * (stirlingSecond k (j + 1) *
+          n.descFactorial (j + 1))) k,
+        stirlingSecond_eq_zero_of_lt k.lt_add_one]
+      simp [mul_left_comm]
+    rw [pow_succ, ih, Finset.sum_mul,
+      Finset.sum_range_succ' (fun j ↦ stirlingSecond (k + 1) j * n.descFactorial j) (k + 1)]
+    simp only [mul_assoc, descFactorial_mul_self, mul_add, Finset.sum_add_distrib, this,
+      stirlingSecond_succ_succ, add_mul, stirlingSecond_succ_zero, zero_mul, add_zero]
+    exact add_comm _ _
 
 end Nat
