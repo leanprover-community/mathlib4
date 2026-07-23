@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.Instances.Icc
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
 public import Mathlib.MeasureTheory.Function.JacobianOneDim
 
@@ -147,7 +148,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
   rw [lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn measurableSet_Icc B hf]
   apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
   have : (mfderiv[Icc a b] (γ ∘ f) t) =
-      (mfderiv[Icc (f a) (f b)] γ (f t)) ∘L mfderiv[Icc a b] f t := by
+      (mfderiv[Icc (f a) (f b)] γ (f t)) ∘L d[Icc a b] f t := by
     rw [← f_im] at hγ ⊢
     apply mfderivWithin_comp
     · apply hγ _ (mem_image_of_mem _ ht)
@@ -158,10 +159,10 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
       exact uniqueDiffOn_Icc h _ ht
   rw [this]
   simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
-  have : mfderiv[Icc a b] f t 1 = derivWithin f (Icc a b) t • (1 : TangentSpace% (f t)) := by
-    simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
+  have : d[Icc a b] f t 1 = derivWithin f (Icc a b) t • (1 : TangentSpace% (f t)) := by
+    simp only [mvfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
     rfl
-  rw [this]
+  erw [this]
   have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 

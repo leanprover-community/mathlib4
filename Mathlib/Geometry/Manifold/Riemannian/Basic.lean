@@ -164,10 +164,12 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       contMDiffOn_iff_contDiffOn.mp (hγ.comp_contMDiffOn contMDiffOn_projIcc)
     rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc,
       pathELength_eq_lintegral_mfderivWithin_Icc]
-    simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
+    simp_rw [mfderivWithin_eq_fderivWithin, ← mvfderivWithin_eq_fderivWithin]
+    --#check enorm_tangentSpace_vectorSpace
+    --simp_rw [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
     conv_lhs =>
       rw [edist_comm, edist_eq_enorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
-    exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
+    convert (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one)--.trans_eq ?_--rfl
   · let γ := ContinuousAffineMap.lineMap (R := ℝ) x y
     have : riemannianEDist 𝓘(ℝ, F) x y ≤ pathELength 𝓘(ℝ, F) γ 0 1 := by
       apply riemannianEDist_le_pathELength ?_ (by simp [γ, ContinuousAffineMap.coe_lineMap_eq])

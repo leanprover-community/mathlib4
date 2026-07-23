@@ -592,3 +592,21 @@ lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
     simp
   simpa using this
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
+
+section
+
+variable {f : E → E'} {s : Set E} {x : E}
+
+/-- For maps between vector spaces, `mvfderivWithin` and `fderivWithin` coincide -/
+@[simp]
+theorem mvfderivWithin_eq_fderivWithin :
+    d[s] f x = fderivWithin 𝕜 f s x := by
+  convert! mfderivWithin_eq_fderivWithin (f := f) (s := s) (x := x)
+
+/-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide -/
+@[simp]
+theorem mvfderiv_eq_fderiv :
+    d% f x = fderiv 𝕜 f x := by
+  convert! mfderiv_eq_fderiv (f := f) (x := x)
+
+end
