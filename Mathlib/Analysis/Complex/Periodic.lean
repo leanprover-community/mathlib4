@@ -69,6 +69,18 @@ theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
   refine ⟨m, by rw [hm, mul_div_assoc, mul_comm (m : ℂ), ← mul_add, ← mul_assoc,
     div_mul_cancel₀ _ two_pi_I_ne_zero, mul_add, mul_div_cancel₀ _ (mod_cast hh), mul_comm]⟩
 
+/-- Translation by `j` in the argument of `qParam` corresponds to multiplication by
+`exp (-2 π I j / h)`. -/
+theorem qParam_sub (z j : ℂ) : 𝕢 h (z - j) = 𝕢 h z * exp (-2 * π * I * j / h) := by
+  simp only [qParam, ← exp_add]
+  ring_nf
+
+/-- The `m`-th power of the local parameter at period `m * h` is the local parameter at
+period `h`. -/
+theorem qParam_nat_mul_pow {m : ℕ} (hm : m ≠ 0) (z : ℂ) : 𝕢 (m * h) z ^ m = 𝕢 h z := by
+  simp only [qParam, ← exp_nat_mul, ofReal_mul, ofReal_natCast]
+  rw [mul_div_assoc', mul_div_mul_left _ _ (Nat.cast_ne_zero.mpr hm)]
+
 theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
     ‖qParam h z‖ < Real.exp (-2 * π * A / h) ↔ A < im z := by
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]

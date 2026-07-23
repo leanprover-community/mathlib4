@@ -181,6 +181,25 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
     (↑ₕf) z = (↑ₕf) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
+/-- A function `ℍ → α`, extended to `ℂ` via `ofComplex`, is periodic with real period `c` iff
+the original function is invariant under translation by `c`. -/
+lemma periodic_comp_ofComplex_iff {α : Type*} {f : ℍ → α} {c : ℝ} :
+    Function.Periodic (f ∘ ofComplex) c ↔ ∀ τ : ℍ, f (c +ᵥ τ) = f τ := by
+  constructor
+  · intro h τ
+    have := h ↑τ
+    simp only [Function.comp_apply] at this
+    rwa [show (τ : ℂ) + ↑c = ↑(c +ᵥ τ) by rw [coe_vadd]; ring, ofComplex_apply,
+      ofComplex_apply] at this
+  · intro h w
+    rcases le_or_gt w.im 0 with hw | hw
+    · exact congrArg f (ofComplex_apply_eq_of_im_nonpos (by simpa using hw) hw)
+    · have hw' : 0 < (w + ↑c).im := by simpa using hw
+      simp only [Function.comp_apply]
+      rw [ofComplex_apply_of_im_pos hw', ofComplex_apply_of_im_pos hw,
+        show (⟨w + ↑c, hw'⟩ : ℍ) = c +ᵥ (⟨w, hw⟩ : ℍ) from UpperHalfPlane.ext (by simp [add_comm])]
+      exact h _
+
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
