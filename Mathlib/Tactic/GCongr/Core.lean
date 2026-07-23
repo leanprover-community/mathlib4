@@ -13,8 +13,6 @@ public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
 
-import all Lean.Meta.Tactic.Apply
-
 /-!
 # The `gcongr` ("generalized congruence") tactic
 
