@@ -68,7 +68,7 @@ variable {I : Type*} {f : I → Type*}
 theorem nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')] :
     Nontrivial (∀ i : I, f i) := by
   classical
-  letI := Classical.decEq (∀ i : I, f i)
+  let := Classical.decEq (∀ i : I, f i)
   exact (Function.update_injective (fun i ↦ Classical.choice (inst i)) i').nontrivial
 
 /-- As a convenience, provide an instance automatically if `(f default)` is nontrivial.

@@ -88,7 +88,7 @@ lemma prop_kernel [P.IsClosedUnderKernels] {X Y : C} (f : X ⟶ Y) [HasKernel f]
 instance [P.IsClosedUnderSubobjects] : P.IsClosedUnderKernels where
   kernels_le := by
     intro _ ⟨_, k, hk, hf⟩
-    letI := Fork.IsLimit.mono hk
+    let := Fork.IsLimit.mono hk
     exact P.prop_of_mono k.ι hf.1
 
 lemma hasLimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasKernel f.hom] :
@@ -136,7 +136,7 @@ lemma prop_cokernel [P.IsClosedUnderCokernels] {X Y : C} (f : X ⟶ Y) [HasCoker
 instance [P.IsClosedUnderQuotients] : P.IsClosedUnderCokernels where
   cokernels_le := by
     intro _ ⟨_, k, hk, hf⟩
-    letI := Cofork.IsColimit.epi hk
+    let := Cofork.IsColimit.epi hk
     exact P.prop_of_epi k.π hf.2
 
 lemma hasColimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [HasCokernel f.hom] :

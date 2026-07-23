@@ -80,6 +80,7 @@ protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
     ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
     (Pi.basis s).repr (Pi.single j (s j i)) = Finsupp.single ⟨j, i⟩ 1 := by

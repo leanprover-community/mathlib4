@@ -93,8 +93,10 @@ theorem compl_def (s : Set α) : sᶜ = { x | x ∉ s } :=
 theorem mem_compl {s : Set α} {x : α} (h : x ∉ s) : x ∈ sᶜ :=
   h
 
-theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
+theorem compl_ofPred {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias compl_setOf := compl_ofPred
 
 theorem notMem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h

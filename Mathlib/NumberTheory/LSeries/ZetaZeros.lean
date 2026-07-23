@@ -54,11 +54,11 @@ private lemma compl_riemannZetaZeros_mem_codiscrete :
   · exact Filter.mem_of_superset (this x hx)
       (by grind [riemannZeta_one_ne_zero, mem_riemannZetaZeros])
 
-lemma isClosed_riemannZetaZeros : IsClosed riemannZetaZeros :=
-  by simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).1
+lemma isClosed_riemannZetaZeros : IsClosed riemannZetaZeros := by
+  simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).1
 
-lemma isDiscrete_riemannZetaZeros : IsDiscrete riemannZetaZeros :=
-  by simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).2
+lemma isDiscrete_riemannZetaZeros : IsDiscrete riemannZetaZeros := by
+  simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).2
 
 /-- Any compact subset of `ℂ` contains only finitely many zeros of the Riemann zeta function. -/
 lemma IsCompact.inter_riemannZetaZeros_finite {S : Set ℂ} (hS : IsCompact S) :

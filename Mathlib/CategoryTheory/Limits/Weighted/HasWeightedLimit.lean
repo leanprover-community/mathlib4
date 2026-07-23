@@ -177,7 +177,7 @@ noncomputable def isLimitWeightedLimCone :
     (W.weightedLimCone F).IsLimit :=
   limit.isLimit _
 
-@[reassoc (attr := simp)]
+@[reassoc, simp] -- `simp` can prove the `reassoc` version
 lemma isLimitWeightedLimCone_fac {Z} (π) (hπ) ⦃j : J⦄ (x : W.obj j) :
     (W.isLimitWeightedLimCone F).lift (Z := Z) π hπ ≫ W.weightedLimObjObjπ F x = π x :=
   (W.isLimitWeightedLimCone F).fac ..
