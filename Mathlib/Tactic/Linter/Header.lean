@@ -175,11 +175,13 @@ The input is the copyright string, the output is an array of `Syntax × String` 
 The linter checks that
 * the first and last line of the copyright are a `("/-", "-/")` pair, each on its own line;
 * the first line is begins with `Copyright (c) 20` and ends with `. All rights reserved.`;
-* the second line is `Released under Apache 2.0 license as described in the file LICENSE.`;
+* the second line equals `expectedLicense` (determined by the `linter.style.header.license` option,
+  defaults to the Mathlib default);
 * the remainder of the string begins with `Authors: `, does not end with `.` and
   contains no ` and ` nor a double space, except possibly after a line break.
 -/
-public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
+public def copyrightHeaderChecks (copyright : String) (expectedLicense : String) :
+    Array (Syntax × String) := Id.run do
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
@@ -240,7 +242,6 @@ public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String)
         "If an authors line spans multiple lines, \
         each line but the last must end with a trailing comma")
     output := output.append (authorsLineChecks authorsLine authorsStart)
-    let expectedLicense := "Released under Apache 2.0 license as described in the file LICENSE."
     if license != expectedLicense then
       output := output.push (toSyntax copyright license,
         s!"Second copyright line should be \"{expectedLicense}\"")
@@ -297,6 +298,12 @@ The linter allows `import`-only files and does not require a copyright statement
 public register_option linter.style.header : Bool := {
   defValue := false
   descr := "enable the header style linter"
+}
+
+/-- The text required by `linter.style.header` as the second line of the header. -/
+public register_option linter.style.header.license : String := {
+  defValue := "Released under Apache 2.0 license as described in the file LICENSE."
+  descr := "The text required as the second line of the copyright header."
 }
 
 namespace Style.header
@@ -367,7 +374,7 @@ because they are files that test the linter.
 -/
 def headerTestFiles : NameSet := .ofList
   [`MathlibTest.Linter.Header.Basic, `MathlibTest.Linter.Header.Fail, `MathlibTest.Linter.Header.Verso,
-  `MathlibTest.DirectoryDependencyLinter.Test]
+  `MathlibTest.Linter.Header.License, `MathlibTest.DirectoryDependencyLinter.Test]
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -437,7 +444,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | _ => ""
   -- Report any errors about the copyright line.
   if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
-    for (stx, m) in copyrightHeaderChecks copyright do
+    let expectedLicense := linter.style.header.license.get (← getOptions)
+    for (stx, m) in copyrightHeaderChecks copyright expectedLicense do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- Report a missing module doc-string.
   match afterImports with
