@@ -191,6 +191,110 @@ theorem derivative_iterate_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
   rw [derivative_iterate, coeff_nsmul, Pi.smul_apply, hasseDeriv_coeff,
     Ring.descPochhammer_eq_factorial_smul_choose, smul_assoc]
 
+/-! ### Leibniz product rule for the first Hasse derivative -/
+
+section LeibnizRule
+
+variable {R : Type*} [CommRing R]
+
+private lemma derivative_coeff (f : LaurentSeries R) (n : ℤ) :
+    (derivative R f).coeff n = (n + 1) • f.coeff (n + 1) := by
+  rw [derivative_apply, hasseDeriv_coeff, Ring.choose_one_right]
+  push_cast; rfl
+
+private lemma support_derivative_subset (f : LaurentSeries R) :
+    (derivative R f).support ⊆ (· - 1) '' f.support := by
+  intro n hn
+  rw [HahnSeries.mem_support] at hn
+  refine ⟨n + 1, ?_, by ring⟩
+  rw [HahnSeries.mem_support]
+  intro hf
+  exact hn (by rw [derivative_coeff, hf, smul_zero])
+
+private lemma isPWO_shifted_support (f : LaurentSeries R) :
+    Set.IsPWO ((· - 1) '' f.support) :=
+  f.isPWO_support.image_of_monotone (fun _ _ h => by lia)
+
+private lemma sum_bij_left (f g : LaurentSeries R) (n : ℤ) :
+    ∑ ij ∈ Finset.addAntidiagonal (isPWO_shifted_support f) g.isPWO_support n,
+        ((ij.fst + 1) • f.coeff (ij.fst + 1)) * g.coeff ij.snd
+    = ∑ ij ∈ Finset.addAntidiagonal f.isPWO_support g.isPWO_support (n + 1),
+        (ij.fst • f.coeff ij.fst) * g.coeff ij.snd := by
+  refine Finset.sum_nbij' (fun ij => (ij.fst + 1, ij.snd))
+                          (fun ij => (ij.fst - 1, ij.snd)) ?_ ?_ ?_ ?_ ?_
+  · rintro ⟨a, b⟩ hab
+    rw [Finset.mem_addAntidiagonal] at hab ⊢
+    obtain ⟨⟨m, hm, hma⟩, hb, hab'⟩ := hab
+    refine ⟨?_, hb, by simp; lia⟩
+    simp only at hma
+    change a + 1 ∈ f.support
+    rwa [show a + 1 = m from by lia]
+  · rintro ⟨i, j⟩ hij
+    rw [Finset.mem_addAntidiagonal] at hij ⊢
+    obtain ⟨hi, hj, hij'⟩ := hij
+    refine ⟨⟨i, hi, by ring⟩, hj, by simp; lia⟩
+  · rintro ⟨a, b⟩ _; ext <;> simp
+  · rintro ⟨i, j⟩ _; ext <;> simp
+  · rintro ⟨a, b⟩ _; rfl
+
+private lemma sum_bij_right (f g : LaurentSeries R) (n : ℤ) :
+    ∑ ij ∈ Finset.addAntidiagonal f.isPWO_support (isPWO_shifted_support g) n,
+        f.coeff ij.fst * ((ij.snd + 1) • g.coeff (ij.snd + 1))
+    = ∑ ij ∈ Finset.addAntidiagonal f.isPWO_support g.isPWO_support (n + 1),
+        f.coeff ij.fst * (ij.snd • g.coeff ij.snd) := by
+  refine Finset.sum_nbij' (fun ij => (ij.fst, ij.snd + 1))
+                          (fun ij => (ij.fst, ij.snd - 1)) ?_ ?_ ?_ ?_ ?_
+  · rintro ⟨a, b⟩ hab
+    rw [Finset.mem_addAntidiagonal] at hab ⊢
+    obtain ⟨ha, ⟨m, hm, hmb⟩, hab'⟩ := hab
+    refine ⟨ha, ?_, by simp; lia⟩
+    simp only at hmb
+    change b + 1 ∈ g.support
+    rwa [show b + 1 = m from by lia]
+  · rintro ⟨i, j⟩ hij
+    rw [Finset.mem_addAntidiagonal] at hij ⊢
+    obtain ⟨hi, hj, hij'⟩ := hij
+    refine ⟨hi, ⟨j, hj, by ring⟩, by simp; lia⟩
+  · rintro ⟨a, b⟩ _; ext <;> simp
+  · rintro ⟨i, j⟩ _; ext <;> simp
+  · rintro ⟨a, b⟩ _; rfl
+
+/-- **Leibniz rule for the first Hasse derivative on Laurent series.**
+The first derivative on `LaurentSeries R` — defined as `hasseDeriv R 1` and
+packaged as `derivative R` — satisfies the Leibniz product rule
+`(f * g)' = f' * g + f * g'` for coefficients in a commutative ring.
+
+Not marked `@[simp]` because `derivative_apply` already simp-rewrites
+`derivative R x` to `hasseDeriv R 1 x`; the simp-normal form is the
+`hasseDeriv_one_mul` corollary below. -/
+theorem derivative_mul (f g : LaurentSeries R) :
+    derivative R (f * g) = derivative R f * g + f * derivative R g := by
+  ext n
+  rw [derivative_coeff (f * g) n, HahnSeries.coeff_mul,
+      HahnSeries.coeff_add', Pi.add_apply,
+      HahnSeries.coeff_mul_left' (isPWO_shifted_support f) (support_derivative_subset f),
+      HahnSeries.coeff_mul_right' (isPWO_shifted_support g) (support_derivative_subset g),
+      Finset.smul_sum]
+  simp only [derivative_coeff]
+  rw [sum_bij_left f g n, sum_bij_right f g n, ← Finset.sum_add_distrib]
+  apply Finset.sum_congr rfl
+  rintro ⟨i, j⟩ hij
+  rw [Finset.mem_addAntidiagonal] at hij
+  obtain ⟨_, _, hij'⟩ := hij
+  change (n + 1) • (f.coeff i * g.coeff j) =
+       i • f.coeff i * g.coeff j + f.coeff i * j • g.coeff j
+  rw [← hij', add_smul, smul_mul_assoc, mul_smul_comm]
+
+/-- **Leibniz rule for the first Hasse derivative on Laurent series**, in
+simp-normal `hasseDeriv R 1` form. Corollary of `derivative_mul` via the
+defeq `derivative R = hasseDeriv R 1`. -/
+@[simp]
+theorem hasseDeriv_one_mul (f g : LaurentSeries R) :
+    hasseDeriv R 1 (f * g) = hasseDeriv R 1 f * g + f * hasseDeriv R 1 g :=
+  derivative_mul f g
+
+end LeibnizRule
+
 end HasseDeriv
 
 section Semiring
