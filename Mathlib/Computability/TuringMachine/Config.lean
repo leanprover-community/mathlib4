@@ -269,8 +269,6 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
         rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix non-terminal simp (operates on two goals, with long simp sets)
-set_option linter.flexible false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
@@ -294,11 +292,10 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       specialize hf v.tail
       replace hg := fun a b => hg (a ::ᵥ b ::ᵥ v.tail)
       simp only [Vector.cons_val, Vector.tail_val] at hf hg
-      simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, Vector.tail_cons,
-        Vector.head_cons, PFun.coe_val, Vector.tail_val]
+      simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val, Vector.tail_val]
       simp only [← Part.pure_eq_some] at hf hg ⊢
       induction v.head with
-        simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some, Bind.bind]
+      | zero => simp [prec, hf, Bind.bind]
       | succ n _ =>
       suffices ∀ a b, a + b = n →
         (n.succ :: 0 ::
@@ -313,6 +310,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
                   (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
             (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
         have := Part.eq_some_iff.mpr (this _ _ (zero_add _))
+        simp [prec, Part.bind_assoc, Bind.bind]
         simp_all
       intro a b e
       induction b generalizing a with
