@@ -372,4 +372,123 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
 
 end Salient
 
+section Semiring
+
+variable {R : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
+variable {E : Type*} [AddCommGroup E] [Module R E]
+variable {C : PointedCone R E}
+
+/-- Expresses that the cone is a submodule. -/
+def IsSubmodule (C : PointedCone R E) : Prop := -C = C
+
+@[simp] lemma IsSubmodule.iff_neg_eq_self : -C = C ↔ C.IsSubmodule := .rfl
+@[simp] lemma IsSubmodule.iff_eq_neg_self : C = -C ↔ C.IsSubmodule := by rw [Eq.comm]; rfl
+
+@[simp] lemma IsSubmodule.iff_neg_le_self : -C ≤ C ↔ C.IsSubmodule := by
+  rw [Iff.comm, ← Submodule.neg_eq_self_iff_neg_le]; rfl
+@[simp] lemma IsSubmodule.iff_le_neg_self : C ≤ -C ↔ C.IsSubmodule := by
+  rw [Iff.comm, ← Submodule.neg_le, iff_neg_le_self]
+
+end Semiring
+
+section Ring
+
+variable {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
+variable {E : Type*} [AddCommGroup E] [Module R E]
+
+@[simp]
+lemma IsSubmodule.submodule (S : Submodule R E) : IsSubmodule (S : PointedCone R E) := by
+  simp [IsSubmodule]
+
+end Ring
+
+section DirectedOrderRing
+
+variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
+variable {E : Type*} [AddCommGroup E] [Module R E]
+variable {C : PointedCone R E} {x : E}
+
+/-- A cone that is closed under negation forms a submodule. -/
+abbrev toSubmodule (hC : C.IsSubmodule) : Submodule R E where
+  __ := C
+  smul_mem' a x hx := by
+    obtain ⟨b, hab, hb⟩ := exists_ge_ge a 0
+    suffices b • x + -(b - a) • x ∈ C by
+      rw [← add_smul] at this
+      abel_nf at this
+      exact this
+    have : -(b - a) • x ∈ C := by
+      rw [← hC]
+      simpa [← neg_smul] using smul_mem _ (sub_nonneg.mpr hab) hx
+    aesop
+
+alias IsSubmodule.lift := toSubmodule
+
+@[simp] lemma ofSubmodule_toSubmodule (hC : C.IsSubmodule) : C.toSubmodule hC = C := rfl
+
+@[simp] alias IsSubmodule.ofSubmodule_lift := ofSubmodule_toSubmodule
+
+lemma coe_toSubmodule (hC : C.IsSubmodule) : (C.toSubmodule hC : Set E) = C := by simp
+
+alias IsSubmodule.coe_lift := coe_toSubmodule
+
+lemma mem_toSubmodule {hC : C.IsSubmodule} : x ∈ C.toSubmodule hC ↔ x ∈ C := by simp
+
+alias IsSubmodule.mem_lift := mem_toSubmodule
+
+instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule IsSubmodule where
+  prf _ h := ⟨h.lift, h.ofSubmodule_lift⟩
+
+lemma IsSubmodule.iff_eq_span : C.IsSubmodule ↔ C = span R (C : Set E) where
+  mp h := by lift C to Submodule R E using h; simp
+  mpr h := by rw [h]; exact submodule _
+
+variable (R)
+
+lemma span_eq_hull_neg_sup_hull (s : Set E) : span R s = hull R (-s) ⊔ hull R s := by
+  suffices span R s = (hull R (-s) ⊔ hull R s).toSubmodule
+    (by simp [← span_neg_eq_neg, sup_comm, IsSubmodule]) by simp [this]
+  refine span_eq_of_le _ (fun x hx ↦ ?_) ?_
+  · simpa using mem_sup_right (Submodule.subset_span hx)
+  · rw [← ofSubmodule_le_ofSubmodule]
+    simpa [hull_le_span] using hull_le_span R (-s)
+
+variable (x) in
+@[simp] lemma hull_neg_pair_eq_span_singleton : hull R {-x, x} = R ∙ x := by
+  change hull R ({-x} ∪ {x}) = (R ∙ x)
+  simp only [span_union, span_eq_hull_neg_sup_hull, Set.neg_singleton]
+
+lemma hull_eq_span_of_neg_eq {s : Set E} (hs : -s = s) :
+    hull R s = span R s := by
+  simp [span_eq_hull_neg_sup_hull, hs]
+
+variable {R}
+
+variable (C) in
+lemma span_eq_neg_sup : span R (C : Set E) = -C ⊔ C := by
+  simp [span_eq_hull_neg_sup_hull, span_neg_eq_neg]
+
+lemma mem_span_iff_mem_neg_sup : x ∈ span R C ↔ x ∈ -C ⊔ C := by
+  rw [← span_eq_neg_sup, mem_ofSubmodule_iff]
+
+lemma mem_span : x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, x = p - n := by
+  simp_rw [mem_span_iff_mem_neg_sup, mem_sup, mem_neg]
+  refine ⟨fun ⟨y, hy', z, hz, h⟩ ↦ ?_, fun ⟨p, hp, n, hn, h⟩ ↦ ?_⟩
+  · exact ⟨z, hz, -y, hy', by grind⟩
+  · exact ⟨-n, by simp [hn], x + n, by simp [h, hp], by simp⟩
+
+end DirectedOrderRing
+
+section LinearOrderRing
+
+variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R]
+variable {E : Type*} [AddCommGroup E] [Module R E]
+variable {C : PointedCone R E}
+
+lemma IsSubmodule.iff_eq_lineal : C.IsSubmodule ↔ C = C.lineal where
+  mp h := by lift C to Submodule R E using h; simp
+  mpr h := by rw [h]; exact submodule _
+
+end LinearOrderRing
+
 end PointedCone
