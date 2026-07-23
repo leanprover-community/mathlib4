@@ -7879,6 +7879,7 @@ public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.DomAct
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.ContinuousMap.Bounded.Star
 public import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
@@ -7888,6 +7889,7 @@ public import Mathlib.Topology.ContinuousMap.CompactlySupported
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.ContinuousMap.DomAct
 public import Mathlib.Topology.ContinuousMap.Ideals
 public import Mathlib.Topology.ContinuousMap.Interval
 public import Mathlib.Topology.ContinuousMap.Lattice
