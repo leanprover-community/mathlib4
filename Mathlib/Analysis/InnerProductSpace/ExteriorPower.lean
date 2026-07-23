@@ -82,13 +82,11 @@ lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder �
   · subst h
     simp [gram_eq_one_iff_orthonormal.mpr (hv.comp _ (RelEmbedding.injective _))]
   · rw [innerProductForm_ιMulti_ιMulti]
-    have : ¬t.1 ⊆ s.1 := Set.powersetCard.eq_iff_subset.not.mp (Ne.symm h)
-    rw [Finset.not_subset] at this
-    obtain ⟨x, hxt, hxs⟩ := this
-    simp only [Set.powersetCard.mem_coe_iff, Set.mem_range, not_exists,
+    obtain ⟨x, hxt, hxs⟩ := (Set.powersetCard.exists_mem_notMem_iff_ne t s).mp (.symm h)
+    simp only [Set.mem_range, not_exists,
       ← Set.powersetCard.mem_range_ofFinEmbEquiv_symm_iff_mem] at hxs hxt
-    obtain ⟨i, hi⟩ := hxt
-    exact det_eq_zero_of_row_eq_zero i (fun j ↦ hv.inner_eq_zero (hi ▸ hxs j))
+    obtain ⟨i, rfl⟩ := hxt
+    exact det_eq_zero_of_row_eq_zero i (fun j ↦ hv.inner_eq_zero (hxs j))
 
 lemma innerProductForm_eq_sum {ι : Type*} [Fintype ι] [LinearOrder ι]
     (b : OrthonormalBasis ι ℝ E) (x y : ⋀[ℝ]^n E) :
