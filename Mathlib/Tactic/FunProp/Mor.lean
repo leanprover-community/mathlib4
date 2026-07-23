@@ -67,38 +67,18 @@ def isMorApp? (e : Expr) : MetaM (Option App) := do
     return none
 
 /--
-Weak normal head form of an expression involving morphism applications. Additionally, `pred`
-can specify which when to unfold definitions.
-
-For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
--/
-partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
-    MetaM Expr := do
-  whnfEasyCases e fun e => do
-    let e ← whnfCore e
-
-    if let some ⟨coe,f,x⟩ ← isMorApp? e then
-      let f ← whnfPred f pred
-      if (← getConfig).zeta then
-        return (coe.app f).app x
-      else
-        return ← mapLetTelescope f fun _ f' => pure ((coe.app f').app x)
-
-    if (← pred e) then
-        match (← unfoldDefinition? e) with
-        | some e => whnfPred e pred
-        | none   => return e
-    else
-      return e
-
-/--
 Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
 -/
-def whnf (e : Expr) : MetaM Expr :=
-  whnfPred e (fun _ => return false)
-
+partial def whnf (e : Expr) : MetaM Expr := do
+  let e ← Lean.Meta.whnf e
+  let some ⟨coe,f,x⟩ ← isMorApp? e | return e
+  let f ← whnf f
+  if (← getConfig).zeta then
+    return (coe.app f).app x
+  else
+    return ← mapLetTelescope f fun _ f' => pure ((coe.app f').app x)
 
 /-- Argument of morphism application that stores corresponding coercion if necessary -/
 structure Arg where

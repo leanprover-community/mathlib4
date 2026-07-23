@@ -61,8 +61,6 @@ namespace MeasurableEquiv
 /-- The map from `X` to `WithLp p X` as a measurable equivalence. -/
 protected def toLp : X ≃ᵐ (WithLp p X) where
   toEquiv := (WithLp.equiv p X).symm
-  measurable_toFun := WithLp.measurable_toLp p X
-  measurable_invFun := WithLp.measurable_ofLp p X
 
 lemma coe_toLp : ⇑(MeasurableEquiv.toLp p X) = WithLp.toLp p := rfl
 

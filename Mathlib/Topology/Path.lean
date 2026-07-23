@@ -116,6 +116,7 @@ theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 
     ⟨⟨f, hf₀, hf₁⟩, rfl⟩
 
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
+@[reducible]
 instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
