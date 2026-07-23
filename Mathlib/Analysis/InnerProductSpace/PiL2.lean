@@ -796,6 +796,17 @@ protected theorem repr_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι')
 
 end OrthonormalBasis
 
+/-- The determinant of the rows of a matrix, considered as vectors in `PiLp` via `WithLp.toLp`,
+with respect to the standard basis. -/
+theorem PiLp.basisFun_det_toLp {ι R : Type*} {p : ENNReal}
+    [Fintype ι] [DecidableEq ι] [CommRing R]
+    (A : Matrix ι ι R) :
+    (PiLp.basisFun p R ι).det (fun i => WithLp.toLp p (A i)) = A.det := by
+  rw [PiLp.basisFun_eq_pi_basisFun, Module.Basis.det_map']
+  rw [AlternatingMap.compLinearMap_apply]
+  simp only [LinearEquiv.coe_coe, LinearEquiv.symm_symm, WithLp.coe_linearEquiv]
+  exact Pi.basisFun_det_apply A
+
 namespace EuclideanSpace
 
 variable (𝕜 ι)
@@ -821,6 +832,13 @@ theorem inner_basisFun_real (x : EuclideanSpace ℝ ι) (i : ι) :
   rw [real_inner_comm, basisFun_inner]
 
 theorem basisFun_toBasis : (basisFun ι 𝕜).toBasis = PiLp.basisFun _ 𝕜 ι := rfl
+
+/-- The determinant of the rows of a matrix, considered as vectors in Euclidean space via
+`WithLp.toLp`, with respect to the standard Euclidean basis. -/
+theorem basisFun_toBasis_det_toLp [DecidableEq ι] (A : Matrix ι ι 𝕜) :
+    (basisFun ι 𝕜).toBasis.det (fun i => WithLp.toLp 2 (A i)) = A.det := by
+  rw [basisFun_toBasis]
+  exact PiLp.basisFun_det_toLp (p := 2) A
 
 end EuclideanSpace
 

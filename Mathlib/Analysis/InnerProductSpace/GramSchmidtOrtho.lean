@@ -361,6 +361,19 @@ theorem gramSchmidtOrthonormalBasis_inv_triangular' {i j : ι} (hij : i < j) :
     (gramSchmidtOrthonormalBasis h f).repr (f i) j = 0 := by
   simpa [OrthonormalBasis.repr_apply_apply] using gramSchmidtOrthonormalBasis_inv_triangular h f hij
 
+/-- If each vector of a family is parallel to its corresponding vector in the orthonormal basis
+constructed from the family by Gram-Schmidt, then the family is pairwise orthogonal. -/
+theorem gramSchmidtOrthonormalBasis_pairwise_inner_eq_zero_of_parallel
+    (hparallel : ∀ i, ∃ c : 𝕜, f i = c • gramSchmidtOrthonormalBasis h f i) :
+    Pairwise fun i k => ⟪f i, f k⟫ = 0 := by
+  intro i k hik
+  rcases hik.lt_or_gt with hlt | hgt
+  · rcases hparallel k with ⟨_, hk⟩
+    simp [hk, inner_smul_right,
+      inner_eq_zero_symm.2 (gramSchmidtOrthonormalBasis_inv_triangular h f hlt)]
+  · rcases hparallel i with ⟨_, hi⟩
+    simp [hi, inner_smul_left, gramSchmidtOrthonormalBasis_inv_triangular h f hgt]
+
 /-- Given an indexed family `f : ι → E` of vectors in an inner product space `E`, for which the
 size of the index set is the dimension of `E`, the matrix of coefficients of `f` with respect to the
 orthonormal basis `gramSchmidtOrthonormalBasis` constructed from `f` is upper-triangular. -/

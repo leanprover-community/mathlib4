@@ -234,6 +234,48 @@ theorem isHadamard_iff_mul_conjTranspose
   ⟨fun hA => ⟨hA.apply_mem, hA.mul_conjTranspose⟩,
    fun hA => IsHadamard.of_mul_conjTranspose hA.1 hA.2 hcard⟩
 
+/-- A matrix whose entries are unitary and whose distinct rows have conjugate dot product zero is
+Hadamard, provided the order is regular in the ring. -/
+theorem IsHadamard.of_unitary_of_pairwise_rows_of_isRegular
+    (hentry : ∀ i j, A i j ∈ unitary R)
+    (horth : ∀ ⦃i k : n⦄, i ≠ k → ∑ j, A i j * star (A k j) = 0)
+    (hcard : IsRegular (Fintype.card n : R)) : A.IsHadamard := by
+  refine IsHadamard.of_mul_conjTranspose hentry ?_ hcard
+  ext i k
+  by_cases hik : i = k
+  · subst k
+    simp [mul_apply, fun j => (Unitary.mem_iff.mp (hentry i j)).2]
+  · simp [mul_apply, hik, horth hik]
+
+/-- A matrix over a commutative ring with trivial star whose entries square to one and whose
+distinct rows have dot product zero is Hadamard, provided the order is regular in the ring. -/
+theorem IsHadamard.of_entry_sq_of_pairwise_rows_of_isRegular [TrivialStar R]
+    (hentry_sq : ∀ i j, (A i j) ^ 2 = 1)
+    (horth : ∀ ⦃i k : n⦄, i ≠ k → ∑ j, A i j * A k j = 0)
+    (hcard : IsRegular (Fintype.card n : R)) : A.IsHadamard :=
+  IsHadamard.of_unitary_of_pairwise_rows_of_isRegular
+    (fun i j => by
+      rw [Unitary.mem_iff]
+      constructor <;> simpa [sq] using hentry_sq i j)
+    (fun {i k} hik => by simpa using horth (i := i) (k := k) hik) hcard
+
+section CharZeroNoZeroDivisors
+variable [TrivialStar R] [CharZero R] [NoZeroDivisors R]
+
+/-- A matrix over a commutative ring with trivial star, characteristic zero, and no zero divisors
+whose entries square to one and whose distinct rows have dot product zero is Hadamard. -/
+theorem IsHadamard.of_entry_sq_of_pairwise_rows
+    (hentry_sq : ∀ i j, (A i j) ^ 2 = 1)
+    (horth : ∀ ⦃i k : n⦄, i ≠ k → ∑ j, A i j * A k j = 0) : A.IsHadamard := by
+  by_cases hempty : IsEmpty n
+  · letI := hempty
+    refine ⟨isEmptyElim, ?_, ?_⟩ <;> ext i <;> exact isEmptyElim i
+  · haveI := not_isEmpty_iff.mp hempty
+    exact IsHadamard.of_entry_sq_of_pairwise_rows_of_isRegular hentry_sq horth <|
+      IsRegular.of_ne_zero <| by exact_mod_cast Fintype.card_ne_zero
+
+end CharZeroNoZeroDivisors
+
 end CommRing
 
 /-- An integer Hadamard matrix of order greater than two has order divisible by four.
