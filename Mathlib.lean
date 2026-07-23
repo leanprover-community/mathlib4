@@ -4597,6 +4597,7 @@ public import Mathlib.Geometry.Convex.Cone.TensorProduct
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Geometry.Convex.ConvexSpace.OfBinary
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Set
