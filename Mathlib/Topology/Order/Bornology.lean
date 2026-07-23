@@ -145,8 +145,25 @@ lemma IsOrderBornology.cobounded_eq_atTop [NoMaxOrder α] [OrderBot α] :
 
 -- TODO (khw): Generate this in the future with `to_dual`
 -- See https://github.com/leanprover-community/mathlib4/pull/37738
+@[to_dual existing]
 lemma IsOrderBornology.cobounded_eq_atBot [NoMinOrder α] [OrderTop α] :
     Bornology.cobounded α = .atBot := cobounded_eq_atTop (α := αᵒᵈ)
+
+instance IsOrderBornology.neBot_cobounded_of_noMinOrder [NoMinOrder α] : (cobounded α).NeBot := by
+  cases topOrderOrNoTopOrder α
+  · rw [cobounded_eq_atBot]
+    infer_instance
+  · have := NoTopOrder.to_noMaxOrder α
+    rw [cobounded_eq]
+    infer_instance
+
+instance IsOrderBornology.neBot_cobounded_of_noMaxOrder [NoMaxOrder α] : (cobounded α).NeBot := by
+  cases botOrderOrNoBotOrder α
+  · rw [cobounded_eq_atTop]
+    infer_instance
+  · have := NoBotOrder.to_noMinOrder α
+    rw [cobounded_eq]
+    infer_instance
 
 end LinearOrder
 
