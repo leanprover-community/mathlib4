@@ -120,7 +120,7 @@ theorem constantTermRelation_scale {ι : Type*} [Fintype ι] [DecidableEq ι]
   have hchg : totalCharge q1 r = g * totalCharge q2 r := by
     unfold totalCharge
     rw [Finset.mul_sum]
-    exact Finset.sum_congr rfl (fun i _ => by rw [hscale i]; push_cast; ring)
+    exact Finset.sum_congr rfl (fun i _ => by rw [hscale i]; ring)
   by_cases hbal : totalCharge q2 r = 0
   · rw [if_pos hbal, if_pos (by rw [hchg, hbal, mul_zero])]
   · rw [if_neg hbal, if_neg (by rw [hchg]; exact mul_ne_zero hg hbal)]

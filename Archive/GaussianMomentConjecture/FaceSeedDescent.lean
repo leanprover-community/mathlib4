@@ -116,7 +116,7 @@ theorem exists_numberField_moment_point_preserving_lowest_face_seed
       MvPolynomial.aeval coefficient (liftedFaceSeed P F hsubset m0) ≠ 0 := by
     rw [aeval_liftedFaceSeed]
     simp only [coefficient, faceToSupport, Function.comp_def]
-    convert hseed using 2 <;> rfl
+    convert hseed using 2; rfl
 
   obtain ⟨K, fieldK, algebraK, hfinite, coefficientK,
       hcoefficientK, hmomentK, hseedK⟩ :=

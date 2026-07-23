@@ -138,17 +138,13 @@ theorem prod_rootSet_Phi (R : F[X]) (M : ℕ) (hM : 1 ≤ M) (hMd : M < R.natDeg
         = ((Phi R M).map (algebraMap (RatFunc F) SF)).roots.prod := by
     have h1 : (∏ α : (Phi R M).rootSet SF, (α : SF))
         = ∏ x ∈ ((Phi R M).aroots SF).toFinset, x := by
-      first
-      | exact Finset.prod_attach _ id
-      | exact Finset.prod_attach _ _
+      exact Finset.prod_attach _ id
     rw [h1, Polynomial.aroots, Finset.prod_eq_multiset_prod, Multiset.map_id',
       Multiset.toFinset_val, hnd.dedup]
   rw [hbridge, prod_roots_Phi R M hM hMd hsplit]
   -- fold the `(−1)^d` sign and the nested `algebraMap`/`RatFunc.C` into `RatFunc.C d`
   simp only [map_mul, map_pow, map_neg, map_one]
-  first
-  | rfl
-  | rw [RatFunc.algebraMap_eq_C]
+  rfl
 
 end GMC2.PhiVieta
 

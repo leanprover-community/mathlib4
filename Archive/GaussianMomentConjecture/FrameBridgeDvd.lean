@@ -61,7 +61,7 @@ theorem smallRootFactor_dvd_PhiPoly (R : Polynomial F) (M : ℕ) :
   have hord : ((↑P : PowerSeries (PowerSeries F)).map
       (Ideal.Quotient.mk (IsLocalRing.maximalIdeal (PowerSeries F)))).order.toNat = M := by
     rw [← Polynomial.polynomial_map_coe, hPdist.map_eq_X_pow, hPnat, Polynomial.coe_pow,
-      Polynomial.coe_X, PowerSeries.order_X_pow, ENat.toNat_coe]
+      Polynomial.coe_X, PowerSeries.order_X_pow, ENat.toNat_natCast]
   -- degree conditions
   have hr0 : (0 : Polynomial (PowerSeries F)).degree
       < ((↑P : PowerSeries (PowerSeries F)).map

@@ -84,7 +84,7 @@ theorem smallRootFactor_natDegree (R : Polynomial F) (M : ℕ) :
   have H := PowerSeries.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
     (phi_residue_ne_zero R M)
   rw [smallRootFactor, H.natDegree_eq_toNat_order_map, map_residue_Phi, PowerSeries.order_X_pow,
-    ENat.toNat_coe]
+    ENat.toNat_natCast]
 
 /-- `P` is monic. -/
 theorem smallRootFactor_monic (R : Polynomial F) (M : ℕ) : (smallRootFactor R M).Monic :=

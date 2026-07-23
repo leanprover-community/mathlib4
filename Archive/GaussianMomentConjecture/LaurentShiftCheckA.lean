@@ -240,7 +240,7 @@ theorem translateSum_one_ne_fullSum_zero
     (hfull : ∑ α : Ω, f α = 0) : False := by
   have h := card_nsmul_translateSum_eq f S x 1 htranslate
   rw [hfull, nsmul_zero] at h
-  have hcast : (Fintype.card G : K) = 0 := by simpa using h
+  have hcast : (Fintype.card G : K) = 0 := by simp at h
   exact (Nat.cast_ne_zero.mpr Fintype.card_ne_zero) hcast
 
 end GMC2.AdditiveOrbitSum

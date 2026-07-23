@@ -65,7 +65,7 @@ theorem ofPowerSeries_coe_eq_aeval (R : Polynomial F) :
     apply Polynomial.ringHom_ext
     · intro a
       simp [Polynomial.coeToPowerSeries.ringHom, HahnSeries.ofPowerSeries_C,
-        ← HahnSeries.C_eq_algebraMap, LaurentSeries.algebraMap_apply]
+        LaurentSeries.algebraMap_apply]
     · simp [Polynomial.coeToPowerSeries.ringHom, HahnSeries.ofPowerSeries_X]
   simpa [Polynomial.coeToPowerSeries.ringHom] using RingHom.congr_fun hext R
 

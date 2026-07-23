@@ -36,14 +36,13 @@ That is the sole remaining gap for GMC(2).
 open scoped BigOperators
 open Polynomial
 
-set_option maxHeartbeats 1000000
-
 namespace GMC2.Thm2067Reduced
 
 open GMC2.PhiVieta
 
 variable {F : Type*} [Field F]
 
+set_option maxHeartbeats 1000000 in
 /-- **The concrete orbit-product contradiction, reduced to the small-root product
 identity.** For `Φ = Phi R M` (`= Xᴹ − t·R`, `1 ≤ M < deg R`, `R(0) ≠ 0`), separable over its
 splitting field, the irreducibility (`hΦ`) and Vieta (`hΩ`) inputs of

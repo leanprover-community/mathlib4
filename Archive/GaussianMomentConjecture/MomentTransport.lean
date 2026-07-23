@@ -73,7 +73,7 @@ theorem E_indexedPolynomial_pow_eq_aeval_momentRelation
           (∏ i, coefficient i ^ r i)) = _
   rw [GMC2.natCast_mul_monomial, GMC2.E_monomial]
   unfold GMC2.wt
-  split_ifs <;> simp <;> ring
+  split_ifs <;> simp
 
 end GMC2.MomentTransport
 

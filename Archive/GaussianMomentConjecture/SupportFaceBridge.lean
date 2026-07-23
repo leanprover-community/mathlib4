@@ -71,7 +71,7 @@ def faceEquivSupportFace
     (((faceEquivSupportFace P F hsubset s).1 : ↥P.support) :
         Fin 2 →₀ ℕ) = (s : Fin 2 →₀ ℕ) := rfl
 
-@[simp] theorem coefficient_faceEquivSupportFace
+theorem coefficient_faceEquivSupportFace
     {R : Type*}
     (P : MvPolynomial (Fin 2) ℂ) (F : Finset (Fin 2 →₀ ℕ))
     (hsubset : F ⊆ P.support) (coefficient : ↥P.support → R) (s : ↥F) :

@@ -50,12 +50,10 @@ theorem exists_numberField_torus_point_of_complex_relations
     exact (Set.finite_range z).union (Set.finite_range fun i ↦ (z i)⁻¹)
   letI : Algebra.FiniteType ℚ A :=
     Algebra.FiniteType.adjoin_of_finite hgenerators
-
   let c : ι → A := fun i ↦
     ⟨z i, Algebra.subset_adjoin (Set.mem_union_left _ (Set.mem_range_self i))⟩
   let cInv : ι → A := fun i ↦
     ⟨(z i)⁻¹, Algebra.subset_adjoin (Set.mem_union_right _ (Set.mem_range_self i))⟩
-
   have hc : ∀ i, IsUnit (c i) := by
     intro i
     rw [isUnit_iff_exists]
@@ -64,14 +62,12 @@ theorem exists_numberField_torus_point_of_complex_relations
       simp [c, cInv, hz i]
     · apply Subtype.ext
       simp [c, cInv, hz i]
-
   have hrelationA : ∀ k, MvPolynomial.aeval c (relation k) = 0 := by
     intro k
     apply Subtype.ext
     change A.val (MvPolynomial.aeval c (relation k)) = A.val 0
     rw [MvPolynomial.comp_aeval_apply, map_zero]
     simpa [c] using hrelation k
-
   exact
     GMC2.AlgebraicDescent.exists_numberField_torus_point_of_relations
       c hc relation hrelationA
@@ -103,7 +99,6 @@ theorem exists_numberField_torus_point_preserving_nonzero_of_complex_relations
         (Set.finite_singleton qValue⁻¹)
   letI : Algebra.FiniteType ℚ A :=
     Algebra.FiniteType.adjoin_of_finite hgenerators
-
   let c : ι → A := fun i ↦
     ⟨z i, Algebra.subset_adjoin
       (Set.mem_union_left _
@@ -112,7 +107,6 @@ theorem exists_numberField_torus_point_preserving_nonzero_of_complex_relations
     ⟨(z i)⁻¹, Algebra.subset_adjoin
       (Set.mem_union_left _
         (Set.mem_union_right _ (Set.mem_range_self i)))⟩
-
   have hc : ∀ i, IsUnit (c i) := by
     intro i
     rw [isUnit_iff_exists]
@@ -121,7 +115,6 @@ theorem exists_numberField_torus_point_preserving_nonzero_of_complex_relations
       simp [c, cInv, hz i]
     · apply Subtype.ext
       simp [c, cInv, hz i]
-
   let qA : A := MvPolynomial.aeval c q
   have hqA_val : (qA : ℂ) = qValue := by
     change A.val (MvPolynomial.aeval c q) = qValue
@@ -141,14 +134,12 @@ theorem exists_numberField_torus_point_preserving_nonzero_of_complex_relations
       change qValue⁻¹ * (qA : ℂ) = 1
       rw [hqA_val]
       simp [qValue, hq]
-
   have hrelationA : ∀ k, MvPolynomial.aeval c (relation k) = 0 := by
     intro k
     apply Subtype.ext
     change A.val (MvPolynomial.aeval c (relation k)) = A.val 0
     rw [MvPolynomial.comp_aeval_apply, map_zero]
     simpa [c] using hrelation k
-
   let units : Option ι → A
     | none => qA
     | some i => c i
@@ -157,7 +148,6 @@ theorem exists_numberField_torus_point_preserving_nonzero_of_complex_relations
     cases j with
     | none => exact hqA
     | some i => exact hc i
-
   obtain ⟨K, fieldK, algebraK, hfinite, φ, hunitK, hrelationK⟩ :=
     GMC2.AlgebraicDescent.exists_numberField_specialization
       units hunits (fun k ↦ MvPolynomial.aeval c (relation k)) hrelationA

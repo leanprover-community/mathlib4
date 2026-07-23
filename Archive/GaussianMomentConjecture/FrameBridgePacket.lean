@@ -46,7 +46,7 @@ theorem exists_packet_prod_eq (Φ : (RatFunc F)[X]) (hΦ0 : Φ ≠ 0)
     (GMC2.FrameBridgeRoots.aroots_map_embedding Φ ψ).symm
   -- product over the deduplicated roots of `Pω` is the multiset product
   have key : ∏ α ∈ Pω.roots.toFinset, (α : Ω) = Pω.roots.prod := by
-    show (Pω.roots.toFinset.val.map (fun α => α)).prod = Pω.roots.prod
+    change (Pω.roots.toFinset.val.map (fun α => α)).prod = Pω.roots.prod
     rw [Multiset.toFinset_val, Multiset.dedup_eq_self.mpr hPωnd, Multiset.map_id']
   refine ⟨Finset.univ.filter (fun β => ψ (β : Φ.SplittingField) ∈ Pω.roots), ?_⟩
   rw [map_prod, ← key]
@@ -71,7 +71,7 @@ theorem exists_packet_prod_eq (Φ : (RatFunc F)[X]) (hΦ0 : Φ ≠ 0)
     refine ⟨⟨γ, hγroot⟩, ?_, hγα⟩
     rw [Finset.mem_filter]
     refine ⟨Finset.mem_univ _, ?_⟩
-    show ψ γ ∈ Pω.roots
+    change ψ γ ∈ Pω.roots
     rw [hγα]; exact hα
   · -- values agree
     intro β _; rfl
