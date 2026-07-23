@@ -161,6 +161,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
@@ -786,6 +787,10 @@ public import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Equiv.Opposite
+public import Mathlib.Algebra.Module.FiniteFreeResolution.BaseChange
+public import Mathlib.Algebra.Module.FiniteFreeResolution.Basic
+public import Mathlib.Algebra.Module.FiniteFreeResolution.Exact
+public import Mathlib.Algebra.Module.FiniteFreeResolution.HasProjectiveDimensionLE
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.GradedModule
 public import Mathlib.Algebra.Module.Hom
@@ -834,6 +839,7 @@ public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.Algebra.Module.StablyFree.Basic
 public import Mathlib.Algebra.Module.StablyFree.FreeOfInvertible
+public import Mathlib.Algebra.Module.StablyFree.HasFiniteFreeResolution
 public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.Algebra.Module.Submodule.Defs
@@ -3226,6 +3232,8 @@ public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
+public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Exact
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
 public import Mathlib.CategoryTheory.ObjectProperty.InheritedFromHom
 public import Mathlib.CategoryTheory.ObjectProperty.Kernels
@@ -6513,6 +6521,8 @@ public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.CohenMacaulay.Maximal
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.Congruence.Basic
@@ -6539,6 +6549,9 @@ public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.DedekindDomain.SInteger
 public import Mathlib.RingTheory.DedekindDomain.SelmerGroup
+public import Mathlib.RingTheory.Depth.AuslanderBuchsbaum
+public import Mathlib.RingTheory.Depth.Basic
+public import Mathlib.RingTheory.Depth.Ischebeck
 public import Mathlib.RingTheory.Depth.Rees
 public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.Derivation.DifferentialRing
@@ -6629,6 +6642,7 @@ public import Mathlib.RingTheory.FractionalIdeal.Operations
 public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
+public import Mathlib.RingTheory.GlobalDimension
 public import Mathlib.RingTheory.GradedAlgebra.AlgHom
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
@@ -6770,6 +6784,7 @@ public import Mathlib.RingTheory.LocalProperties.FinitePresentation
 public import Mathlib.RingTheory.LocalProperties.Injective
 public import Mathlib.RingTheory.LocalProperties.InjectiveDimension
 public import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
+public import Mathlib.RingTheory.LocalProperties.Invertible
 public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalProperties.ProjectiveDimension
 public import Mathlib.RingTheory.LocalProperties.Reduced
@@ -6986,8 +7001,13 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.AuslanderBuchsbaumSerre
+public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
+public import Mathlib.RingTheory.RegularLocalRing.Localization
 public import Mathlib.RingTheory.RegularLocalRing.Polynomial
+public import Mathlib.RingTheory.RegularLocalRing.UFD
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
