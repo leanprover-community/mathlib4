@@ -105,12 +105,11 @@ section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
-set_option backward.isDefEq.respectTransparency.types false in
 -- TODO: add pre-composition version also
 theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
     letI φ := extChartAt I x
     DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
-  simpa [extChartAt_self_eq] using (mdifferentiableWithinAt_iff.1 hf).2
+  simpa [extChartAt_self_eq] using! (mdifferentiableWithinAt_iff.1 hf).2
 
 -- TODO: the `IsManifold I 1 M` assumption can probably be removed
 theorem DifferentiableWithinAt.mdifferentiableWithinAt_of_comp_extChartAt_symm [IsManifold I 1 M]
