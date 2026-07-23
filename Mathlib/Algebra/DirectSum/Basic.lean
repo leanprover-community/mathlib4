@@ -305,14 +305,20 @@ section CongrLeft
 
 variable {κ : Type*}
 
-/-- Reindexing terms of a direct sum. -/
+/-- Reindexing terms of a direct sum: change indexing type from `ι` to `κ` along an equivalence
+`h : ι ≃ κ`. -/
 def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
   { DFinsupp.equivCongrLeft h with map_add' := DFinsupp.comapDomain'_add _ h.right_inv }
 
 @[simp]
 theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
-    equivCongrLeft h f k = f (h.symm k) := by
-  exact DFinsupp.comapDomain'_apply _ h.right_inv _ _
+    equivCongrLeft h f k = f (h.symm k) :=
+  DFinsupp.comapDomain'_apply _ h.right_inv _ _
+
+@[simp]
+theorem equivCongrLeft_of [DecidableEq ι] [DecidableEq κ] (h : ι ≃ κ) (k : κ) (x : β (h.symm k)) :
+    equivCongrLeft h (of β (h.symm k) x) = of (fun k ↦ β (h.symm k)) k x :=
+  DFinsupp.comapDomain'_single h.symm h.right_inv _ _
 
 end CongrLeft
 
@@ -342,6 +348,12 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
     sigmaCurry f i j = f ⟨i, j⟩ :=
   DFinsupp.sigmaCurry_apply (δ := δ) _ i j
 
+@[simp]
+theorem sigmaCurry_of [∀ i : ι, DecidableEq (α i)] (k : (i : ι) × α i) (x : δ k.1 k.2) :
+    sigmaCurry (of (fun k ↦ δ k.1 k.2) k x) =
+      of (fun i' ↦ ⨁ (j' : α i'), δ i' j') k.1 (of (fun j' ↦ δ k.1 j') k.2 x) :=
+  DFinsupp.sigmaCurry_single k x
+
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry : (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2 where
@@ -359,6 +371,37 @@ def sigmaCurryEquiv : (⨁ i : Σ _i, _, δ i.1 i.2) ≃+ ⨁ (i) (j), δ i j :=
   { sigmaCurry, DFinsupp.sigmaCurryEquiv with }
 
 end Sigma
+
+section SigmaFiber
+
+variable {ι₁ ι₂ : Type v} [DecidableEq ι₂] (f : ι₁ → ι₂)
+variable {β : ι₁ → Type w} [Π i, AddCommMonoid (β i)]
+
+/-- The equivalence between a direct sum indexed by a type `ι₁` and the double sum indexed by a type
+`ι₂` together with the fibres of a map `f : ι₁ → ι₂`. -/
+def sigmaFiberAddEquiv : (⨁ i, β i) ≃+ ⨁ (j : ι₂) (i : { i : ι₁ // f i = j}), β ↑i :=
+  (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm).trans
+    (sigmaCurryEquiv (δ := fun j ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i)))
+
+theorem sigmaFiberAddEquiv_apply (x : ⨁ i, β i) :
+    sigmaFiberAddEquiv f x = sigmaCurry (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm x) := rfl
+
+@[simp]
+theorem sigmaFiberAddEquiv_apply_apply (x : ⨁ i, β i) (j : ι₂) (i' : { i : ι₁ // f i = j}) :
+    sigmaFiberAddEquiv f x j i' = x i' := rfl
+
+@[simp]
+theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
+    sigmaFiberAddEquiv f (of _ i x) = of _ (f i) (of _ ⟨i, rfl⟩ x) :=
+  let h := Equiv.sigmaFiberEquiv f
+  let k : (j : ι₂) × {i₁ : ι₁ // f i₁ = j} := ⟨f i, ⟨i, rfl⟩⟩
+  calc sigmaFiberAddEquiv f (of β (h k) x)
+    _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β k.2) k x) := by
+      rw [sigmaFiberAddEquiv_apply]
+      exact congrArg sigmaCurry (equivCongrLeft_of (h := h.symm) _ _)
+    _ = of _ k.1 (of _ k.2 x) := by simp
+
+end SigmaFiber
 
 /-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `AddSubmonoid M`
 indexed by `ι`.
