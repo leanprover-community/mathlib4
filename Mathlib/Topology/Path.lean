@@ -281,6 +281,9 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   source' := by simp
   target' := by norm_num
 
+/-- Notation for path concatenation, mirroring the notation for composition in a category. -/
+scoped infixr:80 " ≫ₚ " => Path.trans
+
 @[grind =]
 theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
     (γ.trans γ') t =
