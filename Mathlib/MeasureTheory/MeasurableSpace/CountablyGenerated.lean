@@ -455,6 +455,70 @@ theorem measurableSingletonClass_of_countablySeparated
 
 end SeparatesPoints
 
+section CountablySeparatedAtoms
+
+variable (α) in
+class CountablySeparatedAtoms [MeasurableSpace α] : Prop where
+  separated : ∃ A : ℕ → Set α, (∀ n, MeasurableSet (A n)) ∧
+    ∀ x y, (∀ n, x ∈ A n ↔ y ∈ A n) → measurableAtom x = measurableAtom y
+
+lemma countablyGeneratedAtom_of_measurableAtom_eq_iInter {α : Type*} {_ : MeasurableSpace α}
+    {A : ℕ → Set α} (hAm : ∀ n, MeasurableSet (A n)) [∀ n, DecidablePred (· ∈ A n)]
+    (h : ∀ x, measurableAtom x = ⋂ n, if x ∈ A n then A n else (A n)ᶜ) :
+    CountablySeparatedAtoms α := ⟨A, hAm, fun x y hxy ↦ by simp [h, hxy]⟩
+
+variable {mα : MeasurableSpace α} [CountablySeparatedAtoms α]
+
+variable (α) in
+def atomGeneratingSet [MeasurableSpace α] [CountablySeparatedAtoms α] : ℕ → Set α :=
+  CountablySeparatedAtoms.separated.choose
+
+lemma measurableSet_atomGeneratingSet (n : ℕ) :
+    MeasurableSet (atomGeneratingSet α n) :=
+  CountablySeparatedAtoms.separated.choose_spec.1 n
+
+lemma separating_atomGeneratingSet {x y : α}
+    (h : ∀ n, x ∈ atomGeneratingSet α n ↔ y ∈ atomGeneratingSet α n) :
+    measurableAtom x = measurableAtom y :=
+  CountablySeparatedAtoms.separated.choose_spec.2 _ _ h
+
+lemma measurableAtom_eq_iInter (x : α) [∀ n, Decidable (x ∈ atomGeneratingSet α n)] :
+    measurableAtom x = ⋂ n,
+      if x ∈ atomGeneratingSet α n then atomGeneratingSet α n else (atomGeneratingSet α n)ᶜ := by
+  refine subset_antisymm (measurableAtom_subset ?_ (by simp; grind)) ?_
+  · refine MeasurableSet.iInter fun n ↦ ?_
+    convert MeasurableSet.ite' (fun _ ↦ measurableSet_atomGeneratingSet n)
+      (fun _ ↦ (measurableSet_atomGeneratingSet n).compl)
+  · intro y hy
+    simp only [mem_iInter] at hy
+    suffices measurableAtom y = measurableAtom x by
+      rw [← this]
+      exact mem_measurableAtom_self y
+    exact separating_atomGeneratingSet fun _ ↦ by grind
+
+end CountablySeparatedAtoms
+
+instance [MeasurableSpace α] [CountablyGenerated α] : CountablySeparatedAtoms α := by
+  classical
+  refine countablyGeneratedAtom_of_measurableAtom_eq_iInter (measurableSet_natGeneratingSequence)
+    fun x ↦ ?_
+  rw [measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence x]
+  unfold countablyGeneratedAtom
+  congr!
+
+-- TODO: investigate the decrease in priority
+instance (priority := 100) [MeasurableSpace α] [CountablySeparated α] :
+    CountablySeparatedAtoms α := by
+  obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
+  classical
+  refine countablyGeneratedAtom_of_measurableAtom_eq_iInter hAm fun x ↦ ?_
+  have := MeasurableSpace.measurableSingletonClass_of_countablySeparated (α := α)
+  rw [measurableAtom_of_measurableSingletonClass]
+  ext y
+  specialize hAsep x (mem_univ x) y (mem_univ y)
+  simp
+  grind
+
 section MeasurableMemPartition
 
 lemma measurableSet_succ_memPartition (t : ℕ → Set α) (n : ℕ) {s : Set α}
