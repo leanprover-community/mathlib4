@@ -116,8 +116,8 @@ alias dual_span := dual_hull
 
 variable {M' : Type*} [AddCommMonoid M'] [Module R M']
 
-@[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s :=
-  by ext; simp
+@[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s := by
+  ext; simp
 
 /-- Duality with respect to a general bilinear map can be expressed as duality using the
   identity pairing. -/
