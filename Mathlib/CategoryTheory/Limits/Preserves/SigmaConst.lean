@@ -137,9 +137,9 @@ noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.o
       ← cancel_mono (PreservesCoproduct.iso F (fun (_ : T₂) ↦ X)).inv,
       Iso.inv_hom_id_assoc, Category.assoc, Category.assoc, Iso.hom_inv_id, Category.comp_id,
       PreservesCoproduct.inv_hom, PreservesCoproduct.inv_hom, sigmaComparison_map_desc]
-    ext
-    simp [Sigma.ι_desc, Sigma.ι_desc_assoc])
+    cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ι_sigmaConstObjCompIso_hom_app {T : Type w} (t : T) :
@@ -150,6 +150,7 @@ lemma map_ι_sigmaConstObjCompIso_hom_app {T : Type w} (t : T) :
     Category.assoc, Iso.hom_inv_id]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_sigmaConstObjCompIso_inv_app {T : Type w} (t : T) :

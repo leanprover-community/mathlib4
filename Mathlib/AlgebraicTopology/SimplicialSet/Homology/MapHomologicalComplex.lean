@@ -57,6 +57,7 @@ noncomputable def chainComplexFunctorObjCompMapIso :
     _ ≅ (whiskering ..).obj (sigmaConst.obj (F.obj R)) ⋙ alternatingFaceMapComplex D :=
       isoWhiskerRight ((whiskering ..).mapIso (sigmaConstObjCompIso F R)) _
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 variable {R} in
 @[reassoc (attr := simp)]

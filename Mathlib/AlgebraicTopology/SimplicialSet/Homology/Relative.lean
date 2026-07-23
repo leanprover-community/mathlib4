@@ -90,6 +90,7 @@ instance (R : C) : Mono ((chainComplexFunctorLeftToRight C).app R) :=
 instance : Mono (chainComplexFunctorLeftToRight C) :=
   NatTrans.mono_of_mono_app _
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     HasCokernel ((((chainComplexFunctorLeftToRight C).app R).app P).f n) := by
@@ -176,6 +177,7 @@ instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
       (HomologicalComplex.eval _ _ n) :=
   HomologicalComplex.eval_preservesCokernel_of_hasCokernel_f ..
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     PreservesColimit (parallelPair (chainComplexFunctorLeftToRight.{w} C) 0 ⋙
