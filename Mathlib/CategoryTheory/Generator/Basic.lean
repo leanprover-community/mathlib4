@@ -182,6 +182,29 @@ end Dual
 
 variable {P}
 
+section Adjunction
+
+lemma IsSeparating.strictMap_leftAdjoint
+    (hP : P.IsSeparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful]
+    (adj : F ⊣ G) :
+    (P.strictMap F).IsSeparating :=
+  fun Y Z f g h ↦ G.map_injective (hP _ _
+    (fun X hX a ↦ (adj.homEquiv _ _).symm.injective (by
+      simpa [adj.homEquiv_counit] using
+        h _ (.mk X hX) (F.map a ≫ adj.counit.app Y))))
+
+set_option backward.isDefEq.respectTransparency false in
+lemma IsCoseparating.strictMap_rightAdjoint
+    (hP : P.IsCoseparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful]
+    (adj : G ⊣ F) :
+    (P.strictMap F).IsCoseparating :=
+  fun Y Z f g h ↦ G.map_injective (hP _ _
+    (fun X hX a ↦ (adj.homEquiv _ _).injective (by
+      simpa [adj.homEquiv_unit] using
+        h _ (.mk X hX) (adj.unit.app Z ≫ F.map a))))
+
+end Adjunction
+
 theorem IsDetecting.isSeparating [HasEqualizers C] (hP : IsDetecting P) :
     IsSeparating P := fun _ _ f g hfg =>
   have : IsIso (equalizer.ι f g) := hP _ fun _ hG _ => equalizer.existsUnique _ (hfg _ hG _)
@@ -552,6 +575,20 @@ theorem IsCoseparator.of_equivalence {G : C} (h : IsCoseparator G) (α : C ≌ D
   simpa using! ObjectProperty.IsCoseparating.of_equivalence h α
 
 end Equivalence
+
+section Adjunction
+
+lemma IsSeparator.leftAdjoint_obj {X : C} (hX : IsSeparator X)
+    {F : C ⥤ D} {G : D ⥤ C} [G.Faithful] (adj : F ⊣ G) :
+    IsSeparator (F.obj X) := by
+  simpa using! hX.strictMap_leftAdjoint adj
+
+lemma IsCoseparator.rightAdjoint_obj {X : C} (hX : IsCoseparator X)
+    {F : C ⥤ D} {G : D ⥤ C} [G.Faithful] (adj : G ⊣ F) :
+    IsCoseparator (F.obj X) := by
+  simpa using! hX.strictMap_rightAdjoint adj
+
+end Adjunction
 
 section Dual
 
@@ -981,6 +1018,19 @@ theorem HasCodetector.hasDetector_of_hasCodetector_op [HasCodetector Cᵒᵖ] :
     HasDetector C := by simp_all
 
 end Dual
+
+section Adjunction
+
+theorem HasSeparator.of_adjunction [HasSeparator C] {F : C ⥤ D} {G : D ⥤ C}
+    [G.Faithful] (adj : F ⊣ G) : HasSeparator D :=
+  ⟨_, (isSeparator_separator C).leftAdjoint_obj adj⟩
+
+theorem HasCoseparator.of_adjunction [HasCoseparator C] {F : C ⥤ D} {G : D ⥤ C}
+    [G.Faithful] (adj : G ⊣ F) :
+    HasCoseparator D :=
+  ⟨_, (isCoseparator_coseparator C).rightAdjoint_obj adj⟩
+
+end Adjunction
 
 end HasGenerator
 
