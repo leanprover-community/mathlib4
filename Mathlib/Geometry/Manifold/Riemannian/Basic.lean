@@ -126,17 +126,17 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace% x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖ = ‖letI V : F := v; V‖ := by
+    ‖v‖ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
+  rfl
 
 lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖₊ = ‖letI V : F := v; V‖₊ := by
+    ‖v‖₊ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖₊ := by
   simp [nnnorm, norm_tangentSpace_vectorSpace]
 
 lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖ₑ = ‖letI V : F := v; V‖ₑ := by
+    ‖v‖ₑ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖ₑ := by
   simp [enorm, nnnorm_tangentSpace_vectorSpace]
 
 open MeasureTheory Measure
@@ -164,10 +164,12 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       contMDiffOn_iff_contDiffOn.mp (hγ.comp_contMDiffOn contMDiffOn_projIcc)
     rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc,
       pathELength_eq_lintegral_mfderivWithin_Icc]
-    simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
+    simp_rw [mfderivWithin_eq_fderivWithin, ← mvfderivWithin_eq_fderivWithin]
+    --#check enorm_tangentSpace_vectorSpace
+    --simp_rw [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
     conv_lhs =>
       rw [edist_comm, edist_eq_enorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
-    exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
+    convert (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one)--.trans_eq ?_--rfl
   · let γ := ContinuousAffineMap.lineMap (R := ℝ) x y
     have : riemannianEDist 𝓘(ℝ, F) x y ≤ pathELength 𝓘(ℝ, F) γ 0 1 := by
       apply riemannianEDist_le_pathELength ?_ (by simp [γ, ContinuousAffineMap.coe_lineMap_eq])
@@ -238,19 +240,18 @@ attribute [local instance] normedSpaceTangentSpaceVectorSpace
 
 variable (I)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
-    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ < C := by
+    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖d% (extChartAt I x) y‖ < C := by
   rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace% x) x
     with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
   have hx : (chartAt H x).source ∈ 𝓝 x := chart_source_mem_nhds H x
   filter_upwards [hC, hx] with y hy h'y
+  rw [mvfderiv, NormedSpace.fromTangentSpace]
   rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
-    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ₑ < C := by
+    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖d% (extChartAt I x) y‖ₑ < C := by
   rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
@@ -384,7 +385,6 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
 lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
@@ -411,7 +411,7 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set
   rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
-      ∧ u ⊆ {y | ‖mfderiv% (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
+      ∧ u ⊆ {y | ‖d% (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
     have := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
     rcases exists_mem_nhds_isClosed_subset this with ⟨u, u_mem, u_closed, hu⟩
     simp only [subset_inter_iff] at hu

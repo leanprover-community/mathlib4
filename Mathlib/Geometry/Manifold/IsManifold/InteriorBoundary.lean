@@ -491,13 +491,13 @@ variable
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
   ext p
   have aux : (interior (range ↑I)) ×ˢ (interior (range J)) = interior (range (I.prod J)) := by
     rw [← interior_prod_eq, ← range_prodMap, modelWithCorners_prod_coe]
+    rfl
   constructor <;> intro hp
   · replace hp : (I.prod J).IsInteriorPoint p := hp
     rw [IsInteriorPoint, ← aux] at hp
