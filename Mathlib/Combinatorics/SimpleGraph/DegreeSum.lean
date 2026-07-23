@@ -6,7 +6,6 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Data.ZMod.Basic
 

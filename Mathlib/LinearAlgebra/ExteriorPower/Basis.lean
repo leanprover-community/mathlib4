@@ -5,7 +5,6 @@ Authors: Sophie Morel, Daniel Morrison
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.RingTheory.Finiteness.Subalgebra
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition

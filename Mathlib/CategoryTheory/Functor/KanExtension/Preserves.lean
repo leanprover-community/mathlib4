@@ -6,7 +6,6 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservation of Kan extensions

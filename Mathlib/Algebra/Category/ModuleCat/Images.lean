@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # The category of R-modules has images.

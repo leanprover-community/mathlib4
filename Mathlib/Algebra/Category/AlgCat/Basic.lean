@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic

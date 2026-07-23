@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Fin.Fin2
-public import Mathlib.Util.Notation3
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`

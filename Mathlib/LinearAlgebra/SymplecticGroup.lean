@@ -5,7 +5,6 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery, Seed Prover, Huanyu Zheng
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.RingTheory.LocalProperties.Basic

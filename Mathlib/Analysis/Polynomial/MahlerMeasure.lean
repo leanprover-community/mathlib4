@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Analytic.Polynomial
 public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 public import Mathlib.Analysis.Convex.Integral

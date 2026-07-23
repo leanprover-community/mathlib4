@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Data.Finset.Sym
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Data.Nat.Choose.Multinomial
 

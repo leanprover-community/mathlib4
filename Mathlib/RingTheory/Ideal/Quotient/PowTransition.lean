@@ -7,8 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Algebra.Algebra.Operations
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-!

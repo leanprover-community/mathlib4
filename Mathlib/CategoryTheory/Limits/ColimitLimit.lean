@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!

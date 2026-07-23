@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!

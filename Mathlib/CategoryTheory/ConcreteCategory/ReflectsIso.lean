@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`

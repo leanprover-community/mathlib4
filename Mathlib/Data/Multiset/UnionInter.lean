@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.Multiset.Filter
 public import Mathlib.Order.MinMax
-public import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets

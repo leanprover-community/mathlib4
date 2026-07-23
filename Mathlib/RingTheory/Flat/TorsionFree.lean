@@ -5,7 +5,6 @@ Authors: Matthew Jasper, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.Tensor

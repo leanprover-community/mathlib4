@@ -6,8 +6,6 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras, Daniel Funck, Juny
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.GoingUp
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.LocalRing.LocalSubring
 public import Mathlib.RingTheory.Polynomial.Ideal
 public import Mathlib.RingTheory.Valuation.Integral

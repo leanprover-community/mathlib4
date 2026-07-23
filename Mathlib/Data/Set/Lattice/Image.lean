@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Lattice
-public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # The set lattice and (pre)images of functions

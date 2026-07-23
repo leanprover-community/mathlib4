@@ -5,9 +5,6 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.GroupTheory.Congruence.Basic

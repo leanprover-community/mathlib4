@@ -6,7 +6,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.Eval.Degree
-public import Mathlib.Algebra.Prime.Lemmas
 
 /-!
 # Theory of degrees of polynomials

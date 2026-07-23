@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.GroupTheory.Perm.Sign
 
-import Mathlib.Algebra.Module.End
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.LinearAlgebra.Matrix.RowCol
 

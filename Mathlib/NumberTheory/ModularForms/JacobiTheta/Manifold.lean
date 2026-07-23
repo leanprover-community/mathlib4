@@ -6,7 +6,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 
 /-!

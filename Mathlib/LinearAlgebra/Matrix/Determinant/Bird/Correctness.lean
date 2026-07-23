@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Preorder.Finite
 
 /-!
 # Correctness of Bird's determinant algorithm

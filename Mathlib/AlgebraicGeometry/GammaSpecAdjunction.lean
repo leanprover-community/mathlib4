@@ -6,9 +6,6 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.AlgebraicGeometry.Restrict
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Adjunction.Opposites
-public import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # Adjunction between `Γ` and `Spec`

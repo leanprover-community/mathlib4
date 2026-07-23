@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.Condensed.Functors
 public import Mathlib.Condensed.Limits
 

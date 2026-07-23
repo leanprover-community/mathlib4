@@ -5,13 +5,10 @@ Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Sequence
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Tactic.LinearCombination
-public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Chebyshev polynomials

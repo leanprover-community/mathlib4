@@ -5,10 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Order.Compact
 public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.LocalExtr
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor

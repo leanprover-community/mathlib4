@@ -8,11 +8,9 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finset.Piecewise
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
-public import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.WithTopology
 
 /-!

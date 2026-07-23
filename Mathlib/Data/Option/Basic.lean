@@ -8,7 +8,6 @@ module
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
 public import Mathlib.Logic.IsEmpty.Basic
-public import Mathlib.Logic.Relator
 public import Mathlib.Util.CompileInductive
 public import Aesop
 public import Batteries.Tactic.Lint.Simp

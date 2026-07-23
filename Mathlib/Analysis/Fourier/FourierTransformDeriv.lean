@@ -5,7 +5,6 @@ Authors: Alex Kontorovich, David Loeffler, Heather Macbeth, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.FourierTransform
 

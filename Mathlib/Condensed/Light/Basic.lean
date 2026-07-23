@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 /-!
 

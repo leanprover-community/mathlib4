@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Order.Ring.Finset
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Data.Fin.Tuple.Finset
 public import Mathlib.Tactic.Positivity.Finset
-public import Mathlib.Tactic.GCongr
 
 /-!
 # The Schwartz-Zippel lemma

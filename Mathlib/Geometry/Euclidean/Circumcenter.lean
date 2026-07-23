@@ -5,11 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
-public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Circumcenter and circumradius

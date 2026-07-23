@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
-public import Mathlib.Tactic.Ring
 
 /-!
 # Big operators on a finset in ordered rings

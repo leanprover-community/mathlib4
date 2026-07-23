@@ -6,7 +6,6 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.LinearAlgebra.Projection

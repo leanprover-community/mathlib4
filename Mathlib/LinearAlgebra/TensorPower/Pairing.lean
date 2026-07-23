@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.TensorPower.Basic
 
 /-!

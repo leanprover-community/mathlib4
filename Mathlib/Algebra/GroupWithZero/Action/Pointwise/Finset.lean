@@ -6,8 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-public import Mathlib.Algebra.GroupWithZero.InjSurj
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 
