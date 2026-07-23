@@ -71,8 +71,8 @@ theorem IsInitial.isIso_to (hI : IsInitial I) {A : C} (f : A ⟶ I) : IsIso f :=
   HasStrictInitialObjects.out f hI
 
 theorem IsInitial.strict_hom_ext (hI : IsInitial I) {A : C} (f g : A ⟶ I) : f = g := by
-  haveI := hI.isIso_to f
-  haveI := hI.isIso_to g
+  have := hI.isIso_to f
+  have := hI.isIso_to g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 
 theorem IsInitial.subsingleton_to (hI : IsInitial I) {A : C} : Subsingleton (A ⟶ I) :=
@@ -156,6 +156,11 @@ theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
       haveI := h A (f ≫ hI.to _)
       ⟨⟨hI.to _ ≫ inv (f ≫ hI.to (⊥_ C)), by rw [← assoc, IsIso.hom_inv_id], hI.hom_ext _ _⟩⟩ }
 
+instance [Quiver.IsThin C] : HasStrictInitialObjects C where
+  out {I A} f hI := by
+    rw [isIso_iff_of_thin]
+    exact ⟨hI.to _⟩
+
 end StrictInitial
 
 section StrictTerminal
@@ -179,8 +184,8 @@ theorem IsTerminal.isIso_from (hI : IsTerminal I) {A : C} (f : I ⟶ A) : IsIso 
   HasStrictTerminalObjects.out f hI
 
 theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : f = g := by
-  haveI := hI.isIso_from f
-  haveI := hI.isIso_from g
+  have := hI.isIso_from f
+  have := hI.isIso_from g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 
 /-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also a terminal object. -/
@@ -214,7 +219,7 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
         obtain rfl : f = 𝟙 _ := Subsingleton.elim _ _
         simp
       · cases h
-        haveI : IsIso (F.map f) := (H _ h_1).isIso_from _
+        have : IsIso (F.map f) := (H _ h_1).isIso_from _
         rw [← IsIso.comp_inv_eq]
         apply (H _ h_1).hom_ext
       · cases h_1
@@ -251,6 +256,11 @@ theorem hasStrictTerminalObjects_of_terminal_is_strict (I : C) (h : ∀ (A) (f :
   { out := fun {I' A} f hI' =>
       haveI := h A (hI'.from _ ≫ f)
       ⟨⟨inv (hI'.from I ≫ f) ≫ hI'.from I, hI'.hom_ext _ _, by rw [assoc, IsIso.inv_hom_id]⟩⟩ }
+
+instance [Quiver.IsThin C] : HasStrictTerminalObjects C where
+  out {I A} f hI := by
+    rw [CategoryTheory.isIso_iff_of_thin]
+    exact ⟨hI.from _⟩
 
 end StrictTerminal
 

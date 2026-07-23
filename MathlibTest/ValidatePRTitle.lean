@@ -86,7 +86,10 @@ section scope
 #guard_msgs in
 #check_title "feat(Algebra.lean): title"
 
-/-- info: Message: 'error: a PR's scope should be a directory, not a module' -/
+/--
+info: Message: 'error: a PR's scope should be a directory or file name, not a module name
+hint: the scope contains a dot, use forward slashes instead'
+-/
 #guard_msgs in
 #check_title "feat(Algebra.Topology): title"
 
@@ -95,7 +98,7 @@ section scope
 #check_title "feat(Algebra Topology): title"
 
 /--
-info: Message: 'error: a PR's scope must not contain backslashes --- use forward slashes instead'
+info: Message: 'error: a PR's scope must not contain backslashes; use forward slashes instead'
 -/
 #guard_msgs in
 #check_title "feat(Algebra\\Too): title"
@@ -111,16 +114,35 @@ section subject
 #guard_msgs in
 #check_title "feat: bad title."
 
-/-- info: Message: 'error: the PR subject should be lowercased' -/
+/-- info: Message: 'error: the PR subject `My Bad Title` should be lowercased' -/
 #guard_msgs in
 #check_title "feat: My Bad Title"
 -- Starting with an acronym is fine, however.
 #guard_msgs in
 #check_title "feat: RPC acronyms are fine"
+#guard_msgs in #check_title "feat: `ℕ` is countable"
+-- We also allow a `s`, `'s` or `'ed` suffix, as manual heuristic.
+#guard_msgs in #check_title "feat: RPCs are yellow"
+#guard_msgs in #check_title "chore: LLMs require adjusting our policies"
+#guard_msgs in #check_title "chore: PR'ed lemmas"
+#guard_msgs in #check_title "feat(CI): PR's to be deleted"
+#guard_msgs in #check_title "chore: FCP'ed decisions should be listed separately"
+-- We only remove at most one suffix.
+/-- info: Message: 'error: the PR subject `PR'ed's lemmas` should be lowercased' -/
+#guard_msgs in #check_title "chore: PR'ed's lemmas"
+/-- info: Message: 'error: the PR subject `PRs's something` should be lowercased' -/
+#guard_msgs in #check_title "chore: PRs's something"
+-- This is not quite an abbreviation (and a grammar error).
+/--
+info: Message: 'error: the PR subject `FCPed decisions should be listed separately` should be lowercased'
+-/
+#guard_msgs in #check_title "chore: FCPed decisions should be listed separately"
 
 -- This PR title is arguably not very bad (Lindelöf is a proper name),
 -- a better fix is to start with a verb (which you should do anyway.)
-/-- info: Message: 'error: the PR subject should be lowercased' -/
+/--
+info: Message: 'error: the PR subject `Lindelöf spaces something something` should be lowercased'
+-/
 #guard_msgs in
 #check_title "feat: Lindelöf spaces something something"
 
@@ -183,3 +205,23 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 -/
 #guard_msgs in
 #check_title "feat(Mathlib/Algebra.lean):  title."
+
+#guard_msgs in
+#check_title "feat(ModularForm): E2 is bounded at ImInfty"
+
+#guard_msgs in
+#check_title "feat(ModuleForm): 2E is bounded at ImInfty"
+
+#guard_msgs in
+#check_title "feat(ModuleForm): 2e is less than 6"
+
+/-- info: Message: 'error: the PR subject `W3c` should be lowercased' -/
+#guard_msgs in
+#check_title "feat(ModuleForm): W3c"
+
+#guard_msgs in
+#check_title "feat(ModuleForm): W3C"
+
+/-- info: Message: 'error: the PR subject `A new lemma` should be lowercased' -/
+#guard_msgs in
+#check_title "feat(ModuleForm): A new lemma"
