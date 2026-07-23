@@ -183,7 +183,7 @@ open scoped Topology
 
 @[fun_prop]
 theorem smulLeftCLM (hf : IsVanishingOn f s) {g : E → ℂ} (hg : g.HasTemperateGrowth) :
-    IsVanishingOn (smulLeftCLM F g f) s := by
+    IsVanishingOn (TemperedDistribution.smulLeftCLM F g f) s := by
   intro u hu
   apply hf ((SchwartzMap.smulLeftCLM ℂ g) u)
   rw [SchwartzMap.smulLeftCLM_apply hg]
@@ -222,7 +222,7 @@ end IsVanishingOn
 section Support
 
 theorem dsupport_smulLeftCLM_subset {g : E → ℂ} (hg : g.HasTemperateGrowth) :
-    dsupport (smulLeftCLM F g f) ⊆ dsupport f := by
+    dsupport (TemperedDistribution.smulLeftCLM F g f) ⊆ dsupport f := by
   gcongr; fun_prop
 
 @[deprecated (since := "2026-07-01")] alias _root_.Distribution.dsupport_smulLeftCLM_subset :=
