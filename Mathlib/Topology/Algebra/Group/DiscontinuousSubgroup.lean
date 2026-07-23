@@ -39,7 +39,7 @@ lemma Subgroup.properlyDiscontinuousSMul_of_le
   exact (hG hK hL).subset fun _ ⟨hg, hg'⟩ ↦ ⟨hGH hg, hg'⟩
 
 /-- If `Γ` acts properly discontinuously, so does every subgroup of `Γ`. -/
-@[to_additive]
+@[to_additive /-- If `Γ` acts properly discontinuously, so does every additive subgroup of `Γ`. -/]
 instance [SMul Γ α] [ProperlyDiscontinuousSMul Γ α] (G : Subgroup Γ) :
     ProperlyDiscontinuousSMul G α := by
   refine Subgroup.properlyDiscontinuousSMul_of_le ?_ le_top
@@ -49,7 +49,8 @@ instance [SMul Γ α] [ProperlyDiscontinuousSMul Γ α] (G : Subgroup Γ) :
 open Pointwise in
 /-- If `G, H` are subgroups of `Γ` which acts on `α`, and `G ∩ H` has finite index in `G`,
 then `G` acts properly discontinuously if `H` does. -/
-@[to_additive]
+@[to_additive /-- If `G, H` are additive subgroups of `Γ` which acts on `α`, and `G ∩ H` has finite
+index in `G`, then `G` acts properly discontinuously if `H` does. -/]
 lemma ProperlyDiscontinuousSMul.ofFiniteRelIndex [MulAction Γ α] [ContinuousConstSMul Γ α]
     (G H : Subgroup Γ) [hH : ProperlyDiscontinuousSMul H α] [H.IsFiniteRelIndex G] :
     ProperlyDiscontinuousSMul G α := by
