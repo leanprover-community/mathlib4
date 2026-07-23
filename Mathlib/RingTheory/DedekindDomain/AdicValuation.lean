@@ -837,7 +837,7 @@ open UniformSpace in
 /-- The `S`-algebra structure on the underlying completion. -/
 noncomputable instance instAlgebraCompletion : Algebra S ((v.valuation K).Completion) where
   toSMul := Completion.instSMul _ _
-  algebraMap := Completion.coeRingHom.comp (algebraMap S (WithVal (v.valuation K)))
+  algebraMap := RingHom.toCompletion.comp (algebraMap S (WithVal (v.valuation K)))
   commutes' r x := by
     induction x using Completion.induction_on with
     | hp =>
@@ -849,7 +849,7 @@ noncomputable instance instAlgebraCompletion : Algebra S ((v.valuation K).Comple
       exact isClosed_eq (continuous_const_smul _) (continuous_const_mul _)
     | ih x =>
       simp [Algebra.smul_def, Completion.algebraMap_def, WithVal.algebraMap_right_apply,
-        Completion.coeRingHom]
+        RingHom.toCompletion]
 
 noncomputable instance : Algebra S (v.adicCompletion K) :=
   fast_instance% (adicCompletion.equivCompletion K v).algebra S
@@ -861,7 +861,7 @@ theorem algebraMap_adicCompletion_toCompletion (r : S) :
 instance {S₀ : Type*} [CommSemiring S₀] [Algebra S₀ S] [Algebra S₀ K] [IsScalarTower S₀ S K] :
     IsScalarTower S₀ S ((v.valuation K).Completion) :=
   .of_algebraMap_eq fun x ↦ by
-    exact congrArg (UniformSpace.Completion.coeRingHom (α := WithVal (v.valuation K)))
+    exact congrArg (UniformSpace.RingHom.toCompletion (α := WithVal (v.valuation K)))
       (IsScalarTower.algebraMap_apply S₀ S (WithVal (v.valuation K)) x)
 
 instance {S₀ : Type*} [CommSemiring S₀] [Algebra S₀ S] [Algebra S₀ K] [IsScalarTower S₀ S K] :

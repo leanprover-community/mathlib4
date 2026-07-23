@@ -53,7 +53,7 @@ equivalent. It is best to do this after `Valued` has been refactored, or at leas
 
 @[expose] public section
 
-open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
+open IsDedekindDomain UniformSpace Completion NumberField PadicInt
 
 local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
 
@@ -145,10 +145,10 @@ noncomputable def withValEquiv (v : HeightOneSpectrum R) :
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
     v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v] where
   __ := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.equiv ℚ v).trans <|
-    (mapRingEquiv _ (withValEquiv v).continuous
+    (RingEquiv.completion _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
   __ := ((IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).trans <|
-    (mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
+    (withValEquiv v).completion.trans Padic.withValUniformEquiv).toHomeomorph
   commutes' := by simp
 
 /-- The continuous `ℤ`-algebra isomorphism between `v.adicCompletionIntegers ℚ` and
@@ -159,13 +159,13 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
           (v.adicCompletionIntegers ℚ)
           (Valued.v (R := (v.valuation ℚ).Completion)).valuationSubring
           fun _ ↦ by rw [HeightOneSpectrum.mem_adicCompletionIntegers]; rfl
-        let e := (mapRingEquiv _ (withValEquiv v).continuous
+        let e := (RingEquiv.completion _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
             simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (e0.trans e).trans withValIntegersRingEquiv
   __ := let e0 := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).subtype
           fun _ ↦ by rw [HeightOneSpectrum.mem_adicCompletionIntegers]; rfl
-        let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
+        let e := (withValEquiv v).completion.subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         ((e0.trans e).trans withValIntegersUniformEquiv).toHomeomorph
   commutes' := by simp

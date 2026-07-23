@@ -45,7 +45,7 @@ noncomputable section
 universe u
 namespace UniformSpace.Completion
 
-open IsDenseInducing UniformSpace Function
+open IsDenseInducing UniformSpace UniformSpace.Function
 
 section one_and_mul
 variable (α : Type*) [Ring α] [UniformSpace α]
@@ -54,7 +54,8 @@ instance one : One (Completion α) :=
   ⟨(1 : α)⟩
 
 instance mul : Mul (Completion α) :=
-  ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
+  ⟨Function.curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend
+    ((↑) ∘ Function.uncurry (· * ·))⟩
 
 @[norm_cast]
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
@@ -112,68 +113,94 @@ instance ring : Ring (Completion α) :=
         fun a b c => by rw [← coe_add, ← coe_mul, ← coe_mul, ← coe_mul, ← coe_add, add_mul] }
 
 /-- The map from a uniform ring to its completion, as a ring homomorphism. -/
-def coeRingHom : α →+* Completion α where
+def _root_.UniformSpace.RingHom.toCompletion : α →+* Completion α where
   toFun := (↑)
   map_one' := coe_one α
   map_zero' := coe_zero
   map_add' := coe_add
   map_mul' := coe_mul
 
-theorem continuous_coeRingHom : Continuous (coeRingHom : α → Completion α) :=
+@[deprecated (since := "2026-06-26")] alias coeRingHom := _root_.UniformSpace.RingHom.toCompletion
+
+theorem _root_.UniformSpace.RingHom.continuous_toCompletion :
+    Continuous (RingHom.toCompletion : α → Completion α) :=
   continuous_coe α
+
+@[deprecated (since := "2026-06-26")]
+alias continuous_coeRingHom := _root_.UniformSpace.RingHom.continuous_toCompletion
 
 variable {β : Type u} [UniformSpace β] [Ring β] [IsUniformAddGroup β] [IsTopologicalRing β]
   (f : α →+* β) (hf : Continuous f)
 
 /-- The completion extension as a ring morphism. -/
-def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
+def _root_.UniformSpace.RingHom.fromCompletion [CompleteSpace β] [T0Space β] : Completion α →+* β :=
   have hf' : Continuous (f : α →+ β) := hf
   -- helping the elaborator
   have hf : UniformContinuous f := uniformContinuous_addMonoidHom_of_continuous hf'
-  { toFun := Completion.extension f
-    map_zero' := by simp_rw [← coe_zero, extension_coe hf, f.map_zero]
+  { toFun := Function.fromCompletion f
+    map_zero' := by simp_rw [← coe_zero, fromCompletion_coe hf, f.map_zero]
     map_add' a b :=
       Completion.induction_on₂ a b
         (isClosed_eq (by fun_prop) (by fun_prop))
-        fun a b => by simp_rw [← coe_add, extension_coe hf, f.map_add]
-    map_one' := by rw [← coe_one, extension_coe hf, f.map_one]
+        fun a b => by simp_rw [← coe_add, fromCompletion_coe hf, f.map_add]
+    map_one' := by rw [← coe_one, fromCompletion_coe hf, f.map_one]
     map_mul' a b :=
       Completion.induction_on₂ a b
         (isClosed_eq (by fun_prop) (by fun_prop))
-        fun a b => by simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
+        fun a b => by simp_rw [← coe_mul, fromCompletion_coe hf, f.map_mul] }
 
-theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α) :
-    Completion.extensionHom f hf a = f a := by
-  simp only [Completion.extensionHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    UniformSpace.Completion.extension_coe <| uniformContinuous_addMonoidHom_of_continuous hf]
+@[deprecated (since := "2026-06-26")]
+alias extensionHom := _root_.UniformSpace.RingHom.fromCompletion
+
+theorem _root_.UniformSpace.RingHom.fromCompletion_coe [CompleteSpace β] [T0Space β] (a : α) :
+    f.fromCompletion hf a = f a := by
+  simp only [RingHom.fromCompletion, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+    Function.fromCompletion_coe <| uniformContinuous_addMonoidHom_of_continuous hf]
+
+@[deprecated (since := "2026-06-26")]
+alias extensionHom_coe := _root_.UniformSpace.RingHom.fromCompletion_coe
 
 instance topologicalRing : IsTopologicalRing (Completion α) where
   continuous_add := continuous_add
   continuous_mul := continuous_mul
 
 /-- The completion map as a ring morphism. -/
-def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
-  extensionHom (coeRingHom.comp f) (continuous_coeRingHom.comp hf)
+protected def _root_.UniformSpace.RingHom.completion (hf : Continuous f) :
+    Completion α →+* Completion β :=
+  (RingHom.toCompletion.comp f).fromCompletion (RingHom.continuous_toCompletion.comp hf)
 
-@[simp] theorem mapRingHom_apply {x : Completion α} : mapRingHom f hf x = .map f x := rfl
-theorem coe_mapRingHom : mapRingHom f hf = Completion.map f := rfl
+@[simp] theorem _root_.UniformSpace.RingHom.completion_apply {x : Completion α} :
+    f.completion hf x = Function.completion f x := rfl
+
+theorem _root_.UniformSpace.RingHom.coe_completion : f.completion hf = Function.completion f := rfl
 
 variable {f}
 
-theorem mapRingHom_coe (hf : Continuous f) (a : α) : mapRingHom f hf a = f a := by
-  rw [mapRingHom_apply, map_coe (uniformContinuous_addMonoidHom_of_continuous hf)]
+theorem _root_.UniformSpace.RingHom.completion_coe (hf : Continuous f) (a : α) :
+    f.completion hf a = f a := by
+  rw [RingHom.completion_apply, Function.completion_coe
+    (uniformContinuous_addMonoidHom_of_continuous hf)]
 
-theorem mapRingHom_comp {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGroup γ]
+theorem _root_.UniformSpace.RingHom.completion_comp
+    {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGroup γ]
     [IsTopologicalRing γ] {g : β →+* γ} (hg : Continuous g) (hf : Continuous f) :
-    (mapRingHom g hg).comp (mapRingHom f hf) = mapRingHom (g.comp f) (hg.comp hf) :=
-  DFunLike.ext' <| map_comp
+    (g.completion hg).comp (f.completion hf) = (g.comp f).completion (hg.comp hf) :=
+  DFunLike.ext' <| Function.completion_comp_completion
     (uniformContinuous_addMonoidHom_of_continuous hg)
     (uniformContinuous_addMonoidHom_of_continuous hf)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem mapRingHom_id : mapRingHom (.id α) continuous_id = .id (Completion α) := by
-  simp [RingHom.ext_iff, mapRingHom_apply]
+theorem _root_.UniformSpace.RingHom.completion_id :
+    (RingHom.id α).completion continuous_id = .id (Completion α) := by
+  simp [RingHom.ext_iff, RingHom.completion_apply]
+
+@[deprecated (since := "2026-04-14")] alias mapRingHom := RingHom.completion
+@[deprecated (since := "2026-04-14")] alias mapRingHom_apply := RingHom.completion_apply
+@[deprecated (since := "2026-04-14")] alias coe_mapRingHom := RingHom.coe_completion
+@[deprecated (since := "2026-04-14")] alias mapRingHom_coe := RingHom.completion_coe
+@[deprecated (since := "2026-04-14")] alias mapRingHom_comp := RingHom.completion_comp
+@[deprecated (since := "2026-04-14")] alias mapRingHom_id := RingHom.completion_id
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -181,10 +208,16 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
 lifts to a ring isomorphism between corresponding uniform space completions. -/
 @[simps!]
-def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm) :
-    Completion α ≃+* Completion β :=
-  .ofRingHom (mapRingHom f.toRingHom hf) (mapRingHom f.symm.toRingHom hf')
-    (by simp [mapRingHom_comp]) (by simp [mapRingHom_comp])
+def _root_.UniformSpace.RingEquiv.completion (f : α ≃+* β) (hf : Continuous f)
+    (hf' : Continuous f.symm) : Completion α ≃+* Completion β :=
+  .ofRingHom (f.toRingHom.completion hf) (f.symm.toRingHom.completion hf')
+    (by simp [RingHom.completion_comp]) (by simp [RingHom.completion_comp])
+
+@[deprecated (since := "2026-06-26")] alias mapRingEquiv := UniformSpace.RingEquiv.completion
+@[deprecated (since := "2026-06-26")] alias mapRingEquiv_apply :=
+  UniformSpace.RingEquiv.completion_apply
+@[deprecated (since := "2026-06-26")] alias mapRingEquiv_symm_apply :=
+  UniformSpace.RingEquiv.completion_symm_apply
 
 section Algebra
 
@@ -193,18 +226,18 @@ variable (A : Type*) [Ring A] [UniformSpace A] [IsUniformAddGroup A] [IsTopologi
 
 @[simp]
 theorem map_smul_eq_mul_coe (r : R) :
-    Completion.map (r • ·) = ((algebraMap R A r : Completion A) * ·) := by
+    Function.completion (r • ·) = ((algebraMap R A r : Completion A) * ·) := by
   ext x
   refine Completion.induction_on x ?_ fun a => ?_
-  · exact isClosed_eq Completion.continuous_map (continuous_const_mul _)
-  · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
+  · exact isClosed_eq Function.continuous_completion (continuous_const_mul _)
+  · simp_rw [completion_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
 instance algebra : Algebra R (Completion A) where
-  algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
+  algebraMap := (RingHom.toCompletion : A →+* Completion A).comp (algebraMap R A)
   commutes' := fun r x =>
     Completion.induction_on x (isClosed_eq (continuous_const_mul _) (continuous_mul_const _))
-      fun a => by
-      simpa only [coe_mul] using! congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
+      fun a => by simpa [coe_mul, RingHom.toCompletion] using
+          congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
   smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x
 
 theorem algebraMap_def (r : R) :
@@ -275,10 +308,10 @@ noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* 
     (ue : IsUniformInducing i) (dr : DenseRange i) (hf : UniformContinuous f) : β →+* γ where
   toFun := (ue.isDenseInducing dr).extend f
   map_one' := by
-    convert! IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 1
+    convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 1
     exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
-    convert! IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 0 <;>
+    convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 0 <;>
     simp only [map_zero]
   map_add' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous
