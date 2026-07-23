@@ -51,8 +51,10 @@ instance IsGaussian.toIsProbabilityMeasure {E : Type*} [TopologicalSpace E] [Add
     [Module ℝ E] {mE : MeasurableSpace E} (μ : Measure E) [IsGaussian μ] :
     IsProbabilityMeasure μ where
   measure_univ := by
-    have : μ.map (0 : StrongDual ℝ E) Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal]
-    simpa [Measure.map_apply (by fun_prop : Measurable (0 : StrongDual ℝ E)) .univ] using this
+    have : μ.map (0 : StrongDual ℝ E) Set.univ = 1 := by
+      simp [-FunLike.coe_zero, IsGaussian.map_eq_gaussianReal]
+    simpa [-FunLike.coe_zero,
+      Measure.map_apply (by fun_prop : Measurable (0 : StrongDual ℝ E)) .univ] using this
 
 /-- A real Gaussian measure is Gaussian. -/
 instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianReal m v) where
@@ -171,8 +173,7 @@ theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
   refine ⟨fun h ↦ h.charFunDual_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
   ext u
   rw [charFun_map_eq_charFunDual_smul L u, h (u • L), charFun_gaussianReal]
-  simp only [FunLike.coe_smul', Pi.smul_apply, smul_eq_mul, ofReal_mul,
-    Real.coe_toNNReal']
+  simp only [FunLike.coe_smul, Pi.smul_apply, smul_eq_mul, ofReal_mul, Real.coe_toNNReal']
   congr
   · rw [integral_const_mul, integral_complex_ofReal]
   · rw [max_eq_left (variance_nonneg _ _), mul_comm, ← ofReal_pow, ← ofReal_mul,
