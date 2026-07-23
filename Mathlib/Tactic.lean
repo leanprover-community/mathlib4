@@ -156,6 +156,17 @@ public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
 public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.Inhabit
+public import Mathlib.Tactic.IntervalArithmetic.Certificate
+public import Mathlib.Tactic.IntervalArithmetic.Core
+public import Mathlib.Tactic.IntervalArithmetic.Dyadic
+public import Mathlib.Tactic.IntervalArithmetic.DyadicReal
+public import Mathlib.Tactic.IntervalArithmetic.Environment
+public import Mathlib.Tactic.IntervalArithmetic.ExactRatReal
+public import Mathlib.Tactic.IntervalArithmetic.Expr
+public import Mathlib.Tactic.IntervalArithmetic.Interval
+public import Mathlib.Tactic.IntervalArithmetic.IntervalHyps
+public import Mathlib.Tactic.IntervalArithmetic.IntervalOpHelpers
+public import Mathlib.Tactic.IntervalArithmetic.Tests
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.Lemma
