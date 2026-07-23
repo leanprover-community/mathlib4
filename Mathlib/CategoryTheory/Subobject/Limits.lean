@@ -121,6 +121,11 @@ variable [HasZeroMorphisms C] (f : X ⟶ Y) [HasKernel f]
 abbrev kernelSubobject : Subobject X :=
   Subobject.mk (kernel.ι f)
 
+lemma _root_.CategoryTheory.Subobject.pullback_kernelSubobject {W : C} (h : W ⟶ X)
+    [HasPullbacks C] [HasKernel (h ≫ f)] :
+    (Subobject.pullback h).obj (kernelSubobject f) = kernelSubobject (h ≫ f) := by
+  simpa only [kernelSubobject, comp_zero] using pullback_equalizer f 0 h
+
 /-- The underlying object of `kernelSubobject f` is (up to isomorphism!)
 the same as the chosen object `kernel f`. -/
 def kernelSubobjectIso : (kernelSubobject f : C) ≅ kernel f :=
@@ -328,6 +333,16 @@ theorem imageSubobject_arrow :
 theorem imageSubobject_arrow' :
     (imageSubobjectIso f).inv ≫ (imageSubobject f).arrow = image.ι f := by simp [imageSubobjectIso]
 
+lemma _root_.CategoryTheory.Subobject.exists_eq_imageSubobject [HasImages C]
+    (f : X ⟶ Y) (X' : Subobject X) : («exists» f).obj X' = imageSubobject (X'.arrow ≫ f) := by
+  apply eq_of_comm ((existsIsoImage f X').trans (imageSubobjectIso (X'.arrow ≫ f)).symm)
+  simp only [Iso.trans_hom, Iso.symm_hom, assoc, imageSubobject_arrow']
+  exact Over.w ((Subobject.existsCompRepresentativeIso f).app X').hom.hom
+
+lemma _root_.CategoryTheory.Subobject.exists_mk_eq_imageSubobject [HasImages C]
+    {A : C} (g : A ⟶ X) [Mono g] (f : X ⟶ Y) :
+    («exists» f).obj (mk g) = imageSubobject (g ≫ f) := by rfl
+
 /-- A factorisation of `f : X ⟶ Y` through `imageSubobject f`. -/
 def factorThruImageSubobject : X ⟶ imageSubobject f :=
   factorThruImage f ≫ (imageSubobjectIso f).inv
@@ -364,6 +379,26 @@ theorem factorThruImageSubobject_comp_self_assoc {W W' : C} (k : W ⟶ W') (k' :
 theorem imageSubobject_comp_le {X' : C} (h : X' ⟶ X) (f : X ⟶ Y) [HasImage f] [HasImage (h ≫ f)] :
     imageSubobject (h ≫ f) ≤ imageSubobject f :=
   Subobject.mk_le_mk_of_comm (image.preComp h f) (by simp)
+
+theorem imageSubobject_epi_comp [HasStrongEpiMonoFactorisations C] {X Y X' : C}
+    (e : X' ⟶ X) (f : X ⟶ Y) [StrongEpi e] [Mono f] :
+    imageSubobject (e ≫ f) = imageSubobject f :=
+  mk_eq_mk_of_comm (image.ι (e ≫ f)) (image.ι f)
+  ((image.isoStrongEpiMono e f rfl).symm ≪≫
+    (image.isoStrongEpiMono (𝟙 _) f (Category.id_comp _))) (by simp)
+
+lemma _root_.CategoryTheory.Subobject.sup_eq_imageSubobject [HasImages C] [HasBinaryCoproducts C]
+    {A : C} (X Y : Subobject A) :
+    X ⊔ Y = imageSubobject (coprod.desc X.arrow Y.arrow) := by
+  refine eq_mk_of_comm (image.ι (coprod.desc X.arrow Y.arrow)) (supIsoImage X Y) ?_
+  · simp only [supIsoImage_hom]
+    apply ofLEMk_comp
+
+lemma _root_.CategoryTheory.Subobject.mk_mono_eq_imageSubobject [HasStrongEpiMonoFactorisations C]
+    {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f)
+    [StrongEpi e] [Mono m] :
+    mk m = imageSubobject f :=
+  mk_eq_mk_of_comm m (image.ι f) (image.isoStrongEpiMono e m comm) (by simp)
 
 section
 

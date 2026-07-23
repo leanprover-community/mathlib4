@@ -311,6 +311,18 @@ instance : Mono (Abelian.factorThruCoimage f) := by infer_instance
 
 instance isIso_factorThruCoimage [Epi f] : IsIso (Abelian.factorThruCoimage f) := by infer_instance
 
+@[simp]
+lemma inv_factorThruImage_comp [Mono f] :
+    inv (Abelian.factorThruImage f) ≫ f = kernel.ι (cokernel.π f) := by
+  rw [← cancel_epi (Abelian.factorThruImage f)]
+  simp
+
+@[simp]
+lemma comp_inv_factorThruCoimage [Epi f] :
+    f ≫ inv (Abelian.factorThruCoimage f) = cokernel.π (kernel.ι f) := by
+  rw [← cancel_mono (Abelian.factorThruCoimage f)]
+  simp
+
 end
 
 section Factor
