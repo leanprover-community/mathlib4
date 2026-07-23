@@ -94,7 +94,6 @@ lemma discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
 @[deprecated discriminantEquiv (since := "2026-05-18")]
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) := discriminantEquiv f
 
-set_option linter.deprecated false in
 @[deprecated discriminantEquiv_apply (since := "2026-05-18")]
 lemma divDiscriminant_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (divDiscriminant f) z = f z / Δ z := rfl
@@ -157,7 +156,7 @@ lemma CuspForm.rank_eq_zero_of_weight_lt_twelve (hk : k < 12) :
 
 /-- The space of weight 12 cusp forms for `𝒮ℒ` has rank 1. -/
 lemma CuspForm.rank_eq_one_of_weight_eq_twelve : Module.rank ℂ (CuspForm 𝒮ℒ 12) = 1 := by
-  simpa [CuspForm.discriminantEquiv.rank_eq] using levelOne_weight_zero_rank_one
+  simpa [CuspForm.discriminantEquiv.rank_eq] using! levelOne_weight_zero_rank_one
 
 /-- Every weight 12 cusp form for `𝒮ℒ` is a scalar multiple of the discriminant. -/
 lemma CuspForm.exists_smul_discriminant_of_weight_eq_twelve (f : CuspForm 𝒮ℒ 12) :
@@ -254,7 +253,7 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
   rcases this with hk | hk | hk
   · -- `k < 3`: direct case-by-case check
     interval_cases k
-    · simpa using levelOne_weight_zero_rank_one
+    · simpa using! levelOne_weight_zero_rank_one
     · grind
     · simpa [Nat.ModEq] using levelOne_weight_two_rank_zero
   · -- `3 ≤ k < 12`: rank decomposition + the weight `k - 12` space is zero
@@ -298,7 +297,7 @@ theorem sturm_bound_levelOne_nat {k : ℕ} {f : ModularForm 𝒮ℒ (k : ℤ)}
     have hsucc : k / 12 = (k - 12) / 12 + 1 := by lia
     rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
       discriminant_qExpansion_order, add_comm, hsucc, Nat.cast_add, Nat.cast_one] at h
-    exact (ENat.add_lt_add_iff_right (ENat.coe_ne_top 1)).mp h
+    exact (ENat.add_lt_add_iff_right (ENat.natCast_ne_top 1)).mp h
 
 /-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
 has q-expansion of order strictly greater than `k / 12`, then `f` is identically zero.

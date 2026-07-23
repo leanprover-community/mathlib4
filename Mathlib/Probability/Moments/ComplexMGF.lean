@@ -158,7 +158,6 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     · positivity
     · exact lt_of_lt_of_le (by simp [ht]) (le_abs_self _)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
-    simp only
     simp_rw [pow_succ, mul_assoc]
     refine HasDerivAt.const_mul _ ?_
     simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]
@@ -242,7 +241,7 @@ the same `integrableExpSet`. -/
 lemma integrableExpSet_eq_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ μ' = 0) :
     integrableExpSet X μ = integrableExpSet Y μ' := by
   ext t
-  simp only [integrableExpSet, Set.mem_setOf_eq]
+  simp only [integrableExpSet, Set.mem_ofPred_eq]
   by_cases hμ : μ = 0
   · simp [hμ, hμμ'.mp hμ]
   have : NeZero μ := ⟨hμ⟩
@@ -314,6 +313,7 @@ section ext
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If the complex moment-generating functions of two random variables `X` and `Y` with respect to
 the finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
 complex moment-generating functions separate the distributions of random variables. -/

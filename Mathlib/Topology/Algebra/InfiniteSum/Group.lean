@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.UniformSpace.Cauchy
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
@@ -35,7 +36,7 @@ variable {f g : β → α} {a a₁ a₂ : α}
 -- `by simpa using` speeds up elaboration. Why?
 @[to_additive]
 theorem HasProd.inv (h : HasProd f a L) : HasProd (fun b ↦ (f b)⁻¹) a⁻¹ L := by
-  simpa only using h.map (MonoidHom.id α)⁻¹ continuous_inv
+  simpa only using! h.map (MonoidHom.id α)⁻¹ continuous_inv
 
 @[to_additive]
 theorem Multipliable.inv (hf : Multipliable f L) : Multipliable (fun b ↦ (f b)⁻¹) L :=
@@ -90,7 +91,7 @@ theorem HasProd.hasProd_compl_iff {s : Set β} (hf : HasProd (f ∘ (↑) : s �
   refine ⟨fun h ↦ hf.mul_compl h, fun h ↦ ?_⟩
   rw [hasProd_subtype_iff_mulIndicator] at hf ⊢
   rw [Set.mulIndicator_compl]
-  simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using h.div hf
+  simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using! h.div hf
 
 @[to_additive]
 theorem HasProd.hasProd_iff_compl {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
@@ -202,7 +203,7 @@ variable [UniformSpace α]
 **Cauchy convergence test** -/]
 theorem multipliable_iff_cauchySeq_finset [CommMonoid α] [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
-  classical exact cauchy_map_iff_exists_tendsto.symm
+  exact cauchy_map_iff_exists_tendsto.symm
 
 variable [CommGroup α] [IsUniformGroup α] {f g : β → α}
 
@@ -329,7 +330,7 @@ variable {G : Type*} [TopologicalSpace G] [CommGroup G] [IsTopologicalGroup G] {
 theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
-  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
+  let : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -337,7 +338,7 @@ theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈
 theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
-  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
+  let : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -349,7 +350,6 @@ cover the whole space. This does not need a summability assumption, as otherwise
 zero. -/]
 theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     Tendsto (fun s : Finset α ↦ ∏' a : { x // x ∉ s }, f a) atTop (𝓝 1) := by
-  classical
   by_cases H : Multipliable f
   · intro e he
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
@@ -387,7 +387,7 @@ theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
 @[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
     (hf : Multipliable f) : f.mulSupport.Countable := by
-  simpa only [ker_nhds] using hf.tendsto_cofinite_one.countable_compl_preimage_ker
+  simpa only [ker_nhds] using! hf.tendsto_cofinite_one.countable_compl_preimage_ker
 
 @[to_additive]
 theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
@@ -404,7 +404,7 @@ theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
 @[to_additive (attr := simp)]
 theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := by
   rcases finite_or_infinite β with hβ | hβ
-  · letI : Fintype β := Fintype.ofFinite β
+  · let : Fintype β := Fintype.ofFinite β
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
     simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]
   · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
@@ -416,14 +416,20 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
 end IsTopologicalGroup
 
 section CommGroupWithZero
-variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [SeparatelyContinuousMul K]
-  {f g : α → K}
+
+variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K]
+  {f g : α → K} {L : SummationFilter α}
+
 /-!
 ## Groups with a zero
 
 These lemmas apply to a `CommGroupWithZero`; the most familiar case is when `K` is a field. These
 are specific to the product setting and do not have a sensible additive analogue.
 -/
+
+section SeparatelyContinuousMul
+
+variable [SeparatelyContinuousMul K]
 
 open Finset in
 lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
@@ -447,6 +453,7 @@ protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliab
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead
 requires the target to be a group under multiplication (and hence fails for infinite products in a
@@ -455,9 +462,40 @@ ring).
 lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠ 0)
     (hfg : ∀ᶠ a in cofinite, f a = g a) :
     Multipliable g := by
-  classical
   obtain ⟨c, hc⟩ := hf
   obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i := ⟨hfg.toFinset, by simp⟩
   exact (hc.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliable
+
+end SeparatelyContinuousMul
+
+theorem HasProd.inv₀ {a : K} [ContinuousInv₀ K] (h : HasProd f a L) (ha : a ≠ 0) :
+    HasProd (fun x ↦ (f x)⁻¹) a⁻¹ L := by
+  simp_rw [HasProd, Finset.prod_inv_distrib]
+  exact Tendsto.inv₀ h ha
+
+theorem Multipliable.inv₀ [ContinuousInv₀ K] (h : Multipliable f L) (ne_zero : ∏'[L] x, f x ≠ 0) :
+    Multipliable (fun x ↦ (f x)⁻¹) L :=
+  h.hasProd.inv₀ ne_zero|>.multipliable
+
+theorem Multipliable.tprod_inv₀ [ContinuousInv₀ K] [T2Space K] [L.NeBot]
+    (h : Multipliable f L) (ne_zero : ∏'[L] x, f x ≠ 0) :
+    ∏'[L] x, (f x)⁻¹ = (∏'[L] x, f x )⁻¹ :=
+  h.hasProd.inv₀ ne_zero|>.tprod_eq
+
+theorem HasProd.div₀ [ContinuousInv₀ K] [ContinuousMul K] {a b : K}
+    (hf : HasProd f a L) (hg : HasProd g b L) (hb : b ≠ 0) :
+    HasProd (fun x ↦ f x / g x) (a / b) L := by
+  simp only [div_eq_mul_inv]
+  exact hf.mul <| hg.inv₀ hb
+
+theorem Multipliable.div₀ [ContinuousInv₀ K] [ContinuousMul K]
+    (hf : Multipliable f L) (hg : Multipliable g L) (ne_zero : ∏'[L] x, g x ≠ 0) :
+    Multipliable (fun x ↦ f x / g x) L :=
+  hf.hasProd.div₀ hg.hasProd ne_zero|>.multipliable
+
+theorem Multipliable.tprod_div₀ [ContinuousInv₀ K] [ContinuousMul K] [T2Space K] [L.NeBot]
+    (hf : Multipliable f L) (hg : Multipliable g L) (ne_zero : ∏'[L] x, g x ≠ 0) :
+    (∏'[L] x, f x / g x) = (∏'[L] x, f x) / (∏'[L] x, g x) :=
+  hf.hasProd.div₀ hg.hasProd ne_zero|>.tprod_eq
 
 end CommGroupWithZero

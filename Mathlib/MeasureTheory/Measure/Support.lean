@@ -126,7 +126,7 @@ lemma support_subset_of_isClosed {t : Set X} (ht : IsClosed t) (h : t ∈ ae μ)
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
   ext x
-  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
+  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_ofPred_eq, and_right_comm,
     nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
@@ -174,6 +174,10 @@ lemma nonempty_support (hμ : μ ≠ 0) : μ.support.Nonempty :=
 lemma nonempty_support_iff : μ.support.Nonempty ↔ μ ≠ 0 :=
   ⟨fun h e ↦ (not_nonempty_iff_eq_empty.mpr <| congrArg Measure.support e |>.trans
     <| support_zero) h, fun h ↦ nonempty_support h⟩
+
+@[simp]
+lemma support_eq_empty_iff : μ.support = ∅ ↔ μ = 0 := by
+  simp [← Set.not_nonempty_iff_eq_empty, not_congr nonempty_support_iff]
 
 end Lindelof
 

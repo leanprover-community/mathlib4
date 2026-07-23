@@ -105,12 +105,12 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
     rw [← concat_comp_IccInclusionLeft hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : z ≤ b)⟩, rfl⟩, rfl⟩
-    simpa [projIccCM, projIcc, h2, hz.1] using h1
+    simpa [projIccCM, projIcc, h2, hz.1] using! h1
   have hgU : MapsTo g K₂ U := by
     rw [← concat_comp_IccInclusionRight hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
-    simpa [projIccCM, projIcc, h2, hz.2] using h1
+    simpa [projIccCM, projIcc, h2, hz.2] using! h1
   filter_upwards [hf K₁ hK₁ U hU hfU, hg K₂ hK₂ U hU hgU, hfg] with i hf hg hfg x hx
   by_cases! hxb : x ≤ b
   · rw [concat_left hfg hxb]
@@ -128,8 +128,8 @@ noncomputable def concatCM :
   toFun fg := concat fg.val.1 fg.val.2
   continuous_toFun := by
     let S : Set (C(Icc a b, E) × C(Icc b c, E)) := {fg | fg.1 ⊤ = fg.2 ⊥}
-    change Continuous (S.restrict concat.uncurry)
-    refine continuousOn_iff_continuous_restrict.mp (fun fg hfg => ?_)
+    change Continuous (S.domRestrict concat.uncurry)
+    refine continuousOn_iff_continuous_domRestrict.mp (fun fg hfg => ?_)
     refine tendsto_concat ?_ hfg ?_ ?_
     · exact eventually_nhdsWithin_of_forall (fun _ => id)
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuousAt_fst

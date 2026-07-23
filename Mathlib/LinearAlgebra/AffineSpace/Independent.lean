@@ -115,7 +115,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)
         have hf2g2 : ∀ x : { x // x ≠ i1 }, f2 x = g2 x := by
           simp only [g2, hf2def]
-          refine fun x => ?_
+          intro x
           rw [hfg]
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s2 f p hf (p i1),
           Finset.weightedVSubOfPoint_insert, Finset.weightedVSubOfPoint_apply,
@@ -148,8 +148,8 @@ theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} 
     have hv : ∀ v : (fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁}), (v : V) +ᵥ p₁ ∈ s \ {p₁} := fun v =>
       (vsub_left_injective p₁).mem_set_image.1 ((vadd_vsub (v : V) p₁).symm ▸ v.property)
     let f : (fun p : P => (p -ᵥ p₁ : V)) '' (s \ {p₁}) → { x : s // x ≠ ⟨p₁, hp₁⟩ } := fun x =>
-      ⟨⟨(x : V) +ᵥ p₁, Set.mem_of_mem_diff (hv x)⟩, fun hx =>
-        Set.notMem_of_mem_diff (hv x) (Subtype.ext_iff.1 hx)⟩
+      ⟨⟨(x : V) +ᵥ p₁, Set.mem_of_mem_sdiff (hv x)⟩, fun hx =>
+        Set.notMem_of_mem_sdiff (hv x) (Subtype.ext_iff.1 hx)⟩
     convert!
       h.comp f fun x1 x2 hx =>
         Subtype.ext (vadd_right_cancel p₁ (Subtype.ext_iff.1 (Subtype.ext_iff.1 hx)))
@@ -170,9 +170,9 @@ theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Se
   rw [affineIndependent_set_iff_linearIndependent_vsub k
       (Set.mem_union_left _ (Set.mem_singleton p₁))]
   have h : (fun p => (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v => v +ᵥ p₁) '' s) \ {p₁}) = s := by
-    simp_rw [Set.union_diff_left, Set.image_diff (vsub_left_injective p₁), Set.image_image,
+    simp_rw [Set.union_sdiff_left, Set.image_sdiff (vsub_left_injective p₁), Set.image_image,
       Set.image_singleton, vsub_self, vadd_vsub, Set.image_id']
-    exact Set.diff_singleton_eq_self fun h => hs 0 h rfl
+    exact Set.sdiff_singleton_eq_self fun h => hs 0 h rfl
   rw [h]
 
 /-- A family is affinely independent if and only if any affine
@@ -248,6 +248,7 @@ theorem LinearIndependent.affineIndependent
 
 variable {k}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we single out one member of an affine-independent family of points and affinely transport
 all others along the line joining them to this member, the resulting new family of points is affine-
 independent.
@@ -315,6 +316,7 @@ protected theorem AffineIndependent.subtype {p : ι → P} (ha : AffineIndepende
     AffineIndependent k fun i : s => p i :=
   ha.comp_embedding (Embedding.subtype _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an indexed family of points is affinely independent, so is the
 corresponding set of points. -/
 protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent k p) :
@@ -470,7 +472,7 @@ lemma AffineIndependent.inf_affineSpan_eq_affineSpan_inter [Nontrivial k] {p : �
     rw [affineIndependent_iff_indicator_eq_of_affineCombination_eq] at ha
     replace ha := ha fs₁ fs₂ w₁ w₂ hw₁ hw₂ hw₁₂
     refine ⟨fs₁ ∩ fs₂, by grind, w₁, ?_, ?_⟩
-    · rw [← hw₁, ← fs₁.sum_inter_add_sum_diff fs₂, eq_comm]
+    · rw [← hw₁, ← fs₁.sum_inter_add_sum_sdiff fs₂, eq_comm]
       convert! add_zero _
       refine Finset.sum_eq_zero ?_
       intro i hi
@@ -528,9 +530,12 @@ protected theorem AffineIndependent.mem_affineSpan_iff [Nontrivial k] {p : ι �
 /-- If a family is affinely independent, a point in the family is not
 in the affine span of the other points, if the underlying ring is
 nontrivial. -/
-theorem AffineIndependent.notMem_affineSpan_diff [Nontrivial k] {p : ι → P}
+theorem AffineIndependent.notMem_affineSpan_sdiff [Nontrivial k] {p : ι → P}
     (ha : AffineIndependent k p) (i : ι) (s : Set ι) : p i ∉ affineSpan k (p '' (s \ {i})) := by
   simp [ha]
+
+@[deprecated (since := "2026-06-03")]
+alias AffineIndependent.notMem_affineSpan_diff := AffineIndependent.notMem_affineSpan_sdiff
 
 lemma AffineIndependent.injective_affineSpan_image [Nontrivial k] {p : ι → P}
     (ha : AffineIndependent k p) : Injective fun (s : Set ι) ↦ affineSpan k (p '' s) := by
@@ -701,6 +706,7 @@ theorem affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndepend
   · simp only [Pi.sub_apply, sub_eq_iff_eq_add]
   · simp_all only [Pi.sub_apply, Finset.sum_sub_distrib, sub_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an affinely independent family of points, an affine combination (with sum of weights 1)
 equals the line map of two affine combination points if and only if its weights are given pointwise
 by the line map of the corresponding weights. -/
@@ -721,6 +727,7 @@ section DivisionRing
 variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An affinely independent set of points can be extended to such a
 set that spans the whole space. -/
 theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
@@ -794,10 +801,10 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
     fin_cases i
     · simp at hi
     · simp [i₁]
-  haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
+  have : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
   refine .of_subsingleton default ?_
   rw [he' default]
-  simpa using h.symm
+  simpa using! h.symm
 
 variable {k}
 
@@ -918,6 +925,7 @@ theorem sign_eq_of_affineCombination_mem_affineSpan_pair {p : ι → P} (h : Aff
   rcases hs with ⟨r, hr⟩
   rw [hr i hi, hr j hj, hi0, hj0, add_zero, add_zero, sub_zero, sub_zero, sign_mul, sign_mul, hij]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an affinely independent family of points, suppose that an affine combination lies in
 the span of one point of that family and a combination of another two points of that family given
 by `lineMap` with coefficient between 0 and 1. Then the coefficients of those two points in the
