@@ -2439,6 +2439,12 @@ public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.Analysis.SumIntegralExpDecay
 public import Mathlib.Analysis.SumOverResidueClass
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
+public import Mathlib.CFT.ActualStuff
+public import Mathlib.CFT.Junk
+public import Mathlib.CFT.No
+public import Mathlib.CFT.Nonsense
+public import Mathlib.CFT.SeparableResidueStruct
+public import Mathlib.CFT.Stuff
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
