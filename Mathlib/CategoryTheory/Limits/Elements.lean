@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
+Authors: Markus Himmel, Emily Riehl
 -/
 module
 
@@ -21,10 +21,6 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 ## Further results
 
 - If `A` is (co)representable, then `A.Elements` has an initial object.
-
-## TODOs
-
-- Show that `A` is (co)representable if `A.Elements` has an initial object.
 
 -/
 
@@ -134,5 +130,38 @@ instance {F : C ⥤ Type*} [F.IsCorepresentable] : HasInitial F.Elements :=
 end Initial
 
 end CategoryOfElements
+
+namespace Functor
+
+/-- An initial object in the category `F.Elements` of a covariant functor defines a
+corepresentation for that functor. -/
+def CorepresentableBy.ofIsInitial {F : C ⥤ Type v} (E : Elements F) (he : IsInitial E) :
+    CorepresentableBy F E.fst where
+      homEquiv := by
+        intro Y
+        refine {
+          toFun f := F.map f E.snd
+          invFun y := (he.to ⟨Y, y⟩).1
+          left_inv f := by
+              have := he.hom_ext (he.to ⟨Y, F.map f E.snd⟩) ⟨f, rfl⟩
+              simpa using congrArg (fun m => m.1) this
+          right_inv y := (he.to ⟨Y, y⟩).2
+        }
+      homEquiv_comp := by
+        intro Y Y' g f
+        simp only [Equiv.coe_fn_mk, Functor.map_comp_apply]
+
+instance (F : C ⥤ Type v) [HasInitial (Elements F)] :
+    IsCorepresentable F where
+      has_corepresentation :=
+        ⟨(⊥_ F.Elements).fst,
+          (Nonempty.intro (CorepresentableBy.ofIsInitial (⊥_ F.Elements) initialIsInitial))⟩
+
+theorem isCorepresentable_iff_hasInitial (F : C ⥤ Type v) :
+    HasInitial (Elements F) ↔ IsCorepresentable F where
+      mp _ := inferInstance
+      mpr _ := inferInstance
+
+end Functor
 
 end CategoryTheory
