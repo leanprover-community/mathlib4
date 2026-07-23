@@ -353,12 +353,10 @@ theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
 /-- A measure space is a measurable space equipped with a
   measure, referred to as `volume`. -/
 class MeasureSpace (α : Type*) extends MeasurableSpace α where
+  /-- `volume` is the canonical measure on `α`. -/
   volume : Measure α
 
 export MeasureSpace (volume)
-
-/-- `volume` is the canonical measure on `α`. -/
-add_decl_doc volume
 
 section MeasureSpace
 
