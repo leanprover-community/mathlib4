@@ -778,6 +778,16 @@ lemma consecutiveCode_admissible
     (consecutive_pell_equation h2 hn hn1)
   exact hsquareNat.map (Nat.castRingHom ℤ)
 
+/-- The set of positive `s`-factored numbers whose successors are also `s`-factored. -/
+def consecutiveFactoredNumbers (s : Finset ℕ) : Set ℕ :=
+  {n | n ∈ factoredNumbers s ∧ n + 1 ∈ factoredNumbers s}
+
+private lemma two_mem_of_mem_consecutiveFactoredNumbers
+    {s : Finset ℕ} {n : ℕ} (hn : n ∈ consecutiveFactoredNumbers s) :
+    2 ∈ s :=
+  (mem_factoredNumbers'.mp (mul_mem_factoredNumbers hn.1 hn.2))
+    2 Nat.prime_two (Nat.two_dvd_mul_add_one n)
+
 /--
 Refined Størmer bound: among the `3 ^ s.card` exponent codes, the
 `2 ^ s.card` codes taking only the values zero and two cannot arise.
@@ -801,15 +811,38 @@ theorem card_consecutive_factoredNumbers_le_sub
     Fintype.card_le_of_injective encode hinjective
 
 /--
-A finite collection of positive consecutive `s`-factored pairs has
-cardinality at most `3 ^ s.card`.
+Størmer's theorem: there are finitely many pairs of consecutive
+`s`-factored natural numbers.
 -/
-theorem card_consecutive_factoredNumbers_le
-    {s A : Finset ℕ}
-    (h2 : 2 ∈ s)
-    (hA : ∀ n ∈ A, n ∈ factoredNumbers s ∧ n + 1 ∈ factoredNumbers s) :
-    A.card ≤ 3 ^ s.card := by
-  exact (card_consecutive_factoredNumbers_le_sub h2 hA).trans (Nat.sub_le _ _)
+theorem finite_consecutiveFactoredNumbers (s : Finset ℕ) :
+    (consecutiveFactoredNumbers s).Finite := by
+  by_contra hfinite
+  have hinfinite : (consecutiveFactoredNumbers s).Infinite := hfinite
+  obtain ⟨n, hn⟩ := hinfinite.nonempty
+  have h2 : 2 ∈ s := two_mem_of_mem_consecutiveFactoredNumbers hn
+  let k := 3 ^ s.card - 2 ^ s.card
+  obtain ⟨A, hA, hAcard⟩ := hinfinite.exists_subset_card_eq (k + 1)
+  have hbound : A.card ≤ k := by
+    apply card_consecutive_factoredNumbers_le_sub h2
+    intro m hm
+    simpa only [consecutiveFactoredNumbers, Set.mem_ofPred_eq] using
+      hA hm
+  omega
+
+/-- The refined Størmer bound for all consecutive `s`-factored pairs. -/
+theorem ncard_consecutiveFactoredNumbers_le_sub (s : Finset ℕ) :
+    (consecutiveFactoredNumbers s).ncard ≤ 3 ^ s.card - 2 ^ s.card := by
+  have hfinite := finite_consecutiveFactoredNumbers s
+  by_cases hnonempty : (consecutiveFactoredNumbers s).Nonempty
+  · obtain ⟨n, hn⟩ := hnonempty
+    have h2 : 2 ∈ s := two_mem_of_mem_consecutiveFactoredNumbers hn
+    rw [Set.ncard_eq_toFinset_card _ hfinite]
+    apply card_consecutive_factoredNumbers_le_sub h2
+    intro m hm
+    simpa only [consecutiveFactoredNumbers, Set.mem_ofPred_eq] using
+      hfinite.mem_toFinset.mp hm
+  · rw [Set.not_nonempty_iff_eq_empty.mp hnonempty]
+    simp
 
 end Stormer
 
