@@ -6191,6 +6191,7 @@ public import Mathlib.Order.NonemptyFiniteChains
 public import Mathlib.Order.Northcott
 public import Mathlib.Order.Notation
 public import Mathlib.Order.Nucleus
+public import Mathlib.Order.Nucleus.Boolean
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.OrderDual
