@@ -161,13 +161,13 @@ noncomputable instance : CategoryStruct (SpanBicat C Wₗ Wᵣ) where
   comp S₁ S₂ := Span.comp S₁ S₂
 
 @[simp, grind =]
-lemma id_apex (X : SpanBicat C Wₗ Wᵣ) : (𝟙 X : X ⟶ X).apex = X.of := rfl
+lemma id_apex (X : SpanBicat C Wₗ Wᵣ) : (𝟙 X :).apex = X.of := rfl
 
 @[simp, grind =]
-lemma id_l {X : SpanBicat C Wₗ Wᵣ} : (𝟙 X : X ⟶ X).l = 𝟙 X.of := rfl
+lemma id_l {X : SpanBicat C Wₗ Wᵣ} : (𝟙 X :).l = 𝟙 X.of := rfl
 
 @[simp, grind =]
-lemma id_r {X : SpanBicat C Wₗ Wᵣ} : (𝟙 X : X ⟶ X).r = 𝟙 X.of := rfl
+lemma id_r {X : SpanBicat C Wₗ Wᵣ} : (𝟙 X :).r = 𝟙 X.of := rfl
 
 instance {X Y : SpanBicat C Wₗ Wᵣ} : Category (X ⟶ Y) :=
   inferInstanceAs (Category <| Span Wₗ Wᵣ X.of Y.of)
@@ -188,7 +188,7 @@ lemma hom₂_ext {X Y : SpanBicat C Wₗ Wᵣ} {S S' : X ⟶ Y} {f g : S ⟶ S'}
   Span.hom_ext h
 
 /-- Constructor for 1-morphisms in `SpanBicat C _ _` -/
-abbrev mkHom {X Y : SpanBicat C Wₗ Wᵣ} (apex : C) (l : apex ⟶ X.of) (r : apex ⟶ Y.of)
+abbrev mkHom {X Y : SpanBicat C Wₗ Wᵣ} {apex : C} (l : apex ⟶ X.of) (r : apex ⟶ Y.of)
     (wl : Wₗ l) (wr : Wᵣ r) :
     X ⟶ Y where
   apex := apex
