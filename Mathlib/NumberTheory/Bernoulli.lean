@@ -124,18 +124,27 @@ theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
 @[simp]
 theorem bernoulli'_two : bernoulli' 2 = 1 / 6 := by
   rw [bernoulli'_def]
-  norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
+  norm_num [sum_range_succ]
 
 @[simp]
 theorem bernoulli'_three : bernoulli' 3 = 0 := by
   rw [bernoulli'_def]
-  norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
+  norm_num [sum_range_succ]
 
 @[simp]
 theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
-  have : Nat.choose 4 2 = 6 := by decide -- shrug
   rw [bernoulli'_def]
-  norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
+  norm_num [sum_range_succ, Nat.choose]
+
+@[simp]
+theorem bernoulli'_five : bernoulli' 5 = 0 := by
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, Nat.choose]
+
+@[simp]
+theorem bernoulli'_six : bernoulli' 6 = 1 / 42 := by
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, Nat.choose]
 
 end Examples
 
