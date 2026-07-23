@@ -950,11 +950,11 @@ multivariate version. -/
 theorem mem_ideal_of_coeff_mem_ideal (I : Ideal (MvPolynomial σ R)) (p : MvPolynomial σ R)
     (hcoe : ∀ m : σ →₀ ℕ, p.coeff m ∈ I.comap (C : R →+* MvPolynomial σ R)) : p ∈ I := by
   rw [as_sum p]
-  suffices ∀ m ∈ p.support, monomial m (MvPolynomial.coeff m p) ∈ I by
+  suffices ∀ m ∈ p.support, monomial m (p.coeff m) ∈ I by
     exact Submodule.sum_mem I this
   intro m _
-  rw [← mul_one (coeff m p), ← C_mul_monomial]
-  suffices C (coeff m p) ∈ I by exact I.mul_mem_right (monomial m 1) this
+  rw [← mul_one (p.coeff m), ← C_mul_monomial]
+  suffices C (p.coeff m) ∈ I by exact I.mul_mem_right (monomial m 1) this
   simpa [Ideal.mem_comap] using hcoe m
 
 /-- The push-forward of an ideal `I` of `R` to `MvPolynomial σ R` via inclusion
@@ -979,11 +979,11 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf
     rw [as_sum f]
-    suffices ∀ m ∈ f.support, monomial m (coeff m f) ∈ (Ideal.map C I : Ideal (MvPolynomial σ R)) by
+    suffices ∀ m ∈ f.support, monomial m (f.coeff m) ∈ (Ideal.map C I : Ideal (MvPolynomial σ R)) by
       exact Submodule.sum_mem _ this
     intro m _
-    rw [← mul_one (coeff m f), ← C_mul_monomial]
-    suffices C (coeff m f) ∈ (Ideal.map C I : Ideal (MvPolynomial σ R)) by
+    rw [← mul_one (f.coeff m), ← C_mul_monomial]
+    suffices C (f.coeff m) ∈ (Ideal.map C I : Ideal (MvPolynomial σ R)) by
       exact Ideal.mul_mem_right _ _ this
     apply Ideal.mem_map_of_mem _
     exact hf m
@@ -993,7 +993,7 @@ theorem ker_map (f : R →+* S) :
     Ideal.map (C : R →+* MvPolynomial σ R) (RingHom.ker f) := by
   ext
   rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
-  simp_rw [coeff_map, coeff_zero, RingHom.mem_ker]
+  simp_rw [coeff_map, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply, RingHom.mem_ker]
 
 lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
     [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :

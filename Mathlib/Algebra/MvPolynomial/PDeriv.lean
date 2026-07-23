@@ -119,7 +119,7 @@ theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a
   rw [C_mul', Derivation.map_smul, C_mul']
 
 theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
-    coeff m (pderiv i p) = coeff (m + single i 1) p * (m i + 1) := by
+    (pderiv i p).coeff m = p.coeff (m + single i 1) * (m i + 1) := by
   classical
   induction p using MvPolynomial.induction_on' with
   | add p q hp hq => simp [hp, hq, add_mul]

@@ -189,7 +189,7 @@ lemma coeff_killCompl {s} :
     rw [killCompl_monomial]
     split_ifs with h
     · simp [← (Finsupp.mapDomain_injective hf).eq_iff, u.mapDomain_comapDomain _ hf h]
-    · simp? says simp only [coeff_zero, coeff_monomial, right_eq_ite_iff]
+    · simp only [coeff_zero, Finsupp.zero_apply, coeff_monomial, right_eq_ite_iff]
       intro rfl
       contrapose! h
       apply subset_trans <| SetLike.coe_subset_coe.mpr <| Finsupp.mapDomain_support
@@ -339,7 +339,7 @@ theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolyno
     rw [rename_monomial, coeff_monomial, coeff_monomial]
     simp only [(Finsupp.mapDomain_injective hf).eq_iff]
   | add =>
-    simp only [*, map_add, coeff_add]
+    simp only [*, map_add, coeff_add, Finsupp.add_apply]
 
 @[simp]
 theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :

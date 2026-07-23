@@ -236,9 +236,13 @@ def comp [Algebra S T] [IsScalarTower R S T]
   aeval_val_σ' s := by
     have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
       rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
+    have hfold (p : MvPolynomial ι' S) :
+        (∑ x ∈ support p, (algebraMap S T) (p.coeff x) * x.prod fun a b ↦ Q.val a ^ b) =
+          aeval Q.val p :=
+      ((aeval_def (f := Q.val) p).trans (eval₂_eq (algebraMap S T) Q.val p)).symm
     conv_rhs => rw [← Q.aeval_val_σ s, (Q.σ s).as_sum]
     simp [aeval_rename, this, aeval_monomial, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
-      Finsupp.sum, MvPolynomial.finsupp_support_eq_support, MvPolynomial.coeff]
+      Finsupp.sum, MvPolynomial.finsupp_support_eq_support, hfold]
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
@@ -674,21 +678,21 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
   · rintro x (h₂ : (Q.ofComp P).toAlgHom x = 0)
     let e : (ι' ⊕ ι →₀ ℕ) ≃+ (ι' →₀ ℕ) × (ι →₀ ℕ) :=
       Finsupp.sumFinsuppAddEquivProdFinsupp
-    suffices ∑ v ∈ (support x).map e, (monomial (e.symm v)) (coeff (e.symm v) x) ∈
+    suffices ∑ v ∈ (support x).map e, (monomial (e.symm v)) (x.coeff (e.symm v)) ∈
         Ideal.map (Q.toComp P).toAlgHom.toRingHom P.ker by
       simpa only [AlgHom.toRingHom_eq_coe, Finset.sum_map, Equiv.coe_toEmbedding,
         EquivLike.coe_coe, AddEquiv.symm_apply_apply, support_sum_monomial_coeff] using! this
     rw [← Finset.sum_fiberwise_of_maps_to (fun i ↦ Finset.mem_image_of_mem Prod.fst)]
     refine sum_mem fun i hi ↦ ?_
     convert_to monomial (e.symm (i, 0)) 1 * (Q.toComp P).toAlgHom.toRingHom
-      (∑ j ∈ (support x).map e.toEmbedding with j.1 = i, monomial j.2 (coeff (e.symm j) x)) ∈ _
+      (∑ j ∈ (support x).map e.toEmbedding with j.1 = i, monomial j.2 (x.coeff (e.symm j))) ∈ _
     · rw [map_sum, Finset.mul_sum]
       refine Finset.sum_congr rfl fun j hj ↦ ?_
       obtain rfl := (Finset.mem_filter.mp hj).2
       obtain ⟨i, j⟩ := j
       clear hj hi
-      have : (Q.toComp P).toAlgHom (monomial j (coeff (e.symm (i, j)) x)) =
-          monomial (e.symm (0, j)) (coeff (e.symm (i, j)) x) :=
+      have : (Q.toComp P).toAlgHom (monomial j (x.coeff (e.symm (i, j)))) =
+          monomial (e.symm (0, j)) (x.coeff (e.symm (i, j))) :=
         toComp_toAlgHom_monomial ..
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
           this]
@@ -696,10 +700,10 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     · apply Ideal.mul_mem_left
       refine Ideal.mem_map_of_mem _ ?_
       simp only [ker_eq_ker_aeval_val, AddEquiv.toEquiv_eq_coe, RingHom.mem_ker, map_sum]
-      rw [← coeff_zero i, ← h₂]
+      rw [show (0 : S) = ((Q.ofComp P).toAlgHom x).coeff i by rw [h₂]; simp]
       clear h₂ hi
       have (x : (Q.comp P).Ring) : (Function.support fun a ↦ if a.1 = i then aeval P.val
-          (monomial a.2 (coeff (e.symm a) x)) else 0) ⊆ SetLike.coe ((support x).map e) := by
+          (monomial a.2 (x.coeff (e.symm a))) else 0) ⊆ SetLike.coe ((support x).map e) := by
         rw [← Set.compl_subset_compl]
         intro j
         obtain ⟨j, rfl⟩ := e.surjective j
@@ -723,7 +727,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         · simp only [*, map_zero, ite_self]
         · congr
       | add p q hp hq =>
-        simp only [coeff_add, map_add, ite_add_zero]
+        simp only [AddMonoidAlgebra.coeff_add, Finsupp.add_apply, map_add, ite_add_zero]
         rw [finsum_add_distrib, hp, hq]
         · refine (((support p).map e).finite_toSet.subset ?_)
           convert! this p
@@ -748,8 +752,7 @@ def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker)
       Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
       Sum.elim_inl, one_mul]
     congr! with v i
-    simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ,
-      coeff]
+    simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
@@ -765,7 +768,6 @@ lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x
   congr 1
   rw [aeval_def, IsScalarTower.algebraMap_eq R S, ← MvPolynomial.algebraMap_eq,
     ← coe_eval₂Hom, ← map_aeval, P.aeval_val_σ]
-  simp [coeff]
 
 lemma map_ofComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     Ideal.map (Q.ofComp P).toAlgHom (Q.comp P).ker = Q.ker := by

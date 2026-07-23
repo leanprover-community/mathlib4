@@ -225,7 +225,7 @@ theorem eval₂_eta (p : MvPolynomial σ R) : eval₂ C X p = p := by
 
 set_option backward.isDefEq.respectTransparency false in
 theorem eval₂_congr (g₁ g₂ : σ → S₁)
-    (h : ∀ {i : σ} {c : σ →₀ ℕ}, i ∈ c.support → coeff c p ≠ 0 → g₁ i = g₂ i) :
+    (h : ∀ {i : σ} {c : σ →₀ ℕ}, i ∈ c.support → p.coeff c ≠ 0 → g₁ i = g₂ i) :
     p.eval₂ f g₁ = p.eval₂ f g₂ := by
   apply Finset.sum_congr rfl
   intro C hc; dsimp; congr 1
@@ -382,13 +382,13 @@ lemma map_eval {S₂ : Type*} [CommSemiring S₂] (q : S₁ →+* S₂) (g : σ 
     q (eval g p) = eval (q ∘ g) (map q p) := by
   rw [← eval₂_eq_eval_map, ← eval₂_id, eval₂_comp_right, map_id]
 
-theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map f p) = f (coeff m p) := by
+theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, (map f p).coeff m = f (p.coeff m) := by
   classical
   apply MvPolynomial.induction_on p <;> clear p
   · intro r m
     simp_rw [map_C, coeff_C, apply_ite f, f.map_zero]
   · intro p q hp hq m
-    simp only [hp, hq, (map f).map_add, coeff_add, f.map_add]
+    simp only [hp, hq, (map f).map_add, coeff_add, Finsupp.add_apply, f.map_add]
   · intro p i hp m
     simp only [(map f).map_mul, map_X, hp, coeff_mul_X', f.map_zero, apply_ite f]
 
@@ -416,7 +416,7 @@ theorem map_surjective (hf : Function.Surjective f) :
     exact ⟨a + b, map_add _ _ _⟩
 
 theorem map_surjective_iff : Function.Surjective (map (σ := σ) f) ↔ Function.Surjective f :=
-  ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(coeff 0 $h)⟩,
+  ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(($h).coeff 0)⟩,
     map_surjective f⟩
 
 /-- If `f` is a left-inverse of `g` then `map f` is a left-inverse of `map g`. -/
@@ -477,12 +477,12 @@ theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf 
 theorem C_dvd_iff_map_hom_eq_zero (q : R →+* S₁) (r : R) (hr : ∀ r' : R, q r' = 0 ↔ r ∣ r')
     (φ : MvPolynomial σ R) : C r ∣ φ ↔ map q φ = 0 := by
   rw [C_dvd_iff_dvd_coeff, MvPolynomial.ext_iff]
-  simp only [coeff_map, coeff_zero, hr]
+  simp only [coeff_map, coeff_zero, Finsupp.zero_apply, hr]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) :
     map f (.ofCoeff <| Finsupp.mapRange g hg <| AddMonoidAlgebra.coeff φ) = φ ↔
-      ∀ d, f (g (coeff d φ)) = coeff d φ := by
+      ∀ d, f (g (φ.coeff d)) = φ.coeff d := by
   simp_rw [MvPolynomial.ext_iff, coeff_map]; rfl
 
 lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
@@ -823,7 +823,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
     · simpa [MvPolynomial.notMem_support_iff.1 ha] using hs a
     have := hs i
-    rw [coeff_add, coeff_monomial] at this
+    rw [coeff_add, Finsupp.add_apply, coeff_monomial] at this
     split_ifs at this with h
     · subst h
       rw [MvPolynomial.notMem_support_iff.1 ha, map_zero]
