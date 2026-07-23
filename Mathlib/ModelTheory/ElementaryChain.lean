@@ -46,8 +46,10 @@ open scoped Cardinal
 
 /-- A system of `L`-structures whose transition maps are elementary embeddings. -/
 structure ElementaryChain (L : Language.{u, v}) (ι : Type w) [Preorder ι] where
+  /-- The structure at each stage of the chain. -/
   carrier : ι → Type w'
   [struc : ∀ i, L.Structure (carrier i)]
+  /-- The elementary embedding from stage `i` to stage `j` when `i ≤ j`. -/
   map : ∀ i j, i ≤ j → carrier i ↪ₑ[L] carrier j
   map_self : ∀ i x, map i i le_rfl x = x
   map_map : ∀ i j k (hij : i ≤ j) (hjk : j ≤ k) (x : carrier i),
