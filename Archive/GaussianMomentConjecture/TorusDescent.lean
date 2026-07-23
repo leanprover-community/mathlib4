@@ -28,7 +28,9 @@ universe u v
 
 noncomputable section
 
-local instance : Algebra ℚ ℂ := (Rat.castHom ℂ).toAlgebra
+/-- The `ℚ`-algebra structure on `ℂ` induced by the rational cast, used locally to
+state the rational relations transported below. -/
+local instance algebraRatComplex : Algebra ℚ ℂ := (Rat.castHom ℂ).toAlgebra
 
 /-- Every complex torus point satisfying an arbitrary family of rational
 multivariate-polynomial relations has a torus realization over some finite

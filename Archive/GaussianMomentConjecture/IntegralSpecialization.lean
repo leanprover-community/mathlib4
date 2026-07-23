@@ -32,7 +32,9 @@ The field structure is exposed separately by `ResidueData.fieldStructure`, so th
 structure stores only proof data and does not install a global noncomputable
 instance. -/
 structure ResidueData (A : Type u) [CommRing A] where
+  /-- The maximal ideal at which `A` is specialized. -/
   point : MaximalSpectrum A
+  /-- The characteristic of the residue field. -/
   p : ℕ
   prime : p.Prime
   charP : CharP (A ⧸ point.asIdeal) p

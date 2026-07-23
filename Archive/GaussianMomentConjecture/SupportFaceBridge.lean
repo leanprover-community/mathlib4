@@ -65,7 +65,7 @@ def faceEquivSupportFace
     (faceEquivSupportFace P F hsubset s).1 =
       GMC2.FaceSeedDescent.faceToSupport hsubset s := rfl
 
-@[simp] theorem faceEquivSupportFace_value
+theorem faceEquivSupportFace_value
     (P : MvPolynomial (Fin 2) ℂ) (F : Finset (Fin 2 →₀ ℕ))
     (hsubset : F ⊆ P.support) (s : ↥F) :
     (((faceEquivSupportFace P F hsubset s).1 : ↥P.support) :

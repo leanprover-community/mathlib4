@@ -40,9 +40,11 @@ variable {ι : Type*}
 def neutral (S : Finset ι) (q : ι → ℚ) : Finset ι :=
   S.filter fun i => q i = 0
 
+/-- The indices of `S` carrying strictly negative charge. -/
 def negative (S : Finset ι) (q : ι → ℚ) : Finset ι :=
   S.filter fun i => q i < 0
 
+/-- The indices of `S` carrying strictly positive charge. -/
 def positive (S : Finset ι) (q : ι → ℚ) : Finset ι :=
   S.filter fun i => 0 < q i
 

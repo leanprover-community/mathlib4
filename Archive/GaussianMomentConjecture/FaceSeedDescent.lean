@@ -26,7 +26,9 @@ namespace GMC2.FaceSeedDescent
 
 noncomputable section
 
-local instance : Algebra ℚ ℂ := (Rat.castHom ℂ).toAlgebra
+/-- The `ℚ`-algebra structure on `ℂ` induced by the rational cast, used locally to
+state the rational relations transported below. -/
+local instance algebraRatComplex : Algebra ℚ ℂ := (Rat.castHom ℂ).toAlgebra
 
 /-- Inclusion of an exact face into the full support, retaining the membership
 proof needed by the target subtype. -/

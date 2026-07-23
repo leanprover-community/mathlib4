@@ -21,6 +21,7 @@ namespace GMC2.FaceDictionary
 /-- Integer `Z`- and `W`-exponents of an exact bidegree. -/
 def exponentA (s : Fin 2 →₀ ℕ) : ℤ := s 0
 
+/-- The exponent of the second variable of a monomial, as an integer. -/
 def exponentB (s : Fin 2 →₀ ℕ) : ℤ := s 1
 
 @[simp] theorem charge_eq (s : Fin 2 →₀ ℕ) :

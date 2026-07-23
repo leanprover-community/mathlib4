@@ -44,7 +44,7 @@ def extendByZero (F : Finset ι) (s : ↥F → ℕ) : ι → ℕ :=
     extendByZero F s i = 0 := by
   simp [extendByZero, hi]
 
-@[simp] theorem extendByZero_subtype (F : Finset ι) (s : ↥F → ℕ)
+theorem extendByZero_subtype (F : Finset ι) (s : ↥F → ℕ)
     (i : ↥F) :
     extendByZero F s i = s i := by
   simp [extendByZero, i.property]
@@ -58,12 +58,12 @@ def dilate (p : ℕ) (F : Finset ι) (s : ↥F → ℕ) : ι → ℕ :=
     (i : ι) :
     dilate p F s i = p * extendByZero F s i := rfl
 
-@[simp] theorem dilate_subtype (p : ℕ) (F : Finset ι) (s : ↥F → ℕ)
+theorem dilate_subtype (p : ℕ) (F : Finset ι) (s : ↥F → ℕ)
     (i : ↥F) :
     dilate p F s i = p * s i := by
   simp [dilate]
 
-@[simp] theorem dilate_of_notMem (p : ℕ) (F : Finset ι) (s : ↥F → ℕ)
+theorem dilate_of_notMem (p : ℕ) (F : Finset ι) (s : ↥F → ℕ)
     {i : ι} (hi : i ∉ F) :
     dilate p F s i = 0 := by
   simp [dilate, hi]

@@ -24,6 +24,7 @@ namespace GMC2
 /-- Rational first exponent and rational charge of an exact bidegree. -/
 def radialExponentQ (s : Fin 2 →₀ ℕ) : ℚ := s 0
 
+/-- The charge of a monomial, as a rational number. -/
 def chargeQ (s : Fin 2 →₀ ℕ) : ℚ := charge s
 
 /-- The discrete NC2 obstruction is exactly the rational straddling predicate
