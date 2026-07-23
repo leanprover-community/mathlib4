@@ -105,7 +105,7 @@ theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ :=
 
 theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   have := Monoid.fg_of_surjective _ (toInvSubmonoid_surjective M S)
-  rw [Monoid.fg_iff_submonoid_fg] at this
+  rw [Monoid.fg_iff_submonoid_fg, Submonoid.fg_def] at this
   rcases this with ⟨s, hs⟩
   refine ⟨⟨s, ?_⟩⟩
   rw [eq_top_iff]

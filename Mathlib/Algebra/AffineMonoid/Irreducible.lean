@@ -47,7 +47,8 @@ elements. -/
 irreducible elements. -/]
 lemma Submonoid.FG.finite_irreducible_mem_submonoidClosure {S : Submonoid M} (hS : S.FG) :
     {p ∈ S | Irreducible p}.Finite := by
-  obtain ⟨T, hT⟩ := hS; exact T.finite_toSet.subset <| hT ▸ irreducible_mem_submonoidClosure_subset
+  obtain ⟨T, hT⟩ := hS.def
+  exact T.finite_toSet.subset <| hT ▸ irreducible_mem_submonoidClosure_subset
 
 variable [Monoid.FG M]
 
@@ -56,7 +57,7 @@ variable [Monoid.FG M]
 /-- A finitely generated additive monoid with a single unit has finitely many irreducible
 elements. -/]
 lemma finite_irreducible : {p : M | Irreducible p}.Finite := by
-  simpa using Monoid.FG.fg_top.finite_irreducible_mem_submonoidClosure
+  simpa using Monoid.fg_top.finite_irreducible_mem_submonoidClosure
 
 end CommMonoid
 
