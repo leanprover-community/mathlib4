@@ -1017,10 +1017,18 @@ theorem IsTrail.cycleBypass_eq_self_iff_isCycle_or_nil {w : G.Walk v v} (hw : w.
   · simp
   · simp [cycleBypass, bypass_eq_self_iff_isPath, cons_isCycle_iff, (isTrail_cons ..).mp hw]
 
+theorem IsCircuit.cycleBypass_eq_self_iff_isCycle {w : G.Walk v v} (hw : w.IsCircuit) :
+    w.cycleBypass = w ↔ w.IsCycle := by
+  simp [hw.cycleBypass_eq_self_iff_isCycle_or_nil, hw.not_nil]
+
 theorem IsTrail.length_cycleBypass_lt_iff_not_isCycle_and_not_nil {w : G.Walk v v}
     (hw : w.IsTrail) :
     w.cycleBypass.length < w.length ↔ ¬w.IsCycle ∧ ¬w.Nil := by
   grind [hw.cycleBypass_eq_self_iff_isCycle_or_nil, cycleBypass_eq_self_iff_length_le]
+
+theorem IsCircuit.length_cycleBypass_lt_iff_not_isCycle {w : G.Walk v v} (hw : w.IsCircuit) :
+    w.cycleBypass.length < w.length ↔ ¬w.IsCycle := by
+  simp [hw.length_cycleBypass_lt_iff_not_isCycle_and_not_nil, hw.not_nil]
 
 end Walk
 
