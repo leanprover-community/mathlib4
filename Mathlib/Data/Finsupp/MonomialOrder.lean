@@ -21,7 +21,7 @@ get them as instances.
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
-The entry `MonomialOrder.wf` asserts that `MonomialOrder.syn` is well founded.
+The entry `MonomialOrder.wellFoundedLT_syn` asserts that `MonomialOrder.syn` is well founded.
 
 The terminology comes from commutative algebra and algebraic geometry, especially Gröbner bases,
 where `c : σ →₀ ℕ` are exponents of monomials.
@@ -77,15 +77,15 @@ structure MonomialOrder (σ : Type*) where
 attribute [instance] MonomialOrder.addCommMonoidSyn MonomialOrder.linearOrderSyn
   MonomialOrder.isOrderedAddMonoid_syn MonomialOrder.wellFoundedLT_syn
 
+namespace MonomialOrder
+
+variable {σ : Type*} (m : MonomialOrder σ)
+
 @[deprecated (since := "2026-07-07")] alias acm := MonomialOrder.addCommMonoidSyn
 
 @[deprecated (since := "2026-07-07")] alias lo := MonomialOrder.linearOrderSyn
 
 @[deprecated (since := "2026-07-07")] alias wf := MonomialOrder.wellFoundedLT_syn
-
-namespace MonomialOrder
-
-variable {σ : Type*} (m : MonomialOrder σ)
 
 instance : AddCancelCommMonoid m.syn where
   add_left_cancel := m.toSyn.symm.injective.isLeftCancelAdd _ (map_add _) |>.add_left_cancel
