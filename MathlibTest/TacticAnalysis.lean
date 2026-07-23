@@ -571,3 +571,48 @@ example : True := by
 end
 
 end verifyGrindSuggestions
+
+section unsqueezeTerminal
+
+set_option linter.tacticAnalysis.unsqueezeTerminal true
+
+/-- warning: 'simp only [x, y]' can be replaced with 'simp [x, y]' -/
+#guard_msgs in
+example : x = y := by
+  simp only [x, y]
+
+/-- warning: 'simp_all only [x, y]' can be replaced with 'simp_all [x, y]' -/
+#guard_msgs in
+example : x = y := by
+  simp_all only [x, y]
+
+#guard_msgs in
+example : x = y := by
+  simp [x]
+  grind [y]
+
+/-- warning: 'simp only [y]' can be replaced with 'simp [y]' -/
+#guard_msgs in
+example : x = y := by
+  simp only [x]
+  simp only [y]
+
+/-- warning: 'simp only [x]' can be replaced with 'simp [x]' -/
+#guard_msgs (substring := true) in
+example : x = y := by
+  simp only [x]
+  simp [y]
+
+#guard_msgs in
+example : x = y := by
+  have : 1 + 2 = 3 := rfl
+  simp only [x]
+  rw [Nat.add_comm] at this
+  simp [y]
+
+#guard_msgs in
+example : x = y := by
+  simp [x]
+  simp [y]
+
+end unsqueezeTerminal
