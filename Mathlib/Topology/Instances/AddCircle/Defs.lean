@@ -377,6 +377,22 @@ theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p))
     liftIoc p a f ↑x = f x := by
   simp [liftIoc, equivIoc_coe_eq hx]
 
+theorem liftIco_coe_apply_of_periodic {f : 𝕜 → B} {x : 𝕜} (hf : f.Periodic p) :
+    liftIco p a f ↑x = f x := by
+  simp [liftIco, equivIco, ← self_sub_toIcoDiv_zsmul, hf.sub_zsmul_eq]
+
+theorem liftIoc_coe_apply_of_periodic {f : 𝕜 → B} {x : 𝕜} (hf : f.Periodic p) :
+    liftIoc p a f ↑x = f x := by
+  simp [liftIoc, equivIoc, ← self_sub_toIocDiv_zsmul, hf.sub_zsmul_eq]
+
+theorem liftIco_comp_mk_eq_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) :
+    liftIco p a f ∘ QuotientAddGroup.mk = f := by
+  ext; apply liftIco_coe_apply_of_periodic hf
+
+theorem liftIoc_comp_mk_eq_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) :
+    liftIoc p a f ∘ QuotientAddGroup.mk = f := by
+  ext; apply liftIoc_coe_apply_of_periodic hf
+
 theorem liftIoc_eq_liftIco_of_ne {f : 𝕜 → B} {x : AddCircle p}
     (x_ne_a : x ≠ a) : liftIoc p a f x = liftIco p a f x := by
   have x_eq_b : x = ↑(equivIco p a x) := coe_equivIco.symm
