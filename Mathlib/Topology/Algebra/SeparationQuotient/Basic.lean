@@ -35,7 +35,7 @@ variable {M X : Type*} [TopologicalSpace X] [SMul M X] [ContinuousConstSMul M X]
 
 @[to_additive]
 instance instSMul : SMul M (SeparationQuotient X) where
-  smul c := Quotient.map' (c • ·) fun _ _ h ↦ h.const_smul c
+  smul c := id <| Quotient.map' (c • ·) fun _ _ h ↦ h.const_smul c
 
 @[to_additive (attr := simp)]
 theorem mk_smul (c : M) (x : X) : mk (c • x) = c • mk x := rfl

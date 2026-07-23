@@ -380,10 +380,6 @@ section LatticeStructure
 
 open Set
 
-instance : PartialOrder (LieSubalgebra R L) :=
-  { PartialOrder.lift ((↑) : LieSubalgebra R L → Set L) coe_injective with
-    le := fun N N' ↦ ∀ ⦃x⦄, x ∈ N → x ∈ N' }
-
 theorem le_def : K ≤ K' ↔ (K : Set L) ⊆ K' :=
   Iff.rfl
 

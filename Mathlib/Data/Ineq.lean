@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis
 -/
 module
 
+public import Batteries.Tactic.Lint.Basic
 public import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -58,8 +59,6 @@ def toString : Ineq → String
   | lt => "<"
 
 instance : ToString Ineq := ⟨toString⟩
-
-instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
 
 end Mathlib.Ineq
 

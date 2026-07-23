@@ -141,6 +141,7 @@ def toNonUnitalAlgHom {F R : Type*} [Monoid R] {A B : Type*}
     toFun := f
     map_smul' := map_smulₛₗ f }
 
+@[nolint instanceDiamonds]
 instance {F R : Type*} [Monoid R] {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]

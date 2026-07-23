@@ -90,6 +90,7 @@ noncomputable def monTypeEquivalenceMonForget :
     MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon.forget (Type u) :=
   NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
+@[nolint instanceDiamonds]
 noncomputable instance monTypeInhabited : Inhabited (Mon (Type u)) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
 

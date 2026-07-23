@@ -285,14 +285,6 @@ namespace UnitClosedDisc
 /-- Coercion to `ℂ`. -/
 @[coe] protected def coe : 𝕔𝔻 → ℂ := Subtype.val
 
-instance : MonoidWithZero 𝕔𝔻 := inferInstanceAs <| MonoidWithZero (closedBall _ _)
-
-instance : IsCancelMulZero 𝕔𝔻 :=
-  inferInstanceAs <| IsCancelMulZero (closedBall _ _)
-
-instance : HasDistribNeg 𝕔𝔻 :=
-  inferInstanceAs <| HasDistribNeg (closedBall _ _)
-
 instance : Coe 𝕔𝔻 ℂ := ⟨UnitClosedDisc.coe⟩
 
 @[ext]
@@ -318,6 +310,17 @@ theorem sq_norm_lt_one (z : 𝕔𝔻) : ‖(z : ℂ)‖ ^ 2 ≤ 1 := by
 theorem normSq_lt_one (z : 𝕔𝔻) : normSq z ≤ 1 := by
   rw [← Complex.norm_mul_self_eq_normSq, ← sq]
   exact z.sq_norm_lt_one
+
+instance : Pow 𝕔𝔻 ℕ where
+  pow z n := ⟨z ^ n, by simp [pow_le_one₀ (norm_nonneg _) z.norm_le_one]⟩
+
+instance : MonoidWithZero 𝕔𝔻 := inferInstanceAs <| MonoidWithZero (closedBall _ _)
+
+instance : IsCancelMulZero 𝕔𝔻 :=
+  inferInstanceAs <| IsCancelMulZero (closedBall _ _)
+
+instance : HasDistribNeg 𝕔𝔻 :=
+  inferInstanceAs <| HasDistribNeg (closedBall _ _)
 
 @[simp, norm_cast]
 theorem coe_mul (z w : 𝕔𝔻) : ↑(z * w) = (z * w : ℂ) :=
@@ -444,9 +447,6 @@ theorem coe_circle_smul (z : Circle) (w : 𝕔𝔻) : ↑(z • w) = (z * w : �
 
 instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
   SMulCommClass.symm _ _ _
-
-instance : Pow 𝕔𝔻 ℕ where
-  pow z n := ⟨z ^ n, by simp [pow_le_one₀ (norm_nonneg _) z.norm_le_one]⟩
 
 @[simp, norm_cast]
 theorem coe_pow (z : 𝕔𝔻) (n : ℕ) : ((z ^ n : 𝕔𝔻) : ℂ) = z ^ (n : ℕ) := rfl

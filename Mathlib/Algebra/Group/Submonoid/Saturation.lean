@@ -146,7 +146,7 @@ instance : Top (SaturatedSubmonoid M) where
 theorem mem_top {x : M} : x ∈ (⊤ : SaturatedSubmonoid M) := trivial
 
 variable (M) in
-@[to_additive]
+@[to_additive (attr := nolint instanceDiamonds)]
 instance : Min (SaturatedSubmonoid M) where
   min s₁ s₂ := { s₁.toSubmonoid ⊓ s₂.toSubmonoid with mulSaturated := .inf s₁.2 s₂.2 }
 

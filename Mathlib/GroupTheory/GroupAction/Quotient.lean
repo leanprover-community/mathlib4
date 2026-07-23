@@ -132,7 +132,7 @@ theorem coe_quotient_smul {H : Subgroup G} [H.Normal] [SMul G X]
   rw [← smul_one_smul (G ⧸ H) g x, ← QuotientGroup.mk_one, Quotient.smul_coe,
     smul_eq_mul, mul_one]
 
-@[to_additive]
+@[to_additive (attr := nolint instanceDiamonds)]
 instance mulLeftCosetsCompSubtypeVal (H I : Subgroup G) : MulAction I (G ⧸ H) :=
   MulAction.compHom (G ⧸ H) (Subgroup.subtype I)
 

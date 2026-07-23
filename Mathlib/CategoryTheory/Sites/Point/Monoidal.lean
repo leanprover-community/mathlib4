@@ -97,6 +97,7 @@ instance (P₁ P₂ : Cᵒᵖ ⥤ A) :
   (IsColimit.coconePointUniqueUpToIso (Φ.isColimitPresheafFiberCocone (P₁ ⊗ P₂))
     ((Φ.isColimitPresheafFiberCocone P₁).tensor (Φ.isColimitPresheafFiberCocone P₂))).isIso_hom
 
+@[nolint instanceDiamonds]
 noncomputable instance : (Φ.presheafFiber (A := A)).Monoidal :=
   .ofOplaxMonoidal _
 
