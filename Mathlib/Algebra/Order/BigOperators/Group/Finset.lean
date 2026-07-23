@@ -615,12 +615,15 @@ theorem apply_union_le_sum [AddCommMonoid β] [Preorder β] [AddLeftMono β]
     f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
   Finset.sup_set_eq_biUnion t s ▸ t.apply_sup_le_sum zero (by simpa)
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 theorem sum_le_one_iff {s : Finset α} {f : α → ℕ} :
     ∑ x ∈ s, f x ≤ 1 ↔ ∀ x y, x ∈ s → y ∈ s → f x ≠ 0 → f y ≠ 0 → x = y ∧ f x = 1 := by
   classical
   refine ⟨fun h x y hsx hsy hfx hfy ↦ ?_, fun h ↦ ?_⟩
   · replace h := (sum_mono_set f (show {x, y} ⊆ s by grind)).trans h
-    grind
+    constructor
+    · grind only [= sum_insert', = mem_singleton, = sum_singleton']
+    · grind
   · by_cases! hx : ∃ x ∈ s, f x ≠ 0
     · obtain ⟨x, hsx, hfx⟩ := hx
       have hs : ∀ y ∈ s \ {x}, f y = 0 := by grind
