@@ -55,7 +55,7 @@ def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
       convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R))
       rw [MonoidalCategory.rightUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
-      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
+      exact LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
     left_distrib := fun x y z => by
       convert! μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]

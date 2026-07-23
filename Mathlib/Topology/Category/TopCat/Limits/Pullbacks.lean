@@ -338,7 +338,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat.{u}} (f : X ⟶ 
           ⟨x, by
             rw [pullback_fst_range]
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩ }
-  convert! (isoOfHomeo esto).isIso_hom
+  exact (isoOfHomeo esto).isIso_hom
 
 theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat.{u}} {f : X ⟶ S} (hf : IsEmbedding f)
     (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd f g) := by
@@ -349,7 +349,7 @@ theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat.{u}} {f : X ⟶ S
           ⟨x, by
             rw [pullback_snd_range]
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩ }
-  convert! (isoOfHomeo esto).isIso_hom
+  exact (isoOfHomeo esto).isIso_hom
 
 theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :
     (pullback.snd f g) '' (pullback.fst f g) ⁻¹' U =

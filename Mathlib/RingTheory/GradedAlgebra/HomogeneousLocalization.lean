@@ -848,7 +848,7 @@ lemma awayMap_fromZeroRingHom (a) :
     awayMap 𝒜 hg hx (fromZeroRingHom 𝒜 _ a) = fromZeroRingHom 𝒜 _ a := by
   ext
   simp only [fromZeroRingHom, val_awayMap]
-  convert! IsLocalization.lift_eq _ _
+  exact IsLocalization.lift_eq _ _
 
 lemma val_awayMap_mk (n a i hi) : (awayMap 𝒜 hg hx (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩)).val =
     Localization.mk (a * g ^ i) ⟨x ^ i, (Submonoid.mem_powers_iff _ _).mpr ⟨i, rfl⟩⟩ := by

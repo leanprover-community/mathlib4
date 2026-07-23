@@ -499,7 +499,7 @@ theorem toFun_tendsto_top_of_firstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial
   intro t
   eta_expand
   simp only [toFun, Pi.smul_apply, smul_eq_mul]
-  convert Filter.Tendsto.const_mul_atTop h_coef
+  exact Filter.Tendsto.const_mul_atTop h_coef
     (UnitMonomial.toFun_tendsto_top_of_firstNonzeroIsPos h_basis h_length h_exps)
 
 theorem toFun_tendsto_bot_of_firstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
@@ -512,7 +512,7 @@ theorem toFun_tendsto_bot_of_firstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial
   intro t
   eta_expand
   simp only [toFun, Pi.smul_apply, smul_eq_mul]
-  convert Filter.Tendsto.const_mul_atTop_of_neg h_coef
+  exact Filter.Tendsto.const_mul_atTop_of_neg h_coef
     (UnitMonomial.toFun_tendsto_top_of_firstNonzeroIsPos h_basis h_length h_exps)
 
 theorem toFun_tendsto_const_of_allZero {coef : ℝ} {exps : UnitMonomial} {basis : Basis}

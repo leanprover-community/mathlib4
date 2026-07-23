@@ -130,7 +130,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       let f : ι → V := fun i => w i • (p i -ᵥ p i1)
       have hs2 : (∑ i ∈ (s.erase i1).subtype fun i => i ≠ i1, f i) = 0 := by
         rw [← hs]
-        convert! Finset.sum_subtype_of_mem f fun x => Finset.ne_of_mem_erase
+        exact Finset.sum_subtype_of_mem f fun x => Finset.ne_of_mem_erase
       have h2 := h ((s.erase i1).subtype fun i => i ≠ i1) (fun x => w x) hs2
       simp_rw [Finset.mem_subtype] at h2
       have h2b : ∀ i ∈ s, i ≠ i1 → w i = 0 := fun i his hi =>
@@ -158,7 +158,7 @@ theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} 
   · intro h
     let f : { x : s // x ≠ ⟨p₁, hp₁⟩ } → (fun p : P => (p -ᵥ p₁ : V)) '' (s \ {p₁}) := fun x =>
       ⟨((x : s) : P) -ᵥ p₁, ⟨x, ⟨⟨(x : s).property, fun hx => x.property (Subtype.ext hx)⟩, rfl⟩⟩⟩
-    convert!
+    exact
       h.comp f fun x1 x2 hx => Subtype.ext (Subtype.ext (vsub_left_cancel (Subtype.ext_iff.1 hx)))
 
 /-- A set of nonzero vectors is linearly independent if and only if,

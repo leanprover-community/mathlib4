@@ -129,7 +129,7 @@ lemma reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
         convert! hr
         have r_dvd_p : r ∣ p := by
           rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
-          convert! congr_arg (Ideal.Quotient.factor hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
+          exact congr_arg (Ideal.Quotient.factor hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
         symm
         apply (Nat.Prime.eq_one_or_self_of_dvd hp r r_dvd_p).resolve_left
         exact CharP.char_ne_one (R ⧸ M) r

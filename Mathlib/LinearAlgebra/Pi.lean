@@ -296,7 +296,7 @@ note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single R φ i) = g.comp (single R φ i)) : f = g := by
   refine pi_ext fun i x => ?_
-  convert! LinearMap.congr_fun (h i) x
+  exact LinearMap.congr_fun (h i) x
 
 end Ext
 

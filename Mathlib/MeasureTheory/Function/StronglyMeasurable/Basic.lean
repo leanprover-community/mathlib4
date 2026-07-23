@@ -1176,7 +1176,7 @@ protected theorem add [AddZeroClass β] [ContinuousAdd β] (hf : FinStronglyMeas
 protected theorem neg [SubtractionMonoid β] [ContinuousNeg β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
   refine ⟨fun n ↦ -hf.approx n, fun n ↦ ?_, fun x ↦ (hf.tendsto_approx x).neg⟩
-  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert! this
+  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ from this
   rw [Function.support_fun_neg (hf.approx n)]
   exact hf.fin_support_approx n
 

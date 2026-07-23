@@ -928,7 +928,7 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   rw [ι_preservesColimitIso_hom_assoc, ι_preservesColimitIso_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
-  convert! h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
+  exact h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

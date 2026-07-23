@@ -1190,7 +1190,7 @@ lemma IsInvertible.inverse_comp_apply_of_right {g : M₂ →L[R] M₃} {f : M �
 @[simp]
 theorem ringInverse_equiv (e : M ≃L[R] M) : (↑e)⁻¹ʳ = inverse (e : M →L[R] M) := by
   suffices ((ContinuousLinearEquiv.unitsEquiv _ _).symm e : M →L[R] M)⁻¹ʳ = inverse ↑e by
-    convert! this
+    exact this
   simp
   rfl
 

@@ -292,7 +292,7 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
       lt_trichotomy i (Fin.castLE (by lia) (Fin.last _ : Fin (p.length + 1)))
     · convert! p.step ⟨i.1, hi⟩ <;> convert! Fin.append_left p q _ <;> rfl
     · convert! connect
-      · convert! Fin.append_left p q _
+      · exact Fin.append_left p q _
       · convert! Fin.append_right p q _; rfl
     · set x := _; set y := _
       change Fin.append p q x ~[r] Fin.append p q y
@@ -320,7 +320,7 @@ lemma append_apply_left (p q : RelSeries r) (connect : p.last ~[r] q.head)
         = p i := by
   delta append
   simp only [Function.comp_apply]
-  convert! Fin.append_left _ _ _
+  exact Fin.append_left _ _ _
 
 set_option backward.defeqAttrib.useBackward true in
 lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)

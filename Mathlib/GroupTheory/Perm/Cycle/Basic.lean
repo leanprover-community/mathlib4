@@ -360,7 +360,7 @@ theorem IsCycle.zpowersEquivSupport_symm_apply {σ : Perm α} (hσ : IsCycle σ)
 
 protected theorem IsCycle.orderOf (hf : IsCycle f) : orderOf f = #f.support := by
   rw [← Fintype.card_zpowers, ← Fintype.card_coe]
-  convert! Fintype.card_congr (IsCycle.zpowersEquivSupport hf)
+  exact Fintype.card_congr (IsCycle.zpowersEquivSupport hf)
 
 theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
     ∀ (n : ℕ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
