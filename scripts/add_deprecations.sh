@@ -21,9 +21,7 @@ BASH_MODULE_DOC
 if [ -z "${1}" ]
 then
   commit="$( git merge-base master "$( git rev-parse --abbrev-ref HEAD )" )"
-  read -p $'Type a commit number such that all diff lines containing `theorem/def`
-correspond to deprecated declarations (use '"'${commit}'"' otherwise):
-' comm
+  read -p $'Type a commit number such that all diff lines containing `theorem/def`\ncorrespond to deprecated declarations (use '"'${commit}'"' otherwise):\n' comm
   [ -n "${comm}" ] && commit=${comm}
 else
   commit="${1}"
@@ -42,9 +40,15 @@ identRegex=[a-zA-Z_\u3b1-\u3ba\u3bc-\u3c9\u391-\u39f\u3a1-\u3a2\u3a4-\u3a9\u3ca-
 ##  for each modified declaration in `<file>`.
 ##  The separators `@@@` delimit different declarations.
 ##  The separators `||||` are later replaced by line breaks.
+##
+##  When a declaration is preceded by `@[to_additive]`, an additional deprecation alias is
+##  emitted for the additive counterpart (e.g. `foo_mul`/`bar_mul` → also `foo_add`/`bar_add`).
+##
 ## To use a specific date, replace $(date +%Y-%m-%d) with 2024-04-17 for instance
 mkDeclAndDepr () {
-  git diff --unified=0 "${commit}" "${1}" |
+  ## Use --unified=1 so that unchanged lines immediately before a changed declaration
+  ## (e.g. `@[to_additive]` attributes) appear as context lines in the diff output.
+  git diff --unified=1 "${commit}" "${1}" |
     awk -v regex="${begs}" -v idRegex="${identRegex}" -v date="$(date +%Y-%m-%d)" -v fil="${1}" '
     # with `perr` we print to stderr a summary of the deprecations
     function perr(msg) { print msg | "cat >&2"; close("cat >&2") }
@@ -57,6 +61,30 @@ mkDeclAndDepr () {
       if(length(line) <= 103) { sub(/\|\|\|\|/, " ", line) }
       return line
     }
+    # Apply standard to_additive word substitutions to convert a multiplicative declaration
+    # name into its additive counterpart (snake_case, matching Lean 4 / mathlib4 conventions).
+    function toAdditiveName(name,    cmd, result) {
+      cmd = "printf \"%s\" \"" name "\" | sed " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)mul\\([^a-zA-Z]\\|$\\)/\\1add\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)Mul\\([^a-zA-Z]\\|$\\)/\\1Add\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)one\\([^a-zA-Z]\\|$\\)/\\1zero\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)One\\([^a-zA-Z]\\|$\\)/\\1Zero\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)inv\\([^a-zA-Z]\\|$\\)/\\1neg\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)Inv\\([^a-zA-Z]\\|$\\)/\\1Neg\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)div\\([^a-zA-Z]\\|$\\)/\\1sub\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)Div\\([^a-zA-Z]\\|$\\)/\\1Sub\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)pow\\([^a-zA-Z]\\|$\\)/\\1nsmul\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)Pow\\([^a-zA-Z]\\|$\\)/\\1NSmul\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)npow\\([^a-zA-Z]\\|$\\)/\\1nsmul\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)zpow\\([^a-zA-Z]\\|$\\)/\\1zsmul\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)HPow\\([^a-zA-Z]\\|$\\)/\\1HSMul\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)hPow\\([^a-zA-Z]\\|$\\)/\\1hSMul\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)prod\\([^a-zA-Z]\\|$\\)/\\1sum\\2/g\" " \
+        "-e \"s/\\([^a-zA-Z]\\|^\\)Prod\\([^a-zA-Z]\\|$\\)/\\1Sum\\2/g\""
+      cmd | getline result
+      close(cmd)
+      return result
+    }
     # `{plus/minus}Regex` makes sure that we find a declaration, followed by something that
     # could be an identifier. For instance, this filters out "We now prove theorem `my_name`."
     BEGIN{
@@ -65,7 +93,17 @@ mkDeclAndDepr () {
       plusRegex="^\\+[^+-]*" regexIdent
       minusRegex="^-[^+-]*" regexIdent
       regex="^"regex"$"
+      toAdditive=0
     }
+    # Context lines (unchanged, start with a single space) — track @[to_additive] attributes.
+    # The attribute appears on the line immediately before the declaration, so if we see it
+    # as a context line, the next changed declaration is additivised.
+    /^ / {
+      stripped=$0; sub(/^ /, "", stripped)
+      if (stripped ~ /^@\[to_additive/) { toAdditive=1 } else { toAdditive=0 }
+    }
+    # Reset on hunk boundaries
+    /^@@/ { toAdditive=0 }
     ($0 ~ minusRegex) {
       for(i=1; i<=NF; i++) {
         strip=$i
@@ -87,14 +125,30 @@ mkDeclAndDepr () {
             # accumulate the summary of deprecations
             report[reps]=sprintf("%s\n", depr(old, $(i+1)))
             reps++
+            # If preceded by @[to_additive], also emit a deprecation alias for the
+            # additive counterpart (e.g. foo_mul -> foo_add, bar_mul -> bar_add).
+            if (toAdditive) {
+              addOld = toAdditiveName(old)
+              addNew = toAdditiveName($(i+1))
+              # Only emit the additive alias if the names actually differ from the
+              # multiplicative ones (i.e. the name contains multiplicative vocabulary)
+              # and the additive old/new names are themselves distinct.
+              if ((addOld != old || addNew != $(i+1)) && (addOld != addNew)) {
+                printf("%s %s ,%s@@@", $i, addNew, depr(addOld, addNew))
+                report[reps]=sprintf("%s\n", depr(addOld, addNew))
+                reps++
+              }
+            }
             # reset the "old name counter", since the deprecation happened
             old=""
+            toAdditive=0
             break
           } else {
             # We found a keyword corresponding to a declaration, but the following word was not
             # different from the line prior to the change.  Hence, we do not need to deprecate.
             # reset the "old name counter", since the deprecation should not happen
             old=""
+            toAdditive=0
             break
           }
         }
