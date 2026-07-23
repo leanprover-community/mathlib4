@@ -15,19 +15,37 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 
 # Injective Dimension in ModuleCat
 
+This file deals with preservation of `injectiveDimension` in (semi) linear equivalences.
+Previously we only know this for linear equivalence within same universe level, now it works with
+all universe level where the ring `R` is small.
+
+## Main Results
+
+* `ModuleCat.hasInjectiveDimensionLE_iff_of_linearEquiv`: `HasInjectiveDimensionLE` is preserved
+  under arbitrary linear equivalence.
+
+* `ModuleCat.hasInjectiveDimensionLE_iff_of_semiLinearEquiv`: `HasInjectiveDimensionLE` is preserved
+  under arbitrary semi-linear equivalence.
+
+* `ModuleCat.injectiveDimension_eq_of_semiLinearEquiv`: `injectiveDimension` is preserved
+  under arbitrary semi-linear equivalence.
+
+* `ModuleCat.injectiveDimension_eq_of_linearEquiv`: `injectiveDimension` is preserved
+  under arbitrary linear equivalence.
+
 -/
 
 public section
 
 universe v v' u u'
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 open CategoryTheory Abelian
 
 namespace ModuleCat
 
-lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux [Small.{v} R]
+private lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux [Small.{v} R]
     {M : ModuleCat.{v} R} {N : ModuleCat.{max v v'} R}
     (e : M ≃ₗ[R] N) (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
   have : Small.{max v v'} R := small_lift R
@@ -55,14 +73,21 @@ lemma hasInjectiveDimensionLE_iff_of_linearEquiv_aux [Small.{v} R]
     exact (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
       ((ih eCoker).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
 
+lemma hasInjectiveDimensionLE_iff_of_linearEquiv [Small.{v} R] [Small.{v'} R]
+    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
+    (e : M ≃ₗ[R] N) (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
+  let eM : M ≃ₗ[R] ModuleCat.of R (ULift.{v'} M) := ULift.moduleEquiv.symm
+  rw [hasInjectiveDimensionLE_iff_of_linearEquiv_aux eM,
+    ← hasInjectiveDimensionLE_iff_of_linearEquiv_aux (e.symm.trans eM)]
+
 section SemiLinear
 
-variable [Small.{v} R] {R' : Type u'} [CommRing R'] (eR : R ≃+* R')
+variable [Small.{v} R] {R' : Type u'} [Ring R'] (eR : R ≃+* R')
 
 attribute [local instance] RingHomInvPair.of_ringEquiv
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
+private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N)
     (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
   induction n generalizing M N with
@@ -94,16 +119,10 @@ lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
       ModuleCat.shortComplexOfCompEqZero _ _ f.exact_map_mkQ_range.linearMap_comp_eq_zero
     have exactS := ModuleCat.shortComplex_shortExact S
       f.exact_map_mkQ_range injf (Submodule.mkQ_surjective _)
-    have eqmap : f'.hom.range.map eI.symm.toLinearMap = f.range := by
-      simp [f, LinearMap.range_comp]
     let eCoker : ModuleCat.of R (I ⧸ f.range) ≃ₛₗ[RingHomClass.toRingHom eR]
-      ModuleCat.of R' (I' ⧸ f'.hom.range) := {
-        __ := Submodule.mapQ _ _ eI.toLinearMap
-          (by simp [← eqmap, Submodule.map_equiv_eq_comap_symm])
-        invFun := Submodule.mapQ _ _ eI.symm.toLinearMap
-          (by simp [← eqmap, ← Submodule.map_le_iff_le_comap])
-        left_inv x := Submodule.Quotient.induction_on _ x (by simp)
-        right_inv x := Submodule.Quotient.induction_on _ x (by simp) }
+      ModuleCat.of R' (I' ⧸ f'.hom.range) :=
+      Submodule.Quotient.equiv _ _ eI
+        (by simp [f, ← Submodule.map_symm_eq_iff eI, LinearMap.range_comp])
     exact (exactS.hasInjectiveDimensionLT_X₃_iff n inferInstance).symm.trans
       ((ih eCoker).trans (exactS'.hasInjectiveDimensionLT_X₃_iff n inferInstance))
 
