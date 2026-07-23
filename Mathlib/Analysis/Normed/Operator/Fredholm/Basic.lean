@@ -25,7 +25,7 @@ the following four equivalent conditions:
 4. `T` admits a `FredholmPackage`: there are topological decompositions `E = E₁ ⊕ E₀`,
   `F = F₁ ⊕ F₀`, where `E₀` and `F₀` are finite dimensional, and an isomorphism `Φ : E₁ ≃L[𝕜] F₁`
   such that `T` is zero on `E₀` and coincides with `Φ` on `E₁`; in other words, in these
-  decompositions, `T` is given by the matrix $$\begin{pmatrix} Φ & 0 \cr 0 & 0 \end{pmatrix}$$
+  decompositions, `T` is given by the matrix $\begin{pmatrix} Φ & 0 \cr 0 & 0 \end{pmatrix}$.
 
 ## Main definitions
 
@@ -161,7 +161,7 @@ a continuous linear equivalence `equiv : decDom.X₁ ≃L[𝕜] decCodom.X₁` b
 (i.e. finite codimension) parts of these decompositions, such that `u` equals the composition
 `decCodom.X₁.subtypeL ∘L equiv ∘L decDom.proj`. In other words, in these
 "essential ⊕ inessential" decompositions, the matrix of `u` is
-$$\begin{pmatrix} \texttt{equiv} & 0 \cr 0 & 0 \end{pmatrix}$$
+$\begin{pmatrix} \texttt{equiv} & 0 \cr 0 & 0 \end{pmatrix}$.
 
 We will show in `isFredholm_tfae` that an operator is Fredholm if and only if it admits
 a Fredholm package. In practice, the condition that `u` is Fredholm (`IsFredholm`) is always easier
