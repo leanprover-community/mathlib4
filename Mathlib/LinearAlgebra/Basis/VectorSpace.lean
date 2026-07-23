@@ -64,7 +64,7 @@ theorem coe_extend (hs : LinearIndepOn K id s) : ⇑(Basis.extend hs) = ((↑) :
 
 theorem range_extend (hs : LinearIndepOn K id s) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
-  rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_extend, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 /-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
@@ -107,7 +107,7 @@ theorem coe_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ s
 
 theorem range_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     range (Basis.extendLe hs hst ht) = hs.extend hst := by
-  rw [coe_extendLe, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_extendLe, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 theorem subset_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     s ⊆ range (Basis.extendLe hs hst ht) :=
@@ -133,7 +133,7 @@ theorem coe_ofSpan (hs : ⊤ ≤ span K s) : ⇑(ofSpan hs) = ((↑) : _ → _) 
 
 theorem range_ofSpan (hs : ⊤ ≤ span K s) :
     range (ofSpan hs) = (linearIndepOn_empty K id).extend (empty_subset s) := by
-  rw [coe_ofSpan, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_ofSpan, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 theorem ofSpan_subset (hs : ⊤ ≤ span K s) : range (ofSpan hs) ⊆ s :=
   extendLe_subset (linearIndependent_empty K V) (empty_subset s) hs
@@ -247,8 +247,8 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   let C := this.extend (subset_univ _)
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
-  haveI Vinh : Inhabited V := ⟨0⟩
-  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => ?_⟩
+  have Vinh : Inhabited V := ⟨0⟩
+  refine ⟨(hC.constr ℕ : _ → _) (C.domRestrict (invFun f)), hB.ext fun b => ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
@@ -257,7 +257,6 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
-open scoped Classical in
 /-- The left inverse of `f : E →ₗ[𝕜] F`.
 
 If `f` is not injective, then we use the junk value `0`. -/
@@ -341,6 +340,7 @@ variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {f : V →ₗ[K] K} {v : V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v ≠ 0`,
 there exists a basis `b` with an index `i`
@@ -425,7 +425,7 @@ theorem exists_basis_of_pairing_eq_zero
   · apply b.ext
     intro i
     rw [Basis.coord_apply, Basis.repr_self]
-    simp only [b, Basis.mk_apply]
+    simp only [b]
     rcases i with ⟨x, rfl | ⟨x, hx, rfl⟩⟩
     · simp [hw]
     · suffices x ≠ w by simp [this]

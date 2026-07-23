@@ -189,9 +189,9 @@ lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
     exact ⟨P, hP, ⟨h₁.symm⟩, h₂⟩
   · rintro ⟨P, hP, hP', hP''⟩
     have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
-    rw [absNorm_differentIdeal K, ← Ideal.natAbs_pow_inertiaDeg' p,
+    rw [absNorm_differentIdeal K, ← Ideal.natAbs_pow_inertiaDeg p,
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
-    exact (dvd_pow_self _ (Ideal.inertiaDeg'_pos ..).ne').trans this
+    exact (dvd_pow_self _ (Ideal.inertiaDeg_pos ..).ne').trans this
 
 /-- A prime `p` does not divide `discr K` if and only if `p` (as the ideal `span {p}`) is
 unramified in the ring of integers `𝒪`.

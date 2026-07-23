@@ -75,6 +75,7 @@ theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
       (.setCongr (s := {x | x ≠ 0}) _) using 1
   ext; simp [show n ≠ 0 by aesop]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, zpow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by
