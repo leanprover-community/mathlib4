@@ -211,6 +211,7 @@ lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
     exact Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) (norm_argSelfAdjoint_le_pi u) key
   · exact (two_mul_one_sub_cos_norm_argSelfAdjoint hu).le
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 @[fun_prop]
 lemma Unitary.continuousOn_argSelfAdjoint :
     ContinuousOn (argSelfAdjoint : unitary A → selfAdjoint A) (ball (1 : unitary A) 2) := by

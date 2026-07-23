@@ -401,6 +401,7 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
   exact lintegral_Lp_add_le_aux hpq hf hg h0
     (lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top hf hf_top hg_top hp1).ne
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 /-- Variant of Minkowski's inequality for functions `α → ℝ≥0∞` in `ℒp` with `p ≤ 1`: the `ℒp`
 seminorm of the sum of two functions is bounded by a constant multiple of the sum
 of their `ℒp` seminorms. -/

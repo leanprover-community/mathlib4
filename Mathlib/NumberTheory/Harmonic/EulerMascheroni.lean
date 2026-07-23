@@ -97,6 +97,7 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
   · simp [field]
   · simp [field]
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := by
   have h1 : eulerMascheroniSeq' 6 = 49 / 20 - log 6 := by
     rw [eulerMascheroniSeq']
