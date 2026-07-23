@@ -432,6 +432,10 @@ theorem of_ge {α : Type*} [LE α] {a b : α} (h : b ≤ a) : SymmGen (· ≤ ·
 alias _root_.LE.le.symmGen := SymmGen.of_le
 alias _root_.LE.le.symmGen_symm := SymmGen.of_ge
 
+@[simp]
+protected theorem eq [Std.Symm r] : SymmGen r = r := by
+  grind [SymmGen, Std.Symm]
+
 end SymmGen
 
 namespace ReflTransGen
