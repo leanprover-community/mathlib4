@@ -51,6 +51,7 @@ lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m))
     g • A = ⟨g * A.1, by simp only [det_mul, SpecialLinearGroup.det_coe, A.2, one_mul]⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
   one_smul b := by rw [smul_def]; simp only [coe_one, one_mul, Subtype.coe_eta]
   mul_smul x y b := by simp_rw [smul_def, ← mul_assoc, coe_mul]
@@ -164,6 +165,7 @@ noncomputable instance repsFintype (k : ℤ) : Fintype (reps k) := by
   ext i j
   simpa only [Subtype.mk.injEq] using congrFun₂ h i j
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
   simp only [smul_def, ← mul_assoc, S_mul_S_eq, neg_mul, one_mul, mul_neg, neg_neg, Subtype.coe_eta]
@@ -172,6 +174,7 @@ lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
 lemma T_S_rel_smul (A : Δ m) : S • S • S • T • S • T • S • A = T⁻¹ • A := by
   simp_rw [← T_S_rel, ← smul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m := by
   induction A using reduce_rec with
   | step A h1 h2 => simpa only [reduce_reduceStep h1] using h2
@@ -188,7 +191,7 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
       suffices A.1 1 0 = 0 ∧ n * A.1 1 0 < A.1 0 0 ∧
           n * A.1 1 1 ≤ A.1 0 1 ∧ |A.1 0 1 + -(n * A.1 1 1)| < |A.1 1 1| by
         simpa only [reps, Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul,
-          Equiv.symm_apply_apply, Set.mem_setOf_eq, of_apply, cons_val', vecMul, cons_dotProduct,
+          Equiv.symm_apply_apply, Set.mem_ofPred_eq, of_apply, cons_val', vecMul, cons_dotProduct,
           vecHead, one_mul, vecTail, Function.comp_apply, Fin.succ_zero_eq_one, neg_mul,
           dotProduct_of_isEmpty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
           cons_val_one, cons_val_zero, lt_add_neg_iff_add_lt, le_add_neg_iff_add_le]
@@ -197,7 +200,7 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
     · simp only [reps, Fin.isValue, reduce_of_not_pos h h1, Int.ediv_neg, neg_neg, smul_def, ←
         mul_assoc, S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
         Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty,
-        Set.mem_setOf_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
+        Set.mem_ofPred_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
         vecTail, Function.comp_apply, Fin.succ_zero_eq_one, h, mul_zero, dotProduct_of_isEmpty,
         add_zero, zero_mul, neg_zero, empty_val', cons_val_fin_one, cons_val_one, cons_val_zero,
         lt_neg, neg_add_rev, zero_add, le_add_neg_iff_add_le, ← le_neg, abs_neg, true_and]

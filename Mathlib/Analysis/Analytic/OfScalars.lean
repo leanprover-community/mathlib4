@@ -215,9 +215,6 @@ theorem inv_le_ofScalars_radius_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
     gcongr
     exact ofScalars_norm_le E c n (Nat.pos_iff_ne_zero.mpr hn)
 
-@[deprecated (since := "2025-11-21")]
-alias ofScalars_radius_ge_inv_of_tendsto := inv_le_ofScalars_radius_of_tendsto
-
 /-- The radius of convergence of a scalar series is the inverse of the non-zero limit
 `fun n ↦ ‖c n.succ‖ / ‖c n‖`. -/
 theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : ℝ≥0} (hr : r ≠ 0)
@@ -240,7 +237,7 @@ theorem ofScalars_radius_eq_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠
   suffices Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r⁻¹) by
     convert! ofScalars_radius_eq_inv_of_tendsto E c (inv_ne_zero hr) this
     simp
-  convert! hc.inv₀ (NNReal.coe_ne_zero.mpr hr) using 1
+  convert hc.inv₀ (NNReal.coe_ne_zero.mpr hr)
   simp
 
 /-- The ratio test stating that if `‖c n.succ‖ / ‖c n‖` tends to zero, the radius is unbounded.

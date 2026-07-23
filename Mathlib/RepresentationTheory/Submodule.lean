@@ -60,6 +60,7 @@ instance [Nontrivial V] : Nontrivial ρ.invtSubmodule :=
 
 end invtSubmodule
 
+set_option backward.isDefEq.respectTransparency false in
 lemma asAlgebraHom_mem_of_forall_mem (p : Submodule k V) (hp : ∀ g, ∀ v ∈ p, ρ g v ∈ p)
     (v : V) (hv : v ∈ p) (x : k[G]) :
     ρ.asAlgebraHom x v ∈ p := by

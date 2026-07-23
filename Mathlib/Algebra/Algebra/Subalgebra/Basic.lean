@@ -44,7 +44,7 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 
 instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
 
@@ -287,7 +287,7 @@ instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebr
 end
 
 /-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
-@[implicit_reducible] -- Not `@[reducible]` because it is an order embedding rather than a function.
+@[instance_reducible] -- Not `@[reducible]` because it is an order embedding rather than a function.
 def toSubmodule : Subalgebra R A ↪o Submodule R A where
   toEmbedding :=
     { toFun := fun S =>
@@ -298,8 +298,9 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
       inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
-/- TODO: bundle other forgetful maps between algebraic substructures, e.g.
+/-! TODO: bundle other forgetful maps between algebraic substructures, e.g.
   `toSubsemiring` and `toSubring` in this file. -/
+
 @[simp]
 theorem mem_toSubmodule {x} : x ∈ (toSubmodule S) ↔ x ∈ S := Iff.rfl
 
@@ -324,7 +325,7 @@ instance : Module R S :=
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstance
 
-/- More general form of `Subalgebra.algebra`.
+/-- More general form of `Subalgebra.algebra`.
 
 This instance should have low priority since it is slow to fail:
 before failing, it will cause a search through all `SMul R' R` instances,
@@ -416,6 +417,7 @@ def map (f : A →ₐ[R] B) (S : Subalgebra R A) : Subalgebra R B :=
   { S.toSubsemiring.map (f : A →+* B) with
     algebraMap_mem' := fun r => f.commutes r ▸ Set.mem_image_of_mem _ (S.algebraMap_mem r) }
 
+@[gcongr]
 theorem map_mono {S₁ S₂ : Subalgebra R A} {f : A →ₐ[R] B} : S₁ ≤ S₂ → S₁.map f ≤ S₂.map f :=
   Set.image_mono
 
@@ -643,6 +645,9 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
     [Algebra R E] [Algebra R F] (f : E →ₐ[R] F) : E ≃ₐ[R] f.range :=
   ofInjective f f.toRingHom.injective
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
 `subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
@@ -1012,31 +1017,30 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*}
 
 /-- The equalizer of two R-algebra homomorphisms -/
 @[simps coe toSubsemiring]
-def equalizer (ϕ ψ : F) [FunLike F A B] [AlgHomClass F R A B] : Subalgebra R A where
+def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
-  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
-  one_mem' := by simp only [Set.mem_setOf_eq, map_one]
+  zero_mem' := by simp only [Set.mem_ofPred_eq, map_zero]
+  one_mem' := by simp only [Set.mem_ofPred_eq, map_one]
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_add, map_add, hx, hy]
+    rw [Set.mem_ofPred_eq, map_add, map_add, hx, hy]
   mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
+    rw [Set.mem_ofPred_eq, map_mul, map_mul, hx, hy]
   algebraMap_mem' x := by
-    simp only [Set.mem_setOf_eq, AlgHomClass.commutes]
-
-variable [FunLike F A B] [AlgHomClass F R A B]
+    simp only [Set.mem_ofPred_eq, AlgHomClass.commutes]
 
 @[simp]
-theorem mem_equalizer (φ ψ : F) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=
+theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
 
-theorem equalizer_toSubmodule {φ ψ : F} :
-    Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus φ ψ := rfl
+theorem equalizer_toSubmodule {φ ψ : A →ₐ[R] B} :
+    Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus
+      (LinearMapClass.linearMap φ) (LinearMapClass.linearMap ψ) := rfl
 
-theorem le_equalizer {φ ψ : F} {S : Subalgebra R A} : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
+theorem le_equalizer {φ ψ : A →ₐ[R] B} {S : Subalgebra R A} :
+    S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
 
 end AlgHom
 

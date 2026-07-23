@@ -22,6 +22,7 @@ This file defines the type of signs $\{-1, 0, 1\}$ and its basic arithmetic inst
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false in
 -- Don't generate unnecessary `sizeOf_spec` lemmas which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in
 /-- The type of signs. -/
@@ -80,7 +81,7 @@ instance : LE SignType :=
 instance : DecidableLE SignType := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor) | exact isFalse (by rintro ⟨_⟩)
 
-/- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
+/-- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
   inv := id

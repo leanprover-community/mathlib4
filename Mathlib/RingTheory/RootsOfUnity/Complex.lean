@@ -108,8 +108,8 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
   have hn0 : (n : ℂ) ≠ 0 := mod_cast NeZero.out
   constructor
   · intro h
-    obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x := by
-      simpa only using (isPrimitiveRoot_exp n NeZero.out).eq_pow_of_pow_eq_one h
+    obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x :=
+      (isPrimitiveRoot_exp n NeZero.out).eq_pow_of_pow_eq_one h
     refine ⟨i, hi, ?_⟩
     rw [← H, ← exp_nat_mul]
     congr 1
@@ -119,7 +119,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     use i
     simp [field]
 
-theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
+theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Nat.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n NeZero.out).card_rootsOfUnity
 
 theorem card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
