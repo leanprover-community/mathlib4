@@ -30,7 +30,7 @@ namespace StateTransition
 state returned before a `none` result. If the state transition function always returns `some`,
 then the computation diverges, returning `Part.none`. -/
 def eval {σ} (f : σ → Option σ) : σ → Part σ :=
-  PFun.fix fun s ↦ Part.some <| (f s).elim (Sum.inl s) Sum.inr
+  PFun.fix (PFun.lift fun s ↦ (f s).elim (Sum.inl s) Sum.inr)
 
 /-- The reflexive transitive closure of a state transition function. `Reaches f a b` means
 there is a finite sequence of steps `f a = some a₁`, `f a₁ = some a₂`, ... such that `aₙ = b`.
@@ -103,26 +103,24 @@ holds of any point where `eval f a` evaluates to `b`. This formalizes the notion
 def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : σ}
     (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
   PFun.fixInduction h fun a' ha' h' ↦
-    H _ ha' fun b' e ↦ h' _ <| Part.mem_some_iff.2 <| by rw [e]; rfl
+    H a' ha' fun b' e ↦ h' b' <| by simp [e]
 
 theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none := by
+  have eval_step {a b} :
+      b ∈ eval f a ↔ (f a = none ∧ a = b) ∨ ∃ a', f a = some a' ∧ b ∈ eval f a' := by
+    unfold eval
+    rw [PFun.mem_fix_iff]
+    simp only [PFun.lift_apply, Part.mem_some_iff]
+    cases h : f a <;> simp [eq_comm]
   refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  · refine evalInduction h fun a h IH ↦ ?_
-    rcases e : f a with - | a'
-    · rw [Part.mem_unique h
-          (PFun.mem_fix_iff.2 <| Or.inl <| Part.mem_some_iff.2 <| by rw [e]; rfl)]
-      exact ⟨ReflTransGen.refl, e⟩
-    · rcases PFun.mem_fix_iff.1 h with (h | ⟨_, h, _⟩) <;> rw [e] at h <;>
-        cases Part.mem_some_iff.1 h
-      obtain ⟨h₁, h₂⟩ := IH a' e
-      exact ⟨ReflTransGen.head e h₁, h₂⟩
-  · refine ReflTransGen.head_induction_on h₁ ?_ fun h _ IH ↦ ?_
-    · refine PFun.mem_fix_iff.2 (Or.inl ?_)
-      rw [h₂]
-      apply Part.mem_some
-    · refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH⟩)
-      rw [h]
-      apply Part.mem_some
+  · refine evalInduction h fun a_ind h_ind IH ↦ ?_
+    rcases eval_step.1 h_ind with ⟨e, rfl⟩ | ⟨a', e, _⟩
+    · exact ⟨ReflTransGen.refl, e⟩
+    · obtain ⟨h_rt, h_none⟩ := IH a' e
+      exact ⟨ReflTransGen.head e h_rt, h_none⟩
+  · refine ReflTransGen.head_induction_on h₁ ?_ fun h_step _ IH ↦ ?_
+    · exact eval_step.2 (Or.inl ⟨h₂, rfl⟩)
+    · exact eval_step.2 (Or.inr ⟨_, h_step, IH⟩)
 
 theorem eval_maximal₁ {σ} {f : σ → Option σ} {a b} (h : b ∈ eval f a) (c) : ¬Reaches₁ f b c
   | bc => by

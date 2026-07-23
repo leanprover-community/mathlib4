@@ -68,8 +68,8 @@ theorem coe_pimage : (s.pimage f : Set β) = f.image s :=
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
-    (s.pimage fun x => Part.some (f x)) = s.image f := by
+theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable ((f : α →. β) x).Dom] :
+    s.pimage (f : α →. β) = s.image f := by
   ext
   simp [eq_comm]
 

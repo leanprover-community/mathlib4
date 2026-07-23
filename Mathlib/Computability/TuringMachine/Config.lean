@@ -110,54 +110,53 @@ or in some cases `n :: v` where `v` will be ignored by a subsequent function.
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
 -/
 def Code.eval : Code → List ℕ →. List ℕ
-  | Code.zero' => fun v => pure (0 :: v)
-  | Code.succ => fun v => pure [v.headI.succ]
-  | Code.tail => fun v => pure v.tail
-  | Code.cons f fs => fun v => do
+  | Code.zero' => PFun.lift fun v => 0 :: v
+  | Code.succ => PFun.lift fun v => [v.headI.succ]
+  | Code.tail => PFun.lift fun v => v.tail
+  | Code.cons f fs => fun v ↦. do
     let n ← Code.eval f v
     let ns ← Code.eval fs v
     pure (n.headI :: ns)
-  | Code.comp f g => fun v => g.eval v >>= f.eval
-  | Code.case f g => fun v => v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail)
+  | Code.comp f g => fun v ↦. g.eval v >>= f.eval
+  | Code.case f g => fun v ↦. v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail)
   | Code.fix f =>
-    PFun.fix fun v => (f.eval v).map fun v => if v.headI = 0 then Sum.inl v.tail else Sum.inr v.tail
+    PFun.fix (fun v ↦. (f.eval v).map fun v' =>
+      if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail)
 
 namespace Code
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem zero'_eval : zero'.eval = fun v => pure (0 :: v) := by simp [eval]
+theorem zero'_eval (v) : zero'.eval v = pure (0 :: v) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem succ_eval : succ.eval = fun v => pure [v.headI.succ] := by simp [eval]
+theorem succ_eval (v) : succ.eval v = pure [v.headI.succ] := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem tail_eval : tail.eval = fun v => pure v.tail := by simp [eval]
+theorem tail_eval (v) : tail.eval v = pure v.tail := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem cons_eval (f fs) : (cons f fs).eval = fun v => do {
-    let n ← Code.eval f v
-    let ns ← Code.eval fs v
-    pure (n.headI :: ns) } := by simp [eval]
+theorem cons_eval (f fs v) :
+    (cons f fs).eval v = (f.eval v >>= fun n => fs.eval v >>= fun ns => pure (n.headI :: ns)) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem comp_eval (f g) : (comp f g).eval = fun v => g.eval v >>= f.eval := by simp [eval]
+theorem comp_eval (f g v) :
+    (comp f g).eval v = (g.eval v >>= fun x => f.eval x) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem case_eval (f g) :
-    (case f g).eval = fun v => v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail) := by
-  simp [eval]
+theorem case_eval (f g v) :
+    (case f g).eval v = v.headI.rec (f.eval v.tail) (fun y _ => g.eval (y::v.tail)) := rfl
 
 @[simp]
-theorem fix_eval (f) : (fix f).eval =
-    PFun.fix fun v => (f.eval v).map fun v =>
-      if v.headI = 0 then Sum.inl v.tail else Sum.inr v.tail := by
-  simp [eval]
+theorem fix_eval (f v) :
+    (fix f).eval v =
+      PFun.fix (fun v' ↦. (f.eval v').map fun v'' =>
+        if v''.headI = 0 then Sum.inl v''.tail else Sum.inr v''.tail) v := rfl
 
 /-- `nil` is the constant nil function: `nil v = []`. -/
 def nil : Code :=
@@ -285,61 +284,66 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
     | comp g hf hg IHf IHg =>
       simpa [Part.bind_eq_bind] using exists_code.comp IHf IHg
-    | @prec n f g _ _ IHf IHg =>
+    | @prec n' f g _ _ IHf IHg =>
       obtain ⟨cf, hf⟩ := IHf
       obtain ⟨cg, hg⟩ := IHg
-      simp only [Part.map_eq_map, Part.map_some, PFun.coe_val] at hf hg
       refine ⟨prec cf cg, fun v => ?_⟩
       rw [← v.cons_head_tail]
       specialize hf v.tail
       replace hg := fun a b => hg (a ::ᵥ b ::ᵥ v.tail)
-      simp only [Vector.cons_val, Vector.tail_val] at hf hg
-      simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, Vector.tail_cons,
-        Vector.head_cons, PFun.coe_val, Vector.tail_val]
+      simp only [Part.map_eq_map, Part.map_some, PFun.coe_val,
+        Vector.cons_val, Vector.tail_val] at hf hg ⊢
       simp only [← Part.pure_eq_some] at hf hg ⊢
       induction v.head with
-        simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some, Bind.bind]
-      | succ n _ =>
-      suffices ∀ a b, a + b = n →
-        (n.succ :: 0 ::
-          g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail) ::
-              v.val.tail : List ℕ) ∈
-          PFun.fix
-            (fun v : List ℕ => Part.bind (cg.eval (v.headI :: v.tail.tail))
-              (fun x => Part.some (if v.tail.headI = 0
-                then Sum.inl
-                  (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail : List ℕ)
-                else Sum.inr
-                  (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
-            (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
-        have := Part.eq_some_iff.mpr (this _ _ (zero_add _))
-        simp_all
-      intro a b e
-      induction b generalizing a with
       | zero =>
-        refine PFun.mem_fix_iff.2 (Or.inl <| Part.eq_some_iff.1 ?_)
-        simp only [hg, ← e, Part.bind_some, List.tail_cons, pure]
-        rfl
-      | succ b IH =>
-        refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH (a + 1) (by rwa [add_right_comm])⟩)
-        simp only [hg, Part.bind_some, List.tail_cons, pure]
-        exact Part.mem_some_iff.2 rfl
+        simp [prec, Part.bind_assoc, ← Part.bind_some_eq_map, Bind.bind, hf, Part.bind_some]
+      | succ n' _ =>
+        simp only [prec, Code.case_eval, Code.cons_eval, Code.comp_eval, Code.fix_eval,
+          Code.tail_eval, Code.succ_eval, Code.pred_eval, Code.id_eval, Code.zero'_eval,
+          Part.bind_assoc, ← Part.bind_some_eq_map, Bind.bind]
+        suffices ∀ a b, a + b = n' →
+          (n'.succ :: 0 ::
+            g (n' ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n' ::ᵥ
+              v.tail) ::
+            v.val.tail : List ℕ) ∈
+            PFun.fix
+              (fun v : List ℕ ↦. Part.bind (cg.eval (v.headI :: v.tail.tail))
+                (fun x => Part.some (if v.tail.headI = 0
+                  then Sum.inl
+                    (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail : List ℕ)
+                  else Sum.inr
+                    (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
+              (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail)
+                by
+          have := Part.eq_some_iff.mpr (this _ _ (zero_add _))
+          simp_all
+        intro a b e
+        induction b generalizing a with
+        | zero =>
+          refine PFun.mem_fix_iff.2 (Or.inl <| Part.eq_some_iff.1 ?_)
+          simp only [hg, ← e, PFun.mk_apply, Part.bind_some, List.tail_cons, pure]
+          rfl
+        | succ b' IH =>
+          refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH (a + 1) (by lia)⟩)
+          simp only [hg, PFun.mk_apply, Part.bind_some, List.tail_cons, pure]
+          exact Part.mem_some_iff.2 rfl
   | comp g _ _ IHf IHg => exact exists_code.comp IHf IHg
-  | @rfind n f _ IHf =>
-    obtain ⟨cf, hf⟩ := IHf; refine ⟨rfind cf, fun v => ?_⟩
+  | @rfind n_val f _ IHf =>
+    obtain ⟨cf, hf⟩ := IHf
+    refine ⟨rfind cf, fun v => ?_⟩
     replace hf := fun a => hf (a ::ᵥ v)
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
       show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
     refine Part.ext fun x => ?_
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.bind_some,
-      cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
-      List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
-      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind,
+      Code.cons_eval, Code.comp_eval, Code.fix_eval, Code.tail_eval, Code.succ_eval,
+      Code.zero'_eval, Code.pred_eval, Part.map_some, false_eq_decide_iff,
+      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind, PFun.mk_apply, PFun.lift_apply,
       List.tail_cons, true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix
-        (fun v => (cf.eval v).bind fun y => Part.some <|
+        (fun v ↦. (cf.eval v).bind fun y => Part.some <|
           if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
             else Sum.inr (v.headI.succ :: v.tail)) v₁ →
         ∀ n, (v₁ = n :: v.val) → (∀ m < n, ¬f (m ::ᵥ v) = 0) →
@@ -352,19 +356,19 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       clear h1
       rintro n rfl hm
       have := PFun.mem_fix_iff.1 h2
-      simp only [hf, Part.bind_some] at this
+      simp only [PFun.mk_apply, hf, Part.bind_some] at this
       split_ifs at this with h
-      · simp only [List.headI_cons, exists_false, or_false, Part.mem_some_iff,
-          List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq] at this
+      · simp only [exists_false, or_false, Part.mem_some_iff,
+          List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq, List.headI] at this
         subst this
         exact ⟨_, ⟨h, @hm⟩, rfl⟩
       · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => ?_
-        obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
-        exacts [hm _ h, h]
+        obtain h' | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
+        exacts [hm _ h', h]
     · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
       refine ⟨n.succ::v.1, ?_, rfl⟩
       have : (n.succ::v.1 : List ℕ) ∈
-        PFun.fix (fun v =>
+        PFun.fix (fun v ↦.
           (cf.eval v).bind fun y =>
             Part.some <|
               if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
@@ -378,7 +382,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       | succ n IH =>
         refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
           (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
-        simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, if_false,
+        simp only [hf, hm n.lt_succ_self, PFun.mk_apply, Part.bind_some, List.headI, if_false,
           Part.mem_some_iff, List.tail_cons]
 
 end Code
@@ -431,13 +435,13 @@ inductive Cont
 
 /-- The semantics of a continuation. -/
 def Cont.eval : Cont → List ℕ →. List ℕ
-  | Cont.halt => pure
-  | Cont.cons₁ fs as k => fun v => do
-    let ns ← Code.eval fs as
-    Cont.eval k (v.headI :: ns)
-  | Cont.cons₂ ns k => fun v => Cont.eval k (ns.headI :: v)
-  | Cont.comp f k => fun v => Code.eval f v >>= Cont.eval k
-  | Cont.fix f k => fun v => if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval
+  | Cont.halt => PFun.id _
+  | Cont.cons₁ fs as k => fun v ↦.
+    Code.eval fs as >>= fun ns => Cont.eval k (v.headI :: ns)
+  | Cont.cons₂ ns k => fun v ↦. Cont.eval k (ns.headI :: v)
+  | Cont.comp f k => fun v ↦. Code.eval f v >>= Cont.eval k
+  | Cont.fix f k => fun v ↦.
+    if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval
 
 /-- The set of configurations of the machine:
 
@@ -527,12 +531,12 @@ def Cont.then : Cont → Cont → Cont
 set_option backward.isDefEq.respectTransparency false in
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
-  | halt => simp only [Cont.eval, Cont.then, pure_bind]
-  | cons₁ => simp only [Cont.eval, Cont.then, bind_assoc, *]
-  | cons₂ => simp only [Cont.eval, Cont.then, *]
-  | comp _ _ k_ih => simp only [Cont.eval, Cont.then, bind_assoc, ← k_ih]
+  | halt => simp only [Cont.eval, Cont.then, PFun.id_apply, Part.bind_eq_bind, Part.bind_some]
+  | cons₁ => simp only [Cont.eval, PFun.mk_apply, Cont.then, bind_assoc, *]
+  | cons₂ => simp only [Cont.eval, PFun.mk_apply, Cont.then, *]
+  | comp _ _ k_ih => simp only [Cont.eval, PFun.mk_apply, Cont.then, bind_assoc, ← k_ih]
   | fix _ _ k_ih =>
-    simp only [Cont.eval, Cont.then, *]
+    simp only [Cont.eval, PFun.mk_apply, Cont.then, *]
     split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
@@ -614,7 +618,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
         this _ h _ _ (stepNormal_then _ Cont.halt _ _) ReflTransGen.refl
       refine ⟨v₂, PFun.mem_fix_iff.2 ?_, h₃⟩
-      simp only [Part.eq_some_iff.2 hv₁, Part.map_some]
+      simp only [PFun.mk_apply, Part.eq_some_iff.2 hv₁, Part.map_some]
       split_ifs at hv₂ ⊢
       · rw [Part.mem_some_iff.1 hv₂]
         exact Or.inl (Part.mem_some _)
@@ -641,12 +645,13 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         rw [e₀, Cont.then, Cfg.then] at e₁
         simp only at e₁
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
-          IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
-            v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
+          IH (stepRet (k₀.then (Cont.fix f k)) v₀)
+            (by rw [stepRet, if_neg he, e₁]; rfl) v'.tail _ stepRet_then
+            (by apply ReflTransGen.single; rw [e₀]; rfl)
         refine ⟨_, PFun.mem_fix_iff.2 ?_, h₃⟩
-        simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
+        simp only [PFun.mk_apply, Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
         split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
-          exact Or.inr ⟨_, rfl, hv₂⟩]
+        exact Or.inr ⟨_, rfl, hv₂⟩]
     · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr
@@ -654,7 +659,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
     · exact ReflTransGen.single rfl
     refine PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => ?_
     rw [fok, Part.bind_eq_bind, Part.mem_bind_iff]
-    obtain he | ⟨v'', he₁', _⟩ := PFun.mem_fix_iff.1 he
+    obtain he | ⟨v'', he₁', _⟩ := by simpa only [PFun.mk_apply] using PFun.mem_fix_iff.1 he
     · obtain ⟨v', he₁, he₂⟩ := (Part.mem_map_iff _).1 he
       split_ifs at he₂ with h; cases he₂
       refine ⟨_, he₁, ?_⟩
@@ -676,24 +681,25 @@ set_option backward.isDefEq.respectTransparency false in
 theorem code_is_ok (c) : Code.Ok c := by
   induction c with (intro k v; rw [stepNormal])
   | cons f fs IHf IHfs =>
-    rw [Code.eval, IHf]
-    simp only [bind_assoc, pure_bind]; congr; funext v
+    rw [Code.cons_eval, IHf]
+    simp only [bind_assoc, pure_bind]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
-    rw [stepRet, IHfs]; congr; funext v'
-    refine Eq.trans (b := eval step (stepRet (Cont.cons₂ v k) v')) ?_ (Eq.symm ?_) <;>
+    rw [stepRet, IHfs]; congr; funext v''
+    refine Eq.trans (b := eval step (stepRet (Cont.cons₂ v' k) v'')) ?_ (Eq.symm ?_) <;>
       exact reaches_eval (ReflTransGen.single rfl)
   | comp f g IHf IHg =>
-    rw [Code.eval, IHg]
-    simp only [bind_assoc]; congr; funext v
+    rw [Code.comp_eval, IHg]
+    simp only [bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IHf]
   | case f g IHf IHg =>
-    simp only [Code.eval]
-    cases v.headI <;> simp only [Nat.rec_zero, Part.bind_eq_bind] <;> [apply IHf; apply IHg]
+    rw [Code.case_eval]
+    dsimp only
+    cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => rw [cont_eval_fix IHf]
-  | _ => simp only [Code.eval, pure_bind]
+  | _ => simp only [Code.zero'_eval, Code.succ_eval, Code.tail_eval, pure_bind]
 
 theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt <$> c.eval v :=
   (code_is_ok c).zero
@@ -702,27 +708,31 @@ set_option backward.isDefEq.respectTransparency false in
 theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := by
   induction k generalizing v with
   | halt =>
-    simp only [Cont.eval, map_pure]
+    simp only [Cont.eval, PFun.id_apply]
     exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
   | cons₁ fs as k IH =>
-    rw [Cont.eval, stepRet, code_is_ok]
+    rw [Cont.eval, PFun.mk_apply, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IH, bind_pure_comp]
-  | cons₂ ns k IH => rw [Cont.eval, stepRet]; exact IH
+  | cons₂ ns k IH =>
+    rw [Cont.eval, PFun.mk_apply, stepRet]
+    exact IH
   | comp f k IH =>
-    rw [Cont.eval, stepRet, code_is_ok]
+    rw [Cont.eval, PFun.mk_apply, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [IH, bind_pure_comp]
   | fix f k IH =>
-    rw [Cont.eval, stepRet]; simp only
-    split_ifs; · exact IH
-    simp only [← bind_pure_comp, bind_assoc, cont_eval_fix (code_is_ok _)]
-    congr; funext; rw [bind_pure_comp, ← IH]
-    exact reaches_eval (ReflTransGen.single rfl)
+    rw [Cont.eval, PFun.mk_apply, stepRet]
+    split_ifs
+    · exact IH
+    · rw [cont_eval_fix (code_is_ok f)]
+      simp only [← bind_pure_comp, bind_assoc]; congr; funext x
+      rw [bind_pure_comp, ← IH]
+      exact reaches_eval (ReflTransGen.single rfl)
 
 end ToPartrec
 
