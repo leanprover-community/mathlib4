@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Maps.OpenQuotient
 
@@ -15,6 +16,9 @@ public import Mathlib.Topology.Maps.OpenQuotient
 
 In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
+
+When `N` is normal, we also bundle the quotient map as a continuous monoid homomorphism
+`QuotientTopGroup.mk`.
 -/
 
 public section
@@ -43,6 +47,17 @@ theorem isQuotientMap_mk (N : Subgroup G) : IsQuotientMap (mk : G → G ⧸ N) :
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
   continuous_quot_mk
+
+/-- The quotient map `G → G ⧸ N` as a continuous monoid homomorphism. -/
+@[expose, to_additive QuotientTopAddGroup.mk
+/-- The quotient map `G → G ⧸ N` as a continuous additive monoid homomorphism. -/]
+def _root_.QuotientTopGroup.mk (N : Subgroup G) [N.Normal] : G →ₜ* G ⧸ N where
+  toMonoidHom := mk' N
+  continuous_toFun := continuous_mk
+
+@[to_additive (attr := simp) QuotientTopAddGroup.coe_mk]
+lemma _root_.QuotientTopGroup.coe_mk (N : Subgroup G) [N.Normal] :
+    ↑(QuotientTopGroup.mk N) = mk' N := rfl
 
 section ContinuousMul
 
