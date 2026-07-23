@@ -179,13 +179,10 @@ def succEquiv (i : ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē
       (@Field.embEquivOfIsAlgClosed _ _ _ _ _ _ _ (_) <|
         (Algebra.IsAlgebraic.tower_top (K := F) _).of_injective (val _) Subtype.val_injective).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem succEquiv_coherence (i : ι) (f) : (succEquiv i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
   ext
-  simp [succEquiv, embEquivOfIsAlgClosed, embEquivOfAdjoinSplits, Equiv.sigmaEquivProdOfEquiv,
-    algHomEquivSigma, AlgHom.domRestrict, Subalgebra.inclusion, Set.inclusion, equivOfEq,
-    Subalgebra.equivOfEq]
+  rfl
 
 instance (i : ι) : FiniteDimensional (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
   adjoin.finiteDimensional ((Algebra.IsAlgebraic.tower_top (K := F) _).isAlgebraic _).isIntegral
@@ -208,10 +205,7 @@ def factor (i : WithTop ι) : Type _ := i.recTopCoe PUnit (X ·)
 
 variable [Algebra.IsSeparable F E]
 
--- slow (typeclass inference reasonable, type checking takes ~4s)
 instance (i : ι) : Algebra.IsSeparable (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
-  have := Algebra.isSeparable_tower_top_of_isSeparable F (E⟮<i⟯) E
-  have : IsScalarTower (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) E := .of_algebraMap_eq' rfl
   Algebra.isSeparable_tower_bot_of_isSeparable _ _ E
 
 open Field in
