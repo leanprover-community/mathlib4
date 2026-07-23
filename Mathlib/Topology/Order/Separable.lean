@@ -63,65 +63,54 @@ end OrdConnected
 
 section Separable
 
-/-- In a separable linearly ordered topological space, the points of a subset `s` that are
-isolated in the subspace `↥s` form a countable set.
+private lemma countable_isolated_inter_Ioi_aux [SeparableSpace α] {s : Set α} {W : s → Set α}
+    (hWo : ∀ x, IsOpen {x} → IsOpen (W x)) (hWc : ∀ x, IsOpen {x} → (W x).OrdConnected)
+    (hWx : ∀ x, IsOpen {x} → {x.1} = W x ∩ s) :
+    {x : s | IsOpen {x} ∧ (W x ∩ Ioi x).Nonempty}.Countable := by
+  refine PairwiseDisjoint.countable_of_isOpen ?_ ?_ fun _ hx ↦ hx.2
+  · rintro x ⟨hx, -⟩ y ⟨hy, -⟩ hxy
+    refine disjoint_left.2 fun z hzx hzy ↦ ?_
+    rcases lt_or_gt_of_ne (Subtype.coe_injective.ne hxy) with h | h
+    · exact h.ne' ((hWx x hx).ge
+        ⟨(hWc x hx).out ((hWx x hx).le rfl).1 hzx.1 ⟨h.le, hzy.2.le⟩, y.2⟩)
+    · exact h.ne' ((hWx y hy).ge
+        ⟨(hWc y hy).out ((hWx y hy).le rfl).1 hzy.1 ⟨h.le, hzx.2.le⟩, x.2⟩)
+  · exact fun x hx ↦ (hWo x hx.1).inter isOpen_Ioi
 
-Each such point `x` has an open order connected neighbourhood `W x` meeting `s` only in `x`. The
-sets `W x ∩ Ioi x` are then pairwise disjoint, as are the sets `W x ∩ Iio x`, so in a separable
-space only countably many of each are nonempty; and if both are empty then `W x = {x}` is open,
-so `x` belongs to any dense set. -/
+/-- In a separable linearly ordered topological space, the points of a subset `s` that are
+isolated in the subspace `s` form a countable set. -/
 theorem countable_setOf_isolated_subtype [SeparableSpace α] (s : Set α) :
     {x : s | IsOpen {x}}.Countable := by
   obtain ⟨D, hDc, hDd⟩ := exists_countable_dense α
-  have key (x : s) (hx : IsOpen {x}) :
-      ∃ W, IsOpen W ∧ W.OrdConnected ∧ x.1 ∈ W ∧ W ∩ s ⊆ {x.1} := by
+  -- Each such point `x` has an open order connected neighbourhood `W x` meeting `s` only in `x`.
+  have key (x : s) (hx : IsOpen {x}) : ∃ W, IsOpen W ∧ W.OrdConnected ∧ {x.1} = W ∩ s := by
     obtain ⟨U, hU, hUx⟩ := Topology.IsInducing.subtypeVal.isOpen_iff.1 hx
-    have hUs : U ∩ s ⊆ {(x : α)} := fun z hz ↦
-      congrArg Subtype.val (hUx.le (show (⟨z, hz.2⟩ : s) ∈ Subtype.val ⁻¹' U from hz.1))
-    obtain ⟨W, hWo, hWc, hWx, hWU⟩ := exists_isOpen_ordConnected_mem_subset hU (hUx.ge rfl)
-    exact ⟨W, hWo, hWc, hWx, (inter_subset_inter_left s hWU).trans hUs⟩
-  choose! W hWo hWc hWx hWs using key
-  -- no isolated point above `x` is caught by `W x`, and none below
-  have hup : ∀ x : s, IsOpen {x} → ∀ y : s, (x : α) < (y : α) →
-      ∀ z ∈ W x, ¬ (y : α) ≤ z := fun x hx y hxy z hz hyz ↦
-    hxy.ne' (hWs x hx ⟨(hWc x hx).out (hWx x hx) hz ⟨hxy.le, hyz⟩, y.2⟩)
-  have hdown : ∀ x : s, IsOpen {x} → ∀ y : s, (y : α) < (x : α) →
-      ∀ z ∈ W x, ¬ z ≤ (y : α) := fun x hx y hyx z hz hzy ↦
-    hyx.ne (hWs x hx ⟨(hWc x hx).out hz (hWx x hx) ⟨hzy, hyx.le⟩, y.2⟩)
-  have hcr : {x : s | IsOpen {x} ∧ (W x ∩ Ioi (x : α)).Nonempty}.Countable := by
-    refine PairwiseDisjoint.countable_of_isOpen (s := fun x : s ↦ W x ∩ Ioi (x : α)) ?_
-      (fun x hx ↦ (hWo x hx.1).inter isOpen_Ioi) fun x hx ↦ hx.2
-    rintro x ⟨hx, -⟩ y ⟨hy, -⟩ hxy
-    refine disjoint_left.2 fun z hzx hzy ↦ ?_
-    rcases lt_or_gt_of_ne (Subtype.coe_injective.ne hxy) with h | h
-    · exact hup x hx y h z hzx.1 hzy.2.le
-    · exact hup y hy x h z hzy.1 hzx.2.le
-  have hcl : {x : s | IsOpen {x} ∧ (W x ∩ Iio x).Nonempty}.Countable := by
-    refine PairwiseDisjoint.countable_of_isOpen (s := fun x : s ↦ W x ∩ Iio (x : α)) ?_
-      (fun x hx ↦ (hWo x hx.1).inter isOpen_Iio) fun x hx ↦ hx.2
-    rintro x ⟨hx, -⟩ y ⟨hy, -⟩ hxy
-    refine disjoint_left.2 fun z hzx hzy ↦ ?_
-    rcases lt_or_gt_of_ne (Subtype.coe_injective.ne hxy) with h | h
-    · exact hdown y hy x h z hzy.1 hzx.2.le
-    · exact hdown x hx y h z hzx.1 hzy.2.le
-  -- an isolated point with nothing of `W x` on either side is isolated in `α`, hence lies in `D`
+    obtain ⟨W, hWo, hWc, hxW, hWU⟩ := exists_isOpen_ordConnected_mem_subset hU (hUx.ge rfl)
+    refine ⟨W, hWo, hWc, Subset.antisymm (fun _ h ↦ h ▸ ⟨hxW, x.2⟩) fun y hy ↦ ?_⟩
+    exact congrArg Subtype.val <|
+      hUx.le (show (⟨y, hy.2⟩ : s) ∈ Subtype.val ⁻¹' U from hWU hy.1)
+  choose! W hWo hWc hWx using key
+  -- The sets `W x ∩ Ioi x` are then pairwise disjoint, as are the sets `W x ∩ Iio x`.
+  have hcr : {x : s | IsOpen {x} ∧ (W x ∩ Ioi x).Nonempty}.Countable :=
+    countable_isolated_inter_Ioi_aux hWo hWc hWx
+  have hcl : {x : s | IsOpen {x} ∧ (W x ∩ Iio x).Nonempty}.Countable :=
+    countable_isolated_inter_Ioi_aux (α := αᵒᵈ) hWo (fun x hx ↦ (hWc x hx).dual) hWx
+  -- An isolated point with nothing of `W x` on either side is isolated in `α`, hence lies in `D`.
   refine ((hcr.union hcl).union (hDc.preimage Subtype.val_injective)).mono fun x hx ↦ ?_
   rcases (W x ∩ Ioi x).eq_empty_or_nonempty with h₁ | h₁
-  swap
-  · exact Or.inl (Or.inl ⟨hx, h₁⟩)
-  rcases (W x ∩ Iio x).eq_empty_or_nonempty with h₂ | h₂
-  swap
-  · exact Or.inl (Or.inr ⟨hx, h₂⟩)
-  have hsing : W x = {x.1} := calc
-    _ = W x ∩ Iio x ∪ W x ∩ {x.1} ∪ W x ∩ Ioi x := by grind
-    _ = {x.1} := by grind
-  exact Or.inr (hDd.mem_of_isOpen_singleton (hsing ▸ hWo x hx))
+  · rcases (W x ∩ Iio x).eq_empty_or_nonempty with h₂ | h₂
+    · have hsing : W x = {x.1} := calc
+        _ = W x ∩ Iio x ∪ W x ∩ {x.1} ∪ W x ∩ Ioi x := by grind
+        _ = {x.1} := by grind
+      exact .inr (hDd.mem_of_isOpen_singleton (hsing ▸ hWo x hx))
+    · exact .inl (.inr ⟨hx, h₂⟩)
+  · exact .inl (.inl ⟨hx, h₁⟩)
 
 /-- A separable linearly ordered topological space is hereditarily separable: every subset,
 equipped with the subspace topology, is a separable space. -/
 instance Set.separableSpace [SeparableSpace α] (s : Set α) : SeparableSpace s := by
   obtain ⟨D, hc, hd⟩ := exists_countable_dense α
-  -- a point of `s` strictly between `p` and `q`, whenever there is one
+  -- A point of `s` strictly between `p` and `q`, whenever there is one.
   have hchoice (p q) : ∃ z : α, (s ∩ Ioo p q).Nonempty → z ∈ s ∩ Ioo p q := by
     by_cases h : (s ∩ Ioo p q).Nonempty
     · exact ⟨h.choose, fun _ ↦ h.choose_spec⟩
@@ -132,31 +121,23 @@ instance Set.separableSpace [SeparableSpace α] (s : Set α) : SeparableSpace s 
     ((hc.image2 hc a).preimage Subtype.val_injective), ?_⟩⟩
   refine dense_iff_inter_open.2 fun O hO ⟨x, hxO⟩ ↦ ?_
   by_cases hxiso : IsOpen {x}
-  · exact ⟨x, hxO, Or.inl hxiso⟩
+  · exact ⟨x, hxO, .inl hxiso⟩
   obtain ⟨U, hU, hUO⟩ := Topology.IsInducing.subtypeVal.isOpen_iff.1 hO
   obtain ⟨W, hWo, hWc, hWx, hWU⟩ := exists_isOpen_ordConnected_mem_subset hU (hUO.ge hxO)
-  -- as `x` is not isolated in `s`, every open set containing it meets `s` in a different point
-  have hnot (G : Set α) (hG : IsOpen G) (hxG : x.1 ∈ G) : ∃ y ∈ s, y ∈ G ∧ y ≠ x := by
-    by_contra! hcon
-    suffices hGx : Subtype.val ⁻¹' G = {x} from hxiso (hGx ▸ hG.preimage continuous_subtype_val)
-    grind
-  -- a point `b` of `s` in `W` with points of `W` strictly on either side of it
-  obtain ⟨b, hbs, hlo, hhi⟩ : ∃ b ∈ s, (W ∩ Iio b).Nonempty ∧ (W ∩ Ioi b).Nonempty := by
-    obtain ⟨y, hys, hyW, hyx⟩ := hnot W hWo hWx
-    rcases hyx.lt_or_gt with hy | hy
-    · obtain ⟨z, hzs, hzW, hzx⟩ := hnot (W ∩ Ioi y) (hWo.inter isOpen_Ioi) ⟨hWx, hy⟩
-      rcases hzx.lt_or_gt with hz | hz
-      · exact ⟨z, hzs, ⟨y, hyW, hzW.2⟩, ⟨x, hWx, hz⟩⟩
-      · exact ⟨x, x.2, ⟨y, hyW, hy⟩, ⟨z, hzW.1, hz⟩⟩
-    · obtain ⟨z, hzs, hzW, hzx⟩ := hnot (W ∩ Iio y) (hWo.inter isOpen_Iio) ⟨hWx, hy⟩
-      rcases hzx.lt_or_gt with hz | hz
-      · exact ⟨x, x.2, ⟨z, hzW.1, hz⟩, ⟨y, hyW, hy⟩⟩
-      · exact ⟨z, hzs, ⟨x, hWx, hz⟩, ⟨y, hyW, hzW.2⟩⟩
+  -- A point `b` of `s` in `W` with points of `W` strictly on either side of it.
+  obtain ⟨b, hbs, hlo, hhi⟩ :
+      ∃ b ∈ s, (W ∩ Iio b).Nonempty ∧ (W ∩ Ioi b).Nonempty := by
+    rw [isOpen_singleton_iff_punctured_nhds] at hxiso
+    let : NeBot (𝓝[≠] x) := ⟨hxiso⟩
+    have hWinf : (Subtype.val ⁻¹' W).Infinite :=
+      infinite_of_mem_nhds x ((hWo.preimage continuous_subtype_val).mem_nhds hWx)
+    by_contra! h
+    exact hWinf (finite_of_forall_not_lt_lt fun a ha b hb c hc hab hbc ↦
+      (congrArg ((c : α) ∈ ·) (h b b.2 ⟨a, ha, hab⟩)).mp ⟨hc, hbc⟩)
   obtain ⟨p, hpD, hpW⟩ := hd.exists_mem_open (hWo.inter isOpen_Iio) hlo
   obtain ⟨q, hqD, hqW⟩ := hd.exists_mem_open (hWo.inter isOpen_Ioi) hhi
   obtain ⟨hasq, hapq⟩ := ha p q ⟨b, hbs, hpW.2, hqW.2⟩
-  exact ⟨⟨a p q, hasq⟩,
-    hUO.le (hWU (hWc.out hpW.1 hqW.1 (Ioo_subset_Icc_self hapq))),
-    Or.inr ⟨p, hpD, q, hqD, rfl⟩⟩
+  exact ⟨⟨a p q, hasq⟩, hUO.le (hWU (hWc.out hpW.1 hqW.1 (Ioo_subset_Icc_self hapq))),
+    .inr ⟨p, hpD, q, hqD, rfl⟩⟩
 
 end Separable
