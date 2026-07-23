@@ -192,4 +192,15 @@ lemma _root_.Topology.IsEmbedding.units_map {f : M →* N} (hf : IsEmbedding f) 
   exact hf.prodMap (opHomeomorph.isEmbedding.comp <| hf.comp opHomeomorph.symm.isEmbedding)
     |>.comp isEmbedding_embedProduct
 
+@[to_additive]
+lemma _root_.Topology.IsOpenEmbedding.units_map {f : M →* N} (hf : IsOpenEmbedding f) :
+    IsOpenEmbedding (Units.map f) := by
+  refine ⟨hf.isEmbedding.units_map, ?_⟩
+  convert (hf.isOpen_range.preimage Units.continuous_val).inter
+    (hf.isOpen_range.preimage Units.continuous_coe_inv)
+  ext n
+  refine ⟨fun ⟨m, hm⟩ ↦ by simp [← hm], fun ⟨⟨m, hm⟩, ⟨m', hm'⟩⟩ ↦ ?_⟩
+  refine ⟨⟨m, m', hf.injective ?_, hf.injective ?_⟩, by ext; simp [hm]⟩
+    <;> simp [f.map_mul, hm, hm']
+
 end Units
