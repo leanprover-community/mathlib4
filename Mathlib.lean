@@ -5584,6 +5584,7 @@ public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 public import Mathlib.MeasureTheory.Measure.FiniteMeasurePi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 public import Mathlib.MeasureTheory.Measure.GiryMonad
+public import Mathlib.MeasureTheory.Measure.Haar.AutomaticContinuity
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 public import Mathlib.MeasureTheory.Measure.Haar.DistribChar
