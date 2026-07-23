@@ -90,7 +90,7 @@ lemma exists_injective_nonempty_iso [EnoughInjectives C] (K : DerivedCategory.Pl
   obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.exists_iso_Q_obj_of_isGE K.obj n
   obtain ⟨M, _, i, hi⟩ :=
     CochainComplex.Plus.exists_quasiIso_injective ⟨L, ⟨n, inferInstance⟩⟩ n
-  have : QuasiIso i.hom := by assumption
+  have : QuasiIso i.hom := hi
   exact ⟨M, inferInstance,
     ⟨DerivedCategory.Plus.ι.preimageIso ((asIso (DerivedCategory.Q.map i.hom)).symm ≪≫ e.symm)⟩⟩
 

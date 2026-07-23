@@ -48,7 +48,7 @@ lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
       · choose k a hk using fun x ↦
           (Types.FilteredColimit.isColimit_eq_iff' hc _ _).1 (congr_hom h x)
         dsimp at f g h k a hk ⊢
-        replace hk : ∀ x, F.map (a x) (f x) = F.map (a x) (g x) := by assumption
+        replace hk : ∀ x, F.map (a x) (f x) = F.map (a x) (g x) := hk
         obtain ⟨l, b, c, hl⟩ : ∃ (l : J) (c : j ⟶ l) (b : ∀ x, k x ⟶ l),
             ∀ x, a x ≫ b x = c := by
           let φ (x : X) : j ⟶ IsCardinalFiltered.max k hX :=
