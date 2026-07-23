@@ -596,7 +596,7 @@ then for any measurable space `β` and `g : Z → β`, the composition `g ∘ f`
 measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
 theorem measurable_comp_iff_restrict {f : X → Z}
     [CountablySeparated (range f)]
-    (hf : Measurable f) {g : Z → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
+    (hf : Measurable f) {g : Z → β} : Measurable (g ∘ f) ↔ Measurable (domRestrict (range f) g) :=
   forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_val hf (s := g ⁻¹' s)
 
 /-- If `f : X → Z` is a surjective Borel measurable map from a standard Borel space
@@ -808,7 +808,7 @@ theorem IsClosed.measurableSet_image_of_continuousOn_injOn
   rw [image_eq_range]
   have : PolishSpace s := IsClosed.polishSpace hs
   apply measurableSet_range_of_continuous_injective
-  · rwa [continuousOn_iff_continuous_restrict] at f_cont
+  · rwa [continuousOn_iff_continuous_domRestrict] at f_cont
   · rwa [injOn_iff_injective] at f_inj
 
 variable {α β : Type*} [MeasurableSpace β]
@@ -864,9 +864,9 @@ the restriction of `f` to `s` is a measurable embedding. -/
 theorem ContinuousOn.measurableEmbedding [BorelSpace β]
     [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ] [BorelSpace γ]
     (hs : MeasurableSet s) (f_cont : ContinuousOn f s)
-    (f_inj : InjOn f s) : MeasurableEmbedding (s.restrict f) :=
+    (f_inj : InjOn f s) : MeasurableEmbedding (s.domRestrict f) :=
   { injective := injOn_iff_injective.1 f_inj
-    measurable := (continuousOn_iff_continuous_restrict.1 f_cont).measurable
+    measurable := (continuousOn_iff_continuous_domRestrict.1 f_cont).measurable
     measurableSet_image' := by
       intro u hu
       have A : MeasurableSet (((↑) : s → γ) '' u) :=
@@ -1035,7 +1035,7 @@ theorem Measurable.tprod {f : ι → X → E} (h : ∀ i : ι, Measurable (f i))
     Measurable (fun x => ∏'[L] i : ι, f i x) := by
   let E := { x | Multipliable (f · x) L }
   have hE : MeasurableSet E := measurableSet_exists_tendsto (by fun_prop)
-  have h0 : (Eᶜ.restrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
+  have h0 : (Eᶜ.domRestrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
     funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
   refine measurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ measurable_const)
   refine measurable_of_tendsto_metrizable' L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)
