@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Sets.Opens
+public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
 
 /-!
 # The category of open sets in a topological space.
@@ -36,7 +37,7 @@ Beyond that, there's a collection of simp lemmas for working with these construc
 
 open CategoryTheory TopologicalSpace Opposite Topology
 
-universe u
+universe u w w'
 
 namespace TopologicalSpace.Opens
 
@@ -308,6 +309,27 @@ lemma mapMapIso_unitIso {X Y : TopCat.{u}} (H : X ≅ Y) :
 lemma mapMapIso_counitIso {X Y : TopCat.{u}} (H : X ≅ Y) :
     (mapMapIso H).counitIso = NatIso.ofComponents (fun U ↦ eqToIso (by cat_disch))
     (by cat_disch) := rfl
+
+instance (f : X ⟶ Y) {J : Type w} [SmallCategory J] [FinCategory J] (K : J ⥤ (Opens Y)) :
+    Limits.PreservesLimit K (map f) :=
+  inferInstanceAs <| Limits.PreservesLimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+instance (f : X ⟶ Y) {J : Type w} [SmallCategory J] [FinCategory J] :
+    Limits.PreservesLimitsOfShape J (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesFiniteLimits (map f) where
+  preservesFiniteLimits _ _ _ := inferInstance
+
+instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] (K : J ⥤ (Opens Y)) :
+    Limits.PreservesColimit K (map f) :=
+  inferInstanceAs <| Limits.PreservesColimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] :
+    Limits.PreservesColimitsOfShape J (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesColimitsOfSize.{w', w} (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesColimits (map f) where
 
 end TopologicalSpace.Opens
 
