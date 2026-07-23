@@ -604,6 +604,22 @@ structure adicCompletion where
   /-- The underlying element of the completion `(v.valuation K).Completion`. -/
   toCompletion : (v.valuation K).Completion
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- Prevents `toCompletion v x` being printed as `{ ofCompletion := x }`
+by `delabStructureInstance`. -/
+@[app_delab adicCompletion.toCompletion]
+meta def adicCompletion.delabToCompletion : Delab := delabApp
+
+/-- Prevents `ofCompletion v x` being printed as `{ toCompletion := x }`
+by `delabStructureInstance`. -/
+@[app_delab adicCompletion.ofCompletion]
+meta def adicCompletion.delabOfCompletion : Delab := delabApp
+
+end Notation
+
 namespace adicCompletion
 
 open UniformSpace MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Filter Topology Valuation
