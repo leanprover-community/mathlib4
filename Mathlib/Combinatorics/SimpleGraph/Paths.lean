@@ -551,6 +551,17 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
   exact hpc.getVert_injOn (by simp only [Set.mem_ofPred_eq]; lia)
     (by simp only [Set.mem_ofPred_eq]; lia) (h.symm ▸ (Walk.getVert_length p).symm)
 
+-- #41720
+set_option warn.sorry false in set_option linter.style.longLine false in
+theorem mk_mem_edges_iff_exists {u v u' v'} (p : G.Walk u v) : s(u', v') ∈ p.edges ↔ ∃ i < p.length, s(p.getVert i, p.getVert (i + 1)) = s(u', v') := sorry
+
+theorem IsCycle.mem_edges_iff_snd_eq_or_penultimate_eq {u v : V} {p : G.Walk u u}
+    (hp : p.IsCycle) : s(u, v) ∈ p.edges ↔ v = p.snd ∨ v = p.penultimate := by
+  constructor
+  · rw [mk_mem_edges_iff_exists]
+    grind [hp.getVert_endpoint_iff]
+  · grind [mk_start_snd_mem_edges, mk_penultimate_end_mem_edges, hp.not_nil]
+
 lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   intro h'

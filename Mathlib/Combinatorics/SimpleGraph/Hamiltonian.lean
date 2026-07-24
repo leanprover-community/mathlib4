@@ -284,4 +284,67 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
     (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
+-- #41460
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [DecidableEq α] [Fintype α] in
+@[simp] theorem Walk.edges_dropLast {G : SimpleGraph α} {u v : α} {p : G.Walk u v} : p.dropLast.edges = p.edges.dropLast := sorry
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [DecidableEq α] [Fintype α] in
+@[simp] theorem Walk.length_mapLe {G G' : SimpleGraph α} (h : G ≤ G') {u v : α} (p : G.Walk u v) : (p.mapLe h).length = p.length := sorry
+
+-- #41717
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [Fintype α] in
+@[simp] theorem Walk.isHamiltonian_transfer {G H : SimpleGraph α} {u v : α} {p : G.Walk u v} {h} : (p.transfer H h).IsHamiltonian ↔ p.IsHamiltonian := sorry
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [Fintype α] in
+@[simp] theorem Walk.isHamiltonianCycle_transfer {G H : SimpleGraph α} {v : α} {p : G.Walk v v} {h} : (p.transfer H h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := sorry
+
+-- #41435
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [Fintype α] in
+@[simp] theorem Walk.isHamiltonian_copy {G : SimpleGraph α} {u v u' v' : α} {p : G.Walk u v} (hu : u = u') (hv : v = v') : (p.copy hu hv).IsHamiltonian ↔ p.IsHamiltonian := sorry
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [Fintype α] in
+@[simp] theorem Walk.isHamiltonianCycle_reverse {G : SimpleGraph α} {v : α} {p : G.Walk v v} : p.reverse.IsHamiltonianCycle ↔ p.IsHamiltonianCycle := sorry
+protected alias ⟨_, Walk.IsHamiltonianCycle.reverse⟩ := Walk.isHamiltonianCycle_reverse
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [Fintype α] in
+@[simp] theorem Walk.isHamiltonian_mapLe {G'} {u v : α} {p : G.Walk u v} (hle : G ≤ G') : (p.mapLe hle).IsHamiltonian ↔ p.IsHamiltonian := sorry
+protected alias ⟨_, Walk.IsHamiltonian.mapLe⟩ := Walk.isHamiltonian_mapLe
+set_option warn.sorry false in set_option linter.style.longLine false in
+omit [Fintype α] in
+theorem Walk.IsHamiltonianCycle.isHamiltonian_dropLast {v : α} {p : G.Walk v v} (hp : p.IsHamiltonianCycle) : p.dropLast.IsHamiltonian := sorry
+set_option warn.sorry false in set_option linter.style.longLine false in
+theorem Walk.IsHamiltonian.isHamiltonian_of_nil {a b : α} {p : G.Walk a b} (hp : p.IsHamiltonian) (hnil : p.Nil) : G.IsHamiltonian := sorry
+
+-- #41393
+set_option warn.sorry false in set_option linter.style.longLine false in
+theorem Walk.IsHamiltonian.isHamiltonian_of_adj {G : SimpleGraph α} {u v : α} {p : G.Walk u v} (hp : p.IsHamiltonian) (hadj : G.Adj u v) (hlen : p.length ≠ 1) : G.IsHamiltonian := sorry
+
+theorem isHamiltonian_sup_edge {u v : α} :
+    (G ⊔ edge u v).IsHamiltonian ↔
+      G.IsHamiltonian ∨ ∃ p : G.Walk u v, p.IsHamiltonian ∧ 2 ≤ p.length := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · refine or_iff_not_imp_left.mpr fun hG ↦ ?_
+    have : Nontrivial α := ⟨u, v, by grind [sup_edge_self]⟩
+    have hadj : ¬G.Adj u v := by grind [sup_eq_left, edge_le_iff]
+    rw [← show (G ⊔ edge u v).deleteEdges {s(u, v)} = G by simpa] at hG ⊢
+    have ⟨p, hp⟩ := h.exists_isHamiltonianCycle u
+    by_cases! huv : s(u, v) ∉ p.edges
+    · exact absurd (fun _ ↦ ⟨u, p.toDeleteEdge _ huv, by simpa⟩) hG
+    wlog hv : p.penultimate = v
+    · grind [hp.mem_edges_iff_snd_eq_or_penultimate_eq, p.penultimate_reverse, p.edges_reverse,
+        hp.reverse]
+    refine ⟨p.dropLast.copy rfl hv |>.toDeleteEdge s(u, v) ?_, ?_, ?_⟩
+    · grind [Walk.edges_copy, p.edges_dropLast, p.mk_penultimate_end_eq_getLast_edges hp.not_nil,
+        hp.edges_nodup, List.dropLast_concat_getLast]
+    · simpa using hp.isHamiltonian_dropLast
+    · simp; grind [hp.three_le_length]
+  · by_cases hG : G.IsHamiltonian
+    · exact hG.mono le_sup_left
+    have ⟨p, hp, hlen⟩ := h.resolve_left hG
+    refine hp.mapLe le_sup_left |>.isHamiltonian_of_adj ?_ <| by grind [p.length_mapLe]
+    grind [sup_adj, adj_edge, hp.isPath.nil_iff_eq, hp.isHamiltonian_of_nil]
+
 end SimpleGraph
