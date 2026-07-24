@@ -234,7 +234,7 @@ lemma coeFnAddMonoidHom_apply [∀ i, AddZeroClass (β i)] (v : Π₀ i, β i) :
   rfl
 
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
+  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
   ⟨fun f => f.mapRange (fun _ => Neg.neg) fun _ => neg_zero⟩
@@ -267,12 +267,12 @@ theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b
   rfl
 
 instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
-  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    fun _ _ => coe_zsmul _ _
+  fast_instance% DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub
+    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    fun _ _ => coe_zsmul _ _
+  fast_instance% DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
+    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 end Algebra
 
@@ -884,7 +884,7 @@ instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β 
       case mp =>
         intro hs₁; ext i
         -- This instance prevent consuming `DecidableEq ι` in the next `by_cases`.
-        letI := Classical.propDecidable
+        let := Classical.propDecidable
         by_cases hs₂ : i ∈ s.val
         case pos => exact hs₁ _ hs₂
         case neg => exact (s.prop i).resolve_left hs₂
@@ -926,6 +926,7 @@ theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 =
   classical exact ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
     simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [DecidableEq ι] in
 theorem mapRange_surjective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
     Function.Surjective (mapRange f hf) ↔ ∀ i, Function.Surjective (f i) := by
@@ -1104,6 +1105,7 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
     comapDomain' h hh' (single (h k) x) = single k x := by
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing terms of a dfinsupp.
 
 This is the dfinsupp version of `Equiv.piCongrLeft'`. -/

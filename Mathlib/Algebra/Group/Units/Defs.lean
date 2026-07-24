@@ -233,8 +233,8 @@ instance instMonoid : Monoid αˣ :=
         inv := a⁻¹ ^ n
         val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
         inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
-    npow_zero := fun a ↦ by ext; simp
-    npow_succ := fun n a ↦ by ext; simp [pow_succ] }
+    npow_zero := fun a ↦ by simp only [HPow.hPow, Pow.pow]; ext; simp
+    npow_succ := fun n a ↦ by simp only [HPow.hPow, Pow.pow]; ext; simp [pow_succ] }
 
 /-- Units of a monoid have division -/
 @[to_additive /-- Additive units of an additive monoid have subtraction. -/]
@@ -251,9 +251,9 @@ instance instDivInvMonoid : DivInvMonoid αˣ where
   zpow := fun n a ↦ match n, a with
     | Int.ofNat n, a => a ^ n
     | Int.negSucc n, a => (a ^ n.succ)⁻¹
-  zpow_zero' := fun a ↦ by simp
-  zpow_succ' := fun n a ↦ by simp [pow_succ]
-  zpow_neg' := fun n a ↦ by simp
+  zpow_zero' := fun a ↦ by simp only [HPow.hPow, Pow.pow]; simp
+  zpow_succ' := fun n a ↦ by simp only [HPow.hPow, Pow.pow]; simp [pow_succ]
+  zpow_neg' := fun n a ↦ rfl
 
 /-- Units of a monoid form a group. -/
 @[to_additive /-- Additive units of an additive monoid form an additive group. -/]
@@ -424,8 +424,6 @@ variable [Subsingleton Mˣ]
 
 @[to_additive] lemma Units.eq_one (u : Mˣ) : u = 1 := Subsingleton.elim ..
 @[to_additive] lemma IsUnit.eq_one : IsUnit a → a = 1 := by rintro ⟨u, rfl⟩; simp [u.eq_one]
-
-@[deprecated (since := "2025-11-19")] alias units_eq_one := Units.eq_one
 
 @[to_additive (attr := simp)]
 lemma isUnit_iff_eq_one : IsUnit a ↔ a = 1 where
@@ -638,12 +636,12 @@ section NoncomputableDefs
 variable {M : Type*}
 
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
   inv := fun a => ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
@@ -652,7 +650,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,

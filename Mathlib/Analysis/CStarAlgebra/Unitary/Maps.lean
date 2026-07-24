@@ -19,6 +19,7 @@ variable {R A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [Ring R] [Modul
 section mulLeft
 variable [SMulCommClass R A A]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 /-- Left multiplication by a unitary as a linear isometric equivalence. -/
 noncomputable def mulLeft : unitary A →* A ≃ₗᵢ[R] A where
@@ -77,7 +78,7 @@ lemma mulRight_trans_mulRight (u v : unitary A) :
 lemma mulRight_mul_apply (u v : unitary A) (x : A) :
     mulRight R (u * v) x = mulRight R v (mulRight R u x) := by simp [mul_assoc]
 
-@[simp] lemma toLinearMap_mulRight (u : unitary A) :
+lemma toLinearMap_mulRight (u : unitary A) :
     (mulRight R u).toLinearMap = LinearMap.mulRight R (u : A) := rfl
 
 @[simp] lemma mulRight_one : mulRight R 1 = .refl R A := by

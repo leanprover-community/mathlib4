@@ -356,7 +356,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i)) hπS_pi hπT_pi hπS_gen hπT_gen
     ?_
   rintro _ _ ⟨s, ⟨sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨sets_t, ht1, ht2⟩, rfl⟩
-  simp only [Set.mem_univ_pi, Set.mem_setOf_eq] at hs1 ht1
+  simp only [Set.mem_univ_pi, Set.mem_ofPred_eq] at hs1 ht1
   rw [← hs2, ← ht2]
   classical
   let sets_s' : ∀ i : ι, Set (β i) := fun i =>
@@ -520,7 +520,7 @@ lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun f κ μ)
     IndepFun (f i * f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f κ μ)
@@ -528,7 +528,7 @@ lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f κ μ)
     IndepFun (f i * f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk₀ hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.mul measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun f κ μ)
@@ -569,7 +569,7 @@ lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun f κ μ)
     IndepFun (f i / f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_left₀ (hf_indep : iIndepFun f κ μ)
@@ -577,7 +577,7 @@ lemma iIndepFun.indepFun_div_left₀ (hf_indep : iIndepFun f κ μ)
     IndepFun (f i / f j) (f k) κ μ := by
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk₀ hf_meas i j k hik hjk
-  simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
+  simpa using! this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun f κ μ)
@@ -616,7 +616,6 @@ variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂
 theorem iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) κ μ := by
-  classical
   have h_right : f i =
     (fun p : ({i} : Finset ι) → β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
     fun a (j : ({i} : Finset ι)) => f j a := rfl
@@ -695,7 +694,7 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
   · exact @MeasurableSet.empty _ (generateFrom {s i})
 
 lemma Indep.indicator_const_indepFun {m : MeasurableSpace Ω} {M 𝓧 : Type*}
-    [Zero M] [MeasurableSpace M] (c : M) [NeZero c] {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
+    [Zero M] [MeasurableSpace M] (c : M) {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω}
     {X : Ω → 𝓧} (hA : MeasurableSet[m] A) (h : Indep m (m𝓧.comap X) κ μ) :
     IndepFun (A.indicator (fun _ ↦ c)) X κ μ :=
   indep_of_indep_of_le_left h (measurable_const.indicator hA).comap_le

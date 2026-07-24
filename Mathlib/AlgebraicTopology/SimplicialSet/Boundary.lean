@@ -35,7 +35,7 @@ namespace SSet
 all `m`-simplices of `stdSimplex n` that are not surjective
 (when viewed as monotone function `m → n`). -/
 def boundary (n : ℕ) : (Δ[n] : SSet.{u}).Subcomplex where
-  obj _ := setOf (fun s ↦ ¬Function.Surjective (stdSimplex.asOrderHom s))
+  obj _ := Set.ofPred (fun s ↦ ¬Function.Surjective (stdSimplex.asOrderHom s))
   map _ _ hs h := hs (Function.Surjective.of_comp h)
 
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
@@ -91,7 +91,7 @@ lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n := by lia) :
 @[simp]
 lemma boundary_zero : boundary.{u} 0 = ⊥ := by
   ext m x
-  simp only [boundary, Nat.reduceAdd, Set.mem_setOf_eq, Subfunctor.bot_obj, Set.bot_eq_empty,
+  simp only [boundary, Nat.reduceAdd, Set.mem_ofPred_eq, Subfunctor.bot_obj, Set.bot_eq_empty,
     Set.mem_empty_iff_false, iff_false, Decidable.not_not]
   intro x
   exact ⟨0, by subsingleton⟩
@@ -117,7 +117,7 @@ lemma subcomplex_hasDimensionLT_of_neq_top (h : A ≠ ⊤) :
   degenerate_eq_top i hi := by
     ext ⟨a, ha⟩
     rw [A.mem_degenerate_iff]
-    simp only [Subfunctor.toFunctor_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+    simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
     obtain hi | rfl := hi.lt_or_eq
     · simp [Δ[n].degenerate_eq_univ_of_hasDimensionLT (n + 1) i]
     · rw [mem_degenerate_iff_notMem_nonDegenerate, nonDegenerate_top_dim]

@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 /-!
 # Gauss norm for polynomials
+
 This file defines the Gauss norm for polynomials. Given a polynomial `p` in `R[X]`, a function
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (p.coeff i) * c ^ i` for all `i` in the support of `p`.
@@ -125,9 +126,8 @@ only if the polynomial is zero. -/
 theorem gaussNorm_eq_zero_iff (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) :
     p.gaussNorm v c = 0 ↔ p = 0 := by
   rw [← gaussNorm_coe_powerSeries _ _ (le_of_lt hc)]
-  convert!
-    PowerSeries.gaussNorm_eq_zero_iff v c p (by grind) (by simp) h_eq_zero hc
-      (by simpa [PowerSeries.HasGaussNorm] using aux_bdd v p)
+  convert PowerSeries.gaussNorm_eq_zero_iff v c p (by grind) (by simp) h_eq_zero hc
+    (by simpa [PowerSeries.HasGaussNorm] using! aux_bdd v p)
   exact Iff.symm coe_eq_zero_iff
 
 omit [ZeroHomClass F R ℝ] in
@@ -139,7 +139,7 @@ theorem gaussNorm_nonneg (hc : 0 ≤ c) : 0 ≤ p.gaussNorm v c := by
 lemma le_gaussNorm (hc : 0 ≤ c) (i : ℕ) : v (p.coeff i) * c ^ i ≤ p.gaussNorm v c := by
   rw [← gaussNorm_coe_powerSeries _ _ hc, ← coeff_coe]
   apply PowerSeries.le_gaussNorm
-  simpa [PowerSeries.HasGaussNorm] using aux_bdd v p
+  simpa [PowerSeries.HasGaussNorm] using! aux_bdd v p
 
 @[simp]
 lemma gaussNorm_zero_right : p.gaussNorm v 0 = v (p.coeff 0) := by
@@ -151,6 +151,7 @@ lemma gaussNorm_zero_right : p.gaussNorm v 0 = v (p.coeff 0) := by
     · aesop (add norm (by simp [gaussNorm, Finset.sup'_le_iff]))
     · grind [p.le_gaussNorm v (le_refl 0) 0]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `v` is a nonnegative function with `v 0 = 0` and `c` is nonnegative, there exists a minimal
 index `i` such that the Gauss norm of `p` at `c` is attained at `i`. -/
 lemma exists_min_eq_gaussNorm (p : R[X]) (hc : 0 ≤ c) :
@@ -158,10 +159,10 @@ lemma exists_min_eq_gaussNorm (p : R[X]) (hc : 0 ≤ c) :
     ∀ j, j < i → v (p.coeff j) * c ^ j < p.gaussNorm v c := by
   have h_nonempty : {i | gaussNorm v c p = v (p.coeff i) * c ^ i}.Nonempty := by
     obtain ⟨i, hi⟩ := exists_eq_gaussNorm v c p
-    exact ⟨i, Set.mem_setOf.mpr hi⟩
+    exact ⟨i, Set.mem_ofPred.mpr hi⟩
   refine ⟨Nat.find h_nonempty, Nat.find_spec h_nonempty, ?_⟩
   intro j hj_lt
-  simp only [Nat.lt_find_iff, Set.mem_setOf_eq] at hj_lt
+  simp only [Nat.lt_find_iff, Set.mem_ofPred_eq] at hj_lt
   exact lt_of_le_of_ne (le_gaussNorm v _ hc j) fun a ↦ hj_lt j (Nat.le_refl j) a.symm
 
 /-- If `v` is a nonnegative nonarchimedean function with `v 0 = 0` and `c` is nonnegative, the
@@ -236,14 +237,14 @@ private theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
   apply le_of_eq_of_le _ <| (p * q).le_gaussNorm v hc0 (i + j)
   -- gaussNorm v c p * gaussNorm v c q is actually equal to v ((p * q).coeff (i + j)) * c ^ (i + j)
   rw [hi_p, hj_q, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk,
-    IsNonarchimedean.apply_sum_eq_of_lt hna (k := i) (by simp)]
+    IsNonarchimedean.apply_sum_eq_of_lt hna (k := i) (by simp) (by simp)]
   /- IsNonarchimedean.apply_sum_eq_of_lt makes the goal almost trivial so we are left to prove
   the hmax hypothesis -/
   · grind
   intro x hx hneq
   apply lt_of_mul_lt_mul_right _ <| pow_nonneg hc0 (i + j)
   have : x + (i + j - x) = i + j := by simp_all
-  convert_to v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
+  convert_to! v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
     v (p.coeff i) * c ^ i * (v (q.coeff j) * c ^ j)
   · grind
   · grind

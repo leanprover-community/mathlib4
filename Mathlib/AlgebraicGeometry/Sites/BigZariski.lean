@@ -53,6 +53,8 @@ abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
 lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck :=
   Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
   intro X
@@ -86,6 +88,7 @@ instance : Scheme.forgetToTop.{u}.IsContinuous zariskiTopology TopCat.grothendie
   · rw [MorphismProperty.comap_precoverage]
     exact MorphismProperty.precoverage_monotone fun X Y f hf ↦ f.isOpenEmbedding
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A Zariski-`1`-hypercover of a scheme where all components are affine. -/
 @[simps! toPreOneHypercover_toPreZeroHypercover]
 noncomputable
@@ -94,7 +97,7 @@ def affineOneHypercover (X : Scheme.{u}) : zariskiTopology.OneHypercover X :=
     (X.affineCover.refineOneHypercover fun i j ↦
       (pullback (X.affineCover.f i) (X.affineCover.f j)).affineCover.toPreZeroHypercover)
     X.affineCover.mem_grothendieckTopology
-    fun i j ↦ by simpa using Cover.mem_grothendieckTopology _
+    fun i j ↦ by simpa using! Cover.mem_grothendieckTopology _
 
 end Scheme
 

@@ -30,6 +30,7 @@ variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
+set_option backward.isDefEq.respectTransparency.types false in
 omit [IsNoetherianRing R] [Module.Finite R M] in
 lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (support R M)) :
     ∃ p : LTSeries (support R M), q.length ≤ p.length ∧ p.last.1.1.IsMaximal := by
@@ -65,14 +66,15 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
       intro ⟨i, hi⟩
       have hi : i + 1 < q.length + 1 :=
         Nat.succ_lt_succ (hi.trans_eq ((Nat.sub_add_cancel (Nat.pos_of_ne_zero hp0)).trans hq))
-      exact ⟨q ⟨i + 1, hi⟩, by simpa using
-        ⟨mem_support_mono (by simpa [h0] using q.monotone (Fin.zero_le _)) p.head.2, q.monotone
+      exact ⟨q ⟨i + 1, hi⟩, by simpa using!
+        ⟨mem_support_mono (by simpa [h0] using! q.monotone (Fin.zero_le _)) p.head.2, q.monotone
           ((Fin.natCast_eq_mk (Nat.lt_of_add_left_lt hi)).trans_le (Nat.le_add_left 1 i)) hxq⟩⟩
     step := by exact fun _ ↦ q.strictMono (by simp)
   }
   grw [le_tsub_add (b := p.length) (a := 1), Nat.cast_add_one, supportDim, Order.krullDim,
     ← le_iSup _ q']
 
+set_option backward.isDefEq.respectTransparency.types false in
 omit [IsNoetherianRing R] in
 /-- If `M` is a finite module over a commutative ring `R`, `x ∈ M` is not in any minimal prime of
   `M`, then `dim M/xM + 1 ≤ dim M`. -/

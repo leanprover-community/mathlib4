@@ -48,6 +48,7 @@ section Quotient
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.sumElim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
@@ -92,8 +93,8 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Submodule.Quotient.mk_surjective M'
-  simpa [add_comm] using (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
-    (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
+  simpa [add_comm] using! (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
+    (by simpa [Function.comp_def, hf] using! hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective Quot.mk_surjective
@@ -600,6 +601,7 @@ theorem sumQuot_repr_left (i : m) :
     (sumQuot bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
   rw [← Module.Basis.apply_eq_iff, sumQuot_inl]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sumQuot_repr_inl (w : W) (i : m) :
     (sumQuot bW bQ).repr w (Sum.inl i) = bW.repr w i := by
   classical

@@ -94,6 +94,11 @@ theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp :
   suffices IntegrableOn (fun x ↦ (b ^ (-p⁻¹)) ^ s * (x ^ s * exp (-x ^ p))) (Ioi 0) by
     rw [show 0 = b ^ (-p⁻¹) * 0 by rw [mul_zero], ← integrableOn_Ioi_comp_mul_left_iff _ _ hib]
     refine this.congr_fun (fun _ hx => ?_) measurableSet_Ioi
+    #adaptation_note /-- 2026-05-17(kmill) added `dsimp only` because a slightly different
+    instantiation order leads to a term with a beta redex.
+    https://github.com/leanprover/lean4/pull/13762
+    This will be removed once app elaboration itself does beta reduction. -/
+    dsimp only
     rw [← mul_assoc, mul_rpow, mul_rpow, ← rpow_mul (z := p), neg_mul, neg_mul, inv_mul_cancel₀,
       rpow_neg_one, mul_inv_cancel_left₀]
     all_goals linarith [mem_Ioi.mp hx]
@@ -287,27 +292,16 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for complex `b`.
 theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
     ∫ x : ℝ in Ioi 0, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) / 2 := by
+  let f : ℝ → ℂ := fun x => cexp (-b * (x : ℂ) ^ 2)
   have full_integral := integral_gaussian_complex hb
-  have : MeasurableSet (Ioi (0 : ℝ)) := measurableSet_Ioi
-  rw [← integral_add_compl this (integrable_cexp_neg_mul_sq hb), compl_Ioi] at full_integral
-  suffices ∫ x : ℝ in Iic 0, cexp (-b * (x : ℂ) ^ 2) = ∫ x : ℝ in Ioi 0, cexp (-b * (x : ℂ) ^ 2) by
-    rw [this, ← mul_two] at full_integral
-    rwa [eq_div_iff]; exact two_ne_zero
-  have : ∀ c : ℝ, ∫ x in (0 : ℝ)..c, cexp (-b * (x : ℂ) ^ 2) =
-      ∫ x in -c..0, cexp (-b * (x : ℂ) ^ 2) := by
-    intro c
-    have := intervalIntegral.integral_comp_sub_left (a := 0) (b := c)
-      (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
-    simpa [zero_sub, neg_sq, neg_zero] using this
-  have t1 :=
-    intervalIntegral_tendsto_integral_Ioi 0 (integrable_cexp_neg_mul_sq hb).integrableOn tendsto_id
-  have t2 :
-    Tendsto (fun c : ℝ => ∫ x : ℝ in (0 : ℝ)..c, cexp (-b * (x : ℂ) ^ 2)) atTop
-      (𝓝 (∫ x : ℝ in Iic 0, cexp (-b * (x : ℂ) ^ 2))) := by
-    simp_rw [this]
-    refine intervalIntegral_tendsto_integral_Iic _ ?_ tendsto_neg_atTop_atBot
-    apply (integrable_cexp_neg_mul_sq hb).integrableOn
-  exact tendsto_nhds_unique t2 t1
+  have h_eq := calc
+    ∫ x : ℝ in Iic 0, f x = ∫ x : ℝ in Ioi 0, f (-x) := by
+      simpa [f] using (integral_comp_neg_Ioi 0 f).symm
+    _ = ∫ x : ℝ in Ioi 0, f x :=
+      setIntegral_congr_fun measurableSet_Ioi fun _ _ ↦ (by simp [f])
+  rw [← integral_add_compl (s := Ioi 0) (by simp) (integrable_cexp_neg_mul_sq hb), compl_Ioi, h_eq,
+    ← mul_two] at full_integral
+  exact (eq_div_iff two_ne_zero).2 (by simpa using full_integral)
 
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for real `b`.
 theorem integral_gaussian_Ioi (b : ℝ) :
@@ -332,7 +326,6 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   convert! congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_const_mul]
     refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
-    dsimp only
     have : (x ^ (2 : ℝ)) ^ (1 / (2 : ℝ) - 1) = x⁻¹ := by
       rw [← rpow_mul (le_of_lt hx)]
       norm_num

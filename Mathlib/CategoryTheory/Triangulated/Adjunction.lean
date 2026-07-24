@@ -51,6 +51,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
   [adj.CommShift ℤ]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include adj in
 /--
@@ -130,7 +131,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         ← Functor.map_comp, right_triangle_components, Functor.map_id, comp_id]
 
 include adj in
-open Pretriangulated.Opposite Functor in
+open Pretriangulated.Opposite in
 /--
 The left adjoint of a triangulated functor is triangulated.
 -/

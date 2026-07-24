@@ -352,6 +352,10 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
+theorem Bijective.of_comp_left {f : α → β} {g : γ → α} (hfg : Function.Bijective (f ∘ g))
+    (hf : Function.Injective f) : Function.Bijective g :=
+  ⟨hfg.1.of_comp, hfg.2.of_comp_left hf⟩
+
 /-- If `f : α → α → β` is surjective, then every endofunction on `β` has a fixed point.
 This is an instance of Lawvere's fixed-point theorem applied to the category of types
 and functions. It is the diagonal argument underlying `cantor_surjective` and
@@ -641,6 +645,18 @@ theorem update_self (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :
 @[simp]
 theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
   dif_neg h
+
+/--
+A congruence lemma for `Function.update`, specialized for the non-dependent case. Without this,
+`simp` can't rewrite in the fourth argument `a` because the result type depends on `a`.
+See also https://github.com/leanprover/lean4/issues/12478.
+-/
+@[congr]
+lemma update_congr {β : Sort*}
+    {f₁ f₂ : α → β} (hf : f₁ = f₂) {a'₁ a'₂ : α} (ha' : a'₁ = a'₂)
+    {v₁ v₂ : β} (hv : v₁ = v₂) {a₁ a₂ : α} (ha : a₁ = a₂) :
+    Function.update f₁ a'₁ v₁ a₁ = Function.update f₂ a'₂ v₂ a₂ := by
+  subst hf; subst ha'; subst hv; subst ha; rfl
 
 /-- On non-dependent functions, `Function.update` can be expressed as an `ite` -/
 theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
@@ -1037,8 +1053,10 @@ lemma not_surjective : Surjective Not := not_involutive.surjective
 lemma not_bijective : Bijective Not := not_involutive.bijective
 
 @[simp]
-lemma symmetric_apply_eq_iff {α : Sort*} {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
-  simp [Symmetric, Involutive]
+lemma symm_apply_eq_iff {α : Sort*} {f : α → α} : Std.Symm (f · = ·) ↔ Involutive f := by
+  simp [symm_def, Involutive]
+
+@[deprecated (since := "2026-06-10")] alias symmetric_apply_eq_iff := symm_apply_eq_iff
 
 /-- The property of a binary function `f : α → β → γ` being injective.
 Mathematically this should be thought of as the corresponding function `α × β → γ` being injective.
@@ -1121,18 +1139,24 @@ lemma forall_existsUnique_iff' {r : α → β → Prop} :
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff' {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Std.Symm.forall_existsUnique_iff' {r : α → α → Prop} [Std.Symm r] :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ r = (f · = ·) := by
   refine ⟨fun h ↦ ?_, fun ⟨f, _, hf⟩ ↦ forall_existsUnique_iff'.2 ⟨f, hf⟩⟩
   rcases forall_existsUnique_iff'.1 h with ⟨f, rfl : r = _⟩
-  exact ⟨f, symmetric_apply_eq_iff.1 hr, rfl⟩
+  exact ⟨f, symm_apply_eq_iff.1 ‹_›, rfl⟩
+
+@[deprecated (since := "2026-06-10")]
+protected alias Symmetric.forall_existsUnique_iff' := Std.Symm.forall_existsUnique_iff'
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Std.Symm.forall_existsUnique_iff {r : α → α → Prop} [Std.Symm r] :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ ∀ {a b}, r a b ↔ f a = b := by
-  simp [hr.forall_existsUnique_iff', funext_iff]
+  simp [Std.Symm.forall_existsUnique_iff', funext_iff]
+
+@[deprecated (since := "2026-06-10")]
+protected alias Symmetric.forall_existsUnique_iff := Std.Symm.forall_existsUnique_iff
 
 /-- `s.piecewise f g` is the function equal to `f` on the set `s`, and to `g` on its complement. -/
 def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, β i)
@@ -1192,7 +1216,13 @@ theorem Function.LeftInverse.cast_eq {γ : β → Sort v} {f : α → β} {g : �
 /-- A set of functions "separates points"
 if for each pair of distinct points there is a function taking different values on them. -/
 def Set.SeparatesPoints {α β : Type*} (A : Set (α → β)) : Prop :=
-  ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
+  ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, f x ≠ f y
+
+theorem Set.separatesPoints_mono {α β : Type*} {A B : Set (α → β)} (hAB : A ⊆ B)
+    (hA : Set.SeparatesPoints A) : Set.SeparatesPoints B := by
+  intro x y hne
+  obtain ⟨f, hfA, hne'⟩ := hA hne
+  exact ⟨f, hAB hfA, hne'⟩
 
 theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β)
     (h : Equivalence r) : Equivalence (InvImage r f) :=

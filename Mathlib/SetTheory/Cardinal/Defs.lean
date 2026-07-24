@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Data.ULift
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Util.Delaborators
 
@@ -76,7 +77,7 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 /-- `Cardinal.{u}` is the type of cardinal numbers in `Type u`,
   defined as the quotient of `Type u` by existence of an equivalence
   (a bijection with explicit inverse). -/
-@[pp_with_univ]
+@[pp_with_univ, wikidata Q163875]
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 

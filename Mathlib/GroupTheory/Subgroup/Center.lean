@@ -88,7 +88,7 @@ theorem center_eq_top [hG : IsMulCommutative G] : center G = ⊤ :=
 
 /-- A group is commutative if the center is the whole group. -/
 @[to_additive /-- An additive group is commutative if the center is the whole group. -/,
-  implicit_reducible]
+  instance_reducible]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by
@@ -97,6 +97,15 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
       apply Subgroup.mem_center_iff.mp _ x
       exact h y
   }
+
+@[to_additive]
+protected theorem center_prod {H : Type*} [Group H] : center (G × H) = prod (center G) (center H) :=
+  SetLike.coe_injective Set.center_prod
+
+@[to_additive]
+protected theorem center_pi {η : Type*} {G : η → Type*} [Π i, Group (G i)] :
+    center (Π i, G i) = pi .univ fun i ↦ center (G i) :=
+  SetLike.coe_injective Set.center_pi
 
 variable {H : Subgroup G}
 
@@ -129,10 +138,11 @@ end IsConj
 
 namespace ConjClasses
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_bijOn (G : Type*) [Group G] :
     Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
   refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
-  · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]
+  · simp only [mem_noncenter, Set.compl_def, Set.mem_ofPred, Set.not_nontrivial_iff]
     intro x hx y hy
     simp only [mem_carrier_iff_mk_eq, mk_eq_mk_iff_isConj] at hx hy
     rw [hx.eq_of_right_mem_center hg, hy.eq_of_right_mem_center hg]
@@ -140,7 +150,7 @@ theorem mk_bijOn (G : Type*) [Group G] :
     exact H.eq_of_left_mem_center hx
   · rintro ⟨g⟩ hg
     refine ⟨g, ?_, rfl⟩
-    simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff] at hg
+    simp only [mem_noncenter, Set.compl_def, Set.mem_ofPred, Set.not_nontrivial_iff] at hg
     rw [SetLike.mem_coe, Subgroup.mem_center_iff]
     intro h
     rw [← mul_inv_eq_iff_eq_mul]
