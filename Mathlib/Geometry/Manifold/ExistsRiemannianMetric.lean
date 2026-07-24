@@ -51,18 +51,18 @@ variable {B : Type*} {F : Type*} {E : B → Type*}
   [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
   [FiberBundle F E] [InnerProductSpace ℝ F] [VectorBundle ℝ F E]
 
+-- The usual setup for a manifold `B` modelled on `HB` with model-with-corners `IB` into `EB`.
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB]
+  [ChartedSpace HB B]
+  {IB : ModelWithCorners ℝ EB HB}
 
 noncomputable section
 
 variable
-  {IB : ModelWithCorners ℝ EB HB}
-  [ChartedSpace HB B]
   [FiniteDimensional ℝ F]
-  [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
-  [FiniteDimensional ℝ EB]
+  [ContMDiffVectorBundle ω F E IB]
   [∀ x, T2Space (E x)]
 
 def g_bilin (i b : B) :
@@ -126,8 +126,6 @@ end
 noncomputable section
 
 variable
-  {IB : ModelWithCorners ℝ EB HB}
-  [ChartedSpace HB B]
   [FiniteDimensional ℝ F]
   [∀ x, T2Space (E x)]
 
@@ -231,13 +229,10 @@ end
 section smooth
 
 variable
-  {IB : ModelWithCorners ℝ EB HB}
-  [ChartedSpace HB B]
   [ContMDiffVectorBundle ω F E IB]
-  [∀ x, T2Space (E x)]
 
 omit [∀ (x : B),
-  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] [∀ (x : B), T2Space (E x)] in
+  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma g_bilin_smooth_on_chart (i : B) :
   ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
     (g_bilin (F := F) (E := E) i)
@@ -276,7 +271,7 @@ noncomputable def g_global_bilin (f : SmoothPartitionOfUnity B IB B) (p : B) :
       ∑ᶠ (j : B), (f j) p • (g_bilin (F := F) j p).snd
 
 omit [∀ (x : B),
-  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] [∀ (x : B), T2Space (E x)] in
+  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma g_global_bilin_smooth (f : SmoothPartitionOfUnity B IB B)
     (h_sub : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source)) :
     ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
@@ -299,8 +294,6 @@ end smooth
 section
 
 variable
-  {IB : ModelWithCorners ℝ EB HB}
-  [ChartedSpace HB B]
   [FiniteDimensional ℝ F]
   [∀ x, T2Space (E x)]
 
@@ -412,20 +405,20 @@ end
 
 section
 
+-- `FiniteDimensional ℝ EB`, `SigmaCompactSpace B` and `T2Space B` are the hypotheses of
+-- `SmoothPartitionOfUnity.exists_isSubordinate`.
+variable [FiniteDimensional ℝ EB] [SigmaCompactSpace B] [T2Space B]
+
 variable
-  {IB : ModelWithCorners ℝ EB HB}
-  [ChartedSpace HB B]
   [FiniteDimensional ℝ F]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
-  [FiniteDimensional ℝ EB] [SigmaCompactSpace B] [T2Space B]
   [∀ x, T2Space (E x)]
 
 /--
 Existence of a smooth Riemannian metric on a manifold.
 -/
-public theorem exists_riemannian_metric
-  [∀ x, FiniteDimensional ℝ (E x)] :
-    Nonempty (ContMDiffRiemannianMetric (IB := IB) (n := ∞) (F := F) (E := E)) :=
+public theorem exists_riemannian_metric :
+  Nonempty (ContMDiffRiemannianMetric (IB := IB) (n := ∞) (F := F) (E := E)) :=
   let ⟨f, hf⟩ : ∃ (f : SmoothPartitionOfUnity B IB B),
       f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source) := by
     apply SmoothPartitionOfUnity.exists_isSubordinate
@@ -438,7 +431,11 @@ public theorem exists_riemannian_metric
   ⟨{ inner := g_global_bilin (F := F) f
      symm := riemannian_metric_symm f hf
      pos := riemannian_metric_pos_def f hf
-     isVonNBounded := riemannian_unit_ball_bounded f hf
+     isVonNBounded := by
+      haveI : ∀ x, FiniteDimensional ℝ (E x) := fun x ↦
+        (Trivialization.linearEquivAt ℝ (trivializationAt F E x) x
+        (FiberBundle.mem_baseSet_trivializationAt' x)).symm.finiteDimensional
+      exact riemannian_unit_ball_bounded f hf
      contMDiff := g_global_bilin_smooth f hf }⟩
 
 end
