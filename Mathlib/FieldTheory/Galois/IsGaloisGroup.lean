@@ -214,6 +214,27 @@ theorem of_isScalarTower [Finite G] [IsGaloisGroup G K L] (E : Type*) [Field E] 
     (AlgHom.equivFieldRange (IsScalarTower.toAlgHom K E L)).toRingEquiv.symm fun ⟨_, ⟨x, rfl⟩⟩ ↦ ?_
   simp [AlgEquiv.symm_apply_eq, Subtype.ext_iff]
 
+attribute [local instance] FractionRing.liftAlgebra in
+/-- If `G` is a Galois group for `B / R` and `R ⊆ A ⊆ B` is a tower of commutative domains with
+`B / A` integral and `A` integrally closed, then the fixing subgroup of the image of `A` in `B`
+is a Galois group for `B / A`. -/
+theorem of_isScalarTower' [Finite G] (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
+    [IsDomain B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+    [FaithfulSMul R A] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G R B]
+    [IsIntegrallyClosed A] [Algebra.IsIntegral A B] :
+    IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap A B))) A B := by
+  have : IsDomain A := IsDomain.of_faithfulSMul A B
+  have : IsDomain R := IsDomain.of_faithfulSMul R A
+  have : FaithfulSMul R B := FaithfulSMul.trans R A B
+  let F := FractionRing A
+  let K := FractionRing R
+  let L := FractionRing B
+  let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G B L
+  rw [IsFractionRing.fixingSubgroup_range_algebraMap G F L]
+  have : IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap F L))) F L :=
+    of_isScalarTower G K L F
+  exact IsGaloisGroup.of_isFractionRing _ A B F L
+
 @[simp]
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
@@ -469,10 +490,46 @@ theorem algebraMap_restrictHom_smul [Finite G] [Finite G'] [MulSemiringAction G 
   rw [algebraMap.smul', algebraMap_quotientMulEquiv_smul, ← IsScalarTower.algebraMap_apply,
     algebraMap.smul', ← IsScalarTower.algebraMap_apply]
 
+/-- The kernel of `restrictHom G G' A B C : G →* G'` is the subgroup of `G` fixing the image of
+`B` in `C`. -/
+theorem restrictHom_ker [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
+    (restrictHom G G' A B C).ker = fixingSubgroup G (Set.range (algebraMap B C)) := by
+  have : FaithfulSMul G' B := ‹IsGaloisGroup G' A B›.faithful
+  ext g
+  simp only [MonoidHom.mem_ker, mem_fixingSubgroup_iff, Set.mem_range, forall_exists_index,
+    forall_apply_eq_imp_iff]
+  refine ⟨fun hg b ↦ ?_, fun hg ↦ eq_of_smul_eq_smul (α := B) fun b ↦ ?_⟩
+  · rw [← algebraMap_restrictHom_smul G G' A B C, hg, one_smul]
+  · apply FaithfulSMul.algebraMap_injective B C
+    simp [hg b]
+
+/-- If `C/B/A` is a tower of domains with `C/A` Galois, `C/B` integral and `B` integrally closed,
+then the kernel of `restrictHom G G' A B C` is a Galois group for `C/B`. -/
+instance isGaloisGroup_restrictHom_ker [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] [IsIntegrallyClosed B] :
+    IsGaloisGroup (restrictHom G G' A B C).ker B C := by
+  have : Algebra.IsIntegral A C := ‹IsGaloisGroup G A C›.isInvariant.isIntegral
+  have : Algebra.IsIntegral B C := Algebra.IsIntegral.tower_top (R := A)
+  rw [restrictHom_ker]
+  exact of_isScalarTower' G A B C
+
 attribute [local instance] FractionRing.liftAlgebra in
 theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] :
     Function.Surjective (restrictHom G G' A B C) := by
+  have : IsDomain B := IsDomain.of_faithfulSMul B C
+  have : IsDomain A := IsDomain.of_faithfulSMul A B
+  have : FaithfulSMul A C := FaithfulSMul.trans A B C
+  let : MulSemiringAction G (FractionRing C) :=
+    IsFractionRing.mulSemiringAction G C (FractionRing C)
+  let N := fixingSubgroup G (Set.range (algebraMap (FractionRing B) (FractionRing C)))
+  have : IsGaloisGroup N (FractionRing B) (FractionRing C) :=
+    of_isScalarTower G (FractionRing A) (FractionRing C) (FractionRing B)
+  let : MulSemiringAction G' (FractionRing B) :=
+    IsFractionRing.mulSemiringAction G' B (FractionRing B)
+  have := isGalois G' (FractionRing A) (FractionRing B)
+  have : N.Normal := normal_of_isGalois G (FractionRing A) (FractionRing C) N (FractionRing B)
   simpa [restrictHom] using QuotientGroup.mk_surjective
 
 open Pointwise in

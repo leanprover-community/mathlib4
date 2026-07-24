@@ -6674,6 +6674,7 @@ public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.RingTheory.Ideal.Finsupp
+public import Mathlib.RingTheory.Ideal.Galois
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.HasGoingUp
