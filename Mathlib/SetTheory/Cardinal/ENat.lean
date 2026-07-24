@@ -133,8 +133,14 @@ lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injecti
 @[simp] lemma lift_le_ofENat {x : Cardinal.{v}} {m : ℕ∞} : lift.{u} x ≤ m ↔ x ≤ m := by
   rw [← lift_ofENat.{u, v}, lift_le]
 
-@[simp] lemma lift_eq_ofENat {x : Cardinal.{v}} {m : ℕ∞} : lift.{u} x = m ↔ x = m := by
-  rw [← lift_ofENat.{u, v}, lift_inj]
+@[simp]
+theorem liftEq_ofENat_iff {x : Cardinal.{v}} {m : ℕ∞} : x =ₗ m ↔ x = m := by
+  unfold LiftEq
+  simpa using lift_inj (b := m)
+
+@[deprecated liftEq_ofENat_iff (since := "2026-07-24")]
+lemma lift_eq_ofENat {x : Cardinal.{v}} {m : ℕ∞} : lift.{u} x = m ↔ x = m := by
+  simp
 
 @[simp] lemma ofENat_lt_lift {x : Cardinal.{v}} {m : ℕ∞} : m < lift.{u} x ↔ m < x := by
   rw [← lift_ofENat.{u, v}, lift_lt]
@@ -142,8 +148,14 @@ lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injecti
 @[simp] lemma ofENat_le_lift {x : Cardinal.{v}} {m : ℕ∞} : m ≤ lift.{u} x ↔ m ≤ x := by
   rw [← lift_ofENat.{u, v}, lift_le]
 
-@[simp] lemma ofENat_eq_lift {x : Cardinal.{v}} {m : ℕ∞} : m = lift.{u} x ↔ m = x := by
-  rw [← lift_ofENat.{u, v}, lift_inj]
+@[simp]
+theorem ofENat_liftEq_iff {x : Cardinal.{v}} {m : ℕ∞} : m =ₗ x ↔ m = x := by
+  unfold LiftEq
+  simpa using lift_inj (a := m)
+
+@[deprecated ofENat_liftEq_iff (since := "2026-07-24")]
+lemma ofENat_eq_lift {x : Cardinal.{v}} {m : ℕ∞} : m = lift.{u} x ↔ m = x := by
+  simp
 
 @[simp]
 lemma range_ofENat : range ofENat = Iic ℵ₀ := by
@@ -310,7 +322,7 @@ theorem toENat_lift : toENat (lift.{v} c) = toENat c := by
   | inr ha => simp [toENat_eq_top.2, ha]
 
 theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
-  rw [← toENat_lift, lift_mk_eq.{_, _, v}.mpr ⟨e⟩, toENat_lift]
+  rw [← toENat_lift, mk_liftEq.mpr ⟨e⟩, toENat_lift]
 
 @[simp, norm_cast]
 lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injOn <;> simp

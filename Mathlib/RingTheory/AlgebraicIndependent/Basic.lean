@@ -323,7 +323,7 @@ open Cardinal
 
 theorem AlgebraicIndependent.lift_cardinalMk_le_trdeg [Nontrivial R]
     (hx : AlgebraicIndependent R x) : lift.{v} #ι ≤ lift.{u} (trdeg R A) := by
-  rw [lift_mk_eq'.mpr ⟨.ofInjective _ hx.injective⟩, lift_le]
+  rw [mk_liftEq.mpr ⟨.ofInjective _ hx.injective⟩, lift_le]
   exact le_ciSup_of_le bddAbove_of_small ⟨_, hx.to_subtype_range⟩ le_rfl
 
 theorem AlgebraicIndependent.cardinalMk_le_trdeg [Nontrivial R] {ι : Type v} {x : ι → A}

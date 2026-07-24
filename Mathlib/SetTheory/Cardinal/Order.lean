@@ -156,13 +156,6 @@ theorem mem_range_lift_of_le {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
   liftInitialSeg.mem_range_of_le
 
-theorem lift_injective : Injective lift.{u, v} :=
-  liftInitialSeg.injective
-
-@[simp]
-theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
-  lift_injective.eq_iff
-
 @[simp]
 theorem lift_le {a b : Cardinal.{v}} : lift.{u} a ≤ lift.{u} b ↔ a ≤ b :=
   liftInitialSeg.le_iff_le
@@ -184,10 +177,18 @@ theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) 
 theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
 
--- This cannot be a `@[simp]` lemma because `simp` can't figure out the universes.
+theorem min_liftEq_min {a₁ b₁ : Cardinal.{u}} {a₂ b₂ : Cardinal.{v}}
+    (ha : a₁ =ₗ a₂) (hb : b₁ =ₗ b₂) : min a₁ b₁ =ₗ min a₂ b₂ := by
+  rw [LiftEq, lift_min, lift_min, ha, hb]
+
+theorem max_liftEq_max {a₁ b₁ : Cardinal.{u}} {a₂ b₂ : Cardinal.{v}}
+    (ha : a₁ =ₗ a₂) (hb : b₁ =ₗ b₂) : max a₁ b₁ =ₗ max a₂ b₂ := by
+  rw [LiftEq, lift_max, lift_max, ha, hb]
+
+@[deprecated "use `liftEq` to state both sides" (since := "2026-07-24")]
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
-  rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
+  simp [← liftEq_iff_eq]
 
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a ↔ ∃ a' ≤ a, lift.{v, u} a' = b :=
@@ -199,9 +200,9 @@ theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
 
 /-! ### Basic cardinals -/
 
-@[simp]
-theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
-  lift_injective.eq_iff' lift_zero
+@[deprecated liftEq_zero_iff (since := "2026-07-24")]
+theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 := by
+  simp
 
 @[simp]
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
@@ -248,9 +249,9 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 
-@[simp]
-theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
-  lift_injective.eq_iff' lift_one
+@[deprecated liftEq_one_iff (since := "2026-07-24")]
+theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 := by
+  simp
 
 @[simp]
 theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v} b :=
@@ -627,13 +628,13 @@ theorem aleph0_lt_lift {c : Cardinal.{u}} : ℵ₀ < lift.{v} c ↔ ℵ₀ < c :
 theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ := by
   simpa using lift_lt (b := ℵ₀)
 
-@[simp]
+@[deprecated aleph0_liftEq_iff (since := "2026-07-24")]
 theorem aleph0_eq_lift {c : Cardinal.{u}} : ℵ₀ = lift.{v} c ↔ ℵ₀ = c := by
-  simpa using lift_inj (a := ℵ₀)
+  simp
 
-@[simp]
+@[deprecated liftEq_aleph0_iff (since := "2026-07-24")]
 theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ := by
-  simp [eqComm]
+  simp
 
 /-! ### Properties about the cast from `ℕ` -/
 
@@ -643,38 +644,58 @@ theorem mk_fin (n : ℕ) : #(Fin n) = n := by simp
 theorem lift_natCast (n : ℕ) : lift.{u} (n : Cardinal.{v}) = n := by induction n <;> simp [*]
 
 @[simp]
+theorem natCast_liftEq_iff {c : Cardinal.{v}} {n : ℕ} : (n : Cardinal.{u}) =ₗ c ↔ n = c := by
+  unfold LiftEq
+  simpa using lift_inj (a := n)
+
+@[simp]
+theorem liftEq_natCast_iff {n : ℕ} {c : Cardinal.{v}} : c =ₗ (n : Cardinal.{u}) ↔ c = n := by
+  unfold LiftEq
+  simpa using lift_inj (b := n)
+
+@[simp]
+theorem liftEq_ofNat_iff {n : ℕ} {c : Cardinal.{v}} [n.AtLeastTwo] :
+    c =ₗ (ofNat(n) : Cardinal.{u}) ↔ c = ofNat(n) :=
+  liftEq_natCast_iff
+
+@[simp]
+theorem ofNat_liftEq_iff {n : ℕ} {c : Cardinal.{v}} [n.AtLeastTwo] :
+    (ofNat(n) : Cardinal.{u}) =ₗ c ↔ ofNat(n) = c :=
+  natCast_liftEq_iff
+
+@[simp]
 theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift.{u} (ofNat(n) : Cardinal.{v}) = OfNat.ofNat n :=
   lift_natCast n
 
-@[simp]
-theorem lift_eq_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a = n :=
-  lift_injective.eq_iff' (lift_natCast n)
+@[deprecated liftEq_natCast_iff (since := "2026-07-24")]
+theorem lift_eq_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a = n := by
+  simp
 
-@[simp]
+@[deprecated liftEq_ofNat_iff (since := "2026-07-24")]
 theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    lift.{v} a = ofNat(n) ↔ a = OfNat.ofNat n :=
-  lift_eq_nat_iff
+    lift.{v} a = ofNat(n) ↔ a = OfNat.ofNat n := by
+  simp
 
-@[simp]
+@[deprecated natCast_liftEq_iff (since := "2026-07-24")]
 theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
     (n : Cardinal) = lift.{v} a ↔ (n : Cardinal) = a := by
   rw [← lift_natCast.{v, u} n, lift_inj]
 
-@[simp]
+@[deprecated zero_liftEq_iff (since := "2026-07-24")]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
     (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
-  simp [eqComm]
+  simp
 
-@[simp]
+@[deprecated one_liftEq_iff (since := "2026-07-24")]
 theorem one_eq_lift_iff {a : Cardinal.{u}} :
     (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
-  simp [eqComm]
+  simp
 
-@[simp]
+@[deprecated ofNat_liftEq_iff (since := "2026-07-24")]
 theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (ofNat(n) : Cardinal) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a :=
-  nat_eq_lift_iff
+    (ofNat(n) : Cardinal) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a := by
+  simp
 
 @[simp]
 theorem lift_le_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by

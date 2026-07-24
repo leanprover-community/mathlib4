@@ -496,7 +496,7 @@ theorem rank_inf_eq_one_of_commute_of_flat_of_inj (hf : Module.Flat R A ∨ Modu
   have : Cardinal.lift.{u} (Module.rank R (⊥ : Subalgebra R S)) =
       Cardinal.lift.{v} (Module.rank R R) :=
     lift_rank_range_of_injective (Algebra.linearMap R S) hinj
-  rw [Module.rank_self, Cardinal.lift_one, Cardinal.lift_eq_one] at this
+  have : Module.rank R (⊥ : Subalgebra R S) = 1 := by simpa
   rw [← this]
   change Module.rank R (toSubmodule (⊥ : Subalgebra R S)) ≤
     Module.rank R (toSubmodule (A ⊓ B))
