@@ -1,0 +1,166 @@
+/-
+Copyright (c) 2026 Jack McCarthy. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jack McCarthy
+-/
+module
+
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Topology.Category.TopCat.Basic
+
+/-!
+# The category of `C^n` manifolds modeled on `I`
+
+This file defines the bundled category `ModelWithCorners.MfldCat.{u} I n` of `C^n` manifolds modeled
+on a fixed `I : ModelWithCorners 𝕜 E H`, along with the forgetful functor to `TopCat`.
+
+## Future work
+* Show that `ModelWithCorners.MfldCat I n` has coproducts given by disjoint unions.
+-/
+
+@[expose] public section
+
+open CategoryTheory
+open scoped Manifold ContDiff
+
+universe u v
+
+namespace ModelWithCorners
+
+variable {𝕜 : Type v} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H]
+
+set_option backward.privateInPublic true in
+/-- The category of `C^n` manifolds modeled on a fixed model with corners `I`. -/
+structure MfldCat (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) where
+  private mk ::
+  /-- The underlying type. -/
+  carrier : Type u
+  [topologicalSpace : TopologicalSpace carrier]
+  [chartedSpace : ChartedSpace H carrier]
+  [isManifold : IsManifold I n carrier]
+
+attribute [instance] MfldCat.topologicalSpace MfldCat.chartedSpace MfldCat.isManifold
+
+initialize_simps_projections MfldCat (-topologicalSpace, -chartedSpace, -isManifold)
+
+namespace MfldCat
+variable {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} {M N P : MfldCat I n} {X Y Z : Type u}
+  [TopologicalSpace X] [ChartedSpace H X] [IsManifold I n X]
+  [TopologicalSpace Y] [ChartedSpace H Y] [IsManifold I n Y]
+  [TopologicalSpace Z] [ChartedSpace H Z] [IsManifold I n Z]
+
+instance : CoeSort (MfldCat I n) (Type u) := ⟨MfldCat.carrier⟩
+
+attribute [coe] MfldCat.carrier
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+/-- The object of `ModelWithCorners.MfldCat I n` associated to a `C^n` manifold `X` modeled on `I`.
+
+This is the preferred way to construct a term of `ModelWithCorners.MfldCat I n`. -/
+abbrev of (X : Type u) [TopologicalSpace X] [ChartedSpace H X] [IsManifold I n X] :
+    MfldCat I n := ⟨X⟩
+
+variable (X I) in
+lemma coe_of : (of (I := I) (n := n) X : Type u) = X := rfl
+
+/-- The type of morphisms in `ModelWithCorners.MfldCat I n`. -/
+@[ext]
+structure Hom (M N : MfldCat.{u} I n) where
+  private mk ::
+  /-- The underlying `C^n` map. -/
+  hom' : ContMDiffMap I I M N n
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+instance : Category (MfldCat I n) where
+  Hom M N := Hom M N
+  id M := ⟨.id⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+instance : ConcreteCategory (MfldCat I n) (fun M N => ContMDiffMap I I M N n) where
+  hom := Hom.hom'
+  ofHom := Hom.mk
+
+/-- Turn a morphism in `ModelWithCorners.MfldCat` back into a `ContMDiffMap`. -/
+abbrev Hom.hom (f : Hom M N) := ConcreteCategory.hom (C := MfldCat I n) f
+
+/-- Typecheck a `ContMDiffMap` as a morphism in `ModelWithCorners.MfldCat`. -/
+abbrev ofHom (f : ContMDiffMap I I X Y n) : of (I := I) (n := n) X ⟶ of (I := I) (n := n) Y :=
+  ConcreteCategory.ofHom (C := MfldCat I n) f
+
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (M N : MfldCat.{u} I n) (f : Hom M N) := f.hom
+
+initialize_simps_projections Hom (hom' → hom)
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
+
+@[simp] lemma hom_id : (𝟙 M : M ⟶ M).hom = ContMDiffMap.id := rfl
+@[simp] lemma hom_comp (f : M ⟶ N) (g : N ⟶ P) : (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+lemma id_apply (M : MfldCat I n) (m : M) : (𝟙 M : M ⟶ M) m = m := rfl
+lemma comp_apply (f : M ⟶ N) (g : N ⟶ P) (m : M) : (f ≫ g) m = g (f m) := rfl
+
+@[ext] lemma hom_ext {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g := Hom.ext hf
+
+@[simp] lemma hom_ofHom (f : ContMDiffMap I I X Y n) : (ofHom f).hom = f := rfl
+@[simp] lemma ofHom_hom (f : M ⟶ N) : ofHom f.hom = f := rfl
+
+@[simp] lemma ofHom_id : ofHom (.id (I := I) (n := n)) = 𝟙 (of X) := rfl
+
+@[simp]
+lemma ofHom_comp (f : ContMDiffMap I I X Y n) (g : ContMDiffMap I I Y Z n) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
+
+lemma ofHom_apply (f : ContMDiffMap I I X Y n) (x : X) : ofHom f x = f x := rfl
+
+lemma inv_hom_apply (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by simp
+lemma hom_inv_apply (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by simp
+
+instance inhabited : Inhabited (MfldCat I n) := ⟨of H⟩
+
+instance hasForgetToTopCat : HasForget₂ (MfldCat I n) TopCat.{u} where
+  forget₂.obj M := .of M
+  forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
+
+@[simp] lemma forget₂_topCat_obj (M : MfldCat I n) :
+    (forget₂ (MfldCat I n) TopCat).obj M = .of M := rfl
+
+@[simp] lemma forget₂_topCat_map (f : M ⟶ N) :
+    (forget₂ (MfldCat I n) TopCat).map f = TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩ := rfl
+
+/-- Build an isomorphism in `ModelWithCorners.MfldCat I n` from a diffeomorphism. -/
+@[simps]
+def isoOfDiffeomorph (e : M ≃ₘ^n⟮I, I⟯ N) : M ≅ N where
+  hom := ofHom e.toContMDiffMap
+  inv := ofHom e.symm.toContMDiffMap
+
+/-- Build a diffeomorphism from an isomorphism in `ModelWithCorners.MfldCat I n`. -/
+@[simps]
+def diffeomorphOfIso (i : M ≅ N) : M ≃ₘ^n⟮I, I⟯ N where
+  toFun := i.hom
+  invFun := i.inv
+  left_inv _ := by simp
+  right_inv _ := by simp
+  contMDiff_toFun := i.hom.hom.contMDiff
+  contMDiff_invFun := i.inv.hom.contMDiff
+
+/-- Diffeomorphisms between manifolds modeled on `I` are the same as isomorphisms in
+`ModelWithCorners.MfldCat I n`. -/
+@[simps]
+def isoEquivDiffeomorph : (M ≅ N) ≃ (M ≃ₘ^n⟮I, I⟯ N) where
+  toFun := diffeomorphOfIso
+  invFun := isoOfDiffeomorph
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+end MfldCat
+
+end ModelWithCorners
