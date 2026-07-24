@@ -721,6 +721,7 @@ public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.Lie.Basis
 public import Mathlib.Algebra.Lie.Basis.Base
 public import Mathlib.Algebra.Lie.Basis.Basic
+public import Mathlib.Algebra.Lie.Basis.Prod
 public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.CartanExists
 public import Mathlib.Algebra.Lie.CartanSubalgebra
@@ -3578,6 +3579,7 @@ public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Combinatorics.Graph.Delete
 public import Mathlib.Combinatorics.Graph.Lattice
 public import Mathlib.Combinatorics.Graph.Maps
+public import Mathlib.Combinatorics.Graph.Simple
 public import Mathlib.Combinatorics.Graph.Subgraph
 public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic

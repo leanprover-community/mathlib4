@@ -486,12 +486,15 @@ end MonoidAlgebra
 #### Conversions between `AddMonoidAlgebra` and `MonoidAlgebra`
 -/
 
+namespace AddMonoidAlgebra
+variable [Semiring R] [Add M]
+
 set_option backward.isDefEq.respectTransparency false in
-variable (k G) in
+variable (R M) in
 /-- The equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative` -/
-protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
-    AddMonoidAlgebra k G ≃+* MonoidAlgebra k (Multiplicative G) where
+@[simps]
+def toMultiplicative : AddMonoidAlgebra R M ≃+* MonoidAlgebra R (Multiplicative M) where
   toFun x := .ofCoeff <| x.coeff.mapDomain .ofAdd
   invFun x := .ofCoeff <| x.coeff.mapDomain Multiplicative.toAdd
   left_inv x := by ext; simp
@@ -500,14 +503,23 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
   map_mul' x y := by
     classical
     ext
-    simp [MonoidAlgebra.coeff_mul, AddMonoidAlgebra.coeff_mul, Finsupp.sum_mapDomain_index, add_mul,
-      mul_add, ite_add_zero, Multiplicative.ext_iff]
+    simp [MonoidAlgebra.coeff_mul, coeff_mul, sum_mapDomain_index, add_mul, mul_add, ite_add_zero,
+      Multiplicative.ext_iff]
+
+@[simp]
+lemma toMultiplicative_single (m : M) (r : R) :
+    toMultiplicative R M (single m r) = .single (.ofAdd m) r := by simp [toMultiplicative]
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable [Semiring R] [Mul M]
 
 set_option backward.isDefEq.respectTransparency false in
-variable (k G) in
+variable (R M) in
 /-- The equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of `Additive` -/
-protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
-    MonoidAlgebra k G ≃+* AddMonoidAlgebra k (Additive G) where
+@[simps]
+def toAdditive : MonoidAlgebra R M ≃+* AddMonoidAlgebra R (Additive M) where
   toFun x := .ofCoeff <| x.coeff.mapDomain .ofMul
   invFun x := .ofCoeff <| x.coeff.mapDomain Additive.toMul
   left_inv x := by ext; simp
@@ -516,5 +528,11 @@ protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
   map_mul' x y := by
     classical
     ext
-    simp [MonoidAlgebra.coeff_mul, AddMonoidAlgebra.coeff_mul, Finsupp.sum_mapDomain_index, add_mul,
-      mul_add, ite_add_zero, Additive.ext_iff]
+    simp [coeff_mul, AddMonoidAlgebra.coeff_mul, sum_mapDomain_index, add_mul, mul_add,
+      ite_add_zero, Additive.ext_iff]
+
+@[simp]
+lemma toAdditive_single (m : M) (r : R) : toAdditive R M (single m r) = .single (.ofMul m) r := by
+  ext; simp
+
+end MonoidAlgebra
