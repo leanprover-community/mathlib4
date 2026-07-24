@@ -29,6 +29,7 @@ namespace CategoryTheory
 
 /-- Endomorphisms of an object in a category. Arguments order in multiplication agrees with
 `Function.comp`, not with `CategoryTheory.CategoryStruct.comp`. -/
+@[implicit_reducible]
 def End {C : Type u} [CategoryStruct.{v} C] (X : C) := X ⟶ X
 
 namespace End
@@ -105,6 +106,7 @@ instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
 
 end End
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isUnit_iff_isIso {C : Type u} [Category.{v} C] {X : C} (f : End X) :
     IsUnit (f : End X) ↔ IsIso f :=
   ⟨fun h => { out := ⟨h.unit.inv, ⟨h.unit.inv_val, h.unit.val_inv⟩⟩ }, fun h =>
@@ -152,6 +154,7 @@ def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
 @[simps!]
 def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEndEquivAut X).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Isomorphisms induce isomorphisms of the automorphism group -/
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := { hom := h.inv ≫ x.hom ≫ h.hom, inv := h.inv ≫ x.inv ≫ h.hom }

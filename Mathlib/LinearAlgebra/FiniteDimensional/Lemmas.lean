@@ -398,29 +398,28 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
     ∃ k : ℕ, k ≤ finrank K V ∧ LinearMap.ker (f ^ k) = LinearMap.ker (f ^ k.succ) := by
-  classical
-    by_contra h_contra
-    simp_rw [not_exists, not_and] at h_contra
-    have h_le_ker_pow : ∀ n : ℕ, n ≤ (finrank K V).succ →
-        n ≤ finrank K (LinearMap.ker (f ^ n)) := by
-      intro n hn
-      induction n with
-      | zero => exact zero_le
-      | succ n ih =>
-        have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
-          refine lt_of_le_of_ne ?_ (h_contra n (Nat.le_of_succ_le_succ hn))
-          rw [pow_succ']
-          apply LinearMap.ker_le_ker_comp
-        have h_finrank_lt_finrank :
-            finrank K (LinearMap.ker (f ^ n)) < finrank K (LinearMap.ker (f ^ n.succ)) := by
-          apply Submodule.finrank_lt_finrank_of_lt h_ker_lt_ker
-        calc
-          n.succ ≤ (finrank K ↑(LinearMap.ker (f ^ n))).succ :=
-            Nat.succ_le_succ (ih (Nat.le_of_succ_le hn))
-          _ ≤ finrank K ↑(LinearMap.ker (f ^ n.succ)) := Nat.succ_le_of_lt h_finrank_lt_finrank
-    have h_any_n_lt : ∀ n, n ≤ (finrank K V).succ → n ≤ finrank K V := fun n hn =>
-      (h_le_ker_pow n hn).trans (Submodule.finrank_le _)
-    exact Nat.not_succ_le_self _ (h_any_n_lt (finrank K V).succ (finrank K V).succ.le_refl)
+  by_contra h_contra
+  simp_rw [not_exists, not_and] at h_contra
+  have h_le_ker_pow : ∀ n : ℕ, n ≤ (finrank K V).succ →
+      n ≤ finrank K (LinearMap.ker (f ^ n)) := by
+    intro n hn
+    induction n with
+    | zero => exact zero_le
+    | succ n ih =>
+      have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
+        refine lt_of_le_of_ne ?_ (h_contra n (Nat.le_of_succ_le_succ hn))
+        rw [pow_succ']
+        apply LinearMap.ker_le_ker_comp
+      have h_finrank_lt_finrank :
+          finrank K (LinearMap.ker (f ^ n)) < finrank K (LinearMap.ker (f ^ n.succ)) := by
+        apply Submodule.finrank_lt_finrank_of_lt h_ker_lt_ker
+      calc
+        n.succ ≤ (finrank K ↑(LinearMap.ker (f ^ n))).succ :=
+          Nat.succ_le_succ (ih (Nat.le_of_succ_le hn))
+        _ ≤ finrank K ↑(LinearMap.ker (f ^ n.succ)) := Nat.succ_le_of_lt h_finrank_lt_finrank
+  have h_any_n_lt : ∀ n, n ≤ (finrank K V).succ → n ≤ finrank K V := fun n hn =>
+    (h_le_ker_pow n hn).trans (Submodule.finrank_le _)
+  exact Nat.not_succ_le_self _ (h_any_n_lt (finrank K V).succ (finrank K V).succ.le_refl)
 
 theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {m : ℕ}
     (hm : finrank K V ≤ m) : LinearMap.ker (f ^ m) = LinearMap.ker (f ^ finrank K V) := by

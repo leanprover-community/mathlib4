@@ -140,7 +140,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
 
 @[symm]
 theorem adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
-  simp only [adjacent, ne_comm, Set.mem_setOf_eq]
+  simp only [adjacent, ne_comm, Set.mem_ofPred_eq]
 
 end Q
 
@@ -238,7 +238,6 @@ since this cardinal is finite, as a natural number in `finrank_V` -/
 
 theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
   have : Module.rank ℝ (V n) = (2 ^ n : ℕ) := by
-    classical
     rw [rank_eq_card_basis (dualBases_e_ε _).basis, Q.card]
   assumption_mod_cast
 
@@ -388,12 +387,12 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
-    have li : LinearIndependent ℝ (H.restrict e) := by
+    have li : LinearIndependent ℝ (H.domRestrict e) := by
       convert! (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
       rw [(dualBases_e_ε _).coe_basis]
       rfl
     have hdW := rank_span li
-    rw [Set.range_restrict] at hdW
+    rw [Set.range_domRestrict] at hdW
     convert! hdW
     rw [← (dualBases_e_ε _).coe_basis, Cardinal.mk_image_eq (dualBases_e_ε _).basis.injective,
       Cardinal.mk_fintype]
@@ -404,6 +403,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   rw [Set.toFinset_card] at hH
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :

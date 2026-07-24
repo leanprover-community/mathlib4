@@ -37,13 +37,19 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a cone for the empty diagram given an object. -/
-@[simps]
+@[simps, implicit_reducible]
 def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
   { pt := X
     π :=
     { app := by cat_disch } }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a cocone for the empty diagram given an object. -/
 @[simps]
 def asEmptyCocone (X : C) : Cocone (Functor.empty.{0} C) :=
@@ -92,6 +98,7 @@ def IsTerminal.ofUniqueHom {Y : C} (h : ∀ X : C, X ⟶ Y) (uniq : ∀ (X : C) 
 def isTerminalTop {α : Type*} [Preorder α] [OrderTop α] : IsTerminal (⊤ : α) :=
   IsTerminal.ofUnique _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport a term of type `IsTerminal` across an isomorphism. -/
 def IsTerminal.ofIso {Y Z : C} (hY : IsTerminal Y) (i : Y ≅ Z) : IsTerminal Z :=
   IsLimit.ofIsoLimit hY
@@ -136,6 +143,7 @@ def IsInitial.ofUniqueHom {X : C} (h : ∀ Y : C, X ⟶ Y) (uniq : ∀ (Y : C) (
 def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=
   IsInitial.ofUnique _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport a term of type `IsInitial` across an isomorphism. -/
 def IsInitial.ofIso {X Y : C} (hX : IsInitial X) (i : X ≅ Y) : IsInitial Y :=
   IsColimit.ofIsoColimit hX
@@ -348,6 +356,7 @@ def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
         dsimp
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, show the cone
 `coneOfDiagramInitial` is a limit. -/
@@ -376,6 +385,7 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.id_comp, ← F.map_comp,
           hX.hom_ext (hX.from i) (f ≫ hX.from j)] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coneOfDiagramTerminal` is a limit. -/
@@ -395,6 +405,7 @@ def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F
         dsimp
         rw [← F.map_comp, Category.comp_id, tX.hom_ext (k ≫ tX.from j') (tX.from j)] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, show the cocone
 `coconeOfDiagramTerminal` is a colimit. -/
@@ -426,6 +437,7 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.comp_id, ← F.map_comp,
           hX.hom_ext (hX.to i ≫ f) (hX.to j)] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coconeOfDiagramInitial` is a colimit. -/

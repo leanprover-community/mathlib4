@@ -69,11 +69,13 @@ noncomputable def d₂ :
   ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ • ((K.X i₁).d i₂ (c₂.next i₂) ≫
     K.toGradedObject.ιMapObjOrZero (ComplexShape.π c₁ c₂ c₁₂) ⟨i₁, _⟩ i₁₂)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma d₁_eq_zero (h : ¬ c₁.Rel i₁ (c₁.next i₁)) :
     K.d₁ c₁₂ i₁ i₂ i₁₂ = 0 := by
   dsimp [d₁]
   rw [K.shape_f _ _ h, zero_comp, smul_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma d₂_eq_zero (h : ¬ c₂.Rel i₂ (c₂.next i₂)) :
     K.d₂ c₁₂ i₁ i₂ i₁₂ = 0 := by
   dsimp [d₂]
@@ -144,12 +146,14 @@ noncomputable def D₂ (i₁₂ i₁₂' : I₁₂) :
 
 namespace totalAux
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ιMapObj_D₁ (i₁₂ i₁₂' : I₁₂) (i : I₁ × I₂) (h : ComplexShape.π c₁ c₂ c₁₂ i = i₁₂) :
     K.toGradedObject.ιMapObj (ComplexShape.π c₁ c₂ c₁₂) i i₁₂ h ≫ K.D₁ c₁₂ i₁₂ i₁₂' =
       K.d₁ c₁₂ i.1 i.2 i₁₂' := by
   simp [D₁]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ιMapObj_D₂ (i₁₂ i₁₂' : I₁₂) (i : I₁ × I₂) (h : ComplexShape.π c₁ c₂ c₁₂ i = i₁₂) :
     K.toGradedObject.ιMapObj (ComplexShape.π c₁ c₂ c₁₂) i i₁₂ h ≫ K.D₂ c₁₂ i₁₂ i₁₂' =
@@ -257,7 +261,7 @@ lemma D₁_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
     K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' = - K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' := by simp
 
 /-- The total complex of a bicomplex. -/
-@[simps -isSimp d]
+@[simps -isSimp d, implicit_reducible]
 noncomputable def total : HomologicalComplex C c₁₂ where
   X := K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)
   d i₁₂ i₁₂' := K.D₁ c₁₂ i₁₂ i₁₂' + K.D₂ c₁₂ i₁₂ i₁₂'

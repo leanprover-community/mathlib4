@@ -131,7 +131,6 @@ theorem IsCoreflexivePair.swap [IsCoreflexivePair f g] : IsCoreflexivePair g f :
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For an adjunction `F ⊣ G` with counit `ε`, the pair `(FGε_B, ε_FGB)` is reflexive. -/
 instance (B : D) :
     IsReflexivePair (F.map (G.map (adj.counit.app B))) (adj.counit.app (F.obj (G.obj B))) :=
@@ -538,6 +537,9 @@ open WalkingReflexivePair WalkingReflexivePair.Hom
 
 variable (F : WalkingReflexivePair ⥤ C)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
 coforks on the underlying parallel pair. -/
 @[simps! functor_obj_pt inverse_obj_pt]
@@ -546,6 +548,7 @@ def reflexiveCoforkEquivCofork :
   (Functor.Final.coconesEquiv _ F).symm.trans (Cocone.precomposeEquivalence
     (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
@@ -554,6 +557,7 @@ lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
   rw [ReflexiveCofork.π, Cofork.π]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma reflexiveCoforkEquivCofork_inverse_obj_π
@@ -565,6 +569,7 @@ lemma reflexiveCoforkEquivCofork_inverse_obj_π
   rw [Functor.Final.extendCocone_obj_ι_app' (Y := .one) (f := 𝟙 zero)]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between reflexive coforks and coforks sends a reflexive cofork to its underlying
 cofork. -/

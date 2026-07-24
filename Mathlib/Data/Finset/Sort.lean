@@ -132,12 +132,8 @@ variable [LinearOrder α]
 theorem sortedLT_sort (s : Finset α) : (sort s).SortedLT :=
   (pairwise_sort _ _).sortedLE.sortedLT_of_nodup (sort_nodup _ _)
 
-@[deprecated (since := "2025-11-27")] alias sort_sorted_lt := sortedLT_sort
-
 theorem sortedGT_sort (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
   (pairwise_sort _ _).sortedGE.sortedGT_of_nodup (sort_nodup _ _)
-
-@[deprecated (since := "2025-11-27")] alias sort_sorted_gt := sortedGT_sort
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.Nonempty) :
     s.sort.get ⟨0, h⟩ = s.min' H := by
@@ -222,7 +218,7 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
     OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
-    Subtype.range_coe_subtype, Finset.setOf_mem]
+    Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 @[simp]
 theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :

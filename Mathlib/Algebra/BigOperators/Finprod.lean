@@ -336,7 +336,7 @@ variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
     ∏ᶠ _ : a ∈ s, f a = mulIndicator s f a := by
-  classical convert! finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
+  convert! finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
 
 @[to_additive (attr := simp)]
 theorem finprod_apply_ne_one (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
@@ -395,6 +395,7 @@ theorem finprod_def (f : α → M) [Decidable (HasFiniteMulSupport f)] :
     rw [HasFiniteMulSupport, mulSupport_comp_eq_preimage]
     exact mt (fun hf => hf.of_preimage Equiv.plift.surjective) h
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem finprod_of_infinite_mulSupport {f : α → M} (hf : (mulSupport f).Infinite) :
     ∏ᶠ i, f i = 1 := by
@@ -477,6 +478,7 @@ theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : F
   contrapose! hxs
   exact (h hxs).2 hx
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem finprod_cond_ne (f : α → M) (a : α) [DecidableEq α] (hf : HasFiniteMulSupport f) :
     (∏ᶠ (i) (_ : i ≠ a), f i) = ∏ i ∈ hf.toFinset.erase a, f i := by
@@ -509,6 +511,7 @@ theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport 
     ∏ᶠ i ∈ s, f i = ∏ i ∈ hf.toFinset, f i :=
   finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp [inter_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem finprod_mem_eq_prod_filter (f : α → M) (s : Set α) [DecidablePred (· ∈ s)]
     (hf : HasFiniteMulSupport f) :
@@ -642,6 +645,7 @@ lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the multiplicative supports of `f` and `g` are finite, then the product of `f i * g i` equals
 the product of `f i` multiplied by the product of `g i`. -/
 @[to_additive
@@ -1107,6 +1111,7 @@ lemma finprod_mem_powerset_sdiff_elem {f : Set α → M} {s : Set α} {a : α} (
 @[deprecated (since := "2026-06-03")]
 alias finprod_mem_powerset_diff_elem := finprod_mem_powerset_sdiff_elem
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : HasFiniteMulSupport f) :
     (f a * ∏ᶠ (i) (_ : i ≠ a), f i) = ∏ᶠ i, f i := by
@@ -1284,6 +1289,7 @@ theorem finsum_mem_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors
   ext a
   by_cases h : a ∈ s <;> simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : HasFiniteMulSupport f) (a : α) :
     (∏ᶠ i, f i) a = ∏ᶠ i, f i a := by
@@ -1342,6 +1348,7 @@ theorem finprod_mem_finset_product₃ {γ : Type*} (s : Finset (α × β × γ))
     simp_rw [finprod_mem_finset_product']
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem finprod_curry (f : α × β → M) (hf : HasFiniteMulSupport f) :
     ∏ᶠ ab, f ab = ∏ᶠ (a) (b), f (a, b) := by

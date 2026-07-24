@@ -5,10 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.FieldTheory.Normal.Basic
-public import Mathlib.Order.Closure
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
 /-!
 # Normal closures
 
@@ -261,8 +259,6 @@ noncomputable def normalClosureOperator : ClosureOperator (IntermediateField F L
   monotone' K K' := normalClosure_mono K K'
   le_closure' := le_normalClosure
   idempotent' K := normalClosure_of_normal (normalClosure F K L)
-
-@[deprecated (since := "2025-11-21")] alias closureOperator := normalClosureOperator
 
 variable {K : IntermediateField F L} {F L}
 

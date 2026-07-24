@@ -186,7 +186,8 @@ theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
 
 theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) (div : p ∣ n) :
     1 ≤ padicValNat p n := by
-  rwa [← ENat.coe_le_coe, padicValNat_eq_emultiplicity hn, ← pow_dvd_iff_le_emultiplicity, pow_one]
+  rwa [← ENat.natCast_le_natCast, padicValNat_eq_emultiplicity hn,
+    ← pow_dvd_iff_le_emultiplicity, pow_one]
 
 theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ padicValNat p n ≠ 0 :=

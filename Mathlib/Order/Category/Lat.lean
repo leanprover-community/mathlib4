@@ -48,7 +48,6 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Lat R`. -/
 @[ext]
 structure Hom (X Y : Lat.{u}) where
