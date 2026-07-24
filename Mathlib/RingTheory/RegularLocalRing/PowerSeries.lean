@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.PowerSeries.Ideal
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.RegularLocalRing.Defs
@@ -40,7 +41,7 @@ lemma PowerSeries.maximalIdeal_eq_sup [IsLocalRing R] : maximalIdeal R⟦X⟧ =
     Ideal.map_map, constantCoeff_comp_C, Ideal.map_id]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma PowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
+instance PowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
     IsRegularLocalRing R⟦X⟧ := by
   apply IsRegularLocalRing.of_spanFinrank_maximalIdeal_le
   apply le_trans _ ringKrullDim_succ_le_ringKrullDim_powerseries
@@ -57,6 +58,11 @@ lemma PowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R
   exact le_of_le_of_eq (Set.ncard_image_le fin')
     (Submodule.FG.generators_ncard (maximalIdeal R).fg_of_isNoetherianRing)
 
-lemma MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R]
+instance MvPowerSeries.isRegularLocalRing_of_isRegularLocalRing [IsRegularLocalRing R]
     {ι : Type*} [Finite ι] : IsRegularLocalRing (MvPowerSeries ι R) := by
-  sorry
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e => exact IsRegularLocalRing.of_ringEquiv (MvPowerSeries.renameEquiv R e).toRingEquiv
+  | h_empty =>
+    exact IsRegularLocalRing.of_ringEquiv (MvPowerSeries.isEmptyEquiv PEmpty R).symm.toRingEquiv
+  | h_option =>
+    exact IsRegularLocalRing.of_ringEquiv (MvPowerSeries.optionEquivLeft _ R).symm.toRingEquiv
