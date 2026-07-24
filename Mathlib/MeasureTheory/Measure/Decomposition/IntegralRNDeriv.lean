@@ -110,8 +110,8 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     rw [hx]
   rw [h_eq, mul_comm, ← div_le_iff₀, div_eq_inv_mul, inv_inv] at h
   · convert! h
-    · simp only [div_eq_inv_mul, Measure.smul_apply, smul_eq_mul, ENNReal.toReal_mul,
-      ENNReal.toReal_inv, μ', measureReal_def]
+    · simp only [div_eq_inv_mul, smul_apply, smul_eq_mul, ENNReal.toReal_mul,
+        ENNReal.toReal_inv, μ', measureReal_def]
   · simp [ENNReal.toReal_pos_iff, hν, measureReal_def]
 
 section Integrable

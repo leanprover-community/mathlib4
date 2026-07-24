@@ -503,13 +503,13 @@ theorem ext_of_generateFrom_of_iUnion (C : Set (Set α)) (B : ℕ → Set α) (h
 @[simp]
 theorem restrict_sum (μ : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
     (sum μ).restrict s = sum fun i => (μ i).restrict s :=
-  ext fun t ht => by simp only [sum_apply, restrict_apply, ht, ht.inter hs]
+  ext fun t ht => by simp only [Measure.sum_apply, restrict_apply, ht, ht.inter hs]
 
 @[simp]
 theorem restrict_sum_of_countable [Countable ι] (μ : ι → Measure α) (s : Set α) :
     (sum μ).restrict s = sum fun i => (μ i).restrict s := by
   ext t ht
-  simp_rw [sum_apply _ ht, restrict_apply ht, sum_apply_of_countable]
+  simp_rw [Measure.sum_apply _ ht, restrict_apply ht, sum_apply_of_countable]
 
 lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s ≪ ν.restrict s := by
   refine Measure.AbsolutelyContinuous.mk (fun t ht htν ↦ ?_)
@@ -518,7 +518,7 @@ lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s
 
 theorem restrict_iUnion_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AEDisjoint μ on s))
     (hm : ∀ i, NullMeasurableSet (s i) μ) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
-  ext fun t ht => by simp only [sum_apply _ ht, restrict_iUnion_apply_ae hd hm ht]
+  ext fun t ht => by simp only [Measure.sum_apply _ ht, restrict_iUnion_apply_ae hd hm ht]
 
 theorem restrict_iUnion [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
     (hm : ∀ i, MeasurableSet (s i)) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
@@ -1091,7 +1091,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     (hs : ∀ y, {i | y ∈ s i}.encard ≤ M) :
     Measure.sum (fun i ↦ μ.restrict (s i)) ≤ M • μ.restrict (⋃ i, s i) := by
   classical
-  refine le_iff.mpr (fun t ht ↦ le_of_eq_of_le (sum_apply _ ht) ?_)
+  refine le_iff.mpr (fun t ht ↦ le_of_eq_of_le (Measure.sum_apply _ ht) ?_)
   refine ENNReal.summable.tsum_le_of_sum_le (fun F ↦ ?_)
   -- `P` is a partition of `⋃ i ∈ F, s i` indexed by `C ∈ Cs` (nonempty subsets of `F`).
   -- `P` is a partition of `s i` when restricted to `C ∈ G i` (subsets of `F` containing `i`).
@@ -1151,7 +1151,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine fun C₁ hC₁ C₂ hC₂ hC ↦ Set.disjoint_iff.mpr fun x hx ↦ hC <| ?_
       exact subset_antisymm (C_subset_C hC₁ hx) (C_subset_C hC₂ (Set.inter_comm _ _ ▸ hx))
     _ ≤ (M • μ.restrict (⋃ i, s i)) t := by
-      rw [Measure.smul_apply]
+      rw [smul_apply]
       exact nsmul_le_nsmul_right (μ.restrict_mono_set iUnion_P t) M
 
 end Sum

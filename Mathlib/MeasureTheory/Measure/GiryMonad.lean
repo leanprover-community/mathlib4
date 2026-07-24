@@ -60,7 +60,7 @@ theorem measurable_of_measurable_coe (f : β → Measure α)
 
 instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
   refine ⟨Measure.measurable_of_measurable_coe _ fun s hs => ?_⟩
-  simp_rw [Measure.coe_add, Pi.add_apply]
+  simp_rw [add_apply]
   refine Measurable.add ?_ ?_
   · exact (Measure.measurable_coe hs).comp measurable_fst
   · exact (Measure.measurable_coe hs).comp measurable_snd
@@ -71,7 +71,7 @@ instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : Measurable
 lemma _root_.Measurable.smul_measure {f : α → ℝ≥0∞} (hf : Measurable f) (μ : Measure β) :
     Measurable (fun x ↦ f x • μ) := by
   refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
-  simp only [Measure.smul_apply, smul_eq_mul]
+  simp only [smul_apply, smul_eq_mul]
   fun_prop
 
 theorem measurable_measure {μ : α → Measure β} :
@@ -149,7 +149,7 @@ theorem join_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ �
 lemma join_sum {ι : Type*} (m : ι → Measure (Measure α)) :
     (sum m).join = sum fun (i : ι) ↦ (m i).join := by
   ext s hs
-  simp_rw [sum_apply _ hs, join_apply hs, lintegral_sum_measure]
+  simp_rw [Measure.sum_apply _ hs, join_apply hs, lintegral_sum_measure]
 
 @[simp]
 theorem join_dirac (μ : Measure α) : join (dirac μ) = μ := by
