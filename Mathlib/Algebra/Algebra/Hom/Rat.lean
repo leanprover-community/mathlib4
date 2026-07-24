@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Algebra.Rat
 
@@ -15,43 +16,73 @@ public import Mathlib.Algebra.Algebra.Rat
 
 @[expose] public section
 
+variable {R S : Type*} [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
 
 namespace RingHom
 
-variable {R S : Type*}
-
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
-def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
+def toRatAlgHom (f : R →+* S) : R →ₐ[ℚ] S :=
   { f with commutes' := f.map_rat_algebraMap }
 
 @[simp]
-theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) :
+theorem toRatAlgHom_toRingHom (f : R →+* S) :
     ↑f.toRatAlgHom = f :=
   RingHom.ext fun _x => rfl
 
 @[simp]
-theorem toRatAlgHom_apply [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) (x : R) :
+theorem toRatAlgHom_apply (f : R →+* S) (x : R) :
     f.toRatAlgHom x = f x :=
   rfl
 
 end RingHom
 
-section
-
-variable {R S : Type*}
-
 @[simp]
-theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
-    (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
+theorem AlgHom.toRingHom_toRatAlgHom (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
   AlgHom.ext fun _x => rfl
 
 variable (R) (S) in
 /-- The equivalence between `RingHom` and `ℚ`-algebra homomorphisms. -/
 @[simps]
-def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
-    (R →+* S) ≃ (R →ₐ[ℚ] S) where
+def RingHom.equivRatAlgHom : (R →+* S) ≃ (R →ₐ[ℚ] S) where
   toFun := RingHom.toRatAlgHom
   invFun := AlgHom.toRingHom
 
-end
+namespace RingEquiv
+
+/-- Reinterpret a `RingEquiv` as a `ℚ`-algebra isomorphism. This actually yields an
+equivalence, see `RingEquiv.equivRatAlgEquiv`. -/
+@[simps! -isSimp apply]
+def toRatAlgEquiv (f : R ≃+* S) : R ≃ₐ[ℚ] S where
+  toEquiv := f
+  __ := f.toRingHom.toRatAlgHom
+
+@[simp]
+theorem coe_toRatAlgEquiv (f : R ≃+* S) : ⇑f.toRatAlgEquiv = ⇑f := rfl
+
+@[simp]
+theorem toRingEquiv_toRatAlgEquiv (f : R ≃+* S) :
+    f.toRatAlgEquiv = f :=
+  rfl
+
+theorem toAlgHom_toRatAlgEquiv (f : R ≃+* S) :
+    f.toRatAlgEquiv.toAlgHom = (f : R →+* S).toRatAlgHom :=
+  rfl
+
+@[simp]
+theorem symm_toRatAlgEquiv (f : R ≃+* S) :
+    f.toRatAlgEquiv.symm = f.symm.toRatAlgEquiv :=
+  rfl
+
+end RingEquiv
+
+@[simp]
+theorem AlgEquiv.toRatAlgEquiv_toRingEquiv (f : R ≃ₐ[ℚ] S) : (f : R ≃+* S).toRatAlgEquiv = f :=
+  rfl
+
+variable (R) (S) in
+/-- The equivalence between `RingEquiv` and `ℚ`-algebra isomorphisms. -/
+@[simps apply symm_apply]
+def RingEquiv.equivRatAlgEquiv : (R ≃+* S) ≃ (R ≃ₐ[ℚ] S) where
+  toFun := RingEquiv.toRatAlgEquiv
+  invFun := AlgEquiv.toRingEquiv
