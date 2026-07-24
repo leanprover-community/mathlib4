@@ -6,7 +6,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 module
 
 public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Topology.Algebra.Equiv.Prod
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
 /-!
 # Operator norm: Cartesian products

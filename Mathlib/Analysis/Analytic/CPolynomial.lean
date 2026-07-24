@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Analytic.CPolynomialDef
-public import Mathlib.Topology.Algebra.Equiv.Prod
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
 /-! # Properties of continuously polynomial functions
 
