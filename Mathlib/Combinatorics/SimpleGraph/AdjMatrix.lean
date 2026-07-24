@@ -107,7 +107,7 @@ theorem _root_.Matrix.isAdjMatrix_reindex_iff [Zero α] [One α] {f : V ≃ W} :
 @[simps]
 def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V where
   Adj i j := A i j = 1
-  symm.symm i j hij := by rwa [h.symm.apply i j]
+  symm i j hij := by rwa [h.symm.apply i j]
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
