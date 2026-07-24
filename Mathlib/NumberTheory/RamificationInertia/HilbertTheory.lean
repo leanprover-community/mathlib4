@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Galois
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Defs
 
 /-!
 
