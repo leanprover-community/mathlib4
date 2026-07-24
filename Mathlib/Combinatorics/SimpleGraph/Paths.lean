@@ -6,9 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
-public import Mathlib.Order.Preorder.Finite
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 
@@ -171,18 +169,29 @@ theorem IsTrail.count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h
     {e : Sym2 V} (he : e ∈ p.edges) : p.edges.count e = 1 :=
   List.count_eq_one_of_mem h.edges_nodup he
 
-theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
-    {w : G.Walk u v} (h : w.IsTrail) : w.length ≤ G.edgeFinset.card := by
-  classical
-  let edges := w.edges.toFinset
-  have : edges.card = w.length := length_edges _ ▸ List.toFinset_card_of_nodup h.edges_nodup
-  rw [← this]
-  have : edges ⊆ G.edgeFinset := by
-    intro e h
-    refine mem_edgeFinset.mpr ?_
-    apply w.edges_subset_edgeSet
-    simpa [edges] using h
-  exact Finset.card_le_card this
+theorem IsTrail.length_le_encard_edgeSet (hp : p.IsTrail) : p.length ≤ G.edgeSet.encard := by
+  grw [← length_edges, hp.edges_nodup.length_le_encard p.edges_subset_edgeSet]
+
+theorem IsTrail.length_le_ncard_edgeSet [Finite G.edgeSet] (hp : p.IsTrail) :
+    p.length ≤ G.edgeSet.ncard := by
+  grw [← length_edges, hp.edges_nodup.length_le_ncard ‹_› p.edges_subset_edgeSet]
+
+theorem IsPath.length_lt_enatCard (hp : p.IsPath) : p.length < ENat.card V := by
+  simpa [← ENat.coe_add_one_le_iff] using hp.support_nodup.length_le_enatCard
+
+theorem IsPath.length_lt_natCard [Finite V] (hp : p.IsPath) : p.length < Nat.card V := by
+  simpa [← ENat.coe_add_one_le_iff] using hp.support_nodup.length_le_natCard
+
+theorem IsCycle.length_le_enatCard {p : G.Walk v v} (hp : p.IsCycle) : p.length ≤ ENat.card V := by
+  simpa using hp.support_nodup.length_le_enatCard
+
+theorem IsCycle.length_le_natCard [Finite V] {p : G.Walk v v} (hp : p.IsCycle) :
+    p.length ≤ Nat.card V := by
+  simpa using hp.support_nodup.length_le_natCard
+
+theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V} {w : G.Walk u v}
+    (h : w.IsTrail) : w.length ≤ G.edgeFinset.card := by
+  simp [edgeFinset, h.length_le_ncard_edgeSet]
 
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
@@ -383,33 +392,31 @@ theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.l
   exact h.take n
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
-lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
+lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [Nonempty V]
     [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsTrail),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsTrail), p'.length ≤ p.length := by
-  have := Fintype.ofFinite G.edgeSet
   let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsTrail ∧ p.length = n}
-  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
-  obtain ⟨x⟩ := N
-  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
+  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeSet.ncard)
+    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.length_le_ncard_edgeSet
+  obtain x := Classical.arbitrary V
+  obtain ⟨_, ⟨u, v, p, hp, _⟩, hn⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
-  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
+  have := hn ⟨u', v', p', hp', rfl⟩
   lia
 
 /-- There exists a path of maximal length in a non-empty graph on finite edges. -/
-lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
+lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [Nonempty V]
     [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsPath), p'.length ≤ p.length := by
-  have := Fintype.ofFinite G.edgeSet
   let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsPath ∧ p.length = n}
-  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_card_edgeFinset
-  obtain ⟨x⟩ := N
-  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
+  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeSet.ncard)
+    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_ncard_edgeSet
+  obtain x := Classical.arbitrary V
+  obtain ⟨_, ⟨u, v, p, hp, _⟩, hn⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
-  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
+  have := hn ⟨u', v', p', hp', rfl⟩
   lia
 
 /-! ### About paths -/
@@ -420,8 +427,7 @@ instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := by
 
 theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) :
     p.length < Fintype.card V := by
-  rw [Nat.lt_iff_add_one_le, ← length_support]
-  exact hp.support_nodup.length_le_card
+  grw [Fintype.card_eq_nat_card, hp.length_lt_natCard]
 
 lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
     Set.InjOn p.getVert {i | i ≤ p.length} := by
