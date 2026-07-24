@@ -82,6 +82,13 @@ theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iUnion :=
   EventuallyLE.countable_iUnion
 
+theorem EventuallyLE.countable_iUnion' [Countable ι] {s : ι → Set α} {t : Set α}
+    (h : ∀ i, s i ≤ᶠ[l] t) :
+    ⋃ i, s i ≤ᶠ[l] t := by
+  refine (eventually_countable_forall.2 h).mono fun x hx1 hx2 ↦ ?_
+  obtain ⟨i, hi⟩ := mem_iUnion.1 hx2
+  exact hx1 i hi
+
 theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
   (EventuallyLE.countable_iUnion fun i => (h i).le).antisymm
