@@ -33,7 +33,7 @@ instance range_Iio : HasCountableSeparatingOn X (· ∈ range Iio) s := by
   rcases TopologicalSpace.exists_countable_dense X with ⟨s, hsc, hsd⟩
   set t := s ∪ {x | ∃ y, y ⋖ x}
   refine ⟨Iio '' t, .image ?_ _, ?_, ?_⟩
-  · exact hsc.union countable_setOf_covBy_left
+  · exact hsc.union countable_setOfPred_covBy_left
   · exact image_subset_range _ _
   · rintro x - y - h
     by_contra! hne

@@ -63,6 +63,7 @@ and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK
 `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
 noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ)).measure
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
 lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
@@ -96,7 +97,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
-  simp_rw [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
+  simp_rw [Set.mem_ofPred_eq, nnrealPart_apply, Real.one_le_toNNReal]
   refine ⟨(fun x hx ↦ Eq.ge (hfK x hx)), ?_⟩
   apply NNReal.eq
   rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
@@ -137,8 +138,8 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     apply Disjoint.preimage
     simp_rw [mem_preimage, mem_Ioc, disjoint_left]
     intro x hx
-    rw [mem_setOf_eq, and_assoc] at hx
-    simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
+    rw [mem_ofPred_eq, and_assoc] at hx
+    simp_rw [mem_ofPred_eq, not_and_or, not_lt, not_le, or_assoc]
     rcases (by lia : m < n ∨ n < m) with hc | hc
     · left
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))

@@ -114,7 +114,7 @@ theorem isDiameter_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} {s : Sphere P}
     (hne₁₂ : p₁ ≠ p₂) (hne₂₃ : p₂ ≠ p₃)
     (hangle : ∠ p₁ p₂ p₃ = π / 2) :
     s.IsDiameter p₁ p₃ := by
-  haveI : FiniteDimensional ℝ V := .of_finrank_eq_succ (Fact.out : finrank ℝ V = 2)
+  have : FiniteDimensional ℝ V := .of_finrank_eq_succ (Fact.out : finrank ℝ V = 2)
   have hne₁₃ : p₁ ≠ p₃ := fun h ↦ by
     rw [h, angle_self_of_ne hne₂₃.symm] at hangle; linarith [Real.pi_pos]
   have hd := Sphere.isDiameter_ofDiameter p₁ p₃
@@ -125,6 +125,26 @@ theorem isDiameter_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} {s : Sphere P}
       hd.left_mem hd.right_mem (angle_eq_pi_div_two_iff_mem_sphere_ofDiameter.mp hangle)
     exact this.elim hne₁₂.symm hne₂₃
   exact h_eq ▸ hd
+
+/-- On a sphere of nonzero radius, the central angle `∠ p₁ s.center p₂` equals `π` iff
+`p₁` and `p₂` are diametrically opposite. -/
+theorem angle_center_eq_pi_iff_isDiameter {s : Sphere P} {p₁ p₂ : P}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hr : s.radius ≠ 0) :
+    ∠ p₁ s.center p₂ = π ↔ s.IsDiameter p₁ p₂ := by
+  rw [angle_eq_pi_iff_sbtw]
+  exact ⟨fun h => isDiameter_iff_mem_and_mem_and_wbtw.2 ⟨hp₁, hp₂, h.wbtw⟩, fun h => h.sbtw hr⟩
+
+/-- On a sphere of nonzero radius, the central angle `∠ p₁ s.center p₂` equals zero iff
+`p₁ = p₂`. -/
+theorem angle_center_eq_zero_iff_eq {s : Sphere P} {p₁ p₂ : P}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hr : s.radius ≠ 0) :
+    ∠ p₁ s.center p₂ = 0 ↔ p₁ = p₂ := by
+  constructor
+  · intro h
+    refine vsub_left_cancel (eq_of_angle_eq_zero_of_norm_eq (by simpa [angle] using h) ?_)
+    rw [norm_vsub_center_eq_radius hp₁, norm_vsub_center_eq_radius hp₂]
+  · rintro rfl
+    exact angle_self_of_ne fun h => hr (center_mem_iff.mp (h ▸ hp₁))
 
 /-- For a tangent line to a sphere, the angle between the line and the radius at the tangent point
 equals `π / 2`. -/

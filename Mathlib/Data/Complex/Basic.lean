@@ -78,7 +78,7 @@ theorem range_im : range im = univ :=
   im_surjective.range_eq
 
 /-- The natural inclusion of the real numbers into the complex numbers. -/
-@[coe, implicit_reducible]
+@[coe, instance_reducible]
 def ofReal (r : ℝ) : ℂ :=
   ⟨r, 0⟩
 instance : Coe ℝ ℂ :=
@@ -271,6 +271,7 @@ theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
 
 theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
   ext <;> simp [Complex.equivRealProd, ofReal]
@@ -304,7 +305,7 @@ scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
 
 end SMul
 
-open scoped SMul
+open scoped Complex.SMul
 
 section SMul
 
@@ -588,7 +589,7 @@ theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
   Complex.ext_iff.2 <| by simp [two_mul, ofReal]
 
 /-- The coercion `ℝ → ℂ` as a `RingHom`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofRealHom : ℝ →+* ℂ where
   toFun x := (x : ℂ)
   map_one' := ofReal_one
