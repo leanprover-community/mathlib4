@@ -622,7 +622,7 @@ variable {α β : Type u} {β' : Type v}
 theorem mk_equiv_eq_zero_iff_not_liftEq : #(α ≃ β') = 0 ↔ ¬ #α =ₗ #β' := by
   rw [mk_eq_zero_iff, ← not_nonempty_iff, ← mk_liftEq]
 
-@[deprecated (since := "2026-05-25")]
+@[deprecated (since := "2026-07-24")]
 alias mk_equiv_eq_zero_iff_lift_ne := mk_equiv_eq_zero_iff_not_liftEq
 
 @[deprecated mk_equiv_eq_zero_iff_not_liftEq (since := "2026-05-25")]
@@ -892,13 +892,8 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
   · exact extend_function_finite f h
   · apply extend_function f
     obtain ⟨g⟩ := id h
-<<<<<<< HEAD
-    haveI := Infinite.of_injective _ g.injective
-    rw [← mk_liftEq] at h ⊢
-=======
     have := Infinite.of_injective _ g.injective
     rw [← lift_mk_eq'] at h ⊢
->>>>>>> master
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]
 

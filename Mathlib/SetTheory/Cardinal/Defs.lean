@@ -241,8 +241,8 @@ theorem mk_liftEq {α : Type u} {β : Type v} : #α =ₗ #β ↔ Nonempty (α �
     ⟨fun ⟨f⟩ => ⟨Equiv.ulift.symm.trans <| f.trans Equiv.ulift⟩, fun ⟨f⟩ =>
       ⟨Equiv.ulift.trans <| f.trans Equiv.ulift.symm⟩⟩
 
-@[deprecated (since := "2026-05-24")] alias lift_mk_eq := mk_liftEq
-@[deprecated (since := "2026-05-24")] alias lift_mk_eq' := mk_liftEq
+@[deprecated (since := "2026-07-24")] alias lift_mk_eq := mk_liftEq
+@[deprecated (since := "2026-07-24")] alias lift_mk_eq' := mk_liftEq
 
 theorem mk_congr_lift {α : Type u} {β : Type v} (e : α ≃ β) : #α =ₗ #β :=
   mk_liftEq.2 ⟨e⟩

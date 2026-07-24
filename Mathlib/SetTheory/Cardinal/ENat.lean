@@ -138,7 +138,7 @@ theorem liftEq_ofENat_iff {x : Cardinal.{v}} {m : ℕ∞} : x =ₗ m ↔ x = m :
   unfold LiftEq
   simpa using lift_inj (b := m)
 
-@[deprecated liftEq_ofENat_iff (since := "2026-05-25")]
+@[deprecated liftEq_ofENat_iff (since := "2026-07-24")]
 lemma lift_eq_ofENat {x : Cardinal.{v}} {m : ℕ∞} : lift.{u} x = m ↔ x = m := by
   simp
 
@@ -153,7 +153,7 @@ theorem ofENat_liftEq_iff {x : Cardinal.{v}} {m : ℕ∞} : m =ₗ x ↔ m = x :
   unfold LiftEq
   simpa using lift_inj (a := m)
 
-@[deprecated ofENat_liftEq_iff (since := "2026-05-25")]
+@[deprecated ofENat_liftEq_iff (since := "2026-07-24")]
 lemma ofENat_eq_lift {x : Cardinal.{v}} {m : ℕ∞} : m = lift.{u} x ↔ m = x := by
   simp
 
@@ -300,7 +300,7 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
 @[simp] lemma toENat_eq_ofNat [n.AtLeastTwo] : toENat c = ofNat(n) ↔ c = ofNat(n) :=
   toENat_eq_natCast
 
-@[deprecated toENat_eq_zero (since := "2026-05-25")]
+@[deprecated toENat_eq_zero (since := "2026-07-24")]
 lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := by simp
 
 @[deprecated (since := "2026-01-13")] alias toENat_eq_nat := toENat_eq_natCast

@@ -68,17 +68,17 @@ theorem mk_shrink_liftEq (α : Type u) [Small.{v} α] : #(Shrink.{v} α) =ₗ #�
 theorem liftEq_mk_shrink (α : Type u) [Small.{v} α] : #α =ₗ #(Shrink.{v} α) :=
   (mk_shrink_liftEq _).symm
 
-@[deprecated mk_shrink_liftEq (since := "2026-05-24")]
+@[deprecated mk_shrink_liftEq (since := "2026-07-24")]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α := by
   simp
 
-@[deprecated mk_shrink_liftEq (since := "2026-05-24")]
+@[deprecated mk_shrink_liftEq (since := "2026-07-24")]
 theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = Cardinal.lift.{v} #α := by
   simp
 
-@[deprecated mk_shrink_liftEq (since := "2026-05-24")]
+@[deprecated mk_shrink_liftEq (since := "2026-07-24")]
 theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
   simp
