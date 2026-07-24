@@ -181,6 +181,16 @@ theorem separableClosure.normalClosure_eq_self :
       (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
+/-- The normal closure of a separable extension is separable. -/
+instance IntermediateField.isSeparable_normalClosure [Algebra.IsSeparable F K] :
+    Algebra.IsSeparable F (normalClosure F K E) :=
+  have h : normalClosure F K E ≤ separableClosure F E :=
+    normalClosure_le_iff.2 fun i ↦
+      have : Algebra.IsSeparable F i.fieldRange :=
+        AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i)
+      le_separableClosure F E _
+  (le_separableClosure_iff F E _).1 h
+
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem IntermediateField.isSeparable_adjoin_iff_isSeparable {S : Set E} :
