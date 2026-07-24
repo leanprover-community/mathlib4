@@ -6626,6 +6626,8 @@ public import Mathlib.RingTheory.FractionalIdeal.Operations
 public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
+public import Mathlib.RingTheory.FrobeniusAlgebra.Basic
+public import Mathlib.RingTheory.FrobeniusAlgebra.IsFrobenius
 public import Mathlib.RingTheory.GradedAlgebra.AlgHom
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
