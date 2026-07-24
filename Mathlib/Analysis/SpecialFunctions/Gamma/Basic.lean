@@ -68,11 +68,11 @@ theorem GammaIntegral_convergent {s : ℝ} (h : 0 < s) :
   rw [← Ioc_union_Ioi_eq_Ioi (@zero_le_one ℝ _ _ _ _), integrableOn_union]
   constructor
   · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
-    refine IntegrableOn.continuousOn_mul continuousOn_id.neg.rexp ?_ isCompact_Icc
-    refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
-    exact intervalIntegrable_rpow' (by linarith)
-  · refine integrable_of_isBigO_exp_neg one_half_pos ?_ (Gamma_integrand_isLittleO _).isBigO
-    exact continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const (by grind))
+    exact (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp
+      ((intervalIntegrable_rpow' (by linarith)).continuousOn_mul continuousOn_id.neg.rexp)
+  · exact integrable_of_isBigO_exp_neg one_half_pos
+      (continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const (by grind)))
+      (Gamma_integrand_isLittleO _).isBigO
 
 end Real
 
