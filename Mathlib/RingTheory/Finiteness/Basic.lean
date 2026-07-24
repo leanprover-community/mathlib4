@@ -514,7 +514,7 @@ end AlgHom
 section Ring
 variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
 
-local notation3 "R≥0" => {c : R // 0 ≤ c}
+local notation3 "R≥0" => Nonneg R
 
 private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   simp_rw [Module.finite_def, Submodule.fg_def, Submodule.eq_top_iff']

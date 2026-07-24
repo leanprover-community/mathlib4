@@ -32,7 +32,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   - `Archimedean ℝ≥0`;
   - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
-  These instances are derived from corresponding instances about the type `{x : α // 0 ≤ x}` in an
+  These instances are derived from corresponding instances about the type `Nonneg α` in an
   appropriate ordered field/ring/group/monoid `α`, see `Mathlib/Algebra/Order/Nonneg/Ring.lean`.
 
 * `Real.toNNReal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(Real.toNNReal x) = x` when `0 ≤ x` and
@@ -55,7 +55,7 @@ assert_not_exists TrivialStar
 open Function
 
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r }
+def NNReal := Nonneg ℝ
 
 namespace NNReal
 
@@ -69,7 +69,7 @@ instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 /-- Constructor of ℝ≥0 from a nonnegative real number.
 
 Important: You should use `NNReal.mk` instead of the anonymous constructor `⟨_, _⟩` to avoid abuse
-of the definitional equality between `ℝ≥0` and `{ r : ℝ // 0 ≤ r }`. -/
+of the definitional equality between `ℝ≥0` and `Nonneg ℝ`. -/
 protected def mk (x : ℝ) (hx : 0 ≤ x) : ℝ≥0 := ⟨x, hx⟩
 
 instance : Zero ℝ≥0 := ⟨.mk 0 le_rfl⟩
