@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Defs
