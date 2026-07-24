@@ -5,9 +5,9 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.RepresentationTheory.Subrepresentation
-public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
+public import Mathlib.RepresentationTheory.Intertwining
+public import Mathlib.RepresentationTheory.Subrepresentation
 
 /-!
 # Irreducible representations
@@ -64,13 +64,15 @@ theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
 instance [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : Subsingleton (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ sub_eq_zero.mp <| (bijective_or_eq_zero _).resolve_left
     fun h ↦ isEmpty_iff.mp inferInstance <| (f - g).ofBijective h⟩
-variable [FiniteDimensional k V] [IsAlgClosed k]
 
-variable (f : IntertwiningMap ρ ρ) in
+variable [IsAlgClosed k] [FiniteDimensional k (IntertwiningMap ρ ρ)]
+
 theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
     Bijective (algebraMap k (IntertwiningMap ρ ρ)) := by
-  have : Bijective (algebraMap k (Module.End k[G] ρ.asModule)) :=
-    IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k
+  have : FiniteDimensional k (Module.End k[G] ρ.asModule) :=
+    (IntertwiningMap.equivLinearMapAsModule ρ ρ).finiteDimensional
+  have : Bijective (algebraMap k (Module.End k[G] ρ.asModule)) := by
+    classical exact IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)
   exact (Bijective.of_comp_iff' (IntertwiningMap.equivAlgEnd (ρ := ρ)).bijective _).1 this
 
 variable (ρ) in
@@ -83,6 +85,8 @@ open scoped IsMulCommutative in
 include ρ in
 variable (ρ) in
 theorem finrank_eq_one_of_isMulCommutative [IsMulCommutative G] : Module.finrank k V = 1 := by
+  have : FiniteDimensional k (Module.End k[G] ρ.asModule) :=
+    (IntertwiningMap.equivLinearMapAsModule ρ ρ).finiteDimensional
   exact IsSimpleModule.finrank_eq_one_of_isMulCommutative k[G] ρ.asModule k
 
 end IsIrreducible
