@@ -625,7 +625,7 @@ theorem mk_equiv_eq_zero_iff_not_liftEq : #(α ≃ β') = 0 ↔ ¬ #α =ₗ #β'
 @[deprecated (since := "2026-07-24")]
 alias mk_equiv_eq_zero_iff_lift_ne := mk_equiv_eq_zero_iff_not_liftEq
 
-@[deprecated mk_equiv_eq_zero_iff_not_liftEq (since := "2026-05-25")]
+@[deprecated mk_equiv_eq_zero_iff_not_liftEq (since := "2026-07-24")]
 theorem mk_equiv_eq_zero_iff_ne : #(α ≃ β) = 0 ↔ #α ≠ #β := by
   simp
 
