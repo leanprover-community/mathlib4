@@ -526,10 +526,6 @@ theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
 
--- this name was backwards
-@[deprecated (since := "2026-01-20")]
-alias AffineMap.vectorSpan_image_eq_submodule_map := AffineMap.map_vectorSpan
-
 namespace AffineSubspace
 
 /-- The image of an affine subspace under an affine map as an affine subspace. -/

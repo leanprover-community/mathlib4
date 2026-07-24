@@ -41,11 +41,6 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
     spectrum 𝕜 (toLpLin p p A) = spectrum 𝕜 A :=
   AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun p 𝕜 n)) _
 
-/-- The spectrum of a matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
-@[deprecated spectrum_toLpLin (since := "2026-01-21")]
-theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
-  spectrum_toLpLin 2
-
 namespace IsHermitian
 
 section DecidableEq

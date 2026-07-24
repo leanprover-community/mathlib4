@@ -527,8 +527,6 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 
 attribute [fun_prop] Measurable.fun_comp
 
-@[deprecated (since := "2026-01-23")] alias Measurable.comp' := Measurable.fun_comp
-
 @[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)

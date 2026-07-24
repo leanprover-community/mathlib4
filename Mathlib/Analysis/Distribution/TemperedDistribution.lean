@@ -481,15 +481,6 @@ instance instContinuousFourier : ContinuousFourier 𝓢'(E, F) 𝓢'(E, F) where
 @[simp]
 theorem fourier_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
 
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLM := FourierTransform.fourierCLM
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLM_apply := FourierTransform.fourierCLM_apply
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransform_apply := fourier_apply
-
 instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv := PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))
 
@@ -504,15 +495,6 @@ instance instContinuousFourierInv : ContinuousFourierInv 𝓢'(E, F) 𝓢'(E, F)
 
 @[simp]
 theorem fourierInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformInvCLM := FourierTransform.fourierInvCLM
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformInvCLM_apply := FourierTransform.fourierInvCLM_apply
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformInv_apply := fourierInv_apply
 
 instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv_fourier_eq f := by ext; simp
@@ -533,9 +515,6 @@ theorem fourier_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
   ext g
   simpa using integral_fourier_smul_eq g f
 
-@[deprecated (since := "2026-01-14")]
-alias fourierTransform_toTemperedDistributionCLM_eq := fourier_toTemperedDistributionCLM_eq
-
 /-- The distributional inverse Fourier transform and the classical inverse Fourier transform
 coincide on `𝓢(E, F)`. -/
 theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
@@ -545,9 +524,6 @@ theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
   _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
     rw [fourier_toTemperedDistributionCLM_eq]
   _ = _ := fourierInv_fourier_eq _
-
-@[deprecated (since := "2026-01-14")]
-alias fourierTransformInv_toTemperedDistributionCLM_eq := fourierInv_toTemperedDistributionCLM_eq
 
 end embedding
 

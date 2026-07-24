@@ -47,9 +47,6 @@ class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOn
 
 alias Scheme.Hom.isClosedEmbedding := IsClosedImmersion.isClosedEmbedding
 
-@[deprecated (since := "2026-01-20")]
-alias IsClosedImmersion.base_closed := Scheme.Hom.isClosedEmbedding
-
 namespace IsClosedImmersion
 
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓

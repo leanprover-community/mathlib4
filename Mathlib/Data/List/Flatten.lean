@@ -66,16 +66,10 @@ theorem getLast_getLast_eq_getLast_flatten {l : List (List α)}
       l.flatten.getLast (flatten_ne_nil_iff.2 ⟨_, getLast_mem hl, hl'⟩) := by
   cases eq_nil_or_concat l with grind
 
-@[deprecated (since := "2026-01-31")]
-alias getLast_flatten_of_getLast_ne_nil := getLast_getLast_eq_getLast_flatten
-
 /-- See also `getLast_getLast_eq_getLast_flatten`, which switches around the proof obligations. -/
 theorem getLast_flatten_eq_getLast_getLast {l : List (List α)}
     (hl : l.flatten ≠ []) (hl' : l.getLast (by grind) ≠ []) :
     l.flatten.getLast hl = (l.getLast (by grind)).getLast hl' :=
   (getLast_getLast_eq_getLast_flatten ..).symm
-
-@[deprecated (since := "2026-01-31")]
-alias getLast_flatten_of_flatten_ne_nil := getLast_flatten_eq_getLast_getLast
 
 end List

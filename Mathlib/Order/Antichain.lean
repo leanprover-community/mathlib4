@@ -71,8 +71,6 @@ protected theorem eq' (hs : IsAntichain r s) {a b : α} (ha : a ∈ s) (hb : b �
 protected theorem antisymm (h : IsAntichain r univ) : Std.Antisymm r :=
   ⟨fun _ _ ha _ => h.eq trivial trivial ha⟩
 
-@[deprecated (since := "2026-01-06")] protected alias isAntisymm := antisymm
-
 protected theorem subsingleton [Std.Trichotomous r] (h : IsAntichain r s) : s.Subsingleton := by
   rintro a ha b hb
   obtain hab | hab | hab := trichotomous_of r a b

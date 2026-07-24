@@ -171,9 +171,6 @@ def Coloring.ofIsEmpty [IsEmpty V] : G.Coloring α := .mk isEmptyElim fun {v} =>
 
 theorem Colorable.of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n := ⟨.ofIsEmpty⟩
 
-@[deprecated (since := "2026-01-03")] alias coloringOfIsEmpty := Coloring.ofIsEmpty
-@[deprecated (since := "2026-01-03")] alias colorableOfIsEmpty := Colorable.of_isEmpty
-
 @[simp]
 lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
   ⟨fun ⟨C⟩ ↦ Function.isEmpty C, fun _ ↦ .of_isEmpty 0⟩

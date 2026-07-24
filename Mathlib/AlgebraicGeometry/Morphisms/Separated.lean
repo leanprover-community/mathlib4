@@ -45,9 +45,6 @@ class IsSeparated : Prop where
   /-- A morphism is separated if the diagonal map is a closed immersion. -/
   isClosedImmersion_diagonal : IsClosedImmersion (pullback.diagonal f) := by infer_instance
 
-@[deprecated (since := "2026-01-20")]
-alias IsSeparated.diagonal_isClosedImmersion := IsSeparated.isClosedImmersion_diagonal
-
 namespace IsSeparated
 
 attribute [instance] diagonal_isClosedImmersion

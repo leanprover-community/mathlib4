@@ -58,8 +58,6 @@ theorem colon_univ {I : Ideal R} [I.IsTwoSided] : I.colon Set.univ = I := by
   simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
   exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
 
-@[deprecated (since := "2026-01-11")] alias colon_top := colon_univ
-
 @[simp]
 theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := by
   ext x
@@ -74,8 +72,6 @@ theorem _root_.Ideal.le_colon {I : Ideal R} {S : Set R} [I.IsTwoSided] : I ≤ I
 theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*) (g : ι₂ → Set M) :
     (⨅ i, f i).colon (⋃ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
   aesop (add simp mem_colon)
-
-@[deprecated (since := "2026-01-11")] alias iInf_colon_iSup := iInf_colon_iUnion
 
 /-- If `S ⊆ N₂`, then intersecting with `N₂` does not change the colon ideal. -/
 lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := by
@@ -126,10 +122,6 @@ section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {N N' : Submodule R M} {S : Set M}
-
-@[deprecated mem_colon (since := "2026-01-15")]
-theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
-  mem_colon
 
 theorem mem_colon_iff_le {r} : r ∈ N.colon N' ↔ r • N' ≤ N := by
   aesop (add simp SetLike.coe_subset_coe)

@@ -380,11 +380,6 @@ protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (
 
 variable (A)
 
-/-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps!, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
-def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
-  DistribSMul.toAddMonoidHom A x
-
 variable (M)
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/

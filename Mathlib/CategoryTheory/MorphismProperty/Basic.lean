@@ -694,9 +694,6 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
 
 end
 
-@[deprecated "Use `op_isomorphisms _` instead." (since := "2026-01-18")]
-lemma isomorphisms_op : (isomorphisms C).op = isomorphisms Cᵒᵖ := op_isomorphisms _
-
 instance RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
   apply RespectsIso.mk <;>
     · intro X Y Z e f

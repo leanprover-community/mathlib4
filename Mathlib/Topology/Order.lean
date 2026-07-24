@@ -755,20 +755,6 @@ theorem TopologicalSpace.nontrivial_iff_exists_not_inseparable {t : TopologicalS
 alias ⟨NontrivialTopology.exists_not_inseparable, NontrivialTopology.of_exists_not_inseparable⟩ :=
   TopologicalSpace.nontrivial_iff_exists_not_inseparable
 
-@[deprecated Inseparable.all (since := "2026-01-21")]
-theorem inseparable_top (x y : α) : @Inseparable α ⊤ x y :=
-  @Inseparable.all _ ⊤ _ x y
-
-@[deprecated TopologicalSpace.indiscrete_iff_forall_inseparable (since := "2026-01-21")]
-theorem TopologicalSpace.eq_top_iff_forall_inseparable {t : TopologicalSpace α} :
-    t = ⊤ ↔ (∀ x y : α, Inseparable x y) := by
-  rw [← TopologicalSpace.indiscrete_iff_forall_inseparable, indiscreteTopology_iff]
-
-@[deprecated TopologicalSpace.nontrivial_iff_exists_not_inseparable (since := "2026-01-21")]
-theorem TopologicalSpace.ne_top_iff_exists_not_inseparable {t : TopologicalSpace α} :
-    t ≠ ⊤ ↔ ∃ x y : α, ¬Inseparable x y := by
-  rw [← TopologicalSpace.nontrivial_iff_exists_not_inseparable, nontrivialTopology_iff]
-
 open TopologicalSpace
 
 variable {γ : Type*} {f : α → β} {ι : Sort*}

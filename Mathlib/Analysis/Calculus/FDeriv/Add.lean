@@ -167,9 +167,6 @@ lemma fderivWithin_neg' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} :
     fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x := by
   simpa only [neg_smul, one_smul] using fderivWithin_const_smul_field' (f := f) (-1 : 𝕜)
 
-@[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
-  fderivWithin_const_smul_field
-
 /-- Special case of `fderiv_const_smul_of_invertible` over a division semiring: any constant is
 allowed.
 
@@ -179,8 +176,6 @@ lemma fderiv_const_smul_field (c : R) : fderiv 𝕜 (c • f) = c • fderiv �
   simp_rw [← fderivWithin_univ]
   ext x
   simp [fderivWithin_const_smul_field c uniqueDiffWithinAt_univ]
-
-@[deprecated (since := "2026-01-11")] alias fderiv_const_smul_of_field := fderiv_const_smul_field
 
 end ConstSMulDivisionRing
 

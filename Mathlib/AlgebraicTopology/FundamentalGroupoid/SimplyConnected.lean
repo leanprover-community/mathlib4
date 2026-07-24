@@ -40,9 +40,6 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
 
-@[deprecated (since := "2026-01-08")]
-alias simply_connected_def := simplyConnectedSpace_iff
-
 theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by

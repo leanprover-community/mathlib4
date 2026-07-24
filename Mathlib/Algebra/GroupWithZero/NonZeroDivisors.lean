@@ -153,16 +153,6 @@ lemma IsUnit.mem_nonZeroDivisors (hx : IsUnit x) : x ∈ M₀⁰ :=
 variable (M₀) in
 lemma isUnit_le_nonZeroDivisors : IsUnit.submonoid M₀ ≤ M₀⁰ := fun _ ↦ (·.mem_nonZeroDivisors)
 
-@[deprecated "Use `Submonoid.mul_mem _ hx hy` instead." (since := "2026-01-07")]
-lemma mul_mem_nonZeroDivisorsLeft_of_mem_nonZeroDivisorsLeft (hx : x ∈ nonZeroDivisorsLeft M₀)
-    (hy : y ∈ nonZeroDivisorsLeft M₀) :
-    x * y ∈ nonZeroDivisorsLeft M₀ := Submonoid.mul_mem _ hx hy
-
-@[deprecated "Use `Submonoid.mul_mem _ hx hy` instead." (since := "2026-01-07")]
-lemma mul_mem_nonZeroDivisorsRight_of_mem_nonZeroDivisorsRight (hx : x ∈ nonZeroDivisorsRight M₀)
-    (hy : y ∈ nonZeroDivisorsRight M₀) :
-    x * y ∈ nonZeroDivisorsRight M₀ := Submonoid.mul_mem _ hx hy
-
 lemma mul_mem_nonZeroDivisors_of_mem_nonZeroDivisors (hx : x ∈ M₀⁰) (hy : y ∈ M₀⁰) :
     x * y ∈ M₀⁰ :=
   mem_nonZeroDivisors_iff'.mpr ⟨Submonoid.mul_mem _ hx.1 hy.1, Submonoid.mul_mem _ hx.2 hy.2⟩

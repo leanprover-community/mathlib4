@@ -299,10 +299,6 @@ instance : SMul ℕ (M ⟶ N) where
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
--- There is no `ℤ`-smul operation on a general semimodule!
-@[deprecated (since := "2026-01-06")]
-alias hom_zsmul := hom_nsmul
-
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
