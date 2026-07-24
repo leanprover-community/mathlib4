@@ -134,7 +134,7 @@ end LMFDB
 
 namespace Pibase
 
-@[pibase P000001]
+@[pibase P000001 "A vacuous comment"]
 theorem p : True := .intro
 
 @[pibase S000023]
@@ -144,7 +144,7 @@ theorem s : True := .intro
 theorem t : True := .intro
 
 /--
-info: some ([π-Base P000001](https://topology.pi-base.org/properties/P000001))
+info: some ([π-Base P000001](https://topology.pi-base.org/properties/P000001) (A vacuous comment))
 -/
 #guard_msgs in
 run_cmd
@@ -152,7 +152,7 @@ run_cmd
 
 /--
 info:
-[π-Base P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration 'p'.
+[π-Base P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration 'p'. (A vacuous comment)
 [π-Base S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration 's'.
 [π-Base T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration 't'.
 -/
