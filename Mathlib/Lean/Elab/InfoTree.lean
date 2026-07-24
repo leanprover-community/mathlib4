@@ -13,6 +13,7 @@ public import Batteries.Tactic.Lint.Misc
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
+
 import Lean.Elab.Term.TermElabM
 
 /-!

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.RatFunc.Basic
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+
 import Mathlib.RingTheory.Valuation.IsTrivialOn
 
 /-!

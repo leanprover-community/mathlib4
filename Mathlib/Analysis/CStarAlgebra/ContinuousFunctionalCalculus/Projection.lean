@@ -6,6 +6,7 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-! # Continuous functional calculus and projections

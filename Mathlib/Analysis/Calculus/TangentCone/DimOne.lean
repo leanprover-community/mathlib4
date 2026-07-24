@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
+
 import Mathlib.Analysis.Calculus.TangentCone.Basic
 import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.Field.Basic

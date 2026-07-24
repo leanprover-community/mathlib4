@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
+
 import Mathlib.Algebra.MvPolynomial.Nilpotent
 
 /-!

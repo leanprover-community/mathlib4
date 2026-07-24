@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Defs
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Normed.Operator.Bilinear

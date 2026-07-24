@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.Tactic.Linter.FlexibleLinter
+
 import all Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.UnusedTactic
 import Batteries.Linter.UnreachableTactic

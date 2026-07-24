@@ -1,6 +1,7 @@
 module
 
 public import Mathlib
+
 import all Mathlib.Tactic.ClickSuggestions.FindPremises
 
 /-!
