@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
-public import Mathlib.Analysis.LocallyConvex.BilinearFormBounded
+public import Mathlib.Analysis.LocallyConvex.Bounded
 
 /-! ## Existence of a Riemannian bundle metric
 
@@ -31,8 +31,11 @@ positivity, definiteness and symmetry.
 We then prove that the two definitions are equal, which allows us to prove that (1) is symmetric,
 positive and definite.
 
-But one is still not done. Mathlib's definition requires von Neumann boundedness,
-which holds because `F` is finite-dimensional.
+But one is still not done. Mathlib's definition requires von Neumann boundedness, which we prove
+directly: on the base set of a trivialisation the form dominates a positive multiple of the squared
+norm of the pushed-forward vector, so the unit sublevel set is contained in the preimage of a ball
+in `F` under a continuous linear equivalence. In particular the fiber `F` need not be
+finite-dimensional.
 
 -/
 
@@ -175,63 +178,72 @@ we then show it agrees with definition (1).
 
 The fibers are assumed to be topological vector spaces --- although this is automatic, since each
 trivialization restricts to a linear homeomorphism `E x ≃ F`, Mathlib has no such instance, so it
-must be given explicitly.
+must be given explicitly. Nothing here needs `F` to be finite-dimensional: pulling back the inner
+product only uses that each trivialization is a continuous linear equivalence.
 -/
 
 noncomputable section
 
-variable [FiniteDimensional ℝ F]
-  [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)] [∀ x, T2Space (E x)]
+variable [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
 
+open scoped Classical in
 variable (F) in
-noncomputable
-def g_bilin_aux (i p : B) : E p →L[ℝ] (E p →L[ℝ] ℝ) := by
-  let χ := trivializationAt F E i
-  let φ := χ.continuousLinearMapAt ℝ p
-  let bilinear : E p →ₗ[ℝ] E p →ₗ[ℝ] ℝ :=
-    LinearMap.compl₁₂ (innerSL ℝ).toLinearMap₁₂ φ.toLinearMap φ.toLinearMap
-  by_cases hp : p ∈ χ.baseSet
-  · let tvsEquiv : E p ≃ₗ[ℝ] F := Trivialization.linearEquivAt ℝ χ p hp
-    haveI : FiniteDimensional ℝ (E p) := tvsEquiv.symm.finiteDimensional
-    let bilinear_cont_inner : E p →ₗ[ℝ] E p →L[ℝ] ℝ := {
-      toFun := fun u => LinearMap.toContinuousLinearMap (bilinear u)
-      map_add' := by simp only [map_add, implies_true]
-      map_smul' := by simp only [map_smul, RingHom.id_apply, implies_true]
-    }
-    exact LinearMap.toContinuousLinearMap bilinear_cont_inner
-  · exact 0
+private def g_bilin_aux (i p : B) : E p →L[ℝ] (E p →L[ℝ] ℝ) :=
+  if hp : p ∈ (trivializationAt F E i).baseSet then
+    letI e : E p ≃L[ℝ] F := (trivializationAt F E i).continuousLinearEquivAt ℝ p hp
+    (e.arrowCongr (e.arrowCongr (ContinuousLinearEquiv.refl ℝ ℝ))).symm (innerSL ℝ)
+  else 0
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
+private lemma g_bilin_aux_apply {i p : B} (hp : p ∈ (trivializationAt F E i).baseSet) (u v : E p) :
+    g_bilin_aux F i p u v =
+      inner ℝ ((trivializationAt F E i).continuousLinearEquivAt ℝ p hp u)
+              ((trivializationAt F E i).continuousLinearEquivAt ℝ p hp v) := by
+  unfold g_bilin_aux
+  rw [dif_pos hp]
+  simp only [ContinuousLinearEquiv.arrowCongr_symm, ContinuousLinearEquiv.arrowCongr_apply,
+    ContinuousLinearEquiv.symm_symm, ContinuousLinearEquiv.refl_symm,
+    ContinuousLinearEquiv.coe_refl', id_eq]
+  rw [innerSL_apply_apply]
+
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
+private lemma g_bilin_aux_of_not_mem {i p : B}
+    (hp : p ∉ (trivializationAt F E i).baseSet) :
+    (g_bilin_aux F i p : E p →L[ℝ] E p →L[ℝ] ℝ) = 0 := by
+  unfold g_bilin_aux
+  rw [dif_neg hp]
+
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma g_nonneg {j b : B} (v : E b) :
     0 ≤ ((g_bilin_aux F j b).toFun v).toFun v := by
-  unfold g_bilin_aux
-  simp only
-  split_ifs
-  · exact inner_self_nonneg (𝕜 := ℝ)
-  · simp
+  change 0 ≤ g_bilin_aux F j b v v
+  by_cases hp : b ∈ (trivializationAt F E j).baseSet
+  · rw [g_bilin_aux_apply hp]
+    exact real_inner_self_nonneg
+  · rw [g_bilin_aux_of_not_mem hp]
+    simp
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma g_pos {i b : B}
     (hb : b ∈ (trivializationAt F E i).baseSet ∩ (chartAt HB i).source)
     (v : E b) (hv : v ≠ 0) :
     0 < ((g_bilin_aux F i b).toFun v).toFun v := by
-  unfold g_bilin_aux
-  simp only
-  rw [dif_pos hb.1]
-  let χ := trivializationAt F E i
-  let φ := χ.continuousLinearMapAt ℝ b
-  have h1 : φ v ≠ 0 := by
-    rw [← coe_continuousLinearEquivAt_eq χ hb.1]
-    exact AddEquivClass.map_ne_zero_iff.mpr hv
-  exact Std.lt_of_le_of_ne (inner_self_nonneg (𝕜 := ℝ))
-    (inner_self_ne_zero.mpr h1).symm
+  change 0 < g_bilin_aux F i b v v
+  rw [g_bilin_aux_apply hb.1]
+  have hne : (trivializationAt F E i).continuousLinearEquivAt ℝ b hb.1 v ≠ 0 := fun h =>
+    hv (((trivializationAt F E i).continuousLinearEquivAt ℝ b hb.1).injective (by rw [h, map_zero]))
+  exact lt_of_le_of_ne real_inner_self_nonneg (inner_self_ne_zero.mpr hne).symm
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 theorem g_bilin_symm_aux (i p : B) (v w : E p) :
     ((g_bilin_aux F i p).toFun v).toFun w =
     ((g_bilin_aux F i p).toFun w).toFun v := by
-  unfold g_bilin_aux
-  simp only
-  split_ifs
-  · exact real_inner_comm _ _
-  · rfl
+  change g_bilin_aux F i p v w = g_bilin_aux F i p w v
+  by_cases hp : p ∈ (trivializationAt F E i).baseSet
+  · rw [g_bilin_aux_apply hp, g_bilin_aux_apply hp]
+    exact real_inner_comm _ _
+  · rw [g_bilin_aux_of_not_mem hp]
+    rfl
 
 def g_global_bilin_aux (f : SmoothPartitionOfUnity B IB B) (p : B) :
     E p →L[ℝ] (E p →L[ℝ] ℝ) :=
@@ -243,14 +255,23 @@ private def evalAt (b : B) (v w : E b) :
   map_zero' := by simp
   map_add' _ _ := rfl
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 private lemma g_global_bilin_aux_support_finite (f : SmoothPartitionOfUnity B IB B) (b : B) :
     (Function.support fun j ↦ ((f j) b • (g_bilin_aux F j b) :
       E b →L[ℝ] E b →L[ℝ] ℝ)).Finite :=
   (f.locallyFinite'.point_finite b).subset (fun i hi => by
-    simp only [Function.mem_support, ne_eq, smul_eq_zero, not_or] at hi; exact hi.1)
+    have hne : (f i) b • g_bilin_aux F i b ≠ 0 := hi
+    have hfi : (f i) b ≠ 0 := by
+      intro h
+      apply hne
+      ext y z
+      simp [h]
+    simp only [Function.mem_support, ne_eq, mem_ofPred_eq]
+    exact hfi)
 
 set_option maxHeartbeats 800000 in
 -- It times out otherwise
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma riemannian_metric_symm_aux (f : SmoothPartitionOfUnity B IB B) (b : B)
   (v w : E b) :
   ((g_global_bilin_aux (F := F) f b).toFun v).toFun w
@@ -279,60 +300,99 @@ lemma riemannian_metric_symm_aux (f : SmoothPartitionOfUnity B IB B) (b : B)
           map_finsum_of_support_subset (evalAt b w v) (f := h) (s := h1.toFinset) h2
     _ = ((∑ j ∈ h1.toFinset, (f j) b • g_bilin_aux F j b).toFun w).toFun v := h3 w v
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
+omit [TopologicalSpace B] in
+private lemma smul_term_eq {b : B} (c : ℝ) (φ : E b →L[ℝ] E b →L[ℝ] ℝ) (v : E b) :
+    ((c • φ).toFun v).toFun v = c * ((φ.toFun v).toFun v) := by
+  simp
+
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
+private lemma g_global_bilin_aux_apply_eq (f : SmoothPartitionOfUnity B IB B) (b : B) (v : E b) :
+    ((g_global_bilin_aux (F := F) f b).toFun v).toFun v
+      = ∑ᶠ (j : B), (((f j) b • g_bilin_aux F j b).toFun v).toFun v := by
+  have h1 := g_global_bilin_aux_support_finite (F := F) (E := E) f b
+  have key := (evalAt b v v).map_finsum h1
+  unfold g_global_bilin_aux
+  simpa only [evalAt, AddMonoidHom.coe_mk, ZeroHom.coe_mk, AddHom.coe_mk] using key
+
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
+private lemma g_global_bilin_aux_term_support_finite
+    (f : SmoothPartitionOfUnity B IB B) (b : B) (v : E b) :
+    (Function.support fun j => (((f j) b • g_bilin_aux F j b).toFun v).toFun v).Finite := by
+  apply (g_global_bilin_aux_support_finite (F := F) (E := E) f b).subset
+  intro x hx
+  simp only [Function.mem_support, ne_eq] at hx ⊢
+  exact fun hz => hx (by rw [hz]; simp)
+
 set_option maxHeartbeats 800000 in
 -- It times out otherwise
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma riemannian_metric_pos_def_aux (f : SmoothPartitionOfUnity B IB B)
   (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
   (b : B) {v : E b} (hv : v ≠ 0) :
   0 < g_global_bilin_aux (F := F) f b v v := by
-  unfold g_global_bilin_aux
-  have h1 := g_global_bilin_aux_support_finite (F := F) (E := E) f b
-  rw [finsum_eq_sum _ h1]
-  have h2 : ∑ j ∈ h1.toFinset, (((f j) b • g_bilin_aux F j b).toFun v).toFun v =
-            ((∑ j ∈ h1.toFinset, (f j) b • g_bilin_aux F j b).toFun v).toFun v := by
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
-    rw [sum_apply, sum_apply]
-  let h : (j : B) → (E b →L[ℝ] (E b →L[ℝ] ℝ)) := fun j ↦ (f j) b • g_bilin_aux F j b
-  let h' x := f x b * ((g_bilin_aux F x b).toFun v).toFun v
-  have h3 : (Function.support h) ⊆ h1.toFinset := Set.Finite.toFinset_subset.mp fun ⦃a⦄ a ↦ a
-  have ⟨i, h5⟩ : ∃ i, 0 < f i b := by
+  change 0 < ((g_global_bilin_aux (F := F) f b).toFun v).toFun v
+  rw [g_global_bilin_aux_apply_eq]
+  have hnn : ∀ j, 0 ≤ (((f j) b • g_bilin_aux F j b).toFun v).toFun v := fun j => by
+    rw [smul_term_eq]; exact mul_nonneg (f.nonneg' j b) (g_nonneg v)
+  obtain ⟨i, h5⟩ : ∃ i, 0 < f i b := by
     by_contra! hneg
     have : ∀ (x : B), f x b = 0 := fun x => le_antisymm (hneg x) (f.nonneg' x b)
     exact absurd ((finsum_eq_zero_of_forall_eq_zero this).symm.trans (f.sum_eq_one' b trivial))
       one_ne_zero.symm
   have h6 : b ∈ (trivializationAt F E i).baseSet ∩ (chartAt HB i).source :=
     hf i (subset_closure (Function.mem_support.mpr h5.ne'))
-  have h7 : ∀ j, 0 ≤ h' j := fun j => mul_nonneg (f.nonneg' j b) (g_nonneg v)
-  have h8 : ∃ j, 0 < h' j := ⟨i, mul_pos h5 (g_pos h6 v hv)⟩
-  have h9 : (Function.support h').Finite := by
-    apply (f.locallyFinite'.point_finite b).subset
-    intro x hx
-    simp only [Function.support_mul, Set.mem_inter_iff, Function.mem_support, ne_eq, h'] at hx
-    exact mul_ne_zero_iff.mp (mul_ne_zero_iff.mpr hx) |>.1
-  have hb : ∑ᶠ i, h' i =
-            ∑ j ∈ h1.toFinset, (((f j) b • g_bilin_aux F j b).toFun v).toFun v :=
-    (map_finsum_of_support_subset (evalAt b v v) (f := h) (s := h1.toFinset) h3) ▸ rfl
-  exact lt_of_lt_of_eq (finsum_pos h7 h8 h9) (hb.trans h2)
+  refine finsum_pos hnn ⟨i, ?_⟩ (g_global_bilin_aux_term_support_finite f b v)
+  rw [smul_term_eq]; exact mul_pos h5 (g_pos h6 v hv)
 
+set_option maxHeartbeats 800000 in
+-- It times out otherwise.
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
+private lemma g_global_bilin_aux_term_le (f : SmoothPartitionOfUnity B IB B) (b : B) (i : B)
+    (v : E b) :
+    f i b * (g_bilin_aux F i b v v) ≤ g_global_bilin_aux (F := F) f b v v := by
+  change f i b * (((g_bilin_aux F i b).toFun v).toFun v)
+      ≤ ((g_global_bilin_aux (F := F) f b).toFun v).toFun v
+  rw [g_global_bilin_aux_apply_eq, ← smul_term_eq (f i b)]
+  refine single_le_finsum i (g_global_bilin_aux_term_support_finite f b v) (fun j => ?_)
+  rw [smul_term_eq]; exact mul_nonneg (f.nonneg' j b) (g_nonneg v)
+
+set_option maxHeartbeats 800000 in
+-- It times out otherwise.
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma riemannian_unit_ball_bounded_aux (f : SmoothPartitionOfUnity B IB B)
   (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
-  [∀ x, FiniteDimensional ℝ (E x)] (b : B) :
-    Bornology.IsVonNBounded ℝ {v : E b | g_global_bilin_aux (F := F) f b v v < 1} :=
-  isVonNBounded_of_posDef (g_global_bilin_aux (F := F) f b)
-    (fun v => by
-      rcases eq_or_ne v (0 : E b) with rfl | hv
-      · simp
-      · exact le_of_lt (riemannian_metric_pos_def_aux f hf b hv))
-    (riemannian_metric_symm_aux f b)
-    (fun v h => by
-      by_contra hv
-      exact lt_irrefl 0 (h ▸ riemannian_metric_pos_def_aux f hf b hv))
+  (b : B) :
+    Bornology.IsVonNBounded ℝ {v : E b | g_global_bilin_aux (F := F) f b v v < 1} := by
+  obtain ⟨i, hi⟩ : ∃ i, 0 < f i b := by
+    by_contra! hneg
+    have : ∀ (x : B), f x b = 0 := fun x => le_antisymm (hneg x) (f.nonneg' x b)
+    exact absurd ((finsum_eq_zero_of_forall_eq_zero this).symm.trans (f.sum_eq_one' b trivial))
+      one_ne_zero.symm
+  have hib : b ∈ (trivializationAt F E i).baseSet ∩ (chartAt HB i).source :=
+    hf i (subset_closure (Function.mem_support.mpr hi.ne'))
+  set e := (trivializationAt F E i).continuousLinearEquivAt ℝ b hib.1 with he
+  have hball : Bornology.IsVonNBounded ℝ (Metric.closedBall (0 : F) (Real.sqrt (1 / f i b))) :=
+    (NormedSpace.isVonNBounded_iff ℝ).2 Metric.isBounded_closedBall
+  apply (hball.image (e.symm : F →L[ℝ] E b)).subset
+  intro v hv
+  simp only [Set.mem_ofPred_eq] at hv
+  refine ⟨e v, ?_, e.symm_apply_apply v⟩
+  rw [mem_closedBall_zero_iff]
+  have hterm := g_global_bilin_aux_term_le (F := F) f b i v
+  rw [g_bilin_aux_apply hib.1, ← he, real_inner_self_eq_norm_sq] at hterm
+  have hlt : f i b * ‖e v‖ ^ 2 < 1 := lt_of_le_of_lt hterm hv
+  have hnormsq : ‖e v‖ ^ 2 ≤ 1 / f i b := by
+    rw [le_div_iff₀ hi]; nlinarith [hlt]
+  calc ‖e v‖ = Real.sqrt (‖e v‖ ^ 2) := (Real.sqrt_sq (norm_nonneg _)).symm
+    _ ≤ Real.sqrt (1 / f i b) := Real.sqrt_le_sqrt hnormsq
 
 /-! ### The two definitions agree
 
 Transferring symmetry, positive definiteness and von Neumann boundedness from (2) to (1).
 -/
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma g_global_bilin_eq
     (f : SmoothPartitionOfUnity B IB B)
     (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
@@ -359,13 +419,14 @@ lemma g_global_bilin_eq
         hf j hp
       simp only [FunLike.coe_smul, Pi.smul_apply, smul_eq_mul]
       congr 1
-      unfold g_bilin g_bilin_aux
-      simp only
-      rw [dif_pos hsupp.1]
+      change (g_bilin (F := F) (E := E) j p).snd u v = g_bilin_aux F j p u v
+      rw [g_bilin_aux_apply hsupp.1 u v]
+      unfold g_bilin
       conv_lhs => rw [inCoordinates_apply_eq₂_spec_symm j p hsupp.1 (innerSL ℝ) u v]
-      rfl
+      rw [innerSL_apply_apply, coe_continuousLinearEquivAt_eq _ hsupp.1]
   rw [this]
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma riemannian_metric_symm
     (f : SmoothPartitionOfUnity B IB B)
     (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
@@ -375,6 +436,7 @@ lemma riemannian_metric_symm
   rw [g_global_bilin_eq f hf b v w, g_global_bilin_eq f hf b w v]
   exact (riemannian_metric_symm_aux (F := F) f b v w)
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma riemannian_metric_pos_def
     (f : SmoothPartitionOfUnity B IB B)
     (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
@@ -383,9 +445,10 @@ lemma riemannian_metric_pos_def
   rw [g_global_bilin_eq (F := F) (E := E) f hf b v v]
   exact riemannian_metric_pos_def_aux f hf b hv
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 lemma riemannian_unit_ball_bounded (f : SmoothPartitionOfUnity B IB B)
   (hf : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source))
-  [∀ x, FiniteDimensional ℝ (E x)] (b : B) :
+  (b : B) :
   Bornology.IsVonNBounded ℝ
     {v : E b | g_global_bilin (F := F) (E := E) f b v v < 1} := by
   simp_rw [fun v => g_global_bilin_eq f hf b v v]
@@ -400,10 +463,10 @@ section
 -- `FiniteDimensional ℝ EB`, `SigmaCompactSpace B` and `T2Space B` are the hypotheses of
 -- `SmoothPartitionOfUnity.exists_isSubordinate`.
 variable [FiniteDimensional ℝ EB] [SigmaCompactSpace B] [T2Space B]
-  [FiniteDimensional ℝ F]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
-  [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)] [∀ x, T2Space (E x)]
+  [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
 
+omit [∀ (x : B), IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
 /--
 Existence of a smooth Riemannian metric on a manifold.
 -/
@@ -421,11 +484,7 @@ public theorem exists_riemannian_metric :
   ⟨{ inner := g_global_bilin (F := F) f
      symm := riemannian_metric_symm f hf
      pos := riemannian_metric_pos_def f hf
-     isVonNBounded := by
-      haveI : ∀ x, FiniteDimensional ℝ (E x) := fun x ↦
-        (Trivialization.linearEquivAt ℝ (trivializationAt F E x) x
-        (FiberBundle.mem_baseSet_trivializationAt' x)).symm.finiteDimensional
-      exact riemannian_unit_ball_bounded f hf
+     isVonNBounded := riemannian_unit_ball_bounded f hf
      contMDiff := g_global_bilin_smooth f hf }⟩
 
 end
