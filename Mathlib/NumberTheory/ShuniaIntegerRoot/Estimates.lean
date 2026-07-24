@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Ravi Bajaj and Ben Burns. All rights reserved.
+Copyright (c) 2026 Ravi Bajaj and Alexander Benjamin Worth Burns. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ravi Bajaj, Ben Burns
+Authors: Ravi Bajaj, Alexander Benjamin Worth Burns
 -/
 module
 
@@ -19,8 +19,6 @@ formula.  If `α = a ^ (1 / n)` and
 then, under the admissibility hypotheses, `(n - 1) * q ^ (2 * a * n)` is smaller than
 `1 / (16 * n * a ^ 2)`.
 -/
-
-@[expose] public section
 
 open Real
 
@@ -77,25 +75,19 @@ private lemma baseline_exponent_bound {n : ℕ} (hn : 3 ≤ n) :
   · norm_num only [Nat.cast_ofNat, Nat.cast_sub (by omega), Nat.cast_one,
       Nat.reduceSubDiff, Nat.reducePow, Nat.cast_pow]
     rw [Real.log_lt_iff_lt_exp (by norm_num)]
-    have he : (8 / 3 : ℝ) < Real.exp 1 := eight_thirds_lt_exp_one
-    have hp : (8 / 3 : ℝ) ^ 8 < (Real.exp 1) ^ 8 := by
-      exact pow_lt_pow_left₀ he (by positivity) (by norm_num)
-    have hp' : (8 / 3 : ℝ) ^ 8 < Real.exp 8 := by
+    have hp : (8 / 3 : ℝ) ^ 8 < Real.exp 8 := by
       calc
-        _ < (Real.exp 1) ^ 8 := hp
+        _ < (Real.exp 1) ^ 8 :=
+          pow_lt_pow_left₀ eight_thirds_lt_exp_one (by positivity) (by norm_num)
         _ = Real.exp 8 := by rw [← Real.exp_nat_mul]; norm_num
-    exact (by norm_num : (1536 : ℝ) < (8 / 3) ^ 8).trans hp'
-  · have hn4' : 4 ≤ n := by omega
-    have htarget_nat := baseline_target_le_two_pow (show 1 ≤ n by omega)
-    have htarget :
+    exact (by norm_num : (1536 : ℝ) < (8 / 3) ^ 8).trans hp
+  · have htarget :
         (16 * (n : ℝ) * (↑(n - 1) : ℝ) * ((2 : ℝ) ^ (n - 1)) ^ 2) ≤
           (2 : ℝ) ^ (4 * n) := by
-      exact_mod_cast htarget_nat
+      exact_mod_cast baseline_target_le_two_pow (show 1 ≤ n by omega)
     have hpos :
         0 < 16 * (n : ℝ) * (↑(n - 1) : ℝ) * ((2 : ℝ) ^ (n - 1)) ^ 2 := by
-      have hnpos : (0 : ℝ) < n := by positivity
-      have hn1pos : (0 : ℝ) < (n - 1 : ℕ) := by
-        exact_mod_cast (show 0 < n - 1 by omega)
+      have hn1pos : 0 < n - 1 := by omega
       positivity
     have hlog :
         Real.log (16 * (n : ℝ) * (↑(n - 1) : ℝ) * ((2 : ℝ) ^ (n - 1)) ^ 2) ≤
@@ -113,21 +105,16 @@ private lemma baseline_exponent_bound {n : ℕ} (hn : 3 ≤ n) :
         _ < (4 * n : ℝ) * ((3 : ℝ) / 4) :=
           mul_lt_mul_of_pos_left log_two_lt_three_four (by positivity)
         _ = 3 * n := by ring
-    have hsquare := nat_sq_le_two_pow hn4'
-    have hsquare' : (n : ℝ) ^ 2 ≤ (2 : ℝ) ^ n := by exact_mod_cast hsquare
+    have hsquare' : (n : ℝ) ^ 2 ≤ (2 : ℝ) ^ n := by
+      exact_mod_cast nat_sq_le_two_pow (show 4 ≤ n by omega)
     have hL : (3 : ℝ) * n ≤ 6 * (2 : ℝ) ^ (n - 1) / n := by
       rw [le_div_iff₀ (by positivity : (0 : ℝ) < n)]
-      have hp : (2 : ℝ) ^ n = 2 * (2 : ℝ) ^ (n - 1) := by
-        calc
-          (2 : ℝ) ^ n = 2 ^ ((n - 1) + 1) := by
-            congr 1
-            omega
-          _ = 2 ^ (n - 1) * 2 := by rw [pow_succ]
-          _ = 2 * 2 ^ (n - 1) := by ring
       calc
         3 * (n : ℝ) * n = 3 * (n : ℝ) ^ 2 := by ring
         _ ≤ 3 * (2 : ℝ) ^ n := by gcongr
-        _ = 6 * (2 : ℝ) ^ (n - 1) := by rw [hp]; ring
+        _ = 6 * (2 : ℝ) ^ (n - 1) := by
+          rw [← mul_pow_sub_one (n := n) (by omega) (2 : ℝ)]
+          ring
     exact hlog3.trans_le hL
 
 private lemma two_ninths_le_root_factor {x : ℝ} (hx₁ : 1 ≤ x) (hx₂ : x ≤ 2) :
@@ -154,26 +141,20 @@ private lemma exponent_gt_log_of_pow {a n : ℕ} {α : ℝ}
   let L : ℝ := 6 * A / n
   let R : ℝ := Real.log (16 * (n : ℝ) * (↑(n - 1) : ℝ) * A ^ 2)
   have hApos : 0 < A := by dsimp [A]; positivity
-  have hnpos : (0 : ℝ) < n := by positivity
-  have hn1pos : (0 : ℝ) < (n - 1 : ℕ) := by
-    exact_mod_cast (show 0 < n - 1 by omega)
+  have hn1pos : 0 < n - 1 := by omega
   have haNat : 0 < a := lt_of_lt_of_le (by positivity : 0 < 2 ^ (n - 1)) ha₀
-  have hapos : (0 : ℝ) < a := by exact_mod_cast haNat
-  have hαpos : 0 < α := lt_of_lt_of_le zero_lt_one hα₁
   have hR_L : R < L := by
     simpa only [A, L, R] using baseline_exponent_bound hn
-  have hnA := nat_le_two_pow_pred (show 1 ≤ n by omega)
   have hnA' : (n : ℝ) ≤ A := by
     dsimp [A]
-    exact_mod_cast hnA
+    exact_mod_cast nat_le_two_pow_pred (show 1 ≤ n by omega)
   have hL6 : 6 ≤ L := by
     dsimp [L]
-    rw [le_div_iff₀ hnpos]
+    rw [le_div_iff₀ (by positivity : (0 : ℝ) < n)]
     nlinarith
-  have hLpos : 0 < L := lt_of_lt_of_le (by norm_num) hL6
   rcases le_total α 2 with hα₂ | hα₂
   · let s : ℝ := (a : ℝ) / A
-    have hspos : 0 < s := div_pos hapos hApos
+    have hspos : 0 < s := by dsimp [s]; positivity
     have hs₁ : 1 ≤ s := by
       dsimp [s]
       rw [le_div_iff₀ hApos]
@@ -218,21 +199,13 @@ private lemma exponent_gt_log_of_pow {a n : ℕ} {α : ℝ}
         L * s = 6 * (a : ℝ) / n := by rw [ha_eq]; simp [L]; ring
         _ ≤ _ := hP
   · let t : ℝ := α / 2
-    have htpos : 0 < t := div_pos hαpos (by norm_num)
+    have htpos : 0 < t := div_pos (zero_lt_one.trans_le hα₁) (by norm_num)
     have ht₁ : 1 ≤ t := by dsimp [t]; linarith
     have hα_eq : α = 2 * t := by dsimp [t]; ring
     have ha_eq : (a : ℝ) = A * (2 * t ^ n) := by
       rw [← hαpow, hα_eq]
       dsimp [A]
-      rw [mul_pow]
-      have htwo : (2 : ℝ) ^ n = 2 * 2 ^ (n - 1) := by
-        calc
-          (2 : ℝ) ^ n = 2 ^ ((n - 1) + 1) := by
-            congr 1
-            omega
-          _ = 2 ^ (n - 1) * 2 := by rw [pow_succ]
-          _ = 2 * 2 ^ (n - 1) := by ring
-      rw [htwo]
+      rw [mul_pow, ← mul_pow_sub_one (n := n) (by omega) (2 : ℝ)]
       ring
     have hlog_eq :
         Real.log (16 * (n : ℝ) * (↑(n - 1) : ℝ) * (a : ℝ) ^ 2) =
@@ -275,12 +248,12 @@ private lemma exponent_gt_log_of_pow {a n : ℕ} {α : ℝ}
         _ ≤ 6 * (1 + (n - 1 : ℕ) * (t - 1)) := hlinear
         _ ≤ 6 * t ^ (n - 1) := by gcongr
         _ ≤ L * t ^ (n - 1) := by gcongr
-    have ht_pow_one : 1 ≤ t ^ (n - 1) := one_le_pow₀ ht₁
     have htotal :
         R + 2 * Real.log 2 + 2 * n * Real.log t <
           2 * L * t ^ (n - 1) := by
       have hfirst : R < L * t ^ (n - 1) :=
-        hR_L.trans_le (by simpa using mul_le_mul_of_nonneg_left ht_pow_one hLpos.le)
+        hR_L.trans_le (by simpa using
+          mul_le_mul_of_nonneg_left (one_le_pow₀ ht₁) (by linarith [hL6]))
       nlinarith
     have hfac := four_ninths_div_le_root_factor hα₂
     have hP :
@@ -296,8 +269,7 @@ private lemma exponent_gt_log_of_pow {a n : ℕ} {α : ℝ}
         2 * L * t ^ (n - 1) = 12 * (a : ℝ) / ((n : ℝ) * α) := by
       rw [ha_eq, hα_eq]
       dsimp [L]
-      rw [show t ^ n = t ^ (n - 1) * t by
-        conv_lhs => rw [show n = (n - 1) + 1 by omega, pow_succ]]
+      rw [← pow_sub_one_mul (n := n) (by omega) t]
       field_simp
       ring
     rw [hlog_eq]
@@ -305,17 +277,14 @@ private lemma exponent_gt_log_of_pow {a n : ℕ} {α : ℝ}
 
 private lemma sin_pi_div_lower {n : ℕ} (hn : 3 ≤ n) :
     (3 * Real.sqrt 3) / (2 * n) ≤ Real.sin (Real.pi / n) := by
-  have hlam0 : (0 : ℝ) ≤ 3 / n := by positivity
   have hlam1 : (3 : ℝ) / n ≤ 1 := by
     rw [div_le_one (by positivity : (0 : ℝ) < n)]
     exact_mod_cast hn
-  have hpi3 : Real.pi / 3 ∈ Set.Icc (0 : ℝ) Real.pi := by
-    constructor
-    · positivity
-    · nlinarith [Real.pi_pos]
+  have hpi3 : Real.pi / 3 ∈ Set.Icc (0 : ℝ) Real.pi :=
+    ⟨by positivity, by nlinarith [Real.pi_pos]⟩
   have hc := strictConcaveOn_sin_Icc.concaveOn.2
     (show (0 : ℝ) ∈ Set.Icc (0 : ℝ) Real.pi by simp [Real.pi_pos.le])
-    hpi3 (sub_nonneg.mpr hlam1) hlam0
+    hpi3 (sub_nonneg.mpr hlam1) (show (0 : ℝ) ≤ 3 / n by positivity)
   calc
     (3 * Real.sqrt 3) / (2 * n) = (3 / n) * (Real.sqrt 3 / 2) := by ring
     _ ≤ Real.sin (Real.pi / n) := by
@@ -323,22 +292,15 @@ private lemma sin_pi_div_lower {n : ℕ} (hn : 3 ≤ n) :
 
 private lemma one_sub_cos_two_pi_div_lower {n : ℕ} (hn : 3 ≤ n) :
     (27 : ℝ) / (2 * n ^ 2) ≤ 1 - Real.cos (2 * Real.pi / n) := by
-  have hsin := sin_pi_div_lower hn
-  have hlower_nonneg : (0 : ℝ) ≤ (3 * Real.sqrt 3) / (2 * n) := by positivity
   have hsin_sq :
       ((3 * Real.sqrt 3) / (2 * n)) ^ 2 ≤ (Real.sin (Real.pi / n)) ^ 2 :=
-    pow_le_pow_left₀ hlower_nonneg hsin 2
-  have hsqrt : Real.sqrt (3 : ℝ) ^ 2 = 3 := Real.sq_sqrt (by norm_num)
-  have htrig :
-      1 - Real.cos (2 * Real.pi / n) = 2 * (Real.sin (Real.pi / n)) ^ 2 := by
-    rw [show 2 * Real.pi / (n : ℝ) = 2 * (Real.pi / n) by ring,
-      Real.sin_sq_eq_half_sub]
-    ring
-  rw [htrig]
+    pow_le_pow_left₀ (by positivity) (sin_pi_div_lower hn) 2
+  rw [show 2 * Real.pi / (n : ℝ) = 2 * (Real.pi / n) by ring,
+    Real.cos_two_mul_eq_one_sub]
   rw [div_pow] at hsin_sq
   have hn0 : (n : ℝ) ≠ 0 := by positivity
   field_simp [hn0] at hsin_sq ⊢
-  nlinarith [hsqrt]
+  nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
 
 private lemma spectral_error_bound_n_ge_three {a n : ℕ} (hn : 3 ≤ n)
     (ha₀ : 2 ^ (n - 1) ≤ a) :
@@ -355,17 +317,12 @@ private lemma spectral_error_bound_n_ge_three {a n : ℕ} (hn : 3 ≤ n)
   let u : ℝ := 2 * α * (1 - c) / D
   let v : ℝ := 27 * α / ((n : ℝ) ^ 2 * D)
   let P : ℝ := 27 * (a : ℝ) * α / ((n : ℝ) * D)
-  have hapos : (0 : ℝ) < a := by
-    exact_mod_cast lt_of_lt_of_le (by positivity : 0 < 2 ^ (n - 1)) ha₀
+  have ha₁ : 1 ≤ a := (show 1 ≤ n by omega).trans
+    ((nat_le_two_pow_pred (show 1 ≤ n by omega)).trans ha₀)
+  have hapos : 0 < a := by omega
   have hα₁ : 1 ≤ α := by
     dsimp [α]
-    apply Real.one_le_rpow
-    · exact_mod_cast (show 1 ≤ n by omega).trans
-        ((nat_le_two_pow_pred (show 1 ≤ n by omega)).trans ha₀)
-    · positivity
-  have hαpos : 0 < α := lt_of_lt_of_le zero_lt_one hα₁
-  have hnpos : (0 : ℝ) < n := by positivity
-  have hDpos : 0 < D := by dsimp [D]; positivity
+    exact Real.one_le_rpow (by exact_mod_cast ha₁) (by positivity)
   have hrad : 0 ≤ rad := by
     have hc := Real.neg_one_le_cos (2 * Real.pi / (n : ℝ))
     dsimp [rad, c]
@@ -392,14 +349,11 @@ private lemma spectral_error_bound_n_ge_three {a n : ℕ} (hn : 3 ≤ n)
     rw [hq_sq, hratio]
     exact (Real.one_sub_le_exp_neg u).trans (Real.exp_le_exp.mpr (neg_le_neg huv))
   have hpow_exp : q ^ (2 * a * n) ≤ Real.exp (-P) := by
-    have hpowers :
-        (q ^ 2) ^ (a * n) ≤ (Real.exp (-v)) ^ (a * n) :=
-      pow_le_pow_left₀ (sq_nonneg q) hq_sq_exp (a * n)
-    have hexponent : (2 * a * n : ℕ) = 2 * (a * n) := by simp [mul_assoc]
     calc
       q ^ (2 * a * n) = (q ^ 2) ^ (a * n) := by
-        rw [hexponent, pow_mul]
-      _ ≤ (Real.exp (-v)) ^ (a * n) := hpowers
+        simpa [mul_assoc] using pow_mul q 2 (a * n)
+      _ ≤ (Real.exp (-v)) ^ (a * n) :=
+        pow_le_pow_left₀ (sq_nonneg q) hq_sq_exp (a * n)
       _ = Real.exp ((a * n : ℕ) * (-v)) := by
         rw [Real.exp_nat_mul]
       _ = Real.exp (-P) := by
@@ -407,27 +361,23 @@ private lemma spectral_error_bound_n_ge_three {a n : ℕ} (hn : 3 ≤ n)
         dsimp [v, P]
         push_cast
         field_simp
+  have hn1 : n - 1 ≠ 0 := by omega
   have hexp : Real.exp (-P) <
       1 / (16 * (n : ℝ) * (↑(n - 1) : ℝ) * (a : ℝ) ^ 2) := by
     apply exp_neg_lt_inv
-    · have : 0 < n - 1 := by omega
-      positivity
+    · positivity
     · simpa only [P, D, α] using
         exponent_gt_log_of_pow hn ha₀ hα₁
           (Real.rpow_inv_natCast_pow (by positivity) (by omega))
-  have hq : q ^ (2 * a * n) <
-      1 / (16 * (n : ℝ) * (↑(n - 1) : ℝ) * (a : ℝ) ^ 2) := by
-    exact hpow_exp.trans_lt hexp
-  have hn1pos : (0 : ℝ) < (n - 1 : ℕ) := by
-    exact_mod_cast (show 0 < n - 1 by omega)
-  have hmul := mul_lt_mul_of_pos_left hq hn1pos
+  have hmul := mul_lt_mul_of_pos_left (hpow_exp.trans_lt hexp)
+    (show (0 : ℝ) < (n - 1 : ℕ) by positivity)
   change (↑(n - 1) : ℝ) * q ^ (2 * a * n) < 1 / (16 * (n : ℝ) * (a : ℝ) ^ 2)
   calc
     (↑(n - 1) : ℝ) * q ^ (2 * a * n)
         < (↑(n - 1) : ℝ) *
             (1 / (16 * (n : ℝ) * (↑(n - 1) : ℝ) * (a : ℝ) ^ 2)) := hmul
     _ = 1 / (16 * (n : ℝ) * (a : ℝ) ^ 2) := by
-      field_simp
+      field_simp [hn1]
 
 private lemma exponent_two_gt_log {a : ℕ} (ha : 4 ≤ a) :
     let α : ℝ := (a : ℝ) ^ ((2 : ℝ)⁻¹)
@@ -504,13 +454,12 @@ private lemma spectral_error_bound_n_two {a : ℕ} (ha : 4 ≤ a) :
   have hq_sq_exp : q ^ 2 ≤ Real.exp (-u) := by
     rw [hq_sq, hratio]
     exact Real.one_sub_le_exp_neg u
-  have hpowers :
-      (q ^ 2) ^ (2 * a) ≤ (Real.exp (-u)) ^ (2 * a) :=
-    pow_le_pow_left₀ (sq_nonneg q) hq_sq_exp (2 * a)
   have hpow_exp : q ^ (4 * a) ≤ Real.exp (-P) := by
     calc
-      q ^ (4 * a) = (q ^ 2) ^ (2 * a) := by rw [show 4 * a = 2 * (2 * a) by ring, pow_mul]
-      _ ≤ (Real.exp (-u)) ^ (2 * a) := hpowers
+      q ^ (4 * a) = (q ^ 2) ^ (2 * a) := by
+        simpa [← mul_assoc] using pow_mul q 2 (2 * a)
+      _ ≤ (Real.exp (-u)) ^ (2 * a) :=
+        pow_le_pow_left₀ (sq_nonneg q) hq_sq_exp (2 * a)
       _ = Real.exp ((2 * a : ℕ) * (-u)) := by rw [Real.exp_nat_mul]
       _ = Real.exp (-P) := by
         congr 1
@@ -524,18 +473,15 @@ private lemma spectral_error_bound_n_two {a : ℕ} (ha : 4 ≤ a) :
     · simpa only [P, D, α] using exponent_two_gt_log ha
   simpa only [q, rad, α] using hpow_exp.trans_lt hexp
 
-lemma spectral_error_bound {a n : ℕ} (ha : 4 ≤ a) (hn : 1 < n)
+public lemma spectral_error_bound {a n : ℕ} (ha : 4 ≤ a) (hn : 1 < n)
     (ha₀ : 2 ^ (n - 1) ≤ a) :
     let α : ℝ := (a : ℝ) ^ ((n : ℝ)⁻¹)
     let q : ℝ :=
       Real.sqrt (1 + α ^ 2 + 2 * α * Real.cos (2 * Real.pi / n)) / (1 + α)
     (n - 1 : ℕ) * q ^ (2 * a * n) <
       1 / (16 * (n : ℝ) * (a : ℝ) ^ 2) := by
-  have hn2le : 2 ≤ n := by omega
-  rcases eq_or_lt_of_le hn2le with hn2 | hn3
-  · subst n
-    have hexponent : (2 * a * 2 : ℕ) = 4 * a := by ring
-    rw [hexponent]
+  rcases eq_or_lt_of_le (show 2 ≤ n by omega) with rfl | hn3
+  · rw [show (2 * a * 2 : ℕ) = 4 * a by ring]
     norm_num only [Nat.cast_ofNat, Nat.reduceSubDiff, one_mul]
     simpa only [one_div] using spectral_error_bound_n_two ha
   · exact spectral_error_bound_n_ge_three (by omega) ha₀
