@@ -15,8 +15,8 @@ Using a partition of unity, we prove the existence of a smooth Riemannian metric
 
 The idea is that there are two equivalent ways of defining a bilinear positive definite form:
 
-  1) pull back the inner product on ℝ^n via the inverse trivialisation
-  2) push forward vectors and then apply the inner product on ℝ^n
+  1) pull back the inner product on `F` via the inverse trivialisation
+  2) push forward vectors and then apply the inner product on `F`
 
 It turns out that using (1) makes proving smoothness straightforward and
 `g_bilin_smooth_on_chart` proves that locally `g_bilin i` is smooth (the trick is to make
@@ -24,31 +24,28 @@ the set on which this is true small enough hence the intersection:
 `((trivializationAt F E i).baseSet ∩ (chartAt HB i).source)`).
 This can then be used to prove global smoothness via a partition of unity.
 
-However it is not so clear (to me at any rate) how one uses (1) to prove positive definiteness.
+However it is not so clear how one uses (1) to prove positive definiteness.
 This is where (2) comes in. With this definition, it is straightforward to prove
 positivity, definiteness and symmetry.
 
-We then prove that the two definitions are equal which allows me to prove that (1) is symmetric,
+We then prove that the two definitions are equal, which allows us to prove that (1) is symmetric,
 positive and definite.
 
-But one is still not done. Mathlib's definition requires von Neumann boundedness
-which is true for finite dimensional manifolds.
+But one is still not done. Mathlib's definition requires von Neumann boundedness,
+which holds because `F` is finite-dimensional.
 
 -/
 
 open Set Bundle ContDiff Manifold Trivialization SmoothPartitionOfUnity
 
 /-
-`E` is a vector bundle over `B` with model fiber `F`. Although the fibers
-are topological vector spaces (each trivialization restricts to a linear homeomorphism `E x ≃ F`),
-Mathlib does have an instance for this, so it must be given explicitly. The `InnerProductSpace`
-constraint also implies a `NormedSpace` constraint required by `VectorBundle`.
+`E` is a vector bundle over `B` with model fiber `F`. The `InnerProductSpace` assumption also
+implies the `NormedSpace` assumption required by `VectorBundle`.
 -/
 variable {B : Type*} {F : Type*} {E : B → Type*}
   [TopologicalSpace B]
   [NormedAddCommGroup F] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [∀ x, AddCommGroup (E x)] [∀ x, Module ℝ (E x)]
-  [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
   [FiberBundle F E] [InnerProductSpace ℝ F] [VectorBundle ℝ F E]
 
 -- The usual setup for a manifold `B` modelled on `HB` with model-with-corners `IB` into `EB`.
@@ -58,18 +55,133 @@ variable
   [ChartedSpace HB B]
   {IB : ModelWithCorners ℝ EB HB}
 
+/-! ### Definition (1): pulling back the inner product along the inverse trivialisation
+
+This is the definition for which smoothness is straightforward. Nothing here needs the fibers
+to be anything beyond topological vector spaces, and nothing here needs `F` to be
+finite-dimensional.
+-/
+
 noncomputable section
 
-variable
-  [FiniteDimensional ℝ F]
-  [ContMDiffVectorBundle ω F E IB]
-  [∀ x, T2Space (E x)]
+variable [ContMDiffVectorBundle ω F E IB]
 
 def g_bilin (i b : B) :
  (TotalSpace (F →L[ℝ] F →L[ℝ] ℝ)
              (fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ)) :=
   ⟨b, (trivializationAt (F →L[ℝ] F →L[ℝ] ℝ)
         (fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i).symm b (innerSL ℝ)⟩
+
+lemma inCoordinates_apply_eq₂_spec
+    {x₀ x : B} {ϕ : E x →L[ℝ] E x →L[ℝ] ℝ} {v w : F}
+    (h₁x : x ∈ (trivializationAt F E x₀).baseSet) :
+    ContinuousLinearMap.inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x₀ x x₀ x ϕ v w =
+    ϕ ((trivializationAt F E x₀).symm x v) ((trivializationAt F E x₀).symm x w) := by
+  rw [inCoordinates_apply_eq₂ h₁x h₁x (by simp [Trivial.fiberBundle_trivializationAt'])]
+  simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
+
+lemma inCoordinates_apply_eq₂_spec_symm
+    (x₀ x : B) (hb : x ∈ (trivializationAt F E x₀).baseSet)
+    (ϕ : F →L[ℝ] F →L[ℝ] ℝ) (u v : E x) :
+    (trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) x₀).symm x ϕ u v =
+    ϕ (trivializationAt F E x₀ |>.continuousLinearMapAt ℝ x u)
+      (trivializationAt F E x₀ |>.continuousLinearMapAt ℝ x v) := by
+  letI ψ := FiberBundle.trivializationAt (F →L[ℝ] F →L[ℝ] ℝ)
+      (fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ) x₀
+  letI χ := trivializationAt F E x₀
+  letI w := ψ.symm x ϕ
+  have hc : x ∈ ψ.baseSet := by
+    rw [hom_trivializationAt_baseSet]
+    simp only [hom_trivializationAt_baseSet, Trivial.fiberBundle_trivializationAt',
+    Trivial.trivialization_baseSet, inter_univ, inter_self]
+    exact mem_of_subset_of_mem (fun ⦃a⦄ a_1 ↦ a_1) hb
+  have h1 : ∀ u v,
+      (((continuousLinearMapAt ℝ ψ x) (ψ.symmL ℝ x ϕ)) u) v = ϕ u v :=
+    fun u v => by rw [continuousLinearMapAt_symmL ψ hc]
+  have h2 : ∀ u v, ϕ u v = w (χ.symm x u) (χ.symm x v) := fun u v => by
+    rw [← h1, continuousLinearMapAt_apply, linearMapAt_apply, hom_trivializationAt_apply,
+      if_pos hc, ← inCoordinates_apply_eq₂_spec hb]
+    rw [symmL_apply]
+    exact hc
+  have h3 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb u
+  rw [symmL_apply] at h3
+  · have h4 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb v
+    rw [symmL_apply] at h4
+    · rw [show w u v = ϕ (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v) from by
+        rw [h2 (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v), h3, h4]]
+    · exact hb
+  · exact hb
+
+lemma g_bilin_smooth_on_chart (i : B) :
+  ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
+    (g_bilin (F := F) (E := E) i)
+    ((trivializationAt F E i).baseSet ∩ (chartAt HB i).source) := by
+  unfold g_bilin
+  intro b hb
+  letI ψ := trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i
+  letI innerAtP : B → F →L[ℝ] F →L[ℝ] ℝ := fun x ↦ innerSL ℝ
+  have h4 : ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
+    (fun c => (c, innerAtP c)) ((trivializationAt F E i).baseSet ∩ (chartAt HB i).source) :=
+    contMDiffOn_id.prodMk contMDiffOn_const
+  have h5 : (trivializationAt F E i).baseSet ∩ (chartAt HB i).source ⊆
+  (fun c ↦ (c, innerAtP c)) ⁻¹' ψ.target := by
+    intro c hc
+    simp only [Set.mem_preimage]
+    rw [ψ.target_eq]
+    simp only [Set.mem_prod, Set.mem_univ, and_true]
+    have baseSet_eq : (trivializationAt F E i).baseSet =
+    (trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i).baseSet := by
+      simp only [hom_trivializationAt_baseSet, Trivial.fiberBundle_trivializationAt',
+               Trivial.trivialization_baseSet, Set.inter_univ, Set.inter_self]
+    rw [←baseSet_eq]
+    exact hc.1
+  refine (ContMDiffOn.congr ((contMDiffOn_symm _).comp h4 h5) ?_) b hb
+  intro y hy
+  simp only [Function.comp_apply]
+  ext
+  · rfl
+  · simp only [innerAtP]
+    rw [Trivialization.symm_apply ψ _ (innerSL ℝ)]
+    · simp
+    · exact (mk_mem_target ψ).mp (h5 hy)
+
+noncomputable def g_global_bilin (f : SmoothPartitionOfUnity B IB B) (p : B) :
+    E p →L[ℝ] (E p →L[ℝ] ℝ) :=
+      ∑ᶠ (j : B), (f j) p • (g_bilin (F := F) j p).snd
+
+lemma g_global_bilin_smooth (f : SmoothPartitionOfUnity B IB B)
+    (h_sub : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source)) :
+    ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
+      (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (g_global_bilin (F := F) (E := E) f x)) := by
+  let s_loc : (i : B) → (b : B) → (E b →L[ℝ] (E b →L[ℝ] Trivial B ℝ b)) :=
+    fun i b => (g_bilin (F := F) (E := E) i b).snd
+  have hj (j : B) : ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
+      (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x ((f j x) • s_loc j x)) := by
+    refine ContMDiffOn.smul_section_of_tsupport ?_
+      ((trivializationAt F E j).open_baseSet.inter (chartAt HB j).open_source) (h_sub j)
+      (g_bilin_smooth_on_chart j)
+    exact ((f j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
+  unfold g_global_bilin
+  apply ContMDiff.finsum_section_of_locallyFinite ?_ hj
+  apply f.locallyFinite.subset fun i x hx ↦ ?_
+  exact left_ne_zero_of_smul hx
+
+end
+
+/-! ### Definition (2): pushing vectors forward and applying the inner product on `F`
+
+This is the definition for which positivity, definiteness and symmetry are straightforward, and
+we then show it agrees with definition (1).
+
+The fibers are assumed to be topological vector spaces --- although this is automatic, since each
+trivialization restricts to a linear homeomorphism `E x ≃ F`, Mathlib has no such instance, so it
+must be given explicitly.
+-/
+
+noncomputable section
+
+variable [FiniteDimensional ℝ F]
+  [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)] [∀ x, T2Space (E x)]
 
 variable (F) in
 noncomputable
@@ -120,14 +232,6 @@ theorem g_bilin_symm_aux (i p : B) (v w : E p) :
   split_ifs
   · exact real_inner_comm _ _
   · rfl
-
-end
-
-noncomputable section
-
-variable
-  [FiniteDimensional ℝ F]
-  [∀ x, T2Space (E x)]
 
 def g_global_bilin_aux (f : SmoothPartitionOfUnity B IB B) (p : B) :
     E p →L[ℝ] (E p →L[ℝ] ℝ) :=
@@ -224,124 +328,10 @@ lemma riemannian_unit_ball_bounded_aux (f : SmoothPartitionOfUnity B IB B)
       by_contra hv
       exact lt_irrefl 0 (h ▸ riemannian_metric_pos_def_aux f hf b hv))
 
-end
+/-! ### The two definitions agree
 
-section smooth
-
-variable
-  [ContMDiffVectorBundle ω F E IB]
-
-omit [∀ (x : B),
-  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
-lemma g_bilin_smooth_on_chart (i : B) :
-  ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
-    (g_bilin (F := F) (E := E) i)
-    ((trivializationAt F E i).baseSet ∩ (chartAt HB i).source) := by
-  unfold g_bilin
-  intro b hb
-  letI ψ := trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i
-  letI innerAtP : B → F →L[ℝ] F →L[ℝ] ℝ := fun x ↦ innerSL ℝ
-  have h4 : ContMDiffOn IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
-    (fun c => (c, innerAtP c)) ((trivializationAt F E i).baseSet ∩ (chartAt HB i).source) :=
-    contMDiffOn_id.prodMk contMDiffOn_const
-  have h5 : (trivializationAt F E i).baseSet ∩ (chartAt HB i).source ⊆
-  (fun c ↦ (c, innerAtP c)) ⁻¹' ψ.target := by
-    intro c hc
-    simp only [Set.mem_preimage]
-    rw [ψ.target_eq]
-    simp only [Set.mem_prod, Set.mem_univ, and_true]
-    have baseSet_eq : (trivializationAt F E i).baseSet =
-    (trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i).baseSet := by
-      simp only [hom_trivializationAt_baseSet, Trivial.fiberBundle_trivializationAt',
-               Trivial.trivialization_baseSet, Set.inter_univ, Set.inter_self]
-    rw [←baseSet_eq]
-    exact hc.1
-  refine (ContMDiffOn.congr ((contMDiffOn_symm _).comp h4 h5) ?_) b hb
-  intro y hy
-  simp only [Function.comp_apply]
-  ext
-  · rfl
-  · simp only [innerAtP]
-    rw [Trivialization.symm_apply ψ _ (innerSL ℝ)]
-    · simp
-    · exact (mk_mem_target ψ).mp (h5 hy)
-
-noncomputable def g_global_bilin (f : SmoothPartitionOfUnity B IB B) (p : B) :
-    E p →L[ℝ] (E p →L[ℝ] ℝ) :=
-      ∑ᶠ (j : B), (f j) p • (g_bilin (F := F) j p).snd
-
-omit [∀ (x : B),
-  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] in
-lemma g_global_bilin_smooth (f : SmoothPartitionOfUnity B IB B)
-    (h_sub : f.IsSubordinate (fun x ↦ (trivializationAt F E x).baseSet ∩ (chartAt HB x).source)) :
-    ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
-      (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (g_global_bilin (F := F) (E := E) f x)) := by
-  let s_loc : (i : B) → (b : B) → (E b →L[ℝ] (E b →L[ℝ] Trivial B ℝ b)) :=
-    fun i b => (g_bilin (F := F) (E := E) i b).snd
-  have hj (j : B) : ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) ∞
-      (fun x ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x ((f j x) • s_loc j x)) := by
-    refine ContMDiffOn.smul_section_of_tsupport ?_
-      ((trivializationAt F E j).open_baseSet.inter (chartAt HB j).open_source) (h_sub j)
-      (g_bilin_smooth_on_chart j)   -- may need `.congr` as before
-    exact ((f j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
-  unfold g_global_bilin
-  apply ContMDiff.finsum_section_of_locallyFinite ?_ hj
-  apply f.locallyFinite.subset fun i x hx ↦ ?_
-  exact left_ne_zero_of_smul hx
-
-end smooth
-
-section
-
-variable
-  [FiniteDimensional ℝ F]
-  [∀ x, T2Space (E x)]
-
-omit [∀ (x : B),
-  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] [∀ (x : B), T2Space (E x)] in
-omit [FiniteDimensional ℝ F] in
-lemma inCoordinates_apply_eq₂_spec
-    {x₀ x : B} {ϕ : E x →L[ℝ] E x →L[ℝ] ℝ} {v w : F}
-    (h₁x : x ∈ (trivializationAt F E x₀).baseSet) :
-    ContinuousLinearMap.inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x₀ x x₀ x ϕ v w =
-    ϕ ((trivializationAt F E x₀).symm x v) ((trivializationAt F E x₀).symm x w) := by
-  rw [inCoordinates_apply_eq₂ h₁x h₁x (by simp [Trivial.fiberBundle_trivializationAt'])]
-  simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
-
-omit [∀ (x : B),
-  IsTopologicalAddGroup (E x)] [∀ (x : B), ContinuousSMul ℝ (E x)] [∀ (x : B), T2Space (E x)] in
-omit [FiniteDimensional ℝ F] in
-lemma inCoordinates_apply_eq₂_spec_symm
-    (x₀ x : B) (hb : x ∈ (trivializationAt F E x₀).baseSet)
-    (ϕ : F →L[ℝ] F →L[ℝ] ℝ) (u v : E x) :
-    (trivializationAt (F →L[ℝ] F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) x₀).symm x ϕ u v =
-    ϕ (trivializationAt F E x₀ |>.continuousLinearMapAt ℝ x u)
-      (trivializationAt F E x₀ |>.continuousLinearMapAt ℝ x v) := by
-  letI ψ := FiberBundle.trivializationAt (F →L[ℝ] F →L[ℝ] ℝ)
-      (fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ) x₀
-  letI χ := trivializationAt F E x₀
-  letI w := ψ.symm x ϕ
-  have hc : x ∈ ψ.baseSet := by
-    rw [hom_trivializationAt_baseSet]
-    simp only [hom_trivializationAt_baseSet, Trivial.fiberBundle_trivializationAt',
-    Trivial.trivialization_baseSet, inter_univ, inter_self]
-    exact mem_of_subset_of_mem (fun ⦃a⦄ a_1 ↦ a_1) hb
-  have h1 : ∀ u v,
-      (((continuousLinearMapAt ℝ ψ x) (ψ.symmL ℝ x ϕ)) u) v = ϕ u v :=
-    fun u v => by rw [continuousLinearMapAt_symmL ψ hc]
-  have h2 : ∀ u v, ϕ u v = w (χ.symm x u) (χ.symm x v) := fun u v => by
-    rw [← h1, continuousLinearMapAt_apply, linearMapAt_apply, hom_trivializationAt_apply,
-      if_pos hc, ← inCoordinates_apply_eq₂_spec hb]
-    rw [symmL_apply]
-    exact hc
-  have h3 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb u
-  rw [symmL_apply] at h3
-  · have h4 := symmL_continuousLinearMapAt (R := ℝ) (trivializationAt F E x₀) hb v
-    rw [symmL_apply] at h4
-    · rw [show w u v = ϕ (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v) from by
-        rw [h2 (χ.continuousLinearMapAt ℝ x u) (χ.continuousLinearMapAt ℝ x v), h3, h4]]
-    · exact hb
-  · exact hb
+Transferring symmetry, positive definiteness and von Neumann boundedness from (2) to (1).
+-/
 
 lemma g_global_bilin_eq
     (f : SmoothPartitionOfUnity B IB B)
@@ -403,16 +393,16 @@ lemma riemannian_unit_ball_bounded (f : SmoothPartitionOfUnity B IB B)
 
 end
 
+/-! ### Existence -/
+
 section
 
 -- `FiniteDimensional ℝ EB`, `SigmaCompactSpace B` and `T2Space B` are the hypotheses of
 -- `SmoothPartitionOfUnity.exists_isSubordinate`.
 variable [FiniteDimensional ℝ EB] [SigmaCompactSpace B] [T2Space B]
-
-variable
   [FiniteDimensional ℝ F]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
-  [∀ x, T2Space (E x)]
+  [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)] [∀ x, T2Space (E x)]
 
 /--
 Existence of a smooth Riemannian metric on a manifold.
