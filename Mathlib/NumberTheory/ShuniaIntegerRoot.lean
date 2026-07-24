@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Ravi Bajaj and Ben Burns. All rights reserved.
+Copyright (c) 2026 Ravi Bajaj and Alexander Benjamin Worth Burns. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ravi Bajaj, Ben Burns
+Authors: Ravi Bajaj, Alexander Benjamin Worth Burns
 -/
 module
 
@@ -11,7 +11,6 @@ import Mathlib.Algebra.BigOperators.ModEq
 import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 import Mathlib.Analysis.SpecialFunctions.Pow.NthRootLemmas
-import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Shunia's integer-root formula
@@ -27,8 +26,6 @@ exponentiations.  Its proof uses the coefficients of `(1 + T) ^ k` reduced by th
 close to the positive real `n`-th root of `a`; evaluation at the large base `a ^ (2 * a * n)`
 then recovers that ratio from the two modular residues.
 -/
-
-@[expose] public section
 
 open scoped BigOperators
 
@@ -75,15 +72,12 @@ private lemma reducedEval_le_top_pow_mul_sum {a n k x : ℕ} (hn : 0 < n) (hx : 
         ∑ i ∈ Finset.range n, coeff a n k i * x ^ (n - 1) := by
       apply Finset.sum_le_sum
       intro i hi
-      apply Nat.mul_le_mul_left
-      exact Nat.pow_le_pow_right hx (by
-        have := Finset.mem_range.mp hi
-        omega)
+      gcongr
+      have hi' := Finset.mem_range.mp hi
+      omega
     _ = x ^ (n - 1) * ∑ i ∈ Finset.range n, coeff a n k i := by
       rw [Finset.mul_sum]
-      apply Finset.sum_congr rfl
-      intro i hi
-      exact mul_comm _ _
+      simp_rw [mul_comm]
 
 private def lowerEval (c : ℕ → ℕ) (n x : ℕ) : ℕ :=
   ∑ i ∈ Finset.range (n - 1), c i * x ^ i
@@ -141,7 +135,7 @@ private lemma lowerEval_error_le
 private lemma ratio_leading_error
     {U C Y L L' B Q : ℝ}
     (hU : 0 < U) (hC : 0 < C) (hY : 0 < Y)
-    (hL : 0 ≤ L) (hL' : 0 ≤ L') (hB : 0 ≤ B)
+    (hL : 0 ≤ L) (hL' : 0 ≤ L')
     (heD : L / (U * Y) ≤ B) (heN : L' / (C * Y) ≤ B)
     (hCU : C / U ≤ Q) :
     |(C * Y + L') / (U * Y + L) - C / U| ≤ Q * B := by
@@ -149,8 +143,7 @@ private lemma ratio_leading_error
   let eN := L' / (C * Y)
   have heD0 : 0 ≤ eD := div_nonneg hL (mul_pos hU hY).le
   have heN0 : 0 ≤ eN := div_nonneg hL' (mul_pos hC hY).le
-  have heDB : eD ≤ B := heD
-  have heNB : eN ≤ B := heN
+  have hB : 0 ≤ B := heD0.trans heD
   have hden : 0 < 1 + eD := by linarith
   have hDY : U * Y + L = U * Y * (1 + eD) := by
     dsimp [eD]
@@ -216,7 +209,7 @@ private lemma leading_recovery_of_decomposition
     (L := (lowerEval c n x : ℝ)) (L' := (lowerEval d n x : ℝ))
     (B := 2 * n * a / x) (Q := 2 * a)
     (by exact_mod_cast hU) (by exact_mod_cast hC) (by positivity)
-    (by positivity) (by positivity) (by positivity) hec hed hCU.le
+    (by positivity) (by positivity) hec hed hCU.le
   push_cast at hratio ⊢
   have hcoarse : (2 * (a : ℝ)) * (2 * n * a / x) < α / (4 * n * a ^ 2) := by
     have hxR : (0 : ℝ) < x := by positivity
@@ -280,65 +273,38 @@ private lemma add_one_pow_mod_eq_reducedEval {a n k x : ℕ} (hn : 0 < n)
     (add_one_pow_modEq_reducedEval (k := k) hn (Nat.modEq_sub ha))).eq_of_lt_of_lt
       (Nat.mod_lt _ (Nat.zero_lt_of_lt hsmall)) hsmall
 
-private def weight (a n i j : ℕ) : ℕ :=
-  if j % n = i then a ^ (j / n) else 0
-
-private lemma coeff_eq_sum_weight (a n k i : ℕ) :
-    coeff a n k i =
-      ∑ j ∈ Finset.range (k + 1), k.choose j * weight a n i j := by
-  simp only [coeff, weight]
-  rw [Finset.sum_filter]
-  apply Finset.sum_congr rfl
-  intro j hj
-  split_ifs <;> simp_all
-
-private lemma coeff_succ (a n k i : ℕ) :
-    coeff a n (k + 1) i =
-      coeff a n k i +
-        ∑ j ∈ Finset.range (k + 1), k.choose j * weight a n i (j + 1) := by
-  rw [coeff_eq_sum_weight, coeff_eq_sum_weight]
-  simpa using Finset.sum_choose_succ_mul (R := ℕ) (fun j _ ↦ weight a n i j) k
-
-private lemma weight_top_succ {a n j : ℕ} (hn : 1 < n) :
-    weight a n (n - 1) (j + 1) = weight a n (n - 2) j := by
-  unfold weight
-  have hn0 : 0 < n := by omega
-  have hmod : (j + 1) % n = n - 1 ↔ j % n = n - 2 := by
-    rw [Nat.add_mod]
-    rw [Nat.mod_eq_of_lt hn]
-    have hjmod : j % n < n := Nat.mod_lt _ hn0
-    by_cases hlt : j % n + 1 < n
-    · rw [Nat.mod_eq_of_lt hlt]
-      omega
-    · have heq : j % n + 1 = n := by omega
-      rw [heq, Nat.mod_self]
-      omega
-  by_cases h : j % n = n - 2
-  · rw [if_pos h, if_pos (hmod.mpr h)]
-    congr 1
-    have hlt : j % n + 1 < n := by omega
-    have hdiv := Nat.add_div_eq_of_add_mod_lt
-      (a := j) (b := 1) (c := n) (by simpa [Nat.mod_eq_of_lt hn] using hlt)
-    simpa [Nat.div_eq_of_lt hn] using hdiv
-  · rw [if_neg h, if_neg (hmod.not.mpr h)]
-
 private lemma coeff_succ_top {a n k : ℕ} (hn : 1 < n) :
     coeff a n (k + 1) (n - 1) =
       coeff a n k (n - 1) + coeff a n k (n - 2) := by
-  rw [coeff_succ, coeff_eq_sum_weight]
-  congr 1
-  rw [coeff_eq_sum_weight]
-  apply Finset.sum_congr rfl
-  intro j hj
-  rw [weight_top_succ hn]
+  let w (i j : ℕ) := if j % n = i then a ^ (j / n) else 0
+  have hcoeff (k i : ℕ) :
+      coeff a n k i =
+        ∑ j ∈ Finset.range (k + 1), k.choose j * w i j := by
+    simp [coeff, w, Finset.sum_filter]
+  have hshift (j : ℕ) : w (n - 1) (j + 1) = w (n - 2) j := by
+    dsimp [w]
+    have hmod : (j + 1) % n = n - 1 ↔ j % n = n - 2 := by
+      have hadd := Nat.add_mod_add_ite j 1 n
+      simp only [Nat.mod_eq_of_lt hn] at hadd
+      have hjmod := Nat.mod_lt j (by omega : 0 < n)
+      split at hadd <;> omega
+    by_cases h : j % n = n - 2
+    · rw [if_pos h, if_pos (hmod.mpr h)]
+      congr 1
+      have hlt : j % n + 1 < n := by omega
+      have hdiv := Nat.add_div_eq_of_add_mod_lt
+        (a := j) (b := 1) (c := n) (by simpa [Nat.mod_eq_of_lt hn] using hlt)
+      simpa [Nat.div_eq_of_lt hn] using hdiv
+    · rw [if_neg h, if_neg (hmod.not.mpr h)]
+  rw [hcoeff, hcoeff, hcoeff]
+  simpa [hshift] using
+    Finset.sum_choose_succ_mul (R := ℕ) (fun j _ ↦ w (n - 1) j) k
 
 private lemma four_mul_le_two_pow {a : ℕ} (ha : 4 ≤ a) : 4 * a ≤ 2 ^ a := by
-  obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le ha
-  induction d with
-  | zero => norm_num
-  | succ d ih =>
-      rw [show 4 + (d + 1) = (4 + d) + 1 by omega, pow_succ]
-      have hpos : 1 ≤ 4 + d := by omega
+  induction a, ha using Nat.le_induction with
+  | base => norm_num
+  | succ a ha ih =>
+      rw [pow_succ]
       omega
 
 /-- The positive real `n`-th root used in the spectral argument. -/
@@ -363,16 +329,14 @@ private lemma weighted_stdAddChar_sum {n i j : ℕ} [NeZero n] (hi : i < n) :
       rw [← AddChar.map_nsmul_eq_pow, ← AddChar.map_add_eq_mul]
       congr 1
       ring
-    _ = if (j : ZMod n) - (i : ZMod n) = 0 then (n : ℂ) else 0 := by
-      simpa [mul_comm, ZMod.card] using
-        AddChar.sum_mulShift ((j : ZMod n) - (i : ZMod n))
-          (ZMod.isPrimitive_stdAddChar n)
-    _ = if j % n = i then (n : ℂ) else 0 := by
-      split_ifs <;>
-        simp_all [sub_eq_zero, ZMod.natCast_eq_natCast_iff', Nat.mod_eq_of_lt hi]
+    _ = _ := by
+      simpa [mul_comm, ZMod.card, sub_eq_zero, ZMod.natCast_eq_natCast_iff',
+        Nat.mod_eq_of_lt hi] using
+          AddChar.sum_mulShift ((j : ZMod n) - (i : ZMod n))
+            (ZMod.isPrimitive_stdAddChar n)
 
 private lemma spectral_sum_eq_filtered
-    (_a n k i : ℕ) (α : ℝ) [NeZero n] (hi : i < n) :
+    (n k i : ℕ) (α : ℝ) [NeZero n] (hi : i < n) :
     ∑ l : ZMod n,
         ZMod.stdAddChar (-((i : ZMod n) * l)) *
           (1 + (α : ℂ) * ZMod.stdAddChar l) ^ k =
@@ -381,40 +345,29 @@ private lemma spectral_sum_eq_filtered
           (k.choose j : ℂ) * (α : ℂ) ^ j := by
   have hbin (z : ℂ) :
       (1 + z) ^ k = ∑ j ∈ Finset.range (k + 1), (k.choose j : ℂ) * z ^ j := by
-    rw [add_comm, add_pow]
-    apply Finset.sum_congr rfl
-    intro j hj
-    simp [mul_comm]
+    simpa [mul_comm, add_comm] using add_pow z 1 k
   calc
     _ = ∑ l : ZMod n,
         ZMod.stdAddChar (-((i : ZMod n) * l)) *
           ∑ j ∈ Finset.range (k + 1),
             (k.choose j : ℂ) * ((α : ℂ) * ZMod.stdAddChar l) ^ j := by
-      apply Finset.sum_congr rfl
-      intro l hl
-      rw [hbin]
+      simp_rw [hbin]
     _ = ∑ j ∈ Finset.range (k + 1),
         ((k.choose j : ℂ) * (α : ℂ) ^ j) *
           ∑ l : ZMod n,
             ZMod.stdAddChar (-((i : ZMod n) * l)) * ZMod.stdAddChar l ^ j := by
-      simp_rw [Finset.mul_sum]
+      simp_rw [Finset.mul_sum, mul_pow]
       rw [Finset.sum_comm]
-      apply Finset.sum_congr rfl
-      intro j hj
-      apply Finset.sum_congr rfl
-      intro l hl
-      rw [mul_pow]
+      congr 1 with j
+      congr 1 with l
       ring
     _ = ∑ j ∈ Finset.range (k + 1),
         ((k.choose j : ℂ) * (α : ℂ) ^ j) *
           (if j % n = i then (n : ℂ) else 0) := by
-      apply Finset.sum_congr rfl
-      intro j hj
-      rw [weighted_stdAddChar_sum hi]
+      simp_rw [weighted_stdAddChar_sum hi]
     _ = _ := by
       rw [Finset.sum_filter, Finset.mul_sum]
-      apply Finset.sum_congr rfl
-      intro j hj
+      congr 1 with j
       split_ifs <;> ring
 
 private lemma filtered_sum_eq_coeff_mul
@@ -445,7 +398,7 @@ private lemma coeff_spectral_identity
       ∑ l : ZMod n,
         ZMod.stdAddChar (-((i : ZMod n) * l)) *
           (1 + (α : ℂ) * ZMod.stdAddChar l) ^ k := by
-  rw [spectral_sum_eq_filtered a n k i α hi, filtered_sum_eq_coeff_mul a n k i α hα]
+  rw [spectral_sum_eq_filtered n k i α hi, filtered_sum_eq_coeff_mul a n k i α hα]
   ring
 
 private lemma sin_pi_div_le_sin_mul {n r : ℕ} (hn : 0 < n) (hr : 0 < r)
@@ -589,30 +542,17 @@ private lemma root_le_sqrt {a n : ℕ} (ha : 1 ≤ a) (hn : 2 ≤ n) :
   apply Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast ha)
   exact inv_anti₀ (by norm_num : (0 : ℝ) < 2) (by exact_mod_cast hn)
 
-private lemma nthRoot_lt_root {a n : ℕ} (ha : 0 < a) (hn : n ≠ 0)
+private lemma root_mem_Ioo_nthRoot_succ {a n : ℕ} (ha : 0 < a) (hn : n ≠ 0)
     (hnotpow : ¬ ∃ b : ℕ, b ^ n = a) :
-    (n.nthRoot a : ℝ) < root a n := by
-  have hle : n.nthRoot a ^ n ≤ a := Nat.pow_nthRoot_le (.inl hn)
-  have hne : n.nthRoot a ^ n ≠ a := fun h ↦ hnotpow ⟨n.nthRoot a, h⟩
-  have hlt : n.nthRoot a ^ n < a := lt_of_le_of_ne hle hne
-  have hlt' : (n.nthRoot a : ℝ) ^ n < (a : ℝ) := by exact_mod_cast hlt
-  rw [← root_pow ha hn] at hlt'
-  exact (pow_lt_pow_iff_left₀ (by positivity) (root_pos ha).le hn).mp hlt'
-
-private lemma root_lt_nthRoot_add_one {a n : ℕ} (ha : 0 < a) (hn : n ≠ 0) :
-    root a n < n.nthRoot a + 1 := by
-  have hlt := Nat.lt_pow_nthRoot_add_one hn a
-  have hlt' : (a : ℝ) < ((n.nthRoot a + 1 : ℕ) : ℝ) ^ n := by exact_mod_cast hlt
-  rw [← root_pow ha hn] at hlt'
-  push_cast at hlt'
-  exact (pow_lt_pow_iff_left₀ (root_pos ha).le (by positivity) hn).mp hlt'
-
-private lemma root_le_nat {a n : ℕ} (ha : 1 < a) (hn : 0 < n) :
-    root a n ≤ a := by
-  calc
-    root a n = root a n ^ 1 := by simp
-    _ ≤ root a n ^ n := pow_le_pow_right₀ (one_lt_root ha hn).le hn
-    _ = a := root_pow (by omega) hn.ne'
+    root a n ∈ Set.Ioo (n.nthRoot a : ℝ) (n.nthRoot a + 1) := by
+  constructor
+  · rw [root, Real.lt_rpow_inv_iff_of_pos (by positivity) (by positivity)
+      (by exact_mod_cast Nat.pos_of_ne_zero hn), Real.rpow_natCast]
+    exact_mod_cast lt_of_le_of_ne (Nat.pow_nthRoot_le (.inl hn))
+      (fun h ↦ hnotpow ⟨n.nthRoot a, h⟩)
+  · rw [root, Real.rpow_inv_lt_iff_of_pos (by positivity) (by positivity)
+      (by exact_mod_cast Nat.pos_of_ne_zero hn), Real.rpow_natCast]
+    exact_mod_cast Nat.lt_pow_nthRoot_add_one hn a
 
 private lemma cast_sum_coeff_le {a n k : ℕ} (ha : 1 < a) (hn : 0 < n) :
     (∑ i ∈ Finset.range n, coeff a n k i : ℕ) ≤ (1 + root a n) ^ k := by
@@ -758,9 +698,7 @@ private lemma coeff_ratio_close {a n k i j : ℕ}
   have hjk : j ≤ k := by
     calc
       j ≤ n := hj.le
-      _ = 1 * n := by simp
-      _ ≤ (2 * a) * n := Nat.mul_le_mul_right n (by omega)
-      _ = 2 * a * n := by ring
+      _ ≤ 2 * a * n := by nlinarith
       _ ≤ k := hk
   have hcj : 0 < coeff a n k j := coeff_pos_of_lt_of_le hj hjk
   have hε : 0 < ε := by dsimp [ε]; positivity
@@ -780,9 +718,7 @@ private lemma coeff_ratio_close {a n k i j : ℕ}
       coeff_normalized_close ha hn hpow hj hk
   have hratio := normalized_ratio_close hε hεsmall hsi hsj
   have hpowSplit : α ^ j = α ^ i * α ^ (j - i) := by
-    rw [← pow_add]
-    congr 1
-    omega
+    rw [← pow_add, Nat.add_sub_of_le hij]
   have hrelation :
       (coeff a n k i : ℝ) / coeff a n k j =
         α ^ (j - i) * (si / sj) := by
@@ -853,7 +789,6 @@ private lemma reducedEval_lt_modulus {a n k : ℕ} (ha : 4 ≤ a) (hn : 1 < n)
     calc
       4 * a ≤ (2 * n) * a := Nat.mul_le_mul_right a (by omega)
       _ = K := by simp [K]; ring
-  have hK2 : 2 ≤ K := le_trans (by omega : 2 ≤ 4 * a) hK4a
   have hx0 : 0 < x := by
     exact pow_pos ha0 _
   have hbase0 : (0 : ℝ) ≤ 3 / 4 := by norm_num
@@ -929,12 +864,10 @@ private lemma reducedEval_lt_modulus {a n k : ℕ} (ha : 4 ≤ a) (hn : 1 < n)
         rw [← pow_succ, Nat.sub_add_cancel hn0]
   have hdouble : 2 * reducedEval a n k x < x ^ n := by
     exact_mod_cast hdoubleReal
-  have ha2 : 2 * a < a ^ 2 := by nlinarith
-  have hax : a ^ 2 ≤ x := by
-    exact Nat.pow_le_pow_right ha0 hK2
-  have hxn : x ≤ x ^ n := by
-    simpa using Nat.pow_le_pow_right hx0 (show 1 ≤ n by omega)
-  have haSmall : 2 * a < x ^ n := lt_of_lt_of_le ha2 (hax.trans hxn)
+  have haSmall : 2 * a < x ^ n := (show 2 * a < a ^ 2 by nlinarith).trans_le <| by
+    dsimp [x, K]
+    rw [← pow_mul]
+    exact Nat.pow_le_pow_right ha0 (by nlinarith)
   change reducedEval a n k x < x ^ n - a
   omega
 
@@ -948,8 +881,7 @@ private lemma root_separation {a n : ℕ} (ha : 2 < a) (hn : 1 < n)
   have hn0 : n ≠ 0 := by omega
   have hα0 : 0 < α := root_pos ha0
   have hα1 : 1 < α := one_lt_root (by omega) (by omega)
-  have hrα : (r : ℝ) < α := nthRoot_lt_root ha0 hn0 hnotpow
-  have hαr : α < (r : ℝ) + 1 := root_lt_nthRoot_add_one ha0 hn0
+  have ⟨hrα, hαr⟩ := root_mem_Ioo_nthRoot_succ ha0 hn0 hnotpow
   have hr0 : (0 : ℝ) ≤ r := by positivity
   have hrootpow : α ^ n = (a : ℝ) := root_pow ha0 hn0
   have hrootpowpred : α * α ^ (n - 1) = (a : ℝ) := by
@@ -1034,9 +966,8 @@ private lemma div_sub_one_eq_nthRoot_of_approx {a n N D : ℕ}
   have hα0 : 0 < root a n := root_pos (by omega)
   have hhalf :
       root a n / (2 * n * a ^ 2) < root a n / (n * a ^ 2) := by
-    apply div_lt_div_of_pos_left hα0
-    · positivity
-    · nlinarith [show (0 : ℝ) < n * a ^ 2 by positivity]
+    gcongr
+    nlinarith [show (0 : ℝ) < n by positivity]
   have habs := abs_lt.mp happrox
   have hlo : (n.nthRoot a : ℝ) < (N : ℝ) / (D : ℝ) - 1 := by
     have := hsep.1
@@ -1050,16 +981,6 @@ private lemma div_sub_one_eq_nthRoot_of_approx {a n N D : ℕ}
       ⟨by push_cast; linarith, by push_cast; linarith⟩
   rw [Nat.floor_div_eq_div] at hf
   omega
-
-private lemma shunia_integer_root_three_two :
-    let k := 2 * 3 * 2
-    let x := 3 ^ k
-    let m := x ^ 2 - 3
-    Nat.nthRoot 2 3 =
-      ((x + 1) ^ (k + 1) % m) / ((x + 1) ^ k % m) - 1 := by
-  have hroot : Nat.nthRoot 2 3 = 1 := by decide
-  rw [hroot]
-  norm_num [Nat.pow_mod]
 
 private lemma shunia_integer_root_of_four_le
     (a n : ℕ) (ha : 4 ≤ a) (hn : 1 < n)
@@ -1087,22 +1008,14 @@ private lemma shunia_integer_root_of_four_le
   have hna : n ≤ a := by
     have := (n - 1).lt_two_pow_self
     omega
-  have hKtop : n - 1 ≤ K := by
-    calc
-      n - 1 ≤ n := Nat.sub_le n 1
-      _ = 1 * n := by simp
-      _ ≤ (2 * a) * n := Nat.mul_le_mul_right n (by omega)
-      _ = K := by simp [K]
-  have hKpos : 1 ≤ K := by
-    dsimp [K]
-    nlinarith
-  have hX0 : 0 < X := by simp [X, ha0]
-  have haX : a ≤ X := by
-    dsimp [X]
-    simpa using Nat.pow_le_pow_right ha0 hKpos
-  have hXXn : X ≤ X ^ n := by
-    simpa using Nat.pow_le_pow_right hX0 (show 1 ≤ n by omega)
-  have haXn : a ≤ X ^ n := haX.trans hXXn
+  have hKtop : n - 1 ≤ K :=
+    (Nat.sub_le n 1).trans <| by
+      dsimp [K]
+      nlinarith
+  have haXn : a ≤ X ^ n := by
+    simpa [X, K, ← pow_mul] using Nat.pow_le_pow_right ha0
+      (Nat.one_le_iff_ne_zero.mpr (by positivity) :
+        1 ≤ (2 * a * n) * n)
   have hsmallK : reducedEval a n K X < M := by
     simpa [K, X, M] using
       (reducedEval_lt_modulus (a := a) (n := n) (k := 2 * a * n)
@@ -1135,34 +1048,25 @@ private lemma shunia_integer_root_of_four_le
         2 * root a n ^ (n - 1 - i) := by
     intro i hi
     exact (coeff_ratio_close ha hn hpow (by omega) (by omega) (by simp [K])).2
+  have hcoeffRatio :=
+    coeff_ratio_close (a := a) (n := n) (k := K) (i := n - 2) (j := n - 1)
+      ha hn hpow (by omega) (by omega) (by simp [K])
   have hcoeff :
       |(V : ℝ) / U - root a n| < root a n / (4 * n * a ^ 2) := by
     simpa [U, V, show n - 1 - (n - 2) = 1 by omega] using
-      (coeff_ratio_close (a := a) (n := n) (k := K) (i := n - 2) (j := n - 1)
-        ha hn hpow (by omega) (by omega) (by simp [K])).1
+      hcoeffRatio.1
+  have hVUtwo : (V : ℝ) / U < 2 * root a n := by
+    simpa [U, V, show n - 1 - (n - 2) = 1 by omega] using
+      hcoeffRatio.2
   have hrec : C = U + V := by
     simpa [C, U, V] using coeff_succ_top (a := a) (n := n) (k := K) hn
   have hCUeq : (C : ℝ) / U = 1 + (V : ℝ) / U := by
     rw [hrec]
     push_cast
     field_simp [show (U : ℝ) ≠ 0 by exact_mod_cast hU.ne']
-  have herrorOne : root a n / (4 * n * a ^ 2) < 1 := by
-    apply (div_lt_one (by positivity)).2
-    have hrootA := root_le_nat (a := a) (n := n) (by omega) hn0
-    have hlarge : (a : ℝ) < 4 * n * (a : ℝ) ^ 2 := by
-      have hfactor : (1 : ℝ) < 4 * n * a := by
-        have hn2 : (2 : ℝ) ≤ n := by exact_mod_cast (show 2 ≤ n by omega)
-        have ha4 : (4 : ℝ) ≤ a := by exact_mod_cast ha
-        nlinarith
-      nlinarith [mul_pos (show (0 : ℝ) < a by positivity)
-        (sub_pos.mpr hfactor)]
-    exact hrootA.trans_lt hlarge
   have hCU : (C : ℝ) / U < 2 * a := by
-    have hVU : (V : ℝ) / U < root a n + 1 := by
-      have := (abs_lt.mp hcoeff).2
-      linarith
     rw [hCUeq]
-    have hrootA := root_le_nat (a := a) (n := n) (by omega) hn0
+    have hrootBound := one_add_root_le_three_quarters ha (by omega : 2 ≤ n)
     have haR : (4 : ℝ) ≤ a := by exact_mod_cast ha
     nlinarith
   have heval :
@@ -1196,7 +1100,7 @@ private lemma shunia_integer_root_of_four_le
   exact hrootResult.symm
 
 /-- Shunia's integer-root formula, formerly Conjecture 6.1. -/
-theorem shunia_integer_root
+public theorem shunia_integer_root
     (a n : ℕ) (ha : 2 < a) (hn : 1 < n)
     (hlog : n ≤ Nat.log2 a + 1)
     (hnotpow : ¬ ∃ b : ℕ, b ^ n = a) :
@@ -1214,6 +1118,8 @@ theorem shunia_integer_root
       rw [hlog3] at hlog
       omega
     subst n
-    exact shunia_integer_root_three_two
+    have hroot : Nat.nthRoot 2 3 = 1 := by decide
+    rw [hroot]
+    norm_num [Nat.pow_mod]
 
 end ShuniaIntegerRoot
