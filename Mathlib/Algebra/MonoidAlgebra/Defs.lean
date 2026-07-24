@@ -755,7 +755,7 @@ def uniqueRingEquiv [Subsingleton M] : R[M] ≃+* R where
   map_mul' x y := by
     let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
     refine (coeff_mul ..).trans ?_
-    simp [Finsupp.sum_unique, Unique.eq_default]
+    simp [Finsupp.sum_unique, Unique.eq_default (α := M)]
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable (M) in
