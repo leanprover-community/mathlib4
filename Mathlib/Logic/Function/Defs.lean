@@ -44,6 +44,8 @@ theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
 
 end DComp
 
+/- ### The product of functions -/
+
 /-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
 `g i` may depend on `i`. -/
 protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
@@ -100,6 +102,32 @@ theorem prod_comp_prod {γ δ} (h : α × β → γ) (k : α × β → δ) :
 @[simp] theorem swap_comp_prod : Prod.swap ∘ Function.prod f g = Function.prod g f := rfl
 
 end Prod
+
+/- ### The diagonal map -/
+
+/-- The diagonal map into `Prod`. -/
+@[inline] protected def diag {α} : α → α × α := fun a : α ↦ (a, a)
+
+section Diag
+
+variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
+
+theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
+
+@[simp, grind =] theorem diag_apply : Function.diag a = (a, a) := rfl
+
+theorem diag_injective : Injective (α := α) Function.diag := fun _ _ ↦ congrArg Prod.fst
+@[simp] theorem prod_id_id : Function.prod (@id α) id = Function.diag := rfl
+@[simp] theorem fst_comp_diag : Prod.fst ∘ Function.diag = @id α := rfl
+@[simp] theorem snd_comp_diag : Prod.snd ∘ Function.diag = @id α := rfl
+
+@[simp] theorem diag_comp : Function.diag ∘ f = Function.prod f f := rfl
+
+@[simp] theorem map_comp_diag : Prod.map f g ∘ Function.diag = Function.prod f g := rfl
+
+@[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
+
+end Diag
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation

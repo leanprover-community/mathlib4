@@ -147,6 +147,10 @@ theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) := by f
 @[continuity]
 theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fun_prop
 
+@[continuity, fun_prop]
+theorem continuous_diag : Continuous (Function.diag : X → X × X) :=
+  continuous_id.prodMk continuous_id
+
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
 lemma IsClosed.setOfPred_mapsTo {α : Type*} {f : X → α → Z} {s : Set α} {t : Set Z}
