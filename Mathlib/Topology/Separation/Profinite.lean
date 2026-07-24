@@ -78,7 +78,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
   lift x to s using interior_subset xs
   have : CompactSpace s := isCompact_iff_compactSpace.1 comp
-  obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
+  obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := exists_isClopen_mem_of_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
     refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.isClosed_iff_image_isClosed.1 VisClopen.1,
       ?_⟩
@@ -119,7 +119,7 @@ lemma exists_clopen_of_closed_subset_open {X : Type*}
     {Z U : Set X} (hZ : IsClosed Z) (hU : IsOpen U) (hZU : Z ⊆ U) :
     ∃ C : Set X, IsClopen C ∧ Z ⊆ C ∧ C ⊆ U := by
   -- every `z ∈ Z` has clopen neighborhood `V z ⊆ U`
-  choose V hV using fun (z : Z) ↦ compact_exists_isClopen_in_isOpen hU (hZU z.property)
+  choose V hV using fun (z : Z) ↦ exists_isClopen_mem_of_isOpen hU (hZU z.property)
   -- the `V z` cover `Z`
   have V_cover : Z ⊆ ⋃ z, V z := fun z hz ↦ mem_iUnion.mpr ⟨⟨z, hz⟩, (hV ⟨z, hz⟩).2.1⟩
   -- choose a finite subcover

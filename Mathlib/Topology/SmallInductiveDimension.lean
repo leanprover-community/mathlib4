@@ -124,6 +124,11 @@ theorem isTopologicalBasis_isClopen [ZeroDimensionalSpace X] :
     IsTopologicalBasis { s : Set X | IsClopen s } :=
   zeroDimensionalSpace_iff_isTopologicalBasis.1 ‹_›
 
+theorem ZeroDimensionalSpace.of_isTopologicalBasis {u : Set (Set X)} (hs : ∀ s ∈ u, IsClopen s)
+    (hu : IsTopologicalBasis u) : ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+  exact hu.of_isOpen_of_subset (fun _ ↦ IsClopen.isOpen) hs
+
 theorem zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis :
     ZeroDimensionalSpace X ↔ ∀ x : X, (𝓝 x).HasBasis (fun s ↦ IsClopen s ∧ x ∈ s) id where
   mp _ _ := isTopologicalBasis_isClopen.nhds_hasBasis
@@ -131,22 +136,23 @@ theorem zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis :
     rw [zeroDimensionalSpace_iff_isTopologicalBasis]
     exact .of_hasBasis_nhds H
 
-theorem ZeroDimensionalSpace.of_hasBasis
-    (H : ∀ x : X, ∃ u : Set (Set X), (∀ s ∈ u, IsClopen s) ∧ (𝓝 x).HasBasis (· ∈ u) id) :
-    ZeroDimensionalSpace X := by
-  rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
-  intro x
-  obtain ⟨u, hu, hu'⟩ := H x
-  apply hu'.to_hasBasis'
-  · exact fun s hs ↦ ⟨s, ⟨hu s hs, mem_of_mem_nhds (hu'.mem_of_mem hs)⟩, subset_rfl⟩
-  · exact fun s ⟨hs, hx⟩ ↦ hs.isOpen.mem_nhds hx
-
 theorem exists_isClopen_mem_of_isOpen [ZeroDimensionalSpace X] {x : X} {U : Set X}
     (hU : IsOpen U) (hx : x ∈ U) : ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
   isTopologicalBasis_isClopen.mem_nhds_iff.1 (hU.mem_nhds hx)
 
 @[deprecated (since := "2026-07-23")]
 alias compact_exists_isClopen_in_isOpen := exists_isClopen_mem_of_isOpen
+
+theorem ZeroDimensionalSpace.of_hasBasis
+    (H : ∀ x : X, ∃ (ι : Sort*) (p : ι → Prop) (s : ι → Set X),
+      (∀ i, p i → IsClopen (s i)) ∧ (𝓝 x).HasBasis p s) :
+    ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
+  intro x
+  obtain ⟨ι, p, s, hx, hx'⟩ := H x
+  apply hx'.to_hasBasis'
+  · exact fun i hi ↦ ⟨s i, ⟨hx i hi, mem_of_mem_nhds (hx'.mem_of_mem hi)⟩, subset_rfl⟩
+  · exact fun s ⟨hs, hx⟩ ↦ hs.isOpen.mem_nhds hx
 
 instance [DiscreteTopology X] : ZeroDimensionalSpace X := by
   rw [zeroDimensionalSpace_iff_isTopologicalBasis]
@@ -159,6 +165,16 @@ instance [T0Space X] [ZeroDimensionalSpace X] : TotallySeparatedSpace X := by
   apply Inseparable.eq
   rw [isTopologicalBasis_isClopen.inseparable_iff]
   exact fun V hV ↦ ⟨hxy V hV, (hxy Vᶜ hV.compl).mtr⟩
+
+instance [DiscreteTopology X] : ZeroDimensionalSpace X := by
+  apply ZeroDimensionalSpace.of_hasBasis
+  simpa using fun x ↦ ⟨_, _, _, Filter.hasBasis_pure x⟩
+
+instance [IndiscreteTopology X] : ZeroDimensionalSpace X := by
+  apply ZeroDimensionalSpace.of_hasBasis
+  intro x
+  rw [IndiscreteTopology.nhds_eq]
+  exact ⟨_, _, _, fun _ _ ↦ isClopen_univ, Filter.hasBasis_top⟩
 
 /-! ### Small inductive dimension -/
 
