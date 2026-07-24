@@ -1347,7 +1347,7 @@ theorem toBasis_orthonormalBasisSingleton :
 theorem orthonormalBasisSingleton_repr_apply (w : E) :
     (orthonormalBasisSingleton ι 𝕜 h v hv).repr w = .single default ⟪v, w⟫ := by
   ext
-  simp [OrthonormalBasis.repr_apply_apply, Unique.eq_default]
+  simp [OrthonormalBasis.repr_apply_apply, Unique.eq_default (α := ι)]
 
 theorem range_orthonormalBasisSingleton :
     Set.range (orthonormalBasisSingleton ι 𝕜 h v hv) = {v} := by

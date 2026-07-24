@@ -143,7 +143,7 @@ lemma isSemilinearSet_formula_realize_semilinear (φ : presburger[[A]].Formula �
   ext x
   simp only [mem_ofPred_eq, mem_image]
   rw [(e.arrowCongr (.refl ℕ)).exists_congr_left]
-  simp [Formula.Realize, Unique.eq_default, Function.comp_def, LinearMap.funLeft, e]
+  simp [Formula.Realize, Unique.eq_default (α := Fin 0 → ℕ), Function.comp_def, LinearMap.funLeft, e]
 
 /-- A set is Presburger definable in `ℕ` if and only if it is semilinear. -/
 theorem definable_iff_isSemilinearSet {s : Set (α → ℕ)} :

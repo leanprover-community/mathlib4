@@ -261,7 +261,7 @@ def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
   invFun a := {
     toFun := fun _ ↦ a
     inj' x y h := by simp [Unique.uniq inferInstance] }
-  left_inv f := by ext; simp [Unique.uniq]
+  left_inv f := by ext x; exact congrArg f (Unique.eq_default x).symm
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
