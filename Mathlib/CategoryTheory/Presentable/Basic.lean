@@ -5,12 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-! # Presentable objects
 
@@ -110,13 +106,13 @@ end
 
 section
 
-variable (F : C ⥤ D)
-
 /-- A functor is accessible relative to a universe `w` if
 it is `κ`-accessible for some regular `κ : Cardinal.{w}`. -/
 @[pp_with_univ]
-class IsAccessible : Prop where
-  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalAccessible F κ
+class IsAccessible (F : C ⥤ D) : Prop where
+  exists_cardinal (F) : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalAccessible F κ
+
+variable (F : C ⥤ D)
 
 lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
@@ -353,6 +349,13 @@ class HasCardinalFilteredColimits (C : Type u₁) [Category.{v₁} C]
 
 instance (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasColimitsOfSize.{w, w} C] :
     HasCardinalFilteredColimits.{w} C κ where
+
+lemma HasCardinalFilteredColimits.of_le {κ : Cardinal.{w}} [Fact κ.IsRegular]
+    [HasCardinalFilteredColimits C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    HasCardinalFilteredColimits C κ' where
+  hasColimitsOfShape J _ _ := by
+    have := IsCardinalFiltered.of_le J h
+    exact HasCardinalFilteredColimits.hasColimitsOfShape C κ J
 
 end
 
