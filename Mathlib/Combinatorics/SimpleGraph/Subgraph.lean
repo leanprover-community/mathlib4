@@ -96,7 +96,7 @@ def subgraphOfAdj (G : SimpleGraph V) {v w : V} (hvw : G.Adj v w) : G.Subgraph w
 
 namespace Subgraph
 
-variable {G : SimpleGraph V} {G₁ G₂ : G.Subgraph} {a b : V}
+variable {G : SimpleGraph V} (G' : G.Subgraph) {G₁ G₂ : G.Subgraph} {a b : V}
 
 protected theorem loopless (G' : Subgraph G) : Std.Irrefl G'.Adj where
   irrefl _ hadj := G.irrefl <| G'.adj_sub hadj
@@ -249,6 +249,9 @@ def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
 theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
   Sym2.ind (fun _ _ ↦ G'.adj_sub)
 
+theorem disjoint_edgeSet_diagSet : Disjoint G'.edgeSet Sym2.diagSet :=
+  G.disjoint_edgeSet_diagSet.mono_left G'.edgeSet_subset
+
 @[simp]
 protected lemma mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.Adj v w := .rfl
 
@@ -265,6 +268,10 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
 @[simp]
 lemma edgeSet_spanningCoe (G' : G.Subgraph) : G'.spanningCoe.edgeSet = G'.edgeSet := by
   rfl
+
+@[simp]
+theorem fromEdgeSet_edgeSet (G' : G.Subgraph) : fromEdgeSet G'.edgeSet = G'.spanningCoe := by
+  simp [← edgeSet_inj, G'.disjoint_edgeSet_diagSet]
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
