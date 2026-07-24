@@ -184,16 +184,16 @@ theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
 @[to_additive]
 theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
 
-@[deprecated (since := "2026-07-07")]
+@[to_additive (attr := deprecated (since := "2026-07-07"))]
 alias eq_one_of_mul_left' := eq_one_of_mul_left
 
-@[deprecated (since := "2026-07-07")]
+@[to_additive (attr := deprecated (since := "2026-07-07"))]
 alias eq_one_of_mul_right' := eq_one_of_mul_right
 
-@[deprecated (since := "2026-07-07")]
+@[to_additive (attr := deprecated (since := "2026-07-07"))]
 alias mul_eq_one' := mul_eq_one
 
-@[deprecated (since := "2026-07-07")]
+@[to_additive (attr := deprecated (since := "2026-07-07"))]
 alias mul_ne_one' := mul_ne_one
 
 end IsDedekindFiniteMonoid
