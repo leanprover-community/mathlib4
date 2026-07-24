@@ -693,35 +693,14 @@ warning: `to_additive` did not change the type of theorem `mulTrivial`. Please r
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
 #guard_msgs in
-@[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
+@[to_additive /-- I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
-/-- info: (via `docComment` syntax) I am an additive docstring! -/
+/-- info: I am an additive docstring! -/
 #guard_msgs in
 run_cmd
   let some doc ← findDocString? (← getEnv) ``addTrivial
-    | throwError "no `docComment` docstring found"
-  logInfo doc
-
-/--
-warning: String syntax for `to_additive` docstrings is deprecated: Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
-
-Update deprecated syntax to:
-  [apply] /-- (via `str` syntax) I am an additive docstring! -/
----
-warning: `to_additive` did not change the type of theorem `mulTrivial'`. Please remove the attribute.
-
-Note: This linter can be disabled with `set_option linter.translateRedundant false`
--/
-#guard_msgs in
-@[to_additive "(via `str` syntax) I am an additive docstring!"]
-theorem mulTrivial' : True := trivial
-
-/-- info: (via `str` syntax) I am an additive docstring! -/
-#guard_msgs in
-run_cmd
-  let some doc ← findDocString? (← getEnv) ``addTrivial'
-    | throwError "no `str` docstring found"
+    | throwError "no docstring found"
   logInfo doc
 
 /-! Test handling of noncomputability -/
@@ -1046,3 +1025,52 @@ info: @add_comm_alias : ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a 
 -/
 #guard_msgs in
 #check @add_comm_alias
+
+/-! Warning when adding docstrings to existing declarations -/
+
+namespace ExistingDeclDocstring
+
+/-- Existing docstring -/
+opaque add (G : Type*) [AddGroup G] : Prop
+
+/-- warning: The target declaration `add` already has a docstring. -/
+#guard_msgs in
+@[to_additive existing /-- New docstring -/]
+opaque mul (G : Type*) [Group G] : Prop
+
+/-- warning: The target declaration `self` already has a docstring. -/
+#guard_msgs in
+/-- Existing docstring -/
+@[to_additive self (reorder := x y) /-- New docstring -/]
+opaque self (x y : Nat) : Prop
+
+/-- Existing docstring -/
+structure addStruct (G : Type*) [AddGroup G] where
+
+/-- warning: The target declaration `addStruct` already has a docstring. -/
+#guard_msgs in
+@[to_additive /-- New docstring -/]
+structure mulStruct (G : Type*) [Group G] where
+
+-- Examples with no pre-existing docstring
+
+opaque add' (G : Type*) [AddGroup G] : Prop
+
+/-- warning: This docstring should be added directly to `add'`. -/
+#guard_msgs in
+@[to_additive existing /-- New docstring -/]
+opaque mul' (G : Type*) [Group G] : Prop
+
+/-- warning: This docstring should be added directly to `self'`. -/
+#guard_msgs in
+@[to_additive self (reorder := x y) /-- New docstring -/]
+opaque self' (x y : Nat) : Prop
+
+structure addStruct' (G : Type*) [AddGroup G] where
+
+/-- warning: This docstring should be added directly to `addStruct'`. -/
+#guard_msgs in
+@[to_additive /-- New docstring -/]
+structure mulStruct' (G : Type*) [Group G] where
+
+end ExistingDeclDocstring
