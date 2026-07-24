@@ -220,6 +220,26 @@ lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype 
   rw [reachable_comm]
   exact not_reachable_of_left_degree_zero huv.symm hu
 
+variable {G} in
+/-- In a graph with finitely-many edges, between any reachable endpoints there exists a longest
+trail among trails between them. -/
+theorem Reachable.exists_isTrail_forall_isTrail_length_le_length [Finite G.edgeSet] {u v : V}
+    (huv : G.Reachable u v) :
+    ∃ p : G.Walk u v, p.IsTrail ∧ ∀ p' : G.Walk u v, p'.IsTrail → p'.length ≤ p.length := by
+  have ⟨p₀, hp₀⟩ := huv.exists_isPath
+  grind [G.exists_isTrail_forall_length_le_of_pred (fun u' v' p hp ↦ u' = u ∧ v' = v)
+    ⟨u, v, p₀, hp₀.isTrail, rfl, rfl⟩]
+
+variable {G} in
+/-- In a graph with finitely-many edges, between any reachable endpoints there exists a longest
+path among paths between them. -/
+theorem Reachable.exists_isPath_forall_isPath_length_le_length [Finite G.edgeSet] {u v : V}
+    (huv : G.Reachable u v) :
+    ∃ p : G.Walk u v, p.IsPath ∧ ∀ p' : G.Walk u v, p'.IsPath → p'.length ≤ p.length := by
+  have ⟨p₀, hp₀⟩ := huv.exists_isPath
+  grind [Walk.IsPath.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u' v' p hp ↦ u' = u ∧ v' = v ∧ p.IsPath) ⟨u, v, p₀, hp₀.isTrail, rfl, rfl, hp₀⟩]
+
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 @[instance_reducible]
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
