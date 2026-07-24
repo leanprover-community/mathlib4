@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
@@ -21,11 +22,11 @@ is satisfied:
 which in diagrams looks like
 ```
 |    |                           |    |
-|    μ          |   |            μ    |
-|   / \          \ /            / \   |
- \ /   |    =   δ ∘ μ     =    |   \ /
-  δ    |         / \           |    δ
-  |    |        |   |          |    |
+|    μ           |   |           μ    |
+|   / \           \ /           / \   |
+ \ /   |    =    δ ∘ μ    =    |   \ /
+  δ    |          / \          |    δ
+  |    |         |   |         |    |
 ```
 where `μ` stands for multiplication and `δ` for comultiplication.
 
@@ -130,13 +131,6 @@ private lemma sum_counit_mul_smul_of_comul_one {S : Finset (A × A)}
     ∑ x ∈ S, (ε : _ →ₗ[R] _) (a * x.1) • x.2 = a := by
   simpa [hS, tmul_sum] using congr(β (rT A ε ($right_eq (a ⊗ₜ[R] 1))))
 
-/-- If a coalgebra satisfies the Frobenius equations, then its counit is nondegenerate. -/
-lemma forall_counit_mul_eq_zero_iff {a : A} :
-    (∀ b, (ε : _ →ₗ[R] _) (a * b) = 0) ↔ a = 0 := by
-  refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
-  obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
-  simpa [h] using (sum_counit_mul_smul_of_comul_one hS a).symm
-
 instance instFinite : Module.Finite R A := by
   have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   classical refine Module.finite_def.mpr ⟨S.image Prod.snd, top_le_iff.mp fun a _ ↦ ?_⟩
@@ -147,6 +141,24 @@ instance instProjective : Module.Projective R A := by
   obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   refine Module.projective_def'.mpr ⟨∑ p ∈ S, (ε ∘ₗ mulRight R p.1).smulRight (.single p.2 1), ?_⟩
   ext; simp [sum_counit_mul_smul_of_comul_one hS]
+
+/-- The bilinear form `(mul R A).compr₂ counit` is separeating left.
+This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
+lemma forall_counit_mul_left_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (a * b) = 0) ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
+  obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
+  simpa [h] using (sum_counit_mul_smul_of_comul_one hS a).symm
+
+/-- The bilinear form `(mul R A).compr₂ counit` is separeating right.
+This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
+lemma forall_counit_mul_right_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (b * a) = 0) ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
+  obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
+  simpa [hS, sum_tmul, h] using congr(TensorProduct.rid R A (lT A ε ($left_eq (1 ⊗ₜ[R] a)))).symm
+
+lemma nondegenerate_compr₂_mul_counit : ((mul R A).compr₂ (ε : A →ₗ[R] R)).Nondegenerate := by
+  simp [Nondegenerate, SeparatingLeft, SeparatingRight, forall_counit_mul_left_eq_zero_iff,
+    forall_counit_mul_right_eq_zero_iff]
 
 end nonAssoc
 
