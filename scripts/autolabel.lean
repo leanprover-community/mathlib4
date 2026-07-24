@@ -434,11 +434,23 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
     -- return 3
 
-  -- get the modified files
-  let gitDiff ← IO.Process.run {
-    cmd := "git",
-    args := #["diff", "--name-only", "origin/master...HEAD"] }
-  let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
+  -- get the modified files: if a valid PR title `...(Folder/Name, Another/Folder): ...`
+  -- is provided, use the paths from it. Otherwise, look at `git diff` to figure out the changes
+  let mut modifiedFiles : Array FilePath := #[]
+  if let some title := (args.flag? "title").map (·.as! String) then
+    let paths : Array FilePath := title.splitOn ":" |>.getD 0 ""
+      |>.splitOn "(" |>.getD 1 ""
+      |>.splitOn ")" |>.getD 0 ""
+      |>.splitOn "," |>.toArray.map ("Mathlib" / ⟨·.trimAscii.toString⟩)
+    if ! paths.isEmpty then
+      println s!"::notice::used title to find labels"
+      modifiedFiles := paths
+  if modifiedFiles.isEmpty then
+      println s!"::notice::used diff to find labels"
+    let gitDiff ← IO.Process.run {
+      cmd := "git",
+      args := #["diff", "--name-only", "origin/master...HEAD"] }
+    modifiedFiles := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files
   let newLabels := dropDependentLabels <| getMatchingLabels modifiedFiles
@@ -500,6 +512,8 @@ def autolabel : Cli.Cmd := `[Cli|
     "curl" : String; "apply label(s) using `curl`. \
                       Usage: `lake exe autolabel --pr 20156 --curl <ACCESS_TOKEN>`. \
                       (currently, this implies `--force`)"
+    "title": String; "Provided a PR title following the mathlib convention, it will try to
+                      extract a folder name from it and use it instead of looking at the git diff"
     "force";         "apply labels even if there are already labels on the PR."
 ]
 
