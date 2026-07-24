@@ -1433,9 +1433,15 @@ Q1149022:
 
 Q1149185X:
   title: Kirby–Paris theorem
+  url: https://github.com/gotrevor/goodstein-independence/blob/main/src/GoodsteinPA/Statement.lean
+  authors: Trevor Morris
+  date: 2026-07-03
+  comment: "Peano Arithmetic does not prove that every Goodstein sequence terminates (Kirby–Paris, 1982). Standalone Lean 4 formalization built on the FormalizedFormalLogic/Foundation library."
 
 Q1149185:
   title: Goodstein's theorem
+  url: https://github.com/gotrevor/lean-gallery/blob/main/LeanGallery/Logic/Goodstein/Statement.lean
+  authors: Trevor Morris
 
 Q1149458:
   title: Compactness theorem
