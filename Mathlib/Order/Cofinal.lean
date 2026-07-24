@@ -177,11 +177,8 @@ theorem isCofinal_setOfPred_imp_lt (r : α → α → Prop) [h : IsWellFounded �
   by_contra! hc'
   exact hb' c (hb.trans hc') hc
 
-<<<<<<< HEAD
-=======
 @[deprecated (since := "2026-07-09")] alias isCofinal_setOf_imp_lt := isCofinal_setOfPred_imp_lt
 
->>>>>>> master
 theorem isCofinal_range_of_strictMono [WellFoundedLT α] {f : α → α} (hf : StrictMono f) :
     IsCofinal (range f) :=
   fun x ↦ ⟨_, ⟨x, rfl⟩, hf.le_apply⟩
