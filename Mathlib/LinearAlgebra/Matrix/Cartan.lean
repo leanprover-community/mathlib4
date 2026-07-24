@@ -272,6 +272,7 @@ proof_wanted E₈_det : E₈.det = 1
 def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
   Pairwise fun i j ↦ A i j = 0 ∨ A i j = -1
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {ι : Type*} [Fintype ι] [DecidableEq ι] : DecidablePred (Matrix.IsSimplyLaced (ι := ι)) :=
   inferInstanceAs <|
     DecidablePred fun A : Matrix ι ι ℤ ↦ ∀ ⦃i j : ι⦄, i ≠ j → (fun i j ↦ A i j = 0 ∨ A i j = -1) i j
@@ -302,12 +303,15 @@ theorem isSimplyLaced_D (n : ℕ) : IsSimplyLaced (D n) := by
   simp only [D, of_apply]
   grind
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isSimplyLaced_E₆ : IsSimplyLaced E₆ := by
   rw [Matrix.isSimplyLaced_iff_of_linearOrder E₆ E₆_isSymm]; decide
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ := by
   rw [Matrix.isSimplyLaced_iff_of_linearOrder E₇ E₇_isSymm]; decide
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ := by
   rw [Matrix.isSimplyLaced_iff_of_linearOrder E₈ E₈_isSymm]; decide
 

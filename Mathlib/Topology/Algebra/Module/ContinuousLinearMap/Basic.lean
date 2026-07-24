@@ -726,8 +726,6 @@ theorem smulRight_comp_smulRight {M₃ : Type*} [AddCommMonoid M₃] [Module R�
   ext
   simp
 
-@[deprecated (since := "2025-12-18")] alias smulRight_comp := smulRight_comp_smulRight
-
 theorem range_smulRight_apply {R : Type*} [DivisionSemiring R] [Module R M₁] [Module R M₂]
     [TopologicalSpace R] [ContinuousSMul R M₂] {f : M₁ →L[R] R} (hf : f ≠ 0) (x : M₂) :
     range (f.smulRight x : M₁ →ₗ[R] M₂) = Submodule.span R {x} :=
@@ -754,14 +752,10 @@ theorem toSpanSingleton_zero : toSpanSingleton R₁ (0 : M₁) = 0 := by ext; si
 theorem toSpanSingleton_apply_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
   one_smul _ _
 
-@[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
-
 @[simp] theorem toSpanSingleton_apply_map_one (c : R₁ →L[R₁] M₂) :
     toSpanSingleton R₁ (c 1) = c := by
   ext
   simp [← ContinuousLinearMap.map_smul_of_tower]
-
-@[deprecated (since := "2025-12-18")] alias smulRight_one_one := toSpanSingleton_apply_map_one
 
 theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
     toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y :=
@@ -777,9 +771,6 @@ theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ :=
 theorem smulRight_one_eq_toSpanSingleton (x : M₁) :
     (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
-
-@[deprecated (since := "2025-12-05")] alias one_smulRight_eq_toSpanSingleton :=
-  smulRight_one_eq_toSpanSingleton
 
 @[simp]
 theorem toLinearMap_toSpanSingleton (x : M₁) :
@@ -798,8 +789,6 @@ theorem toSpanSingleton_comp (f : M₁ →L[R₁] R₁) (g : M₂) :
 @[simp] theorem toSpanSingleton_inj {f f' : M₂} :
     toSpanSingleton R₁ f = toSpanSingleton R₁ f' ↔ f = f' := by
   simp [ContinuousLinearMap.ext_ring_iff]
-
-@[deprecated (since := "2025-12-18")] alias smulRight_one_eq_iff := toSpanSingleton_inj
 
 theorem toSpanSingleton_comp_toSpanSingleton [ContinuousMul R₁] {x : M₂} {c : R₁} :
     (toSpanSingleton R₁ x) ∘L (toSpanSingleton R₁ c) =
@@ -921,8 +910,6 @@ theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (
   | zero => ext; simp
   | succ n ihn =>
     rw [pow_succ, ihn, mul_def, toSpanSingleton_comp_toSpanSingleton, smul_eq_mul, pow_succ']
-
-@[deprecated (since := "2025-12-18")] alias smulRight_one_pow := toSpanSingleton_pow
 
 end Ring
 

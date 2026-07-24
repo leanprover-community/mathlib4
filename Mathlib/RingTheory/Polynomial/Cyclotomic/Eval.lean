@@ -50,7 +50,7 @@ theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S]
 private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
     [CommRing R] [PartialOrder R] [IsStrictOrderedRing R] :
     0 < eval (-1 : R) (cyclotomic n R) := by
-  haveI := NeZero.of_gt hn
+  have := NeZero.of_gt hn
   rw [← map_cyclotomic_int, ← Int.cast_one, ← Int.cast_neg, eval_intCast_map, Int.coe_castRingHom,
     Int.cast_pos]
   suffices 0 < eval (↑(-1 : ℤ)) (cyclotomic n ℝ) by
@@ -146,7 +146,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     linarith [cyclotomic_nonneg n (le_refl (1 : ℤ))]
   rw [← Int.natAbs_eq_natAbs_iff, Int.natAbs_one, Nat.eq_one_iff_not_exists_prime_dvd]
   intro p hp hpe
-  haveI := Fact.mk hp
+  have := Fact.mk hp
   have := prod_cyclotomic_eq_geom_sum hn' ℤ
   apply_fun eval 1 at this
   rw [eval_geom_sum, one_geom_sum, eval_prod, eq_comm, ←

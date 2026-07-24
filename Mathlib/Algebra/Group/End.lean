@@ -410,6 +410,7 @@ private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f
   | 0, _ => Iff.rfl
   | _ + 1, _ => (pow_aux hf (f _)).trans (hf _)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[simp]
@@ -469,6 +470,7 @@ theorem ofSubtype_apply_mem_iff_mem (f : Perm (Subtype p)) (x : α) :
     simpa only [h, iff_true, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) → Perm α) := by
   intro x y h
   rw [Perm.ext_iff] at h ⊢

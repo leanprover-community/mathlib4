@@ -317,6 +317,7 @@ end Class
 
 namespace ZFSet
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u}}
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=

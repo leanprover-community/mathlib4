@@ -85,7 +85,6 @@ variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β]
 lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → α → β} (hf : f₁ ≤ f₂)
     (hh : ∀ i ∈ f₁.support ∪ f₂.support, Monotone (h i))
     (hh₀ : ∀ i ∈ f₁.support ∪ f₂.support, h i 0 = 0) : f₁.sum h ≤ f₂.sum h := by
-  classical
   rw [sum_of_support_subset _ Finset.subset_union_left _ hh₀,
     sum_of_support_subset _ Finset.subset_union_right _ hh₀]
   gcongr with i hi
@@ -292,7 +291,7 @@ lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
     (f1 - f2).mapDomain f = f1.mapDomain f - f2.mapDomain f := by
   ext y
   by_cases! hy : y ∉ Set.range f
-  · simp [mapDomain_notin_range _ _ hy]
+  · simp [mapDomain_of_notMem_range _ _ hy]
   · obtain ⟨x, rfl⟩ := hy
     simp [mapDomain_apply h]
 
