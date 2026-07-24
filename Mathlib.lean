@@ -7922,6 +7922,7 @@ public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Defs.Ultrafilter
 public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.DerivedSet
+public import Mathlib.Topology.DiscreteFamily
 public import Mathlib.Topology.DiscreteQuotient
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.EMetricSpace.Basic
@@ -8074,6 +8075,7 @@ public import Mathlib.Topology.MetricSpace.Ultra.Pi
 public import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
 public import Mathlib.Topology.MetricSpace.UniformConvergence
 public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.Metrizable.BingNagataSmirnov
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 public import Mathlib.Topology.Metrizable.ContinuousMap
 public import Mathlib.Topology.Metrizable.Real
