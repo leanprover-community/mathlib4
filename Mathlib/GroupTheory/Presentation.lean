@@ -94,15 +94,14 @@ theorem fg [Finite α] (P : Group.Generators G α) : Group.FG G :=
 
 end Group.Generators
 
-/-- A group is finitely generated if and only if it admits a generating family indexed by
-a finite generating set, which then indexes itself. -/
+/-- A group is finitely generated if and only if it admits a generating family indexed by `Fin n`.
+-/
 theorem Group.fg_iff_nonempty_finite_generators :
-    Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite), Nonempty (Group.Generators G S) := by
+    Group.FG G ↔ ∃ n, Nonempty (Group.Generators G (Fin n)) := by
   constructor
   · rintro ⟨S, hS⟩
-    exact ⟨S, S.finite_toSet, ⟨⟨Subtype.val, by rwa [Subtype.range_coe]⟩⟩⟩
-  · rintro ⟨S, hS, ⟨P⟩⟩
-    have := hS.to_subtype
+    exact ⟨S.card, Subtype.val ∘ S.equivFin.symm, by simp [hS]⟩
+  · rintro ⟨n, ⟨P⟩⟩
     exact P.fg
 
 /-- A group presentation is given by a generating family (`val : α → G`) and a set of relators
@@ -137,7 +136,7 @@ lemma range_lift_eq_top : P.lift.range = ⊤ :=
 
 lemma ker_lift : P.lift.ker = Subgroup.normalClosure P.rel := P.ker_eq_normalClosure
 
-theorem lift_eq_one_of_mem_rel {r : FreeGroup α} (hr : r ∈ P.rel) : P.lift r = 1 :=
+lemma lift_eq_one_of_mem_rel {r : FreeGroup α} (hr : r ∈ P.rel) : P.lift r = 1 :=
   MonoidHom.mem_ker.mp (by simpa [P.ker_lift] using Subgroup.subset_normalClosure hr)
 
 /-- The `G` with presentation `P` is isomorphic to the `PresentedGroup` given by `P.rel`. -/
