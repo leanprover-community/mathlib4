@@ -8,11 +8,14 @@ module
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.PowerSeries.Ideal
-public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
 # Power Series over Regular Local Ring
+
+In this file we proved that power series and finite variable multi-variable power series
+over regular local rings are again regular.
+
 -/
 
 @[expose] public section
