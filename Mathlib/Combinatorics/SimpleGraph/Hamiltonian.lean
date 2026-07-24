@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.SetTheory.Cardinal.Finite
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 
@@ -39,10 +40,17 @@ namespace Walk
 this definition doesn't contain that `p` is a path, `p.isPath` gives that. -/
 def IsHamiltonian (p : G.Walk a b) : Prop := ∀ a, p.support.count a = 1
 
-variable (f) in
-lemma IsHamiltonian.map (hf : Bijective f) (hp : p.IsHamiltonian) :
-    (p.map f).IsHamiltonian := by
-  simp [IsHamiltonian, hf.surjective.forall, hf.injective, hp _]
+theorem isHamiltonian_map (hf : Function.Bijective f) :
+    (p.map f).IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [IsHamiltonian, hf.surjective.forall, hf.injective]
+
+protected alias ⟨_, IsHamiltonian.map⟩ := isHamiltonian_map
+
+@[simp]
+theorem isHamiltonian_mapLe {H} (hle : G ≤ H) : (p.mapLe hle).IsHamiltonian ↔ p.IsHamiltonian :=
+  isHamiltonian_map <| Function.bijective_id
+
+protected alias ⟨_, IsHamiltonian.mapLe⟩ := isHamiltonian_mapLe
 
 /-- A Hamiltonian path visits every vertex. -/
 @[simp] lemma IsHamiltonian.mem_support (hp : p.IsHamiltonian) (c : α) : c ∈ p.support :=
@@ -59,6 +67,15 @@ lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support)
 
 lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w ∈ p.support :=
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
+
+theorem isHamiltonian_iff_isPath_and_forall_mem_support :
+    p.IsHamiltonian ↔ p.IsPath ∧ ∀ w, w ∈ p.support :=
+  ⟨fun hp ↦ ⟨hp.isPath, hp.mem_support⟩, fun hp ↦ hp.left.isHamiltonian_of_mem hp.right⟩
+
+theorem IsHamiltonian.connected (hp : p.IsHamiltonian) : G.Connected where
+  preconnected u v :=
+    ⟨p.takeUntil u (hp.mem_support u) |>.reverse.append <| p.takeUntil v (hp.mem_support v)⟩
+  nonempty := ⟨a⟩
 
 theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
   intro v
@@ -145,6 +162,22 @@ lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
   refine (Fintype.equivFinOfCardEq ?_).symm
   simp_rw [length_support, h, Nat.sub_one_add_one Fintype.card_ne_zero]
 
+theorem isHamiltonian_iff_finite_and_isPath_and_length_eq :
+    p.IsHamiltonian ↔ Finite α ∧ p.IsPath ∧ p.length = Nat.card α - 1 := by
+  rcases finite_or_infinite α |>.symm with hinf | hfin
+  · simp [hinf]
+  cases nonempty_fintype α
+  simp [isHamiltonian_iff_isPath_and_length_eq, hfin]
+
+@[simp]
+theorem isHamiltonian_copy {a' b' : α} {p : G.Walk a b} {ha : a = a'} {hb : b = b'} :
+    (p.copy ha hb).IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [isHamiltonian_iff_finite_and_isPath_and_length_eq]
+
+@[simp]
+theorem isHamiltonian_reverse : p.reverse.IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [isHamiltonian_iff_finite_and_isPath_and_length_eq]
+
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
@@ -153,6 +186,13 @@ variable {p : G.Walk a a}
 
 lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
   hp.toIsCycle
+
+theorem isHamiltonian_dropLast_iff : p.dropLast.IsHamiltonian ↔ p.tail.IsHamiltonian := by
+  simp_rw [IsHamiltonian, p.support_tail_perm_support_dropLast.count_eq]
+
+theorem IsHamiltonianCycle.isHamiltonian_dropLast (hp : p.IsHamiltonianCycle) :
+    p.dropLast.IsHamiltonian :=
+  isHamiltonian_dropLast_iff.mpr hp.isHamiltonian_tail
 
 lemma IsHamiltonianCycle.map (hf : Bijective f)
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
@@ -165,6 +205,9 @@ lemma IsHamiltonianCycle.map (hf : Bijective f)
     simp only [map_cons, getVert_cons_succ, tail_cons, support_copy, support_map]
     rw [List.count_map_of_injective _ _ hf.injective]
     simpa using hp.isHamiltonian_tail x
+
+theorem IsHamiltonianCycle.connected (hp : p.IsHamiltonianCycle) : G.Connected :=
+  hp.isHamiltonian_tail.connected
 
 /-- If a cycle `p` is Hamiltonian then the graph has finitely many vertices. -/
 protected lemma IsHamiltonianCycle.finite (hp : p.IsHamiltonianCycle) : Finite α :=
@@ -204,22 +247,42 @@ lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a 
     p.support.count b = 1 := by
   rw [← cons_support_tail hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
 
+theorem isHamiltonianCycle_iff_isCycle_and_forall_mem_support :
+    p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ v, v ∈ p.support := by
+  refine ⟨fun hp ↦ ⟨hp.isCycle, hp.mem_support⟩, fun hp ↦ ⟨hp.left, ?_⟩⟩
+  refine IsPath.isHamiltonian_of_mem hp.left.isPath_tail fun v ↦ ?_
+  grind [cons_support_tail hp.left.not_nil, end_mem_support]
+
 lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.length = Fintype.card α := by
   refine ⟨fun h ↦ ⟨h.isCycle, h.length_eq⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   refine isHamiltonian_iff_isPath_and_length_eq.mpr ⟨h₁.isPath_tail, ?_⟩
   grind [length_tail_add_one, IsCycle.not_nil]
 
-@[simp]
-lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
-    (p.rotate v hv).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+theorem isHamiltonianCycle_iff_isCycle_and_length_eq_natCard :
+    p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.length = Nat.card α := by
   cases (finite_or_infinite α).symm
-  · simp
+  · simpa using IsCycle.not_nil
   cases nonempty_fintype α
   simp [isHamiltonianCycle_iff_isCycle_and_length_eq]
 
+@[simp]
+theorem isHamiltonianCycle_copy {p : G.Walk a a} (h : a = b) :
+    (p.copy h h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
+
+@[simp]
+lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
+    (p.rotate v hv).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
+
 protected alias ⟨IsHamiltonianCycle.of_rotate, IsHamiltonianCycle.rotate⟩ :=
   isHamiltonianCycle_rotate
+
+theorem isHamiltonianCycle_reverse : p.reverse.IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
+
+protected alias ⟨_, IsHamiltonianCycle.reverse⟩ := isHamiltonianCycle_reverse
 
 end Walk
 
@@ -245,16 +308,18 @@ lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamilton
 lemma not_isHamiltonian_of_isEmpty [IsEmpty α] : ¬G.IsHamiltonian :=
   (IsEmpty.exists_iff.mp <| · <| by simp)
 
-lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
-  preconnected a b := by
-    obtain rfl | hab := eq_or_ne a b
-    · rfl
-    have : Nontrivial α := ⟨a, b, hab⟩
-    obtain ⟨_, p, hp⟩ := hG Fintype.one_lt_card.ne'
-    have a_mem := hp.mem_support a
-    have b_mem := hp.mem_support b
-    exact ((p.takeUntil a a_mem).reverse.append <| p.takeUntil b b_mem).reachable
-  nonempty := not_isEmpty_iff.mp fun _ ↦ not_isHamiltonian_of_isEmpty hG
+theorem IsHamiltonian.nonempty (hG : G.IsHamiltonian) : Nonempty α :=
+  not_isEmpty_iff.mp fun _ ↦ not_isHamiltonian_of_isEmpty hG
+
+lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected := by
+  rcases or_iff_not_imp_left.mpr hG with h | ⟨a, p, hp⟩
+  · have ⟨_⟩ := Fintype.card_eq_one_iff_nonempty_unique.mp h
+    exact .of_subsingleton
+  exact hp.connected
+
+theorem Walk.IsHamiltonianCycle.isHamiltonian {p : G.Walk v v} (hp : p.IsHamiltonianCycle) :
+    G.IsHamiltonian :=
+  fun _ ↦ ⟨v, p, hp⟩
 
 lemma IsHamiltonian.of_card_eq_one (h : Fintype.card α = 1) : G.IsHamiltonian :=
   (· h |>.elim)
@@ -273,6 +338,10 @@ lemma not_isHamiltonian_bot_of_card_ne_one (h : Fintype.card α ≠ 1) :
 
 lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
   of_card_eq_one <| Fintype.card_unique
+
+theorem Walk.IsHamiltonian.isHamiltonian_of_nil (hp : p.IsHamiltonian) (hnil : p.Nil) :
+    G.IsHamiltonian := by
+  grind [IsHamiltonian.of_card_eq_one, hp.length_support, hnil.length_eq_zero]
 
 /-- A finite simple graph with a bridge is not hamiltonian. -/
 theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHamiltonian := by
