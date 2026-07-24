@@ -53,11 +53,12 @@ variable (R A) in
 @[expose]
 noncomputable def equivDual : A ≃ₗ[R] Module.Dual R A := .ofBijective _ bijective_compr₂_mul
 
-@[simp] lemma equivDual_apply (a b : A) : equivDual R A a b = dual (a * b) := rfl
+@[simp low] lemma equivDual_apply (a : A) : equivDual R A a = (mul R A).compr₂ dual a := rfl
+lemma equivDual_apply_apply (a b : A) : equivDual R A a b = dual (a * b) := by simp
 @[simp] lemma toLinearMap_equivDual : (equivDual R A).toLinearMap = (mul R A).compr₂ dual := rfl
 
 @[simp] lemma dual_apply_symm_equivDual_mul (f : Dual R A) (a : A) :
-    dual ((equivDual R A).symm f * a) = f a := by simp [← equivDual_apply]
+    dual ((equivDual R A).symm f * a) = f a := by simp [← equivDual_apply_apply]
 
 @[simp] lemma symm_equivDual_compr₂_mul_dual (a : A) :
     (equivDual R A).symm (((mul R A).compr₂ dual) a) = a := by simp [equivDual]
@@ -71,7 +72,7 @@ lemma forall_dual_mul_right_eq_zero_iff {a : A} : (∀ b : A, dual (R := R) (b *
   intro x
   simpa using h ((equivDual R A).symm (dual ∘ₗ (mul R A).flip x))
 
-lemma nondegenerate_equivDual : ((mul R A).compr₂ dual).Nondegenerate := by
+lemma nondegenerate_equivDual : (equivDual R A).Nondegenerate := by
   simp [Nondegenerate, SeparatingLeft, SeparatingRight, forall_dual_mul_left_eq_zero_iff,
     forall_dual_mul_right_eq_zero_iff]
 
@@ -132,8 +133,8 @@ section Semiring
 variable [Semiring A] [Algebra R A] [Module.IsReflexive R A] [FrobeniusAlgebra R A]
 
 variable (R A) in
-/-- The Nakayama automorphism: `nakayamaAlgEquiv R A b` is the unique
-element with `dual (nakayamaAlgEquiv R A b * a) = dual (a * b)` for all `a`. -/
+/-- The Nakayama automorphism `nakayamaAlgEquiv R A` such that
+`dual (nakayamaAlgEquiv R A b * a) = dual (a * b)` for all `a, b`. -/
 noncomputable def nakayamaAlgEquiv : A ≃ₐ[R] A :=
   .ofLinearEquiv
     (.trans (.ofBijective _ bijective_flip_compr₂_mul) (equivDual R A).symm)
