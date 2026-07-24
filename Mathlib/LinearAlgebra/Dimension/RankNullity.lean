@@ -95,16 +95,36 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
+theorem LinearMap.lift_rank_comap (f : M →ₗ[R] M') (p : Submodule R M') :
+    lift.{v} (Module.rank R (comap f p)) =
+      lift.{u} (Module.rank R (f.range ⊓ p :)) + lift.{v} (Module.rank R f.ker) := by
+  convert ← (f.submoduleComap p).lift_rank_range_add_rank_ker.symm <;> apply LinearEquiv.rank_eq
+  · rw [range_submoduleComap]; apply submoduleOfEquivInf
+  · rw [ker_submoduleComap]; exact submoduleOfEquivOfLe (by simp)
+
+theorem LinearMap.rank_comap (f : M →ₗ[R] M₁) (p : Submodule R M₁) :
+    Module.rank R (comap f p) = Module.rank R (f.range ⊓ p :) + Module.rank R f.ker := by
+  convert lift_rank_comap f p using 0
+  simp_rw [lift_id]
+
+theorem LinearMap.lift_rank_map_add_rank_ker_inf (f : M →ₗ[R] M') (p : Submodule R M) :
+    lift.{u} (Module.rank R (map f p)) + lift.{v} (Module.rank R (f.ker ⊓ p :)) =
+      lift.{v} (Module.rank R p) := by
+  convert ← (f.submoduleMap p).lift_rank_range_add_rank_ker <;> apply LinearEquiv.rank_eq
+  · rw [range_submoduleMap]; exact topEquiv
+  · rw [ker_submoduleMap]; apply submoduleOfEquivInf
+
+theorem LinearMap.rank_map_add_rank_ker_inf (f : M →ₗ[R] M₂) (p : Submodule R M) :
+    Module.rank R (map f p) + Module.rank R (f.ker ⊓ p :) = Module.rank R p := by
+  convert lift_rank_map_add_rank_ker_inf f p using 0
+  simp_rw [lift_id]
+
 theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
     lift.{v} (Module.rank R (comap f p)) ≤
       lift.{u} (Module.rank R p) + lift.{v} (Module.rank R f.ker) := by
-  let f' : comap f p →ₗ[R] p := f.restrict (by aesop)
-  have hk : Module.rank R f'.ker ≤ Module.rank R f.ker := by
-    rw [← rank_map_eq (injective_subtype (comap f p))]
-    exact rank_mono fun x hx ↦ by aesop (add simp Subtype.ext_iff)
-  have hr : Module.rank R f'.range ≤ Module.rank R p := by grw [Submodule.rank_le f'.range]
-  rw [← f'.lift_rank_range_add_rank_ker]
-  gcongr <;> rwa [lift_le]
+  rw [lift_rank_comap]
+  gcongr
+  exact lift_le.mpr <| rank_mono (by simp)
 
 omit [HasRankNullity.{u} R] in
 lemma LinearMap.rank_quot_submodule_map_eq [HasRankNullity.{v} R]
