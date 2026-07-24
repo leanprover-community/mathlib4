@@ -34,9 +34,7 @@ instance EquivFunctorPerm : EquivFunctor Perm where
 instance EquivFunctorFinset : EquivFunctor Finset where
   map e s := s.map e.toEmbedding
   map_refl' α := by ext; simp
-  map_trans' k h := by
-    ext _ a
-    simp [-trans_toEmbedding]
+  map_trans' k h := by ext; simp [-trans_toEmbedding]
 
 instance EquivFunctorFintype : EquivFunctor Fintype where
   map e _ := Fintype.ofBijective e e.bijective
