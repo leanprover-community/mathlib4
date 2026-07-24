@@ -408,33 +408,16 @@ def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     (fun f₁ f₂ g ↦ by
       simp_rw [← integral_add (mercerForm_integrable μ hK f₁ g)
         (mercerForm_integrable μ hK f₂ g), ← inner_add_left, ← map_add]
-      have hf : ∀ᵐ p ∂(μ.prod μ), (f₁ + f₂) p.2 = f₁ p.2 + f₂ p.2 := by
-        rw [Measure.ae_prod_iff_ae_ae (by
-          rw [measurableSet_setOfPred, AddSubgroup.coe_add]
-          refine Measurable.eq (meas_snd μ (f₁+f₂)) ((meas_snd μ f₁).add (meas_snd μ f₂)))
-          ]
-        rw [Measure.ae_ae_comm (by
-          rw [measurableSet_setOfPred, AddSubgroup.coe_add]
-          refine Measurable.eq (meas_snd μ (f₁+f₂)) ((meas_snd μ f₁).add (meas_snd μ f₂)))
-          ]
-        filter_upwards [Lp.coeFn_add f₁ f₂] with p hp
-        exact ae_of_all μ fun a ↦ hp
+      have hf : ∀ᵐ p ∂(μ.prod μ), (f₁ + f₂) p.2 = f₁ p.2 + f₂ p.2 :=
+        Measure.quasiMeasurePreserving_snd.ae (Lp.coeFn_add f₁ f₂)
       apply integral_congr_ae
       filter_upwards [hf] with p hf
       rw [hf]
     )
     (fun c f g ↦ by
       simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul, ← map_smul]
-      have hf : ∀ᵐ p ∂(μ.prod μ), (c • f) p.2 = c • f p.2 := by
-        rw [Measure.ae_prod_iff_ae_ae (by
-          rw [measurableSet_setOfPred]
-          refine Measurable.eq (meas_snd μ (c • f)) ((meas_snd μ f).const_smul c))
-          ]
-        rw [Measure.ae_ae_comm (by
-          rw [measurableSet_setOfPred]
-          refine Measurable.eq (meas_snd μ (c • f)) ((meas_snd μ f).const_smul c))]
-        filter_upwards [Lp.coeFn_smul c f] with p hp
-        exact ae_of_all μ fun a ↦ hp
+      have hf : ∀ᵐ p ∂(μ.prod μ), (c • f) p.2 = c • f p.2 :=
+        Measure.quasiMeasurePreserving_snd.ae (Lp.coeFn_smul c f)
       apply integral_congr_ae
       filter_upwards [hf] with p hf
       rw [hf]
@@ -442,26 +425,16 @@ def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     (fun f g₁ g₂ ↦ by
       rw [← integral_add (mercerForm_integrable μ hK f g₁) (mercerForm_integrable μ hK f g₂)]
       simp_rw [← inner_add_right]
-      have hf : ∀ᵐ p ∂(μ.prod μ), (g₁ + g₂) p.1 = g₁ p.1 + g₂ p.1 := by
-        rw [Measure.ae_prod_iff_ae_ae (by
-          rw [measurableSet_setOfPred, AddSubgroup.coe_add]
-          refine Measurable.eq (meas_fst μ (g₁+g₂)) ((meas_fst μ g₁).add (meas_fst μ g₂)))
-          ]
-        filter_upwards [Lp.coeFn_add g₁ g₂] with p hp
-        exact ae_of_all μ fun a ↦ hp
+      have hf : ∀ᵐ p ∂(μ.prod μ), (g₁ + g₂) p.1 = g₁ p.1 + g₂ p.1 :=
+        Measure.quasiMeasurePreserving_fst.ae (Lp.coeFn_add g₁ g₂)
       apply integral_congr_ae
       filter_upwards [hf] with p hf
       rw [hf]
     )
     (fun c f g ↦ by
       simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply]
-      have hf : ∀ᵐ p ∂(μ.prod μ), (c • g) p.1 = c • g p.1 := by
-        rw [Measure.ae_prod_iff_ae_ae (by
-          rw [measurableSet_setOfPred]
-          refine Measurable.eq (meas_fst μ (c • g)) ((meas_fst μ g).const_smul c))
-          ]
-        filter_upwards [Lp.coeFn_smul c g] with p hp
-        exact ae_of_all μ fun a ↦ hp
+      have hf : ∀ᵐ p ∂(μ.prod μ), (c • g) p.1 = c • g p.1 :=
+        Measure.quasiMeasurePreserving_fst.ae (Lp.coeFn_smul c g)
       apply integral_congr_ae
       filter_upwards [hf] with p hf
       rw [hf]
