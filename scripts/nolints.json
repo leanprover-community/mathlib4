@@ -122,6 +122,7 @@
  ["defsWithUnderscore", "DividedPowers.subDPIdeal_inf_of_quot"],
  ["defsWithUnderscore", "DomMulAct.stabilizerEquiv_invFun"],
  ["defsWithUnderscore", "DomMulAct.stabilizerEquiv_invFun_aux"],
+ ["defsWithUnderscore", "Dynamics.coverEntropy_supBotHom"],
  ["defsWithUnderscore", "EisensteinSeries.eisensteinSeries_SIF"],
  ["defsWithUnderscore", "EisensteinSeries.gammaSet_one_equiv"],
  ["defsWithUnderscore", "Equiv.removeNone_aux"],
