@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Daniel Liao
 -/
 module
 
@@ -20,6 +20,8 @@ This file proves properties about
 * `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
 * `List.inits`: The list of prefixes of a list.
 * `List.tails`: The list of prefixes of a list.
+* `List.infixes`: The list of infixes of a list (defined here), the infix analogue of
+  `inits`/`tails`.
 * `insert` on lists
 
 All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
@@ -324,6 +326,50 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
   apply ext_getElem <;> (simp [take_take] <;> grind)
+
+/-! #### The infix enumerator -/
+
+/-- All infixes (contiguous factors) of a list, with multiplicity: every prefix of
+every suffix. The infix analogue of the `inits`/`tails` enumerators. -/
+def infixes (l : List α) : List (List α) := l.tails.flatMap inits
+
+/-- A list is a member of `t.infixes` iff it is an infix of `t`. -/
+@[simp]
+theorem mem_infixes {s t : List α} : s ∈ t.infixes ↔ s <:+: t := by
+  simp only [infixes, mem_flatMap, mem_tails, mem_inits]
+  constructor
+  · rintro ⟨v, ⟨r, hr⟩, u, hu⟩
+    exact ⟨r, u, by rw [← hr, ← hu, append_assoc]⟩
+  · rintro ⟨p, q, hpq⟩
+    exact ⟨s ++ q, ⟨p, by rw [← append_assoc, hpq]⟩, q, rfl⟩
+
+/-- The empty list has exactly one infix: itself. -/
+@[simp]
+theorem infixes_nil : ([] : List α).infixes = [[]] := by simp [infixes]
+
+/-- Cons decomposition of the infix enumerator, the analogue of `tails_cons`: the infixes
+of `a :: l` are the initial segments of `a :: l` followed by the infixes of `l`. -/
+theorem infixes_cons (a : α) (l : List α) :
+    (a :: l).infixes = (a :: l).inits ++ l.infixes := by
+  simp [infixes, List.flatMap_cons]
+
+/-- The number of infixes (with multiplicity) grows by `|l| + 2` at each cons — one new
+initial segment for each of the `|l| + 2` prefixes of `a :: l`. -/
+theorem length_infixes_cons (a : α) (l : List α) :
+    ((a :: l).infixes).length = l.length + 2 + l.infixes.length := by
+  rw [infixes_cons, List.length_append, List.length_inits, List.length_cons]
+
+/-- The empty list is an infix of every list. -/
+theorem nil_mem_infixes (l : List α) : [] ∈ l.infixes :=
+  mem_infixes.mpr nil_infix
+
+/-- Every list is an infix of itself. -/
+theorem self_mem_infixes (l : List α) : l ∈ l.infixes :=
+  mem_infixes.mpr (infix_refl l)
+
+/-- `infixes` never returns the empty list of candidates. -/
+theorem infixes_ne_nil (l : List α) : l.infixes ≠ [] :=
+  ne_nil_of_mem (nil_mem_infixes l)
 
 end InitsTails
 
