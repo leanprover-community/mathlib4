@@ -266,7 +266,7 @@ theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs 
   .of_union_cover hs ht h (hc hu) (hd hu)
 
 theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (hs : MeasurableSet s)
-    (h₁ : Measurable (s.restrict f)) (h₂ : Measurable (sᶜ.restrict f)) : Measurable f :=
+    (h₁ : Measurable (s.domRestrict f)) (h₂ : Measurable (sᶜ.domRestrict f)) : Measurable f :=
   measurable_of_measurable_union_cover s sᶜ hs hs.compl (union_compl_self s).ge h₁ h₂
 
 theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
@@ -275,17 +275,17 @@ theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measur
   measurable_of_restrict_of_restrict_compl hs (by simpa) (by simpa)
 
 theorem measurable_of_measurable_on_compl_finite [MeasurableSingletonClass α] {f : α → β}
-    (s : Set α) (hs : s.Finite) (hf : Measurable (sᶜ.restrict f)) : Measurable f :=
+    (s : Set α) (hs : s.Finite) (hf : Measurable (sᶜ.domRestrict f)) : Measurable f :=
   have := hs.to_subtype
   measurable_of_restrict_of_restrict_compl hs.measurableSet (measurable_of_finite _) hf
 
 theorem measurable_of_measurable_on_compl_countable [MeasurableSingletonClass α] {f : α → β}
-    (s : Set α) (hs : s.Countable) (hf : Measurable (sᶜ.restrict f)) : Measurable f :=
+    (s : Set α) (hs : s.Countable) (hf : Measurable (sᶜ.domRestrict f)) : Measurable f :=
   have := hs.to_subtype
   measurable_of_restrict_of_restrict_compl hs.measurableSet (measurable_of_countable _) hf
 
 theorem measurable_of_measurable_on_compl_singleton [MeasurableSingletonClass α] {f : α → β} (a : α)
-    (hf : Measurable ({ x | x ≠ a }.restrict f)) : Measurable f :=
+    (hf : Measurable ({ x | x ≠ a }.domRestrict f)) : Measurable f :=
   measurable_of_measurable_on_compl_finite {a} (finite_singleton a) hf
 
 end Subtype
@@ -645,12 +645,12 @@ theorem measurable_update_left {a : δ} [DecidableEq δ] {x : X a} :
   measurable_update'.comp measurable_prodMk_right
 
 @[fun_prop]
-theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := X)) :=
+theorem Set.measurable_restrict (s : Set δ) : Measurable (s.domRestrict (π := X)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
-    Measurable (restrict₂ (π := X) hst) :=
+    Measurable (domRestrict₂ (π := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
@@ -664,12 +664,12 @@ theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
 
 @[fun_prop]
 theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measurable f) :
-    Measurable (s.restrict f) := hf.comp measurable_subtype_coe
+    Measurable (s.domRestrict f) := hf.comp measurable_subtype_coe
 
 @[fun_prop]
 theorem Set.measurable_restrict₂_apply {s t : Set α} (hst : s ⊆ t)
     {f : t → γ} (hf : Measurable f) :
-    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
+    Measurable (domRestrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 @[fun_prop]
 theorem Finset.measurable_restrict_apply (s : Finset α) {f : α → γ} (hf : Measurable f) :

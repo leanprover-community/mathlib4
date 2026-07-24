@@ -87,6 +87,13 @@ instance : LieModule.IsIrreducible R L L := by
   contrapose _i
   infer_instance
 
+include R in
+/-- A simple lie algebra is non-trivial. -/
+lemma nontrivial : Nontrivial L := by
+  have := IsSimple.non_abelian R (L := L)
+  contrapose! this
+  infer_instance
+
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
 
 variable {R L} in
