@@ -427,7 +427,7 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
       _ = (∑ s : Finset n, (X : R[X]) ^ s.card •
             D (s.piecewise (fun i ↦ (M.map C) i)
               (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
-        congr 2 with s
+        congr 3 with s
         have h_smul : s.piecewise (fun i ↦ ((X : R[X]) • M.map C) i)
             (fun i ↦ (1 : Matrix n n R[X]) i) =
             fun i => (if i ∈ s then (X : R[X]) else 1) •
