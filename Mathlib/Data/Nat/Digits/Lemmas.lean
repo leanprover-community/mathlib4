@@ -420,9 +420,8 @@ This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
-  rw [fixedLengthDigits, Set.coe_toFinset]
-  convert! bijOn_ofDigits hb l
-  ext; simp
+  rw [fixedLengthDigits, Set.coe_toFinset, Finset.coe_range]
+  exact bijOn_ofDigits hb l
 
 /--
 The bijection `Nat.bijOn_digitsAppend` stated as a bijection between `Finset`.
@@ -430,9 +429,8 @@ This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l) := by
-  rw [fixedLengthDigits, Set.coe_toFinset]
-  convert! bijOn_digitsAppend hb l
-  ext; simp
+  rw [fixedLengthDigits, Set.coe_toFinset, Finset.coe_range]
+  exact bijOn_digitsAppend hb l
 
 @[simp]
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :

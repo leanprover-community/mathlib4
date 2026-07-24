@@ -212,7 +212,9 @@ set_option backward.isDefEq.respectTransparency false in
 the index). It is a special case of `IsSemilinearSet.image`. -/
 theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s) :
     IsSemilinearSet { x | ∃ y, Sum.elim x y ∈ s } := by
-  convert! hs.image (LinearMap.funLeft ℕ M Sum.inl)
+  suffices h : { x | ∃ y, Sum.elim x y ∈ s } = ⇑(LinearMap.funLeft ℕ M Sum.inl) '' s by
+    rw [h]
+    exact hs.image _
   ext x
   constructor
   · intro ⟨y, hy⟩

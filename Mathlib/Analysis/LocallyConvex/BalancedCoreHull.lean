@@ -244,7 +244,7 @@ protected theorem IsOpen.balancedHull [ContinuousConstSMul 𝕜 E] {s : Set E} (
     · exact ⟨1, by simp, by simpa [Set.zero_smul_set ⟨0, hzero⟩]⟩
     · use r
   rw [balancedHull, this]
-  exact isOpen_biUnion (fun r hr ↦ hs.smul₀ hr.2)
+  exact isOpen_biUnion (s := {r : 𝕜 | ‖r‖ ≤ 1 ∧ r ≠ 0}) (fun r hr ↦ hs.smul₀ hr.2)
 
 -- We don't have a `NontriviallyNormedDivisionRing`, so we use a `NeBot` assumption instead
 variable [NeBot (𝓝[≠] (0 : 𝕜))]

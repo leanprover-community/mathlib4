@@ -209,10 +209,7 @@ theorem selfAdjoint.val_re_map_spectrum (a : selfAdjoint A) :
 lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
     IsConnected (σ ℂ a)ᶜ := by
   suffices IsConnected (((σ ℂ a)ᶜ ∩ {z | 0 ≤ z.im}) ∪ (σ ℂ a)ᶜ ∩ {z | z.im ≤ 0}) by
-    rw [← Set.inter_union_distrib_left, ← Set.ofPred_or] at this
-    rw [← Set.inter_univ (σ ℂ a)ᶜ]
-    convert this
-    exact Eq.symm <| Set.eq_univ_of_forall (fun z ↦ le_total 0 z.im)
+    simpa [← Set.inter_union_distrib_left, ← Set.ofPred_or, le_total] using this
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|

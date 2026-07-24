@@ -372,8 +372,7 @@ alias bddAbove_setOf_k_lt_card := bddAbove_setOfPred_k_lt_card
 lemma k_pos : 0 < k a := by
   by_contra! hn
   apply nonpos_iff_eq_zero.mp hn ▸ hc.infinite_setOfPred_apply_eq_k
-  convert! Set.finite_empty
-  ext i
+  convert Set.finite_empty with i
   simp [(hc.pos i).ne']
 
 lemma small_one : Small a 1 := by

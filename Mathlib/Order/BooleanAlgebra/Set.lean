@@ -39,8 +39,16 @@ instance : HImp (Set α) where
 
 @[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := .rfl
 
-instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
-  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
+instance instBooleanAlgebra : BooleanAlgebra (Set α) where
+  __ := instDistribLattice
+  __ := instBoundedOrder
+  compl s := sᶜ
+  sdiff s t := s \ t
+  himp s t := s ⇨ t
+  inf_compl_le_bot _ _ h := h.2 h.1
+  top_le_sup_compl s x _ := em (x ∈ s)
+  sdiff_eq _ _ := rfl
+  himp_eq _ _ := ext fun _ => imp_iff_or_not
 
 theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq
 
@@ -200,7 +208,7 @@ lemma mem_compl_singleton_iff : a ∈ ({b} : Set α)ᶜ ↔ a ≠ b := .rfl
 lemma compl_singleton_eq (a : α) : {a}ᶜ = {x | x ≠ a} := rfl
 
 @[simp]
-lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
+lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl {a}
 
 @[simp]
 lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff

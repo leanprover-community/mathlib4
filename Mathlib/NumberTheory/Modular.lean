@@ -810,11 +810,13 @@ section Topology
 -/
 
 lemma isClosed_fd : IsClosed 𝒟 := by
-  refine .inter (.preimage (by fun_prop) isClosed_Ici) ?_
+  change IsClosed ({z : ℍ | 1 ≤ normSq (z : ℂ)} ∩ {z : ℍ | |z.re| ≤ (1 : ℝ) / 2})
+  refine .inter (.preimage (f := fun z : ℍ ↦ normSq (z : ℂ)) (by fun_prop) isClosed_Ici) ?_
   exact isClosed_le (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
 
 lemma isOpen_fdo : IsOpen 𝒟ᵒ := by
-  refine .inter (.preimage (by fun_prop) isOpen_Ioi) ?_
+  change IsOpen ({z : ℍ | 1 < normSq (z : ℂ)} ∩ {z : ℍ | |z.re| < (1 : ℝ) / 2})
+  refine .inter (.preimage (f := fun z : ℍ ↦ normSq (z : ℂ)) (by fun_prop) isOpen_Ioi) ?_
   exact isOpen_lt (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
 
 /-- Explicit formula for the image of `ModularGroup.fdo` in `ℂ`. -/
@@ -839,6 +841,7 @@ since the inclusion of `ℍ` in `ℂ` is an open but not a closed map.
 lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
   rw [coe_fd]
   have : IsClosed {z : ℂ | 0 ≤ z.im ∧ 1 ≤ ‖z‖ ∧ |z.re| ≤ 1/2} := by
+    change IsClosed ({z : ℂ | 0 ≤ z.im} ∩ ({z : ℂ | 1 ≤ ‖z‖} ∩ {z : ℂ | |z.re| ≤ 1/2}))
     refine .inter ?_ (.inter ?_ ?_)
     · exact isClosed_le continuous_const Complex.continuous_im
     · exact isClosed_le continuous_const continuous_norm
@@ -963,6 +966,8 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     Metric.isCompact_iff_isClosed_bounded]
   constructor
   · -- show closed
+    change IsClosed ({z : ℂ | 0 ≤ z.im} ∩
+      ({z : ℂ | z.im ≤ y} ∩ ({z : ℂ | |z.re| ≤ 1 / 2} ∩ {z : ℂ | 1 ≤ ‖z‖})))
     apply (isClosed_le continuous_const Complex.continuous_im).inter
     apply (isClosed_le Complex.continuous_im continuous_const).inter
     apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter

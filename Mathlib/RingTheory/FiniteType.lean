@@ -140,8 +140,9 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
-    apply mem_top
+    have hx : x ∈ (MvPolynomial.aeval (R := R) ((↑) : (↑s : Set S) → S)).range := by
+      rw [← adjoin_eq_range, hs]; exact mem_top
+    exact (AlgHom.mem_range _).1 hx
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 

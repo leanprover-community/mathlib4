@@ -57,7 +57,7 @@ def zeroAtFilterSubmodule
     [TopologicalSpace β] [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β]
     [ContinuousAdd β] [ContinuousConstSMul 𝕜 β]
     (l : Filter α) : Submodule 𝕜 (α → β) where
-  carrier := ZeroAtFilter l
+  carrier := {f | ZeroAtFilter l f}
   zero_mem' := zero_zeroAtFilter l
   add_mem' ha hb := ha.add hb
   smul_mem' c _ hf := hf.smul c
@@ -66,7 +66,7 @@ def zeroAtFilterSubmodule
 which tend to zero along `l`. -/
 def zeroAtFilterAddSubmonoid [TopologicalSpace β] [AddZeroClass β] [ContinuousAdd β]
     (l : Filter α) : AddSubmonoid (α → β) where
-  carrier := ZeroAtFilter l
+  carrier := {f | ZeroAtFilter l f}
   add_mem' ha hb := ha.add hb
   zero_mem' := zero_zeroAtFilter l
 
@@ -119,7 +119,7 @@ variable (𝕜) in
 def boundedFilterSubmodule
     [SeminormedRing 𝕜] [SeminormedAddCommGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
     Submodule 𝕜 (α → β) where
-  carrier := BoundedAtFilter l
+  carrier := {f | BoundedAtFilter l f}
   zero_mem' := const_boundedAtFilter l 0
   add_mem' hf hg := hf.add hg
   smul_mem' c _ hf := hf.smul c
@@ -132,11 +132,12 @@ def boundedFilterSubalgebra
   Submodule.toSubalgebra
     (boundedFilterSubmodule 𝕜 l)
     (const_boundedAtFilter l (1 : β))
-    (fun f g hf hg ↦ by simpa only [Pi.one_apply, mul_one, norm_mul] using! hf.mul hg)
+    (fun f g (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) ↦ by
+      simpa only [Pi.one_apply, mul_one, norm_mul] using! hf.mul hg)
 
 theorem BoundedAtFilter.prod {ι : Type} (s : Finset ι) [SeminormedCommRing β]
     {l : Filter α} {f : ι → α → β} (h : ∀ i ∈ s, BoundedAtFilter l (f i)) :
     BoundedAtFilter l (∏ i ∈ s, f i) :=
-  (boundedFilterSubalgebra β l).prod_mem (f := f) h
+  (boundedFilterSubalgebra β l).prod_mem (t := s) (f := f) h
 
 end Filter

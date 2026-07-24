@@ -69,8 +69,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
       have evn_bound {α : ℝ} (hα : 0 < α) : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, ε < α := by
         rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
         exact ⟨Ioo (-α) α, by grind, isOpen_Ioo, by grind⟩
-      have evn_pos : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, 0 < ε :=
-        eventually_mem_of_tendsto_nhdsWithin (fun _ a ↦ a)
+      have evn_pos : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, 0 < ε := eventually_mem_nhdsWithin
       filter_upwards [evn_pos, evn_bound hη, evn_bound hδ₁,
                       evn_bound (α := (b - x) / 2) (by simp [hx.left.right])]
         with ε hε₁ hε₂ hε₃ hε₄

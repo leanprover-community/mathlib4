@@ -870,7 +870,7 @@ variable [MeasurableSpace α] {p q : α → Prop}
 @[simp] theorem measurable_mem : Measurable (· ∈ s) ↔ MeasurableSet s :=
   measurableSet_setOfPred.symm
 
-alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
+alias ⟨_, Measurable.setOf⟩ := measurableSet_setOfPred
 
 @[fun_prop]
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
@@ -927,21 +927,28 @@ variable [MeasurableSpace β] {g : β → Set α}
 /-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
 random graphs. -/
 instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
-  inferInstanceAs <| MeasurableSpace (α → Prop)
-
-instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) :=
-  inferInstanceAs <| MeasurableSingletonClass (α → Prop)
+  .comap (fun s ↦ ((· ∈ s))) inferInstance
 
 @[simp, fun_prop] lemma measurable_setOfPred :
-    Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
+    Measurable fun p : α → Prop ↦ {a | p a} := measurable_comap_iff.2 measurable_id
 
 @[deprecated (since := "2026-07-09")]
 alias measurable_setOf := measurable_setOfPred
 
-lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
+lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x :=
+  measurable_comap_iff.trans measurable_pi_iff
 
 @[fun_prop]
-lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
+lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s :=
+  (measurable_pi_apply a).comp (comap_measurable _)
+
+instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) where
+  measurableSet_singleton s := by
+    have h : ({s} : Set (Set α)) = {t | ∀ a, a ∈ t ↔ a ∈ s} := by
+      ext t
+      simp [Set.ext_iff]
+    rw [h]
+    exact measurableSet_setOfPred.2 <| .forall fun a ↦ .iff (measurable_set_mem a) measurable_const
 
 lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a

@@ -124,7 +124,8 @@ theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
   mpr h t _ := measure_inter_null_of_null_left t h
 
 theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α)}
-    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    (hC : IsCountablySpanning C) (hm : C ⊆ {t | MeasurableSet t})
+    (ht : ∀ t ∈ C, μ.restrict t s = 0) :
     μ s = 0 := by
   rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
   intro t htc
@@ -133,7 +134,7 @@ theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
     restrict_apply' (measurableSet_toMeasurable _ _),
-    measure_congr ((ae_eq_refl t).inter hs.toMeasurable_ae_eq)]
+    measure_congr (.inter .rfl hs.toMeasurable_ae_eq)]
 
 theorem restrict_le_self : μ.restrict s ≤ μ :=
   Measure.le_iff.2 fun t ht => calc
@@ -336,7 +337,7 @@ theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ 
 theorem restrict_eq_self_of_ae_mem {_m0 : MeasurableSpace α} ⦃s : Set α⦄ ⦃μ : Measure α⦄
     (hs : ∀ᵐ x ∂μ, x ∈ s) : μ.restrict s = μ :=
   calc
-    μ.restrict s = μ.restrict univ := restrict_congr_set (eventuallyEq_univ.mpr hs)
+    μ.restrict s = μ.restrict univ := restrict_congr_set (eventuallyEqSet_univ.mpr hs)
     _ = μ := restrict_univ
 
 theorem restrict_congr_meas (hs : MeasurableSet s) :
@@ -616,7 +617,9 @@ theorem ae_restrict_iff {p : α → Prop} (hp : MeasurableSet { x | p x }) :
 theorem ae_imp_of_ae_restrict {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ.restrict s, p x) :
     ∀ᵐ x ∂μ, x ∈ s → p x := by
   simp only [ae_iff] at h ⊢
-  simpa [ofPred_and, inter_comm] using measure_inter_eq_zero_of_restrict h
+  convert measure_inter_eq_zero_of_restrict h using 2
+  ext a
+  simp [and_comm]
 
 theorem ae_restrict_iff'₀ {p : α → Prop} (hs : NullMeasurableSet s μ) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x := by
@@ -728,7 +731,7 @@ theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ ae (μ.restrict 
 
 /-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
-theorem ae_restrict_of_ae_eq_of_ae_restrict {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
+theorem ae_restrict_of_ae_eq_of_ae_restrict {s t : Set α} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) → ∀ᵐ x ∂μ.restrict t, p x := by simp [Measure.restrict_congr_set hst]
 
 /-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
@@ -758,15 +761,14 @@ lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
       h.exists_measurable_superset_ae_eq
-    have A : (t' ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := by
+    have A : t' ∩ s =ᵐ[μ] t ∩ s := by
       have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t') = (x ∈ t) :=
         (ae_restrict_iff'₀ hs).1 t't
       filter_upwards [this] with y hy
-      change (y ∈ t' ∩ s) = (y ∈ t ∩ s)
       simpa only [eq_iff_iff, mem_inter_iff, and_congr_left_iff] using hy
     obtain ⟨s', -, hs', s's⟩ : ∃ s' ⊇ s, MeasurableSet s' ∧ s' =ᵐ[μ] s :=
       hs.exists_measurable_superset_ae_eq
-    have B : (t' ∩ s' : Set α) =ᵐ[μ] (t' ∩ s : Set α) :=
+    have B : t' ∩ s' =ᵐ[μ] t' ∩ s :=
       ae_eq_set_inter (EventuallyEq.refl _ _) s's
     exact (ht'.inter hs').nullMeasurableSet.congr (B.trans A)
   · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by
@@ -787,7 +789,6 @@ lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     filter_upwards [t't] with x hx using by simpa using! hx
   have : t' =ᵐ[μ] t := by
     filter_upwards [this] with x hx
-    change (x ∈ t') = (x ∈ t)
     simp only [eq_iff_iff]
     tauto
   exact ht'.nullMeasurableSet.congr this
@@ -1141,7 +1142,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       · simp [hPC]
       have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
-        (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
+        (encard_mono (b := {i | x ∈ s i}) (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left zero_le <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm

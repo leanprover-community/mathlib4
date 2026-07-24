@@ -117,7 +117,7 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
   have hZ_closed : IsClosed Z := isClosed_sInter fun b hb ↦ hb.2
   have hZ_nonempty : Z.Nonempty :=
     CompactSpace.nonempty_sInter (fun _ ht ↦ ht.2) fun t ht hf ↦
-      hB.prop.2.1 _ (subset_trans ht (by simp [B'])) hf
+      hB.prop.2.1 _ (subset_trans ht fun _ hx ↦ hx.1) hf
   by_cases hZ_irred : IsIrreducible Z
   · -- If `Z` is irreducible, the intersection `⋂₀ B` contains the generic point of `Z`.
     suffices (⋂₀ B).Nonempty by simp_all [hB.prop.2.2]

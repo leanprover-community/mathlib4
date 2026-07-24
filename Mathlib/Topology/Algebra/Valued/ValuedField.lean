@@ -240,8 +240,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
         rw [Valuation.map_one]
         exact zero_ne_one.symm
       convert! Valued.locally_const this
-      ext x
-      rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_ofPred_eq]
+      simp only [Valuation.map_one, Set.mem_iff_mem, mem_preimage, mem_singleton_iff]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
       rwa [Completion.isDenseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
     have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
@@ -375,7 +374,7 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
       (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
       goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
       the new canonicalizer; a minimization would help. The original proof was: `grind` -/
-      ext; simp
+      simp
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :

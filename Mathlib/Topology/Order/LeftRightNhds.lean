@@ -441,8 +441,10 @@ theorem nhds_basis_mabs_div_lt [NoMaxOrder α] (a : α) :
 @[to_additive]
 theorem nhds_basis_Ioo_one_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => Ioo (a / ε) (a * ε) := by
-  convert! nhds_basis_mabs_div_lt a
-  simp only [Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul, div_lt_comm]
+  refine (nhds_basis_mabs_div_lt a).congr (fun _ => Iff.rfl) fun ε _ => ?_
+  ext b
+  simp only [mem_ofPred_eq, mem_Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul,
+    div_lt_comm]
 
 @[to_additive]
 theorem nhds_basis_Icc_one_lt [NoMaxOrder α] [DenselyOrdered α] (a : α) :

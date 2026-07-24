@@ -83,43 +83,52 @@ theorem Ultrafilter.continuous_mul_left {M} [Mul M] (V : Ultrafilter M) :
 
 namespace Hindman
 
-/-- `FS a` is the set of finite sums in `a`, i.e. `m ∈ FS a` if `m` is the sum of a nonempty
-subsequence of `a`. We give a direct inductive definition instead of talking about subsequences. -/
-inductive FS {M} [AddSemigroup M] : Stream' M → Set M
-  | head' (a : Stream' M) : FS a a.head
-  | tail' (a : Stream' M) (m : M) (h : FS a.tail m) : FS a m
-  | cons' (a : Stream' M) (m : M) (h : FS a.tail m) : FS a (a.head + m)
+/-- `MemFS a m` means that `m` is the sum of a nonempty subsequence of `a`. We give a direct
+inductive definition instead of talking about subsequences. See `FS` for the set version. -/
+inductive MemFS {M} [AddSemigroup M] : Stream' M → M → Prop
+  | head' (a : Stream' M) : MemFS a a.head
+  | tail' (a : Stream' M) (m : M) (h : MemFS a.tail m) : MemFS a m
+  | cons' (a : Stream' M) (m : M) (h : MemFS a.tail m) : MemFS a (a.head + m)
 
-/-- `FP a` is the set of finite products in `a`, i.e. `m ∈ FP a` if `m` is the product of a nonempty
-subsequence of `a`. We give a direct inductive definition instead of talking about subsequences. -/
-@[to_additive FS]
-inductive FP {M} [Semigroup M] : Stream' M → Set M
-  | head' (a : Stream' M) : FP a a.head
-  | tail' (a : Stream' M) (m : M) (h : FP a.tail m) : FP a m
-  | cons' (a : Stream' M) (m : M) (h : FP a.tail m) : FP a (a.head * m)
+/-- `MemFP a m` means that `m` is the product of a nonempty subsequence of `a`. We give a direct
+inductive definition instead of talking about subsequences. See `FP` for the set version. -/
+@[to_additive MemFS]
+inductive MemFP {M} [Semigroup M] : Stream' M → M → Prop
+  | head' (a : Stream' M) : MemFP a a.head
+  | tail' (a : Stream' M) (m : M) (h : MemFP a.tail m) : MemFP a m
+  | cons' (a : Stream' M) (m : M) (h : MemFP a.tail m) : MemFP a (a.head * m)
+
+/-- `FS a` is the set of finite sums in `a`, i.e. `m ∈ FS a` if `m` is the sum of a nonempty
+subsequence of `a`. -/
+def FS {M} [AddSemigroup M] (a : Stream' M) : Set M := {m | MemFS a m}
+
+/-- `FP a` is the set of finite products in `a`, i.e. `m ∈ FP a` if `m` is the product of a
+nonempty subsequence of `a`. -/
+@[to_additive existing FS]
+def FP {M} [Semigroup M] (a : Stream' M) : Set M := {m | MemFP a m}
 
 section Aliases
 
 /-! Since the constructors for `FS` and `FP` cheat using the `Set M = M → Prop` defeq,
 we provide match patterns that preserve the defeq correctly in their type. -/
 
-variable {M} [Semigroup M] (a : Stream' M) (m : M) (h : FP a.tail m)
+variable {M} [Semigroup M] (a : Stream' M) (m : M) (h : m ∈ FP a.tail)
 
 set_option linter.defProp false in
 /-- Constructor for `FP`. This is the preferred spelling over `FP.head'`. -/
 @[to_additive (attr := match_pattern)
   /-- Constructor for `FS`. This is the preferred spelling over `FS.head'`. -/]
-abbrev FP.head : a.head ∈ FP a := FP.head' a
+abbrev FP.head : a.head ∈ FP a := MemFP.head' a
 set_option linter.defProp false in
 /-- Constructor for `FP`. This is the preferred spelling over `FP.tail'`. -/
 @[to_additive (attr := match_pattern)
   /-- Constructor for `FS`. This is the preferred spelling over `FS.tail'`. -/]
-abbrev FP.tail : m ∈ FP a := FP.tail' a m h
+abbrev FP.tail : m ∈ FP a := MemFP.tail' a m h
 set_option linter.defProp false in
 /-- Constructor for `FP`. This is the preferred spelling over `FP.cons'`. -/
 @[to_additive (attr := match_pattern)
   /-- Constructor for `FS`. This is the preferred spelling over `FS.cons'`. -/]
-abbrev FP.cons : a.head * m ∈ FP a := FP.cons' a m h
+abbrev FP.cons : a.head * m ∈ FP a := MemFP.cons' a m h
 
 end Aliases
 

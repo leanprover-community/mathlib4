@@ -200,36 +200,28 @@ theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
   rintro rfl
   exact h.le_bot ⟨hi, hj⟩
 
-theorem iInf_ker_proj_le_iSup_range_single {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
-    ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) ≤ ⨆ i ∈ I, range (single R φ i) :=
-  SetLike.le_def.2
-    (by
-      intro b hb
-      simp only [mem_iInf, mem_ker, proj_apply] at hb
-      rw [←
-        show (∑ i ∈ I, Pi.single i (b i)) = b by
-          ext i
-          rw [Finset.sum_apply, ← Pi.single_eq_same i (b i)]
-          refine Finset.sum_eq_single i (fun j _ ne => Pi.single_eq_of_ne ne.symm _) ?_
-          intro hiI
-          rw [Pi.single_eq_same]
-          exact hb _ ((hu trivial).resolve_left hiI)]
-      exact sum_mem_biSup fun i _ => mem_range_self (single R φ i) (b i))
+theorem iInf_ker_proj_le_iSup_range_single {I J : Set ι} (hI : I.Finite) (hIJ : Codisjoint ↑I J) :
+    ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) ≤ ⨆ i ∈ I, range (single R φ i) := by
+  lift I to Finset ι using hI
+  intro b hb
+  simp only [mem_iInf, mem_ker, proj_apply] at hb
+  rw [←
+    show (∑ i ∈ I, Pi.single i (b i)) = b by
+      ext i
+      rw [Finset.sum_apply, ← Pi.single_eq_same i (b i)]
+      refine Finset.sum_eq_single i (fun j _ ne => Pi.single_eq_of_ne ne.symm _) ?_
+      intro hiI
+      rw [Pi.single_eq_same]
+      exact hb _ ((hIJ.top_le trivial).resolve_left hiI)]
+  exact sum_mem_biSup fun i _ => mem_range_self (single R φ i) (b i)
 
-theorem iSup_range_single_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
-    (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
-    ⨆ i ∈ I, range (single R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
-  refine le_antisymm (iSup_range_single_le_iInf_ker_proj _ _ _ _ hd) ?_
-  have : Set.univ ⊆ ↑hI.toFinset ∪ J := by rwa [hI.coe_toFinset]
-  refine le_trans (iInf_ker_proj_le_iSup_range_single R φ this) (iSup_mono fun i => ?_)
-  rw [Set.Finite.mem_toFinset]
+theorem iSup_range_single_eq_iInf_ker_proj {I J : Set ι} (hIJ : IsCompl I J) (hI : I.Finite) :
+    ⨆ i ∈ I, range (single R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) :=
+  le_antisymm (iSup_range_single_le_iInf_ker_proj _ _ _ _ hIJ.disjoint) <|
+    iInf_ker_proj_le_iSup_range_single R φ hI hIJ.codisjoint
 
 theorem iSup_range_single [Finite ι] : ⨆ i, range (single R φ i) = ⊤ := by
-  cases nonempty_fintype ι
-  convert! top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_single R φ _)
-  · rename_i i
-    exact ((@iSup_pos _ _ _ fun _ => range <| single R φ i) <| Finset.mem_univ i).symm
-  · rw [Finset.coe_univ, Set.union_empty]
+  simpa using iInf_ker_proj_le_iSup_range_single R φ Set.finite_univ isCompl_top_bot.codisjoint
 
 theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
     Disjoint (⨆ i ∈ I, range (single R φ i)) (⨆ i ∈ J, range (single R φ i)) := by

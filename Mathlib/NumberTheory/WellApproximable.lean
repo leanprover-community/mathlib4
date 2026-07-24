@@ -190,7 +190,7 @@ local notation "𝕊" => AddCircle T
 set_option backward.isDefEq.respectTransparency.types false in
 /-- **Gallagher's ergodic theorem** on Diophantine approximation. -/
 theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto δ atTop (𝓝 0)) :
-    (∀ᵐ x, ¬addWellApproximable 𝕊 δ x) ∨ ∀ᵐ x, addWellApproximable 𝕊 δ x := by
+    (∀ᵐ x, x ∉ addWellApproximable 𝕊 δ) ∨ ∀ᵐ x, x ∈ addWellApproximable 𝕊 δ := by
   /- Sketch of proof:
 
     Let `E := addWellApproximable 𝕊 δ`. For each prime `p : ℕ`, we can partition `E` into three
@@ -244,11 +244,11 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     congr
     ext n
     tauto
-  have hE₂ : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊) → E =ᵐ[μ] C p := by
+  have hE₂ : ∀ p : Nat.Primes, A p =ᵐ[μ] ∅ ∧ B p =ᵐ[μ] ∅ → E =ᵐ[μ] C p := by
     rintro p ⟨hA, hB⟩
     rw [hE₁ p]
     exact union_ae_eq_right_of_ae_eq_empty ((union_ae_eq_right_of_ae_eq_empty hA).trans hB)
-  have hA : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∨ A p =ᵐ[μ] univ := by
+  have hA : ∀ p : Nat.Primes, A p =ᵐ[μ] ∅ ∨ A p =ᵐ[μ] univ := by
     rintro ⟨p, hp⟩
     let f : 𝕊 → 𝕊 := fun y => (p : ℕ) • y
     suffices
@@ -260,7 +260,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     refine (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup fun n hn => ?_)
     replace hn := Nat.coprime_comm.mp (hp.coprime_iff_not_dvd.2 hn.2)
     exact approxAddOrderOf.image_nsmul_subset_of_coprime (δ n) hp.pos hn
-  have hB : ∀ p : Nat.Primes, B p =ᵐ[μ] (∅ : Set 𝕊) ∨ B p =ᵐ[μ] univ := by
+  have hB : ∀ p : Nat.Primes, B p =ᵐ[μ] ∅ ∨ B p =ᵐ[μ] univ := by
     rintro ⟨p, hp⟩
     let x := u ⟨p, hp⟩
     let f : 𝕊 → 𝕊 := fun y => p • y + x
@@ -289,7 +289,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     convert! approxAddOrderOf.vadd_subset_of_coprime (p * δ n) h_cop
     rw [hu₀, Subtype.coe_mk, mul_comm p, h_div]
   change (∀ᵐ x, x ∉ E) ∨ E ∈ ae volume
-  rw [← eventuallyEq_empty, ← eventuallyEq_univ]
+  rw [← eventuallyEqSet_empty, ← eventuallyEqSet_univ]
   have hC : ∀ p : Nat.Primes, u p +ᵥ C p = C p := by
     intro p
     let e := (AddAction.toPerm (u p) : Equiv.Perm 𝕊).toOrderIsoSet
@@ -297,8 +297,8 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
     exact blimsup_congr (Eventually.of_forall fun n hn =>
       approxAddOrderOf.vadd_eq_of_mul_dvd (δ n) hn.1 hn.2)
-  by_cases! +distrib h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
-  · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E := by
+  by_cases! +distrib h : ∀ p : Nat.Primes, A p =ᵐ[μ] ∅ ∧ B p =ᵐ[μ] ∅
+  · replace h : ∀ p : Nat.Primes, u p +ᵥ E =ᵐ[μ] E := by
       intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
       have h_qmp : Measure.QuasiMeasurePreserving (-u p +ᵥ ·) μ μ :=

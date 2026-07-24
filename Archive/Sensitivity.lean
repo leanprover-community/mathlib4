@@ -437,13 +437,13 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       (norm_sum_le _ fun p => coeffs y p * _)
     _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
       simp only [abs_mul, f_matrix]
-    _ = ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y p| := by
-      simp [sum_filter]; rfl
-    _ ≤ ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y q| := sum_le_sum fun p _ ↦ H_max p
-    _ = #{p ∈ (coeffs y).support | q.adjacent p} * |coeffs y q| := by
+    _ = ∑ p ∈ (coeffs y).support with p ∈ q.adjacent, |coeffs y p| := by
+      simp [sum_filter]
+    _ ≤ ∑ p ∈ (coeffs y).support with p ∈ q.adjacent, |coeffs y q| := sum_le_sum fun p _ ↦ H_max p
+    _ = #{p ∈ (coeffs y).support | p ∈ q.adjacent} * |coeffs y q| := by
       rw [sum_const, nsmul_eq_mul]
     _ = #((coeffs y).support ∩ q.adjacent.toFinset) * |coeffs y q| := by
-      congr with x; simp; rfl
+      congr with x; simp
     _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
       refine (mul_le_mul_iff_left₀ H_q_pos).2 ?_
       norm_cast

@@ -116,7 +116,7 @@ instance : LocallyPathConnectedSpace (EuclideanQuadrant n) :=
 
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     range (Subtype.val : EuclideanHalfSpace n → _) = { y | 0 ≤ y 0 } :=
-  Subtype.range_val
+  Subtype.range_coe_subtype
 
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
@@ -150,7 +150,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   simpa only [mem_sdiff, mem_ofPred_eq, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
-  Subtype.range_val
+  Subtype.range_coe_subtype
 
 theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
@@ -249,16 +249,16 @@ lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
   calc interior (range (𝓡∂ n))
     _ = interior ({ y | 0 ≤ y 0}) := by
-      congr!
-      apply range_euclideanHalfSpace
+      congr 1
+      exact range_euclideanHalfSpace n
     _ = { y | 0 < y 0 } := interior_halfSpace _ _ _
 
 lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
   calc frontier (range (𝓡∂ n))
     _ = frontier ({ y | 0 ≤ y 0 }) := by
-      congr!
-      apply range_euclideanHalfSpace
+      congr 1
+      exact range_euclideanHalfSpace n
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
 set_option backward.isDefEq.respectTransparency false in

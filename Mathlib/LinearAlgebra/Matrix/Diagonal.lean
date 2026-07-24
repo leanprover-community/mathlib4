@@ -56,12 +56,10 @@ variable {m : Type*} [Fintype m] {K : Type u} [Semifield K]
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
     ker (toLin' (diagonal w)) =
       ⨆ i ∈ { i | w i = 0 }, LinearMap.range (LinearMap.single K (fun _ => K) i) := by
-  rw [← comap_bot, ← iInf_ker_proj, comap_iInf]
+  rw [← comap_bot]
   have := fun i : m => ker_comp (toLin' (diagonal w)) (proj i)
-  simp only [← this, proj_diagonal, ker_smul']
-  have : univ ⊆ { i : m | w i = 0 } ∪ { i : m | w i = 0 }ᶜ := by rw [Set.union_compl_self]
-  exact (iSup_range_single_eq_iInf_ker_proj K (fun _ : m => K) disjoint_compl_right this
-    (Set.toFinite _)).symm
+  simpa [← this, proj_diagonal, ker_smul', ← iInf_ker_proj] using
+    (iSup_range_single_eq_iInf_ker_proj K _ isCompl_compl {i | w i = 0}.toFinite).symm
 
 theorem range_diagonal [DecidableEq m] (w : m → K) :
     LinearMap.range (toLin' (diagonal w)) =
@@ -83,13 +81,11 @@ variable {m : Type*} [Fintype m] {K : Type u} [Field K]
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     LinearMap.rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by
-  have hu : univ ⊆ { i : m | w i = 0 }ᶜ ∪ { i : m | w i = 0 } := by rw [Set.compl_union_self]
-  have hd : Disjoint { i : m | w i ≠ 0 } { i : m | w i = 0 } := disjoint_compl_left
-  have B₁ := iSup_range_single_eq_iInf_ker_proj K (fun _ : m => K) hd hu (Set.toFinite _)
-  have B₂ := iInfKerProjEquiv K (fun _ ↦ K) hd hu
+  have hIJ : IsCompl { i : m | w i ≠ 0 } { i : m | w i = 0 } :=
+    (isCompl_compl (x := { i : m | w i = 0 })).symm
+  have B₁ := iSup_range_single_eq_iInf_ker_proj K (fun _ : m => K) hIJ (Set.toFinite _)
   rw [LinearMap.rank, range_diagonal, B₁, ← @rank_fun' K]
-  apply LinearEquiv.rank_eq
-  apply B₂
+  exact iInfKerProjEquiv K (fun _ ↦ K) hIJ.disjoint hIJ.codisjoint.top_le |>.rank_eq
 
 end Field
 

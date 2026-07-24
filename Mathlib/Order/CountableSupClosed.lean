@@ -180,7 +180,7 @@ variable [Preorder α]
 /-- Every set generates a set closed under countable supremum. -/
 @[to_dual /-- Every set generates a set closed under countable infimum. -/]
 def countableSupClosure : ClosureOperator (Set α) := .ofPred
-  (fun s a ↦ ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a)
+  (fun s ↦ {a | ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a})
   CountableSupClosed
   (fun s x hxs ↦ ⟨{x}, by simp; grind, by simp, by simp, by simp⟩)
   (fun s ↦ by
