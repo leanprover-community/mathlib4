@@ -57,9 +57,7 @@ private lemma dual_comp_left_comp_lid :
       (rT (Dual K A) (contractLeft K A) ∘ₗ α⁻¹ ∘ₗ lT (Dual K A) (coevaluation K A)) ∘ₗ
       rT K (equivDual K A) := by
     ext; simp [coev, coevaluation_apply_one, tmul_sum, mul'_apply]
-  _ = lT K (equivDual K A).symm ∘ₗ (β⁻¹ ∘ₗ γ) ∘ₗ rT K (equivDual K A) := by
-    rw [contractLeft_assoc_coevaluation]
-  _ = _ := by ext; simp
+  _ = _ := by ext; simp [contractLeft_assoc_coevaluation]
 
 /-- The comultiplication satisfies the Frobenius equation. -/
 private lemma left_eq_right_aux :
