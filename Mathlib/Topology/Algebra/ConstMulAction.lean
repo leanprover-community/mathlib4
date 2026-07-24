@@ -196,6 +196,30 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
 
 end Monoid
 
+section Homeomorph
+
+variable {X : Type*} [TopologicalSpace X]
+
+/-- The tautological action by `X ≃ₜ X` on `X`.
+
+This generalizes `Equiv.Perm.applyMulAction`. -/
+instance Homeomorph.applyMulAction : MulAction (X ≃ₜ X) X where
+  smul f x := f x
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp]
+protected theorem Homeomorph.smul_def (f : X ≃ₜ X) (x : X) : f • x = f x := rfl
+
+/-- `Homeomorph.applyMulAction` is faithful. -/
+instance Homeomorph.applyFaithfulSMul : FaithfulSMul (X ≃ₜ X) X := ⟨Homeomorph.ext⟩
+
+/-- `Homeomorph.applyMulAction` is continuous in the second variable. -/
+instance Homeomorph.continuousConstSMul : ContinuousConstSMul (X ≃ₜ X) X :=
+  ⟨fun h ↦ h.continuous⟩
+
+end Homeomorph
+
 section Group
 
 variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [ContinuousConstSMul G α]
