@@ -435,10 +435,10 @@ In general you should use `NonUnitalRing`, `Ring`, etc. -/
 
 variable {A : Type*}
 
-@[simp] lemma not_isUnital_iff_isNotUnital [Mul A] : ¬IsUnital A ↔ IsNotUnital A := by
+@[simp, push] lemma not_isUnital_iff_isNotUnital [Mul A] : ¬IsUnital A ↔ IsNotUnital A := by
   simp [isUnital_iff, isNotUnital_iff, -not_and, Classical.not_and_iff_not_or_not]
 
-@[simp] lemma not_isNotUnital_iff_isUnital [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
+@[simp, push] lemma not_isNotUnital_iff_isUnital [Mul A] : ¬IsNotUnital A ↔ IsUnital A := by
   grind [not_isUnital_iff_isNotUnital]
 
 /-- A unital magma is `MulOneClass`.
