@@ -374,6 +374,12 @@ lemma descFactorial_pos {n k : ℕ} : 0 < n.descFactorial k ↔ k ≤ n := by si
 
 alias ⟨_, descFactorial_of_lt⟩ := descFactorial_eq_zero_iff_lt
 
+theorem descFactorial_mul_self (n j : ℕ) :
+    n.descFactorial j * n = n.descFactorial (j + 1) + j * n.descFactorial j := by
+  rcases le_or_gt j n with h | h
+  · rw [descFactorial_succ, ← Nat.add_mul, Nat.sub_add_cancel h, Nat.mul_comm]
+  · simp [descFactorial_of_lt h]
+
 theorem add_descFactorial_eq_ascFactorial (n : ℕ) : ∀ k : ℕ,
     (n + k).descFactorial k = (n + 1).ascFactorial k
   | 0 => by rw [ascFactorial_zero, descFactorial_zero]
