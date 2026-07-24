@@ -380,6 +380,26 @@ lemma ciInf_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
     ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
   ciSup_image (α := αᵒᵈ) hf hg'
 
+theorem le_ciSup_ciSup_eq_left {b : β} {f : ∀ x : β, x = b → α} :
+    f b rfl ≤ ⨆ x, ⨆ h : x = b, f x h := by
+  refine le_ciSup₂ (f := f) ⟨f b rfl, ?_⟩ b rfl
+  rintro a ⟨_, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
+  rfl
+
+theorem ciInf_ciInf_eq_left_le {b : β} {f : ∀ x : β, x = b → α} :
+    ⨅ x, ⨅ h : x = b, f x h ≤ f b rfl :=
+  le_ciSup_ciSup_eq_left (α := αᵒᵈ)
+
+theorem le_ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
+    f b rfl ≤ ⨆ x, ⨆ h : b = x, f x h := by
+  refine le_ciSup₂ ⟨f b rfl, ?_⟩ b rfl
+  rintro a ⟨_, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
+  rfl
+
+theorem ciInf_ciInf_eq_right_le {b : β} {f : ∀ x : β, b = x → α} :
+    ⨅ x, ⨅ h : b = x, f x h ≤ f b rfl :=
+  le_ciSup_ciSup_eq_right (α := αᵒᵈ)
+
 /-- Note that equality need not hold: consider `ι := Bool, p := (·), α := ℤ, f := fun _ ↦ -1`,
 then the LHS is `-1` but the RHS is `-1 ⊔ sSup ∅ = -1 ⊔ 0 = 0`. -/
 theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih ≤ ⨆ (i) (h), f ⟨i, h⟩ := by
@@ -553,6 +573,16 @@ theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = �
   refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
   simp [show Exists p from ⟨i, hi⟩]
 
+@[simp]
+theorem ciSup_ciSup_eq_left {b : β} {f : ∀ x : β, x = b → α} :
+    ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
+  le_antisymm (ciSup_le' fun _ ↦ ciSup_le' (· ▸ le_rfl)) le_ciSup_ciSup_eq_left
+
+@[simp]
+theorem ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
+    ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
+  le_antisymm (ciSup_le' fun _ ↦ ciSup_le' (· ▸ le_refl (f b rfl))) le_ciSup_ciSup_eq_right
+
 lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
   by_cases hp : p <;>
@@ -578,7 +608,7 @@ theorem l_ciSup (gc : GaloisConnection l u) {f : ι → α} (hf : BddAbove (rang
 
 theorem l_ciSup_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
-  haveI := hne.to_subtype
+  have := hne.to_subtype
   rw [image_eq_range] at hf
   exact gc.l_ciSup hf
 

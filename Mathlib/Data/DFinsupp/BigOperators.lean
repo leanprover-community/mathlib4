@@ -98,7 +98,7 @@ theorem prod_of_support_subset [∀ i, Zero (β i)]
 
 /-- The product over two dfinsupps agree if the functions agree and are well-behaved within the
 shared support. -/
-@[to_additive (attr := gcongr)
+@[to_additive (attr := gcongr only)
 /-- The sum over two dfinsupps agree if the functions agree and are well-behaved within the
 shared support. -/]
 theorem prod_congr_of_eq_on_union
@@ -285,6 +285,7 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
   dsimp [sumZeroHom, single, Trunc.lift_mk]
   rw [Multiset.toFinset_singleton, Finset.sum_singleton, Pi.single_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
     sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl } := by
@@ -308,6 +309,7 @@ theorem sumZeroHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decid
   · rfl
   · rw [not_not.mp h, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When summing over an `AddMonoidHom`, the decidability assumption is not needed, and the result is
 also an `AddMonoidHom`.

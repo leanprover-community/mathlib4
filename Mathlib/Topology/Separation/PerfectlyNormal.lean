@@ -34,7 +34,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
     -- write `s` as the intersection of a sequence of open sets `U n`
     obtain ⟨U, ho, hu⟩ := isGδ_iff_eq_iInter_nat.1 hs.isGδ
     have (n : ℕ) : Disjoint s (U n)ᶜ := by
-      apply HasSubset.Subset.disjoint_compl_right
+      apply LE.le.disjoint_compl_right
       grw [hu, iInter_subset]
     -- for each `n`, construct a continuous function `f n` that separates `s` from `(U n)ᶜ`
     choose f hfs hfu hfr using fun n =>
@@ -55,7 +55,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
       · suffices ∀ n, f n x = 0 from by simp [h, this]
         exact fun n => hfs n hp
       · contrapose h
-        simp only [preimage, notMem_setOf_iff, ContinuousMap.coe_mk, mem_singleton_iff]
+        simp only [preimage, notMem_ofPred_iff, ContinuousMap.coe_mk, mem_singleton_iff]
         apply ne_of_gt
         obtain ⟨i, hi⟩ := mem_iUnion.1 <| compl_iInter _ ▸ mem_compl (hu ▸ h)
         calc
@@ -106,15 +106,5 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
             · rcases (mem_iInter.1 h 0).1 with ⟨x, rfl⟩
               exact (hfr x).1 }
 
-theorem Topology.IsEmbedding.perfectlyNormalSpace {e : X → Y} (he : IsEmbedding e)
-    [PerfectlyNormalSpace Y] : PerfectlyNormalSpace X := by
-  rw [perfectlyNormalSpace_iff_forall_isClosed_preimage_zero]
-  intro t ht
-  obtain ⟨c, hc⟩ : ∃ c, IsClosed c ∧ e '' t = c ∩ range e := he.image_eq_isClosed_inter_range ht
-  obtain ⟨f, rfl, hf⟩ :=
-    perfectlyNormalSpace_iff_forall_isClosed_preimage_zero.1 inferInstance c hc.1
-  refine ⟨⟨f ∘ e, f.continuous.comp he.continuous⟩, ?_, fun x => hf (e x)⟩
-  simpa [Set.ext_iff, he.injective.preimage_image] using congr(e ⁻¹' $(hc.2))
-
-instance {s : Set X} [PerfectlyNormalSpace X] : PerfectlyNormalSpace s :=
-  IsEmbedding.subtypeVal.perfectlyNormalSpace
+@[deprecated (since := "2026-06-03")]
+alias Topology.IsEmbedding.perfectlyNormalSpace := Topology.IsInducing.perfectlyNormalSpace

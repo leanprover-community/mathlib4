@@ -200,6 +200,7 @@ instance : IsCofibrant P.I :=
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance [HasBinaryCoproducts C] [CategoryWithCofibrations C] [P.IsGood]
     [(cofibrations C).RespectsIso] : P.symm.IsGood where
@@ -243,7 +244,6 @@ noncomputable def ofFactorizationData : Cylinder A where
   i₁ := coprod.inr ≫ h.i
   π := h.p
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by cat_disch
 

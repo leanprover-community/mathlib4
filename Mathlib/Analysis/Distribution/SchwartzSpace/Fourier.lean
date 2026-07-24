@@ -188,7 +188,7 @@ theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
 open LineDeriv
 
 set_option backward.isDefEq.respectTransparency false in
-/- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
+/-- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
 of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := by
@@ -200,7 +200,7 @@ theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
   simp [this, innerSL_apply_apply ℝ]
 
 set_option backward.isDefEq.respectTransparency false in
-/- The Fourier transform of line derivative in direction `m` is given by multiplication of
+/-- The Fourier transform of line derivative in direction `m` is given by multiplication of
 `(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
 theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
     𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕 f) := by
@@ -209,13 +209,13 @@ theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
   have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
   simp [fourier_evalCLM_eq ℝ, fourier_fderivCLM_eq, this, innerSL_apply_apply ℝ]
 
-/- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
+/-- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
 Fourier transform of the multiplication with `(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourierInv_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := by
   simp [fourierInv_apply_eq, lineDerivOp_compCLMOfContinuousLinearEquiv, lineDerivOp_fourier_eq]
 
-/- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
+/-- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
 `-(2 * π * Complex.I) • (inner ℝ · m)` with the inverse Fourier transform. -/
 theorem fourierInv_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
     𝓕⁻ (∂_{m} f) = -(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕⁻ f) := by
@@ -240,9 +240,6 @@ theorem integral_bilin_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
   simpa using! VectorFourier.integral_bilin_fourierIntegral_eq_flip M (L := innerₗ V)
     continuous_fourierChar continuous_inner f.integrable g.integrable
-
-@[deprecated (since := "2025-11-16")]
-alias integral_bilin_fourierIntegral_eq := integral_bilin_fourier_eq
 
 /-- The Fourier transform satisfies `∫ 𝓕 f • g = ∫ f • 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
@@ -277,9 +274,6 @@ theorem integral_sesq_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L�
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
   simpa [fourierInv_coe] using! VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
     (L := innerₗ V) continuous_fourierChar continuous_inner f.integrable g.integrable
-
-@[deprecated (since := "2025-11-16")]
-alias integral_sesq_fourierIntegral_eq := integral_sesq_fourier_eq
 
 /-- Plancherel's theorem for Schwartz functions.
 

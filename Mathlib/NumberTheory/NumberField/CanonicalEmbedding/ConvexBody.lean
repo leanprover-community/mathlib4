@@ -62,7 +62,7 @@ abbrev convexBodyLT : Set (mixedSpace K) :=
 theorem convexBodyLT_mem {x : K} :
     mixedEmbedding K x ∈ (convexBodyLT K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
-    forall_true_left, mem_ball_zero_iff, Pi.ringHom_apply, ← Complex.norm_real,
+    forall_true_left, mem_ball_zero_iff, RingHom.pi_apply, ← Complex.norm_real,
     embedding_of_isReal_apply, Subtype.forall, ← forall₂_or_left, ← not_isReal_iff_isComplex, em,
     forall_true_left, norm_embedding_eq]
 
@@ -110,7 +110,7 @@ theorem convexBodyLT_volume :
       simp_rw [convexBodyLTFactor, coe_mul, ENNReal.coe_pow]
       ring
     _ = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finsetProd, mult_isReal, mult_isComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, ofNNReal_finsetProd, mult_isReal, mult_isComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal]
 
 variable {f}
@@ -155,13 +155,13 @@ theorem convexBodyLT'_mem {x : K} :
       (∀ w : InfinitePlace K, w ≠ w₀ → w x < f w) ∧
       |(w₀.val.embedding x).re| < 1 ∧ |(w₀.val.embedding x).im| < (f w₀ : ℝ) ^ 2 := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
-    forall_true_left, Pi.ringHom_apply, mem_ball_zero_iff, ← Complex.norm_real,
+    forall_true_left, RingHom.pi_apply, mem_ball_zero_iff, ← Complex.norm_real,
     embedding_of_isReal_apply, norm_embedding_eq, Subtype.forall]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨fun w h_ne ↦ ?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ⟨fun w hw ↦ ?_, fun w hw ↦ ?_⟩⟩
   · by_cases hw : IsReal w
     · exact norm_embedding_eq w _ ▸ h₁ w hw
     · specialize h₂ w (not_isReal_iff_isComplex.mp hw)
-      rw [apply_ite (w.embedding x ∈ ·), Set.mem_setOf_eq,
+      rw [apply_ite (w.embedding x ∈ ·), Set.mem_ofPred_eq,
         mem_ball_zero_iff, norm_embedding_eq] at h₂
       rwa [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)] at h₂
   · simpa [if_true] using h₂ w₀.val w₀.prop
@@ -207,10 +207,10 @@ theorem convexBodyLT'_volume :
   have vol_box : ∀ B : ℝ≥0, volume {x : ℂ | |x.re| < 1 ∧ |x.im| < B ^ 2} = 4 * B ^ 2 := by
     intro B
     rw [← (Complex.volume_preserving_equiv_real_prod.symm).measure_preimage]
-    · simp_rw [Set.preimage_setOf_eq, Complex.measurableEquivRealProd_symm_apply]
+    · simp_rw [Set.preimage_ofPred_eq, Complex.measurableEquivRealProd_symm_apply]
       rw [show {a : ℝ × ℝ | |a.1| < 1 ∧ |a.2| < B ^ 2} =
         Set.Ioo (-1 : ℝ) (1 : ℝ) ×ˢ Set.Ioo (-(B : ℝ) ^ 2) ((B : ℝ) ^ 2) by
-          ext; simp_rw [Set.mem_setOf_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
+          ext; simp_rw [Set.mem_ofPred_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
         ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
         ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
@@ -241,7 +241,7 @@ theorem convexBodyLT'_volume :
       simp_rw [coe_mul, ENNReal.coe_pow]
       ring
     _ = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finsetProd, mult_isReal, mult_isComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, ofNNReal_finsetProd, mult_isReal, mult_isComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal, mul_assoc]
 
 end convexBodyLT'
@@ -320,22 +320,22 @@ theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :
   · suffices convexBodySum K B = ∅ by rw [this, measure_empty]
     ext x
     refine ⟨fun hx => ?_, fun h => h.elim⟩
-    rw [Set.mem_setOf] at hx
+    rw [Set.mem_ofPred] at hx
     linarith [convexBodySumFun_nonneg x]
   · suffices convexBodySum K B = { 0 } by rw [this, measure_singleton]
     ext
-    rw [convexBodySum, Set.mem_setOf_eq, Set.mem_singleton_iff, hB, ← convexBodySumFun_eq_zero_iff]
+    rw [convexBodySum, Set.mem_ofPred_eq, Set.mem_singleton_iff, hB, ← convexBodySumFun_eq_zero_iff]
     exact (convexBodySumFun_nonneg _).ge_iff_eq'
 
 theorem convexBodySum_mem {x : K} :
     mixedEmbedding K x ∈ (convexBodySum K B) ↔
       ∑ w : InfinitePlace K, (mult w) * w.val x ≤ B := by
-  simp_rw [Set.mem_setOf_eq, convexBodySumFun, normAtPlace_apply]
+  simp_rw [Set.mem_ofPred_eq, convexBodySumFun, normAtPlace_apply]
   rfl
 
 theorem convexBodySum_neg_mem {x : mixedSpace K} (hx : x ∈ (convexBodySum K B)) :
     -x ∈ (convexBodySum K B) := by
-  rw [Set.mem_setOf, convexBodySumFun_neg]
+  rw [Set.mem_ofPred, convexBodySumFun_neg]
   exact hx
 
 theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
@@ -378,7 +378,7 @@ theorem convexBodySum_volume :
   · suffices volume (convexBodySum K 1) = (convexBodySumFactor K) by
       rw [mul_comm]
       convert! addHaar_smul volume B (convexBodySum K 1)
-      · simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hB), Set.preimage_setOf_eq, convexBodySumFun,
+      · simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hB), Set.preimage_ofPred_eq, convexBodySumFun,
         normAtPlace_smul, abs_inv, abs_eq_self.mpr (le_of_lt hB), ← mul_assoc, mul_comm, mul_assoc,
         ← Finset.mul_sum, inv_mul_le_iff₀ hB, mul_one]
       · rw [abs_pow, ofReal_pow (abs_nonneg _), abs_eq_self.mpr (le_of_lt hB),
