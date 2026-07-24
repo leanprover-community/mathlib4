@@ -59,7 +59,7 @@ It is defined *inductively* as follows:
 4. Add all sieves required by the *local character* axiom of a Grothendieck topology.
 -/
 def toGrothendieck (J : Precoverage C) : GrothendieckTopology C where
-  sieves X := setOf (J.Saturate X)
+  sieves X := Set.ofPred (J.Saturate X)
   top_mem' := .top
   pullback_stable' _ _ _ _ hS := .pullback _ _ hS _ _
   transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
@@ -232,7 +232,7 @@ lemma Presieve.isSheafFor_singleton_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S X Y : 
     (g : Y ⟶ S) (e : X ≅ Y) (he : e.hom ≫ g = f) :
     (singleton f).IsSheafFor F ↔ (singleton g).IsSheafFor F := by
   subst he
-  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ← Presieve.ofArrows_pUnit,
+  rw [← Presieve.ofArrows_pUnit.{0}, ← Presieve.ofArrows_pUnit,
     Presieve.isSheafFor_ofArrows_comp_iff]
 
 open Limits

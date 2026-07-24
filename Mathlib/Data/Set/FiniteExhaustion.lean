@@ -38,7 +38,7 @@ instance {α : Type*} {s : Set α} : FunLike (FiniteExhaustion s) ℕ (Set α) w
   coe := toFun
   coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
-instance {α : Type*} {s : Set α} : RelHomClass (FiniteExhaustion s) LE.le HasSubset.Subset where
+instance {α : Type*} {s : Set α} : OrderHomClass (FiniteExhaustion s) Nat (Set α) where
   map_rel K _ _ h := monotone_nat_of_le_succ (fun n ↦ K.subset_succ' n) h
 
 instance {α : Type*} {s : Set α} {K : FiniteExhaustion s} {n : ℕ} : Finite (K n) :=
@@ -80,6 +80,7 @@ lemma _root_.Set.nonempty_finiteExhaustion_iff {s : Set α} :
   rw [← K.iUnion_eq]
   exact countable_iUnion <| fun i ↦ (K.finite i).countable
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]
 alias Set.nonempty_finiteExhaustion_iff := Set.nonempty_finiteExhaustion_iff
 

@@ -177,7 +177,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : ¬x ≡ a [PMOD p]) :
   refine IsOpen.mem_nhds ?_ ?_
   · rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
     exact isOpen_iUnion fun i => isOpen_Ioo
-  · rwa [mem_setOf_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
+  · rwa [mem_ofPred_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
 
 theorem continuousAt_toIcoMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIcoMod hp a) x :=
   continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
@@ -241,7 +241,7 @@ theorem card_torsion_le_of_isSMulRegular (n : ℕ) (h0 : n ≠ 0) (hn : IsSMulRe
   have (x : {x : AddCircle p | n • x = 0}) : ∃ (k : Fin n) (y : 𝕜), y = x.1 ∧ n • y = k.1 • p := by
     obtain ⟨x, hx⟩ := x
     obtain ⟨y, rfl⟩ := mk_surjective x
-    rw [Set.mem_setOf, ← mk_nsmul, eq_zero_iff] at hx
+    rw [Set.mem_ofPred, ← mk_nsmul, eq_zero_iff] at hx
     have ⟨m', hm⟩ := hx
     have : NeZero n := ⟨h0⟩
     rw [← (Int.divModEquiv n).symm_apply_apply m', Int.divModEquiv_symm_apply] at hm
@@ -262,7 +262,7 @@ theorem finite_torsion_of_isSMulRegular (n : ℕ) (hn : IsSMulRegular 𝕜 n) :
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.coe_lt_top n]
+    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.natCast_lt_top n]
 
 theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
@@ -276,7 +276,7 @@ theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.coe_lt_top _]
+    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.natCast_lt_top _]
 
 end Torsion
 
@@ -285,9 +285,12 @@ variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite :=
   finite_torsion_of_isSMulRegular _ _ <| .of_right_eq_zero_of_smul fun _ ↦ by simp [hn.ne']
 
-theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
+theorem finite_setOfPred_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
   (finite_torsion p hn).subset fun _ h ↦ ((addOrderOf_eq_iff hn).mp h).1
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_addOrderOf_eq := finite_setOfPred_addOrderOf_eq
 
 theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
@@ -314,12 +317,12 @@ def equivIoc : AddCircle p ≃ Ioc a (a + p) :=
 /-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `[a, a + p)`. -/
 def liftIco (f : 𝕜 → B) : AddCircle p → B :=
-  restrict _ f ∘ AddCircle.equivIco p a
+  domRestrict _ f ∘ AddCircle.equivIco p a
 
 /-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `(a, a + p]`. -/
 def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
-  restrict _ f ∘ AddCircle.equivIoc p a
+  domRestrict _ f ∘ AddCircle.equivIoc p a
 
 variable {p a}
 
@@ -658,6 +661,7 @@ lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
 
 variable (p)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
 `n`. The inverse of the map sends `m ↦ (m/n * p : AddCircle p)` where `m` is coprime to `n` and
 satisfies `0 ≤ m < n`. -/
@@ -680,12 +684,12 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
   · simp only [Nat.totient_zero, addOrderOf_eq_zero_iff]
     rcases em (∃ u : AddCircle p, ¬IsOfFinAddOrder u) with (⟨u, hu⟩ | h)
     · have : Infinite { u : AddCircle p // ¬IsOfFinAddOrder u } := by
-        rw [← coe_setOf, infinite_coe_iff]
+        rw [← coe_ofPred, infinite_coe_iff]
         exact infinite_not_isOfFinAddOrder hu
       exact Nat.card_eq_zero_of_infinite
     · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa [isEmpty_subtype] using h
       exact Nat.card_of_isEmpty
-  · rw [← coe_setOf, Nat.card_congr (setAddOrderOfEquiv p hn),
+  · rw [← coe_ofPred, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 
@@ -793,7 +797,7 @@ theorem liftIoc_eq_liftIco {f : 𝕜 → B} (hf : f a = f (a + p)) :
 
 theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIco p a f =
-      Quot.lift (restrict (Icc a <| a + p) f)
+      Quot.lift (domRestrict (Icc a <| a + p) f)
           (by
             rintro _ _ ⟨_⟩
             exact h) ∘
@@ -802,7 +806,7 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
 
 theorem liftIoc_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIoc p a f =
-      Quot.lift (restrict (Icc a <| a + p) f)
+      Quot.lift (domRestrict (Icc a <| a + p) f)
           (by
             rintro _ _ ⟨_⟩
             exact h) ∘
@@ -822,7 +826,7 @@ theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIco p a f) := by
   rw [liftIco_eq_lift_Icc hf]
   refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
-  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
+  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_domRestrict.mp hc)
 
 theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
@@ -832,7 +836,7 @@ theorem liftIoc_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIoc p a f) := by
   rw [liftIoc_eq_lift_Icc hf]
   refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
-  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
+  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_domRestrict.mp hc)
 
 theorem liftIoc_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIoc p 0 f) :=
