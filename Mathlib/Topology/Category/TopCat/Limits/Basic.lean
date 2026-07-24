@@ -333,7 +333,7 @@ def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   Limits.IsTerminal.ofUnique _
 
 /-- The terminal object of `Top` is `PUnit`. -/
-def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
+def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ ↧PUnit :=
   terminalIsTerminal.uniqueUpToIso isTerminalPUnit
 
 /-- The initial object of `Top` is `PEmpty`. -/
@@ -343,7 +343,7 @@ def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   Limits.IsInitial.ofUnique _
 
 /-- The initial object of `Top` is `PEmpty`. -/
-def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
+def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ ↧PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPEmpty
 
 /-- The unique map ∅ ⟶ X is inducing. -/

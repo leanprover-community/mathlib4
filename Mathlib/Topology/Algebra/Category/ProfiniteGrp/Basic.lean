@@ -81,7 +81,7 @@ compact and totally disconnected topological additive group.
 `{0}` is a closed set, thus implying Hausdorff in a topological additive group.) -/]
 abbrev ProfiniteGrp.of (G : Type u) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp.{u} where
-  toProfinite := .of G
+  toProfinite := ↧G
   group := ‹_›
   topologicalGroup := ‹_›
 
@@ -257,7 +257,7 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
     [Group H] [IsTopologicalGroup H] (e : G ≃ₜ* H) : ProfiniteGrp.{v} :=
   let _ : CompactSpace H := Homeomorph.compactSpace e.toHomeomorph
   let _ : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
-  .of H
+  ↧H
 
 /-- Build an isomorphism in the category `ProfiniteGrp` from
 a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/

@@ -68,7 +68,7 @@ variable {X} in
 /-- Constructor for objects in the category of `X`-generated spaces. -/
 abbrev of (Y : Type v) [TopologicalSpace Y] [IsGeneratedBy X Y] :
     GeneratedByTopCat.{v} X where
-  obj := TopCat.of Y
+  obj := ↧Y
   property := by assumption
 
 instance : CoeSort (GeneratedByTopCat.{v} X) (Type v) where
@@ -134,7 +134,7 @@ a topological space `Y` to the same type `Y`, with the same topology, but
 considered as an object of `ContinuousGeneratedByCat X`. -/
 @[simps! +dsimpLhs forget₂_obj forget₂_map_hom_apply]
 instance : HasForget₂ TopCat.{v} (ContinuousGeneratedByCat.{v} X) where
-  forget₂.obj Y := .of Y
+  forget₂.obj Y := ↧Y
   forget₂.map f := ContinuousGeneratedByCat.homMk f (f.hom.continuous.continuousGeneratedBy)
 
 end ContinuousGeneratedByCat
@@ -154,7 +154,7 @@ topological space `Y` in the category `ContinuousGeneratedByCat X` to
 the topological space `WithGeneratedByTopology X Y`. -/
 @[simps obj]
 def toTopCat : ContinuousGeneratedByCat.{v} X ⥤ TopCat where
-  obj Y := TopCat.of (WithGeneratedByTopology X Y)
+  obj Y := ↧(WithGeneratedByTopology X Y)
   map f := TopCat.ofHom (f.hom.prop.continuousMap)
 
 variable {X} in
@@ -214,7 +214,7 @@ an `X`-generated topological space `Y` to the topological space `Y`, considered 
 an object of `ContinuousGeneratedByCat X`. -/
 @[simps +dsimpLhs obj map_hom_apply]
 def fromGeneratedByTopCat : GeneratedByTopCat.{v} X ⥤ ContinuousGeneratedByCat.{v} X where
-  obj Y := .of Y.obj
+  obj Y := ↧Y.obj
   map f := ⟨f, f.hom.hom.continuous.continuousGeneratedBy⟩
 
 /-- The isomorphism between

@@ -46,6 +46,11 @@ structure SemilatInfCat : Type (u + 1) where
 
 namespace SemilatSupCat
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `SemilatSupCat.of X` as `↧X`. -/
+@[app_delab SemilatSupCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort SemilatSupCat Type* :=
   ⟨SemilatSupCat.X⟩
 
@@ -70,7 +75,7 @@ instance : ConcreteCategory SemilatSupCat (SupBotHom · ·) where
   ofHom f := f
 
 instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := PartOrd.ofHom ⟨f.toSupHom, OrderHomClass.mono f.toSupHom⟩
 
 @[simp]
@@ -81,6 +86,11 @@ theorem coe_forget_to_partOrd (X : SemilatSupCat) :
 end SemilatSupCat
 
 namespace SemilatInfCat
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `SemilatInfCat.of X` as `↧X`. -/
+@[app_delab SemilatInfCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 instance : CoeSort SemilatInfCat Type* :=
   ⟨SemilatInfCat.X⟩
@@ -106,7 +116,7 @@ instance : ConcreteCategory SemilatInfCat (InfTopHom · ·) where
   ofHom f := f
 
 instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := PartOrd.ofHom ⟨f.toInfHom, OrderHomClass.mono f.toInfHom⟩
 
 @[simp]

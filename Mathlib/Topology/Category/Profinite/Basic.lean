@@ -95,7 +95,7 @@ section Profinite
 to Profinite spaces, given by quotienting a space by its connected components. -/
 @[stacks 0900]
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
-  toTop := TopCat.of (ConnectedComponents X)
+  toTop := ↧(ConnectedComponents X)
   is_compact := Quotient.compactSpace
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace

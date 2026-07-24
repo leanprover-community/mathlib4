@@ -45,6 +45,11 @@ attribute [instance] ωCPO.str
 
 namespace ωCPO
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `ωCPO.of X` as `↧X`. -/
+@[app_delab ωCPO.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 open OmegaCompletePartialOrder
 
 instance : CoeSort ωCPO Type* :=

@@ -110,7 +110,7 @@ lemma isClosedEmbedding_precomp_of_surjective
 noncomputable
 def mvPolynomialHomeomorph (σ : Type v) (R A : CommRingCat.{max u v})
     [TopologicalSpace R] [IsTopologicalRing R] :
-    (CommRingCat.of (MvPolynomial σ A) ⟶ R) ≃ₜ ((A ⟶ R) × (σ → R)) where
+    (↧(MvPolynomial σ A) ⟶ R) ≃ₜ ((A ⟶ R) × (σ → R)) where
   toFun f := ⟨CommRingCat.ofHom MvPolynomial.C ≫ f, fun i ↦ f (.X i)⟩
   invFun fx := CommRingCat.ofHom (MvPolynomial.eval₂Hom fx.1.hom fx.2)
   left_inv f := by ext <;> simp
@@ -127,7 +127,7 @@ open Limits
 variable (R A) in
 lemma isClosedEmbedding_hom [IsTopologicalRing R] [T1Space R] :
     IsClosedEmbedding (fun f : A ⟶ R ↦ (f.hom : A → R)) := by
-  let f : CommRingCat.of (MvPolynomial A (⊥_ CommRingCat)) ⟶ A :=
+  let f : ↧(MvPolynomial A (⊥_ CommRingCat)) ⟶ A :=
     CommRingCat.ofHom (MvPolynomial.eval₂Hom (initial.to A).hom id)
   have : Function.Surjective f := Function.LeftInverse.surjective (g := .X) fun x ↦ by simp [f]
   convert!

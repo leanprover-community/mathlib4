@@ -206,7 +206,7 @@ instance : CommRing (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
 /-- The (bundled) commutative ring of continuous functions from a topological space
 to a topological commutative ring, with pointwise multiplication. -/
 def continuousFunctions (X : TopCat.{v}ᵒᵖ) (R : TopCommRingCat.{v}) : CommRingCat.{v} :=
-  CommRingCat.of (X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R)
+  ↧(X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R)
 
 namespace continuousFunctions
 

@@ -131,7 +131,7 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
 
 /-- The canonical map `(A_f)₀ ⟶ Γ(Proj A, D₊(f))`.
 This is an isomorphism when `f` is homogeneous of positive degree. See `basicOpenIsoAway` below. -/
-def awayToSection : CommRingCat.of (Away 𝒜 f) ⟶ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
+def awayToSection : ↧(Away 𝒜 f) ⟶ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
   ProjectiveSpectrum.Proj.awayToSection ..
 
 /-- The canonical map `Proj A |_ D₊(f) ⟶ Spec (A_f)₀`.
@@ -173,7 +173,7 @@ set_option backward.isDefEq.respectTransparency false in
 when `f` is homogeneous of positive degree. -/
 @[simps! -isSimp hom]
 noncomputable
-def basicOpenIsoAway : CommRingCat.of (Away 𝒜 f) ≅ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
+def basicOpenIsoAway : ↧(Away 𝒜 f) ≅ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
   have : IsIso (awayToSection 𝒜 f) := by
     have := basicOpenToSpec_app_top 𝒜 f
     rw [← Iso.inv_comp_eq, Iso.eq_comp_inv] at this
@@ -323,7 +323,7 @@ def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → �
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
     (Proj 𝒜).AffineOpenCover where
   I₀ := ι
-  X i := .of (Away 𝒜 (f i))
+  X i := ↧(Away 𝒜 (f i))
   f i := awayι 𝒜 (f i) (f_deg i) (hm i)
   idx x := (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose
   covers x := by

@@ -26,7 +26,7 @@ namespace AlgebraicGeometry
 universe u
 
 variable {X Y : Scheme.{u}} {K : Type u} [Field K] [IsAlgClosed K]
-    (f : X ⟶ Spec (.of K)) [LocallyOfFiniteType f] (x : X) (hx : IsClosed {x})
+    (f : X ⟶ Spec ↧K) [LocallyOfFiniteType f] (x : X) (hx : IsClosed {x})
 
 /-- If `X` is a locally of finite type `k`-scheme and `k` is algebraically closed, then
 the residue field of any closed point of `x` is isomorphic to `k`. -/
@@ -49,7 +49,7 @@ lemma SpecMap_residueFieldIsoBase_inv :
 
 /-- If `k` is algebraically closed, this is the `k`-point of `X` associated to a closed point. -/
 noncomputable
-def pointOfClosedPoint : Spec (.of K) ⟶ X :=
+def pointOfClosedPoint : Spec ↧K ⟶ X :=
   Spec.map (residueFieldIsoBase f x hx).hom ≫ X.fromSpecResidueField x
 
 @[reassoc (attr := simp)]
@@ -66,7 +66,7 @@ set_option backward.defeqAttrib.useBackward true in
 then the closed points of `X` are in bijection with the `k`-points of `X`. -/
 @[simps]
 def pointEquivClosedPoint :
-    {p : Spec (.of K) ⟶ X // p ≫ f = 𝟙 _} ≃ closedPoints X where
+    {p : Spec ↧K ⟶ X // p ≫ f = 𝟙 _} ≃ closedPoints X where
   toFun p := ⟨p.1 (IsLocalRing.closedPoint K), by
     have := isClosedImmersion_of_comp_eq_id _ _ p.2
     have := p.1.isClosedEmbedding.isClosed_range
@@ -88,7 +88,7 @@ def pointEquivClosedPoint :
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma ext_of_apply_closedPoint_eq
-    {f g : Spec (.of K) ⟶ X} (h : X ⟶ Spec (.of K))
+    {f g : Spec ↧K ⟶ X} (h : X ⟶ Spec ↧K)
     [LocallyOfFiniteType h]
     (hf : f ≫ h = 𝟙 _) (hg : g ≫ h = 𝟙 _)
     (H : f (IsLocalRing.closedPoint K) = g (IsLocalRing.closedPoint K)) : f = g :=
@@ -98,7 +98,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `X` and `Y` be locally of finite type `K`-schemes with `K` algebraically closed and `Y`
 separated over `K`. Suppose `X` is reduced, then two `K`-morphisms `f g : X ⟶ Y` are equal if
 they are equal on the closed points of a dense locally closed subset of `X`. -/
-lemma ext_of_apply_eq {f g : X ⟶ Y} (i : Y ⟶ Spec (.of K)) [IsSeparated i] [LocallyOfFiniteType i]
+lemma ext_of_apply_eq {f g : X ⟶ Y} (i : Y ⟶ Spec ↧K) [IsSeparated i] [LocallyOfFiniteType i]
     [IsReduced X] [LocallyOfFiniteType (f ≫ i)]
     (S : Set X) (hS : IsLocallyClosed S) (hS' : Dense S)
     (H : ∀ x ∈ S, IsClosed {x} → f x = g x)

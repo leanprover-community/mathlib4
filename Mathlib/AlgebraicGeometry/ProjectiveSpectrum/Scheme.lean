@@ -142,11 +142,11 @@ local notation "pbo " x => ProjectiveSpectrum.basicOpen 𝒜 x
 local notation "sbo " f => PrimeSpectrum.basicOpen f
 
 /-- `Spec` as a locally ringed space -/
-local notation3 "Spec " ring => Spec.locallyRingedSpaceObj (CommRingCat.of ring)
+local notation3 "Spec " ring => Spec.locallyRingedSpaceObj ↧ring
 
 /-- the underlying topological space of `Spec` -/
 local notation "Spec.T " ring =>
-  (Spec.locallyRingedSpaceObj (CommRingCat.of ring)).toSheafedSpace.toPresheafedSpace.1
+  (Spec.locallyRingedSpaceObj ↧ring).toSheafedSpace.toPresheafedSpace.1
 
 local notation3 "A⁰_ " f => HomogeneousLocalization.Away 𝒜 f
 
@@ -592,7 +592,7 @@ set_option backward.isDefEq.respectTransparency false in
 The ring map from `A⁰_ f` to the local sections of the structure sheaf of the projective spectrum of
 `A` on the basic open set `D(f)` defined by sending `s ∈ A⁰_f` to the section `x ↦ s` on `D(f)`.
 -/
-def awayToSection (f) : CommRingCat.of (A⁰_ f) ⟶ (structureSheaf 𝒜).1.obj (op (pbo f)) :=
+def awayToSection (f) : ↧(A⁰_ f) ⟶ (structureSheaf 𝒜).1.obj (op (pbo f)) :=
   CommRingCat.ofHom
     -- Have to hint `S`, otherwise it gets unfolded to `structureSheafInType`
     -- causing `ext` to fail
@@ -633,7 +633,7 @@ of `A` restricted to the basic open set `D(f)`.
 
 Mathematically, the map is the same as `awayToSection`.
 -/
-def awayToΓ (f) : CommRingCat.of (A⁰_ f) ⟶ LocallyRingedSpace.Γ.obj (op <| Proj| pbo f) :=
+def awayToΓ (f) : ↧(A⁰_ f) ⟶ LocallyRingedSpace.Γ.obj (op <| Proj| pbo f) :=
   awayToSection 𝒜 f ≫ (ProjectiveSpectrum.Proj.structureSheaf 𝒜).1.map
     (homOfLE (Opens.isOpenEmbedding_obj_top _).le).op
 
@@ -791,7 +791,7 @@ to `x`.
 -/
 def specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).base x) ≅
-      CommRingCat.of (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+      ↧(AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
     (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
   haveI := isLocalization_atPrime 𝒜 f x f_deg hm
@@ -861,7 +861,7 @@ def «Proj» : Scheme where
       refine x.not_irrelevant_le fun z hz ↦ ?_
       rw [← DirectSum.sum_support_decompose 𝒜 z]
       exact x.1.toIdeal.sum_mem fun k hk ↦ this _ k (SetLike.coe_mem _) <| by_contra <| by aesop
-    exact ⟨⟨pbo f, hx⟩, .of (A⁰_ f), ⟨projIsoSpec 𝒜 f f_deg hm⟩⟩
+    exact ⟨⟨pbo f, hx⟩, ↧(A⁰_ f), ⟨projIsoSpec 𝒜 f f_deg hm⟩⟩
 
 
 end AlgebraicGeometry

@@ -172,7 +172,7 @@ def isoOfIsAffine [IsAffine S] :
       hom := 𝔸(n; S).toSpecΓ ≫ Spec.map (CommRingCat.ofHom
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)))
       inv := homOfVector (Spec.map (CommRingCat.ofHom C) ≫ S.isoSpec.inv)
-        ((Scheme.ΓSpecIso (.of (MvPolynomial n Γ(S, ⊤)))).inv ∘ MvPolynomial.X)
+        ((Scheme.ΓSpecIso ↧(MvPolynomial n Γ(S, ⊤))).inv ∘ MvPolynomial.X)
       hom_inv_id := by
         ext1
         · simp only [Category.assoc, homOfVector_over, Category.id_comp]
@@ -408,7 +408,7 @@ instance : GeometricallyIrreducible (𝔸(n; S) ↘ S) := by
   rw [geometricallyIrreducible_iff]
   introv K h
   apply ObjectProperty.prop_of_iso _
-    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n ↧K)).symm
   infer_instance
 
 instance [IrreducibleSpace S] : IrreducibleSpace 𝔸(n; S) :=
@@ -418,7 +418,7 @@ instance : GeometricallyReduced (𝔸(n; S) ↘ S) := by
   rw [geometricallyReduced_iff]
   introv K h
   apply ObjectProperty.prop_of_iso _
-    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n ↧K)).symm
   infer_instance
 
 set_option backward.isDefEq.respectTransparency.types false in

@@ -102,7 +102,7 @@ variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
 /-- This wraps the predicate `P : TopCat → Prop` in a typeclass. -/
 class HasProp : Prop where
-  hasProp : P (TopCat.of X)
+  hasProp : P ↧X
 
 instance (X : CompHausLike P) : HasProp P X := ⟨X.4⟩
 
@@ -112,7 +112,7 @@ variable [HasProp P X]
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
 abbrev of : CompHausLike P where
-  toTop := TopCat.of X
+  toTop := ↧X
   is_compact := ‹_›
   is_hausdorff := ‹_›
   prop := HasProp.hasProp
