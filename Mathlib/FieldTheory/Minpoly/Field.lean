@@ -322,11 +322,13 @@ section AlgHom
 variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
 
 /-- The minimal polynomial (over `K`) of `σ : L ≃ₐ[K] L` is `X ^ (orderOf σ) - 1`. -/
-lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :
-    minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
-  refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
-  · simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
-  · intro q hq hs
+lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) :
+    minpoly K σ.toLinearMap = X ^ (orderOf σ) - 1 := by
+  by_cases hσ : IsOfFinOrder σ
+  · rw [← map_one C]
+    refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
+    · simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
+    intro q hq hs
     rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]
     intro H
     rw [aeval_eq_sum_range' H, ← Fin.sum_univ_eq_sum_range] at hs
@@ -336,17 +338,24 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
       (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_toAlgHom_injective).comp _
         (Subtype.val_injective.comp ((finEquivPowers hσ).injective)))
       (q.coeff ∘ (↑)) hs ⟨_, H⟩
+  · rw [orderOf_eq_zero hσ, pow_zero, sub_self]
+    apply minpoly.eq_zero
+    intro h
+    obtain ⟨p, hpm, hev⟩ := h
+    rw [← aeval_def, aeval_eq_sum_range] at hev
+    absurd linearIndependent_iff'.1 ((linearIndependent_algHom_toLinearMap' K L L).comp _
+      (AlgEquiv.coe_toAlgHom_injective.comp (injective_pow_iff_not_isOfFinOrder.2 hσ)))
+      (Finset.range (p.natDegree + 1)) p.coeff hev p.natDegree
+    simp [hpm.coeff_natDegree]
 
 /-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
-    minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
-  have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
-    rw [← MonoidHom.coe_coe, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
-    exact (AlgEquiv.algHomUnitsEquiv K L).injective
-  rw [this, ← minpoly_algEquiv_toLinearMap]
-  · apply congr_arg
+    minpoly K σ.toLinearMap = X ^ (orderOf σ) - 1 := by
+  trans minpoly K (AlgEquiv.algHomUnitsEquiv K L hσ.isUnit.unit).toLinearMap
+  · refine congrArg (minpoly K) ?_
     ext
     simp
-  · rwa [← orderOf_pos_iff, ← this, orderOf_pos_iff]
+  · rw [minpoly_algEquiv_toLinearMap]
+    simp [← orderOf_units]
 
 end AlgHom
