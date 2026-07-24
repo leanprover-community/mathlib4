@@ -36,8 +36,7 @@ section Preorder
 
 variable [Preorder α] {a b c : α}
 
-to_dual_name_hint Disjoint Disjoint
-to_dual_name_hint Left Right
+to_dual_name_hint Disjoint Disjoint, Left Right
 
 @[to_dual (attr := simp)]
 theorem Iic_disjoint_Ioi (h : a ≤ b) : Disjoint (Iic a) (Ioi b) :=

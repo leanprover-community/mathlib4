@@ -231,14 +231,15 @@ instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) :=
   prod.instIsAddHaarMeasure volume volume
 
 open Classical in
-instance : NoAtoms (volume : Measure (mixedSpace K)) := by
+instance : NullSingletonClass (volume : Measure (mixedSpace K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
-  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) := pi_noAtoms ⟨w, hw⟩
-    exact prod.instNoAtoms_fst
-  · have : NoAtoms (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
-      pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
-    exact prod.instNoAtoms_snd
+  · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) :=
+      pi_nullSingletonClass ⟨w, hw⟩
+    exact prod.instNullSingletonClass_fst
+  · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
+      pi_nullSingletonClass ⟨w, not_isReal_iff_isComplex.mp hw⟩
+    exact prod.instNullSingletonClass_snd
 
 variable {K} in
 open Classical in
@@ -604,15 +605,15 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
     rcases c with ⟨w, j⟩
     fin_cases j
     · simp only [Fin.zero_eta, Fin.isValue, stdBasis_apply_isComplex_fst, re_eq_add_conj,
-        mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
-        submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, ite_mul, cons_val_one, sum_add_distrib, sum_ite_eq,
-        mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
+        mul_neg, fromBlocks_apply₂₁, Matrix.zero_apply, zero_mul, sum_const_zero,
+        fromBlocks_apply₂₂, submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply,
+        cons_val', cons_val_zero, empty_val', cons_val_fin_one, ite_mul, cons_val_one,
+        sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring
     · simp only [Fin.mk_one, Fin.isValue, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
-        mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
-        submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
+        mul_neg, fromBlocks_apply₂₁, Matrix.zero_apply, zero_mul, sum_const_zero,
+        fromBlocks_apply₂₂, submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply,
+        cons_val', cons_val_zero, empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
         sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring_nf; simp [field]
 
@@ -952,7 +953,7 @@ theorem negAt_symm :
   · by_cases hw : w ∈ s
     · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
         prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
-        neg_apply]
+        ContinuousLinearEquiv.neg_apply]
     · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
         prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
         refl_apply]

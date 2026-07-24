@@ -361,6 +361,12 @@ instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : Grothendiec
       ← PreOneHypercover.map_comp, Over.post_forget_eq_forget_comp, PreOneHypercover.map_comp]
     exact E'.mem₁ _ _ _ _ congr($(w).left)
 
+instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+    {F : C ⥤ D} (X : C) (Y : D) (f : F.obj X ⟶ Y)
+    [(Over.post F).IsContinuous (J.over X) (K.over _)] :
+    (Over.post F ⋙ Over.map f).IsContinuous (J.over X) (K.over Y) :=
+  Functor.isContinuous_comp _ _ _ (K.over _) _
+
 open Limits
 
 lemma coverPreserving_overPullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :

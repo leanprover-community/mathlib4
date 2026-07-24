@@ -217,7 +217,7 @@ theorem map_inter [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ :
 
 theorem map_sdiff [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
     (s₁ \ s₂).map f = s₁.map f \ s₂.map f :=
-  mod_cast Set.image_diff f.injective (s := s₁) (t := s₂)
+  mod_cast Set.image_sdiff f.injective (s := s₁) (t := s₂)
 
 @[simp]
 theorem map_singleton (f : α ↪ β) (a : α) : map f {a} = {f a} :=
@@ -494,11 +494,11 @@ theorem empty_eq_image : ∅ = s.image f ↔ s = ∅ := by rw [eq_comm, image_eq
 
 theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s \ t).image f = s.image f \ t.image f :=
-  mod_cast Set.image_diff hf s t
+  mod_cast Set.image_sdiff hf s t
 
 lemma image_sdiff_of_injOn [DecidableEq α] {t : Finset α} (hf : Set.InjOn f s) (hts : t ⊆ s) :
     (s \ t).image f = s.image f \ t.image f :=
-  mod_cast Set.image_diff_of_injOn hf <| coe_subset.2 hts
+  mod_cast Set.image_sdiff_of_injOn hf <| coe_subset.2 hts
 
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=

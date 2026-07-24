@@ -462,7 +462,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       · exact (disjoint_disjointed K).set_pairwise _
       · exact MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
     rw [this, restrict_mass]
-    exact le_trans (apply_mono _ (diff_subset_compl (K m) (K n))) (hμ.2 n)
+    exact le_trans (apply_mono _ (sdiff_subset_compl (K m) (K n))) (hμ.2 n)
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the finite measures of mass `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
@@ -566,11 +566,11 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
       rw [← ofNNReal_liminf] at this
       · exact mod_cast this
       use 1
-      simpa [ge_iff_le, eventually_map, eventually_atTop, forall_exists_index] using fun _ x h ↦
+      simpa [eventually_map, eventually_atTop, forall_exists_index] using fun _ x h ↦
           (h x (by simp)).trans <| ProbabilityMeasure.apply_le_one (μ (sub x)) (⋃ i ≤ n, U i)
     _ ≤ liminf (fun k ↦ (μ (sub k) (⋃ (i ≤ sub k), U i) : ℝ)) atTop := by
       apply Filter.liminf_le_liminf
-      · simp only [NNReal.coe_le_coe, eventually_atTop, ge_iff_le]
+      · simp only [NNReal.coe_le_coe, eventually_atTop]
         use n + 1
         intro b hypo
         refine (μ (sub b)).apply_mono
@@ -578,12 +578,12 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
         exact le_trans (Nat.le_add_right n 1) (le_trans hypo (StrictMono.le_apply hsubmono))
       · use 0; simp
       · use 1
-        simpa [ge_iff_le, eventually_map, eventually_atTop, ge_iff_le, forall_exists_index] using
+        simpa [eventually_map, eventually_atTop, forall_exists_index] using
             fun _ d hyp ↦ (hyp d (by simp)).trans (by simp)
     _ ≤ 1 - ε := by
       apply Filter.liminf_le_of_le
       · use 0; simp
-      simp only [eventually_atTop, ge_iff_le, forall_exists_index]
+      simp only [eventually_atTop, forall_exists_index]
       intro b c h
       apply le_trans (h c le_rfl)
       refine (ofReal_le_ofReal_iff (by rw [sub_nonneg]; exact hεbound)).mp ?_

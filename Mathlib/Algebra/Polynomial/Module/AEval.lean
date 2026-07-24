@@ -39,6 +39,7 @@ and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
 @[nolint unusedArguments]
 def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
+  deriving AddCommMonoid, Module R
 
 instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A]
     [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M] :
@@ -49,12 +50,8 @@ variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMon
 
 namespace AEval
 
-instance instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (AddCommMonoid M)
-
-instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
-
 instance instFiniteOrig [Module.Finite R M] : Module.Finite R <| AEval R M a :=
-  ‹Module.Finite R M›
+  inferInstanceAs <| Module.Finite R M
 
 noncomputable instance instModulePolynomial : Module R[X] <| AEval R M a :=
   compHom M (aeval a).toRingHom

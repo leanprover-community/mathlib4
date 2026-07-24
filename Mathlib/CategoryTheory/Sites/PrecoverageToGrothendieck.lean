@@ -100,7 +100,7 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       (∀ {X Y : C} {f : Y ⟶ X} (R : Presieve X), R ∈ J X →
         Presieve.IsSheafFor P ((Sieve.generate R).pullback f).arrows) := by
   constructor
-  · refine fun H _ _ _ _ hR => ?_
+  · intro H _ _ _ _ hR
     apply H.isSheafFor
     rw [Sieve.generate_sieve]
     exact J.toGrothendieck.pullback_stable _ (Saturate.of _ _ hR)
@@ -232,7 +232,7 @@ lemma Presieve.isSheafFor_singleton_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S X Y : 
     (g : Y ⟶ S) (e : X ≅ Y) (he : e.hom ≫ g = f) :
     (singleton f).IsSheafFor F ↔ (singleton g).IsSheafFor F := by
   subst he
-  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ← Presieve.ofArrows_pUnit,
+  rw [← Presieve.ofArrows_pUnit.{0}, ← Presieve.ofArrows_pUnit,
     Presieve.isSheafFor_ofArrows_comp_iff]
 
 open Limits

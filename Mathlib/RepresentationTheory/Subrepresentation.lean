@@ -46,7 +46,7 @@ lemma toSubmodule_injective :
 
 instance : SetLike (Subrepresentation ρ) W where
   coe ρ' := ρ'.toSubmodule
-  coe_injective' := SetLike.coe_injective.comp toSubmodule_injective
+  coe_injective := SetLike.coe_injective.comp toSubmodule_injective
 
 instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ) W
 

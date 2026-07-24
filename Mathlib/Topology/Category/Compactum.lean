@@ -111,7 +111,7 @@ instance : CoeSort Compactum Type* :=
 
 instance {X Y : Compactum} : FunLike (X ⟶ Y) X Y where
   coe f := f.f
-  coe_injective' _ _ h := (Monad.forget_faithful β).map_injective (by aesop)
+  coe_injective _ _ h := (Monad.forget_faithful β).map_injective (by aesop)
 
 -- Basic instances
 instance : ConcreteCategory Compactum (· ⟶ ·) where

@@ -94,7 +94,7 @@ variable {A B M N : Type*} [AddMonoid A] [AddMonoid B] [Monoid M] [Monoid N] {ψ
 /-- Define coercion to a function. -/
 instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
-  coe_injective' φ ψ h := by cases φ; cases ψ; congr
+  coe_injective φ ψ h := by cases φ; cases ψ; congr
 
 initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
 

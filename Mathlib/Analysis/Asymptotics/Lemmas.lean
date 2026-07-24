@@ -443,7 +443,7 @@ theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTo
 theorem IsLittleO.of_tendsto_div_atBot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
   refine IsLittleO.of_neg_left (IsLittleO.of_tendsto_div_atTop ?_)
   rw [← tendsto_neg_atBot_iff]
-  convert! h using 2
+  convert h
   simp [div_neg_eq_neg_div]
 
 end div_tendsto_infty

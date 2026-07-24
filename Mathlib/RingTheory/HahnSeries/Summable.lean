@@ -79,7 +79,7 @@ variable [PartialOrder Γ] [AddCommMonoid R]
 
 instance : FunLike (SummableFamily Γ R α) α R⟦Γ⟧ where
   coe := toFun
-  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 @[simp]
 theorem coe_mk (toFun : α → R⟦Γ⟧) (h1 h2) :
@@ -555,7 +555,7 @@ theorem mul_eq_smul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
   rfl
 
 theorem coeff_hsum_mul (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) (g : Γ) :
-    (mul s t).hsum.coeff g = ∑ gh ∈ addAntidiagonal s.isPWO_iUnion_support
+    (mul s t).hsum.coeff g = ∑ gh ∈ antidiagonal s.isPWO_iUnion_support
       t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) * (t.hsum.coeff gh.2) := by
   simp_rw [← smul_eq_mul, mul_eq_smul]
   exact coeff_smul s t g
@@ -694,17 +694,17 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
   swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
   apply hpwo.isWF.induction hg
   intro y ys hy
-  refine ((((addAntidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion
-    fun ij hij => hy ij.snd (mem_addAntidiagonal.1 (mem_coe.1 hij)).2.1 ?_).image Nat.succ).union
+  refine ((((antidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion
+    fun ij hij => hy ij.snd (mem_antidiagonal.1 (mem_coe.1 hij)).2.1 ?_).image Nat.succ).union
       (Set.finite_singleton 0)).subset ?_
-  · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
+  · obtain ⟨hi, _, rfl⟩ := mem_antidiagonal.1 (mem_coe.1 hij)
     exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le ((zero_lt_orderTop_iff h0).mp hx) <|
       order_le_of_coeff_ne_zero <| Function.mem_support.mp hi
   · rintro (_ | n) hn
     · exact Set.mem_union_right _ (Set.mem_singleton 0)
     · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset hn
       refine Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨?_, hi⟩⟩, rfl⟩
-      simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
+      simp only [mem_coe, mem_antidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive `orderTop`, then

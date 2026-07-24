@@ -182,7 +182,7 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
   classical
   simp only [unconditional, comap]
   congr 1 with s
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, Finset.le_eq_subset, mem_preimage]
+  simp only [mem_map, mem_atTop_sets, Finset.le_eq_subset, mem_preimage]
   constructor <;> rintro ⟨t, ht⟩
   · refine ⟨t.preimage f (by simp), fun x hx ↦ ?_⟩
     simpa [Finset.union_eq_right.mpr hx] using ht (t ∪ x.map f) t.subset_union_left
@@ -220,9 +220,8 @@ instance : (conditional β).LeAtTop := ⟨support_eq_univ_iff.mp <| by
   simpa [eq_univ_iff_forall, support, -eventually_and]
     using! fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance [Nonempty β] [IsDirectedOrder β] [IsCodirectedOrder β] : (conditional β).NeBot :=
-  ⟨by simp; infer_instance⟩
+  ⟨by rw [conditional_filter]; infer_instance⟩
 
 instance [IsCountablyGenerated (atTop : Filter β)] [IsCountablyGenerated (atBot : Filter β)] :
     IsCountablyGenerated (conditional β).filter :=

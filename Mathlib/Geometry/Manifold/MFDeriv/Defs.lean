@@ -316,9 +316,9 @@ def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] Tangen
 
 open Classical in
 variable (I I') in
-/-- Let `f` be a function between two manifolds. Then `mfderivWithin I I' f s x` is the
-derivative of `f` at `x` within `s`, as a continuous linear map from the tangent space at `x` to the
-tangent space at `f x`. -/
+/-- `mfderivWithin I I' f s x`, given a function `f` between two manifolds,
+is the derivative of `f` at `x` within `s`,
+as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableWithinAt I I' f s x then
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
@@ -328,21 +328,22 @@ def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[�
 
 open Classical in
 variable (I I') in
-/-- Let `f` be a function between two manifolds. Then `mfderiv I I' f x` is the derivative of
-`f` at `x`, as a continuous linear map from the tangent space at `x` to the tangent space at
-`f x`. -/
+/-- `mfderiv I I' f x`, given a function `f` between two manifolds, is the derivative of `f` at `x`,
+as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableAt I I' f x then
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) :)
   else 0
 
 variable (I I') in
-/-- The derivative within a set, as a map between the tangent bundles -/
+/-- `tangentMapWithin I I' f s` is the derivative of `f : M → M'` within a set `s`,
+as a map between the tangent bundles `TM` and `TM'`. -/
 def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderivWithin I I' f s p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 
 variable (I I') in
-/-- The derivative, as a map between the tangent bundles -/
+/-- `tangentMap I I' f` is the derivative of `f : M → M'` as a map between the tangent bundles
+`TM` and `TM'`. -/
 def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderiv I I' f p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 

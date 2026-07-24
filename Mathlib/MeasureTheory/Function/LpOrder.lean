@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 ## Results
 
-- `Lp E p μ` is an `OrderedAddCommGroup` when `E` is a `NormedLatticeAddCommGroup`.
+- `Lp E p μ` is an ordered group when `E` is a `NormedLatticeAddCommGroup`.
 
 ## TODO
 

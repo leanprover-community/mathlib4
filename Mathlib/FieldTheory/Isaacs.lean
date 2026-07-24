@@ -62,7 +62,7 @@ theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpo
       have ⟨ω, hω⟩ := exists_algHom_adjoin_of_splits
         (fun s hs ↦ ⟨(alg.isIntegral).1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
       refine ⟨ω, β, ((DFunLike.congr_fun hω <| AdjoinSimple.gen F α).trans ?_).symm⟩
-      rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_algHom,
+      rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_toAlgHom,
         adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftAlgHom_root]
       rfl
   have ω : ∃ ω : Ω, ⊤ ≤ M ω := by

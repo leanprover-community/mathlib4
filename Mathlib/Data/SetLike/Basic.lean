@@ -107,13 +107,15 @@ class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
-  protected coe_injective' : Function.Injective coe
+  coe_injective : Function.Injective coe
 
 attribute [coe] SetLike.coe
 
 namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
+
+@[deprecated (since := "2026-06-04")] alias coe_injective' := coe_injective
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
@@ -153,9 +155,6 @@ protected theorem «exists» {q : p → Prop} : (∃ x, q x) ↔ ∃ (x : B) (h 
 
 protected theorem «forall» {q : p → Prop} : (∀ x, q x) ↔ ∀ (x : B) (h : x ∈ p), q ⟨x, ‹_›⟩ :=
   SetCoe.forall
-
-theorem coe_injective : Function.Injective (SetLike.coe : A → Set B) := fun _ _ h =>
-  SetLike.coe_injective' h
 
 @[simp, norm_cast]
 theorem coe_set_eq : (p : Set B) = q ↔ p = q :=
@@ -293,12 +292,12 @@ theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
 /-- membership is inherited from `Set X` -/
 abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
   coe := (↑)
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 /-- membership is inherited from `S` -/
 abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
   coe := (↑)
-  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
+  coe_injective := SetLike.coe_injective.comp Subtype.val_injective
 
 section
 

@@ -44,7 +44,7 @@ structure NonemptyChain (α : Type*) [LE α] where
 
 instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
-  coe_injective' _ _ := NonemptyChain.ext
+  coe_injective _ _ := NonemptyChain.ext
 
 instance {α : Type*} [LE α] : PartialOrder (NonemptyChain α) := .ofSetLike (NonemptyChain α) α
 

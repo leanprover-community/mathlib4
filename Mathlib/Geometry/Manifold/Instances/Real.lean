@@ -108,11 +108,11 @@ instance EuclideanHalfSpace.pathConnectedSpace [NeZero n] :
 instance EuclideanQuadrant.pathConnectedSpace : PathConnectedSpace (EuclideanQuadrant n) :=
   isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
 
-instance [NeZero n] : LocPathConnectedSpace (EuclideanHalfSpace n) :=
-  EuclideanHalfSpace.convex.locPathConnectedSpace
+instance [NeZero n] : LocallyPathConnectedSpace (EuclideanHalfSpace n) :=
+  EuclideanHalfSpace.convex.locallyPathConnectedSpace
 
-instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
-  EuclideanQuadrant.convex.locPathConnectedSpace
+instance : LocallyPathConnectedSpace (EuclideanQuadrant n) :=
+  EuclideanQuadrant.convex.locallyPathConnectedSpace
 
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     range (Subtype.val : EuclideanHalfSpace n → _) = { y | 0 ≤ y 0 } :=
@@ -147,7 +147,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
-  simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
+  simpa only [mem_sdiff, mem_setOf_eq, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val

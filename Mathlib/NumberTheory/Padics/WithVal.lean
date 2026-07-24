@@ -54,7 +54,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
       simp only [← WithVal.val_apply_equiv, map_pow, map_natCast, Rat.padicValuation_self,
         Int.reduceNeg, exp_neg, inv_pow, ← exp_nsmul, nsmul_eq_mul, mul_one]
     use Units.mk0 (Valued.v.restrict (p ^ n)) (by
-      rw [ne_eq, Valuation.restrict_def, restrict₀_eq_zero_iff, hn]; simp)
+      simp [Valuation.restrict_def, Nat.Prime.ne_zero Fact.out])
     intro x y h
     set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy

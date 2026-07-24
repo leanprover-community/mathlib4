@@ -112,6 +112,11 @@ noncomputable abbrev cocyclesMap (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology.cocycles B n :=
   HomologicalComplex.cyclesMap (cochainsMap f φ) n
 
+lemma cochainsMap_congr {f g : G →* H} {φ : res f A ⟶ B} {ψ : res g A ⟶ B} (hfg : f = g)
+    (hφψ : φ.hom.toLinearMap = ψ.hom.toLinearMap) :
+    cochainsMap f φ = cochainsMap g ψ := by
+  subst hfg; congr; ext; simp [hφψ]
+
 @[simp]
 lemma cocyclesMap_id : cocyclesMap (MonoidHom.id G) (𝟙 B) n = 𝟙 _ :=
   HomologicalComplex.cyclesMap_id _ _
@@ -137,6 +142,11 @@ noncomputable abbrev map (n : ℕ) :
     groupCohomology A n ⟶ groupCohomology B n :=
   HomologicalComplex.homologyMap (cochainsMap f φ) n
 
+lemma map_congr {f g : G →* H} {φ : res f A ⟶ B} {ψ : res g A ⟶ B} (hfg : f = g)
+    (hφψ : φ.hom.toLinearMap = ψ.hom.toLinearMap) (n : ℕ) :
+    map f φ n = map g ψ n := by
+  subst hfg; congr; ext; simp [hφψ]
+
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 theorem π_map (n : ℕ) :
@@ -160,6 +170,23 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
   rw [map, cochainsMap_id_comp, HomologicalComplex.homologyMap_comp]
+
+/-- The isomorphism between cohomology groups induced by a group isomorphism `e : G ≃* H` and a
+isomorphism between representations (restricted by `e`). -/
+@[simps]
+noncomputable def mapIso (e : G ≃* H) (e' : B.V ≃ₗ[k] A.V)
+    (he : ∀ g, e' ∘ₗ B.ρ g = A.ρ (e g) ∘ₗ e') (n : ℕ) :
+    groupCohomology B n ≅ groupCohomology A n where
+  hom := groupCohomology.map e.symm (ofHom ⟨e', fun h ↦ by simp [he]⟩) n
+  inv := groupCohomology.map e (ofHom ⟨e'.symm, fun g ↦ by
+    rw [e'.toLinearMap_symm_comp_eq, ← LinearMap.comp_assoc]
+    simp [he, LinearMap.comp_assoc]⟩) n
+  hom_inv_id := by
+    rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
+    exact map_congr (by simp) (by simp [res_id]) n
+  inv_hom_id := by
+    rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
+    exact groupCohomology.map_congr (by simp) e'.comp_symm n
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H → A` to `(g : G) ↦ φ (x (f g))`. -/

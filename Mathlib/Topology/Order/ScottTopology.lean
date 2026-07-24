@@ -101,8 +101,7 @@ and closed sets are `DirSupClosedOn D`. -/
 class IsScottHausdorff (α) (D : Set (Set α)) [Preorder α] [TopologicalSpace α] : Prop where
   topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α D
 
-instance (α) (D : Set (Set α)) [Preorder α] [TopologicalSpace α] :
-    @IsScottHausdorff α D _ (scottHausdorff α D) :=
+instance (α) (D : Set (Set α)) [Preorder α] : @IsScottHausdorff α D _ (scottHausdorff α D) :=
   @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff

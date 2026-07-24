@@ -56,6 +56,7 @@ def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 
 /-- The determinant of a matrix given by the Leibniz formula. -/
+@[wikidata Q178546]
 def det (M : Matrix n n R) : R :=
   detRowAlternating M
 
@@ -84,7 +85,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   · simp
   · simp
 
-theorem det_zero (_ : Nonempty n) : det (0 : Matrix n n R) = 0 :=
+@[simp] theorem det_zero [Nonempty n] : det (0 : Matrix n n R) = 0 :=
   (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_zero
 
 @[simp]

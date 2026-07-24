@@ -639,18 +639,14 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- FIXME: `simpNF` times out synthesizing
--- `FaithfulSMul (Algebra.Generators.ofAlgHom f h).toExtension.Ring S`.
-@[simp, nolint simpNF]
+@[simp]
 lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
     (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
   change RingHom.ker _ = _
   congr
   exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
 
--- FIXME: `simpNF` times out synthesizing
--- `FaithfulSMul (P.ofAlgEquiv e).toExtension.Ring T`.
-@[simp, nolint simpNF]
+@[simp]
 lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
   rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
@@ -798,3 +794,16 @@ lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
 end Hom
 
 end Algebra.Generators
+
+namespace Algebra.Extension
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- The canonical homomorphism of extensions from the universal extension `R[S] → S`
+(given by `Generators.self R S`) to any extension `P` defined via the designated section `P.σ`. -/
+@[simps!]
+noncomputable
+def defaultHom (P : Extension.{w} R S) : (Generators.self R S).toExtension.Hom P :=
+  .ofAlgHom (MvPolynomial.aeval P.σ) (by dsimp; ext; simp)
+
+end Algebra.Extension

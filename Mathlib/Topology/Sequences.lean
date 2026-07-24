@@ -184,7 +184,7 @@ lemma isClosed_iUnion_closure_singleton_of_not_tendsto {x : ℕ → X} [Sequenti
   · have (j : ℕ) : ∃ᶠ k in atTop, ∃ n ≥ j, y n ∈ closure {x k} := by
       refine frequently_atTop.2 fun a => ?_
       have := (Filter.eventually_all_finite (by simp : (Iic a).Finite)).2 fun i hi => hm i
-      simp only [mem_Iic, eventually_atTop, ge_iff_le] at this
+      simp only [mem_Iic, eventually_atTop] at this
       obtain ⟨c, hc⟩ := this
       obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
       refine ⟨b, ?_, c + j, j.le_add_left c, hb⟩

@@ -438,7 +438,7 @@ lemma ContinuousLinearMap.norm_inl [SeminormedAddCommGroup E] [NontrivialTopolog
     ‖ContinuousLinearMap.inl 𝕜 E F‖ = 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap
 
-lemma ContinuousLinearMap.norm_inr [SeminormedAddCommGroup E] [NontrivialTopology E]
+lemma ContinuousLinearMap.norm_inr [SeminormedAddCommGroup E]
     [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NontrivialTopology F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ = 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap

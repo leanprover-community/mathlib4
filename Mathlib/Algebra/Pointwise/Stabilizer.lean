@@ -93,7 +93,7 @@ lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s �
       stabilizer G (s ∪ t)
         ≤ stabilizer G (s ∪ t) ⊓ stabilizer G t := by simpa
       _ ≤ stabilizer G ((s ∪ t) \ t) := stabilizer_inf_stabilizer_le_stabilizer_sdiff
-      _ = stabilizer G s := by rw [union_diff_cancel_right]; simpa [← disjoint_iff_inter_eq_empty]
+      _ = stabilizer G s := by rw [union_sdiff_cancel_right]; simpa [← disjoint_iff_inter_eq_empty]
   · calc
       stabilizer G s
         ≤ stabilizer G s ⊓ stabilizer G t := by simpa

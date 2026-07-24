@@ -51,7 +51,7 @@ variable [Monoid A] [Star A] [Monoid B] [Star B]
 
 instance : FunLike (A →⋆* B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; simp_all
+  coe_injective f g h := by cases f; cases g; simp_all
 
 instance : MonoidHomClass (A →⋆* B) A B where
   map_mul f := f.map_mul'

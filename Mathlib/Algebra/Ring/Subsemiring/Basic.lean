@@ -662,6 +662,11 @@ theorem top_prod (s : Subsemiring S) : (⊤ : Subsemiring R).prod s = s.comap (R
 theorem top_prod_top : (⊤ : Subsemiring R).prod (⊤ : Subsemiring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+@[simp]
+theorem _root_.RingHom.rangeS_prodMap (f : R →+* S) (g : S →+* T) :
+    (f.prodMap g).rangeS = Subsemiring.prod f.rangeS g.rangeS :=
+  SetLike.coe_injective Set.range_prodMap
+
 protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
   SetLike.coe_injective Set.center_prod
 

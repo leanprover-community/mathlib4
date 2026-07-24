@@ -29,7 +29,7 @@ variable {α : Type u} {c d : Cardinal.{u}}
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
 noncomputable def toNat : Cardinal →*₀ ℕ :=
-  ENat.toNatHom.comp toENat
+  ENat.toNatHom.comp (.ofClass toENat)
 
 @[simp] lemma toNat_toENat (a : Cardinal) : ENat.toNat (toENat a) = toNat a := rfl
 

@@ -88,7 +88,7 @@ to the linear map itself, is zero.
 See `Matrix.aeval_self_charpoly` for the equivalent statement about matrices. -/
 theorem aeval_self_charpoly : aeval f f.charpoly = 0 := by
   apply (LinearEquiv.map_eq_zero_iff (algEquivMatrix (chooseBasis R M)).toLinearEquiv).1
-  rw [AlgEquiv.toLinearEquiv_apply, ← AlgEquiv.coe_algHom, ← Polynomial.aeval_algHom_apply _ _ _,
+  rw [AlgEquiv.toLinearEquiv_apply, ← AlgEquiv.coe_toAlgHom, ← Polynomial.aeval_algHom_apply _ _ _,
     charpoly_def]
   exact Matrix.aeval_self_charpoly _
 

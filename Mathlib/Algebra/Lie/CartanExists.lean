@@ -68,6 +68,7 @@ variable (R M)
 variable (x y : L)
 
 open LieModule LinearMap
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 local notation "φ" => LieModule.toEnd R L M
 

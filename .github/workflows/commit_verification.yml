@@ -33,14 +33,14 @@ jobs:
     # This is a quick check to avoid unnecessary runs
     steps:
       - name: Checkout PR head
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           # Checkout the actual PR head, not the merge commit GitHub creates
           ref: ${{ github.event.pull_request.head.sha }}
           # Fetch full history to access all PR commits
           fetch-depth: 0
       - name: Checkout local actions
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1

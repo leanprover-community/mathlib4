@@ -107,11 +107,14 @@ theorem maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) 
   exact fun _ ↦ ⟨fun h x hxs hx ↦ hxs <| h hx (subset_insert _ _) (mem_insert_self x s),
     fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
 
-theorem minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
+theorem minimal_iff_forall_erase (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) where
   mp h := ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx (erase_subset _ _) hxs⟩
   mpr h := ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
     h.2 x hxs <| hP ht (subset_erase.2 ⟨hts, hxt⟩)⟩
+
+@[deprecated (since := "2026-06-03")]
+alias minimal_iff_forall_diff_singleton := minimal_iff_forall_erase
 
 end minimal
 

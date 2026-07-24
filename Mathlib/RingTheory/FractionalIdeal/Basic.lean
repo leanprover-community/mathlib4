@@ -162,7 +162,7 @@ section SetLike
 
 instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
-  coe_injective' := SetLike.coe_injective.comp Subtype.coe_injective
+  coe_injective := SetLike.coe_injective.comp Subtype.coe_injective
 
 instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P) P
 

@@ -113,8 +113,8 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     exact single_le_sum (fun j _ => hM.1 i j) (by simp)
   have : ∃ M' ∈ doublyStochastic R n, N = s' • M' := by
     rw [exists_mem_doublyStochastic_eq_smul_iff hs']
-    simp only [sub_apply, smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply, Option.mem_def,
-      Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
+    simp only [Matrix.sub_apply, Matrix.smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply,
+      Option.mem_def, Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
       sum_sub_distrib, sum_ite_eq, mem_univ, ↓reduceIte, N]
     refine ⟨fun i' j => ?_, by simp [s', hM.2.1], by simp [s', ← σ.eq_symm_apply, hM]⟩
     split

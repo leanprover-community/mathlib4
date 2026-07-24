@@ -87,7 +87,7 @@ variations of this theorem.
 The principle is formalized in the following way, see
 `Finset.exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum`: if `f : α → β` is a function which maps all
 elements of `s : Finset α` to `t : Finset β` and `#t • b < ∑ x ∈ s, w x`, where `w : α → M` is
-a weight function taking values in a `LinearOrderedCancelAddCommMonoid`, then for
+a weight function taking values in a linearly ordered cancellative monoid, then for
 some `y ∈ t`, the sum of the weights of all `x ∈ s` such that `f x = y` is greater than `b`.
 
 There are a few bits we can change in this theorem:

@@ -111,8 +111,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_cexp (k : ℕ) :
     SummableLocallyUniformlyOn
       (fun n ↦ iteratedDerivWithin k (fun z ↦ cexp (2 * π * I * z) ^ n) ℍₒ) ℍₒ := by
   have h0 : (fun n : ℕ ↦ (1 : ℂ)) =O[atTop] fun n ↦ ((n ^ 1) : ℝ) := by
-    simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast,
-      eventually_atTop, ge_iff_le]
+    simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast, eventually_atTop]
     exact ⟨1, 1, fun b hb ↦ by norm_cast; simp [hb]⟩
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp k 1 (p := 1)
     (by norm_num) h0

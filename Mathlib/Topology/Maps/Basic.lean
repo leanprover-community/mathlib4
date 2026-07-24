@@ -369,6 +369,12 @@ protected theorem id : IsOpenMap (@id X) := fun s hs => by rwa [image_id]
 protected theorem comp (hg : IsOpenMap g) (hf : IsOpenMap f) :
     IsOpenMap (g ∘ f) := fun s hs => by rw [image_comp]; exact hg _ (hf _ hs)
 
+/-- If `g ∘ f` is open, where `f` is continuous and surjective, then `g` is open. -/
+theorem of_comp (hf : Continuous f) (f_surj : Surjective f) (h : IsOpenMap (g ∘ f)) :
+    IsOpenMap g := fun s hs => by
+  rw [← f_surj.image_preimage s, ← image_comp]
+  exact h _ (hs.preimage hf)
+
 theorem isOpen_range (hf : IsOpenMap f) : IsOpen (range f) := by
   rw [← image_univ]
   exact hf _ isOpen_univ

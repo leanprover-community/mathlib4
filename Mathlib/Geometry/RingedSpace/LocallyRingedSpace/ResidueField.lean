@@ -48,6 +48,16 @@ def residueField (x : X) : CommRingCat :=
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
+/-- The residue map from the stalk to the residue field. -/
+def residue (X : LocallyRingedSpace.{u}) (x : X) : X.presheaf.stalk x ⟶ X.residueField x :=
+  CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
+
+lemma residue_surjective (x : X) : Function.Surjective (X.residue x) :=
+  Ideal.Quotient.mk_surjective
+
+instance (x : X) : Epi (X.residue x) :=
+  ConcreteCategory.epi_of_surjective _ (X.residue_surjective x)
+
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections
 over `U` to the residue field of `x`.
@@ -56,9 +66,7 @@ If we interpret sections over `U` as functions of `X` defined on `U`, then this 
 corresponds to evaluation at `x`.
 -/
 def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
-  -- TODO: make a new definition wrapping
-  -- `CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk _))`?
-  X.presheaf.germ U x.1 x.2 ≫ CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk _))
+  X.presheaf.germ U x.1 x.2 ≫ X.residue _
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
 def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
@@ -97,10 +105,9 @@ a morphism of residue fields in the other direction. -/
 def residueFieldMap (x : X) : Y.residueField (f.base x) ⟶ X.residueField x :=
   CommRingCat.ofHom (IsLocalRing.ResidueField.map (f.stalkMap x).hom)
 
+@[reassoc]
 lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
-    CommRingCat.ofHom (IsLocalRing.residue (Y.presheaf.stalk (f.base x))) ≫
-      residueFieldMap f x = f.stalkMap x ≫
-      CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x)) := by
+    Y.residue _ ≫ residueFieldMap f x = f.stalkMap x ≫ X.residue _ := by
   simp [residueFieldMap]
   rfl
 

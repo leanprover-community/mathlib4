@@ -373,6 +373,16 @@ lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s,
   rintro ⟨hp, q, hq, hpq⟩
   rwa [← ((hs _ hq).dvd_iff_eq hp.ne_one).1 hpq]
 
+theorem primeFactors_prod_primeFactors (n : ℕ) :
+    (∏ p ∈ n.primeFactors, p).primeFactors = n.primeFactors :=
+  primeFactors_prod fun _ hp ↦ n.mem_primeFactors.mp hp |>.left
+
+theorem prod_primeFactors_dvd_iff {n k : ℕ} (hk : k ≠ 0) :
+    (∏ p ∈ n.primeFactors, p) ∣ k ↔ n.primeFactors ⊆ k.primeFactors := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · grw [← Nat.primeFactors_mono h hk, primeFactors_prod_primeFactors]
+  · grw [← k.prod_primeFactors_dvd, Finset.prod_dvd_prod_of_subset _ _ _ h]
+
 lemma primeFactors_div_gcd (hm : Squarefree m) (hn : n ≠ 0) :
     primeFactors (m / m.gcd n) = primeFactors m \ primeFactors n := by
   ext p

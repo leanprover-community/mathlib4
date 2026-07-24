@@ -352,6 +352,10 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
+theorem Bijective.of_comp_left {f : α → β} {g : γ → α} (hfg : Function.Bijective (f ∘ g))
+    (hf : Function.Injective f) : Function.Bijective g :=
+  ⟨hfg.1.of_comp, hfg.2.of_comp_left hf⟩
+
 /-- If `f : α → α → β` is surjective, then every endofunction on `β` has a fixed point.
 This is an instance of Lawvere's fixed-point theorem applied to the category of types
 and functions. It is the diagonal argument underlying `cantor_surjective` and
@@ -1049,8 +1053,10 @@ lemma not_surjective : Surjective Not := not_involutive.surjective
 lemma not_bijective : Bijective Not := not_involutive.bijective
 
 @[simp]
-lemma symmetric_apply_eq_iff {α : Sort*} {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
-  simp [Symmetric, Involutive]
+lemma symm_apply_eq_iff {α : Sort*} {f : α → α} : Std.Symm (f · = ·) ↔ Involutive f := by
+  simp [symm_def, Involutive]
+
+@[deprecated (since := "2026-06-10")] alias symmetric_apply_eq_iff := symm_apply_eq_iff
 
 /-- The property of a binary function `f : α → β → γ` being injective.
 Mathematically this should be thought of as the corresponding function `α × β → γ` being injective.
@@ -1133,18 +1139,24 @@ lemma forall_existsUnique_iff' {r : α → β → Prop} :
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff' {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Std.Symm.forall_existsUnique_iff' {r : α → α → Prop} [Std.Symm r] :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ r = (f · = ·) := by
   refine ⟨fun h ↦ ?_, fun ⟨f, _, hf⟩ ↦ forall_existsUnique_iff'.2 ⟨f, hf⟩⟩
   rcases forall_existsUnique_iff'.1 h with ⟨f, rfl : r = _⟩
-  exact ⟨f, symmetric_apply_eq_iff.1 hr, rfl⟩
+  exact ⟨f, symm_apply_eq_iff.1 ‹_›, rfl⟩
+
+@[deprecated (since := "2026-06-10")]
+protected alias Symmetric.forall_existsUnique_iff' := Std.Symm.forall_existsUnique_iff'
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
-protected lemma Symmetric.forall_existsUnique_iff {r : α → α → Prop} (hr : Symmetric r) :
+protected lemma Std.Symm.forall_existsUnique_iff {r : α → α → Prop} [Std.Symm r] :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ ∀ {a b}, r a b ↔ f a = b := by
-  simp [hr.forall_existsUnique_iff', funext_iff]
+  simp [Std.Symm.forall_existsUnique_iff', funext_iff]
+
+@[deprecated (since := "2026-06-10")]
+protected alias Symmetric.forall_existsUnique_iff := Std.Symm.forall_existsUnique_iff
 
 /-- `s.piecewise f g` is the function equal to `f` on the set `s`, and to `g` on its complement. -/
 def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, β i)

@@ -274,28 +274,31 @@ protected alias ⟨_, ContinuousWithinAt.insert⟩ := continuousWithinAt_insert_
 /-- `continuousWithinAt_insert` gives the same equivalence but at a point `y` possibly different
 from `x`. As this requires the space to be T1, and this property is not available in this file,
 this is found in another file although it is part of the basic API for `continuousWithinAt`. -/
-theorem ContinuousWithinAt.diff_iff
+theorem ContinuousWithinAt.sdiff_iff
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
-  ⟨fun h => (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
-    h.mono diff_subset⟩
+  ⟨fun h => (h.union ht).mono <| by simp only [sdiff_union_self, subset_union_left], fun h =>
+    h.mono sdiff_subset⟩
 
-/-- See also `continuousWithinAt_diff_singleton` for the case of `s \ {y}`, but
+/-- See also `continuousWithinAt_sdiff_singleton` for the case of `s \ {y}`, but
 requiring `T1Space α`. -/
 @[simp]
-theorem continuousWithinAt_diff_self :
+theorem continuousWithinAt_sdiff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
-  continuousWithinAt_singleton.diff_iff
+  continuousWithinAt_singleton.sdiff_iff
+
+@[deprecated (since := "2026-06-03")]
+alias continuousWithinAt_diff_self := continuousWithinAt_sdiff_self
 
 /-- A function is continuous at a point `x` within a set `s` if `x` is not an accumulation point of
 `s`. -/
 lemma continuousWithinAt_of_not_accPt (h : ¬AccPt x (𝓟 s)) : ContinuousWithinAt f s x := by
-  rw [← continuousWithinAt_diff_self]
-  simp_all [ContinuousWithinAt, AccPt, ← nhdsWithin_inter', Set.diff_eq, Set.inter_comm]
+  rw [← continuousWithinAt_sdiff_self]
+  simp_all [ContinuousWithinAt, AccPt, ← nhdsWithin_inter', Set.sdiff_eq, Set.inter_comm]
 
 @[simp]
 theorem continuousWithinAt_compl_self :
     ContinuousWithinAt f {x}ᶜ x ↔ ContinuousAt f x := by
-  rw [compl_eq_univ_diff, continuousWithinAt_diff_self, continuousWithinAt_univ]
+  rw [compl_eq_univ_sdiff, continuousWithinAt_sdiff_self, continuousWithinAt_univ]
 
 /-- A function is continuous at a point `x` if `x` is isolated. -/
 lemma continuousAt_of_not_accPt (h : ¬AccPt x (𝓟 {x}ᶜ)) : ContinuousAt f x := by

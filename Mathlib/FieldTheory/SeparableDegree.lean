@@ -159,7 +159,7 @@ def embEquivOfEquiv (i : E ≃ₐ[F] K) :
     intro x
     have h := isAlgebraic_algebraMap (R := E) (A := K) (i.symm.toAlgHom x)
     rw [show ∀ y : E, (algebraMap E K) y = i.toAlgHom y from fun y ↦ rfl] at h
-    simpa only [AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply] using h
+    simpa only [AlgEquiv.coe_toAlgHom, AlgEquiv.apply_symm_apply] using h
   apply AlgEquiv.restrictScalars (R := F) (S := E)
   exact IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
 
@@ -195,6 +195,13 @@ theorem finSepDegree_top : finSepDegree F (⊤ : IntermediateField E K) = finSep
   finSepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
 
 end Tower
+
+theorem isSeparable_bot : Algebra.IsSeparable F (⊥ : IntermediateField F E) :=
+  AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv F E).symm
+
+theorem isSeparable_top :
+    Algebra.IsSeparable F (⊤ : IntermediateField F E) ↔ Algebra.IsSeparable F E :=
+  Algebra.IsSeparable.iff_of_equiv_equiv (RingEquiv.refl F) topEquiv.toRingEquiv (by ext; simp)
 
 end IntermediateField
 

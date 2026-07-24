@@ -648,7 +648,7 @@ private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule
     exact LinearEquiv.ofInjective_symm_apply ..
   let g : (S → R) →ₗ[R] I := .lsum _ _ ℕ fun i ↦ .toSpanSingleton _ _ ⟨b i, hT' <| hb i⟩
   have hgf : g ∘ₗ f = .id := LinearMap.ext fun x ↦ Subtype.ext <| by
-    simp only [g, lsum_apply, comp_apply, sum_apply, toSpanSingleton_apply, proj_apply]
+    simp only [g, lsum_apply, comp_apply, LinearMap.sum_apply, toSpanSingleton_apply, proj_apply]
     simp_rw [coe_sum, coe_smul, Algebra.smul_def, hf, mul_assoc, ← Finset.mul_sum,
       Algebra.smul_mul_assoc, eq, (Finset.sum_coe_sort ..).trans hr.2, mul_one, id_apply]
   set m := mul' R A ∘ₗ I.1.subtype.lTensor A

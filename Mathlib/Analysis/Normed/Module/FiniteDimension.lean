@@ -131,13 +131,30 @@ theorem AffineMap.continuous_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) : Con
 theorem AffineEquiv.continuous_of_finiteDimensional (f : PE ≃ᵃ[𝕜] PF) : Continuous f :=
   f.toAffineMap.continuous_of_finiteDimensional
 
+/-- Reinterpret an affine equivalence as a continuous affine equivalence in finite dimension. -/
+def AffineEquiv.toContinuousAffineEquiv : (PE ≃ᵃ[𝕜] PF) ≃ (PE ≃ᴬ[𝕜] PF) where
+  toFun f :=
+    haveI := f.linear.finiteDimensional
+    ⟨f, f.continuous_of_finiteDimensional, f.symm.continuous_of_finiteDimensional⟩
+  invFun f := f.toAffineEquiv
+  left_inv _ := rfl
+  right_inv _ := ContinuousAffineEquiv.toAffineEquiv_injective rfl
+
+@[simp]
+theorem AffineEquiv.coe_toContinuousAffineEquiv (f : PE ≃ᵃ[𝕜] PF) :
+    ⇑(toContinuousAffineEquiv f) = f := rfl
+
+@[simp]
+theorem AffineEquiv.toAffineEquiv_toContinuousAffineEquiv (f : PE ≃ᵃ[𝕜] PF) :
+    (toContinuousAffineEquiv f).toAffineEquiv = f := rfl
+
+@[simp]
+theorem AffineEquiv.toContinuousAffineEquiv_symm_apply (f : PE ≃ᴬ[𝕜] PF) :
+    toContinuousAffineEquiv.symm f = f.toAffineEquiv := rfl
+
 /-- Reinterpret an affine equivalence as a homeomorphism. -/
-def AffineEquiv.toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) : PE ≃ₜ PF where
-  toEquiv := f.toEquiv
-  continuous_toFun := f.continuous_of_finiteDimensional
-  continuous_invFun :=
-    haveI : FiniteDimensional 𝕜 F := f.linear.finiteDimensional
-    f.symm.continuous_of_finiteDimensional
+def AffineEquiv.toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) : PE ≃ₜ PF :=
+  (toContinuousAffineEquiv f).toHomeomorph
 
 @[simp]
 theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) :
@@ -148,6 +165,9 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF)
 theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜] PF) :
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
+
+attribute [deprecated AffineEquiv.toContinuousAffineEquiv (since := "2026-05-11")]
+  AffineEquiv.toHomeomorphOfFiniteDimensional
 
 /-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
 theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :

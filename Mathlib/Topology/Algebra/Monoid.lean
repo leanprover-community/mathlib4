@@ -809,8 +809,8 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 -- To properly fix this, we should make sure that `continuity` applies its
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
 -- is quite an invasive change.
-@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
-theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
+@[to_fun (attr := to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop))]
+theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous (f ^ n) :=
   (continuous_pow n).comp h
 
 @[to_additive]
@@ -826,19 +826,19 @@ theorem Filter.Tendsto.pow {l : Filter α} {f : α → M} {x : M} (hf : Tendsto 
     Tendsto (fun x => f x ^ n) l (𝓝 (x ^ n)) :=
   (continuousAt_pow _ _).tendsto.comp hf
 
-@[to_additive]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousWithinAt.pow {f : X → M} {x : X} {s : Set X} (hf : ContinuousWithinAt f s x)
-    (n : ℕ) : ContinuousWithinAt (fun x => f x ^ n) s x :=
+    (n : ℕ) : ContinuousWithinAt (f ^ n) s x :=
   Filter.Tendsto.pow hf n
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousAt.pow {f : X → M} {x : X} (hf : ContinuousAt f x) (n : ℕ) :
-    ContinuousAt (fun x => f x ^ n) x :=
+    ContinuousAt (f ^ n) x :=
   Filter.Tendsto.pow hf n
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.pow {f : X → M} {s : Set X} (hf : ContinuousOn f s) (n : ℕ) :
-    ContinuousOn (fun x => f x ^ n) s := fun x hx => (hf x hx).pow n
+    ContinuousOn (f ^ n) s := fun x hx => (hf x hx).pow n
 
 /-- If `R` acts on `A` via `A`, then continuous multiplication implies continuous scalar
 multiplication by constants.

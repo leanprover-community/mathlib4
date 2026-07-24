@@ -70,8 +70,8 @@ def toPowerSeries : R⟦ℕ⟧ ≃+* PowerSeries R where
     refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
       sum_filter_ne_zero _
     ext m
-    simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
-      mem_support]
+    simp only [HasAntidiagonal.mem_antidiagonal, Finset.mem_antidiagonal, and_congr_left_iff,
+      mem_filter, mem_support]
     rintro h
     rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
@@ -85,7 +85,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 def ofPowerSeries : PowerSeries R →+* R⟦Γ⟧ :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -169,8 +169,8 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : R⟦σ →₀ ℕ⟧ ≃+* MvPowe
       refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
         sum_filter_ne_zero _
       ext m
-      simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,
-        Finset.mem_antidiagonal]
+      simp only [and_congr_left_iff, Finset.mem_antidiagonal, mem_filter, mem_support,
+        HasAntidiagonal.mem_antidiagonal]
       rintro h
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
@@ -206,8 +206,7 @@ def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
 
 variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
-  is an algebra homomorphism. -/
+/-- Casting a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] A⟦Γ⟧ :=
   (HahnSeries.embDomainAlgHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>

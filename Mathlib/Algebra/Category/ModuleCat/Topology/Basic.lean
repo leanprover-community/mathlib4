@@ -143,7 +143,7 @@ section
 variable {M₁ M₂ : TopModuleCat R}
 
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
-@[simp] lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
+lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
 @[simp] lemma hom_add (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ + φ₂).hom = φ₁.hom + φ₂.hom := rfl
 @[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (-φ).hom = -φ.hom := rfl
 @[simp] lemma hom_sub (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ - φ₂).hom = φ₁.hom - φ₂.hom := rfl
@@ -470,5 +470,16 @@ instance : (forget₂ (TopModuleCat.{max v u} R) TopCat).IsRightAdjoint := ⟨_,
 instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 
 end Adjunction
+
+variable {R} in
+/-- The ring isomorphism between the endomorphisms of an object `M` in `TopModuleCat R` and the
+continuous `R`-linear endomorphisms of `M`. -/
+@[simps]
+def endRingEquiv (M : TopModuleCat R) :
+    End M ≃+* (M →L[R] M) where
+  toFun := TopModuleCat.Hom.hom
+  invFun := TopModuleCat.ofHom
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
 
 end TopModuleCat

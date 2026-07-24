@@ -78,11 +78,12 @@ alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
 
 /-- Extension for the `positivity` tactic: `mersenne`. -/
 @[positivity mersenne _]
-meta def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalMersenne : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(mersenne_pos_of_pos $pa))
     | _ => pure (.nonnegative q(Nat.zero_le (mersenne $a)))
@@ -650,28 +651,31 @@ termination_by structural x => x
 Generalization of `sModNat` with arbitrary base case,
 useful for proving `sModNatTR` and `sModNat` agree.
 -/
-def sModNat_aux (b q : ℕ) : ℕ → ℕ
+def sModNatAux (b q : ℕ) : ℕ → ℕ
   | 0 => b
-  | i + 1 => (sModNat_aux b q i ^ 2 + (q - 2)) % q
+  | i + 1 => (sModNatAux b q i ^ 2 + (q - 2)) % q
 
-theorem sModNat_aux_eq (q k : ℕ) : sModNat_aux (4 % q) q k = sModNat q k := by
+theorem sModNatAux_eq (q k : ℕ) : sModNatAux (4 % q) q k = sModNat q k := by
   induction k with
   | zero => rfl
-  | succ k ih => rw [sModNat_aux, ih, sModNat, ← ih]
+  | succ k ih => rw [sModNatAux, ih, sModNat, ← ih]
+
+@[deprecated (since := "2026-06-06")] alias sModNat_aux := sModNatAux
+@[deprecated (since := "2026-06-06")] alias sModNat_aux_eq := sModNatAux_eq
 
 theorem sModNatTR_eq_sModNat (q i : ℕ) : sModNatTR q i = sModNat q i := by
-  rw [sModNatTR, helper, sModNat_aux_eq]
+  rw [sModNatTR, helper, sModNatAux_eq]
 where
-  helper b q k : sModNatTR.go q k b = sModNat_aux b q k := by
+  helper b q k : sModNatTR.go q k b = sModNatAux b q k := by
     induction k generalizing b with
     | zero => rfl
     | succ k ih =>
-      rw [sModNatTR.go, ih, sModNat_aux]
+      rw [sModNatTR.go, ih, sModNatAux]
       clear ih
       induction k with
       | zero => rfl
       | succ k ih =>
-        rw [sModNat_aux, ih, sModNat_aux]
+        rw [sModNatAux, ih, sModNatAux]
 
 lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p - 1) (p - 2) = 0) :
     LucasLehmerTest p := by

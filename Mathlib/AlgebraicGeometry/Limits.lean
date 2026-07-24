@@ -442,7 +442,7 @@ lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
     · simp only [coprodMk_inr, ← Scheme.Hom.comp_apply, coprod.inr_map] at hxy
       cases Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr _ _).1 ⟨y, rfl⟩ ⟨_, rfl⟩ hxy
   · rintro _ ⟨x, rfl⟩
-    exact ⟨f x, by simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]⟩
+    exact ⟨f x, by simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_inr_inr_coprodMap {X Y X' Y' : Scheme.{u}}
@@ -664,7 +664,7 @@ private lemma IsAffineOpen.iSup_of_disjoint_aux [Finite ι] {U : ι → X.Opens}
     (hU : ∀ i, IsAffineOpen (U i)) (hU' : Pairwise (Disjoint on U)) :
     IsAffineOpen (iSup U) := by
   have := isOpenImmersion_sigmaDesc _ (fun i ↦ (U i).ι)
-    (fun i j e ↦ by convert! hU' e using 0; simp [← Opens.coe_disjoint])
+    (fun i j e ↦ by convert hU' e; simp [← Opens.coe_disjoint])
   convert! isAffineOpen_opensRange (Sigma.desc fun i ↦ (U i).ι)
   · ext
     simp [(sigmaMk _).symm.exists_congr_left, ← Scheme.Hom.comp_apply, Scheme.Opens.exists_toScheme]

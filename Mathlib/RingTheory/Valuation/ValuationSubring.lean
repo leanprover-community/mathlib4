@@ -48,9 +48,9 @@ variable (A : ValuationSubring K)
 
 instance : SetLike (ValuationSubring K) K where
   coe A := A.toSubring
-  coe_injective' := by
+  coe_injective := by
     intro ⟨_, _⟩ ⟨_, _⟩ h
-    replace h := SetLike.coe_injective' h
+    replace h := SetLike.coe_injective h
     congr
 
 instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K

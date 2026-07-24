@@ -208,8 +208,10 @@ theorem coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (x : Class.{u}) ∩ y :=
   ext fun _ => ZFSet.mem_inter
 
 @[simp, norm_cast]
-theorem coe_diff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
+theorem coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
   ext fun _ => ZFSet.mem_sdiff
+
+@[deprecated (since := "2026-06-03")] alias coe_diff := coe_sdiff
 
 @[simp, norm_cast]
 theorem coe_powerset (x : ZFSet.{u}) : ↑x.powerset = powerset.{u} x :=

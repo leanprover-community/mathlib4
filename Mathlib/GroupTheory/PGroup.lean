@@ -37,6 +37,12 @@ theorem iff_orderOf [hp : Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k : �
         ((Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hk)),
       Exists.imp fun k hk => by rw [← hk, pow_orderOf_eq_one]⟩
 
+theorem dvd_orderOf [Fact p.Prime] (hG : IsPGroup p G) {g : G} (hg : g ≠ 1) : p ∣ orderOf g := by
+  have ⟨k, hk⟩ := IsPGroup.iff_orderOf.mp hG g
+  rw [hk]
+  refine dvd_pow_self _ fun hk0 ↦ hg ?_
+  rw [← orderOf_eq_one_iff, hk, hk0, pow_zero]
+
 theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g =>
   ⟨n, by rw [← hG, pow_card_eq_one']⟩
 

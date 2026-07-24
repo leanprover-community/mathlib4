@@ -97,7 +97,7 @@ theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z 
 theorem continuousOn_norm_circleTransformBoundingFunction {R r : ℝ} (hr : r < R) (z : ℂ) :
     ContinuousOn ((‖·‖) ∘ circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
   have : ContinuousOn (circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
-    apply_rules [ContinuousOn.smul, continuousOn_const]
+    apply_rules [ContinuousOn.fun_smul, continuousOn_const]
     · simp only [deriv_circleMap]
       apply_rules [ContinuousOn.mul, (continuous_circleMap 0 R).comp_continuousOn continuousOn_snd,
         continuousOn_const]

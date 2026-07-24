@@ -249,7 +249,7 @@ theorem _root_.Disjoint.of_span (hst : Disjoint (span R s) (span R t)) :
 
 theorem _root_.Disjoint.of_span₀ (hst : Disjoint (span R s) (span R t)) (h0s : 0 ∉ s) :
     Disjoint s t := by
-  rw [← diff_singleton_eq_self h0s]
+  rw [← sdiff_singleton_eq_self h0s]
   exact hst.of_span
 
 section
@@ -692,3 +692,30 @@ theorem LinearEquiv.isPrincipal_iff (e : M ≃ₗ[R] M₂) :
     Module.IsPrincipal R M ↔ Module.IsPrincipal R M₂ where
   mp := (·.of_surjective _ e.surjective)
   mpr := (·.of_surjective _ e.symm.surjective)
+
+section NonUnitalAlgebra
+
+open Submodule
+
+variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+  [IsScalarTower R A A] [SMulCommClass R A A]
+
+/-- In a non-unital algebra, if every element of a set `s` commutes with `x`, then every element of
+`Submodule.span R s` commutes with `x`. -/
+theorem Commute.span_left {s : Set A} {x : A} (h : ∀ y ∈ s, Commute y x) :
+    ∀ y ∈ span R s, Commute y x := by
+  intro y hy
+  induction hy using span_induction with
+  | mem _ _ => aesop
+  | zero => exact .zero_left _
+  | add _ _ _ _ h₁ h₂ => exact h₁.add_left h₂
+  | smul _ _ _ h => exact h.smul_left _
+
+/-- In a non-unital algebra, if `x` commutes with every element of a set `s`, then `x` commutes
+with every element of `Submodule.span R s`. -/
+theorem Commute.span_right {s : Set A} {x : A} (h : ∀ y ∈ s, Commute x y) :
+    ∀ y ∈ span R s, Commute x y := by
+  simp only [Commute.symm_iff (a := x)] at *
+  exact .span_left h
+
+end NonUnitalAlgebra

@@ -135,7 +135,7 @@ def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
 
 instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (NonUnitalSubring R) := .ofSetLike (NonUnitalSubring R) R
 

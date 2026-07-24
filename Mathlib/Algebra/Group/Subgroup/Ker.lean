@@ -67,6 +67,10 @@ open Subgroup
 def range (f : G →* N) : Subgroup N :=
   Subgroup.copy ((⊤ : Subgroup G).map f) (Set.range f) (by simp)
 
+@[to_additive]
+lemma subsingleton_coe_range [Subsingleton G] (f : G →* N) : (f.range : Set N).Subsingleton :=
+  Set.subsingleton_range f
+
 @[to_additive (attr := simp)]
 theorem coe_range (f : G →* N) : (f.range : Set N) = Set.range f :=
   rfl
@@ -77,6 +81,11 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
+
+@[to_additive (attr := simp)]
+theorem comap_range_self (f : G →* N) : f.range.comap f = ⊤ := by
+  ext
+  simp
 
 @[to_additive]
 instance _root_.Subgroup.range_isMulCommutative {G : Type*} [Group G] [IsMulCommutative G]
@@ -266,6 +275,10 @@ theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
 theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
   rfl
 
+@[to_additive]
+theorem ker_le_comap (f : G →* N) (H : Subgroup N) : f.ker ≤ H.comap f :=
+  comap_mono bot_le
+
 @[to_additive (attr := simp)]
 theorem ker_restrict (f : G →* M) : (f.restrict K).ker = f.ker.subgroupOf K :=
   rfl
@@ -397,6 +410,10 @@ theorem map_eq_bot_iff {f : G →* N} : H.map f = ⊥ ↔ H ≤ f.ker :=
 theorem map_eq_bot_iff_of_injective {f : G →* N} (hf : Function.Injective f) :
     H.map f = ⊥ ↔ H = ⊥ := by rw [map_eq_bot_iff, f.ker_eq_bot hf, le_bot_iff]
 
+@[to_additive (attr := simp)]
+theorem map_ker_self (f : G →* N) : f.ker.map f = ⊥ := by
+  rw [map_eq_bot_iff]
+
 open MonoidHom
 
 variable (f : G →* N)
@@ -453,6 +470,15 @@ theorem comap_lt_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Fun
 @[to_additive]
 theorem comap_injective {f : G →* N} (h : Function.Surjective f) : Function.Injective (comap f) :=
   fun K L => by simp only [le_antisymm_iff, comap_le_comap_of_surjective h, imp_self]
+
+@[to_additive (attr := simp)]
+theorem comap_eq_ker {f : G →* N} {H : Subgroup N} : H.comap f = f.ker ↔ Disjoint H f.range := by
+  rw [← H.ker_le_comap f |>.ge_iff_eq', ← map_eq_bot_iff, map_comap_eq, disjoint_iff, inf_comm]
+
+@[to_additive]
+theorem comap_eq_ker_of_surjective {f : G →* N} (hf : Surjective f) {H : Subgroup N} :
+    H.comap f = f.ker ↔ H = ⊥ := by
+  rw [comap_eq_ker, f.range_eq_top_of_surjective hf, disjoint_top]
 
 @[to_additive]
 theorem comap_map_eq_self {f : G →* N} {H : Subgroup G} (h : f.ker ≤ H) :

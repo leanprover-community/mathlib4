@@ -74,7 +74,7 @@ namespace LieAlgebra
 open Matrix
 
 variable (n p q l : Type*) (R : Type u₂)
-variable [DecidableEq n] [DecidableEq p] [DecidableEq q] [DecidableEq l]
+variable [DecidableEq p] [DecidableEq q] [DecidableEq l]
 variable [CommRing R]
 
 @[simp]
@@ -84,6 +84,9 @@ theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.t
     _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
       (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
+
+variable [DecidableEq n]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 namespace SpecialLinear
 

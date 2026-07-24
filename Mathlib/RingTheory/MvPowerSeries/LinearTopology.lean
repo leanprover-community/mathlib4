@@ -61,13 +61,15 @@ noncomputable def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R 
       rw [coeff_mul]
       apply sum_mem
       rintro uv huv
-      exact TwoSidedIdeal.mul_mem_left _ _ _ (hg _ (le_trans (Finset.antidiagonal.snd_le huv) he)))
+      exact TwoSidedIdeal.mul_mem_left _ _ _
+        (hg _ (le_trans (Finset.HasAntidiagonal.antidiagonal.snd_le huv) he)))
     (fun {f g} hf e he ↦ by
       classical
       rw [coeff_mul]
       apply sum_mem
       rintro uv huv
-      exact TwoSidedIdeal.mul_mem_right _ _ _ (hf _ (le_trans (Finset.antidiagonal.fst_le huv) he)))
+      exact TwoSidedIdeal.mul_mem_right _ _ _
+        (hf _ (le_trans (Finset.HasAntidiagonal.antidiagonal.fst_le huv) he)))
 
 variable {σ : Type*} {R : Type*} [Ring R]
 

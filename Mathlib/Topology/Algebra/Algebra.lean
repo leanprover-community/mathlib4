@@ -146,7 +146,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 
 instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f; cases g
     simp only [mk.injEq]
     exact AlgHom.ext (congrFun h)

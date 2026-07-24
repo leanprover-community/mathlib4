@@ -116,7 +116,7 @@ theorem reachable_fromEdgeSet_eq_reflTransGen_toRel {s : Set (Sym2 V)} :
   ext
   simpa [Relation.reflGen_iff] using by tauto
 
-theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Symmetric r) :
+theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Std.Symm r) :
     (fromEdgeSet <| Sym2.fromRel sym).Reachable = Relation.ReflTransGen r :=
   reachable_fromEdgeSet_eq_reflTransGen_toRel
 
@@ -551,7 +551,7 @@ theorem supp_inj {C D : G.ConnectedComponent} : C.supp = D.supp ↔ C = D :=
 
 instance : SetLike G.ConnectedComponent V where
   coe := ConnectedComponent.supp
-  coe_injective' := ConnectedComponent.supp_injective
+  coe_injective := ConnectedComponent.supp_injective
 
 @[simp]
 theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
@@ -753,6 +753,11 @@ theorem isBridge_iff {u v : V} :
 
 @[simp] lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) :
     G.IsBridge s(u, v) := fun h ↦ huv <| h.mono <| deleteEdges_le _
+
+theorem IsBridge.reachable_iff_adj (h : G.IsBridge s(u, v)) : G.Reachable u v ↔ G.Adj u v := by
+  refine ⟨fun hreach ↦ G.mem_edgeSet.mp ?_, Adj.reachable⟩
+  have : G.deleteEdges {s(u, v)} < G := deleteEdges_le _ |>.lt_of_ne <| by grind [isBridge_iff]
+  grind [edgeSet_strict_mono this, edgeSet_deleteEdges]
 
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
   cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩

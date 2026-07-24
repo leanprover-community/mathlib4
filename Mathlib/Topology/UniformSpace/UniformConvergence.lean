@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
@@ -110,6 +111,7 @@ theorem tendstoUniformlyOn_iff_tendsto :
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` with respect to a
 filter `p` if, for any entourage of the diagonal `u`, one has `p`-eventually
 `(f x, Fₙ x) ∈ u` for all `x`. -/
+@[wikidata Q1411887]
 def TendstoUniformly (F : ι → α → β) (f : α → β) (p : Filter ι) :=
   ∀ u ∈ 𝓤 β, ∀ᶠ n in p, ∀ x : α, (f x, F n x) ∈ u
 

@@ -330,6 +330,28 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 include b
 
+@[simp] lemma spanIntRootSupport :
+    span ℤ (P.rootSpanMem ℤ '' b.support) = ⊤ := by
+  refine Submodule.eq_top_iff'.mpr fun ⟨x, hx⟩ ↦ ?_
+  rw [← SetLike.mem_coe, ← (injective_subtype (P.rootSpan ℤ)).mem_set_image, ← Submodule.map_coe]
+  simpa [Submodule.map_span, ← image_comp]
+
+lemma linearIndependentInt [CharZero R] :
+    LinearIndependent ℤ (fun i : b.support ↦ P.rootSpanMem ℤ i) :=
+  ((P.rootSpan ℤ).subtype.linearIndependent_iff (by simp)).mp <|
+    b.linearIndepOn_root.restrict_scalars' ℤ
+
+/-- A base for a root system gives a `ℤ`-basis for the `ℤ`-span of the roots. -/
+def toWeightBasisInt [CharZero R] :
+    Basis b.support ℤ (P.rootSpan ℤ) :=
+  Basis.mk b.linearIndependentInt <| by
+    have : (fun i : b.support ↦ P.rootSpanMem ℤ i) = P.rootSpanMem ℤ ∘ ((↑) : b.support → ι) := rfl
+    simp [this, range_comp]
+
+@[simp] lemma coe_toWeightBasisInt_apply [CharZero R] (i : b.support) :
+    (b.toWeightBasisInt i : M) = P.root i := by
+  simp [toWeightBasisInt]
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma exists_root_eq_sum_nat_or_neg (i : ι) :
     ∃ f : ι → ℕ, f.support ⊆ b.support ∧

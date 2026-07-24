@@ -127,6 +127,9 @@ theorem finSuccEquiv_succ (m : Fin n) : (finSuccEquiv n) m.succ = some m :=
   finSuccEquiv'_above (Fin.zero_le _)
 
 @[simp]
+theorem finSuccEquiv_last (n : ℕ) : finSuccEquiv (n + 1) (Fin.last (n + 1)) = Fin.last n := rfl
+
+@[simp]
 theorem finSuccEquiv_symm_none : (finSuccEquiv n).symm none = 0 :=
   finSuccEquiv'_symm_none _
 

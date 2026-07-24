@@ -218,6 +218,14 @@ theorem mem_upperCentralSeries_succ_iff {n : ℕ} {x : G} :
     x ∈ upperCentralSeries G (n + 1) ↔ ∀ y : G, ⁅x, y⁆ ∈ upperCentralSeries G n :=
   Iff.rfl
 
+variable (G) in
+@[to_additive]
+theorem commutator_upperCentralSeries_top_le (n : ℕ) :
+    ⁅upperCentralSeries G (n + 1), ⊤⁆ ≤ upperCentralSeries G n := by
+  apply closure_le _ |>.mpr
+  rintro _ ⟨h, hh, g, _, rfl⟩
+  exact mem_upperCentralSeries_succ_iff.mp hh g
+
 @[to_additive (attr := simp)]
 lemma comap_upperCentralSeries {H : Type*} [Group H] (e : H ≃* G) :
     ∀ n, (upperCentralSeries G n).comap e = upperCentralSeries H n

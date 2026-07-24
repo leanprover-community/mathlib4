@@ -108,7 +108,7 @@ instance : Membership (OpenPartialHomeomorph H H) (StructureGroupoid H) :=
 instance (H : Type*) [TopologicalSpace H] :
     SetLike (StructureGroupoid H) (OpenPartialHomeomorph H H) where
   coe s := s.members
-  coe_injective' N O h := by cases N; cases O; congr
+  coe_injective N O h := by cases N; cases O; congr
 
 instance : Min (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk

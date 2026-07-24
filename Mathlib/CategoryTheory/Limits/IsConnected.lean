@@ -97,7 +97,7 @@ theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
   induction h with
   | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h
   | refl _ => exact Zigzag.refl _
-  | symm _ _ _ ih => exact zigzag_symmetric ih
+  | symm _ _ _ ih => exact ih.symm
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a

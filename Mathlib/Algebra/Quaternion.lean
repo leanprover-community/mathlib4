@@ -723,11 +723,14 @@ variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
 instance : CoeTC R ℍ[R] := ⟨coe⟩
 
-instance instRing : Ring ℍ[R] := inferInstanceAs <| Ring ℍ[R,-1,0,-1]
+instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,0,-1]
+
+instance instRing : Ring ℍ[R] where
+  nsmul := letI := Quaternion.instSMul (S := ℕ) (R := R); (· • ·)
+  zsmul := letI := Quaternion.instSMul (S := ℤ) (R := R); (· • ·)
+  __ : Ring ℍ[R] := inferInstanceAs <| Ring ℍ[R,-1,0,-1]
 
 instance : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,0,-1]
-
-instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,0,-1]
 
 instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower S T ℍ[R] :=
   inferInstanceAs <| IsScalarTower S T ℍ[R,-1,0,-1]

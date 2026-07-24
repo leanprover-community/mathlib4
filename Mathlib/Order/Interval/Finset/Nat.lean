@@ -16,7 +16,7 @@ intervals as finsets and fintypes.
 
 ## TODO
 
-Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
+Some lemmas can be generalized using `IsOrderedAddMonoid`, `CanonicallyOrderedAdd` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
