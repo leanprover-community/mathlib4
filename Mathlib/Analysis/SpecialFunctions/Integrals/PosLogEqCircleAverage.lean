@@ -180,11 +180,11 @@ theorem circleAverage_log_norm_sub_const_eq_posLog :
   rcases lt_trichotomy 1 ‖a‖ with h | h | h
   · rw [circleAverage_log_norm_sub_const₂ h]
     apply (posLog_eq_log _).symm
-    simp_all [le_of_lt h]
+    simp [le_of_lt h]
   · rw [eq_comm, circleAverage_log_norm_sub_const₁ h.symm, posLog_eq_zero_iff]
     simp_all
   · rw [eq_comm, circleAverage_log_norm_sub_const₀ h, posLog_eq_zero_iff]
-    simp_all [le_of_lt h]
+    simp [le_of_lt h]
 
 /--
 The `circleAverage (log ‖· + a‖) 0 1` equals `log⁺ ‖a‖`.

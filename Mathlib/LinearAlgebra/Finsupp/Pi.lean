@@ -246,7 +246,7 @@ theorem range_mapRange_linearMap (f : M →ₗ[R] N) (hf : LinearMap.ker f = ⊥
     refine ⟨⟨x.support, y, fun i => ?_⟩, by ext; simp_all⟩
     constructor
     <;> contrapose
-    <;> simp_all +contextual [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
+    <;> simp +contextual [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
 
 end Finsupp
 

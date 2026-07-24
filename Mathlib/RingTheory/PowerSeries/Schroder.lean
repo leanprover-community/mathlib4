@@ -74,7 +74,7 @@ lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     simp_all only [mem_range]
     split
     next h =>
-      simp_all only [mul_eq_mul_right_iff]
+      simp only [mul_eq_mul_right_iff]
       simp [coeff_X_mul_largeSchroderSeries x (by lia)]
     next h =>
       simp_all only [not_lt, nonpos_iff_eq_zero, coeff_zero_eq_constantCoeff, map_mul,

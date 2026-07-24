@@ -78,7 +78,7 @@ theorem Valuation.transcendental_of_ne_one (y : K) (h0 : y ≠ 0) (hy : v y ≠ 
     apply this _ (by simpa) (by simpa)
     rw [← val_lt_one_iff _ h0]
     exact lt_of_le_of_ne hlt hy
-  simp_all only [ne_eq, Transcendental]
+  simp only [Transcendental]
   by_contra!
   replace ⟨p, hpnt, hp⟩ : IsAlgebraic A y := .algebraMap this
   suffices v y ^ p.natDegree = 0 by simp_all

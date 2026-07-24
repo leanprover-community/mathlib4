@@ -141,7 +141,7 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   let ⟨wp, x, y, zp, ap, bp⟩ := u
   constructor <;> intro h <;> simp only [w, succPNat, succ_eq_add_one, z] at * <;>
     simp only [← coe_inj, mul_coe, mk_coe] at *
-  · simp_all [← h]; ring
+  · simp [← h]; ring
   · simp only [Nat.mul_add, Nat.add_mul, one_mul, mul_one, ← Nat.add_assoc,
       Nat.add_right_cancel_iff] at h
     rw [← h]; ring

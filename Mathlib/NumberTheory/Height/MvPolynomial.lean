@@ -203,7 +203,7 @@ lemma IsNonarchimedean.eval_mvPolynomial_le [Finite ι] {v : AbsoluteValue K ℝ
     (hv : IsNonarchimedean v) {p : MvPolynomial ι K} {N : ℕ} (hp : p.IsHomogeneous N) (x : ι → K) :
     v (p.eval x) ≤ (⨆ s : p.support, v (coeff s p)) * (⨆ i, v (x i)) ^ N := by
   rcases eq_or_ne p 0 with rfl | hp₀
-  · simp_all
+  · simp
   rw [eval_eq]
   obtain ⟨s, hs₁, hs₂⟩ :=
     hv.finset_image_add_of_nonempty (fun d ↦ coeff d p * ∏ i ∈ d.support, x i ^ d i)

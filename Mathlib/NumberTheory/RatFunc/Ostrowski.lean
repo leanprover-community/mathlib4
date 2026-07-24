@@ -222,7 +222,7 @@ lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDisc
       rw [valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hp0,
         valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hq0]
       simp_all [div_le_one₀, inv_mul_le_one₀,
-        (pow_le_pow_iff_right_of_lt_one₀ (by simp_all) (IsRankOneDiscrete.generator_lt_one v))]
+        (pow_le_pow_iff_right_of_lt_one₀ (by simp) (IsRankOneDiscrete.generator_lt_one v))]
 
 end Associates
 

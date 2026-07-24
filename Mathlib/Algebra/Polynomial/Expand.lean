@@ -168,7 +168,7 @@ theorem map_expand {p : ℕ} {f : R →+* S} {q : R[X]} :
   · simp [hp]
   ext
   rw [coeff_map, coeff_expand (Nat.pos_of_ne_zero hp), coeff_expand (Nat.pos_of_ne_zero hp)]
-  split_ifs <;> simp_all
+  split_ifs <;> simp
 
 @[simp]
 theorem expand_eval (p : ℕ) (P : R[X]) (r : R) : eval r (expand R p P) = eval (r ^ p) P := by

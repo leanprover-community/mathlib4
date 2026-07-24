@@ -822,7 +822,7 @@ lemma MDifferentiableWithinAt.sum
   (HasMFDerivWithinAt.sum fun i hi ↦ (hf i hi).hasMFDerivWithinAt).mdifferentiableWithinAt
 
 lemma MDifferentiableAt.sum (hf : ∀ i ∈ t, MDiffAt (f i) z) : MDiffAt (∑ i ∈ t, f i) z := by
-  simp_all only [← mdifferentiableWithinAt_univ]
+  simp only [← mdifferentiableWithinAt_univ]
   exact .sum hf
 
 lemma MDifferentiableOn.sum (hf : ∀ i ∈ t, MDiff[s] (f i)) : MDiff[s] (∑ i ∈ t, f i) :=
@@ -1032,7 +1032,7 @@ lemma MDifferentiableWithinAt.prod
 
 lemma MDifferentiableAt.prod (hf : ∀ i ∈ t, MDifferentiableAt I 𝓘(𝕜, F') (f i) z) :
     MDifferentiableAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) z := by
-  simp_all only [← mdifferentiableWithinAt_univ]
+  simp only [← mdifferentiableWithinAt_univ]
   exact MDifferentiableWithinAt.prod hf
 
 lemma MDifferentiableOn.prod (hf : ∀ i ∈ t, MDifferentiableOn I 𝓘(𝕜, F') (f i) s) :

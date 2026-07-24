@@ -386,7 +386,7 @@ lemma one_apply_eq_zero_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀)
 
 lemma one_apply_le_one (x : R) : (1 : Valuation R Γ₀) x ≤ 1 := by
   rw [one_apply_def]
-  split_ifs <;> simp_all
+  split_ifs <;> simp
 
 @[simp]
 lemma one_apply_lt_one_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x < 1 ↔ x = 0 := by

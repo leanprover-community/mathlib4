@@ -136,7 +136,7 @@ lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel
   have (b : β) : (η b) s * t.indicator 1 b = t.indicator (fun b ↦ η b s) b := by
     simp only [indicator]
     split_ifs
-    all_goals simp_all
+    all_goals simp
   simp_rw [this]
   rw [lintegral_indicator ht]
   rcases ((η ∘ₖ κ) a).zero_one s with (h₀ | h₁)

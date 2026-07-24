@@ -953,7 +953,7 @@ lemma le_ofDual_iff {x : WithTop α} {y : WithBot αᵒᵈ} :
 
 @[to_dual (attr := simp)]
 lemma ofDual_le_ofDual_iff {x y : WithBot αᵒᵈ} :
-    WithBot.ofDual x ≤ WithBot.ofDual y ↔ y ≤ x := by cases x <;> cases y <;> simp_all
+    WithBot.ofDual x ≤ WithBot.ofDual y ↔ y ≤ x := by cases x <;> cases y <;> simp
 
 end LE
 

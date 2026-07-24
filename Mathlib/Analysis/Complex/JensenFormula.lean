@@ -166,10 +166,10 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
   rw [mem_ball_iff_norm, sub_zero] at hw
   let r : ℕ → ℝ := fun n ↦ R - (R - ‖w‖) / (n + 2)
   have hr_lt (n : ℕ) : r n < R := by
-    simp_all only [sub_lt_self_iff, sub_pos, div_pos_iff_of_pos_left, r]
+    simp only [sub_lt_self_iff, r]
     positivity
   have hr_pos (n : ℕ) : 0 < r n := by
-    simp_all only [sub_lt_self_iff, sub_pos, div_pos_iff_of_pos_left, r]
+    simp only [sub_pos, r]
     apply (div_lt_iff₀ (by linarith)).2
     calc R - ‖w‖
       _ ≤ R * 1 := by aesop
@@ -219,7 +219,7 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log {w ρ c : ℂ} {R : ℝ} (h
   have : (fun z ↦ (herglotzRieszKernel 0 (w - c) z).re * log ‖z - (ρ - c)‖) =
     (Complex.re ∘ herglotzRieszKernel 0 (w - c)) • (log ‖· - (ρ - c)‖) := by rfl
   rw [this, circleAverage_re_herglotzRieszKernel_mul_log₀ (by simp_all)
-    (by simp_all [mem_ball_iff_norm.1 hw])]
+    (by simp [mem_ball_iff_norm.1 hw])]
   simp
 
 /--
