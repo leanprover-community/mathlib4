@@ -531,17 +531,6 @@ theorem map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H 
       MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one]
     rwa [AlgEquiv.ext_iff] at hg' ⊢
 
-variable [MulSemiringAction G R] [SMulDistribClass G R S]
-  [H.Normal] [MulSemiringAction (G ⧸ H) R] [IsScalarTower G (G ⧸ H) R]
-
-theorem stabilizer_quotient : stabilizer (G ⧸ H) p = (stabilizer G q).map (QuotientGroup.mk' H) :=
-  .symm <| map_stabilizer_of_surjective (QuotientGroup.mk' H) H p q (QuotientGroup.mk'_surjective H)
-    (QuotientGroup.ker_mk' H).ge (by simp [algebraMap.coe_smul'])
-
-theorem inertia_quotient : p.inertia (G ⧸ H) = (q.inertia G).map (QuotientGroup.mk' H) :=
-  .symm <| map_inertia_of_surjective (QuotientGroup.mk' H) H p q (QuotientGroup.mk'_surjective H)
-    (QuotientGroup.ker_mk' H).ge (by simp [algebraMap.coe_smul'])
-
 end Ideal
 
 namespace IsFractionRing
