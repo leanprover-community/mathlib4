@@ -12,7 +12,15 @@ import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Aliases
 
 /--
-warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to silence this linter.
+warning: The module doc-string for a file should be the first command after the imports.
+Please, add a module doc-string (`/-! ... -/`) before `example :=
+  trivial`.
+
+Hint: Type `m(odule docstring) + [tab]` to insert a template via snippet.
+
+Note: This linter can be disabled with `set_option linter.style.header false`
+---
+warning: In the past, importing `Lake` in mathlib has led to dramatic slow-downs of the linter (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to silence this linter.
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---
@@ -20,23 +28,17 @@ warning: Files in mathlib cannot import the whole `Mathlib.Tactic` folder. Doing
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---
-warning: 'Mathlib.Tactic.Have' defines a deprecated form of the 'have' tactic; please do not use it in mathlib.
+warning: `Mathlib.Tactic.Have` defines a deprecated form of the `have` tactic; please do not use it in mathlib.
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---
-warning: Duplicate imports: 'Mathlib.Tactic.Linter.Header' already imported
-
-Note: This linter can be disabled with `set_option linter.style.header false`
----
-warning: The module doc-string for a file should be the first command after the imports.
-Please, add a module doc-string before `/-!# Tests for the `docModule` linter
--/
-`.
+warning: Duplicate imports: `Mathlib.Tactic.Linter.Header` already imported
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
 set_option linter.style.header true in
+example := trivial
 
 /-!
 # Tests for the `docModule` linter
