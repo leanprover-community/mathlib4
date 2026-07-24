@@ -395,6 +395,10 @@ lemma edges_eq_nil {p : G.Walk v w} : p.edges = [] ↔ p.Nil := by
   cases p <;> simp
 
 @[simp]
+theorem edgeSet_eq_empty {p : G.Walk v w} : p.edgeSet = ∅ ↔ p.Nil := by
+  simp [← edges_eq_nil, List.eq_nil_iff_forall_not_mem, Set.eq_empty_iff_forall_notMem]
+
+@[simp]
 theorem length_eq_zero_iff {p : G.Walk u v} : p.length = 0 ↔ p.Nil := by
   cases p <;> simp
 
@@ -454,6 +458,12 @@ theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : G.Walk u v}
   induction p with
   | nil => simp at hnil
   | cons h p ih => cases p <;> aesop
+
+theorem mem_support_of_isIsolated {p : G.Walk u v} {w : V} (hw : G.IsIsolated w)
+    (hwp : w ∈ p.support) : p.Nil := by
+  contrapose! hw with hnil
+  have ⟨e, hep, hwe⟩ := mem_support_iff_exists_mem_edges_of_not_nil hnil |>.mp hwp
+  exact not_isIsolated_iff_exists_edgeSet_mem.mpr ⟨e, p.edges_subset_edgeSet hep, hwe⟩
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
