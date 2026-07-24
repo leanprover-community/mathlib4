@@ -233,7 +233,7 @@ end fundamental_identity
 section tower
 
 variable {A B : Type*} [CommRing A] [CommRing B]
-  [Algebra A B] [FaithfulSMul A B] {p : Ideal A} (P : Ideal B)
+  [Algebra A B] {p : Ideal A} (P : Ideal B)
   [P.IsPrime] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
   [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDomain C] [Algebra A C]
   [Algebra B C] [FaithfulSMul B C] [IsScalarTower A B C]
