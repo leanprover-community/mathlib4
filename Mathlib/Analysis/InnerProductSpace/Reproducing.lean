@@ -396,10 +396,6 @@ private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 
     refine ENNReal.mul_lt_top ?_ enorm_lt_top
     refine ENNReal.mul_lt_top hK.eLpNorm_lt_top enorm_lt_top
 
-variable [IsFiniteMeasure μ]
-variable [TopologicalSpace X] [CompactSpace X]
-variable [MeasurableEq V] [MeasurableAdd₂ V]
-
 /-- The bilinear map `(f,g) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ)`. -/
 def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
     Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
@@ -457,8 +453,8 @@ lemma mercerForm_apply (f g : Lp V 2 μ) :
     mercerForm μ hK f g = ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ) := by
   rfl
 
-theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef] (f g : Lp V 2 μ) :
-    starRingEnd 𝕜 (mercerForm μ hK f g) = mercerForm μ hK g f := by
+theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef] [IsFiniteMeasure μ]
+    (f g : Lp V 2 μ) : starRingEnd 𝕜 (mercerForm μ hK f g) = mercerForm μ hK g f := by
   have h := (Fact.out : K.PosSemidef).1
   rw [Matrix.IsHermitian.ext_iff] at h
   simp_rw [mercerForm_apply]
@@ -492,7 +488,7 @@ theorem integralOperator_inner_right_eq_mercerForm [CompleteSpace V] (f g : Lp V
     ⟪integralOperator μ hK f, g⟫_𝕜 = mercerForm μ hK f g := by
   simp [mercerForm, integralOperator]
 
-theorem isSelfAdjoint_integralOperator [CompleteSpace V] [Fact K.PosSemidef] :
+theorem isSelfAdjoint_integralOperator [CompleteSpace V] [Fact K.PosSemidef] [IsFiniteMeasure μ] :
     IsSelfAdjoint (integralOperator μ hK) := by
   ext f
   apply Lp.ext_iff.mp
