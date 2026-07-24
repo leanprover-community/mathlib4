@@ -266,7 +266,7 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
         · simp [h, -le_sup_iff, -sup_le_iff, sup_le_sup, norm_le_pi_norm]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
         rw [prod_update_of_mem (Finset.mem_univ _)]
-        simp [card_univ_diff]
+        simp [card_univ_sdiff]
   calc
     ‖f m₁ - f m₂‖ ≤ C * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
       f.norm_image_sub_le_of_bound' hC H m₁ m₂
@@ -369,7 +369,7 @@ theorem bounds_bddBelow {f : ContinuousMultilinearMap 𝕜 E G} :
 theorem isLeast_opNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
-  simp only [Set.setOf_and, Set.setOf_forall]
+  simp only [Set.ofPred_and, Set.ofPred_forall]
   exact isClosed_Ici.inter (isClosed_iInter fun m ↦ isClosed_le continuous_const (by fun_prop))
 
 theorem opNorm_nonneg (f : ContinuousMultilinearMap 𝕜 E G) : 0 ≤ ‖f‖ :=
@@ -392,7 +392,7 @@ theorem le_opNorm_mul_prod_of_le (f : ContinuousMultilinearMap 𝕜 E G)
 
 theorem le_opNorm_mul_pow_card_of_le (f : ContinuousMultilinearMap 𝕜 E G) {m b} (hm : ‖m‖ ≤ b) :
     ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι := by
-  simpa only [prod_const] using f.le_opNorm_mul_prod_of_le fun i => (norm_le_pi_norm m i).trans hm
+  simpa only [prod_const] using! f.le_opNorm_mul_prod_of_le fun i => (norm_le_pi_norm m i).trans hm
 
 theorem le_opNorm_mul_pow_of_le {n : ℕ} {Ei : Fin n → Type*} [∀ i, SeminormedAddCommGroup (Ei i)]
     [∀ i, NormedSpace 𝕜 (Ei i)] (f : ContinuousMultilinearMap 𝕜 Ei G) {m : ∀ i, Ei i} {b : ℝ}
@@ -532,7 +532,7 @@ theorem opNNNorm_le_iff {f : ContinuousMultilinearMap 𝕜 E G} {C : ℝ≥0} :
 
 theorem isLeast_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
-  simpa only [← opNNNorm_le_iff] using isLeast_Ici
+  simpa only [← opNNNorm_le_iff] using! isLeast_Ici
 
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
@@ -559,7 +559,7 @@ section
 @[simp]
 theorem norm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
     ‖ofSubsingleton 𝕜 G G' i f‖ = ‖f‖ := by
-  letI : Unique ι := uniqueOfSubsingleton i
+  let : Unique ι := uniqueOfSubsingleton i
   simp [norm_def, ContinuousLinearMap.norm_def, (Equiv.funUnique _ _).symm.surjective.forall]
 
 @[simp]
@@ -924,6 +924,7 @@ theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : Continuo
       ‖g (f m)‖ ≤ ‖g‖ * (‖f‖ * ∏ i, ‖m i‖) := g.le_opNorm_of_le <| f.le_opNorm _
       _ = _ := (mul_assoc _ _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 @[simps! apply_apply]
@@ -932,10 +933,9 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
   MultilinearMap.mkContinuous
     { toFun := fun m =>
         LinearMap.mkContinuous
-          { toFun := fun x => f x m
-            map_add' := fun x y => by simp only [map_add, ContinuousMultilinearMap.add_apply]
-            map_smul' := fun c x => by
-              simp only [ContinuousMultilinearMap.smul_apply, map_smul, RingHom.id_apply] }
+          { toFun := (f · m)
+            map_add' := by simp
+            map_smul' := by simp }
           (‖f‖ * ∏ i, ‖m i‖) fun x => by
           rw [mul_right_comm]
           exact (f x).le_of_opNorm_le (f.le_opNorm x) _
@@ -945,7 +945,7 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
           LinearMap.mkContinuous_apply, AddHom.coe_mk]
       map_update_smul' := fun m i c x => by
         ext1
-        simp only [coe_smul', ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
+        simp only [FunLike.coe_smul, ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk] }
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
@@ -1196,7 +1196,7 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
 
-open Classical in
+open scoped Classical in
 /-- The `k`-th iterated derivative of a continuous multilinear map `f` at the point `x`. It is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one

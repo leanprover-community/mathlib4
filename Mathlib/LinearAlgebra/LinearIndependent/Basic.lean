@@ -177,7 +177,7 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [MulAction G R]
   refine (Group.isUnit (w i)).smul_left_cancel.mp ?_
   refine hv s (fun i ↦ w i • g₁ i) (fun i ↦ w i • g₂ i) (fun i hi ↦ ?_) ?_ i
   · simp_rw [hgs i hi]
-  · simpa only [smul_assoc, smul_comm] using hsum
+  · simpa only [smul_assoc, smul_comm] using! hsum
 
 @[simp]
 theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G R]
@@ -196,7 +196,7 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
   rw [← (w i).mul_left_inj]
   refine hv s (fun i ↦ g₁ i • w i) (fun i ↦ g₂ i • w i) (fun i hi ↦ ?_) ?_ i
   · simp_rw [hgs i hi]
-  · simpa only [smul_eq_mul, mul_smul, Pi.smul_apply'] using hsum
+  · simpa only [smul_eq_mul, mul_smul, Pi.smul_apply'] using! hsum
 
 @[simp]
 theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
@@ -294,6 +294,7 @@ theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndep
   use i'
   exact hi'.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     (hs : LinearIndepOn R id s) (h : t ⊆ s) (hst : s ⊆ span R t) : s = t := by
   let f : t ↪ s :=
@@ -496,8 +497,8 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
     [IsDomain L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
-  letI := Classical.decEq (G →* L)
-  letI : MulAction L L := DistribMulAction.toMulAction
+  let := Classical.decEq (G →* L)
+  let : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
   apply linearIndependent_iff'.2
   intro s

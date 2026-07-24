@@ -24,7 +24,7 @@ function of the set. Note that if `α = ℕ`, then this definition matches `Nat.
 ## Main results
 
 - `Order.enum_eq_iff`: `Order.enum s _` is the unique strictly monotonic function with range `s`.
-- `Order.isNormal_enum_iff`: club sets correspond one to one with normal functions.
+- `Order.isNormal_enum_iff_dirSupClosed`: club sets correspond one to one with normal functions.
 
 ## TODO
 
@@ -122,7 +122,7 @@ theorem enum_anti {hs : IsCofinal s} {t : Set α} {x : α} (h : s ⊆ t) :
   exact enum_le_of_forall_lt (h (Subtype.prop _)) fun y hy ↦
     (IH y hy).trans_lt ((enum s hs).strictMono hy)
 
-/-- A characterization of `Order.enum s _`: it is the unique strict monotonic function
+/-- A characterization of `Order.enum s _`: it is the unique strictly monotone function
 with range `s`. -/
 theorem enum_eq_iff {f : α → α} : Subtype.val ∘ enum s hs = f ↔ StrictMono f ∧ range f = s := by
   have H := (Subtype.strictMono_coe _).comp (enum s hs).strictMono
@@ -149,10 +149,11 @@ theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoun
   rw [OrderIso.map_bot]
   rfl
 
-/-- Club sets correspond one to one with normal functions.
+/-- Club sets in regular cardinals correspond one to one with normal functions.
 
-See also `Order.IsClub.isNormal_enum`. -/
-theorem isNormal_enum_iff : IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
+See also `Order.isNormal_enum_iff_isClub`. -/
+theorem isNormal_enum_iff_dirSupClosed :
+    IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
   let H := (Subtype.strictMono_coe _).comp (enum s hs).strictMono
   refine ⟨fun he ↦ by simpa using he.dirSupClosed_range, ?_⟩
   rw [isNormal_iff, dirSupClosed_iff_of_linearOrder]

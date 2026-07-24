@@ -47,7 +47,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Category Limits Functor
+open Category Limits CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   {A B : Type*} [Category* A] [Category* B] (F : A ⥤ B)
@@ -70,6 +70,7 @@ lemma W_of_preservesSheafification
 
 variable [HasWeakSheafify J B]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma W_isInvertedBy_whiskeringRight_presheafToSheaf :
     J.W.IsInvertedBy (((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B) := by
   intro P₁ P₂ f hf
@@ -102,6 +103,7 @@ noncomputable def toPresheafToSheafCompComposeAndSheafify :
 
 variable [J.PreservesSheafification F]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : IsIso (toPresheafToSheafCompComposeAndSheafify J F) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
@@ -128,7 +130,7 @@ section
 variable {G₁ : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj₁ : G₁ ⊣ sheafToPresheaf J A)
   {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B}
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     (adj₂ : G₂ ⊣ sheafToPresheaf J B) :
     J.PreservesSheafification F ↔ ∀ (P : Cᵒᵖ ⥤ A),
@@ -154,6 +156,8 @@ section HasSheafCompose
 
 variable (adj₂ : G₂ ⊣ sheafToPresheaf J B) [J.HasSheafCompose F]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation
 `(whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F`
 when `F : A ⥤ B` is such that `J.HasSheafCompose F`, and that `G₁` and `G₂` are
@@ -179,14 +183,13 @@ lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
   simp [sheafComposeNatTrans, -ObjectProperty.ι_obj, -ObjectProperty.ι_map,
     Adjunction.homEquiv_counit]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
     (α : G₂.obj (P ⋙ F) ⟶ (sheafCompose J F).obj (G₁.obj P))
     (hα : adj₂.unit.app (P ⋙ F) ≫ (sheafToPresheaf J B).map α =
         whiskerRight (adj₁.unit.app P) F) :
     α = (sheafComposeNatTrans J F adj₁ adj₂).app P := by
   apply (adj₂.homEquiv _ _).injective
-  dsimp [sheafComposeNatTrans]
+  dsimp [ObjectProperty.ι_obj, sheafComposeNatTrans, id_obj]
   erw [Equiv.apply_symm_apply]
   rw [← hα]
   apply adj₂.homEquiv_unit
@@ -266,6 +269,7 @@ variable {D E : Type*} [Category* D] [Category* E] (F : D ⥤ E)
   [PreservesLimitsOfSize.{max v u, max v u} (forget E)]
   [(forget D).ReflectsIsomorphisms] [(forget E).ReflectsIsomorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include instCCD instCCE in
 lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cᵒᵖ ⥤ D) :
@@ -281,6 +285,7 @@ lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cᵒ�
   dsimp [plusPlusAdjunction]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (P : Cᵒᵖ ⥤ D) :
     IsIso ((sheafComposeNatTrans J F (plusPlusAdjunction J D) (plusPlusAdjunction J E)).app P) := by
   rw [← isIso_iff_of_reflects_iso _ (sheafToPresheaf J E),

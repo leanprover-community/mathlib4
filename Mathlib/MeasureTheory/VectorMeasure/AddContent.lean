@@ -5,10 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.Measure.Trim
+public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 /-!
 # Constructing a vector measure from an additive content
@@ -16,7 +18,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Basic
 Consider a content defined on a semiring of sets. We investigate in this file
 whether it is possible to extend it to a (countably additive) vector measure on the whole
 sigma-algebra. We show that this is possible when the content is dominated by a finite
-measure, see `exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom`.
+measure, see `exists_extension_of_isSetSemiring_of_le_measure`.
 -/
 
 @[expose] public section
@@ -27,7 +29,7 @@ open scoped symmDiff
 namespace MeasureTheory.VectorMeasure
 
 variable {α : Type*} {hα : MeasurableSpace α} {E : Type*} [NormedAddCommGroup E]
-[CompleteSpace E] {μ : Measure α}
+  [CompleteSpace E] {μ : Measure α}
 
 /-- A finitely additive vector measure which is dominated by a finite positive measure is in
 fact countably additive. -/
@@ -83,7 +85,7 @@ def of_additive_of_le_measure
 
 open scoped ENNReal
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Consider an additive content on a dense ring of sets. Assume that it is dominated by a finite
 positive measure. Then it extends to a countably additive vector measure. -/
 lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
@@ -120,19 +122,19 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     have : edist s t = edist (s : MeasuredSets μ) t := rfl
     simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, edist_eq_enorm_sub]
     rw [measure_symmDiff_eq (by exact s.1.2.nullMeasurableSet) (by exact t.1.2.nullMeasurableSet)]
-    have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_diff _ _
-    have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_diff _ _
+    have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_sdiff _ _
+    have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_sdiff _ _
     nth_rewrite 1 [← Is]
     nth_rewrite 3 [← It]
     rw [addContent_union hC (hC.inter_mem (C'C _ t.2) (C'C _ s.2))
-        (hC.diff_mem (C'C _ t.2) (C'C _ s.2)) Set.disjoint_sdiff_inter.symm,
+        (hC.sdiff_mem (C'C _ t.2) (C'C _ s.2)) Set.disjoint_sdiff_inter.symm,
       addContent_union hC (hC.inter_mem (C'C _ s.2) (C'C _ t.2))
-        (hC.diff_mem (C'C _ s.2) (C'C _ t.2)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
+        (hC.sdiff_mem (C'C _ s.2) (C'C _ t.2)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
     simp only [add_sub_add_left_eq_sub, ge_iff_le]
     apply enorm_sub_le.trans
     gcongr
-    · exact hm _ (hC.diff_mem (C'C _ s.2) (C'C _ t.2))
-    · exact hm _ (hC.diff_mem (C'C _ t.2) (C'C _ s.2))
+    · exact hm _ (hC.sdiff_mem (C'C _ s.2) (C'C _ t.2))
+    · exact hm _ (hC.sdiff_mem (C'C _ t.2) (C'C _ s.2))
   -- Let `m₁` be the extension of `m₀` to all elements of `MeasuredSets μ` by continuity
   let m₁ : MeasuredSets μ → E := C'_dense.extend m₀
   -- It is again Lipschitz continuous and bounded by `μ`
@@ -143,10 +145,10 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     have : Dense {s | ‖m₁ s‖ₑ ≤ μ s} := by
       apply C'_dense.mono
       intro s hs
-      simp only [Set.mem_setOf_eq]
+      simp only [Set.mem_ofPred_eq]
       convert! hm s (C'C s hs)
       exact C'_dense.extend_eq lip.continuous ⟨s, hs⟩
-    simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq] using this
+    simpa only [Dense, IsClosed.closure_eq, Set.mem_ofPred_eq] using! this
   /- Most involved technical step: show that the extension `m₁` of `m₀` is still finitely
   additive. -/
   have hAddit (s t : MeasuredSets μ) (h : Disjoint (s : Set α) t) :
@@ -178,7 +180,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     -- Therefore, the set `s'' := s' \ t'` still approximates well the original set `s`, it belongs
     -- to `C`, and moreover `s''` and `t'` are disjoint.
     let s'' := s' \ t'
-    have s''C : s'' ∈ C := hC.diff_mem s'C t'C
+    have s''C : s'' ∈ C := hC.sdiff_mem s'C t'C
     have hs'' : μ (s'' ∆ s) < 3 * δ := calc
       μ (s'' ∆ s)
       _ ≤ μ (s'' ∆ s') + μ (s' ∆ s) := measure_symmDiff_le _ _ _
@@ -228,7 +230,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     apply VectorMeasure.of_additive_of_le_measure m' (μ := μ)
     · intro s
       by_cases hs : MeasurableSet s
-      · simpa [hs, m'] using hBound _
+      · simpa [hs, m'] using! hBound _
       · simp [hs, m']
     · intro s t hs ht hst
       simp only [hs, ht, MeasurableSet.union, ↓reduceDIte, m']
@@ -292,10 +294,6 @@ private lemma exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom_of
 /-- Consider an additive content `m ` on a semi-ring of sets `C`, which is dominated by a finite
 measure `μ`. Assume that `C` generates the sigma-algebra.
 Then `m` extends to a countably additive vector measure which is dominated by `μ`. -/
-/- TODO: weaken the assumption that `C` generates the sigma-algebra to measurability of all
-elements of `C`, once integrals wrt vector measures is available (by composing the integral wrt `m'`
-on the generated sigma-algebra, with conditional expectation of the indicator function to project
-on the generated sigma-algebra). -/
 theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'C : hα = generateFrom C) :
@@ -315,5 +313,84 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
       nth_rewrite 1 [← Set.inter_self s]
       exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
   exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
+
+/-- Consider an additive content `m` on a semi-ring of measurable sets `C`, which is dominated
+by a finite measure `μ`.
+Then `m` extends to a countably additive vector measure which is dominated by `μ`. -/
+theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
+    [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
+    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'C : ∀ s ∈ C, MeasurableSet s) :
+    ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
+  /- On the sigma-algebra `M` generated by `C`, the desired vector measure is provided by
+  `exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom`. We extend it to the whole
+  sigma-algebra of measurable sets by integrating the conditional expectation with respect to `M`.
+  This extension satisfies all the desired properties. -/
+  classical
+  let M : MeasurableSpace α := generateFrom C
+  have Mle : M ≤ hα := generateFrom_le h'C
+  set μ' := μ.trim Mle with hμ'
+  obtain ⟨m', m'C, hm'⟩ :
+      ∃ m' : @VectorMeasure α M E _ _, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ' s := by
+    apply exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom hC (fun s hs ↦ ?_) rfl
+    apply (hm s hs).trans_eq
+    exact (MeasureTheory.trim_measurableSet_eq Mle (measurableSet_generateFrom hs)).symm
+  have m'_le : m'.variation ≤ μ' := by
+    exact variation_le_of_forall_enorm_le (fun s hs ↦ hm' _)
+  -- next line is to make sure that the default instance is picked below when defininig `m''`.
+  let : MeasurableSpace α := hα
+  let m'' : VectorMeasure α E :=
+  { measureOf' s := if MeasurableSet s then ∫ᵛ x, μ[s.indicator 1 | M] x ∂• m' else 0
+    empty' := by simp
+    not_measurable' s hs := by simp [hs]
+    m_iUnion' f f_meas hf := by
+      have : ∫ᵛ (x : α), μ[fun x ↦ ∑' (d : ℕ), (f d).indicator 1 x | M] x ∂•m'
+          = ∫ᵛ (x : α), ∑' d, μ[(f d).indicator 1 | M] x ∂•m' := by
+        apply VectorMeasure.integral_congr_ae
+        apply ae_mono m'_le
+        apply ae_eq_trim_of_measurable _ (by fun_prop) (by fun_prop)
+        apply condExp_tsum (fun i ↦ ?_)
+        · simp only [enorm_indicator_eq_indicator_enorm, Pi.one_apply, enorm_one, f_meas,
+            lintegral_indicator, lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
+            Set.univ_inter, one_mul, ne_eq, ← measure_iUnion hf f_meas, measure_ne_top,
+            not_false_eq_true]
+        · exact AEStronglyMeasurable.indicator (by fun_prop) (f_meas i)
+      simp only [f_meas, ↓reduceIte, implies_true, MeasurableSet.iUnion,
+        indicator_iUnion_of_pairwise_disjoint _ hf, this]
+      have I : ∑' (i : ℕ), ∫⁻ (a : α), ‖μ[(f i).indicator (1 : α → ℝ) | M] a‖ₑ ∂μ < ∞ := by
+        have A i : ∫⁻ a, ‖μ[(f i).indicator (1 : α → ℝ) | M] a‖ₑ ∂μ = μ (f i) :=
+          lintegral_enorm_condExp_indicator Mle (f_meas i)
+        simp_rw [A, ← measure_iUnion hf f_meas]
+        exact measure_lt_top _ _
+      rw [integral_tsum (by fun_prop)]; swap
+      · apply ne_of_lt
+        grw [m'_le, hμ']
+        have A i : Measurable[M] (fun x ↦ ‖μ[(f i).indicator (1 : α → ℝ) | M] x‖ₑ) := by fun_prop
+        simp_rw [lintegral_trim Mle (A _)]
+        exact I
+      refine Summable.hasSum (Summable.of_enorm ?_)
+      apply ne_of_lt (lt_of_le_of_lt ?_ I)
+      gcongr with i
+      grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
+        lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop)] }
+  refine ⟨m'', fun s hs ↦ ?_, fun s ↦ ?_⟩
+  · simp only [coe_mk, h'C s hs, ↓reduceIte, m'']
+    have : ∫ᵛ (x : α), μ[s.indicator 1 | M] x ∂•m' = ∫ᵛ (x : α), s.indicator 1 x ∂•m' := by
+      apply integral_congr_ae
+      filter_upwards with x
+      rw [condExp_of_stronglyMeasurable Mle]
+      · exact StronglyMeasurable.indicator stronglyMeasurable_const
+          (measurableSet_generateFrom hs)
+      · exact (integrable_const 1).indicator (h'C s hs)
+    rw [this, integral_indicator (measurableSet_generateFrom hs)]
+    have : IsFiniteMeasure m'.variation :=
+      isFiniteMeasure_of_le _ m'_le
+    simp only [Pi.one_apply, setIntegral_const]
+    simp [m'C s hs]
+  · by_cases hs : MeasurableSet s; swap
+    · simp [not_measurable _ hs]
+    simp only [coe_mk, hs, ↓reduceIte, m'']
+    grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
+      lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop),
+      lintegral_enorm_condExp_indicator Mle hs]
 
 end MeasureTheory.VectorMeasure

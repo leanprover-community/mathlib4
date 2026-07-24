@@ -844,10 +844,10 @@ theorem isBigO_snd_prod : g' =O[l] fun x => (f' x, g' x) :=
   isBigOWith_snd_prod.isBigO
 
 theorem isBigO_fst_prod' {f' : α → E' × F'} : (fun x => (f' x).1) =O[l] f' := by
-  simpa [IsBigO_def, IsBigOWith_def] using isBigO_fst_prod (E' := E') (F' := F')
+  simpa [IsBigO_def, IsBigOWith_def] using! isBigO_fst_prod (E' := E') (F' := F')
 
 theorem isBigO_snd_prod' {f' : α → E' × F'} : (fun x => (f' x).2) =O[l] f' := by
-  simpa [IsBigO_def, IsBigOWith_def] using isBigO_snd_prod (E' := E') (F' := F')
+  simpa [IsBigO_def, IsBigOWith_def] using! isBigO_snd_prod (E' := E') (F' := F')
 
 section
 
@@ -1176,7 +1176,7 @@ theorem isBigOWith_const_const (c : E) {c' : F''} (hc' : c' ≠ 0) (l : Filter �
   simp only [IsBigOWith_def]
   apply univ_mem'
   intro x
-  rw [mem_setOf, div_mul_cancel₀ _ (norm_ne_zero_iff.mpr hc')]
+  rw [mem_ofPred, div_mul_cancel₀ _ (norm_ne_zero_iff.mpr hc')]
 
 theorem isBigO_const_const (c : E) {c' : F''} (hc' : c' ≠ 0) (l : Filter α) :
     (fun _x : α => c) =O[l] fun _x => c' :=
@@ -1390,7 +1390,7 @@ theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith 
   · simp only [hx, h₀ hx, inv_zero, norm_zero, mul_zero, le_rfl]
   · have hc : 0 < c := pos_of_mul_pos_left ((norm_pos_iff.2 hx).trans_le hle) (norm_nonneg _)
     replace hle := inv_anti₀ (norm_pos_iff.2 hx) hle
-    simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff₀ hc] using hle
+    simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff₀ hc] using! hle
 
 theorem IsBigO.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : f =O[l] g)
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : (fun x => (g x)⁻¹) =O[l] fun x => (f x)⁻¹ :=

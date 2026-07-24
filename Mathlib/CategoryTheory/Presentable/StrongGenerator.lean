@@ -84,6 +84,7 @@ instance ObjectProperty.isFiltered_costructuredArrow_colimitsCardinalClosure_ι
 
 variable {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
     [HasColimitsOfSize.{w, w} C] [LocallySmall.{w} C]

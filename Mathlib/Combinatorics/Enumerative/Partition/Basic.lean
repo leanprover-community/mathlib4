@@ -165,6 +165,7 @@ def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 
 instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma indiscrete_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
   simp [indiscrete, filter_eq_self, hn]
 
@@ -228,6 +229,33 @@ theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
 /-- The finset of those partitions in which every part is odd and used at most once. -/
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
+
+/-- If `1 ≤ a` and `a ≤ n`, partitions of `n` containing `a` as a part are equivalent to
+partitions of `n - a`. The forward map removes one occurrence of `a`, and the inverse adds `a` as
+a part. -/
+def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n) :
+    {p : n.Partition // a ∈ p.parts} ≃ (n - a).Partition where
+  toFun p := by
+    refine ⟨p.1.parts.erase a, ?_, ?_⟩
+    · intro _ hi
+      exact p.1.parts_pos (p.1.parts.erase_subset a hi)
+    · have hs : a + (p.1.parts.erase a).sum = n := by
+        simpa [p.1.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.2)
+      lia
+  invFun q := ⟨⟨a ::ₘ q.parts, by grind, by simp [q.parts_sum, ha]⟩, by simp⟩
+  left_inv p := Subtype.ext <| Partition.ext <| cons_erase p.property
+  right_inv q := Partition.ext <| erase_cons_head a q.parts
+
+@[simp]
+theorem partitionWithPartEquiv_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
+    (p : {p : n.Partition // a ∈ p.parts}) :
+    (partitionWithPartEquiv ha1 ha p).parts = p.1.parts.erase a := by
+  dsimp [partitionWithPartEquiv]
+
+@[simp]
+theorem partitionWithPartEquiv_symm_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
+    (p : (n - a).Partition) : ((partitionWithPartEquiv ha1 ha).symm p).1.parts = a ::ₘ p.parts := by
+  dsimp [partitionWithPartEquiv]
 
 end Partition
 

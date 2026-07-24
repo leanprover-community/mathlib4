@@ -43,6 +43,9 @@ class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
   /-- The norm is submultiplicative. -/
   protected norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
+-- see Note [lower instance priority]
+attribute [instance 10] NonUnitalSeminormedRing.toNonUnitalRing
+
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α where
@@ -50,6 +53,9 @@ class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α
   dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is submultiplicative. -/
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
+
+-- see Note [lower instance priority]
+attribute [instance 10] SeminormedRing.toRing
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a non-unital seminormed ring. -/
@@ -66,6 +72,9 @@ class NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, Metric
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
 -- see Note [lower instance priority]
+attribute [instance 10] NonUnitalNormedRing.toNonUnitalRing
+
+-- see Note [lower instance priority]
 /-- A non-unital normed ring is a non-unital seminormed ring. -/
 instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
     [β : NonUnitalNormedRing α] : NonUnitalSeminormedRing α :=
@@ -77,6 +86,9 @@ class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
   dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is submultiplicative. -/
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
+
+-- see Note [lower instance priority]
+attribute [instance 10] NormedRing.toRing
 
 -- see Note [lower instance priority]
 /-- A normed ring is a seminormed ring. -/
@@ -95,14 +107,14 @@ class NonUnitalSeminormedCommRing (α : Type*)
     extends NonUnitalSeminormedRing α, NonUnitalCommRing α where
 
 -- see Note [lower instance priority]
-attribute [instance 100] NonUnitalSeminormedCommRing.toNonUnitalCommRing
+attribute [instance 10] NonUnitalSeminormedCommRing.toNonUnitalCommRing
 
 /-- A non-unital normed commutative ring is a non-unital commutative ring endowed with a
 norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NonUnitalNormedCommRing (α : Type*) extends NonUnitalNormedRing α, NonUnitalCommRing α where
 
 -- see Note [lower instance priority]
-attribute [instance 100] NonUnitalNormedCommRing.toNonUnitalCommRing
+attribute [instance 10] NonUnitalNormedCommRing.toNonUnitalCommRing
 
 -- see Note [lower instance priority]
 /-- A non-unital normed commutative ring is a non-unital seminormed commutative ring. -/
@@ -115,14 +127,14 @@ the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class SeminormedCommRing (α : Type*) extends SeminormedRing α, CommRing α where
 
 -- see Note [lower instance priority]
-attribute [instance 100] SeminormedCommRing.toCommRing
+attribute [instance 10] SeminormedCommRing.toCommRing
 
 /-- A normed commutative ring is a commutative ring endowed with a norm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NormedCommRing (α : Type*) extends NormedRing α, CommRing α where
 
 -- see Note [lower instance priority]
-attribute [instance 100] NormedCommRing.toCommRing
+attribute [instance 10] NormedCommRing.toCommRing
 
 -- see Note [lower instance priority]
 /-- A seminormed commutative ring is a non-unital seminormed commutative ring. -/
@@ -361,8 +373,8 @@ theorem List.nnnorm_prod_le [NormOneClass α] (l : List α) : ‖l.prod‖₊ �
 theorem Finset.norm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
     (f : ι → α) : ‖∏ i ∈ s, f i‖ ≤ ∏ i ∈ s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
-  have : l.map f ≠ [] := by simpa using hs
-  simpa using List.norm_prod_le' this
+  have : l.map f ≠ [] := by simpa using! hs
+  simpa using! List.norm_prod_le' this
 
 theorem Finset.nnnorm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
     (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
@@ -371,7 +383,7 @@ theorem Finset.nnnorm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) 
 theorem Finset.norm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
     (f : ι → α) : ‖∏ i ∈ s, f i‖ ≤ ∏ i ∈ s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
-  simpa using (l.map f).norm_prod_le
+  simpa using! (l.map f).norm_prod_le
 
 theorem Finset.nnnorm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
     (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
@@ -472,7 +484,7 @@ lemma norm_commutator_units_sub_one_le (a b : αˣ) :
 
 lemma nnnorm_commutator_units_sub_one_le (a b : αˣ) :
     ‖(a * b * a⁻¹ * b⁻¹).val - 1‖₊ ≤ 2 * ‖a⁻¹.val‖₊ * ‖b⁻¹.val‖₊ * ‖a.val - 1‖₊ * ‖b.val - 1‖₊ := by
-  simpa using norm_commutator_units_sub_one_le a b
+  simpa using! norm_commutator_units_sub_one_le a b
 
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
@@ -912,7 +924,7 @@ end SubringClass
 namespace AbsoluteValue
 
 /-- A real absolute value on a ring determines a `NormedRing` structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
   norm := v
   dist x y := v (-x + y)
@@ -943,10 +955,6 @@ variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
 lemma iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg {F : Type*} [FunLike F R ℝ]
     [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] (v : F) (x : ι → R) (y : ι' → R) :
     ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
-  rcases isEmpty_or_nonempty ι
-  · simp
-  rcases isEmpty_or_nonempty ι'
-  · simp
   simp_rw [Real.iSup_mul_of_nonneg (iSup_nonneg fun i ↦ apply_nonneg v (y i)),
     Real.mul_iSup_of_nonneg (apply_nonneg v _), map_mul, Finite.ciSup_prod]
 

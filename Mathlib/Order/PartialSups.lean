@@ -65,8 +65,7 @@ lemma partialSups_apply (f : ι → α) (i : ι) :
 lemma partialSups_iff_forall {f : ι → α} (p : α → Prop)
     (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) {i : ι} :
     p (partialSups f i) ↔ ∀ j ≤ i, p (f j) := by
-  classical
-  rw [partialSups_apply, comp_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
+  rw [partialSups_apply, apply_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
   · change (Iic i).inf (p ∘ f) ↔ _
     simp [Finset.inf_eq_iInf]
   · intro x y
@@ -132,6 +131,7 @@ protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, Se
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
     partialSups (g ∘ f) = g ∘ partialSups f := by
   funext _; simp [partialSups]
@@ -262,7 +262,7 @@ theorem iSup_partialSups_eq (f : ι → α) :
 
 theorem partialSups_eq_biSup (f : ι → α) (i : ι) :
     partialSups f i = ⨆ j ≤ i, f j := by
-  simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f i
+  simpa only [iSup_subtype] using! partialSups_eq_ciSup_Iic f i
 
 theorem iSup_le_iSup_of_partialSups_le_partialSups {f g : ι → α}
     (h : partialSups f ≤ partialSups g) : ⨆ i, f i ≤ ⨆ i, g i := by

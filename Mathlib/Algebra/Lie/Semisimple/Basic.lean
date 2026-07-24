@@ -87,6 +87,13 @@ instance : LieModule.IsIrreducible R L L := by
   contrapose _i
   infer_instance
 
+include R in
+/-- A simple lie algebra is non-trivial. -/
+lemma nontrivial : Nontrivial L := by
+  have := IsSimple.non_abelian R (L := L)
+  contrapose! this
+  infer_instance
+
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
 
 variable {R L} in
@@ -136,10 +143,10 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
         -- in the supremum of `I` and the atoms not equal to `I`.
         have hx : x ∈ I ⊔ sSup ({I' : LieIdeal R L | IsAtom I'} \ {I}) := by
           nth_rewrite 1 [← sSup_singleton (a := I)]
-          rw [← sSup_union, Set.union_diff_self, Set.union_eq_self_of_subset_left,
+          rw [← sSup_union, Set.union_sdiff_self, Set.union_eq_self_of_subset_left,
             IsSemisimple.sSup_atoms_eq_top]
           · apply LieSubmodule.mem_top
-          · simp only [Set.singleton_subset_iff, Set.mem_setOf_eq, hI]
+          · simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq, hI]
         -- Hence we can write `x` as `a + b` with `a ∈ I`
         -- and `b` in the supremum of the atoms not equal to `I`.
         rw [LieSubmodule.mem_sup] at hx
@@ -321,6 +328,8 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
     rw [LieIdeal.solvable_iff_le_radical] at h₂
     exact (LieIdeal.inclusion_injective h₂).isLieAbelian h₁
   · intro h; apply h; infer_instance
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 theorem ad_ker_eq_bot_of_hasTrivialRadical [HasTrivialRadical R L] : (ad R L).ker = ⊥ := by simp
 

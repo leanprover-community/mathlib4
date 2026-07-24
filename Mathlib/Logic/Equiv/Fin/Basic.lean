@@ -29,6 +29,7 @@ variable {m n : ℕ}
 This is currently not very sorted. PRs welcome!
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
     (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
       Set.pi Set.univ (Fin.cons s <| Fin.cons t finZeroElim) := by
@@ -61,6 +62,7 @@ def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   left_inv x := Fin.succAboveCases i (by simp) (fun j => by simp) x
   right_inv x := by cases x <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finSuccEquiv'_at (i : Fin (n + 1)) : (finSuccEquiv' i) i = none := by
   simp [finSuccEquiv']
@@ -125,6 +127,9 @@ theorem finSuccEquiv_zero : (finSuccEquiv n) 0 = none :=
 @[simp]
 theorem finSuccEquiv_succ (m : Fin n) : (finSuccEquiv n) m.succ = some m :=
   finSuccEquiv'_above (Fin.zero_le _)
+
+@[simp]
+theorem finSuccEquiv_last (n : ℕ) : finSuccEquiv (n + 1) (Fin.last (n + 1)) = Fin.last n := rfl
 
 @[simp]
 theorem finSuccEquiv_symm_none : (finSuccEquiv n).symm none = 0 :=
