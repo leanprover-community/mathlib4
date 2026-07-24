@@ -95,6 +95,7 @@ instance OrderDual.instContinuousSMul_left : ContinuousSMul Mᵒᵈ X where
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prodMk continuous_id)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*} [FunLike F α β]
     [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
     [TopologicalSpace R] [LinearMapClass F R α β] [tβ : TopologicalSpace β] [ContinuousSMul R β]

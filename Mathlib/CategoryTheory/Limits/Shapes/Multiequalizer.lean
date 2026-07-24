@@ -162,6 +162,7 @@ def functorExt {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
   NatIso.ofComponents (fun j ↦ match j with | .left i => left i | .right i => right i) <| by
     rintro _ _ ⟨_⟩ <;> simp [wl, wr]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma functor_ext {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
     (left : ∀ i, F.obj (.left i) = G.obj (.left i))
     (right : ∀ i, F.obj (.right i) = G.obj (.right i))
@@ -541,6 +542,7 @@ theorem app_right_eq_ι_comp_snd (b) :
 theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : J.L) : f.hom ≫ K₂.ι j = K₁.ι j :=
   f.w _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Construct a multifork using a collection `ι` of morphisms. -/
 @[simps]
@@ -626,12 +628,14 @@ lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
   · dsimp
     rw [app_right_eq_ι_comp_fst, reassoc_of% h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for morphisms to the point of a limit multifork. -/
 def IsLimit.lift (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
     (hk : ∀ b, k (J.fst b) ≫ I.fst b = k (J.snd b) ≫ I.snd b) :
     T ⟶ K.pt :=
   hK.lift (Multifork.ofι _ _ k hk)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
     (hk : ∀ b, k (J.fst b) ≫ I.fst b = k (J.snd b) ≫ I.snd b) (a : J.L) :
@@ -700,9 +704,6 @@ theorem ofPiFork_ι (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c 
     (ofPiFork a).ι i = a.ι ≫ c.proj _ :=
   rfl
 
-@[deprecated (since := "2025-12-08")]
-alias ofPiFork_π_app_left := ofPiFork_ι
-
 @[simp]
 theorem ofPiFork_π_app_right
     (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) (i) :
@@ -742,6 +743,7 @@ def ofPiForkFunctor :
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of multiforks is equivalent to the category of forks over `∏ᶜ I.left ⇉ ∏ᶜ I.right`.
 It then follows from `CategoryTheory.IsLimit.ofPreservesConeTerminal` (or `reflects`) that it
@@ -762,6 +764,7 @@ def multiforkEquivPiForkOfIsLimit :
 
 variable [HasProduct I.left] [HasProduct I.right]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The category of multiforks is equivalent to the category of forks over `∏ᶜ I.left ⇉ ∏ᶜ I.right`.
 It then follows from `CategoryTheory.IsLimit.ofPreservesConeTerminal` (or `reflects`) that it
 preserves and reflects limit cones.
@@ -797,6 +800,7 @@ def multiforkOfParallelHomsEquivFork (J : MulticospanShape) [Unique J.L] [Unique
       Category.comp_id, sndPiMapOfIsLimit_proj]
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma multiforkOfParallelHomsEquivFork_functor_obj_ι (J : MulticospanShape) [Unique J.L]
     [Unique J.R] {X Y : C} (f g : X ⟶ Y) (c : Multifork (ofParallelHoms J f g)) :
@@ -957,12 +961,6 @@ theorem ofSigmaCofork_π
     (ofSigmaCofork a).π i = d.inj i ≫ a.π :=
   rfl
 
-@[deprecated (since := "2025-12-08")]
-alias ofSigmaCofork_ι_app_right := ofSigmaCofork_π
-
-@[deprecated (since := "2025-12-08")]
-alias ofSigmaCofork_ι_app_right' := ofSigmaCofork_π
-
 /-- Constructor for isomorphisms between multicoforks. -/
 @[simps!]
 def ext {K K' : Multicofork I}
@@ -1008,6 +1006,7 @@ noncomputable def ofSigmaCoforkFunctor :
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
@@ -1029,6 +1028,7 @@ noncomputable def multicoforkEquivSigmaCoforkOfIsColimit :
 
 variable [HasCoproduct I.left] [HasCoproduct I.right]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
 It then follows from `CategoryTheory.IsColimit.ofPreservesCoconeInitial` (or `reflects`) that
@@ -1110,6 +1110,7 @@ variable [HasProduct I.left] [HasProduct I.right]
 instance : HasEqualizer I.fstPiMap I.sndPiMap :=
   ⟨⟨⟨_, IsLimit.ofPreservesConeTerminal I.multiforkEquivPiFork.functor (limit.isLimit _)⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The multiequalizer is isomorphic to the equalizer of `∏ᶜ I.left ⇉ ∏ᶜ I.right`. -/
 def isoEqualizer : multiequalizer I ≅ equalizer I.fstPiMap I.sndPiMap :=
   limit.isoLimitCone
@@ -1190,6 +1191,7 @@ instance : HasCoequalizer I.fstSigmaMap I.sndSigmaMap :=
       IsColimit.ofPreservesCoconeInitial
         I.multicoforkEquivSigmaCofork.functor (colimit.isColimit _)⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The multicoequalizer is isomorphic to the coequalizer of `∐ I.left ⇉ ∐ I.right`. -/
 def isoCoequalizer : multicoequalizer I ≅ coequalizer I.fstSigmaMap I.sndSigmaMap :=
   colimit.isoColimitCocone
@@ -1253,6 +1255,7 @@ def toLinearOrder : MultispanIndex (.ofLinearOrder ι) C where
   fst j := I.fst j.1
   snd j := I.snd j.1
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a linearly ordered type `ι` and `I : MultispanIndex (.prod ι) C`,
 this is the isomorphism of functors between

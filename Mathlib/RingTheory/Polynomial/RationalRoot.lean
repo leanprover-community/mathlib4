@@ -69,7 +69,7 @@ then the numerator of `r` divides the constant coefficient -/
 theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣ p.coeff 0 := by
   suffices num A r ∣ (scaleRoots p (den A r)).coeff 0 by
     simp only [coeff_scaleRoots] at this
-    haveI inst := Classical.propDecidable
+    have inst := Classical.propDecidable
     by_cases hr : num A r = 0
     · simp_all [nonZeroDivisors.coe_ne_zero]
     · refine dvd_of_dvd_mul_left_of_no_prime_factors hr ?_ this

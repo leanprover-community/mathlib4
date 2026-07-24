@@ -57,6 +57,7 @@ namespace ChainComplex
 
 variable [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] HomologicalComplex.XIsoOfEq in
 /-- The equivalence of categories `ChainComplex C ℤ ≌ CochainComplex C ℤ`. -/
@@ -114,6 +115,7 @@ def homotopyOp (h : Homotopy f g) :
       symm
       exact prevD_eq _ (j' := n - 1) (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma homotopyOp_hom_eq (h : Homotopy f g)
     (p q p' q' : ℤ) (hp : p + p' = 0 := by lia) (hq : q + q' = 0 := by lia) :
@@ -157,6 +159,7 @@ def homotopyUnop (h : Homotopy ((opEquivalence C).functor.map f.op)
       dsimp
       simp [H (- -(n + 1)) (- -n) (n + 1) n (by simp) (by simp), ← op_comp_assoc, ← op_comp])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma homotopyUnop_hom_eq
     (h : Homotopy ((opEquivalence C).functor.map f.op)
@@ -171,6 +174,7 @@ lemma homotopyUnop_hom_eq
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Two morphisms of cochain complexes indexed by `ℤ` are homotopic iff
 they are homotopic after the application of the functor
@@ -189,6 +193,7 @@ def homotopyOpEquiv {K L : CochainComplex C ℤ} {f g : K ⟶ L} :
     simp [homotopyOp_hom_eq _ p q (-p) (-q),
       homotopyUnop_hom_eq _ (-q) (-p) q p]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exactAt_op {K : CochainComplex C ℤ} {n : ℤ} (hK : K.ExactAt n)
     (m : ℤ) (hm : n + m = 0 := by lia) :
     ((opEquivalence C).functor.obj (op K)).ExactAt m := by
