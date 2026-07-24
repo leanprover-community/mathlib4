@@ -463,7 +463,7 @@ theorem lt_mul_iff_one_lt_left' [MulRightStrictMono α] [MulRightReflectLT α] (
   simpa using mul_lt_mul_iff_right a (b := 1)
 
 @[to_additive (attr := simp) add_lt_iff_neg_left]
-theorem mul_lt_iff_lt_one_left' [MulLeftStrictMono α] [MulLeftReflectLT α] (b : α) :
+theorem mul_lt_iff_lt_one_left' [MulLeftStrictMono α] [MulLeftReflectLT α] (a : α) :
     a * b < a ↔ b < 1 := by
   simpa using mul_lt_mul_iff_left a (c := 1)
 
