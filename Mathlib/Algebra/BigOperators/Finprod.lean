@@ -364,6 +364,18 @@ theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h :
   congr
 
 @[to_additive]
+theorem map_finprod_of_mulSupport_subset (φ : M →* N) (f : α → M) {s : Finset α}
+    (h : mulSupport f ⊆ s) :
+    ∏ᶠ i, φ (f i) = ∏ i ∈ s, φ (f i) := by
+  apply finprod_eq_prod_of_mulSupport_subset
+  intro j hj
+  simp only [mulSupport, ne_eq] at hj
+  have hf : f j ≠ 1 := by
+    contrapose! hj
+    simp [hj]
+  exact h hf
+
+@[to_additive]
 theorem finprod_eq_prod_of_mulSupport_toFinset_subset (f : α → M) (hf : HasFiniteMulSupport f)
     {s : Finset α} (h : hf.toFinset ⊆ s) : ∏ᶠ i, f i = ∏ i ∈ s, f i :=
   finprod_eq_prod_of_mulSupport_subset _ fun _ hx => h <| hf.mem_toFinset.2 hx
