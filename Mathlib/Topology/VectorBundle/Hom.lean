@@ -104,13 +104,13 @@ def continuousLinearMap :
   left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ ↦ by
     simp only [TotalSpace.mk_inj]
     ext (v : E₁ x)
-    dsimp only [comp_apply]
+    dsimp only [ContinuousLinearMap.comp_apply]
     rw [Trivialization.symmL_continuousLinearMapAt, Trivialization.symmL_continuousLinearMapAt]
     exacts [h₁, h₂]
   right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ ↦ by
     simp only [Prod.mk_right_inj]
     ext v
-    dsimp only [comp_apply]
+    dsimp only [ContinuousLinearMap.comp_apply]
     rw [Trivialization.continuousLinearMapAt_symmL, Trivialization.continuousLinearMapAt_symmL]
     exacts [h₁, h₂]
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
@@ -153,8 +153,9 @@ theorem continuousLinearMapCoordChange_apply (b : B)
   ext v
   simp_rw [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
     ContinuousLinearEquiv.arrowCongrSL_apply, continuousLinearMap_apply,
-    continuousLinearMap_symm_apply' σ e₁ e₂ hb.1, comp_apply, ContinuousLinearEquiv.coe_coe,
-    ContinuousLinearEquiv.symm_symm, Trivialization.continuousLinearMapAt_apply]
+    continuousLinearMap_symm_apply' σ e₁ e₂ hb.1, ContinuousLinearMap.comp_apply,
+    ContinuousLinearEquiv.coe_coe, ContinuousLinearEquiv.symm_symm,
+    Trivialization.continuousLinearMapAt_apply]
   rw [e₂.symmL_apply hb.1.2, e₁'.symmL_apply hb.2.1, e₂.coordChangeL_apply e₂',
     e₁'.coordChangeL_apply e₁, e₁.coe_linearMapAt_of_mem hb.1.1, e₂'.coe_linearMapAt_of_mem hb.2.2]
   exacts [⟨hb.2.1, hb.1.1⟩, ⟨hb.1.2, hb.2.2⟩]

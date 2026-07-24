@@ -252,8 +252,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
   rw [← Complex.ofRealCLM.map_zero] at this
   convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
   · ext n
-    simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
+    simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply, comp_apply,
       FormalMultilinearSeries.compContinuousLinearMap_apply]
     simp
     norm_cast
@@ -272,8 +271,7 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {r : ℝ} (hr : r �
   convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap)
   · simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv, ← Complex.ofReal_sub]
   · ext n
-    simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
+    simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply, comp_apply,
       FormalMultilinearSeries.compContinuousLinearMap_apply]
     simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv]
   · simp [enorm_eq_nnnorm]

@@ -400,8 +400,7 @@ theorem isBoundedBilinearMap_smulRight :
 bilinear operation. -/
 theorem isBoundedBilinearMap_compMultilinear {ι : Type*} {E : ι → Type*} [Fintype ι]
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
-    IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × ContinuousMultilinearMap 𝕜 E F =>
-      p.1.compContinuousMultilinearMap p.2 :=
+    IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × ContinuousMultilinearMap 𝕜 E F => p.1 ∘ᶠ p.2 :=
   (compContinuousMultilinearMapL 𝕜 E F G).isBoundedBilinearMap
 
 /-- Definition of the derivative of a bilinear map `f`, given at a point `p` by

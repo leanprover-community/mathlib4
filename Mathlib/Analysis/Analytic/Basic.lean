@@ -549,9 +549,8 @@ theorem ContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall (g : F →L[𝕜] G
   r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
   r_pos := h.r_pos
   hasSum hy h'y := by
-    simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
-      g.hasSum (h.hasSum hy h'y)
+    simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply, FunLike.coe_comp,
+      Function.comp_apply] using g.hasSum (h.hasSum hy h'y)
 
 /-- If a function `f` has a power series `p` on a ball and `g` is linear, then `g ∘ f` has the
 power series `g ∘ p` on the same ball. -/
