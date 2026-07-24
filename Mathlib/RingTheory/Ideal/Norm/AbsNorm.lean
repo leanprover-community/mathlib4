@@ -10,11 +10,9 @@ public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 public import Mathlib.LinearAlgebra.FreeModule.Int
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Ideal.Basis
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Defs
-public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
@@ -397,7 +395,7 @@ lemma exists_prime_and_absNorm_eq_pow' (P : Ideal S) [P.IsMaximal] (hP : P ≠ �
   rw [← Ideal.IsPrime.pow_mem_iff_mem (I := P) inferInstance _ n.pos, ← Nat.cast_pow, ← hP']
   exact P.absNorm_mem
 
--- omit [Infinite S] in
+-- omit [Infinite S] in -- Uncommenting that causes an error
 /-- The norm of a maximal ideal is a prime power.
 The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertialDeg P`.
 See `Ideal.absNorm_pow_inertiaDeg`. -/
