@@ -357,8 +357,7 @@ private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 
   calc
     ∫⁻ (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
         ∫⁻ (p : X × X), ‖K p.1 p.2‖ₑ * (‖f p.2‖ₑ * ‖g p.1‖ₑ) ∂μ.prod μ := by
-      grw [enorm_inner_le_enorm]
-      grw [ContinuousLinearMap.le_opENorm]
+      grw [enorm_inner_le_enorm, ContinuousLinearMap.le_opENorm]
       simp [mul_assoc]
     _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ *
           (∫⁻ (a : X × X), ‖f a.2‖ₑ ^ 2 * ‖g a.1‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ := by
@@ -419,8 +418,8 @@ def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
       rw [hf]
     )
     (fun f g₁ g₂ ↦ by
-      rw [← integral_add (mercerForm_integrable μ hK f g₁) (mercerForm_integrable μ hK f g₂)]
-      simp_rw [← inner_add_right]
+      simp_rw [← integral_add (mercerForm_integrable μ hK f g₁) (mercerForm_integrable μ hK f g₂),
+        ← inner_add_right]
       have hf : ∀ᵐ p ∂(μ.prod μ), (g₁ + g₂) p.1 = g₁ p.1 + g₂ p.1 :=
         Measure.quasiMeasurePreserving_fst.ae (Lp.coeFn_add g₁ g₂)
       apply integral_congr_ae
@@ -438,8 +437,7 @@ def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
   )
   (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
   (fun f g ↦ by
-    simp only [LinearMap.mk₂'ₛₗ_apply]
-    grw [norm_integral_le_lintegral_norm]
+    grw [LinearMap.mk₂'ₛₗ_apply, norm_integral_le_lintegral_norm]
     simp_rw [ofReal_norm]
     grw [lintegral_norm_inner_le μ hK f g]
     · simp
@@ -455,13 +453,11 @@ lemma mercerForm_apply (f g : Lp V 2 μ) :
 
 theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef] [IsFiniteMeasure μ]
     (f g : Lp V 2 μ) : starRingEnd 𝕜 (mercerForm μ hK f g) = mercerForm μ hK g f := by
-  have h := (Fact.out : K.PosSemidef).1
-  rw [Matrix.IsHermitian.ext_iff] at h
   simp_rw [mercerForm_apply]
   rw [← integral_conj, ← integral_prod_swap]
-  congr
-  ext x
-  rw [← ContinuousLinearMap.adjoint_inner_right, ← conj_inner_symm, ← star_eq_adjoint, h]
+  congr with _
+  rw [← ContinuousLinearMap.adjoint_inner_right, ← conj_inner_symm, ← star_eq_adjoint,
+    Matrix.IsHermitian.ext_iff.mp (Fact.out : K.PosSemidef).1]
   simp
 
 /-- The integral operator `f ↦ ∫ ∫ (y : X), K · y (f y) ∂μ` defined through the Riesz representer
@@ -474,8 +470,8 @@ def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
   }
   (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
   (fun f ↦ by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, norm_map, mercerForm]
-    grw [le_opNorm, LinearMap.mkContinuous₂_norm_le]
+    grw [LinearMap.coe_mk, AddHom.coe_mk, norm_map, mercerForm, le_opNorm,
+      LinearMap.mkContinuous₂_norm_le]
     exact ENNReal.toReal_nonneg
   )
 
