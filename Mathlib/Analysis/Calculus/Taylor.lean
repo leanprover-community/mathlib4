@@ -349,7 +349,7 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
     (hf : ContDiffOn ℝ (n + 1) f (uIcc x₀ x)) :
     ∃ x' ∈ uIoo x₀ x, f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
       iteratedDeriv (n + 1) f x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
-  have hu : UniqueDiffOn ℝ (uIcc x₀ x) := uniqueDiffOn_Icc (by grind)
+  have hu : UniqueDiffOn ℝ (uIcc x₀ x) := uniqueDiffOn_uIcc hx
   have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (uIcc x₀ x)) (uIcc x₀ x) := by
     refine hf.differentiableOn_iteratedDerivWithin ?_ hu
     norm_cast
@@ -476,7 +476,7 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
     rfl
   | succ n ih =>
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
+    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_uIcc this
     specialize ih (by grind)
     simp only [taylorWithinEval_succ, mul_inv_rev]
     rw [sub_add_eq_sub_sub, ih]
@@ -522,7 +522,7 @@ theorem taylor_integral_remainder_of_absolutelyContinuous {f : ℝ → ℝ} {x x
     fun_prop
   · rcases hk.eq_or_lt with rfl | hk
     · exact hf₂
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
+    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_uIcc this
     replace hf₁ := hf₁.of_le (m := k.succ) (by norm_cast)
     grind [ContDiffOn.absolutelyContinuousOnInterval,
       contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin]
@@ -540,7 +540,7 @@ theorem taylor_integral_remainder [NormedAddCommGroup F] [NormedSpace ℝ F]
       ∫ t in x₀..x, ((x - t) ^ n / n !) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t := by
   rcases eq_or_ne x₀ x with rfl | this
   · simp
-  have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
+  have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_uIcc this
   apply taylor_integral_remainder_aux
   intro k hk
   apply intervalIntegral.integral_smul_deriv_eq_deriv_smul_of_hasDerivAt
