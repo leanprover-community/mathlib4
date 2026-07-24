@@ -316,6 +316,46 @@ instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
 
+@[to_additive]
+instance characteristic_sup [H.Characteristic] [K.Characteristic] :
+    (H ⊔ K).Characteristic := by
+  simp_all [characteristic_iff_map_eq, map_sup]
+
+@[to_additive]
+instance characteristic_iSup {ι : Sort*} {H : ι → Subgroup G} [∀ i, (H i).Characteristic] :
+    (⨆ i, H i).Characteristic := by
+  simp_all [characteristic_iff_map_eq, map_iSup]
+
+@[to_additive]
+theorem characteristic_biSup {ι : Type*} {s : Set ι} {H : ι → Subgroup G}
+    (h : ∀ i ∈ s, (H i).Characteristic) : (⨆ i ∈ s, H i).Characteristic := by
+  simp [← iSup_subtype'', characteristic_iSup, h]
+
+@[to_additive]
+theorem characteristic_sSup {Hs : Set (Subgroup G)} (h : ∀ H ∈ Hs, H.Characteristic) :
+    (sSup Hs).Characteristic := by
+  simp [sSup_eq_iSup', characteristic_iSup, h]
+
+@[to_additive]
+instance characteristic_inf [H.Characteristic] [K.Characteristic] :
+    (H ⊓ K).Characteristic := by
+  simp_all [characteristic_iff_comap_eq, comap_inf]
+
+@[to_additive]
+instance characteristic_iInf {ι : Sort*} {H : ι → Subgroup G} [∀ i, (H i).Characteristic] :
+    (⨅ i, H i).Characteristic := by
+  simp_all [characteristic_iff_comap_eq, comap_iInf]
+
+@[to_additive]
+theorem characteristic_biInf {ι : Type*} {s : Set ι} {H : ι → Subgroup G}
+    (h : ∀ i ∈ s, (H i).Characteristic) : (⨅ i ∈ s, H i).Characteristic := by
+  simp [← iInf_subtype'', characteristic_iInf, h]
+
+@[to_additive]
+theorem characteristic_sInf {Hs : Set (Subgroup G)} (h : ∀ H ∈ Hs, H.Characteristic) :
+    (sInf Hs).Characteristic := by
+  simp [sInf_eq_iInf', characteristic_iInf, h]
+
 /-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
 automorphism of `H`. -/
 @[to_additive (attr := simps!)
