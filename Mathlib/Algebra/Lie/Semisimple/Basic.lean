@@ -87,6 +87,13 @@ instance : LieModule.IsIrreducible R L L := by
   contrapose _i
   infer_instance
 
+include R in
+/-- A simple lie algebra is non-trivial. -/
+lemma nontrivial : Nontrivial L := by
+  have := IsSimple.non_abelian R (L := L)
+  contrapose! this
+  infer_instance
+
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
 
 variable {R L} in
@@ -139,7 +146,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           rw [← sSup_union, Set.union_sdiff_self, Set.union_eq_self_of_subset_left,
             IsSemisimple.sSup_atoms_eq_top]
           · apply LieSubmodule.mem_top
-          · simp only [Set.singleton_subset_iff, Set.mem_setOf_eq, hI]
+          · simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq, hI]
         -- Hence we can write `x` as `a + b` with `a ∈ I`
         -- and `b` in the supremum of the atoms not equal to `I`.
         rw [LieSubmodule.mem_sup] at hx

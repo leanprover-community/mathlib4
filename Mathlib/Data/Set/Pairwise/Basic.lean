@@ -443,10 +443,14 @@ lemma exists_lt_mem_inter_of_not_pairwise_disjoint [LinearOrder ι]
 theorem pairwise_disjoint_fiber (f : ι → α) : Pairwise (Disjoint on fun a : α => f ⁻¹' {a}) :=
   pairwise_univ.1 <| Set.pairwiseDisjoint_fiber f univ
 
-lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
+lemma subsingleton_setOfPred_mem_iff_pairwise_disjoint {f : ι → Set α} :
     (∀ a, {i | a ∈ f i}.Subsingleton) ↔ Pairwise (Disjoint on f) :=
   ⟨fun h _ _ hij ↦ disjoint_left.2 fun a hi hj ↦ hij (h a hi hj),
    fun h _ _ hx _ hy ↦ by_contra fun hne ↦ disjoint_left.1 (h hne) hx hy⟩
+
+@[deprecated (since := "2026-07-09")]
+alias subsingleton_setOf_mem_iff_pairwise_disjoint :=
+  subsingleton_setOfPred_mem_iff_pairwise_disjoint
 
 /-- Simp normal form of `pairwise_ne_iff_injective`. -/
 @[simp] lemma pairwise_not_eq_iff_injective {f : ι → α} :
