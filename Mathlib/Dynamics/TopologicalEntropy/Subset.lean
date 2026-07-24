@@ -202,6 +202,9 @@ noncomputable def coverEntropySupBotHom (T : X → X) :
   map_sup' := fun _ _ ↦ coverEntropy_union
   map_bot' := coverEntropy_empty
 
+@[deprecated (since := "2026-07-25")]
+alias coverEntropy_supBotHom := coverEntropySupBotHom
+
 lemma coverEntropy_iUnion_of_finite [Finite ι] {T : X → X} {F : ι → Set X} :
     coverEntropy T (⋃ i : ι, F i) = ⨆ i : ι, coverEntropy T (F i) :=
   map_finite_iSup (coverEntropySupBotHom T) F
