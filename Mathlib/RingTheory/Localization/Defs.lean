@@ -307,7 +307,7 @@ theorem exists_mk'_eq (z : S) : ∃ (x : R) (y : M), mk' S x y = z :=
 
 variable (S) in
 /-- The localization of a `Fintype` is a `Fintype`. Cannot be an instance. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintype' [Fintype R] : Fintype S :=
   have := Classical.propDecidable
   .ofSurjective (Function.uncurry <| IsLocalization.mk' S) <| mk'_surjective M
@@ -315,7 +315,7 @@ noncomputable def fintype' [Fintype R] : Fintype S :=
 variable {M}
 
 /-- Localizing at a submonoid with 0 inside it leads to the trivial ring. -/
-@[implicit_reducible]
+@[instance_reducible]
 def uniqueOfZeroMem (h : (0 : R) ∈ M) : Unique S :=
   uniqueOfZeroEqOne <| by simpa using IsLocalization.map_units S ⟨0, h⟩
 
@@ -463,13 +463,14 @@ theorem mk'_add (x₁ x₂ : R) (y₁ y₂ : M) :
         simp only [map_add, Submonoid.coe_mul, map_mul]
         ring)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_add_inv_left {g : R →+* P} (h : ∀ y : M, IsUnit (g y)) (y : M) (w z₁ z₂ : P) :
-    w * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) h y)⁻¹ + z₁ =
+    w * ↑(IsUnit.liftRight (g.toMonoidHom.domRestrict M) h y)⁻¹ + z₁ =
     z₂ ↔ w + g y * z₁ = g y * z₂ := by
-  rw [mul_comm, ← one_mul z₁, ← Units.inv_mul (IsUnit.liftRight (g.toMonoidHom.restrict M) h y),
+  rw [mul_comm, ← one_mul z₁, ← Units.inv_mul (IsUnit.liftRight (g.toMonoidHom.domRestrict M) h y),
     mul_assoc, ← mul_add, Units.inv_mul_eq_iff_eq_mul, Units.inv_mul_cancel_left,
     IsUnit.coe_liftRight]
-  simp [RingHom.toMonoidHom_eq_coe, MonoidHom.restrict_apply]
+  simp [RingHom.toMonoidHom_eq_coe, MonoidHom.domRestrict_apply]
 
 theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w' v) :
     ((toLocalizationMap M S).lift hg) z * w + w' = v ↔
@@ -505,7 +506,7 @@ variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 `g : R →* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` maps `f x * (f y)⁻¹` to `g x * (g y)⁻¹` for all `x : R, y ∈ M`. -/
 theorem lift_mk' (x y) :
-    lift hg (mk' S x y) = g x * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) hg y)⁻¹ :=
+    lift hg (mk' S x y) = g x * ↑(IsUnit.liftRight (g.toMonoidHom.domRestrict M) hg y)⁻¹ :=
   (toLocalizationMap M S).lift_mk' _ _ _
 
 theorem lift_mk'_spec (x v) (y : M) : lift hg (mk' S x y) = v ↔ g x = g y * v :=
@@ -660,6 +661,7 @@ section
 
 variable (S Q)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M, T` respectively, an
 isomorphism `j : R ≃+* P` such that `j(M) = T` induces an isomorphism of localizations
 `S ≃+* Q`. -/
@@ -730,7 +732,7 @@ variable (M)
 theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
     haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
     IsLocalization (M.map h) S := by
-  letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
+  let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   constructor; constructor
   · rintro ⟨_, ⟨y, hy, rfl⟩⟩
     convert! IsLocalization.map_units S ⟨y, hy⟩
@@ -750,7 +752,7 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsLocalization M S ↔
       haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
       IsLocalization (M.map h) S := by
-  letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
+  let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   refine ⟨fun _ => isLocalization_of_base_ringEquiv M S h, ?_⟩
   intro (H : IsLocalization (Submonoid.map (h : R ≃* P) M) S)
   convert! isLocalization_of_base_ringEquiv (Submonoid.map (h : R ≃* P) M) S h.symm

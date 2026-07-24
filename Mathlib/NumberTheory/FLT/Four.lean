@@ -66,7 +66,7 @@ theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minima
   let S : Set ℕ := { n | ∃ s : ℤ × ℤ × ℤ, Fermat42 s.1 s.2.1 s.2.2 ∧ n = Int.natAbs s.2.2 }
   have S_nonempty : S.Nonempty := by
     use Int.natAbs c
-    rw [Set.mem_setOf_eq]
+    rw [Set.mem_ofPred_eq]
     use ⟨a, ⟨b, c⟩⟩
   let m : ℕ := Nat.find S_nonempty
   have m_mem : m ∈ S := Nat.find_spec S_nonempty

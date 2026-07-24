@@ -122,8 +122,10 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
   rw [sUnion_eq_iUnion]
   exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
 
-theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
+theorem Convex.setOfPred_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
   by_cases hP : P <;> simp [hP, hs, convex_univ]
+
+@[deprecated (since := "2026-07-09")] alias Convex.setOf_const_imp := Convex.setOfPred_const_imp
 
 end SMul
 
@@ -477,10 +479,12 @@ theorem Convex.smul_mem_of_zero_mem (hs : Convex 𝕜 s) {x : E} (zero_mem : (0 
     {t : 𝕜} (ht : t ∈ Icc (0 : 𝕜) 1) : t • x ∈ s := by
   simpa using hs.add_smul_mem zero_mem (by simpa using hx) ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Convex.mapsTo_lineMap (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
     MapsTo (AffineMap.lineMap x y) (Icc (0 : 𝕜) 1) s := by
   simpa only [mapsTo_iff_image_subset, segment_eq_image_lineMap] using h.segment_subset hx hy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Convex.lineMap_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
     (ht : t ∈ Icc 0 1) : AffineMap.lineMap x y t ∈ s :=
   h.mapsTo_lineMap hx hy ht

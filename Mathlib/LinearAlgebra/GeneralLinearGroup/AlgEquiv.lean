@@ -28,6 +28,7 @@ open Module LinearMap LinearEquiv
 variable {K V W : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective K V]
   [AddCommMonoid W] [Module K W] [Projective K W]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an algebra isomorphism `f : End K V ≃ₐ[K] End K W`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
 public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W) :

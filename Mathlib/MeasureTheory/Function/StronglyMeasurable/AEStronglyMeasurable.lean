@@ -674,7 +674,7 @@ theorem _root_.MeasurableEmbedding.aestronglyMeasurable_map_iff {γ : Type*}
 theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β]
     [PseudoMetrizableSpace γ] {g : β → γ} {f : α → β} (hg : IsEmbedding g) :
     AEStronglyMeasurable (fun x => g (f x)) μ ↔ AEStronglyMeasurable f μ := by
-  letI := pseudoMetrizableSpacePseudoMetric γ
+  let := pseudoMetrizableSpacePseudoMetric γ
   borelize β γ
   refine
     ⟨fun H => aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨?_, ?_⟩, fun H =>
