@@ -202,9 +202,9 @@ equations. -/
 section Algebra
 variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [IsFrobenius R A]
 
-/-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`.
-See `rTensor_counit_comp_right_comp_lTensor_algebraLinearMap` for when we
-compose it on the other side of the tensor.
+/-- Composing the left Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
+See `rTensor_counit_comp_right_comp_lTensor_algebraLinearMap` for the right Frobenius equation
+version.
 
 (This is sometimes known as the left snake equation.) -/
 lemma lTensor_counit_comp_left_comp_rTensor_algebraLinearMap :
@@ -213,9 +213,9 @@ lemma lTensor_counit_comp_left_comp_rTensor_algebraLinearMap :
     left_eq, ← comp_assoc, lTensor_counit_comp_comul]
   ext; simp
 
-/-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`.
-See `lTensor_counit_comp_left_comp_rTensor_algebraLinearMap` for when we
-compose it on the other side of the tensor.
+/-- Composing the right Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
+See `lTensor_counit_comp_left_comp_rTensor_algebraLinearMap` for the left Frobenius equation
+version.
 
 (This is sometimes known as the right snake equation.) -/
 lemma rTensor_counit_comp_right_comp_lTensor_algebraLinearMap :
