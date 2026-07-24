@@ -96,6 +96,6 @@ instance intrinsicStarModule [SMulCommClass R R F] [ContinuousConstSMul R F] :
 lemma intrinsicStar_eq_comp {R : Type*} [CommSemiring R] [StarRing R] [Module R E] [StarModule R E]
     [Module R F] [StarModule R F] (f : WithConv (E →L[R] F)) :
     star f = toConv
-      ((starL R).toContinuousLinearMap.comp (f.ofConv.comp (starL R).toContinuousLinearMap)) := rfl
+      ((starL R (A := F) : F →L⋆[R] F) ∘SL f.ofConv ∘SL (starL R (A := E) : E →L⋆[R] E)) := rfl
 
 end ContinuousLinearMap

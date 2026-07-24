@@ -262,7 +262,7 @@ lemma mulHeight_comp_equiv (e : ι ≃ ι') (x : ι' → K) :
   · have hx' : x ∘ e ≠ 0 := by
       obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := ne_iff.mp hx
       exact ne_iff.mpr ⟨e.symm i, by simp [hi]⟩
-    simp [mulHeight_eq hx, mulHeight_eq hx', comp_apply, H]
+    simp [mulHeight_eq hx, mulHeight_eq hx', H]
 
 lemma mulHeight_swap (x y : K) : mulHeight ![x, y] = mulHeight ![y, x] := by
   let e : Fin 2 ≃ Fin 2 := Equiv.swap 0 1

@@ -580,7 +580,7 @@ theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => 
   · exact (isClosedEmbedding_smul_left hc).isClosedMap
 
 theorem ContinuousLinearMap.exists_rightInverse_of_surjective [T2Space F] [FiniteDimensional 𝕜 F]
-    (f : E →L[𝕜] F) (hf : f.range = ⊤) : ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
+    (f : E →L[𝕜] F) (hf : f.range = ⊤) : ∃ g : F →L[𝕜] E, f ∘L g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
 

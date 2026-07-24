@@ -27,7 +27,7 @@ noncomputable abbrev det {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace 
 theorem det_pi {ι R M : Type*} [Fintype ι] [CommRing R] [AddCommGroup M]
     [TopologicalSpace M] [Module R M] [Module.Free R M] [Module.Finite R M]
     (f : ι → M →L[R] M) :
-    (pi (fun i ↦ (f i).comp (proj i))).det = ∏ i, (f i).det :=
+    (pi (fun i ↦ (f i) ∘L (proj i (R := R) (φ := fun _ ↦ M)))).det = ∏ i, (f i).det :=
   LinearMap.det_pi _
 
 theorem det_smulRight {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜]

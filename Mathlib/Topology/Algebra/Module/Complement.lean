@@ -473,7 +473,7 @@ equivalence. -/
 noncomputable def quotientEquivOfIsTopCompl (h : IsTopCompl p q) : (M ⧸ p) ≃L[R] q :=
   { p.quotientEquivOfIsCompl q h.isCompl with
     continuous_toFun := h.isCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl.mp h
-    continuous_invFun := (p.mkQL.comp q.subtypeL).continuous }
+    continuous_invFun := (p.mkQL ∘L q.subtypeL).continuous }
 
 @[simp]
 theorem toLinearEquiv_quotientEquivOfIsTopCompl (h : IsTopCompl p q) :
@@ -481,7 +481,7 @@ theorem toLinearEquiv_quotientEquivOfIsTopCompl (h : IsTopCompl p q) :
   rfl
 
 theorem quotientEquivOfIsTopCompl_comp_mkQL (h : IsTopCompl p q) :
-    (quotientEquivOfIsTopCompl p q h) ∘L p.mkQL = q.projectionOntoL p h.symm :=
+    (quotientEquivOfIsTopCompl p q h : (M ⧸ p) →L[R] q) ∘L p.mkQL = q.projectionOntoL p h.symm :=
   rfl
 
 @[simp]
@@ -515,7 +515,7 @@ submodules `p` and `q` of `E`, `ContinuousLinearMap.ofIsCompl` is the induced co
 
 This is the continuous version of `LinearMap.ofIsCompl`. -/
 noncomputable def ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) : E →L[R] F :=
-  φ.coprod ψ ∘L ↑(prodEquivOfIsTopCompl p q h).symm
+  φ.coprod ψ ∘L ((prodEquivOfIsTopCompl p q h).symm : E →L[R] p × q)
 
 theorem ofIsTopCompl_eq_add (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
     ofIsTopCompl h φ ψ = φ ∘L p.projectionOntoL q h + ψ ∘L q.projectionOntoL p h.symm := by
