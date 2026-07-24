@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
 /-!
 A discrimination tree for the purpose of unifying local expressions with library results.

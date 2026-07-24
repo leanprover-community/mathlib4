@@ -6,8 +6,8 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.CategoryTheory.Sums.Basic
 public import Mathlib.CategoryTheory.Products.Basic
+public import Mathlib.CategoryTheory.Sums.Basic
 
 /-! # Sums and products of discrete categories.
 

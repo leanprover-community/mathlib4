@@ -5,8 +5,8 @@ Authors: Yi Yuan
 -/
 module
 
-public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Probability.Distributions.Binomial
+public import Mathlib.Probability.Distributions.Poisson.Basic
 
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.SpecialFunctions.Choose

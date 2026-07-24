@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Heather Macbeth, Floris van Doorn
 -/
 module
 
-public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
+public import Mathlib.Topology.VectorBundle.Basic
 
 /-!
 # The vector bundle of continuous alternating multilinear maps

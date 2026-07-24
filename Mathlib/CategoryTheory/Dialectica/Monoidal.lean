@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Dialectica.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # The Dialectica category is symmetric monoidal

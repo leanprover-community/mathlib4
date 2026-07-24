@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Growth in the quotient and intersection with a subgroup

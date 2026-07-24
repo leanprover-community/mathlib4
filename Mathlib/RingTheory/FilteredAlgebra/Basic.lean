@@ -5,10 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.GradedMonoid
-public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.Ring.Int.Defs
 /-!

@@ -6,8 +6,8 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Data.Real.ENatENNReal
-public import Mathlib.Topology.Instances.ENat
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Instances.ENat
 import Mathlib.Algebra.Order.Floor.Extended
 
 /-!

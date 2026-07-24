@@ -5,9 +5,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.RingTheory.WittVector.Truncated
-public import Mathlib.RingTheory.WittVector.Identities
 public import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.RingTheory.WittVector.Identities
+public import Mathlib.RingTheory.WittVector.Truncated
 
 /-!
 
