@@ -114,7 +114,7 @@ lemma Submonoid.closure_irreducible [Monoid.FG M] :
   -- Assume that power is `1`.
   | 1 =>
     -- By cancelling on both sides we get `∏ s ∈ S \ {r}, s ^ (m s + n s) = 1`.
-    simp only [hr, pow_one, mul_assoc, eq_comm (a := r), mul_eq_left, LeftCancelMonoid.mul_eq_one,
+    simp only [hr, pow_one, mul_assoc, eq_comm (a := r), mul_eq_left, mul_eq_one,
       Finset.prod_eq_one_iff] at hr'
     -- Since `M` has a single unit, this means that
     -- `∏ s ∈ S \ {r}, s ^ m s = ∏ s ∈ S \ {r}, s ^ n s = 1`.
