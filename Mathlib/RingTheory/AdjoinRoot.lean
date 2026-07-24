@@ -509,11 +509,11 @@ lemma algEquivOfEq_root (f g : S[X]) (hfg) : algEquivOfEq R f g hfg (root f) = r
 section comp
 variable (f g) (x : R)
 
-def compAlgEquiv : AdjoinRoot (f.comp g) ≃ₐ[R] AdjoinRoot (g.map (of _) - C (root f)) :=
+def compAlgEquiv : AdjoinRoot (f.comp g) ≃ₐ[R] AdjoinRoot (g.map (of f) - C (root f)) :=
   .ofAlgHom
-    (liftAlgHom (f.comp g) (Algebra.ofId R _) (root _) ?fgroot)
-    (liftAlgHom _ (liftAlgHom f (Algebra.ofId R _)
-      (g.aeval (root _)) ?froot) (root (f.comp g)) ?groot)
+    (liftAlgHom (f.comp g) (Algebra.ofId R (AdjoinRoot _)) (root _) ?fgroot)
+    (liftAlgHom _ (liftAlgHom f (Algebra.ofId R (AdjoinRoot (f.comp g)))
+      (g.aeval (root (f.comp g))) ?froot) (root (f.comp g)) ?groot)
     (AdjoinRoot.algHom_ext' (AdjoinRoot.algHom_ext ?mapf) ?mapg) (AdjoinRoot.algHom_ext ?mapfg)
 where finally
   case fgroot =>
@@ -522,7 +522,7 @@ where finally
       enter [1, 2]
       rw [eval₂_eq_eval_map]
       enter [2]
-      equals (g.map (of _) - C (root f)).map (of _) + C (of _ <| root f) =>
+      equals (g.map (of f) - C (root f)).map (of _) + C (of _ (root f)) =>
         rw [Polynomial.map_sub, Polynomial.map_C, sub_add_cancel, Polynomial.map_map]
     rw [eval_add, eval_C, (isRoot_root _).eq_zero, zero_add, ← hom_eval₂, eval₂_root, map_zero]
   case mapfg =>
@@ -537,7 +537,7 @@ where finally
       algebraMap_eq', algebraMap_eq]
     conv =>
       enter [1, 2]
-      equals (g.map (of _) - C (root f)).map (of _) + C (of _ <| root f) =>
+      equals (g.map (of f) - C (root f)).map (of _) + C (of _ (root f)) =>
         rw [Polynomial.map_sub, Polynomial.map_C, sub_add_cancel, Polynomial.map_map]
     rw [eval_add, eval_C, (isRoot_root _).eq_zero, zero_add]
   case groot =>
@@ -550,7 +550,7 @@ where finally
     rw [AlgHom.comp_apply, liftAlgHom_root, liftAlgHom_root, AlgHom.id_apply]
 
 @[simp]
-theorem compAlgEquiv_of : compAlgEquiv f g (of _ x) = of _ (of _ x) := by
+theorem compAlgEquiv_of : compAlgEquiv f g (of (f.comp g) x) = of _ (of f x) := by
   unfold compAlgEquiv
   rw [AlgEquiv.ofAlgHom_apply, liftAlgHom_of, Algebra.ofId_apply,
     algebraMap_eq', algebraMap_eq, RingHom.comp_apply]
@@ -561,17 +561,18 @@ theorem compAlgEquiv_root : compAlgEquiv f g (root (f.comp g)) = root _ := by
   rw [AlgEquiv.ofAlgHom_apply, liftAlgHom_root]
 
 @[simp]
-theorem compAlgEquiv_symm_of_of : (compAlgEquiv f g).symm (of _ (of _ x)) = of _ x := by
+theorem compAlgEquiv_symm_of_of : (compAlgEquiv f g).symm (of _ (of f x)) = of (f.comp g) x := by
   unfold compAlgEquiv
   rw [AlgEquiv.ofAlgHom_symm_apply, liftAlgHom_of, liftAlgHom_of,
     Algebra.ofId_apply, algebraMap_eq]
 
-theorem compAlgEquiv_symm_of_root : (compAlgEquiv f g).symm (of _ (root f)) = g.aeval (root _) := by
+theorem compAlgEquiv_symm_of_root :
+    (compAlgEquiv f g).symm (of _ (root f)) = g.aeval (root (f.comp g)) := by
   unfold compAlgEquiv
   rw [AlgEquiv.ofAlgHom_symm_apply, liftAlgHom_of, liftAlgHom_root]
 
 @[simp]
-theorem compAlgEquiv_symm_root : (compAlgEquiv f g).symm (root _) = root _ := by
+theorem compAlgEquiv_symm_root : (compAlgEquiv f g).symm (root _) = root (f.comp g) := by
   unfold compAlgEquiv
   rw [AlgEquiv.ofAlgHom_symm_apply, liftAlgHom_root]
 
