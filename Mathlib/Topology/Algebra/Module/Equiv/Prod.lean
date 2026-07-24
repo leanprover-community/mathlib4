@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Tjeerd Jan Heeringa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Tjeerd Jan Heeringa
+-/
 module
 
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
