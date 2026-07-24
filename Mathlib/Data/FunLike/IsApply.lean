@@ -260,20 +260,25 @@ lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F' α] [IsOneApplyEqSelf 
     (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   funext <| pow_apply_eq_iterate f n
 
--- these lemmas seem to be misnamed? the FunLike coercion isn't used in the statement!
+-- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
-theorem coe_natCast [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F'] [IsSMulApply Nat F' α α]
-    [IsNatCastApply F' α] [IsOneApplyEqSelf F' α] (n : Nat) :
+theorem natCast_eq_nsmul_one [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F']
+    [IsSMulApply Nat F' α α] [IsNatCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℕ) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
 
+@[deprecated (since := "2026-07-24")] alias coe_natCast := natCast_eq_nsmul_one
+
+-- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
-theorem coe_intCast [IntCast F'] [One F'] [SMul Int α] [SMul Int F'] [IsSMulApply Int F' α α]
-    [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : Int) :
+theorem intCast_eq_zsmul_one [IntCast F'] [One F'] [SMul Int α] [SMul Int F']
+    [IsSMulApply Int F' α α] [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℤ) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
+
+@[deprecated (since := "2026-07-24")] alias coe_intCast := intCast_eq_zsmul_one
 
 end Coercion
 
