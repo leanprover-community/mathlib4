@@ -246,6 +246,11 @@ theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
     (p.append q).getVert i = if i < p.length then p.getVert i else q.getVert (i - p.length) := by
   induction p generalizing i <;> cases i <;> simp [*]
 
+/-- This uses `p` instead of `q` when `i = p.length` unlike the unprimed version. -/
+theorem getVert_append' (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
+    (p.append q).getVert i = if i ≤ p.length then p.getVert i else q.getVert (i - p.length) := by
+  induction p generalizing i <;> cases i <;> simp [*]
+
 theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
     p.reverse.getVert i = p.getVert (p.length - i) := by
   induction p with
@@ -626,6 +631,7 @@ lemma support_take {u v} (p : G.Walk u v) (n : ℕ) :
 
 @[deprecated (since := "2026-05-20")] alias take_support_eq_support_take_succ := support_take
 
+@[simp]
 lemma take_take (p : G.Walk u v) (n m : ℕ) :
     (p.take n).take m = (p.take (min n m)).copy rfl (p.take_getVert n m).symm := by
   apply ext_support
@@ -668,6 +674,14 @@ lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
 
 @[simp]
+theorem darts_tail {p : G.Walk u v} : p.tail.darts = p.darts.tail := by
+  simp [tail, darts_drop]
+
+@[simp]
+theorem edges_tail {p : G.Walk u v} : p.tail.edges = p.edges.tail := by
+  simp [tail, edges_drop]
+
+@[simp]
 lemma drop_zero {u v} (p : G.Walk u v) :
     p.drop 0 = p.copy (getVert_zero p).symm rfl := by
   cases p <;> simp [Walk.drop]
@@ -676,9 +690,16 @@ lemma nil_drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     (p.drop n).Nil := by
   rw [← length_eq_zero_iff, drop_length, Nat.sub_eq_zero_of_le h]
 
+@[simp]
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
+
+@[simp]
+theorem drop_drop (p : G.Walk u v) (n m : ℕ) :
+    (p.drop n).drop m = (p.drop (n + m)).copy (drop_getVert ..).symm rfl := by
+  apply ext_support
+  grind [support_copy, drop_support_eq_support_drop_min, drop_length, List.drop_drop]
 
 @[simp]
 theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
@@ -719,6 +740,14 @@ lemma dropLast_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Nil) 
   p.notNilRec (by simp) hp h
 
 @[simp]
+theorem darts_dropLast {p : G.Walk u v} : p.dropLast.darts = p.darts.dropLast := by
+  simp [dropLast, darts_take, List.dropLast_eq_take]
+
+@[simp]
+theorem edges_dropLast {p : G.Walk u v} : p.dropLast.edges = p.edges.dropLast := by
+  simp [dropLast, edges_take, List.dropLast_eq_take]
+
+@[simp]
 lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     (p.concat h).dropLast = p.copy rfl (by simp) := by
   induction p
@@ -741,9 +770,13 @@ lemma concat_dropLast {p : G.Walk u v} (hp : G.Adj p.penultimate v) : p.dropLast
     | nil => rfl
     | _ => simp [hind]
 
-@[simp] lemma cons_support_tail {p : G.Walk u v} (hp : ¬p.Nil) :
-    u :: p.tail.support = p.support := by
-  rw [← support_cons (p.adj_snd hp), cons_tail_eq _ hp]
+@[simp]
+lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
+    p.tail.support = p.support.tail := by
+  simp [← p.cons_tail_eq hp]
+
+lemma cons_support_tail {p : G.Walk u v} (hp : ¬p.Nil) : u :: p.tail.support = p.support := by
+  simp [hp]
 
 theorem support_dropLast_concat {p : G.Walk u v} (hp : ¬p.Nil) :
     p.dropLast.support ++ [v] = p.support := by
@@ -754,7 +787,11 @@ theorem support_dropLast {p : G.Walk u v} (hp : ¬p.Nil) :
     p.dropLast.support = p.support.dropLast := by
   simp [← support_dropLast_concat hp]
 
-@[simp] lemma length_tail_add_one {p : G.Walk u v} (hp : ¬ p.Nil) :
+@[simp]
+theorem length_tail (p : G.Walk u v) : p.tail.length = p.length - 1 := by
+  cases p <;> simp
+
+lemma length_tail_add_one {p : G.Walk u v} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
   rw [← length_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
@@ -765,6 +802,28 @@ lemma length_dropLast_add_one {p : G.Walk u v} (hp : ¬p.Nil) :
 @[simp]
 lemma length_dropLast (p : G.Walk u v) : p.dropLast.length = p.length - 1 := by
   cases p <;> simp [← length_dropLast_add_one not_nil_cons]
+
+theorem getVert_dropLast {n} {p : G.Walk u v} (h : n < p.length) :
+    p.dropLast.getVert n = p.getVert n := by
+  grind [getVert_eq_support_getElem, length_dropLast, support_dropLast, length_eq_zero_iff]
+
+@[simp]
+theorem reverse_tail (p : G.Walk u v) :
+    p.tail.reverse = p.reverse.dropLast.copy rfl p.penultimate_reverse := by
+  match p with
+  | nil => simp
+  | cons hadj p =>
+    apply ext_support
+    simp [-reverse_cons]
+
+@[simp]
+theorem reverse_dropLast (p : G.Walk u v) :
+    p.dropLast.reverse = p.reverse.tail.copy p.snd_reverse rfl := by
+  match p with
+  | nil => simp
+  | cons hadj p =>
+    apply ext_support
+    simp [-reverse_cons, List.dropLast_cons_of_ne_nil p.support_ne_nil]
 
 protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by
   cases p <;> simp at hp ⊢
@@ -785,10 +844,6 @@ lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) : p = Walk.nil.copy rfl h.eq 
 lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=
   (nil_drop_of_length_le h).eq_copy_nil
-
-lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
-    p.tail.support = p.support.tail := by
-  rw [← cons_support_tail hp, List.tail_cons]
 
 @[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
