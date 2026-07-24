@@ -68,7 +68,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : Is
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
-  convert hc.smul g
+  convert! hc.smul g
   ext x
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv,
     ConjAct.toConjAct_smul, inv_inv, Subgroup.mul_mem_cancel_right _ hg,
@@ -314,7 +314,7 @@ section Real
 
 variable (𝒢 : Subgroup (GL (Fin 2) ℝ))
 
-open Classical in
+open scoped Classical in
 /-- The strict width of the cusp `∞`, i.e. the `x` such that `𝒢.strictPeriods = zmultiples x`, or
 0 if no such `x` exists. -/
 noncomputable def strictWidthInfty : ℝ :=
@@ -433,18 +433,22 @@ open Subgroup
 
 namespace CongruenceSubgroup
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictPeriods_Gamma0 (N : ℕ) :
     strictPeriods (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
   strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictPeriods_Gamma1 (N : ℕ) :
     strictPeriods (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
   strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictWidthInfty_Gamma0 (N : ℕ) :
     strictWidthInfty (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
   strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictWidthInfty_Gamma1 (N : ℕ) :
     strictWidthInfty (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
   strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]

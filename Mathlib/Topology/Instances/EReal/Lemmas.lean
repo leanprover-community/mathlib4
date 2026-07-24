@@ -74,7 +74,7 @@ theorem continuousOn_toReal : ContinuousOn EReal.toReal ({⊥, ⊤}ᶜ : Set ERe
 /-- The set of finite `EReal` numbers is homeomorphic to `ℝ`. -/
 def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
   toEquiv := neTopBotEquivReal
-  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_toReal
+  continuous_toFun := continuousOn_iff_continuous_domRestrict.1 continuousOn_toReal
   continuous_invFun := continuous_coe_real_ereal.subtype_mk _
 
 /-! ### ENNReal coercion -/
@@ -460,7 +460,7 @@ much as possible the symmetries of the multiplication. -/
 private lemma continuousAt_mul_swap {a b : EReal}
     (h : ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (a, b)) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (b, a) := by
-  convert h.comp continuous_swap.continuousAt (x := (b, a))
+  convert! h.comp continuous_swap.continuousAt (x := (b, a))
   simp [mul_comm]
 
 private lemma continuousAt_mul_symm1 {a b : EReal}

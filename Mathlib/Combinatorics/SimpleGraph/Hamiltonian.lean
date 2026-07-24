@@ -65,7 +65,7 @@ theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
   rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v a, List.count_singleton_self]
 
 /-- If a path `p` is Hamiltonian then the graph has finitely many vertices. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
   elems := p.support.toFinset
   complete x := List.mem_toFinset.mpr (mem_support hp x)
@@ -88,8 +88,11 @@ lemma IsHamiltonian.toFinset_support (hp : p.IsHamiltonian) : p.support.toFinset
 alias IsHamiltonian.support_toFinset := IsHamiltonian.toFinset_support
 
 omit [Fintype α] in
-theorem IsHamiltonian.setOf_support (hp : p.IsHamiltonian) : {v | v ∈ p.support} = Set.univ :=
+theorem IsHamiltonian.setOfPred_support (hp : p.IsHamiltonian) : {v | v ∈ p.support} = Set.univ :=
   Set.eq_univ_iff_forall.mpr hp.mem_support
+
+@[deprecated (since := "2026-07-09")]
+alias IsHamiltonian.setOf_support := IsHamiltonian.setOfPred_support
 
 /-- The length of a Hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
@@ -129,7 +132,7 @@ theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surj
 omit [DecidableEq β] in
 theorem IsHamiltonian.injective_of_isPath_map (hp : p.IsHamiltonian) (h : (p.map f).IsPath) :
     Function.Injective f := by
-  rw [← Set.injOn_univ, ← hp.setOf_support]
+  rw [← Set.injOn_univ, ← hp.setOfPred_support]
   exact h.injOn_support_of_isPath_map
 
 lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
@@ -278,7 +281,7 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
   intro hG
   obtain ⟨p, hp⟩ := hG.exists_isHamiltonianCycle u
   refine hp.isHamiltonian_tail.isPath.isTrail.not_mem_support_of_not_reachable
-    (fun huv ↦ he.2 <| .trans ?_ huv) he.2 (hp.isHamiltonian_tail.mem_support v)
+    (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
 end SimpleGraph

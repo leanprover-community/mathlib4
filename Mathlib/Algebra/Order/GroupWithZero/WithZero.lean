@@ -5,8 +5,8 @@ Authors: Kevin Buzzard
 -/
 module
 
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
 
 # Covariant instances on `WithZero`
@@ -35,14 +35,14 @@ assert_not_exists Ring
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     PosMulStrictMono (WithZero α) where
   mul_lt_mul_of_pos_left
-  | (x : α), hx, 0, (b : α), _ => by simpa only [mul_zero] using WithZero.zero_lt_coe _
+  | (x : α), hx, 0, (b : α), _ => by simpa only [mul_zero] using! WithZero.zero_lt_coe _
   | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; gcongr
 
 open Function in
 instance {α : Type*} [Mul α] [Preorder α] [MulRightStrictMono α] :
     MulPosStrictMono (WithZero α) where
   mul_lt_mul_of_pos_right
-  | (x : α), hx, 0, (b : α), _ => by simpa only [mul_zero] using WithZero.zero_lt_coe _
+  | (x : α), hx, 0, (b : α), _ => by simpa only [mul_zero] using! WithZero.zero_lt_coe _
   | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; gcongr
 
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftMono α] :

@@ -73,7 +73,7 @@ def Equiv.Perm.viaFintypeEmbedding : Equiv.Perm β :=
 theorem Equiv.Perm.viaFintypeEmbedding_apply_image (a : α) :
     e.viaFintypeEmbedding f (f a) = f (e a) := by
   rw [Equiv.Perm.viaFintypeEmbedding]
-  convert Equiv.Perm.extendDomain_apply_image e (Function.Embedding.toEquivRange f) a
+  convert! Equiv.Perm.extendDomain_apply_image e (Function.Embedding.toEquivRange f) a
 
 theorem Equiv.Perm.viaFintypeEmbedding_apply_mem_range {b : β} (h : b ∈ Set.range f) :
     e.viaFintypeEmbedding f b = f (e (f.invOfMemRange ⟨b, h⟩)) := by
@@ -102,12 +102,12 @@ noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
   have hst (x : α) : x ∈ fs \ ft ↔ x ∈ s \ t := by simp [hs, ht]
   have hts (x : α) : x ∈ ft \ fs ↔ x ∈ t \ s := by simp [hs, ht]
   have hc : fs.card = ft.card := by
-    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert h
+    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert! h
   replace hc := Finset.card_sdiff_comm hc
   rw [← Fintype.subtype_card (fs \ ft) hst, ← Fintype.subtype_card (ft \ fs) hts] at hc
   exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
 
-open Classical in
+open scoped Classical in
 /-- If `e` is an equivalence between two subtypes of a type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
@@ -135,6 +135,7 @@ Note that when `p = q`, `Equiv.Perm.subtypeCongr e (Equiv.refl _)` can be used i
 noncomputable abbrev extendSubtype (e : { x // p x } ≃ { x // q x }) : Perm α :=
   subtypeCongr e e.toCompl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     e.extendSubtype x = e ⟨x, hx⟩ := by
   simp [extendSubtype, subtypeCongr, sumCompl_symm_apply_of_pos hx]
@@ -145,8 +146,8 @@ theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
 
 theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
-  simp only [extendSubtype, subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply,
-    sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
+  simp only [extendSubtype, subtypeCongr, Equiv.trans_apply,
+    sumCompl_symm_apply_of_neg hx]
   rfl
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
@@ -167,7 +168,6 @@ theorem Perm.exists_extending_pair [Finite α]
 theorem Perm.exists_map_finset_eq
     (s t : Finset β) (h : s.card = t.card) :
     ∃ σ : Perm β, s.map σ.toEmbedding = t := by
-  classical
   obtain ⟨σ, hσ⟩ := Perm.exists_extending_pair
     (fun x : s => (x : β)) (fun x : s => ((s.equivOfCardEq h) x : β))
     Subtype.val_injective (Subtype.val_injective.comp (s.equivOfCardEq h).injective)

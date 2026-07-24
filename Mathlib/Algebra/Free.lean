@@ -344,14 +344,15 @@ theorem quot_mk_assoc_left (x y z w : α) :
     Quot.mk (AssocRel α) (x * (y * z * w)) = Quot.mk _ (x * (y * (z * w))) :=
   Quot.sound (AssocRel.left _ _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : Semigroup (AssocQuotient α) where
   mul x y := by
     refine Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) ?_ ?_
-    · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
+    · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩)
       · exact quot_mk_assoc_left _ _ _ _
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]
-    · rintro a₁ a₂ b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
+    · rintro a₁ a₂ b (⟨c, d, e⟩ | ⟨c, d, e, f⟩)
       · simp only [quot_mk_assoc, quot_mk_assoc_left]
       · rw [quot_mk_assoc, quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc_left,
           quot_mk_assoc_left, ← quot_mk_assoc c d, ← quot_mk_assoc c d, quot_mk_assoc_left]
