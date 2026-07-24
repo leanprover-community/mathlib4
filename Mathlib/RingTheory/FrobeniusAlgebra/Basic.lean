@@ -93,6 +93,8 @@ abbrev ofLinearEquiv (σ : A ≃ₗ[R] A →ₗ[R] R) (hσ : ∀ a b c : A, σ (
     convert σ.bijective
     ext; simp [hσ]
 
+/-- A finite-dimensional algebra with a separating left bilinear form `σ` such that
+`σ (a * b) c = σ a (b * c)` induces a Frobenius algebra, where its dual will be `σ.flip 1`. -/
 noncomputable abbrev ofBilinForm {K A : Type*} [Field K] [Ring A] [Algebra K A]
     [FiniteDimensional K A] (σ : LinearMap.BilinForm K A) (hσ : σ.SeparatingLeft)
     (hσ₂ : ∀ a b c : A, σ (a * b) c = σ a (b * c)) : FrobeniusAlgebra K A :=
