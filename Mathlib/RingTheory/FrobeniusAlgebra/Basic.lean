@@ -80,6 +80,9 @@ instance : FrobeniusAlgebra R R where
   dual := .id
   bijective_compr₂_mul := ⟨fun _ _ h ↦ by simpa using congr($h 1), fun f ↦ ⟨f 1, by ext; simp⟩⟩
 
+lemma flip_equivDual :
+    (equivDual R A).flip = (equivDual R A).dualMap ∘ₗ Module.Dual.eval R A := rfl
+
 end NonUnital
 
 section NonAssoc
@@ -111,20 +114,14 @@ instance instFiniteDimensional {K A : Type*} [Field K] [Ring A] [Algebra K A]
 
 variable [FrobeniusAlgebra R A]
 
-lemma flip_compr₂_mul_dual :
-    ((mul R A).compr₂ (dual (R := R))).flip =
-      (equivDual R A).dualMap ∘ₗ Module.Dual.eval R A := rfl
-
 -- move
 lemma _root_.Module.Dual.eval_injective (R M : Type*) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Function.Injective (Module.Dual.eval R (Module.Dual R M)) :=
   Function.LeftInverse.injective (g := (Module.Dual.eval R M).dualMap) fun _ ↦ by ext; simp
 
-variable [Module.IsReflexive R A]
-
-theorem bijective_flip_compr₂_mul :
-    Function.Bijective ((mul R A).compr₂ (dual (R := R))).flip := by
-  rw [flip_compr₂_mul_dual]
+theorem bijective_flip_equivDual [Module.IsReflexive R A] :
+    Function.Bijective (equivDual R A).flip := by
+  rw [flip_equivDual]
   exact (equivDual R A).dualMap.bijective.comp (Module.bijective_dual_eval R A)
 
 end NonAssoc
@@ -137,7 +134,7 @@ variable (R A) in
 `dual (nakayamaAlgEquiv R A b * a) = dual (a * b)` for all `a, b`. -/
 noncomputable def nakayamaAlgEquiv : A ≃ₐ[R] A :=
   .ofLinearEquiv
-    (.trans (.ofBijective _ bijective_flip_compr₂_mul) (equivDual R A).symm)
+    (.trans (.ofBijective _ bijective_flip_equivDual) (equivDual R A).symm)
     ((equivDual R A).injective (by ext a; simp))
     (by simp [← (equivDual R A).injective.eq_iff, LinearMap.ext_iff, equivDual_apply, mul_assoc])
 
