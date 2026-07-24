@@ -12,10 +12,19 @@ import Mathlib.Tactic.NormNum.Basic
 /-!
 # Computation engine for the Bareiss decomposition tactic
 
-The producer computes on the integer values of the entries, read off their numeral syntax or
-evaluated by `norm_num`; the ring is consulted to decide whether a value vanishes. Rows
-with fractional entries are scaled integral by the lcm of their denominators, which is
-folded back into the transform `L`.
+Given a matrix literal `M` over a commutative domain, the entry point
+`mkBareissDecomposition` elaborates a certificate `⟨L, σ, pivot, …⟩ :
+Bareiss.Decomposition M`, with the three certificate conditions checked by the kernel via
+`decide`.
+
+The production is data-only: no proofs are constructed, and the ring is consulted only to
+decide whether a value vanishes (`isZeroInR`).
+
+## Main definitions
+
+- `mkBareissDecomposition`: produce and elaborate the decomposition of a matrix literal.
+- `bareissDecomp`: fraction-free Gaussian elimination on integer values.
+- `BareissData`: the raw decomposition data.
 -/
 
 public meta section

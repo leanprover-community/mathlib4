@@ -10,9 +10,12 @@ public import Mathlib.Tactic.Echelon.Bareiss
 /-!
 # `norm_rank` simproc and `eval_rank` tactic
 
-The read-off layer: matches `Matrix.rank M`, produces and elaborates a Bareiss
-decomposition, applies `rank_eq`, and returns a `Simp.Result` rewriting the rank to a
-literal.
+`eval_rank` closes goals of the form `Matrix.rank !![…] = k` over a commutative domain,
+for matrices whose entries are numerals or `norm_num`-evaluable expressions.
+
+`normalizeRank` matches `Matrix.rank M`, produces and elaborates a
+Bareiss decomposition of `M`, applies `rank_eq`, and returns a `Simp.Result` rewriting
+the rank to a literal.
 -/
 
 public meta section
