@@ -24,7 +24,9 @@ section MonoidWithZero
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Zero α]
   [IsZeroApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
-  [ZeroHomClass F α α]
+  [ZeroHomClass F α α] [NPow F]
+  (pow_zero : ∀ f : F, f ^ 0 = 1)
+  (pow_succ : ∀ (n : ℕ) (f : F), f ^ (n + 1) = f ^ n * f)
 
 /-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `MonoidWithZero`
 if `α` is a `MonoidWithZero`. -/
@@ -34,6 +36,8 @@ protected abbrev FunLike.monoidWithZero : MonoidWithZero F where
   mul_one _ := by apply DFunLike.ext; simp
   one_mul _ := by apply DFunLike.ext; simp
   mul_assoc _ _ _ := by apply DFunLike.ext; simp
+  npow_zero := pow_zero
+  npow_succ := pow_succ
 
 end MonoidWithZero
 
@@ -42,11 +46,12 @@ section Semiring
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddCommMonoid α]
   [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
   [SMul ℕ F] [IsSMulApply ℕ F α α] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApply F α]
+  [NPow F] (pow_zero : ∀ f : F, f ^ 0 = 1) (pow_succ : ∀ (n : ℕ) (f : F), f ^ (n + 1) = f ^ n * f)
 
 /-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `Semiring` if `α`
-is a `Semiring`. -/
+is a `AddCommMonoid`. -/
 protected abbrev FunLike.semiring : Semiring F where
-  __ := FunLike.monoidWithZero
+  __ := FunLike.monoidWithZero pow_zero pow_succ
   __ := FunLike.addCommMonoid
   left_distrib f g h := by apply DFunLike.ext; simp
   right_distrib _ _ _ := by apply DFunLike.ext; simp
@@ -64,11 +69,12 @@ variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
   [SMul ℕ F] [IsSMulApply ℕ F α α]
   [SMul ℤ F] [IsSMulApply ℤ F α α] [AddMonoidHomClass F α α]
   [NatCast F] [IsNatCastApply F α] [IntCast F] [IsIntCastApply F α]
+  [NPow F] (pow_zero : ∀ f : F, f ^ 0 = 1) (pow_succ : ∀ (n : ℕ) (f : F), f ^ (n + 1) = f ^ n * f)
 
 /-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `Ring` if `α` is a
-`Ring`. -/
+`AddCommGroup`. -/
 protected abbrev FunLike.ring : Ring F where
-  __ := FunLike.semiring
+  __ := FunLike.semiring pow_zero pow_succ
   __ := FunLike.addCommGroup
   intCast_ofNat _ := by apply DFunLike.ext; simp
   intCast_negSucc n := by apply DFunLike.ext; simp [succ_nsmul]
