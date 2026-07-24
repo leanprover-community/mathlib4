@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
-public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Univ
 
 import Mathlib.SetTheory.Ordinal.Principal
@@ -98,11 +97,12 @@ theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
   ⟨Function.mtr fun hwo ↦ ne_of_lt <| by simp_all [ord_card_le],
   fun how ↦ (Ordinal.lt_omega0.1 how).rec fun n h ↦ h ▸ isInitial_natCast (n + 1)⟩
 
-theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
-  rintro ⟨a, ha⟩
-  have := ha (isInitial_ord (succ a.card))
-  rw [ord_le] at this
-  exact (lt_succ _).not_ge this
+theorem isCofinal_setOf_isInitial : IsCofinal {x | IsInitial x} :=
+  fun _ ↦ ⟨_, isInitial_ord _, (lt_ord_succ_card _).le⟩
+
+@[deprecated isCofinal_setOf_isInitial (since := "2026-05-25")]
+theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} :=
+  isCofinal_setOf_isInitial.not_bddAbove
 
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]
@@ -118,11 +118,11 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
 
 For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
 def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
-  toFun := enumOrd {x | IsInitial x}
-  inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
-  map_rel_iff' := enumOrd_le_enumOrd not_bddAbove_isInitial
+  toFun x := Order.enum _ isCofinal_setOf_isInitial x
+  inj' _ _ h := Subtype.coe_injective.comp (OrderIso.injective _) h
+  map_rel_iff' := (Order.enum _ isCofinal_setOf_isInitial).le_iff_le
 
-theorem coe_preOmega : preOmega = enumOrd {x | IsInitial x} :=
+theorem coe_preOmega : preOmega = Subtype.val ∘ Order.enum _ isCofinal_setOf_isInitial :=
   rfl
 
 theorem preOmega_strictMono : StrictMono preOmega :=
@@ -138,15 +138,14 @@ theorem preOmega_max (o₁ o₂ : Ordinal) : preOmega (max o₁ o₂) = max (pre
   preOmega.monotone.map_max
 
 theorem isInitial_preOmega (o : Ordinal) : IsInitial (preOmega o) :=
-  enumOrd_mem not_bddAbove_isInitial o
+  Subtype.prop _
 
 theorem le_preOmega_self (o : Ordinal) : o ≤ preOmega o :=
   preOmega_strictMono.le_apply
 
 @[simp]
-theorem preOmega_zero : preOmega 0 = 0 := by
-  rw [coe_preOmega, enumOrd_zero]
-  exact csInf_eq_bot_of_bot_mem isInitial_zero
+theorem preOmega_zero : preOmega 0 = 0 :=
+  Order.enum_bot.trans <| csInf_eq_bot_of_bot_mem isInitial_zero
 
 @[simp]
 theorem preOmega_natCast (n : ℕ) : preOmega n = n := by
@@ -154,9 +153,7 @@ theorem preOmega_natCast (n : ℕ) : preOmega n = n := by
   | zero => exact preOmega_zero
   | succ n IH =>
     apply (le_preOmega_self _).antisymm'
-    apply enumOrd_succ_le not_bddAbove_isInitial (isInitial_natCast _) (IH.trans_lt _)
-    rw [Nat.cast_lt]
-    exact lt_succ n
+    exact enum_succ_le_of_lt (isInitial_natCast _) (IH.trans_lt (by simp))
 
 @[simp]
 theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega ofNat(n) = n :=
@@ -164,7 +161,7 @@ theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega ofNat(n) = n :=
 
 theorem preOmega_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, preOmega b < a) :
     preOmega o ≤ a :=
-  enumOrd_le_of_forall_lt ha H
+  enum_le_of_forall_lt ha H
 
 theorem isNormal_preOmega : IsNormal preOmega := by
   rw [isNormal_iff]
@@ -176,8 +173,9 @@ theorem isNormal_preOmega : IsNormal preOmega := by
   exact lt_succ b
 
 @[simp]
-theorem range_preOmega : range preOmega = {x | IsInitial x} :=
-  range_enumOrd not_bddAbove_isInitial
+theorem range_preOmega : range preOmega = {x | IsInitial x} := by
+  apply (EquivLike.range_comp Subtype.val _).trans
+  simp
 
 theorem mem_range_preOmega_iff {x : Ordinal} : x ∈ range preOmega ↔ IsInitial x := by
   rw [range_preOmega, mem_ofPred]
@@ -288,7 +286,7 @@ namespace Cardinal
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
 def preAleph : Ordinal.{u} ≃o Cardinal.{u} :=
-  (enumOrdOrderIso _ not_bddAbove_isInitial).trans isInitialIso
+  (enum _ isCofinal_setOf_isInitial).trans isInitialIso
 
 @[simp]
 theorem _root_.Ordinal.card_preOmega (o : Ordinal) : (preOmega o).card = preAleph o :=
