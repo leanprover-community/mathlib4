@@ -7326,6 +7326,9 @@ public import Mathlib.Tactic.Determinant.Bird.Cert
 public import Mathlib.Tactic.Determinant.Bird.Meta
 public import Mathlib.Tactic.DuplicateDecls
 public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Tactic.EnsureConstructive
+public import Mathlib.Tactic.EnsureConstructive.Core
+public import Mathlib.Tactic.EnsureConstructive.Elab
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eval
