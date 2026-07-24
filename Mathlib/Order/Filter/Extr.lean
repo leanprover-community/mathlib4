@@ -9,6 +9,7 @@ public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set
@@ -114,6 +115,7 @@ def IsMaxOn :=
   IsMaxFilter f (𝓟 s) a
 
 /-- `IsExtrOn f s a` means `IsMinOn f s a` or `IsMaxOn f s a` -/
+@[wikidata Q845060]
 def IsExtrOn : Prop :=
   IsExtrFilter f (𝓟 s) a
 
@@ -142,7 +144,7 @@ theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
     IsGLB {f x | x ∈ s} (f a) := by
   rw [isGLB_iff_le_iff]
   intro b
-  simp only [mem_lowerBounds, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  simp only [mem_lowerBounds, mem_ofPred_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   exact ⟨fun hba x hx ↦ le_trans hba (hfsa hx), fun hb ↦ hb a ha⟩
 
 theorem IsMaxOn.isLUB (ha : a ∈ s) (hfsa : IsMaxOn f s a) :

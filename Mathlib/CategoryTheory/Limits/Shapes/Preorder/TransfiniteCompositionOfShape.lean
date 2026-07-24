@@ -118,6 +118,7 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
       (Cocone.ext (Iso.refl _))
   fac := by simp [← Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/

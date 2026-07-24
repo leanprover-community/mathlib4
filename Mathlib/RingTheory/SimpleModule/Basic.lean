@@ -388,7 +388,6 @@ theorem IsSemisimpleModule.exists_linearEquiv_dfinsupp [IsSemisimpleModule R M] 
   have ⟨s, ind, sSup, simple⟩ := IsSemisimpleModule.exists_sSupIndep_sSup_simples_eq_top R M
   refine ⟨s, ?_, ind, SetCoe.forall.mpr simple⟩
   rw [sSupIndep_iff] at ind
-  classical
   exact .symm <| .trans (.ofInjective _ ind.dfinsupp_lsum_injective) <| .trans (.ofEq _ ⊤ <|
     by rw [← Submodule.iSup_eq_range_dfinsupp_lsum, ← sSup, sSup_eq_iSup']) Submodule.topEquiv
 
@@ -445,7 +444,7 @@ open LinearMap in
 /-- A finite product of semisimple rings is semisimple. -/
 instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisimpleRing (R i)] :
     IsSemisimpleRing (Π i, R i) := by
-  letI _ (i) : Module (Π i, R i) (R i) := Module.compHom _ (Pi.evalRingHom R i)
+  let _ (i) : Module (Π i, R i) (R i) := Module.compHom _ (Pi.evalRingHom R i)
   let e (i) : R i →ₛₗ[Pi.evalRingHom R i] R i :=
     { AddMonoidHom.id (R i) with map_smul' := fun _ _ ↦ rfl }
   have (i : _) : IsSemisimpleModule (Π i, R i) (R i) :=
@@ -455,8 +454,8 @@ instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisi
 set_option backward.isDefEq.respectTransparency false in
 /-- A binary product of semisimple rings is semisimple. -/
 instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := by
-  letI : Module (R × S) R := Module.compHom _ (.fst R S)
-  letI : Module (R × S) S := Module.compHom _ (.snd R S)
+  let : Module (R × S) R := Module.compHom _ (.fst R S)
+  let : Module (R × S) S := Module.compHom _ (.snd R S)
   -- e₁, e₂ got falsely flagged by the unused argument linter
   let _e₁ : R →ₛₗ[.fst R S] R := { AddMonoidHom.id R with map_smul' := fun _ _ ↦ rfl }
   let _e₂ : S →ₛₗ[.snd R S] S := { AddMonoidHom.id S with map_smul' := fun _ _ ↦ rfl }
@@ -468,8 +467,8 @@ instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing 
 
 theorem RingHom.isSemisimpleRing_of_surjective (f : R →+* S) (hf : Function.Surjective f)
     [IsSemisimpleRing R] : IsSemisimpleRing S := by
-  letI : Module R S := Module.compHom _ f
-  haveI : RingHomSurjective f := ⟨hf⟩
+  let : Module R S := Module.compHom _ f
+  have : RingHomSurjective f := ⟨hf⟩
   let e : S →ₛₗ[f] S := { AddMonoidHom.id S with map_smul' := fun _ _ ↦ rfl }
   rw [IsSemisimpleRing, ← e.isSemisimpleModule_iff_of_bijective Function.bijective_id]
   infer_instance
@@ -547,23 +546,17 @@ instance (R) [DivisionRing R] [Module R M] [Nontrivial M] : IsSimpleModule (Modu
 
 end LinearMap
 
-namespace JordanHolderModule
+namespace JordanHolderLattice
 
-instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
-  IsMaximal := (· ⋖ ·)
-  lt_of_isMaximal := CovBy.lt
-  sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy
-  isMaximal_inf_left_of_isMaximal_sup := inf_covBy_of_covBy_sup_of_covBy_sup_left
-  Iso X Y := Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
-  iso_symm := fun ⟨f⟩ => ⟨f.symm⟩
-  iso_trans := fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
-  second_iso {X} {Y} _ := by
-    constructor
-    rw [sup_comm, inf_comm]
-    dsimp
-    exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
+/-- The isomorphism relation for composition series of modules implies isomorphism of quotients. -/
+noncomputable def Iso.linearEquiv {X Y : Submodule R M × Submodule R M} (h : Iso X Y) :
+    (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype :=
+  letI e : Submodule R M × Submodule R M → Submodule R M × Submodule R M → Prop :=
+    fun X Y ↦ Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
+  Nonempty.some <| h.rel e ⟨.refl R _⟩ (fun ⟨f⟩ ↦ ⟨f.symm⟩) (fun ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩)
+    fun h ↦ by rw [sup_comm, inf_comm]; exact ⟨(LinearMap.quotientInfEquivSupQuotient ..).symm⟩
 
-end JordanHolderModule
+end JordanHolderLattice
 
 section jacobson_density
 
@@ -584,6 +577,7 @@ theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
   have ⟨r, hr⟩ := mem_span_singleton.mp this
   ⟨r, fun m hm ↦ by simpa [x] using! congr($hr ⟨m, hm⟩).symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Jacobson density theorem for a module finite over its endomorphism ring. -/
 protected theorem Module.Finite.toModuleEnd_moduleEnd_surjective [Module.Finite (End R M) M] :
     Function.Surjective (Module.toModuleEnd (End R M) (S := R) M) := by

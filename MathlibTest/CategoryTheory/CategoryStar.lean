@@ -66,7 +66,9 @@ universe u₁ u₂
 variable (E : Sort (imax (u₁ + 1) (u₂ + 1))) [Category* E]
 variable (F : Sort (max (u₁ + 1) (u₂ + 1))) [Category* F]
 
+set_option linter.checkUnivs false in
 def barE := E ⥤ E
+set_option linter.checkUnivs false in
 def barF := F ⥤ F
 
 /--

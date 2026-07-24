@@ -172,6 +172,10 @@ theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero_iff
 @[to_additive (attr := simp)]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
+@[to_additive]
+theorem length_surjective [Nonempty α] : (@length α).Surjective :=
+  ‹Nonempty α›.elim fun a n => ⟨FreeMonoid.ofList (List.replicate n a), by simp [length]⟩
+
 @[to_additive FreeAddMonoid.length_eq_one]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
   List.length_eq_one_iff
@@ -340,7 +344,7 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
   DFunLike.ext_iff.1 (comp_lift g f) x
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
@@ -381,6 +385,7 @@ theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
 @[to_additive]
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
     map f (map g x) = map (f ∘ g) x := by
