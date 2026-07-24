@@ -47,17 +47,17 @@ namespace Database
 
 /-- The URL for an external database entry. -/
 def url : Database → String → String
-  | .kerodon, id => "https://kerodon.net/tag/" ++ id
-  | .lmfdb, id => "https://www.lmfdb.org/knowledge/show/" ++ id
+  | .kerodon, id => s!"https://kerodon.net/tag/{id}"
+  | .lmfdb, id => s!"https://www.lmfdb.org/knowledge/show/{id}"
   | .pibase, id =>
       let path := match id.toList with
-        | 'P' :: _ => "properties/"
-        | 'S' :: _ => "spaces/"
-        | 'T' :: _ => "theorems/"
+        | 'P' :: _ => "properties"
+        | 'S' :: _ => "spaces"
+        | 'T' :: _ => "theorems"
         | _ => ""
-      "https://topology.pi-base.org/" ++ path ++ id
-  | .stacks, id => "https://stacks.math.columbia.edu/tag/" ++ id
-  | .wikidata, id => "https://www.wikidata.org/wiki/" ++ id
+      s!"https://topology.pi-base.org/{path}/{id}"
+  | .stacks, id => s!"https://stacks.math.columbia.edu/tag/{id}"
+  | .wikidata, id => s!"https://www.wikidata.org/wiki/{id}"
 
 /-- The display label used in docstring links and trace output. -/
 def label : Database → String
