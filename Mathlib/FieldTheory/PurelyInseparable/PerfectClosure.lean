@@ -232,20 +232,21 @@ instance isPurelyInseparable_iSup {ι : Sort*} {t : ι → IntermediateField F E
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
     [Algebra.IsSeparable F (adjoin F S)] (q : ℕ) [ExpChar F q] (n : ℕ) :
     adjoin F S = adjoin F ((· ^ q ^ n) '' S) := by
-  set L := adjoin F S
   set M := adjoin F ((· ^ q ^ n) '' S)
-  have hi : M ≤ L := by
-    rw [adjoin_le_iff]
-    rintro _ ⟨y, hy, rfl⟩
+  have := expChar_of_injective_algebraMap (algebraMap F M).injective q
+  refine le_antisymm (adjoin_le_iff.2 fun x hx ↦ ?_) (adjoin_le_iff.2 ?_)
+  · have : Algebra.IsSeparable M M⟮x⟯ :=
+      (isSeparable_adjoin_simple_iff_isSeparable M E).2 <|
+        ((isSeparable_adjoin_iff_isSeparable F E).1 inferInstance x hx).tower_top M
+    have : IsPurelyInseparable M M⟮x⟯ :=
+      (isPurelyInseparable_adjoin_simple_iff_pow_mem M E q).2
+        ⟨n, ⟨x ^ q ^ n, subset_adjoin F _ ⟨x, hx, rfl⟩⟩, rfl⟩
+    have hx' := mem_adjoin_simple_self M x
+    rw [M⟮x⟯.eq_bot_of_isPurelyInseparable_of_isSeparable, mem_bot] at hx'
+    obtain ⟨y, rfl⟩ := hx'
+    exact y.2
+  · rintro _ ⟨y, hy, rfl⟩
     exact pow_mem (subset_adjoin F S hy) _
-  let := (inclusion hi).toAlgebra
-  have : Algebra.IsSeparable M (extendScalars hi) :=
-    Algebra.isSeparable_tower_top_of_isSeparable F M L
-  have : IsPurelyInseparable M (extendScalars hi) := by
-    rw [extendScalars_adjoin hi, isPurelyInseparable_adjoin_iff_pow_mem M _ q]
-    exact fun x hx ↦ ⟨n, ⟨x ^ q ^ n, subset_adjoin F _ ⟨x, hx, rfl⟩⟩, rfl⟩
-  simpa only [extendScalars_restrictScalars, restrictScalars_bot_eq_self] using congr_arg
-    (restrictScalars F) (extendScalars hi).eq_bot_of_isPurelyInseparable_of_isSeparable
 
 /-- If `E / F` is a separable field extension of exponential characteristic `q`, then
 `F(S) = F(S ^ (q ^ n))` for any subset `S` of `E` and any natural number `n`. -/

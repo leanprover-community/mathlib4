@@ -262,8 +262,6 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
         rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix non-terminal simp (operates on two goals, with long simp sets)
-set_option linter.flexible false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
@@ -289,8 +287,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         Vector.cons_val, Vector.tail_val] at hf hg ⊢
       simp only [← Part.pure_eq_some] at hf hg ⊢
       induction v.head with
-      | zero =>
-        simp [prec, Part.bind_assoc, ← Part.bind_some_eq_map, Bind.bind, hf, Part.bind_some]
+      | zero => simp [prec, hf, Bind.bind]
       | succ n' _ =>
         simp only [prec, Code.case_eval, Code.cons_eval, Code.comp_eval, Code.fix_eval,
           Code.tail_eval, Code.succ_eval, Code.pred_eval, Code.id_eval, Code.zero'_eval,
@@ -310,6 +307,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
               (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail)
                 by
           have := Part.eq_some_iff.mpr (this _ _ (zero_add _))
+          simp [Part.bind_assoc]
           simp_all
         intro a b e
         induction b generalizing a with
