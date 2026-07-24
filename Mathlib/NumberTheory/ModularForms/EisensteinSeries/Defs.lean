@@ -58,10 +58,10 @@ lemma gammaSet_one_const (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a = gammaSet 1
 /-- For level `N = 1`, the gamma sets simplify to only a `gcd` condition. -/
 lemma gammaSet_one_eq (a : Fin 2 → ZMod 1) :
     gammaSet 1 r a = {v : Fin 2 → ℤ | (v 0).gcd (v 1) = r} := by
-  simp [gammaSet, Subsingleton.eq_zero]
+  simp [gammaSet, Subsingleton.eq_zero (α := Fin 2 → ZMod 1)]
 
 lemma gammaSet_one_mem_iff (v : Fin 2 → ℤ) : v ∈ gammaSet 1 r 0 ↔ (v 0).gcd (v 1) = r := by
-  simp [gammaSet, Subsingleton.eq_zero]
+  simp [gammaSet, Subsingleton.eq_zero (α := Fin 2 → ZMod 1)]
 
 /-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence. -/
 def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a ≃ gammaSet 1 r a' :=
