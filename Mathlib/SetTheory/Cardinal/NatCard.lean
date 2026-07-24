@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Data.Set.Card
 
 /-!
 
@@ -224,19 +224,85 @@ theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α �
 
 end Set
 
-namespace List.Nodup
+namespace Finset
 
-variable {l : List α} (h : l.Nodup)
-include h
+variable {s : Finset α} {s' : Set α}
 
-theorem length_le_natCard [Finite α] : l.length ≤ Nat.card α := by
-  have := Fintype.ofFinite α
-  grw [h.length_le_card, Fintype.card_eq_nat_card]
+theorem card_le_encard (h : ∀ a ∈ s, a ∈ s') : s.card ≤ s'.encard := by
+  grw [← Set.encard_coe_eq_coe_finsetCard, Set.encard_le_encard (h · <| by simpa using ·)]
+
+theorem card_le_ncard (hs : s'.Finite) (h : ∀ a ∈ s, a ∈ s') : s.card ≤ s'.ncard := by
+  grw [← ENat.coe_le_coe, hs.cast_ncard_eq, s.card_le_encard h]
+
+variable (s) in
+theorem card_le_enatCard : s.card ≤ ENat.card α := by
+  simp [← Set.encard_univ, card_le_encard]
+
+variable (s) in
+theorem card_le_natCard [Finite α] : s.card ≤ Nat.card α := by
+  simp [← Set.ncard_univ, card_le_ncard]
+
+end Finset
+
+namespace Multiset
+
+variable {m : Multiset α} {s : Set α}
+
+theorem ncard_setOf_mem [DecidableEq α] : {a | a ∈ m}.ncard = m.dedup.card := by
+  rw [← coe_toFinset, Set.ncard_coe_finset, card_toFinset]
+
+theorem encard_setOf_mem [DecidableEq α] : {a | a ∈ m}.encard = m.dedup.card := by
+  rw [← m.finite_toSet.cast_ncard_eq, ncard_setOf_mem]
+
+namespace Nodup
+
+variable (hm : m.Nodup)
+include hm
+
+theorem card_le_encard (h : ∀ a ∈ m, a ∈ s) : m.card ≤ s.encard := by
+  classical
+  grw [← toFinset_card_of_nodup hm, Finset.card_le_encard (h · <| by simpa using ·)]
+
+theorem card_le_ncard (hs : s.Finite) (h : ∀ a ∈ m, a ∈ s) : m.card ≤ s.ncard := by
+  grw [← ENat.coe_le_coe, hs.cast_ncard_eq, hm.card_le_encard h]
+
+theorem card_le_enatCard : m.card ≤ ENat.card α := by
+  simp [← Set.encard_univ, hm.card_le_encard]
+
+theorem card_le_natCard [Finite α] : m.card ≤ Nat.card α := by
+  simp [← Set.ncard_univ, hm.card_le_ncard]
+
+end Nodup
+
+end Multiset
+
+namespace List
+
+variable {l : List α} {s : Set α}
+
+theorem ncard_setOf_mem [DecidableEq α] : {a | a ∈ l}.ncard = l.dedup.length := by
+  rw [← coe_toFinset, Set.ncard_coe_finset, card_toFinset]
+
+theorem encard_setOf_mem [DecidableEq α] : {a | a ∈ l}.encard = l.dedup.length := by
+  rw [← l.finite_toSet.cast_ncard_eq, ncard_setOf_mem]
+
+namespace Nodup
+
+variable (hl : l.Nodup)
+include hl
+
+theorem length_le_encard (h : ∀ a ∈ l, a ∈ s) : l.length ≤ s.encard := by
+  grw [← Multiset.coe_card, Multiset.coe_nodup.mpr hl |>.card_le_encard h]
+
+theorem length_le_ncard (hs : s.Finite) (h : ∀ a ∈ l, a ∈ s) : l.length ≤ s.ncard := by
+  grw [← ENat.coe_le_coe, hs.cast_ncard_eq, hl.length_le_encard h]
 
 theorem length_le_enatCard : l.length ≤ ENat.card α := by
-  cases finite_or_infinite α
-  · grw [h.length_le_natCard, ENat.card_eq_coe_natCard]
-  · grw [ENat.card_eq_top_of_infinite]
-    exact le_top
+  simp [← Set.encard_univ, hl.length_le_encard]
 
-end List.Nodup
+theorem length_le_natCard [Finite α] : l.length ≤ Nat.card α := by
+  simp [← Set.ncard_univ, hl.length_le_ncard]
+
+end Nodup
+
+end List
