@@ -460,7 +460,7 @@ theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef] [IsFiniteMeas
     Matrix.IsHermitian.ext_iff.mp (Fact.out : K.PosSemidef).1]
   simp
 
-/-- The integral operator `f ↦ ∫ ∫ (y : X), K · y (f y) ∂μ` defined through the Riesz representer
+/-- The integral operator `f ↦ ∫ (y : X), K · y (f y) ∂μ` defined through the Riesz representer
 associated to the bilinear form `mercerForm`. -/
 def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
   {
