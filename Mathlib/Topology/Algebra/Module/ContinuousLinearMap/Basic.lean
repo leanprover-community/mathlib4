@@ -592,9 +592,11 @@ instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) :=
 @[deprecated (since := "2026-07-23")] alias coe_pow' := FunLike.coe_pow_eq_iterate
 
 @[simp, norm_cast]
-theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
+theorem toLinearMap_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
   DFunLike.ext' <| (FunLike.coe_pow_eq_iterate f n).trans
     <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+
+@[deprecated (since := "2026-07-24")] protected alias coe_pow := toLinearMap_pow
 
 instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
