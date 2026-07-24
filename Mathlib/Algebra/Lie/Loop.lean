@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.Cochain
+public import Mathlib.Algebra.Lie.Graded
 public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.MonoidAlgebra.Grading
 public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
 
 /-!
 # Loop Lie algebras and their central extensions
@@ -69,6 +72,43 @@ def loopAlgebraEquivLaurent :
   LieEquiv.refl
 
 namespace LoopAlgebra
+
+noncomputable instance [DecidableEq A] [AddCommMonoid A] :
+    GradedLieAlgebra (fun (a : A) ↦ (DirectSum.decomposeTensor
+      (fun b ↦ AddMonoidAlgebra.grade R b) L a)) where
+  bracket_mem i j xi xj hi hj := by
+    rw [DirectSum.decomposeTensor_apply] at hi hj ⊢
+    obtain ⟨xi, hxi⟩ := hi
+    obtain ⟨xj, hxj⟩ := hj
+    rw [← hxi, ← hxj]
+    clear hxi hxj
+    induction xi using TensorProduct.induction_on with
+    | zero => simp
+    | tmul x y =>
+      simp only [LinearMap.rTensor_tmul, Submodule.subtype_apply]
+      induction xj using TensorProduct.induction_on with
+      | zero => simp
+      | tmul u v =>
+        obtain ⟨x, hx⟩ := x
+        obtain ⟨u, hu⟩ := u
+        use ⟨x * u, SetLike.mul_mem_graded hx hu⟩ ⊗ₜ ⁅y, v⁆
+        simp
+      | add u v hu hv =>
+        rw [LinearMap.map_add, lie_add]
+        obtain ⟨u', hu'⟩ := hu
+        obtain ⟨v', hv'⟩ := hv
+        use u' + v'
+        simp [← hu', ← hv']
+    | add x y hx hy =>
+      rw [LinearMap.map_add, add_lie]
+      obtain ⟨u, hu⟩ := hx
+      obtain ⟨v, hv⟩ := hy
+      use u + v
+      simp [← hu, ← hv]
+  decompose' :=
+    (DirectSum.tensorDecomposition (fun (a : A) ↦ AddMonoidAlgebra.grade R a) L).decompose'
+  left_inv := (DirectSum.tensorDecomposition _ L).left_inv
+  right_inv := (DirectSum.tensorDecomposition _ L).right_inv
 
 open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
