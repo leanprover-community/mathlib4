@@ -75,10 +75,6 @@ lemma mem_associatedPrimes_atPrime_of_mem_associatedPrimes
     p.primeCompl (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.under_maximalIdeal] using ass
 
-@[deprecated (since := "2025-11-27")]
-alias mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes :=
-  mem_associatedPrimes_atPrime_of_mem_associatedPrimes
-
 include S f in
 @[stacks 0310 "(2)"]
 lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of_fg (p : Ideal R')
@@ -127,6 +123,7 @@ lemma preimage_comap_associatedPrimes_eq_associatedPrimes_of_isLocalizedModule
     fun h ↦ comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of_fg S f p h
     ((isNoetherianRing_iff_ideal_fg R).mp ‹_› _)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
 lemma minimalPrimes_annihilator_subset_associatedPrimes [IsNoetherianRing R] [Module.Finite R M] :
     (Module.annihilator R M).minimalPrimes ⊆ associatedPrimes R M := by

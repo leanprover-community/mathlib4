@@ -28,6 +28,7 @@ variable (R) in
 def convexHull : ClosureOperator (Set X) :=
   .ofCompletePred (IsConvexSet R) (fun _ ↦ .sInter)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma subset_convexHull_iff : t ⊆ convexHull R s ↔ ∀ C, s ⊆ C → IsConvexSet R C → t ⊆ C := by
   simp [convexHull, iInter_subtype, iInter_and]
 
@@ -36,6 +37,7 @@ lemma subset_convexHull_iff : t ⊆ convexHull R s ↔ ∀ C, s ⊆ C → IsConv
 protected lemma IsConvexSet.convexHull : IsConvexSet R (convexHull R s) :=
   ClosureOperator.isClosed_closure (.ofCompletePred (IsConvexSet R) _) s
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma convexHull_eq_iInter :
     convexHull R s = ⋂ (t : Set X) (_ : s ⊆ t) (_ : IsConvexSet R t), t := by
   simp [convexHull, iInter_subtype, iInter_and]

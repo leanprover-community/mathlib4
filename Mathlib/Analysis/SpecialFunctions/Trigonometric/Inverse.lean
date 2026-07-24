@@ -40,7 +40,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_arcsin : range arcsin = Icc (-(π / 2)) (π / 2) := by
   rw [arcsin, range_comp Subtype.val]
-  simp [Icc]
+  ext
+  simp
 
 theorem arcsin_le_pi_div_two (x : ℝ) : arcsin x ≤ π / 2 :=
   (arcsin_mem_Icc x).2

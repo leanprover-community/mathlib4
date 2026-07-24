@@ -210,6 +210,7 @@ lemma mpullbackWithin_eq_pullbackWithin {f : E → E'} {V : E' → E'} {s : Set 
   simp only [mpullbackWithin, mfderivWithin_eq_fderivWithin, pullbackWithin]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mpullback_eq_pullback {f : E → E'} {V : E' → E'} :
     mpullback 𝓘(𝕜, E) 𝓘(𝕜, E') f V = pullback 𝕜 f V := by
   simp only [← mpullbackWithin_univ, ← pullbackWithin_univ, mpullbackWithin_eq_pullbackWithin]
@@ -641,6 +642,7 @@ lemma eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm
   simp only [mfld_simps] at hy h'y
   simp [hy, h'y]
 
+set_option backward.isDefEq.respectTransparency false in
 omit [CompleteSpace E] in
 lemma eventuallyEq_mpullback_mpullbackWithin_extChartAt (V : Π (x : M), TangentSpace I x) :
     V =ᶠ[𝓝[s] x] mpullback I 𝓘(𝕜, E) (extChartAt I x)

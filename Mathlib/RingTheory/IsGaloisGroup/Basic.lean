@@ -126,16 +126,27 @@ instance IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [Finite G]
 
 end Field
 
-variable (G G' K L : Type*) [Group G] [Group G'] [Field K] [Field L] [Algebra K L]
-  [MulSemiringAction G L] [MulSemiringAction G' L]
+variable (G : Type*) [Group G]
 
 namespace IsGaloisGroup
 
 section IsDomain
 
 variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B]
-  [MulSemiringAction G B] [MulSemiringAction G' B] [IsGaloisGroup G A B] [IsGaloisGroup G' A B]
-  [Finite G] [Finite G']
+  [MulSemiringAction G B] [IsGaloisGroup G A B] [Finite G]
+
+attribute [local instance] FractionRing.liftAlgebra in
+/-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
+@[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
+  MulEquiv.ofBijective (MulSemiringAction.toAlgAut G A B) (by
+    have := IsDomain.of_faithfulSMul A B
+    have : FaithfulSMul G B := IsGaloisGroup.faithful A
+    refine ⟨fun _ _ ↦ eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, fun φ ↦ ?_⟩
+    obtain ⟨g, hg⟩ := Ideal.Quotient.stabilizerHom_surjective G ⊥ ⊥
+      (Ideal.Quotient.algEquivOfEqMap (⊥ : Ideal A) φ Ideal.map_bot.symm)
+    use g
+    rw [AlgEquiv.ext_iff] at hg ⊢
+    exact fun x ↦ (AlgEquiv.quotientBot A B).symm.injective (hg x))
 
 end IsDomain
 
@@ -233,6 +244,8 @@ def smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SMulCo
       simp [algebraMap.smul, algebraMap.smul', smul_comm])⟩
 
 end Semiring
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] [MulSemiringAction G L]
 
 variable (F : IntermediateField K L) (N : Subgroup G) [N.Normal] [IsGaloisGroup N F L]
 

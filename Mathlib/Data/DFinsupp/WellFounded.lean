@@ -60,6 +60,7 @@ section Zero
 
 variable [∀ i, Zero (α i)] (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This key lemma says that if a finitely supported dependent function `x₀` is obtained by merging
   two such functions `x₁` and `x₂`, and if we evolve `x₀` down the `DFinsupp.Lex` relation one
   step and get `x`, we can always evolve one of `x₁` and `x₂` down the `DFinsupp.Lex` relation
@@ -75,25 +76,25 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
   simp_rw [piecewise_apply] at hs hr
   split_ifs at hs with hp
   · refine ⟨⟨{ j | r j i → j ∈ p }, piecewise x₁ x { j | r j i }, x₂⟩,
-      .fst ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
+      .fst ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_ofPred_eq]
     · simp only [if_pos hj]
     · split_ifs with hi
       · rwa [hr i hi, if_pos hp] at hs
       · assumption
     · ext1 j
-      simp only [piecewise_apply, Set.mem_setOf_eq]
+      simp only [piecewise_apply, Set.mem_ofPred_eq]
       split_ifs with h₁ h₂ <;> try rfl
       · rw [hr j h₂, if_pos (h₁ h₂)]
       · rw [Classical.not_imp] at h₁
         rw [hr j h₁.1, if_neg h₁.2]
   · refine ⟨⟨{ j | r j i ∧ j ∈ p }, x₁, piecewise x₂ x { j | r j i }⟩,
-      .snd ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
+      .snd ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_ofPred_eq]
     · exact if_pos hj
     · split_ifs with hi
       · rwa [hr i hi, if_neg hp] at hs
       · assumption
     · ext1 j
-      simp only [piecewise_apply, Set.mem_setOf_eq]
+      simp only [piecewise_apply, Set.mem_ofPred_eq]
       split_ifs with h₁ h₂ <;> try rfl
       · rw [hr j h₁.1, if_pos h₁.2]
       · rw [hr j h₂, if_neg]
@@ -173,6 +174,7 @@ instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellF
     WellFoundedLT (Lex (Π₀ i, α i)) :=
   ⟨Lex.wellFounded' (fun _ _ => not_lt_zero) (fun i => (hα i).wf) hι.wf⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFoundedLT ι]
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [∀ i, WellFoundedLT (α i)] :
@@ -189,8 +191,8 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, We
     WellFounded (Pi.Lex r (fun {i} ↦ s i)) := by
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
   · convert! emptyWf.wf
-  letI : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
-  haveI := Fintype.ofFinite ι
+  let : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
+  have := Fintype.ofFinite ι
   refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) hs ?_)
   exacts [(hs i).not_lt_min ⊤ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 
@@ -198,6 +200,7 @@ instance Pi.Lex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
     [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (∀ i, α i)) :=
   ⟨Pi.Lex.wellFounded (· < ·) fun i => (hwf i).1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance Pi.Colex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (∀ i, α i)) :=
   Pi.Lex.wellFoundedLT (ι := ιᵒᵈ)
@@ -215,6 +218,7 @@ instance DFinsupp.Lex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ 
     [∀ i, LT (α i)] [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (Π₀ i, α i)) :=
   ⟨DFinsupp.Lex.wellFounded_of_finite (· < ·) fun i => (hwf i).1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance DFinsupp.Colex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ i, Zero (α i)]
     [∀ i, LT (α i)] [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (Π₀ i, α i)) :=
   DFinsupp.Lex.wellFoundedLT_of_finite (ι := ιᵒᵈ)
@@ -246,8 +250,8 @@ instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, Well
   ⟨by
     obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
     · convert! emptyWf.wf
-    letI : ∀ i, Zero (α i) := fun i => ⟨(hw i).wf.min ⊤ ⟨x i, trivial⟩⟩
-    haveI := Fintype.ofFinite ι
+    let : ∀ i, Zero (α i) := fun i => ⟨(hw i).wf.min ⊤ ⟨x i, trivial⟩⟩
+    have := Fintype.ofFinite ι
     refine InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => ?_).wf
     exact (hw i).wf.not_lt_min ⊤ trivial⟩
 

@@ -14,6 +14,7 @@ public meta import Lean.Meta.Tactic.Symm
 public meta import Lean.Meta.CoeAttr
 public meta import Mathlib.Lean.Meta.Simp
 public import Batteries.Lean.NameMapAttribute
+public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Translate.Attributes
@@ -40,7 +41,7 @@ In the case of `to_additive`, we may want to apply it multiple times,
 (such as in `a ^ n` -> `n • a` -> `n +ᵥ a`). In this case, you should use the syntax
 `to_additive (attr := some_other_attr, to_additive)`, which will apply `some_other_attr` to all
 three generated declarations.
- -/
+-/
 syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
 
 syntax reorderOption := &"reorder" " := " translateReorder
@@ -162,6 +163,13 @@ register_option linter.translateOverwrite : Bool := {
 register_option linter.translateRedundant : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute is redundant" }
+
+/-- Linter used by translate attributes that warns when a translation was not added
+because of being invalid. -/
+register_option linter.translate.warnInvalid : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that warns when a translation was not added
+    because of being invalid." }
 
 /-- `RelevantArg` represents an optional argument that should be checked to determine
 whether or not to translate the given constant. -/
@@ -294,12 +302,9 @@ where
   /-- Insert only one direction of a translation. -/
   insertTranslationAux (src : Name) (t : TranslateData) (info : TranslationInfo) : CoreM Unit := do
     if let some info' := findTranslation? (← getEnv) t src then
-      -- After `insert_to_additive_translation`, we may end up adding same translation again.
-      -- So in that case, don't log a warning.
-      if info.translation != info'.translation then
-        Linter.logLintIf linter.translateOverwrite ref m!"`{src}` was already translated to \
-          `{info'.translation}` instead of `{info.translation}`.\n\
-          Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
+      Linter.logLintIf linter.translateOverwrite ref m!"`{src}` was already translated to \
+        `{info'.translation}` instead of `{info.translation}`.\n\
+        Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
     trace[translate] "Added translation {src} ↦ {tgt}\
       {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})"} \
@@ -615,20 +620,19 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
 
 /-- Run `applyReplacementFun` on the given `srcDecl` to make a new declaration with name `tgt`. -/
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : Reorder) (dont : List Nat)
+    (reorder : ArgReorder) (dont : List Nat)
     (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) (rename : NameMap Name) :
     MetaM (ConstantInfo × Option RelevantArg) := do
   unless srcDecl.all == [srcDecl.name] do
     throwError "`{t.attrName}` does not support mutually recursive declarations."
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
-  let decl := decl.updateLevelParams (reorder.univReorder.permuteList! decl.levelParams)
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
     value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
   trace[translate] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
-  value ← reorderLambda reorder.reorder value'
+  value ← reorderLambda reorder value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
@@ -637,7 +641,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     type ← b.insertBoundaries decl.type t.attrName
   let (type', relevantArg₂) ← applyReplacementForall t dont <|
     renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
-  type ← reorderForall reorder.reorder type'
+  type ← reorderForall reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return (decl.updateType type, .merge .min relevantArg₁ relevantArg₂)
@@ -650,7 +654,7 @@ and only if that fails do we try to include them.
 The reason is that in the most common case, `to_dual` succeeds without needing to insert
 unfold boundaries, and figuring out whether to insert them can be quite expensive. -/
 def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : Reorder) (dont : List Nat) (rename : NameMap Name) :
+    (reorder : ArgReorder) (dont : List Nat) (rename : NameMap Name) :
     MetaM (ConstantInfo × Option RelevantArg) :=
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
@@ -732,14 +736,14 @@ def findAuxDecls (decl : ConstantInfo) (pre : Name) : CoreM (Array Name) := do
 /-- Return the `relevant_arg` option based on the computed `relevantArg?`
 and the given `cfg.relevantArg?`. -/
 def getRelevantArg (t : TranslateData) (cfg : Config) (relevantArg? : Option RelevantArg)
-    (src : Name) : CoreM RelevantArg := do
+    (src : Name) (lint : Bool := true) : CoreM RelevantArg := do
   let relevantArg := relevantArg?.getD (.arg 0)
   if let some relevantArg' := cfg.relevantArg? then
-    if relevantArg == relevantArg' then
+    if lint && relevantArg == relevantArg' then
       Linter.logLintIf linter.translateRelevantArg cfg.ref m!"\
         `{t.attrName}` correctly autogenerated `(relevant_arg := {relevantArg'})` for \
         `{.ofConstName src}`.\nYou may remove the option."
-    else if relevantArg?.isSome then
+    else if lint && relevantArg?.isSome then
       Linter.logLintIf linter.translateRelevantArg cfg.ref m!"\
         `{t.attrName}` determined that `(relevant_arg := {relevantArg})` \
         is the right option for `{.ofConstName src}`, \
@@ -793,7 +797,6 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       let namesPre := (← getConstInfo rootSrc).type.getForallBinderNames
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| cfg.dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
-  let reorder := { reorder, univReorder := guessUnivReorder reorder srcDecl }
   -- now transform the source declaration
   let (tgtDecl, relevantArg?) ←
     MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate rename
@@ -802,7 +805,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       getRelevantArg t cfg relevantArg? src
     else
       pure (relevantArg?.getD .noArg)
-  insertTranslation t src tgt reorder relevantArg cfg.ref
+  insertTranslation t src tgt { reorder } relevantArg cfg.ref
   if src == rootSrc && srcDecl.isThm && tgtDecl.type == srcDecl.type then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"`{t.attrName}` did not change the type \
       of theorem `{.ofConstName src}`. Please remove the attribute."
@@ -861,11 +864,27 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
-    -- Copy implicit_reducible status before adding instance attribute
-    if (← getReducibilityStatus src) matches .implicitReducible then
-      setReducibilityStatus tgt .implicitReducible
+    -- Copy `instance_reducible` / `instance_reducible` status before adding instance attribute
+    match (← getReducibilityStatus src) with
+    | .implicitReducible => setReducibilityStatus tgt .implicitReducible
+    | .instanceReducible => setReducibilityStatus tgt .instanceReducible
+    | _ => pure ()
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
+
+open Batteries.Tactic.Alias in
+/-- If `src` was declared with `alias`, then record `tgt` as an alias,
+and give it an alias-style docstring if it doesn't have a doc-string already -/
+def copyAliasAttribute (t : TranslateData) (src tgt : Name) : CoreM Unit := do
+  if let some srcInfo ← getAliasInfo? src then
+    let env ← getEnv
+    let tgtInfo? := match srcInfo with
+      | .plain n => .plain <$> findTranslationName? env t n
+      | .forward n => .forward <$> findTranslationName? env t n
+      | .reverse n => .reverse <$> findTranslationName? env t n
+    if let some tgtInfo := tgtInfo? then
+      setAliasInfo tgtInfo tgt
+      addAliasDocstring tgt tgtInfo
 
 /-- Warn the user when the declaration has an attribute. -/
 def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
@@ -891,24 +910,6 @@ def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : Paramet
     (thisAttr attrName src tgt : Name) : CoreM Unit :=
   warnAttrCore stx (attr.getParam? · · |>.isSome) thisAttr attrName src tgt
 
-/-- `translateLemmas names argInfo desc t` runs `t` on all elements of `names`
-and adds translations between the generated lemmas (the output of `t`).
-`names` must be non-empty. -/
-def translateLemmas
-    (t : TranslateData) (names : Array Name) (reorder : Reorder) (relevantArg : RelevantArg)
-    (desc : String) (ref : Syntax) (runAttr : Name → CoreM (Array Name)) : CoreM Unit := do
-  let auxLemmas ← names.mapM runAttr
-  let nLemmas := auxLemmas[0]!.size
-  for nm in names, lemmas in auxLemmas do
-    unless lemmas.size == nLemmas do
-      throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
-  for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
-    for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
-      -- Only add a translation if one doesn't already exist.
-      -- This happens if `srcLemma` is the `_assoc` lemma from `to_dual (attr := reassoc)`.
-      if (findTranslation? (← getEnv) t srcLemma).isNone then
-        insertTranslation t srcLemma tgtLemma reorder relevantArg ref
-
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
   if cfg.self then
@@ -920,11 +921,6 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
       logWarning m!"`{t.attrName} none` ignores the provided name {cfg.target}"
     return ← withDeclNameForAuxNaming src do
       mkAuxDeclName <| .mkSimple ("_" ++ t.attrName.toString)
-  -- When re-tagging an existing translation, simply return that existing translation.
-  if cfg.existing then
-    if cfg.target == .anonymous then
-      if let some tgt := findTranslationName? (← getEnv) t src then
-        return tgt
   let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
   -- Auto-generated name of the resulting declaration, without prior namespace components.
@@ -959,33 +955,38 @@ where
       n'
 
 /-- Verify that the type of `srcDecl` translates to that of `tgtDecl`.
-Also try to autogenerate the `reorder` option for this translation. -/
-partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config) :
+Also try to autogenerate the `reorder` and `relevant_arg` options for this translation. -/
+partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config) (lint := true) :
     MetaM (Reorder × RelevantArg) := withoutExporting do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"checking translation `{.ofConstName src}` → `{.ofConstName tgt}`") do
   let srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
-  unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
-    throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
-      universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
+  unless srcDecl.numLevelParams == tgtDecl.numLevelParams do
+    throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.numLevelParams} \
+      universe levels, but '{tgt}' has {tgtDecl.numLevelParams} universe levels"
   let mut srcType := srcDecl.type
   let unfoldBoundaries? ← t.unfoldBoundaries?.mapM (return ·.getState (← getEnv))
   if let some b := unfoldBoundaries? then
     srcType ← b.insertBoundaries srcType t.attrName
   let (srcType', relevantArg?) ← applyReplacementForall t cfg.dontTranslate srcType
   srcType := srcType'
-  let reorder' ← guessReorder srcType tgtDecl.type
+  let reorder' ← withTraceNode `translate_detail (fun _ =>
+    return m!"guessing the reorder between `{srcType}` and `{tgtDecl.type}`") do
+    guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
   let reorder ←
     if let some reorder := cfg.reorder? then
-      if reorder == reorder' then
+      if reorder.range > srcType.getForallArity then
+        throwError "The given (reorder := {reorder}) is out of bounds for `{.ofConstName src}`"
+      if lint && reorder == reorder' then
         Linter.logLintIf linter.translateReorder cfg.ref m!"\
           `{t.attrName}` correctly autogenerated `(reorder := {reorder'})` for {src}.\n\
           You may remove the `(reorder := {reorder})` argument."
       pure reorder
     else
       pure reorder'
-  let univReorder := guessUnivReorder reorder srcDecl
-  if cfg.self && reorder.isEmpty then
+  if lint && cfg.self && reorder.isEmpty then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
       Please remove the attribute, or provide an explicit `(reorder := ...)` argument.\n\
@@ -994,32 +995,70 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
-  srcType := srcType.instantiateLevelParams
-    (univReorder.permuteList! srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
+  -- We rely on unification to determine how the universe parameters need to be reordered.
+  let levels ← mkFreshLevelMVars srcDecl.numLevelParams
+  srcType := srcType.instantiateLevelParams srcDecl.levelParams levels
   let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
-  return ({ univReorder, reorder }, ← getRelevantArg t cfg relevantArg? src)
+  -- Process any remaining universe contraints, to assign all universe metavariables.
+  discard <| processPostponed (mayPostpone := false) (exceptionOnFailure := true)
+  let params ← levels.mapM fun level ↦ do match ← instantiateLevelMVars level with
+    | .param u => return u
+    | _ => throwError "inferred universe `{level}` in `{srcType}` is not a parameter."
+  let some univReorder := getPermutation params.toArray tgtDecl.levelParams.toArray |
+    throwError "inferred universe parameters {params} \
+      are not a reordering of {srcDecl.levelParams}."
+  return ({ univReorder, reorder }, ← getRelevantArg t cfg relevantArg? src lint)
+
+/-- A version of `insertTranslation` that checks whether the translation is valid, and only
+inserts the translation if it is valid. -/
+def insertTranslationChecked (t : TranslateData) (src tgt : Name) (cfg : Config) : CoreM Unit := do
+  let (reorder, relevantArg) ←
+    try
+      checkExistingType t src tgt cfg (lint := false) |>.run'
+    catch ex =>
+      Linter.logLintIf linter.translate.warnInvalid cfg.ref m!"\
+        @[{t.attrName}] failed to add a translation from `{.ofConstName src}` to \
+        `{.ofConstName tgt}`.\nPlease silence this warning and add a translation manually. \
+        Error:\n\n{ex.toMessageData}"
+      return
+  insertTranslation t src tgt reorder relevantArg cfg.ref
+
+/-- `translateLemmas` runs `runAttr` on all elements of `names` and adds translations between
+the generated lemmas (the output of `t`).  `names` must be non-empty. -/
+def translateLemmas (t : TranslateData) (names : Array Name)
+    (desc : String) (cfg : Config) (runAttr : Name → CoreM (Array Name)) : CoreM Unit := do
+  let auxLemmas ← names.mapM runAttr
+  let nLemmas := auxLemmas[0]!.size
+  for nm in names, lemmas in auxLemmas do
+    unless lemmas.size == nLemmas do
+      throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
+  for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
+    for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
+      -- Only add a translation if one doesn't already exist.
+      -- This happens if `srcLemma` is the `_assoc` lemma from `to_dual (attr := reassoc)`.
+      if (findTranslation? (← getEnv) t srcLemma).isNone then
+        insertTranslationChecked t srcLemma tgtLemma cfg
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
-def proceedFieldsAux (t : TranslateData) (src tgt : Name) (reorder : Reorder)
-    (relevantArg : RelevantArg) (ref : Syntax) (f : Name → Array Name) : CoreM Unit := do
+def proceedFieldsAux (t : TranslateData) (src tgt : Name) (cfg : Config)
+    (f : Name → Array Name) : CoreM Unit := do
   let srcFields := f src
   let tgtFields := f tgt
   if srcFields.size != tgtFields.size then
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
       Lengths do not match."
   for srcField in srcFields, tgtField in tgtFields do
-    insertTranslation t srcField tgtField reorder relevantArg ref
+    insertTranslationChecked t srcField tgtField cfg
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that they will be translated correctly. -/
-def proceedFields (t : TranslateData) (src tgt : Name) (reorder : Reorder)
-    (relevantArg : RelevantArg) (ref : Syntax) : CoreM Unit := do
+def proceedFields (t : TranslateData) (src tgt : Name) (cfg : Config) : CoreM Unit := do
   let env ← getEnv
-  let aux := proceedFieldsAux t src tgt reorder relevantArg ref
+  let aux := proceedFieldsAux t src tgt cfg
   -- add translations for the structure fields
   aux fun declName ↦
     if isStructure env declName then
@@ -1145,10 +1184,12 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
 
 mutual
 /-- Apply attributes to the original and translated declarations. -/
-partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) (reorder : Reorder)
-    (relevantArg : RelevantArg) : TermElabM (Array Name) := do
-  -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
-  copyInstanceAttribute src tgt
+partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) :
+    TermElabM (Array Name) := do
+  if !cfg.existing && !cfg.none then
+    -- Copy the `instance` attribute, since it is nice to directly tag `instance` declarations.
+    copyInstanceAttribute src tgt
+    copyAliasAttribute t src tgt
   -- Warn users if the original declaration has an attribute
   if !cfg.existing && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
@@ -1186,19 +1227,31 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   for attr in attrs do
     if let some impl := (← generatingAttrs.get).find? attr.name then
       withRef attr.stx do withLogging do
-        translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
+        translateLemmas t allDecls "simps lemmas" cfg
           (impl · attr.stx attr.kind)
     else
-      for decl in allDecls do
+      let mut attr := attr
+      -- Set the target of `(attr := deprecated)` when applied to an `alias`.
+      if attr.name == `deprecated then
+        if let some info ← Batteries.Tactic.Alias.getAliasInfo? src then
+          if let `(attr| deprecated%$tk $[$desc:str]? $[(since := $since)]?) := attr.stx then
+            attr := { attr with stx := ← `(attr|
+              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[(since := $since)]?) }
+      for decl in allDecls, i in 0...* do
+        if i != 0 then
+          -- Translate the target of `(attr := deprecated)` if possible.
+          if attr.name == `deprecated then
+            if let `(attr| deprecated%$tk $name $[$desc]? $[(since := $since)]?) := attr.stx then
+              let name ← realizeGlobalConstNoOverload name
+              if let some name := findTranslationName? (← getEnv) t name then
+                attr := { attr with stx := ← `(attr|
+                  deprecated%$tk $(mkCIdent name) $[$desc]? $[(since := $since)]?) }
         Term.applyAttributes decl #[attr]
   return nestedDecls
 
-/--
-Copies equation lemmas and attributes from `src` to `tgt`
--/
-partial def copyMetaData (t : TranslateData) (cfg : Config) (src : Name) : CoreM (Array Name) := do
-  let some { reorder, relevantArg, translation := tgt } := findTranslation? (← getEnv) t src |
-    throwError "internal `{t.attrName}` error: {src} was not translated."
+/-- Copies equation lemmas and attributes from `src` to `tgt`. -/
+partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) :
+    CoreM (Array Name) := do
   -- The equation lemmas can only be related if the value of `tgt` is the translated value of `src`.
   unless cfg.existing do
     if let some eqns := eqnsAttribute.find? (← getEnv) src then
@@ -1210,9 +1263,9 @@ partial def copyMetaData (t : TranslateData) (cfg : Config) (src : Name) : CoreM
       /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
       definitions. If we don't do that, the equation lemma for `src` might be generated later
       when doing a `rw`, but it won't be generated for `tgt`. -/
-      translateLemmas t #[src, tgt] reorder relevantArg "equation lemmas" cfg.ref fun nm ↦
+      translateLemmas t #[src, tgt] "equation lemmas" cfg fun nm ↦
         (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
-  applyAttributes t cfg src tgt reorder relevantArg |>.run'.run'
+  applyAttributes t cfg src tgt |>.run'.run'
 
 /-- `addTranslationAttr src cfg` adds a translation attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
@@ -1238,20 +1291,20 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- since `tgt` already exists, we just need to
     -- add translations `src.x ↦ tgt.x'` for any subfields.
     trace[translate_detail] "declaration {tgt} already exists."
-    proceedFields t src tgt reorder relevantArg cfg.ref
+    proceedFields t src tgt cfg
   else
     unless (← withoutExporting do getConstInfo src).hasValue (allowOpaque := true) do
       throwError "`{t.attrName}` cannot translate `{.ofConstName src}` because it has no value."
     let reorder := cfg.reorder?.getD {}
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder cfg.rename
-  let nestedNames ← copyMetaData t cfg src
+  if let some doc := cfg.doc then
+    addDocStringCore tgt doc
+  let nestedNames ← copyMetaData t cfg src tgt
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
   Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
     |>.run' |>.run'
-  if let some doc := cfg.doc then
-    addDocStringCore tgt doc
   return nestedNames.push tgt
 
 end

@@ -29,7 +29,7 @@ variable {α : Type*}
 section
 variable [GroupWithZero α]
 
-open Classical in
+open scoped Classical in
 /-- This is a variant of integer exponentiation, defined for internal use in the `field_simp` tactic
 implementation. It differs from the usual integer exponentiation in that `0 ^ 0` is `0`, not `1`.
 With this choice, the function `n ↦ a ^ n` is always a homomorphism (`a ^ (n + m) = a ^ n * a ^ m`),
@@ -201,6 +201,7 @@ the corresponding `ℤ` term, then multiply them all together. -/
 noncomputable def eval [GroupWithZero M] (l : NF M) : M :=
   (l.map (fun (⟨r, x⟩ : ℤ × M) ↦ zpow' x r)).prod
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem eval_cons [CommGroupWithZero M] (p : ℤ × M) (l : NF M) :
     (p ::ᵣ l).eval = l.eval * zpow' p.2 p.1 := by
   unfold eval cons
@@ -314,6 +315,7 @@ theorem cons_zero_eq_div_of_eq_div [CommGroupWithZero M] (e : M) {t t_n t_d : NF
 instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
   simp +instances only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
   congr! 2
@@ -332,6 +334,7 @@ instance : Pow (NF M) ℤ where
 
 @[simp] theorem zpow_apply (r : ℤ) (l : NF M) : l ^ r = l.map fun (a, x) ↦ (r * a, x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval_zpow' [CommGroupWithZero M] (l : NF M) (r : ℤ) :
     (l ^ r).eval = zpow' l.eval r := by
   unfold NF.eval at ⊢
