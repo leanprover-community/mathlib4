@@ -7,9 +7,15 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Bareiss.Defs
 
-/-!
-# Reification engine for the Bareiss decomposition tactic (wip)
+import Mathlib.Tactic.NormNum.Basic
 
+/-!
+# Computation engine for the Bareiss decomposition tactic
+
+The producer computes on the integer values of the entries, read off their numeral syntax or
+evaluated by `norm_num`; the ring is consulted to decide whether a value vanishes. Rows
+with fractional entries are scaled integral by the lcm of their denominators, which is
+folded back into the transform `L`.
 -/
 
 public meta section
@@ -18,71 +24,241 @@ open Lean Meta Elab
 
 namespace Mathlib.Tactic.Echelon
 
-partial def vecLit (α : Expr) (entries : Array Expr) : MetaM Expr := do
-  let mut acc ← mkAppOptM ``Matrix.vecEmpty #[some α]
-  for e in entries.reverse do
-    acc ← mkAppM ``Matrix.vecCons #[e, acc]
-  return acc
+/- TODO: once `!![…]` elaborates to `Matrix.ofArray`, the following 4 conversions need a
+corresponding adaptation.
+-/
+/-- Build the vector literal `![a, b, …]` with the given entries. -/
+def mkVecLit (α : Expr) (entries : Array Expr) : MetaM Expr := do
+  entries.foldrM (fun e acc => mkAppM ``Matrix.vecCons #[e, acc])
+    (← mkAppOptM ``Matrix.vecEmpty #[some α])
 
-def matrixLitExpr (R : Expr) (rows : Array (Array Expr)) : MetaM Expr := do
-  let numRows := rows.size
-  let numCols := if 0 < rows.size then rows[0]!.size else 0
-  let finN ← mkAppM ``Fin #[mkNatLit numCols]
-  let outer ← vecLit (← mkArrow finN R) (← rows.mapM (vecLit R))
-  let finM ← mkAppM ``Fin #[mkNatLit numRows]
+/-- Build the matrix literal `!![…]` with the given rows of entries. -/
+def mkMatrixLit (R : Expr) (rows : Array (Array Expr)) : MetaM Expr := do
+  let m := rows.size
+  let n := (rows.getD 0 #[]).size
+  let finN ← mkAppM ``Fin #[mkNatLit n]
+  let outer ← mkVecLit (← mkArrow finN R) (← rows.mapM (mkVecLit R))
+  let finM ← mkAppM ``Fin #[mkNatLit m]
   -- `Matrix.of` is an `Equiv`, so apply it through `DFunLike.coe`.
   mkAppM ``DFunLike.coe #[← mkAppOptM ``Matrix.of #[some finM, some finN, some R], outer]
 
-def pivotLitExpr (numCols : Nat) (idxs : Array Nat) : MetaM Expr := do
-  let finN ← mkAppM ``Fin #[mkNatLit numCols]
-  let elems ← idxs.mapM fun k => mkAppOptM ``OfNat.ofNat #[some finN, some (mkNatLit k), none]
-  mkListLit finN elems.toList
-
+/-- Parse a `![a, b, …]` vector literal into its entries. -/
 partial def parseVec? (e : Expr) : Option (Array Expr) :=
   go #[] e
 where
   go (acc : Array Expr) (e : Expr) : Option (Array Expr) :=
-    match_expr e.consumeMData with
+    match_expr e.cleanupAnnotations with
     | Matrix.vecEmpty _ => some acc
     | Matrix.vecCons _ _ head tail => go (acc.push head) tail
     | _ => none
 
-partial def listLitLen (e : Expr) : Nat :=
-  match_expr e.consumeMData with
-  | List.cons _ _ tail => 1 + listLitLen tail
-  | _ => 0
+/-- Parse a `!![…]` matrix literal into its rows of entry expressions. -/
+def parseMatrix? (M : Expr) : Option (Array (Array Expr)) :=
+  match_expr M.cleanupAnnotations with
+  | DFunLike.coe _ _ _ _ f v =>
+    match_expr f.cleanupAnnotations with
+    | Matrix.of _ _ _ => (parseVec? v).bind (·.mapM parseVec?)
+    | _ => none
+  | _ => none
 
-def parseMatrix (M : Expr) : MetaM (Array (Array Expr)) := do
-  let mut e := M.consumeMData
-  for _ in [0:8] do
-    match_expr e with
-    | DFunLike.coe _ _ _ _ f v =>
-      match_expr f.consumeMData with
-      | Matrix.of _ _ _ =>
-        let some rows := parseVec? v | throwError "expected a matrix literal"
-        return ← rows.mapM fun r => do
-          let some entries := parseVec? r | throwError "expected a matrix literal"
-          return entries
-      | _ => pure ()
-    | _ => pure ()
-    match ← unfoldDefinition? e with
-    | some e' => e := e'.consumeMData
-    | none => break
-  throwError "expected a matrix literal, got{indentExpr M}"
+/-- Build the pivot-column list `[c₀, c₁, …] : List (Fin n)`. -/
+def mkPivotLit (n : Nat) (pivots : Array Nat) : MetaM Expr := do
+  let finN ← mkAppM ``Fin #[mkNatLit n]
+  mkListLit finN (← pivots.mapM (mkNumeral finN)).toList
 
-/- TODO: PLACEHOLDER -/
-def produceBareiss (_entries : Array (Array Expr)) : MetaM (Expr × Expr × Expr) := do
-  let R := mkConst ``Int
-  let i (n : Int) : Expr := toExpr n
-  let L ← matrixLitExpr R #[#[i 1, i 0], #[i (-3), i 1]]
-  let σ ← mkAppM ``Equiv.refl #[← mkAppM ``Fin #[mkNatLit 2]]
-  let pivot ← pivotLitExpr 2 #[0, 1]
-  return (L, σ, pivot)
+/-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
+def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
+  let finM ← mkAppM ``Fin #[mkNatLit m]
+  let mut acc ← mkAppM ``Equiv.refl #[finM]
+  for (a, b) in swaps do
+    acc ← mkMul acc (← mkAppM ``Equiv.swap #[← mkNumeral finM a, ← mkNumeral finM b])
+  return acc
 
-def reifyBareiss (M : Expr) : TermElabM Expr := do
-  let (L, σ, pivot) ← produceBareiss (← parseMatrix M)
-  let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ), $(← Term.exprToSyntax pivot),
-                by decide, by decide, by decide⟩ :
+/-- Build the numeral of an integer in `R`: `mkNumeral` on the absolute value, negated if
+`i` is negative. -/
+def mkIntNumeral (R : Expr) (i : Int) : MetaM Expr := do
+  let n ← mkNumeral R i.natAbs
+  if i < 0 then mkAppM ``Neg.neg #[n] else return n
+
+/-- Read the rational value of a numeral. `a / b` is read as a fraction only when division
+in the ring is field division. -/
+def rat? (isDivRing : Bool) (e : Expr) : Option Rat :=
+  let (sign, e) : Int × Expr :=
+    match_expr e.cleanupAnnotations with
+    | Neg.neg _ _ a => (-1, a)
+    | _ => (1, e)
+  match_expr e.cleanupAnnotations with
+  | HDiv.hDiv _ _ _ _ a b =>
+    if isDivRing then
+      match a.cleanupAnnotations.int?, b.cleanupAnnotations.nat? with
+      | some n, some d => some (mkRat (sign * n) d)
+      | _, _ => none
+    else
+      none
+  | _ => e.cleanupAnnotations.int?.map fun n => mkRat (sign * n) 1
+
+/-- Read a matrix entry's rational value: off its numeral syntax when possible, else off the
+`norm_num` normal form of the entry. The evaluation is data-only — the certificate is stated
+about the original entries, so no proof is kept. -/
+def entryRat (isDivRing : Bool) (e : Expr) : MetaM Rat := do
+  -- shortcut if the entry is already a value literal
+  match rat? isDivRing e with
+  | some v => return v
+  | none =>
+    -- fallback: try to evaluate the expression
+    let ctx ← Simp.mkContext (congrTheorems := ← getSimpCongrTheorems)
+    let r ← Meta.NormNum.deriveSimp ctx (useSimp := false) e
+    let some v := rat? isDivRing r.expr
+      | throwError "the entry does not evaluate to a numeral{indentExpr e}"
+    return v
+
+/-- Whether the integer value `v` is zero in `R`, by reducing the `Decidable` instance of
+`(v : R) = 0` in the kernel. The engine also checks the final certificate. -/
+def isZeroInR (R : Expr) (v : Int) : MetaM Bool := do
+  -- shortcircuit
+  if v == 0 then return true
+  let castV ← mkAppOptM ``Int.cast #[some R, none, some (toExpr v)]
+  let eq ← mkEq castV (← mkNumeral R 0)
+  let some inst ← synthInstance? (← mkAppM ``Decidable #[eq])
+    | throwError "equality with zero in the element type is not decidable{indentExpr R}"
+  if let .ok r := Kernel.whnf (← getEnv) (← getLCtx) inst then
+    if r.isAppOf ``Decidable.isTrue then return true
+    if r.isAppOf ``Decidable.isFalse then return false
+  throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
+
+/-- Raw data of a Bareiss decomposition on integer valuess. -/
+structure BareissData where
+  /-- The lower-triangular transform. -/
+  L : Array (Array Int)
+  /-- The row transpositions in the order performed: the pair `(r, p)` exchanges the rows
+  at positions `r < p` of the current arrangement when the pivot of step `r` is found at
+  position `p`. The row permutation `σ` is later constructed by their product. -/
+  swaps : Array (Nat × Nat)
+  /-- The pivot columns. The `k`-th entry is the column of the pivot
+  in row `k` of the final echelon form. -/
+  pivot : Array Nat
+
+/-- `get A i j` is the `(i, j)`-th entry of the matrix `A`, or `0` when out of bounds. -/
+protected def get {α : Type*} [Zero α] (A : Array (Array α)) (i j : Nat) : α :=
+  (A.getD i #[]).getD j 0
+
+/- Pivot swap mechanism
+Let `M_σ := M.submatrix σ id` be the original matrix with its rows in the arrangement `σ`
+accumulated so far.
+
+When the pivot search swaps the rows at positions `r < p`, the invariant `L * M_σ = W` must be
+restored against the new `M_σ' = S * M_σ`, where `S` is the permutation matrix of the
+transposition `σ`:
+
+  `S * W = S * L * (S⁻¹ * S) * M_σ = (S * L * S⁻¹) * M_σ'`
+
+so `L` needs to be conjugated by the matrix corresponding to `σ = (r, p)`.
+
+This is similar to LU factorisation with partial pivoting. -/
+
+/-- Core algorithm of Fraction-free Gaussian elimination.
+
+A separate `isZero` function handles testing for zero in the original ring `R`.
+
+A single sweep accumulates the transform `L` alongside the working matrix `W`. The main
+invariant is `L * (M.submatrix σ id) = W` for the row arrangement `σ` so far: eliminations
+update both simultaneously, and a row interchange conjugates `L` by the swap.
+The divisions are exact by Sylvester's identity. -/
+def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
+    MetaM BareissData := do
+  let m := M.size
+  let n := (M.getD 0 #[]).size
+  -- the main row elimination function
+  let eliminate : Int → Int → Int → Array Int → Array Int → Array Int :=
+    fun piv f prev rowI rowR =>
+      rowI.mapIdx fun j a => (piv * a - f * rowR.getD j 0) / prev
+  let mut W := M
+  let mut L : Array (Array Int) :=
+    (Array.range m).map fun i => (Array.range m).map fun j => if i == j then 1 else 0
+  let mut swaps : Array (Nat × Nat) := #[]
+  let mut pivots : Array Nat := #[]
+  let mut r : Nat := 0
+  let mut prev : Int := 1
+  for c in [0:n] do
+    if r == m then break
+    let mut p : Nat := m
+    for q in [r:m] do
+      if !(← isZero (Echelon.get W q c)) then
+        p := q
+        break
+    if p < m then
+      if p ≠ r then
+        W := W.swapIfInBounds r p
+        -- the interchange conjugates the transform, `L ← S * L * S⁻¹`.
+        -- row swap
+        L := L.swapIfInBounds r p
+        -- column swap. This affects only rows `r` and `p`, since every other
+        -- row vanishes at both columns
+        L := (L.modify r (·.swapIfInBounds r p)).modify p (·.swapIfInBounds r p)
+        swaps := swaps.push (r, p)
+      pivots := pivots.push c
+      let piv := Echelon.get W r c
+      let rowR := W.getD r #[]
+      let lRow := L.getD r #[]
+      for i in [r+1:m] do
+        let f := Echelon.get W i c
+        W := W.set! i (eliminate piv f prev (W.getD i #[]) rowR)
+        L := L.set! i (eliminate piv f prev (L.getD i #[]) lRow)
+      prev := piv
+      r := r + 1
+  return { L, swaps, pivot := pivots }
+
+/-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`: parse the
+entries' values, scale fractional rows integral, eliminate, fold the scaling back into `L`,
+and elaborate the certificate with the kernel checking its three conditions. -/
+def mkBareissDecomposition (M : Expr) : TermElabM Expr := do
+  let M ← instantiateMVars M
+  let some entries := parseMatrix? M
+    | throwError "expected a matrix literal, got{indentExpr M}"
+  let_expr Matrix finM finN R := ← inferType M
+    | throwError "expected a matrix, got{indentExpr M}"
+  let_expr Fin mE := finM.cleanupAnnotations
+    | throwError "expected `Fin` row indices, got{indentExpr finM}"
+  let_expr Fin nE := finN.cleanupAnnotations
+    | throwError "expected `Fin` column indices, got{indentExpr finN}"
+  -- the counts appear as `OfNat` numerals or as raw literals; `Expr.nat?` matches only the
+  -- former
+  let some m := mE.nat?.orElse fun _ => mE.rawNatLit?
+    | throwError "expected a row count literal, got{indentExpr mE}"
+  let some n := nE.nat?.orElse fun _ => nE.rawNatLit?
+    | throwError "expected a column count literal, got{indentExpr nE}"
+  unless entries.size == m && entries.all (·.size == n) do
+    throwError "the matrix literal does not match its type dimensions{indentExpr M}"
+  let isDivRing := (← synthInstance? (← mkAppM ``DivisionRing #[R])).isSome
+  let ratRows ← entries.mapM fun row => row.mapM fun e => entryRat isDivRing e
+  -- scale each row integral by its denominator lcm; the scaling is folded into `L` below
+  let scales : Array Nat := ratRows.map fun row => row.foldl (fun l v => Nat.lcm l v.den) 1
+  let values : Array (Array Int) :=
+    (ratRows.zip scales).map fun (row, s) => row.map fun v => (mkRat s 1 * v).num
+  -- verification runs in the kernel: probe one zero test so that element types without
+  -- kernel-decidable equality refuse early with a clean error (drop the probe once a
+  -- non-kernel verification route exists)
+  try
+    discard <| isZeroInR R 1
+  catch e =>
+    throwError "cannot verify the rank certificate: {e.toMessageData}"
+  -- in a `CharZero` ring the integer values decide their own zero tests, so expensive
+  -- kernel tests for zero can be avoided.
+  let charZero := (← synthInstance? (← mkAppM ``CharZero #[R])).isSome
+  let d ← bareissDecomp (if charZero then fun v => pure (v == 0) else isZeroInR R) values
+  -- `L * (D·M).submatrix σ id = E` gives `(L·D_σ) * (M.submatrix σ id) = E`: scale column
+  -- `j` of `L` by the factor of the row that ends up in position `j`
+  let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range m)
+  let scaledL := d.L.map fun row =>
+    row.mapIdx fun j a => a * (scales.getD (order.getD j 0) 1 : Int)
+  -- constructing the main Bareiss certificate from internal raw data
+  let L ← mkMatrixLit R (← scaledL.mapM fun row => row.mapM fun v => mkIntNumeral R v)
+  let σ ← mkPerm m d.swaps
+  let pivotE ← mkPivotLit n d.pivot
+  let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
+                $(← Term.exprToSyntax pivotE),
+                -- switch to an efficient decision of matrix mult once implemented
+                by decide +kernel, by decide +kernel, by decide +kernel⟩ :
               Bareiss.Decomposition $(← Term.exprToSyntax M)))
   let e ← Term.elabTermEnsuringType stx none
   Term.synthesizeSyntheticMVarsNoPostponing

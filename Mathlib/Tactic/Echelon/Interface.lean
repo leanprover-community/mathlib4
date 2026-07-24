@@ -8,10 +8,11 @@ module
 public import Mathlib.Tactic.Echelon.Bareiss
 
 /-!
-# `norm_rank` simproc and `eval_rank` tactic (wip)
+# `norm_rank` simproc and `eval_rank` tactic
 
-The read-off layer: matches `Matrix.rank M`, calls `reifyBareiss`, applies `rank_eq`, and
-returns a `Simp.Result` rewriting the rank to a literal.
+The read-off layer: matches `Matrix.rank M`, produces and elaborates a Bareiss
+decomposition, applies `rank_eq`, and returns a `Simp.Result` rewriting the rank to a
+literal.
 -/
 
 public meta section
@@ -28,10 +29,12 @@ def normalizeRank (e : Expr) : MetaM Simp.Result := do
       | throwError "expected the element type to be a commutative ring"
     let some _ ← synthInstance? (← mkAppOptM ``IsDomain #[some R, none])
       | throwError "expected the element type to be a domain"
-    let decomp ← (reifyBareiss M).run'
+    let decomp ← (mkBareissDecomposition M).run'
     let pf ← mkAppM ``Bareiss.Decomposition.rank_eq #[decomp]
-    let pivot ← whnf (← mkAppM ``Bareiss.Decomposition.pivot #[decomp])
-    let k := mkNatLit (listLitLen pivot)
+    let lenE ← mkAppM ``List.length #[← mkAppM ``Bareiss.Decomposition.pivot #[decomp]]
+    let some len := ((Kernel.whnf (← getEnv) (← getLCtx) lenE).toOption).bind (·.rawNatLit?)
+      | throwError "the pivot count does not reduce to a literal"
+    let k := mkNatLit len
     return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
   | _ => throwError "expected `Matrix.rank _`, got{indentExpr e}"
 
@@ -39,12 +42,6 @@ def normalizeRank (e : Expr) : MetaM Simp.Result := do
 simproc_decl norm_rank (Matrix.rank _) := fun e => return .done (← normalizeRank e)
 
 /-- Reduce `Matrix.rank` of a closed matrix to a literal, then try to close the goal. -/
-macro "eval_rank" : tactic => `(tactic| simp only [norm_rank] <;> try omega)
-
-/-! ## tests (hardcoded placeholder) -/
-
-example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℤ).rank = 2 := by eval_rank
-
-example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℤ).rank ≤ 5 := by eval_rank
+macro (name := evalRank) "eval_rank" : tactic => `(tactic| simp only [norm_rank] <;> try omega)
 
 end

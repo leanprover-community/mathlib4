@@ -1,0 +1,171 @@
+module
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Data.Real.Basic
+import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+public import Mathlib.Tactic.Echelon.Interface
+
+/-! # Tests for the `eval_rank` tactic -/
+
+lemma test_row_vector : Matrix.rank (R := ℤ)
+    !![1, 2, 3] = 1 := by
+  eval_rank
+
+lemma test_col_vector : Matrix.rank (R := ℤ)
+    !![1;
+       2;
+       3] = 1 := by
+  eval_rank
+
+lemma test_empty : Matrix.rank (R := ℚ)
+    !![] = 0 := by
+  eval_rank
+
+lemma test_square_rank_zero : Matrix.rank (R := ℚ)
+    !![0, 0;
+       0, 0] = 0 := by
+  eval_rank
+
+lemma test_square_rank_one : Matrix.rank (R := ℚ)
+    !![1, 2;
+       2, 4] = 1 := by
+  eval_rank
+
+lemma test_square_rank_two : Matrix.rank (R := ℚ)
+    !![1, 2, 3, 4;
+       2, 4, 6, 8;
+       1, 1, 1, 1;
+       2, 3, 4, 5] = 2 := by
+  eval_rank
+
+lemma test_square_rank_three : Matrix.rank (R := ℚ)
+    !![1, 2, 0, 1, 3;
+       0, 1, 1, 2, 1;
+       2, 4, 0, 2, 6;
+       0, 0, 1, 0, 2;
+       1, 3, 1, 3, 4] = 3 := by
+  eval_rank
+
+lemma test_square_full_rank : Matrix.rank (R := ℚ)
+    !![1, 2, 3;
+       4, 5, 6;
+       7, 8, 10] = 3 := by
+  eval_rank
+
+-- more rows than columns, full column rank
+lemma test_tall_full_rank : Matrix.rank (R := ℚ)
+    !![1, 0;
+       0, 1;
+       1, 1;
+       2, 3] = 2 := by
+  eval_rank
+
+-- more columns than rows, row 2 = 2 * row 1
+lemma test_wide_rank_one : Matrix.rank (R := ℚ)
+    !![1, 2, 3, 4;
+       2, 4, 6, 8] = 1 := by
+  eval_rank
+
+lemma test_rat_entries : Matrix.rank (R := ℚ)
+    !![1/2, 1/3;
+       1/5, 1/7] = 2 := by
+  eval_rank
+
+-- row 2 = (1/2) * row 1
+lemma test_rat_entries_rank_one : Matrix.rank (R := ℚ)
+    !![1/2, 1/3;
+       1/4, 1/6] = 1 := by
+  eval_rank
+
+instance : Fact (Nat.Prime 7) := ⟨by decide⟩
+
+lemma test_zmod7_full_rank : Matrix.rank (R := ZMod 7) !![3, 5; 2, 4] = 2 := by eval_rank
+
+-- det = -7 ≡ 0 (mod 7): full rank over ℚ, but rank 1 over ZMod 7
+lemma test_zmod7_rank_drop : Matrix.rank (R := ZMod 7) !![2, 5; 3, 4] = 1 := by eval_rank
+
+-- This 9x9 matrix has rank 8 and is the Cartan matrix of the
+-- affine-type E8 root system.
+public lemma test_Cartan_matrix :
+    Matrix.rank (R := ℚ)
+      !![ 2, -1,  0,  0,  0,  0,  0,  0,  0;
+         -1,  2, -1,  0,  0,  0,  0,  0,  0;
+          0, -1,  2, -1,  0,  0,  0,  0,  0;
+          0,  0, -1,  2, -1,  0,  0,  0,  0;
+          0,  0,  0, -1,  2, -1,  0,  0,  0;
+          0,  0,  0,  0, -1,  2, -1,  0, -1;
+          0,  0,  0,  0,  0, -1,  2, -1,  0;
+          0,  0,  0,  0,  0,  0, -1,  2,  0;
+          0,  0,  0,  0,  0, -1,  0,  0,  2] = 8 := by
+  eval_rank
+
+-- axiom-footprint regression guard: exactly the three standard axioms, no `sorryAx`
+set_option linter.hashCommand false in
+/-- info: 'test_Cartan_matrix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms test_Cartan_matrix
+
+/-! ## element-type coverage -/
+
+set_option linter.hashCommand false
+
+open Polynomial
+
+-- a ring the tactic never names: ℤ[i], with structurally decidable equality
+example : Matrix.rank (R := GaussianInt) !![2, 5; 3, 4] = 2 := by eval_rank
+
+-- entries must still have a rational value: `i = ⟨0, 1⟩` has none
+/--
+error: the entry does not evaluate to a numeral
+  { re := 0, im := 1 }
+-/
+#guard_msgs in
+example : Matrix.rank (R := GaussianInt) !![⟨0, 1⟩, 1; 1, ⟨0, 1⟩] = 2 := by eval_rank
+
+-- compound entries evaluate by `norm_num`: 1/2 * 5/2 = 5/4, det ≠ 0
+example : Matrix.rank (R := ℚ) !![1/2 * 5/2, 1; 1, 1] = 2 := by eval_rank
+
+-- the evaluated value feeds the elimination: 1/2 * 4 = 2 collapses the rank
+example : Matrix.rank (R := ℚ) !![1/2 * 4, 2; 1, 1] = 1 := by eval_rank
+
+-- the evaluated value feeds the zero-test in the ring: 2 * 4 ≡ 1 (mod 7), det ≡ 0
+example : Matrix.rank (R := ZMod 7) !![2 * 4, 1; 1, 1] = 1 := by eval_rank
+
+-- only closed matrix literals are in scope
+/--
+error: expected a matrix literal, got
+  A
+-/
+#guard_msgs in
+example (A : Matrix (Fin 2) (Fin 2) ℚ) : A.rank = 2 := by eval_rank
+
+/-- error: expected the element type to be a commutative ring -/
+#guard_msgs in
+example : Matrix.rank (R := ℕ) !![1, 2; 3, 4] = 2 := by eval_rank
+
+/-- error: expected the element type to be a domain -/
+#guard_msgs in
+example : Matrix.rank (R := ZMod 4) !![1, 2; 3, 4] = 2 := by eval_rank
+
+/--
+error: cannot verify the rank certificate: equality in the element type does not reduce in
+the kernel
+  ℝ
+-/
+#guard_msgs in
+example : Matrix.rank (R := ℝ) !![1, 2; 3, 4] = 2 := by eval_rank
+
+/--
+error: cannot verify the rank certificate: equality in the element type does not reduce in
+the kernel
+  ℚ[X]
+-/
+#guard_msgs in
+example : Matrix.rank (R := ℚ[X]) !![1, 2; 2, 4] = 1 := by eval_rank
+
+/--
+error: the entry does not evaluate to a numeral
+  X
+-/
+#guard_msgs in
+example : Matrix.rank (R := ℚ[X]) !![X, 1; 1, X] = 2 := by eval_rank

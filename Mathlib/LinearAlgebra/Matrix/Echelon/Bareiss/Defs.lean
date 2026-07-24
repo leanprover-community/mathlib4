@@ -49,8 +49,11 @@ variable [CommRing R] [IsDomain R]
 
 /-- The result returned by the Bareiss algorithm. -/
 structure Decomposition (M : Matrix (Fin m) (Fin n) R) where
+  /-- The lower-triangular transform. -/
   L : Matrix (Fin m) (Fin m) R
+  /-- The row permutation. -/
   σ : Equiv.Perm (Fin m)
+  /-- The pivot columns, in order. -/
   pivot : List (Fin n)
   is_pivot : (L * (M.submatrix σ id)).IsPivot pivot
   L_lowerTriangular : L.BlockTriangular OrderDual.toDual
