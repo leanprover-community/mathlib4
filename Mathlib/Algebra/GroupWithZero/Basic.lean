@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.GroupWithZero.NeZero
-public import Mathlib.Logic.Unique
+public import Mathlib.Basic.Unique
 public import Mathlib.Tactic.Conv
 public import Batteries.Tactic.SeqFocus
 

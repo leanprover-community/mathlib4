@@ -201,6 +201,7 @@ def mathlibLabelData : (l : Label) → LabelData l
     dependencies := #[.«t-algebra»] }
   | .«t-data» => {
     dirs := #[
+      "Mathlib" / "Basic",
       "Mathlib" / "Control",
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {

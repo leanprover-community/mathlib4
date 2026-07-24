@@ -5,13 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.UnivLE
 public import Mathlib.Data.Countable.Small
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Logic.Small.Set
-public import Mathlib.Logic.UnivLE
 public import Mathlib.SetTheory.Cardinal.Order
 
 /-!

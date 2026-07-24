@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Basic.UnivLE
 public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.Logic.UnivLE
 public import Mathlib.Logic.Small.Basic
 
 /-!

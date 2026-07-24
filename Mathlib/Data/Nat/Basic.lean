@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Logic.Basic
+public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Data.Nat.Init
-public import Mathlib.Logic.Basic
-public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.GCongr.Core
 
