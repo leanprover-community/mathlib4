@@ -90,15 +90,15 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     exact subset_toMeasurable _ _ hx
   set g : α → β := (⋂ i, s i).piecewise (const α default) f
   refine ⟨g, measurable_of_restrict_of_restrict_compl hsm ?_ ?_, ae_sum_iff.mpr fun i => ?_⟩
-  · rw [restrict_piecewise]
+  · rw [domRestrict_piecewise]
     simp only [s]
     exact measurable_const
-  · rw [restrict_piecewise_compl, compl_iInter]
+  · rw [domRestrict_piecewise_compl, compl_iInter]
     intro t ht
     refine ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ, MeasurableSet.iUnion fun i ↦
       (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl, ?_⟩
     ext ⟨x, hx⟩
-    simp only [mem_preimage, mem_iUnion, Set.restrict, mem_inter_iff,
+    simp only [mem_preimage, mem_iUnion, Set.domRestrict, mem_inter_iff,
       mem_compl_iff] at hx ⊢
     constructor
     · rintro ⟨i, hxt, hxs⟩
@@ -399,9 +399,9 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
   refine ⟨v.piecewise (fun _ ↦ default) f, ?_, measure_mono_null (fun x ↦
     not_imp_comm.2 fun hxv ↦ (piecewise_eq_of_notMem _ _ _ hxv).symm) hvμ⟩
   refine measurable_of_restrict_of_restrict_compl hvm ?_ ?_
-  · rw [restrict_piecewise]
+  · rw [domRestrict_piecewise]
     apply measurable_const
-  · rw [restrict_piecewise_compl, restrict_eq]
+  · rw [domRestrict_piecewise_compl, domRestrict_eq]
     refine measurable_generateFrom fun s hs ↦ .of_subtype_image ?_
     rw [preimage_comp, Subtype.image_preimage_coe]
     convert! (hTm s hs).diff hvm using 1
