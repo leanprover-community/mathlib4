@@ -595,7 +595,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   | comp f _g _IHf IHg => apply IHg
   | case f g IHf IHg =>
     rw [stepNormal]
-    simp only []
+    simp only
     cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => apply IHf
   | _ => exact ⟨_, _, rfl⟩
@@ -620,7 +620,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         exact Or.inl (Part.mem_some _)
       · exact Or.inr ⟨_, Part.mem_some _, hv₂⟩
     refine fun c he => evalInduction he fun y h IH => ?_
-    rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only [] at h IH
+    rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only at h IH
     · have := mem_eval.2 ⟨hr, rfl⟩
       rw [fok, Part.bind_eq_bind, Part.mem_bind_iff] at this
       obtain ⟨v'', h₁, h₂⟩ := this
@@ -639,7 +639,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       · obtain ⟨k₀, v₀, e₀⟩ := stepNormal.is_ret f Cont.halt v'.tail
         have e₁ := stepNormal_then f Cont.halt (Cont.fix f k) v'.tail
         rw [e₀, Cont.then, Cfg.then] at e₁
-        simp only [] at e₁
+        simp only at e₁
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
           IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
