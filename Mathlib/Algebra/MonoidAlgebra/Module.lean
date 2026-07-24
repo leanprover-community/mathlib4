@@ -91,7 +91,7 @@ lemma mapDomainLinearMap_single (f : M → N) (s : S) (m : M) :
 @[to_additive (attr := simp)]
 lemma mapDomainLinearMap_comp (f : M → N) (g : N → O) :
     mapDomainLinearMap R S (g ∘ f) = mapDomainLinearMap R S g ∘ₗ mapDomainLinearMap R S f := by
-  ext; simp [Finsupp.mapDomain_comp]
+  ext; simp [Finsupp.mapDomain_fun_comp]
 
 variable (R S) in
 /-- `MonoidAlgebra.mapDomain` as a linear equiv. -/
