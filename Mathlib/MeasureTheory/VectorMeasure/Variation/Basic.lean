@@ -443,17 +443,16 @@ theorem ennrealVariation_eq_self : μ.ennrealVariation = μ := by
 
 end ENNReal
 
+variable {W : Type*}
+
 lemma variation_eq_of_forall_enorm_eq [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
-    (μ ν : VectorMeasure X V) (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ = ‖ν E‖ₑ) :
+    [TopologicalSpace W] [ENormedAddCommMonoid W] [T2Space W]
+    (μ : VectorMeasure X V) (ν : VectorMeasure X W) (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ = ‖ν E‖ₑ) :
     μ.variation = ν.variation := by
-    apply le_antisymm
-    · apply variation_le_of_forall_enorm_le
-      intro E hE
-      rw [h E hE]
-      exact enorm_measure_le_variation ν E
-    · apply variation_le_of_forall_enorm_le
-      intro E hE
-      rw [← h E hE]
-      exact enorm_measure_le_variation μ E
+  apply le_antisymm <;>
+  apply variation_le_of_forall_enorm_le <;>
+  intro E hE
+  · simpa only [h E hE] using enorm_measure_le_variation ν E
+  · simpa only [h E hE] using enorm_measure_le_variation μ E
 
 end MeasureTheory.VectorMeasure

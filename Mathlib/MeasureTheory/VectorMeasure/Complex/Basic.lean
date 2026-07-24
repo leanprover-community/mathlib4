@@ -5,7 +5,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.SignedMeasure
 public import Mathlib.MeasureTheory.Measure.Complex
 
 /-!
@@ -39,41 +39,46 @@ variable {α : Type*} [MeasurableSpace α]
 /-- The real part of a complex measure as a complex measure. -/
 def reCm : ComplexMeasure α →ₗ[ℝ] ComplexMeasure α where
   toFun := fun μ => μ.re.mapRangeₗ Complex.ofRealCLM.toLinearMap Complex.ofRealCLM.continuous
-  map_add' := by intro; simp
+  map_add' := by intro; simp [_root_.map_add]
   map_smul' := by intro; simp
 
 @[simp]
 lemma reCm_apply (μ : ComplexMeasure α) (E : Set α) : μ.reCm E = μ.re E := by simp [reCm]
 
 lemma variation_reCm_eq_variation_re (μ : ComplexMeasure α) :
-    μ.reCm.variation = μ.re.variation := by sorry
-  -- apply variation_eq_of_forall_enorm_eq
+    μ.reCm.variation = μ.re.variation := by
+  apply variation_eq_of_forall_enorm_eq; intro _ _; simp [← ofReal_norm]
 
 /-- The imaginary part of a complex measure as a complex measure. -/
 def imCm : ComplexMeasure α →ₗ[ℝ] ComplexMeasure α where
   toFun := fun μ => μ.im.mapRangeₗ Complex.ofRealCLM.toLinearMap Complex.ofRealCLM.continuous
-  map_add' := by intro; simp
+  map_add' := by intro; simp [_root_.map_add]
   map_smul' := by intro; simp
 
 @[simp]
 lemma imCm_apply (μ : ComplexMeasure α) (E : Set α) : μ.imCm E = μ.im E := by simp [imCm]
 
 lemma variation_imCm_eq_variation_im (μ : ComplexMeasure α) :
-    μ.imCm.variation = μ.im.variation := by sorry
-  -- apply variation_eq_of_forall_enorm_eq
+    μ.imCm.variation = μ.im.variation := by
+  apply variation_eq_of_forall_enorm_eq; intro _ _; simp [← ofReal_norm]
 
 lemma eq_add_re_im (μ : ComplexMeasure α) : μ = μ.reCm + Complex.I • μ.imCm := by
-  ext E; apply Complex.ext <;> simp
+  ext E; apply Complex.ext <;> simp <;> rfl
 
-theorem isFiniteMeasure (μ : ComplexMeasure α) : IsFiniteMeasure μ.variation := by
+section IsFiniteMeasure
+
+variable (μ : ComplexMeasure α)
+
+instance : IsFiniteMeasure μ.variation := by
   rw [μ.eq_add_re_im, isFiniteMeasure_iff]
-  apply lt_of_le_of_lt (by apply variation_add_le _ _)
+  apply lt_of_le_of_lt (by apply variation_add_le)
   rw [Measure.add_apply, ENNReal.add_lt_top]
   constructor
-  · rw [variation_reCm_eq_variation_re]
-    sorry
-    -- re.variation = re.totalVariation, use finiteness
-  · sorry
-    -- similar
+  · rw [variation_reCm_eq_variation_re, ← SignedMeasure.totalVariation_eq_variation]
+    exact measure_lt_top _ _
+  · rw [variation_smul, variation_imCm_eq_variation_im, ← SignedMeasure.totalVariation_eq_variation]
+    exact measure_lt_top _ _
+
+end IsFiniteMeasure
 
 end MeasureTheory.ComplexMeasure
