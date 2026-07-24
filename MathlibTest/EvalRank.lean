@@ -7,38 +7,38 @@ public import Mathlib.Tactic.Echelon.Interface
 
 /-! # Tests for the `eval_rank` tactic -/
 
-lemma test_row_vector : Matrix.rank (R := ℤ)
+example : Matrix.rank (R := ℤ)
     !![1, 2, 3] = 1 := by
   eval_rank
 
-lemma test_col_vector : Matrix.rank (R := ℤ)
+example : Matrix.rank (R := ℤ)
     !![1;
        2;
        3] = 1 := by
   eval_rank
 
-lemma test_empty : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![] = 0 := by
   eval_rank
 
-lemma test_square_rank_zero : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![0, 0;
        0, 0] = 0 := by
   eval_rank
 
-lemma test_square_rank_one : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![1, 2;
        2, 4] = 1 := by
   eval_rank
 
-lemma test_square_rank_two : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![1, 2, 3, 4;
        2, 4, 6, 8;
        1, 1, 1, 1;
        2, 3, 4, 5] = 2 := by
   eval_rank
 
-lemma test_square_rank_three : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![1, 2, 0, 1, 3;
        0, 1, 1, 2, 1;
        2, 4, 0, 2, 6;
@@ -46,14 +46,14 @@ lemma test_square_rank_three : Matrix.rank (R := ℚ)
        1, 3, 1, 3, 4] = 3 := by
   eval_rank
 
-lemma test_square_full_rank : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![1, 2, 3;
        4, 5, 6;
        7, 8, 10] = 3 := by
   eval_rank
 
 -- more rows than columns, full column rank
-lemma test_tall_full_rank : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![1, 0;
        0, 1;
        1, 1;
@@ -61,28 +61,28 @@ lemma test_tall_full_rank : Matrix.rank (R := ℚ)
   eval_rank
 
 -- more columns than rows, row 2 = 2 * row 1
-lemma test_wide_rank_one : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![1, 2, 3, 4;
        2, 4, 6, 8] = 1 := by
   eval_rank
 
-lemma test_rat_entries : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![1/2, 1/3;
        1/5, 1/7] = 2 := by
   eval_rank
 
 -- row 2 = (1/2) * row 1
-lemma test_rat_entries_rank_one : Matrix.rank (R := ℚ)
+example : Matrix.rank (R := ℚ)
     !![1/2, 1/3;
        1/4, 1/6] = 1 := by
   eval_rank
 
 instance : Fact (Nat.Prime 7) := ⟨by decide⟩
 
-lemma test_zmod7_full_rank : Matrix.rank (R := ZMod 7) !![3, 5; 2, 4] = 2 := by eval_rank
+example : Matrix.rank (R := ZMod 7) !![3, 5; 2, 4] = 2 := by eval_rank
 
 -- det = -7 ≡ 0 (mod 7): full rank over ℚ, but rank 1 over ZMod 7
-lemma test_zmod7_rank_drop : Matrix.rank (R := ZMod 7) !![2, 5; 3, 4] = 1 := by eval_rank
+example : Matrix.rank (R := ZMod 7) !![2, 5; 3, 4] = 1 := by eval_rank
 
 -- This 9x9 matrix has rank 8 and is the Cartan matrix of the
 -- affine-type E8 root system.
