@@ -202,6 +202,18 @@ instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α]
 
 end UniformAddCommGroup
 
+section Sum
+
+lemma coe_sum [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
+    (s : Finset β) (f : β → α) :
+    (↑(s.sum f) : UniformSpace.Completion α) = s.sum (fun x => ↑(f x)) := by
+  letI : DecidableEq β := Classical.decEq β
+  induction s using Finset.induction_on with
+  | empty => simp [UniformSpace.Completion.coe_zero]
+  | insert x s hx ih => simp [Finset.sum_insert hx, UniformSpace.Completion.coe_add, ih]
+
+end Sum
+
 end UniformSpace.Completion
 
 section AddMonoidHom
