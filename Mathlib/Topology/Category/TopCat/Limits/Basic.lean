@@ -85,6 +85,7 @@ instance topologicalSpaceConePtOfConeForget :
     TopologicalSpace (conePtOfConeForget c) :=
   (⨅ j, (F.obj j).str.induced (c.π.app j))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, this is a cone for `F` whose point is
 `c.pt` with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -99,6 +100,7 @@ def coneOfConeForget : Cone F where
         ext
         apply ConcreteCategory.congr_hom (c.π.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, the limit of `F` is `c.pt` equipped
 with the infimum of the induced topologies by the maps `c.π.app j`. -/
@@ -111,7 +113,7 @@ def isLimitConeOfForget (c : Cone (F ⋙ forget)) (hc : IsLimit c) :
   rw [le_iInf_iff]
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
-  convert continuous_iff_le_induced.1 (s.π.app j).hom.continuous
+  convert! continuous_iff_le_induced.1 (s.π.app j).hom.continuous
   ext x
   exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCone s) j) x
 
@@ -123,6 +125,7 @@ variable {F : J ⥤ TopCat.{u}} (c : Cone F) (hc : IsLimit c)
 
 include hc
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem induced_of_isLimit :
     c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
@@ -138,6 +141,7 @@ theorem induced_of_isLimit :
 
 end IsLimit
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
     (hc : IsLimit ((forget).mapCone c)) :
     Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
@@ -155,6 +159,7 @@ theorem limit_topology [HasLimit F] :
     (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
   induced_of_isLimit _ (limit.isLimit _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hasLimit_iff_small_sections :
     HasLimit F ↔ Small.{u} ((F ⋙ forget).sections) := by
   rw [← Types.hasLimit_iff_small_sections]
@@ -197,6 +202,7 @@ instance topologicalSpaceCoconePtOfCoconeForget :
     TopologicalSpace (coconePtOfCoconeForget c) :=
   (⨆ j, (F.obj j).str.coinduced (c.ι.app j))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, this is a cocone for `F` whose point is
 `c.pt` with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
@@ -212,6 +218,7 @@ def coconeOfCoconeForget : Cocone F where
         ext
         apply ConcreteCategory.congr_hom (c.ι.naturality φ) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, the colimit of `F` is `c.pt` equipped
 with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
@@ -224,7 +231,7 @@ def isColimitCoconeOfForget (c : Cocone (F ⋙ forget)) (hc : IsColimit c) :
   rw [iSup_le_iff]
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
-  convert continuous_iff_le_induced.1 (s.ι.app j).hom.continuous
+  convert! continuous_iff_le_induced.1 (s.ι.app j).hom.continuous
   ext x
   exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCocone s) j) x
 
@@ -236,6 +243,8 @@ variable (c : Cocone F) (hc : IsColimit c)
 
 include hc
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem coinduced_of_isColimit :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   let c' := coconeOfCoconeForget ((forget).mapCocone c)
@@ -256,6 +265,7 @@ lemma isOpen_iff_of_isColimit (X : Set c.pt) :
   · simp only [← isOpen_coinduced]
     apply isOpen_iSup_iff
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isClosed_iff_of_isColimit (X : Set c.pt) :
     IsClosed X ↔ ∀ (j : J), IsClosed (c.ι.app j ⁻¹' X) := by
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
@@ -268,6 +278,7 @@ lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt �
 
 end IsColimit
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
     Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩
@@ -289,6 +300,7 @@ theorem colimit_isOpen_iff (F : J ⥤ TopCat.{u}) [HasColimit F]
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   apply isOpen_iff_of_isColimit _ (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hasColimit_iff_small_colimitType :
     HasColimit F ↔ Small.{u} (F ⋙ forget).ColimitType := by
   rw [← Types.hasColimit_iff_small_colimitType]

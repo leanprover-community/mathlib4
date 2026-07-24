@@ -52,6 +52,8 @@ namespace IsFlasque
 
 attribute [instance low] IsFlasque.epi
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 instance pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
     IsFlasque (f _* F) where
   epi {U V} i := by
@@ -80,7 +82,7 @@ an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. -/
 abbrev Under := StructuredArrow ⟨op U, s⟩ (Functor.whiskerRight g.hom
   (CategoryTheory.forget AddCommGrpCat.{u})).mapElements
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /- The next lemma proves that the relation `fun x y ↦ Nonempty (y ⟶ x)` on `Under g s`
 satisfies the requirements for applying Zorn's lemma -/
 lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
@@ -162,7 +164,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
           refine (eq_app_of_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
           rw [Fin.forall_fin_two]
           refine ⟨tcomp.symm, ?_⟩
-          simp only [Fin.isValue, Functor.comp_obj, map_add, homOfLE_leOfHom, sf, f]
+          simp only [Fin.isValue, map_add, homOfLE_leOfHom, sf, f]
           have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
             rw [← NatTrans.comp_app, ← ObjectProperty.FullSubcategory.comp_hom, S.zero]
             rfl
@@ -174,6 +176,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     exact leOfHom ((ht t₆) this).some.right.1.unop ((le_iSup f 1) hW)
   exact ⟨t.right.2 |_ U, by simp [map_restrict, ← tcomp, restrict_restrict]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
 theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat X)}
@@ -185,3 +188,32 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
     exact CategoryTheory.epi_of_epi (S.g.1.app U) (S.X₃.obj.map i)
 
 end TopCat.Sheaf.IsFlasque
+
+set_option backward.defeqAttrib.useBackward true in
+/--
+If the unique map from `A` to the terminal object is an epimorphism, then the skyscraper sheaf
+valued in `A` supported at an arbitrary point is a flasque sheaf.
+-/
+theorem isFlasque_skyscraperSheaf_of_epi_from {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasTerminal C]
+    [Epi <| terminalIsTerminal.from A] :
+    (skyscraperSheaf p₀ A).IsFlasque where
+  epi {U V} r := by
+    by_cases h1 : p₀ ∈ unop U
+    · by_cases h2 : p₀ ∈ unop V
+      · simp_all only [skyscraperSheaf_obj_obj, skyscraperSheaf_obj_map, ↓reduceDIte]
+        infer_instance
+      · simp
+        grind
+    · have h2 : p₀ ∉ unop V := fun hV => h1 (r.unop.le hV)
+      have := isIso_of_isTerminal (isTerminalSkyscraperSheafObjObjOfNotMem h1)
+        (isTerminalSkyscraperSheafObjObjOfNotMem h2) ((skyscraperSheaf p₀ A).obj.map r)
+      infer_instance
+
+/--
+If the target category has a zero object, then any skyscraper sheaf valued in this category is a
+flasque sheaf.
+-/
+theorem isFlasque_skyscraperSheaf_of_hasZeroObject {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasZeroObject C] :
+    (skyscraperSheaf p₀ A).IsFlasque := isFlasque_skyscraperSheaf_of_epi_from p₀ A

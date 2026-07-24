@@ -55,6 +55,7 @@ For *removing* attributes, the `in` works as expected.
 error: failed to synthesize
   Add Nat
 -/
+
 #guard_msgs in
 attribute [-instance] instAddNat in
 #synth Add Nat

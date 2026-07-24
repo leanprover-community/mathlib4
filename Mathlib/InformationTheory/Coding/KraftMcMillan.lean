@@ -65,8 +65,7 @@ private lemma concatFn_injective_of_uniquelyDecodable {S : Finset (List α)}
   have := List.ofFn_injective (h _ _ (by simp) (by simp) hflat)
   exact Subtype.ext (congrArg (fun f => f i) this)
 
-private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
-    {T : Finset (List α)} {s : ℕ} :
+private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] {T : Finset (List α)} {s : ℕ} :
     (∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ x.length)
       ≤ ((Fintype.card α) ^ s) * (1 / Fintype.card α) ^ s := by
   calc
@@ -156,7 +155,7 @@ public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [No
   have hAbs : |1 / K| < 1 := by
     grw [abs_of_pos (by positivity), div_lt_one] <;> grind
   have : Tendsto (fun r : ℕ => r * maxLen / K ^ r) atTop (nhds 0) := by
-    simpa [mul_left_comm, mul_div_assoc] using
+    simpa [mul_left_comm, mul_div_assoc] using!
       (tendsto_self_mul_const_pow_of_abs_lt_one hAbs).const_mul (maxLen : ℝ)
   obtain ⟨r, hr⟩ := eventually_atTop.mp <| this.eventually <| gt_mem_nhds zero_lt_one
   refine ⟨r + 1, by linarith, ?_⟩

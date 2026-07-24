@@ -124,7 +124,7 @@ lemma center_subset_centralizer (S : Set M) : Set.center M ⊆ S.centralizer :=
 
 @[to_additive addCentralizer_union]
 lemma centralizer_union : centralizer (S ∪ T) = centralizer S ∩ centralizer T := by
-  simp [centralizer, or_imp, forall_and, setOf_and]
+  simp [centralizer, or_imp, forall_and, ofPred_and]
 
 @[to_additive (attr := gcongr) addCentralizer_subset]
 lemma centralizer_subset (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun _ ht s hs ↦ ht s (h hs)
@@ -166,13 +166,13 @@ theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M)
   simp_all [subset_def, mem_centralizer_iff]
 
 @[to_additive addCenter_prod]
-theorem center_prod {N : Type*} [Mul N] :
+protected theorem center_prod {N : Type*} [Mul N] :
     center (M × N) = center M ×ˢ center N := by
-  aesop (add simp [Prod.forall, forall_and, commute_iff_eq, isMulCentral_iff, mem_center_iff])
+  aesop (add simp [forall_and, commute_iff_eq, isMulCentral_iff, mem_center_iff])
 
 open Function in
 @[to_additive addCenter_pi]
-theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
+protected theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
     center (Π i, A i) = univ.pi fun i ↦ center (A i) := by
   classical
   ext x

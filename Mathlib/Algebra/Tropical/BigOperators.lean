@@ -50,7 +50,7 @@ theorem Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
 
 theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
     trop (∑ i ∈ s, f i) = ∏ i ∈ s, trop (f i) := by
-  convert Multiset.trop_sum (s.val.map f)
+  convert! Multiset.trop_sum (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
@@ -66,7 +66,7 @@ theorem Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (Tropical R)) :
 
 theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
     untrop (∏ i ∈ s, f i) = ∑ i ∈ s, untrop (f i) := by
-  convert Multiset.untrop_prod (s.val.map f)
+  convert! Multiset.untrop_prod (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
@@ -84,7 +84,7 @@ theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
 
 theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R) :
     trop (s.inf f) = ∑ i ∈ s, trop (f i) := by
-  convert Multiset.trop_inf (s.val.map f)
+  convert! Multiset.trop_inf (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
@@ -106,7 +106,7 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
 
 theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i ∈ s, f i) = s.inf (untrop ∘ f) := by
-  convert Multiset.untrop_sum (s.val.map f)
+  convert! Multiset.untrop_sum (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply, inf_def]
 
 theorem untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S)

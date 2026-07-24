@@ -43,6 +43,7 @@ namespace Ideal
 variable [Semiring α] (I : Ideal α) {a b : α}
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals. -/
+@[wikidata Q1203540]
 class IsMaximal (I : Ideal α) : Prop where
   /-- The maximal ideal is a coatom in the ordering on ideals; that is, it is not the entire ring,
   and there are no other proper ideals strictly containing it. -/
@@ -63,6 +64,9 @@ theorem isMaximal_iff {I : Ideal α} :
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
   eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
+
+theorem IsMaximal.eq_iff_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) : I = J ↔ I ≤ J :=
+  ⟨by aesop, Ideal.IsMaximal.eq_of_le hI hJ⟩
 
 instance : IsCoatomic (Ideal α) := CompleteLattice.coatomic_of_top_compact isCompactElement_top
 
@@ -143,6 +147,9 @@ variable [CommSemiring α] (I : Ideal α)
 
 theorem span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set α)) ↔ Prime p := by
   simp [isPrime_iff, Prime, span_singleton_eq_top, hp, mem_span_singleton]
+
+theorem isPrime_span_singleton_of_prime {p : α} (hp : Prime p) : (span {p}).IsPrime := by
+  simp [Ideal.span_singleton_prime hp.ne_zero, hp]
 
 theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
   ⟨H.1.1, @fun x y hxy =>

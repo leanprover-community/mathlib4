@@ -113,6 +113,7 @@ theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P
 
 end AffineSubspace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
@@ -133,7 +134,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 variable (k V) {p₁ p₂ : P}
 
 /-- The affine span of a single point, coerced to a set, contains just that point. -/
-@[simp high] -- This needs to take priority over `coe_affineSpan`
+@[simp]
 theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
   ext x
   rw [mem_coe, ← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_singleton p)) _,
@@ -236,7 +237,7 @@ theorem vectorSpan_eq_span_vsub_set_left_ne {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((p -ᵥ ·) '' (s \ {p})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k hp, ← Set.insert_eq_of_mem hp, ←
-      Set.insert_diff_singleton, Set.image_insert_eq]
+      Set.insert_sdiff_singleton, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right,
@@ -245,7 +246,7 @@ theorem vectorSpan_eq_span_vsub_set_right_ne {s : Set P} {p : P} (hp : p ∈ s) 
     vectorSpan k s = Submodule.span k ((· -ᵥ p) '' (s \ {p})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k hp, ← Set.insert_eq_of_mem hp, ←
-      Set.insert_diff_singleton, Set.image_insert_eq]
+      Set.insert_sdiff_singleton, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right,
@@ -261,7 +262,7 @@ theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i
     vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi, ←
-      Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
+      Set.insert_sdiff_singleton, Set.image_insert_eq, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
@@ -270,7 +271,7 @@ theorem vectorSpan_image_eq_span_vsub_set_right_ne (p : ι → P) {s : Set ι} {
     vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi,
-      ← Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
+      ← Set.insert_sdiff_singleton, Set.image_insert_eq, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` of an indexed family is the span of the pairwise subtractions with a given
@@ -294,7 +295,7 @@ theorem vectorSpan_range_eq_span_range_vsub_left_ne (p : ι → P) (i₀ : ι) :
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i₀ -ᵥ p i) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_left_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -307,7 +308,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i -ᵥ p i₀) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_right_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -330,7 +331,8 @@ spans `P`. -/
 theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
     (h : Submodule.span k (Set.range ((↑) : s → V)) = ⊤) :
     affineSpan k ({p} ∪ (fun v => v +ᵥ p) '' s) = ⊤ := by
-  convert ext_of_direction_eq _
+  convert!
+    ext_of_direction_eq _
       ⟨p, mem_affineSpan k (Set.mem_union_left _ (Set.mem_singleton _)), mem_top k V p⟩
   rw [direction_affineSpan, direction_top,
     vectorSpan_eq_span_vsub_set_right k (Set.mem_union_left _ (Set.mem_singleton _) : p ∈ _),
@@ -366,11 +368,13 @@ theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
   rw [vectorSpan_pair_rev, Submodule.mem_span_singleton]
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A combination of two points expressed with `lineMap` lies in their affine span. -/
 theorem AffineMap.lineMap_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
     AffineMap.lineMap p₁ p₂ r ∈ line[k, p₁, p₂] :=
   AffineMap.lineMap_mem _ (left_mem_affineSpan_pair _ _ _) (right_mem_affineSpan_pair _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A combination of two points expressed with `lineMap` (with the two points reversed) lies in
 their affine span. -/
 theorem AffineMap.lineMap_rev_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
@@ -403,6 +407,7 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
   rw [vadd_mem_iff_mem_direction _ (right_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
     p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₁ p₂ r = p := by
   constructor
@@ -414,6 +419,7 @@ lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
   · rintro ⟨r, rfl⟩
     exact AffineMap.lineMap_mem_affineSpan_pair _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_affineSpan_pair_iff_exists_lineMap_rev_eq {p p₁ p₂ : P} :
     p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₂ p₁ r = p := by
   rw [Set.pair_comm, mem_affineSpan_pair_iff_exists_lineMap_eq]
@@ -529,7 +535,7 @@ namespace AffineSubspace
 /-- The image of an affine subspace under an affine map as an affine subspace. -/
 def map (s : AffineSubspace k P₁) : AffineSubspace k P₂ where
   carrier := f '' s
-  smul_vsub_vadd_mem := by
+  smul_vsub_vadd_mem' := by
     rintro t - - - ⟨p₁, h₁, rfl⟩ ⟨p₂, h₂, rfl⟩ ⟨p₃, h₃, rfl⟩
     use t • (p₁ -ᵥ p₂) +ᵥ p₃
     suffices t • (p₁ -ᵥ p₂) +ᵥ p₃ ∈ s by
@@ -722,7 +728,7 @@ namespace AffineSubspace
 /-- The preimage of an affine subspace under an affine map as an affine subspace. -/
 def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace k P₁ where
   carrier := f ⁻¹' s
-  smul_vsub_vadd_mem t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
+  smul_vsub_vadd_mem' t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
       rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub]
       apply s.smul_vsub_vadd_mem _ hp₁ hp₂ hp₃
@@ -735,6 +741,7 @@ theorem coe_comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : (s.com
 theorem mem_comap {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₂} : x ∈ s.comap f ↔ f x ∈ s :=
   Iff.rfl
 
+@[gcongr]
 theorem comap_mono {f : P₁ →ᵃ[k] P₂} {s t : AffineSubspace k P₂} : s ≤ t → s.comap f ≤ t.comap f :=
   preimage_mono
 
@@ -813,11 +820,81 @@ namespace AffineSubspace
 
 open AffineEquiv
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-variable [AffineSpace V P]
+variable {k V W P Q : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+  [AddCommGroup W] [Module k W] [AffineSpace W Q]
+
+/-- The product of two affine subspaces as an affine subspace. -/
+def prod (s : AffineSubspace k P) (t : AffineSubspace k Q) : AffineSubspace k (P × Q) where
+  carrier := (s : Set P) ×ˢ (t : Set Q)
+  smul_vsub_vadd_mem' c _ _ _ hp₁ hp₂ hp₃ :=
+    ⟨s.smul_vsub_vadd_mem' c hp₁.1 hp₂.1 hp₃.1, t.smul_vsub_vadd_mem' c hp₁.2 hp₂.2 hp₃.2⟩
+
+@[simp]
+theorem coe_prod (s : AffineSubspace k P) (t : AffineSubspace k Q) :
+    (s.prod t : Set (P × Q)) = (s : Set P) ×ˢ (t : Set Q) :=
+  rfl
+
+@[simp]
+theorem mem_prod (s : AffineSubspace k P) (t : AffineSubspace k Q) (x : P × Q) :
+    x ∈ s.prod t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+  Set.mem_prod
+
+@[gcongr]
+theorem prod_mono {s₁ s₂ : AffineSubspace k P} {t₁ t₂ : AffineSubspace k Q}
+    (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
+  Set.prod_mono hs ht
+
+@[simp]
+theorem prod_top_top : (⊤ : AffineSubspace k P).prod (⊤ : AffineSubspace k Q) = ⊤ := by
+  ext; simp
+
+@[simp]
+theorem prod_bot_right (s : AffineSubspace k P) : s.prod (⊥ : AffineSubspace k Q) = ⊥ := by
+  simp [AffineSubspace.ext_iff]
+
+@[simp]
+theorem prod_bot_left (t : AffineSubspace k P) : (⊥ : AffineSubspace k Q).prod t = ⊥ := by
+  simp [AffineSubspace.ext_iff]
+
+theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P) (t₁ t₂ : AffineSubspace k Q) :
+    s₁.prod t₁ ⊓ s₂.prod t₂ = (s₁ ⊓ s₂).prod (t₁ ⊓ t₂) :=
+  SetLike.coe_injective Set.prod_inter_prod
+
+theorem _root_.vectorSpan_prod_le (s : Set P) (t : Set Q) :
+    vectorSpan k (s ×ˢ t) ≤ (vectorSpan k s).prod (vectorSpan k t) := by
+  simpa [vectorSpan_def, Set.prod_vsub_prod_comm] using Submodule.span_prod_le (s -ᵥ s) (t -ᵥ t)
+
+theorem direction_prod_le (s : AffineSubspace k P) (t : AffineSubspace k Q) :
+    (s.prod t).direction ≤ s.direction.prod t.direction := by
+  simpa [direction_eq_vectorSpan, coe_prod] using vectorSpan_prod_le (s : Set P) (t : Set Q)
+
+theorem _root_.vectorSpan_prod_eq {s : Set P} {t : Set Q} (hs : s.Nonempty) (ht : t.Nonempty) :
+    vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
+  rw [vectorSpan_def, Set.prod_vsub_prod_comm]
+  exact Submodule.span_prod_eq k hs.zero_mem_vsub_self ht.zero_mem_vsub_self
+
+theorem direction_prod_eq {s : AffineSubspace k P} {t : AffineSubspace k Q}
+    (hs : s ≠ ⊥) (ht : t ≠ ⊥) :
+    (s.prod t).direction = s.direction.prod t.direction := by
+  simp [direction_eq_vectorSpan, vectorSpan_prod_eq, nonempty_iff_ne_bot, ht, hs]
+
+theorem _root_.affineSpan_prod_eq (s : Set P) (t : Set Q) :
+    affineSpan k (s ×ˢ t) = (affineSpan k s).prod (affineSpan k t) := by
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp
+  rcases t.eq_empty_or_nonempty with rfl | ht
+  · simp
+  apply AffineSubspace.ext_of_direction_eq
+  · simp [direction_prod_eq, Set.nonempty_iff_ne_empty.mp, hs, ht, direction_affineSpan,
+      vectorSpan_prod_eq]
+  · obtain ⟨x, hx⟩ := hs
+    obtain ⟨y, hy⟩ := ht
+    use ⟨x, y⟩
+    simp [mem_affineSpan, hx, hy]
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector
 to all points. -/
+@[wikidata Q53875]
 def Parallel (s₁ s₂ : AffineSubspace k P) : Prop :=
   ∃ v : V, s₂ = s₁.map (constVAdd k P v)
 
@@ -845,6 +922,18 @@ theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥
   rcases h₂₃ with ⟨v₂₃, rfl⟩
   refine ⟨v₂₃ + v₁₂, ?_⟩
   rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add]
+
+instance : Std.Refl (α := AffineSubspace k P) Parallel where
+  refl := .refl
+
+instance : Std.Symm (α := AffineSubspace k P) Parallel where
+  symm _ _ := .symm
+
+instance : IsTrans (AffineSubspace k P) Parallel where
+  trans _ _ _ := .trans
+
+theorem Parallel.equivalence : Equivalence (α := AffineSubspace k P) Parallel :=
+  ⟨.refl, .symm, .trans⟩
 
 theorem Parallel.direction_eq {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) :
     s₁.direction = s₂.direction := by
@@ -942,9 +1031,9 @@ lemma affineSpan_pair_eq_of_mem_of_mem_of_ne {p₁ p₂ p₃ p₄ : P} (hp₁ : 
     simp [sub_smul, hp₁, hp₂]
   rw [← eq_inv_smul_iff₀ hr₀] at hr
   refine affineSpan_pair_le_of_mem_of_mem ?_ ?_
-  · convert smul_vsub_vadd_mem_affineSpan_pair (-r₁ * (r₂ - r₁)⁻¹) p₁ p₂
+  · convert! smul_vsub_vadd_mem_affineSpan_pair (-r₁ * (r₂ - r₁)⁻¹) p₁ p₂
     simp [mul_smul, ← hr, hp₁]
-  · convert smul_vsub_vadd_mem_affineSpan_pair ((1 - r₁) * (r₂ - r₁)⁻¹) p₁ p₂
+  · convert! smul_vsub_vadd_mem_affineSpan_pair ((1 - r₁) * (r₂ - r₁)⁻¹) p₁ p₂
     simp [mul_smul, ← hr, sub_smul, hp₁]
 
 /-- One line equals another differing in the first point if the first point of the first line is

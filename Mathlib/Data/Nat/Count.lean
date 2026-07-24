@@ -71,10 +71,7 @@ theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ (by grind)
 
 theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
-  have : Disjoint {x ∈ range a | p x} {x ∈ (range b).map <| addLeftEmbedding a | p x} := by
-    grind [Finset.disjoint_left]
-  simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
-    filter_map, addLeftEmbedding, card_map, Function.Embedding.coeFn_mk, Function.comp_def]
+  simp [count, List.range_add, Function.comp_def]
 
 theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a + count p b := by
   rw [add_comm, count_add, add_comm]
@@ -111,11 +108,11 @@ theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = cou
   · exact this hn hm heq.symm h.symm (by grind)
   · simpa [heq] using count_strict_mono hm hmn
 
-theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ #hp.toFinset := by
+theorem count_le_card (hp : (Set.ofPred p).Finite) (n : ℕ) : count p n ≤ #hp.toFinset := by
   rw [count_eq_card_filter_range]
   exact Finset.card_mono fun x hx ↦ hp.mem_toFinset.2 (mem_filter.1 hx).2
 
-theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n < #hp.toFinset :=
+theorem count_lt_card {n : ℕ} (hp : (Set.ofPred p).Finite) (hpn : p n) : count p n < #hp.toFinset :=
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 
 theorem count_iff_forall {n : ℕ} : count p n = n ↔ ∀ n' < n, p n' := by

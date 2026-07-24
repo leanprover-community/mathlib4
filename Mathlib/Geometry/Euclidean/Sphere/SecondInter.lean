@@ -43,6 +43,7 @@ the second intersection with the sphere through `p` and with center `s.center`. 
 def Sphere.secondInter (s : Sphere P) (p : P) (v : V) : P :=
   (-2 * ⟪v, p -ᵥ s.center⟫ / ⟪v, v⟫) • v +ᵥ p
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Sphere.secondInter_map (s : Sphere P) (p : P) (v : V) (f : P →ᵃⁱ[ℝ] P₂) :
     Sphere.secondInter ⟨f s.center, s.radius⟩ (f p) (f.linearIsometry v) =
       f (s.secondInter p v) := by
@@ -110,8 +111,8 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
 lemma Sphere.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair {s : Sphere P} {p q : P}
     (hp : p ∈ s) {p' : P} (hp' : p' ∈ line[ℝ, p, q]) :
     p' = p ∨ p' = s.secondInter p (q -ᵥ p) ↔ p' ∈ s := by
-  convert s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
-  convert hp'
+  convert! s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
+  convert! hp'
   rw [AffineSubspace.eq_iff_direction_eq_of_mem (AffineSubspace.self_mem_mk' p _)
     (left_mem_affineSpan_pair _ _ _)]
   simp [direction_affineSpan, vectorSpan_pair_rev]
@@ -140,10 +141,11 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   simp only [Sphere.secondInter, vadd_vsub_assoc, vadd_vadd, inner_add_right, inner_smul_right,
     div_mul_cancel₀ _ hv']
   rw [← @vsub_eq_zero_iff_eq V, vadd_vsub, ← add_smul, ← add_div]
-  convert zero_smul ℝ _
-  convert zero_div (G₀ := ℝ) _
+  convert! zero_smul ℝ _
+  convert! zero_div (G₀ := ℝ) _
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result of `secondInter` may be expressed using `lineMap`. -/
 theorem Sphere.secondInter_eq_lineMap (s : Sphere P) (p p' : P) :
@@ -212,6 +214,7 @@ lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite {s :
 
 attribute [local instance] Nat.AtLeastTwo.neZero_sub_one
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the point passed to `secondInter` is a vertex of a simplex, lying on the sphere, and all
 vertices lie on or inside the sphere, and the vector passed to `secondInter` is given by a
 subtraction involving that vertex and a point in the interior of the simplex, the given vertex

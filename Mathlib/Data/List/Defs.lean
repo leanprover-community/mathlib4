@@ -170,7 +170,7 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
   | t :: ts, is =>
       H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
   termination_by ts is => (length ts + length is, length ts)
-  decreasing_by all_goals (simp_wf; omega)
+  decreasing_by all_goals (simp_wf; grind)
 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
 permutations of `is ++ ts` that do not fix `ts`. -/
@@ -240,9 +240,13 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
-  Defined as `pwFilter (≠)`.
+Defined as `pwFilter (≠)`.
 
-     dedup [1, 0, 2, 2, 1] = [0, 2, 1] -/
+See also `eraseDups` which keeps the first occurrence instead:
+```
+dedup [2, 0, 1, 0, 2, 0] = [1, 2, 0]
+eraseDups [2, 0, 1, 0, 2, 0] = [2, 0, 1]
+``` -/
 def dedup [DecidableEq α] : List α → List α :=
   pwFilter (· ≠ ·)
 

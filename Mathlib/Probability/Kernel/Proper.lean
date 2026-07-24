@@ -135,7 +135,7 @@ lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf
     · exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
   · rintro g' hg'_meas hg'_mono hg'
     simp_rw [ENNReal.iSup_mul]
-    rw [lintegral_iSup (fun n ↦ ((hg'_meas _).mono h𝓑𝓧 le_rfl).mul hf)
+    rw [lintegral_iSup (fun n ↦ ((hg'_meas _).mono h𝓑𝓧 le_rfl).fun_mul hf)
       (hg'_mono.mul_const zero_le)]
     simp_rw [hg']
 

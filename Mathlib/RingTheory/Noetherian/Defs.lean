@@ -140,7 +140,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     intro N
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
       WellFounded.has_min H.wf { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
-    convert h₁
+    convert! h₁
     refine (e.antisymm ?_).symm
     by_contra h₃
     obtain ⟨x, hx₁ : x ∈ N, hx₂ : x ∉ N₀⟩ := Set.not_subset.mp h₃
@@ -192,6 +192,7 @@ end
 
 /-- A (semi)ring is Noetherian if it is Noetherian as a module over itself,
 i.e. all its ideals are finitely generated. -/
+@[wikidata Q582271]
 abbrev IsNoetherianRing (R) [Semiring R] :=
   IsNoetherian R R
 

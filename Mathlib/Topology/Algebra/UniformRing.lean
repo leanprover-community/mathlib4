@@ -170,10 +170,14 @@ theorem mapRingHom_comp {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGr
     (uniformContinuous_addMonoidHom_of_continuous hg)
     (uniformContinuous_addMonoidHom_of_continuous hf)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapRingHom_id : mapRingHom (.id α) continuous_id = .id (Completion α) := by
   simp [RingHom.ext_iff, mapRingHom_apply]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
 lifts to a ring isomorphism between corresponding uniform space completions. -/
 @[simps!]
@@ -200,7 +204,7 @@ instance algebra : Algebra R (Completion A) where
   commutes' := fun r x =>
     Completion.induction_on x (isClosed_eq (continuous_const_mul _) (continuous_mul_const _))
       fun a => by
-      simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
+      simpa only [coe_mul] using! congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
   smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x
 
 theorem algebraMap_def (r : R) :
@@ -271,10 +275,10 @@ noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* 
     (ue : IsUniformInducing i) (dr : DenseRange i) (hf : UniformContinuous f) : β →+* γ where
   toFun := (ue.isDenseInducing dr).extend f
   map_one' := by
-    convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 1
+    convert! IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 1
     exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
-    convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 0 <;>
+    convert! IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 0 <;>
     simp only [map_zero]
   map_add' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous

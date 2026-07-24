@@ -114,7 +114,7 @@ theorem nodupKeys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : No
 theorem NodupKeys.eq_of_fst_eq {l : List (Sigma β)} (nd : NodupKeys l) {s s' : Sigma β} (h : s ∈ l)
     (h' : s' ∈ l) : s.1 = s'.1 → s = s' :=
   @Pairwise.forall_of_forall _ (fun s s' : Sigma β => s.1 = s'.1 → s = s') _
-    (fun _ _ H h => (H h.symm).symm) (fun _ _ _ => rfl)
+    ⟨fun _ _ H h => (H h.symm).symm⟩ (fun _ _ _ => rfl)
     ((nodupKeys_iff_pairwise.1 nd).imp fun h h' => (h h').elim) _ h _ h'
 
 theorem NodupKeys.eq_of_mk_mem {a : α} {b b' : β a} {l : List (Sigma β)} (nd : NodupKeys l)
@@ -508,7 +508,7 @@ theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
   | cons hd tl ih =>
     obtain ⟨ah, bh⟩ := hd
     by_cases h₁ : a = ah <;> by_cases h₂ : a' = ah
-    · substs h₁ h₂
+    · subst h₁ h₂
       cases Ne.irrefl h
     · subst h₁
       simp [h₂]
@@ -549,7 +549,6 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
 
 theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
-  simp only [SizeOf.sizeOf, _sizeOf_1]
   induction xs with
   | nil => simp
   | cons y ys => by_cases x = y.1 <;> simp [*]
@@ -617,7 +616,6 @@ theorem dedupKeys_cons {x : Sigma β} (l : List (Sigma β)) :
     dedupKeys (x :: l) = kinsert x.1 x.2 (dedupKeys l) :=
   rfl
 
-
 theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := by
   dsimp [dedupKeys]
   generalize hl : nil = l'
@@ -646,16 +644,19 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
     · rw [dedupKeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
       exact h
 
+theorem sizeOf_cons_le_sizeOf_cons {α : Type*} [SizeOf α] {l r : List α} (a : α)
+    (h : SizeOf.sizeOf l ≤ SizeOf.sizeOf r) :
+    SizeOf.sizeOf (a :: l) ≤ SizeOf.sizeOf (a :: r) := by
+  rw [cons.sizeOf_spec, cons.sizeOf_spec]
+  exact Nat.add_le_add_iff_left.mpr h
+
 theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
     (xs : List (Sigma β)) : SizeOf.sizeOf (dedupKeys xs) ≤ SizeOf.sizeOf xs := by
-  simp only [SizeOf.sizeOf, _sizeOf_1]
   induction xs with
   | nil => simp [dedupKeys]
-  | cons x xs =>
-    simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
-    trans
-    · apply sizeOf_kerase
-    · assumption
+  | cons x xs h =>
+    simp only [dedupKeys_cons, kinsert_def, Sigma.eta]
+    exact sizeOf_cons_le_sizeOf_cons x (le_trans (sizeOf_kerase x.fst xs.dedupKeys) h)
 
 /-! ### `kunion` -/
 
