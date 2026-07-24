@@ -103,9 +103,11 @@ end Preorder
 
 section LinearOrder
 
-variable [Nonempty α] [LinearOrder α] [IsOrderBornology α]
+variable [LinearOrder α] [IsOrderBornology α]
 
 lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology.cobounded α := by
+  cases isEmpty_or_nonempty α
+  · simp
   intro s
   rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s,
     Filter.atTop_basis_Ioi.mem_iff]
@@ -118,8 +120,9 @@ lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology
 lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology.cobounded α :=
   atTop_le_cobounded (α := αᵒᵈ)
 
-lemma IsOrderBornology.cobounded_le_atBot_sup_atTop :
-    cobounded α ≤ .atBot ⊔ .atTop := by
+lemma IsOrderBornology.cobounded_le_atBot_sup_atTop : cobounded α ≤ .atBot ⊔ .atTop := by
+  cases isEmpty_or_nonempty α
+  · simp
   intro s
   rw [Filter.mem_sup, Filter.atTop_basis.mem_iff, Filter.atBot_basis.mem_iff,
     ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
@@ -145,8 +148,15 @@ lemma IsOrderBornology.cobounded_eq_atTop [NoMaxOrder α] [OrderBot α] :
 
 -- TODO (khw): Generate this in the future with `to_dual`
 -- See https://github.com/leanprover-community/mathlib4/pull/37738
+@[to_dual existing]
 lemma IsOrderBornology.cobounded_eq_atBot [NoMinOrder α] [OrderTop α] :
     Bornology.cobounded α = .atBot := cobounded_eq_atTop (α := αᵒᵈ)
+
+instance IsOrderBornology.neBot_cobounded_of_noMinOrder [Nonempty α] [NoMinOrder α] :
+    (cobounded α).NeBot := by grw [← atBot_le_cobounded]; infer_instance
+
+instance IsOrderBornology.neBot_cobounded_of_noMaxOrder [Nonempty α] [NoMaxOrder α] :
+    (cobounded α).NeBot := by grw [← atTop_le_cobounded]; infer_instance
 
 end LinearOrder
 
