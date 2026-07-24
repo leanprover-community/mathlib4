@@ -111,7 +111,7 @@ set_option linter.hashCommand false
 
 open Polynomial
 
--- a ring the tactic never names: ℤ[i], with structurally decidable equality
+-- ℤ[i] with integer entries
 example : Matrix.rank (R := GaussianInt) !![2, 5; 3, 4] = 2 := by eval_rank
 
 -- entries must still have a rational value: `i = ⟨0, 1⟩` has none
@@ -122,13 +122,13 @@ error: the entry does not evaluate to a numeral
 #guard_msgs in
 example : Matrix.rank (R := GaussianInt) !![⟨0, 1⟩, 1; 1, ⟨0, 1⟩] = 2 := by eval_rank
 
--- compound entries evaluate by `norm_num`: 1/2 * 5/2 = 5/4, det ≠ 0
+-- compound entries: 1/2 * 5/2 = 5/4, det ≠ 0
 example : Matrix.rank (R := ℚ) !![1/2 * 5/2, 1; 1, 1] = 2 := by eval_rank
 
--- the evaluated value feeds the elimination: 1/2 * 4 = 2 collapses the rank
+-- 1/2 * 4 = 2 collapses the rank
 example : Matrix.rank (R := ℚ) !![1/2 * 4, 2; 1, 1] = 1 := by eval_rank
 
--- the evaluated value feeds the zero-test in the ring: 2 * 4 ≡ 1 (mod 7), det ≡ 0
+-- 2 * 4 ≡ 1 (mod 7), det ≡ 0
 example : Matrix.rank (R := ZMod 7) !![2 * 4, 1; 1, 1] = 1 := by eval_rank
 
 -- only closed matrix literals are in scope
