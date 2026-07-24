@@ -160,7 +160,23 @@ theorem ofLE_comp (h₁₂ : G₁ ≤ G₂) (h₂₃ : G₂ ≤ G₃) :
 def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.induce s).toCopy
 
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
-protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
+protected def bot (f : W ↪ V) : Copy (⊥ : SimpleGraph W) G := ⟨⟨f, False.elim⟩, f.injective⟩
+
+/-- The copy of any simple graph in `⊤` that can embed its vertices. -/
+protected def top (f : W ↪ V) : Copy H (⊤ : SimpleGraph V) :=
+  ⟨⟨f, fun h ↦ f.injective.ne h.ne⟩, f.injective⟩
+
+/-- The copy of `H` in `H.map ·`. -/
+protected abbrev map (f : W ↪ V) : Copy H (H.map f) := (Embedding.map f H).toCopy
+
+/-- The copy of `G.map ·` in `G`. -/
+protected abbrev map' (f : V ≃ W) : Copy (G.map f) G := (Iso.map f G).symm.toCopy
+
+/-- The copy of `G.comap ·` in `G`. -/
+protected abbrev comap (f : W ↪ V) : Copy (G.comap f) G := (Embedding.comap f G).toCopy
+
+/-- The copy of `H` in `H.comap ·`. -/
+protected abbrev comap' (f : V ≃ W) : Copy H (H.comap f) := (Iso.comap f H).symm.toCopy
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -299,6 +315,14 @@ lemma bot_isContained_iff_card_le [Fintype α] [Fintype β] :
     fun h ↦ ⟨Copy.bot (Function.Embedding.nonempty_of_card_le h).some⟩⟩
 
 protected alias IsContained.bot := bot_isContained_iff_card_le
+
+/-- `⊤` contains a simple graph if and only if it has sufficiently many vertices. -/
+lemma isContained_top_iff_card_le [Fintype V] [Fintype W] :
+    H ⊑ (⊤ : SimpleGraph V) ↔ card W ≤ card V :=
+  ⟨fun ⟨f⟩ ↦ Fintype.card_le_of_embedding f.toEmbedding,
+    fun h ↦ ⟨Copy.top (Function.Embedding.nonempty_of_card_le h).some⟩⟩
+
+protected alias IsContained.top := isContained_top_iff_card_le
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
