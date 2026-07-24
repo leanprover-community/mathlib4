@@ -5,8 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Data.Set.Finite.Basic
+
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Combinatorial compactness and the Rado selection lemma

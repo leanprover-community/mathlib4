@@ -5,11 +5,11 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.Sub
+public import Mathlib.MeasureTheory.Measure.WithDensity
 
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
-public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
 # Results about subtraction of finite measures
