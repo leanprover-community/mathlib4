@@ -6,8 +6,9 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 module
 
 public import Mathlib.Data.Finset.Basic
-public import Mathlib.ModelTheory.Syntax
 public import Mathlib.Data.List.ProdSigma
+public import Mathlib.Data.Set.Card
+public import Mathlib.ModelTheory.Syntax
 
 /-!
 # Basics on First-Order Semantics
@@ -33,6 +34,9 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 - Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
   `liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
   sentences, and theories.
+- `FirstOrder.Language.Formula.realize_iExsAtLeast`, `realize_iExsAtMost`, and
+  `realize_iExsExactly` characterize counting formulas using the extended cardinality of their
+  realization sets.
 
 ## Implementation Notes
 
@@ -941,6 +945,82 @@ theorem realize_iExsUnique [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → 
 end BoundedFormula
 
 namespace Formula
+
+/-- Realization of `iExsAtLeast` is equivalent to the existence of an injective family of `n`
+pairwise distinct realizing assignments to the `β`-variables. -/
+theorem realize_iExsAtLeast_iff_exists_injective [Finite β]
+    (φ : L.Formula (α ⊕ β)) (v : α → M) (n : ℕ) :
+    (φ.iExsAtLeast β n).Realize v ↔
+      ∃ f : Fin n → (β → M), (∀ i, φ.Realize (Sum.elim v (f i))) ∧ Function.Injective f := by
+  simp only [iExsAtLeast, ne_eq, realize_iExs, realize_inf, realize_iInf, realize_relabel,
+    realize_not, realize_equal, Term.realize_var, Sum.elim_inr, not_forall, Subtype.forall,
+    Prod.forall]
+  refine (Equiv.curry (Fin n) β M).exists_congr fun u ↦ and_congr ?_ ?_
+  · refine forall_congr' fun i ↦ iff_of_eq <| congrArg φ.Realize ?_
+    funext x
+    cases x <;> rfl
+  · rw [Function.injective_iff_pairwise_ne]
+    simp [Pairwise, funext_iff, Function.onFun]
+
+/-- The formula `iExsAtLeast β n φ` is realized exactly when the realization set of `φ` has
+extended cardinality at least `n`. -/
+@[simp]
+theorem realize_iExsAtLeast [Finite β] (φ : L.Formula (α ⊕ β)) (v : α → M) (n : ℕ) :
+    (φ.iExsAtLeast β n).Realize v ↔
+      (n : ℕ∞) ≤ {x : β → M | φ.Realize (Sum.elim v x)}.encard := by
+  simp only [realize_iExsAtLeast_iff_exists_injective, Set.le_encard_iff_exists_injection_fin,
+    Set.mem_ofPred_eq]
+
+/-- The formula `iExsAtMost β n φ` is realized exactly when the realization set of `φ` has
+extended cardinality at most `n`. -/
+@[simp]
+theorem realize_iExsAtMost [Finite β] (φ : L.Formula (α ⊕ β)) (v : α → M) (n : ℕ) :
+    (φ.iExsAtMost β n).Realize v ↔
+      {x : β → M | φ.Realize (Sum.elim v x)}.encard ≤ n := by
+  simpa [iExsAtMost] using ENat.lt_natCast_add_one_iff
+
+/-- The formula `iExsExactly β n φ` is realized exactly when the realization set of `φ` has
+extended cardinality `n`. -/
+@[simp]
+theorem realize_iExsExactly [Finite β] (φ : L.Formula (α ⊕ β)) (v : α → M) (n : ℕ) :
+    (φ.iExsExactly β n).Realize v ↔
+      {x : β → M | φ.Realize (Sum.elim v x)}.encard = n := by
+  simpa [iExsExactly] using Iff.symm ge_antisymm_iff
+
+/-- Exact cardinality zero means there is no realizing assignment to the `β`-variables. -/
+theorem realize_iExsExactly_zero [Finite β] (φ : L.Formula (α ⊕ β)) (v : α → M) :
+    (φ.iExsExactly β 0).Realize v ↔ ¬∃ x : β → M, φ.Realize (Sum.elim v x) := by
+  simp only [realize_iExsExactly, Nat.cast_zero, Set.encard_eq_zero, not_exists]
+  exact Set.eq_empty_iff_forall_notMem
+
+/-- Exact cardinality one is semantically equivalent to unique existence. -/
+theorem realize_iExsExactly_one_iff_iExsUnique [Finite β]
+    (φ : L.Formula (α ⊕ β)) (v : α → M) :
+    (φ.iExsExactly β 1).Realize v ↔ (φ.iExsUnique β).Realize v := by
+  rw [realize_iExsExactly, Nat.cast_one, realize_iExsUnique, Set.encard_eq_one]
+  constructor
+  · rintro ⟨x, hx⟩
+    have hmem := Set.ext_iff.mp hx
+    exact ⟨x, (hmem x).2 rfl, fun y hy ↦ (hmem y).1 hy⟩
+  · rintro ⟨x, hx, hunique⟩
+    refine ⟨x, Set.ext fun y ↦ ?_⟩
+    simp only [Set.mem_ofPred_eq, Set.mem_singleton_iff]
+    exact ⟨hunique y, fun hy ↦ hy ▸ hx⟩
+
+/-- Having at most `n` realizations is the negation of having at least `n + 1` realizations. -/
+theorem realize_iExsAtMost_iff_not_iExsAtLeast_succ [Finite β]
+    (φ : L.Formula (α ⊕ β)) (v : α → M) (n : ℕ) :
+    (φ.iExsAtMost β n).Realize v ↔ ¬(φ.iExsAtLeast β (n + 1)).Realize v := by
+  simpa using Iff.symm ENat.lt_natCast_add_one_iff
+
+/-- Having at most `n` realizations rules out any injective family of `n + 1` realizations. -/
+theorem realize_iExsAtMost_iff_not_exists_injection [Finite β]
+    (φ : L.Formula (α ⊕ β)) (v : α → M) (n : ℕ) :
+    (φ.iExsAtMost β n).Realize v ↔
+      ¬∃ f : Fin (n + 1) → (β → M),
+        (∀ i, φ.Realize (Sum.elim v (f i))) ∧ Function.Injective f := by
+  simpa only [realize_iExsAtMost_iff_not_iExsAtLeast_succ] using
+    not_congr (realize_iExsAtLeast_iff_exists_injective φ v (n + 1))
 
 @[simp]
 theorem realize_exClosure [DecidableEq α] (φ : L.Formula α) :
