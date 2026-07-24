@@ -167,7 +167,7 @@ instance instFinite : Module.Finite R A := by
   exact sum_mem fun _ _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span (by grind))
 
 instance instProjective : Module.Projective R A := by
-  obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
+  have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   refine Module.projective_def'.mpr ⟨∑ p ∈ S, (ε ∘ₗ mulRight R p.1).smulRight (.single p.2 1), ?_⟩
   ext; simp [sum_counit_mul_left_smul_of_comul_one hS]
 
@@ -175,14 +175,14 @@ instance instProjective : Module.Projective R A := by
 This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
 lemma forall_counit_mul_left_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (a * b) = 0) ↔ a = 0 := by
   refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
-  obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
+  have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   simpa [h] using (sum_counit_mul_left_smul_of_comul_one hS a).symm
 
 /-- The bilinear form `(mul R A).compr₂ counit` is separating right.
 This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
 lemma forall_counit_mul_right_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (b * a) = 0) ↔ a = 0 := by
   refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
-  obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
+  have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   simpa [hS, sum_tmul, h] using (sum_counit_mul_right_smul_of_comul_one hS a).symm
 
 /-- The bilinear form `mul.compr₂ counit` is nondegenerate. -/
@@ -191,7 +191,7 @@ lemma nondegenerate_compr₂_mul_counit : ((mul R A).compr₂ ε).Nondegenerate 
 
 /-- The bilinear form `mul.compr₂ counit` is bijective. -/
 lemma bijective_compr₂_mul_counit : (⇑((mul R A).compr₂ ε)).Bijective := by
-  obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
+  have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   refine ⟨fun a b h ↦ ?_, fun f ↦ ⟨∑ x ∈ S, f x.1 • x.2, ext fun b ↦ ?_⟩⟩
   · rw [← sum_counit_mul_left_smul_of_comul_one hS b]
     simp only [LinearMap.ext_iff, compr₂_apply, mul_apply_apply] at h
