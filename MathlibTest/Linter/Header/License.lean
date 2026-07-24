@@ -6,7 +6,8 @@ Authors: Oliver Butterley
 
 import Mathlib.Tactic.Linter.Header
 
-/- Test that the expected copyright license line is configurable via `linter.style.header.license`
+/-!
+Test that the expected copyright license line is configurable via `linter.style.header.license`
 (default: the Apache LICENSE line). -/
 
 /--
