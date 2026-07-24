@@ -48,6 +48,11 @@ lemma isUniversal_starGraph_self {r : V} : (starGraph r).IsUniversal r := by
   intro _ _
   simpa
 
+variable {G} in
+theorem starGraph_le_iff {r : V} : starGraph r ≤ G ↔ G.IsUniversal r := by
+  refine ⟨fun h u hne ↦ h <| by simpa, fun h a b hadj ↦ ?_⟩
+  grind [starGraph_adj, IsUniversal, Adj.symm]
+
 /-- On (starGraph r), r is adjacent to v iff v ≠ r. -/
 lemma starGraph_adj_center_iff {r v : V} : (starGraph r).Adj r v ↔ r ≠ v := by simp
 
@@ -83,5 +88,23 @@ lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v
 lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
   simp
+
+theorem cliqueFree_starGraph_three (r : V) : starGraph r |>.CliqueFree 3 :=
+  isAcyclic_starGraph r |>.cliqueFree_three
+
+variable {G} in
+theorem eq_starGraph_of_isUniversal_of_cliqueFree_three {v : V} (hv : G.IsUniversal v)
+    (h3 : G.CliqueFree 3) : G = starGraph v := by
+  by_contra! hne
+  have := hne.lt_of_le' <| starGraph_le_iff.mpr hv
+  obtain ⟨⟨a, b⟩, he, he'⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono this
+  classical
+  refine h3 {v, a, b} <| is3Clique_triple_iff.mpr ⟨hv ?_, hv ?_, he⟩ <;>
+    intro rfl <;> simp [he.ne] at he'
+
+theorem IsUniversal.isAcyclic_iff_cliqueFree_three {v : V} (hv : G.IsUniversal v) :
+    G.IsAcyclic ↔ G.CliqueFree 3 where
+  mp := IsAcyclic.cliqueFree_three
+  mpr h3 := eq_starGraph_of_isUniversal_of_cliqueFree_three hv h3 ▸ isAcyclic_starGraph v
 
 end SimpleGraph
