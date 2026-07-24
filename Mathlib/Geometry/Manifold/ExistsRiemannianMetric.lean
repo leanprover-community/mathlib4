@@ -38,23 +38,29 @@ which is true for finite dimensional manifolds.
 
 open Set Bundle ContDiff Manifold Trivialization SmoothPartitionOfUnity
 
-variable {B : Type*}
-  {E : B → Type*}
-  [∀ x, TopologicalSpace (E x)] [∀ x, AddCommGroup (E x)]
+/-
+`E` is a vector bundle over `B` with model fiber `F`. Although the fibers
+are topological vector spaces (each trivialization restricts to a linear homeomorphism `E x ≃ F`),
+Mathlib does have an instance for this, so it must be given explicitly. The `InnerProductSpace`
+constraint also implies a `NormedSpace` constraint required by `VectorBundle`.
+-/
+variable {B : Type*} {F : Type*} {E : B → Type*}
+  [TopologicalSpace B]
+  [NormedAddCommGroup F] [TopologicalSpace (TotalSpace F E)]
+  [∀ x, TopologicalSpace (E x)] [∀ x, AddCommGroup (E x)] [∀ x, Module ℝ (E x)]
+  [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
+  [FiberBundle F E] [InnerProductSpace ℝ F] [VectorBundle ℝ F E]
 
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [InnerProductSpace ℝ EB]
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB]
-  {F : Type*} [NormedAddCommGroup F] [TopologicalSpace (TotalSpace F E)]
 
 noncomputable section
 
 variable
-  {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
-  [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
-  [FiberBundle F E] [VectorBundle ℝ F E]
+  {IB : ModelWithCorners ℝ EB HB}
+  [ChartedSpace HB B]
+  [FiniteDimensional ℝ F]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
   [FiniteDimensional ℝ EB]
   [∀ x, T2Space (E x)]
@@ -73,11 +79,8 @@ def g_bilin_aux (i p : B) : E p →L[ℝ] (E p →L[ℝ] ℝ) := by
   let bilinear : E p →ₗ[ℝ] E p →ₗ[ℝ] ℝ :=
     LinearMap.compl₁₂ (innerSL ℝ).toLinearMap₁₂ φ.toLinearMap φ.toLinearMap
   by_cases hp : p ∈ χ.baseSet
-  · let bar : E p ≃ₗ[ℝ] F := Trivialization.linearEquivAt ℝ χ p hp
-    haveI : FiniteDimensional ℝ (E p) := bar.symm.finiteDimensional
-    haveI : IsTopologicalAddGroup (E p) := by infer_instance
-    haveI : ContinuousSMul ℝ (E p) := by infer_instance
-    haveI : T2Space (E p) := by infer_instance
+  · let tvsEquiv : E p ≃ₗ[ℝ] F := Trivialization.linearEquivAt ℝ χ p hp
+    haveI : FiniteDimensional ℝ (E p) := tvsEquiv.symm.finiteDimensional
     let bilinear_cont_inner : E p →ₗ[ℝ] E p →L[ℝ] ℝ := {
       toFun := fun u => LinearMap.toContinuousLinearMap (bilinear u)
       map_add' := by simp only [map_add, implies_true]
@@ -123,11 +126,9 @@ end
 noncomputable section
 
 variable
-  {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
-  [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
-  [FiberBundle F E] [VectorBundle ℝ F E]
+  {IB : ModelWithCorners ℝ EB HB}
+  [ChartedSpace HB B]
+  [FiniteDimensional ℝ F]
   [∀ x, T2Space (E x)]
 
 def g_global_bilin_aux (f : SmoothPartitionOfUnity B IB B) (p : B) :
@@ -230,11 +231,8 @@ end
 section smooth
 
 variable
-  {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
-  [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F]
-  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
-  [FiberBundle F E] [VectorBundle ℝ F E]
+  {IB : ModelWithCorners ℝ EB HB}
+  [ChartedSpace HB B]
   [ContMDiffVectorBundle ω F E IB]
   [∀ x, T2Space (E x)]
 
@@ -301,11 +299,9 @@ end smooth
 section
 
 variable
-  {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
-  [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
-  [FiberBundle F E] [VectorBundle ℝ F E]
+  {IB : ModelWithCorners ℝ EB HB}
+  [ChartedSpace HB B]
+  [FiniteDimensional ℝ F]
   [∀ x, T2Space (E x)]
 
 omit [∀ (x : B),
@@ -417,15 +413,12 @@ end
 section
 
 variable
-  {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
-  [TopologicalSpace B] [ChartedSpace HB B]
-  [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [∀ x, Module ℝ (E x)] [∀ x, IsTopologicalAddGroup (E x)] [∀ x, ContinuousSMul ℝ (E x)]
-  [FiberBundle F E] [VectorBundle ℝ F E]
+  {IB : ModelWithCorners ℝ EB HB}
+  [ChartedSpace HB B]
+  [FiniteDimensional ℝ F]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
   [FiniteDimensional ℝ EB] [SigmaCompactSpace B] [T2Space B]
   [∀ x, T2Space (E x)]
-
 
 /--
 Existence of a smooth Riemannian metric on a manifold.
