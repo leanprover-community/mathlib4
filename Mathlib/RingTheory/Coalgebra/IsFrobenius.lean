@@ -250,15 +250,15 @@ lemma comul_eq_of_isFrobenius : δ = (TensorProduct.mk R A A).flip 1 :=
 @[simp] lemma algebraMap_counit_of_isFrobenius (a : A) : algebraMap R A (ε a) = a := by
   simpa [Algebra.algebraMap_eq_smul_one] using congr(β ($rTensor_counit_comp_comul a))
 
-lemma algebraMap_bijective_of_isFrobenius : Function.Bijective (algebraMap R A) :=
+lemma bijective_algebraMap_of_isFrobenius : Function.Bijective (algebraMap R A) :=
   ⟨algebraMap_injective A, fun a ↦ ⟨ε a, by simp⟩⟩
 
-lemma counit_bijective_of_isFrobenius : Function.Bijective (ε : A →ₗ[R] R) :=
+lemma bijective_counit_of_isFrobenius : Function.Bijective (ε : A →ₗ[R] R) :=
   ⟨Function.LeftInverse.injective algebraMap_counit_of_isFrobenius, counit_surjective⟩
 
 /-- When a bialgebra satisfies the Frobenius equations, we get `R ≃ A`.
 So if `R` and `A` are not isomorphic, then `A` cannot satisfy the Frobenius equations. -/
 lemma nonempty_algEquiv_of_isFrobenius : Nonempty (R ≃ₐ[R] A) :=
-  ⟨.ofBijective (Algebra.ofId R A) algebraMap_bijective_of_isFrobenius⟩
+  ⟨.ofBijective (Algebra.ofId R A) bijective_algebraMap_of_isFrobenius⟩
 
 end Bialgebra
