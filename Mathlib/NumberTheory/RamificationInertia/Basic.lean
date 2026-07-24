@@ -309,8 +309,8 @@ noncomputable def powQuotSuccInclusion (i : ℕ) :
 
 theorem powQuotSuccInclusion_injective (i : ℕ) :
     Function.Injective (powQuotSuccInclusion p P i) := by
-  rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-  simpa [Subtype.ext_iff] using h
+  rintro ⟨_, _⟩ ⟨_, _⟩ h
+  rwa [Subtype.ext_iff] at h ⊢
 
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`.
 See `quotientToQuotientRangePowQuotSucc` for this as a linear map,
