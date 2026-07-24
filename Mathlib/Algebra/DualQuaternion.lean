@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.DualNumber
-public import Mathlib.Algebra.Quaternion
+public import Mathlib.Algebra.Quaternion.Basic
 
 /-!
 # Dual quaternions
