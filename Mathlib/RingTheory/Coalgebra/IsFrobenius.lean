@@ -18,6 +18,19 @@ This file defines `Coalgebra.IsFrobenius` and shows some elementary results.
 
 A coalgebra with an algebra structure is said to be Frobenius when the Frobenius equation
 is satisfied:
+`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
+which in diagrams looks like
+```
+|    |             |    |
+|    μ             μ    |
+|   / \           / \   |
+ \ /   |    =    |   \ /
+  δ    |         |    δ
+  |    |         |    |
+```
+where `μ` stands for multiplication and `δ` for comultiplication.
+
+When the Frobenius equations are satisfies, we actually get
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 which in diagrams looks like
 ```
@@ -28,16 +41,7 @@ which in diagrams looks like
   δ    |          / \          |    δ
   |    |         |   |         |    |
 ```
-where `μ` stands for multiplication and `δ` for comultiplication.
-
-This file shows that it suffices to have
-`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)` in order to have the
-Frobenius equations. So we call this one the Frobenius equation too.
-
-## Naming convention
-
-We call the left part of the Frobenius equation "left" in lemma names, and the right part "right"
-for simplicity.
+In texts, this is what the Frobenius equations are usually referred to as.
 
 ## Main definitions and results
 
@@ -80,28 +84,40 @@ lemma LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module R
 
 /-! ### Definition and basic properties -/
 
-variable (R A) in
+variable (R A)
+
+/-- The left Frobenius equation: `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id)`. -/
+abbrev Coalgebra.IsFrobenius.left : A ⊗[R] A →ₗ[R] A ⊗[R] A := lT A μ[R] ∘ₗ α ∘ₗ rT A δ
+
+/-- The right Frobenius equation: `(mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`. -/
+abbrev Coalgebra.IsFrobenius.right : A ⊗[R] A →ₗ[R] A ⊗[R] A := rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ
+
 /-- A coalgebra with an algebra structure is said to be **Frobenius** when
-the Frobenius equation is satisfied:
+the Frobenius equation is satisfied, i.e., `IsFrobenius.left` and `IsFrobenius.right` are equal,
+in other words,
 
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`.
+
+See `IsFrobenius.left_eq` and `IsFrobenius.right_eq` which refer to each side of the equality
+being equal to `comul ∘ mul`.
 
 When the Frobenius equations are satisfied, the bilinear form `mul.compr₂ counit` is
 nondegenerate and bijective (see `IsFrobenius.nondegenerate_compr₂_mul_counit` and
 `IsFrobenius.bijective_compr₂_mul_counit`). -/
 class Coalgebra.IsFrobenius : Prop where
   /-- The Frobenius equation. -/
-  eq : lT A μ[R] ∘ₗ α ∘ₗ rT A δ = rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ
+  left_eq_right : IsFrobenius.left R A = IsFrobenius.right R A
 
-instance CommSemiring.toIsFrobenius : IsFrobenius R R where eq := by ext; simp
+instance CommSemiring.toIsFrobenius : IsFrobenius R R where left_eq_right := by ext; simp
+
+variable {R A}
 
 namespace Coalgebra.IsFrobenius
 variable [IsFrobenius R A]
 
-/-- The left Frobenius equation. -/
-lemma left_eq : lT A μ[R] ∘ₗ α ∘ₗ rT A δ = δ ∘ₗ μ[R] := by
-  have h := ‹IsFrobenius R A›.eq
-  simp only [lTensor, rTensor] at h ⊢
+lemma left_eq : left R A = δ ∘ₗ μ[R] := by
+  have h := ‹IsFrobenius R A›.left_eq_right
+  simp only [left, lTensor, rTensor, right] at h ⊢
   calc
     _ = rT A μ ∘ₗ α⁻¹ ∘ₗ ((β ∘ₗ rT A ε ∘ₗ δ) ⊗ₘ δ) := by
       simp only [h, CoassocSimps.map_counit_comp_comul_left, coassoc_simps]
@@ -112,11 +128,7 @@ lemma left_eq : lT A μ[R] ∘ₗ α ∘ₗ rT A δ = δ ∘ₗ μ[R] := by
     _ = β ∘ₗ lT R (δ ∘ₗ μ) ∘ₗ α ∘ₗ rT A (rT A ε ∘ₗ δ) := by simp only [coassoc_simps]
     _ = δ ∘ₗ μ := by simp only [coassoc_simps, CoassocSimps.map_counit_comp_comul_left]
 
-/-- The right Frobenius equation. -/
-lemma right_eq : rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ = δ ∘ₗ μ[R] := eq (R := R) (A := A) ▸ left_eq
-
-alias lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul' := left_eq
-alias rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul' := right_eq
+lemma right_eq : right R A = δ ∘ₗ μ[R] := by rw [← left_eq_right, left_eq]
 
 -- TODO: show `IsFrobenius R (A ⊗ B)` and `IsFrobenius R (A × B)`
 -- should be easy, but annoying
@@ -166,7 +178,7 @@ lemma forall_counit_mul_right_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _)
   simpa [hS, sum_tmul, h] using (sum_counit_mul_right_smul_of_comul_one hS a).symm
 
 /-- The bilinear form `mul.compr₂ counit` is nondegenerate. -/
-lemma nondegenerate_compr₂_mul_counit : ((mul R A).compr₂ (ε : A →ₗ[R] R)).Nondegenerate := by
+lemma nondegenerate_compr₂_mul_counit : ((mul R A).compr₂ ε).Nondegenerate := by
   simp [Nondegenerate, SeparatingLeft, SeparatingRight, forall_counit_mul_left_eq_zero_iff,
     forall_counit_mul_right_eq_zero_iff]
 
@@ -190,32 +202,23 @@ equations. -/
 section Algebra
 variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [IsFrobenius R A]
 
-/-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`.
-See `rTensor_counit_comp_right_comp_lTensor_algebraLinearMap` for when we
-compose it on the other side of the tensor.
+/-- Composing the left Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
+See `rTensor_counit_comp_right_comp_lTensor_algebraLinearMap` for the right Frobenius equation
+version.
 
 (This is sometimes known as the left snake equation.) -/
 lemma lTensor_counit_comp_left_comp_rTensor_algebraLinearMap :
-    lT A (ε ∘ₗ μ[R]) ∘ₗ α ∘ₗ rT A (δ ∘ₗ η[R]) = (TensorProduct.comm _ _ _).toLinearMap := by
-  simp_rw [rTensor_comp, ← comp_assoc (rT A η), lTensor_comp, comp_assoc _ (lT _ _),
-    left_eq, ← comp_assoc, lTensor_counit_comp_comul]
-  ext; simp
+    lT A ε ∘ₗ left R A ∘ₗ rT A η[R] = (TensorProduct.comm _ _ _).toLinearMap := by
+  ext; simp [left_eq]
 
-/-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`.
-See `lTensor_counit_comp_left_comp_rTensor_algebraLinearMap` for when we
-compose it on the other side of the tensor.
+/-- Composing the right Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
+See `lTensor_counit_comp_left_comp_rTensor_algebraLinearMap` for the left Frobenius equation
+version.
 
 (This is sometimes known as the right snake equation.) -/
 lemma rTensor_counit_comp_right_comp_lTensor_algebraLinearMap :
-    rT A (ε ∘ₗ μ[R]) ∘ₗ α⁻¹ ∘ₗ lT A (δ ∘ₗ η[R]) = (TensorProduct.comm _ _ _).toLinearMap := by
-  simp_rw [lTensor_comp, ← comp_assoc (lT A η), rTensor_comp, comp_assoc _ (rT _ _),
-    right_eq, ← comp_assoc, rTensor_counit_comp_comul]
-  ext; simp
-
-alias rTensor_counit_comp_mul'_comp_assoc_symm_comp_lTensor_comul_comp_algebraLinearMap :=
-  rTensor_counit_comp_right_comp_lTensor_algebraLinearMap
-alias lTensor_counit_comp_mul'_comp_assoc_comp_rTensor_comul_comp_algebraLinearMap :=
-  lTensor_counit_comp_left_comp_rTensor_algebraLinearMap
+    rT A ε ∘ₗ right R A ∘ₗ lT A η[R] = (TensorProduct.comm _ _ _).toLinearMap := by
+  ext; simp [right_eq]
 
 end Algebra
 
