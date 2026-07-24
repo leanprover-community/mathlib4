@@ -244,19 +244,20 @@ instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
 
 section
 
-variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
-  {σ : R →+* S} [RingHomSurjective σ]
+variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P] {σ : R →+* S}
 
--- TODO: remove RingHomSurjective
 @[stacks 0519 "(3)"]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
-    Module.Finite S P :=
-  ⟨by
-    rw [← LinearMap.range_eq_top.mpr hf, ← Submodule.map_top]
-    exact hM.fg_top.map f⟩
+    Module.Finite S P := by
+  rw [Module.finite_def, Submodule.fg_def] at hM ⊢
+  obtain ⟨s, hsfin, hs⟩ := hM
+  refine ⟨f '' s, hsfin.image f, eq_top_iff.mpr fun p _ ↦ ?_⟩
+  obtain ⟨m, rfl⟩ := hf p
+  apply image_span_subset_span f s
+  exact ⟨m, by simp [hs], rfl⟩
 
-theorem _root_.LinearMap.finite_iff_of_bijective (f : M →ₛₗ[σ] P) (hf : Function.Bijective f) :
-    Module.Finite R M ↔ Module.Finite S P :=
+theorem _root_.LinearMap.finite_iff_of_bijective [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] P) (hf : Function.Bijective f) : Module.Finite R M ↔ Module.Finite S P :=
   ⟨fun _ ↦ of_surjective f hf.surjective, fun _ ↦ ⟨fg_of_fg_map_injective f hf.injective <| by
     rwa [Submodule.map_top, LinearMap.range_eq_top.mpr hf.surjective, ← Module.finite_def]⟩⟩
 
