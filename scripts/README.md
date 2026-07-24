@@ -307,6 +307,12 @@ to module `Foo.Bar` (no `srcDir` indirection).
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
 
+**Linter configuration files**
+- `forbiddenDirs.json` is read by the `directoryDependency` linter
+  (in `Mathlib/Tactic/Linter/DirectoryDependency.lean`): it records which directories are not
+  allowed to import from each other, to keep mathlib's import graph manageable.
+  Lines starting with (possibly whitespace and) `//` are treated as comments and ignored.
+
 **Grind tactic analysis**
 - `grind_unused_lemmas.sh` `[N] [logfile]`
   Builds Mathlib with `set_option grind.unusedLemmaThreshold N` (default 10) and reports
