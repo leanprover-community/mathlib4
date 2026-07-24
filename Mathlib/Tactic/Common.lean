@@ -122,6 +122,7 @@ public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
+public import Reap
 
 public import Lean.Elab.Tactic.Try
 
