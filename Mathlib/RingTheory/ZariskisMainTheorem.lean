@@ -610,8 +610,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
           simp +contextual only [Subalgebra.range_val, Algebra.adjoin_le_iff, Subalgebra.coe_map,
             Subalgebra.coe_val, Set.subset_def, SetLike.mem_coe, Algebra.mem_adjoin_of_mem,
             Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right, R']
-          simpa [R', mem_integralClosure_iff,
-            ← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective R' S),
+          simpa [R', mem_integralClosure_iff, ← isIntegral_algebraMap_iff (A := R') (B := S),
             forall_and, hr, or_imp, Finset.mem_smul_finset]
         refine ⟨fun i ↦ ?_, fun a has ↦ ?_⟩
         · convert! isIntegral_algebraMap (x := MvPolynomial.X i)
