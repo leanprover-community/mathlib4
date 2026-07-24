@@ -50,11 +50,34 @@ infinite places. See `NumberField.InfinitePlace` for the definition of an infini
 
 /-- The infinite adele ring of a number field. -/
 def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
-deriving CommRing, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace InfiniteAdeleRing
 
 variable (K : Type*) [Field K]
+
+/- The algebraic and topological instances are given by `show … from inferInstance` on the
+underlying pi type rather than `deriving` or `inferInstanceAs`.
+`deriving` and `inferInstanceAs` both emit machine-generated `_aux_*` field definitions that
+are opaque to instance-implicit unification at `instances` transparency, forcing downstream
+`set_option backward.isDefEq.respectTransparency false` workarounds.
+With `show CommRing ((v : InfinitePlace K) → v.Completion) from inferInstance` the instance
+body is definitionally the pi instance (no structure re-packing), so operations unfold at
+`instances` transparency. See #42057. -/
+
+instance : CommRing (InfiniteAdeleRing K) :=
+  show CommRing ((v : InfinitePlace K) → v.Completion) from inferInstance
+
+instance : Inhabited (InfiniteAdeleRing K) :=
+  show Inhabited ((v : InfinitePlace K) → v.Completion) from inferInstance
+
+instance : TopologicalSpace (InfiniteAdeleRing K) :=
+  show TopologicalSpace ((v : InfinitePlace K) → v.Completion) from inferInstance
+
+instance : IsTopologicalRing (InfiniteAdeleRing K) :=
+  show IsTopologicalRing ((v : InfinitePlace K) → v.Completion) from inferInstance
+
+instance : Algebra K (InfiniteAdeleRing K) :=
+  show Algebra K ((v : InfinitePlace K) → v.Completion) from inferInstance
 
 instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
   (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
