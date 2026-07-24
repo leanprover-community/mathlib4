@@ -3011,6 +3011,7 @@ public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakKernels
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakPullbacks
 public import Mathlib.CategoryTheory.Limits.Weighted.HasWeightedLimit
+public import Mathlib.CategoryTheory.Limits.Weighted.PreservesLimit
 public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Linear.FunctorCategory
