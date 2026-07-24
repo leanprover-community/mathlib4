@@ -187,7 +187,7 @@ private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulR
     ContinuousLinearMap.smulRight_apply, add_apply, Pi.smul_apply,
     FunLike.coe_smul']
 
-nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
+theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
   simpa using (hf.hasStrictFDerivAt.cpow hg h0).hasStrictDerivAt

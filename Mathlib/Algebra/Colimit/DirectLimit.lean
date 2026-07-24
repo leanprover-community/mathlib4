@@ -708,7 +708,7 @@ variable [Nonempty ι]
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
 @[simps]
-nonrec def of (i) : G i →ₙ+* DirectLimit G f where
+def of (i) : G i →ₙ+* DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   map_mul' _ _ := (mul_def ..).symm
   map_zero' := (zero_def i).symm
@@ -754,7 +754,7 @@ variable [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
 @[simps]
-nonrec def of (i) : G i →+* DirectLimit G f where
+def of (i) : G i →+* DirectLimit G f where
   __ := NonUnitalRing.of G f i
   toFun x := ⟦⟨i, x⟩⟧
   map_one' := (one_def i).symm

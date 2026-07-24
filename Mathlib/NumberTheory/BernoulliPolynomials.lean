@@ -124,7 +124,7 @@ theorem derivative_bernoulli (k : ℕ) :
   | succ k => exact mod_cast derivative_bernoulli_add_one k
 
 @[simp]
-nonrec theorem sum_bernoulli (n : ℕ) :
+theorem sum_bernoulli (n : ℕ) :
     (∑ k ∈ range (n + 1), ((n + 1).choose k : ℚ) • bernoulli k) = monomial n (n + 1 : ℚ) := by
   simp_rw [bernoulli_def, Finset.smul_sum, Finset.range_eq_Ico, ← Finset.sum_Ico_Ico_comm,
     Finset.sum_Ico_eq_sum_range]

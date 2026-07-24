@@ -114,7 +114,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
 
 /-- The (multiplicative) universal property of `WithZero`. -/
 @[simps! symm_apply_apply]
-nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
+def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
     { toFun := recZeroCoe 0 f
       map_zero' := rfl
