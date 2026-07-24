@@ -641,6 +641,18 @@ theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
   · rw [connectedComponentIn_eq_empty hx]
     exact Set.empty_subset _
 
+/-- The preimage of a connected component of `F` is the union of the connected components of
+`f ⁻¹' F` at the points of that preimage. -/
+theorem Continuous.preimage_connectedComponentIn [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (F : Set β) (y : β) :
+    f ⁻¹' connectedComponentIn F y =
+      ⋃ x ∈ f ⁻¹' connectedComponentIn F y, connectedComponentIn (f ⁻¹' F) x := by
+  refine subset_antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun x hx z hz ↦ ?_)
+  · exact mem_biUnion hz (mem_connectedComponentIn (connectedComponentIn_subset F y hz))
+  · rw [mem_preimage, connectedComponentIn_eq hx]
+    exact connectedComponentIn_mono _ (image_preimage_subset f F)
+      (hf.mapsTo_connectedComponentIn (connectedComponentIn_subset F y hx) hz)
+
 /-- A preconnected space is one where there is no non-trivial open partition. -/
 class PreconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
   /-- The universal set `Set.univ` in a preconnected space is a preconnected set. -/
