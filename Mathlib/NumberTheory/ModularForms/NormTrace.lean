@@ -123,7 +123,7 @@ variable {f} in
 lemma ModularForm.norm_ne_zero [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢 k]
     (hf : (f : ℍ → ℂ) ≠ 0) : ModularForm.norm ℋ f ≠ 0 := by
   contrapose hf
-  rw [← DFunLike.coe_injective.eq_iff, coe_norm, coe_zero, prod_eq_zero_iff] at hf
+  rw [← DFunLike.coe_injective.eq_iff, coe_norm, FunLike.coe_zero, prod_eq_zero_iff] at hf
   · simpa [QuotientGroup.exists_mk] using hf
   · exact Quotient.forall.mpr fun r _ ↦ (translate f r.val⁻¹).holo'
 
@@ -158,7 +158,7 @@ private lemma ModularForm.eq_const_of_weight_zero₀ [𝒢.IsArithmetic] [𝒢.H
     simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk] using ⟨1, by simp⟩
   obtain rfl : c = 0 := by simpa [hc]
   -- So `f - f I` has zero norm, hence it's the zero form.
-  simp only [Function.const_zero, coe_eq_zero_iff, norm_eq_zero_iff, sub_eq_zero] at hc
+  simp only [Function.const_zero, FunLike.coe_zero_iff, norm_eq_zero_iff, sub_eq_zero] at hc
   exact ⟨f I, by rw [hc, ModularForm.coe_const, Function.const_apply]⟩
 
 lemma ModularForm.eq_const_of_weight_zero [𝒢.IsArithmetic] (f : ModularForm 𝒢 0) :
