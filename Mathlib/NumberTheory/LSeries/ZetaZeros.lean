@@ -30,7 +30,9 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 @[expose] public section
 
 /-- The zeros of Riemann's ζ-function. -/
-def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
 
 lemma mem_riemannZetaZeros {z : ℂ} :
     z ∈ riemannZetaZeros ↔ riemannZeta z = 0 := .rfl
