@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.IntervalAverage
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
 # Circle Averages
@@ -202,10 +201,10 @@ theorem ContinuousOn.circleAverage {f : ℂ → E} {s : Set ℝ} {c : ℂ}
     (hf : ContinuousOn f {z : ℂ | ‖z - c‖ ∈ s})
     (hs : ∀ r ∈ s, 0 ≤ r) :
     ContinuousOn (circleAverage f c) s := by
-  rw [continuousOn_iff_continuous_restrict] at *
+  rw [continuousOn_iff_continuous_domRestrict] at *
   apply (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' _ _ _).const_smul
-  have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} :=
-    by simp [abs_of_nonneg (hs x.1 (Subtype.coe_prop x.1))]
+  have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} := by
+    simp [abs_of_nonneg (hs x.1 (Subtype.coe_prop x.1))]
   apply hf.comp (f := (fun x ↦ ⟨circleMap c x.1 x.2, this x⟩))
   fun_prop
 

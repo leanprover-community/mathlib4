@@ -117,6 +117,9 @@ lemma zeroDimensionalSpace_iff_isTopologicalBasis :
 @[deprecated (since := "2026-06-21")]
 alias hasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis
 
+@[deprecated (since := "2026-06-21")]
+alias HasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis
+
 theorem isTopologicalBasis_isClopen [ZeroDimensionalSpace X] :
     IsTopologicalBasis { s : Set X | IsClopen s } :=
   zeroDimensionalSpace_iff_isTopologicalBasis.1 ‹_›
@@ -181,7 +184,7 @@ theorem smallInductiveDimension_lt_iff {n : ℕ} :
       · exact fun i _ ↦ h.mono zero_le
     | succ n =>
       apply (smallInductiveDimension_le_iff.2 h).trans_lt
-      exact_mod_cast lt_add_one n
+      exact_mod_cast n.lt_add_one
 
 theorem smallInductiveDimension_eq (n : ℕ)
     (hle : HasSmallInductiveDimensionLE X n) (hlt : ¬ HasSmallInductiveDimensionLT X n) :

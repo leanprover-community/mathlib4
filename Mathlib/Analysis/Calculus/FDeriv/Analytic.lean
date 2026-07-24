@@ -88,7 +88,7 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
   refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right ?_)
   refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
   apply Tendsto.mono_left _ nhdsWithin_le_nhds
-  refine (continuous_id.sub continuous_const).norm.tendsto' _ _ ?_
+  refine (continuous_id.fun_sub continuous_const).norm.tendsto' _ _ ?_
   rw [_root_.id, sub_self, norm_zero]
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -220,6 +220,16 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
   dsimp only
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_enorm_sub, Metric.mem_eball] using! hz
+
+protected theorem FormalMultilinearSeries.fderiv_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
+    fderiv 𝕜 p.sum x = p.derivSeries.sum x := by
+  simpa using (p.hasFPowerSeriesOnBall (zero_le.trans_lt h)).fderiv.sum (by simpa using h)
+
+protected theorem FormalMultilinearSeries.hasFDerivAt_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
+    HasFDerivAt p.sum (p.derivSeries.sum x) x := by
+  rw [← FormalMultilinearSeries.fderiv_sum h]
+  exact p.hasFPowerSeriesOnBall (zero_le.trans_lt h)
+    |>.analyticAt_of_mem (by simpa using h) |>.differentiableAt.hasFDerivAt
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
@@ -722,6 +732,7 @@ private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [De
   simp_rw [this]
   simp [-Equiv.embeddingFinSucc_fst]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A continuous multilinear function `f` admits a Taylor series, whose successive terms are given
 by `f.iteratedFDeriv n`. This is the point of the definition of `f.iteratedFDeriv`. -/
 theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
