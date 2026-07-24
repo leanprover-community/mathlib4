@@ -284,11 +284,10 @@ and a remainder `h` not involving `X i`. -/
 private lemma Alon.exists_eq_mul_X_sub_C_add [Nontrivial R]
     (f : MvPolynomial σ R) (i : σ) (r : R) :
     ∃ g h : MvPolynomial σ R, f = g * (X i - C r) + h ∧ h.degreeOf i = 0 := by
-  classical
-  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  haveI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨g, rem, hf, -, hrem⟩ := degLex.div (b := fun _ : Unit ↦ X i - C r)
     (fun _ ↦ by rw [(degLex.monic_X_sub_C i r).leadingCoeff_eq_one]; exact isUnit_one) f
-  refine ⟨g default, rem, ?_, ?_⟩
+  refine ⟨g 0, rem, ?_, ?_⟩
   · rw [hf, Finsupp.linearCombination_unique, smul_eq_mul]
   · rw [← Nat.lt_one_iff, degreeOf_lt_iff Nat.one_pos]
     intro m hm
@@ -369,63 +368,48 @@ theorem generalized_combinatorial_nullstellensatz
     (S : σ → Finset R) (htS : ∀ ⦃i⦄, t i < #(S i)) :
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   classical
-  haveI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   -- Generalize over `f`, `t` and `S` so that the induction hypothesis is usable.
-  suffices H : ∀ (n : ℕ) (f : MvPolynomial σ R) (t : σ →₀ ℕ), t.degree = n →
+  suffices h : ∀ (n : ℕ) (f : MvPolynomial σ R) (t : σ →₀ ℕ), t.degree = n →
       f.coeff t ≠ 0 → (∀ t' : σ →₀ ℕ, t < t' → f.coeff t' = 0) →
       ∀ (S : σ → Finset R), (∀ i, t i < #(S i)) →
       ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 by
-    exact H t.degree f t rfl ht ht' S fun i ↦ @htS i
-  clear ht ht' htS f t S
+    exact h t.degree f t rfl ht ht' S @htS
   -- A pointwise comparison for `Finsupp`, used repeatedly below.
-  have coord_le : ∀ (a b : σ →₀ ℕ), a ≤ b → ∀ j, a j ≤ b j := fun a b hab j ↦ by
-    by_cases hj : j ∈ a.support
-    · exact (Finsupp.le_iff a b).mp hab j hj
-    · rw [Finsupp.notMem_support_iff.mp hj]; exact Nat.zero_le _
   intro n
   induction n with
   | zero =>
-    intro f t htn htc htmax S hScard
-    rw [Finsupp.degree_eq_zero_iff] at htn
-    subst htn
+    intro f t ht htc htmax S hScard
+    rw [Finsupp.degree_eq_zero_iff] at ht
+    subst ht
     have hf₁ : f = C f.constantCoeff := by
       simp only [coe_zero, Pi.zero_apply, Finset.card_pos] at hScard
       ext t'
       by_cases ht'₀ : t' = 0
       · subst ht'₀
-        simp [constantCoeff_eq]
-      · have h₀ : 0 < t' := by constructor <;> simp [ht'₀]
-        simp only [htmax t' h₀, coeff_C, right_eq_ite_iff]
+        simp only [constantCoeff_eq, coeff_C, ↓reduceIte]
+      · simp only [htmax t' (Ne.pos ht'₀), coeff_C, right_eq_ite_iff]
         rintro rfl
-        contradiction
-    have hf₂ : f.constantCoeff ≠ 0 := by tauto
+        exact (ht'₀ rfl).elim
     rw [hf₁]
     simp only [coe_zero, Pi.zero_apply, Finset.card_pos] at hScard
     use (hScard · |>.exists_mem.choose)
-    simp only [Exists.choose_spec, implies_true, eval_C, ne_eq, hf₂, not_false_eq_true, and_self]
+    simp only [Exists.choose_spec, implies_true, eval_C, true_and]
+    tauto
   | succ n ih =>
-    intro f t htn htc htmax S hScard
+    intro f t ht htc htmax S hScard
     have htne : t ≠ 0 := by
       rintro rfl
-      exact n.succ_ne_zero htn.symm
+      exact n.succ_ne_zero ht.symm
     obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr htne
     rw [Finsupp.mem_support_iff] at hi
-    have hSne : ∀ j, (S j).Nonempty := fun j ↦
-      Finset.card_pos.mp (Nat.zero_lt_of_lt (hScard j))
-    obtain ⟨r, hr⟩ := hSne i
+    obtain ⟨r, hr⟩ := Finset.card_pos.mp (Nat.zero_lt_of_lt (hScard i))
     obtain ⟨g, h, hfgh, hdeg⟩ := Alon.exists_eq_mul_X_sub_C_add f i r
     by_cases Hh : ∃ y : σ → R, (∀ j, y j ∈ S j) ∧ eval y h ≠ 0
     · obtain ⟨y, hy, hyh⟩ := Hh
-      refine ⟨Function.update y i r, ?_, ?_⟩
-      · intro j
-        by_cases hji : j = i
-        · rw [hji, Function.update_self]
-          exact hr
-        · rw [Function.update_of_ne hji]
-          exact hy j
-      · rw [hfgh, map_add, map_mul, map_sub, eval_X, eval_C, Function.update_self, sub_self,
-          mul_zero, zero_add, Alon.eval_update_of_degreeOf_eq_zero h i r y hdeg]
-        exact hyh
+      refine ⟨Function.update y i r, by grind, ?_⟩
+      rw [hfgh, map_add, map_mul, map_sub, eval_X, eval_C, Function.update_self, sub_self,
+        mul_zero, zero_add, Alon.eval_update_of_degreeOf_eq_zero h i r y hdeg]
+      exact hyh
     · simp only [not_exists, not_and, not_not] at Hh
       set t₀ := t - single i 1 with ht₀def
       have hcancel : t₀ + single i 1 = t := ht₀def ▸ Finsupp.sub_add_single_one_cancel hi
@@ -442,37 +426,26 @@ theorem generalized_combinatorial_nullstellensatz
           grind only
         rw [hcancel, hgt, mul_zero, sub_zero] at hrec
         exact hrec.symm
-      have hgmax : ∀ u, t₀ < u → g.coeff u = 0 := by
-        intro u hu
+      have hgmax (u : σ →₀ ℕ) (hu : t₀ < u) : g.coeff u = 0 := by
         refine Alon.coeff_quotient_eq_zero hfgh hdeg u fun c hc ↦ htmax _ ?_
         obtain ⟨hle, hne⟩ := lt_iff_le_and_ne.mp hu
-        obtain ⟨j, hjne⟩ := Finsupp.ne_iff.mp hne
-        have hj : t₀ j < u j := lt_of_le_of_ne (coord_le _ _ hle j) hjne
-        refine lt_of_le_of_ne ?_ fun heq ↦ ?_
-        · rw [← hcancel]; exact add_le_add hle (Finsupp.single_le_single.mpr hc)
-        · have hcoord : t j = (u + single i c) j := by rw [heq]
-          rw [Finsupp.add_apply] at hcoord
-          have htj : t j = t₀ j + (single i 1) j := by rw [← hcancel, Finsupp.add_apply]
-          rw [htj] at hcoord
-          have hsingle : (single i 1 : σ →₀ ℕ) j ≤ (single i c : σ →₀ ℕ) j := by
-            rcases eq_or_ne j i with hji | hji
-            · subst hji; simp only [Finsupp.single_eq_same]; omega
-            · simp only [Finsupp.single_eq_of_ne hji, le_refl]
-          omega
+        obtain ⟨j, hj₁⟩ := Finsupp.ne_iff.mp hne
+        refine lt_of_le_of_ne ?_ ?_
+        · rw [← hcancel]
+          exact add_le_add hle (Finsupp.single_le_single.mpr hc)
+        · rintro rfl
+          have hj₂ : t₀ j < u j := lt_of_le_of_ne (hle _) hj₁
+          have htj : (u + single i c) j = t₀ j + (single i 1) j := by
+            rw [← hcancel, Finsupp.add_apply]
+          simp only [coe_add, Pi.add_apply] at htj
+          grind only [single_apply]
       set S' : σ → Finset R := Function.update S i ((S i).erase r) with hS'def
-      have hScard' : ∀ j, t₀ j < #(S' j) := by
-        intro j
+      have hScard' (j : σ) : t₀ j < #(S' j) := by
         by_cases hji : j = i
-        · rw [hji, hS'def, Function.update_self, Finset.card_erase_of_mem hr]
-          have ht0i : t₀ i = t i - 1 := by
-            rw [ht₀def, Finsupp.tsub_apply, Finsupp.single_eq_same]
-          rw [ht0i]
-          have := hScard i
-          omega
-        · rw [hS'def, Function.update_of_ne hji]
-          have ht0j : t₀ j = t j := by
-            rw [ht₀def, Finsupp.tsub_apply, Finsupp.single_eq_of_ne hji, Nat.sub_zero]
-          rw [ht0j]; exact hScard j
+        · grind only [tsub_apply, Function.update, single_apply, Finset.card_erase_of_mem]
+        · rw [hS'def, Function.update_of_ne hji, ht₀def, Finsupp.tsub_apply,
+            Finsupp.single_eq_of_ne hji, Nat.sub_zero]
+          exact hScard j
       obtain ⟨s, hs, hsg⟩ := ih g t₀ hdeg₀ (hB ▸ htc) hgmax S' hScard'
       have hsS : ∀ j, s j ∈ S j := by
         intro j
@@ -484,12 +457,11 @@ theorem generalized_combinatorial_nullstellensatz
         · have hmem := hs j
           rw [hS'def, Function.update_of_ne hji] at hmem
           exact hmem
-      have hsi : s i ≠ r := by
-        have hmem := hS'def ▸ hs i
-        rw [Function.update_self] at hmem
-        exact (Finset.mem_erase.mp hmem).1
       refine ⟨s, hsS, ?_⟩
       rw [hfgh, map_add, map_mul, map_sub, eval_X, eval_C, Hh s hsS, add_zero]
-      exact mul_ne_zero hsg (sub_ne_zero.mpr hsi)
+      refine mul_ne_zero hsg (sub_ne_zero.mpr ?_)
+      have hmem := hS'def ▸ hs i
+      rw [Function.update_self] at hmem
+      exact (Finset.mem_erase.mp hmem).1
 
 end MvPolynomial
