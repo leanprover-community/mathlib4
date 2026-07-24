@@ -18,6 +18,8 @@ public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.GroupTheory.Submonoid.Center
 public import Mathlib.GroupTheory.Subsemigroup.Centralizer
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Bundled non-unital subsemirings
@@ -637,6 +639,13 @@ theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonem
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → NonUnitalSubsemiring R) :
+    ((⨆ i, S i : NonUnitalSubsemiring R) : Set R) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : NonUnitalSubsemiring R) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
+  simp_rw [← Finset.sup_eq_iSup]
+  exact fun _ _ ↦ Finset.sup_mono
 
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
     {S : ι → NonUnitalSubsemiring R} [hS : ∀ i, IsMulCommutative (S i)]

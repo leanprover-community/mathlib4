@@ -38,6 +38,12 @@ theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ 
     (iSup_le fun i ↦ le_iSup (fun i ↦ (K i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup K _)
   simp [this, s]
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subalgebra R A) :
+    ((⨆ i, S i : Subalgebra R A) : Set A) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subalgebra R A) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le ?_]
+  simp_rw [← Finset.sup_eq_iSup]
+  exact fun _ _ ↦ Finset.sup_mono
+
 theorem isMulCommutative_iSup {S : ι → Subalgebra R A}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : Subalgebra R A) := by
