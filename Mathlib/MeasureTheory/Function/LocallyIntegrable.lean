@@ -832,7 +832,6 @@ theorem continuous_smul [SecondCountableTopologyEither X 𝕜] {f : X → E} {g 
     isOpen_univ.isLocallyClosed hg.continuousOn)
 
 theorem smul_continuous [SecondCountableTopologyEither X E] {f : X → 𝕜} {g : X → E}
-    [SecondCountableTopologyEither X E] [Module 𝕜 E] [NormSMulClass 𝕜 E] {f : X → 𝕜} {g : X → E}
     (hg : Continuous g) (hf : LocallyIntegrable f μ) : LocallyIntegrable (fun x => f x • g x) μ :=
   locallyIntegrableOn_univ.1 ((hf.locallyIntegrableOn univ).smul_continuousOn
     isOpen_univ.isLocallyClosed hg.continuousOn)
