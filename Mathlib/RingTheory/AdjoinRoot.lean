@@ -509,6 +509,8 @@ lemma algEquivOfEq_root (f g : S[X]) (hfg) : algEquivOfEq R f g hfg (root f) = r
 section comp
 variable (f g) (x : R)
 
+/-- Adjoining a root of `f(g(x))` is the same as first adjoining a root of `f(x)`,
+and then adjoining a root of `g(x) - root f`. -/
 def compAlgEquiv : AdjoinRoot (f.comp g) ≃ₐ[R] AdjoinRoot (g.map (of f) - C (root f)) :=
   .ofAlgHom
     (liftAlgHom (f.comp g) (Algebra.ofId R (AdjoinRoot _)) (root _) ?fgroot)
