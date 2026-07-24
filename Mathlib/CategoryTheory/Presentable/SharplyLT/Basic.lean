@@ -227,7 +227,9 @@ lemma isCardinalFiltered_iUnion :
   obtain ⟨⟨x, hx⟩, hx'⟩ := hφ₀ Y hY' m hm _
     (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA _) f hK
   refine ⟨⟨x, ?_⟩, hx'⟩
-  have : NoMaxOrder κ₁.ord.ToType := noMaxOrder (IsRegular.aleph0_le Fact.out)
+  have : NoMaxOrder κ₁.ord.ToType := by
+    rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_toType]
+    exact (isSuccLimit_ord (IsRegular.aleph0_le Fact.out)).isSuccPrelimit
   rwa [transfiniteIterate_succ _ _ _ (not_isMax j),
     φ_eq _ _ _ (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA _)]
 
