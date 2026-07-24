@@ -808,6 +808,9 @@ attribute [instance 1100] AddCommMonoid.toAddMonoid
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
+-- However multiplication is often not commutative so it's less clear that this is a good idea
+attribute [instance 1100] CommMonoid.toMonoid
+
 /-- Shortcut instance for `IsCommutativeHMul M → IsDedekindFiniteMonoid M`.
 
 This is assigned default rather than low priority because it gives the most common examples
