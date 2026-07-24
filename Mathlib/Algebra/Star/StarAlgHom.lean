@@ -1101,7 +1101,7 @@ end Bijective
 section Group
 variable {S R : Type*} [Mul R] [Add R] [Star R] [SMul S R]
 
-instance : One (R ≃⋆ₐ[S] R) where one := refl
+instance : One (R ≃⋆ₐ[S] R) where one := .refl S R
 instance : Mul (R ≃⋆ₐ[S] R) where mul a b := b.trans a
 instance : Inv (R ≃⋆ₐ[S] R) where inv := symm
 instance : Pow (R ≃⋆ₐ[S] R) Nat where
