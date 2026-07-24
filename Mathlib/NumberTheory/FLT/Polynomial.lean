@@ -10,6 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.Tactic.GCongr
+
 import Mathlib.NumberTheory.FLT.MasonStothers
 import Mathlib.RingTheory.Polynomial.IsIntegral
 
