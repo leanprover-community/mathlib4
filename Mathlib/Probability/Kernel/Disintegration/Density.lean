@@ -398,14 +398,13 @@ lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [I
   · exact (martingale_densityProcess hκν a hs).submartingale
   · refine uniformIntegrable_of le_rfl ENNReal.one_ne_top ?_ ?_
     · exact fun n ↦ (measurable_densityProcess_right κ ν n a hs).aestronglyMeasurable
-    · refine fun ε _ ↦ ⟨2, fun n ↦ le_of_eq_of_le ?_ (?_ : 0 ≤ ENNReal.ofReal ε)⟩
-      · suffices {x | 2 ≤ ‖densityProcess κ ν n a x s‖₊} = ∅ by simp [this]
-        ext x
-        simp only [mem_ofPred_eq, mem_empty_iff_false, iff_false, not_le]
-        refine (?_ : _ ≤ (1 : ℝ≥0)).trans_lt one_lt_two
-        rw [Real.nnnorm_of_nonneg (densityProcess_nonneg _ _ _ _ _ _)]
-        exact mod_cast (densityProcess_le_one hκν _ _ _ _)
-      · simp
+    · refine fun ε _ ↦ ⟨2, fun n ↦ ?_⟩
+      suffices {x | 2 ≤ ‖densityProcess κ ν n a x s‖₊} = ∅ by simp [this]
+      ext x
+      simp only [mem_ofPred_eq, mem_empty_iff_false, iff_false, not_le]
+      refine (?_ : _ ≤ (1 : ℝ≥0)).trans_lt one_lt_two
+      rw [Real.nnnorm_of_nonneg (densityProcess_nonneg _ _ _ _ _ _)]
+      exact mod_cast (densityProcess_le_one hκν _ _ _ _)
 
 lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel ν]
     (hκν : fst κ ≤ ν) (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set γ) :

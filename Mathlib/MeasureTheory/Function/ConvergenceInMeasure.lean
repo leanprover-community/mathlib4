@@ -471,7 +471,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E]
 theorem tendstoInMeasure_of_tendsto_Lp [NormedAddCommGroup E] [hp : Fact (1 ≤ p)]
     {f : ι → Lp E p μ} {g : Lp E p μ}
     {l : Filter ι} (hfg : Tendsto f l (𝓝 g)) : TendstoInMeasure μ (fun n => f n) l g :=
-  tendstoInMeasure_of_tendsto_eLpNorm (zero_lt_one.trans_le hp.elim).ne.symm
+  tendstoInMeasure_of_tendsto_eLpNorm (zero_lt_one.trans_le hp.elim).ne'
     (fun _ => Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
     ((Lp.tendsto_Lp_iff_tendsto_eLpNorm' _ _).mp hfg)
 

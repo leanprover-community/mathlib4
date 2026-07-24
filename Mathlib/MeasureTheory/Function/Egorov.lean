@@ -97,7 +97,7 @@ theorem exists_notConvergentSeq_lt (hε : 0 < ε)
     ∃ j : ι, μ (s ∩ notConvergentSeq f g n j) ≤ ε * 2⁻¹ ^ n := by
   have ⟨N, hN⟩ := (ENNReal.tendsto_atTop ENNReal.zero_ne_top).1
     (measure_notConvergentSeq_tendsto_zero hf hsm hs hfg n) (ε * 2⁻¹ ^ n)
-      (ENNReal.mul_pos hε.ne.symm (by simp))
+      (ENNReal.mul_pos hε.ne' (by simp))
   rw [zero_add] at hN
   exact ⟨N, (hN N le_rfl).2⟩
 
@@ -127,7 +127,7 @@ def iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a)))
     (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) : Set α :=
-  ⋃ n, s ∩ notConvergentSeq f g n (notConvergentSeqLTIndex (ε.half_pos hε.ne.symm) hf hsm hs hfg n)
+  ⋃ n, s ∩ notConvergentSeq f g n (notConvergentSeqLTIndex (ε.half_pos hε.ne') hf hsm hs hfg n)
 
 theorem iUnionNotConvergentSeq_measurableSet (hε : 0 < ε)
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a)))
@@ -142,7 +142,7 @@ theorem measure_iUnionNotConvergentSeq (hε : 0 < ε)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     μ (iUnionNotConvergentSeq hε hf hsm hs hfg) ≤ ε := by
   refine (measure_iUnion_le _).trans (le_trans
-    (ENNReal.tsum_le_tsum <| notConvergentSeqLTIndex_spec (ε.half_pos hε.ne.symm) hf hsm hs hfg) ?_)
+    (ENNReal.tsum_le_tsum <| notConvergentSeqLTIndex_spec (ε.half_pos hε.ne') hf hsm hs hfg) ?_)
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric_two, mul_comm]
   exact mul_div_le
 
@@ -162,7 +162,7 @@ theorem tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq (hε : 0 < ε)
   intro δ hδ
   obtain ⟨N, hN⟩ := ENNReal.exists_inv_nat_lt hδ.ne'
   rw [eventually_atTop]
-  refine ⟨Egorov.notConvergentSeqLTIndex (ε.half_pos hε.ne.symm) hf hsm hs hfg N, ?_⟩
+  refine ⟨Egorov.notConvergentSeqLTIndex (ε.half_pos hε.ne') hf hsm hs hfg N, ?_⟩
   intro n hn x hx
   refine lt_of_le_of_lt ?_ hN
   have : edist (f n x) (g x) ≤ (N : ℝ≥0∞)⁻¹ :=

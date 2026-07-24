@@ -103,7 +103,7 @@ protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) 
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
     UnifIntegrable (f + g) p μ := by
   intro ε hε
-  have hε2 : 0 < ε / 2 := ε.half_pos hε.ne.symm
+  have hε2 : 0 < ε / 2 := ε.half_pos hε.ne'
   obtain ⟨δ₁, hδ₁_pos, hfδ₁⟩ := hf (ε / 2) hε2
   obtain ⟨δ₂, hδ₂_pos, hgδ₂⟩ := hg (ε / 2) hε2
   refine ⟨min δ₁ δ₂, lt_min hδ₁_pos hδ₂_pos, fun i s hs hμs => ?_⟩
@@ -269,7 +269,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
     (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε toReal_nonneg)
   refine ⟨M ^ (1 / p.toReal), ?_⟩
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top, ← rpow_one ε]
-  conv_rhs => rw [← mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne.symm]
+  conv_rhs => rw [← mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne']
   rw [ENNReal.rpow_mul]
   gcongr
   convert! hM using 3 with x
@@ -278,7 +278,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
     rw [coe_nnnorm, coe_nnnorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
       ← Real.rpow_le_rpow_iff hM' (by positivity)
         (one_div_pos.2 <| toReal_pos hp_ne_zero hp_ne_top), ← Real.rpow_mul (norm_nonneg _),
-      mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne.symm, Real.rpow_one]
+      mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne', Real.rpow_one]
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
   · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.enorm_of_nonneg (by positivity),
       ← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm]
@@ -312,7 +312,7 @@ theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε :
       rw [Pi.zero_apply, ← norm_le_zero_iff]
       exact (lt_of_lt_of_le (hf x) hM).le
   refine ⟨(ε / ENNReal.ofReal M) ^ p.toReal,
-    ENNReal.rpow_pos_of_nonneg (ENNReal.div_pos hε.ne.symm coe_ne_top) toReal_nonneg, ?_⟩
+    ENNReal.rpow_pos_of_nonneg (ENNReal.div_pos hε.ne' coe_ne_top) toReal_nonneg, ?_⟩
   intro s hs hμ
   by_cases hp : p = 0
   · simp [hp]
@@ -364,7 +364,7 @@ measurability on `f`. -/
 theorem MemLp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ δ > 0, ∀ s, MeasurableSet s → μ s ≤ δ → eLpNorm (s.indicator f) p μ ≤ ε := by
-  obtain ⟨δ, hδpos, hδ⟩ := hf.eLpNorm_indicator_le' hp_one hp_top hmeas (ε.half_pos hε.ne.symm)
+  obtain ⟨δ, hδpos, hδ⟩ := hf.eLpNorm_indicator_le' hp_one hp_top hmeas (ε.half_pos hε.ne')
   refine ⟨δ, hδpos, fun s hs hμs ↦ (hδ s hs hμs).trans_eq ?_⟩
   exact ENNReal.mul_div_cancel two_ne_zero ofNat_ne_top
 
@@ -445,7 +445,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
     exact ⟨0, fun n _ => by simp [h]⟩
   by_cases hμ : μ = 0
   · exact ⟨0, fun n _ => by simp [hμ]⟩
-  have hε' : 0 < ε / 3 := ε.div_pos hε.ne.symm ofNat_ne_top
+  have hε' : 0 < ε / 3 := ε.div_pos hε.ne' ofNat_ne_top
   have hdivp : 0 ≤ 1 / p.toReal := by positivity
   have hpow : 0 < measureUnivNNReal μ ^ (1 / p.toReal) :=
     Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
@@ -454,7 +454,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
   obtain ⟨t, htm, ht₁, ht₂⟩ := tendstoUniformlyOn_of_ae_tendsto' hf hg hfg (lt_min hδ₁ hδ₂)
   rw [Metric.tendstoUniformlyOn_iff] at ht₂
   specialize ht₂ (ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
-    (div_pos (toReal_pos (gt_iff_lt.1 hε).ne.symm h.ne) (mul_pos (by simp) hpow))
+    (div_pos (toReal_pos (gt_iff_lt.1 hε).ne' h.ne) (mul_pos (by simp) hpow))
   obtain ⟨N, hN⟩ := eventually_atTop.1 ht₂; clear ht₂
   refine ⟨N, fun n hn => ?_⟩
   rw [← t.indicator_self_add_compl (f n - g)]
@@ -556,7 +556,7 @@ theorem tendstoInMeasure_iff_tendsto_Lp_finite [IsFiniteMeasure μ] (hp : 1 ≤ 
     TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ↔
       Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) :=
   ⟨fun h => tendsto_Lp_finite_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2 h.1, fun h =>
-    ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne.symm
+    ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne'
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h⟩⟩
 
@@ -566,14 +566,14 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
     (h : ∀ ε > 0, ∃ C : ℝ≥0, 0 < C ∧
       ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ε) :
     UnifIntegrable f p μ := by
-  have hpzero := (lt_of_lt_of_le zero_lt_one hp).ne.symm
+  have hpzero := (lt_of_lt_of_le zero_lt_one hp).ne'
   by_cases hμ : μ Set.univ = 0
   · rw [Measure.measure_univ_eq_zero] at hμ
     exact hμ.symm ▸ unifIntegrable_zero_meas
   intro ε hε
-  obtain ⟨C, hCpos, hC⟩ := h (ε / 2) (ε.half_pos hε.ne.symm)
+  obtain ⟨C, hCpos, hC⟩ := h (ε / 2) (ε.half_pos hε.ne')
   refine ⟨(ε / (2 * C)) ^ p.toReal, ?_, ?_⟩
-  · exact rpow_pos_of_nonneg (ε.div_pos hε.ne.symm (mul_ne_top ofNat_ne_top coe_ne_top))
+  · exact rpow_pos_of_nonneg (ε.div_pos hε.ne' (mul_ne_top ofNat_ne_top coe_ne_top))
       toReal_nonneg
   intro i s hs hμs
   by_cases hμs' : μ s = 0
@@ -620,7 +620,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
       rwa [one_div, ENNReal.rpow_inv_le_iff (toReal_pos hpzero hp')]
     _ ≤ (ε / 2) + (ε / 2) := by
       apply add_le_add_right
-      rw [← ENNReal.mul_comm_div, ENNReal.le_div_iff_mul_le (.inr hε.ne.symm) (.inl ofNat_ne_top),
+      rw [← ENNReal.mul_comm_div, ENNReal.le_div_iff_mul_le (.inr hε.ne') (.inl ofNat_ne_top),
         mul_comm _ 2, ← mul_assoc, ← mul_div_assoc]
       exact (mul_le_mul_left ENNReal.div_self_le_one ε).trans_eq (one_mul ε)
     _ = ε := ε.add_halves
@@ -826,7 +826,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
       coe_toNNReal ofNat_ne_top, coe_toNNReal _] at this; swap
     · exact rpow_ne_top_of_nonneg (by positivity) (by finiteness)
     rw [mul_assoc, ← mul_rpow_of_nonneg δ⁻¹ δ (by positivity),
-      ENNReal.inv_mul_cancel hδpos.ne.symm (ne_top_of_lt (hℐ 0)), one_rpow, mul_one,
+      ENNReal.inv_mul_cancel hδpos.ne' (ne_top_of_lt (hℐ 0)), one_rpow, mul_one,
       ← coe_two, ← coe_mul, coe_le_coe, two_mul] at this
     replace this := (add_le_add (le_max_left M 1) (le_max_right M 1)).trans this
     exact not_lt_of_ge this (lt_add_one M)
@@ -854,7 +854,7 @@ theorem uniformIntegrable_iff [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
       (∀ i, AEStronglyMeasurable (f i) μ) ∧
         ∀ ε > 0, ∃ C : ℝ≥0,
           ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ε :=
-  ⟨fun h => ⟨h.1, fun _ => h.spec (lt_of_lt_of_le zero_lt_one hp).ne.symm hp'⟩,
+  ⟨fun h => ⟨h.1, fun _ => h.spec (lt_of_lt_of_le zero_lt_one hp).ne' hp'⟩,
     fun h => uniformIntegrable_of hp hp' h.1 h.2⟩
 
 /-- The averaging of a uniformly integrable sequence is also uniformly integrable. -/
