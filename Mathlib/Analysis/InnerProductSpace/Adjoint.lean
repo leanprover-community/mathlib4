@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+public import Mathlib.Tactic.CrossRefAttribute
 
 
 /-!
@@ -111,6 +112,7 @@ public section
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
   denoted as `A†`. -/
+@[wikidata Q1509647]
 def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
   LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
     ⟨adjointAux A, adjointAux_adjointAux A⟩

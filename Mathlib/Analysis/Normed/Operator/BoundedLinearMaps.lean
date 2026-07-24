@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Bounded linear maps
@@ -76,6 +77,7 @@ inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`.
 
 (We put only the typeclasses strictly necessary for the definition, although the main case of
 interest is when `𝕜` itself is a normed ring and `E, F` are normed modules.) -/
+@[wikidata Q2342396]
 structure IsBoundedLinearMap : Prop
     extends IsLinearMap 𝕜 f where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Order.SuccPred.Relation
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Order.OrderClosed
 
 /-!

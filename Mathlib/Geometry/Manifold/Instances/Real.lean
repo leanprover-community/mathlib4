@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -55,6 +56,7 @@ open scoped Manifold ContDiff ENNReal
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
 -/
+@[wikidata Q644719]
 def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
 deriving TopologicalSpace
