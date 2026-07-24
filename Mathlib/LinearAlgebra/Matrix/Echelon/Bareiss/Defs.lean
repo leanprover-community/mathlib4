@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 /-!
 # An exact-division algorithm for echelon form
 
-This file defines an implementation of Bareiss algorithm which derives the echelon form of a matrix
+This file defines the interface of Bareiss algorithm, which derives the echelon form of a matrix
 using exact divisions to avoid exponential explosion in the sizes of intermediate elements.
 
 The certificate is constructed from verifying the final matrix multiplication instead of the
@@ -53,7 +53,7 @@ structure Decomposition (M : Matrix (Fin m) (Fin n) R) where
   L : Matrix (Fin m) (Fin m) R
   /-- The row permutation. -/
   σ : Equiv.Perm (Fin m)
-  /-- The pivot columns, in order. -/
+  /-- The pivot columns of the final echelon form. -/
   pivot : List (Fin n)
   is_pivot : (L * (M.submatrix σ id)).IsPivot pivot
   L_lowerTriangular : L.BlockTriangular OrderDual.toDual
