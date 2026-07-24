@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Štěpán Holub. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Štěpán Holub
+Authors: Štěpán Holub, Daniel Liao
 -/
 module
 
@@ -12,6 +12,8 @@ public import Mathlib.Tactic.TacticAnalysis.Declarations
 /-! # Periods of words (Lists)
 
 This file defines the notion of a period of a word (list) and proves the Periodicity Lemma.
+It also provides the correspondence between periods and *repetitions* (`n`-fold
+concatenations `(replicate n l).flatten`), and a `Decidable` instance for `HasPeriod`.
 
 ## Implementation notes
 
@@ -232,5 +234,72 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
   termination_by (q, p)
   decreasing_by
     all_goals grind
+
+/-! ### Decidability -/
+
+/-- `HasPeriod` is decidable: it is a prefix test. -/
+instance [DecidableEq α] (w : List α) (p : ℕ) : Decidable (w.HasPeriod p) :=
+  inferInstanceAs <| Decidable <| w <+: w.take p ++ w
+
+/-! ### Periods of repeated lists
+
+The two directions of the correspondence between periods and repetitions: the `n`-fold
+repetition `(replicate n l).flatten` has period `l.length`, and conversely a list with
+period `p` and length exactly `r * p` is the `r`-fold repetition of its length-`p` prefix.
+-/
+
+/-- The length of the `n`-fold repetition of `l` is `n * l.length`. -/
+lemma length_flatten_replicate (n : ℕ) (l : List α) :
+    ((replicate n l).flatten).length = n * l.length := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      rw [replicate_succ, flatten_cons, length_append, ih, Nat.succ_mul, Nat.add_comm]
+
+/-- The `n`-fold repetition of a list has the root length as a period. -/
+lemma hasPeriod_flatten_replicate (n : ℕ) (l : List α) :
+    ((replicate n l).flatten).HasPeriod l.length := by
+  match n with
+  | 0 | 1 => simp
+  | n + 2 =>
+      have ih := hasPeriod_flatten_replicate (n + 1) l
+      have htake : ((replicate (n + 1) l).flatten).take l.length = l := by
+        rw [replicate_succ, flatten_cons, take_append_of_le_length le_rfl, take_length]
+      have hlen : l.length ≤ ((replicate (n + 1) l).flatten).length := by
+        rw [length_flatten_replicate]
+        exact Nat.le_mul_of_pos_left l.length (Nat.succ_pos n)
+      have h := ih.take_append l.length l.length ((replicate (n + 1) l).flatten)
+        (dvd_refl l.length) hlen
+      rw [htake] at h
+      rw [replicate_succ, flatten_cons]
+      exact h
+
+/-- A list with period `p` and length `r * p` is the `r`-fold repetition of its
+length-`p` prefix. This is the converse of `hasPeriod_flatten_replicate`. -/
+lemma eq_flatten_replicate_of_hasPeriod {w : List α} {p r : ℕ} (per : w.HasPeriod p)
+    (hlen : w.length = r * p) : w = (replicate r (w.take p)).flatten := by
+  induction r generalizing w with
+  | zero =>
+      rw [Nat.zero_mul, length_eq_zero_iff] at hlen
+      simp [hlen]
+  | succ r ih =>
+      rcases Nat.eq_zero_or_pos r with hr | hr
+      · subst hr
+        have hw : w.length ≤ p := by simpa using Nat.le_of_eq hlen
+        rw [take_of_length_le hw]
+        simp
+      · have hdrop_per : (w.drop p).HasPeriod p := per.infix (drop_suffix p w).isInfix
+        have hdrop_len : (w.drop p).length = r * p := by
+          rw [length_drop, hlen, Nat.succ_mul, Nat.add_sub_cancel]
+        have hp_le : p ≤ (w.drop p).length := by
+          rw [hdrop_len]; exact Nat.le_mul_of_pos_left p hr
+        have hroot : (w.drop p).take p = w.take p := by
+          rw [prefix_iff_eq_take.mp (per.drop_prefix p), take_take, min_eq_left hp_le]
+        calc w = w.take p ++ w.drop p := (take_append_drop p w).symm
+          _ = w.take p ++ (replicate r ((w.drop p).take p)).flatten := by
+              rw [← ih hdrop_per hdrop_len]
+          _ = w.take p ++ (replicate r (w.take p)).flatten := by rw [hroot]
+          _ = (replicate (r + 1) (w.take p)).flatten := by
+              rw [replicate_succ, flatten_cons]
 
 end List
