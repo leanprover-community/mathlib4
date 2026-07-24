@@ -5936,6 +5936,8 @@ public import Mathlib.NumberTheory.Rayleigh
 public import Mathlib.NumberTheory.Real.GoldenRatio
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.NumberTheory.SelbergSieve
+public import Mathlib.NumberTheory.ShuniaIntegerRoot
+public import Mathlib.NumberTheory.ShuniaIntegerRoot.Estimates
 public import Mathlib.NumberTheory.SiegelsLemma
 public import Mathlib.NumberTheory.SmoothNumbers
 public import Mathlib.NumberTheory.SumFourSquares
