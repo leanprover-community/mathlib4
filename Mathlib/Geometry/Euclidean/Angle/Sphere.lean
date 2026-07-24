@@ -247,6 +247,33 @@ theorem two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi {s : Sphere P} {p₁ 
   rw [← oangle_center_eq_two_zsmul_oangle hp₁ hp₂ hp₃ hp₂p₁ hp₂p₃,
     oangle_eq_pi_sub_two_zsmul_oangle_center_right hp₁ hp₃ hp₁p₃, add_sub_cancel]
 
+/-- For a tangent line to a sphere, twice the oriented angle between the line and the radius at the
+tangent point equals `π`. -/
+theorem IsTangentAt.two_zsmul_oangle_eq_pi {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) (hq : q ∈ as) (hqp : q ≠ p) (hcp : s.center ≠ p) :
+    (2 : ℤ) • ∡ q p s.center = π := by
+  rw [Real.Angle.two_zsmul_eq_pi_iff, ← Real.Angle.abs_toReal_eq_pi_div_two_iff,
+    ← angle_eq_abs_oangle_toReal hqp hcp]
+  exact h.angle_eq_pi_div_two hq
+
+/-- **Alternate segment theorem**: Oriented angle version of "the angle between a tangent and
+a chord equals the inscribed angle subtending that chord", for oriented angles mod π,
+represented here as equality of twice the angles. -/
+theorem two_zsmul_oangle_tangent_eq {s : Sphere P} {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s)
+    (hp₃ : p₃ ∈ s) (htan : s.IsTangentAt p₁ line[ℝ, p₁, p₄]) (hp₄p₁ : p₄ ≠ p₁) (hp₃p₁ : p₃ ≠ p₁)
+    (hp₃p₂ : p₃ ≠ p₂) (hp₂p₁ : p₂ ≠ p₁) :
+    (2 : ℤ) • ∡ p₄ p₁ p₂ = (2 : ℤ) • ∡ p₁ p₃ p₂ := by
+  have hcenter : s.center ≠ p₁ := (ne_center_of_mem_of_mem_of_ne hp₁ hp₃ hp₃p₁.symm).symm
+  have htan_chord : (2 : ℤ) • ∡ p₄ p₁ p₂ = π + (2 : ℤ) • ∡ s.center p₁ p₂ := by
+    have hright : (2 : ℤ) • ∡ p₄ p₁ s.center = π :=
+      htan.two_zsmul_oangle_eq_pi (right_mem_affineSpan_pair ℝ p₁ p₄) hp₄p₁ hcenter
+    rw [← oangle_add hp₄p₁ hcenter hp₂p₁, smul_add, hright]
+  have hinscribed : (2 : ℤ) • ∡ p₁ p₃ p₂ = π + (2 : ℤ) • ∡ s.center p₁ p₂ := by
+    have h := two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi hp₁ hp₃ hp₂ hp₃p₁ hp₃p₂ hp₂p₁.symm
+    rw [oangle_rev, smul_neg] at h
+    rw [← h]; abel
+  exact htan_chord.trans hinscribed.symm
+
 /-- A base angle of an isosceles triangle with apex at the center of a circle is acute. -/
 theorem abs_oangle_center_left_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : |(∡ s.center p₂ p₁).toReal| < π / 2 :=
