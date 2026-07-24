@@ -55,7 +55,7 @@ lemma toAlgHom_apply {A B : Under R} (f : A ⟶ B) (a : A) :
 
 variable (R) in
 /-- Make an object of `Under R` from an `R`-algebra. -/
-@[simps! hom, simps! -isSimp right]
+@[implicit_reducible, simps! hom, simps! -isSimp right]
 def mkUnder (A : Type u) [CommRing A] [Algebra R A] : Under R :=
   Under.mk (CommRingCat.ofHom <| algebraMap R A)
 
@@ -93,19 +93,12 @@ end AlgHom
 
 namespace AlgEquiv
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Make an isomorphism in `Under R` from an algebra isomorphism. -/
 def toUnder {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (f : A ≃ₐ[R] B) :
     CommRingCat.mkUnder R A ≅ CommRingCat.mkUnder R B where
   hom := f.toAlgHom.toUnder
   inv := f.symm.toAlgHom.toUnder
-  hom_inv_id := by
-    ext (a : (CommRingCat.mkUnder R A).right)
-    simp
-  inv_hom_id := by
-    ext a
-    simp
 
 @[simp]
 lemma toUnder_hom_right_apply {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
