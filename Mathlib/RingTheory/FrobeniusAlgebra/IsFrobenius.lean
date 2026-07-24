@@ -109,8 +109,8 @@ noncomputable abbrev toCoalgebra : Coalgebra K A where
 attribute [local instance] toCoalgebra in
 /-- The coalgebra coming from a Frobenius algebra satisfies the Frobenius equations. -/
 theorem isFrobenius_toCoalgebra : (toCoalgebra K A).IsFrobenius K A where
-  eq := by
-    simp only [CoalgebraStruct.comul]
+  left_eq_right := by
+    simp only [Coalgebra.IsFrobenius.left, Coalgebra.IsFrobenius.right, CoalgebraStruct.comul]
     nth_rw 1 [left_eq_right_aux]
     ext
     simp [coevaluation_apply_one, tmul_sum, sum_tmul]
