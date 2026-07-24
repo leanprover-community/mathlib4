@@ -59,10 +59,6 @@ instance : ZeroDimensionalSpace X := by
   · rw [mem_nhds_iff]
     exact ⟨V, hUV, hxV.isOpen, V_op⟩
 
-@[deprecated isTopologicalBasis_isClopen (since := "2026-07-23")]
-theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
-  convert (isTopologicalBasis_isClopen (X := X)).nhds_hasBasis using 2 <;> tauto
-
 end Profinite
 
 section LocallyCompact

@@ -136,6 +136,15 @@ theorem zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis :
     rw [zeroDimensionalSpace_iff_isTopologicalBasis]
     exact .of_hasBasis_nhds H
 
+theorem nhds_basis_isClopen [ZeroDimensionalSpace X] (x : X) :
+    (𝓝 x).HasBasis (fun s : Set X ↦ IsClopen s ∧ x ∈ s) id :=
+  (isTopologicalBasis_isClopen (X := X)).nhds_hasBasis
+
+@[deprecated nhds_basis_isClopen (since := "2026-07-24")]
+theorem nhds_basis_clopen [ZeroDimensionalSpace X] (x : X) :
+    (𝓝 x).HasBasis (fun s : Set X ↦ x ∈ s ∧ IsClopen s) id := by
+  simp_rw [and_comm]; exact nhds_basis_isClopen x
+
 theorem exists_isClopen_mem_of_isOpen [ZeroDimensionalSpace X] {x : X} {U : Set X}
     (hU : IsOpen U) (hx : x ∈ U) : ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
   isTopologicalBasis_isClopen.mem_nhds_iff.1 (hU.mem_nhds hx)
