@@ -236,7 +236,7 @@ lemma isGroupLikeElem_iff_mem_range_single_one {x : R[M]} :
   mpr := by rintro ⟨g, rfl⟩; exact isGroupLikeElem_single_one _
 
 open Submodule in
-@[to_additive (dont_translate := R) (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp) isGroupLikeElem_iff_mem_range_of]
 lemma isGroupLikeElem_iff_mem_range_of {x : R[M]} :
     IsGroupLikeElem R x ↔ x ∈ Set.range (single · 1) := isGroupLikeElem_iff_mem_range_single_one
 
@@ -403,16 +403,6 @@ end CommSemiring
 
 section CommRing
 variable [CommRing R] [IsDomain R]
-
-section AddGroup
-variable [AddGroup G] [AddGroup H] [AddGroup I]
-
-open Submodule in
-@[simp]
-lemma isGroupLikeElem_iff_mem_range_of {x : R[G]} : IsGroupLikeElem R x ↔ x ∈ Set.range (of R G) :=
-  isGroupLikeElem_iff_mem_range_single_one
-
-end AddGroup
 
 section AddCommGroup
 variable [AddCommGroup G] [AddCommGroup H]
