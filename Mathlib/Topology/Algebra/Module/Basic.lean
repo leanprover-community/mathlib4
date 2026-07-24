@@ -66,9 +66,9 @@ theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }
   rcases hs with ⟨y, hy⟩
   refine Submodule.eq_top_iff'.2 fun x => ?_
   rw [mem_interior_iff_mem_nhds] at hy
-  have : Tendsto (fun c : R => y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + (0 : R) • x)) :=
-    tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).smul tendsto_const_nhds)
-  rw [zero_smul, add_zero] at this
+  have : Tendsto (fun c : R ↦ y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + 0)) :=
+    tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).zero_smul_const _)
+  rw [add_zero] at this
   obtain ⟨_, hu : y + _ • _ ∈ s, u, rfl⟩ :=
     nonempty_of_mem (inter_mem (Filter.mem_map.1 (this hy)) self_mem_nhdsWithin)
   have hy' : y ∈ ↑s := mem_of_mem_nhds hy
@@ -90,8 +90,8 @@ theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   suffices Tendsto (fun c : R => x + c • y) (𝓝[≠] 0) (𝓝[≠] x) from this.neBot
   refine Tendsto.inf ?_ (tendsto_principal_principal.2 <| ?_)
-  · convert! tendsto_const_nhds.add ((@tendsto_id R _).smul_const y)
-    rw [zero_smul, add_zero]
+  · convert! tendsto_const_nhds.add ((@tendsto_id R _).zero_smul_const y)
+    rw [add_zero]
   · intro c hc
     simpa [hy] using hc
 
