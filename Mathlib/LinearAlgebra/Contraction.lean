@@ -16,6 +16,15 @@ Given modules $M, N$ over a commutative ring $R$, this file defines the natural 
 $M^* \otimes M \to R$, $M \otimes M^* \to R$, and $M^* \otimes N → Hom(M, N)$, as well as proving
 some basic properties of these maps.
 
+It also constructs linear equivalences between tensor products of hom modules and hom modules of
+tensor products:
+* `lTensorHomEquivHomLTensor`: `P ⊗ Hom(M, Q) ≃ₗ Hom(M, P ⊗ Q)` for `M` finite projective
+* `rTensorHomEquivHomRTensor`: `Hom(M, P) ⊗ Q ≃ₗ Hom(M, P ⊗ Q)` for `M` finite projective
+* `TensorProduct.homTensorHomEquiv`: `Hom(M, P) ⊗ Hom(N, Q) ≃ₗ Hom(M ⊗ N, P ⊗ Q)` for `M`, `N`
+  finite projective
+* `TensorProduct.dualDistribEquiv`: `Dual M ⊗ Dual N ≃ₗ Dual (M ⊗ N)` for `M`, `N` finite
+  projective
+
 ## Tags
 
 contraction, dual module, tensor product
@@ -23,39 +32,36 @@ contraction, dual module, tensor product
 
 @[expose] public section
 
-variable {ι : Type*} (R M N P Q : Type*)
+open Function LinearMap Matrix Module TensorProduct
+
+variable {ι R M N P Q : Type*}
 
 -- Enable extensionality of maps out of the tensor product.
 -- High priority so it takes precedence over `LinearMap.ext`.
 attribute [local ext high] TensorProduct.ext
 
 section Contraction
-
-open TensorProduct LinearMap Matrix Module
-
-open TensorProduct
-
 section CommSemiring
 
 variable [CommSemiring R]
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
-variable (b : Basis ι R M)
 
+variable (R M) in
 /-- The natural left-handed pairing between a module and its dual. -/
 def contractLeft : Module.Dual R M ⊗[R] M →ₗ[R] R :=
   (uncurry _ _ _ _).toFun LinearMap.id
 
+variable (R M) in
 /-- The natural right-handed pairing between a module and its dual. -/
 def contractRight : M ⊗[R] Module.Dual R M →ₗ[R] R :=
   (uncurry _ _ _ _).toFun (LinearMap.flip LinearMap.id)
 
+variable (R M N) in
 /-- The natural map associating a linear map to the tensor product of two modules. -/
 def dualTensorHom : Module.Dual R M ⊗[R] N →ₗ[R] M →ₗ[R] N :=
   let M' := Module.Dual R M
   (uncurry (.id R) M' N (M →ₗ[R] N) : _ → M' ⊗ N →ₗ[R] M →ₗ[R] N) LinearMap.smulRightₗ
-
-variable {R M N P Q}
 
 @[simp]
 theorem contractLeft_apply (f : Module.Dual R M) (m : M) : contractLeft R M (f ⊗ₜ m) = f m :=
@@ -161,7 +167,7 @@ end
 
 section Fintype
 
-variable [DecidableEq ι] [Fintype ι]
+variable [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
 
 attribute [-ext] AlgebraTensorModule.curry_injective in
 /-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function
@@ -206,21 +212,6 @@ theorem dualTensorHomEquivOfBasis_symm_cancel_right (x : M →ₗ[R] N) :
   rw [← dualTensorHomEquivOfBasis_apply b, LinearEquiv.apply_symm_apply]
 
 end Fintype
-
-theorem dualTensorHom_bijective [Module.Finite R M] [Projective R M] :
-    Function.Bijective (dualTensorHom R M N) := by
-  obtain ⟨n, f, g, -, -, eq⟩ := Finite.exists_comp_eq_id_of_projective R M
-  constructor
-  · refine .of_comp (f := f.lcomp R N) ?_
-    rw [← coe_comp, ← dualTensorHom_comp_rTensor_dualMap, coe_comp,
-      ← coe_dualTensorHomEquivOfBasis (Pi.basisFun ..)]
-    refine (EquivLike.injective _).comp (injective_of_comp_eq_id _ (rTensor _ g.dualMap) ?_)
-    simp [← rTensor_comp, dualMap_comp_dualMap g f, eq]
-  · refine .of_comp (g := g.dualMap.rTensor N) ?_
-    rw [← coe_comp, dualTensorHom_comp_rTensor_dualMap, coe_comp,
-      ← coe_dualTensorHomEquivOfBasis (Pi.basisFun ..)]
-    refine (surjective_of_comp_eq_id (f.lcomp R N) _ ?_).comp (EquivLike.surjective _)
-    ext φ; exact congr(φ ($eq _))
 
 theorem dualTensorHom_self_right : dualTensorHom R M R = TensorProduct.rid R (Dual R M) := by
   ext; simp
@@ -274,13 +265,46 @@ theorem dualTensorHom_bijective_of_finite_left_projective_right [Module.Finite R
   dualTensorHom_bijective_of_comp_eq_id_right _ _ eq <|
     dualTensorHom_finsupp_bijective (.inr ‹_›) dualTensorHom_self_right_bijective
 
+section FiniteProjective
+variable [Module.Finite R M] [Projective R M]
+
+lemma dualTensorHom_bijective : Function.Bijective (dualTensorHom R M N) := by
+  obtain ⟨n, f, g, -, -, eq⟩ := Finite.exists_comp_eq_id_of_projective R M
+  refine ⟨.of_comp (f := f.lcomp R N) ?_, .of_comp (g := g.dualMap.rTensor N) ?_⟩
+  · rw [← coe_comp, ← dualTensorHom_comp_rTensor_dualMap, coe_comp,
+      ← coe_dualTensorHomEquivOfBasis (Pi.basisFun ..)]
+    refine (EquivLike.injective _).comp (injective_of_comp_eq_id _ (rTensor _ g.dualMap) ?_)
+    simp [← rTensor_comp, dualMap_comp_dualMap g f, eq]
+  · rw [← coe_comp, dualTensorHom_comp_rTensor_dualMap, coe_comp,
+      ← coe_dualTensorHomEquivOfBasis (Pi.basisFun ..)]
+    refine (surjective_of_comp_eq_id (f.lcomp R N) _ ?_).comp (EquivLike.surjective _)
+    ext φ x
+    exact congr(φ ($eq x))
+
 variable (R M N) in
-/-- If `M` is finite free, the natural map $M^* ⊗ N → Hom(M, N)$ is an
-equivalence. -/
-@[simp]
-noncomputable def dualTensorHomEquiv [Module.Finite R M] [Projective R M] :
-    Module.Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
-  .ofBijective _ (dualTensorHom_bijective ..)
+/-- If `M` is finite projective, the natural map $M^* ⊗ N → Hom(M, N)$ is an equivalence. -/
+noncomputable def dualTensorHomEquiv : Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
+  .ofBijective (dualTensorHom R M N) dualTensorHom_bijective
+
+@[simp] lemma dualTensorHomEquiv_toLinearMap :
+    (dualTensorHomEquiv R M N).toLinearMap = dualTensorHom R M N := rfl
+
+@[simp] lemma dualTensorHomEquiv_apply (f : Dual R M) (m : M) (n : N) :
+    dualTensorHomEquiv R M N (f ⊗ₜ n) m = f m • n := rfl
+
+@[simp] lemma dualTensorHomEquiv_symm_cancel_left (x : Dual R M ⊗[R] N) :
+    (dualTensorHomEquiv R M N).symm (dualTensorHom R M N x) = x :=
+  (dualTensorHomEquiv R M N).symm_apply_apply _
+
+@[simp] lemma dualTensorHomEquiv_symm_cancel_right (x : M →ₗ[R] N) :
+    dualTensorHom R M N ((dualTensorHomEquiv R M N).symm x) = x :=
+  (dualTensorHomEquiv R M N).apply_symm_apply _
+
+@[simp] lemma dualTensorHomEquivOfBasis_eq_dualTensorHomEquiv [DecidableEq ι] [Fintype ι]
+    (b : Basis ι R M) : dualTensorHomEquivOfBasis b = dualTensorHomEquiv R M N := by
+  apply LinearEquiv.toLinearMap_injective; ext; simp
+
+end FiniteProjective
 
 theorem dualTensorHomEquiv_eq_dualTensorHomEquivOfBasis
     (b : Basis ι R M) [DecidableEq ι] [Fintype ι] :
@@ -294,10 +318,6 @@ end Contraction
 
 section HomTensorHom
 
-open TensorProduct
-
-open Module TensorProduct LinearMap
-
 section CommSemiring
 
 variable [CommSemiring R]
@@ -305,21 +325,22 @@ variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 variable [Projective R M] [Module.Finite R M]
 
-/-- When `M` is a finite free module, the map `lTensorHomToHomLTensor` is an equivalence. Note
+variable (R M P Q) in
+/-- When `M` is a finite projective module, the map `lTensorHomToHomLTensor` is an equivalence. Note
 that `lTensorHomEquivHomLTensor` is not defined directly in terms of
 `lTensorHomToHomLTensor`, but the equivalence between the two is given by
 `lTensorHomEquivHomLTensor_toLinearMap` and `lTensorHomEquivHomLTensor_apply`. -/
 noncomputable def lTensorHomEquivHomLTensor : P ⊗[R] (M →ₗ[R] Q) ≃ₗ[R] M →ₗ[R] P ⊗[R] Q :=
-  congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q).symm ≪≫ₗ
-      TensorProduct.leftComm R P _ Q ≪≫ₗ
+  congr (.refl R P) (dualTensorHomEquiv R M Q).symm ≪≫ₗ leftComm R P _ Q ≪≫ₗ
     dualTensorHomEquiv R M _
 
-/-- When `M` is a finite free module, the map `rTensorHomToHomRTensor` is an equivalence. Note
+variable (R M P Q) in
+/-- When `M` is a finite projective module, the map `rTensorHomToHomRTensor` is an equivalence. Note
 that `rTensorHomEquivHomRTensor` is not defined directly in terms of
 `rTensorHomToHomRTensor`, but the equivalence between the two is given by
 `rTensorHomEquivHomRTensor_toLinearMap` and `rTensorHomEquivHomRTensor_apply`. -/
 noncomputable def rTensorHomEquivHomRTensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R] M →ₗ[R] P ⊗[R] Q :=
-  congr (dualTensorHomEquiv R M P).symm (LinearEquiv.refl R Q) ≪≫ₗ TensorProduct.assoc R _ P Q ≪≫ₗ
+  congr (dualTensorHomEquiv R M P).symm (.refl R Q) ≪≫ₗ TensorProduct.assoc R _ P Q ≪≫ₗ
     dualTensorHomEquiv R M _
 
 attribute [-ext] AlgebraTensorModule.curry_injective in
@@ -342,8 +363,6 @@ theorem rTensorHomEquivHomRTensor_toLinearMap :
   ext f p q m
   simp [e, rTensorHomEquivHomRTensor, smul_tmul']
 
-variable {R M N P Q}
-
 @[simp]
 theorem lTensorHomEquivHomLTensor_apply (x : P ⊗[R] (M →ₗ[R] Q)) :
     lTensorHomEquivHomLTensor R M P Q x = lTensorHomToHomLTensor (.id R) M P Q x := by
@@ -354,67 +373,75 @@ theorem rTensorHomEquivHomRTensor_apply (x : (M →ₗ[R] P) ⊗[R] Q) :
     rTensorHomEquivHomRTensor R M P Q x = rTensorHomToHomRTensor (.id R) M P Q x := by
   rw [← LinearEquiv.coe_toLinearMap, rTensorHomEquivHomRTensor_toLinearMap]
 
-variable (R M N P Q) [Projective R N] [Module.Finite R N]
+variable [Projective R N] [Module.Finite R N]
 
+variable (R M N P Q) in
 /-- When `M` and `N` are free `R` modules, the map `homTensorHomMap` is an equivalence. Note that
 `homTensorHomEquiv` is not defined directly in terms of `homTensorHomMap`, but the equivalence
 between the two is given by `homTensorHomEquiv_toLinearMap` and `homTensorHomEquiv_apply`.
 -/
 noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
-  rTensorHomEquivHomRTensor R M P _ ≪≫ₗ
-      (LinearEquiv.refl R M).arrowCongr (lTensorHomEquivHomLTensor R N _ Q) ≪≫ₗ
-    lift.equiv _ M N _
+  -- We make sure `homTensorHomEquiv_toLinearMap` is true by definition.
+  .ofBijective (homTensorHomMap (.id R) M N P Q) <| by
+    convert (rTensorHomEquivHomRTensor R M P _ ≪≫ₗ (LinearEquiv.refl R M).arrowCongr
+      (lTensorHomEquivHomLTensor R N _ Q) ≪≫ₗ lift.equiv _ M N _).bijective
+    congr
+    ext
+    simp
 
-attribute [-ext] AlgebraTensorModule.curry_injective in
 @[simp]
 theorem homTensorHomEquiv_toLinearMap :
-    (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap (.id R) M N P Q := by
-  ext m n
-  simp only [homTensorHomEquiv, compr₂ₛₗ_apply, mk_apply, LinearEquiv.coe_toLinearMap,
-    LinearEquiv.trans_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply, LinearEquiv.refl_symm,
-    LinearEquiv.refl_apply, rTensorHomEquivHomRTensor_apply, lTensorHomEquivHomLTensor_apply,
-    lTensorHomToHomLTensor_apply, rTensorHomToHomRTensor_apply, homTensorHomMap_apply,
-    map_tmul]
-
-variable {R M N P Q}
+    (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap (.id R) M N P Q := rfl
 
 @[simp]
 theorem homTensorHomEquiv_apply (x : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q)) :
-    homTensorHomEquiv R M N P Q x = homTensorHomMap (.id R) M N P Q x := by
-  rw [← LinearEquiv.coe_toLinearMap, homTensorHomEquiv_toLinearMap]
+    homTensorHomEquiv R M N P Q x = homTensorHomMap (.id R) M N P Q x := rfl
 
 end CommSemiring
 
 end HomTensorHom
 
 namespace TensorProduct
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
-open LinearMap Module
+section
+variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free R N]
 
-variable {R M N : Type*} {ι κ : Type*}
-variable [DecidableEq ι] [DecidableEq κ]
-variable [Fintype ι] [Fintype κ]
-
-attribute [local ext] TensorProduct.ext
-
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-variable [Module R M] [Module R N]
-
-/-- An inverse to `TensorProduct.dualDistrib` given bases.
+variable (R M N) in
+/--
+A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
+modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
+isomorphism `R ⊗ R ≃ R`.
 -/
+noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
+  homTensorHomEquiv R M N R R ≪≫ₗ (TensorProduct.rid R R).congrRight
+
+@[simp] lemma toLinearMap_dualDistribEquiv : dualDistribEquiv R M N = dualDistrib R M N := by
+  ext; simp [dualDistribEquiv, mul_comm]
+
+@[simp] lemma dualDistribEquiv_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
+    dualDistribEquiv R M N (f ⊗ₜ g) (m ⊗ₜ n) = g n * f m := rfl
+
+end
+
+variable {ι κ : Type*} [Fintype ι] [Fintype κ] [DecidableEq ι] [DecidableEq κ]
+
+/-- An inverse to `TensorProduct.dualDistrib` given bases. -/
+@[deprecated dualDistribEquiv (since := "2026-07-07")]
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
       applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
 
-@[simp]
+@[deprecated dualDistribEquiv (since := "2026-07-07")]
 theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
     dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
   simp [dualDistribInvOfBasis]
 
-theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistrib R M N) (dualDistribInvOfBasis b c) = LinearMap.id := by
+@[deprecated dualDistribEquiv (since := "2026-07-07")]
+lemma dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
+    (dualDistrib R M N).comp (dualDistribInvOfBasis b c) = LinearMap.id := by
   apply (b.tensorProduct c).dualBasis.ext
   rintro ⟨i, j⟩
   apply (b.tensorProduct c).ext
@@ -422,14 +449,15 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
     Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
-    Basis.tensorProduct_apply, LinearMap.coe_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
-    map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
+    Basis.tensorProduct_apply, LinearMap.coe_sum, Finset.sum_apply, LinearMap.smul_apply,
+    LinearEquiv.coe_coe, map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
   · simpa using mul_comm _ _
   all_goals { intros; simp [*] at * }
 
+@[deprecated dualDistribEquiv (since := "2026-07-07")]
 theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistribInvOfBasis b c) (dualDistrib R M N) = LinearMap.id := by
+    (dualDistribInvOfBasis b c).comp (dualDistrib R M N) = LinearMap.id := by
   apply (b.dualBasis.tensorProduct c.dualBasis).ext
   rintro ⟨i, j⟩
   simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
@@ -441,25 +469,12 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
 
 /-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
 It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simps!]
+isomorphism `R ⊗ R ≃ R`. -/
+@[simps!, deprecated dualDistribEquiv (since := "2026-07-07")]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
   refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
   · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
   · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
-
-variable (R M N)
-variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free R N]
-
-/--
-A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
-modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simp]
-noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
-  dualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
 
 end TensorProduct

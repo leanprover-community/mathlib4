@@ -750,6 +750,7 @@ end arrowCongr
 
 /-- If `M₂` and `M₃` are linearly isomorphic then the two spaces of linear maps from `M` into `M₂`
 and `M` into `M₃` are linearly isomorphic. -/
+@[simps!]
 def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ[R] M₃ :=
   arrowCongr (LinearEquiv.refl R M) f
 
