@@ -108,11 +108,10 @@ noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰))
 
 section FiniteFree
 
-/-! In this section we assume further that `Module.Finite ℤ R` and `Module.Free ℤ R`.
-This characterises `R` as being isomorphic to `𝓞 K` without explicitly requiring that type.
-As a result, if `F = ℚ`, then we can use `ℤ` and `𝓞 ℚ` interchangeably. -/
+/-! In this section we assume further that `R` has finite quotients and is infinite,
+as holds for the ring of integers `𝓞 K` of a number field. -/
 
-variable [Module.Finite ℤ R] [Module.Free ℤ R]
+variable [Ring.HasFiniteQuotients R] [Infinite R]
 
 namespace HeightOneSpectrum
 
@@ -123,7 +122,7 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   rw [← absNorm_eq_one_iff]
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
-    exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
+    exact Ring.HasFiniteQuotients.finiteQuotient v.ne_bot
   lia
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
