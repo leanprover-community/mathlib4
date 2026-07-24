@@ -67,6 +67,9 @@ theorem induce_eq_top : G.induce s = ⊤ ↔ G.IsClique s := by
 theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ :=
   induce_eq_top.symm
 
+theorem IsClique.top_isIndContained {s : Set α} (h : G.IsClique s) : completeGraph s ⊴ G :=
+  induce_eq_top.mpr h ▸ Embedding.induce s |>.isIndContained
+
 theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
   simp [IsChain, G.symm.iff]
 
@@ -438,9 +441,25 @@ theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
   obtain ⟨t, hts, ht⟩ := exists_subset_card_eq (h.trans hs.card_eq.ge)
   exact hG _ ⟨hs.isClique.subset hts, ht⟩
 
+theorem CliqueFree.anti_isContained (h : G ⊑ H) : H.CliqueFree n → G.CliqueFree n := by
+  simp_rw [cliqueFree_iff]
+  contrapose!
+  exact h.trans'
+
 @[gcongr]
 theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
+
+theorem Free.cliqueFree {n : ℕ} {H : SimpleGraph (Fin n)} (h : H.Free G) : G.CliqueFree n := by
+  rw [cliqueFree_iff]
+  contrapose! h
+  exact .trans (.of_le le_top) h
+
+theorem Free.cliqueFree_card [Finite β] {H : SimpleGraph β} (h : H.Free G) :
+    G.CliqueFree (Nat.card β) := by
+  have := Fintype.ofFinite β
+  rw [Nat.card_eq_fintype_card, cliqueFree_iff_top_free]
+  exact h.mono <| .of_le le_top
 
 /-- If a graph is cliquefree, any graph that is contained in it is also cliquefree. -/
 @[gcongr only]
