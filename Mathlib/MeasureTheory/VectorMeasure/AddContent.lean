@@ -85,6 +85,7 @@ def of_additive_of_le_measure
 
 open scoped ENNReal
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Consider an additive content on a dense ring of sets. Assume that it is dominated by a finite
 positive measure. Then it extends to a countably additive vector measure. -/
 lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
@@ -144,10 +145,10 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     have : Dense {s | ‖m₁ s‖ₑ ≤ μ s} := by
       apply C'_dense.mono
       intro s hs
-      simp only [Set.mem_setOf_eq]
+      simp only [Set.mem_ofPred_eq]
       convert! hm s (C'C s hs)
       exact C'_dense.extend_eq lip.continuous ⟨s, hs⟩
-    simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq] using! this
+    simpa only [Dense, IsClosed.closure_eq, Set.mem_ofPred_eq] using! this
   /- Most involved technical step: show that the extension `m₁` of `m₀` is still finitely
   additive. -/
   have hAddit (s t : MeasuredSets μ) (h : Disjoint (s : Set α) t) :

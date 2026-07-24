@@ -210,7 +210,6 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     rw [Category.assoc, ← Adjunction.counit_naturality, ← Category.assoc, ← F.map_comp, hf']
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
@@ -249,7 +248,6 @@ variable {D : Type u'} [Category.{v'} D] (F : C ≌ D)
 theorem map_projective_iff (P : C) : Projective (F.functor.obj P) ↔ Projective P :=
   ⟨F.toAdjunction.projective_of_map_projective P, F.toAdjunction.map_projective P⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence of categories `F`, a projective presentation of `F(X)` induces a
 projective presentation of `X.` -/
 def projectivePresentationOfMapProjectivePresentation (X : C)

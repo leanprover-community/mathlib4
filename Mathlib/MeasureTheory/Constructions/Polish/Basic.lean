@@ -93,7 +93,7 @@ a compatible Polish topology.
 Warning: following this with `borelize α` will cause an error. Instead, one can
 rewrite with `eq_borel_upgradeStandardBorel α`.
 TODO: fix the corresponding bug in `borelize`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable
 def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
     UpgradedStandardBorel α := by
@@ -596,7 +596,7 @@ then for any measurable space `β` and `g : Z → β`, the composition `g ∘ f`
 measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
 theorem measurable_comp_iff_restrict {f : X → Z}
     [CountablySeparated (range f)]
-    (hf : Measurable f) {g : Z → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
+    (hf : Measurable f) {g : Z → β} : Measurable (g ∘ f) ↔ Measurable (domRestrict (range f) g) :=
   forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_val hf (s := g ⁻¹' s)
 
 /-- If `f : X → Z` is a surjective Borel measurable map from a standard Borel space
@@ -808,7 +808,7 @@ theorem IsClosed.measurableSet_image_of_continuousOn_injOn
   rw [image_eq_range]
   have : PolishSpace s := IsClosed.polishSpace hs
   apply measurableSet_range_of_continuous_injective
-  · rwa [continuousOn_iff_continuous_restrict] at f_cont
+  · rwa [continuousOn_iff_continuous_domRestrict] at f_cont
   · rwa [injOn_iff_injective] at f_inj
 
 variable {α β : Type*} [MeasurableSpace β]
@@ -864,9 +864,9 @@ the restriction of `f` to `s` is a measurable embedding. -/
 theorem ContinuousOn.measurableEmbedding [BorelSpace β]
     [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ] [BorelSpace γ]
     (hs : MeasurableSet s) (f_cont : ContinuousOn f s)
-    (f_inj : InjOn f s) : MeasurableEmbedding (s.restrict f) :=
+    (f_inj : InjOn f s) : MeasurableEmbedding (s.domRestrict f) :=
   { injective := injOn_iff_injective.1 f_inj
-    measurable := (continuousOn_iff_continuous_restrict.1 f_cont).measurable
+    measurable := (continuousOn_iff_continuous_domRestrict.1 f_cont).measurable
     measurableSet_image' := by
       intro u hu
       have A : MeasurableSet (((↑) : s → γ) '' u) :=
@@ -928,7 +928,7 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   Therefore, we need to remove the points where the map is not injective. There are only countably
   many points that have several preimages, so this set is also measurable. -/
   let u : Set β := {c | ∃ x, ∃ y, x ∈ t ∧ y ∈ t ∧ x < y ∧ g x = c ∧ g y = c}
-  have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
+  have hu : Set.Countable u := MonotoneOn.countable_setOfPred_two_preimages hg
   let t' := t ∩ g ⁻¹' u
   have ht' : MeasurableSet t' := by
     have : t' = ⋃ c ∈ u, t ∩ g ⁻¹' {c} := by ext; simp [t']
@@ -961,14 +961,14 @@ theorem MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
     rw [← image_union]
     congr!
     ext
-    simp only [sdiff_sep_self, not_not, mem_union, mem_setOf_eq, t']
+    simp only [sdiff_sep_self, not_not, mem_union, mem_ofPred_eq, t']
     tauto
   rw [this]
   apply MeasurableSet.union _ (ht'.image g).measurableSet
   apply MeasurableSet.image_of_monotoneOn_of_continuousOn (ht.diff ht'.measurableSet)
     (hg.mono sdiff_subset)
   intro x hx
-  simp only [sdiff_sep_self, not_not, mem_setOf_eq, t'] at hx
+  simp only [sdiff_sep_self, not_not, mem_ofPred_eq, t'] at hx
   exact hx.2.mono sdiff_subset
 
 /-- The image of a measurable set under an antitone map is measurable. -/
@@ -1008,11 +1008,11 @@ theorem MeasureTheory.measurableSet_exists_tendsto [TopologicalSpace γ]
       ((f · x) '' u n) ×ˢ ((f · x) '' u n) := fun x => (hu.map _).prod (hu.map _)
   simp_rw [and_iff_right (hl.map _),
     Filter.HasBasis.le_basis_iff (this _).toHasBasis Metric.uniformity_basis_dist_inv_nat_succ,
-    Set.setOf_forall]
+    Set.ofPred_forall]
   refine MeasurableSet.biInter Set.countable_univ fun K _ => ?_
-  simp_rw [Set.setOf_exists, true_and]
+  simp_rw [Set.ofPred_exists, true_and]
   refine MeasurableSet.iUnion fun N => ?_
-  simp_rw [prod_image_image_eq, image_subset_iff, prod_subset_iff, Set.setOf_forall]
+  simp_rw [prod_image_image_eq, image_subset_iff, prod_subset_iff, Set.ofPred_forall]
   exact
     MeasurableSet.biInter (to_countable (u N)) fun i _ =>
       MeasurableSet.biInter (to_countable (u N)) fun j _ =>
@@ -1035,7 +1035,7 @@ theorem Measurable.tprod {f : ι → X → E} (h : ∀ i : ι, Measurable (f i))
     Measurable (fun x => ∏'[L] i : ι, f i x) := by
   let E := { x | Multipliable (f · x) L }
   have hE : MeasurableSet E := measurableSet_exists_tendsto (by fun_prop)
-  have h0 : (Eᶜ.restrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
+  have h0 : (Eᶜ.domRestrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
     funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
   refine measurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ measurable_const)
   refine measurable_of_tendsto_metrizable' L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)

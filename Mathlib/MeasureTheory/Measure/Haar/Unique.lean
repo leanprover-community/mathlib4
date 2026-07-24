@@ -293,7 +293,6 @@ theorem integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f) :
     ∫ x, f x ∂μ' = ∫ x, f x ∂(haarScalarFactor μ' μ • μ) := by
-  classical
   rcases h'f.eq_zero_or_locallyCompactSpace_of_group hf with Hf | Hf
   · simp [Hf]
   · simp only [haarScalarFactor, Hf, not_true_eq_false, ite_false]
@@ -742,7 +741,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
     · simp only [iUnion_subset_iff]
       intro a ac x hx
-      simp only [A, subset_def, mem_setOf_eq] at cA
+      simp only [A, subset_def, mem_ofPred_eq] at cA
       exact (cA _ ac).1 x hx
     · rintro x hx y hy hxy
       simp only [mem_iUnion, exists_prop] at hx hy

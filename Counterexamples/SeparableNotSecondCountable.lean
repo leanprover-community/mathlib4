@@ -45,7 +45,7 @@ theorem not_secondCountableTopology : ¬SecondCountableTopology (ℝ ×ₗ Bool)
   intro h
   have : {x : ℝ ×ₗ Bool | (ofLex x).2}.Countable := by
     simpa [Prod.Lex.covBy_iff, Bool.covBy_iff, exists_or, not_covBy, (Bool.le_true _).not_gt,
-      (Bool.false_le _).lt_iff_ne] using countable_setOf_covBy_left (α := ℝ ×ₗ Bool)
+      (Bool.false_le _).lt_iff_ne] using countable_setOfPred_covBy_left (α := ℝ ×ₗ Bool)
   refine not_countable_univ <| (this.image fun x ↦ (ofLex x).1).mono fun x _ ↦ ?_
   exact ⟨toLex (x, true), rfl, rfl⟩
 

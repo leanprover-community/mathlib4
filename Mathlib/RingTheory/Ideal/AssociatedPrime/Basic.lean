@@ -107,9 +107,6 @@ variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] 
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 
-@[deprecated (since := "2025-11-24")]
-alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
-
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
 instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.1
@@ -118,6 +115,7 @@ theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x : M, I = colon ⊥ {x} :=
   (⊥ : Submodule R M).isAssociatedPrime_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
   obtain ⟨x, rfl⟩ := h.2

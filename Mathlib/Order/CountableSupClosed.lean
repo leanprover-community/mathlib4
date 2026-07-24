@@ -229,7 +229,7 @@ lemma countableSupClosure_eq_sInter (s : Set α) :
     countableSupClosure s = ⋂₀ {t | s ⊆ t ∧ CountableSupClosed t} := by
   have : CountableSupClosed (⋂₀ {t | s ⊆ t ∧ CountableSupClosed t}) := by
     constructor
-    simp only [Set.subset_sInter_iff, Set.mem_setOf_eq, and_imp, Set.mem_sInter]
+    simp only [Set.subset_sInter_iff, Set.mem_ofPred_eq, and_imp, Set.mem_sInter]
     intro t ht ht_ne ht_c x hx t' hst' ht'
     exact ht'.isLUB_mem t (ht t' hst' ht') ht_ne ht_c x hx
   refine le_antisymm (countableSupClosure_min (by grind) (by grind)) (Set.sInter_subset_of_mem ?_)

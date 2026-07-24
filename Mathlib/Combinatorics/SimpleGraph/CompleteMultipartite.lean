@@ -74,7 +74,7 @@ protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
     (G.induce s).IsCompleteMultipartite := fun _u _v _w ↦ @hG _ _ _
 
 /-- The setoid given by non-adjacency -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
     ⟨(¬ G.Adj · ·), ⟨G.loopless, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
 
@@ -82,6 +82,7 @@ lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → 
     (completeMultipartiteGraph V).IsCompleteMultipartite := by
   simp_all [IsCompleteMultipartite]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The graph isomorphism from a graph `G` that `IsCompleteMultipartite` to the corresponding
 `completeMultipartiteGraph` (see also `isCompleteMultipartite_iff`) -/
 def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
@@ -227,6 +228,7 @@ def completeEquipartiteGraph.completeMultipartiteGraph :
     completeEquipartiteGraph r t ≃g completeMultipartiteGraph (const (Fin r) (Fin t)) :=
   { (Equiv.sigmaEquivProd (Fin r) (Fin t)).symm with map_rel_iff' := by simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `turanGraph`.
 
 The difference is that the former vertices are a product type whereas the latter vertices are
@@ -373,10 +375,12 @@ theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
 /-- The finset of vertices in a complete equipartite subgraph. -/
 def verts : Finset V := K.parts.disjiUnion id K.disjoint
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 /-- The finset of vertices in a complete equipartite subgraph as a `biUnion`. -/
 lemma verts_eq_biUnion : K.verts = K.parts.biUnion id := by rw [verts, disjiUnion_eq_biUnion]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- There are `r * t` vertices in a complete equipartite subgraph with `r` parts of size `t`. -/
 theorem card_verts : #K.verts = r * t := by
   simp_rw [verts, card_disjiUnion, id_eq, sum_congr rfl fun _ ↦ K.card_mem_parts, sum_const,
@@ -411,6 +415,7 @@ noncomputable def toCopy : Copy (completeEquipartiteGraph r t) G := by
     refine K.isCompleteBetween (fᵣ _).prop (fᵣ _).prop ?_ (fₜ _ _).prop (fₜ _ _).prop
     exact Subtype.ext_iff.ne.mp <| fᵣ.injective.ne hne
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A copy of a complete equipartite graph identifies a complete equipartite subgraph. -/
 def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSubgraph r t := by
   by_cases ht : t = 0
