@@ -5,11 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
-public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.LinearAlgebra.LinearIndependent.Algebra
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.OreLocalization.OreSet
 
 /-!
@@ -77,6 +77,22 @@ theorem IsLocalization.finrank_eq : finrank S N = finrank R N := by
 
 end
 
+variable {S} in
+theorem IsLocalization.linearIndepOn_finsetIntegerMultiple {A : Type*} [CommRing A] [Algebra S A]
+    [Algebra R A] [IsScalarTower R S A] (M : Submonoid S) [IsLocalization M A] [FaithfulSMul S A]
+    {s : Finset A} (hs : LinearIndepOn R id (s : Set A)) [DecidableEq S] :
+    LinearIndepOn R id (finsetIntegerMultiple M s : Set S) := by
+  classical
+  rw [← LinearIndepOn.id_image_algebraMap_iff (A := A),
+    finsetIntegerMultiple_image, ← s.coe_smul_finset]
+  rw [linearIndepOn_finset_iff] at hs ⊢
+  intro f h
+  rw [s.smul_finset_def, s.forall_mem_image]
+  apply hs
+  have inj := (IsLocalization.smul_bijective A (commonDenomOfFinset M s)).injective
+  rw [← inj.eq_iff, smul_zero, s.smul_sum, ← h, s.smul_finset_def, s.sum_image inj.injOn]
+  exact s.sum_congr rfl fun x hx ↦ smul_comm ..
+
 section
 
 variable (R N) [IsFractionRing R S]
@@ -91,11 +107,42 @@ theorem IsFractionRing.rank_right_eq : Module.rank S N = Module.rank R N :=
 /-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the finrank `finrank S N`
 of the right part of the tower equals the finrank `finrank R N` of the whole tower.
 
-See `IsFractionRing.rank_right_eq` for the rank version. -/
+See `IsFractionRing.rank_right_eq` for the rank version.
+See `IsFractionRing.finrank_left_eq` for the left version.
+See `IsFractionRing.finrank_eq` for the simultaneous version. -/
 theorem IsFractionRing.finrank_right_eq : finrank S N = finrank R N :=
   IsLocalization.finrank_eq S R⁰ le_rfl
 
 end
+
+variable (R) in
+open IsLocalization in
+/-- Given `IsScalarTower R S A`, if `A` is the fraction ring of `S`, then the finrank `finrank R S`
+of the left part of the tower equals the finrank `finrank R A` of the whole tower.
+
+See `IsFractionRing.finrank_right_eq` for the right version.
+See `IsFractionRing.finrank_eq` for the simultaneous version. -/
+theorem IsFractionRing.finrank_left_eq (A : Type*) [CommRing A] [Algebra S A] [Algebra R A]
+    [IsScalarTower R S A] [IsFractionRing S A] : Module.finrank R S = Module.finrank R A := by
+  nontriviality R
+  classical
+  apply Cardinal.toNat_eq_of_forall_le_iff
+  intro n
+  simp_rw [Module.le_rank_iff_exists_finset, LinearIndepOn]
+  constructor
+  · rintro ⟨s, rfl, hs⟩
+    let f : S ↪ A := ⟨algebraMap S A, FaithfulSMul.algebraMap_injective S A⟩
+    exact ⟨s.map f, s.card_map f,
+      (linearIndependent_equiv (s.equivMap f)).mp (LinearIndependent.algebraMap_comp_iff.mpr hs)⟩
+  · rintro ⟨s, rfl, hs⟩
+    exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s,
+      linearIndepOn_finsetIntegerMultiple S⁰ hs⟩
+
+variable (R) in
+theorem IsFractionRing.finrank_eq (R' S' : Type*) [CommRing R'] [CommRing S'] [Module R' S']
+    [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
+    [IsFractionRing R R'] [IsFractionRing S S'] : Module.finrank R' S' = Module.finrank R S :=
+  (finrank_right_eq R R' S').trans (finrank_left_eq R S S').symm
 
 variable (R M) in
 theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
