@@ -1121,24 +1121,29 @@ namespace Walk
 variable {G} {u v : V} {H : SimpleGraph V}
 variable {p : G.Walk u v}
 
-set_option backward.isDefEq.respectTransparency.types false in
-protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
-    (p.transfer H hp).IsPath := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih =>
-    simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
-    exact ⟨ih _ pp.1, pp.2⟩
+@[simp]
+theorem isTrail_transfer (h) : (p.transfer H h).IsTrail ↔ p.IsTrail := by
+  simp [isTrail_def]
 
-set_option backward.isDefEq.respectTransparency.types false in
-protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
-    (q.transfer H hq).IsCycle := by
-  cases q with
-  | nil => simp at qc
-  | cons _ q =>
-    simp only [edges_cons, List.mem_cons, forall_eq_or_imp] at hq
-    simp only [Walk.transfer, cons_isCycle_iff, edges_transfer q hq.2] at qc ⊢
-    exact ⟨qc.1.transfer hq.2, qc.2⟩
+protected alias ⟨_, IsTrail.transfer⟩ := isTrail_transfer
+
+@[simp]
+theorem isPath_transfer (h) : (p.transfer H h).IsPath ↔ p.IsPath := by
+  simp [isPath_def]
+
+protected alias ⟨_, IsPath.transfer⟩ := isPath_transfer
+
+@[simp]
+theorem isCircuit_transfer {p : G.Walk v v} (h) : (p.transfer H h).IsCircuit ↔ p.IsCircuit := by
+  simp [isCircuit_def]
+
+protected alias ⟨_, IsCircuit.transfer⟩ := isCircuit_transfer
+
+@[simp]
+theorem isCycle_transfer {p : G.Walk v v} (h) : (p.transfer H h).IsCycle ↔ p.IsCycle := by
+  simp [isCycle_def]
+
+protected alias ⟨_, IsCycle.transfer⟩ := isCycle_transfer
 
 end Walk
 
