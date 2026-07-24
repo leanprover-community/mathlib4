@@ -72,6 +72,29 @@ lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
   Coinvariants.hom_ext <| TensorProduct.ext <| MonoidAlgebra.lhom_ext' fun h =>
     LinearMap.ext_ring <| hfg h
 
+variable {φ ρ} in
+@[elab_as_elim]
+lemma IndV.induction_on {p : IndV φ ρ → Prop} (v : IndV φ ρ) (mk : ∀ h a, p (IndV.mk φ ρ h a))
+    (add : ∀ x y : IndV φ ρ, p x → p y → p (x + y)) : p v := by
+  refine Representation.Coinvariants.induction_on v ?_
+  intro v
+  induction v with
+  | zero => simpa using mk 1 0
+  | tmul m a =>
+      refine MonoidAlgebra.induction_linear m ?_ ?_ ?_
+      · simpa using mk 1 0
+      · intro _ _ hx hy
+        rw [TensorProduct.add_tmul, map_add]
+        exact add _ _ hx hy
+      · intro h r
+        rw [← mul_one r, ← MonoidAlgebra.smul_single', TensorProduct.smul_tmul]
+        exact mk h (r • a)
+  | add _ _ hx hy => simpa [map_add] using add _ _ hx hy
+
+lemma IndV.mk_map_inv_mul (g : G) (h : H) (a : A) :
+    IndV.mk φ ρ ((φ g)⁻¹ * h) a = IndV.mk φ ρ h (ρ g a) := by
+  simpa using (Coinvariants.mk_inv_tmul ((leftRegular k H).comp φ) ρ (.single h 1) a g)
+
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
 `(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
@@ -86,6 +109,11 @@ noncomputable def ind : Representation k H (IndV φ ρ) where
 lemma ind_mk (h₁ h₂ : H) (a : A) :
     ind φ ρ h₁ (IndV.mk _ _ h₂ a) = IndV.mk _ _ (h₂ * h₁⁻¹) a := by
   simp
+
+lemma ind_map_conj_mk (g : G) (h : H) (a : A) :
+    ind φ ρ (h⁻¹ * (φ g) * h) (IndV.mk _ _ h a) = IndV.mk _ _ h (ρ g a) := by
+  rw [ind_mk, mul_inv_rev, mul_inv_rev, inv_inv, ← mul_assoc, mul_inv_cancel, one_mul,
+    IndV.mk_map_inv_mul]
 
 end Representation
 

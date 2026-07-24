@@ -539,12 +539,30 @@ instance preservesColimits_forget :
     Limits.PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.preservesColimits_of_natIso (forgetNatIsoActionForget k G).symm
 
+variable {k G}
+
+/-- The concrete bicone of `A.ρ.prod B.ρ`. -/
+@[implicit_reducible]
+def binaryBicone (A B : Rep.{w} k G) :
+    Limits.BinaryBicone A B :=
+  ⟨Rep.of (X := A.V × B.V) (A.ρ.prod B.ρ), Rep.ofHom (.fst k A.ρ B.ρ), Rep.ofHom (.snd k A.ρ B.ρ),
+    Rep.ofHom (.inl k A.ρ B.ρ), Rep.ofHom (.inr k A.ρ B.ρ), by ext1; simp, by ext1; simp [zero_hom],
+    by ext1; simp [zero_hom], by ext1; simp⟩
+
+/-- The concrete binary bicone in `Rep` is a bilimit. -/
+def binaryBiconeIsBilimit (A B : Rep.{w} k G) :
+    (binaryBicone A B).IsBilimit :=
+  Limits.isBinaryBilimitOfTotal _ <| by
+    ext1; unfold binaryBicone; simp [add_hom]
+
 instance : Limits.HasBinaryBiproducts (Rep.{w} k G) where
-  has_binary_biproduct A B := Limits.hasBinaryBiproduct_of_total
-    ⟨Rep.of (X := A.V × B.V) (A.ρ.prod B.ρ), Rep.ofHom (.fst k A.ρ B.ρ), Rep.ofHom (.snd k A.ρ B.ρ),
-      Rep.ofHom (.inl k A.ρ B.ρ), Rep.ofHom (.inr k A.ρ B.ρ), by ext1; simp,
-      by ext1; simp [zero_hom], by ext1; simp [zero_hom], by ext1; simp⟩ <| by
-    ext1; simp [Rep.add_hom]
+  has_binary_biproduct A B := Limits.HasBinaryBiproduct.mk
+    ⟨binaryBicone A B, binaryBiconeIsBilimit A B⟩
+
+/-- The canonical isomorphism from the concrete product to the abstract product. -/
+def prodIsoProduct (A B : Rep.{w} k G) :
+    Rep.of (A.ρ.prod B.ρ) ≅ A ⨯ B :=
+  (binaryBiconeIsBilimit A B).isLimit.conePointUniqueUpToIso (Limits.limit.isLimit _)
 
 instance : Limits.HasZeroObject (Rep.{w} k G) where
   zero := ⟨Rep.trivial k G PUnit, {
@@ -570,13 +588,13 @@ instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCa
 instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.reflectsColimits_of_reflectsIsomorphisms
 
-variable {k G} in
+instance : Abelian (Rep.{w} k G) := abelianOfEquivalence (RepToAction k G)
+
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).epi_of_epi_map ((ModuleCat.epi_iff_surjective <|
     (forget₂ _ _).map f).2 h)⟩
 
-variable {k G} in
 theorem mono_iff_injective (f : A ⟶ B) : Mono f ↔ Function.Injective f.hom :=
   ⟨fun _ => (ModuleCat.mono_iff_injective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
