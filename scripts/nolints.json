@@ -156,6 +156,7 @@
  ["defsWithUnderscore", "IndexedPartition.simpleFunc_piecewise"],
  ["defsWithUnderscore", "Int.le_induction"],
  ["defsWithUnderscore", "Int.le_induction_down"],
+ ["defsWithUnderscore", "IntermediateField.restrict_algEquiv"],
  ["defsWithUnderscore", "IsLocalization.invertible_mk'_one"],
  ["defsWithUnderscore", "IsUltrametricDist.ball_openAddSubgroup"],
  ["defsWithUnderscore", "IsUltrametricDist.ball_openSubgroup"],
