@@ -216,7 +216,7 @@ version.
 
 (This is sometimes known as the left snake equation.) -/
 lemma lTensor_counit_comp_left_comp_rTensor_algebraLinearMap :
-    lT A ε ∘ₗ left R A ∘ₗ rT A η[R] = (TensorProduct.comm _ _ _).toLinearMap := by
+    lT A ε ∘ₗ left R A ∘ₗ rT A η[R] = (TensorProduct.comm R R A).toLinearMap := by
   ext; simp [left_eq_comul_comp_mul']
 
 /-- Composing the right Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
@@ -225,7 +225,7 @@ version.
 
 (This is sometimes known as the right snake equation.) -/
 lemma rTensor_counit_comp_right_comp_lTensor_algebraLinearMap :
-    rT A ε ∘ₗ right R A ∘ₗ lT A η[R] = (TensorProduct.comm _ _ _).toLinearMap := by
+    rT A ε ∘ₗ right R A ∘ₗ lT A η[R] = (TensorProduct.comm R A R).toLinearMap := by
   ext; simp [right_eq_comul_comp_mul']
 
 end Algebra
