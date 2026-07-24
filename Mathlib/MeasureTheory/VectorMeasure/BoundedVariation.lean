@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 
 import Mathlib.MeasureTheory.VectorMeasure.AddContent
@@ -28,16 +29,21 @@ dominated by a finite measure. For this, we can use the Stieltjes measure associ
 variation of `f.rightLim`. The extension we get is not exactly the desired vector measure, as we
 need to tweak things if there is a bot element `a`: the previous vector measure gives to `{a}` the
 mass `0` instead of the desired `f.rightLim a - f a`, so we add a Dirac mass to correct this defect.
+
+We also study the variation of this vector measure. We show that it is always finite, and we
+control its variation on the different kinds of intervals in terms of the `eVariationOn` of `f`
+(for upper bounds) or `f.leftLim` or `f.rightLim` (for exact formulas).
 -/
 
 @[expose] public section
 
-open Filter Set MeasureTheory MeasurableSpace MeasureTheory
+open Filter Set MeasureTheory MeasurableSpace
 open scoped symmDiff Topology NNReal ENNReal
 
 variable {α : Type*} [LinearOrder α] [DenselyOrdered α] [TopologicalSpace α] [OrderTopology α]
   [SecondCountableTopology α] [CompactIccSpace α] [hα : MeasurableSpace α] [BorelSpace α]
-  {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+  {E F G : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+  [NormedAddCommGroup F] [NormedAddCommGroup G]
   {f : α → E} {a b : α}
 
 namespace BoundedVariationOn
@@ -131,7 +137,7 @@ lemma vectorMeasure_Ioc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     · simp [hx]
   simp [vectorMeasure, A, B]
 
-lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
+@[simp] lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure {a} = f.rightLim a - f.leftLim a := by
   by_cases ha : IsBot a
   · have h : ∃ x, IsBot x := ⟨a, ha⟩
@@ -269,5 +275,323 @@ theorem vectorMeasure_univ (hf : BoundedVariationOn f univ) :
   rw [← Iio_union_Ici (a := hα.some), VectorMeasure.of_union (by simp) measurableSet_Iio
     measurableSet_Ici, hf.vectorMeasure_Iio, hf.vectorMeasure_Ici]
   abel
+
+open scoped Classical in
+/-- Auxiliary measure, which will be proved to coincide with the variation of the vector measure
+associated to the bounded variation function `f`. Do not use: use instead the properties
+of `hf.vectorMeasure.variation` which are deduced from this equality. -/
+private noncomputable def variationAux (hf : BoundedVariationOn f univ) : Measure α :=
+  hf.measureAux +
+  (if h : ∃ x, IsBot x then ‖f.rightLim h.choose - f h.choose‖₊ • Measure.dirac h.choose else 0)
+
+private instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.variationAux := by
+  classical
+  have : IsFiniteMeasure (if h : ∃ x, IsBot x then ‖Function.rightLim f h.choose - f h.choose‖₊
+      • Measure.dirac h.choose else 0) := by split_ifs <;> infer_instance
+  exact isFiniteMeasureAdd
+
+open VectorMeasure
+
+private lemma variation_vectorMeasure_le_variationAux (hf : BoundedVariationOn f univ) :
+    hf.vectorMeasure.variation ≤ hf.variationAux := by
+  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  simp only [vectorMeasure, add_apply, variationAux, Measure.coe_add, Pi.add_apply]
+  grw [enorm_add_le]
+  gcongr
+  · apply hf.exists_vectorMeasure_le_measureAux.choose_spec.2.2
+  · split_ifs with h
+    · by_cases hx : h.choose ∈ s <;> simp [hx, hs]
+    · simp
+
+private lemma variationAux_Ioc_le (hf : BoundedVariationOn f univ) {a b : α} (h : a ≤ b) :
+    hf.variationAux (Ioc a b) ≤ eVariationOn f.rightLim (Ioc a b) := by
+  classical
+  have : (if h : ∃ x, IsBot x then ‖Function.rightLim f h.choose - f h.choose‖₊ •
+      Measure.dirac h.choose else 0) (Ioc a b) = 0 := by
+    split_ifs with h
+    · simp [not_lt.mpr (h.choose_spec a)]
+    · simp
+  have hα : Nonempty α := ⟨a⟩
+  simp only [variationAux, measureAux, hα, ↓reduceDIte, stieltjesFunctionRightLim, Measure.coe_add,
+    Pi.add_apply, StieltjesFunction.measure_Ioc, this, add_zero]
+  rw [← variationOnFromTo.add hf.rightLim.locallyBoundedVariationOn (mem_univ hα.some) (mem_univ a)
+    (mem_univ b), add_sub_cancel_left, variationOnFromTo.eq_of_le _ _ h, univ_inter,
+    ENNReal.ofReal_toReal (hf.rightLim.mono (subset_univ _)),
+    eVariationOn.eVariationOn_Ioc_eq_Icc_of_continuousWithinAt
+      (continuousWithinAt_rightLim_Ici (hf.tendsto_rightLim a))]
+
+private lemma eVariationOn_Ioc_le_variation (hf : BoundedVariationOn f univ) {a b : α} :
+    eVariationOn f.rightLim (Ioc a b) ≤ hf.vectorMeasure.variation (Ioc a b) := by
+  simp only [eVariationOn, iSup_le_iff, Prod.forall, Subtype.forall, mem_Ioc, and_imp,
+    edist_eq_enorm_sub]
+  intro n u u_mono u_mem
+  calc ∑ i ∈ Finset.range n, ‖Function.rightLim f (u (i + 1)) - Function.rightLim f (u i)‖ₑ
+  _ ≤ ∑ i ∈ Finset.range n, hf.vectorMeasure.variation (Ioc (u i) (u (i + 1))) := by
+    gcongr with i
+    grw [← enorm_measure_le_variation, vectorMeasure_Ioc _ (u_mono (by grind))]
+  _ = hf.vectorMeasure.variation (⋃ i ∈ Finset.range n, Ioc (u i) (u (i + 1))) := by
+    rw [measure_biUnion_finset ?_ (fun i hi ↦ measurableSet_Ioc)]
+    rintro i - j - hij
+    simp [Function.onFun]
+    grind [Monotone]
+  _ ≤ hf.vectorMeasure.variation (Ioc a b) := measure_mono (by simp; grind)
+
+private lemma variationAux_Ioc (hf : BoundedVariationOn f univ) {a b : α} (h : a ≤ b) :
+    hf.variationAux (Ioc a b) = hf.vectorMeasure.variation (Ioc a b) :=
+  le_antisymm (by grw [variationAux_Ioc_le hf h, eVariationOn_Ioc_le_variation hf])
+    (variation_vectorMeasure_le_variationAux _ _)
+
+lemma variation_vectorMeasure_Ioc (hf : BoundedVariationOn f univ) {a b : α} :
+    hf.vectorMeasure.variation (Ioc a b) = eVariationOn f.rightLim (Ioc a b) := by
+  rcases le_or_gt a b with h | h
+  · exact le_antisymm (by grw [← variationAux_Ioc hf h, variationAux_Ioc_le hf h])
+      (eVariationOn_Ioc_le_variation hf)
+  · have : Ioc a b = ∅ := by grind
+    simp [this]
+
+lemma variation_vectorMeasure_singleton (hf : BoundedVariationOn f univ) {a : α} :
+    hf.vectorMeasure.variation {a} = ‖f.rightLim a - f.leftLim a‖ₑ := by
+  simp
+
+private lemma variationAux_singleton (hf : BoundedVariationOn f univ) {a : α} :
+    hf.variationAux {a} = hf.vectorMeasure.variation {a} := by
+  classical
+  have hα : Nonempty α := ⟨a⟩
+  simp only [variationAux, Measure.coe_add, Pi.add_apply, variation_vectorMeasure_singleton]
+  by_cases ha : IsBot a
+  · have hx : ∃ x, IsBot x := ⟨a, ha⟩
+    have A : hx.choose = a := le_antisymm (hx.choose_spec _) (ha _)
+    suffices hf.measureAux {a} = 0 by simpa [hx, A, leftLim_eq_of_isBot ha, ← enorm_eq_nnnorm]
+    simp [measureAux, hα, leftLim_eq_of_isBot ha]
+  have : (𝓝[<] a).NeBot := nhdsLT_neBot_of_exists_lt (by simpa [IsBot] using ha)
+  have : (if h : ∃ x, IsBot x then ‖Function.rightLim f h.choose - f h.choose‖₊
+      • Measure.dirac h.choose else 0) {a} = 0 := by
+    split_ifs with h
+    · have : h.choose ≠ a := by grind
+      simp [this]
+    · simp
+  simp [measureAux, hα, this, variationOnFromTo.leftLim_eq hf.rightLim, dist_eq_norm_sub,
+    leftLim_rightLim (hf.tendsto_leftLim _), stieltjesFunctionRightLim]
+
+private lemma variationAux_eq_variation_vectorMeasure (hf : BoundedVariationOn f univ) :
+    hf.variationAux = hf.vectorMeasure.variation := by
+  apply Measure.ext_of_Icc _ _ (fun a b hab ↦ ?_)
+  rw [← Icc_union_Ioc_eq_Icc le_rfl hab, measure_union (by grind) measurableSet_Ioc,
+    measure_union (by grind) measurableSet_Ioc]
+  simp [variationAux_singleton hf, variationAux_Ioc hf hab]
+
+instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.vectorMeasure.variation := by
+  rw [← variationAux_eq_variation_vectorMeasure hf]
+  infer_instance
+
+lemma variation_vectorMeasure_Ioo_right
+    (hf : BoundedVariationOn f univ) {a b : α} :
+    hf.vectorMeasure.variation (Ioo a b) = eVariationOn f.rightLim (Ioo a b) := by
+  rcases le_or_gt b a with hab | hab
+  · simp [hab]
+  have : (𝓝[<] b).NeBot := nhdsLT_neBot_of_exists_lt ⟨a, hab⟩
+  have A : hf.vectorMeasure.variation (Ioc a b) = eVariationOn f.rightLim (Ioc a b) :=
+    variation_vectorMeasure_Ioc _
+  have B : eVariationOn f.rightLim (Ioc a b) = eVariationOn f.rightLim (Ioo a b) +
+      edist (f.rightLim b) (f.leftLim b) := by
+    rw [show Ioc a b = Ioc a b ∩ Iic b by grind,
+      eVariationOn.eVariationOn_on_inter_Iic_eq_Iio_add_edist (l := f.leftLim b),
+      show Ioc a b ∩ Iio b = Ioo a b by grind]
+    · have : 𝓝[Ioc a b ∩ Iio b] b = 𝓝[<] b := nhdsWithin_inter_of_mem (Ioc_mem_nhdsLT hab)
+      rwa [this]
+    · grind
+    · rw [← leftLim_rightLim (hf.tendsto_leftLim _)]
+      apply (hf.rightLim.tendsto_leftLim b).mono_left
+      exact nhdsWithin_mono _ inter_subset_right
+  have C : hf.vectorMeasure.variation (Ioc a b) =
+      hf.vectorMeasure.variation (Ioo a b) + ‖f.rightLim b - f.leftLim b‖ₑ := by
+    rw [show Ioc a b = Ioo a b ∪ {b} by grind, measure_union (by grind)
+      (measurableSet_singleton _), variation_vectorMeasure_singleton]
+  rwa [B, C, edist_eq_enorm_sub, ENNReal.add_left_inj (by simp)] at A
+
+lemma variation_vectorMeasure_Ioo_left
+    (hf : BoundedVariationOn f univ) {a b : α} :
+    hf.vectorMeasure.variation (Ioo a b) = eVariationOn f.leftLim (Ioo a b) := by
+  rw [variation_vectorMeasure_Ioo_right]
+  apply le_antisymm
+  · have : eVariationOn f.rightLim (Ioo a b) =  eVariationOn f.leftLim.rightLim (Ioo a b) := by
+      apply eVariationOn.congr
+      intro x hx
+      have : (𝓝[>] x).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hx.2⟩
+      exact (rightLim_leftLim (hf.tendsto_rightLim _)).symm
+    rw [this]
+    exact eVariationOn.eVariationOn_rightLim_le isOpen_Ioo
+  · have : eVariationOn f.leftLim (Ioo a b) =  eVariationOn f.rightLim.leftLim (Ioo a b) := by
+      apply eVariationOn.congr
+      intro x hx
+      have : (𝓝[<] x).NeBot := nhdsLT_neBot_of_exists_lt ⟨a, hx.1⟩
+      exact (leftLim_rightLim (hf.tendsto_leftLim _)).symm
+    rw [this]
+    exact eVariationOn.eVariationOn_leftLim_le isOpen_Ioo
+
+lemma variation_vectorMeasure_Ico (hf : BoundedVariationOn f univ) {a b : α} :
+    hf.vectorMeasure.variation (Ico a b) = eVariationOn f.leftLim (Ico a b) := by
+  rcases le_or_gt b a with hab | hab
+  · simp [hab]
+  have : (𝓝[>] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
+  have A : eVariationOn f.leftLim (Ico a b) = eVariationOn f.leftLim (Ioo a b) +
+      edist (f.rightLim a) (f.leftLim a) := by
+    rw [show Ico a b = Ico a b ∩ Ici a by grind,
+      eVariationOn.eVariationOn_on_inter_Ici_eq_Ioi_add_edist (l := f.rightLim a),
+      show Ico a b ∩ Ioi a = Ioo a b by grind, edist_comm]
+    · have : 𝓝[Ico a b ∩ Ioi a] a = 𝓝[>] a := nhdsWithin_inter_of_mem (Ico_mem_nhdsGT hab)
+      rwa [this]
+    · grind
+    · rw [← rightLim_leftLim (hf.tendsto_rightLim _)]
+      apply (hf.leftLim.tendsto_rightLim a).mono_left
+      exact nhdsWithin_mono _ inter_subset_right
+  have B : hf.vectorMeasure.variation (Ico a b) =
+      hf.vectorMeasure.variation (Ioo a b) + ‖f.rightLim a - f.leftLim a‖ₑ := by
+    rw [show Ico a b = Ioo a b ∪ {a} by grind, measure_union (by grind)
+      (measurableSet_singleton _), variation_vectorMeasure_singleton]
+  rw [A, B, edist_eq_enorm_sub, variation_vectorMeasure_Ioo_left]
+
+lemma variation_vectorMeasure_Ioi (hf : BoundedVariationOn f univ) {a : α} :
+    hf.vectorMeasure.variation (Ioi a) = eVariationOn f.rightLim (Ioi a) := by
+  by_cases hb : ∃ (b : α), IsTop b
+  · rcases hb with ⟨b, hb⟩
+    rw [show Ioi a = Ioc a b by grind [IsTop], variation_vectorMeasure_Ioc]
+  apply le_antisymm
+  · have : Nonempty α := ⟨a⟩
+    obtain ⟨u, u_mono, hu⟩ : ∃ u, Monotone u ∧ Tendsto u atTop atTop :=
+      Filter.exists_seq_monotone_tendsto_atTop_atTop α
+    have A : Tendsto (fun n ↦ hf.vectorMeasure.variation (Ioc a (u n))) atTop
+        (𝓝 (hf.vectorMeasure.variation (Ioi a))) := by
+      have : Ioi a = ⋃ n, Ioc a (u n) := by
+        apply le_antisymm ?_ (by simp [Ioc_subset_Ioi_self])
+        intro x (hx : a < x)
+        simpa [hx] using (hu.eventually (Ici_mem_atTop x)).exists
+      rw [this]
+      exact tendsto_measure_iUnion_atTop (fun i j hij x hx ↦ by grind [Monotone])
+    apply le_of_tendsto A
+    filter_upwards with n
+    grw [variation_vectorMeasure_Ioc, eVariationOn.mono]
+    grind
+  · simp only [eVariationOn, iSup_le_iff, Prod.forall, Subtype.forall, mem_Ioi, and_imp]
+    intro n u u_mono hu
+    obtain ⟨b, hb⟩ : ∃ b, u n < b := by
+      simp only [IsTop, not_exists, not_forall, not_le] at hb
+      exact hb (u n)
+    apply (eVariationOn.sum_le_of_monotoneOn_Iic (s := Ioo a b) (u_mono.monotoneOn _)
+      (by grind [Monotone])).trans
+    rw [← variation_vectorMeasure_Ioo_right hf]
+    exact measure_mono Ioo_subset_Ioi_self
+
+lemma variation_vectorMeasure_Iio (hf : BoundedVariationOn f univ) {a : α} :
+    hf.vectorMeasure.variation (Iio a) = eVariationOn f.leftLim (Iio a) := by
+  by_cases hb : ∃ (b : α), IsBot b
+  · rcases hb with ⟨b, hb⟩
+    rw [show Iio a = Ico b a by grind [IsBot], variation_vectorMeasure_Ico]
+  apply le_antisymm
+  · have : Nonempty α := ⟨a⟩
+    obtain ⟨u, u_mono, hu⟩ : ∃ u, Antitone u ∧ Tendsto u atTop atBot :=
+      Filter.exists_seq_antitone_tendsto_atTop_atBot α
+    have A : Tendsto (fun n ↦ hf.vectorMeasure.variation (Ico (u n) a)) atTop
+        (𝓝 (hf.vectorMeasure.variation (Iio a))) := by
+      have : Iio a = ⋃ n, Ico (u n) a := by
+        apply le_antisymm ?_ (by simp [Ico_subset_Iio_self])
+        intro x (hx : x < a)
+        simpa [hx] using (hu.eventually (Iic_mem_atBot x)).exists
+      rw [this]
+      exact tendsto_measure_iUnion_atTop (fun i j hij x hx ↦ by grind [Antitone])
+    apply le_of_tendsto A
+    filter_upwards with n
+    grw [variation_vectorMeasure_Ico, eVariationOn.mono]
+    grind
+  · simp only [eVariationOn, iSup_le_iff, Prod.forall, Subtype.forall, mem_Iio, and_imp]
+    intro n u u_mono hu
+    obtain ⟨b, hb⟩ : ∃ b, b < u 0 := by
+      simp only [IsBot, not_exists, not_forall, not_le] at hb
+      exact hb (u 0)
+    apply (eVariationOn.sum_le_of_monotoneOn_Iic (s := Ioo b a) (u_mono.monotoneOn _) ?_).trans
+    · rw [← variation_vectorMeasure_Ioo_left hf]
+      exact measure_mono Ioo_subset_Iio_self
+    · intro i hi
+      have : u 0 ≤ u i := u_mono (Nat.zero_le i)
+      grind [Monotone]
+
+lemma variation_vectorMeasure_Ioo_le (hf : BoundedVariationOn f univ) {a b : α} :
+    hf.vectorMeasure.variation (Ioo a b) ≤ eVariationOn f (Ioo a b) := by
+  rw [variation_vectorMeasure_Ioo_right]
+  exact eVariationOn.eVariationOn_rightLim_le isOpen_Ioo
+
+lemma variation_vectorMeasure_Ioc_le (hf : BoundedVariationOn f univ) {a b : α} :
+    hf.vectorMeasure.variation (Ioc a b) ≤
+      eVariationOn f (Ioo a b) + ‖f.rightLim b - f.leftLim b‖ₑ := by
+  rcases le_or_gt b a with hab | hab
+  · simp [hab]
+  grw [show Ioc a b = Ioo a b ∪ {b} by grind, measure_union (by grind)
+    (measurableSet_singleton _), variation_vectorMeasure_singleton, variation_vectorMeasure_Ioo_le]
+
+lemma variation_vectorMeasure_Ico_le (hf : BoundedVariationOn f univ) {a b : α} :
+    hf.vectorMeasure.variation (Ico a b) ≤
+      eVariationOn f (Ioo a b) + ‖f.rightLim a - f.leftLim a‖ₑ := by
+  rcases le_or_gt b a with hab | hab
+  · simp [hab]
+  grw [show Ico a b = Ioo a b ∪ {a} by grind, measure_union (by grind)
+    (measurableSet_singleton _), variation_vectorMeasure_singleton,
+    variation_vectorMeasure_Ioo_le]
+
+lemma variation_vectorMeasure_Icc_le (hf : BoundedVariationOn f univ) {a b : α} :
+    hf.vectorMeasure.variation (Icc a b) ≤
+      eVariationOn f (Ioo a b) + ‖f.rightLim a - f.leftLim a‖ₑ + ‖f.rightLim b - f.leftLim b‖ₑ := by
+  rcases lt_or_ge b a with hab | hab
+  · simp [hab]
+  grw [show Icc a b = Ico a b ∪ {b} by grind, measure_union (by grind)
+    (measurableSet_singleton _), variation_vectorMeasure_singleton,
+    variation_vectorMeasure_Ico_le]
+
+lemma variation_vectorMeasure_Ioi_le (hf : BoundedVariationOn f univ) {a : α} :
+    hf.vectorMeasure.variation (Ioi a) ≤ eVariationOn f (Ioi a) := by
+  grw [variation_vectorMeasure_Ioi, eVariationOn.eVariationOn_rightLim_le isOpen_Ioi]
+
+lemma variation_vectorMeasure_Ici_le (hf : BoundedVariationOn f univ) {a : α} :
+    hf.vectorMeasure.variation (Ici a) ≤
+      eVariationOn f (Ioi a) + ‖f.rightLim a - f.leftLim a‖ₑ := by
+  grw [show Ici a = Ioi a ∪ {a} by grind, measure_union (by grind)
+    (measurableSet_singleton _), variation_vectorMeasure_singleton,
+    variation_vectorMeasure_Ioi_le]
+
+lemma variation_vectorMeasure_Iio_le (hf : BoundedVariationOn f univ) {a : α} :
+    hf.vectorMeasure.variation (Iio a) ≤ eVariationOn f (Iio a) := by
+  grw [variation_vectorMeasure_Iio, eVariationOn.eVariationOn_leftLim_le isOpen_Iio]
+
+lemma variation_vectorMeasure_Iic_le (hf : BoundedVariationOn f univ) {a : α} :
+    hf.vectorMeasure.variation (Iic a) ≤
+      eVariationOn f (Iio a) + ‖f.rightLim a - f.leftLim a‖ₑ := by
+  grw [show Iic a = Iio a ∪ {a} by grind, measure_union (by grind)
+    (measurableSet_singleton _), variation_vectorMeasure_singleton,
+    variation_vectorMeasure_Iio_le]
+
+lemma variation_vectorMeasure_univ_le (hf : BoundedVariationOn f univ) :
+    hf.vectorMeasure.variation univ ≤ eVariationOn f univ := by
+  rcases isEmpty_or_nonempty α with hα | ⟨⟨a⟩⟩
+  · have : (univ : Set α) = ∅ := Subsingleton.elim _ _
+    simp [this]
+  calc hf.vectorMeasure.variation univ
+  _ = hf.vectorMeasure.variation (Iio a ∪ {a} ∪ Ioi a) := by simp
+  _ = hf.vectorMeasure.variation (Iio a) + hf.vectorMeasure.variation {a}
+        + hf.vectorMeasure.variation (Ioi a) := by rw [measure_union (by grind) measurableSet_Ioi,
+    measure_union (by grind) (measurableSet_singleton _)]
+  _ ≤ eVariationOn f (Iio a) + (‖f a - f.rightLim a‖ₑ + ‖f a - f.leftLim a‖ₑ)
+      + eVariationOn f (Ioi a) := by
+    gcongr
+    · exact variation_vectorMeasure_Iio_le _
+    · rw [variation_vectorMeasure_singleton]
+      simp only [← edist_eq_enorm_sub]
+      apply edist_triangle_left
+    · exact variation_vectorMeasure_Ioi_le _
+  _ = (eVariationOn f (Iio a) + ‖f a - f.leftLim a‖ₑ)
+      + (eVariationOn f (Ioi a) + ‖f a - f.rightLim a‖ₑ) := by abel
+  _ = eVariationOn f (Iic a) + eVariationOn f (Ici a) := by
+    rw [← edist_eq_enorm_sub, ← edist_eq_enorm_sub, hf.eVariationOn_Ici_eq_Ioi_add_edist,
+      hf.eVariationOn_Iic_eq_Iio_add_edist]
+  _ = eVariationOn f univ := by
+    rw [← eVariationOn.union (x := a) _ isGreatest_Iic isLeast_Ici, Iic_union_Ici]
 
 end BoundedVariationOn
