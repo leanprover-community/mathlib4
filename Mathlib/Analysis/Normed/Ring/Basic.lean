@@ -898,12 +898,6 @@ namespace SubringClass
 
 variable {S R : Type*} [SetLike S R]
 
-instance toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) : SeminormedRing s :=
-  fast_instance% SeminormedRing.induced s R (SubringClass.subtype s)
-
-instance toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
-  fast_instance% NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
-
 instance toSeminormedCommRing [SeminormedCommRing R] [_h : SubringClass S R] (s : S) :
     SeminormedCommRing s :=
   fast_instance% SeminormedCommRing.induced s R (SubringClass.subtype s)
