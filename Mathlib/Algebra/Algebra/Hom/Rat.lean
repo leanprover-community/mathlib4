@@ -58,14 +58,13 @@ def toRatAlgEquiv (f : R ≃+* S) : R ≃ₐ[ℚ] S where
   __ := f.toRingHom.toRatAlgHom
 
 @[simp]
-theorem toRatAlgEquiv_coe (f : R ≃+* S) : ⇑f.toRatAlgEquiv = ⇑f := rfl
+theorem coe_toRatAlgEquiv (f : R ≃+* S) : ⇑f.toRatAlgEquiv = ⇑f := rfl
 
 @[simp]
 theorem toRingEquiv_toRatAlgEquiv (f : R ≃+* S) :
     f.toRatAlgEquiv = f :=
   rfl
 
-@[simp]
 theorem toAlgHom_toRatAlgEquiv (f : R ≃+* S) :
     f.toRatAlgEquiv.toAlgHom = (f : R →+* S).toRatAlgHom :=
   rfl

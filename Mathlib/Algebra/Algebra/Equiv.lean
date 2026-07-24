@@ -788,10 +788,9 @@ def toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) : R ≃ₐ[ℕ] S wh
   __ := f.toRingHom.toNatAlgHom
 
 @[simp]
-lemma toNatAlgEquiv_coe [Semiring R] [Semiring S] (f : R ≃+* S) :
+lemma coe_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
     ⇑f.toNatAlgEquiv = ⇑f := rfl
 
-@[simp]
 lemma toAlgHom_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
     f.toNatAlgEquiv.toAlgHom = (f : R →+* S).toNatAlgHom := rfl
 
@@ -817,10 +816,9 @@ def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S where
   __ := f.toRingHom.toIntAlgHom
 
 @[simp]
-lemma toIntAlgEquiv_coe [Ring R] [Ring S] (f : R ≃+* S) :
+lemma coe_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
     ⇑f.toIntAlgEquiv = ⇑f := rfl
 
-@[simp]
 lemma toAlgHom_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
     f.toIntAlgEquiv.toAlgHom = (f : R →+* S).toIntAlgHom := rfl
 
