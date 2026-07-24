@@ -167,8 +167,7 @@ theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (
 
 theorem Partrec.dom_re {α β} [Primcodable α] [Primcodable β] {f : α →. β} (h : Partrec f) :
     REPred fun a => (f a).Dom :=
-  (h.map (Computable.const ()).to₂).of_eq fun n => Part.ext fun _ => by
-    simp [← Part.dom_iff_mem]
+  (h.map (Computable.const ()).to₂).of_eq fun n => Part.ext fun _ => by simp [← Part.dom_iff_mem]
 
 theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : ComputablePred p)
     (H : ∀ a, p a ↔ q a) : ComputablePred q :=

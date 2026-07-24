@@ -125,29 +125,23 @@ def Code.eval : Code → List ℕ →. List ℕ
 
 namespace Code
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem zero'_eval (v) : zero'.eval v = pure (0 :: v) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem succ_eval (v) : succ.eval v = pure [v.headI.succ] := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem tail_eval (v) : tail.eval v = pure v.tail := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cons_eval (f fs v) :
     (cons f fs).eval v = (f.eval v >>= fun n => fs.eval v >>= fun ns => pure (n.headI :: ns)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp_eval (f g v) :
     (comp f g).eval v = (g.eval v >>= fun x => f.eval x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem case_eval (f g v) :
     (case f g).eval v = v.headI.rec (f.eval v.tail) (fun y _ => g.eval (y::v.tail)) := rfl
