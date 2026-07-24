@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 # Categories where inclusions into coproducts are monomorphisms
 
 If `C` is a category, the class `MonoCoprod C` expresses that left
-inclusions `A ⟶ A ⨿ B` are monomorphisms when `HasCoproduct A B`
+inclusions `A ⟶ A ⨿ B` are monomorphisms when `HasBinaryCoproduct A B`
 holds. If so, it is shown that right inclusions are
 also monomorphisms.
 

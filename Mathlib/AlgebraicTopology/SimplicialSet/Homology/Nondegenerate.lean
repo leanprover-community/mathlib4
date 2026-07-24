@@ -128,6 +128,7 @@ lemma ιNormalizedChainComplex_fromNormalizedChainComplex_f (x : X _⦋n⦌) :
   dsimp [ιNormalizedChainComplex]
   rw [Category.assoc, toNormalizedChainComplex_f_fromNormalizedChainComplex_f]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ιNormalizedChainComplex_eq_zero (x : X _⦋n⦌) (hx : x ∈ X.degenerate n) :
     X.ιNormalizedChainComplex (R := R) x = 0 := by
