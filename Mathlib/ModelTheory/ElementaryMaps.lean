@@ -22,6 +22,12 @@ public import Mathlib.ModelTheory.Substructures
 
 ## Main Results
 
+- `FirstOrder.Language.ElementaryEmbedding.mk_realizations_le` shows that definable-set
+  cardinality cannot decrease under an elementary embedding.
+- `FirstOrder.Language.ElementaryEmbedding.encard_realizations_eq_coe_iff` shows that elementary
+  embeddings preserve exact finite definable-set cardinality.
+- `FirstOrder.Language.ElementaryEmbedding.infinite_realizations_iff` shows that elementary
+  embeddings preserve and reflect infinitude of definable sets.
 - The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
   gives a simple criterion for an embedding to be elementary.
 -/
@@ -30,6 +36,7 @@ public import Mathlib.ModelTheory.Substructures
 
 
 open FirstOrder
+open scoped Cardinal
 
 namespace FirstOrder
 
@@ -109,6 +116,44 @@ theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
 
 instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
   { show FunLike (M ↪ₑ[L] N) M N from inferInstance with injective' := injective }
+
+section
+
+universe u u' v v'
+
+variable {M : Type u} {N : Type u'} {α : Type v} {β : Type v'}
+variable [L.Structure M] [L.Structure N]
+
+/-- The embedding of realization subtypes induced by an elementary embedding. -/
+def realizationsEmbedding (e : M ↪ₑ[L] N) (φ : L.Formula (β ⊕ α)) (b : β → M) :
+    {x : α → M | φ.Realize (Sum.elim b x)} ↪
+      {x : α → N | φ.Realize (Sum.elim (e ∘ b) x)} where
+  toFun x := ⟨e ∘ x, show φ.Realize _ by
+    simpa only [← Sum.comp_elim] using (e.map_formula φ (Sum.elim b x)).mpr x.2⟩
+  inj' x y h := Subtype.ext <| e.injective.comp_left <| congrArg Subtype.val h
+
+/-- Cardinality of a definable set cannot decrease under an elementary embedding. -/
+theorem mk_realizations_le (e : M ↪ₑ[L] N) (φ : L.Formula (β ⊕ α)) (b : β → M) :
+    Cardinal.lift.{max u' v} (#({x : α → M | φ.Realize (Sum.elim b x)})) ≤
+      Cardinal.lift.{max u v} (#({x : α → N | φ.Realize (Sum.elim (e ∘ b) x)})) :=
+  Cardinal.lift_mk_le_lift_mk_of_injective (realizationsEmbedding e φ b).injective
+
+/-- An elementary embedding preserves and reflects exact finite cardinality of a definable set. -/
+theorem encard_realizations_eq_coe_iff [Finite α] (e : M ↪ₑ[L] N)
+    (φ : L.Formula (β ⊕ α)) (b : β → M) (n : ℕ) :
+    {x : α → N | φ.Realize (Sum.elim (e ∘ b) x)}.encard = n ↔
+      {x : α → M | φ.Realize (Sum.elim b x)}.encard = n := by
+  simp only [← Formula.realize_iExsExactly, map_formula]
+
+/-- The infinitude of a definable set is preserved under an elementary embedding. -/
+theorem infinite_realizations_iff [Finite α] (e : M ↪ₑ[L] N)
+    (φ : L.Formula (β ⊕ α)) (b : β → M) :
+    Set.Infinite {x : α → N | φ.Realize (Sum.elim (e ∘ b) x)} ↔
+      Set.Infinite {x : α → M | φ.Realize (Sum.elim b x)} := by
+  simp [Set.encard_eq_top_iff.symm.trans ENat.eq_top_iff_forall_ge,
+    ← Formula.realize_iExsAtLeast]
+
+end
 
 @[simp]
 theorem map_fun (φ : M ↪ₑ[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
