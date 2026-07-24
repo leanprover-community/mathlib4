@@ -124,24 +124,30 @@ def Code.eval : Code → List ℕ →. List ℕ
 
 namespace Code
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem zero'_eval : zero'.eval = fun v => pure (0 :: v) := by simp [eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem succ_eval : succ.eval = fun v => pure [v.headI.succ] := by simp [eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem tail_eval : tail.eval = fun v => pure v.tail := by simp [eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cons_eval (f fs) : (cons f fs).eval = fun v => do {
     let n ← Code.eval f v
     let ns ← Code.eval fs v
     pure (n.headI :: ns) } := by simp [eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp_eval (f g) : (comp f g).eval = fun v => g.eval v >>= f.eval := by simp [eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem case_eval (f g) :
     (case f g).eval = fun v => v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail) := by
@@ -237,6 +243,7 @@ def prec (f g : Code) : Code :=
 
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → List.Vector ℕ m →. ℕ}
     (hf : ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v)
     (hg : ∀ i, ∃ c : Code, ∀ v : List.Vector ℕ m, c.eval v.1 = pure <$> g i v) :
@@ -517,6 +524,7 @@ def Cont.then : Cont → Cont → Cont
   | Cont.comp f k => fun k' => Cont.comp f (k.then k')
   | Cont.fix f k => fun k' => Cont.fix f (k.then k')
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
   | halt => simp only [Cont.eval, Cont.then, pure_bind]
@@ -587,7 +595,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   | comp f _g _IHf IHg => apply IHg
   | case f g IHf IHg =>
     rw [stepNormal]
-    simp only []
+    simp only
     cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => apply IHf
   | _ => exact ⟨_, _, rfl⟩
@@ -612,7 +620,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         exact Or.inl (Part.mem_some _)
       · exact Or.inr ⟨_, Part.mem_some _, hv₂⟩
     refine fun c he => evalInduction he fun y h IH => ?_
-    rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only [] at h IH
+    rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only at h IH
     · have := mem_eval.2 ⟨hr, rfl⟩
       rw [fok, Part.bind_eq_bind, Part.mem_bind_iff] at this
       obtain ⟨v'', h₁, h₂⟩ := this
@@ -631,7 +639,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       · obtain ⟨k₀, v₀, e₀⟩ := stepNormal.is_ret f Cont.halt v'.tail
         have e₁ := stepNormal_then f Cont.halt (Cont.fix f k) v'.tail
         rw [e₀, Cont.then, Cfg.then] at e₁
-        simp only [] at e₁
+        simp only at e₁
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
           IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
@@ -664,6 +672,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       rw [stepRet, if_neg h]
       exact IH v₁.tail ((Part.mem_map_iff _).2 ⟨_, he₁, if_neg h⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem code_is_ok (c) : Code.Ok c := by
   induction c with (intro k v; rw [stepNormal])
   | cons f fs IHf IHfs =>
@@ -689,6 +698,7 @@ theorem code_is_ok (c) : Code.Ok c := by
 theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt <$> c.eval v :=
   (code_is_ok c).zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := by
   induction k generalizing v with
   | halt =>

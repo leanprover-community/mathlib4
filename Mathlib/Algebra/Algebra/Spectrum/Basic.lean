@@ -158,7 +158,7 @@ theorem preimage_algebraMap (S : Type*) {R A : Type*} [CommSemiring R] [CommSemi
 
 @[simp]
 theorem resolventSet_of_subsingleton [Subsingleton A] (a : A) : resolventSet R a = Set.univ := by
-  simp_rw [resolventSet, Subsingleton.elim (algebraMap R A _ - a) 1, isUnit_one, Set.setOf_true]
+  simp_rw [resolventSet, Subsingleton.elim (algebraMap R A _ - a) 1, isUnit_one, Set.ofPred_true]
 
 @[simp]
 theorem of_subsingleton [Subsingleton A] (a : A) : spectrum R a = ∅ := by
@@ -252,10 +252,13 @@ theorem preimage_units_mul_comm (a b : A) :
     ((↑) : Rˣ → R) ⁻¹' σ (a * b) = (↑) ⁻¹' σ (b * a) :=
   Set.ext fun _ => unit_mem_mul_comm
 
-theorem setOf_isUnit_inter_mul_comm (a b : A) :
+theorem setOfPred_isUnit_inter_mul_comm (a b : A) :
     {r | IsUnit r} ∩ σ (a * b) = {r | IsUnit r} ∩ σ (b * a) := by
   ext r
   simpa using fun hr : IsUnit r ↦ unit_mem_mul_comm (r := hr.unit)
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isUnit_inter_mul_comm := setOfPred_isUnit_inter_mul_comm
 
 section Star
 

@@ -33,7 +33,7 @@ section
 
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
-open Classical in
+open scoped Classical in
 /-- Given a prime ideal `q` of an `R`-algebra `S`, the inertia degree of `q` over `R` is defined
 to be the degree of the residue field of `q` over the residue field of its preimage `p` in `R`.
 

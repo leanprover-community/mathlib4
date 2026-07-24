@@ -519,6 +519,7 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
