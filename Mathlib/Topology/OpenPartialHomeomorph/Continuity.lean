@@ -120,16 +120,20 @@ theorem eventually_nhdsWithin' {x : X} (p : X → Prop) {s : Set X}
 /-- This lemma is useful in the manifold library in the case that `e` is a chart. It states that
   locally around `e x` the set `e.symm ⁻¹' s` is the same as the set intersected with the target
   of `e` and some other neighborhood of `f x` (which will be the source of a chart on `Z`). -/
-theorem preimage_eventuallyEq_target_inter_preimage_inter {e : OpenPartialHomeomorph X Y}
+theorem preimage_eventuallyEqSet_target_inter_preimage_inter {e : OpenPartialHomeomorph X Y}
     {s : Set X} {t : Set Z} {x : X} {f : X → Z} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
     (ht : t ∈ 𝓝 (f x)) :
-    e.symm ⁻¹' s =ᶠ[𝓝 (e x)] (e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) : Set Y) := by
-  rw [eventuallyEq_set, e.eventually_nhds _ hxe]
+    e.symm ⁻¹' s =ᶠ[𝓝 (e x)] e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) := by
+  rw [eventuallyEqSet_iff, e.eventually_nhds _ hxe]
   filter_upwards [e.open_source.mem_nhds hxe,
     mem_nhdsWithin_iff_eventually.mp (hf.preimage_mem_nhdsWithin ht)]
   intro y hy hyu
   simp_rw [mem_inter_iff, mem_preimage, mem_inter_iff, e.mapsTo hy, true_and, iff_self_and,
     e.left_inv hy, iff_true_intro hyu]
+
+@[deprecated (since := "2026-07-23")]
+alias preimage_eventuallyEq_target_inter_preimage_inter :=
+  preimage_eventuallyEqSet_target_inter_preimage_inter
 
 section Continuity
 

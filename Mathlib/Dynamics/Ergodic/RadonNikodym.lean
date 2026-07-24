@@ -41,7 +41,7 @@ protected theorem singularPart [SigmaFinite ν] {f : X → X}
   rcases (μ.mutuallySingular_singularPart ν).symm with ⟨s, hsm, hνs, hμs⟩
   convert! hfμ.restrict_preimage hsm using 1
   · refine singularPart_eq_restrict ?_ (hfν.preimage_null hνs)
-    rw [← mem_ae_iff, ← Filter.eventuallyEq_univ,
+    rw [← mem_ae_iff, ← Filter.eventuallyEqSet_univ,
       ae_eq_univ_iff_measure_eq (hfμ.measurable hsm).nullMeasurableSet]
     calc
       μ.singularPart ν (f ⁻¹' s) = (ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν) (f ⁻¹' s) := by
