@@ -258,7 +258,7 @@ theorem finite_absNorm_le [IsDedekindDomain S] [Infinite S] (B : ℕ) :
   finite_cardQuot_le B
 
 /-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
-theorem finite_cardQuot_heightOneSpectrum_le [IsDedekindDomain S] (B : ℕ) :
+theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
     {p : IsDedekindDomain.HeightOneSpectrum S | p.asIdeal.cardQuot ≤ B}.Finite :=
   (finite_cardQuot_le B).of_injOn (by simp [Set.MapsTo])
     (Function.Injective.injOn fun _ _ ↦ IsDedekindDomain.HeightOneSpectrum.ext)
