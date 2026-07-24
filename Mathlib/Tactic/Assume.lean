@@ -12,21 +12,31 @@ public import Mathlib.Init
 # The `assume` tactic
 -/
 
-/-- The `assume` tactic introduces hypotheses to the context, without giving them a user-facing
-name.
-* Example: `assume f x = f y, 0 < g y`
-* The arguments should be comma-separated, and are required to be propositions that are
-  definitionally equal to the hypothesis (or domain of a dependent function) in the goal.
-* The introduced hypothesis will have the exact statement the user wrote.
-* `assume h₁, h₂, h₃` is equivalent to `intro (_ : h₁) (_ : h₂) (_ : h₃)` if they are hypotheses.
+/-- `assume e` introduces a new (unnamed) hypothesis of type `e`.
+It is equivalent to `intro (_ : e)`.
+
+The argument `e` is required to be a proposition, definitionally equal to the hypothesis
+(or domain of a dependent function) in the goal. The introduced hypothesis will have
+the exact form the user wrote.
+
+Example:
+
+```lean
+example {α} (f : α → α) (h : Function.Injective f) : ∀ x y, f x = f y → x = y := by
+  intro x y
+  assume f x = f y
+  apply h
+  assumption
+```
 -/
-syntax (name := assume) &"assume " (ppSpace colGt term),* : tactic
+syntax (name := assume) &"assume " (ppSpace colGt term)? : tactic
 
 open Lean Meta Elab Tactic
 elab_rules : tactic
-  | `(tactic| assume $[$ts:term],*) => do
-    if ts.isEmpty then throwError "Tactic 'assume' failed: No hypotheses given."
-    for t in ts do withMainContext do
+  | `(tactic| assume $[$t?:term]?) => do
+    let some t := t?
+      | throwError "Tactic 'assume' failed: No hypotheses given."
+    withMainContext do
       let e ← elabTerm t (some (.sort .zero))
       let eType ← inferType e
       let .true ← isDefEq eType (.sort .zero) |

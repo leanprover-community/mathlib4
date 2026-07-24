@@ -28,15 +28,6 @@ example {α β γ} {g : β → γ} {f : α → β} (hg : g.Injective) (hf : f.In
   guard_hyp h :ₛ (g ∘ f) x = (g ∘ f) y
   exact hf (hg ‹_›)
 
-example (p : Prop) : p → p → p → p → p → p → p := by
-  assume p
-  assume
-    p
-  assume p,
-    p,
-    p, p
-  assumption
-
 /-- error: Tactic 'assume' failed: No hypotheses given. -/
 #guard_msgs in
 example (p : Prop) : p → p := by
@@ -60,7 +51,8 @@ is not an implication.
 -/
 #guard_msgs in
 example (p q : Prop) : p → p := by
-  assume p, p
+  assume p
+  assume p
 
 /--
 error: Tactic 'assume' failed: Given type
