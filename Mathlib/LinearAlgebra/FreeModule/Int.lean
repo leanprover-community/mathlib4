@@ -22,14 +22,6 @@ public section
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
 
-/-- A nontrivial free `ℤ`-module is infinite. -/
-instance [Module.Free ℤ M] [Nontrivial M] : Infinite M := Module.Free.infinite ℤ M
-
-/-- A nontrivial free `ℤ`-module is torsion-free, hence of characteristic zero. -/
-instance [Module.Free ℤ R] [Nontrivial R] : CharZero R :=
-  haveI : IsAddTorsionFree R := .of_isTorsionFree ℤ _
-  CharZero.of_isAddTorsionFree R R
-
 namespace Module.Basis.SmithNormalForm
 
 variable [Fintype ι]

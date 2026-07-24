@@ -188,7 +188,7 @@ theorem cardQuot_pow_inertiaDeg [Module.Finite R S] [p.IsMaximal] [q.IsMaximal] 
 @[deprecated (since := "2026-07-03")] alias cardQuot_pow_inertiaDeg' := cardQuot_pow_inertiaDeg
 
 theorem absNorm_pow_inertiaDeg [Module.Finite R S] [q.IsPrime] [q.LiesOver p]
-    [IsDedekindDomain R] [IsDedekindDomain S] [Module.Free ℤ R] [Module.Free ℤ S] :
+    [IsDedekindDomain R] [IsDedekindDomain S] [Infinite R] [Infinite S] :
     p.absNorm ^ q.inertiaDeg R = q.absNorm := by
   by_cases hp : p = ⊥
   · subst hp
@@ -200,14 +200,14 @@ theorem absNorm_pow_inertiaDeg [Module.Finite R S] [q.IsPrime] [q.LiesOver p]
 
 @[deprecated (since := "2026-07-03")] alias absNorm_pow_inertiaDeg' := absNorm_pow_inertiaDeg
 
-theorem natAbs_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] (p : ℤ)
+theorem natAbs_pow_inertiaDeg [IsDedekindDomain R] [Infinite R] [Module.Finite ℤ R] (p : ℤ)
     (P : Ideal R) [P.IsPrime] [P.LiesOver (span {p})] :
     p.natAbs ^ P.inertiaDeg ℤ = absNorm P := by
   simpa using absNorm_pow_inertiaDeg (span {p}) P
 
 @[deprecated (since := "2026-07-03")] alias natAbs_pow_inertiaDeg' := natAbs_pow_inertiaDeg
 
-theorem pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] (p : ℕ)
+theorem pow_inertiaDeg [IsDedekindDomain R] [Infinite R] [Module.Finite ℤ R] (p : ℕ)
     (P : Ideal R) [P.IsPrime] [P.LiesOver (span {(p : ℤ)})] :
     p ^ P.inertiaDeg ℤ = absNorm P :=
   natAbs_pow_inertiaDeg p P

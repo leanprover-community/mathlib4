@@ -114,6 +114,10 @@ As a result, if `F = ℚ`, then we can use `ℤ` and `𝓞 ℚ` interchangeably.
 
 variable [Module.Finite ℤ R] [Module.Free ℤ R]
 
+-- TEMP(absnorm-weakening): local `Infinite R` standing in for the removed global
+-- `Module.Free ℤ → Infinite` instance; remove once these hypotheses are generalized.
+local instance : Infinite R := Module.Free.infinite ℤ R
+
 namespace HeightOneSpectrum
 
 /-- The norm of a maximal ideal is `> 1` -/

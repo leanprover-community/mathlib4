@@ -282,6 +282,9 @@ section Free
 
 variable [Module.Free ℤ S] [Module.Finite ℤ S]
 
+-- A nontrivial free `ℤ`-module is infinite; local to this section to supply `Infinite S`.
+local instance : Infinite S := Module.Free.infinite ℤ S
+
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
