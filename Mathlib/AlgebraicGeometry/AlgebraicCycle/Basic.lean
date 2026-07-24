@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.AlgebraicGeometry.ResidueField
+public import Mathlib.RingTheory.Flat.Rank
 
 /-!
 # Algebraic Cycles
@@ -43,10 +44,10 @@ but be aware of this if there is ever an instance clash involving algebraic cycl
 @[stacks 02QR]
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
   Function.locallyFinsupp X R
+namespace AlgebraicCycle
+section map
 
 variable (f : X ⟶ Y) [Semiring R] (c : AlgebraicCycle X R) (x : X) (z : Y)
-namespace AlgebraicCycle
-
 /--
 Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the
 pushforward of a cycle `c` at a point `z = f x`.
@@ -75,5 +76,59 @@ lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R)
     map (𝟙 _) wx wx c = c := by
   apply Function.locallyFinsupp.map_id
   simp [mapCoeff]
+
+end map
+section degree
+
+variable {Y : Scheme.{u}} (f : X ⟶ Y)
+
+/--
+The degree of a zero-cycle `D` with respect to a morphism `f : X ⟶ Y`.
+Note that this definition is closely related to the pushforward of `D` along `f` (see stacks 0AZ1).
+In applications, typically `f` is proper (so the pushforward respects rational equivalence) and `Y`
+is `Spec k` for some field `k`.
+-/
+@[stacks 0AZ2]
+noncomputable def degree {R : Type*} [AddCommMonoid R] (D : AlgebraicCycle X R) : R :=
+    ∑ᶠ (x : X), (f.residueDegree x) • (D x)
+
+section AddCommMonoid
+
+variable [AddCommMonoid R]
+
+@[simp]
+lemma degree_sum (D D' : AlgebraicCycle X R) [CompactSpace X] :
+    degree f (D + D') = degree f D + degree f D' := by
+  simp only [degree, Function.locallyFinsuppWithin.coe_add, Pi.add_apply, smul_add]
+  rw [finsum_add_distrib]
+  · apply D.finite_support.subset
+    aesop
+  · apply D'.finite_support.subset
+    aesop
+
+open Function.locallyFinsuppWithin in
+@[simp]
+lemma degree_single [DecidableEq X] (p : X) {r : R} : degree f (single p r) =
+    (f.residueDegree p) • r := by
+  simp [degree, finsum_eq_finsetSum_of_support_subset (s := {p})]
+
+end AddCommMonoid
+
+section AddCommGroup
+
+variable [AddCommGroup R]
+
+@[simp]
+lemma degree_neg (D : AlgebraicCycle X R) : degree f (-D) = - degree f D :=
+    by simp [degree, finsum_neg_distrib]
+
+@[simp]
+lemma degree_sub (D D' : AlgebraicCycle X R) [CompactSpace X] :
+    degree f (D - D') = degree f D - degree f D' := by
+  simp [sub_eq_add_neg]
+
+end AddCommGroup
+
+end degree
 
 end AlgebraicGeometry.AlgebraicCycle
