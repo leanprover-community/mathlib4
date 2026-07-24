@@ -172,6 +172,10 @@ theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero_iff
 @[to_additive (attr := simp)]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
+@[to_additive]
+theorem length_surjective [Nonempty α] : (@length α).Surjective :=
+  ‹Nonempty α›.elim fun a n => ⟨FreeMonoid.ofList (List.replicate n a), by simp [length]⟩
+
 @[to_additive FreeAddMonoid.length_eq_one]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
   List.length_eq_one_iff
