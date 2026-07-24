@@ -775,6 +775,11 @@ instance : IsLocalHom e.toAlgHom := by
 
 end Semiring
 
+lemma comp_inj {R A B C : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Semiring C]
+    [Algebra R A] [Algebra R B] [Algebra R C] (e : A ≃ₐ[R] B) {f g : B →ₐ[R] C}
+    (h : f.comp e.toAlgHom = g.comp e.toAlgHom) : f = g := AlgHom.ext
+  fun x ↦ (by simpa using congr($h (e.symm x)))
+
 end AlgEquiv
 
 namespace MulSemiringAction
