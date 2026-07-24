@@ -519,6 +519,15 @@ theorem integralOperator_inner_right_eq_mercerForm [CompleteSpace V] (f g : Lp V
     ⟪integralOperator μ hK f, g⟫_𝕜 = mercerForm μ hK f g := by
   simp [mercerForm, integralOperator]
 
+theorem isSelfAdjoint_integralOperator [CompleteSpace V] [Fact K.PosSemidef] :
+    IsSelfAdjoint (integralOperator μ hK) := by
+  ext f
+  apply Lp.ext_iff.mp
+  refine ext_inner_left 𝕜 fun g ↦ ?_
+  rw [star_eq_adjoint, adjoint_inner_right, ← inner_conj_symm g ((integralOperator μ hK) f)]
+  simp_rw [integralOperator_inner_right_eq_mercerForm]
+  exact Eq.symm (mercerForm_conj_symm μ hK f g)
+
 end Mercer
 
 end RKHS
