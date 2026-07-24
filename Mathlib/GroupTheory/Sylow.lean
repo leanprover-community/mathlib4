@@ -702,6 +702,33 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
 
+/-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the cardinality of `G`, then
+there is a series of subgroups of cardinality `p ^ k` for `k` through `0` to `n`. -/
+theorem exists_subgroup_tower [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
+    ∃ f : Fin (n + 1) → Subgroup G, (∀ k, Nat.card (f k) = p ^ k.val) ∧
+      ∀ k : Fin n, f k.castSucc ≤ f k.succ := by
+  have : Fact (Nat.Prime p) := ⟨hp⟩
+  induction n generalizing G with
+  | zero => exact ⟨![⊥], by simp⟩
+  | succ n ih =>
+    obtain ⟨s, hs⟩ := exists_subgroup_card_pow_prime p h
+    have hdvd : p ^ n ∣ Nat.card s := by simp [hs, pow_add]
+    obtain ⟨f, h1, h2⟩ := ih hdvd
+    let f' := fun k ↦ if hk : k = Fin.last (n + 1) then s else (f (k.castPred hk)).map s.subtype
+    refine ⟨f', fun k ↦ ?_, fun k ↦ ?_⟩
+    · by_cases hk : k = Fin.last (n + 1)
+      · simpa [f', hk] using hs
+      · simp only [hk, f', ↓reduceDIte, Subgroup.card_map_of_injective s.subtype_injective]
+        exact h1 (k.castPred hk)
+    · by_cases hk : k = Fin.last n
+      · simpa [f', hk] using Subgroup.map_subtype_le (f k)
+      · simp only [Fin.castSucc_ne_last, ↓reduceDIte, Fin.castPred_castSucc, Fin.succ_eq_last_succ,
+          Nat.succ_eq_add_one, hk, map_subtype_le_map_subtype, f']
+        convert h2 (k.castPred hk)
+        · simp
+        · ext
+          simp
+
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
 then there is a subgroup of cardinality `p ^ n`. -/
 lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
