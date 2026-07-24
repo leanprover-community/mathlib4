@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Basics on bilinear maps
@@ -526,6 +527,7 @@ protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
 
 variable (R M) in
 /-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+@[wikidata Q837924]
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring

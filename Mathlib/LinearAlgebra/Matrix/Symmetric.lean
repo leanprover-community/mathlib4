@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Symmetric matrices
@@ -30,6 +31,7 @@ variable {α β n m R : Type*}
 namespace Matrix
 
 /-- A matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`. -/
+@[wikidata Q339011]
 def IsSymm (A : Matrix n n α) : Prop :=
   Aᵀ = A
 
