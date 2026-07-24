@@ -67,6 +67,13 @@ theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic
 theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 
+/-- Turning all bound variables into free variables preserves atomicity. -/
+theorem IsAtomic.toFormula {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
+    φ.toFormula.IsAtomic := by
+  cases hφ with
+  | equal t₁ t₂ => exact .equal (t₁.relabel Sum.inl) (t₂.relabel Sum.inl)
+  | rel R ts => exact .rel R fun i => (ts i).relabel Sum.inl
+
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to Boolean combinations of atomic formulas. -/
 inductive IsQF : L.BoundedFormula α n → Prop
@@ -102,6 +109,13 @@ protected theorem liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
 
 protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
   IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
+
+theorem toFormula {φ : L.BoundedFormula α n} (hφ : φ.IsQF) :
+    φ.toFormula.IsQF := by
+  induction hφ with
+  | falsum => exact IsQF.falsum
+  | of_isAtomic hφ => exact hφ.toFormula.isQF
+  | imp _ _ ih₁ ih₂ => simpa [BoundedFormula.toFormula] using ih₁.imp ih₂
 
 end IsQF
 
@@ -467,6 +481,25 @@ end Relations
 
 theorem Formula.isAtomic_graph (f : L.Functions n) : (Formula.graph f).IsAtomic :=
   BoundedFormula.IsAtomic.equal _ _
+
+/-- If `v` and `w` realize the same quantifier-free formulas, they agree on every atomic equality
+of terms. -/
+theorem Formula.realize_equal_iff_of_agree_qf {N : Type*} [L.Structure N] {v : α → M} {w : α → N}
+    (hQF : ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w)) (t u : L.Term α) :
+    (t.equal u).Realize v ↔ (t.equal u).Realize w :=
+  hQF _ <| by
+    simpa [Term.equal] using
+      (BoundedFormula.IsAtomic.equal (t.relabel Sum.inl) (u.relabel Sum.inl)).isQF
+
+/-- If `v` and `w` realize the same quantifier-free formulas, they agree on every atomic relation
+applied to terms. -/
+theorem Formula.realize_rel_iff_of_agree_qf {N : Type*} [L.Structure N] {v : α → M} {w : α → N}
+    (hQF : ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w))
+    {k : ℕ} (R : L.Relations k) (ts : Fin k → L.Term α) :
+    (R.formula ts).Realize v ↔ (R.formula ts).Realize w :=
+  hQF _ <| by
+    simpa [Relations.formula] using
+      (BoundedFormula.IsAtomic.rel R fun i => (ts i).relabel Sum.inl).isQF
 
 end Language
 
