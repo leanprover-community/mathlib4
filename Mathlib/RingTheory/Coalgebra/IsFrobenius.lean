@@ -18,6 +18,19 @@ This file defines `Coalgebra.IsFrobenius` and shows some elementary results.
 
 A coalgebra with an algebra structure is said to be Frobenius when the Frobenius equation
 is satisfied:
+`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
+which in diagrams looks like
+```
+|    |             |    |
+|    μ             μ    |
+|   / \           / \   |
+ \ /   |    =    |   \ /
+  δ    |         |    δ
+  |    |         |    |
+```
+where `μ` stands for multiplication and `δ` for comultiplication.
+
+When the Frobenius equations are satisfies, we actually get
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 which in diagrams looks like
 ```
@@ -28,11 +41,7 @@ which in diagrams looks like
   δ    |          / \          |    δ
   |    |         |   |         |    |
 ```
-where `μ` stands for multiplication and `δ` for comultiplication.
-
-This file shows that it suffices to have
-`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)` in order to have the
-Frobenius equations. So we call this one the Frobenius equation too.
+In texts, this is what the Frobenius equations are usually referred to as.
 
 ## Naming convention
 
@@ -86,6 +95,9 @@ the Frobenius equation is satisfied:
 
 `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`.
 
+See `IsFrobenius.left_eq` and `IsFrobenius.right_eq` which refer to each side of the equality
+being equal to `comul ∘ mul`.
+
 When the Frobenius equations are satisfied, the bilinear form `mul.compr₂ counit` is
 nondegenerate and bijective (see `IsFrobenius.nondegenerate_compr₂_mul_counit` and
 `IsFrobenius.bijective_compr₂_mul_counit`). -/
@@ -113,7 +125,7 @@ lemma left_eq : lT A μ[R] ∘ₗ α ∘ₗ rT A δ = δ ∘ₗ μ[R] := by
     _ = δ ∘ₗ μ := by simp only [coassoc_simps, CoassocSimps.map_counit_comp_comul_left]
 
 /-- The right Frobenius equation. -/
-lemma right_eq : rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ = δ ∘ₗ μ[R] := eq (R := R) (A := A) ▸ left_eq
+lemma right_eq : rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ = δ ∘ₗ μ[R] := by rw [← eq, left_eq]
 
 alias lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul' := left_eq
 alias rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul' := right_eq
