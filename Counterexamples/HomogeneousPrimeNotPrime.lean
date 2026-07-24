@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Divisibility.Finite
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Algebra.GroupWithZero.Units.Fintype
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+module
+
+public import Mathlib.Algebra.Divisibility.Finite
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
@@ -25,12 +27,12 @@ structure of linear ordered additive commutative monoid by setting `0 + 0 = 0` a
 and not prime. But it is homogeneously prime, i.e. if `(a, b), (c, d)` are two homogeneous elements
 then `(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
 
-
 ## Tags
 
 homogeneous, prime
 -/
 
+@[expose] public noncomputable section
 
 namespace Counterexample
 
