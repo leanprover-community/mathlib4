@@ -120,7 +120,7 @@ theorem isClosed_setOfPred_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f
   filter_upwards [(tendsto_measure_symmDiff_preimage_nhds_zero (hf.tendsto z)
     (.of_forall hfm) (hfm z) htm ht).eventually hz] with w hw
   intro (hw' : f w ⁻¹' t =ᵐ[μ] s)
-  rw [measure_congr (hw'.symmDiff (ae_eq_refl (· ∈ ⇑(f z) ⁻¹' t))), symmDiff_comm] at hw
+  rw [measure_congr (hw'.symmDiff .rfl), symmDiff_comm] at hw
   exact hw.false
 
 @[deprecated (since := "2026-07-09")]

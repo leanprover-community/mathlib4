@@ -246,7 +246,7 @@ equivalent. See also `continuousWithinAt_congr_set'` which requires that the set
 locally away from a point `y`, in a T1 space. -/
 theorem continuousWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
-  simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEq.mpr h]
+  simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEqSet.mpr h]
 
 theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f t x :=

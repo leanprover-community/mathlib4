@@ -336,7 +336,7 @@ theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ 
 theorem restrict_eq_self_of_ae_mem {_m0 : MeasurableSpace α} ⦃s : Set α⦄ ⦃μ : Measure α⦄
     (hs : ∀ᵐ x ∂μ, x ∈ s) : μ.restrict s = μ :=
   calc
-    μ.restrict s = μ.restrict univ := restrict_congr_set (eventuallyEq_univ.mpr hs)
+    μ.restrict s = μ.restrict univ := restrict_congr_set (eventuallyEqSet_univ.mpr hs)
     _ = μ := restrict_univ
 
 theorem restrict_congr_meas (hs : MeasurableSet s) :
@@ -758,14 +758,14 @@ lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
       h.exists_measurable_superset_ae_eq
-    have A : (t' ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := by
+    have A : t' ∩ s =ᵐ[μ] t ∩ s := by
       have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t') = (x ∈ t) :=
         (ae_restrict_iff'₀ hs).1 t't
       filter_upwards [this] with y hy
       simpa only [eq_iff_iff, mem_inter_iff, and_congr_left_iff] using hy
     obtain ⟨s', -, hs', s's⟩ : ∃ s' ⊇ s, MeasurableSet s' ∧ s' =ᵐ[μ] s :=
       hs.exists_measurable_superset_ae_eq
-    have B : (t' ∩ s' : Set α) =ᵐ[μ] (t' ∩ s : Set α) :=
+    have B : t' ∩ s' =ᵐ[μ] t' ∩ s :=
       ae_eq_set_inter (EventuallyEq.refl _ _) s's
     exact (ht'.inter hs').nullMeasurableSet.congr (B.trans A)
   · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by

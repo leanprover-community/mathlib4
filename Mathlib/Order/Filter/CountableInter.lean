@@ -144,6 +144,23 @@ theorem EventuallyEqSet.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Count
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bInter :=
   EventuallyEqSet.countable_bInter
 
+@[deprecated (since := "2026-07-23")]
+alias EventuallyLE.countable_iUnion := EventuallySubset.countable_iUnion
+@[deprecated (since := "2026-07-23")]
+alias EventuallyEq.countable_iUnion := EventuallyEqSet.countable_iUnion
+@[deprecated (since := "2026-07-23")]
+alias EventuallyLE.countable_bUnion := EventuallySubset.countable_bUnion
+@[deprecated (since := "2026-07-23")]
+alias EventuallyEq.countable_bUnion := EventuallyEqSet.countable_bUnion
+@[deprecated (since := "2026-07-23")]
+alias EventuallyLE.countable_iInter := EventuallySubset.countable_iInter
+@[deprecated (since := "2026-07-23")]
+alias EventuallyEq.countable_iInter := EventuallyEqSet.countable_iInter
+@[deprecated (since := "2026-07-23")]
+alias EventuallyLE.countable_bInter := EventuallySubset.countable_bInter
+@[deprecated (since := "2026-07-23")]
+alias EventuallyEq.countable_bInter := EventuallyEqSet.countable_bInter
+
 /-- Construct a filter with countable intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the countable intersection property. -/
 def ofCountableInter (l : Set (Set α))

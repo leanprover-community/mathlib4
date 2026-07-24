@@ -423,7 +423,7 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   let s_g : Set α := Function.support (hgm.mk g)
   have hs_g : MeasurableSet[m] s_g := hgm.stronglyMeasurable_mk.measurableSet_support
   have hs_g_eq : s_g =ᵐ[μ] Function.support g := hgm.ae_eq_mk.symm.support
-  have h_inter_empty : (s_f ∩ s_g : Set α) =ᵐ[μ] (∅ : Set α) := by
+  have h_inter_empty : s_f ∩ s_g =ᵐ[μ] ∅ := by
     refine (hs_f_eq.inter hs_g_eq).trans ?_
     suffices Function.support f ∩ Function.support g = ∅ by rw [this]
     exact Set.disjoint_iff_inter_eq_empty.mp h_disj

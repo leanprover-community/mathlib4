@@ -117,19 +117,23 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
   exact (hf.fderivWithin_right (m := 1) ht le_rfl
     (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt one_ne_zero
 
-lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
+lemma fderivWithin_fderivWithin_eq_of_eventuallyEqSet (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
     = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
       (fderivWithin_eventually_congr_set h).fderivWithin_eq_of_nhds
   _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
 
+@[deprecated (since := "2026-07-23")]
+alias fderivWithin_fderivWithin_eq_of_eventuallyEq :=
+  fderivWithin_fderivWithin_eq_of_eventuallyEqSet
+
 lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
     (h : s ∈ 𝓝 x) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderiv 𝕜 (fderiv 𝕜 f) x := by
   simp only [← fderivWithin_univ]
-  apply fderivWithin_fderivWithin_eq_of_eventuallyEq
-  exact eventuallyEq_univ.mpr h
+  apply fderivWithin_fderivWithin_eq_of_eventuallyEqSet
+  simp [h]
 
 @[simp] lemma isSymmSndFDerivWithinAt_univ :
     IsSymmSndFDerivWithinAt 𝕜 f univ x ↔ IsSymmSndFDerivAt 𝕜 f x := by
@@ -146,7 +150,7 @@ theorem IsSymmSndFDerivWithinAt.mono_of_mem_nhdsWithin (h : IsSymmSndFDerivWithi
 theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s x)
     (hst : s =ᶠ[𝓝 x] t) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
   intro v w
-  rw [fderivWithin_fderivWithin_eq_of_eventuallyEq hst.symm]
+  rw [fderivWithin_fderivWithin_eq_of_eventuallyEqSet hst.symm]
   exact h v w
 
 theorem isSymmSndFDerivWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
@@ -588,7 +592,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞ω}
       (m := 0) le_rfl).continuousOn
     apply this.congr
     intro y hy
-    apply fderivWithin_fderivWithin_eq_of_eventuallyEq
+    apply fderivWithin_fderivWithin_eq_of_eventuallyEqSet
     filter_upwards [u_open.mem_nhds hy.2] with z hz
     simp_all
   have B : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k)) atTop

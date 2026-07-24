@@ -163,8 +163,8 @@ theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasu
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
-    (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } : Set α) =ᵐ[μ] s :=
-  inter_eventuallyEq_left.2 <| hf.ae_mem_imp_frequently_image_mem hs
+    s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } =ᵐ[μ] s :=
+  inter_eventuallyEqSet_left.2 <| hf.ae_mem_imp_frequently_image_mem hs
 
 theorem measure_inter_frequently_image_mem_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
     μ (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s }) = μ s :=

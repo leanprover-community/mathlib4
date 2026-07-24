@@ -692,8 +692,7 @@ theorem subset_interior_normLeOne :
 
 open ENNReal MeasureTheory
 
-theorem closure_paramSet_ae_interior :
-    closure (paramSet K) =ᵐ[volume] interior (paramSet K) := by
+theorem closure_paramSet_ae_interior : closure (paramSet K) =ᵐ[volume] interior (paramSet K) := by
   rw [closure_paramSet, interior_paramSet, volume_pi]
   refine Measure.ae_eq_set_pi fun w _ ↦ ?_
   split_ifs
@@ -811,7 +810,7 @@ open MeasureTheory
 theorem compactSet_ae :
     compactSet K =ᵐ[volume] expMapBasis '' closure (paramSet K) := by
   rw [compactSet_eq_union]
-  exact union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.2 (by simp))
+  exact union_ae_eq_left_of_ae_eq_empty (by simp)
 
 end compactSet
 

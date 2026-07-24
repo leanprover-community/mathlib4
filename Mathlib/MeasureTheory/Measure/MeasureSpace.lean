@@ -344,7 +344,8 @@ lemma measure_inter_conull' (ht : μ (s \ t) = 0) : μ (s ∩ t) = μ s := by
 lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
   rw [← sdiff_compl, measure_sdiff_null ht]
 
-theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
+@[simp]
+theorem union_ae_eq_left_iff_ae_subset : s ∪ t =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
   rw [ae_le_set]
   refine
     ⟨fun h => by simpa only [union_sdiff_left] using (ae_eq_set.mp h).1, fun h =>
@@ -352,7 +353,8 @@ theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤
         ⟨by rwa [ae_le_set, union_sdiff_left],
           .of_subset subset_union_left⟩⟩
 
-theorem union_ae_eq_right_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] t ↔ s ≤ᵐ[μ] t := by
+@[simp]
+theorem union_ae_eq_right_iff_ae_subset : s ∪ t =ᵐ[μ] t ↔ s ≤ᵐ[μ] t := by
   rw [union_comm, union_ae_eq_left_iff_ae_subset]
 
 theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t ≤ μ s)
@@ -377,7 +379,7 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
       _ ≤ μ (s i) := hi ▸ h_le i
       _ ≤ μ (⋃ i, s i) := measure_mono <| subset_iUnion _ _
   set M := toMeasurable μ
-  have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
+  have H : ∀ b, M (t b) ∩ M (⋃ b, s b) =ᵐ[μ] M (t b) := by
     refine fun b => ae_eq_of_subset_of_measure_ge inter_subset_left ?_ ?_ ?_
     · calc
         μ (M (t b)) = μ (t b) := measure_toMeasurable _

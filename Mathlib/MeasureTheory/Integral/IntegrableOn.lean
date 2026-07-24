@@ -138,8 +138,7 @@ theorem IntegrableOn.mono_measure' (h : IntegrableOn f s ν) (hμ : μ.restrict 
 theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ≤ᵐ[μ] t) : IntegrableOn f s μ :=
   h.integrable.mono_measure <| Measure.restrict_mono_ae hst
 
-theorem IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s =ᵐ[μ] t) :
-    IntegrableOn f s μ :=
+theorem IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s =ᵐ[μ] t) : IntegrableOn f s μ :=
   h.mono_set_ae hst.le
 
 theorem integrableOn_congr_set_ae (hst : s =ᵐ[μ] t) : IntegrableOn f s μ ↔ IntegrableOn f t μ :=
@@ -628,7 +627,7 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
     IntegrableAtFilter f (l ⊓ ae μ) μ ↔ IntegrableAtFilter f l μ := by
   refine ⟨?_, fun h ↦ h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hf⟩
-  refine ⟨t, ht, hf.congr_set_ae <| eventuallyEq_set.2 ?_⟩
+  refine ⟨t, ht, hf.congr_set_ae <| eventuallyEqSet_iff.2 ?_⟩
   filter_upwards [hu] with x hx using (and_iff_left hx).symm
 
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff

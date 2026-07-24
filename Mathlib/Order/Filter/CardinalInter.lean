@@ -160,6 +160,23 @@ theorem EventuallyEqSet.cardinal_bInter {S : Set ι} (hS : #S < c)
   (EventuallySubset.cardinal_bInter hS fun i hi => (h i hi).subset).antisymm
     (EventuallySubset.cardinal_bInter hS fun i hi => (h i hi).symm.subset)
 
+@[deprecated (since := "2026-07-23")]
+alias EventuallyLE.cardinal_iUnion := EventuallySubset.cardinal_iUnion
+@[deprecated (since := "2026-07-23")]
+alias EventuallyEq.cardinal_iUnion := EventuallyEqSet.cardinal_iUnion
+@[deprecated (since := "2026-07-23")]
+alias EventuallyLE.cardinal_bUnion := EventuallySubset.cardinal_bUnion
+@[deprecated (since := "2026-07-23")]
+alias EventuallyEq.cardinal_bUnion := EventuallyEqSet.cardinal_bUnion
+@[deprecated (since := "2026-07-23")]
+alias EventuallyLE.cardinal_iInter := EventuallySubset.cardinal_iInter
+@[deprecated (since := "2026-07-23")]
+alias EventuallyEq.cardinal_iInter := EventuallyEqSet.cardinal_iInter
+@[deprecated (since := "2026-07-23")]
+alias EventuallyLE.cardinal_bInter := EventuallySubset.cardinal_bInter
+@[deprecated (since := "2026-07-23")]
+alias EventuallyEq.cardinal_bInter := EventuallyEqSet.cardinal_bInter
+
 /-- Construct a filter with cardinal `c` intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the cardinal `c` intersection property. -/
 def ofCardinalInter (l : Set (Set α)) (hc : 2 < c)
