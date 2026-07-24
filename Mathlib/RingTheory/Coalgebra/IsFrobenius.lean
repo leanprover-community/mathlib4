@@ -84,7 +84,11 @@ variable (R A) in
 /-- A coalgebra with an algebra structure is said to be **Frobenius** when
 the Frobenius equation is satisfied:
 
-`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`. -/
+`(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`.
+
+When the Frobenius equations are satisfied, the bilinear form `mul.compr₂ counit` is
+nondegenerate and bijective (see `IsFrobenius.nondegenerate_compr₂_mul_counit` and
+`IsFrobenius.bijective_compr₂_mul_counit`). -/
 class Coalgebra.IsFrobenius : Prop where
   /-- The Frobenius equation. -/
   eq : lT A μ[R] ∘ₗ α ∘ₗ rT A δ = rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ
@@ -126,39 +130,55 @@ section nonAssoc
 variable {A : Type*} [NonAssocSemiring A] [Module R A] [Coalgebra R A]
   [SMulCommClass R A A] [IsScalarTower R A A] [IsFrobenius R A]
 
-private lemma sum_counit_mul_smul_of_comul_one {S : Finset (A × A)}
+private lemma sum_counit_mul_left_smul_of_comul_one {S : Finset (A × A)}
     (hS : δ (1 : A) = ∑ i ∈ S, i.1 ⊗ₜ[R] i.2) (a : A) :
     ∑ x ∈ S, (ε : _ →ₗ[R] _) (a * x.1) • x.2 = a := by
   simpa [hS, tmul_sum] using congr(β (rT A ε ($right_eq (a ⊗ₜ[R] 1))))
 
+private lemma sum_counit_mul_right_smul_of_comul_one {S : Finset (A × A)}
+    (hS : δ (1 : A) = ∑ i ∈ S, i.1 ⊗ₜ[R] i.2) (a : A) :
+    ∑ x ∈ S, (ε : _ →ₗ[R] _) (x.2 * a) • x.1 = a := by
+  simpa [hS, sum_tmul] using congr(TensorProduct.rid R A (lT A ε ($left_eq (1 ⊗ₜ[R] a))))
+
 instance instFinite : Module.Finite R A := by
   have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   classical refine Module.finite_def.mpr ⟨S.image Prod.snd, top_le_iff.mp fun a _ ↦ ?_⟩
-  rw [← sum_counit_mul_smul_of_comul_one hS a]
+  rw [← sum_counit_mul_left_smul_of_comul_one hS a]
   exact sum_mem fun _ _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span (by grind))
 
 instance instProjective : Module.Projective R A := by
   obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   refine Module.projective_def'.mpr ⟨∑ p ∈ S, (ε ∘ₗ mulRight R p.1).smulRight (.single p.2 1), ?_⟩
-  ext; simp [sum_counit_mul_smul_of_comul_one hS]
+  ext; simp [sum_counit_mul_left_smul_of_comul_one hS]
 
 /-- The bilinear form `(mul R A).compr₂ counit` is separeating left.
 This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
 lemma forall_counit_mul_left_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (a * b) = 0) ↔ a = 0 := by
   refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
   obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
-  simpa [h] using (sum_counit_mul_smul_of_comul_one hS a).symm
+  simpa [h] using (sum_counit_mul_left_smul_of_comul_one hS a).symm
 
 /-- The bilinear form `(mul R A).compr₂ counit` is separeating right.
 This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
 lemma forall_counit_mul_right_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (b * a) = 0) ↔ a = 0 := by
   refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
   obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
-  simpa [hS, sum_tmul, h] using congr(TensorProduct.rid R A (lT A ε ($left_eq (1 ⊗ₜ[R] a)))).symm
+  simpa [hS, sum_tmul, h] using (sum_counit_mul_right_smul_of_comul_one hS a).symm
 
+/-- The bilinear form `mul.compr₂ counit` is nondegenerate. -/
 lemma nondegenerate_compr₂_mul_counit : ((mul R A).compr₂ (ε : A →ₗ[R] R)).Nondegenerate := by
   simp [Nondegenerate, SeparatingLeft, SeparatingRight, forall_counit_mul_left_eq_zero_iff,
     forall_counit_mul_right_eq_zero_iff]
+
+/-- The bilinear form `mul.compr₂ counit` is bijective. -/
+lemma bijective_compr₂_mul_counit : (⇑((mul R A).compr₂ ε)).Bijective := by
+  obtain ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
+  refine ⟨fun a b h ↦ ?_, fun f ↦ ⟨∑ x ∈ S, f x.1 • x.2, ext fun b ↦ ?_⟩⟩
+  · rw [← IsFrobenius.sum_counit_mul_left_smul_of_comul_one hS b]
+    simp only [LinearMap.ext_iff, compr₂_apply, mul_apply_apply] at h
+    simp only [← h, IsFrobenius.sum_counit_mul_left_smul_of_comul_one hS]
+  · calc _ = ∑ x ∈ S, ε (x.2 * b) • f x.1 := by simp [mul_comm (f _)]; simp [← smul_eq_mul]; rfl
+      _ = _ := by simp only [← map_smul, ← map_sum, sum_counit_mul_right_smul_of_comul_one hS]
 
 end nonAssoc
 
