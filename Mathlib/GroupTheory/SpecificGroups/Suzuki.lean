@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Mathlib Ryan Smith. All rights reserved.
+Copyright (c) 2026 Ryan Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ryan Smith
 -/
@@ -24,6 +24,11 @@ for any natural number `n : ℕ`.
 
 * `suzukiGroup n`: The Suzuki group $Sz(2^{2n+1})$, defined as a subgroup of
   `GL (Fin 4) (GaloisField 2 (2 * n + 1))`.
+* `Suzuki.unipotentMatrix n a b`: The matrix $S(a, b)$.
+* `Suzuki.weylMatrix n`: The Weyl generator matrix $w$.
+* `Suzuki.unipotent n a b`: The unipotent generator as an element of `GL (Fin 4) (Fq n)`.
+* `Suzuki.weyl n`: The Weyl generator as an element of `GL (Fin 4) (Fq n)`.
+* `Suzuki.generators n`: The set of generators for $Sz(2^{2n+1})$.
 -/
 
 @[expose] public section
