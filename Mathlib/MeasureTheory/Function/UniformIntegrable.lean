@@ -55,6 +55,7 @@ namespace MeasureTheory
 open ENNReal Set Filter TopologicalSpace
 
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+  {f g : ι → α → β} {p : ℝ≥0∞}
 
 /-- Uniform integrability in the measure theory sense.
 
@@ -63,8 +64,13 @@ some `δ > 0` such that for all sets `s` with measure less than `δ`, the Lp-nor
 restricted to `s` is less than `ε`.
 
 Uniform integrability is also known as uniformly absolutely continuous integrals. -/
-def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
+def UnifIntegrable' {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   ∀ ε > 0, ∃ δ > 0, ∀ i s, MeasurableSet s → μ s ≤ δ → eLpNorm (s.indicator (f i)) p μ ≤ ε
+
+def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
+  Tendsto (fun ε ↦ ⨆ (i : ι) (s : Set α) (_ : μ s ≤ ε), eLpNorm (f i) p (μ.restrict s)) (𝓝 0) (𝓝 0)
+
+
 
 /-- In probability theory, a family of measurable functions is uniformly integrable if it is
 uniformly integrable in the measure theory sense and is uniformly bounded. -/
@@ -73,15 +79,15 @@ def UniformIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ�
 
 namespace UniformIntegrable
 
-protected theorem aestronglyMeasurable {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ)
-    (i : ι) : AEStronglyMeasurable (f i) μ :=
+protected theorem aestronglyMeasurable (hf : UniformIntegrable f p μ) (i : ι) :
+    AEStronglyMeasurable (f i) μ :=
   hf.1 i
 
-protected theorem unifIntegrable {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ) :
+protected theorem unifIntegrable (hf : UniformIntegrable f p μ) :
     UnifIntegrable f p μ :=
   hf.2.1
 
-protected theorem memLp {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ) (i : ι) :
+protected theorem memLp (hf : UniformIntegrable f p μ) (i : ι) :
     MemLp (f i) p μ :=
   ⟨hf.1 i,
     let ⟨_, _, hC⟩ := hf.2
@@ -96,8 +102,6 @@ section UnifIntegrable
 This section deals with uniform integrability in the measure theory sense. -/
 
 namespace UnifIntegrable
-
-variable {f g : ι → α → β} {p : ℝ≥0∞}
 
 protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) (hp : 1 ≤ p)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
@@ -114,8 +118,9 @@ protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) 
     (hgδ₂ i s hs (hμs.trans (min_le_right _ _)))
 
 protected theorem neg (hf : UnifIntegrable f p μ) : UnifIntegrable (-f) p μ := by
-  simp_rw [UnifIntegrable, Pi.neg_apply, Set.indicator_neg', eLpNorm_neg]
-  exact hf
+  refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ ?_
+  filter_upwards [ENNReal.tendsto_nhds_zero.1 hf ε hε] with s hs
+  simpa only [Pi.neg_apply, eLpNorm_neg]
 
 protected theorem sub (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) (hp : 1 ≤ p)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
@@ -123,29 +128,29 @@ protected theorem sub (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) 
   rw [sub_eq_add_neg]
   exact hf.add hg.neg hp hf_meas fun i => (hg_meas i).neg
 
-protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
+protected theorem ae_mono (hg : UnifIntegrable g p μ) (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
+    UnifIntegrable f p μ := by
+  refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ ?_
+  filter_upwards [ENNReal.tendsto_nhds_zero.1 hg ε hε] with s hs
+  refine (iSup_mono fun i ↦ iSup₂_mono fun s hs ↦ ?_).trans hs
+  exact (iSup_mono fun i ↦ eLpNorm_mono_enorm_ae <| (hfg i).filter_mono ae_restrict_le).trans hs
+
+protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) :
     UnifIntegrable g p μ := by
-  intro ε hε
-  obtain ⟨δ, hδ_pos, hfδ⟩ := hf ε hε
-  refine ⟨δ, hδ_pos, fun n s hs hμs => (le_of_eq <| eLpNorm_congr_ae ?_).trans (hfδ n s hs hμs)⟩
-  filter_upwards [hfg n] with x hx
-  exact indicator_eq_indicator (by rfl) hx.symm
+  refine hf.ae_mono fun i ↦ ?_
+  filter_upwards [hfg i] with x hx
+  rw [hx]
 
 /-- Uniform integrability is preserved by restriction of the functions to a set. -/
-protected theorem indicator (hf : UnifIntegrable f p μ) (E : Set α) :
-    UnifIntegrable (fun i => E.indicator (f i)) p μ := fun ε hε ↦ by
-  obtain ⟨δ, hδ_pos, hε⟩ := hf ε hε
-  refine ⟨δ, hδ_pos, fun i s hs hμs ↦ ?_⟩
-  calc
-    eLpNorm (s.indicator (E.indicator (f i))) p μ
-      = eLpNorm (E.indicator (s.indicator (f i))) p μ := by
-      simp only [indicator_indicator, inter_comm]
-    _ ≤ eLpNorm (s.indicator (f i)) p μ := eLpNorm_indicator_le _
-    _ ≤ ε := hε _ _ hs hμs
+protected theorem indicator (hf : UnifIntegrable f p μ) (s : Set α) :
+    UnifIntegrable (fun i ↦ s.indicator (f i)) p μ :=
+  hf.ae_mono fun i ↦ Eventually.of_forall fun x ↦ enorm_indicator_le_enorm_self (f i) x
 
 /-- Uniform integrability is preserved by restriction of the measure to a set. -/
-protected theorem restrict (hf : UnifIntegrable f p μ) (E : Set α) :
-    UnifIntegrable f p (μ.restrict E) := fun ε hε ↦ by
+protected theorem restrict (hf : UnifIntegrable f p μ) (s : Set α) :
+    UnifIntegrable f p (μ.restrict s) := by
+  refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ ?_
+
   obtain ⟨δ, hδ_pos, hδε⟩ := hf ε hε
   refine ⟨δ, hδ_pos, fun i s hs hμs ↦ ?_⟩
   rw [μ.restrict_apply hs, ← measure_toMeasurable] at hμs
