@@ -187,11 +187,7 @@ theorem comp_iff {r : α → Prop → Prop} : r ∘r (· ↔ ·) = r := by
   grind [comp_eq]
 
 theorem comp_assoc : (r ∘r p) ∘r q = r ∘r p ∘r q := by
-  funext a d
-  apply propext
-  constructor
-  · exact fun ⟨c, ⟨b, hab, hbc⟩, hcd⟩ ↦ ⟨b, hab, c, hbc, hcd⟩
-  · exact fun ⟨b, hab, c, hbc, hcd⟩ ↦ ⟨c, ⟨b, hab, hbc⟩, hcd⟩
+  grind [Comp]
 
 theorem flip_comp : flip (r ∘r p) = flip p ∘r flip r := by
   funext c a
@@ -274,8 +270,7 @@ instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → �
 
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
-  refine ⟨fun _ _ _ ⟨x, y, hxy, hx, hy⟩ ⟨y', z, hyz, hy', hz⟩ ↦ ?_⟩
-  exact ⟨x, z, trans_of r hxy <| trans_of r (hf y y' <| hy' ▸ hy) hyz, hx, hz⟩
+  grind [isTrans_def, Relation.Map]
 
 @[deprecated (since := "2026-03-27")] alias isTrans_map := IsTrans.map
 
@@ -385,12 +380,7 @@ instance stdSymm [Std.Symm r] : Std.Symm (ReflGen r) where
 @[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 instance [IsTrans α r] : IsPreorder α (ReflGen r) where
-  trans a b c h₁ h₂ := by
-    obtain (rfl | h₂) := h₂
-    · exact h₁
-    obtain (rfl | h₁) := h₁
-    · exact single h₂
-    exact single (trans_of r h₁ h₂)
+  trans := by grind [isTrans_def]
 
 end ReflGen
 
@@ -501,10 +491,7 @@ theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a
   | refl => exact Or.inl ac
   | tail _ bd IH =>
     rcases IH with (IH | IH)
-    · rcases cases_head IH with (rfl | ⟨e, be, ec⟩)
-      · exact Or.inr (single bd)
-      · cases U bd be
-        exact Or.inl ec
+    · grind [cases_head IH, Relator.RightUnique]
     · exact Or.inr (IH.tail bd)
 
 end ReflTransGen
@@ -932,10 +919,8 @@ protected instance Join.refl [Std.Refl r] : Std.Refl (Join r) where
 @[deprecated (since := "2026-06-10")] alias reflexive_join := Join.refl
 
 theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
-    IsTrans α (Join r) :=
-  ⟨fun _a b _c ⟨x, hax, hbx⟩ ⟨y, hby, hcy⟩ ↦
-  let ⟨z, hxz, hyz⟩ := h b x y hbx hby
-  ⟨z, trans_of r hax hxz, trans_of r hcy hyz⟩⟩
+    IsTrans α (Join r) := by
+  grind [isTrans_def, Join]
 
 @[deprecated (since := "2026-02-21")] alias transitive_join := isTrans_join
 
@@ -986,23 +971,10 @@ theorem Quot.eqvGen_exact (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
     (Quot.lift (Quotient.mk (EqvGen.setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
 
 theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
-  EqvGen.rec
-    (fun _ _ h ↦ Quot.sound h)
-    (fun _ ↦ rfl)
-    (fun _ _ _ IH ↦ Eq.symm IH)
-    (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
-    H
+  H.rec (fun _ _ ↦ Quot.sound) (fun _ ↦ rfl) (fun _ _ _ ↦ .symm) (fun _ _ _ _ _ ↦ .trans)
 
 theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
-  Iff.intro
-    (by
-      intro h
-      induction h with
-      | rel => assumption
-      | refl => exact h.1 _
-      | symm => apply h.symm; assumption
-      | trans _ _ _ _ _ hab hbc => exact h.trans hab hbc)
-    (EqvGen.rel a b)
+  ⟨by intro h; induction h <;> grind [Equivalence], .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
