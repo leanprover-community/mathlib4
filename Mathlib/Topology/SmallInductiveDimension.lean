@@ -131,9 +131,22 @@ theorem zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis :
     rw [zeroDimensionalSpace_iff_isTopologicalBasis]
     exact .of_hasBasis_nhds H
 
+theorem ZeroDimensionalSpace.of_hasBasis
+    (H : ∀ x : X, ∃ u : Set (Set X), (∀ s ∈ u, IsClopen s) ∧ (𝓝 x).HasBasis (· ∈ u) id) :
+    ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
+  intro x
+  obtain ⟨u, hu, hu'⟩ := H x
+  apply hu'.to_hasBasis'
+  · exact fun s hs ↦ ⟨s, ⟨hu s hs, mem_of_mem_nhds (hu'.mem_of_mem hs)⟩, subset_rfl⟩
+  · exact fun s ⟨hs, hx⟩ ↦ hs.isOpen.mem_nhds hx
+
 theorem exists_isClopen_mem_of_isOpen [ZeroDimensionalSpace X] {x : X} {U : Set X}
     (hU : IsOpen U) (hx : x ∈ U) : ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
   isTopologicalBasis_isClopen.mem_nhds_iff.1 (hU.mem_nhds hx)
+
+@[deprecated (since := "2026-07-23")]
+alias compact_exists_isClopen_in_isOpen := exists_isClopen_mem_of_isOpen
 
 instance [DiscreteTopology X] : ZeroDimensionalSpace X := by
   rw [zeroDimensionalSpace_iff_isTopologicalBasis]

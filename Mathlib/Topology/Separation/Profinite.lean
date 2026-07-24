@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Fintype.Option
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.SmallInductiveDimension
 
 /-!
 # Separation properties: profinite spaces
@@ -40,42 +41,27 @@ theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
 
 variable [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X]
 
-theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id :=
-  ⟨fun U => by
-    constructor
-    · have hx : connectedComponent x = {x} :=
-        totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
-      rw [connectedComponent_eq_iInter_isClopen] at hx
-      intro hU
-      let N := { s // IsClopen s ∧ x ∈ s }
-      rsuffices ⟨⟨s, hs, hs'⟩, hs''⟩ : ∃ s : N, s.val ⊆ U
-      · exact ⟨s, ⟨hs', hs⟩, hs''⟩
-      have : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
-      have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
-      have hdir : Directed GE.ge fun s : N => s.val := by
-        rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
-        exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
-      have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
-        rw [hx, mem_singleton_iff] at y_in
-        rwa [y_in]
-      exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
-    · rintro ⟨V, ⟨hxV, -, V_op⟩, hUV : V ⊆ U⟩
-      rw [mem_nhds_iff]
-      exact ⟨V, hUV, V_op, hxV⟩⟩
+instance : ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
+  refine fun x ↦ ⟨fun U ↦ ⟨fun hU ↦ ?_, fun ⟨V, ⟨hxV, V_op⟩, hUV⟩ ↦ ?_⟩⟩
+  · have hx : connectedComponent x = {x} :=
+      totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
+    rw [connectedComponent_eq_iInter_isClopen] at hx
+    let N := { s // IsClopen s ∧ x ∈ s }
+    have : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
+    have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
+    have hdir : Directed (· ≥ ·) fun s : N => s.val := by
+      rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
+      exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
+    have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := by grind
+    obtain ⟨⟨s, hs, hs'⟩, hs''⟩ := exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
+    exact ⟨s, ⟨hs, hs'⟩, hs''⟩
+  · rw [mem_nhds_iff]
+    exact ⟨V, hUV, hxV.isOpen, V_op⟩
 
-theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
-  apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.2
-  intro x U hxU U_op
-  have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
-  rcases (nhds_basis_clopen x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
-  use V
-  tauto
-
-/-- Every member of an open set in a compact Hausdorff totally disconnected space
-  is contained in a clopen set contained in the open set. -/
-theorem compact_exists_isClopen_in_isOpen {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
-    ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
-  isTopologicalBasis_isClopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
+@[deprecated isTopologicalBasis_isClopen (since := "2026-07-23")]
+theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
+  convert (isTopologicalBasis_isClopen (X := X)).nhds_hasBasis using 2 <;> tauto
 
 end Profinite
 
