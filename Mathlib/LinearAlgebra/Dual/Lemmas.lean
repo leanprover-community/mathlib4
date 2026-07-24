@@ -620,7 +620,7 @@ vanish on `W`.
 The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)

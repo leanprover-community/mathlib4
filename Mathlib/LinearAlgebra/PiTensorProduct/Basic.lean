@@ -599,7 +599,7 @@ This is the n-ary version of `TensorProduct.congr`
 -/
 noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
     (⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, t i :=
-  .ofLinear
+  .ofLinearMap
     (map (fun i ↦ f i))
     (map (fun i ↦ (f i).symm))
     (by ext; simp)
@@ -608,12 +608,13 @@ noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
 @[simp]
 theorem congr_tprod (f : Π i, s i ≃ₗ[R] t i) (m : Π i, s i) :
     congr f (tprod R m) = tprod R (fun (i : ι) ↦ (f i) (m i)) := by
-  simp only [congr, LinearEquiv.ofLinear_apply, map_tprod, LinearEquiv.coe_coe]
+  simp only [congr, LinearEquiv.coe_ofLinearMap, map_tprod, LinearEquiv.coe_coe]
 
 @[simp]
 theorem congr_symm_tprod (f : Π i, s i ≃ₗ[R] t i) (p : Π i, t i) :
     (congr f).symm (tprod R p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
-  simp only [congr, LinearEquiv.ofLinear_symm_apply, map_tprod, LinearEquiv.coe_coe]
+  simp only [congr, LinearEquiv.symm_ofLinearMap, LinearEquiv.coe_ofLinearMap, map_tprod,
+    LinearEquiv.coe_coe]
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, then `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
@@ -680,7 +681,7 @@ variable (s) in
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
-  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
+  LinearEquiv.ofLinearMap (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
 end
 
@@ -805,7 +806,7 @@ variable [Subsingleton ι] (i₀ : ι)
 
 /-- Tensor product over a singleton type with element `i₀` is equivalent to `s i₀`. -/
 def subsingletonEquiv : (⨂[R] i : ι, s i) ≃ₗ[R] s i₀ :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift
       { toFun f := f i₀
         map_update_add' m i := by rw [Subsingleton.elim i i₀]; simp
@@ -845,7 +846,7 @@ set_option backward.isDefEq.respectTransparency false in
 modules, use the non-dependent version `PiTensorProduct.tmulEquiv` instead. -/
 def tmulEquivDep :
     (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) ≃ₗ[R] ⨂[R] i, N i :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (TensorProduct.lift
       { toFun a := PiTensorProduct.lift (PiTensorProduct.lift
           (MultilinearMap.currySumEquiv (tprod R)) a)

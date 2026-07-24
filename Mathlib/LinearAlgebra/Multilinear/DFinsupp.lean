@@ -208,7 +208,7 @@ on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π�
 def fromDFinsuppEquiv :
     ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) N) ≃ₗ[R]
       MultilinearMap R (fun i ↦ Π₀ j : κ i, M i j) N :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     ((DFinsupp.lsum ℕ fun _ ↦ .id).compMultilinearMapₗ R ∘ₗ MultilinearMap.dfinsuppFamilyₗ)
     (LinearMap.pi fun p ↦ MultilinearMap.compLinearMapₗ fun i ↦ DFinsupp.lsingle (p i))
     (by ext f x; simp)

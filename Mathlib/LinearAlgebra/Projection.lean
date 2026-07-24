@@ -286,7 +286,7 @@ to its projection onto `q` along `p`; the backward direction sends an element of
 in `M ⧸ p`. -/
 @[simps! symm_apply]
 def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
-  .ofLinear
+  .ofLinearMap
     (p.liftQ (q.projectionOnto p h.symm) (by simp))
     (p.mkQ ∘ₗ q.subtype)
     (by ext; simp)
