@@ -151,7 +151,9 @@ class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 instance [Semiring α] : Distrib α := inferInstance
 instance [Semiring α] : MulZeroClass α := inferInstance
 instance [Semiring α] : MulZeroOneClass α := inferInstance
-attribute [instance] Semiring.toAddCommMonoid Semiring.toMonoid
+attribute [instance] Semiring.toAddCommMonoid
+-- Testing the hypothesis that most monoids are semirings.
+attribute [instance 1200] Semiring.toMonoid
 
 /-!
 ### Semirings
