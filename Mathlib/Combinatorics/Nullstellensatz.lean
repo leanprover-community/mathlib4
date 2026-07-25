@@ -213,10 +213,9 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
-  use h
-  suffices r = 0 by
-    rw [this, add_zero] at hf
-    exact ⟨fun i ↦ degLex_totalDegree_monotone (hh i), hf⟩
+  suffices hr' : r = 0 by
+    rw [hr', add_zero] at hf
+    exact ⟨h, fun i ↦ degLex_totalDegree_monotone (hh i), hf⟩
   apply eq_zero_of_eval_zero_at_prod_finset r S
   · intro i
     rw [degreeOf_eq_sup, Finset.sup_lt_iff (by simp [Sne i])]
@@ -279,16 +278,41 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   apply lt_of_le_of_lt _ (htS i)
   simp [← hpq, hq]
 
+private noncomputable def quotient_remainder (f : MvPolynomial σ R) (i : σ) (r : R) :
+    MvPolynomial σ R × MvPolynomial σ R :=
+  haveI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  let q :=
+    (degLex.div (fun _ ↦ (degLex.monic_X_sub_C i r).leadingCoeff_eq_one ▸ isUnit_one) f).choose
+  have hq := 
+    (degLex.div
+      (fun _ ↦ (degLex.monic_X_sub_C i r).leadingCoeff_eq_one ▸ isUnit_one) f
+      (b := fun _ : Unit ↦ X i - C r)).choose_spec
+  let r := hq.choose
+  ⟨q 0, r⟩
+
+private noncomputable def quotient (f : MvPolynomial σ R) (i : σ) (r : R) :
+    MvPolynomial σ R :=
+  (quotient_remainder f i r).1
+
+private noncomputable def remainder (f : MvPolynomial σ R) (i : σ) (r : R) :
+    MvPolynomial σ R :=
+  (quotient_remainder f i r).2
+
+@[simp]
+private theorem mul_quotient_add_remainder_eq {f : MvPolynomial σ R} {i : σ} {r : R} :
+    quotient f i r * (X i - C r) + remainder f i r = f := by
+  sorry
+
 /-- Division of `f` by the monic linear polynomial `X i - C r`: there exist a quotient `g`
 and a remainder `h` not involving `X i`. -/
-private lemma Alon.exists_eq_mul_X_sub_C_add [Nontrivial R]
-    (f : MvPolynomial σ R) (i : σ) (r : R) :
+private lemma Alon.exists_eq_mul_X_sub_C_add
+    [Nontrivial R] (f : MvPolynomial σ R) (i : σ) (r : R) :
     ∃ g h : MvPolynomial σ R, f = g * (X i - C r) + h ∧ h.degreeOf i = 0 := by
   haveI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨g, rem, hf, -, hrem⟩ := degLex.div (b := fun _ : Unit ↦ X i - C r)
-    (fun _ ↦ by rw [(degLex.monic_X_sub_C i r).leadingCoeff_eq_one]; exact isUnit_one) f
+    (fun _ ↦ (degLex.monic_X_sub_C i r).leadingCoeff_eq_one ▸ isUnit_one) f
   refine ⟨g 0, rem, ?_, ?_⟩
-  · rw [hf, Finsupp.linearCombination_unique, smul_eq_mul]
+  · rw [hf, linearCombination_unique, smul_eq_mul]
   · rw [← Nat.lt_one_iff, degreeOf_lt_iff Nat.one_pos]
     intro m hm
     rw [Nat.lt_one_iff]
@@ -339,7 +363,8 @@ private lemma Alon.coeff_quotient_eq_zero {i : σ} {r : R} {g h f : MvPolynomial
   refine lt_of_lt_of_le ?_
     (Finset.single_le_sum (f := fun j ↦ (m + single i (g.totalDegree + 1)) j)
       (fun j _ ↦ Nat.zero_le _) hmem)
-  rw [hDi]; omega
+  rw [hDi]
+  omega
 
 omit [Finite σ] in
 /-- Evaluating a polynomial not involving `X i` is unaffected by updating the `i`-th coordinate. -/
@@ -351,12 +376,8 @@ private lemma Alon.eval_update_of_degreeOf_eq_zero [DecidableEq σ]
   congr 1
   refine Finset.prod_congr rfl fun j hj ↦ ?_
   have hji : j ≠ i := by
-    rintro rfl
-    rw [Finsupp.mem_support_iff] at hj
-    apply hj
-    have hle := monomial_le_degreeOf j hd
-    rw [hdeg] at hle
-    omega
+    have := monomial_le_degreeOf j hd
+    grind only [Finsupp.mem_support_iff]
   rw [Function.update_of_ne hji]
 
 /--
@@ -441,22 +462,9 @@ theorem generalized_combinatorial_nullstellensatz
           grind only [single_apply]
       set S' : σ → Finset R := Function.update S i ((S i).erase r) with hS'def
       have hScard' (j : σ) : t₀ j < #(S' j) := by
-        by_cases hji : j = i
-        · grind only [tsub_apply, Function.update, single_apply, Finset.card_erase_of_mem]
-        · rw [hS'def, Function.update_of_ne hji, ht₀def, Finsupp.tsub_apply,
-            Finsupp.single_eq_of_ne hji, Nat.sub_zero]
-          exact hScard j
+        grind only [tsub_apply, Function.update, single_apply, Finset.card_erase_of_mem]
       obtain ⟨s, hs, hsg⟩ := ih g t₀ hdeg₀ (hB ▸ htc) hgmax S' hScard'
-      have hsS : ∀ j, s j ∈ S j := by
-        intro j
-        by_cases hji : j = i
-        · rw [hji]
-          have hmem := hs i
-          rw [hS'def, Function.update_self] at hmem
-          exact Finset.mem_of_mem_erase hmem
-        · have hmem := hs j
-          rw [hS'def, Function.update_of_ne hji] at hmem
-          exact hmem
+      have hsS : ∀ j, s j ∈ S j := by grind
       refine ⟨s, hsS, ?_⟩
       rw [hfgh, map_add, map_mul, map_sub, eval_X, eval_C, Hh s hsS, add_zero]
       refine mul_ne_zero hsg (sub_ne_zero.mpr ?_)
