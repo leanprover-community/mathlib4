@@ -702,8 +702,8 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
 
-/-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the cardinality of `G`, then
-there is a series of subgroups of cardinality `p ^ k` for `k` through `0` to `n`. -/
+/-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
+there is a chain of subgroups of size `p ^ k` for `k` through `0` to `n`. -/
 theorem exists_subgroup_tower [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val := by
   suffices ∃ f : Fin (n + 1) →o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val by
