@@ -76,7 +76,7 @@ def approxOrderOf (A : Type*) [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :
 @[to_additive mem_approx_add_orderOf_iff]
 theorem mem_approxOrderOf_iff {A : Type*} [SeminormedGroup A] {n : ℕ} {δ : ℝ} {a : A} :
     a ∈ approxOrderOf A n δ ↔ ∃ b : A, orderOf b = n ∧ a ∈ ball b δ := by
-  simp only [approxOrderOf, thickening_eq_biUnion_ball, mem_iUnion₂, mem_setOf_eq, exists_prop]
+  simp only [approxOrderOf, thickening_eq_biUnion_ball, mem_iUnion₂, mem_ofPred_eq, exists_prop]
 
 /-- In a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`, `wellApproximable A δ`
 is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it is the set of points that
@@ -115,7 +115,7 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
   rintro - ⟨a, ha, rfl⟩
   obtain ⟨b, hb : orderOf b = n * m, hab : a ∈ ball b δ⟩ := mem_approxOrderOf_iff.mp ha
   replace hb : b ^ m ∈ {y : A | orderOf y = n} := by
-    rw [mem_setOf_eq, orderOf_pow' b hm.ne', hb, Nat.gcd_mul_left_left, n.mul_div_cancel hm]
+    rw [mem_ofPred_eq, orderOf_pow' b hm.ne', hb, Nat.gcd_mul_left_left, n.mul_div_cancel hm]
   apply ball_subset_thickening hb (m * δ)
   convert! pow_mem_ball hm hab using 1
   simp only [nsmul_eq_mul]
@@ -124,7 +124,7 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
 theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
     a • approxOrderOf A n δ ⊆ approxOrderOf A (orderOf a * n) δ := by
   simp_rw [approxOrderOf, thickening_eq_biUnion_ball, ← image_smul, image_iUnion₂, image_smul,
-    smul_ball'', smul_eq_mul, mem_setOf_eq]
+    smul_ball'', smul_eq_mul, mem_ofPred_eq]
   refine iUnion₂_subset_iff.mpr fun b hb c hc => ?_
   simp only [mem_iUnion, exists_prop]
   refine ⟨a * b, ?_, hc⟩
@@ -135,7 +135,7 @@ theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
 theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
     a • approxOrderOf A n δ = approxOrderOf A n δ := by
   simp_rw [approxOrderOf, thickening_eq_biUnion_ball, ← image_smul, image_iUnion₂, image_smul,
-    smul_ball'', smul_eq_mul, mem_setOf_eq]
+    smul_ball'', smul_eq_mul, mem_ofPred_eq]
   replace han : ∀ {b : A}, orderOf b = n → orderOf (a * b) = n := by
     intro b hb
     rw [← hb] at han hn
@@ -146,11 +146,11 @@ theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
   have hf : Surjective f := by
     rintro ⟨b, hb⟩
     refine ⟨⟨a⁻¹ * b, ?_⟩, ?_⟩
-    · rw [mem_setOf_eq, ← orderOf_inv, mul_inv_rev, inv_inv, mul_comm]
+    · rw [mem_ofPred_eq, ← orderOf_inv, mul_inv_rev, inv_inv, mul_comm]
       apply han
       simpa
     · simp only [f, mul_inv_cancel_left]
-  simpa only [mem_setOf_eq, Subtype.coe_mk, iUnion_coe_set] using
+  simpa only [mem_ofPred_eq, Subtype.coe_mk, iUnion_coe_set] using
     hf.iUnion_comp fun b => ball (b : A) δ
 
 end approxOrderOf
@@ -159,7 +159,7 @@ namespace UnitAddCircle
 
 theorem mem_approxAddOrderOf_iff {δ : ℝ} {x : UnitAddCircle} {n : ℕ} (hn : 0 < n) :
     x ∈ approxAddOrderOf UnitAddCircle n δ ↔ ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ := by
-  simp only [mem_approx_add_orderOf_iff, mem_setOf_eq, ball, dist_eq_norm,
+  simp only [mem_approx_add_orderOf_iff, mem_ofPred_eq, ball, dist_eq_norm,
     AddCircle.addOrderOf_eq_pos_iff hn, mul_one]
   constructor
   · rintro ⟨y, ⟨m, hm₁, hm₂, rfl⟩, hx⟩; exact ⟨m, hm₁, hm₂, hx⟩
@@ -169,7 +169,7 @@ theorem mem_addWellApproximable_iff (δ : ℕ → ℝ) (x : UnitAddCircle) :
     x ∈ addWellApproximable UnitAddCircle δ ↔
       {n : ℕ | ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ n}.Infinite := by
   simp only [mem_add_wellApproximable_iff, ← Nat.cofinite_eq_atTop, cofinite.blimsup_set_eq,
-    mem_setOf_eq]
+    mem_ofPred_eq]
   refine iff_of_eq (congr_arg Set.Infinite <| ext fun n => ⟨fun hn => ?_, fun hn => ?_⟩)
   · exact (mem_approxAddOrderOf_iff hn.1).mp hn.2
   · have h : 0 < n := by obtain ⟨m, hm₁, _, _⟩ := hn; exact pos_of_gt hm₁

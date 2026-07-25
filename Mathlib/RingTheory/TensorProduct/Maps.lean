@@ -501,7 +501,9 @@ variable {R S T R' S' T' : Type*}
   (HS : fS.comp (algebraMap _ _) = (algebraMap _ _).comp fR)
   (HT : fT.comp (algebraMap _ _) = (algebraMap _ _).comp fR)
 
-/-- Heterobasic version of `Algebra.TensorProduct.map` as a ring homomorphism. -/
+/-- Heterobasic version of `Algebra.TensorProduct.map` as a ring homomorphism.
+
+Note that this would generalise `map` if we were to have `SemiAlgHom`. -/
 def mapRingHom : S ⊗[R] T →+* S' ⊗[R'] T' :=
   letI := fR.toAlgebra
   letI := ((algebraMap R' S').comp fR).toAlgebra

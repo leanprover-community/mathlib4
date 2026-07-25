@@ -128,8 +128,8 @@ noncomputable def concatCM :
   toFun fg := concat fg.val.1 fg.val.2
   continuous_toFun := by
     let S : Set (C(Icc a b, E) × C(Icc b c, E)) := {fg | fg.1 ⊤ = fg.2 ⊥}
-    change Continuous (S.restrict concat.uncurry)
-    refine continuousOn_iff_continuous_restrict.mp (fun fg hfg => ?_)
+    change Continuous (S.domRestrict concat.uncurry)
+    refine continuousOn_iff_continuous_domRestrict.mp (fun fg hfg => ?_)
     refine tendsto_concat ?_ hfg ?_ ?_
     · exact eventually_nhdsWithin_of_forall (fun _ => id)
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuousAt_fst

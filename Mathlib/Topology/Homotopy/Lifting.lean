@@ -98,7 +98,7 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     change g' (t n, a) ∈ (q e).source; rw [g'_a _ le_rfl]
     exact h_sub ⟨le_rfl, t_mono n.le_succ⟩
   · rw [← t_0]; exact ⟨t_mono n.zero_le, le_rfl⟩
-  · have ht := Set.mem_setOf.mp (frontier_le_subset_eq continuous_fst continuous_const hfr)
+  · have ht := Set.mem_ofPred.mp (frontier_le_subset_eq continuous_fst continuous_const hfr)
     have : f ta ∈ (q e).target := huv ⟨hu (by rw [ht]; exact ⟨le_rfl, t_mono n.le_succ⟩), hav⟩
     rw [if_pos this]
     -- here we use that {tₙ} × Nₙ₊₁ is mapped to the domain of `q e`

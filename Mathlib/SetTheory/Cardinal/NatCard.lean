@@ -196,10 +196,10 @@ theorem ecard_lt_ecard (hs : s.Finite) (hsub : s ⊂ t) : ENat.card s < ENat.car
       sdiff_union_of_subset hsub.subset]
   exact le_add_of_le_right hle
 
-theorem card_strictMonoOn : StrictMonoOn (α := Set α) (Nat.card ∘ (↑)) (setOf Set.Finite) :=
+theorem card_strictMonoOn : StrictMonoOn (α := Set α) (Nat.card ∘ (↑)) (Set.ofPred Set.Finite) :=
   fun _ _ _ ↦ card_lt_card
 
-theorem ecard_strictMonoOn : StrictMonoOn (α := Set α) (ENat.card ∘ (↑)) (setOf Set.Finite) :=
+theorem ecard_strictMonoOn : StrictMonoOn (α := Set α) (ENat.card ∘ (↑)) (Set.ofPred Set.Finite) :=
   fun _ hs _ _ ↦ hs.ecard_lt_ecard
 
 theorem eq_of_subset_of_card_le (ht : t.Finite) (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) :
