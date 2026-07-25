@@ -212,6 +212,32 @@ Authors: Name LastName
 -/
 "
 
+-- The required second line is configurable via the `linter.style.header.license` option.
+/--
+info: Text: `Released under Apache 2.0 license as described in the file LICENSE.`
+Range: (73, 140)
+Message: 'Second copyright line should be "Released under the Custom License."'
+-/
+#guard_msgs in
+set_option linter.style.header.license "Released under the Custom License." in
+#check_copyright
+"/-
+Copyright (c) 2026 The Beneficial AI Foundation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Name LastName
+-/
+"
+
+-- A header whose second line matches the custom license is accepted.
+set_option linter.style.header.license "Released under the Custom License." in
+#check_copyright
+"/-
+Copyright (c) 2026 The Beneficial AI Foundation. All rights reserved.
+Released under the Custom License.
+Authors: Name LastName
+-/
+"
+
 /--
 info: Text: `A uthors:`
 Range: (126, 135)

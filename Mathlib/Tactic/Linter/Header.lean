@@ -374,7 +374,7 @@ because they are files that test the linter.
 -/
 def headerTestFiles : NameSet := .ofList
   [`MathlibTest.Linter.Header.Basic, `MathlibTest.Linter.Header.Fail, `MathlibTest.Linter.Header.Verso,
-  `MathlibTest.Linter.Header.License, `MathlibTest.DirectoryDependencyLinter.Test]
+  `MathlibTest.DirectoryDependencyLinter.Test]
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
