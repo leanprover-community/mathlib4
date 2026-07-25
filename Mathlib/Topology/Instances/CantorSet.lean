@@ -39,7 +39,9 @@ This file defines the Cantor ternary set and proves a few properties.
 middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
 union of the images under the functions `(· / 3)` and `((2 + ·) / 3)` of `preCantorSet n`.
 -/
-def preCantorSet : ℕ → Set ℝ
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
   | n + 1 => (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n
 
@@ -52,7 +54,9 @@ def preCantorSet : ℕ → Set ℝ
 pre-Cantor sets. This means that the Cantor set is obtained by iteratively removing the
 open middle third of each subinterval, starting from the unit interval `[0, 1]`.
 -/
-def cantorSet : Set ℝ := ⋂ n, preCantorSet n
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 
 
 /-!
