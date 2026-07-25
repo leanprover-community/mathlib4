@@ -126,8 +126,8 @@ variable (R A) in
 `dual (nakayamaAlgEquiv R A b * a) = dual (a * b)` for all `a, b`. -/
 @[expose] noncomputable def nakayamaAlgEquiv : A ≃ₐ[R] A :=
   .ofLinearEquiv ((equivDual R A).flip.trans (equivDual R A).symm)
-    ((equivDual R A).injective (by ext a; simp))
-    (by simp [← (equivDual R A).injective.eq_iff, LinearMap.ext_iff, equivDual_apply, mul_assoc])
+    ((equivDual R A).injective (by simp [LinearMap.ext_iff]))
+    (by simp [← (equivDual R A).injective.eq_iff, LinearMap.ext_iff, mul_assoc])
 
 @[simp] theorem dual_nakayamaAlgEquiv_mul (a b : A) :
     dual (R := R) (nakayamaAlgEquiv R A b * a) = dual (a * b) := by
