@@ -5,9 +5,8 @@ Authors: Lua Viana Reis
 -/
 module
 
-public import Mathlib.Dynamics.BirkhoffSum.Basic
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 /-!
 # Measurability of Birkhoff sums
@@ -25,12 +24,12 @@ section Measurable
 variable [MeasurableSpace β] [MeasurableAdd₂ β] [MeasurableConstSMul R β]
 
 @[fun_prop]
-lemma birkhoffSum_measurable (hf : Measurable f) (hg : Measurable g) :
+lemma measurable_birkhoffSum (hf : Measurable f) (hg : Measurable g) :
     Measurable (birkhoffSum f g n) := by
   fun_prop [birkhoffSum]
 
 @[fun_prop]
-lemma birkhoffAverage_measurable (hf : Measurable f) (hg : Measurable g) :
+lemma measurable_birkhoffAverage (hf : Measurable f) (hg : Measurable g) :
     Measurable (birkhoffAverage R f g n) := by
   fun_prop [birkhoffAverage]
 
@@ -41,14 +40,14 @@ section AEStronglyMeasurable
 variable [TopologicalSpace β] [ContinuousAdd β] [ContinuousConstSMul R β]
 
 @[fun_prop]
-lemma birkhoffSum_aestronglyMeasurable (hf : MeasurePreserving f μ μ)
+lemma aestronglyMeasurable_birkhoffSum (hf : MeasurePreserving f μ μ)
     (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffSum f g n) μ := by
   apply Finset.aestronglyMeasurable_fun_sum
   exact fun i _ ↦ hg.comp_measurePreserving (hf.iterate i)
 
 @[fun_prop]
-lemma birkhoffAverage_aestronglyMeasurable (hf : MeasurePreserving f μ μ)
+lemma aestronglyMeasurable_birkhoffAverage (hf : MeasurePreserving f μ μ)
     (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffAverage R f g n) μ := by
   fun_prop [birkhoffAverage]

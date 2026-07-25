@@ -5,18 +5,27 @@ Authors: Lua Viana Reis
 -/
 module
 
-public import Mathlib.Dynamics.BirkhoffSum.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Integrability of Birkhoff sums
 -/
 
+public section
+
 open MeasureTheory
 
-variable {α : Type*} [MeasurableSpace α] {f : α → α} {g : α → ℝ} {n : ℕ} {μ : Measure α}
+variable {α β R : Type*} [MeasurableSpace α] [NormedAddCommGroup β]
+  [NormedDivisionRing R] [Module R β] [IsBoundedSMul R β]
+  {f : α → α} {g : α → β} {μ : Measure α} {n : ℕ}
 
 @[fun_prop]
-public lemma integrable_birkhoffSum (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
+lemma integrable_birkhoffSum (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
     Integrable (birkhoffSum f g n) μ :=
   integrable_finsetSum _ fun _ _ ↦ (hf.iterate _).integrable_comp_of_integrable hg
+
+@[fun_prop]
+lemma integrable_birkhoffAverage (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
+    Integrable (birkhoffAverage R f g n) μ := by
+  fun_prop [birkhoffAverage]
