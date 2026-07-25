@@ -472,6 +472,9 @@ theorem _root_.Measurable.measurableSet_graph
     forall_apply_eq_imp_iff₂, measurableSet_setOfPred]
   fun_prop (disch := measurability)
 
+instance [MeasurableSpace β] [CountablySeparated β] : MeasurableEq β :=
+⟨measurable_swap measurable_id.measurableSet_graph⟩
+
 end SeparatesPoints
 
 section MeasurableMemPartition
