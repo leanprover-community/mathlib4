@@ -123,6 +123,12 @@ protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
   filter_upwards [hfg n] with x hx
   simp only [indicator, mem_compl_iff, hx]
 
+protected theorem comp {ι' : Type*} (g : ι' → ι) (hf : UnifTight f p μ) :
+    UnifTight (f ∘ g) p μ := by
+  intro ε hε
+  obtain ⟨s, hμs, hs⟩ := hf ε hε
+  exact ⟨s, hμs, fun i ↦ hs (g i)⟩
+
 end UnifTight
 
 /-- If two functions agree a.e., then one is tight iff the other is tight. -/
@@ -336,18 +342,11 @@ measure to some function `g` in a finite measure space, then `f` converge in Lp 
 theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : MemLp g p μ)
     (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
-    (hfg : TendstoInMeasure μ f atTop g) : Tendsto (fun n ↦ eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
-  refine tendsto_of_subseq_tendsto fun ns hns => ?_
-  obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε => (hfg ε hε).comp hns
-  exact ⟨ms,
-    tendsto_Lp_of_tendsto_ae hp hp' (fun _ => hf _) hg
-      (fun ε hε => -- `UnifIntegrable` on a subsequence
-        let ⟨δ, hδ, hδ'⟩ := hui ε hε
-        ⟨δ, hδ, fun i s hs hμs => hδ' _ s hs hμs⟩)
-      (fun ε hε => -- `UnifTight` on a subsequence
-        let ⟨s, hμs, hfε⟩ := hut ε hε
-        ⟨s, hμs, fun i => hfε _⟩)
-      hms'⟩
+    (hfg : TendstoInMeasure μ f atTop g) :
+    Tendsto (fun n ↦ eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
+  refine tendsto_of_subseq_tendsto fun ns hns ↦ ?_
+  obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε ↦ (hfg ε hε).comp hns
+  exact ⟨ms, tendsto_Lp_of_tendsto_ae hp hp' (fun _ ↦ hf _) hg (hui.comp _) (hut.comp _) hms'⟩
 
 /-- **Vitali's convergence theorem** (non-finite measure version).
 
