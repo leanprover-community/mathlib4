@@ -487,8 +487,7 @@ theorem frobenius_pow_eq_pow_mod {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ}
 /-- Pointwise form of `frobenius_pow_eq_pow_mod`. -/
 theorem iterateFrobenius_mod {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ}
     (hcard : Fintype.card K = p ^ n) (m : ℕ) (x : K) :
-    iterateFrobenius K p m x =
-      iterateFrobenius K p (m % n) x := by
+    iterateFrobenius K p m x = iterateFrobenius K p (m % n) x := by
   rw [iterateFrobenius_eq_pow, iterateFrobenius_eq_pow, frobenius_pow_eq_pow_mod hcard m]
 
 open Polynomial
