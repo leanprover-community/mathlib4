@@ -893,7 +893,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
   · apply extend_function f
     obtain ⟨g⟩ := id h
     have := Infinite.of_injective _ g.injective
-    rw [← lift_mk_eq'] at h ⊢
+    rw [← mk_liftEq] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]
 
