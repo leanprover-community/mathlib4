@@ -85,7 +85,7 @@ end BirkhoffMax
 variable {g : α → ℝ}
 
 @[fun_prop]
-public lemma birkhoffMax_measurable [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
+public lemma measurable_birkhoffMax [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
     Measurable (birkhoffMax f g n) := by
   unfold birkhoffMax
   induction n <;> measurability
@@ -98,7 +98,7 @@ variable [MeasurableSpace α] (μ : Measure α := by volume_tac) (hf : MeasurePr
 include hf
 
 @[fun_prop]
-public lemma birkhoffMax_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
+public lemma aestronglyMeasurable_birkhoffMax (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
   induction n <;> measurability
@@ -106,20 +106,20 @@ public lemma birkhoffMax_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
 include hg
 
 @[fun_prop]
-public lemma birkhoffMax_integrable : Integrable (birkhoffMax f g n) μ := by
+public lemma integrable_birkhoffMax : Integrable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
   induction n with
   | zero => exact integrable_zero ..
-  | succ n hn => simpa using Integrable.sup hn (birkhoffSum_integrable hf hg)
+  | succ n hn => simpa using Integrable.sup hn (integrable_birkhoffSum hf hg)
 
 lemma birkhoffMax_integral_le :
     ∫ x, birkhoffMax f g n x ∂μ ≤
     ∫ x in (birkhoffMax f g n).support, g x ∂μ +
     ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ := by
-  have := hf.integrable_comp_of_integrable (birkhoffMax_integrable μ hf hg (n := n))
+  have := hf.integrable_comp_of_integrable (integrable_birkhoffMax μ hf hg (n := n))
   rw [←integral_add hg.restrict, ←setIntegral_support]
   · apply setIntegral_mono_on₀
-    · exact (birkhoffMax_integrable μ hf hg).restrict
+    · exact (integrable_birkhoffMax μ hf hg).restrict
     · exact .add hg.restrict this.restrict
     · exact AEStronglyMeasurable.nullMeasurableSet_support (by measurability)
     · intro x hx
@@ -131,7 +131,7 @@ lemma birkhoffMax_integral_le :
 lemma setIntegral_birkhoffMax_support_nonneg :
     0 ≤ ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
   have hg₁ : AEStronglyMeasurable (birkhoffMax f g n) μ := by measurability
-  have hg₂ : Integrable (birkhoffMax f g n) μ := birkhoffMax_integrable μ hf hg
+  have hg₂ : Integrable (birkhoffMax f g n) μ := integrable_birkhoffMax μ hf hg
   have hg₃ : Integrable (birkhoffMax f g n ∘ f) μ := hf.integrable_comp_of_integrable hg₂
   calc
     0 ≤ ∫ x in (birkhoffMax f g n).supportᶜ, birkhoffMax f g n (f x) ∂μ := by
