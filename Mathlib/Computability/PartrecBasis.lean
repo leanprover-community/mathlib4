@@ -31,7 +31,7 @@ inductive Partrec' : ∀ {n}, (List.Vector ℕ n →. ℕ) → Prop
   | prim {n f} : @Primrec' n f → @Partrec' n f
   | comp {m n f} (g : Fin n → List.Vector ℕ m →. ℕ) :
     Partrec' f → (∀ i, Partrec' (g i)) →
-      Partrec' (fun v ↦. (List.Vector.mOfFn fun i => g i v) >>= f)
+      Partrec' fun v ↦. (List.Vector.mOfFn fun i => g i v) >>= f
   | rfind {n} {f : List.Vector ℕ (n + 1) → ℕ} :
     @Partrec' (n + 1) f →
       Partrec' (fun v ↦. Nat.rfind fun n => decide (f (n ::ᵥ v) = 0))

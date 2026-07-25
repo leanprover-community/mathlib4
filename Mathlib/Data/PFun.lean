@@ -67,11 +67,12 @@ structure PFun (α β : Type*) where
 infixr:25 " →. " => PFun
 
 /-- `fun x ↦. f x` is notation for `PFun.mk fun x ↦ f x`. -/
-macro:max "fun " xs:Lean.Parser.Term.funBinder+ " ↦. " b:term : term =>
+macro:max ppAllowUngrouped "fun " xs:Lean.Parser.Term.funBinder+ " ↦. " b:term : term =>
   `(PFun.mk fun $xs* ↦ $b)
 
 /-- `fun x : α ↦. f x` is notation for `PFun.mk fun x : α ↦ f x`. -/
-macro:max "fun " xs:Lean.Parser.Term.funBinder+ " : " type:term " ↦. " b:term : term =>
+macro:max ppAllowUngrouped "fun " xs:Lean.Parser.Term.funBinder+ " : " type:term " ↦. "
+    b:term : term =>
   `(PFun.mk fun $xs* : $type ↦ $b)
 
 namespace PFun
@@ -278,6 +279,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     · refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
       · rw [WellFounded.fixF_eq]
+        -- Porting note: used to be simp [h₁, h₂]
         apply Part.mem_assert h₁
         split
         next e =>
