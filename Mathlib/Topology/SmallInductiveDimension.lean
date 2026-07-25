@@ -118,7 +118,7 @@ lemma zeroDimensionalSpace_iff_isTopologicalBasis :
     rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, sdiff_eq_empty] at ‹_›
   · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
 
-@[deprecated (since := "2026-06-21")]
+@[deprecated (since := "2026-07-24")]
 alias hasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis
 
 @[deprecated (since := "2026-06-21")]
@@ -167,10 +167,6 @@ theorem ZeroDimensionalSpace.of_hasBasis
   · exact fun i hi ↦ ⟨s i, ⟨hx i hi, mem_of_mem_nhds (hx'.mem_of_mem hi)⟩, subset_rfl⟩
   · exact fun s ⟨hs, hx⟩ ↦ hs.isOpen.mem_nhds hx
 
-instance [DiscreteTopology X] : ZeroDimensionalSpace X := by
-  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
-  simpa using isTopologicalBasis_opens (α := X)
-
 instance [T0Space X] [ZeroDimensionalSpace X] : TotallySeparatedSpace X := by
   simp_rw [totallySeparatedSpace_iff_exists_isClopen, mem_compl_iff]
   intro x y hxy
@@ -180,11 +176,10 @@ instance [T0Space X] [ZeroDimensionalSpace X] : TotallySeparatedSpace X := by
   exact fun V hV ↦ ⟨hxy V hV, (hxy Vᶜ hV.compl).mtr⟩
 
 instance [DiscreteTopology X] : ZeroDimensionalSpace X := by
-  apply ZeroDimensionalSpace.of_hasBasis
-  simpa using fun x ↦ ⟨_, _, _, Filter.hasBasis_pure x⟩
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+  simpa using isTopologicalBasis_opens (α := X)
 
 instance [IndiscreteTopology X] : ZeroDimensionalSpace X := by
-  apply ZeroDimensionalSpace.of_hasBasis
-  intro x
+  refine ZeroDimensionalSpace.of_hasBasis fun x ↦ ?_
   rw [IndiscreteTopology.nhds_eq]
   exact ⟨_, _, _, fun _ _ ↦ isClopen_univ, Filter.hasBasis_top⟩
