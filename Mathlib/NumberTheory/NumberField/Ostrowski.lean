@@ -60,7 +60,7 @@ lemma exists_num_denom_absolute_value_one {α : K} {v : HeightOneSpectrum (𝓞 
     simp_all [S, (toNNReal_le_one_iff hb).mp h_abs]
   -- Use the localization description of `S`-integers to choose a numerator and
   -- denominator in `𝓞 K`.
-  letI : Fact (Monoid.IsTorsion (ClassGroup (𝓞 K))) := fact_iff.mpr isTorsion_of_finite
+  letI : Fact (IsMulTorsion (ClassGroup (𝓞 K))) := fact_iff.mpr isMulTorsion_of_finite
   let γ : S.integer K := ⟨α, mem⟩
   obtain ⟨⟨x, ⟨y, hy_away, hy_nzd⟩⟩, h⟩ := IsLocalization.surj S.submonoid γ
   refine ⟨x, y, ?_, by simpa [adicAbv_coe_eq_one_iff, S] using hy_away⟩
