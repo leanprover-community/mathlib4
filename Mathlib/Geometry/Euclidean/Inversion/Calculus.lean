@@ -111,16 +111,15 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
 
 /-- Inversion with nonzero radius is not continuous at its center. -/
 theorem not_continuousAt_inversion_center [Nontrivial F] (hR : R ≠ 0) :
-    ¬ ContinuousAt (inversion c R) c := by
-  exact not_continuousAt_of_tendsto
+    ¬ ContinuousAt (inversion c R) c :=
+  not_continuousAt_of_tendsto
     (tendsto_inversion_nhdsNE_center_cobounded (c := c) (R := R) hR)
     nhdsWithin_le_nhds (Metric.disjoint_nhds_cobounded _)
 
 /-- The Fréchet derivative of inversion at its center is zero. -/
 theorem fderiv_inversion_center [Nontrivial F] (hR : R ≠ 0) :
-    fderiv ℝ (inversion c R) c = 0 := by
-  refine fderiv_zero_of_not_differentiableAt ?_
-  exact mt DifferentiableAt.continuousAt
+    fderiv ℝ (inversion c R) c = 0 :=
+  fderiv_zero_of_not_differentiableAt <| mt DifferentiableAt.continuousAt
     (not_continuousAt_inversion_center (c := c) (R := R) hR)
 
 /-- Formula for the Fréchet derivative of inversion, valid at every point. -/
