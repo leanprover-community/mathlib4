@@ -23,7 +23,8 @@ of time averages for dynamical systems.
 Let `(α, μ)` be a probability space and `f: α → α` be a measure-preserving transformation. The
 result states that, for any integrable function `φ  ∈ L¹(μ)`, the time averages
 `(1/n)∑_{k=0}^{n-1} φ(f^k x)` converge almost everywhere as `n → ∞` to a limit function `φ*`.
-Moreover the limit function `φ*` is essentially `f`-invariant and integrable with `∫ φ* dμ = ∫ φ dμ`.
+Moreover the limit function `φ*` is essentially `f`-invariant and integrable with
+`∫ φ* dμ = ∫ φ dμ`.
 If the system is ergodic, then `φ*` equals the constant `∫ f dμ` almost everywhere.
 
 The limit function `φ*` is equal to the conditional expectation of `φ` with respect to the σ-algebra
@@ -76,6 +77,12 @@ lemma birkhoffMaxDiff_aux {f : α → α} {g n x} :
     birkhoffMaxDiff f g n x = g x - (0 ⊓ (g x + birkhoffMax f g n (f x))) := by
   rw [sub_eq_sub_iff_add_eq_add, birkhoffMax_succ, max_add_min, zero_add]
 
+lemma birkhoffMaxDiff_antitone {f : α → α} {g : α → ℝ} : Antitone (birkhoffMaxDiff f g) := by
+  intro m n hmn x
+  simp only [birkhoffMaxDiff_aux]
+  gcongr
+  exact (birkhoffMax f g).mono hmn (f x)
+
 lemma birkhoffMaxDiff_tendsto_of_mem_divergentSet {f : α → α} {x g} (hx : x ∈ divergentSet f g) :
     Tendsto (birkhoffMaxDiff f g · x) atTop (𝓝 (g x)) := by
   have hx' : f x ∈ divergentSet f g := divergentSet_invariant.mpr hx
@@ -126,38 +133,7 @@ lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x 
   rw [← EReal.coe_ennreal_toReal hεt]
   exact_mod_cast havg
 
-  -- obtain ⟨M, hM⟩ : ∃ (M : ℝ), ∀ (n : ℕ), birkhoffSum f g (n + 1) x ≤ M := by
-  --   induction M' using EReal.rec with
-  --   | bot => exfalso; exact (EReal.bot_lt_coe _).not_ge (M_is_bound 0)
-  --   | top => contradiction
-  --   | coe M => exact ⟨M, by norm_cast at M_is_bound⟩
-  -- /- use archimedian property of reals -/
-  -- obtain ⟨N, hN⟩ := Archimedean.arch M hε
-  -- have upperBound (n : ℕ) (hn : N ≤ n) : birkhoffAverage ℝ f g (n + 1) x < ε := by
-  --   have : M < (n + 1) • ε := by
-  --     exact hN.trans_lt <| smul_lt_smul_of_pos_right (Nat.lt_succ_of_le hn) hε
-  --   rw [nsmul_eq_mul] at this
-  --   exact (inv_smul_lt_iff_of_pos (Nat.cast_pos.mpr (Nat.zero_lt_succ n))).mpr
-  --       ((hM n).trans_lt this)
-  -- /- conclusion -/
-  -- apply eventually_atTop.mpr
-  -- use N + 1
-  -- intro n hn
-  -- specialize upperBound n.pred (Nat.le_pred_of_lt hn)
-  -- rwa [← Nat.succ_pred_eq_of_pos (Nat.zero_lt_of_lt hn)]
-
 variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac) {g : α → ℝ}
-
-lemma birkhoffSum_integrable (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) {n} :
-    Integrable (birkhoffSum f g n) μ :=
-  integrable_finset_sum _ fun _ _ ↦ (hf.iterate _).integrable_comp_of_integrable hg
-
-lemma birkhoffMax_integrable (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) {n} :
-    Integrable (birkhoffMax f g n) μ := by
-  unfold birkhoffMax
-  induction n with
-  | zero => simpa
-  | succ n hn => simpa using Integrable.sup hn (birkhoffSum_integrable μ hf hg)
 
 lemma birkhoffMaxDiff_integrable (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) {n} :
     Integrable (birkhoffMaxDiff f g n) μ := by
@@ -181,7 +157,7 @@ lemma int_birkhoffMaxDiff_in_divergentSet_tendsto (hf : MeasurePreserving f μ �
     intro x
     rw [Real.norm_eq_abs]
     exact abs_le_max_abs_abs (by simp [birkhoffMaxDiff_aux])
-      (birkhoffMaxDiff_antitone (zero_le n) _)
+      (birkhoffMaxDiff_antitone n.zero_le _)
   · exact (ae_restrict_iff' (divergentSet_measurable hf.measurable hg')).mpr
       (ae_of_all _ fun _ hx ↦ birkhoffMaxDiff_tendsto_of_mem_divergentSet hx)
 
@@ -215,7 +191,7 @@ lemma nullMeasurableSpace_le [msα : MeasurableSpace α] {μ : Measure α} :
   fun s hs ↦ ⟨s, hs, ae_eq_refl s⟩
 
 lemma divergentSet_zero_meas_of_condexp_neg [hμ : IsProbabilityMeasure μ]
-    (h : ∀ᵐ x ∂μ, (μ[g|invariants f]) x < 0) (hf : MeasurePreserving f μ μ)
+    (h : ∀ᵐ x ∂μ, (μ[g | invariants f]) x < 0) (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ) (hg' : Measurable g) :
     μ (divergentSet f g) = 0 := by
   have pos : ∀ᵐ x ∂μ.restrict (divergentSet f g), 0 < -(μ[g|invariants f]) x := by
@@ -239,8 +215,8 @@ lemma divergentSet_zero_meas_of_condexp_neg [hμ : IsProbabilityMeasure μ]
 
 lemma ae_tendsTo_birkhoffAverage_of_condExp_neg [hμ : IsProbabilityMeasure μ]
     (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) (hg' : Measurable g)
-    (h : ∀ᵐ x ∂μ, (μ[g|invariants f]) x < 0) :
-    ∀ᵐ x ∂μ, limsup_le (birkhoffAverage ℝ f g · x) atTop 0 := by
+    (h : ∀ᵐ x ∂μ, (μ[g | invariants f]) x < 0) :
+    ∀ᵐ x ∂μ, limsup (birkhoffAverage ℝ f g · x |>.toEReal) atTop ≤ 0 := by
   apply Eventually.mono _ fun _ ↦ birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet
   apply ae_iff.mpr
   simp only [not_not, Set.setOf_mem_eq]
@@ -258,7 +234,8 @@ variable {α : Type*} {f : α → α} [MeasurableSpace α] (μ : Measure α := b
 /-- The time average is a.e., eventually not much less than the conditional expectation. -/
 lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
     (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) (hg' : Measurable g) :
-    ∀ᵐ x ∂μ, limsup_le (birkhoffAverage ℝ f g · x - (μ[g|invariants f] x + ε)) atTop 0 := by
+    ∀ᵐ x ∂μ, limsup
+      (fun n ↦ (birkhoffAverage ℝ f g n x - (μ[g|invariants f] x + ε)).toEReal) atTop ≤ 0 := by
   -- Let `ψ` denote the difference between `g` and the conditional expectation of `g` plus `ε`.
   let h := g - (μ[g|invariants f] + fun _ ↦ ε)
   have h_integrable : Integrable h μ := hg.sub (integrable_condExp.add (integrable_const _))
@@ -276,25 +253,20 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
     _ = - μ[fun _ ↦ ε|invariants f] := by simp
     _ = - fun _ ↦ ε := by rw [condExp_const <| invariants_le f]
   -- For typical points the time average of `ψ` is eventually non-negative.
-  have limsup_nonpos : ∀ᵐ x ∂μ, limsup_le (birkhoffAverage ℝ f h · x) atTop 0 := by
+  have limsup_nonpos : ∀ᵐ x ∂μ, limsup (birkhoffAverage ℝ f h · x |>.toEReal) atTop ≤ 0 := by
     suffices ∀ᵐ x ∂μ, μ[h|invariants f] x < 0 from
       ae_tendsTo_birkhoffAverage_of_condExp_neg μ hf h_integrable h_measurable this
     exact h_condexp_const.mono fun x hx ↦ by simp [hx, hε]
   -- Transfer the result on `ψ` to the required result on `g`.
   refine limsup_nonpos.mono fun x hx => ?_
-  suffices ∀ (n : ℕ), n ≠ 0 →
-      birkhoffAverage ℝ f h n x = birkhoffAverage ℝ f g n x - (μ[g|invariants f] x + ε) by
-    simp only [limsup_le, eventually_atTop] at hx ⊢
-    intro r hr
-    obtain ⟨n, hn⟩ := hx r hr
-    refine ⟨n + 1, fun k hk ↦ ?_⟩
-    rw [← this k (Nat.ne_zero_of_lt hk)]
-    exact hn k (Nat.le_of_succ_le hk)
-  intro n hn
-  have : μ[g|invariants f] ∘ f = μ[g|invariants f] :=
+  refine le_of_eq_of_le (limsup_congr ?_) hx
+  filter_upwards [eventually_ne_atTop 0] with n hn
+  have hcomp : μ[g|invariants f] ∘ f = μ[g|invariants f] :=
     comp_eq_of_measurable_invariants stronglyMeasurable_condExp.measurable
-  simp [h, birkhoffAverage_sub, birkhoffAverage_add, birkhoffAverage_of_comp_eq
-    (show _ = fun _ ↦ ε from rfl) hn, birkhoffAverage_of_comp_eq this hn]
+  have hn' : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hn
+  simp [h, birkhoffAverage_sub, birkhoffAverage_add,
+    birkhoffAverage_of_comp_eq ℝ (show (fun _ : α ↦ ε) ∘ f = fun _ ↦ ε from rfl) hn',
+    birkhoffAverage_of_comp_eq ℝ hcomp hn']
 
 /-- Same as the main result `ae_tendsTo_birkhoffAverage_condExp` but assuming `Measurable g`. -/
 private lemma ae_tendsTo_birkhoffAverage_condExp_aux
@@ -310,22 +282,19 @@ private lemma ae_tendsTo_birkhoffAverage_condExp_aux
     have p₂ := ae_tendsTo_birkhoffAverage_sub_condExp_nonneg μ hδ hf hg.neg hg'.neg
     have : μ[-g|invariants f] =ᵐ[μ] - μ[g|invariants f] := condExp_neg _ _
     refine ((p₁.and p₂).and this).mono fun x ⟨⟨hx₁, hx₂⟩, hx₃⟩ => ?_
-    simp only [limsup_le, eventually_atTop] at hx₁ hx₂ ⊢
-    obtain ⟨n₁, hn₁⟩ := hx₁ δ hδ
-    obtain ⟨n₂, hn₂⟩ := hx₂ δ hδ
-    simp_rw [δ] at hn₁ hn₂ ⊢
-    refine ⟨max n₁ n₂, fun m hm ↦ abs_lt.mpr ⟨?_, ?_⟩⟩
-    · specialize hn₂ m (le_of_max_le_right hm)
-      rw [hx₃, birkhoffAverage_neg] at hn₂
-      norm_num at hn₂
-      linarith
-    · specialize hn₁ m (le_of_max_le_left hm)
-      linarith
+    have hδ' : (0 : EReal) < (δ : ℝ) := by exact_mod_cast hδ
+    filter_upwards [eventually_lt_of_limsup_lt (hx₁.trans_lt hδ'),
+      eventually_lt_of_limsup_lt (hx₂.trans_lt hδ')] with m hm₁ hm₂
+    rw [EReal.coe_lt_coe_iff] at hm₁ hm₂
+    rw [hx₃, birkhoffAverage_neg] at hm₂
+    norm_num at hm₂
+    simp_rw [δ] at hm₁ hm₂
+    exact abs_lt.mpr ⟨by linarith, by linarith⟩
   refine this.mono fun x hx ↦ Metric.tendsto_atTop.mpr fun ε hε ↦ ?_
   obtain ⟨k, hk⟩ := Archimedean.arch 1 hε
   have hk' : 1 < (k + 1) • ε :=
     hk.trans_lt <| smul_lt_smul_of_pos_right (lt_add_one k) hε
-  simp only [eventually_atTop, ge_iff_le, Subtype.forall, gt_iff_lt] at hx
+  simp only [eventually_atTop, Subtype.forall, gt_iff_lt] at hx
   obtain ⟨N, hN⟩ := hx k.succ (Nat.zero_lt_succ k)
   refine ⟨N, fun n hn ↦ ?_⟩
   apply (hN n hn).trans
