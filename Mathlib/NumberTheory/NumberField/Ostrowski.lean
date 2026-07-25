@@ -32,7 +32,9 @@ absolute value, number field, Ostrowski's theorem
 
 @[expose] public section
 
-section Non_archimedean
+namespace NumberField
+
+section Nonarchimedean
 
 /-!
 ### The non-archimedean case
@@ -43,8 +45,6 @@ Every bounded absolute value on `K` is equivalent to .
 open IsDedekindDomain HeightOneSpectrum WithZeroMulInt NumberField NNReal
 
 variable {K : Type*} [Field K] [NumberField K] (f : AbsoluteValue K ℝ)
-
-section Nonarchimedean
 
 open NumberField.RingOfIntegers.HeightOneSpectrum
 
@@ -106,149 +106,102 @@ lemma integers_closed_unit_ball (x : 𝓞 K) : f x ≤ 1 := by
 
 include nonarch in
 /-- The open unit ball in `𝓞 K` is a non-zero prime ideal of `𝓞 K`. -/
-def prime_ideal (hf_nontriv : f.IsNontrivial) : IsDedekindDomain.HeightOneSpectrum (𝓞 K) where
+def prime_ideal (hf_nontriv : f.IsNontrivial) : HeightOneSpectrum (𝓞 K) where
   asIdeal := {
-    carrier := {a : (𝓞 K) | f a < 1}
-    add_mem' := by
-                  -- The ultrametric inequality makes the open unit ball additively closed.
-                  simp only [Set.mem_setOf_eq, map_add]
-                  exact fun ha hb ↦ lt_of_le_of_lt (nonarch _ _) (max_lt ha hb)
+    carrier := {a | f a < 1}
+    add_mem' := fun ha hb ↦ lt_of_le_of_lt (nonarch _ _) (max_lt ha hb)
     zero_mem' := by simp
     smul_mem' := by
-                  -- Algebraic integers have absolute value at most one, so multiplying by
-                  -- an algebraic integer preserves the open unit ball.
-                  simp only [Set.mem_setOf_eq, smul_eq_mul, map_mul]
-                  exact fun c x hx ↦ mul_lt_one_of_nonneg_of_lt_one_right
-                    (integers_closed_unit_ball f nonarch c) (apply_nonneg f ↑x) hx
+      simpa [Set.mem_ofPred_eq] using
+        (fun (c x : 𝓞 K) hx ↦
+          mul_lt_one_of_nonneg_of_lt_one_right
+            (integers_closed_unit_ball f nonarch c) (apply_nonneg f ↑x) hx)
   }
   isPrime := by
       rw [Ideal.isPrime_iff]
       constructor
-      -- The open unit ball is proper because `1` has absolute value `1`.
-      · simp [-ne_eq, -AddSubsemigroup.mk_eq_top, Ideal.ne_top_iff_one]
+      · rw [Ideal.ne_top_iff_one]
+        change ¬f (1 : RingOfIntegers K) < 1
+        simp
       -- If `x * y` has absolute value less than `1`, one of the two factors must.
-      · simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
-        Set.mem_setOf_eq, map_mul]
-        intro x y hxy
+      · intro x y hxy
+        change f (x * y) < 1 at hxy
+        rw [map_mul] at hxy
+        change f x < 1 ∨ f y < 1
         by_contra! h
         linarith [one_le_mul_of_one_le_of_one_le h.1 h.2]
   ne_bot := by
-      -- Nontriviality gives an element with absolute value different from `1`.
-      -- Writing it as a fraction of algebraic integers shows that one of the
-      -- numerator or denominator lies in the open unit ball.
-      rw [Submodule.ne_bot_iff]
-      simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_setOf_eq,
-        ne_eq]
-      obtain ⟨a, ha, hfa⟩ := hf_nontriv
-      obtain ⟨c, b, h3, rfl⟩ := IsFractionRing.div_surjective (A := 𝓞 K) a
-      have h_b_nezero : b ≠ 0 := nonZeroDivisors.ne_zero h3
-      by_cases h : f b < 1; exact ⟨b, h, h_b_nezero⟩
-      have h_c_nezero : c ≠ 0 := by
-        by_contra! h
-        simp [h] at ha
-      have h_b : f b = 1 := by linarith [integers_closed_unit_ball f nonarch b]
-      simp only [map_div₀, h_b, div_one, ne_eq] at hfa
-      have h_c_lt_one : f c < 1 := by
-        linarith [lt_of_le_of_ne (integers_closed_unit_ball f nonarch c) hfa]
-      exact ⟨c, h_c_lt_one, h_c_nezero⟩
+    rw [Submodule.ne_bot_iff]
+    change ∃ x : 𝓞 K, f x < 1 ∧ x ≠ 0
+    obtain ⟨a, ha, hfa⟩ := hf_nontriv
+    obtain ⟨c, b, h, rfl⟩ := IsFractionRing.div_surjective (A := 𝓞 K) a
+    by_cases hfb : f b < 1
+    · exact ⟨b, hfb, nonZeroDivisors.ne_zero h⟩
+    rw [map_div₀, le_antisymm (integers_closed_unit_ball f nonarch b) (le_of_not_gt hfb)] at hfa
+    grind [integers_closed_unit_ball]
 
---TODO: clean up
 open AbsoluteValue in
 include nonarch in
-/-- A nontrivial nonarchimedean absolute value on a number field is uniquely equal
-to an adic absolute value attached to a height-one prime of `𝓞 K`. -/
+/-- A nontrivial nonarchimedean absolute value on a number field is equal to a `v`-adic absolute
+value attached for some `v : HeightOneSpectrum (𝓞 K)`. -/
 theorem Ostr_nonarch (hf_nontriv : f.IsNontrivial) :
     ∃! P : IsDedekindDomain.HeightOneSpectrum (𝓞 K),
     ∃ b : ℝ≥0, ∃ hb : 1 < b,
     f = adicAbv P hb := by
-  -- Let `P` be the height-one prime given by the open unit ball.
+  -- Let `P` be the non-zero prime given by the open unit ball.
   let P := prime_ideal f nonarch hf_nontriv
   use P
-  simp only [forall_exists_index]
-  have h_norm := HeightOneSpectrum.one_lt_absNorm P
   -- Choose a uniformizer of `P`; its absolute value determines the base `b`.
-  rcases IsDedekindDomain.HeightOneSpectrum.intValuation_exists_uniformizer P with ⟨π, hπ⟩
+  rcases intValuation_exists_uniformizer P with ⟨π, hπ⟩
   -- Basic facts about the chosen uniformizer.
-  have hπ_ne_zero : π ≠ 0 := by
-    by_contra! h
-    rw [h] at hπ
-    simp at hπ
-    have := @WithZero.exp_ne_zero ℤ 1
-    contradiction
-  have hπ_zero_le_f : 0 < f π := by simp [hπ_ne_zero]
-  have hπ_f_lt_one : f π < 1 := by
-    exact (show (π : 𝓞 K) ∈ P.asIdeal ↔ f (π : K) < 1 from Iff.rfl).1 <|
-      (IsDedekindDomain.HeightOneSpectrum.intValuation_lt_one_iff_mem P π).1 <| by
-        rw [hπ]
-        rw [← WithZero.exp_zero, WithZero.exp_lt_exp]
-        norm_num
-  have hπ_val_ne_zero : P.valuation K (π : K) ≠ 0 := by simp_all
-  have hπ_toAdd: Multiplicative.toAdd (WithZero.unzero hπ_val_ne_zero) = -1 := by
-    simp_all [IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap P π, P]
+  have hπv_eq : P.valuation K π = WithZero.exp (-1) := by
+    simpa [IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap P π] using hπ
+  have hπv_ne : P.valuation K (π : K) ≠ 0 := by simp [hπv_eq]
+  have hπ_ne_zero : π ≠ 0 := by grind
+  have hπ_pos : 0 < f π := by simp [hπ_ne_zero]
+  have hπ_lt_one : f π < 1 := by
+    change π ∈ P.asIdeal
+    rw [← intValuation_lt_one_iff_mem, hπ, ← WithZero.exp_zero, WithZero.exp_lt_exp]
+    norm_num
+  have hπv : Multiplicative.toAdd (WithZero.unzero hπv_ne) = -1 := by
+    simp only [hπv_eq]
     rfl
-  -- Elements of `v`-adic absolute value `1` also have `f`-absolute value `1`.
-  -- First reduce to algebraic integers using the denominator lemma above.
-  have absolute_value_eq_one_of_vadic_abv_eq_one {x : K} (hx : x ≠ 0) {b : ℝ≥0} (hb : 1 < b)
-      (h : adicAbv P hb x = 1) : f x = 1 := by
-    obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_absolute_value_one hb (le_of_eq h)
-    have : y ≠ 0 ∧ z ≠ 0 := by
-      by_contra! h'
-      apply hx
-      by_cases h'' : y = 0
-      · simp_all
-      · simp_all [h' h'']
-    have absolute_value_eq_one_of_vadic_abv_eq_one_int {x : 𝓞 K} (hx : x ≠ 0) (h : adicAbv P hb (x : K) = 1) :
-      f x = 1 := by
-      -- For algebraic integers, being a `P`-adic unit means not lying in the
-      -- open unit ball, and the closed unit ball lemma gives the reverse bound.
-      rw [adicAbv_coe_eq_one_iff] at h
-      have : 1 ≤ f x := le_of_not_gt h
-      linarith [integers_closed_unit_ball f nonarch x]
-    simp_all
   let b : ℝ≥0 := ⟨(f π)⁻¹, by positivity⟩
   have hb : 1 < b := by
-    change (1 : ℝ) < (f π)⁻¹
-    exact (one_lt_inv₀ hπ_zero_le_f).2 hπ_f_lt_one
-  -- The chosen base makes the adic absolute value take the same value as `f` on
-  -- the uniformizer.
-  --let c := Real.logb (Ideal.absNorm P.asIdeal)⁻¹ (f π)
+    exact_mod_cast (one_lt_inv₀ hπ_pos).2 hπ_lt_one
+  -- Elements of `v`-adic absolute value `1` also have `f`-absolute value `1`.
+  have f_eq_one_of_adicAbv_eq_one {x : K} (hx : adicAbv P hb x = 1) : f x = 1 := by
+    obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_absolute_value_one hb (le_of_eq hx)
+    have int_unit {x : 𝓞 K} (hx : adicAbv P hb (x : K) = 1) : f x = 1 := by
+      rw [adicAbv_coe_eq_one_iff] at hx
+      exact le_antisymm (integers_closed_unit_ball f nonarch x) (le_of_not_gt hx)
+    have hy : adicAbv P hb (y : K) = 1 := by simpa [map_div₀, hz] using hx
+    simp [map_div₀, int_unit hy, int_unit hz]
+  -- The chosen base makes the adic absolute value take the same value as `f` on π.
   constructor
   · use b, hb
     ext x
-    by_cases hx : x = 0; simp [hx]
+    by_cases hx : x = 0
+    · simp [hx]
     -- Divide `x` by the matching power of the uniformizer. The quotient has
     -- `P`-adic absolute value `1`, so it has `f`-absolute value `1`.
-    have hx_val_ne_zero : P.valuation K x ≠ 0 := (Valuation.ne_zero_iff (P.valuation K)).mpr hx
-    have : (b : ℝ) = (f π)⁻¹ := rfl
-    simp [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef]
-    simp only [WithZeroMulInt.toNNReal_neg_apply _ hx_val_ne_zero, NNReal.coe_zpow, this]
-    rw [← neg_neg <| Multiplicative.toAdd (WithZero.unzero hx_val_ne_zero), ← inv_zpow', inv_inv,
-      ← map_zpow₀, ← mul_inv_eq_one₀ <| (AbsoluteValue.ne_zero_iff f).mpr <|
-      zpow_ne_zero _ (RingOfIntegers.coe_ne_zero_iff.mpr hπ_ne_zero), ← map_inv₀, ← map_mul]
-    rw [zpow_neg, inv_inv]
-    apply absolute_value_eq_one_of_vadic_abv_eq_one (mul_ne_zero hx
-      (zpow_ne_zero _ (RingOfIntegers.coe_ne_zero_iff.mpr hπ_ne_zero))) hb
-    simp [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, this,
-      WithZeroMulInt.toNNReal_neg_apply _ hπ_val_ne_zero,
-      WithZeroMulInt.toNNReal_neg_apply _ hx_val_ne_zero, hπ_toAdd]
-    have hπf_ne_zero : f (π : K) ≠ 0 :=
-      (AbsoluteValue.ne_zero_iff f).2 (RingOfIntegers.coe_ne_zero_iff.mpr hπ_ne_zero)
-    simpa [zpow_neg] using
-      inv_mul_cancel₀ (zpow_ne_zero (Multiplicative.toAdd (WithZero.unzero hx_val_ne_zero)) hπf_ne_zero)
+    have hxv_ne : P.valuation K x ≠ 0 := (Valuation.ne_zero_iff (P.valuation K)).mpr hx
+    have coe_b : (b : ℝ) = (f π)⁻¹ := rfl
+    simp only [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, AbsoluteValue.coe_mk,
+      MulHom.coe_mk, WithZeroMulInt.toNNReal_neg_apply _ hxv_ne, NNReal.coe_zpow, coe_b, inv_zpow]
+    apply eq_inv_of_mul_eq_one_left
+    rw [← map_zpow₀, ← map_mul]
+    apply f_eq_one_of_adicAbv_eq_one
+    simp [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, coe_b,
+      WithZeroMulInt.toNNReal_neg_apply _ hπv_ne, WithZeroMulInt.toNNReal_neg_apply _ hxv_ne, hπv]
+    field_simp
   · -- Uniqueness: the prime is recovered as the set of algebraic integers with
     -- absolute value less than `1`.
-    intro Q c hc heq
-    simp [IsDedekindDomain.HeightOneSpectrum.ext_iff, ← SetLike.coe_set_eq, Set.ext_iff]
-    intro x
-    constructor
-    · intro hxQ
-      have hQlt : adicAbv Q hc (x : K) < 1 :=
-        (adicAbv_coe_lt_one_iff (v := Q) (hb := hc) (r := x)).2 hxQ
-      have hflt : f x < 1 := by simpa [heq] using hQlt
-      exact (show x ∈ P.asIdeal ↔ f x < 1 by rfl).2 hflt
-    · intro hxP
-      have hflt : f x < 1 := (show x ∈ P.asIdeal ↔ f x < 1 by rfl).1 hxP
-      have hQlt : adicAbv Q hc (x : K) < 1 := by simpa [heq] using hflt
-      exact (adicAbv_coe_lt_one_iff (v := Q) (hb := hc) (r := x)).1 hQlt
+    simp only [forall_exists_index]
+    rintro Q _ hc rfl
+    ext x
+    exact (adicAbv_coe_lt_one_iff Q hc x).symm
 
 end Nonarchimedean
+
+end NumberField
