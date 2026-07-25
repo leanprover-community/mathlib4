@@ -73,9 +73,8 @@ lemma forall_dual_mul_right_eq_zero_iff {a : A} : (∀ b : A, dual (R := R) (b *
   intro x
   simpa using h ((equivDual R A).symm (dual ∘ₗ (mul R A).flip x))
 
-lemma nondegenerate_equivDual : (equivDual R A).Nondegenerate := by
-  simp [Nondegenerate, SeparatingLeft, SeparatingRight, forall_dual_mul_left_eq_zero_iff,
-    forall_dual_mul_right_eq_zero_iff]
+lemma nondegenerate_equivDual : (equivDual R A).Nondegenerate :=
+  ⟨fun _ ↦ forall_dual_mul_left_eq_zero_iff.mp, fun _ ↦ forall_dual_mul_right_eq_zero_iff.mp⟩
 
 instance : FrobeniusAlgebra R R where
   dual := .id
