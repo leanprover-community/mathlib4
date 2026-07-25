@@ -117,7 +117,7 @@ lemma birkhoffMax_integral_le :
     ∫ x in (birkhoffMax f g n).support, g x ∂μ +
     ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ := by
   have := hf.integrable_comp_of_integrable (integrable_birkhoffMax μ hf hg (n := n))
-  rw [←integral_add hg.restrict, ←setIntegral_support]
+  rw [← integral_add hg.restrict, ← setIntegral_support]
   · apply setIntegral_mono_on₀
     · exact (integrable_birkhoffMax μ hf hg).restrict
     · exact .add hg.restrict this.restrict
@@ -134,14 +134,14 @@ lemma setIntegral_birkhoffMax_support_nonneg :
   have hg₂ : Integrable (birkhoffMax f g n) μ := integrable_birkhoffMax μ hf hg
   have hg₃ : Integrable (birkhoffMax f g n ∘ f) μ := hf.integrable_comp_of_integrable hg₂
   calc
-    0 ≤ ∫ x in (birkhoffMax f g n).supportᶜ, birkhoffMax f g n (f x) ∂μ := by
-      exact integral_nonneg (fun x ↦ birkhoffMax_nonneg)
+    0 ≤ ∫ x in (birkhoffMax f g n).supportᶜ, birkhoffMax f g n (f x) ∂μ :=
+      integral_nonneg (fun x ↦ birkhoffMax_nonneg)
     _ = ∫ x, birkhoffMax f g n (f x) ∂μ -
-        ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ := by
-      exact setIntegral_compl₀ hg₁.nullMeasurableSet_support hg₃
+        ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ :=
+      setIntegral_compl₀ hg₁.nullMeasurableSet_support hg₃
     _ = ∫ x, birkhoffMax f g n x ∂μ -
         ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ := by
-      rw [←integral_map hf.aemeasurable (hf.map_eq.symm ▸ hg₁), hf.map_eq]
+      rw [← integral_map hf.aemeasurable (hf.map_eq.symm ▸ hg₁), hf.map_eq]
     _ ≤ ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
       grw [birkhoffMax_integral_le μ hf hg]
       grind
@@ -157,7 +157,7 @@ public def birkhoffSumSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
 
 lemma birkhoffSumSup_eq_iSup_birkhoffMax :
     birkhoffSumSup f g x = ⨆ n, ↑(birkhoffMax f g n x) := by
-  simp [birkhoffMax, Pi.partialSups_apply, ←map_partialSups' EReal.coe_max, birkhoffSumSup]
+  simp [birkhoffMax, Pi.partialSups_apply, ← map_partialSups' EReal.coe_max, birkhoffSumSup]
 
 /-- The maximal ergodic operator: the supremum of the Birkhoff averages of `g`. -/
 @[expose]
@@ -173,8 +173,8 @@ lemma setOf_birkhoffSumSup_pos_eq_iUnion_birkhoffMax_support :
 
 theorem lt_birkhoffAverage_iff_lt_birkhoffSum {a : ℝ} (hn : 0 < n) :
     a < birkhoffAverage ℝ f g n x ↔ 0 < birkhoffSum f (g - fun _ ↦ a) n x := by
-  nth_rw 2 [←smul_lt_smul_iff_of_pos_left (a := (↑n : ℝ)⁻¹) (by positivity)]
-  rw [smul_zero, ←birkhoffAverage, birkhoffAverage_sub]
+  nth_rw 2 [← smul_lt_smul_iff_of_pos_left (a := (↑n : ℝ)⁻¹) (by positivity)]
+  rw [smul_zero, ← birkhoffAverage, birkhoffAverage_sub]
   simp only [Pi.sub_apply, sub_pos]
   nth_rw 2 [birkhoffAverage_of_comp_eq _ rfl (by positivity)]
 
@@ -184,7 +184,7 @@ theorem lt_birkhoffAverageSup_iff_lt_birkhoffSumSup {a : ℝ} (ha : 0 < a) :
   · have ⟨n, hn⟩ := lt_iSup_iff.mp h
     apply lt_iSup_iff.mpr (.intro n _)
     norm_cast at *
-    rwa [←lt_birkhoffAverage_iff_lt_birkhoffSum]
+    rwa [← lt_birkhoffAverage_iff_lt_birkhoffSum]
     by_contra!
     apply Nat.eq_zero_of_le_zero at this
     simp only [this, birkhoffAverage_zero'] at hn
@@ -240,10 +240,10 @@ public theorem distribution_birkhoffAverageSup_le_integral (a : ℝ) (ha : 0 < a
       simp [lt_birkhoffAverageSup_iff_lt_birkhoffSumSup ha]
       ring
     _ ≤ ∫ x in {x | 0 < birkhoffSumSup f (g - fun _ ↦ a) x}, a ∂μ +
-        ∫ x in {x | 0 < birkhoffSumSup f (g - fun _ ↦ a) x}, g x - a ∂μ := by
-      exact le_add_of_nonneg_right (setIntegral_birkhoffSumSup_nonneg μ hf p₁)
+        ∫ x in {x | 0 < birkhoffSumSup f (g - fun _ ↦ a) x}, g x - a ∂μ :=
+      le_add_of_nonneg_right (setIntegral_birkhoffSumSup_nonneg μ hf p₁)
     _ = ∫ x in {x | a < birkhoffAverageSup f g x}, g x ∂μ := by
-      rw [←integral_add (integrable_const a).restrict]
+      rw [← integral_add (integrable_const a).restrict]
       · simp [lt_birkhoffAverageSup_iff_lt_birkhoffSumSup ha]
       · exact p₁.restrict
 
@@ -262,10 +262,10 @@ public theorem const_mul_distribution_birkhoffAverageSup_le_norm (a : ℝ) :
   · apply mul_nonpos_of_nonpos_of_nonneg ha measureReal_nonneg |>.trans
     exact integral_nonneg (fun _ ↦ norm_nonneg _)
   calc
-    _ ≤ ∫ x in {x | a < birkhoffAverageSup f (‖g ·‖) x}, ‖g x‖ ∂μ := by
-      exact distribution_birkhoffAverageSup_le_integral μ hf hg.norm a ha
-    _ ≤ ∫ x, ‖g x‖ ∂μ := by
-      exact setIntegral_le_integral hg.norm (ae_of_all _ (norm_nonneg <| g ·))
+    _ ≤ ∫ x in {x | a < birkhoffAverageSup f (‖g ·‖) x}, ‖g x‖ ∂μ :=
+      distribution_birkhoffAverageSup_le_integral μ hf hg.norm a ha
+    _ ≤ ∫ x, ‖g x‖ ∂μ :=
+      setIntegral_le_integral hg.norm (ae_of_all _ (norm_nonneg <| g ·))
 
 end NormedAddCommGroup
 
