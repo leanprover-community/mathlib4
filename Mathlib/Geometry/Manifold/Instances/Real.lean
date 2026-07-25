@@ -55,6 +55,7 @@ open scoped Manifold ContDiff ENNReal
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
 -/
+@[implicit_reducible]
 def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
 deriving TopologicalSpace
@@ -63,6 +64,7 @@ deriving TopologicalSpace
 The quadrant in `ℝ^n`, used to model manifolds with corners, made of all vectors with nonnegative
 coordinates.
 -/
+@[implicit_reducible]
 def EuclideanQuadrant (n : ℕ) : Type :=
   { x : EuclideanSpace ℝ (Fin n) // ∀ i : Fin n, 0 ≤ x i }
 deriving TopologicalSpace
@@ -147,7 +149,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
-  simpa only [mem_sdiff, mem_setOf_eq, not_lt] using antisymm_iff
+  simpa only [mem_sdiff, mem_ofPred_eq, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -167,7 +169,6 @@ theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the scope `Manifold`, use the shortcut `𝓡∂ n`.
@@ -200,7 +201,6 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
       (PiLp.continuous_apply 2 _ 0).max continuous_const).subtype_mk _
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanQuadrant n)`, used as a
 model for manifolds with corners -/
@@ -261,7 +261,6 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       apply range_euclideanHalfSpace
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -271,14 +270,13 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
-  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_right,
-    imp_self, implies_true]
+  map_source' := by simp
   map_target' := by
-    simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
+    simp only [min_lt_iff, mem_ofPred_eq]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
-    simp only [mem_setOf_eq, mem_Icc] at hz h'z
+    simp only [mem_ofPred_eq, mem_Icc] at hz h'z
     simp only [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
@@ -309,7 +307,6 @@ end Fact.Manifold
 
 open Fact.Manifold
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IccLeftChart_extend_bot : (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
   norm_num [IccLeftChart, modelWithCornersEuclideanHalfSpace_zero]
   congr
@@ -325,9 +322,8 @@ lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.v
 lemma IccLeftChart_extend_bot_mem_frontier :
     (IccLeftChart x y).extend (𝓡∂ 1) ⊥ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
-    mem_setOf, PiLp.zero_apply]
+    mem_ofPred, PiLp.zero_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -338,14 +334,13 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   toFun z := ⟨toLp 2 fun _ ↦ y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
     ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
-  map_source' := by simp only [mem_setOf_eq, Fin.isValue, sub_lt_sub_iff_left,
-    imp_self, implies_true]
+  map_source' := by simp
   map_target' := by
-    simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
+    simp only [lt_max_iff, mem_ofPred_eq]; intro z hz; left
     linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
-    simp only [mem_setOf_eq, mem_Icc] at hz h'z
+    simp only [mem_ofPred_eq, mem_Icc] at hz h'z
     simp only [Fin.isValue, sub_eq_add_neg, neg_add_rev, neg_neg,
       add_neg_cancel_comm_assoc, hz, sup_of_le_left]
   right_inv' := by
@@ -367,7 +362,6 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
   norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
@@ -376,7 +370,7 @@ lemma IccRightChart_extend_top :
 lemma IccRightChart_extend_top_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
-    mem_setOf, PiLp.zero_apply]
+    mem_ofPred, PiLp.zero_apply]
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
@@ -445,7 +439,6 @@ lemma boundary_product [I.Boundaryless] :
     (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {⊥, ⊤} := by
   rw [I.boundary_of_boundaryless_left, boundary_Icc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The manifold structure on `[x, y]` is smooth. -/
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by

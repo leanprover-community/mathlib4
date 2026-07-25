@@ -47,7 +47,7 @@ open Finset Function
 
 namespace SimpleGraph
 
-variable {V : Type*} (G : SimpleGraph V) {e : Sym2 V}
+variable {V : Type*} (G H : SimpleGraph V) {e : Sym2 V}
 
 section EdgeFinset
 
@@ -99,7 +99,8 @@ theorem edgeFinset_sup [Fintype (edgeSet (G₁ ⊔ G₂))] [DecidableEq V] :
     (G₁ ⊔ G₂).edgeFinset = G₁.edgeFinset ∪ G₂.edgeFinset := by simp [edgeFinset]
 
 @[simp]
-theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeFinset ∩ G₂.edgeFinset := by
+theorem edgeFinset_inf [Fintype (G₁ ⊓ G₂).edgeSet] [DecidableEq V] :
+    (G₁ ⊓ G₂).edgeFinset = G₁.edgeFinset ∩ G₂.edgeFinset := by
   simp [edgeFinset]
 
 @[simp]
@@ -196,6 +197,10 @@ protected alias ⟨IsIsolated.of_neighborFinset_eq_empty, IsIsolated.neighborFin
 
 attribute [simp] IsIsolated.neighborFinset_eq_empty
 
+theorem disjoint_neighborFinset_of_disjoint [Fintype <| H.neighborSet v] (h : Disjoint G H) :
+    Disjoint (G.neighborFinset v) (H.neighborFinset v) := by
+  simp [← Finset.disjoint_coe, disjoint_neighborSet.mpr h v]
+
 /-- `G.degree v` is the number of vertices adjacent to `v`. -/
 def degree : ℕ := #(G.neighborFinset v)
 
@@ -287,6 +292,10 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
 theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v ⊆ G.edgeFinset :=
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
+
+theorem disjoint_incidenceFinset_of_disjoint [DecidableEq V] [Fintype <| H.neighborSet v]
+    (h : Disjoint G H) : Disjoint (G.incidenceFinset v) (H.incidenceFinset v) := by
+  simp [← Finset.disjoint_coe, disjoint_incidenceSet.mpr h v]
 
 /-- The degree of a vertex is at most the number of edges. -/
 theorem degree_le_card_edgeFinset [Fintype G.edgeSet] :

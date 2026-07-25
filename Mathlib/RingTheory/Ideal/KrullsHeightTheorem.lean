@@ -51,7 +51,7 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
   have : Ring.KrullDimLE 0 (R ⧸ I) := Ring.krullDimLE_zero_iff.mpr fun J prime ↦
     Ideal.isMaximal_of_isIntegral_of_isMaximal_comap _ <| by
       convert! IsLocalRing.maximalIdeal.isMaximal R
-      rw [Ideal.minimalPrimes, Set.mem_setOf] at hp
+      rw [Ideal.minimalPrimes, Set.mem_ofPred] at hp
       have := prime.comap (Ideal.Quotient.mk I)
       exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
   IsNoetherianRing.isArtinianRing_of_krullDimLE_zero
@@ -194,7 +194,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
     have := hp.isPrime
     cases n with
     | zero =>
-      rw [ENat.coe_zero, nonpos_iff_eq_zero, height_eq_zero_iff, minimalPrimes]
+      rw [ENat.natCast_zero, nonpos_iff_eq_zero, height_eq_zero_iff, minimalPrimes]
       simp_all
     | succ n =>
       wlog hR : ∃ (_ : IsLocalRing R), p = maximalIdeal R
@@ -204,7 +204,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
         exact this _ (s.image (algebraMap R (Localization p.primeCompl))) (by simpa using hp)
           inferInstance _ H (Finset.card_image_le.trans hn) ⟨inferInstance, rfl⟩
       obtain ⟨_, rfl⟩ := hR
-      simp_rw [height_le_iff_covBy, ENat.coe_add, ENat.coe_one, ENat.lt_coe_add_one_iff]
+      simp_rw [height_le_iff_covBy, ENat.natCast_add, ENat.natCast_one, ENat.lt_natCast_add_one_iff]
       intro q hq hpq hq'
       obtain ⟨x, s', hxs', rfl, hxq⟩ : ∃ x s', x ∉ s' ∧ s = insert x s' ∧ x ∉ q := by
         have : ¬(s : Set R) ⊆ q := by
@@ -271,7 +271,7 @@ lemma Ideal.height_le_spanRank (I : Ideal R) (hI : I ≠ ⊤) :
 
 instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
     I.FiniteHeight := finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl
-  fun h ↦ Or.inr <| (I.height_le_spanFinrank h).trans_lt (ENat.coe_lt_top _)
+  fun h ↦ Or.inr <| (I.height_le_spanFinrank h).trans_lt (ENat.natCast_lt_top _)
 
 instance [IsLocalRing R] : FiniteRingKrullDim R := by
   apply finiteRingKrullDim_iff_ne_bot_and_top.mpr
@@ -286,12 +286,12 @@ instance [IsLocalRing R] : FiniteRingKrullDim R := by
 lemma Ideal.exists_spanRank_eq_and_height_eq (I : Ideal R) (hI : I ≠ ⊤) :
     ∃ J ≤ I, J.spanRank = I.height ∧ J.height = I.height := by
   obtain ⟨J, hJ₁, hJ₂, hJ₃⟩ := exists_spanRank_le_and_le_height_of_le_height I _
-    (ENat.coe_toNat_le_self I.height)
-  rw [ENat.coe_toNat_eq_self.mpr (Ideal.height_ne_top hI)] at hJ₃
+    (ENat.natCast_toNat_le_self I.height)
+  rw [ENat.natCast_toNat_eq_self.mpr (Ideal.height_ne_top hI)] at hJ₃
   refine ⟨J, hJ₁, le_antisymm ?_ (le_trans ?_ (J.height_le_spanRank ?_)),
     le_antisymm (Ideal.height_mono hJ₁) hJ₃⟩
   · convert! hJ₂
-    exact Cardinal.ofENat_eq_nat.mpr (ENat.coe_toNat (I.height_ne_top hI)).symm
+    exact Cardinal.ofENat_eq_nat.mpr (ENat.natCast_toNat (I.height_ne_top hI)).symm
   · exact Cardinal.ofENat_le_ofENat_of_le hJ₃
   · rintro rfl
     exact hI (top_le_iff.mp hJ₁)

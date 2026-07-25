@@ -129,6 +129,14 @@ theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p
   rw [p.length_darts] at h
   ext <;> simp [p.getVert_eq_support_getElem (le_of_lt h), p.getVert_eq_support_getElem h]
 
+theorem getElem_edges {p : G.Walk u v} {i : ℕ} (h : i < p.edges.length) :
+    p.edges[i] = s(p.getVert i, p.getVert (i + 1)) := by
+  simp [getElem_edges_eq_edge_getElem_darts, darts_getElem_eq_getVert]
+
+theorem mk_mem_edges_iff_exists {u' v' : V} (p : G.Walk u v) :
+    s(u', v') ∈ p.edges ↔ ∃ i < p.length, s(p.getVert i, p.getVert (i + 1)) = s(u', v') := by
+  constructor <;> grind [getElem_edges, List.mem_iff_getElem]
+
 theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.support) :
     G.Adj u' v' := by
   have ⟨k, hk, h⟩ := List.infix_iff_getElem?.mp h

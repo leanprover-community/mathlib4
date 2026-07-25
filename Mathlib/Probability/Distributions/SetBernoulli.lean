@@ -48,22 +48,22 @@ noncomputable def setBernoulli : Measure (Set ι) :=
 @[inherit_doc] scoped notation "setBer(" u ", " p ")" => setBernoulli u p
 
 instance : IsProbabilityMeasure setBer(u, p) :=
-  MeasurableEquiv.setOf.symm.measurableEmbedding.isProbabilityMeasure_comap <| .of_forall fun P ↦
-    ⟨{i | P i}, rfl⟩
+  MeasurableEquiv.setOfPred.symm.measurableEmbedding.isProbabilityMeasure_comap <|
+    .of_forall fun P ↦ ⟨{i | P i}, rfl⟩
 
 variable (u p) in
 lemma setBernoulli_eq_map :
     setBer(u, p) = .map (fun p : ι → Prop ↦ {i | p i})
       (infinitePi fun i : ι ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False) :=
-  MeasurableEquiv.setOf.comap_symm
+  MeasurableEquiv.setOfPred.comap_symm
 
 lemma setBernoulli_apply (S : Set (Set ι)) :
     setBer(u, p) S = (infinitePi fun i ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False)
-      ((fun t i ↦ i ∈ t) '' S) := MeasurableEquiv.setOf.symm.measurableEmbedding.comap_apply ..
+      ((fun t i ↦ i ∈ t) '' S) := MeasurableEquiv.setOfPred.symm.measurableEmbedding.comap_apply ..
 
 lemma setBernoulli_apply' (S : Set (Set ι)) :
     setBer(u, p) S = (infinitePi fun i ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False)
-      ((fun p ↦ {i | p i}) ⁻¹' S) := MeasurableEquiv.setOf.symm.comap_apply ..
+      ((fun p ↦ {i | p i}) ⁻¹' S) := MeasurableEquiv.setOfPred.symm.comap_apply ..
 
 variable (u) in
 @[simp] lemma setBernoulli_zero : setBer(u, 0) = dirac ∅ := by simp [setBernoulli_eq_map]
@@ -75,8 +75,8 @@ section Countable
 variable [Countable ι]
 
 lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
-  simp only [Filter.Eventually, mem_ae_iff, Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem,
-    Set.setOf_exists, Set.setOf_and, measure_iUnion_null_iff]
+  simp only [Filter.Eventually, mem_ae_iff, Set.compl_ofPred, Set.not_subset_iff_exists_mem_notMem,
+    Set.ofPred_exists, Set.ofPred_and, measure_iUnion_null_iff]
   rintro i
   by_cases hi : i ∈ u
   · simp [*]
@@ -118,8 +118,8 @@ variable (p) in
       rw [tprod_eq_prod, Finset.prod_congr rfl] <;>
         simp +contextual [ite_add_ite, mt (@hsu _), ← ENNReal.coe_add]
     _ = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (↑u \ s).ncard := by
-      simp [Finset.prod_ite, ← Set.ncard_coe_finset, Set.setOf_and,
-        Set.inter_eq_right.2 hsu, ← Set.compl_setOf, Set.sdiff_eq_compl_inter, Set.inter_comm]
+      simp [Finset.prod_ite, ← Set.ncard_coe_finset, Set.ofPred_and,
+        Set.inter_eq_right.2 hsu, ← Set.compl_ofPred, Set.sdiff_eq_compl_inter, Set.inter_comm]
 
 @[simp]
 lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
@@ -131,12 +131,12 @@ lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I)
       (u.ncard.choose k) * p ^ k * (1 - p) ^ (u.ncard - k) := by
   have : {s ⊆ u | s.ncard ∈ ({k} : Set ℕ)}.Finite := hu.finite_subsets.subset (by grind)
   rw [measureReal_def, map_ncard_setBernoulli_apply, ← measureReal_def,
-    ← Set.biUnion_of_singleton (setOf _)]
+    ← Set.biUnion_of_singleton (Set.ofPred _)]
   simp_rw [← this.mem_toFinset]
   rw [measureReal_biUnion_finset (by simp) (by simp)]
   have h1 s (hs : s ∈ this.toFinset) :
       setBer(u, p).real {s} = p ^ k * (1 - p) ^ (u.ncard - k) := by
-    simp only [Set.mem_singleton_iff, Set.Finite.mem_toFinset, Set.mem_setOf_eq] at hs
+    simp only [Set.mem_singleton_iff, Set.Finite.mem_toFinset, Set.mem_ofPred_eq] at hs
     rw [setBernoulli_real_singleton _ hs.1 hu, Set.ncard_sdiff' hs.1 hu, hs.2]
   rw [Finset.sum_congr rfl h1, Finset.sum_const, nsmul_eq_mul, mul_assoc,
     ← Set.ncard_eq_toFinset_card _ _]
