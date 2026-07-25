@@ -181,7 +181,7 @@ alias IsOpen.locPathConnectedSpace := IsOpen.locallyPathConnectedSpace
 theorem IsOpen.isConnected_iff_isPathConnected {U : Set X} (U_op : IsOpen U) :
     IsConnected U ↔ IsPathConnected U := by
   rw [isConnected_iff_connectedSpace, isPathConnected_iff_pathConnectedSpace]
-  haveI := U_op.locallyPathConnectedSpace
+  have := U_op.locallyPathConnectedSpace
   exact pathConnectedSpace_iff_connectedSpace.symm
 
 /-- Locally path-connected spaces are locally connected. -/

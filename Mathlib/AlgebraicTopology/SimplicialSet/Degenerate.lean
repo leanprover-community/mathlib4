@@ -34,7 +34,7 @@ variable (X : SSet.{u})
 /-- An `n`-simplex of a simplicial set `X` is degenerate if it is in the range
 of `X.map f.op` for some morphism `f : [n] ⟶ [m]` with `m < n`. -/
 def degenerate (n : ℕ) : Set (X _⦋n⦌) :=
-  setOf (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌),
+  Set.ofPred (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌),
     x ∈ Set.range (X.map f.op))
 
 /-- The set of `n`-dimensional non-degenerate simplices in a simplicial

@@ -70,7 +70,7 @@ def loopAlgebraEquivLaurent :
 
 namespace LoopAlgebra
 
-open Classical in
+open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
 def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
   TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis A R)
@@ -122,7 +122,7 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
   val := (residuePairing R A L Φ).compr₂ (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm
   property := by
     refine Cohomology.mem_twoCochain_iff.mpr fun f ↦ ?_
-    letI F := toFinsupp R A L
+    let F := toFinsupp R A L
     suffices ((F f).sum fun a v ↦ a • Φ (F f (-a)) v) = 0 by simpa
     classical
     set s := (F f).support ∪ (F f).support.image (Equiv.neg A) with hs

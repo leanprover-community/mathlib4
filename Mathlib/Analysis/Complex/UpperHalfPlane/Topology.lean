@@ -186,6 +186,14 @@ lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
   simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
 
+@[fun_prop]
+lemma continuousOn_ofComplex_I_mul :
+    ContinuousOn (fun t : ℝ ↦ ofComplex (I * t)) (Set.Ioi 0) := by
+  simp only [ofComplex_apply_eq_ite, continuousOn_iff_continuous_domRestrict,
+    continuous_induced_rng]
+  have : Continuous (fun t : ℝ ↦ Complex.I * t) := by fun_prop
+  exact (this.comp continuous_subtype_val).congr (by simp +contextual)
+
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext
   rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos)]

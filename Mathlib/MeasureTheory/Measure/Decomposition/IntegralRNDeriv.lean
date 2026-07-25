@@ -168,7 +168,7 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral (hf : StronglyMeasurable f)
     have h_compProd : (fun p ↦ μ.rnDeriv ν p.1 * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
         (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) := (rnDeriv_compProd hκη ν).symm
     rwa [Filter.EventuallyEq, Measure.ae_compProd_iff] at h_compProd
-    simp only [measurableSet_setOf]
+    simp only [measurableSet_setOfPred]
     fun_prop
   filter_upwards [h_ae1, h_ae2, h_lt_top, h_integrable.1, h_int.1]
     with a h_eq_one h_mul_eq h_lt_top h_int' h_int
