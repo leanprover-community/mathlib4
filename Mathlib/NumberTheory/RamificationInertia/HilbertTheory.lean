@@ -745,7 +745,7 @@ section compositum
 variable [CommRing A] [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K] [Algebra A L]
   [IsScalarTower A K L] [Algebra A B] [IsScalarTower A B L] [IsDedekindDomain B]
   [FiniteDimensional K L] [Module.Finite A B]
-  {p : Ideal A} [p.IsMaximal] [P.IsMaximal] [P.LiesOver p] [PerfectField p.ResidueField]
+  (p : Ideal A) [p.IsMaximal] [P.IsMaximal] [P.LiesOver p] [PerfectField p.ResidueField]
   (F₁ F₂ : IntermediateField K L) {B₁ B₂ : Type*}
   [CommRing B₁] [IsDedekindDomain B₁] [Algebra A B₁] [Algebra B₁ F₁] [IsFractionRing B₁ F₁]
   [Algebra B₁ B] [Algebra B₁ L] [IsScalarTower B₁ F₁ L] [IsScalarTower B₁ B L]
@@ -761,8 +761,7 @@ variable [CommRing A] [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K] [A
 
 section Galois
 
-variable (p) [IsGalois K L]
-  [MulSemiringAction Gal(L/F₁) B] [SMulDistribClass Gal(L/F₁) B L]
+variable [IsGalois K L] [MulSemiringAction Gal(L/F₁) B] [SMulDistribClass Gal(L/F₁) B L]
   [MulSemiringAction Gal(L/F₂) B] [SMulDistribClass Gal(L/F₂) B L]
   [MulSemiringAction Gal(L/↑(F₁ ⊔ F₂)) B] [SMulDistribClass Gal(L/↑(F₁ ⊔ F₂)) B L]
 
