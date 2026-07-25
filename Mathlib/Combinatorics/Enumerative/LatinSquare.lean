@@ -228,13 +228,7 @@ lemma forall_finset_card_le_card_biUnion {α : Type*} [DecidableEq α] {n : Type
     ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
   intro s
   set l := s.card with hl
-  have h₁ : ∑ j ∈ s, (Finset.card (B j)) = l*(Fintype.card n - Fintype.card k) := by
-    conv =>
-      congr
-      arg 2
-      ext
-      rw [h₂]
-    simp [hl]
+  have h₁ : ∑ j ∈ s, (Finset.card (B j)) = l*(Fintype.card n - Fintype.card k) := by simp [h₂, hl]
   by_contra hc
   simp only [ge_iff_le, not_le] at hc
   have _ : NeZero ((Fintype.card n) - (Fintype.card k) ) := {out := by lia}
