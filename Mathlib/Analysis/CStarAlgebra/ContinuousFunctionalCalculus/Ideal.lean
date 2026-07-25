@@ -94,4 +94,3 @@ theorem cfcₙ_mem_of_isClosed {I : TwoSidedIdeal A} (hI : IsClosed (I : Set A))
   cfcₙ_cases (· ∈ I) a f I.zero_mem fun _ _ ha' => cfcₙHom_mem_of_isClosed hI ha ha' _
 
 end TwoSidedIdeal
-
