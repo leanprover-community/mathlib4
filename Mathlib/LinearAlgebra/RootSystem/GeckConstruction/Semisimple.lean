@@ -54,7 +54,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
         (e i ^ n).col (.inr j) = x • Pi.single (.inr k) 1 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : IsAddTorsionFree M := .of_isTorsionFree R M
-  letI := P.indexNeg
+  let := P.indexNeg
   have aux (n : ℕ) : (e i ^ (n + 1)).col (.inr j) = (e i).mulVec ((e i ^ n).col (.inr j)) := by
     rw [pow_succ', ← Matrix.mulVec_single_one, ← Matrix.mulVec_mulVec]; simp
   induction n with
@@ -100,7 +100,7 @@ lemma isNilpotent_e :
   classical
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : IsAddTorsionFree M := .of_isTorsionFree R M
-  letI := P.indexNeg
+  let := P.indexNeg
   rw [Matrix.isNilpotent_iff_forall_col]
   have case_inl (j : b.support) : (e i ^ 2).col (Sum.inl j) = 0 := by
     ext (k | k)
@@ -151,7 +151,7 @@ omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
 @[simp] lemma trace_h_eq_zero :
     (h i).trace = 0 := by
   classical
-  letI _i := P.indexNeg
+  let _i := P.indexNeg
   suffices ∑ j, P.pairingIn ℤ j i = 0 by
     simp only [h_eq_diagonal, Matrix.trace_diagonal, Fintype.sum_sum_type, Finset.univ_eq_attach,
       Sum.elim_inl, Pi.zero_apply, Finset.sum_const_zero, Sum.elim_inr, zero_add]
@@ -211,7 +211,8 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     replace hdx : x = diagonal d := by simpa using! hdx
     have this (d : b.support ⊕ ι → K) (μ : K) :
         (diagonal d).toLin' - μ • 1 = (diagonal (d - μ • 1)).toLin' := by
-      aesop (add simp Pi.single_apply)
+      ext i j
+      simp [Pi.single_apply, ite_sub_ite]
     simp [mem_genWeightSpaceOf, hdx, this, ← toLin'_pow, diagonal_pow]
   obtain ⟨i, hi⟩ : ∃ i, w (Sum.inr i) ≠ 0 := by
     obtain ⟨l, hl⟩ : ∃ l, χ (h' l) ≠ 0 := by
@@ -270,7 +271,7 @@ omit [P.IsRootSystem] in
 private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι} (hi : v b i ∈ U) :
     U = ⊤ := by
-  letI _i := P.indexNeg
+  let _i := P.indexNeg
   have hωu (i : b.support) : ω b *ᵥ (u i) = u i := by
     ext (j | j) <;> simp [ω, u, Pi.single_apply, one_apply]
   have hωv (i : ι) : ω b *ᵥ (v b i) = v b (-i) := by ext (j | j) <;> simp [ω, v, Pi.single_apply]

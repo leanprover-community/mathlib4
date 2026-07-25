@@ -38,6 +38,7 @@ variable [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [∀ i, NormedAddCommGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)]
 variable {p q r : ℝ≥0∞}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A uniformly bounded family of continuous linear maps, as a continuous linear map
 on the `lp` space. -/
 @[simps!]

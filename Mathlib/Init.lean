@@ -39,6 +39,8 @@ public import ImportGraph.Tools
 public import Mathlib.Tactic.Linter.Lint
 -- This import makes the `#min_imports in` command available globally.
 public import Mathlib.Tactic.MinImports
+-- This import makes the binder plicity code action available globally
+public import Mathlib.Util.CodeActions
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -132,7 +134,7 @@ run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=
     #[`linter.checkInitImports, `linter.allScriptsDocumented]
   let env ← getEnv
-  let ls := linterSetsExt.getEntries env
+  let ls := (linterSetsExt.getState env).localEntries
   let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
     throwError m!"'linter.mathlibStandardSet' is not defined."
   let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |
@@ -146,3 +148,5 @@ run_cmd liftTermElabM do
     let some cinfo := env.find? mlRes | throwError "{mlRes}: this code should be unreachable."
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
+
+#allow_unused_tactic! Mathlib.Linter.Style.show

@@ -99,6 +99,7 @@ lemma MorphismProperty.isCardinalAccessible_ι_isLocal
     W.isLocal.ι.IsCardinalAccessible κ where
   preservesColimitOfShape J _ _ := by
     have := W.isClosedUnderColimitsOfShape_isLocal J κ hW
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     infer_instance
 
 namespace OrthogonalReflection
@@ -290,9 +291,6 @@ lemma isLocal_isLocal_toSucc :
   · choose f hf using fun (d : D₁ W Z) ↦ (hT d.1.1.hom d.1.2).2 (d.2 ≫ g)
     exact ⟨Multicoequalizer.desc _ _ (fun ⟨⟩ ↦ pushout.desc (Sigma.desc f) g)
       (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
-
-@[deprecated (since := "2025-11-20")] alias leftBousfieldW_isLocal_toSucc :=
-  isLocal_isLocal_toSucc
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

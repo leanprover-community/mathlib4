@@ -37,7 +37,7 @@ variable {α : Type*} [PseudoEMetricSpace α]
 theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0∞}
     (h : hausdorffEDist s t < δ) : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 < δ} := by
   rw [hausdorffEDist, max_lt_iff] at h
-  rw [hausdorffEntourage, Set.mem_setOf]
+  rw [hausdorffEntourage, Set.mem_ofPred]
   conv => enter [2, 2, 1, 1, _]; rw [edist_comm]
   have {s t : Set α} (h : ⨆ x ∈ s, infEDist x t < δ) :
       s ⊆ SetRel.preimage {p | edist p.1 p.2 < δ} t := by
@@ -48,7 +48,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
 theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
     (h : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 ≤ δ}) : hausdorffEDist s t ≤ δ := by
   rw [hausdorffEDist, max_le_iff]
-  rw [hausdorffEntourage, Set.mem_setOf] at h
+  rw [hausdorffEntourage, Set.mem_ofPred] at h
   conv at h => enter [2, 2, 1, 1, _]; rw [edist_comm]
   have {s t : Set α} (h : s ⊆ SetRel.preimage {p | edist p.1 p.2 ≤ δ} t) :
       ⨆ x ∈ s, infEDist x t ≤ δ := by
@@ -277,82 +277,6 @@ theorem isClosed_in_closeds [CompleteSpace α] :
     IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) :=
   NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range
 
-/-- In a second countable space, the type of nonempty compact subsets is second countable -/
-instance instSecondCountableTopology [SecondCountableTopology α] :
-    SecondCountableTopology (NonemptyCompacts α) :=
-  haveI : SeparableSpace (NonemptyCompacts α) := by
-    /- To obtain a countable dense subset of `NonemptyCompacts α`, start from
-        a countable dense subset `s` of α, and then consider all its finite nonempty subsets.
-        This set is countable and made of nonempty compact sets. It turns out to be dense:
-        by total boundedness, any compact set `t` can be covered by finitely many small balls, and
-        approximations in `s` of the centers of these balls give the required finite approximation
-        of `t`. -/
-    rcases exists_countable_dense α with ⟨s, cs, s_dense⟩
-    let v0 := { t : Set α | t.Finite ∧ t ⊆ s }
-    let v : Set (NonemptyCompacts α) := { t : NonemptyCompacts α | (t : Set α) ∈ v0 }
-    refine ⟨⟨v, ?_, ?_⟩⟩
-    · have : v0.Countable := countable_setOf_finite_subset cs
-      exact this.preimage SetLike.coe_injective
-    · refine fun t => EMetric.mem_closure_iff.2 fun ε εpos => ?_
-      -- t is a compact nonempty set, that we have to approximate uniformly by a a set in `v`.
-      rcases exists_between εpos with ⟨δ, δpos, δlt⟩
-      have δpos' : 0 < δ / 2 := ENNReal.half_pos δpos.ne'
-      -- construct a map F associating to a point in α an approximating point in s, up to δ/2.
-      have Exy : ∀ x, ∃ y, y ∈ s ∧ edist x y < δ / 2 := by
-        intro x
-        rcases EMetric.mem_closure_iff.1 (s_dense x) (δ / 2) δpos' with ⟨y, ys, hy⟩
-        exact ⟨y, ⟨ys, hy⟩⟩
-      let F x := (Exy x).choose
-      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
-      -- cover `t` with finitely many balls. Their centers form a set `a`
-      have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
-      obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, Metric.eball y (δ / 2)⟩ :=
-        EMetric.totallyBounded_iff.1 this (δ / 2) δpos'
-      -- replace each center by a nearby approximation in `s`, giving a new set `b`
-      let b := F '' a
-      have : b.Finite := af.image _
-      have tb : ∀ x ∈ t, ∃ y ∈ b, edist x y < δ := by
-        intro x hx
-        rcases mem_iUnion₂.1 (ta hx) with ⟨z, za, Dxz⟩
-        exists F z, mem_image_of_mem _ za
-        calc
-          edist x (F z) ≤ edist x z + edist z (F z) := edist_triangle _ _ _
-          _ < δ / 2 + δ / 2 := ENNReal.add_lt_add Dxz (Fspec z).2
-          _ = δ := ENNReal.add_halves _
-      -- keep only the points in `b` that are close to point in `t`, yielding a new set `c`
-      let c := { y ∈ b | ∃ x ∈ t, edist x y < δ }
-      have : c.Finite := ‹b.Finite›.subset fun x hx => hx.1
-      -- points in `t` are well approximated by points in `c`
-      have tc : ∀ x ∈ t, ∃ y ∈ c, edist x y ≤ δ := by
-        intro x hx
-        rcases tb x hx with ⟨y, yv, Dxy⟩
-        have : y ∈ c := by simpa [c, -mem_image] using ⟨yv, ⟨x, hx, Dxy⟩⟩
-        exact ⟨y, this, le_of_lt Dxy⟩
-      -- points in `c` are well approximated by points in `t`
-      have ct : ∀ y ∈ c, ∃ x ∈ t, edist y x ≤ δ := by
-        rintro y ⟨_, x, xt, Dyx⟩
-        have : edist y x ≤ δ :=
-          calc
-            edist y x = edist x y := edist_comm _ _
-            _ ≤ δ := le_of_lt Dyx
-        exact ⟨x, xt, this⟩
-      -- it follows that their Hausdorff distance is small
-      have : hausdorffEDist (t : Set α) c ≤ δ := hausdorffEDist_le_of_mem_edist tc ct
-      have Dtc : hausdorffEDist (t : Set α) c < ε := this.trans_lt δlt
-      -- the set `c` is not empty, as it is well approximated by a nonempty set
-      have hc : c.Nonempty := nonempty_of_hausdorffEDist_ne_top t.nonempty (ne_top_of_lt Dtc)
-      -- let `d` be the version of `c` in the type `NonemptyCompacts α`
-      let d : NonemptyCompacts α := ⟨⟨c, ‹c.Finite›.isCompact⟩, hc⟩
-      have : c ⊆ s := by
-        intro x hx
-        rcases (mem_image _ _ _).1 hx.1 with ⟨y, ⟨_, yx⟩⟩
-        rw [← yx]
-        exact (Fspec y).1
-      have : d ∈ v := ⟨‹c.Finite›, this⟩
-      -- we have proved that `d` is a good approximation of `t` as requested
-      exact ⟨d, ‹d ∈ v›, Dtc⟩
-  UniformSpace.secondCountable_of_separable (NonemptyCompacts α)
-
 theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
   fun _ _ => hausdorffEDist_singleton
 
@@ -371,18 +295,6 @@ end TopologicalSpace
 namespace EMetric
 
 open Metric
-
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.continuous_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.continuous_toCloseds
-
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.isClosed_subsets_of_isClosed :=
-  TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
-
-@[deprecated (since := "2025-11-19")]
-alias Closeds.isClosed_subsets_of_isClosed :=
-  TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
 
 @[deprecated (since := "2026-01-08")]
 alias mem_hausdorffEntourage_of_hausdorffEdist_lt :=
@@ -407,10 +319,6 @@ alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_toCloseds :=
   TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.isUniformEmbedding_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isClosed_in_closeds :=

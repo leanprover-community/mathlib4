@@ -158,11 +158,7 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
     x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
   Set.mem_image_equiv
 
--- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp 1100, nolint simpNF)]
+@[to_additive (attr := simp 1100)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image
@@ -397,6 +393,7 @@ end Subgroup
 namespace MulEquiv
 variable {H : Type*} [Group H]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their inverse images.
@@ -423,6 +420,7 @@ lemma coe_comapSubgroup (e : G ≃* H) : comapSubgroup e = Subgroup.comap e.toMo
 @[to_additive (attr := simp)]
 lemma symm_comapSubgroup (e : G ≃* H) : (comapSubgroup e).symm = comapSubgroup e.symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their forward images.

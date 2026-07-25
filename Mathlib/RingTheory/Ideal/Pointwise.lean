@@ -27,13 +27,13 @@ Where possible, try to keep them in sync.
 
 open Set
 
-variable {M R : Type*}
+variable {M N R : Type*}
 
 namespace Ideal
 
 section Monoid
 
-variable [Monoid M] [Semiring R] [MulSemiringAction M R]
+variable [Monoid M] [Monoid N] [Semiring R] [MulSemiringAction M R] [MulSemiringAction N R]
 
 /-- The action on an ideal corresponding to applying the action to every element.
 
@@ -66,6 +66,13 @@ scoped[Pointwise] attribute [instance] Ideal.pointwiseMulSemiringAction
 theorem pointwise_smul_def {a : M} (S : Ideal R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
+
+instance [SMul M N] [IsScalarTower M N R] : IsScalarTower M N (Ideal R) where
+  smul_assoc x y z := by
+    simp_rw [pointwise_smul_def, map_map]
+    congr
+    ext
+    simp
 
 -- note: unlike with `Subring`, `pointwise_smul_toAddSubgroup` wouldn't be true
 

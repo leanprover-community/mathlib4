@@ -29,7 +29,7 @@ open scoped Real
     [s.direction.HasOrthogonalProjection] (h : p' ∈ s) :
     haveI : Nonempty s := ⟨p', h⟩
     ∠ p (orthogonalProjection s p) p' = π / 2 := by
-  haveI : Nonempty s := ⟨p', h⟩
+  have : Nonempty s := ⟨p', h⟩
   rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
   exact Submodule.inner_left_of_mem_orthogonal (K := s.direction)
     (AffineSubspace.vsub_mem_direction h (orthogonalProjection_mem _))

@@ -65,6 +65,7 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   proj_toFun _ _ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma trivialization_symm_apply [Zero F] (b : B) (f : F) :
     (trivialization B F).symm b f = f := by
   simp [trivialization, homeomorphProd, TotalSpace.toProd, Trivialization.symm,
@@ -263,7 +264,7 @@ instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f 
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
 
--- adding `@[implicit_reducible]` causes downstream breakage
+-- adding `@[instance_reducible]` causes downstream breakage
 set_option warn.classDefReducibility false in
 /-- Definition of `Pullback.TotalSpace.topologicalSpace`, which we make irreducible. -/
 irreducible_def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
@@ -301,8 +302,9 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
   exact (FiberBundle.totalSpaceMk_isInducing F E (f x)).eq_induced.le
 
 variable {E F}
-variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
+variable [∀ _b, Nonempty (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 @[simps]
 noncomputable def Bundle.Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :

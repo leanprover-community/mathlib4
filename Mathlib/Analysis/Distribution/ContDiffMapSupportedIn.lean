@@ -191,7 +191,7 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
-   (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+    (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
 
 section AddCommGroup
 
@@ -234,7 +234,7 @@ instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-   SMul R 𝓓^{n}_{K}(E, F) where
+    SMul R 𝓓^{n}_{K}(E, F) where
   smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left

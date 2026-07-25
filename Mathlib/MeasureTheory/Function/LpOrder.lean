@@ -5,16 +5,14 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
 # Order related properties of Lp spaces
 
 ## Results
 
-- `Lp E p μ` is an `OrderedAddCommGroup` when `E` is a `NormedLatticeAddCommGroup`.
+- `Lp E p μ` is an ordered group when `E` is a `NormedLatticeAddCommGroup`.
 
 ## TODO
 

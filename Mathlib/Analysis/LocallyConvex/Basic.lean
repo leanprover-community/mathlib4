@@ -230,8 +230,7 @@ variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Every neighbourhood of the origin is absorbent. -/
 theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A :=
-  absorbent_iff_inv_smul.2 fun x ↦ Filter.tendsto_inv₀_cobounded.smul tendsto_const_nhds <| by
-    rwa [zero_smul]
+  absorbent_iff_inv_smul.2 fun _ ↦ Filter.tendsto_inv₀_cobounded.zero_smul_const _ hA
 
 /-- The union of `{0}` with the interior of a balanced set is balanced. -/
 theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
@@ -304,5 +303,9 @@ theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x�
   rw [show a = -((1 - a) / 2) + (a - -1) / 2 by ring, add_smul, neg_smul, ← smul_neg]
   exact hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)
     (div_nonneg (sub_nonneg_of_le ha.1) zero_le_two) (by ring)
+
+theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
+  starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
+    hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
 
 end Real
