@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
+public import Mathlib.NumberTheory.RamificationInertia.HilbertTheory
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
@@ -99,6 +100,43 @@ theorem galEquivZMod_restrictNormal_apply (h : m ∣ n) (σ : Gal(K/ℚ)) :
   rw [← map_pow, (hζ.pow_eq_one_iff_dvd _).mpr h, map_one]
 
 end restrict
+
+open Ideal in
+/--
+Let `K = ℚ(ζₙ)` with `n = p ^ k * m` where `p` is prime and `¬ p ∣ m`. Then the subfield
+`F = ℚ(ζₘ)` is the inertia field of any prime `P` of `𝓞 K` lying over `p`.
+-/
+theorem isInertiaField (m p k : ℕ) (hn : n = p ^ k * m) [hp : Fact (p.Prime)] (hm : ¬ p ∣ m)
+    (F : IntermediateField ℚ K) [hF : IsCyclotomicExtension {m} ℚ F] (P : Ideal (𝓞 K))
+    [P.IsMaximal] [P.LiesOver (span {(p : ℤ)})] :
+    F = P.inertiaField ℚ K := by
+  have : NeZero m := ⟨fun h ↦ by simp [h] at hm⟩
+  have hp' : span {(p : ℤ)} ≠ ⊥ := by simpa using hp.out.ne_zero
+  have : IsGalois ℚ K := isGalois {n} ℚ K
+  let 𝓟F : Ideal (𝓞 F) := comap (algebraMap (𝓞 F) (𝓞 K)) P
+  have : P.LiesOver 𝓟F := over_under P
+  have : 𝓟F.IsPrime := IsPrime.under (𝓞 F) P
+  have : 𝓟F.LiesOver (span {(p : ℤ)}) := under_liesOver_of_liesOver (𝓞 F) P (span {(p : ℤ)})
+  have hPF : 𝓟F ≠ ⊥ := Ideal.ne_bot_of_liesOver_of_ne_bot hp' _
+  have h := ramificationIdx_eq_of_not_dvd p F 𝓟F hm
+  refine (Ideal.eq_inertiaField_iff' ℤ ℚ K P F 𝓟F (span {(p : ℤ)})).mpr ⟨?_, h⟩
+  obtain rfl | hk := Nat.eq_zero_or_eq_succ_pred k
+  · have hFtop : F = ⊤ := by
+      convert IntermediateField.isCyclotomicExtension_eq {n} ℚ K _ _
+      · rwa [hn, pow_zero, one_mul]
+      · exact IsCyclotomicExtension.equiv {n} ℚ K IntermediateField.topEquiv.symm
+    have hn' : ¬ p ∣ n := by rwa [hn, pow_zero, one_mul]
+    have h' := Ideal.ramificationIdx_tower (R := ℤ) 𝓟F P
+    rw [IntermediateField.finrank_eq_one_iff_eq_top.mpr hFtop]
+    rwa [ramificationIdx_eq_of_not_dvd p K P hn', h, one_mul, eq_comm] at h'
+  rw [hk] at hn
+  suffices Module.finrank F K = p ^ k.pred * (p - 1) by
+    have h' := Ideal.ramificationIdx_tower (R := ℤ) 𝓟F P
+    rwa [h, one_mul, ramificationIdx_eq n K P hn hm, ← this, eq_comm] at h'
+  rw [← mul_right_inj' ((Module.finrank_pos (R := ℚ) (M := F)).ne'),
+    Module.finrank_mul_finrank ℚ F K, finrank n, finrank m, hn, Nat.totient_mul,
+    Nat.totient_prime_pow_succ hp.out, mul_comm]
+  exact Nat.Coprime.pow_left k.pred.succ <| by rwa [hp.out.coprime_iff_not_dvd]
 
 section stabilizer
 
