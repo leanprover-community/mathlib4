@@ -111,8 +111,8 @@ variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac)
 
 lemma birkhoffMaxDiff_integrable (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) {n} :
     Integrable (birkhoffMaxDiff f g n) μ :=
-  (birkhoffMax_integrable μ hf hg).sub
-    (hf.integrable_comp_of_integrable (birkhoffMax_integrable μ hf hg))
+  (integrable_birkhoffMax μ hf hg).sub
+    (hf.integrable_comp_of_integrable (integrable_birkhoffMax μ hf hg))
 
 lemma int_birkhoffMaxDiff_in_divergentSet_tendsto (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ) (hg' : Measurable g) :
@@ -139,10 +139,10 @@ lemma int_birkhoffMaxDiff_in_divergentSet_nonneg (hf : MeasurePreserving f μ μ
   have hres : MeasurePreserving f (μ.restrict (divergentSet f g)) (μ.restrict (divergentSet f g)) :=
     ⟨hf.measurable, by nth_rw 1 [← (divergentSet_mem_invalg hf.measurable hg').2,
       ← μ.restrict_map hf.measurable (divergentSet_measurable hf.measurable hg'), hf.map_eq]⟩
-  have mi {n : ℕ} := birkhoffMax_integrable μ hf hg (n := n)
+  have mi {n : ℕ} := integrable_birkhoffMax μ hf hg (n := n)
   rw [integral_sub, sub_nonneg]
   · rw [← integral_map hres.aemeasurable
-      (birkhoffMax_measurable hf.measurable hg').aestronglyMeasurable, hres.map_eq]
+      (measurable_birkhoffMax hf.measurable hg').aestronglyMeasurable, hres.map_eq]
     exact integral_mono mi.restrict mi.restrict ((birkhoffMax f g).monotone (Nat.le_succ _))
   · exact mi.restrict
   · exact hres.integrable_comp_of_integrable mi.restrict
@@ -192,7 +192,7 @@ lemma ae_tendsTo_birkhoffAverage_of_condExp_neg [hμ : IsProbabilityMeasure μ]
 
 end DivergentSet
 
-section PointwiseErgodicTheorem
+section Real
 
 open MeasureTheory Measure MeasurableSpace Filter Topology
 
@@ -269,7 +269,7 @@ private lemma ae_tendsTo_birkhoffAverage_condExp_aux
 /-- **Pointwise Ergodic Theorem** a.k.a. **Birkhoff's Ergodic Theorem**
 
 Time average coincides with conditional expectation for typical points. -/
-public theorem ae_tendsTo_birkhoffAverage_condExp {g : α → ℝ} (hf : MeasurePreserving f μ μ)
+public theorem ae_tendsTo_birkhoffAverage_condExp_real {g : α → ℝ} (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ) :
     ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f g · x) atTop (𝓝 (μ[g|invariants f] x)) := by
   let h := hg.left.mk
@@ -281,4 +281,4 @@ public theorem ae_tendsTo_birkhoffAverage_condExp {g : α → ℝ} (hf : Measure
   filter_upwards [h1, h2, h3] with _ h1' h2' h3'
   simp [h1', h2', h3']
 
-end PointwiseErgodicTheorem
+end Real
