@@ -57,8 +57,7 @@ lemma nonsingular_iff_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
 theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) : A.Nonsingular := by
   intro a b bal
   let P (r : ℕ) : Prop := ∀ f g : Fin r → n, (A.submatrix f g).DetpBalanced a b
-  suffices h : P 0 by simpa [DetpBalanced, detp_neg_one_of_isEmpty ![],
-    detp_one_of_isEmpty ![]] using h Fin.elim0 Fin.elim0
+  suffices h : P 0 by simpa [DetpBalanced] using h Fin.elim0 Fin.elim0
   refine Nat.decreasingInduction' (n := Fintype.card n) (fun r _ _ ih f g ↦ ?_) (Nat.zero_le _) <|
     bal.submatrix_of_card_le (Fintype.card_fin _).ge
   by_cases hg : g.Surjective
