@@ -435,11 +435,11 @@ lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R 
   rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
   exact WithBot.coe_eq_coe.mp this
 
-@[deprecated "Use `mem_minimalPrimes_of_height_eq` instead." (since := "2026-04-02")]
+@[deprecated "Use `mem_minimalPrimes_of_height_le` instead." (since := "2026-04-02")]
 private lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e : I ≤ J)
     (e' : J.primeHeight = I.height) [J.FiniteHeight] : J ∈ I.minimalPrimes := by
   rw [← J.height_eq_primeHeight] at e'
-  exact mem_minimalPrimes_of_height_eq e (e' ▸ le_refl _)
+  exact mem_minimalPrimes_of_height_le e (e' ▸ le_refl _)
 
 lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
     (hr : r ≤ I.height) : ∃ J ≤ I, J.spanRank ≤ r ∧ r ≤ J.height := by
@@ -480,7 +480,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
         exact Order.add_one_le_of_lt (lt_of_le_of_ne (h₃.trans this) h)
       intro e
       apply hx₂ p
-      · refine ⟨mem_minimalPrimes_of_height_eq (le_sup_left.trans hp.le) (e.symm.trans_le h₃),
+      · refine ⟨mem_minimalPrimes_of_height_le (le_sup_left.trans hp.le) (e.symm.trans_le h₃),
           e.symm⟩
       · apply hp.le <| Ideal.mem_sup_right <| mem_span_singleton_self x
 
