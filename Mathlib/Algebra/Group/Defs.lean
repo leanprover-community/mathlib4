@@ -823,7 +823,10 @@ end IsDedekindFiniteMonoid
 end Monoid
 
 attribute [local instance] IsUnital.toMulOneClass in
-/-- A unital semigroup is a monoid. -/
+/-- A unital semigroup is a monoid.
+
+This constructor is primarily intended to be used within proofs since they create bad definitional
+equalities. -/
 noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
