@@ -6,9 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 public import Mathlib.Geometry.Manifold.Orientation
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Constructing examples of manifolds over ℝ
