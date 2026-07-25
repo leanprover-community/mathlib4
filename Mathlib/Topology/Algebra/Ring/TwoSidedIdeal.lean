@@ -29,6 +29,8 @@ non-unital non-associative topological rings.
   (e.g. a Banach algebra), the closure of a proper two-sided ideal is proper.
 -/
 
+@[expose] public section
+
 open Topology
 
 namespace TwoSidedIdeal
