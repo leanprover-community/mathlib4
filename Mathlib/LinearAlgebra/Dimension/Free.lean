@@ -61,7 +61,10 @@ theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
   convert! lift_rank_mul_lift_rank F K A <;> rw [lift_id]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
-$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
+$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
+
+See `Module.finrank_mul_finrank'` for a variant over a tower of domains that assumes the rings are
+module-finite rather than the modules being free. -/
 theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
   simp_rw [finrank]
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
