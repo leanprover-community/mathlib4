@@ -12,6 +12,7 @@ public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Order.LeftRightLim
 public import Mathlib.Topology.Semicontinuity.Defs
+public import Mathlib.Topology.Path
 public import Mathlib.Tactic.Bound
 
 /-!
@@ -1272,3 +1273,34 @@ theorem LipschitzWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} (h
   hf.lipschitzOnWith.locallyBoundedVariationOn
 
 end LipschitzOnWith
+
+/-- The edist between the endpoints of a path is bounded by its extended variation
+ (i.e. length) on [0, 1].
+
+TODO: Characterize shortest paths as straight line segments in strict convex spaces.
+-/
+lemma edist_le_length_of_path {E : Type*} [PseudoEMetricSpace E] {a b : E}
+    (γ : Path a b) : edist a b ≤ eVariationOn γ (Icc 0 1) := by
+  dsimp [eVariationOn]
+  let n : ℕ := 1
+  let u : ℕ → ↑unitInterval := fun i ↦ if i = 0 then ⟨0, by simp⟩ else ⟨1, by simp⟩
+  have hu : Monotone (fun i ↦ (u i : ℝ)) := by
+    apply monotone_nat_of_le_succ
+    intro i
+    dsimp [u]
+    split_ifs <;> simp
+  have us : ∀ i, (u i : ℝ) ∈ Icc (0 : ℝ) 1 := fun i ↦ (u i).property
+  apply le_iSup_of_le ⟨n, u, hu, us⟩
+  simp only
+  rw [Finset.sum_range_one,zero_add]
+  dsimp [u]
+  rw [γ.source, γ.target, edist_comm]
+
+/-- The distance between the endpoints of a path is bounded by its variation
+(i.e. length) on [0, 1]. This is a special case of the previous theorem in
+the metric space setting. -/
+lemma dist_le_length_of_path {E : Type*} [MetricSpace E] {a b : E}
+    (γ : Path a b) : ENNReal.ofReal (dist a b) ≤ eVariationOn γ.toFun (Icc 0 1) := by
+  have h := edist_le_length_of_path γ
+  rw [edist_dist] at h
+  exact h
