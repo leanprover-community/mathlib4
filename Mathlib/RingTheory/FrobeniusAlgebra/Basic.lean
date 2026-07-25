@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
 # Frobenius algebras
@@ -80,19 +81,16 @@ instance : FrobeniusAlgebra R R where
   dual := .id
   bijective_compr₂_mul := ⟨fun _ _ h ↦ by simpa using congr($h 1), fun f ↦ ⟨f 1, by ext; simp⟩⟩
 
-lemma flip_equivDual :
-    (equivDual R A).flip = (equivDual R A).dualMap ∘ₗ Module.Dual.eval R A := rfl
-
 end NonUnital
 
 section NonAssoc
 variable [NonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
-/-- An algebra with an isomorphism `σ : A ≃ₗ[R] A →ₗ[R] R` such that
+/-- An algebra with an isomorphism `σ : A ≃ₗ[R] Dual R A` such that
 `σ (a * b) c = σ a (b * c)` induces a Frobenius algebra, where its dual will be `σ.flip 1`. -/
-abbrev ofLinearEquiv (σ : A ≃ₗ[R] A →ₗ[R] R) (hσ : ∀ a b c : A, σ (a * b) c = σ a (b * c)) :
+abbrev ofLinearEquiv (σ : A ≃ₗ[R] Module.Dual R A) (hσ : ∀ a b c : A, σ (a * b) c = σ a (b * c)) :
     FrobeniusAlgebra R A where
-  dual := σ.flip 1
+  dual := σ.toLinearMap.flip 1
   bijective_compr₂_mul := by
     convert σ.bijective
     ext; simp [hσ]
@@ -119,11 +117,6 @@ lemma _root_.Module.Dual.eval_injective (R M : Type*) [CommSemiring R] [AddCommM
     [Module R M] : Function.Injective (Module.Dual.eval R (Module.Dual R M)) :=
   Function.LeftInverse.injective (g := (Module.Dual.eval R M).dualMap) fun _ ↦ by ext; simp
 
-theorem bijective_flip_equivDual [Module.IsReflexive R A] :
-    Function.Bijective (equivDual R A).flip := by
-  rw [flip_equivDual]
-  exact (equivDual R A).dualMap.bijective.comp (Module.bijective_dual_eval R A)
-
 end NonAssoc
 
 section Semiring
@@ -132,9 +125,8 @@ variable [Semiring A] [Algebra R A] [Module.IsReflexive R A] [FrobeniusAlgebra R
 variable (R A) in
 /-- The Nakayama automorphism `nakayamaAlgEquiv R A` such that
 `dual (nakayamaAlgEquiv R A b * a) = dual (a * b)` for all `a, b`. -/
-noncomputable def nakayamaAlgEquiv : A ≃ₐ[R] A :=
-  .ofLinearEquiv
-    (.trans (.ofBijective _ bijective_flip_equivDual) (equivDual R A).symm)
+@[expose] noncomputable def nakayamaAlgEquiv : A ≃ₐ[R] A :=
+  .ofLinearEquiv ((equivDual R A).flip.trans (equivDual R A).symm)
     ((equivDual R A).injective (by ext a; simp))
     (by simp [← (equivDual R A).injective.eq_iff, LinearMap.ext_iff, equivDual_apply, mul_assoc])
 
