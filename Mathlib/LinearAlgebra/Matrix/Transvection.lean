@@ -298,7 +298,7 @@ theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
   ext a b
   simp only [reindexEquiv, transvection, toMatrix_mk]
   by_cases ha : e t_i = a <;> by_cases hb : e t_j = b <;> by_cases hab : a = b <;>
-    simp [ha, hb, hab, ← e.apply_eq_iff_eq_symm_apply, single]
+    simp [ha, hb, hab, e.eq_symm_apply, single]
 
 theorem toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n R)) :
     (L.map (toMatrix ∘ reindexEquiv e)).prod = reindexAlgEquiv R _ e (L.map toMatrix).prod := by

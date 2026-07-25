@@ -276,12 +276,12 @@ theorem insert_symm_apply_inr {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {
 @[simp]
 theorem insert_apply_left {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
     Equiv.Set.insert H ⟨a, Or.inl rfl⟩ = Sum.inr PUnit.unit :=
-  (Equiv.Set.insert H).apply_eq_iff_eq_symm_apply.2 rfl
+  (Equiv.Set.insert H).eq_symm_apply.1 rfl
 
 @[simp]
 theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) (b : s) :
     Equiv.Set.insert H ⟨b, Or.inr b.2⟩ = Sum.inl b :=
-  (Equiv.Set.insert H).apply_eq_iff_eq_symm_apply.2 rfl
+  (Equiv.Set.insert H).eq_symm_apply.1 rfl
 
 /-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`.
 

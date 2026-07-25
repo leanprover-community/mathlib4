@@ -434,7 +434,7 @@ theorem equivPair_symm (i) (p : Pair M i) : (equivPair i).symm p = rcons p :=
 
 theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
     equivPair i w = ⟨1, w, h⟩ :=
-  (equivPair i).apply_eq_iff_eq_symm_apply.mpr <| Eq.symm (dif_pos rfl)
+  (equivPair i).eq_symm_apply.mp <| Eq.symm (dif_pos rfl)
 
 theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     (⟨i, m⟩ ∈ (equivPair j w).tail.toList) ↔ ⟨i, m⟩ ∈ w.toList.tail

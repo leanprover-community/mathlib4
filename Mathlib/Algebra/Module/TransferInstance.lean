@@ -61,7 +61,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] :
     map_smul' := fun r x => by
       apply e.symm.injective
       simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
-      exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
+      exact Iff.mp (eq_symm_apply _) rfl }
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in

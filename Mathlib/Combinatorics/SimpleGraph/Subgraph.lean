@@ -663,7 +663,7 @@ theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
 @[simp] lemma map_iso_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.map e.toHom ⊤ = ⊤ := by
-  ext <;> simp [Relation.Map, e.apply_eq_iff_eq_symm_apply, ← e.map_rel_iff]
+  ext <;> simp [Relation.Map, ← e.eq_symm_apply, ← e.map_rel_iff]
 
 @[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
     (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap ..

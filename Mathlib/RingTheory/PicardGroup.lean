@@ -475,7 +475,7 @@ variable {R M N}
 
 theorem mk_eq_iff {N : Pic R} : Pic.mk R M = N ↔ Nonempty (M ≃ₗ[R] N) where
   mp := (· ▸ ⟨(mk.linearEquiv R M).symm⟩)
-  mpr := fun ⟨e⟩ ↦ ((equivShrink _).apply_eq_iff_eq_symm_apply).mpr <|
+  mpr := fun ⟨e⟩ ↦ ((equivShrink _).eq_symm_apply).mp <|
     Units.ext <| Quotient.mk_eq_iff_out.mpr ⟨(Finite.reprEquivₛ R M ≪≫ₗ e).toModuleIsoₛ⟩
 
 theorem mk_eq_self {M : Pic R} : Pic.mk R M = M := mk_eq_iff.mpr ⟨.refl ..⟩

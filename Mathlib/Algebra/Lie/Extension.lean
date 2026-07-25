@@ -223,7 +223,7 @@ def LieEquiv.ofCoboundary (c' : twoCocycle R L M) (x : oneCochain R L M)
     ofProd c (y.1, y.2 + x y.1)
   map_add' _ _ := by simp [← of_add]; abel
   map_smul' := by simp [← of_smul, smul_sub]
-  map_lie' := ((ofProd c').apply_eq_iff_eq_symm_apply).2 <| by simp [bracket_ofTwoCocycle, h]; abel
+  map_lie' := ((ofProd c').eq_symm_apply).1 <| by simp [bracket_ofTwoCocycle, h]; abel
   left_inv y := by simp
   right_inv z := by simp
 

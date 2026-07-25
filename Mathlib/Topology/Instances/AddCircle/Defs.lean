@@ -327,10 +327,10 @@ def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
 variable {p a}
 
 theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
+  rw [← Equiv.eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
 
 theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
+  rw [← Equiv.eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
 
 @[simp]
 lemma coe_equivIco {y : AddCircle p} :
