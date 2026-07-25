@@ -196,7 +196,8 @@ theorem cardQuot_mul [IsDedekindDomain S] [Infinite S] (I J : Ideal S) :
         (Ideal.isUnit_iff.mp
           (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 
-/-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
+/-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`.
+`Infinite R` is needed for multiplicativity to hold at `⊥` (`I * ⊥ = ⊥` forces `absNorm ⊥ = 0`). -/
 noncomputable def Ideal.absNorm [IsDedekindDomain S] [Infinite S] :
     Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
@@ -410,6 +411,8 @@ end Free
 
 variable [Ring.HasFiniteQuotients S] [Infinite S]
 
+/-- The absolute norm of an ideal is zero iff the ideal is `⊥`, when the ring has finite
+quotients. -/
 theorem absNorm_eq_zero_iff {I : Ideal S} :
     Ideal.absNorm I = 0 ↔ I = ⊥ := by
   constructor
