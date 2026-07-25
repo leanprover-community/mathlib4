@@ -47,7 +47,7 @@ class IsSeparated : Prop where
 
 namespace IsSeparated
 
-attribute [instance] diagonal_isClosedImmersion
+attribute [instance] isClosedImmersion_diagonal
 
 theorem isSeparated_eq_diagonal_isClosedImmersion :
     @IsSeparated = MorphismProperty.diagonal @IsClosedImmersion := by
