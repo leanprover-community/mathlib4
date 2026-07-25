@@ -52,9 +52,8 @@ lemma divergentSet_invariant {f : α → α} {x g} : f x ∈ divergentSet f g �
   rw [← EReal.add_iSup, EReal.add_eq_top_iff_eq_top_right (by simp) (by simp)]
 
 lemma divergentSet_measurable {f : α → α} [MeasurableSpace α] (hf : Measurable f) {g : α → ℝ}
-    (hg : Measurable g) : MeasurableSet (divergentSet f g) := by
-  apply Measurable.setOf
-  fun_prop [birkhoffSumSup]
+    (hg : Measurable g) : MeasurableSet (divergentSet f g) :=
+  measurable_birkhoffSumSup hf hg (measurableSet_singleton ⊤)
 
 lemma divergentSet_mem_invalg [MeasurableSpace α] {f : α → α} (hf : Measurable f) {g : α → ℝ}
     (hg : Measurable g) : MeasurableSet[invariants f] (divergentSet f g) :=
@@ -94,53 +93,26 @@ lemma birkhoffMaxDiff_tendsto_of_mem_divergentSet {f : α → α} {x g} (hx : x 
 
 lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x g}
     (hx : x ∉ divergentSet f g) : limsup (birkhoffAverage ℝ f g · x |>.toEReal) atTop ≤ 0 := by
-  /- it suffices to show there are upper bounds ≤ ε for all ε > 0 -/
-  apply (limsup_le_iff ..).mpr
-  intro ε hε
-  lift ε to ENNReal using hε.le
-  norm_cast at hε
-  /- from `hx` hypothesis, the birkhoff sums are bounded above -/
-  simp only [divergentSet, birkhoffSumSup, iSup_eq_top, Set.mem_setOf_eq, not_forall, not_exists,
-    not_lt, lt_top_iff_ne_top] at hx
-  rcases hx with ⟨M, M_lt_top, M_is_bound⟩
-  lift M to ENNReal
-  · by_contra!
-    exact this.not_ge (M_is_bound 0)
-  simp only [ne_eq, EReal.coe_ennreal_eq_top_iff] at M_lt_top
-  obtain ⟨n, _, hn⟩ := ENNReal.exists_nat_pos_mul_gt hε.ne.symm M_lt_top
-  rw [eventually_atTop]
-  use n, fun i hi ↦ ?_
-  rcases eq_or_ne ε ⊤ with hεt | hεt
-  · rw [hεt, EReal.coe_ennreal_top]
-    exact EReal.coe_lt_top _
-  have hn0 : 0 < n := by positivity
-  have hi0 : (0 : ℝ) < i := by exact_mod_cast lt_of_lt_of_le hn0 hi
-  have hb : birkhoffSum f g i x ≤ M.toReal := by
-    have h := M_is_bound i
-    rw [← EReal.coe_ennreal_toReal M_lt_top] at h
-    exact_mod_cast h
-  have hn' : M < ↑i * ε := lt_of_lt_of_le hn (by gcongr)
-  have hMti : M.toReal < ↑i * ε.toReal := by
-    rw [← ENNReal.toReal_natCast i, ← ENNReal.toReal_mul]
-    exact (ENNReal.toReal_lt_toReal M_lt_top
-      (ENNReal.mul_ne_top (ENNReal.natCast_ne_top i) hεt)).mpr hn'
-  have havg : birkhoffAverage ℝ f g i x < ε.toReal := by
-    simp only [birkhoffAverage, smul_eq_mul, inv_mul_eq_div]
-    rw [div_lt_iff₀ hi0]
-    calc birkhoffSum f g i x ≤ M.toReal := hb
-      _ < ↑i * ε.toReal := hMti
-      _ = ε.toReal * ↑i := mul_comm _ _
-  rw [← EReal.coe_ennreal_toReal hεt]
-  exact_mod_cast havg
+  /- from `hx` hypothesis, the birkhoff sums are bounded above by some real `M` -/
+  simp only [divergentSet, birkhoffSumSup, Set.mem_setOf_eq, iSup_eq_top, not_forall, not_exists,
+    not_lt] at hx
+  obtain ⟨M, hM, hbound⟩ := hx
+  lift M to ℝ using ⟨hM.ne, ((EReal.bot_lt_coe _).trans_le (hbound 0)).ne'⟩
+  /- hence the birkhoff averages are bounded by `M / n`, which tends to `0` -/
+  refine le_of_le_of_eq (limsup_le_limsup (v := fun n : ℕ ↦ ((M / n : ℝ) : EReal)) ?_) ?_
+  · refine Eventually.of_forall fun n ↦ EReal.coe_le_coe_iff.mpr ?_
+    rw [birkhoffAverage, smul_eq_mul, div_eq_inv_mul]
+    gcongr
+    exact EReal.coe_le_coe_iff.mp (hbound n)
+  · rw [← EReal.coe_zero]
+    exact (EReal.tendsto_coe.mpr (tendsto_const_div_atTop_nhds_zero_nat M)).limsup_eq
 
 variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac) {g : α → ℝ}
 
 lemma birkhoffMaxDiff_integrable (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) {n} :
-    Integrable (birkhoffMaxDiff f g n) μ := by
-  apply Integrable.sub (birkhoffMax_integrable μ hf hg)
-  apply (integrable_map_measure _ hf.measurable.aemeasurable).mp <;> rw [hf.map_eq]
-  · exact birkhoffMax_integrable μ hf hg
-  · exact (birkhoffMax_integrable μ hf hg).aestronglyMeasurable
+    Integrable (birkhoffMaxDiff f g n) μ :=
+  (birkhoffMax_integrable μ hf hg).sub
+    (hf.integrable_comp_of_integrable (birkhoffMax_integrable μ hf hg))
 
 lemma int_birkhoffMaxDiff_in_divergentSet_tendsto (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ) (hg' : Measurable g) :
@@ -164,20 +136,16 @@ lemma int_birkhoffMaxDiff_in_divergentSet_tendsto (hf : MeasurePreserving f μ �
 lemma int_birkhoffMaxDiff_in_divergentSet_nonneg (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ) (hg' : Measurable g) {n} :
     0 ≤ ∫ x in divergentSet f g, birkhoffMaxDiff f g n x ∂μ := by
-  unfold birkhoffMaxDiff
-  have : (μ.restrict (divergentSet f g)).map f = μ.restrict (divergentSet f g) := by
-    nth_rw 1 [← (divergentSet_mem_invalg hf.measurable hg').2,
-      ← μ.restrict_map hf.measurable (divergentSet_measurable hf.measurable hg'),
-      hf.map_eq]
+  have hres : MeasurePreserving f (μ.restrict (divergentSet f g)) (μ.restrict (divergentSet f g)) :=
+    ⟨hf.measurable, by nth_rw 1 [← (divergentSet_mem_invalg hf.measurable hg').2,
+      ← μ.restrict_map hf.measurable (divergentSet_measurable hf.measurable hg'), hf.map_eq]⟩
   have mi {n : ℕ} := birkhoffMax_integrable μ hf hg (n := n)
-  have mm {n : ℕ} := birkhoffMax_measurable hf.measurable hg' (n := n)
   rw [integral_sub, sub_nonneg]
-  · rw [← integral_map (hf.aemeasurable.restrict) mm.aestronglyMeasurable, this]
+  · rw [← integral_map hres.aemeasurable
+      (birkhoffMax_measurable hf.measurable hg').aestronglyMeasurable, hres.map_eq]
     exact integral_mono mi.restrict mi.restrict ((birkhoffMax f g).monotone (Nat.le_succ _))
   · exact mi.restrict
-  · apply (integrable_map_measure mm.aestronglyMeasurable hf.aemeasurable.restrict).mp
-    rw [this]
-    exact mi.restrict
+  · exact hres.integrable_comp_of_integrable mi.restrict
 
 lemma int_in_divergentSet_nonneg (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ) (hg' : Measurable g) : 0 ≤ ∫ x in divergentSet f g, g x ∂μ :=
@@ -194,8 +162,8 @@ lemma divergentSet_zero_meas_of_condexp_neg [hμ : IsProbabilityMeasure μ]
     (h : ∀ᵐ x ∂μ, (μ[g | invariants f]) x < 0) (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ) (hg' : Measurable g) :
     μ (divergentSet f g) = 0 := by
-  have pos : ∀ᵐ x ∂μ.restrict (divergentSet f g), 0 < -(μ[g|invariants f]) x := by
-    exact ae_restrict_of_ae (h.mono fun _ hx ↦ neg_pos.mpr hx)
+  have pos : ∀ᵐ x ∂μ.restrict (divergentSet f g), 0 < -(μ[g|invariants f]) x :=
+    ae_restrict_of_ae (h.mono fun _ hx ↦ neg_pos.mpr hx)
   have ds_meas := divergentSet_mem_invalg hf.measurable hg'
   by_contra hm; simp_rw [← pos_iff_ne_zero] at hm
   have : ∫ x in divergentSet f g, g x ∂μ < 0 := by
@@ -282,7 +250,7 @@ private lemma ae_tendsTo_birkhoffAverage_condExp_aux
     have p₂ := ae_tendsTo_birkhoffAverage_sub_condExp_nonneg μ hδ hf hg.neg hg'.neg
     have : μ[-g|invariants f] =ᵐ[μ] - μ[g|invariants f] := condExp_neg _ _
     refine ((p₁.and p₂).and this).mono fun x ⟨⟨hx₁, hx₂⟩, hx₃⟩ => ?_
-    have hδ' : (0 : EReal) < (δ : ℝ) := by exact_mod_cast hδ
+    have hδ' : (0 : EReal) < (δ : ℝ) := EReal.coe_pos.mpr hδ
     filter_upwards [eventually_lt_of_limsup_lt (hx₁.trans_lt hδ'),
       eventually_lt_of_limsup_lt (hx₂.trans_lt hδ')] with m hm₁ hm₂
     rw [EReal.coe_lt_coe_iff] at hm₁ hm₂
@@ -291,16 +259,12 @@ private lemma ae_tendsTo_birkhoffAverage_condExp_aux
     simp_rw [δ] at hm₁ hm₂
     exact abs_lt.mpr ⟨by linarith, by linarith⟩
   refine this.mono fun x hx ↦ Metric.tendsto_atTop.mpr fun ε hε ↦ ?_
-  obtain ⟨k, hk⟩ := Archimedean.arch 1 hε
-  have hk' : 1 < (k + 1) • ε :=
-    hk.trans_lt <| smul_lt_smul_of_pos_right (lt_add_one k) hε
+  obtain ⟨k, hk⟩ := exists_nat_one_div_lt hε
   simp only [eventually_atTop, Subtype.forall, gt_iff_lt] at hx
-  obtain ⟨N, hN⟩ := hx k.succ (Nat.zero_lt_succ k)
-  refine ⟨N, fun n hn ↦ ?_⟩
-  apply (hN n hn).trans
-  rw [inv_lt_iff_one_lt_mul₀ (Nat.cast_pos.mpr k.succ_pos)]
-  norm_num at hk' ⊢
-  linarith
+  obtain ⟨N, hN⟩ := hx (k + 1) k.succ_pos
+  refine ⟨N, fun n hn ↦ (hN n hn).trans ?_⟩
+  rw [one_div] at hk
+  exact_mod_cast hk
 
 /-- **Pointwise Ergodic Theorem** a.k.a. **Birkhoff's Ergodic Theorem**
 
