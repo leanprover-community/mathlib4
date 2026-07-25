@@ -32,7 +32,7 @@ but it may be worth re-examining this to make it easier in the future; see the T
 * In the linearly ordered case, versions of lemmas like `minimal_mem_image` will hold with
   `MonotoneOn`/`AntitoneOn` assumptions rather than the stronger `x ≤ y ↔ f x ≤ f y` assumptions.
 
-* `Set.maximal_iff_forall_insert` and `Set.minimal_iff_forall_diff_singleton` will generalize to
+* `Set.maximal_iff_forall_insert` and `Set.minimal_iff_forall_sdiff_singleton` will generalize to
   lemmas about covering in the case of an `IsStronglyAtomic`/`IsStronglyCoatomic` order.
 
 * `Finset` versions of the lemmas about sets.
@@ -189,26 +189,28 @@ theorem not_minimal_iff_exists_lt (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x �
 alias ⟨exists_lt_of_not_minimal, _⟩ := not_minimal_iff_exists_lt
 
 @[to_dual]
-theorem MinimalFor.of_strictMonoOn_comp (hg : StrictMonoOn g (f '' setOf Q))
+theorem MinimalFor.of_strictMonoOn_comp (hg : StrictMonoOn g (f '' Set.ofPred Q))
     (h : MinimalFor Q (g ∘ f) i) : MinimalFor Q f i := by
   refine ⟨h.prop, fun j hj hle ↦ ?_⟩
   by_contra
   exact h.not_lt hj <| hg ⟨j, hj, rfl⟩ ⟨i, h.prop, rfl⟩ <| lt_of_le_not_ge hle this
 
 @[to_dual]
-theorem MinimalFor.minimal_of_strictMonoOn (hg : StrictMonoOn g (setOf P)) (h : MinimalFor P g x) :
+theorem MinimalFor.minimal_of_strictMonoOn (hg : StrictMonoOn g (Set.ofPred P))
+    (h : MinimalFor P g x) :
     Minimal P x :=
   minimalFor_id.mp <| .of_strictMonoOn_comp (Set.image_id _ ▸ hg) h
 
 @[to_dual]
-theorem MinimalFor.maximalFor_of_strictAntiOn_comp (hg : StrictAntiOn g (f '' setOf Q))
+theorem MinimalFor.maximalFor_of_strictAntiOn_comp (hg : StrictAntiOn g (f '' Set.ofPred Q))
     (h : MinimalFor Q (g ∘ f) i) : MaximalFor Q f i := by
   refine ⟨h.prop, fun j hj hle ↦ ?_⟩
   by_contra
   exact h.not_lt hj <| hg ⟨i, h.prop, rfl⟩ ⟨j, hj, rfl⟩ <| lt_of_le_not_ge hle this
 
 @[to_dual]
-theorem MinimalFor.maximal_of_strictAntiOn (hg : StrictAntiOn g (setOf P)) (h : MinimalFor P g x) :
+theorem MinimalFor.maximal_of_strictAntiOn (hg : StrictAntiOn g (Set.ofPred P))
+    (h : MinimalFor P g x) :
     Maximal P x :=
   maximalFor_id.mp <| MinimalFor.maximalFor_of_strictAntiOn_comp (Set.image_id _ ▸ hg) h
 
@@ -338,18 +340,27 @@ theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬ t ⊂ s :=
 theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
   h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
 
-theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
-  fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
+theorem Minimal.notMem_of_prop_sdiff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
+  fun hxs ↦ ((h.eq_of_superset hx sdiff_subset).subset hxs).2 rfl
 
-theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
+@[deprecated (since := "2026-06-03")]
+alias Minimal.notMem_of_prop_diff_singleton := Minimal.notMem_of_prop_sdiff_singleton
+
+theorem Set.minimal_iff_forall_sdiff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
-  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_diff_singleton hP hx⟩,
+  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_sdiff_singleton hP hx⟩,
     fun h ↦ ⟨h.1, fun _ ht hts x hxs ↦ by_contra fun hxt ↦
-      h.2 x hxs (hP ht <| subset_diff_singleton hts hxt)⟩⟩
+      h.2 x hxs (hP ht <| subset_sdiff_singleton hts hxt)⟩⟩
 
-theorem Set.exists_diff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
+@[deprecated (since := "2026-06-03")]
+alias Set.minimal_iff_forall_diff_singleton := Set.minimal_iff_forall_sdiff_singleton
+
+theorem Set.exists_sdiff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
     (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
-  simpa [Set.minimal_iff_forall_diff_singleton hP, hs] using h
+  simpa [Set.minimal_iff_forall_sdiff_singleton hP, hs] using h
+
+@[deprecated (since := "2026-06-03")]
+alias Set.exists_diff_singleton_of_not_minimal := Set.exists_sdiff_singleton_of_not_minimal
 
 theorem Set.maximal_iff_forall_ssuperset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
   maximal_iff_forall_gt
@@ -370,7 +381,7 @@ theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t �
     (h : ¬ Maximal P s) : ∃ x ∉ s, P (insert x s) := by
   simpa [Set.maximal_iff_forall_insert hP, hs] using h
 
-/- TODO : generalize `minimal_iff_forall_diff_singleton` and `maximal_iff_forall_insert`
+/- TODO : generalize `minimal_iff_forall_sdiff_singleton` and `maximal_iff_forall_insert`
 to `IsStronglyCoatomic`/`IsStronglyAtomic` orders. -/
 
 end Subset
@@ -383,8 +394,11 @@ section Preorder
 variable [Preorder α]
 
 @[to_dual]
-theorem setOf_minimal_subset (s : Set α) : {x | Minimal (· ∈ s) x} ⊆ s :=
+theorem setOfPred_minimal_subset (s : Set α) : {x | Minimal (· ∈ s) x} ⊆ s :=
   sep_subset ..
+
+@[deprecated (since := "2026-07-09")] alias setOf_minimal_subset := setOfPred_minimal_subset
+@[deprecated (since := "2026-07-09")] alias setOf_maximal_subset := setOfPred_maximal_subset
 
 @[to_dual]
 theorem Set.Subsingleton.minimal_mem_iff (h : s.Subsingleton) : Minimal (· ∈ s) x ↔ x ∈ s := by
@@ -444,28 +458,52 @@ theorem minimal_mem_image_antitone_iff (ha : a ∈ s)
   maximal_mem_image_monotone_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
 
 @[to_dual (reorder := hf (x y, 3 4))]
-theorem image_monotone_setOf_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ x ≤ y)) :
+theorem image_monotone_setOfPred_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Minimal P x} = {x | Minimal (∃ x₀, P x₀ ∧ f x₀ = ·) x} := by
   refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨x, (hx : Minimal _ x), rfl⟩
     exact (minimal_mem_image_monotone_iff hx.prop hf).2 hx
-  obtain ⟨y, hy, rfl⟩ := (mem_setOf_eq ▸ h).prop
-  exact mem_image_of_mem _ <| (minimal_mem_image_monotone_iff (s := setOf P) hy hf).1 h
+  obtain ⟨y, hy, rfl⟩ := (mem_ofPred_eq ▸ h).prop
+  exact mem_image_of_mem _ <| (minimal_mem_image_monotone_iff (s := Set.ofPred P) hy hf).1 h
+
+@[deprecated (since := "2026-07-09")]
+alias image_monotone_setOf_minimal := image_monotone_setOfPred_minimal
+
+@[deprecated (since := "2026-07-09")]
+alias image_monotone_setOf_maximal := image_monotone_setOfPred_maximal
 
 @[to_dual (reorder := hf (x y, 3 4))]
-theorem image_antitone_setOf_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ y ≤ x)) :
+theorem image_antitone_setOfPred_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ y ≤ x)) :
     f '' {x | Minimal P x} = {x | Maximal (∃ x₀, P x₀ ∧ f x₀ = ·) x} :=
-  image_monotone_setOf_minimal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
+  image_monotone_setOfPred_minimal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
+
+@[deprecated (since := "2026-07-09")]
+alias image_antitone_setOf_minimal := image_antitone_setOfPred_minimal
+
+@[deprecated (since := "2026-07-09")]
+alias image_antitone_setOf_maximal := image_antitone_setOfPred_maximal
 
 @[to_dual (reorder := hf (x y, 3 4))]
-theorem image_monotone_setOf_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
+theorem image_monotone_setOfPred_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
-  image_monotone_setOf_minimal hf
+  image_monotone_setOfPred_minimal hf
+
+@[deprecated (since := "2026-07-09")]
+alias image_monotone_setOf_minimal_mem := image_monotone_setOfPred_minimal_mem
+
+@[deprecated (since := "2026-07-09")]
+alias image_monotone_setOf_maximal_mem := image_monotone_setOfPred_maximal_mem
 
 @[to_dual (reorder := hf (x y, 3 4))]
-theorem image_antitone_setOf_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
+theorem image_antitone_setOfPred_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
     f '' {x | Minimal (· ∈ s) x} = {x | Maximal (· ∈ f '' s) x} :=
-  image_antitone_setOf_minimal hf
+  image_antitone_setOfPred_minimal hf
+
+@[deprecated (since := "2026-07-09")]
+alias image_antitone_setOf_minimal_mem := image_antitone_setOfPred_minimal_mem
+
+@[deprecated (since := "2026-07-09")]
+alias image_antitone_setOf_maximal_mem := image_antitone_setOfPred_maximal_mem
 
 end Function
 
@@ -498,25 +536,39 @@ theorem minimal_apply_mem_iff (ht : t ⊆ Set.range f) :
 
 @[deprecated (since := "2026-04-07")] alias maximal_apply_iff := maximal_apply_mem_iff
 
-theorem image_setOf_minimal : f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
-  _root_.image_monotone_setOf_minimal (by simp [f.le_iff_le])
+theorem image_setOfPred_minimal : f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
+  _root_.image_monotone_setOfPred_minimal (by simp [f.le_iff_le])
+
+@[deprecated (since := "2026-07-09")]
+alias image_setOf_minimal := image_setOfPred_minimal
 
 @[to_dual]
-theorem inter_preimage_setOf_minimal_eq_of_subset (hts : t ⊆ f '' s) :
+theorem inter_preimage_setOfPred_minimal_eq_of_subset (hts : t ⊆ f '' s) :
     x ∈ s ∩ f ⁻¹' {y | Minimal (· ∈ t) y} ↔ Minimal (· ∈ s ∩ f ⁻¹' t) x := by
-  simp_rw [mem_inter_iff, preimage_setOf_eq, mem_setOf_eq, mem_preimage,
+  simp_rw [mem_inter_iff, preimage_ofPred_eq, mem_ofPred_eq, mem_preimage,
     f.minimal_apply_mem_iff (hts.trans (image_subset_range _ _)),
     minimal_and_iff_left_of_imp (fun _ hx ↦ f.injective.mem_set_image.1 <| hts hx)]
+
+@[deprecated (since := "2026-07-09")]
+alias inter_preimage_setOf_minimal_eq_of_subset := inter_preimage_setOfPred_minimal_eq_of_subset
+
+@[deprecated (since := "2026-07-09")]
+alias inter_preimage_setOf_maximal_eq_of_subset := inter_preimage_setOfPred_maximal_eq_of_subset
 
 end OrderEmbedding
 
 namespace OrderIso
 
 @[to_dual]
-theorem image_setOf_minimal (f : α ≃o β) (P : α → Prop) :
+theorem image_setOfPred_minimal (f : α ≃o β) (P : α → Prop) :
     f '' {x | Minimal P x} = {x | Minimal (fun x ↦ P (f.symm x)) x} := by
-  convert! _root_.image_monotone_setOf_minimal (f := f) (by simp [f.le_iff_le])
+  convert! _root_.image_monotone_setOfPred_minimal (f := f) (by simp [f.le_iff_le])
   aesop
+
+@[deprecated (since := "2026-07-09")]
+alias image_setOf_minimal := image_setOfPred_minimal
+@[deprecated (since := "2026-07-09")]
+alias image_setOf_maximal := image_setOfPred_maximal
 
 @[to_dual]
 theorem map_minimal_mem (f : s ≃o t) (hx : Minimal (· ∈ s) x) :
@@ -544,12 +596,17 @@ def mapSetOfMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maxima
 
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 @[to_dual /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/]
-def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :
+def setOfPredMinimalIsoSetOfPredMaximal (f : s ≃o tᵒᵈ) :
     {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} where
       toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal x).2⟩
       invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMinimal x).2⟩
       __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal
+
+@[deprecated (since := "2026-07-09")]
+alias setOfMinimalIsoSetOfMaximal := setOfPredMinimalIsoSetOfPredMaximal
+@[deprecated (since := "2026-07-09")]
+alias setOfMaximalIsoSetOfMinimal := setOfPredMaximalIsoSetOfPredMinimal
 
 end OrderIso
 

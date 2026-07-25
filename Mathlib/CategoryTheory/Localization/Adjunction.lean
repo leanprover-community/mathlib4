@@ -27,7 +27,7 @@ induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F
 
 namespace CategoryTheory
 
-open Localization Category Functor
+open Localization Category CategoryTheory.Functor
 
 namespace Adjunction
 
@@ -56,7 +56,7 @@ lemma ε_app (X₁ : C₁) :
     (ε adj L₁ W₁ L₂ G' F').app (L₁.obj X₁) =
       L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
         F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
-  letI : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
+  let : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
     Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso.symm
   simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
     Functor.id_obj, Functor.comp_obj, Functor.rightUnitor_hom_app,
@@ -68,20 +68,18 @@ noncomputable def η : F' ⋙ G' ⟶ 𝟭 D₂ := by
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso.symm
   exact liftNatTrans L₂ W₂ ((F ⋙ G) ⋙ L₂) L₂ (F' ⋙ G') (𝟭 D₂) (whiskerRight adj.counit L₂)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma η_app (X₂ : C₂) :
     (η adj L₁ L₂ W₂ G' F').app (L₂.obj X₂) =
       G'.map ((CatCommSq.iso F L₂ L₁ F').inv.app X₂) ≫
         (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
         L₂.map (adj.counit.app X₂) := by
-  letI : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
+  let : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso.symm
   simp only [η, liftNatTrans_app, Lifting.iso, Iso.symm, CatCommSq.hComp_iso_inv_app,
     whiskerRight_app, Functor.rightUnitor_inv_app, comp_id, assoc]
 
 end Localization
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : G ⊣ F` is an adjunction between two categories `C₁` and `C₂` that
 are equipped with localization functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` with
 respect to `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, and that
@@ -95,8 +93,7 @@ noncomputable def localization : G' ⊣ F' :=
       left_triangle := by
         apply natTrans_ext L₁ W₁
         intro X₁
-        have eq := congr_app adj.left_triangle X₁
-        dsimp at eq
+        have eq := adj.left_triangle_components X₁
         rw [NatTrans.comp_app, NatTrans.comp_app, whiskerRight_app, Localization.ε_app,
           Functor.associator_hom_app, id_comp, whiskerLeft_app, G'.map_comp, G'.map_comp,
           assoc, assoc]
@@ -108,8 +105,7 @@ noncomputable def localization : G' ⊣ F' :=
       right_triangle := by
         apply natTrans_ext L₂ W₂
         intro X₂
-        have eq := congr_app adj.right_triangle X₂
-        dsimp at eq
+        have eq := adj.right_triangle_components X₂
         rw [NatTrans.comp_app, NatTrans.comp_app, whiskerLeft_app, whiskerRight_app,
           Localization.η_app, Functor.associator_inv_app, id_comp, F'.map_comp, F'.map_comp]
         erw [← (Localization.ε _ _ _ _ _ _).naturality_assoc, Localization.ε_app,
@@ -135,7 +131,6 @@ lemma localization_counit_app (X₂ : C₂) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 include adj in
 lemma isLocalization [F.Full] [F.Faithful] :
     G.IsLocalization ((MorphismProperty.isomorphisms C₂).inverseImage G) := by

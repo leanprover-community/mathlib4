@@ -48,6 +48,7 @@ universe w v u
 open Category Iso
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- In a bicategory, we can compose the 1-morphisms `f : a ⟶ b` and `g : b ⟶ c` to obtain
 a 1-morphism `f ≫ g : a ⟶ c`. This composition does not need to be strictly associative,
 but there is a specified associator, `α_ f g h : (f ≫ g) ≫ h ≅ f ≫ (g ≫ h)`.
@@ -57,7 +58,6 @@ These associators and unitors satisfy the pentagon and triangle equations.
 
 See https://ncatlab.org/nlab/show/bicategory.
 -/
-@[nolint checkUnivs]
 class Bicategory (B : Type u) extends CategoryStruct.{v} B where
   /-- The category structure on the collection of 1-morphisms -/
   homCategory : ∀ a b : B, Category.{w} (a ⟶ b) := by infer_instance

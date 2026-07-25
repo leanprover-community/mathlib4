@@ -193,9 +193,6 @@ theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bern
     simpa [mul_assoc, sub_mul, mul_comm (evalNegHom (exp ℚ)), exp_mul_exp_neg_eq_one]
   congr
 
-@[deprecated (since := "2025-12-09")]
-alias bernoulli'_odd_eq_zero := bernoulli'_eq_zero_of_odd
-
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
@@ -257,12 +254,13 @@ theorem bernoulli_spec' (n : ℕ) :
   -- key equation: the corresponding fact for `bernoulli'`
   have H := bernoulli'_spec' n.succ
   -- massage it to match the structure of the goal, then convert piece by piece
-  rw [sum_eq_add_sum_diff_singleton_of_mem h₁] at H ⊢
+  rw [sum_eq_add_sum_sdiff_singleton_of_mem h₁] at H ⊢
   apply add_eq_of_eq_sub'
   convert! eq_sub_of_add_eq' H using 1
   · refine sum_congr rfl fun p h => ?_
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
-    simp [bernoulli_eq_bernoulli'_of_ne_one ((not_congr (antidiagonal_congr h' h₁)).mp h'')]
+    simp [bernoulli_eq_bernoulli'_of_ne_one
+      ((not_congr (HasAntidiagonal.antidiagonal_congr h' h₁)).mp h'')]
   · simp [field, h₃]
     norm_num
 

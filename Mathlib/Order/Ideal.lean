@@ -108,7 +108,7 @@ theorem toLowerSet_injective : Injective (toLowerSet : Ideal P → LowerSet P) :
 
 instance : SetLike (Ideal P) P where
   coe s := s.carrier
-  coe_injective' _ _ h := toLowerSet_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := toLowerSet_injective <| SetLike.coe_injective h
 
 /-- The partial ordering by subset inclusion, inherited from `Set P`. -/
 instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P) P

@@ -61,8 +61,7 @@ functionals `fun v => v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
-deriving AddCommMonoid, TopologicalSpace, ContinuousAdd, Inhabited,
-  FunLike, ContinuousLinearMapClass
+deriving TopologicalSpace, Inhabited, FunLike, ContinuousLinearMapClass
 
 namespace WeakDual
 
@@ -74,6 +73,8 @@ multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
 instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
   inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
+
+deriving instance AddCommMonoid, ContinuousAdd for WeakDual
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
@@ -138,6 +139,25 @@ def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
   StrongDual.toWeakDual.symm
 
 @[simp]
+theorem symm_toStrongDual :
+    (toStrongDual (𝕜 := 𝕜) (E := E)).symm = StrongDual.toWeakDual :=
+  rfl
+
+@[simp]
+theorem _root_.StrongDual.symm_toWeakDual :
+    (StrongDual.toWeakDual (𝕜 := 𝕜) (E := E)).symm = toStrongDual :=
+  rfl
+
+@[simp]
+theorem _root_.StrongDual.toStrongDual_toWeakDual (x : StrongDual 𝕜 E) :
+    x.toWeakDual.toStrongDual = x :=
+  rfl
+
+@[simp]
+theorem toWeakDual_toStrongDual (x : WeakDual 𝕜 E) : x.toStrongDual.toWeakDual = x :=
+  rfl
+
+@[simp]
 theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y := rfl
 
 theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜) = x' := rfl
@@ -181,7 +201,7 @@ end WeakDual
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
-deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd
+deriving TopologicalSpace
 
 section Semiring
 
@@ -189,10 +209,18 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
+-- The `SMul` instance exists to avoid an nsmul diamond.
+variable [CommSemiring 𝕝] [Module 𝕝 E] in
+deriving instance SMul 𝕝 for WeakSpace 𝕜 E
+
+deriving instance AddCommMonoid, ContinuousAdd for WeakSpace
+
 namespace WeakSpace
 
 instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
   inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
+
+instance instModule : Module 𝕜 (WeakSpace 𝕜 E) := inferInstance
 
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=

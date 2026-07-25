@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.Probability.Notation
-public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
 
@@ -61,7 +60,7 @@ namespace MeasureTheory
 
 variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞}
 
-open Classical in
+open scoped Classical in
 /-- Conditional (Lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
 
 It is defined as `0` if either `¬ mΩ ≤ mΩ₀` or `hm : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)`.
@@ -78,7 +77,7 @@ noncomputable irreducible_def condLExp (mΩ : MeasurableSpace Ω) (P : Measure[m
   else 0
 
 @[inherit_doc MeasureTheory.condLExp]
-scoped macro:max P:term noWs "⁻[" X:term "|" mΩ:term "]" : term =>
+scoped macro:max P:term noWs "⁻[" X:term " | " mΩ:term "]" : term =>
   `(MeasureTheory.condLExp $mΩ $P $X)
 
 /-- Unexpander for `μ⁻[f|m]` notation. -/
@@ -87,10 +86,10 @@ meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $mΩ $P $X) => `($P⁻[$X|$mΩ])
   | _ => throw ()
 
-/-- info: P⁻[X|mΩ] : Ω → ℝ≥0∞ -/
+/-- info: P⁻[X | mΩ] : Ω → ℝ≥0∞ -/
 #guard_msgs in
 #check P⁻[X|mΩ]
-/-- info: P⁻[X|mΩ] sorry : ℝ≥0∞ -/
+/-- info: P⁻[X | mΩ] sorry : ℝ≥0∞ -/
 #guard_msgs in
 #check P⁻[X|mΩ] (sorry : Ω)
 

@@ -95,6 +95,21 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
         not_imp_not.1 fun hne hx => hne <| ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
       ha
 
+theorem not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTotal r := by
+  intro h
+  obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty
+  obtain ⟨b, hba⟩ := h a
+  specialize ha b (Set.mem_univ b)
+  contradiction
+
+theorem not_leftTotal (wf : WellFounded (Function.swap r)) [Nonempty α] :
+    ¬ Relator.LeftTotal r := by
+  intro h
+  obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty
+  obtain ⟨b, hab⟩ := h a
+  specialize ha b (Set.mem_univ b)
+  contradiction
+
 /-- A minimal element of a nonempty set in a well-founded order.
 
 If you're working with a nonempty linear order, consider defining a
@@ -359,7 +374,7 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
 noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where

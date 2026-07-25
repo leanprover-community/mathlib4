@@ -20,7 +20,5 @@
   "files.readonlyInclude": {
     "**/.elan/**": true,
     "**/.lake/**": true
-  },
-  "json.schemaDownload.enable": false,
-  "workbench.experimental.cloudChanges.partialMatches.enabled": true
+  }
 }

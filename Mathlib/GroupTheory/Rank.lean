@@ -59,6 +59,8 @@ variable (G) in
 theorem rank_pos [Nontrivial G] [FG G] : 0 < rank G := by
   rwa [pos_iff_ne_zero, ne_eq, rank_eq_zero_iff, not_subsingleton_iff_nontrivial]
 
+-- TODO: Prove monotonicity of `rank` along injective homomorphisms of abelian groups. This could
+-- potentially be deduced from a (yet unproved) analogous statement for `Submodule.spanRank`.
 @[to_additive]
 lemma rank_le_of_surjective [FG G] [FG H] (f : G →* H) (hf : Surjective f) : rank H ≤ rank G := by
   classical
@@ -100,7 +102,7 @@ lemma rank_closure_finset_le_card (s : Finset G) : rank (closure (s : Set G)) �
 
 @[to_additive]
 lemma rank_closure_finite_le_nat_card (s : Set G) [Finite s] : rank (closure s) ≤ Nat.card s := by
-  haveI := Fintype.ofFinite s
+  have := Fintype.ofFinite s
   rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]
   exact rank_closure_finset_le_card s.toFinset
 
