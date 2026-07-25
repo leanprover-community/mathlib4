@@ -65,7 +65,7 @@ Then `f` is friendly iff it is `1`-Lipschitz.
 
 namespace Tactic.ComputeAsymptotics.Seq
 
-open Stream' Seq
+open Stream' Stream'.Seq
 
 open scoped UniformConvergence
 
@@ -83,6 +83,7 @@ noncomputable local instance : MetricSpace (Seq α) :=
 local instance : CompleteSpace (Stream' α) :=
   @PiNat.completeSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : CompleteSpace (Seq α) := by
   suffices IsClosed (X := Stream' (Option α))
       (fun x ↦ ∀ {n : ℕ}, x n = none → x (n + 1) = none) by
@@ -92,7 +93,7 @@ local instance : CompleteSpace (Seq α) := by
   rw [clusterPt_principal_iff] at hs
   obtain ⟨t, hts, ht⟩ := hs (Metric.ball s ((1 / 2 : ℝ) ^ (n + 1)))
     (Metric.ball_mem_nhds _ (by positivity))
-  simp only [Metric.ball, Set.mem_setOf_eq] at hts
+  simp only [Metric.ball, Set.mem_ofPred_eq] at hts
   rw [← PiNat.apply_eq_of_dist_lt hts (by simp)] at hn
   rw [← PiNat.apply_eq_of_dist_lt hts (by rfl)]
   exact ht hn
@@ -234,6 +235,7 @@ theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →�
   use f
   exact hF.fixedPoint_isFixedPt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Main theorem of this file. It shows that there exists a function satisfying the corecursive
 definition of the form `def foo (x : X) := hd x :: op (foo (tlArg x))` where `f` is friendly. -/
 theorem FriendlyOperation.exists_fixed_point (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
@@ -416,6 +418,7 @@ theorem FriendlyOperation.of_dist_le_pow {op : Seq α → Seq α}
   obtain ⟨n, hst⟩ := dist_eq_two_inv_pow hst
   grind
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Coinduction principle for proving that an operation is friendly. -/
 theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     {op : Seq α → Seq α}

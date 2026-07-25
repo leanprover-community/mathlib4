@@ -114,6 +114,7 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
       have hxa : x ≠ g.symm x := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
       exact (List.nodup_cons.1 hl).1 <| mem_of_mem_permsOfList hg.1 (by simpa using hxa)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a finset, produce the finset of all permutations of its elements. -/
 def permsOfFinset (s : Finset α) : Finset (Perm α) :=
   Quotient.hrecOn s.1 (fun l hl => ⟨permsOfList l, nodup_permsOfList hl⟩)
@@ -130,7 +131,7 @@ theorem card_perms_of_finset : ∀ s : Finset α, #(permsOfFinset s) = (#s)! := 
   rintro ⟨⟨l⟩, hs⟩; exact length_permsOfList l
 
 /-- The collection of permutations of a fintype is a fintype. -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypePerm [Fintype α] : Fintype (Perm α) :=
   ⟨permsOfFinset (@Finset.univ α _), by simp [mem_perms_of_finset_iff]⟩
 

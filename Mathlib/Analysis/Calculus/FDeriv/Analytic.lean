@@ -223,10 +223,7 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
 
 protected theorem FormalMultilinearSeries.fderiv_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
     fderiv 𝕜 p.sum x = p.derivSeries.sum x := by
-  have h := p.hasFPowerSeriesOnBall (zero_le.trans_lt h) |>.fderiv.hasSum
-    (show x ∈ Metric.eball 0 p.radius by simpa using h) |>.tsum_eq
-  rw [zero_add] at h
-  rw [← h, FormalMultilinearSeries.sum]
+  simpa using (p.hasFPowerSeriesOnBall (zero_le.trans_lt h)).fderiv.sum (by simpa using h)
 
 protected theorem FormalMultilinearSeries.hasFDerivAt_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
     HasFDerivAt p.sum (p.derivSeries.sum x) x := by
@@ -735,6 +732,7 @@ private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [De
   simp_rw [this]
   simp [-Equiv.embeddingFinSucc_fst]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A continuous multilinear function `f` admits a Taylor series, whose successive terms are given
 by `f.iteratedFDeriv n`. This is the point of the definition of `f.iteratedFDeriv`. -/
 theorem hasFTaylorSeriesUpTo_iteratedFDeriv :

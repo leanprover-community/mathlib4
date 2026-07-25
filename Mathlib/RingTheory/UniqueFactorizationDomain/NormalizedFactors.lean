@@ -186,7 +186,7 @@ theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducib
     obtain rfl | ⟨b, hb⟩ := s.empty_or_exists_mem
     · rw [Multiset.cons_zero, Multiset.prod_singleton, Multiset.map_singleton,
         normalizedFactors_irreducible ia]
-    haveI := nontrivial_of_ne b 0 (ib b hb).ne_zero
+    have := nontrivial_of_ne b 0 (ib b hb).ne_zero
     rw [Multiset.prod_cons, Multiset.map_cons,
       normalizedFactors_mul ia.ne_zero (Multiset.prod_ne_zero fun h => (ib 0 h).ne_zero rfl),
       normalizedFactors_irreducible ia, ih ib, Multiset.singleton_add]
@@ -375,7 +375,7 @@ variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 open scoped Classical in
 /-- Noncomputably defines a `StrongNormalizationMonoid` structure on a `UniqueFactorizationMonoid`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 protected noncomputable def strongNormalizationMonoid : StrongNormalizationMonoid α :=
   strongNormalizationMonoidOfMonoidHomRightInverse
     { toFun := fun a : Associates α =>
