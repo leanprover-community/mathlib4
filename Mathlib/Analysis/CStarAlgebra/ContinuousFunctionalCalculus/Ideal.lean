@@ -60,7 +60,6 @@ theorem smul_mem_of_isClosed {𝕜 : Type*} [SMul 𝕜 A] [ContinuousConstSMul �
   have h : Tendsto (fun x => r • (x * y)) (approximateUnit A) (𝓝 (r • y)) :=
     ((increasingApproximateUnit A).tendsto_mul_right y).const_smul r
   refine hI.mem_of_tendsto h (Eventually.of_forall fun x => ?_)
-  show r • (x * y) ∈ I
   rw [← smul_mul_assoc]
   exact I.mul_mem_left (r • x) y hy
 
@@ -69,15 +68,10 @@ value of the non-unital continuous functional calculus homomorphism `cfcₙHom` 
 theorem cfcₙHom_mem_of_isClosed {I : TwoSidedIdeal A} (hI : IsClosed (I : Set A)) {a : A}
     (ha : a ∈ I) (ha' : IsSelfAdjoint a) (g : C(quasispectrum ℝ a, ℝ)₀) :
     cfcₙHom ha' g ∈ I := by
-  have h0 : ((0 : quasispectrum ℝ a) : ℝ) = 0 := rfl
-  have hid : cfcₙHom ha' (ContinuousMapZero.id h0) = a := by
-    rw [show (ContinuousMapZero.id h0 : C(quasispectrum ℝ a, ℝ)₀) =
-        ⟨(ContinuousMap.id ℝ).restrict (quasispectrum ℝ a), rfl⟩ from rfl]
-    exact cfcₙHom_id ha'
-  induction g using ContinuousMapZero.induction_on_of_compact h0 with
+  induction g using ContinuousMapZero.induction_on_of_compact with
   | zero => simp only [map_zero]; exact I.zero_mem
-  | id => rw [hid]; exact ha
-  | star_id => rw [map_star, hid, ha'.star_eq]; exact ha
+  | id => rw [cfcₙHom_id ha']; exact ha
+  | star_id => rw [map_star, cfcₙHom_id ha', ha'.star_eq]; exact ha
   | add f g hf hg => rw [map_add]; exact I.add_mem hf hg
   | mul f g hf hg => rw [map_mul]; exact I.mul_mem_left _ _ hg
   | smul r f hf => rw [map_smul]; exact smul_mem_of_isClosed hI hf r
