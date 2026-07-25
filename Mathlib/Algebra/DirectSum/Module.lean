@@ -137,6 +137,7 @@ theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
     (H : ∀ i, ψ.comp (lof R ι M i) = ψ'.comp (lof R ι M i)) : ψ = ψ' :=
   DFinsupp.lhom_ext' H
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of a subset of the direct summands
 into a larger subset of the direct summands, as a linear map. -/
 def lsetToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, M i) →ₗ[R] ⨁ i : T, M i :=
@@ -424,12 +425,14 @@ variable {A}
 theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, A i :=
   (Submodule.iSup_eq_range_dfinsupp_lsum _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
     {i : ι} (x : A i) :
     (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = x := by
   rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
     {i j : ι} (hij : i ≠ j) (x : A i) :
@@ -474,12 +477,14 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
   change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
   simp [h.ofBijective_coeLinearMap_of_mem hx]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by

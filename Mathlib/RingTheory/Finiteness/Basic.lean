@@ -93,6 +93,7 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   rw [LinearMap.range_eq_map]
   exact Module.Finite.fg_top.map f
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn

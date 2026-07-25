@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Perm.Sign
 
 import Mathlib.Algebra.Module.End
 import Mathlib.GroupTheory.Perm.Option
+import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Nonsingular inverses over semirings
@@ -184,12 +185,12 @@ theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]
 
 theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
-  let A' : Matrix n n R := of <| Function.update A j (A i)
+  let A' : Matrix n n R := A.updateRow j (A i)
   have h' s : (A * adjp s A) i j = (A' * adjp s A') j j := sum_congr rfl fun _ _ ↦
     congr_arg₂ (· * ·) (by simp [A']) <| sum_congr rfl fun σ hσ ↦ prod_congr rfl fun _ _ ↦ by aesop
   simp_rw [h', mul_adjp_apply_eq]
   apply detp_eq_of_row_eq h
-  simp [A', h]
+  simp [A', Matrix.row_apply', h]
 
 theorem adjp_mul_apply_eq : (adjp s A * A) i i = detp s A := by
   rw [← detp_transpose, ← mul_adjp_apply_eq _ _ i, adjp_transpose, ← transpose_mul, transpose_apply]

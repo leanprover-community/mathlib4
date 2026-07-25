@@ -772,7 +772,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
       rw [Filter.eventually_iff] at this
       convert! this
       ext
-      simp only [Set.mem_iInter, Set.mem_setOf_eq]; rfl
+      simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
       intro i _
       apply (coeff_tendsto hℱ _).eventually
@@ -886,7 +886,7 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   apply hT₁
   apply hγ
   simpa only [Units.coe_map, MonoidHom.coe_mk, ZeroHom.toFun_eq_coe, OneHom.coe_mk, add_comm,
-    MonoidWithZeroHom.toZeroHom_coe, ← sub_eq_add_neg, Set.mem_setOf_eq,
+    MonoidWithZeroHom.toZeroHom_coe, ← sub_eq_add_neg, Set.mem_ofPred_eq,
     Valuation.restrict_lt_iff_lt_embedding]
 
 end Dense
@@ -905,10 +905,11 @@ lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : K⟮X⟯, Valued.v f = Valued
 
 open MonoidWithZeroHom.ValueGroup₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
-  simp only [Filter.mem_mk, Set.mem_setOf_eq, uniformity_eq_comap_nhds_zero,
+  simp only [Filter.mem_mk, Set.mem_ofPred_eq, uniformity_eq_comap_nhds_zero,
     Filter.mem_comap]
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
@@ -921,7 +922,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
         rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff]; simp [hx])
       simp [v_def, Valuation.restrict_lt_iff, ← hx]
     apply hd
-    simp only [sub_zero, Set.mem_setOf_eq]
+    simp only [sub_zero, Set.mem_ofPred_eq]
     rw [← map_sub, Valuation.restrict_lt_iff_lt_embedding]
     simp only [valuation_def]
     rwa [← valuation_eq_LaurentSeries_valuation]
@@ -938,12 +939,12 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
           simp only [h, map_zero] at hx
           exact Units.ne_zero _ hx.symm)
         simp only [Units.val_mk0, ← Valuation.restrict_lt_iff_lt_embedding,
-          X_def, Set.setOf_subset_setOf, Valuation.restrict_lt_iff]
+          X_def, Set.ofPred_subset_ofPred, Valuation.restrict_lt_iff]
         rw [← hx, embedding_restrict₀]
         simp [v_def, valuation_coe_ratFunc]
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      rw [Set.mem_setOf_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
+      rw [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
         valuation_eq_LaurentSeries_valuation, map_sub]
       assumption
 
@@ -1069,6 +1070,7 @@ theorem valuation_LaurentSeries_equal_extension :
     rfl
   · exact Valued.continuous_valuation_of_surjective (valuation_surjective K)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     Tendsto (Valued.v : K⟮X⟯ → ℤᵐ⁰) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤᵐ⁰)) := by
   have := Valued.is_topological_valuation (R := (idealX K).adicCompletion K⟮X⟯)
@@ -1093,11 +1095,12 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha),
       Filter.eventually_comap, Filter.Eventually, Valued.mem_nhds]
     use Units.mk0 (Valued.v.restrict a) (by simp [Valuation.restrict_def, ha])
-    simp only [Units.val_mk0, v_def, Set.setOf_subset_setOf]
+    simp only [Units.val_mk0, v_def, Set.ofPred_subset_ofPred]
     rintro y val_y b rfl
     rw [← valuedAdicCompletion_eq_valuation']
     exact (Valuation.restrict_inj _).mp <| Valuation.map_eq_of_sub_lt Valued.v.restrict val_y
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The extension of the `X`-adic valuation from `K⟮X⟯` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
 theorem valuation_compare (f : K⸨X⸩) :
@@ -1143,6 +1146,7 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
     (powerSeriesEquivSubring K f : K⸨X⸩) = ofPowerSeries ℤ K f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Through the isomorphism `LaurentSeriesRingEquiv`, power series land in the unit ball inside the
 completion of `K⟮X⟯`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :

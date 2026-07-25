@@ -163,7 +163,7 @@ universe uK uV
 variable {K : Type uK} {V : Type uV}
 variable [CommSemiring K] [AddCommMonoid V] [Module K V] [Projective K V]
 
-open Module Module.Dual Submodule LinearMap Cardinal Basis Module
+open Module Module.Dual Submodule LinearMap Cardinal Module
 
 section
 

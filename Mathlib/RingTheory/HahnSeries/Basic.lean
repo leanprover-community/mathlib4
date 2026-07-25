@@ -166,6 +166,7 @@ def ofIterate [PartialOrder Γ'] (x : R⟦Γ'⟧⟦Γ⟧) : R⟦Γ ×ₗ Γ'⟧ 
 lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
   simp_rw [HahnSeries.ext_iff, funext_iff, coeff_zero, Pi.zero_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Change a `HahnSeries` on a Lex product to a `HahnSeries` with coefficients in a `HahnSeries`. -/
 def toIterate [PartialOrder Γ'] (x : R⟦Γ ×ₗ Γ'⟧) : R⟦Γ'⟧⟦Γ⟧ where
   coeff := fun g => {

@@ -127,6 +127,7 @@ lemma binomial_real_self (n : ℕ) (p : I) :
 lemma map_cast_binomial_real_self [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
     Bin(R, n, p).real {(n : R)} = p ^ n := by simp [map_cast_binomial_real_singleton]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma binomial_one_eq_bernoulliMeasure (p : I) :
     Bin(1, p) = Ber(1, 0, p) := by

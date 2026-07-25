@@ -44,7 +44,7 @@ namespace Equiv.Perm
 We use this to partition permutations in `Matrix.det_zero_of_row_eq`, such that each partition
 sums up to `0`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
@@ -274,7 +274,7 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (sw
   | 0, x, y => by intro; exact Fin.elim0 x
   | 1, x, y => by
     dsimp [signAux, swap, swapCore]
-    simp only [eq_iff_true_of_subsingleton, not_true, ite_true, le_refl, prod_const,
+    simp only [eq_iff_true_of_subsingleton, not_true,
                IsEmpty.forall_iff]
   | n + 2, x, y => fun hxy => by
     have h2n : 2 ≤ n + 2 := by exact le_add_self
@@ -288,6 +288,7 @@ def signAux2 : List α → Perm α → ℤˣ
   | [], _ => 1
   | x::l, f => if x = f x then signAux2 l f else -signAux2 l (swap x (f x) * f)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem signAux_eq_signAux2 {n : ℕ} :
     ∀ (l : List α) (f : Perm α) (e : α ≃ Fin n) (_h : ∀ x, f x ≠ x → x ∈ l),
       signAux ((e.symm.trans f).trans e) = signAux2 l f

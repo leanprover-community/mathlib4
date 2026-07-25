@@ -243,6 +243,7 @@ lemma HasAffineProperty.affineAnd_iff (P : MorphismProperty Scheme.{u})
     rw [targetAffineLocally_affineAnd_iff hQi, h f]
     aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma HasAffineProperty.affineAnd_le_isAffineHom (P : MorphismProperty Scheme.{u})
     (hA : HasAffineProperty P (affineAnd Q)) : P ≤ @IsAffineHom := by
   intro X Y f hf
