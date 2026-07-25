@@ -140,7 +140,7 @@ theorem eventually_isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ}
     exact hcard_edges.trans (mod_cast card_edgeFinset_le_extremalNumber h_free)
   · exact antitoneOn_extremalNumber_div_choose_two H hm (hm.trans hn) hn
 
-open Classical in
+open scoped Classical in
 /-- The edge density of `H`-free simple graphs on `turanDensityConst H ε` vertices
 is at most `turanDensity H + ε`.
 

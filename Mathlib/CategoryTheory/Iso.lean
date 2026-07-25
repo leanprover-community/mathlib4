@@ -229,6 +229,7 @@ def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
 
 end Iso
 
+set_option linter.translate.warnInvalid false in
 /-- The `IsIso` typeclass expresses that a morphism is invertible.
 
 Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get
@@ -238,7 +239,6 @@ class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 
-set_option linter.translateOverwrite false in
 /-- `IsIso.mk'` is the dual of `IsIso.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
 @[to_dual existing mk]

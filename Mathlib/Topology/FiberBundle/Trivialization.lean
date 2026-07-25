@@ -132,7 +132,7 @@ theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
 
 /-- Composition of inverse and coercion from the subtype of the target. -/
 def setSymm : e.target → Z :=
-  e.target.restrict e.toPartialEquiv.symm
+  e.target.domRestrict e.toPartialEquiv.symm
 
 theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
@@ -227,7 +227,7 @@ section Nonempty
 
 variable [∀ x, Nonempty (E x)]
 
-open Classical in
+open scoped Classical in
 /-- A fiberwise inverse to `e`. This is the function `F → E b` that induces a local inverse
 `B × F → TotalSpace F E` of `e` on `e.baseSet`. Outside of `e.baseSet` it takes on arbitrarily
 chosen junk values. -/
@@ -880,7 +880,8 @@ theorem frontier_preimage (e : Trivialization F proj) (s : Set B) :
   rw [← (e.isImage_preimage_prod s).frontier.preimage_eq, frontier_prod_univ_eq,
     (e.isImage_preimage_prod _).preimage_eq, e.source_eq, preimage_inter]
 
-open Classical in
+set_option backward.isDefEq.respectTransparency false in
+open scoped Classical in
 /-- Given two bundle trivializations `e`, `e'` of `proj : Z → B` and a set `s : Set B` such that
 the base sets of `e` and `e'` intersect `frontier s` on the same set and `e p = e' p` whenever
 `proj p ∈ e.baseSet ∩ frontier s`, `e.piecewise e' s Hs Heq` is the bundle trivialization over
@@ -928,7 +929,7 @@ noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Triviali
     · simp [*]
     · simp [*]
 
-open Classical in
+open scoped Classical in
 /-- Given two bundle trivializations `e`, `e'` over disjoint sets, `e.disjoint_union e' H` is the
 bundle trivialization over the union of the base sets that agrees with `e` and `e'` over their
 base sets. -/

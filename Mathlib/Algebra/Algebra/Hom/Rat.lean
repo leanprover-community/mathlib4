@@ -46,13 +46,12 @@ theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra 
     (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
   AlgHom.ext fun _x => rfl
 
+variable (R) (S) in
 /-- The equivalence between `RingHom` and `ℚ`-algebra homomorphisms. -/
 @[simps]
 def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
     (R →+* S) ≃ (R →ₐ[ℚ] S) where
   toFun := RingHom.toRatAlgHom
   invFun := AlgHom.toRingHom
-  left_inv f := RingHom.toRatAlgHom_toRingHom f
-  right_inv f := AlgHom.toRingHom_toRatAlgHom f
 
 end

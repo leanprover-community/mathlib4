@@ -430,7 +430,7 @@ private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
           using (ha₂ ⟨w, hw⟩).le
       · rw [normAtAllPlaces_apply, normAtPlace_apply_of_isComplex hw,
           normAtComplexPlaces_apply_isComplex ⟨w, hw⟩]
-    · simpa [Set.mem_setOf_eq, normAtComplexPlaces_apply_isReal] using (ha₂ w).ne'
+    · simpa [Set.mem_ofPred_eq, normAtComplexPlaces_apply_isReal] using (ha₂ w).ne'
 
 open scoped Classical in
 /--

@@ -315,7 +315,7 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter
 
 end ae
 
-open Classical in
+open scoped Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
 This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example

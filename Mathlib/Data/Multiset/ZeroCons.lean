@@ -218,7 +218,7 @@ theorem cons_ne_zero {a : α} {m : Multiset α} : a ::ₘ m ≠ 0 :=
 
 theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
     a ::ₘ as = b ::ₘ bs ↔ a = b ∧ as = bs ∨ a ≠ b ∧ ∃ cs, as = b ::ₘ cs ∧ bs = a ::ₘ cs := by
-  haveI : DecidableEq α := Classical.decEq α
+  have : DecidableEq α := Classical.decEq α
   constructor
   · intro eq
     by_cases h : a = b
