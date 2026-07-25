@@ -475,7 +475,7 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
   suffices ψ.comp (cfcHom ha) = (cfcHom hψa).comp (ContinuousMap.compStarAlgHom' R R ι) by
     have hf' : ContinuousOn f (spectrum R (ψ a)) := hf.mono h_spec
     rw [cfc_apply .., cfc_apply ..]
-    congrm($(this) ⟨_, hf.restrict⟩)
+    congrm($(this) ⟨_, hf.domRestrict⟩)
   refine ContinuousMap.UniqueHom.eq_of_continuous_of_map_id _ _ _ ?_ ?_ ?apply_id
   case apply_id =>
     trans cfcHom hψa (.restrict (spectrum R (ψ a)) (.id R))

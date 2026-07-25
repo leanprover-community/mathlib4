@@ -252,7 +252,7 @@ theorem linearCombinationOn_range (s : Set α) :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem linearCombination_restrict (s : Set α) :
-    linearCombination R (s.restrict v) = Submodule.subtype _ ∘ₗ
+    linearCombination R (s.domRestrict v) = Submodule.subtype _ ∘ₗ
       linearCombinationOn α M R v s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by
   ext; simp [linearCombinationOn]
 
