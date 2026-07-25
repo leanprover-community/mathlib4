@@ -569,11 +569,11 @@ theorem Integrable.sup {β}
   rw [← memLp_one_iff_integrable] at hf hg ⊢
   exact hf.sup hg
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Integrable.abs {β}
     [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
     {f : α → β} (hf : Integrable f μ) :
-    Integrable (fun a => |f a|) μ := by
+    Integrable (|f|) μ := by
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.abs
 
