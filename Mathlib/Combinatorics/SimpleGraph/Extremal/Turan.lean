@@ -452,8 +452,8 @@ lemma strictMonoOn_turanNumber : StrictMonoOn (turanNumber n) (Set.Icc 1 n) := b
   contrapose key
   exact key.mono hab
 
-@[deprecated (since := "2026-04-18")] alias card_edgeFinset_turanGraph_add := turanNumber_add
-@[deprecated (since := "2026-04-18")] alias card_edgeFinset_turanGraph := turanNumber_eq
-@[deprecated (since := "2026-04-18")] alias mul_card_edgeFinset_turanGraph_le := mul_turanNumber_le
+@[deprecated (since := "2026-07-25")] alias card_edgeFinset_turanGraph_add := turanNumber_add
+@[deprecated (since := "2026-07-25")] alias card_edgeFinset_turanGraph := turanNumber_eq
+@[deprecated (since := "2026-07-25")] alias mul_card_edgeFinset_turanGraph_le := mul_turanNumber_le
 
 end SimpleGraph
