@@ -56,8 +56,12 @@ variable (X) in
 abbrev HasSmallInductiveDimensionLE (n : ℕ) :=
   HasSmallInductiveDimensionLT X (n + 1)
 
-@[simp]
-theorem hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
+variable (X) in
+/-- The small inductive dimension of a topological space. -/
+noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
+  sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasSmallInductiveDimensionLT X i}
+
+lemma hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
   ⟨fun h ↦ by cases h; assumption, fun _ ↦ .zero⟩
 
 @[deprecated (since := "2026-06-21")]
