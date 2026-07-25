@@ -530,7 +530,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {K : Geometry.SimplicialComplex ℝ E}
 variable {n : ℕ} [NeZero n]
 
-local instance : DecidableEq E := Classical.decEq E
+/-- Classical decidable equality used while indexing a top-dimensional face. -/
+local instance topFaceIndexDecidableEq :
+    DecidableEq E := Classical.decEq E
 
 /--
 A top face written as `insert a F`, where `F` has `n` vertices, can be indexed as an
@@ -650,7 +652,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {K : Geometry.SimplicialComplex ℝ E}
 variable {n : ℕ} [NeZero n]
 
-local instance : DecidableEq E := Classical.decEq E
+/-- Classical decidable equality used in the three-top-faces argument. -/
+local instance threeTopFacesDecidableEq :
+    DecidableEq E := Classical.decEq E
 
 /--
 Three distinct top faces of the form `insert a F` cannot occur around the same
@@ -755,7 +759,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {K : Geometry.SimplicialComplex ℝ E}
 variable {n : ℕ} [NeZero n]
 
-local instance : DecidableEq E := Classical.decEq E
+/-- Classical decidable equality used for finite families of coface apices. -/
+local instance finiteApexFamilyDecidableEq :
+    DecidableEq E := Classical.decEq E
 
 /--
 A finite family of apices producing top faces around one codimension-one face has
@@ -822,7 +828,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {K : Geometry.SimplicialComplex ℝ E}
 variable {n : ℕ}
 
-local instance : DecidableEq E := Classical.decEq E
+/-- Classical decidable equality used for finite vertices and coface apices. -/
+local instance finiteComplexVerticesDecidableEq :
+    DecidableEq E := Classical.decEq E
 
 /-- The finite set of all vertices occurring in a finite geometric simplicial complex. -/
 noncomputable def finiteVertices (K : Geometry.SimplicialComplex ℝ E)
@@ -851,8 +859,8 @@ noncomputable def cofaceApices (K : Geometry.SimplicialComplex ℝ E)
     (K.finiteVertices hK).filter fun a =>
       a ∉ F ∧ insert a F ∈ K.faces
 
-@[simp]
-theorem mem_cofaceApices_iff (hK : K.faces.Finite) {F : Finset E} {a : E} :
+private theorem mem_cofaceApices_iff_internal
+    (hK : K.faces.Finite) {F : Finset E} {a : E} :
     a ∈ K.cofaceApices hK F ↔ a ∉ F ∧ insert a F ∈ K.faces := by
   classical
   rw [cofaceApices, Finset.mem_filter]
@@ -865,6 +873,24 @@ theorem mem_cofaceApices_iff (hK : K.faces.Finite) {F : Finset E} {a : E} :
       (K := K) hK).2
     exact ⟨insert a F, ha.2, Finset.mem_insert_self a F⟩
 
+@[simp]
+theorem mem_cofaceApices_iff [DecidableEq E]
+    (hK : K.faces.Finite) {F : Finset E} {a : E} :
+    a ∈ K.cofaceApices hK F ↔ a ∉ F ∧ insert a F ∈ K.faces := by
+  constructor
+  · intro ha
+    obtain ⟨haF, haFace⟩ :=
+      (mem_cofaceApices_iff_internal (K := K) hK).1 ha
+    refine ⟨haF, ?_⟩
+    convert haFace using 1
+    ext x
+    simp
+  · rintro ⟨haF, haFace⟩
+    apply (mem_cofaceApices_iff_internal (K := K) hK).2
+    refine ⟨haF, ?_⟩
+    convert haFace using 1
+    ext x
+    simp
 /--
 If every top coface represented by `cofaceApices` is a facet of a finite complex with
 convex space, then a codimension-one face has at most two such cofaces.
@@ -1070,8 +1096,11 @@ theorem card_cofaceApices_le_two_stdSimplex
       Geometry.SimplicialComplex.mem_facets_of_mem_faces_card_eq
         (K := K) hK hspace htFace
     rw [htEq, Finset.card_insert_of_notMem haF, hFcard]
-  apply hfacet_of_insert_like _ haFace
-  intro x
+  have hfacet := hfacet_of_insert_like _ haFace (by
+    intro x
+    simp)
+  convert hfacet using 1
+  ext x
   simp
 
 end Geometry.SimplicialComplex
