@@ -380,8 +380,8 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     rw [← quasiIsoAt_iff_comp_right _ (π f n), mappingCocone.lift_fst]
     exact hf q hq
   · have := mono_homologyMap_π f n n (by lia)
-    have : Mono (homologyMap (mappingCocone.triangle (α f n)).mor₁ n) :=
-      by dsimp; infer_instance
+    have : Mono (homologyMap (mappingCocone.triangle (α f n)).mor₁ n) := by
+      dsimp; infer_instance
     have h₁ := (exact_homologyShortComplex f n).fIsKernel
     have h₂ := (CochainComplex.homologyMap_exact₂_of_distTriang _
       (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) n).fIsKernel
