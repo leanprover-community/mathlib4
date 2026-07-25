@@ -705,29 +705,30 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the cardinality of `G`, then
 there is a series of subgroups of cardinality `p ^ k` for `k` through `0` to `n`. -/
 theorem exists_subgroup_tower [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
-    ∃ f : Fin (n + 1) → Subgroup G, (∀ k, Nat.card (f k) = p ^ k.val) ∧
-      ∀ k : Fin n, f k.castSucc ≤ f k.succ := by
-  have : Fact (Nat.Prime p) := ⟨hp⟩
+    ∃ f : Fin (n + 1) ↪o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val := by
+  suffices ∃ f : Fin (n + 1) →o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val by
+    obtain ⟨f, h⟩ := this
+    refine ⟨.ofStrictMono f (f.monotone.strictMono_of_injective fun a b hab ↦ ?_), h⟩
+    have hcard := h a ▸ h b ▸ congr(Nat.card $hab)
+    simpa [pow_right_inj₀ hp.pos hp.ne_one, Fin.ext_iff] using hcard
+  have : Fact p.Prime := ⟨hp⟩
   induction n generalizing G with
-  | zero => exact ⟨![⊥], by simp⟩
+  | zero => exact ⟨⟨![⊥], by simp⟩, by simp⟩
   | succ n ih =>
     obtain ⟨s, hs⟩ := exists_subgroup_card_pow_prime p h
-    have hdvd : p ^ n ∣ Nat.card s := by simp [hs, pow_add]
-    obtain ⟨f, h1, h2⟩ := ih hdvd
+    obtain ⟨f, hf⟩ := ih (show p ^ n ∣ Nat.card s by simp [hs, pow_add])
     let f' := fun k ↦ if hk : k = Fin.last (n + 1) then s else (f (k.castPred hk)).map s.subtype
-    refine ⟨f', fun k ↦ ?_, fun k ↦ ?_⟩
-    · by_cases hk : k = Fin.last (n + 1)
+    have hf' (k : Fin (n + 2)) : Nat.card (f' k) = p ^ k.val := by
+      by_cases hk : k = Fin.last (n + 1)
       · simpa [f', hk] using hs
-      · simp only [hk, f', ↓reduceDIte, Subgroup.card_map_of_injective s.subtype_injective]
-        exact h1 (k.castPred hk)
-    · by_cases hk : k = Fin.last n
-      · simpa [f', hk] using Subgroup.map_subtype_le (f k)
-      · simp only [Fin.castSucc_ne_last, ↓reduceDIte, Fin.castPred_castSucc, Fin.succ_eq_last_succ,
-          Nat.succ_eq_add_one, hk, map_subtype_le_map_subtype, f']
-        convert h2 (k.castPred hk)
-        · simp
-        · ext
-          simp
+      · simp only [hk, f', ↓reduceDIte, card_map_of_injective s.subtype_injective]
+        exact hf (k.castPred hk)
+    refine ⟨⟨f', monotone_iff_forall_lt.mpr fun a b hab ↦ ?_⟩, hf'⟩
+    · have ha : a ≠ Fin.last (n + 1) := Fin.ne_last_of_lt hab
+      by_cases hb : b = Fin.last (n + 1)
+      · simp only [↓reduceDIte, ha, hb, f']
+        apply map_subtype_le
+      · simpa [ha, hb, f'] using f.mono hab.le
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
 then there is a subgroup of cardinality `p ^ n`. -/
