@@ -210,7 +210,7 @@ lemma Ideal.finiteHeight_of_le {I J : Ideal R} (e : I ≤ J) (hJ : J ≠ ⊤) [F
 
 /-- If J is a prime ideal containing I, and its height is less than or equal to the height of I,
 then J is a minimal prime over I -/
-lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
+lemma Ideal.mem_minimalPrimes_of_height_le {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
     [FiniteHeight J] (e' : J.height ≤ I.height) : J ∈ I.minimalPrimes := by
   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
   convert! h₁
@@ -219,6 +219,9 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
   exact lt_irrefl _ ((height_strict_mono_of_isPrime h₃).trans_le
     (e'.trans <| height_mono h₁.le))
+
+@[deprecated (since := "2026-07-25")]
+alias Ideal.mem_minimalPrimes_of_height_eq := Ideal.mem_minimalPrimes_of_height_le
 
 /-- A prime ideal has height zero if and only if it is minimal -/
 lemma Ideal.height_eq_zero_iff {I : Ideal R} [I.IsPrime] : height I = 0 ↔ I ∈ minimalPrimes R := by
