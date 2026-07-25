@@ -86,3 +86,7 @@ variable (R) (S) in
 def RingEquiv.equivRatAlgEquiv : (R ≃+* S) ≃ (R ≃ₐ[ℚ] S) where
   toFun := RingEquiv.toRatAlgEquiv
   invFun := AlgEquiv.toRingEquiv
+
+lemma RingEquiv.toRatAlgEquiv_injective :
+    Function.Injective (RingEquiv.toRatAlgEquiv : (R ≃+* S) → _) :=
+  (RingEquiv.equivRatAlgEquiv R S).injective
