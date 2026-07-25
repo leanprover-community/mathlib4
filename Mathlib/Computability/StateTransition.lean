@@ -30,7 +30,7 @@ namespace StateTransition
 state returned before a `none` result. If the state transition function always returns `some`,
 then the computation diverges, returning `Part.none`. -/
 def eval {σ} (f : σ → Option σ) : σ → Part σ :=
-  PFun.fix (PFun.lift fun s ↦ (f s).elim (Sum.inl s) Sum.inr)
+  PFun.fix fun s ↦ (f s).elim (Sum.inl s) Sum.inr
 
 /-- The reflexive transitive closure of a state transition function. `Reaches f a b` means
 there is a finite sequence of steps `f a = some a₁`, `f a₁ = some a₂`, ... such that `aₙ = b`.
@@ -110,7 +110,7 @@ theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches 
       b ∈ eval f a ↔ (f a = none ∧ a = b) ∨ ∃ a', f a = some a' ∧ b ∈ eval f a' := by
     unfold eval
     rw [PFun.mem_fix_iff]
-    simp only [PFun.lift_apply, Part.mem_some_iff]
+    simp only [PFun.coe_val, Part.mem_some_iff]
     cases h : f a <;> simp [eq_comm]
   refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · refine evalInduction h fun a_ind h_ind IH ↦ ?_

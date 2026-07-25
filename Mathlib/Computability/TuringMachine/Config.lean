@@ -110,9 +110,9 @@ or in some cases `n :: v` where `v` will be ignored by a subsequent function.
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
 -/
 def Code.eval : Code → List ℕ →. List ℕ
-  | Code.zero' => PFun.lift fun v => 0 :: v
-  | Code.succ => PFun.lift fun v => [v.headI.succ]
-  | Code.tail => PFun.lift fun v => v.tail
+  | Code.zero' => fun v : List ℕ => 0 :: v
+  | Code.succ => fun v : List ℕ => [v.headI.succ]
+  | Code.tail => fun v : List ℕ => v.tail
   | Code.cons f fs => fun v ↦. do
     let n ← Code.eval f v
     let ns ← Code.eval fs v
@@ -330,7 +330,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.bind_some,
       Code.cons_eval, Code.comp_eval, Code.fix_eval, Code.tail_eval, Code.succ_eval,
       Code.zero'_eval, Code.pred_eval, Part.map_some, false_eq_decide_iff,
-      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind, PFun.mk_apply, PFun.lift_apply,
+      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind, PFun.mk_apply, PFun.coe_val,
       List.tail_cons, true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩

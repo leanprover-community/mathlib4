@@ -59,10 +59,10 @@ the constant zero, the successor, left and right projections, each oracle `g ∈
 and is closed under pairing, composition, primitive recursion, and μ-recursion.
 -/
 protected inductive RecursiveIn (O : Set (ℕ →. ℕ)) : (ℕ →. ℕ) → Prop
-  | zero : Nat.RecursiveIn O (PFun.lift fun _ => 0)
-  | succ : Nat.RecursiveIn O (PFun.lift Nat.succ)
-  | left : Nat.RecursiveIn O (PFun.lift fun n => (Nat.unpair n).1)
-  | right : Nat.RecursiveIn O (PFun.lift fun n => (Nat.unpair n).2)
+  | zero : Nat.RecursiveIn O fun _ : ℕ => 0
+  | succ : Nat.RecursiveIn O Nat.succ
+  | left : Nat.RecursiveIn O fun n => (Nat.unpair n).1
+  | right : Nat.RecursiveIn O fun n => (Nat.unpair n).2
   | oracle : ∀ g ∈ O, Nat.RecursiveIn O g
   | pair {f h : ℕ →. ℕ} (hf : Nat.RecursiveIn O f) (hh : Nat.RecursiveIn O h) :
       Nat.RecursiveIn O (fun n ↦. (Nat.pair <$> f n <*> h n))

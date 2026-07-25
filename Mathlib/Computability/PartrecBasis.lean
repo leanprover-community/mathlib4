@@ -73,7 +73,7 @@ theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ (fun v ↦. f v.tail)
 set_option backward.isDefEq.respectTransparency.types false in
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n (fun v ↦. (f v).bind fun a => g (a ::ᵥ v)) :=
-  (@comp n (n + 1) g (Fin.cases f (fun i => PFun.lift fun v => v.get i)) hg <|
+  (@comp n (n + 1) g (Fin.cases f (fun i => fun v : List.Vector ℕ n => v.get i)) hg <|
     Fin.cases (by simpa using hf) (fun i => by simpa using prim (Nat.Primrec'.get i))).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
@@ -85,7 +85,7 @@ protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions. -/
 def Vec {n m} (f : List.Vector ℕ n → List.Vector ℕ m) :=
-  ∀ i, Partrec' (PFun.lift fun v => (f v).get i)
+  ∀ i, @Partrec' n fun v : List.Vector ℕ n => (f v).get i
 
 nonrec theorem Vec.prim {n m f} (hf : @Nat.Primrec'.Vec n m f) : Vec f := fun i => prim <| hf i
 
@@ -114,7 +114,7 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
         (of_prim (Primrec.nat_sub.comp (_root_.Primrec.const 1) Primrec.vector_head)).comp₁
           (fun n => 1 - n) hf).bind
     ((prim Nat.Primrec'.pred).comp₁ Nat.pred hf)).of_eq fun v => Part.ext fun b => by
-      simp only [Nat.rfindOpt, Nat.sub_eq_zero_iff_le, PFun.coe_mk, PFun.lift_apply,
+      simp only [Nat.rfindOpt, Nat.sub_eq_zero_iff_le, PFun.coe_mk, PFun.coe_val,
         Part.mem_bind_iff, Part.mem_some_iff, Part.mem_coe, Option.mem_def]
       refine exists_congr fun a =>
         (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h => ?_)
@@ -122,7 +122,7 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
         funext n
         cases f (n ::ᵥ v) <;> simp <;> rfl
       · have := Nat.rfind_spec h
-        simp only [PFun.lift_apply, Part.mem_some_iff] at this
+        simp only [PFun.coe_val, Part.mem_some_iff] at this
         revert this; rcases f (a ::ᵥ v) with - | c <;> intro this
         · cases this
         rw [← Option.some_inj, eq_comm]

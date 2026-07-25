@@ -466,10 +466,10 @@ end
   exists and if `eval cf (pair a k)` terminates for all `m ≤ k ≤ n`.
 -/
 def eval : Code → ℕ →. ℕ
-  | zero => PFun.lift fun _ => 0
-  | succ => PFun.lift Nat.succ
-  | left => PFun.lift fun n => n.unpair.1
-  | right => PFun.lift fun n => n.unpair.2
+  | zero => fun _ : ℕ => 0
+  | succ => Nat.succ
+  | left => fun n : ℕ => n.unpair.1
+  | right => fun n : ℕ => n.unpair.2
   | pair cf cg => fun n ↦. Nat.pair <$> eval cf n <*> eval cg n
   | comp cf cg => fun n ↦. eval cg n >>= eval cf
   | prec cf cg =>

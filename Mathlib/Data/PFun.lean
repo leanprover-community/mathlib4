@@ -153,10 +153,6 @@ theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x)
 @[coe]
 protected def lift (f : α → β) : α →. β := fun a ↦. Part.some (f a)
 
-@[simp]
-theorem lift_apply (f : α → β) (x : α) : PFun.lift f x = Part.some (f x) :=
-  rfl
-
 instance coe : Coe (α → β) (α →. β) :=
   ⟨PFun.lift⟩
 

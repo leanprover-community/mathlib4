@@ -133,7 +133,7 @@ theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = P
 /-- Find the smallest `n` satisfying `f n`, where all `f k` for `k < n` are defined as false.
 Returns a `Part`. -/
 def rfindOpt {α} (f : ℕ → Option α) : Part α :=
-  (rfind (PFun.lift fun n => (f n).isSome)).bind fun n => f n
+  (rfind fun n => (f n).isSome).bind fun n => f n
 
 theorem rfindOpt_spec {α} {f : ℕ → Option α} {a} (h : a ∈ rfindOpt f) : ∃ n, a ∈ f n :=
   let ⟨n, _, h₂⟩ := mem_bind_iff.1 h
@@ -143,7 +143,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
   ⟨fun h => (rfindOpt_spec ⟨h, rfl⟩).imp fun _ h => ⟨_, h⟩, fun h => by
     have h' : ∃ n, (f n).isSome := h.imp fun n => Option.isSome_iff_exists.2
     have s := Nat.find_spec h'
-    have fd : (rfind (PFun.lift fun n => (f n).isSome)).Dom :=
+    have fd : (rfind fun n => (f n).isSome).Dom :=
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
     refine ⟨fd, ?_⟩
     have := rfind_spec (get_mem fd)
@@ -159,10 +159,10 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
 
 /-- `Nat.Partrec f` means that the partial function `f : ℕ →. ℕ` is partially recursive. -/
 protected inductive Partrec : (ℕ →. ℕ) → Prop
-  | zero : Nat.Partrec (PFun.lift fun _ => 0)
-  | succ : Nat.Partrec (PFun.lift Nat.succ)
-  | left : Nat.Partrec (PFun.lift fun n : ℕ => n.unpair.1)
-  | right : Nat.Partrec (PFun.lift fun n : ℕ => n.unpair.2)
+  | zero : Nat.Partrec fun _ : ℕ => 0
+  | succ : Nat.Partrec Nat.succ
+  | left : Nat.Partrec fun n : ℕ => n.unpair.1
+  | right : Nat.Partrec fun n : ℕ => n.unpair.2
   | pair {f g} : Nat.Partrec f → Nat.Partrec g → Nat.Partrec
       (fun n ↦. pair <$> f n <*> g n)
   | comp {f g} : Nat.Partrec f → Nat.Partrec g → Nat.Partrec
@@ -201,7 +201,7 @@ theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Nat.Partrec f := by
     induction n.unpair.2 with
     | zero => simp
     | succ m IH =>
-      simp only [PFun.lift_apply, bind_eq_bind, mem_bind_iff, mem_some_iff]
+      simp only [PFun.coe_val, bind_eq_bind, mem_bind_iff, mem_some_iff]
       exact ⟨_, IH, rfl⟩
 
 protected theorem some : Nat.Partrec (PFun.id ℕ) :=
@@ -744,6 +744,16 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
         rcases am with ⟨a₂, am₂, fa₂⟩
         exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
     cases n <;> simp [F] at h₂
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `obtain`/`specialize`. It is not yet clear whether this is due to defeq abuse
+    in Mathlib or a problem in the new canonicalizer; a minimization would help. The original
+    proof was:
+    ```
+    have := h₁ (Nat.lt_succ_self _)
+    grind [mem_unique, PFun.mem_fix_iff]
+    ```
+    -/
     obtain ⟨c, hc⟩ := h₁ (Nat.lt_succ_self _)
     specialize this _ _ hc
     grind [mem_unique, PFun.mem_fix_iff]
@@ -759,6 +769,9 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       · simpa [F] using Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simpa [F] using ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer),
+      the `clear_value F` was not required here. -/
       clear_value F
       grind
 
