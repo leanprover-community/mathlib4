@@ -65,15 +65,13 @@ def weylMatrix (n : ℕ) : Matrix (Fin 4) (Fin 4) (Fq n) :=
 
 /-- Proof that `unipotentMatrix n a b` has determinant 1. -/
 lemma det_unipotentMatrix (a b : Fq n) : (unipotentMatrix n a b).det = 1 := by
-  dsimp [unipotentMatrix]
   rw [det_succ_row_zero, Fin.sum_univ_four]
-  simp [submatrix_apply, det_fin_three, Fin.succAbove]
+  simp [det_fin_three, unipotentMatrix, submatrix]
 
 /-- Proof that `weylMatrix n` has determinant 1. -/
 lemma det_weylMatrix : (weylMatrix n).det = 1 := by
-  dsimp [weylMatrix]
   rw [det_succ_row_zero, Fin.sum_univ_four]
-  simp [submatrix_apply, det_fin_three, Fin.succAbove]
+  simp [det_fin_three, weylMatrix, submatrix, Fin.succAbove]
   ring
 
 /-- The unipotent generator as an element of `GL (Fin 4) (Fq n)`. -/
