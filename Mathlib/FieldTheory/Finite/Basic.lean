@@ -478,6 +478,20 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
   | succ n hn =>
     rw [pow_succ', pow_succ, pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
 
+/-- Powers of Frobenius may be reduced modulo the extension degree. -/
+theorem frobenius_pow_eq_pow_mod
+    (hcard : Fintype.card K = p ^ n) (m : ℕ) :
+    frobenius K p ^ m = frobenius K p ^ (m % n) :=
+  pow_eq_pow_mod m (frobenius_pow hcard)
+
+/-- Pointwise form of `frobenius_pow_eq_pow_mod`. -/
+theorem iterateFrobenius_mod
+    (hcard : Fintype.card K = p ^ n) (m : ℕ) (x : K) :
+    iterateFrobenius K p m x =
+      iterateFrobenius K p (m % n) x := by
+  rw [iterateFrobenius_eq_pow, iterateFrobenius_eq_pow,
+    frobenius_pow_eq_pow_mod hcard m]
+
 open Polynomial
 
 theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
