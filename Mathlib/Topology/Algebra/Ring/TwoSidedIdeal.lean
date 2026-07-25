@@ -3,8 +3,10 @@ Copyright (c) 2026 Pablo Cohen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pablo Cohen
 -/
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Closures of two-sided ideals in topological rings
@@ -44,11 +46,11 @@ protected def closure (I : TwoSidedIdeal R) : TwoSidedIdeal R :=
     (fun {x _} hy =>
       have h : Set.MapsTo (fun b => x * b) (I : Set R) (I : Set R) :=
         fun a ha => I.mul_mem_left x a ha
-      h.closure (continuous_mul_left x) hy)
+      h.closure (continuous_const_mul x) hy)
     (fun {_ y} hx =>
       have h : Set.MapsTo (fun b => b * y) (I : Set R) (I : Set R) :=
         fun a ha => I.mul_mem_right a y ha
-      h.closure (continuous_mul_right y) hx)
+      h.closure (continuous_mul_const y) hx)
 
 @[simp]
 theorem coe_closure (I : TwoSidedIdeal R) : (I.closure : Set R) = _root_.closure (I : Set R) := by
