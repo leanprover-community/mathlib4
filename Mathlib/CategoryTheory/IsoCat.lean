@@ -170,6 +170,13 @@ instance IsoCat.isIso_functor (e : IsoCat C D) : e.functor.IsIso where
     ⟨e.inverse.obj, fun X => (Functor.congr_obj e.unit_eq X).symm,
       Functor.congr_obj e.counit_eq⟩
 
+/-- Convert an isomorphism of categories into a bijection on objects. -/
+def IsoCat.objEquiv (e : IsoCat C D) : C ≃ D where
+  toFun := e.functor.obj
+  invFun := e.inverse.obj
+  left_inv c : (e.functor ⋙ e.inverse).obj c = (𝟭 C).obj c := by rw [e.unit_eq]
+  right_inv d : (e.inverse ⋙ e.functor).obj d = (𝟭 D).obj d := by rw [e.counit_eq]
+
 instance (e : IsoCat C D) : e.inverse.IsIso := e.symm.isIso_functor
 
 instance [F.IsIso] : F.strictInv.IsIso := F.asIsomorphism.symm.isIso_functor

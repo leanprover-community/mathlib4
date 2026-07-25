@@ -1066,9 +1066,8 @@ def prodIsoCat : IsoCat (ComposableArrows (C × D) n)
   counit_eq := rfl
 
 /-- `ComposableArrows` preserves products, up to bijection. -/
-def prodEquiv : ComposableArrows (C × D) n ≃ ComposableArrows C n × ComposableArrows D n where
-  toFun := (prodEquivalence C D n).functor.obj
-  invFun := (prodEquivalence C D n).inverse.obj
+def prodEquiv : ComposableArrows (C × D) n ≃ ComposableArrows C n × ComposableArrows D n :=
+  IsoCat.objEquiv (prodIsoCat C D n)
 
 end
 
