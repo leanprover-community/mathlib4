@@ -113,11 +113,11 @@ variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
 
 instance : FunLike (A₁ →CP A₂) A₁ A₂ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where

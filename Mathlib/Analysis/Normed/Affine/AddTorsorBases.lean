@@ -63,20 +63,21 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
       AffineSubspace.eq_univ_of_subsingleton_span_eq_top (subsingleton_range _) b.tot
     simp [this]
   · -- The positive-dimensional case.
-    haveI : FiniteDimensional ℝ E := b.finiteDimensional
+    have : FiniteDimensional ℝ E := b.finiteDimensional
     have : convexHull ℝ (range b) = ⋂ i, b.coord i ⁻¹' Ici 0 := by
-      rw [b.convexHull_eq_nonneg_coord, setOf_forall]; rfl
+      rw [b.convexHull_eq_nonneg_coord, ofPred_forall]; rfl
     ext
     simp only [this, interior_iInter_of_finite, ←
       IsOpenMap.preimage_interior_eq_interior_preimage (isOpenMap_barycentric_coord b _)
         (continuous_barycentric_coord b _),
-      interior_Ici, mem_iInter, mem_setOf_eq, mem_Ioi, mem_preimage]
+      interior_Ici, mem_iInter, mem_ofPred_eq, mem_Ioi, mem_preimage]
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 open AffineMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a set `s` of affine-independent points belonging to an open set `u`, we may extend `s` to
 an affine basis, all of whose elements belong to `u`. -/
 theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : IsOpen u)
@@ -126,8 +127,8 @@ theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}
 
 theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : AffineBasis ι ℝ V) :
     Finset.univ.centroid ℝ b ∈ interior (convexHull ℝ (range b)) := by
-  haveI := b.nonempty
-  simp only [b.interior_convexHull, mem_setOf_eq, b.coord_apply_centroid (Finset.mem_univ _),
+  have := b.nonempty
+  simp only [b.interior_convexHull, mem_ofPred_eq, b.coord_apply_centroid (Finset.mem_univ _),
     inv_pos, Nat.cast_pos, Finset.card_pos, Finset.univ_nonempty, forall_true_iff]
 
 theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V} :
@@ -135,7 +136,7 @@ theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional �
   refine ⟨affineSpan_eq_top_of_nonempty_interior, fun h => ?_⟩
   obtain ⟨t, hts, b, hb⟩ := AffineBasis.exists_affine_subbasis h
   suffices (interior (convexHull ℝ (range b))).Nonempty by
-    rw [hb, Subtype.range_coe_subtype, setOf_mem_eq] at this
+    rw [hb, Subtype.range_coe_subtype, ofPred_mem_eq] at this
     refine this.mono (by gcongr)
   lift t to Finset V using b.finite_set
   exact ⟨_, b.centroid_mem_interior_convexHull⟩

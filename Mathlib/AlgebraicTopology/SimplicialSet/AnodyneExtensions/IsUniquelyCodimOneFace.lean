@@ -104,6 +104,7 @@ lemma unique (f : ⦋d⦌ ⟶ ⦋d + 1⦌) [Mono f]
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hxy in
 lemma op : (S.opEquiv.symm x).IsUniquelyCodimOneFace (S.opEquiv.symm y) := by
   obtain ⟨d, x, rfl⟩ := x.mk_surjective
@@ -128,6 +129,16 @@ lemma iff_of_iso {Y : SSet.{u}} (e : X ≅ Y) (x y : X.S) :
     (S.mk (e.hom.app _ x.simplex)).IsUniquelyCodimOneFace (S.mk (e.hom.app _ y.simplex)) ↔
       x.IsUniquelyCodimOneFace y :=
   ⟨fun hxy' ↦ by simpa using hxy'.of_iso e.symm, fun hxy ↦ hxy.of_iso e⟩
+
+lemma index_of_iso {Y : SSet.{u}} (e : X ≅ Y) {d : ℕ} (hd : x.dim = d) :
+    (hxy.of_iso e).index hd = hxy.index hd := by
+  obtain ⟨dx, x, rfl⟩ := x.mk_surjective
+  obtain ⟨dy, y, rfl⟩ := y.mk_surjective
+  obtain rfl : dy = dx + 1 := hxy.dim_eq
+  obtain rfl : dx = d := hd
+  symm
+  simp [← (hxy.of_iso e).δ_eq_iff rfl,
+    ← SSet.δ_naturality_apply, dsimp% hxy.δ_index rfl]
 
 end IsUniquelyCodimOneFace
 

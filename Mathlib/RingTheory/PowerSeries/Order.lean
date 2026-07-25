@@ -70,7 +70,7 @@ theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 := by
   simpa using order_finite_iff_ne_zero.not_left
 
 theorem coe_toNat_order {φ : R⟦X⟧} (hf : φ ≠ 0) : φ.order.toNat = φ.order := by
-  rw [ENat.coe_toNat_eq_self.mpr (order_eq_top.not.mpr hf)]
+  rw [ENat.natCast_toNat_eq_self.mpr (order_eq_top.not.mpr hf)]
 
 /-- If the order of a formal power series is finite,
 then the coefficient indexed by the order is nonzero. -/
@@ -83,7 +83,6 @@ theorem coeff_order (h : φ ≠ 0) : coeff φ.order.toNat φ ≠ 0 := by
 /-- If the `n`th coefficient of a formal power series is nonzero,
 then the order of the power series is less than or equal to `n`. -/
 theorem order_le (n : ℕ) (h : coeff n φ ≠ 0) : order φ ≤ n := by
-  classical
   rw [order, dif_neg]
   · simpa using ⟨n, le_rfl, h⟩
   · exact exists_coeff_ne_zero_iff_ne_zero.mp ⟨n, h⟩
@@ -98,12 +97,11 @@ theorem coeff_of_lt_order_toNat (n : ℕ) (h : n < φ.order.toNat) : coeff n φ 
   by_cases h' : φ = 0
   · simp [h']
   · refine coeff_of_lt_order _ ?_
-    rwa [← coe_toNat_order h', ENat.coe_lt_coe]
+    rwa [← coe_toNat_order h', ENat.natCast_lt_natCast]
 
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
 theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff i φ = 0) : ↑n ≤ order φ := by
-  classical
   simp only [order]
   split_ifs
   · simp
@@ -123,7 +121,6 @@ theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coe
 and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
     order φ = n ↔ coeff n φ ≠ 0 ∧ ∀ i, i < n → coeff i φ = 0 := by
-  classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simp
   simp [order, dif_neg hφ, Nat.find_eq_iff]
@@ -346,7 +343,7 @@ theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
       · rw [X_pow_eq, order_monomial]
         split_ifs
         · simp
-        · rw [← hn, ENat.coe_lt_coe]
+        · rw [← hn, ENat.natCast_lt_natCast]
           simp
 
 end OrderBasic
@@ -401,7 +398,7 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
   apply le_antisymm _ (le_order_mul _ _)
   by_cases! h : φ = 0 ∨ ψ = 0
   · rcases h with h | h <;> simp [h]
-  · rw [← coe_toNat_order h.1, ← coe_toNat_order h.2, ← ENat.coe_add]
+  · rw [← coe_toNat_order h.1, ← coe_toNat_order h.2, ← ENat.natCast_add]
     apply order_le
     rw [coeff_mul, Finset.sum_eq_single_of_mem ⟨φ.order.toNat, ψ.order.toNat⟩ (by simp)]
     · exact mul_ne_zero (coeff_order h.1) (coeff_order h.2)

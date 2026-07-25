@@ -23,7 +23,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory.Join
 
-open Bicategory Functor
+open Bicategory CategoryTheory.Functor
 
 -- The proof gets too slow if we put it in a single `pseudofunctor` constructor,
 -- so we break down the component proofs for the pseudofunctors over several lemmas.
@@ -44,6 +44,15 @@ def mapCompLeft (F : A ⥤ B) (G : B ⥤ C) :
     mapPair (F ⋙ G) (𝟭 D) ≅ mapPair F (𝟭 D) ⋙ mapPair G (𝟭 D) :=
   mapIsoWhiskerLeft _ (Functor.leftUnitor _).symm ≪≫ mapPairComp F (𝟭 D) G (𝟭 D)
 
+#adaptation_note
+/--
+`mapIsoWhiskerRight`'s `simps` theorems were formulated in simp normal form under
+`respectTransparency.types true`. We use `respectTransparency.types false` here because these
+lemmas fail to match without this annotation.
+Suggested way forward: Decide what the correct signatures of the `mapIsoWhiskerRight` lemmas
+are, then update this proof accordingly.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (A) in
 @[reassoc]
@@ -53,6 +62,15 @@ lemma mapWhiskerLeft_whiskerLeft (F : B ⥤ C) {G H : C ⥤ D} (η : G ⟶ H) :
       (mapCompRight A F H).inv := by
   apply natTrans_ext <;> ext <;> simp [mapCompRight]
 
+#adaptation_note
+/--
+`mapIsoWhiskerLeft`'s `simps` theorems were formulated in simp normal form under
+`respectTransparency.types true`. We use `respectTransparency.types false` here because these
+lemmas fail to match without this annotation.
+Suggested way forward: Decide what the correct signatures of the `mapIsoWhiskerLeft` lemmas
+are, then update this proof accordingly.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (D) in
 @[reassoc]
@@ -137,6 +155,9 @@ lemma mapWhiskerRight_rightUnitor_hom (F : A ⥤ B) :
 
 end
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pseudofunctor sending `D` to `C ⋆ D`. -/
 @[simps!]
 def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
@@ -145,13 +166,16 @@ def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
   map F := (mapPair (𝟭 C) F.toFunctor).toCatHom
   map₂ f := (mapWhiskerLeft (𝟭 C) f.toNatTrans).toCatHom₂
   mapId D := Cat.Hom.isoMk mapPairId
-  mapComp F G:= Cat.Hom.isoMk <| mapCompRight C F.toFunctor G.toFunctor
+  mapComp F G := Cat.Hom.isoMk <| mapCompRight C F.toFunctor G.toFunctor
   map₂_whisker_left := by intros; exact congr($(mapWhiskerLeft_whiskerLeft C _ _).toCatHom₂)
   map₂_whisker_right := by intros; exact congr($(mapWhiskerLeft_whiskerRight C _ _).toCatHom₂)
   map₂_associator := by intros; exact congr($(mapWhiskerLeft_associator_hom C _ _ _).toCatHom₂)
   map₂_left_unitor := by intros; exact congr($(mapWhiskerLeft_leftUnitor_hom C _).toCatHom₂)
   map₂_right_unitor := by intros; exact congr($(mapWhiskerLeft_rightUnitor_hom C _).toCatHom₂)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pseudofunctor sending `C` to `C ⋆ D`. -/
 @[simps!]
 def pseudofunctorLeft (D : Type u₂) [Category.{v₂} D] :

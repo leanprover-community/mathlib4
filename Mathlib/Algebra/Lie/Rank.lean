@@ -49,6 +49,7 @@ variable (b : Basis ι R L) (bₘ : Basis ιₘ R M) (x : L)
 namespace LieModule
 
 open LieAlgebra LinearMap Module.Free
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R L M)
 
@@ -124,6 +125,7 @@ end LieModule
 namespace LieAlgebra
 
 open LieAlgebra LinearMap Module.Free
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R L)
 
