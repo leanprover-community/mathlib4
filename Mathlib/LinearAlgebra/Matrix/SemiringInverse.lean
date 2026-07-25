@@ -135,10 +135,6 @@ lemma DetpBalanced.submatrix_equiv (e₁ e₂ : m ≃ n) (h : A.DetpBalanced a b
   mp h := by simpa using h.submatrix_equiv e₁.symm e₂.symm
   mpr := (·.submatrix_equiv ..)
 
-lemma DetpBalanced.scalar_mul (h : A.DetpBalanced a b) (c : R) :
-    A.DetpBalanced (c * a) (c * b) := by
-  simp [DetpBalanced, mul_assoc, ← mul_add, h.mul_add_mul_eq]
-
 lemma DetpBalanced.smul (h : A.DetpBalanced a b) (c : R) :
     (c • A).DetpBalanced a b := by
   simp_rw [DetpBalanced, detp_smul, ← mul_assoc, mul_comm _ (c ^ _), mul_assoc,
