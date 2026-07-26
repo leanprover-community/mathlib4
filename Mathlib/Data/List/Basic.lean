@@ -606,6 +606,10 @@ theorem idxOf_getLast {l : List α} (hl : l ≠ []) (hl' : l.getLast hl ∉ l.dr
     contrapose hl'
     rwa [mem_dropLast_iff_idxOf_lt <| getLast_mem hl, ← Nat.not_le]
 
+theorem idxOf_tail_of_head_ne {a : α} (hl : l ≠ []) (ha : l.head hl ≠ a) :
+    l.tail.idxOf a = (l.idxOf a) - 1 := by
+  induction l <;> grind
+
 end IndexOf
 
 /-! ### nth element -/
