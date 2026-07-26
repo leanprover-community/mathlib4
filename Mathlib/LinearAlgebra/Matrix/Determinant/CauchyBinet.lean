@@ -145,10 +145,23 @@ subsets `S` of `n` of the product of the two maximal minors with columns (resp. 
 selected by `S` in increasing order. -/
 theorem det_mul_cauchyBinet (A : Matrix m n R) (B : Matrix n m R) :
     (A * B).det =
+      ∑ S ∈ (univ.powersetCard (Fintype.card m) : Finset (Finset n)).attach,
+        (A.submatrix (Fintype.equivFin m).symm
+            (S.1.orderEmbOfFin (mem_powersetCard.mp S.2).2)).det *
+          (B.submatrix (S.1.orderEmbOfFin (mem_powersetCard.mp S.2).2)
+            (Fintype.equivFin m).symm).det := by
+  classical
+  have key : (A * B).det =
       ∑ S : {s : Finset n // s.card = Fintype.card m},
         (A.submatrix (Fintype.equivFin m).symm (S.1.orderEmbOfFin S.2)).det *
-        (B.submatrix (S.1.orderEmbOfFin S.2) (Fintype.equivFin m).symm).det := by
-  classical
+        (B.submatrix (S.1.orderEmbOfFin S.2) (Fintype.equivFin m).symm).det := ?key
+  · rw [key]
+    refine Finset.sum_nbij'
+      (fun S => ⟨S.1, by rw [mem_powersetCard]; exact ⟨subset_univ _, S.2⟩⟩)
+      (fun S => ⟨S.1, (mem_powersetCard.mp S.2).2⟩)
+      (fun S _ => Finset.mem_attach _ _) (fun S _ => Finset.mem_univ _)
+      (fun S _ => rfl) (fun S _ => rfl) (fun S _ => rfl)
+  case key =>
   rw [det_mul_eq_sum_det_submatrix_mul_prod]
   simp_rw [← fiberSum A B]
   rw [Finset.sum_sigma']
