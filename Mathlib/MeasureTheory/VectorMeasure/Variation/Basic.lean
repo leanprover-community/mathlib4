@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Properties of variation
@@ -287,6 +285,15 @@ theorem _root_.MeasurableEmbedding.variation_map (hφ : MeasurableEmbedding φ) 
     apply le_trans ?_ (enorm_measure_le_variation _ _)
     by_cases hx : x ∈ s <;> simp [hs, hx]
 
+lemma variation_eq_of_forall_enorm_eq {W : Type*} [TopologicalSpace W] [ENormedAddCommMonoid W]
+    [T2Space W] (ν : VectorMeasure X W) (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ = ‖ν E‖ₑ) :
+    μ.variation = ν.variation := by
+  apply le_antisymm <;>
+  apply variation_le_of_forall_enorm_le <;>
+  intro E hE
+  · simpa only [h E hE] using enorm_measure_le_variation ν E
+  · simpa only [h E hE] using enorm_measure_le_variation μ E
+
 end Basic
 
 section NormedAddCommGroup
@@ -442,17 +449,5 @@ theorem ennrealVariation_eq_self : μ.ennrealVariation = μ := by
   simp [variation_eq_ennrealToMeasure, ennrealVariation]
 
 end ENNReal
-
-variable {W : Type*}
-
-lemma variation_eq_of_forall_enorm_eq [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
-    [TopologicalSpace W] [ENormedAddCommMonoid W] [T2Space W]
-    (μ : VectorMeasure X V) (ν : VectorMeasure X W) (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ = ‖ν E‖ₑ) :
-    μ.variation = ν.variation := by
-  apply le_antisymm <;>
-  apply variation_le_of_forall_enorm_le <;>
-  intro E hE
-  · simpa only [h E hE] using enorm_measure_le_variation ν E
-  · simpa only [h E hE] using enorm_measure_le_variation μ E
 
 end MeasureTheory.VectorMeasure
