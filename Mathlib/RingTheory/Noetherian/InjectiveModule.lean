@@ -64,8 +64,7 @@ private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
     rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, smul_smul, hc, zero_smul]
   have hker : ideal_b f (r + n) ≤
       LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
-    rw [hr n]
-    exact hker0
+    rwa [hr n]
   refine ⟨(Submodule.liftQ (ideal_b f (r + n))
       (LinearMap.toSpanSingleton R M (f ^ r • y)) hker).comp
     (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm.toLinearMap, ?_⟩
@@ -73,10 +72,7 @@ private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
       (⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ : Ideal.span {f^(r + n)})
       = Submodule.Quotient.mk (1 : R) := by
     rw [LinearEquiv.symm_apply_eq, Ideal.quotTorsionOfEquivSpanSingleton_apply_mk, one_smul]
-  change (Submodule.liftQ (ideal_b f (r + n))
-      (LinearMap.toSpanSingleton R M (f ^ r • y)) hker)
-      ((Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
-        ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩) = f ^ r • y
+  dsimp
   rw [hmk, Submodule.liftQ_apply, LinearMap.toSpanSingleton_apply, one_smul]
 
 variable [IsNoetherianRing R]
@@ -118,7 +114,7 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
     (algebraMap R (Module.End R I') (⟨f ^ (r + n), s_mem⟩ : Submonoid.powers f)) :=
     (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g ⟨f ^ (r + n), s_mem⟩)
   apply hbij.1
-  change f ^ (r + n) • (g z) = f ^ (r + n) • x
+  dsimp
   rw [hz2, smul_smul, ← pow_add]
 
 /-- **Hartshorne III. Lemma 3.3.** Let `R` be a Noetherian ring and `I` an injective `R`-module.
