@@ -554,6 +554,7 @@ variable (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime
 
 open IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `R ⧸ p ^ n ≃ₐ[R] Rₚ ⧸ maximalIdeal Rₚ ^ n`, where `Rₚ` satisfies
 `IsLocalization.AtPrime Rₚ p`. -/
 noncomputable
@@ -691,11 +692,13 @@ noncomputable def equivQuotientMapMaximalIdeal : S ⧸ pS ≃+* Sₚ ⧸ pSₚ :
       IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma equivQuotientMapMaximalIdeal_apply_mk (s : S) :
     equivQuotientMapMaximalIdeal S p Rₚ Sₚ (Ideal.Quotient.mk _ s) = (algebraMap S _) s := by
   simp [equivQuotientMapMaximalIdeal]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma equivQuotientMapMaximalIdeal_symm_apply_mk (s : S) :
     (equivQuotientMapMaximalIdeal S p Rₚ Sₚ).symm (algebraMap S _ s) = Ideal.Quotient.mk _ s := by
