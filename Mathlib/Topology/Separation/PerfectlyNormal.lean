@@ -55,7 +55,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
       · suffices ∀ n, f n x = 0 from by simp [h, this]
         exact fun n => hfs n hp
       · contrapose h
-        simp only [preimage, notMem_setOf_iff, ContinuousMap.coe_mk, mem_singleton_iff]
+        simp only [preimage, notMem_ofPred_iff, ContinuousMap.coe_mk, mem_singleton_iff]
         apply ne_of_gt
         obtain ⟨i, hi⟩ := mem_iUnion.1 <| compl_iInter _ ▸ mem_compl (hu ▸ h)
         calc

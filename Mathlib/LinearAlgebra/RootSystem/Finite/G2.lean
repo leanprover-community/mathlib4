@@ -587,7 +587,7 @@ lemma card_index_eq_twelve :
   rw [← this]
   exact Nat.card_congr <| indexEquivAllRoots P
 
-lemma setOf_index_eq_univ :
+lemma setOfPred_index_eq_univ :
     letI _i := P.indexNeg
     { long P, -long P,
       short P, -short P,
@@ -596,6 +596,8 @@ lemma setOf_index_eq_univ :
       threeShortAddLong P, -threeShortAddLong P,
       threeShortAddTwoLong P, -threeShortAddTwoLong P } = univ :=
   eq_univ_iff_forall.mpr fun i ↦ by simpa using mem_allRoots P i
+
+@[deprecated (since := "2026-07-09")] alias setOf_index_eq_univ := setOfPred_index_eq_univ
 
 end IsIrreducible
 

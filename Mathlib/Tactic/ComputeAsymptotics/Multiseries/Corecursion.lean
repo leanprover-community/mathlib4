@@ -93,7 +93,7 @@ local instance : CompleteSpace (Seq α) := by
   rw [clusterPt_principal_iff] at hs
   obtain ⟨t, hts, ht⟩ := hs (Metric.ball s ((1 / 2 : ℝ) ^ (n + 1)))
     (Metric.ball_mem_nhds _ (by positivity))
-  simp only [Metric.ball, Set.mem_setOf_eq] at hts
+  simp only [Metric.ball, Set.mem_ofPred_eq] at hts
   rw [← PiNat.apply_eq_of_dist_lt hts (by simp)] at hn
   rw [← PiNat.apply_eq_of_dist_lt hts (by rfl)]
   exact ht hn

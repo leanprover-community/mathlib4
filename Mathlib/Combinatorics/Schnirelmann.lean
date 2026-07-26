@@ -214,11 +214,17 @@ lemma schnirelmannDensity_finite {A : Set ℕ} [DecidablePred (· ∈ A)] (hA : 
 @[simp] lemma schnirelmannDensity_univ : schnirelmannDensity Set.univ = 1 :=
   (schnirelmannDensity_eq_one_iff_of_zero_mem (by simp)).2 (by simp)
 
-lemma schnirelmannDensity_setOf_even : schnirelmannDensity (setOf Even) = 0 :=
+lemma schnirelmannDensity_setOfPred_even : schnirelmannDensity (Set.ofPred Even) = 0 :=
   schnirelmannDensity_eq_zero_of_one_notMem <| by simp
 
-lemma schnirelmannDensity_setOf_prime : schnirelmannDensity (setOf Nat.Prime) = 0 :=
+@[deprecated (since := "2026-07-09")]
+alias schnirelmannDensity_setOf_even := schnirelmannDensity_setOfPred_even
+
+lemma schnirelmannDensity_setOfPred_prime : schnirelmannDensity (Set.ofPred Nat.Prime) = 0 :=
   schnirelmannDensity_eq_zero_of_one_notMem <| by simp [Nat.not_prime_one]
+
+@[deprecated (since := "2026-07-09")]
+alias schnirelmannDensity_setOf_prime := schnirelmannDensity_setOfPred_prime
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -226,7 +232,7 @@ The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`,
 
 Note that if `m = 1`, this set is empty.
 -/
-lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
+lemma schnirelmannDensity_setOfPred_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     schnirelmannDensity {n | n % m = 1} = (m⁻¹ : ℝ) := by
   rcases m.eq_zero_or_pos with rfl | hm'
   · simp only [Nat.cast_zero, inv_zero]
@@ -235,7 +241,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   apply le_antisymm (schnirelmannDensity_le_of_le m hm'.ne' _) _
   · rw [← one_div, ← @Nat.cast_one ℝ]
     gcongr
-    simp only [Set.mem_setOf_eq, card_le_one_iff_subset_singleton, subset_iff,
+    simp only [Set.mem_ofPred_eq, card_le_one_iff_subset_singleton, subset_iff,
       mem_filter, mem_Ioc, mem_singleton, and_imp]
     use 1
     intro x _ hxm h
@@ -244,7 +250,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     rwa [Nat.mod_eq_of_lt hxm'] at h
   rw [le_schnirelmannDensity_iff]
   intro n hn
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ {x ∈ Ioc 0 n | x % m = 1} := by
     simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
     rintro _ y _ hy' rfl
@@ -261,17 +267,26 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   intro a b
   simp [hm'.ne']
 
-lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
+@[deprecated (since := "2026-07-09")]
+alias schnirelmannDensity_setOf_mod_eq_one := schnirelmannDensity_setOfPred_mod_eq_one
+
+lemma schnirelmannDensity_setOfPred_modeq_one {m : ℕ} :
     schnirelmannDensity {n | n ≡ 1 [MOD m]} = (m⁻¹ : ℝ) := by
   rcases eq_or_ne m 1 with rfl | hm
   · simp [Nat.modEq_one]
-  rw [← schnirelmannDensity_setOf_mod_eq_one hm]
+  rw [← schnirelmannDensity_setOfPred_mod_eq_one hm]
   simp [Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
 
-lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
-  have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff
+@[deprecated (since := "2026-07-09")]
+alias schnirelmannDensity_setOf_modeq_one := schnirelmannDensity_setOfPred_modeq_one
+
+lemma schnirelmannDensity_setOfPred_Odd : schnirelmannDensity (Set.ofPred Odd) = 2⁻¹ := by
+  have h : Set.ofPred Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff
   simp only [h]
-  rw [schnirelmannDensity_setOf_mod_eq_one (by norm_num1), Nat.cast_two]
+  rw [schnirelmannDensity_setOfPred_mod_eq_one (by norm_num1), Nat.cast_two]
+
+@[deprecated (since := "2026-07-09")]
+alias schnirelmannDensity_setOf_Odd := schnirelmannDensity_setOfPred_Odd
 
 open scoped Pointwise
 

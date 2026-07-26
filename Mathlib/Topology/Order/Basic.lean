@@ -129,7 +129,7 @@ theorem le_mem_nhds [OrderTopology α] {a b : α} (h : a < b) : ∀ᶠ x in 𝓝
 theorem nhds_eq_order [OrderTopology α] (a : α) :
     𝓝 a = (⨅ b ∈ Iio a, 𝓟 (Ioi b)) ⊓ ⨅ b ∈ Ioi a, 𝓟 (Iio b) := by
   rw [OrderTopology.topology_eq_generate_intervals (α := α), nhds_generateFrom]
-  simp_rw [mem_setOf_eq, @and_comm (a ∈ _), exists_or, or_and_right, iInf_or, iInf_and,
+  simp_rw [mem_ofPred_eq, @and_comm (a ∈ _), exists_or, or_and_right, iInf_or, iInf_and,
     iInf_exists, iInf_inf_eq, iInf_comm (ι := Set α), iInf_iInf_eq_left, mem_Ioi, mem_Iio]
 
 @[to_dual none]
@@ -169,7 +169,7 @@ lemma exists_countable_generateFrom_Ioi_Iio
   refine ⟨a '' t, t_count.image _, ?_⟩
   apply le_antisymm
   · apply le_generateFrom_iff_subset_isOpen.2
-    simp only [mem_image, exists_exists_and_eq_and, setOf_subset_setOf, forall_exists_index,
+    simp only [mem_image, exists_exists_and_eq_and, ofPred_subset_ofPred, forall_exists_index,
       and_imp]
     grind [isOpen_Iio', isOpen_Ioi']
   · rw [ht]
@@ -192,7 +192,7 @@ lemma isTopologicalBasis_biInter_Ioi_Iio_of_generateFrom (c : Set α)
     · apply hg_fin.isOpen_biInter (fun i hi ↦ ?_)
       rw [h]
       exact isOpen_generateFrom_of_mem ⟨i, hgc hi, Or.inr rfl⟩
-  simp only [exists_and_left, image_subset_iff, preimage_setOf_eq, setOf_subset_setOf, and_imp]
+  simp only [exists_and_left, image_subset_iff, preimage_ofPred_eq, ofPred_subset_ofPred, and_imp]
   intro k k_fin hk
   let kl := {s ∈ k | ∃ a ∈ c, s = Ioi a}
   let kr := {s ∈ k | ∃ a ∈ c, s = Iio a}
@@ -562,10 +562,10 @@ theorem SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered 
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
-@[to_dual countable_setOf_covBy_left
+@[to_dual countable_setOfPred_covBy_left
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/]
-theorem countable_setOf_covBy_right [SecondCountableTopology α] :
+theorem countable_setOfPred_covBy_right [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, x ⋖ y } := by
   nontriviality α
   let s := { x : α | ∃ y, x ⋖ y }
@@ -605,11 +605,17 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
   simp_rw [subset_def, mem_Ioo, mem_Ioc]
   exact fun u hu ↦ ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
+@[deprecated (since := "2026-07-09")] alias countable_setOf_covBy_right :=
+  countable_setOfPred_covBy_right
+
+@[deprecated (since := "2026-07-09")] alias countable_setOf_covBy_left :=
+  countable_setOfPred_covBy_left
+
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
 theorem countable_of_isolated_left' [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y < x ∧ Ioo y x = ∅ } := by
-  simpa only [← covBy_iff_Ioo_eq] using countable_setOf_covBy_left
+  simpa only [← covBy_iff_Ioo_eq] using countable_setOfPred_covBy_left
 
 /-- Consider a disjoint family of intervals `(x, y)` with `x < y` in a second-countable space.
 Then the family is countable.
@@ -622,7 +628,7 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α]
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
     (h.subset sdiff_subset).countable_of_isOpen (fun _ _ ↦ isOpen_Ioo) fun x hx ↦
       (not_covBy_iff_exists_mem_Ioo (h' _ hx.1)).1 <| mt (Exists.intro (y x)) hx.2
-  this.of_sdiff countable_setOf_covBy_right
+  this.of_sdiff countable_setOfPred_covBy_right
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. We give
@@ -703,7 +709,7 @@ instance instIsCountablyGenerated_atTop [SeparableSpace α] :
   · obtain ⟨s, s_count, hs⟩ := exists_countable_dense α
     have : atTop = generate (Ici '' s) := by
       refine atTop_eq_generate_of_not_bddAbove fun ⟨x, hx⟩ ↦ ?_
-      simp only [eq_empty_iff_forall_notMem, IsTop, mem_setOf_eq, not_forall, not_le] at h
+      simp only [eq_empty_iff_forall_notMem, IsTop, mem_ofPred_eq, not_forall, not_le] at h
       obtain ⟨y, hy, hxy⟩ := hs.exists_mem_open isOpen_Ioi (h x)
       exact (hx hy).not_gt hxy
     rw [this]

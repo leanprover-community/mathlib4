@@ -154,7 +154,7 @@ lemma factoredNumbers_compl {N : ℕ} {s : Finset ℕ} (h : primesBelow N ≤ s)
   intro n hn
   simp only [Set.mem_compl_iff, mem_factoredNumbers, Set.mem_sdiff, ne_eq, not_and, not_forall,
     exists_prop, Set.mem_singleton_iff] at hn
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   obtain ⟨p, hp₁, hp₂⟩ := hn.1 hn.2
   have : N ≤ p := by
     contrapose! hp₂

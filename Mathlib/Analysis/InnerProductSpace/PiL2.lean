@@ -177,18 +177,18 @@ theorem EuclideanSpace.ball_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 �
     Metric.ball (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 < r ^ 2} := by
   ext x
   have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
-  simp_rw [mem_setOf, mem_ball_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_lt this hr]
+  simp_rw [mem_ofPred, mem_ball_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_lt this hr]
 
 theorem EuclideanSpace.closedBall_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
     Metric.closedBall (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 ≤ r ^ 2} := by
   ext
-  simp_rw [mem_setOf, mem_closedBall_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_le_left hr]
+  simp_rw [mem_ofPred, mem_closedBall_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_le_left hr]
 
 theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
     Metric.sphere (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 = r ^ 2} := by
   ext x
   have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
-  simp_rw [mem_setOf, mem_sphere_zero_iff_norm, norm_eq, norm_eq_abs, sq_abs,
+  simp_rw [mem_ofPred, mem_sphere_zero_iff_norm, norm_eq, norm_eq_abs, sq_abs,
     Real.sqrt_eq_iff_eq_sq this hr]
 
 section
@@ -1046,15 +1046,16 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
 
 theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type*} [Fintype ι]
     (card_ι : finrank 𝕜 E = Fintype.card ι) {v : ι → E} {s : Set ι}
-    (hv : Orthonormal 𝕜 (s.restrict v)) : ∃ b : OrthonormalBasis ι 𝕜 E, ∀ i ∈ s, b i = v i := by
-  have hsv : Injective (s.restrict v) := hv.linearIndependent.injective
-  have hX : Orthonormal 𝕜 ((↑) : Set.range (s.restrict v) → E) := by
+    (hv : Orthonormal 𝕜 (s.domRestrict v)) :
+    ∃ b : OrthonormalBasis ι 𝕜 E, ∀ i ∈ s, b i = v i := by
+  have hsv : Injective (s.domRestrict v) := hv.linearIndependent.injective
+  have hX : Orthonormal 𝕜 ((↑) : Set.range (s.domRestrict v) → E) := by
     rwa [orthonormal_subtype_range hsv]
   obtain ⟨Y, b₀, hX, hb₀⟩ := hX.exists_orthonormalBasis_extension
   have hιY : Fintype.card ι = Y.card := by
     refine card_ι.symm.trans ?_
     exact Module.finrank_eq_card_finset_basis b₀.toBasis
-  have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_restrict])
+  have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_domRestrict])
   have hsv' : Set.InjOn v s := by
     rw [Set.injOn_iff_injective]
     exact hsv

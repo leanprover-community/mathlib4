@@ -497,9 +497,9 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 lemma asAlgebraHom_ofMulAction_smul_eq_mul (x y : k[G]) :
     (ofMulAction k G G).asAlgebraHom x y = x * y := by
   induction x using induction_on with
-  | hM g => ext; simp [MonoidAlgebra.coeff_single_mul_apply]
-  | hadd x y hx hy => simp [hx, hy, add_mul]
-  | hsmul r x hx => simp [← hx]
+  | of g => ext; simp [MonoidAlgebra.coeff_single_mul_apply]
+  | add x y hx hy => simp [hx, hy, add_mul]
+  | smul r x hx => simp [← hx]
 
 @[deprecated (since := "2026-06-18")]
 alias ofMulAction_self_smul_eq_mul := asAlgebraHom_ofMulAction_smul_eq_mul

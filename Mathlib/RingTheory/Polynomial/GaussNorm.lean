@@ -159,10 +159,10 @@ lemma exists_min_eq_gaussNorm (p : R[X]) (hc : 0 ≤ c) :
     ∀ j, j < i → v (p.coeff j) * c ^ j < p.gaussNorm v c := by
   have h_nonempty : {i | gaussNorm v c p = v (p.coeff i) * c ^ i}.Nonempty := by
     obtain ⟨i, hi⟩ := exists_eq_gaussNorm v c p
-    exact ⟨i, Set.mem_setOf.mpr hi⟩
+    exact ⟨i, Set.mem_ofPred.mpr hi⟩
   refine ⟨Nat.find h_nonempty, Nat.find_spec h_nonempty, ?_⟩
   intro j hj_lt
-  simp only [Nat.lt_find_iff, Set.mem_setOf_eq] at hj_lt
+  simp only [Nat.lt_find_iff, Set.mem_ofPred_eq] at hj_lt
   exact lt_of_le_of_ne (le_gaussNorm v _ hc j) fun a ↦ hj_lt j (Nat.le_refl j) a.symm
 
 /-- If `v` is a nonnegative nonarchimedean function with `v 0 = 0` and `c` is nonnegative, the

@@ -134,7 +134,7 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
       · change MeasurableSet {p : E × E | b < ‖p.2‖}
         exact measurableSet_lt (by fun_prop) (by fun_prop)
     congr 1
-    simp only [Set.preimage_setOf_eq, ContinuousLinearMap.rotation_apply, Real.cos_neg,
+    simp only [Set.preimage_ofPred_eq, ContinuousLinearMap.rotation_apply, Real.cos_neg,
       Real.cos_pi_div_four, Real.sin_neg, Real.sin_pi_div_four, neg_smul, neg_neg]
     have h_twos : ‖2⁻¹ * √2‖ = (√2)⁻¹ := by
       simp only [norm_mul, norm_inv, Real.norm_ofNat, Real.norm_eq_abs]
@@ -147,7 +147,7 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
   _ ≤ (μ.prod μ) {p | (b - a) / √2 < ‖p.1‖ ∧ (b - a) / √2 < ‖p.2‖} := by
     -- The rotated bands are contained in quadrants.
     refine measure_mono fun p ↦ ?_
-    simp only [Set.mem_setOf_eq, and_imp]
+    simp only [Set.mem_ofPred_eq, and_imp]
     intro hp1 hp2
     suffices (b - a) / √2 < min ‖p.1‖ ‖p.2‖ from lt_min_iff.mp this
     calc (b - a) / √2
@@ -495,7 +495,7 @@ theorem lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self [IsProbabilityMeasu
     by_contra! h_neg
     have : {x : E | ‖x‖ ≤ a} = ∅ := by
       ext x
-      simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_le]
+      simp only [Set.mem_ofPred_eq, Set.mem_empty_iff_false, iff_false, not_le]
       exact h_neg.trans_le (norm_nonneg _)
     simp only [this, measure_empty, nonpos_iff_eq_zero] at hc
     simp [hc] at hc_gt
@@ -573,12 +573,12 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
       · exact h_of_pos a ha
     have h_univ : (Set.univ : Set E) = ⋃ a : ℕ, {x | ‖x‖ ≤ a} := by
       ext x
-      simp only [Set.mem_univ, Set.mem_iUnion, Set.mem_setOf_eq, true_iff]
+      simp only [Set.mem_univ, Set.mem_iUnion, Set.mem_ofPred_eq, true_iff]
       exact exists_nat_ge _
     rw [h_univ, Monotone.measure_iUnion]
     · simp [h_le]
     · intro a b hab x hx
-      simp only [Set.mem_setOf_eq] at hx ⊢
+      simp only [Set.mem_ofPred_eq] at hx ⊢
       exact hx.trans (mod_cast hab)
   -- So we can take `C = 1` and show that `x ↦ exp (‖x‖ ^ 2)` is integrable, since it is bounded.
   have hb' : ∀ᵐ x ∂μ, ‖x‖ ≤ b := by

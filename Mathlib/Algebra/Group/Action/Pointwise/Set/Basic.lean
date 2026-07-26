@@ -293,8 +293,14 @@ theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
   (Function.Surjective.iSup_congr _ inv_surjective) fun _ ↦ rfl
 
 @[to_additive]
-theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
-  simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
+theorem iUnion_smul_eq_ofPred_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
+  simp_rw [← iUnion_ofPred, ← iUnion_inv_smul, ← preimage_smul, preimage]
+
+@[deprecated (since := "2026-07-09")]
+alias iUnion_smul_eq_setOf_exists := iUnion_smul_eq_ofPred_exists
+
+@[deprecated (since := "2026-07-09")]
+alias iUnion_vadd_eq_setOf_exists := iUnion_vadd_eq_ofPred_exists
 
 @[to_additive (attr := simp)]
 lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by

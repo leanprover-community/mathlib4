@@ -72,15 +72,25 @@ end CliffordAlgebra
 -/
 @[wikidata Q674689]
 def CliffordAlgebra := CliffordAlgebra.ringCon Q |>.Quotient
-deriving Inhabited, Ring, Algebra R
+deriving Inhabited
 
 namespace CliffordAlgebra
+
+-- This instance exists to avoid nsmul and zsmul diamonds.
+instance {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
+    [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
+    [IsScalarTower R A M] : SMul R (CliffordAlgebra Q) :=
+  inferInstanceAs <| SMul R (RingCon.Quotient _)
+
+deriving instance Ring for CliffordAlgebra
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
   inferInstanceAs <| Algebra R (RingCon.Quotient _)
+
+instance : Algebra R (CliffordAlgebra Q) := inferInstance
 
 -- verify there are no diamonds
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906

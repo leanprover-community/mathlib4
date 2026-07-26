@@ -25,7 +25,7 @@ public section
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
     f = ∑ a : ZMod m, {n : ℕ | (n : ZMod m) = a}.indicator f := by
   ext n
-  simp only [Finset.sum_apply, Set.indicator_apply, Set.mem_setOf_eq, Finset.sum_ite_eq,
+  simp only [Finset.sum_apply, Set.indicator_apply, Set.mem_ofPred_eq, Finset.sum_ite_eq,
     Finset.mem_univ, ↓reduceIte]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -37,8 +37,8 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
     Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) ↔ Summable fun n ↦ f (m * n + k) := by
   trans Summable ({n : ℕ | (n : ZMod m) = k ∧ k ≤ n}.indicator f)
   · rw [← (finite_lt_nat k).summable_compl_iff (f := {n : ℕ | (n : ZMod m) = k}.indicator f)]
-    simp only [summable_subtype_iff_indicator, indicator_indicator, inter_comm, setOf_and,
-      compl_setOf, not_lt]
+    simp only [summable_subtype_iff_indicator, indicator_indicator, inter_comm, ofPred_and,
+      compl_ofPred, not_lt]
   · let g : ℕ → ℕ := fun n ↦ m * n + k
     have hg : Function.Injective g := fun m n hmn ↦ by simpa [g, hm.ne] using hmn
     have hg' : ∀ n ∉ range g, {n : ℕ | (n : ZMod m) = k ∧ k ≤ n}.indicator f n = 0 := by
@@ -46,7 +46,7 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
       contrapose! hn
       exact (Nat.range_mul_add m k).symm ▸ mem_of_indicator_ne_zero hn
     convert (Function.Injective.summable_iff hg hg').symm
-    simp only [Function.comp_apply, mem_setOf_eq, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
+    simp only [Function.comp_apply, mem_ofPred_eq, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
       zero_mul, zero_add, le_add_iff_nonneg_left, zero_le, and_self, indicator_of_mem, g]
 
 /-- If `f : ℕ → ℝ` is decreasing and has a negative term, then `f` is not summable. -/
