@@ -6,7 +6,7 @@ Authors: Yongxi Lin
 module
 
 public import Mathlib.Probability.Process.Adapted
-public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 public import Mathlib.Topology.Order.Separable
 
 /-!
