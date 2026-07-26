@@ -118,8 +118,7 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
       choose psi hpsi using hI (ideal_p f (r + n)) phi
       let z := psi 1
       have hz : f ^ (r + n) • z = f ^ r • a := by
-        rw [← psi.map_smul (f ^ (r + n)) (1 : R)]
-        rw [smul_eq_mul, mul_one, ← hphi]
+        rw [← psi.map_smul (f ^ (r + n)) (1 : R), smul_eq_mul, mul_one, ← hphi]
         exact hpsi _ _
       have hz2 : f ^ (r + n) • (g z) = f ^ (r) • (f ^ n • x) := by
         rw [← ha, ← g.map_smul, ← g.map_smul]
