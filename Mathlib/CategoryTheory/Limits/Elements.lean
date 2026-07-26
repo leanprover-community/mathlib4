@@ -135,7 +135,7 @@ namespace Functor
 
 /-- An initial object in the category `F.Elements` of a covariant functor defines a
 corepresentation for that functor. -/
-def CorepresentableBy.ofIsInitial {F : C ⥤ Type v} (E : Elements F) (he : IsInitial E) :
+def CorepresentableBy.ofIsInitial {F : C ⥤ Type v} {E : Elements F} (he : IsInitial E) :
     CorepresentableBy F E.fst where
       homEquiv :=
         { toFun f := F.map f E.snd
