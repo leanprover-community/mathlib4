@@ -408,20 +408,11 @@ def ofIsCovariantDerivativeOnOfOpenCover {ι : Type*} {s : ι → Set M}
 @[deprecated (since := "2026-07-26")]
 alias of_isCovariantDerivativeOn_of_open_cover := ofIsCovariantDerivativeOnOfOpenCover
 
-@[deprecated (since := "2026-07-25")]
-alias of_isCovariantDerivativeOn_of_open_cover := ofIsCovariantDerivativeOnOfOpenCover
-
 @[simp]
-lemma ofIsCovariantDerivativeOnOfOpenCover {ι : Type*} {s : ι → Set M}
+lemma of_isCovariantDerivativeOn_of_open_cover_coe {ι : Type*} {s : ι → Set M}
     {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i, IsCovariantDerivativeOn F cov (s i)) (hs : ⋃ i, s i = Set.univ) :
     ofIsCovariantDerivativeOnOfOpenCover hcov hs = cov := rfl
-
-@[deprecated (since := "2026-07-26")]
-alias of_isCovariantDerivativeOn_of_open_cover_coe := ofIsCovariantDerivativeOnOfOpenCover
-
-@[deprecated (since := "2026-07-25")]
-alias of_isCovariantDerivativeOn_of_open_cover_coe := ofIsCovariantDerivativeOnOfOpenCover
 
 /--
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
