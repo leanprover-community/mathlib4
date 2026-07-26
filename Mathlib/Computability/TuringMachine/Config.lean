@@ -126,31 +126,33 @@ def Code.eval : Code → List ℕ →. List ℕ
 namespace Code
 
 @[simp]
-theorem zero'_eval (v) : zero'.eval v = pure (0 :: v) := rfl
+theorem zero'_eval : zero'.eval = fun v ↦. pure (0 :: v) := rfl
 
 @[simp]
-theorem succ_eval (v) : succ.eval v = pure [v.headI.succ] := rfl
+theorem succ_eval : succ.eval = fun v ↦. pure [v.headI.succ] := rfl
 
 @[simp]
-theorem tail_eval (v) : tail.eval v = pure v.tail := rfl
+theorem tail_eval : tail.eval = fun v ↦. pure v.tail := rfl
 
 @[simp]
-theorem cons_eval (f fs v) :
-    (cons f fs).eval v = (f.eval v >>= fun n => fs.eval v >>= fun ns => pure (n.headI :: ns)) := rfl
+theorem cons_eval (f fs) :
+    (cons f fs).eval =
+      fun v ↦. f.eval v >>= fun n => fs.eval v >>= fun ns => pure (n.headI :: ns) := rfl
 
 @[simp]
-theorem comp_eval (f g v) :
-    (comp f g).eval v = (g.eval v >>= fun x => f.eval x) := rfl
+theorem comp_eval (f g) :
+    (comp f g).eval = fun v ↦. g.eval v >>= fun x => f.eval x := rfl
 
 @[simp]
-theorem case_eval (f g v) :
-    (case f g).eval v = v.headI.rec (f.eval v.tail) (fun y _ => g.eval (y::v.tail)) := rfl
+theorem case_eval (f g) :
+    (case f g).eval =
+      fun v ↦. v.headI.rec (f.eval v.tail) (fun y _ => g.eval (y :: v.tail)) := rfl
 
 @[simp]
-theorem fix_eval (f v) :
-    (fix f).eval v =
-      PFun.fix (fun v' ↦. (f.eval v').map fun v'' =>
-        if v''.headI = 0 then Sum.inl v''.tail else Sum.inr v''.tail) v := rfl
+theorem fix_eval (f) :
+    (fix f).eval =
+      PFun.fix (fun v ↦. (f.eval v).map fun v' =>
+        if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail) := rfl
 
 /-- `nil` is the constant nil function: `nil v = []`. -/
 def nil : Code :=
@@ -291,7 +293,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       | succ n' _ =>
         simp only [prec, Code.case_eval, Code.cons_eval, Code.comp_eval, Code.fix_eval,
           Code.tail_eval, Code.succ_eval, Code.pred_eval, Code.id_eval, Code.zero'_eval,
-          Part.bind_assoc, ← Part.bind_some_eq_map, Bind.bind]
+          PFun.mk_apply, Part.bind_assoc, ← Part.bind_some_eq_map, Bind.bind]
         suffices ∀ a b, a + b = n' →
           (n'.succ :: 0 ::
             g (n' ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n' ::ᵥ
@@ -673,7 +675,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem code_is_ok (c) : Code.Ok c := by
   induction c with (intro k v; rw [stepNormal])
   | cons f fs IHf IHfs =>
-    rw [Code.cons_eval, IHf]
+    rw [Code.cons_eval, PFun.mk_apply, IHf]
     simp only [bind_assoc, pure_bind]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
@@ -681,17 +683,17 @@ theorem code_is_ok (c) : Code.Ok c := by
     refine Eq.trans (b := eval step (stepRet (Cont.cons₂ v' k) v'')) ?_ (Eq.symm ?_) <;>
       exact reaches_eval (ReflTransGen.single rfl)
   | comp f g IHf IHg =>
-    rw [Code.comp_eval, IHg]
+    rw [Code.comp_eval, PFun.mk_apply, IHg]
     simp only [bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IHf]
   | case f g IHf IHg =>
-    rw [Code.case_eval]
+    rw [Code.case_eval, PFun.mk_apply]
     dsimp only
     cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => rw [cont_eval_fix IHf]
-  | _ => simp only [Code.zero'_eval, Code.succ_eval, Code.tail_eval, pure_bind]
+  | _ => simp only [Code.zero'_eval, Code.succ_eval, Code.tail_eval, PFun.mk_apply, pure_bind]
 
 theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt <$> c.eval v :=
   (code_is_ok c).zero

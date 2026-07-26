@@ -67,13 +67,13 @@ structure PFun (α β : Type*) where
 infixr:25 " →. " => PFun
 
 /-- `fun x ↦. f x` is notation for `PFun.mk fun x ↦ f x`. -/
-macro:max ppAllowUngrouped "fun " xs:Lean.Parser.Term.funBinder+ " ↦. " b:term : term =>
-  `(PFun.mk fun $xs* ↦ $b)
+macro:max ppAllowUngrouped "fun " x:Lean.Parser.Term.funBinder " ↦. " b:term : term =>
+  `(PFun.mk fun $x ↦ $b)
 
 /-- `fun x : α ↦. f x` is notation for `PFun.mk fun x : α ↦ f x`. -/
-macro:max ppAllowUngrouped "fun " xs:Lean.Parser.Term.funBinder+ " : " type:term " ↦. "
+macro:max ppAllowUngrouped "fun " x:Lean.Parser.Term.funBinder " : " type:term " ↦. "
     b:term : term =>
-  `(PFun.mk fun $xs* : $type ↦ $b)
+  `(PFun.mk fun $x : $type ↦ $b)
 
 namespace PFun
 

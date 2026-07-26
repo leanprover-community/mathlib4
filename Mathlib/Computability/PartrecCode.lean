@@ -53,7 +53,7 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
       (PFun.mk <| Nat.unpaired fun a m =>
         (Nat.rfind (fun n ↦.
           (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)) :=
-  Partrec₂.unpaired'.mpr <| by
+  Partrec₂.unpaired_part'.mpr <| by
     let G : ℕ → ℕ → Part ℕ := fun x y =>
       f (Nat.pair (Nat.unpair x).1 (y + (Nat.unpair x).2))
     have h1 :
@@ -67,8 +67,8 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
           (Primrec.nat_add.comp _root_.Primrec.snd <|
             _root_.Primrec.snd.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)).to_comp
       have hG_unpaired : Nat.Partrec (PFun.mk (Nat.unpaired G)) :=
-        Partrec₂.unpaired'.mpr (((Partrec.nat_iff.mpr hf).comp hpair).to₂)
-      Partrec₂.unpaired'.mp <|
+        Partrec₂.unpaired_part'.mpr (((Partrec.nat_iff.mpr hf).comp hpair).to₂)
+      Partrec₂.unpaired_part'.mp <|
         (Nat.Partrec.rfind hG_unpaired).of_eq fun p => by simp [G, Nat.unpaired]
     exact Partrec.map h1
       (Primrec.nat_add.comp _root_.Primrec.snd <|
