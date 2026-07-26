@@ -136,10 +136,14 @@ lemma width_le_iff {k : ℕ} (t : G.TreeDecomp W) (hwidth : t.ewidth ≠ ⊤) :
   rw [← Nat.cast_le (α := ℕ∞), t.coe_width hwidth, t.ewidth_le_iff]
 
 /-- On a finite vertex type, every tree decomposition has `width` at most `card V - 1`. -/
-lemma ewidth_le_card_sub_one [Fintype V] (t : G.TreeDecomp W) :
-    t.ewidth ≤ card V - 1 :=
+lemma ewidth_le_card_sub_one [Fintype V] (t : G.TreeDecomp W) : t.ewidth ≤ card V - 1 :=
   iSup_le fun _ ↦ by
     exact_mod_cast Nat.sub_le_sub_right (Finset.card_le_univ _) 1
+
+lemma ewidth_lt_card [Fintype V] [Nonempty V] (t : G.TreeDecomp W) : t.ewidth < card V := by
+  grw [ewidth_le_card_sub_one]
+  enat_to_nat
+  exact Nat.sub_lt Fintype.card_pos one_pos
 
 /-- On a finite vertex type, every tree decomposition has finite extended width. -/
 lemma ewidth_ne_top_of_finite [Finite V] (t : G.TreeDecomp W) : t.ewidth ≠ ⊤ := by
