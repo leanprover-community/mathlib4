@@ -155,8 +155,8 @@ lemma isCorepresentable.ofHasInitial (F : C ⥤ Type w) [HasInitial (Elements F)
 
 theorem isCorepresentable_iff_hasInitial (F : C ⥤ Type w) :
     HasInitial (Elements F) ↔ IsCorepresentable F where
-      mp _ := isCorepresentable.ofHasInitial F
-      mpr _ := inferInstance
+  mp _ := isCorepresentable.ofHasInitial F
+  mpr _ := inferInstance
 
 /-- An initial object in the category `F.Elements` of a contravariant functor defines a
 representation for that functor. -/
