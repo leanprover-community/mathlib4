@@ -691,8 +691,8 @@ lemma isFiniteRelIndex_iff_finiteIndex :
   rw [isFiniteRelIndex_iff_relIndex_ne_zero, finiteIndex_iff, relIndex]
 
 @[to_additive]
-theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
-  by simp [finiteIndex_iff]
+theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 := by
+  simp [finiteIndex_iff]
 
 @[simp]
 theorem finiteIndex_toAddSubgroup_iff : H.toAddSubgroup.FiniteIndex ↔ H.FiniteIndex := by
