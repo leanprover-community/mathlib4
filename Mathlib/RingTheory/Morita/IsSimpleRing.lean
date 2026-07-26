@@ -5,6 +5,7 @@ Authors: Edison Xie
 -/
 module
 
+public import Mathlib.RingTheory.Length
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Matrix.Module
@@ -31,7 +32,7 @@ universe w u v
 
 section simple
 
-variable (k : Type u) (A : Type v) [Field k] [Ring A] [Algebra k A]
+variable (k : Type u) (A : Type v) [CommRing k] [Ring A] [Algebra k A]
     [IsSimpleRing A] [Module.Finite k A]
 
 @[stacks 074E "(1)"]
@@ -60,7 +61,7 @@ lemma directSum_simple_module_over_simple_ring [IsArtinianRing A] (M : Type v) [
   exact ⟨S, inferInstance, inferInstance, hS, ι, he⟩
 
 @[stacks 074E "(2)"]
-lemma directSum_simple_module_over_simple_algebra (M : Type v) [AddCommGroup M]
+lemma directSum_simple_module_over_simple_algebra [IsArtinianRing k] (M : Type v) [AddCommGroup M]
     [Module A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module k S)
     (_ : Module A S) (_ : IsScalarTower k A S) (_ : IsSimpleModule A S) (ι : Type v),
     Nonempty (M ≃ₗ[A] (ι →₀ S)) := by
@@ -81,20 +82,30 @@ lemma directSum_simple_module_over_simple_algebra' (A : Type v) [Ring A] [IsArti
 /-- Two modules over a simple `k`-algebra `A` have an `A`-linear equivalence if and only if their
 `k`-dimension is the same. -/
 @[stacks 074E "(3)"]
-lemma linearEquiv_iff_finrank_eq_over_simple_ring
-    (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N] [Module k M]
-    [Module k N] [IsScalarTower k A M] [IsScalarTower k A N] [Module.Finite A M]
-    [Module.Finite A N] : Nonempty (M ≃ₗ[A] N) ↔ Module.finrank k M = Module.finrank k N := by
-  have : IsArtinianRing A := .of_finite k A
-  refine ⟨fun ⟨e⟩ ↦ (e.restrictScalars k).finrank_eq, fun h ↦ ?_⟩
+lemma linearEquiv_iff_length_eq_over_simple_ring [IsArtinianRing k]
+    (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N]
+    [Module k M] [Module k N] [IsScalarTower k A M] [IsScalarTower k A N]
+    [Module.Finite A M] [Module.Finite A N] :
+    Nonempty (M ≃ₗ[A] N) ↔ Module.length k M = Module.length k N := by
+  have : IsArtinianRing A := IsArtinianRing.of_finite k A
+  refine ⟨fun ⟨e⟩ ↦ (e.restrictScalars k).length_eq, fun h ↦ ?_⟩
   obtain ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule A A)
   rw [← isSimpleModule_iff_isAtom] at hS
-  obtain ⟨m, ⟨eM⟩⟩ := (isIsotypicOfType_over_simple A M S).linearEquiv_fun
-  obtain ⟨n, ⟨eN⟩⟩ := (isIsotypicOfType_over_simple A N S).linearEquiv_fun
-  have : Nontrivial S := IsSimpleModule.nontrivial A S
-  obtain rfl : m = n := by simp_all [(eM.restrictScalars k).finrank_eq, Module.finrank_pi_fintype,
-    (eN.restrictScalars k).finrank_eq, ne_of_gt <| Module.finrank_pos (R := k) (M := S)]
-  exact ⟨eM.trans eN.symm⟩
+  obtain ⟨ι1, ⟨eM⟩⟩ := directSum_simple_module_over_simple_algebra' A M S
+  obtain ⟨ι2, ⟨eN⟩⟩ := directSum_simple_module_over_simple_algebra' A N S
+  have hι : Module.length k (ι1 →₀ S) = Module.length k (ι2 →₀ S) := by
+    rwa [(eM.restrictScalars k).length_eq, (eN.restrictScalars k).length_eq] at h
+  refine ⟨eM ≪≫ₗ (Finsupp.mapDomain.linearEquiv _ _ ?_) ≪≫ₗ eN.symm⟩
+  have : Module.Finite A (ι1 →₀ S) := Module.Finite.of_injective _ eM.symm.injective
+  have : Module.Finite A (ι2 →₀ S) := Module.Finite.of_injective _ eN.symm.injective
+  have : Fintype ι1 := sorry
+  have : Fintype ι2 := sorry
+  refine Fintype.equivOfCardEq ?_
+  apply_fun ENat.toNat at hι
+  have : Nontrivial S := IsSimpleModule.nontrivial A ↥S
+  have : IsArtinian k S := sorry
+  have : IsNoetherian k S := sorry
+  simpa [ne_of_gt (Module.length_pos (R := k) (M := S)), Module.length_ne_top] using hι
 
 namespace IsSimpleRing
 
@@ -122,3 +133,5 @@ scoped instance smulCommClass_compHom_pi {n : ℕ} (D : Type w) [DivisionRing D]
   ⟨fun a b x ↦ show wdb a • b • x = b • wdb a • x by ext; simp [Finset.smul_sum]⟩
 
 end IsSimpleRing
+
+end simple
