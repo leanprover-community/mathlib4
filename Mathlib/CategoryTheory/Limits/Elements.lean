@@ -153,8 +153,8 @@ instance (F : C ⥤ Type v) [HasInitial (Elements F)] :
 
 theorem isCorepresentable_iff_hasInitial (F : C ⥤ Type v) :
     HasInitial (Elements F) ↔ IsCorepresentable F where
-      mp _ := inferInstance
-      mpr _ := inferInstance
+  mp _ := inferInstance
+  mpr _ := inferInstance
 
 end Functor
 
