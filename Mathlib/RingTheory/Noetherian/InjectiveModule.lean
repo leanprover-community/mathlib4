@@ -103,16 +103,11 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
     [Module R I'] (g : I →ₗ[R] I') [IsLocalizedModule (Submonoid.powers f) g] :
     Function.Surjective g := by
       intro x
-      have h : ∃ (n : ℕ) (a : I), g a = f ^ n • x := by
+     obtain ⟨n, a, ha⟩ : ∃ (n : ℕ) (a : I), g a = f ^ n • x := by
         obtain ⟨⟨a, s⟩, hs⟩ := IsLocalizedModule.surj (Submonoid.powers f) g x
         choose n hn using (Submonoid.mem_powers_iff s.1 f).1 s.2
-        use n
-        use a
-        rw [hn]
-        symm
-        exact hs
-      choose n h1 using h
-      choose a ha using h1
+        use n, a
+        exact hn ▸ hs.symm
       choose r hr using stabilize_ideal_b f
       choose phi hphi using exists_divide_by_fn_map f n r hr a
       choose psi hpsi using hI (ideal_p f (r + n)) phi
