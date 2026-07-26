@@ -6,7 +6,7 @@ Authors: Paul Cadman
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-meta import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness
 public meta import Mathlib.Tactic.Determinant.Bird.Cert
 
 /-!
