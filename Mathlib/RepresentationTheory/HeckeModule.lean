@@ -5,6 +5,7 @@ Authors: Jiaxi Mo
 -/
 module
 
+import Mathlib.Init
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Induced
 

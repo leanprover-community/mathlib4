@@ -5,6 +5,7 @@ Authors: Jiaxi Mo
 -/
 module
 
+import Mathlib.Init
 public import Mathlib.RepresentationTheory.Smooth.Basic
 public import Mathlib.RepresentationTheory.Induced
 public import Mathlib.RepresentationTheory.Irreducible
