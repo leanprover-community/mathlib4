@@ -18,7 +18,7 @@ This file defines tree decompositions on simple graphs and the treewidth.
 
 ## Main definitions
 
-* `SimpleGraph.TreeDecomp` is a tree decomposition of a simple graph.
+* `SimpleGraph.TreeDecomp W` is a tree decomposition of a simple graph, indexed by a type `W`.
 * `TreeDecomp.ewidth` is the extended width of the tree decomposition. `TreeDecomp.width` is the
   ℕ-valued version, and is equivalent to `ewidth` when there is `[Finite V]`.
 * `SimpleGraph.HasTreeDecomp n` is a predicate that a simple graph has a tree decomposition of width
