@@ -11,12 +11,7 @@ public import Mathlib.RepresentationTheory.Induced
 /-!
 # Induction
 
-This file defines the restriction functor, the coinduced functor and the induced functor between
-categories of smooth representations, and also proves the adjunctions.
-
-## Main definitions
-
-## Implementation notes
+This files defines Hecke algebras and Hecke modules.
 
 -/
 

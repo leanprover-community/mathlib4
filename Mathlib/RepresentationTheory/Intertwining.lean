@@ -653,7 +653,6 @@ noncomputable def centralAlgebraMul {z : A[G]} (hz : z ∈ Submonoid.center A[G]
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-
 variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommGroup V] [AddCommGroup W]
   [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W) in
 instance [Module.Finite A V] [IsNoetherian A W] :

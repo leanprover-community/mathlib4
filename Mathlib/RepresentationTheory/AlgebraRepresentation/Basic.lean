@@ -23,8 +23,8 @@ variable {A V : Type*} (k : Type*) [Field k] [Ring A] [Algebra k A] [AddCommGrou
   [Module A V] [IsScalarTower k A V]
   [IsSimpleModule A V] [FiniteDimensional k (Module.End A V)] [IsAlgClosed k]
 
-/-- Schur's Lemma: If `V` is a representation of an algebra `A` over an algebraically closed field
-`k`, then any endomorphism of `V` is scalar. -/
+/-- Schur's Lemma: If `V` is an irreducible representation of an algebra `A` over an algebraically
+closed field `k` with finite dimensional endomorphisms, then any endomorphism of `V` is scalar. -/
 theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     Function.Bijective (algebraMap k (Module.End A V)) := by
   classical exact IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)
@@ -32,8 +32,8 @@ theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
 variable (A V)
 
 open scoped IsMulCommutative in
-/-- Any finite-dimensional irreducible representation of a commutative algebra over an algebraically
-closed field is one-dimensional. -/
+/-- Any irreducible representation of a commutative algebra with finite dimensional endomorphisms
+over an algebraically closed field is one-dimensional. -/
 theorem IsSimpleModule.finrank_eq_one_of_isMulCommutative [IsMulCommutative A] :
     Module.finrank k V = 1 := by
   have : Nontrivial V := IsSimpleModule.nontrivial A V

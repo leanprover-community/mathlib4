@@ -207,7 +207,7 @@ open Opposite
 noncomputable abbrev dual (A : SmRep.{u} k G) := (ihom A).obj (𝟙_ (SmRep.{u} k G))
 
 /-- The dualizing functor in `SmRep`. -/
-noncomputable def dualFunctor : SmRep.{u} k G ⥤ (SmRep.{u} k G)ᵒᵖ where
+noncomputable abbrev dualFunctor : SmRep.{u} k G ⥤ (SmRep.{u} k G)ᵒᵖ where
   obj A := op (dual A)
   map {A B} f := op ((MonoidalClosed.pre (C := SmRep.{u} k G) f).app (𝟙_ (SmRep.{u} k G)))
 
