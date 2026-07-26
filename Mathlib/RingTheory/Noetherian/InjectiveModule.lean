@@ -120,7 +120,7 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
       have hz : f ^ (r + n) • z = f ^ r • a := by
         rw [← psi.map_smul (f ^ (r + n)) (1 : R), smul_eq_mul, mul_one, ← hphi]
         exact hpsi _ _
-      have hz2 : f ^ (r + n) • (g z) = f ^ (r) • (f ^ n • x) := by
+      have hz2 : f ^ (r + n) • (g z) = f ^ r • (f ^ n • x) := by
         rw [← ha, ← g.map_smul, ← g.map_smul]
         exact congrArg g hz
       use z
