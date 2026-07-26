@@ -383,8 +383,6 @@ def localFrameCoeff (i : ι) : Π x : M, (V x →ₗ[𝕜] 𝕜) :=
 
 @[deprecated (since := "2026-07-26")] alias localFrame_coeff := localFrameCoeff
 
-@[deprecated (since := "2026-07-25")] alias localFrame_coeff := localFrameCoeff
-
 variable {e b}
 variable {x x' : M}
 
@@ -396,9 +394,6 @@ lemma localFrameCoeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (i : ι) :
     (e.isLocalFrameOn_localFrame_baseSet I 1 b).coeff_apply_of_notMem hx i
 
 @[deprecated (since := "2026-07-26")]
-alias localFrame_coeff_apply_of_notMem_baseSet := localFrameCoeff_apply_of_notMem_baseSet
-
-@[deprecated (since := "2026-07-25")]
 alias localFrame_coeff_apply_of_notMem_baseSet := localFrameCoeff_apply_of_notMem_baseSet
 
 variable (e b) in
@@ -414,9 +409,6 @@ lemma localFrameCoeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M,
 @[deprecated (since := "2026-07-26")]
 alias localFrame_coeff_apply_of_mem_baseSet := localFrameCoeff_apply_of_mem_baseSet
 
-@[deprecated (since := "2026-07-25")]
-alias localFrame_coeff_apply_of_mem_baseSet := localFrameCoeff_apply_of_mem_baseSet
-
 variable {s s' : Π x : M, V x}
 
 lemma eq_sum_localFrameCoeff_smul [Fintype ι] (hx : x' ∈ e.baseSet) :
@@ -424,9 +416,6 @@ lemma eq_sum_localFrameCoeff_smul [Fintype ι] (hx : x' ∈ e.baseSet) :
   (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_sum_eq s hx
 
 @[deprecated (since := "2026-07-26")]
-alias eq_sum_localFrame_coeff_smul := eq_sum_localFrameCoeff_smul
-
-@[deprecated (since := "2026-07-25")]
 alias eq_sum_localFrame_coeff_smul := eq_sum_localFrameCoeff_smul
 
 variable (e b) in
@@ -445,8 +434,6 @@ lemma localFrameCoeff_congr {i : ι} (hss' : s x = s' x) :
 
 @[deprecated (since := "2026-07-26")] alias localFrame_coeff_congr := localFrameCoeff_congr
 
-@[deprecated (since := "2026-07-25")] alias localFrame_coeff_congr := localFrameCoeff_congr
-
 variable {n}
 
 variable (e) in
@@ -458,8 +445,6 @@ lemma localFrameCoeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
   simp [e.localFrameCoeff_apply_of_mem_baseSet b hxe, basisAt]
 
 @[deprecated (since := "2026-07-26")] alias localFrame_coeff_eq_coeff := localFrameCoeff_eq_coeff
-
-@[deprecated (since := "2026-07-25")] alias localFrame_coeff_eq_coeff := localFrameCoeff_eq_coeff
 
 end Bundle.Trivialization
 
@@ -505,9 +490,6 @@ lemma contMDiffAt_localFrameCoeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s
 @[deprecated (since := "2026-07-26")]
 alias contMDiffAt_localFrame_coeff := contMDiffAt_localFrameCoeff
 
-@[deprecated (since := "2026-07-25")]
-alias contMDiffAt_localFrame_coeff := contMDiffAt_localFrameCoeff
-
 /-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrameCoeff e i`
 in the local frame induced by `e` -/
 lemma contMDiffOn_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
@@ -519,9 +501,6 @@ lemma contMDiffOn_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
 @[deprecated (since := "2026-07-26")]
 alias contMDiffOn_localFrame_coeff := contMDiffOn_localFrameCoeff
 
-@[deprecated (since := "2026-07-25")]
-alias contMDiffOn_localFrame_coeff := contMDiffOn_localFrameCoeff
-
 /-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrameCoeff e i`
 in the local frame induced by `e` -/
 lemma contMDiffOn_baseSet_localFrameCoeff (hs : CMDiff[e.baseSet] k (T% s)) (i : ι) :
@@ -529,9 +508,6 @@ lemma contMDiffOn_baseSet_localFrameCoeff (hs : CMDiff[e.baseSet] k (T% s)) (i :
   contMDiffOn_localFrameCoeff b e.open_baseSet (subset_refl _) hs _
 
 @[deprecated (since := "2026-07-26")]
-alias contMDiffOn_baseSet_localFrame_coeff := contMDiffOn_baseSet_localFrameCoeff
-
-@[deprecated (since := "2026-07-25")]
 alias contMDiffOn_baseSet_localFrame_coeff := contMDiffOn_baseSet_localFrameCoeff
 
 /-- A section `s` of `V` is `C^k` at `x ∈ e.baseSet` iff each of its
@@ -545,9 +521,6 @@ lemma contMDiffAt_iff_localFrameCoeff (hx : x' ∈ e.baseSet) :
 @[deprecated (since := "2026-07-26")]
 alias contMDiffAt_iff_localFrame_coeff := contMDiffAt_iff_localFrameCoeff
 
-@[deprecated (since := "2026-07-25")]
-alias contMDiffAt_iff_localFrame_coeff := contMDiffAt_iff_localFrameCoeff
-
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
 coefficients `(LinearMap.piApply (b.localFrameCoeff e i) s)` in a local frame near `x` is -/
 lemma contMDiffOn_iff_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
@@ -559,9 +532,6 @@ lemma contMDiffOn_iff_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
 @[deprecated (since := "2026-07-26")]
 alias contMDiffOn_iff_localFrame_coeff := contMDiffOn_iff_localFrameCoeff
 
-@[deprecated (since := "2026-07-25")]
-alias contMDiffOn_iff_localFrame_coeff := contMDiffOn_iff_localFrameCoeff
-
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
 coefficients `(LinearMap.piApply (b.localFrameCoeff e i) s)` in a local frame near `x` is -/
 lemma contMDiffOn_baseSet_iff_localFrameCoeff :
@@ -570,9 +540,6 @@ lemma contMDiffOn_baseSet_iff_localFrameCoeff :
   rw [contMDiffOn_iff_localFrameCoeff b e.open_baseSet (subset_refl _)]
 
 @[deprecated (since := "2026-07-26")]
-alias contMDiffOn_baseSet_iff_localFrame_coeff := contMDiffOn_baseSet_iff_localFrameCoeff
-
-@[deprecated (since := "2026-07-25")]
 alias contMDiffOn_baseSet_iff_localFrame_coeff := contMDiffOn_baseSet_iff_localFrameCoeff
 
 -- Differentiability of a section can be checked in terms of its local frame coefficients
@@ -616,9 +583,6 @@ lemma mdifferentiableOn_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
 @[deprecated (since := "2026-07-26")]
 alias mdifferentiableOn_localFrame_coeff := mdifferentiableOn_localFrameCoeff
 
-@[deprecated (since := "2026-07-25")]
-alias mdifferentiableOn_localFrame_coeff := mdifferentiableOn_localFrameCoeff
-
 /-- If `s` is differentiable on `e.baseSet`, so is its coefficient `b.localFrameCoeff e i` in the
 local frame induced by `e` -/
 lemma mdifferentiableOn_baseSet_localFrameCoeff (hs : MDiff[e.baseSet] (T% s)) (i : ι) :
@@ -626,9 +590,6 @@ lemma mdifferentiableOn_baseSet_localFrameCoeff (hs : MDiff[e.baseSet] (T% s)) (
   mdifferentiableOn_localFrameCoeff b e.open_baseSet (subset_refl _) hs _
 
 @[deprecated (since := "2026-07-26")]
-alias mdifferentiableOn_baseSet_localFrame_coeff := mdifferentiableOn_baseSet_localFrameCoeff
-
-@[deprecated (since := "2026-07-25")]
 alias mdifferentiableOn_baseSet_localFrame_coeff := mdifferentiableOn_baseSet_localFrameCoeff
 
 /-- A section `s` of `V` is differentiable at `x ∈ e.baseSet` iff each of its
@@ -639,9 +600,6 @@ lemma mdifferentiableAt_iff_localFrameCoeff (hx : x' ∈ e.baseSet) :
     (e.isLocalFrameOn_localFrame_baseSet I 1 b).mdifferentiableAt_of_coeff_aux hi e.open_baseSet hx⟩
 
 @[deprecated (since := "2026-07-26")]
-alias mdifferentiableAt_iff_localFrame_coeff := mdifferentiableAt_iff_localFrameCoeff
-
-@[deprecated (since := "2026-07-25")]
 alias mdifferentiableAt_iff_localFrame_coeff := mdifferentiableAt_iff_localFrameCoeff
 
 end MDifferentiable
