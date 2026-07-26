@@ -83,7 +83,7 @@ end MulOneClass
 
 section Monoid
 
-variable {M} [Monoid M]
+variable {M N} [Monoid M] [Monoid N]
 
 /-- The center of a monoid is commutative. -/
 @[to_additive /-- The center of an additive monoid is additively commutative. -/]
@@ -98,6 +98,25 @@ example : center.commMonoid.toMonoid = Submonoid.toMonoid (center M) := by
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
+
+@[to_additive]
+theorem map_center_le_center {f : M →* N} (hf : Function.Surjective f) :
+    map f (center M) ≤ center N := by
+  refine fun x hx ↦ mem_center_iff.mpr fun y ↦ ?_
+  obtain ⟨m₁, rfl⟩ := hf y
+  obtain ⟨m₂, hm₂, rfl⟩ := mem_map.mp hx
+  rw [← MonoidHom.map_mul, ← MonoidHom.map_mul, mem_center_iff.mp hm₂]
+
+@[to_additive]
+theorem center_le_comap_center {f : M →* N} (hf : Function.Surjective f) :
+    center M ≤ comap f (center N) :=
+  map_le_iff_le_comap.mp (map_center_le_center hf)
+
+@[to_additive]
+theorem map_center_of_mulEquiv (f : M ≃* N) : map f (center M) = center N := by
+  refine le_antisymm (map_center_le_center (f := f.toMonoidHom) f.surjective) ?_
+  rw [map_equiv_eq_comap_symm]
+  exact center_le_comap_center (f := f.symm.toMonoidHom) f.symm.surjective
 
 @[to_additive]
 instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
