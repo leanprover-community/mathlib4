@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Lattice
 public import Mathlib.Data.List.Nodup

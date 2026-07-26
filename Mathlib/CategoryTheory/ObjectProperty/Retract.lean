@@ -5,12 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.EssentiallySmall
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.Small
-public import Mathlib.CategoryTheory.Retract
 
 /-! # Properties of objects which are stable under retracts
 

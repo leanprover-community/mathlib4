@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Limits in the category of elements

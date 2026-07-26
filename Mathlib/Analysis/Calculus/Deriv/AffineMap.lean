@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Linear
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 /-!
 # Derivatives of affine maps
 

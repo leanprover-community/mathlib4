@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Sheaves preserve products

@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Functorial constructions of ideal sheaves

@@ -5,9 +5,6 @@ Authors: Kim Morrison, Johan Commelin, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Iso
-public import Mathlib.CategoryTheory.Functor.Category
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Products.Unitor
 
 /-!

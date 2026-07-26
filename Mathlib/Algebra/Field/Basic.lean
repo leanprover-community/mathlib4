@@ -9,8 +9,6 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
-public import Mathlib.Order.OrderDual
-public import Mathlib.Order.Lex
 public import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!

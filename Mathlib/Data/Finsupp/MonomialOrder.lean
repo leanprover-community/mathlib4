@@ -5,9 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Data.List.TFAE
 
 /-! # Monomial orders
 

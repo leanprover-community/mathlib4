@@ -5,7 +5,6 @@ Authors: Yourong Zang, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.WithTopology

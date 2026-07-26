@@ -6,7 +6,6 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!

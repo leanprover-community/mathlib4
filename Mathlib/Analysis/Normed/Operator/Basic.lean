@@ -5,7 +5,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap

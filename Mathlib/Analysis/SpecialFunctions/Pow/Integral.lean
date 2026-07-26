@@ -5,7 +5,6 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.Layercake
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
 public import Mathlib.Tactic.MoveAdd

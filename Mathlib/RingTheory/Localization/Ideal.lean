@@ -8,10 +8,8 @@ module
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
-public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings

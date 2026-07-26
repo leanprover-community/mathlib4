@@ -5,7 +5,6 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback

@@ -5,11 +5,8 @@ Authors: Jinzhao Pan
 -/
 module
 
-public import Mathlib.Order.RelSeries
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!

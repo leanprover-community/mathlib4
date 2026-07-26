@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.GaloisConnection
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Topology.Category.TopCat.EpiMono

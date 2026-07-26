@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 

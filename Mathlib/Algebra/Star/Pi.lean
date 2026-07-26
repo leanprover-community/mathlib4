@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Ring.Pi
 
 /-!

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Higher differentiability of composition

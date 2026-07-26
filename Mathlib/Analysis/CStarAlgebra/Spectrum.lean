@@ -9,7 +9,6 @@ public import Mathlib.Analysis.CStarAlgebra.Unitization
 public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # Spectral properties in C⋆-algebras
 

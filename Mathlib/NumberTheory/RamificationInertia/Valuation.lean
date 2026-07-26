@@ -5,10 +5,8 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Algebra.Order.Hom.Units
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
-public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 

@@ -6,7 +6,6 @@ Authors: Jiale Miao, Utensil Song, Eric Wieser
 module
 
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Even

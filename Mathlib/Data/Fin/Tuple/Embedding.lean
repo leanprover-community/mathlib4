@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Fin.Tuple.Basic
-public import Mathlib.Order.Fin.Basic
 
 /-! # Constructions of embeddings of `Fin n` into a type
 

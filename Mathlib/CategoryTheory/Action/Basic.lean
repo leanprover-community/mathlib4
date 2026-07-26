@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Conj
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.Tactic.ApplyFun
 

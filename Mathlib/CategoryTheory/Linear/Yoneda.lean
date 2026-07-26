@@ -5,8 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!

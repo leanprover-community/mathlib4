@@ -5,7 +5,6 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Maps.Strict.Module
 public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Algebra.Module.FiniteDimension

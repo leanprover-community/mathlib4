@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Basic
 
 /-!

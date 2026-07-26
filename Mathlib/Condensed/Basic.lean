@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Presentable.Limits
 public import Mathlib.CategoryTheory.Presentable.Retracts
 public import Mathlib.CategoryTheory.Generator.StrongGenerator

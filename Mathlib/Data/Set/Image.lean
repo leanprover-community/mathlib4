@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Batteries.Tactic.Congr
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Set.SymmDiff

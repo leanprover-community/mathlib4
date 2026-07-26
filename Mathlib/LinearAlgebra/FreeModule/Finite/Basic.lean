@@ -5,7 +5,6 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Matrix.StdBasis
 public import Mathlib.RingTheory.Finiteness.Cardinality
 

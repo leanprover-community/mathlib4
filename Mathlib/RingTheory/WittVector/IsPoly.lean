@@ -6,7 +6,6 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.MvPolynomial.Funext
-public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.RingTheory.WittVector.Basic
 public meta import Mathlib.Lean.Elab.Tactic.Basic
 /-!

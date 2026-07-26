@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Module
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 

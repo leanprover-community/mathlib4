@@ -5,7 +5,6 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 
 /-!

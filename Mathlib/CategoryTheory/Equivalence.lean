@@ -5,12 +5,9 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.CategoryTheory.EssentialImage
 public import Mathlib.Tactic.CategoryTheory.Slice
-public import Mathlib.Data.Int.Notation
 /-!
 # Equivalence of categories
 

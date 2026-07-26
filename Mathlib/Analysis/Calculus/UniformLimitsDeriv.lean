@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Normed.Module.RCLike.Basic
-public import Mathlib.Order.Filter.Curry
 
 /-!
 # Swapping limits and derivatives via uniform convergence

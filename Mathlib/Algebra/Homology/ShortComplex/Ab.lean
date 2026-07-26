@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Kernels
-public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.GroupTheory.QuotientGroup.Finite
 

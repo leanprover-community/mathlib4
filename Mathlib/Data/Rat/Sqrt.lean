@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Data.Rat.Lemmas
-public import Mathlib.Data.Int.Sqrt
 
 /-!
 # Square root on rational numbers

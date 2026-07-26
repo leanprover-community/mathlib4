@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.Subgroup.Simple
 

@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Module.NatInt
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Combinatorics.SimpleGraph.Density
 public import Mathlib.Data.Rat.BigOperators
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.Order.Closure
-public import Mathlib.CategoryTheory.Subfunctor.Basic
 
 /-!
 # Closed sieves

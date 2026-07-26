@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Sites.CartesianClosed
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
 

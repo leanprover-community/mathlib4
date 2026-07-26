@@ -6,7 +6,6 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
-public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 public import Mathlib.Data.Rat.Floor
 
 /-!

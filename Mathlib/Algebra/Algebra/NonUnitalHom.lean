@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.Algebra.GroupWithZero.Action.Prod
 
 /-!
 # Morphisms of non-unital algebras

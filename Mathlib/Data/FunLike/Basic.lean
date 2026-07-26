@@ -6,7 +6,6 @@ Authors: Anne Baanen
 module
 
 public meta import Lean.Meta.CoeAttr
-public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Unique
 public import Mathlib.Util.CompileInductive
 public import Mathlib.Tactic.Simps.NotationClass

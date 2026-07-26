@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
 
 /-! # Niven's Theorem
 

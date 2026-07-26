@@ -5,7 +5,6 @@ Authors: Nailin Guan, Yi Song, Xuchun Li, Bryan Wang
 -/
 module
 
-public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Separation.Profinite

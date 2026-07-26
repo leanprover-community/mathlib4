@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 
 /-!

@@ -6,12 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
-public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.Interval.Set.Final
 

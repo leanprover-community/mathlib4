@@ -7,7 +7,6 @@ module
 
 public import Mathlib.NumberTheory.DirichletCharacter.Bounds
 public import Mathlib.NumberTheory.LSeries.Convolution
-public import Mathlib.NumberTheory.LSeries.Deriv
 public import Mathlib.NumberTheory.LSeries.Positivity
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.SumPrimeReciprocals

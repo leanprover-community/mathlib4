@@ -6,7 +6,6 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Constructions
-public import Mathlib.Data.Set.Notation
 
 /-!
 # Maps between matroids

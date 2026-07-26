@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.Resolution
-public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 /-!

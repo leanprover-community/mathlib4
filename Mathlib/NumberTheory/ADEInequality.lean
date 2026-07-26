@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Interval

@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Analysis.Normed.Lp.ProdLp
 

@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Pi
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!

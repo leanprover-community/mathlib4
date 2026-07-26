@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.Condensed.Basic
 public import Mathlib.Topology.Category.TopCat.Yoneda

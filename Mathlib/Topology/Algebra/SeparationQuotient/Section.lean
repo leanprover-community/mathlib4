@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`

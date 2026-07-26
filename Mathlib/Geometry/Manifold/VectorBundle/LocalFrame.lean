@@ -5,8 +5,6 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.Monoid
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 

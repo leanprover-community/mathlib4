@@ -5,9 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Convex.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 /-!

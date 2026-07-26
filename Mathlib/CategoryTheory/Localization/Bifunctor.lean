@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.Prod
-public import Mathlib.CategoryTheory.Functor.Currying
 
 /-!
 # Lifting of bifunctors

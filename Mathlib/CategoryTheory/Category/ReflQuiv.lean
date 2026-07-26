@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Emily Riehl
 module
 
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
-public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Quiv
 
 /-!

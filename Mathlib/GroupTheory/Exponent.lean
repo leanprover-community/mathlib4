@@ -5,8 +5,6 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Factorization.LCM
 public import Mathlib.GroupTheory.OrderOfElement

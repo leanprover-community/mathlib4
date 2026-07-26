@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 

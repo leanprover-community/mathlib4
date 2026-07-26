@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.Basic
 public import Mathlib.Algebra.Homology.Opposite
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # Support of homological complexes
 

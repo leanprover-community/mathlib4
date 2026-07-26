@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Data.Multiset.FinsetOps
-public import Mathlib.Data.Multiset.Fold
 
 /-!
 # GCD and LCM operations on multisets

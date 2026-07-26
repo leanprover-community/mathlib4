@@ -6,13 +6,8 @@ Authors: David Loeffler
 
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
-public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.MeasureTheory.Function.Jacobian
 
 /-!

@@ -5,9 +5,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
-public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!

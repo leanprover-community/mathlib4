@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.Quotient
 

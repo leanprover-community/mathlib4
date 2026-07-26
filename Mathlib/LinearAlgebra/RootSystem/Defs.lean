@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.Reflection
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Root data and root systems

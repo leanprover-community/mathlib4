@@ -5,10 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.RingHom.Etale
-public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
-public import Mathlib.Tactic.Algebraize
 
 /-!
 # Standard smooth ring homomorphisms

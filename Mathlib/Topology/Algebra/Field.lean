@@ -6,8 +6,6 @@ Authors: Patrick Massot, Kim Morrison
 module
 
 public import Mathlib.Algebra.Field.Subfield.Defs
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Order.LocalExtr

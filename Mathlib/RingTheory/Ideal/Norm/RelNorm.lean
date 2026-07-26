@@ -5,7 +5,6 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.DedekindDomain.Instances

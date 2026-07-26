@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-! # The cochain complex of homomorphisms between cochain complexes
 

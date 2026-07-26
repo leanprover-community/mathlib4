@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Edward Ayers
 -/
 module
 
-public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.ShrinkYoneda

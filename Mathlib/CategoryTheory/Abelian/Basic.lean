@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 

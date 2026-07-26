@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Notation
 public import Mathlib.Order.SetNotation
 public import Mathlib.Logic.Embedding.Basic
-public import Mathlib.Logic.Pairwise
 public import Mathlib.Data.Set.Image
 
 /-!

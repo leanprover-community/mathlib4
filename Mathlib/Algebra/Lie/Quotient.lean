@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Lie.Ideal
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules

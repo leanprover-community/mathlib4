@@ -5,7 +5,6 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 module
 
-public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!

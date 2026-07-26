@@ -5,9 +5,7 @@ Authors: Johan Commelin, Anne Baanen
 -/
 module
 
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.GaloisConnection.Basic
-public import Mathlib.Order.Hom.Basic
 
 /-!
 # Lattice structure on order homomorphisms

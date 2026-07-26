@@ -6,9 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Algebra.Order.Group.Multiset
-public import Mathlib.Data.Finset.Basic
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Units.Equiv
 

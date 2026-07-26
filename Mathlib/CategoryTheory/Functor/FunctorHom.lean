@@ -6,7 +6,6 @@ Authors: Jack McKoen, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Enriched.Basic
 
 /-!

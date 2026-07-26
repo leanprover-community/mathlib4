@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Data.Nat.Cast.Basic
 
 import Mathlib.Data.Int.LeastGreatest
 

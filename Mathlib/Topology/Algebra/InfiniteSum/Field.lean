@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Infinite sums and products in topological fields

@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Unramified.Locus
-public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 

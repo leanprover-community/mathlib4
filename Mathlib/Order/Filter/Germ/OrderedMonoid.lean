@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 module
 
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Order.Filter.Germ.Basic
 

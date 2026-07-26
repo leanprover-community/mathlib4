@@ -5,13 +5,10 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.GroupTheory.Subgroup.Simple
-public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Alternating Groups

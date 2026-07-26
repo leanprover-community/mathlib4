@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.RingTheory.SimpleModule.Isotypic
 public import Mathlib.RingTheory.SimpleRing.Congr

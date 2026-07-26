@@ -5,7 +5,6 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 module
 
-public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log

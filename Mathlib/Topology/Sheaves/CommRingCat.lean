@@ -5,7 +5,6 @@ Authors: Kim Morrison, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.Topology.Category.TopCommRingCat

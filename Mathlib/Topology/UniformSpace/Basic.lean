@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Rel
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.ContinuousOn

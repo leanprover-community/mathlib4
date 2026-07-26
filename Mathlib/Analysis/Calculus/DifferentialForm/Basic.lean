@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 
 /-!

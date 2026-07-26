@@ -9,8 +9,6 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 public import Mathlib.Analysis.Convex.Contractible
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Complex.Convex
-public import Mathlib.Analysis.Complex.ReImTopology
-public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!

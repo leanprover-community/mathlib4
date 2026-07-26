@@ -5,7 +5,6 @@ Authors: Eric Wieser, Sophie Morel
 -/
 module
 
-public import Mathlib.Data.Fintype.Quotient
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 

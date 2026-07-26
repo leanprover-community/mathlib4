@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 
 /-!
 # Affine spaces are convex spaces

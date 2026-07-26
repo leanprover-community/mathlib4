@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Algebra.Order.Ring.Int

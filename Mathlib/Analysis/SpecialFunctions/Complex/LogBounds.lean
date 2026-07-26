@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.SpecificLimits.RCLike
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv

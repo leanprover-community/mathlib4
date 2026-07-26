@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Int.Bitwise
 public import Mathlib.Data.Int.Order.Lemmas
-public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Miscellaneous lemmas about the integers

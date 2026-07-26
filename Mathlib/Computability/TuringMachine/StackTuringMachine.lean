@@ -5,11 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Data.PFun
 public import Mathlib.Computability.TuringMachine.PostTuringMachine
 
 /-!

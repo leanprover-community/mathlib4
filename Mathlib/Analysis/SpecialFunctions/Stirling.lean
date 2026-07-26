@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Real.Pi.Wallis
-public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Stirling's formula

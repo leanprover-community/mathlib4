@@ -6,7 +6,6 @@ Authors: Anatole Dedecker, Devon Tuma
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!

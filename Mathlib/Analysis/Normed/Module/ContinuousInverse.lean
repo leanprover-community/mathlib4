@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.Module.Complement
 
 /-! # Continuous linear maps with a continuous left/right inverse
 

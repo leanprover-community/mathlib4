@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt

@@ -5,9 +5,7 @@ Authors: Joël Riou, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.CategoryTheory.Preadditive.LeftExact
 public import Mathlib.CategoryTheory.Abelian.Exact
 

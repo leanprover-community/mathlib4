@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.TensorProduct.Quotient

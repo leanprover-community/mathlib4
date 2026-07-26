@@ -7,9 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
-public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Locally presentable categories and strong generators

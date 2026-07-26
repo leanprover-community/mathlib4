@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.ContinuousMultilinearMap
-public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
 /-!
 # Derivatives of operations on continuous alternating maps

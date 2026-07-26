@@ -5,7 +5,6 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Order.Atoms

@@ -5,14 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Analysis.Normed.Lp.WithLp
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.Topology.MetricSpace.Basic
 
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Analysis.MeanInequalities
-import Mathlib.Data.ENNReal.BigOperators
 import Mathlib.Tactic.Positivity.Finset
 
 /-!

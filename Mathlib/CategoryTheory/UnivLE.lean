@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.EssentialImage
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Logic.UnivLE
 

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Linear recurrence

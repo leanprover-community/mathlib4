@@ -5,7 +5,6 @@ Authors: Peter Nelson, Jun Kwon
 -/
 module
 
-public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Sym.Sym2
 
 /-!

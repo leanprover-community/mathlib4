@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Junyan Xu
 -/
 module
 
-public import Mathlib.Data.Prod.Lex
 public import Mathlib.SetTheory.Ordinal.Rank
 
 /-!

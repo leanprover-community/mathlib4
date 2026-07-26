@@ -5,7 +5,6 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Field.ProperSpace
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient

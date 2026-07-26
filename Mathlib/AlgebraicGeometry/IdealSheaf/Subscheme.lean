@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
-public import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Subscheme associated to an ideal sheaf

@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.RingTheory.Valuation.ValuationSubring

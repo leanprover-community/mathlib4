@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Filtered.Basic
-public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 
 /-!

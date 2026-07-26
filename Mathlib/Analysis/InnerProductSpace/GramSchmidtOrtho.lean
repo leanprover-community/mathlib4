@@ -6,7 +6,6 @@ Authors: Jiale Miao, Kevin Buzzard, Alexander Bentkamp
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.LinearAlgebra.Matrix.Block
 
 /-!
 # Gram-Schmidt Orthogonalization and Orthonormalization

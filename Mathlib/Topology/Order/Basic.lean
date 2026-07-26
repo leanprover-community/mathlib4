@@ -8,9 +8,7 @@ module
 public import Mathlib.Order.Filter.Interval
 public import Mathlib.Order.Interval.Set.Pi
 public import Mathlib.Order.OrdContinuous
-public import Mathlib.Tactic.TFAE
 public import Mathlib.Tactic.NormNum
-public import Mathlib.Topology.Order.LeftRight
 public import Mathlib.Topology.Order.OrderClosed
 
 /-!

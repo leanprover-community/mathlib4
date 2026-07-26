@@ -11,7 +11,6 @@ public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
 # Galois theory for cyclotomic fields

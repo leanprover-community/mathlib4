@@ -5,7 +5,6 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial

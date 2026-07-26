@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/

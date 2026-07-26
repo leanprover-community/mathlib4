@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
-public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 
 /-!
 # Affine morphisms with additional ring hom property

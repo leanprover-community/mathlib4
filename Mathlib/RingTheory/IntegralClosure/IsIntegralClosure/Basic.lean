@@ -5,13 +5,11 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 public import Mathlib.RingTheory.Polynomial.IntegralNormalization
-public import Mathlib.RingTheory.Polynomial.ScaleRoots
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 import Mathlib.RingTheory.Polynomial.Subring

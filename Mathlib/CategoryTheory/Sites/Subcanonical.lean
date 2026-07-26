@@ -5,9 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Sites.Canonical
-public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 public import Mathlib.CategoryTheory.Sites.Continuous
 /-!

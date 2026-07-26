@@ -5,7 +5,6 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic

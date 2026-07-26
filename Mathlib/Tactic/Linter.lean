@@ -12,8 +12,6 @@ module
 public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.PPRoundtrip
-public import Mathlib.Tactic.Linter.PrivateModule
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UpstreamableDecl
 
 set_option linter.style.header false

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
-public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Pseudofunctors

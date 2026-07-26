@@ -5,10 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Trace of a matrix

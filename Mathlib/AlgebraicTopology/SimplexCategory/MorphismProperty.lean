@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Properties of morphisms in the simplex category

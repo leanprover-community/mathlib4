@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
-public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Girth of a simple graph

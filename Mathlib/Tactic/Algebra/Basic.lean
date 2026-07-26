@@ -7,7 +7,6 @@ module
 
 public meta import Lean.Meta.Tactic.NormCast
 public import Mathlib.Tactic.Algebra.Lemmas  -- shake: keep (Qq output dependency)
-public import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # The `algebra` tactic

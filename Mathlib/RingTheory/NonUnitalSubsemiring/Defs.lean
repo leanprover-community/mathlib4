@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled non-unital subsemirings

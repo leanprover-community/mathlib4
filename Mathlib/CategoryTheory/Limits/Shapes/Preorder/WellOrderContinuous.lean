@@ -5,16 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.IsLimit
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Order.Interval.Set.InitialSeg
 public import Mathlib.Order.Interval.Set.Limit
 public import Mathlib.Order.SuccPred.InitialSeg
-public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!

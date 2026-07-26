@@ -5,9 +5,7 @@ Authors: Bhavik Mehta, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 

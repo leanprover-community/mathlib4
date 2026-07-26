@@ -10,7 +10,6 @@ public import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Map
-public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Generators of multiple tensor products

@@ -10,7 +10,6 @@ public import Mathlib.FieldTheory.Perfect
 public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 public import Mathlib.RingTheory.Artinian.Instances
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Semisimple linear endomorphisms

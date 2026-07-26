@@ -5,14 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Archimedean.Defs
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Order.Directed
 public import Mathlib.Data.Rat.Floor
 
 import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
 

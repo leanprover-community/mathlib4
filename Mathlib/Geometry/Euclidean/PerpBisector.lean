@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Joseph Myers
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
-public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.InnerProductSpace.Affine
 

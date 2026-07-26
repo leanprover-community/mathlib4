@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.Topology.Sheaves.Sheaf
-public import Mathlib.Topology.Sets.Opens
 
 /-!
 # The standard conservative family of points for the site attached to a topological space

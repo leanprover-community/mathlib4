@@ -6,10 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
-public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 /-!

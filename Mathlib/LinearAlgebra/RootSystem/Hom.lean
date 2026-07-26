@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Basic
-public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Morphisms of root pairings

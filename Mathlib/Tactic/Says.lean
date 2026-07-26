@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Qq.Match
 public meta import Mathlib.Lean.Elab.InfoTree

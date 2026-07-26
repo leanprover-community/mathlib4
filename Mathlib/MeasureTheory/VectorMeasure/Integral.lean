@@ -6,7 +6,6 @@ Authors: Yoh Tanimoto, Yongxi Lin, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Integral.SetToL1
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!

@@ -5,7 +5,6 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Algebra.Order.WithTop.Untop0
 public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 

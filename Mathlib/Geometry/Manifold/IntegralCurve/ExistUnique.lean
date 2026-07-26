@@ -6,11 +6,8 @@ Authors: Winston Yin
 module
 
 public import Mathlib.Analysis.ODE.ExistUnique
-public import Mathlib.Analysis.ODE.Gronwall
-public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Existence and uniqueness of integral curves

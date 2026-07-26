@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra

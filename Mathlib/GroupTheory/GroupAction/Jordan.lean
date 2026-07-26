@@ -5,8 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
-public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
 
 /-! # Theorems of Jordan
