@@ -374,7 +374,7 @@ alias ChartedSpace.of_discreteTopology := ChartedSpace.ofDiscreteTopology
 
 /-- A chart on the discrete space is the constant chart. -/
 @[simp, mfld_simps]
-lemma chartedSpace_ofDiscreteTopology_chartAt [TopologicalSpace M] [TopologicalSpace H]
+lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [TopologicalSpace H]
     [DiscreteTopology M] [h : Unique H] {x : M} :
     haveI := ChartedSpace.ofDiscreteTopology (M := M) (H := H)
     chartAt H x = OpenPartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) :=
