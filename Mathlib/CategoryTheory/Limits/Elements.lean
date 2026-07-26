@@ -173,9 +173,9 @@ def RepresentableBy.ofIsInitial {F : Cᵒᵖ ⥤ Type w} {E : Elements F} (he : 
 
 lemma isRepresentable.ofHasInitial (F : Cᵒᵖ ⥤ Type w) [HasInitial (Elements F)] :
     IsRepresentable F where
-      has_representation :=
-        ⟨(⊥_ F.Elements).fst.unop,
-          (Nonempty.intro (RepresentableBy.ofIsInitial initialIsInitial))⟩
+  has_representation :=
+    ⟨(⊥_ F.Elements).fst.unop,
+      (Nonempty.intro (RepresentableBy.ofIsInitial initialIsInitial))⟩
 
 theorem isRepresentable_iff_hasInitial (F : Cᵒᵖ ⥤ Type w) :
     HasInitial (Elements F) ↔ IsRepresentable F where
