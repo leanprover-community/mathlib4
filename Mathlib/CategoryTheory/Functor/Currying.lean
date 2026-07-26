@@ -54,6 +54,7 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
 
 /-- The object level part of the currying functor. (See `curry` for the functorial version.)
 -/
+@[implicit_reducible]
 def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
@@ -68,7 +69,7 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
 -/
-@[simps! obj_obj_obj obj_obj_map obj_map_app map_app_app]
+@[implicit_reducible, simps! obj_obj_obj obj_obj_map obj_map_app map_app_app]
 def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
   obj F := curryObj F
   map T :=
@@ -86,7 +87,7 @@ set_option backward.defeqAttrib.useBackward true in
 -- create projection simp lemmas even though this isn't a `{ .. }`.
 /-- The equivalence of functor categories given by currying/uncurrying.
 -/
-@[simps!]
+@[implicit_reducible, simps!]
 def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
   functor := uncurry
   inverse := curry
@@ -101,7 +102,7 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of functor categories given by flipping. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def flipping : C ⥤ D ⥤ E ≌ D ⥤ C ⥤ E where
   functor := flipFunctor _ _ _
   inverse := flipFunctor _ _ _
@@ -233,7 +234,7 @@ lemma curry_obj_comp_flip (F : C × B ⥤ D) (G : D ⥤ E) :
       (curry.obj F).flip ⋙ (whiskeringRight _ _ _).obj G := rfl
 
 /-- The equivalence of types of bifunctors giving by flipping the arguments. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
   toFun F := F.flip
   invFun F := F.flip
@@ -241,7 +242,7 @@ def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
   right_inv _ := rfl
 
 /-- The equivalence of types of bifunctors given by currying. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
   toFun F := uncurry.obj F
   invFun G := curry.obj G
@@ -249,7 +250,7 @@ def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
   right_inv := uncurry_obj_curry_obj
 
 /-- The flipped equivalence of types of bifunctors given by currying. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
   flippingEquiv.trans curryingEquiv
 
