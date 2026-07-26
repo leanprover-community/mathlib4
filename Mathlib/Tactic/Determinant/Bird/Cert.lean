@@ -318,10 +318,12 @@ partial def certIterStepEntry (t i j : ℕ) : CertM rα (Cert rα) := do
       --   sumFrom n (i + 1) fun k => F_t i k * get n A k j
       let tailSumCert ← certTail t' i j (i + 1)
       let rhsCert ← certAdd diagProdCert tailSumCert
+      let hStep := q(BirdDet.stepEntry_eq $dimLit $A $(ctx.iterStepEntry t') $i $j)
+      let stepCert := rhsCert.chainProof hStep
       let hIter := q(Function.iterate_succ_apply'
         (BirdDet.stepEntry $dimLit $A) $t' (BirdDet.get $dimLit $A))
       let h := q(congrArg (fun F : ℕ → ℕ → $α ↦ F $i $j) $hIter)
-      pure (rhsCert.chainProof h)
+      pure (stepCert.chainProof h)
   modify fun s =>
     {s with iterStepEntryCache := s.iterStepEntryCache.insert (t, i, j) cert}
   return cert
