@@ -129,9 +129,8 @@ theorem ext {f g : α →. β} (H : ∀ a b, b ∈ f a ↔ b ∈ g a) : f = g :=
 
 /-- Partial function extensionality -/
 theorem ext' {f g : α →. β} (H1 : ∀ a, a ∈ Dom f ↔ a ∈ Dom g) (H2 : ∀ a p q, f.fn a p = g.fn a q) :
-    f = g := by
-  ext a b
-  rw [Part.ext' (H1 a) (H2 a)]
+    f = g :=
+  DFunLike.ext f g fun a => Part.ext' (H1 a) (H2 a)
 
 /-- Turns a partial function into a function out of its domain. -/
 def asSubtype (f : α →. β) (s : f.Dom) : β :=
@@ -570,7 +569,7 @@ theorem prodLift_apply (f : α →. β) (g : α →. γ) (x : α) :
 theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
-  · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff, coe_mk]
+  · simp only [prodLift_apply, Part.mem_mk_iff, And.exists, Prod.ext_iff]
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 /-- Product of partial functions. -/
@@ -594,7 +593,7 @@ theorem prodMap_apply (f : α →. γ) (g : β →. δ) (x : α × β) :
 theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × δ} :
     y ∈ f.prodMap g x ↔ y.1 ∈ f x.1 ∧ y.2 ∈ g x.2 := by
   trans ∃ hp hq, (f x.1).get hp = y.1 ∧ (g x.2).get hq = y.2
-  · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff, coe_mk]
+  · simp only [prodMap_apply, Part.mem_mk_iff, And.exists, Prod.ext_iff]
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 set_option backward.isDefEq.respectTransparency false in
