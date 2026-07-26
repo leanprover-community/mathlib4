@@ -429,7 +429,7 @@ lemma isClosed_singleton_iff_isClosedImmersion {X : Scheme} {x : X} :
 section Section
 
 set_option backward.isDefEq.respectTransparency false in
-nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton Y]
+theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton Y]
     (f : X ⟶ Y) (g : Y ⟶ X) (hg : g ≫ f = 𝟙 Y) :
     IsClosedImmersion g := by
   wlog hX : ∃ R, X = Spec R

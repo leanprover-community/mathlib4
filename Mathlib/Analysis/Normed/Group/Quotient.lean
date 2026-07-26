@@ -436,7 +436,7 @@ instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M �
 
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `Submodule.Quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
-nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :
+theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :
     ∃ m : M, Submodule.Quotient.mk m = x ∧ ‖m‖ < ‖x‖ + ε :=
   exists_norm_mk_lt x hε
 
@@ -487,7 +487,7 @@ section Ideal
 
 variable {R : Type*} [SeminormedCommRing R] (I : Ideal R)
 
-nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} (hε : 0 < ε) :
+theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} (hε : 0 < ε) :
     ∃ r : R, Ideal.Quotient.mk I r = x ∧ ‖r‖ < ‖x‖ + ε :=
   exists_norm_mk_lt x hε
 

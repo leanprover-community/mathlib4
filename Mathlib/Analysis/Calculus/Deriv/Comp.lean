@@ -319,7 +319,7 @@ theorem deriv_comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : Different
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x := by
   subst hy; exact deriv_comp x hh₂ hh
 
-protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
+protected theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasDerivAtFilter f f' L) (hL : Tendsto (Prod.map f f) L L) (n : ℕ) :
     HasDerivAtFilter f^[n] (f' ^ n) L := by
   have := hf.hasFDerivAtFilter.iterate hL n

@@ -161,7 +161,7 @@ Then `P` descends along quasi-compact morphisms satisfying `P'`.
 
 Note: The second condition is in particular satisfied for faithfully flat morphisms.
 -/
-nonrec lemma HasRingHomProperty.descendsAlong [HasRingHomProperty P Q]
+lemma HasRingHomProperty.descendsAlong [HasRingHomProperty P Q]
     (hQQ' : RingHom.CodescendsAlong Q Q') :
     P.DescendsAlong (P' ⊓ @QuasiCompact) := by
   apply IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact _ _ H₁
@@ -190,7 +190,7 @@ Then `P` descends along quasi-compact morphisms satisfying `P'`.
 
 Note: The second condition is in particular satisfied for faithfully flat morphisms.
 -/
-nonrec lemma HasAffineProperty.descendsAlong_of_affineAnd
+lemma HasAffineProperty.descendsAlong_of_affineAnd
     (hP : HasAffineProperty P (affineAnd Q)) [MorphismProperty.DescendsAlong @IsAffineHom P']
     (hQ : RingHom.RespectsIso Q) (hQQ' : RingHom.CodescendsAlong Q Q') :
     P.DescendsAlong (P' ⊓ @QuasiCompact) := by

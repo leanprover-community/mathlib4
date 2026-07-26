@@ -744,7 +744,7 @@ nonrec theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
   rw [← ofReal_inj]; simp [sin_three_mul]
 
 /-- The definition of `sinh` in terms of `exp`. -/
-nonrec theorem sinh_eq (x : ℝ) : sinh x = (exp x - exp (-x)) / 2 :=
+theorem sinh_eq (x : ℝ) : sinh x = (exp x - exp (-x)) / 2 :=
   ofReal_injective <| by simp [Complex.sinh]
 
 @[simp]

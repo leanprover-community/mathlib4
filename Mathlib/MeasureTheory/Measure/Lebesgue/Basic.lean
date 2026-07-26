@@ -275,13 +275,13 @@ theorem volume_pi_Ico_toReal {a b : ι → ℝ} (h : a ≤ b) :
   simp only [volume_pi_Ico, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
 
 @[simp]
-nonrec theorem volume_pi_ball (a : ι → ℝ) {r : ℝ} (hr : 0 < r) :
+theorem volume_pi_ball (a : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     volume (Metric.ball a r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
   simp only [MeasureTheory.volume_pi_ball a hr, volume_ball, Finset.prod_const]
   exact (ENNReal.ofReal_pow (mul_nonneg zero_le_two hr.le) _).symm
 
 @[simp]
-nonrec theorem volume_pi_closedBall (a : ι → ℝ) {r : ℝ} (hr : 0 ≤ r) :
+theorem volume_pi_closedBall (a : ι → ℝ) {r : ℝ} (hr : 0 ≤ r) :
     volume (Metric.closedBall a r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
   simp only [MeasureTheory.volume_pi_closedBall a hr, volume_closedBall, Finset.prod_const]
   exact (ENNReal.ofReal_pow (mul_nonneg zero_le_two hr) _).symm

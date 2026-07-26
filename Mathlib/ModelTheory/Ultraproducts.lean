@@ -157,7 +157,7 @@ theorem sentence_realize (φ : L.Sentence) :
   rw [← realize_formula_cast φ, iff_eq_eq]
   exact congr rfl (Subsingleton.elim _ _)
 
-nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=
+instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=
   letI : ∀ a, Inhabited (M a) := fun _ => Classical.inhabited_of_nonempty'
   inferInstance
 

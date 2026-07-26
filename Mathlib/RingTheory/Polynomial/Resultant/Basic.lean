@@ -530,7 +530,7 @@ Let `P` be a predicate on a polynomial.
 If `R → S` injective implies `(∀ p : S[X], P p) → (∀ p : R[X], P p)`,
 and if `R → S` surjective implies `(∀ p : R[X], P p) → (∀ p : S[X], P p)`,
 then we may reduce to the case where `R` is a field and `p` splits. -/
-nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
+lemma induction_of_Splits_of_injective_of_surjective.{u}
     {R : Type u} [CommRing R] (p : R[X])
     (P : ∀ {R : Type u} [CommRing R], R[X] → Prop)
     (Splits : ∀ (R : Type u) [Field R] (p : R[X]) (hp : p.Splits), P p)
@@ -553,7 +553,7 @@ nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
   exact Splits _ _ hp
 
 /-- `Res(f, g₁ * g₂) = Res(f, g₁) * Res(f, g₂)`. -/
-nonrec lemma resultant_mul_right (f g₁ g₂ : R[X]) (m : ℕ) (hm : f.natDegree ≤ m) :
+lemma resultant_mul_right (f g₁ g₂ : R[X]) (m : ℕ) (hm : f.natDegree ≤ m) :
     resultant f (g₁ * g₂) m (g₁.natDegree + g₂.natDegree) =
       resultant f g₁ m * resultant f g₂ m := by
   wlog hgn : m = f.natDegree
@@ -587,7 +587,7 @@ lemma resultant_mul_left (f₁ f₂ g : R[X]) (n : ℕ) (hn : g.natDegree ≤ n)
   simp
 
 /-- `Res(f, f) = 0` unless `deg f = 0`. Also see `resultant_self_eq_zero`. -/
-@[simp] nonrec lemma resultant_self (f : R[X]) : resultant f f = 0 ^ f.natDegree := by
+@[simp] lemma resultant_self (f : R[X]) : resultant f f = 0 ^ f.natDegree := by
   induction f using induction_of_Splits_of_injective_of_surjective with
   | Splits R f hf =>
     by_cases h : f.natDegree = 0
@@ -686,7 +686,7 @@ lemma resultant_X_pow_right (f : R[X]) (m n : ℕ) (hm : f.natDegree ≤ m) :
     f.resultant (X ^ n) m n = (-1) ^ (m * n) * f.coeff 0 ^ n := by
   convert! resultant_X_sub_C_pow_right f 0 m n hm <;> simp [coeff_zero_eq_eval_zero]
 
-nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
+lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     resultant (f.scaleRoots r) (g.scaleRoots r) =
       r ^ (f.natDegree * g.natDegree) * resultant f g := by
   rw [natDegree_scaleRoots, natDegree_scaleRoots]
@@ -761,7 +761,7 @@ lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
   rw [this, ← mul_assoc, ← pow_add, add_comm, ← Nat.mul_add_one, Nat.sub_add_cancel (by lia)]
 
 /-- `Res(f(x + r), g(x + r)) = Res(f, g)`. -/
-nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
+lemma resultant_taylor (f g : R[X]) (r : R) :
     resultant (f.taylor r) (g.taylor r) = resultant f g := by
   induction f using induction_of_Splits_of_injective_of_surjective with
   | Splits R f hf' =>

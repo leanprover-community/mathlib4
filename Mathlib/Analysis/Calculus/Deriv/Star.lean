@@ -47,7 +47,7 @@ protected theorem HasDerivAt.star (h : HasDerivAt f f' x) :
     HasDerivAt (fun x => star (f x)) (star f') x :=
   HasDerivAtFilter.star h
 
-protected nonrec theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
+protected theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => star (f x)) (star f') x :=
   HasDerivAtFilter.star h
 

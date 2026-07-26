@@ -523,7 +523,7 @@ instance Pi.instMeasurableConstSMul {ι : Type*} {α : ι → Type*} [∀ i, SMu
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
 @[to_additive]
-nonrec instance MulOpposite.instMeasurableConstSMul [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
+instance MulOpposite.instMeasurableConstSMul [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
     [MeasurableConstSMul M α] : MeasurableConstSMul Mᵐᵒᵖ α where
   measurable_const_smul := by simpa using measurable_const_smul
 

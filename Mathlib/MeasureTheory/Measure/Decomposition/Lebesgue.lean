@@ -947,7 +947,7 @@ variable (μ ν) in
 Any s-finite measure `μ` has Lebesgue decomposition with respect to any σ-finite measure `ν`.
 That is to say, there exist a measure `ξ` and a measurable function `f`,
 such that `ξ` is mutually singular with respect to `ν` and `μ = ξ + ν.withDensity f` -/
-nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
+instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
     [SFinite μ] [SigmaFinite ν] : HaveLebesgueDecomposition μ ν := by
   wlog hμ : IsFiniteMeasure μ generalizing μ
   · exact .sfinite_of_isFiniteMeasure fun μ _ ↦ this μ ‹_›
