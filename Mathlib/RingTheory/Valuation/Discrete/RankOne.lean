@@ -88,14 +88,11 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
   split_ifs with h0 <;>
   simp only [MonoidWithZeroHom.coe_ofClass] at h0
   · simp [h0]
-  · simp only [WithZero.map'_coe, MonoidHom.coe_coe]
-    conv_rhs => rw [← coe_unzero h0]
-    rw [WithZero.coe_inj, ← (MulEquiv.injective (intEquivOfZPowersEqTop _
-      (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top))).eq_iff,
-      MulEquiv.apply_symm_apply]
+  · rw [WithZero.map'_coe, ← coe_unzero h0, WithZero.coe_inj,
+      ← (MulEquiv.injective (intEquivOfZPowersEqTop _
+      (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top))).eq_iff]
     ext
-    simp [intEquivOfZPowersEqTop_apply, generator',
-      generator_eq_exp_neg_one_of_surjective hsurj, MonoidWithZeroHom.coe_ofClass, exp_log h0]
+    simp [generator', generator_eq_exp_neg_one_of_surjective hsurj, toAdd_unzero h0, exp_log h0]
 
 end WithZeroMulInt
 

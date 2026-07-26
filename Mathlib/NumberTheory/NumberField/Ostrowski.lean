@@ -151,7 +151,7 @@ theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
   have hπv_ne : P.valuation K (π : K) ≠ 0 := by simp [valuation_of_algebraMap, hπ]
   have hπ_pos : 0 < f π := by grind [AbsoluteValue.pos_iff]
   have hπv : Multiplicative.toAdd (WithZero.unzero hπv_ne) = -1 := by
-    simp [valuation_of_algebraMap, hπ]
+    simp [valuation_of_algebraMap, hπ, WithZero.toAdd_unzero]
   let b : ℝ≥0 := ⟨(f π)⁻¹, by positivity⟩
   have hb : 1 < b := by
     apply_mod_cast (one_lt_inv₀ hπ_pos).2

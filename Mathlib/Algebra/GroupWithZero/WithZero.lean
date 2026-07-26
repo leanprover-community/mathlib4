@@ -396,11 +396,6 @@ variable [AddMonoid M]
 /-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
 def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 
-@[simp] lemma toAdd_unzero {x : Mᵐ⁰} (hx : x ≠ 0) :
-    Multiplicative.toAdd (unzero hx) = log x := by
-  lift x to Multiplicative M using hx
-  rfl
-
 @[simp] lemma log_exp (a : M) : log (exp a) = a := rfl
 @[simp] lemma exp_log {x : Mᵐ⁰} (hx : x ≠ 0) : exp (log x) = x := by
   lift x to Multiplicative M using hx; rfl
@@ -426,6 +421,10 @@ lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
   | 0, 0 => by simp
   | 0, n + 1 => by simp
   | (x : Multiplicative M), n => rfl
+
+lemma toAdd_unzero {x : Mᵐ⁰} (hx : x ≠ 0) : Multiplicative.toAdd (unzero hx) = log x := by
+  lift x to Multiplicative M using hx
+  rfl
 
 end AddMonoid
 
