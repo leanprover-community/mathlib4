@@ -59,9 +59,9 @@ theorem mk_comp_outCLM : mk ∘ outCLM K E = id := funext (mk_outCLM K)
 variable {K} in
 theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
     (F : Type*) [AddCommMonoid F] [Module L F] [TopologicalSpace F] :
-    Function.Surjective ((mkCLM K E).comp : (F →SL[σ] E) → (F →SL[σ] SeparationQuotient E)) := by
+    Function.Surjective (FComp.comp (mkCLM K E) : (F →SL[σ] E) → _) := by
   intro f
-  use (outCLM K E).comp f
+  use (outCLM K E) ∘SL f
   rw [← ContinuousLinearMap.comp_assoc, mkCLM_comp_outCLM, ContinuousLinearMap.id_comp]
 
 /-- The `SeparationQuotient.outCLM K E` map is a topological embedding. -/

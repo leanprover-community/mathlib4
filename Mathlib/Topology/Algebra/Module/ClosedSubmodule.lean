@@ -107,7 +107,7 @@ lemma mem_comap {f : M →L[R] N} {s : ClosedSubmodule R N} {x : M} : x ∈ s.co
 @[simp] lemma comap_id (s : ClosedSubmodule R M) : s.comap (.id _ _) = s := rfl
 
 lemma comap_comap (g : N →L[R] O) (f : M →L[R] N) (s : ClosedSubmodule R O) :
-    (s.comap g).comap f = s.comap (g.comp f) := rfl
+    (s.comap g).comap f = s.comap (g ∘L f) := rfl
 
 instance instInf : Min (ClosedSubmodule R M) where
   min s t := ⟨s ⊓ t, s.isClosed.inter t.isClosed⟩

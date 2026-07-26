@@ -76,11 +76,11 @@ theorem isConformalMap_of_subsingleton [Subsingleton M] (f' : M →L[R] N) : IsC
 
 namespace IsConformalMap
 
-theorem comp (hg : IsConformalMap g) (hf : IsConformalMap f) : IsConformalMap (g.comp f) := by
+theorem comp (hg : IsConformalMap g) (hf : IsConformalMap f) : IsConformalMap (g ∘L f) := by
   rcases hf with ⟨cf, hcf, lif, rfl⟩
   rcases hg with ⟨cg, hcg, lig, rfl⟩
   refine ⟨cg * cf, mul_ne_zero hcg hcf, lig.comp lif, ?_⟩
-  rw [smul_comp, comp_smul, mul_smul]
+  rw [FunLike.smul_comp, comp_smul, mul_smul]
   rfl
 
 protected theorem injective {f : M' →L[R] N} (h : IsConformalMap f) : Function.Injective f := by

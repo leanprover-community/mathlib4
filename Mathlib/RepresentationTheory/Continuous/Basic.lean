@@ -148,13 +148,13 @@ open ContinuousLinearMap in
 /-- The composition of two continuous intertwining maps is a continuous intertwining map. -/
 def comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     {π₃ : ContRepresentation R G U} (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : π₁ →ⁱL π₃ where
-  __ := f.toContinuousLinearMap.comp g.toContinuousLinearMap
+  __ := f.toContinuousLinearMap ∘L g.toContinuousLinearMap
   isIntertwining' h := by rw [comp_assoc, g.2, ← comp_assoc, f.2, comp_assoc]
 
 @[simp]
 lemma toContinuousLinearMap_comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     {π₃ : ContRepresentation R G U} (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) :
-    (f.comp g).toContinuousLinearMap = f.toContinuousLinearMap.comp g.toContinuousLinearMap := rfl
+    (f.comp g).toContinuousLinearMap = f.toContinuousLinearMap ∘L g.toContinuousLinearMap := rfl
 
 instance : Add (π₁ →ⁱL π₂) where
   add f g := ⟨f.toContinuousLinearMap + g.toContinuousLinearMap, by simp [g.2, f.2]⟩
@@ -225,7 +225,7 @@ instance instSMul {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R
     [ContinuousConstSMul S W] [LinearMap.CompatibleSMul W W S R] :
     SMul S (π₁ →ⁱL π₂) where
   smul s f := ⟨s • f.toContinuousLinearMap, fun g ↦ by
-    rw [ContinuousLinearMap.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
+    rw [FunLike.smul_comp, f.2, ContinuousLinearMap.comp_smul]⟩
 
 section addcommgroup
 
@@ -297,19 +297,23 @@ lemma isIntertwining (g : G) :
 
 /-- An `Equiv` between representations could be built from a `LinearEquiv` and an assumption
   proving the `G`-equivariance. -/
-def mk (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) : ρ.Equiv σ where
+def mk (e : V ≃L[R] W) (he : ∀ g, (e : V →L[R] W) ∘L (ρ g) = (σ g) ∘L (e : V →L[R] W)) :
+    ρ.Equiv σ where
   __ := e
   cont := e.continuous
   isIntertwining' := he
 
-lemma toContinuousLinearEquiv_mk' {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma toContinuousLinearEquiv_mk' {e : V ≃L[R] W}
+    (he : ∀ g, (e : V →L[R] W) ∘L (ρ g) = (σ g) ∘L (e : V →L[R] W)) :
     (mk e he).toContinuousLinearEquiv = e := rfl
 
-lemma toContIntertwiningMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma toContIntertwiningMap_mk' (e : V ≃L[R] W)
+    (he : ∀ g, (e : V →L[R] W) ∘L (ρ g) = (σ g) ∘L (e : V →L[R] W)) :
     (mk e he).toContIntertwiningMap = ⟨e.toContinuousLinearMap, he⟩ := rfl
 
 @[simp]
-lemma toContinuousLinearMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma toContinuousLinearMap_mk' (e : V ≃L[R] W)
+    (he : ∀ g, (e : V →L[R] W) ∘L (ρ g) = (σ g) ∘L (e : V →L[R] W)) :
     (mk e he).toContinuousLinearMap = e.toContinuousLinearMap := rfl
 
 lemma toContinuousLinearEquiv_injective :
@@ -334,8 +338,8 @@ instance : ContinuousLinearEquivClass (σ.Equiv ρ) R W V where
   inv_continuous f := f.continuous_invFun
 
 @[simp]
-lemma mk_apply {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) (v : V) :
-    (mk e he) v = e v := rfl
+lemma mk_apply {e : V ≃L[R] W} (he : ∀ g, (e : V →L[R] W) ∘L (ρ g) = (σ g) ∘L (e : V →L[R] W))
+    (v : V) : (mk e he) v = e v := rfl
 
 @[ext]
 lemma ext {φ ψ : Equiv ρ σ} (h : (φ : V → W) = ψ) : φ = ψ := by
@@ -377,12 +381,12 @@ def symm : Equiv σ ρ := mk φ.toContinuousLinearEquiv.symm <| fun g ↦ by
 open ContinuousLinearMap
 
 lemma _root_.ContinuousLinearEquiv.isIntertwining_symm_isIntertwining {e : V ≃L[R] W}
-    (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) (g : G) :
-    e.symm ∘L (σ g) = (ρ g) ∘L e.symm :=
+    (he : ∀ g, (e : V →L[R] W) ∘L (ρ g) = (σ g) ∘L (e : V →L[R] W)) (g : G) :
+    (e.symm : W →L[R] V) ∘L (σ g) = (ρ g) ∘L (e.symm : W →L[R] V) :=
   (mk e he).symm.isIntertwining g
 
 @[simp]
-lemma mk_symm {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma mk_symm {e : V ≃L[R] W} (he : ∀ g, (e : V →L[R] W) ∘L (ρ g) = (σ g) ∘L (e : V →L[R] W)) :
     (mk e he).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he) := rfl
 
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
@@ -402,7 +406,7 @@ lemma toContIntertwiningMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
 
 @[simp]
 lemma toContinuousLinearMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
-    (trans φ ψ).toContinuousLinearMap = ψ.toContinuousLinearMap.comp φ.toContinuousLinearMap := rfl
+    (trans φ ψ).toContinuousLinearMap = ψ.toContinuousLinearMap ∘L φ.toContinuousLinearMap := rfl
 
 @[simp]
 lemma trans_apply (φ : Equiv ρ σ) (ψ : Equiv σ τ) (v : V) :

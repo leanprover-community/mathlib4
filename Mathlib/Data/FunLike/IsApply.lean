@@ -70,6 +70,18 @@ public section
 
 section Def
 
+section Comp
+
+/-- `IsCompApply F₁ F₂ F₃ α β γ` states for all `f : F₁`, `g : F₂` and `x : α`, we have
+`(g ∘ᶠ f) x = g (f x)`. -/
+class IsCompApply (F₁ F₂ : Type*) (F₃ α β γ : outParam Type*) [FunLike F₁ α β] [FunLike F₂ β γ]
+    [FunLike F₃ α γ] [FComp F₁ F₂ F₃] where
+  comp_apply (f : F₁) (g : F₂) (x : α) : (g ∘ᶠ f) x = g (f x)
+
+@[simp, grind =_] alias comp_apply := IsCompApply.comp_apply
+
+end Comp
+
 section Zero
 
 /-- `IsZeroApply F α β` states for all `x : α`, `(0 : F) x = 0`. -/
@@ -200,9 +212,19 @@ end Def
 
 namespace FunLike
 
-variable {M M' F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
+variable {M M' F F' F₁ F₂ F₃ α β γ : Type*} [FunLike F α β] [FunLike F' α α]
 
 section Coercion
+
+section Comp
+
+variable [FunLike F₁ α β] [FunLike F₂ β γ] [FunLike F₃ α γ] [FComp F₁ F₂ F₃]
+  [IsCompApply F₁ F₂ F₃ α β γ]
+
+@[norm_cast]
+theorem coe_comp (f : F₁) (g : F₂) : ((g ∘ᶠ f) : α → γ) = (g : β → γ) ∘ f := by ext; simp
+
+end Comp
 
 @[to_additive (attr := norm_cast)]
 theorem coe_one [One F] [One β] [IsOneApply F α β] : ↑(1 : F) = (1 : α → β) := by ext; simp
@@ -275,5 +297,61 @@ theorem coe_intCast [IntCast F'] [One F'] [SMul Int α] [SMul Int F'] [IsSMulApp
   simp
 
 end Coercion
+
+section Comp
+
+variable {F₁ F₂ F₃ α β γ : Type*}
+  [FunLike F₁ α β] [FunLike F₂ β γ] [FunLike F₃ α γ] [FComp F₁ F₂ F₃] [IsCompApply F₁ F₂ F₃ α β γ]
+
+@[to_additive (attr := simp)]
+theorem one_comp [One γ] [One F₂] [One F₃] [IsOneApply F₂ β γ] [IsOneApply F₃ α γ] (f : F₁) :
+    (1 : F₂) ∘ᶠ f = 1 := by
+  apply DFunLike.ext
+  intro x
+  simp
+
+@[to_additive (attr := simp)]
+theorem mul_comp [Mul γ] [Mul F₂] [Mul F₃] [IsMulApply F₂ β γ] [IsMulApply F₃ α γ]
+    (f : F₁) (g₁ g₂ : F₂) :
+    (g₁ * g₂) ∘ᶠ f = (g₁ ∘ᶠ f) * (g₂ ∘ᶠ f) := by
+  apply DFunLike.ext
+  intro x
+  simp
+
+@[to_additive (attr := simp)]
+theorem div_comp [Div γ] [Div F₂] [Div F₃] [IsDivApply F₂ β γ] [IsDivApply F₃ α γ]
+    (f : F₁) (g₁ g₂ : F₂) :
+    (g₁ / g₂) ∘ᶠ f = (g₁ ∘ᶠ f) / (g₂ ∘ᶠ f) := by
+  apply DFunLike.ext
+  intro x
+  simp
+
+@[to_additive (attr := simp)]
+theorem inv_comp [Inv γ] [Inv F₂] [Inv F₃] [IsInvApply F₂ β γ] [IsInvApply F₃ α γ]
+    (f : F₁) (g : F₂) :
+    (g⁻¹) ∘ᶠ f = (g ∘ᶠ f)⁻¹ := by
+  apply DFunLike.ext
+  intro x
+  simp
+
+@[to_additive (attr := simp)]
+theorem smul_comp [SMul M γ] [SMul M F₂] [SMul M F₃] [IsSMulApply M F₂ β γ] [IsSMulApply M F₃ α γ]
+    (c : M) (f : F₁) (g : F₂) :
+    (c • g) ∘ᶠ f = c • (g ∘ᶠ f) := by
+  apply DFunLike.ext
+  intro x
+  simp
+
+@[to_additive existing smul_comp]
+theorem pow_comp [Pow γ M] [Pow F₂ M] [Pow F₃ M] [IsPowApply M F₂ β γ] [IsPowApply M F₃ α γ]
+    (f : F₁) (g : F₂) (n : M) :
+    (g ^ n) ∘ᶠ f = (g ∘ᶠ f) ^ n := by
+  apply DFunLike.ext
+  intro x
+  simp
+
+attribute [simp] pow_comp
+
+end Comp
 
 end FunLike

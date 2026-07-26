@@ -128,7 +128,7 @@ theorem coe_inr : (inr R M₁ M₂ : M₂ →ₗ[R] M₁ × M₂) = LinearMap.in
   rfl
 
 lemma comp_inl_add_comp_inr (L : M₁ × M₂ →L[R] M₃) (v : M₁ × M₂) :
-    L.comp (.inl R M₁ M₂) v.1 + L.comp (.inr R M₁ M₂) v.2 = L v := by simp [← map_add]
+    (L ∘L (.inl R M₁ M₂)) v.1 + (L ∘L (.inr R M₁ M₂)) v.2 = L v := by simp [← map_add]
 
 theorem ker_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
     ker (f.prod g : M₁ →ₗ[R] M₂ × M₃) = ker (f : M₁ →ₗ[R] M₂) ⊓ ker (g : M₁ →ₗ[R] M₃) := by
@@ -168,12 +168,12 @@ theorem fst_prod_snd : (fst R M₁ M₂).prod (snd R M₁ M₂) = .id R (M₁ ×
 
 @[simp]
 theorem fst_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
-    (fst R M₂ M₃).comp (f.prod g) = f :=
+    (fst R M₂ M₃) ∘L (f.prod g) = f :=
   ext fun _x => rfl
 
 @[simp]
 theorem snd_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
-    (snd R M₂ M₃).comp (f.prod g) = g :=
+    (snd R M₂ M₃) ∘L (f.prod g) = g :=
   ext fun _x => rfl
 
 @[simp] theorem fst_comp_inl : fst R M₁ M₂ ∘L inl R M₁ M₂ = .id R M₁ := rfl
@@ -184,7 +184,7 @@ theorem snd_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
 /-- `Prod.map` of two continuous linear maps. -/
 def prodMap (f₁ : M₁ →L[R] M₂) (f₂ : M₃ →L[R] M₄) :
     M₁ × M₃ →L[R] M₂ × M₄ :=
-  (f₁.comp (fst R M₁ M₃)).prod (f₂.comp (snd R M₁ M₃))
+  (f₁ ∘L (fst R M₁ M₃)).prod (f₂ ∘L (snd R M₁ M₃))
 
 @[simp, norm_cast]
 theorem coe_prodMap (f₁ : M₁ →L[R] M₂)
@@ -228,7 +228,7 @@ theorem pi_zero : pi (fun _ => 0 : ∀ i, M →L[R] φ i) = 0 :=
   ext fun _ => rfl
 
 theorem pi_comp (f : ∀ i, M →L[R] φ i) (g : M₂ →L[R] M) :
-    (pi f).comp g = pi fun i => (f i).comp g :=
+    (pi f) ∘L g = pi fun i => (f i) ∘L g :=
   rfl
 
 /-- The projections from a family of topological modules are continuous linear maps. -/
@@ -240,7 +240,8 @@ theorem proj_apply (i : ι) (b : ∀ i, φ i) : (proj i : (∀ i, φ i) →L[R] 
   rfl
 
 @[simp]
-theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
+theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i : (∀ i, φ i) →L[R] φ i) ∘L (pi f) = f i :=
+  rfl
 
 @[simp]
 theorem coe_proj (i : ι) : (proj i).toLinearMap = (LinearMap.proj i : ((i : ι) → φ i) →ₗ[R] _) :=
@@ -250,7 +251,8 @@ theorem coe_proj (i : ι) : (proj i).toLinearMap = (LinearMap.proj i : ((i : ι)
 theorem pi_proj : pi proj = .id R (∀ i, φ i) := rfl
 
 @[simp]
-theorem pi_proj_comp (f : M₂ →L[R] ∀ i, φ i) : pi (proj · ∘L f) = f := rfl
+theorem pi_proj_comp (f : M₂ →L[R] ∀ i, φ i) :
+    pi (fun i ↦ (proj i : (∀ i, φ i) →L[R] φ i) ∘L f) = f := rfl
 
 theorem iInf_ker_proj :
     (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i).toLinearMap : Submodule R (∀ i, φ i)) = ⊥ :=
@@ -267,7 +269,7 @@ A bundled version of `Pi.map`.
 If the index type is finite, then this map can be seen as a “block diagonal” map
 between indexed products of modules. -/
 def piMap (f : ∀ i, φ i →L[R] ψ i) : (∀ i, φ i) →L[R] (∀ i, ψ i) :=
-  .pi fun i ↦ f i ∘L .proj i
+  .pi fun i ↦ f i ∘L (proj i : (∀ i, φ i) →L[R] φ i)
 
 @[simp]
 theorem coe_piMap (f : ∀ i, φ i →L[R] ψ i) :
@@ -298,7 +300,7 @@ def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
   toLinearMap := .single R φ i
 
 lemma sum_comp_single [Fintype ι] [DecidableEq ι] (L : (Π i, φ i) →L[R] M) (v : Π i, φ i) :
-    ∑ i, L.comp (.single R φ i) (v i) = L v := by
+    ∑ i, (L ∘L (.single R φ i)) (v i) = L v := by
   simp [← map_sum, LinearMap.sum_single_apply]
 
 end Pi
@@ -332,16 +334,18 @@ variable
 @[simps apply]
 def prodEquiv : (M →L[R] M₂) × (M →L[R] M₃) ≃ (M →L[R] M₂ × M₃) where
   toFun f := f.1.prod f.2
-  invFun f := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
+  invFun f := ⟨(fst R M₂ M₃) ∘L f, (snd R M₂ M₃) ∘L f⟩
+  left_inv := by intro; simp
+  right_inv := by intro; ext; all_goals simp
 
 theorem prod_ext_iff {f g : M × M₂ →L[R] M₃} :
-    f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) := by
+    f = g ↔ f ∘L (inl R M M₂) = g ∘L (inl R M M₂) ∧ f ∘L (inr R M M₂) = g ∘L (inr R M M₂) := by
   simp only [← coe_inj, LinearMap.prod_ext_iff]
   rfl
 
 @[ext]
-theorem prod_ext {f g : M × M₂ →L[R] M₃} (hl : f.comp (inl _ _ _) = g.comp (inl _ _ _))
-    (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g :=
+theorem prod_ext {f g : M × M₂ →L[R] M₃} (hl : f ∘L (inl R M M₂) = g ∘L (inl R M M₂))
+    (hr : f ∘L (inr R M M₂) = g ∘L (inr R M M₂)) : f = g :=
   prod_ext_iff.2 ⟨hl, hr⟩
 
 variable (S : Type*) [Semiring S]
@@ -381,17 +385,17 @@ lemma range_coprod (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) :
     (f₁.coprod f₂).range = f₁.range ⊔ f₂.range := LinearMap.range_coprod ..
 
 lemma comp_fst_add_comp_snd (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) :
-    f₁.comp (.fst _ _ _) + f₂.comp (.snd _ _ _) = f₁.coprod f₂ := rfl
+    f₁ ∘L (.fst R M₁ M₂) + f₂ ∘L (.snd R M₁ M₂) = f₁.coprod f₂ := rfl
 
 lemma comp_coprod (f : M →L[R] N) (g₁ : M₁ →L[R] M) (g₂ : M₂ →L[R] M) :
-    f.comp (g₁.coprod g₂) = (f.comp g₁).coprod (f.comp g₂) :=
+    f ∘L (g₁.coprod g₂) = (f ∘L g₁).coprod (f ∘L g₂) :=
   coe_injective <| LinearMap.comp_coprod ..
 
 @[simp] lemma coprod_comp_inl (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) :
-    (f₁.coprod f₂).comp (.inl _ _ _) = f₁ := coe_injective <| LinearMap.coprod_inl ..
+    (f₁.coprod f₂) ∘L (.inl R M₁ M₂) = f₁ := coe_injective <| LinearMap.coprod_inl ..
 
 @[simp] lemma coprod_comp_inr (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) :
-    (f₁.coprod f₂).comp (.inr _ _ _) = f₂ := coe_injective <| LinearMap.coprod_inr ..
+    (f₁.coprod f₂) ∘L (.inr R M₁ M₂) = f₂ := coe_injective <| LinearMap.coprod_inr ..
 
 @[simp]
 lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .id R (M × N) :=
@@ -413,7 +417,7 @@ def coprodEquiv [ContinuousAdd M₁] [ContinuousAdd M₂] [Semiring S] [Module S
     [ContinuousConstSMul S M] [SMulCommClass R S M] :
     ((M₁ →L[R] M) × (M₂ →L[R] M)) ≃ₗ[S] M₁ × M₂ →L[R] M where
   toFun f := f.1.coprod f.2
-  invFun f := (f.comp (.inl ..), f.comp (.inr ..))
+  invFun f := (f ∘L (.inl R M₁ M₂), f ∘L (.inr R M₁ M₂))
   left_inv f := by simp
   right_inv f := by simp [← comp_coprod f (.inl R M₁ M₂)]
   map_add' a b := coprod_add ..

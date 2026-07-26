@@ -374,7 +374,7 @@ theorem isUniformInducing_postcomp
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformInducing g) (𝔖 : Set (Set E)) :
     IsUniformInducing (α := E →SLᵤ[σ, 𝔖] F) (β := E →SLᵤ[ρ, 𝔖] G)
-      g.comp := by
+      (FComp.comp g : (E →SL[σ] F) → (E →SLᵤ[ρ, 𝔖] G)) := by
   rw [← (isUniformInducing_coeFn _ _ _).of_comp_iff]
   exact (UniformOnFun.postcomp_isUniformInducing hg).comp (isUniformInducing_coeFn _ _ _)
 
@@ -385,7 +385,7 @@ theorem isUniformEmbedding_postcomp
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformEmbedding g) (𝔖 : Set (Set E)) :
     IsUniformEmbedding (α := E →SLᵤ[σ, 𝔖] F) (β := E →SLᵤ[ρ, 𝔖] G)
-      g.comp :=
+      (FComp.comp g : (E →SL[σ] F) → (E →SLᵤ[ρ, 𝔖] G)) :=
   .mk (isUniformInducing_postcomp _ g hg.isUniformInducing _) fun _ _ ↦ g.cancel_left hg.injective
 
 theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
@@ -495,9 +495,9 @@ convergence topology. -/
 def precompUniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
     (L : E →SL[σ] F) (hL : MapsTo (L '' ·) 𝔖 𝔗) :
     (F →SLᵤ[τ, 𝔗] G) →L[𝕜₃] (E →SLᵤ[ρ, 𝔖] G) where
-  toFun f := f.comp L
-  map_add' f g := add_comp f g L
-  map_smul' a f := smul_comp a f L
+  toFun f := toUniformConvergenceCLM _ _ _ <| ((toUniformConvergenceCLM _ _ _).symm f) ∘SL L
+  map_add' f g := by simp
+  map_smul' a f := by simp
   cont := by
     let : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
     have : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
@@ -518,7 +518,7 @@ convergence topology. -/
 def postcompUniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
     [ContinuousConstSMul 𝕜₃ G] [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) :
     (E →SLᵤ[σ, 𝔖] F) →SL[τ] (E →SLᵤ[ρ, 𝔖] G) where
-  toFun f := L.comp f
+  toFun f := L ∘SL f
   map_add' := comp_add L
   map_smul' := comp_smulₛₗ L
   cont := by

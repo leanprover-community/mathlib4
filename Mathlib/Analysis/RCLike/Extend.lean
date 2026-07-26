@@ -132,7 +132,7 @@ When `F` is a normed space, this can be upgraded to an *isometric* linear equiva
 @[simps -isSimp apply symm_apply]
 noncomputable def extendRCLikeₗ : StrongDual ℝ F ≃ₗ[ℝ] StrongDual 𝕜 F where
   toFun := StrongDual.extendRCLike (𝕜 := 𝕜)
-  invFun f := RCLike.reCLM.comp (f.restrictScalars ℝ)
+  invFun f := RCLike.reCLM (K := 𝕜) ∘L (f.restrictScalars ℝ)
   left_inv f := by ext; simp
   right_inv f := by ext; apply RCLike.ext <;> simp [extendRCLike_apply]
   map_add' := by intros; ext; simp [extendRCLike_apply]; ring

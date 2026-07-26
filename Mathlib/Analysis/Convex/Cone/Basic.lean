@@ -115,7 +115,7 @@ abbrev comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
 @[simp] lemma coe_comap (f : E →L[R] F) (C : ProperCone R F) : (C.comap f : Set E) = f ⁻¹' C := rfl
 
 lemma comap_comap (g : F →L[R] G) (f : E →L[R] F) (C : ProperCone R G) :
-    (C.comap g).comap f = C.comap (g.comp f) := rfl
+    (C.comap g).comap f = C.comap (g ∘L f) := rfl
 
 lemma mem_comap {C : ProperCone R F} {f : E →L[R] F} : x ∈ C.comap f ↔ f x ∈ C := .rfl
 
