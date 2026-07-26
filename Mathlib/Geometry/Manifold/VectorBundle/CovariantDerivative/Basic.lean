@@ -387,17 +387,23 @@ lemma zero [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V) : cov 0 = 0
 
 /-- If `cov` is a covariant derivative on each set in an open cover, it is a covariant derivative.
 -/
-def of_isCovariantDerivativeOn_of_open_cover {ι : Type*} {s : ι → Set M}
+def ofIsCovariantDerivativeOnOfOpenCover {ι : Type*} {s : ι → Set M}
     {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i, IsCovariantDerivativeOn F cov (s i)) (hs : ⋃ i, s i = Set.univ) :
     CovariantDerivative I F V :=
   ⟨cov, hs ▸ IsCovariantDerivativeOn.iUnion hcov⟩
 
+@[deprecated (since := "2026-07-25")]
+alias of_isCovariantDerivativeOn_of_open_cover := ofIsCovariantDerivativeOnOfOpenCover
+
 @[simp]
-lemma of_isCovariantDerivativeOn_of_open_cover_coe {ι : Type*} {s : ι → Set M}
+lemma ofIsCovariantDerivativeOnOfOpenCover {ι : Type*} {s : ι → Set M}
     {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i, IsCovariantDerivativeOn F cov (s i)) (hs : ⋃ i, s i = Set.univ) :
-    of_isCovariantDerivativeOn_of_open_cover hcov hs = cov := rfl
+    ofIsCovariantDerivativeOnOfOpenCover hcov hs = cov := rfl
+
+@[deprecated (since := "2026-07-25")]
+alias of_isCovariantDerivativeOn_of_open_cover_coe := ofIsCovariantDerivativeOnOfOpenCover
 
 /--
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
