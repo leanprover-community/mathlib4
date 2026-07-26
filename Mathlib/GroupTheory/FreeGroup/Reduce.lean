@@ -252,6 +252,29 @@ theorem toWord_inv (x : FreeGroup α) : x⁻¹.toWord = invRev x.toWord := by
   rcases x with ⟨L⟩
   rw [quot_mk_eq_mk, inv_mk, toWord_mk, toWord_mk, reduce_invRev]
 
+@[to_additive (attr := simp)]
+theorem toWord_of_zpow (a : α) (n : ℤ) :
+    (of a ^ n).toWord = List.replicate n.natAbs (a, decide (0 ≤ n)) := by
+  by_cases! hn : 0 ≤ n
+  · lift n to ℕ using hn
+    simp
+  · rw [zpow_eq_inv_pow_natAbs _ (le_of_lt hn)]
+    simp [FreeGroup.invRev, hn]
+
+omit [DecidableEq α] in
+@[to_additive]
+theorem eq_of_of_zpow_eq_of_zpow {a b : α} (hab : a ≠ b) {n m : ℤ} (h : of a ^ n = of b ^ m) :
+    n = 0 ∧ m = 0 := by
+  classical
+  simp [← toWord_inj, hab, toWord_of_zpow] at h
+  lia
+
+omit [DecidableEq α] in
+@[to_additive]
+theorem eq_of_of_pow_eq_of_pow {a b : α} (hab : a ≠ b) {n m : ℕ} (h : of a ^ n = of b ^ m) :
+    n = 0 ∧ m = 0 := by
+  simpa [← Int.natCast_eq_zero] using eq_of_of_zpow_eq_of_zpow hab h
+
 @[to_additive]
 theorem reduce_append_reduce_reduce : reduce (reduce L₁ ++ reduce L₂) = reduce (L₁ ++ L₂) := by
   rw [← toWord_mk (L₁ := L₁ ++ L₂), ← mul_mk, toWord_mul, toWord_mk, toWord_mk]
@@ -393,6 +416,10 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
 @[to_additive (attr := simp)]
 theorem norm_of_pow (a : α) (n : ℕ) : norm (of a ^ n) = n := by
   rw [norm, toWord_of_pow, List.length_replicate]
+
+@[to_additive (attr := simp)]
+theorem norm_of_zpow (a : α) (n : ℤ) : norm (of a ^ n) = n.natAbs := by
+  rw [norm, toWord_of_zpow, List.length_replicate]
 
 @[to_additive]
 theorem norm_surjective [Nonempty α] : Function.Surjective (norm (α := α)) := by
