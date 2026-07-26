@@ -34,10 +34,7 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-/-- `𝔟 i` is the annihilator of `f ^ i` in `R`. -/
-private abbrev ideal_b (f : R) (i : ℕ) : Ideal R := Ideal.torsionOf R R (f ^ i)
-
-private lemma ascending_ideal_b (f : R) : Monotone (ideal_b f) := by
+private lemma ascending_ideal_b (f : R) : Monotone (fun i ↦ Ideal.torsionOf R R (f ^ i)) := by
   intro i j hle
   choose k hk using Nat.exists_eq_add_of_le hle
   intro a ha
@@ -51,21 +48,23 @@ private lemma ascending_ideal_b (f : R) : Monotone (ideal_b f) := by
   rw [← mul_assoc, ha]
   exact zero_mul _
 
-private abbrev ideal_b_order_hom (f : R) : ℕ →o Ideal R := ⟨ideal_b f, ascending_ideal_b f⟩
+private abbrev ideal_b_order_hom (f : R) : ℕ →o Ideal R :=
+  ⟨fun i ↦ Ideal.torsionOf R R (f ^ i), ascending_ideal_b f⟩
 
 private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
-    (hr : ∀ (i : ℕ), ideal_b f (r + i) = ideal_b f r)
+    (hr : ∀ (i : ℕ), Ideal.torsionOf R R (f ^ (r + i)) = Ideal.torsionOf R R (f ^ r))
     {M : Type u} [AddCommGroup M] [Module R M] (y : M) :
     ∃ phi : Ideal.span {f^(r + n)} →ₗ[R] M,
       phi ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ = f ^ r • y := by
-  have hker0 : ideal_b f r ≤ LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
+  have hker0 : Ideal.torsionOf R R (f ^ r) ≤
+      LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
     intro c hc
     rw [Ideal.mem_torsionOf_iff, smul_eq_mul] at hc
     rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, smul_smul, hc, zero_smul]
-  have hker : ideal_b f (r + n) ≤
+  have hker : Ideal.torsionOf R R (f ^ (r + n)) ≤
       LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
     rwa [hr n]
-  refine ⟨(Submodule.liftQ (ideal_b f (r + n))
+  refine ⟨(Submodule.liftQ (Ideal.torsionOf R R (f ^ (r + n)))
       (LinearMap.toSpanSingleton R M (f ^ r • y)) hker).comp
     (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm.toLinearMap, ?_⟩
   have hmk : (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
@@ -78,7 +77,7 @@ private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
 variable [IsNoetherianRing R]
 
 private lemma stabilize_ideal_b (f : R) :
-    ∃ (r : ℕ), ∀ (i : ℕ), ideal_b f (r + i) = ideal_b f r := by
+    ∃ (r : ℕ), ∀ (i : ℕ), Ideal.torsionOf R R (f ^ (r + i)) = Ideal.torsionOf R R (f ^ r) := by
   choose r hr using monotone_stabilizes_iff_noetherian.mpr inferInstance (ideal_b_order_hom f)
   use r
   intro i
