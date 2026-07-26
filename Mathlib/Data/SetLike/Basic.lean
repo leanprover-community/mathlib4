@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.SetLike
-public import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property

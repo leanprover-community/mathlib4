@@ -6,8 +6,8 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Algebra.Category.Grp.Colimits
-public import Mathlib.Algebra.Module.CharacterModule
 public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Module.CharacterModule
 
 /-!
 # Existence of "big" colimits in the category of additive commutative groups

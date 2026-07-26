@@ -6,14 +6,14 @@ Authors: Kim Morrison, Heather Macbeth
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Order.Module.Basic
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.Algebra.Star.Real
 public import Mathlib.Topology.Algebra.StarSubalgebra
-public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.Weierstrass
-public import Mathlib.Algebra.Order.Module.Basic
 
 /-!
 # The Stone-Weierstrass theorem

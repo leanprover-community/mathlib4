@@ -5,13 +5,13 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.Basic
+public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Count
 public import Mathlib.Data.List.Duplicate
-public import Mathlib.Data.List.InsertIdx
 public import Mathlib.Data.List.Induction
-public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.InsertIdx
 public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Tactic.Finiteness.Attr
 

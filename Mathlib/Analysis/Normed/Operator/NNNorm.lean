@@ -5,8 +5,8 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Operator norm as an `NNNorm`

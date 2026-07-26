@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Data.List.OfFn
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Data.List.OfFn
 
 /-!
 # Pointwise operations with lists of sets

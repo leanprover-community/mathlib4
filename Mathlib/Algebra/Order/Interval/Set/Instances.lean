@@ -5,10 +5,10 @@ Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Kim Morris
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.InjSurj
-public import Mathlib.Algebra.GroupWithZero.Hom
-public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Tactic.FastInstance

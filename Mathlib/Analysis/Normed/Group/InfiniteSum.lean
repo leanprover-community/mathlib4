@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Topology.Instances.NNReal.Lemmas
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+public import Mathlib.Topology.Instances.NNReal.Lemmas
 
 /-!
 # Infinite sums in (semi)normed groups

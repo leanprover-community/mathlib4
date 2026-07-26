@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.OuterMeasure.Operations
 public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.MeasureTheory.OuterMeasure.Operations
 
 /-!
 # Outer measures from functions

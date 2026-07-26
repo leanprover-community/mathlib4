@@ -5,9 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.ModelTheory.Bundled
 public import Mathlib.ModelTheory.Skolem
+public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!

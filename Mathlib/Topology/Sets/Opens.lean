@@ -6,11 +6,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Data.Fintype.Option
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.Copy
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Order.CompactlyGenerated.Basic
-public import Mathlib.Order.Copy
 
 /-!
 # Open sets

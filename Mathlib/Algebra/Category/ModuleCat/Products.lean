@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!

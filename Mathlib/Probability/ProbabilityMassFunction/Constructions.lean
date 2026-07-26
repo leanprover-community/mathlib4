@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Devon Tuma
 -/
 module
 
+public import Mathlib.Control.ULiftable
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProbabilityMassFunction.Monad
-public import Mathlib.Control.ULiftable
 
 /-!
 # Specific Constructions of Probability Mass Functions

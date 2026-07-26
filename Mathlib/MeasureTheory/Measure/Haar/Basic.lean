@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.Topology.Algebra.Group.Compact
 
 /-!

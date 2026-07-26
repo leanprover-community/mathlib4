@@ -5,8 +5,8 @@ Authors: Blake Farman
 -/
 module
 public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.Subobject.MonoOver
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 /-!
 # Preradicals

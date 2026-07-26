@@ -5,8 +5,8 @@ Authors: Josha Dekker
 -/
 module
 
-public import Mathlib.Topology.Bases
 public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Compactness.SigmaCompact
 
 /-!

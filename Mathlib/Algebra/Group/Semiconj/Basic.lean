@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Semiconj.Defs
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Semiconj.Defs
 
 /-!
 # Lemmas about semiconjugate elements of a group

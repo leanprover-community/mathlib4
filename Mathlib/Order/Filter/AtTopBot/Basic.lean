@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Nat
 public import Mathlib.Tactic.Subsingleton
 

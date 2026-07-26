@@ -7,13 +7,13 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.GroupTheory.Schreier
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Finite.Sum
-public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.GroupTheory.Schreier
 public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!

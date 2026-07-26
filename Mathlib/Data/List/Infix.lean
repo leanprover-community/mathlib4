@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.TakeDrop
+public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
-public import Mathlib.Data.List.Basic
 
 /-!
 # Prefixes, suffixes, infixes

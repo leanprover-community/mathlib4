@@ -5,10 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Topology.NhdsWithin
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
+public import Mathlib.Topology.NhdsWithin
+public import Mathlib.Topology.Semicontinuity.Defs
+public import Mathlib.Topology.Separation.Regular
 import Mathlib.Topology.Sequences
 
 /-! # Hemicontinuity

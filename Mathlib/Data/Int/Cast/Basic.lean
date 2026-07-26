@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Data.Nat.Basic
 
 /-!

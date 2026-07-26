@@ -6,11 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.Compactness.Paracompact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Continuous partition of unity

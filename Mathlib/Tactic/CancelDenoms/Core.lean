@@ -5,9 +5,9 @@ Authors: Robert Y. Lewis
 -/
 module
 
+public meta import Mathlib.Algebra.Group.Nat.Defs
 public meta import Mathlib.Data.Tree.Basic
 public import Mathlib.Algebra.Field.Basic
-public meta import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Tree.Basic
 public import Mathlib.Tactic.NormNum.Core

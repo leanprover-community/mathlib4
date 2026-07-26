@@ -5,9 +5,9 @@ Authors: Joël Riou, Adam Topaz, Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.AlgebraicTopology.MooreComplex
-public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Preadditive.Opposite

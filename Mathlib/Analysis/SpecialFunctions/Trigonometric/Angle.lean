@@ -5,9 +5,9 @@ Authors: Calle Sönne
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Analysis.Normed.Group.AddCircle
 public import Mathlib.Algebra.CharZero.Quotient
+public import Mathlib.Analysis.Normed.Group.AddCircle
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Topology.Instances.Sign
 import Mathlib.Algebra.Order.Ring.Interval
 

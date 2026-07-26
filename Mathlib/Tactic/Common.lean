@@ -8,39 +8,37 @@ Authors: Kim Morrison
 module  -- shake: keep-all, shake: keep-downstream
 
 public import Aesop
-public import Qq
-public import Plausible
+public import Batteries.CodeAction
+public import Batteries.Tactic.Alias
 
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic
 public import Batteries.Tactic.Case
-public import Batteries.Tactic.HelpCmd
-public import Batteries.Tactic.Alias
 public import Batteries.Tactic.GeneralizeProofs
+public import Batteries.Tactic.HelpCmd
+public import Lean.Elab.Tactic.Try
 
 -- Import Batteries code actions
-public import Batteries.CodeAction
-
--- Import syntax for leansearch
 public import LeanSearchClient
 
+-- Import syntax for leansearch
+public import Mathlib.Tactic.ApplyAt
+
 -- Import Mathlib-specific linters.
-public import Mathlib.Tactic.Linter.Lint
+public import Mathlib.Tactic.ApplyCongr
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
-public import Mathlib.Tactic.ApplyCongr
+public import Mathlib.Tactic.ApplyWith
 -- ApplyFun imports `Mathlib/Order/Monotone/Basic.lean`
 -- import Mathlib.Tactic.ApplyFun
-public import Mathlib.Tactic.ApplyAt
-public import Mathlib.Tactic.ApplyWith
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.ByContra
 public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Check
 public import Mathlib.Tactic.Choose
-public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.ClearExcept
+public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.Clear_
 public import Mathlib.Tactic.ClickSuggestions
 public import Mathlib.Tactic.Coe
@@ -50,13 +48,13 @@ public import Mathlib.Tactic.Constructor
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
-public import Mathlib.Tactic.DeprecateTo
 public import Mathlib.Tactic.DepRewrite
-public import Mathlib.Tactic.DSimpPercent
-public import Mathlib.Tactic.ErwQuestion
+public import Mathlib.Tactic.DeprecateTo
 public import Mathlib.Tactic.Eqns
+public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.ExistsI
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.FailIfNoProgress
@@ -74,15 +72,16 @@ public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Linter
+public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.NthRewrite
 -- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.Push
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
-public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.RSuffices
 public import Mathlib.Tactic.Recover
 public import Mathlib.Tactic.Relation.Rfl
@@ -103,26 +102,27 @@ public import Mathlib.Tactic.SuccessIfFailWithMsg
 public import Mathlib.Tactic.SudoSetOption
 public import Mathlib.Tactic.SwapVar
 public import Mathlib.Tactic.Tauto
-public import Mathlib.Tactic.ToFun
 public import Mathlib.Tactic.TermCongr
+public import Mathlib.Tactic.ToExpr
+public import Mathlib.Tactic.ToFun
 -- TFAE imports `Mathlib/Data/List/TFAE.lean` and thence `Mathlib/Data/List/Basic.lean`.
 -- import Mathlib.Tactic.TFAE
-public import Mathlib.Tactic.ToExpr
 public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.UnsetOption
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.Variable
+public import Mathlib.Tactic.WLOG
 public import Mathlib.Tactic.Widget.Calc
 public import Mathlib.Tactic.Widget.CongrM
 public import Mathlib.Tactic.Widget.Conv
 public import Mathlib.Tactic.Widget.LibraryRewrite
-public import Mathlib.Tactic.WLOG
 public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
-public import Lean.Elab.Tactic.Try
+public import Plausible
+public import Qq
 
 /-!
 # Common tactics, linters, and utilities

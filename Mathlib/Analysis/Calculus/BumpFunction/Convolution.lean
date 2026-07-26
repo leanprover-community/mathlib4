@@ -5,12 +5,12 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Analysis.Convolution
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 public import Mathlib.Analysis.Calculus.BumpFunction.Normed
-public import Mathlib.MeasureTheory.Integral.Average
-public import Mathlib.MeasureTheory.Covering.Differentiation
+public import Mathlib.Analysis.Convolution
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.MeasureTheory.Covering.Differentiation
+public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!

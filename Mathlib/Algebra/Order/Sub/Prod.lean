@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Products of `OrderedSub` types.

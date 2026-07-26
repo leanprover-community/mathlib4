@@ -6,9 +6,9 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-! # Type classes for derivatives and the Laplacian
 

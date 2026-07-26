@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 
 module
-public import Mathlib.Logic.Function.Basic
 public import Mathlib.Data.Fin.Init
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # The `LawfulXor` typeclass

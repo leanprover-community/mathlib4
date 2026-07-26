@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
-public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.Generator.StrongGenerator
+public import Mathlib.CategoryTheory.Limits.Presheaf
 
 /-!
 # Dense functors

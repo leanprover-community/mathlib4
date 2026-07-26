@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Algebra.Order.Group.Nat
 /-!
 # Adjoining elements to form subalgebras
 

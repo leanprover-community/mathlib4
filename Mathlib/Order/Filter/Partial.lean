@@ -5,8 +5,8 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Data.PFun
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # `Tendsto` for relations and partial functions

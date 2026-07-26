@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Topology.Covering.AddCircle
-public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Maps on the unit circle

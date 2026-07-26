@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson, Jack McKoen, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 
 /-!
 # The monoidal category structure on presheaves of modules

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.Algebra.Category.Ring.Basic
-public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Epimorphisms in `CommRingCat`

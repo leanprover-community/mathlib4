@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplexCategory.ToMkOne
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
 # Simplices in `Δ[1]`

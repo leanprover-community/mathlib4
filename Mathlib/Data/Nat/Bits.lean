@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
+public import Mathlib.Data.Nat.BinaryRec
 
 /-!
 # Additional properties of binary recursion on `Nat`

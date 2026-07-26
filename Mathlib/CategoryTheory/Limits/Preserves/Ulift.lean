@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 module
 
 public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.Data.Set.Subsingleton
 
 /-!

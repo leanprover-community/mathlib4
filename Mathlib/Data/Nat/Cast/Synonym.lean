@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Order.OrderDual
 public import Mathlib.Order.Lex
+public import Mathlib.Order.OrderDual
 
 deprecated_module "use Mathlib.Algebra.Order.Ring.Synonym instead" (since := "2026-05-30")

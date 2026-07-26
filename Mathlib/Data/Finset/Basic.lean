@@ -12,10 +12,10 @@ public import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.SDiff
 public import Mathlib.Data.Multiset.Basic
+public import Mathlib.Data.Set.SymmDiff
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Basic lemmas on finite sets

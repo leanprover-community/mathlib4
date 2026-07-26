@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.NumberTheory.Real.Irrational
-public import Mathlib.Topology.Separation.GDelta
 public import Mathlib.Topology.Instances.Real.Lemmas
+public import Mathlib.Topology.Separation.GDelta
 
 /-!
 # Topology of irrational numbers

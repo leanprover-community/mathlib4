@@ -5,9 +5,9 @@ Authors: Jovan Gerbscheid, Newell Jensen
 -/
 module
 
+public import Mathlib.Tactic.FinCases
 public import Mathlib.Topology.MetricSpace.Congruence
 public import Mathlib.Topology.MetricSpace.Dilation
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Similarities

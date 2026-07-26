@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.SmallHom
-public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.CategoryTheory.Shift.Localization
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 /-!
 # Shrinking morphisms in localized categories equipped with shifts

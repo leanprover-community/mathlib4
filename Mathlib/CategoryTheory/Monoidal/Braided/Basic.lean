@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.Opposite
-public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!

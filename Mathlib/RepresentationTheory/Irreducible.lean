@@ -5,9 +5,9 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.RepresentationTheory.Subrepresentation
-public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
+public import Mathlib.RepresentationTheory.Intertwining
+public import Mathlib.RepresentationTheory.Subrepresentation
 
 /-!
 # Irreducible representations

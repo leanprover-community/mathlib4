@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.FieldTheory.SeparablyGenerated
+public import Mathlib.RingTheory.Etale.Field
 
 /-!
 

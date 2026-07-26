@@ -6,8 +6,8 @@ Authors: Xavier Roblot, Kenny Lau
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.Field.ZMod
 
 /-!
 # Prime fields

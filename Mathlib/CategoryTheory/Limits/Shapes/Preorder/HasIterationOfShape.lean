@@ -8,8 +8,8 @@ module
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
-public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.Interval.Set.InitialSeg
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 # An assumption for constructions by transfinite induction

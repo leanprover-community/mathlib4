@@ -5,9 +5,9 @@ Authors: Patrick Massot, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Tactic.TautoSet
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.UniformSpace.Defs
-public import Mathlib.Tactic.TautoSet
 
 /-!
 # Compact separated uniform spaces

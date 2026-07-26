@@ -5,8 +5,8 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Topological space structure on the opposite monoid and on the units group

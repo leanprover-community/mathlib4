@@ -5,13 +5,13 @@ Authors: Fabrizio Barroero, Kevin H. Wilson
 -/
 module
 
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Analysis.Analytic.Polynomial
 public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-public import Mathlib.Analysis.Polynomial.Norm
-public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 public import Mathlib.Analysis.Convex.Integral
 public import Mathlib.Analysis.Polynomial.Fourier
+public import Mathlib.Analysis.Polynomial.Norm
+public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
 /-!
 # Mahler measure of complex polynomials

@@ -5,16 +5,16 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Basic
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Data.List.TakeDrop
-public import Mathlib.Data.List.Forall2
-public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Order.Basic
 
 /-!

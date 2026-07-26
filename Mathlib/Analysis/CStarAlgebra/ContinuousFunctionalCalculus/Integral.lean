@@ -5,11 +5,11 @@ Authors: Frédéric Dupuis, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
 
 /-!
 # Integrals and the continuous functional calculus

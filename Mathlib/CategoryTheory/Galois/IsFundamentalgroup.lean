@@ -6,8 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Galois.Basic
-public import Mathlib.CategoryTheory.Galois.Topology
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
+public import Mathlib.CategoryTheory.Galois.Topology
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!

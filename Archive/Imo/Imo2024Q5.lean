@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.ChainOfFn
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Fintype.Fin
-import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # IMO 2024 Q5

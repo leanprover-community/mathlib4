@@ -5,9 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv
-public import Mathlib.LinearAlgebra.BilinearMap
 
 /-! # Weak topologies on modules
 

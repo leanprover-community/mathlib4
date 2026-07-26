@@ -5,8 +5,8 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Std.Data.HashMap.AdditionalOperations
 public meta import Batteries.Lean.HashMap
+public meta import Std.Data.HashMap.AdditionalOperations
 public import Mathlib.Tactic.Linarith.Datatypes
 
 /-!

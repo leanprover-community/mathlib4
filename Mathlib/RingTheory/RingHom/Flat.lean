@@ -6,8 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Localization
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Ideal.GoingDown
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # Flat ring homomorphisms

@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.GroupTheory.CoprodI
-public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.CoprodI
 
 /-!
 

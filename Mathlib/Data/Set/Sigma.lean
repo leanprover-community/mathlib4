@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Image
 public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.Set.Image
 
 /-!
 # Sets in sigma types

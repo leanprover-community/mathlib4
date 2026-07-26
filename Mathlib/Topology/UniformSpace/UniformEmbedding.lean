@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Patrick Massot
 -/
 module
 
+public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.UniformSpace.Cauchy
 public import Mathlib.Topology.UniformSpace.Separation
-public import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Uniform embeddings of uniform spaces.

@@ -5,8 +5,8 @@ Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Data.Nat.Basic
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Compare
 public import Mathlib.Order.Max

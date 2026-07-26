@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 module
 
-public import Mathlib.Data.Set.Function
 public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.Data.Set.Function
 
 /-!
 # Reflexive Quivers

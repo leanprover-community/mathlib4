@@ -5,10 +5,10 @@ Authors: Anatole Dedecker
 -/
 module
 
+public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Connected.LocallyPathConnected
-public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Locally convex topological modules

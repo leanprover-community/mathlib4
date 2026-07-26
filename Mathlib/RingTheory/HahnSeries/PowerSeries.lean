@@ -5,10 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.RingTheory.HahnSeries.Multiplication
-public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.Data.Finsupp.PWO
+public import Mathlib.RingTheory.HahnSeries.Multiplication
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Comparison between Hahn series and power series

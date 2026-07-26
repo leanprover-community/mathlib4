@@ -5,10 +5,10 @@ Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
 module
 
-public import Mathlib.Logic.UnivLE
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Types.ColimitType
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.Logic.UnivLE
 
 /-!
 # Colimits in the category of types

@@ -7,9 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
-public import Mathlib.RingTheory.Ideal.Height
 
 /-!
 # Basic properties of schemes

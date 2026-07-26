@@ -5,11 +5,11 @@ Authors: Kenny Lau, Eric Wieser, Antoine Chambert-Loir, María-Inés de Frutos-F
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.GroupWithZero.Invertible
-public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Trivial Square-Zero Extension

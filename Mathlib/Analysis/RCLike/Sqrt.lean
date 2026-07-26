@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Square root on `RCLike`

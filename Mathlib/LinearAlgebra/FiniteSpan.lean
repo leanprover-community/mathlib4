@@ -5,9 +5,9 @@ Authors: Oliver Nash, Deepro Choudhury
 -/
 module
 
+public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.LinearAlgebra.Span.Defs
-public import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
 

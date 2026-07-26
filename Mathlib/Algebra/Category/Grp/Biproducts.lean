@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!

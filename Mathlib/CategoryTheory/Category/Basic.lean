@@ -7,9 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Combinatorics.Quiver.Basic
-public import Mathlib.Tactic.PPWithUniv
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.TryThis
 
 /-!

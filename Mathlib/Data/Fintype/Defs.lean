@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.Filter
 public import Mathlib.Order.Lex
 
 /-!

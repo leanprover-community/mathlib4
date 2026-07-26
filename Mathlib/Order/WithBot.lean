@@ -5,14 +5,14 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Nontrivial.Basic
-public import Mathlib.Order.TypeTags
+public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.TypeTags
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Lift
-public import Mathlib.Data.Option.Basic
-public import Mathlib.Order.Lattice
-public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # `WithBot`, `WithTop`

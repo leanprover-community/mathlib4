@@ -5,8 +5,8 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
 

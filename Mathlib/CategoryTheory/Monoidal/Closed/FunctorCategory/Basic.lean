@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 public import Mathlib.CategoryTheory.Enriched.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 
 /-!
 # Functor categories are monoidal closed

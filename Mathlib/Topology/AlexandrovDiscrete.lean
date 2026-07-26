@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Set.Image
 public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Compactness.NhdsKer
+public import Mathlib.Topology.Inseparable
 
 /-!
 # Alexandrov-discrete topological spaces

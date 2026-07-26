@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Topology.Category.TopCat.Opens
 
 /-!
 # The category of open neighborhoods of a point

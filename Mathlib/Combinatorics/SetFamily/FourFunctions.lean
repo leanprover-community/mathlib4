@@ -13,9 +13,9 @@ public import Mathlib.Data.Finset.Sups
 public import Mathlib.Order.Birkhoff
 public import Mathlib.Order.Booleanisation
 public import Mathlib.Order.Sublattice
+public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries

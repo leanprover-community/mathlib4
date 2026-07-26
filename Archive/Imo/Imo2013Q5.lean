@@ -7,8 +7,8 @@ import Mathlib.Algebra.Order.Archimedean.Real.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Positivity
 
 /-!
 # IMO 2013 Q5

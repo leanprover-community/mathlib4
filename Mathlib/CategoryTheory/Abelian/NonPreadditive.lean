@@ -5,10 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.CategoryTheory.Abelian.Images
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
-public import Mathlib.CategoryTheory.Abelian.Images
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!

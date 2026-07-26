@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Group.Indicator
-public import Mathlib.MeasureTheory.OuterMeasure.Basic
 public import Mathlib.Data.FunLike.Module
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
 /-!
 # Operations on outer measures

@@ -6,9 +6,9 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.Order.SuccPred.IntervalSucc
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Order.SuccPred.IntervalSucc
 
 /-!
 # Absolutely Continuous Functions

@@ -9,12 +9,12 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Int.Basic
-public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Submonoids: membership criteria

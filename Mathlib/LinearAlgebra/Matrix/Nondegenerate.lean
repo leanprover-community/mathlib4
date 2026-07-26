@@ -6,8 +6,8 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Data.Matrix.Basic
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Matrices associated with non-degenerate bilinear forms

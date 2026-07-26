@@ -6,9 +6,9 @@ Authors: Yakov Pechersky, David Loeffler
 module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Group
 public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!

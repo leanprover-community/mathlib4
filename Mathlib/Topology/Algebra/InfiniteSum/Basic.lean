@@ -9,9 +9,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Order.Filter.AtTopBot.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Order.Filter.AtTopBot.BigOperators
 
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 

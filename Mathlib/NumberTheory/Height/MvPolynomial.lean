@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Homogenize
 public import Mathlib.NumberTheory.Height.Basic
 
+import all Mathlib.NumberTheory.Height.Basic
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
-import all Mathlib.NumberTheory.Height.Basic
 
 /-!
 # Height bounds for linear and polynomial maps

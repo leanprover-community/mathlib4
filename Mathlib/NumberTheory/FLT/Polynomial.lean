@@ -5,8 +5,8 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.RingTheory.Polynomial.Content

@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
-public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
+public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 
 /-!
 # Morphisms to K-injective complexes in the derived category

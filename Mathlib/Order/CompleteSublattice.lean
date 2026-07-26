@@ -6,8 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Data.Set.Functor
-public import Mathlib.Order.Sublattice
 public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Order.Sublattice
 
 /-!
 # Complete Sublattices

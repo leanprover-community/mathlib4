@@ -8,8 +8,8 @@ module
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Separation.Connected
+public import Mathlib.Topology.Separation.Profinite
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
 

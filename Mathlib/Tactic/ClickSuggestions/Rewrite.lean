@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Mathlib.Control.Basic
+public import Mathlib.Tactic.ClickSuggestions.SectionState
 
 /-!
 # Support for `rw` suggestions in `#click_suggestions`

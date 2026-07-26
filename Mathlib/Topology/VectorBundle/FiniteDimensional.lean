@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 module
-public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.Topology.VectorBundle.Basic
 
 /-! # Finite-rank vector bundles -/
 

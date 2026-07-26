@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Meta.Match.MatcherInfo
+public import Mathlib.Init
 
 /-!
 # Additional functions on `Lean.Name`.

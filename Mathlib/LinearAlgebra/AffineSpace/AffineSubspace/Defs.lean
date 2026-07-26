@@ -5,9 +5,9 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Order.Atoms
-public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Atoms
 
 /-!
 # Affine spaces

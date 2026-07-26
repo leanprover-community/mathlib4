@@ -5,10 +5,10 @@ Authors: Chris Birkbeck
 -/
 module
 
+public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Order.Interval.Finset.Box
-public import Mathlib.Analysis.Asymptotics.Defs
 
 /-!
 # Summability of Eisenstein series

@@ -5,9 +5,9 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.NumberTheory.Padics.MahlerBasis
 public import Mathlib.Topology.Algebra.Monoid.AddChar
-public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Additive characters of `ℤ_[p]`

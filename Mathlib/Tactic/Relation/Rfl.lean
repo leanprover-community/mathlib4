@@ -5,8 +5,8 @@ Authors: Newell Jensen
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.Rfl
+public import Mathlib.Init
 
 /-!
 # `Lean.MVarId.liftReflToEq`

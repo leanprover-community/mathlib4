@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.Algebra.Module.SnakeLemma
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Base change along flat modules preserves equalizers

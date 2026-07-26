@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Data.Finite.Prod
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 

@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Lemma about subtraction in ordered monoids with a top element adjoined.

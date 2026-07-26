@@ -5,10 +5,10 @@ Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Basic Theorems About Bitvectors

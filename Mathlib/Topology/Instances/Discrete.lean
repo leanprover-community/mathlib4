@@ -5,8 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Instances related to the discrete topology

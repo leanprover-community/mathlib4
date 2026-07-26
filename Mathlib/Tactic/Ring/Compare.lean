@@ -5,9 +5,9 @@ Authors: Heather Macbeth
 -/
 module
 
-import all Mathlib.Tactic.NormNum.Ineq
 public import Mathlib.Tactic.NormNum.Ineq
 public import Mathlib.Tactic.Ring.Basic
+import all Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # Automation for proving inequalities in commutative (semi)rings

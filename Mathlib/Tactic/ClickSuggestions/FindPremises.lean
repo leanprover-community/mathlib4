@@ -5,12 +5,12 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.Rewrite
-public import Mathlib.Tactic.ClickSuggestions.GRewrite
-public import Mathlib.Tactic.ClickSuggestions.Apply
-public import Mathlib.Tactic.ClickSuggestions.ApplyAt
 public meta import Mathlib.Lean.FoldEnvironment
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public import Mathlib.Tactic.ClickSuggestions.Apply
+public import Mathlib.Tactic.ClickSuggestions.ApplyAt
+public import Mathlib.Tactic.ClickSuggestions.GRewrite
+public import Mathlib.Tactic.ClickSuggestions.Rewrite
 
 /-!
 # Generating a shortlist of candidate lemmas for suggestions

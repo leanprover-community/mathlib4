@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Sharvil Kesarwani
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Complemented subspaces of Banach spaces

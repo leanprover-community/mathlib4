@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public meta import Mathlib.Data.Multiset.Defs
+public meta import Mathlib.Util.Qq
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.Multiset.Range
-public meta import Mathlib.Util.Qq
-public meta import Mathlib.Data.Multiset.Defs
 
 /-!
 # Construct a sorted list from a multiset.

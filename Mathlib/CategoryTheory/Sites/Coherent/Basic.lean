@@ -5,9 +5,9 @@ Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 module
 
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Sites.Coverage
-public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # The Coherent, Regular and Extensive Grothendieck Topologies

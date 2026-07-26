@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.Alternating.Curry
-public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.Data.Fin.Parity
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Uncurrying alternating maps

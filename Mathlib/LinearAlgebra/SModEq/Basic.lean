@@ -5,11 +5,11 @@ Authors: Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # modular equivalence for submodule

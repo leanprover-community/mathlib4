@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-public import Mathlib.CategoryTheory.Triangulated.Functor
 public import Mathlib.CategoryTheory.Shift.Localization
+public import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-! # Localization of triangulated categories
 

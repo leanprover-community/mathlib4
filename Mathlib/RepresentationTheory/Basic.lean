@@ -5,8 +5,8 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.LinearAlgebra.Contraction
 
 /-!
 # Monoid representations

@@ -5,9 +5,9 @@ Authors: Yaël Dillies, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Ray
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Strictly convex spaces

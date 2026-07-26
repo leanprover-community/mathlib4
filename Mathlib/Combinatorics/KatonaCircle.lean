@@ -6,8 +6,8 @@ Authors: Ching-Tsun Chou, Chris Wong, Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Density
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Nat.Choose.Cast
 
 /-!

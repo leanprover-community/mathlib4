@@ -5,8 +5,8 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.Algebra.Category.Ring.Epi
+public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!

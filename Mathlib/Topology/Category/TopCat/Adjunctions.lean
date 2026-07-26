@@ -5,8 +5,8 @@ Authors: Patrick Massot, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Adjunctions regarding the category of topological spaces

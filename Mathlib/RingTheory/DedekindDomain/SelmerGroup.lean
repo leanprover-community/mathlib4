@@ -6,9 +6,9 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Algebra.Group.Int.TypeTags
 public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.Algebra.Group.Int.TypeTags
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains

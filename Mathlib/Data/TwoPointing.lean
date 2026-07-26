@@ -5,10 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Logic.Nontrivial.Defs
-public import Mathlib.Logic.Nonempty
-public import Mathlib.Tactic.Simps.Basic
 public import Batteries.Logic
+public import Mathlib.Logic.Nonempty
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Two-pointings

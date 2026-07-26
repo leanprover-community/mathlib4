@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Interaction of separation properties with connectedness properties

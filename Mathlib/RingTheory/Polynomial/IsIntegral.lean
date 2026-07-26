@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
+public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
 

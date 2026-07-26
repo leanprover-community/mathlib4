@@ -6,8 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 
 /-!
 # Basis of cotangent space can be realized as a presentation

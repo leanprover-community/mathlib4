@@ -6,9 +6,9 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.BoundedOrder.Monotone
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
-public import Mathlib.Order.BoundedOrder.Monotone
 public import Mathlib.Order.Interval.Set.Basic
 
 /-!

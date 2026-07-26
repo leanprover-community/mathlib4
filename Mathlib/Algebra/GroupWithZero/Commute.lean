@@ -5,8 +5,8 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Tactic.Nontriviality
 
 /-!

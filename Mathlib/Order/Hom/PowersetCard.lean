@@ -5,8 +5,8 @@ Authors: Daniel Morrison
 -/
 module
 
-public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!

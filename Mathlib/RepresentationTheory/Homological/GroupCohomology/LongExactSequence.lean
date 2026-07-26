@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 /-!
 # Long exact sequence in group cohomology

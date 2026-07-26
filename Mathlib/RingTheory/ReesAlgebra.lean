@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 

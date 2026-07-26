@@ -5,11 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.PiNat
-public import Mathlib.Topology.MetricSpace.UniformConvergence
-public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Topology.MetricSpace.Contracting
+public import Mathlib.Topology.MetricSpace.PiNat
+public import Mathlib.Topology.MetricSpace.UniformConvergence
 
 /-!
 # Non-primitive corecursion for sequences

@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # External product of diagrams in a monoidal category

@@ -6,8 +6,8 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
 # I-Primary Components of modules

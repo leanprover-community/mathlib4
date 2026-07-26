@@ -5,8 +5,8 @@ Authors: Kim Morrison, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.Grp.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.LinearAlgebra.DFinsupp
 

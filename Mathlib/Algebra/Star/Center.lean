@@ -5,9 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Star.Pointwise
-public import Mathlib.Algebra.Group.Center
 
 /-! # `Set.center`, `Set.centralizer` and the `star` operation -/
 

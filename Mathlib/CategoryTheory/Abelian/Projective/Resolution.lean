@@ -5,8 +5,8 @@ Authors: Markus Himmel, Kim Morrison, Jakob von Raumer, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!

@@ -5,8 +5,8 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.EMetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces

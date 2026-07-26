@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Use the `elementwise` attribute to create applied versions of lemmas.

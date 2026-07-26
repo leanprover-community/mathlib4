@@ -8,8 +8,8 @@ module
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 public import Mathlib.NumberTheory.ClassNumber.Finite
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Class numbers of number fields

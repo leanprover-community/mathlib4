@@ -5,11 +5,11 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 -/
 module
 
+public meta import Lean.Elab.Tactic.Meta
+public meta import Lean.Elab.Tactic.SolveByElim
 public meta import Qq.MetaM
 public import Mathlib.Logic.Nontrivial.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Attr.Register -- shake: keep (tactic dependency)
-public meta import Lean.Elab.Tactic.Meta
-public meta import Lean.Elab.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 

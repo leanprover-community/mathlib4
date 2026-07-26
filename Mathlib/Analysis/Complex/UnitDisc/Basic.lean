@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Complex.Circle
-public import Mathlib.Analysis.Normed.Module.Ball.Action
 public import Mathlib.Algebra.Group.NatPowAssoc
 public import Mathlib.Algebra.Group.PNatPowAssoc
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Normed.Module.Ball.Action
 
 /-!
 # Poincaré disc

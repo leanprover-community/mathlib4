@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Yoneda
-public import Mathlib.CategoryTheory.Presentable.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
 # Colimits of presentable objects

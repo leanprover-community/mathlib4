@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Tactic.MinImports
 
 /-!

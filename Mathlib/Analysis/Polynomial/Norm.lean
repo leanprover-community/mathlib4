@@ -5,9 +5,9 @@ Authors: Kevin H. Wilson
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.GaussNorm
-public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.RingTheory.Polynomial.GaussNorm
 
 
 /-!

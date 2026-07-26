@@ -5,11 +5,11 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Units
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Prime elements in rings

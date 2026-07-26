@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Convex.PartitionOfUnity
 public import Mathlib.Topology.EMetricSpace.Paracompact
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Analysis.Convex.PartitionOfUnity
 
 /-!
 # Lemmas about (e)metric spaces that need partition of unity

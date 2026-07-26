@@ -3,9 +3,9 @@ Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
+import Archive.Kuratowski
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Real.Lemmas
-import Archive.Kuratowski
 
 /-!
 # Kuratowski's closure-complement theorem is sharp

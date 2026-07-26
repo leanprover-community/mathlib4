@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.ENNReal.Inv
 public import Mathlib.Data.EReal.Operations
-public import Mathlib.Data.Sign.Basic
 public import Mathlib.Data.Nat.Cast.Order.Field
+public import Mathlib.Data.Sign.Basic
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers

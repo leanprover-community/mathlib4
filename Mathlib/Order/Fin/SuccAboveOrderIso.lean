@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Fin.Basic
 public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Order.Fin.Basic
 
 /-!
 # The order isomorphism `Fin (n + 1) ≃o {i}ᶜ`

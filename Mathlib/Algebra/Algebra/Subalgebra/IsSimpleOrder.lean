@@ -5,8 +5,8 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!

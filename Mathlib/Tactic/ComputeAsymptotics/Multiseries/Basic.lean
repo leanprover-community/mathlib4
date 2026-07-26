@@ -5,8 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 
 /-!
 # Basic constructions for multiseries

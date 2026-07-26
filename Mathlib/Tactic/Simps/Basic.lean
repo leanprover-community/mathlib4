@@ -5,13 +5,13 @@ Authors: Floris van Doorn
 -/
 module
 
-public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
 public meta import Lean.Elab.ConfigEval
+public meta import Lean.Elab.Tactic.Simp
 public meta import Mathlib.Lean.Expr.Basic
-public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.Translate.Attributes
+public import Mathlib.Util.AddRelatedDecl
 
 /-!
 # Simps attribute

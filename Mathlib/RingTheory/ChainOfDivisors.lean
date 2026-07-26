@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Hom.Bounded
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 /-!
 
 # Chains of divisors

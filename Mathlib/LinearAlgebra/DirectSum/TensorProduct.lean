@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 /-!
 # Tensor products of direct sums
 

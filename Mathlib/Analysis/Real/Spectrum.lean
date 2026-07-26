@@ -6,8 +6,8 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-public import Mathlib.Topology.Instances.NNReal.Lemmas
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Topology.Instances.NNReal.Lemmas
 
 /-!
 # Some lemmas on the spectrum and quasispectrum of elements and positivity

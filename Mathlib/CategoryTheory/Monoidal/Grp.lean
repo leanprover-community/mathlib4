@@ -5,10 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
+public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 
 /-!
 # The category of groups in a Cartesian monoidal category

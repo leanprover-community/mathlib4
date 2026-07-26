@@ -5,9 +5,9 @@ Authors: Wenrong Zou
 -/
 module
 
+public import Mathlib.Algebra.CharP.Frobenius
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Basic
-public import Mathlib.Algebra.CharP.Frobenius
 
 /-!
 # Results on `MvPolynomial.expand`

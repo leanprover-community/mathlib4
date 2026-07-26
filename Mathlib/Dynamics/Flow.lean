@@ -5,9 +5,9 @@ Authors: Jean Lo
 -/
 module
 
-public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Flows and invariant sets

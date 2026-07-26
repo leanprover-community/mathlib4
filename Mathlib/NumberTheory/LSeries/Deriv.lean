@@ -5,10 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.NumberTheory.LSeries.Convergence
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.Analysis.Complex.HalfPlane
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.NumberTheory.LSeries.Convergence
 
 /-!
 # Differentiability and derivatives of L-series

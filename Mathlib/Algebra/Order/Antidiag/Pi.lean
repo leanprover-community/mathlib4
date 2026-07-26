@@ -6,10 +6,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
 -/
 module
 
+public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
-public import Mathlib.Algebra.Group.Pi.Lemmas
 
 /-!
 # Antidiagonal of functions as finsets

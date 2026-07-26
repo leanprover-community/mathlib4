@@ -6,8 +6,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public meta import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Tactic.Rify
 public import Qq
 

@@ -5,9 +5,9 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Process.Adapted
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
+public import Mathlib.Probability.Process.Adapted
 
 /-!
 # Stopping times, stopped processes and stopped values

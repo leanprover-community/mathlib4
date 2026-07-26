@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
+public import Mathlib.CategoryTheory.Subfunctor.Basic
 
 /-!
 # Sieves attached to subpresheaves

@@ -5,8 +5,8 @@ Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
 public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Data.Finite.Defs
 
 /-!
 

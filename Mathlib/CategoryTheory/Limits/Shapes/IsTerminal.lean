@@ -5,10 +5,10 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.PEmpty
-public import Mathlib.CategoryTheory.Limits.IsLimit
-public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.CategoryTheory.PEmpty
 
 /-!
 # Initial and terminal objects in a category.

@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
-public import Mathlib.Data.Rat.Defs
 public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Rat.Defs
 
 /-!
 # The rational numbers possess a linear order

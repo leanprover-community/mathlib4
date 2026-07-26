@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 module
 
+public import Mathlib.Data.FunLike.Module
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
-public import Mathlib.Data.FunLike.Module
 
 /-!
 # Group seminorms

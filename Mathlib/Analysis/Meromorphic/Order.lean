@@ -5,8 +5,8 @@ Authors: David Loeffler, Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
 # Orders of Meromorphic Functions

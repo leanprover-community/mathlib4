@@ -5,9 +5,9 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Sylow
-public import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # The Transfer Homomorphism

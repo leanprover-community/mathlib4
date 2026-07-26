@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 -/
 module
 
-public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Basic
 
 /-!
 # Birkhoff average

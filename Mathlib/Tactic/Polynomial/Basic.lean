@@ -8,8 +8,8 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Coeff
-public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Algebra.AlgebraNF
+public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Polynomial.Core
 
 /-!

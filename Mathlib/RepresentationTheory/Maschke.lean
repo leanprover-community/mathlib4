@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.RepresentationTheory.Semisimple
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Maschke's theorem

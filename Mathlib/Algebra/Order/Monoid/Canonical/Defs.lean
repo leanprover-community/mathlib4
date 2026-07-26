@@ -6,9 +6,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuya
 module
 
 public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.NeZero
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.NeZero
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Interval.Set.Defs
 

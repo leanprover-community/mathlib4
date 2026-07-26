@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Notation.Prod
-public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Dependent functions with finite support

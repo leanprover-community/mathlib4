@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Order intervals

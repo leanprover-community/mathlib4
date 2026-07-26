@@ -6,8 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Analytic.Uniqueness
-public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Analysis.Real.Cardinality

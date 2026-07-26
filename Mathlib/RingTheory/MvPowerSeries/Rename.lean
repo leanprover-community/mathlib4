@@ -5,9 +5,9 @@ Authors: Riccardo Brasca, Bingyu Xia
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
-public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Renaming variables of power series

@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 public import Mathlib.Analysis.SpecialFunctions.PolarCoord
-public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!

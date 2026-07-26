@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.ModelTheory.ElementarySubstructures
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+public import Mathlib.ModelTheory.ElementarySubstructures
 
 /-!
 # Bundled First-Order Structures

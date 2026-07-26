@@ -5,8 +5,8 @@ Authors: Pablo Donato
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
 # Subobjects presheaf

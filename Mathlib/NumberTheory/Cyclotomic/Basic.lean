@@ -5,10 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.Galois.Abelian
+public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Cyclotomic extensions

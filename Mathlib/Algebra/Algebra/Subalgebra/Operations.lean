@@ -6,8 +6,8 @@ Authors: Andrew Yang, Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Algebra.Ring.Action.Submonoid
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # More operations on subalgebras

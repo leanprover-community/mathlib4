@@ -5,8 +5,8 @@ Authors: Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
 
 import Mathlib.Tactic.ApplyFun
 

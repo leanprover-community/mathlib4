@@ -6,10 +6,10 @@ Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.Topology.Compactification.StoneCech
-public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.Category.CompHausLike.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # The category of Compact Hausdorff Spaces

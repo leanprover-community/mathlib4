@@ -5,9 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
 public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!

@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
 # Tensor power of a semimodule over a commutative semiring

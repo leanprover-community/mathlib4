@@ -6,11 +6,11 @@ Authors: Yuval Filmus
 
 module
 
+public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
-public import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Algebra.Polynomial.Sequence
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss

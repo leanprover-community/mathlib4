@@ -5,9 +5,9 @@ Authors: David Loeffler, Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.ZMod
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+public import Mathlib.NumberTheory.LSeries.ZMod
 
 /-!
 # Analytic continuation of Dirichlet L-functions

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+public import Mathlib.RingTheory.RingHom.FinitePresentation
 
 /-!
 # Descent of finiteness conditions under faithfully flat maps

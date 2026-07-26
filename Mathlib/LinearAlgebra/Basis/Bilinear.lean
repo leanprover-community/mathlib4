@@ -5,8 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Lemmas about bilinear maps with a basis over each argument

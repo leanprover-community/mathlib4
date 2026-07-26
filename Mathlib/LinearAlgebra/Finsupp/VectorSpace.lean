@@ -10,8 +10,8 @@ public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Finsupp.Span
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Projection
 
 /-!

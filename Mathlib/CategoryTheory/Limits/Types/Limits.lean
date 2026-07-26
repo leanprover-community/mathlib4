@@ -5,9 +5,9 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.Logic.UnivLE
-public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.Logic.UnivLE
 
 /-!
 # Limits in the category of types.

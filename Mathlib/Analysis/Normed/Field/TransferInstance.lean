@@ -5,8 +5,8 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Field.TransferInstance
+public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded

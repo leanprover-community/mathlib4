@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Algebra.RestrictScalars
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
 # Additional typeclass for modules over an algebra

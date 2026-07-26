@@ -6,9 +6,9 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 module
 
 public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Analysis.Complex.Norm
 public import Mathlib.Algebra.Order.CauSeq.BigOperators
 public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.Complex.Norm
 public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Tactic.NormNum.BigOperators

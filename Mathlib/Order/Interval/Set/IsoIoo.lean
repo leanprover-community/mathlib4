@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Tactic.FieldSimp
 
 /-!

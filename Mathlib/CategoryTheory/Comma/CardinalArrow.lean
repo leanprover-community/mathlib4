@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 

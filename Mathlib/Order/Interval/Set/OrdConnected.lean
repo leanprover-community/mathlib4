@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.Antichain
+public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.SetNotation
 
 /-!

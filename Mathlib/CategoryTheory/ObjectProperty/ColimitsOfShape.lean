@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Limits.Presentation
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
-public import Mathlib.CategoryTheory.Limits.Presentation
+public import Mathlib.CategoryTheory.ObjectProperty.Small
 
 import Mathlib.CategoryTheory.Adjunction.Limits
 

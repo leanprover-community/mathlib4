@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.Ring.Basic
-public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Category of topological commutative rings

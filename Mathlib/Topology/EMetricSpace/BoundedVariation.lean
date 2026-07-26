@@ -5,14 +5,14 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Data.Finset.Sort
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Finiteness
-public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Order.LeftRightLim
 public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Functions of bounded variation

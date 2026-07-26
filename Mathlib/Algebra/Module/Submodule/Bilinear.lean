@@ -5,8 +5,8 @@ Authors: Kenny Lau, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Images of pairs of submodules under bilinear maps

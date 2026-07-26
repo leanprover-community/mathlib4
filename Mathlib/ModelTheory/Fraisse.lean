@@ -5,10 +5,10 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.ModelTheory.Bundled
 public import Mathlib.ModelTheory.FinitelyGenerated
 public import Mathlib.ModelTheory.PartialEquiv
-public import Mathlib.ModelTheory.Bundled
-public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Fraïssé Classes and Fraïssé Limits

@@ -5,8 +5,8 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 public import Mathlib.RingTheory.PrincipalIdealDomain

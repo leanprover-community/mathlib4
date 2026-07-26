@@ -6,8 +6,8 @@ Authors: Chris Hughes, Antoine Chambert-Loir
 module
 
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Polynomial.Content
 
 /-! # The Eisenstein criterion
 

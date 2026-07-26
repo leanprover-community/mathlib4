@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
 public import Mathlib.CategoryTheory.GuitartExact.KanExtension
 public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 /-!
 # Existence of pointwise right derived functors via derivability structures

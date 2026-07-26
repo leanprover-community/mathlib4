@@ -5,9 +5,9 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # The Hurwitz zeta function

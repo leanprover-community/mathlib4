@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Products.Basic
-public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Products.Bifunctor
 
 /-!

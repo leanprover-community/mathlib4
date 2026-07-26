@@ -5,11 +5,11 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 module
 
-public import Mathlib.NumberTheory.Divisors
-public import Mathlib.NumberTheory.Padics.PadicVal.Defs
 public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
 /-!
 # `p`-adic Valuation

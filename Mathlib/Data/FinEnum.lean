@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.List.ProdSigma
 public import Mathlib.Data.List.Pi
+public import Mathlib.Data.List.ProdSigma
 
 /-!
 Type class for finitely enumerable types. The property is stronger

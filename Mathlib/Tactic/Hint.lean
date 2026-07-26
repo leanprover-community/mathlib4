@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Lean.Meta.Tactic.TryThis
 public meta import Batteries.Control.Nondet.Basic
 public import Batteries.Linter.UnreachableTactic
+public import Lean.Meta.Tactic.TryThis
 public import Mathlib.Tactic.Basic
 
 /-!

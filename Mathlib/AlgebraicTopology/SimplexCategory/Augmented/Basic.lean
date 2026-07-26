@@ -5,9 +5,9 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.WithTerminal.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
 
 /-!
 # The Augmented simplex category
