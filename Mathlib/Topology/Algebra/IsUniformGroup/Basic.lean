@@ -86,7 +86,8 @@ variable {G : Type*} [Group G] [UniformSpace G] [IsRightUniformGroup G]
 /-- A locally compact right-uniform group is complete. -/
 @[to_additive
 /-- A locally compact right-uniform additive group is complete. -/]
-instance (priority := 100) completeSpace_of_weaklyLocallyCompactSpace
+-- not an instance for performance reasons, see benchmark on PR #42117
+theorem completeSpace_of_weaklyLocallyCompactSpace
     [WeaklyLocallyCompactSpace G] : CompleteSpace G where
   complete {f} hf := by
     open scoped RightActions in
@@ -109,7 +110,8 @@ variable {G : Type*} [Group G] [UniformSpace G] [IsLeftUniformGroup G]
 /-- A locally compact left-uniform group is complete. -/
 @[to_additive
 /-- A locally compact left-uniform additive group is complete. -/]
-instance (priority := 100) completeSpace_of_weaklyLocallyCompactSpace
+-- not an instance for performance reasons, see benchmark on PR #42117
+theorem completeSpace_of_weaklyLocallyCompactSpace
     [WeaklyLocallyCompactSpace G] : CompleteSpace G where
   complete {f} hf := by
     open scoped RightActions in
