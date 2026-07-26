@@ -133,8 +133,6 @@ end CategoryOfElements
 
 namespace Functor
 
-attribute [local implicit_reducible] Quiver.Hom.op Quiver.Hom.unop
-
 /-- An initial object in the category `F.Elements` of a covariant functor defines a
 corepresentation for that functor. -/
 def CorepresentableBy.ofIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsInitial E) :
