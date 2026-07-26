@@ -245,6 +245,8 @@ lemma affineCombination (hcov : IsCovariantDerivativeOn F cov s)
     simp [hcov.leibniz hσ hφ, hcov'.leibniz hσ hφ]
     module
 
+@[deprecated (since := "2026-07-26")] alias affine_combination := affineCombination
+
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
 lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination [IsManifold I 1 M]
     [VectorBundle 𝕜 F V]
@@ -257,6 +259,10 @@ lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination [IsManifold I 1 M]
     apply ContMDiffOn.add_section
     · exact hf.smul_section <| Hcov.contMDiff hσ
     · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hσ
+
+@[deprecated (since := "2026-07-26")]
+alias _root_.ContMDiffCovariantDerivativeOn.affine_combination :=
+  _root_.ContMDiffCovariantDerivativeOn.affineCombination
 
 /-- A finite affine combination of covariant derivatives is a covariant derivative. -/
 lemma finiteAffineCombination {ι : Type*} {s : Finset ι}
@@ -279,6 +285,8 @@ lemma finiteAffineCombination {ι : Type*} {s : Finset ι}
           rw [Finset.sum_add_distrib, Finset.smul_sum, Finset.sum_apply, Finset.sum_smul]
       _ = g x • ∑ i ∈ s, f i x • cov i σ x + (d% g x).smulRight (σ x) := by rw [hf]; simp
 
+@[deprecated (since := "2026-07-26")] alias finite_affine_combination := finiteAffineCombination
+
 /-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
 lemma _root_.ContMDiffCovariantDerivativeOn.finiteAffineCombination [IsManifold I 1 M]
     {n : ℕ∞ω} [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
@@ -289,6 +297,10 @@ lemma _root_.ContMDiffCovariantDerivativeOn.finiteAffineCombination [IsManifold 
   contMDiff {σ} hσ := by
     simpa using ContMDiffOn.sum_section
       (fun i hi ↦ (hf i hi).smul_section <| (hcov i hi).contMDiff hσ)
+
+@[deprecated (since := "2026-07-26")]
+alias _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination :=
+  _root_.ContMDiffCovariantDerivativeOn.finiteAffineCombination
 
 /-- Adding a one-form taking values in the endomorphisms of the vector bundle to a covariant
   derivative gives a covariant derivative. -/
@@ -393,6 +405,9 @@ def ofIsCovariantDerivativeOnOfOpenCover {ι : Type*} {s : ι → Set M}
     CovariantDerivative I F V :=
   ⟨cov, hs ▸ IsCovariantDerivativeOn.iUnion hcov⟩
 
+@[deprecated (since := "2026-07-26")]
+alias of_isCovariantDerivativeOn_of_open_cover := ofIsCovariantDerivativeOnOfOpenCover
+
 @[deprecated (since := "2026-07-25")]
 alias of_isCovariantDerivativeOn_of_open_cover := ofIsCovariantDerivativeOnOfOpenCover
 
@@ -401,6 +416,9 @@ lemma ofIsCovariantDerivativeOnOfOpenCover {ι : Type*} {s : ι → Set M}
     {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i, IsCovariantDerivativeOn F cov (s i)) (hs : ⋃ i, s i = Set.univ) :
     ofIsCovariantDerivativeOnOfOpenCover hcov hs = cov := rfl
+
+@[deprecated (since := "2026-07-26")]
+alias of_isCovariantDerivativeOn_of_open_cover_coe := ofIsCovariantDerivativeOnOfOpenCover
 
 @[deprecated (since := "2026-07-25")]
 alias of_isCovariantDerivativeOn_of_open_cover_coe := ofIsCovariantDerivativeOnOfOpenCover
@@ -445,6 +463,8 @@ def affineCombination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
   isCovariantDerivativeOnUniv :=
     cov.isCovariantDerivativeOn.affineCombination cov'.isCovariantDerivativeOn _
 
+@[deprecated (since := "2026-07-26")] alias affine_combination := affineCombination
+
 /-- A finite affine combination of covariant derivatives as a covariant derivative. -/
 def finiteAffineCombination {ι : Type*} {s : Finset ι}
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
@@ -452,6 +472,8 @@ def finiteAffineCombination {ι : Type*} {s : Finset ι}
   toFun t x := ∑ i ∈ s, (f i x) • (cov i) t x
   isCovariantDerivativeOnUniv := IsCovariantDerivativeOn.finiteAffineCombination
     (fun i ↦ (cov i).isCovariantDerivativeOn) hf
+
+@[deprecated (since := "2026-07-26")] alias finite_affine_combination := finiteAffineCombination
 
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.affineCombination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
@@ -462,6 +484,10 @@ lemma ContMDiffCovariantDerivative.affineCombination [IsManifold I 1 M] [VectorB
   contMDiff :=
     ContMDiffCovariantDerivativeOn.affineCombination hf.contMDiffOn hcov.contMDiff hcov'.contMDiff
 
+@[deprecated (since := "2026-07-26")]
+alias ContMDiffCovariantDerivative.affine_combination :=
+  ContMDiffCovariantDerivative.affineCombination
+
 /-- An affine combination of finitely many `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivative.finiteAffineCombination [IsManifold I 1 M] [VectorBundle 𝕜 F V]
     {ι : Type*} {s : Finset ι} (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜}
@@ -471,6 +497,10 @@ lemma ContMDiffCovariantDerivative.finiteAffineCombination [IsManifold I 1 M] [V
   contMDiff :=
     ContMDiffCovariantDerivativeOn.finiteAffineCombination
       (fun i hi ↦ (hcov i hi).contMDiff) (fun i hi ↦ (hf' i hi).contMDiffOn)
+
+@[deprecated (since := "2026-07-26")]
+alias ContMDiffCovariantDerivative.finite_affine_combination :=
+  ContMDiffCovariantDerivative.finiteAffineCombination
 
 -- TODO: prove a version with a locally finite sum, and deduce that C^k connections always
 -- exist (using a partition of unity argument)

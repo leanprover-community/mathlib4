@@ -496,7 +496,7 @@ variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
 /-- The disjoint union of two charted spaces modelled on a non-empty space `H`
 is a charted space over `H`. -/
 @[instance_reducible]
-def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
+def ChartedSpace.sumOfNonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
     ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
   -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
@@ -525,7 +525,7 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
 
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
   by_cases! h : Nonempty H
-  · exact ChartedSpace.sum_of_nonempty
+  · exact ChartedSpace.sumOfNonempty
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
