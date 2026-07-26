@@ -62,26 +62,26 @@ private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
     {M : Type u} [AddCommGroup M] [Module R M] (y : M) :
     ∃ phi : Ideal.span {f^(r + n)} →ₗ[R] M,
       phi ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ = f ^ r • y := by
-        have hker0 : ideal_b f r ≤ LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
-          intro c hc
-          rw [Ideal.mem_torsionOf_iff, smul_eq_mul] at hc
-          rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, smul_smul, hc, zero_smul]
-        have hker : ideal_b f (r + n) ≤
-            LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
-          rw [hr n]
-          exact hker0
-        refine ⟨(Submodule.liftQ (ideal_b f (r + n))
-            (LinearMap.toSpanSingleton R M (f ^ r • y)) hker).comp
-          (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm.toLinearMap, ?_⟩
-        have hmk : (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
-            (⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ : Ideal.span {f^(r + n)})
-            = Submodule.Quotient.mk (1 : R) := by
-          rw [LinearEquiv.symm_apply_eq, Ideal.quotTorsionOfEquivSpanSingleton_apply_mk, one_smul]
-        change (Submodule.liftQ (ideal_b f (r + n))
-            (LinearMap.toSpanSingleton R M (f ^ r • y)) hker)
-            ((Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
-              ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩) = f ^ r • y
-        rw [hmk, Submodule.liftQ_apply, LinearMap.toSpanSingleton_apply, one_smul]
+  have hker0 : ideal_b f r ≤ LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
+    intro c hc
+    rw [Ideal.mem_torsionOf_iff, smul_eq_mul] at hc
+    rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, smul_smul, hc, zero_smul]
+  have hker : ideal_b f (r + n) ≤
+      LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
+    rw [hr n]
+    exact hker0
+  refine ⟨(Submodule.liftQ (ideal_b f (r + n))
+      (LinearMap.toSpanSingleton R M (f ^ r • y)) hker).comp
+    (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm.toLinearMap, ?_⟩
+  have hmk : (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
+      (⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ : Ideal.span {f^(r + n)})
+      = Submodule.Quotient.mk (1 : R) := by
+    rw [LinearEquiv.symm_apply_eq, Ideal.quotTorsionOfEquivSpanSingleton_apply_mk, one_smul]
+  change (Submodule.liftQ (ideal_b f (r + n))
+      (LinearMap.toSpanSingleton R M (f ^ r • y)) hker)
+      ((Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
+        ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩) = f ^ r • y
+  rw [hmk, Submodule.liftQ_apply, LinearMap.toSpanSingleton_apply, one_smul]
 
 variable [IsNoetherianRing R]
 
