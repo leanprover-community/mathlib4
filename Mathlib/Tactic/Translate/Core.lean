@@ -1275,7 +1275,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder cfg.rename
   if let some doc := cfg.doc then
-    -- TODO: `Syntax.missing` means we do not add binders to the context, 
+    -- TODO: `Syntax.missing` means we do not add binders to the context,
     -- so the docstring is going to have incomplete syntax highlighting.
     addDocString tgt Syntax.missing doc |>.run'.run'
   let nestedNames ← copyMetaData t cfg src tgt
