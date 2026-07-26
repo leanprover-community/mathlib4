@@ -6,7 +6,6 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.NumberTheory.NumberField.ClassNumber
-public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.DedekindDomain.SInteger
 
 /-!
