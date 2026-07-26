@@ -51,8 +51,8 @@ namespace Nat.Partrec
 theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
     Nat.Partrec
       (PFun.mk <| Nat.unpaired fun a m =>
-        (Nat.rfind (fun n ↦.
-          (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)) :=
+        (Nat.rfind fun n ↦.
+          (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m))).map (· + m)) :=
   Partrec₂.unpaired_part'.mpr <| by
     let G : ℕ → ℕ → Part ℕ := fun x y =>
       f (Nat.pair (Nat.unpair x).1 (y + (Nat.unpair x).2))
@@ -479,8 +479,8 @@ def eval : Code → ℕ →. ℕ
         eval cg (Nat.pair a (Nat.pair y i))
   | rfind' cf =>
     PFun.mk <| Nat.unpaired fun a m =>
-      (Nat.rfind (fun n ↦.
-        (fun x => decide (x = 0)) <$> eval cf (Nat.pair a (n + m)))).map (· + m)
+      (Nat.rfind fun n ↦.
+        (fun x => decide (x = 0)) <$> eval cf (Nat.pair a (n + m))).map (· + m)
 
 /-- Helper lemma for the evaluation of `prec` in the base case. -/
 @[simp]
