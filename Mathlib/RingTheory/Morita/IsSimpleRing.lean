@@ -55,8 +55,8 @@ lemma directSum_simple_module_over_simple_ring [IsArtinianRing A] (M : Type v) [
   exact ⟨S, inferInstance, inferInstance, hS, ι, he⟩
 
 @[stacks 074E "(2)"]
-lemma directSum_simple_module_over_simple_algebra (M : Type v) [AddCommGroup M] [Module k M]
-    [Module A M] [IsScalarTower k A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module k S)
+lemma directSum_simple_module_over_simple_algebra (M : Type v) [AddCommGroup M]
+    [Module A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module k S)
     (_ : Module A S) (_ : IsScalarTower k A S) (_ : IsSimpleModule A S) (ι : Type v),
     Nonempty (M ≃ₗ[A] (ι →₀ S)) := by
   let : IsArtinianRing A := IsArtinianRing.of_finite k A
