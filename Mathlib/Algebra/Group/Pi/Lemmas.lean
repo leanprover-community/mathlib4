@@ -13,6 +13,7 @@ public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Logic.Pairwise
 
 import Mathlib.Util.Delaborators
+public import Mathlib.Util.Delaborators
 
 /-!
 # Extra lemmas about products of monoids and groups

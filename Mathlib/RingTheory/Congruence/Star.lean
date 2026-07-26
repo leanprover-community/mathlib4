@@ -5,8 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.RingTheory.Congruence.Defs
 
 /-!
 # Helpers for working with star operators on quotients.

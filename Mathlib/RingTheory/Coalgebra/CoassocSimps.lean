@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Basic
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Tactic to reassociate comultiplication in a coalgebra

@@ -6,7 +6,6 @@ Authors: Kenny Lau, Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.RingTheory.FreeRing
 

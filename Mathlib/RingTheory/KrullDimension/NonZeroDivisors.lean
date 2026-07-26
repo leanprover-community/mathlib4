@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
-public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 

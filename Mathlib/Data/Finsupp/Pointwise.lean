@@ -6,8 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Pi
 
 /-!
 # The pointwise product on `Finsupp`.

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+public import Mathlib.Data.ENat.Lattice
 
 /-! # Multiply preprimitive actions
 

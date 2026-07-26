@@ -11,6 +11,7 @@ public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Covering
