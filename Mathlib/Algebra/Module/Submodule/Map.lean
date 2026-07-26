@@ -674,6 +674,13 @@ theorem submoduleMap_injective [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ�
     (p : Submodule R M) : Injective (f.submoduleMap p) :=
   f.toAddMonoidHom.addSubmonoidMap_injective hf _
 
+theorem submoduleMap_injective_of_injOn [RingHomSurjective σ₁₂]
+    {p : Submodule R M} {f : M →ₛₗ[σ₁₂] M₂} (hf : Set.InjOn f p) :
+    Injective (f.submoduleMap p) := by
+  intro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+  replace hxy : f x = f y := by simpa [Subtype.ext_iff] using hxy
+  aesop
+
 open Submodule
 
 theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (h p') :

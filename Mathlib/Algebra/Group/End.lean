@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
-
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms

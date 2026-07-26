@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.RingTheory.Valuation.ValuationSubring
-
+public import Mathlib.Algebra.Order.GroupWithZero.Range
 
 /-!
 # The topology on a valued ring
