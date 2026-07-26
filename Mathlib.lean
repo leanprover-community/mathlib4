@@ -6405,6 +6405,7 @@ public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
 public import Mathlib.RepresentationTheory.FiniteIndex
+public import Mathlib.RepresentationTheory.HeckeModule
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.LowDegree
@@ -6433,6 +6434,7 @@ public import Mathlib.RepresentationTheory.Rep.Basic
 public import Mathlib.RepresentationTheory.Rep.Iso
 public import Mathlib.RepresentationTheory.Rep.Res
 public import Mathlib.RepresentationTheory.Semisimple
+public import Mathlib.RepresentationTheory.Smooth.Admissible
 public import Mathlib.RepresentationTheory.Smooth.Basic
 public import Mathlib.RepresentationTheory.Smooth.Res
 public import Mathlib.RepresentationTheory.Smooth.SmRep
