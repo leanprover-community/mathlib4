@@ -24,11 +24,6 @@ for any natural number `n : ℕ`.
 
 * `suzukiGroup n`: The Suzuki group $Sz(2^{2n+1})$, defined as a subgroup of
   `GL (Fin 4) (GaloisField 2 (2 * n + 1))`.
-* `Suzuki.unipotentMatrix n a b`: The matrix $S(a, b)$.
-* `Suzuki.weylMatrix n`: The Weyl generator matrix $w$.
-* `Suzuki.unipotent n a b`: The unipotent generator as an element of `GL (Fin 4) (Fq n)`.
-* `Suzuki.weyl n`: The Weyl generator as an element of `GL (Fin 4) (Fq n)`.
-* `Suzuki.generators n`: The set of generators for $Sz(2^{2n+1})$.
 -/
 
 @[expose] public section
@@ -43,18 +38,18 @@ variable (n : ℕ)
 
 instance : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
 
-/-- The field $\mathbb{F}_q$ where $q = 2^{2n+1}$. -/
-abbrev Fq (n : ℕ) : Type := GaloisField 2 (2 * n + 1)
+/-- Notation for the field $\mathbb{F}_q$ where $q = 2^{2n+1}$. -/
+scoped notation "Fq" n:arg => GaloisField 2 (2 * n + 1)
 
-/-- The field endomorphism $\sigma(x) = x^{2^{n+1}}$ on $\mathbb{F}_{2^{2n+1}}$. -/
-def sigma (n : ℕ) (x : Fq n) : Fq n := x ^ (2 ^ (n + 1))
+/-- Notation for the field endomorphism $\sigma(x) = x^{2^{n+1}}$ on $\mathbb{F}_{2^{2n+1}}$. -/
+scoped notation "σ" n:arg x:arg => x ^ (2 ^ (n + 1))
 
 /-- The unipotent matrix generator $S(a, b)$ for $a, b \in \mathbb{F}_q$. -/
 def unipotentMatrix (n : ℕ) (a b : Fq n) : Matrix (Fin 4) (Fin 4) (Fq n) :=
   ![![1, 0, 0, 0],
     ![a, 1, 0, 0],
-    ![a * sigma n a + b, sigma n a, 1, 0],
-    ![a ^ 2 * sigma n a + a * b + sigma n b, b, a, 1]]
+    ![a * σ n a + b, σ n a, 1, 0],
+    ![a ^ 2 * σ n a + a * b + σ n b, b, a, 1]]
 
 /-- The Weyl group generator matrix $w$. -/
 def weylMatrix (n : ℕ) : Matrix (Fin 4) (Fin 4) (Fq n) :=
