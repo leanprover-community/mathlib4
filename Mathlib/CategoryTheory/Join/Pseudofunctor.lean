@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Join.Basic
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.Join.Basic
 
 /-!
 # Pseudofunctoriality of categorical joins

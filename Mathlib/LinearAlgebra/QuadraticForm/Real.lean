@@ -5,10 +5,10 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-public import Mathlib.Data.Sign.Basic
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Sign.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!
 # Real quadratic forms

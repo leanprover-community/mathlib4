@@ -9,12 +9,12 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Tactic.Monotonicity.Attr
-
-import Mathlib.Data.Set.Function
 public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Tactic.Bound.Attribute
+
+public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Util.CompileInductive
+import Mathlib.Data.Set.Function
 
 /-!
 # Lemmas on the monotone multiplication typeclasses

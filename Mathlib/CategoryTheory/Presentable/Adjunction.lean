@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-!
 # Presentable objects and adjunctions

@@ -5,13 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
-public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.CategoryTheory.Limits.VanKampen
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
-public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
 /-!
 

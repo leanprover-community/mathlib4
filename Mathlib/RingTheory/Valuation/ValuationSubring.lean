@@ -5,14 +5,14 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.ValuationRing
-public import Mathlib.RingTheory.Localization.AsSubring
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.Algebra.Ring.Action.Field
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Localization.AsSubring
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 

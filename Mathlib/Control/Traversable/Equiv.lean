@@ -5,9 +5,9 @@ Authors: Simon Hudon
 -/
 module
 
+public import Batteries.Tactic.SeqFocus
 public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Logic.Equiv.Defs
-public import Batteries.Tactic.SeqFocus
 
 import Mathlib.Tactic.Attr.Register
 

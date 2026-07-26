@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.Map
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of a set with a countable cover

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Properties of morphisms that are bounded by a cardinal

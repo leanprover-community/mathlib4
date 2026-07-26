@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Etale
-public import Mathlib.RingTheory.Finiteness.Descent
 public import Mathlib.RingTheory.Extension.Cotangent.BaseChange
+public import Mathlib.RingTheory.Finiteness.Descent
+public import Mathlib.RingTheory.RingHom.Etale
 
 /-!
 # Etale descends along faithfully flat ring maps

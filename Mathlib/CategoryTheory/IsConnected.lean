@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Jakob von Raumer
 -/
 module
 
-public import Mathlib.Data.List.Chain
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.Data.List.Chain
 
 /-!
 # Connected category

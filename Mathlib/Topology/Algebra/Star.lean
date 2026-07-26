@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.ContinuousMap.Defs
-public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Continuity of `star`

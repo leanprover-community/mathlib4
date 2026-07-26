@@ -6,9 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Data.Finsupp.Indicator
 public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Finitely supported product of finsets

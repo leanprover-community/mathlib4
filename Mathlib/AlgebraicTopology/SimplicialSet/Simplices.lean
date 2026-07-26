@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Elements
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+public import Mathlib.CategoryTheory.Elements
 
 /-!
 # The preordered type of simplices of a simplicial set

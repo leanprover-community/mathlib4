@@ -5,10 +5,10 @@ Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 module
 
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 

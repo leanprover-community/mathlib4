@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Analysis.Normed.Module.Normalize
+public import Mathlib.Geometry.Euclidean.Projection
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.

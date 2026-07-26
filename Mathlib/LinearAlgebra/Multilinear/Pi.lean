@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Multilinear.Basic
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Interactions between (dependent) functions and multilinear maps

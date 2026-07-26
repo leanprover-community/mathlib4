@@ -6,8 +6,8 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Control.Functor
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.Common
 
 /-!
 # Functors with two arguments

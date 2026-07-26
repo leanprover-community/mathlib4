@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, Richard Copley
 -/
 module
 
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 

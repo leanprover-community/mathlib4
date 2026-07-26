@@ -5,10 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
-public import Mathlib.Topology.Algebra.UniformField
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Valued fields and their completions

@@ -6,12 +6,12 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Limits.IsLimit
 public import Mathlib.CategoryTheory.FinCategory.Basic
-public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.CategoryTheory.Limits.IsLimit
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # The category of "pairwise intersections".

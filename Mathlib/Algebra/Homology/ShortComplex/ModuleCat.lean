@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 
 /-!
 # Homology and exactness of short complexes of modules

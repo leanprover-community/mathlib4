@@ -5,8 +5,8 @@ Authors: Adam Topaz, Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Category.CompHausLike.Limits
+public import Mathlib.Topology.Category.Profinite.Basic
 /-!
 
 # Explicit limits and colimits

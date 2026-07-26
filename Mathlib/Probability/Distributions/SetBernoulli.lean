@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.HasLaw
+public import Mathlib.Probability.ProductMeasure
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 

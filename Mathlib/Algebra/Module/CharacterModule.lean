@@ -5,10 +5,10 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.Grp.Injective
-public import Mathlib.Topology.Instances.AddCircle.Defs
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # Character module of a module

@@ -5,8 +5,8 @@ Authors: Ansar Azhdarov
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Zorn
 
 /-!

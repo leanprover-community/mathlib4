@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.FunLike.Basic
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa

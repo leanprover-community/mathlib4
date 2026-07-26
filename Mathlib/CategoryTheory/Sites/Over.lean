@@ -5,11 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Functor.Flat
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
+public import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-! # Localization
 

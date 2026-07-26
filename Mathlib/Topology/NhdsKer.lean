@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.NhdsSet
 public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Neighborhoods kernel of a set

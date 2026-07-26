@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Logic.Small.Basic
 public import Mathlib.Data.Countable.Defs
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # All countable types are small.

@@ -5,10 +5,10 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
 module
 
-public import Mathlib.GroupTheory.Solvable
-public import Mathlib.GroupTheory.Sylow
 public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.GroupTheory.Commutator.Finite
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 

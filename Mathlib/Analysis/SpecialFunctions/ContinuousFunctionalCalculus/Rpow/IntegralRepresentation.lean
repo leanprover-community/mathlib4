@@ -5,11 +5,11 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.RingInverseOrder
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-!
 # Integral representations of `rpow`

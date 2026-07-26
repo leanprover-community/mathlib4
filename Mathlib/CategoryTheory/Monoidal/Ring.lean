@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
 # Ring objects in cartesian monoidal categories

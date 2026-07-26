@@ -10,11 +10,11 @@ public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Order.Filter.Ker
 public import Mathlib.Order.Filter.Pi
 public import Mathlib.Order.Filter.Prod
-public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Heyting.Boundary
 
 /-!

@@ -6,8 +6,8 @@ Authors: Attila Gáspár
 module
 
 public import Mathlib.Algebra.Torsor.Basic
-public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Topological torsors of groups

@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Equiv
 public import Lean.PrettyPrinter.Delaborator.Basic
+public import Mathlib.Algebra.Algebra.Equiv
 
 /-!
 # Notation for Galois group

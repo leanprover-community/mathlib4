@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.MorphismProperty.Local
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
-public import Mathlib.CategoryTheory.MorphismProperty.Local
 
 /-!
 # Covers in subcanonical topologies

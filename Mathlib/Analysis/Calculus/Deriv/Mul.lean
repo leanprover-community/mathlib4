@@ -6,9 +6,9 @@ Authors: Gabriel Ebner, Anatole Dedecker, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Support
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
 # Derivative of `f x * g x`

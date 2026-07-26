@@ -6,8 +6,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Anatole Dedec
 module
 
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
-public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-! # Linear topologies on modules and rings
 

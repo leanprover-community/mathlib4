@@ -5,9 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Data.NNRat.Defs
-public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Algebra.Order.Nonneg.Ring
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.NNRat.Defs
 
 /-!
 # Bundled ordered algebra structures on `ℚ≥0`

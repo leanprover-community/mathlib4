@@ -6,10 +6,10 @@ Authors: Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Data.Set.Function
-public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Images of intervals under `(+ d)`

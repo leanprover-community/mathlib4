@@ -12,9 +12,9 @@ public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.Polynomial.Quotient
 public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
 # Adjoining roots of polynomials

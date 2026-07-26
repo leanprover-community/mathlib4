@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Batteries.Logic
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Order.Defs.Unbundled
-public import Batteries.Logic
 
 /-!
 # Lexicographic order on a sigma type

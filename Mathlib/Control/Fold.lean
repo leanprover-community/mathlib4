@@ -5,8 +5,8 @@ Authors: Simon Hudon, Sean Leather
 -/
 module
 
-public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.CategoryTheory.Category.KleisliCat
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Types.Basic

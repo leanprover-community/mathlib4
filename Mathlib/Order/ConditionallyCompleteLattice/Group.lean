@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Conditionally complete lattices and groups.

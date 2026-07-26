@@ -5,8 +5,8 @@ Authors: Fabian Odermatt
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
 /-!
 # Simplicial homotopies of simplicial objects

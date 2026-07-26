@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Set-like fintype

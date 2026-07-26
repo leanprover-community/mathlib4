@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Ring.Action.End
 public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 

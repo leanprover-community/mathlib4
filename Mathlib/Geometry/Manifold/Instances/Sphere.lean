@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Complex.Circle
-public import Mathlib.Analysis.Normed.Module.Ball.Action
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Module.Ball.Action
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic

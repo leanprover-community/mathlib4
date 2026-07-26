@@ -6,8 +6,8 @@ Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 module
 
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import Mathlib.RingTheory.Jacobson.Radical
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
 # Jacobson radical

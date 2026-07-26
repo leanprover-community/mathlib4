@@ -5,13 +5,13 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Hom
-public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Data.Real.Star
 public import Mathlib.Topology.Algebra.Module.Star
 

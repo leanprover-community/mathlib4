@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Submonoid.Defs
 
 /-!
 # Actions by `Submonoid`s

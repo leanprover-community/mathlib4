@@ -5,8 +5,8 @@ Authors: Floris van Doorn, Hannah Scholz
 -/
 module
 
-public import Mathlib.Topology.CWComplex.Classical.Finite
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Topology.CWComplex.Classical.Finite
 
 /-!
 # Subcomplexes

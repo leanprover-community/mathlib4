@@ -8,11 +8,11 @@ module
 
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Meta.AppBuilder
 public import Lean.Meta.Match.MatcherInfo
 public import Lean.Meta.Transform
 public import Lean.Structure
+import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # Additional operations on Expr and related types

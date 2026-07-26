@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 module
 
+public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.GroupTheory.Coset.Basic
 
 /-! Results about the cardinality of a quotient module. -/
 

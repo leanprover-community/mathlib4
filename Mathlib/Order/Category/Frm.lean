@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 public import Mathlib.Order.Category.Lat
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of frames

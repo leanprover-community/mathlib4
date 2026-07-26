@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Properties on the underlying functions of morphisms of schemes

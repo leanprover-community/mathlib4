@@ -5,8 +5,8 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.Data.Set.Finite.Powerset
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Noncomputable Set Cardinality

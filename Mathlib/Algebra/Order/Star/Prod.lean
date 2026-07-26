@@ -6,8 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Algebra.Star.Prod
 public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Star.Prod
 
 /-!
 # Products of star-ordered rings

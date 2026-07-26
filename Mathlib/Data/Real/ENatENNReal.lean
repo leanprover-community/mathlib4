@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.ENNReal.Basic
+public import Mathlib.Data.ENat.Basic
 
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`

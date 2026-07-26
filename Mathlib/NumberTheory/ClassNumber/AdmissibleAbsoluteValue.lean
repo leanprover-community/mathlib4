@@ -5,9 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+public import Mathlib.Combinatorics.Pigeonhole
+public import Mathlib.Data.Real.Basic
 
 /-!
 # Admissible absolute values

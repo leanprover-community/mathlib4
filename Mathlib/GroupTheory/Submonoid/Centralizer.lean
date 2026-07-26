@@ -5,8 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.GroupTheory.Subsemigroup.Centralizer
 public import Mathlib.GroupTheory.Submonoid.Center
+public import Mathlib.GroupTheory.Subsemigroup.Centralizer
 
 /-!
 # Centralizers of magmas and monoids

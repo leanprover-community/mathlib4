@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 public import Mathlib.Analysis.PSeriesComplex
+public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!

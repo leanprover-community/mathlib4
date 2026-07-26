@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.Basic
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
 # Lifting properties in Over categories

@@ -5,8 +5,8 @@ Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Set.Finite.Basic

@@ -6,8 +6,8 @@ Authors: Andrew Yang, Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Extensive
-public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!
 

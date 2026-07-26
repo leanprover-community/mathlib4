@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
 public import ImportGraph.Lean.Environment
+public import Mathlib.Init
 
 /-!
 # A tool for finding duplicate declarations

@@ -9,12 +9,12 @@ public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.LinearAlgebra.Finsupp.LSum
-public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Tactic.FastInstance
 
 import Mathlib.Data.Finsupp.SMul
 

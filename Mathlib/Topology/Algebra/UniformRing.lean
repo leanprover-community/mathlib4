@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Topology.Algebra.GroupCompletion
-public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!

@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.Tactic.Push
 public import Mathlib.CategoryTheory.Iso
+public import Mathlib.Tactic.Push
 
 /-!
 # Simproc for canceling morphisms with their inverses

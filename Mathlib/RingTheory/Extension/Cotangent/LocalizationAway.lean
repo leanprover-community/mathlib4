@@ -6,8 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Extension.Presentation.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.Kaehler.JacobiZariski
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 
 /-!
 # Cotangent and localization away

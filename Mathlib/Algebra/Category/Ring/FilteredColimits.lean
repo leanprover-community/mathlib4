@@ -5,8 +5,8 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
+public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Ring.ULift
 
 /-!

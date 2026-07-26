@@ -6,9 +6,9 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Sites.Sheafification
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 

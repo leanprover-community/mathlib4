@@ -5,11 +5,11 @@ Authors: Christopher Hoskin
 -/
 module
 
+public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Convert
-public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Idempotent elements of a ring

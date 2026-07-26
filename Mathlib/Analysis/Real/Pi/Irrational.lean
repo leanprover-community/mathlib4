@@ -6,8 +6,8 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Topology.Algebra.Order.Floor
 public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # `Real.pi` is irrational

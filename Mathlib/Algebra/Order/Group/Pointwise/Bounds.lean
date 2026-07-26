@@ -5,11 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Order.GaloisConnection.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Upper/lower bounds in ordered monoids and groups

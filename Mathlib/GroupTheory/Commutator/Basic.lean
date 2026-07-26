@@ -6,8 +6,8 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.Algebra.Group.Commutator
-public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Commutators of Subgroups

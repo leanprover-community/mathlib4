@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.Ring.EqualizerPushout
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
-public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
+public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 
 /-!
 # Effective epimorphisms in the category of schemes

@@ -5,8 +5,8 @@ Authors: Reid Barton
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Adjunctions
 public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.Topology.Category.TopCat.Adjunctions
 
 /-!
 # Epi- and monomorphisms in `Top`

@@ -5,8 +5,8 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!

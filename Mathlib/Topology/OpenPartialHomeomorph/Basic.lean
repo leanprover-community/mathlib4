@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
-public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.PartialHomeomorph.Basic
+public import Mathlib.Topology.Sets.Opens
 /-!
 # Partial homeomorphisms: basic theory
 

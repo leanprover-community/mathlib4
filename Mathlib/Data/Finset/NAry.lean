@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Set.Lattice.Image
 
 /-!

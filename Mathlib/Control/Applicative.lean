@@ -6,8 +6,8 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Control.Functor
 public import Mathlib.Control.Basic
+public import Mathlib.Control.Functor
 
 import Mathlib.Tactic.Attr.Register
 

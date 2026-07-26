@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Geometry.Convex.Star
-public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.LinearAlgebra.AffineSpace.Combination
 
 /-!
 # Modules are convex spaces

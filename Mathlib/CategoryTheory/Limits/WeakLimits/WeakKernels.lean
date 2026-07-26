@@ -5,8 +5,8 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!

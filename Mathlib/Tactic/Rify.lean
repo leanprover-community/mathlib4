@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.Zify
 public import Mathlib.Tactic.Qify -- shake: keep (for `@[qify_simps]`)
+public import Mathlib.Tactic.Zify
 
 /-!
 # `rify` tactic
@@ -22,8 +22,8 @@ In the example below, assumption `hn` is about natural numbers, `hk` is about in
 and involves casting a natural number to `ℤ`, and the conclusion is about real numbers.
 The proof uses `rify` to lift both assumptions to `ℝ` before calling `linarith`.
 ```
+import Mathlib
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Rify
 
 example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
     (0 : ℝ) < n - k - 1 := by
@@ -65,7 +65,7 @@ variable.
 Examples:
 ```
 /--
-import Mathlib
+import Mathlib.Tactic.Rify
 
 open Real
 Here, the assumption `hn` is about natural numbers, `hk` is about integers

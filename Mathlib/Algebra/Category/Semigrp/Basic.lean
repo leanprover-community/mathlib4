@@ -5,8 +5,8 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.PEmptyInstances
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.PEmptyInstances
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 

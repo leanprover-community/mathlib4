@@ -5,9 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.Doubling
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.OpenPos
-public import Mathlib.MeasureTheory.Measure.Doubling
 
 /-!
 # The product measure

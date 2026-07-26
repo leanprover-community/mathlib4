@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Category.Quiv
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
-public import Mathlib.CategoryTheory.Category.Quiv
 
 /-!
 

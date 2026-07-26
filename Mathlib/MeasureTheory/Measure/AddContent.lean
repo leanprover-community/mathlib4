@@ -5,8 +5,8 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.MeasureTheory.SetSemiring
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
+public import Mathlib.MeasureTheory.SetSemiring
 public import Mathlib.Tactic.FinCases
 
 /-!

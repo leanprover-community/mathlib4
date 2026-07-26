@@ -11,12 +11,12 @@ public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.BinaryRec
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids

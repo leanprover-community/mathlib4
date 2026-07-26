@@ -5,8 +5,8 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!

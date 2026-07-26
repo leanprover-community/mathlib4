@@ -5,8 +5,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Pairwise
 public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Logic.Pairwise
 
 /-!
 # The set lattice

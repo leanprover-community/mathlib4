@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.OuterMeasure.AE
+public import Mathlib.MeasureTheory.OuterMeasure.Induced
 
 /-!
 # Measure spaces

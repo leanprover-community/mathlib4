@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.FGModuleCat.Limits
 public import Mathlib.Algebra.Category.FGModuleCat.Colimits
+public import Mathlib.Algebra.Category.FGModuleCat.Limits
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Basic

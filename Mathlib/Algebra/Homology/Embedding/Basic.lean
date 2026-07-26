@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Tactic.Push
 
 /-! # Embeddings of complex shapes

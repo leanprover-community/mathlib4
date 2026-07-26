@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Rel
 public import Mathlib.Order.Filter.SmallSets
-public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Basic results on uniform spaces

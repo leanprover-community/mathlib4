@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.SectionState
 public import Mathlib.Tactic.ApplyAt
+public import Mathlib.Tactic.ClickSuggestions.SectionState
 
 /-!
 # Support for `apply at` suggestions in `#click_suggestions`

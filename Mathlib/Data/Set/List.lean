@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Image
 public import Mathlib.Data.List.Defs
+public import Mathlib.Data.Set.Image
 
 /-!
 # Lemmas about `List`s and `Set.range`

@@ -5,9 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.FunLike.Basic
-public import Mathlib.Data.Finite.Prod
 
 /-!
 # Finiteness of `DFunLike` types

@@ -5,8 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.RingHom.Finite
 
 /-!

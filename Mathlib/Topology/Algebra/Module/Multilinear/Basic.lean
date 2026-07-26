@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
-public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.LinearAlgebra.Multilinear.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 /-!
 # Continuous multilinear maps

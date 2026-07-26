@@ -5,9 +5,9 @@ Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 -/
 module
 
+public import Batteries.Tactic.Congr
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Limits.Cones
-public import Batteries.Tactic.Congr
 
 /-!
 # Limits and colimits

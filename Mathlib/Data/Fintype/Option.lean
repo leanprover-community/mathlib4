@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instances for option

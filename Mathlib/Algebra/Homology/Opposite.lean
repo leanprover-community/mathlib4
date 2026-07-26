@@ -5,11 +5,11 @@ Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Opposite
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ImageToKernel
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!
 # Opposite categories of complexes

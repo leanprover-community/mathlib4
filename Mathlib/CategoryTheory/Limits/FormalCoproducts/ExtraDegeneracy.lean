@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
-public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Cech
 public import Mathlib.CategoryTheory.Limits.Constructions.WidePullbackOfTerminal
+public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Cech
 
 /-!
 # Extradegeneracy for the Cech object

@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Data.List.Pi
 public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.List.Pi
 
 /-!
 # Quotients of families indexed by a finite type

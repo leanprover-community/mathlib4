@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.PathCategory.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
 # Properties of morphisms in a path category.

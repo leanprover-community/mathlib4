@@ -6,8 +6,8 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Complete Partial Orders

@@ -5,8 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
 public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!

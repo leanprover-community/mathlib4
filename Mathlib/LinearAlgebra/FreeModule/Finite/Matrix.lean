@@ -5,8 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Finite and free modules using matrices

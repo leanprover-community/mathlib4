@@ -6,8 +6,8 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Topology.Algebra.InfiniteSum.Real
 public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.Real
 
 /-! # Multiplying two infinite sums in a normed ring
 

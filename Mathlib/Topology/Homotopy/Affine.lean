@@ -5,8 +5,8 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Topology.Homotopy.Path
 
 /-!
 # Affine homotopy between two continuous maps

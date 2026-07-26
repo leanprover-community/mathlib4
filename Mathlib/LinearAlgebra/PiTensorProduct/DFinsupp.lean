@@ -5,9 +5,9 @@ Authors: Sophie Morel, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 /-!
 # Tensor products of finitely supported functions

@@ -6,8 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.RingTheory.WittVector.Frobenius
-public import Mathlib.RingTheory.WittVector.Verschiebung
 public import Mathlib.RingTheory.WittVector.MulP
+public import Mathlib.RingTheory.WittVector.Verschiebung
 
 /-!
 ## Identities between operations on the ring of Witt vectors

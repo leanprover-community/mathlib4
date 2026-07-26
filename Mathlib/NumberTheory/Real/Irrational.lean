@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury K
 module
 
 public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Sqrt
-public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.IntervalCases

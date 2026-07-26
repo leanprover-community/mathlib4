@@ -5,10 +5,10 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 module
 
+public import Batteries.Data.Fin.Basic
 public import Mathlib.Data.Int.DivMod
 public import Mathlib.Order.Lattice
 public import Mathlib.Tactic.Common
-public import Batteries.Data.Fin.Basic
 
 /-!
 # The finite type with `n` elements

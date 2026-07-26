@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 public import Mathlib.Topology.Homotopy.Product
 

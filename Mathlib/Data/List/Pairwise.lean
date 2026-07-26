@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Batteries.Data.List.Lemmas
 public import Batteries.Data.List.Pairwise
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Logic.Relation
-public import Batteries.Data.List.Lemmas
 
 /-!
 # Pairwise relations on a list

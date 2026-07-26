@@ -5,12 +5,12 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.BernoulliPolynomials
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.Polynomial
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.PSeries
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.NumberTheory.BernoulliPolynomials
 
 /-!
 # Critical values of the Riemann zeta function

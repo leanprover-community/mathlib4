@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Order.ZornAtoms
 
 /-!

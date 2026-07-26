@@ -5,9 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.Whiskering
 
 /-!
 # Disjoint union of categories

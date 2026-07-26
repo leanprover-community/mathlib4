@@ -5,8 +5,8 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.RepresentationTheory.Homological.Resolution
 public import Mathlib.Tactic.CategoryTheory.Slice
 

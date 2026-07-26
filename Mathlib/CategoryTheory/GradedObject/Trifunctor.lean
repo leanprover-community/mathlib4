@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 public import Mathlib.CategoryTheory.Functor.Trifunctor
+public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 /-!
 # The action of trifunctors on graded objects
 

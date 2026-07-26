@@ -5,8 +5,8 @@ Authors: Wrenna Robson
 -/
 module
 
-public import Mathlib.Data.Nat.Notation
 public import Init.Data.Fin.Bitwise
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Basic operations on bounded natural numbers.

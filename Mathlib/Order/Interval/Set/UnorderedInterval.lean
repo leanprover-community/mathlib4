@@ -9,8 +9,8 @@ public import Mathlib.Data.Set.Order
 public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.Interval.Set.Image
 public import Mathlib.Order.Interval.Set.LinearOrder
-public import Mathlib.Tactic.Common
 public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.Common
 
 /-!
 # Intervals without endpoints ordering

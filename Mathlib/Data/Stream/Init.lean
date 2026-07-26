@@ -5,9 +5,9 @@ Authors: Leonardo de Moura
 -/
 module
 
+public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Stream.Defs
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Common
 
 /-!

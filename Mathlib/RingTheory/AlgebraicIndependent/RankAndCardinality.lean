@@ -9,8 +9,8 @@ public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.FieldTheory.MvRatFunc.Rank
 public import Mathlib.RingTheory.Algebraic.Cardinality
 public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
-public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
 # Cardinality of a transcendence basis

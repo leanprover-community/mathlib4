@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Quaternion
-public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Ring
 
 /-!
 # Basis on a quaternion-like algebra

@@ -5,9 +5,9 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-! # Metric connections
 

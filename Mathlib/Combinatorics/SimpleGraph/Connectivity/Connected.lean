@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Operations
 
 /-!
 ## Main definitions

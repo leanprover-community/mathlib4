@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.LocallyConvex.Barrelled
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.Baire.CompleteMetrizable
 
 /-!

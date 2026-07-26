@@ -5,9 +5,9 @@ Authors: Justin Thomas
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Module.AEval
 public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Annihilating Ideal

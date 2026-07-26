@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Actions by matrices on vectors through `*ᵥ` and `ᵥ*`, cast as `Module`s

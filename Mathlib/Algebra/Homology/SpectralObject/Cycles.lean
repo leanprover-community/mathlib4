@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.ExactSequenceFour
+public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!

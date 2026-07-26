@@ -5,12 +5,12 @@ Authors: Simon Hudon
 -/
 module
 
+public import Mathlib.Control.Lawful
 public import Mathlib.Control.Monad.Basic
 public import Mathlib.Control.Monad.Cont
 public import Mathlib.Control.Monad.Writer
 public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Logic.Equiv.Functor
-public import Mathlib.Control.Lawful
 
 /-!
 # Universe lifting for type families

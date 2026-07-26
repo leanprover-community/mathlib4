@@ -5,9 +5,9 @@ Authors: Kexing Ying
 -/
 module
 
+public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
-public import Mathlib.Probability.Martingale.Basic
 
 /-! # Optional stopping theorem (fair game theorem)
 

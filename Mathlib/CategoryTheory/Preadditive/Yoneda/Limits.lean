@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!
 # The Yoneda embedding for preadditive categories preserves limits

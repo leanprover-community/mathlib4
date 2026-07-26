@@ -5,8 +5,8 @@ Authors: Junyan Xu, Jiedong Jiang
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.Normal.Closure
 
 /-!
 # Relative Algebraic Closure

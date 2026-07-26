@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 

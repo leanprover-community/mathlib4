@@ -5,9 +5,9 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
+public import Batteries.Data.List.Lemmas
 public import Batteries.Data.List.Perm
 public import Mathlib.Tactic.Common
-public import Batteries.Data.List.Lemmas
 
 /-!
 # Counting in lists

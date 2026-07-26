@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!

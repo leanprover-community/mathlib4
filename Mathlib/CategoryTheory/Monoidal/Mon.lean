@@ -6,9 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 import Mathlib.Tactic.Attr.Register
 

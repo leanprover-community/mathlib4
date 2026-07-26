@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Basic Results about Star on Pi Types

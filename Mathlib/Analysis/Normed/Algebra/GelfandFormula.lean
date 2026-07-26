@@ -5,11 +5,11 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Normed.Operator.Mul
-import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Analytic.RadiusLiminf
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras

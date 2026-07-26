@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Lattice
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Borel sigma algebras on spaces with orders

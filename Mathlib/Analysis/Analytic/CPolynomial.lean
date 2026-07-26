@@ -5,8 +5,8 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Analytic.CPolynomialDef
+public import Mathlib.Analysis.Analytic.Constructions
 
 /-! # Properties of continuously polynomial functions
 

@@ -6,8 +6,8 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 module
 
 public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Multiplicity
 
 /-!
 # Characteristic of semirings

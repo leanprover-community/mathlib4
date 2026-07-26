@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Limits.Presentation
+public import Mathlib.CategoryTheory.ObjectProperty.Small
 
 import Mathlib.CategoryTheory.Adjunction.Limits
 

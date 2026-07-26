@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.CommSq
+public import Mathlib.CategoryTheory.Comma.Arrow
 
 /-!
 # The category of commutative squares

@@ -5,8 +5,8 @@ Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.Order.Hom.PowersetCard
 
 /-!

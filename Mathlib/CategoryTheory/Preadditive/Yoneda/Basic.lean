@@ -5,10 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Opposite
-public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.Algebra.Category.Grp.Yoneda
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # The Yoneda embedding for preadditive categories

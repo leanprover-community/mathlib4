@@ -5,9 +5,9 @@ Authors: David Loeffler, Terence Tao
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.Dirichlet
-public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.NumberTheory.Harmonic.GammaDeriv
+public import Mathlib.NumberTheory.LSeries.Dirichlet
 
 import Mathlib.Analysis.Calculus.Deriv.Star
 import Mathlib.Analysis.Normed.Module.Connected

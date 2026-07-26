@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Basic
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
-import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 import Mathlib.Analysis.Normed.Operator.NNNorm
+import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # Inverse function theorem, the "easy half"

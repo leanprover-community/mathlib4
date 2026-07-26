@@ -5,9 +5,9 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 module
 
+public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.FinMeasAdditive
-public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Extension of a linear function from indicators to L1

@@ -5,10 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 -/
 module
 
-public import Mathlib.Data.Finset.Sym
-public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Sum
 
 /-!
 # Stars and bars

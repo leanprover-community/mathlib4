@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!

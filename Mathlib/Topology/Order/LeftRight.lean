@@ -6,8 +6,8 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Order.Antichain
-public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Left and right continuity

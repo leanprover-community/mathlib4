@@ -6,10 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Relation of covering by cosets

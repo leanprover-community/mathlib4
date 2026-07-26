@@ -5,12 +5,12 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Topology.Order.Bornology
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.EMetricSpace.Diam
 public import Mathlib.Topology.MetricSpace.Cauchy
 public import Mathlib.Topology.MetricSpace.Defs
-public import Mathlib.Topology.EMetricSpace.Diam
+public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.Order.Bornology
+public import Mathlib.Topology.Order.Compact
 
 /-!
 ## Boundedness in (pseudo)-metric spaces

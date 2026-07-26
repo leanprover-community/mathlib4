@@ -9,8 +9,8 @@ public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!

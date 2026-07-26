@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Sheaf
-public import Mathlib.CategoryTheory.Sites.Limits
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
 # Presheaves in `C` have limits and colimits when `C` does.

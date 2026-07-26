@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Gluing
-public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.Topology.Gluing
 
 /-!
 # Gluing structured spaces

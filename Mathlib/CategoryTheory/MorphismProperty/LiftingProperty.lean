@@ -5,9 +5,9 @@ Authors: Jack McKoen, Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.LiftingProperties.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
-public import Mathlib.CategoryTheory.LiftingProperties.Limits
 public import Mathlib.Order.GaloisConnection.Defs
 
 /-!

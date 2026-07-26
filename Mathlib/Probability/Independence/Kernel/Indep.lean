@@ -5,9 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Probability.Kernel.Basic
 public import Mathlib.Tactic.Peel
-public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Independence of families of sets with respect to a kernel and a measure

@@ -6,8 +6,8 @@ Authors: Chris Birkbeck
 
 module
 
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
 
 /-!
 # Slash action on E2

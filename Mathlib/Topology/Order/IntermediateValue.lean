@@ -5,11 +5,11 @@ Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
 module
 
-public import Mathlib.Order.Interval.Set.Image
 public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Order.Interval.Set.Image
+public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Order.DenselyOrdered
 public import Mathlib.Topology.Order.Monotone
-public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Intermediate Value Theorem

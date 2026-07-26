@@ -5,8 +5,8 @@ Authors: Chris Birkbeck, Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.ClassGroup.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Extended
 
 /-!
 # Class group map induced by an extension of domains

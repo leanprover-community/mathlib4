@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # The opposite of an abelian category is abelian.

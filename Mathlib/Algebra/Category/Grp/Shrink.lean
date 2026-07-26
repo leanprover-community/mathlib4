@@ -6,8 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.Grp.Basic
-public import Mathlib.CategoryTheory.ShrinkYoneda
 public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # Shrinking a functor to `GrpCat`

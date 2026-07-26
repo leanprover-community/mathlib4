@@ -6,10 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Kaehler.JacobiZariski
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Smooth.Kaehler
-public import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # The differential module and étale algebras

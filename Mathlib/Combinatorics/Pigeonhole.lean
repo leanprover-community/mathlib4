@@ -6,10 +6,10 @@ Authors: Kyle Miller, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Order.Preorder.Finite
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 

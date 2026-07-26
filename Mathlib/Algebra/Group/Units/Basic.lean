@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Subsingleton
-public import Mathlib.Tactic.Attr.Core
 
 import Mathlib.Tactic.Attr.Register
 

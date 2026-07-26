@@ -6,8 +6,8 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 module
 
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
-public import Mathlib.GroupTheory.OreLocalization.Basic
 public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.GroupTheory.OreLocalization.Basic
 
 /-!
 

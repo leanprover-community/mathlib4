@@ -5,10 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Complex.Spectrum
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.Complex.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.RCLike.Lemmas
 

@@ -5,8 +5,8 @@ Authors: Shanghe Chen
 -/
 module
 
-public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # The left/right unitor equivalences `1 × C ≌ C` and `C × 1 ≌ C`.

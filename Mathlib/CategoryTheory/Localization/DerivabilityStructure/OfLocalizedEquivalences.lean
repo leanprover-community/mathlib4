@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 /-!
 # Derivability structures deduced from localized equivalences

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.Quiver.Path
-public import Mathlib.Data.Set.Insert
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Path Vertices

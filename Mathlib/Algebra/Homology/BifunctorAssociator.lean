@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.CategoryTheory.GradedObject.Associator
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.Algebra.Homology.Bifunctor
 
 /-!
 # The associator for actions of bifunctors on homological complexes

@@ -5,10 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Algebra.Group.Int.Units
+public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Int.Basic
+public import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime numbers in the naturals and the integers

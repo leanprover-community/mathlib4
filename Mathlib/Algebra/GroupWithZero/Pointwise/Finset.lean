@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
 # Pointwise operations of finsets in a group with zero

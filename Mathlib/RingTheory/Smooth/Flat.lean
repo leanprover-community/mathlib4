@@ -7,10 +7,10 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 public import Mathlib.RingTheory.Flat.Stability
-public import Mathlib.RingTheory.Smooth.AdicCompletion
-public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Smooth
+public import Mathlib.RingTheory.Smooth.AdicCompletion
+public import Mathlib.RingTheory.Smooth.NoetherianDescent
 
 /-!
 # Smooth algebras are flat

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.Indization.Equalizers
 public import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Indization.Products

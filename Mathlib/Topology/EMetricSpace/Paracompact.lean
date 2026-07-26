@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Topology.Compactness.Paracompact
 public import Mathlib.Topology.EMetricSpace.Basic
-public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # (Extended) metric spaces are paracompact

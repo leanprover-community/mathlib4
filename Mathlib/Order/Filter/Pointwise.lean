@@ -11,10 +11,10 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Finset.Attr
 public import Mathlib.Order.Filter.AtTopBot.Map
 public import Mathlib.Order.Filter.NAry
 public import Mathlib.Order.Filter.Ultrafilter.Defs
-public import Mathlib.Data.Finset.Attr
 
 /-!
 # Pointwise operations on filters

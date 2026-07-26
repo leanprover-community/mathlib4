@@ -5,9 +5,9 @@ Authors: Kim Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.Topology.Sheaves.Init
 
 /-!

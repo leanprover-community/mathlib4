@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Artinian rings

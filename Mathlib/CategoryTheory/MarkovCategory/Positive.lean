@@ -5,8 +5,8 @@ Authors: Gaëtan Serré
 -/
 module
 
-public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
+public import Mathlib.CategoryTheory.MarkovCategory.Basic
 
 /-!
 # Positive Categories

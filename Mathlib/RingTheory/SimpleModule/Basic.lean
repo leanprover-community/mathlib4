@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.Isomorphisms
@@ -15,9 +16,8 @@ public import Mathlib.Order.CompactlyGenerated.Intervals
 public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
-public import Mathlib.SetTheory.Cardinal.NatCard
 
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Simple Modules

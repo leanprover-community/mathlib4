@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise actions on sets

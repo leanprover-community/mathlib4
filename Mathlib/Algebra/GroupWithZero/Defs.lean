@@ -5,10 +5,10 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Logic.Nontrivial.Defs
-public import Mathlib.Logic.Basic
 public import Batteries.Tactic.SeqFocus
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Basic
+public import Mathlib.Logic.Nontrivial.Defs
 
 /-!
 # Typeclasses for groups with an adjoined zero element

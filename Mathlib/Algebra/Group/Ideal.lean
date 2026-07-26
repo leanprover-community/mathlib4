@@ -5,8 +5,8 @@ Authors: Dexin Zhang
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.Closure
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.Closure
 
 /-!
 # Semigroup ideals

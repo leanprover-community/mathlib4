@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Tactic.Positivity
 public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 Rational approximation of the square root of a natural number.

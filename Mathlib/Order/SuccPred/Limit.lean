@@ -5,8 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Order.BoundedOrder.Lattice
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Successor and predecessor limits

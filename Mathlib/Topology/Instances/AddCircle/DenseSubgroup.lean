@@ -6,8 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.NumberTheory.Real.Irrational
-public import Mathlib.Topology.Instances.AddCircle.Defs
 public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # Irrational rotation is minimal

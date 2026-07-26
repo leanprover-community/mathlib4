@@ -6,13 +6,13 @@ Authors: Johan Commelin, Kenny Lau, Ralf Stephan
 module
 
 public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MoveAdd
-public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # Formal power series (in one variable)

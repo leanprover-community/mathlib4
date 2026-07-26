@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Computability.StateTransition
-public import Mathlib.Data.Finset.Prod
+public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.PFun
 public import Mathlib.Data.Vector.Basic

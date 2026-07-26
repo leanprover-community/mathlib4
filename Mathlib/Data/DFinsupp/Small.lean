@@ -5,8 +5,8 @@ Authors: Sophie Morel, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.Logic.Small.Basic
 
 /-!

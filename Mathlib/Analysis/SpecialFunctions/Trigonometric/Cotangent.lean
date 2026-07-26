@@ -6,12 +6,12 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.WithinZpow
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.Analysis.Complex.IntegerCompl
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
-public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 

@@ -5,10 +5,10 @@ Authors: Chris Birkbeck
 -/
 module
 
+public import Mathlib.Algebra.Ring.Subring.Units
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
 # The General Linear group $GL(n, R)$

@@ -5,9 +5,9 @@ Authors: Kenny Lau
 -/
 module
 
+public import Batteries.Tactic.Lint.Simp
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Equiv.Defs
-public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Multiplicative opposite and algebraic operations on it

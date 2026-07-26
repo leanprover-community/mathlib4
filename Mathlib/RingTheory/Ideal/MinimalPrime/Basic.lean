@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Order.Minimal
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.Order.Minimal
 
 /-!
 

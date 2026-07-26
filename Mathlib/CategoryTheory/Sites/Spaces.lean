@@ -5,9 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Lattice
 public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 public import Mathlib.CategoryTheory.Sites.Pretopology
-public import Mathlib.CategoryTheory.Limits.Lattice
 public import Mathlib.Topology.Sets.OpenCover
 
 /-!

@@ -5,12 +5,12 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FinallySmall
-public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.Filtered.Small
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.Limits.FinallySmall
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
+public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 
 /-!
 # Ind-objects

@@ -6,9 +6,9 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Fintype.Lattice
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic

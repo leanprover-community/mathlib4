@@ -5,12 +5,12 @@ Authors: Nicolò Cavalleri, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Derivation.ToSquareZero
-public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.RingTheory.IsTensorProduct
-public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Derivation.ToSquareZero
+public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!

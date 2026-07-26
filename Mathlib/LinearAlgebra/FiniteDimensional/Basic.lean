@@ -6,11 +6,11 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Finiteness.Lattice
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Finite-dimensional vector spaces

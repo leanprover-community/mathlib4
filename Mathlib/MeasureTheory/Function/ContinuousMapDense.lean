@@ -5,9 +5,9 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Approximation in Lᵖ by continuous functions

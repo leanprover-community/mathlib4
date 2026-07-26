@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Topology.MetricSpace.IsometricSMul
 public import Mathlib.Tactic.Finiteness
+public import Mathlib.Topology.MetricSpace.IsometricSMul
 
 /-!
 # Hausdorff distance

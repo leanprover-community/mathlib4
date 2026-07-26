@@ -5,13 +5,13 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodr
 -/
 module
 
+public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Count
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Order.OrderIsoNat
 public import Mathlib.Order.WellFounded
-public import Mathlib.Data.Finset.Sort
 
 /-!
 # The `n`th Number Satisfying a Predicate

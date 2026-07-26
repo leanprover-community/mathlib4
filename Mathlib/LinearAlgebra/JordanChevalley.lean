@@ -6,8 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Dynamics.Newton
-public import Mathlib.LinearAlgebra.Semisimple
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.LinearAlgebra.Semisimple
 
 /-!
 # Jordan-Chevalley-Dunford decomposition

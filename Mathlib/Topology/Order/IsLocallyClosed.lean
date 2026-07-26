@@ -5,8 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.LocallyClosed
+public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Intervals are locally closed

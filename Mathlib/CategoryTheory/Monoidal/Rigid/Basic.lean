@@ -5,9 +5,9 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!
 # Rigid (autonomous) monoidal categories

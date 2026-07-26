@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.Combinatorics.Enumerative.Bell
 public import Mathlib.Data.Nat.Choose.Multinomial
 public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Divided powers
 

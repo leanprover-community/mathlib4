@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Data.Int.WithZero
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.Topology.Algebra.Valued.WithVal
-public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
 # Adic valuations on Dedekind domains

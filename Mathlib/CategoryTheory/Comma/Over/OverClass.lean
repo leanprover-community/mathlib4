@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Typeclasses for `S`-objects and `S`-morphisms

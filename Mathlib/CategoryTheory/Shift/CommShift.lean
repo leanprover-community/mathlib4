@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Functors which commute with shifts

@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.Topology.Spectral.Hom
-public import Mathlib.AlgebraicGeometry.Limits
 
 /-!
 # Quasi-compact morphisms

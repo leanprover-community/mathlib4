@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Logic.Small.Defs
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Order instances on Shrink

@@ -5,10 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Indization.Category
-public import Mathlib.CategoryTheory.Preadditive.Transfer
-public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.Algebra.Category.Grp.LeftExactFunctor
+public import Mathlib.CategoryTheory.Limits.Indization.Category
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+public import Mathlib.CategoryTheory.Preadditive.Transfer
 
 /-!
 # The category of ind-objects is preadditive

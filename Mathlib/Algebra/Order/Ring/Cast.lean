@@ -6,9 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 /-!
 # Order properties of cast of integers

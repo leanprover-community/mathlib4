@@ -5,10 +5,10 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
-public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Flat.Basic
 
 /-!

@@ -5,10 +5,10 @@ Authors: Nailin Guan, Jingting Wang
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Map between Ext groups induced by an exact functor

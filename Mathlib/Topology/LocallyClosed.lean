@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Constructions
 public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.Constructions
 
 /-!
 # Locally closed sets

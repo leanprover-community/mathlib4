@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 ## Ultrametric spaces

@@ -6,8 +6,8 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 module
 
 public import Mathlib.Data.Finset.Basic
-public import Mathlib.ModelTheory.Syntax
 public import Mathlib.Data.List.ProdSigma
+public import Mathlib.ModelTheory.Syntax
 
 /-!
 # Basics on First-Order Semantics

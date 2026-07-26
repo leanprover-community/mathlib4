@@ -7,8 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 /-!
 # Contraction in Clifford Algebras

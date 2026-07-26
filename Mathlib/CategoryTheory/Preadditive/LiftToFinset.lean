@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 public import Mathlib.CategoryTheory.Preadditive.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additional results about the `liftToFinset` construction
