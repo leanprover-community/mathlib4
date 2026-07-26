@@ -34,11 +34,9 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-set_option backward.privateInPublic true in
 /-- `𝔟 i` is the annihilator of `f ^ i` in `R`. -/
 private abbrev ideal_b (f : R) (i : ℕ) : Ideal R := Ideal.torsionOf R R (f ^ i)
 
-set_option backward.privateInPublic true in
 private lemma ascending_ideal_b (f : R) : Monotone (ideal_b f) := by
   intro i j hle
   choose k hk using Nat.exists_eq_add_of_le hle
@@ -53,10 +51,8 @@ private lemma ascending_ideal_b (f : R) : Monotone (ideal_b f) := by
   rw [← mul_assoc, ha]
   exact zero_mul _
 
-set_option backward.privateInPublic true in
 private abbrev ideal_b_order_hom (f : R) : ℕ →o Ideal R := ⟨ideal_b f, ascending_ideal_b f⟩
 
-set_option backward.privateInPublic true in
 private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
     (hr : ∀ (i : ℕ), ideal_b f (r + i) = ideal_b f r)
     {M : Type u} [AddCommGroup M] [Module R M] (y : M) :
@@ -85,7 +81,6 @@ private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
 
 variable [IsNoetherianRing R]
 
-set_option backward.privateInPublic true in
 private lemma stabilize_ideal_b (f : R) :
     ∃ (r : ℕ), ∀ (i : ℕ), ideal_b f (r + i) = ideal_b f r := by
   choose r hr using monotone_stabilizes_iff_noetherian.mpr inferInstance (ideal_b_order_hom f)
