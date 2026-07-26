@@ -623,6 +623,14 @@ theorem singleton_prod_singleton (x : α) (y : β) :
     ({x} ×ˢ {y} : NonemptyCompacts (α × β)) = {(x, y)} :=
   NonemptyCompacts.ext Set.singleton_prod_singleton
 
+/-- `TopologicalSpace.NonemptyCompacts.toCompacts` as an order embedding. -/
+def toCompactsOrderEmbedding : NonemptyCompacts α ↪o Compacts α :=
+  .ofMapLEIff toCompacts fun _ _ => .rfl
+
+@[simp]
+theorem coe_toCompactsOrderEmbedding : ⇑(toCompactsOrderEmbedding (α := α)) = toCompacts :=
+  rfl
+
 end NonemptyCompacts
 
 /-! ### Positive compact sets -/

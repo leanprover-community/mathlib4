@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Register
 
 public import Mathlib.Tactic.Common

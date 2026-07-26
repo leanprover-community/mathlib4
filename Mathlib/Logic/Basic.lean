@@ -7,8 +7,6 @@ module
 
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
-public import Mathlib.Lean.Meta.Simp
-
 public import Mathlib.Tactic.Attr.Register
 
 /-!

@@ -1068,8 +1068,12 @@ variable [DivInvMonoid G]
     ZPow.zpow n x = x ^ n :=
   rfl
 
-@[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
+@[to_additive zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
+
+-- `zpow_zero` is provable by `simp` (via `zpow_ofNat`), so the `simpNF` linter rejects tagging it.
+-- We still want the additive `zero_zsmul` to be `simp`, so we tag that one manually.
+attribute [simp] zero_zsmul
 
 @[to_additive (attr := simp, norm_cast) natCast_zsmul]
 theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
@@ -1080,7 +1084,9 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
 
-@[to_additive ofNat_zsmul]
+-- TODO: consider also making `ofNat_zsmul` a `simp` lemma; it is currently not, because it breaks
+-- `simp`-normal forms involving `(2 : ℤ) • ·` used in the theory of oriented angles.
+@[to_additive ofNat_zsmul, simp]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
@@ -1117,8 +1123,12 @@ theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
 theorem one_div (a : G) : 1 / a = a⁻¹ :=
   (inv_eq_one_div a).symm
 
-@[to_additive (attr := simp) one_zsmul]
+@[to_additive one_zsmul]
 lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
+
+-- `zpow_one` is provable by `simp` (via `zpow_ofNat`), so the `simpNF` linter rejects tagging it.
+-- We still want the additive `one_zsmul` to be `simp`, so we tag that one manually.
+attribute [simp] one_zsmul
 
 @[to_additive two_zsmul] lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by rw [zpow_ofNat, pow_two]
 
