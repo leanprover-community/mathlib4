@@ -139,13 +139,13 @@ attribute [local implicit_reducible] Quiver.Hom.op Quiver.Hom.unop
 corepresentation for that functor. -/
 def CorepresentableBy.ofIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsInitial E) :
     CorepresentableBy F E.fst where
-      homEquiv :=
-        { toFun f := F.map f E.snd
-          invFun y := (he.to ⟨_, y⟩).val
-          left_inv f := by
-            have := Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
-            simpa using Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
-          right_inv y := (he.to ⟨_, y⟩).prop }
+  homEquiv :=
+    { toFun f := F.map f E.snd
+      invFun y := (he.to ⟨_, y⟩).val
+      left_inv f := by
+        have := Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
+        simpa using Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
+      right_inv y := (he.to ⟨_, y⟩).prop }
 
 lemma isCorepresentable.ofHasInitial (F : C ⥤ Type w) [HasInitial (Elements F)] :
     IsCorepresentable F where
