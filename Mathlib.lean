@@ -6871,6 +6871,7 @@ public import Mathlib.RingTheory.NoetherNormalization
 public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.Noetherian.Filter
+public import Mathlib.RingTheory.Noetherian.InjectiveModule
 public import Mathlib.RingTheory.Noetherian.Nilpotent
 public import Mathlib.RingTheory.Noetherian.OfPrime
 public import Mathlib.RingTheory.Noetherian.Orzech

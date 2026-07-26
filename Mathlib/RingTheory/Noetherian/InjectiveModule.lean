@@ -1,0 +1,143 @@
+/-
+Copyright (c) 2026 Lambert A'Campo. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Lambert A'Campo
+-/
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.Module.Injective
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.Noetherian.Basic
+
+/-!
+# Injective modules over a Noetherian ring
+
+This file proves Hartshorne's Lemma III.3.3: if `R` is a commutative
+Noetherian ring and `I` is an injective `R`-module, then for
+any `f : R` the localization map `I → I_f` is surjective.
+
+## Main statement
+
+* `Module.surjective_of_isLocalizedModule_of_injective`: for `R` Noetherian and `I` injective,
+  the localization map `I → I_f` is surjective for any `f : R`.
+
+## References
+
+* [Hartshorne, *Algebraic Geometry*][har77], Lemma III.3.3
+-/
+
+public section
+
+universe u
+
+variable {R : Type u} [CommRing R]
+
+set_option backward.privateInPublic true in
+/-- `𝔟 i` is the annihilator of `f ^ i` in `R`. -/
+private abbrev ideal_b (f : R) (i : ℕ) : Ideal R := Ideal.torsionOf R R (f ^ i)
+
+set_option backward.privateInPublic true in
+private lemma ascending_ideal_b (f : R) : Monotone (ideal_b f) := by
+  intro i j hle
+  choose k hk using Nat.exists_eq_add_of_le hle
+  intro a ha
+  rw [Ideal.mem_torsionOf_iff] at ha
+  rw [Ideal.mem_torsionOf_iff]
+  have h : f ^ j = f ^ i * f ^ k := by
+    rw [hk]
+    ring_nf
+  rw [h, smul_eq_mul]
+  rw [smul_eq_mul] at ha
+  rw [← mul_assoc, ha]
+  exact zero_mul _
+
+set_option backward.privateInPublic true in
+private abbrev ideal_b_order_hom (f : R) : ℕ →o Ideal R := ⟨ideal_b f, ascending_ideal_b f⟩
+
+private abbrev ideal_p (f : R) (i : ℕ) : Ideal R := Ideal.span {f ^ i}
+
+set_option backward.privateInPublic true in
+private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
+    (hr : ∀ (i : ℕ), ideal_b f (r + i) = ideal_b f r)
+    {M : Type u} [AddCommGroup M] [Module R M] (y : M) :
+    ∃ phi : ideal_p f (r + n) →ₗ[R] M,
+      phi ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ = f ^ r • y := by
+        have hker0 : ideal_b f r ≤ LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
+          intro c hc
+          rw [Ideal.mem_torsionOf_iff, smul_eq_mul] at hc
+          rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, smul_smul, hc, zero_smul]
+        have hker : ideal_b f (r + n) ≤
+            LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
+          rw [hr n]
+          exact hker0
+        refine ⟨(Submodule.liftQ (ideal_b f (r + n))
+            (LinearMap.toSpanSingleton R M (f ^ r • y)) hker).comp
+          (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm.toLinearMap, ?_⟩
+        have hmk : (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
+            (⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ : ideal_p f (r + n))
+            = Submodule.Quotient.mk (1 : R) := by
+          rw [LinearEquiv.symm_apply_eq, Ideal.quotTorsionOfEquivSpanSingleton_apply_mk, one_smul]
+        change (Submodule.liftQ (ideal_b f (r + n))
+            (LinearMap.toSpanSingleton R M (f ^ r • y)) hker)
+            ((Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
+              ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩) = f ^ r • y
+        rw [hmk, Submodule.liftQ_apply, LinearMap.toSpanSingleton_apply, one_smul]
+
+variable [IsNoetherianRing R]
+
+set_option backward.privateInPublic true in
+private lemma stabilize_ideal_b (f : R) :
+    ∃ (r : ℕ), ∀ (i : ℕ), ideal_b f (r + i) = ideal_b f r := by
+  choose r hr using monotone_stabilizes_iff_noetherian.mpr inferInstance (ideal_b_order_hom f)
+  use r
+  intro i
+  specialize hr (r + i)
+  exact symm (hr (Nat.le_add_right r i))
+
+/-- **Hartshorne III. Lemma 3.3.** If `R` is a Noetherian ring and `I` satisfies Baer's criterion,
+then for any `f : R` the localization map `I → I_f` is surjective. -/
+theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
+    [AddCommGroup I] [Module R I] (hI : Module.Baer R I) (f : R) {I' : Type u} [AddCommGroup I']
+    [Module R I'] (g : I →ₗ[R] I') [IsLocalizedModule (Submonoid.powers f) g] :
+    Function.Surjective g := by
+      intro x
+      have h : ∃ (n : ℕ) (a : I), g a = f ^ n • x := by
+        obtain ⟨⟨a, s⟩, hs⟩ := IsLocalizedModule.surj (Submonoid.powers f) g x
+        choose n hn using (Submonoid.mem_powers_iff s.1 f).1 s.2
+        use n
+        use a
+        rw [hn]
+        symm
+        exact hs
+      choose n h1 using h
+      choose a ha using h1
+      choose r hr using stabilize_ideal_b f
+      choose phi hphi using exists_divide_by_fn_map f n r hr a
+      choose psi hpsi using hI (ideal_p f (r + n)) phi
+      let z := psi 1
+      have hz : f ^ (r + n) • z = f ^ r • a := by
+        rw [← psi.map_smul (f ^ (r + n)) (1 : R)]
+        rw [smul_eq_mul, mul_one, ← hphi]
+        exact hpsi _ _
+      have hz2 : f ^ (r + n) • (g z) = f ^ (r) • (f ^ n • x) := by
+        rw [← ha, ← g.map_smul, ← g.map_smul]
+        exact congrArg g hz
+      use z
+      have s_mem : f ^ (r + n) ∈ Submonoid.powers f :=
+        (Submonoid.mem_powers_iff (f ^ (r + n)) f).mpr ⟨r + n, rfl⟩
+      have hbij : Function.Bijective
+          (algebraMap R (Module.End R I') (⟨f ^ (r + n), s_mem⟩ : Submonoid.powers f)) :=
+        (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g ⟨f ^ (r + n), s_mem⟩)
+      apply hbij.1
+      change f ^ (r + n) • (g z) = f ^ (r + n) • x
+      rw [hz2, smul_smul, ← pow_add]
+
+/-- **Hartshorne III. Lemma 3.3.** Let `R` be a Noetherian ring and `I` an injective `R`-module.
+For any `f : R`, the localization map `I → I_f` is surjective. -/
+theorem Module.surjective_of_isLocalizedModule_of_injective {I : Type u}
+    [AddCommGroup I] [Module R I] (hI : Module.Injective R I) (f : R) {I' : Type u}
+    [AddCommGroup I'] [Module R I'] (g : I →ₗ[R] I') [IsLocalizedModule (Submonoid.powers f) g] :
+    Function.Surjective g :=
+  Module.surjective_of_isLocalizedModule_of_baer (Module.Baer.of_injective hI) f g
