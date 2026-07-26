@@ -235,9 +235,11 @@ def certEntry (i j : ℕ) : CertM rα (Cert rα) := do
   let idx := dim * i + j
   let entry := arrayEntries.getD idx q(0)
   let ce ← certEval entry
-  have : $lhs =Q $entry := ⟨⟩
-  let h : Q($lhs = $entry) := q(rfl)
-  let cert := ce.chainProof h
+  let getD : Q($α) := q(Array.getD $A ($dimLit * $i + $j) 0)
+  let hGet : Q($lhs = $getD) := q(BirdDet.get_eq $dimLit $A $i $j)
+  have : $getD =Q $entry := ⟨⟩
+  let hGetD : Q($getD = $entry) := q(rfl)
+  let cert := ce.chainProof q(Eq.trans $hGet $hGetD)
   modify fun s => {s with entryCache := s.entryCache.insert (i, j) cert}
   return cert
 
