@@ -122,7 +122,7 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
           (algebraMap R (Module.End R I') (⟨f ^ (r + n), s_mem⟩ : Submonoid.powers f)) :=
         (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g ⟨f ^ (r + n), s_mem⟩)
       apply hbij.1
-      change f ^ (r + n) • (g z) = f ^ (r + n) • x
+      dsimp
       rw [hz2, smul_smul, ← pow_add]
 
 /-- **Hartshorne III. Lemma 3.3.** Let `R` be a Noetherian ring and `I` an injective `R`-module.
