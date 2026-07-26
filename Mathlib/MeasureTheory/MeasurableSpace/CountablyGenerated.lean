@@ -459,10 +459,10 @@ theorem _root_.Measurable.measurableSet_graph
     [MeasurableSpace α]
     [MeasurableSpace β] [cs : CountablySeparated β]
     {f : α → β} (measf : Measurable f) :
-    MeasurableSet { (x, y) : α × β | y = f x } := by
+    MeasurableSet { p : α × β | p.2 = f p.1 } := by
   let ⟨V, Vctbl, Vmeas, Vsep⟩ := cs.countably_separated
-  let A : Set (Set (α × β)) := (fun v => { (x, y) : α × β | x ∈ f ⁻¹' v ↔ y ∈ v }) '' V
-  have : { (x, y) : α × β | y = f x } = ⋂₀ A := by
+  let A : Set (Set (α × β)) := (fun v => { p : α × β | p.1 ∈ f ⁻¹' v ↔ p.2 ∈ v }) '' V
+  have : { p : α × β | p.2 = f p.1 } = ⋂₀ A := by
     ext x
     have := Vsep (f x.1) (Set.mem_univ _) x.2 (Set.mem_univ _)
     simp [A]; grind
