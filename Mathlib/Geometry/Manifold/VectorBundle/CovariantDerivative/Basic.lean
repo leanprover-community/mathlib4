@@ -234,7 +234,7 @@ variable {s : Set M} {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L
 
 /-- An affine combination of covariant derivatives is a covariant derivative. -/
 @[simps]
-lemma affineCombination (hcov : IsCovariantDerivativeOn F cov s)
+lemma affine_combination (hcov : IsCovariantDerivativeOn F cov s)
     {cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov' : IsCovariantDerivativeOn F cov' s) (g : M → 𝕜) :
     IsCovariantDerivativeOn F (fun σ ↦ (g • (cov σ)) + (1 - g) • (cov' σ)) s where
@@ -245,10 +245,8 @@ lemma affineCombination (hcov : IsCovariantDerivativeOn F cov s)
     simp [hcov.leibniz hσ hφ, hcov'.leibniz hσ hφ]
     module
 
-@[deprecated (since := "2026-07-26")] alias affine_combination := affineCombination
-
 /-- An affine combination of two `C^k` connections is a `C^k` connection. -/
-lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination [IsManifold I 1 M]
+lemma _root_.ContMDiffCovariantDerivativeOn.affine_combination [IsManifold I 1 M]
     [VectorBundle 𝕜 F V]
     {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     {u : Set M} {f : M → 𝕜} {n : ℕ∞ω} (hf : CMDiff[u] n f)
@@ -260,12 +258,8 @@ lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination [IsManifold I 1 M]
     · exact hf.smul_section <| Hcov.contMDiff hσ
     · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hσ
 
-@[deprecated (since := "2026-07-26")]
-alias _root_.ContMDiffCovariantDerivativeOn.affine_combination :=
-  _root_.ContMDiffCovariantDerivativeOn.affineCombination
-
 /-- A finite affine combination of covariant derivatives is a covariant derivative. -/
-lemma finiteAffineCombination {ι : Type*} {s : Finset ι}
+lemma finite_affine_combination {ι : Type*} {s : Finset ι}
     {u : Set M} {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (h : ∀ i, IsCovariantDerivativeOn F (cov i) u) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
     IsCovariantDerivativeOn F (fun σ x ↦ ∑ i ∈ s, (f i x) • (cov i) σ x) u where
@@ -285,10 +279,8 @@ lemma finiteAffineCombination {ι : Type*} {s : Finset ι}
           rw [Finset.sum_add_distrib, Finset.smul_sum, Finset.sum_apply, Finset.sum_smul]
       _ = g x • ∑ i ∈ s, f i x • cov i σ x + (d% g x).smulRight (σ x) := by rw [hf]; simp
 
-@[deprecated (since := "2026-07-26")] alias finite_affine_combination := finiteAffineCombination
-
 /-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
-lemma _root_.ContMDiffCovariantDerivativeOn.finiteAffineCombination [IsManifold I 1 M]
+lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifold I 1 M]
     {n : ℕ∞ω} [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
     {cov : ι → (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivativeOn F n (cov i) u)
@@ -297,10 +289,6 @@ lemma _root_.ContMDiffCovariantDerivativeOn.finiteAffineCombination [IsManifold 
   contMDiff {σ} hσ := by
     simpa using ContMDiffOn.sum_section
       (fun i hi ↦ (hf i hi).smul_section <| (hcov i hi).contMDiff hσ)
-
-@[deprecated (since := "2026-07-26")]
-alias _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination :=
-  _root_.ContMDiffCovariantDerivativeOn.finiteAffineCombination
 
 /-- Adding a one-form taking values in the endomorphisms of the vector bundle to a covariant
   derivative gives a covariant derivative. -/
