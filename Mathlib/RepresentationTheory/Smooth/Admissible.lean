@@ -5,7 +5,6 @@ Authors: Jiaxi Mo
 -/
 module
 
-import Mathlib.Init
 public import Mathlib.RepresentationTheory.Smooth.Basic
 public import Mathlib.RepresentationTheory.Induced
 public import Mathlib.RepresentationTheory.Irreducible
@@ -13,6 +12,9 @@ public import Mathlib.RepresentationTheory.Irreducible
 /-!
 # Induction
 
+This file introduces admissible representations over a field and prove basic properties on them.
+We also prove the **Schur's Lemma** for irreducible admissible smooth representations over an
+algeraically closed field.
 
 ## Main definitions
 
