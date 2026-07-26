@@ -146,7 +146,7 @@ theorem comp_eval (f g) :
 @[simp]
 theorem case_eval (f g) :
     (case f g).eval =
-      fun v ↦. v.headI.rec (f.eval v.tail) (fun y _ => g.eval (y :: v.tail)) := rfl
+      fun v ↦. v.headI.rec (f.eval v.tail) fun y _ => g.eval (y :: v.tail) := rfl
 
 @[simp]
 theorem fix_eval (f) :

@@ -551,7 +551,7 @@ theorem bind_decode₂_iff {f : α →. σ} :
 theorem vector_mOfFn :
     ∀ {n} {f : Fin n → α →. σ},
       (∀ i, Partrec (f i)) → Partrec
-      fun a : α ↦. List.Vector.mOfFn (fun i => f i a)
+      fun a : α ↦. List.Vector.mOfFn fun i => f i a
   | 0, _, _ => const _
   | n + 1, f, hf => by
     simp only [List.Vector.mOfFn, pure_eq_some, bind_eq_bind]
