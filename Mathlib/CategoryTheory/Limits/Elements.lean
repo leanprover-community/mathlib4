@@ -149,9 +149,9 @@ def CorepresentableBy.ofIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsIn
 
 lemma isCorepresentable.ofHasInitial (F : C ⥤ Type w) [HasInitial (Elements F)] :
     IsCorepresentable F where
-      has_corepresentation :=
-        ⟨(⊥_ F.Elements).fst,
-          (Nonempty.intro (CorepresentableBy.ofIsInitial initialIsInitial))⟩
+  has_corepresentation :=
+    ⟨(⊥_ F.Elements).fst,
+      (Nonempty.intro (CorepresentableBy.ofIsInitial initialIsInitial))⟩
 
 theorem isCorepresentable_iff_hasInitial (F : C ⥤ Type w) :
     HasInitial (Elements F) ↔ IsCorepresentable F where
