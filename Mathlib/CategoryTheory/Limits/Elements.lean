@@ -179,8 +179,8 @@ lemma isRepresentable.ofHasInitial (F : Cᵒᵖ ⥤ Type w) [HasInitial (Element
 
 theorem isRepresentable_iff_hasInitial (F : Cᵒᵖ ⥤ Type w) :
     HasInitial (Elements F) ↔ IsRepresentable F where
-      mp _ := isRepresentable.ofHasInitial F
-      mpr _ := inferInstance
+  mp _ := isRepresentable.ofHasInitial F
+  mpr _ := inferInstance
 
 end Functor
 
