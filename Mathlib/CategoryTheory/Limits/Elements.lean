@@ -137,19 +137,13 @@ namespace Functor
 corepresentation for that functor. -/
 def CorepresentableBy.ofIsInitial {F : C ⥤ Type v} (E : Elements F) (he : IsInitial E) :
     CorepresentableBy F E.fst where
-      homEquiv := by
-        intro Y
-        refine {
-          toFun f := F.map f E.snd
-          invFun y := (he.to ⟨Y, y⟩).1
+      homEquiv :=
+        { toFun f := F.map f E.snd
+          invFun y := (he.to ⟨_, y⟩).val
           left_inv f := by
-              have := he.hom_ext (he.to ⟨Y, F.map f E.snd⟩) ⟨f, rfl⟩
-              simpa using congrArg (fun m => m.1) this
-          right_inv y := (he.to ⟨Y, y⟩).2
-        }
-      homEquiv_comp := by
-        intro Y Y' g f
-        simp only [Equiv.coe_fn_mk, Functor.map_comp_apply]
+            have := Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
+            simpa using Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
+          right_inv y := (he.to ⟨_, y⟩).prop }
 
 instance (F : C ⥤ Type v) [HasInitial (Elements F)] :
     IsCorepresentable F where
