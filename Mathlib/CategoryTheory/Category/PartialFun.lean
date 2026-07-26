@@ -60,8 +60,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
-  hom := PFun.lift e
-  inv := PFun.lift e.symm
+  hom := (e : α →. β)
+  inv := (e.symm : β →. α)
   hom_inv_id := (PFun.coe_comp _ _).symm.trans (by
     simp only [Equiv.symm_comp_self, PFun.coe_id]
     rfl)
