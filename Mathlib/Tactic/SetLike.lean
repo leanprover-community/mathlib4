@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Aesop.Frontend
 public meta import Batteries.Util.LibraryNote
+public import Aesop.Frontend
 public import Mathlib.Init
 
 /-!

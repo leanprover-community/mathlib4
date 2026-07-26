@@ -5,8 +5,8 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
+public import Mathlib.Init
 
 /-!
 

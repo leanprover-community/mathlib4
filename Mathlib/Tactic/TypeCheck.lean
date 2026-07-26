@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module -- shake: keep-all
 
-public import Mathlib.Init
-public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Elab.SyntheticMVars
+public meta import Lean.Elab.Tactic.Basic
+public import Mathlib.Init
 
 deprecated_module (since := "2026-05-21")

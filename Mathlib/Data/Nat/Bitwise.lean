@@ -5,6 +5,7 @@ Authors: Markus Himmel, Alex Keizer
 -/
 module
 
+public import Batteries.Data.Nat.Bitwise
 public import Mathlib.Algebra.NeZero
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Ring.Parity
@@ -14,7 +15,6 @@ public import Mathlib.Data.Nat.Bits
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Common
-public import Batteries.Data.Nat.Bitwise
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!

@@ -5,10 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public meta import Lean.Util.Heartbeats
-public meta import Lean.Server.InfoUtils
-public meta import Mathlib.Lean.Elab.Tactic.Meta
 public meta import Lean.Compiler.IR.CompilerM
+public meta import Lean.Server.InfoUtils
+public meta import Lean.Util.Heartbeats
+public meta import Mathlib.Lean.Elab.Tactic.Meta
 public import Lean.Elab.Command
 public import Mathlib.Lean.ContextInfo
 

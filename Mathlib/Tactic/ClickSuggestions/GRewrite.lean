@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Lean.Meta.ExprLens
+public import Mathlib.Tactic.ClickSuggestions.SectionState
 
 /-!
 # Support for `grw` suggestions in `#click_suggestions`

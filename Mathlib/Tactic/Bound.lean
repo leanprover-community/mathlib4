@@ -5,9 +5,9 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Aesop
 public meta import Mathlib.Tactic.Bound.Attribute
 public meta import Mathlib.Tactic.NormNum.Core
+public import Aesop
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Linarith.Frontend
 

@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.Symm
+public import Mathlib.Init
 
 /-!
 # `relSidesIfSymm?`

@@ -5,10 +5,10 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Lean.Elab.DefView
-public meta import Lean.Util.CollectAxioms
 public meta import ImportGraph.Imports.Redundant
 public meta import ImportGraph.Imports.RequiredModules
+public meta import Lean.Elab.DefView
+public meta import Lean.Util.CollectAxioms
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -28,10 +28,10 @@ Unlike the related `#find_home`, this command takes into account notation and ta
 Parsing of `attribute`s is hard and the command makes minimal effort to support them.
 Here is an example where the command fails to notice a dependency:
 ```lean
-import Mathlib.Data.Sym.Sym2.Init -- the actual minimal import
+import A
 import Aesop.Frontend.Attribute   -- the import that `#min_imports in` suggests
 
-import Mathlib.Tactic.MinImports
+import B
 
 -- import Aesop.Frontend.Attribute
 #min_imports in
@@ -250,8 +250,8 @@ def getIrredundantImports (env : Environment) (importNames : NameSet) : NameSet 
 /-- `minImpsCore stx id` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs
 ```lean
-import A
-import B
+import Mathlib.Data.Sym.Sym2.Init -- the actual minimal import
+import Mathlib.Tactic.MinImports
 ...
 import Z
 ```

@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.Group.Even
+public import Mathlib.Data.Fintype.Card
 import all Init.Data.Fin.Fold  -- for exposing `Fin.foldr`
 
 /-!

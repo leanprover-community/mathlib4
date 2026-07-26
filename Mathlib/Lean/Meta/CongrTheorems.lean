@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Lean.Meta.Tactic.Cleanup
 public meta import Lean.Meta.Tactic.Refl
+public import Lean.Meta.Tactic.Cleanup
 public import Mathlib.Logic.IsEmpty.Defs
 
 /-!

@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public import Mathlib.Init
 public import Mathlib.Util.PPOptions
 
 /-! # Pi type notation

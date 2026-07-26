@@ -5,9 +5,9 @@ Authors: Paul Cadman
 -/
 module
 
+public meta import Mathlib.Tactic.Determinant.Bird.Cert
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 meta import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness
-public meta import Mathlib.Tactic.Determinant.Bird.Cert
 
 /-!
 # `norm_det` simproc and `eval_det` tactic

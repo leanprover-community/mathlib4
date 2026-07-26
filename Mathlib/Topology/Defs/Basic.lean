@@ -5,14 +5,14 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
+public meta import Mathlib.Util.DelabNonCanonical
+public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.Continuity
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Mathlib.Data.Nat.Notation
 
-public meta import Mathlib.Util.DelabNonCanonical
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Basic definitions about topological spaces

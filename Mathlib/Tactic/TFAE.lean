@@ -5,8 +5,8 @@ Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carnei
 -/
 module
 
-public meta import Qq
 public meta import Mathlib.Util.AtomM
+public meta import Qq
 public import Mathlib.Data.List.TFAE  -- shake: keep (dependency of Qq output)
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.ExtendDoc
