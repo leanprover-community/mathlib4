@@ -327,7 +327,7 @@ theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : m
   | succ c hc =>
     rw [← eraseLead_add_C_mul_X_pow f]
     cases c
-    · convert! C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1
+    · convert C_mul_pow f.natDegree f.leadingCoeff ?_ df
       · convert! zero_add (C (leadingCoeff f) * X ^ f.natDegree)
         rw [← card_support_eq_zero, card_support_eraseLead' hf]
       · rw [leadingCoeff_ne_zero, Ne, ← card_support_eq_zero, hf]
@@ -418,7 +418,7 @@ theorem card_support_eq {n : ℕ} :
         Function.extend Fin.castSucc x fun _ => f.leadingCoeff, ?_, ?_, ?_⟩
     · intro i j hij
       have hi : i ∈ Set.range (Fin.castSucc : Fin n → Fin (n + 1)) := by
-        simp only [Fin.range_castSucc, Nat.succ_eq_add_one, Set.mem_setOf_eq]
+        simp only [Fin.range_castSucc, Nat.succ_eq_add_one, Set.mem_ofPred_eq]
         exact lt_of_lt_of_le hij (Nat.lt_succ_iff.mp j.2)
       obtain ⟨i, rfl⟩ := hi
       rw [Fin.strictMono_castSucc.injective.extend_apply]

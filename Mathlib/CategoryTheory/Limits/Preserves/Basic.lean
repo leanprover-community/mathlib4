@@ -80,7 +80,7 @@ diagram `J ⥤ C` to limit cones, where `J : Type u` with `[Category.{v} J]`. -/
 -- `PreservesLimitsOfSize`, `PreservesColimitsOfSize`, `ReflectsLimitsOfSize`, and
 -- `ReflectsColimitsOfSize` would default to universe output parameters.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesLimitsOfSize (F : C ⥤ D) : Prop where
   preservesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesLimitsOfShape J F := by
     infer_instance
@@ -93,7 +93,7 @@ abbrev PreservesLimits (F : C ⥤ D) :=
 -- This should be used with explicit universe variables.
 /-- `PreservesColimitsOfSize.{v u} F` means that `F` sends all colimit cocones over any
 diagram `J ⥤ C` to colimit cocones, where `J : Type u` with `[Category.{v} J]`. -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class PreservesColimitsOfSize (F : C ⥤ D) : Prop where
   preservesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesColimitsOfShape J F := by
     infer_instance
@@ -263,6 +263,7 @@ lemma preservesLimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
     PreservesLimitsOfSize.{w, w'} F ↔ PreservesLimitsOfSize.{w, w'} G :=
   ⟨fun _ ↦ preservesLimits_of_natIso h, fun _ ↦ preservesLimits_of_natIso h.symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of limits along an equivalence in the shape. -/
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
@@ -345,6 +346,7 @@ lemma preservesColimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
     PreservesColimitsOfSize.{w, w'} F ↔ PreservesColimitsOfSize.{w, w'} G :=
   ⟨fun _ ↦ preservesColimits_of_natIso h, fun _ ↦ preservesColimits_of_natIso h.symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of colimits along an equivalence in the shape. -/
 lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
@@ -415,7 +417,7 @@ whenever the image of a cone over some `K : J ⥤ C` under `F` is a limit cone i
 the cone was already a limit cone in `C`.
 Note that we do not assume a priori that `D` actually has any limits.
 -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsLimitsOfSize (F : C ⥤ D) : Prop where
   reflectsLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsLimitsOfShape J F := by
     infer_instance
@@ -434,7 +436,7 @@ whenever the image of a cocone over some `K : J ⥤ C` under `F` is a colimit co
 the cocone was already a colimit cocone in `C`.
 Note that we do not assume a priori that `D` actually has any colimits.
 -/
-@[univ_out_params, nolint checkUnivs, pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class ReflectsColimitsOfSize (F : C ⥤ D) : Prop where
   reflectsColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsColimitsOfShape J F := by
     infer_instance
@@ -766,7 +768,7 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_coconePt_of_preservesColimit
@@ -778,7 +780,7 @@ lemma isIso_app_coconePt_of_preservesColimit
     (isColimitOfPreserves L hc) (isColimitOfPreserves L' hc) (asIso (whiskerLeft K α))
   convert! (inferInstance : IsIso e.hom)
   apply (isColimitOfPreserves L hc).hom_ext fun j ↦ ?_
-  simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
+  simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.mapCocone_ι_app,
     NatTrans.naturality, IsColimit.coconePointsIsoOfNatIso_hom, asIso_hom, e]
   refine (((isColimitOfPreserves L hc).ι_map (L'.mapCocone c) (whiskerLeft K α) j).trans ?_).symm
   simp
@@ -787,6 +789,7 @@ end
 
 variable (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A fully faithful functor reflects limits. -/
 instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSize.{w, w'} F where
   reflectsLimitsOfShape {J} 𝒥₁ :=
@@ -798,6 +801,7 @@ instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSi
               intro s m
               rw [Functor.map_preimage]
               apply t.uniq_cone_morphism⟩ } }
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A fully faithful functor reflects colimits. -/
 instance fullyFaithful_reflectsColimits [F.Full] [F.Faithful] :
     ReflectsColimitsOfSize.{w, w'} F where

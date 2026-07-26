@@ -157,6 +157,7 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
 instance : OrderedSub (Language α) where
   tsub_le_iff_right _ _ _ := sdiff_le_iff'
 
+set_option backward.isDefEq.respectTransparency false in
 instance instSemiring : Semiring (Language α) where
   add_assoc := union_assoc
   zero_add := empty_union
@@ -186,9 +187,11 @@ def map (f : α → β) : Language α →+* Language β where
   map_add' := image_union _
   map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
@@ -238,11 +241,11 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 
 theorem iSup_sub {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) - m = ⨆ i, l i - m :=
-  iUnion_diff _ _
+  iUnion_sdiff _ _
 
 theorem sub_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m - ⨆ i, l i) = ⨅ i, m - l i :=
-  diff_iUnion _ _
+  sdiff_iUnion _ _
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
@@ -363,6 +366,7 @@ lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := reverse_invol
 @[simp]
 lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
   simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,

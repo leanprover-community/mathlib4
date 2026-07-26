@@ -31,8 +31,8 @@ namespace LinearMap
 
 section Ring
 
-variable [Ring K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-variable [AddCommGroup V'] [Module K V']
+variable [Semiring K] [AddCommMonoid V] [Module K V] [AddCommMonoid V₁] [Module K V₁]
+variable [AddCommMonoid V'] [Module K V']
 
 /-- `rank f` is the rank of a `LinearMap` `f`, defined as the dimension of `f.range`. -/
 abbrev rank (f : V →ₗ[K] V') : Cardinal :=
@@ -48,7 +48,7 @@ theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
 theorem rank_zero [Nontrivial K] : rank (0 : V →ₗ[K] V') = 0 := by
   rw [rank, LinearMap.range_zero, rank_bot]
 
-variable [AddCommGroup V''] [Module K V'']
+variable [AddCommMonoid V''] [Module K V'']
 
 theorem rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.comp g) ≤ rank f := by
   refine Submodule.rank_mono ?_

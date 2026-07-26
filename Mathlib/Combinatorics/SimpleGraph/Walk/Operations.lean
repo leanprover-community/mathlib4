@@ -90,7 +90,7 @@ theorem concat_eq_append {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
 /-- The concatenation of the reverse of the first walk with the second walk. -/
 protected def reverseAux {u v w : V} : G.Walk u v → G.Walk u w → G.Walk v w
   | nil, q => q
-  | cons h p, q => Walk.reverseAux p (cons (G.symm h) q)
+  | cons h p, q => p.reverseAux <| cons h.symm q
 
 /-- The walk in reverse. -/
 @[symm]
@@ -155,7 +155,7 @@ theorem exists_concat_eq_cons {u v w : V} :
 @[simp]
 theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil := rfl
 
-theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons (G.symm h) nil :=
+theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons h.symm nil :=
   rfl
 
 @[simp]
@@ -163,7 +163,7 @@ theorem reverse_toWalk {u v : V} (h : G.Adj u v) : h.toWalk.reverse = h.symm.toW
 
 @[simp]
 theorem cons_reverseAux {u v w x : V} (p : G.Walk u v) (q : G.Walk w x) (h : G.Adj w u) :
-    (cons h p).reverseAux q = p.reverseAux (cons (G.symm h) q) := rfl
+    (cons h p).reverseAux q = p.reverseAux (cons h.symm q) := rfl
 
 @[simp]
 protected theorem append_reverseAux {u v w x : V}
@@ -171,7 +171,7 @@ protected theorem append_reverseAux {u v w x : V}
     (p.append q).reverseAux r = q.reverseAux (p.reverseAux r) := by
   induction p with
   | nil => rfl
-  | cons h _ ih => exact ih q (cons (G.symm h) r)
+  | cons h _ ih => exact ih q (cons h.symm r)
 
 @[simp]
 protected theorem reverseAux_append {u v w x : V}
@@ -179,14 +179,14 @@ protected theorem reverseAux_append {u v w x : V}
     (p.reverseAux q).append r = p.reverseAux (q.append r) := by
   induction p with
   | nil => rfl
-  | cons h _ ih => simp [ih (cons (G.symm h) q)]
+  | cons h _ ih => simp [ih (cons h.symm q)]
 
 protected theorem reverseAux_eq_reverse_append {u v w : V} (p : G.Walk u v) (q : G.Walk u w) :
     p.reverseAux q = p.reverse.append q := by simp [reverse]
 
 @[simp]
 theorem reverse_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).reverse = p.reverse.append (cons (G.symm h) nil) := by simp [reverse]
+    (cons h p).reverse = p.reverse.append (cons h.symm nil) := by simp [reverse]
 
 @[simp]
 theorem reverse_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -200,7 +200,7 @@ theorem reverse_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
 
 @[simp]
 theorem reverse_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).reverse = cons (G.symm h) p.reverse := by simp [concat_eq_append]
+    (p.concat h).reverse = cons h.symm p.reverse := by simp [concat_eq_append]
 
 @[simp]
 theorem reverse_reverse {u v : V} (p : G.Walk u v) : p.reverse.reverse = p := by
@@ -282,6 +282,7 @@ def concatRec {u v : V} (p : G.Walk u v) : motive u v p :=
 theorem concatRec_nil (u : V) :
     @concatRec _ _ motive @Hnil @Hconcat _ _ (nil : G.Walk u u) = Hnil := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
     @concatRec _ _ motive @Hnil @Hconcat _ _ (p.concat h) =
@@ -291,7 +292,7 @@ theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
   trans concatRecAux @Hnil @Hconcat (cons h.symm p.reverse)
   · congr
     simp
-  · rw [concatRecAux, eqRec_heq_iff_heq]
+  · rw [concatRecAux, eqRec_heq_iff]
     congr <;> simp
 
 end ConcatRec
@@ -413,6 +414,7 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
   simp_rw [support_append, ← Multiset.coe_add, coe_support, add_comm ({v} : Multiset V),
     ← add_assoc, add_tsub_cancel_right]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofSupport_support {u v : V} (p : G.Walk u v) :
     ofSupport _ p.support_ne_nil p.isChain_adj_support = p.copy (by simp) (by simp) := by
@@ -448,6 +450,7 @@ theorem darts_reverse {u v : V} (p : G.Walk u v) :
 theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
     d ∈ p.reverse.darts ↔ d.symm ∈ p.darts := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofDarts_darts {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
     ofDarts _ (darts_eq_nil.not.mpr hp) p.isChain_dartAdj_darts = p.copy (by simp) (by simp) := by
@@ -538,6 +541,7 @@ lemma Nil.append {p : G.Walk u v} {q : G.Walk v w} (hp : p.Nil) (hq : q.Nil) :
 lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
   cases p <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   match p, n with
@@ -580,6 +584,7 @@ lemma darts_drop (p : G.Walk u v) (n : ℕ) : (p.drop n).darts = p.darts.drop n 
 lemma edges_drop (p : G.Walk u v) (n : ℕ) : (p.drop n).edges = p.edges.drop n := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The walk obtained by taking the first `n` darts of a walk. -/
 def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   match p, n with
@@ -721,10 +726,12 @@ lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
   · rw! [concat_cons, dropLast_cons_of_not_nil] <;>
       simp [*, ← length_eq_zero_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
   cases p <;> simp at hp ⊢
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma concat_dropLast {p : G.Walk u v} (hp : G.Adj p.penultimate v) : p.dropLast.concat hp = p := by
   induction p with

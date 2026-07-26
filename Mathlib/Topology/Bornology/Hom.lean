@@ -79,7 +79,7 @@ variable [Bornology α] [Bornology β] [Bornology γ] [Bornology δ]
 
 instance : FunLike (LocallyBoundedMap α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr

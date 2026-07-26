@@ -267,6 +267,10 @@ instance [(weakEquivalences C).IsMultiplicative] :
     (weakEquivalences P.FullSubcategory).IsMultiplicative :=
   inferInstanceAs ((weakEquivalences C).inverseImage P.ι).IsMultiplicative
 
+instance [(weakEquivalences C).RespectsIso] :
+    (weakEquivalences P.FullSubcategory).RespectsIso :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).RespectsIso
+
 lemma weakEquivalence_iff_of_objectProperty
     {X Y : P.FullSubcategory} (f : X ⟶ Y) :
     WeakEquivalence f ↔ WeakEquivalence f.hom := by

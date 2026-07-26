@@ -90,9 +90,6 @@ theorem isNormal_veblenWith (o : Ordinal) : IsNormal (veblenWith f o) := by
   · rwa [veblenWith_zero]
   · exact isNormal_veblenWith' f h
 
-@[deprecated (since := "2025-12-25")]
-protected alias IsNormal.veblenWith := isNormal_veblenWith
-
 theorem mem_range_veblenWith (h : o ≠ 0) :
     a ∈ range (veblenWith f o) ↔ ∀ b < o, veblenWith f b a = a := by
   rw [veblenWith_of_ne_zero f h, mem_range_derivFamily (fun _ ↦ isNormal_veblenWith hf _)]
@@ -212,9 +209,6 @@ theorem isNormal_veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     rw [veblenWith_veblenWith_of_lt hf]
     rw [lt_succ_iff]
     exact le_max_left _ b
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.veblenWith_zero := isNormal_veblenWith_zero
 
 theorem veblenWith_veblenWith_eq_veblenWith_iff (h : o₂ ≤ o₁) :
     veblenWith f o₁ (veblenWith f o₂ a) = veblenWith f o₂ a ↔ veblenWith f o₁ a = a := by

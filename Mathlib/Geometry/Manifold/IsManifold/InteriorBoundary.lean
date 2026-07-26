@@ -6,12 +6,14 @@ Authors: Michael Rothgang, Ben Eltschig
 module
 
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
+public import Mathlib.Geometry.Manifold.Notation
 
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # Interior and boundary of a manifold
+
 Define the interior and boundary of a manifold.
 
 ## Main definitions
@@ -115,8 +117,8 @@ lemma isBoundaryPoint_iff {x : M} : I.IsBoundaryPoint x ↔ extChartAt I x x ∈
 
 /-- Every point is either an interior or a boundary point. -/
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
-  rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_diff_interior,
-    I.isClosed_range.closure_eq, mem_diff]
+  rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_sdiff_interior,
+    I.isClosed_range.closure_eq, mem_sdiff]
   exact fun h ↦ ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
@@ -351,7 +353,7 @@ variable
 /-- If a function `f` is differentiable at `x` with surjective `mfderiv I I' f x` and `x` is an
 interior point with respect to `I`, `f x` must be an interior point with respect to `I'`. -/
 lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x : M}
-    (hf : MDifferentiableAt I I' f x) (hf' : Surjective (mfderiv I I' f x))
+    (hf : MDiffAt f x) (hf' : Surjective (mfderiv% f x))
     (hx : I.IsInteriorPoint x) : I'.IsInteriorPoint (f x) := by
   -- Since p-adic manifolds don't have boundary, WLOG `𝕜` is `ℝ` or `ℂ` and `E` is normed over `ℝ`.
   wlog _ : IsRCLikeNormedField 𝕜
@@ -360,7 +362,7 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   let _ : NormedSpace ℝ E' := NormedSpace.restrictScalars ℝ 𝕜 E'
   -- Write everything in terms of extended charts around `x` and `f x`.
-  simp only [mfderiv, hf, ite_true] at hf'
+  simp only [mfderiv, hf] at hf'
   have hf'' := hf.differentiableWithinAt_writtenInExtChartAt.differentiableAt <| by
     simpa [← mem_interior_iff_mem_nhds] using! hx
   rw [fderivWithin_eq_fderiv (I.uniqueDiffOn _ <| by simp) hf''] at hf'
