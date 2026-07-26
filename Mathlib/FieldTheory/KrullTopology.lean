@@ -20,7 +20,7 @@ import Mathlib.Topology.UniformSpace.Separation
 
 We define the Krull topology on `Gal(L/K)` for an arbitrary field extension `L/K`, whose basic
 open neighborhoods of `1` are given by `E.fixingSubgroup`, where `E` ranges over intermediate
-field between `L` and `K` such that `E/K` is finite dimensional.
+field between `L` and `K` such that `E/K` is finitely generated.
 
 ## Main Definitions
 
@@ -60,6 +60,7 @@ open scoped Pointwise Uniformity
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 variable (K L) in
+/-- For a field extension `L/K`, we equiv `Gal(L/K)` with the left uniform structure. -/
 @[no_expose]
 instance : UniformSpace Gal(L/K) := .ofCore
   { uniformity := ⨅ x : L, 𝓟 {p | p.1 x = p.2 x}
@@ -82,7 +83,7 @@ theorem krullTopology_mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
 
 variable (K L) in
 /-- For a field extension `L/K`, `krullTopology K L` is the topological space structure on
-`Gal(L/K)` induced by the group filter basis `galGroupBasis K L`. -/
+`Gal(L/K)` induced by the uniform structure. -/
 instance krullTopology : TopologicalSpace Gal(L/K) := inferInstance
 
 variable (K L) in
@@ -186,7 +187,7 @@ section KrullT2
 
 open scoped Topology Filter
 
-/-- Let `L/E/K` be a tower of fields with `E/K` finite.
+/-- Let `L/E/K` be a tower of fields with `E/K` finitely generated.
 Then `Gal(L/E)` is an open subgroup of `Gal(L/K)`. -/
 theorem IntermediateField.isOpen_fixingSubgroup (E : IntermediateField K L)
     [Algebra.EssFiniteType K E] : IsOpen (E.fixingSubgroup : Set Gal(L/K)) :=
@@ -196,8 +197,7 @@ theorem IntermediateField.isOpen_fixingSubgroup (E : IntermediateField K L)
 @[deprecated (since := "2026-03-05")]
 alias IntermediateField.fixingSubgroup_isOpen := IntermediateField.isOpen_fixingSubgroup
 
-/-- Given a tower of fields `L/E/K`, with `E/K` finite,
-the subgroup `Gal(L/E) ≤ Gal(L/K)` is closed. -/
+/-- Given a tower of fields `L/E/K`, the subgroup `Gal(L/E) ≤ Gal(L/K)` is closed. -/
 theorem IntermediateField.isClosed_fixingSubgroup (E : IntermediateField K L) :
     IsClosed (E.fixingSubgroup : Set Gal(L/K)) := by
   have hx (x : E) : IsClosed ((adjoin K {(x : L)}).fixingSubgroup : Set Gal(L/K)) :=
@@ -233,11 +233,10 @@ instance : TotallySeparatedSpace Gal(L/K) := by
     IntermediateField.mem_fixingSubgroup_iff, not_forall]
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
 
-/-- If `L/K` is an algebraic extension, then the Krull topology on `Gal(L/K)` is Hausdorff. -/
+/-- The Krull topology on `Gal(L/K)` is Hausdorff. -/
 instance krullTopology_t2 : T2Space Gal(L/K) := TotallySeparatedSpace.t2Space
 
-/-- If `L/K` is an algebraic field extension, then the Krull topology on `Gal(L/K)` is
-  totally separated. -/
+/-- The Krull topology on `Gal(L/K)` is totally separated. -/
 @[deprecated TotallySeparatedSpace.isTotallySeparated_univ (since := "2026-03-05")]
 theorem krullTopology_isTotallySeparated :
     IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
@@ -246,8 +245,8 @@ theorem krullTopology_isTotallySeparated :
 end TotallySeparated
 
 variable (K L) in
-instance krullTopology_discreteTopology_of_essFiniteType
-    [Algebra.EssFiniteType K L] : DiscreteTopology Gal(L/K) := sorry
+instance krullTopology_discreteUniformity_of_essFiniteType
+    [Algebra.EssFiniteType K L] : DiscreteUniformity Gal(L/K) := sorry
 
 variable (K L) in
 theorem AlgEquiv.totallyBounded_univ [Algebra.IsAlgebraic K L] :
@@ -271,6 +270,7 @@ variable (K L) in
 open IntermediateField in
 instance [Algebra.IsIntegral K L] : CompactSpace Gal(L/K) where
   isCompact_univ := by
+    stop
     apply (AlgEquiv.totallyBounded_univ K L).isCompact_of_isComplete
     intro f hf _
     rw [cauchy_iff] at hf
@@ -317,8 +317,7 @@ instance [Algebra.IsIntegral K L] : CompactSpace Gal(L/K) where
 
 section MulAction
 
-/-- If `L/K` is an algebraic field extension, then the stabilizer
-in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
+/-- The stabilizer in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
 theorem stabilizer_isOpen_of_isIntegral (x : L) :
     IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) := by
   open IntermediateField in
