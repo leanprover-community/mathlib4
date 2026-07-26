@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Init
 public meta import Lean.Elab.DeclarationRange
-public meta import Lean.Linter.TacticTypeCheck
 
 /-!
 # `addRelatedDecl`

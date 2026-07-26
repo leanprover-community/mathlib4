@@ -10,6 +10,7 @@ public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Data.List.TFAE
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 

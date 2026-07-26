@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Complex.Harmonic.Poisson
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
-import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!
 # Jensen's Formula of Complex Analysis

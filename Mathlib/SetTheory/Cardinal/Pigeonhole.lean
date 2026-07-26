@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!

@@ -12,6 +12,7 @@ public import Mathlib.Probability.Moments.CovarianceBilin
 
 import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Analysis.Matrix.Order
 
 /-!
 # Multivariate Gaussian distributions

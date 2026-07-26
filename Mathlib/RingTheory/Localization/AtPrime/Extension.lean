@@ -5,7 +5,9 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.RamificationInertia.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.NumberTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 /-!
 # Primes in an extension of localization at prime

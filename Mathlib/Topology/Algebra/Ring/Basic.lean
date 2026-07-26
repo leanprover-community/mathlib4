@@ -8,9 +8,10 @@ module
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.GroupTopology
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 

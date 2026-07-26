@@ -6,6 +6,9 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Tactic.Algebra.Basic
+public meta import Mathlib.Tactic.Algebra.Basic
+public meta import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Tactic.Ring.RingNF
 
 /-! # The `algebra_nf` tactic
 

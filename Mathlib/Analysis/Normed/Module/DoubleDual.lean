@@ -5,8 +5,8 @@ Authors: Heather Macbeth, Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.WeakSpace
 public import Mathlib.Analysis.Normed.Module.WeakDual
+public import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
 # The double dual of a normed space

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Analysis.PSeries
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Convergence of `p`-series on lattices

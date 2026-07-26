@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Order.Group.Action
-public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 
 /-! # Pointwise instances on `Submodule`s
 

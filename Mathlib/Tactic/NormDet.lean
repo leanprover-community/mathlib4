@@ -5,9 +5,11 @@ Authors: Paul Cadman
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-meta import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness
-public meta import Mathlib.Tactic.Determinant.Bird.Cert
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Tactic.Determinant.Bird.Cert
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # `norm_det` simproc and `eval_det` tactic

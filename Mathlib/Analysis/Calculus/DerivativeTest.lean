@@ -6,7 +6,6 @@ Yongxi Lin, Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.Topology.Order.OrderClosedExtr
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Ordered
