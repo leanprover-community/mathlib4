@@ -1,0 +1,119 @@
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Matrix.Module
+public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
+
+/-!
+## Simple modules over simple rings
+
+## Main results
+
+* `linearEquiv_of_isSimpleModule_over_simple_ring`: any two simple modules over an Artinian
+  simple ring are isomorphic.
+* `directSum_simple_module_over_simple_ring`: any module over an Artinian simple ring is
+  isomorphic to a direct sum of copies of a simple module.
+* `linearEquiv_iff_finrank_eq_over_simple_ring`: two finite modules over a finite simple algebra
+  `A` over a field `k` are isomorphic as `A`-modules if and only if they have the same dimension
+  over `k`.
+
+-/
+
+@[expose] public section
+
+universe w u v
+
+section simple
+
+variable (k : Type u) (A : Type v) [Field k] [Ring A] [Algebra k A]
+    [IsSimpleRing A] [Module.Finite k A]
+
+@[stacks 074E "(1)"]
+lemma linearEquiv_of_isSimpleModule_over_simple_ring [IsArtinianRing A] (M N : Type w)
+    [AddCommGroup M] [AddCommGroup N] [Module A M] [Module A N] [IsSimpleModule A M]
+    [IsSimpleModule A N] : Nonempty (M ≃ₗ[A] N) := by
+  let eM := LinearEquiv.ofInjective (LinearMap.inl A M N) LinearMap.inl_injective
+  let eN := LinearEquiv.ofInjective (LinearMap.inr A M N) LinearMap.inr_injective
+  have : IsSimpleModule A (LinearMap.range (LinearMap.inl A M N)) := .congr eM.symm
+  have : IsSimpleModule A (LinearMap.range (LinearMap.inr A M N)) := .congr eN.symm
+  obtain ⟨e⟩ := IsSimpleRing.isIsotypic A (M × N) (LinearMap.range (LinearMap.inl A M N))
+    (LinearMap.range (LinearMap.inr A M N))
+  exact ⟨eM.trans (e.symm.trans eN.symm)⟩
+
+lemma isIsotypicOfType_over_simple [IsArtinianRing A] (M : Type w) [AddCommGroup M]
+    [Module A M] (S : Type w) [AddCommGroup S] [Module A S] [IsSimpleModule A S] :
+    IsIsotypicOfType A M S := fun m _ ↦ linearEquiv_of_isSimpleModule_over_simple_ring A m S
+
+@[stacks 074E "(2)"]
+lemma directSum_simple_module_over_simple_ring [IsArtinianRing A] (M : Type v) [AddCommGroup M]
+    [Module A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module A S) (_ : IsSimpleModule A S)
+    (ι : Type v), Nonempty (M ≃ₗ[A] (ι →₀ S)) := by
+  obtain ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule A A)
+  rw [← isSimpleModule_iff_isAtom] at hS
+  obtain ⟨ι, he⟩ := (isIsotypicOfType_over_simple A M S).linearEquiv_finsupp
+  exact ⟨S, inferInstance, inferInstance, hS, ι, he⟩
+
+@[stacks 074E "(2)"]
+lemma directSum_simple_module_over_simple_algebra (M : Type v) [AddCommGroup M] [Module k M]
+    [Module A M] [IsScalarTower k A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module k S)
+    (_ : Module A S) (_ : IsScalarTower k A S) (_ : IsSimpleModule A S) (ι : Type v),
+    Nonempty (M ≃ₗ[A] (ι →₀ S)) := by
+  let : IsArtinianRing A := IsArtinianRing.of_finite k A
+  obtain ⟨S, _, _, _, ι, ⟨iso⟩⟩ := directSum_simple_module_over_simple_ring A M
+  let : Module k S := Module.compHom S (algebraMap k A)
+  have : IsScalarTower k A S := .of_algebraMap_smul fun _ _ ↦ rfl
+  exact ⟨S, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, ι, ⟨iso⟩⟩
+
+lemma directSum_simple_module_over_simple_algebra' (A : Type v) [Ring A] [IsArtinianRing A]
+    [IsSimpleRing A] (M : Type v) [AddCommGroup M] [Module A M]
+    (S : Type v) [AddCommGroup S] [Module A S] [IsSimpleModule A S] :
+    ∃ (ι : Type v), Nonempty (M ≃ₗ[A] (ι →₀ S)) := by
+  obtain ⟨T, _, _, _, ι, ⟨iso⟩⟩ := directSum_simple_module_over_simple_ring A M
+  obtain ⟨iso'⟩ := linearEquiv_of_isSimpleModule_over_simple_ring A S T
+  exact ⟨ι, ⟨iso ≪≫ₗ Finsupp.mapRange.linearEquiv iso'.symm⟩⟩
+
+/-- Two modules over a simple `k`-algebra `A` have an `A`-linear equivalence if and only if their
+`k`-dimension is the same. -/
+@[stacks 074E "(3)"]
+lemma linearEquiv_iff_finrank_eq_over_simple_ring
+    (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N] [Module k M]
+    [Module k N] [IsScalarTower k A M] [IsScalarTower k A N] [Module.Finite A M]
+    [Module.Finite A N] : Nonempty (M ≃ₗ[A] N) ↔ Module.finrank k M = Module.finrank k N := by
+  have : IsArtinianRing A := .of_finite k A
+  refine ⟨fun ⟨e⟩ ↦ (e.restrictScalars k).finrank_eq, fun h ↦ ?_⟩
+  obtain ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule A A)
+  rw [← isSimpleModule_iff_isAtom] at hS
+  obtain ⟨m, ⟨eM⟩⟩ := (isIsotypicOfType_over_simple A M S).linearEquiv_fun
+  obtain ⟨n, ⟨eN⟩⟩ := (isIsotypicOfType_over_simple A N S).linearEquiv_fun
+  have : Nontrivial S := IsSimpleModule.nontrivial A S
+  obtain rfl : m = n := by simp_all [(eM.restrictScalars k).finrank_eq, Module.finrank_pi_fintype,
+    (eN.restrictScalars k).finrank_eq, ne_of_gt <| Module.finrank_pos (R := k) (M := S)]
+  exact ⟨eM.trans eN.symm⟩
+
+namespace IsSimpleRing
+
+open Matrix.Module
+
+scoped instance isScalarTower_matrix_pi {n : ℕ} (D : Type w) [DivisionRing D] [Algebra k D] :
+    IsScalarTower k (Matrix (Fin n) (Fin n) D) (Fin n → D) where
+  smul_assoc a b x := by ext; simp [Finset.smul_sum]
+
+/-- Along a Wedderburn–Artin isomorphism `A ≃ₐ[k] Mₙ(D)`, the induced `A`-action on `Fin n → D`
+is compatible with the `k`-action. -/
+scoped instance isScalarTower_compHom_pi {n : ℕ} (D : Type w) [DivisionRing D] [Algebra k D]
+    (wdb : A ≃ₐ[k] Matrix (Fin n) (Fin n) D) :
+    letI := Module.compHom (Fin n → D) wdb.toRingEquiv.toRingHom
+    IsScalarTower k A (Fin n → D) :=
+  let := Module.compHom (Fin n → D) wdb.toRingEquiv.toRingHom
+  ⟨fun a b x ↦ show wdb (a • b) • x = _ by
+    rw [map_smul, Algebra.smul_def, mul_smul, algebraMap_smul]; rfl⟩
+
+scoped instance smulCommClass_compHom_pi {n : ℕ} (D : Type w) [DivisionRing D] [Algebra k D]
+    (wdb : A ≃ₐ[k] Matrix (Fin n) (Fin n) D) :
+    letI := Module.compHom (Fin n → D) wdb.toRingEquiv.toRingHom
+    SMulCommClass A k (Fin n → D) :=
+  let := Module.compHom (Fin n → D) wdb.toRingEquiv.toRingHom
+  ⟨fun a b x ↦ show wdb a • b • x = b • wdb a • x by ext; simp [Finset.smul_sum]⟩
+
+end IsSimpleRing
