@@ -130,9 +130,6 @@ lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
     Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
   ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
 
-@[deprecated (since := "2025-12-09")]
-alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
-
 end Comp
 
 lemma iff_of_surjective
@@ -142,12 +139,8 @@ lemma iff_of_surjective
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
     and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
 
-@[deprecated (since := "2025-12-09")]
-alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
-
 section BaseChange
 
-open scoped TensorProduct
 
 instance [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
   .of_formallyUnramified_and_formallySmooth
@@ -196,8 +189,8 @@ theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
 
 /-- The localization of a formally étale map is formally étale. -/
 theorem localization_map [FormallyEtale R S] : FormallyEtale Rₘ Sₘ := by
-  haveI : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
-  haveI : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
+  have : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
+  have : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
   exact FormallyEtale.localization_base M
 
 end Localization

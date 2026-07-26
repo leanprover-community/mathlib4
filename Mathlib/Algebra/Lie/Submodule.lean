@@ -323,7 +323,7 @@ instance : InfSet (LieSubmodule R L M) :=
   ⟨fun S ↦
     { toSubmodule := sInf {(s : Submodule R M) | s ∈ S}
       lie_mem := fun {x m} h ↦ by
-        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_setOf_eq,
+        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_ofPred_eq,
           forall_apply_eq_imp_iff₂, forall_exists_index, and_imp] at h ⊢
         intro N hN; apply N.lie_mem (h N hN) }⟩
 
@@ -354,7 +354,7 @@ theorem iInf_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
 theorem coe_sInf (S : Set (LieSubmodule R L M)) : (↑(sInf S) : Set M) = ⋂ s ∈ S, (s : Set M) := by
   rw [← LieSubmodule.coe_toSubmodule, sInf_toSubmodule, Submodule.coe_sInf]
   ext m
-  simp only [mem_iInter, mem_setOf_eq, forall_apply_eq_imp_iff₂, exists_imp,
+  simp only [mem_iInter, mem_ofPred_eq, forall_apply_eq_imp_iff₂, exists_imp,
     and_imp, SetLike.mem_coe, mem_toSubmodule]
 
 @[simp]
@@ -383,7 +383,6 @@ instance : SupSet (LieSubmodule R L M) where
         change ⁅x, m⁆ ∈ sSup {(p : Submodule R M) | p ∈ S}
         obtain ⟨s, hs, hsm⟩ := Submodule.mem_sSup_iff_exists_finset.mp hm
         clear hm
-        classical
         induction s using Finset.induction_on generalizing m with
         | empty =>
           replace hsm : m = 0 := by simpa using hsm
@@ -971,6 +970,7 @@ lemma map_le_range {M' : Type*}
   rw [← LieModuleHom.map_top]
   exact LieSubmodule.map_mono le_top
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_incl_lt_iff_lt_top {N' : LieSubmodule R L N} :
     N'.map (LieSubmodule.incl N) < N ↔ N' < ⊤ := by

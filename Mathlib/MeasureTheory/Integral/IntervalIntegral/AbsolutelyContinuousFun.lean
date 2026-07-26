@@ -6,7 +6,6 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 
@@ -77,7 +76,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
         with ε hε₁ hε₂ hε₃ hε₄
       refine ⟨(x, x + ε), ⟨⟨hx.1.1, by linarith, by linarith⟩, ?_⟩, by simp, rfl⟩
       exact hδ₂ (by grind) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
-  simp only [t, subset_def, mem_setOf_eq] at hu₁
+  simp only [t, subset_def, mem_ofPred_eq] at hu₁
   refine ⟨u, ⟨hu₁, hu₃, ?_⟩⟩
   have : Countable u := by simp [hu₂]
   have : Pairwise (Disjoint on fun (z : u) ↦ Icc z.val.1 z.val.2) :=

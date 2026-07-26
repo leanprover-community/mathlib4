@@ -5,7 +5,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot, Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 
@@ -151,7 +150,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
     refine fun n => Eventually.of_forall fun x => ?_
-    grw [(h_anti zero_le).subset]
+    grw [h_anti zero_le]
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
 end TendstoMono
@@ -296,6 +295,7 @@ open scoped Interval
 variable {E X : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
   {a b b₀ b₁ b₂ : ℝ} {μ : Measure ℝ} {f : ℝ → E}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     (h_int : IntervalIntegrable f μ (min a b₁) (max a b₂)) :
     ContinuousWithinAt (fun b => ∫ x in a..b, f x ∂μ) (Icc b₁ b₂) b₀ := by
@@ -435,7 +435,7 @@ theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X
     rw [nhds_prod_eq]
     exact (continuous_abs.tendsto' _ _ abs_zero).comp (this.comp tendsto_snd)
 
-variable [NoAtoms μ]
+variable [NullSingletonClass μ]
 
 theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
     ContinuousOn (fun x => ∫ t in Ioc a x, f t ∂μ) (Icc a b) := by
@@ -636,8 +636,8 @@ theorem continuousWithinAt_Ici_primitive_Ioi {a₀ : ℝ} (hf : IntegrableOn f (
     · filter_upwards [mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hx)] with a ha using by grind
     · filter_upwards [self_mem_nhdsWithin] with a ha using by grind
 
-theorem continuousOn_Ici_primitive_Ioi [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Ioi a₀) μ) :
-    ContinuousOn (fun b ↦ ∫ x in Ioi b, f x ∂μ) (Ici a₀) := by
+theorem continuousOn_Ici_primitive_Ioi [NullSingletonClass μ] {a₀ : ℝ}
+    (hf : IntegrableOn f (Ioi a₀) μ) : ContinuousOn (fun b ↦ ∫ x in Ioi b, f x ∂μ) (Ici a₀) := by
   intro a (ha : a₀ ≤ a)
   rw [continuousWithinAt_iff_continuous_left_right]
   constructor
@@ -671,8 +671,8 @@ theorem continuousWithinAt_Iic_primitive_Iio {a₀ : ℝ} (hf : IntegrableOn f (
     · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioi_mem_nhds hx)] with a ha using by grind
     · filter_upwards [self_mem_nhdsWithin] with a ha using by grind
 
-theorem continuousOn_Iic_primitive_Iio [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Iio a₀) μ) :
-    ContinuousOn (fun b ↦ ∫ x in Iio b, f x ∂μ) (Iic a₀) := by
+theorem continuousOn_Iic_primitive_Iio [NullSingletonClass μ] {a₀ : ℝ}
+    (hf : IntegrableOn f (Iio a₀) μ) : ContinuousOn (fun b ↦ ∫ x in Iio b, f x ∂μ) (Iic a₀) := by
   intro a (ha : a ≤ a₀)
   rw [continuousWithinAt_iff_continuous_left_right]
   constructor
@@ -688,13 +688,13 @@ theorem continuousOn_Iic_primitive_Iio [NoAtoms μ] {a₀ : ℝ} (hf : Integrabl
       continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
     exact (continuousWithinAt_const.add h_cwa).congr h_split (h_split a (left_mem_Icc.2 ha))
 
-theorem continuousOn_Ici_primitive_Ici [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Ici a₀) μ) :
-    ContinuousOn (fun b ↦ ∫ x in Ici b, f x ∂μ) (Ici a₀) := by
+theorem continuousOn_Ici_primitive_Ici [NullSingletonClass μ] {a₀ : ℝ}
+    (hf : IntegrableOn f (Ici a₀) μ) : ContinuousOn (fun b ↦ ∫ x in Ici b, f x ∂μ) (Ici a₀) := by
   simp_rw [integral_Ici_eq_integral_Ioi]
   exact (hf.mono_set Ioi_subset_Ici_self).continuousOn_Ici_primitive_Ioi
 
-theorem continuousOn_Iic_primitive_Iic [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Iic a₀) μ) :
-    ContinuousOn (fun b ↦ ∫ x in Iic b, f x ∂μ) (Iic a₀) := by
+theorem continuousOn_Iic_primitive_Iic [NullSingletonClass μ] {a₀ : ℝ}
+    (hf : IntegrableOn f (Iic a₀) μ) : ContinuousOn (fun b ↦ ∫ x in Iic b, f x ∂μ) (Iic a₀) := by
   simp_rw [integral_Iic_eq_integral_Iio]
   exact (hf.mono_set Iio_subset_Iic_self).continuousOn_Iic_primitive_Iio
 

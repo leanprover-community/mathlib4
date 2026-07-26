@@ -31,18 +31,75 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 @[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
+section DComp
+
+variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
+    (g : ∀ i, β i) (i : ι)
+
+theorem dcomp_def : @f ∘' g = fun i => f (g i) := rfl
+
+theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
+
+@[simp] theorem dcomp_eq_comp {α β γ} (f : β → γ) (g : α → β) : f ∘' g = f ∘ g := rfl
+
+end DComp
+
 /-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
 `g i` may depend on `i`. -/
 protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
     α i × β i := (f i, g i)
 
-@[simp] lemma prod_apply {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
-    Function.prod f g i = (f i , g i) := rfl
+section DProd
 
-lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = .swap :=
-  rfl
+variable {ι} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i)
+
+theorem prod_def : Function.prod f g = fun i : ι => (f i, g i) := rfl
+
+@[simp, grind =] lemma prod_apply (i : ι) : Function.prod f g i = (f i, g i) := rfl
+
+variable {f f' g g'} in
+@[simp] theorem prod_inj : Function.prod f g = Function.prod f' g' ↔ f = f' ∧ g = g' := by
+  simp [funext_iff, Prod.ext_iff, forall_and]
+
+end DProd
+
+section Prod
+
+variable {α β : Type*} {ι : Sort*} (f : ι → α) (g : ι → β)
+
+theorem prod_ext_iff {h h' : ι → α × β} :
+    h = h' ↔ Prod.fst ∘ h = Prod.fst ∘ h' ∧ Prod.snd ∘ h = Prod.snd ∘ h' :=
+  prod_inj
+
+@[simp] lemma prod_fst_snd : Function.prod (Prod.fst : _ → α) (Prod.snd : _ → β) = id := rfl
+@[simp] lemma prod_snd_fst : Function.prod (Prod.snd : _ → β) (Prod.fst : _ → α) = .swap := rfl
+
+@[simp] theorem fst_comp_prod : Prod.fst ∘ Function.prod f g = f := rfl
+@[simp] theorem snd_comp_prod : Prod.snd ∘ Function.prod f g = g := rfl
+
+@[simp] theorem prod_fst_comp_snd_comp (h : ι → α × β) :
+    Function.prod (Prod.fst ∘ h) (Prod.snd ∘ h) = h := rfl
+
+theorem const_prod (p : α × β) : const ι p = Function.prod (const ι p.1) (const ι p.2) := rfl
+
+@[simp] theorem prod_const_const (a : α) (b : β) :
+    Function.prod (const ι a) (const ι b) = const ι (a, b) := rfl
+
+theorem prod_comp {κ} (h : κ → ι) : Function.prod f g ∘ h = Function.prod (f ∘ h) (g ∘ h) := rfl
+
+@[simp] theorem prod_comp_fst_comp_snd {α₁ α₂ β₁ β₂} (f : α₁ → α₂) (g : β₁ → β₂) :
+    Function.prod (f ∘ Prod.fst) (g ∘ Prod.snd) = Prod.map f g := rfl
+
+@[simp] theorem map_comp_prod {γ δ} (h : α → γ) (k : β → δ) :
+    Prod.map h k ∘ Function.prod f g = Function.prod (h ∘ f) (k ∘ g) := rfl
+
+theorem prod_comp_prod {γ δ} (h : α × β → γ) (k : α × β → δ) :
+    Function.prod h k ∘ Function.prod f g =
+      Function.prod (h ∘ Function.prod f g) (k ∘ Function.prod f g) := rfl
+
+@[simp] theorem swap_comp_prod : Prod.swap ∘ Function.prod f g = Function.prod g f := rfl
+
+end Prod
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation

@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Eisenstein polynomials
+
 Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]` is
 *Eisenstein at `𝓟`* if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
 `f.coeff 0 ∉ 𝓟 ^ 2`. In this file we gather miscellaneous results about Eisenstein polynomials.

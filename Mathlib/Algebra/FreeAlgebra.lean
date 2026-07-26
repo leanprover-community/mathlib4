@@ -201,7 +201,6 @@ instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
   mul_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.mul_assoc
-  one := Quot.mk _ 1
   one_mul := by
     rintro ⟨⟩
     exact Quot.sound Rel.one_mul
@@ -223,6 +222,7 @@ instance instDistrib : Distrib (FreeAlgebra R X) where
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.right_distrib
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
@@ -237,7 +237,6 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   add_comm := by
     rintro ⟨⟩ ⟨⟩
     exact Quot.sound Rel.add_comm
-  nsmul := (· • ·)
   nsmul_zero := by
     rintro ⟨⟩
     change Quot.mk _ (_ * _) = _
@@ -245,7 +244,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     exact Quot.sound Rel.zero_mul
   nsmul_succ n := by
     rintro ⟨a⟩
-    dsimp +instances only [HSMul.hSMul, instSMul, Quot.map]
+    dsimp only [HSMul.hSMul, SMul.smul, NSMul.nsmul, Quot.map]
     rw [map_add, map_one, mk_mul, mk_mul, ← add_one_mul (_ : FreeAlgebra R X)]
     congr 1
     exact Quot.sound Rel.add_scalar
@@ -459,7 +458,7 @@ for example.
 noncomputable def equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X] :=
   .ofAlgHom (lift R fun x ↦ .of R (FreeMonoid X) (.of x))
     (MonoidAlgebra.lift R (FreeAlgebra R X) (FreeMonoid X) (FreeMonoid.lift (ι R)))
-    (by ext; simp) (by ext; simp)
+    (MonoidAlgebra.algHom_ext' (by ext; simp) (by ext)) (by ext; simp)
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
@@ -537,6 +536,7 @@ end FreeAlgebra
 `CoeSort` below. Closing it and reopening it fixes it... -/
 namespace FreeAlgebra
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is

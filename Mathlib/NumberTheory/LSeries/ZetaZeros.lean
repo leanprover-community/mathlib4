@@ -30,7 +30,9 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 @[expose] public section
 
 /-- The zeros of Riemann's ζ-function. -/
-def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
 
 lemma mem_riemannZetaZeros {z : ℂ} :
     z ∈ riemannZetaZeros ↔ riemannZeta z = 0 := .rfl
@@ -54,11 +56,11 @@ private lemma compl_riemannZetaZeros_mem_codiscrete :
   · exact Filter.mem_of_superset (this x hx)
       (by grind [riemannZeta_one_ne_zero, mem_riemannZetaZeros])
 
-lemma isClosed_riemannZetaZeros : IsClosed riemannZetaZeros :=
-  by simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).1
+lemma isClosed_riemannZetaZeros : IsClosed riemannZetaZeros := by
+  simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).1
 
-lemma isDiscrete_riemannZetaZeros : IsDiscrete riemannZetaZeros :=
-  by simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).2
+lemma isDiscrete_riemannZetaZeros : IsDiscrete riemannZetaZeros := by
+  simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).2
 
 /-- Any compact subset of `ℂ` contains only finitely many zeros of the Riemann zeta function. -/
 lemma IsCompact.inter_riemannZetaZeros_finite {S : Set ℂ} (hS : IsCompact S) :

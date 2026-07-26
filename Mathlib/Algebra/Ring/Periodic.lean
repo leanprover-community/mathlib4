@@ -41,7 +41,7 @@ namespace Function
 
 
 /-- A function `f` is said to be `Periodic` with period `c` if for all `x`, `f (x + c) = f x`. -/
-@[simp]
+@[simp, wikidata Q184743]
 def Periodic [Add α] (f : α → β) (c : α) : Prop :=
   ∀ x : α, f (x + c) = f x
 
@@ -414,5 +414,12 @@ theorem Antiperiodic.mul [Add α] [Mul β] [HasDistribNeg β] (hf : Antiperiodic
 
 theorem Antiperiodic.div [Add α] [DivisionMonoid β] [HasDistribNeg β] (hf : Antiperiodic f c)
     (hg : Antiperiodic g c) : Periodic (f / g) c := by simp_all [neg_div_neg_eq]
+
+/-- For an antiperiodic function `f` with antiperiod `c`, summing `f` over a `Finset` shifted by
+`c` (via `addRightEmbedding c`) negates the sum over the original `Finset`. -/
+theorem Antiperiodic.sum_map_addRightEmbedding [Add α] [IsRightCancelAdd α]
+    [SubtractionCommMonoid β] (hf : Antiperiodic f c) (s : Finset α) :
+    ∑ k ∈ s.map (addRightEmbedding c), f k = -∑ k ∈ s, f k := by
+  simp [hf _]
 
 end Function

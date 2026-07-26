@@ -60,6 +60,7 @@ def evariance : ℝ≥0∞ := ∫⁻ ω, ‖X ω - μ[X]‖ₑ ^ 2 ∂μ
 variable (X μ) in
 /-- The `ℝ`-valued variance of a real-valued random variable defined by applying `ENNReal.toReal`
 to `evariance`. -/
+@[wikidata Q175199]
 def variance : ℝ := (evariance X μ).toReal
 
 /-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
@@ -209,8 +210,6 @@ theorem variance_const_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 theorem variance_mul_const (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (fun ω => X ω * c) μ = variance X μ * c ^ 2 := by
   simp [mul_comm, variance_const_mul]
-
-@[deprecated (since := "2025-11-29")] alias variance_mul := variance_const_mul
 
 theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (c • X) μ = c ^ 2 * variance X μ :=
