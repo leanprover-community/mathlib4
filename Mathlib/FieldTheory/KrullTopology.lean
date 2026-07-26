@@ -246,7 +246,37 @@ end TotallySeparated
 
 variable (K L) in
 instance krullTopology_discreteUniformity_of_essFiniteType
-    [Algebra.EssFiniteType K L] : DiscreteUniformity Gal(L/K) := sorry
+    [Algebra.EssFiniteType K L] : DiscreteUniformity Gal(L/K) := by
+  rw [discreteUniformity_iff_eq_principal_setRelId, le_antisymm_iff,
+    and_iff_left refl_le_uniformity, krullTopology_uniformity_def]
+  obtain ⟨s, hs⟩ := IntermediateField.fg_top K L
+  rw [Filter.le_principal_iff, Filter.mem_iInf_finite]
+  refine ⟨s, ?_⟩
+  rw [Filter.iInf_principal_finset, Filter.mem_principal]
+  intro p hp
+  rw [Set.mem_iInter₂] at hp
+  have hpe (x : L) : p.1 x = p.2 x ↔
+      x ∈ IntermediateField.fixedField (Subgroup.zpowers (p.1⁻¹ * p.2)) := by
+    rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← IntermediateField.adjoin_le_iff,
+      IntermediateField.le_iff_le, Subgroup.zpowers_le, ← p.1.eq_symm_apply,
+      ← AlgEquiv.coe_inv, ← AlgEquiv.mul_apply, ← AlgEquiv.smul_def, eq_comm,
+      ← MulAction.mem_stabilizer_iff]
+    generalize p.1⁻¹ * p.2 = σ
+    revert σ
+    rw [← SetLike.ext_iff, le_antisymm_iff, ← IntermediateField.le_iff_le,
+      IntermediateField.adjoin_simple_le_iff]
+    constructor
+    · simp
+    · intro σ hσ
+      simpa using hσ ⟨x, IntermediateField.mem_adjoin_simple_self K x⟩
+  ext x
+  have hx : x ∈ (⊤ : IntermediateField K L) := IntermediateField.mem_top
+  rw [hpe]
+  revert x hx
+  rw [← SetLike.le_def, ← hs, IntermediateField.adjoin_le_iff]
+  intro x hx
+  rw [SetLike.mem_coe, ← hpe]
+  exact hp x hx
 
 variable (K L) in
 theorem AlgEquiv.totallyBounded_univ [Algebra.IsAlgebraic K L] :
