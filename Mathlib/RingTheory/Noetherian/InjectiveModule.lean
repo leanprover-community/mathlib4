@@ -79,10 +79,7 @@ private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
             (⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ : ideal_p f (r + n))
             = Submodule.Quotient.mk (1 : R) := by
           rw [LinearEquiv.symm_apply_eq, Ideal.quotTorsionOfEquivSpanSingleton_apply_mk, one_smul]
-        change (Submodule.liftQ (ideal_b f (r + n))
-            (LinearMap.toSpanSingleton R M (f ^ r • y)) hker)
-            ((Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm
-              ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩) = f ^ r • y
+        dsimp
         rw [hmk, Submodule.liftQ_apply, LinearMap.toSpanSingleton_apply, one_smul]
 
 variable [IsNoetherianRing R]
