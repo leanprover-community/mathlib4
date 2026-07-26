@@ -440,7 +440,7 @@ def affineCombination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
     CovariantDerivative I F V where
   toFun := fun σ ↦ (g • (cov σ)) + (1 - g) • (cov' σ)
   isCovariantDerivativeOnUniv :=
-    cov.isCovariantDerivativeOn.affineCombination cov'.isCovariantDerivativeOn _
+    cov.isCovariantDerivativeOn.affine_combination cov'.isCovariantDerivativeOn _
 
 @[deprecated (since := "2026-07-26")] alias affine_combination := affineCombination
 
@@ -449,7 +449,7 @@ def finiteAffineCombination {ι : Type*} {s : Finset ι}
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
     CovariantDerivative I F V where
   toFun t x := ∑ i ∈ s, (f i x) • (cov i) t x
-  isCovariantDerivativeOnUniv := IsCovariantDerivativeOn.finiteAffineCombination
+  isCovariantDerivativeOnUniv := IsCovariantDerivativeOn.finite_affine_combination
     (fun i ↦ (cov i).isCovariantDerivativeOn) hf
 
 @[deprecated (since := "2026-07-26")] alias finite_affine_combination := finiteAffineCombination
@@ -461,7 +461,7 @@ lemma ContMDiffCovariantDerivative.affineCombination [IsManifold I 1 M] [VectorB
     (hcov : ContMDiffCovariantDerivative cov n) (hcov' : ContMDiffCovariantDerivative cov' n) :
     ContMDiffCovariantDerivative (affineCombination cov cov' f) n where
   contMDiff :=
-    ContMDiffCovariantDerivativeOn.affineCombination hf.contMDiffOn hcov.contMDiff hcov'.contMDiff
+    ContMDiffCovariantDerivativeOn.affine_combination hf.contMDiffOn hcov.contMDiff hcov'.contMDiff
 
 @[deprecated (since := "2026-07-26")]
 alias ContMDiffCovariantDerivative.affine_combination :=
@@ -474,7 +474,7 @@ lemma ContMDiffCovariantDerivative.finiteAffineCombination [IsManifold I 1 M] [V
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivative (cov i) n) :
     ContMDiffCovariantDerivative (finiteAffineCombination cov hf) n where
   contMDiff :=
-    ContMDiffCovariantDerivativeOn.finiteAffineCombination
+    ContMDiffCovariantDerivativeOn.finite_affine_combination
       (fun i hi ↦ (hcov i hi).contMDiff) (fun i hi ↦ (hf' i hi).contMDiffOn)
 
 @[deprecated (since := "2026-07-26")]
