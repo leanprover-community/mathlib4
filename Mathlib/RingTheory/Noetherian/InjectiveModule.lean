@@ -99,14 +99,13 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
   choose r hr using stabilize_ideal_b f
   choose phi hphi using exists_divide_by_fn_map f n r hr a
   choose psi hpsi using hI (Ideal.span {f^(r + n)}) phi
-  let z := psi 1
-  have hz : f ^ (r + n) • z = f ^ r • a := by
+  have hz : f ^ (r + n) • (psi 1) = f ^ r • a := by
     rw [← psi.map_smul (f ^ (r + n)) (1 : R), smul_eq_mul, mul_one, ← hphi]
     exact hpsi _ _
-  have hz2 : f ^ (r + n) • (g z) = f ^ r • (f ^ n • x) := by
+  have hz2 : f ^ (r + n) • (g (psi 1)) = f ^ r • (f ^ n • x) := by
     rw [← ha, ← g.map_smul, ← g.map_smul]
     exact congrArg g hz
-  use z
+  use psi 1
   have s_mem : f ^ (r + n) ∈ Submonoid.powers f :=
     (Submonoid.mem_powers_iff (f ^ (r + n)) f).mpr ⟨r + n, rfl⟩
   have hbij : Function.Bijective
