@@ -162,14 +162,14 @@ theorem isCorepresentable_iff_hasInitial (F : C ⥤ Type w) :
 representation for that functor. -/
 def RepresentableBy.ofIsInitial {F : Cᵒᵖ ⥤ Type w} {E : Elements F} (he : IsInitial E) :
     RepresentableBy F (E.fst.unop) where
-      homEquiv :=
-        { toFun f := F.map f.op E.snd
-          invFun y := (he.to ⟨_, y⟩).val.unop
-          left_inv f := by
-            have :=
-              Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f.op E.snd⟩) ⟨f.op, rfl⟩)
-            simp only [this, Quiver.Hom.unop_op]
-          right_inv y := (he.to ⟨_, y⟩).prop }
+  homEquiv :=
+    { toFun f := F.map f.op E.snd
+      invFun y := (he.to ⟨_, y⟩).val.unop
+      left_inv f := by
+        have :=
+          Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f.op E.snd⟩) ⟨f.op, rfl⟩)
+        simp only [this, Quiver.Hom.unop_op]
+      right_inv y := (he.to ⟨_, y⟩).prop }
 
 lemma isRepresentable.ofHasInitial (F : Cᵒᵖ ⥤ Type w) [HasInitial (Elements F)] :
     IsRepresentable F where
