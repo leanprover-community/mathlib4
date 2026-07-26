@@ -70,8 +70,7 @@ private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
           rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, smul_smul, hc, zero_smul]
         have hker : ideal_b f (r + n) ≤
             LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
-          rw [hr n]
-          exact hker0
+          rwa [hr n]
         refine ⟨(Submodule.liftQ (ideal_b f (r + n))
             (LinearMap.toSpanSingleton R M (f ^ r • y)) hker).comp
           (Ideal.quotTorsionOfEquivSpanSingleton R R (f ^ (r + n))).symm.toLinearMap, ?_⟩
