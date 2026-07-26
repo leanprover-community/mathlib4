@@ -45,6 +45,7 @@ Every bounded absolute value on `K` is equivalent to .
 open IsDedekindDomain HeightOneSpectrum WithZeroMulInt NumberField NNReal
 
 variable {K : Type*} [Field K] [NumberField K] (f : AbsoluteValue K ℝ)
+variable (nonarch : IsNonarchimedean f) (hf_nontriv : f.IsNontrivial)
 
 open NumberField.RingOfIntegers.HeightOneSpectrum
 
@@ -67,8 +68,6 @@ lemma exists_num_denom_absolute_value_one {α : K} {v : HeightOneSpectrum (𝓞 
   rw [eq_div_iff <| IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hy_nzd]
   exact Subtype.ext_iff.mp h
 
-variable (nonarch : IsNonarchimedean f)
-
 open Polynomial minpoly
 
 include nonarch in
@@ -82,7 +81,7 @@ lemma integers_closed_unit_ball (x : 𝓞 K) : f x ≤ 1 := by
   have hC (y : 𝓞 K) : f y ≤ C := by
     rw [← B.sum_repr y]
     calc
-      f (↑(∑ i, (B.repr y i) • B i) : K) ≤ ∑ i, f ((B.repr y i) • B i) := by
+      f ↑(∑ i, (B.repr y i) • B i) ≤ ∑ i, f ((B.repr y i) • B i) := by
         rw [RingOfIntegers.coe_eq_algebraMap, map_sum]
         exact f.sum_le Finset.univ _
       _ ≤ ∑ i, f (B i) := by
@@ -104,17 +103,16 @@ lemma integers_closed_unit_ball (x : 𝓞 K) : f x ≤ 1 := by
       (Or.inl <| ne_of_gt <| lt_of_lt_of_le zero_lt_one hC_one)
   exact ge_of_tendsto ht <| Filter.eventually_atTop.2 ⟨1, fun k hk ↦ hx_root (Nat.ne_of_gt hk)⟩
 
-include nonarch in
+include nonarch hf_nontriv in
 /-- The open unit ball in `𝓞 K` is a non-zero prime ideal of `𝓞 K`. -/
-def prime_ideal (hf_nontriv : f.IsNontrivial) : HeightOneSpectrum (𝓞 K) where
+def prime_ideal : HeightOneSpectrum (𝓞 K) where
   asIdeal := {
     carrier := {a | f a < 1}
     add_mem' := fun ha hb ↦ lt_of_le_of_lt (nonarch _ _) (max_lt ha hb)
     zero_mem' := by simp
     smul_mem' := by
       simpa [Set.mem_ofPred_eq] using
-        (fun (c x : 𝓞 K) hx ↦
-          mul_lt_one_of_nonneg_of_lt_one_right
+        (fun (c x : 𝓞 K) hx ↦ mul_lt_one_of_nonneg_of_lt_one_right
             (integers_closed_unit_ball f nonarch c) (apply_nonneg f ↑x) hx)
   }
   isPrime := by
@@ -145,31 +143,21 @@ include nonarch in
 /-- A nontrivial nonarchimedean absolute value on a number field is equal to a `v`-adic absolute
 value attached for some `v : HeightOneSpectrum (𝓞 K)`. -/
 theorem Ostr_nonarch (hf_nontriv : f.IsNontrivial) :
-    ∃! P : IsDedekindDomain.HeightOneSpectrum (𝓞 K),
-    ∃ b : ℝ≥0, ∃ hb : 1 < b,
-    f = adicAbv P hb := by
+    ∃! P : HeightOneSpectrum (𝓞 K), ∃ b, ∃ hb : 1 < b, f = adicAbv P hb := by
   -- Let `P` be the non-zero prime given by the open unit ball.
   let P := prime_ideal f nonarch hf_nontriv
   use P
   -- Choose a uniformizer of `P`; its absolute value determines the base `b`.
   rcases intValuation_exists_uniformizer P with ⟨π, hπ⟩
-  -- Basic facts about the chosen uniformizer.
-  have hπv_eq : P.valuation K π = WithZero.exp (-1) := by
-    simpa [IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap P π] using hπ
-  have hπv_ne : P.valuation K (π : K) ≠ 0 := by simp [hπv_eq]
-  have hπ_ne_zero : π ≠ 0 := by grind
-  have hπ_pos : 0 < f π := by simp [hπ_ne_zero]
-  have hπ_lt_one : f π < 1 := by
-    change π ∈ P.asIdeal
-    rw [← intValuation_lt_one_iff_mem, hπ, ← WithZero.exp_zero, WithZero.exp_lt_exp]
-    norm_num
+  have hπv_ne : P.valuation K (π : K) ≠ 0 := by simp [valuation_of_algebraMap, hπ]
+  have hπ_pos : 0 < f π := by grind [AbsoluteValue.pos_iff]
   have hπv : Multiplicative.toAdd (WithZero.unzero hπv_ne) = -1 := by
-    simp only [hπv_eq]
-    rfl
+    simp [valuation_of_algebraMap, hπ]
   let b : ℝ≥0 := ⟨(f π)⁻¹, by positivity⟩
   have hb : 1 < b := by
-    exact_mod_cast (one_lt_inv₀ hπ_pos).2 hπ_lt_one
-  -- Elements of `v`-adic absolute value `1` also have `f`-absolute value `1`.
+    apply_mod_cast (one_lt_inv₀ hπ_pos).2
+    change π ∈ P.asIdeal
+    simp [← intValuation_lt_one_iff_mem, hπ, ←WithZero.exp_zero, -WithZero.exp_neg]
   have f_eq_one_of_adicAbv_eq_one {x : K} (hx : adicAbv P hb x = 1) : f x = 1 := by
     obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_absolute_value_one hb (le_of_eq hx)
     have int_unit {x : 𝓞 K} (hx : adicAbv P hb (x : K) = 1) : f x = 1 := by
@@ -177,14 +165,11 @@ theorem Ostr_nonarch (hf_nontriv : f.IsNontrivial) :
       exact le_antisymm (integers_closed_unit_ball f nonarch x) (le_of_not_gt hx)
     have hy : adicAbv P hb (y : K) = 1 := by simpa [map_div₀, hz] using hx
     simp [map_div₀, int_unit hy, int_unit hz]
-  -- The chosen base makes the adic absolute value take the same value as `f` on π.
   constructor
   · use b, hb
     ext x
     by_cases hx : x = 0
     · simp [hx]
-    -- Divide `x` by the matching power of the uniformizer. The quotient has
-    -- `P`-adic absolute value `1`, so it has `f`-absolute value `1`.
     have hxv_ne : P.valuation K x ≠ 0 := (Valuation.ne_zero_iff (P.valuation K)).mpr hx
     have coe_b : (b : ℝ) = (f π)⁻¹ := rfl
     simp only [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, AbsoluteValue.coe_mk,
@@ -195,9 +180,7 @@ theorem Ostr_nonarch (hf_nontriv : f.IsNontrivial) :
     simp [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, coe_b,
       WithZeroMulInt.toNNReal_neg_apply _ hπv_ne, WithZeroMulInt.toNNReal_neg_apply _ hxv_ne, hπv]
     field_simp
-  · -- Uniqueness: the prime is recovered as the set of algebraic integers with
-    -- absolute value less than `1`.
-    simp only [forall_exists_index]
+  · simp only [forall_exists_index]
     rintro Q _ hc rfl
     ext x
     exact (adicAbv_coe_lt_one_iff Q hc x).symm
