@@ -438,7 +438,7 @@ theorem card_le_of_interleaved {s t : Finset α}
     _ ≤ t.card + 1 := (card_insert_le _ _).trans (Nat.add_le_add_right card_image_le _)
 
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card (t \ s) + 1`. -/
-theorem card_le_diff_of_interleaved {s t : Finset α}
+theorem card_le_sdiff_of_interleaved {s t : Finset α}
     (h :
       ∀ᵉ (x ∈ s) (y ∈ s),
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
@@ -446,6 +446,9 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
   card_le_of_interleaved fun x hx y hy hxy hs =>
     let ⟨z, hzt, hxz, hzy⟩ := h x hx y hy hxy hs
     ⟨z, mem_sdiff.2 ⟨hzt, fun hzs => hs z hzs ⟨hxz, hzy⟩⟩, hxz, hzy⟩
+
+@[deprecated (since := "2026-06-03")]
+alias card_le_diff_of_interleaved := card_le_sdiff_of_interleaved
 
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:

@@ -26,8 +26,9 @@ universe u v
 
 variable {X : Type u} [TopologicalSpace X] {ι : Sort v} {α : Type*} {x : X} {s t : Set X}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhds_def' (x : X) : 𝓝 x = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 s := by
-  simp only [nhds_def, mem_setOf_eq, @and_comm (x ∈ _), iInf_and]
+  simp only [nhds_def, mem_ofPred_eq, @and_comm (x ∈ _), iInf_and]
 
 /-- The open sets containing `x` are a basis for the neighborhood filter. See `nhds_basis_opens'`
 for a variant using open neighborhoods instead. -/
@@ -67,7 +68,7 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 containing `x`. -/
 theorem eventually_nhds_iff {p : X → Prop} :
     (∀ᶠ y in 𝓝 x, p y) ↔ ∃ t : Set X, (∀ y ∈ t, p y) ∧ IsOpen t ∧ x ∈ t :=
-  mem_nhds_iff.trans <| by simp only [subset_def, mem_setOf_eq]
+  mem_nhds_iff.trans <| by simp only [subset_def, mem_ofPred_eq]
 
 theorem frequently_nhds_iff {p : X → Prop} :
     (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
@@ -222,7 +223,7 @@ theorem Filter.EventuallyEq.tendsto {l : Filter α} {f : α → X} (hf : f =ᶠ[
 /-! ### Interior, closure and frontier in terms of neighborhoods -/
 
 theorem interior_eq_nhds' : interior s = { x | s ∈ 𝓝 x } :=
-  Set.ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_setOf_eq]
+  Set.ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_ofPred_eq]
 
 theorem interior_eq_nhds : interior s = { x | 𝓝 x ≤ 𝓟 s } :=
   interior_eq_nhds'.trans <| by simp only [le_principal_iff]
@@ -232,11 +233,17 @@ theorem interior_mem_nhds : interior s ∈ 𝓝 x ↔ s ∈ 𝓝 x :=
   ⟨fun h => mem_of_superset h interior_subset, fun h =>
     IsOpen.mem_nhds isOpen_interior (mem_interior_iff_mem_nhds.2 h)⟩
 
-theorem interior_setOf_eq {p : X → Prop} : interior { x | p x } = { x | ∀ᶠ y in 𝓝 x, p y } :=
+theorem interior_setOfPred_eq {p : X → Prop} : interior { x | p x } = { x | ∀ᶠ y in 𝓝 x, p y } :=
   interior_eq_nhds'
 
-theorem isOpen_setOf_eventually_nhds {p : X → Prop} : IsOpen { x | ∀ᶠ y in 𝓝 x, p y } := by
-  simp only [← interior_setOf_eq, isOpen_interior]
+@[deprecated (since := "2026-07-09")]
+alias interior_setOf_eq := interior_setOfPred_eq
+
+theorem isOpen_setOfPred_eventually_nhds {p : X → Prop} : IsOpen { x | ∀ᶠ y in 𝓝 x, p y } := by
+  simp only [← interior_setOfPred_eq, isOpen_interior]
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_eventually_nhds := isOpen_setOfPred_eventually_nhds
 
 theorem subset_interior_iff_nhds {V : Set X} : s ⊆ interior V ↔ ∀ x ∈ s, V ∈ 𝓝 x := by
   simp_rw [subset_def, mem_interior_iff_mem_nhds]
@@ -244,7 +251,7 @@ theorem subset_interior_iff_nhds {V : Set X} : s ⊆ interior V ↔ ∀ x ∈ s,
 theorem isOpen_iff_nhds : IsOpen s ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s :=
   calc
     IsOpen s ↔ s ⊆ interior s := subset_interior_iff_isOpen.symm
-    _ ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_setOf]
+    _ ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_ofPred]
 
 theorem TopologicalSpace.ext_iff_nhds {X} {t t' : TopologicalSpace X} :
     t = t' ↔ ∀ x, @nhds _ t x = @nhds _ t' x :=
@@ -328,12 +335,14 @@ theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
   let ⟨U, hsub, ho, hx⟩ := mem_nhds_iff.1 ht
   (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun _y hy => ⟨hy.2, hsub hy.1⟩
 
-theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
+theorem closure_sdiff : closure s \ closure t ⊆ closure (s \ t) :=
   calc
-    closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [diff_eq, inter_comm]
+    closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [sdiff_eq, inter_comm]
     _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
-    _ = closure (s \ closure t) := by simp only [diff_eq, inter_comm]
-    _ ⊆ closure (s \ t) := closure_mono <| diff_subset_diff (Subset.refl s) subset_closure
+    _ = closure (s \ closure t) := by simp only [sdiff_eq, inter_comm]
+    _ ⊆ closure (s \ t) := closure_mono <| sdiff_subset_sdiff (Subset.refl s) subset_closure
+
+@[deprecated (since := "2026-06-03")] alias closure_diff := closure_sdiff
 
 theorem Filter.Frequently.mem_of_closed (h : ∃ᶠ x in 𝓝 x, x ∈ s)
     (hs : IsClosed s) : x ∈ s :=

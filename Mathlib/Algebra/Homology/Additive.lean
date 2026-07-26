@@ -122,6 +122,7 @@ instance Functor.map_homogical_complex_additive (F : V ⥤ W) [F.Additive] (c : 
 
 variable (W₁)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor on homological complexes induced by the identity functor is
 isomorphic to the identity functor. -/
@@ -135,11 +136,27 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
     ReflectsIsomorphisms (F.mapHomologicalComplex c) :=
   ⟨fun f => by
     intro
-    haveI : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
+    have : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
         ((HomologicalComplex.eval W₂ c n).mapIso
           (asIso ((F.mapHomologicalComplex c).map f))).isIso_hom
-    haveI := fun n => isIso_of_reflects_iso (f.f n) F
+    have := fun n => isIso_of_reflects_iso (f.f n) F
     exact HomologicalComplex.Hom.isIso_of_components f⟩
+
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] :
+    (F.mapHomologicalComplex c).Faithful where
+  map_injective {K L} f₁ f₂ h := by
+    ext
+    exact F.map_injective ((HomologicalComplex.eval W c _).congr_map h)
+
+set_option backward.isDefEq.respectTransparency.types false in
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] [F.Full] :
+    (F.mapHomologicalComplex c).Full where
+  map_surjective {X Y} f := ⟨
+    { f n := F.preimage (f.f n)
+      comm' i j _ := by
+        apply F.map_injective
+        simp only [Functor.map_comp, Functor.map_preimage]
+        exact f.comm i j }, by cat_disch⟩
 
 variable {W₁}
 
@@ -188,6 +205,17 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
+/-- If additive functors are related by an isomorphism `F ⋙ G ≅ H`, this is
+the corresponding isomorphism for the induced functors on categories
+of homological complexes. -/
+@[simps!]
+def Functor.mapHomologicalComplexCompIso {W' : Type*} [Category W'] [Preadditive W']
+    {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
+    F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c ≅ H.mapHomologicalComplex c :=
+  NatIso.mapHomologicalComplex e c
+
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalences between the respective categories
 of homological complex.
@@ -209,6 +237,7 @@ namespace ChainComplex
 
 variable {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X : α → W₁)
     (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :

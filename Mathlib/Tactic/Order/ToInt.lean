@@ -10,6 +10,7 @@ public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Util.AtomM
 public meta import Mathlib.Util.Qq
+public meta import Std.Data.HashMap.AdditionalOperations
 
 /-!
 # Translating linear orders to ℤ

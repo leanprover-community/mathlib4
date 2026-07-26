@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
-public import Mathlib.MeasureTheory.Function.LpSpace.Complete
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-!
@@ -270,27 +269,15 @@ protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
 
 theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) (f : α →ₛ E)
     (hf : MemLp f p μ) (y : E) (hy_ne : y ≠ 0) : μ (f ⁻¹' {y}) < ∞ := by
-  have hp_pos_real : 0 < p.toReal := ENNReal.toReal_pos hp_pos hp_ne_top
-  have hf_eLpNorm := MemLp.eLpNorm_lt_top hf
-  rw [eLpNorm_eq_eLpNorm' hp_pos hp_ne_top, f.eLpNorm'_eq, one_div,
-    ← @ENNReal.lt_rpow_inv_iff _ _ p.toReal⁻¹ (by simp [hp_pos_real]),
-    @ENNReal.top_rpow_of_pos p.toReal⁻¹⁻¹ (by simp [hp_pos_real]),
-    ENNReal.sum_lt_top] at hf_eLpNorm
-  by_cases hyf : y ∈ f.range
-  swap
-  · suffices h_empty : f ⁻¹' {y} = ∅ by
-      rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
-    exact (preimage_eq_empty_iff _ _).mpr hyf
-  specialize hf_eLpNorm y hyf
-  rw [ENNReal.mul_lt_top_iff] at hf_eLpNorm
-  cases hf_eLpNorm with
-  | inl hf_eLpNorm => exact hf_eLpNorm.2
-  | inr hf_eLpNorm =>
-    cases hf_eLpNorm with
-    | inl hf_eLpNorm =>
-      refine absurd ?_ hy_ne
-      simpa [hp_pos_real] using hf_eLpNorm
-    | inr hf_eLpNorm => simp [hf_eLpNorm]
+  have h_fin : (f.map fun x ↦ ‖x‖ₑ ^ p.toReal).FinMeasSupp μ := by
+    refine FinMeasSupp.of_lintegral_ne_top ?_
+    rw [← (f.map fun x ↦ ‖x‖ₑ ^ p.toReal).lintegral_eq_lintegral μ]
+    exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_pos hp_ne_top hf.eLpNorm_lt_top).ne
+  have hf_fin : f.FinMeasSupp μ := by
+    have {b : E} : (fun x ↦ ‖x‖ₑ ^ p.toReal) b = 0 ↔ b = 0 := by
+      simp [rpow_eq_zero_iff_of_pos (toReal_pos hp_pos hp_ne_top)]
+    rwa [FinMeasSupp.map_iff this] at h_fin
+  exact hf_fin.meas_preimage_singleton_ne_zero hy_ne
 
 theorem memLp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
     (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) : MemLp f p μ := by
@@ -488,6 +475,7 @@ theorem toLp_add (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
 theorem toLp_neg (f : α →ₛ E) (hf : MemLp f p μ) : toLp (-f) hf.neg = -toLp f hf :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toLp_sub (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
     toLp (f - g) (hf.sub hg) = toLp f hf - toLp g hg := by
   simp only [sub_eq_add_neg, ← toLp_neg, ← toLp_add]
@@ -648,6 +636,7 @@ section CoeToLp
 
 variable [Fact (1 ≤ p)]
 
+@[fun_prop]
 protected theorem uniformContinuous : UniformContinuous ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   uniformContinuous_comap
 
@@ -664,7 +653,7 @@ lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
   intro f
   rw [mem_closure_iff_seq_limit]
   have hfi' : MemLp f p μ := Lp.memLp f
-  haveI : SeparableSpace (range f ∪ {0} : Set E) :=
+  have : SeparableSpace (range f ∪ {0} : Set E) :=
     (Lp.stronglyMeasurable f).separableSpace_range_union_singleton
   refine
     ⟨fun n =>
@@ -738,7 +727,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
   have hg_memLp : MemLp (g : α → G) p μ := Lp.memLp (g : Lp G p μ)
   have zero_mem : (0 : G) ∈ (range (g : α → G) ∪ {0} : Set G) ∩ { y | 0 ≤ y } := by
     simp only [union_singleton, mem_inter_iff, mem_insert_iff, true_or,
-      mem_setOf_eq, le_refl, and_self_iff]
+      mem_ofPred_eq, le_refl, and_self_iff]
   have : SeparableSpace ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y } : Set G) := by
     apply IsSeparable.separableSpace
     apply IsSeparable.mono _ Set.inter_subset_left
