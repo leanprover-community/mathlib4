@@ -7932,6 +7932,7 @@ public import Mathlib.Topology.EMetricSpace.Diam
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.EMetricSpace.PairReduction
 public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.EMetricSpace.PathLength
 public import Mathlib.Topology.EMetricSpace.Pi
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 public import Mathlib.Topology.EMetricSpace.Weak
