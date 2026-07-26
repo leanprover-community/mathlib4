@@ -9,9 +9,9 @@ public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.Digraph.Basic
 
 /-!
-# Digraphs are HyperGraphLike
+# Digraphs as graph-like structures
 
-This file shows that `Digraph` is `HyperGraphLike`, `GraphLike`, `Directed`, `NoMultiEdge`.
+This file shows that `Digraph` is `HyperGraphLike`, `GraphLike`, `Directed`, `NoParallelEdge`.
 -/
 
 public section
@@ -45,7 +45,7 @@ attribute [grind =] verts_def edges_def isSource_def isTarget_def isLink_def adj
 
 instance : GraphLike V (Bool × V × V) (V × V) (Digraph V) where
   order_eq_two G := by
-    simp only [edges_def, Set.mem_setOf_eq, order, Prod.forall]
+    simp only [edges_def, Set.mem_ofPred_eq, order, Prod.forall]
     intro u v hab
     have h : (edgeFun G).preimage {(u, v)} = {(true, u, v), (false, u, v)} := by
       ext i
@@ -66,27 +66,8 @@ instance : Directed V (Bool × V × V) (V × V) (Digraph V) where
   not_isTarget_of_isSource G i hi := by simp_all
   not_isSource_of_isTarget G i hi := by simp_all
 
-instance : NoMultiEdge V (Bool × V × V) (V × V) (Digraph V) where
-  col_inj G e he f hf h := by
-    classical
-    obtain ⟨u, v, huv⟩ := exists_isLink_of_mem_edgeSet he
-    obtain ⟨u', v', huv'⟩ := exists_isLink_of_mem_edgeSet hf
-    rw [huv.incMatrixWith_col_eq_of_directed, huv'.incMatrixWith_col_eq_of_directed] at h
-    obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ : u = u' ∧ v = v' ∨ u = v' ∧ v = u' := by
-      by_contra! hc
-      obtain hv : v = u' ∨ v = v' := by
-        by_contra! hc
-        simpa [hc.1, hc.2] using congr_fun (congr_fun h v) 1
-      obtain rfl | rfl : u = u' ∨ u = v' := by
-        by_contra! hc
-        simpa [hc.1, hc.2] using congr_fun (congr_fun h u) 0
-      all_goals
-      · simp only [or_false, false_or, hc] at hv
-        simp only [ne_eq, forall_const, not_true_eq_false, imp_false, and_self, hv] at hc
-        simpa [hc, hv] using And.intro (congr_fun (congr_fun h v) 0) (congr_fun (congr_fun h v) 1)
-    · grind
-    obtain rfl | hne := eq_or_ne u v
-    · grind
-    simpa [hne] using congr_fun (congr_fun h u) 0
+instance : NoParallelEdge V (Bool × V × V) (V × V) (Digraph V) where
+  edge_eq_of_isLink h h' := by
+    grind [isIncident_def]
 
 end Digraph

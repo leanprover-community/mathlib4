@@ -11,8 +11,10 @@ public import Mathlib.Data.Fintype.Sigma
 /-!
 # Darts in graphs
 
-A `Dart` or half-edge or bond in a graph is an ordered pair of adjacent vertices, regarded as an
-oriented edge. This file defines darts and proves some of their basic properties.
+A `Dart` records a traversal of an edge from a source incidence to a distinct target incidence.
+It is represented by the ordered pair of incidence identifiers; its edge, source vertex, and target
+vertex are derived from the incidence relation. This file defines darts and proves some of their
+basic properties.
 -/
 
 public section
@@ -23,7 +25,8 @@ namespace HyperGraphLike
 
 variable {V I E Gr : Type*} {G : Gr} {i j : I} {e : E} {u v : V} [HyperGraphLike V I E Gr]
 
-/-- The set of darts of a graph-like structure. -/
+/-- The type of darts of a graph-like structure. A dart consists of distinct source and target
+incidence identifiers belonging to the same edge. -/
 @[expose]
 def Dart (G : Gr) := {s : I × I // s.1 ≠ s.2 ∧ IsSource G s.1 ∧ IsTarget G s.2 ∧
     ∃ e u v, IsIncident G s.1 e u ∧ IsIncident G s.2 e v}
@@ -104,8 +107,7 @@ lemma target_eq_iff (d : Dart G) : d.target = v ↔ IsIncident G d.snd d.edge v 
 @[simp] lemma val_eq_iff : d.val = (i, j) ↔ d.fst = i ∧ d.snd = j := by grind [fst, snd]
 
 @[ext]
-lemma ext (hf : d₁.fst = d₂.fst) (hs : d₁.snd = d₂.snd) : d₁ = d₂ :=
-  match d₁, d₂ with | ⟨⟨i₁, j₁⟩, h₁⟩, ⟨⟨i₂, j₂⟩, h₂⟩ => by simp_all [fst, snd]
+lemma ext (hf : d₁.fst = d₂.fst) (hs : d₁.snd = d₂.snd) : d₁ = d₂ := Subtype.ext <| Prod.ext hf hs
 
 lemma _root_.HyperGraphLike.isLink_iff_exists_dart :
     IsLink G e u v ↔ ∃ d : Dart G, d.edge = e ∧ d.source = u ∧ d.target = v := by
@@ -130,7 +132,7 @@ lemma _root_.HyperGraphLike.adj_iff_exists_dart :
 lemma Adj (d : Dart G) : Adj G d.source d.target := adj_def.mpr ⟨d.edge, d.fst, d.snd,
   d.fst_ne_snd, d.fst_isSource, d.snd_isTarget, d.source_isIncident, d.target_isIncident⟩
 
-/-- Convert an incidence to a pair of vertices. -/
+/-- The ordered pair consisting of the source and target vertices of a dart. -/
 @[expose] noncomputable def toProd (d : Dart G) : V × V := (d.source, d.target)
 
 @[simp, grind =]
@@ -138,8 +140,8 @@ lemma toProd_eq_mk_iff (d : Dart G) (u v : V) :
     d.toProd = (u, v) ↔ d.source = u ∧ d.target = v := by
   simp [toProd]
 
-/-- The two vertices of the dart as an unordered pair. Not well-defined for not undirected graphs.
--/
+/-- The source and target vertices of a dart as an unordered pair. This is primarily useful for
+undirected graph-like structures. -/
 @[expose] noncomputable def sym2 (d : Dart G) : Sym2 V := s(d.source, d.target)
 
 @[simp, grind =]
@@ -165,10 +167,6 @@ lemma edge_mem_edgeFun_iff_fst_or_snd (d : Dart G) :
 
 lemma fst_or_snd_of_isIncident (d : Dart G) (h : IsIncident G i d.edge v) :
     i = d.fst ∨ i = d.snd := (d.edge_mem_edgeFun_iff_fst_or_snd i).mp h.mem_edgeFun
-
-lemma incMatrix_col_eq [DecidableEq V] {n : ℕ∞} (d : Dart G) :
-    (incMatrix G n n n).col d.edge = Pi.single d.source n + Pi.single d.target n :=
-  d.IsLink.incMatrix_col_eq
 
 end GraphLike
 
@@ -225,9 +223,9 @@ lemma edge_eq_iff_of_directed [GraphLike V I E Gr] (d₁ d₂ : Dart G) :
 
 end Directed
 
-section NoMultiEdge
+section NoParallelEdge
 
-variable [GraphLike V I E Gr] [NoMultiEdge V I E Gr]
+variable [GraphLike V I E Gr] [NoParallelEdge V I E Gr]
 
 @[simp]
 theorem sym2_eq_iff [Undirected V I E Gr] (d₁ d₂ : Dart G) :
@@ -235,16 +233,16 @@ theorem sym2_eq_iff [Undirected V I E Gr] (d₁ d₂ : Dart G) :
   simp only [sym2, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
   refine ⟨?_, by rintro (rfl | rfl) <;> simp⟩
   rintro (⟨h1, h2⟩ | ⟨h1, h2⟩)
-  · exact (edge_eq_iff_of_undirected d₁ d₂).mp <| d₁.IsLink.edge_inj_of_isLink_of_undirected
+  · exact (edge_eq_iff_of_undirected d₁ d₂).mp <| d₁.IsLink.edge_eq
       (h1 ▸ h2 ▸ d₂.IsLink)
-  have := (edge_eq_iff_of_undirected d₁ d₂.symm).mp <| d₁.IsLink.edge_inj_of_isLink_of_undirected
+  have := (edge_eq_iff_of_undirected d₁ d₂.symm).mp <| d₁.IsLink.edge_eq
     (by simpa [h1, h2] using d₂.symm.IsLink)
   grind
 
 lemma eq_of_source_target_eq_of_directed [Directed V I E Gr] (hds : d₁.source = d₂.source)
     (hdt : d₁.target = d₂.target) : d₁ = d₂ :=
   (d₁.edge_eq_iff_of_directed d₂).mp <|
-    d₁.IsLink.edge_inj_of_isLink_of_directed (hds ▸ hdt ▸ d₂.IsLink)
+    d₁.IsLink.edge_eq (hds ▸ hdt ▸ d₂.IsLink)
 
 lemma source_target_inj_of_directed [Directed V I E Gr] :
     Function.Injective fun d : Dart G ↦ (d.source, d.target) := by
@@ -254,7 +252,7 @@ lemma source_target_inj_of_directed [Directed V I E Gr] :
 
 lemma eq_of_source_target_eq_of_undirected [Undirected V I E Gr] [Loopless V I E Gr]
     (hds : d₁.source = d₂.source) (hdt : d₁.target = d₂.target) : d₁ = d₂ :=
-  have := d₁.IsLink.edge_inj_of_isLink_of_undirected (hds ▸ hdt ▸ d₂.IsLink)
+  have := d₁.IsLink.edge_eq (hds ▸ hdt ▸ d₂.IsLink)
   ext (d₁.source_isIncident.inc_inj (hds ▸ this ▸ d₂.source_isIncident))
     (d₁.target_isIncident.inc_inj (hdt ▸ this ▸ d₂.target_isIncident))
 
@@ -264,6 +262,6 @@ lemma source_target_inj_of_undirected [Undirected V I E Gr] [Loopless V I E Gr] 
   rw [Prod.mk.injEq] at h
   exact eq_of_source_target_eq_of_undirected h.1 h.2
 
-end NoMultiEdge
+end NoParallelEdge
 
 end HyperGraphLike.Dart

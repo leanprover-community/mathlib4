@@ -9,9 +9,9 @@ public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
-# SimpleGraphs are HyperGraphLike
+# Simple graphs as graph-like structures
 
-This file shows that `SimpleGraph` is `HyperGraphLike`, `GraphLike`, `Undirected`, `NoMultiEdge`,
+This file shows that `SimpleGraph` is `HyperGraphLike`, `GraphLike`, `Undirected`, `NoParallelEdge`,
 and `Loopless`.
 -/
 
@@ -70,25 +70,9 @@ instance : GraphLike V (V × V) (Sym2 V) (SimpleGraph V) where
 instance : Undirected V (V × V) (Sym2 V) (SimpleGraph V) where
   isSource_iff G i := by simp
 
-instance : NoMultiEdge V (V × V) (Sym2 V) (SimpleGraph V) where
-  col_inj G e he f hf h := by
-    classical
-    obtain ⟨u, v, huv⟩ := exists_isLink_of_mem_edgeSet he
-    obtain ⟨u', v', huv'⟩ := exists_isLink_of_mem_edgeSet hf
-    have hne : u ≠ v := fun heq => G.loopless.irrefl u (heq ▸ IsLink.adj huv)
-    have hne' : u' ≠ v' := fun heq => G.loopless.irrefl u' (heq ▸ IsLink.adj huv')
-    rw [huv.incMatrixWith_col_eq_of_undirected, huv'.incMatrixWith_col_eq_of_undirected] at h
-    have hu'_mem : u' = u ∨ u' = v := by
-      by_contra! hc
-      simpa [hc.1, hc.2, hne'] using congr_fun (congr_fun h u') 2
-    obtain rfl | rfl : u = u' ∨ u = v' := by
-      by_contra! hc
-      simpa [hc.1, hc.2, hne] using congr_fun (congr_fun h u) 2
-    · obtain rfl : v = v' := by
-        by_contra! hc
-        simpa [hc, hne] using congr_fun (congr_fun h v) 2
-      grind [isIncident_def]
-    grind
+instance : NoParallelEdge V (V × V) (Sym2 V) (SimpleGraph V) where
+  edge_eq_of_isLink h h' := by
+    grind [isIncident_def]
 
 lemma edgeFun_eq {i : V × V} (hi : G.Adj i.1 i.2) : edgeFun G i = Part.some (s(i.1, i.2)) := by
   ext e
@@ -102,7 +86,7 @@ lemma endPoint_eq {i : V × V} (hi : G.Adj i.1 i.2) : endPoint G i = Part.some i
 
 instance : Loopless V (V × V) (Sym2 V) (SimpleGraph V) where
   no_loops_of_mem_mem G i j hi hj hij hne := by
-    simp only [incs_def, exists_and_left, ↓existsAndEq, and_true, Set.mem_setOf_eq] at hi hj
+    simp only [incs_def, exists_and_left, ↓existsAndEq, and_true, Set.mem_ofPred_eq] at hi hj
     simp only [edgeFun_eq hi, edgeFun_eq hj, Part.some_inj, Sym2.eq, Prod.mk.eta,
       Sym2.rel_iff'] at hij
     simp only [endPoint_eq hi, endPoint_eq hj, ne_eq, Part.some_inj]

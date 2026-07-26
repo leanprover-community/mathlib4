@@ -10,8 +10,8 @@ public import Mathlib.Combinatorics.GraphLike.Walks.Dart
 /-!
 # Walks
 
-In a general graph structure, a *walk* is a finite sequence of adjacent vertices, and can be
-thought of equally well as a sequence of directed edges.
+In a graph-like structure, a *walk* is a finite sequence of composable darts. Its support records
+the corresponding sequence of vertices.
 
 **Warning:** graph theorists mean something different by "path" than do homotopy theorists.
 A "walk" in graph theory is a "path" in homotopy theory.  Another warning: some graph theorists use
@@ -22,12 +22,12 @@ counterparts in [Chou1994].
 
 ## Main definitions
 
-* `GraphLike.Walk` (with accompanying pattern definitions
-  `GraphLike.Walk.nil'` and `GraphLike.Walk.cons'`)
-* `GraphLike.Walk.Nil`: A predicate for the empty walk
-* `GraphLike.Walk.length`: The length of a walk
-* `GraphLike.Walk.support`: The list of vertices a walk visits in order
-* `GraphLike.Walk.darts`: The list of darts a walk visits in order
+* `HyperGraphLike.Walk` (with accompanying pattern definitions
+  `HyperGraphLike.Walk.nil'` and `HyperGraphLike.Walk.cons'`)
+* `HyperGraphLike.Walk.Nil`: A predicate for the empty walk
+* `HyperGraphLike.Walk.length`: The length of a walk
+* `HyperGraphLike.Walk.support`: The list of vertices a walk visits in order
+* `HyperGraphLike.Walk.darts`: The list of darts a walk traverses in order
 
 ## Tags
 walks
@@ -35,20 +35,18 @@ walks
 
 public section
 
-attribute [simp] Subtype.heq_iff_coe_eq
-
 namespace HyperGraphLike
 
 variable {V I E Gr : Type*} {u v w : V} {G : Gr} {i j : I} {e : E} [HyperGraphLike V I E Gr]
   {d d' : Dart G}
 
-/-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`, the type `Walk u v` consists
-of all walks starting at `u` and ending at `v`.
+/-- A walk is a finite sequence of composable darts. For vertices `u v : V`, the type `Walk G u v`
+consists of all walks in `G` starting at `u` and ending at `v`.
 
-We say that a walk *visits* the vertices it contains.  The set of vertices a
-walk visits is `GraphLike.Walk.support`.
+We say that a walk *visits* the vertices it contains. The list of vertices a walk visits is
+`HyperGraphLike.Walk.support`.
 
-See `GraphLike.Walk.nil'` and `GraphLike.Walk.cons'` for patterns that
+See `HyperGraphLike.Walk.nil'` and `HyperGraphLike.Walk.cons'` for patterns that
 can be useful in definitions since they make the vertices explicit. -/
 inductive Walk (G : Gr) : V → V → Type (max u_1 u_2 u_3)
   | nil {u : V} : Walk G u u
@@ -99,7 +97,7 @@ theorem exists_eq_cons_of_ne (hne : u ≠ v) : ∀ (p : Walk G u v), ∃ (w : V)
   | nil => (hne rfl).elim
   | cons hds hdt p' => ⟨_, _, hds, hdt, p', rfl⟩
 
-/-- The length of a walk is the number of edges/darts along it. -/
+/-- The length of a walk is the number of times it traverses an edge. -/
 @[expose]
 def length {u v : V} : Walk G u v → ℕ
   | nil => 0
@@ -142,14 +140,13 @@ def support {u v : V} : Walk G u v → List V
   | nil => [u]
   | cons _ _ p => u :: p.support
 
-/-- The `darts` of a walk is the list of `dart`s it visits in order. -/
+/-- The `darts` of a walk are the darts it traverses in order. -/
 @[expose]
 def darts {u v : V} : Walk G u v → List (Dart G)
   | nil => []
   | cons (d := d) _ _ p => d :: p.darts
 
-/-- The `edges` of a walk is the list of edges it visits in order.
-This is defined to be the list of edges underlying `SimpleGraph.Walk.darts`. -/
+/-- The `edges` of a walk are the edges underlying its darts, in traversal order. -/
 @[expose] noncomputable def edges {u v : V} (p : Walk G u v) : List E := p.darts.map (·.edge)
 
 @[simp]
@@ -439,8 +436,9 @@ theorem support_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain (Adj
     (ofSupport l hne hchain).support = l := by
   match l with
   | [_] => rfl
-  | _ :: v :: l =>
-    simpa using support_ofSupport (l.cons_ne_nil v) hchain.of_cons
+  | u :: v :: l =>
+    change u :: (ofSupport (v :: l) (l.cons_ne_nil v) hchain.of_cons).support = u :: v :: l
+    rw [support_ofSupport]
 
 @[simp, grind =]
 theorem length_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain (Adj G)) :
@@ -475,8 +473,8 @@ theorem darts_ofDarts {l : List (Dart G)} (hne : l ≠ []) (hchain : l.IsChain D
   match l with
   | [_] => rfl
   | d₁ :: d₂ :: l =>
-    have := darts_ofDarts (l.cons_ne_nil d₂) hchain.of_cons
-    simpa using this
+    change d₁ :: (ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons).darts = d₁ :: d₂ :: l
+    rw [darts_ofDarts]
 
 @[simp]
 theorem edges_ofDarts {l : List (Dart G)} (hne : l ≠ []) (hchain : l.IsChain DartAdj) :
@@ -493,7 +491,7 @@ end HyperGraphLike
 variable {p : Walk G u v}
 
 theorem mem_darts_iff_infix_support [GraphLike V I E Gr] [Undirected V I E Gr] [Loopless V I E Gr]
-    [NoMultiEdge V I E Gr] (d : Dart G) :
+    [NoParallelEdge V I E Gr] (d : Dart G) :
     d ∈ p.darts ↔ [d.source, d.target] <:+: p.support := by
   refine .trans ⟨fun h ↦ ?_, fun ⟨i, hi, h⟩ ↦ ?_⟩ List.infix_iff_getElem?.symm
   · have ⟨i, hi, h⟩ := List.getElem_of_mem h
@@ -506,7 +504,7 @@ theorem mem_darts_iff_infix_support [GraphLike V I E Gr] [Undirected V I E Gr] [
     exact hd ▸ p.darts.getElem_mem (n := i) (by grind)
 
 theorem mem_darts_iff_fst_snd_infix_support [GraphLike V I E Gr] [Undirected V I E Gr]
-    [Loopless V I E Gr] [NoMultiEdge V I E Gr] (d : Dart G) :
+    [Loopless V I E Gr] [NoParallelEdge V I E Gr] (d : Dart G) :
     d ∈ p.darts ↔ [d.source, d.target] <:+: p.support :=
   mem_darts_iff_infix_support d
 
