@@ -39,19 +39,17 @@ section Nonarchimedean
 /-!
 ### The non-archimedean case
 
-Every bounded absolute value on `K` is equivalent to .
--/
+Every bounded absolute value on `K` is equivalent to a `v`-adic absolute value for some
+`v : HeightOneSpectrum (𝓞 K)`. -/
 
 open IsDedekindDomain HeightOneSpectrum WithZeroMulInt NumberField NNReal
 
 variable {K : Type*} [Field K] [NumberField K] (f : AbsoluteValue K ℝ)
 variable (nonarch : IsNonarchimedean f) (hf_nontriv : f.IsNontrivial)
 
-open NumberField.RingOfIntegers.HeightOneSpectrum
-
 /-- If the `v`-adic absolute value of `α` is at most one, then `α` can be written
 as a quotient of algebraic integers with denominator a `v`-adic unit. -/
-lemma exists_num_denom_absolute_value_one {α : K} {v : HeightOneSpectrum (𝓞 K)}
+lemma exists_num_denom_adicAbv_eq_one {α : K} {v : HeightOneSpectrum (𝓞 K)}
     {b : ℝ≥0} (hb : 1 < b) (h_abs : adicAbv v hb α ≤ 1) :
   ∃ x y : 𝓞 K, α = x / y ∧ adicAbv v hb (y : K) = 1 := by
   -- Allow denominators away from `v`, so the only condition to check is at `v`.
@@ -73,7 +71,7 @@ open Polynomial minpoly
 include nonarch in
 /-- Algebraic integers are contained in the closed unit ball of a nonarchimedean
 absolute value. -/
-lemma integers_closed_unit_ball (x : 𝓞 K) : f x ≤ 1 := by
+lemma RingOfIntegers.absoluteValue_le_one (x : 𝓞 K) : f x ≤ 1 := by
   -- x can be written in a basis of 𝓞 K
   let B := RingOfIntegers.basis K
   let C := ∑ i, f (B i)
@@ -105,7 +103,7 @@ lemma integers_closed_unit_ball (x : 𝓞 K) : f x ≤ 1 := by
 
 include nonarch hf_nontriv in
 /-- The open unit ball in `𝓞 K` is a non-zero prime ideal of `𝓞 K`. -/
-def prime_ideal : HeightOneSpectrum (𝓞 K) where
+def maximalIdeal : HeightOneSpectrum (𝓞 K) where
   asIdeal := {
     carrier := {a | f a < 1}
     add_mem' := fun ha hb ↦ lt_of_le_of_lt (nonarch _ _) (max_lt ha hb)
@@ -113,7 +111,7 @@ def prime_ideal : HeightOneSpectrum (𝓞 K) where
     smul_mem' := by
       simpa [Set.mem_ofPred_eq] using
         (fun (c x : 𝓞 K) hx ↦ mul_lt_one_of_nonneg_of_lt_one_right
-            (integers_closed_unit_ball f nonarch c) (apply_nonneg f ↑x) hx)
+            (RingOfIntegers.absoluteValue_le_one f nonarch c) (apply_nonneg f ↑x) hx)
   }
   isPrime := by
       rw [Ideal.isPrime_iff]
@@ -135,17 +133,18 @@ def prime_ideal : HeightOneSpectrum (𝓞 K) where
     obtain ⟨c, b, h, rfl⟩ := IsFractionRing.div_surjective (A := 𝓞 K) a
     by_cases hfb : f b < 1
     · exact ⟨b, hfb, nonZeroDivisors.ne_zero h⟩
-    rw [map_div₀, le_antisymm (integers_closed_unit_ball f nonarch b) (le_of_not_gt hfb)] at hfa
-    grind [integers_closed_unit_ball]
+    rw [map_div₀, le_antisymm (RingOfIntegers.absoluteValue_le_one f nonarch b) (le_of_not_gt hfb)]
+      at hfa
+    grind [RingOfIntegers.absoluteValue_le_one]
 
 open AbsoluteValue in
 include nonarch in
 /-- A nontrivial nonarchimedean absolute value on a number field is equal to a `v`-adic absolute
 value attached for some `v : HeightOneSpectrum (𝓞 K)`. -/
-theorem Ostr_nonarch (hf_nontriv : f.IsNontrivial) :
+theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
     ∃! P : HeightOneSpectrum (𝓞 K), ∃ b, ∃ hb : 1 < b, f = adicAbv P hb := by
   -- Let `P` be the non-zero prime given by the open unit ball.
-  let P := prime_ideal f nonarch hf_nontriv
+  let P := maximalIdeal f nonarch hf_nontriv
   use P
   -- Choose a uniformizer of `P`; its absolute value determines the base `b`.
   rcases intValuation_exists_uniformizer P with ⟨π, hπ⟩
@@ -159,10 +158,10 @@ theorem Ostr_nonarch (hf_nontriv : f.IsNontrivial) :
     change π ∈ P.asIdeal
     simp [← intValuation_lt_one_iff_mem, hπ, ←WithZero.exp_zero, -WithZero.exp_neg]
   have f_eq_one_of_adicAbv_eq_one {x : K} (hx : adicAbv P hb x = 1) : f x = 1 := by
-    obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_absolute_value_one hb (le_of_eq hx)
+    obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_adicAbv_eq_one hb (le_of_eq hx)
     have int_unit {x : 𝓞 K} (hx : adicAbv P hb (x : K) = 1) : f x = 1 := by
       rw [adicAbv_coe_eq_one_iff] at hx
-      exact le_antisymm (integers_closed_unit_ball f nonarch x) (le_of_not_gt hx)
+      exact le_antisymm (RingOfIntegers.absoluteValue_le_one f nonarch x) (le_of_not_gt hx)
     have hy : adicAbv P hb (y : K) = 1 := by simpa [map_div₀, hz] using hx
     simp [map_div₀, int_unit hy, int_unit hz]
   constructor
