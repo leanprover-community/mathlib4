@@ -3,9 +3,9 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
-import Mathlib.RingTheory.KrullDimension.Polynomial
-import Mathlib.RingTheory.KrullDimension.LocalRing
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
+import Mathlib.RingTheory.KrullDimension.LocalRing
+import Mathlib.RingTheory.KrullDimension.Polynomial
 import Mathlib.RingTheory.PowerSeries.Inverse
 
 /-!

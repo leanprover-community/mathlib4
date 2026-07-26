@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Brodbelt, Violeta Hernández
 -/
 
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Linarith
 import Mathlib.Data.PNat.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
 
 /-!
 # IMO 1982 Q1
