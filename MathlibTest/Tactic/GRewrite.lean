@@ -114,7 +114,7 @@ example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
 
 -- Binder names are preserved:
 /--
-trace: α : Type ?u.3
+trace: α : Type _
 X Y Z W : Set α
 a b : ℕ
 h : a < b
@@ -130,7 +130,7 @@ example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
   rfl
 
 /--
-trace: α : Type ?u.3
+trace: α : Type _
 X Y Z W : Set α
 ⊢ ∀ {α : Type u_1} [inst : LinearOrder α] (a b : α), max a b ≤ max a b
 -/

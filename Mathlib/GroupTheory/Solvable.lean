@@ -175,6 +175,11 @@ instance (H : Subgroup G) [H.Normal] [IsSolvable G] :
     IsSolvable (G ⧸ H) :=
   isSolvable_of_surjective (QuotientGroup.mk'_surjective H)
 
+theorem isSolvable_iff_subgroup_quotient (H : Subgroup G) [H.Normal] :
+    IsSolvable G ↔ IsSolvable H ∧ IsSolvable (G ⧸ H) :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦
+    isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H) (by simp)⟩
+
 instance {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   isSolvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
