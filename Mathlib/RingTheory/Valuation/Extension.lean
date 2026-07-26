@@ -5,8 +5,8 @@ Authors: Jiedong Jiang, Bichang Lei, María Inés de Frutos-Fernández, Filippo 
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.ValuationSubring
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 

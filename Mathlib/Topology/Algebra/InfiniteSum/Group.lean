@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
