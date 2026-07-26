@@ -455,9 +455,9 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   rw [Multiset.map_add, Multiset.prod_add]
   apply le_trans (mul_le_mul' h_Wx h_Wy)
   rw [add_mul]
-  apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_right)
+  apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_left)
   rw [mul_add]
-  apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_left)
+  apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_right)
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
 /-- In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
@@ -492,9 +492,9 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
   rw [Multiset.map_add, Multiset.prod_add]
   refine ⟨le_trans (mul_le_mul' h_Wx_le h_Wy_le) ?_, mt Ideal.mul_eq_bot.mp ?_⟩
   · rw [add_mul]
-    apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_right)
+    apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_left)
     rw [mul_add]
-    apply sup_le (show span A {x} * M ≤ M from Ideal.mul_le_left)
+    apply sup_le (show span A {x} * M ≤ M from Ideal.mul_le_right)
     rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
   · rintro (hx | hy) <;> contradiction
 

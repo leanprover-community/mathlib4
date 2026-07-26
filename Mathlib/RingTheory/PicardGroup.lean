@@ -930,6 +930,6 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
     convert! Subtype.val_injective.comp e.injective using 2
     rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
-  exacts [mul_le_right (e 1).2, mul_le_left (e 1).2]
+  exacts [mul_le_left (e 1).2, mul_le_right (e 1).2]
 
 end Ideal
