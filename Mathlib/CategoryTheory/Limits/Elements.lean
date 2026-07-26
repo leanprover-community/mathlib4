@@ -142,9 +142,7 @@ def CorepresentableBy.ofIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsIn
   homEquiv :=
     { toFun f := F.map f E.snd
       invFun y := (he.to ⟨_, y⟩).val
-      left_inv f := by
-        have := Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
-        simpa using Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
+      left_inv f := Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
       right_inv y := (he.to ⟨_, y⟩).prop }
 
 lemma isCorepresentable.ofHasInitial (F : C ⥤ Type w) [HasInitial (Elements F)] :
