@@ -34,7 +34,7 @@ inductive Partrec' : ∀ {n}, (List.Vector ℕ n →. ℕ) → Prop
       Partrec' fun v ↦. (List.Vector.mOfFn fun i => g i v) >>= f
   | rfind {n} {f : List.Vector ℕ (n + 1) → ℕ} :
     @Partrec' (n + 1) f →
-      Partrec' (fun v ↦. Nat.rfind fun n => decide (f (n ::ᵥ v) = 0))
+      Partrec' fun v ↦. Nat.rfind fun n => decide (f (n ::ᵥ v) = 0)
 
 end Nat
 
@@ -64,7 +64,7 @@ theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
 set_option backward.isDefEq.respectTransparency.types false in
-theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ (fun v ↦. f v.tail) :=
+theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v ↦. f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
     have h_vec : List.Vector.ofFn (fun i => v.get i.succ) = v.tail := by
       ext i; rw [List.Vector.get_ofFn]; exact (List.Vector.get_tail v i).symm
@@ -72,14 +72,14 @@ theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ (fun v ↦. f v.tail)
 
 set_option backward.isDefEq.respectTransparency.types false in
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
-    @Partrec' n (fun v ↦. (f v).bind fun a => g (a ::ᵥ v)) :=
+    @Partrec' n fun v ↦. (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (Fin.cases f (fun i => fun v : List.Vector ℕ n => v.get i)) hg <|
     Fin.cases (by simpa using hf) (fun i => by simpa using prim (Nat.Primrec'.get i))).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
 protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)
     (hg : @Partrec' (n + 1) g) :
-    @Partrec' n (fun v ↦. (f v).map fun a => g (a ::ᵥ v)) := by
+    @Partrec' n fun v ↦. (f v).map fun a => g (a ::ᵥ v) := by
   simpa [(Part.bind_some_eq_map _ _).symm] using hf.bind hg
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
@@ -100,16 +100,16 @@ theorem idv {n} : @Vec n n id :=
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem comp' {n m f g} (hf : @Partrec' m f) (hg : @Vec n m g) :
-    Partrec' (fun v ↦. f (g v)) :=
+    Partrec' fun v ↦. f (g v) :=
   (hf.comp _ hg).of_eq fun v => by simp
 
 theorem comp₁ {n} (f : ℕ →. ℕ) {g : List.Vector ℕ n → ℕ}
-    (hf : @Partrec' 1 (fun v ↦. f v.head)) (hg : @Partrec' n g) :
-    @Partrec' n (fun v ↦. f (g v)) := by
+    (hf : @Partrec' 1 fun v ↦. f v.head) (hg : @Partrec' n g) :
+    @Partrec' n fun v ↦. f (g v) := by
   simpa using hf.comp' (Partrec'.cons hg Partrec'.nil)
 
 theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f) :
-    @Partrec' n (fun v ↦. Nat.rfindOpt fun a => ofNat (Option ℕ) (f (a ::ᵥ v))) :=
+    @Partrec' n fun v ↦. Nat.rfindOpt fun a => ofNat (Option ℕ) (f (a ::ᵥ v)) :=
   ((rfind <|
         (of_prim (Primrec.nat_sub.comp (_root_.Primrec.const 1) Primrec.vector_head)).comp₁
           (fun n => 1 - n) hf).bind

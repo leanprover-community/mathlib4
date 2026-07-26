@@ -120,8 +120,8 @@ def Code.eval : Code → List ℕ →. List ℕ
   | Code.comp f g => fun v ↦. g.eval v >>= f.eval
   | Code.case f g => fun v ↦. v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail)
   | Code.fix f =>
-    PFun.fix (fun v ↦. (f.eval v).map fun v' =>
-      if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail)
+    PFun.fix fun v ↦. (f.eval v).map fun v' =>
+      if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail
 
 namespace Code
 
@@ -151,8 +151,8 @@ theorem case_eval (f g) :
 @[simp]
 theorem fix_eval (f) :
     (fix f).eval =
-      PFun.fix (fun v ↦. (f.eval v).map fun v' =>
-        if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail) := rfl
+      PFun.fix fun v ↦. (f.eval v).map fun v' =>
+        if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail := rfl
 
 /-- `nil` is the constant nil function: `nil v = []`. -/
 def nil : Code :=

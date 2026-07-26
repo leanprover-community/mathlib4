@@ -57,9 +57,9 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
     let G : ℕ → ℕ → Part ℕ := fun x y =>
       f (Nat.pair (Nat.unpair x).1 (y + (Nat.unpair x).2))
     have h1 :
-        Partrec₂ (fun a => fun b ↦.
-          Nat.rfind (fun n ↦.
-            (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))) :=
+        Partrec₂ fun a => fun b ↦.
+          Nat.rfind fun n ↦.
+            (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)) :=
       have hpair : Computable (fun p : ℕ × ℕ =>
           Nat.pair (Nat.unpair p.1).1 (p.2 + (Nat.unpair p.1).2)) :=
         (Primrec₂.pair.comp
