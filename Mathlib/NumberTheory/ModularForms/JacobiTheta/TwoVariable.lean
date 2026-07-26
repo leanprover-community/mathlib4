@@ -355,6 +355,29 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     (((hasFDerivAt_jacobiTheta₂ z hτ).comp z (hasFDerivAt_prodMk_left z τ)).hasDerivAt :)
   rwa [← step1.tsum_eq] at step3
 
+/-- The derivative of `Θ z τ` in `τ`, for fixed `z`, as a sum over `n` of the `τ`-derivatives
+of the summands. Compare `hasDerivAt_jacobiTheta₂_fst` for the derivative in `z`. -/
+lemma hasDerivAt_jacobiTheta₂_snd (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
+    HasDerivAt (jacobiTheta₂ z) (∑' n : ℤ, π * I * n ^ 2 * jacobiTheta₂_term n z τ) τ := by
+  -- As in `hasDerivAt_jacobiTheta₂_fst`, we must commute "evaluation at a point" through an
+  -- infinite sum of continuous linear maps; here the point is `(0, 1)` rather than `(1, 0)`.
+  let eval_snd_CLM : (ℂ × ℂ →L[ℂ] ℂ) →L[ℂ] ℂ :=
+  { toFun := fun f ↦ f (0, 1)
+    map_add' := by simp only [add_apply, forall_const]
+    map_smul' := by simp }
+  have step1 : HasSum (fun n ↦ (jacobiTheta₂_term_fderiv n z τ) (0, 1))
+      ((jacobiTheta₂_fderiv z τ) (0, 1)) := by
+    apply eval_snd_CLM.hasSum (hasSum_jacobiTheta₂_term_fderiv z hτ)
+  have step2 (n : ℤ) : (jacobiTheta₂_term_fderiv n z τ) (0, 1)
+      = π * I * n ^ 2 * jacobiTheta₂_term n z τ := by
+    simp only [jacobiTheta₂_term_fderiv, jacobiTheta₂_term, add_apply,
+      FunLike.coe_smul', ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd',
+      Pi.smul_apply, smul_eq_mul, mul_zero, mul_one, zero_add, mul_comm _ (cexp _)]
+  rw [funext step2] at step1
+  have step3 : HasDerivAt (jacobiTheta₂ z) ((jacobiTheta₂_fderiv z τ) (0, 1)) τ :=
+    (((hasFDerivAt_jacobiTheta₂ z hτ).comp τ (hasFDerivAt_prodMk_right z τ)).hasDerivAt :)
+  rwa [← step1.tsum_eq] at step3
+
 lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     ContinuousAt (fun p : ℂ × ℂ ↦ jacobiTheta₂' p.1 p.2) (z, τ) := by
   obtain ⟨T, hT, hτ'⟩ := exists_between hτ
