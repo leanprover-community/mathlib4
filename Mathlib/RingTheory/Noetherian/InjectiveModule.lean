@@ -34,23 +34,6 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-private lemma ascending_ideal_b (f : R) : Monotone (fun i ↦ Ideal.torsionOf R R (f ^ i)) := by
-  intro i j hle
-  choose k hk using Nat.exists_eq_add_of_le hle
-  intro a ha
-  rw [Ideal.mem_torsionOf_iff] at ha
-  rw [Ideal.mem_torsionOf_iff]
-  have h : f ^ j = f ^ i * f ^ k := by
-    rw [hk]
-    ring_nf
-  rw [h, smul_eq_mul]
-  rw [smul_eq_mul] at ha
-  rw [← mul_assoc, ha]
-  exact zero_mul _
-
-private abbrev ideal_b_order_hom (f : R) : ℕ →o Ideal R :=
-  ⟨fun i ↦ Ideal.torsionOf R R (f ^ i), ascending_ideal_b f⟩
-
 private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
     (hr : ∀ (i : ℕ), Ideal.torsionOf R R (f ^ (r + i)) = Ideal.torsionOf R R (f ^ r))
     {M : Type u} [AddCommGroup M] [Module R M] (y : M) :
@@ -78,11 +61,18 @@ variable [IsNoetherianRing R]
 
 private lemma stabilize_ideal_b (f : R) :
     ∃ (r : ℕ), ∀ (i : ℕ), Ideal.torsionOf R R (f ^ (r + i)) = Ideal.torsionOf R R (f ^ r) := by
-  choose r hr using monotone_stabilizes_iff_noetherian.mpr inferInstance (ideal_b_order_hom f)
+  let ideal_b_order_hom : ℕ →o Ideal R := by
+    refine ⟨fun i ↦ Ideal.torsionOf R R (f ^ i), ?_⟩
+    intro i j hle
+    choose k hk using Nat.exists_eq_add_of_le hle
+    refine Ideal.torsionOf_le_of_div (f ^ i) (f ^ j) ⟨f ^ k, ?_⟩
+    rw [hk, smul_eq_mul]
+    ring
+  choose r hr using monotone_stabilizes_iff_noetherian.mpr inferInstance ideal_b_order_hom
   use r
   intro i
-  specialize hr (r + i)
-  exact symm (hr (Nat.le_add_right r i))
+  specialize hr (r + i) (Nat.le_add_right r i)
+  exact symm hr
 
 /-- **Hartshorne III. Lemma 3.3.** If `R` is a Noetherian ring and `I` satisfies Baer's criterion,
 then for any `f : R` the localization map `I → I_f` is surjective. -/

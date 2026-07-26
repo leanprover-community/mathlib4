@@ -140,6 +140,14 @@ theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
   simpa using this
 
+theorem torsionOf_le_of_div {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  (x : M) (y : M) (hdiv : ∃ r : R, y = r • x) : torsionOf R M x ≤ torsionOf R M y := by
+  intro m hm
+  rw [mem_torsionOf_iff]
+  rw [mem_torsionOf_iff] at hm
+  choose r hr using hdiv
+  rw [hr, smul_comm, hm, smul_zero]
+
 end TorsionOf
 
 section
