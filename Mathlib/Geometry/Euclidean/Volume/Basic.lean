@@ -55,10 +55,7 @@ theorem volume_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
     (s.map f.toAffineMap f.injective).volume = s.volume := by
   induction n with
   | zero => simp
-  | succ n ih =>
-    conv_lhs => rw [volume_eq _ 0]
-    conv_rhs => rw [volume_eq _ 0]
-    simp [height_map, faceOpposite_map, ih]
+  | succ n ih => simp [volume_eq _ 0, height_map, faceOpposite_map, ih]
 
 @[simp]
 theorem volume_restrict {n : ℕ} (s : Simplex ℝ P n) {S : AffineSubspace ℝ P}
@@ -67,11 +64,7 @@ theorem volume_restrict {n : ℕ} (s : Simplex ℝ P n) {S : AffineSubspace ℝ 
     (s.restrict S hS).volume = s.volume := by
   induction n with
   | zero => simp
-  | succ n ih =>
-    have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
-    conv_lhs => rw [volume_eq _ 0]
-    conv_rhs => rw [volume_eq _ 0]
-    simp [height_restrict, faceOpposite_restrict, ih]
+  | succ n ih => simp [volume_eq _ 0, height_restrict, faceOpposite_restrict, ih]
 
 @[simp]
 theorem volume_pos {n : ℕ} (s : Simplex ℝ P n) : 0 < s.volume := by
