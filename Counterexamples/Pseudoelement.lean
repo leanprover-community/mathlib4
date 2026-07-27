@@ -65,6 +65,7 @@ theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd
     simp_rw [biprod.lift_snd]; rfl
 
 set_option backward.isDefEq.respectTransparency false in
+/-- `x` is not pseudoequal to `y`. -/
 theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   intro h
   replace h := ModuleCat.eq_range_of_pseudoequal h
