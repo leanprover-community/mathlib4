@@ -49,7 +49,7 @@ variable (f g) in
 def divergentSet : Set α := {x | birkhoffSumSup f g x = ⊤}
 
 lemma divergentSet_invariant : f x ∈ divergentSet f g ↔ x ∈ divergentSet f g := by
-  simp only [divergentSet, birkhoffSumSup, Set.mem_setOf_eq]
+  simp only [divergentSet, birkhoffSumSup, Set.mem_ofPred_eq]
   nth_rw 2 [← sup_iSup_nat_succ]
   simp only [birkhoffSum_zero', Pi.zero_apply, EReal.coe_zero, birkhoffSum_succ', EReal.coe_add,
     max_eq_top, EReal.zero_ne_top, false_or]
@@ -57,7 +57,7 @@ lemma divergentSet_invariant : f x ∈ divergentSet f g ↔ x ∈ divergentSet f
 
 lemma birkhoffMax_tendsto_atTop_of_mem_divergentSet (hx : x ∈ divergentSet f g) :
     Tendsto (birkhoffMax f g · x) atTop atTop := by
-  simp only [divergentSet, birkhoffSumSup, iSup_eq_top, Set.mem_setOf_eq] at hx
+  simp only [divergentSet, birkhoffSumSup, iSup_eq_top, Set.mem_ofPred_eq] at hx
   refine tendsto_atTop_atTop.mpr fun b ↦ ?_
   obtain ⟨N, hN⟩ := hx b (by simp)
   norm_cast at hN
@@ -90,7 +90,7 @@ lemma tendsTo_birkhoffMaxDiff_of_mem_divergentSet (hx : x ∈ divergentSet f g) 
 lemma limsup_birkhoffAverage_nonpos_of_notMem_divergentSet (hx : x ∉ divergentSet f g) :
     limsup (birkhoffAverage ℝ f g · x |>.toEReal) atTop ≤ 0 := by
   /- from `hx` hypothesis, the birkhoff sums are bounded above by some real `M` -/
-  simp only [divergentSet, birkhoffSumSup, Set.mem_setOf_eq, iSup_eq_top, not_forall, not_exists,
+  simp only [divergentSet, birkhoffSumSup, Set.mem_ofPred_eq, iSup_eq_top, not_forall, not_exists,
     not_lt] at hx
   obtain ⟨M, hM, hbound⟩ := hx
   lift M to ℝ using ⟨hM.ne, ((EReal.bot_lt_coe _).trans_le (hbound 0)).ne'⟩
@@ -172,13 +172,21 @@ lemma measure_divergentSet_eq_zero_of_condExp_neg [IsFiniteMeasure μ]
   filter_upwards [h] with x hx hxd
   exact ⟨by simpa using hx.ne, hxd⟩
 
-include g_meas hf hg in
-lemma ae_tendsTo_birkhoffAverage_of_condExp_neg [IsFiniteMeasure μ]
+include hf hg in
+lemma ae_limsup_birkhoffAverage_nonpos_of_condExp_neg [IsFiniteMeasure μ]
     (h : ∀ᵐ x ∂μ, μ[g | invariants f] x < 0) :
     ∀ᵐ x ∂μ, limsup (birkhoffAverage ℝ f g · x |>.toEReal) atTop ≤ 0 := by
-  filter_upwards [measure_eq_zero_iff_ae_notMem.mp
-    (measure_divergentSet_eq_zero_of_condExp_neg g_meas μ hf hg h)] with x
-  exact limsup_birkhoffAverage_nonpos_of_notMem_divergentSet
+  -- Replace `g` by an a.e. equal measurable representative `g'`.
+  set g' := hg.aemeasurable.mk g
+  have g_eq : g =ᵐ[μ] g' := hg.aemeasurable.ae_eq_mk
+  have h' : ∀ᵐ x ∂μ, μ[g' | invariants f] x < 0 := by
+    filter_upwards [condExp_congr_ae g_eq, h] with x hx₁ hx₂
+    rwa [← hx₁]
+  have hae := ae_all_iff.mpr <| hf.quasiMeasurePreserving.birkhoffAverage_ae_eq_of_ae_eq ℝ g_eq
+  filter_upwards [measure_eq_zero_iff_ae_notMem.mp (measure_divergentSet_eq_zero_of_condExp_neg
+    hg.aemeasurable.measurable_mk μ hf (hg.congr g_eq) h'), hae] with x hx hx'
+  exact le_of_eq_of_le (limsup_congr <| Eventually.of_forall fun n ↦ by rw [hx' n])
+    (limsup_birkhoffAverage_nonpos_of_notMem_divergentSet hx)
 
 end DivergentSet
 
@@ -186,11 +194,11 @@ section Real
 
 open MeasureTheory Measure MeasurableSpace Filter Topology
 
-variable {α : Type*} {f : α → α} {g : α → ℝ} [MeasurableSpace α] (g_meas : Measurable g)
+variable {α : Type*} {f : α → α} {g : α → ℝ} [MeasurableSpace α]
     (μ : Measure α := by volume_tac) [IsProbabilityMeasure μ] (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ)
 
-include g_meas hf hg in
+include hf hg in
 /-- The time average is a.e., eventually not much less than the conditional expectation. -/
 lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε) :
     ∀ᵐ x ∂μ, limsup
@@ -198,8 +206,6 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε) :
   -- Let `h` denote the difference between `g` and the conditional expectation of `g` plus `ε`.
   let h := g - (μ[g|invariants f] + fun _ ↦ ε)
   have h_integrable : Integrable h μ := by fun_prop
-  have h_measurable : Measurable h :=
-    g_meas.sub ((stronglyMeasurable_condExp.measurable.le (invariants_le f)).add measurable_const)
   -- It follows from the definition of `h` that it is a.e. equal to `-ε`.
   have h_condexp_const : μ[h|invariants f] =ᵐ[μ] - fun _ ↦ ε := calc
     _ =ᵐ[μ] μ[g|invariants f] - μ[μ[g|invariants f] + fun _ ↦ ε|invariants f] :=
@@ -213,7 +219,7 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε) :
   -- For typical points the time average of `h` is eventually non-negative.
   have limsup_nonpos : ∀ᵐ x ∂μ, limsup (birkhoffAverage ℝ f h · x |>.toEReal) atTop ≤ 0 := by
     suffices ∀ᵐ x ∂μ, μ[h|invariants f] x < 0 from
-      ae_tendsTo_birkhoffAverage_of_condExp_neg h_measurable μ hf h_integrable this
+      ae_limsup_birkhoffAverage_nonpos_of_condExp_neg μ hf h_integrable this
     exact h_condexp_const.mono fun x hx ↦ by simp [hx, hε]
   -- Transfer the result on `h` to the required result on `g`.
   have hcomp : μ[g|invariants f] ∘ f = μ[g|invariants f] :=
@@ -224,9 +230,8 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε) :
     birkhoffAverage_of_comp_eq ℝ (show (fun _ : α ↦ ε) ∘ f = fun _ ↦ ε from rfl) (by norm_cast),
     birkhoffAverage_of_comp_eq ℝ hcomp (by norm_cast)]
 
-include g_meas hf hg in
-/-- Same as `ae_tendsTo_birkhoffAverage_condExp_real` but assuming `Measurable g`. -/
-lemma ae_tendsTo_birkhoffAverage_condExp_aux :
+include hf hg in
+theorem ae_tendsTo_birkhoffAverage_condExp_real :
     ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f g · x) atTop (𝓝 (μ[g|invariants f] x)) := by
   have : ∀ᵐ x ∂μ, ∀ k : ℕ,
       ∀ᶠ n in atTop, |birkhoffAverage ℝ f g n x - μ[g|invariants f] x| < (k + 1 : ℝ)⁻¹ := by
@@ -234,8 +239,8 @@ lemma ae_tendsTo_birkhoffAverage_condExp_aux :
     let δ := (k + 1 : ℝ)⁻¹ / 2
     have hδ : 0 < δ := by positivity
     have hδ' : (0 : EReal) < δ := by norm_cast
-    have p₁ := ae_tendsTo_birkhoffAverage_sub_condExp_nonneg g_meas μ hf hg hδ
-    have p₂ := ae_tendsTo_birkhoffAverage_sub_condExp_nonneg g_meas.neg μ hf hg.neg hδ
+    have p₁ := ae_tendsTo_birkhoffAverage_sub_condExp_nonneg μ hf hg hδ
+    have p₂ := ae_tendsTo_birkhoffAverage_sub_condExp_nonneg μ hf hg.neg hδ
     filter_upwards [p₁, p₂, condExp_neg (μ := μ) g (invariants f)] with x hx₁ hx₂ hx₃
     filter_upwards [eventually_lt_of_limsup_lt (hx₁.trans_lt hδ'),
       eventually_lt_of_limsup_lt (hx₂.trans_lt hδ')] with m hm₁ hm₂
@@ -247,16 +252,6 @@ lemma ae_tendsTo_birkhoffAverage_condExp_aux :
   obtain ⟨k, hk⟩ := exists_nat_one_div_lt hε
   obtain ⟨N, hN⟩ := eventually_atTop.mp (hx k)
   exact ⟨N, fun n hn ↦ (hN n hn).trans (by rwa [one_div] at hk)⟩
-
-include hf hg in
-theorem ae_tendsTo_birkhoffAverage_condExp_real :
-    ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f g · x) atTop (𝓝 (μ[g|invariants f] x)) := by
-  have g_eq : g =ᵐ[μ] hg.left.mk := hg.left.ae_eq_mk
-  have h1 := condExp_congr_ae (m := invariants f) g_eq
-  have h2 := ae_tendsTo_birkhoffAverage_condExp_aux hg.left.measurable_mk μ hf (hg.congr g_eq)
-  have h3 := ae_all_iff.mpr <| hf.quasiMeasurePreserving.birkhoffAverage_ae_eq_of_ae_eq ℝ g_eq
-  filter_upwards [h1, h2, h3] with _ h1' h2' h3'
-  simp [h1', h2', h3']
 
 end Real
 
@@ -287,7 +282,7 @@ lemma measure_limsup_birkhoffAverage_sub_condExp_le (hf : MeasurePreserving f μ
   have e_tendsto := ae_tendsTo_birkhoffAverage_condExp_real μ hf e_int.norm
   have hsplit : μ[g | invariants f] =ᵐ[μ] μ[s | invariants f] + μ[e | invariants f] :=
     e_eq_sum ▸ condExp_add s_integrable e_int _
-  have hnorm : (‖μ[e | invariants f] ·‖) ≤ᵐ[μ] μ[(‖e ·‖) | invariants f] := norm_condExp_le
+  have hnorm : (‖μ[e | invariants f] ·‖) ≤ᵐ[μ] μ[(‖e ·‖) | invariants f] := norm_condExp_le _
   -- The exceptional set is a.e. a subset of a set whose measure we can control.
   have hsub : birkhoffExceptionalSet μ f g ε ≤ᵐ[μ] {x | ε ≤ 2 * μ[(‖e ·‖) | invariants f] x} := by
     filter_upwards [s_tendsto, e_tendsto, hsplit, hnorm] with x hxs hxe hxsplit hxnorm hmem
