@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 ## Main results
 
-* `coeff` : for a `ℝ`-basis `b` in an `R`-vector space `V` and a `V`-valued vector measure `μ`, one
+* `coeff` : for a `ℝ`-basis `b` in an `ℝ`-vector space `V` and a `V`-valued vector measure `μ`, one
   has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coefficients `a i E` is
   an `ℝ`-valued vector measure (`SignedMeasure`), which we call `μ.coeff b`.
 * `sum_coeff_smul_eq` : the characterizing equality `∑ i, (μ.coeff b i E) • b i = μ E ` for `coeff`.
@@ -30,22 +30,22 @@ namespace MeasureTheory.VectorMeasure
 
 variable {X : Type*} {mX : MeasurableSpace X}
   {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
-  {ι : Type*} [Fintype ι] [DecidableEq ι]
+  {ι : Type*}
 
 /-- For a basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coeff b i` gives the
-`i`-th component of `μ` as a `ℝ`-valued vector measure, which is `SignedMeasure V`. -/
+`i`-th component of `μ` as a `ℝ`-valued vector measure, which is `SignedMeasure X`. -/
 noncomputable def coeff (b : Basis ι ℝ V) (μ : VectorMeasure X V) : ι → SignedMeasure X :=
-  fun i ↦ mapRangeₗ (b.dualBasis i) (b.dualBasis i).continuous_of_finiteDimensional μ
+  fun i ↦ mapRangeₗ (b.coord i) (b.coord i).continuous_of_finiteDimensional μ
 
 @[simp]
 lemma coeff_apply (b : Basis ι ℝ V) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
     μ.coeff b i E = b.coord i (μ E) := by simp [coeff]
 
-theorem sum_coeff_smul_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) (E : Set X) :
+theorem sum_coeff_smul_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) (E : Set X) [Fintype ι] :
     ∑ i, (μ.coeff b i E) • b i = μ E := by
   simp
 
-theorem sum_toSpanSingleton_coeff_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) :
+theorem sum_toSpanSingleton_coeff_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) [Fintype ι] :
     ∑ i, mapRangeₗ (toSpanSingleton ℝ V (b i))
       ((toSpanSingleton ℝ V (b i)).continuous_of_finiteDimensional) (μ.coeff b i) = μ := by
   ext; simp
