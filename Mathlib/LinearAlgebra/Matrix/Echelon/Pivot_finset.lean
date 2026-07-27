@@ -29,6 +29,7 @@ open Finset OrderDual
 variable {m n : Type*} {R : Type*}
 
 /-! ### Leading entries -/
+/- These goes into basic.lean if adopted -/
 
 /-- `c` is the column of the leading nonzero entry of row `i`. -/
 def IsLeadingEntry [Zero R] [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
@@ -99,26 +100,19 @@ theorem IsPivotFinset.rank_eq [Finite m] [LinearOrder m] [Fintype n] [LinearOrde
   · refine (rank_le_card_of_row_eq_zero A (univ.filter fun i => A i ≠ 0)
       fun i hi => by simpa using hi).trans ?_
     rw [← card_attach (s := univ.filter fun i => A i ≠ 0)]
-    refine card_le_card_of_injOn
-      (fun x => (exists_isLeadingEntry_of_ne_zero (mem_filter.mp x.2).2).choose)
-      (fun x _ => (h.mem_iff _).mpr
-        ⟨x.1, (exists_isLeadingEntry_of_ne_zero (mem_filter.mp x.2).2).choose_spec⟩)
-      fun x₁ _ x₂ _ heq => by
-        simp only at heq
-        exact Subtype.ext (h.rowEchelon.isLeadingEntry_row_eq
-          (exists_isLeadingEntry_of_ne_zero (mem_filter.mp x₁.2).2).choose_spec
-          (heq ▸ (exists_isLeadingEntry_of_ne_zero (mem_filter.mp x₂.2).2).choose_spec))
-  · have hrow : ∀ k : Fin s.card, ∃ i, A.IsLeadingEntry i (s.orderEmbOfFin rfl k) :=
-      fun k => (h.mem_iff _).mp (orderEmbOfFin_mem s rfl k)
-    have htri : (A.submatrix (fun k => (hrow k).choose)
-        (s.orderEmbOfFin rfl)).BlockTriangular id := fun a b hab =>
-      (hrow a).choose_spec.1 _ ((s.orderEmbOfFin rfl).strictMono hab)
-    have hdet : (A.submatrix (fun k => (hrow k).choose) (s.orderEmbOfFin rfl)).det ≠ 0 := by
+    choose f hf using fun x : { x // x ∈ univ.filter fun i => A i ≠ 0 } =>
+      exists_isLeadingEntry_of_ne_zero (mem_filter.mp x.2).2
+    refine card_le_card_of_injOn f (fun x _ => (h.mem_iff _).mpr ⟨x.1, hf x⟩)
+      fun x₁ _ x₂ _ heq => Subtype.ext
+        (h.rowEchelon.isLeadingEntry_row_eq (hf x₁) (heq ▸ hf x₂))
+  · choose f hf using fun c : ↥s => (h.mem_iff _).mp c.2
+    have htri : (A.submatrix f Subtype.val).BlockTriangular id := fun a b hab =>
+      (hf a).1 _ hab
+    have hdet : (A.submatrix f Subtype.val).det ≠ 0 := by
       rw [det_of_upperTriangular htri]
-      exact prod_ne_zero_iff.mpr fun a _ => (hrow a).choose_spec.2
-    calc (s.card : ℕ) = (A.submatrix (fun k => (hrow k).choose)
-          (s.orderEmbOfFin rfl)).rank := by
-          rw [rank_of_det_ne_zero hdet, Fintype.card_fin]
+      exact prod_ne_zero_iff.mpr fun a _ => (hf a).2
+    calc (s.card : ℕ) = (A.submatrix f Subtype.val).rank := by
+          rw [rank_of_det_ne_zero hdet, Fintype.card_coe]
       _ ≤ A.rank := rank_submatrix_le A _ _
 
 lemma rank_mul_eq_right_of_lowerTriangular [Fintype m] [LinearOrder m] [Fintype n]
