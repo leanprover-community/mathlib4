@@ -453,7 +453,12 @@ lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := log
 lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
   lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; rfl
 
-@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
+-- This is deliberately not a `simp` lemma: the group structure on `Gᵐ⁰` interacts much worse with
+-- the order relation than the one on `G`, so `exp (-a)` is a better normal form than `(exp a)⁻¹`.
+-- The `simp` lemma pushing `⁻¹` inside `exp` is `WithZero.inv_exp` below.
+lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
+
+@[simp] lemma inv_exp (a : G) : (exp a)⁻¹ = exp (-a) := rfl
 
 @[simp]
 lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
