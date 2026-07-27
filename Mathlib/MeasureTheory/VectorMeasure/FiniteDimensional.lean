@@ -6,17 +6,19 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
-# TODO
+# Decomposition of a vector measure in a finite-dimensional `ℝ`-vector space with respect to a basis
 
 ## Main results
 
-TODO
+* `coeff` : for a `ℝ`-basis `b` in an `R`-vector space `V` and a `V`-valued vector measure `μ`, one
+  has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coefficients `a i E` is
+  an `ℝ`-valued vector measure (`SignedMeasure`), which we call `μ.coeff b`.
+* `sum_coeff_smul_eq` : the characterizing equality `∑ i, (μ.coeff b i E) • b i = μ E ` for `coeff`.
+* `sum_toSpanSingleton_coeff_eq` : `μ` as a linear combination of vector measures.
+
 -/
 
 public section
@@ -37,9 +39,13 @@ noncomputable def coeff (b : Basis ι ℝ V) (μ : VectorMeasure X V) : ι → S
 
 @[simp]
 lemma coeff_apply (b : Basis ι ℝ V) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
-    μ.coeff b i E = b.dualBasis i (μ E) := by simp [coeff]
+    μ.coeff b i E = b.coord i (μ E) := by simp [coeff]
 
-theorem sum_coeff_smul_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) :
+theorem sum_coeff_smul_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) (E : Set X) :
+    ∑ i, (μ.coeff b i E) • b i = μ E := by
+  simp
+
+theorem sum_toSpanSingleton_coeff_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) :
     ∑ i, mapRangeₗ (toSpanSingleton ℝ V (b i))
       ((toSpanSingleton ℝ V (b i)).continuous_of_finiteDimensional) (μ.coeff b i) = μ := by
   ext; simp

@@ -6,7 +6,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.MeasureTheory.Measure.Complex
-public import Mathlib.MeasureTheory.VectorMeasure.Variation.SignedMeasure
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
 # Properties of complex measures
@@ -17,7 +17,6 @@ We prove basic properties of `μ : ComplexMeasure X` on `MeasurableSpace X`.
 
 * `reCm`, `imCm` : the real and imaginary parts of a complex measure as complex measures.
 * `eq_add_re_im` : a complex measure is the sum of its real and imaginary parts.
-* `instance : IsFiniteMeasure μ.variation` : any complex measure has finite total variation.
 
 ## References
 
@@ -64,22 +63,4 @@ lemma variation_imCm_eq_variation_im (μ : ComplexMeasure X) :
 theorem eq_add_re_im (μ : ComplexMeasure X) : μ = μ.reCm + Complex.I • μ.imCm := by
   ext E; apply Complex.ext <;> simp <;> rfl
 
-section IsFiniteMeasure
-
-variable (μ : ComplexMeasure X)
-
-instance : IsFiniteMeasure μ.variation := by
-  rw [μ.eq_add_re_im, isFiniteMeasure_iff]
-  apply lt_of_le_of_lt (by apply variation_add_le)
-  rw [Measure.add_apply, ENNReal.add_lt_top]
-  constructor
-  · rw [variation_reCm_eq_variation_re, ← SignedMeasure.totalVariation_eq_variation]
-    exact measure_lt_top _ _
-  · rw [variation_smul, variation_imCm_eq_variation_im, ← SignedMeasure.totalVariation_eq_variation]
-    exact measure_lt_top _ _
-
-end IsFiniteMeasure
-
 end MeasureTheory.ComplexMeasure
-
-variable (a : ℝ)
