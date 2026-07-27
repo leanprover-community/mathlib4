@@ -109,6 +109,10 @@ theorem homogeneousSubmodule_eq_finsupp_supported (n : ℕ) :
   simp_rw [degree_eq_weight_one]
   exact weightedHomogeneousSubmodule_eq_finsupp_supported R 1 n
 
+lemma homogeneousSubmodule_fg [Finite σ] (n : ℕ) :
+    (homogeneousSubmodule σ R n).FG :=
+  weightedHomogeneousSubmodule_fg R (1 : σ → ℕ) (by simp) n
+
 variable {σ R}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -164,6 +168,10 @@ theorem isHomogeneous_zero (n : ℕ) : IsHomogeneous (0 : MvPolynomial σ R) n :
 
 theorem isHomogeneous_one : IsHomogeneous (1 : MvPolynomial σ R) 0 :=
   isHomogeneous_C _ _
+
+lemma isHomogeneous_of_isEmpty [IsEmpty σ] (f : MvPolynomial σ R) : f.IsHomogeneous 0 := by
+  rw [eq_C_of_isEmpty f]
+  exact isHomogeneous_C _ _
 
 variable {σ}
 
@@ -565,10 +573,25 @@ theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
     homogeneousComponent m p = if m = n then p else 0 :=
   weightedHomogeneousComponent_of_mem h
 
+lemma homogeneousComponent_eq_self {n : ℕ} {p : MvPolynomial σ R}
+    (hp : p.IsHomogeneous n) : homogeneousComponent n p = p := by
+  simp [homogeneousComponent_of_mem hp]
+
 lemma support_homogeneousComponent (n : ℕ) (p : MvPolynomial σ R) :
     (homogeneousComponent n p).support = {c ∈ p.support | c.degree = n} := by
   rw [degree_eq_weight_one]
   exact support_weightedHomogeneousComponent n p
+
+lemma rename_homogeneousComponent {τ : Type*} {φ : σ → τ} (n : ℕ) (p : MvPolynomial σ R) :
+    rename φ (homogeneousComponent n p) = homogeneousComponent n (rename φ p) := by
+  induction p using MvPolynomial.induction_on' with
+  | monomial d c =>
+    rw [rename_monomial,
+      homogeneousComponent_of_mem (isHomogeneous_monomial c rfl),
+      homogeneousComponent_of_mem (isHomogeneous_monomial c (Finsupp.degree_mapDomain φ d))]
+    split_ifs <;> simp [rename_monomial]
+  | add p q hp hq => simp [map_add, hp, hq]
+
 
 end HomogeneousComponent
 
@@ -606,6 +629,18 @@ theorem decomposition.decompose'_eq :
         fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
   rw [degree_eq_weight_one]
   rfl
+
+attribute [local instance] MvPolynomial.gradedAlgebra
+
+lemma mem_iff_homogeneousComponent_mem {I : Ideal (MvPolynomial σ R)}
+    (h : I.IsHomogeneous (homogeneousSubmodule σ R)) (p : MvPolynomial σ R) :
+    p ∈ I ↔ ∀ n, (homogeneousComponent n p) ∈ I :=
+  mem_iff_weightedHomogeneousComponent_mem R (1 : σ → ℕ) h p
+
+lemma homogeneousComponent_mem_of_mem {I : Ideal (MvPolynomial σ R)}
+    (h : I.IsHomogeneous (homogeneousSubmodule σ R)) {p : MvPolynomial σ R} (hp : p ∈ I) (n : ℕ) :
+    (homogeneousComponent n p) ∈ I :=
+  weightedHomogeneousComponent_mem_of_mem R (1 : σ → ℕ) h hp n
 
 end GradedAlgebra
 

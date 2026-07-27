@@ -148,7 +148,6 @@ section ev
 variable [DayConvolution F H] (ℌ : DayConvolutionInternalHom F G H)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `ℌ : DayConvolutionInternalHom F H`, if we think of `H.obj G`
 as the internal hom `[F, G]`, then this is the transformation
 corresponding to the component at `G` of the "evaluation" natural morphism

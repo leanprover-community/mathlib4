@@ -106,8 +106,7 @@ structure IsPredLimit (a : α) : Prop where
   /-- Predecessor limits aren't covered by any other elements. -/
   protected isPredPrelimit : IsPredPrelimit a
 
-attribute [to_dual existing]
-  IsSuccLimit.mk IsSuccLimit.not_isMin IsSuccLimit.isSuccPrelimit isSuccLimit_iff
+attribute [to_dual existing] isSuccLimit_iff
 attribute [simp] IsSuccLimit.isSuccPrelimit IsPredLimit.isPredPrelimit
 
 @[to_dual (attr := simp)]
@@ -377,9 +376,6 @@ theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
 theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b :=
   fun a hab ↦ (H a hab.lt).ne hab.succ_eq
 
-@[deprecated (since := "2025-12-20")]
-alias isPredPrelimit_of_pred_lt := isPredPrelimit_of_lt_pred
-
 @[to_dual lt_pred]
 theorem IsSuccPrelimit.succ_lt (hb : IsSuccPrelimit b) (ha : a < b) : succ a < b := by
   by_cases h : IsMax a
@@ -560,7 +556,7 @@ variable [PartialOrder α] [SuccOrder α]
   (succ : ∀ a, ¬IsMax a → motive (succ a)) (isSuccPrelimit : ∀ a, IsSuccPrelimit a → motive a)
 
 variable (b) in
-open Classical in
+open scoped Classical in
 /-- A value can be built by building it on successors and successor pre-limits. -/
 @[to_dual (attr := elab_as_elim)
 /-- A value can be built by building it on predecessors and predecessor pre-limits. -/]
@@ -608,7 +604,7 @@ variable [PartialOrder α] [SuccOrder α]
   (isSuccLimit : ∀ a, IsSuccLimit a → motive a)
 
 variable (b) in
-open Classical in
+open scoped Classical in
 /-- A value can be built by building it on minimal elements, successors,
 and successor limits. -/
 @[to_dual (attr := elab_as_elim)
@@ -666,7 +662,7 @@ variable [PartialOrder α] [SuccOrder α] [WellFoundedLT α]
   (isSuccPrelimit : ∀ a, IsSuccPrelimit a → (∀ b < a, motive b) → motive a)
 
 variable (b) in
-open Classical in
+open scoped Classical in
 /-- Recursion principle on a well-founded partial `SuccOrder`. -/
 @[to_dual (attr := elab_as_elim)
 /-- Recursion principle on a well-founded partial `PredOrder`. -/]
@@ -721,7 +717,7 @@ variable [PartialOrder α] [SuccOrder α] [WellFoundedLT α] (isMin : ∀ a, IsM
   (isSuccLimit : ∀ a, IsSuccLimit a → (∀ b < a, motive b) → motive a)
 
 variable (b) in
-open Classical in
+open scoped Classical in
 /-- Recursion principle on a well-founded partial `SuccOrder`, separating out the case of a
 minimal element. -/
 @[to_dual (attr := elab_as_elim)

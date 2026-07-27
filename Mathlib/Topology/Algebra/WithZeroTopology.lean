@@ -142,7 +142,7 @@ theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
 structure: the set `{p : Γ₀ × Γ₀ | p.1 ≤ p.2}` is closed. -/
 scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
   isClosed_le' := by
-    simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
+    simp only [← isOpen_compl_iff, compl_ofPred, not_le, isOpen_iff_mem_nhds]
     rintro ⟨a, b⟩ (hab : b < a)
     rw [nhds_prod_eq, nhds_of_ne_zero hab.ne_zero, pure_prod]
     exact Iio_mem_nhds hab

@@ -43,7 +43,6 @@ instance : CoeSort PartOrdEmb (Type _) :=
 
 attribute [coe] PartOrdEmb.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `PartOrdEmb R`. -/
 @[ext]
 structure Hom (X Y : PartOrdEmb.{u}) where
@@ -260,7 +259,6 @@ instance : PartialOrder (CoconePt hc) where
       ((congr_arg (c.ι.app l) (h₃.symm.trans (h₇.trans h₅))).trans
         ((ConcreteCategory.congr_hom (c.w a) y₁).trans hy₁)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cocone for a functor `F : J ⥤ PartOrdEmb` from a filtered
 category that is constructed from a colimit cocone for `F ⋙ forget _`. -/
 @[simps]

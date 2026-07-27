@@ -71,7 +71,8 @@ theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) (a : α) :
     _ = Cη * κ a Set.univ := MeasureTheory.lintegral_const Cη
     _ = κ a Set.univ * Cη := mul_comm _ _
 
-@[simp] lemma zero_comp (κ : Kernel α β) : (0 : Kernel β γ) ∘ₖ κ = 0 := by ext; simp [comp_apply]
+@[simp] lemma zero_comp (κ : Kernel α β) : (0 : Kernel β γ) ∘ₖ κ = 0 := by
+  ext; simp [comp_apply, FunLike.coe_zero]
 
 @[simp] lemma comp_zero (κ : Kernel β γ) : κ ∘ₖ (0 : Kernel α β) = 0 := by ext; simp [comp_apply]
 

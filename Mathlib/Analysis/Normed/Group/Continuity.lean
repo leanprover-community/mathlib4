@@ -171,9 +171,6 @@ theorem Inseparable.enorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousE
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
   h.map continuous_enorm |>.eq
 
-@[deprecated (since := "2025-12-23")]
-alias Inseparable.enorm_eq_enorm' := Inseparable.enorm_eq_enorm
-
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
   rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).ge_iff_eq']
@@ -218,8 +215,6 @@ variable [TopologicalSpace E] [ContinuousENorm E] {a : E} {l : Filter α} {f : �
 
 lemma Filter.Tendsto.enorm (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
   .comp continuous_enorm.continuousAt h
-
-@[deprecated (since := "2025-12-23")] alias Filter.Tendsto.enorm' := Filter.Tendsto.enorm
 
 end ContinuousENorm
 

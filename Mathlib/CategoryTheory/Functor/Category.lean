@@ -158,7 +158,7 @@ end NatTrans
 namespace Functor
 
 /-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
-@[simps (attr := grind =) obj_obj obj_map]
+@[implicit_reducible, simps (attr := grind =) obj_obj obj_map]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
     { obj := fun j => (F.obj j).obj k,
@@ -172,7 +172,7 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 
 /-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def leftUnitor (F : C ⥤ D) :
     𝟭 C ⋙ F ≅ F where
   hom := { app := fun X => 𝟙 (F.obj X) }
@@ -180,7 +180,7 @@ def leftUnitor (F : C ⥤ D) :
 
 /-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def rightUnitor (F : C ⥤ D) :
     F ⋙ 𝟭 D ≅ F where
   hom := { app := fun X => 𝟙 (F.obj X) }
@@ -191,7 +191,7 @@ def rightUnitor (F : C ⥤ D) :
 (In fact, `iso.refl _` will work here, but it tends to make Lean slow later,
 and it's usually best to insert explicit associators.)
 -/
-@[simps]
+@[implicit_reducible, simps]
 def associator (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
     (F ⋙ G) ⋙ H ≅ F ⋙ G ⋙ H where
   hom := { app := fun _ => 𝟙 _ }
@@ -204,7 +204,7 @@ end Functor
 
 variable (C D E) in
 /-- The functor `(C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E` which flips the variables. -/
-@[simps]
+@[implicit_reducible, simps]
 def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
