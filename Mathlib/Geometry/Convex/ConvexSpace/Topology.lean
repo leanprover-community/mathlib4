@@ -30,7 +30,6 @@ universe u v
 
 open Topology
 
-
 variable (R : Type u) [PartialOrder R] [Ring R] [TopologicalSpace R]
 
 namespace Convexity
@@ -166,12 +165,12 @@ public lemma continuous_weights_apply {M : Type*} (m : M) :
   rw [topologicalSpace_eq]
   exact continuous_map_weights_apply R g m
 
-lemma isEmbedding_toFun_comp_weights (M : Type*) [Finite M] :
+public lemma isEmbedding_toFun_comp_weights (M : Type*) [Finite M] :
     IsEmbedding (fun t ↦ t.weights : StdSimplex R M → M → R) where
   eq_induced := by rw [topologicalSpace_eq]
   injective _ _ h := by ext; apply congr_fun h
 
-lemma isClosedEmbedding_toFun_comp_weights
+public lemma isClosedEmbedding_toFun_comp_weights
     [OrderClosedTopology R] (M : Type*) [Finite M] :
     IsClosedEmbedding (fun t ↦ t.weights : StdSimplex R M → M → R) where
   toIsEmbedding := isEmbedding_toFun_comp_weights R M
@@ -187,7 +186,7 @@ end StdSimplex
 /-- This typeclass expresses a compatibility between a topological space
 structure on a type `M` and a convex space structure (over `R`): it says
 that the map `sConvexComb : StdSimplex R M → M` is continuous. -/
-class IsContinuousConvexSpace
+public class IsContinuousConvexSpace
     (R : Type u) [PartialOrder R] [Ring R] [TopologicalSpace R]
     [IsTopologicalRing R] [IsStrictOrderedRing R]
     (X : Type*) [ConvexSpace R X] [TopologicalSpace X] : Prop where
@@ -200,7 +199,7 @@ export IsContinuousConvexSpace (continuous_sConvexComb)
 variable [IsStrictOrderedRing R] [IsTopologicalRing R] (X : Type*)
 
 open Classical in
-instance : IsContinuousConvexSpace R (StdSimplex R X) where
+public instance : IsContinuousConvexSpace R (StdSimplex R X) where
   continuous_sConvexComb := by
     rw [StdSimplex.continuous_iff]
     intro ι _ f
