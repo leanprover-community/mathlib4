@@ -128,9 +128,9 @@ theorem ext (hs : p.vertices = q.vertices) (he : p.edges = q.edges)
     (hi : p.incidencePairs = q.incidencePairs) : p = q := by
   induction p generalizing q <;> cases q <;> grind
 
-@[simp, grind =] lemma mem_nil_iff : x ∈ (nil u : WalkData V I E).vertices ↔ x = u := by grind
+lemma mem_nil_iff : x ∈ (nil u : WalkData V I E).vertices ↔ x = u := by grind
 
-@[simp, grind =] lemma mem_cons_iff : x ∈ (cons u i e j p).vertices ↔ x = u ∨ x ∈ p.vertices := by
+lemma mem_cons_iff : x ∈ (cons u i e j p).vertices ↔ x = u ∨ x ∈ p.vertices := by
   grind
 
 @[simp, grind .] lemma first_mem (p : WalkData V I E) : p.first ∈ p.vertices := by cases p <;> grind
@@ -454,12 +454,15 @@ variable {p q : Walk G u v}
 @[expose] noncomputable def _root_.HyperGraphLike.Dart.toWalk (d : Dart G) :
     Walk G d.source d.target := Walk.cons d (Walk.nil d.target_mem)
 
+/-- Pattern to get `Walk.nil` with the vertex as an explicit argument. -/
 @[match_pattern] abbrev nil' (u : V) (hu : u ∈ V(G)) : Walk G u u := Walk.nil hu
 
+/-- Pattern to get `Walk.consRaw` with the vertices as explicit arguments. -/
 @[match_pattern]
 abbrev consRaw' (u : V) (i : I) (e : E) (j : I) (v w : V) (h : IsTraversal G u i e j v)
     (p : Walk G v w) : Walk G u w := Walk.consRaw i e j h p
 
+/-- Pattern to get `Walk.cons` with the terminal vertex as an explicit argument. -/
 @[match_pattern]
 noncomputable abbrev cons' (d : Dart G) (w : V) (p : Walk G d.target w) : Walk G d.source w :=
   Walk.cons d p
@@ -587,14 +590,17 @@ theorem map_source_darts_append (p : Walk G u v) : p.darts.map Dart.source ++ [v
 theorem map_target_darts (p : Walk G u v) : p.darts.map Dart.target = p.vertices.tail :=
   p.isValid.map_target_darts
 
+/-- The set of vertices visited by a walk. -/
 @[expose] def vertexSet (p : Walk G u v) : Set V := p.data.vertexSet
 
 lemma vertexSet_subset (p : Walk G u v) : p.vertexSet ⊆ V(G) := p.isValid.vertexSet_subset
 
+/-- The set of edges traversed by a walk. -/
 @[expose] def edgeSet (p : Walk G u v) : Set E := p.data.edgeSet
 
 lemma edgeSet_subset (p : Walk G u v) : p.edgeSet ⊆ E(G) := p.isValid.edgeSet_subset
 
+/-- The set of incidences used by a walk. -/
 @[expose] def incidenceSet (p : Walk G u v) : Set I := p.data.incidenceSet
 
 lemma incidenceSet_subset (p : Walk G u v) : p.incidenceSet ⊆ I(G) :=
@@ -606,7 +612,7 @@ abbrev Nil (p : Walk G u v) : Prop := p.data.Nil
 /-- Predicate for an endpoint-indexed nonempty walk. -/
 abbrev Nonempty (p : Walk G u v) : Prop := p.data.Nonempty
 
-@[simp, grind .] theorem nil_nil (hu : u ∈ V(G)) : (nil hu).Nil := WalkData.nil_nil
+theorem nil_nil (hu : u ∈ V(G)) : (nil hu).Nil := WalkData.nil_nil
 
 @[simp, grind .]
 theorem not_nil_consRaw (h : IsTraversal G u i e j v) (p : Walk G v w) :
