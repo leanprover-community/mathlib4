@@ -435,11 +435,11 @@ variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ
 
 instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
-      map_zero' := if_pos rfl
+      map_zero' := ite_eq_left rfl
       add_le' := fun x y => by
         by_cases hx : x = 0
-        · rw [if_pos hx, hx, zero_add, zero_add]
-        · rw [if_neg hx]
+        · rw [ite_eq_left hx, hx, zero_add, zero_add]
+        · rw [ite_eq_right hx]
           refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
@@ -621,11 +621,11 @@ variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 1 then 0 else 1
-      map_one' := if_pos rfl
+      map_one' := ite_eq_left rfl
       mul_le' := fun x y => by
         by_cases hx : x = 1
-        · rw [if_pos hx, hx, one_mul, zero_add]
-        · rw [if_neg hx]
+        · rw [ite_eq_left hx, hx, one_mul, zero_add]
+        · rw [ite_eq_right hx]
           refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
@@ -673,12 +673,12 @@ variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ
 
 instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
-      map_zero' := if_pos rfl
+      map_zero' := ite_eq_left rfl
       add_le_max' := fun x y => by
         by_cases hx : x = 0
-        · simp_rw [if_pos hx, hx, zero_add]
+        · simp_rw [ite_eq_left hx, hx, zero_add]
           exact le_max_of_le_right (le_refl _)
-        · simp_rw [if_neg hx]
+        · simp_rw [ite_eq_right hx]
           split_ifs <;> simp
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 

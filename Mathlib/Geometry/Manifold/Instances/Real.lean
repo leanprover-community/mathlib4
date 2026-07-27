@@ -419,9 +419,9 @@ instance instIccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
   mem_chart_source z := by
     by_cases h' : z.val < y
-    · simp only [h', if_true]
+    · simp only [h', ite_true]
       exact h'
-    · simp only [h', if_false]
+    · simp only [h', ite_false]
       apply lt_of_lt_of_le h.out
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']

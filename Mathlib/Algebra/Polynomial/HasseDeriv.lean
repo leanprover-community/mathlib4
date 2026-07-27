@@ -107,10 +107,10 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
   simp only [hasseDeriv_coeff, coeff_monomial]
   by_cases hnik : n = i + k
   · grind
-  · rw [if_neg hnik, mul_zero]
+  · rw [ite_eq_right hnik, mul_zero]
     by_cases! hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
-      rw [if_neg hnik]
+      rw [ite_eq_right hnik]
     · rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, zero_mul, ite_self]
 
 theorem hasseDeriv_C (r : R) (hk : 0 < k) : hasseDeriv k (C r) = 0 := by

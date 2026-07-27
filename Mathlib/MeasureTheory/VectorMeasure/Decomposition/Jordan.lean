@@ -121,29 +121,29 @@ theorem real_smul_def (r : ℝ) (j : JordanDecomposition α) :
 
 @[simp]
 theorem coe_smul (r : ℝ≥0) : (r : ℝ) • j = r • j := by
-  rw [real_smul_def, if_pos (NNReal.coe_nonneg r), Real.toNNReal_coe]
+  rw [real_smul_def, ite_eq_left (NNReal.coe_nonneg r), Real.toNNReal_coe]
 
 theorem real_smul_nonneg (r : ℝ) (hr : 0 ≤ r) : r • j = r.toNNReal • j :=
-  dif_pos hr
+  dite_eq_left hr
 
 theorem real_smul_neg (r : ℝ) (hr : r < 0) : r • j = -((-r).toNNReal • j) :=
-  dif_neg (not_le.2 hr)
+  dite_eq_right (not_le.2 hr)
 
 theorem real_smul_posPart_nonneg (r : ℝ) (hr : 0 ≤ r) :
     (r • j).posPart = r.toNNReal • j.posPart := by
-  rw [real_smul_def, ← smul_posPart, if_pos hr]
+  rw [real_smul_def, ← smul_posPart, ite_eq_left hr]
 
 theorem real_smul_negPart_nonneg (r : ℝ) (hr : 0 ≤ r) :
     (r • j).negPart = r.toNNReal • j.negPart := by
-  rw [real_smul_def, ← smul_negPart, if_pos hr]
+  rw [real_smul_def, ← smul_negPart, ite_eq_left hr]
 
 theorem real_smul_posPart_neg (r : ℝ) (hr : r < 0) :
     (r • j).posPart = (-r).toNNReal • j.negPart := by
-  rw [real_smul_def, ← smul_negPart, if_neg (not_le.2 hr), neg_posPart]
+  rw [real_smul_def, ← smul_negPart, ite_eq_right (not_le.2 hr), neg_posPart]
 
 theorem real_smul_negPart_neg (r : ℝ) (hr : r < 0) :
     (r • j).negPart = (-r).toNNReal • j.posPart := by
-  rw [real_smul_def, ← smul_posPart, if_neg (not_le.2 hr), neg_negPart]
+  rw [real_smul_def, ← smul_posPart, ite_eq_right (not_le.2 hr), neg_negPart]
 
 /-- The signed measure associated with a Jordan decomposition. -/
 def toSignedMeasure : SignedMeasure α :=

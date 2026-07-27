@@ -203,7 +203,7 @@ theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
 
 @[to_additive]
 theorem orderOf_eq_zero (h : ¬IsOfFinOrder x) : orderOf x = 0 := by
-  rwa [orderOf, minimalPeriod, dif_neg]
+  rwa [orderOf, minimalPeriod, dite_eq_right]
 
 @[to_additive (attr := simp)]
 theorem orderOf_eq_zero_iff : orderOf x = 0 ↔ ¬IsOfFinOrder x :=

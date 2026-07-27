@@ -241,7 +241,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
           simp only [Functor.mapEnd, DFunLike.coe, this, hF']
-          exact dif_neg h
+          exact dite_eq_right h
         intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
@@ -253,9 +253,9 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
           rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
           rcases e with ⟨e | e, eT⟩
           · rw [hF']
-            exact dif_pos (Or.inl eT)
+            exact dite_eq_left (Or.inl eT)
           · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
-            exact dif_pos (Or.inr eT)
+            exact dite_eq_left (Or.inr eT)
       · intro E hE
         ext x
         suffices (functorOfMonoidHom T E).map x = F'.map x by

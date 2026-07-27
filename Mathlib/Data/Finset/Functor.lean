@@ -97,10 +97,10 @@ instance lawfulApplicative : LawfulApplicative Finset :=
     seqLeft_eq := fun s t => by
       rw [seq_def, fmap_def, seqLeft_def]
       obtain rfl | ht := t.eq_empty_or_nonempty
-      · simp_rw [image_empty, if_true]
+      · simp_rw [image_empty, ite_true]
         exact (sup_bot _).symm
       · ext a
-        rw [if_neg ht.ne_empty, mem_sup]
+        rw [ite_eq_right ht.ne_empty, mem_sup]
         refine ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
@@ -110,9 +110,9 @@ instance lawfulApplicative : LawfulApplicative Finset :=
     seqRight_eq := fun s t => by
       rw [seq_def, fmap_def, seqRight_def]
       obtain rfl | hs := s.eq_empty_or_nonempty
-      · rw [if_pos rfl, image_empty, sup_empty, bot_eq_empty]
+      · rw [ite_eq_left rfl, image_empty, sup_empty, bot_eq_empty]
       · ext a
-        rw [if_neg hs.ne_empty, mem_sup]
+        rw [ite_eq_right hs.ne_empty, mem_sup]
         refine ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha

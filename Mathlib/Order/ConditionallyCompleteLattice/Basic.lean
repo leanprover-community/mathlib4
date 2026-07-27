@@ -61,24 +61,24 @@ noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
 @[to_dual]
 theorem WithTop.sSup_eq [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
-  (if_neg hs).trans <| if_pos hs'
+  (ite_eq_right hs).trans <| ite_eq_left hs'
 
 @[to_dual]
 theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) (h's : BddBelow s) :
     sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
-  if_neg <| by simp [hs, h's]
+  ite_eq_right <| by simp [hs, h's]
 
 @[simp]
 theorem WithTop.sInf_empty [InfSet α] : sInf (∅ : Set (WithTop α)) = ⊤ :=
-  if_pos <| by simp
+  ite_eq_left <| by simp
 
 @[to_dual (attr := simp)]
 theorem WithTop.sInf_singleton_top [InfSet α] : sInf ({⊤} : Set (WithTop α)) = ⊤ :=
-  if_pos <| .inl subset_rfl
+  ite_eq_left <| .inl subset_rfl
 
 @[to_dual (attr := simp)]
 theorem WithTop.sSup_of_top_mem [SupSet α] {s : Set (WithTop α)} (h : ⊤ ∈ s) : sSup s = ⊤ :=
-  if_pos h
+  ite_eq_left h
 
 @[to_dual]
 theorem WithTop.sSup_singleton_top [SupSet α] : sSup ({⊤} : Set (WithTop α)) = ⊤ := by
@@ -89,19 +89,19 @@ theorem WithTop.sSup_of_not_bddAbove [SupSet α] {s : Set (WithTop α)}
     (h : ¬BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ⊤ := by
   by_cases hmem : ⊤ ∈ s
   · exact sSup_of_top_mem hmem
-  · exact if_neg hmem |>.trans <| if_neg h
+  · exact ite_eq_right hmem |>.trans <| ite_eq_right h
 
 @[to_dual (attr := simp)]
 theorem WithTop.sInf_of_not_bddBelow [InfSet α] {s : Set (WithTop α)} (h : ¬BddBelow s) :
     sInf s = ⊤ :=
-  if_pos <| .inr h
+  ite_eq_left <| .inr h
 
 @[to_dual (attr := norm_cast)]
 theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   classical
   change _ = ite _ _ _
-  rw [if_neg, preimage_image_eq, if_pos hs]
+  rw [ite_eq_right, preimage_image_eq, ite_eq_left hs]
   · exact Option.some_injective _
   · rintro ⟨x, _, ⟨⟩⟩
 

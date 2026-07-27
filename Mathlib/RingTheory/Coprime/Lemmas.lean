@@ -139,7 +139,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat] at hμ
       refine ⟨ih.mp ⟨Pi.single h.choose (μ a * s h.choose) + μ * fun _ ↦ s a, ?_⟩, fun b hb ↦ ?_⟩
       · rw [prod_eq_mul_prod_sdiff_singleton_of_mem h.choose_spec, ← mul_assoc, ←
-          @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
+          @ite_eq_left _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
         rw [← hμ, sum_congr rfl]
         intro x hx
         convert! add_mul (R := R) _ _ _ using 2
@@ -169,7 +169,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       simp only [↓reduceIte, ite_mul]
       rw [← huv, ← hμ', sum_congr rfl]
       intro x hx
-      rw [mul_assoc, if_neg fun ha : x = a ↦ hat (ha.casesOn hx)]
+      rw [mul_assoc, ite_eq_right fun ha : x = a ↦ hat (ha.casesOn hx)]
       rw [mul_assoc]
       congr
       rw [prod_eq_prod_sdiff_singleton_mul (mem x hx) _]

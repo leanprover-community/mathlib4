@@ -157,8 +157,8 @@ theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i 
 theorem mk_coord_apply [DecidableEq ι] {i j : ι} :
     (Basis.mk hli hsp).coord i (v j) = if j = i then 1 else 0 := by
   rcases eq_or_ne j i with h | h
-  · simp only [h, if_true, mk_coord_apply_eq i]
-  · simp only [h, if_false, mk_coord_apply_ne h]
+  · simp only [h, ite_true, mk_coord_apply_eq i]
+  · simp only [h, ite_false, mk_coord_apply_ne h]
 
 end Coord
 

@@ -315,7 +315,7 @@ variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
 set_option backward.privateInPublic true in
 lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.domRestrict⟩ := by
-  rw [cfc_def, dif_pos ⟨ha, hf⟩]
+  rw [cfc_def, dite_eq_left ⟨ha, hf⟩]
 
 lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
@@ -325,15 +325,15 @@ lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc
 
 lemma cfc_apply_of_not_and {f : R → R} (a : A) (ha : ¬ (p a ∧ ContinuousOn f (spectrum R a))) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg ha]
+  rw [cfc_def, dite_eq_right ha]
 
 lemma cfc_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg (not_and_of_not_left _ ha)]
+  rw [cfc_def, dite_eq_right (not_and_of_not_left _ ha)]
 
 lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn f (spectrum R a)) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg (not_and_of_not_right _ hf)]
+  rw [cfc_def, dite_eq_right (not_and_of_not_right _ hf)]
 
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
     cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
@@ -346,7 +346,7 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
 
 lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
     cfc f a = cfcL ha ⟨_, hf.domRestrict⟩ := by
-  rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
+  rw [cfc_def, dite_eq_left ⟨ha, hf⟩, cfcL_apply]
 
 set_option backward.privateInPublic true in
 /-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/

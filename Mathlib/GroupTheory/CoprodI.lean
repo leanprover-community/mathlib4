@@ -341,24 +341,24 @@ def rcons {i} (p : Pair M i) : Word M :=
 
 @[simp]
 theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
-  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, map_one, one_mul]
-  else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons, prod]
+  if hm : p.head = 1 then by rw [rcons, dite_eq_left hm, hm, map_one, one_mul]
+  else by rw [rcons, dite_eq_right hm, cons, prod, List.map_cons, List.prod_cons, prod]
 
 theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
   rintro ⟨m, w, h⟩ ⟨m', w', h'⟩ he
   by_cases hm : m = 1 <;> by_cases hm' : m' = 1
-  · simp only [rcons, dif_pos hm, dif_pos hm'] at he
+  · simp only [rcons, dite_eq_left hm, dite_eq_left hm'] at he
     simp_all
   · exfalso
-    simp only [rcons, dif_pos hm, dif_neg hm'] at he
+    simp only [rcons, dite_eq_left hm, dite_eq_right hm'] at he
     rw [he] at h
     exact h rfl
   · exfalso
-    simp only [rcons, dif_pos hm', dif_neg hm] at he
+    simp only [rcons, dite_eq_left hm', dite_eq_right hm] at he
     rw [← he] at h'
     exact h' rfl
   · have : m = m' ∧ w.toList = w'.toList := by
-      simpa [cons, rcons, dif_neg hm, dif_neg hm', eq_self_iff_true, Subtype.mk_eq_mk,
+      simpa [cons, rcons, dite_eq_right hm, dite_eq_right hm', eq_self_iff_true, Subtype.mk_eq_mk,
         heq_iff_eq, ← Subtype.ext_iff] using he
     rcases this with ⟨rfl, h⟩
     congr
@@ -434,7 +434,7 @@ theorem equivPair_symm (i) (p : Pair M i) : (equivPair i).symm p = rcons p :=
 
 theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
     equivPair i w = ⟨1, w, h⟩ :=
-  (equivPair i).apply_eq_iff_eq_symm_apply.mpr <| Eq.symm (dif_pos rfl)
+  (equivPair i).apply_eq_iff_eq_symm_apply.mpr <| Eq.symm (dite_eq_left rfl)
 
 theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     (⟨i, m⟩ ∈ (equivPair j w).tail.toList) ↔ ⟨i, m⟩ ∈ w.toList.tail

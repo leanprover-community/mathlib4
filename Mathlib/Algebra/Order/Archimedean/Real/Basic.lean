@@ -125,7 +125,7 @@ theorem sSup_def (s : Set ℝ) :
   rfl
 
 protected theorem isLUB_sSup (h₁ : s.Nonempty) (h₂ : BddAbove s) : IsLUB s (sSup s) := by
-  simp only [sSup_def, dif_pos (And.intro h₁ h₂)]
+  simp only [sSup_def, dite_eq_left (And.intro h₁ h₂)]
   apply Classical.choose_spec
 
 noncomputable instance : InfSet ℝ :=
@@ -169,7 +169,7 @@ theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
 
 @[simp]
 theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
-  dif_neg <| by simp
+  dite_eq_right <| by simp
 
 theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
   simp [sInf_def]
@@ -186,7 +186,7 @@ theorem iSup_const_zero : ⨆ _ : ι, (0 : ℝ) = 0 := by
   · exact Real.iSup_of_isEmpty _
   · exact ciSup_const
 
-lemma sSup_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = 0 := dif_neg fun h => hs h.2
+lemma sSup_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = 0 := dite_eq_right fun h => hs h.2
 lemma iSup_of_not_bddAbove (hf : ¬BddAbove (Set.range f)) : ⨆ i, f i = 0 := sSup_of_not_bddAbove hf
 
 theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bddAbove_univ

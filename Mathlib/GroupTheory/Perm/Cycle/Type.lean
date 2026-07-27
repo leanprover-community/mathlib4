@@ -347,16 +347,16 @@ theorem sign_of_cycleType_eq_replicate {σ : Perm α} {n : ℕ} (hn : 0 < n)
       (-1) ^ ((Fintype.card α - Fintype.card (Function.fixedPoints σ)) / n) := by
   rw [sign_of_cycleType', hσ, Multiset.map_replicate, Multiset.prod_replicate]
   obtain h | h := Nat.even_or_odd n
-  · rw [if_neg (Nat.not_odd_iff_even.mpr h), h.neg_one_pow, σ.card_fixedPoints,
+  · rw [ite_eq_right (Nat.not_odd_iff_even.mpr h), h.neg_one_pow, σ.card_fixedPoints,
       Nat.sub_sub_self σ.sum_cycleType_le,
       show σ.cycleType.sum = σ.cycleType.card * n by rw [hσ]; simp,
         Nat.mul_div_cancel _ hn]
-  · rw [if_pos h, h.neg_one_pow, neg_neg, one_pow]
+  · rw [ite_eq_left h, h.neg_one_pow, neg_neg, one_pow]
 
 theorem sign_of_pow_two_eq_one {σ : Perm α} (hσ : σ ^ 2 = 1) :
     sign σ = (-1) ^ ((Fintype.card α - Fintype.card (Function.fixedPoints σ)) / 2) := by
   rw [sign_of_cycleType_eq_replicate zero_lt_two (cycleType_of_pow_prime_eq_one hσ),
-    if_neg (Nat.not_odd_iff.mpr rfl)]
+    ite_eq_right (Nat.not_odd_iff.mpr rfl)]
 
 end CycleType
 
@@ -706,8 +706,8 @@ theorem IsThreeCycle.support_eq_iff_mem_support
       simpa only [Finset.singleton_subset_iff, Perm.apply_mem_support]
     · rw [hg3.card_support]
       simp only [mem_support, ne_eq] at ha
-      rw [Finset.card_insert_eq_ite, if_neg]
-      · rw [Finset.card_insert_eq_ite, if_neg]
+      rw [Finset.card_insert_eq_ite, ite_eq_right]
+      · rw [Finset.card_insert_eq_ite, ite_eq_right]
         · simp
         · simpa using Ne.symm ha
       · simp only [Finset.mem_insert, Finset.mem_singleton]

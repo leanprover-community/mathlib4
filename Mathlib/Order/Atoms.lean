@@ -909,20 +909,20 @@ protected noncomputable def completeLattice : CompleteLattice α :=
       refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
       · rcases eq_bot_or_eq_top x with (rfl | rfl)
         · exact bot_le
-        · rw [if_pos h]
+        · rw [ite_eq_left h]
       · rcases eq_bot_or_eq_top x with (rfl | rfl)
-        · rw [if_neg]
+        · rw [ite_eq_right]
           intro con
           exact bot_ne_top (eq_top_iff.2 (h con))
         · exact le_top
     isGLB_sInf s := by
       refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
       · rcases eq_bot_or_eq_top x with (rfl | rfl)
-        · rw [if_pos h]
+        · rw [ite_eq_left h]
         · exact le_top
       · rcases eq_bot_or_eq_top x with (rfl | rfl)
         · exact bot_le
-        · rw [if_neg]
+        · rw [ite_eq_right]
           intro con
           exact top_ne_bot (eq_bot_iff.2 (h con)) }
 

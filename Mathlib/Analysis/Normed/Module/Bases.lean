@@ -179,7 +179,7 @@ theorem range_proj_eq_span (A : Finset β) :
   · rw [Submodule.span_le]
     rintro _ ⟨i, hi, rfl⟩
     use b i
-    rw [ContinuousLinearMap.coe_coe, proj_apply_basis_mem, if_pos (Finset.mem_coe.mp hi)]
+    rw [ContinuousLinearMap.coe_coe, proj_apply_basis_mem, ite_eq_left (Finset.mem_coe.mp hi)]
 
 set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in

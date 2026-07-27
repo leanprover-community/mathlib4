@@ -54,7 +54,7 @@ theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i
     ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by
   haveI : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
   exact ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
-    funext fun i ↦ dif_pos i.2⟩
+    funext fun i ↦ dite_eq_left i.2⟩
 
 instance PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α i)] (p : ι → Prop) :
     CanLift (∀ i : Subtype p, α i) (∀ i, α i) (fun f i => f i) fun _ => True where

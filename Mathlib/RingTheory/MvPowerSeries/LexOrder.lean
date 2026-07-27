@@ -47,7 +47,7 @@ theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
   suffices ne : Set.Nonempty (toLex '' φ.support) by
     use ne
     unfold lexOrder
-    simp only [dif_neg hφ]
+    simp only [dite_eq_right hφ]
   exact (Function.support_nonempty_iff.mpr hφ).image _
 
 @[simp]
@@ -60,7 +60,7 @@ theorem lexOrder_eq_top_iff_eq_zero (φ : MvPowerSeries σ R) :
 
 @[simp] theorem lexOrder_zero : lexOrder (0 : MvPowerSeries σ R) = ⊤ := by
   unfold lexOrder
-  rw [dif_pos rfl]
+  rw [dite_eq_left rfl]
 
 theorem exists_finsupp_eq_lexOrder_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     ∃ (d : σ →₀ ℕ), lexOrder φ = toLex d := by

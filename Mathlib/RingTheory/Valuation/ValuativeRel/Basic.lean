@@ -623,7 +623,7 @@ instance : Inv (ValueGroupWithZero R) where
     · absurd hx
       apply vle_mul_cancel t.prop
       simpa using vle_trans h₁ (mul_vle_mul_left hy s)
-    · simp only [dif_neg hx, dif_neg hy]
+    · simp only [dite_eq_right hx, dite_eq_right hy]
       apply ValueGroupWithZero.sound
       · grw [veq_mul_comm, veq_mul_comm _ x]
         simpa using h₂
@@ -632,7 +632,7 @@ instance : Inv (ValueGroupWithZero R) where
 
 @[simp]
 theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 0) :
-    (ValueGroupWithZero.mk x y)⁻¹ = ValueGroupWithZero.mk (y : R) ⟨x, hx⟩ := dif_neg hx
+    (ValueGroupWithZero.mk x y)⁻¹ = ValueGroupWithZero.mk (y : R) ⟨x, hx⟩ := dite_eq_right hx
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
@@ -643,7 +643,7 @@ instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
     rw [← ValueGroupWithZero.mk_zero 1, ← ValueGroupWithZero.mk_one_one,
       ValueGroupWithZero.mk_le_mk] at h
     simp [not_vle_one_zero] at h
-  inv_zero := dif_pos .rfl
+  inv_zero := dite_eq_left .rfl
   mul_inv_cancel := ValueGroupWithZero.ind fun x y h => by
     rw [ne_eq, ← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_eq_mk] at h
     simp only [Submonoid.coe_one, mul_one, zero_mul, zero_vle, and_true] at h
