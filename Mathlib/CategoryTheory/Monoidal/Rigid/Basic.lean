@@ -135,6 +135,10 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   coevaluation_evaluation' := by monoidal_coherence
   evaluation_coevaluation' := by monoidal_coherence
 
+lemma ExactPairing.unit_coevaluation : η_ (𝟙_ C) (𝟙_ C) = (ρ_ (𝟙_ C)).inv := rfl
+
+lemma ExactPairing.unit_evaluation : ε_ (𝟙_ C) (𝟙_ C) = (ρ_ (𝟙_ C)).hom := rfl
+
 /-- The tensor product of exact pairings. Given exact pairings `(X₁, Y₁)` and `(X₂, Y₂)`,
 we get an exact pairing `(X₁ ⊗ X₂, Y₂ ⊗ Y₁)`. Note the reversed order in the second factor. -/
 instance ExactPairing.tensor {X₁ X₂ Y₁ Y₂ : C} [ExactPairing X₁ Y₁] [ExactPairing X₂ Y₂] :
@@ -611,25 +615,24 @@ theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDua
 namespace ExactPairing
 
 /-- The right mate of a morphism with explicitly supplied exact pairings. This is useful in certain
-situations, e.g. TODO -/
+situations. -/
 abbrev rightMate {X X' Y Y' : C} (pX : ExactPairing X X') (pY : ExactPairing Y Y')
     (f : X ⟶ Y) : Y' ⟶ X' := @rightAdjointMate C _ _ X Y ⟨X'⟩ ⟨Y'⟩ f
 
-/-- Similar docstring to above TODO -/
 lemma rightMate_comp_evaluation {X X' Y Y' : C} (pX : ExactPairing X X') (pY : ExactPairing Y Y')
     (f : X ⟶ Y) : pX.rightMate pY f ▷ X ≫ ε_ X X' = Y' ◁ f ≫ ε_ Y Y' :=
   @rightAdjointMate_comp_evaluation C _ _ X Y ⟨X'⟩ ⟨Y'⟩ f
 
 lemma rightHom_ext {X X' Z : C} (p : ExactPairing X X') {f g : Z ⟶ X'}
-    (h : f ▷ X ≫ @evaluation C _ _ X X' p =
-      g ▷ X ≫ @evaluation C _ _ X X' p) : f = g := by
+    (h : f ▷ X ≫ ε_ X X' = g ▷ X ≫ ε_ X X') : f = g := by
   have hf := @tensorRightHomEquiv_whiskerRight_comp_evaluation C _ _ X Z ⟨X'⟩ f
   have hg := @tensorRightHomEquiv_whiskerRight_comp_evaluation C _ _ X Z ⟨X'⟩ g
-  change (tensorRightHomEquiv Z X X' (𝟙_ C))
-    (f ▷ X ≫ ε_ X X') = f ≫ (λ_ X').inv at hf
-  change (tensorRightHomEquiv Z X X' (𝟙_ C))
-    (g ▷ X ≫ ε_ X X') = g ≫ (λ_ X').inv at hg
+  dsimp only [HasRightDual.rightDual] at hf hg
   rw [← cancel_mono (λ_ X').inv, ← hf, h, hg]
+
+lemma leftHom_ext {X X' Z : C} (p : ExactPairing X X') {f g : X ⟶ Z}
+    (h : η_ X X' ≫ f ▷ X' = η_ X X' ≫ g ▷ X') : f = g := by
+  simpa using congrArg (tensorRightHomEquiv (𝟙_ C) X X' Z).symm h
 
 lemma rightMate_tensor {X₁ X₂ X₁' X₂' Y₁ Y₂ Y₁' Y₂' : C}
     (pX₁ : ExactPairing X₁ X₁') (pX₂ : ExactPairing X₂ X₂')
@@ -731,8 +734,8 @@ def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y
 
 /-- Right duals are isomorphic. -/
 def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) : Y₁ ≅ Y₂ where
-  hom := rightMate p₂ p₁ (𝟙 X)
-  inv := rightMate p₁ p₂ (𝟙 X)
+  hom := @rightAdjointMate C _ _ X X ⟨Y₂⟩ ⟨Y₁⟩ (𝟙 X)
+  inv := @rightAdjointMate C _ _ X X ⟨Y₁⟩ ⟨Y₂⟩ (𝟙 X)
   hom_inv_id := by
     -- Make all arguments explicit, because we want to find them by unification not synthesis.
     rw [← @comp_rightAdjointMate, Category.comp_id, @rightAdjointMate_id]
