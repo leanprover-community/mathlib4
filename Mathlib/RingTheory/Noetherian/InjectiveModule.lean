@@ -88,11 +88,9 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
   choose phi hphi using exists_divide_by_fn_map f n r hr a
   choose psi hpsi using hI (Ideal.span {f^(r + n)}) phi
   use psi 1
-  have s_mem : f ^ (r + n) ∈ Submonoid.powers f :=
-    (Submonoid.mem_powers_iff (f ^ (r + n)) f).mpr ⟨r + n, rfl⟩
   have hbij : Function.Bijective
-    (algebraMap R (Module.End R I') (⟨f ^ (r + n), s_mem⟩ : Submonoid.powers f)) :=
-    (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g ⟨f ^ (r + n), s_mem⟩)
+    (algebraMap R (Module.End R I') <| Submonoid.pow f (r + n)) :=
+    (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g (Submonoid.pow f (r + n)))
   apply hbij.1
   dsimp
   rw [← g.map_smul, pow_add, ← smul_smul, ← smul_smul, ← ha, ← g.map_smul]
