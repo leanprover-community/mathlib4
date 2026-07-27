@@ -48,10 +48,10 @@ open Function Set
 
 noncomputable section
 
-/-- A free group basis `FreeAddGroupBasis ι G` is a structure recording the isomorphism between a
-group `G` and the additive free group over `ι`. One may think of such a basis as a function from `ι`
-to `G` (which is registered through a `FunLike` instance) together with the fact that the morphism
-induced by this function from `FreeAddGroup ι` to `G` is an isomorphism. -/
+/-- A free group basis `FreeAddGroupBasis ι G` is a structure recording the isomorphism between an
+additive group `G` and the additive free group over `ι`. One may think of such a basis as a function
+from `ι` to `G` (which is registered through a `FunLike` instance) together with the fact that the
+morphism induced by this function from `FreeAddGroup ι` to `G` is an isomorphism. -/
 structure FreeAddGroupBasis (ι : Type*) (G : Type*) [AddGroup G] where
   /-- `FreeAddGroupBasis.ofRepr` constructs a basis given an equivalence with an additive free
   group. -/
@@ -139,7 +139,8 @@ protected lemma injective (b : FreeGroupBasis ι G) : Injective b :=
   b.repr.symm.injective.comp FreeGroup.of_injective
 
 /-- A group admitting a free group basis is a free group. -/
-@[to_additive /-- A group admitting an additive free group basis is an additive free group. -/]
+@[to_additive
+/-- An additive group admitting an additive free group basis is an additive free group. -/]
 lemma isFreeGroup (b : FreeGroupBasis ι G) : IsFreeGroup G :=
   ⟨range b, ⟨b.reindex (Equiv.ofInjective (↑b) b.injective)⟩⟩
 
@@ -154,7 +155,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 to a group `H` and morphisms from `G` to `H`. -/
 @[to_additive (attr := simps!)
 /-- Given an additive free group basis of `G` over `ι`, there is a canonical bijection between
-maps from `ι` to a group `H` and morphisms from `G` to `H`. -/]
+maps from `ι` to an additive group `H` and morphisms from `G` to `H`. -/]
 def lift (b : FreeGroupBasis ι G) : (ι → H) ≃ (G →* H) :=
   FreeGroup.lift.trans
     { toFun := fun f => f.comp b.repr.toMonoidHom
@@ -230,7 +231,8 @@ irreducible_def mulEquiv : FreeGroup (Generators G) ≃* G :=
   (IsFreeGroup.nonempty_basis (G := G)).choose_spec.some.repr.symm
 
 /-- A free group basis of a free group `G`, over the set `Generators G`. -/
-@[to_additive /-- A free group basis of an additive free group `G`, over the set `Generators G`. -/]
+@[to_additive
+/-- An additive free group basis of an additive free group `G`, over the set `Generators G`. -/]
 def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (mulEquiv G).symm
 
 /-- Any free group is isomorphic to "the" free group. -/
@@ -251,8 +253,8 @@ variable {H : Type*} [Group H]
 /-- The equivalence between functions on the generators and group homomorphisms from a free group
 given by those generators. -/
 @[to_additive
-/-- The equivalence between functions on the generators and group homomorphisms from an additive
-free group given by those generators. -/]
+/-- The equivalence between functions on the generators and additive group homomorphisms from an
+additive free group given by those generators. -/]
 def lift : (Generators G → H) ≃ (G →* H) :=
   (basis G).lift
 
