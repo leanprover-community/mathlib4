@@ -187,7 +187,7 @@ instance Prod.locallyConnectedSpace [TopologicalSpace β] [LocallyConnectedSpace
 
 /-- If each `X i` is locally connected and all but finitely many are preconnected, then
 `∀ i, X i` is locally connected. -/
-theorem Pi.locallyConnectedSpace_of_finite_nonpreconnected [∀ i, TopologicalSpace (X i)]
+theorem Pi.locallyConnectedSpace_of_finite_not_preconnectedSpace [∀ i, TopologicalSpace (X i)]
     [∀ i, LocallyConnectedSpace (X i)] (hfinite : {i | ¬PreconnectedSpace (X i)}.Finite) :
     LocallyConnectedSpace (∀ i, X i) := by
   refine locallyConnectedSpace_iff_connected_subsets.2 fun x U hU ↦ ?_
