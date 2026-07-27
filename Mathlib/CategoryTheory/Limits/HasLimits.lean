@@ -182,7 +182,7 @@ def limit.cone (F : J ⥤ C) [HasLimit F] : Cone F :=
   (getLimitCone F).cone
 
 /-- An arbitrary choice of limit object of a functor. -/
-@[implicit_reducible, to_dual /-- An arbitrary choice of colimit object of a functor. -/]
+@[to_dual (attr := implicit_reducible) /-- An arbitrary choice of colimit object of a functor. -/]
 def limit (F : J ⥤ C) [HasLimit F] :=
   (limit.cone F).pt
 
