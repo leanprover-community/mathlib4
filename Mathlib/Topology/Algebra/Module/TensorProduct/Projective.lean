@@ -32,6 +32,9 @@ public def ProjectiveTensorProduct := M ⊗[R] N
 @[inherit_doc] scoped[TensorProduct] notation:100 M:100 " ⊗[" R "]π " N:101 =>
   ProjectiveTensorProduct R M N
 
+instance : AddCommMonoid (M ⊗[R]π N) := TensorProduct.addCommMonoid
+instance : Module R (M ⊗[R]π  N) := TensorProduct.instModule
+
 end Semiring
 
 namespace TensorProduct
@@ -43,9 +46,6 @@ variable [CommSemiring R] [TopologicalSpace R]
 variable [PartialOrder R]
 variable [AddCommGroup M] [Module R M] [TopologicalSpace M] [LocallyConvexSpace R M]
 variable [AddCommGroup N] [Module R N] [TopologicalSpace N] [LocallyConvexSpace R N]
-
-instance : AddCommGroup (M ⊗[R]π N) := addCommGroup
-instance : Module R (M ⊗[R]π  N) := instModule
 
 variable (R) in
 def tensorProductTopologies := { t : TopologicalSpace (M ⊗[R] N) |
@@ -130,27 +130,13 @@ lemma projectiveModuleFilterBasisSets_inter_sets
     ∃ z ∈ projectiveModuleFilterBasisSets 𝔘 𝔙, z ⊆ x ∩ y := by
   obtain ⟨U₁, hU₁, V₁, hV₁, rfl⟩ := hx
   obtain ⟨U₂, hU₂, V₂, hV₂, rfl⟩ := hy
-  obtain ⟨U₃, hU₃, hU₃_subset⟩ := h𝔘.mem_iff.mp (inter_mem
-    (h𝔘.mem_iff.mpr ⟨U₁, hU₁, subset_rfl⟩)
-    (h𝔘.mem_iff.mpr ⟨U₂, hU₂, subset_rfl⟩))
-  obtain ⟨V₃, hV₃, hV₃_subset⟩ := h𝔙.mem_iff.mp (inter_mem
-    (h𝔙.mem_iff.mpr ⟨V₁, hV₁, subset_rfl⟩)
-    (h𝔙.mem_iff.mpr ⟨V₂, hV₂, subset_rfl⟩))
-  use absConvexHull 𝕜 (U₃ ⊗ˢ[𝕜] V₃)
-  constructor
-  · exact ⟨U₃, hU₃, V₃, hV₃, rfl⟩
-  · apply (AbsConvex.absConvexHull_subset_iff
-      (AbsConvex.inter absConvex_absConvexHull absConvex_absConvexHull)).mpr
-    calc
-      U₃ ⊗ˢ[𝕜] V₃ ⊆ (U₁ ⊗ˢ[𝕜] V₁) ∩ (U₂ ⊗ˢ[𝕜] V₂) := by
-        rintro x ⟨u, hu, v, hv, rfl⟩
-        exact ⟨⟨u, Set.mem_of_mem_inter_left (Set.mem_of_subset_of_mem hU₃_subset hu),
-          v, Set.mem_of_mem_inter_left (Set.mem_of_subset_of_mem hV₃_subset hv), rfl⟩,
-          ⟨u, Set.mem_of_mem_inter_right (Set.mem_of_subset_of_mem hU₃_subset hu),
-          v, Set.mem_of_mem_inter_right (Set.mem_of_subset_of_mem hV₃_subset hv), rfl⟩⟩
-      _ ⊆ absConvexHull 𝕜 ((U₁ ⊗ˢ[𝕜] V₁) ∩ (U₂ ⊗ˢ[𝕜] V₂)) := subset_absConvexHull
-      _ ⊆ (absConvexHull 𝕜) (U₁ ⊗ˢ[𝕜] V₁) ∩ (absConvexHull 𝕜) (U₂ ⊗ˢ[𝕜] V₂) :=
-        absConvexHull_inter_subset
+  obtain ⟨U₃, hU₃, hU₃_sub⟩ := h𝔘.mem_iff.mp (inter_mem (h𝔘.mem_of_mem hU₁) (h𝔘.mem_of_mem hU₂))
+  obtain ⟨V₃, hV₃, hV₃_sub⟩ := h𝔙.mem_iff.mp (inter_mem (h𝔙.mem_of_mem hV₁) (h𝔙.mem_of_mem hV₂))
+  use absConvexHull 𝕜 (U₃ ⊗ˢ[𝕜] V₃), ⟨U₃, hU₃, V₃, hV₃, rfl⟩
+  refine absConvexHull_min ?_ (AbsConvex.inter absConvex_absConvexHull absConvex_absConvexHull)
+  rintro _ ⟨u, hu, v, hv, rfl⟩
+  exact ⟨subset_absConvexHull ⟨u, (hU₃_sub hu).1, v, (hV₃_sub hv).1, rfl⟩,
+         subset_absConvexHull ⟨u, (hU₃_sub hu).2, v, (hV₃_sub hv).2, rfl⟩⟩
 
 lemma projectiveModuleFilterBasisSets_zero
     (h𝔘 : (𝓝 (0 : E)).HasBasis 𝔘 id) (h𝔙 : (𝓝 (0 : F)).HasBasis 𝔙 id)
@@ -169,32 +155,19 @@ lemma projectiveModuleFilterBasisSets_smul_left (h𝔘 : (𝓝 (0 : E)).HasBasis
     (c : 𝕜) {W : Set (E ⊗[𝕜] F)} (hW : W ∈ projectiveModuleFilterBasisSets 𝔘 𝔙) :
     ∃ t ∈ projectiveModuleFilterBasisSets 𝔘 𝔙, t ⊆ (fun x ↦ c • x) ⁻¹' W := by
   obtain ⟨U, hU, V, hV, rfl⟩ := hW
-  have hU_nhds : U ∈ 𝓝 0 := h𝔘.mem_iff.mpr ⟨U, hU, subset_rfl⟩
-  have hcU_nhds : (fun x ↦ c • x) ⁻¹' U ∈ 𝓝 0 := by
-    have h_cont := (continuous_const_smul c).tendsto (0 : E)
-    rw [smul_zero] at h_cont
-    exact h_cont hU_nhds
+  have hcU_nhds : (fun x ↦ c • x) ⁻¹' U ∈ 𝓝 0 :=
+    (continuous_const_smul c).tendsto' 0 0 (smul_zero c) (h𝔘.mem_of_mem hU)
   obtain ⟨U', hU', hU_sub⟩ := h𝔘.mem_iff.mp hcU_nhds
-  use absConvexHull 𝕜 (U' ⊗ˢ[𝕜] V)
-  constructor
-  · exact ⟨U', hU', V, hV, rfl⟩
-  · have h_abs : AbsConvex 𝕜 ((fun x ↦ c • x) ⁻¹' (absConvexHull 𝕜 (U ⊗ˢ[𝕜] V))) := by
-      constructor
-      · intro a ha x hx
-        rw [Set.mem_smul_set] at hx
-        obtain ⟨y, hy, rfl⟩ := hx
-        rw [Set.mem_preimage] at hy ⊢
-        rw [smul_comm c a y]
-        apply Set.smul_mem_smul_set (a := a) at hy
-        exact balanced_absConvexHull a ha hy
-      · rintro x hx y hy a b ha hb hab
-        rw [Set.mem_preimage] at hx hy ⊢
-        rw [smul_add, smul_comm c a x, smul_comm c b y]
-        exact convex_absConvexHull hx hy ha hb hab
-    apply absConvexHull_min _ h_abs
-    rintro _ ⟨u, hu, v, hv, rfl⟩
-    apply subset_absConvexHull
-    exact ⟨c • u, hU_sub hu, v, hv, rfl⟩
+  use absConvexHull 𝕜 (U' ⊗ˢ[𝕜] V), ⟨U', hU', V, hV, rfl⟩
+  have h_abs : AbsConvex 𝕜 ((fun x ↦ c • x) ⁻¹' (absConvexHull 𝕜 (U ⊗ˢ[𝕜] V))) := by
+    refine ⟨fun a ha x hx ↦ ?_, convex_absConvexHull.smul_preimage c⟩
+    obtain ⟨y, hy, rfl⟩ := Set.mem_smul_set.mp hx
+    rw [Set.mem_preimage] at hy ⊢
+    rw [smul_comm]
+    exact balanced_absConvexHull.smul_mem ha hy
+  refine absConvexHull_min ?_ h_abs
+  rintro _ ⟨u, hu, v, hv, rfl⟩
+  exact subset_absConvexHull ⟨c • u, hU_sub hu, v, hv, rfl⟩
 
 end PartialOrder
 
@@ -214,49 +187,33 @@ lemma projectiveModuleFilterBasisSets_add_sub
   have hc_ne : c ≠ 0 := norm_pos_iff.mp hc
   have h_cont := (continuous_const_smul c⁻¹).tendsto (0 : E)
   rw [smul_zero] at h_cont
-  have h_preimage : (fun x : E ↦ c⁻¹ • x) ⁻¹' U ∈ 𝓝 (0 : E) :=
-    h_cont (h𝔘.mem_iff.mpr ⟨U, hU, subset_rfl⟩)
-  rcases h𝔘.mem_iff.mp h_preimage with ⟨U', hU', hU'_sub⟩
+  obtain ⟨U', hU', hU'_sub⟩ := h𝔘.mem_iff.mp (h_cont (h𝔘.mem_iff.mpr ⟨U, hU, subset_rfl⟩))
+  use absConvexHull 𝕜 (U' ⊗ˢ[𝕜] V), ⟨U', hU', V, hV, rfl⟩
   have h_sub : U' ⊗ˢ[𝕜] V ⊆ c • (U ⊗ˢ[𝕜] V) := by
-    rintro z ⟨x, hx, y, hy, rfl⟩
-    use (c⁻¹ • x) ⊗ₜ[𝕜] y
-    refine ⟨⟨c⁻¹ • x, hU'_sub hx, y, hy, rfl⟩, ?_⟩
-    simp only [smul_tmul, ← tmul_smul, smul_smul, mul_inv_cancel₀ hc_ne, one_smul]
+    rintro _ ⟨x, hx, y, hy, rfl⟩
+    refine ⟨(c⁻¹ • x) ⊗ₜ[𝕜] y, ⟨c⁻¹ • x, hU'_sub hx, y, hy, rfl⟩, ?_⟩
+    simp [smul_tmul, smul_smul, mul_inv_cancel₀ hc_ne]
   have h_t_sub : absConvexHull 𝕜 (U' ⊗ˢ[𝕜] V) ⊆ c • absConvexHull 𝕜 (U ⊗ˢ[𝕜] V) :=
     absConvexHull_min (h_sub.trans (Set.image_mono subset_absConvexHull))
       ⟨balanced_absConvexHull.smul c, convex_absConvexHull.smul c⟩
-  have h_add_sub :
-      c • absConvexHull 𝕜 (U ⊗ˢ[𝕜] V) + c • absConvexHull 𝕜 (U ⊗ˢ[𝕜] V)
-      ⊆ absConvexHull 𝕜 (U ⊗ˢ[𝕜] V) := by
-    rintro z ⟨x1, ⟨y1, hy1, rfl⟩, x2, ⟨y2, hy2, rfl⟩, rfl⟩
-    have h1 : (1/2 : 𝕜) • y1 + (1/2 : 𝕜) • y2 ∈ absConvexHull 𝕜 (U ⊗ˢ[𝕜] V) :=
-      convex_absConvexHull hy1 hy2 (by positivity) (by positivity) (add_halves 1)
-    have h2 : ‖(2 : 𝕜) * c‖ ≤ 1 := by
-      have h_two : ‖(2 : 𝕜)‖ ≤ 2 := by
-        have eq_two : (2 : 𝕜) = 1 + 1 := by ring
-        rw [eq_two]
-        calc
-          ‖(1 : 𝕜) + 1‖ ≤ ‖(1 : 𝕜)‖ + ‖(1 : 𝕜)‖ := norm_add_le _ _
-          _ = 1 + 1 := by simp only [norm_one]
-          _ = 2 := by norm_num
-      calc
-        ‖(2 : 𝕜) * c‖ = ‖(2 : 𝕜)‖ * ‖c‖ := norm_mul (2 : 𝕜) c
-        _ ≤ 2 * ‖c‖ := mul_le_mul_of_nonneg_right h_two (norm_nonneg c)
-        _ ≤ 1 := by linarith [hc_lt]
-    have h3 : (2 * c) • ((1/2 : 𝕜) • y1 + (1/2 : 𝕜) • y2) ∈ absConvexHull 𝕜 (U ⊗ˢ[𝕜] V) :=
-      balanced_absConvexHull (2 * c) h2 ⟨(1/2 : 𝕜) • y1 + (1/2 : 𝕜) • y2, h1, rfl⟩
-    have h4 : (2 * c) • ((1/2 : 𝕜) • y1 + (1/2 : 𝕜) • y2) = c • y1 + c • y2 := by
-      rw [smul_add, smul_smul, smul_smul]
-      have h_scalar : (2 * c) * (1 / 2 : 𝕜) = c := by
-        calc (2 * c) * (1 / 2 : 𝕜)
-          _ = c * ((2 : 𝕜) * (1 / 2 : 𝕜)) := by rw [mul_comm (2 : 𝕜) c, mul_assoc]
-          _ = c * ((2 : 𝕜) / 2) := by rw [mul_one_div]
-          _ = c * 1 := by rw [div_self (by norm_num)]
-          _ = c := mul_one c
-      rw [h_scalar]
-    rwa [h4] at h3
-  exact ⟨absConvexHull 𝕜 (U' ⊗ˢ[𝕜] V), ⟨U', hU', V, hV, rfl⟩,
-    (Set.add_subset_add h_t_sub h_t_sub).trans h_add_sub⟩
+  refine (Set.add_subset_add h_t_sub h_t_sub).trans ?_
+  rintro _ ⟨_, ⟨y1, hy1, rfl⟩, _, ⟨y2, hy2, rfl⟩, rfl⟩
+  change c • y1 + c • y2 ∈ _
+  have h_scalar : (2 * c) * (1 / 2 : 𝕜) = c := by
+    rw [mul_comm (2 : 𝕜), mul_assoc, mul_one_div, div_self (by norm_num), mul_one]
+  have eq : c • y1 + c • y2 = (2 * c) • ((1 / 2 : 𝕜) • y1 + (1 / 2 : 𝕜) • y2) := by
+    rw [smul_add, smul_smul, h_scalar, smul_smul, h_scalar]
+  rw [eq]
+  have h_two : ‖(2 : 𝕜)‖ ≤ 2 := by
+    rw [show (2 : 𝕜) = 1 + 1 by ring]
+    exact (norm_add_le 1 1).trans_eq (by norm_num)
+  have h_norm_le : ‖(2 : 𝕜) * c‖ ≤ 1 := by
+    calc
+      ‖(2 : 𝕜) * c‖ = ‖(2 : 𝕜)‖ * ‖c‖ := norm_mul _ _
+      _ ≤ 2 * ‖c‖ := mul_le_mul_of_nonneg_right h_two (norm_nonneg _)
+      _ ≤ 1 := by linarith [hc_lt]
+  exact balanced_absConvexHull.smul_mem h_norm_le
+    (convex_absConvexHull hy1 hy2 (by positivity) (by positivity) (add_halves 1))
 
 variable [ContinuousSMul 𝕜 F]
 variable (h𝔘 : (𝓝 (0 : E)).HasBasis 𝔘 id) (h𝔙 : (𝓝 (0 : F)).HasBasis 𝔙 id)
@@ -268,47 +225,27 @@ lemma projectiveModuleFilterBasisSets_smul_right
   induction z using TensorProduct.induction_on with
   | zero =>
     intro W hW
-    obtain ⟨U, hU, V, hV, rfl⟩ := hW
     filter_upwards with c
     rw [smul_zero]
-    apply subset_absConvexHull
-    rw [← TensorProduct.tmul_zero F 0]
-    have hU_zero : (0 : E) ∈ U := mem_of_mem_nhds (h𝔘.mem_iff.mpr ⟨U, hU, subset_rfl⟩)
-    have hV_zero : (0 : F) ∈ V := mem_of_mem_nhds (h𝔙.mem_iff.mpr ⟨V, hV, subset_rfl⟩)
-    exact ⟨0, hU_zero, 0, hV_zero, rfl⟩
+    exact projectiveModuleFilterBasisSets_zero h𝔘 h𝔙 hW
   | tmul u v =>
     intro W hW
     obtain ⟨U, hU, V, hV, rfl⟩ := hW
-    have hU_nhds : U ∈ 𝓝 0 := h𝔘.mem_iff.mpr ⟨U, hU, subset_rfl⟩
     have hV_nhds : V ∈ 𝓝 0 := h𝔙.mem_iff.mpr ⟨V, hV, subset_rfl⟩
-    have hv : Tendsto (fun x : 𝕜 ↦ x • v) (𝓝 0) (𝓝 0) :=
-      (continuous_id.smul continuous_const).tendsto' _ _ (zero_smul _ _)
-    have h_ev_v : ∀ᶠ x in 𝓝[≠] (0 : 𝕜), x ≠ 0 ∧ x • v ∈ V :=
-      (eventually_nhdsWithin_of_forall fun x a ↦ a).and
-        (eventually_nhdsWithin_of_eventually_nhds (hv hV_nhds))
-    obtain ⟨c₂, hc₂_ne, hc₂_V⟩ := h_ev_v.exists
-    have hu : Tendsto (fun x : 𝕜 ↦ (x * c₂⁻¹) • u) (𝓝 0) (𝓝 0) := by
-      have ht1 : Tendsto (fun x : 𝕜 ↦ x * c₂⁻¹) (𝓝 0) (𝓝 0) :=
-        (continuous_mul_const c₂⁻¹).tendsto' _ _ (zero_mul _)
-      have ht2 : Tendsto (fun y : 𝕜 ↦ y • u) (𝓝 0) (𝓝 0) :=
-        (continuous_id.smul continuous_const).tendsto' _ _ (zero_smul _ _)
-      exact ht2.comp ht1
-    have h_ev_u : ∀ᶠ x in 𝓝 0, (x * c₂⁻¹) • u ∈ U := hu hU_nhds
-    filter_upwards [h_ev_u] with x hx
-    have : x • (u ⊗ₜ[𝕜] v) = ((x * c₂⁻¹) • u) ⊗ₜ[𝕜] (c₂ • v) := by
-      rw [smul_tmul, tmul_smul, tmul_smul, smul_smul]
-      have h_mul : x * c₂⁻¹ * c₂ = x := by
-        rw [mul_assoc, inv_mul_cancel₀ hc₂_ne, mul_one]
-      rw [h_mul]
+    rcases exists_smul_of_mem_nhds_zero (𝕜 := 𝕜) hV_nhds v with ⟨r, _, v', hv', rfl⟩
+    have h_ev : ∀ᶠ c in 𝓝 0, (c * r) • u ∈ U := by
+      have ht : Tendsto (fun c : 𝕜 ↦ (c * r) • u) (𝓝 0) (𝓝 0) :=
+        (continuous_id.mul continuous_const).smul continuous_const |>.tendsto' 0 0 (by simp)
+      exact ht (h𝔘.mem_iff.mpr ⟨U, hU, subset_rfl⟩)
+    filter_upwards [h_ev] with c hc
+    have : c • (u ⊗ₜ[𝕜] (r • v')) = ((c * r) • u) ⊗ₜ[𝕜] v' := by
+      simp [smul_tmul, tmul_smul, smul_smul]
     rw [this]
-    apply subset_absConvexHull
-    exact ⟨_, hx, _, hc₂_V, rfl⟩
+    exact subset_absConvexHull (Set.mem_image2_of_mem hc hv')
   | add x y hx hy =>
     intro W hW
     obtain ⟨W', hW', h_subset⟩ := projectiveModuleFilterBasisSets_add_sub h𝔘 h𝔙 hW
-    have hx_ev : ∀ᶠ c in 𝓝 (0 : 𝕜), c • x ∈ W' := hx hW'
-    have hy_ev : ∀ᶠ c in 𝓝 (0 : 𝕜), c • y ∈ W' := hy hW'
-    filter_upwards [hx_ev, hy_ev] with c hcx hcy
+    filter_upwards [hx hW', hy hW'] with c hcx hcy
     rw [smul_add]
     exact h_subset (Set.add_mem_add hcx hcy)
 
@@ -425,32 +362,17 @@ theorem topology_eq_projective :
     rw [(projectiveModuleFilterBasis h𝔘 h𝔙).nhds_zero_hasBasis.le_basis_iff t_hasBasis_absConvex]
     intro W ⟨hW_mem_nhds_zero, hW_absConvex⟩
     let W' := (Function.uncurry (tmul 𝕜)) ⁻¹' W
-    have hW_mem_nhds_zero : W' ∈ (𝓝 (0,0)) := by
-      apply ContinuousAt.preimage_mem_nhds (Continuous.continuousAt ht_cont_tmul)
-      simp only [uncurry_apply_pair, tmul_zero]
-      exact hW_mem_nhds_zero
-    rw [nhds_prod_eq, (h𝔘.prod h𝔙).mem_iff] at hW_mem_nhds_zero
-    obtain ⟨⟨U, V⟩, ⟨⟨hU, hV⟩, hW'⟩⟩ := hW_mem_nhds_zero
-    simp only [id_eq] at hU hV hW' ⊢
+    have hW'_nhds : W' ∈ 𝓝 (0, 0) :=
+      ht_cont_tmul.continuousAt.preimage_mem_nhds (by simpa using hW_mem_nhds_zero)
+    rw [nhds_prod_eq, (h𝔘.prod h𝔙).mem_iff] at hW'_nhds
+    obtain ⟨⟨U, V⟩, ⟨⟨hU, hV⟩, hW'⟩⟩ := hW'_nhds
     have h_tmul_subset_W : U ⊗ˢ[𝕜] V ⊆ W := by
       rw [Set.prod_subset_iff] at hW'
-      intro z hz
-      rw [Set.mem_image2] at hz
-      obtain ⟨x, hx, y, hy, rfl⟩  := hz
-      specialize hW' x hx y hy
-      apply Set.mem_image_of_mem (Function.uncurry (tmul 𝕜)) at hW'
-      dsimp [W'] at hW' W
-      apply Set.mem_of_subset_of_mem (Set.image_preimage_subset _ _) at hW'
-      exact hW'
-    have h_mem_projectiveModuleFilterBasis :
-        absConvexHull 𝕜 (U ⊗ˢ[𝕜] V) ∈ (projectiveModuleFilterBasis h𝔘 h𝔙) := by
-      change _ ∈ (projectiveModuleFilterBasisSets 𝔘 𝔙)
-      rw [Set.mem_ofPred_eq]
-      exact ⟨U, hU, V, hV, rfl⟩
-    have h_subset_W : absConvexHull 𝕜 (U ⊗ˢ[𝕜] V) ⊆ W := by
-      exact (AbsConvex.absConvexHull_subset_iff hW_absConvex).mpr h_tmul_subset_W
+      rintro _ ⟨u, hu, v, hv, rfl⟩
+      exact hW' u hu v hv
     use absConvexHull 𝕜 (U ⊗ˢ[𝕜] V)
-    exact ⟨h_mem_projectiveModuleFilterBasis, h_subset_W⟩
+    refine ⟨⟨U, hU, V, hV, rfl⟩,
+      (AbsConvex.absConvexHull_subset_iff hW_absConvex).mpr h_tmul_subset_W⟩
   · apply sInf_le
     exact projectiveModuleFilterBasis_topology_mem_tensorProductTopologies h𝔘 h𝔙
 
