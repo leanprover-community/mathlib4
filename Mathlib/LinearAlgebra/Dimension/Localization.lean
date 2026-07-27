@@ -138,11 +138,16 @@ theorem IsFractionRing.finrank_left_eq (A : Type*) [CommRing A] [Algebra S A] [A
     exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s,
       linearIndepOn_finsetIntegerMultiple S⁰ hs⟩
 
-variable (R) in
-theorem IsFractionRing.finrank_eq (R' S' : Type*) [CommRing R'] [CommRing S'] [Module R' S']
-    [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
-    [IsFractionRing R R'] [IsFractionRing S S'] : Module.finrank R' S' = Module.finrank R S :=
-  (finrank_right_eq R R' S').trans (finrank_left_eq R S S').symm
+/-- If `K` is the fraction ring of `A` and `L` is the fraction ring of `B`, then the finrank
+`finrank K L` of the fraction rings equals the finrank `A B` of the base rings.
+
+See `IsFractionRing.finrank_left_eq` and `IsFractionRing.finrank_right_eq` for one-sided versions.
+See `Algebra.IsAlgebraic.rank_of_isFractionRing` for a rank version with additional assumptions. -/
+protected theorem IsFractionRing.finrank_eq (A K B L : Type*)
+    [CommRing A] [CommRing K] [CommRing B] [CommRing L] [Algebra A B] [Module K L]
+    [Algebra A K] [Algebra B L] [Algebra A L] [IsScalarTower A K L] [IsScalarTower A B L]
+    [IsFractionRing A K] [IsFractionRing B L] : Module.finrank K L = Module.finrank A B :=
+  (finrank_right_eq A K L).trans (finrank_left_eq A B L).symm
 
 variable (R M) in
 theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :

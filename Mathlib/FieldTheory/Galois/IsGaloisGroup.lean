@@ -123,7 +123,7 @@ theorem card_eq_finrank' : Nat.card G = Module.finrank A B := by
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G B (FractionRing B)
   rw [IsGaloisGroup.card_eq_finrank G (FractionRing A) (FractionRing B),
-    IsFractionRing.finrank_eq A B (FractionRing A) (FractionRing B)]
+    IsFractionRing.finrank_eq A (FractionRing A) B (FractionRing B)]
 
 @[simp]
 theorem map_mulEquivAlgEquiv_fixingSubgroup [IsGaloisGroup G K L] (F : IntermediateField K L) :
