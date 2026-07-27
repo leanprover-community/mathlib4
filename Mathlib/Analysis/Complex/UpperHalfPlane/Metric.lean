@@ -109,6 +109,7 @@ theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / 
 
 /-- An auxiliary `MetricSpace` instance on the upper half-plane. This instance has bad projection
 to `TopologicalSpace`. We replace it later. -/
+@[instance_reducible]
 def metricSpaceAux : MetricSpace ℍ where
   dist := dist
   dist_self z := by rw [dist_eq, dist_self, zero_div, arsinh_zero, mul_zero]
@@ -152,10 +153,9 @@ theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
     √(2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2) := by
   rw [← sqrt_sq dist_nonneg, dist_coe_center_sq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
     cmp (dist z w) r = cmp (dist (z : ℂ) (w.center r)) (w.im * Real.sinh r) := by
-  letI := metricSpaceAux
+  let := metricSpaceAux
   rcases lt_or_ge r 0 with hr₀ | hr₀
   · trans Ordering.gt
     exacts [(hr₀.trans_le dist_nonneg).cmp_eq_gt,
@@ -258,7 +258,7 @@ instance : MetricSpace ℍ :=
       apply_rules [Continuous.div, Continuous.mul, continuous_const, Continuous.arsinh,
         Continuous.dist, continuous_coe.comp, continuous_fst, continuous_snd,
         Real.continuous_sqrt.comp, continuous_im.comp]
-    · letI : MetricSpace ℍ := metricSpaceAux
+    · let : MetricSpace ℍ := metricSpaceAux
       refine le_of_nhds_le_nhds fun z => ?_
       rw [nhds_induced]
       refine (nhds_basis_ball.le_basis_iff (nhds_basis_ball.comap _)).2 fun R hR => ?_
@@ -309,17 +309,14 @@ instance : ProperSpace ℍ := by
   rw [isEmbedding_coe.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
   refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   rw [dist_of_re_eq]
   exacts [congr_arg₂ _ (log_exp _) (log_exp _), rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isometry_real_vadd (a : ℝ) : Isometry (a +ᵥ · : ℍ → ℍ) :=
   Isometry.of_dist_eq fun y₁ y₂ => by simp only [dist_eq, coe_vadd, vadd_im, dist_add_left]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ → ℍ) := by
   refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
@@ -327,7 +324,6 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
     Real.norm_eq_abs, mul_left_comm]
   exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsIsometricSMul SL(2, ℝ) ℍ :=
   ⟨fun g => by

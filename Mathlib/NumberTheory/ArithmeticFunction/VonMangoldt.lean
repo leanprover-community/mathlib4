@@ -122,12 +122,10 @@ theorem vonMangoldt_mul_zeta : Λ * ζ = log := by
 @[simp]
 theorem zeta_mul_vonMangoldt : (ζ : ArithmeticFunction ℝ) * Λ = log := by rw [mul_comm]; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem log_mul_moebius_eq_vonMangoldt : log * μ = Λ := by
   rw [← vonMangoldt_mul_zeta, mul_assoc, coe_zeta_mul_coe_moebius, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem moebius_mul_log_eq_vonMangoldt : (μ : ArithmeticFunction ℝ) * log = Λ := by
   rw [mul_comm]; simp
@@ -158,3 +156,19 @@ theorem vonMangoldt_le_log : ∀ {n : ℕ}, Λ n ≤ Real.log (n : ℝ)
       (mem_divisors_self _ n.succ_ne_zero)
 
 end ArithmeticFunction
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: the von Mangoldt function is nonnegative. -/
+@[positivity ArithmeticFunction.vonMangoldt _]
+meta def evalVonMangoldt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@ArithmeticFunction.vonMangoldt $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(ArithmeticFunction.vonMangoldt_nonneg))
+  | _, _, _ => throwError "not von Mangoldt"
+
+end Mathlib.Meta.Positivity

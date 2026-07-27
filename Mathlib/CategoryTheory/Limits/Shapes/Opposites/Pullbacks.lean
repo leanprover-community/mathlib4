@@ -33,15 +33,17 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {J : Type u₂} [Category.{v₂} J]
 
 instance hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ := by
-  haveI : HasColimitsOfShape WalkingCospanᵒᵖ C :=
+  have : HasColimitsOfShape WalkingCospanᵒᵖ C :=
     hasColimitsOfShape_of_equivalence walkingCospanOpEquiv.symm
   apply hasLimitsOfShape_op_of_hasColimitsOfShape
 
 instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
-  haveI : HasLimitsOfShape WalkingSpanᵒᵖ C :=
+  have : HasLimitsOfShape WalkingSpanᵒᵖ C :=
     hasLimitsOfShape_of_equivalence walkingSpanOpEquiv.symm
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `Span f.op g.op` and `(Cospan f g).op` -/
 @[simps!]
 def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -52,6 +54,8 @@ def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `span f.unop g.unop` and `(cospan f g).leftOp` -/
 @[simps!]
 def spanUnop {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -74,6 +78,8 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
       Functor.associator _ _ _
     _ ≅ walkingCospanOpEquiv.functor ⋙ span f.op g.op := isoWhiskerLeft _ (spanOp f g).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `Cospan f.op g.op` and `(Span f g).op` -/
 @[simps!]
 def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
@@ -84,6 +90,8 @@ def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `cospan f.unop g.unop` and `(span f g).leftOp` -/
 @[simps!]
 def cospanUnop {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : X ⟶ Z) :
@@ -112,24 +120,28 @@ namespace PushoutCocone
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     PullbackCone f.unop g.unop :=
-  Cocone.unop ((Cocones.precompose (opCospan f.unop g.unop).hom).obj
+  Cocone.unop ((Cocone.precompose (opCospan f.unop g.unop).hom).obj
     (Cocone.whisker walkingCospanOpEquiv.functor c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.fst = c.inl.unop := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.snd = c.inr.unop := by simp
 
 /-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
 @[simps!]
 def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : PullbackCone f.op g.op :=
-  (Cones.postcompose (cospanOp f g).symm.hom).obj
+  (Cone.postcompose (cospanOp f g).symm.hom).obj
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.op.fst = c.inl.op := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.op.snd = c.inr.op := by simp
 
@@ -137,36 +149,47 @@ end PushoutCocone
 
 namespace PullbackCone
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The obvious map `PullbackCone f g → PushoutCocone f.unop g.unop` -/
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     PushoutCocone f.unop g.unop :=
   Cone.unop
-    ((Cones.postcompose (opSpan f.unop g.unop).symm.hom).obj
+    ((Cone.postcompose (opSpan f.unop g.unop).symm.hom).obj
       (Cone.whisker walkingSpanOpEquiv.functor c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inl = c.fst.unop := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inr = c.snd.unop := by simp
 
 /-- The obvious map `PullbackCone f g → PushoutCocone f.op g.op` -/
 @[simps!]
 def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutCocone f.op g.op :=
-  (Cocones.precompose (spanOp f g).hom).obj
+  (Cocone.precompose (spanOp f g).hom).obj
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.op.inl = c.fst.op := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.op.inr = c.snd.op := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a pullback cone, then `c.op.unop` is isomorphic to `c`. -/
 def opUnopIso {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.unop ≅ c :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a pullback cone in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
 def unopOpIso {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.unop.op ≅ c :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
@@ -175,10 +198,14 @@ end PullbackCone
 
 namespace PushoutCocone
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a pushout cocone, then `c.op.unop` is isomorphic to `c`. -/
 def opUnopIso {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.unop ≅ c :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a pushout cocone in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
 def unopOpIso {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.unop.op ≅ c :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
@@ -258,11 +285,13 @@ noncomputable def pullbackIsoUnopPushout {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
   IsLimit.conePointUniqueUpToIso (@limit.isLimit _ _ _ _ _ h)
     ((PushoutCocone.isColimitEquivIsLimitUnop _) (colimit.isColimit (span f.op g.op)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     (pullbackIsoUnopPushout f g).inv ≫ pullback.fst f g = (pushout.inl f.op g.op).unop :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp [unop_id (X := { unop := X })])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     (pullbackIsoUnopPushout f g).inv ≫ pullback.snd f g = (pushout.inr f.op g.op).unop :=
@@ -285,11 +314,13 @@ noncomputable def pullbackIsoOpPushout {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y �
   IsLimit.conePointUniqueUpToIso (@limit.isLimit _ _ _ _ _ h)
     ((PushoutCocone.isColimitEquivIsLimitOp _) (colimit.isColimit (span f.unop g.unop)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOpPushout_inv_fst {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     (pullbackIsoOpPushout f g).inv ≫ pullback.fst f g = (pushout.inl f.unop g.unop).op :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOpPushout_inv_snd {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     (pullbackIsoOpPushout f g).inv ≫ pullback.snd f g = (pushout.inr f.unop g.unop).op :=
@@ -334,11 +365,13 @@ noncomputable def pushoutIsoUnopPullback {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y)
   IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)
     ((PullbackCone.isLimitEquivIsColimitUnop _) (limit.isLimit (cospan f.op g.op)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pushoutIsoUnopPullback_inl_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g] :
     pushout.inl _ _ ≫ (pushoutIsoUnopPullback f g).hom = (pullback.fst f.op g.op).unop :=
   (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pushoutIsoUnopPullback_inr_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g] :
     pushout.inr _ _ ≫ (pushoutIsoUnopPullback f g).hom = (pullback.snd f.op g.op).unop :=
@@ -361,11 +394,13 @@ noncomputable def pushoutIsoOpPullback {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X �
   IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)
     ((PullbackCone.isLimitEquivIsColimitOp _) (limit.isLimit (cospan f.unop g.unop)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pushoutIsoOpPullback_inl_hom {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g] :
     pushout.inl _ _ ≫ (pushoutIsoOpPullback f g).hom = (pullback.fst f.unop g.unop).op :=
   (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem pushoutIsoOpPullback_inr_hom {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g] :
     pushout.inr _ _ ≫ (pushoutIsoOpPullback f g).hom = (pullback.snd f.unop g.unop).op :=

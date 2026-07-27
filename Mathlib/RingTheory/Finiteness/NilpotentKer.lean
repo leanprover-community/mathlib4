@@ -17,7 +17,6 @@ public section
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `I` is a finitely generated nilpotent ideal of an `R`-algebra `S`, and `T = S / I` is
 `R`-finite, then `S` is also `R`-finite. -/
 lemma Module.finite_of_surjective_of_ker_le_nilradical
@@ -56,7 +55,7 @@ lemma Module.finite_of_surjective_of_ker_le_nilradical
         rw [LinearMap.ker_comp, ← Submodule.map_le_map_iff_of_injective (I ^ n).subtype_injective,
           Submodule.map_smul'', Submodule.map_comap_eq]
         simpa [pow_succ'] using Ideal.mul_le_left (I := I) (J := I ^ n)
-      convert Module.Finite.fg_top.map (ψ.restrictScalars R) using 1
+      convert! Module.Finite.fg_top.map (ψ.restrictScalars R) using 1
       suffices LinearMap.ker φ.toLinearMap = Submodule.map (I ^ (n + 1)).mkQ (I ^ n) by
         simpa [LinearMap.range_restrictScalars, ψ, LinearMap.range_comp, Submodule.range_liftQ]
       apply Submodule.comap_injective_of_surjective (I ^ (n + 1)).mkQ_surjective

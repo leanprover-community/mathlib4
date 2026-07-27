@@ -36,6 +36,7 @@ variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing �
 variable {R : Type*} [CommRing R] (abv : AbsoluteValue R 𝕜)
 
 /-- The uniform structure coming from an absolute value. -/
+@[instance_reducible]
 def uniformSpace : UniformSpace R :=
   .ofFun (fun x y => abv (y - x)) (by simp) (fun x y => abv.map_sub y x)
     (fun _ _ _ => (abv.sub_le _ _ _).trans_eq (add_comm _ _))

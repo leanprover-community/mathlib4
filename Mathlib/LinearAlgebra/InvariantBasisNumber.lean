@@ -213,11 +213,11 @@ instance (priority := 100) invariantBasisNumber_of_rankCondition [RankCondition 
 /-- A semiring `R` satisfies the strong rank condition, iff we cannot embed `R^(ℕ)` in some `Rⁿ`. -/
 theorem strongRankCondition_iff_forall_not_injective :
     StrongRankCondition R ↔ ∀ n (f : (ℕ →₀ R) →ₗ[R] Fin n → R), ¬ Injective f := by
-  rw [strongRankCondition_iff_succ, ← not_iff_not]; push_neg
+  rw [strongRankCondition_iff_succ, ← not_iff_not]; push Not
   constructor <;> refine fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩
   · exact f.exists_finsupp_nat_of_fin_fun_injective inj
   · exact ⟨f ∘ₗ Finsupp.lmapDomain R R (↑) ∘ₗ (Finsupp.linearEquivFunOnFinite ..).symm.toLinearMap,
-      inj.comp <| by simpa using Finsupp.mapDomain_injective Fin.val_injective⟩
+      inj.comp <| by simpa using! Finsupp.mapDomain_injective Fin.val_injective⟩
 
 end
 
@@ -296,15 +296,20 @@ section
 
 attribute [local instance] Ideal.Quotient.field
 
-/-- Nontrivial commutative rings have the invariant basis number property.
+/--
+Nontrivial commutative rings satisfy the invariant basis number property.
 
-There are two stronger results in mathlib: `commRing_strongRankCondition`, which says that any
-nontrivial commutative ring satisfies the strong rank condition, and
-`rankCondition_of_nontrivial_of_commSemiring`, which says that any nontrivial commutative semiring
-satisfies the rank condition.
+There are two stronger results in mathlib:
+1.  `CommRing.orzechProperty` in `Mathlib.RingTheory.FiniteType`,
+    which says that any commutative ring satisfies the Orzech property, and hence
+    (by `strongRankCondition_of_orzechProperty`) that nontrivial commutative rings satisfy
+    the strong rank condition. A shortcut instance `commRing_strongRankCondition` is also provided.
+2.  `rankCondition_of_nontrivial_of_commSemiring` in
+    `Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber`, which says that
+    any nontrivial commutative semiring satisfies the rank condition.
 
-We prove this instance separately to avoid dependency on
-`Mathlib/LinearAlgebra/Charpoly/Basic.lean` or `Mathlib/LinearAlgebra/Matrix/ToLin.lean`. -/
+We prove this instance here anyway to reduce the required imports.
+-/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>

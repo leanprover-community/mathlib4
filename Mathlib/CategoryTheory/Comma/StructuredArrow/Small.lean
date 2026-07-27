@@ -16,7 +16,7 @@ Here we prove a technical result about small sets in the category of structured 
 be used in the proof of the Special Adjoint Functor Theorem.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -52,9 +52,6 @@ instance essentiallySmall [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
     (StructuredArrow.pre S (equivSmallModel.{w} C).inverse T).asEquivalence]
   exact essentiallySmall_of_small_of_locallySmall _
 
-@[deprecated (since := "2025-10-07")] alias small_proj_preimage_of_locallySmall :=
-  small_inverseImage_proj_of_locallySmall
-
 end StructuredArrow
 
 namespace CostructuredArrow
@@ -83,9 +80,6 @@ instance essentiallySmall [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
   rw [← essentiallySmall_congr
     (CostructuredArrow.pre (equivSmallModel.{w} C).inverse S T).asEquivalence]
   exact essentiallySmall_of_small_of_locallySmall _
-
-@[deprecated (since := "2025-10-07")] alias small_proj_preimage_of_locallySmall :=
-  small_inverseImage_proj_of_locallySmall
 
 end CostructuredArrow
 

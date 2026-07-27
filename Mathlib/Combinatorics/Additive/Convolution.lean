@@ -32,7 +32,6 @@ convolution of `A` and `B` is a map `G → ℕ` that maps `x ∈ G` to the numbe
 representations of `x` in the form `x = a + b`, where `a ∈ A`, `b ∈ B`. -/]
 def convolution (A B : Finset G) : G → ℕ := fun x => #{ab ∈ A ×ˢ B | ab.1 * ab.2 = x}
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma card_smul_inter_smul (A B : Finset G) (x y : G) :
     #((x • A) ∩ (y • B)) = A.convolution B⁻¹ (x⁻¹ * y) :=
@@ -50,6 +49,19 @@ lemma card_inter_smul (A B : Finset G) (x : G) : #(A ∩ (x • B)) = A.convolut
 @[to_additive]
 lemma card_smul_inter (A B : Finset G) (x : G) : #((x • A) ∩ B) = A.convolution B⁻¹ x⁻¹ := by
   simpa using card_smul_inter_smul _ _ x 1
+
+@[to_additive]
+lemma card_inter_smul_inv (A B : Finset G) (x : G) : #(A ∩ (x • B⁻¹)) = A.convolution B x := by
+  simp [card_inter_smul]
+
+@[to_additive]
+lemma card_mul_eq (A B : Finset G) (x : G) :
+    #{ab ∈ A ×ˢ B | ab.1 * ab.2 = x} = A.convolution B x := rfl
+
+@[to_additive]
+lemma card_div_eq (A B : Finset G) (x : G) :
+    #{ab ∈ A ×ˢ B | ab.1 / ab.2 = x} = A.convolution B⁻¹ x :=
+  Finset.card_equiv ((Equiv.refl _).prodCongr (.inv _)) (by simp [div_eq_mul_inv])
 
 @[to_additive card_add_neg_eq_addConvolution_neg]
 lemma card_mul_inv_eq_convolution_inv (A B : Finset G) (x : G) :
@@ -105,5 +117,15 @@ lemma convolution_op_smul_eq_convolution_mul_inv (A B : Finset G) (s x : G) :
   nth_rw 2 [← inv_inv B]
   rw [← inv_inv (B <• s), inv_op_smul_finset_distrib, ← card_inter_smul, ← card_inter_smul,
     smul_smul]
+
+variable [Fintype G]
+
+@[to_additive (attr := simp) univ_addConvolution]
+lemma univ_convolution (B : Finset G) (a : G) : univ.convolution B a = #B := by
+  simp [← card_inter_smul_inv]
+
+@[to_additive (attr := simp) addConvolution_univ]
+lemma convolution_univ (A : Finset G) (a : G) : A.convolution univ a = #A := by
+  simp [← card_inter_smul_inv]
 
 end Finset

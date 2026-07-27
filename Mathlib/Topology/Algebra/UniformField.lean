@@ -81,7 +81,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   rw [this, ← Filter.map_map]
   apply Cauchy.map _ (Completion.uniformContinuous_coe K)
   apply CompletableTopField.nice
-  · haveI := isDenseInducing_coe.comap_nhds_neBot y
+  · have := isDenseInducing_coe.comap_nhds_neBot y
     apply cauchy_nhds.comap
     rw [Completion.comap_coe_eq_uniformity]
   · have eq_bot : 𝓝 (0 : hat K) ⊓ 𝓝 y = ⊥ := by
@@ -92,7 +92,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     rw [eq_bot]
     exact comap_bot
 
-open Classical in
+open scoped Classical in
 /--
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
@@ -122,12 +122,11 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
 variable [IsUniformAddGroup K]
 
 theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
-  haveI : T1Space (hat K) := T2Space.t1Space
+  have : T1Space (hat K) := T2Space.t1Space
   let f := fun x : hat K => x * hatInv x
   let c := (fun (x : K) => (x : hat K))
   change f x = 1
-  have cont : ContinuousAt f x := by
-    fun_prop (disch := assumption)
+  have cont : ContinuousAt f x := by fun_prop
   have clo : x ∈ closure (c '' {0}ᶜ) := by
     have := isDenseInducing_coe.dense x
     rw [← image_univ, show (univ : Set K) = {0} ∪ {0}ᶜ from (union_compl_self _).symm,
@@ -135,8 +134,8 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
     apply mem_closure_of_mem_closure_union this
     rw [image_singleton]
     exact compl_singleton_mem_nhds x_ne
-  have fxclo : f x ∈ closure (f '' (c '' {0}ᶜ)) := mem_closure_image cont clo
-  have : f '' (c '' {0}ᶜ) ⊆ {1} := by
+  have fxclo : f x ∈ closure (f '' c '' {0}ᶜ) := mem_closure_image cont clo
+  have : f '' c '' {0}ᶜ ⊆ {1} := by
     rw [image_image]
     rintro _ ⟨z, z_ne, rfl⟩
     rw [mem_singleton_iff]
@@ -187,7 +186,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K w
 instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
     [IsTopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
   nice F cau_F hF := by
-    haveI : NeBot F := cau_F.1
+    have : NeBot F := cau_F.1
     rcases CompleteSpace.complete cau_F with ⟨x, hx⟩
     have hx' : x ≠ 0 := by
       rintro rfl

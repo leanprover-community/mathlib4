@@ -5,8 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Lemma
+public import Mathlib.Init
 
 /-!
 # Coequalizer of a pair of functions

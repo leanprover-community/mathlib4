@@ -6,6 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 
 /-!
 # Bundled exact functors
@@ -41,6 +42,11 @@ variable {C D} in
 lemma leftExactFunctor_iff (F : C ⥤ D) :
     leftExactFunctor C D F ↔ PreservesFiniteLimits F := Iff.rfl
 
+instance : (leftExactFunctor C D).IsClosedUnderIsomorphisms where
+  of_iso e h := by
+    simp only [leftExactFunctor_iff] at h ⊢
+    exact preservesFiniteLimits_of_natIso e
+
 /-- Bundled left-exact functors. -/
 abbrev LeftExactFunctor := (leftExactFunctor C D).FullSubcategory
 
@@ -64,6 +70,11 @@ variable {C D} in
 lemma rightExactFunctor_iff (F : C ⥤ D) :
     rightExactFunctor C D F ↔ PreservesFiniteColimits F := Iff.rfl
 
+instance : (rightExactFunctor C D).IsClosedUnderIsomorphisms where
+  of_iso e h := by
+    simp only [rightExactFunctor_iff] at h ⊢
+    exact preservesFiniteColimits_of_natIso e
+
 /-- Bundled right-exact functors. -/
 abbrev RightExactFunctor := (rightExactFunctor C D).FullSubcategory
 
@@ -86,6 +97,10 @@ variable {C D} in
 @[simp]
 lemma exactFunctor_iff (F : C ⥤ D) :
     exactFunctor C D F ↔ PreservesFiniteLimits F ∧ PreservesFiniteColimits F := Iff.rfl
+
+instance : (exactFunctor C D).IsClosedUnderIsomorphisms := by
+  dsimp [exactFunctor]
+  infer_instance
 
 /-- Bundled exact functors. -/
 abbrev ExactFunctor := (exactFunctor C D).FullSubcategory
@@ -219,6 +234,8 @@ section
 
 variable (C D E)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
 def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤ₗ E) where
@@ -227,6 +244,8 @@ def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤�
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringLeft C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
 def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤ₗ E) where
@@ -235,6 +254,8 @@ def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤�
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringRight C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
 def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤ᵣ E) where
@@ -243,6 +264,8 @@ def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤�
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringLeft C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
 def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤ᵣ E) where
@@ -251,6 +274,8 @@ def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringRight C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
 def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E) where
@@ -260,6 +285,8 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringLeft C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
 def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E) where
@@ -272,11 +299,5 @@ def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E
 end
 
 end
-
-@[deprecated (since := "2025-12-18")] alias LeftExactFunctor.ofExact_map :=
-  LeftExactFunctor.ofExact_map_hom
-
-@[deprecated (since := "2025-12-18")] alias RightExactFunctor.ofExact_map :=
-  RightExactFunctor.ofExact_map_hom
 
 end CategoryTheory

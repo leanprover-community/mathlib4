@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
 # Abelian varieties
@@ -19,7 +19,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 
@@ -35,6 +35,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance (G : Over (Spec (.of K))) [GrpObj G] : IsClosedImmersion η[G].left :=
   isClosedImmersion_of_comp_eq_id (Y := Spec (.of K)) G.hom η[G].left (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgClosed K]
     (G : Over (Spec (.of K))) [IsProper G.hom] [IsIntegral (G ⊗ G).left] [GrpObj G] :
@@ -59,10 +60,10 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
   rw [isCommMonObj_iff_commutator_eq_toUnit_η]
   ext1
   have H : γ.left '' ((fst G G).left ⁻¹' {η[G].left point}) ⊆ {(lift η[G] η[G]).left point} := by
-    rw [Set.image_subset_iff, ← Set.diff_eq_empty, ← Set.not_nonempty_iff_eq_empty]
+    rw [Set.image_subset_iff, ← Set.sdiff_eq_empty, ← Set.not_nonempty_iff_eq_empty]
     intro H
     obtain ⟨c₀, ⟨hc₁, hc₂⟩, hc₃⟩ := nonempty_inter_closedPoints H <| by
-      rw [Set.diff_eq_compl_inter, ← Set.image_singleton, ← Set.image_singleton];
+      rw [Set.sdiff_eq_compl_inter, ← Set.image_singleton, ← Set.image_singleton];
       refine (IsOpen.isLocallyClosed ?_).inter (IsClosed.isLocallyClosed ?_)
       · exact (((lift η[G] η[G]).left.isClosedMap _ hpoint).preimage γ.left.continuous).isOpen_compl
       · exact (η[G].left.isClosedMap _ hpoint).preimage (fst G G).left.continuous
@@ -111,21 +112,22 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
         γ.left.isClosedMap ((H ⟨_, hyU⟩).subset (Set.image_subset_iff.mpr fun _ ↦ by
           simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, γ])) ?_ ?_
       · let α : G ⊗ G ⟶ G ⊗ G := toUnit _ ≫ x ⊗ₘ 𝟙 _
-        convert ((IrreducibleSpace.isIrreducible_univ _).image α.left
-          α.left.continuous.continuousOn).isPreirreducible
+        convert!
+          ((IrreducibleSpace.isIrreducible_univ _).image α.left
+              α.left.continuous.continuousOn).isPreirreducible
         rw [Over.tensorHom_left]
         simp [Set.range_comp, Scheme.Pullback.range_map, x]
       · exact ⟨y, subset_closure (by simp), rfl⟩
       · refine ⟨xe, subset_closure ?_, ?_⟩
-        · simp [xe, ← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]
+        · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
         · simp only [xe, γ, ← Scheme.Hom.comp_apply, ← Over.comp_left]
           congr 6; ext <;> simp
-    convert congr((snd G G).left $this) using 1
+    convert! congr((snd G G).left $this) using 1
     · simp [γ, ← Scheme.Hom.comp_apply]
-    · simp [xe, ← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]
+    · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A proper geometrically integral group scheme over a field is commutative. -/
 @[stacks 0BFD]
 theorem isCommMonObj_of_isProper_of_geometricallyIntegral

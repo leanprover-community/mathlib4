@@ -45,11 +45,11 @@ instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) w
   smul g x := J.map g x
   one_smul x := by
     change J.map (𝟙 _) x = x
-    simp only [FunctorToTypes.map_id_apply]
+    simp
   mul_smul g h x := by
     change J.map (g * h) x = (J.map h ≫ J.map g) x
     rw [← SingleObj.comp_as_mul]
-    · simp only [FunctorToTypes.map_comp_apply, types_comp_apply]
+    · simp
       rfl
 
 section Limits
@@ -98,6 +98,9 @@ def colimitTypeRelEquivOrbitRelQuotient :
   left_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
   right_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The colimit of `J : SingleObj G ⥤ Type u` is equivalent to the quotient of
 `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps!]

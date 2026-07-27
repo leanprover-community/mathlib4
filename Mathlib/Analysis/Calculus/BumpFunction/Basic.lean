@@ -172,7 +172,6 @@ theorem eventuallyEq_one_of_mem_ball (h : x ∈ ball c f.rIn) : f =ᶠ[𝓝 x] 1
 theorem eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
   f.eventuallyEq_one_of_mem_ball (mem_ball_self f.rIn_pos)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set X}
     {f : ∀ x, ContDiffBump (c x)} {x : X} (hc : ContDiffWithinAt ℝ n c s x)

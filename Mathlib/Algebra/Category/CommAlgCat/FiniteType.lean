@@ -47,6 +47,13 @@ lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [CommRing A] [Alge
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp h
   exact ⟨⟨n, RingHom.ker f⟩, ⟨(Ideal.quotientKerAlgEquivOfSurjective hf).symm⟩⟩
 
+lemma RingHom.FiniteType.exists_smallRepr {S : Type v} [CommRing S] {f : R →+* S}
+    (hf : f.FiniteType) :
+    ∃ (T : FGAlgCatSkeleton R) (e : T.eval.obj ≃+* S), f = e.toRingHom.comp (algebraMap _ _) := by
+  algebraize [f]
+  obtain ⟨T, ⟨e⟩⟩ := Algebra.FiniteType.exists_fgAlgCatSkeleton R S
+  exact ⟨T, e.symm.toRingEquiv, e.symm.toAlgHom.comp_algebraMap.symm⟩
+
 /-- Universe lift functor for finitely generated algebras. -/
 def FGAlgCat.uliftFunctor : FGAlgCat.{v} R ⥤ FGAlgCat.{max v w} R where
   obj A := ⟨.of R <| ULift A.1, .equiv inferInstance ULift.algEquiv.symm⟩

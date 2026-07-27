@@ -96,6 +96,7 @@ theorem ext_functor {G} [Groupoid.{v} G] [IsFreeGroupoid G] {X : Type v} [Group 
   let ⟨_, _, u⟩ := @unique_lift G _ _ X _ fun (a b : Generators G) (e : a ⟶ b) => g.map (of e)
   _root_.trans (u _ h) (u _ fun _ _ _ => rfl).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An action groupoid over a free group is free. More generally, one could show that the groupoid
 of elements over a free groupoid is free, but this version is easier to prove and suffices for our
 purposes.
@@ -128,7 +129,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
         apply uF'
         intro e
         ext
-        · convert hE _ _ _
+        · convert! hE _ _ _
           rfl
         · rfl
       apply Functor.hext
@@ -155,6 +156,7 @@ private def root' : G :=
 
 -- this has to be marked noncomputable, see issue https://github.com/leanprover-community/mathlib4/pull/451.
 -- It might be nicer to define this in terms of `composePath`
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A path in the tree gives a hom, by composition. -/
@@ -162,12 +164,14 @@ def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
   | _, Path.nil => 𝟙 _
   | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- For every vertex `a`, there is a canonical hom from the root, given by the path in the tree. -/
 def treeHom (a : G) : root' T ⟶ a :=
   homOfPath T default
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Any path to `a` gives `treeHom T a`, since paths in the tree are unique. -/
 theorem treeHom_eq {a : G} (p : Path (root T) a) : treeHom T a = homOfPath T p := by
   rw [treeHom, Unique.default_eq]
@@ -199,6 +203,7 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
     simp only [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
@@ -235,9 +240,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          -- Work around the defeq `X = End (F'.obj (IsFreeGroupoid.SpanningTree.root' T))`
-          erw [Functor.mapEnd_apply]
-          rw [this, hF']
+          simp only [Functor.mapEnd, DFunLike.coe, this, hF']
           exact dif_neg h
         intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
@@ -257,7 +260,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
         ext x
         suffices (functorOfMonoidHom T E).map x = F'.map x by
           simpa only [loopOfHom, functorOfMonoidHom, IsIso.inv_id, treeHom_root,
-            Category.id_comp, Category.comp_id] using this
+            Category.id_comp, Category.comp_id] using! this
         congr
         apply uF'
         intro a b e
@@ -270,10 +273,9 @@ end SpanningTree
 
 set_option backward.privateInPublic true in
 /-- Another name for the identity function `G → G`, to help type checking. -/
-private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
-    G → Symmetrify (Generators G) :=
-  id
+private def symgen {G : Type u} [Groupoid.{v} G] : G → Symmetrify (Generators G) := id
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag

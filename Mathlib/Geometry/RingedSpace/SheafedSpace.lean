@@ -72,8 +72,7 @@ instance : Inhabited (SheafedSpace (Discrete Unit)) :=
   ⟨unit (TopCat.of PEmpty)⟩
 
 instance : Category (SheafedSpace C) :=
-  show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
-    infer_instance
+  inferInstanceAs <| Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace)
 
 @[ext (iff := false)]
 theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.hom.base = β.hom.base)
@@ -154,14 +153,6 @@ theorem comp_hom_c_app' {X Y Z : SheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (
 theorem congr_hom_app {X Y : SheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.hom.c.app U = β.hom.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) :=
   (PresheafedSpace.congr_app (by rw [h]) U)
-
-@[deprecated (since := "2025-12-18")] alias id_base := id_hom_base
-@[deprecated (since := "2025-12-18")] alias id_c := id_hom_c
-@[deprecated (since := "2025-12-18")] alias id_c_app := id_hom_c_app
-@[deprecated (since := "2025-12-18")] alias comp_base := comp_hom_base
-@[deprecated (since := "2025-12-18")] alias comp_c_app := comp_hom_c_app
-@[deprecated (since := "2025-12-18")] alias comp_c_app' := comp_hom_c_app'
-@[deprecated (since := "2025-12-18")] alias congr_app := congr_hom_app
 
 variable (C)
 
@@ -246,6 +237,7 @@ variable [PreservesLimits (CategoryTheory.forget C)]
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.hom.base = g.hom.base)
@@ -275,6 +267,7 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
   replace e := congr_arg InducedCategory.Hom.hom e
   congr 1
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)
@@ -282,7 +275,7 @@ lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)
     (h₂ : ∀ x, Mono (f.hom.stalkMap x)) : Epi f := by
   constructor
   intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
-  rw [InducedCategory.hom_ext_iff] at e
+  apply_fun InducedCategory.Hom.hom at e
   obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun y ↦ by
     rw [← (h₁ y).choose_spec]
     simpa using congr(($e).base.hom (h₁ y).choose)

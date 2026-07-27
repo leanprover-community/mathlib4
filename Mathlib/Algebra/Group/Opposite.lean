@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Conv
 # Group structures on the multiplicative and additive opposites
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Units
 
@@ -142,6 +142,7 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   zpow n a := op <| a.unop ^ n
   zpow_zero' _ := unop_injective <| zpow_zero _
   zpow_succ' _ _ := unop_injective <| by
+    simp_rw [HPow.hPow, Pow.pow]
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
   zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
 
@@ -235,7 +236,7 @@ attribute [nolint simpComm] AddOpposite.addCommute_unop
 @[to_additive] protected theorem isDedekindFiniteMonoid_iff [MulOne α] :
     IsDedekindFiniteMonoid αᵐᵒᵖ ↔ IsDedekindFiniteMonoid α := by
   simp_rw [isDedekindFiniteMonoid_iff, ← opEquiv.forall_congr_right]
-  simpa [← op_one, ← op_mul] using forall_swap
+  simpa [← op_one, ← op_mul] using forall_comm
 
 @[to_additive] instance [MulOne α] [IsDedekindFiniteMonoid α] : IsDedekindFiniteMonoid αᵐᵒᵖ :=
   MulOpposite.isDedekindFiniteMonoid_iff.mpr ‹_›

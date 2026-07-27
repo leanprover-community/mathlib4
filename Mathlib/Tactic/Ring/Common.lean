@@ -7,22 +7,21 @@ module
 
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
-public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
-# `ring` tactic
+# `ring`-like tactics
 
-A tactic for solving equations in commutative (semi)rings,
-where the exponents can also contain variables.
+The core normalization procedure for ring-like tactics that solve equations in commutative
+(semi)rings where the exponents can also contain variables.
 Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 More precisely, expressions of the following form are supported:
 - constants (non-negative integers)
 - variables
-- coefficients (any rational number, embedded into the (semi)ring)
+- coefficients (living in `BaseType`; for `ring` this is a rational embedded into the semiring)
 - addition of expressions
 - multiplication of expressions (`a * b`)
-- scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ`)
+- scalar multiplication of expressions (`r • a`)
 - exponentiation of expressions (the exponent must have type `ℕ`)
 - subtraction and negation of expressions (if the base is a full ring)
 
@@ -38,7 +37,7 @@ the normalised version.
 
 The outline of the file:
 - Define a mutual inductive family of types `ExSum`, `ExProd`, `ExBase`,
-  which can represent expressions with `+`, `*`, `^` and rational numerals.
+  which can represent expressions with `+`, `*`, `^` and some parametric `BaseType`.
   The mutual induction ensures that associativity and distributivity are applied,
   by restricting which kinds of subexpressions appear as arguments to the various operators.
 - Represent addition, multiplication and exponentiation in the `ExSum` type,
@@ -53,7 +52,8 @@ There are some details we glossed over which make the plan more complicated:
   then use the index into the list as a key to order on.
 - For `pow`, the exponent must be a natural number, while the base can be any semiring `α`.
   We swap out operations for the base ring `α` with those for the exponent ring `ℕ`
-  as soon as we deal with exponents.
+  as soon as we deal with exponents. Unfortunately this has to be done with a separate inductive
+  type due to universe issues outlined later in this file.
 
 ## Caveats and future work
 
@@ -76,12 +76,12 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-@[expose] public meta section
+public meta section
 
 assert_not_exists IsOrderedMonoid
 
 namespace Mathlib.Tactic
-namespace Ring
+namespace Ring.Common
 
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
 
@@ -96,15 +96,60 @@ ring subexpressions of type `ℕ`.
 def sℕ : Q(CommSemiring ℕ) := q(Nat.instCommSemiring)
 
 /--
-A typed expression of type `CommSemiring ℤ` used when we are working on
-ring subexpressions of type `ℤ`.
+The data used by `ring` to represent coefficients. `e` is a raw rat cast.
+
+We include `e` as a parameter even though it is unused in this definition because it lets us use
+`Qq` type annotations in the `RingCompute` structure, and so that it can be used with the `Result`
+type defined below.
 -/
-def sℤ : Q(CommSemiring ℤ) := q(Int.instCommSemiring)
+structure _root_.Mathlib.Tactic.Ring.RatCoeff {u : Lean.Level} {α : Q(Type u)} (e : Q($α)) where
+  /-- The value represented by `e`. Should not be zero. -/
+  value : ℚ
+  /-- If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
+  hyp : Option Expr
+deriving Inhabited
+
+/-- The data used to represent coefficients in exponents. This is the same data that `ring` uses. -/
+abbrev btℕ (e : Q(ℕ)) : Type := _root_.Mathlib.Tactic.Ring.RatCoeff q($e)
+
+instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
+
+universe u v
+
+/-!
+## The ExNat types
+
+The `Ex{Base,Prod,Sum}Nat` types are equivalent to `Ex{Base,Prod,Sum} btℕ sℕ`. `ExProdNat` is only
+used to represent exponents in `ExProd`s. We cannot use `ExProd btℕ sℕ` in the `mul` constructor
+of `ExProd` because `BaseType` is a parameter and not an index. Making `BaseType` an index
+(i.e. moving it to the right of the colon) would require including it as an argument to each
+constructor, raising the universe level of `ExProd` from `Type` to `Type 1`; that is:
+```
+inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+    (sα : Q(CommSemiring $α)) (e : Q($α)), Type
+  | const {u : Lean.Level} {α : Q(Type u)} {BaseType} {sα} {e : Q($α)} (value : BaseType e) :
+      ExProd BaseType sα e
+  | mul {u : Lean.Level} {α : Q(Type u)} {BaseType} {sα} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
+    ExBase BaseType sα x → ExProd btℕ sℕ e → ExProd BaseType sα b →
+      ExProd BaseType sα q($x ^ $e * $b)
+```
+would fail to compile because `ExProd` lives in `Type 1`.
+
+Lean does not support monadic computation in `Type 1` in its core monad types,
+so we cannot tolerate this universe bump.
+-/
 
 mutual
 
-/-- The base `e` of a normalized exponent expression. -/
-meta inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+
+/-- `ExBaseNat e` stores the structure of a normalized expression `e : Q(ℕ)`, which appears
+as the base of an exponent expression `e^n`. The `sum` constructor is only used when the exponent
+`n` is not a constant.
+
+Used to represent normalized natural number expressions in exponents.
+
+`ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two. -/
+meta inductive ExBaseNat : (e : Q(ℕ)) → Type
   /--
   An atomic expression `e` with id `id`.
 
@@ -114,136 +159,107 @@ meta inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $�
 
   Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
   The field `index : ℕ` should be a unique number for each class,
-  while `value : expr` contains a representative of this class.
-  The function `resolve_atom` determines the appropriate atom for a given expression.
+  while `e : Q($α)` contains a representative of this class.
   -/
-  | atom {sα} {e} (id : ℕ) : ExBase sα e
+  | atom {e} (id : ℕ) : ExBaseNat e
   /-- A sum of monomials. -/
-  | sum {sα} {e} (_ : ExSum sα e) : ExBase sα e
+  | sum {e} (_ : ExSumNat e) : ExBaseNat e
 
-/--
-A monomial, which is a product of powers of `ExBase` expressions,
-terminated by a (nonzero) constant coefficient.
+/-- `ExProdNat e` stores the structure of a normalized monomial expression `e : Q(ℕ)`.
+A monomial here is a product of powers of `ExBaseNat` expressions, terminated by a (nonzero)
+constant coefficient.
+
+Used to represent normalized natural number expressions in exponents.
+
+`ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two.
 -/
-meta inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+meta inductive ExProdNat : (e : Q(ℕ)) → Type
+  /-- A coefficient `value`, holding the data that `ring` uses to represent rational coefficients.
+  In this case these happen to always be natural numbers. -/
+  | const {e : Q(ℕ)} (value : btℕ e) : ExProdNat e
+  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBaseNat`
+  and `e` is an `ExProdNat` representing a monomial expression in `ℕ` (it is a monomial instead of
+  a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
+  | mul {x : Q(ℕ)} {e : Q(ℕ)} {b : Q(ℕ)} :
+    ExBaseNat x → ExProdNat e → ExProdNat b → ExProdNat q($x ^ $e * $b)
+
+/-- `ExSumNat e` stores the structure of a normalized polynomial expression `e : Q(ℕ)`, which is
+a sum of monomials.
+
+Used to represent normalized natural number expressions in exponents.
+
+`ExSumNat q($e)` is equivalent to `ExSum btℕ sℕ q($e)`, and one can cast between the two. -/
+meta inductive ExSumNat : (e : Q(ℕ)) → Type
+  /-- Zero is a polynomial. `e` is the expression `0`. -/
+  | zero : ExSumNat q(0)
+  /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
+  | add {a b : Q(ℕ)} : ExProdNat a → ExSumNat b → ExSumNat q($a + $b)
+end
+
+/-!
+The `BaseType` parameter is used to specify how constant coefficients are stored. In the ring
+tactic we need only to store coefficients as normalizations to rational numbers, but in a future
+algebra tactic the base type may itself be a normalized ring expression.
+-/
+
+mutual
+
+/-- `ExBase BaseType sα e` stores the structure of a normalized expression `e`, which appears
+as the base of an exponent expression `e^n`. The `sum` constructor is only used when the exponent
+`n` is not a constant. -/
+meta inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+    (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
+  /--
+  An atomic expression `e` with id `id`.
+
+  Atomic expressions are those which a `ring`-like tactic cannot parse any further.
+  For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
+  The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
+
+  Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
+  The field `index : ℕ` should be a unique number for each class,
+  while `e : Q($α)` contains a representative of this class.
+  -/
+  | atom {e} (id : ℕ) : ExBase BaseType sα e
+  /-- A sum of monomials. -/
+  | sum {e} (_ : ExSum BaseType sα e) : ExBase BaseType sα e
+
+
+/-- `ExProd BaseType sα e` stores the structure of a normalized monomial expression `e`.
+A monomial here is a product of powers of `ExBase` expressions, terminated by a (nonzero) constant
+coefficient. The data of the constant coefficient is stored in the `BaseType`. -/
+meta inductive ExProd {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+    (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
-  | const {sα} {e} (value : ℚ) (hyp : Option Expr := none) : ExProd sα e
+  | const {e : Q($α)} (value : BaseType e) : ExProd BaseType sα e
   /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
-  and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
-  a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
-  | mul {u : Lean.Level} {α : Q(Type u)} {sα} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
-    ExBase sα x → ExProd sℕ e → ExProd sα b → ExProd sα q($x ^ $e * $b)
+  and `e` is an `ExProdNat` representing a monomial expression in `ℕ` (it is a monomial instead of
+  a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.)
+  -/
+  | mul {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
+    ExBase BaseType sα x → ExProdNat e → ExProd BaseType sα b → ExProd BaseType sα q($x ^ $e * $b)
 
-/-- A polynomial expression, which is a sum of monomials. -/
-meta inductive ExSum : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+/-- `ExSum BaseType sα e` stores the structure of a normalized polynomial expression `e`, which is
+a sum of monomials. -/
+meta inductive ExSum {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+    (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
-  | zero {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} : ExSum sα q(0 : $α)
+  | zero : ExSum BaseType sα q(0 : $α)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
-  | add {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
-    ExProd sα a → ExSum sα b → ExSum sα q($a + $b)
-end
-
-mutual
-
-/-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
-def ExBase.eq
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
-    ExBase sα a → ExBase sα b → Bool
-  | .atom i, .atom j => i == j
-  | .sum a, .sum b => a.eq b
-  | _, _ => false
-
-@[inherit_doc ExBase.eq]
-def ExProd.eq
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
-    ExProd sα a → ExProd sα b → Bool
-  | .const i _, .const j _ => i == j
-  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => a₁.eq b₁ && a₂.eq b₂ && a₃.eq b₃
-  | _, _ => false
-
-@[inherit_doc ExBase.eq]
-def ExSum.eq
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
-    ExSum sα a → ExSum sα b → Bool
-  | .zero, .zero => true
-  | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
-  | _, _ => false
-end
-
--- TODO: this should be somewhere else
-instance : Ord Rat where
-  compare a b := if a ≤ b then if b ≤ a then .eq else .lt else .gt
-
-mutual
-/--
-A total order on normalized expressions.
-This is not an `Ord` instance because it is heterogeneous.
--/
-def ExBase.cmp
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
-    ExBase sα a → ExBase sα b → Ordering
-  | .atom i, .atom j => compare i j
-  | .sum a, .sum b => a.cmp b
-  | .atom .., .sum .. => .lt
-  | .sum .., .atom .. => .gt
-
-@[inherit_doc ExBase.cmp]
-def ExProd.cmp
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
-    ExProd sα a → ExProd sα b → Ordering
-  | .const i _, .const j _ => compare i j
-  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => (a₁.cmp b₁).then (a₂.cmp b₂) |>.then (a₃.cmp b₃)
-  | .const _ _, .mul .. => .lt
-  | .mul .., .const _ _ => .gt
-
-@[inherit_doc ExBase.cmp]
-def ExSum.cmp
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
-    ExSum sα a → ExSum sα b → Ordering
-  | .zero, .zero => .eq
-  | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
-  | .zero, .add .. => .lt
-  | .add .., .zero => .gt
-end
-
-variable {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)}
-
-instance : Inhabited (Σ e, (ExBase sα) e) := ⟨default, .atom 0⟩
-instance : Inhabited (Σ e, (ExSum sα) e) := ⟨_, .zero⟩
-instance : Inhabited (Σ e, (ExProd sα) e) := ⟨default, .const 0 none⟩
-
-mutual
-
-/-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
-def ExBase.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExBase sα a → Σ a, ExBase sβ a
-  | .atom i => ⟨a, .atom i⟩
-  | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
-
-/-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
-def ExProd.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExProd sα a → Σ a, ExProd sβ a
-  | .const i h => ⟨a, .const i h⟩
-  | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
-
-/-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
-def ExSum.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExSum sα a → Σ a, ExSum sβ a
-  | .zero => ⟨_, .zero⟩
-  | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
+  | add {a b : Q($α)} :
+    ExProd BaseType sα a → ExSum BaseType sα b → ExSum BaseType sα q($a + $b)
 
 end
+
+variable {u : Lean.Level}
 
 /--
 The result of evaluating an (unnormalized) expression `e` into the type family `E`
-(one of `ExSum`, `ExProd`, `ExBase`) is a (normalized) element `e'`
+(typically one of `ExSum`, `ExProd`, `ExBase` or `BaseType`) is a (normalized) element `e'`
 and a representation `E e'` for it, and a proof of `e = e'`.
 -/
-structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
+structure Result {α : Q(Type u)} (E : Q($α) → Type*) (e : Q($α)) where
   /-- The normalized result. -/
   expr : Q($α)
   /-- The data associated to the normalization. -/
@@ -255,71 +271,234 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
     Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
-variable (sα)
-variable {R : Type*} [CommSemiring R]
 
-/--
-Constructs the expression corresponding to `.const n`.
-(The `.const` constructor does not check that the expression is correct.)
--/
-def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd sα e :=
-  let lit : Q(ℕ) := .lit (.natVal n)
-  ⟨q(($lit).rawCast : $α), .const n none⟩
+/-- Defines how comparisons and binary equality are computed in the base type. These are seperated
+from RingCompute because they can often be defined without using instance caches. -/
+structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type) where
+  /-- Returns whether two coefficients are equal -/
+  eq : ∀ {x y : Q($α)}, BaseType x → BaseType y → Bool
+  /-- Returns whether `x` is less than, equal to or greater than `y`. Can be any total order. -/
+  compare : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
 
-/--
-Constructs the expression corresponding to `.const (-n)`.
-(The `.const` constructor does not check that the expression is correct.)
--/
-def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :=
-  let lit : Q(ℕ) := mkRawNatLit n
-  ⟨q((Int.negOfNat $lit).rawCast : $α), .const (-n) none⟩
+/-- Stores all of the normalization procedures on the coefficient type.
 
-/--
-Constructs the expression corresponding to `.const q h` for `q = n / d`
-and `h` a proof that `(d : α) ≠ 0`.
-(The `.const` constructor does not check that the expression is correct.)
--/
-def ExProd.mkNNRat (_ : Q(DivisionSemiring $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
-    (e : Q($α)) × ExProd sα e :=
-  ⟨q(NNRat.rawCast $n $d : $α), .const q h⟩
+`ring` implements these using `norm_num`
+`algebra` will implement these using `ring` -/
+structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+  (sα : Q(CommSemiring $α)) extends RingCompare BaseType where
+  /-- Evaluate the sum of two coefficents.
 
-/--
-Constructs the expression corresponding to `.const q h` for `q = -(n / d)`
-and `h` a proof that `(d : α) ≠ 0`.
-(The `.const` constructor does not check that the expression is correct.)
--/
-def ExProd.mkNegNNRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
-    (e : Q($α)) × ExProd sα e :=
-  ⟨q(Rat.rawCast (.negOfNat $n) $d : $α), .const q h⟩
+  If the result is zero returns a proof of this fact, which is used to remove zero terms. -/
+  add {x y : Q($α)} : BaseType x → BaseType y →
+    MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
+  /-- Evaluate the product of two coefficents. -/
+  mul {x y : Q($α)} : BaseType x → BaseType y → MetaM (Result BaseType q($x * $y))
+  /-- Given a commutative ring `β` with a scalar multiplication action on `α` and a `x : β`, cast
+  `x` to `α` such that the scalar multiplication turns into normal multiplication. Typically one
+  can think of `α` as being an algebra over `β`, but this file does not know about `Algebra`s. -/
+  cast (v : Lean.Level) (β : Q(Type v)) (_ : Q(CommSemiring $β))
+      (_ : Q(SMul $β $α)) (x : Q($β)) :
+    AtomM (Σ y : Q($α), ExSum BaseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
+  /-- Evaluate the negation of a coefficient. -/
+  neg {x : Q($α)} (rα : Q(CommRing $α)) : BaseType x → MetaM (Result BaseType q(-$x))
+  /-- Raise a coefficient to some natural power.
+
+  The exponent is not necessarily a natural literal. If the tactic can only raise coefficients to
+  the power of a literal (e.g. `ring`), it should check for this and return `none` otherwise. -/
+  pow {x : Q($α)} {b : Q(ℕ)} : BaseType x → (vb : ExProdNat q($b)) →
+    OptionT MetaM (Result BaseType q($x ^ $b))
+  /-- Evaluate the inverse of a coefficient. -/
+  inv {x : Q($α)} (czα : Option Q(CharZero $α)) (fα : Q(Semifield $α)) : BaseType x →
+    AtomM (Option <| Result BaseType q($x⁻¹))
+  /-- Evaluate an expression as a potential coefficient. -/
+  derive (x : Q($α)) : MetaM (Result (ExSum BaseType sα) q($x))
+  /-- Decides whether a coefficient is 1 and returns a proof if so. -/
+  isOne {x : Q($α)} : BaseType x → Option Q(NormNum.IsNat $x 1)
+  /-- The number 1 represented as a BaseType. -/
+  one : Result BaseType q((nat_lit 1).rawCast)
+
+instance {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+    (sα : Q(CommSemiring $α)) : CoeOut (RingCompute BaseType sα) (RingCompare BaseType) where
+  coe x := x.toRingCompare
+
+instance (u : Lean.Level) (α : Q(Type u)) (BaseType : Q($α) → Type) [∀ e, Nonempty (BaseType e)]
+    (sα : Q(CommSemiring «$α»)) : Nonempty <|
+    Common.RingCompute (BaseType) sα := ⟨{
+  eq := default
+  compare := default
+  add := default
+  mul := default
+  cast _ _ _ _ _ _ := do return ⟨_, .zero (BaseType := BaseType) (sα := sα), default⟩
+  neg := default
+  pow := default
+  inv := default
+  derive := default
+  isOne := default
+  one :=
+    have (e : Q($α)) : Inhabited (BaseType e) := Classical.inhabited_of_nonempty'
+    default
+}⟩
+
+instance : Inhabited (Σ e, ExBaseNat e) := ⟨default, .atom 0⟩
+instance : Inhabited (Σ e, ExSumNat e) := ⟨_, .zero⟩
+instance : Inhabited (Σ e, ExProdNat e) := ⟨default, .const default⟩
+
+variable {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)}
+   [∀ e, Inhabited (bt e)]
+
+instance : Inhabited (Σ e, ExBase bt sα e) := ⟨default, .atom 0⟩
+instance : Inhabited (Σ e, ExSum bt sα e) := ⟨_, .zero⟩
+instance : Inhabited (Σ e, ExProd bt sα e) := ⟨default, .const default⟩
+
+variable (rc : RingCompute bt sα) (rcℕ : RingCompute btℕ sℕ)
+
+mutual
+
+/-- Cast `ExBaseNat` to `ExBase btℕ sℕ`. -/
+partial def ExBaseNat.toExBase (e : Q(ℕ)) : ExBaseNat e → Σ e', ExBase btℕ sℕ e' := fun
+  | .atom id => ⟨_, .atom (e := e) id⟩
+  | .sum v => ⟨_, .sum v.toExSum.2⟩
+
+/-- Cast `ExProdNat` to `ExProd btℕ sℕ`. -/
+partial def ExProdNat.toExProd (e : Q(ℕ)) : ExProdNat e → Σ e', ExProd btℕ sℕ e' := fun
+  | .const value => ⟨_, .const value⟩
+  | .mul vx ve vt => ⟨_, .mul vx.toExBase.2 ve vt.toExProd.2⟩
+
+/-- Cast `ExSumNat` to `ExSum btℕ sℕ`. -/
+partial def ExSumNat.toExSum (e : Q(ℕ)) : ExSumNat e → Σ e', ExSum btℕ sℕ e' := fun
+  | .zero => ⟨_, .zero (BaseType := btℕ) (sα := sℕ)⟩
+  | .add va vb => ⟨_, .add va.toExProd.2 vb.toExSum.2⟩
+
+end
+
+mutual
+
+/-- Cast `ExBase btℕ sℕ` to `ExBaseNat`. -/
+partial def ExBase.toExBaseNat (e : Q(ℕ)) : ExBase btℕ sℕ e → Σ e', ExBaseNat e' := fun
+  | .atom id => ⟨_, .atom (e := e) id⟩
+  | .sum v => ⟨_, .sum v.toExSumNat.2⟩
+
+/-- Cast `ExProd btℕ sℕ` to `ExProdNat`. -/
+partial def ExProd.toExProdNat (e : Q(ℕ)) : ExProd btℕ sℕ e → Σ e', ExProdNat e' := fun
+  | .const value => ⟨_, .const value⟩
+  | .mul vx ve vt => ⟨_, .mul vx.toExBaseNat.2 ve vt.toExProdNat.2⟩
+
+/-- Cast `ExSum btℕ sℕ` to `ExSumNat`. -/
+partial def ExSum.toExSumNat (e : Q(ℕ)) : ExSum btℕ sℕ e → Σ e', ExSumNat e' := fun
+  | .zero => ⟨_, .zero⟩
+  | .add va vb => ⟨_, .add va.toExProdNat.2 vb.toExSumNat.2⟩
+
+end
 
 section
 
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
-def ExBase.toProd {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a : Q($α)} {b : Q(ℕ)}
-    (va : ExBase sα a) (vb : ExProd sℕ b) :
-    ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
+def ExBase.toProd
+    {a : Q($α)} {b : Q(ℕ)}
+    (va : ExBase bt sα a) (vb : ExProdNat b) :
+    Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
+  let ⟨_, one, pf⟩ := rc.one
+  ⟨_, .mul va vb (.const  (one)), q(by rw [← $pf])⟩
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
-def ExProd.toSum {sα : Q(CommSemiring $α)} {e : Q($α)} (v : ExProd sα e) : ExSum sα q($e + 0) :=
+def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
   .add v .zero
 
+
+
+-- Partial because the termination checker failed
+mutual
+
+variable (rcℕ : RingCompare btℕ)
+
+/-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
+partial def ExBase.eq
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt)
+    {a b : Q($α)} :
+    ExBase bt sα a → ExBase bt sα b → Bool
+  | .atom i, .atom j => i == j
+  | .sum a, .sum b => a.eq rc b
+  | _, _ => false
+
+@[inherit_doc ExBase.eq]
+partial def ExProd.eq
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt)
+    {a b : Q($α)} :
+    ExProd bt sα a → ExProd bt sα b → Bool
+  | .const i, .const j => rc.eq i j
+  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => a₁.eq rc b₁ && a₂.toExProd.2.eq rcℕ b₂.toExProd.2 && a₃.eq rc b₃
+  | _, _ => false
+
+@[inherit_doc ExBase.eq]
+partial def ExSum.eq
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt)
+    {a b : Q($α)} :
+    ExSum bt sα a → ExSum bt sα b → Bool
+  | .zero, .zero => true
+  | .add a₁ a₂, .add b₁ b₂ => a₁.eq rc b₁ && a₂.eq rc b₂
+  | _, _ => false
+end
+
+mutual
+
+variable (rcℕ : RingCompute btℕ sℕ)
+
+/--
+A total order on normalized expressions.
+This is not an `Ord` instance because it is heterogeneous.
+-/
+partial def ExBase.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
+    (rc : RingCompare bt) {a b : Q($α)} :
+    ExBase bt sα a → ExBase bt sα b → Ordering
+  | .atom i, .atom j => compare i j
+  | .sum a, .sum b => a.cmp rc b
+  | .atom .., .sum .. => .lt
+  | .sum .., .atom .. => .gt
+
+@[inherit_doc ExBase.cmp]
+partial def ExProd.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
+    (rc : RingCompare bt) {a b : Q($α)} :
+    ExProd bt sα a → ExProd bt sα b → Ordering
+  | .const i, .const j => rc.compare i j
+  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ =>
+    (a₁.cmp rc b₁).then (a₂.toExProd.2.cmp rcℕ b₂.toExProd.2) |>.then (a₃.cmp rc b₃)
+  | .const _, .mul .. => .lt
+  | .mul .., .const _ => .gt
+
+@[inherit_doc ExBase.cmp]
+partial def ExSum.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
+    (rc : RingCompare bt) {a b : Q($α)} :
+    ExSum bt sα a → ExSum bt sα b → Ordering
+  | .zero, .zero => .eq
+  | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp rc b₁).then (a₂.cmp rc b₂)
+  | .zero, .add .. => .lt
+  | .add .., .zero => .gt
+end
+
+variable {R : Type*} [CommSemiring R]
+
+section
+
 /-- Get the leading coefficient of an `ExProd`. -/
-def ExProd.coeff {sα : Q(CommSemiring $α)} {e : Q($α)} : ExProd sα e → ℚ
-  | .const q _ => q
+def ExProd.coeff {e : Q($α)} :
+    have : Inhabited <| Σ c, bt c := ⟨default, default⟩
+  ExProd bt sα e → Σ c, bt c
+  | .const q => ⟨_, q⟩
   | .mul _ _ v => v.coeff
 end
 
+variable (bt) (sα) in
 /--
 Two monomials are said to "overlap" if they differ by a constant factor, in which case the
 constants just add. When this happens, the constant may be either zero (if the monomials cancel)
 or nonzero (if they add up); the zero case is handled specially.
 -/
-inductive Overlap (e : Q($α)) where
+inductive Overlap (e : Q($α)) : Type where
   /-- The expression `e` (the sum of monomials) is equal to `0`. -/
   | zero (_ : Q(IsNat $e (nat_lit 0)))
   /-- The expression `e` (the sum of monomials) is equal to another monomial
   (with nonzero leading coefficient). -/
-  | nonzero (_ : Result (ExProd sα) e)
+  | nonzero (_ : Result (ExProd bt sα) e)
 
 variable {a a' a₁ a₂ a₃ b b' b₁ b₂ b₃ c c₁ c₂ : R}
 
@@ -343,21 +522,19 @@ If the monomials are not compatible, returns `none`.
 For example, `xy + 2xy = 3xy` is a `.nonzero` overlap, while `xy + xz` returns `none`
 and `xy + -xy = 0` is a `.zero` overlap.
 -/
-def evalAddOverlap {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
-    OptionT MetaM (Overlap sα q($a + $b)) := do
+def evalAddOverlap {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
+    OptionT MetaM (Overlap bt sα q($a + $b)) := do
   Lean.Core.checkSystem decl_name%.toString
-  match va, vb with
-  | .const za ha, .const zb hb => do
-    let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-    let res ← ra.add rb
-    match res with
-    | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
-    | rc =>
-      let ⟨zc, hc⟩ ← rc.toRatNZ
-      let ⟨c, pc⟩ := rc.toRawEq
-      pure <| .nonzero ⟨c, .const zc hc, pc⟩
+  match (dependent := true) va, vb with
+  | .const za, .const zb => do
+    let ⟨⟨_, zc, pf⟩, isZero⟩ ← rc.add za zb
+    match isZero with
+    | .some pf => pure <| .zero q($pf)
+    | .none =>
+      assumeInstancesCommute
+      pure <| .nonzero ⟨_, .const zc, q($pf)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ => do
-    guard (va₁.eq vb₁ && va₂.eq vb₂)
+    guard (va₁.eq rcℕ rc vb₁ && va₂.toExProd.2.eq rcℕ rcℕ vb₂.toExProd.2)
     have : $a₁ =Q $b₁ := ⟨⟩; have : $a₂ =Q $b₂ := ⟨⟩
     match ← evalAddOverlap va₃ vb₃ with
     | .zero p => pure <| .zero q(add_overlap_pf_zero $a₁ $a₂ $p)
@@ -390,15 +567,15 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
 * `(a₁ + a₂) + (b₁ + b₂) = a₁ + (a₂ + (b₁ + b₂))` (if `a₁.lt b₁`)
 * `(a₁ + a₂) + (b₁ + b₂) = b₁ + ((a₁ + a₂) + b₂)` (if not `a₁.lt b₁`)
 -/
-partial def evalAdd {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
-    MetaM <| Result (ExSum sα) q($a + $b) := do
-  Lean.Core.checkSystem decl_name%.toString
+partial def evalAdd {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
+    MetaM <| Result (ExSum bt sα) q($a + $b) :=
+  Lean.Core.checkSystem decl_name%.toString *>
   match va, vb with
-  | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
-  | va, .zero => return ⟨a, va, q(add_pf_add_zero $a)⟩
-  | .add (a := a₁) (b := _a₂) va₁ va₂, .add (a := b₁) (b := _b₂) vb₁ vb₂ =>
+  | .zero, vb => do return ⟨b, vb, q(add_pf_zero_add $b)⟩
+  | va, .zero => do return ⟨a, va, q(add_pf_add_zero $a)⟩
+  | .add (a := a₁) (b := _a₂) va₁ va₂, .add (a := b₁) (b := _b₂) vb₁ vb₂ => do
     have va := .add va₁ va₂; have vb := .add vb₁ vb₂ -- FIXME: why does `va@(...)` fail?
-    match ← (evalAddOverlap sα va₁ vb₁).run with
+    match ← (evalAddOverlap rc rcℕ va₁ vb₁).run with
     | some (.nonzero ⟨_, vc₁, pc₁⟩) =>
       let ⟨_, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
       return ⟨_, .add vc₁ vc₂, q(add_pf_add_overlap $pc₁ $pc₂)⟩
@@ -406,7 +583,7 @@ partial def evalAdd {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
       let ⟨c₂, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
       return ⟨c₂, vc₂, q(add_pf_add_overlap_zero $pc₁ $pc₂)⟩
     | none =>
-      if let .lt := va₁.cmp vb₁ then
+      if let .lt := va₁.cmp rcℕ rc vb₁ then
         let ⟨_c, vc, pc⟩ ← evalAdd va₂ vb
         return ⟨_, .add va₁ vc, q(add_pf_add_lt $a₁ $pc)⟩
       else
@@ -441,37 +618,34 @@ theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * 
 * `(a₁ * a₂) * (b₁ * b₂) = a₁ * (a₂ * (b₁ * b₂))` (if `a₁.lt b₁`)
 * `(a₁ * a₂) * (b₁ * b₂) = b₁ * ((a₁ * a₂) * b₂)` (if not `a₁.lt b₁`)
 -/
-partial def evalMulProd {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
-    MetaM <| Result (ExProd sα) q($a * $b) := do
-  Lean.Core.checkSystem decl_name%.toString
+partial def evalMulProd {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
+    MetaM <| Result (ExProd bt sα) q($a * $b) :=
+  Lean.Core.checkSystem decl_name%.toString *>
   match va, vb with
-  | .const za ha, .const zb hb =>
-    if za = 1 then
-      have : $a =Q Nat.rawCast 1 := ⟨⟩
-      return ⟨b, .const zb hb, q(one_mul $b)⟩
-    else if zb = 1 then
-      have : $b =Q Nat.rawCast 1 := ⟨⟩
-      return ⟨a, .const za ha, q(mul_one $a)⟩
-    else
-      let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-      let rc ← ra.mul rb
-      let ⟨zc, hc⟩ := rc.toRatNZ.get!
-      let ⟨c, pc⟩ := rc.toRawEq
-      return ⟨c, .const zc hc, pc⟩
-  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, vb@(.const _ _) =>
+  | .const za, .const zb => do
+    let ⟨_, zc, pf⟩ ← rc.mul za zb
+    assumeInstancesCommute
+    return ⟨_, .const zc, q($pf)⟩
+  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, vb@(.const _) => do
     let ⟨_, vc, pc⟩ ← evalMulProd va₃ vb
     return ⟨_, .mul va₁ va₂ vc, q(mul_pf_left $a₁ $a₂ $pc)⟩
-  | va@(.const _ _), .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
+  | va@(.const _), .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ => do
     let ⟨_, vc, pc⟩ ← evalMulProd va vb₃
     return ⟨_, .mul vb₁ vb₂ vc, q(mul_pf_right $b₁ $b₂ $pc)⟩
-  | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ =>
+  | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
     have va := .mul vxa vea va₂; have vb := .mul vxb veb vb₂ -- FIXME: why does `va@(...)` fail?
-    if vxa.eq vxb then
+    let ⟨ea', vea'⟩ := vea.toExProd
+    let ⟨eb', veb'⟩ := veb.toExProd
+    if vxa.eq rcℕ rc vxb then
       have : $xa =Q $xb := ⟨⟩
-      if let some (.nonzero ⟨_, ve, pe⟩) ← (evalAddOverlap sℕ vea veb).run then
+      if let some (.nonzero ⟨ec', vec', pec'⟩) ← (evalAddOverlap rcℕ rcℕ vea' veb').run then
         let ⟨_, vc, pc⟩ ← evalMulProd va₂ vb₂
-        return ⟨_, .mul vxa ve vc, q(mul_pp_pf_overlap $xa $pe $pc)⟩
-    if let .lt := (vxa.cmp vxb).then (vea.cmp veb) then
+        let ⟨ec, vec⟩ := vec'.toExProdNat
+        have : $ea =Q $ea' := ⟨⟩
+        have : $eb =Q $eb' := ⟨⟩
+        have : $ec =Q $ec' := ⟨⟩
+        return ⟨_, .mul vxa vec vc, q(mul_pp_pf_overlap $xa $pec' $pc)⟩
+    if let .lt := (vxa.cmp rcℕ rc vxb).then (vea'.cmp rcℕ rcℕ veb') then
       let ⟨_, vc, pc⟩ ← evalMulProd va₂ vb
       return ⟨_, .mul vxa vea vc, q(mul_pf_left $xa $ea $pc)⟩
     else
@@ -489,14 +663,14 @@ theorem mul_add {d : R} (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c
 * `a * 0 = 0`
 * `a * (b₁ + b₂) = (a * b₁) + (a * b₂)`
 -/
-def evalMul₁ {a b : Q($α)} (va : ExProd sα a) (vb : ExSum sα b) :
-    MetaM <| Result (ExSum sα) q($a * $b) := do
+def evalMul₁ {a b : Q($α)} (va : ExProd bt sα a) (vb : ExSum bt sα b) :
+    MetaM <| Result (ExSum bt sα) q($a * $b) :=
   match vb with
-  | .zero => return ⟨_, .zero, q(mul_zero $a)⟩
-  | .add vb₁ vb₂ =>
-    let ⟨_, vc₁, pc₁⟩ ← evalMulProd sα va vb₁
+  | .zero => do return ⟨_, .zero, q(mul_zero $a)⟩
+  | .add vb₁ vb₂ => do
+    let ⟨_, vc₁, pc₁⟩ ← evalMulProd rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalMul₁ va vb₂
-    let ⟨_, vd, pd⟩ ← evalAdd sα vc₁.toSum vc₂
+    let ⟨_, vd, pd⟩ ← evalAdd rc rcℕ vc₁.toSum vc₂
     return ⟨_, vd, q(mul_add $pc₁ $pc₂ $pd)⟩
 
 theorem zero_mul (b : R) : 0 * b = 0 := by simp
@@ -509,205 +683,20 @@ theorem add_mul {d : R} (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c
 * `0 * b = 0`
 * `(a₁ + a₂) * b = (a₁ * b) + (a₂ * b)`
 -/
-def evalMul {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
-    MetaM <| Result (ExSum sα) q($a * $b) := do
+def evalMul {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
+    MetaM <| Result (ExSum bt sα) q($a * $b) :=
   match va with
-  | .zero => return ⟨_, .zero, q(zero_mul $b)⟩
-  | .add va₁ va₂ =>
-    let ⟨_, vc₁, pc₁⟩ ← evalMul₁ sα va₁ vb
+  | .zero => do return ⟨_, .zero, q(zero_mul $b)⟩
+  | .add va₁ va₂ => do
+    let ⟨_, vc₁, pc₁⟩ ← evalMul₁ rc rcℕ va₁ vb
     let ⟨_, vc₂, pc₂⟩ ← evalMul va₂ vb
-    let ⟨_, vd, pd⟩ ← evalAdd sα vc₁ vc₂
+    let ⟨_, vd, pd⟩ ← evalAdd rc rcℕ vc₁ vc₂
     return ⟨_, vd, q(add_mul $pc₁ $pc₂ $pd)⟩
-
-/-! ### Scalar multiplication by `ℕ` -/
-
-theorem natCast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
-
-theorem natCast_mul {a₁ a₃ : ℕ} (a₂) (_ : ((a₁ : ℕ) : R) = b₁)
-    (_ : ((a₃ : ℕ) : R) = b₃) : ((a₁ ^ a₂ * a₃ : ℕ) : R) = b₁ ^ a₂ * b₃ := by
-  subst_vars; simp
-
-theorem natCast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
-
-theorem natCast_add {a₁ a₂ : ℕ}
-    (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) : ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by
-  subst_vars; simp
-
-mutual -- partial only to speed up compilation
-
-/-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
-
-* An atom `e` causes `↑e` to be allocated as a new atom.
-* A sum delegates to `ExSum.evalNatCast`.
--/
-partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result (ExBase sα) q($a)) :=
-  match va with
-  | .atom _ => do
-    let (i, ⟨b', _⟩) ← addAtomQ q($a)
-    pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
-  | .sum va => do
-    let ⟨_, vc, p⟩ ← va.evalNatCast
-    pure ⟨_, .sum vc, p⟩
-
-/-- Applies `Nat.cast` to a nat monomial to produce a monomial in `α`.
-
-* `↑c = c` if `c` is a numeric literal
-* `↑(a ^ n * b) = ↑a ^ n * ↑b`
--/
-partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sℕ a) : AtomM (Result (ExProd sα) q($a)) :=
-  match va with
-  | .const c hc =>
-    have n : Q(ℕ) := a.appArg!
-    have : $a =Q Nat.rawCast $n := ⟨⟩
-    pure ⟨q(Nat.rawCast $n), .const c hc, q(natCast_nat (R := $α) $n)⟩
-  | .mul (e := a₂) va₁ va₂ va₃ => do
-    let ⟨_, vb₁, pb₁⟩ ← va₁.evalNatCast
-    let ⟨_, vb₃, pb₃⟩ ← va₃.evalNatCast
-    pure ⟨_, .mul vb₁ va₂ vb₃, q(natCast_mul $a₂ $pb₁ $pb₃)⟩
-
-/-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
-
-* `↑0 = 0`
-* `↑(a + b) = ↑a + ↑b`
--/
-partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sℕ a) : AtomM (Result (ExSum sα) q($a)) :=
-  match va with
-  | .zero => pure ⟨_, .zero, q(natCast_zero (R := $α))⟩
-  | .add va₁ va₂ => do
-    let ⟨_, vb₁, pb₁⟩ ← va₁.evalNatCast
-    let ⟨_, vb₂, pb₂⟩ ← va₂.evalNatCast
-    pure ⟨_, .add vb₁ vb₂, q(natCast_add $pb₁ $pb₂)⟩
-
-end
-
-theorem smul_nat {a b c : ℕ} (h : (a * b : ℕ) = c) : a • b = c := h
-
-theorem smul_eq_cast {a : ℕ} (_ : ((a : ℕ) : R) = a') (_ : a' * b = c) : a • b = c := by
-  subst_vars; simp
-
-/-- Constructs the scalar multiplication `n • a`, where both `n : ℕ` and `a : α` are normalized
-polynomial expressions.
-
-* `a • b = a * b` if `α = ℕ`
-* `a • b = ↑a * b` otherwise
--/
-def evalNSMul {a : Q(ℕ)} {b : Q($α)} (va : ExSum sℕ a) (vb : ExSum sα b) :
-    AtomM (Result (ExSum sα) q($a • $b)) := do
-  if ← isDefEq sα sℕ then
-    have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; assumeInstancesCommute
-    let ⟨a', va'⟩ := va.cast
-    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
-    have : $a =Q $a' := ⟨⟩
-    pure ⟨_, vc, q(smul_nat $pc)⟩
-  else
-    let ⟨_, va', pa'⟩ ← va.evalNatCast sα
-    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
-    pure ⟨_, vc, q(smul_eq_cast $pa' $pc)⟩
-
-/-! ### Scalar multiplication by `ℤ` -/
-
-theorem natCast_int {R} [CommRing R] (n) : ((Nat.rawCast n : ℤ) : R) = Nat.rawCast n := by simp
-
-theorem intCast_negOfNat_Int {R} [CommRing R] (n) :
-    ((Int.rawCast (Int.negOfNat n) : ℤ) : R) = Int.rawCast (Int.negOfNat n) := by simp
-
-theorem intCast_mul {R} [CommRing R] {b₁ b₃ : R} {a₁ a₃ : ℤ} (a₂) (_ : ((a₁ : ℤ) : R) = b₁)
-    (_ : ((a₃ : ℤ) : R) = b₃) : ((a₁ ^ a₂ * a₃ : ℤ) : R) = b₁ ^ a₂ * b₃ := by
-  subst_vars; simp
-
-theorem intCast_zero {R} [CommRing R] : ((0 : ℤ) : R) = 0 := Int.cast_zero
-
-theorem intCast_add {R} [CommRing R] {b₁ b₂ : R} {a₁ a₂ : ℤ}
-    (_ : ((a₁ : ℤ) : R) = b₁) (_ : ((a₂ : ℤ) : R) = b₂) : ((a₁ + a₂ : ℤ) : R) = b₁ + b₂ := by
-  subst_vars; simp
-
-mutual -- partial only to speed up compilation
-
-/-- Applies `Int.cast` to an int polynomial to produce a polynomial in `α`.
-
-* An atom `e` causes `↑e` to be allocated as a new atom.
-* A sum delegates to `ExSum.evalIntCast`.
--/
-partial def ExBase.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExBase sℤ a) :
-    AtomM (Result (ExBase sα) q($a)) :=
-  match va with
-  | .atom _ => do
-    let (i, ⟨b', _⟩) ← addAtomQ q($a)
-    pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
-  | .sum va => do
-    let ⟨_, vc, p⟩ ← va.evalIntCast rα
-    pure ⟨_, .sum vc, p⟩
-
-
-/-- Applies `Int.cast` to an int monomial to produce a monomial in `α`.
-
-* `↑c = c` if `c` is a numeric literal
-* `↑(a ^ n * b) = ↑a ^ n * ↑b`
--/
-partial def ExProd.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExProd sℤ a) :
-    AtomM (Result (ExProd sα) q($a)) :=
-  match va with
-  | .const c hc => do
-    match a with
-    | ~q(Nat.rawCast $m) =>
-      pure ⟨q(Nat.rawCast $m), .const c hc, q(natCast_int (R := $α) $m)⟩
-    | ~q(Int.rawCast (Int.negOfNat $m)) =>
-      pure ⟨q(Int.rawCast (Int.negOfNat $m)), .const c hc, q(intCast_negOfNat_Int (R := $α) $m)⟩
-  | .mul (e := a₂) va₁ va₂ va₃ => do
-    let ⟨_, vb₁, pb₁⟩ ← va₁.evalIntCast rα
-    let ⟨_, vb₃, pb₃⟩ ← va₃.evalIntCast rα
-    assumeInstancesCommute
-    pure ⟨_, .mul vb₁ va₂ vb₃, q(intCast_mul $a₂ $pb₁ $pb₃)⟩
-
-/-- Applies `Int.cast` to an int polynomial to produce a polynomial in `α`.
-
-* `↑0 = 0`
-* `↑(a + b) = ↑a + ↑b`
--/
-partial def ExSum.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExSum sℤ a) :
-    AtomM (Result (ExSum sα) q($a)) :=
-  match va with
-  | .zero => do
-    assumeInstancesCommute
-    pure ⟨_, .zero, q(intCast_zero)⟩
-  | .add va₁ va₂ => do
-    let ⟨_, vb₁, pb₁⟩ ← va₁.evalIntCast rα
-    let ⟨_, vb₂, pb₂⟩ ← va₂.evalIntCast rα
-    assumeInstancesCommute
-    pure ⟨_, .add vb₁ vb₂, q(intCast_add $pb₁ $pb₂)⟩
-
-end
-
-theorem smul_int {a b c : ℤ} (h : (a * b : ℤ) = c) : a • b = c := h
-
-theorem smul_eq_intCast {R} [CommRing R] {a' b c : R} {a : ℤ} (_ : ((a : ℤ) : R) = a')
-    (_ : a' * b = c) : a • b = c := by
-  subst_vars; simp
-
-/-- Constructs the scalar multiplication `n • a`, where both `n : ℤ` and `a : α` are normalized
-polynomial expressions.
-
-* `a • b = a * b` if `α = ℤ`
-* `a • b = a' * b` otherwise, where `a'` is `↑a` with the coercion pushed as deep as possible.
--/
-def evalZSMul {a : Q(ℤ)} {b : Q($α)} (rα : Q(CommRing $α)) (va : ExSum sℤ a) (vb : ExSum sα b) :
-    AtomM (Result (ExSum sα) q($a • $b)) := do
-  if ← isDefEq sα sℤ then
-    have : u =QL 0 := ⟨⟩; have : $α =Q ℤ := ⟨⟩; assumeInstancesCommute
-    let ⟨a', va'⟩ := va.cast
-    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
-    have : $a =Q $a' := ⟨⟩
-    pure ⟨_, vc, q(smul_int $pc)⟩
-  else
-    let ⟨_, va', pa'⟩ ← va.evalIntCast sα rα
-    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
-    assumeInstancesCommute
-    pure ⟨_, vc, q(smul_eq_intCast $pa' $pc)⟩
 
 /-! ### Negation -/
 
-theorem neg_one_mul {R} [CommRing R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCast * a = b) :
-    -a = b := by subst_vars; simp [Int.negOfNat]
+theorem neg_one_mul {R} [CommRing R] {a b : R} (_ : (-1 : R) * a = b) :
+    -a = b := by subst_vars; simp
 
 theorem neg_mul {R} [CommRing R] (a₁ : R) (a₂) {a₃ b : R}
     (_ : -a₃ = b) : -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * b := by subst_vars; simp
@@ -717,19 +706,14 @@ theorem neg_mul {R} [CommRing R] (a₁ : R) (a₂) {a₃ b : R}
 * `-c = (-c)` (for `c` coefficient)
 * `-(a₁ * a₂) = a₁ * -a₂`
 -/
-def evalNegProd {a : Q($α)} (rα : Q(CommRing $α)) (va : ExProd sα a) :
-    MetaM <| Result (ExProd sα) q(-$a) := do
-  Lean.Core.checkSystem decl_name%.toString
+def evalNegProd {a : Q($α)} (rα : Q(CommRing $α)) (va : ExProd bt sα a) :
+    MetaM <| Result (ExProd bt sα) q(-$a) :=
+  Lean.Core.checkSystem decl_name%.toString *>
   match va with
-  | .const za ha =>
-    let rm := Result.isNegNat _ q(nat_lit 1) q(IsInt.of_raw $α (.negOfNat (nat_lit 1)))
-    let ra := Result.ofRawRat za a ha
-    let rb ← rm.mul ra _
-    let ⟨zb, hb⟩ := rb.toRatNZ.get!
-    let ⟨b, pb⟩ := rb.toRawEq
-    assumeInstancesCommute
-    return ⟨b, .const zb hb, q(neg_one_mul $pb)⟩
-  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
+  | .const za => do
+    let ⟨b, zb, pb⟩ ← rc.neg q($rα) za
+    return ⟨b, .const zb,  q($pb)⟩
+  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ => do
     let ⟨_, vb, pb⟩ ← evalNegProd rα va₃
     assumeInstancesCommute
     return ⟨_, .mul va₁ va₂ vb, q(neg_mul $a₁ $a₂ $pb)⟩
@@ -745,13 +729,15 @@ theorem neg_add {R} [CommRing R] {a₁ a₂ b₁ b₂ : R}
 * `-0 = 0` (for `c` coefficient)
 * `-(a₁ + a₂) = -a₁ + -a₂`
 -/
-def evalNeg {a : Q($α)} (rα : Q(CommRing $α)) (va : ExSum sα a) :
-    MetaM <| Result (ExSum sα) q(-$a) := do
-  assumeInstancesCommute
+def evalNeg {a : Q($α)} (rα : Q(CommRing $α)) (va : ExSum bt sα a) :
+    MetaM <| Result (ExSum bt sα) q(-$a) :=
   match va with
-  | .zero => return ⟨_, .zero, q(neg_zero (R := $α))⟩
-  | .add va₁ va₂ =>
-    let ⟨_, vb₁, pb₁⟩ ← evalNegProd sα rα va₁
+  | .zero => do
+    assumeInstancesCommute
+    return ⟨_, .zero, q(neg_zero (R := $α))⟩
+  | .add va₁ va₂ => do
+    assumeInstancesCommute
+    let ⟨_, vb₁, pb₁⟩ ← evalNegProd rc rα va₁
     let ⟨_, vb₂, pb₂⟩ ← evalNeg rα va₂
     return ⟨_, .add vb₁ vb₂, q(neg_add $pb₁ $pb₂)⟩
 
@@ -764,17 +750,19 @@ theorem sub_pf {R} [CommRing R] {a b c d : R}
 
 * `a - b = a + -b`
 -/
-def evalSub {α : Q(Type u)} (sα : Q(CommSemiring $α)) {a b : Q($α)}
-    (rα : Q(CommRing $α)) (va : ExSum sα a) (vb : ExSum sα b) :
-    MetaM <| Result (ExSum sα) q($a - $b) := do
-  let ⟨_c, vc, pc⟩ ← evalNeg sα rα vb
-  let ⟨d, vd, pd⟩ ← evalAdd sα va vc
+def evalSub {a b : Q($α)}
+    (rα : Q(CommRing $α)) (va : ExSum bt sα a) (vb : ExSum bt sα b) :
+    MetaM <| Result (ExSum bt sα) q($a - $b) := do
+  let ⟨_c, vc, pc⟩ ← evalNeg rc rα vb
+  let ⟨d, vd, pd⟩ ← evalAdd rc rcℕ va vc
   assumeInstancesCommute
   return ⟨d, vd, q(sub_pf $pc $pd)⟩
 
 /-! ### Exponentiation -/
 
-theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
+theorem pow_prod_atom (a : R) (b) {e : R} (h : (a + 0) ^ b * (nat_lit 1).rawCast = e) :
+    a ^ b = e := by
+  simp [← h]
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -783,11 +771,14 @@ the input types are different.)
 
 * `x ^ e = (x + 0) ^ e * 1`
 -/
-def evalPowProdAtom {a : Q($α)} {b : Q(ℕ)} (va : ExProd sα a) (vb : ExProd sℕ b) :
-    Result (ExProd sα) q($a ^ $b) :=
-  ⟨_, (ExBase.sum va.toSum).toProd vb, q(pow_prod_atom $a $b)⟩
+def evalPowProdAtom {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat b) :
+    Result (ExProd bt sα) q($a ^ $b) :=
+    let ⟨_, vc, pc⟩ := (ExBase.sum va.toSum).toProd rc vb
+  ⟨_, vc, q(pow_prod_atom $a $b $pc)⟩
 
-theorem pow_atom (a : R) (b) : a ^ b = a ^ b * (nat_lit 1).rawCast + 0 := by simp
+theorem pow_atom (a : R) (b) {e : R} (h : a ^ b * (nat_lit 1).rawCast = e) :
+    a ^ b = e + 0 := by
+  simp [← h]
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -795,9 +786,10 @@ exponent expression.
 
 * `x ^ e = x ^ e * 1 + 0`
 -/
-def evalPowAtom {a : Q($α)} {b : Q(ℕ)} (va : ExBase sα a) (vb : ExProd sℕ b) :
-    Result (ExSum sα) q($a ^ $b) :=
-  ⟨_, (va.toProd vb).toSum, q(pow_atom $a $b)⟩
+def evalPowAtom {a : Q($α)} {b : Q(ℕ)} (va : ExBase bt sα a) (vb : ExProdNat b) :
+    Result (ExSum bt sα) q($a ^ $b) :=
+  let ⟨_, vc, pc⟩ := (va.toProd rc vb)
+  ⟨_, vc.toSum, q(pow_atom $a $b $pc)⟩
 
 theorem const_pos (n : ℕ) (h : Nat.ble 1 n = true) : 0 < (n.rawCast : ℕ) := Nat.le_of_ble_eq_true h
 
@@ -817,7 +809,7 @@ mutual -- partial only to speed up compilation
 * Atoms are not (necessarily) positive
 * Sums defer to `ExSum.evalPos`
 -/
-partial def ExBase.evalPos {a : Q(ℕ)} (va : ExBase sℕ a) : Option Q(0 < $a) :=
+partial def ExBaseNat.evalPos {a : Q(ℕ)} (va : ExBaseNat a) : Option Q(0 < $a) :=
   match va with
   | .atom _ => none
   | .sum va => va.evalPos
@@ -827,9 +819,9 @@ partial def ExBase.evalPos {a : Q(ℕ)} (va : ExBase sℕ a) : Option Q(0 < $a) 
 * `0 < c` (where `c` is a numeral) is true by the normalization invariant (`c` is not zero)
 * `0 < x ^ e * b` if `0 < x` and `0 < b`
 -/
-partial def ExProd.evalPos {a : Q(ℕ)} (va : ExProd sℕ a) : Option Q(0 < $a) :=
+partial def ExProdNat.evalPos {a : Q(ℕ)} (va : ExProdNat a) : Option Q(0 < $a) :=
   match va with
-  | .const _ _ =>
+  | .const _ =>
     -- it must be positive because it is a nonzero nat literal
     have lit : Q(ℕ) := a.appArg!
     haveI : $a =Q Nat.rawCast $lit := ⟨⟩
@@ -845,7 +837,7 @@ partial def ExProd.evalPos {a : Q(ℕ)} (va : ExProd sℕ a) : Option Q(0 < $a) 
 * `0 < 0` fails
 * `0 < a + b` if `0 < a` or `0 < b`
 -/
-partial def ExSum.evalPos {a : Q(ℕ)} (va : ExSum sℕ a) : Option Q(0 < $a) :=
+partial def ExSumNat.evalPos {a : Q(ℕ)} (va : ExSumNat a) : Option Q(0 < $a) :=
   match va with
   | .zero => none
   | .add (a := a₁) (b := a₂) va₁ va₂ => do
@@ -874,8 +866,8 @@ into a sum of monomials.
 * `x ^ (2*n) = x ^ n * x ^ n`
 * `x ^ (2*n+1) = x ^ n * x ^ n * x`
 -/
-partial def evalPowNat {a : Q($α)} (va : ExSum sα a) (n : Q(ℕ)) :
-    MetaM <| Result (ExSum sα) q($a ^ $n) := do
+partial def evalPowNat {a : Q($α)} (va : ExSum bt sα a) (n : Q(ℕ)) :
+    MetaM <| Result (ExSum bt sα) q($a ^ $n) := do
   let nn := n.natLit!
   if nn = 1 then
     have : $n =Q 1 := ⟨⟩
@@ -886,59 +878,65 @@ partial def evalPowNat {a : Q($α)} (va : ExSum sα a) (n : Q(ℕ)) :
     if nn &&& 1 = 0 then
       have : $n =Q 2 * $m := ⟨⟩
       let ⟨_, vb, pb⟩ ← evalPowNat va m
-      let ⟨_, vc, pc⟩ ← evalMul sα vb vb
+      let ⟨_, vc, pc⟩ ← evalMul rc rcℕ vb vb
       return ⟨_, vc, q(pow_bit0 $pb $pc)⟩
     else
       have : $n =Q 2 * $m + 1 := ⟨⟩
       let ⟨_, vb, pb⟩ ← evalPowNat va m
-      let ⟨_, vc, pc⟩ ← evalMul sα vb vb
-      let ⟨_, vd, pd⟩ ← evalMul sα vc va
+      let ⟨_, vc, pc⟩ ← evalMul rc rcℕ vb vb
+      let ⟨_, vd, pd⟩ ← evalMul rc rcℕ vc va
       return ⟨_, vd, q(pow_bit1 $pb $pc $pd)⟩
 
-theorem one_pow (b : ℕ) : ((nat_lit 1).rawCast : R) ^ b = (nat_lit 1).rawCast := by simp
+theorem one_pow {a : R} (b : ℕ) (ha : IsNat a 1) : a ^ b = a := by
+  simp [ha.out]
 
 theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
-set_option backward.privateInPublic true in
+theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ c₃ d : R} (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂)
+    (_ : xa₁ ^ c₁ * (nat_lit 1).rawCast = c₃) (_ : c₃ * c₂ = d) :
+    (xa₁ ^ ea₁ * a₂ : R) ^ b = d := by
+  subst_vars; simp [_root_.mul_pow, pow_mul, Nat.rawCast]
+
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
-private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
-    MonadLiftT (OptionT m) (OptionT m') where
+private local instance {m m'} [MonadLiftT m m'] : MonadLiftT (OptionT m) (OptionT m') where
   monadLift x := OptionT.mk x.run
 
 /-- There are several special cases when exponentiating monomials:
 
 * `1 ^ n = 1`
-* `x ^ y = (x ^ y)` when `x` and `y` are constants
+* `x ^ y = (x ^ y)` when `x` is a constant (Note this may fail if e.g. `y` is not a constant)
 * `(a * b) ^ e = a ^ e * b ^ e`
 
 In all other cases we use `evalPowProdAtom`.
 -/
-def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd sα a) (vb : ExProd sℕ b) :
-    MetaM <| Result (ExProd sα) q($a ^ $b) := do
+def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat b) :
+    MetaM <| Result (ExProd bt sα) q($a ^ $b) := do
   Lean.Core.checkSystem decl_name%.toString
-  let res : OptionT MetaM (Result (ExProd sα) q($a ^ $b)) := do
-    match va, vb with
-    | va@(.const 1), _ =>
-      have : $a =Q Nat.rawCast 1 := ⟨⟩
-      return ⟨_, va, q(one_pow (R := $α) $b)⟩
-    | .const za ha, .const zb hb =>
-      assert! 0 ≤ zb
-      let ra := Result.ofRawRat za a ha
-      have lit : Q(ℕ) := b.appArg!
-      let rb := q(IsNat.of_raw ℕ $lit)
-      let rc ← NormNum.evalPow.core q($a ^ $b) q(HPow.hPow) q($a) q($b) lit rb
-        q(CommSemiring.toSemiring) ra
-      let ⟨zc, hc⟩ ← rc.toRatNZ
-      let ⟨c, pc⟩ := rc.toRawEq
-      return ⟨c, .const zc hc, pc⟩
-    | .mul vxa₁ vea₁ va₂, vb =>
-      let ⟨_, vc₁, pc₁⟩ ← evalMulProd sℕ vea₁ vb
+  let res : OptionT MetaM (Result (ExProd bt sα) q($a ^ $b)) :=
+    match va with
+    | va@(.const za) => do
+      match rc.isOne za with
+      | .some pf =>
+        return ⟨_, va, q(one_pow $b $pf)⟩
+      | .none =>
+        -- NOTE: rc.pow may fail, e.g. for `ring` when `vb` is not a constant.
+        let ⟨_, zc, pc⟩ ← rc.pow za vb
+        return ⟨_, .const zc, q($pc)⟩
+    | .mul vxa₁ (e := ea₁) vea₁ va₂ => do
+      let ⟨ea₁', vea₁'⟩ := vea₁.toExProd
+      let ⟨b', vb'⟩ := vb.toExProd
+      let ⟨c₁, vc₁, pc₁⟩ ← evalMulProd rcℕ rcℕ vea₁' vb'
+      let ⟨c₁', vc₁'⟩ := vc₁.toExProdNat
       let ⟨_, vc₂, pc₂⟩ ← evalPowProd va₂ vb
-      return ⟨_, .mul vxa₁ vc₁ vc₂, q(mul_pow $pc₁ $pc₂)⟩
-    | _, _ => OptionT.fail
-  return (← res.run).getD (evalPowProdAtom sα va vb)
+      let ⟨_, vc₃, pc₃⟩ := vxa₁.toProd rc vc₁'
+      let ⟨_, vd, pd⟩ ← evalMulProd rc rcℕ vc₃ vc₂
+      have : $c₁ =Q $c₁' := ⟨⟩
+      have : $b =Q $b' := ⟨⟩
+      have : $ea₁ =Q $ea₁' := ⟨⟩
+      return ⟨_, vd, q(mul_pow_mul $pc₁ $pc₂ $pc₃ $pd)⟩
+  return (← res.run).getD (evalPowProdAtom rc va vb)
 
 /--
 The result of `extractCoeff` is a numeral and a proof that the original expression
@@ -950,11 +948,12 @@ structure ExtractCoeff (e : Q(ℕ)) where
   /-- The result of extracting the coefficient is a monic monomial. -/
   e' : Q(ℕ)
   /-- `e'` is a monomial. -/
-  ve' : ExProd sℕ e'
+  ve' : ExProdNat e'
   /-- The proof that `e` splits into the coefficient `k` and the monic monomial `e'`. -/
   p : Q($e = $e' * $k)
 
-theorem coeff_one (k : ℕ) : k.rawCast = (nat_lit 1).rawCast * k := by simp
+theorem coeff_one (k : ℕ) {e : ℕ} (h : (nat_lit 1).rawCast = e) :
+  k.rawCast = e * k := by simp [← h]
 
 theorem coeff_mul {a₃ c₂ k : ℕ}
     (a₁ a₂ : ℕ) (_ : a₃ = c₂ * k) : a₁ ^ a₂ * a₃ = (a₁ ^ a₂ * c₂) * k := by
@@ -966,18 +965,23 @@ theorem coeff_mul {a₃ c₂ k : ℕ}
 * `c = 1 * c` (if `c` is a constant)
 * `a * b = (a * b') * k` if `b = b' * k`
 -/
-def extractCoeff {a : Q(ℕ)} (va : ExProd sℕ a) : ExtractCoeff a :=
+def extractCoeff {a : Q(ℕ)} (va : ExProdNat a) : ExtractCoeff a :=
   match va with
-  | .const _ _ =>
+  | .const _ => Id.run do
     have k : Q(ℕ) := a.appArg!
     have : $a =Q Nat.rawCast $k := ⟨⟩
-    ⟨k, q((nat_lit 1).rawCast), .const 1, q(coeff_one $k)⟩
+    assumeInstancesCommute
+    let ⟨_, one, pf⟩ := rcℕ.one
+    return ⟨k, _, .const (one), q(coeff_one $k $pf)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨k, _, vc, pc⟩ := extractCoeff va₃
     ⟨k, _, .mul va₁ va₂ vc, q(coeff_mul $a₁ $a₂ $pc)⟩
 termination_by structural a
 
 theorem pow_one_cast (a : R) : a ^ (nat_lit 1).rawCast = a := by simp
+
+theorem pow_one_cast_of_isNat (a : R) (b : ℕ) (hb : IsNat b 1) :
+    a ^ b = a := by simp [hb.out]
 
 theorem zero_pow {b : ℕ} (_ : 0 < b) : (0 : R) ^ b = 0 := match b with | b+1 => by simp [pow_succ]
 
@@ -997,28 +1001,37 @@ theorem pow_nat {b c k : ℕ} {d e : R} (_ : b = c * k) (_ : a ^ c = d) (_ : d ^
 
 Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
 -/
-partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum sα a) (vb : ExProd sℕ b) :
-    MetaM <| Result (ExSum sα) q($a ^ $b) := do
-  match va, vb with
-  | va, .const 1 =>
-    haveI : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
-    return ⟨_, va, q(pow_one_cast $a)⟩
-  | .zero, vb => match vb.evalPos with
-    | some p => return ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
-    | none => return evalPowAtom sα (.sum .zero) vb
-  | ExSum.add va .zero, vb => -- TODO: using `.add` here takes a while to compile?
-    let ⟨_, vc, pc⟩ ← evalPowProd sα va vb
-    return ⟨_, vc.toSum, q(single_pow $pc)⟩
-  | va, vb =>
-    if vb.coeff > 1 then
-      let ⟨k, _, vc, pc⟩ := extractCoeff vb
-      let ⟨_, vd, pd⟩ ← evalPow₁ va vc
-      let ⟨_, ve, pe⟩ ← evalPowNat sα vd k
-      return ⟨_, ve, q(pow_nat $pc $pd $pe)⟩
-    else
-      return evalPowAtom sα (.sum va) vb
+partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExProdNat b) :
+    MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
+  let notPowOne : MetaM <| Result (ExSum bt sα) q($a ^ $b) :=
+    match va with
+    | .zero => do match vb.evalPos with
+      | some p => return ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
+      | none => return evalPowAtom rc (.sum .zero) vb
+    | ExSum.add va .zero => do -- TODO: using `.add` here takes a while to compile?
+      let ⟨_, vc, pc⟩ ← evalPowProd rc rcℕ va vb
+      return ⟨_, vc.toSum, q(single_pow $pc)⟩
+    | va => do
+      -- FIXME: condition used to be k.coeff > 1. Should go back to something like this.
+      let ⟨k, _, vc, pc⟩ := extractCoeff rcℕ vb
+      if k.natLit! > 1 then
+        let ⟨_, vd, pd⟩ ← evalPow₁ va vc
+        let ⟨_, ve, pe⟩ ← evalPowNat rc rcℕ vd k
+        return ⟨_, ve, q(pow_nat $pc $pd $pe)⟩
+      else
+        return evalPowAtom rc (.sum va) vb
+  match vb with
+  | .const zb => do
+    match rcℕ.isOne zb with
+    | .some pf =>
+      assumeInstancesCommute
+      return ⟨_, va, q(pow_one_cast_of_isNat $a _ $pf)⟩
+    | .none => notPowOne
+  | _ =>
+    notPowOne
 
-theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
+theorem pow_zero (a : R) {e : R} (h : (nat_lit 1).rawCast = e) :
+    a ^ 0 = e + 0 := by simp [← h]
 
 theorem pow_add {b₁ b₂ : ℕ} {d : R}
     (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) : (a : R) ^ (b₁ + b₂) = d := by
@@ -1029,14 +1042,17 @@ theorem pow_add {b₁ b₂ : ℕ} {d : R}
 * `a ^ 0 = 1`
 * `a ^ (b₁ + b₂) = a ^ b₁ * a ^ b₂`
 -/
-def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum sα a) (vb : ExSum sℕ b) :
-    MetaM <| Result (ExSum sα) q($a ^ $b) := do
+def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExSumNat b) :
+    MetaM <| Result (ExSum bt sα) q($a ^ $b) :=
   match vb with
-  | .zero => return ⟨_, (ExProd.mkNat sα 1).2.toSum, q(pow_zero $a)⟩
-  | .add vb₁ vb₂ =>
-    let ⟨_, vc₁, pc₁⟩ ← evalPow₁ sα va vb₁
+  | .zero => do
+    let ⟨_, one, pf⟩ := rc.one
+    assumeInstancesCommute
+    return ⟨_, (ExProd.const (one)).toSum, q(pow_zero $a $pf)⟩
+  | .add vb₁ vb₂ => do
+    let ⟨_, vc₁, pc₁⟩ ← evalPow₁ rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
-    let ⟨_, vd, pd⟩ ← evalMul sα vc₁ vc₂
+    let ⟨_, vd, pd⟩ ← evalMul rc rcℕ vc₁ vc₂
     return ⟨_, vd, q(pow_add $pc₁ $pc₂ $pd)⟩
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
@@ -1055,74 +1071,37 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
     dsα := (← trySynthInstanceQ q(Semifield $α)).toOption
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
-theorem cast_pos {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
-  | ⟨e⟩ => by simp [e]
+theorem toProd_pf (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e) :
+    a = a' ^ e * (nat_lit 1).rawCast := by simp [← hone, *]
 
-theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
-  | ⟨e⟩ => by simp [e]
+theorem atom_pf (a : R) {e : ℕ} (hone : (nat_lit 1).rawCast = e)
+    (hb : a ^ e * (nat_lit 1).rawCast = b) :
+    a = b + 0 := by
+  simp [← hone, ← hb]
 
-theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} :
-    IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
-  | ⟨e⟩ => by simp [e]
-
-theorem cast_nnrat {n : ℕ} {d : ℕ} {R} [DivisionSemiring R] {a : R} :
-    IsNNRat a n d → a = NNRat.rawCast n d + 0
-  | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
-
-theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} :
-    IsRat a n d → a = Rat.rawCast n d + 0
-  | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
-
-/-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
-
-* `e = 0` if `norm_num` returns `IsNat e 0`
-* `e = Nat.rawCast n + 0` if `norm_num` returns `IsNat e n`
-* `e = Int.rawCast n + 0` if `norm_num` returns `IsInt e n`
-* `e = NNRat.rawCast n d + 0` if `norm_num` returns `IsNNRat e n d`
-* `e = Rat.rawCast n d + 0` if `norm_num` returns `IsRat e n d`
--/
-def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
-    NormNum.Result e → Option (Result (ExSum sα) e)
-  | .isNat _ (.lit (.natVal 0)) p => do
-    assumeInstancesCommute
-    pure ⟨_, .zero, q(cast_zero $p)⟩
-  | .isNat _ lit p => do
-    assumeInstancesCommute
-    have ⟨e', s⟩ := ExProd.mkNat sα lit.natLit!
-    have : $e' =Q ($lit).rawCast := ⟨⟩
-    pure ⟨_, s.toSum, q(cast_pos $p)⟩
-  /- In the following cases, Qq needs help identifying the `0` in the produced type with the `0`
-  in the expected type, which arise from different instances. -/
-  | .isNegNat rα lit p =>
-    pure ⟨_, (ExProd.mkNegNat sα rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
-  | .isNNRat dsα q n d p =>
-    pure ⟨_, (ExProd.mkNNRat sα dsα q n d q(IsNNRat.den_nz $p)).2.toSum, (q(cast_nnrat $p) : Expr)⟩
-  | .isNegNNRat dα q n d p =>
-    pure ⟨_, (ExProd.mkNegNNRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
-  | _ => none
-
-theorem toProd_pf (p : (a : R) = a') :
-    a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast := by simp [*]
-theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp
-theorem atom_pf' (p : (a : R) = a') :
-    a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp [*]
+theorem atom_pf' (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e)
+    (hb : a' ^ e * (nat_lit 1).rawCast = b) :
+    a = b + 0 := by simp [← hone, ← hb, *]
 
 /--
 Evaluates an atom, an expression where `ring` can find no additional structure.
 
 * `a = a ^ 1 * 1 + 0`
 -/
-def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
+def evalAtom (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := do
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
   let (i, ⟨a', _⟩) ← addAtomQ e'
-  let ve' := (ExBase.atom i (e := a')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
-  pure ⟨_, ve', match r.proof? with
+  let ⟨_, one, pf_one⟩ := rcℕ.one
+  let one := ExProdNat.const (one)
+  let ⟨_, vb, pb⟩ : Result (ExProd bt sα) _ := (ExBase.atom i (e := a')).toProd rc one
+  let vc := vb.toSum
+  pure ⟨_, vc, match r.proof? with
   | none =>
     have : $e =Q $e' := ⟨⟩
-    q(atom_pf $e)
+    q(atom_pf $e $pf_one $pb)
   | some (p : Q($e = $a')) =>
-    q(atom_pf' $p)⟩
+    q(atom_pf' $p $pf_one $pb)⟩
 
 theorem inv_mul {R} [Semifield R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
@@ -1142,7 +1121,7 @@ section
 variable (dsα : Q(Semifield $α))
 
 /-- Applies `⁻¹` to a polynomial to get an atom. -/
-def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
+def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase bt sα) q($a⁻¹)) := do
   let (i, ⟨b', _⟩) ← addAtomQ q($a⁻¹)
   pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
 
@@ -1151,42 +1130,44 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
 * `c⁻¹ = (c⁻¹)` if `c` is a constant
 * `(a ^ b * c)⁻¹ = a⁻¹ ^ b * c⁻¹`
 -/
-def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
-    AtomM (Result (ExProd sα) q($a⁻¹)) := do
-  Lean.Core.checkSystem decl_name%.toString
+def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd bt sα a) :
+    AtomM (Result (ExProd bt sα) q($a⁻¹)) :=
+  Lean.Core.checkSystem decl_name%.toString *>
   match va with
-  | .const c hc =>
-    let ra := Result.ofRawRat c a hc
-    match ← (Lean.observing? <| ra.inv _ czα :) with
-    | some rc =>
-      let ⟨zc, hc⟩ := rc.toRatNZ.get!
-      let ⟨c, pc⟩ := rc.toRawEq
-      pure ⟨c, .const zc hc, pc⟩
+  | .const c => do
+    match ← rc.inv czα q($dsα) c with
+    | some ⟨_, vd, pd⟩ => pure ⟨_, .const vd, q($pd)⟩
     | none =>
-      let ⟨_, vc, pc⟩ ← evalInvAtom sα dsα a
-      pure ⟨_, vc.toProd (ExProd.mkNat sℕ 1).2, q(toProd_pf $pc)⟩
+      let ⟨_, vc, pc⟩ ← evalInvAtom dsα a
+      let ⟨_, one, pf⟩ := rcℕ.one
+      let ⟨_, vc', pc'⟩ := vc.toProd rc (ExProdNat.const (one))
+      pure ⟨_, vc', q($pc' ▸ toProd_pf $pc $pf)⟩
   | .mul (x := a₁) (e := _a₂) _va₁ va₂ va₃ => do
-    let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom sα dsα a₁
+    let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom dsα a₁
     let ⟨_b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
-    let ⟨c, vc, pc⟩ ← evalMulProd sα vb₃ (vb₁.toProd va₂)
+    let ⟨_b₁', vb₁', pb₁'⟩ := (vb₁.toProd rc va₂)
+    let ⟨c, vc, pc⟩ ← evalMulProd rc rcℕ vb₃ vb₁'
     assumeInstancesCommute
-    pure ⟨c, vc, q(inv_mul $pb₁ $pb₃ $pc)⟩
+    pure ⟨c, vc, q(inv_mul $pb₁ $pb₃ ($pb₁' ▸ $pc))⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 
 * `0⁻¹ = 0`
 * `a⁻¹ = (a⁻¹)` if `a` is a nontrivial sum
 -/
-def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
-    AtomM (Result (ExSum sα) q($a⁻¹)) :=
+def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum bt sα a) :
+    AtomM (Result (ExSum bt sα) q($a⁻¹)) :=
   match va with
   | ExSum.zero => pure ⟨_, .zero, (q(inv_zero (R := $α)) : Expr)⟩
   | ExSum.add va ExSum.zero => do
-    let ⟨_, vb, pb⟩ ← va.evalInv sα dsα czα
+    let ⟨_, vb, pb⟩ ← va.evalInv rc rcℕ dsα czα
     pure ⟨_, vb.toSum, (q(inv_single $pb) : Expr)⟩
   | va => do
-    let ⟨_, vb, pb⟩ ← evalInvAtom sα dsα a
-    pure ⟨_, vb.toProd (ExProd.mkNat sℕ 1).2 |>.toSum, q(atom_pf' $pb)⟩
+    let ⟨_, vb, pb⟩ ← evalInvAtom dsα a
+    let ⟨_, one, pf⟩ := rcℕ.one
+    let ⟨_', vb', pb'⟩ := vb.toProd rc (ExProdNat.const (one))
+    assumeInstancesCommute
+    pure ⟨_, vb'.toSum, q(atom_pf' $pb $pf $pb')⟩
 
 end
 
@@ -1199,9 +1180,9 @@ theorem div_pf {R} [Semifield R] {a b c d : R}
 * `a / b = a * b⁻¹`
 -/
 def evalDiv {a b : Q($α)} (rα : Q(Semifield $α)) (czα : Option Q(CharZero $α))
-    (va : ExSum sα a) (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
-  let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
-  let ⟨d, vd, pd⟩ ← evalMul sα va vc
+    (va : ExSum bt sα a) (vb : ExSum bt sα b) : AtomM (Result (ExSum bt sα) q($a / $b)) := do
+  let ⟨_c, vc, pc⟩ ← vb.evalInv rc rcℕ rα czα
+  let ⟨d, vd, pd⟩ ← evalMul rc rcℕ va vc
   assumeInstancesCommute
   pure ⟨d, vd, q(div_pf $pc $pd)⟩
 
@@ -1235,12 +1216,15 @@ theorem inv_congr {R} [Semifield R] {a a' b : R} (_ : a = a')
 theorem div_congr {R} [Semifield R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
 
+theorem smul_congr {R α : Type*} [CommSemiring α] [SMul R α]
+    {r : R} {a b t c : α}
+    (_ : a = b) (_ : ∀ (x : α), r • x = t * x) (_ : t * b = c) :
+    r • a = c := by
+  subst_vars
+  simp [*]
+
 /-- A precomputed `Cache` for `ℕ`. -/
 def Cache.nat : Cache sℕ := { rα := none, dsα := none, czα := some q(inferInstance) }
-
-/-- A precomputed `Cache` for `ℤ`. -/
-def Cache.int : Cache sℤ :=
-  { rα := some q(inferInstance), dsα := none, czα := some q(inferInstance) }
 
 /-- Checks whether `e` would be processed by `eval` as a ring expression,
 or otherwise if it is an atom or something simplifiable via `norm_num`.
@@ -1254,10 +1238,10 @@ Returns:
   but `NormNum.derive` can nevertheless simplify `e`, with result `r`.
 -/
 -- Note this is not the same as whether the result of `eval` is an atom. (e.g. consider `x + 0`.)
-def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Cache sα) (e : Q($α)) : AtomM (Option (Option (Result (ExSum sα) e))) := do
+def isAtomOrDerivable
+    (c : Cache sα) (e : Q($α)) : AtomM (Option (Option (Result (ExSum bt sα) e))) := do
   let els := try
-      pure <| some (evalCast sα (← derive e))
+      pure <| some <| some (← rc.derive e)
     catch _ => pure (some none)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα, c.dsα with
@@ -1271,79 +1255,89 @@ def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
   | _, _, _ => els
 
+end
+
+variable (rcℕ : RingCompute btℕ sℕ) in
+
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
+
+* `rc` tells us how to normalize constants in `α`.
+* `rcℕ` tells us how to normalize constants in exponents.
 -/
-partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
+/- Note: Some other functions include similar `match` statement on all valid head symbols. Any
+changes to `eval` should be kept in sync:
+* `Common.isAtomOrDerivable`
+* `Algebra.collectScalarRings`
+-/
+partial def eval  {u : Lean.Level}
+    {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
+    (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := Lean.withIncRecDepth do
   let els := do
-    try evalCast sα (← derive e)
-    catch _ => evalAtom sα e
+    try rc.derive e
+    catch _ => evalAtom rc rcℕ e
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα, c.dsα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
     | ~q($a + $b) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalAdd sα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨_, vb, pb⟩ ← eval rc c b
+      let ⟨c, vc, p⟩ ← evalAdd rc rcℕ va vb
       pure ⟨c, vc, q(add_congr $pa $pb $p)⟩
     | _ => els
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
     | ~q($a * $b) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalMul sα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨_, vb, pb⟩ ← eval rc c b
+      let ⟨c, vc, p⟩ ← evalMul rc rcℕ va vb
       pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
     | _ => els
-  | ``HSMul.hSMul, rα, _ => match rα, e with
-    | _, ~q(($a : ℕ) • ($b : «$α»)) =>
-      let ⟨_, va, pa⟩ ← eval sℕ .nat a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalNSMul sα va vb
-      pure ⟨c, vc, q(nsmul_congr $pa $pb $p)⟩
-    | some rα, ~q(($a : ℤ) • ($b : «$α»)) =>
-      let ⟨_, va, pa⟩ ← eval sℤ .int a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalZSMul sα rα va vb
-      assumeInstancesCommute
-      pure ⟨c, vc, q(zsmul_congr $pa $pb $p)⟩
-    | _, _ => els
+  | ``HSMul.hSMul, _, _ | ``SMul.smul, _, _ => match e with
+    | ~q(@HSMul.hSMul $R _ _ (@instHSMul _ _ $inst) $r $a) =>
+      try
+        let sR : Q(CommSemiring $R) ← synthInstanceQ q(CommSemiring $R)
+        let ⟨_, vb, pb⟩ ← eval rc c a
+        let ⟨_, vt, pt⟩ ← rc.cast _ _ q($sR) q(inferInstance) _
+        let ⟨_, vc, pc⟩ ← evalMul rc rcℕ vt vb
+        return ⟨_, vc, q(smul_congr $pb $pt $pc)⟩
+      catch _ => els
+    | _ => els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ $b) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sℕ .nat b
-      let ⟨c, vc, p⟩ ← evalPow sα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨b, vb, pb⟩ ← eval rcℕ .nat b
+      let ⟨b', vb'⟩ := vb.toExSumNat
+      have : $b =Q $b' := ⟨⟩
+      let ⟨c, vc, p⟩ ← evalPow rc rcℕ va vb'
       pure ⟨c, vc, q(pow_congr $pa $pb $p)⟩
     | _ => els
   | ``Neg.neg, some rα, _ => match e with
     | ~q(-$a) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨b, vb, p⟩ ← evalNeg sα rα va
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨b, vb, p⟩ ← evalNeg rc rα va
       pure ⟨b, vb, q(neg_congr $pa $p)⟩
     | _ => els
   | ``HSub.hSub, some rα, _ | ``Sub.sub, some rα, _ => match e with
     | ~q($a - $b) => do
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalSub sα rα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨_, vb, pb⟩ ← eval rc c b
+      let ⟨c, vc, p⟩ ← evalSub rc rcℕ rα va vb
       pure ⟨c, vc, q(sub_congr $pa $pb $p)⟩
     | _ => els
   | ``Inv.inv, _, some dsα => match e with
     | ~q($a⁻¹) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨b, vb, p⟩ ← va.evalInv sα dsα c.czα
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨b, vb, p⟩ ← va.evalInv rc rcℕ dsα c.czα
       pure ⟨b, vb, q(inv_congr $pa $p)⟩
     | _ => els
   | ``HDiv.hDiv, _, some dsα | ``Div.div, _, some dsα => match e with
     | ~q($a / $b) => do
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalDiv sα dsα c.czα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨_, vb, pb⟩ ← eval rc c b
+      let ⟨c, vc, p⟩ ← evalDiv rc rcℕ dsα c.czα va vb
       pure ⟨c, vc, q(div_congr $pa $pb $p)⟩
     | _ => els
   | _, _, _ => els
 
-end Ring
-
-end Mathlib.Tactic
+end Mathlib.Tactic.Ring.Common

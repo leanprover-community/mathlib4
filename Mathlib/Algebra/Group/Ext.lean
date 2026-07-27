@@ -47,7 +47,7 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   have : m₁.npow = m₂.npow := by
     ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
-  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
+  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩, _, _, ⟨_⟩⟩
   congr
 
 @[to_additive]
@@ -131,9 +131,10 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
   have : m₁.div = m₂.div := by
     ext a b
-    exact @map_div' _ _
-      (F := @MonoidHom _ _ (_) _) _ (id _) _ inferInstance f (congr_fun h_inv) a b
-  rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
+    exact (@div_eq_mul_inv _ m₁ a b).trans
+      (((congr_fun (congr_fun h_mul a) _).trans
+        (congr_arg _ (congr_fun h_inv b))).trans (@div_eq_mul_inv _ m₂ a b).symm)
+  rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩, ⟨_⟩⟩
   congr
 
 @[to_additive]

@@ -103,6 +103,7 @@ theorem noncommCoprod_comp_inl : (f.noncommCoprod g comm).comp (inl M N) = f :=
 theorem noncommCoprod_comp_inr : (f.noncommCoprod g comm).comp (inr M N) = g :=
   ext fun x => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem noncommCoprod_unique (f : M × N →* P) :
     (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (fun _ _ => (commute_inl_inr _ _).map f)
@@ -114,6 +115,7 @@ theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N] :
     (inl M N).noncommCoprod (inr M N) commute_inl_inr = id (M × N) :=
   noncommCoprod_unique <| .id (M × N)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem comp_noncommCoprod {Q : Type*} [Monoid Q] (h : P →* Q) :
     h.comp (f.noncommCoprod g comm) =
@@ -124,7 +126,6 @@ section group
 
 open Subgroup
 
-set_option backward.isDefEq.respectTransparency false in
 lemma noncommCoprod_injective {M N P : Type*} [Group M] [Group N] [Group P]
     (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) :
     Function.Injective (noncommCoprod f g comm) ↔
@@ -140,7 +141,6 @@ lemma noncommCoprod_injective {M N P : Type*} [Group M] [Group N] [Group P]
     have key := hp ⟨⟨a⁻¹, by rwa [map_inv, inv_eq_iff_mul_eq_one]⟩, b, rfl⟩
     exact ⟨hf a (by rwa [key, mul_one] at h), hg b key⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma noncommCoprod_range {M N P : Type*} [Group M] [Group N] [Group P]
     (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) :
     (noncommCoprod f g comm).range = f.range ⊔ g.range := by

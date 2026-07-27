@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
@@ -42,7 +41,6 @@ open Polynomial Finset
 
 open scoped Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
@@ -65,7 +63,6 @@ theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (
 
 variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finite field with `p ^ n` elements.
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
@@ -81,7 +78,7 @@ variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
-  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
@@ -130,17 +127,16 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     intro x y _ _ hx hy
     rw [hx, hy]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
-  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
 theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
-    convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
+    convert! FiniteField.roots_X_pow_card_sub_X (ZMod p)
     exact (ZMod.card p).symm
   have h2 := FiniteField.X_pow_card_sub_X_natDegree_eq (ZMod p) hp
   -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
@@ -178,23 +174,31 @@ variable {K : Type*} [Field K] [Algebra (ZMod p) K]
 
 theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
     Splits (map (algebraMap (ZMod p) K) (X ^ Nat.card K - X)) := by
-  haveI : Fintype K := Fintype.ofFinite K
+  have : Fintype K := Fintype.ofFinite K
   rw [Nat.card_eq_fintype_card]
   exact (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
 theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) := by
-  haveI : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
-  haveI : Fintype K := Fintype.ofFinite K
+  have : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
+  have : Fintype K := Fintype.ofFinite K
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
+
+theorem _root_.Polynomial.splits_X_pow_nat_card_sub_X :
+    Splits (X ^ (Nat.card K) - X : K[X]) := by
+  cases fintypeOrInfinite K
+  · have := (IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
+    simpa [Algebra.algebraMap_self, map_sub, map_pow, map_X] using this
+  · rw [← Polynomial.splits_neg_iff]
+    simpa [Nat.card_eq_zero_of_infinite, pow_zero, neg_sub] using Splits.X_sub_C (1 : K)
 
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
   cases nonempty_fintype K'
   obtain ⟨p, hp⟩ := CharP.exists K
-  haveI : CharP K p := hp
-  haveI : CharP K' p := charP_of_injective_algebraMap' K p
+  have : CharP K p := hp
+  have : CharP K' p := charP_of_injective_algebraMap' K p
   exact IsGalois.of_separable_splitting_field
     (galois_poly_separable p (Fintype.card K')
       (let ⟨n, _, hn⟩ := FiniteField.card K' p
@@ -235,9 +239,12 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     simp_rw [Nat.card_units]
     classical
     have := Fintype.ofFinite K'ˣ
-    convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
-      (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
-      Nat.sub_pos_of_lt Finite.one_lt_card
+    convert!
+      IsCyclic.card_pow_eq_one_le (α := K'ˣ) <|
+        Nat.div_pos
+            (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective)
+              _) <|
+          Nat.sub_pos_of_lt Finite.one_lt_card
     rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr 1; ext
     simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
 

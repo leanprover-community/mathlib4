@@ -55,7 +55,8 @@ This file contains basic results on dual vector spaces.
     antitone Galois coinsertion.
   * `Subspace.quotAnnihilatorEquiv` is the equivalence
     `Dual K V ⧸ W.dualAnnihilator ≃ₗ[K] Dual K W`.
-  * `LinearMap.dualPairing_nondegenerate` says that `Module.dualPairing` is nondegenerate.
+  * `LinearMap.id_nondegenerate` says that `LinearMap.id` is nondegenerate as a bilinear pairing.
+  * `LinearMap.eval_nondegenerate` says that `Dual.eval` is nondegenerate.
   * `Subspace.is_compl_dualAnnihilator` says that the dual annihilator carries complementary
     subspaces to complementary subspaces.
 * Finite-dimensional vector spaces:
@@ -162,7 +163,7 @@ universe uK uV
 variable {K : Type uK} {V : Type uV}
 variable [CommSemiring K] [AddCommMonoid V] [Module K V] [Projective K V]
 
-open Module Module.Dual Submodule LinearMap Cardinal Basis Module
+open Module Module.Dual Submodule LinearMap Cardinal Module
 
 section
 
@@ -282,7 +283,9 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
 instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
   equiv ULift.moduleEquiv.symm
 
-instance instFiniteDimensionalOfIsReflexive (K V : Type*)
+-- Very low priority because instance resolution will often end up using the instances above
+-- to prove `IsReflexive`, which require proving `Finite` again.
+instance (priority := 90) instFiniteDimensionalOfIsReflexive (K V : Type*)
     [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
     FiniteDimensional K V := by
   rw [FiniteDimensional, ← rank_lt_aleph0_iff]
@@ -294,7 +297,7 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
     exact lt_irrefl _ this
   have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
   have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
-    convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
+    convert! lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
     rw [lift_id']
   exact lt_trans h₁ h₂
 
@@ -382,7 +385,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
   rw [← p.liftQ_mkQ K h]
   ext x
-  convert LinearMap.congr_fun hK' (p.mkQ x)
+  convert! LinearMap.congr_fun hK' (p.mkQ x)
   simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
@@ -395,14 +398,13 @@ open Submodule LinearMap
 -- We work in vector spaces because `exists_isCompl` only hold for vector spaces
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
   refine le_antisymm (fun v ↦ Function.mtr ?_) (le_dualAnnihilator_dualCoannihilator _)
   simp only [mem_dualAnnihilator, mem_dualCoannihilator]
   rw [← Quotient.mk_eq_zero W, ← Module.forall_dual_apply_eq_zero_iff K]
-  push_neg
+  push Not
   refine fun ⟨φ, hφ⟩ ↦ ⟨φ.comp W.mkQ, fun w hw ↦ ?_, hφ⟩
   rw [comp_apply, mkQ_apply, (Quotient.mk_eq_zero W).mpr hw, φ.map_zero]
 
@@ -437,7 +439,6 @@ theorem dualAnnihilator_inj {W W' : Subspace K V} :
     W.dualAnnihilator = W'.dualAnnihilator ↔ W = W' :=
   ⟨fun h ↦ (dualAnnihilatorGci K V).l_injective h, congr_arg _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a subspace `W` of `V` and an element of its dual `φ`, `dualLift W φ` is
 an arbitrary extension of `φ` to an element of the dual of `V`.
 That is, `dualLift W φ` sends `w ∈ W` to `φ x` and `x` in a chosen complement of `W` to `0`. -/
@@ -446,7 +447,6 @@ noncomputable def dualLift (W : Subspace K V) : Module.Dual K W →ₗ[K] Module
 
 variable {W : Subspace K V}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dualLift_of_subtype {φ : Module.Dual K W} (w : W) : W.dualLift φ (w : V) = φ w :=
   congr_arg φ <| LinearMap.leftInverse_apply_of_inj W.ker_subtype _
@@ -529,7 +529,6 @@ noncomputable def quotDualEquivAnnihilator (W : Subspace K V) :
     (Module.Dual K V ⧸ LinearMap.range W.dualLift) ≃ₗ[K] W.dualAnnihilator :=
   LinearEquiv.quotEquivOfQuotEquiv <| LinearEquiv.trans W.quotAnnihilatorEquiv W.dualEquivDual
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The quotient by a subspace is isomorphic to its dual annihilator. -/
 noncomputable def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] W.dualAnnihilator :=
@@ -571,16 +570,14 @@ simultaneously restricting to `W.dualAnnihilator`.
 
 See `Subspace.dualCopairing_nondegenerate`. -/
 def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →ₗ[R] R :=
-  LinearMap.flip <|
-    W.liftQ ((Module.dualPairing R M).domRestrict W.dualAnnihilator).flip
-      (by
-        intro w hw
-        ext ⟨φ, hφ⟩
-        exact (mem_dualAnnihilator φ).mp hφ w hw)
+  LinearMap.flip <| W.liftQ W.dualAnnihilator.subtype.flip (by
+    intro w hw
+    ext ⟨φ, hφ⟩
+    exact (mem_dualAnnihilator φ).mp hφ w hw)
 
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
-  coe_injective' φ ψ h := by
+  coe_injective φ ψ h := by
     ext
     simp only [funext_iff] at h
     exact h _
@@ -680,7 +677,6 @@ theorem flip_quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) 
     Function.Injective W.quotDualCoannihilatorToDual.flip :=
   fun _ _ he ↦ Subtype.ext <| LinearMap.ext fun m ↦ DFunLike.congr_fun he ⟦m⟧
 
-set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem quotDualCoannihilatorToDual_nondegenerate (W : Submodule R (Dual R M)) :
     W.quotDualCoannihilatorToDual.Nondegenerate := by
@@ -699,7 +695,6 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
   ((f.quotKerEquivOfSurjective hf).dualMap.range_comp _).trans
     (LinearMap.ker f).range_dualMap_mkQ_eq
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note, this can be specialized to the case where `R` is an injective `R`-module, or when
 -- `f.coker` is a projective `R`-module.
 theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M →ₗ[R] M')
@@ -708,7 +703,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have rr_surj : Function.Surjective f.rangeRestrict := by
     rw [← range_eq_top, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
-  convert this using 1
+  convert! this using 1
   · calc
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
       _ = _ := ?_
@@ -785,20 +780,39 @@ end Module.Dual
 
 end
 
-variable {K V₁ V₂ : Type*} [Field K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
-
 namespace LinearMap
 
-theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
-  ⟨separatingLeft_iff_ker_eq_bot.mpr ker_id, fun x => (forall_dual_apply_eq_zero_iff K x).mp⟩
+variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
+
+theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
+  separatingLeft_iff_ker_eq_bot.mpr ker_id
+
+theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
+
+variable [Module.Projective K V]
+
+theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
+  fun x => (forall_dual_apply_eq_zero_iff K x).mp
+
+theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
+
+theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
+  ⟨id_separatingLeft, id_separatingRight⟩
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
+
+theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
+  ⟨eval_separatingLeft, eval_separatingRight⟩
+
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function.Injective f) :
     Function.Surjective f.dualMap := fun φ ↦
   have ⟨f', hf'⟩ := f.exists_leftInverse_of_injective (ker_eq_bot.mpr hf)
   ⟨φ.comp f', ext fun x ↦ congr(φ <| $hf' x)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_dualMap_eq_dualAnnihilator_ker (f : V₁ →ₗ[K] V₂) :
     LinearMap.range f.dualMap = (LinearMap.ker f).dualAnnihilator :=
   range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective f <|
@@ -813,6 +827,9 @@ theorem dualMap_surjective_iff {f : V₁ →ₗ[K] V₂} :
 
 end LinearMap
 
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
+
 namespace Subspace
 
 open Submodule
@@ -822,7 +839,6 @@ theorem dualPairing_eq (W : Subspace K V₁) :
   ext
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualPairing_eq]
@@ -833,7 +849,6 @@ theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegen
     simpa only [Submodule.dualPairing_apply, dualLift_of_subtype] using
       h (Submodule.Quotient.mk (W.dualLift φ))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dualCopairing_nondegenerate (W : Subspace K V₁) : W.dualCopairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualCopairing_eq]
@@ -901,7 +916,6 @@ open Module LinearMap
 
 namespace LinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
@@ -960,19 +974,16 @@ namespace Subspace
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotDualCoannihilatorToDual_bijective (W : Subspace K (Dual K V)) [FiniteDimensional K W] :
     Function.Bijective W.quotDualCoannihilatorToDual :=
   ⟨W.quotDualCoannihilatorToDual_injective, letI : AddCommGroup W := inferInstance
     flip_injective_iff₂.mp W.flip_quotDualCoannihilatorToDual_injective⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem flip_quotDualCoannihilatorToDual_bijective (W : Subspace K (Dual K V))
     [FiniteDimensional K W] : Function.Bijective W.quotDualCoannihilatorToDual.flip :=
   letI : AddCommGroup W := inferInstance
   flip_bijective_iff₂.mpr W.quotDualCoannihilatorToDual_bijective
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [FiniteDimensional K W] :
     W.dualCoannihilator.dualAnnihilator = W :=
   let e := (LinearEquiv.ofBijective _ W.flip_quotDualCoannihilatorToDual_bijective).trans
@@ -981,13 +992,11 @@ theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [Finite
   haveI : FiniteDimensional K W.dualCoannihilator.dualAnnihilator := LinearEquiv.finiteDimensional e
   (eq_of_le_of_finrank_eq W.le_dualCoannihilator_dualAnnihilator e.finrank_eq).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)} :
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
     fun _ ↦ FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order
   isomorphism between the finite-codimensional subspaces in the vector space and the
@@ -1014,14 +1023,13 @@ def orderIsoFiniteDimensional [FiniteDimensional K V] :
   right_inv _ := dualCoannihilator_dualAnnihilator_eq
   map_rel_iff' := dualAnnihilator_le_dualAnnihilator_iff
 
-set_option backward.isDefEq.respectTransparency false in
 open Submodule in
 theorem dualAnnihilator_dualAnnihilator_eq_map (W : Subspace K V) [FiniteDimensional K W] :
     W.dualAnnihilator.dualAnnihilator = W.map (Dual.eval K V) := by
   let e1 := (Free.chooseBasis K W).toDualEquiv ≪≫ₗ W.quotAnnihilatorEquiv.symm
-  haveI := e1.finiteDimensional
+  have := e1.finiteDimensional
   let e2 := (Free.chooseBasis K _).toDualEquiv ≪≫ₗ W.dualAnnihilator.dualQuotEquivDualAnnihilator
-  haveI := LinearEquiv.finiteDimensional (V₂ := W.dualAnnihilator.dualAnnihilator) e2
+  have := LinearEquiv.finiteDimensional (V₂ := W.dualAnnihilator.dualAnnihilator) e2
   rw [eq_of_le_of_finrank_eq (map_le_dualAnnihilator_dualAnnihilator W)]
   rw [← (equivMapOfInjective _ (eval_apply_injective K (V := V)) W).finrank_eq, e1.finrank_eq]
   exact e2.finrank_eq
@@ -1117,71 +1125,5 @@ theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
   rfl
 
 end AlgebraTensorModule
-
-variable {R M N}
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-variable [Module R M] [Module R N]
-
-/-- An inverse to `TensorProduct.dualDistrib` given bases.
--/
-noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  ∑ i, ∑ j,
-    (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
-
-@[simp]
-theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
-    dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
-  simp [dualDistribInvOfBasis]
-
-theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistrib R M N) (dualDistribInvOfBasis b c) = LinearMap.id := by
-  apply (b.tensorProduct c).dualBasis.ext
-  rintro ⟨i, j⟩
-  apply (b.tensorProduct c).ext
-  rintro ⟨i', j'⟩
-  simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
-    Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
-    Basis.tensorProduct_apply, LinearMap.coe_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
-    map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simpa using mul_comm _ _
-  all_goals { intros; simp [*] at * }
-
-theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistribInvOfBasis b c) (dualDistrib R M N) = LinearMap.id := by
-  apply (b.dualBasis.tensorProduct c.dualBasis).ext
-  rintro ⟨i, j⟩
-  simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
-    id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simp
-  all_goals { intros; simp [*] at * }
-
-/-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
-It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simps!]
-noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
-  · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
-  · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
-
-variable (R M N)
-variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free R N]
-
-/--
-A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
-modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simp]
-noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
-  dualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
 
 end TensorProduct

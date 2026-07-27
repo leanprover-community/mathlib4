@@ -26,6 +26,7 @@ This file is about Bochner integrals. See the file `AEEqOfLIntegral` for Lebesgu
 All results listed below apply to two functions `f, g`, together with two main hypotheses,
 * `f` and `g` are integrable on all measurable sets with finite measure,
 * for all measurable sets `s` with finite measure, `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ`.
+
 The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 * `ae_eq_of_forall_setIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
 * `AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq`: for functions which are
@@ -79,7 +80,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
     (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) :
     f =ᵐ[μ] 0 := by
   rcases ht with ⟨d, d_count, hd⟩
-  haveI : Encodable d := d_count.toEncodable
+  have : Encodable d := d_count.toEncodable
   have : ∀ x : d, ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖(x : E)‖ :=
     fun x => exists_dual_vector'' 𝕜 (x : E)
   choose s hs using this
@@ -147,7 +148,6 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
       rw [← μ.restrict_toMeasurable mus.ne]
       exact hf_zero _ (measurableSet_toMeasurable ..) (by rwa [measure_toMeasurable])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ae_le_of_forall_setIntegral_le {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable g μ)
     (hf_le : ∀ s, MeasurableSet s → μ s < ∞ → (∫ x in s, f x ∂μ) ≤ ∫ x in s, g x ∂μ) :
     f ≤ᵐ[μ] g := by
@@ -183,7 +183,7 @@ theorem AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg {f : α �
   let t := hf.sigmaFiniteSet
   suffices 0 ≤ᵐ[μ.restrict t] f from
     ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl.symm.le
-  haveI : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
+  have : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
   refine
     ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite (fun s hs hμts => ?_) fun s hs hμts => ?_
   · rw [IntegrableOn, Measure.restrict_restrict hs]
@@ -203,7 +203,6 @@ theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg {f : α → ℝ}
   refine hf_zero (s ∩ t) (hs.inter ht) ?_
   exact (measure_mono Set.inter_subset_right).trans_lt (lt_top_iff_ne_top.mpr hμt)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) {t : Set α}
@@ -289,7 +288,7 @@ theorem AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α
   let t := hf.sigmaFiniteSet
   suffices f =ᵐ[μ.restrict t] 0 from
     ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl
-  haveI : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
+  have : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
   refine ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite ?_ ?_
   · intro s hs hμs
     rw [IntegrableOn, Measure.restrict_restrict hs]
@@ -334,7 +333,7 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
     (hf : FinStronglyMeasurable f (μ.trim hm)) : f =ᵐ[μ] 0 := by
   obtain ⟨t, ht_meas, htf_zero, htμ⟩ := hf.exists_set_sigmaFinite
-  haveI : SigmaFinite ((μ.restrict t).trim hm) := by rwa [restrict_trim hm μ ht_meas] at htμ
+  have : SigmaFinite ((μ.restrict t).trim hm) := by rwa [restrict_trim hm μ ht_meas] at htμ
   have htf_zero : f =ᵐ[μ.restrict tᶜ] 0 := by
     rw [EventuallyEq, ae_restrict_iff' (MeasurableSet.compl (hm _ ht_meas))]
     exact Eventually.of_forall htf_zero
@@ -358,27 +357,16 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
     exact hf_zero _ (hs.inter ht_meas) hμs
 
 theorem Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α → E} (hf : Integrable f μ)
-    (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 := by
-  have hf_Lp : MemLp f 1 μ := memLp_one_iff_integrable.mpr hf
-  let f_Lp := hf_Lp.toLp f
-  have hf_f_Lp : f =ᵐ[μ] f_Lp := (MemLp.coeFn_toLp hf_Lp).symm
-  refine hf_f_Lp.trans ?_
-  refine Lp.ae_eq_zero_of_forall_setIntegral_eq_zero f_Lp one_ne_zero ENNReal.coe_ne_top ?_ ?_
-  · exact fun s _ _ => Integrable.integrableOn (L1.integrable_coeFn _)
-  · intro s hs hμs
-    rw [integral_congr_ae (ae_restrict_of_ae hf_f_Lp.symm)]
-    exact hf_zero s hs hμs
+    (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 :=
+  hf.aefinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero
+    (fun _ _ _ => hf.integrableOn) hf_zero
 
 theorem Integrable.ae_eq_of_forall_setIntegral_eq (f g : α → E) (hf : Integrable f μ)
     (hg : Integrable g μ)
     (hfg : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ) :
-    f =ᵐ[μ] g := by
-  rw [← sub_ae_eq_zero]
-  have hfg' : ∀ s : Set α, MeasurableSet s → μ s < ∞ → (∫ x in s, (f - g) x ∂μ) = 0 := by
-    intro s hs hμs
-    rw [integral_sub' hf.integrableOn hg.integrableOn]
-    exact sub_eq_zero.mpr (hfg s hs hμs)
-  exact Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero (hf.sub hg) hfg'
+    f =ᵐ[μ] g :=
+  AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq (fun _ _ _ => hf.integrableOn)
+    (fun _ _ _ => hg.integrableOn) hfg hf.aefinStronglyMeasurable hg.aefinStronglyMeasurable
 
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 
@@ -420,7 +408,7 @@ lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
   · intro n
     exact (isClosed_closure.inter hs).measurableSet
   · intro m n hmn
-    simp only [t, Set.le_iff_subset]
+    simp only [t]
     gcongr
   · exact hf.integrableOn
 

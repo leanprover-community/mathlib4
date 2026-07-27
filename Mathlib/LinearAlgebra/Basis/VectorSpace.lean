@@ -64,12 +64,14 @@ theorem coe_extend (hs : LinearIndepOn K id s) : ⇑(Basis.extend hs) = ((↑) :
 
 theorem range_extend (hs : LinearIndepOn K id s) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
-  rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_extend, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 /-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
 The specific value of this definition should be considered an implementation detail. -/
-def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
   LinearIndepOn.extend hs.linearIndepOn_id (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
@@ -107,7 +109,7 @@ theorem coe_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ s
 
 theorem range_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     range (Basis.extendLe hs hst ht) = hs.extend hst := by
-  rw [coe_extendLe, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_extendLe, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 theorem subset_extendLe (hs : LinearIndepOn K id s) (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
     s ⊆ range (Basis.extendLe hs hst ht) :=
@@ -133,7 +135,7 @@ theorem coe_ofSpan (hs : ⊤ ≤ span K s) : ⇑(ofSpan hs) = ((↑) : _ → _) 
 
 theorem range_ofSpan (hs : ⊤ ≤ span K s) :
     range (ofSpan hs) = (linearIndepOn_empty K id).extend (empty_subset s) := by
-  rw [coe_ofSpan, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [coe_ofSpan, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 theorem ofSpan_subset (hs : ⊤ ≤ span K s) : range (ofSpan hs) ⊆ s :=
   extendLe_subset (linearIndependent_empty K V) (empty_subset s) hs
@@ -164,7 +166,7 @@ theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
 
 theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
-  convert (ofVectorSpace K V).linearIndependent
+  convert! (ofVectorSpace K V).linearIndependent
   ext x
   rw [ofVectorSpace_apply_self]
 
@@ -247,8 +249,8 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   let C := this.extend (subset_univ _)
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
-  haveI Vinh : Inhabited V := ⟨0⟩
-  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => ?_⟩
+  have Vinh : Inhabited V := ⟨0⟩
+  refine ⟨(hC.constr ℕ : _ → _) (C.domRestrict (invFun f)), hB.ext fun b => ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
@@ -257,7 +259,6 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
-open scoped Classical in
 /-- The left inverse of `f : E →ₗ[𝕜] F`.
 
 If `f` is not injective, then we use the junk value `0`. -/
@@ -276,7 +277,6 @@ theorem LinearMap.leftInverse_apply_of_inj {f : V →ₗ[K] V'} (h_inj : LinearM
     f.leftInverse (f x) = x :=
   LinearMap.ext_iff.mp (f.leftInverse_comp_of_inj h_inj) x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
   ⟨LinearMap.ker p.subtype.leftInverse,
     LinearMap.isCompl_of_proj <| LinearMap.leftInverse_apply_of_inj p.ker_subtype⟩
@@ -284,7 +284,6 @@ theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, Is
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole
 space. -/
 theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
@@ -298,9 +297,9 @@ theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →
   refine ⟨g, ?_, ?_⟩
   · ext x
     have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.2
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
-    simpa using congr($hg _).trans this
+    simpa using! congr($hg _).trans this
 
 open Submodule LinearMap
 
@@ -386,7 +385,6 @@ theorem exists_basis_of_pairing_ne_zero
     apply Or.resolve_left (Set.mem_insert_iff.mpr j.prop)
     simp [← hi, b, Subtype.coe_inj, Ne.symm h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v = 0`,
 there exists a basis `b` with two distinct indices `i`, `j`
@@ -429,7 +427,7 @@ theorem exists_basis_of_pairing_eq_zero
   · apply b.ext
     intro i
     rw [Basis.coord_apply, Basis.repr_self]
-    simp only [b, Basis.mk_apply]
+    simp only [b]
     rcases i with ⟨x, rfl | ⟨x, hx, rfl⟩⟩
     · simp [hw]
     · suffices x ≠ w by simp [this]

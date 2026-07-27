@@ -42,7 +42,6 @@ instance : CoeSort BoolAlg (Type _) :=
 
 attribute [coe] BoolAlg.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `BoolAlg R`. -/
 @[ext]
 structure Hom (X Y : BoolAlg.{u}) where
@@ -173,7 +172,6 @@ instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between Boolean algebras from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where

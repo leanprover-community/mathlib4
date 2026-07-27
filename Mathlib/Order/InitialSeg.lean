@@ -64,7 +64,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
 scoped[InitialSeg] infixl:25 " ≼i " => InitialSeg
 
 /-- An `InitialSeg` between the `<` relations of two types. -/
-notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
+notation3:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
 
 namespace InitialSeg
 
@@ -73,7 +73,7 @@ instance : Coe (r ≼i s) (r ↪r s) :=
 
 instance : FunLike (r ≼i s) α β where
   coe f := f.toFun
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
     congr with x
     exact congr_fun h x
@@ -194,7 +194,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b := by
   apply or_iff_not_imp_right.2
   intro h b
-  push_neg at h
+  push Not at h
   apply IsWellFounded.induction s b
   intro x IH
   obtain ⟨y, ⟨hy, hs⟩ | ⟨hy, hs⟩⟩ := h x
@@ -251,7 +251,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
 scoped[InitialSeg] infixl:25 " ≺i " => PrincipalSeg
 
 /-- A `PrincipalSeg` between the `<` relations of two types. -/
-notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
+notation3:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
 
 open scoped InitialSeg
 
@@ -287,6 +287,9 @@ theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α �
 
 theorem mem_range_iff_rel (f : r ≺i s) : ∀ {b : β}, b ∈ Set.range f ↔ s b f.top :=
   f.mem_range_iff_rel' _
+
+theorem range_eq (f : r ≺i s) : Set.range f = {b | s b f.top} :=
+  Set.ext_iff.2 fun _ ↦ mem_range_iff_rel f
 
 theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
   f.mem_range_iff_rel.1 ⟨_, rfl⟩
@@ -339,7 +342,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 segment embedding -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
-    simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
+    simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_comm, ← exists_and_left]⟩
 
 @[simp]
 theorem transInitial_apply (f : r ≺i s) (g : s ≼i t) (a : α) : f.transInitial g a = g (f a) :=
@@ -416,7 +419,7 @@ theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofE
 @[simps! symm_apply]
 noncomputable def subrelIso (f : r ≺i s) : Subrel s (s · f.top) ≃r r :=
   RelIso.symm ⟨(Equiv.ofInjective f f.injective).trans
-    (Equiv.setCongr (funext fun _ ↦ propext f.mem_range_iff_rel)), f.map_rel_iff⟩
+    (Equiv.subtypeEquivProp <| funext fun _ ↦ propext f.mem_range_iff_rel), f.map_rel_iff⟩
 
 @[simp]
 theorem apply_subrelIso (f : r ≺i s) (b : {b // s b f.top}) : f (f.subrelIso b) = b :=
@@ -470,7 +473,7 @@ theorem wellFounded_iff_principalSeg {β : Type u} {s : β → β → Prop} [IsT
 
 namespace InitialSeg
 
-open Classical in
+open scoped Classical in
 /-- Every initial segment embedding into a well order can be turned into an isomorphism if
 surjective, or into a principal segment embedding if not. -/
 noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) :=
@@ -511,7 +514,7 @@ private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { 
   (RelEmbedding.isWellFounded f).fix _ fun a IH =>
     have H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
       fun b h => trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
-    ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
+    ⟨_, IsWellFounded.wf.not_lt_min _ H⟩
 
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
@@ -524,7 +527,7 @@ private theorem collapseF_not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
     (h : ∀ a', r a' a → s (collapseF f a') b) : ¬s b (collapseF f a) := by
   rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
-  exact WellFounded.not_lt_min _ _ _ h
+  exact WellFounded.not_lt_min _ {b | ∀ a', r a' a → s (collapseF f a') b} h
 
 /-- Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
 subsequent element in `α` is mapped to the least element in `β` that hasn't been used yet.
@@ -638,6 +641,9 @@ variable [PartialOrder β] {a a' : α} {b : β}
 
 theorem mem_range_of_le [LT α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
   (f : α ≤i β).mem_range_of_le h
+
+theorem range_eq_Iio [LT α] (f : α <i β) : Set.range f = Set.Iio f.top :=
+  f.range_eq
 
 theorem isLowerSet_range [LT α] (f : α <i β) : IsLowerSet (Set.range f) :=
   (f : α ≤i β).isLowerSet_range

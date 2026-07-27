@@ -36,6 +36,10 @@ theorem Complex.sqrt_eq_real_add_ite {a : ℂ} :
   simp only [re_add_im, ↓reduceIte, h.not_ge, neg_one_mul, ← ofReal_neg,
     ← cpow_inv_two_im_eq_neg_sqrt h]
 
+open Complex in
+lemma sqrt_eq_exp {z : ℂ} (hz : z ≠ 0) : sqrt z = exp (log z / 2) := by
+  simp [sqrt, cpow_def, hz, div_eq_mul_inv]
+
 /-- The square root on `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 := map ℂ 𝕜 (map 𝕜 ℂ a).sqrt
 
@@ -78,6 +82,7 @@ theorem RCLike.re_sqrt_ofReal {a : ℝ} :
 @[simp] theorem RCLike.sqrt_complex {a : ℂ} :
     sqrt a = a.sqrt := by simp [sqrt]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Complex.sqrt_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
     a.sqrt = √a.re := by
   obtain ⟨α : ℝ, hα, rfl⟩ := RCLike.nonneg_iff_exists_ofReal.mp ha

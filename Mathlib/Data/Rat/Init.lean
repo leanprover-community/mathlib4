@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yaël Dillies
 module
 
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 public import Batteries.Classes.RatCast
 
 /-!

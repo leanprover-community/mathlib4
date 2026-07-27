@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 /-!
 # HasPullback
+
 `HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
 pullbacks.
 
@@ -22,15 +23,15 @@ pullbacks.
 
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
-```
-  pullback f g ---pullback.fst f g---> X
-      |                                |
-      |                                |
-pullback.snd f g                       f
-      |                                |
-      v                                v
-      Y --------------g--------------> Z
-```
+  ```
+    pullback f g ---pullback.fst f g---> X
+        |                                |
+        |                                |
+  pullback.snd f g                       f
+        |                                |
+        v                                v
+        Y --------------g--------------> Z
+  ```
 
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pushout.
@@ -38,14 +39,14 @@ pullback.snd f g                       f
   abbreviation for `HasColimitsOfShape WalkingSpan C`
 * `pushout f g`: Given a `HasPushout f g` instance, this function returns the choice of a colimit
   object corresponding to the pushout of `f` and `g`. It fits into the following diagram:
-```
+  ```
       X --------------f--------------> Y
       |                                |
       g                          pushout.inl f g
       |                                |
       v                                v
       Z ---pushout.inr f g---> pushout f g
-```
+  ```
 
 ## Main results & API
 * The following API is available for using the universal property of `pullback f g`:
@@ -194,15 +195,17 @@ theorem pushout.inr_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f
 `l : W ⟶ pullback f g` such that `l ≫ pullback.fst = h` and `l ≫ pullback.snd = k`. -/
 def pullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) :
-      { l : W ⟶ pullback f g // l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k } :=
+    { l : W ⟶ pullback f g // l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k } :=
   ⟨pullback.lift h k w, pullback.lift_fst _ _ _, pullback.lift_snd _ _ _⟩
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
 `l : pushout f g ⟶ W` such that `pushout.inl _ _ ≫ l = h` and `pushout.inr _ _ ≫ l = k`. -/
-def pullback.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
+def pushout.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) :
-      { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
+    { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
   ⟨pushout.desc h k w, pushout.inl_desc _ _ _, pushout.inr_desc _ _ _⟩
+
+@[deprecated (since := "2026-06-25")] alias pullback.desc' := pushout.desc'
 
 @[reassoc]
 theorem pullback.condition {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] :
@@ -433,6 +436,20 @@ theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
     G.map (pullback.lift _ _ w) ≫ pullbackComparison G f g =
       pullback.lift (G.map h) (G.map k) (by simp only [← G.map_comp, w]) := by
   ext <;> simp [← G.map_comp]
+
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc]
+lemma pullbackComparison_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X Y S : C}
+    (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] [HasPullback (F.map f) (F.map g)]
+    [HasPullback (G.map (F.map f)) (G.map (F.map g))]
+    [HasPullback ((F ⋙ G).map f) ((F ⋙ G).map g)] :
+    pullbackComparison (F ⋙ G) f g = G.map (pullbackComparison F f g) ≫
+      pullbackComparison G (F.map f) (F.map g) := by
+  ext
+  · rw [pullbackComparison_comp_fst]
+    simp [← Functor.map_comp]
+  · rw [pullbackComparison_comp_snd]
+    simp [← Functor.map_comp]
 
 /-- The comparison morphism for the pushout of `f,g`.
 This is an isomorphism iff `G` preserves the pushout of `f,g`; see

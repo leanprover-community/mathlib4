@@ -5,6 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Yuyang Zhao
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
@@ -27,7 +28,7 @@ variable {α : Type u} {β : Type v} {F : Type w}
 
 open Set Function
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
@@ -43,6 +44,7 @@ which requires the standard condition `x * y ∈ P → x ∈ P ∨ y ∈ P`.
 For the stronger condition `x * y ∈ P → x ∈ P ∨ y ∈ P` in noncommutative rings,
 see `Ideal.IsCompletelyPrime`.
 -/
+@[wikidata Q863912]
 class IsPrime (I : Ideal α) : Prop where
   /-- The prime ideal is not the entire ring. -/
   ne_top' : I ≠ ⊤
@@ -167,6 +169,11 @@ def primeCompl (P : Ideal α) [hp : P.IsCompletelyPrime] : Submonoid α where
 @[simp]
 theorem mem_primeCompl_iff {P : Ideal α} [P.IsCompletelyPrime] {x : α} :
     x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
+
+theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
+    (⊥ : Ideal α).primeCompl = nonZeroDivisors α := by
+  ext
+  simp
 
 end Ideal
 

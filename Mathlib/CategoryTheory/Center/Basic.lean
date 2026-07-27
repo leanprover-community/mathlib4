@@ -19,7 +19,7 @@ type of endomorphisms of the identity functor of `C`.
 
 -/
 
-@[expose] public section
+public section
 universe v u
 
 namespace CategoryTheory
@@ -58,9 +58,9 @@ lemma mul_app (x y : CatCenter C) (X : C) : (x * y).app X = x.app X ≫ y.app X 
   exact x.naturality (y.app X)
 
 instance : IsMulCommutative (CatCenter C) where
-  is_comm := ⟨fun x y ↦ by
+  is_comm.comm x y := by
     ext X
-    rw [mul_app' x y, mul_app y x]⟩
+    rw [mul_app' x y, mul_app y x]
 
 instance {X Y : C} : SMul (CatCenter C) (X ⟶ Y) where
   smul z f := f ≫ z.app Y

@@ -77,7 +77,7 @@ theorem generateMeasurableRec_mono (s : Set (Set α)) : Monotone (generateMeasur
   intro i j h x hx
   rcases h.eq_or_lt with (rfl | h)
   · exact hx
-  · convert iUnion_mem_generateMeasurableRec fun _ => ⟨i, h, hx⟩
+  · convert! iUnion_mem_generateMeasurableRec fun _ => ⟨i, h, hx⟩
     exact (iUnion_const x).symm
 
 /-- An inductive principle for the elements of `generateMeasurableRec`. -/
@@ -121,13 +121,9 @@ theorem generateMeasurableRec_omega_one (s : Set (Set α)) :
   · intro f H
     choose I hI using fun n => (H n).1
     simp_rw [exists_prop] at hI
-    refine ⟨_, Ordinal.lsub_lt_ord_lift ?_ fun n => (hI n).1,
-      iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_lsub I n, (hI n).2⟩⟩
-    rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_omega_eq]
-    exact aleph0_lt_aleph_one
-
-@[deprecated (since := "2025-12-22")]
-alias generateMeasurableRec_omega1 := generateMeasurableRec_omega_one
+    refine ⟨_, Ordinal.lift_iSup_add_one_lt_of_lt_cof ?_ fun n => (hI n).1,
+      iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_iSup_add_one I n, (hI n).2⟩⟩
+    simp
 
 theorem generateMeasurableRec_subset (s : Set (Set α)) (i : Ordinal) :
     generateMeasurableRec s i ⊆ { t | GenerateMeasurable s t } := by
@@ -158,9 +154,6 @@ theorem generateMeasurableRec_of_omega_one_le (s : Set (Set α)) {i : Ordinal.{v
   apply (generateMeasurableRec_mono s hi).antisymm'
   rw [← generateMeasurable_eq_rec]
   exact generateMeasurableRec_subset s i
-
-@[deprecated (since := "2025-12-22")]
-alias generateMeasurableRec_of_omega1_le := generateMeasurableRec_of_omega_one_le
 
 /-- At each step of the inductive construction, the cardinality bound `≤ #s ^ ℵ₀` holds. -/
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :

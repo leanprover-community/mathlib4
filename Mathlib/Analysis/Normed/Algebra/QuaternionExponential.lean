@@ -32,19 +32,17 @@ open NormedSpace
 
 namespace Quaternion
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem exp_coe (r : ℝ) : exp (r : ℍ[ℝ]) = ↑(exp r) :=
   (map_exp (algebraMap ℝ ℍ[ℝ]) (continuous_algebraMap _ _) _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The even terms of `expSeries` are real, and correspond to the series for $\cos ‖q‖$. -/
 theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :
     expSeries ℝ (Quaternion ℝ) (2 * n) (fun _ => q) =
       ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) := by
   rw [expSeries_apply_eq]
   have hq2 : q ^ 2 = -normSq q := sq_eq_neg_normSq.mpr hq
-  letI k : ℝ := ↑(2 * n)!
+  let k : ℝ := ↑(2 * n)!
   calc
     k⁻¹ • q ^ (2 * n) = k⁻¹ • (-normSq q) ^ n := by rw [pow_mul, hq2]
     _ = k⁻¹ • ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) := ?_
@@ -57,7 +55,6 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
     norm_cast
     ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The odd terms of `expSeries` are real, and correspond to the series for
 $\frac{q}{‖q‖} \sin ‖q‖$. -/
 theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :
@@ -81,7 +78,6 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
     simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left' hqn]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated
 at `‖q‖` tend to `c` and `s`, then the exponential series tends to `c + (s / ‖q‖)`. -/
 theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s : ℝ}
@@ -91,10 +87,10 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
   replace hc := hasSum_coe.mpr hc
   replace hs := (hs.div_const ‖q‖).smul_const q
   refine HasSum.even_add_odd ?_ ?_
-  · convert hc using 1
+  · convert! hc using 1
     ext n : 1
     rw [expSeries_even_of_imaginary hq]
-  · convert hs using 1
+  · convert! hs using 1
     ext n : 1
     rw [expSeries_odd_of_imaginary hq]
 
@@ -137,7 +133,6 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp q) = exp q.re ^ 2 :=
         normSq_eq_norm_mul_self, ← sq, div_mul_cancel₀ _ (pow_ne_zero _ hv)]
     _ = exp q.re ^ 2 := by rw [Real.cos_sq_add_sin_sq, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Note that this implies that exponentials of pure imaginary quaternions are unit quaternions
 since in that case the RHS is `1` via `NormedSpace.exp_zero` and `norm_one`. -/
 @[simp]

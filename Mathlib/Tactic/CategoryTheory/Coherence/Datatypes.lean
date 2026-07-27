@@ -416,7 +416,7 @@ inductive NormalizedHom : Type
 /-- The underlying expression of a normalized 1-morphism. -/
 def NormalizedHom.e : NormalizedHom → Mor₁
   | NormalizedHom.nil e _ => e
-  | NormalizedHom.cons e _ _  => e
+  | NormalizedHom.cons e _ _ => e
 
 /-- The domain of a normalized 1-morphism. -/
 def NormalizedHom.src : NormalizedHom → Obj

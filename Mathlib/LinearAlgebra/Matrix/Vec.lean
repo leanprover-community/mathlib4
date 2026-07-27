@@ -109,6 +109,20 @@ theorem vec_single [DecidableEq m] [DecidableEq n] [Zero R] (i : m) (j : n) (r :
 section Kronecker
 open scoped Kronecker
 
+section CommSemigroup
+variable [CommSemigroup R]
+
+theorem hadamard_kronecker_hadamard (A B : Matrix l m R) (C D : Matrix n p R) :
+    (A ⊙ B) ⊗ₖ (C ⊙ D) = (A ⊗ₖ C) ⊙ (B ⊗ₖ D) :=
+  ext fun _ _ => mul_mul_mul_comm _ _ _ _
+
+theorem kronecker_hadamard_kronecker
+    (A : Matrix l m R) (B : Matrix n p R) (C : Matrix l m R) (D : Matrix n p R) :
+    (A ⊗ₖ B) ⊙ (C ⊗ₖ D) = (A ⊙ C) ⊗ₖ (B ⊙ D) :=
+  hadamard_kronecker_hadamard _ _ _ _ |>.symm
+
+end CommSemigroup
+
 section NonUnitalSemiring
 variable [NonUnitalSemiring R] [Fintype m] [Fintype n]
 
@@ -159,6 +173,25 @@ theorem vec_mul_eq_vecMul [DecidableEq m] (A : Matrix m n R) (B : Matrix n p R) 
   obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 end Semiring
+
+section Hadamard
+
+variable [NonUnitalSemiring R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
+
+/-- The Hadamard bilinear form equals the Kronecker bilinear form on diagonal embeddings. -/
+theorem dotProduct_hadamard_mulVec_eq_kronecker
+    (x : m → R) (A B : Matrix m n R) (x' : n → R) :
+    x ⬝ᵥ (A ⊙ B) *ᵥ x' = vec (diagonal x) ⬝ᵥ (A ⊗ₖ B) *ᵥ vec (diagonal x') := by
+  simp [diagonal, mulVec, dotProduct, Fintype.sum_prod_type]
+
+/-- The starred Hadamard bilinear form equals the starred Kronecker bilinear form on diagonal
+embeddings. -/
+theorem star_dotProduct_hadamard_mulVec_eq_kronecker [StarAddMonoid R]
+    (x : m → R) (A B : Matrix m n R) (x' : n → R) :
+    star x ⬝ᵥ (A ⊙ B) *ᵥ x' = star (vec (diagonal x)) ⬝ᵥ (A ⊗ₖ B) *ᵥ vec (diagonal x') := by
+  rw [dotProduct_hadamard_mulVec_eq_kronecker, ← map_diagonal_star, star_vec]
+
+end Hadamard
 
 end Kronecker
 
