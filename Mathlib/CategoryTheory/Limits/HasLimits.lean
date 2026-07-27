@@ -318,7 +318,7 @@ instance isIso_limMap {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [
   ⟨limMap (inv α), by cat_disch , by cat_disch⟩
 
 set_option backward.isDefEq.respectTransparency false in
-@[to_dual (attr := reassoc (attr := simp))]
+@[to_dual (attr := reassoc (attr := simp)) map_desc]
 theorem limit.lift_map {F G : J ⥤ C} [HasLimit F] [HasLimit G] (c : Cone F) (α : F ⟶ G) :
     limit.lift F c ≫ limMap α = limit.lift G ((Cone.postcompose α).obj c) := by
   ext
@@ -953,13 +953,6 @@ theorem colimMap_eq : colimMap α = colim.map α := rfl
 set_option backward.isDefEq.respectTransparency false in -- This seems to be needed in downstream files.
 @[reassoc]
 theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp
-
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
-theorem colimit.map_desc (c : Cocone G) :
-    colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocone.precompose α).obj c) := by
-  ext j
-  simp [colimit.ι_desc, colimit.ι_desc]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
