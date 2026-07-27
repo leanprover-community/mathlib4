@@ -124,6 +124,9 @@ lemma essFiniteType_iff {K : IntermediateField F E} :
       adjoin_map, ← Set.range_comp, Function.comp_def, ← AlgHom.fieldRange_eq_map] using! this
   exact ⟨fun ⟨s, _, hs⟩ ↦ ⟨s, hs⟩, fun ⟨s, hs⟩ ↦ ⟨s, hs ▸ subset_adjoin _ _, hs⟩⟩
 
+instance [Finite S] : Algebra.EssFiniteType F (adjoin F S) :=
+  essFiniteType_iff.mpr (fg_adjoin_of_finite S.toFinite)
+
 /-- A field is finitely generated if and only if it is essentially of finite type over its prime
 subfield. -/
 theorem _root_.Field.fg_iff_essFiniteType : Field.FG F ↔ Algebra.EssFiniteType (⊥ : Subfield F) F :=
