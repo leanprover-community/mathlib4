@@ -207,44 +207,24 @@ if and only if the adjoint of `A` sends the residual `y - A x` to zero. -/
 theorem norm_sub_apply_eq_iInf_iff_adjoint_apply_sub_eq_zero
     (A : E →L[𝕜] F) (y : F) (x : E) :
     (‖y - A x‖ = ⨅ z : A.range, ‖y - z‖) ↔ (A†) (y - A x) = 0 := by
-  -- The fitted value belongs to the range of `A`, with preimage `x`.
-  have hx : A x ∈ A.range := ⟨x, rfl⟩
-  -- Rewrite minimization as orthogonality, then as membership in the kernel
-  -- of the adjoint, and finally as the adjoint sending the residual to zero.
-  rw [A.range.norm_eq_iInf_iff_inner_eq_zero hx,
-    ← Submodule.mem_orthogonal', A.orthogonal_range, LinearMap.mem_ker]
-  -- These expressions differ only by the coercion to an underlying linear map.
-  rfl
+  rw [A.range.norm_eq_iInf_iff_inner_eq_zero (by simp),
+    ← Submodule.mem_orthogonal', A.orthogonal_range, LinearMap.mem_ker, coe_coe, map_sub]
 
 /-- The residual norm at `x` is minimal among all points of `E` if and only if
 the adjoint of `A` sends the residual `y - A x` to zero. -/
 theorem forall_norm_sub_apply_le_iff_adjoint_apply_sub_eq_zero
     (A : E →L[𝕜] F) (y : F) (x : E) :
     (∀ z : E, ‖y - A x‖ ≤ ‖y - A z‖) ↔ (A†) (y - A x) = 0 := by
-  -- Residual norms are bounded below by zero. This fact lets us compare their
-  -- conditional infimum with any particular residual norm.
-  have residual_norms_bddBelow :
-      BddBelow (Set.range fun w : A.range => ‖y - w‖) :=
+  have residual_norms_bddBelow : BddBelow (Set.range fun w : A.range => ‖y - w‖) :=
     ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩
-  -- Rewrite the adjoint equation as minimization over `A.range`.
   rw [← A.norm_sub_apply_eq_iInf_iff_adjoint_apply_sub_eq_zero y x]
   constructor
   · intro h
     apply le_antisymm
-    · -- The hypothesis makes the residual at `x` a lower bound for all
-      -- residuals coming from points in `A.range`.
-      apply le_ciInf
-      intro w
-      -- Since `w` belongs to `A.range`, it equals `A z` for some `z : E`.
-      obtain ⟨z, hz⟩ := w.property
-      rw [← hz]
-      exact h z
-    · -- The infimum is at most the residual at the particular range point
-      -- `A x`.
-      exact ciInf_le residual_norms_bddBelow ⟨A x, ⟨x, rfl⟩⟩
+    · apply le_ciInf
+      simpa
+    · exact ciInf_le residual_norms_bddBelow ⟨A x, ⟨x, rfl⟩⟩
   · intro h z
-    -- The fitted value `A z` is an admissible point of `A.range`, so its
-    -- residual norm is at least the infimum.
     rw [h]
     exact ciInf_le residual_norms_bddBelow ⟨A z, ⟨z, rfl⟩⟩
 
