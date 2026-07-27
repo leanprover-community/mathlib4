@@ -35,11 +35,8 @@ exact pairings and duals.
 
 ## Future work
 
-* Show that `X ⊗ Y` and `Yᘁ ⊗ Xᘁ` form an exact pairing.
-* Show that the left adjoint mate of the right adjoint mate of a morphism is the morphism itself.
 * Simplify constructions in the case where a symmetry or braiding is present.
 * Show that `ᘁ` gives an equivalence of categories `C ≅ (Cᵒᵖ)ᴹᵒᵖ`.
-* Define pivotal categories (rigid categories equipped with a natural isomorphism `ᘁᘁ ≅ 𝟙 C`).
 
 ## Notes
 
@@ -551,17 +548,21 @@ theorem tensorRightHomEquiv_symm_coevaluation_comp_whiskerRight {Y Y' Z : C} [Ex
     _ = _ := by
       rw [evaluation_coevaluation'']; monoidal
 
-set_option backward.isDefEq.respectTransparency.types false in
-@[simp]
-theorem tensorLeftHomEquiv_whiskerLeft_comp_evaluation {Y Z : C} [HasLeftDual Z] (f : Y ⟶ ᘁZ) :
-    (tensorLeftHomEquiv _ _ _ _) (Z ◁ f ≫ ε_ _ _) = f ≫ (ρ_ _).inv :=
+lemma tensorLeftHomEquiv_whiskerLeft_comp_evaluation_of_exactPairing
+    {X Y Y' : C} [ExactPairing Y Y'] (f : X ⟶ Y) :
+    (tensorLeftHomEquiv _ _ _ _) (Y' ◁ f ≫ ε_ _ _) = f ≫ (ρ_ _).inv :=
   calc
-    _ = 𝟙 _ ⊗≫ (η_ (ᘁZ : C) Z ▷ Y ≫ ((ᘁZ) ⊗ Z) ◁ f) ⊗≫ (ᘁZ) ◁ ε_ (ᘁZ) Z := by
+    _ = 𝟙 _ ⊗≫ (η_ Y Y' ▷ X ≫ (Y ⊗ Y') ◁ f) ⊗≫ Y ◁ ε_ Y Y' := by
       dsimp [tensorLeftHomEquiv]; monoidal
-    _ = f ⊗≫ (η_ (ᘁZ) Z ▷ (ᘁZ) ⊗≫ (ᘁZ) ◁ ε_ (ᘁZ) Z) := by
+    _ = f ⊗≫ (η_ Y Y' ▷ Y ⊗≫ Y ◁ ε_ Y Y') := by
       rw [← whisker_exchange]; monoidal
     _ = _ := by
       rw [evaluation_coevaluation'']; monoidal
+
+@[simp]
+theorem tensorLeftHomEquiv_whiskerLeft_comp_evaluation {Y Z : C} [HasLeftDual Z] (f : Y ⟶ ᘁZ) :
+    (tensorLeftHomEquiv _ _ _ _) (Z ◁ f ≫ ε_ _ _) = f ≫ (ρ_ _).inv :=
+  tensorLeftHomEquiv_whiskerLeft_comp_evaluation_of_exactPairing f
 
 @[simp]
 theorem tensorLeftHomEquiv_whiskerRight_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y]
@@ -611,6 +612,25 @@ theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDua
     (fᘁ ▷ X) ≫ ε_ X (Xᘁ) = ((Yᘁ) ◁ f) ≫ ε_ Y (Yᘁ) := by
   apply_fun tensorRightHomEquiv _ X (Xᘁ) _
   simp
+
+lemma leftAdjointMate_rightAdjointMate {X Y : C}
+    [HasLeftDual X] [HasRightDual X] [HasLeftDual Y] [HasRightDual Y] (f : X ⟶ Y) :
+    (ᘁ(fᘁ)) = f := by
+  rw [← cancel_mono (ρ_ Y).inv]
+  have h : _ ≫ ε_ Y Yᘁ = _ :=
+    (leftAdjointMate_comp_evaluation (fᘁ)).trans (rightAdjointMate_comp_evaluation f)
+  simpa only [tensorLeftHomEquiv_whiskerLeft_comp_evaluation_of_exactPairing] using
+    congrArg (tensorLeftHomEquiv X Y (Yᘁ) (𝟙_ C)) h
+
+lemma rightAdjointMate_leftAdjointMate {X Y : C}
+    [HasLeftDual X] [HasRightDual X] [HasLeftDual Y] [HasRightDual Y] (f : X ⟶ Y) :
+    (ᘁf)ᘁ = f := by
+  rw [← cancel_epi (ρ_ X).hom]
+  have h : η_ (ᘁX) X ≫ (ᘁX) ◁ rightAdjointMate (leftAdjointMate f) = _ :=
+    (coevaluation_comp_rightAdjointMate (leftAdjointMate f)).trans
+      (coevaluation_comp_leftAdjointMate f)
+  simpa only [tensorLeftHomEquiv_symm_coevaluation_comp_whiskerLeft] using
+    congrArg (tensorLeftHomEquiv (𝟙_ C) (ᘁX) X Y).symm h
 
 namespace ExactPairing
 

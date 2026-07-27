@@ -56,9 +56,8 @@ abbrev pivotalIso : 𝟭 C ≅ doubleRightDualFunctor C := PivotalCategory.pivot
 set_option backward.isDefEq.respectTransparency false in
 lemma rightAdjointMate_rightAdjointMate {X Y : C} (f : X ⟶ Y) :
     (fᘁ)ᘁ = (pivotalIso.app X).inv ≫ f ≫ (pivotalIso.app Y).hom := by
-  rw [← cancel_mono (pivotalIso.app Y).inv]
-  erw [pivotalIso.inv.naturality]
-  simp
+  simp [← cancel_mono (pivotalIso.app Y).inv, ← doubleRightDualFunctor_map,
+    pivotalIso.inv.naturality]
 
 /-- In a pivotal category, `X` is a left dual of its right dual `Xᘁ`. -/
 @[implicit_reducible]
@@ -80,22 +79,10 @@ lemma pivotalExactPairing_evaluation (X : C) :
 def leftDualIsoRightDual (X : C) : (ᘁX) ≅ Xᘁ :=
   leftDualIso HasLeftDual.exact (pivotalExactPairing X)
 
-omit [PivotalCategory C] in
-private lemma leftAdjointMate_rightAdjointMate {X Y : C} (f : X ⟶ Y) :
-    leftAdjointMate (rightAdjointMate f) = f := by
-  rw [← cancel_mono (ρ_ Y).inv]
-  have h : _ ≫ ε_ Y Yᘁ = _ :=
-    (leftAdjointMate_comp_evaluation (fᘁ)).trans (rightAdjointMate_comp_evaluation f)
-  have e (g : X ⟶ Y) :=
-    @tensorLeftHomEquiv_whiskerLeft_comp_evaluation C _ _ X (Yᘁ) ⟨Y⟩ g
-  change ∀ g, (tensorLeftHomEquiv X Y (Yᘁ) (𝟙_ C))
-    ((Yᘁ) ◁ g ≫ ε_ Y (Yᘁ)) = g ≫ (ρ_ Y).inv at e
-  rw [← e, h, e]
-
-private lemma pivotalLeftAdjointMate {X Y : C} (f : X ⟶ Y) :
+lemma pivotal_adjointMate {X Y : C} (f : X ⟶ Y) :
     letI : HasLeftDual X := { leftDual := Xᘁ, exact := pivotalExactPairing X }
     letI : HasLeftDual Y := { leftDual := Yᘁ, exact := pivotalExactPairing Y }
-  leftAdjointMate f = fᘁ := by
+  (ᘁf) = fᘁ := by
   rw [← leftAdjointMate_rightAdjointMate (fᘁ), rightAdjointMate_rightAdjointMate]
   dsimp only [leftAdjointMate]
   rw [pivotalExactPairing_coevaluation, pivotalExactPairing_evaluation]
@@ -104,7 +91,7 @@ private lemma pivotalLeftAdjointMate {X Y : C} (f : X ⟶ Y) :
 @[reassoc]
 lemma leftDualIsoRightDual_hom_naturality {X Y : C} (f : X ⟶ Y) :
     (ᘁf) ≫ (leftDualIsoRightDual X).hom = (leftDualIsoRightDual Y).hom ≫ fᘁ := by
-  simp [leftDualIsoRightDual, leftDualIso, ← @comp_leftAdjointMate, ← pivotalLeftAdjointMate f,
+  simp [leftDualIsoRightDual, leftDualIso, ← @comp_leftAdjointMate, ← pivotal_adjointMate f,
     ← @comp_leftAdjointMate]
 
 @[reassoc]
