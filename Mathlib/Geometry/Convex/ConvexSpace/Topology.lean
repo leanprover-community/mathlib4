@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.SetTheory.Cardinal.NatCard
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # The topology on the standard simplex
