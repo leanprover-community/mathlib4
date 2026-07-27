@@ -13,7 +13,6 @@ import Mathlib.Topology.Algebra.Order.Field
 
 import Mathlib.Algebra.Order.Field.Basic
 
-
 @[expose] public section
 
 open scoped TensorProduct Topology Pointwise
@@ -54,7 +53,6 @@ def tensorProductTopologies := { t : TopologicalSpace (M ⊗[R] N) |
     IsTopologicalAddGroup (M ⊗[R] N) ∧
     LocallyConvexSpace R (M ⊗[R] N) ∧
     ContinuousSMul R (M ⊗[R] N) ∧
-    -- Continuous (fun (p : M × N) ↦ TensorProduct.mk R M N p.1 p.2)
     Continuous (Function.uncurry (tmul R : M → N → M ⊗[R] N))
 }
 
@@ -64,12 +62,6 @@ instance instTopologicalSpaceProjectiveTensorProduct : TopologicalSpace (M ⊗[R
   sInf (tensorProductTopologies R)
 
 instance : LocallyConvexSpace R (M ⊗[R]π N) := LocallyConvexSpace.sInf fun _ ⟨_, h, _⟩ ↦ h
-
-example {t : TopologicalSpace (M ⊗[R] N)} (ht : t ∈ tensorProductTopologies R) :
-  instTopologicalSpaceProjectiveTensorProduct ≤ t := sInf_le ht
-
-example {t : TopologicalSpace (M ⊗[R] N)} (ht : t ∈ tensorProductTopologies R) :
-    𝓝 (0 : (M ⊗[R]π N)) ≤ 𝓝 (0 : (M ⊗[R] N)) := nhds_mono (sInf_le ht)
 
 end CommSemiring
 section NontriviallyNormedField
