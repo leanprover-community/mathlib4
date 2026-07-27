@@ -99,7 +99,7 @@ theorem Joined.inv {G : Type*} [Inv G] [TopologicalSpace G] [ContinuousInv G]
 variable (X)
 
 /-- The setoid corresponding the equivalence relation of being joined by a continuous path. -/
-@[implicit_reducible]
+@[instance_reducible]
 def pathSetoid : Setoid X where
   r := Joined
   iseqv := Equivalence.mk Joined.refl Joined.symm Joined.trans
@@ -183,6 +183,7 @@ theorem JoinedIn.target_mem (h : JoinedIn F x y) : y ∈ F :=
 def JoinedIn.somePath (h : JoinedIn F x y) : Path x y :=
   Classical.choose h
 
+@[simp]
 theorem JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F :=
   Classical.choose_spec h t
 
@@ -528,7 +529,7 @@ theorem IsPathConnected.exists_path_through_family' {n : ℕ}
     ∃ (γ : Path (p 0) (p (last n))) (t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
   rcases h.exists_path_through_family p hp with ⟨γ, hγ⟩
   rcases hγ with ⟨h₁, h₂⟩
-  simp only [range, mem_setOf_eq] at h₂
+  simp only [range, mem_ofPred_eq] at h₂
   rw [range_subset_iff] at h₁
   choose! t ht using h₂
   exact ⟨γ, t, h₁, ht⟩
@@ -547,7 +548,7 @@ class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 theorem pathConnectedSpace_iff_zerothHomotopy :
     PathConnectedSpace X ↔ Nonempty (ZerothHomotopy X) ∧ Subsingleton (ZerothHomotopy X) := by
-  letI := pathSetoid X
+  let := pathSetoid X
   constructor
   · intro h
     refine ⟨(nonempty_quotient_iff _).mpr h.1, ⟨?_⟩⟩
@@ -575,7 +576,7 @@ theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (
 
 theorem isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConnectedSpace F := by
   rw [pathConnectedSpace_iff_univ, IsInducing.subtypeVal.isPathConnected_iff, image_univ,
-    Subtype.range_val_subtype, setOf_mem_eq]
+    Subtype.range_val_subtype, ofPred_mem_eq]
 
 theorem isPathConnected_univ [PathConnectedSpace X] : IsPathConnected (univ : Set X) :=
   pathConnectedSpace_iff_univ.mp inferInstance
@@ -599,6 +600,55 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by fun_prop⟩, by simp, by simp⟩⟩
   nonempty := inferInstance
+
+/-! ### Products and pi types -/
+
+section Prod
+
+variable {s : Set X} {t : Set Y}
+
+/-- If `x₁` is joined to `x₂` within `s` and `y₁` to `y₂` within `t`, then `(x₁, y₁)` is joined
+to `(x₂, y₂)` within `s ×ˢ t`. -/
+theorem JoinedIn.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : JoinedIn s x₁ x₂) (hy : JoinedIn t y₁ y₂) :
+    JoinedIn (s ×ˢ t) (x₁, y₁) (x₂, y₂) :=
+  ⟨hx.somePath.prod hy.somePath, by simp⟩
+
+/-- The product of two path-connected sets is path-connected. -/
+theorem IsPathConnected.prod (hs : IsPathConnected s) (ht : IsPathConnected t) :
+    IsPathConnected (s ×ˢ t) := by
+  rw [isPathConnected_iff]
+  refine ⟨hs.nonempty.prod ht.nonempty, fun (x₁, y₁) ⟨hx₁, hy₁⟩ (x₂, y₂) ⟨hx₂, hy₂⟩ ↦ ?_⟩
+  exact hs.joinedIn x₁ hx₁ x₂ hx₂ |>.prod <| ht.joinedIn y₁ hy₁ y₂ hy₂
+
+instance Prod.instPathConnectedSpace [PathConnectedSpace X] [PathConnectedSpace Y] :
+    PathConnectedSpace (X × Y) := by
+  rw [pathConnectedSpace_iff_univ, ← Set.univ_prod_univ]
+  exact isPathConnected_univ.prod isPathConnected_univ
+
+end Prod
+
+section Pi
+
+variable {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
+
+/-- If for each `i`, `x i` is joined to `y i` within `s i`, then `x` is joined to `y` within the
+product set `Set.univ.pi s`. -/
+theorem JoinedIn.pi {s : ∀ i, Set (Z i)} {x y : ∀ i, Z i}
+    (h : ∀ i, JoinedIn (s i) (x i) (y i)) : JoinedIn (Set.univ.pi s) x y :=
+  ⟨.pi (fun i ↦ (h i).somePath), by simp⟩
+
+/-- The product of a family of path-connected sets is path-connected. -/
+theorem IsPathConnected.pi {s : ∀ i, Set (Z i)} (h : ∀ i, IsPathConnected (s i)) :
+    IsPathConnected (Set.univ.pi s) := by
+  choose x hx hjoin using h
+  exact ⟨x, by simpa, fun y hy ↦ .pi fun i ↦ hjoin i (by grind)⟩
+
+instance Pi.instPathConnectedSpace [∀ i, PathConnectedSpace (Z i)] :
+    PathConnectedSpace (∀ i, Z i) := by
+  rw [pathConnectedSpace_iff_univ, ← Set.pi_univ]
+  exact .pi fun _ ↦ isPathConnected_univ
+
+end Pi
 
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]

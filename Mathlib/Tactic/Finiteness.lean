@@ -111,7 +111,7 @@ macro_rules
   `(tactic| · ($[have := $h];*); finiteness_nonterminal $c*)
 
 /-!
- We register `finiteness` with the `hint` tactic.
- -/
+We register `finiteness` with the `hint` tactic.
+-/
 register_hint 1000 finiteness
 register_try?_tactic (priority := 1000) finiteness

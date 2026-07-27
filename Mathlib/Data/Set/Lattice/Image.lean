@@ -231,7 +231,7 @@ theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ i, p i → Set α} (hp
     {f : α → β} (h : InjOn f (⋃ (i) (hi), s i hi)) :
     (f '' ⋂ (i) (hi), s i hi) = ⋂ (i) (hi), f '' s i hi := by
   simp only [iInter, iInf_subtype']
-  haveI : Nonempty { i // p i } := nonempty_subtype.2 hp
+  have : Nonempty { i // p i } := nonempty_subtype.2 hp
   apply InjOn.image_iInter_eq
   simpa only [iUnion, iSup_subtype'] using h
 

@@ -58,6 +58,7 @@ def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
     π := { app := fun S => CompHausLike.ofHom (Y := X.diagram.obj S) _
             ⟨S.proj, IsLocallyConstant.continuous (S.proj_isLocallyConstant)⟩ } }
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) :=
   CompHausLike.isIso_of_bijective _
     (by

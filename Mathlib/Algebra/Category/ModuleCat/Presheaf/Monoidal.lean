@@ -101,7 +101,6 @@ end Monoidal
 
 open Monoidal
 
-set_option backward.isDefEq.respectTransparency false in
 open ModuleCat.MonoidalCategory in
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where

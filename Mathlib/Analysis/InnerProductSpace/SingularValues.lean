@@ -101,8 +101,9 @@ theorem singularValues_nonneg (i : ℕ) : 0 ≤ T.singularValues i := by
   rw [singularValues, Finsupp.embDomain_apply, Finsupp.ofSupportFinite_coe]
   split_ifs <;> positivity
 
-theorem singularValues_pos_iff_ne_zero (i : ℕ) : 0 < T.singularValues i ↔ T.singularValues i ≠ 0 :=
-  by grind [T.singularValues_nonneg i]
+theorem singularValues_pos_iff_ne_zero (i : ℕ) :
+    0 < T.singularValues i ↔ T.singularValues i ≠ 0 := by
+  grind [T.singularValues_nonneg i]
 
 /--
 Connection between `LinearMap.singularValues` and `LinearMap.IsSymmetric.eigenvalues`.
@@ -121,7 +122,7 @@ theorem singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (hi :
   T.singularValues_fin hn ⟨i, hi⟩
 
 theorem singularValues_of_finrank_le {i : ℕ} (hi : finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
-  apply Finsupp.embDomain_notin_range
+  apply Finsupp.embDomain_of_notMem_range
   simp [hi]
 
 theorem sq_singularValues_fin {n : ℕ} (hn : finrank 𝕜 E = n) (i : Fin n) :

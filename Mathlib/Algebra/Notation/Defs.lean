@@ -50,6 +50,7 @@ class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
 attribute [notation_class smul Simps.copySecond] HSMul
 attribute [notation_class nsmul Simps.nsmulArgs] HSMul
 attribute [notation_class zsmul Simps.zsmulArgs] HSMul
+attribute [notation_class vadd Simps.copySecond] HVAdd
 
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type u) (P : Type v) where
