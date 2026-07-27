@@ -9,7 +9,13 @@ public import Mathlib
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
 /-!
-# ...
+# The topology on the standard simplex
+
+In this file, we define the topology on the standard simplex `StdSimplex R M`.
+When `M` is finite, the topology is the one that is induced by the
+embedding `StdSimplex R M → (M → R)`. We use the supremum of the coinduced
+topologies for the maps `StdSimplex.map f : StdSimplex R ι → StdSimplex R M`
+where `f : ι → M` is a map from a finite set `ι`.
 
 -/
 
@@ -32,6 +38,9 @@ variable (R : Type u) [PartialOrder R] [Ring R] [TopologicalSpace R]
 
 namespace StdSimplex
 
+/-- The topology on `StdSimplex R ι` that is induced by the embedding
+`StdSimplex R ι → (ι → R)`. This is the correct topoplogy only when
+`ι` is finite, see `StdSimplex.isEmbedding_toFun_comp_weights`. -/
 abbrev topologicalSpaceInduced (ι : Type*) : TopologicalSpace (StdSimplex R ι) :=
   .induced (fun t ↦ t.weights : StdSimplex R ι → ι → R) inferInstance
 
@@ -70,9 +79,8 @@ lemma continuous_map_weights_apply
   simp only [this]
   fun_prop
 
-lemma continuous_map
-    [IsStrictOrderedRing R] [IsTopologicalRing R] {ι₁ ι₂ : Type*}
-    [Finite ι₁] (f : ι₁ → ι₂) :
+lemma continuous_map [IsStrictOrderedRing R] [IsTopologicalRing R]
+    {ι₁ ι₂ : Type*} [Finite ι₁] (f : ι₁ → ι₂) :
     Continuous (map (R := R) f) := by
   rw [continuous_iff]
   fun_prop
@@ -82,11 +90,17 @@ end topologicalSpaceInduced
 variable [IsStrictOrderedRing R] [IsTopologicalRing R]
 
 attribute [local instance] topologicalSpaceInduced in
+/-- This is the topology on `StdSimplex R M` when `M` is a possibly
+infinite type. The lemma `StdSimplex.continuous_iff` shows that
+this topology is characterized by the fact that a map `f` from
+`StdSimplex R M` is continuous iff for any map `g : ι → M`
+with a finite `ι`, the composition `f ∘ map g : StdSimplex R ι → _`
+is continuous, where `StdSimplex R ι` is equipped with the
+topology that is induced by the embedding `StdSimplex R ι → (ι → R)`. -/
 @[no_expose]
 public noncomputable instance topologicalSpace (M : Type v) :
     TopologicalSpace (StdSimplex R M) :=
-  ⨆ (ι : Type v) (_ : Finite ι) (f : ι → M),
-    TopologicalSpace.coinduced (map f) inferInstance
+  ⨆ (ι : Type v) (_ : Finite ι) (f : ι → M), .coinduced (map f) inferInstance
 
 lemma topologicalSpace_eq (M : Type v) [Finite M] :
     topologicalSpace R M = topologicalSpaceInduced _ _ := by
@@ -96,11 +110,11 @@ lemma topologicalSpace_eq (M : Type v) [Finite M] :
   · refine le_trans ?_ (le_iSup _ M)
     refine le_trans ?_ (le_iSup _ (by assumption))
     refine le_trans ?_ (le_iSup _ id)
-    rw [show map id = id by aesop]
+    rw [map_id']
     rfl
 
 variable {R} in
-lemma continuous_iff
+public lemma continuous_iff
     {M : Type v} {T : Type*} [TopologicalSpace T] (f : StdSimplex R M → T) :
     Continuous f ↔ ∀ (ι : Type v) [Finite ι] (g : ι → M),
       Continuous (f ∘ map g) := by
@@ -147,7 +161,7 @@ public lemma continuous_iff'
 
 open topologicalSpaceInduced in
 @[fun_prop]
-lemma continuous_weights_apply {M : Type*} (m : M) :
+public lemma continuous_weights_apply {M : Type*} (m : M) :
     Continuous (fun (t : StdSimplex R M) ↦ t.weights m) := by
   rw [continuous_iff]
   intro ι _ g
@@ -155,8 +169,9 @@ lemma continuous_weights_apply {M : Type*} (m : M) :
   exact continuous_map_weights_apply R g m
 
 -- to be moved
-lemma range_toFun_comp_weights (M : Type*) [Fintype M] :
-    Set.range (fun (t : StdSimplex R M) ↦ (t.weights : M → R)) =
+-- needs clean up
+public lemma range_toFun_comp_weights (M : Type*) [Fintype M] :
+    Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
     (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
   ext s
   simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
@@ -180,17 +195,21 @@ lemma range_toFun_comp_weights (M : Type*) [Fintype M] :
       simp only [Finsupp.coe_finsetSum, Finset.sum_apply]
       rw [Finset.sum_eq_single m (by aesop) (by simp), Finsupp.single_eq_same]
 
+lemma isEmbedding_toFun_comp_weights (M : Type*) [Finite M] :
+    IsEmbedding (fun t ↦ t.weights : StdSimplex R M → M → R) where
+  eq_induced := by rw [topologicalSpace_eq]
+  injective _ _ h := by ext; apply congr_fun h
+
 lemma isClosedEmbedding_toFun_comp_weights
     [OrderClosedTopology R] (M : Type*) [Finite M] :
     IsClosedEmbedding (fun t ↦ t.weights : StdSimplex R M → M → R) where
-  eq_induced := by rw [topologicalSpace_eq]
-  injective _ _ h := by ext; apply congr_fun h
+  toIsEmbedding := isEmbedding_toFun_comp_weights R M
   isClosed_range := by
     have := Fintype.ofFinite M
     rw [range_toFun_comp_weights]
-    exact IsClosed.inter (isClosed_iInter
-      (fun _ ↦ isClosed_le (by fun_prop) (by fun_prop)))
-      (isClosed_eq (by fun_prop) (by fun_prop))
+    refine IsClosed.inter (isClosed_iInter (fun _ ↦ isClosed_le ?_ ?_))
+      (isClosed_eq ?_ ?_)
+    all_goals fun_prop
 
 end StdSimplex
 

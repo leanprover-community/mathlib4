@@ -136,6 +136,8 @@ lemma map_duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M
 lemma map_id (f : StdSimplex R M) : f.map id = f := by
   ext; simp
 
+lemma map_id' : map (R := R) (id : M → M) = id := by aesop
+
 lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
   ext; simp [mapDomain_comp]
