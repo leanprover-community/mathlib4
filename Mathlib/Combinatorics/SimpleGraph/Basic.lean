@@ -903,10 +903,6 @@ theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
   grind [mem_neighborSet, bot_adj]
 
-theorem disjoint_neighborSet {G₁ G₂ : SimpleGraph V} {v : V} (h : Disjoint G₁ G₂) :
-    Disjoint (G₁.neighborSet v) (G₂.neighborSet v) := by
-  rw [Set.disjoint_iff_inter_eq_empty, ← neighborSet_inf, h.eq_bot, neighborSet_bot]
-
 variable {G} in
 theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
   ⟨u, v, hadj.ne⟩

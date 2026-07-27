@@ -213,16 +213,16 @@ theorem neighborFinset_sdiff [DecidableEq V] {G₁ G₂ : SimpleGraph V}
     (G₁ \ G₂).neighborFinset v = G₁.neighborFinset v \ G₂.neighborFinset v := by
   simp [← Finset.coe_inj]
 
-theorem disjoint_neighborFinset {G₁ G₂ : SimpleGraph V} [Fintype (G₁.neighborSet v)]
-    [Fintype (G₂.neighborSet v)] (h : Disjoint G₁ G₂) :
-    Disjoint (G₁.neighborFinset v) (G₂.neighborFinset v) := by
-  simp [← Finset.disjoint_coe, disjoint_neighborSet h]
+theorem disjoint_neighborFinset_of_disjoint [Fintype <| H.neighborSet v] (h : Disjoint G H) :
+    Disjoint (G.neighborFinset v) (H.neighborFinset v) := by
+  simp [← Finset.disjoint_coe, disjoint_neighborSet.mpr h v]
 
 theorem neighborFinset_sup_of_disjoint {G₁ G₂ : SimpleGraph V}
     [Fintype ((G₁ ⊔ G₂).neighborSet v)] [Fintype (G₁.neighborSet v)] [Fintype (G₂.neighborSet v)]
     (h : Disjoint G₁ G₂) :
     (G₁ ⊔ G₂).neighborFinset v =
-      (G₁.neighborFinset v).disjUnion (G₂.neighborFinset v) (disjoint_neighborFinset v h) := by
+      (G₁.neighborFinset v).disjUnion (G₂.neighborFinset v)
+        (disjoint_neighborFinset_of_disjoint G₁ G₂ v h) := by
   simp [← Finset.coe_inj, Finset.coe_disjUnion]
 
 @[simp] lemma neighborFinset_eq_empty : G.neighborFinset v = ∅ ↔ G.IsIsolated v := by
@@ -235,10 +235,6 @@ protected alias ⟨IsIsolated.of_neighborFinset_eq_empty, IsIsolated.neighborFin
     := neighborFinset_eq_empty
 
 attribute [simp] IsIsolated.neighborFinset_eq_empty
-
-theorem disjoint_neighborFinset_of_disjoint [Fintype <| H.neighborSet v] (h : Disjoint G H) :
-    Disjoint (G.neighborFinset v) (H.neighborFinset v) := by
-  simp [← Finset.disjoint_coe, disjoint_neighborSet.mpr h v]
 
 /-- `G.degree v` is the number of vertices adjacent to `v`. -/
 def degree : ℕ := #(G.neighborFinset v)
