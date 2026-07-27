@@ -71,24 +71,29 @@ leading columns of its rows. -/
 structure IsPivotFinset [Zero R] [LT m] [LT n] (A : Matrix m n R) (s : Finset n) :
     Prop where
   rowEchelon : A.RowEchelon
-  mem_iff : ∀ c, c ∈ s ↔ ∃ i, A.IsLeadingEntry i c
+  -- a similar design to FilterBases that states a separate iff lemma later.
+  mem_iff' : ∀ c : n, c ∈ s ↔ ∃ i, A.IsLeadingEntry i c
+
+theorem IsPivotFinset.mem_iff [Zero R] [LT m] [LT n] {A : Matrix m n R} {s : Finset n}
+    (h : A.IsPivotFinset s) {c : n} : c ∈ s ↔ ∃ i, A.IsLeadingEntry i c :=
+  h.mem_iff' c
 
 theorem IsPivotFinset.rank_le_card [LinearOrder m] [Fintype n] [LinearOrder n]
     [CommSemiring R] [StrongRankCondition R] {A : Matrix m n R} {s : Finset n}
     (h : A.IsPivotFinset s) : A.rank ≤ s.card := by
-  choose f hf using fun c : s => (h.mem_iff _).mp c.2
+  choose f hf using fun c : s => h.mem_iff.mp c.2
   refine (rank_le_card_of_row_eq_zero A (s.attach.image f) fun i hi => ?_).trans
     (card_image_le.trans_eq card_attach)
   contrapose! hi
   obtain ⟨c, hc⟩ := exists_isLeadingEntry_of_ne_zero hi
-  have hcs : c ∈ s := (h.mem_iff _).mpr ⟨i, hc⟩
+  have hcs : c ∈ s := h.mem_iff.mpr ⟨i, hc⟩
   refine mem_image.mpr ⟨⟨c, hcs⟩, mem_attach _ _, ?_⟩
   exact h.rowEchelon.isLeadingEntry_row_eq (hf ⟨c, hcs⟩) hc
 
 theorem IsPivotFinset.card_le_rank [LT m] [Fintype n] [LinearOrder n]
     [CommRing R] [IsDomain R] {A : Matrix m n R} {s : Finset n}
     (h : A.IsPivotFinset s) : s.card ≤ A.rank := by
-  choose f hf using fun c : s => (h.mem_iff _).mp c.2
+  choose f hf using fun c : s => h.mem_iff.mp c.2
   have htri : (A.submatrix f Subtype.val).BlockTriangular id := fun i j hij =>
     (hf i).1 _ hij
   have hdet : (A.submatrix f Subtype.val).det ≠ 0 := by
