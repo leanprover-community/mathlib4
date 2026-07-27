@@ -4,8 +4,20 @@ import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 public import Mathlib.Tactic.Echelon.Interface
+public import Mathlib.LinearAlgebra.Matrix.Cartan
 
 /-! # Tests for the `eval_rank` tactic -/
+
+example (A : Matrix (Fin 1) (Fin 3) ℤ) (hA : A = !![1, 2, 3]) :
+     A.rank = 1 := by
+  rw [hA]
+  eval_rank
+
+/-
+take existing definitions that will unfold to a literals
+-/
+example : Matrix.rank (R := ℤ) CartanMatrix.E₇ = 7 := by unfold CartanMatrix.E₇; eval_rank
+
 
 example : Matrix.rank (R := ℤ)
     !![1, 2, 3] = 1 := by
