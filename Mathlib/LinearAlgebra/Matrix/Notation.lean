@@ -401,7 +401,7 @@ section Submatrix
 
 @[simp]
 theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' → n') :
-    submatrix A row col = ![] :=
+    submatrix A row col = of ![] :=
   empty_eq _
 
 set_option backward.isDefEq.respectTransparency false in
