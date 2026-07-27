@@ -22,12 +22,6 @@ open scoped MatrixGroups
 
 namespace SL2Gen
 
-/-- A transvection `transvection i j hij b` lies in `lineStab (span F {Pi.single i 1})`. -/
-lemma transvection_mem_lineStab {i j : ι} (hij : i ≠ j) (b : F) :
-    transvection hij b ∈ lineStab (Submodule.span F {(Pi.single i (1 : F) : ι → F)}) :=
-  fun w ↦ Submodule.mem_span_singleton.2 ⟨b * w j, by simp [mul_smul,
-    Matrix.SpecialLinearGroup.smul_def, transvection_coe, add_smul, Matrix.single_mulVec_eq]⟩
-
 /-- Every transvection in `SL ι F` whose indices are `(i₁, i₂)` or `(i₂, i₁)` is in the join
 of `lineStab(span F {e_{i₁}})` and `lineStab(span F {e_{i₂}})`. -/
 lemma transvection_mem_lineStab_sup (t : TransvectionStruct (Fin 2) F) :
@@ -50,6 +44,9 @@ lemma SL_card_two_lineStab_sup_eq_top :
       (fun i j hij a ↦ by simpa using transvection_mem_lineStab_sup ⟨i, j, hij, a⟩)
       (fun _ _ ↦ mul_mem) M
 
+@[deprecated (since := "2026-07-27")]
+alias transvection_mem_lineStab := Matrix.SpecialLinearGroup.transvection_mem_lineStab
+
 end SL2Gen
 
 open scoped LinearAlgebra.Projectivization
@@ -67,12 +64,7 @@ lemma PSL.iSup_lineStab_eq_top :
 `iwasawaT` subgroups equals all of `PSL`. -/
 lemma PSL.iSup_iwasawaT_eq_top :
     iSup (PSL.iwasawaT (F := F) (ι := Fin 2)) = ⊤ := by
-  have step1 : iSup (PSL.iwasawaT (F := F) (ι := Fin 2)) =
-      Subgroup.map (QuotientGroup.mk' (Subgroup.center (Matrix.SpecialLinearGroup (Fin 2) F)))
-        (⨆ p : ℙ F (Fin 2 → F),
-          Matrix.SpecialLinearGroup.lineStab (F := F) (ι := Fin 2) p.submodule) := by
-    rw [Subgroup.map_iSup]
-  rw [step1, PSL.iSup_lineStab_eq_top]
+  rw [← Subgroup.map_iSup, PSL.iSup_lineStab_eq_top]
   exact Subgroup.map_top_of_surjective _ (QuotientGroup.mk'_surjective _)
 
 open MulAction
@@ -80,11 +72,10 @@ open MulAction
 /-- The Iwasawa structure on PSL(2, F). -/
 noncomputable abbrev PSL2.Iwasawa : IwasawaStructure PSL(2, F) (ℙ F (Fin 2 → F)) where
   T := PSL.iwasawaT
-  is_comm p := by
-    have hSL : IsMulCommutative (lineStab (F := F) (ι := Fin 2) p.submodule) := by
-      rw [← Projectivization.mk_rep p, Projectivization.submodule_mk]
-      exact lineStab_isMulCommutative_of_span p.rep p.rep_nonzero
-    exact Subgroup.map_isMulCommutative _ _
+  is_comm p :=
+    haveI : IsMulCommutative (lineStab (F := F) (ι := Fin 2) p.submodule) :=
+      p.submodule_eq.symm ▸ lineStab_isMulCommutative_of_span p.rep p.rep_nonzero
+    Subgroup.map_isMulCommutative _ _
   is_conj g p := by
     obtain ⟨g_SL, rfl⟩ := QuotientGroup.mk_surjective g
     rw [Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk]
