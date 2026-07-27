@@ -22,7 +22,7 @@ where `f : ι → M` is a map from a finite set `ι`.
 For a convex space `X` that is also equipped with a topology, we introduce
 a typeclass `IsContinuousConvexSpace R X` which says that the map
 `sConvexComb : StdSimplex R X → X` is continuous. We show that
-`IsContinuousConvexSpace R (StdSimplex R M)` hold for any type `M`.
+`IsContinuousConvexSpace R (StdSimplex R M)` holds for any type `M`.
 
 -/
 
