@@ -220,7 +220,7 @@ instance Pi.locallyConnectedSpace [∀ i, TopologicalSpace (X i)]
     [∀ i, LocallyConnectedSpace (X i)] [∀ i, PreconnectedSpace (X i)] :
     LocallyConnectedSpace (∀ i, X i) :=
   locallyConnectedSpace_of_finite_nonpreconnected
-    (Set.finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
+    (finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
 
 /-- A product of spaces is locally connected iff it is empty, or every factor is locally
 connected and all but finitely many factors are preconnected. -/
