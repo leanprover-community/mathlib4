@@ -353,7 +353,7 @@ instance Pi.locallyPathConnectedSpace {Z : ι → Type*} [∀ i, TopologicalSpac
     [∀ i, LocallyPathConnectedSpace (Z i)] [∀ i, PathConnectedSpace (Z i)] :
     LocallyPathConnectedSpace (∀ i, Z i) :=
   locallyPathConnectedSpace_of_finite_nonpathconnected
-    (Set.finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
+    (finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
 
 /-- A product of spaces is locally path-connected iff it is empty, or every factor is locally
 path-connected and all but finitely many factors are path-connected. -/
