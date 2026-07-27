@@ -278,23 +278,33 @@ instance krullTopology_discreteUniformity_of_essFiniteType
   rw [SetLike.mem_coe, ← hpe]
   exact hp x hx
 
-variable (K L) in
-theorem AlgEquiv.totallyBounded_univ [Algebra.IsAlgebraic K L] :
-    TotallyBounded (Set.univ : Set Gal(L/K)) := by
+theorem AlgEquiv.totallyBounded_fixingSubgroup
+    (E : IntermediateField K L) [Algebra.IsAlgebraic E L] :
+    TotallyBounded (E.fixingSubgroup : Set Gal(L/K)) := by
   intro U hU
   rw [krullTopology_mem_uniformity_iff] at hU
   obtain ⟨s, hs⟩ := hU
-  let F := IntermediateField.adjoin K (s : Set L)
-  have : FiniteDimensional K F :=
+  let F := IntermediateField.adjoin E (s : Set L)
+  have : IsScalarTower K F L := ⟨fun a b c => smul_assoc a b.1 c⟩
+  have : FiniteDimensional E F :=
     IntermediateField.finiteDimensional_adjoin fun _ _ => Algebra.IsIntegral.isIntegral _
-  let f (σ : Gal(L/K)) : F →ₐ[K] L := σ.toAlgHom.comp (IsScalarTower.toAlgHom K F L)
-  refine ⟨Set.range (Function.invFun f), Set.finite_range _, fun σ _ => ?_⟩
+  let f (σ : Gal(L/E)) : F →ₐ[E] L := σ.toAlgHom.comp (IsScalarTower.toAlgHom E F L)
+  refine ⟨Set.range (AlgEquiv.restrictScalars K ∘ Function.invFun f),
+    Set.finite_range _, fun σ hσ => ?_⟩
+  let σE := E.fixingSubgroupEquiv ⟨σ, hσ⟩
   rw [Set.biUnion_range]
-  refine Set.mem_iUnion_of_mem (f σ) (hs σ _ fun x hx => ?_)
-  have hf : f (Function.invFun f (f σ)) ⟨x, IntermediateField.mem_adjoin_of_mem K hx⟩ =
-      f σ ⟨x, IntermediateField.mem_adjoin_of_mem K hx⟩ :=
-    DFunLike.congr_fun (Function.invFun_eq ⟨σ, rfl⟩) _
-  simpa [f] using hf.symm
+  refine Set.mem_iUnion_of_mem (f σE) (hs σ _ fun x hx => ?_)
+  let xE : F := ⟨x, IntermediateField.mem_adjoin_of_mem E hx⟩
+  have hf : f (Function.invFun f (f σE)) xE = f σE xE :=
+    DFunLike.congr_fun (Function.invFun_eq ⟨σE, rfl⟩) xE
+  -- TODO: add API for `IntermediateField.fixingSubgroup`
+  simpa [f, σE, xE, IntermediateField.fixingSubgroupEquiv] using hf.symm
+
+variable (K L) in
+theorem AlgEquiv.totallyBounded_univ [Algebra.IsAlgebraic K L] :
+    TotallyBounded (Set.univ : Set Gal(L/K)) := by
+  rw [← Subgroup.coe_top, ← IntermediateField.fixingSubgroup_bot]
+  exact AlgEquiv.totallyBounded_fixingSubgroup ⊥
 
 variable (K L) in
 open IntermediateField in
