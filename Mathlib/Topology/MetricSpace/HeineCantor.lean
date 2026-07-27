@@ -57,9 +57,9 @@ each point of a compact set `s`, then for every `ε > 0` there is a `δ > 0` suc
 theorem IsCompact.exists_forall_dist_lt_of_continuousAt (hs : IsCompact s)
     (hf : ∀ a ∈ s, ContinuousAt f a) {ε : ℝ} (hε : 0 < ε) :
     ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → dist (f x) (f y) < ε := by
-  obtain ⟨δ, hδ, H⟩ := uniformity_basis_dist.mem_iff.1
+  let ⟨δ, hδ, H⟩ := uniformity_basis_dist.mem_iff.1
     (hs.uniformContinuousAt_of_continuousAt f hf (uniformity_basis_dist.mem_of_mem hε))
-  exact ⟨δ, hδ, fun x hx y hxy ↦ H (a := (x, y)) hxy hx⟩
+  ⟨δ, hδ, fun x hx y hxy ↦ H (a := (x, y)) hxy hx⟩
 
 /-- Version of `IsCompact.exists_forall_dist_lt_of_continuousAt` with non-strict inequalities. -/
 theorem IsCompact.exists_forall_dist_le_of_continuousAt (hs : IsCompact s)
