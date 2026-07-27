@@ -487,7 +487,7 @@ theorem IsRotated.dropLast_tail {α}
     simp only [head_cons, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons] at hL'
     simp [hL', IsRotated.cons_getLast_dropLast]
 
-theorem exists_sublist_isRotated_iff {L L' : List α} :
+theorem exists_isRotated_sublist_iff {L L' : List α} :
     (∃ L₁ : List α, L ~r L₁ ∧ L₁ <+ L') ↔ (∃ L₂ : List α, L <+ L₂ ∧ L₂ ~r L') := by
   refine ⟨fun ⟨L₁, hLr, hL⟩ => ?_, fun ⟨L₂, hL, hLr⟩ => ?_⟩ <;>
     obtain ⟨n, hn, rfl⟩ := isRotated_iff_mod.mp hLr
