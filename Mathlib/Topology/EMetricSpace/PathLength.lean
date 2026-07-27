@@ -82,13 +82,12 @@ theorem length_symm (γ : Path a b) :
     γ.symm.length = γ.length := by
   unfold length
   rw [symm_eq_comp γ]
-  have h :=
-    eVariationOn.comp_eq_of_antitoneOn (f := γ) (t := (Set.univ : Set I)) (φ := σ)
-      (by
-        intro x hx y hy hxy
-        change (σ y : ℝ) ≤ (σ x : ℝ)
-        rw [coe_symm_eq, coe_symm_eq]
-        linarith [show (x : ℝ) ≤ (y : ℝ) from hxy])
+  have h : eVariationOn (γ ∘ σ) (Set.univ : Set I) = eVariationOn γ (σ '' (Set.univ : Set I)) := by
+    apply eVariationOn.comp_eq_of_antitoneOn (f := γ) (t := (Set.univ : Set I)) (φ := σ)
+    intro x hx y hy hxy
+    change (σ y : ℝ) ≤ (σ x : ℝ)
+    rw [coe_symm_eq, coe_symm_eq]
+    linarith [show (x : ℝ) ≤ (y : ℝ) from hxy]
   rw [Set.image_univ, Set.range_eq_univ.2 unitInterval.symm_bijective.surjective] at h
   exact h
 
@@ -131,65 +130,59 @@ private lemma eVariationOn_symm_Icc_left_half (γ : Path a b) :
   rw [symm_eq_comp γ]
   calc
     _ = eVariationOn γ (σ '' Icc (0 : I) half) := by
-          apply eVariationOn.comp_eq_of_antitoneOn
-          intro x hx y hy hxy
-          change (σ y : ℝ) ≤ (σ x : ℝ)
-          rw [coe_symm_eq, coe_symm_eq]
-          linarith [show (x : ℝ) ≤ (y : ℝ) from hxy]
+        apply eVariationOn.comp_eq_of_antitoneOn
+        intro x hx y hy hxy
+        change (σ y : ℝ) ≤ (σ x : ℝ)
+        rw [coe_symm_eq, coe_symm_eq]
+        linarith [show (x : ℝ) ≤ (y : ℝ) from hxy]
     _ = eVariationOn γ (Icc half (1 : I)) := by
-          congr 1
-          ext x
+        congr 1
+        ext x
+        constructor
+        · rintro ⟨t, ht, rfl⟩
           constructor
-          · rintro ⟨t, ht, rfl⟩
-            constructor
-            · exact (half_le_symm_iff t).2 ht.2
-            · exact (σ t).2.2
-          · intro hx
-            refine ⟨σ x, ?_, ?_⟩
-            · constructor
-              · simp
-              · have : (1 / 2 : ℝ) ≤ (σ (σ x) : ℝ) := by
-                  rw [unitInterval.symm_symm]
-                  exact hx.1
-                exact (half_le_symm_iff (σ x)).1 this
+          · exact (half_le_symm_iff t).2 ht.2
+          · exact (σ t).2.2
+        · intro hx
+          refine ⟨σ x, ?_, ?_⟩
+          · constructor
             · simp
+            · have : (1 / 2 : ℝ) ≤ (σ (σ x) : ℝ) := by
+                rw [unitInterval.symm_symm]
+                exact hx.1
+              exact (half_le_symm_iff (σ x)).1 this
+          · simp
 
 /-! ## Length of concatenations -/
 
 /-- The variation of a concatenation on its left half is the variation of the first path. -/
 private lemma eVariationOn_trans_left (γ : Path a b) (η : Path b c) :
-    eVariationOn (γ.trans η) (Icc 0 half) = eVariationOn γ Set.univ := by
-  refine (eVariationOn.congr
-    (g := fun t : I ↦ γ.extend (2 * (t : ℝ)))
-    ?_).trans ?_
+    eVariationOn (γ.trans η) (Icc 0 half) = γ.length := by
+  refine (eVariationOn.congr (g := fun t : I ↦ γ.extend (2 * (t : ℝ))) ?_).trans ?_
   · intro t ht
     have hle : (t : ℝ) ≤ (1 / 2 : ℝ) := ht.2
-    rw [Path.trans_apply, dif_pos hle]
-    rw [← Path.extend_apply γ (by grind)]
-  · change eVariationOn (γ.extend ∘ fun t : I ↦ (2 : ℝ) * t) (Icc 0 half)
-        = eVariationOn γ Set.univ
+    rw [Path.trans_apply, dif_pos hle, ← Path.extend_apply γ (by grind)]
+  · change eVariationOn (γ.extend ∘ fun t : I ↦ (2 : ℝ) * t) (Icc 0 half) = eVariationOn γ Set.univ
     calc
       _ = eVariationOn γ.extend ((fun t : I ↦ (2 : ℝ) * t) '' Icc (0 : I) half) := by
-            apply eVariationOn.comp_eq_of_monotoneOn
-            intro x hx y hy hxy
-            exact mul_le_mul_of_nonneg_left hxy (by positivity)
+          apply eVariationOn.comp_eq_of_monotoneOn
+          intro x hx y hy hxy
+          exact mul_le_mul_of_nonneg_left hxy (by positivity)
       _ = eVariationOn γ.extend (Icc (0 : ℝ) 1) := by
-            rw [image_double_Icc_half]
+          rw [image_double_Icc_half]
       _ = γ.length := (length_eq_eVariationOn_extend γ).symm
-      _ = eVariationOn γ Set.univ := rfl
 
 /-- The variation of a concatenation on its right half is the variation of the second path. -/
 private lemma eVariationOn_trans_right (γ : Path a b) (η : Path b c) :
-    eVariationOn (γ.trans η) (Icc half 1) = eVariationOn η Set.univ := by
+    eVariationOn (γ.trans η) (Icc half 1) = η.length := by
   calc
     _ = eVariationOn (γ.trans η).symm (Icc 0 half) := by
-          exact (eVariationOn_symm_Icc_left_half (γ := γ.trans η)).symm
+        exact (eVariationOn_symm_Icc_left_half (γ := γ.trans η)).symm
     _ = eVariationOn η.symm Set.univ := by
-          rw [Path.trans_symm]
-          exact eVariationOn_trans_left (γ := η.symm) (η := γ.symm)
+        rw [Path.trans_symm]
+        exact eVariationOn_trans_left (γ := η.symm) (η := γ.symm)
     _ = eVariationOn η Set.univ := by
-          change η.symm.length = η.length
-          exact length_symm η
+        exact length_symm η
 
 /-- The length of a concatenation is the sum of the lengths of the two pieces. -/
 theorem length_trans (γ : Path a b) (η : Path b c) :
@@ -200,6 +193,7 @@ theorem length_trans (γ : Path a b) (η : Path b c) :
   simp only [Set.univ_inter] at h
   rw [← unitInterval.univ_eq_Icc] at h
   rw [← h, eVariationOn_trans_left, eVariationOn_trans_right]
+  rfl
 
 end
 
