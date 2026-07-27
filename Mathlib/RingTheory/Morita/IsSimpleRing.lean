@@ -81,10 +81,24 @@ lemma directSum_simple_module_over_simple_algebra' (A : Type v) [Ring A] [IsArti
     ∃ (ι : Type v), Nonempty (M ≃ₗ[A] (ι →₀ S)) :=
   (isIsotypicOfType_over_simple A M S).linearEquiv_finsupp
 
+/-- Two finite modules over an artinian simple ring `A` have an `A`-linear
+equivalence if and only if their `A`-length is the same. -/
+lemma linearEquiv_iff_length_eq_over_isSimpleRing [IsArtinianRing A]
+    (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N]
+    [Module.Finite A M] [Module.Finite A N] :
+    Nonempty (M ≃ₗ[A] N) ↔ Module.length A M = Module.length A N := by
+  refine ⟨fun ⟨e⟩ ↦ e.length_eq, fun h ↦ ?_⟩
+  obtain ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule A A)
+  rw [← isSimpleModule_iff_isAtom] at hS
+  obtain ⟨m, ⟨eM⟩⟩ := (isIsotypicOfType_over_simple A M S).linearEquiv_fun
+  obtain ⟨n, ⟨eN⟩⟩ := (isIsotypicOfType_over_simple A N S).linearEquiv_fun
+  obtain rfl : m = n := by simpa [eM.length_eq, eN.length_eq] using h
+  exact ⟨eM.trans eN.symm⟩
+
 /-- Two finite modules over a simple `k`-algebra `A` have an `A`-linear equivalence if and only if
 their `k`-length is the same. -/
 @[stacks 074E "(3)"]
-lemma linearEquiv_iff_length_eq_over_simple_ring [IsArtinianRing k]
+lemma linearEquiv_iff_length_eq_over_simple_algebra [IsArtinianRing k]
     (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N]
     [Module k M] [Module k N] [IsScalarTower k A M] [IsScalarTower k A N]
     [Module.Finite A M] [Module.Finite A N] :
@@ -105,7 +119,7 @@ lemma linearEquiv_iff_length_eq_over_simple_ring [IsArtinianRing k]
 /-- Two finite modules over a finite simple algebra `A` over a field `k` have an `A`-linear
 equivalence if and only if their `k`-dimension is the same. -/
 @[stacks 074E "(3)"]
-lemma linearEquiv_iff_finrank_eq_over_simple_ring (k : Type u) (A : Type v) [Field k] [Ring A]
+lemma linearEquiv_iff_finrank_eq_over_simple_algebra (k : Type u) (A : Type v) [Field k] [Ring A]
     [Algebra k A] [IsSimpleRing A] [Module.Finite k A]
     (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N]
     [Module k M] [Module k N] [IsScalarTower k A M] [IsScalarTower k A N]
@@ -113,7 +127,7 @@ lemma linearEquiv_iff_finrank_eq_over_simple_ring (k : Type u) (A : Type v) [Fie
     Nonempty (M ≃ₗ[A] N) ↔ Module.finrank k M = Module.finrank k N := by
   have : Module.Finite k M := .trans A M
   have : Module.Finite k N := .trans A N
-  rw [linearEquiv_iff_length_eq_over_simple_ring k A M N, Module.length_eq_finrank,
+  rw [linearEquiv_iff_length_eq_over_simple_algebra k A M N, Module.length_eq_finrank,
     Module.length_eq_finrank, Nat.cast_inj]
 
 namespace IsSimpleRing
