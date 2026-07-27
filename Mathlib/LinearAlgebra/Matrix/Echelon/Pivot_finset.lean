@@ -30,12 +30,12 @@ variable {m n : Type*} {R : Type*}
 
 /-! ### Leading entries -/
 
-/-- `c` is the column of the leading (leftmost nonzero) entry of row `i`. -/
+/-- `c` is the column of the leading nonzero entry of row `i`. -/
 def IsLeadingEntry [Zero R] [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
   (∀ j < c, A i j = 0) ∧ A i c ≠ 0
 
-/-- A row has at most one leading entry. -/
-protected theorem IsLeadingEntry.unique [Zero R] [LinearOrder n] {A : Matrix m n R} {i : m}
+/-- A row has at most one leading entry. Currently unused -/
+theorem IsLeadingEntry.unique [Zero R] [LinearOrder n] {A : Matrix m n R} {i : m}
     {c₁ c₂ : n} (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) : c₁ = c₂ := by
   rcases lt_trichotomy c₁ c₂ with hlt | heq | hlt
   · exact absurd (h₂.1 c₁ hlt) h₁.2
@@ -69,6 +69,7 @@ theorem RowEchelon.row_eq_zero_of_lt [Zero R] [LT m] [LT n] {A : Matrix m n R}
 theorem exists_isLeadingEntry_of_ne_zero [Zero R] [Finite n] [LinearOrder n]
     {A : Matrix m n R} {i : m} (h : A i ≠ 0) : ∃ c, A.IsLeadingEntry i c := by
   cases nonempty_fintype n
+  -- todo: check mathlib's policy on classical
   classical
   have hne : (univ.filter fun j => A i j ≠ 0).Nonempty := by
     rcases Function.ne_iff.mp h with ⟨j, hj⟩
