@@ -178,7 +178,6 @@ theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y)
     ((alternatingFaceMapComplex C).map f).f n = f.app (op ⦋n⦌) :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.map_zsmul in
 /-- The construction of the alternating face map complex commutes with the application
 of an additive functor. -/
