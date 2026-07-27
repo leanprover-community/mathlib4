@@ -294,9 +294,6 @@ point. -/]
 def limit.isoLimitCone {F : J ⥤ C} [HasLimit F] (t : LimitCone F) : limit F ≅ t.cone.pt :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit F) t.isLimit
 
--- Can remove this after #40365:
-attribute [to_dual existing] Cone.forget_map
-
 set_option backward.isDefEq.respectTransparency false in
 @[to_dual (attr := reassoc (attr := simp)) isoColimitCocone_ι_inv]
 theorem limit.isoLimitCone_hom_π {F : J ⥤ C} [HasLimit F] (t : LimitCone F) (j : J) :
