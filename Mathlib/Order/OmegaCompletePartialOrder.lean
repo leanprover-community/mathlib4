@@ -226,16 +226,16 @@ theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup 
 lemma isLUB_range_ωSup (c : Chain α) : IsLUB (Set.range c) (ωSup c) := by
   constructor
   · simp only [upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      Set.mem_setOf_eq]
+      Set.mem_ofPred_eq]
     exact fun a ↦ le_ωSup c a
   · simp only [lowerBounds, upperBounds, Set.mem_range, forall_exists_index,
-      forall_apply_eq_imp_iff, Set.mem_setOf_eq]
+      forall_apply_eq_imp_iff, Set.mem_ofPred_eq]
     exact fun ⦃a⦄ a_1 ↦ ωSup_le c a a_1
 
 lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a = ωSup c := by
   rw [le_antisymm_iff]
   simp only [IsLUB, IsLeast, upperBounds, lowerBounds, Set.mem_range, forall_exists_index,
-    forall_apply_eq_imp_iff, Set.mem_setOf_eq] at h
+    forall_apply_eq_imp_iff, Set.mem_ofPred_eq] at h
   constructor
   · apply h.2
     exact fun a ↦ le_ωSup c a

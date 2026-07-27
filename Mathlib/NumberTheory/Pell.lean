@@ -333,25 +333,25 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine Infinite.mono (fun q h => ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
     have h0 : 0 < (q.2 : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
     have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
-    rw [mem_setOf, abs_sub_comm, ← @Int.cast_lt ℝ,
+    rw [mem_ofPred, abs_sub_comm, ← @Int.cast_lt ℝ,
       ← div_lt_div_iff_of_pos_right (abs_pos_of_pos h0)]
     push_cast
     rw [← abs_div, abs_sq, sub_div, mul_div_cancel_right₀ _ h0.ne', ← div_pow, h1, ←
       sq_sqrt (Int.cast_pos.mpr h₀).le, sq_sub_sq, abs_mul, ← mul_one_div]
     refine mul_lt_mul'' (((abs_add_le ξ q).trans ?_).trans_lt hM₁) h (abs_nonneg _) (abs_nonneg _)
     rw [two_mul, add_assoc, add_le_add_iff_left, ← sub_le_iff_le_add']
-    rw [mem_setOf, abs_sub_comm] at h
+    rw [mem_ofPred, abs_sub_comm] at h
     refine (abs_sub_abs_le_abs_sub (q : ℝ) ξ).trans (h.le.trans ?_)
     rw [div_le_one h0, one_le_sq_iff_one_le_abs, Nat.abs_cast, Nat.one_le_cast]
     exact q.pos
   obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.1 ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
     contrapose! hM
     refine (congr_arg _ (ext fun x => ?_)).mp (Finite.biUnion (finite_Ioo (-M) M) fun m _ => hM m)
-    simp only [abs_lt, mem_setOf, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']
+    simp only [abs_lt, mem_ofPred, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']
   have hm₀ : m ≠ 0 := by
     rintro rfl
     obtain ⟨q, hq⟩ := hm.nonempty
-    rw [mem_setOf, sub_eq_zero, mul_comm] at hq
+    rw [mem_ofPred, sub_eq_zero, mul_comm] at hq
     obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_ne_zero).mp ⟨d, hq⟩
     rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩

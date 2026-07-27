@@ -391,7 +391,7 @@ theorem tendsto_nhdsWithin_of_tendsto_nhds {f : α → β} {a : α} {s : Set α}
 
 theorem eventually_mem_of_tendsto_nhdsWithin {f : β → α} {a : α} {s : Set α} {l : Filter β}
     (h : Tendsto f l (𝓝[s] a)) : ∀ᶠ i in l, f i ∈ s := by
-  simp_rw [nhdsWithin_eq, tendsto_iInf, mem_setOf_eq, tendsto_principal, mem_inter_iff,
+  simp_rw [nhdsWithin_eq, tendsto_iInf, mem_ofPred_eq, tendsto_principal, mem_inter_iff,
     eventually_and] at h
   exact (h univ ⟨mem_univ a, isOpen_univ⟩).2
 
@@ -516,7 +516,7 @@ theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
   eventually_nhds_subtype_iff s a (¬ P ·) |>.not
 
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
-    Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
+    Tendsto f (𝓝[s] a) l ↔ Tendsto (s.domRestrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
 
 theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t) {J : Set s} {a : s} :

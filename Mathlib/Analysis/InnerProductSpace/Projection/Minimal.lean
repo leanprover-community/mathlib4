@@ -78,8 +78,9 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
           2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) :=
         calc
           4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ + ‖wp - wq‖ * ‖wp - wq‖ =
-              2 * ‖u - half • (wq + wp)‖ * (2 * ‖u - half • (wq + wp)‖) + ‖wp - wq‖ * ‖wp - wq‖ :=
-            by ring
+              2 * ‖u - half • (wq + wp)‖ * (2 * ‖u - half • (wq + wp)‖) +
+              ‖wp - wq‖ * ‖wp - wq‖ := by
+            ring
           _ =
               absR 2 * ‖u - half • (wq + wp)‖ * (absR 2 * ‖u - half • (wq + wp)‖) +
                 ‖wp - wq‖ * ‖wp - wq‖ := by
