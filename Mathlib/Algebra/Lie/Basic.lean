@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Data.Bracket
+public import Mathlib.Data.FunLike.Module
 public import Mathlib.Tactic.Abel
 
 /-!
@@ -383,23 +384,23 @@ theorem id_apply (x : L₁) : (id : L₁ →ₗ⁅R⁆ L₁) x = x :=
 instance : Zero (L₁ →ₗ⁅R⁆ L₂) :=
   ⟨{ (0 : L₁ →ₗ[R] L₂) with map_lie' := by simp }⟩
 
-@[norm_cast, simp]
-theorem coe_zero : ((0 : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂) = 0 :=
-  rfl
+instance : IsZeroApply (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
+  zero_apply _ := rfl
 
-theorem zero_apply (x : L₁) : (0 : L₁ →ₗ⁅R⁆ L₂) x = 0 :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-27")] protected alias zero_apply := zero_apply
 
 /-- The identity map is a Lie algebra morphism. -/
 instance : One (L₁ →ₗ⁅R⁆ L₁) :=
   ⟨id⟩
 
-@[simp]
-theorem coe_one : ((1 : L₁ →ₗ⁅R⁆ L₁) : L₁ → L₁) = _root_.id :=
-  rfl
+instance : IsOneApplyEqSelf (L₁ →ₗ⁅R⁆ L₁) L₁ where
+  one_apply_eq_self _ := rfl
 
-theorem one_apply (x : L₁) : (1 : L₁ →ₗ⁅R⁆ L₁) x = x :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_one := FunLike.coe_one_eq_id
+
+@[deprecated (since := "2026-07-27")] protected alias one_apply := one_apply_eq_self
 
 instance : Inhabited (L₁ →ₗ⁅R⁆ L₂) :=
   ⟨0⟩
@@ -410,7 +411,7 @@ theorem coe_injective : @Function.Injective (L₁ →ₗ⁅R⁆ L₂) (L₁ → 
 
 @[ext]
 theorem ext {f g : L₁ →ₗ⁅R⁆ L₂} (h : ∀ x, f x = g x) : f = g :=
-  coe_injective <| funext h
+  DFunLike.ext f g h
 
 theorem congr_fun {f g : L₁ →ₗ⁅R⁆ L₂} (h : f = g) (x : L₁) : f x = g x :=
   h ▸ rfl
@@ -577,9 +578,10 @@ theorem ext {f g : L₁ ≃ₗ⁅R⁆ L₂} (h : ∀ x, f x = g x) : f = g :=
 instance : One (L₁ ≃ₗ⁅R⁆ L₁) :=
   ⟨{ (1 : L₁ ≃ₗ[R] L₁) with map_lie' := rfl }⟩
 
-@[simp]
-theorem one_apply (x : L₁) : (1 : L₁ ≃ₗ⁅R⁆ L₁) x = x :=
-  rfl
+instance : IsOneApplyEqSelf (L₁ ≃ₗ⁅R⁆ L₁) L₁ where
+  one_apply_eq_self _ := rfl
+
+@[deprecated (since := "2026-07-27")] protected alias one_apply := one_apply_eq_self
 
 instance : Inhabited (L₁ ≃ₗ⁅R⁆ L₁) :=
   ⟨1⟩
@@ -730,16 +732,19 @@ theorem id_apply (x : M) : (id : M →ₗ⁅R,L⁆ M) x = x :=
 instance : Zero (M →ₗ⁅R,L⁆ N) :=
   ⟨{ (0 : M →ₗ[R] N) with map_lie' := by simp }⟩
 
-@[norm_cast, simp]
-theorem coe_zero : ⇑(0 : M →ₗ⁅R,L⁆ N) = 0 :=
-  rfl
+instance : IsZeroApply (M →ₗ⁅R,L⁆ N) M N where
+  zero_apply _ := rfl
 
-theorem zero_apply (m : M) : (0 : M →ₗ⁅R,L⁆ N) m = 0 :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-27")] protected alias zero_apply := zero_apply
 
 /-- The identity map is a Lie module morphism. -/
 instance : One (M →ₗ⁅R,L⁆ M) :=
   ⟨id⟩
+
+instance : IsOneApplyEqSelf (M →ₗ⁅R,L⁆ M) M where
+  one_apply_eq_self _ := rfl
 
 instance : Inhabited (M →ₗ⁅R,L⁆ N) :=
   ⟨0⟩
@@ -800,72 +805,67 @@ def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse
 instance : Add (M →ₗ⁅R,L⁆ N) where
   add f g := { (f : M →ₗ[R] N) + (g : M →ₗ[R] N) with map_lie' := by simp }
 
+instance : IsAddApply (M →ₗ⁅R,L⁆ N) M N where
+  add_apply _ _ _ := rfl
+
 instance : Sub (M →ₗ⁅R,L⁆ N) where
   sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by simp }
 
+instance : IsSubApply (M →ₗ⁅R,L⁆ N) M N where
+  sub_apply _ _ _ := rfl
+
 instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := { -(f : M →ₗ[R] N) with map_lie' := by simp }
 
-@[norm_cast, simp]
-theorem coe_add (f g : M →ₗ⁅R,L⁆ N) : ⇑(f + g) = f + g :=
-  rfl
+instance : IsNegApply (M →ₗ⁅R,L⁆ N) M N where
+  neg_apply _ _ := rfl
 
-theorem add_apply (f g : M →ₗ⁅R,L⁆ N) (m : M) : (f + g) m = f m + g m :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_add := FunLike.coe_add
 
-@[norm_cast, simp]
-theorem coe_sub (f g : M →ₗ⁅R,L⁆ N) : ⇑(f - g) = f - g :=
-  rfl
+@[deprecated (since := "2026-07-27")] protected alias add_apply := add_apply
 
-theorem sub_apply (f g : M →ₗ⁅R,L⁆ N) (m : M) : (f - g) m = f m - g m :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_sub := FunLike.coe_sub
 
-@[norm_cast, simp]
-theorem coe_neg (f : M →ₗ⁅R,L⁆ N) : ⇑(-f) = -f :=
-  rfl
+@[deprecated (since := "2026-07-27")] protected alias sub_apply := sub_apply
 
-theorem neg_apply (f : M →ₗ⁅R,L⁆ N) (m : M) : (-f) m = -f m :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-07-27")] protected alias neg_apply := neg_apply
 
 instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-@[norm_cast, simp]
-theorem coe_nsmul (n : ℕ) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
-  rfl
+instance : IsSMulApply ℕ (M →ₗ⁅R,L⁆ N) M N where
+  smul_apply _ _ _ := rfl
 
-theorem nsmul_apply (n : ℕ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (n • f) m = n • f m :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_nsmul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-27")] protected alias nsmul_apply := smul_apply
 
 instance hasZSMul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
   smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-@[norm_cast, simp]
-theorem coe_zsmul (z : ℤ) (f : M →ₗ⁅R,L⁆ N) : ⇑(z • f) = z • (⇑f) :=
-  rfl
+instance : IsSMulApply ℤ (M →ₗ⁅R,L⁆ N) M N where
+  smul_apply _ _ _ := rfl
 
-theorem zsmul_apply (z : ℤ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (z • f) m = z • f m :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_zsmul := FunLike.coe_smul
 
-instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    (fun _ _ => coe_zsmul _ _)
+@[deprecated (since := "2026-07-27")] protected alias zsmul_apply := smul_apply
+
+instance : AddCommGroup (M →ₗ⁅R,L⁆ N) := fast_instance% FunLike.addCommGroup
 
 variable [LieAlgebra R L] [LieModule R L N]
 
 instance : SMul R (M →ₗ⁅R,L⁆ N) where
   smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-@[norm_cast, simp]
-theorem coe_smul (t : R) (f : M →ₗ⁅R,L⁆ N) : ⇑(t • f) = t • (⇑f) :=
-  rfl
+instance : IsSMulApply R (M →ₗ⁅R,L⁆ N) M N where
+  smul_apply _ _ _ := rfl
 
-theorem smul_apply (t : R) (f : M →ₗ⁅R,L⁆ N) (m : M) : (t • f) m = t • f m :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coe_smul := FunLike.coe_smul
 
-instance : Module R (M →ₗ⁅R,L⁆ N) :=
-  Function.Injective.module R
-    { toFun := fun f => f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
-    coe_injective coe_smul
+@[deprecated (since := "2026-07-27")] protected alias smul_apply := smul_apply
+
+instance : Module R (M →ₗ⁅R,L⁆ N) := fast_instance% FunLike.module
 
 end LieModuleHom
 
@@ -956,9 +956,10 @@ instance : LinearEquivClass (M ≃ₗ⁅R,L⁆ N) R M N where
 instance : One (M ≃ₗ⁅R,L⁆ M) :=
   ⟨{ (1 : M ≃ₗ[R] M) with map_lie' := rfl }⟩
 
-@[simp]
-theorem one_apply (m : M) : (1 : M ≃ₗ⁅R,L⁆ M) m = m :=
-  rfl
+instance : IsOneApplyEqSelf (M ≃ₗ⁅R,L⁆ M) M where
+  one_apply_eq_self _ := rfl
+
+@[deprecated (since := "2026-07-27")] protected alias one_apply := one_apply_eq_self
 
 instance : Inhabited (M ≃ₗ⁅R,L⁆ M) :=
   ⟨1⟩
