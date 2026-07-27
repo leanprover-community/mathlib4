@@ -98,7 +98,7 @@ public def rightDualFunctorCoreMonoidal : (rightDualFunctor C).CoreMonoidal wher
       rightDualIso_hom_trans, rightDualIso_hom_naturality, rightDualIso_id, Iso.refl_hom, id_comp]
     apply ExactPairing.rightHom_ext _
     rw [ExactPairing.rightMate_comp_evaluation]
-    simp only [ExactPairing.tensor_evaluation, ExactPairing.unit_coevaluation]
+    simp only [ExactPairing.tensor_evaluation, ExactPairing.unit_evaluation]
     monoidal
   right_unitality X := by
     refine MonoidalOpposite.hom_ext (Quiver.Hom.unop_inj ?_)
@@ -107,7 +107,7 @@ public def rightDualFunctorCoreMonoidal : (rightDualFunctor C).CoreMonoidal wher
       rightDualIso_hom_trans, rightDualIso_hom_naturality, rightDualIso_id, Iso.refl_hom, id_comp]
     apply ExactPairing.rightHom_ext _
     rw [ExactPairing.rightMate_comp_evaluation]
-    simp only [ExactPairing.tensor_evaluation, ExactPairing.unit_coevaluation]
+    simp only [ExactPairing.tensor_evaluation, ExactPairing.unit_evaluation]
     monoidal
 
 /-- The monoidal structure on the right dual functor. -/
