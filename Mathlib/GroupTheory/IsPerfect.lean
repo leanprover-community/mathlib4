@@ -82,7 +82,7 @@ lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
 open scoped IsMulCommutative in
 variable (G) in
 lemma not_isMulCommutative [Nontrivial G] [IsPerfect G] : ¬ IsMulCommutative G :=
-  fun _ ↦ (not_isSolvable G) CommGroup.isSolvable
+  fun _ ↦ (not_isSolvable G) inferInstance
 
 instance subsingleton_of_isMulCommutative
     [hG : IsPerfect G] [h_comm : IsMulCommutative G] : Subsingleton G := by

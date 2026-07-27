@@ -421,7 +421,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
     rw [ht]
     congr 1
     apply measure_congr
-    filter_upwards [f_eq_F] with a ha using by simp [setOf, ha]
+    filter_upwards [f_eq_F] with a ha using by simp [Set.ofPred, ha]
   have eq₂ : ∀ᵐ ω ∂μ,
       ENNReal.ofReal (∫ t in 0..f ω, g t) = ENNReal.ofReal (∫ t in 0..F ω, G t) := by
     filter_upwards [f_eq_F] with ω fω_nn

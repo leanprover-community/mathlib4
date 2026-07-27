@@ -187,7 +187,7 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     exact finite_of_encard_eq_coe hα
   have hα : Nat.card α = 2 := by
     rw [← ENat.card_coe_set_eq, ENat.card_eq_coe_natCard, Nat.card_coe_set_eq, ncard_univ] at hα
-    exact ENat.coe_inj.mp hα
+    exact ENat.natCast_inj.mp hα
   have hα2 : Fact (Nat.card (Perm α)).Prime := by
     apply Fact.mk
     rw [Nat.card_perm, hα, Nat.factorial_two]

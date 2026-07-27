@@ -148,7 +148,7 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
   rfl
 
 lemma coe_domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
-    ⇑(f.domRestrict p) = Set.restrict p f := rfl
+    ⇑(f.domRestrict p) = Set.domRestrict p f := rfl
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p.
@@ -167,12 +167,12 @@ theorem codRestrict_apply (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M
 @[simp]
 theorem comp_codRestrict (p : Submodule R₃ M₃) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M →ₛₗ[σ₁₃] p) = codRestrict p (g.comp f) fun _ => h _ :=
-  ext fun _ => rfl
+  rfl
 
 @[simp]
 theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p) :
     p.subtype.comp (codRestrict p f h) = f :=
-  ext fun _ => rfl
+  rfl
 
 @[simp]
 theorem domRestrict_comp_codRestrict (g : M₂ →ₛₗ[σ₂₃] M₃) (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂)

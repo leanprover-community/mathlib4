@@ -55,7 +55,6 @@ variable [GaloisCategory C] [FiberFunctor F]
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
 
-set_option backward.privateInPublic true in
 private local instance fintypeQuotient (H : OpenSubgroup (G)) :
     Fintype (G ⧸ (H : Subgroup (G))) :=
   have : Finite (G ⧸ H.toSubgroup) := H.toSubgroup.quotient_finite_of_isOpen H.isOpen'
