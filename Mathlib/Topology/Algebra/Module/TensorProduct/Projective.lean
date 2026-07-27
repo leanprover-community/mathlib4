@@ -389,17 +389,6 @@ theorem moduleFilterBasis_topology_mem_tensorProductTopologies :
       LinearMap.toAddMonoidHom'_apply, mk_apply]
     exact continuousAt_tmul_right_of_basis h𝔘 h𝔙
 
-/--
-This lemma can probably be moved to another file
--/
-lemma le_of_nhds_zero_le_nhds_zero {E : Type*} [AddGroup E]
-    {t₁ t₂ : TopologicalSpace E}
-    [h₁ : @IsTopologicalAddGroup E t₁ _] [h₂ : @IsTopologicalAddGroup E t₂ _]
-    (h : @nhds E t₁ 0 ≤ @nhds E t₂ 0) : t₁ ≤ t₂ := by
-  rw [← @continuous_id_iff_le E t₁ t₂]
-  exact @continuous_of_continuousAt_zero E t₁ _ h₁ E _ _ t₂ _ _ _ (AddMonoidHom.id E) h
-
-
 theorem topology_eq_projective :
     (moduleFilterBasis h𝔘 h𝔙).topology = (instTopologicalSpaceProjectiveTensorProduct
       (R:=𝕜) (M:=E) (N:=F)) := by
@@ -408,7 +397,7 @@ theorem topology_eq_projective :
     intro t ⟨ht_isTopologicalAddGroup, ht_locallyConvexSpace, ht_continuousSMul , ht_cont_tmul⟩
     letI := t
     let t_hasBasis_absConvex := nhds_hasBasis_absConvex 𝕜 (E ⊗[𝕜] F)
-    apply le_of_nhds_zero_le_nhds_zero
+    apply IsTopologicalAddGroup.le_of_nhds_zero_le_nhds_zero
     rw [(moduleFilterBasis h𝔘 h𝔙).nhds_zero_hasBasis.le_basis_iff t_hasBasis_absConvex]
     intro W ⟨hW_mem_nhds_zero, hW_absConvex⟩
     let W' := (Function.uncurry (tmul 𝕜)) ⁻¹' W
