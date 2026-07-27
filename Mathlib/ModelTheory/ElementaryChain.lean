@@ -7,6 +7,7 @@ module
 
 public import Mathlib.ModelTheory.DirectLimit
 public import Mathlib.ModelTheory.ElementaryMaps
+public import Mathlib.SetTheory.Cardinal.DirectLimit
 
 /-!
 # Elementary chains
@@ -155,23 +156,31 @@ theorem exists_toLimit (C : ElementaryChain L ι) (z : C.Limit) :
     ∃ (i : ι) (x : C.carrier i), C.toLimit i x = z := by
   simpa [toLimit] using DirectLimit.exists_of z
 
-omit [Nonempty ι] in
-theorem mk_limit_le_mk_sigma (C : ElementaryChain L ι) :
-    #(C.Limit) ≤ #(Σ i, C.carrier i) :=
-  DirectLimit.mk_le_mk_sigma C.carrier fun i j h ↦ (C.map i j h).toEmbedding
+private def limitEquiv (C : ElementaryChain L ι) :
+    C.Limit ≃
+      _root_.DirectLimit C.carrier (fun i j h ↦ (C.map i j h).toEmbedding) :=
+  Quotient.congrRight fun _ _ ↦ Iff.rfl
 
 omit [Nonempty ι] in
-theorem mk_limit_le_lift_mk_mul_iSup_lift_mk (C : ElementaryChain L ι) :
-    #(C.Limit) ≤ Cardinal.lift.{w'} #ι * ⨆ i, Cardinal.lift.{w} #(C.carrier i) :=
-  DirectLimit.mk_le_lift_mk_mul_iSup_lift_mk C.carrier
-    fun i j h ↦ (C.map i j h).toEmbedding
-
-omit [Nonempty ι] in
+/-- An infinite cardinal bounding the index type and every stage also bounds the limit. -/
 theorem mk_limit_le_of_lift_mk_le (C : ElementaryChain L ι) {κ : Cardinal.{max w w'}}
     (hκ : ℵ₀ ≤ κ) (hι : Cardinal.lift.{w'} #ι ≤ κ)
     (hC : ∀ i, Cardinal.lift.{w} #(C.carrier i) ≤ κ) :
-    #(C.Limit) ≤ κ :=
-  DirectLimit.mk_le_of_lift_mk_le C.carrier (fun i j h ↦ (C.map i j h).toEmbedding) hκ hι hC
+    #(C.Limit) ≤ κ := by
+  rw [(limitEquiv C).cardinal_eq]
+  exact _root_.DirectLimit.mk_le_of_aleph0_le
+    (fun i j h ↦ (C.map i j h).toEmbedding) κ hκ hι hC
+
+/-- If every stage has cardinality `κ` and the index type has cardinality at most `κ`, then the
+limit also has cardinality `κ`. -/
+theorem mk_limit_eq_of_forall_lift_mk_eq (C : ElementaryChain L ι)
+    (κ : Cardinal.{max w w'}) (hι : Cardinal.lift.{w'} #ι ≤ κ)
+    (hC : ∀ i, Cardinal.lift.{w} #(C.carrier i) = κ) :
+    #(C.Limit) = κ := by
+  rw [(limitEquiv C).cardinal_eq]
+  apply _root_.DirectLimit.mk_eq_of_forall_lift_mk_eq
+    (fun i j h ↦ (C.map i j h).toEmbedding) κ hι hC
+  exact _root_.DirectLimit.mk_injective _ fun i j h ↦ (C.map i j h).injective
 
 /-- Realization of bounded formulas is preserved and reflected by a canonical map into the direct
 limit. -/
