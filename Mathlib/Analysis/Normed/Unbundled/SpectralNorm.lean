@@ -149,8 +149,7 @@ theorem spectralValue_X_sub_C (r : R) : spectralValue (X - C r) = ‖r‖ := by
     ext n
     by_cases hn : n = 0
     · rw [ite_eq_left hn, ite_eq_left hn, hn, cast_zero, sub_zero, coeff_X_zero, coeff_C_zero,
-      zero_sub,
-        norm_neg, inv_one, rpow_one]
+        zero_sub, norm_neg, inv_one, rpow_one]
     · rw [ite_eq_right hn, ite_eq_right hn]
   · apply ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun n ↦ ?_)
       (fun _ hx ↦ ⟨0, by simp only [ite_true, hx]⟩)
@@ -167,9 +166,8 @@ theorem spectralValue_X_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
   · ext m
     by_cases hmn : m < n
     · rw [ite_eq_left hmn, rpow_eq_zero_iff_of_nonneg (norm_nonneg _),
-      ite_eq_right (_root_.ne_of_lt hmn),
-        norm_zero, one_div, ne_eq, inv_eq_zero, ← cast_sub (le_of_lt hmn), cast_eq_zero,
-        Nat.sub_eq_zero_iff_le]
+        ite_eq_right (_root_.ne_of_lt hmn), norm_zero, one_div, ne_eq, inv_eq_zero,
+        ← cast_sub (le_of_lt hmn), cast_eq_zero, Nat.sub_eq_zero_iff_le]
       exact ⟨Eq.refl _, not_le_of_gt hmn⟩
     · rw [ite_eq_right hmn]
   · infer_instance
@@ -252,8 +250,8 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
         rw [spectralValue, iSup, not_le, Set.Finite.csSup_lt_iff (spectralValueTerms_finite_range p)
           (Set.range_nonempty (spectralValueTerms p))] at h_ge
         have h_rg : ‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ)) ∈
-          Set.range (spectralValueTerms p) := by use n; simp only [spectralValueTerms,
-            ite_eq_left hn]
+            Set.range (spectralValueTerms p) := by
+          use n; simp only [spectralValueTerms, ite_eq_left hn]
         exact h_ge (‖p.coeff n‖₊ ^ (1 / (p.natDegree - n : ℝ))) h_rg
       rw [← hexp, ← rpow_natCast, ← rpow_natCast]
       gcongr

@@ -1156,8 +1156,7 @@ theorem AddValuation.map_mul (x y : ℚ_[p]) :
   · by_cases hy : y = 0
     · rw [hy, ite_eq_left rfl, mul_zero, ite_eq_left rfl, WithTop.add_top]
     · rw [ite_eq_right hx, ite_eq_right hy, ite_eq_right (mul_ne_zero hx hy), ← WithTop.coe_add,
-      WithTop.coe_eq_coe,
-        valuation_mul hx hy]
+        WithTop.coe_eq_coe, valuation_mul hx hy]
 
 theorem AddValuation.map_add (x y : ℚ_[p]) :
     min (addValuationDef x) (addValuationDef y) ≤ addValuationDef (x + y : ℚ_[p]) := by
@@ -1172,7 +1171,7 @@ theorem AddValuation.map_add (x y : ℚ_[p]) :
       · rw [hy, ite_eq_left rfl, min_eq_left, add_zero]
         exact le_top
       · rw [ite_eq_right hx, ite_eq_right hy, ite_eq_right hxy, ← WithTop.coe_min,
-        WithTop.coe_le_coe]
+          WithTop.coe_le_coe]
         exact le_valuation_add hxy
 
 open WithZero

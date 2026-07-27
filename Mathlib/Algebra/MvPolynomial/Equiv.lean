@@ -707,8 +707,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
         rw [cons_tail] at hjmi
         contradiction
       simpa only [monomial_eq, C_1, one_mul, Finsupp.prod_pow, tail_apply,
-        ite_eq_right hmj.symm] using!
-        coeff_monomial m j.tail (1 : R)
+        ite_eq_right hmj.symm] using! coeff_monomial m j.tail (1 : R)
 
 theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (n + 1)) R) :
     eval (Fin.cons y s : Fin (n + 1) → R) f =

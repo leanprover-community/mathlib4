@@ -205,7 +205,7 @@ theorem bernoulliFun_eval_half (k : ℕ) : bernoulliFun k 2⁻¹ = (2 / 2 ^ k - 
     simp_rw [Nat.cast_ofNat, mul_inv_cancel₀ (two_ne_zero' ℝ), Finset.sum_range_succ,
       Finset.sum_range_zero, Nat.cast_zero, Nat.cast_one, ← one_div, add_halves,
       bernoulliFun_eval_one, ite_eq_right k1, bernoulliFun_eval_zero, zero_div, add_zero,
-        zero_add] at m
+      zero_add] at m
     rw [← inv_mul_eq_iff_eq_mul₀ (by positivity), ← sub_eq_iff_eq_add, ← sub_one_mul, inv_div] at m
     rw [m, one_div]
 

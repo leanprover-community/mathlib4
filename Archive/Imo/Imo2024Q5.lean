@@ -991,9 +991,8 @@ lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
     rw [Fin.ext_iff]
     exact hc₁N
   simp_rw [winningStrategy_play_two hN, path1, path1OfEdgeN, path2, path2OfEdgeNDef,
-    ite_eq_right hc₁0,
-    dite_eq_right hc₁0, ite_eq_left hc₁N, dite_eq_left hc₁N, ite_eq_left hc₁r0, dite_eq_left hc₁r0,
-    ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
+    ite_eq_right hc₁0, dite_eq_right hc₁0, ite_eq_left hc₁N, dite_eq_left hc₁N, ite_eq_left hc₁r0,
+    dite_eq_left hc₁r0, ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
   convert! rfl using 4
   nth_rw 2 [← m.reflect_reflect]
   rw [Path.firstMonster_reflect]

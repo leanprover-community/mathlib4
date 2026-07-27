@@ -321,8 +321,8 @@ theorem disjUnion_tag_of_mem_left (h : Disjoint π₁.iUnion π₂.iUnion) (hJ :
 
 theorem disjUnion_tag_of_mem_right (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₂) :
     (π₁.disjUnion π₂ h).tag J = π₂.tag J :=
-  dite_eq_right fun h₁ => h.le_bot ⟨π₁.subset_iUnion h₁ J.upper_mem,
-    π₂.subset_iUnion hJ J.upper_mem⟩
+  dite_eq_right fun h₁ =>
+    h.le_bot ⟨π₁.subset_iUnion h₁ J.upper_mem, π₂.subset_iUnion hJ J.upper_mem⟩
 
 theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h₂ : IsSubordinate π₂ r)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsSubordinate (π₁.disjUnion π₂ h) r := by

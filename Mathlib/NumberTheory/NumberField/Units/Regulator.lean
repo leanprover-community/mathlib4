@@ -246,8 +246,7 @@ theorem finrank_mul_regOfFamily_eq_det (u : Fin (rank K) → (𝓞 K)ˣ) (w' : I
     (f.symm w'), abs_mul, abs_mul, abs_neg_one_pow, one_mul]
   · simp_rw [reindex_apply, submatrix_submatrix, ← f.symm.sum_comp, f.symm_symm, submatrix_apply,
       Function.comp_def, Equiv.apply_symm_apply, of_apply, dite_eq_left, ← Nat.cast_sum,
-        sum_mult_eq,
-      Nat.abs_cast]
+      sum_mult_eq, Nat.abs_cast]
     rw [regOfFamily_eq_det u w' e, ← Matrix.det_reindex_self g]
     congr with i j
     rw [reindex_apply, submatrix_apply, submatrix_apply, of_apply, of_apply, dite_eq_right]

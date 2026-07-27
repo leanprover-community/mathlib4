@@ -111,8 +111,8 @@ is naturally equivalent to the type of functions `{a // ¬ p a} → β`. -/
 @[simps]
 def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // ¬p a } → β) where
   toFun (x : { x : α → β // x ∘ Subtype.val = x₀ }) a := (x : α → β) a
-  invFun x := ⟨fun a => if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨_,
-    h⟩ => dite_eq_left h⟩
+  invFun x :=
+    ⟨fun a => if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨_, h⟩ => dite_eq_left h⟩
   left_inv := fun ⟨x, hx⟩ =>
     Subtype.val_injective <|
       funext fun a => by

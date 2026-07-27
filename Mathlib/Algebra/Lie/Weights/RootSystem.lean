@@ -94,8 +94,7 @@ lemma apply_coroot_eq_cast' :
     β (coroot α) = ↑(chainLength α β - 2 * chainTopCoeff α β : ℤ) := by
   by_cases hα : α.IsZero
   · rw [coroot_eq_zero_iff.mpr hα, chainLength, dite_eq_left hα, hα.eq, chainTopCoeff_zero,
-    map_zero,
-      CharP.cast_eq_zero, mul_zero, sub_self, Int.cast_zero]
+      map_zero, CharP.cast_eq_zero, mul_zero, sub_self, Int.cast_zero]
   obtain ⟨x, hx, x_ne0⟩ := (chainTop α β).exists_ne_zero
   have := chainLength_smul _ _ hx
   rw [lie_eq_smul_of_mem_rootSpace hx, ← sub_eq_zero, ← sub_smul,

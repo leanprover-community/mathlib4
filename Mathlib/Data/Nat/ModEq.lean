@@ -521,8 +521,8 @@ theorem add_mod_add_ite (a b c : ℕ) :
     · rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]
 
 theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
-    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, ite_eq_right (not_le_of_gt hc),
-      add_zero]
+    (a + b) % c = a % c + b % c := by
+  rw [← add_mod_add_ite, ite_eq_right (not_le_of_gt hc), add_zero]
 
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
     (a + b) % c + c = a % c + b % c := by rw [← add_mod_add_ite, ite_eq_left hc]

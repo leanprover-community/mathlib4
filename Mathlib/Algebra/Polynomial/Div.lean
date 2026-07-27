@@ -210,8 +210,8 @@ theorem modByMonic_eq_of_not_monic (p : R[X]) (hq : ¬Monic q) : p %ₘ q = p :=
 theorem modByMonic_eq_self_iff [Nontrivial R] (hq : Monic q) : p %ₘ q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ degree_modByMonic_lt _ hq, fun h => by
     have : ¬degree q ≤ degree p := not_le_of_gt h
-    unfold modByMonic divModByMonicAux; dsimp; rw [dite_eq_left hq,
-      ite_eq_right (mt And.left this)]⟩
+    unfold modByMonic divModByMonicAux; dsimp
+    rw [dite_eq_left hq, ite_eq_right (mt And.left this)]⟩
 
 theorem degree_modByMonic_le (p : R[X]) {q : R[X]} (hq : Monic q) : degree (p %ₘ q) ≤ degree q := by
   nontriviality R
@@ -275,8 +275,8 @@ theorem divByMonic_eq_zero_iff [Nontrivial R] (hq : Monic q) : p /ₘ q = 0 ↔ 
     rwa [h, mul_zero, add_zero, modByMonic_eq_self_iff hq] at this,
   fun h => by
     have : ¬degree q ≤ degree p := not_le_of_gt h
-    unfold divByMonic divModByMonicAux; dsimp; rw [dite_eq_left hq,
-      ite_eq_right (mt And.left this)]⟩
+    unfold divByMonic divModByMonicAux; dsimp
+    rw [dite_eq_left hq, ite_eq_right (mt And.left this)]⟩
 
 theorem degree_add_divByMonic (hq : Monic q) (h : degree q ≤ degree p) :
     degree q + degree (p /ₘ q) = degree p := by

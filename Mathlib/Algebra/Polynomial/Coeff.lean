@@ -201,8 +201,7 @@ theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (h
   apply subset_antisymm (support_binomial_subset k m x y)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, ite_eq_right hkm, ite_eq_right hkm.symm, mul_zero,
-      zero_add,
-    add_zero, Ne, hx, hy, not_false_eq_true, and_true]
+    zero_add, add_zero, Ne, hx, hy, not_false_eq_true, and_true]
 
 theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) :
@@ -210,10 +209,9 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
   apply subset_antisymm (support_trinomial_subset k m n x y z)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, ite_eq_right hkm.ne, ite_eq_right hkm.ne',
-      ite_eq_right hmn.ne,
-    ite_eq_right hmn.ne', ite_eq_right (hkm.trans hmn).ne, ite_eq_right (hkm.trans hmn).ne',
-      mul_zero, add_zero,
-    zero_add, Ne, hx, hy, hz, not_false_eq_true, and_true]
+    ite_eq_right hmn.ne, ite_eq_right hmn.ne', ite_eq_right (hkm.trans hmn).ne,
+    ite_eq_right (hkm.trans hmn).ne', mul_zero, add_zero, zero_add, Ne, hx, hy, hz,
+    not_false_eq_true, and_true]
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     #(support (C x * X ^ k + C y * X ^ m)) = 2 := by

@@ -527,8 +527,8 @@ theorem evalCoeff_eq [IsOrderedAddMonoid R] [Archimedean R] {x : M} {c : FiniteA
     {y : f.val.domain} (hy : y.val - x ∈ ball K c) :
     evalCoeff f x c = (ofLex (f.val y)).coeff c := by
   have hnonempty : ∃ y : f.val.domain, y.val - x ∈ ball K c := ⟨y, hy⟩
-  simpa [evalCoeff,
-    dite_eq_left hnonempty] using coeff_eq_of_mem f x hnonempty.choose_spec hy le_rfl
+  simpa [evalCoeff, dite_eq_left hnonempty]
+    using coeff_eq_of_mem f x hnonempty.choose_spec hy le_rfl
 
 theorem evalCoeff_eq_zero {x : M} {c : FiniteArchimedeanClass M}
     (h : ¬∃ y : f.val.domain, y.val - x ∈ ball K c) :

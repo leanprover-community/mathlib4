@@ -387,7 +387,7 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
   obtain rfl | h := Decidable.eq_or_ne j i
   · rw [DirectSum.of_eq_same, ite_eq_left rfl]
   · rw [DirectSum.of_eq_of_ne _ _ _ h, ite_eq_right h.symm, ZeroMemClass.coe_zero,
-    ZeroMemClass.coe_zero]
+      ZeroMemClass.coe_zero]
 
 /-- The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
 `M` is said to be internal if the canonical map `(⨁ i, A i) →+ M` is bijective.

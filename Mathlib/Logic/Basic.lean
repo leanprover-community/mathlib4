@@ -905,8 +905,7 @@ theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
 
 theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
   ⟨fun he ↦ ⟨fun h ↦ (dite_eq_left h).symm.trans he, fun h ↦ (dite_eq_right h).symm.trans he⟩,
-    fun he ↦
-    (em P).elim (fun h ↦ (dite_eq_left h).trans <| he.1 h) fun h ↦
+    fun he ↦ (em P).elim (fun h ↦ (dite_eq_left h).trans <| he.1 h) fun h ↦
       (dite_eq_right h).trans <| he.2 h⟩
 
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'

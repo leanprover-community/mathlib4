@@ -68,8 +68,7 @@ theorem log_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : log b r = Nat.log
 theorem log_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : log b r = -Nat.clog b ⌈r⁻¹⌉₊ := by
   obtain rfl | hr := hr.eq_or_lt
   · rw [log, ite_eq_left hr, inv_one, Nat.ceil_one, Nat.floor_one, Nat.log_one_right,
-    Nat.clog_one_right,
-      Int.ofNat_zero, neg_zero]
+      Nat.clog_one_right, Int.ofNat_zero, neg_zero]
   · exact ite_eq_right hr.not_ge
 
 @[simp, norm_cast]

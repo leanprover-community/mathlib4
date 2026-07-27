@@ -281,8 +281,8 @@ theorem sign_zero : sign (0 : α) = 0 := by simp [sign_apply]
 theorem sign_pos (ha : 0 < a) : sign a = 1 := by rwa [sign_apply, ite_eq_left]
 
 @[simp]
-theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, ite_eq_right <| asymm ha,
-  ite_eq_left]
+theorem sign_neg (ha : a < 0) : sign a = -1 := by
+  rwa [sign_apply, ite_eq_right <| asymm ha, ite_eq_left]
 
 theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
   refine ⟨fun h => ?_, fun h => sign_pos h⟩

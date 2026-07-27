@@ -82,8 +82,7 @@ theorem coeff_mirror (n : ℕ) :
   rw [revAt_le (h2.trans (Nat.le_add_right _ _))]
   by_cases h3 : p.natTrailingDegree ≤ n
   · rw [← tsub_add_eq_add_tsub h2, ← tsub_tsub_assoc h2 h3, mirror, coeff_mul_X_pow',
-    ite_eq_left h3,
-      coeff_reverse, revAt_le (tsub_le_self.trans h2)]
+      ite_eq_left h3, coeff_reverse, revAt_le (tsub_le_self.trans h2)]
   rw [not_le] at h3
   rw [coeff_eq_zero_of_natDegree_lt (lt_tsub_iff_right.mpr (Nat.add_lt_add_left h3 _))]
   exact coeff_eq_zero_of_lt_natTrailingDegree (by rwa [mirror_natTrailingDegree])

@@ -134,8 +134,8 @@ theorem exists_lt_card_finite_nth_eq (hf : (Set.ofPred p).Finite) {x} (h : p x) 
 
 /-- When `s` is an infinite set, `nth` agrees with `Nat.Subtype.orderIsoOfNat`. -/
 theorem nth_apply_eq_orderIsoOfNat (hf : (Set.ofPred p).Infinite) (n : ℕ) :
-    nth p n = @Nat.Subtype.orderIsoOfNat (Set.ofPred p) hf.to_subtype n := by rw [nth,
-      dite_eq_right hf]
+    nth p n = @Nat.Subtype.orderIsoOfNat (Set.ofPred p) hf.to_subtype n := by
+  rw [nth, dite_eq_right hf]
 
 /-- When `s` is an infinite set, `nth` agrees with `Nat.Subtype.orderIsoOfNat`. -/
 theorem nth_eq_orderIsoOfNat (hf : (Set.ofPred p).Infinite) :

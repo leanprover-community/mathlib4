@@ -602,10 +602,11 @@ lemma Monic.supDegree_pow
     [Nontrivial R] (hp : p.Monic D) :
     (p ^ n).supDegree D = n • p.supDegree D := by
   induction n with
-  | zero => rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, ite_eq_right one_ne_zero,
-    hzero]
-  | succ n ih => rw [pow_succ', (hp.pow hadd hD).supDegree_mul_of_ne_zero_left hD hadd hp.ne_zero,
-      ih, succ_nsmul']
+  | zero =>
+    rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, ite_eq_right one_ne_zero, hzero]
+  | succ n ih =>
+    rw [pow_succ', (hp.pow hadd hD).supDegree_mul_of_ne_zero_left hD hadd hp.ne_zero, ih,
+      succ_nsmul']
 
 end AddMonoid
 

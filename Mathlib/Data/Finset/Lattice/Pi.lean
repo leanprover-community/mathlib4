@@ -46,7 +46,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
   · simpa only [cast_eq, dite_eq_left, Function.comp_def, Subtype.coe_mk, dite_eq_right,
-    aux] using! this
+      aux] using! this
   rw [mem_insert] at hj
   obtain (rfl | hj) := hj
   · simpa

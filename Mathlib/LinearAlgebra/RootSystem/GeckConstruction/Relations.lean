@@ -177,8 +177,7 @@ lemma lie_e_f_same :
       simp only [e, f, h, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
         Matrix.fromBlocks_apply₂₁, Matrix.of_apply, hki, reduceIte, zero_mul, Finset.sum_const_zero,
         Matrix.fromBlocks_apply₂₂, mul_ite, ite_mul, mul_zero, ← ite_and, ite_eq_right (hx _),
-          add_zero,
-        aux, zero_sub, Matrix.diagonal_apply]
+        add_zero, aux, zero_sub, Matrix.diagonal_apply]
       rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
       simp [eq_comm, apply_ite ((-·) : R → R)]
     rcases eq_or_ne k l with rfl | hkl
@@ -331,8 +330,8 @@ lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
       Finset.sum_eq_single_of_mem l' (Finset.mem_univ _) (by
         rintro x - h
         rw [ite_eq_right (aux₄ _ h)]),
-      ite_eq_left (⟨hm, by rw [hm, hk]; abel⟩), ite_eq_left ⟨by rw [hl', add_comm], by rw [hl',
-        hk]⟩]
+      ite_eq_left (⟨hm, by rw [hm, hk]; abel⟩),
+      ite_eq_left ⟨by rw [hl', add_comm], by rw [hl', hk]⟩]
     have := chainBotCoeff_mul_chainTopCoeff i.property j.property hij' hl'.symm hm.symm h₅
     norm_cast
 

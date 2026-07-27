@@ -372,7 +372,7 @@ theorem lintegral_rnDeriv_lt_top_of_measure_ne_top (ν : Measure α) {s : Set α
       _ = μ s := by rw [← Measure.add_apply, ← haveLebesgueDecomposition_add, measure_toMeasurable]
       _ < ⊤ := hs.lt_top
   · simp only [Measure.rnDeriv, dite_eq_right hl, Pi.zero_apply, lintegral_zero,
-    ENNReal.zero_lt_top]
+      ENNReal.zero_lt_top]
 
 theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
     ∫⁻ x, μ.rnDeriv ν x ∂ν < ∞ := by

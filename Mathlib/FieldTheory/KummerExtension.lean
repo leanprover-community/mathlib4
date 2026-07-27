@@ -71,8 +71,8 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
   | inl hn =>
     simp only [hn, pow_zero, ← C.map_one, ← map_sub, Splits.C]
   | inr hn =>
-    rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, ite_eq_left ⟨α,
-      e⟩]
+    rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C,
+      ite_eq_left ⟨α, e⟩]
 
 -- make this private, as we only use it to prove a strictly more general version
 private
