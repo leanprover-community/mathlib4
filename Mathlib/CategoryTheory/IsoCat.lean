@@ -171,6 +171,7 @@ instance IsoCat.isIso_functor (e : IsoCat C D) : e.functor.IsIso where
       Functor.congr_obj e.counit_eq⟩
 
 /-- Convert an isomorphism of categories into a bijection on objects. -/
+@[implicit_reducible, simps]
 def IsoCat.objEquiv (e : IsoCat C D) : C ≃ D where
   toFun := e.functor.obj
   invFun := e.inverse.obj

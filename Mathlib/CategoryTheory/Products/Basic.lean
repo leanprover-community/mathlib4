@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.IsoCat
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Data.Prod.Basic
 
@@ -440,6 +441,13 @@ def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C :=
     inverse := functorProdToProdFunctor A B C,
     unitIso := functorProdFunctorEquivUnitIso A B C,
     counitIso := functorProdFunctorEquivCounitIso A B C, }
+
+/-- The isomorphism of categories between `(A ⥤ B) × (A ⥤ C)` and `A ⥤ (B × C)` -/
+def functorProdFunctorIsoCat : IsoCat ((A ⥤ B) × (A ⥤ C)) (A ⥤ B × C) where
+  functor := prodFunctorToFunctorProd A B C
+  inverse := functorProdToProdFunctor A B C
+  unit_eq := rfl
+  counit_eq := rfl
 
 section Opposite
 

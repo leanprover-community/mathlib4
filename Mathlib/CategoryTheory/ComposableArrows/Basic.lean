@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.IsoCat
+public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.SuppressCompilation
@@ -1054,19 +1055,16 @@ section
 variable (D : Type*) [Category* D] (n : ℕ)
 
 /-- `ComposableArrows` preserves products, up to equivalence of categories. -/
-def prodEquivalence : ComposableArrows (C × D) n ≌ ComposableArrows C n × ComposableArrows D n :=
+abbrev prodEquivalence : ComposableArrows (C × D) n ≌ ComposableArrows C n × ComposableArrows D n :=
   (functorProdFunctorEquiv (Fin (n + 1)) C D).symm
 
 /-- `ComposableArrows` preserves products, up to isomorphism of categories. -/
-def prodIsoCat : IsoCat (ComposableArrows (C × D) n)
-                        (ComposableArrows C n × ComposableArrows D n) where
-  functor := (prodEquivalence C D n).functor
-  inverse := (prodEquivalence C D n).inverse
-  unit_eq := rfl
-  counit_eq := rfl
+abbrev prodIsoCat : IsoCat (ComposableArrows (C × D) n)
+                           (ComposableArrows C n × ComposableArrows D n) :=
+  (functorProdFunctorIsoCat (Fin (n + 1)) C D).symm
 
 /-- `ComposableArrows` preserves products, up to bijection. -/
-def prodEquiv : ComposableArrows (C × D) n ≃ ComposableArrows C n × ComposableArrows D n :=
+abbrev prodEquiv : ComposableArrows (C × D) n ≃ ComposableArrows C n × ComposableArrows D n :=
   IsoCat.objEquiv (prodIsoCat C D n)
 
 end
