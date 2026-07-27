@@ -14,6 +14,9 @@ public import Mathlib.Topology.UniformSpace.HeineCantor
 A function continuous on a compact set of a pseudometric space is uniformly continuous there.
 This file records the metric ε-δ consequences of the uniform-space level
 `IsCompact.uniformContinuousOn_of_continuous` and its siblings.
+
+See `Mathlib/Topology/EMetricSpace/HeineCantor.lean` for the versions phrased in terms of `edist`
+and an `ℝ≥0∞`-valued ε, which apply in any pseudoemetric space.
 -/
 
 public section
@@ -38,7 +41,9 @@ theorem ContinuousOn.exists_forall_dist_le_of_isCompact (hs : IsCompact s) (hf :
 
 /-- **Heine–Cantor** on a compact space, in metric ε-δ form: a continuous function on a compact
 pseudometric space is uniformly continuous, so for every `ε > 0` there is a `δ > 0` such that any
-two points within `δ` are mapped within `ε`. -/
+two points within `δ` are mapped within `ε`.
+
+See `ContinuousMap.uniform_continuity` for a bundled version of this theorem. -/
 theorem Continuous.exists_forall_dist_lt_of_compactSpace [CompactSpace α] (hf : Continuous f)
     {ε : ℝ} (hε : 0 < ε) :
     ∃ δ > 0, ∀ x y : α, dist x y < δ → dist (f x) (f y) < ε :=
@@ -56,7 +61,7 @@ each point of a compact set `s`, then for every `ε > 0` there is a `δ > 0` suc
 `ContinuousOn.exists_forall_dist_lt_of_isCompact`, the point `y` need not lie in `s`. -/
 theorem IsCompact.exists_forall_dist_lt_of_continuousAt (hs : IsCompact s)
     (hf : ∀ a ∈ s, ContinuousAt f a) {ε : ℝ} (hε : 0 < ε) :
-    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → dist (f x) (f y) < ε := 
+    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → dist (f x) (f y) < ε :=
   let ⟨δ, hδ, H⟩ := uniformity_basis_dist.mem_iff.1
     (hs.uniformContinuousAt_of_continuousAt f hf (uniformity_basis_dist.mem_of_mem hε))
   ⟨δ, hδ, fun x hx y hxy ↦ H (a := (x, y)) hxy hx⟩
