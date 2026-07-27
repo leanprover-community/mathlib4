@@ -318,7 +318,7 @@ instance Prod.locallyPathConnectedSpace [LocallyPathConnectedSpace Y] :
 
 /-- If each `Z i` is locally path-connected and all but finitely many are path-connected, then
 `∀ i, Z i` is locally path-connected. -/
-theorem Pi.locallyPathConnectedSpace_of_finite_nonpathconnected {Z : ι → Type*}
+theorem Pi.locallyPathConnectedSpace_of_finite_not_pathConnectedSpace {Z : ι → Type*}
     [∀ i, TopologicalSpace (Z i)] [∀ i, LocallyPathConnectedSpace (Z i)]
     (hfinite : {i | ¬PathConnectedSpace (Z i)}.Finite) :
     LocallyPathConnectedSpace (∀ i, Z i) where
