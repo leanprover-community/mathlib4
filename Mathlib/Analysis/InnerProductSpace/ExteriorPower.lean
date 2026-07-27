@@ -47,19 +47,19 @@ variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 /-- The inner product on `⋀[ℝ]^n E` as a bilinear map. This is an implementation detail
 for constructing the `InnerProductSpace` instance and should not be used directly.
 Use `⟪·, ·⟫` instead. -/
-def innerProductForm : ⋀[ℝ]^n E →ₗ[ℝ] ⋀[ℝ]^n E →ₗ[ℝ] ℝ :=
+private def innerProductForm : ⋀[ℝ]^n E →ₗ[ℝ] ⋀[ℝ]^n E →ₗ[ℝ] ℝ :=
   pairingDual ℝ E n ∘ₗ map n (innerₗ E)
 
-lemma innerProductForm_ιMulti_ιMulti (x y : Fin n → E) :
+private lemma innerProductForm_ιMulti_ιMulti (x y : Fin n → E) :
     innerProductForm (ιMulti ℝ n x) (ιMulti ℝ n y) = det (of fun i j ↦ ⟪x j, y i⟫) := by
   simp [innerProductForm]
 
 @[simp]
-lemma innerProductForm_ιMulti_self (x : Fin n → E) :
+private lemma innerProductForm_ιMulti_self (x : Fin n → E) :
     innerProductForm (ιMulti ℝ n x) (ιMulti ℝ n x) = det (gram ℝ x) := by
   simp [gram, innerProductForm_ιMulti_ιMulti, real_inner_comm]
 
-lemma flip_innerProductForm : (innerProductForm (E := E) (n := n)).flip = innerProductForm := by
+private lemma flip_innerProductForm : (innerProductForm (E := E) (n := n)).flip = innerProductForm := by
   apply linearMap_ext
   ext
   simp only [LinearMap.compAlternatingMap_apply, LinearMap.flip_apply,
@@ -69,11 +69,11 @@ lemma flip_innerProductForm : (innerProductForm (E := E) (n := n)).flip = innerP
   ext
   exact real_inner_comm _ _
 
-lemma innerProductForm_symm (x y : ⋀[ℝ]^n E) : innerProductForm y x = innerProductForm x y :=
+private lemma innerProductForm_symm (x y : ⋀[ℝ]^n E) : innerProductForm y x = innerProductForm x y :=
   congr($flip_innerProductForm x y)
 
 @[simp]
-lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder ι] {v : ι → E}
+private lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder ι] {v : ι → E}
     (hv : Orthonormal ℝ v) (s t : Set.powersetCard ι n) :
     innerProductForm (ιMulti_family ℝ n v s) (ιMulti_family ℝ n v t) = if s = t then 1 else 0 := by
   simp only [ιMulti_family]
@@ -87,7 +87,7 @@ lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder �
     obtain ⟨i, rfl⟩ := hxt
     exact det_eq_zero_of_row_eq_zero i (fun j ↦ hv.inner_eq_zero (hxs j))
 
-lemma innerProductForm_eq_sum {ι : Type*} [Fintype ι] [LinearOrder ι]
+private lemma innerProductForm_eq_sum {ι : Type*} [Fintype ι] [LinearOrder ι]
     (b : OrthonormalBasis ι ℝ E) (x y : ⋀[ℝ]^n E) :
     innerProductForm x y =
       ∑ s, (b.toBasis.exteriorPower n).repr y s * (b.toBasis.exteriorPower n).repr x s := by
@@ -95,12 +95,12 @@ lemma innerProductForm_eq_sum {ι : Type*} [Fintype ι] [LinearOrder ι]
     rw [← (b.toBasis.exteriorPower n).sum_repr x, ← (b.toBasis.exteriorPower n).sum_repr y]
   simp
 
-lemma innerProductForm_self (x : ⋀[ℝ]^n E) {ι : Type*} [Fintype ι] [LinearOrder ι]
+private lemma innerProductForm_self (x : ⋀[ℝ]^n E) {ι : Type*} [Fintype ι] [LinearOrder ι]
     (b : OrthonormalBasis ι ℝ E) :
     innerProductForm x x = ∑ s, (b.toBasis.exteriorPower n).repr x s ^ 2 := by
   simp_rw [innerProductForm_eq_sum b, pow_two]
 
-instance [FiniteDimensional ℝ E] : InnerProductSpace.Core ℝ (⋀[ℝ]^n E) where
+@[no_expose] instance [FiniteDimensional ℝ E] : InnerProductSpace.Core ℝ (⋀[ℝ]^n E) where
   inner x y := innerProductForm x y
   conj_inner_symm := innerProductForm_symm
   add_left := by simp
