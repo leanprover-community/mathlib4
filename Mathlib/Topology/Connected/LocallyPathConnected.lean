@@ -366,7 +366,7 @@ theorem Pi.locallyPathConnectedSpace_iff {Z : ι → Type*} [∀ i, TopologicalS
     · exact .inl he
     obtain ⟨x⟩ := hne
     classical
-    haveI : ∀ i, Nonempty (Z i) := Classical.nonempty_pi.mp ⟨x⟩
+    have : ∀ i, Nonempty (Z i) := Classical.nonempty_pi.mp ⟨x⟩
     refine .inr ⟨fun i ↦ ((isOpenMap_eval i).isQuotientMap (continuous_apply i)
       (surjective_eval i)).locallyPathConnectedSpace, ?_⟩
     have hVn : pathComponent x ∈ 𝓝 x :=
