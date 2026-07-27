@@ -59,7 +59,8 @@ private lemma innerProductForm_ιMulti_self (x : Fin n → E) :
     innerProductForm (ιMulti ℝ n x) (ιMulti ℝ n x) = det (gram ℝ x) := by
   simp [gram, innerProductForm_ιMulti_ιMulti, real_inner_comm]
 
-private lemma flip_innerProductForm : (innerProductForm (E := E) (n := n)).flip = innerProductForm := by
+private lemma flip_innerProductForm :
+    (innerProductForm (E := E) (n := n)).flip = innerProductForm := by
   apply linearMap_ext
   ext
   simp only [LinearMap.compAlternatingMap_apply, LinearMap.flip_apply,
@@ -69,7 +70,8 @@ private lemma flip_innerProductForm : (innerProductForm (E := E) (n := n)).flip 
   ext
   exact real_inner_comm _ _
 
-private lemma innerProductForm_symm (x y : ⋀[ℝ]^n E) : innerProductForm y x = innerProductForm x y :=
+private lemma innerProductForm_symm (x y : ⋀[ℝ]^n E) :
+    innerProductForm y x = innerProductForm x y :=
   congr($flip_innerProductForm x y)
 
 @[simp]
