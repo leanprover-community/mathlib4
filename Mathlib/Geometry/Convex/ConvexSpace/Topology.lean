@@ -13,32 +13,21 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 /-!
 # The topology on the standard simplex
 
-In this file, we define the topology on the standard simplex `StdSimplex R M`.
-When `M` is finite, the topology is the one that is induced by the
-embedding `StdSimplex R M → (M → R)`. We use the supremum of the coinduced
-topologies for the maps `StdSimplex.map f : StdSimplex R ι → StdSimplex R M`
+In this file, we define a topology on the standard simplex `StdSimplex R M`.
+When `M` is finite, this is the topology that is induced by the
+embedding `StdSimplex R M → (M → R)`. In general, we use the supremum of
+the coinduced topologies for the maps `StdSimplex.map f : StdSimplex R ι → StdSimplex R M`
 where `f : ι → M` is a map from a finite set `ι`.
 
 -/
 
 universe u v
 
--- to be moved
-open Classical in
-@[to_additive]
-lemma Finset.prod_eq_of_subset {ι M : Type*} [CommMonoid M]
-    {s₁ s₂ : Finset ι} (h : s₁ ⊆ s₂) (f : ι → M) (hf : ∀ (i : ι), i ∈ s₂ → i ∉ s₁ → f i = 1) :
-    ∏ i ∈ s₁, f i = ∏ i ∈ s₂, f i := by
-  rw [show s₂ = s₁.disjUnion (s₂ \ s₁) disjoint_sdiff by simpa, Finset.prod_disjUnion,
-    Finset.prod_eq_one (s := s₂ \ s₁) (by aesop), mul_one]
-
 open Topology
 
-namespace Convexity
+namespace Convexity.StdSimplex
 
 variable (R : Type u) [PartialOrder R] [Ring R] [TopologicalSpace R]
-
-namespace StdSimplex
 
 /-- The topology on `StdSimplex R ι` that is induced by the embedding
 `StdSimplex R ι → (ι → R)`. This is the correct topoplogy only when
@@ -118,8 +107,8 @@ lemma topologicalSpace_eq (M : Type v) [Finite M] :
 variable {R} in
 public lemma continuous_iff
     {M : Type v} {T : Type*} [TopologicalSpace T] (f : StdSimplex R M → T) :
-    Continuous f ↔ ∀ (ι : Type v) [Finite ι] (g : ι → M),
-      Continuous (f ∘ map g) := by
+    Continuous f ↔
+      ∀ (ι : Type v) [Finite ι] (g : ι → M), Continuous (f ∘ map g) := by
   rw [continuous_iSup_dom]
   refine forall_congr' (fun ι ↦ ?_)
   rw [continuous_iSup_dom]
@@ -151,10 +140,11 @@ public lemma continuous_map {M : Type*} {N : Type v} (f : M → N) :
   rw [← map_comp', Function.comp_assoc, Equiv.symm_comp_self, Function.comp_id]
 
 open Classical in
+/-- Same as `StdSimplex.continuous_iff` but we only consider inclusions of
+finite subsets of `M` instead of all maps `ι → M` for arbitrary finite types `ι`. -/
 public lemma continuous_iff'
     {M T : Type*} [TopologicalSpace T] (f : StdSimplex R M → T) :
-    Continuous f ↔ ∀ (s : Finset M),
-      Continuous (f ∘ map (Subtype.val : s → M)) := by
+    Continuous f ↔ ∀ (s : Finset M), Continuous (f ∘ map (Subtype.val : s → M)) := by
   rw [continuous_iff]
   refine ⟨fun h s ↦ h _ _, fun h ι _ g ↦ ?_⟩
   have := Fintype.ofFinite ι
@@ -169,33 +159,6 @@ public lemma continuous_weights_apply {M : Type*} (m : M) :
   intro ι _ g
   rw [topologicalSpace_eq]
   exact continuous_map_weights_apply R g m
-
--- to be moved
--- needs clean up
-public lemma range_toFun_comp_weights (M : Type*) [Fintype M] :
-    Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
-    (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
-  ext s
-  simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
-  refine ⟨?_, ?_⟩
-  · rintro ⟨s, rfl⟩
-    refine ⟨s.weights_nonneg, ?_⟩
-    have := s.total
-    rwa [Finsupp.sum_fintype _ _ (by simp)] at this
-  · rintro ⟨h₁, h₂⟩
-    refine ⟨{ weights := ∑ (m : M), .single m (s m), nonneg := ?_, total := ?_ }, ?_⟩
-    · intro m
-      simp only [Finsupp.coe_zero, Pi.zero_apply, Finsupp.coe_finsetSum, Finset.sum_apply]
-      rw [Finset.sum_eq_single m (by aesop) (by simp)]
-      simpa using h₁ m
-    · simp only [implies_true, Finsupp.sum_fintype, Finsupp.coe_finsetSum,
-        Finset.sum_apply, ← h₂]
-      congr
-      ext m
-      rw [Finset.sum_eq_single m (by aesop) (by simp), Finsupp.single_eq_same]
-    · ext m
-      simp only [Finsupp.coe_finsetSum, Finset.sum_apply]
-      rw [Finset.sum_eq_single m (by aesop) (by simp), Finsupp.single_eq_same]
 
 lemma isEmbedding_toFun_comp_weights (M : Type*) [Finite M] :
     IsEmbedding (fun t ↦ t.weights : StdSimplex R M → M → R) where
@@ -213,6 +176,4 @@ lemma isClosedEmbedding_toFun_comp_weights
       (isClosed_eq ?_ ?_)
     all_goals fun_prop
 
-end StdSimplex
-
-end Convexity
+end Convexity.StdSimplex

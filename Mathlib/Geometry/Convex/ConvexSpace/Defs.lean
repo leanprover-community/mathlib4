@@ -81,6 +81,26 @@ lemma nonempty [Nontrivial R] (w : StdSimplex R M) : Nonempty M :=
 
 @[ext] alias ⟨ext, _⟩ := weights_inj
 
+@[simp]
+lemma total_of_fintype [Fintype M] (w : StdSimplex R M) :
+    ∑ i, w.weights i = 1 := by
+  have := w.total
+  rwa [Finsupp.sum_fintype _ _ (by simp)] at this
+
+lemma range_toFun_comp_weights [Fintype M] :
+    Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
+    (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
+  ext s
+  simp only [Set.mem_range, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  refine ⟨?_, ?_⟩
+  · rintro ⟨s, rfl⟩
+    exact ⟨s.weights_nonneg, by simp⟩
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨{
+      weights := equivFunOnFinite.symm s
+      nonneg m := by simpa using h₁ m
+      total := by simpa [Finsupp.sum_fintype] }, by simp⟩
+
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
