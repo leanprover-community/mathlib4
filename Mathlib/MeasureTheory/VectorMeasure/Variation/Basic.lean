@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
-public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Properties of variation
@@ -287,15 +285,6 @@ theorem _root_.MeasurableEmbedding.variation_map (hφ : MeasurableEmbedding φ) 
     apply le_trans ?_ (enorm_measure_le_variation _ _)
     by_cases hx : x ∈ s <;> simp [hs, hx]
 
-lemma variation_eq_of_forall_enorm_eq {W : Type*} [TopologicalSpace W] [ENormedAddCommMonoid W]
-    [T2Space W] (ν : VectorMeasure X W) (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ = ‖ν E‖ₑ) :
-    μ.variation = ν.variation := by
-  apply le_antisymm <;>
-  apply variation_le_of_forall_enorm_le <;>
-  intro E hE
-  · simpa only [h E hE] using enorm_measure_le_variation ν E
-  · simpa only [h E hE] using enorm_measure_le_variation μ E
-
 end Basic
 
 section NormedAddCommGroup
@@ -337,26 +326,6 @@ instance {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} [IsFi
     IsFiniteMeasure (c • μ).variation := by
   simp only [variation_smul]
   infer_instance
-
-section ContinuousLinearMap
-
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
-
-lemma variation_mapRangeₗ_le
-    (μ : VectorMeasure X V) (f : V →L[ℝ] W) :
-    (μ.mapRangeₗ f.toLinearMap f.continuous).variation ≤ ‖f‖₊ • μ.variation := by
-  refine variation_le_of_forall_enorm_le fun E _ ↦ ?_
-  simp only [mapRangeₗ_apply, ContinuousLinearMap.coe_coe]
-  calc ‖f (μ E)‖ₑ ≤ ‖f‖ₑ * ‖μ E‖ₑ := f.le_opENorm (μ E)
-    _ ≤ ‖f‖ₑ * μ.variation E := by gcongr; exact enorm_measure_le_variation μ E
-    _ = (‖f‖₊ • μ.variation) E := by rw [Measure.coe_nnreal_smul_apply, ← enorm_eq_nnnorm]
-
-instance (μ : VectorMeasure X V) (f : V →L[ℝ] W) [IsFiniteMeasure μ.variation] :
-    IsFiniteMeasure (μ.mapRangeₗ f.toLinearMap f.continuous).variation :=
-  isFiniteMeasure_of_le _ (variation_mapRangeₗ_le μ f)
-
-end ContinuousLinearMap
 
 instance [Finite X] : IsFiniteMeasure μ.variation where
   measure_univ_lt_top := by
