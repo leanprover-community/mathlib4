@@ -59,7 +59,7 @@ variable (M N)
 
 variable (R) in
 /-- Type synonym for the projective tensor product of topological modules. -/
-public def ProjectiveTensorProduct := M ⊗[R] N
+def ProjectiveTensorProduct := M ⊗[R] N
 
 @[inherit_doc] scoped[TensorProduct] notation:100 M:100 " ⊗[" R "]π " N:101 =>
   ProjectiveTensorProduct R M N
