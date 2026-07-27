@@ -67,12 +67,9 @@ lemma continuous_map_weights_apply
   have (t : StdSimplex R ι₁) :
       (map (R := R) f t).weights i₂ =
         ∑ i₁ with f i₁ = i₂, t.weights i₁ := by
-    simp only [weights_map]
-    rw [Finsupp.mapDomain] -- needs clean up
-    rw [Finsupp.sum_fintype _ _ (by simp)]
-    simp only [Finsupp.coe_finsetSum, Finset.sum_apply]
-    rw [← Finset.sum_eq_of_subset (s₁ := { i₁ | f i₁ = i₂}) (by simp) _
-      (fun i₁ _ hi₁ ↦ Finsupp.single_eq_of_ne' (by simpa using hi₁))]
+    rw [weights_map, Finsupp.mapDomain_fintype, Finsupp.coe_finsetSum, Finset.sum_apply,
+      ← Finset.sum_eq_of_subset (s₁ := { i₁ | f i₁ = i₂}) (by simp)
+        _ (fun i₁ _ hi₁ ↦ Finsupp.single_eq_of_ne' (by simpa using hi₁))]
     refine Finset.sum_congr rfl (fun i₁ hi₁ ↦ ?_)
     obtain rfl : f i₁ = i₂ := by simpa using hi₁
     simp
