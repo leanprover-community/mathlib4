@@ -380,9 +380,6 @@ lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [Topological
     chartAt H x = OpenPartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) :=
   rfl
 
-@[deprecated (since := "2026-07-26")]
-alias chartedSpace_of_discreteTopology_chartAt := chartedSpace_ofDiscreteTopology_chartAt
-
 section Products
 
 library_note «Manifold type tags» /-- For technical reasons we introduce two type tags:
