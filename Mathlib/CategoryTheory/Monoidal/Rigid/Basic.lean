@@ -610,53 +610,37 @@ theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDua
 
 namespace ExactPairing
 
-/-- The right mate of a morphism, relative to explicitly supplied exact pairings. -/
-def rightMate {X X' Y Y' : C} (pX : ExactPairing X X') (pY : ExactPairing Y Y')
-    (f : X ⟶ Y) : Y' ⟶ X' :=
-  (ρ_ Y').inv ≫ Y' ◁ pX.coevaluation ≫ Y' ◁ f ▷ X' ≫ (α_ Y' Y X').inv ≫
-    pY.evaluation ▷ X' ≫ (λ_ X').hom
+/-- The right mate of a morphism with explicitly supplied exact pairings. This is useful in certain
+situations, e.g. TODO -/
+abbrev rightMate {X X' Y Y' : C} (pX : ExactPairing X X') (pY : ExactPairing Y Y')
+    (f : X ⟶ Y) : Y' ⟶ X' := @rightAdjointMate C _ _ X Y ⟨X'⟩ ⟨Y'⟩ f
 
-/-- The right mate of a composite is the composite of the right mates. -/
-theorem rightMate_comp {X X' Y Y' Z Z' : C}
-    (pX : ExactPairing X X') (pY : ExactPairing Y Y') (pZ : ExactPairing Z Z')
-    (f : X ⟶ Y) (g : Y ⟶ Z) :
-    pX.rightMate pZ (f ≫ g) = pY.rightMate pZ g ≫ pX.rightMate pY f :=
-  @comp_rightAdjointMate C _ _ X Y Z
-    { rightDual := X', exact := pX } { rightDual := Y', exact := pY }
-      { rightDual := Z', exact := pZ } f g
+/-- Similar docstring to above TODO -/
+lemma rightMate_comp_evaluation {X X' Y Y' : C} (pX : ExactPairing X X') (pY : ExactPairing Y Y')
+    (f : X ⟶ Y) : pX.rightMate pY f ▷ X ≫ ε_ X X' = Y' ◁ f ≫ ε_ Y Y' :=
+  @rightAdjointMate_comp_evaluation C _ _ X Y ⟨X'⟩ ⟨Y'⟩ f
 
-theorem rightMate_comp_evaluation {X X' Y Y' : C}
-    (pX : ExactPairing X X') (pY : ExactPairing Y Y') (f : X ⟶ Y) :
-    pX.rightMate pY f ▷ X ≫ @evaluation C _ _ X X' pX =
-      Y' ◁ f ≫ @evaluation C _ _ Y Y' pY :=
-  @rightAdjointMate_comp_evaluation C _ _ X Y
-    { rightDual := X', exact := pX } { rightDual := Y', exact := pY } f
-
-/-- Morphisms into the right member of an exact pairing are determined by evaluation. -/
-theorem rightHom_ext {X X' Z : C} (p : ExactPairing X X') {f g : Z ⟶ X'}
+lemma rightHom_ext {X X' Z : C} (p : ExactPairing X X') {f g : Z ⟶ X'}
     (h : f ▷ X ≫ @evaluation C _ _ X X' p =
       g ▷ X ≫ @evaluation C _ _ X X' p) : f = g := by
-  let hX : HasRightDual X := { rightDual := X', exact := p }
-  have hf := @tensorRightHomEquiv_whiskerRight_comp_evaluation C _ _ X Z hX f
-  have hg := @tensorRightHomEquiv_whiskerRight_comp_evaluation C _ _ X Z hX g
+  have hf := @tensorRightHomEquiv_whiskerRight_comp_evaluation C _ _ X Z ⟨X'⟩ f
+  have hg := @tensorRightHomEquiv_whiskerRight_comp_evaluation C _ _ X Z ⟨X'⟩ g
   change (tensorRightHomEquiv Z X X' (𝟙_ C))
-    (f ▷ X ≫ @evaluation C _ _ X X' p) = f ≫ (λ_ X').inv at hf
+    (f ▷ X ≫ ε_ X X') = f ≫ (λ_ X').inv at hf
   change (tensorRightHomEquiv Z X X' (𝟙_ C))
-    (g ▷ X ≫ @evaluation C _ _ X X' p) = g ≫ (λ_ X').inv at hg
+    (g ▷ X ≫ ε_ X X') = g ≫ (λ_ X').inv at hg
   rw [← cancel_mono (λ_ X').inv, ← hf, h, hg]
 
-/-- Taking right mates commutes with tensor products, with the order reversed. -/
-theorem rightMate_tensor {X₁ X₂ X₁' X₂' Y₁ Y₂ Y₁' Y₂' : C}
+lemma rightMate_tensor {X₁ X₂ X₁' X₂' Y₁ Y₂ Y₁' Y₂' : C}
     (pX₁ : ExactPairing X₁ X₁') (pX₂ : ExactPairing X₂ X₂')
     (pY₁ : ExactPairing Y₁ Y₁') (pY₂ : ExactPairing Y₂ Y₂')
     (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     (pX₁.tensorOf pX₂).rightMate (pY₁.tensorOf pY₂) (f ⊗ₘ g) =
       pX₂.rightMate pY₂ g ⊗ₘ pX₁.rightMate pY₁ f := by
-  letI : HasRightDual X₁ := { rightDual := X₁', exact := pX₁ }
-  letI : HasRightDual X₂ := { rightDual := X₂', exact := pX₂ }
-  letI : HasRightDual Y₁ := { rightDual := Y₁', exact := pY₁ }
-  letI : HasRightDual Y₂ := { rightDual := Y₂', exact := pY₂ }
-  change _ = gᘁ ⊗ₘ fᘁ
+  letI : HasRightDual X₁ := ⟨X₁'⟩
+  letI : HasRightDual X₂ := ⟨X₂'⟩
+  letI : HasRightDual Y₁ := ⟨Y₁'⟩
+  letI : HasRightDual Y₂ := ⟨Y₂'⟩
   symm
   apply (pX₁.tensorOf pX₂).rightHom_ext
   rw [rightMate_comp_evaluation]
@@ -752,8 +736,8 @@ def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y
 
 /-- Right duals are isomorphic. -/
 def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) : Y₁ ≅ Y₂ where
-  hom := @rightAdjointMate C _ _ X X ⟨Y₂⟩ ⟨Y₁⟩ (𝟙 X)
-  inv := @rightAdjointMate C _ _ X X ⟨Y₁⟩ ⟨Y₂⟩ (𝟙 X)
+  hom := rightMate p₂ p₁ (𝟙 X)
+  inv := rightMate p₁ p₂ (𝟙 X)
   hom_inv_id := by
     -- Make all arguments explicit, because we want to find them by unification not synthesis.
     rw [← @comp_rightAdjointMate, Category.comp_id, @rightAdjointMate_id]
@@ -784,18 +768,14 @@ theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.
   ext
   simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id]
 
-/-- Comparison isomorphisms between right duals compose transitively. -/
-theorem rightDualIso_hom_trans {X Y₁ Y₂ Y₃ : C}
+lemma rightDualIso_hom_trans {X Y₁ Y₂ Y₃ : C}
     (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) (p₃ : ExactPairing X Y₃) :
     (rightDualIso p₁ p₂).hom ≫ (rightDualIso p₂ p₃).hom =
       (rightDualIso p₁ p₃).hom := by
-  change p₂.rightMate p₁ (𝟙 X) ≫ p₃.rightMate p₂ (𝟙 X) =
-    p₃.rightMate p₁ (𝟙 X)
-  simpa only [Category.comp_id] using
-    (ExactPairing.rightMate_comp p₃ p₂ p₁ (𝟙 X) (𝟙 X)).symm
+  dsimp only [rightDualIso]
+  rw [← @comp_rightAdjointMate, Category.comp_id]
 
-/-- Comparison isomorphisms between tensor-product right duals are tensor products. -/
-theorem rightDualIso_tensor {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C}
+lemma rightDualIso_tensor {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C}
     (p₁ : ExactPairing X₁ Y₁) (p₂ : ExactPairing X₂ Y₂)
     (q₁ : ExactPairing X₁ Z₁) (q₂ : ExactPairing X₂ Z₂) :
     (rightDualIso (p₁.tensorOf p₂) (q₁.tensorOf q₂)).hom =
@@ -805,16 +785,13 @@ theorem rightDualIso_tensor {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C}
   simpa only [id_tensorHom_id] using
     ExactPairing.rightMate_tensor q₁ q₂ p₁ p₂ (𝟙 X₁) (𝟙 X₂)
 
-/-- Naturality of right mates with respect to comparison isomorphisms. -/
-theorem rightDualIso_hom_naturality {X Y A₁ A₂ B₁ B₂ : C}
+lemma rightDualIso_hom_naturality {X Y A₁ A₂ B₁ B₂ : C}
     (pX₁ : ExactPairing X A₁) (pX₂ : ExactPairing X A₂)
     (pY₁ : ExactPairing Y B₁) (pY₂ : ExactPairing Y B₂) (f : X ⟶ Y) :
     pX₁.rightMate pY₁ f ≫ (rightDualIso pX₁ pX₂).hom =
       (rightDualIso pY₁ pY₂).hom ≫ pX₂.rightMate pY₂ f := by
-  change pX₁.rightMate pY₁ f ≫ pX₂.rightMate pX₁ (𝟙 X) =
-    pY₂.rightMate pY₁ (𝟙 Y) ≫ pX₂.rightMate pY₂ f
-  rw [← ExactPairing.rightMate_comp pX₂ pX₁ pY₁]
-  rw [← ExactPairing.rightMate_comp pX₂ pY₂ pY₁]
+  dsimp only [ExactPairing.rightMate, rightDualIso]
+  rw [← @comp_rightAdjointMate, ← @comp_rightAdjointMate]
   simp
 
 /-- The right dual of a tensor product is isomorphic to the reversed tensor product of
