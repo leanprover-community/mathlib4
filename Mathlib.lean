@@ -3555,6 +3555,8 @@ public import Mathlib.Combinatorics.Configuration
 public import Mathlib.Combinatorics.Derangements.Basic
 public import Mathlib.Combinatorics.Derangements.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
+public import Mathlib.Combinatorics.DiHypergraph.Basic
+public import Mathlib.Combinatorics.DiHypergraph.GraphLike
 public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.Digraph.GraphLike
 public import Mathlib.Combinatorics.Digraph.Orientation
@@ -3592,6 +3594,7 @@ public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
 public import Mathlib.Combinatorics.Hindman
 public import Mathlib.Combinatorics.Hypergraph.Basic
+public import Mathlib.Combinatorics.Hypergraph.GraphLike
 public import Mathlib.Combinatorics.KatonaCircle
 public import Mathlib.Combinatorics.Matroid.Basic
 public import Mathlib.Combinatorics.Matroid.Circuit
