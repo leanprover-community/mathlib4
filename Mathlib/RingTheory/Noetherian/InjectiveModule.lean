@@ -69,8 +69,7 @@ private lemma stabilize_ideal_b (f : R) :
   choose r hr using monotone_stabilizes_iff_noetherian.mpr inferInstance ideal_b_order_hom
   use r
   intro i
-  specialize hr (r + i) (Nat.le_add_right r i)
-  exact hr.symm
+  exact (hr (r + i) (Nat.le_add_right r i)).symm
 
 /-- **Hartshorne III. Lemma 3.3.** If `R` is a Noetherian ring and `I` satisfies Baer's criterion,
 then for any `f : R` the localization map `I → I_f` is surjective. -/
