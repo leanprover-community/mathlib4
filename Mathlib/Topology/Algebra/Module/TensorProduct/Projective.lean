@@ -44,6 +44,7 @@ hulls.
 ## References
 
 * H. H. Schaefer, M. P. Wolff, *Topological Vector Spaces*, Chapter III, Section 6 (pp. 92–97).
+* https://en.wikipedia.org/wiki/Projective_tensor_product
 
 ## Tags
 
