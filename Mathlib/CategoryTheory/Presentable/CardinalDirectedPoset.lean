@@ -64,7 +64,7 @@ variable {κ} {J : Type u} [SmallCategory J] [IsCardinalFiltered J κ]
 lemma isCardinalFiltered_pt (hF : ∀ j, IsCardinalFiltered (F.obj j) κ) :
     haveI := isFiltered_of_isCardinalFiltered J κ
     IsCardinalFiltered (CoconePt hc) κ := by
-  haveI := isFiltered_of_isCardinalFiltered J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   refine isCardinalFiltered_preorder _ _ (fun K f hK ↦ ?_)
   rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
   choose j₀ x₀ hx₀ using fun k ↦ Types.jointly_surjective_of_isColimit hc (f k)
@@ -208,7 +208,7 @@ instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) wh
     obtain ⟨f⟩ : Cardinal.mk J.obj ≤ Cardinal.mk X := by
       simpa [hX] using ((hasCardinalLT_iff_cardinal_mk_lt _ _).1 hJ).le
     let e := Equiv.ofInjective _ f.injective
-    letI : PartialOrder (Set.range f) := PartialOrder.lift _ e.symm.injective
+    let : PartialOrder (Set.range f) := PartialOrder.lift _ e.symm.injective
     let e' : Set.range f ≃o J.obj := { toEquiv := e.symm, map_rel_iff' := by rfl }
     exact ⟨_, ⟨⟨Set.range f, inferInstance,
       ⟨⟨IsCardinalFiltered.of_equivalence κ e'.symm.equivalence⟩⟩⟩⟩,
@@ -284,6 +284,7 @@ instance (S : Subtype (J.PropSetWithTop κ')) : HasTerminal S :=
 instance (S : Subtype (J.PropSetWithTop κ')) : IsCardinalFiltered S κ :=
   isCardinalFiltered_of_hasTerminal _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsCardinalFiltered (Subtype (J.PropSetWithTop κ')) κ' :=
   isCardinalFiltered_preorder _ _ (fun K α hK ↦ by
     rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
@@ -308,6 +309,7 @@ lemma propSetWithTop_pair (j : J.obj) : J.PropSetWithTop κ' {WithTop.some j, �
   ⟨hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out),
     Set.mem_insert_of_mem _ (by simp)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_mem_propSetWithTop (a : J.withTop.obj) :
     ∃ S, J.PropSetWithTop κ' S ∧ a ∈ S := by
   induction a with
@@ -320,6 +322,7 @@ colimit of its subsets that are of cardinality `< κ'` and contain `⊤`. -/
 abbrev coconeWithTop : Cocone (functorOfPredicateSet (J.PropSetWithTop κ')) :=
   coconeOfPredicateSet (PropSetWithTop J κ')
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `J : CardinalDirectedPoset κ` and `κ'` is any regular cardinal,
 then `J.withTop` is the `κ'`-filtered colimit of its subsets that are of
 cardinality `< κ'` and contain `⊤`. -/

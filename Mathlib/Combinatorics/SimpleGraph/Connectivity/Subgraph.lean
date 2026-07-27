@@ -215,6 +215,10 @@ theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
 theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = p.edgeSet :=
   Set.ext fun _ => p.mem_edges_toSubgraph
 
+theorem _root_.SimpleGraph.Adj.toSubgraph_toWalk (h : G.Adj u v) :
+    h.toWalk.toSubgraph = G.subgraphOfAdj h := by
+  ext <;> simp
+
 @[simp]
 theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).toSubgraph = p.toSubgraph ⊔ q.toSubgraph := by induction p <;> simp [*, sup_assoc]
@@ -278,44 +282,20 @@ theorem toSubgraph_adj_snd {u v} (w : G.Walk u v) (h : ¬ w.Nil) : w.toSubgraph.
 theorem toSubgraph_adj_penultimate {u v} (w : G.Walk u v) (h : ¬ w.Nil) :
     w.toSubgraph.Adj w.penultimate v := by
   rw [not_nil_iff_lt_length] at h
-  simpa [show w.length - 1 + 1 = w.length from by lia]
+  simpa [show w.length - 1 + 1 = w.length by lia]
     using w.toSubgraph_adj_getVert (by lia : w.length - 1 < w.length)
+
+lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
+    p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
+  rw [← mem_edges_toSubgraph, Subgraph.mem_edgeSet]
 
 theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
     w.toSubgraph.Adj u' v' ↔ ∃ i, s(w.getVert i, w.getVert (i + 1)) =
       s(u', v') ∧ i < w.length := by
-  constructor
-  · intro hadj
-    unfold Walk.toSubgraph at hadj
-    match w with
-    | .nil =>
-      simp only [singletonSubgraph_adj, Pi.bot_apply, Prop.bot_eq_false] at hadj
-    | .cons h p =>
-      simp only [Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
-        Prod.swap_prod_mk] at hadj
-      cases hadj with
-      | inl hl =>
-        use 0
-        simp only [Walk.getVert_zero, zero_add, getVert_cons_succ]
-        refine ⟨?_, by simp only [length_cons, Nat.zero_lt_succ]⟩
-        exact Sym2.eq_iff.mpr hl
-      | inr hr =>
-        obtain ⟨i, hi⟩ := (toSubgraph_adj_iff _).mp hr
-        use i + 1
-        simp only [getVert_cons_succ]
-        constructor
-        · exact hi.1
-        · simp only [Walk.length_cons, Nat.add_lt_add_right hi.2 1]
-  · rintro ⟨i, hi⟩
-    rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
-    exact toSubgraph_adj_getVert _ hi.2
+  grind [adj_toSubgraph_iff_mem_edges, mk_mem_edges_iff_exists]
 
 lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
-
-lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
-    p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
-  rw [← p.mem_edges_toSubgraph, Subgraph.mem_edgeSet]
 
 theorem toSubgraph_le_iff {w : G.Walk u v} (hnil : ¬w.Nil) {G' : G.Subgraph} :
     w.toSubgraph ≤ G' ↔ w.edgeSet ⊆ G'.edgeSet := by
@@ -391,7 +371,7 @@ lemma neighborSet_toSubgraph_endpoint {u v} {p : G.Walk u v}
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsPath)
     (h : i ≠ 0) (h' : i < p.length) :
     p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
-  have hadj1 := ((show i - 1 + 1 = i from by lia) ▸
+  have hadj1 := ((show i - 1 + 1 = i by lia) ▸
     p.toSubgraph_adj_getVert (by lia : (i - 1) < p.length)).symm
   ext v
   simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
@@ -399,8 +379,8 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsP
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
   rintro ⟨i', ⟨hl, _⟩ | ⟨_, hl⟩⟩ <;>
-    apply hp.getVert_injOn (by rw [Set.mem_setOf_eq]; lia)
-      (by rw [Set.mem_setOf_eq]; lia) at hl <;> aesop
+    apply hp.getVert_injOn (by rw [Set.mem_ofPred_eq]; lia)
+      (by rw [Set.mem_ofPred_eq]; lia) at hl <;> aesop
 
 lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsPath)
     (h : i ≠ 0) (h' : i < p.length) :
@@ -408,7 +388,7 @@ lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v
   rw [hp.neighborSet_toSubgraph_internal h h']
   have : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
     intro h
-    have := hp.getVert_injOn (by rw [Set.mem_setOf_eq]; lia) (by rw [Set.mem_setOf_eq]; lia) h
+    have := hp.getVert_injOn (by rw [Set.mem_ofPred_eq]; lia) (by rw [Set.mem_ofPred_eq]; lia) h
     lia
   simp_all
 
@@ -418,11 +398,11 @@ lemma snd_of_toSubgraph_adj {u v v'} {p : G.Walk u v} (hp : p.IsPath)
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi
   rcases hi.1 with ⟨hl1, rfl⟩ | ⟨hr1, hr2⟩
   · have : i = 0 := by
-      apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
+      apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
       rw [p.getVert_zero, hl1]
     simp [this]
   · have : i + 1 = 0 := by
-      apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
+      apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
       rw [p.getVert_zero, hr2]
     contradiction
 
@@ -441,7 +421,7 @@ lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≠ 0) (h' : i < p.length) :
     p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
-  have hadj1 := ((show i - 1 + 1 = i from by lia) ▸
+  have hadj1 := ((show i - 1 + 1 = i by lia) ▸
     p.toSubgraph_adj_getVert (by lia : (i - 1) < p.length)).symm
   ext v
   simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
@@ -449,11 +429,11 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.Is
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
   rintro ⟨i', ⟨hl1, hl2⟩ | ⟨hr1, hr2⟩⟩
-  · apply hpc.getVert_injOn' (by rw [Set.mem_setOf_eq]; lia)
-      (by rw [Set.mem_setOf_eq]; lia) at hl1
+  · apply hpc.getVert_injOn' (by rw [Set.mem_ofPred_eq]; lia)
+      (by rw [Set.mem_ofPred_eq]; lia) at hl1
     simp_all
-  · apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; lia)
-      (by rw [Set.mem_setOf_eq]; lia) at hr2
+  · apply hpc.getVert_injOn (by rw [Set.mem_ofPred_eq]; lia)
+      (by rw [Set.mem_ofPred_eq]; lia) at hr2
     aesop
 
 lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycle)
@@ -653,7 +633,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset, Set.mem_iUnion,
-                 Set.mem_setOf_eq, Walk.start_mem_support, exists_prop, and_true]
+                 Set.mem_ofPred_eq, Walk.start_mem_support, exists_prop, and_true]
       exact ⟨u, ut⟩
     intro v hv
     simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset] at hv
@@ -661,7 +641,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     refine ⟨{x | x ∈ (Gpc u w).some.support}, ?_, ?_⟩
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]
       exact fun x xw => Set.mem_iUnion₂.mpr ⟨w, wt, xw⟩
-    · simp only [Set.mem_setOf_eq, Walk.start_mem_support, exists_true_left]
+    · simp only [Set.mem_ofPred_eq, Walk.start_mem_support, exists_true_left]
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs

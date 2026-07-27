@@ -37,6 +37,11 @@ variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u
 abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u + 1}.obj X
 
+#adaptation_note
+/--
+In this declaration and `isColimitLocallyConstantPresheaf`, `coe_comp` interferes with rewriting via
+`Cone.w`, so we needed to manualy exclude it.
+-/
 set_option backward.defeqAttrib.useBackward true in
 /--
 The functor `locallyConstantPresheaf` takes cofiltered limits of finite sets with surjective
@@ -59,10 +64,10 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     change fi ((c.π.app k ≫ (F ⋙ toProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toProfinite).map _) x)
     have h := LocallyConstant.congr_fun h x
-    dsimp
+    dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toProfinite).op ⋙ locallyConstantPresheaf X))
@@ -72,7 +77,6 @@ lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (
   change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨i⟩) ≫
     (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
   rw [(isColimitLocallyConstantPresheaf c X hc).fac]
-  rfl
 
 /-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
 noncomputable def isColimitLocallyConstantPresheafDiagram (S : Profinite) :
@@ -130,6 +134,7 @@ variable {S : Profinite.{u}} {F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)}
 instance : Final <| Profinite.Extend.functorOp S.asLimitCone :=
   Profinite.Extend.functorOp_final S.asLimitCone S.asLimit
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 A presheaf, which takes a profinite set written as a cofiltered limit to the corresponding
 colimit, agrees with the left Kan extension of its restriction.
@@ -153,6 +158,7 @@ def lanPresheafNatIso (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimi
   NatIso.ofComponents (fun ⟨S⟩ ↦ (lanPresheafIso (hF S)))
     fun _ ↦ (by simpa using colimit.hom_ext fun _ ↦ (by simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma lanPresheafNatIso_hom_app (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op)
     (S : Profiniteᵒᵖ) : (lanPresheafNatIso hF).hom.app S =
@@ -247,6 +253,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Finite X] [Finite Y
 
 attribute [local simp] toProfinite_obj
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
@@ -347,10 +354,10 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     change fi ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x)
     have h := LocallyConstant.congr_fun h x
-    dsimp
+    dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toLightProfinite).op ⋙ locallyConstantPresheaf X))
@@ -360,7 +367,6 @@ lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (
   change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨n⟩) ≫
     (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
   rw [(isColimitLocallyConstantPresheaf c X hc).fac]
-  rfl
 
 /-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
 noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
@@ -368,7 +374,7 @@ noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
   (Functor.Final.isColimitWhiskerEquiv (opOpEquivalence ℕ).inverse _).symm
     (isColimitLocallyConstantPresheaf _ _ S.asLimit)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
     (s : Cocone (S.diagram.rightOp ⋙ locallyConstantPresheaf X))
@@ -378,7 +384,6 @@ lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
   change ((((locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone)).ι.app n) ≫
     (isColimitLocallyConstantPresheafDiagram X S).desc s) _ = _
   rw [(isColimitLocallyConstantPresheafDiagram X S).fac]
-  rfl
 
 end LocallyConstantAsColimit
 
@@ -427,6 +432,7 @@ variable {S : LightProfinite.{u}} {F : LightProfinite.{u}ᵒᵖ ⥤ Type u}
 instance : Final <| LightProfinite.Extend.functorOp S.asLimitCone :=
   LightProfinite.Extend.functorOp_final S.asLimitCone S.asLimit
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 A presheaf, which takes a light profinite set written as a sequential limit to the corresponding
 colimit, agrees with the left Kan extension of its restriction.
@@ -454,6 +460,7 @@ def lanPresheafNatIso
     lanPresheafIso_hom, Opposite.op_unop]
   exact colimit.hom_ext fun _ ↦ (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma lanPresheafNatIso_hom_app
     (hF : ∀ S : LightProfinite, IsColimit <| F.mapCocone (coconeRightOpOfCone S.asLimitCone))
@@ -539,6 +546,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Finite X] [Fin
 
 attribute [local simp] toLightProfinite_obj
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
