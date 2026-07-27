@@ -70,6 +70,10 @@ theorem omega_mul_omega_eq_add :
   ext <;> simp
 
 @[simp]
+theorem basis_apply_one : (basis a b) 1 = ω := by
+  ext <;> simp [basis]
+
+@[simp]
 theorem omega_mul_mk (x y : R) : (ω : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨a * y, x + b * y⟩ := by
   ext <;> simp
 
@@ -301,6 +305,65 @@ theorem norm_mem_nonZeroDivisors_iff {z : QuadraticAlgebra R a b} :
     exact Submonoid.mul_mem _ hz (star_mem_nonZeroDivisors hz)
 
 end norm
+
+section trace
+
+variable [CommRing R]
+
+/-- the trace in a quadratic algebra, as an `R`-linear map. -/
+def trace : QuadraticAlgebra R a b →ₗ[R] R where
+  toFun z := 2 * z.re + b * z.im
+  map_add' z w := by simp only [re_add, im_add]; ring
+  map_smul' r z := by simp only [re_smul, im_smul, RingHom.id_apply, smul_eq_mul]; ring
+
+theorem trace_apply (z : QuadraticAlgebra R a b) :
+    trace z = 2 * z.re + b * z.im := rfl
+
+@[simp]
+theorem trace_algebraMap (r : R) :
+    trace (algebraMap R (QuadraticAlgebra R a b) r) = 2 * r := by
+  simp [trace_apply, algebraMap_re, algebraMap_im]
+
+@[simp]
+theorem trace_natCast (n : ℕ) : trace (n : QuadraticAlgebra R a b) = 2 * n := by
+  simp [trace_apply, re_natCast, im_natCast]
+
+@[simp]
+theorem trace_intCast (n : ℤ) : trace (n : QuadraticAlgebra R a b) = 2 * n := by
+  simp [trace_apply, re_intCast, im_intCast]
+
+@[simp]
+theorem trace_omega : trace (ω : QuadraticAlgebra R a b) = b := by
+  simp [trace_apply]
+
+@[simp]
+theorem trace_one : trace (1 : QuadraticAlgebra R a b) = 2 := by
+  simp [trace_apply]
+
+@[simp]
+theorem trace_star (z : QuadraticAlgebra R a b) : trace (star z) = trace z := by
+  simp only [trace_apply, re_star, im_star]
+  ring
+
+/-- `z + star z` is the trace of `z`. -/
+theorem algebraMap_trace_eq_add_star (z : QuadraticAlgebra R a b) :
+    algebraMap R (QuadraticAlgebra R a b) (trace z) = z + star z := by
+  ext <;>
+  simp only [trace_apply, algebraMap_re, algebraMap_im, re_add, im_add, re_star, im_star] <;>
+  ring
+
+/-- Every element of a quadratic algebra satisfies its characteristic equation. -/
+theorem sq_sub_trace_smul_add_norm_eq_zero (z : QuadraticAlgebra R a b) :
+    z ^ 2 - trace z • z + algebraMap R _ (norm z) = 0 := by
+  rw [Algebra.smul_def, algebraMap_trace_eq_add_star, algebraMap_norm_eq_mul_star]; ring
+
+/-- The reduction `z ^ 2 = trace z • z - norm z`, lowering the degree of a square. -/
+theorem sq_eq_trace_smul_sub_norm (z : QuadraticAlgebra R a b) :
+    z ^ 2 = trace z • z - algebraMap R _ (norm z) := by
+  rw [← sub_eq_zero, ← sub_add]
+  exact sq_sub_trace_smul_add_norm_eq_zero z
+
+end trace
 
 section field
 
