@@ -1294,7 +1294,7 @@ section HasKernels
 variable [HasKernels C]
 
 /-- The kernel of an arrow is natural. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ker : Arrow C ⥤ C where
   obj f := kernel f.hom
   map {f g} u := kernel.lift _ (kernel.ι _ ≫ u.left) (by simp)
@@ -1314,7 +1314,7 @@ section HasCokernels
 variable [HasCokernels C]
 
 /-- The cokernel of an arrow is natural. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def coker : Arrow C ⥤ C where
   obj f := cokernel f.hom
   map {f g} u := cokernel.desc _ (u.right ≫ cokernel.π _) (by simp [← Arrow.w_assoc u])
