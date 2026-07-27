@@ -240,12 +240,12 @@ def currySum (f : MultilinearMap R N M₂) :
     MultilinearMap R (fun i : ι ↦ N (.inl i)) (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂) where
   toFun u :=
     { toFun v := f (Sum.rec u v)
-      map_update_add' := by letI := Classical.decEq ι; simp
-      map_update_smul' := by letI := Classical.decEq ι; simp }
+      map_update_add' := by let := Classical.decEq ι; simp
+      map_update_smul' := by let := Classical.decEq ι; simp }
   map_update_add' u i x y :=
-    ext fun _ ↦ by letI := Classical.decEq ι'; simp
+    ext fun _ ↦ by let := Classical.decEq ι'; simp
   map_update_smul' u i c x :=
-    ext fun _ ↦ by letI := Classical.decEq ι'; simp
+    ext fun _ ↦ by let := Classical.decEq ι'; simp
 
 @[simp low]
 theorem currySum_apply (f : MultilinearMap R N M₂)
@@ -276,12 +276,12 @@ def uncurrySum
     MultilinearMap R N M₂ where
   toFun u := g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i'))
   map_update_add' := by
-    letI := Classical.decEq ι
-    letI := Classical.decEq ι'
+    let := Classical.decEq ι
+    let := Classical.decEq ι'
     rintro _ _ (_ | _) _ _ <;> simp
   map_update_smul' := by
-    letI := Classical.decEq ι
-    letI := Classical.decEq ι'
+    let := Classical.decEq ι
+    let := Classical.decEq ι'
     rintro _ _ (_ | _) _ _ <;> simp
 
 @[simp]

@@ -41,6 +41,7 @@ noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
 abbrev AsType : Type :=
   Fin (Fintype.card α)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simps -isSimp id comp]
 noncomputable instance categoryAsType : SmallCategory (AsType α) where
   Hom i j := Fin (Fintype.card (@Quiver.Hom (ObjAsType α) _ i j))
@@ -49,6 +50,7 @@ noncomputable instance categoryAsType : SmallCategory (AsType α) where
 
 attribute [local simp] categoryAsType_id categoryAsType_comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The "identity" functor from `AsType α` to `ObjAsType α`. -/
 @[simps]
 noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α where

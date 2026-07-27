@@ -1048,7 +1048,7 @@ theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ s' ⊆ s, BijOn f 
   · rcases eq_empty_or_nonempty t with (rfl | ht)
     · exact fun _ => ⟨∅, empty_subset _, bijOn_empty f⟩
     · intro h
-      haveI : Nonempty α := ⟨Classical.choose (h.comap_nonempty ht)⟩
+      have : Nonempty α := ⟨Classical.choose (h.comap_nonempty ht)⟩
       exact ⟨_, h.mapsTo_invFunOn.image_subset, h.bijOn_subset⟩
   · rintro ⟨s', hs', hfs'⟩
     exact hfs'.surjOn.mono hs' (Subset.refl _)

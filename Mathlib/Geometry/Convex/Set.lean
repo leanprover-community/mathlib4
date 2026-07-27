@@ -100,7 +100,6 @@ protected lemma IsConvexSet.iUnion {ι : Sort*} {s : ι → Set X} (hs : Directe
 
 protected lemma IsConvexSet.preimage {s : Set Y} (hf : IsAffineMap R f) (hs : IsConvexSet R s) :
     IsConvexSet R (f ⁻¹' s) := by
-  classical
   rintro w hw
   simp only [mem_preimage, hf.map_sConvexComb, sConvexComb_map]
   exact hs.iConvexComb_mem fun x hx ↦ hw <| by simpa
@@ -182,6 +181,7 @@ section Field
 variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X] {w : StdSimplex K X}
   {s t : Set X} {x y : X}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Convexity of a set can be checked via binary combinations if the scalars form a field. -/
 lemma IsConvexSet.of_convexCombPair_mem
     (hs : ∀ a b : K, ∀ ha hb hab, ∀ x ∈ s, ∀ y ∈ s, convexCombPair a b ha hb hab x y ∈ s) :
