@@ -482,4 +482,31 @@ instance : (opOpEquivalence C).IsMonoidal where
   leftAdjoint_ε := by simp [opOpEquivalence]
   leftAdjoint_μ := by simp [opOpEquivalence]
 
+section
+
+variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+
+/-- Taking both opposites of a functor into an opposite monoidal category. -/
+@[simps! obj map]
+protected def Functor.opMop (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) : (Cᵒᵖ)ᴹᵒᵖ ⥤ D :=
+  unmopFunctor Cᵒᵖ ⋙ (F ⋙ unmopFunctor Dᵒᵖ).leftOp
+
+variable (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) [F.Monoidal]
+
+/-- The monoidal structure on the functor obtained by taking both opposites. -/
+def Functor.opMopCoreMonoidal : F.opMop.CoreMonoidal where
+  εIso := ((Functor.Monoidal.εIso F).unmop.unop).symm
+  μIso X Y := ((Functor.Monoidal.μIso F _ _).unmop.unop).symm
+  μIso_hom_natural_left _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+  μIso_hom_natural_right _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+  associativity _ _ _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+  left_unitality _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+  right_unitality _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
+
+/-- The monoidal structure on the functor obtained by taking both opposites. -/
+@[instance_reducible, instance]
+def Functor.opMopMonoidal : F.opMop.Monoidal := F.opMopCoreMonoidal.toMonoidal
+
+end
+
 end CategoryTheory
