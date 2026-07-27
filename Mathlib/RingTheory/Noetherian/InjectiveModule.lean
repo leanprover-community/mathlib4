@@ -62,12 +62,10 @@ variable [IsNoetherianRing R]
 private lemma stabilize_ideal_b (f : R) :
     ∃ (r : ℕ), ∀ (i : ℕ), Ideal.torsionOf R R (f ^ (r + i)) = Ideal.torsionOf R R (f ^ r) := by
   let ideal_b_order_hom : ℕ →o Ideal R := by
-    refine ⟨fun i ↦ Ideal.torsionOf R R (f ^ i), ?_⟩
-    intro i j hle
-    choose k hk using Nat.exists_eq_add_of_le hle
-    refine Ideal.torsionOf_le_of_div (f ^ i) (f ^ j) ⟨f ^ k, ?_⟩
-    rw [hk, smul_eq_mul]
-    ring
+    refine ⟨fun i ↦ Ideal.torsionOf R R <| f ^ i, fun i j hle ↦ ?_⟩
+    obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hle
+    refine Ideal.torsionOf_le_of_div (f ^ i) (f ^ (i + k)) ⟨f ^ k, ?_⟩
+    grind [smul_eq_mul]
   choose r hr using monotone_stabilizes_iff_noetherian.mpr inferInstance ideal_b_order_hom
   use r
   intro i
