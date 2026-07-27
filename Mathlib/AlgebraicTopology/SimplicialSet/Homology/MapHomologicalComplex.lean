@@ -61,7 +61,7 @@ variable {R} in
 @[reassoc (attr := simp)]
 lemma map_ιChainComplex_chainComplexFunctorObjCompMapIso_hom_app_f
     {n : ℕ} (x : X _⦋n⦌) :
-   dsimp% F.map (X.ιChainComplex x) ≫
+    dsimp% F.map (X.ιChainComplex x) ≫
       ((chainComplexFunctorObjCompMapIso F R).hom.app X).f n =
     X.ιChainComplex x := by
   simp [chainComplexFunctorObjCompMapIso, ιChainComplex,
