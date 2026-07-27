@@ -80,8 +80,8 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
     Function.Surjective g := by
   intro x
   obtain ⟨n, a, ha⟩ : ∃ (n : ℕ) (a : I), g a = f ^ n • x := by
-    obtain ⟨⟨a, s⟩, hs⟩ := IsLocalizedModule.surj (Submonoid.powers f) g x
-    choose n hn using (Submonoid.mem_powers_iff s.1 f).1 s.2
+    obtain ⟨⟨a, ⟨s, ps⟩⟩, hs⟩ := IsLocalizedModule.surj (Submonoid.powers f) g x
+    obtain ⟨n, rfl⟩ := (Submonoid.mem_powers_iff s f).mp ps
     use n, a
     exact hn ▸ hs.symm
   choose r hr using stabilize_ideal_b f
