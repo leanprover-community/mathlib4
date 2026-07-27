@@ -472,6 +472,26 @@ theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁
   (lt_or_ge x b).elim (fun hxb => Or.inl ⟨lt_of_le_of_lt h₁ hx.1, hxb⟩)
     fun hxb => Or.inr ⟨lt_of_lt_of_le h₂ hxb, lt_of_lt_of_le hx.2 h₃⟩
 
+theorem Ioo_union_Ioo_eq_Ioo_sdiff_singleton
+    {α : Type*} [LinearOrder α] {a b c : α} (a_le_b : a ≤ b) (b_le_c : b ≤ c) :
+    Ioo a b ∪ Ioo b c = Ioo a c \ {b} := by
+  grind
+
+theorem Ico_union_Ioo_eq_Ico_sdiff_singleton
+    {α : Type*} [LinearOrder α] {a b c : α} (a_le_b : a ≤ b) (b_le_c : b ≤ c) :
+    Ico a b ∪ Ioo b c = Ico a c \ {b} := by
+  simp [← Ico_union_Ico_eq_Ico a_le_b b_le_c, union_sdiff_distrib]
+
+theorem Ico_union_Ioc_eq_Icc_sdiff_singleton
+    {α : Type*} [LinearOrder α] {a b c : α} (a_le_b : a ≤ b) (b_le_c : b ≤ c) :
+    Ico a b ∪ Ioc b c = Icc a c \ {b} := by
+  simp [← Icc_union_Icc_eq_Icc a_le_b b_le_c, union_sdiff_distrib]
+
+theorem Ioo_union_Ioc_eq_Ioc_sdiff_singleton
+    {α : Type*} [LinearOrder α] {a b c : α} (a_le_b : a ≤ b) (b_le_c : b ≤ c) :
+    Ioo a b ∪ Ioc b c = Ioc a c \ {b} := by
+  simp [← Ioc_union_Ioc_eq_Ioc a_le_b b_le_c, union_sdiff_distrib]
+
 /-! ### Intersection, difference, complement -/
 
 @[to_dual (attr := simp)]
