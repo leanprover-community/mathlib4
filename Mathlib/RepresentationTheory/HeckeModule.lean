@@ -65,14 +65,15 @@ lemma ind_apply_subgroup_cosetVector_one {H : Subgroup G} (h : H) :
   · simp
 
 lemma IntertwiningMap.surjective_cosetVector_one {H : Subgroup G}
-    (f : IntertwiningMap ρ (ind H.subtype (trivial k H k))) {v : V} (h : f v = cosetVector k H 1) :
+    (f : IntertwiningMap ρ (ind H.subtype (trivial k H k))) (h : ∃ v, f v = cosetVector k H 1) :
     Function.Surjective f := by
   intro x
   refine IndV.induction_on x ?_ ?_
   · intro g r
+    obtain ⟨v, hv⟩ := h
     use r • (ρ g⁻¹ v)
-    rw [map_smul, IntertwiningMap.isIntertwining, h, ind_apply_cosetVector, cosetVector, ← map_smul,
-      smul_eq_mul, mul_one, one_mul, inv_inv]
+    rw [map_smul, IntertwiningMap.isIntertwining, hv, ind_apply_cosetVector, cosetVector,
+      ← map_smul, smul_eq_mul, mul_one, one_mul, inv_inv]
   · intro _ _ ⟨v, hv⟩ ⟨w, hw⟩
     use v + w
     rw [map_add, hv, hw]
