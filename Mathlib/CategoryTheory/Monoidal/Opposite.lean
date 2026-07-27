@@ -487,7 +487,7 @@ section
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 /-- Taking both opposites of a functor into an opposite monoidal category. -/
-@[simps! obj map]
+@[simps!]
 protected def Functor.opMop (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) : (Cᵒᵖ)ᴹᵒᵖ ⥤ D :=
   unmopFunctor Cᵒᵖ ⋙ (F ⋙ unmopFunctor Dᵒᵖ).leftOp
 
