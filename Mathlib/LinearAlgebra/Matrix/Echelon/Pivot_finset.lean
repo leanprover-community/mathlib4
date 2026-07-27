@@ -5,7 +5,6 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Data.Fintype.Sort
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
@@ -91,29 +90,35 @@ structure IsPivotFinset [Zero R] [LT m] [LT n] (A : Matrix m n R) (s : Finset n)
   rowEchelon : A.RowEchelon
   mem_iff : ∀ c, c ∈ s ↔ ∃ i, A.IsLeadingEntry i c
 
-theorem IsPivotFinset.rank_eq [Finite m] [LinearOrder m] [Fintype n] [LinearOrder n]
+theorem IsPivotFinset.rank_le_card [LinearOrder m] [Fintype n] [LinearOrder n]
+    [CommSemiring R] [StrongRankCondition R] {A : Matrix m n R} {s : Finset n}
+    (h : A.IsPivotFinset s) : A.rank ≤ s.card := by
+  choose f hf using fun c : ↥s => (h.mem_iff _).mp c.2
+  refine (rank_le_card_of_row_eq_zero A (s.attach.image f) fun i hi => ?_).trans
+    (card_image_le.trans_eq card_attach)
+  by_contra h0
+  obtain ⟨c, hc⟩ := exists_isLeadingEntry_of_ne_zero h0
+  have hcs : c ∈ s := (h.mem_iff _).mpr ⟨i, hc⟩
+  exact hi (mem_image.mpr ⟨⟨c, hcs⟩, mem_attach _ _,
+    h.rowEchelon.isLeadingEntry_row_eq (hf ⟨c, hcs⟩) hc⟩)
+
+theorem IsPivotFinset.card_le_rank [LT m] [Fintype n] [LinearOrder n]
     [CommRing R] [IsDomain R] {A : Matrix m n R} {s : Finset n}
-    (h : A.IsPivotFinset s) : A.rank = s.card := by
-  cases nonempty_fintype m
-  classical
-  refine le_antisymm ?_ ?_
-  · refine (rank_le_card_of_row_eq_zero A (univ.filter fun i => A i ≠ 0)
-      fun i hi => by simpa using hi).trans ?_
-    rw [← card_attach (s := univ.filter fun i => A i ≠ 0)]
-    choose f hf using fun x : { x // x ∈ univ.filter fun i => A i ≠ 0 } =>
-      exists_isLeadingEntry_of_ne_zero (mem_filter.mp x.2).2
-    refine card_le_card_of_injOn f (fun x _ => (h.mem_iff _).mpr ⟨x.1, hf x⟩)
-      fun x₁ _ x₂ _ heq => Subtype.ext
-        (h.rowEchelon.isLeadingEntry_row_eq (hf x₁) (heq ▸ hf x₂))
-  · choose f hf using fun c : ↥s => (h.mem_iff _).mp c.2
-    have htri : (A.submatrix f Subtype.val).BlockTriangular id := fun a b hab =>
-      (hf a).1 _ hab
-    have hdet : (A.submatrix f Subtype.val).det ≠ 0 := by
-      rw [det_of_upperTriangular htri]
-      exact prod_ne_zero_iff.mpr fun a _ => (hf a).2
-    calc (s.card : ℕ) = (A.submatrix f Subtype.val).rank := by
-          rw [rank_of_det_ne_zero hdet, Fintype.card_coe]
-      _ ≤ A.rank := rank_submatrix_le A _ _
+    (h : A.IsPivotFinset s) : s.card ≤ A.rank := by
+  choose f hf using fun c : ↥s => (h.mem_iff _).mp c.2
+  have htri : (A.submatrix f Subtype.val).BlockTriangular id := fun a b hab =>
+    (hf a).1 _ hab
+  have hdet : (A.submatrix f Subtype.val).det ≠ 0 := by
+    rw [det_of_upperTriangular htri]
+    exact prod_ne_zero_iff.mpr fun a _ => (hf a).2
+  calc (s.card : ℕ) = (A.submatrix f Subtype.val).rank := by
+        rw [rank_of_det_ne_zero hdet, Fintype.card_coe]
+    _ ≤ A.rank := rank_submatrix_le A _ _
+
+theorem IsPivotFinset.rank_eq [LinearOrder m] [Fintype n] [LinearOrder n]
+    [CommRing R] [IsDomain R] {A : Matrix m n R} {s : Finset n}
+    (h : A.IsPivotFinset s) : A.rank = s.card :=
+  le_antisymm h.rank_le_card h.card_le_rank
 
 lemma rank_mul_eq_right_of_lowerTriangular [Fintype m] [LinearOrder m] [Fintype n]
     [CommRing R] [IsDomain R] (A : Matrix m m R) (B : Matrix m n R) (σ : Equiv.Perm m)
