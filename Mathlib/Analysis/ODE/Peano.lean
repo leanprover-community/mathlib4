@@ -339,4 +339,89 @@ lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x�
 
 end ArzelaAscoli
 
+/-! ### Extraction and convergence of a subsequence -/
+
+section LimitExtraction
+
+variable [FiniteDimensional ℝ E]
+
+/-- A subsequence of Tonelli approximations converges uniformly to a continuous curve. -/
+lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+    ∃ α : ℝ → E, ∃ φ : ℕ → ℕ, StrictMono φ ∧ ContinuousOn α (Icc t₀ tmax) ∧
+      MapsTo α (Icc t₀ tmax) (closedBall x₀ r) ∧
+        TendstoUniformlyOn (tonelliApproximation f t₀ x₀ ∘ φ) α atTop (Icc t₀.val tmax) := by
+  obtain ⟨β, φ, hφ_mono, hβ_tendsto⟩ := exists_tendsto_subseq_boundedTonelliApproximation hf
+  let α : ℝ → E := fun t ↦ if h : t ∈ Icc t₀.val tmax then β ⟨t, h⟩ else 0
+  refine ⟨α, φ, hφ_mono, ?_, ?_, ?_⟩
+  · rw [continuousOn_iff_continuous_domRestrict]
+    have h_restrict : (Set.Icc t₀.val tmax).domRestrict α = β := by
+      ext x
+      simp only [α, Set.domRestrict]
+      exact dif_pos x.prop
+    rw [h_restrict]
+    exact β.continuous
+  · intro t ht
+    have hα_apply : α t = β ⟨t, ht⟩ := by
+      simp only [α]
+      exact dif_pos ht
+    rw [hα_apply]
+    let t' : Icc t₀.val tmax := ⟨t, ht⟩
+    have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
+      BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
+    have h_pointwise :
+        Tendsto (fun n ↦ boundedTonelliApproximation hf (φ n) t') atTop (nhds (β t')) :=
+      h_uniform.tendsto_at t'
+    apply isClosed_closedBall.mem_of_tendsto h_pointwise
+    apply Eventually.of_forall
+    intro n
+    change tonelliApproximation f t₀ x₀ (φ n) t ∈ closedBall x₀ r
+    exact mapsTo_tonelliApproximation_closedBall hf (φ n) ht
+  · have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
+      BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
+    rw [tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
+    have hα_comp : α ∘ Subtype.val = ⇑β := by
+      ext t
+      simp only [Function.comp_apply, α]
+      exact dif_pos t.prop
+    rw [hα_comp]
+    change TendstoUniformly
+      (fun n (t : Icc t₀.val tmax) ↦ boundedTonelliApproximation hf (φ n) t) ⇑β atTop
+    exact h_uniform
+
+variable {φ : ℕ → ℕ}
+
+/-- The time-step sizes of the Tonelli approximations tend to zero. -/
+lemma tendsto_stepSize_zero : Tendsto (stepSize t₀) atTop (nhds 0) :=
+  tendsto_const_div_atTop_nhds_zero_nat (tmax - t₀)
+
+/-- The delayed input converges to the identity. -/
+lemma tendsto_delayedInput_id (t : ℝ) (ht : t ∈ Icc t₀.val tmax) :
+    Tendsto (fun n ↦ delayedInput t₀ n t) atTop (nhds t) := by
+  have h_tendsto : Tendsto (fun n ↦ max (t - stepSize t₀ n) t₀.val) atTop
+      (nhds (max (t - 0) t₀.val)) :=
+    Tendsto.max (Tendsto.sub tendsto_const_nhds tendsto_stepSize_zero) tendsto_const_nhds
+  simp only [sub_zero, max_eq_left ht.1] at h_tendsto
+  exact h_tendsto
+
+omit [FiniteDimensional ℝ E]
+
+/-- Uniform convergence of Tonelli approximations implies pointwise convergence after composition
+with the corresponding delayed inputs. -/
+lemma tendsto_tonelliApproximation_delayedInput_of_tendstoUniformlyOn_tonelliApproximation
+    (hφ : StrictMono φ)
+    (hα : ContinuousOn α (Icc t₀.val tmax))
+    (h_tendsto : TendstoUniformlyOn (tonelliApproximation f t₀ x₀ ∘ φ) α atTop
+      (Icc t₀.val tmax))
+    (t : ℝ) (ht : t ∈ Icc t₀.val tmax) :
+    Tendsto
+      (fun n ↦
+        tonelliApproximation f t₀ x₀ (φ n) (delayedInput t₀ (φ n + 1) t))
+      atTop (nhds (α t)) := by
+  refine h_tendsto.tendsto_comp (hα t ht) (tendsto_nhdsWithin_iff.mpr ?_)
+  exact
+    ⟨(tendsto_delayedInput_id t ht).comp <| (tendsto_add_atTop_nat 1).comp hφ.tendsto_atTop,
+      Eventually.of_forall (fun _ ↦ mapsTo_delayedInput _ _ ht)⟩
+
+end LimitExtraction
+
 end IsPeano
