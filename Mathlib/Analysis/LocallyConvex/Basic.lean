@@ -259,6 +259,17 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
+/-- An unbundled version of `absorbent_nhds_zero`. Every element in a topological vector
+space over a nontrivially normed field can be represented as a scaled version of an
+element in any given neighborhood of zero. -/
+lemma exists_smul_of_mem_nhds_zero [TopologicalSpace E] [ContinuousSMul 𝕜 E]
+    (hs : s ∈ 𝓝 (0 : E)) (x : E) :
+    ∃ (r : 𝕜) (_ : r ≠ 0), ∃ x' ∈ s, x = r • x' := by
+  obtain ⟨r, hr_mem, hr_ne⟩ :=
+    ((absorbent_nhds_zero hs x).and (Bornology.eventually_ne_cobounded (0 : 𝕜))).exists
+  obtain ⟨x', hx', rfl⟩ := Set.mem_smul_set.mp (Set.singleton_subset_iff.mp hr_mem)
+  exact ⟨r, hr_ne, x', hx', rfl⟩
+
 variable [PartialOrder 𝕜] in
 protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull 𝕜 s) := by
   suffices Convex 𝕜 { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull 𝕜 s } by

@@ -81,21 +81,6 @@ variable [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 variable {𝔘 : Set (Set E)} {𝔙 : Set (Set F)}
   (h𝔘 : (𝓝 (0 : E)).HasBasis 𝔘 id) (h𝔙 : (𝓝 (0 : F)).HasBasis 𝔙 id)
 
-/-- Every element in a topological vector space over a nontrivially normed field
-can be represented as a scaled version of an element in any given neighborhood of zero. -/
-lemma exists_smul_of_mem_nhds_zero [ContinuousSMul 𝕜 E]
-    {V : Set E} (hV : V ∈ 𝓝 0) (x : E) :
-    ∃ (r : 𝕜) (_ : r ≠ 0), ∃ x' ∈ V, x = r • x' := by
-  have h_abs := absorbent_nhds_zero (𝕜 := 𝕜) hV x
-  have h_abs' : ∀ᶠ (r : 𝕜) in cobounded 𝕜, ∃ x' ∈ V, x = r • x' := by
-    filter_upwards [h_abs] with r hr
-    have hx : x ∈ r • V := Set.singleton_subset_iff.mp hr
-    rcases Set.mem_smul_set.mp hx with ⟨x', hx', rfl⟩
-    exact ⟨x', hx', rfl⟩
-  have h_abs_ne := h_abs'.and (eventually_ne_cobounded 0)
-  rcases h_abs_ne.exists with ⟨r, ⟨x', hx', rfl⟩, hr_ne⟩
-  exact ⟨r, hr_ne, x', hx', rfl⟩
-
 section PartialOrder
 
 variable [PartialOrder 𝕜]
