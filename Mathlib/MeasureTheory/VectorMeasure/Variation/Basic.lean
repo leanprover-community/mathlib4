@@ -338,9 +338,12 @@ instance {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} [IsFi
   simp only [variation_smul]
   infer_instance
 
-lemma variation_mapRangeₗ_le
-    {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+section ContinuousLinearMap
+
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
+
+lemma variation_mapRangeₗ_le
     (μ : VectorMeasure X V) (f : V →L[ℝ] W) :
     (μ.mapRangeₗ f.toLinearMap f.continuous).variation ≤ ‖f‖₊ • μ.variation := by
   refine variation_le_of_forall_enorm_le fun E _ ↦ ?_
@@ -349,7 +352,11 @@ lemma variation_mapRangeₗ_le
     _ ≤ ‖f‖ₑ * μ.variation E := by gcongr; exact enorm_measure_le_variation μ E
     _ = (‖f‖₊ • μ.variation) E := by rw [Measure.coe_nnreal_smul_apply, ← enorm_eq_nnnorm]
 
--- TODO `IsFiniteMeasure` for `mapRangeₗ`
+instance (μ : VectorMeasure X V) (f : V →L[ℝ] W) [IsFiniteMeasure μ.variation] :
+    IsFiniteMeasure (μ.mapRangeₗ f.toLinearMap f.continuous).variation :=
+  isFiniteMeasure_of_le _ (variation_mapRangeₗ_le μ f)
+
+end ContinuousLinearMap
 
 instance [Finite X] : IsFiniteMeasure μ.variation where
   measure_univ_lt_top := by
