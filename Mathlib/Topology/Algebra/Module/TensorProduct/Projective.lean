@@ -76,14 +76,6 @@ section PartialOrder
 
 variable [PartialOrder 𝕜]
 
-/--
-this can be moved out to existing file
--/
-lemma absConvexHull_inter_subset {s t : Set E} :
-    absConvexHull 𝕜 (s ∩ t) ⊆ absConvexHull 𝕜 s ∩ absConvexHull 𝕜 t :=
-  Set.subset_inter (absConvexHull_mono Set.inter_subset_left)
-                   (absConvexHull_mono Set.inter_subset_right)
-
 abbrev projectiveModuleFilterBasisSets (𝔘 : Set (Set E)) (𝔙 : Set (Set F)) :=
   { s | ∃ U ∈ 𝔘, ∃ B ∈ 𝔙, s = absConvexHull 𝕜 (U ⊗ˢ[𝕜] B) }
 
