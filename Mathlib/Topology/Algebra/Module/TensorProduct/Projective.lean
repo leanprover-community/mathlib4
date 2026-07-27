@@ -103,6 +103,21 @@ instance instTopologicalSpaceProjectiveTensorProduct : TopologicalSpace (M ⊗[R
 
 instance : LocallyConvexSpace R (M ⊗[R]π N) := LocallyConvexSpace.sInf fun _ ⟨_, h, _⟩ ↦ h
 
+/-- The projective tensor product of two topological groups is an additive commutative group. -/
+instance : AddCommGroup (M ⊗[R]π N) := TensorProduct.addCommGroup
+
+/-- The projective tensor product topology is a topological additive group. -/
+instance : IsTopologicalAddGroup (M ⊗[R]π N) :=
+  topologicalAddGroup_sInf fun _ h ↦ h.1
+
+/-- The canonical uniform space structure on the projective tensor product. -/
+instance : UniformSpace (M ⊗[R]π N) :=
+  IsTopologicalAddGroup.rightUniformSpace (M ⊗[R]π N)
+
+/-- The projective tensor product is a uniform additive group. -/
+instance : IsUniformAddGroup (M ⊗[R]π N) :=
+  isUniformAddGroup_of_addCommGroup
+
 end CommSemiring
 section NontriviallyNormedField
 
