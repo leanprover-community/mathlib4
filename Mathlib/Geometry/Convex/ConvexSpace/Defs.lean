@@ -140,6 +140,11 @@ lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
   ext; simp [mapDomain_comp]
 
+lemma map_comp' (g₁ : M → N) (g₂ : N → P) :
+    map (R := R) (g₂ ∘ g₁) = map g₂ ∘ map g₁ := by
+  ext : 1
+  simp [map_comp]
+
 lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
