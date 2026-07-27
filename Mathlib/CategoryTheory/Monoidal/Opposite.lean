@@ -494,6 +494,7 @@ protected def Functor.opMop (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) : (Cᵒᵖ)ᴹᵒᵖ 
 variable (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) [F.Monoidal]
 
 /-- The monoidal structure on the functor obtained by taking both opposites. -/
+@[simps]
 def Functor.opMopCoreMonoidal : F.opMop.CoreMonoidal where
   εIso := ((Functor.Monoidal.εIso F).unmop.unop).symm
   μIso X Y := ((Functor.Monoidal.μIso F _ _).unmop.unop).symm
@@ -504,8 +505,8 @@ def Functor.opMopCoreMonoidal : F.opMop.CoreMonoidal where
   right_unitality _ := Quiver.Hom.op_inj (Quiver.Hom.mop_inj (by simp))
 
 /-- The monoidal structure on the functor obtained by taking both opposites. -/
-@[instance_reducible, instance]
-def Functor.opMopMonoidal : F.opMop.Monoidal := F.opMopCoreMonoidal.toMonoidal
+@[simps!]
+instance Functor.opMopMonoidal : F.opMop.Monoidal := F.opMopCoreMonoidal.toMonoidal
 
 end
 

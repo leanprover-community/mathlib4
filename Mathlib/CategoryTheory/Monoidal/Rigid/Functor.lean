@@ -30,11 +30,9 @@ dual endofunctor for a right rigid monoidal category.
 
 -/
 
-@[expose] public section
-
 namespace CategoryTheory
 
-open Category MonoidalCategory MonoidalOpposite Opposite Functor.LaxMonoidal Functor.OplaxMonoidal
+open Category MonoidalCategory MonoidalOpposite Opposite
 
 universe v u
 
@@ -45,8 +43,8 @@ section LeftRigid
 variable [LeftRigidCategory C]
 
 /-- The left dual functor from `C` to `(Cᵒᵖ)ᴹᵒᵖ`. -/
-@[simps obj map]
-def leftDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
+@[simps obj map, expose]
+public def leftDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
   obj X := mop (op (ᘁX))
   map f := (ᘁf).op.mop
   map_id X := by simp [leftAdjointMate_id]
@@ -59,36 +57,40 @@ section RightRigid
 variable [RightRigidCategory C]
 
 /-- The right dual functor from `C` to `(Cᵒᵖ)ᴹᵒᵖ`. -/
-@[simps]
-def rightDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
+@[simps obj map, expose]
+public def rightDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
   obj X := mop (op (Xᘁ))
   map f := (fᘁ).op.mop
   map_id X := by simp [rightAdjointMate_id]
   map_comp f g := by simp [comp_rightAdjointMate]
 
 /-- The core monoidal structure on the right dual functor. -/
-def rightDualFunctorCoreMonoidal : (rightDualFunctor C).CoreMonoidal where
+@[simps!, expose]
+public def rightDualFunctorCoreMonoidal : (rightDualFunctor C).CoreMonoidal where
   εIso := (rightDualIso (RightRigidCategory.rightDual (𝟙_ C)).exact exactPairingUnit).op.mop
   μIso X Y := (rightDualTensorIso X Y).op.mop
   μIso_hom_natural_left f Z := by
     refine MonoidalOpposite.hom_ext (Quiver.Hom.unop_inj ?_)
     dsimp [rightDualFunctor, rightDualTensorIso, Iso.mop, Iso.op, Functor.mapIso, mopFunctor]
-    rw [← tensorHom_id, rightDualIso_hom_naturality, ExactPairing.rightMate_tensor, cancel_epi]
+    rw [← tensorHom_id, rightDualIso_hom_naturality, ExactPairing.rightMate_tensor,
+      Iso.cancel_iso_hom_left]
     simp
   μIso_hom_natural_right Z f := by
     refine MonoidalOpposite.hom_ext (Quiver.Hom.unop_inj ?_)
     dsimp [rightDualFunctor, rightDualTensorIso, Iso.mop, Iso.op, Functor.mapIso, mopFunctor]
-    rw [← id_tensorHom, rightDualIso_hom_naturality, ExactPairing.rightMate_tensor, cancel_epi]
+    rw [← id_tensorHom, rightDualIso_hom_naturality, ExactPairing.rightMate_tensor,
+      Iso.cancel_iso_hom_left]
     simp
   associativity X Y Z := by
     refine MonoidalOpposite.hom_ext (Quiver.Hom.unop_inj ?_)
     dsimp [rightDualFunctor, Iso.mop, Iso.op, Functor.mapIso, mopFunctor, rightDualTensorIso]
     rw [← id_tensorHom, ← Iso.refl_hom, ← rightDualIso_id, ← rightDualIso_tensor, assoc,
       rightDualIso_hom_trans, rightDualIso_hom_naturality, ← tensorHom_id, ← Iso.refl_hom,
-      ← rightDualIso_id, ← rightDualIso_tensor, rightDualIso_hom_trans, cancel_epi]
+      ← rightDualIso_id, ← rightDualIso_tensor, rightDualIso_hom_trans, Iso.cancel_iso_hom_left]
     apply ExactPairing.rightHom_ext _
     rw [ExactPairing.rightMate_comp_evaluation]
-    simpa only [ExactPairing.tensor_evaluation] using (by monoidal)
+    simp only [ExactPairing.tensor_evaluation]
+    monoidal
   left_unitality X := by
     refine MonoidalOpposite.hom_ext (Quiver.Hom.unop_inj ?_)
     dsimp [rightDualFunctor, Iso.mop, Iso.op, Functor.mapIso, mopFunctor, rightDualTensorIso]
@@ -96,8 +98,8 @@ def rightDualFunctorCoreMonoidal : (rightDualFunctor C).CoreMonoidal where
       rightDualIso_hom_trans, rightDualIso_hom_naturality, rightDualIso_id, Iso.refl_hom, id_comp]
     apply ExactPairing.rightHom_ext _
     rw [ExactPairing.rightMate_comp_evaluation]
-    simpa only [ExactPairing.tensor_evaluation,
-      show ε_ (𝟙_ C) (𝟙_ C) = (ρ_ (𝟙_ C)).hom from rfl] using (by monoidal)
+    simp only [ExactPairing.tensor_evaluation, ExactPairing.unit_coevaluation]
+    monoidal
   right_unitality X := by
     refine MonoidalOpposite.hom_ext (Quiver.Hom.unop_inj ?_)
     dsimp [rightDualFunctor, Iso.mop, Iso.op, Functor.mapIso, mopFunctor, rightDualTensorIso]
@@ -105,20 +107,20 @@ def rightDualFunctorCoreMonoidal : (rightDualFunctor C).CoreMonoidal where
       rightDualIso_hom_trans, rightDualIso_hom_naturality, rightDualIso_id, Iso.refl_hom, id_comp]
     apply ExactPairing.rightHom_ext _
     rw [ExactPairing.rightMate_comp_evaluation]
-    simpa only [ExactPairing.tensor_evaluation,
-      show ε_ (𝟙_ C) (𝟙_ C) = (ρ_ (𝟙_ C)).hom from rfl] using (by monoidal)
+    simp only [ExactPairing.tensor_evaluation, ExactPairing.unit_coevaluation]
+    monoidal
 
 /-- The monoidal structure on the right dual functor. -/
-instance rightDualFunctorMonoidal : (rightDualFunctor C).Monoidal :=
+public instance rightDualFunctorMonoidal : (rightDualFunctor C).Monoidal :=
   (rightDualFunctorCoreMonoidal C).toMonoidal
 
 /-- The double (right) dual endofunctor `X ↦ Xᘁᘁ`. -/
-@[simps!]
-def doubleRightDualFunctor : C ⥤ C :=
+@[simps!, expose]
+public def doubleRightDualFunctor : C ⥤ C :=
   rightDualFunctor C ⋙ (rightDualFunctor C).opMop
 
 /-- The monoidal structure on the double-right-dual functor. -/
-instance doubleRightDualFunctorMonoidal : (doubleRightDualFunctor C).Monoidal :=
+public instance doubleRightDualFunctorMonoidal : (doubleRightDualFunctor C).Monoidal :=
   inferInstanceAs (rightDualFunctor C ⋙ (rightDualFunctor C).opMop).Monoidal
 
 end RightRigid
