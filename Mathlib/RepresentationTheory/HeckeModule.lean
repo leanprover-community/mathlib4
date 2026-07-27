@@ -26,6 +26,7 @@ variable {k : Type*} [CommRing k]
 variable {V : Type*} [AddCommGroup V] [Module k V] {ρ : Representation k G V}
 variable {W : Type*} [AddCommGroup W] [Module k W] {σ : Representation k H W}
 
+/-- One direction of `resIndEquiv` which we use to construct IntertwiningMaps staring from `ind`. -/
 noncomputable def IntertwiningMap.resToInd (φ : H →* G) (f : IntertwiningMap σ (ρ.comp φ)) :
     IntertwiningMap (ind φ σ) ρ :=
   ⟨Representation.Coinvariants.lift _
@@ -46,6 +47,7 @@ lemma IntertwiningMap.resToInd_apply_IndVMk_trivial_eq (φ : H →* G) (g : G) (
 
 variable (k)
 
+/-- The characteristic function on the coset `Hg`. -/
 noncomputable def cosetVector (H : Subgroup G) (g : G) :
     IndV H.subtype (trivial k H k) := IndV.mk H.subtype (trivial k H k) g 1
 
@@ -81,6 +83,7 @@ lemma IntertwiningMap.resToInd_apply_cosetVector_eq (H : Subgroup G) (g : G)
     IntertwiningMap.resToInd H.subtype f (cosetVector k H g) = ρ g⁻¹ (f 1) := by
   exact IntertwiningMap.resToInd_apply_IndVMk_trivial_eq H.subtype g 1 f
 
+/-- The IntertwiningMap sending the neutral cosetVector to the neutral cosetVector. -/
 noncomputable def bimoduleHecke₁.canonicalIntertwiningMap {H1 H2 : Subgroup G} (h : H1 ≤ H2) :
     IntertwiningMap (ind H1.subtype (trivial k H1 k)) (ind H2.subtype (trivial k H2 k)) :=
   IntertwiningMap.resToInd H1.subtype
