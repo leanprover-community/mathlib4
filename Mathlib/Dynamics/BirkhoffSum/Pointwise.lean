@@ -18,18 +18,15 @@ public import Mathlib.Topology.Separation.CompletelyRegular
 /-!
 # Pointwise Ergodic Theorem
 
-The Pointwise Ergodic Theorem, also known as Birkhoff's Ergodic Theorem, establishes the convergence
-of time averages for dynamical systems.
+The Pointwise Ergodic Theorem, also known as Birkhoff's Ergodic Theorem, establishes the pointwise
+convergence of time averages for dynamical systems.
 
 Let `(α, μ)` be a probability space and `f : α → α` be a measure-preserving transformation. The
-result states that, for any integrable function `φ ∈ L¹(μ)`, the time averages
-`(1/n)∑_{k=0}^{n-1} φ(f^k x)` converge almost everywhere as `n → ∞` to a limit function `φ*`.
-Moreover the limit function `φ*` is essentially `f`-invariant and integrable with
-`∫ φ* dμ = ∫ φ dμ`.
-If the system is ergodic, then `φ*` equals the constant `∫ φ dμ` almost everywhere.
-
-The limit function `φ*` is equal to the conditional expectation of `φ` with respect to the σ-algebra
-of `f`-invariant sets. This is used explicitly during this proof and also in the main statement.
+result states that for any integrable function `φ ∈ L¹(μ)`, the Birkhoff averages
+`(1/n)∑_{k=0}^{n-1} φ(f^k x)` converge almost everywhere as `n → ∞` to a limit function `φ*`, which
+can be chosen to be the conditional expectation of `φ` with respect to the σ-algebra of
+`f`-invariant sets. This chosen limit is strictly `f`-invariant and also integrable with
+`∫ φ* dμ = ∫ φ dμ` (see `MeasureTheory.integral_condExp`).
 
 ## Main statements
 
@@ -264,7 +261,7 @@ variable {α E : Type*} [MeasurableSpace α] {μ : Measure α} [IsProbabilityMea
 
 /-- The set of points where the Birkhoff average is `ε`-away from the conditional expectation for
 infinitely many `n`. -/
-abbrev birkhoffExceptionalSet (μ : Measure α) (f : α → α) (g : α → E) (ε : ℝ) : Set α :=
+def birkhoffExceptionalSet (μ : Measure α) (f : α → α) (g : α → E) (ε : ℝ) : Set α :=
   {x | ∃ᶠ n in atTop, ε ≤ dist (birkhoffAverage ℝ f g n x) (μ[g|invariants f] x)}
 
 /-- The exceptional set for a fixed `ε` has measure at most `2 * δ / ε` whenever `g` is within `L¹`
@@ -374,5 +371,14 @@ public theorem ae_tendsTo_birkhoffAverage_condExp (hf : MeasurePreserving f μ �
     filter_upwards [h₁, h₂, hg₁] with x hx₁ hx₂ hx₃
     conv in birkhoffAverage .. => rw [← hx₁]
     rwa [← hx₂]
+
+section Invariant
+
+omit [IsProbabilityMeasure μ] [CompleteSpace E] in
+public lemma comp_eq_condExp_invariants : μ[g | invariants f] ∘ f = μ[g | invariants f] := by
+  borelize E
+  exact comp_eq_of_measurable_invariants stronglyMeasurable_condExp.measurable
+
+end Invariant
 
 end NormedAddCommGroup
