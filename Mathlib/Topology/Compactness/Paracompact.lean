@@ -293,11 +293,11 @@ instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLoc
     ⟨β, c, t, hto, htc, htf⟩
   exact ⟨β, t, fun x ↦ (hto x).1.2, htc, htf, fun b ↦ ⟨i <| c b, (hto b).2⟩⟩
 
-/-- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
+/-- **Dieudonné's theorem**: a paracompact R₁ space is normal.
 Formalization is based on the proof
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
-instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [ParacompactSpace X] :
-    T4Space X := by
+instance (priority := 100) NormalSpace.of_paracompactSpace_r1Space
+    [R1Space X] [ParacompactSpace X] : NormalSpace X := by
   -- First we show how to go from points to a set on one side.
   have : ∀ s t : Set X, IsClosed s →
       (∀ x ∈ s, ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ t ⊆ v ∧ Disjoint u v) →
@@ -318,6 +318,6 @@ instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [Para
   refine { normal := fun s t hs ht hst ↦ this s t hs fun x hx ↦ ?_ }
   rcases this t {x} ht fun y hy ↦ (by
     simp_rw [singleton_subset_iff]
-    exact t2_separation (hst.symm.ne_of_mem hy hx))
+    exact r1_separation <| ht.not_inseparable hy <| hst.notMem_of_mem_left hx)
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
