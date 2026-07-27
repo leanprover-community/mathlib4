@@ -673,7 +673,7 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis
     cases nonempty_fintype ι
     let := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
-   fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
+   fun h => h.symm ▸ zero_apply _⟩
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=
