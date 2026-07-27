@@ -32,7 +32,7 @@ variable {X : Type*} {mX : MeasurableSpace X}
   {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
   {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-/-! For a basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coeff b i` gives the
+/-- For a basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coeff b i` gives the
 `i`-th component of `μ` as a `ℝ`-valued vector measure, which is `SignedMeasure V`. -/
 noncomputable def coeff (b : Basis ι ℝ V) (μ : VectorMeasure X V) : ι → SignedMeasure X :=
   fun i ↦ mapRangeₗ (b.dualBasis i) (b.dualBasis i).continuous_of_finiteDimensional μ
