@@ -48,9 +48,6 @@ theorem sort_val : Multiset.sort s.val r = sort s r :=
 theorem pairwise_sort : List.Pairwise r (sort s r) :=
   Multiset.pairwise_sort _ _
 
-@[deprecated (since := "2025-10-11")]
-alias sort_sorted := pairwise_sort
-
 @[simp]
 theorem sort_eq : ↑(sort s r) = s.1 :=
   Multiset.sort_eq _ _
@@ -135,12 +132,8 @@ variable [LinearOrder α]
 theorem sortedLT_sort (s : Finset α) : (sort s).SortedLT :=
   (pairwise_sort _ _).sortedLE.sortedLT_of_nodup (sort_nodup _ _)
 
-@[deprecated (since := "2025-11-27")] alias sort_sorted_lt := sortedLT_sort
-
 theorem sortedGT_sort (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
   (pairwise_sort _ _).sortedGE.sortedGT_of_nodup (sort_nodup _ _)
-
-@[deprecated (since := "2025-11-27")] alias sort_sorted_gt := sortedGT_sort
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.Nonempty) :
     s.sort.get ⟨0, h⟩ = s.min' H := by
@@ -192,7 +185,7 @@ the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s`
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
   OrderIso.trans (Fin.castOrderIso ((s.length_sort (· ≤ ·)).trans h).symm) <|
-    (s.sortedLT_sort.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
+    (s.sortedLT_sort.getIso _).trans <| OrderIso.setCongr {x | x ∈ s.sort (· ≤ ·)} _ <| by simp
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderEmbOfFin s h` is
 the increasing bijection between `Fin k` and `s` as an order embedding into `α`. Here, `h` is a
@@ -219,14 +212,13 @@ theorem orderEmbOfFin_mem (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k)
     s.orderEmbOfFin h i ∈ s :=
   (s.orderIsoOfFin h i).2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Set.range (s.orderEmbOfFin h) = s := by
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
     OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
-    Subtype.range_coe_subtype, Finset.setOf_mem]
+    Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 @[simp]
 theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
@@ -287,7 +279,7 @@ and only if `i = j`. Since they can be defined on a priori not defeq types `Fin 
 theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin k} {j : Fin l}
     {h : s.card = k} {h' : s.card = l} :
     s.orderEmbOfFin h i = s.orderEmbOfFin h' j ↔ (i : ℕ) = (j : ℕ) := by
-  substs k l
+  subst k l
   exact (s.orderEmbOfFin rfl).eq_iff_eq.trans Fin.ext_iff
 
 /-- Given a finset `s` of size at least `k` in a linear order `α`, the map `orderEmbOfCardLe`
@@ -308,8 +300,8 @@ lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}
         (Fin.succAboveOrderEmb i) := by
   apply DFunLike.coe_injective
   rw [eq_comm]
-  convert orderEmbOfFin_unique _ (fun x ↦ ?_)
-    ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
+  convert!
+    orderEmbOfFin_unique _ (fun x ↦ ?_) ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
   · simp
   · simp [← h, card_compl]
 
@@ -354,6 +346,6 @@ def Fintype.orderIsoFinOfCardEq
 lemma nonempty_orderEmbedding_of_finite_infinite
     (α : Type*) [LinearOrder α] [hα : Finite α]
     (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩

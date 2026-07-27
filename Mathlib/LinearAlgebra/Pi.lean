@@ -54,7 +54,7 @@ variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
 def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
-  { Pi.addHom fun i => (f i).toAddHom with
+  { AddHom.pi fun i => (f i).toAddHom with
     toFun := fun c i => f i c
     map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
 
@@ -111,6 +111,16 @@ theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = 
 
 theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :=
   surjective_eval i
+
+/-- Homs to a pi module are canonically identified with a product of hom types, even linearly so. -/
+@[simps] def _root_.LinearEquiv.linearMapPi (S) [Semiring S] [(i : ι) → Module S (φ i)]
+    [∀ i, SMulCommClass R S (φ i)] : (Π i, M₂ →ₗ[R] φ i) ≃ₗ[S] M₂ →ₗ[R] Π i, φ i where
+  toFun := pi
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun f i := proj i ∘ₗ f
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
@@ -216,7 +226,7 @@ theorem iSup_range_single_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
 
 theorem iSup_range_single [Finite ι] : ⨆ i, range (single R φ i) = ⊤ := by
   cases nonempty_fintype ι
-  convert top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_single R φ _)
+  convert! top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_single R φ _)
   · rename_i i
     exact ((@iSup_pos _ _ _ fun _ => range <| single R φ i) <| Finset.mem_univ i).symm
   · rw [Finset.coe_univ, Set.union_empty]
@@ -286,7 +296,7 @@ note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single R φ i) = g.comp (single R φ i)) : f = g := by
   refine pi_ext fun i x => ?_
-  convert LinearMap.congr_fun (h i) x
+  convert! LinearMap.congr_fun (h i) x
 
 end Ext
 
@@ -341,7 +351,7 @@ variable (R φ)
 
 theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   ext x j
-  convert (update_apply 0 x i j _).symm
+  convert! (update_apply 0 x i j _).symm
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
@@ -369,8 +379,8 @@ variable [Semiring R] {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)] [(
 open LinearMap
 
 /-- A version of `Set.pi` for submodules. Given an index set `I` and a family of submodules
-`p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
-`f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
+`p : (i : ι) → Submodule R (φ i)`, `pi I p` is the submodule of dependent functions
+`f : (i : ι) → φ i` such that `f i` belongs to `p i` whenever `i ∈ I`. -/
 @[simps]
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
   carrier := Set.pi I fun i => p i
@@ -459,6 +469,7 @@ variable [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 variable [(i : ι) → AddCommMonoid (ψ i)] [(i : ι) → Module R (ψ i)]
 variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
 
 This is `Equiv.piCongrRight` as a `LinearEquiv` -/
@@ -552,7 +563,6 @@ variable {ι R M}
 theorem piRing_apply (f : (ι → R) →ₗ[R] M) (i : ι) : piRing R M ι S f i = f (Pi.single i 1) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem piRing_symm_apply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm f g = ∑ i, g i • f i := by
   simp [piRing, LinearMap.lsum_apply]
@@ -732,7 +742,6 @@ lemma Module.pi_induction {ι : Type v} [Finite ι]
       [AddCommMonoid N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
     (M : ι → Type u) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
     (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
-  classical
   cases nonempty_fintype ι
   revert M
   refine Fintype.induction_empty_option
@@ -781,7 +790,6 @@ lemma Module.pi_induction' {ι : Type v} [Finite ι] (R : Type*) [Ring R]
       [AddCommGroup N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
     (M : ι → Type u) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
     (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
-  classical
   cases nonempty_fintype ι
   revert M
   refine Fintype.induction_empty_option

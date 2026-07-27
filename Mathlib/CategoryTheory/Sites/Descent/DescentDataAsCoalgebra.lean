@@ -32,7 +32,7 @@ to the adjunction `(F.map f.op.toLoc).adj`.
 
 ## TODO (@joelriou, @chrisflav)
 * Compare `DescentDataAsCoalgebra` with `DescentData` when suitable
-pullbacks exist and certain base change morphisms are isomorphims
+  pullbacks exist and certain base change morphisms are isomorphisms
 
 -/
 
@@ -65,8 +65,8 @@ structure DescentDataAsCoalgebra
   hom (i₁ i₂ : ι) : obj i₁ ⟶
     (F.map (f i₁).op.toLoc).l.toFunctor.obj
       ((F.map (f i₂).op.toLoc).r.toFunctor.obj (obj i₂))
-  counit (i : ι) : hom i i ≫ (F.map (f i).op.toLoc).adj.counit.toNatTrans.app _ = 𝟙 _ :=
-    by cat_disch
+  counit (i : ι) : hom i i ≫ (F.map (f i).op.toLoc).adj.counit.toNatTrans.app _ = 𝟙 _ := by
+    cat_disch
   coassoc (i₁ i₂ i₃ : ι) :
     hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).l.toFunctor.map
       ((F.map (f i₂).op.toLoc).r.toFunctor.map (hom i₂ i₃)) =
@@ -76,6 +76,9 @@ structure DescentDataAsCoalgebra
 
 namespace DescentDataAsCoalgebra
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [reassoc (attr := simp)] counit coassoc
 
 section
@@ -129,10 +132,12 @@ def isoMk {D₁ D₂ : F.DescentDataAsCoalgebra f} (e : ∀ (i : ι), D₁.obj i
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- When the index type `ι` contains a unique element, the category
 `DescentDataAsCoalgebra` identifies to the category of coalgebras
-over the comonoad corresponding to the adjunction
+over the comonad corresponding to the adjunction
 `(F.map f.op.toLoc).adj`. -/
 @[simps! functor_obj_A functor_obj_a functor_map_f inverse_obj_obj inverse_obj_hom
   inverse_map_hom counitIso_hom_app_f counitIso_inv_app_f,
@@ -166,6 +171,7 @@ def coalgebraEquivalence (ι : Type*) [Unique ι] {X S : C} (f : X ⟶ S) :
 
 end DescentDataAsCoalgebra
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The functor `(F.obj (.mk (op S))).obj ⥤ F.DescentDataAsCoalgebra f`
 when `f i : X i ⟶ S` is a family of morphisms. -/
@@ -188,7 +194,7 @@ section
 
 variable (ι : Type*) [Unique ι] {X S : C} (f : X ⟶ S)
 
-/-- When `ι` contains a unique element and `f : X ⟶ S` is a morphim,
+/-- When `ι` contains a unique element and `f : X ⟶ S` is a morphism,
 the composition of `F.toDescentDataAsCoalgebra (fun (_ : ι) ↦ f)`
 and the functor of the equivalence
 `DescentDataAsCoalgebra.coalgebraEquivalence F ι f` identifies to

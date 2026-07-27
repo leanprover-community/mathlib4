@@ -74,7 +74,10 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
 @[to_additive]
 lemma colimit_mul_mk_eq' {j : J} (x y : F.obj j) :
     G.mk.{v, u} F ⟨j, x⟩ * G.mk.{v, u} F ⟨j, y⟩ = G.mk.{v, u} F ⟨j, x * y⟩ := by
-  simpa using colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)
+  #adaptation_note /-- Prior to leanprover/lean4#12564, this was just
+  `simpa using colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)` -/
+  have := colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)
+  simpa using this
 
 /-- The "unlifted" version of taking inverses in the colimit. -/
 @[to_additive /-- The "unlifted" version of negation in the colimit. -/]
@@ -127,7 +130,7 @@ noncomputable def colimitCocone : Cocone F where
   ι.app J := GrpCat.ofHom ((MonCat.FilteredColimits.colimitCocone
     (F ⋙ forget₂ GrpCat MonCat)).ι.app J).hom
   ι.naturality _ _ f := (forget₂ _ MonCat).map_injective
-    ((MonCat.FilteredColimits.colimitCocone _).ι.naturality f)
+    ((MonCat.FilteredColimits.colimitCocone (F ⋙ forget₂ GrpCat MonCat)).ι.naturality f)
 
 /-- The proposed colimit cocone is a colimit in `GrpCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddGroup`. -/]
@@ -188,7 +191,7 @@ noncomputable def colimitCocone : Cocone F where
   ι.app J := CommGrpCat.ofHom
     ((GrpCat.FilteredColimits.colimitCocone (F ⋙ forget₂ CommGrpCat GrpCat)).ι.app J).hom
   ι.naturality _ _ f := (forget₂ _ GrpCat).map_injective
-    ((GrpCat.FilteredColimits.colimitCocone _).ι.naturality f)
+    ((GrpCat.FilteredColimits.colimitCocone (F ⋙ forget₂ CommGrpCat GrpCat)).ι.naturality f)
 
 /-- The proposed colimit cocone is a colimit in `CommGrpCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddCommGroup`. -/]

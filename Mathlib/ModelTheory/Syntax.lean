@@ -52,8 +52,8 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
@@ -197,6 +197,7 @@ def varsToConstants : L.Term (γ ⊕ α) → L[[γ]].Term α
   | var (Sum.inl c) => Constants.term (Sum.inr c)
   | func f ts => func (Sum.inl f) fun i => (ts i).varsToConstants
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bijection between terms with constants and terms with extra variables. -/
 @[simps]
 def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
@@ -571,14 +572,12 @@ theorem relabel_imp (g : α → β ⊕ (Fin n)) {k} (φ ψ : L.BoundedFormula α
 theorem relabel_not (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) :
     φ.not.relabel g = (φ.relabel g).not := by simp [BoundedFormula.not]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relabel_all (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
     φ.all.relabel g = (φ.relabel g).all := by
   rw [relabel, mapTermRel, relabel]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relabel_ex (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
     φ.ex.relabel g = (φ.relabel g).ex := by simp [BoundedFormula.ex]
@@ -785,6 +784,12 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
   iExs β <| φ ⊓ iAlls β
     ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
       .iInf fun g => Term.equal (var (.inr g)) (var (.inl (.inr g))))
+
+variable [DecidableEq α] in
+/-- `exClosure φ` is the sentence asserting that there exist values for all free variables of `φ`
+such that `φ` holds. -/
+noncomputable def exClosure (φ : L.Formula α) : L.Sentence :=
+  iExs φ.freeVarFinset (Formula.relabel Sum.inr (φ.restrictFreeVar id))
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=

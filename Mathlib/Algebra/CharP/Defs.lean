@@ -88,7 +88,6 @@ lemma eq {p q : ℕ} (hp : CharP R p) (hq : CharP R q) : p = q :=
   Nat.dvd_antisymm ((cast_eq_zero_iff (self := hp) R p q).1 (@cast_eq_zero _ _ _ hq))
     ((cast_eq_zero_iff (self := hq) R q p).1 (@cast_eq_zero _ _ _ hp))
 
-set_option backward.isDefEq.respectTransparency false in
 instance ofCharZero [CharZero R] : CharP R 0 where
   cast_eq_zero_iff x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
 
@@ -102,7 +101,7 @@ lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
     lift -a to ℕ using Int.neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-  · simp only [Int.cast_zero, Int.dvd_zero]
+  · simp
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 
@@ -117,7 +116,6 @@ end AddGroupWithOne
 section NonAssocSemiring
 variable [NonAssocSemiring R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma «exists» : ∃ p, CharP R p :=
   letI := Classical.decEq R
   by_cases
@@ -158,7 +156,7 @@ namespace ringChar
 variable [NonAssocSemiring R]
 
 lemma spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
-  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
+  let : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
   exact CharP.cast_eq_zero_iff R (ringChar R)
 
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
@@ -390,7 +388,7 @@ noncomputable def ringExpChar : ℕ := max (ringChar R) 1
 
 lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
   rcases h with _ | h
-  · haveI := CharP.ofCharZero R
+  · have := CharP.ofCharZero R
     rw [ringExpChar, ringChar.eq R 0]; rfl
   rw [ringExpChar, ringChar.eq R q]
   exact Nat.max_eq_left h.one_lt.le

@@ -26,13 +26,13 @@ variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 
 /-- Left-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
-theorem Filter.tendsto_cocompact_mul_left₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
+theorem Filter.tendsto_cocompact_mul_left₀ [SeparatelyContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => a * x) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_left (inv_mul_cancel₀ ha)
 
 /-- Right-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
-theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
+theorem Filter.tendsto_cocompact_mul_right₀ [SeparatelyContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
@@ -125,24 +125,28 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
     exact mul_div_cancel_left₀ x h
   right_inv y := by simp [mul_div_cancel₀ _ h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem affineHomeomorph_image_Icc {𝕜 : Type*}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Icc c d = Set.Icc (a * c + b) (a * d + b) := by
   simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem affineHomeomorph_image_Ico {𝕜 : Type*}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Ico c d = Set.Ico (a * c + b) (a * d + b) := by
   simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem affineHomeomorph_image_Ioc {𝕜 : Type*}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Ioc c d = Set.Ioc (a * c + b) (a * d + b) := by
   simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem affineHomeomorph_image_Ioo {𝕜 : Type*}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
@@ -179,8 +183,8 @@ theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
   have hmaps : MapsTo f S {1, -1} := by
-    simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
-  simpa using hS.eqOn_const_of_mapsTo (toFinite _).isDiscrete hf hmaps
+    simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using! hsq
+  simpa using! hS.eqOn_const_of_mapsTo (toFinite _).isDiscrete hf hmaps
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then either `f = g` or `f = -g` on

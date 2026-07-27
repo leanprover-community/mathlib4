@@ -88,7 +88,6 @@ theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   | zero => simp
   | succ n IH => simpa [mul_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction n with
@@ -359,10 +358,12 @@ lemma primrec_pappAck_step : Primrec pappAck.step := by
     [Code.primrec₂_curry.comp, Code.primrec₂_prec.comp, Code.primrec₂_comp.comp,
       _root_.Primrec.id, Primrec.const]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck_step_zero (c : Code) : (pappAck.step c).eval 0 = c.eval 1 := by
   simp [pappAck.step, Code.eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck_step_succ (c : Code) (n) :
     (pappAck.step c).eval (n + 1) = ((pappAck.step c).eval n).bind c.eval := by
@@ -370,9 +371,10 @@ lemma eval_pappAck_step_succ (c : Code) (n) :
 
 lemma primrec_pappAck : Primrec pappAck := by
   suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
-    convert this using 2 with n; induction n <;> simp [pappAck, *]
+    convert! this using 2 with n; induction n <;> simp [pappAck, *]
   apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
   induction m, n using ack.induct with

@@ -39,7 +39,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits Functor
+open Category Limits CategoryTheory.Functor
 
 section
 
@@ -67,7 +67,7 @@ lemma FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits 
           preserves := fun {c : Cocone K} (t : IsColimit c) => ⟨by
             apply evaluationJointlyReflectsColimits _ fun {k} => ?_
             change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
-            let this :=
+            let :=
               isColimitOfPreserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
             apply IsColimit.mapCoconeEquiv _ this
             apply (NatIso.ofComponents _ _).symm
@@ -129,6 +129,21 @@ instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category* C] {D : T
       apply evaluationJointlyReflectsLimits _ (fun k => ?_)
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact isLimitOfPreserves _ hc⟩⟩⟩
+
+instance {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
+    [HasLimitsOfShape J D] (F : D ⥤ E) [F.ReflectsIsomorphisms] [PreservesLimitsOfShape J F] :
+    ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
+  reflectsLimitsOfShape_of_reflectsIsomorphisms
+
+instance {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
+    [HasLimitsOfShape J E] (F : D ⥤ E) [ReflectsLimitsOfShape J F] :
+    ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
+  ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
+    apply evaluationJointlyReflectsLimits _ (fun k ↦ ?_)
+    apply isLimitOfReflects F
+    exact isLimitOfPreserves ((evaluation C E).obj k) hc⟩⟩⟩
 
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
 functor. -/

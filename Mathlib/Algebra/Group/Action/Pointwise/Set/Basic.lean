@@ -114,16 +114,16 @@ lemma op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
 
 end Semigroup
 
-section IsLeftCancelMul
+section IsLeftCancelSMul
 
-variable [Mul α] [IsLeftCancelMul α] {s t : Set α}
+variable [SMul α β] [IsLeftCancelSMul α β] {s : Set α} {t : Set β}
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 * p.2 :=
-  pairwiseDisjoint_image_right_iff fun _ _ ↦ mul_right_injective _
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 • p.2 :=
+  pairwiseDisjoint_image_right_iff fun a _ _ _ h ↦ IsLeftCancelSMul.left_cancel a _ _ h
 
-end IsLeftCancelMul
+end IsLeftCancelSMul
 
 @[to_additive]
 instance smulCommClass_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
@@ -238,7 +238,7 @@ theorem smul_set_iInter {ι : Sort*}
 
 @[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_diff (MulAction.injective a) _ _
+  image_sdiff (MulAction.injective a) _ _
 
 open scoped symmDiff in
 @[to_additive]
@@ -260,7 +260,7 @@ theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ 
 
 @[to_additive]
 theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
-  simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
+  simp_rw [Set.compl_eq_univ_sdiff, smul_set_sdiff, smul_set_univ]
 
 @[to_additive]
 theorem smul_inter_nonempty_iff {s t : Set α} {x : α} :
@@ -272,20 +272,10 @@ theorem smul_inter_nonempty_iff {s t : Set α} {x : α} :
   · rintro ⟨a, b, ⟨ha, hb⟩, rfl⟩
     exact ⟨a, mem_inter (mem_smul_set.mpr ⟨b, hb, by simp⟩) ha⟩
 
-@[to_additive (attr := deprecated smul_inter_nonempty_iff (since := "2025-12-10"))]
-theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
-  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff]
-
 @[to_additive]
 theorem smul_inter_nonempty_iff' {s t : Set α} {x : α} :
     (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
   simp_rw [smul_inter_nonempty_iff, div_eq_mul_inv]
-
-@[to_additive (attr := deprecated smul_inter_nonempty_iff' (since := "2025-12-10"))]
-theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
-  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff']
 
 @[to_additive]
 theorem op_smul_inter_nonempty_iff {s t : Set α} {x : αᵐᵒᵖ} :
@@ -298,18 +288,19 @@ theorem op_smul_inter_nonempty_iff {s t : Set α} {x : αᵐᵒᵖ} :
     have : MulOpposite.op (a⁻¹ * b) = x := congr_arg MulOpposite.op H
     exact ⟨b, mem_inter (mem_smul_set.mpr ⟨a, ha, by simp [← this]⟩) hb⟩
 
-@[to_additive (attr := deprecated op_smul_inter_nonempty_iff (since := "2025-12-10"))]
-theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
-  rw [← nonempty_iff_ne_empty, op_smul_inter_nonempty_iff]
-
 @[to_additive (attr := simp)]
 theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
   (Function.Surjective.iSup_congr _ inv_surjective) fun _ ↦ rfl
 
 @[to_additive]
-theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
-  simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
+theorem iUnion_smul_eq_ofPred_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
+  simp_rw [← iUnion_ofPred, ← iUnion_inv_smul, ← preimage_smul, preimage]
+
+@[deprecated (since := "2026-07-09")]
+alias iUnion_smul_eq_setOf_exists := iUnion_smul_eq_ofPred_exists
+
+@[deprecated (since := "2026-07-09")]
+alias iUnion_vadd_eq_setOf_exists := iUnion_vadd_eq_ofPred_exists
 
 @[to_additive (attr := simp)]
 lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by
@@ -331,7 +322,6 @@ lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t
 lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
   simpa using disjoint_smul_set (a := a) (s := a⁻¹ • s)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive] lemma pairwise_disjoint_smul_iff :
     Pairwise (Disjoint on fun a : α ↦ a • s) ↔ ∀ a : α, (a • s ∩ s).Nonempty → a = 1 := by
   simp_rw [Pairwise, disjoint_smul_set_right, ← mul_smul,

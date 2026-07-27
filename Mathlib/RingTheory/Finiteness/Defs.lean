@@ -57,8 +57,6 @@ theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G)
   ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure]⟩,
     fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
 
-@[deprecated (since := "2025-08-20")] alias fg_iff_add_subgroup_fg := fg_iff_addSubgroup_fg
-
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), span R (range s) = N := by
   rw [fg_def]
@@ -77,7 +75,7 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
   · intro hN
     obtain ⟨n, f, h⟩ := fg_iff_exists_fin_generating_family.mp hN
     refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
-    convert h
+    convert! h
     ext
     simp
   · rintro ⟨G, _, g, hg⟩

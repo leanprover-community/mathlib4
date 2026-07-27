@@ -83,7 +83,6 @@ variable (R)
 theorem smeval_zero : (0 : R[X]).smeval x = 0 := by
   simp only [smeval_eq_sum, sum_zero_index]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smeval_one : (1 : R[X]).smeval x = 1 • x ^ 0 := by
   rw [← C_1, smeval_C]
@@ -270,7 +269,6 @@ theorem smeval_mul : (p * q).smeval x = p.smeval x * q.smeval x := by
   | monomial n a =>
     simp only [smeval_monomial, smeval_monomial_mul, smul_mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smeval_pow : ∀ (n : ℕ), (p ^ n).smeval x = (p.smeval x) ^ n
   | 0 => by
     simp only [npow_zero, smeval_one, one_smul]
@@ -292,16 +290,7 @@ variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [Semiring S]
 theorem smeval_commute_left (hc : Commute x y) : Commute (p.smeval x) y := by
   induction p using Polynomial.induction_on' with
   | add r s hr hs => exact (smeval_add R r s x) ▸ Commute.add_left hr hs
-  | monomial n a =>
-    simp only [smeval_monomial]
-    refine Commute.smul_left ?_ a
-    induction n with
-    | zero => simp only [npow_zero, Commute.one_left]
-    | succ n ih =>
-      refine (commute_iff_eq (x ^ (n + 1)) y).mpr ?_
-      rw [commute_iff_eq (x ^ n) y] at ih
-      rw [pow_succ, ← mul_assoc, ← ih]
-      exact Commute.right_comm hc (x ^ n)
+  | monomial n a => simpa [smeval_monomial] using Commute.smul_left (Commute.pow_left hc _) _
 
 theorem smeval_commute (hc : Commute x y) : Commute (p.smeval x) (q.smeval y) := by
   induction p using Polynomial.induction_on' with

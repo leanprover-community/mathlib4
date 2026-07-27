@@ -35,7 +35,6 @@ lemma TendstoUniformlyOn.comp_cexp {p : Filter ι} {g : α → ℂ}
   refine (UniformContinuousOn.cexp _).comp_tendstoUniformlyOn_eventually (by simpa) ?_ hf
   exact fun x hx ↦ (hv x hx).trans (lt_add_one v).le
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Summable.hasSumUniformlyOn_log_one_add (hu : Summable u)
     (h : ∀ᶠ i in cofinite, ∀ x ∈ K, ‖f i x‖ ≤ u i) :
     HasSumUniformlyOn (fun i x ↦ log (1 + f i x)) (fun x ↦ ∑' i, log (1 + f i x)) K := by
@@ -83,7 +82,6 @@ namespace Summable
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] [TopologicalSpace α]
   {f : ι → α → R}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a sequence of continuous functions `f i x` on an open compact `K` have norms eventually
 bounded by a summable function, then `∏' i, (1 + f i x)` is uniformly convergent on `K`. -/
 lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
@@ -93,15 +91,15 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
   by_cases hKe : K = ∅
   · simp [TendstoUniformly, hKe]
-  · haveI hCK : CompactSpace K := isCompact_iff_compactSpace.mp hK
-    haveI hne : Nonempty K := by rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty]
-    let f' i : C(K, R) := ⟨_, continuousOn_iff_continuous_restrict.mp (hcts i)⟩
+  · have hCK : CompactSpace K := isCompact_iff_compactSpace.mp hK
+    have hne : Nonempty K := by rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty]
+    let f' i : C(K, R) := ⟨_, continuousOn_iff_continuous_domRestrict.mp (hcts i)⟩
     have hf'_bd : ∀ᶠ i in cofinite, ‖f' i‖ ≤ u i := by
       simp only [ContinuousMap.norm_le_of_nonempty]
       filter_upwards [h] with i hi using fun x ↦ hi x x.2
     have hM : Multipliable fun i ↦ 1 + f' i :=
       multipliable_one_add_of_summable (hu.of_norm_bounded_eventually (by simpa using hf'_bd))
-    convert ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
+    convert! ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
     · simp [f']
     · exact funext fun k ↦ ContinuousMap.tprod_apply hM k
 

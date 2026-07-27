@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -121,10 +121,7 @@ theorem intCast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
 
 /-! ### `nsmul` and `pow` -/
 
-instance instNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
-  ⟨fun n f => ⟨n • ⇑f, f.continuous.nsmul n⟩⟩
-
-@[to_additive existing]
+@[to_additive]
 instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
   ⟨fun f n => ⟨(⇑f) ^ n, f.continuous.pow n⟩⟩
 
@@ -188,10 +185,7 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 
 /-! ### `zpow` and `zsmul` -/
 
-instance instZSMul [AddGroup β] [IsTopologicalAddGroup β] : SMul ℤ C(α, β) where
-  smul z f := ⟨z • ⇑f, f.continuous.zsmul z⟩
-
-@[to_additive existing]
+@[to_additive]
 instance instZPow [Group β] [IsTopologicalGroup β] : Pow C(α, β) ℤ where
   pow f z := ⟨(⇑f) ^ z, f.continuous.zpow z⟩
 
@@ -251,35 +245,35 @@ namespace ContinuousMap
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 @[to_additive]
-instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) :=
+instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) := fast_instance%
   coe_injective.semigroup _ coe_mul
 
 @[to_additive]
-instance [CommSemigroup β] [ContinuousMul β] : CommSemigroup C(α, β) :=
+instance [CommSemigroup β] [ContinuousMul β] : CommSemigroup C(α, β) := fast_instance%
   coe_injective.commSemigroup _ coe_mul
 
 @[to_additive]
-instance [MulOneClass β] [ContinuousMul β] : MulOneClass C(α, β) :=
+instance [MulOneClass β] [ContinuousMul β] : MulOneClass C(α, β) := fast_instance%
   coe_injective.mulOneClass _ coe_one coe_mul
 
-instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C(α, β) :=
+instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C(α, β) := fast_instance%
   coe_injective.mulZeroClass _ coe_zero coe_mul
 
-instance [SemigroupWithZero β] [ContinuousMul β] : SemigroupWithZero C(α, β) :=
+instance [SemigroupWithZero β] [ContinuousMul β] : SemigroupWithZero C(α, β) := fast_instance%
   coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 @[to_additive]
-instance [Monoid β] [ContinuousMul β] : Monoid C(α, β) :=
+instance [Monoid β] [ContinuousMul β] : Monoid C(α, β) := fast_instance%
   coe_injective.monoid _ coe_one coe_mul coe_pow
 
-instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) :=
+instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) := fast_instance%
   coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
-instance [CommMonoid β] [ContinuousMul β] : CommMonoid C(α, β) :=
+instance [CommMonoid β] [ContinuousMul β] : CommMonoid C(α, β) := fast_instance%
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
-instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, β) :=
+instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, β) := fast_instance%
   coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
@@ -332,17 +326,18 @@ theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset �
     (a : α) : (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
 
 @[to_additive]
-instance [Group β] [IsTopologicalGroup β] : Group C(α, β) :=
+instance [Group β] [IsTopologicalGroup β] : Group C(α, β) := fast_instance%
   coe_injective.group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
-instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : CommGroup C(α, β) :=
+instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] :
+    CommGroup C(α, β) := fast_instance%
   coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
-    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
+    let : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
@@ -352,7 +347,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
         ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
-    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
+    let : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f
@@ -415,56 +410,59 @@ namespace ContinuousMap
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] : NonUnitalNonAssocSemiring C(α, β) :=
+  fast_instance%
   coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalSemiring β]
-    [IsTopologicalSemiring β] : NonUnitalSemiring C(α, β) :=
+    [IsTopologicalSemiring β] : NonUnitalSemiring C(α, β) := fast_instance%
   coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddMonoidWithOne β]
-    [ContinuousAdd β] : AddMonoidWithOne C(α, β) :=
+    [ContinuousAdd β] : AddMonoidWithOne C(α, β) := fast_instance%
   coe_injective.addMonoidWithOne _ coe_zero coe_one coe_add coe_nsmul coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocSemiring β]
-    [IsTopologicalSemiring β] : NonAssocSemiring C(α, β) :=
+    [IsTopologicalSemiring β] : NonAssocSemiring C(α, β) := fast_instance%
   coe_injective.nonAssocSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
-    [IsTopologicalSemiring β] : Semiring C(α, β) :=
+    [IsTopologicalSemiring β] : Semiring C(α, β) := fast_instance%
   coe_injective.semiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocRing β] [IsTopologicalRing β] : NonUnitalNonAssocRing C(α, β) :=
+  fast_instance%
   coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β]
-    [IsTopologicalRing β] : NonUnitalRing C(α, β) :=
+    [IsTopologicalRing β] : NonUnitalRing C(α, β) := fast_instance%
   coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocRing β]
-    [IsTopologicalRing β] : NonAssocRing C(α, β) :=
+    [IsTopologicalRing β] : NonAssocRing C(α, β) := fast_instance%
   coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_natCast coe_intCast
 
 instance instRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
-    [IsTopologicalRing β] : Ring C(α, β) :=
+    [IsTopologicalRing β] : Ring C(α, β) := fast_instance%
   coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_natCast coe_intCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalCommSemiring β] [IsTopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
+  fast_instance%
   coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
-    [IsTopologicalSemiring β] : CommSemiring C(α, β) :=
+    [IsTopologicalSemiring β] : CommSemiring C(α, β) := fast_instance%
   coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
-    [IsTopologicalRing β] : NonUnitalCommRing C(α, β) :=
+    [IsTopologicalRing β] : NonUnitalCommRing C(α, β) := fast_instance%
   coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommRing β]
-    [IsTopologicalRing β] : CommRing C(α, β) :=
+    [IsTopologicalRing β] : CommRing C(α, β) := fast_instance%
   coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_pow coe_natCast coe_intCast
 
@@ -493,8 +491,6 @@ def coeFnRingHom {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpa
 end ContinuousMap
 
 end RingStructure
-
-attribute [local ext] Subtype.eq
 
 section ModuleStructure
 
@@ -578,17 +574,17 @@ instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCom
   smul_comm _ _ _ := ext fun _ => smul_comm (_ : M) ..
 
 instance [Monoid R] [MulAction R M] [ContinuousConstSMul R M] : MulAction R C(α, M) :=
-  Function.Injective.mulAction _ coe_injective coe_smul
+  fast_instance% Function.Injective.mulAction _ coe_injective coe_smul
 
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [ContinuousAdd M]
-    [ContinuousConstSMul R M] : DistribMulAction R C(α, M) :=
+    [ContinuousConstSMul R M] : DistribMulAction R C(α, M) := fast_instance%
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [ContinuousAdd M] [Module R M] [ContinuousConstSMul R M]
 variable [ContinuousAdd M₂] [Module R M₂] [ContinuousConstSMul R M₂]
 
-instance module : Module R C(α, M) :=
+instance module : Module R C(α, M) := fast_instance%
   Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
 
 variable (R)
@@ -600,7 +596,6 @@ protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type*) [Topolo
     (g : M →L[R] M₂) : C(α, M) →L[R] C(α, M₂) where
   __ := g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous
   map_smul' := fun c _ => ext fun _ => g.map_smul' c _
-  cont := ContinuousMap.continuous_postcomp _
 
 /-- The constant map `x ↦ y ↦ x` as a `ContinuousLinearMap`. -/
 @[simps!]
@@ -608,13 +603,20 @@ def _root_.ContinuousLinearMap.const (α : Type*) [TopologicalSpace α] : M →L
   toFun m := .const α m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := ContinuousMap.continuous_const'
 
 /-- Coercion to a function as a `LinearMap`. -/
 @[simps]
 def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
     map_smul' := coe_smul }
+
+variable (M) in
+/-- Composition on the right by a continuous map, as a `ContinuousLinearMap`. -/
+@[simps]
+def compCLM (f : C(α, β)) : C(β, M) →L[R] C(α, M) where
+  toFun g := g.comp f
+  map_add' _ _ := add_comp _ _ f
+  map_smul' _ _ := smul_comp _ _ f
 
 /-- Evaluation at a point, as a continuous linear map. -/
 @[simps apply]
@@ -748,7 +750,6 @@ def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
 
 variable [Field 𝕜] [IsTopologicalRing 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.
 
@@ -849,3 +850,46 @@ def ContinuousMap.evalAlgHom (x : X) : C(X, R) →ₐ[S] R where
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
   commutes' _ := rfl
+
+section curry
+
+namespace ContinuousMap
+
+variable {Y Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
+
+@[to_additive (attr := simp)]
+lemma curry_mul_apply [Mul Z] [ContinuousMul Z] (f g : C(X × Y, Z)) (x : X) :
+    (f * g).curry x = f.curry x * g.curry x :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_div_apply [Div Z] [ContinuousDiv Z] (f g : C(X × Y, Z)) (x : X) :
+    (f / g).curry x = f.curry x / g.curry x :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_smul_apply {R : Type*} [SMul R Z] [ContinuousConstSMul R Z]
+    (f : C(X × Y, Z)) (r : R) (x : X) :
+    (r • f).curry x = r • f.curry x :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_inv_apply [Inv Z] [ContinuousInv Z] (f : C(X × Y, Z)) (x : X) :
+    (f⁻¹).curry x = (f.curry x)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_pow_apply [Monoid Z] [ContinuousMul Z]
+    (f : C(X × Y, Z)) (n : ℕ) (x : X) :
+    (f ^ n).curry x = (f.curry x) ^ n :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_zpow_apply [Group Z] [IsTopologicalGroup Z]
+    (f : C(X × Y, Z)) (n : ℤ) (x : X) :
+    (f ^ n).curry x = (f.curry x) ^ n :=
+  rfl
+
+end ContinuousMap
+
+end curry

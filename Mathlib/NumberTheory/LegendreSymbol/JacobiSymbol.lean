@@ -140,7 +140,7 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
       (by
         intro _ ha'
         rcases List.mem_pmap.mp ha' with ⟨p, hp, rfl⟩
-        haveI : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
+        have : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
         exact quadraticChar_isQuadratic (ZMod p) a)
 
 /-- The symbol `J(1 | b)` has the value `1`. -/
@@ -195,7 +195,6 @@ theorem pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
   Nat.recOn e (by rw [_root_.pow_zero, _root_.pow_zero, one_left]) fun _ ih => by
     rw [_root_.pow_succ, _root_.pow_succ, mul_left, ih]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We have that `J(a | b^e) = J(a | b)^e`. -/
 theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
   induction e with
@@ -337,6 +336,12 @@ theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     (by decide : (4 : ℤ) = (2 : ℕ) ^ 2), jacobiSym.sq_one' this, one_mul]
 
+/-- If `b` is odd, then `J(4 | b) = 1`. -/
+theorem at_four {b : ℕ} (hb : Odd b) : J(4 | b) = 1 := by
+  have : J((4 : ℤ) | b) = J((4 : ℤ) / 4 | b) :=
+    (div_four_left (by decide) (Nat.odd_iff.mp hb)).symm
+  simpa [one_left]
+
 theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     (if b % 8 = 3 ∨ b % 8 = 5 then -J(a / 2 | b) else J(a / 2 | b)) = J(a | b) := by
   obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha2
@@ -358,7 +363,6 @@ def qrSign (m n : ℕ) : ℤ :=
 
 namespace qrSign
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We can express `qrSign m n` as a power of `-1` when `m` and `n` are odd. -/
 theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) :
     qrSign m n = (-1) ^ (m / 2 * (n / 2)) := by
@@ -404,7 +408,7 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
   -- define the right-hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
-      map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
+      map_one' := by convert! ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
       map_mul' := fun x y => by
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
@@ -422,7 +426,6 @@ theorem quadratic_reciprocity {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = (-1) ^ (a / 2 * (b / 2)) * J(b | a) := by
   rw [← qrSign.neg_one_pow ha hb, qrSign.symm ha hb, quadratic_reciprocity' ha hb]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Law of Quadratic Reciprocity for the Jacobi symbol: if `a` and `b` are natural numbers
 with `a % 4 = 1` and `b` odd, then `J(a | b) = J(b | a)`. -/
 theorem quadratic_reciprocity_one_mod_four {a b : ℕ} (ha : a % 4 = 1) (hb : Odd b) :
@@ -494,6 +497,8 @@ section FastJacobi
 We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
+-- `fastLegendreSym` is used for computing the Legendre symbol in a `norm_num` extension,
+-- i.e. needs to be used publicly.
 set_option backward.privateInPublic true
 
 open NumberTheorySymbols jacobiSym
@@ -560,7 +565,6 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   else
     fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
@@ -589,7 +593,6 @@ set_option backward.privateInPublic.warn false in
 @[inline, nolint unusedArguments]
 private def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := J(a | p)
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastLegendreSym.eq : legendreSym = fastLegendreSym := by
   ext p _ a; rw [legendreSym.to_jacobiSym, fastLegendreSym]

@@ -57,6 +57,7 @@ theorem altitude_def {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma altitude_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
     (s.reindex e).altitude = s.altitude ∘ e.symm := by
   ext i
@@ -100,13 +101,13 @@ lemma altitude_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     ((s.restrict S hS).altitude i).map S.subtype = s.altitude i := by
   rw [eq_comm]
-  convert (s.restrict S hS).altitude_map S.subtypeₐᵢ i
+  convert! (s.restrict S hS).altitude_map S.subtypeₐᵢ i
 
 lemma altitude_restrict_eq_comap_subtype {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).altitude i = (s.altitude i).comap S.subtype := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   rw [← s.map_altitude_restrict S hS, comap_map_eq_of_injective S.subtype_injective]
 
 open Module
@@ -160,8 +161,8 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} [NeZero n] (s : Simplex ℝ P 
   · rintro ⟨hne, h⟩
     rw [← Submodule.mem_inf, _root_.inf_comm, ← direction_altitude] at h
     rw [vectorSpan_eq_span_vsub_set_left_ne ℝ (Set.mem_insert _ _),
-      Set.insert_diff_of_mem _ (Set.mem_singleton _),
-      Set.diff_singleton_eq_self fun h => hne (Set.mem_singleton_iff.1 h), Set.image_singleton]
+      Set.insert_sdiff_of_mem _ (Set.mem_singleton _),
+      Set.sdiff_singleton_eq_self fun h => hne (Set.mem_singleton_iff.1 h), Set.image_singleton]
     refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le]
       simpa using h
@@ -191,7 +192,7 @@ set_option backward.isDefEq.respectTransparency false in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).altitudeFoot i = s.altitudeFoot i := by
   rw [eq_comm]
-  convert (s.restrict S hS).altitudeFoot_map S.subtypeₐᵢ i
+  convert! (s.restrict S hS).altitudeFoot_map S.subtypeₐᵢ i
 
 @[simp] lemma ne_altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
     s.points i ≠ s.altitudeFoot i := by
@@ -227,6 +228,10 @@ lemma altitudeFoot_mem_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : 
   rw [← affineSpan_pair_altitudeFoot_eq_altitude]
   exact left_mem_affineSpan_pair _ _ _
 
+@[simp] lemma altitudeFoot_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2) :
+    s.altitudeFoot i = s.points i.rev := by
+  simp [altitudeFoot, faceOpposite_point_eq_point_rev]
+
 /-- The height of a vertex of a simplex is the distance between it and the foot of the altitude
 from that vertex. -/
 def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
@@ -247,7 +252,7 @@ def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).height i = s.height i := by
   rw [eq_comm]
-  convert (s.restrict S hS).height_map S.subtypeₐᵢ i
+  convert! (s.restrict S hS).height_map S.subtypeₐᵢ i
 
 @[simp]
 lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
@@ -256,7 +261,8 @@ lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
 open Qq Mathlib.Meta.Positivity in
 /-- Extension for the `positivity` tactic: the height of a simplex is always positive. -/
 @[positivity height _ _]
-meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalHeight : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
     assertInstancesCommute
@@ -266,6 +272,14 @@ meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
 example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   positivity
 
+/-- The height of a 1-dimensional simplex equals to the distance between the two vertices. -/
+@[simp] lemma height_eq_dist (s : Simplex ℝ P 1) (i : Fin 2) :
+    s.height i = dist (s.points 0) (s.points 1) := by
+  fin_cases i
+  · simp [height]
+  · rw [dist_comm]
+    simp [height]
+
 open scoped RealInnerProductSpace
 
 variable {n : ℕ} (s : Simplex ℝ P n)
@@ -274,7 +288,7 @@ variable {n : ℕ} (s : Simplex ℝ P n)
 lemma inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero {i j : Fin (n + 1)} (h : i ≠ j) :
     have : NeZero n := by grind [neZero_iff]
     ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 := by
-  haveI : NeZero n := by grind [neZero_iff]
+  have : NeZero n := by grind [neZero_iff]
   refine Submodule.inner_right_of_mem_orthogonal
     (K := vectorSpan ℝ (s.points '' {i}ᶜ))
     (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
@@ -303,7 +317,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
     |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫|
       < s.height i * s.height j := by
   apply lt_of_le_of_ne
-  · convert abs_real_inner_le_norm _ _ using 1
+  · convert! abs_real_inner_le_norm _ _ using 1
     simp only [dist_eq_norm_vsub, height]
   · simp_rw [height, dist_eq_norm_vsub]
     rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
@@ -336,7 +350,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
           simp_rw [← Set.image_univ, ← Set.compl_inter]
           rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
           simpa using hij.symm
-        convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
+        convert! AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
       rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
       refine ⟨?_, ?_⟩
       · rw [h, ← direction_affineSpan]

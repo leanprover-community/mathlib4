@@ -10,7 +10,6 @@ public import Mathlib.Analysis.BoxIntegral.Integrability
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Divergence theorem for Bochner integral
@@ -136,7 +135,6 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
       Box.coe_subset_Icc
     exact (this.hasBoxIntegral ⊥ rfl).integral_eq
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma for
 `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`. Compared to the previous
 lemma, here we drop the assumption of differentiability on the boundary of the box. -/
@@ -183,7 +181,7 @@ private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box
       Tendsto (fun k => ∫ x in Box.Icc ((J k).face i), f (i.insertNth (c k) x) i) atTop
         (𝓝 <| ∫ x in Box.Icc (I.face i), f (i.insertNth d x) i) by
     rw [Box.Icc_eq_pi] at hJ_sub'
-    refine tendsto_finset_sum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
+    refine tendsto_finsetSum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
     exacts [fun k => hJ_sub' k (J k).upper_mem_Icc _ trivial, fun k =>
       hJ_sub' k (J k).lower_mem_Icc _ trivial]
   intro i c d hc hcd
@@ -250,7 +248,6 @@ local notation "face " i => Set.Icc (a ∘ Fin.succAbove i) (b ∘ Fin.succAbove
 local notation:max "frontFace " i:arg => Fin.insertNth i (b i)
 local notation:max "backFace " i:arg => Fin.insertNth i (a i)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
 `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `fun x ↦ ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
@@ -364,7 +361,6 @@ open ContinuousLinearMap (smulRight)
 local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
 local macro:arg t:term:max noWs "²" : term => `(Fin 2 → $t)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Fundamental theorem of calculus, part 2**. This version assumes that `f` is continuous on the
 interval and is differentiable off a countable set `s`.
 
@@ -379,9 +375,7 @@ theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : 
     (Hd : ∀ x ∈ Ioo a b \ s, HasDerivAt f (f' x) x) (Hi : IntervalIntegrable f' volume a b) :
     ∫ x in a..b, f' x = f b - f a := by
   set e : ℝ ≃L[ℝ] ℝ¹ := (ContinuousLinearEquiv.funUnique (Fin 1) ℝ ℝ).symm
-  have e_symm : ∀ x, e.symm x = x 0 := fun x => rfl
   set F' : ℝ → ℝ →L[ℝ] E := fun x => smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
-  have hF' : ∀ x y, F' x y = y • f' x := fun x y => rfl
   calc
     ∫ x in a..b, f' x = ∫ x in Icc a b, f' x := by
       rw [intervalIntegral.integral_of_le hle, setIntegral_congr_set Ioc_ae_eq_Icc]
@@ -396,7 +390,7 @@ theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : 
           (fun _ => F') s hs a b hle (fun _ => Hc) (fun x hx _ => Hd x hx) _ ?_ ?_
       · exact fun x y => (OrderIso.funUnique (Fin 1) ℝ).symm.le_iff_le
       · exact (volume_preserving_funUnique (Fin 1) ℝ).symm _
-      · intro x; rw [Fin.sum_univ_one, hF', e_symm, Pi.single_eq_same, one_smul]
+      · simp [F', e]
       · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hle] at Hi
         exact Hi.congr_set_ae Ioc_ae_eq_Icc.symm
     _ = f b - f a := by
@@ -420,7 +414,6 @@ theorem integral_eq_of_hasDerivAt_off_countable [CompleteSpace E] (f f' : ℝ �
     rw [intervalIntegral.integral_symm, neg_eq_iff_eq_neg, neg_sub]
     exact integral_eq_of_hasDerivAt_off_countable_of_le f f' hab hs Hc Hd Hi.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Divergence theorem** for functions on the plane along rectangles. It is formulated in terms of
 two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1] × [a.2, b.2]`, where
 `a b : ℝ × ℝ`, `a ≤ b`. When thinking of `f` and `g` as the two coordinates of a single function
@@ -461,8 +454,9 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : �
           ((∫ x in Icc a.1 b.1, g (x, b.2)) - ∫ x in Icc a.1 b.1, g (x, a.2)) := by
       have : ∀ (a b : ℝ¹) (f : ℝ¹ → E),
           ∫ x in Icc a b, f x = ∫ x in Icc (a 0) (b 0), f fun _ => x := fun a b f ↦ by
-        convert (((volume_preserving_funUnique (Fin 1) ℝ).symm _).setIntegral_preimage_emb
-          (MeasurableEquiv.measurableEmbedding _) f _).symm
+        convert!
+          (((volume_preserving_funUnique (Fin 1) ℝ).symm _).setIntegral_preimage_emb
+              (MeasurableEquiv.measurableEmbedding _) f _).symm
         exact ((OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc a b).symm
       simp only [Fin.sum_univ_two, this]
       rfl
@@ -495,9 +489,8 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_of_le (f g : ℝ × ℝ → 
       (((∫ x in a.1..b.1, g (x, b.2)) - ∫ x in a.1..b.1, g (x, a.2)) +
           ∫ y in a.2..b.2, f (b.1, y)) - ∫ y in a.2..b.2, f (a.1, y) :=
   integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le f g f' g' a b hle ∅
-    (by simp) Hcf Hcg (by simpa only [diff_empty]) (by simpa only [diff_empty]) Hi
+    (by simp) Hcf Hcg (by simpa only [sdiff_empty]) (by simpa only [sdiff_empty]) Hi
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Divergence theorem** for functions on the plane. It is formulated in terms of two functions
 `f g : ℝ × ℝ → E` and iterated integral `∫ x in a₁..b₁, ∫ y in a₂..b₂, _`, where
 `a₁ a₂ b₁ b₂ : ℝ`. When thinking of `f` and `g` as the two coordinates of a single function

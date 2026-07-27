@@ -32,6 +32,7 @@ universe u
 namespace Mathlib.Meta.NormNum
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
+@[instance_reducible]
 def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
     ∀ (a : α) [Invertible a], a = k * b → Invertible b
   | _, ⟨c, hc1, hc2⟩, rfl => by
@@ -40,6 +41,7 @@ def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
     exact ⟨_, hc1, hc2⟩
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
+@[instance_reducible]
 def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
     (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
@@ -190,7 +192,6 @@ theorem isInt_add {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' 
     f = HAdd.hAdd → IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_add ..).symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- see note [norm_num lemma function equality]
 theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb nc : ℕ} {da db dc k : ℕ} :
     f = HAdd.hAdd → IsNNRat a na da → IsNNRat b nb db →
@@ -212,7 +213,6 @@ theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: clean up and move it somewhere in mathlib? It's a bit much for this file
 -- see note [norm_num lemma function equality]
 theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : ℤ} {da db dc k : ℕ} :
@@ -243,7 +243,7 @@ def _root_.Mathlib.Meta.monadLiftOptionMetaM : MonadLift Option MetaM where
   | some e => pure e
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of adding two norm_num results. -/
+/-- The result of adding two `norm_num` results. -/
 def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Add $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a + $b)) := do
@@ -332,7 +332,7 @@ theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d 
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of negating a norm_num result. -/
+/-- The result of negating a `norm_num` result. -/
 def Result.neg {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result q($a))
     (rα : Q(Ring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q(-$a)) := do
@@ -384,7 +384,7 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   rw [show Int.mul (-nb) _ = _ from neg_mul ..]; exact h₁
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of subtracting two norm_num results. -/
+/-- The result of subtracting two `norm_num` results. -/
 def Result.sub {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Ring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a - $b)) := do
@@ -441,7 +441,6 @@ theorem isInt_mul {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' 
     f = HMul.hMul → IsInt a a' → IsInt b b' → Int.mul a' b' = c → IsInt (a * b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_mul ..).symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_mul {α} [Semiring α] {f : α → α → α} {a b : α} {na nb nc : ℕ} {da db dc k : ℕ} :
     f = HMul.hMul → IsNNRat a na da → IsNNRat b nb db →
     Nat.mul na nb = Nat.mul k nc →
@@ -462,7 +461,6 @@ theorem isNNRat_mul {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : ℤ} {da db dc k : ℕ} :
     f = HMul.hMul → IsRat a na da → IsRat b nb db →
     Int.mul na nb = Int.mul k nc →
@@ -484,7 +482,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of multiplying two norm_num results. -/
+/-- The result of multiplying two `norm_num` results. -/
 def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Semiring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a * $b)) := do
@@ -531,7 +529,7 @@ def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
   | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
     -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
     -- so would still need to be in `MetaM`.
-    ratArm (←synthInstanceQ q(DivisionRing $α))
+    ratArm (← synthInstanceQ q(DivisionRing $α))
   | .isNNRat dsα .., _ | _, .isNNRat dsα .. =>
     nnratArm dsα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα

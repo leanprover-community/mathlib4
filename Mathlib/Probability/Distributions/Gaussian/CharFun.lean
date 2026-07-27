@@ -53,7 +53,6 @@ section NormedSpace
 
 variable [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsGaussian.charFunDual_eq' [IsGaussian μ] (L : StrongDual ℝ E) :
     charFunDual μ L = exp ((L μ[id]) * I - covarianceBilinDual μ L L / 2) := by
   rw [IsGaussian.charFunDual_eq, covarianceBilinDual_self_eq_variance, integral_complex_ofReal,
@@ -107,7 +106,7 @@ lemma gaussian_charFunDual_congr [IsFiniteMeasure μ] {m : E}
     ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj', sub_im, mul_im, div_ofNat_im,
     zero_div, sub_zero] at hn
   constructor
-  · rw [NormedSpace.eq_iff_forall_dual_eq ℝ]
+  · rw [SeparatingDual.eq_iff_forall_dual_eq (R := ℝ)]
     simp [hn]
   · rw [← toBilinForm_inj]
     apply LinearMap.BilinForm.ext_of_isSymm hf.isSymm isPosSemidef_covarianceBilinDual.isSymm
@@ -134,7 +133,6 @@ section InnerProductSpace
 
 variable [InnerProductSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsGaussian.charFun_eq' [IsGaussian μ] (t : E) :
     charFun μ t = exp (⟪t, μ[id]⟫ * I - covarianceBilin μ t t / 2) := by
   rw [IsGaussian.charFun_eq, covarianceBilin_self, integral_complex_ofReal,
@@ -143,6 +141,7 @@ lemma IsGaussian.charFun_eq' [IsGaussian μ] (t : E) :
   · exact IsGaussian.integrable_id
   · exact IsGaussian.memLp_two_id
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The measure `μ` is Gaussian if and only if there
 exist `m : E` and `f : E →L[ℝ]  E →L[ℝ] ℝ`
 satisfying `f.toBilinForm.IsPosSemidef` and `charFun μ t = exp (⟪t, m⟫ * I - f t t / 2)`. -/
@@ -164,6 +163,7 @@ lemma isGaussian_iff_gaussian_charFun [IsFiniteMeasure μ] :
   · simp [charFun_eq_charFunDual_toDualMap, h, -InnerProductSpace.toContinuousLinearMap_toDualMap]
   · simp [← charFun_toDual_symm_eq_charFunDual, h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If the characteristic function of `μ` takes the form of a gaussian characteristic function,
 then the parameters have to be the expectation and the covariance bilinear form. -/
 lemma gaussian_charFun_congr [IsFiniteMeasure μ] (m : E) (f : E →L[ℝ] E →L[ℝ] ℝ)

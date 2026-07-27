@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Data.Finsupp.Defs
 
 /-!
@@ -53,7 +53,6 @@ def single (a : α) (b : M) : α →₀ M where
     Pi.single a b
   mem_support_toFun a' := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
@@ -62,17 +61,16 @@ theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b els
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 
-theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
-  classical
-  ext x
-  simp only [single_apply, Set.indicator, Set.mem_singleton_iff, @eq_comm _ a]
+theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b := by
+  ext; simp [single_apply, Pi.single_apply, eq_comm]
 
-theorem Set.indicator_singleton_eq (a : α) (f : α → M) :
+theorem set_indicator_singleton (a : α) (f : α → M) :
     Set.indicator {a} f = ⇑(single a (f a)) := by
-  classical
-  ext x
-  simp only [Set.indicator, Set.mem_singleton_iff, single_apply, @eq_comm _ a]
-  split_ifs with h <;> simp [h]
+  classical rw [Set.indicator_singleton, single_eq_pi_single]
+
+@[deprecated set_indicator_singleton (since := "2026-04-27")]
+theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b :=
+  (set_indicator_singleton a (fun _ => b)).symm
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -87,24 +85,23 @@ theorem single_eq_of_ne' (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := b
   classical exact Pi.single_eq_of_ne' h _
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
-    ⇑(single a b) = Function.update (0 : _) a b := by
-  classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
-
-theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
-  single_eq_update a b
+    ⇑(single a b) = Function.update (0 : _) a b :=
+  single_eq_pi_single a b
 
 @[simp, grind =]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
   DFunLike.coe_injective <| by
-    classical simpa only [single_eq_update, coe_zero] using Function.update_eq_self a (0 : α → M)
+    classical simpa only [single_eq_update, coe_zero] using! Function.update_eq_self a (0 : α → M)
 
 theorem single_of_single_apply (a a' : α) (b : M) :
     single a ((single a' b) a) = single a' (single a' b) a := by
   classical
   grind
 
-theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
+@[simp] lemma support_single (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
   if_neg hb
+
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
   classical
@@ -124,7 +121,7 @@ theorem single_injective (a : α) : Function.Injective (single a : M → α →�
   rwa [single_eq_same, single_eq_same] at this
 
 theorem single_apply_eq_zero {a x : α} {b : M} : single a b x = 0 ↔ x = a → b = 0 := by
-  simp [single_eq_set_indicator]
+  classical simp [single_apply, eq_comm]
 
 theorem single_apply_ne_zero {a x : α} {b : M} : single a b x ≠ 0 ↔ x = a ∧ b ≠ 0 := by
   simp [single_apply_eq_zero]
@@ -165,15 +162,15 @@ lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
   RightInverse.surjective fun _ ↦ single_eq_same
 
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
-  simpa only [support_single_ne_zero _ h] using singleton_ne_empty _
+  simpa only [support_single _ h] using! singleton_ne_empty _
 
 theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : α} :
     Disjoint (single i b).support (single j b').support ↔ i ≠ j := by
-  rw [support_single_ne_zero _ hb, support_single_ne_zero _ hb', disjoint_singleton]
+  rw [support_single _ hb, support_single _ hb', disjoint_singleton]
 
 @[simp]
 theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
-  simp [DFunLike.ext_iff, single_eq_set_indicator]
+  classical simp [DFunLike.ext_iff, single_apply]
 
 theorem single_ne_zero : single a b ≠ 0 ↔ b ≠ 0 :=
   single_eq_zero.not
@@ -185,6 +182,13 @@ instance instNontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) 
   inhabit α
   rcases exists_ne (0 : M) with ⟨x, hx⟩
   exact nontrivial_of_ne (single default x) 0 (mt single_eq_zero.1 hx)
+
+lemma nontrivial_iff : Nontrivial (α →₀ M) ↔ Nonempty α ∧ Nontrivial M where
+  mp := by
+    rintro ⟨f, g, hfg⟩
+    obtain ⟨a, ha⟩ := ne_iff.mp hfg
+    exact ⟨⟨a⟩, _, _, ha⟩
+  mpr | ⟨_, _⟩ => inferInstance
 
 theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x default) :=
   ext <| Unique.forall_iff.2 single_eq_same.symm
@@ -204,14 +208,14 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
   ⟨fun h =>
     ⟨mem_support_iff.1 <| h.symm ▸ Finset.mem_singleton_self a,
       eq_single_iff.2 ⟨subset_of_eq h, rfl⟩⟩,
-    fun h => h.2.symm ▸ support_single_ne_zero _ h.1⟩
+    fun h => h.2.symm ▸ support_single _ h.1⟩
 
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
-    fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
+    fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single _ hb⟩
 
 theorem card_support_eq_one {f : α →₀ M} :
     #f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
@@ -235,6 +239,26 @@ theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
 theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
     #f.support ≤ 1 ↔ ∃ a b, f = single a b := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton']
+
+/-- If `α` has a unique term, then finitely supported functions `α →₀ M` are in bijection with `M`.
+-/
+@[simps]
+noncomputable def uniqueEquiv (a : α) [Subsingleton α] : (α →₀ M) ≃ M where
+  toFun f := f a
+  invFun := single a
+  left_inv f := by ext b; simp [Subsingleton.elim b a]
+  right_inv x := by simp
+
+-- We want this lemma to fire before `uniqueEquiv_symm_apply`.
+@[simp↓ high] lemma uniqueEquiv_symm_apply_apply (a : α) [Subsingleton α] (m : M) (b : α) :
+    (uniqueEquiv a).symm m b = m := by simp [Subsingleton.elim b a]
+
+/--
+If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
+-/
+@[simps!, deprecated uniqueEquiv (since := "2026-05-06")]
+noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
+  Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 
 @[simp]
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :
@@ -337,7 +361,6 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
     haveI := Classical.decEq α
     if a' = a then 0 else f a'
   mem_support_toFun a' := by
-    classical
     grind
 
 @[grind =]
@@ -349,7 +372,6 @@ theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
 @[simp]
 theorem support_erase [DecidableEq α] {a : α} {f : α →₀ M} :
     (f.erase a).support = f.support.erase a := by
-  classical
   grind
 
 @[simp]
@@ -413,7 +435,7 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     (h : l.embDomain f = single a b) : ∃ x, l = single x b ∧ f x = a := by
   classical
     have h_map_support : Finset.map f l.support = {a} := by
-      rw [← support_embDomain, h, support_single_ne_zero _ hb]
+      rw [← support_embDomain, h, support_single _ hb]
     have ha : a ∈ Finset.map f l.support := by simp only [h_map_support, Finset.mem_singleton]
     rcases Finset.mem_map.1 ha with ⟨c, _hc₁, hc₂⟩
     use c

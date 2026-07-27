@@ -39,7 +39,7 @@ def dualSubmodule (N : Submodule R M) : Submodule R M where
   add_mem' {a b} ha hb y hy := by simpa using add_mem (ha y hy) (hb y hy)
   zero_mem' y _ := by rw [B.zero_left]; exact zero_mem _
   smul_mem' r a ha y hy := by
-    convert (1 : Submodule R S).smul_mem r (ha y hy)
+    convert! (1 : Submodule R S).smul_mem r (ha y hy)
     rw [← IsScalarTower.algebraMap_smul S r a]
     simp only [algebraMap_smul, map_smul_of_tower, LinearMap.smul_apply]
 
@@ -50,7 +50,7 @@ lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
     N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ := by
   change (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
   simp only [mem_dualSubmodule, Submodule.mem_one, flip_apply]
-  exact forall₂_swap
+  exact forall₂_comm
 
 /-- The natural paring of `B.dualSubmodule N` and `N`.
 This is bundled as a bilinear map in `BilinForm.dualSubmoduleToDual`. -/
@@ -119,7 +119,7 @@ lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     B.dualSubmodule (B.flip.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis_flip hB]
 
@@ -128,7 +128,7 @@ lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     B.flip.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis _ hB.flip,
     dualBasis_flip_dualBasis hB]
 
@@ -137,7 +137,7 @@ lemma dualSubmodule_dualSubmodule_of_basis
     B.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis hB hB']
 

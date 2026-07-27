@@ -14,7 +14,6 @@ Problem: `f` and `g` are real-valued functions defined on the real line. For all
 Prove that `|g(x)| ≤ 1` for all `x`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This proof begins by introducing the supremum of `f`, `k ≤ 1` as well as `k' = k / ‖g y‖`. We then
 suppose that the conclusion does not hold (`hneg`) and show that `k ≤ k'` (by
@@ -71,7 +70,6 @@ theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y
     k' < k := H₁
     _ ≤ k' := H₂
 
-set_option backward.isDefEq.respectTransparency false in
 /-- IMO 1972 Q5
 
 Problem: `f` and `g` are real-valued functions defined on the real line. For all `x` and `y`,

@@ -15,7 +15,7 @@ public import Mathlib.Data.Num.Lemmas
 This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
 
-@[expose] public section
+public section
 
 open Int
 
@@ -157,7 +157,6 @@ theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
       have := congr_arg ZNum.bit1 (cast_to_znum p)
       rwa [← ZNum.bit1_of_bit1] at this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
   | a, 1 => by
     rw [sub'_one, Num.cast_toZNum, ← Num.cast_to_nat, pred'_to_nat, ← Nat.sub_one]
@@ -280,7 +279,7 @@ theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n
   | 0, a => by cases a <;> exact (_root_.zero_add _).symm
   | b, 0 => by cases b <;> exact (_root_.add_zero _).symm
   | pos _, pos _ => PosNum.cast_add _ _
-  | pos a, neg b => by simpa only [sub_eq_add_neg] using PosNum.cast_sub' (α := α) _ _
+  | pos a, neg b => by simpa only [sub_eq_add_neg] using! PosNum.cast_sub' (α := α) _ _
   | neg a, pos b =>
     have : (↑b + -↑a : α) = -↑a + ↑b := by
       rw [← PosNum.cast_to_int a, ← PosNum.cast_to_int b, ← Int.cast_neg, ← Int.cast_add (-a)]
@@ -325,9 +324,7 @@ theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
 
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
-  | pos a, pos b => by
-    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
-    simp
+  | pos a, pos b => by simpa using! PosNum.cmp_to_nat a b
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
     cases PosNum.cmp b a <;> [simp; simp +contextual; simp]
@@ -516,7 +513,6 @@ end ZNum
 
 namespace PosNum
 
-set_option backward.isDefEq.respectTransparency false in
 theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q : ℕ) + q) = n)
     (h₂ : (r : ℕ) < 2 * d) :
     ((divModAux d q r).2 + d * (divModAux d q r).1 : ℕ) = ↑n ∧ ((divModAux d q r).2 : ℕ) < d := by
@@ -602,7 +598,6 @@ theorem mod_to_nat : ∀ n d, ((n % d : Num) : ℕ) = n % d
   | pos _, 0 => (Nat.mod_zero _).symm
   | pos _, pos _ => PosNum.mod'_to_nat _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem gcd_to_nat_aux :
     ∀ {n} {a b : Num}, a ≤ b → (a * b).natSize ≤ n → (gcdAux n a b : ℕ) = Nat.gcd a b
   | 0, 0, _, _ab, _h => (Nat.gcd_zero_left _).symm

@@ -8,8 +8,9 @@ module
 public import Mathlib.Data.Sigma.Lex
 public import Mathlib.Util.Notation3
 public import Mathlib.Data.Sigma.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.Lex
 
 /-!
 # Orders on a sigma type

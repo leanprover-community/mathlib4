@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Algebra.DirectSum.Algebra
 
@@ -45,6 +45,7 @@ variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 namespace PiTensorProduct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two dependent pairs of tensor products are equal if their index is equal and the contents
 are equal after a canonical reindexing. -/
 @[ext (iff := false)]
@@ -133,6 +134,7 @@ theorem cast_eq_cast {i j} (h : i = j) :
   rw [cast_refl]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
     tprod R a ₜ* tprod R b = tprod R (Fin.append a b) := by
@@ -162,9 +164,6 @@ theorem mul_one {n} (a : ⨂[R]^n M) : cast R M (add_zero _) (a ₜ* ₜ1) = a :
   | smul_tprod r a =>
     rw [← TensorProduct.smul_tmul', map_smul, map_smul, ← gMul_def, tprod_mul_tprod R a _,
       cast_tprod]
-    congr 2 with i
-    rw [Fin.append_elim0]
-    refine congr_arg a (Fin.ext ?_)
     simp
   | add x y hx hy =>
     rw [TensorProduct.add_tmul, map_add, map_add, hx, hy]
@@ -225,7 +224,6 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   rw [← smul_eq_mul, map_smul]
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 
-set_option backward.isDefEq.respectTransparency false in
 instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
   { TensorPower.gmonoid with
     mul_zero := fun _ => map_zero _
@@ -238,6 +236,7 @@ instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
 
 example : Semiring (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor powers form a graded algebra.
 
 Note that this instance implies `Algebra R (⨁ n : ℕ, ⨂[R]^n M)` via `DirectSum.Algebra`. -/

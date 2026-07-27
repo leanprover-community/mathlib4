@@ -13,6 +13,7 @@ import Mathlib.Tactic.Ring
 
 /-!
 # IMO 1998 Q2
+
 In a competition, there are `a` contestants and `b` judges, where `b ≥ 3` is an odd integer. Each
 judge rates each contestant as either "pass" or "fail". Suppose `k` is a number such that, for any
 two judges, their ratings coincide for at most `k` contestants. Prove that `k / a ≥ (b - 1) / (2b)`.
@@ -97,7 +98,6 @@ def A : Finset (AgreedTriple C J) :=
   Finset.univ.filter @fun (a : AgreedTriple C J) =>
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
 
-open scoped Classical in
 theorem A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
     a ∈ A r → a.judgePair ∈ Finset.offDiag (@Finset.univ J _) := by simp [A, Finset.mem_offDiag]
 
@@ -153,7 +153,6 @@ end
 theorem add_sq_add_sq_sub {α : Type*} [Ring α] (x y : α) :
     (x + y) * (x + y) + (x - y) * (x - y) = 2 * x * x + 2 * y * y := by noncomm_ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
     2 * z * z + 2 * z + 1 ≤ x * x + y * y := by
   suffices 4 * z * z + 4 * z + 1 + 1 ≤ 2 * x * x + 2 * y * y by
@@ -211,7 +210,7 @@ end
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff₀]
-  on_goal 1 => convert Nat.cast_le (α := ℚ)
+  on_goal 1 => convert! Nat.cast_le (α := ℚ)
   all_goals simp [ha, hb]
 
 end

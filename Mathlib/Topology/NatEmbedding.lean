@@ -14,7 +14,7 @@ In this file we prove several properties of infinite Hausdorff topological space
 
 - `exists_seq_infinite_isOpen_pairwise_disjoint`: there exists a sequence
   of pairwise disjoint infinite open sets;
-- `exists_topology_isEmbedding_nat`: there exista a topological embedding of `ℕ` into the space;
+- `exists_topology_isEmbedding_nat`: there exists a topological embedding of `ℕ` into the space;
 - `exists_infinite_discreteTopology`: there exists an infinite subset with discrete topology.
 -/
 
@@ -24,7 +24,6 @@ open Function Filter Set Topology
 
 variable (X : Type*) [TopologicalSpace X] [T2Space X] [Infinite X]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In an infinite Hausdorff topological space, there exists a sequence of pairwise disjoint
 infinite open sets. -/
 theorem exists_seq_infinite_isOpen_pairwise_disjoint :

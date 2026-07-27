@@ -37,22 +37,15 @@ private def triangleIndices (A : Finset (G × G)) : Finset (G × G × G) :=
 
 @[simp]
 private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b) ∈ A ∧ c = a + b := by
-  simp only [triangleIndices, Prod.ext_iff, mem_map, Embedding.coeFn_mk, Prod.exists,
-    eq_comm]
+  simp only [triangleIndices, Prod.ext_iff, mem_map, Prod.exists, eq_comm]
   refine ⟨?_, fun h ↦ ⟨_, _, h.1, rfl, rfl, h.2⟩⟩
   rintro ⟨_, _, h₁, rfl, rfl, h₂⟩
   exact ⟨h₁, h₂⟩
 
 @[simp] private lemma card_triangleIndices : #(triangleIndices A) = #A := card_map _
 
--- TODO: fix non-terminal simp (operates on three goals, leaving two)
-set_option linter.flexible false in
 private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triangleIndices A) := by
-  constructor
-  all_goals
-    simp only [mk_mem_triangleIndices, and_imp]
-    rintro a b _ a' - rfl - h'
-    simp [*] at * <;> assumption
+  constructor <;> simp +contextual
 
 private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     NoAccidental (triangleIndices A) where
@@ -60,7 +53,6 @@ private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     simp only [mk_mem_triangleIndices] at ha hb hc
     exact .inl <| hs ⟨hc.1, hb.1, ha.1, hb.2.symm.trans ha.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma farFromTriangleFree_graph [Fintype G] [DecidableEq G] (hε : ε * card G ^ 2 ≤ #A) :
     (graph <| triangleIndices A).FarFromTriangleFree (ε / 9) := by
   refine farFromTriangleFree _ ?_
@@ -81,7 +73,6 @@ Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exp
 `cornersTheoremBound` is in practice absolutely tiny. -/
 noncomputable def cornersTheoremBound (ε : ℝ) : ℕ := ⌊(triangleRemovalBound (ε / 9) * 27)⁻¹⌋₊ + 1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **corners theorem** for finite abelian groups.
 
 The maximum density of a corner-free set in `G × G` goes to zero as `|G|` tends to infinity. -/
@@ -100,7 +91,7 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
   classical
   have h₁ := (farFromTriangleFree_graph hAε).le_card_cliqueFinset
   rw [card_triangles, card_triangleIndices] at h₁
-  convert h₁.trans (Nat.cast_le.2 <| card_le_univ _) using 1 <;> simp <;> ring
+  convert! h₁.trans (Nat.cast_le.2 <| card_le_univ _) using 1 <;> simp <;> ring
 
 open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- The **corners theorem** for `ℕ`.
@@ -199,7 +190,6 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
 
 open Asymptotics Filter
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Roth's theorem** for `ℕ` as an asymptotic statement.
 
 The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/

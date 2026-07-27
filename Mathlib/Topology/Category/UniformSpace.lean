@@ -59,7 +59,7 @@ instance : LargeCategory.{u} UniformSpaceCat.{u} where
 instance instFunLike (X Y : UniformSpaceCat) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 instance : ConcreteCategory UniformSpaceCat ({ f : · → · // UniformContinuous f }) where
   hom f := f.hom'
@@ -157,26 +157,30 @@ instance : Inhabited CpltSepUniformSpace :=
 
 /-- The category instance on `CpltSepUniformSpace`. -/
 instance category : LargeCategory CpltSepUniformSpace :=
-  inferInstanceAs (Category (InducedCategory _ toUniformSpace))
+  inferInstanceAs <| Category (InducedCategory _ toUniformSpace)
 
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
 instance concreteCategory : ConcreteCategory CpltSepUniformSpace
     ({ f : · → · // UniformContinuous f }) :=
-  InducedCategory.concreteCategory toUniformSpace
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toUniformSpace) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
-  InducedCategory.hasForget₂ toUniformSpace
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toUniformSpace) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem hom_comp {X Y Z : CpltSepUniformSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ConcreteCategory.hom (f ≫ g) = ⟨g ∘ f, g.hom.hom.prop.comp f.hom.hom.prop⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem hom_id (X : CpltSepUniformSpace) :
     ConcreteCategory.hom (𝟙 X : X ⟶ X) = ⟨id, uniformContinuous_id⟩ :=
@@ -195,6 +199,7 @@ open UniformSpace
 
 open CpltSepUniformSpace
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor turning uniform spaces into complete separated uniform spaces. -/
 @[simps map]
 noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
@@ -231,8 +236,6 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
   exact congr_fun (Completion.extension_comp_coe f.hom.property) x
-
-@[deprecated (since := "2025-12-18")] alias extension_comp_coe := extension_comp_hom
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/

@@ -183,12 +183,10 @@ theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)
     sym a * sym b = sym (⅟2 * (a * b + b * a)) :=
   rfl
 
-set_option linter.existingAttributeWarning false in
 @[simp, to_additive existing]
 theorem sym_inv [Inv α] (a : α) : sym a⁻¹ = (sym a)⁻¹ :=
   rfl
 
-set_option linter.existingAttributeWarning false in
 @[simp, to_additive existing]
 theorem unsym_inv [Inv α] (a : αˢʸᵐ) : unsym a⁻¹ = (unsym a)⁻¹ :=
   rfl
@@ -280,12 +278,10 @@ instance [Ring α] [Invertible (2 : α)] : NonAssocRing αˢʸᵐ :=
 /-! The squaring operation coincides for both multiplications -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unsym_mul_self [Semiring α] [Invertible (2 : α)] (a : αˢʸᵐ) :
     unsym (a * a) = unsym a * unsym a := by
   rw [mul_def, unsym_sym, ← two_mul, invOf_mul_cancel_left]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sym_mul_self [Semiring α] [Invertible (2 : α)] (a : α) : sym (a * a) = sym a * sym a := by
   rw [sym_mul_sym, ← two_mul, invOf_mul_cancel_left]
 
@@ -296,7 +292,6 @@ theorem mul_comm [Mul α] [AddCommSemigroup α] [One α] [OfNat α 2] [Invertibl
 instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
   mul_comm := SymAlg.mul_comm
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
     have commute_half_left := fun a : α => by
@@ -322,7 +317,7 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
       rw [add_mul, ← add_assoc, ← mul_assoc, ← mul_assoc]
       rw [unsym_mul_self]
       rw [← mul_assoc, ← mul_assoc, ← mul_assoc, ← mul_assoc, ← sub_eq_zero, ← mul_sub]
-      convert mul_zero (⅟(2 : α) * ⅟(2 : α))
+      convert! mul_zero (⅟(2 : α) * ⅟(2 : α))
       rw [add_sub_add_right_eq_sub, add_assoc, add_assoc, add_sub_add_left_eq_sub, add_comm,
         add_sub_add_right_eq_sub, sub_eq_zero]
     -- Rearrange RHS

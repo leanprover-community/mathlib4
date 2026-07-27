@@ -125,7 +125,7 @@ example {A} [Semiring A] [Fintype n] := (mulVecBilin A Aᵐᵒᵖ : Matrix m n A
 
 /-- `vecMulVec` as a bilinear map.
 
-When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
+When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecBilin A Aᵐᵒᵖ`. -/
 @[simps]
 def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
   toFun x :=
@@ -137,9 +137,9 @@ def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
 
 example {A} [Semiring A] := (vecMulVecBilin A Aᵐᵒᵖ : (m → A) →ₗ[_] (n → A) →ₗ[_] _)
 
-/-- `vecMulVec` as a bilinear map.
+/-- `dotProduct` as a bilinear map.
 
-When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
+When `A` is noncommutative, `R` and `S` can be instantiated as `dotProductBilin A Aᵐᵒᵖ`. -/
 @[simps]
 def dotProductBilin [Fintype m] : (m → A) →ₗ[R] (m → A) →ₗ[S] A where
   toFun x :=
@@ -171,9 +171,10 @@ theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
 
 variable [Fintype m]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_vecMulLinear (M : Matrix m n R) :
     LinearMap.range M.vecMulLinear = span R (range M.row) := by
-  letI := Classical.decEq m
+  let := Classical.decEq m
   simp_rw [range_eq_map, ← iSup_range_single, Submodule.map_iSup, range_eq_map, ←
     Ideal.span_singleton_one, Ideal.span, Submodule.map_span, image_image, image_singleton,
     Matrix.vecMulLinear_apply, iSup_span, range_eq_iUnion, iUnion_singleton_eq_range,
@@ -194,6 +195,7 @@ lemma Matrix.linearIndependent_rows_of_isUnit {A : Matrix m m R}
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `Matrix m n R`,
 by having matrices act by right multiplication.
 -/
@@ -476,6 +478,7 @@ theorem LinearMap.toMatrix'_mul [Fintype m] [DecidableEq m] (f g : (m → R) →
     LinearMap.toMatrix' (f * g) = LinearMap.toMatrix' f * LinearMap.toMatrix' g :=
   LinearMap.toMatrix'_comp f g
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.toMatrix'_algebraMap (x : R) :
     LinearMap.toMatrix' (algebraMap R (Module.End R (n → R)) x) = scalar n x := by
@@ -557,12 +560,10 @@ theorem LinearMap.toMatrixAlgEquiv'_mul (f g : (n → R) →ₗ[R] n → R) :
       LinearMap.toMatrixAlgEquiv' f * LinearMap.toMatrixAlgEquiv' g :=
   LinearMap.toMatrixAlgEquiv'_comp f g
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.isUnit_toMatrix'_iff {f : (n → R) →ₗ[R] n → R} : IsUnit f.toMatrix' ↔ IsUnit f :=
   isUnit_map_iff LinearMap.toMatrixAlgEquiv' f
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Matrix.isUnit_toLin'_iff {M : Matrix n n R} : IsUnit M.toLin' ↔ IsUnit M :=
   isUnit_map_iff LinearMap.toMatrixAlgEquiv'.symm M
@@ -651,6 +652,7 @@ lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) 
 theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrix_id v₁, Matrix.toLin_toMatrix]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.toLin_scalar (r : R) : Matrix.toLin v₁ v₁ (scalar n r) = r • LinearMap.id :=
   (LinearMap.toMatrix v₁ v₁).injective (by simp [toMatrix_id, smul_one_eq_diagonal])
 
@@ -660,6 +662,7 @@ theorem LinearMap.toMatrix_reindexRange [DecidableEq M₁] (f : M₁ →ₗ[R] M
       LinearMap.toMatrix v₁ v₂ f k i := by
   simp_rw [LinearMap.toMatrix_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.toMatrix_algebraMap (x : R) :
     LinearMap.toMatrix v₁ v₁ (algebraMap R (Module.End R M₁) x) = scalar n x := by
@@ -696,6 +699,16 @@ theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M�
       LinearMap.toMatrix v₁ v₂ (DistribSMul.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
   rfl
 
+variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
+
+theorem LinearMap.toMatrix_map_left (f : M₃ →ₗ[R] M₂) (g : M₁ ≃ₗ[R] M₃) :
+    f.toMatrix (v₁.map g) v₂ = (f ∘ₗ g.toLinearMap).toMatrix v₁ v₂ := by
+  rfl
+
+theorem LinearMap.toMatrix_map_right (f : M₁ →ₗ[R] M₃) (g : M₂ ≃ₗ[R] M₃) :
+    f.toMatrix v₁ (v₂.map g) = (g.symm.toLinearMap ∘ₗ f).toMatrix v₁ v₂ := by
+  rfl
+
 end Finite
 
 variable {R : Type*} [CommSemiring R]
@@ -703,6 +716,7 @@ variable {l m n : Type*} [Fintype n] [DecidableEq n]
 variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The matrix of `toSpanSingleton R M₂ x` given by bases `v₁` and `v₂` is equal to
 `vecMulVec (v₂.repr x) v₁`. When `v₁ = Module.Basis.singleton`
 then this is the column matrix of `v₂.repr x`. -/
@@ -710,6 +724,7 @@ theorem LinearMap.toMatrix_toSpanSingleton [Finite m] (v₁ : Basis n R R) (v₂
     (x : M₂) : (toSpanSingleton R M₂ x).toMatrix v₁ v₂ = vecMulVec (v₂.repr x) v₁ := by
   ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma LinearMap.toMatrix_smulRight [Finite m] (f : M₁ →ₗ[R] R) (x : M₂) :
     toMatrix v₁ v₂ (f.smulRight x) = vecMulVec (v₂.repr x) (f ∘ v₁) := by
@@ -764,7 +779,7 @@ lemma LinearMap.toMatrix_pow (f : M₁ →ₗ[R] M₁) (k : ℕ) :
 theorem Matrix.toLin_mul [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R) :
     Matrix.toLin v₁ v₃ (A * B) = (Matrix.toLin v₂ v₃ A).comp (Matrix.toLin v₁ v₂ B) := by
   apply (LinearMap.toMatrix v₁ v₃).injective
-  haveI : DecidableEq l := fun _ _ ↦ Classical.propDecidable _
+  have : DecidableEq l := fun _ _ ↦ Classical.propDecidable _
   rw [LinearMap.toMatrix_comp v₁ v₂ v₃]
   repeat' rw [LinearMap.toMatrix_toLin]
 
@@ -823,7 +838,6 @@ theorem LinearMap.toMatrixAlgEquiv_toLinAlgEquiv (M : Matrix n n R) :
     LinearMap.toMatrixAlgEquiv v₁ (Matrix.toLinAlgEquiv v₁ M) = M := by
   rw [← Matrix.toLinAlgEquiv_symm, AlgEquiv.symm_apply_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearMap.toMatrixAlgEquiv_apply (f : M₁ →ₗ[R] M₁) (i j : n) :
     LinearMap.toMatrixAlgEquiv v₁ f i j = v₁.repr (f (v₁ j)) i := by
   simp [LinearMap.toMatrixAlgEquiv, LinearMap.toMatrix_apply]
@@ -850,7 +864,6 @@ theorem Matrix.toLinAlgEquiv_self (M : Matrix n n R) (i : n) :
     Matrix.toLinAlgEquiv v₁ M (v₁ i) = ∑ j, M j i • v₁ j :=
   Matrix.toLin_self _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearMap.toMatrixAlgEquiv_id : LinearMap.toMatrixAlgEquiv v₁ id = 1 := by
   simp_rw [LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply, LinearMap.toMatrix_id]
 
@@ -863,7 +876,6 @@ theorem LinearMap.toMatrixAlgEquiv_reindexRange [DecidableEq M₁] (f : M₁ →
       LinearMap.toMatrixAlgEquiv v₁ f k i := by
   simp_rw [LinearMap.toMatrixAlgEquiv_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearMap.toMatrixAlgEquiv_comp (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrixAlgEquiv v₁ (f.comp g) =
       LinearMap.toMatrixAlgEquiv v₁ f * LinearMap.toMatrixAlgEquiv v₁ g := by
@@ -877,14 +889,12 @@ theorem LinearMap.toMatrixAlgEquiv_mul (f g : M₁ →ₗ[R] M₁) :
 theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
     Matrix.toLinAlgEquiv v₁ (A * B) =
       (Matrix.toLinAlgEquiv v₁ A).comp (Matrix.toLinAlgEquiv v₁ B) := by
-  convert Matrix.toLin_mul v₁ v₁ v₁ A B
+  convert! Matrix.toLin_mul v₁ v₁ v₁ A B
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.isUnit_toMatrix_iff {f : M₁ →ₗ[R] M₁} : IsUnit (f.toMatrix v₁ v₁) ↔ IsUnit f :=
   isUnit_map_iff (LinearMap.toMatrixAlgEquiv _) f
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Matrix.isUnit_toLin_iff {M : Matrix n n R} : IsUnit (M.toLin v₁ v₁) ↔ IsUnit M :=
   isUnit_map_iff (LinearMap.toMatrixAlgEquiv _).symm M
@@ -992,6 +1002,7 @@ variable {A M n : Type*} [Fintype n] [DecidableEq n]
   [CommSemiring A] [AddCommMonoid M] [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M]
   (bA : Basis m R A) (bM : Basis n A M)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.LinearMap.restrictScalars_toMatrix (f : M →ₗ[A] M) :
     (f.restrictScalars R).toMatrix (bA.smulTower' bM) (bA.smulTower' bM) =
       ((f.toMatrix bM bM).map (leftMulMatrix bA)).comp _ _ _ _ _ := by
@@ -1007,6 +1018,7 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smulTower_leftMulMatrix (x) (ik jk) :
     leftMulMatrix (b.smulTower c) x ik jk =
       leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
@@ -1100,13 +1112,22 @@ noncomputable
 abbrev «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b
 
-attribute [simp] end_repr_apply
-
 lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) :=
   linearMap_apply b b ij
 
 lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 :=
   linearMap_apply_apply b b ij k
+
+lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    (b : Basis ι R M) (a : ι → R) (s : Module.End R M)
+    (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
+    ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
+  refine b.ext fun k ↦ ?_
+  simp only [Ring.lie_def, LinearMap.sub_apply, End.mul_apply, LinearMap.smul_apply,
+    Basis.end_apply_apply, smul_ite, smul_zero, sub_smul]
+  rcases eq_or_ne j k with rfl | hjk
+  · simp [hs, Basis.end_apply_apply]
+  · simp [hs, Basis.end_apply_apply, hjk]
 
 end Module.Basis
 
@@ -1117,6 +1138,7 @@ variable (R : Type*) [CommSemiring R]
 variable (A : Type*) [Semiring A] [Algebra R A]
 variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
 are `A`-linear maps `M → M`. In another word, we have `End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
@@ -1150,6 +1172,7 @@ def endVecRingEquivMatrixEnd :
     exact congr_arg₂ _ (by aesop) rfl
   map_add' f g := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
 are `R`-linear maps `M → M`. In another word, we have `End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:

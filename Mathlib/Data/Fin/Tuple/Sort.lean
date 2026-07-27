@@ -64,11 +64,7 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
   invFun p := p.1.2
   left_inv i := by simp
   right_inv := fun ⟨⟨x, i⟩, h⟩ => by
-    -- Porting note: was `simpa [graph] using h`
-    simp only [graph, Finset.mem_image, Finset.mem_univ, true_and] at h
-    obtain ⟨i', hi'⟩ := h
-    obtain ⟨-, rfl⟩ := Prod.mk_inj.mp hi'
-    simpa
+    simpa [graph, eq_comm, eqComm] using h
 
 @[simp]
 theorem proj_equiv₁' (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :=
@@ -208,7 +204,6 @@ theorem sort_perm (σ : Equiv.Perm (Fin n)) :
 
 end Tuple
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Equiv.Perm.monotone_iff {n : ℕ} (σ : Perm (Fin n)) :
     Monotone σ ↔ σ = 1 := by
   rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_perm, ← inv_eq_one, one_def]

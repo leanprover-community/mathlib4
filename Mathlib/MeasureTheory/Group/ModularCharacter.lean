@@ -5,12 +5,7 @@ Authors: Noam Atar
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.Topology.Metrizable.Urysohn
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Modular character of a locally compact group
@@ -64,7 +59,7 @@ lemma modularCharacterFun_eq_haarScalarFactor [MeasurableSpace G] [BorelSpace G]
   apply NNReal.coe_injective
   have t : (∫ x, f (x * g) ∂ν) = (∫ x, f (x * g) ∂(haarScalarFactor ν μ • μ)) := by
     refine integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport ν μ ?_ ?_
-    · exact Continuous.comp' f_cont (continuous_mul_right g)
+    · exact Continuous.comp' f_cont (continuous_mul_const g)
     · have j : (fun x ↦ f (x * g)) = (f ∘ (Homeomorph.mulRight g)) := rfl
       rw [j]
       exact HasCompactSupport.comp_homeomorph f_comp _

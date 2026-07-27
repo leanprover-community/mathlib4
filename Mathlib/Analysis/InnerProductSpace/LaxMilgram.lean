@@ -50,7 +50,6 @@ variable {B : V →L[ℝ] V →L[ℝ] ℝ}
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin (𝕜 := ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ := by
   rcases coercive with ⟨C, C_ge_0, coercivity⟩
   refine ⟨C, C_ge_0, ?_⟩
@@ -82,7 +81,7 @@ theorem isClosed_range (coercive : IsCoercive B) : IsClosed (B♯.range : Set V)
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 
 theorem range_eq_top (coercive : IsCoercive B) : B♯.range = ⊤ := by
-  haveI := coercive.isClosed_range.completeSpace_coe
+  have := coercive.isClosed_range.completeSpace_coe
   rw [← B♯.range.orthogonal_orthogonal]
   rw [Submodule.eq_top_iff']
   intro v w mem_w_orthogonal

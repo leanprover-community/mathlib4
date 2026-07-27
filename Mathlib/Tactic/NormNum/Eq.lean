@@ -27,7 +27,6 @@ theorem isInt_eq_false [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} �
     IsInt a a' → IsInt b b' → decide (a' = b') = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simpa using of_decide_eq_false h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem NNRat.invOf_denom_swap [Semiring α] (n₁ n₂ : ℕ) (a₁ a₂ : α)
     [Invertible a₁] [Invertible a₂] : n₁ * ⅟a₁ = n₂ * ⅟a₂ ↔ n₁ * a₂ = n₂ * a₁ := by
   rw [mul_invOf_eq_iff_eq_mul_right, ← Nat.commute_cast, mul_assoc,
@@ -39,7 +38,6 @@ theorem isNNRat_eq_false [Semiring α] [CharZero α] : {a b : α} → {na nb : �
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     rw [NNRat.invOf_denom_swap]; exact mod_cast of_decide_eq_false h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Rat.invOf_denom_swap [Ring α] (n₁ n₂ : ℤ) (a₁ a₂ : α)
     [Invertible a₁] [Invertible a₂] : n₁ * ⅟a₁ = n₂ * ⅟a₂ ↔ n₁ * a₂ = n₂ * a₁ := by
   rw [mul_invOf_eq_iff_eq_mul_right, ← Int.commute_cast, mul_assoc,
@@ -114,7 +112,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
     -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
     -- so would still need to be in `MetaM`.
-    ratArm (←synthInstanceQ q(DivisionRing $α))
+    ratArm (← synthInstanceQ q(DivisionRing $α))
   | .isNNRat dsα .., _ | _, .isNNRat dsα .. => nnratArm dsα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
   | .isNat _ na pa, .isNat mα nb pb =>

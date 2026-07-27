@@ -30,6 +30,8 @@ open Function
 
 namespace Finset
 
+open Finset.HasAntidiagonal
+
 namespace Nat
 
 /-- The antidiagonal of a natural number `n` is
@@ -43,16 +45,17 @@ lemma antidiagonal_eq_map (n : ℕ) :
     antidiagonal n = (range (n + 1)).map ⟨fun i ↦ (i, n - i), fun _ _ h ↦ (Prod.ext_iff.1 h).1⟩ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma antidiagonal_eq_map' (n : ℕ) :
     antidiagonal n =
       (range (n + 1)).map ⟨fun i ↦ (n - i, i), fun _ _ h ↦ (Prod.ext_iff.1 h).2⟩ := by
   rw [← map_swap_antidiagonal, antidiagonal_eq_map, map_map]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antidiagonal_eq_image (n : ℕ) :
     antidiagonal n = (range (n + 1)).image fun i ↦ (i, n - i) := by
   simp only [antidiagonal_eq_map, map_eq_image, Function.Embedding.coeFn_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma antidiagonal_eq_image' (n : ℕ) :
     antidiagonal n = (range (n + 1)).image fun i ↦ (n - i, i) := by
   simp only [antidiagonal_eq_map', map_eq_image, Function.Embedding.coeFn_mk]
@@ -116,7 +119,6 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
     rw [add_assoc, add_comm, add_assoc, add_comm j l, hl]
     exact Nat.sub_add_cancel h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma antidiagonal_filter_fst_le_of_le {n k : ℕ} (h : k ≤ n) :
     {a ∈ antidiagonal n | a.fst ≤ k} = (antidiagonal k).map
       (Embedding.prodMap (Embedding.refl ℕ) ⟨_, add_left_injective (n - k)⟩) := by
@@ -141,7 +143,6 @@ set_option backward.isDefEq.respectTransparency false in
     rw [add_right_comm, hl]
     exact tsub_add_cancel_of_le h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma antidiagonal_filter_le_snd_of_le {n k : ℕ} (h : k ≤ n) :
     {a ∈ antidiagonal n | k ≤ a.snd} = (antidiagonal (n - k)).map
       (Embedding.prodMap (Embedding.refl ℕ) ⟨_, add_left_injective k⟩) := by
@@ -150,11 +151,11 @@ set_option backward.isDefEq.respectTransparency false in
                       ∃ a b, a + b = n - k ∧ a = i ∧ b + k = j :=
     fun i j ↦ by rw [exists_comm]; exact exists₂_congr (fun a b ↦ by rw [add_comm])
   rw [← map_prodComm_antidiagonal]
-  simp_rw [aux₁, ← map_filter, antidiagonal_filter_le_fst_of_le h, map_map]
+  simp_rw [aux₁, ← map_filter, antidiagonal_filter_le_fst_of_le h,
+    map_map]
   ext ⟨i, j⟩
   simpa using aux₂ i j
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. -/
 @[simps]
 def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where

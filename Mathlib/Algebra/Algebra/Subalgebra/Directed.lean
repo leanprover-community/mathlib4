@@ -38,9 +38,19 @@ theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ 
     (iSup_le fun i ↦ le_iSup (fun i ↦ (K i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup K _)
   simp [this, s]
 
+theorem isMulCommutative_iSup {S : ι → Subalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : Subalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subsemiring.coe_iSup_of_directed dir] using Subsemiring.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
@@ -78,6 +88,7 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
   exact liftSup.comp (inclusion hT)
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
@@ -93,6 +104,7 @@ theorem iSupLift_comp_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i �
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_mk {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}

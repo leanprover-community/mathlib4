@@ -17,7 +17,7 @@ We equip `ℝ`, `ℝ≥0`, and `ℝ≥0∞` with their natural norms / enorms.
 normed group
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝓕 α ι κ E F G : Type*}
@@ -39,7 +39,7 @@ instance : ENorm ℝ≥0∞ where
 
 @[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
-instance : ENormedAddCommMonoid ℝ≥0∞ where
+noncomputable instance : ENormedAddCommMonoid ℝ≥0∞ where
   continuous_enorm := continuous_id
   enorm_zero := by simp
   enorm_eq_zero := by simp
@@ -57,7 +57,7 @@ theorem norm_eq_abs (r : ℝ) : ‖r‖ = |r| :=
   rfl
 
 instance normedAddCommGroup : NormedAddCommGroup ℝ :=
-  ⟨fun _r _y => rfl⟩
+  ⟨fun _r _y => by rw [Real.dist_eq, ← abs_neg, neg_sub, add_comm, sub_eq_add_neg, norm_eq_abs]⟩
 
 theorem norm_of_nonneg (hr : 0 ≤ r) : ‖r‖ = r :=
   abs_of_nonneg hr
@@ -84,11 +84,12 @@ lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
 @[simp 1100, norm_cast]
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖ = q := norm_of_nonneg q.cast_nonneg
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp 1100, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by
+  simp [nnnorm]
+  rfl
 
-theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
+theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = .mk r hr :=
   NNReal.eq <| norm_of_nonneg hr
 
 lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
@@ -101,7 +102,10 @@ lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖�
 @[simp] lemma enorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [enorm]
 
 theorem enorm_eq_ofReal (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
-  rw [← ofReal_norm_eq_enorm, norm_of_nonneg hr]
+  rw [← ofReal_norm, norm_of_nonneg hr]
+
+@[simp] lemma enorm_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : ‖a.toReal‖ₑ = a := by
+  simp [enorm_eq_ofReal, ha]
 
 theorem enorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
   rw [← enorm_eq_ofReal (abs_nonneg _), enorm_abs]

@@ -5,7 +5,7 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -53,7 +53,6 @@ lemma exists_inter_eq_singleton (hrep : Represents s C) (h : c ∈ C) : ∃ x, s
   obtain ⟨a, ha⟩ := existsUnique_rep hrep h
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_supp_of_notMem (hrep : Represents s C) (h : c ∉ C) : Disjoint s c.supp := by
   rw [Set.disjoint_left]
   intro a ha hc
@@ -71,7 +70,7 @@ lemma ncard_eq (hrep : Represents s C) : s.ncard = C.ncard :=
 lemma ncard_sdiff_of_mem (hrep : Represents s C) (h : c ∈ C) :
     (c.supp \ s).ncard = c.supp.ncard - 1 := by
   obtain ⟨a, ha⟩ := exists_inter_eq_singleton hrep h
-  rw [← Set.diff_inter_self_eq_diff, ha, Set.ncard_diff, Set.ncard_singleton]
+  rw [← Set.sdiff_inter_self_eq_sdiff, ha, Set.ncard_sdiff, Set.ncard_singleton]
   simp [← ha]
 
 lemma ncard_sdiff_of_notMem (hrep : Represents s C) (h : c ∉ C) :

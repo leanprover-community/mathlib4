@@ -52,7 +52,7 @@ theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.
     simp_rw [← mul_to_nat]
     simp only [cast_lt, dvd_to_nat]
     split_ifs <;> try rfl
-    rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
+    rw [ih] <;> [congr; convert! Nat.lt_succ_of_lt h using 1] <;>
       simp only [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
         add_left_comm, ← one_add_one_eq_two]
 
@@ -62,7 +62,6 @@ def minFac : PosNum → PosNum
   | bit0 _ => 2
   | bit1 n => minFacAux (bit1 n) n 1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   obtain - | n := n

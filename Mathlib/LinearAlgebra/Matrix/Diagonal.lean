@@ -16,7 +16,7 @@ diagonal matrix (`range`, `ker` and `rank`).
 
 ## Tags
 
-matrix, diagonal, linear_map
+matrix, diagonal, linear map
 -/
 
 public section
@@ -52,7 +52,6 @@ section Semifield
 
 variable {m : Type*} [Fintype m] {K : Type u} [Semifield K]
 
-set_option backward.isDefEq.respectTransparency false in
 -- maybe try to relax the universe constraint
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
     ker (toLin' (diagonal w)) =
@@ -67,7 +66,7 @@ theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
 theorem range_diagonal [DecidableEq m] (w : m → K) :
     LinearMap.range (toLin' (diagonal w)) =
       ⨆ i ∈ { i | w i ≠ 0 }, LinearMap.range (LinearMap.single K (fun _ => K) i) := by
-  dsimp only [mem_setOf_eq]
+  dsimp only [mem_ofPred_eq]
   rw [← Submodule.map_top, ← iSup_range_single, Submodule.map_iSup]
   congr; funext i
   rw [← LinearMap.range_comp, diagonal_comp_single, ← range_smul']

@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
@@ -32,29 +32,6 @@ variable {R : Type uR} [Semiring R]
 variable {S : Type uS} [CommSemiring S]
 variable {T : Type uT}
 variable {A : Type uA} [Semiring A] [Algebra S A]
-
-namespace RingCon
-
-instance (c : RingCon A) : Algebra S c.Quotient where
-  algebraMap := c.mk'.comp (algebraMap S A)
-  commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
-  smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
-
-variable (S) in
-/-- The algebra morphism from `A` to the quotient by a ring congruence. -/
-@[simps!] def mkₐ (c : RingCon A) : A →ₐ[S] c.Quotient :=
-  { mk' c with commutes' _ := rfl }
-
-theorem mkₐ_surjective (c : RingCon A) :
-    Function.Surjective (c.mkₐ (S := S)) :=
-  mk'_surjective c
-
-@[simp, norm_cast]
-theorem coe_algebraMap (c : RingCon A) (s : S) :
-    (algebraMap S A s : c.Quotient) = algebraMap S c.Quotient s :=
-  rfl
-
-end RingCon
 
 namespace RingQuot
 
@@ -177,7 +154,6 @@ instance : NatCast (RingQuot r) :=
   ⟨fun ⟨a⟩ n ↦ ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
     (fun a b (h : Rel r a b) ↦ by
       -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
-      dsimp only
       induction n with
       | zero => rw [pow_zero, pow_zero]
       | succ n ih =>
@@ -295,7 +271,6 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
 def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) where
   neg_add_cancel := by
     rintro ⟨⟨⟩⟩
@@ -303,7 +278,6 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
   sub_eq_add_neg := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]
-  zsmul := (· • ·)
   zsmul_zero' := by
     rintro ⟨⟨⟩⟩
     simp [smul_quot, ← zero_quot]
@@ -514,6 +488,7 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
   rcases mkAlgHom_surjective S s x with ⟨x, rfl⟩
   exact AlgHom.congr_fun w x
 
+set_option backward.isDefEq.respectTransparency false in
 irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=
 { toFun := fun x ↦ Quot.lift f
@@ -570,6 +545,38 @@ theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ �
 theorem eq_liftAlgHom_comp_mkAlgHom {s : A → A → Prop} (f : RingQuot s →ₐ[S] B) :
     f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg f (mkAlgHom_rel S h)⟩ :=
   liftAlgHom_unique S (f.comp (mkAlgHom S s)) (fun _ _ h ↦ congr_arg (⇑f) (mkAlgHom_rel S h)) f rfl
+
+open scoped Function -- required for scoped `on` notation
+
+variable {S}
+
+/-- If two `S`-algebras are `S`-equivalent and their quotients by a relation `rel` are defined,
+then their quotients are also `S`-equivalent.
+
+(Special case of the third isomorphism theorem.) -/
+def algEquivQuotAlgEquiv (f : A ≃ₐ[S] B) (rel : A → A → Prop) :
+    RingQuot rel ≃ₐ[S] RingQuot (rel on f.symm) :=
+  AlgEquiv.ofAlgHom
+    (RingQuot.liftAlgHom S (s := rel)
+      ⟨AlgHom.comp (RingQuot.mkAlgHom S (rel on f.symm)) f,
+      fun x y h_rel ↦ by
+        apply RingQuot.mkAlgHom_rel
+        simpa [Function.onFun]⟩)
+    ((RingQuot.liftAlgHom S (s := rel on f.symm)
+      ⟨AlgHom.comp (RingQuot.mkAlgHom S rel) f.symm,
+      fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
+    (by ext b; simp) (by ext a; simp)
+
+/-- If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
+then their quotients are also equivalent.
+
+(Special case of `algEquivQuotAlgEquiv` when `S = ℕ`, which in turn is a special
+case of the third isomorphism theorem.) -/
+def equivQuotEquiv (f : A ≃+* B) (rel : A → A → Prop) :
+    RingQuot rel ≃+* RingQuot (rel on f.symm) :=
+  let f_alg : A ≃ₐ[ℕ] B :=
+    AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
+  algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
 
 end Algebra
 

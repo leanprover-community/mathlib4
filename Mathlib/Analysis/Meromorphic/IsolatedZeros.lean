@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Basic
+public import Mathlib.Analysis.Meromorphic.Order
 
 /-!
 # Principles of Isolated Zeros and Identity Principles for Meromorphic Functions
@@ -60,13 +60,25 @@ theorem eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin (hf : Mer
     (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U)) (h : f =ᶠ[codiscreteWithin U] 0) :
     f =ᶠ[𝓝[≠] x] 0 := by
   rw [← hf.frequently_zero_iff_eventuallyEq_zero]
-  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually
-    (mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x h₁x)).mp
-  filter_upwards
-  intro a
-  simp_rw [Pi.zero_apply]
-  rw [(by rfl : ({x | f x = 0} ∪ Uᶜ) a ↔ a ∈ {x | f x = 0} ∪ Uᶜ)]
-  simp_all
+  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually <| eventually_mem_set.2
+    (mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x h₁x)).mono
+  simp +contextual
+
+/--
+Variant of the principle of isolated zeros, formulated in terms of orders: If `f` is nowhere locally
+constant zero, then its zero set is discrete within its domain of meromorphicity.
+-/
+theorem MeromorphicOn.codiscreteWithin_setOfPred_ne_zero (h₁f : MeromorphicOn f U)
+    (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
+    ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
+  filter_upwards [h₁f.analyticAt_mem_codiscreteWithin,
+    h₁f.codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top h₂f] with x h₁x h₂x
+  have := h₂f x h₂x.1
+  simp_all [← h₁x.analyticOrderAt_eq_zero, h₁x.meromorphicOrderAt_eq]
+
+@[deprecated (since := "2026-07-09")]
+alias MeromorphicOn.codiscreteWithin_setOf_ne_zero :=
+  MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
 
 /-!
 ## Identity Principles
@@ -94,4 +106,42 @@ theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf : MeromorphicAt
   rw [eventuallyEq_iff_sub] at *
   apply (hf.sub hg).eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin h₁x h₂x h
 
+/-
+Variant of `MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin`, as a statement
+about meromorphic functions that agree outside a set codiscrete within a perfect set.
+-/
+theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect (hf : MeromorphicAt f x)
+    (hg : MeromorphicAt g x) (hx : x ∈ U) (hU : Preperfect U) (h : f =ᶠ[codiscreteWithin U] g) :
+    f =ᶠ[𝓝[≠] x] g :=
+  hf.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin hg hx (hU x hx) h
+
+/-
+Variant of `MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin`, as a statement
+about meromorphic functions agreeing in a neighborhood of a preperfect set.
+-/
+theorem eventually_nhdsSet_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U)
+    (hg : MeromorphicOn g U) (hU : Preperfect U) (h : f =ᶠ[codiscreteWithin U] g) :
+    ∀ᶠ x in 𝓝ˢ U, f =ᶠ[𝓝[≠] x] g := by
+  rw [eventually_nhdsSet_iff_exists]
+  use {x | f =ᶠ[𝓝[≠] x] g}
+  simp only [Set.mem_ofPred_eq, imp_self, implies_true, and_true]
+  constructor
+  · apply isOpen_setOfPred_eventually_nhdsWithin
+  · intro x hx
+    rw [Set.mem_ofPred]
+    exact eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf x hx) (hg x hx) hx (hU x hx) h
+
 end MeromorphicAt
+
+/-- If meromorphic `f` and `g` agree on `codiscreteWithin U`, so do their derivatives. -/
+theorem MeromorphicOn.deriv_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U)
+    (hg : MeromorphicOn g U) (h : f =ᶠ[codiscreteWithin U] g) :
+    deriv f =ᶠ[codiscreteWithin U] deriv g := by
+  rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
+  intro x hx
+  by_cases hacc : AccPt x (𝓟 U)
+  · have h : f =ᶠ[𝓝[≠] x] g :=
+      (hf x hx).eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hg x hx) hx hacc h
+    filter_upwards [h.nhdsNE_deriv] using by simp +contextual
+  · rw [accPt_iff_frequently_nhdsNE, not_frequently] at hacc
+    filter_upwards [hacc] using by grind

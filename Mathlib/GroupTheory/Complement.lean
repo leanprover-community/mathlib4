@@ -196,7 +196,7 @@ theorem isComplement'_top_right : IsComplement' H ⊤ ↔ H = ⊥ :=
 @[to_additive]
 lemma isComplement_iff_existsUnique_inv_mul_mem :
     IsComplement S T ↔ ∀ g, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
-  convert isComplement_iff_existsUnique with g
+  convert! isComplement_iff_existsUnique with g
   constructor <;> rintro ⟨x, hx, hx'⟩
   · exact ⟨(x, ⟨_, hx⟩), by simp, by aesop⟩
   · exact ⟨x.1, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (y, ⟨_, hy⟩)).1⟩
@@ -204,7 +204,7 @@ lemma isComplement_iff_existsUnique_inv_mul_mem :
 @[to_additive]
 lemma isComplement_iff_existsUnique_mul_inv_mem :
     IsComplement S T ↔ ∀ g, ∃! t : T, g * (t : G)⁻¹ ∈ S := by
-  convert isComplement_iff_existsUnique with g
+  convert! isComplement_iff_existsUnique with g
   constructor <;> rintro ⟨x, hx, hx'⟩
   · exact ⟨(⟨_, hx⟩, x), by simp, by aesop⟩
   · exact ⟨x.2, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (⟨_, hy⟩, y)).2⟩
@@ -225,16 +225,16 @@ lemma isComplement_subgroup_left_iff_existsUnique_quotientMk'' :
 
 @[to_additive]
 lemma isComplement_subgroup_right_iff_bijective :
-    IsComplement S H ↔ Bijective (S.restrict (QuotientGroup.mk : G → G ⧸ H)) :=
+    IsComplement S H ↔ Bijective (S.domRestrict (QuotientGroup.mk : G → G ⧸ H)) :=
   isComplement_subgroup_right_iff_existsUnique_quotientGroupMk.trans
-    (bijective_iff_existsUnique (S.restrict QuotientGroup.mk)).symm
+    (bijective_iff_existsUnique (S.domRestrict QuotientGroup.mk)).symm
 
 @[to_additive]
 lemma isComplement_subgroup_left_iff_bijective :
     IsComplement H T ↔
-      Bijective (T.restrict (Quotient.mk'' : G → Quotient (QuotientGroup.rightRel H))) :=
+      Bijective (T.domRestrict (Quotient.mk'' : G → Quotient (QuotientGroup.rightRel H))) :=
   isComplement_subgroup_left_iff_existsUnique_quotientMk''.trans
-    (bijective_iff_existsUnique (T.restrict Quotient.mk'')).symm
+    (bijective_iff_existsUnique (T.domRestrict Quotient.mk'')).symm
 
 @[to_additive]
 lemma IsComplement.card_left (h : IsComplement S H) : Nat.card S = H.index :=
@@ -269,7 +269,6 @@ lemma isComplement_range_right {f : Quotient (QuotientGroup.rightRel H) → G}
   rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
   exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S H ∧ g ∈ S := by
   classical
@@ -289,7 +288,6 @@ lemma exists_isComplement_right (H : Subgroup G) (g : G) :
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
   · simp [Function.update, dif_neg hq, q.out_eq']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
 lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
@@ -306,7 +304,6 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     refine congr_arg₂ (· * ·) ?_ ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two subgroups `H' ⊆ H`, there exists a right transversal to `H'` inside `H`. -/
 @[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
 lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
@@ -386,12 +383,14 @@ theorem rightCosetEquivalence_equiv_snd (g : G) :
   -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
   rw [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
     (hST.equiv g).fst = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨g, hg⟩, ⟨1, h1⟩) = g := by
     rw [equiv, Equiv.ofBijective]; simp
   conv_lhs => rw [← this, Equiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_snd_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
     (hST.equiv g).snd = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨1, h1⟩, ⟨g, hg⟩) = g := by
@@ -408,7 +407,6 @@ theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T)
   ext
   rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem equiv_mul_right (g : G) (k : K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
   have : (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
@@ -422,7 +420,6 @@ theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * ⟨k, h⟩) :=
   equiv_mul_right _ g ⟨k, h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem equiv_mul_left (h : H) (g : G) :
     hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
   have : (hHT.equiv (h * g)).2 = (hHT.equiv g).2 := hHT.equiv_snd_eq_iff_rightCosetEquivalence.2 ?_
@@ -435,6 +432,7 @@ theorem equiv_mul_left_of_mem {h g : G} (hh : h ∈ H) :
     hHT.equiv (h * g) = (⟨h, hh⟩ * (hHT.equiv g).fst, (hHT.equiv g).snd) :=
   equiv_mul_left _ ⟨h, hh⟩ g
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_one (hs1 : 1 ∈ S) (ht1 : 1 ∈ T) :
     hST.equiv 1 = (⟨1, hs1⟩, ⟨1, ht1⟩) := by
   rw [Equiv.apply_eq_iff_eq_symm_apply]; simp [equiv]
@@ -562,7 +560,8 @@ end IsComplement
 
 section Action
 
-open Pointwise MulAction
+open scoped Pointwise
+open MulAction
 
 /-- The collection of left transversals of a subgroup -/
 @[to_additive /-- The collection of left transversals of a subgroup. -/]
@@ -612,14 +611,17 @@ theorem smul_apply_eq_smul_apply_inv_smul (f : F) (S : H.LeftTransversal) (q : G
 end Action
 
 @[to_additive]
-instance : Inhabited H.LeftTransversal :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance : Inhabited H.LeftTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_left Quotient.out_eq'⟩⟩
 
 @[to_additive]
-instance : Inhabited H.RightTransversal :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance : Inhabited H.RightTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_right Quotient.out_eq'⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
   refine
     ⟨disjoint_iff_inf_le.mpr fun g ⟨p, q⟩ =>
@@ -634,13 +636,15 @@ theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
 theorem IsComplement'.sup_eq_top (h : IsComplement' H K) : H ⊔ K = ⊤ :=
   h.isCompl.sup_eq_top
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsComplement'.disjoint (h : IsComplement' H K) : Disjoint H K :=
   h.isCompl.disjoint
 
 theorem IsComplement'.index_eq_card (h : IsComplement' H K) : K.index = Nat.card H :=
   h.card_left.symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `H` and `K` are complementary with `K` normal, then `G ⧸ K` is isomorphic to `H`. -/
 @[simps!]
 noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement' K) :
@@ -657,21 +661,18 @@ theorem IsComplement'.card_mul (h : IsComplement' H K) :
     Nat.card H * Nat.card K = Nat.card G :=
   IsComplement.card_mul h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
     (h2 : ↑H * ↑K = (Set.univ : Set G)) : IsComplement' H K := by
   refine ⟨mul_injective_of_disjoint h1, fun g => ?_⟩
   obtain ⟨h, hh, k, hk, hg⟩ := Set.eq_univ_iff_forall.mp h2 g
   exact ⟨(⟨h, hh⟩, ⟨k, hk⟩), hg⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isComplement'_of_card_mul_and_disjoint [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G) (h2 : Disjoint H K) :
     IsComplement' H K :=
   (Nat.bijective_iff_injective_and_card _).mpr
     ⟨mul_injective_of_disjoint h2, (Nat.card_prod H K).trans h1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
     IsComplement' H K ↔ Nat.card H * Nat.card K = Nat.card G ∧ Disjoint H K :=
   ⟨fun h => ⟨h.card_mul, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
@@ -679,9 +680,8 @@ theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
 theorem isComplement'_of_coprime [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G)
     (h2 : Nat.Coprime (Nat.card H) (Nat.card K)) : IsComplement' H K :=
-  isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
+  isComplement'_of_card_mul_and_disjoint h1 <| disjoint_of_coprime_natCard h2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :
     IsComplement' H (MulAction.stabilizer G a) := by

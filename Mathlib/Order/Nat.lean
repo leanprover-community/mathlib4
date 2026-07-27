@@ -21,7 +21,7 @@ See note [foundational algebra order theory].
 Move the `LinearOrder ℕ` instance here (https://github.com/leanprover-community/mathlib4/pull/13092).
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

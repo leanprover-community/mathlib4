@@ -64,7 +64,7 @@ instance : LargeCategory MeasCat where
 
 instance (X Y : MeasCat) : FunLike ({ f : X → Y // Measurable f }) X Y where
   coe f := f
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 instance : ConcreteCategory MeasCat ({ f : · → · // Measurable f }) where
   hom f := f
@@ -94,7 +94,7 @@ def Giry : CategoryTheory.Monad MeasCat where
   η :=
     { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
       naturality :=
-        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac hf a).symm }
+        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac' hf a).symm }
   μ :=
     { app := fun X => ⟨@Measure.join X.1 X.2, Measure.measurable_join⟩
       naturality := fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun μ => Measure.join_map_map hf μ }

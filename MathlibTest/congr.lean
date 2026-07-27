@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CongrExclamation
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Group.Basic
@@ -325,13 +326,14 @@ example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
 Lawful BEq instances are "subsingletons".
 -/
 
+set_option linter.overlappingInstances false in
 example (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
   congr!
 
+set_option linter.overlappingInstances false in
 /--
 error: unsolved goals
-case h.e'_2
 α : Type
 inst1 : BEq α
 inst✝¹ : LawfulBEq α

@@ -47,7 +47,6 @@ variable {ι : Type*} (v : ι → K)
 variable {κ : Type*} (w : κ → L)
 variable (hv : AlgebraicIndependent R v)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
     IsAlgClosure (Algebra.adjoin R (Set.range v)) K :=
   letI := RingHom.domain_nontrivial (algebraMap R K)
@@ -56,7 +55,6 @@ theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenc
 
 variable (hw : AlgebraicIndependent R w)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- setting `R` to be `ZMod (ringChar R)` this result shows that if two algebraically
 closed fields have equipotent transcendence bases and the same characteristic then they are
 isomorphic. -/
@@ -85,7 +83,6 @@ variable {ι : Type w} (v : ι → K)
 variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']
 variable {ι' : Type u} (v' : ι' → K')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
 the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
@@ -98,7 +95,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
   calc
     Cardinal.lift.{max u w} #K ≤ Cardinal.lift.{max u w}
         (max #(Algebra.adjoin R (Set.range v)) ℵ₀) := by
-      letI := isAlgClosure_of_transcendence_basis v hv
+      let := isAlgClosure_of_transcendence_basis v hv
       simpa using Algebra.IsAlgebraic.cardinalMk_le_max (Algebra.adjoin R (Set.range v)) K
     _ = Cardinal.lift.{v} (max #(MvPolynomial ι R) ℵ₀) := by
       rw [lift_max, ← Cardinal.lift_mk_eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
@@ -176,8 +173,8 @@ theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < 
 
 private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
     (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
-  letI : Algebra (ZMod p) K := ZMod.algebra _ _
-  letI : Algebra (ZMod p) L := ZMod.algebra _ _
+  let : Algebra (ZMod p) K := ZMod.algebra _ _
+  let : Algebra (ZMod p) L := ZMod.algebra _ _
   obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p) K
   obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p) L
   have hL : ℵ₀ < #L := by
@@ -196,11 +193,11 @@ if they have the same cardinality and the same characteristic. -/
 theorem ringEquiv_of_equiv_of_char_eq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
-  · haveI : Fact p.Prime := ⟨hp⟩
+  · have : Fact p.Prime := ⟨hp⟩
     exact ringEquiv_of_Cardinal_eq_of_charP p hK hKL
   · simp only [hp] at *
-    letI : CharZero K := CharP.charP_to_charZero K
-    letI : CharZero L := CharP.charP_to_charZero L
+    let : CharZero K := CharP.charP_to_charZero K
+    let : CharZero L := CharP.charP_to_charZero L
     exact ringEquiv_of_equiv_of_charZero hK hKL
 
 end IsAlgClosed

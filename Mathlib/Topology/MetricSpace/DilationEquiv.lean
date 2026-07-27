@@ -37,7 +37,7 @@ class DilationEquivClass [EquivLike F X Y] : Prop where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
 instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
-  { inferInstanceAs (FunLike F X Y), ‹DilationEquivClass F X Y› with }
+  { (inferInstance : FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 
@@ -86,6 +86,12 @@ theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) �
 
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
+
+theorem symm_apply_eq (e : X ≃ᵈ Y) {x : X} {y : Y} : e.symm y = x ↔ y = e x :=
+  Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (e : X ≃ᵈ Y) {x : X} {y : Y} : x = e.symm y ↔ e x = y :=
+  Equiv.eq_symm_apply _
 
 /-- See Note [custom simps projection]. -/
 def Simps.symm_apply (e : X ≃ᵈ Y) : Y → X := e.symm
@@ -184,7 +190,7 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
 def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
-  edist_eq' := ⟨1, one_ne_zero, by simpa using e.isometry⟩
+  edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
   __ := e.toEquiv
 
 @[simp]

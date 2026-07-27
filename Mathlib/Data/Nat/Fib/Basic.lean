@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Zify
@@ -79,7 +80,7 @@ lemma fib_add_one : ∀ {n}, n ≠ 0 → fib (n + 1) = fib (n - 1) + fib n
 
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 
-@[mono]
+@[gcongr, mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 
@@ -146,7 +147,6 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
     simp only [fib_add_two, ih]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
@@ -154,7 +154,6 @@ theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) 
     simp only [← add_assoc, add_tsub_cancel_right]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
   rw [two_mul, fib_add]
   ring
@@ -245,8 +244,13 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
     conv_rhs => rw [← mod_add_div' n m]
     rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 
-theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
-  rwa [← gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mpr]
+theorem isStrongDvdSequence_fib : IsStrongDvdSequence fib :=
+  fun m n ↦ (fib_gcd m n).symm
+
+theorem isDvdSequence_fib : IsDvdSequence fib :=
+  isStrongDvdSequence_fib.isDvdSequence
+
+alias fib_dvd := isDvdSequence_fib
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=

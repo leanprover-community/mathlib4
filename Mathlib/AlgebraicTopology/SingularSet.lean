@@ -62,12 +62,16 @@ noncomputable def TopCat.toSSetObjEquiv (X : TopCat.{u}) (n : SimplexCategoryᵒ
   Equiv.ulift.{0}.trans (ConcreteCategory.homEquiv.trans
     (Homeomorph.ulift.continuousMapCongr (.refl _)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The *geometric realization functor* is
 the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
 It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
 noncomputable def SSet.toTop : SSet.{u} ⥤ TopCat.{u} :=
   stdSimplex.{u}.leftKanExtension SimplexCategory.toTop
+
+/-- The geometric realization of a simplicial set. -/
+scoped[Simplicial] notation "|" X "|" => SSet.toTop.obj X
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/
@@ -76,15 +80,26 @@ noncomputable def sSetTopAdj : SSet.toTop.{u} ⊣ TopCat.toSSet.{u} :=
     (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.toTop)
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop)
 
+instance : SSet.toTop.{u}.IsLeftAdjoint := sSetTopAdj.isLeftAdjoint
+instance : TopCat.toSSet.{u}.IsRightAdjoint := sSetTopAdj.isRightAdjoint
+
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
 noncomputable def SSet.toTopSimplex :
     SSet.stdSimplex.{u} ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
   Presheaf.isExtensionAlongULiftYoneda _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
+
+set_option backward.isDefEq.respectTransparency.types false in
+lemma sSetTopAdj_unit_app_app_down (S : SSet) (m : SimplexCategoryᵒᵖ) (a : S.obj m) :
+    ((sSetTopAdj.unit.app S).app m a).down =
+      SSet.toTopSimplex.inv.app _ ≫ SSet.toTop.map (SSet.yonedaEquiv.symm a) := by
+  cat_disch
 
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpace X] :
@@ -92,3 +107,12 @@ noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpa
   (NatIso.ofComponents (fun n ↦ Equiv.toIso
     ((TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace _ X).symm.trans
       (X.toSSetObjEquiv n).symm))).symm
+
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
+/-- The canonical map `Δ[n] ⟶ Simp(Δₜ[n])` (where `Δₜ[n]` is the topological `n`-simplex). -/
+@[simps! -isSimp] noncomputable def SSet.stdSimplexToTop :
+    SSet.stdSimplex.{u} ⟶ SimplexCategory.toTop ⋙ TopCat.toSSet :=
+  SSet.stdSimplex.whiskerLeft sSetTopAdj.unit ≫
+    Functor.whiskerRight SSet.toTopSimplex.hom TopCat.toSSet

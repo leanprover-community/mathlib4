@@ -37,7 +37,7 @@ noncomputable def Basis.ofRankEqZero [Module.Free K V] {ι : Type*} [IsEmpty ι]
     (hV : Module.rank K V = 0) : Basis ι K V :=
   haveI : Subsingleton V := by
     obtain ⟨_, b⟩ := Module.Free.exists_basis (R := K) (M := V)
-    haveI := mk_eq_zero_iff.1 (hV ▸ b.mk_eq_rank'')
+    have := mk_eq_zero_iff.1 (hV ▸ b.mk_eq_rank'')
     exact b.repr.toEquiv.subsingleton
   Basis.empty _
 
@@ -47,13 +47,13 @@ theorem Basis.ofRankEqZero_apply [Module.Free K V] {ι : Type*} [IsEmpty ι]
 
 theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
     c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndepOn K id s := by
-  haveI := nontrivial_of_invariantBasisNumber K
+  have := nontrivial_of_invariantBasisNumber K
   constructor
   · intro h
     obtain ⟨κ, t'⟩ := Module.Free.exists_basis (R := K) (M := V)
     let t := t'.reindexRange
     have : LinearIndepOn K id (Set.range t') := by
-      convert t.linearIndependent.linearIndepOn_id
+      convert! t.linearIndependent.linearIndepOn_id
       ext
       simp [t]
     rw [← t.mk_eq_rank'', le_mk_iff_exists_subset] at h
@@ -104,21 +104,20 @@ theorem rank_le_one_iff [Module.Free K V] :
 single non-zero vector of which all vectors are multiples. -/
 theorem rank_eq_one_iff [Module.Free K V] :
     Module.rank K V = 1 ↔ ∃ v₀ : V, v₀ ≠ 0 ∧ ∀ v, ∃ r : K, r • v₀ = v := by
-  haveI := nontrivial_of_invariantBasisNumber K
+  have := nontrivial_of_invariantBasisNumber K
   refine ⟨fun h ↦ ?_, fun ⟨v₀, h, hv⟩ ↦ (rank_le_one_iff.2 ⟨v₀, hv⟩).antisymm ?_⟩
   · obtain ⟨v₀, hv⟩ := rank_le_one_iff.1 h.le
     refine ⟨v₀, fun hzero ↦ ?_, hv⟩
     simp_rw [hzero, smul_zero, exists_const] at hv
-    haveI : Subsingleton V := .intro fun _ _ ↦ by simp_rw [← hv]
+    have : Subsingleton V := .intro fun _ _ ↦ by simp_rw [← hv]
     exact one_ne_zero (h ▸ rank_subsingleton' K V)
   · by_contra H
-    rw [not_le, lt_one_iff_zero] at H
+    rw [not_le, Cardinal.lt_one_iff] at H
     obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := K) (M := V)
-    haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
-    haveI := b.repr.toEquiv.subsingleton
+    have := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
+    have := b.repr.toEquiv.subsingleton
     exact h (Subsingleton.elim _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector in the submodule such that the submodule is contained in
 its span. -/
@@ -127,7 +126,6 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension `1` if and only if there is a
 single non-zero vector in the submodule such that the submodule is contained in
 its span. -/
@@ -143,13 +141,12 @@ theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
   · obtain ⟨r, hr⟩ := h v hv
     exact ⟨r, by rwa [Subtype.ext_iff, coe_smul]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
 theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
-  haveI := nontrivial_of_invariantBasisNumber K
+  have := nontrivial_of_invariantBasisNumber K
   constructor
   · rw [rank_submodule_le_one_iff]
     rintro ⟨v₀, _, h⟩
@@ -159,7 +156,6 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
     simpa [b.mk_eq_rank''] using b.linearIndependent.map' _ (ker_inclusion _ _ h)
       |>.cardinal_le_rank.trans (rank_span_le {v₀})
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K W] :
     Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
   simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
@@ -174,7 +170,7 @@ theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K
 
 theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
     Module.rank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
-  haveI := Module.Free.of_equiv (topEquiv (R := K) (M := V)).symm
+  have := Module.Free.of_equiv (topEquiv (R := K) (M := V)).symm
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 
 /-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
@@ -214,10 +210,10 @@ theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Fini
 variable (K V) in
 theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
     [Module.Finite K V] : lift.{u} #V = lift.{v} #K ^ lift.{u} (Module.rank K V) := by
-  haveI := nontrivial_of_invariantBasisNumber K
+  have := nontrivial_of_invariantBasisNumber K
   obtain ⟨s, hs⟩ := Module.Free.exists_basis (R := K) (M := V)
   -- `Module.Finite.finite_basis` is in a much later file, so we copy its proof to here
-  haveI : Finite s := by
+  have : Finite s := by
     obtain ⟨t, ht⟩ := ‹Module.Finite K V›
     exact basis_finite_of_finite_spans t.finite_toSet ht hs
   have := lift_mk_eq'.2 ⟨hs.repr.toEquiv⟩
@@ -243,7 +239,6 @@ namespace Subalgebra
 variable {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
   {S : Subalgebra F E}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S = ⊥ := by
   nontriviality E
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := S)
@@ -252,19 +247,17 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
     rw [← b.mk_eq_rank'', eq_one_iff_unique, ← unique_iff_subsingleton_and_nonempty] at h1
     obtain ⟨h1⟩ := h1
     obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
-      Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
+      Finsupp.uniqueLinearEquiv _ _ default).symm).surjective ⟨x, hx⟩
     exact ⟨y, congr(Subtype.val $(hy))⟩
-  haveI := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ lt_one_iff_zero.1 (h.lt_of_ne h1))
-  haveI := b.repr.toEquiv.subsingleton
+  have := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ Cardinal.lt_one_iff.1 (h.lt_of_ne h1))
+  have := b.repr.toEquiv.subsingleton
   exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_of_finrank_one (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
   refine Subalgebra.eq_bot_of_rank_le_one ?_
   rw [finrank, toNat_eq_one] at h
   rw [h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 ↔ S = ⊥ := by
   refine ⟨fun h ↦ Subalgebra.eq_bot_of_rank_le_one h.le, ?_⟩
@@ -275,27 +268,24 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
     rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff,
       ← Algebra.toSubmodule_bot, rank_toSubmodule] at this
   · by_contra H
-    rw [not_le, lt_one_iff_zero] at H
-    haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
-    haveI := b.repr.toEquiv.subsingleton
+    rw [not_le, Cardinal.lt_one_iff] at H
+    have := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
+    have := b.repr.toEquiv.subsingleton
     exact one_ne_zero congr((⊥ : Subalgebra F E).val $(Subsingleton.elim 1 0))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_eq_one_iff [Nontrivial E] [Module.Free F S] : finrank F S = 1 ↔ S = ⊥ := by
   rw [← Subalgebra.rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bot_eq_top_iff_rank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
-  haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
+  have := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bot_eq_top_iff_finrank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
-  haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
+  have := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
   rw [← finrank_top, ← subalgebra_top_finrank_eq_submodule_top_finrank,
     Subalgebra.finrank_eq_one_iff, eq_comm]
 
@@ -304,5 +294,12 @@ alias ⟨_, bot_eq_top_of_rank_eq_one⟩ := bot_eq_top_iff_rank_eq_one
 alias ⟨_, bot_eq_top_of_finrank_eq_one⟩ := bot_eq_top_iff_finrank_eq_one
 
 attribute [simp] bot_eq_top_of_finrank_eq_one bot_eq_top_of_rank_eq_one
+
+lemma _root_.Algebra.finrank_eq_one_iff_bijective_algebraMap [Module.Free F E] :
+    Module.finrank F E = 1 ↔ Function.Bijective (algebraMap F E) := by
+  refine ⟨?_, Module.finrank_of_bijective_algebraMap⟩
+  nontriviality E
+  refine fun h ↦ ⟨FaithfulSMul.algebraMap_injective F E, ?_⟩
+  rwa [Algebra.surjective_algebraMap_iff, eq_comm, Subalgebra.bot_eq_top_iff_finrank_eq_one]
 
 end Subalgebra

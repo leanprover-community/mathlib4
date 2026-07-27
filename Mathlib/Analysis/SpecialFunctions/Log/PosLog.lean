@@ -39,16 +39,18 @@ noncomputable def posLog : ℝ → ℝ := fun r ↦ max 0 (log r)
 scoped notation "log⁺" => posLog
 
 /-- Definition of the positive part of the logarithm, formulated as a theorem. -/
-theorem posLog_def : log⁺ x = max 0 (log x) := rfl
+theorem posLog_apply : log⁺ x = max 0 (log x) := rfl
+
+/-- Definition of the positive part of the logarithm, formulated as a theorem. -/
+theorem posLog_def : log⁺ = max 0 (log ·) := rfl
 
 /-!
 ## Elementary Properties
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv : log⁺ x - log⁺ x⁻¹ = log x := by
-  rw [posLog_def, posLog_def, log_inv]
+  rw [posLog_apply, posLog_apply, log_inv]
   by_cases! h : 0 ≤ log x
   · simp [h]
   · simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
@@ -92,7 +94,7 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
 
 /-- The function `log⁺` equals `log (max 1 _)` for non-negative real numbers. -/
 theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
-  grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_def]
+  grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_apply]
 
 /-- The function `log⁺` is monotone on the positive axis. -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
@@ -118,6 +120,18 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   rw [not_le] at hx
   have : 1 ≤ |x ^ n| := by simp_all [one_le_pow₀, hx.le]
   simp [posLog_eq_log this, posLog_eq_log hx.le]
+
+/-- The function `log⁺` is continuous. -/
+@[fun_prop] theorem continuous_posLog : Continuous log⁺ := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  by_cases hx : x = 0
+  · apply ContinuousAt.congr (f := fun _ ↦ 0) (by fun_prop)
+    filter_upwards [Metric.ball_mem_nhds _ zero_lt_one] with y hy
+    rw [eq_comm, posLog_eq_zero_iff y]
+    simp_all [le_of_lt]
+  rw [posLog_def]
+  fun_prop
 
 /-!
 ## Estimates for Products
@@ -158,9 +172,6 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 ## Estimates for Sums
 -/
 
-set_option backward.isDefEq.respectTransparency false in
--- TODO: non-terminal simp followed by positivity
-set_option linter.flexible false in
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
 just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
@@ -178,7 +189,7 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     apply monotoneOn_posLog (by simp) (by simp [Finset.sum_nonneg])
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp; positivity)
+    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp [mul_nonneg])
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]
@@ -201,7 +212,7 @@ lemma posLog_norm_sum_le {E : Type*} [SeminormedAddCommGroup E] {α : Type*} (s 
 Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving multiple summands.
 -/
 theorem posLog_add : log⁺ (x + y) ≤ log 2 + log⁺ x + log⁺ y := by
-  convert posLog_sum Finset.univ ![x, y] using 1 <;> simp [add_assoc]
+  convert! posLog_sum Finset.univ ![x, y] using 1 <;> simp [add_assoc]
 
 /--
 Variant of `posLog_add` for norms of elements in normed additive commutative groups, using
