@@ -407,10 +407,10 @@ class MulOneClass (M : Type u) extends One M, Mul M, MulOne M where
   /-- One is a right neutral element for multiplication -/
   protected mul_one : ∀ a : M, a * 1 = a
 
-attribute [instance 150] AddZeroClass.toAdd
-attribute [instance 150] MulOneClass.toMul
-attribute [instance 150] AddZeroClass.toZero
-attribute [instance 150] MulOneClass.toOne
+attribute [instance 100] AddZeroClass.toAdd
+attribute [instance 100] MulOneClass.toMul
+attribute [instance 100] AddZeroClass.toZero
+attribute [instance 100] MulOneClass.toOne
 
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
@@ -675,7 +675,7 @@ instance NPow.toPow {M : Type*} [NPow M] : Pow M ℕ :=
 instance NPow.ofPow {M : Type*} [Pow M ℕ] : NPow M := ⟨fun n x ↦ Pow.pow x n⟩
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M, NSMul M where
+class AddMonoid (M : Type u) extends Zero M, Add M, AddZeroClass M, AddSemigroup M, NSMul M where
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero (x : M) : 0 • x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -683,13 +683,17 @@ class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M, NSMul M whe
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends MulOneClass M, Semigroup M, NPow M where
+class Monoid (M : Type u) extends One M, Mul M, MulOneClass M, Semigroup M, NPow M where
   npow := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero (x : M) : x ^ 0 = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ (n : ℕ) (x : M) : x ^ (n + 1) = x ^ n * x := by intros; rfl
 
+attribute [instance 150] AddMonoid.toAdd
+attribute [instance 150] Monoid.toMul
+attribute [instance 150] AddMonoid.toZero
+attribute [instance 150] Monoid.toOne
 attribute [instance 150] AddMonoid.toAddZeroClass
 attribute [instance 150] Monoid.toMulOneClass
 

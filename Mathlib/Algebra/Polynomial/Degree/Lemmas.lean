@@ -412,7 +412,7 @@ end NoZeroDivisors
   by_cases h : p = 0
   · simp [h]
   rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
-  simp [((Commute.neg_one_left _).pow_left _).eq, h]
+  simp [Commute.eq, h]
 
 @[simp]
 theorem comp_neg_X_eq_zero_iff [Ring R] {p : R[X]} : p.comp (-X) = 0 ↔ p = 0 := by
