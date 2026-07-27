@@ -861,6 +861,7 @@ section AutRing
 
 variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
 def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
   toFun u :=
@@ -1061,7 +1062,7 @@ equivalence. -/
 def IsInvertible (f : M →L[R] M₂) : Prop :=
   ∃ (A : M ≃L[R] M₂), A = f
 
-open Classical in
+open scoped Classical in
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
 `f` is a continuous linear equivalence and to `0` otherwise.  This definition is somewhat ad hoc,
 but one needs a fully (rather than partially) defined inverse function for some purposes, including

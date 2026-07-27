@@ -95,9 +95,9 @@ theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M�
     simp only [Multiset.prod_zero] at hprod
     left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>
-    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
+    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_ofPred] at hm
     simp only [Multiset.prod_cons] at hprod
-    simp only [Set.mem_setOf_eq] at hind
+    simp only [Set.mem_ofPred_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
       refine hind x (y * k) ?_ hs ?_
@@ -178,7 +178,7 @@ theorem prod_eq_one_iff {p : Multiset (Associates M)} :
     (by simp +contextual [mul_eq_one, or_imp, forall_and])
 
 theorem prod_le_prod {p q : Multiset (Associates M)} (h : p ≤ q) : p.prod ≤ q.prod := by
-  haveI := Classical.decEq (Associates M)
+  have := Classical.decEq (Associates M)
   suffices p.prod ≤ (p + (q - p)).prod by rwa [add_tsub_cancel_of_le h] at this
   suffices p.prod * 1 ≤ p.prod * (q - p).prod by simpa
   exact mul_mono (le_refl p.prod) one_le

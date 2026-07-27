@@ -157,7 +157,7 @@ lemma coverMincard_union_le (T : X → X) (F G : Set X) (U : SetRel X X) (n : �
   · rw [hG, add_top]; exact le_top
   obtain ⟨s, s_cover, s_coverMincard⟩ := (coverMincard_finite_iff T F U n).1 hF
   obtain ⟨t, t_cover, t_coverMincard⟩ := (coverMincard_finite_iff T G U n).1 hG
-  rw [← s_coverMincard, ← t_coverMincard, ← ENat.coe_add]
+  rw [← s_coverMincard, ← t_coverMincard, ← ENat.natCast_add]
   apply (IsDynCoverOf.coverMincard_le_card _).trans (WithTop.coe_mono (s.card_union_le t))
   rw [s.coe_union t]
   exact s_cover.union t_cover

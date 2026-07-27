@@ -76,7 +76,7 @@ theorem coeff_mirror (n : ℕ) :
   · rw [coeff_eq_zero_of_natDegree_lt (by rwa [mirror_natDegree])]
     by_cases h1 : n ≤ p.natDegree + p.natTrailingDegree
     · rw [revAt_le h1, coeff_eq_zero_of_lt_natTrailingDegree]
-      exact (tsub_lt_iff_left h1).mpr (Nat.add_lt_add_right h2 _)
+      grw [h2, add_tsub_cancel_left]
     · rw [← revAtFun_eq, revAtFun, if_neg h1, coeff_eq_zero_of_natDegree_lt h2]
   rw [not_lt] at h2
   rw [revAt_le (h2.trans (Nat.le_add_right _ _))]

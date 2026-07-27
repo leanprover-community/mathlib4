@@ -13,6 +13,8 @@ public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Tactic.CrossRefAttribute
 
+import Mathlib.Data.Set.Lattice
+
 /-!
 # Simple graphs
 
@@ -98,6 +100,7 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
@@ -154,7 +157,7 @@ def completeBipartiteGraph (V W : Type*) : SimpleGraph (V ⊕ W) where
 
 namespace SimpleGraph
 
-variable {ι : Sort*} {V : Type u} (G : SimpleGraph V) {a b c u v w : V} {e : Sym2 V}
+variable {ι : Sort*} {V : Type u} (G H : SimpleGraph V) {a b c u v w : V} {e : Sym2 V}
 
 @[simp]
 protected theorem irrefl {v : V} : ¬G.Adj v v :=
@@ -484,13 +487,9 @@ alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiag
 
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 
-@[simp]
-theorem edgeSet_subset_edgeSet : edgeSet G₁ ⊆ edgeSet G₂ ↔ G₁ ≤ G₂ :=
-  (edgeSetEmbedding V).le_iff_le
+theorem edgeSet_subset_edgeSet : edgeSet G₁ ⊆ edgeSet G₂ ↔ G₁ ≤ G₂ := by simp
 
-@[simp]
-theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ :=
-  (edgeSetEmbedding V).lt_iff_lt
+theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ := by simp
 
 theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V)) :=
   (edgeSetEmbedding V).injective
@@ -514,9 +513,6 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
 @[simp]
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
   simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
-
-@[deprecated (since := "2025-12-10")]
-alias edgeSet_subset_setOf_not_isDiag := edgeSet_subset_compl_diagSet
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -557,8 +553,12 @@ theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := b
 variable {G G₁ G₂}
 
 @[simp] lemma disjoint_edgeSet : Disjoint G₁.edgeSet G₂.edgeSet ↔ Disjoint G₁ G₂ := by
-  rw [Set.disjoint_iff, disjoint_iff_inf_le, ← edgeSet_inf, ← edgeSet_bot, ← Set.le_iff_subset,
-    OrderEmbedding.le_iff_le]
+  rw [Set.disjoint_iff, disjoint_iff_inf_le, ← edgeSet_inf, ← edgeSet_bot, OrderEmbedding.le_iff_le]
+
+theorem disjoint_of_disjoint_support (h : Disjoint G.support H.support) : Disjoint G H := by
+  simp_rw [Set.disjoint_left, mem_support] at h
+  rw [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
+  grind [mem_edgeSet]
 
 @[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
 
@@ -762,6 +762,17 @@ theorem mk'_mem_incidenceSet_right_iff : s(a, b) ∈ G.incidenceSet b ↔ G.Adj 
 theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a ∈ (e : Sym2 V) :=
   and_iff_right e.2
 
+theorem iUnion_incidenceSet : ⋃ v, G.incidenceSet v = G.edgeSet := by
+  ext ⟨_, _⟩
+  simp [mk'_mem_incidenceSet_iff]
+
+variable {G H} in
+theorem disjoint_incidenceSet :
+    (∀ v, Disjoint (G.incidenceSet v) (H.incidenceSet v)) ↔ Disjoint G H := by
+  simp_rw [← disjoint_edgeSet, ← iUnion_incidenceSet, Set.disjoint_iUnion_left,
+    Set.disjoint_iUnion_right, Set.disjoint_left, Sym2.forall]
+  grind [mk'_mem_incidenceSet_iff]
+
 theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
     G.incidenceSet a ∩ G.incidenceSet b ⊆ {s(a, b)} := fun _e he =>
   (Sym2.mem_and_mem_iff h).1 ⟨he.1.2, he.2.2⟩
@@ -804,6 +815,11 @@ theorem neighborSet_subset_compl : G.neighborSet v ⊆ {v}ᶜ := by
 variable (v) in
 theorem neighborSet_ne_univ : G.neighborSet v ≠ .univ :=
   Set.ne_univ_iff_exists_notMem _ |>.mpr ⟨v, G.notMem_neighborSet_self⟩
+
+variable {G H} in
+theorem disjoint_neighborSet :
+    (∀ v, Disjoint (G.neighborSet v) (H.neighborSet v)) ↔ Disjoint G H := by
+  simp_rw [← disjoint_edgeSet, Set.disjoint_left, mem_neighborSet, Sym2.forall, mem_edgeSet]
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -896,6 +912,12 @@ theorem commonNeighbors_subset_neighborSet_right (v w : V) :
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
     DecidablePred (· ∈ G.commonNeighbors v w) :=
   inferInstanceAs <| DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
+
+variable {G H} in
+theorem disjoint_commonNeighbors :
+    (∀ u v, Disjoint (G.commonNeighbors u v) (H.commonNeighbors u v)) ↔ Disjoint G H := by
+  simp_rw [← disjoint_edgeSet, Set.disjoint_left, mem_commonNeighbors, Sym2.forall, mem_edgeSet]
+  grind
 
 theorem commonNeighbors_top_eq {v w : V} :
     (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
