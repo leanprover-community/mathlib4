@@ -177,8 +177,7 @@ abbrev resolution'Res (φ : H →ₜ* G) :
   f n := resolutionXRes X φ (n + 1)
   comm' := by
     intro _ _ rfl
-    simp only [mapHomologicalComplex_obj_d, ContinuousMonoidHom.coe_toMonoidHom,
-      CochainComplex.of_d, resolution'd_eq]
+    simp only [mapHomologicalComplex_obj_d, CochainComplex.of_d, resolution'd_eq]
     exact resolutionXRes_comp_d φ _
 
 /-- The cochain maps `resolution'Res φ` as a natural transformation. -/
@@ -231,7 +230,7 @@ noncomputable abbrev resNatTrans (φ : H →ₜ* G) (n : ℕ) :
 lemma resNatTrans_app (φ : H →ₜ* G) (n : ℕ) (X : TopRep k G) :
     (resNatTrans k φ n).app X =
       HomologicalComplex.homologyMap ((homogeneousCochainsResNatTrans k φ).app X) n := by
-  simp only [resNatTrans, NatTrans.hcomp_id_app, HomologicalComplex.homologyFunctor_map]
+  rfl
 
 set_option allowUnsafeReducibility true in
 attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
@@ -386,11 +385,14 @@ lemma resolutionResMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) (i : ℕ) :
 /-- `resolutionXRes` is the special case of `resolutionResMap` where the coefficient map is the
 identity. -/
 lemma resolutionResMap_id_snd (φ : H →ₜ* G) (i : ℕ) :
-    resolutionResMap φ (𝟙 (res φ.toMonoidHom X)) i = resolutionXRes X φ i := by
+    resolutionResMap φ (𝟙 (res (φ : H →* G) X)) i = resolutionXRes X φ i := by
   induction i with
   | zero => rfl
-  | succ i ih => rw [resolutionResMap_succ, resolutionXRes_succ, ih]
+  | succ i ih =>
+    rw [resolutionResMap_succ, resolutionXRes_succ, ih]
+    rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `resolutionMap` is the special case of `resolutionResMap` along the identity of `G`. -/
 lemma resolutionResMap_id_fst (f : X ⟶ X') (i : ℕ) :
     resolutionResMap (ContinuousMonoidHom.id G) f i = resolutionMap f i := by
