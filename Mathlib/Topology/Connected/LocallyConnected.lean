@@ -233,7 +233,7 @@ theorem Pi.locallyConnectedSpace_iff [∀ i, TopologicalSpace (X i)] :
     · exact .inl he
     obtain ⟨x⟩ := hne
     classical
-    haveI : ∀ i, Nonempty (X i) := Classical.nonempty_pi.mp ⟨x⟩
+    have : ∀ i, Nonempty (X i) := Classical.nonempty_pi.mp ⟨x⟩
     refine .inr ⟨fun i ↦ ((isOpenMap_eval i).isQuotientMap (continuous_apply i)
       (Function.surjective_eval i)).locallyConnectedSpace, ?_⟩
     have hVn : connectedComponent x ∈ 𝓝 x :=
