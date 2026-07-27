@@ -51,6 +51,20 @@ namespace IsPeano
 variable {E : Type*} [NormedAddCommGroup E]
   {f : ℝ × E → E} {α : ℝ → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {r L : ℝ≥0}
 
+lemma mul_abs_sub_le_radius {t : ℝ} (hf : IsPeano f t₀ x₀ r L)
+    (ht : t ∈ Icc t₀.val tmax) : L * |t - t₀| ≤ r := by
+  have h_abs : |t - t₀| = t - t₀ := abs_of_nonneg (sub_nonneg.mpr ht.1)
+  have h_diff : t - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := by
+    calc
+      t - t₀ ≤ tmax - t₀ := sub_le_sub_right ht.2 t₀
+      tmax - t₀ ≤ max (tmax - t₀) (t₀ - tmin) := le_max_left (tmax - t₀) (t₀ - tmin)
+  calc
+    L * |t - t₀| = L * (t - t₀) := by rw [h_abs]
+    L * (t - t₀) ≤ L * max (tmax - t₀) (t₀ - tmin) := by
+      apply mul_le_mul_of_nonneg_left h_diff
+      positivity
+    L * max (tmax - t₀) (t₀ - tmin) ≤ r := hf.mul_max_le
+
 variable [NormedSpace ℝ E]
 
 /-! ### Tonelli approximations -/
@@ -127,6 +141,63 @@ lemma tonelliIterate_apply_t₀ (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x�
   | zero => simp [tonelliIterate]
   | succ => simp [tonelliIterate]
 
+/-- Every recursively defined curve stays in the cylinder and has Lipschitz constant `L`. -/
+private lemma tonelliIterate_bounds (hf : IsPeano f t₀ x₀ r L) (n k : ℕ) :
+    MapsTo (tonelliIterate f t₀ x₀ n k) (Icc t₀.val tmax) (closedBall x₀ r) ∧
+    LipschitzOnWith L (tonelliIterate f t₀ x₀ n k) (Icc t₀.val tmax) := by
+  induction k with
+  | zero =>
+    exact
+      ⟨fun _ _ ↦ by simp [tonelliIterate, mem_closedBall],
+        (LipschitzWith.const x₀).weaken L.2 |>.lipschitzOnWith⟩
+  | succ k hk =>
+    have h_map : MapsTo
+        (fun s ↦ tonelliIterate f t₀ x₀ n k (delayedInput t₀ n s))
+        (Icc t₀ tmax) (closedBall x₀ r) :=
+      hk.1.comp (mapsTo_delayedInput t₀ n)
+    have h_cont :
+        ContinuousOn
+          (fun s ↦ f (s, tonelliIterate f t₀ x₀ n k (delayedInput t₀ n s)))
+          (uIcc t₀.val tmax) := by
+      rw [uIcc_of_le t₀.2.2]
+      exact hf.continuousOn.comp
+        (ContinuousOn.prodMk continuousOn_id
+          (ContinuousOn.comp hk.2.continuousOn
+            (lipschitzWith_delayedInput t₀ n).continuous.continuousOn
+            (mapsTo_delayedInput t₀ n)))
+        (fun t ht ↦ ⟨⟨t₀.2.1.trans ht.1, ht.2⟩, h_map ht⟩)
+    have h_int :
+        IntervalIntegrable
+          (fun s ↦ f (s, tonelliIterate f t₀ x₀ n k (delayedInput t₀ n s)))
+          MeasureTheory.volume t₀ tmax :=
+      ContinuousOn.intervalIntegrable h_cont
+    have h_lip : LipschitzOnWith L (tonelliIterate f t₀ x₀ n (k + 1)) (Icc (↑t₀) tmax) := by
+      rw [lipschitzOnWith_iff_dist_le_mul]
+      intro a ha b hb
+      rw [Real.dist_eq, dist_eq_norm, tonelliIterate, add_sub_add_left_eq_sub,
+        intervalIntegral.integral_interval_sub_left]
+      · refine intervalIntegral.norm_integral_le_of_norm_le_const fun t ht ↦ ?_
+        have ht' := uIoc_subset_uIcc.trans (uIcc_subset_Icc hb ha) ht
+        exact hf.norm_le t ⟨t₀.2.1.trans ht'.1, ht'.2⟩ _ (h_map ht')
+      · exact h_int.mono_set (uIcc_subset_uIcc left_mem_uIcc <| Icc_subset_uIcc ha)
+      · exact h_int.mono_set (uIcc_subset_uIcc left_mem_uIcc <| Icc_subset_uIcc hb)
+    refine ⟨fun t ht ↦ ?_, h_lip⟩
+    rw [mem_closedBall]
+    nth_rewrite 2 [← tonelliIterate_apply_t₀ f t₀ x₀ n (k + 1)]
+    refine (h_lip.dist_le_mul t ht t₀ <| left_mem_Icc.mpr t₀.2.2).trans ?_
+    rw [Real.dist_eq]
+    exact mul_abs_sub_le_radius hf ht
+
+/-- Every recursively defined curve stays in the cylinder. -/
+lemma mapsTo_tonelliIterate_closedBall (hf : IsPeano f t₀ x₀ r L) (n : ℕ) (k : ℕ) :
+    MapsTo (tonelliIterate f t₀ x₀ n k) (Icc t₀.val tmax) (closedBall x₀ r) :=
+  tonelliIterate_bounds hf n k |>.1
+
+/-- Every recursively defined curve is Lipschitz continuous with constant `L`. -/
+lemma lipschitzOnWith_tonelliIterate (hf : IsPeano f t₀ x₀ r L) (n : ℕ) (k : ℕ) :
+    LipschitzOnWith L (tonelliIterate f t₀ x₀ n k) (Icc t₀.val tmax) :=
+  tonelliIterate_bounds hf n k |>.2
+
 /-- Consecutive recursive curves agree on the first `k` time steps. -/
 lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
     (ht : t ∈ Icc t₀.val (t₀.val + k * stepSize t₀ n)) :
@@ -156,6 +227,16 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (t : ℝ)
 noncomputable def tonelliApproximation
     (f : ℝ × E → E) (t₀ : Icc tmin tmax) (x₀ : E) (n : ℕ) : ℝ → E :=
   fun t ↦ tonelliIterate f t₀ x₀ (n + 1) (n + 1) t
+
+/-- Every diagonal Tonelli approximation stays in the cylinder. -/
+lemma mapsTo_tonelliApproximation_closedBall (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+    MapsTo (tonelliApproximation f t₀ x₀ n) (Icc t₀.val tmax) (closedBall x₀ r) :=
+  mapsTo_tonelliIterate_closedBall hf (n + 1) (n + 1)
+
+/-- Every diagonal Tonelli approximation is Lipschitz continuous with constant `L`. -/
+lemma lipschitzOnWith_tonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+    LipschitzOnWith L (tonelliApproximation f t₀ x₀ n) (Icc t₀.val tmax) :=
+  lipschitzOnWith_tonelliIterate hf (n + 1) (n + 1)
 
 /-- Every diagonal Tonelli approximation satisfies the integral equation with delayed input. -/
 lemma tonelliApproximation_eq_integral (n : ℕ) (t : ℝ) (ht : t ∈ Icc t₀.val tmax) :
