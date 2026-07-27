@@ -20,8 +20,11 @@ incidences used by its steps. `WalkData.IsValid` certifies that data in a partic
 * `HyperGraphLike.WalkData`: graph-independent walk data
 * `HyperGraphLike.WalkData.IsValid`: validity of walk data in a graph
 * `HyperGraphLike.Walk`: valid walk data with indexed endpoints
-* `HyperGraphLike.Walk.ofIncidencePairs` / `ofEdges` / `ofVertices`: construct a walk from
-  incidence pairs, edges, or vertices under the corresponding uniqueness hypotheses
+* `HyperGraphLike.Walk.ofDarts`: reconstruct a walk from a chain of adjacent darts
+* `HyperGraphLike.Walk.ofVertices`: reconstruct a walk from a vertex chain
+  (`GraphLike` + `NoParallelEdge` + `Loopless`)
+* `HyperGraphLike.Walk.ofEdges`: reconstruct a walk from a start vertex and edge list
+  (`GraphLike` + `Loopless`)
 
 ## Tags
 
@@ -365,7 +368,7 @@ lemma IsValid.ext_vertices_of_source_target_injective (h : p.IsValid G) (hq : q.
 vertex list of valid walk data determines the walk. -/
 lemma IsValid.ext_vertices [GraphLike V I E Gr] [NoParallelEdge V I E Gr] [Loopless V I E Gr]
     (h : p.IsValid G) (hq : q.IsValid G) (hv : p.vertices = q.vertices) : p = q :=
-  h.ext_vertices_of_source_target_injective hq Dart.source_target_inj_of_undirected hv
+  h.ext_vertices_of_source_target_injective hq Dart.source_target_inj hv
 
 /-- Under `NoParallelEdge` and `Directed`, there is a unique dart between an ordered pair of
 vertices, so the vertex list of valid walk data determines the walk. -/
@@ -406,6 +409,16 @@ theorem IsValid.map_target_darts (h : p.IsValid G) : h.darts.map Dart.target = p
   induction p with
   | nil => rfl
   | cons u i e j p ih => grind [darts_cons, vertices_head p]
+
+theorem IsValid.isChain_dartAdj_darts (h : p.IsValid G) : List.IsChain DartAdj h.darts := by
+  induction p with
+  | nil => exact .nil
+  | cons u i e j p ih =>
+    cases p with
+    | nil => exact .singleton _
+    | cons =>
+      refine .cons_cons ?_ (ih h.2)
+      simp [DartAdj]
 
 end WalkData
 
@@ -485,6 +498,10 @@ theorem data_cons (d : Dart G) (p : Walk G d.target w) :
 theorem length_consRaw (h : IsTraversal G u i e j v) (p : Walk G v w) :
     (consRaw i e j h p).length = p.length + 1 := rfl
 
+@[simp, grind =]
+theorem length_cons (d : Dart G) (p : Walk G d.target w) :
+    (cons d p).length = p.length + 1 := rfl
+
 /-- The vertices visited by a walk. -/
 @[expose] def vertices (p : Walk G u v) : List V := p.data.vertices
 
@@ -494,6 +511,10 @@ theorem vertices_nil (hu : u ∈ V(G)) : (nil hu).vertices = [u] := rfl
 @[simp, grind =]
 theorem vertices_consRaw (h : IsTraversal G u i e j v) (p : Walk G v w) :
     (consRaw i e j h p).vertices = u :: p.vertices := rfl
+
+@[simp, grind =]
+theorem vertices_cons (d : Dart G) (p : Walk G d.target w) :
+    (cons d p).vertices = d.source :: p.vertices := rfl
 
 @[simp, grind =]
 theorem length_vertices (p : Walk G u v) : p.vertices.length = p.length + 1 :=
@@ -527,9 +548,17 @@ lemma ext_vertices [GraphLike V I E Gr] [NoParallelEdge V I E Gr] [Loopless V I 
     (h : p.vertices = q.vertices) : p = q :=
   Subtype.ext <| WalkData.IsValid.ext_vertices p.isValid q.isValid h
 
+lemma ext_vertices_iff [GraphLike V I E Gr] [NoParallelEdge V I E Gr] [Loopless V I E Gr] :
+    p = q ↔ p.vertices = q.vertices :=
+  ⟨(· ▸ rfl), ext_vertices⟩
+
 lemma ext_vertices_of_directed [GraphLike V I E Gr] [NoParallelEdge V I E Gr] [Directed V I E Gr]
     (h : p.vertices = q.vertices) : p = q :=
   Subtype.ext <| WalkData.IsValid.ext_vertices_of_directed p.isValid q.isValid h
+
+lemma ext_vertices_of_directed_iff [GraphLike V I E Gr] [NoParallelEdge V I E Gr]
+    [Directed V I E Gr] : p = q ↔ p.vertices = q.vertices :=
+  ⟨(· ▸ rfl), ext_vertices_of_directed⟩
 
 /-- The edges traversed by a walk. -/
 @[expose] def edges (p : Walk G u v) : List E := p.data.edges
@@ -541,10 +570,17 @@ theorem edges_consRaw (h : IsTraversal G u i e j v) (p : Walk G v w) :
     (consRaw i e j h p).edges = e :: p.edges := rfl
 
 @[simp, grind =]
+theorem edges_cons (d : Dart G) (p : Walk G d.target w) :
+    (cons d p).edges = d.edge :: p.edges := rfl
+
+@[simp, grind =]
 theorem length_edges (p : Walk G u v) : p.edges.length = p.length := p.data.length_edges
 
 lemma ext_edges [GraphLike V I E Gr] [Loopless V I E Gr] (h : p.edges = q.edges) : p = q :=
   Subtype.ext <| WalkData.IsValid.ext_edges p.isValid q.isValid (by grind) h
+
+lemma ext_edges_iff [GraphLike V I E Gr] [Loopless V I E Gr] : p = q ↔ p.edges = q.edges :=
+  ⟨(· ▸ rfl), ext_edges⟩
 
 /-- The incidence pairs used by a walk. -/
 @[expose] def incidencePairs (p : Walk G u v) : List (I × I) := p.data.incidencePairs
@@ -556,12 +592,30 @@ theorem incidencePairs_consRaw (h : IsTraversal G u i e j v) (p : Walk G v w) :
     (consRaw i e j h p).incidencePairs = (i, j) :: p.incidencePairs := rfl
 
 @[simp, grind =]
+theorem incidencePairs_cons (d : Dart G) (p : Walk G d.target w) :
+    (cons d p).incidencePairs = (d.fst, d.snd) :: p.incidencePairs := rfl
+
+@[simp, grind =]
 theorem length_incidencePairs (p : Walk G u v) : p.incidencePairs.length = p.length :=
   p.data.length_incidencePairs
 
 /-- Two walks are equal if they have the same sequence of incidence pairs. -/
-@[ext] lemma ext (h : p.data.incidencePairs = q.data.incidencePairs) : p = q :=
+@[ext] lemma ext (h : p.incidencePairs = q.incidencePairs) : p = q :=
   Subtype.ext <| WalkData.IsValid.ext_incidencePairs p.isValid q.isValid (by grind) h
+
+instance [DecidableEq I] : DecidableEq (Walk G u v) :=
+  fun _ _ ↦ decidable_of_iff' _ Walk.ext_iff
+
+instance [GraphLike V I E Gr] [Loopless V I E Gr] [DecidableEq E] : DecidableEq (Walk G u v) :=
+  fun _ _ ↦ decidable_of_iff' _ Walk.ext_edges_iff
+
+instance [GraphLike V I E Gr] [NoParallelEdge V I E Gr] [Directed V I E Gr] [DecidableEq V] :
+    DecidableEq (Walk G u v) :=
+  fun _ _ ↦ decidable_of_iff' _ Walk.ext_vertices_of_directed_iff
+
+instance [GraphLike V I E Gr] [NoParallelEdge V I E Gr] [Loopless V I E Gr] [DecidableEq V] :
+    DecidableEq (Walk G u v) :=
+  fun _ _ ↦ decidable_of_iff' _ Walk.ext_vertices_iff
 
 /-- The certified darts traversed by a walk. -/
 @[expose] noncomputable def darts (p : Walk G u v) : List (Dart G) := p.isValid.darts
@@ -571,6 +625,11 @@ theorem length_incidencePairs (p : Walk G u v) : p.incidencePairs.length = p.len
 @[simp]
 theorem darts_consRaw (h : IsTraversal G u i e j v) (p : Walk G v w) :
     (consRaw i e j h p).darts = h.toDart :: p.darts := congrArg₂ (· :: ·) rfl rfl
+
+@[simp]
+theorem darts_cons (d : Dart G) (p : Walk G d.target w) :
+    (cons d p).darts = d :: p.darts := by
+  simp [cons, darts_consRaw]
 
 @[simp]
 theorem length_darts (p : Walk G u v) : p.darts.length = p.length := p.isValid.length_darts
@@ -584,6 +643,42 @@ theorem map_source_darts_append (p : Walk G u v) : p.darts.map Dart.source ++ [v
 
 theorem map_target_darts (p : Walk G u v) : p.darts.map Dart.target = p.vertices.tail :=
   p.isValid.map_target_darts
+
+theorem isChain_dartAdj_darts (p : Walk G u v) : List.IsChain DartAdj p.darts :=
+  p.isValid.isChain_dartAdj_darts
+
+theorem isChain_dartAdj_cons_darts (d : Dart G) (p : Walk G d.target w) :
+    List.IsChain DartAdj (d :: p.darts) := by
+  match hp : p.darts with
+  | [] => exact .singleton _
+  | d' :: _ =>
+    refine .cons_cons ?_ (by simpa [hp] using p.isChain_dartAdj_darts)
+    have : (p.darts.map Dart.source ++ [w]).head (by simp [hp]) = d.target := by
+      simp [map_source_darts_append, head_vertices]
+    simpa [DartAdj, hp] using this.symm
+
+/-- Change the indexed endpoints of a walk along equalities. -/
+@[expose]
+def copy {u' v' : V} (p : Walk G u v) (hu : u = u') (hv : v = v') : Walk G u' v' :=
+  hu ▸ hv ▸ p
+
+@[simp] theorem copy_rfl (p : Walk G u v) : p.copy rfl rfl = p := rfl
+
+@[simp] theorem darts_copy {u' v' : V} (p : Walk G u v) (hu : u = u') (hv : v = v') :
+    (p.copy hu hv).darts = p.darts := by
+  subst hu hv; rfl
+
+@[simp] theorem length_copy {u' v' : V} (p : Walk G u v) (hu : u = u') (hv : v = v') :
+    (p.copy hu hv).length = p.length := by
+  subst hu hv; rfl
+
+@[simp] theorem vertices_copy {u' v' : V} (p : Walk G u v) (hu : u = u') (hv : v = v') :
+    (p.copy hu hv).vertices = p.vertices := by
+  subst hu hv; rfl
+
+@[simp] theorem edges_copy {u' v' : V} (p : Walk G u v) (hu : u = u') (hv : v = v') :
+    (p.copy hu hv).edges = p.edges := by
+  subst hu hv; rfl
 
 /-- The set of vertices visited by a walk. -/
 @[expose] def vertexSet (p : Walk G u v) : Set V := p.data.vertexSet
@@ -613,6 +708,10 @@ theorem nil_nil (hu : u ∈ V(G)) : (nil hu).Nil := WalkData.nil_nil
 theorem not_nil_consRaw (h : IsTraversal G u i e j v) (p : Walk G v w) :
     ¬ (consRaw i e j h p).Nil := WalkData.not_nil_cons
 
+@[simp, grind .]
+theorem not_nil_cons (d : Dart G) (p : Walk G d.target w) : ¬ (cons d p).Nil :=
+  not_nil_consRaw _ _
+
 @[simp, grind =]
 theorem length_eq_zero_iff (p : Walk G u v) : p.length = 0 ↔ p.Nil :=
   p.data.length_eq_zero_iff
@@ -626,6 +725,10 @@ theorem length_pos_iff (p : Walk G u v) : 0 < p.length ↔ p.Nonempty :=
 alias ⟨_, Nonempty.length_pos⟩ := length_pos_iff
 
 theorem nil_or_nonempty (p : Walk G u v) : p.Nil ∨ p.Nonempty := p.data.nil_or_nonempty
+
+@[push] theorem not_nil_iff (p : Walk G u v) : ¬ p.Nil ↔ p.Nonempty := p.data.not_nil_iff
+
+@[push] theorem not_nonempty_iff (p : Walk G u v) : ¬ p.Nonempty ↔ p.Nil := p.data.not_nonempty_iff
 
 theorem exists_eq_consRaw_of_nonempty (h : p.Nonempty) :
     ∃ (x : V) (i : I) (e : E) (j : I) (q : Walk G x v),
@@ -642,6 +745,122 @@ theorem exists_eq_consRaw_of_ne (huv : u ≠ v) (p : Walk G u v) :
   refine exists_eq_consRaw_of_nonempty ?_
   by_contra! h
   grind [h.first_eq_last]
+
+section Constructors
+
+/-- Construct a walk from a nonempty chain of adjacent darts. -/
+@[expose]
+noncomputable def ofDarts (l : List (Dart G)) (hne : l ≠ []) (hchain : l.IsChain DartAdj) :
+    Walk G (l.head hne).source (l.getLast hne).target := by
+  match l with
+  | [d] => exact cons d (nil d.target_mem)
+  | d₁ :: d₂ :: rest =>
+    let q := ofDarts (d₂ :: rest) (rest.cons_ne_nil d₂) hchain.of_cons
+    have htrav : IsTraversal G d₁.source d₁.fst d₁.edge d₁.snd q.data.first := by
+      convert d₁.isTraversal
+      rw [q.first_eq]
+      simpa using hchain.rel.symm
+    exact ⟨.cons d₁.source d₁.fst d₁.edge d₁.snd q.data, ⟨htrav, q.isValid⟩, rfl, q.last_eq⟩
+
+@[simp]
+theorem ofDarts_singleton (d : Dart G) :
+    ofDarts [d] ([].cons_ne_nil d) (.singleton d) = cons d (nil d.target_mem) :=
+  rfl
+
+theorem darts_ofDarts_cons_cons {d₁ d₂ : Dart G} {l : List (Dart G)}
+    (hne : d₁ :: d₂ :: l ≠ []) (hchain : (d₁ :: d₂ :: l).IsChain DartAdj) :
+    (ofDarts (d₁ :: d₂ :: l) hne hchain).darts =
+      d₁ :: (ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons).darts := by
+  refine congrArg₂ (· :: ·) ?_ rfl
+  ext <;> rfl
+
+@[simp]
+theorem darts_ofDarts {l : List (Dart G)} (hne : l ≠ []) (hchain : l.IsChain DartAdj) :
+    (ofDarts l hne hchain).darts = l := by
+  match l with
+  | [_] => rfl
+  | d₁ :: d₂ :: rest => rw [darts_ofDarts_cons_cons, darts_ofDarts]
+
+@[simp]
+theorem edges_ofDarts {l : List (Dart G)} (hne : l ≠ []) (hchain : l.IsChain DartAdj) :
+    (ofDarts l hne hchain).edges = l.map Dart.edge := by
+  simp [← map_edge_darts, darts_ofDarts]
+
+@[simp, grind =]
+theorem length_ofDarts {l : List (Dart G)} (hne : l ≠ []) (hchain : l.IsChain DartAdj) :
+    (ofDarts l hne hchain).length = l.length := by
+  grind [← length_darts, darts_ofDarts]
+
+/-! ### Reconstruction from vertices and edges -/
+
+/-- A list of edges is valid as a walk from `u` when each consecutive edge admits a traversal
+continuing from the vertex reached so far. -/
+@[expose]
+def EdgesValid (G : Gr) : V → List E → Prop
+  | u, [] => u ∈ V(G)
+  | u, e :: es => ∃ i j v, IsTraversal G u i e j v ∧ EdgesValid G v es
+
+/-- Construct a walk from a start vertex and a valid edge list.
+Under `GraphLike` and `Loopless`, each edge and source determine a unique dart
+(`Dart.edge_source_inj`), so the resulting walk is the unique one with these edges. -/
+@[expose]
+noncomputable def ofEdges (u : V) : ∀ (es : List E), EdgesValid G u es → Σ v : V, Walk G u v
+  | [], h => ⟨u, nil h⟩
+  | _e :: es, h => by
+    choose i j v htv using h
+    let wp := ofEdges v es htv.2
+    exact ⟨wp.1, consRaw i _e j htv.1 wp.2⟩
+
+@[simp] theorem ofEdges_nil (hu : u ∈ V(G)) : ofEdges u [] hu = ⟨u, nil hu⟩ := rfl
+
+@[simp]
+theorem edges_ofEdges (u : V) : ∀ es (h : EdgesValid G u es), (ofEdges u es h).2.edges = es
+  | [], _ => rfl
+  | _e :: es, _h => by
+    simp only [ofEdges, edges_consRaw]
+    exact congrArg (_e :: ·) (edges_ofEdges _ es _)
+
+@[simp]
+theorem length_ofEdges (u : V) (es : List E) (h : EdgesValid G u es) :
+    (ofEdges u es h).2.length = es.length := by
+  rw [← length_edges, edges_ofEdges]
+
+/-- Construct a walk from a nonempty adjacency chain of vertices.
+`NoParallelEdge` and `Loopless` ensure consecutive vertices determine a unique dart. -/
+@[expose]
+noncomputable def ofVertices (l : List V) (hne : l ≠ []) (hchain : l.IsChain (Adj G))
+    (hu : l.head hne ∈ V(G)) : Walk G (l.head hne) (l.getLast hne) :=
+  match l with
+  | [v] => nil hu
+  | u :: v :: rest => by
+    choose d hd using adj_iff_exists_dart.mp hchain.rel
+    let q := ofVertices (v :: rest) (rest.cons_ne_nil v) hchain.of_cons (hd.2 ▸ d.target_mem)
+    refine ⟨.cons u d.fst d.edge d.snd q.data, ⟨?_, q.isValid⟩, rfl, q.last_eq⟩
+    rw [← hd.1, q.first_eq, ← hd.2]
+    exact d.isTraversal
+
+@[simp]
+theorem ofVertices_singleton (hv : v ∈ V(G)) :
+    ofVertices [v] ([].cons_ne_nil v) (.singleton v) hv = nil hv := rfl
+
+theorem vertices_ofVertices_cons_cons {l : List V} (hne : u :: v :: l ≠ [])
+    (hchain : (u :: v :: l).IsChain (Adj G)) (hu : (u :: v :: l).head hne ∈ V(G)) :
+    (ofVertices (u :: v :: l) hne hchain hu).vertices = u :: (ofVertices (v :: l) (l.cons_ne_nil v)
+      hchain.of_cons (by grind [adj_iff_exists_dart.mp hchain.rel])).vertices := rfl
+
+@[simp]
+theorem vertices_ofVertices (l : List V) (hne : l ≠ []) (hchain : l.IsChain (Adj G))
+    (hu : l.head hne ∈ V(G)) : (ofVertices l hne hchain hu).vertices = l := by
+  match l with
+  | [_] => rfl
+  | u :: v :: rest => rw [vertices_ofVertices_cons_cons, vertices_ofVertices]
+
+@[simp]
+theorem length_ofVertices (l : List V) (hne : l ≠ []) (hchain : l.IsChain (Adj G))
+    (hu : l.head hne ∈ V(G)) : (ofVertices l hne hchain hu).length = l.length - 1 := by
+  grind [vertices_ofVertices]
+
+end Constructors
 
 end Walk
 

@@ -9,8 +9,11 @@ public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.Graph.Basic
 
 /-!
-This file `IncidenceType` and using it to show that `Graph` is `HyperGraphLike`, `GraphLike`,
-and `Undirected`.
+# Graphs as graph-like structures
+
+This file defines `IncidenceType` and uses it to show that `Graph` is `HyperGraphLike`,
+`GraphLike`, and `Undirected`, with incidence identifiers of type `IncidenceType V E` (directed
+darts: `dir` for non-loops, and `fwd`/`bwd` for loops).
 -/
 
 public section

@@ -371,8 +371,6 @@ section Directed
 class Directed (V I E : outParam Type*) (Gr : Type*) [HyperGraphLike V I E Gr] where
   /-- A source incidence is not a target incidence. -/
   not_isTarget_of_isSource ⦃G : Gr⦄ ⦃i : I⦄ : IsSource G i → ¬ IsTarget G i
-  /-- A target incidence is not a source incidence. -/
-  not_isSource_of_isTarget ⦃G : Gr⦄ ⦃i : I⦄ : IsTarget G i → ¬ IsSource G i
 
 variable [Directed V I E Gr]
 
@@ -380,9 +378,7 @@ variable [Directed V I E Gr]
 lemma IsSource.not_isTarget (h : IsSource G i) : ¬ IsTarget G i :=
   Directed.not_isTarget_of_isSource h
 
-@[grind →]
-lemma IsTarget.not_isSource (h : IsTarget G i) : ¬ IsSource G i :=
-  Directed.not_isSource_of_isTarget h
+lemma IsTarget.not_isSource (h : IsTarget G i) : ¬ IsSource G i := by grind
 
 end Directed
 

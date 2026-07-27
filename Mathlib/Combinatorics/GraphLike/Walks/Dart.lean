@@ -373,17 +373,17 @@ lemma source_target_inj_of_directed [Directed V I E Gr] :
   rw [Prod.mk.injEq] at h
   exact eq_of_source_target_eq_of_directed h.1 h.2
 
-lemma eq_of_source_target_eq_of_undirected [Loopless V I E Gr]
-    (hds : d₁.source = d₂.source) (hdt : d₁.target = d₂.target) : d₁ = d₂ :=
+lemma eq_of_source_target_eq [Loopless V I E Gr] (hds : d₁.source = d₂.source)
+    (hdt : d₁.target = d₂.target) : d₁ = d₂ :=
   have := d₁.IsLink.edge_eq (hds ▸ hdt ▸ d₂.IsLink)
   ext (d₁.source_isIncident.inc_inj (hds ▸ this ▸ d₂.source_isIncident))
     (d₁.target_isIncident.inc_inj (hdt ▸ this ▸ d₂.target_isIncident))
 
-lemma source_target_inj_of_undirected [Loopless V I E Gr] :
+lemma source_target_inj [Loopless V I E Gr] :
     Function.Injective fun d : Dart G ↦ (d.source, d.target) := by
   rintro d₁ d₂ h
   rw [Prod.mk.injEq] at h
-  exact eq_of_source_target_eq_of_undirected h.1 h.2
+  exact eq_of_source_target_eq h.1 h.2
 
 end NoParallelEdge
 
