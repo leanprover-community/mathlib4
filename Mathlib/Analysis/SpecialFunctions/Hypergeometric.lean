@@ -74,7 +74,7 @@ theorem Gamma_nat_add_div_Gamma_eq {n : ℕ} (z : ℂ) (hz : ∀ k : ℕ, -z ≠
 
 variable {p q : ℕ}
 
-variable {a : Fin p → ℂ} {b : Fin q → ℂ} {n : ℕ}
+variable {a : Fin p → ℂ} {b : Fin q → ℂ} {n m : ℕ} {j : Fin p} {k : Fin q}
 
 /-- The coefficients of the regularized hypergeometric series. -/
 def regularizedHGFunCoeff (a : Fin p → ℂ) (b : Fin q → ℂ) (n : ℕ) : ℂ :=
@@ -87,13 +87,13 @@ theorem regularizedHGFunCoeff_eq_zero_iff :
   unfold regularizedHGFunCoeff
   simp [Finset.prod_eq_zero_iff, Gamma_eq_zero_iff, n.factorial_ne_zero]
 
-variable (a b n) in
-theorem regularizedHGFunCoeff_eq_zero_right
-    (hb : ∃ (j : Fin q) (m : ℕ), b j = -n - m) : regularizedHGFunCoeff a b n = 0 := by grind
+variable (a b n m k) in
+theorem regularizedHGFunCoeff_eq_zero_right (hb : b k = -n - m := by grind) :
+    regularizedHGFunCoeff a b n = 0 := by grind
 
-variable (a b n) in
-theorem regularizedHGFunCoeff_eq_zero_left
-    (ha : ∃ (j : Fin p), ∃ k < n, k = -a j) : regularizedHGFunCoeff a b n = 0 := by grind
+variable (a b n m j) in
+theorem regularizedHGFunCoeff_eq_zero_left (hm : m < n := by grind) (ha : a j = -m := by grind) :
+  regularizedHGFunCoeff a b n = 0 := by grind
 
 /-- If `a j = -k` for some `k : ℕ`, then the coefficients of the regularized hypergeometric series
 vanish for all `n > k`. -/
@@ -134,7 +134,7 @@ theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n 
   · obtain ⟨j, hj⟩ := hb
     have h₁ : (∏ i, (b i + n)) = 0 := by
       grind [Finset.prod_eq_zero_iff]
-    rw [regularizedHGFunCoeff_eq_zero_right a b n (by use j, 0; grind)]
+    rw [regularizedHGFunCoeff_eq_zero_right a b n 0 j]
     simp [h₁]
 
 private theorem prod_eq_pow_mul_prod (a : Fin p → ℂ) (hn : n ≠ 0) :
@@ -221,8 +221,8 @@ private theorem tendsto_finsetProd_div_finsetProd_mul :
   apply this.congr
   simp
 
-/-- If `p < q + 1`, then the hypergeometric series has infinite convergence radius. -/
-theorem radius_regularizedHGFunSeries_eq_top (a : Fin p → ℂ) (b : Fin q → ℂ) (h : p < q + 1) :
+/-- If `p ≤ q`, then the hypergeometric series has infinite convergence radius. -/
+theorem radius_regularizedHGFunSeries_eq_top (a : Fin p → ℂ) (b : Fin q → ℂ) (h : p ≤ q) :
     (regularizedHGFunSeries a b).radius = ⊤ := by
   by_cases! ha : ∃ (j : Fin p) (k : ℕ), a j = -k
   · apply radius_regularizedHGFunSeries_eq_top_of_finite ha
