@@ -300,6 +300,10 @@ def cochainsResMap (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
     rw [homogeneousCochains.d_eq, homogeneousCochains.d_eq, ← invariantsResMap_comp,
       resolutionResMap_comp_d, invariantsResMap_map_comp]
 
+@[deprecated (since := "2026-07-27")] alias cochainsMap := cochainsResMap
+@[deprecated (since := "2026-07-27")] alias cochainsMap_f := cochainsResMap_f
+@[deprecated (since := "2026-07-27")] alias cochainsMap_f_hom := cochainsResMap_f_hom
+
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma cochainsResMap_id (X : TopRep k G) :
@@ -309,12 +313,17 @@ lemma cochainsResMap_id (X : TopRep k G) :
   ext v
   rfl
 
+@[deprecated (since := "2026-07-27")] alias cochainsMap_id := cochainsResMap_id
+
 @[reassoc]
 lemma cochainsResMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X ⟶ Y) (g : res ψ Y ⟶ Z) :
     cochainsResMap (φ.comp ψ) (X := X) ((resFunctor (ψ : K →* H)).map f ≫ g) =
       cochainsResMap φ f ≫ cochainsResMap ψ g := by
   ext i v x
   exact congr($(resolutionResMap_comp φ ψ f g (i + 1)).hom v.1 x)
+
+@[deprecated (since := "2026-07-27")] alias cochainsMap_comp := cochainsResMap_comp
+@[deprecated (since := "2026-07-27")] alias cochainsMap_comp_assoc := cochainsResMap_comp_assoc
 
 /-- The map `Zⁿ(G, X) ⟶ Zⁿ(H, Y)` on cocycles induced by a continuous group homomorphism
 `φ : H →ₜ* G` and a morphism of topological `H`-representations `f : res φ X ⟶ Y`. -/
