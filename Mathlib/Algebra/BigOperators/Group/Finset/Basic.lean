@@ -155,7 +155,7 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
 
 open Classical in
 @[to_additive]
-lemma prod_eq_of_subset {ι : Type*}
+lemma prod_eq_of_subset
     {s₁ s₂ : Finset ι} (h : s₁ ⊆ s₂) (f : ι → M) (hf : ∀ (i : ι), i ∈ s₂ → i ∉ s₁ → f i = 1) :
     ∏ i ∈ s₁, f i = ∏ i ∈ s₂, f i := by
   rw [show s₂ = s₁.disjUnion (s₂ \ s₁) disjoint_sdiff by simpa, Finset.prod_disjUnion,
