@@ -171,6 +171,52 @@ lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
 
+lemma mem_range_map_iff
+    (f : M → N) (s : StdSimplex R N) :
+    s ∈ Set.range (map f) ↔ ∀ (x : N), x ∉ Set.range f → s.weights x = 0 := by
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨s, rfl⟩
+    intro x hx
+    simpa using Finsupp.mapDomain_of_notMem_range s.weights x hx
+  · have (i : s.weights.support) : ∃ (m : M), f m = i := by grind
+    choose m hm using this
+    refine ⟨{
+      weights := ∑ (y : s.weights.support), .single (m y) (s.weights y)
+      nonneg x := by
+        simp only [Finsupp.coe_finsetSum, Finset.sum_apply,
+          Finsupp.coe_zero, Pi.zero_apply]
+        refine Finset.sum_nonneg' (fun y ↦ ?_)
+        by_cases hy : m y = x
+        · subst hy
+          simp
+        · rw [Finsupp.single_eq_of_ne' hy]
+      total := by
+        rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp), ← s.total]
+        conv_rhs => dsimp [Finsupp.sum]; rw [← Finset.sum_attach]
+        congr
+        ext
+        simp }, ?_⟩
+    ext y
+    by_cases hy : y ∈ s.weights.support
+    · simp only [Finset.univ_eq_attach, weights_map, Finsupp.mapDomain, Finsupp.sum_apply]
+      rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp),
+        Finset.sum_eq_single ⟨y, hy⟩ ?_ (by simp)]
+      · simp [hm]
+      · intro z hz hz'
+        simp only [hm, Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply,
+          Finsupp.sum_single_index]
+        aesop
+    · rw [Finsupp.notMem_support_iff] at hy
+      rw [hy]
+      refine Finsupp.mapDomain_of_not_mem_image_support ?_
+      simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
+        Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
+      intro x hx rfl
+      refine hx (Finset.sum_eq_zero (fun z hz ↦ Finsupp.single_eq_of_ne ?_))
+      intro rfl
+      simp only [hm, ← Finsupp.notMem_support_iff] at hy
+      exact hy z.prop
+
 /--
 Join operation for standard simplices (monadic join).
 Given a distribution over distributions, flattens it to a single distribution.
