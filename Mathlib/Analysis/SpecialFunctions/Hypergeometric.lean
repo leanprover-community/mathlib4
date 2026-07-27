@@ -180,9 +180,8 @@ def regularizedHGFun (a : Fin p → ℂ) (b : Fin q → ℂ) (z : ℂ) : ℂ :=
 
 /-- If there exists `j` and `k : ℕ`, such that `a j = -k`, then the hypergeometric series is finite
 and has convergence radius `∞`. -/
-theorem radius_regularizedHGFunSeries_eq_top_of_finite (ha : ∃ (j : Fin p) (k : ℕ), a j = -k) :
+theorem radius_regularizedHGFunSeries_eq_top_of_finite (j : Fin p) (k : ℕ) (ha : a j = -k) :
     (regularizedHGFunSeries a b).radius = ⊤ := by
-  obtain ⟨j, k, h⟩ := ha
   apply FormalMultilinearSeries.radius_eq_top_of_eventually_eq_zero
   apply eventually_atTop.mpr
   use k + 1
@@ -225,7 +224,8 @@ private theorem tendsto_finsetProd_div_finsetProd_mul :
 theorem radius_regularizedHGFunSeries_eq_top (a : Fin p → ℂ) (b : Fin q → ℂ) (h : p ≤ q) :
     (regularizedHGFunSeries a b).radius = ⊤ := by
   by_cases! ha : ∃ (j : Fin p) (k : ℕ), a j = -k
-  · apply radius_regularizedHGFunSeries_eq_top_of_finite ha
+  · obtain ⟨j, k, ha⟩ := ha
+    apply radius_regularizedHGFunSeries_eq_top_of_finite j k ha
   apply FormalMultilinearSeries.ofScalars_radius_eq_top_of_tendsto
   · apply eventually_atTop_regularizedHGFunCoeff_ne_zero ha
   · simp only [Nat.succ_eq_add_one]
@@ -247,6 +247,7 @@ theorem radius_regularizedHGFunSeries_eq_top (a : Fin p → ℂ) (b : Fin q → 
 
 /-- If `p = q + 1`, then the hypergeometric series has convergence radius `1`, unless it is a
 polynomial. -/
+@[grind =]
 theorem radius_regularizedHGFunSeries_eq_one (a : Fin p → ℂ) (b : Fin q → ℂ) (h : p = q + 1)
     (h' : ∀ (j : Fin p) (k : ℕ), a j ≠ -k) :
     (regularizedHGFunSeries a b).radius = 1 := by
@@ -262,6 +263,34 @@ theorem radius_regularizedHGFunSeries_eq_one (a : Fin p → ℂ) (b : Fin q → 
   have := FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto (r := 1) ℂ _ (by simp) this
   simpa
 
+/-- If `p = q + 1`, then the hypergeometric series has convergence radius greater or equal to
+`1`. -/
+theorem radius_regularizedHGFunSeries_ge_one (a : Fin p → ℂ) (b : Fin q → ℂ) (h : p = q + 1) :
+    1 ≤ (regularizedHGFunSeries a b).radius := by
+  by_cases! h' : ∀ (j : Fin p) (k : ℕ), a j ≠ -k
+  · grind
+  · obtain ⟨j, k, h'⟩ := h'
+    rw [radius_regularizedHGFunSeries_eq_top_of_finite j k h']
+    simp
+
+section ZeroZero
+
+/-- The regularized hypergeometric series with `p = q = 0` is exponential series. -/
+@[simp, grind =]
+theorem regularizedHGFunSeries_vecEmpty_vecEmpty :
+    regularizedHGFunSeries ![] ![] = NormedSpace.expSeries ℂ ℂ := by
+  ext n
+  simp [regularizedHGFunCoeff, NormedSpace.expSeries]
+
+/-- The regularized hypergeometric function `₀F₀` is the complex exponential. -/
+@[simp, grind =]
+theorem regularizedHGFun_vecEmpty_vecEmpty : regularizedHGFun ![] ![] = exp := by
+  rw [exp_eq_exp_ℂ, NormedSpace.exp_eq_expSeries_sum (𝕂 := ℂ)]
+  unfold regularizedHGFun
+  simp
+
+end ZeroZero
+
 section Gaussian
 
 /-- The regularized Gaussian hypergeometric function. -/
@@ -274,10 +303,28 @@ def regularizedGaussHGFun (a b c z : ℂ) : ℂ :=
 
 variable {a b c : ℂ}
 
+variable (b c) in
+@[simp]
+theorem radius_regularizedGaussHGFunSeries_eq_top_of_left (k : ℕ) :
+    (regularizedGaussHGFunSeries (-k) b c).radius = ⊤ :=
+  radius_regularizedHGFunSeries_eq_top_of_finite 0 k (by simp)
+
+variable (a c) in
+@[simp]
+theorem radius_regularizedGaussHGFunSeries_eq_top_of_right (k : ℕ) :
+    (regularizedGaussHGFunSeries a (-k) c).radius = ⊤ :=
+  radius_regularizedHGFunSeries_eq_top_of_finite 1 k (by simp)
+
 variable (c) in
+@[grind =]
 theorem radius_regularizedGaussHGFunSeries_eq_one (h : ∀ k : ℕ, a ≠ -k ∧ b ≠ -k) :
     (regularizedGaussHGFunSeries a b c).radius = 1 :=
   radius_regularizedHGFunSeries_eq_one _ _ (by simp) (by simp; grind)
+
+variable (a b c) in
+theorem radius_regularizedGaussHGFunSeries_ge_one :
+    1 ≤ (regularizedGaussHGFunSeries a b c).radius :=
+  radius_regularizedHGFunSeries_ge_one _ _ (by simp)
 
 end Gaussian
 
