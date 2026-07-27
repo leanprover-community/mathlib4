@@ -34,7 +34,7 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-private lemma exists_divide_by_fn_map (f : R) (n : ℕ) (r : ℕ)
+private lemma exists_divide_by_fn_map (f : R) (n r : ℕ)
     (hr : ∀ (i : ℕ), Ideal.torsionOf R R (f ^ (r + i)) = Ideal.torsionOf R R (f ^ r))
     {M : Type u} [AddCommGroup M] [Module R M] (y : M) :
     ∃ phi : Ideal.span {f^(r + n)} →ₗ[R] M,
