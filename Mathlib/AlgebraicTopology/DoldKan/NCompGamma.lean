@@ -217,7 +217,6 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
     eq₁, eq₂, PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
@@ -226,7 +225,6 @@ theorem identity_N₂ :
     NatTrans.id_app, Functor.comp_obj]
   rw [Γ₂.map_id, N₂.map_id, comp_id, id_comp, id_comp, identity_N₂_objectwise P]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ _ ⟶ _) := by
   have : ∀ P : Karoubi (SimplicialObject C), IsIso (Γ₂N₂.natTrans.app P) := by
     intro P
@@ -239,7 +237,6 @@ instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ 
     exact isIso_of_reflects_iso _ N₂
   apply NatIso.isIso_of_isIso_app
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (Γ₂N₁.natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ _ ⟶ _) := by
   have : ∀ X : SimplicialObject C, IsIso (Γ₂N₁.natTrans.app X) := by
     intro X

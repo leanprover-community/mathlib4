@@ -39,6 +39,8 @@ theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
 end Imo2013Q1
 
 open Imo2013Q1
+
+set_option backward.isDefEq.respectTransparency.types false in
 theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     ∃ m : ℕ → ℕ+, (1 : ℚ) + (2 ^ k - 1) / n = ∏ i ∈ Finset.range k, (1 + 1 / (m i : ℚ)) := by
   induction k generalizing n with

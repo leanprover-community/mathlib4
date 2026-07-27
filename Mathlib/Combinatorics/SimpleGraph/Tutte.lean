@@ -79,7 +79,6 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
       G.deleteUniversalVerts.coe.IsClique K.supp) :
     ∃ M : Subgraph G, M.IsMatching ∧ M.vertsᶜ ⊆ G.universalVerts := by
-  classical
   have hrep := ConnectedComponent.Represents.image_out G.deleteUniversalVerts.coe.oddComponents
   -- First we match one node from each odd component to a universal vertex
   obtain ⟨t, ht, M1, hM1⟩ := Subgraph.IsMatching.exists_of_universalVerts
@@ -265,6 +264,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     exact tutte_exists_isAlternating_isCycles p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- From a graph on an even number of vertices with no perfect matching, we can remove an odd number
 of vertices such that there are more odd components in the resulting graph than vertices we removed.
 
@@ -294,21 +294,21 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     obtain ⟨p, hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
-    simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts, ne_eq,
+    simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts,
       Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
       Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and]
       at hxa hxb hnadjxb
-    obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj c a := by
-      simpa [universalVerts] using a.1.2.2
-    have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb.symm
+    obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj a c := by
+      simpa [universalVerts, IsUniversal] using a.1.2.2
+    have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb
     obtain ⟨_, hG1⟩ := hMaximal _ <| left_lt_sup.mpr (by
       rw [edge_le_iff (v := x.1.1) (w := b.1.1)]
       simp [hnadjxb, Subtype.val_injective.ne <| Subtype.val_injective.ne hnxb])
     obtain ⟨_, hG2⟩ := hMaximal _ <| left_lt_sup.mpr (by
-      rwa [edge_le_iff (v := a.1.1) (w := c), adj_comm, not_or])
-    have hcnex : c ≠ x.val.val := by rintro rfl; exact hc.2 hxa
+      rwa [edge_le_iff (v := a.1.1) (w := c), not_or])
+    have hcnex : x.val.val ≠ c := by rintro rfl; exact hc.2 hxa.symm
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
-      hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by lia) hcnex.symm hc.1 hbnec hG1 hG2
+      hxb hnadjxb (fun hadj ↦ hc.2 hadj) (by lia) hcnex hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
 /-- **Tutte's theorem**
@@ -317,7 +317,6 @@ A graph has a perfect matching if and only if: For every subset `u` of vertices,
 subset induces at most `u.ncard` components of odd size. This is formally stated using the
 predicate `IsTutteViolator`, which is satisfied exactly when this condition does not hold. -/
 theorem tutte : (∃ M : Subgraph G, M.IsPerfectMatching) ↔ ∀ u, ¬ G.IsTutteViolator u := by
-  classical
   refine ⟨by rintro ⟨M, hM⟩; apply not_isTutteViolator_of_isPerfectMatching hM, ?_⟩
   contrapose!
   intro h

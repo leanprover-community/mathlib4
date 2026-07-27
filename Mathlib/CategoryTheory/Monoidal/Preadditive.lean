@@ -310,7 +310,6 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Finite J]
 @[ext]
 theorem leftDistributor_ext_left {J : Type} [Finite J] {X Y : C} {f : J → C} {g h : X ⊗ ⨁ f ⟶ Y}
     (w : ∀ j, (X ◁ biproduct.ι f j) ≫ g = (X ◁ biproduct.ι f j) ≫ h) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_epi (leftDistributor X f).inv).mp
   ext
@@ -319,7 +318,6 @@ theorem leftDistributor_ext_left {J : Type} [Finite J] {X Y : C} {f : J → C} {
 @[ext]
 theorem leftDistributor_ext_right {J : Type} [Finite J] {X Y : C} {f : J → C} {g h : X ⟶ Y ⊗ ⨁ f}
     (w : ∀ j, g ≫ (Y ◁ biproduct.π f j) = h ≫ (Y ◁ biproduct.π f j)) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_mono (leftDistributor Y f).hom).mp
   ext
@@ -349,7 +347,6 @@ theorem leftDistributor_ext₂_right {J : Type} [Finite J]
 theorem rightDistributor_ext_left {J : Type} [Finite J]
     {f : J → C} {X Y : C} {g h : (⨁ f) ⊗ X ⟶ Y}
     (w : ∀ j, (biproduct.ι f j ▷ X) ≫ g = (biproduct.ι f j ▷ X) ≫ h) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_epi (rightDistributor f X).inv).mp
   ext
@@ -359,7 +356,6 @@ theorem rightDistributor_ext_left {J : Type} [Finite J]
 theorem rightDistributor_ext_right {J : Type} [Finite J]
     {f : J → C} {X Y : C} {g h : X ⟶ (⨁ f) ⊗ Y}
     (w : ∀ j, g ≫ (biproduct.π f j ▷ Y) = h ≫ (biproduct.π f j ▷ Y)) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_mono (rightDistributor f Y).hom).mp
   ext

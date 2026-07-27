@@ -442,7 +442,7 @@ theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
         (proj l.attach[i.cast List.length_attach.symm]) <•
           ((l.attach.drop (.succ i)).map x).prod) x := by
-  classical exact hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
+  exact hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
 
 /--
 Auxiliary lemma for `hasStrictFDerivAt_multiset_prod`.

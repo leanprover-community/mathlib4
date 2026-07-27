@@ -2,6 +2,7 @@ module
 import Mathlib.Tactic.Convert
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Set.Image
+import Mathlib.Algebra.Notation.Pi.Defs
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
@@ -152,5 +153,11 @@ example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P a) : P (semireducibl
 
 example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P (semireducibleId a)) : P b := by
   convert! h
+
+-- Test that overapplications are supported
+example (f g h k : Nat → Nat) (H : (f + g) 1 = 0) : (h + k) 1 = 0 := by
+  convert H
+  guard_target =ₛ h = f
+  all_goals exact test_sorry
 
 end Tests
