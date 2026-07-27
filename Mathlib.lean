@@ -4841,7 +4841,6 @@ public import Mathlib.GroupTheory.OreLocalization.Basic
 public import Mathlib.GroupTheory.OreLocalization.Cardinality
 public import Mathlib.GroupTheory.OreLocalization.OreSet
 public import Mathlib.GroupTheory.PGroup
-public import Mathlib.GroupTheory.PSLn
 public import Mathlib.GroupTheory.Perm.Basic
 public import Mathlib.GroupTheory.Perm.Centralizer
 public import Mathlib.GroupTheory.Perm.Closure
@@ -5213,6 +5212,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Collinear
 public import Mathlib.LinearAlgebra.Projectivization.Constructions
 public import Mathlib.LinearAlgebra.Projectivization.Independence
 public import Mathlib.LinearAlgebra.Projectivization.PSL.PSL2
+public import Mathlib.LinearAlgebra.Projectivization.PSL.PSLn
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 public import Mathlib.LinearAlgebra.Projectivization.Subspace
 public import Mathlib.LinearAlgebra.QuadraticForm.AlgClosed
