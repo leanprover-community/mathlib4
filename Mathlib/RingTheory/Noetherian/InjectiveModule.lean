@@ -37,7 +37,7 @@ variable {R : Type u} [CommRing R]
 private lemma exists_divide_by_fn_map (f : R) (n r : ℕ)
     (hr : ∀ (i : ℕ), Ideal.torsionOf R R (f ^ (r + i)) = Ideal.torsionOf R R (f ^ r))
     {M : Type u} [AddCommGroup M] [Module R M] (y : M) :
-    ∃ phi : Ideal.span {f^(r + n)} →ₗ[R] M,
+    ∃ phi : Ideal.span {f ^ (r + n)} →ₗ[R] M,
       phi ⟨f ^ (r + n), Ideal.mem_span_singleton_self _⟩ = f ^ r • y := by
   have hker0 : Ideal.torsionOf R R (f ^ r) ≤
       LinearMap.ker (LinearMap.toSpanSingleton R M (f ^ r • y)) := by
