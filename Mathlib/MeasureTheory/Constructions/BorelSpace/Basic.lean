@@ -503,7 +503,7 @@ theorem ContinuousOn.measurable_of_countable_compl [MeasurableSingletonClass α]
     {f : α → γ} {s : Set α} (hf : ContinuousOn f s) (hs : (sᶜ).Countable) : Measurable f := by
   apply measurable_of_measurable_on_compl_countable _ hs
   rw [compl_compl]
-  exact (continuousOn_iff_continuous_restrict.1 hf).measurable
+  exact (continuousOn_iff_continuous_domRestrict.1 hf).measurable
 
 /-- If a function is continuous outside of a countable set, then it is measurable. -/
 theorem measurable_of_countable_not_continuousAt [MeasurableSingletonClass α]
@@ -585,7 +585,7 @@ theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
 theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
     (hf : ContinuousOn f {a}ᶜ) : Measurable f :=
   measurable_of_measurable_on_compl_singleton a
-    (continuousOn_iff_continuous_restrict.1 hf).measurable
+    (continuousOn_iff_continuous_domRestrict.1 hf).measurable
 
 theorem Continuous.measurable2 [SecondCountableTopologyEither α β] {f : δ → α}
     {g : δ → β} {c : α → β → γ} (h : Continuous fun p : α × β => c p.1 p.2) (hf : Measurable f)

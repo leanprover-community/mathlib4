@@ -131,7 +131,7 @@ instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
 noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T) where
   toEquiv := equivIoc T a
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
-    (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
+    (continuousOn_iff_continuous_domRestrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIoc T a hx).measurable
   measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
 
@@ -140,7 +140,7 @@ noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T
 noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T) where
   toEquiv := equivIco T a
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
-    (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
+    (continuousOn_iff_continuous_domRestrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIco T a hx).measurable
   measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
 
@@ -224,7 +224,7 @@ also satisfies `MemLp` with respect to the Haar measure. -/
 lemma MeasureTheory.MemLp.memLp_liftIoc {T : ℝ} [hT : Fact (0 < T)] {t : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞}
     (hLp : MemLp f p (volume.restrict (Ioc t (t + T)))) :
       MemLp (AddCircle.liftIoc T t f) p := by
-  simp only [AddCircle.liftIoc, Set.restrict_def, Function.comp_def]
+  simp only [AddCircle.liftIoc, Set.domRestrict_def, Function.comp_def]
   apply hLp.comp_measurePreserving
   refine .comp (measurePreserving_subtype_coe measurableSet_Ioc) ?_
   exact AddCircle.measurePreserving_equivIoc T

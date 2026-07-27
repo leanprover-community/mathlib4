@@ -917,7 +917,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have : Finite (f '' s) := finite_coe_iff.mpr h_fin
   have : Infinite s := infinite_coe_iff.mpr h_inf
   have h := not_injective_infinite_finite
-            ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
+            ((f '' s).codRestrict (s.domRestrict f) fun x => ⟨x, x.property, rfl⟩)
   contrapose h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
