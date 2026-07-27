@@ -155,7 +155,7 @@ theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU
 theorem Topology.IsCoinducing.locallyConnectedSpace [LocallyConnectedSpace α]
     [TopologicalSpace β] {f : α → β} (hf : IsCoinducing f) : LocallyConnectedSpace β := by
   refine locallyConnectedSpace_iff_connectedComponentIn_open.2 fun F hF y _ ↦ ?_
-  rw [← hf.isOpen_preimage, hf.continuous.preimage_connectedComponentIn]
+  rw [← hf.isOpen_preimage, hf.continuous.continuousOn.preimage_connectedComponentIn]
   exact isOpen_biUnion fun x _ ↦ (hF.preimage hf.continuous).connectedComponentIn
 
 /-- If a space is locally connected, the topology of its connected components is discrete. -/
