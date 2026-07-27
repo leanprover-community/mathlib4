@@ -187,6 +187,7 @@ theorem radius_regularizedHGFunSeries_eq_top_of_finite (j : Fin p) (k : ℕ) (ha
   use k + 1
   grind
 
+variable (b) in
 /-- If for all `j` and `k : ℕ`, `a j ≠ -k`, then the coefficients of the hypergeometric series
 are eventually non-vanishing. -/
 theorem eventually_atTop_regularizedHGFunCoeff_ne_zero (h : ∀ (j : Fin p) (k : ℕ), a j ≠ -↑k) :
@@ -221,13 +222,14 @@ private theorem tendsto_finsetProd_div_finsetProd_mul :
   simp
 
 /-- If `p ≤ q`, then the hypergeometric series has infinite convergence radius. -/
+@[grind =]
 theorem radius_regularizedHGFunSeries_eq_top (a : Fin p → ℂ) (b : Fin q → ℂ) (h : p ≤ q) :
     (regularizedHGFunSeries a b).radius = ⊤ := by
   by_cases! ha : ∃ (j : Fin p) (k : ℕ), a j = -k
   · obtain ⟨j, k, ha⟩ := ha
     apply radius_regularizedHGFunSeries_eq_top_of_finite j k ha
   apply FormalMultilinearSeries.ofScalars_radius_eq_top_of_tendsto
-  · apply eventually_atTop_regularizedHGFunCoeff_ne_zero ha
+  · apply eventually_atTop_regularizedHGFunCoeff_ne_zero b ha
   · simp only [Nat.succ_eq_add_one]
     have h₁ : Tendsto (fun (n : ℕ) ↦ (n : ℂ) ^ (p - (q : ℤ) - 1)) atTop (𝓝 0) := by
       have := (tendsto_one_div_atTop_nhds_zero_nat (𝕜 := ℂ)).pow (q + 1 - p)
@@ -240,7 +242,7 @@ theorem radius_regularizedHGFunSeries_eq_top (a : Fin p → ℂ) (b : Fin q → 
     have := (h₁.mul (tendsto_finsetProd_div_finsetProd_mul a b)).norm
     simp only [mul_one, norm_zero] at this
     apply this.congr'
-    have h_ne := eventually_atTop_regularizedHGFunCoeff_ne_zero ha (b := b)
+    have h_ne := eventually_atTop_regularizedHGFunCoeff_ne_zero b ha
     filter_upwards [h_ne, Filter.eventually_ne_atTop 0] with n hn₁ hn₂
     rw [← Complex.norm_div, regularizedHGFunCoeff_add_one_div_self hn₁,
       finsetProd_div_finsetProd_mul a b hn₂, mul_div]
@@ -256,7 +258,7 @@ theorem radius_regularizedHGFunSeries_eq_one (a : Fin p → ℂ) (b : Fin q → 
     have := (tendsto_finsetProd_div_finsetProd_mul a b).norm
     simp only [norm_one] at this
     apply this.congr'
-    have h_ne := eventually_atTop_regularizedHGFunCoeff_ne_zero h' (b := b)
+    have h_ne := eventually_atTop_regularizedHGFunCoeff_ne_zero b h'
     filter_upwards [h_ne, Filter.eventually_ne_atTop 0] with n hn₁ hn₂
     simp [Nat.succ_eq_add_one, ← Complex.norm_div, regularizedHGFunCoeff_add_one_div_self hn₁,
       finsetProd_div_finsetProd_mul a b hn₂, h]
