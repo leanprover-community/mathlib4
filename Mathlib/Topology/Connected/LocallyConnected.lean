@@ -210,7 +210,7 @@ theorem Pi.locallyConnectedSpace_of_finite_not_preconnectedSpace [∀ i, Topolog
 /-- A finite product of locally connected spaces is locally connected. -/
 instance Pi.locallyConnectedSpace_of_finite [Finite ι] [∀ i, TopologicalSpace (X i)]
     [∀ i, LocallyConnectedSpace (X i)] : LocallyConnectedSpace (∀ i, X i) :=
-  locallyConnectedSpace_of_finite_nonpreconnected (Set.toFinite _)
+  locallyConnectedSpace_of_finite_nonpreconnected (toFinite _)
 
 /-- A product of preconnected, locally connected spaces is locally connected. Note that an
 arbitrary product of locally connected spaces need not be locally connected, so the
