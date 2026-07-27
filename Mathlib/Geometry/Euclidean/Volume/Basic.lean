@@ -72,8 +72,7 @@ theorem volume_pos {n : ℕ} (s : Simplex ℝ P n) : 0 < s.volume := by
   | zero => simp
   | succ n ih =>
     rw [volume_eq _ 0]
-    have : 0 < (s.faceOpposite 0).volume := ih _
-    positivity
+    positivity [ih (s.faceOpposite 0)]
 
 open Qq Mathlib.Meta.Positivity in
 /-- Extension for the `positivity` tactic: the volume of a simplex is always positive. -/
