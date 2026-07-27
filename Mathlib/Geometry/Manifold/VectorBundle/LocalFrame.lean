@@ -573,6 +573,9 @@ lemma mdifferentiableAt_localFrameCoeff
     mdifferentiableAt_iff_differentiableAt.mpr <| by fun_prop
   exact this.comp x h₁
 
+@[deprecated (since := "2026-07-26")]
+alias mdifferentiableAt_localFrame_coeff := mdifferentiableAt_localFrameCoeff
+
 /-- If `s` is differentiable on `t ⊆ e.baseSet`, so is its coefficient `b.localFrameCoeff e i`
 in the local frame induced by `e` -/
 lemma mdifferentiableOn_localFrameCoeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
