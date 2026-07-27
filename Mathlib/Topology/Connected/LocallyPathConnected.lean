@@ -343,7 +343,7 @@ theorem Pi.locallyPathConnectedSpace_of_finite_not_pathConnectedSpace {Z : ι �
 instance Pi.locallyPathConnectedSpace_of_finite [Finite ι] {Z : ι → Type*}
     [∀ i, TopologicalSpace (Z i)] [∀ i, LocallyPathConnectedSpace (Z i)] :
     LocallyPathConnectedSpace (∀ i, Z i) :=
-  locallyPathConnectedSpace_of_finite_nonpathconnected (Set.toFinite _)
+  locallyPathConnectedSpace_of_finite_nonpathconnected (toFinite _)
 
 /-- A product of path-connected, locally path-connected spaces is locally path-connected. Note
 that an arbitrary product of locally path-connected spaces need not be locally path-connected, so
