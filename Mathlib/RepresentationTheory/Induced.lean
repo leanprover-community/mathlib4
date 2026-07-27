@@ -98,7 +98,7 @@ lemma IndV.mk_map_inv_mul (g : G) (h : H) (a : A) :
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
 `(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
-@[simps]
+@[simps -isSimp]
 noncomputable def ind : Representation k H (IndV φ ρ) where
   toFun h :=
     Coinvariants.map _ _ ⟨(MonoidAlgebra.mapDomainLinearMap k k fun x => x * h⁻¹).rTensor _,
@@ -108,7 +108,7 @@ noncomputable def ind : Representation k H (IndV φ ρ) where
 
 lemma ind_mk (h₁ h₂ : H) (a : A) :
     ind φ ρ h₁ (IndV.mk _ _ h₂ a) = IndV.mk _ _ (h₂ * h₁⁻¹) a := by
-  simp
+  simp [ind_apply]
 
 lemma ind_map_conj_mk (g : G) (h : H) (a : A) :
     ind φ ρ (h⁻¹ * (φ g) * h) (IndV.mk _ _ h a) = IndV.mk _ _ h (ρ g a) := by
@@ -116,6 +116,8 @@ lemma ind_map_conj_mk (g : G) (h : H) (a : A) :
     IndV.mk_map_inv_mul]
 
 end Representation
+
+attribute [local simp] Representation.ind_apply
 
 namespace Rep
 

@@ -5,15 +5,17 @@ Authors: Jiaxi Mo
 -/
 module
 
-public import Mathlib.RepresentationTheory.Smooth.Basic
+public import Mathlib.RepresentationTheory.HeckeModule
 public import Mathlib.RepresentationTheory.Induced
 public import Mathlib.RepresentationTheory.Irreducible
+public import Mathlib.RepresentationTheory.Smooth.Basic
+
 
 /-!
 # Induction
 
 This file introduces admissible representations over a field and prove basic properties on them.
-We also prove the **Schur's Lemma** for irreducible admissible smooth representations over an
+We also prove **Schur's Lemma** for irreducible admissible smooth representations over an
 algeraically closed field.
 
 ## Main definitions
@@ -25,20 +27,61 @@ algeraically closed field.
 
 @[expose] public section
 
-variable {G : Type*} [Group G] [TopologicalSpace G]
+variable {G : Type*} [Group G]
 variable {k : Type*} [Field k]
 variable {V : Type*} [AddCommGroup V] [Module k V] (ρ : Representation k G V)
 variable {W : Type*} [AddCommGroup W] [Module k W] (σ : Representation k G W)
 
-namespace Representation.Smooth
+namespace Representation
+
+lemma finiteDimensional_intertwiningMap.le_subgroup {H1 H2 : Subgroup G} (h : H1 ≤ H2)
+    [FiniteDimensional k ((ind H1.subtype (trivial k H1 k)).IntertwiningMap ρ)] :
+    FiniteDimensional k ((ind H2.subtype (trivial k H2 k)).IntertwiningMap ρ) := by
+  let f := bimoduleHecke₁.canonicalIntertwiningMap k h
+  have h_sur : Function.Surjective f := by
+    apply IntertwiningMap.surjective_cosetVector_one
+    use cosetVector k H1 1
+    simp [f]
+  have : Function.Injective ((IntertwiningMap.llcomp
+      (ind H1.subtype (trivial k H1 k)) (ind H2.subtype (trivial k H2 k)) ρ).flip f) := by
+    intro _ _ h_eq
+    apply IntertwiningMap.ext
+    apply Function.Surjective.injective_linearMapComp_right h_sur
+    exact LinearMap.ext fun v => congrArg (fun f ↦ f v) h_eq
+  exact FiniteDimensional.of_injective _ this
+
+namespace Smooth
+
+variable [TopologicalSpace G]
 
 section admissible
 
 /-- A representation `(ρ, V)` of `G` is called admissible if for any open subgroup `K` of `G`, its
 `K`-invariants is finite dimensional. -/
-class IsAdmissible : Prop where
+@[mk_iff] class IsAdmissible : Prop where
   finiteDimensional_intertwiningMap : ∀ (H : OpenSubgroup G),
       FiniteDimensional k ((ind H.subtype (trivial k H k)).IntertwiningMap ρ)
+
+variable {ρ σ}
+
+lemma isAdmissible_injective [h : IsAdmissible ρ] {f : IntertwiningMap σ ρ}
+    (h_inj : Function.Injective f) : IsAdmissible σ := by
+  rw [isAdmissible_iff]
+  intro H
+  have : FiniteDimensional k ((ind H.subtype (trivial k H k)).IntertwiningMap ρ) :=
+    h.finiteDimensional_intertwiningMap H
+  have : Function.Injective (IntertwiningMap.llcomp (ind H.subtype (trivial k H k)) σ ρ f) := by
+    intro _ _ h_eq
+    apply IntertwiningMap.ext
+    apply Function.Injective.injective_linearMapComp_left h_inj
+    exact LinearMap.ext fun v => congrArg (fun f ↦ f v) h_eq
+  exact FiniteDimensional.of_injective _ this
+
+lemma isAdmissible_subrepresentation [h : IsAdmissible ρ] (φ : Subrepresentation ρ) :
+    IsAdmissible φ.toRepresentation := by
+  have : Function.Injective (⟨φ.1.subtype, fun _ ↦ rfl⟩ : IntertwiningMap φ.toRepresentation ρ) :=
+    Submodule.subtype_injective φ.1
+  exact isAdmissible_injective this
 
 end admissible
 
@@ -53,27 +96,15 @@ lemma IsAdmissible.finiteDimensional_intertwiningMap_self [h : IsAdmissible ρ] 
   have : Nontrivial V := IsSimpleModule.nontrivial k[G] ρ.asModule
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   let H := ρ.stabilizer v
-  let f' : k →ₗ[k] V := LinearMap.toSpanSingleton k V v
-  have hstab (h : H) : ρ h⁻¹ v = v := by simp [(mem_stabilizer (ρ := ρ) (g := h⁻¹) (v := v)).mp]
-  let fToLinearMap : IndV H.subtype (trivial k H k) →ₗ[k] V :=
-    Representation.Coinvariants.lift _
-      (TensorProduct.lift <| (Finsupp.lift _ _ _ fun h => ρ h⁻¹ ∘ₗ f') ∘ₗ
-        (MonoidAlgebra.coeffLinearEquiv k).toLinearMap)
-      fun h ↦ by
-        ext g
-        simp only [LinearMap.coe_comp, Function.comp_apply, MonoidAlgebra.lsingle_apply]
-        simp [ofMulAction_single, mul_inv_rev, f', hstab]
-  let f : IntertwiningMap (ind H.subtype (trivial k H k)) ρ
-    := ⟨fToLinearMap, fun g ↦ by unfold fToLinearMap; ext; simp⟩
   have : FiniteDimensional k (IntertwiningMap (ind H.subtype (trivial k H k)) ρ) :=
     h.finiteDimensional_intertwiningMap ⟨H, h_smooth.smooth v⟩
+  let f' : IntertwiningMap (trivial k H k) (ρ.comp H.subtype) :=
+    ⟨LinearMap.toSpanSingleton k V v, fun h ↦ by ext; simp [mem_stabilizer.mp h.2]⟩
+  let f := IntertwiningMap.resToInd H.subtype f'
   have hf : f ≠ 0 := by
-    have hfeq : f (IndV.mk H.subtype (trivial k H k) 1 1) = v := by
-      change fToLinearMap (IndV.mk H.subtype (trivial k H k) 1 1) = v
-      simp only [fToLinearMap, Coinvariants.lift_mk, LinearMap.coe_comp, Function.comp_apply,
-        TensorProduct.mk_apply, TensorProduct.lift.tmul]
-      simp [f', coeffLinearEquiv_apply, coeff_single, Finsupp.lift_apply, Finsupp.sum_single_index,
-         LinearMap.toSpanSingleton_apply]
+    have hfeq : f (cosetVector k H 1) = v := by
+      simp only [f, IntertwiningMap.resToInd_apply_cosetVector_eq]
+      simp [f']
     by_contra
     have : v = 0 := by
       rw [← hfeq, this, IntertwiningMap.coe_zero, Pi.zero_apply]
