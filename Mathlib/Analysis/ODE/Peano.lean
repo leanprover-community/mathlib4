@@ -12,11 +12,13 @@ public import Mathlib.Topology.MetricSpace.UniformConvergence
 /-!
 # Peano Existence Theorem
 
-This files concerns ODE theory involving a continuous time-dependent vector field on a
+This file proves Peano's existence theorem in integral form forward in time
+for a continuous time-dependent vector field on a
 finite-dimensional real normed vector space. The assumptions are collected in `IsPeano`.
 
-The proof constructs Tonelli approximations with a delayed input, and extracts a uniformly
-convergent subsequence using the Arzelà–Ascoli theorem.
+The proof constructs Tonelli approximations with a delayed input, extracts a uniformly
+convergent subsequence using the Arzelà–Ascoli theorem, and passes to the limit in the associated
+integral equation.
 
 ## Main definitions
 
@@ -33,7 +35,7 @@ The finite-dimensionality assumption is used to apply the Arzelà–Ascoli theor
 
 ## Tags
 
-differential equation, initial value problem, Tonelli approximation
+differential equation, initial value problem, Peano existence theorem, Tonelli approximation
 -/
 
 @[expose] public section
@@ -423,5 +425,85 @@ lemma tendsto_tonelliApproximation_delayedInput_of_tendstoUniformlyOn_tonelliApp
       Eventually.of_forall (fun _ ↦ mapsTo_delayedInput _ _ ht)⟩
 
 end LimitExtraction
+
+/-! ### Passage to the limit -/
+
+/-- Every composition of a Tonelli approximation with its delayed input is continuous. -/
+lemma continuousOn_tonelliApproximation_delayedInput (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+    ContinuousOn
+      (fun t ↦ tonelliApproximation f t₀ x₀ n (delayedInput t₀ (n + 1) t))
+      (Icc t₀ tmax) :=
+  (lipschitzOnWith_tonelliApproximation hf n).continuousOn.comp
+    (lipschitzWith_delayedInput t₀ _).continuous.continuousOn (mapsTo_delayedInput t₀ _)
+
+/-- Every Tonelli approximation composed with its delayed input stays in the cylinder. -/
+lemma mapsTo_tonelliApproximation_delayedInput (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+    MapsTo
+      (fun t ↦ tonelliApproximation f t₀ x₀ n (delayedInput t₀ (n + 1) t))
+      (Icc t₀ tmax) (closedBall x₀ r) :=
+  (mapsTo_tonelliApproximation_closedBall hf n).comp (mapsTo_delayedInput t₀ _)
+
+/-- Every composition of the vector field `f` with a delayed Tonelli approximation is continuous. -/
+lemma continuousOn_comp_tonelliApproximation_delayedInput
+    (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+    ContinuousOn
+      (fun t ↦ f (t, tonelliApproximation f t₀ x₀ n (delayedInput t₀ (n + 1) t)))
+      (Icc t₀ tmax) := by
+  apply hf.continuousOn.comp
+    (ContinuousOn.prodMk continuousOn_id (continuousOn_tonelliApproximation_delayedInput hf n))
+  intro s hs
+  exact
+    ⟨mem_Icc.mp ⟨t₀.2.1.trans hs.1, hs.2⟩,
+      mapsTo_tonelliApproximation_delayedInput hf n hs⟩
+
+lemma mem_Icc_of_mem_uIoc {s t : ℝ} (ht : t ∈ Icc t₀.val tmax)
+    (hs : s ∈ uIoc t₀.val t) : s ∈ Icc t₀.val tmax :=
+  Icc_subset_Icc_right ht.2 (Ioc_subset_Icc_self (uIoc_of_le ht.1 ▸ hs))
+
+variable [FiniteDimensional ℝ E]
+
+/-! ### Existence of integral and differential solutions -/
+
+/-- There exists a solution of the integral equation on the interval forward in time. -/
+lemma exists_eq_forall_mem_Icc_eq_integral_forward (hf : IsPeano f t₀ x₀ r L) :
+    ∃ α : ℝ → E, ContinuousOn α (Icc t₀ tmax) ∧ MapsTo α (Icc t₀ tmax) (closedBall x₀ r) ∧
+      ∀ t ∈ Icc t₀.val tmax, α t = x₀ + ∫ s in t₀..t, f (s, α s) := by
+  obtain ⟨α, φ, hφ_mono, hα_cont, hα_maps, hα_tendsto⟩ :=
+    exists_tendstoUniformlyOn_subseq_tonelliApproximation hf
+  refine ⟨α, hα_cont, hα_maps, fun t ht ↦ tendsto_nhds_unique
+    (hα_tendsto.tendsto_at ht)
+    ((Tendsto.const_add x₀ ?_).congr (fun n ↦ (tonelliApproximation_eq_integral (φ n) t ht).symm))⟩
+  apply intervalIntegral.tendsto_integral_filter_of_dominated_convergence (bound := fun _ ↦ L)
+    _ _ intervalIntegrable_const _
+  · apply Eventually.of_forall
+    intro n
+    have h_cont := continuousOn_comp_tonelliApproximation_delayedInput hf (φ n)
+    rw [uIoc_of_le ht.1]
+    exact (h_cont.mono (Ioc_subset_Icc_self.trans
+      (Icc_subset_Icc le_rfl ht.2))).aestronglyMeasurable measurableSet_Ioc
+  · apply Eventually.of_forall
+    intro n
+    apply Eventually.of_forall
+    intro s hs
+    have hs := mem_Icc_of_mem_uIoc ht hs
+    apply hf.norm_le s ⟨t₀.2.1.trans hs.1, hs.2⟩
+    exact mapsTo_tonelliApproximation_delayedInput hf (φ n) hs
+  · have h_lim :=
+      tendsto_tonelliApproximation_delayedInput_of_tendstoUniformlyOn_tonelliApproximation
+        hφ_mono hα_cont hα_tendsto
+    apply Eventually.of_forall
+    intro s hs
+    have hs := mem_Icc_of_mem_uIoc ht hs
+    apply Tendsto.comp (hf.continuousOn.continuousWithinAt _)
+    · refine tendsto_nhdsWithin_iff.mpr
+        ⟨Tendsto.prodMk_nhds tendsto_const_nhds (h_lim s hs), ?_⟩
+      apply Eventually.of_forall
+      exact fun n ↦ mem_prod.mpr
+        ⟨⟨t₀.2.1.trans hs.1, hs.2⟩,
+          MapsTo.comp (mapsTo_tonelliApproximation_closedBall hf _)
+            (mapsTo_delayedInput t₀ _) hs⟩
+    · refine ⟨⟨t₀.2.1.trans hs.1, hs.2⟩, ?_⟩
+      apply IsClosed.mem_of_tendsto isClosed_closedBall (hα_tendsto.tendsto_at hs)
+      exact Eventually.of_forall (fun n ↦ mapsTo_tonelliApproximation_closedBall hf (φ n) hs)
 
 end IsPeano
