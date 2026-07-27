@@ -8,6 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Data.Complex.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.Tactic.NormDet
 
 /-!
 # A counterexample to the Jacobian conjecture
@@ -96,12 +97,9 @@ private theorem pderiv_ofNat (i : Fin 3) (n : ℕ) [n.AtLeastTwo] :
   rw [← Nat.cast_ofNat (R := MvPolynomial (Fin 3) ℚ) (n := n)]
   exact (pderiv i).map_natCast _
 
--- The `3×3` determinant of cubic entries expands to a large polynomial; the default
--- `maxRecDepth` (512) is exhausted while `simp` distributes `pderiv` over it.
-set_option maxRecDepth 8000 in
 /-- **Theorem 3.1, first identity.** The formal Jacobian determinant of `F` is the constant
 polynomial `-2`. This is an identity in `MvPolynomial (Fin 3) ℚ`, verified by expanding the nine
-partial derivatives and normalizing with `ring`. -/
+partial derivatives and evaluating the determinant with `eval_det`. -/
 theorem jacobian_det : J.det = C (-2) := by
   have hC : (C (-2 : ℚ) : MvPolynomial (Fin 3) ℚ) = -2 := by
     rw [map_neg, _root_.map_ofNat]
@@ -118,14 +116,14 @@ theorem jacobian_det : J.det = C (-2) := by
   have n2 : ∀ i : Fin 3, pderiv i (2 : MvPolynomial (Fin 3) ℚ) = 0 := fun i => pderiv_ofNat i 2
   have n3 : ∀ i : Fin 3, pderiv i (3 : MvPolynomial (Fin 3) ℚ) = 0 := fun i => pderiv_ofNat i 3
   have n4 : ∀ i : Fin 3, pderiv i (4 : MvPolynomial (Fin 3) ℚ) = 0 := fun i => pderiv_ofNat i 4
-  rw [hC, Matrix.det_fin_three]
+  rw [hC, Matrix.eta_fin_three J]
   -- Reduce each matrix entry `J i j` to `pderiv j` of the concrete coordinate, then push every
   -- `pderiv` through the ring structure down to `pderiv _ (X _)`.
   simp only [J, F, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
     Matrix.cons_val_two, Matrix.tail_cons, P, Q, R,
     map_add, map_sub, pderiv_mul, pderiv_pow, pderiv_one,
     pderiv_X_self, h01, h02, h10, h12, h20, h21, n2, n3, n4]
-  ring
+  eval_det
 
 /-! ### The fiber collision over `ℚ` -/
 
