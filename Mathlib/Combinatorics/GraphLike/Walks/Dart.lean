@@ -25,11 +25,83 @@ namespace HyperGraphLike
 
 variable {V I E Gr : Type*} {G : Gr} {i j : I} {e : E} {u v : V} [HyperGraphLike V I E Gr]
 
+/-- `IsTraversal G u i e j v` means that the ordered pair of distinct incidences `i, j`
+traverses the edge `e` from `u` to `v`. -/
+def IsTraversal (G : Gr) (u : V) (i : I) (e : E) (j : I) (v : V) : Prop :=
+  i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧ IsIncident G i e u ∧ IsIncident G j e v
+
+namespace IsTraversal
+
+@[grind .] lemma inc_ne (h : IsTraversal G u i e j v) : i ≠ j := h.1
+
+@[grind .]
+lemma sourceInc_isSource (h : IsTraversal G u i e j v) : IsSource G i := h.2.1
+
+@[grind .]
+lemma targetInc_isTarget (h : IsTraversal G u i e j v) : IsTarget G j := h.2.2.1
+
+lemma source_isIncident (h : IsTraversal G u i e j v) : IsIncident G i e u := h.2.2.2.1
+
+lemma target_isIncident (h : IsTraversal G u i e j v) : IsIncident G j e v := h.2.2.2.2
+
+@[grind .] lemma sourceInc_mem (h : IsTraversal G u i e j v) : i ∈ I(G) :=
+  h.sourceInc_isSource.mem
+
+@[grind .] lemma targetInc_mem (h : IsTraversal G u i e j v) : j ∈ I(G) :=
+  h.targetInc_isTarget.mem
+
+@[grind .] lemma edge_mem (h : IsTraversal G u i e j v) : e ∈ E(G) :=
+  h.source_isIncident.edge_mem
+
+@[grind .] lemma source_mem (h : IsTraversal G u i e j v) : u ∈ V(G) :=
+  h.source_isIncident.vert_mem
+
+@[grind .] lemma target_mem (h : IsTraversal G u i e j v) : v ∈ V(G) :=
+  h.target_isIncident.vert_mem
+
+lemma isLink (h : IsTraversal G u i e j v) : IsLink G e u v := isLink_def.mpr
+  ⟨i, j, h.inc_ne, h.sourceInc_isSource, h.targetInc_isTarget, h.source_isIncident,
+    h.target_isIncident⟩
+
+@[grind .] lemma adj (h : IsTraversal G u i e j v) : Adj G u v := h.isLink.adj
+
+variable {e' : E} {u' v' : V}
+
+/-- The ordered incidence identifiers of a traversal determine its edge and endpoints. -/
+@[grind →]
+lemma inj (h : IsTraversal G u i e j v) (h' : IsTraversal G u' i e' j v') :
+    e = e' ∧ u = u' ∧ v = v' := by
+  obtain ⟨he, hu⟩ := h.source_isIncident.inj h'.source_isIncident
+  exact ⟨he, hu, (h.target_isIncident.inj h'.target_isIncident).2⟩
+
+section Undirected
+
+variable [Undirected V I E Gr]
+
+/-- Reverse a traversal in an undirected graph-like structure. -/
+@[symm]
+lemma symm (h : IsTraversal G u i e j v) : IsTraversal G v j e i u :=
+  ⟨h.inc_ne.symm, (isSource_iff G j).mpr h.targetInc_isTarget,
+    (isSource_iff G i).mp h.sourceInc_isSource, h.target_isIncident, h.source_isIncident⟩
+
+end Undirected
+
+end IsTraversal
+
+lemma isLink_iff_exists_isTraversal :
+    IsLink G e u v ↔ ∃ i j, IsTraversal G u i e j v := by
+  rw [isLink_def]
+  rfl
+
+lemma adj_iff_exists_isTraversal :
+    Adj G u v ↔ ∃ e i j, IsTraversal G u i e j v := by
+  rw [adj_def]
+  rfl
+
 /-- The type of darts of a graph-like structure. A dart consists of distinct source and target
 incidence identifiers belonging to the same edge. -/
 @[expose]
-def Dart (G : Gr) := {s : I × I // s.1 ≠ s.2 ∧ IsSource G s.1 ∧ IsTarget G s.2 ∧
-    ∃ e u v, IsIncident G s.1 e u ∧ IsIncident G s.2 e v}
+def Dart (G : Gr) := {s : I × I // ∃ e u v, IsTraversal G u s.1 e s.2 v}
 
 namespace Dart
 
@@ -42,25 +114,27 @@ variable (d : Dart G)
 @[expose] def snd : I := d.val.snd
 
 /-- The edge of a dart. -/
-@[expose] noncomputable def edge : E := d.prop.2.2.2.choose
+@[expose] noncomputable def edge : E := d.prop.choose
 
 /-- The source of a dart. -/
-@[expose] noncomputable def source : V := d.prop.2.2.2.choose_spec.choose
+@[expose] noncomputable def source : V := d.prop.choose_spec.choose
 
 /-- The target of a dart. -/
-@[expose] noncomputable def target : V := d.prop.2.2.2.choose_spec.choose_spec.choose
+@[expose] noncomputable def target : V := d.prop.choose_spec.choose_spec.choose
 
-@[grind .] lemma fst_ne_snd : d.fst ≠ d.snd := d.prop.1
+/-- The traversal certified by a dart. -/
+lemma isTraversal : IsTraversal G d.source d.fst d.edge d.snd d.target :=
+  d.prop.choose_spec.choose_spec.choose_spec
 
-@[grind .] lemma fst_isSource : IsSource G d.fst := d.prop.2.1
+@[grind .] lemma fst_ne_snd : d.fst ≠ d.snd := d.isTraversal.inc_ne
 
-@[grind .] lemma snd_isTarget : IsTarget G d.snd := d.prop.2.2.1
+@[grind .] lemma fst_isSource : IsSource G d.fst := d.isTraversal.sourceInc_isSource
 
-lemma source_isIncident : IsIncident G d.fst d.edge d.source :=
-  d.prop.2.2.2.choose_spec.choose_spec.choose_spec.1
+@[grind .] lemma snd_isTarget : IsTarget G d.snd := d.isTraversal.targetInc_isTarget
 
-lemma target_isIncident : IsIncident G d.snd d.edge d.target :=
-  d.prop.2.2.2.choose_spec.choose_spec.choose_spec.2
+lemma source_isIncident : IsIncident G d.fst d.edge d.source := d.isTraversal.source_isIncident
+
+lemma target_isIncident : IsIncident G d.snd d.edge d.target := d.isTraversal.target_isIncident
 
 @[grind .] lemma fst_mem : d.fst ∈ I(G) := d.fst_isSource.mem
 
@@ -104,33 +178,67 @@ lemma target_eq_of_isIncident_snd (h : IsIncident G d.snd e v) : d.target = v :=
 lemma target_eq_iff (d : Dart G) : d.target = v ↔ IsIncident G d.snd d.edge v :=
   ⟨(· ▸ d.target_isIncident), target_eq_of_isIncident_snd⟩
 
+variable (h : IsTraversal G u i e j v)
+
+/-- Bundle a traversal as a dart. -/
+@[expose]
+def _root_.HyperGraphLike.IsTraversal.toDart : Dart G := ⟨(i, j), e, u, v, h⟩
+
+@[simp, grind =]
+lemma _root_.HyperGraphLike.IsTraversal.toDart_fst : h.toDart.fst = i := rfl
+
+@[simp, grind =]
+lemma _root_.HyperGraphLike.IsTraversal.toDart_snd : h.toDart.snd = j := rfl
+
+@[simp, grind =]
+lemma _root_.HyperGraphLike.IsTraversal.toDart_edge : h.toDart.edge = e :=
+  h.toDart.edge_eq_of_isIncident_fst h.source_isIncident
+
+@[simp, grind =]
+lemma _root_.HyperGraphLike.IsTraversal.toDart_source : h.toDart.source = u :=
+  h.toDart.source_eq_of_isIncident_fst h.source_isIncident
+
+@[simp, grind =]
+lemma _root_.HyperGraphLike.IsTraversal.toDart_target : h.toDart.target = v :=
+  h.toDart.target_eq_of_isIncident_snd h.target_isIncident
+
 @[simp] lemma val_eq_iff : d.val = (i, j) ↔ d.fst = i ∧ d.snd = j := by grind [fst, snd]
 
 @[ext]
 lemma ext (hf : d₁.fst = d₂.fst) (hs : d₁.snd = d₂.snd) : d₁ = d₂ := Subtype.ext <| Prod.ext hf hs
 
+@[simp]
+lemma isTraversal_toDart (d : Dart G) : d.isTraversal.toDart = d := by ext <;> simp
+
+lemma _root_.HyperGraphLike.isTraversal_iff_exists_dart :
+    IsTraversal G u i e j v ↔ ∃ d : Dart G, d.fst = i ∧ d.snd = j ∧ d.edge = e ∧
+      d.source = u ∧ d.target = v := by
+  refine ⟨fun h ↦ ⟨h.toDart, by simp⟩, ?_⟩
+  rintro ⟨d, rfl, rfl, rfl, rfl, rfl⟩
+  exact d.isTraversal
+
 lemma _root_.HyperGraphLike.isLink_iff_exists_dart :
     IsLink G e u v ↔ ∃ d : Dart G, d.edge = e ∧ d.source = u ∧ d.target = v := by
-  refine ⟨fun h ↦ ?_, fun ⟨d, he, hs, ht⟩ ↦ isLink_def.mpr ⟨d.fst, d.snd, d.fst_ne_snd,
-    d.fst_isSource, d.snd_isTarget, hs ▸ he ▸ d.source_isIncident, ht ▸ he ▸ d.target_isIncident⟩⟩
-  obtain ⟨i, j, hne, hi, hj, hei, hej⟩ := isLink_def.mp h
-  use ⟨(i, j), hne, hi, hj, e, u, v, hei, hej⟩, edge_eq_of_isIncident_fst hei,
-    source_eq_of_isIncident_fst hei, target_eq_of_isIncident_snd hej
+  rw [isLink_iff_exists_isTraversal]
+  constructor
+  · rintro ⟨i, j, h⟩
+    exact ⟨h.toDart, by simp⟩
+  · rintro ⟨d, rfl, rfl, rfl⟩
+    exact ⟨d.fst, d.snd, d.isTraversal⟩
 
-lemma IsLink (d : Dart G) : IsLink G d.edge d.source d.target := isLink_def.mpr ⟨d.fst, d.snd,
-  d.fst_ne_snd, d.fst_isSource, d.snd_isTarget, d.source_isIncident, d.target_isIncident⟩
+lemma IsLink (d : Dart G) : IsLink G d.edge d.source d.target := d.isTraversal.isLink
 
 lemma _root_.HyperGraphLike.adj_iff_exists_dart :
     Adj G u v ↔ ∃ d : Dart G, d.source = u ∧ d.target = v := by
-  refine ⟨fun h ↦ ?_, fun ⟨d, hs, ht⟩ ↦ adj_def.mpr ⟨d.edge, d.fst, d.snd, d.fst_ne_snd,
-    d.fst_isSource, d.snd_isTarget, hs ▸ d.source_isIncident, ht ▸ d.target_isIncident⟩⟩
-  obtain ⟨e, i, j, hne, hi, hj, hei, hej⟩ := adj_def.mp h
-  use ⟨(i, j), hne, hi, hj, e, u, v, hei, hej⟩, source_eq_of_isIncident_fst hei,
-    target_eq_of_isIncident_snd hej
+  rw [adj_iff_exists_isTraversal]
+  constructor
+  · rintro ⟨e, i, j, h⟩
+    exact ⟨h.toDart, by simp⟩
+  · rintro ⟨d, rfl, rfl⟩
+    exact ⟨d.edge, d.fst, d.snd, d.isTraversal⟩
 
 @[grind .]
-lemma Adj (d : Dart G) : Adj G d.source d.target := adj_def.mpr ⟨d.edge, d.fst, d.snd,
-  d.fst_ne_snd, d.fst_isSource, d.snd_isTarget, d.source_isIncident, d.target_isIncident⟩
+lemma Adj (d : Dart G) : Adj G d.source d.target := d.isTraversal.adj
 
 /-- The ordered pair consisting of the source and target vertices of a dart. -/
 @[expose] noncomputable def toProd (d : Dart G) : V × V := (d.source, d.target)
@@ -168,6 +276,20 @@ lemma edge_mem_edgeFun_iff_fst_or_snd (d : Dart G) :
 lemma fst_or_snd_of_isIncident (d : Dart G) (h : IsIncident G i d.edge v) :
     i = d.fst ∨ i = d.snd := (d.edge_mem_edgeFun_iff_fst_or_snd i).mp h.mem_edgeFun
 
+lemma eq_of_edge_source_eq [Loopless V I E Gr] (he : d₁.edge = d₂.edge)
+    (hs : d₁.source = d₂.source) : d₁ = d₂ := by
+  have hfst : d₁.fst = d₂.fst :=
+    d₁.source_isIncident.inc_inj (he ▸ hs ▸ d₂.source_isIncident)
+  obtain ⟨i, j, hij, hmem⟩ := exists_pair_mem_edgeFun_iff d₁.edge_mem
+  apply Dart.ext hfst
+  grind [d₁.edge_mem_edgeFun_fst, d₁.edge_mem_edgeFun_snd,
+    he.symm ▸ d₂.edge_mem_edgeFun_fst, he.symm ▸ d₂.edge_mem_edgeFun_snd]
+
+lemma edge_source_inj [Loopless V I E Gr] :
+    Function.Injective fun d : Dart G ↦ (d.edge, d.source) := by
+  rintro d₁ d₂ h
+  exact eq_of_edge_source_eq (congrArg Prod.fst h) (congrArg Prod.snd h)
+
 end GraphLike
 
 section Undirected
@@ -177,7 +299,8 @@ variable [Undirected V I E Gr]
 lemma Adj' (d : Dart G) : HyperGraphLike.Adj G d.target d.source := d.Adj.symm
 
 /-- The dart with reversed orientation from a given dart. -/
-@[expose] def symm (d : Dart G) : Dart G := ⟨d.val.swap, by grind⟩
+@[expose] def symm (d : Dart G) : Dart G :=
+  ⟨d.val.swap, d.edge, d.target, d.source, d.isTraversal.symm⟩
 
 @[simp, grind =]
 lemma symm_fst (d : Dart G) : (d.symm).fst = d.snd := by rfl
@@ -250,13 +373,13 @@ lemma source_target_inj_of_directed [Directed V I E Gr] :
   rw [Prod.mk.injEq] at h
   exact eq_of_source_target_eq_of_directed h.1 h.2
 
-lemma eq_of_source_target_eq_of_undirected [Undirected V I E Gr] [Loopless V I E Gr]
+lemma eq_of_source_target_eq_of_undirected [Loopless V I E Gr]
     (hds : d₁.source = d₂.source) (hdt : d₁.target = d₂.target) : d₁ = d₂ :=
   have := d₁.IsLink.edge_eq (hds ▸ hdt ▸ d₂.IsLink)
   ext (d₁.source_isIncident.inc_inj (hds ▸ this ▸ d₂.source_isIncident))
     (d₁.target_isIncident.inc_inj (hdt ▸ this ▸ d₂.target_isIncident))
 
-lemma source_target_inj_of_undirected [Undirected V I E Gr] [Loopless V I E Gr] :
+lemma source_target_inj_of_undirected [Loopless V I E Gr] :
     Function.Injective fun d : Dart G ↦ (d.source, d.target) := by
   rintro d₁ d₂ h
   rw [Prod.mk.injEq] at h
