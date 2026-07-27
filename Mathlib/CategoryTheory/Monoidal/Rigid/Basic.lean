@@ -614,7 +614,7 @@ theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDua
   simp
 
 lemma leftAdjointMate_rightAdjointMate {X Y : C}
-    [HasLeftDual X] [HasRightDual X] [HasLeftDual Y] [HasRightDual Y] (f : X ⟶ Y) :
+    [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) :
     (ᘁ(fᘁ)) = f := by
   rw [← cancel_mono (ρ_ Y).inv]
   have h : _ ≫ ε_ Y Yᘁ = _ :=
@@ -623,7 +623,7 @@ lemma leftAdjointMate_rightAdjointMate {X Y : C}
     congrArg (tensorLeftHomEquiv X Y (Yᘁ) (𝟙_ C)) h
 
 lemma rightAdjointMate_leftAdjointMate {X Y : C}
-    [HasLeftDual X] [HasRightDual X] [HasLeftDual Y] [HasRightDual Y] (f : X ⟶ Y) :
+    [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
     (ᘁf)ᘁ = f := by
   rw [← cancel_epi (ρ_ X).hom]
   have h : η_ (ᘁX) X ≫ (ᘁX) ◁ rightAdjointMate (leftAdjointMate f) = _ :=
