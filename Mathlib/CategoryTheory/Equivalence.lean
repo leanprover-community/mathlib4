@@ -57,8 +57,6 @@ if it is full, faithful and essentially surjective.
 We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bundled equivalence.
 
 -/
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency.types false
 
 @[expose] public section
 
@@ -109,7 +107,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual existing functor_unitIso_comp]
 theorem counitIso_functor_comp (e : C ≌ D) (X : C) :
     dsimp% e.counitIso.inv.app (e.functor.obj X) ≫ e.functor.map (e.unitIso.inv.app X) =
@@ -117,7 +114,6 @@ theorem counitIso_functor_comp (e : C ≌ D) (X : C) :
   simpa [functor_unitIso_comp] using Iso.inv_eq_inv
     (e.functor.mapIso (e.unitIso.app X) ≪≫ e.counitIso.app (e.functor.obj X)) (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Equivalence.mk'` is the dual of `Equivalence.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
 @[to_dual existing mk']
@@ -265,7 +261,6 @@ theorem functor_unit_comp (e : C ≌ D) (X : C) :
     dsimp% e.functor.map (e.unit.app X) ≫ e.counit.app (e.functor.obj X) = 𝟙 (e.functor.obj X) :=
   e.functor_unitIso_comp X
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual counitInv_app_functor]
 theorem counit_app_functor (e : C ≌ D) (X : C) :
     e.counit.app (e.functor.obj X) = e.functor.map (e.unitInv.app X) := by
@@ -306,7 +301,6 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     rw [← map_comp e.inverse, e.counitInv_naturality, e.counitIso.hom_inv_id_app]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual unitInv_app_inverse]
 theorem unit_app_inverse (e : C ≌ D) (Y : D) :
     e.unit.app (e.inverse.obj Y) = e.inverse.map (e.counitInv.app Y) := by
@@ -340,7 +334,7 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
     _ ≅ 𝟭 C ⋙ F ⋙ G := isoWhiskerRight η.symm (F ⋙ G)
     _ ≅ F ⋙ G := leftUnitor (F ⋙ G)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
@@ -369,7 +363,7 @@ instance : Inhabited (C ≌ C) :=
   ⟨refl⟩
 
 /-- Equivalence of categories is symmetric. -/
-@[symm, simps]
+@[implicit_reducible, symm, simps]
 def symm (e : C ≌ D) : D ≌ C :=
   ⟨e.inverse, e.functor, e.counitIso.symm, e.unitIso.symm, e.inverse_counitInv_comp⟩
 
@@ -384,6 +378,7 @@ lemma symm_unit (e : C ≌ D) : e.symm.unit = e.counitInv := rfl
 
 variable {E : Type u₃} [Category.{v₃} E]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Equivalence of categories is transitive. -/
 @[trans, simps]
 def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
@@ -425,6 +420,7 @@ theorem invFunIdAssoc_hom_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
   dsimp [invFunIdAssoc]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
 @[simps! functor inverse unitIso_hom_app unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
@@ -482,7 +478,6 @@ theorem cancel_counit_right {X Y : D} (f f' : X ⟶ e.functor.obj (e.inverse.obj
 /-
 `cancel_counit_left` is not a `simp` lemma because it would be redundant.
 -/
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual cancel_counit_left, simp]
 theorem cancel_counitInv_right {X Y : D} (f f' : X ⟶ Y) :
     f ≫ e.counitInv.app Y = f' ≫ e.counitInv.app Y ↔ f = f' := by simp only [cancel_mono]
@@ -581,7 +576,7 @@ instance full_inverse (e : C ≌ E) : e.inverse.Full :=
 
 /-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
 an isomorphism, then there is an equivalence of categories whose functor is `G`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def changeFunctor (e : C ≌ D) {G : C ⥤ D} (iso : e.functor ≅ G) : C ≌ D where
   functor := G
   inverse := e.inverse
@@ -595,9 +590,10 @@ theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := b
 theorem changeFunctor_trans (e : C ≌ D) {G G' : C ⥤ D} (iso₁ : e.functor ≅ G) (iso₂ : G ≅ G') :
     (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
 an isomorphism, then there is an equivalence of categories whose inverse is `G`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def changeInverse (e : C ≌ D) {G : D ⥤ C} (iso : e.inverse ≅ G) : C ≌ D where
   functor := e.functor
   inverse := G
@@ -637,13 +633,13 @@ end IsEquivalence
 
 /-- A quasi-inverse `D ⥤ C` to a functor that `F : C ⥤ D` that is an equivalence,
 i.e. faithful, full, and essentially surjective. -/
+@[implicit_reducible]
 noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   obj X := F.objPreimage X
   map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
   map_id X := by apply F.map_injective; simp
   map_comp {X Y Z} f g := by apply F.map_injective; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a functor that is an equivalence as an equivalence. -/
 @[simps functor, simps -isSimp inverse, simps! -isSimp unitIso_hom_app unitIso_inv_app
   counitIso_hom_app counitIso_inv_app, stacks 02C3]
@@ -676,12 +672,13 @@ end Functor
 
 namespace Functor
 
-
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem fun_inv_map (F : C ⥤ D) [IsEquivalence F] (X Y : D) (f : X ⟶ Y) :
     F.map (F.inv.map f) = F.asEquivalence.counit.app X ≫ f ≫ F.asEquivalence.counitInv.app Y := by
   simpa using! (NatIso.naturality_2 (α := F.asEquivalence.counitIso) (f := f)).symm
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem inv_fun_map (F : C ⥤ D) [IsEquivalence F] (X Y : C) (f : X ⟶ Y) :
     F.inv.map (F.map f) = F.asEquivalence.unitInv.app X ≫ f ≫ F.asEquivalence.unit.app Y := by
