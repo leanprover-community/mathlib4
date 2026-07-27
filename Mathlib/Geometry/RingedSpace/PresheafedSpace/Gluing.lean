@@ -180,7 +180,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   · delta IsOpenImmersion.opensFunctor IsOpenEmbedding.functor
-    dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
+    dsimp only [Functor.op, Opens.map_def, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr 2
     have := (𝖣.t_fac k i j).symm
     rw [← IsIso.inv_comp_eq] at this
@@ -462,6 +462,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
       infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `ιInvApp` is the inverse of `D.ι i` on `U`. -/
 theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U = 𝟙 _ := by
@@ -478,6 +479,7 @@ theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     rw [Category.id_comp]
     apply π_ιInvApp_π
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance componentwise_diagram_π_isIso (i : D.J) (U : Opens (D.U i).carrier) :
     IsIso (D.diagramOverOpenπ U i) := by
   use D.ιInvAppπEqMap U ≫ D.ιInvApp U

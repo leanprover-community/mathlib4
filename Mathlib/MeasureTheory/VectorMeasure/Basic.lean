@@ -133,11 +133,29 @@ theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwi
   · simp [Function.apply_extend MeasurableSet, Function.comp_def, hm]
   · exact hd.disjoint_extend_bot (he.factorsThrough _)
 
+theorem of_if {ι : Type*} {x : ι} {B : Set ι} {A : Set α} [Decidable (x ∈ B)] :
+    v (if x ∈ B then A else ∅) = indicator B (fun _ => v A) x := by
+  split_ifs with h <;> simp [h]
+
 variable [T2Space M]
 
 theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
     v (⋃ i, f i) = ∑' i, v (f i) :=
   (hasSum_of_disjoint_iUnion hm hd).tsum_eq.symm
+
+theorem of_biUnion {ι : Type*} {s : Set ι} {f : ι → Set α} (hs : s.Countable)
+    (hd : s.Pairwise (Disjoint on f)) (h : ∀ b ∈ s, MeasurableSet (f b)) :
+    v (⋃ b ∈ s, f b) = ∑' p : s, v (f p) := by
+  haveI := hs.toEncodable
+  rw [biUnion_eq_iUnion]
+  apply of_disjoint_iUnion
+  · exact fun x ↦ h x x.2
+  · exact hd.on_injective Subtype.coe_injective fun x => x.2
+
+theorem of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
+    (hm : ∀ b ∈ s, MeasurableSet (f b)) : v (⋃ b ∈ s, f b) = ∑ p ∈ s, v (f p) := by
+  rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype (L := .unconditional s)]
+  exact of_biUnion s.countable_toSet hd hm
 
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
@@ -206,22 +224,6 @@ theorem of_nonpos_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (
   rw [of_union h hA₁ hB₁] at hAB
   linarith
 
-lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
-    (hm : ∀ b ∈ s, MeasurableSet (f b)) : v (⋃ b ∈ s, f b) = ∑ p ∈ s, v (f p) := by
-  classical
-  induction s using Finset.induction with
-  | empty => simp
-  | insert a s has ih =>
-    simp only [Finset.mem_insert, iUnion_iUnion_eq_or_left, has, not_false_eq_true,
-      Finset.sum_insert]
-    rw [of_union, ih]
-    · exact hd.subset (by simp)
-    · grind
-    · simp only [disjoint_iUnion_right]
-      exact fun i hi ↦ hd (by simp) (by simp [hi]) (by grind)
-    · apply hm _ (by simp)
-    · apply Finset.measurableSet_biUnion _ (by grind)
-
 theorem tendsto_vectorMeasure_iUnion_atTop_nat
     {s : ℕ → Set α} (hm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) :
     Tendsto (fun n ↦ v (s n)) atTop (𝓝 (v (⋃ n, s n))) := by
@@ -250,6 +252,22 @@ theorem tendsto_vectorMeasure_iInter_atTop_nat
   exact tendsto_vectorMeasure_iUnion_atTop_nat (fun i j hij ↦ by simpa using hm hij)
     (fun i ↦ (hs i).compl)
 
+/-- If two vector measures give the same mass to the whole space and coincide on a
+generating π-system, then they coincide. -/
+theorem ext_of_generateFrom {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
+    {X : Type*} {mX : MeasurableSpace X} {μ ν : VectorMeasure X M}
+    (C : Set (Set X)) (hμν : ∀ s ∈ C, μ s = ν s)
+    (hA : mX = MeasurableSpace.generateFrom C) (hC : IsPiSystem C)
+    (h_univ : μ Set.univ = ν Set.univ) : μ = ν := by
+  ext s hs
+  induction s, hs using MeasurableSpace.induction_on_inter hA hC with
+  | empty => simp
+  | basic t ht => exact hμν t ht
+  | compl t htm iht =>
+    simp [of_compl, iht, htm, h_univ]
+  | iUnion f hfd hfm ihf =>
+    simp [of_disjoint_iUnion, hfm, hfd, ihf]
+
 end
 
 section SMul
@@ -259,7 +277,7 @@ variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R 
 
 /-- Given a scalar `r` and a vector measure `v`, `smul r v` is the vector measure corresponding to
 the set function `s : Set α => r • (v s)`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := r • ⇑v
   empty' := by rw [Pi.smul_apply, empty, smul_zero]
@@ -583,7 +601,7 @@ variable {mα : MeasurableSpace α} [MeasurableSpace β]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable (v : VectorMeasure α M)
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a vector measure along a function. -/
 def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
   if hf : Measurable f then
@@ -669,6 +687,7 @@ variable {R : Type*} [Semiring R] [Module R M] [Module R N]
 
 variable [ContinuousConstSMul R M] [ContinuousConstSMul R N]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continuous f) {c : R} :
     (c • v).mapRange f.toAddMonoidHom hf = c • (v.mapRange f.toAddMonoidHom hf) := by
@@ -676,6 +695,7 @@ theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continu
 
 variable [ContinuousAdd M] [ContinuousAdd N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Continuous f) :
@@ -688,7 +708,7 @@ end Module
 
 end
 
-open Classical in
+open scoped Classical in
 /-- The restriction of a vector measure on some set. -/
 @[no_expose] def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
@@ -711,6 +731,12 @@ theorem restrict_apply {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : Me
     v.restrict i j = v (j ∩ i) := by
   rw [restrict, dif_pos hi]
   exact if_pos hj
+
+@[simp] theorem restrict_apply_univ {i : Set α} :
+    v.restrict i univ = v i := by
+  by_cases hi : MeasurableSet i
+  · simp [restrict_apply, hi]
+  · simp [restrict_not_measurable, hi]
 
 theorem restrict_eq_self {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : MeasurableSet j)
     (hij : j ⊆ i) : v.restrict i j = v j := by
@@ -1294,7 +1320,7 @@ end MutuallySingular
 
 section Trim
 
-open Classical in
+open scoped Classical in
 /-- Restriction of a vector measure onto a sub-σ-algebra. -/
 @[simps]
 def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :

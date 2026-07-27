@@ -58,8 +58,9 @@ protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) 
     exact ⟨y', h.symm⟩
   · exact ⟨y, Ne.symm hx⟩
 
-open Classical in
-theorem exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := Decidable.exists_ne x
+theorem exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := by
+  classical
+  exact Decidable.exists_ne x
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
 theorem nontrivial_of_ne (x y : α) (h : x ≠ y) : Nontrivial α :=

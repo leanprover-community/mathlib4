@@ -176,7 +176,7 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
   · have : n = n - 3 + 3 := by lia
     rw [this] at h
     refine ⟨h.toHom ⟨0, by lia⟩, Walk.map h.toHom <| cycleGraph.cycle (n - 3), ?_, ?_⟩
-    · exact (map_isCycle_iff_of_injective h.injective).mpr cycleGraph.isCycle_cycle
+    · exact (isCycle_map_iff_of_injective h.injective).mpr cycleGraph.isCycle_cycle
     · simp [cycleGraph.length_cycle, ← this]
   · obtain ⟨a, p, hp₁, hp₂⟩ := h'
     refine ⟨⟨⟨fun n ↦ p.support[n.succ]'(?_), ?_⟩, ?_⟩⟩

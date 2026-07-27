@@ -66,6 +66,12 @@ variable {𝕜 E F : Type*}
   [AddCommGroup E] [TopologicalSpace E]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
+-- Note: ideally this would be in `Mathlib.Topology.Algebra.Module.Basic`, but `CoFG` imports
+-- too much at the moment for this to be allowed.
+instance Submodule.CoFG.topologicalClosure [Ring 𝕜] [Module 𝕜 E] [ContinuousAdd E]
+    [ContinuousConstSMul 𝕜 E] (s : Submodule 𝕜 E) [s.CoFG] : s.topologicalClosure.CoFG :=
+  ‹s.CoFG›.of_le s.le_topologicalClosure
+
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
 instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
     [Module 𝕜 F] [IsNoetherian 𝕜 F] [ContinuousConstSMul 𝕜 F] :
@@ -210,8 +216,8 @@ variable [CompleteSpace 𝕜]
 private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   have := Fintype.ofFinite ι
-  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
-  letI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
+  let : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
   intro n hn
   induction n generalizing ι E with
@@ -219,12 +225,12 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
     rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
   | succ n IH =>
-    haveI : FiniteDimensional 𝕜 E := ξ.finiteDimensional_of_finite
+    have : FiniteDimensional 𝕜 E := ξ.finiteDimensional_of_finite
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
       intro s s_dim
-      letI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
+      let : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
       let b := Basis.ofVectorSpace 𝕜 s
       have U : IsUniformEmbedding b.equivFun.symm.toEquiv := by
         have : Fintype.card (Basis.ofVectorSpaceIndex 𝕜 s) = n := by
@@ -330,16 +336,6 @@ theorem coe_toContinuousLinearMap_symm :
 @[simp]
 theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
     (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
-  rfl
-
-@[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
-theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    (LinearMap.toContinuousLinearMap f).ker = ker f := by
-  simp
-
-@[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
-theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    (LinearMap.toContinuousLinearMap f).range = range f :=
   rfl
 
 /-- A surjective linear map `f` with finite-dimensional codomain is an open map. -/
@@ -553,6 +549,17 @@ theorem Submodule.isClosed_sup_finiteDimensional
   rw [← comap_map_mkQ]
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
+/-- A sufficient condition for a linear map taking values in a TVS to have closed range is that
+there exists a finite-codimension subspace of the domain whose image is closed. -/
+theorem LinearMap.isClosed_range_of_isClosed_map_of_finiteDimensional_quotient
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E →ₗ[𝕜] F} {s : Submodule 𝕜 E}
+    [s.CoFG] (h : IsClosed (s.map f : Set F)) :
+    IsClosed (f.range : Set F) := by
+  obtain ⟨t, s_compl_t⟩ := Submodule.exists_isCompl s
+  have : FiniteDimensional 𝕜 t := .of_fg <| Submodule.CoFG.fg_of_isCompl s_compl_t inferInstance
+  rw [← Submodule.map_top, ← s_compl_t.sup_eq_top, Submodule.map_sup]
+  exact Submodule.isClosed_sup_finiteDimensional _ _ h
+
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
 theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] [T2Space F]
     {f : E →ₗ[𝕜] F} (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
@@ -629,7 +636,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
   obtain ⟨F, hF_finite, hF_cover⟩ := totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hU_tb
     (c • U) ((set_smul_mem_nhds_zero_iff hc_ne).mpr hU_nhds)
   let M : Submodule 𝕜 Eᵤ := Submodule.span 𝕜 F
-  letI : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
+  let : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
   have h_cover : U ⊆ M + c • U := fun x hx ↦ by
     obtain ⟨f, hf, y, hy, rfl⟩ := Set.mem_iUnion₂.mp <| hF_cover hx
     exact ⟨f, Submodule.subset_span hf, y, hy, rfl⟩
