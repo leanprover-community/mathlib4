@@ -80,8 +80,6 @@ variable [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
 -- variable [PartialOrder 𝕜]
 variable [LinearOrder 𝕜]
 
-local notation:100 A:100 " ⊗ˢ[" 𝕜 "] " B:101 => Set.image2 (tmul 𝕜) A B
-
 omit [TopologicalSpace E] in
 -- variable [PartialOrder 𝕜] in
 /--

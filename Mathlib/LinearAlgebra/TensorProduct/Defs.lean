@@ -113,6 +113,13 @@ infixl:100 " ⊗ₜ " => tmul _
 /-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x:100 " ⊗ₜ[" R "] " y:101 => tmul R x y
 
+variable (R) in
+/-- The set-wise tensor product of two sets. -/
+abbrev setTmul (A : Set M) (B : Set N) : Set (M ⊗[R] N) :=
+  Set.image2 (tmul R) A B
+
+scoped[TensorProduct] notation:100 A:100 " ⊗ˢ[" R "] " B:101 => TensorProduct.setTmul R A B
+
 /-- Produces an arbitrary representation of the form `mₒ ⊗ₜ n₀ + ...`. -/
 unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
   reprPrec mn p :=
