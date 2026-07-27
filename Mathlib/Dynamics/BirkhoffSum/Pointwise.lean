@@ -311,9 +311,9 @@ lemma measure_limsup_birkhoffAverage_sub_condExp_le (hf : MeasurePreserving f μ
         rw [integral_const_mul, integral_condExp (invariants_le f)]
         grw [e_close]
 
-/-- A.e. convergence of Birkhoff averages transfers along `L¹` approximation: if for every
-`δ > 0` there is an integrable `s` satisfying the theorem with `∫ ‖g - s‖ < δ`, then `g`
-satisfies the theorem. -/
+/-- The set of functions satisfying the pointwise theorem is closed in `L¹`: if for every `δ > 0`,
+there is an integrable `s` satisfying the theorem with `∫ ‖g - s‖ < δ`, then `g` satisfies the
+theorem. -/
 lemma ae_tendsTo_birkhoffAverage_condExp_of_approx (hf : MeasurePreserving f μ μ)
     (hg : Integrable g μ)
     (h : ∀ δ : ℝ, 0 < δ → ∃ s : α → E, Integrable s μ ∧
