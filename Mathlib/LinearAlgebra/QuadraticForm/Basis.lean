@@ -125,7 +125,7 @@ lemma add_toBilin (bm : Basis ι R M) (Q₁ Q₂ : QuadraticMap R M N) :
     (Q₁ + Q₂).toBilin bm = Q₁.toBilin bm + Q₂.toBilin bm := by
   refine bm.ext fun i => bm.ext fun j => ?_
   obtain h | rfl | h := lt_trichotomy i j
-  · simp [h.ne, h, toBilin_apply, polar_add]
+  · simp [h.ne, h, toBilin_apply, polar_add, FunLike.coe_add]
   · simp [toBilin_apply]
   · simp [h.ne', h.not_gt, toBilin_apply]
 
@@ -137,7 +137,7 @@ lemma smul_toBilin (bm : Basis ι R M) (s : S) (Q : QuadraticMap R M N) :
     (s • Q).toBilin bm = s • Q.toBilin bm := by
   refine bm.ext fun i => bm.ext fun j => ?_
   obtain h | rfl | h := lt_trichotomy i j
-  · simp [h.ne, h, toBilin_apply, polar_smul]
+  · simp [h.ne, h, toBilin_apply, polar_smul, FunLike.coe_smul]
   · simp [toBilin_apply]
   · simp [h.ne', h.not_gt, toBilin_apply]
 
