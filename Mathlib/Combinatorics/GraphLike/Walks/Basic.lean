@@ -281,10 +281,8 @@ vertex of `G`. -/
 lemma isValid_cons_iff :
     (cons u i e j p).IsValid G ↔ IsTraversal G u i e j p.first ∧ p.IsValid G := Iff.rfl
 
-@[grind →]
 lemma IsValid.of_cons (h : (cons u i e j p).IsValid G) : p.IsValid G := h.2
 
-@[grind →]
 lemma IsValid.head (h : (cons u i e j p).IsValid G) : IsTraversal G u i e j p.first := h.1
 
 @[grind →]
@@ -303,15 +301,12 @@ lemma IsValid.first_mem (h : p.IsValid G) : p.first ∈ V(G) := h.vertex_mem_of_
 
 lemma IsValid.last_mem (h : p.IsValid G) : p.last ∈ V(G) := h.vertex_mem_of_mem p.last_mem
 
-@[grind →]
 lemma IsValid.vertexSet_subset (h : p.IsValid G) : p.vertexSet ⊆ V(G) :=
   fun _ ↦ h.vertex_mem_of_mem
 
-@[grind →]
 lemma IsValid.edgeSet_subset (h : p.IsValid G) : p.edgeSet ⊆ E(G) :=
   fun _ ↦ h.edge_mem_of_mem
 
-@[grind →]
 lemma IsValid.incidenceSet_subset (h : p.IsValid G) : p.incidenceSet ⊆ I(G) :=
   fun _ ↦ h.incidence_mem_of_mem
 
