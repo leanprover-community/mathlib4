@@ -511,7 +511,7 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 
 /-- Construct an isomorphism of chain complexes from isomorphism of the objects
 which commute with the differentials. -/
-@[simps]
+@[simps, implicit_reducible]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
     (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where

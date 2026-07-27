@@ -127,7 +127,6 @@ section
 variable [HasCoproducts.{w} C] [HasCoproducts.{w} D]
   (F : C ⥤ D) [∀ (T : Type w), PreservesColimitsOfShape (Discrete T) F] (X : C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomophism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
 preserves coproducts. -/
 noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X) :=
@@ -139,8 +138,6 @@ noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.o
       PreservesCoproduct.inv_hom, PreservesCoproduct.inv_hom, sigmaComparison_map_desc]
     cat_disch)
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ι_sigmaConstObjCompIso_hom_app {T : Type w} (t : T) :
     dsimp% F.map (Sigma.ι (fun (_ : T) ↦ X) t) ≫ (sigmaConstObjCompIso F X).hom.app T =
@@ -150,8 +147,6 @@ lemma map_ι_sigmaConstObjCompIso_hom_app {T : Type w} (t : T) :
     Category.assoc, Iso.hom_inv_id]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_sigmaConstObjCompIso_inv_app {T : Type w} (t : T) :
     Sigma.ι (fun (_ : T) ↦ F.obj X) t ≫ (sigmaConstObjCompIso F X).inv.app T =

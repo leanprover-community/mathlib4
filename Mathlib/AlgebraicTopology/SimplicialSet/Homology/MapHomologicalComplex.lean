@@ -57,8 +57,6 @@ noncomputable def chainComplexFunctorObjCompMapIso :
     _ ≅ (whiskering ..).obj (sigmaConst.obj (F.obj R)) ⋙ alternatingFaceMapComplex D :=
       isoWhiskerRight ((whiskering ..).mapIso (sigmaConstObjCompIso F R)) _
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 variable {R} in
 @[reassoc (attr := simp)]
 lemma map_ιChainComplex_chainComplexFunctorObjCompMapIso_hom_app_f
@@ -66,7 +64,7 @@ lemma map_ιChainComplex_chainComplexFunctorObjCompMapIso_hom_app_f
    dsimp% F.map (X.ιChainComplex x) ≫
       ((chainComplexFunctorObjCompMapIso F R).hom.app X).f n =
     X.ιChainComplex x := by
-  simp [chainComplexFunctorObjCompMapIso, ιChainComplex, chainComplex,
+  simp [chainComplexFunctorObjCompMapIso, ιChainComplex,
     SSet.chainComplexFunctor]
 
 end SSet
