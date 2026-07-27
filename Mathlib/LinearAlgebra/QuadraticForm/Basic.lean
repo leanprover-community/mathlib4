@@ -861,8 +861,8 @@ general ring with no nontrivial distinguished commutative subring, use `Quadrati
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where
   toFun Q := ⅟(2 : Module.End R N) • polarBilin Q
-  map_add' _ _ := LinearMap.ext₂ fun _ _ ↦ by simp [polar_add, FunLike.coe_add]
-  map_smul' _ _ := LinearMap.ext₂ fun _ _ ↦ by simp [polar_smul, FunLike.coe_smul]
+  map_add' _ _ := LinearMap.ext₂ fun _ _ ↦ by simp [polar_add]
+  map_smul' _ _ := LinearMap.ext₂ fun _ _ ↦ by simp [polar_smul]
 
 variable (Q : QuadraticMap R M N)
 
