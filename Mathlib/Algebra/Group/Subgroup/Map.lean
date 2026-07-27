@@ -393,6 +393,7 @@ end Subgroup
 namespace MulEquiv
 variable {H : Type*} [Group H]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their inverse images.
@@ -419,6 +420,7 @@ lemma coe_comapSubgroup (e : G ≃* H) : comapSubgroup e = Subgroup.comap e.toMo
 @[to_additive (attr := simp)]
 lemma symm_comapSubgroup (e : G ≃* H) : (comapSubgroup e).symm = comapSubgroup e.symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their forward images.

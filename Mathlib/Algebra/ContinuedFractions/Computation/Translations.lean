@@ -213,6 +213,7 @@ Now let's show how the values of the sequences correspond to one another.
 -/
 
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair K}
     (s_nth_eq : (of v).s.get? n = some gp_n) :
     ∃ ifp : IntFractPair K, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b := by
@@ -222,6 +223,7 @@ theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair
     simpa using s_nth_eq
   simp_all only [Option.some.injEq, exists_eq_left']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shows how the entries of the sequence of the computed continued fraction can be obtained by the
 integer parts of the stream of integer and fractional parts.
 -/

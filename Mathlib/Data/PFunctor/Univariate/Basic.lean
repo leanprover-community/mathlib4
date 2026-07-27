@@ -172,6 +172,7 @@ variable {P : PFunctor.{uA, uB}}
 
 open Functor
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
     Liftp p x ↔ ∃ a f, x = ⟨a, f⟩ ∧ ∀ i, p (f i) := by
   constructor
@@ -184,6 +185,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
   use ⟨a, fun i => ⟨f i, pf i⟩⟩
   rw [xeq]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
     @Liftp.{u} P.Obj _ α p ⟨a, f⟩ ↔ ∀ i, p (f i) := by
   simp only [liftp_iff]; constructor <;> intro h
@@ -217,7 +219,7 @@ open Set
 
 theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
     @supp.{u} P.Obj _ α (⟨a, f⟩ : P α) = f '' univ := by
-  ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
+  ext x; simp only [supp, image_univ, mem_range, mem_ofPred_eq]
   constructor <;> intro h
   · apply @h fun x => ∃ y : P.B a, f y = x
     rw [liftp_iff']

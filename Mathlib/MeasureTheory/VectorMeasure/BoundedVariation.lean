@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 
 import Mathlib.MeasureTheory.VectorMeasure.AddContent
 

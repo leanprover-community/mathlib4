@@ -10,7 +10,6 @@ public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 public import Mathlib.Algebra.Order.Ring.Finset
 public import Mathlib.FieldTheory.SeparableClosure
-public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
@@ -129,7 +128,6 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
 
 theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (i : ι)
     (hi : i ∈ F.vars) : IsAlgebraic (Algebra.adjoin k (a '' {i}ᶜ)) (a i) := by
-  classical
   have ⟨σ, hσ, hσi⟩ := (mem_vars_iff_mem_support i).mp hi
   refine ⟨toPolynomialAdjoinImageCompl F a i,
     fun h ↦ coeff_toPolynomialAdjoinImageCompl_ne_zero HF σ hσ i
@@ -159,13 +157,15 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
     rw [F.support.sum_attach (fun i ↦ monomial i (F.coeff i)), support_sum_monomial_coeff, hFa])
   simp only [LinearIndependent, injective_iff_map_eq_zero, not_forall] at this
   obtain ⟨F', hF', hF'0⟩ := this
-  let F'' : MvPolynomial ι k := F'.mapDomain fun s ↦ σ' s.1
-  have hF''0 : F'' ≠ 0 := ne_of_ne_of_eq ((Finsupp.mapDomain_injective fun s t h ↦ Subtype.ext
-    (Finsupp.ext fun i ↦ by rw [hσ' _ s.2, hσ' _ t.2, h])).ne_iff.mpr hF'0) (by simp)
+  let F'' : MvPolynomial ι k := .ofCoeff <| F'.mapDomain fun s ↦ σ' s.1
+  have hF''0 : F'' ≠ 0 := ne_of_ne_of_eq (AddMonoidAlgebra.ofCoeff_eq_zero.ne.2 <|
+    (Finsupp.mapDomain_injective fun s t h ↦ Subtype.ext
+    (Finsupp.ext fun i ↦ by rw [hσ' _ s.2, hσ' _ t.2, h])).ne hF'0) (by simp)
   have hF'' : aeval a F'' = 0 := by
-    have : (aeval a).toLinearMap ∘ₗ (Finsupp.lmapDomain k k fun s : F.support ↦ σ' s) =
+    have : (aeval a).toLinearMap ∘ₗ (AddMonoidAlgebra.coeffLinearEquiv _).symm.toLinearMap ∘ₗ
+      Finsupp.lmapDomain k k (fun s : F.support ↦ σ' s) =
         (Finsupp.linearCombination k fun s : F.support ↦ aeval a (monomial (σ' s) (1 : k))) := by
-      ext v; simp [AddMonoidAlgebra, monomial]
+      ext v; simp [monomial]
     simp only [← hF', F'', ← this]; rfl
   suffices hpm : p * F''.totalDegree ≤ F.totalDegree by
     have hF''0' : F''.totalDegree ≠ 0 := by
@@ -306,6 +306,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFin
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (k K) in
 /-- Any finitely generated extension over perfect fields are separably generated. -/
 lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField

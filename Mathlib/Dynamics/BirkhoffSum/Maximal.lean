@@ -61,7 +61,7 @@ lemma birkhoffMax_succ :
   have : birkhoffSum f g ∘ (· + 1) = (g + birkhoffSum f g · ∘ f) :=
     funext₂ <| fun k x ↦ birkhoffSum_succ' ..
   rw [birkhoffMax, partialSups_add_one', this, partialSups_const_add]
-  simp [partialSups]
+  simp [Pi.partialSups_apply]
 
 variable [LinearOrder M] [IsOrderedAddMonoid M]
 
@@ -168,7 +168,7 @@ end BirkhoffSup
 
 lemma setOf_birkhoffSumSup_pos_eq_iUnion_birkhoffMax_support :
     {x | 0 < birkhoffSumSup f g x} = ⋃ n : ℕ, (birkhoffMax f g n).support := by
-  simp_rw [birkhoffSumSup_eq_iSup_birkhoffMax, lt_iSup_iff, Set.setOf_exists, EReal.coe_pos,
+  simp_rw [birkhoffSumSup_eq_iSup_birkhoffMax, lt_iSup_iff, Set.ofPred_exists, EReal.coe_pos,
     birkhoffMax_nonneg.lt_iff_ne, Function.support, ne_comm]
 
 theorem lt_birkhoffAverage_iff_lt_birkhoffSum {a : ℝ} (hn : 0 < n) :

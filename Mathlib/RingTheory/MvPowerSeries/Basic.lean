@@ -508,6 +508,7 @@ section Map
 variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map between multivariate formal power series induced by a map on the coefficients. -/
 def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   toFun φ n := f <| coeff n φ
@@ -599,6 +600,7 @@ section Semiring
 
 variable [Semiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     (X s : MvPowerSeries σ R) ^ n ∣ φ ↔ ∀ m : σ →₀ ℕ, m s < n → coeff m φ = 0 := by
   classical
@@ -668,6 +670,7 @@ open Finset.HasAntidiagonal Finset
 
 variable {R : Type*} [CommSemiring R] {ι : Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
