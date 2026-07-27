@@ -83,6 +83,7 @@ theorem FinTrdeg.of_isTranscendenceBasis {ι : Type*} [Finite ι] {x : ι → L}
     ← hx.lift_cardinalMk_eq_trdeg, Cardinal.lift_lt_aleph0]
   exact Cardinal.mk_lt_aleph0
 
+variable (K L) in
 theorem exists_finset_isTranscendenceBasis [FinTrdeg K L] :
     ∃ s : Finset L, IsTranscendenceBasis K ((↑) : s → L) := by
   obtain ⟨s, hs⟩ := exists_isTranscendenceBasis K L
