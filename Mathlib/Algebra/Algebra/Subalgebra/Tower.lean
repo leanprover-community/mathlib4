@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.RingTheory.Ideal.Defs
 
 /-!
 # Subalgebras in towers of algebras
@@ -120,9 +121,25 @@ end Semiring
 
 section CommSemiring
 
+variable [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A)
+
 @[simp]
-lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) :
+theorem restrictScalars_one :
+    Submodule.restrictScalars R (1 : Submodule S A) = Subalgebra.toSubmodule S := by
+  ext; simp
+
+theorem codisjoint_one_iff (I : Ideal A) :
+    Codisjoint (1 : Submodule S A) (I.restrictScalars S) ↔
+      Codisjoint (Subalgebra.toSubmodule S) (I.restrictScalars R) := by
+  simp [← Submodule.codisjoint_restrictScalars_iff R]
+
+theorem disjoint_one_iff (I : Ideal A) :
+    Disjoint (1 : Submodule S A) (I.restrictScalars S) ↔
+      Disjoint (Subalgebra.toSubmodule S) (I.restrictScalars R) := by
+  simp [← Submodule.disjoint_restrictScalars_iff R]
+
+@[simp]
+lemma range_isScalarTower_toAlgHom :
     LinearMap.range (IsScalarTower.toAlgHom R S A : S →ₗ[R] A) = Subalgebra.toSubmodule S := by
   ext
   simp [algebraMap_eq]

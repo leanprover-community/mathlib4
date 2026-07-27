@@ -61,6 +61,7 @@ namespace AdicCompletion
 
 open LinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
     (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ f.reduceModIdeal (I ^ n) =
       (f.reduceModIdeal (I ^ m) : _ →ₗ[R] _) ∘ₗ transitionMap I M hmn := by
@@ -69,6 +70,7 @@ theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
 
 namespace AdicCauchySequence
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear map induces a linear map on adic Cauchy sequences. -/
 @[simps]
 def map (f : M →ₗ[R] N) : AdicCauchySequence I M →ₗ[R] AdicCauchySequence I N where
@@ -327,6 +329,23 @@ def piEquivFin (n : ℕ) :
     AdicCompletion I (Fin n → R) ≃ₗ[AdicCompletion I R] Fin n → AdicCompletion I R :=
   piEquivOfFintype I (ι := Fin n) (fun _ : Fin n ↦ R)
 
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem piEquivFin_apply (n : ℕ) (x : AdicCompletion I (Fin n → R)) :
     piEquivFin I n x = pi I (fun _ : Fin n ↦ R) x := by
@@ -340,6 +359,7 @@ open Submodule
 
 variable {I}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_smodEq_pow_add_one_smul {f : M →ₗ[R] N}
     (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) {y : N} {n : ℕ}
     (hy : y ∈ (I ^ n • ⊤ : Submodule R N)) :
@@ -384,6 +404,7 @@ theorem exists_smodEq_pow_smul_top_and_mkQ_eq {f : M →ₗ[R] N}
   use x', hxx'
   rwa [mkQ_apply, hx'y0]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
     (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) : Function.Surjective (map I f) := by
   intro y

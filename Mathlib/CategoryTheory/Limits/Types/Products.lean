@@ -163,8 +163,7 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
         (BinaryFan.mk (↾_root_.Prod.fst) (↾_root_.Prod.snd ≫ f)) }
   map {X₁ X₂} f :=
     { app := fun Y =>
-      (binaryProductLimit X₂ Y).lift (BinaryFan.mk (↾_root_.Prod.fst ≫ f)
-      (↾_root_.Prod.snd)) }
+      BinaryFan.IsLimit.lift (binaryProductLimit X₂ Y) (↾_root_.Prod.fst ≫ f) (↾_root_.Prod.snd) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The product functor given by the instance `HasBinaryProducts (Type u)` is isomorphic to the
@@ -218,6 +217,8 @@ namespace Small
 
 variable {J : Type v} (F : J → Type u) [Small.{u} J]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 A variant of `productLimitCone` using a `Small` hypothesis rather than a function to `Type`.
 -/
@@ -231,20 +232,23 @@ noncomputable def productLimitCone :
     have : Small.{u} (∀ j, F j) := inferInstance
     { lift := fun s => ↾fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
       uniq := fun s m w => ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
-        simpa using ConcreteCategory.congr_hom (w ⟨j⟩) x) }
+        simpa using! ConcreteCategory.congr_hom (w ⟨j⟩) x) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
     (∏ᶜ F : Type u) ≅ Shrink (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[elementwise (attr := simp)]
 theorem productIso_hom_comp_eval (j : J) :
     (productIso.{v, u} F).hom ≫ (↾fun f => (equivShrink (∀ j, F j)).symm f j) =
       Pi.π F j :=
   limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[elementwise (attr := simp)]
 theorem productIso_inv_comp_π (j : J) :
     (productIso.{v, u} F).inv ≫ Pi.π F j =

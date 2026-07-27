@@ -54,7 +54,7 @@ def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ,
     match elt, le.dest (Hb _ Helt), Helt with
     | _, ⟨n, rfl⟩, Hn => ⟨n, Hn⟩
   ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h => by
-    obtain ⟨n, rfl⟩ := le.dest (Hb _ h); grw [Int.ofNat_le.2 <| Nat.find_min' EX h]⟩
+    obtain ⟨n, rfl⟩ := le.dest (Hb _ h); grw [Nat.find_min' EX h]⟩
 
 /-- `Int.leastOfBdd` is the least integer satisfying a predicate which is false for all `z : ℤ` with
 `z < b` for some fixed `b : ℤ`. -/

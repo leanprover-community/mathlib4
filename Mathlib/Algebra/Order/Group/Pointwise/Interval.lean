@@ -535,19 +535,19 @@ variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [MulPosReflectL
 
 @[simp]
 theorem preimage_mul_const_Iic₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iic a = Iic (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iic a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Iic a
 
 @[simp]
 theorem preimage_mul_const_Ici₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ici a = Ici (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ici a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Ici a
 
 @[simp]
 theorem preimage_mul_const_Ioi₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ioi a = Ioi (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ioi a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Ioi a
 
 @[simp]
 theorem preimage_mul_const_Iio₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iio a = Iio (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iio a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Iio a
 
 @[simp]
 theorem preimage_mul_const_Icc₀ (a b : G₀) (h : 0 < c) :
@@ -842,7 +842,7 @@ lemma preimage_const_mul_Ioi_or_Iio (hb : a ≠ 0) {U V : Set α}
     (hU : U ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a}) (hV : V = (a * ·) ⁻¹' U) :
     V ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a} := by
   obtain ⟨aU, (haU | haU)⟩ := hU <;>
-  simp only [hV, haU, mem_setOf_eq] <;>
+  simp only [hV, haU, mem_ofPred_eq] <;>
   use a⁻¹ * aU <;>
   rcases lt_or_gt_of_ne hb with (hb | hb)
   · right; rw [Set.preimage_const_mul_Ioi_of_neg _ hb, div_eq_inv_mul]
@@ -897,10 +897,6 @@ theorem Ici_pow_eq {a : α} :
     ∀ n ≠ 0, Ici a ^ n = Ici (a ^ n)
   | 1, _ => by simp
   | n + 2, _ => by simp [pow_succ _ n.succ, Ici_pow_eq, Ici_mul_Ici_eq]
-
-omit [MulRightMono α] in
-@[to_additive]
-lemma Ici_one_eq_univ : Set.Ici (1 : α) = Set.univ := by aesop
 
 end CanonicallyOrdered
 

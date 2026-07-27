@@ -161,7 +161,7 @@ lemma sum_telescope {m n : ℕ} (hm : N ≤ m) (hn : m < n) :
 
 include ht in
 lemma le_sum_pool : ∑ i ∈ range b, (i : ℤ) ≤ ∑ x ∈ pool a t, x := by
-  convert sum_range_le_sum fun x mx ↦ (mem_Icc.mp ((pool_subset_Icc ha) mx)).1
+  convert! sum_range_le_sum fun x mx ↦ (mem_Icc.mp ((pool_subset_Icc ha) mx)).1
   · rw [hbN _ ht]
   · rw [zero_add]
 
@@ -169,7 +169,7 @@ include ht in
 lemma sum_pool_le : ∑ x ∈ pool a t, x ≤ ∑ i ∈ range (b - 1), (2014 - i : ℤ) := by
   have zmp := zero_mem_pool ha hbN ht
   rw [← insert_erase zmp, sum_insert (notMem_erase _ _), zero_add]
-  convert sum_le_sum_range fun x mx ↦ ?_
+  convert! sum_le_sum_range fun x mx ↦ ?_
   · rw [card_erase_of_mem zmp, hbN _ ht]
   · exact (mem_Icc.mp ((pool_subset_Icc ha) (mem_erase.mp mx).2)).2
 

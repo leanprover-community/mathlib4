@@ -35,7 +35,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits Opposite Functor
+open CategoryTheory.Limits Opposite CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -56,6 +56,7 @@ noncomputable def yonedaYonedaColimit :
   _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) :=
         isoWhiskerLeft yoneda.op (colimitIsoFlipCompColim (F ⋙ yoneda)).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X)).inv =
     (colimitObjIsoColimitCompEvaluation _ _).hom ≫

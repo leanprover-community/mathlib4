@@ -143,7 +143,7 @@ theorem coeff_hermite_explicit :
     ∀ n k : ℕ, coeff (hermite (2 * n + k)) k = (-1) ^ n * (2 * n - 1)‼ * Nat.choose (2 * n + k) k
   | 0, _ => by simp
   | n + 1, 0 => by
-    convert coeff_hermite_succ_zero (2 * n + 1) using 1
+    convert! coeff_hermite_succ_zero (2 * n + 1) using 1
     rw [coeff_hermite_explicit n 1, (by grind : 2 * (n + 1) - 1 = 2 * n + 1),
       Nat.doubleFactorial_add_one, Nat.choose_zero_right,
       Nat.choose_one_right, pow_succ]

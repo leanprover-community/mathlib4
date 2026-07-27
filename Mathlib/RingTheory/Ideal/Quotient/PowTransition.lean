@@ -54,6 +54,7 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
   · rcases mem_image_of_mem_map_of_surjective _ Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
     simpa [← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
     (hp : Antitone p) (x : (n : ℕ) → M ⧸ (p n)) (h : ∀ m, x m = factor (hp m.le_succ) (x (m + 1)))
     {m n : ℕ} (g : m ≤ n) : x m = factor (hp g) (x n) := by
@@ -86,7 +87,7 @@ lemma Ideal.map_mk_comap_factor [J.IsTwoSided] [K.IsTwoSided] (hIJ : J ≤ I) (h
     rw [← add_sub_cancel ((mk K) r) x, ← eq', ← map_add]
     exact mem_map_of_mem (mk K) (Submodule.add_mem _ hr (hIJ hs))
   · rcases mem_image_of_mem_map_of_surjective (mk K) Quotient.mk_surjective h with ⟨r, hr, eq⟩
-    simpa only [← eq] using mem_map_of_mem (mk J) hr
+    simpa only [← eq] using! mem_map_of_mem (mk J) hr
 
 namespace Submodule
 
@@ -179,7 +180,7 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
       rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← map_mul,
         Ideal.Quotient.eq_zero_iff_mem, pow_add]
       apply Ideal.mul_mem_mul hc (Ideal.mul_le_left (I := I ^ (n - 1)) _)
-      simpa only [← pow_add, Nat.sub_add_cancel npos] using hc
+      simpa only [← pow_add, Nat.sub_add_cancel npos] using! hc
 
 section powSMulQuotInclusion
 

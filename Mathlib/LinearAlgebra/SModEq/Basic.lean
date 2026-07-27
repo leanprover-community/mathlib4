@@ -53,7 +53,7 @@ theorem top : x ≡ y [SMOD (⊤ : Submodule R M)] :=
 theorem bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
   rw [SModEq.def, Submodule.Quotient.eq, mem_bot, sub_eq_zero]
 
-@[mono]
+@[gcongr, mono]
 theorem mono (HU : U₁ ≤ U₂) (hxy : x ≡ y [SMOD U₁]) : x ≡ y [SMOD U₂] :=
   (Submodule.Quotient.eq U₂).2 <| HU <| (Submodule.Quotient.eq U₁).1 hxy
 
@@ -93,7 +93,6 @@ theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) 
 @[gcongr]
 theorem sum {ι} {s : Finset ι} {x y : ι → M}
     (hxy : ∀ i ∈ s, x i ≡ y i [SMOD U]) : ∑ i ∈ s, x i ≡ ∑ i ∈ s, y i [SMOD U] := by
-  classical
   induction s using Finset.cons_induction with
   | empty => simp [SModEq.rfl]
   | cons i s _ ih =>
@@ -124,7 +123,6 @@ theorem mul {I : Ideal A} {x₁ x₂ y₁ y₂ : A} (hxy₁ : x₁ ≡ y₁ [SMO
 @[gcongr]
 theorem prod {I : Ideal A} {ι} {s : Finset ι} {x y : ι → A}
     (hxy : ∀ i ∈ s, x i ≡ y i [SMOD I]) : ∏ i ∈ s, x i ≡ ∏ i ∈ s, y i [SMOD I] := by
-  classical
   induction s using Finset.cons_induction with
   | empty => simp [SModEq.rfl]
   | cons i s _ ih =>

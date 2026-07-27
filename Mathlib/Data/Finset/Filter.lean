@@ -214,7 +214,7 @@ lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : S
 theorem disjoint_filter_and_not_filter :
     Disjoint (s.filter (fun x ↦ p x ∧ ¬q x)) (s.filter (fun x ↦ q x ∧ ¬p x)) := by
   intro _ htp htq
-  simp only [bot_eq_empty, le_eq_subset, subset_empty]
+  simp only [bot_eq_empty, subset_empty]
   by_contra! ⟨_, hx⟩
   exact (mem_filter.mp (htq hx)).2.2 (mem_filter.mp (htp hx)).2.1
 
@@ -225,6 +225,11 @@ lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔
 
 lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by
   simp [Finset.ext_iff]
+
+@[simp]
+lemma filter_mem_eq_of_subset [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    t.filter (· ∈ s) = s := by
+  grind
 
 end Filter
 
