@@ -611,21 +611,31 @@ theorem Continuous.image_connectedComponent_subset [TopologicalSpace β] {f : α
   (isConnected_connectedComponent.image f h.continuousOn).subset_connectedComponent
     ((mem_image f (connectedComponent a) (f a)).2 ⟨a, mem_connectedComponent, rfl⟩)
 
+theorem ContinuousOn.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
+    {a : α} (hf : ContinuousOn f s) (hx : a ∈ s) :
+    f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
+  (isPreconnected_connectedComponentIn.image _ <| hf.mono <| connectedComponentIn_subset _ _)
+    |>.subset_connectedComponentIn (mem_image_of_mem _ <| mem_connectedComponentIn hx)
+      (image_mono <| connectedComponentIn_subset _ _)
+
 theorem Continuous.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
     {a : α} (hf : Continuous f) (hx : a ∈ s) :
     f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
-  (isPreconnected_connectedComponentIn.image _ hf.continuousOn).subset_connectedComponentIn
-    (mem_image_of_mem _ <| mem_connectedComponentIn hx)
-    (image_mono <| connectedComponentIn_subset _ _)
+  hf.continuousOn.image_connectedComponentIn_subset hx
 
 theorem Continuous.mapsTo_connectedComponent [TopologicalSpace β] {f : α → β} (h : Continuous f)
     (a : α) : MapsTo f (connectedComponent a) (connectedComponent (f a)) :=
   mapsTo_iff_image_subset.2 <| h.image_connectedComponent_subset a
 
+theorem ContinuousOn.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
+    (h : ContinuousOn f s) {a : α} (hx : a ∈ s) :
+    MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
+  mapsTo_iff_image_subset.2 <| h.image_connectedComponentIn_subset hx
+
 theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
     (h : Continuous f) {a : α} (hx : a ∈ s) :
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
-  mapsTo_iff_image_subset.2 <| image_connectedComponentIn_subset h hx
+  h.continuousOn.mapsTo_connectedComponentIn hx
 
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=
@@ -643,8 +653,8 @@ theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
 
 /-- The preimage of a connected component of `F` is the union of the connected components of
 `f ⁻¹' F` at the points of that preimage. -/
-theorem Continuous.preimage_connectedComponentIn [TopologicalSpace β] {f : α → β}
-    (hf : Continuous f) (F : Set β) (y : β) :
+theorem ContinuousOn.preimage_connectedComponentIn [TopologicalSpace β] {f : α → β} {F : Set β}
+    (hf : ContinuousOn f (f ⁻¹' F)) (y : β) :
     f ⁻¹' connectedComponentIn F y =
       ⋃ x ∈ f ⁻¹' connectedComponentIn F y, connectedComponentIn (f ⁻¹' F) x := by
   refine subset_antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun x hx z hz ↦ ?_)
@@ -652,6 +662,22 @@ theorem Continuous.preimage_connectedComponentIn [TopologicalSpace β] {f : α �
   · rw [mem_preimage, connectedComponentIn_eq hx]
     exact connectedComponentIn_mono _ (image_preimage_subset f F)
       (hf.mapsTo_connectedComponentIn (connectedComponentIn_subset F y hx) hz)
+
+/-- The preimage of a connected component of `F` is the union of the connected components of
+`f ⁻¹' F` at the points of that preimage. -/
+theorem Continuous.preimage_connectedComponentIn [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (F : Set β) (y : β) :
+    f ⁻¹' connectedComponentIn F y =
+      ⋃ x ∈ f ⁻¹' connectedComponentIn F y, connectedComponentIn (f ⁻¹' F) x :=
+  hf.continuousOn.preimage_connectedComponentIn y
+
+/-- The preimage of a connected component is the union of the connected components at the points
+of that preimage. -/
+theorem Continuous.preimage_connectedComponent [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (y : β) :
+    f ⁻¹' connectedComponent y = ⋃ x ∈ f ⁻¹' connectedComponent y, connectedComponent x := by
+  simpa only [connectedComponentIn_univ, preimage_univ] using
+    hf.preimage_connectedComponentIn univ y
 
 /-- A preconnected space is one where there is no non-trivial open partition. -/
 class PreconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where

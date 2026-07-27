@@ -158,11 +158,6 @@ theorem Topology.IsCoinducing.locallyConnectedSpace [LocallyConnectedSpace α]
   rw [← hf.isOpen_preimage, hf.continuous.preimage_connectedComponentIn]
   exact isOpen_biUnion fun x _ ↦ (hF.preimage hf.continuous).connectedComponentIn
 
-/-- The image of a locally connected space under a quotient map is locally connected. -/
-theorem Topology.IsQuotientMap.locallyConnectedSpace [LocallyConnectedSpace α]
-    [TopologicalSpace β] {f : α → β} (hf : IsQuotientMap f) : LocallyConnectedSpace β :=
-  hf.isCoinducing.locallyConnectedSpace
-
 /-- If a space is locally connected, the topology of its connected components is discrete. -/
 instance [LocallyConnectedSpace α] : DiscreteTopology <| ConnectedComponents α := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
@@ -204,23 +199,23 @@ theorem Pi.locallyConnectedSpace_of_finite_not_preconnectedSpace [∀ i, Topolog
   · rw [piecewise_eq_of_mem _ _ _ hi]
     exact isPreconnected_connectedComponentIn
   · rw [piecewise_eq_of_notMem _ _ _ hi]
-    have : PreconnectedSpace (X i) := not_not.mp fun h ↦ hi (mem_union_right _ h)
+    have : PreconnectedSpace (X i) := not_not.mp (not_or.1 hi).2
     exact isPreconnected_univ
 
 /-- A finite product of locally connected spaces is locally connected. -/
 instance Pi.locallyConnectedSpace_of_finite [Finite ι] [∀ i, TopologicalSpace (X i)]
     [∀ i, LocallyConnectedSpace (X i)] : LocallyConnectedSpace (∀ i, X i) :=
-  locallyConnectedSpace_of_finite_nonpreconnected (toFinite _)
+  locallyConnectedSpace_of_finite_not_preconnectedSpace (toFinite _)
 
 /-- A product of preconnected, locally connected spaces is locally connected. Note that an
 arbitrary product of locally connected spaces need not be locally connected, so the
 preconnectedness assumption cannot be dropped entirely (though it can be dropped for finitely
-many factors, see `Pi.locallyConnectedSpace_of_finite_nonpreconnected`). -/
+many factors, see `Pi.locallyConnectedSpace_of_finite_not_preconnectedSpace`). -/
 instance Pi.locallyConnectedSpace [∀ i, TopologicalSpace (X i)]
     [∀ i, LocallyConnectedSpace (X i)] [∀ i, PreconnectedSpace (X i)] :
     LocallyConnectedSpace (∀ i, X i) :=
-  locallyConnectedSpace_of_finite_nonpreconnected
-    (finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
+  locallyConnectedSpace_of_finite_not_preconnectedSpace
+    (finite_empty.subset fun _ hi ↦ hi inferInstance)
 
 /-- A product of spaces is locally connected iff it is empty, or every factor is locally
 connected and all but finitely many factors are preconnected. -/
@@ -247,7 +242,7 @@ theorem Pi.locallyConnectedSpace_iff [∀ i, TopologicalSpace (X i)] :
     rw [Function.update_of_ne (ne_of_mem_of_not_mem hj hiJ)]
     exact mem_of_mem_nhds (ht j)
   · rintro (he | ⟨hloc, hfin⟩)
-    · exact ⟨fun x ↦ he.elim x⟩
-    · exact locallyConnectedSpace_of_finite_nonpreconnected hfin
+    · exact ⟨he.elim⟩
+    · exact locallyConnectedSpace_of_finite_not_preconnectedSpace hfin
 
 end LocallyConnectedSpace

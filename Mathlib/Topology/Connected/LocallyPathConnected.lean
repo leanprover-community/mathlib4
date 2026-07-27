@@ -336,24 +336,24 @@ theorem Pi.locallyPathConnectedSpace_of_finite_not_pathConnectedSpace {Z : ι �
     · rw [piecewise_eq_of_mem _ _ _ hi]
       exact isPathConnected_pathComponentIn (mem_of_mem_nhds (ht i))
     · rw [piecewise_eq_of_notMem _ _ _ hi]
-      have : PathConnectedSpace (Z i) := not_not.mp fun h ↦ hi (mem_union_right _ h)
+      have : PathConnectedSpace (Z i) := not_not.mp (not_or.1 hi).2
       exact isPathConnected_univ
 
 /-- A finite product of locally path-connected spaces is locally path-connected. -/
 instance Pi.locallyPathConnectedSpace_of_finite [Finite ι] {Z : ι → Type*}
     [∀ i, TopologicalSpace (Z i)] [∀ i, LocallyPathConnectedSpace (Z i)] :
     LocallyPathConnectedSpace (∀ i, Z i) :=
-  locallyPathConnectedSpace_of_finite_nonpathconnected (toFinite _)
+  locallyPathConnectedSpace_of_finite_not_pathConnectedSpace (toFinite _)
 
 /-- A product of path-connected, locally path-connected spaces is locally path-connected. Note
 that an arbitrary product of locally path-connected spaces need not be locally path-connected, so
 the path-connectedness assumption cannot be dropped entirely (though it can be dropped for
-finitely many factors, see `Pi.locallyPathConnectedSpace_of_finite_nonpathconnected`). -/
+finitely many factors, see `Pi.locallyPathConnectedSpace_of_finite_not_pathConnectedSpace`). -/
 instance Pi.locallyPathConnectedSpace {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
     [∀ i, LocallyPathConnectedSpace (Z i)] [∀ i, PathConnectedSpace (Z i)] :
     LocallyPathConnectedSpace (∀ i, Z i) :=
-  locallyPathConnectedSpace_of_finite_nonpathconnected
-    (finite_empty.subset fun _ hi ↦ (hi inferInstance).elim)
+  locallyPathConnectedSpace_of_finite_not_pathConnectedSpace
+    (finite_empty.subset fun _ hi ↦ hi inferInstance)
 
 /-- A product of spaces is locally path-connected iff it is empty, or every factor is locally
 path-connected and all but finitely many factors are path-connected. -/
@@ -380,8 +380,8 @@ theorem Pi.locallyPathConnectedSpace_iff {Z : ι → Type*} [∀ i, TopologicalS
     rw [update_of_ne (ne_of_mem_of_not_mem hj hiJ)]
     exact mem_of_mem_nhds (ht j)
   · rintro (he | ⟨hloc, hfin⟩)
-    · exact ⟨fun x ↦ he.elim x⟩
-    · exact locallyPathConnectedSpace_of_finite_nonpathconnected hfin
+    · exact ⟨he.elim⟩
+    · exact locallyPathConnectedSpace_of_finite_not_pathConnectedSpace hfin
 
 instance AlexandrovDiscrete.locallyPathConnectedSpace [AlexandrovDiscrete X] :
     LocallyPathConnectedSpace X := by
