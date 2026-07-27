@@ -202,6 +202,20 @@ theorem orthogonal_range (T : E →L[𝕜] F) : T.rangeᗮ = T†.ker := by
   rw [← T†.ker.orthogonal_orthogonal, T†.orthogonal_ker]
   simp
 
+/-- The fitted value `A x` minimizes the distance to `y` among points in `A.range`
+if and only if the adjoint of `A` sends the residual `y - A x` to zero. -/
+theorem norm_sub_apply_eq_iInf_iff_adjoint_apply_sub_eq_zero
+    (A : E →L[𝕜] F) (y : F) (x : E) :
+    (‖y - A x‖ = ⨅ z : A.range, ‖y - z‖) ↔ (A†) (y - A x) = 0 := by
+  -- The fitted value belongs to the range of `A`, with preimage `x`.
+  have hx : A x ∈ A.range := ⟨x, rfl⟩
+  -- Rewrite minimization as orthogonality, then as membership in the kernel
+  -- of the adjoint, and finally as the adjoint sending the residual to zero.
+  rw [A.range.norm_eq_iInf_iff_inner_eq_zero hx,
+    ← Submodule.mem_orthogonal', A.orthogonal_range, LinearMap.mem_ker]
+  -- These expressions differ only by the coercion to an underlying linear map.
+  rfl
+
 omit [CompleteSpace E] in
 theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[𝕜] E}
     (hT : T.IsSymmetric) (hU : U.IsSymmetric) :
