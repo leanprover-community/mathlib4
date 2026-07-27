@@ -86,6 +86,8 @@ variable [AddCommGroup M] [Module R M] [TopologicalSpace M] [LocallyConvexSpace 
 variable [AddCommGroup N] [Module R N] [TopologicalSpace N] [LocallyConvexSpace R N]
 
 variable (R) in
+/-- Set of all locally convex topological module topology,
+for which the canonical bilinear map is continuous -/
 def tensorProductTopologies := { t : TopologicalSpace (M ⊗[R] N) |
     letI := t
     IsTopologicalAddGroup (M ⊗[R] N) ∧
@@ -114,6 +116,11 @@ section PartialOrder
 
 variable [PartialOrder 𝕜]
 
+/-- Given collections of sets `𝔘` in `E` and `𝔙` in `F`, `projectiveModuleFilterBasisSets 𝔘 𝔙`
+is the collection of absolutely convex hulls of the set-wise tensor products `U ⊗ˢ[𝕜] V` for
+`U ∈ 𝔘` and `V ∈ 𝔙`. When `𝔘` and `𝔙` constitute neighborhood bases of zero in `E` and `F`
+respectively, this collection forms a neighborhood basis of zero for the projective tensor product
+topology. -/
 def projectiveModuleFilterBasisSets (𝔘 : Set (Set E)) (𝔙 : Set (Set F)) :=
   { s | ∃ U ∈ 𝔘, ∃ V ∈ 𝔙, s = absConvexHull 𝕜 (U ⊗ˢ[𝕜] V) }
 
@@ -278,6 +285,10 @@ lemma projectiveModuleFilterBasisSets_smul_right
     rw [smul_add]
     exact h_subset (Set.add_mem_add hcx hcy)
 
+/-- Constructs the `ModuleFilterBasis` on the tensor product `E ⊗[𝕜] F` given neighborhood
+bases `𝔘` of zero in `E` and `𝔙` of zero in `F`. The underlying filter basis sets are the
+absolutely convex hulls of `U ⊗ˢ[𝕜] V`. This basis induces the projective topology,
+equipping the tensor product with a topological module structure. -/
 def projectiveModuleFilterBasis : ModuleFilterBasis 𝕜 (E ⊗[𝕜] F) where
   sets := projectiveModuleFilterBasisSets 𝔘 𝔙
   nonempty := projectiveModuleFilterBasisSets_nonempty h𝔘 h𝔙

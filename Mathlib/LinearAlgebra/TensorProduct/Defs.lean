@@ -118,6 +118,7 @@ variable (R) in
 abbrev setTmul (A : Set M) (B : Set N) : Set (M ⊗[R] N) :=
   Set.image2 (tmul R) A B
 
+@[inherit_doc setTmul]
 scoped[TensorProduct] notation:100 A:100 " ⊗ˢ[" R "] " B:101 => TensorProduct.setTmul R A B
 
 /-- Produces an arbitrary representation of the form `mₒ ⊗ₜ n₀ + ...`. -/
