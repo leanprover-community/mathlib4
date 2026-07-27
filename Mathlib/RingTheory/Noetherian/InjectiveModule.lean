@@ -59,7 +59,7 @@ private lemma exists_divide_by_fn_map (f : R) (n r : ℕ)
 
 variable [IsNoetherianRing R]
 
-private lemma stabilize_ideal_b (f : R) :
+private lemma stabilize_ideal_torsionOf_powers (f : R) :
     ∃ (r : ℕ), ∀ (i : ℕ), Ideal.torsionOf R R (f ^ (r + i)) = Ideal.torsionOf R R (f ^ r) := by
   let ideal_b_order_hom : ℕ →o Ideal R := by
     refine ⟨fun i ↦ Ideal.torsionOf R R <| f ^ i, fun i j hle ↦ ?_⟩
@@ -83,7 +83,7 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
     obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff s f).mp ps
     use n, a
     exact hn ▸ hs.symm
-  choose r hr using stabilize_ideal_b f
+  choose r hr using stabilize_ideal_torsionOf_powers f
   choose phi hphi using exists_divide_by_fn_map f n r hr a
   choose psi hpsi using hI (Ideal.span {f^(r + n)}) phi
   use psi 1
