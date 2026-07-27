@@ -5,9 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
