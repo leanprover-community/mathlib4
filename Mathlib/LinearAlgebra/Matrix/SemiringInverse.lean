@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Perm.Sign
 
 import Mathlib.Algebra.Module.End
 import Mathlib.GroupTheory.Perm.Option
+import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Nonsingular inverses over semirings
@@ -184,12 +185,12 @@ theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]
 
 theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
-  let A' : Matrix n n R := of <| Function.update A j (A i)
+  let A' : Matrix n n R := A.updateRow j (A i)
   have h' s : (A * adjp s A) i j = (A' * adjp s A') j j := sum_congr rfl fun _ _ ↦
     congr_arg₂ (· * ·) (by simp [A']) <| sum_congr rfl fun σ hσ ↦ prod_congr rfl fun _ _ ↦ by aesop
   simp_rw [h', mul_adjp_apply_eq]
   apply detp_eq_of_row_eq h
-  simp [A', h]
+  simp [A', Matrix.row_apply', h]
 
 theorem adjp_mul_apply_eq : (adjp s A * A) i i = detp s A := by
   rw [← detp_transpose, ← mul_adjp_apply_eq _ _ i, adjp_transpose, ← transpose_mul, transpose_apply]
@@ -294,37 +295,5 @@ instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFinite
     smul_add, smul_add, add_add_add_comm, smul_smul, smul_smul, ← add_smul,
     ((isAddUnit_detp_smul_mul_adjp hAB).add
       ((isAddUnit_detp_mul_detp hAB).smul_right _)).add_left_inj] at h
-
-@[deprecated (since := "2025-11-29")] protected alias mul_eq_one_comm := mul_eq_one_comm
-
-variable (A B)
-
-/-- We can construct an instance of invertible A if A has a left inverse. -/
-@[deprecated invertibleOfLeftInverse (since := "2025-12-06"), implicit_reducible]
-protected def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
-  invertibleOfLeftInverse _ _ h
-
-/-- We can construct an instance of invertible A if A has a right inverse. -/
-@[deprecated invertibleOfRightInverse (since := "2025-12-06"), implicit_reducible]
-protected def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
-  invertibleOfRightInverse _ _ h
-
-variable {A B}
-
-@[deprecated IsUnit.of_mul_eq_one_right (since := "2025-12-06")]
-theorem isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
-  .of_mul_eq_one_right _ h
-
-@[deprecated isUnit_iff_exists_inv' (since := "2025-12-06")]
-theorem exists_left_inverse_iff_isUnit : (∃ B, B * A = 1) ↔ IsUnit A :=
-  isUnit_iff_exists_inv'.symm
-
-@[deprecated IsUnit.of_mul_eq_one (since := "2025-12-06")]
-theorem isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
-  .of_mul_eq_one _ h
-
-@[deprecated isUnit_iff_exists_inv (since := "2025-12-06")]
-theorem exists_right_inverse_iff_isUnit : (∃ B, A * B = 1) ↔ IsUnit A :=
-  isUnit_iff_exists_inv.symm
 
 end Matrix

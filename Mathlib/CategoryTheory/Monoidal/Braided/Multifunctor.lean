@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C] [MonoidalCategory C]
 
-open MonoidalCategory Functor
+open MonoidalCategory CategoryTheory.Functor
 
 namespace BraidedCategory
 
@@ -131,6 +131,9 @@ variable (C) in
 def firstMap₃ : functor₂₃₁ C ⟶ functor₂₃₁' C where
   app _ := { app _ := { app _ := (α_ _ _ _).hom } }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The top right map in the forward hexagon identity. -/
 @[simps!]
 def secondMap₁ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃ C ⟶ functor₂₁₃ C :=
@@ -142,6 +145,9 @@ variable (C) in
 def secondMap₂ : functor₂₁₃ C ⟶ functor₂₁₃' C where
   app _ := { app _ := { app _ := (α_ _ _ _).hom } }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bottom right map in the forward hexagon identity. -/
 @[simps!]
 def secondMap₃ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₂₁₃' C ⟶ functor₂₃₁' C :=
@@ -176,6 +182,9 @@ firstMap₂ |            |secondMap₂            |             |
 ```
 -/
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The middle left map in the reverse hexagon identity. -/
 @[simps!]
 def firstMap₂ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃ C ⟶ functor₃₁₂' C :=
@@ -188,6 +197,9 @@ variable (C) in
 def firstMap₃ : functor₃₁₂' C ⟶ functor₃₁₂ C :=
   flip₂₃Functor.map ((flipFunctor _ _ _).map (curriedAssociatorNatIso C).inv)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The top right map in the reverse hexagon identity. -/
 @[simps!]
 def secondMap₁ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃' C ⟶ functor₁₃₂' C :=
@@ -199,6 +211,9 @@ variable (C) in
 def secondMap₂ : functor₁₃₂' C ⟶ functor₁₃₂ C where
   app _ := { app _ := { app _ := (α_ _ _ _).inv } }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bottom right map in the reverse hexagon identity. -/
 @[simps!]
 def secondMap₃ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₃₂ C ⟶ functor₃₁₂ C :=
@@ -223,7 +238,7 @@ Given a braiding `β : curriedTensor C ≅ (curriedTensor C).flip` as a natural 
 bifunctors, and the two equalities `hexagon_forward` and `hexagon_reverse` of natural
 transformations between trifunctors, we obtain a braided category structure.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofBifunctor : BraidedCategory C where
   braiding X Y := (β.app X).app Y
   braiding_naturality_right _ _ _ _ := (β.app _).hom.naturality _
@@ -241,7 +256,7 @@ open BraidedCategory
 Alternative constructor for symmetric categories, where the symmetry of the braiding is phrased
 as an equality of natural transformation of bifunctors.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def SymmetricCategory.ofCurried [BraidedCategory C]
     (h : (curriedBraidingNatIso C).hom ≫ (flipFunctor _ _ _).map (curriedBraidingNatIso C).hom =
       𝟙 _) :

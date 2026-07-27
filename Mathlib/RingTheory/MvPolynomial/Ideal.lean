@@ -102,6 +102,7 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
   rw [pow_idealOfVars]
@@ -132,6 +133,7 @@ theorem mkₐ_eq_aeval :
   ext d
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mk_eq_eval₂ : (Ideal.Quotient.mk I).toFun =
       eval₂ (algebraMap A (MvPolynomial σ A ⧸ I)) fun d : σ => Ideal.Quotient.mk I (X d) := by
   ext d
@@ -161,7 +163,6 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p)) :
     span (m.leadingTerm '' B) =
       span ((fun p ↦ MvPolynomial.monomial (m.degree p) (1 : R)) '' B) := by
-  classical
   apply le_antisymm
   all_goals
     rw [Ideal.span_le, Set.image_subset_iff]
