@@ -78,4 +78,8 @@ theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation =
   · apply VectorMeasure.variation_le_of_forall_enorm_le
     exact fun s _ ↦ enorm_le_totalVariation μ s
 
+/-- The variation of a signed measure is a finite measure. -/
+instance (μ : SignedMeasure X) : IsFiniteMeasure μ.variation := by
+  rw [← totalVariation_eq_variation]; infer_instance
+
 end MeasureTheory.SignedMeasure
