@@ -175,8 +175,6 @@ protected lemma div_mul_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 
 protected lemma div_mul_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : b / a * a = b :=
   ENNReal.div_mul_cancel' (by simp [ha₀]) (by simp [ha])
 
-/-- Cancels a finite nonzero middle term:
-`a / b * (b / c) = a / c` for `b ≠ 0`, `b ≠ ∞` in `ℝ≥0∞`. -/
 protected lemma div_mul_div_cancel (hb₀ : b ≠ 0) (hb : b ≠ ∞) :
     a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, ENNReal.div_mul_cancel hb₀ hb]
