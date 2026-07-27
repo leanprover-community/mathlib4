@@ -89,12 +89,6 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
   choose r hr using stabilize_ideal_b f
   choose phi hphi using exists_divide_by_fn_map f n r hr a
   choose psi hpsi using hI (Ideal.span {f^(r + n)}) phi
-  have hz : f ^ (r + n) • (psi 1) = f ^ r • a := by
-    rw [← psi.map_smul (f ^ (r + n)) (1 : R), smul_eq_mul, mul_one, ← hphi]
-    exact hpsi _ _
-  have hz2 : f ^ (r + n) • (g (psi 1)) = f ^ r • (f ^ n • x) := by
-    rw [← ha, ← g.map_smul, ← g.map_smul]
-    exact congrArg g hz
   use psi 1
   have s_mem : f ^ (r + n) ∈ Submonoid.powers f :=
     (Submonoid.mem_powers_iff (f ^ (r + n)) f).mpr ⟨r + n, rfl⟩
@@ -103,7 +97,10 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
     (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g ⟨f ^ (r + n), s_mem⟩)
   apply hbij.1
   dsimp
-  rw [hz2, smul_smul, ← pow_add]
+  rw [← g.map_smul, pow_add, <- smul_smul, <- smul_smul, <- ha, <- g.map_smul]
+  apply congrArg g
+  rw [smul_smul, <- pow_add, ← psi.map_smul (f^(r + n)) (1 : R), smul_eq_mul, mul_one, ← hphi]
+  exact hpsi _ _
 
 /-- **Hartshorne III. Lemma 3.3.** Let `R` be a Noetherian ring and `I` an injective `R`-module.
 For any `f : R`, the localization map `I → I_f` is surjective. -/
