@@ -555,10 +555,10 @@ theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
       rw [Finset.mem_union] at hi_mem_union
       rcases hi_mem_union with hi1 | hi2
       · have hi2 : i ∉ p2 := fun hip2 => Set.disjoint_left.mp hST (hp1 hi1) (hp2 hip2)
-        simp_rw [g, if_pos hi1, if_neg hi2, Set.inter_univ]
+        simp_rw [g, ite_eq_left hi1, ite_eq_right hi2, Set.inter_univ]
         exact ht1_m i hi1
       · have hi1 : i ∉ p1 := fun hip1 => Set.disjoint_right.mp hST (hp2 hi2) (hp1 hip1)
-        simp_rw [g, if_neg hi1, if_pos hi2, Set.univ_inter]
+        simp_rw [g, ite_eq_right hi1, ite_eq_left hi2, Set.univ_inter]
         exact ht2_m i hi2
     have h_p1_inter_p2 :
       ((⋂ x ∈ p1, f1 x) ∩ ⋂ x ∈ p2, f2 x) =
@@ -694,7 +694,7 @@ theorem iIndepSets.piiUnionInter_of_notMem {π : ι → Set (Set Ω)} {a : ι} {
     suffices h_forall : ∀ n ∈ s, f n = ft1 n by grind
     intro n hnS
     have hn_ne_a : n ≠ a := by rintro rfl; exact haS (hs_mem hnS)
-    simp_rw [f, if_pos hnS, if_neg hn_ne_a]
+    simp_rw [f, ite_eq_left hnS, ite_eq_right hn_ne_a]
   have h_μ_t1 : ∀ᵐ a' ∂μ, κ a' t1 = ∏ n ∈ s, κ a' (f n) := by
     filter_upwards [hp_ind s h_f_mem_pi] with a' ha'
     rw [h_t1, ← ha']

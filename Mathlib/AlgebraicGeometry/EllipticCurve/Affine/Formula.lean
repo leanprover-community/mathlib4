@@ -180,7 +180,7 @@ def slope (x₁ x₂ y₁ y₂ : F) : F :=
 @[simp]
 lemma slope_of_Y_eq {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) :
     W.slope x₁ x₂ y₁ y₂ = 0 := by
-  rw [slope, if_pos hx, if_pos hy]
+  rw [slope, ite_eq_left hx, ite_eq_left hy]
 
 @[simp]
 lemma slope_of_Y_ne' {x₂ y₁ y₂ : F} (hy : ¬y₁ = -y₂ - W.a₁ * x₂ - W.a₃) :
@@ -196,7 +196,7 @@ lemma slope_of_Y_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ 
 @[simp]
 lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
     W.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) / (x₁ - x₂) := by
-  rw [slope, if_neg hx]
+  rw [slope, ite_eq_right hx]
 
 lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
     W.slope x₁ x₂ y₁ y₂ = -W.polynomialX.evalEval x₁ y₁ / W.polynomialY.evalEval x₁ y₁ := by

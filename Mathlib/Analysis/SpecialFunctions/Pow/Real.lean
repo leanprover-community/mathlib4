@@ -49,7 +49,7 @@ theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 
 theorem rpow_def_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : x ^ y = exp (log x * y) := by
-  rw [rpow_def_of_nonneg (le_of_lt hx), if_neg (ne_of_gt hx)]
+  rw [rpow_def_of_nonneg (le_of_lt hx), ite_eq_right (ne_of_gt hx)]
 
 theorem exp_mul (x y : ℝ) : exp (x * y) = exp x ^ y := by rw [rpow_def_of_pos (exp_pos _), log_exp]
 
@@ -93,7 +93,7 @@ lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 := by
 open Real
 
 theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * y) * cos (y * π) := by
-  rw [rpow_def, Complex.cpow_def, if_neg]
+  rw [rpow_def, Complex.cpow_def, ite_eq_right]
   · have : Complex.log x * y = ↑(log (-x) * y) + ↑(y * π) * Complex.I := by
       simp only [Complex.log, Complex.norm_real, norm_eq_abs, abs_of_neg hx, log_neg_eq_log,
         Complex.arg_ofReal_of_neg hx, Complex.ofReal_mul]

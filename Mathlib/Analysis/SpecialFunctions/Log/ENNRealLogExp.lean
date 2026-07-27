@@ -41,7 +41,7 @@ section LogExp
 @[simp] lemma EReal.log_exp (x : EReal) : log (exp x) = x := by
   induction x
   · simp
-  · rw [exp_coe, log_ofReal, if_neg (not_le.mpr (Real.exp_pos _)), Real.log_exp]
+  · rw [exp_coe, log_ofReal, ite_eq_right (not_le.mpr (Real.exp_pos _)), Real.log_exp]
   · simp
 
 @[simp] lemma ENNReal.exp_log (x : ℝ≥0∞) : exp (log x) = x := by

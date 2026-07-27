@@ -190,7 +190,7 @@ noncomputable def factors (a : α) : Multiset α :=
   if h : a = 0 then 0 else Classical.choose (UniqueFactorizationMonoid.exists_prime_factors a h)
 
 theorem factors_prod {a : α} (ane0 : a ≠ 0) : Associated (factors a).prod a := by
-  rw [factors, dif_neg ane0]
+  rw [factors, dite_eq_right ane0]
   exact (Classical.choose_spec (exists_prime_factors a ane0)).2
 
 @[simp]
@@ -205,7 +205,7 @@ theorem dvd_of_mem_factors {p a : α} (h : p ∈ factors a) : p ∣ a :=
 
 theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
   have ane0 := ne_zero_of_mem_factors hx
-  rw [factors, dif_neg ane0] at hx
+  rw [factors, dite_eq_right ane0] at hx
   exact (Classical.choose_spec (UniqueFactorizationMonoid.exists_prime_factors a ane0)).1 x hx
 
 theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>

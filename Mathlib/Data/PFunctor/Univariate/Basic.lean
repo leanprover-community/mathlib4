@@ -135,7 +135,7 @@ theorem fst_map (x : P α) (f : α → β) : (P.map f x).1 = x.1 := by cases x; 
 @[simp]
 theorem iget_map [DecidableEq P.A] [Inhabited α] [Inhabited β] (x : P α)
     (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (P.map f x).iget i = f (x.iget i) := by
-  simp only [Obj.iget, fst_map, *, dif_pos]
+  simp only [Obj.iget, fst_map, *, dite_eq_left]
   cases x
   rfl
 

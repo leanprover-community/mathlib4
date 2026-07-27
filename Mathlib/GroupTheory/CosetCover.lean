@@ -246,7 +246,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     have ⟨j, hj, hjfi⟩ := exists_finiteIndex_of_leftCoset_cover hcovers
     have ⟨x, hx⟩ : (t j hj hjfi).Nonempty := Finset.nonempty_coe_sort.mp
       (ht j hj hjfi).1.leftQuotientEquiv.symm.nonempty
-    ⟨⟨⟨j, hj⟩, ⟨x, dif_pos hjfi ▸ hx⟩⟩, hjfi, if_pos hjfi⟩
+    ⟨⟨⟨j, hj⟩, ⟨x, dite_eq_left hjfi ▸ hx⟩⟩, hjfi, ite_eq_left hjfi⟩
   -- Since `D` is the unique subgroup of finite index whose cosets occur in the new covering,
   -- the cosets of the other subgroups can be omitted.
   replace hcovers' : ⋃ i ∈ Finset.univ.filter (K · = D), f i • (D : Set G) = Set.univ := by
@@ -294,8 +294,8 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       rw [← (ht i hi.1 hi.2).2] at hi'
       suffices ∃ r : H i, r ∈ t i hi.1 hi.2 ∧ x ∈ (g i * r) • (D : Set G) by
         have ⟨r, hr, hxr⟩ := this
-        refine ⟨⟨⟨i, hi.1⟩, ⟨r, dif_pos hi.2 ▸ hr⟩⟩, rfl, ?_⟩
-        simpa [K, f, if_pos hi.2] using! hxr
+        refine ⟨⟨⟨i, hi.1⟩, ⟨r, dite_eq_left hi.2 ▸ hr⟩⟩, rfl, ?_⟩
+        simpa [K, f, ite_eq_left hi.2] using! hxr
       simpa [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, mul_assoc] using! hi' hx
     have ⟨k₁, hik₁, hk₁, hxk₁⟩ := hk' i hi hi'
     have ⟨k₂, hjk₂, hk₂, hxk₂⟩ := hk' j hj hj'

@@ -326,11 +326,11 @@ theorem prod_filter (p : ι → Prop) [DecidablePred p] (f : ι → M) :
     ∏ a ∈ s with p a, f a = ∏ a ∈ s, if p a then f a else 1 :=
   calc
     ∏ a ∈ s with p a, f a = ∏ a ∈ s with p a, if p a then f a else 1 :=
-      prod_congr rfl fun a h => by rw [if_pos]; simpa using (mem_filter.1 h).2
+      prod_congr rfl fun a h => by rw [ite_eq_left]; simpa using (mem_filter.1 h).2
     _ = ∏ a ∈ s, if p a then f a else 1 := by
       { refine prod_subset (filter_subset _ s) fun x hs h => ?_
         rw [mem_filter, not_and] at h
-        exact if_neg (by simpa using h hs) }
+        exact ite_eq_right (by simpa using h hs) }
 
 @[to_additive]
 theorem prod_eq_single_of_mem {s : Finset ι} {f : ι → M} (a : ι) (h : a ∈ s)
@@ -484,7 +484,7 @@ theorem prod_congr_set [Fintype ι] (s : Set ι) [DecidablePred (· ∈ s)] (f :
 @[to_additive]
 theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
-  (prod_congr rfl) fun _i hi => if_pos hi
+  (prod_congr rfl) fun _i hi => ite_eq_left hi
 
 /-- Also see `Finset.prod_ite_mem_eq` -/
 @[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]

@@ -382,7 +382,7 @@ theorem weightedHomogeneousComponent_isWeightedHomogeneous :
   classical
   intro d hd
   contrapose! hd
-  rw [coeff_weightedHomogeneousComponent, if_neg hd]
+  rw [coeff_weightedHomogeneousComponent, ite_eq_right hd]
 
 theorem weightedHomogeneousComponent_mem (w : σ → M) (φ : MvPolynomial σ R) (m : M) :
     weightedHomogeneousComponent w m φ ∈ weightedHomogeneousSubmodule R w m := by
@@ -432,14 +432,14 @@ theorem sum_weightedHomogeneousComponent :
   ext1 d
   simp only [coeff_sum, coeff_weightedHomogeneousComponent]
   rw [Finset.sum_eq_single (weight w d)]
-  · rw [if_pos rfl]
+  · rw [ite_eq_left rfl]
   · intro m _ hm'
-    rw [if_neg hm'.symm]
+    rw [ite_eq_right hm'.symm]
   · intro hm
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
     simp only [Finite.mem_toFinset, mem_support, Ne, Classical.not_not] at hm
     have := coeff_weightedHomogeneousComponent (w := w) (weight w d) φ d
-    rw [hm, if_pos rfl, coeff_zero] at this
+    rw [hm, ite_eq_left rfl, coeff_zero] at this
     exact this.symm
 
 theorem finsum_weightedHomogeneousComponent :
@@ -458,7 +458,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvP
   · split_ifs
     · rfl
     rw [zero_coeff]
-  · rw [hp zero_coeff, if_pos rfl]
+  · rw [hp zero_coeff, ite_eq_left rfl]
 
 theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
     {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) :
@@ -469,7 +469,7 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
   · simp [zero_coeff]
-  · rw [if_neg]
+  · rw [ite_eq_right]
     · rw [coeff_zero]
     · rw [hp zero_coeff]; exact Ne.symm hn
 
@@ -555,8 +555,8 @@ theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [IsAddTorsio
   classical
   ext1 d
   rcases Classical.em (d = 0) with (rfl | hd)
-  · simp only [coeff_weightedHomogeneousComponent, if_pos, map_zero, coeff_zero_C]
-  · rw [coeff_weightedHomogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
+  · simp only [coeff_weightedHomogeneousComponent, ite_eq_left, map_zero, coeff_zero_C]
+  · rw [coeff_weightedHomogeneousComponent, ite_eq_right, coeff_C, ite_eq_right (Ne.symm hd)]
     simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.linearCombination_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]

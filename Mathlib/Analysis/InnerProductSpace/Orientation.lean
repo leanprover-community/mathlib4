@@ -186,7 +186,7 @@ theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
       -AlternatingMap.constLinearEquivOfIsEmpty 1 := by
   simp_rw [volumeForm, Or.by_cases, positiveOrientation]
-  apply if_neg
+  apply ite_eq_right
   simp only [neg_rayOfNeZero]
   rw [ray_eq_iff, SameRay.sameRay_comm]
   intro h
@@ -200,7 +200,7 @@ theorem volumeForm_robust (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.o
   cases n
   · classical
       have : o = positiveOrientation := hb.symm.trans b.toBasis.orientation_isEmpty
-      simp_rw [volumeForm, Or.by_cases, dif_pos this, Nat.rec_zero, Basis.det_isEmpty]
+      simp_rw [volumeForm, Or.by_cases, dite_eq_left this, Nat.rec_zero, Basis.det_isEmpty]
   · simp_rw [volumeForm]
     rw [same_orientation_iff_det_eq_det, hb]
     exact o.finOrthonormalBasis_orientation _ _
@@ -212,7 +212,7 @@ theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBas
   rcases n with - | n
   · classical
       have : positiveOrientation ≠ o := by rwa [b.toBasis.orientation_isEmpty] at hb
-      simp_rw [volumeForm, Or.by_cases, dif_neg this.symm, Nat.rec_zero, Basis.det_isEmpty]
+      simp_rw [volumeForm, Or.by_cases, dite_eq_right this.symm, Nat.rec_zero, Basis.det_isEmpty]
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   simp_rw [volumeForm]
   apply e.det_eq_neg_det_of_opposite_orientation b

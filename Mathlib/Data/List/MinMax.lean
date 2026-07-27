@@ -57,7 +57,7 @@ private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (som
 
 @[simp]
 theorem argAux_self (hr₀ : Std.Irrefl r) (a : α) : argAux r (some a) a = a :=
-  if_neg <| hr₀.irrefl _
+  ite_eq_right <| hr₀.irrefl _
 
 theorem not_of_mem_foldl_argAux (hr₀ : Std.Irrefl r) (hr₁ : IsTrans α r) :
     ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
@@ -182,12 +182,12 @@ theorem index_of_argmax :
     simp only [cond_eq_ite, beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_gt ‹_› ‹_›
-    · rw [if_pos rfl]
-    · rw [if_neg, if_neg]
+    · rw [ite_eq_left rfl]
+    · rw [ite_eq_right, ite_eq_right]
       · exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne
-    · rw [if_pos rfl]
+    · rw [ite_eq_left rfl]
       exact Nat.zero_le _
 
 theorem index_of_argmin :

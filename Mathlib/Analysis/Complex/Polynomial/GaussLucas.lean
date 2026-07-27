@@ -40,7 +40,7 @@ theorem sum_derivRootWeight_pos (hP : 0 < degree P) (z : ℂ) :
   have hP₀ : P ≠ 0 := by rintro rfl; simp at hP
   by_cases hPz : P.eval z = 0
   · simp [derivRootWeight, hPz, hP₀]
-  · simp only [derivRootWeight, if_neg hPz]
+  · simp only [derivRootWeight, ite_eq_right hPz]
     apply Finset.sum_pos
     · intro w hw
       apply div_pos (by simp_all)
@@ -71,11 +71,11 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
     _ = s.centerMass weight id := by
       simp only [add_eq_right, Finset.centerMass, this, smul_zero]
   by_cases hzP : P.eval z = 0
-  · simp only [weight, derivRootWeight, if_pos hzP]
+  · simp only [weight, derivRootWeight, ite_eq_left hzP]
     rw [Finset.sum_eq_single z] <;> simp_all
   calc
     ∑ x ∈ s, weight x • (z - x) = conj (∑ x ∈ s, P.rootMultiplicity x • (1 / (z - x))) := by
-      simp only [map_sum, weight, derivRootWeight, if_neg hzP]
+      simp only [map_sum, weight, derivRootWeight, ite_eq_right hzP]
       refine Finset.sum_congr rfl fun x hx ↦ ?_
       have : z - x ≠ 0 := by
         rw [sub_ne_zero]

@@ -483,7 +483,7 @@ theorem IsSt.unique {x : ℝ*} {r s : ℝ} (hr : IsSt x r) (hs : IsSt x s) : r =
 @[deprecated "`IsSt` is deprecated" (since := "2026-01-05")]
 theorem IsSt.st_eq {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : st x = r := by
   have h : ∃ r, IsSt x r := ⟨r, hxr⟩
-  rw [st, dif_pos h]
+  rw [st, dite_eq_left h]
   exact (Classical.choose_spec h).unique hxr
 
 @[deprecated "`IsSt` is deprecated" (since := "2026-01-05")]
@@ -497,7 +497,7 @@ theorem not_infinite_of_exists_st {x : ℝ*} : (∃ r : ℝ, IsSt x r) → ¬Inf
 
 @[deprecated stdPart_eq_zero (since := "2026-01-05")]
 theorem Infinite.st_eq {x : ℝ*} (hi : Infinite x) : st x = 0 :=
-  dif_neg fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
+  dite_eq_right fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
 
 @[deprecated stdPart_eq_sSup (since := "2026-01-05")]
 theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y : ℝ*) < x }) := by

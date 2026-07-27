@@ -49,7 +49,7 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
         · subst h
           simp only [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
         · dsimp [single]
-          rw [if_neg h, if_neg (fun h' => h (by lia))])))
+          rw [ite_eq_right h, ite_eq_right (fun h' => h (by lia))])))
     (fun {X Y} f => by
       obtain rfl : a' = a + n := by lia
       ext

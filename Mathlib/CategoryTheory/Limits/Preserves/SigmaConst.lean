@@ -83,7 +83,7 @@ lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
       Sigma.ι (fun _ ↦ R) ⟨b, hb⟩ := by
   dsimp [sigmaConstCokernelCofork]
   rw [Sigma.ι_desc]
-  apply dif_pos
+  apply dite_eq_left
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -91,7 +91,7 @@ lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
     dsimp% Sigma.ι (fun _ ↦ R) (f a) ≫ (sigmaConstCokernelCofork R f).π = 0 := by
   dsimp [sigmaConstCokernelCofork]
   rw [Sigma.ι_desc]
-  exact dif_neg (by simp)
+  exact dite_eq_right (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

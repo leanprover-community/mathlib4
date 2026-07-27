@@ -54,12 +54,12 @@ decreasing_by exact mod_opow_log_lt_self b h
 @[simp]
 theorem rec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : CNF.rec b H0 H 0 = H0 := by
-  rw [CNF.rec, dif_pos rfl]
+  rw [CNF.rec, dite_eq_left rfl]
 
 theorem rec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     CNF.rec b H0 H o = H o ho (@CNF.rec b C H0 H _) := by
-  rw [CNF.rec, dif_neg]
+  rw [CNF.rec, dite_eq_right]
 
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
