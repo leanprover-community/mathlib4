@@ -139,7 +139,7 @@ theorem IsFractionRing.finrank_left_eq (A : Type*) [CommRing A] [Algebra S A] [A
       linearIndepOn_finsetIntegerMultiple S⁰ hs⟩
 
 /-- If `K` is the fraction ring of `A` and `L` is the fraction ring of `B`, then the finrank
-`finrank K L` of the fraction rings equals the finrank `A B` of the base rings.
+`finrank K L` of the fraction rings equals the finrank `finrank A B` of the base rings.
 
 See `IsFractionRing.finrank_left_eq` and `IsFractionRing.finrank_right_eq` for one-sided versions.
 See `Algebra.IsAlgebraic.rank_of_isFractionRing` for a rank version with additional assumptions. -/
