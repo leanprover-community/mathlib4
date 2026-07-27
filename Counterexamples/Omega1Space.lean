@@ -26,8 +26,10 @@ open Set
 
 namespace Omega1Space
 
+universe u
+
 /-- The greatest element `Ω`. -/
-noncomputable abbrev Ω : Ordinal.{0} := ω₁
+noncomputable abbrev Ω : Ordinal := ω₁
 
 /-- The set `S_Ω`. -/
 abbrev SΩ : Set Ordinal := Iio Ω
@@ -87,7 +89,7 @@ instance : CompactSpace SΩC := isCompact_iff_compactSpace.mp isCompact_SΩC
 
 /-! Main theorem: `S_Ω × S̄_Ω` is not normal. -/
 
-theorem prod_SΩ_SΩC_not_normal : ¬ NormalSpace (SΩ × SΩC) := by
+theorem prod_SΩ_SΩC_not_normal : ¬ NormalSpace (SΩ.{u} × SΩC.{u}) := by
   intro
   let A : Set (SΩ × SΩC) := {(a,b) | inc a = b}
   let B : Set (SΩ × SΩC) := {(a,b) | b = ⊤}
@@ -128,30 +130,30 @@ instance SΩC_prod_normal : NormalSpace (SΩC × SΩC) := inferInstance
 /-! A subspace of a paracompact space need not be paracompact. -/
 
 theorem prod_SΩ_SΩC_not_paracompact :
-    ¬ ∀ (X Y : Type 1) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
+    ¬ ∀ (X Y : Type (u+1)) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
       ParacompactSpace Y → Topology.IsEmbedding f → ParacompactSpace X := fun h => by
-  have : ParacompactSpace (SΩ × SΩC) :=
+  have : ParacompactSpace (SΩ.{u} × SΩC.{u}) :=
     h _ _ _ SΩC_prod_paracompact inc_prod_embedding
   exact prod_SΩ_SΩC_not_normal inferInstance
 
 /-! The product of two normal spaces need not be normal. -/
 
 theorem product_of_normal_not_normal :
-    ¬ ∀ (X Y : Type 1) [TopologicalSpace X] [TopologicalSpace Y],
+    ¬ ∀ (X Y : Type (u+1)) [TopologicalSpace X] [TopologicalSpace Y],
       NormalSpace X → NormalSpace Y → NormalSpace (X × Y) :=
   fun h => prod_SΩ_SΩC_not_normal (h _ _ inferInstance inferInstance)
 
 /-! A subspace of a normal space need not be normal. -/
 
 theorem subspace_of_normal_not_normal :
-    ¬ ∀ (X Y : Type 1) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
+    ¬ ∀ (X Y : Type (u+1)) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
       NormalSpace Y → Topology.IsEmbedding f → NormalSpace X :=
   fun h => prod_SΩ_SΩC_not_normal (h _ _ _ SΩC_prod_normal inc_prod_embedding)
 
 /-! A regular space need not be normal. -/
 
 theorem regular_not_normal :
-    ¬ ∀ (X : Type 1) [TopologicalSpace X], RegularSpace X → NormalSpace X :=
+    ¬ ∀ (X : Type (u+1)) [TopologicalSpace X], RegularSpace X → NormalSpace X :=
   fun h => prod_SΩ_SΩC_not_normal (h _ inferInstance)
 
 end Omega1Space
