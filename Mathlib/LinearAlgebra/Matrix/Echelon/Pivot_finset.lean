@@ -145,6 +145,22 @@ Note that the fin-set based version requires a bespoke decidability instance, as
 automatically synthesised version perform a lot of redundant `s.sort`.
 -/
 
+/-- A relation holds pairwise on the sorted enumeration of a finite linear order iff it holds
+for every ordered pair. -/
+theorem _root_.Finset.pairwise_sort_univ_iff {α : Type*} [Fintype α] [LinearOrder α]
+    {r : α → α → Prop} :
+    ((univ : Finset α).sort (· ≤ ·)).Pairwise r ↔ ∀ ⦃a₁ a₂ : α⦄, a₁ < a₂ → r a₁ a₂ := by
+  constructor
+  · intro hp a₁ a₂ hlt
+    have hsub : List.Sublist [a₁, a₂] ((univ : Finset α).sort (· ≤ ·)) :=
+      List.sublist_of_subperm_of_sortedLE
+        ((List.nodup_cons.mpr ⟨by simp [hlt.ne], List.nodup_singleton _⟩).subperm
+          fun a _ => (mem_sort _).mpr (mem_univ a))
+        (List.sortedLE_iff_pairwise.mpr (by simp [hlt.le]))
+        (List.sortedLE_iff_pairwise.mpr (pairwise_sort _ _))
+    exact List.pairwise_iff_forall_sublist.mp hp hsub
+  · exact fun h => (List.sortedLT_iff_pairwise.mp (sortedLT_sort _)).imp fun hlt => h hlt
+
 /-- The leading column of row `r`, or `none` for a zero row. -/
 def leadingCol [Zero R] [DecidableEq R] [Fintype n] [LinearOrder n] (A : Matrix m n R)
     (r : m) : Option n :=
@@ -197,6 +213,12 @@ theorem leadingCol_eq_none_iff [Zero R] [DecidableEq R] [Fintype n] [LinearOrder
     rintro ⟨j, hj⟩
     exact (mem_filter.mp hj).2 (congrFun h0 j)
 
+theorem mem_filterMap_leadingCol [Zero R] [DecidableEq R] [Fintype m] [LinearOrder m]
+    [Fintype n] [LinearOrder n] {A : Matrix m n R} {c : n} :
+    c ∈ ((univ : Finset m).sort (· ≤ ·)).filterMap (leadingCol A) ↔
+      ∃ i, A.IsLeadingEntry i c := by
+  simp [List.mem_filterMap, leadingCol_eq_some_iff]
+
 /-- The staircase relation between the optional leading columns of two rows in order:
 leading columns strictly increase, and no nonzero row follows a zero row. -/
 def LeadStep [LT n] : Option n → Option n → Prop
@@ -206,6 +228,39 @@ def LeadStep [LT n] : Option n → Option n → Prop
 
 instance [LinearOrder n] : DecidableRel (LeadStep (n := n)) := fun o₁ o₂ => by
   cases o₁ <;> cases o₂ <;> simp only [LeadStep] <;> infer_instance
+
+/-- A matrix is in row echelon form iff the optional leading columns of every ordered pair of
+rows satisfy the staircase relation. -/
+theorem rowEchelon_iff_leadStep [Zero R] [DecidableEq R] [LT m] [Fintype n] [LinearOrder n]
+    {A : Matrix m n R} :
+    A.RowEchelon ↔ ∀ ⦃i₁ i₂ : m⦄, i₁ < i₂ → LeadStep (leadingCol A i₁) (leadingCol A i₂) := by
+  constructor
+  · intro hre i₁ i₂ hlt
+    cases h₁ : leadingCol A i₁ with
+    | none =>
+      change leadingCol A i₂ = none
+      exact leadingCol_eq_none_iff.mpr
+        (hre.row_eq_zero_of_lt hlt (leadingCol_eq_none_iff.mp h₁))
+    | some c₁ =>
+      cases h₂ : leadingCol A i₂ with
+      | none => trivial
+      | some c₂ =>
+        exact hre.isLeadingEntry_lt (leadingCol_eq_some_iff.mp h₁)
+          (leadingCol_eq_some_iff.mp h₂) hlt
+  · intro hstep i₁ i₂ hlt j₂ hz
+    cases h₂ : leadingCol A i₂ with
+    | none => exact congrFun (leadingCol_eq_none_iff.mp h₂) j₂
+    | some c₂ =>
+      have hstep' := hstep hlt
+      cases h₁ : leadingCol A i₁ with
+      | none => rw [h₁, h₂] at hstep'; exact absurd hstep' (by simp [LeadStep])
+      | some c₁ =>
+        rw [h₁, h₂] at hstep'
+        have hc₁₂ : c₁ < c₂ := hstep'
+        have hlead₁ := leadingCol_eq_some_iff.mp h₁
+        have hlead₂ := leadingCol_eq_some_iff.mp h₂
+        have hle : ¬ c₁ < j₂ := fun hc => hlead₁.2 (hz _ hc)
+        exact hlead₂.1 _ (lt_of_le_of_lt (not_lt.mp hle) hc₁₂)
 
 /-- Decision procedure for `IsPivotFinset`: compute the leading column of each row once,
 then check the staircase relation on the rows in order and compare the leading columns
@@ -219,94 +274,25 @@ theorem isPivotFinsetB_iff [Zero R] [DecidableEq R] [Fintype m] [LinearOrder m] 
     [LinearOrder n] (A : Matrix m n R) (s : Finset n) :
     isPivotFinsetB A s = true ↔ A.IsPivotFinset s := by
   rw [isPivotFinsetB]
-  simp only [Bool.and_eq_true, decide_eq_true_eq]
+  simp only [Bool.and_eq_true, decide_eq_true_eq, List.filterMap_map, Function.id_comp,
+    List.pairwise_map]
   constructor
   · rintro ⟨hpair, heq⟩
-    have hpair' : ((univ : Finset m).sort (· ≤ ·)).Pairwise
-        fun r₁ r₂ => LeadStep (leadingCol A r₁) (leadingCol A r₂) := List.pairwise_map.mp hpair
-    have hstep : ∀ {i₁ i₂ : m}, i₁ < i₂ → LeadStep (leadingCol A i₁) (leadingCol A i₂) := by
-      intro i₁ i₂ hlt
-      obtain ⟨a, ha, rfl⟩ := List.mem_iff_getElem.mp
-        (show i₁ ∈ (univ : Finset m).sort (· ≤ ·) from
-          (mem_sort _).mpr (mem_univ i₁))
-      obtain ⟨b, hb, rfl⟩ := List.mem_iff_getElem.mp
-        (show i₂ ∈ (univ : Finset m).sort (· ≤ ·) from
-          (mem_sort _).mpr (mem_univ i₂))
-      have hab : a < b := by
-        rcases lt_trichotomy a b with h' | h' | h'
-        · exact h'
-        · subst h'
-          exact absurd hlt (lt_irrefl _)
-        · exact absurd (hlt.trans ((sortedLT_sort _).strictMono_get
-            (show (⟨b, hb⟩ : Fin _) < ⟨a, ha⟩ from h'))) (lt_irrefl _)
-      exact List.pairwise_iff_getElem.mp hpair' a b ha hb hab
-    have hrec : A.RowEchelon := by
-      intro i₁ i₂ hlt j₂ hz
-      cases h₂ : leadingCol A i₂ with
-      | none => exact congrFun (leadingCol_eq_none_iff.mp h₂) j₂
-      | some c₂ =>
-        have hstep' := hstep hlt
-        cases h₁ : leadingCol A i₁ with
-        | none => rw [h₁, h₂] at hstep'; exact absurd hstep' (by simp [LeadStep])
-        | some c₁ =>
-          rw [h₁, h₂] at hstep'
-          have hc₁₂ : c₁ < c₂ := hstep'
-          have hlead₁ := leadingCol_eq_some_iff.mp h₁
-          have hlead₂ := leadingCol_eq_some_iff.mp h₂
-          have hle : ¬ c₁ < j₂ := fun hc => hlead₁.2 (hz _ hc)
-          exact hlead₂.1 _ (lt_of_le_of_lt (not_lt.mp hle) hc₁₂)
-    refine ⟨hrec, fun c => ?_⟩
-    constructor
-    · intro hc
-      have hmem : c ∈ (((univ : Finset m).sort (· ≤ ·)).map (leadingCol A)).filterMap
-          id := by rw [heq]; exact (mem_sort _).mpr hc
-      obtain ⟨o, ho, hoc⟩ := List.mem_filterMap.mp hmem
-      obtain ⟨r, _, rfl⟩ := List.mem_map.mp ho
-      exact ⟨r, leadingCol_eq_some_iff.mp hoc⟩
-    · rintro ⟨i, hlead⟩
-      have hmem : c ∈ (((univ : Finset m).sort (· ≤ ·)).map (leadingCol A)).filterMap
-          id := List.mem_filterMap.mpr ⟨some c, List.mem_map.mpr
-        ⟨i, (mem_sort _).mpr (mem_univ i), leadingCol_eq_some_iff.mpr hlead⟩, rfl⟩
-      rw [heq] at hmem
-      exact (mem_sort _).mp hmem
+    refine ⟨rowEchelon_iff_leadStep.mpr (Finset.pairwise_sort_univ_iff.mp hpair),
+      fun c => (mem_sort _).symm.trans (heq ▸ mem_filterMap_leadingCol)⟩
   · rintro ⟨hre, hmem⟩
-    have hstep_of_lt : ∀ {r₁ r₂ : m}, r₁ < r₂ → LeadStep (leadingCol A r₁) (leadingCol A r₂) := by
-      intro r₁ r₂ hlt
-      cases h₁ : leadingCol A r₁ with
-      | none =>
-        have h0 : A r₂ = 0 := hre.row_eq_zero_of_lt hlt (leadingCol_eq_none_iff.mp h₁)
-        change leadingCol A r₂ = none
-        exact leadingCol_eq_none_iff.mpr h0
-      | some c₁ =>
-        cases h₂ : leadingCol A r₂ with
-        | none => trivial
-        | some c₂ =>
-          exact hre.isLeadingEntry_lt (leadingCol_eq_some_iff.mp h₁)
-            (leadingCol_eq_some_iff.mp h₂) hlt
-    have hpairrows : ((univ : Finset m).sort (· ≤ ·)).Pairwise (· < ·) :=
-      List.sortedLT_iff_pairwise.mp (sortedLT_sort _)
-    refine ⟨List.pairwise_map.mpr (hpairrows.imp fun hlt => hstep_of_lt hlt), ?_⟩
-    rw [List.filterMap_map, Function.id_comp]
-    have hnd : (((univ : Finset m).sort (· ≤ ·)).filterMap (leadingCol A)).Pairwise
-        (· < ·) := by
-      rw [List.pairwise_filterMap]
-      refine hpairrows.imp fun hlt => ?_
-      intro b hb b' hb'
-      have hstep := hstep_of_lt hlt
-      rw [hb, hb'] at hstep
-      exact hstep
-    have hext : ∀ c, c ∈ ((univ : Finset m).sort (· ≤ ·)).filterMap (leadingCol A) ↔
-        c ∈ s.sort (· ≤ ·) := by
-      intro c
-      rw [List.mem_filterMap, mem_sort]
-      constructor
-      · rintro ⟨r, _, hr⟩
-        exact (hmem c).mpr ⟨r, leadingCol_eq_some_iff.mp hr⟩
-      · intro hc
-        obtain ⟨i, hlead⟩ := (hmem c).mp hc
-        exact ⟨i, (mem_sort _).mpr (mem_univ i), leadingCol_eq_some_iff.mpr hlead⟩
-    exact List.Subset.antisymm_of_sortedLT (fun c => (hext c).mp)
-      (fun c => (hext c).mpr) hnd.sortedLT (sortedLT_sort _)
+    have hstep := rowEchelon_iff_leadStep.mp hre
+    refine ⟨Finset.pairwise_sort_univ_iff.mpr hstep, ?_⟩
+    have hsorted : (((univ : Finset m).sort (· ≤ ·)).filterMap (leadingCol A)).SortedLT := by
+      rw [List.sortedLT_iff_pairwise, List.pairwise_filterMap]
+      refine Finset.pairwise_sort_univ_iff.mpr fun r₁ r₂ hlt b hb b' hb' => ?_
+      have h := hstep hlt
+      rw [hb, hb'] at h
+      exact h
+    exact List.Subset.antisymm_of_sortedLT
+      (fun c hc => (mem_sort _).mpr ((hmem c).mpr (mem_filterMap_leadingCol.mp hc)))
+      (fun c hc => mem_filterMap_leadingCol.mpr ((hmem c).mp ((mem_sort _).mp hc)))
+      hsorted (sortedLT_sort _)
 
 instance decidableIsPivotFinset [Zero R] [DecidableEq R] [Fintype m] [LinearOrder m]
     [Fintype n] [LinearOrder n] (A : Matrix m n R) (s : Finset n) :
