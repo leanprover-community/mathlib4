@@ -19,15 +19,14 @@ Equivalently, if L is an algebraic extension of a finitely generated field exten
 
 public section
 
-variable {K L : Type*} [Field K] [Field L] [Algebra K L]
-
 open IntermediateField
 
-variable (K L) in
 /-- A field extension L/K is said to have finite transcendence degree if there is some
 intermediate extension L/E/K with E/K finitely generated and L/E algebraic. -/
-class FinTrdeg where
-  exists_fg_isAlgebraic : ∃ E : IntermediateField K L, E.FG ∧ Algebra.IsAlgebraic E L
+class FinTrdeg (K L : Type*) [Field K] [Field L] [Algebra K L] where
+  exists_fg_isAlgebraic (K L) : ∃ E : IntermediateField K L, E.FG ∧ Algebra.IsAlgebraic E L
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 variable (K L) in
 instance [Algebra.IsAlgebraic K L] : FinTrdeg K L where
