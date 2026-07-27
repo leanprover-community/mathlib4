@@ -77,22 +77,10 @@ section NontriviallyNormedField
 variable {𝕜 E F : Type*}
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
--- variable [PartialOrder 𝕜]
-variable [LinearOrder 𝕜]
-
-omit [TopologicalSpace E] in
--- variable [PartialOrder 𝕜] in
-/--
-this can be moved out to existing file
--/
-lemma absConvexHull_inter_subset {s t : Set E} :
-    absConvexHull 𝕜 (s ∩ t) ⊆ absConvexHull 𝕜 s ∩ absConvexHull 𝕜 t :=
-  Set.subset_inter (absConvexHull_mono Set.inter_subset_left)
-                   (absConvexHull_mono Set.inter_subset_right)
-
 variable [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
+variable {𝔘 : Set (Set E)} {𝔙 : Set (Set F)}
+  (h𝔘 : (𝓝 (0 : E)).HasBasis 𝔘 id) (h𝔙 : (𝓝 (0 : F)).HasBasis 𝔙 id)
 
-omit [LinearOrder 𝕜] in
 /-- Every element in a topological vector space over a nontrivially normed field
 can be represented as a scaled version of an element in any given neighborhood of zero. -/
 lemma exists_smul_of_mem_nhds_zero [ContinuousSMul 𝕜 E]
@@ -108,18 +96,31 @@ lemma exists_smul_of_mem_nhds_zero [ContinuousSMul 𝕜 E]
   rcases h_abs_ne.exists with ⟨r, ⟨x', hx', rfl⟩, hr_ne⟩
   exact ⟨r, hr_ne, x', hx', rfl⟩
 
+section PartialOrder
+
+variable [PartialOrder 𝕜]
+
+omit [TopologicalSpace E] in
+-- variable [PartialOrder 𝕜] in
+/--
+this can be moved out to existing file
+-/
+lemma absConvexHull_inter_subset {s t : Set E} :
+    absConvexHull 𝕜 (s ∩ t) ⊆ absConvexHull 𝕜 s ∩ absConvexHull 𝕜 t :=
+  Set.subset_inter (absConvexHull_mono Set.inter_subset_left)
+                   (absConvexHull_mono Set.inter_subset_right)
+
 -- variable [PartialOrder 𝕜] in
 abbrev absConvexHulls (𝔘 : Set (Set E)) (𝔙 : Set (Set F)) :=
   { s | ∃ U ∈ 𝔘, ∃ B ∈ 𝔙, s = absConvexHull 𝕜 (U ⊗ˢ[𝕜] B) }
 
-variable {𝔘 : Set (Set E)} {𝔙 : Set (Set F)}
-  (h𝔘 : (𝓝 (0 : E)).HasBasis 𝔘 id) (h𝔙 : (𝓝 (0 : F)).HasBasis 𝔙 id)
+end PartialOrder
 
-variable [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F]
+section LinearOrder
 
-variable [IsStrictOrderedRing 𝕜]
+variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [ContinuousSMul 𝕜 E]
 
-omit [ContinuousSMul 𝕜 F] in
 lemma absConvexHulls_add_sub (h𝔘 : (𝓝 (0 : E)).HasBasis 𝔘 id) (_ : (𝓝 (0 : F)).HasBasis 𝔙 id)
     {W : Set (E ⊗[𝕜] F)} (hW : W ∈ absConvexHulls 𝔘 𝔙) :
     ∃ W' ∈ absConvexHulls 𝔘 𝔙, W' + W' ⊆ W := by
@@ -172,7 +173,8 @@ lemma absConvexHulls_add_sub (h𝔘 : (𝓝 (0 : E)).HasBasis 𝔘 id) (_ : (�
   exact ⟨absConvexHull 𝕜 (U' ⊗ˢ[𝕜] V), ⟨U', hU', V, hV, rfl⟩,
     (Set.add_subset_add h_t_sub h_t_sub).trans h_add_sub⟩
 
--- variable [PartialOrder 𝕜]
+variable [ContinuousSMul 𝕜 F]
+
 
 def moduleFilterBasis : ModuleFilterBasis 𝕜 (E ⊗[𝕜] F) where
   sets := absConvexHulls 𝔘 𝔙
@@ -314,7 +316,7 @@ def moduleFilterBasis : ModuleFilterBasis 𝕜 (E ⊗[𝕜] F) where
       rw [smul_add]
       exact h_subset (Set.add_mem_add hcx hcy)
 
-    -- rwa [h_final_eq] at h_bal
+
 lemma locallyConvexSpace_of_basis :
     @LocallyConvexSpace 𝕜 (E ⊗[𝕜] F) _ _ _ _ (moduleFilterBasis h𝔘 h𝔙).topology := by
   letI topology := (moduleFilterBasis h𝔘 h𝔙).topology (R:=𝕜)
@@ -426,6 +428,8 @@ theorem topology_eq_projective :
     exact ⟨h_mem_moduleFilterBasis, h_subset_W⟩
   · apply sInf_le
     exact moduleFilterBasis_topology_mem_tensorProductTopologies h𝔘 h𝔙
+
+end LinearOrder
 
 end NontriviallyNormedField
 
