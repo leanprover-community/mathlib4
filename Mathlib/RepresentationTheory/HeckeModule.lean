@@ -58,9 +58,9 @@ lemma ind_apply_cosetVector (H : Subgroup G) (g₁ g₂ : G) :
 
 @[simp]
 lemma ind_apply_subgroup_cosetVector_one {H : Subgroup G} (h : H) :
-    ind H.subtype (trivial k H k) h (cosetVector k H 1) = cosetVector k H 1 := by
-  rw [ind_apply_cosetVector, one_mul, cosetVector, cosetVector]
-  convert IndV.mk_map_inv_mul H.subtype (trivial k H k) h 1 1
+    cosetVector k H h = cosetVector k H 1 := by
+  unfold cosetVector
+  convert IndV.mk_map_inv_mul H.subtype (trivial k H k) h⁻¹ 1 1
   · simp
   · simp
 
