@@ -54,6 +54,7 @@ class CompactIccSpace (α : Type*) [TopologicalSpace α] [Preorder α] : Prop wh
   isCompact_Icc : ∀ {a b : α}, IsCompact (Icc a b)
 
 export CompactIccSpace (isCompact_Icc)
+attribute [compactness .] isCompact_Icc
 
 variable {α : Type*}
 
@@ -91,9 +92,41 @@ instance {α β : Type*} [Preorder α] [TopologicalSpace α] [CompactIccSpace α
   ⟨fun {a b} => (Icc_prod_eq a b).symm ▸ isCompact_Icc.prod isCompact_Icc⟩
 
 /-- An unordered closed interval is compact. -/
+@[compactness .]
 theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α]
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
+
+section DenseLinear
+
+variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrdered α]
+  [CompactIccSpace α]
+
+@[compactness .]
+lemma isCompact_closure_Ioc {a b : α} : IsCompact (closure (Ioc a b)) := by
+  obtain rfl|h := eq_or_ne a b
+  · simp
+  · simp [h, isCompact_Icc]
+
+@[compactness .]
+lemma isCompact_closure_Ico {a b : α} : IsCompact (closure (Ico a b)) := by
+  obtain rfl|h := eq_or_ne a b
+  · simp
+  · simp [h, isCompact_Icc]
+
+@[compactness .]
+lemma isCompact_closure_Ioo {a b : α} : IsCompact (closure (Ioo a b)) := by
+  obtain rfl|h := eq_or_ne a b
+  · simp
+  · simp [h, isCompact_Icc]
+
+@[compactness .]
+lemma isCompact_closure_uIoc {a b : α} : IsCompact (closure (uIoc a b)) := by
+  obtain rfl|h := eq_or_ne a b
+  · simp
+  · simp [h, isCompact_uIcc]
+
+end DenseLinear
 
 -- See note [lower instance priority]
 /-- A complete linear order is a compact space.
