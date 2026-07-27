@@ -214,7 +214,7 @@ theorem ae_tendsto_iff_forall_measure_frequently_eq_zero :
     intro k
     have hk : 0 < 1 / (k + 1 : ℝ) := by positivity
     filter_upwards [measure_eq_zero_iff_ae_notMem.mp (h _ hk)] with x hx
-    simpa [not_frequently, not_le, Set.mem_setOf_eq] using hx
+    simpa [not_frequently, not_le, Set.mem_ofPred_eq] using hx
   filter_upwards [ae_all_iff.mpr H] with x hx
   refine Metric.tendsto_atTop.mpr fun ε hε ↦ ?_
   obtain ⟨k, hk⟩ := exists_nat_one_div_lt hε
