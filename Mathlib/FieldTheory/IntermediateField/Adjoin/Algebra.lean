@@ -93,7 +93,6 @@ lemma fg_top_iff :
     (⊤ : IntermediateField F E).FG ↔ Algebra.EssFiniteType F E := by
   constructor
   · intro ⟨s, hs⟩
-    have : Algebra.FiniteType F (Algebra.adjoin F (s : Set E)) := .adjoin_of_finite s.finite_toSet
     have : Algebra.EssFiniteType (Algebra.adjoin F (s : Set E)) (adjoin F (s : Set E)) :=
       .of_isLocalization _ (nonZeroDivisors _)
     have : Algebra.EssFiniteType F (adjoin F (s : Set E)) :=
