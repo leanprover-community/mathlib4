@@ -208,7 +208,7 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
   · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _).aedisjoint
   · exact lt_top_iff_ne_top.mp <| measure_lt_top_of_subset
       (by simp only [Set.iUnion_subset_iff, Set.inter_subset_right, implies_true]) hs₂
-  · rw [Set.mem_setOf, Set.inter_eq_self_of_subset_left hν, volume_box]
+  · rw [Set.mem_ofPred, Set.inter_eq_self_of_subset_left hν, volume_box]
 
 /-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.box` that are subsets of `B`.
 This is a finite set. These boxes cover `B` if it has integral vertices, see
@@ -220,7 +220,7 @@ def admissibleIndex (B : Box ι) : Finset (ι → ℤ) := by
 variable {n} in
 theorem mem_admissibleIndex_iff {B : Box ι} {ν : ι → ℤ} :
     ν ∈ admissibleIndex n B ↔ box n ν ≤ B := by
-  rw [admissibleIndex, Set.Finite.mem_toFinset, Set.mem_setOf_eq, Box.coe_subset_coe]
+  rw [admissibleIndex, Set.Finite.mem_toFinset, Set.mem_ofPred_eq, Box.coe_subset_coe]
 
 open scoped Classical in
 /-- For `B : BoxIntegral.Box`, the `TaggedPrepartition` formed by the set of all

@@ -243,7 +243,7 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
   rw [last_eraseLast, last]
   have := s.step ⟨s.length - 1, by lia⟩
-  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
+  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_ofPred_eq] at this
   convert! this using 3
   exact (tsub_add_cancel_of_le h).symm
 

@@ -937,8 +937,9 @@ lemma subsingleton_iff {n : ℕ} : Subsingleton (ZMod n) ↔ n = 1 := by
 lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
--- todo: this can be made a `Unique` instance.
-instance instSubsingletonUnits : Subsingleton (ZMod 2)ˣ := ⟨by decide⟩
+instance : Unique (ZMod 2)ˣ where
+  default := 1
+  uniq := by decide
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
@@ -1282,7 +1283,7 @@ residue class of `k` mod `m`. -/
 lemma Nat.range_mul_add (m k : ℕ) :
     Set.range (fun n : ℕ ↦ m * n + k) = {n : ℕ | (n : ZMod m) = k ∧ k ≤ n} := by
   ext n
-  simp only [Set.mem_range, Set.mem_setOf_eq]
+  simp only [Set.mem_range, Set.mem_ofPred_eq]
   conv => enter [1, 1, y]; rw [add_comm, eq_comm]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
   · simpa using congr_arg ((↑) : ℕ → ZMod m) ha

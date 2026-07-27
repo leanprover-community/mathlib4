@@ -5,7 +5,7 @@ Authors: Amelia Livingston, Yaël Dillies, Michał Mrugała
 -/
 module
 
-public import Mathlib.RingTheory.Bialgebra.Hom
+public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
 /-!
@@ -84,6 +84,48 @@ lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
 lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : R[M]) :
     mapDomainBialgHom R f (mapDomainBialgHom R g x) = mapDomainBialgHom R (f.comp g) x := by
   ext; simp
+
+end MonoidAlgebra
+
+namespace AddMonoidAlgebra
+variable [CommSemiring R] [Semiring A] [Bialgebra R A] [AddMonoid M]
+
+variable (R A M) in
+/-- The bialgebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
+`Multiplicative`. -/
+-- TODO: Make `BialgEquiv.toCoalgEquiv` the simp normal form so that this can be simp
+@[simps! -isSimp]
+def toMultiplicativeBialgEquiv : A[M] ≃ₐc[R] MonoidAlgebra A (Multiplicative M) :=
+  .ofAlgEquiv (toMultiplicativeAlgEquiv R A M) (by ext <;> simp) <| by
+    ext a
+    · simp [Algebra.TensorProduct.one_def]
+    · simp [← (Coalgebra.Repr.arbitrary R a).eq]
+
+@[simp]
+lemma toMultiplicativeBialgEquiv_single (m : M) (a : A) :
+    toMultiplicativeBialgEquiv R A M (single m a) = .single (.ofAdd m) a := by
+  simp [toMultiplicativeBialgEquiv]
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M]
+
+variable (R A M) in
+/-- The bialgebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
+`Additive`. -/
+-- TODO: Make `BialgEquiv.toCoalgEquiv` the simp normal form so that this can be simp
+@[simps! -isSimp]
+def toAdditiveBialgEquiv : A[M] ≃ₐc[R] AddMonoidAlgebra A (Additive M) :=
+  .ofAlgEquiv (toAdditiveAlgEquiv R A M) (by ext <;> simp) <| by
+    ext a
+    · simp [Algebra.TensorProduct.one_def]
+    · simp [← (Coalgebra.Repr.arbitrary R a).eq]
+
+@[simp]
+lemma toAdditiveBialgEquiv_single (m : M) (a : A) :
+    toAdditiveBialgEquiv R A M (single m a) = .single (.ofMul m) a := by
+  simp [toAdditiveBialgEquiv]
 
 end MonoidAlgebra
 

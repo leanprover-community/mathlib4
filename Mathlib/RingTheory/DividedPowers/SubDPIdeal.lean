@@ -430,7 +430,7 @@ theorem span_carrier_eq_dpow_span {S : Set A} (hS : S ⊆ I) :
   · rw [le_iInf₂_iff]
     intro K hK
     have : S ≤ K := by
-      simp only [Set.mem_insert_iff, Set.mem_setOf_eq] at hK
+      simp only [Set.mem_insert_iff, Set.mem_ofPred_eq] at hK
       rcases hK with rfl | hKS
       exacts [hS, hKS]
     rw [span_le]
@@ -493,7 +493,7 @@ def dpEqualizer : Ideal A where
 theorem mem_dpEqualizer_iff {x : A} :
     x ∈ dpEqualizer hI hI' ↔ x ∈ I ∧ ∀ n : ℕ, hI.dpow n x = hI'.dpow n x := by
   simp [dpEqualizer, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
-    Set.mem_setOf_eq]
+    Set.mem_ofPred_eq]
 
 theorem dpEqualizer_is_dp_ideal_left :
     DividedPowers.IsSubDPIdeal hI (dpEqualizer hI hI') :=

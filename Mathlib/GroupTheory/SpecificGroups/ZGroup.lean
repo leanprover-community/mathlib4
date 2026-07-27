@@ -100,8 +100,8 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
   exact hP.isComplement' rfl
 
-instance [Finite G] [IsZGroup G] : IsSolvable G := by
-  rw [isSolvable_iff_commutator_lt]
+instance [Finite G] [IsZGroup G] : Group.IsSolvable G := by
+  rw [Group.isSolvable_iff_commutator_lt]
   intro H h
   rw [← H.nontrivial_iff_ne_bot] at h
   rw [← H.range_subtype, MonoidHom.range_eq_map, ← Subgroup.map_commutator,
@@ -149,7 +149,7 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
   rcases eq_or_ne H ⊥ with rfl | h
   · rw [Subgroup.commutator_bot_left]
     infer_instance
-  · specialize hH ⁅H, H⁆ (IsSolvable.commutator_lt_of_ne_bot h)
+  · specialize hH ⁅H, H⁆ (Group.IsSolvable.commutator_lt_of_ne_bot h)
     replace hH : IsCyclic (⁅commutator H, commutator H⁆ : Subgroup H) := by
       let f := Subgroup.equivMapOfInjective ⁅commutator H, commutator H⁆ _ H.subtype_injective
       rw [Subgroup.map_commutator, Subgroup.map_subtype_commutator] at f
