@@ -86,23 +86,38 @@ theorem IsPivotFinset.rank_eq_of_lowerTriangular [CommRing R] [IsDomain R]
 /-! ## Decidability
 
 `IsPivotFinset` and `BlockTriangular` are decidable over a `DecidableEq` ring, so a certified
-`(T, σ, s)` computed off-kernel can be checked by `decide +kernel` directly on the matrix. -/
+`(T, σ, s)` computed off-kernel can be checked by `decide +kernel` directly on the matrix.
+
+Note that the fin-set based version requires a bespoke decidability instance, as the
+automatically synthesised version perform a lot of redundant `s.sort`.
+-/
 
 instance decidableIsPivotFinset [Zero R] [DecidableEq R] (A : Matrix (Fin m) (Fin n) R)
     (s : Finset (Fin n)) : Decidable (A.IsPivotFinset s) := by
   haveI : ∀ i : Fin m,
-      Decidable (∀ h : (i : ℕ) < s.card, ∀ j < s.orderEmbOfFin rfl ⟨i, h⟩, A i j = 0) :=
+      Decidable (∀ h : (i : ℕ) < (s.sort (· ≤ ·)).length,
+        (∀ j < (s.sort (· ≤ ·))[i], A i j = 0) ∧ A i (s.sort (· ≤ ·))[i] ≠ 0) :=
     fun _ => inferInstance
   haveI : ∀ i : Fin m, Decidable (∀ _ : s.card ≤ (i : ℕ), A i = 0) := fun _ => inferInstance
-  refine decidable_of_iff'
+  refine decidable_of_iff
     (s.card ≤ m ∧
-      (∀ i : Fin m, ∀ h : (i : ℕ) < s.card, ∀ j < s.orderEmbOfFin rfl ⟨i, h⟩, A i j = 0) ∧
-      (∀ i : Fin m, ∀ h : (i : ℕ) < s.card, A i (s.orderEmbOfFin rfl ⟨i, h⟩) ≠ 0) ∧
+      (∀ i : Fin m, ∀ h : (i : ℕ) < (s.sort (· ≤ ·)).length,
+        (∀ j < (s.sort (· ≤ ·))[i], A i j = 0) ∧ A i (s.sort (· ≤ ·))[i] ≠ 0) ∧
       (∀ i : Fin m, ∀ _ : s.card ≤ (i : ℕ), A i = 0)) ?_
+  have hlen : (s.sort (· ≤ ·)).length = s.card := s.length_sort (· ≤ ·)
+  have key : ∀ (i : ℕ) (h : i < s.card),
+      s.orderEmbOfFin rfl ⟨i, h⟩ = (s.sort (· ≤ ·))[i]'(by rw [hlen]; exact h) := fun i h => by
+    rw [orderEmbOfFin_apply, Fin.getElem_fin]
   constructor
-  · rintro ⟨hc, h₂, h₃, h₄⟩
-    exact ⟨hc, h₂, h₃, h₄⟩
-  · rintro ⟨hc, h₂, h₃, h₄⟩
-    exact ⟨hc, h₂, h₃, h₄⟩
+  · rintro ⟨hc, hrow, hzero⟩
+    refine ⟨hc, fun i h j hj => ?_, fun i h => ?_, hzero⟩
+    · exact (hrow i (by omega)).1 j (by rw [key i h] at hj; exact hj)
+    · rw [key i h]
+      exact (hrow i (by omega)).2
+  · rintro ⟨hc, hz, hnz, hzero⟩
+    refine ⟨hc, fun i h => ⟨fun j hj => ?_, ?_⟩, hzero⟩
+    · exact hz i (by omega) j (by rw [key i (by omega)]; exact hj)
+    · have := hnz i (by omega)
+      rwa [key i (by omega)] at this
 
 end Matrix
