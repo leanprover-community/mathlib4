@@ -1158,7 +1158,7 @@ theorem Group.nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
 end FinitePi
 
 /-- A nilpotent subgroup is solvable -/
-instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSolvable G := by
+instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group.IsSolvable G := by
   obtain ⟨n, hn⟩ := nilpotent_iff_lowerCentralSeries.1 h
   use n
   rw [eq_bot_iff, ← hn]

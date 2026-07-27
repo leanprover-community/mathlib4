@@ -230,6 +230,8 @@ theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
     ContMDiffWithinAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) s p :=
   (contMDiffAt_proj E).contMDiffWithinAt
 
+section
+
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
@@ -252,6 +254,35 @@ theorem contMDiffAt_zeroSection {x : B} : ContMDiffAt IB (IB.prod 𝓘(𝕜, F))
 theorem contMDiffWithinAt_zeroSection {t : Set B} {x : B} :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) t x :=
   (contMDiff_zeroSection _ _ x).contMDiffWithinAt
+
+end
+
+variable {s : ∀ x, E x} {u : Set B} {x : B}
+
+@[nontriviality]
+lemma contMDiffWithinAt_section_of_subsingleton [Subsingleton F] :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x := by
+  rw [contMDiffWithinAt_section]
+  apply contMDiffWithinAt_const |>.congr
+  · intro y _
+    apply Subsingleton.elim
+  rfl
+
+@[nontriviality]
+lemma contMDiffAt_section_of_subsingleton [Subsingleton F] :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x := by
+  rw [← contMDiffWithinAt_univ]
+  apply contMDiffWithinAt_section_of_subsingleton
+
+@[nontriviality]
+lemma contMDiffOn_section_of_subsingleton [Subsingleton F] :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u :=
+  fun _x _hx ↦ contMDiffWithinAt_section_of_subsingleton ..
+
+@[nontriviality]
+lemma contMDiff_section_of_subsingleton [Subsingleton F] :
+    ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) :=
+  fun _x ↦ contMDiffAt_section_of_subsingleton ..
 
 end Bundle
 
