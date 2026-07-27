@@ -16,11 +16,13 @@ import Mathlib.Tactic.NormDet
 # Cartan matrices
 
 This file defines Cartan matrices for simple Lie algebras, both the exceptional types
-(E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D).
+(E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D), as well as the
+generalized Eₙ family obtained by continuing the E-type Dynkin diagram.
 
 ## Main definitions
 
-### Exceptional types
+### Exceptional types and the E family
+* `CartanMatrix.E` : The Cartan matrix of type Eₙ
 * `CartanMatrix.E₆` : The Cartan matrix of type E₆
 * `CartanMatrix.E₇` : The Cartan matrix of type E₇
 * `CartanMatrix.E₈` : The Cartan matrix of type E₈
@@ -50,6 +52,16 @@ namespace CartanMatrix
 open Matrix
 
 /-! ### Exceptional Cartan matrices -/
+
+/-- The generalized Cartan matrix of type Eₙ, extending E₆, E₇, E₈ by the same Dynkin-diagram
+pattern. -/
+def E (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
+  fun i j =>
+    if i = j then 2
+    else if (i.val = 0 ∧ j.val = 2) ∨ (j.val = 0 ∧ i.val = 2) ∨
+      (i.val = 1 ∧ j.val = 3) ∨ (j.val = 1 ∧ i.val = 3) ∨
+      (2 ≤ i.val ∧ i.val + 1 = j.val) ∨ (2 ≤ j.val ∧ j.val + 1 = i.val)
+    then -1 else 0
 
 /-- The Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
 def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
@@ -257,6 +269,94 @@ theorem E₈_isSymm : E₈.IsSymm := E₈_transpose
 theorem G₂_det : G₂.det = 1 := by decide
 
 theorem F₄_det : F₄.det = 1 := by decide
+
+private def reverseE (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
+  (E n).reindex Fin.revPerm Fin.revPerm
+
+private def headLink {n : ℕ} (i : Fin n) : ℤ :=
+  if i.val = 0 then -1 else 0
+
+private def extendPath {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
+    Matrix (Fin n.succ) (Fin n.succ) ℤ :=
+  fun i j =>
+    Fin.cases (Fin.cases 2 headLink j)
+      (fun i ↦ Fin.cases (headLink i) (fun j ↦ M i j) j) i
+
+private theorem extendPath_tail {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
+    (extendPath M).submatrix Fin.succ Fin.succ = M := by
+  rfl
+
+private theorem extendPath_minor {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
+    ((extendPath M).submatrix Fin.succ (Fin.succAbove 1)).det =
+      -(M.submatrix Fin.succ Fin.succ).det := by
+  let B := (extendPath M).submatrix Fin.succ (Fin.succAbove 1)
+  have hhead : B 0 0 = -1 := by
+    change extendPath M (Fin.succ 0) 0 = -1
+    rfl
+  have hzero (i : Fin n) : B i.succ 0 = 0 := by
+    simp [B, extendPath, headLink]
+  have hminor : B.submatrix Fin.succ Fin.succ = M.submatrix Fin.succ Fin.succ := by
+    ext
+    simp [B, extendPath]
+  change B.det = _
+  rw [Matrix.det_succ_column_zero, Fin.sum_univ_succ]
+  simp [hhead, hzero, hminor]
+
+private theorem extendPath_det {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
+    (extendPath M).det = 2 * M.det - (M.submatrix Fin.succ Fin.succ).det := by
+  rw [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
+  simp [extendPath, headLink, extendPath_tail, extendPath_minor, sub_eq_add_neg]
+
+private theorem reverseE_succ (n : ℕ) (hn : 4 ≤ n) :
+    reverseE (n + 1) = extendPath (reverseE n) := by
+  ext i j
+  refine Fin.cases ?_ (fun i ↦ Fin.cases ?_ (fun j ↦ ?_) j) i
+  · refine Fin.cases ?_ (fun j ↦ ?_) j
+    · simp [reverseE, E, extendPath]
+    · simp [reverseE, E, extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
+      split_ifs <;> omega
+  · simp [reverseE, E, extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
+    split_ifs <;> omega
+  · simp [reverseE, E, extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
+
+private theorem reverseE_det_recurrence (n : ℕ) (hn : 4 ≤ n) :
+    (reverseE (n + 2)).det = 2 * (reverseE (n + 1)).det - (reverseE n).det := by
+  have htail : (reverseE (n + 1)).submatrix Fin.succ Fin.succ = reverseE n := by
+    rw [reverseE_succ n hn, extendPath_tail]
+  rw [reverseE_succ (n + 1) (by omega), extendPath_det, htail]
+
+private theorem reverseE_three_det : (reverseE 3).det = 6 := by decide
+
+private theorem reverseE_four_det : (reverseE 4).det = 5 := by decide
+
+private theorem reverseE_five_det : (reverseE 5).det = 4 := by
+  have htail : (reverseE 4).submatrix Fin.succ Fin.succ = reverseE 3 := by decide
+  rw [reverseE_succ 4 (by omega), extendPath_det, htail, reverseE_three_det,
+    reverseE_four_det]
+  norm_num
+
+private theorem reverseE_det_from_four (n : ℕ) :
+    (reverseE (n + 4)).det = 5 - (n : ℤ) := by
+  induction n using Nat.twoStepInduction with
+  | zero => exact reverseE_four_det
+  | one => exact reverseE_five_det
+  | more n hn hn1 =>
+      rw [reverseE_det_recurrence (n + 4) (by omega), hn, hn1]
+      push_cast
+      ring
+
+/-- The determinant of `E n` is `9 - n` for `n ≥ 3`. -/
+theorem E_det {n : ℕ} (hn : 3 ≤ n) : (E n).det = 9 - (n : ℤ) := by
+  rw [← Matrix.det_reindex_self Fin.revPerm (E n)]
+  by_cases h3 : n = 3
+  · subst n
+    exact reverseE_three_det
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le (show 4 ≤ n by omega)
+  rw [show 4 + n = n + 4 by omega]
+  change (reverseE (n + 4)).det = 9 - ((n + 4 : ℕ) : ℤ)
+  rw [reverseE_det_from_four]
+  push_cast
+  ring
 
 /-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively. -/
 
