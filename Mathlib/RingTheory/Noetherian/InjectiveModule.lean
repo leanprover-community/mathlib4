@@ -93,9 +93,9 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
     (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g (Submonoid.pow f (r + n)))
   apply hbij.1
   dsimp [Submonoid.pow]
-  rw [← g.map_smul, pow_add, ← smul_smul, ← smul_smul, ← ha, ← g.map_smul]
+  rw [← g.map_smul, pow_add, ← smul_smul, ← smul_smul, ← ha, ← g.map_smul, smul_smul, ← pow_add,
+    ← psi.map_smul (f^(r + n)) (1 : R), smul_eq_mul, mul_one, ← hphi]
   apply congrArg g
-  rw [smul_smul, ← pow_add, ← psi.map_smul (f^(r + n)) (1 : R), smul_eq_mul, mul_one, ← hphi]
   exact hpsi _ _
 
 /-- **Hartshorne III. Lemma 3.3.** Let `R` be a Noetherian ring and `I` an injective `R`-module.
