@@ -70,7 +70,7 @@ private lemma stabilize_ideal_b (f : R) :
   use r
   intro i
   specialize hr (r + i) (Nat.le_add_right r i)
-  exact symm hr
+  exact hr.symm
 
 /-- **Hartshorne III. Lemma 3.3.** If `R` is a Noetherian ring and `I` satisfies Baer's criterion,
 then for any `f : R` the localization map `I → I_f` is surjective. -/
@@ -81,7 +81,7 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
   intro x
   obtain ⟨n, a, ha⟩ : ∃ (n : ℕ) (a : I), g a = f ^ n • x := by
     obtain ⟨⟨a, ⟨s, ps⟩⟩, hs⟩ := IsLocalizedModule.surj (Submonoid.powers f) g x
-    obtain ⟨n, rfl⟩ := (Submonoid.mem_powers_iff s f).mp ps
+    obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff s f).mp ps
     use n, a
     exact hn ▸ hs.symm
   choose r hr using stabilize_ideal_b f
@@ -92,7 +92,7 @@ theorem Module.surjective_of_isLocalizedModule_of_baer {I : Type u}
     (algebraMap R (Module.End R I') <| Submonoid.pow f (r + n)) :=
     (Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g (Submonoid.pow f (r + n)))
   apply hbij.1
-  dsimp
+  dsimp [Submonoid.pow]
   rw [← g.map_smul, pow_add, ← smul_smul, ← smul_smul, ← ha, ← g.map_smul]
   apply congrArg g
   rw [smul_smul, ← pow_add, ← psi.map_smul (f^(r + n)) (1 : R), smul_eq_mul, mul_one, ← hphi]
