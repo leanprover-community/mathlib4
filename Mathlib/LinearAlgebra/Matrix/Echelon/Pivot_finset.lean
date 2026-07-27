@@ -134,7 +134,11 @@ automatically synthesised version perform a lot of redundant `s.sort`.
 -/
 
 /-- A relation holds pairwise on the sorted enumeration of a `Finset` iff it holds for every
-ordered pair of elements. -/
+ordered pair of elements.
+
+todo: This needs to be moved to the correct file eventually; currently gets a `_root_`
+qualifier for now.
+-/
 theorem _root_.Finset.pairwise_sort_iff {α : Type*} [LinearOrder α] {s : Finset α}
     {r : α → α → Prop} :
     (s.sort (· ≤ ·)).Pairwise r ↔ ∀ a₁ ∈ s, ∀ a₂ ∈ s, a₁ < a₂ → r a₁ a₂ := by
