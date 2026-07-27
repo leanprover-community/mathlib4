@@ -36,50 +36,33 @@ def IsLeadingEntry [Zero R] [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
 
 /-- A row has at most one leading entry. Currently unused -/
 theorem IsLeadingEntry.unique [Zero R] [LinearOrder n] {A : Matrix m n R} {i : m}
-    {c₁ c₂ : n} (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) : c₁ = c₂ := by
-  rcases lt_trichotomy c₁ c₂ with hlt | heq | hlt
-  · exact absurd (h₂.1 c₁ hlt) h₁.2
-  · exact heq
-  · exact absurd (h₁.1 c₂ hlt) h₂.2
+    {c₁ c₂ : n} (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) : c₁ = c₂ :=
+  le_antisymm (not_lt.mp fun h => h₂.2 (h₁.1 _ h)) (not_lt.mp fun h => h₁.2 (h₂.1 _ h))
 
 /-- In an echelon matrix, a column is led by at most one row. -/
 theorem RowEchelon.isLeadingEntry_row_eq [Zero R] [LinearOrder m] [LT n]
     {A : Matrix m n R} {i₁ i₂ : m} {c : n} (he : A.RowEchelon)
-    (h₁ : A.IsLeadingEntry i₁ c) (h₂ : A.IsLeadingEntry i₂ c) : i₁ = i₂ := by
-  rcases lt_trichotomy i₁ i₂ with hlt | heq | hlt
-  · exact absurd (he hlt h₁.1) h₂.2
-  · exact heq
-  · exact absurd (he hlt h₂.1) h₁.2
+    (h₁ : A.IsLeadingEntry i₁ c) (h₂ : A.IsLeadingEntry i₂ c) : i₁ = i₂ :=
+  le_antisymm (not_lt.mp fun hlt => h₁.2 (he hlt h₂.1))
+    (not_lt.mp fun hlt => h₂.2 (he hlt h₁.1))
 
 /-- In an echelon matrix, leading columns of lower rows are strictly to the right. -/
 theorem RowEchelon.isLeadingEntry_lt [Zero R] [LT m] [LinearOrder n]
     {A : Matrix m n R} {i₁ i₂ : m} {c₁ c₂ : n} (he : A.RowEchelon)
     (h₁ : A.IsLeadingEntry i₁ c₁) (h₂ : A.IsLeadingEntry i₂ c₂) (hlt : i₁ < i₂) :
-    c₁ < c₂ := by
-  by_contra hle
-  exact h₂.2 (he hlt fun j hj => h₁.1 j (lt_of_lt_of_le hj (not_lt.mp hle)))
+    c₁ < c₂ :=
+  lt_of_not_ge fun hge => h₂.2 (he hlt fun j hj => h₁.1 j (hj.trans_le hge))
 
 /-- In an echelon matrix, rows below a zero row are zero. -/
 theorem RowEchelon.row_eq_zero_of_lt [Zero R] [LT m] [LT n] {A : Matrix m n R}
-    {i₁ i₂ : m} (he : A.RowEchelon) (hlt : i₁ < i₂) (h0 : A i₁ = 0) : A i₂ = 0 := by
-  funext j
-  simp [he hlt (fun j _ => (congrFun h0 j))]
+    {i₁ i₂ : m} (he : A.RowEchelon) (hlt : i₁ < i₂) (h0 : A i₁ = 0) : A i₂ = 0 :=
+  funext fun _ => he hlt fun j₁ _ => congrFun h0 j₁
 
-/-- Over a finite linear order of columns, a nonzero row has a leading entry. -/
-theorem exists_isLeadingEntry_of_ne_zero [Zero R] [Finite n] [LinearOrder n]
+/-- Over a well-founded column order, a nonzero row has a leading entry. -/
+theorem exists_isLeadingEntry_of_ne_zero [Zero R] [LT n] [WellFoundedLT n]
     {A : Matrix m n R} {i : m} (h : A i ≠ 0) : ∃ c, A.IsLeadingEntry i c := by
-  cases nonempty_fintype n
-  -- todo: check mathlib's policy on classical
-  classical
-  have hne : (univ.filter fun j => A i j ≠ 0).Nonempty := by
-    rcases Function.ne_iff.mp h with ⟨j, hj⟩
-    exact ⟨j, mem_filter.mpr ⟨mem_univ _, by simpa using hj⟩⟩
-  refine ⟨(univ.filter fun j => A i j ≠ 0).min' hne, fun j hj => ?_, ?_⟩
-  · by_contra hj'
-    exact absurd
-      (min'_le _ j (mem_filter.mpr ⟨mem_univ _, hj'⟩))
-      (not_le.mpr hj)
-  · exact (mem_filter.mp ((univ.filter fun j => A i j ≠ 0).min'_mem hne)).2
+  obtain ⟨c, hc, hmin⟩ := wellFounded_lt.has_min {j | A i j ≠ 0} (Function.ne_iff.mp h)
+  exact ⟨c, fun j hj => not_not.mp fun hj' => hmin j hj' hj, hc⟩
 
 /-! ### Pivot sets -/
 
@@ -93,34 +76,34 @@ structure IsPivotFinset [Zero R] [LT m] [LT n] (A : Matrix m n R) (s : Finset n)
 theorem IsPivotFinset.rank_le_card [LinearOrder m] [Fintype n] [LinearOrder n]
     [CommSemiring R] [StrongRankCondition R] {A : Matrix m n R} {s : Finset n}
     (h : A.IsPivotFinset s) : A.rank ≤ s.card := by
-  choose f hf using fun c : ↥s => (h.mem_iff _).mp c.2
+  choose f hf using fun c : s => (h.mem_iff _).mp c.2
   refine (rank_le_card_of_row_eq_zero A (s.attach.image f) fun i hi => ?_).trans
     (card_image_le.trans_eq card_attach)
-  by_contra h0
-  obtain ⟨c, hc⟩ := exists_isLeadingEntry_of_ne_zero h0
+  contrapose! hi
+  obtain ⟨c, hc⟩ := exists_isLeadingEntry_of_ne_zero hi
   have hcs : c ∈ s := (h.mem_iff _).mpr ⟨i, hc⟩
-  exact hi (mem_image.mpr ⟨⟨c, hcs⟩, mem_attach _ _,
-    h.rowEchelon.isLeadingEntry_row_eq (hf ⟨c, hcs⟩) hc⟩)
+  refine mem_image.mpr ⟨⟨c, hcs⟩, mem_attach _ _, ?_⟩
+  exact h.rowEchelon.isLeadingEntry_row_eq (hf ⟨c, hcs⟩) hc
 
 theorem IsPivotFinset.card_le_rank [LT m] [Fintype n] [LinearOrder n]
     [CommRing R] [IsDomain R] {A : Matrix m n R} {s : Finset n}
     (h : A.IsPivotFinset s) : s.card ≤ A.rank := by
-  choose f hf using fun c : ↥s => (h.mem_iff _).mp c.2
-  have htri : (A.submatrix f Subtype.val).BlockTriangular id := fun a b hab =>
-    (hf a).1 _ hab
+  choose f hf using fun c : s => (h.mem_iff _).mp c.2
+  have htri : (A.submatrix f Subtype.val).BlockTriangular id := fun i j hij =>
+    (hf i).1 _ hij
   have hdet : (A.submatrix f Subtype.val).det ≠ 0 := by
     rw [det_of_upperTriangular htri]
-    exact prod_ne_zero_iff.mpr fun a _ => (hf a).2
-  calc (s.card : ℕ) = (A.submatrix f Subtype.val).rank := by
+    exact prod_ne_zero_iff.mpr fun i _ => (hf i).2
+  calc s.card = (A.submatrix f Subtype.val).rank := by
         rw [rank_of_det_ne_zero hdet, Fintype.card_coe]
-    _ ≤ A.rank := rank_submatrix_le A _ _
+    _ ≤ A.rank := rank_submatrix_le A f Subtype.val
 
 theorem IsPivotFinset.rank_eq [LinearOrder m] [Fintype n] [LinearOrder n]
     [CommRing R] [IsDomain R] {A : Matrix m n R} {s : Finset n}
     (h : A.IsPivotFinset s) : A.rank = s.card :=
   le_antisymm h.rank_le_card h.card_le_rank
 
-lemma rank_mul_eq_right_of_lowerTriangular [Fintype m] [LinearOrder m] [Fintype n]
+theorem rank_mul_eq_right_of_lowerTriangular [Fintype m] [LinearOrder m] [Fintype n]
     [CommRing R] [IsDomain R] (A : Matrix m m R) (B : Matrix m n R) (σ : Equiv.Perm m)
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
     (A * B.submatrix σ id).rank = B.rank := by
@@ -145,79 +128,58 @@ Note that the fin-set based version requires a bespoke decidability instance, as
 automatically synthesised version perform a lot of redundant `s.sort`.
 -/
 
+/-- A relation holds pairwise on the sorted enumeration of a `Finset` iff it holds for every
+ordered pair of elements. -/
+theorem _root_.Finset.pairwise_sort_iff {α : Type*} [LinearOrder α] {s : Finset α}
+    {r : α → α → Prop} :
+    (s.sort (· ≤ ·)).Pairwise r ↔ ∀ a₁ ∈ s, ∀ a₂ ∈ s, a₁ < a₂ → r a₁ a₂ := by
+  constructor
+  · intro hp a₁ h₁ a₂ h₂ hlt
+    obtain ⟨i, hi, rfl⟩ := List.mem_iff_getElem.mp ((mem_sort (· ≤ ·)).mpr h₁)
+    obtain ⟨j, hj, rfl⟩ := List.mem_iff_getElem.mp ((mem_sort (· ≤ ·)).mpr h₂)
+    exact List.pairwise_iff_getElem.mp hp i j hi hj
+      (s.sortedLT_sort.getElem_lt_getElem_iff.mp hlt)
+  · exact fun h => s.sortedLT_sort.pairwise.imp_of_mem fun ha hb hlt =>
+      h _ ((mem_sort _).mp ha) _ ((mem_sort _).mp hb) hlt
+
 /-- A relation holds pairwise on the sorted enumeration of a finite linear order iff it holds
 for every ordered pair. -/
 theorem _root_.Finset.pairwise_sort_univ_iff {α : Type*} [Fintype α] [LinearOrder α]
     {r : α → α → Prop} :
-    ((univ : Finset α).sort (· ≤ ·)).Pairwise r ↔ ∀ ⦃a₁ a₂ : α⦄, a₁ < a₂ → r a₁ a₂ := by
-  constructor
-  · intro hp a₁ a₂ hlt
-    have hsub : List.Sublist [a₁, a₂] ((univ : Finset α).sort (· ≤ ·)) :=
-      List.sublist_of_subperm_of_sortedLE
-        ((List.nodup_cons.mpr ⟨by simp [hlt.ne], List.nodup_singleton _⟩).subperm
-          fun a _ => (mem_sort _).mpr (mem_univ a))
-        (List.sortedLE_iff_pairwise.mpr (by simp [hlt.le]))
-        (List.sortedLE_iff_pairwise.mpr (pairwise_sort _ _))
-    exact List.pairwise_iff_forall_sublist.mp hp hsub
-  · exact fun h => (List.sortedLT_iff_pairwise.mp (sortedLT_sort _)).imp fun hlt => h hlt
+    ((univ : Finset α).sort (· ≤ ·)).Pairwise r ↔ ∀ ⦃a₁ a₂ : α⦄, a₁ < a₂ → r a₁ a₂ :=
+  Finset.pairwise_sort_iff.trans
+    ⟨fun h _ _ hlt => h _ (mem_univ _) _ (mem_univ _) hlt, fun h _ _ _ _ hlt => h hlt⟩
 
 /-- The leading column of row `r`, or `none` for a zero row. -/
 def leadingCol [Zero R] [DecidableEq R] [Fintype n] [LinearOrder n] (A : Matrix m n R)
     (r : m) : Option n :=
-  if h : (univ.filter fun j => A r j ≠ 0).Nonempty then
-    some ((univ.filter fun j => A r j ≠ 0).min' h)
-  else
-    none
+  (univ.filter fun j => A r j ≠ 0).min
 
 theorem leadingCol_eq_some_iff [Zero R] [DecidableEq R] [Fintype n] [LinearOrder n]
     {A : Matrix m n R} {r : m} {c : n} :
     leadingCol A r = some c ↔ A.IsLeadingEntry r c := by
   constructor
   · intro h
-    rw [leadingCol] at h
-    split at h
-    · rename_i hne
-      obtain rfl : (univ.filter fun j => A r j ≠ 0).min' hne = c :=
-        Option.some_injective _ h
-      refine ⟨fun j hj => ?_, ?_⟩
-      · by_contra hj'
-        exact absurd
-          (min'_le _ j (mem_filter.mpr ⟨mem_univ _, hj'⟩))
-          (not_le.mpr hj)
-      · exact (mem_filter.mp
-          ((univ.filter fun j => A r j ≠ 0).min'_mem hne)).2
-    · exact absurd h (by simp)
+    replace h : (univ.filter fun j => A r j ≠ 0).min = (c : WithTop n) := h
+    refine ⟨fun j hj => ?_, (mem_filter.mp (mem_of_min h)).2⟩
+    by_contra hj'
+    have hjmem : j ∈ univ.filter fun j => A r j ≠ 0 := mem_filter.mpr ⟨mem_univ _, hj'⟩
+    exact absurd (min_le_of_eq hjmem h) (not_le.mpr hj)
   · intro hlead
-    have hcmem : c ∈ univ.filter fun j => A r j ≠ 0 :=
-      mem_filter.mpr ⟨mem_univ _, hlead.2⟩
-    have hne : (univ.filter fun j => A r j ≠ 0).Nonempty := ⟨c, hcmem⟩
-    rw [leadingCol, dif_pos hne]
-    have hle := min'_le _ c hcmem
-    have hmem := (mem_filter.mp
-      ((univ.filter fun j => A r j ≠ 0).min'_mem hne)).2
-    rcases eq_or_lt_of_le hle with heq | hlt
-    · rw [heq]
-    · exact absurd (hlead.1 _ hlt) hmem
+    change (univ.filter fun j => A r j ≠ 0).min = (c : WithTop n)
+    refine le_antisymm (min_le (mem_filter.mpr ⟨mem_univ _, hlead.2⟩)) (Finset.le_min ?_)
+    exact fun b hb => WithTop.coe_le_coe.mpr
+      (not_lt.mp fun hbc => (mem_filter.mp hb).2 (hlead.1 b hbc))
 
 theorem leadingCol_eq_none_iff [Zero R] [DecidableEq R] [Fintype n] [LinearOrder n]
-    {A : Matrix m n R} {r : m} : leadingCol A r = none ↔ A r = 0 := by
-  constructor
-  · intro h
-    funext j
-    change A r j = 0
-    by_contra hj
-    rw [leadingCol, dif_pos ⟨j, mem_filter.mpr ⟨mem_univ _, hj⟩⟩] at h
-    exact absurd h (by simp)
-  · intro h0
-    rw [leadingCol, dif_neg]
-    rintro ⟨j, hj⟩
-    exact (mem_filter.mp hj).2 (congrFun h0 j)
+    {A : Matrix m n R} {r : m} : leadingCol A r = none ↔ A r = 0 :=
+  Finset.min_eq_top.trans <| by simp [filter_eq_empty_iff, funext_iff]
 
 theorem mem_filterMap_leadingCol [Zero R] [DecidableEq R] [Fintype m] [LinearOrder m]
     [Fintype n] [LinearOrder n] {A : Matrix m n R} {c : n} :
     c ∈ ((univ : Finset m).sort (· ≤ ·)).filterMap (leadingCol A) ↔
       ∃ i, A.IsLeadingEntry i c := by
-  simp [List.mem_filterMap, leadingCol_eq_some_iff]
+  simp [leadingCol_eq_some_iff]
 
 /-- The staircase relation between the optional leading columns of two rows in order:
 leading columns strictly increase, and no nonzero row follows a zero row. -/
@@ -226,8 +188,11 @@ def LeadStep [LT n] : Option n → Option n → Prop
   | some _, none => True
   | none, o₂ => o₂ = none
 
-instance [LinearOrder n] : DecidableRel (LeadStep (n := n)) := fun o₁ o₂ => by
-  cases o₁ <;> cases o₂ <;> simp only [LeadStep] <;> infer_instance
+instance [LT n] [DecidableLT n] : DecidableRel (LeadStep (n := n))
+  | some c₁, some c₂ => inferInstanceAs (Decidable (c₁ < c₂))
+  | some _, none => .isTrue trivial
+  | none, none => .isTrue rfl
+  | none, some _ => .isFalse (Option.some_ne_none _)
 
 /-- A matrix is in row echelon form iff the optional leading columns of every ordered pair of
 rows satisfy the staircase relation. -/
@@ -238,7 +203,6 @@ theorem rowEchelon_iff_leadStep [Zero R] [DecidableEq R] [LT m] [Fintype n] [Lin
   · intro hre i₁ i₂ hlt
     cases h₁ : leadingCol A i₁ with
     | none =>
-      change leadingCol A i₂ = none
       exact leadingCol_eq_none_iff.mpr
         (hre.row_eq_zero_of_lt hlt (leadingCol_eq_none_iff.mp h₁))
     | some c₁ =>
@@ -253,14 +217,13 @@ theorem rowEchelon_iff_leadStep [Zero R] [DecidableEq R] [LT m] [Fintype n] [Lin
     | some c₂ =>
       have hstep' := hstep hlt
       cases h₁ : leadingCol A i₁ with
-      | none => rw [h₁, h₂] at hstep'; exact absurd hstep' (by simp [LeadStep])
+      | none => rw [h₁, h₂] at hstep'; exact absurd hstep' (Option.some_ne_none c₂)
       | some c₁ =>
         rw [h₁, h₂] at hstep'
-        have hc₁₂ : c₁ < c₂ := hstep'
         have hlead₁ := leadingCol_eq_some_iff.mp h₁
         have hlead₂ := leadingCol_eq_some_iff.mp h₂
         have hle : ¬ c₁ < j₂ := fun hc => hlead₁.2 (hz _ hc)
-        exact hlead₂.1 _ (lt_of_le_of_lt (not_lt.mp hle) hc₁₂)
+        exact hlead₂.1 _ (lt_of_le_of_lt (not_lt.mp hle) hstep')
 
 /-- Decision procedure for `IsPivotFinset`: compute the leading column of each row once,
 then check the staircase relation on the rows in order and compare the leading columns
@@ -283,16 +246,11 @@ theorem isPivotFinsetB_iff [Zero R] [DecidableEq R] [Fintype m] [LinearOrder m] 
   · rintro ⟨hre, hmem⟩
     have hstep := rowEchelon_iff_leadStep.mp hre
     refine ⟨Finset.pairwise_sort_univ_iff.mpr hstep, ?_⟩
-    have hsorted : (((univ : Finset m).sort (· ≤ ·)).filterMap (leadingCol A)).SortedLT := by
-      rw [List.sortedLT_iff_pairwise, List.pairwise_filterMap]
-      refine Finset.pairwise_sort_univ_iff.mpr fun r₁ r₂ hlt b hb b' hb' => ?_
-      have h := hstep hlt
-      rw [hb, hb'] at h
-      exact h
-    exact List.Subset.antisymm_of_sortedLT
-      (fun c hc => (mem_sort _).mpr ((hmem c).mpr (mem_filterMap_leadingCol.mp hc)))
-      (fun c hc => mem_filterMap_leadingCol.mpr ((hmem c).mp ((mem_sort _).mp hc)))
-      hsorted (sortedLT_sort _)
+    have hsorted : (((univ : Finset m).sort (· ≤ ·)).filterMap (leadingCol A)).SortedLT :=
+      ((Finset.pairwise_sort_univ_iff.mpr hstep).filterMap (leadingCol A)
+        fun _ _ h _ hb _ hb' => by rw [hb, hb'] at h; exact h).sortedLT
+    exact hsorted.eq_of_mem_iff (sortedLT_sort _) fun c =>
+      mem_filterMap_leadingCol.trans ((hmem c).symm.trans (mem_sort _).symm)
 
 instance decidableIsPivotFinset [Zero R] [DecidableEq R] [Fintype m] [LinearOrder m]
     [Fintype n] [LinearOrder n] (A : Matrix m n R) (s : Finset n) :
