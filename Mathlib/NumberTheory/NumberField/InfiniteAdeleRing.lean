@@ -48,13 +48,33 @@ infinite places. See `NumberField.InfinitePlace` for the definition of an infini
 `NumberField.InfinitePlace.Completion` for the associated completion.
 -/
 
-/-- The infinite adele ring of a number field. -/
+/-- The infinite adele ring of a number field.
+
+Kept as a semi-reducible `def` (not an `abbrev`) so the custom adelic product `Norm`
+below is not competed with by the pi/sup-norm hierarchy from `NormedField` on each
+completion. Algebraic and topological structure is still the underlying product: the
+instances use `show … from inferInstance` so they are definitionally the pi instances
+(needed at `instances` transparency since Lean v4.29). See #42057. -/
 def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
-deriving CommRing, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace InfiniteAdeleRing
 
 variable (K : Type*) [Field K]
+
+instance : CommRing (InfiniteAdeleRing K) :=
+  show CommRing ((v : InfinitePlace K) → v.Completion) from inferInstance
+
+instance : Inhabited (InfiniteAdeleRing K) :=
+  show Inhabited ((v : InfinitePlace K) → v.Completion) from inferInstance
+
+instance : TopologicalSpace (InfiniteAdeleRing K) :=
+  show TopologicalSpace ((v : InfinitePlace K) → v.Completion) from inferInstance
+
+instance : IsTopologicalRing (InfiniteAdeleRing K) :=
+  show IsTopologicalRing ((v : InfinitePlace K) → v.Completion) from inferInstance
+
+instance : Algebra K (InfiniteAdeleRing K) :=
+  show Algebra K ((v : InfinitePlace K) → v.Completion) from inferInstance
 
 instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
   (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
