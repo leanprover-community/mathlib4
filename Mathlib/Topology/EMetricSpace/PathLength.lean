@@ -32,21 +32,26 @@ open Set unitInterval
 
 namespace Path
 
-@[expose] public section
-
-noncomputable section
+@[expose] public noncomputable section
 
 variable {E : Type*} [PseudoEMetricSpace E] {a b c : E}
 
 local notation "half" => (⟨(1 / 2 : ℝ), by constructor <;> norm_num⟩ : I)
 
+/-- Auxiliary lemma: `0 ≤ half` in the unit interval. -/
 private lemma zero_le_half : (0 : I) ≤ half := by
   change (0 : ℝ) ≤ (1 / 2 : ℝ)
   norm_num
 
+/-- Auxiliary lemma: `half ≤ 1` in the unit interval. -/
 private lemma half_le_one : half ≤ (1 : I) := by
   change (1 / 2 : ℝ) ≤ (1 : ℝ)
   norm_num
+
+/-- Auxiliary lemma: the symmetry of the unit interval fixes `half`. -/
+private lemma symm_half : σ half = half := by
+  ext
+  norm_num [unitInterval.symm]
 
 /-! ## Definition and basic properties -/
 
@@ -74,6 +79,7 @@ theorem length_refl (x : E) :
   apply eVariationOn.constant_on
   simp
 
+/-- Auxiliary lemma: the reversed path is obtained by composing with unit-interval symmetry. -/
 private lemma symm_eq_comp (γ : Path a b) : ⇑γ.symm = ⇑γ ∘ σ := rfl
 
 /-- Reversing a path does not change its length. -/
@@ -101,15 +107,15 @@ lemma length_eq_eVariationOn_extend (γ : Path a b) :
     exact Subtype.coe_image_univ I
   calc
     _ = eVariationOn (γ.extend ∘ ((↑) : I → ℝ)) (Set.univ : Set I) := by
-      apply eVariationOn.congr
-      intro t ht
-      exact (Path.extend_extends' γ t).symm
+        apply eVariationOn.congr
+        intro t ht
+        exact (Path.extend_extends' γ t).symm
     _ = eVariationOn γ.extend (((↑) : I → ℝ) '' (Set.univ : Set I)) := by
-      apply eVariationOn.comp_eq_of_monotoneOn
-      intro x hx y hy hxy
-      exact hxy
+        apply eVariationOn.comp_eq_of_monotoneOn
+        intro x hx y hy hxy
+        exact hxy
     _ = eVariationOn γ.extend (Icc (0 : ℝ) 1) := by
-      rw [himage]
+        rw [himage]
 
 /-- Auxiliary lemma: the affine map `t ↦ 2t` sends the left half
 of the unit interval onto `[0,1]`. -/
@@ -129,33 +135,16 @@ private lemma eVariationOn_symm_Icc_left_half (γ : Path a b) :
     eVariationOn γ.symm (Icc 0 half) = eVariationOn γ (Icc half 1) := by
   rw [symm_eq_comp γ]
   calc
-    _ = eVariationOn γ (σ '' Icc (0 : I) half) := by
-        apply eVariationOn.comp_eq_of_antitoneOn
-        intro x hx y hy hxy
-        change (σ y : ℝ) ≤ (σ x : ℝ)
-        rw [coe_symm_eq, coe_symm_eq]
-        linarith [show (x : ℝ) ≤ (y : ℝ) from hxy]
-    _ = eVariationOn γ (Icc half (1 : I)) := by
-        congr 1
-        ext x
-        constructor
-        · rintro ⟨t, ht, rfl⟩
-          constructor
-          · exact (half_le_symm_iff t).2 ht.2
-          · exact (σ t).2.2
-        · intro hx
-          refine ⟨σ x, ?_, ?_⟩
-          · constructor
-            · simp
-            · have : (1 / 2 : ℝ) ≤ (σ (σ x) : ℝ) := by
-                rw [unitInterval.symm_symm]
-                exact hx.1
-              exact (half_le_symm_iff (σ x)).1 this
-          · simp
+    _ = eVariationOn γ (σ '' Icc (0 : I) half) :=
+        eVariationOn.comp_eq_of_antitoneOn γ σ fun _ _ _ _ hxy => symm_le_symm.mpr hxy
+    _ = eVariationOn γ (Icc half 1) := by
+        rw [ContinuousOn.image_Icc_of_antitoneOn zero_le_half
+          ((unitInterval.continuous_symm.continuousOn : ContinuousOn σ (Icc 0 half)))
+          (strictAnti_symm.antitone.antitoneOn _), symm_half, symm_zero]
 
 /-! ## Length of concatenations -/
-
-/-- The variation of a concatenation on its left half is the variation of the first path. -/
+/-- Auxiliary lemma: the variation of a concatenation on its left half
+is the length of the first path. -/
 private lemma eVariationOn_trans_left (γ : Path a b) (η : Path b c) :
     eVariationOn (γ.trans η) (Icc 0 half) = γ.length := by
   refine (eVariationOn.congr (g := fun t : I ↦ γ.extend (2 * (t : ℝ))) ?_).trans ?_
@@ -172,7 +161,8 @@ private lemma eVariationOn_trans_left (γ : Path a b) (η : Path b c) :
           rw [image_double_Icc_half]
       _ = γ.length := (length_eq_eVariationOn_extend γ).symm
 
-/-- The variation of a concatenation on its right half is the variation of the second path. -/
+/-- Auxiliary lemma: the variation of a concatenation on its right half
+is the length of the second path. -/
 private lemma eVariationOn_trans_right (γ : Path a b) (η : Path b c) :
     eVariationOn (γ.trans η) (Icc half 1) = η.length := by
   calc
@@ -181,8 +171,7 @@ private lemma eVariationOn_trans_right (γ : Path a b) (η : Path b c) :
     _ = eVariationOn η.symm Set.univ := by
         rw [Path.trans_symm]
         exact eVariationOn_trans_left (γ := η.symm) (η := γ.symm)
-    _ = eVariationOn η Set.univ := by
-        exact length_symm η
+    _ = eVariationOn η Set.univ := length_symm η
 
 /-- The length of a concatenation is the sum of the lengths of the two pieces. -/
 theorem length_trans (γ : Path a b) (η : Path b c) :
@@ -194,8 +183,6 @@ theorem length_trans (γ : Path a b) (η : Path b c) :
   rw [← unitInterval.univ_eq_Icc] at h
   rw [← h, eVariationOn_trans_left, eVariationOn_trans_right]
   rfl
-
-end
 
 end
 
