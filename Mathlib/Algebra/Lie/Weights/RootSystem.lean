@@ -187,7 +187,7 @@ lemma chainLength_neg :
 
 @[simp]
 lemma chainLength_zero [Nontrivial L] : chainLength 0 β = 0 := by
-  simp [← chainBotCoeff_add_chainTopCoeff, FunLike.coe_zero]
+  simp [← chainBotCoeff_add_chainTopCoeff]
 
 /-- If `β - qα ... β ... β + rα` is the `α`-chain through `β`, then
   `β (coroot α) = q - r`. In particular, it is an integer. -/
@@ -263,7 +263,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
   apply eq_of_le_of_not_lt
   · rw [Nat.one_le_iff_ne_zero]
     intro e
-    exact α.2 (by simpa [e, FunLike.coe_zero] using!
+    exact α.2 (by simpa [e] using!
       genWeightSpace_chainTopCoeff_add_one_nsmul_add α (0 : Weight K H L) hα)
   obtain ⟨x, hx, x_ne0⟩ := (chainTop α (0 : Weight K H L)).exists_ne_zero
   obtain ⟨h, e, f, isSl2, he, hf⟩ := exists_isSl2Triple_of_weight_isNonZero hα
@@ -299,7 +299,7 @@ lemma chainLength_zero_right [Nontrivial L] (hα : α.IsNonZero) : chainLength �
 lemma rootSpace_two_smul (hα : α.IsNonZero) : rootSpace H (2 • α) = ⊥ := by
   cases subsingleton_or_nontrivial L
   · exact IsEmpty.elim inferInstance α
-  simpa [FunLike.coe_zero, chainTopCoeff_zero_right α hα] using
+  simpa [chainTopCoeff_zero_right α hα] using
     genWeightSpace_chainTopCoeff_add_one_nsmul_add α (0 : Weight K H L) hα
 
 lemma rootSpace_one_div_two_smul (hα : α.IsNonZero) : rootSpace H ((2⁻¹ : K) • α) = ⊥ := by
