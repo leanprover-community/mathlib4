@@ -266,7 +266,7 @@ section Gaussian
 
 /-- The regularized Gaussian hypergeometric function. -/
 def regularizedGaussHGFunSeries (a b c : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
-  regularizedHGFunSeries (fun (k : Fin 2) ↦ if k = 0 then a else b) (fun _ : Fin 1 ↦ c)
+  regularizedHGFunSeries ![a, b] ![c]
 
 /-- The regularized Gaussian hypergeometric function. -/
 def regularizedGaussHGFun (a b c z : ℂ) : ℂ :=
@@ -277,7 +277,7 @@ variable {a b c : ℂ}
 variable (c) in
 theorem radius_regularizedGaussHGFunSeries_eq_one (h : ∀ k : ℕ, a ≠ -k ∧ b ≠ -k) :
     (regularizedGaussHGFunSeries a b c).radius = 1 :=
-  radius_regularizedHGFunSeries_eq_one _ _ (by simp) (by grind)
+  radius_regularizedHGFunSeries_eq_one _ _ (by simp) (by simp; grind)
 
 end Gaussian
 
