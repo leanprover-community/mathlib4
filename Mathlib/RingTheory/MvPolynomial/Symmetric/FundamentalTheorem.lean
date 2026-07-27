@@ -113,8 +113,7 @@ lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : A
     exact Nat.sub_add_cancel (hs i.le_succ)
   · have := (Nat.sub_one_add_one <| Nat.ne_zero_of_lt hm).symm
     rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dite_eq_left hm,
-      dite_eq_right this.not_gt,
-      Nat.sub_zero]
+      dite_eq_right this.not_gt, Nat.sub_zero]
     intro j hj
     rw [invAccumulate, dite_eq_right hj.not_gt, Nat.zero_sub]
 

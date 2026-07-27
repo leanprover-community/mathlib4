@@ -104,9 +104,9 @@ def dividedPowers {J : Ideal A} (hJ : IsSubDPIdeal hI J) [âˆ€ x, Decidable (x âˆ
   dpow_zero hx    := by simp [ite_eq_left hx, hI.dpow_zero (hJ.isSubideal hx)]
   dpow_one hx     := by simp [ite_eq_left hx, hI.dpow_one (hJ.isSubideal hx)]
   dpow_mem hn hx  := by simp [ite_eq_left hx, hJ.dpow_mem _ hn hx]
-  dpow_add hx hy  := by simp_rw [ite_eq_left hx, ite_eq_left hy,
-    ite_eq_left (Ideal.add_mem J hx hy),
-    hI.dpow_add (hJ.isSubideal hx) (hJ.isSubideal hy)]
+  dpow_add hx hy  := by
+    simp_rw [ite_eq_left hx, ite_eq_left hy, ite_eq_left (Ideal.add_mem J hx hy),
+      hI.dpow_add (hJ.isSubideal hx) (hJ.isSubideal hy)]
   dpow_mul hx     := by
     simp [ite_eq_left hx, ite_eq_left (mul_mem_left J _ hx), hI.dpow_mul (hJ.isSubideal hx)]
   mul_dpow hx     := by simp [ite_eq_left hx, hI.mul_dpow (hJ.isSubideal hx)]

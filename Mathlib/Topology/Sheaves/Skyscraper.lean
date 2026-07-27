@@ -60,8 +60,8 @@ point, then the skyscraper presheaf `𝓕` with value `A` is defined by `U ↦ A
 def skyscraperPresheaf : Presheaf C X where
   obj U := if p₀ ∈ unop U then A else terminal C
   map {U V} i :=
-    if h : p₀ ∈ unop V then eqToHom <| by rw [ite_eq_left h,
-      ite_eq_left (by simpa using i.unop.le h)]
+    if h : p₀ ∈ unop V then eqToHom <| by
+      rw [ite_eq_left h, ite_eq_left (by simpa using i.unop.le h)]
     else ((ite_eq_right h).symm.ndrec terminalIsTerminal).from _
   map_id U :=
     (em (p₀ ∈ U.unop)).elim (fun h => dite_eq_left h) fun h =>

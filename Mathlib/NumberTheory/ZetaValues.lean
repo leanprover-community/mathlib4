@@ -258,8 +258,7 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
       Nat.factorial_one, pow_one]
     rw [bernoulli_zero_fourier_coeff hn, sub_zero, mul_one, div_neg, neg_div]
   · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, ite_eq_right (by grind),
-    Nat.add_sub_cancel k 1, h'k,
-      Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
+      Nat.add_sub_cancel k 1, h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
     ring
 
 end BernoulliFourierCoeffs

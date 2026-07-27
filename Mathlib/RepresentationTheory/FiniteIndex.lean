@@ -73,9 +73,8 @@ lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
      indToCoindAux A (s * g₁) (A.ρ s a) g₂ = indToCoindAux A g₁ a g₂ := by
   rcases em ((QuotientGroup.rightRel S).r g₂ g₁) with ⟨s₁, rfl⟩ | h
   · simp only [indToCoindAux, LinearMap.pi_apply]
-    rw [dite_eq_left ⟨s₁ * s⁻¹, by simp [S.1.smul_def, smul_eq_mul, mul_assoc]⟩, dite_eq_left ⟨s₁,
-      rfl⟩,
-      ← Module.End.mul_apply, ← map_mul]
+    rw [dite_eq_left ⟨s₁ * s⁻¹, by simp [S.1.smul_def, smul_eq_mul, mul_assoc]⟩,
+      dite_eq_left ⟨s₁, rfl⟩, ← Module.End.mul_apply, ← map_mul]
     congr
     simp [Subtype.ext_iff, S.1.smul_def, mul_assoc]
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]

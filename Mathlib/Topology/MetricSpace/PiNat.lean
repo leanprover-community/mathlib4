@@ -594,8 +594,8 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     · rintro x ⟨y, rfl⟩
       by_cases hy : y ∈ s
       · rwa [fs y hy]
-      simpa [f,
-        ite_eq_right hy] using! (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
+      simpa [f, ite_eq_right hy]
+        using! (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
     · intro x hx
       rw [← fs x hx]
       exact mem_range_self _
