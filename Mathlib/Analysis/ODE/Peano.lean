@@ -6,6 +6,8 @@ Authors: Julian Rolfes, Luke Schleef, Philipp Svinger, Paul Niessner, Florian Gr
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+public import Mathlib.Topology.MetricSpace.UniformConvergence
 
 /-!
 # Peano Existence Theorem
@@ -13,8 +15,8 @@ public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 This files concerns ODE theory involving a continuous time-dependent vector field on a
 finite-dimensional real normed vector space. The assumptions are collected in `IsPeano`.
 
-This file constructs Tonelli approximations with a delayed input
-which prepares for Peano existence theorem.
+The proof constructs Tonelli approximations with a delayed input, and extracts a uniformly
+convergent subsequence using the Arzelà–Ascoli theorem.
 
 ## Main definitions
 
@@ -23,6 +25,11 @@ which prepares for Peano existence theorem.
 - `IsPeano.delayedInput`: the delayed time argument used in the Tonelli approximations.
 - `IsPeano.tonelliIterate`: the recursively defined curves used in the construction.
 - `IsPeano.tonelliApproximation`: the diagonal sequence of Tonelli approximations.
+- `IsPeano.boundedTonelliApproximation`: the approximations as bounded continuous functions.
+
+## Implementation notes
+
+The finite-dimensionality assumption is used to apply the Arzelà–Ascoli theorem.
 
 ## Tags
 
@@ -47,6 +54,9 @@ structure IsPeano {E : Type*} [NormedAddCommGroup E]
   mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ r
 
 namespace IsPeano
+
+open Filter
+open scoped BoundedContinuousFunction
 
 variable {E : Type*} [NormedAddCommGroup E]
   {f : ℝ × E → E} {α : ℝ → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {r L : ℝ≥0}
@@ -251,5 +261,82 @@ lemma tonelliApproximation_eq_integral (n : ℕ) (t : ℝ) (ht : t ∈ Icc t₀.
   simp_rw [h_succ t ht, tonelliApproximation, tonelliIterate]
 
 end TonelliApproximation
+
+/-! ### Compactness via the Arzelà–Ascoli theorem -/
+
+section ArzelaAscoli
+
+/-- Restrict a curve on `ℝ` to the interval `Icc t₀ tmax`. -/
+def restrictToIcc (α : ℝ → E) : Icc t₀.val tmax → E :=
+  fun t ↦ α t
+
+/-- Package a continuous function on `Icc t₀ tmax` as a continuous map. -/
+def continuousMapOnIcc (α : Icc t₀.val tmax → E) (hα : Continuous α) :
+    C(Icc t₀.val tmax, E) where
+  toFun := α
+  continuous_toFun := hα
+
+/-- Package a continuous map on the compact interval `Icc t₀ tmax` as a bounded continuous map. -/
+def boundedContinuousFunctionOnIcc (α : C(Icc t₀.val tmax, E)) :
+    Icc t₀.val tmax →ᵇ E :=
+  BoundedContinuousFunction.mkOfCompact α
+
+/-- The Tonelli approximations as bounded continuous functions on `Icc t₀ tmax`. -/
+noncomputable def boundedTonelliApproximation
+    (hf : IsPeano f t₀ x₀ r L) (n : ℕ) : Icc t₀.val tmax →ᵇ E :=
+  boundedContinuousFunctionOnIcc
+    (continuousMapOnIcc (restrictToIcc (tonelliApproximation f t₀ x₀ n))
+      (continuousOn_iff_continuous_domRestrict.mp
+        (lipschitzOnWith_tonelliApproximation hf n).continuousOn))
+
+/-- The bounded continuous form of each Tonelli approximation has Lipschitz constant `L`. -/
+lemma lipschitzWith_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) (n : ℕ) :
+    LipschitzWith L (boundedTonelliApproximation hf n) := by
+  rw [lipschitzWith_iff_dist_le_mul]
+  intro t s
+  rw [boundedTonelliApproximation]
+  exact (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.property s.val s.property
+
+/-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
+lemma equicontinuous_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+    Equicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) := by
+  have : UniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) :=
+    LipschitzWith.uniformEquicontinuous (fun n ↦ (boundedTonelliApproximation hf n).toFun) L
+      (lipschitzWith_boundedTonelliApproximation hf)
+  apply UniformEquicontinuous.equicontinuous this
+
+variable [FiniteDimensional ℝ E]
+
+/-- The closure of the family of the Tonelli approximations is compact. -/
+lemma isCompact_closure_range_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+    IsCompact (closure (range (boundedTonelliApproximation hf))) := by
+  apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) _ _ _ _
+  · apply isCompact_closedBall
+  · intro g x hg
+    simp only [mem_range] at hg
+    obtain ⟨n, rfl⟩ := hg
+    unfold boundedTonelliApproximation boundedContinuousFunctionOnIcc continuousMapOnIcc
+      restrictToIcc
+    simp only [BoundedContinuousFunction.mkOfCompact_apply]
+    apply mapsTo_tonelliApproximation_closedBall hf n x.property
+  · intro x U hU
+    apply (equicontinuous_boundedTonelliApproximation hf x U hU).mono
+    simp
+
+/-- The Tonelli approximations admit a convergent subsequence of bounded continuous functions. -/
+lemma exists_tendsto_subseq_boundedTonelliApproximation (hf : IsPeano f t₀ x₀ r L) :
+    ∃ β : Icc t₀.val tmax →ᵇ E, ∃ φ : ℕ → ℕ, StrictMono φ ∧
+      Tendsto (boundedTonelliApproximation hf ∘ φ) atTop (nhds β) := by
+  let s : Set (Icc t₀.val tmax →ᵇ E) := closure (range (boundedTonelliApproximation hf))
+  have h_s_compact : IsCompact s := by
+    simpa [s] using isCompact_closure_range_boundedTonelliApproximation hf
+  have h_mem : ∀ n, boundedTonelliApproximation hf n ∈
+      closure (range (boundedTonelliApproximation hf)) := by
+    intro n
+    exact subset_closure ⟨n, rfl⟩
+  obtain ⟨β, _, φ, hφ_mono, hφ_tendsto⟩ := h_s_compact.tendsto_subseq h_mem
+  exact ⟨β, φ, hφ_mono, hφ_tendsto⟩
+
+end ArzelaAscoli
 
 end IsPeano
