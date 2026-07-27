@@ -52,7 +52,7 @@ def Extension : Type :=
 
 theorem finrank_zmod_extension [Algebra (ZMod p) k] :
     Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
-  letI := ZMod.algebra k p
+  let := ZMod.algebra k p
   unfold Extension
   convert!
     GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
@@ -75,7 +75,7 @@ instance [Algebra (ZMod p) k] : IsScalarTower (ZMod p) k (Extension k p n) :=
   .of_algebraMap_eq' <| Subsingleton.elim _ _
 
 theorem natCard_extension : Nat.card (Extension k p n) = Nat.card k ^ n := by
-  letI := ZMod.algebra k p
+  let := ZMod.algebra k p
   rw [← pow_finrank_eq_natCard p, ← pow_finrank_eq_natCard p, finrank_zmod_extension, pow_mul]
 
 theorem finrank_extension : Module.finrank k (Extension k p n) = n := by

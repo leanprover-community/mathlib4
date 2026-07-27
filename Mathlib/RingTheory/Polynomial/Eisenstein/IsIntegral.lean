@@ -138,7 +138,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     (hp : Prime p) (hBint : IsIntegral R B.gen) {z : L} {Q : R[X]} (hQ : aeval B.gen Q = p • z)
     (hzint : IsIntegral R z) (hei : (minpoly R B.gen).IsEisensteinAt 𝓟) : p ∣ Q.coeff 0 := by
   -- First define some abbreviations.
-  letI := B.finite
+  let := B.finite
   let P := minpoly R B.gen
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
   have finrank_K_L : Module.finrank K L = B.dim := B.finrank
@@ -236,7 +236,6 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   set P := minpoly R B.gen with hP
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
   have : Module.IsTorsionFree R L := .trans_faithfulSMul R K L
-  let _ := P.map (algebraMap R L)
   -- There is a polynomial `Q` such that `p • z = aeval B.gen Q`. We can assume that
   -- `Q.degree < P.degree` and `Q ≠ 0`.
   rw [adjoin_singleton_eq_range_aeval] at hz

@@ -278,8 +278,9 @@ noncomputable def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : 
   sup_le' := rieszContentAux_sup_le Λ
 
 lemma rieszContent_ne_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
-  simp [rieszContent, ne_eq, ENNReal.coe_ne_top, not_false_eq_true]
+  simp [rieszContent, ne_eq, not_false_eq_true]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
   simp only [rieszContent, le_antisymm_iff, le_iInf_iff, ENNReal.coe_le_coe, Content.mk_apply]
@@ -321,6 +322,7 @@ promoted to a measure. It will be later shown that
 `∫ (x : X), f x ∂(rieszMeasure Λ hΛ) = Λ f` for all `f : C_c(X, ℝ≥0)`. -/
 def rieszMeasure := (rieszContent Λ).measure
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1)
     {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by
   rw [← TopologicalSpace.Compacts.coe_mk K hK]

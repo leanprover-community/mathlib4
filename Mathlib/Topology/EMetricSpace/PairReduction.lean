@@ -243,6 +243,7 @@ lemma one_le_radius_logSizeBallSeq (hJ : J.Nonempty) (ha : 1 < a) (i : ℕ) :
   | 0 => exact one_le_logSizeRadius ha
   | i + 1 => exact one_le_logSizeRadius ha
 
+set_option backward.isDefEq.respectTransparency false in
 lemma point_mem_finset_logSizeBallSeq (hJ : J.Nonempty) (i : ℕ)
     (h : (logSizeBallSeq J hJ a c i).finset.Nonempty) :
     (logSizeBallSeq J hJ a c i).point ∈ (logSizeBallSeq J hJ a c i).finset := by
@@ -357,6 +358,7 @@ lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
           (point_mem_finset_logSizeBallSeq hJ _ h)
     simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   wlog hJ : J.Nonempty
   · simp [Finset.not_nonempty_iff_eq_empty.mp hJ]

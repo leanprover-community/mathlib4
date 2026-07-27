@@ -100,8 +100,10 @@ theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
   rfl
 
 @[simp]
-theorem preimage_setOf_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
+theorem preimage_ofPred_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias preimage_setOf_eq := preimage_ofPred_eq
 
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
@@ -433,12 +435,12 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
 
 @[simp]
 theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
-  rw [← Injective.of_comp_iff Set.mem_injective, ← Injective.of_comp_iff' _ Set.setOf_bijective]
+  rw [← Injective.of_comp_iff Set.mem_injective, ← Injective.of_comp_iff' _ Set.ofPred_bijective]
   exact injective_comp_right_iff_surjective
 
 @[simp]
 theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
-  rw [← Surjective.of_comp_iff _ Set.setOf_bijective.surjective,
+  rw [← Surjective.of_comp_iff _ Set.ofPred_bijective.surjective,
     ← Surjective.of_comp_iff' Set.mem_bijective]
   exact surjective_comp_right_iff_injective
 
@@ -473,8 +475,10 @@ theorem image_sdiff_preimage {f : α → β} {s : Set α} {t : Set β} :
 theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
   image_eq_preimage_of_inverse compl_compl compl_compl
 
-theorem compl_image_set_of {p : Set α → Prop} : compl '' { s | p s } = { s | p sᶜ } :=
+theorem compl_image_ofPred {p : Set α → Prop} : compl '' { s | p s } = { s | p sᶜ } :=
   congr_fun compl_image {x | p x}
+
+@[deprecated (since := "2026-07-13")] alias compl_image_set_of := compl_image_ofPred
 
 theorem inter_preimage_subset (s : Set α) (t : Set β) (f : α → β) :
     s ∩ f ⁻¹' t ⊆ f ⁻¹' (f '' s ∩ t) := fun _ h => ⟨mem_image_of_mem _ h.left, h.right⟩
@@ -869,7 +873,7 @@ theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h
     range (Subtype.map f h) = (↑) ⁻¹' f '' { x | p x } := by
   ext ⟨x, hx⟩
   simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map]
-  simp only [Subtype.mk.injEq, exists_prop, mem_setOf_eq]
+  simp only [Subtype.mk.injEq, exists_prop, mem_ofPred_eq]
 
 theorem image_swap_eq_preimage_swap : image (@Prod.swap α β) = preimage Prod.swap :=
   image_eq_preimage_of_inverse Prod.swap_leftInverse Prod.swap_rightInverse

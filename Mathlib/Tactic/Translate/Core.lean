@@ -111,7 +111,7 @@ syntax bracketedOption := "(" attrOption <|> reorderOption <|>
 syntax translationHint := (ppSpace (&"existing" <|> &"self" <|> &"none"))?
 
 syntax attrArgs :=
-  translationHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
+  translationHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace docComment)?
 
 -- We omit a doc-string on these syntaxes to instead show the `to_additive` or `to_dual` doc-string
 attribute [nolint docBlame] attrArgs bracketedOption
@@ -319,7 +319,7 @@ structure Config : Type where
   and the translate tactic auto-generates a name instead -/
   target : Name := Name.anonymous
   /-- An optional doc string. -/
-  doc : Option String := .none
+  doc : Option (TSyntax ``Lean.Parser.Command.docComment) := .none
   /-- If `allowAutoName` is `false` (default) then
   we check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
@@ -864,9 +864,11 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
-    -- Copy implicit_reducible status before adding instance attribute
-    if (← getReducibilityStatus src) matches .implicitReducible then
-      setReducibilityStatus tgt .implicitReducible
+    -- Copy `instance_reducible` / `instance_reducible` status before adding instance attribute
+    match (← getReducibilityStatus src) with
+    | .implicitReducible => setReducibilityStatus tgt .implicitReducible
+    | .instanceReducible => setReducibilityStatus tgt .instanceReducible
+    | _ => pure ()
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
@@ -956,6 +958,8 @@ where
 Also try to autogenerate the `reorder` and `relevant_arg` options for this translation. -/
 partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config) (lint := true) :
     MetaM (Reorder × RelevantArg) := withoutExporting do
+  withTraceNode `translate_detail (fun _ =>
+    return m!"checking translation `{.ofConstName src}` → `{.ofConstName tgt}`") do
   let srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
   unless srcDecl.numLevelParams == tgtDecl.numLevelParams do
@@ -967,7 +971,9 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     srcType ← b.insertBoundaries srcType t.attrName
   let (srcType', relevantArg?) ← applyReplacementForall t cfg.dontTranslate srcType
   srcType := srcType'
-  let reorder' ← guessReorder srcType tgtDecl.type
+  let reorder' ← withTraceNode `translate_detail (fun _ =>
+    return m!"guessing the reorder between `{srcType}` and `{tgtDecl.type}`") do
+    guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
   let reorder ←
     if let some reorder := cfg.reorder? then
@@ -1145,30 +1151,6 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
         Instead, you can write the attributes in the usual way."
     trace[translate_detail]
       "attributes: {attrs}; reorder arguments: {reorder?.elim "none" (·.toString)}"
-    let doc ← doc.mapM fun
-      | `(str|$doc:str) => open Linter in do
-        -- Deprecate `str` docstring syntax (since := "2025-08-12")
-        if getLinterValue linter.deprecated (← getLinterOptions) then
-          let hintSuggestion := {
-            diffGranularity := .none
-            toTryThisSuggestion := { suggestion := "/-- " ++ doc.getString.trimAscii ++ " -/" }
-          }
-          let sugg ← Hint.mkSuggestionsMessage #[hintSuggestion] doc
-            (codeActionPrefix? := "Update to: ") (forceList := false)
-          logWarningAt doc <| .tagged ``Linter.deprecatedAttr
-            m!"String syntax for `to_additive` docstrings is deprecated: Use \
-              docstring syntax instead (e.g. `@[to_additive /-- example -/]`)\n\
-              \n\
-              Update deprecated syntax to:{sugg}"
-        return doc.getString
-      | `(docComment|$doc:docComment) => do
-        -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
-        validateDocComment doc
-        /- Note: the following replicates the behavior of `addDocString`. However, this means that
-        trailing whitespace might appear in docstrings added via `docComment` syntax when compared
-        to those added via `str` syntax. See this [Zulip thread](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Why.20do.20docstrings.20include.20trailing.20whitespace.3F/with/533553356). -/
-        return (← getDocStringText doc).removeLeadingSpaces
-      | _ => throwUnsupportedSyntax
     return {
       trace := !stx[1].isNone
       target := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
@@ -1293,7 +1275,9 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder cfg.rename
   if let some doc := cfg.doc then
-    addDocStringCore tgt doc
+    -- TODO: `Syntax.missing` means we do not add binders to the context,
+    -- so the docstring is going to have incomplete syntax highlighting.
+    addDocString tgt Syntax.missing doc |>.run'.run'
   let nestedNames ← copyMetaData t cfg src tgt
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)

@@ -863,7 +863,7 @@ def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
 attribute [local instance] comapMulAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
   when `G = kˣ`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def comapDistribMulActionSelf [AddCommMonoid k] :
     DistribMulAction G (SkewMonoidAlgebra k G) where
   smul_zero g := by
@@ -1177,7 +1177,6 @@ variable (k G) [Monoid G] [MulSemiringAction G k]
 instance isScalarTower_self [IsScalarTower k k k] :
     IsScalarTower k (SkewMonoidAlgebra k G) (SkewMonoidAlgebra k G) :=
   ⟨fun t a b ↦ by
-    classical
     simp only [smul_eq_mul]
     refine Eq.trans (sum_smul_index' (g := a) (b := t) ?_) ?_ <;>
       simp only [← smul_sum, smul_mul_assoc, ← smul_single,

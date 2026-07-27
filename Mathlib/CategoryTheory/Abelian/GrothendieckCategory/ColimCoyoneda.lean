@@ -86,6 +86,7 @@ lemma hf (j : Under j₀) :
     colimit.ι (kernel (g y)) j ≫ f y = (kernel.ι (g y)).app j :=
   (IsColimit.ι_map _ _ _ _).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {y} in
 include hc hy in

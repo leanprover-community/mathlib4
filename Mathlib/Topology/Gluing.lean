@@ -172,6 +172,7 @@ theorem eqvGen_of_π_eq
     colimit.isoColimitCocone_ι_hom, Category.id_comp] at this
   exact Quot.eq.1 this
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   constructor
@@ -379,6 +380,7 @@ theorem ι_fromOpenSubsetsGlue (i : J) :
     (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion' _ :=
   Multicoequalizer.π_desc _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue U) := by
   intro x y e
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
@@ -412,6 +414,7 @@ theorem fromOpenSubsetsGlue_isOpenEmbedding : IsOpenEmbedding (fromOpenSubsetsGl
   .of_continuous_injective_isOpenMap (ContinuousMap.continuous_toFun _)
     (fromOpenSubsetsGlue_injective U) (fromOpenSubsetsGlue_isOpenMap U)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (U i : Set α) := by
   ext
   constructor
