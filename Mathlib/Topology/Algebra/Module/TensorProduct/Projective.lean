@@ -178,7 +178,7 @@ variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 variable [TopologicalSpace F]
 
 
-lemma projectiveModuleFilterBasisSets_add_sub
+lemma projectiveModuleFilterBasisSets_add_subset
     (h𝔘 : (𝓝 (0 : E)).HasBasis 𝔘 id) (_ : (𝓝 (0 : F)).HasBasis 𝔙 id)
     {W : Set (E ⊗[𝕜] F)} (hW : W ∈ projectiveModuleFilterBasisSets 𝔘 𝔙) :
     ∃ W' ∈ projectiveModuleFilterBasisSets 𝔘 𝔙, W' + W' ⊆ W := by
@@ -244,7 +244,7 @@ lemma projectiveModuleFilterBasisSets_smul_right
     exact subset_absConvexHull (Set.mem_image2_of_mem hc hv')
   | add x y hx hy =>
     intro W hW
-    obtain ⟨W', hW', h_subset⟩ := projectiveModuleFilterBasisSets_add_sub h𝔘 h𝔙 hW
+    obtain ⟨W', hW', h_subset⟩ := projectiveModuleFilterBasisSets_add_subset h𝔘 h𝔙 hW
     filter_upwards [hx hW', hy hW'] with c hcx hcy
     rw [smul_add]
     exact h_subset (Set.add_mem_add hcx hcy)
@@ -260,7 +260,7 @@ def projectiveModuleFilterBasis : ModuleFilterBasis 𝕜 (E ⊗[𝕜] F) where
     exact projectiveModuleFilterBasisSets_zero h𝔘 h𝔙 hs
   add' := by
     rintro s hs
-    exact projectiveModuleFilterBasisSets_add_sub h𝔘 h𝔙 hs
+    exact projectiveModuleFilterBasisSets_add_subset h𝔘 h𝔙 hs
   neg' := by
     rintro s hs
     exact projectiveModuleFilterBasisSets_neg hs
@@ -277,7 +277,7 @@ def projectiveModuleFilterBasis : ModuleFilterBasis 𝕜 (E ⊗[𝕜] F) where
     rintro x s hs
     exact projectiveModuleFilterBasisSets_smul_right h𝔘 h𝔙 x hs
 
-lemma locallyConvexSpace_of_basis :
+lemma locallyConvexSpace_projectiveModuleFilterBasis :
     @LocallyConvexSpace 𝕜 (E ⊗[𝕜] F) _ _ _ _ (projectiveModuleFilterBasis h𝔘 h𝔙).topology := by
   letI topology := (projectiveModuleFilterBasis h𝔘 h𝔙).topology (R:=𝕜)
   apply LocallyConvexSpace.ofBasisZero 𝕜 (E ⊗[𝕜] F) id _
@@ -285,7 +285,8 @@ lemma locallyConvexSpace_of_basis :
   rintro s ⟨U, hU, B, hB, rfl⟩
   exact convex_absConvexHull
 
-lemma tendsto_tmul_nhds_zero_of_basis : Tendsto (fun p : E × F ↦ p.1 ⊗ₜ[𝕜] p.2) (𝓝 0 ×ˢ 𝓝 0)
+lemma tendsto_tmul_nhds_zero_projectiveModuleFilterBasis :
+    Tendsto (fun p : E × F ↦ p.1 ⊗ₜ[𝕜] p.2) (𝓝 0 ×ˢ 𝓝 0)
     (projectiveModuleFilterBasis h𝔘 h𝔙).filter := by
   rw [(projectiveModuleFilterBasis h𝔘 h𝔙).toFilterBasis.hasBasis.tendsto_right_iff]
   rintro s ⟨U, hU, B, hB, rfl⟩
@@ -296,7 +297,7 @@ lemma tendsto_tmul_nhds_zero_of_basis : Tendsto (fun p : E × F ↦ p.1 ⊗ₜ[�
   rintro ⟨x, y⟩ ⟨hx : x ∈ U, hy : y ∈ B⟩
   exact subset_absConvexHull (Set.mem_image2_of_mem hx hy)
 
-lemma continuousAt_tmul_right_of_basis (y : F) : @ContinuousAt E (E ⊗[𝕜] F) _
+lemma continuousAt_tmul_right_projectiveModuleFilterBasis (y : F) : @ContinuousAt E (E ⊗[𝕜] F) _
     (projectiveModuleFilterBasis h𝔘 h𝔙).topology (fun x ↦ x ⊗ₜ[𝕜] y) 0 := by
   letI topology := (projectiveModuleFilterBasis h𝔘 h𝔙).topology (R:=𝕜)
   rw [ContinuousAt, zero_tmul]
@@ -312,7 +313,7 @@ lemma continuousAt_tmul_right_of_basis (y : F) : @ContinuousAt E (E ⊗[𝕜] F)
   rw [← TensorProduct.smul_tmul]
   exact subset_absConvexHull (Set.mem_image2_of_mem hx hy')
 
-lemma continuousAt_mk_apply_of_basis (x : E) :
+lemma continuousAt_mk_apply_projectiveModuleFilterBasis (x : E) :
     @ContinuousAt F (E ⊗[𝕜] F) _ (projectiveModuleFilterBasis h𝔘 h𝔙).topology ((mk 𝕜 E F) x) 0 := by
   letI topology := (projectiveModuleFilterBasis h𝔘 h𝔙).topology (R:=𝕜)
   rw [ContinuousAt, map_zero]
@@ -335,22 +336,23 @@ theorem projectiveModuleFilterBasis_topology_mem_tensorProductTopologies :
   unfold tensorProductTopologies
   simp only [Set.mem_ofPred_eq]
   refine ⟨(projectiveModuleFilterBasis h𝔘 h𝔙).isTopologicalAddGroup,
-    locallyConvexSpace_of_basis h𝔘 h𝔙, (projectiveModuleFilterBasis h𝔘 h𝔙).continuousSMul, ?_⟩
+    locallyConvexSpace_projectiveModuleFilterBasis h𝔘 h𝔙,
+    (projectiveModuleFilterBasis h𝔘 h𝔙).continuousSMul, ?_⟩
   apply continuous_of_continuousAt_zero₂
     (LinearMap.toAddMonoidHom'.comp (TensorProduct.mk 𝕜 E F).toAddMonoidHom)
   · rw [ContinuousAt, Prod.mk_zero_zero]
     simp only [AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe, comp_apply,
       LinearMap.toAddMonoidHom'_apply, mk_apply, Prod.fst_zero, map_zero, Prod.snd_zero]
     rw [nhds_prod_eq, (projectiveModuleFilterBasis h𝔘 h𝔙).toAddGroupFilterBasis.nhds_zero_eq]
-    exact tendsto_tmul_nhds_zero_of_basis (𝕜 := 𝕜) h𝔘 h𝔙
+    exact tendsto_tmul_nhds_zero_projectiveModuleFilterBasis (𝕜 := 𝕜) h𝔘 h𝔙
   · simp only [AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe, comp_apply,
       LinearMap.toAddMonoidHom'_apply]
-    exact continuousAt_mk_apply_of_basis h𝔘 h𝔙
+    exact continuousAt_mk_apply_projectiveModuleFilterBasis h𝔘 h𝔙
   · simp only [AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe, comp_apply,
       LinearMap.toAddMonoidHom'_apply, mk_apply]
-    exact continuousAt_tmul_right_of_basis h𝔘 h𝔙
+    exact continuousAt_tmul_right_projectiveModuleFilterBasis h𝔘 h𝔙
 
-theorem topology_eq_projective :
+theorem projectiveModuleFilterBasis_topology_eq_projectiveTopology :
     (projectiveModuleFilterBasis h𝔘 h𝔙).topology = (instTopologicalSpaceProjectiveTensorProduct
       (R:=𝕜) (M:=E) (N:=F)) := by
   apply le_antisymm
