@@ -753,10 +753,10 @@ theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
   ext i
   rw [biproduct.fromSubtype, biproduct.ι_desc_assoc, biproduct.ι_π]
   by_cases h : p j
-  · rw [dif_pos h, biproduct.ι_π]
+  · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
     exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
-  · rw [dif_neg h, dif_neg (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
+  · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
 
 theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
     biproduct.fromSubtype f p =
@@ -787,10 +787,10 @@ theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
   ext i
   rw [biproduct.toSubtype, Category.assoc, biproduct.lift_π, biproduct.ι_π]
   by_cases h : p j
-  · rw [dif_pos h, biproduct.ι_π]
+  · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
     exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
-  · rw [dif_neg h, dif_neg (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
+  · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
 
 theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
     biproduct.toSubtype f p =
@@ -848,8 +848,8 @@ def biproduct.isLimitFromSubtype :
       rw [KernelFork.ι_ofι, Category.assoc, Category.assoc,
         biproduct.toSubtype_fromSubtype_assoc, biproduct.map_π]
       rcases Classical.em (i = j) with (rfl | h)
-      · rw [if_neg (Classical.not_not.2 rfl), comp_zero, comp_zero, KernelFork.condition]
-      · rw [if_pos (Ne.symm h), Category.comp_id], by
+      · rw [ite_eq_right (Classical.not_not.2 rfl), comp_zero, comp_zero, KernelFork.condition]
+      · rw [ite_eq_left (Ne.symm h), Category.comp_id], by
       intro m hm
       rw [← hm, KernelFork.ι_ofι, Category.assoc, biproduct.fromSubtype_toSubtype]
       exact (Category.comp_id _).symm⟩
@@ -874,8 +874,8 @@ def biproduct.isColimitToSubtype :
       apply biproduct.hom_ext'; intro j
       rw [CokernelCofork.π_ofπ, biproduct.toSubtype_fromSubtype_assoc, biproduct.ι_map_assoc]
       rcases Classical.em (i = j) with (rfl | h)
-      · rw [if_neg (Classical.not_not.2 rfl), zero_comp, CokernelCofork.condition]
-      · rw [if_pos (Ne.symm h), Category.id_comp], by
+      · rw [ite_eq_right (Classical.not_not.2 rfl), zero_comp, CokernelCofork.condition]
+      · rw [ite_eq_left (Ne.symm h), Category.id_comp], by
       intro m hm
       rw [← hm, CokernelCofork.π_ofπ, ← Category.assoc, biproduct.fromSubtype_toSubtype]
       exact (Category.id_comp _).symm⟩
@@ -908,7 +908,7 @@ def kernelForkBiproductToSubtype (p : K → Prop) :
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
           comp_zero, zero_comp]
-        rw [dif_neg k.2]
+        rw [dite_eq_right k.2]
         simp only [zero_comp])
   isLimit :=
     KernelFork.IsLimit.ofι _ _ (fun {_} g _ => g ≫ biproduct.toSubtype f pᶜ)
@@ -946,7 +946,7 @@ def cokernelCoforkBiproductFromSubtype (p : K → Prop) :
         ext j k
         simp only [Category.assoc, Pi.compl_apply, biproduct.ι_fromSubtype_assoc,
           biproduct.ι_toSubtype_assoc, comp_zero, zero_comp]
-        rw [dif_neg]
+        rw [dite_eq_right]
         · simp only [zero_comp]
         · exact not_not.mpr k.2)
   isColimit :=

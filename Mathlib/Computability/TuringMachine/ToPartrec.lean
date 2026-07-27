@@ -714,7 +714,7 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
   rw [tr]
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_update_main, elim_rev, elim_update_rev,
     Function.update_self, trList]
-  rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
+  rw [ite_eq_right (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
   refine (clear_ok (splitAtPred_eq _ _ _ none [] ?_ ⟨rfl, rfl⟩)).trans ?_
   · exact fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)
   convert! unrev_ok using 2; simp [List.reverseAux_eq]

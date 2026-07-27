@@ -271,7 +271,7 @@ theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : S
   classical
   by_cases hp : p = 0
   · simp [hp]
-  rw [rootMultiplicity_eq_multiplicity, if_neg hp, ← Nat.cast_le (α := ℕ∞),
+  rw [rootMultiplicity_eq_multiplicity, ite_eq_right hp, ← Nat.cast_le (α := ℕ∞),
     Nat.cast_one, ← (finiteMultiplicity_X_sub_C x hp).emultiplicity_eq_multiplicity]
   apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 

@@ -549,7 +549,7 @@ lemma piecewise_apply_left {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : Is
     piecewise h₁ h₂ h f g hfg x = f ⟨x, hx⟩ := by
   simp only [piecewise,
     coe_mk]
-  rw [dif_pos hx]
+  rw [dite_eq_left hx]
 
 @[simp]
 lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)

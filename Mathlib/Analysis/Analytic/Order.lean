@@ -62,7 +62,7 @@ noncomputable def analyticOrderNatAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ := (an
 
 @[simp]
 lemma analyticOrderAt_of_not_analyticAt (hf : ¬ AnalyticAt 𝕜 f z₀) : analyticOrderAt f z₀ = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 @[simp]
 lemma analyticOrderNatAt_of_not_analyticAt (hf : ¬ AnalyticAt 𝕜 f z₀) :
@@ -411,7 +411,7 @@ lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
   · exact hFa.congr (by filter_upwards [hU0] using by simp +contextual)
   · by_cases hz : z ∈ U
     · simpa [hz] using hU' z hz
-    · simp only [if_neg hz]
+    · simp only [ite_eq_right hz]
       rw [smul_inv_smul₀]
       · module
       · contrapose hz

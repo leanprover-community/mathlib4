@@ -238,7 +238,7 @@ protected noncomputable def symm (e : Pretrivialization F (π F E)) (b : B) (y :
 
 theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).2 :=
-  dif_pos hb
+  dite_eq_left hb
 
 @[deprecated "The junk values of `Pretrivialization.symm` were changed from `0` to
 `Classical.arbitrary` and should not be relied on; this lemma will be removed soon. Note that this
@@ -291,13 +291,13 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
     simpa only [Prod.map_apply, ← e.proj_toFun _ hz] using! e.map_source' hz
   map_target' x hx := by
     simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
-    rw [dif_pos hx]; exact e.map_target' hx
+    rw [dite_eq_left hx]; exact e.map_target' hx
   left_inv' z hz := by
-    dsimp only; rw [dif_pos] <;> all_goals simp_rw [← e.proj_toFun _ hz]
+    dsimp only; rw [dite_eq_left] <;> all_goals simp_rw [← e.proj_toFun _ hz]
     exacts [Subtype.ext (e.left_inv' hz), e.map_source' hz]
   right_inv' x hx := Subtype.val_injective.prodMap injective_id <| by
     simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
-    simp_rw [Prod.map_apply]; rw [dif_pos hx]
+    simp_rw [Prod.map_apply]; rw [dite_eq_left hx]
     convert! ← e.right_inv' hx; exact e.proj_toFun _ (e.map_target' hx)
   open_target := e.open_target.preimage <| by fun_prop
   baseSet := Subtype.val ⁻¹' e.baseSet
@@ -328,7 +328,7 @@ noncomputable def domExtend {s : Set B} (e : Pretrivialization F fun z : proj �
     simpa [hzp, e.coe_fst hze] using e.map_source hze
   map_target' x hx := by simpa using ⟨(e.invFun x).2, e.map_target hx⟩
   left_inv' _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.symm_apply_apply hze]
-  right_inv' x hx := (dif_pos (e.invFun x).2).trans (e.right_inv hx)
+  right_inv' x hx := (dite_eq_left (e.invFun x).2).trans (e.right_inv hx)
   open_target := e.open_target
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
@@ -690,7 +690,7 @@ protected noncomputable def symm (e : Trivialization F (π F E)) (b : B) (y : F)
 theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e.symm b y =
       cast (congr_arg E (e.symm_coe_proj hb)) (e.toOpenPartialHomeomorph.symm (b, y)).2 :=
-  dif_pos hb
+  dite_eq_left hb
 
 @[deprecated "The junk values of `Trivialization.symm` were changed from `0` to
 `Classical.arbitrary` and should not be relied on; this lemma will be removed soon. Note that this
@@ -831,7 +831,7 @@ noncomputable def restrictPreimage' (e : Trivialization F proj) (s : Set B)
       fun z hz ↦ by ext; exacts [(e.proj_toFun _ hz).symm, rfl]
   continuousOn_invFun := Topology.IsInducing.subtypeVal.continuousOn_iff.mpr <|
     (e.continuousOn_invFun.comp (continuous_subtype_val.prodMap continuous_id).continuousOn
-      fun _ ↦ id).congr fun x hx ↦ congr_arg Subtype.val (dif_pos hx)
+      fun _ ↦ id).congr fun x hx ↦ congr_arg Subtype.val (dite_eq_left hx)
 
 /-- The restriction of a trivialization to a set with nonempty intersection with the base set. -/
 @[simps! apply source target baseSet]
@@ -851,7 +851,7 @@ noncomputable def domExtend {s : Set B} (hps : IsOpen (proj ⁻¹' s))
   continuousOn_toFun := Topology.IsInducing.subtypeVal.continuousOn_image_iff.mpr <| by
     convert! e.continuousOn_toFun
     ext1 ⟨x, (hx : proj x ∈ s)⟩
-    simpa [Pretrivialization.domExtend] using! dif_pos hx
+    simpa [Pretrivialization.domExtend] using! dite_eq_left hx
   continuousOn_invFun := continuous_subtype_val.comp_continuousOn <| by
     convert! e.continuousOn_invFun
 

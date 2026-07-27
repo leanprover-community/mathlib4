@@ -443,7 +443,7 @@ theorem continuous_integral_integral :
   of the right-hand side is integrable. -/
 theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
-  by_cases hE : CompleteSpace E; swap; · simp only [integral, dif_neg hE]
+  by_cases hE : CompleteSpace E; swap; · simp only [integral, dite_eq_right hE]
   revert f
   apply Integrable.induction
   · intro c s hs h2s

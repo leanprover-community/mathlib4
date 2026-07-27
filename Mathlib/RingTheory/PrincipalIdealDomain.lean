@@ -341,7 +341,7 @@ noncomputable def factors (a : R) : Multiset R :=
 
 theorem factors_spec (a : R) (h : a ≠ 0) :
     (∀ b ∈ factors a, Irreducible b) ∧ Associated (factors a).prod a := by
-  unfold factors; rw [dif_neg h]
+  unfold factors; rw [dite_eq_right h]
   exact Classical.choose_spec (WfDvdMonoid.exists_factors a h)
 
 theorem ne_zero_of_mem_factors {R : Type v} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]

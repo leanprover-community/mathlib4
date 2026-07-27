@@ -733,8 +733,8 @@ theorem one_le_ncard_insert (a : α) (s : Set α) (hs : s.Finite := by toFinite_
 theorem ncard_insert_eq_ite {a : α} [Decidable (a ∈ s)] (hs : s.Finite := by toFinite_tac) :
     ncard (insert a s) = if a ∈ s then s.ncard else s.ncard + 1 := by
   by_cases h : a ∈ s
-  · rw [ncard_insert_of_mem h, if_pos h]
-  · rw [ncard_insert_of_notMem h hs, if_neg h]
+  · rw [ncard_insert_of_mem h, ite_eq_left h]
+  · rw [ncard_insert_of_notMem h hs, ite_eq_right h]
 
 theorem ncard_le_ncard_insert (a : α) (s : Set α) : s.ncard ≤ (insert a s).ncard := by
   classical

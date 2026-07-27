@@ -390,7 +390,7 @@ noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
   classical
   exact { config := fun g => if g ∈ U then x g else default,
           support := U,
-          condition := fun g hg => if_neg hg }
+          condition := fun g hg => ite_eq_right hg }
 
 /-- On the translated support, `p.mulShift v` agrees with `p.config` at the preimage.
 

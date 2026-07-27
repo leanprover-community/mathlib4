@@ -85,16 +85,16 @@ def intValuationDef (r : R) : ℤᵐ⁰ :=
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
-  if_pos hr
+  ite_eq_left hr
 
 @[simp]
 theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuationDef r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
-  if_neg hr
+  ite_eq_right hr
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
@@ -111,10 +111,10 @@ theorem intValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
   simp only [intValuationDef]
   by_cases hx : x = 0
-  · rw [hx, zero_mul, if_pos rfl, zero_mul]
+  · rw [hx, zero_mul, ite_eq_left rfl, zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, mul_zero, if_pos rfl, mul_zero]
-    · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← exp_add,
+    · rw [hy, mul_zero, ite_eq_left rfl, mul_zero]
+    · rw [ite_eq_right hx, ite_eq_right hy, ite_eq_right (mul_ne_zero hx hy), ← exp_add,
         ← Ideal.span_singleton_mul_span_singleton, ← Associates.mk_mul_mk, ← neg_add,
         Associates.count_mul (Associates.mk_ne_zero'.mpr hx) (Associates.mk_ne_zero'.mpr hy)
           v.associates_irreducible,
@@ -138,7 +138,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
     · rw [hy, add_zero]
       order
     · by_cases hxy : x + y = 0
-      · rw [intValuationDef, if_pos hxy]; exact zero_le
+      · rw [intValuationDef, ite_eq_left hxy]; exact zero_le
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
           le_max_iff]
         simp only [exp_le_exp, neg_le_neg_iff, Nat.cast_le, ← min_le_iff]

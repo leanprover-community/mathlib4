@@ -102,8 +102,8 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   refine fun m _ => mul_eq_mul_left_iff.mpr (Or.inl ?_)
   rw [ite_pow, zero_pow (pow_ne_zero _ hp.out.ne_zero)]
   by_cases Pm : P m
-  · rw [if_pos Pm, if_neg <| not_not_intro Pm, zero_pow Fin.pos'.ne', add_zero]
-  · rwa [if_neg Pm, if_pos, zero_add]
+  · rw [ite_eq_left Pm, ite_eq_right <| not_not_intro Pm, zero_pow Fin.pos'.ne', add_zero]
+  · rwa [ite_eq_right Pm, ite_eq_left, zero_add]
 
 theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
     (x + y).coeff n = x.coeff n + y.coeff n := by
@@ -179,7 +179,7 @@ elab_rules : tactic
       fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,
         WittVector.coeff_mk, Matrix.cons_val_one, WittVector.mk, Fin.mk_zero, Matrix.cons_val',
         Matrix.empty_val', Matrix.cons_val_fin_one, Matrix.cons_val_zero,
-        hk, if_true]
+        hk, ite_true]
     ))
 
 @[simp]

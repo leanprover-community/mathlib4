@@ -360,7 +360,7 @@ variable [Semifield K] [CharZero K]
 
 lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → K) (i : ι) :
     𝔼 j, ite (i = j) (Fintype.card ι : K) 0 * f j = f i := by
-  simp_rw [expect_univ, ite_mul, zero_mul, sum_ite_eq, if_pos (mem_univ _)]
+  simp_rw [expect_univ, ite_mul, zero_mul, sum_ite_eq, ite_eq_left (mem_univ _)]
   rw [← @NNRat.cast_natCast K, ← NNRat.smul_def, inv_smul_smul₀]
   simp [Fintype.card_ne_zero]
 

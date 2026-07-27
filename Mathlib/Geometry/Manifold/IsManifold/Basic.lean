@@ -194,7 +194,7 @@ def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
   source_eq := hsource
   convex_range' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
-    simp only [this, htarget, dite_else_true]
+    simp only [this, htarget, dite_true_right]
     intro h
     let := h.rclike 𝕜
     let := NormedSpace.restrictScalars ℝ 𝕜 E

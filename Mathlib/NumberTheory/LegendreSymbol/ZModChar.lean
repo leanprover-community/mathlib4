@@ -76,7 +76,7 @@ theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
 /-- Alternative description of `χ₄ n` for odd `n : ℕ` in terms of powers of `-1` -/
 theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 2) := by
   rw [χ₄_nat_eq_if_mod_four]
-  simp only [hn, Nat.one_ne_zero, if_false]
+  simp only [hn, Nat.one_ne_zero, ite_false]
   nth_rewrite 3 [← Nat.div_add_mod n 4]
   nth_rewrite 3 [show 4 = 2 * 2 by lia]
   rw [mul_assoc, add_comm, Nat.add_mul_div_left _ _ zero_lt_two, pow_add, pow_mul,

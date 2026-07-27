@@ -122,10 +122,10 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
   classical
   refine ⟨fun j ↦ if hji : j = i then by convert! t else univ, fun j ↦ ?_, ?_⟩
   · by_cases hji : j = i
-    · simp only [hji, eq_mpr_eq_cast, dif_pos]
+    · simp only [hji, eq_mpr_eq_cast, dite_eq_left]
       convert! ht
       simp only [cast_heq]
-    · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
+    · simp only [hji, not_false_iff, dite_eq_right, MeasurableSet.univ]
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
     (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
     It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
@@ -185,7 +185,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
   let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
   have hf' : f' ∈ cylinder s S := by
     rw [mem_cylinder]
-    simpa only [Finset.restrict_def, Finset.coe_mem, dif_pos, f']
+    simpa only [Finset.restrict_def, Finset.coe_mem, dite_eq_left, f']
   rw [h] at hf'
   exact notMem_empty _ hf'
 

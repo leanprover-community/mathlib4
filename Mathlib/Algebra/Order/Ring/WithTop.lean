@@ -34,24 +34,24 @@ instance instMulZeroClass : MulZeroClass (WithTop α) where
     | ⊤, ⊤ => ⊤
   mul_zero
     | (a : α) => congr_arg some <| mul_zero _
-    | ⊤ => if_pos rfl
+    | ⊤ => ite_eq_left rfl
   zero_mul
     | (b : α) => congr_arg some <| zero_mul _
-    | ⊤ => if_pos rfl
+    | ⊤ => ite_eq_left rfl
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithTop α) = a * b := rfl
 
 lemma mul_top' : ∀ (a : WithTop α), a * ⊤ = if a = 0 then 0 else ⊤
   | (a : α) => if_congr coe_eq_zero.symm rfl rfl
-  | ⊤ => (if_neg top_ne_zero).symm
+  | ⊤ => (ite_eq_right top_ne_zero).symm
 
-@[simp] lemma mul_top (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', if_neg h]
+@[simp] lemma mul_top (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', ite_eq_right h]
 
 lemma top_mul' : ∀ (b : WithTop α), ⊤ * b = if b = 0 then 0 else ⊤
   | (b : α) => if_congr coe_eq_zero.symm rfl rfl
-  | ⊤ => (if_neg top_ne_zero).symm
+  | ⊤ => (ite_eq_right top_ne_zero).symm
 
-@[simp] lemma top_mul (hb : b ≠ 0) : ⊤ * b = ⊤ := by rw [top_mul', if_neg hb]
+@[simp] lemma top_mul (hb : b ≠ 0) : ⊤ * b = ⊤ := by rw [top_mul', ite_eq_right hb]
 
 @[simp] lemma top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := rfl
 
@@ -86,7 +86,7 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a 
 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.byContradiction fun h₂ => ?_⟩
-  rw [mul_def, if_neg h₂] at h₁
+  rw [mul_def, ite_eq_right h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
 
@@ -303,15 +303,15 @@ instance : MulZeroClass (WithBot α) := inferInstanceAs <| MulZeroClass (WithTop
 
 lemma mul_bot' : ∀ (a : WithBot α), a * ⊥ = if a = 0 then 0 else ⊥
   | (a : α) => if_congr coe_eq_zero.symm rfl rfl
-  | ⊥ => (if_neg bot_ne_zero).symm
+  | ⊥ => (ite_eq_right bot_ne_zero).symm
 
-@[simp] lemma mul_bot (h : a ≠ 0) : a * ⊥ = ⊥ := by rw [mul_bot', if_neg h]
+@[simp] lemma mul_bot (h : a ≠ 0) : a * ⊥ = ⊥ := by rw [mul_bot', ite_eq_right h]
 
 lemma bot_mul' : ∀ (b : WithBot α), ⊥ * b = if b = 0 then 0 else ⊥
   | (b : α) => if_congr coe_eq_zero.symm rfl rfl
-  | ⊥ => (if_neg bot_ne_zero).symm
+  | ⊥ => (ite_eq_right bot_ne_zero).symm
 
-@[simp] lemma bot_mul (hb : b ≠ 0) : ⊥ * b = ⊥ := by rw [bot_mul', if_neg hb]
+@[simp] lemma bot_mul (hb : b ≠ 0) : ⊥ * b = ⊥ := by rw [bot_mul', ite_eq_right hb]
 
 @[simp] lemma bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ := rfl
 
