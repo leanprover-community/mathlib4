@@ -8,10 +8,6 @@ module
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
-
-import Mathlib.Topology.Algebra.Order.Field
-
-import Mathlib.Algebra.Order.Field.Basic
 /-!
 # Projective topology on the tensor product of topological vector spaces
 
