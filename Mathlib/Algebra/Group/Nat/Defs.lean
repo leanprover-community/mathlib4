@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Group.Defs
 
 This file contains the additive and multiplicative monoid instances on the natural numbers.
 
-See note [foundational algebra order theory].
+See notes [foundational algebra order theory] and [higher instance priority].
 -/
 
 public section
@@ -23,11 +23,11 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance instMulOneClass : MulOneClass ℕ where
+instance (priority := 1100) instMulOneClass : MulOneClass ℕ where
   one_mul := Nat.one_mul
   mul_one := Nat.mul_one
 
-instance instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
+instance (priority := 1100) instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
   add := Nat.add
   add_assoc := Nat.add_assoc
   zero := Nat.zero
@@ -39,7 +39,7 @@ instance instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
   nsmul_succ := succ_mul
   add_left_cancel _ _ _ := Nat.add_left_cancel
 
-instance instCommMonoid : CommMonoid ℕ where
+instance (priority := 1100) instCommMonoid : CommMonoid ℕ where
   mul := Nat.mul
   mul_assoc := Nat.mul_assoc
   one := Nat.succ Nat.zero
@@ -54,10 +54,10 @@ instance instCommMonoid : CommMonoid ℕ where
 -- typeclass search, but it is better practice to not rely on algebraic order theory to prove
 -- purely algebraic results on concrete types. Eg the results can be made available earlier.
 
-instance instIsMulTorsionFree : IsMulTorsionFree ℕ where
+instance (priority := 1100) instIsMulTorsionFree : IsMulTorsionFree ℕ where
   pow_left_injective _ h _ _ := (Nat.pow_left_inj h).mp
 
-instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
+instance (priority := 1100) instIsAddTorsionFree : IsAddTorsionFree ℕ where
   nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
 
 /-!
@@ -68,14 +68,14 @@ These also prevent non-computable instances being used to construct these instan
 
 set_option linter.style.whitespace false -- manual alignment is not recognised
 
-instance instAddCommMonoid    : AddCommMonoid ℕ    := by infer_instance
-instance instAddMonoid        : AddMonoid ℕ        := by infer_instance
-instance instMonoid           : Monoid ℕ           := by infer_instance
-instance instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
-instance instSemigroup        : Semigroup ℕ        := by infer_instance
-instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
-instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
-instance instOne              : One ℕ              := inferInstance
+instance (priority := 1100) instAddCommMonoid    : AddCommMonoid ℕ    := by infer_instance
+instance (priority := 1100) instAddMonoid        : AddMonoid ℕ        := by infer_instance
+instance (priority := 1100) instMonoid           : Monoid ℕ           := by infer_instance
+instance (priority := 1100) instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
+instance (priority := 1100) instSemigroup        : Semigroup ℕ        := by infer_instance
+instance (priority := 1100) instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
+instance (priority := 1100) instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
+instance (priority := 1100) instOne              : One ℕ              := inferInstance
 
 set_option linter.style.whitespace true
 
