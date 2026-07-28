@@ -70,8 +70,9 @@ variable {M N}
 theorem isMulFG_def : IsMulFG M ↔ ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤ :=
   ⟨fun h ↦ h.fg_top, fun h ↦ ⟨h⟩⟩
 
+-- We give this instance low priority to avoid slow typeclass resolutions.
 @[to_additive]
-instance [Finite M] : IsMulFG M := by
+instance (priority := 100) [Finite M] : IsMulFG M := by
   cases nonempty_fintype M
   exact ⟨Finset.univ, by simp⟩
 
