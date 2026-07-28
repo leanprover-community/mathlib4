@@ -140,7 +140,7 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
       (by
         intro _ ha'
         rcases List.mem_pmap.mp ha' with ⟨p, hp, rfl⟩
-        haveI : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
+        have : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
         exact quadraticChar_isQuadratic (ZMod p) a)
 
 /-- The symbol `J(1 | b)` has the value `1`. -/
@@ -497,6 +497,8 @@ section FastJacobi
 We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
+-- `fastLegendreSym` is used for computing the Legendre symbol in a `norm_num` extension,
+-- i.e. needs to be used publicly.
 set_option backward.privateInPublic true
 
 open NumberTheorySymbols jacobiSym
@@ -563,7 +565,6 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   else
     fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
@@ -592,7 +593,6 @@ set_option backward.privateInPublic.warn false in
 @[inline, nolint unusedArguments]
 private def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := J(a | p)
 
-set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastLegendreSym.eq : legendreSym = fastLegendreSym := by
   ext p _ a; rw [legendreSym.to_jacobiSym, fastLegendreSym]

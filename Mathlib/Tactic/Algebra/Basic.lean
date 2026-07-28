@@ -6,11 +6,12 @@ Authors: Arend Mellendijk
 module
 
 public meta import Lean.Meta.Tactic.NormCast
-public import Mathlib.Tactic.Algebra.Lemmas
+public import Mathlib.Tactic.Algebra.Lemmas  -- shake: keep (Qq output dependency)
 public import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # The `algebra` tactic
+
 A suite of three tactics for solving equations in commutative algebras over commutative (semi)rings,
 where the exponents can also contain variables.
 
@@ -431,7 +432,7 @@ and `S` that appear are comparable, in the sense that either `R` is an `S`-algeb
 
 * `algebra with R` uses the term `R` as the scalar ring, instead of attempting to infer it
 automatically.
- -/
+-/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
     liftMetaTactic1 (transformAtTarget (fun e _ ↦ preprocess e) "algebra" .silent · default)

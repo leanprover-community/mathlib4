@@ -45,6 +45,7 @@ def Ideal.fiberIsoOfBijectiveResidueField
   (PrimeSpectrum.primesOverOrderIsoFiber ..).trans <|
     (PrimeSpectrum.comapEquiv e.toRingEquiv).trans (PrimeSpectrum.primesOverOrderIsoFiber ..).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Ideal.comap_fiberIsoOfBijectiveResidueField_symm
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p)))
     (Q : p.primesOver S) :
@@ -163,7 +164,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
   wlog hm0 : 0 < m generalizing m
   · refine this (m + 1) (by grind) (by simp)
   have hs₃q : s₃.1 ∉ q := fun h ↦ (show ↑s₂ ^ m * (s₁ * ↑s₂ ^ n) ∉ q from q.primeCompl.mul_mem
-    (pow_mem hs₂q _) (mul_mem hs₁q (pow_mem hs₂q _))) (hm ▸ Ideal.mul_mem_left _ _ h)
+     (pow_mem hs₂q _) (mul_mem hs₁q (pow_mem hs₂q _))) (hm ▸ Ideal.mul_mem_left _ _ h)
   refine ⟨↑s₂ ^ m * ↑s₃, q.primeCompl.mul_mem (pow_mem hs₂q _) hs₃q, (s₂ ^ m * s₃).2,
     fun q' _ hq'q _ ↦ hm ▸ Ideal.mul_mem_left _ _ (Ideal.mul_mem_right _ _ (hs₁ q' ‹_› hq'q ‹_›)),
     fun q' _ hq'q _ ↦ ?_⟩
@@ -212,7 +213,6 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
           P''.IsPrime → P''.LiesOver P → e₀ ∉ P'' → P'' =
             P'.comap (Algebra.TensorProduct.map (.id R' R') (integralClosure R S).val).toRingHom) ∧
       ∀ P'' : Ideal (R' ⊗[R] S), P''.IsPrime → P''.LiesOver P → e ∉ P'' → P'' = P' := by
-  classical
   obtain ⟨s, hsq, hRs, hs, hs₀⟩ := exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver p q
   obtain ⟨m, f, b, hfm, hbm, hab, hfab, hf⟩ : ∃ (m : ℕ) (f : R[X])
       (b : p.ResidueField[X]), f.Monic ∧ b.Monic ∧ IsCoprime (X ^ (m + 1)) b ∧
@@ -394,8 +394,8 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
   let Pf := P.map (algebraMap _ (Localization.Away f))
   have : Pf.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint (.powers f) _ _ ‹_› (by
     rwa [Ideal.disjoint_powers_iff_notMem_of_isPrime])
-  have : Pf.LiesOver P := ⟨(IsLocalization.under_map_of_isPrime_disjoint (.powers f) _ ‹_› (by
-    rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])).symm⟩
+  have : Pf.LiesOver P := IsLocalization.liesOver_map_of_isPrime_disjoint (.powers f) _ (by
+    rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])
   let φ : R' ⊗[R] S →ₐ[R'] Localization.Away f ⊗[R] S :=
     Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)
   let := φ.toAlgebra
@@ -411,7 +411,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     change f ∉ P'.under _
     rwa [← P'.over_def P]
   have : P'f.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint _ _ _ ‹_› hP'f
-  have : P'f.LiesOver P' := ⟨(IsLocalization.under_map_of_isPrime_disjoint _ _ ‹_› hP'f).symm⟩
+  have : P'f.LiesOver P' := IsLocalization.liesOver_map_of_isPrime_disjoint _ _ hP'f
   have : P'f.LiesOver P := .trans _ P' _
   have : P'f.LiesOver Pf := ⟨congr($(PrimeSpectrum.localization_comap_injective
       (Localization.Away f) (.powers f) (a₁ := ⟨Pf, ‹_›⟩)
@@ -447,9 +447,9 @@ attribute [local instance] Localization.AtPrime.algebraOfLiesOver
 
 /-- A key induction step of `exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq`. -/
 private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux
-    {R : Type u} {S : Type (max u v)} [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime]
-    [q.LiesOver p] (R' : Type u) [CommRing R'] [Algebra R R'] [Algebra.Etale R R'] (P : Ideal R')
+    {R : Type u} {S : Type (max u v)} [CommRing R] [CommRing S] [Algebra R S]
+    (p : Ideal R) [p.IsPrime] (q : Ideal S)
+    (R' : Type u) [CommRing R'] [Algebra R R'] [Algebra.Etale R R'] (P : Ideal R')
     [P.IsPrime] [P.LiesOver p] (e : R' ⊗[R] S) (P' : Ideal (R' ⊗[R] S))
     [P'.IsPrime] [P'.LiesOver P]
     (hP'q : Ideal.comap Algebra.TensorProduct.includeRight.toRingHom P' = q)
