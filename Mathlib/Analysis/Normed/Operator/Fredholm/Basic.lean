@@ -1,6 +1,5 @@
 /-
-Copyright (c) 2026 Jon Bannon, Anatole Dedecker, Yongxi Lin, Patrick Massot, Oliver Nash,
-Filippo A. E. Nuccio. All rights reserved.
+Copyright (c) 2026 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Anatole Dedecker, Yongxi Lin, Patrick Massot, Oliver Nash, Filippo A. E. Nuccio
 -/
@@ -11,7 +10,7 @@ public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 /-!
 # Fredholm operators between topological vector spaces
 
-Fix `𝕜` a complete `NontriviallyNormedField`, and `E`, `F` be two Hausdorff topological vector
+Fix `𝕜` a complete `NontriviallyNormedField`, and let `E`, `F` be two Hausdorff topological vector
 spaces over `𝕜`.
 
 We say that a continuous linear map `T : E →L[𝕜] F` is a **Fredholm operator** if it satisfies
