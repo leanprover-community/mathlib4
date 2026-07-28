@@ -210,6 +210,9 @@ lemma eq_bot (hP : P.supp = ⊥) : P = ⊥ := by
 lemma supp_eq_bot_iff : P.supp = ⊥ ↔ P = ⊥ :=
   ⟨eq_bot, (· ▸ supp_bot)⟩
 
+lemma notMem_of_bot (hP : P.supp = ⊥) (x : α) : x ∉ P :=
+  (eq_bot hP).symm ▸ notMem_bot
+
 /-- A partition has a part iff it is not the empty partition. -/
 @[simp]
 lemma parts_nonempty_iff (P : Partition α) : P.parts.Nonempty ↔ P ≠ ⊥ := by
