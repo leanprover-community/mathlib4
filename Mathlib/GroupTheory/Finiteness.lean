@@ -66,9 +66,10 @@ theorem isMulFG_def {M : Type*} [Mul M] :
 
 namespace Monoid
 
+variable {M : Type*} [Monoid M]
+
 @[to_additive]
-theorem isMulFG_iff {M : Type*} [Monoid M] :
-    IsMulFG M ↔ ∃ S : Finset M, Submonoid.closure (S : Set M) = ⊤ := by
+theorem isMulFG_iff : IsMulFG M ↔ ∃ S : Finset M, Submonoid.closure (S : Set M) = ⊤ := by
   classical
   simp_rw [isMulFG_def, SetLike.ext'_iff, Submonoid.closure_eq_one_union,
     Subsemigroup.coe_top, Submonoid.coe_top]
@@ -79,7 +80,7 @@ theorem isMulFG_iff {M : Type*} [Monoid M] :
   · exact Subsemigroup.closure_mono (by simp) hx
 
 @[to_additive]
-theorem isMulFG_iff_finite {M : Type*} [Monoid M] :
+theorem isMulFG_iff_finite :
     IsMulFG M ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = ⊤ ∧ S.Finite :=
   isMulFG_iff.trans
     ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
@@ -88,9 +89,10 @@ end Monoid
 
 namespace Submonoid
 
+variable {M : Type*} [Monoid M] {P : Submonoid M}
+
 @[to_additive]
-theorem isMulFG_iff {M : Type*} [Monoid M] {P : Submonoid M} :
-    IsMulFG P ↔ ∃ S : Finset M, Submonoid.closure (S : Set M) = P := by
+theorem isMulFG_iff : IsMulFG P ↔ ∃ S : Finset M, Submonoid.closure (S : Set M) = P := by
   classical
   simp_rw [Monoid.isMulFG_iff, ← (map_injective_of_injective P.subtype_injective).eq_iff,
     ← MonoidHom.mrange_eq_map, mrange_subtype, MonoidHom.map_mclosure]
@@ -100,25 +102,29 @@ theorem isMulFG_iff {M : Type*} [Monoid M] {P : Submonoid M} :
   simpa [Set.image_preimage_eq_of_subset h]
 
 @[to_additive]
-theorem isMulFG_iff_finite {M : Type*} [Monoid M] {P : Submonoid M} :
+theorem isMulFG_iff_finite :
     IsMulFG P ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = P ∧ S.Finite :=
   isMulFG_iff.trans
     ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+
+@[to_additive (attr := simp)]
+theorem isMulFG_top_iff : IsMulFG (⊤ : Submonoid M) ↔ IsMulFG M :=
+  isMulFG_iff.trans Monoid.isMulFG_iff.symm
 
 end Submonoid
 
 namespace Group
 
+variable {G : Type*} [Group G]
+
 @[to_additive]
-theorem isMulFG_iff {G : Type*} [Group G] :
-    IsMulFG G ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = ⊤ := by
+theorem isMulFG_iff : IsMulFG G ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = ⊤ := by
   classical
   exact Monoid.isMulFG_iff.trans ⟨fun ⟨S, hS⟩ ↦ ⟨S, Subgroup.closure_eq_top_of_mclosure_eq_top hS⟩,
     fun ⟨S, hS⟩ ↦ ⟨S ∪ S⁻¹, by simp [← Subgroup.closure_toSubmonoid, hS]⟩⟩
 
 @[to_additive]
-theorem isMulFG_iff_finite {G : Type*} [Group G] :
-    IsMulFG G ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = ⊤ ∧ S.Finite :=
+theorem isMulFG_iff_finite : IsMulFG G ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = ⊤ ∧ S.Finite :=
   isMulFG_iff.trans
     ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
 
@@ -126,9 +132,10 @@ end Group
 
 namespace Subgroup
 
+variable {G : Type*} [Group G] {H : Subgroup G}
+
 @[to_additive]
-theorem isMulFG_iff {G : Type*} [Group G] {H : Subgroup G} :
-    IsMulFG H ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = H := by
+theorem isMulFG_iff : IsMulFG H ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = H := by
   classical
   simp_rw [Group.isMulFG_iff, ← Subgroup.map_subtype_inj,
     ← MonoidHom.range_eq_map, range_subtype, MonoidHom.map_closure]
@@ -138,10 +145,13 @@ theorem isMulFG_iff {G : Type*} [Group G] {H : Subgroup G} :
   simpa [Set.image_preimage_eq_of_subset h]
 
 @[to_additive]
-theorem isMulFG_iff_finite {G : Type*} [Group G] {H : Subgroup G} :
-    IsMulFG H ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = H ∧ S.Finite :=
+theorem isMulFG_iff_finite : IsMulFG H ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = H ∧ S.Finite :=
   isMulFG_iff.trans
     ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+
+@[to_additive (attr := simp)]
+theorem isMulFG_top_iff : IsMulFG (⊤ : Subgroup G) ↔ IsMulFG G :=
+  isMulFG_iff.trans Group.isMulFG_iff.symm
 
 end Subgroup
 
