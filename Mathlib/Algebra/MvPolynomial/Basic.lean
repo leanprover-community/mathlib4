@@ -534,12 +534,6 @@ lemma disjoint_support_monomial {a : σ →₀ ℕ} {p : MvPolynomial σ R} {s :
   classical
   simpa [support_monomial, hs] using notMem_support_iff.mp ha
 
-/-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
-`monomial d₀ (coeff d₀ φ)`. -/
-theorem eq_monomial_of_support_subset_singleton {φ : MvPolynomial σ R} {d₀ : σ →₀ ℕ}
-    (h : ∀ d ∈ φ.support, d = d₀) : φ = monomial d₀ (coeff d₀ φ) :=
-  Finsupp.support_subset_singleton.mp fun d hd ↦ Finset.mem_singleton.mpr (h d hd)
-
 @[ext]
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   fun h ↦ AddMonoidAlgebra.ext <| by ext; exact h _
@@ -595,6 +589,16 @@ theorem monic_monomial_eq (m) :
 theorem coeff_monomial [DecidableEq σ] (m n) (a) :
     coeff m (monomial n a : MvPolynomial σ R) = if n = m then a else 0 :=
   Finsupp.single_apply
+
+/-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
+`monomial d₀ (coeff d₀ φ)`. -/
+theorem eq_monomial_of_support_subset_singleton {φ : MvPolynomial σ R} {d₀ : σ →₀ ℕ}
+    (h : ∀ d ∈ φ.support, d = d₀) : φ = monomial d₀ (coeff d₀ φ) := by
+  classical
+  ext d
+  rcases eq_or_ne d d₀ with rfl | hd
+  · rw [coeff_monomial, if_pos rfl]
+  · rw [notMem_support_iff.mp fun hmem ↦ hd (h d hmem), coeff_monomial, if_neg fun e ↦ hd e.symm]
 
 @[simp]
 theorem coeff_C [DecidableEq σ] (m) (a) :
