@@ -236,11 +236,19 @@ end OrderedCommGroup
 
 section WithZero
 
-theorem tprod_nonneg [CommMonoidWithZero α] [TopologicalSpace α] [Preorder α] [ZeroLEOneClass α]
-    [PosMulMono α] [ClosedIciTopology α] [L.NeBot] {f : ι → α} (hf : ∀ i, 0 ≤ f i) :
+variable [CommMonoidWithZero α] [TopologicalSpace α] [Preorder α] [ZeroLEOneClass α]
+  [PosMulMono α] [ClosedIciTopology α]
+
+theorem HasProd.nonneg [L.NeBot] {f : ι → α} (hf : ∀ i, 0 ≤ f i) {a : α} (h : HasProd f a L) :
+    0 ≤ a :=
+  ge_of_tendsto' h fun s ↦ s.prod_nonneg fun i _ ↦ hf i
+
+theorem tprod_nonneg {f : ι → α} (hf : ∀ i, 0 ≤ f i) :
     0 ≤ ∏'[L] x, f x := by
   by_cases h : Multipliable f L
-  · exact ge_of_tendsto' h.hasProd fun s ↦ s.prod_nonneg fun i _ ↦ hf i
+  · by_cases hbot : L.NeBot
+    · exact h.hasProd.nonneg hf
+    · simpa [tprod_bot hbot] using finprod_nonneg fun i ↦ hf i
   · simp [tprod_eq_one_of_not_multipliable h]
 
 end WithZero
