@@ -576,7 +576,7 @@ def irrelevant : HomogeneousIdeal 𝒜 :=
   ⟨RingHom.ker (GradedRing.projZeroRingHom 𝒜), fun i r (hr : (decompose 𝒜 r 0 : A) = 0) => by
     change (decompose 𝒜 (decompose 𝒜 r _ : A) 0 : A) = 0
     by_cases h : i = 0
-    · rw [h, hr, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+    · rw [h, hr, decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
     · rw [decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
 
 @[inherit_doc] scoped notation 𝒜 "₊" => irrelevant 𝒜

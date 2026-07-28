@@ -216,13 +216,14 @@ to get `0 → A ⊗ K → A ⊗ M` exact.
   have := SnakeLemma.exact_δ'_left (K.subtype.rTensor M) (K.subtype.rTensor N) (K.subtype.rTensor P)
     (g.lTensor K) (f.lTensor K) (lTensor_exact K H hf) (g.lTensor Q) (f.lTensor Q)
     (lTensor_exact Q H hf) (by simp) (by simp) (K₃ := Unit) 0
-    (by simpa using Module.Flat.rTensor_preserves_injective_linearMap _ K.subtype_injective)
+    (by simpa [-FunLike.coe_zero] using
+      Module.Flat.rTensor_preserves_injective_linearMap _ K.subtype_injective)
     (π.rTensor M) (rTensor_exact _ (exact_subtype_ker_map π) hπ) (π.rTensor N)
     (rTensor_exact _ (exact_subtype_ker_map π) hπ) (lTensor_surjective K hf)
     (Module.Flat.lTensor_preserves_injective_linearMap _ hg) (g.lTensor A)
     (by simp) (rTensor_surjective _ hπ)
   rw [Subsingleton.elim (SnakeLemma.δ' ..) 0] at this
-  simpa using this
+  simpa [-FunLike.coe_zero] using this
 
 /-- Given surjection `f : N → P` with `P` flat, then `A ⊗ ker f ≃ ker (A ⊗ f)`.
 Also see `LinearMap.tensorKerEquiv` for the version with `A` flat instead. -/
