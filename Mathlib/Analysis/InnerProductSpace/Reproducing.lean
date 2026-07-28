@@ -372,6 +372,7 @@ lemma posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
       grw [ge_iff_le, sub_nonneg, norm_inner_le_norm]
 
 variable (K) in
+/-- The submodule of `X→V` by embedding `OfKernel K` into `X→V`. -/
 def toSubmodule : Submodule 𝕜 (X → V) := (coeCLM 𝕜 (H := OfKernel K)).range
 
 lemma kerFun_OfKernel_apply_eq_toComplL_single (x : X) (v : V) :
