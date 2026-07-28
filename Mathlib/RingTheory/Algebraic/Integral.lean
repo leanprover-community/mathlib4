@@ -564,7 +564,8 @@ end Algebra.IsAlgebraic
 
 attribute [local instance] FractionRing.liftAlgebra in
 /-- Tower law for `Module.finrank` in a tower of domains `R → S → T`. This is a variant of
-`Module.finrank_mul_finrank` that assumes the rings are domains instead of the modules being free. -/
+`Module.finrank_mul_finrank` that assumes the rings are domains instead of the modules being
+free. -/
 theorem Module.finrank_mul_finrank' [FaithfulSMul R S] (T : Type*) [CommRing T] [IsDomain T]
     [Algebra S T] [Algebra R T] [IsScalarTower R S T] [FaithfulSMul S T] :
     Module.finrank R S * Module.finrank S T = Module.finrank R T := by
