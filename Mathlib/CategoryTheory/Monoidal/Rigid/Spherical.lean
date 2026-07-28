@@ -42,7 +42,7 @@ instance symmetricSphericalCategory
     rw [BraidedCategory.exactPairingSwap_coevaluation, BraidedCategory.exactPairingSwap_evaluation]
     simp [← SymmetricCategory.braiding_swap_eq_inv_braiding]
 
-/-- The common trace in a spherical category. -/
+/-- The trace in a spherical category. -/
 @[nolint unusedArguments]
 def trace [PivotalCategory C] [SphericalCategory C]
     {X : C} (f : X ⟶ X) : 𝟙_ C ⟶ 𝟙_ C :=
