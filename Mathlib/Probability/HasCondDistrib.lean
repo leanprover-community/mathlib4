@@ -62,6 +62,16 @@ lemma HasCondDistrib.hasLaw_of_const [IsProbabilityMeasure P] {Q : Measure 𝓨}
       simp [Measure.map_apply_of_aemeasurable h.aemeasurable_fst]
     rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst] at h_snd
 
+/-- If two random variables are independent, then the conditional distribution of the second
+given the first is the constant kernel at its marginal distribution. -/
+lemma IndepFun.hasCondDistrib_const [IsFiniteMeasure P] (hXY : IndepFun X Y P)
+    (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
+    HasCondDistrib Y X (Kernel.const 𝓧 (P.map Y)) P := by
+  constructor
+  · exact hX.prodMk hY
+  · rw [Measure.compProd_const]
+    exact hXY.map_prod_eq_prod_map_map hX hY
+
 variable [SFinite P] [IsSFiniteKernel κ]
 
 lemma HasCondDistrib.comp_left (h : HasCondDistrib Y X κ P) {f : 𝓨 → 𝓩} (hf : Measurable f) :
