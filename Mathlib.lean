@@ -6318,6 +6318,7 @@ public import Mathlib.Probability.IdentDistribIndep
 public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.Independence.BoundedContinuousFunction
 public import Mathlib.Probability.Independence.CharacteristicFunction
+public import Mathlib.Probability.Independence.CondDistrib
 public import Mathlib.Probability.Independence.Conditional
 public import Mathlib.Probability.Independence.InfinitePi
 public import Mathlib.Probability.Independence.Integrable
