@@ -5,8 +5,9 @@ Authors: Sebastian Monnet, Aaron Liu
 -/
 module
 
+public import Mathlib.FieldTheory.FinTrdeg
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 -- this `import` is only used in the deprecated material at the bottom of the file
 -- it should be removed when the deprecated material is removed
 public import Mathlib.Topology.Algebra.FilterBasis
@@ -81,6 +82,27 @@ theorem krullTopology_mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
   rw [Set.mem_iInter₂]
   rfl
 
+open SetRel IntermediateField in
+theorem krullTopology_mem_uniformity_iff_fg {s : SetRel Gal(L/K) Gal(L/K)} :
+    s ∈ 𝓤 Gal(L/K) ↔ ∃ F : IntermediateField K L,
+    F.FG ∧ ∀ σ τ : Gal(L/K), Set.EqOn σ τ F → σ ~[s] τ := by
+  rw [krullTopology_mem_uniformity_iff]
+  simp_rw [FG, existsAndEq, true_and]
+  refine exists_congr fun u => forall_congr' fun σ => forall_congr' fun τ => imp_congr_left ?_
+  unfold Set.EqOn
+  simp_rw [← AlgEquiv.symm_apply_eq, ← AlgEquiv.coe_inv, ← AlgEquiv.mul_apply]
+  have hst (σ : Gal(L/K)) (x : L) : σ x = x ↔ x ∈ fixedField (Subgroup.zpowers σ) := by
+    rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← adjoin_le_iff, le_iff_le,
+      Subgroup.zpowers_le, ← AlgEquiv.smul_def, ← MulAction.mem_stabilizer_iff]
+    revert σ
+    rw [← SetLike.ext_iff, le_antisymm_iff, ← le_iff_le, adjoin_simple_le_iff]
+    constructor
+    · simp
+    · intro σ hσ
+      simpa using hσ ⟨x, mem_adjoin_simple_self K x⟩
+  simp_rw [hst, ← Set.ofPred_subset_ofPred, SetLike.setOfPred_mem_eq,
+    Set.ofPred_mem_eq, SetLike.coe_subset_coe, adjoin_le_iff]
+
 variable (K L) in
 /-- For a field extension `L/K`, `krullTopology K L` is the topological space structure on
 `Gal(L/K)` induced by the uniform structure. -/
@@ -115,29 +137,6 @@ instance : IsLeftUniformGroup Gal(L/K) where
     rw [nhds_eq_comap_uniformity, comap_comap, krullTopology_uniformity_def, comap_iInf]
     refine iInf_congr fun x => ?_
     simp [AlgEquiv.eq_symm_apply]
-
--- open IntermediateField in
--- variable (K L) in
--- /-- For a field extension `L/K`, the Krull topology on `Gal(L/K)` makes it a topological group. -/
--- @[stacks 0BMJ "We define the Krull topology directly without proving the universal property"]
--- instance : IsUniformGroup Gal(L/K) where
---   uniformContinuous_div s hs := by
---     rw [krullTopology_mem_uniformity_iff] at hs
---     obtain ⟨F, _, hF⟩ := hs
---     rw [uniformity_prod_eq_prod, map_map, mem_map, mem_prod_self_iff]
---     refine ⟨{p | Set.EqOn p.1 p.2 (normalClosure K F L)}, ?_, ?_⟩
---     · rw [krullTopology_mem_uniformity_iff]
---       exact ⟨_, inferInstance, fun _ _ h => h⟩
---     rw [Set.prod_subset_iff]
---     intro σ hσ τ hτ
---     simp only [Set.mem_preimage, Function.comp_apply]
---     refine hF _ _ fun x hx => ?_
---     simp only [div_eq_mul_inv, AlgEquiv.mul_apply, AlgEquiv.coe_inv]
---     have hn : τ.1.symm x ∈ normalClosure K F L := by
---       have h : (AlgHom.comp τ.1.symm (IsScalarTower.toAlgHom K F L)).fieldRange ≤
---           normalClosure K F L := AlgHom.fieldRange_le_normalClosure _
---       exact h (by simpa using hx)
---     rw [hσ hn, σ.2.injective.eq_iff, AlgEquiv.eq_symm_apply, ← hτ hn, τ.1.apply_symm_apply]
 
 open IntermediateField in
 open scoped Topology in
@@ -278,6 +277,86 @@ instance krullTopology_discreteUniformity_of_essFiniteType
   rw [SetLike.mem_coe, ← hpe]
   exact hp x hx
 
+open IntermediateField in
+theorem AlgEquiv.isComplete_fixingSubgroup (E : IntermediateField K L) [FinTrdeg E L] :
+    IsComplete (E.fixingSubgroup : Set Gal(L/K)) := by
+  intro f hf hfE
+  rw [cauchy_iff] at hf
+  obtain ⟨_, hf⟩ := hf
+  obtain ⟨_, ⟨u, rfl⟩, alg⟩ := FinTrdeg.exists_fg_isAlgebraic E L
+  replace hf (F : IntermediateField K L) (_ : F.FG) :
+      ∃ σ : Gal(L/K), ∀ᶠ τ : Gal(L/K) in f, Set.EqOn σ τ F := by
+    obtain ⟨t, hf, ht⟩ := hf {p | Set.EqOn p.1 p.2 F}
+      (krullTopology_mem_uniformity_iff_fg.2 ⟨F, ‹_›, fun _ _ h => h⟩)
+    obtain ⟨σ, hσ⟩ := Filter.nonempty_of_mem hf
+    exact ⟨σ, Filter.eventually_of_mem hf fun τ hτ => @ht (σ, τ) ⟨hσ, hτ⟩⟩
+  have h (x : L) : ∃ y, ∀ᶠ τ in f, y = τ x :=
+    (hf (adjoin K {x}) (fg_adjoin_of_finite (Set.finite_singleton _))).elim
+      fun σ hσ => ⟨σ x, hσ.mono fun τ hτ => hτ (mem_adjoin_simple_self K x)⟩
+  choose s hs using h
+  let σh : L →ₐ[E] L :=
+    { toFun := s
+      map_zero' := (hs 0).exists.elim fun _ h => by simp [h]
+      map_one' := (hs 1).exists.elim fun _ h => by simp [h]
+      commutes' x :=
+        ((hs x.1).and ((Filter.eventually_mem_principal _).filter_mono hfE)).exists.elim fun _ h =>
+          by simp [h.1, (mem_fixingSubgroup_iff _ _).1 h.2]
+      map_add' x y := by
+        obtain ⟨τ, hτ⟩ := ((hs x).and ((hs y).and (hs (x + y)))).exists
+        simp [hτ.1, hτ.2.1, hτ.2.2]
+      map_mul' x y := by
+        obtain ⟨τ, hτ⟩ := ((hs x).and ((hs y).and (hs (x * y)))).exists
+        simp [hτ.1, hτ.2.1, hτ.2.2] }
+  let σ : Gal(L/E) := .ofBijective σh <| by
+    refine ⟨σh.injective, fun x => ?_⟩
+    obtain ⟨su, hsu, hsuE⟩ :=
+      (((Filter.eventually_all_finite u.finite_toSet).2 fun y hy => hs y).and
+        ((Filter.eventually_mem_principal _).filter_mono hfE)).exists
+    let Eu : IntermediateField E L := adjoin E (u : Set L)
+    let suE : Gal(L/E) := E.fixingSubgroupEquiv ⟨su, hsuE⟩
+    have algm : Algebra.IsIntegral (Eu.map (suE : L →ₐ[E] L)) L := sorry
+    let mp : Polynomial (Eu.map (suE : L →ₐ[E] L)) := minpoly _ x
+    let p : Polynomial Eu := mp.map
+      ((IntermediateField.equivMap Eu (suE : L →ₐ[E] L)).symm : Eu.map (suE : L →ₐ[E] L) →+* Eu)
+    have hp0 : p ≠ 0 := by
+      unfold p
+      refine (Polynomial.map_ne_zero_iff ?_).mpr ?_
+      · apply AlgEquiv.injective
+      unfold mp
+      apply minpoly.ne_zero
+      apply Algebra.IsIntegral.isIntegral
+    let S : Set L := p.rootSet L
+    have hS : S.Finite := Polynomial.rootSet_finite _ _
+    obtain ⟨τ, hτ, hτE⟩ :=
+      (((Filter.eventually_all_finite (u.finite_toSet.union hS)).2
+        fun y hy => hs y).and ((Filter.eventually_mem_principal _).filter_mono hfE)).exists
+    suffices h : τ.symm x ∈ S from ⟨τ.symm x, by simp [hτ (τ.symm x) (Set.mem_union_right u h), σh]⟩
+    let τE : Gal(L/E) := E.fixingSubgroupEquiv ⟨τ, hτE⟩
+    have hττE : ⇑τ.symm = τE.symm := rfl
+    unfold S
+    rw [Polynomial.mem_rootSet_of_ne hp0]
+    unfold p
+    apply (τE : L →+* L).injective
+    rw [hττE, map_zero, Polynomial.aeval_def, Polynomial.hom_eval₂,
+      RingHom.coe_coe, τE.apply_symm_apply, Polynomial.eval₂_eq_eval_map, Polynomial.map_map]
+    stop
+    conv =>
+      enter [1, 2, 1]
+      equals τE.symm.toRingHom.comp (algebraMap _ _) => ext; simp [AlgEquiv.]
+    stop
+    sorry
+  refine ⟨E.fixingSubgroupEquiv.symm σ, (E.fixingSubgroupEquiv.symm σ).2, fun U hU => ?_⟩
+  rw [← map_mul_left_nhds_one, Filter.mem_map, krullTopology_mem_nhds_one_iff'] at hU
+  obtain ⟨F, fg, hF⟩ := hU
+  rw [← Set.image_subset_iff] at hF
+  refine Filter.mem_of_superset ?_ hF
+  obtain ⟨σ', hσ'⟩ := hf F fg
+  have eq : Set.EqOn σ σ' F := fun x hx =>
+    ((hs x).and hσ').exists.elim fun _ h => h.1.trans (h.2 hx).symm
+  filter_upwards [hσ'] with τ hτ
+  refine ⟨_ * τ, (F.mem_fixingSubgroup_iff _).2 fun x hx => ?_, mul_inv_cancel_left _ τ⟩
+  simp [AlgEquiv.symm_apply_eq, eq hx, hτ hx]
+
 theorem AlgEquiv.totallyBounded_fixingSubgroup
     (E : IntermediateField K L) [Algebra.IsAlgebraic E L] :
     TotallyBounded (E.fixingSubgroup : Set Gal(L/K)) := by
@@ -297,8 +376,7 @@ theorem AlgEquiv.totallyBounded_fixingSubgroup
   let xE : F := ⟨x, IntermediateField.mem_adjoin_of_mem E hx⟩
   have hf : f (Function.invFun f (f σE)) xE = f σE xE :=
     DFunLike.congr_fun (Function.invFun_eq ⟨σE, rfl⟩) xE
-  -- TODO: add API for `IntermediateField.fixingSubgroup`
-  simpa [f, σE, xE, IntermediateField.fixingSubgroupEquiv] using hf.symm
+  simpa [f, σE, xE] using hf.symm
 
 variable (K L) in
 theorem AlgEquiv.totallyBounded_univ [Algebra.IsAlgebraic K L] :
@@ -307,53 +385,16 @@ theorem AlgEquiv.totallyBounded_univ [Algebra.IsAlgebraic K L] :
   exact AlgEquiv.totallyBounded_fixingSubgroup ⊥
 
 variable (K L) in
+instance [FinTrdeg K L] : LocallyCompactSpace Gal(L/K) := sorry
+
+variable (K L) in
+instance [FinTrdeg K L] : CompleteSpace Gal(L/K) :=
+  IsLeftUniformGroup.completeSpace_of_weaklyLocallyCompactSpace
+
+variable (K L) in
 open IntermediateField in
 instance [Algebra.IsIntegral K L] : CompactSpace Gal(L/K) where
-  isCompact_univ := by
-    stop
-    apply (AlgEquiv.totallyBounded_univ K L).isCompact_of_isComplete
-    intro f hf _
-    rw [cauchy_iff] at hf
-    obtain ⟨_, hf⟩ := hf
-    replace hf (F : IntermediateField K L) (_ : FiniteDimensional K F) :
-        ∃ σ : Gal(L/K), ∀ᶠ τ : Gal(L/K) in f, Set.EqOn σ τ F := by
-      obtain ⟨t, hf, ht⟩ := hf {p | Set.EqOn p.1 p.2 F}
-        (krullTopology_mem_uniformity_iff.2 ⟨F, ‹_›, fun _ _ h => h⟩)
-      obtain ⟨σ, hσ⟩ := Filter.nonempty_of_mem hf
-      exact ⟨σ, Filter.eventually_of_mem hf fun τ hτ => @ht (σ, τ) ⟨hσ, hτ⟩⟩
-    have h (x : L) : ∃ y, ∀ᶠ τ in f, y = τ x :=
-      (hf (adjoin K {x}) (adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x))).elim
-        fun σ hσ => ⟨σ x, hσ.mono fun τ hτ => hτ (mem_adjoin_simple_self K x)⟩
-    choose s hs using h
-    let σ : Gal(L/K) := .ofBijective
-      { toFun := s
-        map_zero' := (hs 0).exists.elim fun _ h => by simp [h]
-        map_one' := (hs 1).exists.elim fun _ h => by simp [h]
-        commutes' x := (hs (algebraMap K L x)).exists.elim fun _ h => by simp [h]
-        map_add' x y := by
-          obtain ⟨τ, hτ⟩ := ((hs x).and ((hs y).and (hs (x + y)))).exists
-          simp [hτ.1, hτ.2.1, hτ.2.2]
-        map_mul' x y := by
-          obtain ⟨τ, hτ⟩ := ((hs x).and ((hs y).and (hs (x * y)))).exists
-          simp [hτ.1, hτ.2.1, hτ.2.2] } <| by
-      refine ⟨RingHom.injective _, fun x => ?_⟩
-      obtain ⟨τ, hτ⟩ :=
-        ((Filter.eventually_all_finite ((minpoly K x).rootSet_finite L)).2
-          fun y hy => hs y).exists
-      suffices h : τ.symm x ∈ (minpoly K x).rootSet L from ⟨τ.symm x, by simp [hτ (τ.symm x) h]⟩
-      rw [Polynomial.mem_rootSet_of_ne (minpoly.ne_zero (Algebra.IsIntegral.isIntegral x)),
-        Polynomial.aeval_algEquiv, AlgHom.comp_apply, minpoly.aeval, map_zero]
-    refine ⟨σ, Set.mem_univ σ, fun U hU => ?_⟩
-    rw [← map_mul_left_nhds_one, Filter.mem_map, krullTopology_mem_nhds_one_iff] at hU
-    obtain ⟨F, _, hF⟩ := hU
-    rw [← Set.image_subset_iff] at hF
-    refine Filter.mem_of_superset ?_ hF
-    obtain ⟨σ', hσ'⟩ := hf F ‹_›
-    have eq : Set.EqOn σ σ' F := fun x hx =>
-      ((hs x).and hσ').exists.elim fun _ h => h.1.trans (h.2 hx).symm
-    filter_upwards [hσ'] with τ hτ using
-      ⟨_, (F.mem_fixingSubgroup_iff _).2 fun x hx =>
-        by simp [AlgEquiv.symm_apply_eq, eq hx, hτ hx], mul_inv_cancel_left σ τ⟩
+  isCompact_univ := (AlgEquiv.totallyBounded_univ K L).isCompact_of_isComplete isComplete_univ
 
 section MulAction
 
