@@ -1,6 +1,7 @@
 /-
 Copyright (c) 2026 Cameron Beeley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Cameron Beeley
 -/
 module
 
@@ -23,7 +24,9 @@ part of this construction.
 open Set
 open scoped ContDiff
 
-namespace ContDiffMap
+@[expose] public section
+
+namespace SmoothMap
 
 noncomputable section
 
@@ -69,4 +72,4 @@ theorem jet_apply (f : ContDiffMap 𝕜 E F) (k : ℕ) :
   rfl
 
 end
-end ContDiffMap
+end SmoothMap
