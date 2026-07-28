@@ -54,6 +54,7 @@ public structure ImportState where
   importSize   : Nat := 0
   deriving Inhabited
 
+-- TODO: we could give `#import_bumps` reset semantics and deprecate `#reset_min_imports`.
 /-- `#reset_min_imports` makes the `minImports` linter start again from empty cumulative
 imports. -/
 -- Only the linter can write the linter state. The elaborator does nothing: the `minImports`
