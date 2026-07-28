@@ -65,8 +65,8 @@ structure DescentDataAsCoalgebra
   hom (i₁ i₂ : ι) : obj i₁ ⟶
     (F.map (f i₁).op.toLoc).l.toFunctor.obj
       ((F.map (f i₂).op.toLoc).r.toFunctor.obj (obj i₂))
-  counit (i : ι) : hom i i ≫ (F.map (f i).op.toLoc).adj.counit.toNatTrans.app _ = 𝟙 _ :=
-    by cat_disch
+  counit (i : ι) : hom i i ≫ (F.map (f i).op.toLoc).adj.counit.toNatTrans.app _ = 𝟙 _ := by
+    cat_disch
   coassoc (i₁ i₂ i₃ : ι) :
     hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).l.toFunctor.map
       ((F.map (f i₂).op.toLoc).r.toFunctor.map (hom i₂ i₃)) =
