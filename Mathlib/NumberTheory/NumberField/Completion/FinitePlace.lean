@@ -81,7 +81,7 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
       exists_prop]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use (WithVal.equiv (v.valuation K)).symm π
-    simp [hπ, ← exp_zero, -exp_neg,
+    simp [hπ, ← exp_zero,
       ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
 end DVR
