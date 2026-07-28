@@ -18,6 +18,7 @@ public import MathlibTest.Linter.SuperfluousExpose.Positive_ScopedInstance
 public import MathlibTest.Linter.SuperfluousExpose.Positive_MultiSection
 public import MathlibTest.Linter.SuperfluousExpose.Negative_PlainDef
 public import MathlibTest.Linter.SuperfluousExpose.Negative_IrreducibleDef
+public import MathlibTest.Linter.SuperfluousExpose.Negative_ReducibleDef
 public import MathlibTest.Linter.SuperfluousExpose.Negative_MatchPattern
 public import MathlibTest.Linter.SuperfluousExpose.Negative_ToAdditive
 public import MathlibTest.Linter.SuperfluousExpose.Negative_Inductive
@@ -49,6 +50,7 @@ Positive cases, where the linter must fire:
 Negative cases, where the linter must not fire:
 * `Negative_PlainDef.lean`: a plain `def`.
 * `Negative_IrreducibleDef.lean`: `@[irreducible] def`; downstream code can still use `rw`.
+* `Negative_ReducibleDef.lean`: `@[reducible] def`; only `abbrev` carries its own exposure.
 * `Negative_MatchPattern.lean`: a `@[match_pattern]` def; pattern elaboration needs the body.
 * `Negative_ToAdditive.lean`: a `@[to_additive]` def; the source and the twin are real defs.
 * `Negative_Inductive.lean`: an inductive that is not a structure.

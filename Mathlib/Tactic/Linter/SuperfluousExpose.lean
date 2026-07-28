@@ -31,7 +31,9 @@ downstream typechecking.
 A declaration benefits from exposure when its body matters to downstream
 proofs or elaboration. These benefit: plain `def`, plain `inductive`,
 `@[match_pattern]` def, `@[irreducible]` def (downstream `rw` and `unfold`
-still need the body), and `@[to_additive]` def. These do not benefit:
+still need the body), `@[reducible]` def (a hidden body breaks even
+same-file public `rfl` proofs; only `abbrev` carries its own exposure), and
+`@[to_additive]` def. These do not benefit:
 theorems, abbrevs, classes, structures, instances, `unsafe` and `partial`
 defs, projections, matchers, and parser entries that come from notation. The
 linter uses `Batteries.Tactic.Lint.isAutoDecl` to identify compiler-generated
@@ -90,6 +92,9 @@ causes a false positive. The known cases are:
   `attribute [reducible] foo`, does not change the recorded verdict. The
   early verdict errs toward "benefits from exposure", so the linter stays
   silent.
+* Macro-generated abbrevs. The abbrev exemption requires a visible `abbrev`
+  command. An `abbrev` that a macro produces counts as a reducible def that
+  benefits from exposure, so its section gets no warning.
 -/
 
 meta section
@@ -138,15 +143,24 @@ private def looksLikeNotationDecl (info : ConstantInfo) (name : Name) : Bool :=
     returnTypeHeadIs info ``Lean.Macro
   nameMatches && typeMatches
 
+/-- Returns `true` when the command visibly declares an `abbrev`. Only such
+commands qualify for the abbrev exemption in `benefitsFromExposure`; an
+abbrev hidden behind a macro counts as a reducible def, which is the
+conservative direction. -/
+private def isAbbrevCommand (stx : Syntax) : Bool :=
+  stx.isOfKind ``Parser.Command.declaration &&
+    stx[1].getKind == ``Parser.Command.abbrev
+
 /-- Returns `true` when the body of the constant is relevant to downstream
-typechecking. Callers must filter out `Batteries.Tactic.Lint.isAutoDecl`
-names first.
+typechecking or to same-file public proofs. `fromAbbrev` states whether the
+command that created the constant is an `abbrev`. Callers must filter out
+`Batteries.Tactic.Lint.isAutoDecl` names first.
 
 Callers must apply this check while the scopes of the declaring command are
 still active: `Lean.Meta.isInstanceCore` sees a `scoped instance` or a
 `local instance` only while its scope is active. -/
 private def benefitsFromExposure (env : Environment) (name : Name)
-    (info : ConstantInfo) : Bool :=
+    (info : ConstantInfo) (fromAbbrev : Bool) : Bool :=
   if isPrivateName name then false else
   if looksLikeNotationDecl info name then false else
   if (env.getProjectionFnInfo? name).isSome then false else
@@ -162,8 +176,10 @@ private def benefitsFromExposure (env : Environment) (name : Name)
       else if Lean.hasMatchPatternAttribute env name then true
       else
         match Lean.getReducibilityStatusCore env name with
-        -- Modules expose `abbrev` bodies by default, with or without `@[expose]`.
-        | .reducible => false
+        -- An `abbrev` carries its own exposure, with or without `@[expose]`.
+        -- A hand-written `@[reducible] def` does not: hiding its body breaks
+        -- even same-file public `rfl` proofs.
+        | .reducible => !fromAbbrev
         -- Plain `def`, `@[irreducible] def`, `irreducible_def`, and
         -- `@[implicit_reducible]` all need the body downstream: even for
         -- `@[irreducible]`, downstream code can apply `rw` or `unfold` explicitly.
@@ -237,13 +253,14 @@ public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
       -- Classify the declarations that appeared since the previous command.
       let mut st := self
       if let some r := st.region? then
+        let fromAbbrev := isAbbrevCommand stx
         let mut seen := st.seen
         let mut benefits := r.someDeclBenefits
         for (n, info) in env.constants.map₂ do
           unless seen.contains n do
             seen := seen.insert n
             unless benefits || (← liftCoreM (Batteries.Tactic.Lint.isAutoDecl n)) do
-              benefits := benefitsFromExposure env n info
+              benefits := benefitsFromExposure env n info fromAbbrev
         st := { seen, region? := some { r with someDeclBenefits := benefits } }
       if Parser.isTerminalCommand stx then
         -- The end of the file closes an open section.
