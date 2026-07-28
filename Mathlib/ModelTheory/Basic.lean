@@ -55,7 +55,6 @@ namespace FirstOrder
 set_option linter.checkUnivs false in
 /-- A first-order language consists of a type of functions of every natural-number arity and a
   type of relations of every natural-number arity. -/
-@[nolint checkUnivs]
 structure Language where
   /-- For every arity, a `Type u` of functions of that arity -/
   Functions : ℕ → Type u

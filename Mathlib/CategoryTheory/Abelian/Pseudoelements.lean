@@ -382,11 +382,11 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
       -- Let's give a name to the second pullback morphism.
       let j : pullback (kernel.ι (cokernel.π S.f)) (kernel.ι S.g) ⟶ kernel S.g := pullback.snd _ _
       -- Since `q` is an epimorphism, in particular this means that `j` is an epimorphism.
-      haveI pe : Epi j := epi_of_epi_fac hz₂
+      have pe : Epi j := epi_of_epi_fac hz₂
       -- But it is also a monomorphism, because `kernel.ι (cokernel.π f)` is: A kernel is
       -- always a monomorphism and the pullback of a monomorphism is a monomorphism.
       -- But mono + epi = iso, so `j` is an isomorphism.
-      haveI : IsIso j := isIso_of_mono_of_epi _
+      have : IsIso j := isIso_of_mono_of_epi _
       -- But then `kernel.ι g` can be expressed using all of the maps of the pullback square, and we
       -- are done.
       rw [(Iso.eq_inv_comp (asIso j)).2 pullback.condition.symm]

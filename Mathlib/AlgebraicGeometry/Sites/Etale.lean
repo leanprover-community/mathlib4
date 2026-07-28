@@ -77,7 +77,7 @@ lemma ofArrows_mem_smallEtaleTopology_iff
     let V : Cover (precoverage @Etale) W.left :=
       Cover.mkOfCovers W.left (fun w ↦ (Z (i w)).left)
         (fun w ↦ (f (i w)).left) (fun w ↦ ⟨_, _, hz w⟩) inferInstance
-    letI : Cover.Over X V :=
+    let : Cover.Over X V :=
       { over w := ⟨(Z (i w)).hom⟩
         isOver_map w := by cat_disch }
     have (w : W.left) : Etale (V.X w ↘ X) := (Z (i w)).prop

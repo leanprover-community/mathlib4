@@ -41,7 +41,7 @@ noncomputable def linear : Linear R D := Linear.ofRingMorphism
 lemma functor_linear :
     letI := linear R L W
     Functor.Linear R L := by
-  letI := linear R L W
+  let := linear R L W
   constructor
   intro X Y f r
   change L.map (r • f) = ((Linear.toCatCenter R C r).localization L W).app (L.obj X) ≫ L.map f

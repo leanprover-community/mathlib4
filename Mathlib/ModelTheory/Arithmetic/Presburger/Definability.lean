@@ -111,7 +111,7 @@ variable [Finite α]
 
 lemma isSemilinearSet_boundedFormula_realize {n} (φ : presburger[[A]].BoundedFormula α n) :
     IsSemilinearSet {v : α ⊕ Fin n → ℕ | φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr)} := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   induction φ with simp only [BoundedFormula.Realize]
   | equal t₁ t₂ =>
     rcases term_realize_eq_add_dotProduct t₁ with ⟨k₁, u₁, ht₁⟩

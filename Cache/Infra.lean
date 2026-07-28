@@ -24,6 +24,11 @@ def MATHLIBREPO := "leanprover-community/mathlib4"
 /-- The full name of the Mathlib nightly-testing GitHub repository. -/
 def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
 
+/-- Whether `repo` is a first-party Mathlib repo rather than a fork. Forks cache
+into the per-commit `forks` namespace; the canonical repos do not. -/
+def isCanonicalRepo (repo : String) : Bool :=
+  repo == MATHLIBREPO || repo == NIGHTLY_TESTING_REPO
+
 /--
 Canonical form of a GitHub `owner/repo` name for use as a cache blob path
 segment.
@@ -51,10 +56,11 @@ inductive Container where
   | nightlyTesting
   /-- Container for toolchain-PR test runs. -/
   | prToolchainTests
-  /-- The bare `mathlib4` container that older cache clients read from. Only
-  master CI writes here (mirroring its `mathlib4-master` upload), so those
-  clients keep finding master-built artifacts; forks and nightly-testing stay
-  out to keep low-trust writes from reaching readers that predate the split. -/
+  /-- The bare `mathlib4` container that older cache clients read from. CI does
+  not upload here; it is a read-only store of the master-built artifacts that
+  were mirrored from `mathlib4-master`, kept reachable so those older clients
+  can resolve them. The `master` container is a self-contained cache, so reads
+  fall back to `legacy` only for artifacts predating the write cutover. -/
   | legacy
   deriving DecidableEq, Repr, BEq, Inhabited
 

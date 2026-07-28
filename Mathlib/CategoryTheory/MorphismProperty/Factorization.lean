@@ -72,6 +72,25 @@ def op {X Y : C} {f : X ⟶ Y} (hf : MapFactorizationData W₁ W₂ f) :
   hi := hf.hp
   hp := hf.hi
 
+/-- The factorization obtained from a factorization in the opposite category. -/
+@[simps]
+protected def unop {W₁ W₂ : MorphismProperty Cᵒᵖ} {X Y : Cᵒᵖ} {f : X ⟶ Y}
+    (φ : MapFactorizationData W₁ W₂ f) :
+    MapFactorizationData W₂.unop W₁.unop f.unop where
+  Z := φ.Z.unop
+  i := φ.p.unop
+  p := φ.i.unop
+  hi := φ.hp
+  hp := φ.hi
+  fac := by simp [← unop_comp]
+
+/-- The bijection between factorizations in `C` and factorizations in `Cᵒᵖ`. -/
+@[simps]
+def opEquiv {W₁ W₂ : MorphismProperty C} {X Y : C} {f : X ⟶ Y} :
+    MapFactorizationData W₁ W₂ f ≃ MapFactorizationData W₂.op W₁.op f.op where
+  toFun φ := φ.op
+  invFun φ := φ.unop
+
 end MapFactorizationData
 
 /-- The data of a term in `MapFactorizationData W₁ W₂ f` for any morphism `f`. -/

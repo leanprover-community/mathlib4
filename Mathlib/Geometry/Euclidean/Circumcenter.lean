@@ -56,7 +56,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     (hp : p ∉ s) (hu : ∃! cs : Sphere P, cs.center ∈ s ∧ ps ⊆ (cs : Set P)) :
     ∃! cs₂ : Sphere P,
       cs₂.center ∈ affineSpan ℝ (insert p (s : Set P)) ∧ insert p ps ⊆ (cs₂ : Set P) := by
-  haveI : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
+  have : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
   rcases hu with ⟨⟨cc, cr⟩, ⟨hcc, hcr⟩, hcccru⟩
   simp only at hcc hcr hcccru
   let x := dist cc (orthogonalProjection s p)
@@ -143,7 +143,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
       obtain ⟨i, hi⟩ := hn
-      haveI : Unique ι := ⟨⟨i⟩, hi⟩
+      have : Unique ι := ⟨⟨i⟩, hi⟩
       use ⟨p i, 0⟩
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
       constructor
@@ -162,7 +162,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
             Finset.card_sdiff, Finset.card_univ, hn]
           simp
         · simp
-      haveI : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
+      have : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)
       have ha2 : AffineIndependent ℝ fun i2 : ι2 => p i2 := ha.subtype _
       replace hm := hm ha2 _ hc
       have hr : Set.range p = insert (p i) (Set.range fun i2 : ι2 => p i2) := by

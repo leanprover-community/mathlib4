@@ -647,8 +647,8 @@ def LeftExtension.isUniversalPrecomp₂
     refine
       ⟨⟨StructuredArrow.homMk (hb.desc u) <| by
           ext x
-          haveI hb_fac_app := congr_app (hb.fac u) (L.obj x)
-          haveI hα_fac_app :=
+          have hb_fac_app := congr_app (hb.fac u) (L.obj x)
+          have hα_fac_app :=
             congr_app (hα.fac <| LeftExtension.mk _ <|
               y.hom ≫ (L.associator L' y.right).hom) x
           dsimp at hα_fac_app hb_fac_app

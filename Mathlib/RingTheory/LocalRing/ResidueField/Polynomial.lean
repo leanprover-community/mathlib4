@@ -131,7 +131,7 @@ theorem _root_.Ideal.exists_mem_span_singleton_map_residueField_eq
       I.map (mapRingHom (algebraMap R P.ResidueField)) := by
   obtain ⟨p, hp : _ = Ideal.span _⟩ := (inferInstance :
     (I.map (mapRingHom (algebraMap R P.ResidueField))).IsPrincipal)
-  letI := (mapRingHom (algebraMap (R ⧸ P) P.ResidueField)).toAlgebra
+  let := (mapRingHom (algebraMap (R ⧸ P) P.ResidueField)).toAlgebra
   have := Polynomial.isLocalization (R ⧸ P)⁰ P.ResidueField
   have : p ∈ (I.map (mapRingHom (algebraMap R (R ⧸ P)))).map (algebraMap _ _) := by
     rw [Ideal.map_map, RingHom.algebraMap_toAlgebra, mapRingHom_comp,

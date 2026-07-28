@@ -169,7 +169,6 @@ Simplifier lemma: `single x y` takes the value `y` at `x` and is zero otherwise.
 -/
 @[simp] lemma single_apply [DecidableEq X] [Zero Y] {x₁ x₂ : X} {y : Y} :
     single x₁ y x₂ = if x₂ = x₁ then y else 0 := by
-  classical
   simp_rw [DFunLike.coe, single, Pi.single_apply]
 
 /--
@@ -598,7 +597,7 @@ noncomputable def restrict [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (
     intro _ _
     simp_all
 
-open Classical in
+open scoped Classical in
 lemma restrict_apply [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) (z : X) :
     (D.restrict h) z = if z ∈ V then D z else 0 := rfl
 
@@ -691,5 +690,19 @@ lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U
   ext x
   simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
   aesop
+
+lemma disjoint_nhdsWithin_cofinite_of_mem [Zero Y]
+    (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
+    Disjoint (𝓝[f.support] p) cofinite := by
+  rw [disjoint_cofinite_right]
+  obtain ⟨t, h₁t, h₂t⟩ := f.supportLocallyFiniteWithinDomain p hp
+  refine ⟨t ∩ f.support, ?_, h₂t⟩
+  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
+  grind
+
+lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
+    [Zero Y] (f : locallyFinsupp X Y) (p : X) :
+    Disjoint (𝓝[f.support] p) cofinite :=
+  disjoint_nhdsWithin_cofinite_of_mem f p (mem_univ _)
 
 end Function.locallyFinsuppWithin

@@ -90,8 +90,7 @@ class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 
 instance : CStarRing ℝ where
-  norm_mul_self_le x := by
-    simp only [Real.norm_eq_abs, abs_mul_abs_self, star, id, norm_mul, le_refl]
+  norm_mul_self_le x := by simp
 
 namespace CStarRing
 

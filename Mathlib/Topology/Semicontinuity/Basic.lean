@@ -408,15 +408,6 @@ theorem Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α →
     (hf : LowerSemicontinuous f) (gmon : Antitone g) : UpperSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_lowerSemicontinuousAt_antitone (hf x) gmon
 
-@[deprecated (since := "2025-12-06")]
-alias LowerSemicontinuousAt.comp_continuousAt := LowerSemicontinuousAt.comp
-
-@[deprecated (since := "2025-12-06")]
-alias LowerSemicontinuousAt.comp_continuousAt_of_eq := LowerSemicontinuousAt.comp
-
-@[deprecated (since := "2025-12-06")]
-alias LowerSemicontinuous.comp_continuous := LowerSemicontinuous.comp
-
 end
 
 /-! #### Addition -/
@@ -1033,15 +1024,6 @@ theorem Continuous.comp_upperSemicontinuous_antitone {g : γ → δ} {f : α →
   hg.continuousAt.comp_upperSemicontinuousAt_antitone (hf x) gmon
 
 variable [Preorder β]
-
-@[deprecated (since := "2025-12-06")]
-alias UpperSemicontinuousAt.comp_continuousAt := UpperSemicontinuousAt.comp
-
-@[deprecated (since := "2025-12-06")]
-alias UpperSemicontinuousAt.comp_continuousAt_of_eq := UpperSemicontinuousAt.comp
-
-@[deprecated (since := "2025-12-06")]
-alias UpperSemicontinuous.comp_continuous := UpperSemicontinuous.comp
 
 end
 

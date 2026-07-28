@@ -379,7 +379,7 @@ theorem average_pair [CompleteSpace E]
 
 theorem measure_smul_setAverage (f : α → E) {s : Set α} (h : μ s ≠ ∞) :
     μ.real s • ⨍ x in s, f x ∂μ = ∫ x in s, f x ∂μ := by
-  haveI := Fact.mk h.lt_top
+  have := Fact.mk h.lt_top
   rw [← measure_smul_average, measureReal_restrict_apply_univ]
 
 theorem average_union {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
@@ -387,7 +387,7 @@ theorem average_union {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t) (ht
     ⨍ x in s ∪ t, f x ∂μ =
       (μ.real s / (μ.real s + μ.real t)) • ⨍ x in s, f x ∂μ +
         (μ.real t / (μ.real s + μ.real t)) • ⨍ x in t, f x ∂μ := by
-  haveI := Fact.mk hsμ.lt_top; haveI := Fact.mk htμ.lt_top
+  have := Fact.mk hsμ.lt_top; have := Fact.mk htμ.lt_top
   rw [restrict_union₀ hd ht, average_add_measure hfs hft, measureReal_restrict_apply_univ,
     measureReal_restrict_apply_univ]
 
@@ -500,7 +500,7 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
   replace H : (μ.restrict s) {x | f x ≤ ⨍ a in s, f a ∂μ} = 0 := by
     rwa [restrict_apply₀, inter_comm]
     exact AEStronglyMeasurable.nullMeasurableSet_le hf.1 aestronglyMeasurable_const
-  haveI := Fact.mk hμ₁.lt_top
+  have := Fact.mk hμ₁.lt_top
   refine (integral_sub_average (μ.restrict s) f).not_gt ?_
   refine (setIntegral_pos_iff_support_of_nonneg_ae ?_ ?_).2 ?_
   · refine measure_mono_null (fun x hx ↦ ?_) H

@@ -237,7 +237,7 @@ their compatibilities with shifts. -/
 def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
   (HomotopyCategory.singleFunctors C).postcomp Qh
 
-/-- The shift functor `C ⥤ DerivedCategory C` which sends `X : C` to the
+/-- The single functor `C ⥤ DerivedCategory C` which sends `X : C` to the
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 

@@ -218,7 +218,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         (P'.σ ((algebraMap P.Ring S') x) * (f.toAlgHom y - g.toAlgHom y) +
           P'.σ ((algebraMap P.Ring S') y) * (f.toAlgHom x - g.toAlgHom x)) ∈
       P'.ker ^ 2 := by
-  letI := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
+  let := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
   have :
       (f.toAlgHom x - P'.σ (algebraMap P.Ring S' x)) * (f.toAlgHom y - g.toAlgHom y) +
       (g.toAlgHom y - P'.σ (algebraMap P.Ring S' y)) * (f.toAlgHom x - g.toAlgHom x)
@@ -462,7 +462,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cotangentSpaceBasis_repr_tmul (r x i) :
     P.cotangentSpaceBasis.repr (r ⊗ₜ[P.Ring] KaehlerDifferential.D R P.Ring x : _) i =
       r * aeval P.val (pderiv i x) := by
-  classical
   simp only [cotangentSpaceBasis, Basis.baseChange_repr_tmul, mvPolynomialBasis_repr_apply,
     Algebra.smul_def, mul_comm r, algebraMap_apply, toExtension]
 

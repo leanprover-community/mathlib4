@@ -606,7 +606,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
       setToSimpleFunc_zero_apply]
   simp_rw [setToSimpleFunc]
   obtain rfl | hs_univ := eq_or_ne s univ
-  · haveI hα := hs_empty.to_type
+  · have hα := hs_empty.to_type
     simp [← Function.const_def]
   rw [range_indicator hs hs_empty hs_univ]
   by_cases hx0 : x = 0

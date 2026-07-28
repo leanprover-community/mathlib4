@@ -299,7 +299,7 @@ lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHo
   obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
   rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
   suffices Γ(N) ≤ (t • 𝒮ℒ ⊓ 𝒮ℒ).comap (mapGL ℝ) by
-    haveI _ : NeZero N := ⟨hN⟩
+    have _ : NeZero N := ⟨hN⟩
     simpa only [index_comap] using! (finiteIndex_of_le this).index_ne_zero
   intro k hk
   simpa [mem_pointwise_smul_iff_inv_smul_mem] using!
@@ -329,7 +329,7 @@ lemma IsCongruenceSubgroup.conjGL {Γ : Subgroup SL(2, ℤ)} (hΓ : IsCongruence
     (g : GL (Fin 2) ℚ) :
     IsCongruenceSubgroup (conjGL Γ (g.map <| Rat.castHom ℝ)) := by
   obtain ⟨M, hN, hΓM⟩ := hΓ
-  haveI _ : NeZero M := ⟨hN⟩
+  have _ : NeZero M := ⟨hN⟩
   obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g M
   rw [Subgroup.pointwise_smul_subset_iff] at hN'
   refine ⟨N, ‹_›, fun x hx ↦ ?_⟩

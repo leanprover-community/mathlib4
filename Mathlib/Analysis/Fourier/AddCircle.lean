@@ -356,7 +356,7 @@ def fourierCoeffOn {a b : ℝ} (hab : a < b) (f : ℝ → E) (n : ℤ) : E :=
 theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab f n =
       (1 / (b - a)) • ∫ x in a..b, fourier (-n) (x : AddCircle (b - a)) • f x := by
-  haveI := Fact.mk (by linarith : 0 < b - a)
+  have := Fact.mk (by linarith : 0 < b - a)
   rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a, add_sub, add_sub_cancel_left]
   congr 1
   simp_rw [intervalIntegral.integral_of_le hab.le]
@@ -366,7 +366,7 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
 
 theorem fourierCoeffOn.const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab (c • f) n = c • fourierCoeffOn hab f n := by
-  haveI := Fact.mk (by linarith : 0 < b - a)
+  have := Fact.mk (by linarith : 0 < b - a)
   apply fourierCoeff.const_smul
 
 theorem fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : ℤ) (hab : a < b) :
@@ -458,7 +458,7 @@ the sum of the squared norms of the Fourier coefficients equals the `L²` norm o
 theorem hasSum_sq_fourierCoeffOn
     {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
     HasSum (fun i => ‖fourierCoeffOn hab f i‖ ^ 2) ((b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2) := by
-  haveI := Fact.mk (by linarith : 0 < b - a)
+  have := Fact.mk (by linarith : 0 < b - a)
   rw [← add_sub_cancel a b] at hL2
   have h := hL2.memLp_liftIoc.haarAddCircle
   convert hasSum_sq_fourierCoeff h.toLp

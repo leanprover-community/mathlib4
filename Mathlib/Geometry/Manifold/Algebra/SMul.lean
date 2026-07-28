@@ -173,8 +173,7 @@ instance {n : ℕ∞ω} : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, E) n 𝕜 E where
     exact contDiff_smul.contMDiff.comp h
 
 /-- The monoid `E →L[𝕜] E` of continuous linear endomorphisms of `E` acts smoothly on `E`. -/
-instance [CompleteSpace E] {n : ℕ∞ω} :
-    ContMDiffSMul 𝓘(𝕜, E →L[𝕜] E) 𝓘(𝕜, E) n (E →L[𝕜] E) E where
+instance {n : ℕ∞ω} : ContMDiffSMul 𝓘(𝕜, E →L[𝕜] E) 𝓘(𝕜, E) n (E →L[𝕜] E) E where
   contMDiff_smul := by
     have h : ContMDiff (𝓘(𝕜, E →L[𝕜] E).prod 𝓘(𝕜, E)) 𝓘(𝕜, (E →L[𝕜] E) × E) n
         (@id ((E →L[𝕜] E) × E)) := by

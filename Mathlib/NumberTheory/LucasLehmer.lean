@@ -555,7 +555,7 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
         orderOf_dvd_iff_pow_eq_one.1 o
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
-    haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
+    have : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
     apply ZMod.neg_one_ne_one h.symm
   · apply orderOf_dvd_iff_pow_eq_one.2
     apply Units.ext

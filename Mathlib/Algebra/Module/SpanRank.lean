@@ -284,6 +284,13 @@ lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 
   · by_contra!
     simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
 
+lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPrincipal ∧ p ≠ ⊥ := by
+  refine ⟨fun h ↦ ⟨?_, (by grind [spanFinrank_bot])⟩,
+    fun ⟨⟨a, ha⟩, _⟩ ↦ ha ▸ spanFinrank_singleton (by simp_all)⟩
+  have fg : p.FG := spanRank_finite_iff_fg.1 (by simp_all [spanFinrank])
+  obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
+  exact ⟨a, ha ▸ (p.span_generators).symm⟩
+
 end Defs
 
 end Submodule
@@ -433,7 +440,7 @@ lemma Module.Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R
 
 theorem Submodule.rank_eq_spanRank_of_free [Module.Free R M] [StrongRankCondition R] :
     Module.rank R M = (⊤ : Submodule R M).spanRank := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   obtain ⟨I, B⟩ := ‹Module.Free R M›
   rw [← Basis.mk_eq_rank'' B, ← Basis.mk_eq_spanRank B, ← Cardinal.lift_id #(Set.range B),
     Cardinal.mk_range_eq_of_injective B.injective, Cardinal.lift_id _]

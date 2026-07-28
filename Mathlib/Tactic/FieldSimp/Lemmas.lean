@@ -29,7 +29,7 @@ variable {α : Type*}
 section
 variable [GroupWithZero α]
 
-open Classical in
+open scoped Classical in
 /-- This is a variant of integer exponentiation, defined for internal use in the `field_simp` tactic
 implementation. It differs from the usual integer exponentiation in that `0 ^ 0` is `0`, not `1`.
 With this choice, the function `n ↦ a ^ n` is always a homomorphism (`a ^ (n + m) = a ^ n * a ^ m`),

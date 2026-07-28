@@ -140,7 +140,6 @@ theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
 
 /-- The topology on a linearly ordered group with zero element adjoined is compatible with the order
 structure: the set `{p : Γ₀ × Γ₀ | p.1 ≤ p.2}` is closed. -/
-@[nolint defLemma]
 scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
   isClosed_le' := by
     simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
@@ -149,7 +148,6 @@ scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ�
     exact Iio_mem_nhds hab
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/
-@[nolint defLemma]
 scoped instance (priority := 100) t5Space : T5Space Γ₀ where
   completely_normal := fun s t h₁ h₂ => by
     by_cases hs : 0 ∈ s
@@ -159,7 +157,6 @@ scoped instance (priority := 100) t5Space : T5Space Γ₀ where
 
 /-- The topology on a linearly ordered group with zero element adjoined makes it a topological
 monoid. -/
-@[nolint defLemma]
 scoped instance (priority := 100) : ContinuousMul Γ₀ where
   continuous_mul := by
     simp only [continuous_iff_continuousAt, ContinuousAt]
@@ -182,7 +179,6 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
       exact pure_le_nhds (x * y)
 
-@[nolint defLemma]
 scoped instance (priority := 100) : ContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]

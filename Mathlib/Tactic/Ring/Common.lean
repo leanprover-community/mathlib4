@@ -900,8 +900,7 @@ theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ c₃ d : R} (_ : ea₁ * b = c�
   subst_vars; simp [_root_.mul_pow, pow_mul, Nat.rawCast]
 
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
-private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
-    MonadLiftT (OptionT m) (OptionT m') where
+private local instance {m m'} [MonadLiftT m m'] : MonadLiftT (OptionT m) (OptionT m') where
   monadLift x := OptionT.mk x.run
 
 /-- There are several special cases when exponentiating monomials:

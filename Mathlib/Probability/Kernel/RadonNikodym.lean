@@ -81,7 +81,7 @@ namespace ProbabilityTheory.Kernel
 variable {α γ : Type*} {mα : MeasurableSpace α} {mγ : MeasurableSpace γ} {κ η : Kernel α γ}
   [hαγ : MeasurableSpace.CountableOrCountablyGenerated α γ]
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary function used to define `ProbabilityTheory.Kernel.rnDeriv` and
 `ProbabilityTheory.Kernel.singularPart`.
 

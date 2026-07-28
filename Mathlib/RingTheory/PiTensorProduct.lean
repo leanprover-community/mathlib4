@@ -276,9 +276,9 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
       ((lift.tprod _).trans Finset.prod_const_one)
       (by
         -- one of these is required, the other is a performance optimization
-        letI : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           IsScalarTower.right (R := R) (A := ⨂[R] (x : ι), R)
-        letI : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
         ext

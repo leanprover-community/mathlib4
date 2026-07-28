@@ -53,7 +53,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
 
 theorem Polynomial.isCoveringMapOn_eval (p : 𝕜[X]) :
     IsCoveringMapOn p.eval (p.eval '' {k | p.derivative.eval k = 0})ᶜ := by
-  refine p.isClosedMap_eval.isCoveringMapOn_of_openPartialHomeomorph (fun x hx ↦ ?_)
+  refine p.isClosedMap_eval.isCoveringMapOn_of_isLocalHomeomorphOn (fun x hx ↦ ?_)
     fun x hx ↦ ⟨_, ((p.hasStrictDerivAt x).hasStrictFDerivAt_equiv
       fun h ↦ hx ⟨x, h, rfl⟩).mem_toOpenPartialHomeomorph_source, by simp⟩
   obtain rfl | ne := eq_or_ne p (C x)

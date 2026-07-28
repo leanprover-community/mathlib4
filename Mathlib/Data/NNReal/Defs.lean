@@ -165,6 +165,7 @@ theorem _root_.Real.le_coe_toNNReal (r : ℝ) : r ≤ Real.toNNReal r :=
   le_max_left r 0
 
 @[bound] theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
+@[simp] lemma not_toReal_neg {r : ℝ≥0} : ¬ r.toReal < 0 := r.coe_nonneg.not_gt
 
 @[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal (.mk a ha) = a := rfl
 

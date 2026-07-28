@@ -10,6 +10,7 @@ public import Mathlib.Order.Ideal
 
 /-!
 # Partial Isomorphisms
+
 This file defines partial isomorphisms between first-order structures.
 
 ## Main Definitions

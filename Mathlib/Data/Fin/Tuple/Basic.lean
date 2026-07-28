@@ -1183,7 +1183,7 @@ lemma find_congr (hi : p i) (hpq : ∀ j ≤ i, p j ↔ q j) :
 
 /-- A weak version of `Fin.find_congr`, requiring `p = q` everywhere. -/
 lemma find_congr' {hp : ∃ i, p i} {hq : ∃ i, q i} (hpq : ∀ {i}, p i ↔ q i) :
-   Fin.find p hp = Fin.find q hq :=
+    Fin.find p hp = Fin.find q hq :=
   let ⟨_, hp⟩ := hp; find_congr hp fun _ _ ↦ hpq
 
 lemma find_le (hi : p i) : Fin.find p ⟨i, hi⟩ ≤ i :=

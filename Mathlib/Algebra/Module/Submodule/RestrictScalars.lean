@@ -56,7 +56,7 @@ theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
   SetLike.coe_injective rfl
 
 @[simp] theorem restrictScalars_restrictScalars
-    (T : Type*) [Semiring T] [SMul T R] [SMul S T] [IsScalarTower S T R]
+    (T : Type*) [Semiring T] [SMul T R] [SMul S T]
     [Module T M] [IsScalarTower S T M] [IsScalarTower T R M]
     (V : Submodule R M) :
     (V.restrictScalars T).restrictScalars S = V.restrictScalars S :=

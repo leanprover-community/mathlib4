@@ -419,7 +419,7 @@ noncomputable def centerEquivRootsOfUnity_invFun
       simpa [← Subtype.val_inj, ← Units.val_inj]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 /-- The isomorphism between the roots of unity and the center of the special linear group. -/
 noncomputable def centerEquivRootsOfUnity :
     (Subgroup.center (SpecialLinearGroup R V)) ≃*

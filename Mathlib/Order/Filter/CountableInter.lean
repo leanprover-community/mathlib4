@@ -55,7 +55,7 @@ theorem countable_iInter_mem [Countable ι] {s : ι → Set α} : (⋂ i, s i) �
 theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : ∀ i ∈ S, Set α} :
     (⋂ i, ⋂ hi : i ∈ S, s i ‹_›) ∈ l ↔ ∀ i, ∀ hi : i ∈ S, s i ‹_› ∈ l := by
   rw [biInter_eq_iInter]
-  haveI := hS.toEncodable
+  have := hS.toEncodable
   exact countable_iInter_mem.trans Subtype.forall
 
 theorem eventually_countable_forall [Countable ι] {p : α → ι → Prop} :
@@ -94,7 +94,7 @@ theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countabl
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
-  haveI := hS.toEncodable
+  have := hS.toEncodable
   exact EventuallyLE.countable_iUnion fun i => h i i.2
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_bUnion :=
@@ -129,7 +129,7 @@ theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countabl
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
-  haveI := hS.toEncodable
+  have := hS.toEncodable
   exact EventuallyLE.countable_iInter fun i => h i i.2
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_bInter :=
@@ -273,7 +273,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
     s ∈ countableGenerate g ↔ ∃ S : Set (Set α), S ⊆ g ∧ S.Countable ∧ ⋂₀ S ⊆ s := by
   constructor <;> intro h
   · induction h with
-    | @basic s hs => exact ⟨{s}, by simp [hs, subset_refl]⟩
+    | @basic s hs => exact ⟨{s}, by simp [hs]⟩
     | univ => exact ⟨∅, by simp⟩
     | superset _ _ ih => refine Exists.imp (fun S => ?_) ih; tauto
     | @sInter S Sct _ ih =>

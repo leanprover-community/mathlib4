@@ -164,7 +164,7 @@ def toNormedField : NormedField L :=
     norm_mul := fun x y => by simp only [Valuation.norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
-      haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
+      have : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
       · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
@@ -179,7 +179,7 @@ def toNormedField : NormedField L :=
           simp only [mem_setOf_eq, Valuation.norm, hδ, NNReal.coe_lt_coe] at hx
           rw [mem_setOf, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
-        · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
+        · have : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
             ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
           obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
           use u

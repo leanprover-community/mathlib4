@@ -299,7 +299,6 @@ either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. 
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
     Nonempty (G ≃*o ℤᵐ⁰) ∨ DenselyOrdered G := by
-  classical
   rw [← denselyOrdered_units_iff]
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
   intro ⟨f⟩

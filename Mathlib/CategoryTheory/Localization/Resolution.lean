@@ -389,7 +389,7 @@ lemma hasRightResolutions_arrow_of_essSurj_of_full
     [R.functor.EssSurj] [R.functor.Full] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.arrow.HasRightResolutions] :
     B.arrow.HasRightResolutions := by
-  letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasRightResolutions_of_iso_of_essSurj
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
@@ -397,7 +397,7 @@ lemma hasLeftResolutions_arrow_of_essSurj_of_full
     [R.functor.EssSurj] [R.functor.Full] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.arrow.HasLeftResolutions] :
     B.arrow.HasLeftResolutions := by
-  letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasLeftResolutions_of_iso_of_essSurj
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
@@ -405,7 +405,7 @@ lemma hasRightResolutions_arrow_iff_of_equivalences
     [R.functor.IsEquivalence] [R.IsInduced] [L.functor.IsEquivalence] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.arrow.HasRightResolutions ↔ B.arrow.HasRightResolutions := by
-  letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasRightResolutions_iff_iso_of_essSurj_of_full
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
@@ -413,7 +413,7 @@ lemma hasLeftResolutions_arrow_iff_of_equivalences
     [R.functor.IsEquivalence] [R.IsInduced] [L.functor.IsEquivalence] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.arrow.HasLeftResolutions ↔ B.arrow.HasLeftResolutions := by
-  letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasLeftResolutions_iff_iso_of_essSurj_of_full
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 

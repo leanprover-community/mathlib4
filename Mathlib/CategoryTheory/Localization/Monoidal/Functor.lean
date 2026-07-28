@@ -156,7 +156,7 @@ transformation.
 instance lifting_isMonoidal :
     letI : F.Monoidal := functorMonoidalOfComp L W F G
     (Lifting.iso L W G F).hom.IsMonoidal := by
-  letI : F.Monoidal := functorMonoidalOfComp L W F G
+  let : F.Monoidal := functorMonoidalOfComp L W F G
   refine ⟨?_, fun _ _ ↦ ?_⟩
   · simp [functorMonoidalOfComp_ε]
   · simp [functorMonoidalOfComp_μ]

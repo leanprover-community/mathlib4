@@ -94,13 +94,13 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     [IsSplitMono ((reflectorAdjunction i).unit.app A)] : i.essImage A := by
   let η : 𝟭 C ⟶ reflector i ⋙ i := (reflectorAdjunction i).unit
-  haveI : IsIso (η.app (i.obj ((reflector i).obj A))) :=
+  have : IsIso (η.app (i.obj ((reflector i).obj A))) :=
     Functor.essImage.unit_isIso ((i.obj_mem_essImage _))
   have : Epi (η.app A) := by
     refine @epi_of_epi _ _ _ _ _ (retraction (η.app A)) (η.app A) ?_
     rw [show retraction _ ≫ η.app A = _ from η.naturality (retraction (η.app A))]
     apply epi_comp (η.app (i.obj ((reflector i).obj A)))
-  haveI := isIso_of_epi_of_isSplitMono (η.app A)
+  have := isIso_of_epi_of_isSplitMono (η.app A)
   exact (reflectorAdjunction i).mem_essImage_of_unit_isIso A
 
 /-- Composition of reflective functors. -/
@@ -225,13 +225,13 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mem_essImage_of_counit_isSplitEpi [Coreflective j] {A : D}
     [IsSplitEpi ((coreflectorAdjunction j).counit.app A)] : j.essImage A := by
   let ε : coreflector j ⋙ j ⟶ 𝟭 D := (coreflectorAdjunction j).counit
-  haveI : IsIso (ε.app (j.obj ((coreflector j).obj A))) :=
+  have : IsIso (ε.app (j.obj ((coreflector j).obj A))) :=
     Functor.essImage.counit_isIso ((j.obj_mem_essImage _))
   have : Mono (ε.app A) := by
     refine @mono_of_mono _ _ _ _ _ (ε.app A) (section_ (ε.app A)) ?_
     rw [show ε.app A ≫ section_ _ = _ from (ε.naturality (section_ (ε.app A))).symm]
     apply mono_comp _ (ε.app (j.obj ((coreflector j).obj A)))
-  haveI := isIso_of_mono_of_isSplitEpi (ε.app A)
+  have := isIso_of_mono_of_isSplitEpi (ε.app A)
   exact (coreflectorAdjunction j).mem_essImage_of_counit_isIso A
 
 instance Coreflective.comp (F : C ⥤ D) (G : D ⥤ E) [Coreflective F] [Coreflective G] :

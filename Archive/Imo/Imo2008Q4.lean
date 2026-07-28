@@ -10,6 +10,7 @@ import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2008 Q4
+
 Find all functions `f : (0,∞) → (0,∞)` (so, `f` is a function from the positive real
 numbers to the positive real numbers) such that
       ```

@@ -204,7 +204,7 @@ theorem eq_bot_of_comap_eq_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R
 theorem isMaximal_comap_of_isIntegral_of_isMaximal [Algebra.IsIntegral R S] (I : Ideal S)
     [hI : I.IsMaximal] : IsMaximal (I.comap (algebraMap R S)) := by
   refine Ideal.Quotient.maximal_of_isField _ ?_
-  haveI : IsPrime (I.comap (algebraMap R S)) := comap_isPrime _ _
+  have : IsPrime (I.comap (algebraMap R S)) := comap_isPrime _ _
   exact isField_of_isIntegral_of_isField
     algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
 
@@ -286,10 +286,9 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
     exact absurd (hP x0) hx
   let Rₚ := Localization P.primeCompl
   let Sₚ := Localization (Algebra.algebraMapSubmonoid S P.primeCompl)
-  letI : IsDomain (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
+  let : IsDomain (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
     IsLocalization.isDomain_localization (le_nonZeroDivisors_of_noZeroDivisors hP0)
   obtain ⟨Qₚ : Ideal Sₚ, Qₚ_maximal⟩ := exists_maximal Sₚ
-  let _ : Algebra Rₚ Sₚ := localizationAlgebra P.primeCompl S
   have : Algebra.IsIntegral Rₚ Sₚ := ⟨isIntegral_localization⟩
   have Qₚ_max : IsMaximal (comap _ Qₚ) :=
     isMaximal_comap_of_isIntegral_of_isMaximal (R := Rₚ) (S := Sₚ) Qₚ

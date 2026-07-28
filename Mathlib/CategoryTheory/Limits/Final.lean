@@ -928,15 +928,15 @@ variable {C : Type u₁} [Category.{v₁} C] {c : C}
 
 lemma final_fromPUnit_of_isTerminal (hc : Limits.IsTerminal c) : (fromPUnit c).Final where
   out c' := by
-    letI : Inhabited (StructuredArrow c' (fromPUnit c)) := ⟨.mk (Y := default) (hc.from c')⟩
-    letI : Subsingleton (StructuredArrow c' (fromPUnit c)) :=
+    let : Inhabited (StructuredArrow c' (fromPUnit c)) := ⟨.mk (Y := default) (hc.from c')⟩
+    let : Subsingleton (StructuredArrow c' (fromPUnit c)) :=
       ⟨fun i j ↦ StructuredArrow.obj_ext _ _ (by cat_disch) (hc.hom_ext _ _)⟩
     infer_instance
 
 lemma initial_fromPUnit_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).Initial where
   out c' := by
-    letI : Inhabited (CostructuredArrow (fromPUnit c) c') := ⟨.mk (Y := default) (hc.to c')⟩
-    letI : Subsingleton (CostructuredArrow (fromPUnit c) c') :=
+    let : Inhabited (CostructuredArrow (fromPUnit c) c') := ⟨.mk (Y := default) (hc.to c')⟩
+    let : Subsingleton (CostructuredArrow (fromPUnit c) c') :=
       ⟨fun i j ↦ CostructuredArrow.obj_ext _ _ (by cat_disch) (hc.hom_ext _ _)⟩
     infer_instance
 
@@ -1102,7 +1102,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   constructor
   rintro ⟨d, f⟩
   let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
-  letI : Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
+  let : Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
     ⟨u, ⟨c, (F.map g).toFunctor.obj f⟩, ⟨(by exact g), (by exact 𝟙 _)⟩⟩
   apply zigzag_isConnected
   rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩

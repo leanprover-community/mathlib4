@@ -198,7 +198,7 @@ variable [Monoid R] [DistribMulAction R K[X]]
 variable [IsScalarTower R K[X] K[X]]
 
 theorem mk_smul (c : R) (p q : K[X]) : RatFunc.mk (c • p) q = c • RatFunc.mk p q := by
-  letI : SMulZeroClass R (FractionRing K[X]) := inferInstance
+  let : SMulZeroClass R (FractionRing K[X]) := inferInstance
   by_cases hq : q = 0
   · rw [hq, mk_zero, mk_zero, ← ofFractionRing_smul, smul_zero]
   · rw [mk_eq_localization_mk _ hq, mk_eq_localization_mk _ hq, ← Localization.smul_mk, ←
@@ -290,10 +290,8 @@ def instAddCommGroup : AddCommGroup K⟮X⟯ where
   add_zero := by frac_tac
   neg_add_cancel := by frac_tac
   sub_eq_add_neg := by frac_tac
-  nsmul := (· • ·)
   nsmul_zero := by smul_tac
   nsmul_succ _ := by smul_tac
-  zsmul := (· • ·)
   zsmul_zero' := by smul_tac
   zsmul_succ' _ := by smul_tac
   zsmul_neg' _ := by smul_tac

@@ -128,17 +128,15 @@ noncomputable abbrev coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coi
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the coinduced `H`-representation `coind φ A`, with action on maps given by postcomposition. -/
-@[simps obj map]
+@[implicit_reducible, simps obj map]
 noncomputable def coindFunctor : Rep.{t} k G ⥤ Rep k H where
   obj A := coind φ A
   map f := coindMap φ f
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance {G : Type v'} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
   preserves {X Y} f := (epi_iff_surjective _).2 fun y => by
-    letI := QuotientGroup.rightRel S
+    let := QuotientGroup.rightRel S
     choose! s hs using (Rep.epi_iff_surjective f).1 ‹_›
     choose! i hi using Quotient.mk'_surjective (α := G)
     let γ (g : G) : S := ⟨g * (i (Quotient.mk' g))⁻¹,
@@ -166,7 +164,7 @@ noncomputable def _root_.Representation.coind' :
     Representation k H (res φ (leftRegular k H) ⟶ A) where
   toFun h :=
   { toFun f := (resFunctor φ).map ((leftRegularHomEquiv (leftRegular k H)).symm.toLinearMap
-      (Finsupp.single h 1)) ≫ f
+      (.single h 1)) ≫ f
     map_add' _ _ := rfl
     map_smul' _ _ := rfl }
   map_one' := by
@@ -199,7 +197,7 @@ noncomputable def coindMap' {A B : Rep k G} (f : A ⟶ B) : coind' φ A ⟶ coin
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the coinduced `H`-representation `coind' φ A`, with action on maps given by postcomposition. -/
-@[simps obj map]
+@[implicit_reducible, simps obj map]
 noncomputable def coindFunctor' : Rep k G ⥤ Rep k H where
   obj A := coind' φ A
   map f := coindMap' φ f
@@ -213,7 +211,8 @@ to the `G`-representation morphisms `k[H] ⟶ A`. -/
 @[simps]
 noncomputable def coindVEquiv :
     A.ρ.coindV φ ≃ₗ[k] (res φ (leftRegular k H) ⟶ A) where
-  toFun f := Rep.ofHom ⟨linearCombination _ f.1, fun g ↦ by dsimp; ext; simp [f.2 g]⟩
+  toFun f := Rep.ofHom ⟨linearCombination _ f.1 ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
+    fun g ↦ by dsimp; ext; simp [f.2 g]⟩
   map_add' _ _ := coind'_ext φ <| by simp [Rep.add_hom]
   map_smul' _ _ := coind'_ext φ <| by simp [smul_hom]
   invFun f := ⟨fun h ↦ f.hom.toLinearMap (.single h 1), fun g h ↦ by
@@ -228,8 +227,6 @@ noncomputable def coindVEquiv :
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
   Rep.mkIso <| .mk (coindVEquiv φ A) fun h => by ext; simp [homEquiv]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functors `Rep k G ⥤ Rep k H` given by
 `coindFunctor k φ` and `coindFunctor' k φ` are naturally isomorphic, with isomorphism on objects
 given by `coindIso φ`. -/

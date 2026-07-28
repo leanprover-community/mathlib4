@@ -420,8 +420,8 @@ theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [F
     [HasFiniteCoproducts C] [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
     [PreservesColimitsOfShape (Discrete WalkingPair) F] [F.ReflectsIsomorphisms] :
     FinitaryExtensive C := by
-  haveI : ReflectsLimitsOfShape WalkingCospan F := reflectsLimitsOfShape_of_reflectsIsomorphisms
-  haveI : ReflectsColimitsOfShape (Discrete WalkingPair) F :=
+  have : ReflectsLimitsOfShape WalkingCospan F := reflectsLimitsOfShape_of_reflectsIsomorphisms
+  have : ReflectsColimitsOfShape (Discrete WalkingPair) F :=
     reflectsColimitsOfShape_of_reflectsIsomorphisms
   exact finitaryExtensive_of_preserves_and_reflects F
 

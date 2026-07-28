@@ -166,8 +166,6 @@ theorem _root_.IsClosed.powerset_hausdorff {F : Set α} (hF : IsClosed F) :
   simp_rw [Set.powerset, ← isOpen_compl_iff, Set.compl_setOf, ← Set.inter_compl_nonempty_iff]
   exact isOpen_inter_nonempty_of_isOpen hF.isOpen_compl
 
-@[deprecated (since := "2025-11-23")] alias isClosed_powerset := IsClosed.powerset_hausdorff
-
 theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
   constructor
   · rw [← Set.powerset_empty]

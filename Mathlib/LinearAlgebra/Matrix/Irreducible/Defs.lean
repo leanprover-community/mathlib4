@@ -95,7 +95,7 @@ variable {A : Matrix n n R}
 lemma IsIrreducible.exists_pos [Nontrivial n]
     (h_irr : IsIrreducible A) (i : n) :
     ∃ j, 0 < A i j := by
-  letI : Quiver n := toQuiver A
+  let : Quiver n := toQuiver A
   by_contra h_row
   have no_out : ∀ j : n, IsEmpty (i ⟶ j) :=
     fun j => ⟨fun e => h_row ⟨j, e.down⟩⟩
@@ -117,7 +117,7 @@ theorem pow_apply_pos_iff_nonempty_path
     (hA : ∀ i j, 0 ≤ A i j) (k : ℕ) (i j : n) :
     letI := toQuiver A
     0 < (A ^ k) i j ↔ Nonempty {p : Path i j // p.length = k} := by
-  letI := toQuiver A
+  let := toQuiver A
   induction k generalizing i j with
   | zero =>
     refine ⟨fun h_pos ↦ ?_, fun ⟨p, hp⟩ ↦ ?_⟩
@@ -160,7 +160,7 @@ theorem isIrreducible_iff_exists_pow_pos
     [Fintype n] [IsOrderedRing R] [PosMulStrictMono R] [Nontrivial R] [DecidableEq n]
     (hA : ∀ i j, 0 ≤ A i j) :
     IsIrreducible A ↔ ∀ i j, ∃ k > 0, 0 < (A ^ k) i j := by
-  letI : Quiver n := toQuiver A
+  let : Quiver n := toQuiver A
   constructor
   · intro h_irr i j
     obtain ⟨p, hp_len⟩ := h_irr.2 i j
@@ -207,14 +207,14 @@ theorem IsIrreducible.transpose (hA : IsIrreducible A) : IsIrreducible Aᵀ := b
     simpa [Matrix.transpose_apply] using hA.nonneg j i
   refine ⟨hA_T_nonneg, ?_⟩
   intro i j
-  letI : Quiver n := toQuiver A
+  let : Quiver n := toQuiver A
   obtain ⟨p, hp_pos⟩ := hA.connected j i
   cases p with
   | nil =>
     simp at hp_pos
   | @cons b _ q e =>
     let qT := transposePath (A := A) (q.cons e)
-    letI : Quiver n := toQuiver Aᵀ
+    let : Quiver n := toQuiver Aᵀ
     use qT
     simp [qT, transposePath, Quiver.Path.length_comp, Quiver.Path.length_toPath]
 

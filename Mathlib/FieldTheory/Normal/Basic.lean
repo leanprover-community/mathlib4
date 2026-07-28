@@ -67,7 +67,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     exact Normal.of_algEquiv
       (AlgEquiv.ofBijective (Algebra.ofId F E) (Algebra.bijective_algebraMap_iff.2 this.symm))
   refine normal_iff.mpr fun x ↦ ?_
-  haveI : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
+  have : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
   have hx := IsIntegral.of_finite F x
   let L := (p * minpoly F x).SplittingField
   have hL := SplittingField.splits (p * minpoly F x)
@@ -77,7 +77,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     rw [← j.comp_algebraMap, ← Polynomial.map_map] at hL2
     refine ⟨hx, Splits.of_splits_map (j : E →+* L) hL2 fun a ha ↦ ?_⟩
     rw [Polynomial.map_map, j.comp_algebraMap] at ha
-    letI : Algebra F⟮x⟯ L := ((algHomAdjoinIntegralEquiv F hx).symm ⟨a, ha⟩).toRingHom.toAlgebra
+    let : Algebra F⟮x⟯ L := ((algHomAdjoinIntegralEquiv F hx).symm ⟨a, ha⟩).toRingHom.toAlgebra
     let j' : E →ₐ[F⟮x⟯] L := IsSplittingField.lift E (p.map (algebraMap F F⟮x⟯)) ?_
     · change a ∈ j.range
       rw [← IsSplittingField.adjoin_rootSet_eq_range E p j,
@@ -100,7 +100,7 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet K)
   have hF : Normal F E := by
-    haveI : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
+    have : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
       refine isSplittingField_iSup ?_ fun i _ => adjoin_rootSet_isSplittingField ?_
       · exact Finset.prod_ne_zero_iff.mpr fun i _ => minpoly.ne_zero ((h i.1).isIntegral i.2)
       · simpa [Polynomial.map_map] using! ((h i.1).splits i.2).map (algebraMap (t i.1) K)

@@ -50,7 +50,7 @@ lemma IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
     (hf : P f) (x : X) (y : Y) (h : f x = g y) :
     ∃ a : ↑(pullback f g), pullback.snd f g a = y := by
   let iso := pullbackSymmetry f g
-  haveI : HasPullback g f := hasPullback_symmetry f g
+  have : HasPullback g f := hasPullback_symmetry f g
   obtain ⟨a, ha⟩ := exists_preimage_fst_triplet_of_prop hf y x h.symm
   use (pullbackSymmetry f g).inv a
   rwa [← Scheme.Hom.comp_apply, pullbackSymmetry_inv_comp_snd]
@@ -88,7 +88,7 @@ lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Sch
 @[simp]
 lemma singleton_mem_precoverage_iff {X S : Scheme.{u}} (f : X ⟶ S) :
     Presieve.singleton f ∈ precoverage P S ↔ Function.Surjective f.base ∧ P f := by
-  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ofArrows_mem_precoverage_iff]
+  rw [← Presieve.ofArrows_pUnit.{0}, ofArrows_mem_precoverage_iff]
   aesop
 
 lemma bot_mem_precoverage (X : Scheme.{u}) [IsEmpty X] : ⊥ ∈ Scheme.precoverage P X :=

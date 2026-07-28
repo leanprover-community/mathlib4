@@ -73,8 +73,8 @@ variable {B : Type w} [CommRing B] [Algebra R B] (I : Ideal B)
 theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
     Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
   intro f₁ f₂ e
-  letI := f₁.toRingHom.toAlgebra
-  haveI := IsScalarTower.of_algebraMap_eq' f₁.comp_algebraMap.symm
+  let := f₁.toRingHom.toAlgebra
+  have := IsScalarTower.of_algebraMap_eq' f₁.comp_algebraMap.symm
   have :=
     ((KaehlerDifferential.linearMapEquivDerivation R A).toEquiv.trans
           (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
@@ -220,7 +220,7 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
   have e' :=
     FormallyUnramified.lift_unique I ⟨2, hI⟩ (f₁.comp <| IsScalarTower.toAlgHom R A B)
       (f₂.comp <| IsScalarTower.toAlgHom R A B) (by rw [← AlgHom.comp_assoc, e, AlgHom.comp_assoc])
-  letI := (f₁.restrictDomain A).toAlgebra
+  let := (f₁.restrictDomain A).toAlgebra
   let F₁ : B →ₐ[A] C := { f₁ with commutes' := fun r => rfl }
   let F₂ : B →ₐ[A] C := { f₂ with commutes' := AlgHom.congr_fun e'.symm }
   ext1 x
@@ -231,8 +231,8 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
 theorem of_restrictScalars [FormallyUnramified R B] : FormallyUnramified A B := by
   rw [iff_comp_injective]
   intro Q _ _ I e f₁ f₂ e'
-  letI := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
-  letI : IsScalarTower R A Q := IsScalarTower.of_algebraMap_eq' rfl
+  let := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
+  let : IsScalarTower R A Q := IsScalarTower.of_algebraMap_eq' rfl
   refine AlgHom.restrictScalars_injective R ?_
   refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
@@ -278,8 +278,8 @@ instance base_change [FormallyUnramified R A] :
     FormallyUnramified B (B ⊗[R] A) := by
   rw [iff_comp_injective]
   intro C _ _ I hI f₁ f₂ e
-  letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
-  haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
+  let := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
+  have : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   ext : 1
   exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
 
@@ -323,9 +323,9 @@ theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ 
 
 theorem localization_map [FormallyUnramified R S] :
     FormallyUnramified Rₘ Sₘ := by
-  haveI : FormallyUnramified S Sₘ :=
+  have : FormallyUnramified S Sₘ :=
     FormallyUnramified.of_isLocalization (M.map (algebraMap R S))
-  haveI : FormallyUnramified R Sₘ := FormallyUnramified.comp R S Sₘ
+  have : FormallyUnramified R Sₘ := FormallyUnramified.comp R S Sₘ
   exact FormallyUnramified.localization_base M
 
 end Localization

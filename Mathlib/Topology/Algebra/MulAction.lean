@@ -117,22 +117,22 @@ theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : T
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
-    ContinuousWithinAt (fun x => f x • g x) s b :=
+    ContinuousWithinAt (f • g) s b :=
   Filter.Tendsto.smul hf hg
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousAt.smul (hf : ContinuousAt f b) (hg : ContinuousAt g b) :
-    ContinuousAt (fun x => f x • g x) b :=
+    ContinuousAt (f • g) b :=
   Filter.Tendsto.smul hf hg
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x • g x) s := fun x hx => (hf x hx).smul (hg x hx)
+    ContinuousOn (f • g) s := fun x hx => (hf x hx).smul (hg x hx)
 
-@[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
+@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
+theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous (f • g) :=
   continuous_smul.comp (hf.prodMk hg)
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
@@ -191,7 +191,7 @@ lemma Topology.IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpac
     ContinuousSMul N Y where
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
-      using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
+      using (hf.comp continuous_fst).fun_smul <| hg.continuous.comp continuous_snd
 
 @[to_additive]
 instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :

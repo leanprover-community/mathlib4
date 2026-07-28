@@ -48,7 +48,7 @@ variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
 whose support is contained in the support of M.
 -/
-private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 < s)
+private lemma exists_perm_eq_zero_implies_eq_zero {s : R} (hs : 0 < s)
     (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
     ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix R i j = 0 := by
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM

@@ -246,7 +246,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem toPushforwardOfIso_app {X Y : TopCat.{w}} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
     (H₂ : H₁.hom _* ℱ ⟶ 𝒢) (U : (Opens X)ᵒᵖ) :
     (toPushforwardOfIso H₁ H₂).app U =
-      ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
+      ℱ.map (eqToHom (by simp [Opens.map_def, Set.preimage_preimage])) ≫
         H₂.app (op ((Opens.map H₁.inv).obj (unop U))) := by
   simp [toPushforwardOfIso, Adjunction.homEquiv_unit]
 
@@ -263,7 +263,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat.{w}} (H₁ : X ≅ Y) {ℱ : Y.Pres
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) (U : (Opens X)ᵒᵖ) :
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
-        𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
+        𝒢.map (eqToHom (by simp [Opens.map_def, Set.preimage_preimage])) := by
   simp [pushforwardToOfIso, Equivalence.toAdjunction, Adjunction.homEquiv_counit]
 
 end Iso

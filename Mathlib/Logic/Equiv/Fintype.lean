@@ -107,7 +107,7 @@ noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
   rw [← Fintype.subtype_card (fs \ ft) hst, ← Fintype.subtype_card (ft \ fs) hts] at hc
   exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
 
-open Classical in
+open scoped Classical in
 /-- If `e` is an equivalence between two subtypes of a type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
@@ -167,7 +167,6 @@ theorem Perm.exists_extending_pair [Finite α]
 theorem Perm.exists_map_finset_eq
     (s t : Finset β) (h : s.card = t.card) :
     ∃ σ : Perm β, s.map σ.toEmbedding = t := by
-  classical
   obtain ⟨σ, hσ⟩ := Perm.exists_extending_pair
     (fun x : s => (x : β)) (fun x : s => ((s.equivOfCardEq h) x : β))
     Subtype.val_injective (Subtype.val_injective.comp (s.equivOfCardEq h).injective)

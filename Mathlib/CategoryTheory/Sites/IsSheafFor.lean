@@ -184,10 +184,10 @@ theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.HasPairwisePullback
   constructor
   · intro t Y₁ Y₂ f₁ f₂ hf₁ hf₂
     apply t
-    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
+    have := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     apply pullback.condition
   · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
-    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
+    have := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     rw [← pullback.lift_fst _ _ comm, op_comp, Functor.map_comp, comp_apply,
       t hf₁ hf₂, ← comp_apply, ← Functor.map_comp, ← op_comp, pullback.lift_snd]
 
@@ -557,7 +557,7 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
   dsimp [functor]
   simp only [Subtype.forall, shrinkYonedaObjObjEquiv.forall_congr_left, Equiv.apply_symm_apply]
   congr!
-  simp [Equiv.subtypeEquiv]
+  simp
 
 /--
 If `P` is a sheaf for the sieve `S` on `X`, a natural transformation from `S` (viewed as a functor)
@@ -1062,10 +1062,10 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type*) (R S : Sieve X)
   apply Presieve.isSheafFor_subsieve_aux P this
   · apply isSheafFor_bind _ _ _ hR hS
     intro Y f hf Z g
-    rw [← pullback_comp]
+    rw [← Sieve.pullback_comp]
     apply (hS (R.downward_closed hf _)).isSeparatedFor
   · intro Y f hf
-    have : Sieve.pullback f (Sieve.bind R fun T (k : T ⟶ X) (_ : R k) => pullback k S) =
+    have : Sieve.pullback f (Sieve.bind R fun T (k : T ⟶ X) (_ : R k) => Sieve.pullback k S) =
         R.pullback f := by
       ext Z g
       constructor

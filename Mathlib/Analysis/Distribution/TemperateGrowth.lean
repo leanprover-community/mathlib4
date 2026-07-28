@@ -424,7 +424,7 @@ open scoped ENNReal
 class HasTemperateGrowth (μ : Measure E) : Prop where
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
-open Classical in
+open scoped Classical in
 /-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
 temperate growth. -/
 def integrablePower (μ : Measure E) : ℕ :=

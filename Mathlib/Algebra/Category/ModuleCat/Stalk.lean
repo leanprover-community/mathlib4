@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-
 # Module structure on stalks
+
 Let `M` be a presheaf of `R`-modules on a topological space. We endow `M.presheaf.stalk x` with
 an `R.stalk x`-module structure.
 
@@ -136,7 +136,7 @@ lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
     letI := IsColimit.module R M H hcR hcM
     cM.ι.app i (r • m) =
       HSMul.hSMul (α := cR.pt) (β := cM.pt) (cR.ι.app i r) (cM.ι.app i m) := by
-  letI := filteredColimitsModule R M H
+  let := filteredColimitsModule R M H
   let α := IsColimit.coconePointUniqueUpToIso hcM
     (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit M)
   let β := IsColimit.coconePointUniqueUpToIso hcR

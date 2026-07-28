@@ -58,7 +58,7 @@ variable [HasExt.{w} C] (X : C) (n : ℕ)
 
 lemma subsingleton [hX : HasProjectiveDimensionLT X n] (i : ℕ) (hi : n ≤ i) (Y : C) :
     Subsingleton (Ext.{w} X Y i) := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   have := hX.subsingleton' i hi
   exact Ext.chgUniv.{w, max u v}.symm.subsingleton
 
@@ -67,7 +67,7 @@ lemma mk (hX : ∀ (i : ℕ) (_ : n ≤ i) ⦃Y : C⦄, ∀ (e : Ext X Y i), e =
     HasProjectiveDimensionLT X n where
   subsingleton' i hi Y := by
     have : Subsingleton (Ext X Y i) := ⟨fun e₁ e₂ ↦ by simp only [hX i hi]⟩
-    letI := HasExt.standard C
+    let := HasExt.standard C
     exact Ext.chgUniv.{max u v, w}.symm.subsingleton
 
 end HasProjectiveDimensionLT
@@ -90,7 +90,7 @@ lemma hasProjectiveDimensionLT_iff [HasExt.{w} C] :
 variable {X} in
 lemma Limits.IsZero.hasProjectiveDimensionLT_zero (hX : IsZero X) :
     HasProjectiveDimensionLT X 0 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
   rw [← e.mk₀_id_comp, hX.eq_of_src (𝟙 X) 0, Ext.mk₀_zero, Ext.zero_comp]
@@ -99,7 +99,7 @@ instance : HasProjectiveDimensionLT (0 : C) 0 :=
   (isZero_zero C).hasProjectiveDimensionLT_zero
 
 lemma isZero_of_hasProjectiveDimensionLT_zero [HasProjectiveDimensionLT X 0] : IsZero X := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [IsZero.iff_id_eq_zero]
   apply Ext.homEquiv₀.symm.injective
   simpa only [Ext.homEquiv₀_symm_apply, Ext.mk₀_zero]
@@ -111,7 +111,7 @@ lemma hasProjectiveDimensionLT_zero_iff_isZero : HasProjectiveDimensionLT X 0 �
 lemma hasProjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
     [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X m := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
   exact e.eq_zero_of_hasProjectiveDimensionLT n (by lia)
@@ -129,7 +129,7 @@ instance [HasProjectiveDimensionLT X n] :
   inferInstanceAs (HasProjectiveDimensionLT X (n + 1))
 
 instance [Projective X] : HasProjectiveDimensionLT X 1 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
   obtain _ | i := i
@@ -150,7 +150,7 @@ lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] :
 variable {X} in
 lemma projective_iff_hasProjectiveDimensionLT_one :
     Projective X ↔ HasProjectiveDimensionLT X 1 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
     (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
@@ -165,7 +165,7 @@ end
 lemma Retract.hasProjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
     [HasProjectiveDimensionLT Y n] :
     HasProjectiveDimensionLT X n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi T x
   rw [← x.mk₀_id_comp, ← h.retract, ← Ext.mk₀_comp_mk₀,
@@ -192,7 +192,7 @@ include hS
 lemma hasProjectiveDimensionLT_X₂ (h₁ : HasProjectiveDimensionLT S.X₁ n)
     (h₃ : HasProjectiveDimensionLT S.X₃ n) :
     HasProjectiveDimensionLT S.X₂ n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y x₂
   obtain ⟨x₃, rfl⟩ := Ext.contravariant_sequence_exact₂ hS _ x₂
@@ -202,7 +202,7 @@ lemma hasProjectiveDimensionLT_X₂ (h₁ : HasProjectiveDimensionLT S.X₁ n)
 lemma hasProjectiveDimensionLT_X₃ (h₁ : HasProjectiveDimensionLT S.X₁ n)
     (h₂ : HasProjectiveDimensionLT S.X₂ (n + 1)) :
     HasProjectiveDimensionLT S.X₃ (n + 1) := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   rintro (_ | i) hi Y x₃
   · simp at hi
@@ -213,7 +213,7 @@ lemma hasProjectiveDimensionLT_X₃ (h₁ : HasProjectiveDimensionLT S.X₁ n)
 lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
     (h₃ : HasProjectiveDimensionLT S.X₃ (n + 1)) :
     HasProjectiveDimensionLT S.X₁ n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y x₁
   obtain ⟨x₂, rfl⟩ := Ext.contravariant_sequence_exact₁ hS _ x₁ (add_comm _ _)

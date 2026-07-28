@@ -151,7 +151,7 @@ lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
 
 variable {X : C}
 
-open Classical in
+open scoped Classical in
 /-- Assuming `G : C` is a generator, `X : C`, and `A : Subobject X`,
 this is a subobject of `X` which is `⊤` if `A = ⊤`, and otherwise
 it is a larger subobject given by the lemma `exists_larger_subobject`.

@@ -1004,23 +1004,23 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
       simp only [Functor.map_comp, Functor.map_id, ι_map_tensorHom_hom_eq_tensorHom,
         ι_map_associator_hom_eq_associator_hom]
       -- this is a bit painful...
-      letI : DayConvolution
+      let : DayConvolution
           (((ι C V D |>.obj a) ⊛ (ι C V D |>.obj b)) ⊛ (ι C V D |>.obj c))
           (ι C V D |>.obj d) :=
         convolution C V D _ _
-      letI : DayConvolution
+      let : DayConvolution
           ((ι C V D |>.obj a) ⊛ (ι C V D |>.obj b))
           ((ι C V D |>.obj c) ⊛ (ι C V D |>.obj d)) :=
         convolution C V D _ _
-      letI : DayConvolution
+      let : DayConvolution
           ((ι C V D |>.obj a) ⊛ ((ι C V D |>.obj b) ⊛ (ι C V D |>.obj c)))
           (ι C V D |>.obj d) :=
         convolution C V D _ _
-      letI : DayConvolution
+      let : DayConvolution
           (ι C V D |>.obj a)
           ((ι C V D |>.obj b) ⊛ ((ι C V D |>.obj c) ⊛ (ι C V D |>.obj d))) :=
         convolution C V D _ _
-      letI : DayConvolution
+      let : DayConvolution
           (ι C V D |>.obj a)
           (((ι C V D |>.obj b) ⊛ (ι C V D |>.obj c)) ⊛ (ι C V D |>.obj d)) :=
         convolution C V D _ _
@@ -1232,9 +1232,9 @@ def mkLawfulDayConvolutionMonoidalCategoryStruct :
     associator_hom_unit_unit d₁ d₂ d₃ x₁ x₂ x₃ := by
       simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, tensor_obj, associator,
         Functor.FullyFaithful.preimageIso_hom, Functor.FullyFaithful.map_preimage]
-      letI : DayConvolution (ι C V D |>.obj d₁) ((ι C V D |>.obj d₂) ⊛ (ι C V D |>.obj d₃)) :=
+      let : DayConvolution (ι C V D |>.obj d₁) ((ι C V D |>.obj d₂) ⊛ (ι C V D |>.obj d₃)) :=
         convolutions C V _ _
-      letI : DayConvolution ((ι C V D |>.obj d₁) ⊛ (ι C V D |>.obj d₂)) (ι C V D |>.obj d₃) :=
+      let : DayConvolution ((ι C V D |>.obj d₁) ⊛ (ι C V D |>.obj d₂)) (ι C V D |>.obj d₃) :=
         convolutions C V _ _
       apply DayConvolution.associator_hom_unit_unit
     leftUnitor_hom_unit_app _ _ := by

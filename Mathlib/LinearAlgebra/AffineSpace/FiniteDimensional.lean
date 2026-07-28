@@ -96,7 +96,7 @@ theorem finite_of_fin_dim_affineIndependent [FiniteDimensional k V] {p : ι → 
     (hi : AffineIndependent k p) : Finite ι := by
   nontriviality ι; inhabit ι
   rw [affineIndependent_iff_linearIndependent_vsub k p default] at hi
-  letI : IsNoetherian k V := IsNoetherian.iff_fg.2 inferInstance
+  let : IsNoetherian k V := IsNoetherian.iff_fg.2 inferInstance
   exact
     (Set.finite_singleton default).finite_of_compl (Set.finite_coe_iff.1 hi.finite_of_isNoetherian)
 
@@ -383,7 +383,7 @@ variable (k)
 finite-dimensional. -/
 instance finiteDimensional_vectorSpan_insert_set (s : Set P) [FiniteDimensional k (vectorSpan k s)]
     (p : P) : FiniteDimensional k (vectorSpan k (insert p s)) := by
-  haveI : FiniteDimensional k (affineSpan k s).direction :=
+  have : FiniteDimensional k (affineSpan k s).direction :=
     (direction_affineSpan k s).symm ▸ inferInstance
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan]
   exact finiteDimensional_vectorSpan_insert (affineSpan k s) p
@@ -393,7 +393,7 @@ direction of the `affineSpan` is finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_insert_set (s : Set P)
     [FiniteDimensional k (affineSpan k s).direction] (p : P) :
     FiniteDimensional k (affineSpan k (insert p s)).direction := by
-  haveI : FiniteDimensional k (vectorSpan k s) := (direction_affineSpan k s) ▸ inferInstance
+  have : FiniteDimensional k (vectorSpan k s) := (direction_affineSpan k s) ▸ inferInstance
   rw [direction_affineSpan]
   infer_instance
 

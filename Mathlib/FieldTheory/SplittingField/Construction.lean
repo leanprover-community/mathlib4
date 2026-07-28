@@ -47,7 +47,7 @@ open Polynomial
 
 section SplittingField
 
-open Classical in
+open scoped Classical in
 /-- Non-computably choose an irreducible factor from a polynomial. -/
 def factor (f : K[X]) : K[X] :=
   if H : ∃ g, Irreducible g ∧ g ∣ f then Classical.choose H else X
@@ -214,7 +214,7 @@ end SplittingFieldAux
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
-deriving Inhabited, CommRing
+deriving Inhabited
 
 namespace SplittingField
 
@@ -222,6 +222,8 @@ variable (f : K[X])
 
 variable {S : Type*} [DistribSMul S K] [IsScalarTower S K K] in
 deriving instance SMul S for SplittingField f
+
+instance : CommRing (SplittingField f) := inferInstanceAs <| CommRing (_ ⧸ _)
 
 variable {R : Type*} [CommSemiring R] [Algebra R K] in
 deriving instance Algebra R, IsScalarTower R K for SplittingField f

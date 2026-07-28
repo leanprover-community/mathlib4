@@ -175,7 +175,7 @@ theorem bot_quotient_isMaximal_iff (I : Ideal R) [I.IsTwoSided] :
     mk_ker (I := I) ▸
       comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective (K := ⊥) (H := hI),
     fun hI => by
-    letI := Quotient.divisionRing I
+    let := Quotient.divisionRing I
     exact bot_isMaximal⟩
 
 /-- See also `Ideal.mem_quotient_iff_mem` in case `I ≤ J`. -/
@@ -566,7 +566,7 @@ lemma _root_.AlgHom.liftOfSurjective_apply (f : A →ₐ[R] B) (hf : Function.Su
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :
     AlgHom.liftOfSurjective f hf g H (f x) = g x := by
   dsimp [AlgHom.liftOfSurjective]
-  erw [AlgEquiv.coe_algHom] -- fixed after #21031
+  erw [AlgEquiv.coe_toAlgHom] -- fixed after #21031
   rw [Ideal.quotientKerAlgEquivOfSurjective_symm_apply]
   rfl
 

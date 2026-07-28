@@ -392,7 +392,7 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
     𝒰(α, γ, ‹UniformSpace β›.comap f) = 𝒰(α, β, _).comap (f ∘ ·) := by
-  letI : UniformSpace γ := .comap f ‹_›
+  let : UniformSpace γ := .comap f ‹_›
   exact (UniformFun.postcomp_isUniformInducing (f := f) ⟨rfl⟩).comap_uniformSpace.symm
 
 set_option backward.isDefEq.respectTransparency false in

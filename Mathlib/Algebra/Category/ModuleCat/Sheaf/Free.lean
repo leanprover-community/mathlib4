@@ -32,7 +32,6 @@ open CategoryTheory Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
   [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 namespace SheafOfModules
 
@@ -175,7 +174,6 @@ section
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) (I : Type u)
 
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.

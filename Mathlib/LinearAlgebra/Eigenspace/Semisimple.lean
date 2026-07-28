@@ -19,6 +19,8 @@ endomorphisms.
 
 * `Module.End.IsFinitelySemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
   a generalized eigenspace is an eigenspace.
+* `Module.End.IsSemisimple.iSup_maxGenEigenspace_eq_top_iff`: a semisimple endomorphism is
+  triangularizable if and only if it is diagonalizable.
 * `Module.End.IsSemisimple.iSup_eigenspace_eq_top`: over an algebraically closed field,
   the eigenspaces of a semisimple endomorphism span the whole space.
 * `Module.End.IsSemisimple.eq_zero_iff_forall_eigenvalue`: a semisimple endomorphism over
@@ -70,6 +72,16 @@ lemma IsFinitelySemisimple.maxGenEigenspace_eq_eigenspace
     (hf : f.IsFinitelySemisimple) (μ : R) :
     f.maxGenEigenspace μ = f.eigenspace μ :=
   hf.genEigenspace_eq_eigenspace μ ENat.top_pos
+
+/-- A finitely-semisimple endomorphism is triangularizable if and only if it is diagonalizable. -/
+lemma IsFinitelySemisimple.iSup_maxGenEigenspace_eq_top_iff (hf : f.IsFinitelySemisimple) :
+    (⨆ μ : R, f.maxGenEigenspace μ) = ⊤ ↔ (⨆ μ : R, f.eigenspace μ) = ⊤ := by
+  simp [hf.maxGenEigenspace_eq_eigenspace]
+
+/-- A semisimple endomorphism is triangularizable if and only if it is diagonalizable. -/
+lemma IsSemisimple.iSup_maxGenEigenspace_eq_top_iff (hf : f.IsSemisimple) :
+    (⨆ μ : R, f.maxGenEigenspace μ) = ⊤ ↔ (⨆ μ : R, f.eigenspace μ) = ⊤ :=
+  hf.isFinitelySemisimple.iSup_maxGenEigenspace_eq_top_iff
 
 section AlgClosed
 

@@ -30,7 +30,7 @@ variable {ι : Type*} {α : ι → Type*} {s : Set (Π i, α i)} {i : ι} {S : S
 
 namespace Topology
 
-open Classical in
+open scoped Classical in
 /-- Given a set in a product space `s : Set (Π j, α j)` and a set of coordinates `S : Set ι`,
 `Sᶜ.restrict '' s × (Π i : S, α i)` is the set of functions that coincide with an element of `s`
 on `Sᶜ` and are arbitrary on `S`.

@@ -86,9 +86,9 @@ variable {M} in
 theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
     integerNormalization M p = 0 ↔ p = 0 := by
   obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
-  letI := isDomain_of_le_nonZeroDivisors S hM
-  letI := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
-  letI : Function.Injective <| mapRingHom (algebraMap R S) := by
+  let := isDomain_of_le_nonZeroDivisors S hM
+  let := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
+  let : Function.Injective <| mapRingHom (algebraMap R S) := by
     rw [coe_mapRingHom, map_injective_iff]
     exact IsLocalization.injective S hM
   rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
@@ -173,7 +173,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommS
     (map Sₘ f M.le_comap_map : Rₘ →+* _).IsIntegralElem (algebraMap S Sₘ x) := by
   by_cases triv : (1 : Rₘ) = 0
   · exact ⟨0, ⟨_root_.trans leadingCoeff_zero triv.symm, eval₂_zero _ _⟩⟩
-  haveI : Nontrivial Rₘ := nontrivial_of_ne 1 0 triv
+  have : Nontrivial Rₘ := nontrivial_of_ne 1 0 triv
   obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.mp (map_units Rₘ ⟨p.leadingCoeff, hM⟩)
   refine ⟨p.map (algebraMap R Rₘ) * C b, ⟨?_, ?_⟩⟩
   · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
@@ -254,7 +254,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
 theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
     (x : S) (hx : IsIntegral Rₘ x) : ∃ m : M, IsIntegral R (m • x) := by
   rcases subsingleton_or_nontrivial Rₘ with _ | nontriv
-  · haveI := (algebraMap Rₘ S).codomain_trivial
+  · have := (algebraMap Rₘ S).codomain_trivial
     exact ⟨1, Polynomial.X, Polynomial.monic_X, Subsingleton.elim _ _⟩
   obtain ⟨p, hp₁, hp₂⟩ := hx
   -- Porting note: obtain doesn't support side goals
@@ -331,7 +331,7 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
     · simp_all
   let q' := q.sum fun i r ↦ X ^ i * r.reflect N
   have (i : _) : aeval t (reflect N (q.coeff i)) = t ^ N * (aeval s (q.coeff i)) := by
-    letI : Invertible t := ⟨s, hst, (mul_comm _ _).trans hst⟩
+    let : Invertible t := ⟨s, hst, (mul_comm _ _).trans hst⟩
     rw [aeval_def, ← eval₂_reflect_mul_pow _ _ N _ ((natDegree_reflect_le ..).trans (by simp [hN]))]
     simp +instances [mul_comm, this, aeval_def]
   refine ⟨q', ?_, ?_⟩
@@ -494,8 +494,8 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
   simp only [Algebra.isAlgebraic_def]
   constructor
   · intro h x
-    letI := MulActionWithZero.nontrivial S K
-    letI := FractionRing.liftAlgebra R K
+    let := MulActionWithZero.nontrivial S K
+    let := FractionRing.liftAlgebra R K
     have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]
     obtain ⟨a : S, b, ha, rfl⟩ := div_surjective S x

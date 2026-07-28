@@ -809,7 +809,7 @@ def hasShift :
           dcongr_arg (fun a => (i a).hom.app X) (add_assoc m₁ m₂ m₃)]
         simp [shiftFunctorAdd', eqToHom_map])
       zero_add_hom_app := fun n X => hF.map_injective (by
-        have this := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
+        have := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
         rw [← cancel_mono ((i n).hom.app ((s 0).obj X))]
         simp only [comp_obj, map_add_hom_app, this, shiftFunctorAdd_zero_add_hom_app, id_obj,
           Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, Iso.inv_hom_id_app,

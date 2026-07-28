@@ -114,9 +114,9 @@ theorem AEMeasurable.mul_const [MeasurableMul M] (hf : AEMeasurable f μ) (c : M
     AEMeasurable (fun x => f x * c) μ :=
   (measurable_mul_const c).comp_aemeasurable hf
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem Measurable.mul [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => f a * g a :=
+    Measurable (f * g) :=
   measurable_mul.comp (hf.prodMk hg)
 
 /-- Compositional version of `Measurable.mul` for use by `fun_prop`. -/
@@ -126,15 +126,13 @@ lemma Measurable.mul' [MeasurableMul₂ M] {f g : α → β → M} {h : α → �
     (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a * g a) (h a) := by
   dsimp; fun_prop
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f * g) μ :=
   measurable_mul.comp_aemeasurable (hf.prodMk hg)
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a * g a) μ :=
-  measurable_mul.comp_aemeasurable (hf.prodMk hg)
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.mul' := AEMeasurable.mul
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.add' := AEMeasurable.add
 
 @[to_additive]
 instance (priority := 100) MeasurableMul₂.toMeasurableMul [MeasurableMul₂ M] :
@@ -267,9 +265,9 @@ theorem AEMeasurable.div_const [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G
     AEMeasurable (fun x => f x / c) μ :=
   (MeasurableDiv.measurable_div_const c).comp_aemeasurable hf
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem Measurable.div [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => f a / g a :=
+    Measurable (f / g) :=
   measurable_div.comp (hf.prodMk hg)
 
 @[to_additive (attr := fun_prop)]
@@ -277,15 +275,13 @@ lemma Measurable.div' [MeasurableDiv₂ G] {f g : α → β → G} {h : α → �
     (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a / g a) (h a) := by
   dsimp; fun_prop
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f / g) μ :=
   measurable_div.comp_aemeasurable (hf.prodMk hg)
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a / g a) μ :=
-  measurable_div.comp_aemeasurable (hf.prodMk hg)
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.div' := AEMeasurable.div
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.sub' := AEMeasurable.sub
 
 @[to_additive]
 instance (priority := 100) MeasurableDiv₂.toMeasurableDiv [MeasurableDiv₂ G] :
@@ -349,23 +345,23 @@ section Inv
 variable {G α : Type*} [Inv G] [MeasurableSpace G] [MeasurableInv G] {m : MeasurableSpace α}
   {f : α → G} {μ : Measure α}
 
-@[to_additive (attr := fun_prop)]
-theorem Measurable.inv (hf : Measurable f) : Measurable fun x => (f x)⁻¹ :=
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem Measurable.inv (hf : Measurable f) : Measurable f⁻¹ :=
   measurable_inv.comp hf
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable (fun x => (f x)⁻¹) μ :=
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable f⁻¹ μ :=
   measurable_inv.comp_aemeasurable hf
 
 @[to_additive (attr := simp)]
 theorem measurable_inv_iff {G : Type*} [InvolutiveInv G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : (Measurable fun x => (f x)⁻¹) ↔ Measurable f :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h => by simpa only [inv_inv] using h.fun_inv, fun h => h.inv⟩
 
 @[to_additive (attr := simp)]
 theorem aemeasurable_inv_iff {G : Type*} [InvolutiveInv G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h => by simpa only [inv_inv] using h.fun_inv, fun h => h.inv⟩
 
 @[to_additive]
 instance Pi.measurableInv {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
@@ -535,9 +531,9 @@ end MeasurableConstSMul
 
 variable [MeasurableSpace M]
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem Measurable.smul [MeasurableSMul₂ M X] (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun x => f x • g x :=
+    Measurable (f • g) :=
   measurable_smul.comp (hf.prodMk hg)
 
 /-- Compositional version of `Measurable.smul` for use by `fun_prop`. -/
@@ -547,9 +543,9 @@ lemma Measurable.smul' [MeasurableSMul₂ M X] {f : α → β → M} {g : α →
     (hf : Measurable ↿f) (hg : Measurable ↿g) (hh : Measurable h) :
     Measurable fun a ↦ (f a • g a) (h a) := by dsimp; fun_prop
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem AEMeasurable.smul [MeasurableSMul₂ M X] {μ : Measure α} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun x => f x • g x) μ :=
+    (hg : AEMeasurable g μ) : AEMeasurable (f • g) μ :=
   MeasurableSMul₂.measurable_smul.comp_aemeasurable (hf.prodMk hg)
 
 @[to_additive]

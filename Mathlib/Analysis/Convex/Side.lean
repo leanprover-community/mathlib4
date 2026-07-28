@@ -347,6 +347,46 @@ theorem _root_.Wbtw.wOppSide₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbt
 
 end StrictOrderedCommRing
 
+section LinearOrderedCommRing
+
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
+
+/-- If `x` and `y` are displaced from points of `s` by multiples of a common vector whose
+coefficients have nonnegative product, they are weakly on the same side of `s`. -/
+theorem wSameSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : 0 ≤ c₁ * c₂) : s.WSameSide x y := by
+  refine ⟨p₁, hp₁, p₂, hp₂, ?_⟩
+  rw [h₁, h₂]
+  exact sameRay_smul_smul_of_mul_nonneg hc
+
+/-- If `x` and `y` are displaced from points of `s` by multiples of a common vector whose
+coefficients have nonpositive product, they are weakly on opposite sides of `s`. -/
+theorem wOppSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : c₁ * c₂ ≤ 0) : s.WOppSide x y := by
+  refine ⟨p₁, hp₁, p₂, hp₂, ?_⟩
+  have h₂' : p₂ -ᵥ y = (-c₂) • m := by rw [← neg_vsub_eq_vsub_rev, h₂, neg_smul]
+  rw [h₁, h₂']
+  exact sameRay_smul_smul_of_mul_nonneg (by rw [mul_neg]; exact neg_nonneg.2 hc)
+
+/-- If `x` and `y` lie off `s` and are displaced from points of `s` by multiples of a common
+vector whose coefficients have nonnegative product, they are strictly on the same side of `s`. -/
+theorem sSameSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : 0 ≤ c₁ * c₂) (hx : x ∉ s) (hy : y ∉ s) : s.SSameSide x y :=
+  ⟨wSameSide_of_vsub_eq_smul hp₁ hp₂ h₁ h₂ hc, hx, hy⟩
+
+/-- If `x` and `y` lie off `s` and are displaced from points of `s` by multiples of a common
+vector whose coefficients have nonpositive product, they are strictly on opposite sides of `s`. -/
+theorem sOppSide_of_vsub_eq_smul {s : AffineSubspace R P} {x y p₁ p₂ : P} {m : V} {c₁ c₂ : R}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h₁ : x -ᵥ p₁ = c₁ • m) (h₂ : y -ᵥ p₂ = c₂ • m)
+    (hc : c₁ * c₂ ≤ 0) (hx : x ∉ s) (hy : y ∉ s) : s.SOppSide x y :=
+  ⟨wOppSide_of_vsub_eq_smul hp₁ hp₂ h₁ h₂ hc, hx, hy⟩
+
+end LinearOrderedCommRing
+
 section LinearOrderedField
 
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
@@ -740,7 +780,7 @@ variable [NormedAddTorsor V P]
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WSameSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   by_cases hx : x ∈ s
   · simp only [wSameSide_of_left_mem, hx]
     have := AddTorsor.connectedSpace V P
@@ -761,7 +801,7 @@ theorem isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_sSameSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SSameSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   rw [setOf_sSameSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Ioi.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
@@ -781,7 +821,7 @@ theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
     IsConnected { y | s.WOppSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   by_cases hx : x ∈ s
   · simp only [wOppSide_of_left_mem, hx]
     have := AddTorsor.connectedSpace V P
@@ -802,7 +842,7 @@ theorem isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
 theorem isConnected_setOf_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SOppSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   rw [setOf_sOppSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Iio.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn

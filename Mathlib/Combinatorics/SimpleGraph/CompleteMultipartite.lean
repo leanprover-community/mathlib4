@@ -372,7 +372,7 @@ theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
 /-- The finset of vertices in a complete equipartite subgraph. -/
 def verts : Finset V := K.parts.disjiUnion id K.disjoint
 
-open Classical in
+open scoped Classical in
 /-- The finset of vertices in a complete equipartite subgraph as a `biUnion`. -/
 lemma verts_eq_biUnion : K.verts = K.parts.biUnion id := by rw [verts, disjiUnion_eq_biUnion]
 
@@ -449,7 +449,6 @@ theorem completeEquipartiteGraph_isContained_iff :
     completeEquipartiteGraph r t ⊑ G ↔ Nonempty (G.CompleteEquipartiteSubgraph r t) :=
   ⟨fun ⟨f⟩ ↦ ⟨CompleteEquipartiteSubgraph.ofCopy f⟩, fun ⟨K⟩ ↦ ⟨K.toCopy⟩⟩
 
-open Classical in
 /-- Simple graphs contain a copy of a `completeEquipartiteGraph (r + 1) t` iff there exists
 `s : Finset V` of size `#s = t` and `K : G.CompleteEquipartiteSubgraph r t` such that the
 vertices in `s` are adjacent to the vertices in `K`. -/
@@ -457,6 +456,7 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
   completeEquipartiteGraph (r + 1) t ⊑ G
     ↔ ∃ᵉ (K : G.CompleteEquipartiteSubgraph r t) (s : Finset V),
         #s = t ∧ ∀ p ∈ K.parts, G.IsCompleteBetween p s := by
+  classical
   by_cases ht : t = 0
   · have (r' : ℕ) : IsEmpty (Fin r' × Fin t) := by simp [ht, Fin.isEmpty]
     have h_bot (r' : ℕ) : completeEquipartiteGraph r' t = ⊥ :=

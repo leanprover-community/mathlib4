@@ -42,6 +42,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+set_option linter.translate.warnInvalid false in
 /-- `NatTrans F G` represents a natural transformation between functors `F` and `G`.
 
 The field `app` provides the components of the natural transformation.
@@ -55,12 +56,10 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   /-- The naturality square for a given morphism. -/
   naturality ⦃X Y : C⦄ (f : X ⟶ Y) : F.map f ≫ app Y = app X ≫ G.map f := by cat_disch
 
-set_option linter.translateOverwrite false in
 @[to_dual existing naturality]
 lemma NatTrans.naturality' {F G : C ⥤ D} (self : NatTrans G F) ⦃X Y : C⦄ (f : Y ⟶ X) :
     self.app Y ≫ F.map f = G.map f ≫ self.app X := (self.naturality f).symm
 
-set_option linter.translateOverwrite false in
 /-- `NatTrans.mk'` is the dual of `NatTrans.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
 @[to_dual existing mk]

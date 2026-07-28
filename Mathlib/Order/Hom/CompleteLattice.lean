@@ -183,13 +183,6 @@ end Equiv
 
 variable [FunLike F α β]
 
-/-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
-@[simps] def OrderIso.toCompleteLatticeHom [CompleteLattice α] [CompleteLattice β]
-    (f : OrderIso α β) : CompleteLatticeHom α β where
-  toFun := f
-  map_sInf' := sInfHomClass.map_sInf f
-  map_sSup' := sSupHomClass.map_sSup f
-
 @[to_dual]
 instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
@@ -454,6 +447,11 @@ instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β where
   map_sSup f := f.map_sSup'
   map_sInf f := f.map_sInf'
 
+/-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
+@[simps] def OrderIso.toCompleteLatticeHom (f : OrderIso α β) : CompleteLatticeHom α β where
+  toFun := f
+  map_sInf' := sInfHomClass.map_sInf f
+  map_sSup' := sSupHomClass.map_sSup f
 
 /-- Reinterpret a `CompleteLatticeHom` as a `BoundedLatticeHom`. -/
 def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β :=

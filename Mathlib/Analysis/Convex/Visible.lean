@@ -146,7 +146,6 @@ Note that the converse does not hold. -/
 lemma IsVisible.mem_convexHull_isVisible (hx : x ∉ convexHull ℝ s) (hy : y ∈ convexHull ℝ s)
     (hxy : IsVisible ℝ (convexHull ℝ s) x y) :
     y ∈ convexHull ℝ {z ∈ s | IsVisible ℝ (convexHull ℝ s) x z} := by
-  classical
   obtain ⟨ι, _, w, a, hw₀, hw₁, ha, rfl⟩ := mem_convexHull_iff_exists_fintype.1 hy
   rw [← Fintype.sum_subset (s := {i | w i ≠ 0})
     fun i hi ↦ mem_filter.2 ⟨mem_univ _, left_ne_zero_of_smul hi⟩]
@@ -207,7 +206,7 @@ lemma rank_le_card_isVisible (hs : IsClosed (convexHull ℝ s)) (hx : x ∉ conv
           span ℝ (-x +ᵥ {y ∈ s | IsVisible ℝ (convexHull ℝ s) x y}) by
         rw [AffineSubspace.coe_pointwise_vadd, h, span_span]
       simp [← AffineSubspace.coe_pointwise_vadd, AffineSubspace.pointwise_vadd_span,
-        vadd_set_insert, -coe_affineSpan, affineSpan_insert_zero]
+        vadd_set_insert, affineSpan_insert_zero]
     _ ≤ #(-x +ᵥ {y ∈ s | IsVisible ℝ (convexHull ℝ s) x y}) := rank_span_le _
     _ = #{y ∈ s | IsVisible ℝ (convexHull ℝ s) x y} := by simp
 

@@ -675,7 +675,7 @@ theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} 
   .of_continuous_injective_isClosedMap h hf h.isClosedMap
 
 /-- A continuous surjective map from a compact space to a Hausdorff space is a quotient map. -/
-theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
+theorem Topology.IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
     (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
   hcont.isClosedMap.isQuotientMap hcont hsurj
 

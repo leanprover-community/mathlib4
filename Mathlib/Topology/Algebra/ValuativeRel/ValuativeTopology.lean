@@ -92,9 +92,34 @@ variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*}
 
 section TopologicalSpace
 
-variable [TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ₀) [v.Compatible]
-
+variable [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
 namespace IsValuativeTopology
+
+/-- If the neighborhoods of every point for a given topology are defined by a valuation `v`
+compatible with the valuative relation, then the topology is a valuative topology. -/
+theorem of_mem_nhds_iff_vle (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔
+    ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ), {z : R | v.restrict (z - x) < γ} ⊆ s) :
+    IsValuativeTopology R := by
+  constructor
+  refine fun {s x} ↦ ⟨fun h_mem ↦ ?_, fun ⟨γ, hγ⟩ ↦
+    H.mpr ⟨.mk0 ((orderMonoidIso v) γ) (by simp), subset_trans (by simp [neg_add_eq_sub]) hγ⟩⟩
+  obtain ⟨γ, hγ⟩ := H.mp h_mem
+  exact ⟨.mk0 ((orderMonoidIso v).symm γ) (by simp), subset_trans (by simp [neg_add_eq_sub]) hγ⟩
+
+open scoped Pointwise in
+/-- In a topological group, if the neighborhoods of zero are defined by a valuation `v` compatible
+with the valuative relation, then the underlying topology is valuative. -/
+theorem of_mem_nhds_zero_iff_vle [IsTopologicalAddGroup R]
+    (H : ∀ {s : Set R}, s ∈ 𝓝 0 ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
+    {z : R | v.restrict z < γ} ⊆ s) : IsValuativeTopology R := by
+  apply of_mem_nhds_iff_vle v (fun {s x} ↦ ?_)
+  rw [← vadd_mem_nhds_vadd_iff (g := -x)]
+  simp only [vadd_eq_add, neg_add_cancel, H, subset_vadd_set_iff, neg_neg]
+  suffices ∀ (γ : (ValueGroup₀ (.ofClass v))ˣ), (x +ᵥ {z | v.restrict z < ↑γ}) =
+    {a | v.restrict (-x + a) < ↑γ} by simp_all [neg_add_eq_sub]
+  simp [Set.ext_iff, mem_vadd_set_iff_neg_vadd_mem]
+
+variable [IsValuativeTopology R]
 
 /-- A variant of `IsValuativeTopology.mem_nhds_iff` using subtraction. -/
 lemma mem_nhds_iff' {s : Set R} {x : R} :
@@ -134,6 +159,8 @@ lemma hasBasis_nhds_zero' :
 end IsValuativeTopology
 
 open IsValuativeTopology
+
+variable [IsValuativeTopology R]
 
 namespace Valuation
 
@@ -235,8 +262,8 @@ variable [_t : TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ�
 
 theorem toTopologicalSpace_eq :
     _t = v.subgroups_basis.topology := by
-  letI u := IsTopologicalAddGroup.rightUniformSpace R
-  letI := isUniformAddGroup_of_addCommGroup (G := R)
+  let u := IsTopologicalAddGroup.rightUniformSpace R
+  let := isUniformAddGroup_of_addCommGroup (G := R)
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
 instance (priority := low) _root_.IsValuativeTopology.isTopologicalRing : IsTopologicalRing R := by

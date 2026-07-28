@@ -49,12 +49,12 @@ open scoped Classical in
 theorem Nat.card_eq (α : Type*) :
     Nat.card α = if _ : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
-  · letI := Fintype.ofFinite α
+  · let := Fintype.ofFinite α
     simp only [this, *, Nat.card_eq_fintype_card, dif_pos]
   · simp only [*, card_eq_zero_of_infinite, not_finite_iff_infinite.mpr, dite_false]
 
 theorem Finite.card_pos_iff [Finite α] : 0 < Nat.card α ↔ Nonempty α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   rw [Nat.card_eq_fintype_card, Fintype.card_pos_iff]
 
 theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
@@ -63,16 +63,16 @@ theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
 namespace Finite
 
 theorem card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
   simp only [Nat.card_eq_fintype_card, Fintype.card_eq]
 
 theorem card_le_one_iff_subsingleton [Finite α] : Nat.card α ≤ 1 ↔ Subsingleton α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_le_one_iff_subsingleton]
 
 theorem one_lt_card_iff_nontrivial [Finite α] : 1 < Nat.card α ↔ Nontrivial α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.one_lt_card_iff_nontrivial]
 
 theorem one_lt_card [Finite α] [h : Nontrivial α] : 1 < Nat.card α :=
@@ -80,14 +80,14 @@ theorem one_lt_card [Finite α] [h : Nontrivial α] : 1 < Nat.card α :=
 
 @[simp]
 theorem card_option [Finite α] : Nat.card (Option α) = Nat.card α + 1 := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_option]
 
 theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
   Nat.card_le_card_of_injective _ f.injective
 
 theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_eq_zero_iff]
 
 /-- If `f` is injective, then `Nat.card α ≤ Nat.card β`. We must also assume
@@ -114,10 +114,10 @@ theorem card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
 theorem card_eq_zero_of_surjective {f : α → β} (hf : Function.Surjective f) (h : Nat.card β = 0) :
     Nat.card α = 0 := by
   cases finite_or_infinite β
-  · haveI := card_eq_zero_iff.mp h
-    haveI := Function.isEmpty f
+  · have := card_eq_zero_iff.mp h
+    have := Function.isEmpty f
     exact Nat.card_of_isEmpty
-  · haveI := Infinite.of_surjective f hf
+  · have := Infinite.of_surjective f hf
     exact Nat.card_eq_zero_of_infinite
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
@@ -137,13 +137,13 @@ theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ N
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
   classical
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card] using Fintype.card_subtype_le p
 
 theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
     Nat.card { x // p x } < Nat.card α := by
   classical
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card, gt_iff_lt] using Fintype.card_subtype_lt hx
 
 end Finite

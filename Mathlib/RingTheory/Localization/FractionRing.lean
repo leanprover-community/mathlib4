@@ -270,11 +270,11 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
 
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  haveI := (algebraMap R K).domain_nontrivial
+  have := (algebraMap R K).domain_nontrivial
   simp [nonZeroDivisors.ne_zero]
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
-  haveI := (algebraMap A K).domain_nontrivial
+  have := (algebraMap A K).domain_nontrivial
   refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=

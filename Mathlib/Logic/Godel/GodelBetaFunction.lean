@@ -64,11 +64,9 @@ lemma coprime_mul_succ {n m a} (ha : m - n ∣ a) : Coprime (n * a + 1) (m * a +
 variable {m : ℕ}
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private def supOfSeq (a : Fin m → ℕ) : ℕ := max m (Finset.sup .univ a) + 1
 
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (supOfSeq a)! + 1
 
 set_option backward.privateInPublic true in
@@ -83,7 +81,6 @@ lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
 
 open scoped Function in -- required for scoped `on` notation
 set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
   intro i j hij
   wlog! ltij : i < j

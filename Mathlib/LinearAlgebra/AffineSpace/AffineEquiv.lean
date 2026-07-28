@@ -427,6 +427,7 @@ def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁ where
   map_vadd' _ _ := add_vadd _ _ _
 
 /-- `p' ↦ p -ᵥ p'` as an equivalence. -/
+@[simps! linear apply symm_apply]
 def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁ where
   toEquiv := Equiv.constVSub p
   linear := LinearEquiv.neg k
@@ -509,13 +510,17 @@ variable {P₁}
 
 open Function
 
-/-- Point reflection in `x` as a permutation. -/
+/-- The affine equivalence given by reflection about the point `x`.
+This is `Equiv.pointReflection` as an `AffineEquiv`. -/
 def pointReflection (x : P₁) : P₁ ≃ᵃ[k] P₁ :=
   (constVSub k x).trans (vaddConst k x)
 
-@[simp] lemma pointReflection_apply_eq_equivPointReflection_apply (x y : P₁) :
-    pointReflection k x y = Equiv.pointReflection x y :=
+@[simp]
+lemma coe_pointReflection (x y : P₁) : pointReflection k x y = Equiv.pointReflection x y :=
   rfl
+
+@[deprecated (since := "2026-06-22")]
+alias pointReflection_apply_eq_equivPointReflection_apply := coe_pointReflection
 
 theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) +ᵥ x :=
   rfl

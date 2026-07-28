@@ -227,7 +227,7 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
   cases nonempty_encodable α
   rcases exists_pair_lt β with ⟨x, y, hxy⟩
   obtain ⟨a, ha⟩ := exists_between hxy
-  haveI : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
+  have : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
   let our_ideal : Ideal (PartialIso α _) :=
     idealOfCofinals default (definedAtLeft (Set.Ioo x y))
   let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ _ a)

@@ -61,7 +61,6 @@ lemma card_pow_quotient_mul_pow_inter_subgroup_le :
 @[to_additive]
 lemma le_card_quotient_mul_sq_inter_subgroup (hAsymm : A⁻¹ = A) :
     #A ≤ #(A.image <| QuotientGroup.mk' H) * #{x ∈ A ^ 2 | x ∈ H} := by
-  classical
   set π := QuotientGroup.mk' H
   rw [card_eq_sum_card_image π]
   refine sum_le_card_nsmul _ _ _ <| forall_mem_image.2 fun a ha ↦ ?_

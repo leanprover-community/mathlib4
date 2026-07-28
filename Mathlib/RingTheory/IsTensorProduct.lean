@@ -166,13 +166,13 @@ end map
 section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
- {M₁ M₂ M₃ M₁₂ M₂₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
- [AddCommMonoid M₁₂] [AddCommMonoid M₂₃]
- [Module R M₁]
- [Module R M₂] [Module S M₂] [IsScalarTower R S M₂]
- [Module R M₃] [Module S M₃] [IsScalarTower R S M₃]
- [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
- [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
+  {M₁ M₂ M₃ M₁₂ M₂₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [AddCommMonoid M₁₂] [AddCommMonoid M₂₃]
+  [Module R M₁]
+  [Module R M₂] [Module S M₂] [IsScalarTower R S M₂]
+  [Module R M₃] [Module S M₃] [IsScalarTower R S M₃]
+  [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
+  [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation): Use the more linear `IsTensorProduct.assoc`. -/
@@ -540,8 +540,8 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
     (hg : IsBaseChange T g) : IsBaseChange T ((g.restrictScalars R).comp f) := by
   apply IsBaseChange.of_lift_unique
   intro Q _ _ _ _ i
-  letI := Module.compHom Q (algebraMap S T)
-  haveI : IsScalarTower S T Q :=
+  let := Module.compHom Q (algebraMap S T)
+  have : IsScalarTower S T Q :=
     ⟨fun x y z => by
       rw [Algebra.smul_def, mul_smul]
       rfl⟩
@@ -563,9 +563,9 @@ lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
     IsBaseChange T h := by
   apply IsBaseChange.of_lift_unique
   intro Q _ _ _ _ r
-  letI : Module R Q := .restrictScalars R S Q
-  haveI : IsScalarTower R S Q := .restrictScalars R S Q
-  haveI : IsScalarTower R T Q := IsScalarTower.of_algebraMap_smul fun r x ↦ by
+  let : Module R Q := .restrictScalars R S Q
+  have : IsScalarTower R S Q := .restrictScalars R S Q
+  have : IsScalarTower R T Q := IsScalarTower.of_algebraMap_smul fun r x ↦ by
     simp [IsScalarTower.algebraMap_apply R S T]
   let r' : M →ₗ[R] Q := r ∘ₗ f
   let q : O →ₗ[T] Q := hc.lift r'
@@ -760,7 +760,7 @@ lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
     [Algebra.IsPushout R S R' S'] :
     Algebra.IsPushout R T R' T' ↔ Algebra.IsPushout S T S' T' := by
   let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
-  haveI : IsScalarTower R S T' := .of_algebraMap_eq fun x ↦ by
+  have : IsScalarTower R S T' := .of_algebraMap_eq fun x ↦ by
     rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
   have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
       (toAlgHom R R' T').toLinearMap := by

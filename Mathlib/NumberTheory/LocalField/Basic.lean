@@ -61,16 +61,16 @@ variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchi
 attribute [local simp] zero_lt_iff
 
 instance : IsTopologicalDivisionRing K := by
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  have := isUniformAddGroup_of_addCommGroup (G := K)
   infer_instance
 
 lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuation K x ≤ γ } := by
   obtain ⟨γ, rfl⟩ := ValuativeRel.valuation_surjective γ
   by_cases hγ : γ = 0
   · simp [hγ]
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  letI := isUniformAddGroup_of_addCommGroup (G := K)
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  let := isUniformAddGroup_of_addCommGroup (G := K)
   obtain ⟨s, hs, -, hs'⟩ := LocallyCompactSpace.local_compact_nhds (0 : K) .univ Filter.univ_mem
   obtain ⟨r, hr, hr1, H⟩ :
       ∃ r', r' ≠ 0 ∧ valuation K r' < 1 ∧ { x | valuation K x ≤ valuation K r' } ⊆ s := by
@@ -115,8 +115,8 @@ instance : IsDiscreteValuationRing 𝒪[K] :=
 noncomputable
 def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   apply Nonempty.some
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  have := isUniformAddGroup_of_addCommGroup (G := K)
   obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
     (isCompact_iff_compactSpace.mpr (inferInstance : CompactSpace 𝒪[K]))
   let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=

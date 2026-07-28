@@ -100,7 +100,6 @@ protected lemma IsConvexSet.iUnion {ι : Sort*} {s : ι → Set X} (hs : Directe
 
 protected lemma IsConvexSet.preimage {s : Set Y} (hf : IsAffineMap R f) (hs : IsConvexSet R s) :
     IsConvexSet R (f ⁻¹' s) := by
-  classical
   rintro w hw
   simp only [mem_preimage, hf.map_sConvexComb, sConvexComb_map]
   exact hs.iConvexComb_mem fun x hx ↦ hw <| by simpa

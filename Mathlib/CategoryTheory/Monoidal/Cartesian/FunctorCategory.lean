@@ -148,7 +148,7 @@ instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     PreservesColimitsOfShape K (tensorLeft F) := by
   apply preservesColimitsOfShape_of_evaluation
   intro k
-  haveI : tensorLeft F ⋙ (evaluation J C).obj k ≅ (evaluation J C).obj k ⋙ tensorLeft (F.obj k) :=
+  have : tensorLeft F ⋙ (evaluation J C).obj k ≅ (evaluation J C).obj k ⋙ tensorLeft (F.obj k) :=
     NatIso.ofComponents (fun _ ↦ Iso.refl _)
   exact preservesColimitsOfShape_of_natIso this.symm
 

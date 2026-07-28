@@ -33,12 +33,12 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {J : Type u₂} [Category.{v₂} J]
 
 instance hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ := by
-  haveI : HasColimitsOfShape WalkingCospanᵒᵖ C :=
+  have : HasColimitsOfShape WalkingCospanᵒᵖ C :=
     hasColimitsOfShape_of_equivalence walkingCospanOpEquiv.symm
   apply hasLimitsOfShape_op_of_hasColimitsOfShape
 
 instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
-  haveI : HasLimitsOfShape WalkingSpanᵒᵖ C :=
+  have : HasLimitsOfShape WalkingSpanᵒᵖ C :=
     hasLimitsOfShape_of_equivalence walkingSpanOpEquiv.symm
   infer_instance
 

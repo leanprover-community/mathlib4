@@ -211,7 +211,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     have : CharP K p := by
       rw [← f.charP_iff_charP]
       infer_instance
-    haveI : Infinite K :=
+    have : Infinite K :=
       Infinite.of_injective (algebraMap (Polynomial (ZMod p)) (FractionRing (Polynomial (ZMod p))))
         (IsFractionRing.injective _ _)
     refine ⟨K, ?_, ?_, ?_⟩ <;> infer_instance

@@ -1029,8 +1029,8 @@ theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEqu
   ⟨fun {X} {Y} f => by
     let em : StrongEpiMonoFactorisation (F.inv.map f) :=
       (HasStrongEpiMonoFactorisations.has_fac (F.inv.map f)).some
-    haveI : Mono (F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y) := mono_comp _ _
-    haveI : StrongEpi (F.asEquivalence.counitIso.inv.app X ≫ F.map em.e) := strongEpi_comp _ _
+    have : Mono (F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y) := mono_comp _ _
+    have : StrongEpi (F.asEquivalence.counitIso.inv.app X ≫ F.map em.e) := strongEpi_comp _ _
     exact
       Nonempty.intro
         { I := F.obj em.I

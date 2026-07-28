@@ -64,7 +64,7 @@ variable {α β : Type*} (f : α → β)
   [HasCoproduct (fun (_ : α) ↦ R)] [HasCoproduct (fun (_ : β) ↦ R)]
   [HasCoproduct (fun (_ : ((Set.range f)ᶜ : Set _)) ↦ R)]
 
-open Classical in
+open scoped Classical in
 /-- A colimit cokernel cofork for the map
 `∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced by a map `f : α → β`. -/
 @[simps! pt]

@@ -870,7 +870,7 @@ lemma not_R_hits_same {x : Hollom} (hx : x ∈ R n C) (hx' : x ∉ C ∩ level n
   apply f.incomp_apply _ (hx.2 _ hfx).symm
   exact ne_of_mem_of_not_mem hfx hx'
 
-open Classical in
+open scoped Classical in
 /--
 Given a subset `C` of the Hollom partial order, and an index `n`, find the smallest element of
 `C ∩ level (n + 1)`, expressed as `(x₀, y₀, n + 1)`.
@@ -912,7 +912,7 @@ lemma x0_y0_mem (h : (C ∩ level (n + 1)).Nonempty) : h(x0 n C, y0 n C, n + 1) 
 lemma x0_y0_min (hC : IsChain (· ≤ ·) C) {a b : ℕ} (h : h(a, b, n + 1) ∈ C) :
     h(x0 n C, y0 n C, n + 1) ≤ h(a, b, n + 1) := x0y0_min (a, b) hC h
 
-open Classical in
+open scoped Classical in
 /--
 Construction of the set `S`, which has the following key properties:
 * It is a subset of `R`.

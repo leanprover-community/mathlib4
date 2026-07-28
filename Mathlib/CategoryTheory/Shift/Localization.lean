@@ -241,7 +241,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance NatTrans.commShift_iso_hom_of_localization :
     letI := Functor.commShiftOfLocalization L W A F F'
     NatTrans.CommShift (Lifting.iso L W F F').hom A := by
-  letI := Functor.commShiftOfLocalization L W A F F'
+  let := Functor.commShiftOfLocalization L W A F F'
   constructor
   intro a
   ext X
@@ -307,7 +307,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma natTransCommShift_hom :
     letI := Φ.commShift M L₁ L₂ G e
     NatTrans.CommShift e.hom M := by
-  letI := Φ.commShift M L₁ L₂ G e
+  let := Φ.commShift M L₁ L₂ G e
   refine ⟨fun m ↦ ?_⟩
   ext X
   simp [Functor.commShiftIso_comp_hom_app, commShift_iso_hom_app, ← Functor.map_comp_assoc]
