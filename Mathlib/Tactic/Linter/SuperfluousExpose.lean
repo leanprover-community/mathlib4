@@ -16,9 +16,7 @@ public import Lean.Meta.Match.MatcherInfo
 public import Lean.Meta.Match.MatchPatternAttr
 public import Batteries.Tactic.Lint.Basic
 -- Import `Mathlib.Init`, not the header linter directly, to ensure that this
--- file has a valid copyright header and module docstring. The import-linter
--- requires that a module outside the closure of `Mathlib.Init` imports
--- `Mathlib.Init`.
+-- file has a valid copyright header and module docstring.
 public import Mathlib.Init  -- shake: keep
 
 /-!
@@ -167,11 +165,8 @@ private def benefitsFromExposure (env : Environment) (name : Name)
         -- Modules expose `abbrev` bodies by default, with or without `@[expose]`.
         | .reducible => false
         -- Plain `def`, `@[irreducible] def`, `irreducible_def`, and
-        -- `@[implicit_reducible]` all need the body downstream. `@[irreducible]`
-        -- does not help: downstream code can still apply `rw` or `unfold`
-        -- explicitly. Example:
-        --   irreducible_def myConst : Nat := 42
-        --   -- Downstream, `theorem … := by rw [myConst]` needs the body of `myConst`.
+        -- `@[implicit_reducible]` all need the body downstream: even for
+        -- `@[irreducible]`, downstream code can apply `rw` or `unfold` explicitly.
         | _ => true
   | .inductInfo _ =>
       -- A plain inductive benefits: it serves pattern matching and recursor
@@ -237,6 +232,7 @@ public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
   registerStatefulLinter {}
     (post := fun stx self _ _ _ => do
       let env ← getEnv
+      -- Only module files can contain `public section`s.
       if !env.header.isModule then return self
       -- Classify the declarations that appeared since the previous command.
       let mut st := self
@@ -264,8 +260,10 @@ public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
           seen := seen.insert n
         return { seen, region? := some { pos := stx.getPos?.getD ⟨0⟩ } }
       | some r, false =>
+        -- The region closes at this command.
         reportRegion r
         return { st with region? := none }
+      -- No region and none opens, or the open region continues.
       | _, _ => return st)
 
 end Mathlib.Linter
