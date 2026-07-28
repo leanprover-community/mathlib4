@@ -108,7 +108,7 @@ private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a +
     directSum_of_E₄_pow_mul_E₆_pow_apply hab, map_mul, map_pow, map_pow,
     ModularForm.qExpansionRingHom_apply, ModularForm.qExpansionRingHom_apply,
     PowerSeries.coeff_mul]
-  simp [Finset.antidiagonal_zero, PowerSeries.coeff_pow,
+  simp [Finset.Nat.antidiagonal_zero, PowerSeries.coeff_pow,
     E_qExpansion_coeff_zero _ ⟨2, rfl⟩, E_qExpansion_coeff_zero _ ⟨3, rfl⟩]
 
 private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ ↑n)
@@ -207,14 +207,14 @@ private lemma surj_at_small_weight {n : ℕ} (hn12 : n < 12) (hk_even : Even (n 
       (E_ne_zero (k := 6) (by norm_num) ⟨3, rfl⟩)
       (MvPolynomial.X 1) evalE₄E₆_X1 f
   · refine surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨4, rfl⟩ (by norm_num))
-      (ModularForm.mul_ne_zero one_pos one_mem_strictPeriods_SL (f := E₄) (g := E₄)
+      (ModularForm.mul_ne_zero ⟨1, one_mem_strictPeriods_SL, one_pos⟩ (f := E₄) (g := E₄)
         (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨2, rfl⟩))
       (MvPolynomial.X 0 ^ 2) ?_ f
     rw [map_pow, evalE₄E₆_X0, pow_two, DirectSum.of_mul_of]
     exact DirectSum.of_eq_of_gradedMonoid_eq
       (ModularForm.gradedMonoid_eq_of_cast (by norm_num : (4 : ℤ) + 4 = 8) rfl)
   · refine surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨5, rfl⟩ (by norm_num))
-      (ModularForm.mul_ne_zero one_pos one_mem_strictPeriods_SL (f := E₄) (g := E₆)
+      (ModularForm.mul_ne_zero ⟨1, one_mem_strictPeriods_SL, one_pos⟩ (f := E₄) (g := E₆)
         (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨3, rfl⟩))
       (MvPolynomial.X 0 * MvPolynomial.X 1) ?_ f
     rw [map_mul, evalE₄E₆_X0, evalE₄E₆_X1, DirectSum.of_mul_of]

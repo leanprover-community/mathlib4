@@ -235,13 +235,6 @@ theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
   apply isWeightedHomogeneous_monomial
   simp only [weight, LinearMap.toAddMonoidHom_coe, linearCombination_single, one_nsmul]
 
-/-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
-`monomial d₀ (coeff d₀ φ)`. -/
-theorem eq_monomial_of_support_subset_singleton {R : Type*} [CommSemiring R] {φ : MvPolynomial σ R}
-    {d₀ : σ →₀ ℕ} (h : ∀ d ∈ φ.support, d = d₀) :
-    φ = monomial d₀ (coeff d₀ φ) :=
-  Finsupp.support_subset_singleton.mp fun d hd ↦ Finset.mem_singleton.mpr (h d hd)
-
 namespace IsWeightedHomogeneous
 
 variable {R}
