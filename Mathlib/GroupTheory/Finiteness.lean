@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
@@ -32,6 +33,105 @@ finitely-generated modules.
 @[expose] public section
 
 assert_not_exists MonoidWithZero
+
+section
+
+open Pointwise
+
+class IsAddFG (M : Type*) [Add M] : Prop where
+  fg_top : ∃ S : Finset M, AddSubsemigroup.closure (S : Set M) = ⊤
+
+@[to_additive existing]
+class IsMulFG (M : Type*) [Mul M] : Prop where
+  fg_top : ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤
+
+@[to_additive]
+theorem isMulFG_def {M : Type*} [Mul M] :
+    IsMulFG M ↔ ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤ :=
+  ⟨fun h ↦ h.fg_top, fun h ↦ ⟨h⟩⟩
+
+namespace Monoid
+
+@[to_additive]
+theorem isMulFG_iff {M : Type*} [Monoid M] :
+    IsMulFG M ↔ ∃ S : Finset M, Submonoid.closure (S : Set M) = ⊤ := by
+  classical
+  simp_rw [isMulFG_def, SetLike.ext'_iff, Submonoid.closure_eq_one_union,
+    Subsemigroup.coe_top, Submonoid.coe_top]
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, by simp_all⟩, fun ⟨S, hS⟩ ↦ ⟨{1} ∪ S, ?_⟩⟩
+  rw [← Set.univ_subset_iff, ← hS]
+  rintro x (rfl | hx)
+  · exact Subsemigroup.mem_closure_of_mem (by simp)
+  · exact Subsemigroup.closure_mono (by simp) hx
+
+@[to_additive]
+theorem isMulFG_iff_finite {M : Type*} [Monoid M] :
+    IsMulFG M ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = ⊤ ∧ S.Finite :=
+  isMulFG_iff.trans
+    ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+
+end Monoid
+
+namespace Submonoid
+
+@[to_additive]
+theorem isMulFG_iff {M : Type*} [Monoid M] {P : Submonoid M} :
+    IsMulFG P ↔ ∃ S : Finset M, Submonoid.closure (S : Set M) = P := by
+  classical
+  simp_rw [Monoid.isMulFG_iff, ← (map_injective_of_injective P.subtype_injective).eq_iff,
+    ← MonoidHom.mrange_eq_map, mrange_subtype, MonoidHom.map_mclosure]
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S.image P.subtype, by simpa⟩,
+    fun ⟨S, hS⟩ ↦ ⟨S.preimage P.subtype P.subtype_injective.injOn, ?_⟩⟩
+  have h : ↑S ⊆ Set.range (Subtype.val : P → M) := by simp [← hS]
+  simpa [Set.image_preimage_eq_of_subset h]
+
+@[to_additive]
+theorem isMulFG_iff_finite {M : Type*} [Monoid M] {P : Submonoid M} :
+    IsMulFG P ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = P ∧ S.Finite :=
+  isMulFG_iff.trans
+    ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+
+end Submonoid
+
+namespace Group
+
+@[to_additive]
+theorem isMulFG_iff {G : Type*} [Group G] :
+    IsMulFG G ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = ⊤ := by
+  classical
+  exact Monoid.isMulFG_iff.trans ⟨fun ⟨S, hS⟩ ↦ ⟨S, Subgroup.closure_eq_top_of_mclosure_eq_top hS⟩,
+    fun ⟨S, hS⟩ ↦ ⟨S ∪ S⁻¹, by simp [← Subgroup.closure_toSubmonoid, hS]⟩⟩
+
+@[to_additive]
+theorem isMulFG_iff_finite {G : Type*} [Group G] :
+    IsMulFG G ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = ⊤ ∧ S.Finite :=
+  isMulFG_iff.trans
+    ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+
+end Group
+
+namespace Subgroup
+
+@[to_additive]
+theorem isMulFG_iff {G : Type*} [Group G] {H : Subgroup G} :
+    IsMulFG H ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = H := by
+  classical
+  simp_rw [Group.isMulFG_iff, ← Subgroup.map_subtype_inj,
+    ← MonoidHom.range_eq_map, range_subtype, MonoidHom.map_closure]
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S.image H.subtype, by simpa⟩,
+    fun ⟨S, hS⟩ ↦ ⟨S.preimage H.subtype H.subtype_injective.injOn, ?_⟩⟩
+  have h : ↑S ⊆ Set.range (Subtype.val : H → G) := by simp [← hS]
+  simpa [Set.image_preimage_eq_of_subset h]
+
+@[to_additive]
+theorem isMulFG_iff_finite {G : Type*} [Group G] {H : Subgroup G} :
+    IsMulFG H ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = H ∧ S.Finite :=
+  isMulFG_iff.trans
+    ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+
+end Subgroup
+
+end
 
 /-! ### Monoids and submonoids -/
 

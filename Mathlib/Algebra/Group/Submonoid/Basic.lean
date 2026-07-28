@@ -217,6 +217,8 @@ example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x �
   | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
+@[to_additive /-- The `AddSubmonoid.closure` of a set is the union of `{0}` and its
+`AddSubsemigroup.closure`. -/]
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by
   apply le_antisymm
