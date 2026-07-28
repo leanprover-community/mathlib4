@@ -248,7 +248,7 @@ theorem tprod_nonneg {f : ι → α} (hf : ∀ i, 0 ≤ f i) :
   by_cases h : Multipliable f L
   · by_cases hbot : L.NeBot
     · exact h.hasProd.nonneg hf
-    · simpa [tprod_bot hbot] using finprod_nonneg fun i ↦ hf i
+    · simpa [tprod_bot hbot] using finprod_nonneg hf
   · simp [tprod_eq_one_of_not_multipliable h]
 
 end WithZero
