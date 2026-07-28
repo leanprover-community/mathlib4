@@ -109,14 +109,14 @@ private theorem Homeomorph.hasSmallInductiveDimensionLT' (f : X ≃ₜ Y) (n : �
     rw [hasSmallInductiveDimensionLT_zero_iff] at h ⊢
     exact f.toEquiv.isEmpty_congr.mp h
   | succ n hn =>
-    cases h
-    rename_i s sb hs
-    refine .succ n (preimage ⇑f.symm '' s) (sb.isInducing f.symm.isInducing) ?_
-    intro U ⟨V, hV, VU⟩
-    rw [← VU]
-    refine hn ?_ (hs V hV)
-    rw [← f.image_eq_preimage_symm V, ← f.image_frontier V]
-    exact f.image (frontier V)
+    cases h with
+    | succ n s sb hs =>
+      refine .succ n (preimage ⇑f.symm '' s) (sb.isInducing f.symm.isInducing) ?_
+      intro U ⟨V, hV, VU⟩
+      rw [← VU]
+      refine hn ?_ (hs V hV)
+      rw [← f.image_eq_preimage_symm V, ← f.image_frontier V]
+      exact f.image (frontier V)
 
 protected theorem Homeomorph.hasSmallInductiveDimensionLT (f : X ≃ₜ Y) (n : ℕ) :
     HasSmallInductiveDimensionLT X n ↔ HasSmallInductiveDimensionLT Y n  :=
