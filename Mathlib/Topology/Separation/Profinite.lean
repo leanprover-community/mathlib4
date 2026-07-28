@@ -39,9 +39,9 @@ theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
     exact ⟨Vᶜ, V, hV.1.compl.isOpen, hV.1.isOpen, notMem_subset hV.2.2 hy.2, hV.2.1,
       (union_comm _ _ ▸ union_compl_self V).superset, disjoint_compl_left⟩
 
-variable [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X]
-
-instance : ZeroDimensionalSpace X := by
+-- TODO: this generalizes to weakly locally compact spaces.
+-- https://topology.pi-base.org/theorems/T000269
+instance [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X] : ZeroDimensionalSpace X := by
   rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
   refine fun x ↦ ⟨fun U ↦ ⟨fun hU ↦ ?_, fun ⟨V, ⟨hxV, V_op⟩, hUV⟩ ↦ ?_⟩⟩
   · have hx : connectedComponent x = {x} :=

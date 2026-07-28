@@ -9,6 +9,9 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Separation.CompletelyRegular
+
+import Mathlib.Topology.Algebra.Indicator
 
 /-!
 # Small inductive dimension
@@ -183,3 +186,12 @@ instance [IndiscreteTopology X] : ZeroDimensionalSpace X := by
   refine ZeroDimensionalSpace.of_hasBasis fun x ↦ ?_
   rw [IndiscreteTopology.nhds_eq]
   exact ⟨_, _, _, fun _ _ ↦ isClopen_univ, Filter.hasBasis_top⟩
+
+instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
+  completely_regular x K hK hxK := by
+    obtain ⟨U, hU, hxU, hUK⟩ := exists_isClopen_mem_of_isOpen hK.isOpen_compl hxK
+    refine ⟨_, hU.compl.continuous_indicator continuous_one, ?_, fun y hy ↦ ?_⟩
+    · simpa
+    · rw [indicator_of_mem (subset_compl_comm.mp hUK hy)]
+
+instance [T0Space X] [ZeroDimensionalSpace X] : T35Space X where
