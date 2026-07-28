@@ -237,17 +237,16 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
 theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
     (s t : ToType (F.1.obj (op V))) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
     (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by
-  classical
-    fapply F.eq_of_locally_eq' fun t : Bool => if t then U₁ else U₂
-    · exact fun i => if h : i then eqToHom (if_pos h) ≫ i₁ else eqToHom (if_neg h) ≫ i₂
-    · refine le_trans hcover ?_
-      rw [sup_le_iff]
-      constructor
-      · exact le_iSup (fun t : Bool => if t then U₁ else U₂) true
-      · exact le_iSup (fun t : Bool => if t then U₁ else U₂) false
-    · rintro ⟨_ | _⟩
-      any_goals exact h₁
-      any_goals exact h₂
+  fapply F.eq_of_locally_eq' fun t : Bool => if t then U₁ else U₂
+  · exact fun i => if h : i then eqToHom (if_pos h) ≫ i₁ else eqToHom (if_neg h) ≫ i₂
+  · refine le_trans hcover ?_
+    rw [sup_le_iff]
+    constructor
+    · exact le_iSup (fun t : Bool => if t then U₁ else U₂) true
+    · exact le_iSup (fun t : Bool => if t then U₁ else U₂) false
+  · rintro ⟨_ | _⟩
+    any_goals exact h₁
+    any_goals exact h₂
 
 variable {F} {U} in
 theorem eq_app_of_locally_eq {V : Opens X} {G : Sheaf C X} {f : F ⟶ G}

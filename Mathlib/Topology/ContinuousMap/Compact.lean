@@ -68,6 +68,9 @@ theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoun
   { isUniformInducing_equivBoundedOfCompact α β with
     injective := (equivBoundedOfCompact α β).injective }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
@@ -459,7 +462,6 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
-  classical
   refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK
   have A : ∀ s : Finset ι, restrict K (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by
