@@ -228,7 +228,7 @@ section ColRow
 variable {ι : Type*}
 
 @[simp]
-theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
+theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = of vecEmpty :=
   empty_eq _
 
 set_option backward.isDefEq.respectTransparency false in
@@ -368,7 +368,7 @@ section VecMulVec
 variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
-theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![] :=
+theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = of ![] :=
   empty_eq _
 
 @[simp]
