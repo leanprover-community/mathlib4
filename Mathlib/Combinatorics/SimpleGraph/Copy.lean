@@ -574,8 +574,7 @@ copies of `H` in `G` with vertices in `s`. -/
 theorem labelledCopyCount_induce_eq_card_subtype_copy (s : Finset V) :
     (G.induce s).labelledCopyCount H
       = card {f : Copy H G // univ.map f.toEmbedding ⊆ s} := by
-  rw [labelledCopyCount_induce_eq_card_filter_copy,
-    ← card_univ, ← subtype_univ, card_subtype]
+  rw [labelledCopyCount_induce_eq_card_filter_copy, ← card_univ, ← subtype_univ, card_subtype]
 
 omit [DecidableEq V] [Fintype (Copy H G)] in
 theorem labelledCopyCount_induce_le (s : Finset V) :
