@@ -973,8 +973,7 @@ lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
 
--- remark: `rfl` works here but the kernel spends a very long
--- time typechecking it.
+-- remark: `rfl` works here but the kernel spends a long time typechecking it.
 theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := by
   refine StarAlgEquiv.ext fun x => ?_

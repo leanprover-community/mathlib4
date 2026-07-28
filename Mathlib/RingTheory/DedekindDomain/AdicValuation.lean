@@ -670,6 +670,7 @@ def valueGroupEquiv :
   -- Note: proving this by `rfl` makes the kernel re-check a huge definitional unfolding.
   map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
 
+-- `rfl` works as a proof but the kernel spends a long time typechecking it.
 @[simp] theorem coe_valueGroupEquiv (a : valueGroup (.ofClass (valuation K v))) :
     ((valueGroupEquiv K v a : _) : ℤᵐ⁰ˣ) = a := by
   simp [valueGroupEquiv, Equiv.setCongr, Equiv.subtypeEquivProp]
