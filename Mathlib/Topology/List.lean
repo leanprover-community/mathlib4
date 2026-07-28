@@ -53,7 +53,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
           ⟨u::v, List.Forall₂.cons hu hv,
             Subset.trans (Set.seq_mono (Set.image_mono hut) hvss) hus⟩
     rcases this with ⟨v, hv, hvs⟩
-    have : ∀ᶠ y in traverse 𝓝 l, sequence v y :=
+    have : ∀ᶠ y in traverse 𝓝 l, y ∈ sequence v :=
       mem_traverse _ _ <| hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
     refine Eventually.mono this fun u hu ↦ ?_
     have hu := (List.mem_traverse _ _).1 hu
