@@ -302,6 +302,18 @@ theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * 
 instance decidableMemCenter {R} [Semiring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
+theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Surjective f) : map f (center R) ≤ center S :=
+  NonUnitalSubsemiring.map_center_le_center hf
+
+theorem center_le_comap_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : Function.Surjective f) : center R ≤ comap f (center S) :=
+  map_le_iff_le_comap.mp (map_center_le_center hf)
+
+@[simp]
+theorem map_center_eq (f : R ≃+* S) : map f (center R) = center S :=
+  SetLike.coe_injective Set.image_center_eq
+
 @[simp]
 theorem center_eq_top (R) [CommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
