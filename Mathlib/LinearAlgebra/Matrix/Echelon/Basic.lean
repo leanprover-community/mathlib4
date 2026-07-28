@@ -89,6 +89,8 @@ structure IsReducedRowEchelon [LT m] [LT n] [One R] (M : Matrix m n R) : Prop wh
   isRowEchelon : M.IsRowEchelon
   eq_one_of_isLeadingEntry : ∀ ⦃i : m⦄ ⦃c : n⦄, M.IsLeadingEntry i c → M i c = 1
   eq_zero_of_lt_of_isLeadingEntry :
+  -- there's an interesting case of non-linear order here. But does that even make sense for
+  -- matrix indices?
     ∀ ⦃i₁ i₂ : m⦄, i₁ < i₂ → ∀ ⦃c : n⦄, M.IsLeadingEntry i₂ c → M i₁ c = 0
 
 end Matrix

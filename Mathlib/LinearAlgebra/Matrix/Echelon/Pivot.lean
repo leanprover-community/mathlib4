@@ -86,7 +86,9 @@ theorem IsPivot.unique [LT m] [LinearOrder n] {l' : m → WithTop n}
     (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' :=
   funext fun i => (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
 
-/-- The staircase characterisation of a pivot map. -/
+/-- The staircase characterisation of a pivot map.
+  This is somewhat reusing the design in the structural version.
+ -/
 theorem isPivot_iff [PartialOrder m] [LinearOrder n] :
     A.IsPivot l ↔
       Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧ ∀ i : m, A.IsLeadingEntry i (l i) := by
