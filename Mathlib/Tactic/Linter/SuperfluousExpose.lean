@@ -24,11 +24,11 @@ public import Mathlib.Init  -- shake: keep
 /-!
 # Superfluous-expose linter
 
-This linter is the dual of `privateModule`. It reports a module that has an
-`@[expose] public section` but no declaration whose body must be visible
-downstream. It suggests that you remove the `@[expose]` modifier. The removal
-changes the file default from exposed bodies to hidden bodies, and it does
-not change downstream typechecking.
+This linter is the dual of `privateModule`. It reports each `@[expose] public
+section` that contains no declaration whose body must be visible downstream.
+It suggests that you remove the `@[expose]` modifier. The removal changes the
+section default from exposed bodies to hidden bodies, and it does not change
+downstream typechecking.
 
 A declaration benefits from exposure when its body matters to downstream
 proofs or elaboration. These benefit: plain `def`, plain `inductive`,
@@ -43,16 +43,31 @@ and skips them.
 ## Implementation notes
 
 The linter is a stateful linter (`Lean.Elab.Command.registerStatefulLinter`),
-so it keeps state across the commands of a module. After each command, the
-linter inspects the current `Scope`. Nested scopes inherit `Scope.isPublic`
-and `Scope.attrs`. Thus a command is under an explicit or inherited
-`@[expose] public section` exactly when its scope is public and carries the
-`expose` attribute. The linter records this fact in its state. The terminal
-command (`Parser.Command.eoi` or `#exit`) has access to the full elaborated
-environment, but every section scope is already closed there. Thus, at the
-terminal command, the linter reads the recorded flag, walks
-`env.constants.map₂` to enumerate the locally-defined constants, and fires
-unless some declaration benefits from exposure.
+so it keeps state across the commands of a module. It tracks regions: a
+region is a maximal run of commands whose scope is public and carries the
+`expose` attribute. Nested scopes inherit `Scope.isPublic` and `Scope.attrs`,
+so one check of the top scope after each command finds these regions. A
+region opens when the predicate becomes true, and the linter records the
+position of the command that opened it (the section header). A region closes
+when the predicate becomes false (an `end` command), or at the terminal
+command for a section that the end of the file closes.
+
+After each command inside a region, the linter classifies the declarations
+that appeared in the environment since the previous command, and it folds the
+verdicts into one flag: does some declaration of the region benefit from
+exposure? The classification runs while the scopes of the command are still
+active. Thus `Lean.Meta.isInstanceCore` also identifies `scoped instance` and
+`local instance` declarations, which an end-of-file check would misclassify
+as plain defs.
+
+When a region closes and no declaration in it benefits from exposure, the
+linter logs its warning at the recorded position of the section header. A
+file with several expose sections gets one verdict per section.
+
+The linter tracks regions and classifies declarations unconditionally; the
+`linter.superfluousExpose` option gates only the report. The tracking cost is
+one pass over the local constants per command inside a region, and the
+classification of each constant runs once.
 
 The scope inspection is semantic, not syntactic. The linter detects an
 `@[expose] section` nested inside a `public section` in the same way as a
@@ -62,23 +77,21 @@ declarations of the inner section. The linter does not detect a non-public
 a `public section` has downstream visibility.
 
 The linter is conservative. Each known limitation causes a false negative:
-the linter stays silent on a file where the warning applies. No limitation
+the linter stays silent on a section where the warning applies. No limitation
 causes a false positive. The known cases are:
 
-* File-level granularity. Suppose a file has several `@[expose] public
-  section`s and only some of them are needed. If any declaration in the file
-  benefits from exposure, the linter stays silent, and it does not find the
-  superfluous `@[expose]` on the other sections.
 * Tactic-implementation defs. Declarations that come from `simproc_decl`,
   `elab`, `macro_rules`, or `scoped macro` count as ordinary defs that
-  benefit from exposure. Thus a file with only such declarations gets no
+  benefit from exposure. Thus a section with only such declarations gets no
   warning.
-* Scoped and local instances. `Lean.Meta.isInstanceCore` catches global
-  instances but misses `scoped instance` and `local instance`. In the
-  environment, these look identical to `@[implicit_reducible] def` shortcuts
-  that are not instances and whose bodies do need exposure. The linter does
-  not try to tell them apart. Thus a file with only scoped or local
-  instances gets no warning.
+* Nested expose sections. An `@[expose] public section` inside another one
+  extends the same region. The linter gives one verdict for the combined
+  region and cannot report the inner, redundant modifier separately.
+* Late attribute changes. The linter classifies a declaration at the command
+  that creates it. A later `attribute` command, for example
+  `attribute [reducible] foo`, does not change the recorded verdict. The
+  early verdict errs toward "benefits from exposure", so the linter stays
+  silent.
 -/
 
 meta section
@@ -87,12 +100,12 @@ open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
-/-- The `superfluousExpose` linter detects a module with `@[expose] public
-section` where no declaration needs its body visible downstream. It suggests
-that you remove the `@[expose]` modifier. -/
+/-- The `superfluousExpose` linter detects each `@[expose] public section`
+where no declaration needs its body visible downstream. It suggests that you
+remove the `@[expose]` modifier. -/
 public register_option linter.superfluousExpose : Bool := {
   defValue := false
-  descr := "Enable the `superfluousExpose` linter, which detects modules \
+  descr := "Enable the `superfluousExpose` linter, which detects sections \
     where `@[expose] public section` is superfluous."
 }
 
@@ -129,7 +142,11 @@ private def looksLikeNotationDecl (info : ConstantInfo) (name : Name) : Bool :=
 
 /-- Returns `true` when the body of the constant is relevant to downstream
 typechecking. Callers must filter out `Batteries.Tactic.Lint.isAutoDecl`
-names first. -/
+names first.
+
+Callers must apply this check while the scopes of the declaring command are
+still active: `Lean.Meta.isInstanceCore` sees a `scoped instance` or a
+`local instance` only while its scope is active. -/
 private def benefitsFromExposure (env : Environment) (name : Name)
     (info : ConstantInfo) : Bool :=
   if isPrivateName name then false else
@@ -169,57 +186,87 @@ private def isExposeAttrInstance (ai : TSyntax ``Parser.Term.attrInstance) : Boo
   let attr := ai.raw[1]
   attr.isOfKind ``Parser.Attr.simple && attr[0].getId.eraseMacroScopes == `expose
 
-/-- The persistent state of the `superfluousExpose` linter. It records whether
-some command of the current module was inside an `@[expose] public section`
-scope. -/
-public structure ExposeSectionState where
-  /-- `true` when some previous command was in a public scope that carries
-  `@[expose]`. -/
-  hasExposeSection : Bool := false
-deriving Inhabited
+/-- An open exposed region: a run of commands whose scope is public and
+carries `@[expose]`. -/
+public structure ExposeRegion where
+  /-- Position of the command that opened the region (the section header).
+  The warning ref points here. -/
+  pos : String.Pos.Raw
+  /-- `true` when some declaration created inside the region benefits from
+  exposure. -/
+  someDeclBenefits : Bool := false
 
-/-- The end-of-module check of the `superfluousExpose` linter. It walks the
-elaborated environment and logs the lint warning, unless some declaration
-benefits from body exposure. Callers must check the `linter.superfluousExpose`
-option. Callers must also check that the module has an `@[expose] public
-section`. -/
-def superfluousExposeCheck : CommandElabM Unit := do
-  let env ← getEnv
-  if !env.header.isModule then return
-  if env.constants.map₂.isEmpty then return
-  for (decl, info) in env.constants.map₂ do
-    if ← liftCoreM (Batteries.Tactic.Lint.isAutoDecl decl) then continue
-    if benefitsFromExposure env decl info then return
-  let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
-  logLint linter.superfluousExpose topOfFileRef
-    "This module has `@[expose] public section` but no declaration that \
-    would benefit from body exposure. The `@[expose]` modifier can be \
-    safely removed: it would only affect `def`/`inductive` bodies, and \
-    there are none here that need exposure (only theorems, instances, \
-    classes/structures, abbrevs, notation, or auto-generated decls)."
+/-- The persistent state of the `superfluousExpose` linter: the constants
+classified so far, and the open region, if any. -/
+public structure ExposeSectionState where
+  /-- Constants of the module that the linter has classified, or that existed
+  when the current region opened. -/
+  seen : NameSet := {}
+  /-- The open exposed region, if any. Regions cannot nest: an expose section
+  inside an active region extends the same region. -/
+  region? : Option ExposeRegion := none
+
+instance : Inhabited ExposeSectionState := ⟨{}⟩
+
+/-- Reports a closed region: logs the lint warning at the position of the
+section header, unless some declaration of the region benefits from exposure
+or the `linter.superfluousExpose` option is off. -/
+private def reportRegion (r : ExposeRegion) : CommandElabM Unit := do
+  if r.someDeclBenefits then return
+  unless getLinterValue linter.superfluousExpose (← getLinterOptions) do return
+  let ref := Syntax.atom (.synthetic r.pos r.pos) ""
+  logLint linter.superfluousExpose ref
+    "This `@[expose] public section` contains no declaration that benefits \
+    from body exposure. You can safely remove the `@[expose]` modifier: it \
+    only affects `def` and `inductive` bodies, and no declaration here needs \
+    exposure (only theorems, instances, classes, structures, abbrevs, \
+    notation, or auto-generated declarations)."
 
 /--
-The `superfluousExpose` linter detects a module with `@[expose] public
-section` where no declaration needs its body exposed downstream. It suggests
-that you remove the `@[expose]` modifier.
+The `superfluousExpose` linter detects each `@[expose] public section` where
+no declaration needs its body exposed downstream. It suggests that you remove
+the `@[expose]` modifier.
 
-After each command, the linter records in its state whether the scope of the
-command is public and carries `@[expose]`. At the terminal command, it reads
-the flag and runs `superfluousExposeCheck`. It logs its message at the top of
-the file.
+After each command, the linter tracks the current exposed region and
+classifies the declarations that the command created. When a region closes —
+at its `end` command, or at the terminal command for a section that the end
+of the file closes — the linter reports the region if no declaration in it
+benefits from exposure. The warning points at the section header.
 -/
 public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
   registerStatefulLinter {}
     (post := fun stx self _ _ _ => do
+      let env ← getEnv
+      if !env.header.isModule then return self
+      -- Classify the declarations that appeared since the previous command.
+      let mut st := self
+      if let some r := st.region? then
+        let mut seen := st.seen
+        let mut benefits := r.someDeclBenefits
+        for (n, info) in env.constants.map₂ do
+          unless seen.contains n do
+            seen := seen.insert n
+            unless benefits do
+              unless ← liftCoreM (Batteries.Tactic.Lint.isAutoDecl n) do
+                benefits := benefitsFromExposure env n info
+        st := { seen, region? := some { r with someDeclBenefits := benefits } }
       if Parser.isTerminalCommand stx then
-        if self.hasExposeSection then
-          if getLinterValue linter.superfluousExpose (← getLinterOptions) then
-            superfluousExposeCheck
-        return self
-      else if self.hasExposeSection then
-        return self
-      else
-        let sc ← getScope
-        return { hasExposeSection := sc.isPublic && sc.attrs.any isExposeAttrInstance })
+        -- The end of the file closes an open section.
+        if let some r := st.region? then reportRegion r
+        return { st with region? := none }
+      let sc ← getScope
+      let exposedNow := sc.isPublic && sc.attrs.any isExposeAttrInstance
+      match st.region?, exposedNow with
+      | none, true =>
+        -- The region opens at this command. Snapshot the current constants:
+        -- declarations from before the region do not count.
+        let mut seen : NameSet := {}
+        for (n, _) in env.constants.map₂ do
+          seen := seen.insert n
+        return { seen, region? := some { pos := stx.getPos?.getD ⟨0⟩ } }
+      | some r, false =>
+        reportRegion r
+        return { st with region? := none }
+      | _, _ => return st)
 
 end Mathlib.Linter

@@ -8,20 +8,23 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: the file contains only `abbrev` declarations. Modules
-expose `abbrev` bodies by default, with or without `@[expose]`. Thus the
-`@[expose]` modifier is superfluous here. The linter must fire. -/
+/-! Positive case: the file contains a class, a `local instance`, and a
+theorem. The linter classifies each declaration at the command that creates
+it, while the instance is still active, so `Lean.Meta.isInstanceCore`
+identifies the local instance. No declaration benefits from exposure. The
+linter must fire. -/
 
 @[expose] public section
 
-namespace SuperfluousExposeTest.AbbrevOnly
+namespace SuperfluousExposeTest.LocalInstance
 
-abbrev MyNat := Nat
-abbrev double (n : Nat) : Nat := n + n
+class Tagged (α : Type) where dummy : Unit
 
-theorem double_zero : double 0 = 0 := rfl
+local instance instTaggedNat : Tagged Nat := ⟨()⟩
 
-end SuperfluousExposeTest.AbbrevOnly
+theorem trivial_proof : True := trivial
+
+end SuperfluousExposeTest.LocalInstance
 
 -- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
 -- can capture the warning. The linter option is off at the real end of the
