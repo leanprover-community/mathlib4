@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Data.Pi.Interval
-public import Mathlib.Tactic.Rify
 
 /-!
 # Siegel's Lemma
@@ -66,7 +65,7 @@ section preparation
 and
 # Step 2: #S < #T
 Pigeonhole will give different x and y in T with A.mulVec x = A.mulVec y in S
-Their difference is the solution we are looking for
+Their difference is the solution we are looking for.
 -/
 
 -- # Step 1: ∀ v ∈ T, A *ᵥ v ∈  S
@@ -92,9 +91,9 @@ private lemma card_T_eq [DecidableEq β] : #T = (B + 1) ^ n := by
 private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
   calc
     N i ≤ 0 := by
-      simpa using Finset.sum_nonneg fun _ _ ↦ by positivity
+      simpa using sum_nonneg fun _ _ ↦ by positivity
     _ ≤ P i + 1 :=
-      add_nonneg (Finset.sum_nonneg fun _ _ ↦ by positivity) zero_le_one
+      add_nonneg (sum_nonneg fun _ _ ↦ by positivity) zero_le_one
 
 private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i - N i + 1) := by
   rw [Pi.card_Icc N P, Nat.cast_prod]
@@ -102,7 +101,7 @@ private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i 
   rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
-/-- The sup norm of a non-zero integer matrix is at least one -/
+/-- The sup norm of a non-zero integer matrix is at least one. -/
 lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
   obtain ⟨i, j, hij⟩ := (Function.ne_iff.mp hA).imp fun _ hi ↦ Function.ne_iff.mp hi
   calc
