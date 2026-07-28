@@ -19,11 +19,6 @@ embedding `StdSimplex R M → (M → R)`. In general, we use the supremum of
 the coinduced topologies for the maps `StdSimplex.map f : StdSimplex R ι → StdSimplex R M`
 where `f : ι → M` is a map from a finite set `ι`.
 
-For a convex space `X` that is also equipped with a topology, we introduce
-a typeclass `IsContinuousConvexSpace R X` which says that the map
-`sConvexComb : StdSimplex R X → X` is continuous. We show that
-`IsContinuousConvexSpace R (StdSimplex R M)` holds for any type `M`.
-
 -/
 
 universe u v
@@ -32,9 +27,7 @@ open Topology
 
 variable (R : Type u) [PartialOrder R] [Ring R] [TopologicalSpace R]
 
-namespace Convexity
-
-namespace StdSimplex
+namespace Convexity.StdSimplex
 
 /-- The topology on `StdSimplex R ι` that is induced by the embedding
 `StdSimplex R ι → (ι → R)`. This is the correct topoplogy only when
@@ -181,54 +174,4 @@ public lemma isClosedEmbedding_toFun_comp_weights
       (isClosed_eq ?_ ?_)
     all_goals fun_prop
 
-end StdSimplex
-
-/-- This typeclass expresses a compatibility between a topological space
-structure on a type `M` and a convex space structure (over `R`): it says
-that the map `sConvexComb : StdSimplex R M → M` is continuous. -/
-public class IsContinuousConvexSpace
-    (R : Type u) [PartialOrder R] [Ring R] [TopologicalSpace R]
-    [IsTopologicalRing R] [IsStrictOrderedRing R]
-    (X : Type*) [ConvexSpace R X] [TopologicalSpace X] : Prop where
-  continuous_sConvexComb (R X) : Continuous (sConvexComb : StdSimplex R X → X)
-
-attribute [fun_prop] IsContinuousConvexSpace.continuous_sConvexComb
-
-export IsContinuousConvexSpace (continuous_sConvexComb)
-
-variable [IsStrictOrderedRing R] [IsTopologicalRing R] (X : Type*)
-
-open Classical in
-public instance : IsContinuousConvexSpace R (StdSimplex R X) where
-  continuous_sConvexComb := by
-    rw [StdSimplex.continuous_iff]
-    intro ι _ f
-    have := Fintype.ofFinite ι
-    wlog hX : Finite X generalizing X
-    · let s : Finset X := Finset.univ.biUnion (fun i ↦ (f i).weights.support)
-      have H (i : ι) : ∃ (g : StdSimplex R s), StdSimplex.map Subtype.val g = f i :=
-        (Convexity.StdSimplex.mem_range_map_iff _ _).2 (by aesop)
-      choose g hg using H
-      have := this _ g inferInstance
-      have : sConvexComb (R := R) ∘ StdSimplex.map f =
-          StdSimplex.map Subtype.val ∘ (sConvexComb ∘ StdSimplex.map g) := by
-        funext x
-        dsimp
-        rw [StdSimplex.map_sConvexComb, StdSimplex.map_map]
-        congr 2
-        grind
-      rw [this]
-      fun_prop
-    rw [(StdSimplex.isEmbedding_toFun_comp_weights R X).continuous_iff,
-      continuous_pi_iff]
-    intro m
-    convert_to Continuous (fun (s : StdSimplex R ι) ↦ ∑ (i : ι), (s.weights i) * (f i).weights m)
-    · ext s
-      simp only [Function.comp_apply, StdSimplex.weights_sConvexComb, StdSimplex.weights_map,
-        Finsupp.mapDomain_fintype, Finsupp.sum_apply, Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul]
-      rw [Finsupp.sum_finsetSum _ _ _ (by simp) (by simp [add_mul])]
-      congr
-      aesop
-    · fun_prop
-
-end Convexity
+end Convexity.StdSimplex
