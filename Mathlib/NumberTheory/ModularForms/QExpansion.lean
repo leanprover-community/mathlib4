@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
@@ -627,6 +628,14 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
   | succ n ih =>
     rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
       pow_succ]
+
+/-- The product of two non-zero modular forms is non-zero. -/
+protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
+    {a b : ℤ} {f : ModularForm Γ a} {g : ModularForm Γ b} (hf : f ≠ 0) (hg : g ≠ 0) :
+    f.mul g ≠ 0 := by
+  simp only [ne_eq, ← ModularForm.qExpansion_eq_zero_iff hh hΓ,
+    ModularForm.qExpansion_mul hh hΓ] at hf hg ⊢
+  exact mul_ne_zero hf hg
 
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :

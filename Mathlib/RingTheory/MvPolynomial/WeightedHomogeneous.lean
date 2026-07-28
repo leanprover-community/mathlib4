@@ -235,6 +235,13 @@ theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
   apply isWeightedHomogeneous_monomial
   simp only [weight, LinearMap.toAddMonoidHom_coe, linearCombination_single, one_nsmul]
 
+/-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
+`monomial d₀ (coeff d₀ φ)`. -/
+theorem eq_monomial_of_support_subset_singleton {R : Type*} [CommSemiring R] {φ : MvPolynomial σ R}
+    {d₀ : σ →₀ ℕ} (h : ∀ d ∈ φ.support, d = d₀) :
+    φ = monomial d₀ (coeff d₀ φ) :=
+  Finsupp.support_subset_singleton.mp fun d hd ↦ Finset.mem_singleton.mpr (h d hd)
+
 namespace IsWeightedHomogeneous
 
 variable {R}
@@ -257,6 +264,25 @@ theorem inj_right {w : σ → M} (hφ : φ ≠ 0) (hm : IsWeightedHomogeneous w 
 theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
     IsWeightedHomogeneous w (φ + ψ) n :=
   (weightedHomogeneousSubmodule R w n).add_mem hφ hψ
+
+/-- The difference of two weighted homogeneous polynomials of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem sub {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
+    (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
+    IsWeightedHomogeneous w (φ - ψ) n :=
+  (weightedHomogeneousSubmodule R w n).sub_mem hφ hψ
+
+/-- A weighted homogeneous polynomial of degree `n` is zero if no monomial has weight `n`. -/
+theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
+    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 :=
+  support_eq_empty.mp <| Finset.eq_empty_of_forall_notMem
+    fun _ hd ↦ hno _ (hφ (mem_support_iff.mp hd))
+
+/-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
+fixed `d₀` is a single monomial. -/
+theorem eq_monomial_of_unique_weight {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (d₀ : σ →₀ ℕ)
+    (huniq : ∀ d, weight w d = n → d = d₀) : φ = monomial d₀ (coeff d₀ φ) :=
+  eq_monomial_of_support_subset_singleton fun d hd ↦ huniq d (hφ (mem_support_iff.mp hd))
 
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
