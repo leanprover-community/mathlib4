@@ -7,9 +7,7 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Server.InfoUtils
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public meta import Mathlib.Tactic.Linter.Header
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
@@ -443,7 +441,7 @@ def isImport (s : String) : Bool :=
   s.startsWith "import all " || s.startsWith "meta import all "
 
 @[inherit_doc Mathlib.Linter.linter.style.longLine]
-def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def longLinePost (readPrev : PrevStateFn) (stx : Syntax) : CommandElabM Unit := do
     unless getLinterValue linter.style.longLine (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
@@ -456,11 +454,16 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
     let stx ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
-        let fileMap ← getFileMap
-        -- `impMods` is the syntax for the modules imported in the current file
-        let (impMods, _) ← Parser.parseHeader
-          { inputString := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
-        pure impMods.raw
+        -- `impMods` is the syntax for the modules imported in the current file. The state of
+        -- the `header` linter provides it when the header checks ran. Otherwise, we parse the
+        -- header of the file.
+        let headerStx := (readPrev Style.header.headerLinter).headerSyntax
+        if headerStx.isMissing then
+          let fileMap ← getFileMap
+          let (impMods, _) ← Parser.parseHeader
+            { inputString := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
+          pure impMods.raw
+        else pure headerStx
       else pure stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
@@ -478,7 +481,13 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
           (.ofRange ⟨(line.drop maxLineLength).startPos, line.stopPos⟩)
           m!"This line exceeds the {maxLineLength} character limit, please shorten it!{stringMsg}"
 
-initialize addLinter longLineLinter
+/--
+The typed handle of the `longLine` linter. The linter is stateful in order to read the state of
+the `header` linter; its own state is trivial.
+-/
+public initialize longLineLinter : StatefulLinter Unit Unit ←
+  registerStatefulLinter ()
+    (post := fun stx _ _ readPrev _ => withSetOptionIn' (longLinePost readPrev) stx)
 
 end Style.longLine
 
