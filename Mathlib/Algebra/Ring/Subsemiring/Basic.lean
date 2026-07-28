@@ -308,7 +308,7 @@ theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
 
 theorem center_le_comap_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
     (hf : Function.Surjective f) : center R ≤ comap f (center S) :=
-  map_le_iff_le_comap.mp (map_center_le_center hf)
+  NonUnitalSubsemiring.center_le_comap_center hf
 
 @[simp]
 theorem map_center_eq (f : R ≃+* S) : map f (center R) = center S :=
