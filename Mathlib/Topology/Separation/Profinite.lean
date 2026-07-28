@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Topology.SmallInductiveDimension
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Separation properties: profinite spaces

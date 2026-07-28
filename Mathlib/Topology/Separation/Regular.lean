@@ -821,7 +821,7 @@ private instance [T2Space X] [TotallyDisconnectedSpace X] [CompactSpace X] :
   · rw [mem_nhds_iff]
     exact ⟨V, hUV, hxV.isOpen, V_op⟩
 
-instance [T2Space X] [TotallyDisconnectedSpace X] [LocallyCompactSpace X] :
+instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] :
     ZeroDimensionalSpace X := by
   rw [zeroDimensionalSpace_iff_isTopologicalBasis]
   refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_
@@ -853,10 +853,12 @@ instance [T2Space X] [TotallyDisconnectedSpace X] [LocallyCompactSpace X] :
 
 @[deprecated (since := "2026-07-28")]
 alias loc_compact_Haus_tot_disc_of_zero_dim :=
-  instZeroDimensionalSpaceOfT2SpaceOfTotallyDisconnectedSpaceOfLocallyCompactSpace
+  instZeroDimensionalSpaceOfT2SpaceOfTotallyDisconnectedSpaceOfWeaklyLocallyCompactSpace
 
-/-- A locally compact Xausdorff space is totally disconnected
-  if and only if it is totally separated. -/
-theorem loc_compact_t2_tot_disc_iff_tot_sep [T2Space X] [LocallyCompactSpace X] :
+theorem totallyDisconnectedSpace_iff_totallySeparatedSpace
+    [T2Space X] [WeaklyLocallyCompactSpace X] :
     TotallyDisconnectedSpace X ↔ TotallySeparatedSpace X :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+@[deprecated (since := "2026-07-28")]
+alias loc_compact_t2_tot_disc_iff_tot_sep := totallyDisconnectedSpace_iff_totallySeparatedSpace

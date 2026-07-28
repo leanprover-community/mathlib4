@@ -196,14 +196,19 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
 
+instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
+  completely_regular x K hK hxK := by
+    obtain ⟨U, hU, hxU, hUK⟩ := exists_isClopen_mem_of_isOpen hK.isOpen_compl hxK
+    refine ⟨_, hU.compl.continuous_indicator continuous_one, ?_, fun y hy ↦ ?_⟩
+    · simpa
+    · rw [indicator_of_mem (subset_compl_comm.mp hUK hy)]
+
+@[deprecated instCompletelyRegularSpaceOfZeroDimensionalSpace (since := "2026-07-28")]
 theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
     (h : TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s}) :
-    CompletelyRegularSpace X where
-  completely_regular x K hK hx := by
-    obtain ⟨s, hs, hx, hsK⟩ := h.exists_subset_of_mem_open hx hK.isOpen_compl
-    refine ⟨sᶜ.indicator 1, ?_, by simpa, fun x hx ↦ indicator_of_mem ?_ _⟩
-    · exact hs.compl.continuous_indicator continuous_const
-    · exact (mem_compl_iff s x).mpr fun hs ↦ hsK hs hx
+    CompletelyRegularSpace X := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis] at h
+  infer_instance
 
 open TopologicalSpace Cardinal in
 theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
@@ -236,13 +241,6 @@ theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_conti
     IsTopologicalBasis {s : Set X | IsClopen s} := by
   rw [← zeroDimensionalSpace_iff_isTopologicalBasis]
   exact CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum hX
-
-instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
-  completely_regular x K hK hxK := by
-    obtain ⟨U, hU, hxU, hUK⟩ := exists_isClopen_mem_of_isOpen hK.isOpen_compl hxK
-    refine ⟨_, hU.compl.continuous_indicator continuous_one, ?_, fun y hy ↦ ?_⟩
-    · simpa
-    · rw [indicator_of_mem (subset_compl_comm.mp hUK hy)]
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]
