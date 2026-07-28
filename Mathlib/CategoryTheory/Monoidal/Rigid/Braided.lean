@@ -105,6 +105,63 @@ lemma rightMate_swap_rightMate {X X' Y Y' : C}
     ← braiding_naturality_left_assoc]
   rfl
 
+private lemma tensorPairing_evaluation {X X' Y Y' : C}
+    (pX : ExactPairing X X') (pY : ExactPairing Y Y') :
+    ε_ (X ⊗ Y) (Y' ⊗ X') =
+      (Y' ⊗ X') ◁ (β_ X Y).hom ≫ tensorμ Y' X' Y X ≫ (ε_ Y Y' ⊗ₘ ε_ X X') ≫
+        (λ_ (𝟙_ C)).hom := by
+  rw [ExactPairing.tensor_evaluation]
+  calc
+    _ = 𝟙 _ ⊗≫ Y' ◁ ((β_ (X' ⊗ X) Y).hom ≫ Y ◁ ε_ X X') ⊗≫ ε_ Y Y' := by
+      rw [← braiding_naturality_left, braiding_tensorUnit_left]
+      monoidal
+    _ = _ := by
+      rw [braiding_tensor_left_hom, tensorμ, tensorHom_def, ← whisker_exchange]
+      monoidal
+
+section Symmetric
+
+variable {D : Type*} [Category* D] [MonoidalCategory D] [SymmetricCategory D]
+
+private lemma tensorμ_braid (X₁ X₂ Y₁ Y₂ : D) :
+    tensorμ X₁ X₂ Y₁ Y₂ ≫ (β_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂)).hom =
+      ((β_ X₁ X₂).hom ⊗ₘ (β_ Y₁ Y₂).hom) ≫ tensorμ X₂ X₁ Y₂ Y₁ := by
+  simp [tensorμ, SymmetricCategory.braiding_swap_eq_inv_braiding Y₁ X₂, tensorHom_def]
+
+private lemma tensorμ_braid_tensorHom (X₁ X₂ Y₁ Y₂ : D) :
+    tensorμ X₁ X₂ Y₁ Y₂ ≫ ((β_ X₁ Y₁).hom ⊗ₘ (β_ X₂ Y₂).hom) =
+      (β_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂)).hom ≫ tensorμ Y₁ Y₂ X₁ X₂ := by
+  simp only [tensorμ, SymmetricCategory.braiding_swap_eq_inv_braiding Y₁ X₂, tensorHom_def,
+    whiskerRight_tensor, tensor_whiskerLeft, Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc,
+    braiding_tensor_right_hom, braiding_tensor_left_hom, comp_whiskerRight, whisker_assoc,
+    whiskerLeft_comp, pentagon_assoc, pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc,
+    whiskerLeft_hom_inv_assoc, Iso.cancel_iso_hom_left]
+  slice_rhs 10 11 =>
+    rw [← whiskerLeft_comp, ← comp_whiskerRight, SymmetricCategory.symmetry]
+  monoidal
+
+lemma tensorOf_swap_evaluation {X X' Y Y' : D}
+    (pX : ExactPairing X X') (pY : ExactPairing Y Y') :
+    @ExactPairing.evaluation D _ _ (Y' ⊗ X') (X ⊗ Y)
+      ((exactPairing_swap Y Y').tensorOf (exactPairing_swap X X')) =
+    @ExactPairing.evaluation D _ _ (Y' ⊗ X') (X ⊗ Y)
+      (exactPairing_swap (X ⊗ Y) (Y' ⊗ X')) := by
+  rw [exactPairingSwap_evaluation (pX.tensorOf pY),
+    tensorPairing_evaluation, tensorPairing_evaluation, exactPairingSwap_evaluation pY,
+    exactPairingSwap_evaluation pX, ← tensorHom_comp_tensorHom]
+  slice_lhs 2 3 => rw [tensorμ_braid_tensorHom]
+  simp only [Category.assoc]
+  rw [braiding_naturality_right_assoc, cancel_epi, ← tensorHom_id, ← id_tensorHom]
+  slice_lhs 1 1 =>
+    rw [← Category.id_comp (β_ Y' X').hom, ← SymmetricCategory.symmetry X Y,
+      ← tensorHom_comp_tensorHom]
+  slice_lhs 2 3 => rw [← tensorμ_braid]
+  simp only [Category.assoc]
+  rw [← braiding_naturality_assoc, braiding_leftUnitor]
+  monoidal
+
+end Symmetric
+
 end CategoryTheory.ExactPairing
 
 namespace CategoryTheory.BraidedCategory

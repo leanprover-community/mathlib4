@@ -5,8 +5,9 @@ Authors: Kim Morrison, Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 public import Mathlib.CategoryTheory.Monoidal.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 
 /-!
 # Dual Functors for Rigid Categories
@@ -23,6 +24,8 @@ dual endofunctor for a right rigid monoidal category.
   `X` to `Xᘁ` and `f` to `fᘁ`.
 * `doubleRightDualFunctor C`: The functor `C ⥤ C` on a right rigid category sending
   `X` to `Xᘁᘁ` and `f` to `fᘁᘁ`.
+* `drinfeldIso`: The Drinfeld isomorphism from the identity to the double right dual
+  in a braided right rigid monoidal category.
 
 ## Future work
 
@@ -32,7 +35,7 @@ dual endofunctor for a right rigid monoidal category.
 
 namespace CategoryTheory
 
-open Category MonoidalCategory MonoidalOpposite Opposite
+open BraidedCategory Category MonoidalCategory MonoidalOpposite Opposite
 
 universe v u
 
@@ -136,6 +139,56 @@ public lemma doubleRightDualFunctor_ε :
 public lemma doubleRightDualFunctor_μ (X Y : C) :
     Functor.LaxMonoidal.μ (doubleRightDualFunctor C) X Y =
       (rightDualTensorIso Yᘁ Xᘁ).inv ≫ ((rightDualTensorIso X Y).homᘁ) := rfl
+
+section Braided
+
+variable [BraidedCategory C]
+
+/-- The Drinfeld isomorphism from the identity functor to the double right dual functor
+in a braided right rigid monoidal category. -/
+@[simps!, expose]
+public def drinfeldIso : 𝟭 C ≅ doubleRightDualFunctor C :=
+  NatIso.ofComponents
+    (fun X ↦ rightDualIso (exactPairing_swap X Xᘁ) HasRightDual.exact)
+    (fun f ↦ by
+      erw [← rightDualIso_hom_naturality, ExactPairing.rightMate_swap_rightMate]
+      rfl)
+
+end Braided
+
+section Symmetric
+
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C]
+  [RightRigidCategory C]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The Drinfeld isomorphism is monoidal in a symmetric monoidal category. -/
+public instance drinfeldIso_isMonoidal :
+    NatTrans.IsMonoidal (drinfeldIso (C := C)).hom where
+  unit := by
+    letI : HasRightDual (𝟙_ C) := RightRigidCategory.rightDual _
+    simp only [drinfeldIso, Functor.id_obj, NatIso.ofComponents_hom_app,
+      doubleRightDualFunctor_ε]
+    erw [← rightDualIso_hom_naturality (pX₁ := exactPairing_swap (𝟙_ C) (𝟙_ C)ᘁ)]
+    rw [ExactPairing.rightMate_eq_of_evaluation_eq
+      (pY₂ := exactPairing_swap (𝟙_ C) (𝟙_ C)) (h := by
+        rw [exactPairingSwap_evaluation exactPairingUnit,
+          ExactPairing.unit_evaluation, braiding_tensorUnit_left]
+        monoidal)]
+    simp [rightDualIso, ExactPairing.rightMate_swap_rightMate]
+  tensor X Y := by
+    simp only [Functor.id_obj, drinfeldIso, NatIso.ofComponents_hom_app,
+      ← rightDualIso_tensor, doubleRightDualFunctor_μ, rightDualTensorIso,
+      rightDualIso_inv,
+      ← rightDualIso_hom_naturality
+        (pX₁ := exactPairing_swap (X ⊗ Y) (X ⊗ Y)ᘁ),
+      ← Category.assoc,
+      ExactPairing.rightMate_eq_of_evaluation_eq
+        (h := ExactPairing.tensorOf_swap_evaluation
+          HasRightDual.exact HasRightDual.exact)]
+    simp [rightDualIso, ExactPairing.rightMate_swap_rightMate]
+
+end Symmetric
 
 end RightRigid
 

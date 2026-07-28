@@ -5,7 +5,6 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Functor
 
 /-!
@@ -20,6 +19,8 @@ from the identity functor to the double right dual functor (`X ↦ Xᘁᘁ`).
 * `leftDualIsoRightDual X`: an isomorphism `ᘁX ≅ Xᘁ` in a pivotal category.
 * `dualFunctorIso`: a natural isomorphism between the left and right dual functors in a
   pivotal category.
+* `symmetricPivotalCategory`: the canonical pivotal structure on a rigid symmetric
+  monoidal category.
 
 ## Tags
 
@@ -47,8 +48,18 @@ class PivotalCategory (C : Type u) [Category.{v} C] [MonoidalCategory C]
 
 attribute [instance] PivotalCategory.pivotalIso_isMonoidal
 
+section Symmetric
+
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [RigidCategory C]
-  [PivotalCategory C]
+  [SymmetricCategory C]
+
+/-- The canonical pivotal structure on a rigid symmetric monoidal category. -/
+instance symmetricPivotalCategory : PivotalCategory C where
+  pivotalIso := drinfeldIso C
+
+end Symmetric
+
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [RigidCategory C] [PivotalCategory C]
 
 /-- The chosen natural isomorphism from the identity to the double right dual. -/
 abbrev pivotalIso : 𝟭 C ≅ doubleRightDualFunctor C := PivotalCategory.pivotalIso
