@@ -75,6 +75,7 @@ instance [Finite M] : IsMulFG M := by
   cases nonempty_fintype M
   exact ⟨Finset.univ, by simp⟩
 
+@[to_additive]
 theorem IsMulFG.of_surjective {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
     (hf : Function.Surjective f) [IsMulFG M] : IsMulFG N := by
   classical
@@ -87,7 +88,7 @@ end Mul
 
 namespace Monoid
 
-variable {M : Type*} [Monoid M]
+variable {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
 
 @[to_additive]
 theorem isMulFG_iff : IsMulFG M ↔ ∃ S : Finset M, Submonoid.closure (S : Set M) = ⊤ := by
@@ -106,11 +107,15 @@ theorem isMulFG_iff_finite :
   isMulFG_iff.trans
     ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
 
+@[to_additive]
+instance [IsMulFG M] : IsMulFG (MonoidHom.mrange f) :=
+  .of_surjective f.mrangeRestrict (f.mrangeRestrict_surjective)
+
 end Monoid
 
 namespace Submonoid
 
-variable {M : Type*} [Monoid M] {P : Submonoid M}
+variable {M N : Type*} [MulOneClass M] [MulOneClass N] {P : Submonoid M} (f : M →* N)
 
 @[to_additive]
 theorem isMulFG_iff : IsMulFG P ↔ ∃ S : Finset M, Submonoid.closure (S : Set M) = P := by
@@ -136,11 +141,15 @@ theorem isMulFG_top_iff : IsMulFG (⊤ : Submonoid M) ↔ IsMulFG M :=
 instance [IsMulFG M] : IsMulFG (⊤ : Submonoid M) :=
   isMulFG_top_iff.mpr ‹_›
 
+@[to_additive]
+instance [IsMulFG P] : IsMulFG (P.map f) :=
+  .of_surjective (f.submonoidMap P) (f.submonoidMap_surjective P)
+
 end Submonoid
 
 namespace Group
 
-variable {G : Type*} [Group G]
+variable {G G' : Type*} [Group G] [Group G'] (f : G →* G')
 
 @[to_additive]
 theorem isMulFG_iff : IsMulFG G ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = ⊤ := by
@@ -153,11 +162,15 @@ theorem isMulFG_iff_finite : IsMulFG G ↔ ∃ S : Set G, Subgroup.closure (S : 
   isMulFG_iff.trans
     ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
 
+@[to_additive]
+instance [IsMulFG G] : IsMulFG f.range :=
+  .of_surjective f.rangeRestrict (f.rangeRestrict_surjective)
+
 end Group
 
 namespace Subgroup
 
-variable {G : Type*} [Group G] {H : Subgroup G}
+variable {G G' : Type*} [Group G] [Group G'] {H : Subgroup G} (f : G →* G')
 
 @[to_additive]
 theorem isMulFG_iff : IsMulFG H ↔ ∃ S : Finset G, Subgroup.closure (S : Set G) = H := by
@@ -181,6 +194,10 @@ theorem isMulFG_top_iff : IsMulFG (⊤ : Subgroup G) ↔ IsMulFG G :=
 @[to_additive]
 instance [IsMulFG G] : IsMulFG (⊤ : Subgroup G) :=
   isMulFG_top_iff.mpr ‹_›
+
+@[to_additive]
+instance [IsMulFG H] : IsMulFG (H.map f) :=
+  .of_surjective (f.subgroupMap H) (f.subgroupMap_surjective H)
 
 end Subgroup
 
