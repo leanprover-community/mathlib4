@@ -60,13 +60,13 @@ theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : �
 
 theorem eventually_countable_forall [Countable ι] {p : α → ι → Prop} :
     (∀ᶠ x in l, ∀ i, p x i) ↔ ∀ i, ∀ᶠ x in l, p x i := by
-  simpa only [Filter.Eventually, setOf_forall] using
+  simpa only [Filter.Eventually, ofPred_forall] using
     @countable_iInter_mem _ _ l _ _ fun i => { x | p x i }
 
 theorem eventually_countable_ball {ι : Type*} {S : Set ι} (hS : S.Countable)
     {p : α → ∀ i ∈ S, Prop} :
     (∀ᶠ x in l, ∀ i hi, p x i hi) ↔ ∀ i hi, ∀ᶠ x in l, p x i hi := by
-  simpa only [Filter.Eventually, setOf_forall] using
+  simpa only [Filter.Eventually, ofPred_forall] using
     @countable_bInter_mem _ l _ _ _ hS fun i hi => { x | p x i hi }
 
 theorem eventually_finset_ball {ι : Type*} {S : Finset ι} {p : α → ∀ i ∈ S, Prop} :
@@ -176,13 +176,13 @@ def ofCountableUnion (l : Set (Set α))
     (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, s ∈ l) → ⋃₀ S ∈ l)
     (hmono : ∀ t ∈ l, ∀ s ⊆ t, s ∈ l) : Filter α := by
   refine .ofCountableInter {s | sᶜ ∈ l} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
-  · rw [mem_setOf_eq, compl_sInter]
+  · rw [mem_ofPred_eq, compl_sInter]
     apply hUnion (compl '' S) (hSc.image _)
     intro s hs
     rw [mem_image] at hs
     rcases hs with ⟨t, ht, rfl⟩
     apply hSp ht
-  · rw [mem_setOf_eq]
+  · rw [mem_ofPred_eq]
     rw [← compl_subset_compl] at hsub
     exact hmono sᶜ ht tᶜ hsub
 

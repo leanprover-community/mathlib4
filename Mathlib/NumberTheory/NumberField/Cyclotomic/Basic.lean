@@ -137,7 +137,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
   refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton_of_prime_pow hζ).isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
-    simp only [Set.singleton_subset_iff, Set.mem_setOf_eq]
+    simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩
     exact IsIntegral.algebraMap ((IsCyclotomicExtension.integral {p ^ k} ℤ _).isIntegral _)
@@ -822,7 +822,7 @@ theorem cyclotomicRing_isIntegralClosure :
   refine ⟨IsFractionRing.injective _ _, fun {x} => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton hζ).isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
-    simp only [Set.singleton_subset_iff, Set.mem_setOf_eq]
+    simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩
     exact IsIntegral.algebraMap ((IsCyclotomicExtension.integral {n} ℤ _).isIntegral _)

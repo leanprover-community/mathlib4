@@ -158,8 +158,10 @@ protected alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 protected alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 
 @[simp high]
-protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p]
+protected theorem toFinset_ofPred [Fintype α] (p : α → Prop) [DecidablePred p]
     (h : { x | p x }.Finite) : h.toFinset = ({x | p x} : Finset α) := by simp
+
+@[deprecated (since := "2026-07-09")] protected alias toFinset_setOf := Set.Finite.toFinset_ofPred
 
 @[simp]
 nonrec theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
@@ -819,7 +821,7 @@ theorem Finite.card_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
 theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :
     Fintype.card { x : α | x ≠ a } = Fintype.card α - 1 := by
   have := Classical.decEq α
-  rw [← toFinset_card, toFinset_setOf, Finset.filter_ne',
+  rw [← toFinset_card, toFinset_ofPred, Finset.filter_ne',
     Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ]
 
 /-! ### Infinite sets -/
@@ -915,7 +917,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have : Finite (f '' s) := finite_coe_iff.mpr h_fin
   have : Infinite s := infinite_coe_iff.mpr h_inf
   have h := not_injective_infinite_finite
-            ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
+            ((f '' s).codRestrict (s.domRestrict f) fun x => ⟨x, x.property, rfl⟩)
   contrapose h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 

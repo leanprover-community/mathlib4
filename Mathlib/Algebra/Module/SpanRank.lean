@@ -196,7 +196,7 @@ theorem FG.exists_span_finset_card_eq_spanFinrank {p : Submodule R M} (h : p.FG)
   obtain ⟨s, ⟨hs₁, hs₂⟩⟩ := exists_span_set_encard_eq_spanFinrank h
   have s_f := Set.finite_of_encard_eq_coe hs₁
   refine ⟨s_f.toFinset, ⟨?_, by simpa using hs₂⟩⟩
-  simpa [s_f.encard_eq_coe_toFinset_card, ENat.coe_inj] using hs₁
+  simpa [s_f.encard_eq_coe_toFinset_card, ENat.natCast_inj] using hs₁
 
 lemma lift_spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Cardinal.{max u v}} :
     Cardinal.lift.{v} p.spanRank ≤ a ↔ ∃ s : Set M, Cardinal.lift.{v} #s ≤ a ∧ span R s = p := by
