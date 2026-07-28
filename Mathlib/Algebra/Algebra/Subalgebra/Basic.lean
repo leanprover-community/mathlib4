@@ -931,6 +931,10 @@ theorem map_center_le_center {F} [FunLike F A B] [AlgHomClass F R A B] {f : F}
     (hf : Function.Surjective f) : map (AlgHomClass.toAlgHom f) (center R A) ≤ center R B :=
   NonUnitalSubsemiring.map_center_le_center hf
 
+theorem center_le_comap_center {F} [FunLike F A B] [AlgHomClass F R A B] {f : F}
+    (hf : Function.Surjective f) : center R A ≤ comap (AlgHomClass.toAlgHom f) (center R B) :=
+  NonUnitalSubsemiring.center_le_comap_center hf
+
 @[simp]
 theorem map_center_eq {F} [EquivLike F A B] [AlgEquivClass F R A B] {f : F} :
     map (AlgHomClass.toAlgHom f) (center R A) = center R B :=

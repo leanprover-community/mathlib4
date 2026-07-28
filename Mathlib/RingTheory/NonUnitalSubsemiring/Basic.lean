@@ -286,7 +286,7 @@ instance decidableMemCenter {R} [NonUnitalSemiring R] [DecidableEq R] [Fintype R
 theorem map_center_le_center {F} [NonUnitalNonAssocSemiring S] [FunLike F R S]
     [NonUnitalRingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     map f (center R) ≤ center S :=
-  Set.image_center_le hf
+  Set.image_center_subset hf
 
 theorem center_le_comap_center {F} [NonUnitalNonAssocSemiring S] [FunLike F R S]
     [NonUnitalRingHomClass F R S] {f : F} (hf : Function.Surjective f) :
