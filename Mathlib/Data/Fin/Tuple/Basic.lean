@@ -555,7 +555,7 @@ theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : 
 @[simp]
 theorem snoc_castAdd {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
-  dif_pos _
+  dite_eq_left _
 
 @[simp]
 theorem snoc_comp_castAdd {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
@@ -860,7 +860,8 @@ theorem insertNth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succ
 @[simp]
 theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
     (j : Fin n) : insertNth i x p (i.succAbove j) = p j := by
-  simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _), succAbove_lt_iff_castSucc_lt]
+  simp only [insertNth, succAboveCases, dite_eq_right (succAbove_ne _ _),
+    succAbove_lt_iff_castSucc_lt]
   split_ifs with hlt
   · generalize_proofs H₁ H₂; revert H₂
     generalize hk : castPred ((succAbove i) j) H₁ = k
@@ -931,12 +932,12 @@ theorem insertNth_right_injective {p : Fin (n + 1)} (x : α p) :
 theorem insertNth_apply_below {i j : Fin (n + 1)} (h : j < i) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
     i.insertNth x p j = succAbove_castPred_of_lt _ _ h ▸ (p <| j.castPred _) := by
-  rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_lt h), dif_pos h]
+  rw [insertNth, succAboveCases, dite_eq_right (Fin.ne_of_lt h), dite_eq_left h]
 
 theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
     i.insertNth x p j = succAbove_pred_of_lt _ _ h ▸ (p <| j.pred _) := by
-  rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_gt h), dif_neg (Fin.lt_asymm h)]
+  rw [insertNth, succAboveCases, dite_eq_right (Fin.ne_of_gt h), dite_eq_right (Fin.lt_asymm h)]
 
 theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
     insertNth 0 x p =
@@ -1276,16 +1277,16 @@ def contractNth (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → �
 
 theorem contractNth_apply_of_lt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (k : ℕ) < j) : contractNth j op g k = g (Fin.castSucc k) :=
-  if_pos h
+  ite_eq_left h
 
 theorem contractNth_apply_of_eq (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (k : ℕ) = j) : contractNth j op g k = op (g (Fin.castSucc k)) (g k.succ) := by
   have : ¬(k : ℕ) < j := not_lt.2 (le_of_eq h.symm)
-  rw [contractNth, if_neg this, if_pos h]
+  rw [contractNth, ite_eq_right this, ite_eq_left h]
 
 theorem contractNth_apply_of_gt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (j : ℕ) < k) : contractNth j op g k = g k.succ := by
-  rw [contractNth, if_neg (not_lt_of_gt h), if_neg (Ne.symm <| ne_of_lt h)]
+  rw [contractNth, ite_eq_right (not_lt_of_gt h), ite_eq_right (Ne.symm <| ne_of_lt h)]
 
 theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by

@@ -54,10 +54,10 @@ def orderedInsert (a : α) : List α → List α
 
 theorem orderedInsert_cons_of_le {a b : α} (l : List α) (h : a ≼ b) :
     orderedInsert r a (b :: l) = a :: b :: l :=
-  dif_pos h
+  dite_eq_left h
 
 theorem orderedInsert_of_not_le {a b : α} (l : List α) (h : ¬ a ≼ b) :
-    orderedInsert r a (b :: l) = b :: orderedInsert r a l := dif_neg h
+    orderedInsert r a (b :: l) = b :: orderedInsert r a l := dite_eq_right h
 
 /-- `insertionSort l` returns `l` sorted using the insertion sort algorithm. -/
 def insertionSort : List α → List α := foldr (orderedInsert r) []
@@ -193,7 +193,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · have hba := pairwise_cons.mp hb |>.left _ (mem_of_cons_sublist ‹a :: as <+ bs›)
         exact absurd (trans_of _ ‹r x b› hba) hr
       · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
-        rw [orderedInsert_cons, if_neg hr] at ih
+        rw [orderedInsert_cons, ite_eq_right hr] at ih
         exact .cons _ ih
       · simp_all
       · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons

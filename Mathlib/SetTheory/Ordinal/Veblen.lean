@@ -68,11 +68,11 @@ termination_by o
 
 @[simp]
 theorem veblenWith_zero (f : Ordinal → Ordinal) : veblenWith f 0 = f := by
-  rw [veblenWith, if_pos rfl]
+  rw [veblenWith, ite_eq_left rfl]
 
 theorem veblenWith_of_ne_zero (f : Ordinal → Ordinal) (h : o ≠ 0) :
     veblenWith f o = derivFamily fun x : Iio o ↦ veblenWith f x.1 := by
-  rw [veblenWith, if_neg h]
+  rw [veblenWith, ite_eq_right h]
 
 /-- `veblenWith f o` is always normal for `o ≠ 0`. See `isNormal_veblenWith` for a version which
 assumes `IsNormal f`. -/

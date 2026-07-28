@@ -274,7 +274,7 @@ lemma length_eq [Nonempty R] (s : Set R) :
   simp [length]
 
 lemma length_eq_of_isEmpty [IsEmpty R] (s : Set R) : f.length s = 0 := by
-  simp only [length, if_pos]
+  simp only [length, ite_eq_left]
 
 @[simp]
 theorem length_empty : f.length ∅ = 0 := by

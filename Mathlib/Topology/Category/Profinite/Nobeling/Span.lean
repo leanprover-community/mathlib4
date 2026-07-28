@@ -62,7 +62,7 @@ instance : Fintype (π C (· ∈ s)) := by
   ext i
   by_cases hi : i ∈ s
   · exact congrFun h ⟨i, hi⟩
-  · simp only [Proj, if_neg hi]
+  · simp only [Proj, ite_eq_right hi]
 
 open scoped Classical in
 /-- The Kronecker delta as a locally constant map from `π C (· ∈ s)` to `ℤ`. -/
@@ -105,15 +105,16 @@ theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x)
   rintro _ ⟨a, ⟨b, _, rfl⟩, rfl⟩
   dsimp
   split_ifs with hh
-  · rw [e, LocallyConstant.coe_mk, if_pos hh]
-  · rw [LocallyConstant.sub_apply, e, LocallyConstant.coe_mk, LocallyConstant.coe_mk, if_neg hh]
+  · rw [e, LocallyConstant.coe_mk, ite_eq_left hh]
+  · rw [LocallyConstant.sub_apply, e, LocallyConstant.coe_mk, LocallyConstant.coe_mk,
+      ite_eq_right hh]
     simp only [LocallyConstant.toFun_eq_coe, LocallyConstant.coe_one, Pi.one_apply, sub_zero]
 
 theorem e_mem_of_eq_true {x : (π C (· ∈ s))} {a : I} (hx : x.val a = true) :
     e (π C (· ∈ s)) a ∈ factors C s x := by
   rcases x with ⟨_, z, hz, rfl⟩
   simp only [factors, List.mem_map, Finset.mem_sort]
-  refine ⟨a, ?_, if_pos hx⟩
+  refine ⟨a, ?_, ite_eq_left hx⟩
   aesop (add simp Proj)
 
 theorem one_sub_e_mem_of_false {x y : (π C (· ∈ s))} {a : I} (ha : y.val a = true)
@@ -134,10 +135,10 @@ theorem factors_prod_eq_basis_of_ne {x y : (π C (· ∈ s))} (h : y ≠ x) :
   · rw [hx, ne_eq, Bool.not_eq_false] at ha
     refine ⟨1 - (e (π C (· ∈ s)) a), ⟨one_sub_e_mem_of_false _ _ ha hx, ?_⟩⟩
     rw [e, LocallyConstant.evalMonoidHom_apply, LocallyConstant.sub_apply,
-      LocallyConstant.coe_one, Pi.one_apply, LocallyConstant.coe_mk, if_pos ha, sub_self]
+      LocallyConstant.coe_one, Pi.one_apply, LocallyConstant.coe_mk, ite_eq_left ha, sub_self]
   · refine ⟨e (π C (· ∈ s)) a, ⟨e_mem_of_eq_true _ _ hx, ?_⟩⟩
     rw [hx] at ha
-    rw [LocallyConstant.evalMonoidHom_apply, e, LocallyConstant.coe_mk, if_neg ha]
+    rw [LocallyConstant.evalMonoidHom_apply, e, LocallyConstant.coe_mk, ite_eq_right ha]
 
 /-- If `s` is finite, the product of the elements of the list `factors C s x`
 is the delta function at `x`. -/

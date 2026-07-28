@@ -283,11 +283,11 @@ instance sub : Sub Ordinal where
   sub a b := if h : b ≤ a then Classical.choose (exists_add_of_le h) else 0
 
 private theorem sub_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a - b = 0 :=
-  dif_neg h.not_ge
+  dite_eq_right h.not_ge
 
 protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - b) = a := by
   change b + dite _ _ _ = a
-  rw [dif_pos h]
+  rw [dite_eq_left h]
   exact (Classical.choose_spec (exists_add_of_le h)).symm
 
 @[simp]

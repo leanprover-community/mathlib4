@@ -103,7 +103,7 @@ lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
   gcongr
   rw [← Nat.cast_pred hk', Nat.cast_le]
   suffices {a ∈ Ioc 0 k | a ∈ A} ⊆ Ioo 0 k from (card_le_card this).trans_eq (by simp)
-  rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
+  rw [← Ioo_insert_right hk', filter_insert, ite_eq_right hk]
   exact filter_subset _ _
 
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/

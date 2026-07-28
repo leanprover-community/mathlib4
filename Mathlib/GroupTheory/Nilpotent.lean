@@ -527,7 +527,7 @@ noncomputable def Group.nilpotencyClass : ℕ :=
 @[to_additive]
 theorem Group.nilpotencyClass_of_not_nilpotent (hG : ¬ IsNilpotent G) :
     Group.nilpotencyClass G = 0 :=
-  dif_neg hG
+  dite_eq_right hG
 
 variable [hG : IsNilpotent G]
 
@@ -535,7 +535,7 @@ open scoped Classical in
 @[to_additive]
 theorem Group.nilpotencyClass_def :
     Group.nilpotencyClass G = Nat.find (IsNilpotent.nilpotent G) :=
-  dif_pos hG
+  dite_eq_left hG
 
 namespace Subgroup
 

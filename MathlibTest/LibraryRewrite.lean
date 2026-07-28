@@ -130,7 +130,7 @@ info: Pattern n / 2
 
 Pattern x / y
 · if 0 < 2 ∧ 2 ≤ n then (n - 2) / 2 + 1 else 0
-  Nat.div_eq
+  Nat.div_eq_ite
 · (n - n % 2) / 2
   Nat.div_eq_sub_mod_div
 · 0

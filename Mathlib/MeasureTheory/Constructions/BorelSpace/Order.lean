@@ -1008,8 +1008,8 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   rcases isEmpty_or_nonempty (Subtype p) with hp | hp
   · simp [hv.liminf_eq_sSup_iUnion_iInter]
   by_cases H : ∃ (j : Subtype p), s j = ∅
-  · simp_rw [hv.liminf_eq_ite, if_pos H, measurable_const]
-  simp_rw [hv.liminf_eq_ite, if_neg H]
+  · simp_rw [hv.liminf_eq_ite, ite_eq_left H, measurable_const]
+  simp_rw [hv.liminf_eq_ite, ite_eq_right H]
   have : ∀ i, Countable (s i) := fun i ↦ countable_coe_iff.2 (hs i)
   let m : Subtype p → Set δ := fun j ↦ {x | BddBelow (range (fun (i : s j) ↦ f i x))}
   have m_meas : ∀ j, MeasurableSet (m j) :=
@@ -1035,9 +1035,9 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
     ext x
     have A : reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := rfl
     split_ifs with hjx
-    · have : reparam x j = j := by rw [A, if_pos hjx]
+    · have : reparam x j = j := by rw [A, ite_eq_left hjx]
       simp only [hF1, this]
-    · have : reparam x j = g (Nat.find (Z x)) := by rw [A, if_neg hjx]
+    · have : reparam x j = g (Nat.find (Z x)) := by rw [A, ite_eq_right hjx]
       simp only [hF1, this]
   rw [this]
   apply Measurable.piecewise (m_meas j) (F0_meas j)

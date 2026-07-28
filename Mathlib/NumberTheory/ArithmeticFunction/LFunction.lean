@@ -134,7 +134,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
 set_option backward.isDefEq.respectTransparency.types false in
 theorem ofPowerSeries_apply {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (n : ℕ) :
     ofPowerSeries q f n = Function.extend (q ^ ·) (f.coeff ·) 0 n := by
-  simp [ofPowerSeries, dif_pos hq]
+  simp [ofPowerSeries, dite_eq_left hq]
 
 theorem ofPowerSeries_apply_pow {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (k : ℕ) :
     ofPowerSeries q f (q ^ k) = f.coeff k := by
@@ -150,7 +150,7 @@ theorem ofPowerSeries_apply_one (q : ℕ) (f : PowerSeries R) :
     ofPowerSeries q f 1 = f.constantCoeff := by
   by_cases hq : 1 < q
   · rw [← pow_zero q, ofPowerSeries_apply_pow hq, PowerSeries.coeff_zero_eq_constantCoeff]
-  · simp [ofPowerSeries, dif_neg hq]
+  · simp [ofPowerSeries, dite_eq_right hq]
 
 end CommSemiring
 

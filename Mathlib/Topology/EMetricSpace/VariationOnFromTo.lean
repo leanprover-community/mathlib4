@@ -36,18 +36,18 @@ variable (f : α → E) (s : Set α)
 
 protected theorem self (a : α) : variationOnFromTo f s a a = 0 := by
   dsimp only [variationOnFromTo]
-  rw [if_pos le_rfl, Icc_self, eVariationOn.subsingleton, ENNReal.toReal_zero]
+  rw [ite_eq_left le_rfl, Icc_self, eVariationOn.subsingleton, ENNReal.toReal_zero]
   exact fun x hx y hy => hx.2.trans hy.2.symm
 
 protected theorem nonneg_of_le {a b : α} (h : a ≤ b) : 0 ≤ variationOnFromTo f s a b := by
-  simp only [variationOnFromTo, if_pos h, ENNReal.toReal_nonneg]
+  simp only [variationOnFromTo, ite_eq_left h, ENNReal.toReal_nonneg]
 
 protected theorem eq_neg_swap (a b : α) :
     variationOnFromTo f s a b = -variationOnFromTo f s b a := by
   rcases lt_trichotomy a b with (ab | rfl | ba)
-  · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_ge, neg_neg]
+  · simp only [variationOnFromTo, ite_eq_left ab.le, ite_eq_right ab.not_ge, neg_neg]
   · simp only [variationOnFromTo.self, neg_zero]
-  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge]
+  · simp only [variationOnFromTo, ite_eq_left ba.le, ite_eq_right ba.not_ge]
 
 protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s a b ≤ 0 := by
   rw [variationOnFromTo.eq_neg_swap]
@@ -64,7 +64,7 @@ theorem abs_le_eVariationOn (hf : BoundedVariationOn f s) {a b : α} :
 
 protected theorem eq_of_le {a b : α} (h : a ≤ b) :
     variationOnFromTo f s a b = (eVariationOn f (s ∩ Icc a b)).toReal :=
-  if_pos h
+  ite_eq_left h
 
 protected theorem eq_of_ge {a b : α} (h : b ≤ a) :
     variationOnFromTo f s a b = -(eVariationOn f (s ∩ Icc b a)).toReal := by

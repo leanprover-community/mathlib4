@@ -11,13 +11,13 @@ section
 set_option linter.style.setOption true
 
 /--
-warning: `linter.style.commandStart` has been deprecated: use the `linter.style.whitespace` option instead
+warning: `linter.style.commandStart` has been deprecated: Use `linter.style.whitespace` instead
 -/
 #guard_msgs in
 set_option linter.style.commandStart true
 
 /--
-warning: `linter.style.commandStart` has been deprecated: use the `linter.style.whitespace` option instead
+warning: `linter.style.commandStart` has been deprecated: Use `linter.style.whitespace` instead
 -/
 #guard_msgs in
 set_option linter.style.commandStart true in

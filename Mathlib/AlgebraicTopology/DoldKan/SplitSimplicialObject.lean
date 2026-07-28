@@ -53,7 +53,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem cofan_inj_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
     (h : B ≠ A) : (s.cofan Δ).inj A ≫ s.πSummand B = 0 := by
   dsimp [πSummand]
-  rw [ι_desc, dif_neg h.symm]
+  rw [ι_desc, dite_eq_right h.symm]
 
 variable [Preadditive C]
 

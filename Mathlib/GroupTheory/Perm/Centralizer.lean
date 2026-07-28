@@ -281,13 +281,13 @@ theorem ofPermHomFun_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
     rw [← IsCycleOn.zpow_apply_eq_zpow_apply
       (isCycleOn_support_of_mem_cycleFactorsFinset c.prop) (mem_support_self a c)]
     rw [hn, hm]
-  simp only [ofPermHomFun, dif_pos hx'']
+  simp only [ofPermHomFun, dite_eq_left hx'']
   congr
   exact hx'.symm
 
 theorem ofPermHomFun_apply_of_mem_fixedPoints {x : α} (hx : x ∈ Function.fixedPoints g) :
     ofPermHomFun a τ x = x := by
-  rw [ofPermHomFun, dif_neg]
+  rw [ofPermHomFun, dite_eq_right]
   rw [cycleOf_mem_cycleFactorsFinset_iff, notMem_support]
   exact hx
 
@@ -704,7 +704,7 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     apply Nat.div_eq_of_eq_mul_left
     · have : 0 < m.prod := Multiset.prod_pos <| fun a ha => zero_lt_two.trans_le (hm.2 a ha)
       positivity
-    rw [card_of_cycleType_mul_eq, if_pos hm]
+    rw [card_of_cycleType_mul_eq, ite_eq_left hm]
   · -- empty case
     exact (card_of_cycleType_eq_zero_iff α).mpr hm
 
@@ -717,7 +717,7 @@ lemma card_of_cycleType_singleton {n : ℕ} (hn' : 2 ≤ n) (hα : n ≤ card α
   have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred hn₀]
   rw [mul_comm, ← Nat.mul_left_inj hn₀, mul_assoc, ← aux, ← Nat.mul_left_inj (factorial_ne_zero _),
     Nat.choose_mul_factorial_mul_factorial hα, mul_assoc]
-  simpa [ite_and, if_pos hα, if_pos hn', mul_comm _ n, mul_assoc]
+  simpa [ite_and, ite_eq_left hα, ite_eq_left hn', mul_comm _ n, mul_assoc]
     using card_of_cycleType_mul_eq α {n}
 
 end Equiv.Perm
