@@ -43,8 +43,6 @@ structure Subfunctor (F : C ⥤ Type w) where
   `F i x` is in `F(V)`. -/
   map : ∀ {U V : C} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 
-@[deprecated (since := "2025-12-11")] alias Subpresheaf := Subfunctor
-
 variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 
 instance : PartialOrder (Subfunctor F) :=
@@ -190,26 +188,6 @@ theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
 
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.le_def := le_def
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.top_obj := top_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.bot_obj := bot_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.sSup_obj := sSup_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.sInf_obj := sInf_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.iSup_obj := iSup_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.iInf_obj := iInf_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.max_obj := max_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.min_obj := min_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.max_min := max_min
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.iSup_min := iSup_min
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toFunctor := toFunctor
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.ι := ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.homOfLe := homOfLe
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.homOfLe_ι := homOfLe_ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.eq_top_iff_isIso := eq_top_iff_isIso
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.nat_trans_naturality := nat_trans_naturality
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf := toFunctor
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_obj := toFunctor_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_map_coe := toFunctor_map
 @[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
 
 end Subfunctor

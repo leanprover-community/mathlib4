@@ -47,7 +47,6 @@ universe v u
 
 variable (R : Type u) [Ring R]
 
-set_option backward.privateInPublic true in
 /-- The category of R-modules and their morphisms.
 
 Note that in the case of `R = ℤ`, we cannot

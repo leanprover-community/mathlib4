@@ -100,10 +100,9 @@ theorem simple_obj_iff {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤
 
 theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
     (w : f ≠ 0) : kernel.ι f = 0 := by
-  classical
-    by_contra h
-    haveI := isIso_of_mono_of_nonzero h
-    exact w (eq_zero_of_epi_kernel f)
+  by_contra h
+  have := isIso_of_mono_of_nonzero h
+  exact w (eq_zero_of_epi_kernel f)
 
 -- See also `mono_of_nonzero_from_simple`, which requires `Preadditive C`.
 /-- A nonzero morphism `f` to a simple object is an epimorphism
@@ -112,14 +111,13 @@ theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [H
 theorem epi_of_nonzero_to_simple [HasEqualizers C] {X Y : C} [Simple Y] {f : X ⟶ Y} [HasImage f]
     (w : f ≠ 0) : Epi f := by
   rw [← image.fac f]
-  haveI : IsIso (image.ι f) := isIso_of_mono_of_nonzero fun h => w (eq_zero_of_image_eq_zero h)
+  have : IsIso (image.ι f) := isIso_of_mono_of_nonzero fun h => w (eq_zero_of_image_eq_zero h)
   apply epi_comp
 
 theorem mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f]
     (w : IsIso f → False) : f = 0 := by
-  classical
-    by_contra h
-    exact w (isIso_of_mono_of_nonzero h)
+  by_contra h
+  exact w (isIso_of_mono_of_nonzero h)
 
 theorem id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
   (Simple.mono_isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
@@ -156,18 +154,17 @@ simple. -/
 theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso f ↔ f ≠ 0) :
     Simple X :=
   ⟨fun {Y} f I => by
-    classical
-      fconstructor
-      · intros
-        have hx := cokernel.π_of_epi f
-        by_contra h
-        subst h
-        exact (h _).mp inferInstance hx
-      · intro hf
-        suffices Epi f by exact isIso_of_mono_of_epi _
-        apply Preadditive.epi_of_cokernel_zero
-        by_contra h'
-        exact cokernel_not_iso_of_nonzero hf ((h _).mpr h')⟩
+    fconstructor
+    · intros
+      have hx := cokernel.π_of_epi f
+      by_contra h
+      subst h
+      exact (h _).mp inferInstance hx
+    · intro hf
+      suffices Epi f by exact isIso_of_mono_of_epi _
+      apply Preadditive.epi_of_cokernel_zero
+      by_contra h'
+      exact cokernel_not_iso_of_nonzero hf ((h _).mpr h')⟩
 
 /-- A nonzero epimorphism from a simple object is an isomorphism. -/
 theorem isIso_of_epi_of_nonzero {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f] (w : f ≠ 0) : IsIso f :=
@@ -178,16 +175,14 @@ theorem isIso_of_epi_of_nonzero {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f] (w : 
 
 theorem cokernel_zero_of_nonzero_to_simple {X Y : C} [Simple Y] {f : X ⟶ Y} (w : f ≠ 0) :
     cokernel.π f = 0 := by
-  classical
-    by_contra h
-    haveI := isIso_of_epi_of_nonzero h
-    exact w (eq_zero_of_mono_cokernel f)
+  by_contra h
+  have := isIso_of_epi_of_nonzero h
+  exact w (eq_zero_of_mono_cokernel f)
 
 theorem epi_from_simple_zero_of_not_iso {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f]
     (w : IsIso f → False) : f = 0 := by
-  classical
-    by_contra h
-    exact w (isIso_of_epi_of_nonzero h)
+  by_contra h
+  exact w (isIso_of_epi_of_nonzero h)
 
 end Abelian
 

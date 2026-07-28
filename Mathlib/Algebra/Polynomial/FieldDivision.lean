@@ -368,7 +368,6 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
-    classical
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
       not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
     rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
@@ -652,7 +651,6 @@ then `f / (X - a)` is coprime with `X - a`.
 Note that we do not assume `f a = 0`, because `f / (X - a) = (f - f a) / (X - a)`. -/
 theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f : K[X]) (a : K)
     (hf' : f.derivative.eval a ≠ 0) : IsCoprime (X - C a : K[X]) (f /ₘ (X - C a)) := by
-  classical
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
         (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_
