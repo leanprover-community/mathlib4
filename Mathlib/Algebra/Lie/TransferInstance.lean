@@ -71,8 +71,7 @@ end
 
 namespace Equiv
 
-variable {α β : Type*} [LieRing β] (e : α ≃ β)
-variable {R : Type*} [CommRing R] [LieAlgebra R β]
+variable {R L' L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (e : L' ≃ L)
 
 /-- Transfer `LieRing` across an `Equiv` -/
 protected abbrev lieRing : LieRing α :=
