@@ -58,18 +58,23 @@ structure IsPivot [LT m] [LT n] (A : Matrix m n R) (l : m → WithTop n) : Prop 
 
 theorem IsPivot.eq_top_iff [LT m] [LT n] {i : m} (h : A.IsPivot l) :
     l i = ⊤ ↔ A i = 0 := by
-  refine ⟨fun htop => isLeadingEntry_top_iff.mp (htop ▸ h.isLeadingEntry i), fun h0 => ?_⟩
-  by_contra hne
-  obtain ⟨c, hc⟩ := WithTop.ne_top_iff_exists.mp hne
-  exact (h.isLeadingEntry i).2 c hc.symm (congrFun h0 c)
+  constructor
+  · intro htop
+    exact isLeadingEntry_top_iff.mp (htop ▸ h.isLeadingEntry i)
+  · intro h0
+    by_contra hne
+    obtain ⟨c, hc⟩ := WithTop.ne_top_iff_exists.mp hne
+    exact (h.isLeadingEntry i).2 c hc.symm (congrFun h0 c)
 
 theorem IsPivot.lt_of_lt_of_ne_top [LT m] [LinearOrder n] {i₁ i₂ : m}
     (h : A.IsPivot l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
-  refine lt_of_not_ge fun hge => ?_
+  refine lt_of_not_ge ?_
+  intro hge
   have h₂ : l i₂ ≠ ⊤ := fun ht => h₁ (top_le_iff.mp (ht ▸ hge))
   obtain ⟨c₂, hc₂⟩ := WithTop.ne_top_iff_exists.mp h₂
-  exact (h.isLeadingEntry i₂).2 c₂ hc₂.symm (h.isRowEchelon hlt fun j hj =>
-    (h.isLeadingEntry i₁).1 j ((hc₂ ▸ WithTop.coe_lt_coe.mpr hj).trans_le hge))
+  refine (h.isLeadingEntry i₂).2 c₂ hc₂.symm (h.isRowEchelon hlt ?_)
+  intro j hj
+  exact (h.isLeadingEntry i₁).1 j ((hc₂ ▸ WithTop.coe_lt_coe.mpr hj).trans_le hge)
 
 theorem IsPivot.monotone [PartialOrder m] [LinearOrder n] (h : A.IsPivot l) :
     Monotone l := by
@@ -81,28 +86,35 @@ theorem IsPivot.monotone [PartialOrder m] [LinearOrder n] (h : A.IsPivot l) :
     · exact (h.lt_of_lt_of_ne_top hlt h₁).le
 
 theorem IsPivot.strictMonoOn [Preorder m] [LinearOrder n] (h : A.IsPivot l) :
-    StrictMonoOn l {i | l i ≠ ⊤} :=
-  fun _ ha _ _ hab => h.lt_of_lt_of_ne_top hab ha
+    StrictMonoOn l {i | l i ≠ ⊤} := by
+  intro i₁ h₁ i₂ _ hlt
+  exact h.lt_of_lt_of_ne_top hlt h₁
 
 /-- The pivot map of a matrix is unique. -/
 theorem IsPivot.unique [LT m] [LinearOrder n] {l' : m → WithTop n}
-    (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' :=
-  funext fun i => (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
+    (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' := by
+  funext i
+  exact (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
 
 /-- The staircase characterisation of a pivot map. -/
 theorem isPivot_iff [PartialOrder m] [LinearOrder n] :
     A.IsPivot l ↔
       Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧ ∀ i : m, A.IsLeadingEntry i (l i) := by
-  refine ⟨fun h => ⟨h.monotone, h.strictMonoOn, h.isLeadingEntry⟩, ?_⟩
-  rintro ⟨hmono, hstrict, hlead⟩
-  refine ⟨fun i₁ i₂ hlt j₂ hz => (hlead i₂).1 j₂ ?_, hlead⟩
-  rcases eq_or_ne (l i₂) ⊤ with h₂ | h₂
-  · rw [h₂]
-    exact WithTop.coe_lt_top j₂
-  · have h₁ : l i₁ ≠ ⊤ := fun ht => h₂ (top_le_iff.mp (ht ▸ hmono hlt.le))
-    refine lt_of_le_of_lt (not_lt.mp fun hc => ?_) (hstrict h₁ h₂ hlt)
-    obtain ⟨c₁, hc₁, hcj⟩ := WithTop.lt_iff_exists_coe.mp hc
-    exact (hlead i₁).2 c₁ hc₁ (hz c₁ (WithTop.coe_lt_coe.mp hcj))
+  constructor
+  · intro h
+    exact ⟨h.monotone, h.strictMonoOn, h.isLeadingEntry⟩
+  · rintro ⟨hmono, hstrict, hlead⟩
+    refine ⟨?_, hlead⟩
+    intro i₁ i₂ hlt j₂ hz
+    refine (hlead i₂).1 j₂ ?_
+    rcases eq_or_ne (l i₂) ⊤ with h₂ | h₂
+    · rw [h₂]
+      exact WithTop.coe_lt_top j₂
+    · have h₁ : l i₁ ≠ ⊤ := fun ht => h₂ (top_le_iff.mp (ht ▸ hmono hlt.le))
+      refine lt_of_le_of_lt (not_lt.mp ?_) (hstrict h₁ h₂ hlt)
+      intro hc
+      obtain ⟨c₁, hc₁, hcj⟩ := WithTop.lt_iff_exists_coe.mp hc
+      exact (hlead i₁).2 c₁ hc₁ (hz c₁ (WithTop.coe_lt_coe.mp hcj))
 
 end Zero
 
@@ -121,9 +133,11 @@ section Rank
 variable [Fintype m] [Fintype n] {A : Matrix m n R} {l : m → WithTop n}
 
 theorem IsPivot.rank_le_card [LT m] [LT n] [DecidableEq n] [CommSemiring R]
-    [StrongRankCondition R] (h : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} :=
-  rank_le_card_of_row_eq_zero A _ fun i hi =>
-    h.eq_top_iff.mp (of_not_not fun hne => hi ((mem_filter_univ i).mpr hne))
+    [StrongRankCondition R] (h : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} := by
+  refine rank_le_card_of_row_eq_zero A _ ?_
+  intro i hi
+  have htop : l i = ⊤ := of_not_not fun hne => hi ((mem_filter_univ i).mpr hne)
+  exact h.eq_top_iff.mp htop
 
 variable [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
 
@@ -134,8 +148,9 @@ theorem IsPivot.card_le_rank (h : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank :
     have hl := h.isLeadingEntry i.1
     rw [← WithTop.coe_untop (l i.1) i.2, isLeadingEntry_coe_iff] at hl
     exact hl
-  have htri : (A.submatrix Subtype.val g).BlockTriangular id := fun i j hij =>
-    (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (h.strictMonoOn j.2 i.2 hij))
+  have htri : (A.submatrix Subtype.val g).BlockTriangular id := by
+    intro i j hij
+    exact (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (h.strictMonoOn j.2 i.2 hij))
   have hdet : (A.submatrix Subtype.val g).det ≠ 0 := by
     rw [det_of_upperTriangular htri]
     exact prod_ne_zero_iff.mpr fun i _ => (hlead i).2

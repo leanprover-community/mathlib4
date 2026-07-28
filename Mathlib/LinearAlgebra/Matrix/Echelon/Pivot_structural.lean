@@ -70,14 +70,16 @@ theorem IsPivot.isRowEchelon [Preorder m] [LinearOrder n] (h : A.IsPivot l) :
   · rw [h₂]
     exact WithTop.coe_lt_top j₂
   · have h₁ : l i₁ ≠ ⊤ := fun ht => h₂ (top_le_iff.mp (ht ▸ h.monotone hlt.le))
-    refine lt_of_le_of_lt (not_lt.mp fun hc => ?_) (h.lt_of_lt_of_ne_top hlt h₁)
+    refine lt_of_le_of_lt (not_lt.mp ?_) (h.lt_of_lt_of_ne_top hlt h₁)
+    intro hc
     obtain ⟨c₁, hc₁, hcj⟩ := WithTop.lt_iff_exists_coe.mp hc
     exact (h.isLeadingEntry i₁).2 c₁ hc₁ (hz c₁ (WithTop.coe_lt_coe.mp hcj))
 
 /-- The pivot map of a matrix is unique. -/
 theorem IsPivot.unique [Preorder m] [LinearOrder n] {l' : m → WithTop n}
-    (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' :=
-  funext fun i => (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
+    (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' := by
+  funext i
+  exact (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
 
 end Zero
 
@@ -97,10 +99,11 @@ variable [Fintype m] [Fintype n] [Preorder n] [DecidableEq n] {A : Matrix m n R}
   {l : m → WithTop n}
 
 theorem IsPivot.rank_le_card [Preorder m] [CommSemiring R] [StrongRankCondition R]
-    (h : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} :=
-  rank_le_card_of_row_eq_zero A _ fun i hi =>
-    isLeadingEntry_top_iff.mp
-      (of_not_not (fun hne => hi ((mem_filter_univ i).mpr hne)) ▸ h.isLeadingEntry i)
+    (h : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} := by
+  refine rank_le_card_of_row_eq_zero A _ ?_
+  intro i hi
+  have htop : l i = ⊤ := of_not_not fun hne => hi ((mem_filter_univ i).mpr hne)
+  exact isLeadingEntry_top_iff.mp (htop ▸ h.isLeadingEntry i)
 
 variable [LinearOrder m] [CommRing R] [IsDomain R]
 
@@ -111,8 +114,9 @@ theorem IsPivot.card_le_rank (h : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank :
     have hl := h.isLeadingEntry i.1
     rw [← WithTop.coe_untop (l i.1) i.2, isLeadingEntry_coe_iff] at hl
     exact hl
-  have htri : (A.submatrix Subtype.val g).BlockTriangular id := fun i j hij =>
-    (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (h.strictMonoOn j.2 i.2 hij))
+  have htri : (A.submatrix Subtype.val g).BlockTriangular id := by
+    intro i j hij
+    exact (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (h.strictMonoOn j.2 i.2 hij))
   have hdet : (A.submatrix Subtype.val g).det ≠ 0 := by
     rw [det_of_upperTriangular htri]
     exact prod_ne_zero_iff.mpr fun i _ => (hlead i).2

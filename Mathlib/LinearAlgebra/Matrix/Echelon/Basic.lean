@@ -45,8 +45,9 @@ def IsRowEchelon [LT m] [LT n] (M : Matrix m n R) : Prop :=
 
 /-- In an echelon matrix, rows below a zero row are zero. -/
 theorem IsRowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : M.IsRowEchelon)
-    (hlt : i₁ < i₂) (h0 : M i₁ = 0) : M i₂ = 0 :=
-  funext fun _ => he hlt fun j₁ _ => congrFun h0 j₁
+    (hlt : i₁ < i₂) (h0 : M i₁ = 0) : M i₂ = 0 := by
+  funext j
+  exact he hlt fun j₁ _ => congrFun h0 j₁
 
 /-! ### Leading entries -/
 
@@ -57,25 +58,24 @@ def IsLeadingEntry [LT n] (M : Matrix m n R) (i : m) (c : WithTop n) : Prop :=
 
 @[simp]
 theorem isLeadingEntry_top_iff [LT n] {i : m} :
-    M.IsLeadingEntry i ⊤ ↔ M i = 0 :=
-  ⟨fun h => funext fun j => h.1 j (WithTop.coe_lt_top j),
-    fun h0 => ⟨fun j _ => congrFun h0 j, fun _ hc => absurd hc WithTop.top_ne_coe⟩⟩
+    M.IsLeadingEntry i ⊤ ↔ M i = 0 := by
+  simp [IsLeadingEntry, funext_iff]
 
 @[simp]
 theorem isLeadingEntry_coe_iff [LT n] {i : m} {c : n} :
-    M.IsLeadingEntry i c ↔ (∀ j < c, M i j = 0) ∧ M i c ≠ 0 :=
-  ⟨fun h => ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mpr hj), h.2 c rfl⟩,
-    fun h => ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mp hj),
-      fun _ hc => WithTop.coe_inj.mp hc ▸ h.2⟩⟩
+    M.IsLeadingEntry i c ↔ (∀ j < c, M i j = 0) ∧ M i c ≠ 0 := by
+  simp [IsLeadingEntry]
 
 /-- A row has at most one leading position. -/
 theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : WithTop n}
     (h₁ : M.IsLeadingEntry i c₁) (h₂ : M.IsLeadingEntry i c₂) :
     c₁ = c₂ := by
-  refine le_antisymm (not_lt.mp fun hlt => ?_) (not_lt.mp fun hlt => ?_)
-  · obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
+  refine le_antisymm (not_lt.mp ?_) (not_lt.mp ?_)
+  · intro hlt
+    obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
     exact h₂.2 c₀ hc (h₁.1 c₀ hlt')
-  · obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
+  · intro hlt
+    obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
     exact h₁.2 c₀ hc (h₂.1 c₀ hlt')
 
 end Matrix
