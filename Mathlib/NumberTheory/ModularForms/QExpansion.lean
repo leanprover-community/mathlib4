@@ -612,9 +612,10 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
       pow_succ]
 
 /-- The product of two non-zero modular forms is non-zero. -/
-protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
+protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hΓ : ∃ h ∈ Γ.strictPeriods, 0 < h)
     {a b : ℤ} {f : ModularForm Γ a} {g : ModularForm Γ b} (hf : f ≠ 0) (hg : g ≠ 0) :
     f.mul g ≠ 0 := by
+  obtain ⟨h, hΓ, hh⟩ := hΓ
   simp only [ne_eq, ← ModularForm.qExpansion_eq_zero_iff hh hΓ,
     ModularForm.qExpansion_mul hh hΓ] at hf hg ⊢
   exact mul_ne_zero hf hg
