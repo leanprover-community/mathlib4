@@ -220,7 +220,7 @@ lemma Ideal.mem_minimalPrimes_of_height_le {I J : Ideal R} (e : I ≤ J) [J.IsPr
   exact lt_irrefl _ ((height_strict_mono_of_isPrime h₃).trans_le
     (e'.trans <| height_mono h₁.le))
 
-@[deprecated (since := "2026-07-25")]
+@[deprecated (since := "2026-07-28")]
 alias Ideal.mem_minimalPrimes_of_height_eq := Ideal.mem_minimalPrimes_of_height_le
 
 /-- A prime ideal has height zero if and only if it is minimal -/
