@@ -25,7 +25,6 @@ open CategoryTheory Simplicial Convexity
 
 namespace SimplexCategory
 
---attribute [local simp] stdSimplex.map_comp_apply in
 /-- The functor `SimplexCategory ⥤ TopCat.{0}`
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps obj map, implicit_reducible]

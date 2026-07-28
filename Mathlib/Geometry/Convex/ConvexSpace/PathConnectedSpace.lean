@@ -50,6 +50,7 @@ instance (M : Type*) [Nonempty M] : PathConnectedSpace (StdSimplex ℝ M) where
     source' := by simp
     target' := by simp }⟩
 
+/-- The standard one-dimension simplex is homeomorphic to the unit interval. -/
 noncomputable def homeomorphI : StdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toFun s := ⟨s.weights 1, by simp⟩
   invFun t := duple (s := 1 - t) (t := t) 0 1 (by grind) (by grind) (by simp)
