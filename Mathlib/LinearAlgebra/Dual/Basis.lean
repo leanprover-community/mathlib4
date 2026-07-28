@@ -57,6 +57,7 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
   rw [toDual, constr_basis b, constr_basis b]
   simp only [eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
@@ -64,6 +65,7 @@ theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
   simp_rw [map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq', Finsupp.if_mem_support]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
@@ -197,7 +199,7 @@ omit [DecidableEq ι]
 @[simp]
 theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R) (i : ι) :
     Finsupp.linearCombination R b.coord f (b i) = f i := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   rw [← coe_dualBasis, linearCombination_dualBasis]
 
 end CommSemiring
@@ -238,7 +240,7 @@ variable {e : ι → M} {ε : ι → Dual R M}
 def coeffs (h : DualBases e ε) (m : M) : ι →₀ R where
   toFun i := ε i m
   support := (h.finite m).toFinset
-  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_ofPred_eq]
 
 @[simp]
 theorem coeffs_apply (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i m :=

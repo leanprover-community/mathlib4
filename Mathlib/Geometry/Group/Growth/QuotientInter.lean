@@ -43,7 +43,7 @@ lemma card_pow_quotient_mul_pow_inter_subgroup_le :
     _ ≤ #(((A ^ m).image π).image φ * {x ∈ A ^ n | x ∈ H}) := by
       rw [Finset.card_mul_iff.2]
       simp only [Set.InjOn, coe_image, coe_pow, coe_filter, Set.mem_prod, Set.mem_image,
-        exists_exists_and_eq_and, Set.mem_setOf_eq, and_imp, forall_exists_index, Prod.forall,
+        exists_exists_and_eq_and, Set.mem_ofPred_eq, and_imp, forall_exists_index, Prod.forall,
         Prod.mk.injEq]
       rintro _ a₁ b₁ hb₁ rfl - ha₁ _ a₂ b₂ hb₂ rfl - ha₂ hab
       have hπa₁ : π a₁ = 1 := (QuotientGroup.eq_one_iff _).2 ha₁
@@ -61,7 +61,6 @@ lemma card_pow_quotient_mul_pow_inter_subgroup_le :
 @[to_additive]
 lemma le_card_quotient_mul_sq_inter_subgroup (hAsymm : A⁻¹ = A) :
     #A ≤ #(A.image <| QuotientGroup.mk' H) * #{x ∈ A ^ 2 | x ∈ H} := by
-  classical
   set π := QuotientGroup.mk' H
   rw [card_eq_sum_card_image π]
   refine sum_le_card_nsmul _ _ _ <| forall_mem_image.2 fun a ha ↦ ?_

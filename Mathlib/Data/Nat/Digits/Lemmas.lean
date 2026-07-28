@@ -350,7 +350,7 @@ theorem lt_of_mem_digitsAppend {b : ℕ} (hb : 1 < b) (l i : ℕ)
 
 theorem mapsTo_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.MapsTo (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} :=
-  fun _ h ↦ Set.mem_setOf.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
+  fun _ h ↦ Set.mem_ofPred.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
 
 theorem mapsTo_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.MapsTo (digitsAppend b l) {n | n < b ^ l} {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=

@@ -5,10 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.FieldTheory.Normal.Basic
-public import Mathlib.Order.Closure
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
 /-!
 # Normal closures
 
@@ -174,7 +172,7 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
 @[stacks 0BMG "When `L` is normal over `K`, this agrees with 0BMG (1) finiteness."]
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
-  haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
+  have : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
     f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
 
@@ -261,8 +259,6 @@ noncomputable def normalClosureOperator : ClosureOperator (IntermediateField F L
   monotone' K K' := normalClosure_mono K K'
   le_closure' := le_normalClosure
   idempotent' K := normalClosure_of_normal (normalClosure F K L)
-
-@[deprecated (since := "2025-11-21")] alias closureOperator := normalClosureOperator
 
 variable {K : IntermediateField F L} {F L}
 

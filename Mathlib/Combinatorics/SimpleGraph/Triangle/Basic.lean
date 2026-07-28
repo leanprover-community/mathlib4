@@ -95,7 +95,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
     = {s | G.Adj a b ∧ ∃ c, G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c}} := by
     ext s
     simp only [mem_sym2_iff, Sym2.mem_iff, forall_eq_or_imp, forall_eq,
-      mem_cliqueSet_iff, Set.mem_setOf_eq,
+      mem_cliqueSet_iff, Set.mem_ofPred_eq,
       is3Clique_iff]
     constructor
     · rintro ⟨⟨c, d, e, hcd, hce, hde, rfl⟩, hab⟩
@@ -154,7 +154,7 @@ lemma EdgeDisjointTriangles.card_edgeFinset_le (hG : G.EdgeDisjointTriangles) :
     rw [← this]
     refine card_mono ?_
     simp [insert_subset, *]
-  · simpa only [card_le_one, mem_bipartiteBelow, and_imp, Set.Subsingleton, Set.mem_setOf_eq,
+  · simpa only [card_le_one, mem_bipartiteBelow, and_imp, Set.Subsingleton, Set.mem_ofPred_eq,
       mem_cliqueFinset_iff, mem_cliqueSet_iff]
       using hG.mem_sym2_subsingleton (G.not_isDiag_of_mem_edgeSet <| mem_edgeFinset.1 he)
 
