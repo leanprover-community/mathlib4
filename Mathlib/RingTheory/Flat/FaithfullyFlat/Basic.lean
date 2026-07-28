@@ -127,7 +127,7 @@ lemma lTensor_reflects_triviality
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
     [Subsingleton (M ⊗[R] N)] :
     Subsingleton N := by
-  haveI : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
+  have : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
   apply rTensor_reflects_triviality R M
 
 attribute [-simp] Ideal.Quotient.mk_eq_mk in
@@ -139,7 +139,7 @@ lemma iff_flat_and_rTensor_faithful :
   refine ⟨fun fl => ⟨inferInstance, rTensor_nontrivial R M⟩, fun ⟨flat, faithful⟩ => ⟨?_⟩⟩
   intro m hm rid
   specialize faithful (ULift (R ⧸ m)) inferInstance
-  haveI : Nontrivial ((R ⧸ m) ⊗[R] M) :=
+  have : Nontrivial ((R ⧸ m) ⊗[R] M) :=
     (congr (ULift.moduleEquiv : ULift (R ⧸ m) ≃ₗ[R] R ⧸ m)
       (LinearEquiv.refl R M)).symm.toEquiv.nontrivial
   have := (quotTensorEquivQuotSMul M m).toEquiv.symm.nontrivial
@@ -195,7 +195,7 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
   refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
   obtain ⟨i⟩ := ‹Nonempty ι›
   obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
-  haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
+  have : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
   apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
@@ -545,10 +545,10 @@ as an `R`-module. -/
 theorem trans : FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
   refine ⟨Module.Flat.trans R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
-  rw [zero_iff_lTensor_zero (R:= R) (M := S) f,
-    show f.lTensor S = (AlgebraTensorModule.map (A:= S) LinearMap.id f).restrictScalars R by aesop,
+  rw [zero_iff_lTensor_zero (R := R) (M := S) f,
+    show f.lTensor S = (AlgebraTensorModule.map (A := S) LinearMap.id f).restrictScalars R by aesop,
     show (0 :  S ⊗[R] N →ₗ[R] S ⊗[R] N') = (0 : S ⊗[R] N →ₗ[S] S ⊗[R] N').restrictScalars R by rfl,
-    restrictScalars_inj, zero_iff_lTensor_zero (R:= S) (M := M)]
+    restrictScalars_inj, zero_iff_lTensor_zero (R := S) (M := M)]
   ext m n
   apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
   simpa using congr($aux (m ⊗ₜ[R] n))

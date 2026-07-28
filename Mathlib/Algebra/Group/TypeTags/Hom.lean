@@ -61,9 +61,6 @@ def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
 lemma MonoidHom.coe_toAdditive [MulOneClass α] [MulOneClass β] (f : α →* β) :
     ⇑(toAdditive f) = ofMul ∘ f ∘ toMul := rfl
 
-@[deprecated (since := "2025-11-07")]
-alias MonoidHom.coe_toMultiplicative := MonoidHom.coe_toAdditive
-
 @[simp] lemma MonoidHom.toAdditive_id [MulOneClass α] : (id α).toAdditive = .id _ := rfl
 
 /-- Reinterpret `Additive α →+ β` as `α →* Multiplicative β`. -/

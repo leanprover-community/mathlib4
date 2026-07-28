@@ -81,14 +81,17 @@ instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType g] :
     LocallyOfFiniteType (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType f] :
     LocallyOfFiniteType (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFiniteType f] : LocallyOfFiniteType (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -110,6 +113,7 @@ instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
     (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
@@ -138,6 +142,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
   have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
   exact PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mp (isJacobsonRing_of_finiteType (A := R))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The category of affine schemes locally of finite type over a fixed base scheme is essentially small.

@@ -72,6 +72,7 @@ private lemma of_isAffine_target {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] 
     (AffineScheme.ofHom f) (InducedCategory.Hom.ext hf)
   use u.hom, InducedCategory.Hom.ext_iff.mp hu
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open pullback in
 /-- If `π : X ⟶ Y` is surjective and flat between affine schemes, then any morphism `f : X ⟶ S` of
@@ -111,6 +112,7 @@ private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffin
 
 end EffectiveEpiConstruction
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `π : X ⟶ Y` is a flat and surjective morphism between affine schemes, then `π` is a
 regular epimorphism in the category of schemes. -/

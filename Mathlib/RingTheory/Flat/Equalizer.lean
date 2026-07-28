@@ -109,6 +109,7 @@ def LinearMap.tensorKerInv [Module.Flat R M] :
     (Module.Flat.lTensor_preserves_injective_linearMap (ker f).subtype
       (ker f).injective_subtype) (by simp [Module.Flat.ker_lTensor_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma LinearMap.lTensor_ker_subtype_tensorKerInv [Module.Flat R M]
     (x : ker (AlgebraTensorModule.lTensor S M f)) :
@@ -127,6 +128,7 @@ def LinearMap.tensorEqLocusInv [Module.Flat R M] :
     (Module.Flat.lTensor_preserves_injective_linearMap (eqLocus f g).subtype
       (eqLocus f g).injective_subtype) (by simp [Module.Flat.eqLocus_lTensor_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R M]
     (x : eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g)) :
@@ -351,3 +353,18 @@ lemma Algebra.kerTensorProductMapIdToAlgHomEquiv_symm_apply [Module.Flat R T]
       x ⊗ₜ (y * z.1) := rfl
 
 end Algebra
+
+namespace RingHom
+
+/--
+A property `P` of ring homomorphisms is said to have stable equalizers, if the equalizer
+of algebra maps between algebras with structure morphisms satisfying `P`, is preserved by
+arbitrary base change.
+-/
+def HasStableEqualizers (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
+  ∀ {R S A B : Type u} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R S] [Algebra R B]
+    (f g : A →ₐ[R] B), P (algebraMap R A) → P (algebraMap R B) →
+    Function.Bijective (f.tensorEqualizer R S g)
+
+end RingHom

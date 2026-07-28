@@ -44,14 +44,10 @@ class Quasicategory (S : SSet) : Prop where
 lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n + 1)⦄
     (h0 : 0 < i) (hn : i < Fin.last n)
     (σ₀ : (Λ[n, i] : SSet) ⟶ S) : ∃ σ : Δ[n] ⟶ S, σ₀ = Λ[n, i].ι ≫ σ := by
-  cases n using Nat.casesAuxOn with
-  | zero => simp [Fin.lt_def] at hn
-  | succ n =>
-  cases n using Nat.casesAuxOn with
-  | zero =>
-    simp only [Fin.lt_def, Fin.val_zero, Fin.val_last, zero_add, Nat.lt_one_iff] at h0 hn
-    simp [hn] at h0
-  | succ n => exact Quasicategory.hornFilling' σ₀ h0 hn
+  match n with
+  | 0
+  | 1 => lia
+  | n + 2 => exact Quasicategory.hornFilling' σ₀ h0 hn
 
 /-- Every Kan complex is a quasicategory. -/
 @[kerodon 003C]

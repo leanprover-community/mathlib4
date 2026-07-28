@@ -65,7 +65,7 @@ instance instCommGroup : CommGroup (GrothendieckGroup M) where
   inv_mul_cancel a := by
     cases a using ind
     rw [inv_mk, mk_eq_monoidOf_mk', ← Submonoid.LocalizationMap.mk'_mul]
-    convert Submonoid.LocalizationMap.mk'_self' _ _
+    convert! Submonoid.LocalizationMap.mk'_self' _ _
     rw [mul_comm, Submonoid.coe_mul]
 
 @[to_additive (attr := simp)]
@@ -84,6 +84,7 @@ noncomputable def lift : (M →* G) ≃ (GrothendieckGroup M →* G) where
   left_inv f := by ext; simp
   right_inv f := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma lift_apply (f : M →* G) (x : GrothendieckGroup M) :
     lift f x = f ((monoidOf ⊤).sec x).1 / f ((monoidOf ⊤).sec x).2 := by

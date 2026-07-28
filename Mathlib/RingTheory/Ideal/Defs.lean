@@ -94,7 +94,7 @@ with the kernel of `LinearMap.toSpanSingleton R M (m - m')`. -/
 def Module.eqIdeal (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M) : Ideal R where
   carrier := {r : R | r • m = r • m'}
   add_mem' h h' := by simpa [add_smul] using congr($h + $h')
-  zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
+  zero_mem' := by simp_rw [Set.mem_ofPred, zero_smul]
   smul_mem' _ _ h := by simpa [mul_smul] using congr(_ • $h)
 
 end Semiring
@@ -146,11 +146,18 @@ theorem mul_sub_mul_mem [I.IsTwoSided]
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
 
-/--
-The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`.
--/
-abbrev inertia (G : Type*) [Group G] [MulAction G α] (I : Ideal α) :
-    Subgroup G := AddSubgroup.inertia I.toAddSubgroup G
+section inertia
+
+variable (G : Type*) [Group G] [MulAction G α] (I : Ideal α)
+
+/-- The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`. -/
+abbrev inertia : Subgroup G := I.toAddSubgroup.inertia G
+
+variable {I G} in
+theorem coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H :=
+  I.toAddSubgroup.coe_mem_inertia
+
+end inertia
 
 end Ideal
 

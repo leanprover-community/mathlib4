@@ -176,6 +176,9 @@ nonrec def mk (A M N : Type*) [Semiring A]
 
 variable {R A B M N P Q}
 
+/-- The heterobasic version of `mk` coincides with the regular version. -/
+lemma mk_eq : mk R R M N = TensorProduct.mk R M N := rfl
+
 /-- Heterobasic version of `TensorProduct.map` -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
   lift <|
@@ -516,6 +519,7 @@ section rightComm
 variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- A tensor product analogue of `mul_right_comm`.
 

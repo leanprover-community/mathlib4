@@ -53,7 +53,9 @@ theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ 
   exact subset_toMeasurable _ _ hxs
 
 /-- A set such that `μ h.nullSet = 0` and `ν h.nullSetᶜ = 0`. -/
-def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
 
 lemma measurableSet_nullSet (h : μ ⟂ₘ ν) : MeasurableSet h.nullSet := h.choose_spec.1
 
@@ -203,8 +205,8 @@ lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0}
 
 lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
-    convert exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1))
-      <| pow_pos (by simp) (n + 1)
+    convert!
+      exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1)) <| pow_pos (by simp) (n + 1)
     conv =>
       -- this tweak is needed due to the known issue of `norm_cast` with numeric fractions
       enter [1, 1]

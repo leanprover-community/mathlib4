@@ -101,7 +101,7 @@ lemma neg_Z (P : Fin 3 → R) : W'.neg P z = P z :=
   rfl
 
 protected lemma neg_smul (P : Fin 3 → R) (u : R) : W'.neg (u • P) = u • W'.neg P := by
-  simpa only [neg, negY_smul] using (smul_fin3 (W'.neg P) u).symm
+  simpa only [neg, negY_smul] using! (smul_fin3 (W'.neg P) u).symm
 
 lemma neg_smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.neg (u • P) ≈ W'.neg P :=
   ⟨hu.unit, (W'.neg_smul ..).symm⟩
@@ -205,8 +205,8 @@ lemma add_smul_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) {u v : R} (hu : 
 lemma add_smul_equiv (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     W'.add (u • P) (v • Q) ≈ W'.add P Q := by
   by_cases h : P ≈ Q
-  · exact ⟨hu.unit ^ 4, by convert (add_smul_of_equiv h hu hv).symm⟩
-  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert (add_smul_of_not_equiv h hu hv).symm⟩
+  · exact ⟨hu.unit ^ 4, by convert! (add_smul_of_equiv h hu hv).symm⟩
+  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert! (add_smul_of_not_equiv h hu hv).symm⟩
 
 lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') :
     W'.add P Q ≈ W'.add P' Q' := by

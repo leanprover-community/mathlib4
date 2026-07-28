@@ -202,16 +202,16 @@ theorem prod_prod_le (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) ≤ μ s 
         restrict_apply_univ, mul_comm]
     _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
 
-instance prod.instNoAtoms_fst [NoAtoms μ] :
-    NoAtoms (Measure.prod μ ν) where
+instance prod.instNullSingletonClass_fst [NullSingletonClass μ] :
+    NullSingletonClass (Measure.prod μ ν) where
   measure_singleton
   | (x, y) => nonpos_iff_eq_zero.mp <| calc
     μ.prod ν {(x, y)} = μ.prod ν ({x} ×ˢ {y}) := by rw [singleton_prod_singleton]
     _ ≤ μ {x} * ν {y} := prod_prod_le _ _
     _ = 0 := by simp
 
-instance prod.instNoAtoms_snd [NoAtoms ν] :
-    NoAtoms (Measure.prod μ ν) where
+instance prod.instNullSingletonClass_snd [NullSingletonClass ν] :
+    NullSingletonClass (Measure.prod μ ν) where
   measure_singleton
   | (x, y) => nonpos_iff_eq_zero.mp <| calc
     μ.prod ν {(x, y)} = μ.prod ν ({x} ×ˢ {y}) := by rw [singleton_prod_singleton]
@@ -419,6 +419,14 @@ theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ �
   rw [measure_prod_null hs] at h2s
   exact (h2s.filter_mono h1.ae_le).mono fun _ h => h2 h
 
+omit [SFinite ν] in
+@[gcongr] theorem prod_mono [SFinite ν'] (h1 : μ ≤ μ') (h2 : ν ≤ ν') : μ.prod ν ≤ μ'.prod ν' := by
+  apply Measure.le_iff.2 (fun s hs ↦ ?_)
+  calc μ.prod ν s
+  _ ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := prod_apply_le hs
+  _ ≤ ∫⁻ x, ν' (Prod.mk x ⁻¹' s) ∂μ' := by gcongr
+  _ = (μ'.prod ν') s := (prod_apply hs).symm
+
 /-- Note: the converse is not true. For a counterexample, see
   Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. It is true if the set is
   measurable, see `ae_prod_mem_iff_ae_ae_mem`. -/
@@ -568,7 +576,7 @@ theorem prod_eq_generateFrom {μ : Measure α} {ν : Measure β} {C : Set (Set �
       (generateFrom_eq_prod hC hD h3C.isCountablySpanning h3D.isCountablySpanning).symm
       (h2C.prod h2D) ?_
   rintro _ ⟨s, hs, t, ht, rfl⟩
-  haveI := h3D.sigmaFinite
+  have := h3D.sigmaFinite
   rw [h₁ s hs t ht, prod_prod]
 
 /- Note that the next theorem is not true for s-finite measures: let `μ = ν = ∞ • Leb` on `[0,1]`
@@ -755,7 +763,7 @@ theorem prodAssoc_prod [SFinite τ] :
     isPiSystem_measurableSet isPiSystem_prod ((sfiniteSeq μ i.1.1)).toFiniteSpanningSetsIn
     ((sfiniteSeq ν i.1.2).toFiniteSpanningSetsIn.prod (sfiniteSeq τ i.2).toFiniteSpanningSetsIn)
       ?_).symm
-  rintro s hs _ ⟨t, ht, u, hu, rfl⟩; rw [mem_setOf_eq] at hs ht hu
+  rintro s hs _ ⟨t, ht, u, hu, rfl⟩; rw [mem_ofPred_eq] at hs ht hu
   simp_rw [map_apply (MeasurableEquiv.measurable _) (hs.prod (ht.prod hu)),
     MeasurableEquiv.prodAssoc, MeasurableEquiv.coe_mk, Equiv.prod_assoc_preimage, prod_prod,
     mul_assoc]
@@ -835,7 +843,8 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
 
 -- `prod_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
-lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
+lemma prod_smul_left {μ : Measure α} {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) : (c • μ).prod ν = c • (μ.prod ν) := by
   ext s hs
   rw [prod_apply hs, Measure.smul_apply, prod_apply hs]
   simp
@@ -907,7 +916,8 @@ theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [Measu
     (h2f : ∀ᵐ y ∂ν, QuasiMeasurePreserving (fun x => f (x, y)) μ τ) :
     QuasiMeasurePreserving f (μ.prod ν) τ := by
   rw [← prod_swap]
-  convert (QuasiMeasurePreserving.prod_of_right (hf.comp measurable_swap) h2f).comp
+  convert!
+    (QuasiMeasurePreserving.prod_of_right (hf.comp measurable_swap) h2f).comp
       ((measurable_swap.measurePreserving (ν.prod μ)).symm
           MeasurableEquiv.prodComm).quasiMeasurePreserving
 
@@ -1038,7 +1048,7 @@ theorem setLIntegral_prod_symm [SFinite μ] {s : Set α} {t : Set β} (f : α ×
     setLIntegral_prod]
   · rfl
   · refine AEMeasurable.comp_measurable ?_ measurable_swap
-    convert hf
+    convert! hf
     rw [← Measure.prod_restrict, Measure.prod_swap, Measure.prod_restrict]
 
 /-- The reversed version of **Tonelli's Theorem**. In this version `f` is in curried form, which

@@ -62,6 +62,7 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
     ext
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
     liftAlternating (R := R) (M := M) (N := N) f (ι R m) = f 1 ![m] := by
@@ -77,6 +78,7 @@ theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
   rw [foldl_mul, foldl_ι]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem liftAlternating_one (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
     liftAlternating (R := R) (M := M) (N := N) f (1 : ExteriorAlgebra R M) = f 0 0 := by

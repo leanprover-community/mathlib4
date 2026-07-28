@@ -110,7 +110,6 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     abel
   rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
-    change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, Module.End.commute_pow_left_of_commute h_comm_square,
       LinearMap.comp_apply, hk, map_zero]
   -- Unpack the information we have about `m₁`, `m₂`.
@@ -215,7 +214,7 @@ namespace Weight
 
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
-  coe_injective' χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
+  coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
 
 @[simp] lemma coe_weight_mk (χ : L → R) (h) :
     (↑(⟨χ, h⟩ : Weight R L M) : L → R) = χ :=
@@ -267,13 +266,16 @@ lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : 
 
 noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
-def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
+def equivSetOfPred : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
   toFun w := ⟨w.1, w.2⟩
   invFun w := ⟨w.1, w.2⟩
   left_inv w := by simp
   right_inv w := by simp
+
+@[deprecated (since := "2026-07-09")] alias equivSetOf := equivSetOfPred
 
 lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
     genWeightSpaceOf M (χ x) x ≠ ⊥ := by
@@ -552,7 +554,7 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
   rw [← LieSubmodule.map_comp]
-  convert LieSubmodule.map_id
+  convert! LieSubmodule.map_id
   ext
   simp
 
@@ -585,7 +587,7 @@ lemma isCompl_genWeightSpaceOf_zero_posFittingCompOf (x : L) :
     IsCompl (genWeightSpaceOf M 0 x) (posFittingCompOf R M x) := by
   simpa only [isCompl_iff, codisjoint_iff, disjoint_iff, ← LieSubmodule.toSubmodule_inj,
     LieSubmodule.sup_toSubmodule, LieSubmodule.inf_toSubmodule,
-    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using
+    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using!
     (toEnd R L M x).isCompl_iSup_ker_pow_iInf_range_pow
 
 /-- This lemma exists only to simplify the proof of
@@ -673,7 +675,7 @@ lemma iSupIndep_genWeightSpace : iSupIndep fun χ : L → R ↦ genWeightSpace M
 
 lemma iSupIndep_genWeightSpace' : iSupIndep fun χ : Weight R L M ↦ genWeightSpace M χ :=
   (iSupIndep_genWeightSpace R L M).comp <|
-    Subtype.val_injective.comp (Weight.equivSetOf R L M).injective
+    Subtype.val_injective.comp (Weight.equivSetOfPred R L M).injective
 
 lemma iSupIndep_genWeightSpaceOf (x : L) : iSupIndep fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [← LieSubmodule.iSupIndep_toSubmodule]
@@ -690,7 +692,7 @@ lemma finite_genWeightSpace_ne_bot [IsNoetherian R M] :
 
 instance Weight.instFinite [IsNoetherian R M] : Finite (Weight R L M) := by
   have : Finite {χ : L → R | genWeightSpace M χ ≠ ⊥} := finite_genWeightSpace_ne_bot R L M
-  exact Finite.of_injective (equivSetOf R L M) (equivSetOf R L M).injective
+  exact Finite.of_injective (equivSetOfPred R L M) (equivSetOfPred R L M).injective
 
 noncomputable instance Weight.instFintype [IsNoetherian R M] : Fintype (Weight R L M) := .ofFinite _
 
@@ -706,6 +708,8 @@ instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizabl
 
 instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
   maxGenEigenspace_eq_top x := IsTriangularizable.maxGenEigenspace_eq_top (x : L)
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
   maxGenEigenspace_eq_top := by
@@ -771,7 +775,7 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by
   have := iSup_genWeightSpace_eq_top K L M
-  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
+  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOfPred K L M).iSup_comp] at this
   exact this
 
 lemma eq_iSup_inf_genWeightSpace [IsTriangularizable K L M] (N : LieSubmodule K L M) :

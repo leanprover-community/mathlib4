@@ -101,7 +101,7 @@ is a Riemannian bundle. -/
 instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
   refine ⟨fun x ↦ innerSL ℝ, fun x ↦ ?_, fun x v w ↦ rfl⟩
   simp only [contMDiffAt_section]
-  convert contMDiffAt_const (c := innerSL ℝ)
+  convert! contMDiffAt_const (c := innerSL ℝ)
   ext v w
   simp [hom_trivializationAt_apply, inCoordinates]
 
@@ -119,11 +119,11 @@ variable
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
 lemma ContMDiffWithinAt.inner_bundle
-    (hv : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)) s x)
-    (hw : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) s x) :
-    ContMDiffWithinAt IM 𝓘(ℝ) n (fun m ↦ ⟪v m, w m⟫) s x := by
+    (hv : CMDiffAt[s] n (fun m ↦ (v m : TotalSpace F E)) x)
+    (hw : CMDiffAt[s] n (fun m ↦ (w m : TotalSpace F E)) x) :
+    CMDiffAt[s] n (fun m ↦ ⟪v m, w m⟫) x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
-  have hb : ContMDiffWithinAt IM IB n b s x := by
+  have hb : CMDiffAt[s] n b x := by
     simp only [contMDiffWithinAt_totalSpace] at hv
     exact hv.1
   simp only [hg]
@@ -139,24 +139,24 @@ lemma ContMDiffWithinAt.inner_bundle
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
 lemma ContMDiffAt.inner_bundle
-    (hv : ContMDiffAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)) x)
-    (hw : ContMDiffAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) x) :
-    ContMDiffAt IM 𝓘(ℝ) n (fun b ↦ ⟪v b, w b⟫) x :=
+    (hv : CMDiffAt n (fun m ↦ (v m : TotalSpace F E)) x)
+    (hw : CMDiffAt n (fun m ↦ (w m : TotalSpace F E)) x) :
+    CMDiffAt n (fun b ↦ ⟪v b, w b⟫) x :=
   ContMDiffWithinAt.inner_bundle hv hw
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
 lemma ContMDiffOn.inner_bundle
-    (hv : ContMDiffOn IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)) s)
-    (hw : ContMDiffOn IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) s) :
-    ContMDiffOn IM 𝓘(ℝ) n (fun b ↦ ⟪v b, w b⟫) s :=
+    (hv : CMDiff[s] n (fun m ↦ (v m : TotalSpace F E)))
+    (hw : CMDiff[s] n (fun m ↦ (w m : TotalSpace F E))) :
+    CMDiff[s] n (fun b ↦ ⟪v b, w b⟫) :=
   fun x hx ↦ (hv x hx).inner_bundle (hw x hx)
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
 lemma ContMDiff.inner_bundle
-    (hv : ContMDiff IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)))
-    (hw : ContMDiff IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E))) :
+    (hv : CMDiff n (fun m ↦ (v m : TotalSpace F E)))
+    (hw : CMDiff n (fun m ↦ (w m : TotalSpace F E))) :
     CMDiff n (fun b ↦ ⟪v b, w b⟫) :=
   fun x ↦ (hv x).inner_bundle (hw x)
 
@@ -174,11 +174,11 @@ variable
 /-- Given two differentiable maps into the same fibers of a Riemannian bundle,
 their scalar product is differentiable. -/
 lemma MDifferentiableWithinAt.inner_bundle
-    (hv : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) s x)
-    (hw : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) s x) :
+    (hv : MDiffAt[s] (fun m ↦ (v m : TotalSpace F E)) x)
+    (hw : MDiffAt[s] (fun m ↦ (w m : TotalSpace F E)) x) :
     MDiffAt[s] (fun m ↦ ⟪v m, w m⟫) x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
-  have hb : MDifferentiableWithinAt IM IB b s x := by
+  have hb : MDiffAt[s] b x := by
     simp only [mdifferentiableWithinAt_totalSpace] at hv
     exact hv.1
   simp only [hg]
@@ -195,24 +195,24 @@ lemma MDifferentiableWithinAt.inner_bundle
 /-- Given two differentiable maps into the same fibers of a Riemannian bundle,
 their scalar product is differentiable. -/
 lemma MDifferentiableAt.inner_bundle
-    (hv : MDifferentiableAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) x)
-    (hw : MDifferentiableAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) x) :
+    (hv : MDiffAt (fun m ↦ (v m : TotalSpace F E)) x)
+    (hw : MDiffAt (fun m ↦ (w m : TotalSpace F E)) x) :
     MDiffAt (fun b ↦ ⟪v b, w b⟫) x :=
   MDifferentiableWithinAt.inner_bundle hv hw
 
 /-- Given two differentiable maps into the same fibers of a Riemannian bundle,
 their scalar product is differentiable. -/
 lemma MDifferentiableOn.inner_bundle
-    (hv : MDifferentiableOn IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) s)
-    (hw : MDifferentiableOn IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) s) :
+    (hv : MDiff[s] (fun m ↦ (v m : TotalSpace F E)))
+    (hw : MDiff[s] (fun m ↦ (w m : TotalSpace F E))) :
     MDiff[s] (fun b ↦ ⟪v b, w b⟫) :=
   fun x hx ↦ (hv x hx).inner_bundle (hw x hx)
 
 /-- Given two differentiable maps into the same fibers of a Riemannian bundle,
 their scalar product is differentiable. -/
 lemma MDifferentiable.inner_bundle
-    (hv : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)))
-    (hw : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E))) :
+    (hv : MDiff (fun m ↦ (v m : TotalSpace F E)))
+    (hw : MDiff (fun m ↦ (w m : TotalSpace F E))) :
     MDiff (fun b ↦ ⟪v b, w b⟫) :=
   fun x ↦ (hv x).inner_bundle (hw x)
 
