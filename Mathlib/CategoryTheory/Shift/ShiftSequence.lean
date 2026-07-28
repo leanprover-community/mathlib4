@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! # Sequences of functors from a category equipped with a shift
@@ -33,8 +33,9 @@ set_option backward.defeqAttrib.useBackward true
 
 open CategoryTheory Category ZeroObject Limits
 
-variable {C A : Type*} [Category* C] [Category* A] (F : C ⥤ A)
-  (M : Type*) [AddMonoid M] [HasShift C M]
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A] (F : C ⥤ A)
+  {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
+  (M : Type*) [AddMonoid M] [HasShift C M] [HasShift D M]
   {G : Type*} [AddGroup G] [HasShift C G]
 
 namespace CategoryTheory
@@ -60,7 +61,7 @@ class ShiftSequence where
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The tautological shift sequence on a functor. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def ShiftSequence.tautological : ShiftSequence F M where
   sequence n := shiftFunctor C n ⋙ F
   isoZero := isoWhiskerRight (shiftFunctorZero C M) F ≪≫ F.leftUnitor
@@ -98,7 +99,6 @@ lemma shiftIso_hom_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X �
       (shiftIso F n a a' ha').hom.app X ≫ (shift F a').map f :=
   (F.shiftIso n a a' ha').hom.naturality f
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X ⟶ Y) :
     (shift F a').map f ≫ (shiftIso F n a a' ha').inv.app Y =
@@ -194,7 +194,6 @@ lemma shiftIso_add'_inv_app (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
         (shift F a).map ((shiftFunctorAdd' C m n mn hnm).inv.app X) := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftIso_hom_app_comp (n m mn : M) (hnm : m + n = mn)
     (a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
@@ -222,7 +221,6 @@ lemma shiftMap_comp' {X Y Z : C} {n : M} (f : X ⟶ Y) (g : Y ⟶ Z⟦n⟧) (a a
     F.shiftMap (f ≫ g) a a' ha' = (F.shift a).map f ≫ F.shiftMap g a a' ha' := by
   simp [shiftMap]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 When `f : X ⟶ Y⟦m⟧`, `m + n = mn`, `n + a = a'` and `ha'' : m + a' = a''`, this lemma
 relates the two morphisms `F.shiftMap f a' a'' ha''` and `(F.shift a).map (f⟦n⟧')`. Indeed,
@@ -238,7 +236,6 @@ lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n m
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
     id_comp, comp_obj, shiftIso_hom_naturality_assoc, shiftMap]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : X ⟶ Y⟦m⟧`, `n + m = 0` and `ha' : m + a = a'`, this lemma relates the two
 morphisms `F.shiftMap f a a' ha'` and `(F.shift a').map (f⟦n⟧')`. Indeed,
@@ -282,6 +279,37 @@ instance (n : M) : (F.shift n).Additive := additive_of_iso (F.isoShift n)
 end
 
 end
+
+namespace ShiftSequence
+
+variable {F} in
+set_option backward.isDefEq.respectTransparency false in
+/-- Given an isomorphism `π ⋙ H ≅ F`, where `π` is a functor which commutes
+with the shift by `M` and `H` is equipped with a shift sequence,
+then this is the shift sequence for `F` induced by composition. -/
+@[implicit_reducible, simps]
+def leftComp [π.CommShift M] [H.ShiftSequence M] : F.ShiftSequence M where
+  sequence n := π ⋙ H.shift n
+  isoZero := isoWhiskerLeft π (H.isoShiftZero M) ≪≫ e
+  shiftIso n a a' ha' :=
+    (Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight (π.commShiftIso n) _ ≪≫ Functor.associator _ _ _ ≪≫
+      isoWhiskerLeft π (H.shiftIso n a a' ha')
+  shiftIso_zero a := by
+    ext K
+    simp [← Functor.map_comp, commShiftIso_zero]
+  shiftIso_add n m a a' a'' ha' ha'':= by
+    ext K
+    dsimp
+    simp only [H.shiftIso_add_hom_app n m a a' a'' ha' ha'', assoc,
+      commShiftIso_add, CommShift.isoAdd_hom_app, ← Functor.map_comp_assoc,
+      id_comp, Iso.inv_hom_id_app, comp_obj, comp_id]
+    simp
+
+instance [π.CommShift M] [H.ShiftSequence M] : (π ⋙ H).ShiftSequence M :=
+  leftComp (Iso.refl _) _
+
+end ShiftSequence
 
 end Functor
 

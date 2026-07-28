@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.Matrix.Transvection
 
 /-!
 # Rank of matrices
@@ -25,6 +26,19 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 * `Matrix.cRank`: the rank of a matrix as a cardinal
 * `Matrix.eRank`: the rank of a matrix as a term in `ℕ∞`.
 
+## Main results
+
+* `Matrix.rank_eq_finrank_range_toLin`: the rank equals the dimension of the range of the
+corresponding linear map, and is therefore independent of the choice of bases.
+* `Matrix.rank_eq_finrank_span_cols`, `Matrix.rank_eq_finrank_span_row`: the rank equals the
+dimension of the space spanned by the columns (resp. rows).
+* `Matrix.rank_transpose`: transposing a matrix does not change its rank.
+* `Matrix.rank_mul_le`: the rank of `A * B` is at most the rank of `A` and at most the rank of `B`.
+* `Matrix.rank_mul_eq_left_of_isUnit_det`, `Matrix.rank_mul_eq_right_of_isUnit_det`: multiplying by
+an invertible matrix does not change the rank.
+* `Matrix.exists_rank_normal_form`: every square matrix over a field can be brought, by left and
+right multiplication by invertible matrices, into the block form `fromBlocks 1 0 0 0`, where the
+identity block has size equal to the rank of the matrix.
 -/
 
 @[expose] public section
@@ -44,7 +58,7 @@ section Infinite
 variable [Semiring R]
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
-noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range Aᵀ
+noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range A.col
 
 @[simp]
 theorem cRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.cRank = 1 :=
@@ -53,14 +67,15 @@ theorem cRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.cRank = 1 :=
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range A.col)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     lift.{um} (A.submatrix r c).cRank ≤ lift.{um₀} A.cRank := by
   have h : ((A.submatrix r id).submatrix id c).cRank ≤ (A.submatrix r id).cRank :=
     Submodule.rank_mono <| span_mono <| by rintro _ ⟨x, rfl⟩; exact ⟨c x, rfl⟩
   refine (Cardinal.lift_monotone h).trans ?_
   let f : (m → R) →ₗ[R] (m₀ → R) := LinearMap.funLeft R R r
-  have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
-    rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
+  have h_eq : Submodule.map f (span R (range A.col)) = span R (range (A.submatrix r id).col) := by
+    simp_rw [LinearMap.map_span, ← image_univ, image_image, col_eq_transpose, transpose_submatrix]
     aesop
   rw [cRank, ← h_eq]
   have hwin := lift_rank_map_le f (span R (range Aᵀ))
@@ -78,7 +93,8 @@ lemma cRank_le_card_height [StrongRankCondition R] [Fintype m] (A : Matrix m n R
 
 lemma cRank_le_card_width [StrongRankCondition R] [Fintype n] (A : Matrix m n R) :
     A.cRank ≤ Fintype.card n :=
-  (rank_span_le ..).trans <| by simpa using Cardinal.mk_range_le_lift (f := Aᵀ)
+  (rank_span_le ..).trans <|
+    by simpa [col_eq_transpose] using Cardinal.mk_range_le_lift (f := A.col)
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a term in `ℕ∞`. -/
 noncomputable def eRank (A : Matrix m n R) : ℕ∞ := A.cRank.toENat
@@ -103,7 +119,6 @@ lemma eRank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.eRank �
   exact A.cRank_le_card_width
 
 lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card m := by
-  classical
   wlog hfin : Finite m
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite m
@@ -122,12 +137,13 @@ noncomputable def rank [CommSemiring R] (A : Matrix m n R) : ℕ :=
 theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
   finrank_subsingleton
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
-  have h : LinearIndependent R (1 : Matrix m m R)ᵀ := by
+  have h : LinearIndependent R (1 : Matrix m m R).col := by
     convert! Pi.linearIndependent_single_one m R
-    simp [funext_iff, Matrix.one_eq_pi_single]
+    simp [funext_iff, one_apply, Pi.single_apply]
   rw [cRank, rank_span h, ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 
 @[simp] theorem eRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
@@ -143,12 +159,12 @@ theorem rank_one [CommSemiring R] [DecidableEq n] [StrongRankCondition R] :
 theorem rank_zero [CommSemiring R] [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cRank_zero {m n : Type*} [Semiring R] [Nontrivial R] : cRank (0 : Matrix m n R) = 0 := by
   obtain hn | hn := isEmpty_or_nonempty n
   · rw [cRank, range_eq_empty, span_empty, rank_bot]
-  rw [cRank, transpose_zero, range_zero, span_zero_singleton, rank_bot]
+  rw [cRank, col_eq_transpose, transpose_zero, of_symm_zero, range_zero, span_zero_singleton,
+    rank_bot]
 
 @[simp]
 theorem eRank_zero {m n : Type*} [Semiring R] [Nontrivial R] : eRank (0 : Matrix m n R) = 0 := by
@@ -277,6 +293,9 @@ theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
   eRank_submatrix ..
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The rank of a matrix equals the dimension of the range of the corresponding linear map,
+and is therefore independent of the choice of bases. -/
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [CommSemiring R]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R)
     (v₁ : Basis m R M₁) (v₂ : Basis n R M₂) :
@@ -327,6 +346,44 @@ theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) 
   rw [Matrix.rank, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
+open TransvectionStruct in
+/-- Every square matrix over a field can be brought, by left and right multiplication by
+invertible matrices, into the block form `fromBlocks 1 0 0 0`, where the identity block has size
+equal to the rank of the matrix. -/
+theorem exists_rank_normal_form [Fintype m] [DecidableEq m] (M : Matrix m m R) :
+    ∃ (V U : Matrix m m R) (e : m ≃ Fin M.rank ⊕ Fin (Fintype.card m - M.rank)),
+      IsUnit V ∧ IsUnit U ∧
+      V * M * U = (fromBlocks 1 0 0 0).submatrix e e := by
+  classical
+  obtain ⟨L, L', D, hM0⟩ := Matrix.Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M
+  set E := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with E_def
+  set s : Finset m := .filter (fun i ↦ D i ≠ 0) .univ with s_def
+  set V := diagonal E * (L.reverse.map (toMatrix ∘ .inv)).prod with V_def
+  set U := (L'.reverse.map (toMatrix ∘ .inv)).prod with U_def
+  have hUdet : IsUnit U.det := (isUnit_iff_isUnit_det _).1 <| isUnit_prod_comp_inverse _
+  have hVdet : IsUnit V.det := by
+    rw [V_def, det_mul, det_diagonal]
+    exact IsUnit.mk0 _ (Finset.prod_ne_zero_iff.2 (by grind)) |>.mul <|
+      (isUnit_iff_isUnit_det _).1 (isUnit_prod_comp_inverse _)
+  have hM : V * M * U = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
+    rw [V_def, U_def, hM0, mul_assoc, mul_assoc _ (L'.map _).prod, prod_mul_reverse_inv_prod,
+      mul_one, ← mul_assoc, mul_assoc _ (L.reverse.map _).prod, reverse_inv_prod_mul_prod, mul_one]
+    ext
+    simp only [E_def, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, s_def,
+      Finset.mem_filter, Finset.mem_univ, true_and, ite_not]
+    split_ifs with h1 h2 <;> first | rw [← h1, h2] | rw [← h1, inv_mul_cancel₀ h2] | rfl
+  have hs : s.card = M.rank := by
+    simp [← rank_mul_eq_right_of_isUnit_det V M hVdet, ← rank_mul_eq_left_of_isUnit_det U (V * M)
+      hUdet, hM, rank_diagonal]
+  set e : m ≃ Fin M.rank ⊕ Fin (Fintype.card m - M.rank) :=
+    (Equiv.sumCompl (· ∈ s)).symm.trans <| (Finset.equivFinOfCardEq hs).sumCongr <|
+      Fintype.equivFinOfCardEq <| by rw [Fintype.card_subtype_compl, Fintype.card_coe, hs] with he
+  refine ⟨V, U, e, (isUnit_iff_isUnit_det _).2 hVdet, isUnit_prod_comp_inverse _, ?_⟩
+  rw [hM, ← diagonal_one, ← diagonal_zero, fromBlocks_diagonal, submatrix_diagonal_equiv]
+  refine congrArg _ (funext fun i ↦ ?_)
+  split_ifs with hi <;> simp [he, hi]
+
+set_option backward.isDefEq.respectTransparency false in
 theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by
   classical
@@ -337,9 +394,9 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     convert! hli'.comp Subtype.val Subtype.val_injective
     ext ⟨j, hj⟩ k
     simp [w', diagonal, hj, Pi.single_apply, eq_comm]
-  have hrw : insert 0 (range (diagonal w)ᵀ) = insert 0 (range w') := by
+  have hrw : insert 0 (range (diagonal w).col) = insert 0 (range w') := by
     suffices ∀ a, diagonal w a = 0 ∨ ∃ b, w b ≠ 0 ∧ diagonal w b = diagonal w a
-      by simpa [subset_antisymm_iff, subset_def, w']
+      by aesop (add simp [col_eq_transpose, subset_def])
     simp_rw [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
     simp +contextual [funext_iff, diagonal]
   rw [cRank, ← span_insert_zero, hrw, span_insert_zero, rank_span h,

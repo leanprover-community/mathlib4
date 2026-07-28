@@ -549,7 +549,7 @@ variable [Ring R] [AddCommGroup M] [Module R M]
 variable {I : Ideal R} {r : R}
 
 /-- can't be an instance because `hM` can't be inferred -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
   smul b := QuotientAddGroup.lift I.toAddSubgroup (smulAddHom R M)
     (by rwa [isTorsionBySet_iff_subset_annihilator] at hM) b
@@ -573,11 +573,11 @@ theorem IsTorsionBy.mk_smul [(Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M 
   rfl
 
 /-- An `(R ⧸ I)`-module is an `R`-module which `IsTorsionBySet R M I`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsTorsionBySet.module [I.IsTwoSided] (hM : IsTorsionBySet R M I) : Module (R ⧸ I) M :=
   letI := hM.hasSMul; fast_instance% I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
 
-instance IsTorsionBySet.isScalarTower [I.IsTwoSided] (hM : IsTorsionBySet R M I)
+instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
     {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     @IsScalarTower S (R ⧸ I) M _ hM.hasSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
@@ -608,7 +608,7 @@ where finally
 
 /-- Any module is also a module over the quotient of the ring by the annihilator.
 Not an instance because it causes synthesis failures / timeouts. -/
-@[implicit_reducible]
+@[instance_reducible]
 def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
   (isTorsionBySet_annihilator R M).module
 
@@ -808,7 +808,7 @@ theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R 
   refine ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finsetProd, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
-  letI := Classical.decEq M
+  let := Classical.decEq M
   rw [← Finset.prod_erase_mul _ _ n.prop, mul_smul, ← Submonoid.smul_def, (@hM n).choose_spec,
     smul_zero]
 
@@ -938,10 +938,8 @@ theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a 
 
 end Ideal.Quotient
 
-namespace AddMonoid
-
-theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
-    AddMonoid.IsTorsion M ↔ Module.IsTorsion ℕ M := by
+theorem isAddTorsion_iff_isTorsion_nat [AddCommMonoid M] :
+    IsAddTorsion M ↔ Module.IsTorsion ℕ M := by
   refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
@@ -949,8 +947,11 @@ theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     obtain ⟨n, hn⟩ := @h x
     exact ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
 
-theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
-    AddMonoid.IsTorsion M ↔ Module.IsTorsion ℤ M := by
+@[deprecated (since := "2026-07-01")] alias AddMonoid.isTorsion_iff_isTorsion_nat :=
+  isAddTorsion_iff_isTorsion_nat
+
+theorem isAddTorsion_iff_isTorsion_int [AddCommGroup M] :
+    IsAddTorsion M ↔ Module.IsTorsion ℤ M := by
   refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
@@ -960,7 +961,8 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     obtain ⟨n, hn⟩ := @h x
     exact ⟨_, Int.natAbs_pos.2 (nonZeroDivisors.coe_ne_zero n), natAbs_nsmul_eq_zero.2 hn⟩
 
-end AddMonoid
+@[deprecated (since := "2026-07-01")] alias AddMonoid.isTorsion_iff_isTorsion_int :=
+  isAddTorsion_iff_isTorsion_int
 
 namespace AddSubgroup
 
@@ -1005,7 +1007,7 @@ lemma torsionBy.mod_self_nsmul' (s : ℕ) {x : A} (h : x ∈ A[n]) :
   nsmul_eq_mod_nsmul s (torsionBy.nsmul_iff.mp h)
 
 /-- For a natural number `n`, the `n`-torsion subgroup of `A` is a `ZMod n` module. -/
-@[implicit_reducible]
+@[instance_reducible]
 def torsionBy.zmodModule : Module (ZMod n) A[n] :=
   AddCommGroup.zmodModule torsionBy.nsmul
 

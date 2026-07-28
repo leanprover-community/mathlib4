@@ -139,9 +139,6 @@ noncomputable
 instance instLaplacian : Laplacian (E → F) (E → F) where
   laplacian f x := tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
 
-@[deprecated (since := "2025-12-31")]
-alias InnerProduct.laplacian := _root_.Laplacian.laplacian
-
 open Laplacian
 
 /--

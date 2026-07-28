@@ -84,7 +84,7 @@ theorem countable_meas_le_ne_meas_lt (g : α → R) :
   exact ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
 
 theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
-    (ν : Measure R) [NoAtoms ν] (g : α → R) :
+    (ν : Measure R) [NullSingletonClass ν] (g : α → R) :
     (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
   Set.Countable.measure_zero (countable_meas_le_ne_meas_lt μ g) _
 
@@ -97,6 +97,7 @@ section Layercake
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions, and a sigma-finiteness assumption.
@@ -420,7 +421,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
     rw [ht]
     congr 1
     apply measure_congr
-    filter_upwards [f_eq_F] with a ha using by simp [setOf, ha]
+    filter_upwards [f_eq_F] with a ha using by simp [Set.ofPred, ha]
   have eq₂ : ∀ᵐ ω ∂μ,
       ENNReal.ofReal (∫ t in 0..f ω, g t) = ENNReal.ofReal (∫ t in 0..F ω, G t) := by
     filter_upwards [f_eq_F] with ω fω_nn
