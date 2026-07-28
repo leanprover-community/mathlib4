@@ -682,13 +682,15 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
 open TensorProduct LinearMap
 
 variable (N) in
-lemma Module.isBaseChange_map_of_finite_free (S : Type*) [CommRing S] [Algebra R S] (n : ℕ) :
-    IsBaseChange S (LinearMap.baseChangeHom R S (Fin n → R) N) := by
-  let e₁ := TensorProduct.piRight R S S (fun _ : Fin n ↦ R)
+lemma Module.isBaseChange_map_of_finite_free (S ι : Type*) [Finite ι] [CommRing S] [Algebra R S] :
+    IsBaseChange S (LinearMap.baseChangeHom R S (ι → R) N) := by
+  classical
+  have : Fintype ι := Fintype.ofFinite ι
+  let e₁ := TensorProduct.piRight R S S (fun _ : ι ↦ R)
   let e₂ := (LinearEquiv.piCongrRight (fun _ ↦ (LinearMap.ringLmapEquivSelf S S _).symm ≪≫ₗ
     (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm))) ≪≫ₗ
-    (LinearMap.lsum S (fun _ : Fin n ↦ _) S) ≪≫ₗ (e₁.symm.congrLeft (S ⊗[R] N) S)
-  let e₃ := (LinearMap.lsum R (fun _ : Fin n ↦ R) R).symm ≪≫ₗ
+    (LinearMap.lsum S (fun _ : ι ↦ _) S) ≪≫ₗ (e₁.symm.congrLeft (S ⊗[R] N) S)
+  let e₃ := (LinearMap.lsum R (fun _ : ι ↦ R) R).symm ≪≫ₗ
     LinearEquiv.piCongrRight (fun _ ↦ LinearMap.ringLmapEquivSelf R R N)
   refine IsBaseChange.of_equiv ((e₃.baseChange R S) ≪≫ₗ (TensorProduct.piRight R S S _) ≪≫ₗ e₂)
     (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective (LinearMap.ext fun s ↦ ?_))
@@ -702,7 +704,7 @@ theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Alg
   obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
   refine IsBaseChange.of_left_exact S (f' := (f.baseChange S).lcomp S (S ⊗[R] N))
     (g' := (g.baseChange S).lcomp S (S ⊗[R] N)) _ _ _ ?_ ?_
-    (Module.isBaseChange_map_of_finite_free N S n) (Module.isBaseChange_map_of_finite_free N S m)
+    (Module.isBaseChange_map_of_finite_free N S _) (Module.isBaseChange_map_of_finite_free N S _)
     (exact_lcomp_of_exact_of_surjective _ hfg hf) (lcomp_injective_of_surjective f hf) ?_ ?_
   · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
