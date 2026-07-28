@@ -159,12 +159,6 @@ lemma pairwise_divisorsAntidiagonalList_snd {n : ℕ} :
   rintro a b hab _ _ ha rfl rfl _ _ hb rfl rfl
   rwa [Nat.div_lt_div_left hn ⟨_, hb.symm⟩ ⟨_, ha.symm⟩]
 
-@[deprecated (since := "2025-11-27")] alias sorted_divisorsAntidiagonalList_fst :=
-  pairwise_divisorsAntidiagonalList_fst
-
-@[deprecated (since := "2025-11-27")] alias sorted_divisorsAntidiagonalList_snd :=
-  pairwise_divisorsAntidiagonalList_snd
-
 lemma sortedLT_map_fst_divisorsAntidiagonalList {n : ℕ} :
     (n.divisorsAntidiagonalList.map Prod.fst).SortedLT :=
   (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_fst).sortedLT
@@ -367,6 +361,7 @@ theorem image_snd_divisorsAntidiagonal : (divisorsAntidiagonal n).image Prod.snd
   rw [← map_swap_divisorsAntidiagonal, map_eq_image, image_image]
   exact image_fst_divisorsAntidiagonal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_div_right_divisors :
     n.divisors.map ⟨fun d => (d, n / d), fun _ _ => congr_arg Prod.fst⟩ =
       n.divisorsAntidiagonal := by
@@ -380,6 +375,7 @@ theorem map_div_right_divisors :
   · rintro ⟨rfl, hn⟩
     exact ⟨⟨dvd_mul_right _ _, hn⟩, Nat.mul_div_cancel_left _ (left_ne_zero_of_mul hn).bot_lt⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_div_left_divisors :
     n.divisors.map ⟨fun d => (n / d, d), fun _ _ => congr_arg Prod.snd⟩ =
       n.divisorsAntidiagonal := by

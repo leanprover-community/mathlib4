@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Consume bridge artifact
         id: bridge
-        uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        uses: leanprover-community/privilege-escalation-bridge/consume@ea7d63d1c8ece92a8e89b6a6d8fda40603167a91 # v1.3.0
         with:
           artifact: workflow-data
           source_workflow: Maintainer merge
@@ -163,7 +163,7 @@ jobs:
 
       - name: Checkout local actions
         if: ${{ steps.authorized.outputs.authorized == 'true' }}
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -213,7 +213,7 @@ jobs:
       - name: Send message on Zulip
         if: ${{ steps.authorized.outputs.authorized == 'true' }}
         continue-on-error: true
-        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'

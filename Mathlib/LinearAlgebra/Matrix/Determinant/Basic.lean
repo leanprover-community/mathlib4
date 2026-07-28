@@ -607,6 +607,7 @@ theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 
 
 end DetEq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Matrix n n R) :
     (blockDiagonal M).det = ∏ k, (M k).det := by
@@ -666,6 +667,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
     rw [blockDiagonal_apply_ne]
     exact hkx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The determinant of a 2×2 block matrix with the lower-left block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see
 `Matrix.det_of_upperTriangular`. -/

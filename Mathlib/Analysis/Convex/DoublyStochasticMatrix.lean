@@ -65,7 +65,7 @@ lemma doublyStochastic_eq_rowStochastic_inf_colStochastic :
     doublyStochastic R n = rowStochastic R n ⊓ colStochastic R n := by
   ext M
   simp only [rowStochastic, colStochastic, Submonoid.mem_inf, Submonoid.mem_mk, Subsemigroup.mem_mk,
-    Set.mem_setOf_eq, doublyStochastic]
+    Set.mem_ofPred_eq, doublyStochastic]
   grind
 
 lemma mem_doublyStochastic_iff_mem_rowStochastic_and_mem_colStochastic {M : Matrix n n R} :
@@ -148,7 +148,6 @@ by nonnegative factors rather than positive ones only.
 lemma exists_mem_doublyStochastic_eq_smul_iff {M : Matrix n n R} {s : R} (hs : 0 ≤ s) :
     (∃ M' ∈ doublyStochastic R n, M = s • M') ↔
       (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = s) ∧ (∀ j, ∑ i, M i j = s) := by
-  classical
   constructor
   case mp =>
     rintro ⟨M', hM', rfl⟩

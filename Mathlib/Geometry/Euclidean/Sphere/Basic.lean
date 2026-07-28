@@ -138,6 +138,11 @@ lemma Sphere.radius_nonneg_of_mem {s : Sphere P} {p : P} (h : p ∈ s) : 0 ≤ s
 @[simp] lemma Sphere.center_mem_iff {s : Sphere P} : s.center ∈ s ↔ s.radius = 0 := by
   simp [mem_sphere, eq_comm]
 
+/-- A point of a sphere that differs from another point of the sphere is not its center. -/
+lemma Sphere.ne_center_of_mem_of_mem_of_ne {s : Sphere P} {p q : P}
+    (hp : p ∈ s) (hq : q ∈ s) (hpq : p ≠ q) : p ≠ s.center := by
+  grind [dist_eq_zero, mem_sphere']
+
 /-- A set of points is cospherical if they are equidistant from some
 point. In two dimensions, this is the same thing as being
 concyclic. -/
@@ -205,6 +210,12 @@ to the ambient space is cospherical. -/
 theorem Cospherical.subtype_val {S : AffineSubspace ℝ P} [Nonempty S] {ps : Set S}
     (hps : Cospherical ps) : Cospherical (Subtype.val '' ps) :=
   Isometry.cospherical S.subtypeₐᵢ.isometry hps
+
+omit [NormedSpace ℝ V] in
+/-- For a point on a sphere, the norm of its displacement from the center equals the radius. -/
+theorem norm_vsub_center_eq_radius {s : Sphere P} {p : P} (hp : p ∈ s) :
+    ‖p -ᵥ s.center‖ = s.radius := by
+  rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hp
 
 lemma Sphere.nonempty_iff [Nontrivial V] {s : Sphere P} : (s : Set P).Nonempty ↔ 0 ≤ s.radius := by
   refine ⟨fun ⟨p, hp⟩ ↦ radius_nonneg_of_mem hp, fun h ↦ ?_⟩
@@ -368,7 +379,7 @@ inclusion into a larger affine subspace `S₂` is cospherical. -/
 theorem Cospherical.inclusion_iff {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
     [S₁.direction.HasOrthogonalProjection] [S₂.direction.HasOrthogonalProjection] (hS : S₁ ≤ S₂) :
     Cospherical (AffineSubspace.inclusion hS '' ps) ↔ Cospherical ps := by
-  haveI : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
+  have : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
   simp [(Cospherical.subtype_val_iff (S := S₂) (ps := AffineSubspace.inclusion hS '' ps)).symm,
     Set.image_image]
 
@@ -444,6 +455,7 @@ theorem Sphere.inner_vsub_center_midpoint_vsub {p₁ p₂ : P} {s : Sphere P}
     (dist_left_midpoint_eq_dist_right_midpoint p₁ p₂)
     (dist_center_eq_dist_center_of_mem_sphere hp₁ hp₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The distance from the center of a sphere to any point strictly between
 two points on the sphere is strictly less than the radius. -/
 theorem Sphere.dist_center_lt_radius_of_sbtw {p₁ p₂ p : P} {s : Sphere P}
@@ -456,8 +468,8 @@ theorem Sphere.dist_center_lt_radius_of_sbtw {p₁ p₂ p : P} {s : Sphere P}
   have ht₁' : t < 1 := lt_of_le_of_ne ht₁ fun h => hne₂ <| by
     rw [← hpt, h, AffineMap.lineMap_apply_one]
   set u := p₁ -ᵥ o; set v := p₂ -ᵥ o
-  have hu : ‖u‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hp₁
-  have hv : ‖v‖ = s.radius := by rw [← dist_eq_norm_vsub]; exact mem_sphere.mp hp₂
+  have hu : ‖u‖ = s.radius := norm_vsub_center_eq_radius hp₁
+  have hv : ‖v‖ = s.radius := norm_vsub_center_eq_radius hp₂
   have huv : u ≠ v := fun h => hne₁ <| by
     rw [← hpt, vsub_left_cancel h, AffineMap.lineMap_same, AffineMap.const_apply]
   have hpo : p -ᵥ o = (1 - t) • u + t • v := by
@@ -551,8 +563,8 @@ the radius vector at one endpoint is negative. -/
 theorem inner_vsub_center_vsub_pos {p₁ p₂ : P} {s : Sphere P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₁p₂ : p₁ ≠ p₂) :
     0 < ⟪p₂ -ᵥ p₁, s.center -ᵥ p₁⟫ := by
-  have hp₁' : ‖p₁ -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hp₁
-  have hp₂' : ‖p₂ -ᵥ s.center‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hp₂
+  have hp₁' : ‖p₁ -ᵥ s.center‖ = s.radius := norm_vsub_center_eq_radius hp₁
+  have hp₂' : ‖p₂ -ᵥ s.center‖ = s.radius := norm_vsub_center_eq_radius hp₂
   have hd : ‖p₂ -ᵥ s.center‖ ^ 2 =
       ‖p₂ -ᵥ p₁‖ ^ 2 + 2 * ⟪p₂ -ᵥ p₁, p₁ -ᵥ s.center⟫ + ‖p₁ -ᵥ s.center‖ ^ 2 := by
     rw [← vsub_add_vsub_cancel p₂ p₁ s.center, norm_add_sq_real]
@@ -592,6 +604,18 @@ lemma isDiameter_iff_mem_and_mem_and_wbtw :
   have hd := hr.dist_add_dist
   rw [mem_sphere.1 h₁, mem_sphere'.1 h₂, ← two_mul, eq_comm] at hd
   exact isDiameter_iff_mem_and_mem_and_dist.2 ⟨h₁, h₂, hd⟩
+
+/-- The center lies on the line through two points of a sphere if and only if those
+points are the endpoints of a diameter. -/
+theorem center_mem_affineSpan_pair_iff_isDiameter (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) :
+    s.center ∈ line[ℝ, p₁, p₂] ↔ s.IsDiameter p₁ p₂ := by
+  rcases eq_or_ne p₁ p₂ with rfl | hp₁p₂
+  · simp [isDiameter_iff_left_mem_and_midpoint_eq_center, hp₁, eq_comm]
+  · rw [isDiameter_iff_mem_and_mem_and_wbtw]
+    refine ⟨fun h => ⟨hp₁, hp₂, ?_⟩, fun h => h.2.2.mem_affineSpan⟩
+    refine wbtw_of_collinear_of_dist_center_le_radius ?_ hp₁ ?_ hp₂ hp₁p₂
+    · rw [Set.insert_comm]; exact collinear_insert_of_mem_affineSpan_pair h
+    · simpa using radius_nonneg_of_mem hp₁
 
 end Sphere
 

@@ -187,6 +187,7 @@ lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
 lemma SortedLT.sbtw {l : List R} (h : l.SortedLT) : l.Sbtw R :=
   ⟨h.sortedLE.wbtw, h.nodup⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
     (∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l) ↔
       l.Wbtw R := by
@@ -236,6 +237,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
               ring_nf
               simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_map_eq_of_sorted_iff_wbtw {l : List P} :
     (∃ p₁ p₂ : P, ∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap p₁ p₂) = l) ↔ l.Wbtw R := by
   refine ⟨fun ⟨p₁, p₂, l', hl's, hl'l⟩ ↦ ?_, fun h ↦ ?_⟩
@@ -246,6 +248,7 @@ lemma exists_map_eq_of_sorted_iff_wbtw {l : List P} :
         simp [hl, sortedLE_iff_pairwise]⟩
     · exact ⟨l.head hl, l.getLast hl, (exists_map_eq_of_sorted_nonempty_iff_wbtw hl).2 h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
     (∃ l' : List R, l'.SortedLT ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l ∧
       (l.length = 1 ∨ l.head hl ≠ l.getLast hl)) ↔ l.Sbtw R := by
@@ -275,6 +278,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
           refine hp.1 ((head :: head2 :: tail).getLast hl) ?_
           simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_map_eq_of_sorted_iff_sbtw [Nontrivial P] {l : List P} :
     (∃ p₁ p₂ : P, p₁ ≠ p₂ ∧ ∃ l' : List R, l'.SortedLT ∧ l'.map (lineMap p₁ p₂) = l) ↔
       l.Sbtw R := by

@@ -72,7 +72,7 @@ jobs:
 
       - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
         name: Emit bridge artifact
-        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        uses: leanprover-community/privilege-escalation-bridge/emit@ea7d63d1c8ece92a8e89b6a6d8fda40603167a91 # v1.3.0
         with:
           artifact: workflow-data
           outputs_file: bridge-outputs.json

@@ -22,9 +22,6 @@ and proves some basic lemmas about them.
 
 /-! ### Unbundled classes -/
 
-/-- An empty relation does not relate any elements. -/
-@[deprecated (since := "2025-12-22")] alias EmptyRelation := emptyRelation
-
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
 @[deprecated Std.Irrefl (since := "2026-01-07")]
@@ -33,10 +30,6 @@ abbrev IsIrrefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Irrefl r
 /-- `IsRefl X r` means the binary relation `r` on `X` is reflexive. -/
 @[deprecated Std.Refl (since := "2026-01-08")]
 abbrev IsRefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Refl r
-
-/-- `IsSymm X r` means the binary relation `r` on `X` is symmetric. -/
-@[deprecated Std.Symm (since := "2025-12-26")]
-abbrev IsSymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Symm r
 
 /-- `IsAsymm X r` means that the binary relation `r` on `X` is asymmetric, that is,
 `r a b → ¬ r b a`. -/

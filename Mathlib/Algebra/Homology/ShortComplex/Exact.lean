@@ -92,12 +92,12 @@ variable {S}
 
 lemma HomologyData.exact_iff (h : S.HomologyData) :
     S.Exact ↔ IsZero h.left.H := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   exact LeftHomologyData.exact_iff h.left
 
 lemma HomologyData.exact_iff' (h : S.HomologyData) :
     S.Exact ↔ IsZero h.right.H := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   exact RightHomologyData.exact_iff h.right
 
 variable (S)
@@ -148,7 +148,7 @@ variable {S}
 
 lemma HomologyData.exact_iff_i_p_zero (h : S.HomologyData) :
     S.Exact ↔ h.left.i ≫ h.right.p = 0 := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   rw [h.left.exact_iff, ← h.comm]
   constructor
   · intro z
@@ -171,8 +171,8 @@ lemma exact_iff_iCycles_pOpcycles_zero [S.HasHomology] :
 lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
     [HasKernel S.g] [HasCokernel S.f] :
     S.Exact ↔ kernel.ι S.g ≫ cokernel.π S.f = 0 := by
-  haveI := HasLeftHomology.hasCokernel S
-  haveI := HasRightHomology.hasKernel S
+  have := HasLeftHomology.hasCokernel S
+  have := HasRightHomology.hasKernel S
   exact S.exact_iff_i_p_zero (LeftHomologyData.ofHasKernelOfHasCokernel S)
     (RightHomologyData.ofHasCokernelOfHasKernel S)
 
@@ -295,8 +295,8 @@ lemma exact_iff_epi [HasZeroObject C] (hg : S.g = 0) :
   · intro h
     have := h.hasHomology
     simp only [exact_iff_isZero_homology] at h
-    haveI := S.isIso_iCycles hg
-    haveI : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
+    have := S.isIso_iCycles hg
+    have : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
     rw [← S.toCycles_i]
     apply epi_comp
   · intro
@@ -310,14 +310,14 @@ variable {S}
 set_option backward.defeqAttrib.useBackward true in
 lemma Exact.epi_f' (hS : S.Exact) (h : LeftHomologyData S) : Epi h.f' :=
   epi_of_isZero_cokernel' _ h.hπ (by
-    haveI := hS.hasHomology
+    have := hS.hasHomology
     dsimp
     simpa only [← h.exact_iff] using hS)
 
 set_option backward.defeqAttrib.useBackward true in
 lemma Exact.mono_g' (hS : S.Exact) (h : RightHomologyData S) : Mono h.g' :=
   mono_of_isZero_kernel' _ h.hι (by
-    haveI := hS.hasHomology
+    have := hS.hasHomology
     dsimp
     simpa only [← h.exact_iff] using hS)
 
