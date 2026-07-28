@@ -24,6 +24,8 @@ coalgebra structure.
   monoid and `A` is an `R`-bialgebra.
 * `LaurentPolynomial.instBialgebra`: the `R`-bialgebra structure on the Laurent polynomials
   `A[T;T⁻¹]` when `A` is an `R`-bialgebra.
+* `(Add)MonoidAlgebra.mapDomainBialgHomEquiv`: isomorphism between `R`-bialgebra homs `A[G] → A[H]`
+  and groups homs `G → H` when `G` and `H` are an (add) group and `A` is an `R`-bialgebra.
 -/
 
 public noncomputable section
@@ -153,10 +155,8 @@ def bialgEquivOfSubsingleton [Subsingleton M] : R[M] ≃ₐc[R] R where
 
 lemma isGroupLikeElem_of (m : M) : IsGroupLikeElem R (of A M m) := isGroupLikeElem_single_one ..
 
-set_option linter.translate.warnInvalid false in
 /-- The `R`-bialgebra map from the group algebra on the group-like elements of `A` to `A`. -/
-@[expose, to_additive (dont_translate := R A) (attr := simps!) liftGroupLikeBialgHom
-/-- The `R`-bialgebra map from the group algebra on the group-like elements of `A` to `A`. -/]
+@[expose, simps!]
 def liftGroupLikeBialgHom : R[GroupLike R A] →ₐc[R] A :=
   .ofAlgHom (lift R A (GroupLike R A) { toFun g := g.1, map_one' := by simp, map_mul' := by simp })
     (by ext; simp) (by ext; simp)
