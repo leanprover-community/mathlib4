@@ -61,7 +61,7 @@ We apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z p`, to obtain a `(1,1)
   non-differentiable vector fields.
   If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead.
 
-* `CovariantDerivative.leviCivitaConnection_isLeviCivitaConnection`:
+* `CovariantDerivative.isLeviCivitaConnection_leviCivitaConnection`:
   `leviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free)
 
 ## Implementation notes
@@ -289,7 +289,7 @@ noncomputable def leviCivitaAux₀ (x : M) : ℝ :=
   + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2
 
 /-- `leviCivitaAux₀` is tensorial with respect to its first argument. -/
-theorem leviCivitaAux₀_tensorial₁
+theorem tensorialAt₁_leviCivitaAux₀
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
     (hZ : MDiffAt (T% Z) x) :
     TensorialAt I E (leviCivitaAux₀ I · Y Z x) x where
@@ -304,7 +304,7 @@ theorem leviCivitaAux₀_tensorial₁
     ring
 
 /-- `leviCivitaAux₀` is tensorial with respect to its second argument. -/
-theorem leviCivitaAux_tensorial₂
+theorem tensorialAt₂_leviCivitaAux₀
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {X : Π x, TangentSpace I x}
     (hX : MDiffAt (T% X) x) :
     TensorialAt I E (leviCivitaAux₀ I X Y · x) x where
@@ -333,8 +333,8 @@ noncomputable def leviCivitaAux₁
   have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
     (TensorialAt.mkHom₂ _ (x := x)
-      (fun _Z hZ ↦ leviCivitaAux₀_tensorial₁ _ _ hY hZ)
-      (fun _X hX ↦ leviCivitaAux_tensorial₂ _ _ hY hX))
+      (fun _Z hZ ↦ tensorialAt₁_leviCivitaAux₀ _ _ hY hZ)
+      (fun _X hX ↦ tensorialAt₂_leviCivitaAux₀ _ _ hY hX))
 
 theorem leviCivitaAux₁_apply_inner {x : M}
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -414,7 +414,7 @@ public lemma isMetricCompatible_leviCivitaConnection :
     mlieBracket_swap (V := Y) (W := X)]
   ring
 
-public lemma leviCivitaConnection_torsion_eq_zero :
+public lemma torsion_leviCivitaConnection_eq_zero :
     (leviCivitaConnection I M).torsion = 0 := by
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
@@ -426,9 +426,9 @@ public lemma leviCivitaConnection_torsion_eq_zero :
   ring
 
 /-- `leviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free) -/
-public lemma leviCivitaConnection_isLeviCivitaConnection :
+public lemma isLeviCivitaConnection_leviCivitaConnection :
     (leviCivitaConnection I M).IsLeviCivitaConnection :=
-  ⟨isMetricCompatible_leviCivitaConnection I, leviCivitaConnection_torsion_eq_zero I⟩
+  ⟨isMetricCompatible_leviCivitaConnection I, torsion_leviCivitaConnection_eq_zero I⟩
 
 end existence
 
