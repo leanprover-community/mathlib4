@@ -145,7 +145,7 @@ variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace α]
 
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
-  haveI : Nonempty s := ne_s.to_subtype
+  have : Nonempty s := ne_s.to_subtype
   suffices (s ∩ ⋂ x ∈ s, Iic x).Nonempty from
     ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
   rw [biInter_eq_iInter]
@@ -195,7 +195,7 @@ theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
   refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
   · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
     convert! univ_mem
-  · haveI := h_nonempty.nonempty
+  · have := h_nonempty.nonempty
     obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
     obtain ⟨b, hb⟩ := exists_lt a
     exact Filter.mem_atBot_sets.mpr ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction
@@ -542,18 +542,5 @@ theorem le_sSup_image_Icc (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
   have := mem_image_of_mem f hc
   rw [h.image_Icc (hc.1.trans hc.2)] at this
   exact this.2
-
-theorem image_Icc_of_monotoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
-    (h' : MonotoneOn f <| Icc a b) : f '' Icc a b = Icc (f a) (f b) := by
-  rw [h.image_Icc hab]
-  congr!
-  · exact h'.sInf_image_Icc hab
-  · exact h'.sSup_image_Icc hab
-
-theorem image_Icc_of_antitoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
-    (h' : AntitoneOn f <| Icc a b) : f '' Icc a b = Icc (f b) (f a) := by
-  have : Icc (f b) (f a) = Icc (toDual (f a)) (toDual (f b)) := by rw [Icc_toDual]; rfl
-  rw [this]
-  exact image_Icc_of_monotoneOn (β := βᵒᵈ) hab h h'.dual_right
 
 end ContinuousOn

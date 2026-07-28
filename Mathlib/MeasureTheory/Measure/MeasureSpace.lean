@@ -160,7 +160,7 @@ theorem measure_add_measure_compl (h : MeasurableSet s) : μ s + μ sᶜ = μ un
 theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
     (hd : s.Pairwise (AEDisjoint μ on f)) (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) := by
-  haveI := hs.toEncodable
+  have := hs.toEncodable
   rw [biUnion_eq_iUnion]
   exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.2) fun x => h x x.2
 
@@ -296,7 +296,7 @@ alias measure_diff_le_iff_le_add := measure_sdiff_le_iff_le_add
 
 theorem measure_eq_measure_of_null_sdiff {s t : Set α} (hst : s ⊆ t) (h_nullsdiff : μ (t \ s) = 0) :
     μ s = μ t := measure_congr <|
-      EventuallyLE.antisymm (HasSubset.Subset.eventuallyLE hst) (ae_le_set.mpr h_nullsdiff)
+      EventuallyLE.antisymm (LE.le.eventuallyLE hst) (ae_le_set.mpr h_nullsdiff)
 
 @[deprecated (since := "2026-06-03")]
 alias measure_eq_measure_of_null_diff := measure_eq_measure_of_null_sdiff
@@ -351,7 +351,7 @@ theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤
     ⟨fun h => by simpa only [union_sdiff_left] using (ae_eq_set.mp h).1, fun h =>
       eventuallyLE_antisymm_iff.mpr
         ⟨by rwa [ae_le_set, union_sdiff_left],
-          HasSubset.Subset.eventuallyLE subset_union_left⟩⟩
+          LE.le.eventuallyLE subset_union_left⟩⟩
 
 @[simp]
 theorem union_ae_eq_right_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] t ↔ s ≤ᵐ[μ] t := by
@@ -367,7 +367,7 @@ theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t �
 /-- If `s ⊆ t`, `μ t ≤ μ s`, `μ t ≠ ∞`, and `s` is measurable, then `s =ᵐ[μ] t`. -/
 theorem ae_eq_of_subset_of_measure_ge (h₁ : s ⊆ t) (h₂ : μ t ≤ μ s) (hsm : NullMeasurableSet s μ)
     (ht : μ t ≠ ∞) : s =ᵐ[μ] t :=
-  ae_eq_of_ae_subset_of_measure_ge (HasSubset.Subset.eventuallyLE h₁) h₂ hsm ht
+  ae_eq_of_ae_subset_of_measure_ge h₁.eventuallyLE h₂ hsm ht
 
 theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → Set α} {t : ι → Set α}
     (hsub : ∀ i, s i ⊆ t i) (h_le : ∀ i, μ (t i) ≤ μ (s i)) : μ (⋃ i, s i) = μ (⋃ i, t i) := by
@@ -411,7 +411,7 @@ theorem measure_iUnion_toMeasurable {ι : Sort*} [Countable ι] (s : ι → Set 
 
 theorem measure_biUnion_toMeasurable {I : Set β} (hc : I.Countable) (s : β → Set α) :
     μ (⋃ b ∈ I, toMeasurable μ (s b)) = μ (⋃ b ∈ I, s b) := by
-  haveI := hc.toEncodable
+  have := hc.toEncodable
   simp only [biUnion_eq_iUnion, measure_iUnion_toMeasurable]
 
 @[simp]
@@ -542,7 +542,7 @@ theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirectedOrder ι]
 
 theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countable)
     (hd : DirectedOn ((· ⊆ ·) on s) t) : μ (⋃ i ∈ t, s i) = ⨆ i ∈ t, μ (s i) := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   rw [biUnion_eq_iUnion, hd.directed_val.measure_iUnion, ← iSup_subtype'']
 
 /-- **Continuity from above**:
@@ -1226,7 +1226,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       obtain ⟨i, hi⟩ := mem_iUnion.1 <| ht' hx₂
       refine ⟨i, ?_, hi⟩
       by_contra h
-      simp only [mem_setOf_eq, not_lt] at h
+      simp only [mem_ofPred_eq, not_lt] at h
       exact mem_iInter₂.1 hx₁ i h hi
     have hle₂ : ν (tᶜ ∩ s) ≤ ∑' (n : {k | ν (t' k) < μ (t' k)}), ν (t' n) :=
       (measure_mono hcap).trans (measure_biUnion_le ν (to_countable {k | ν (t' k) < μ (t' k)}) _)
@@ -1240,11 +1240,11 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
         intro n hn; simpa
       · rw [Subtype.forall]
         intro n hn
-        rw [mem_setOf_eq] at hn
+        rw [mem_ofPred_eq] at hn
         simp [le_of_lt hn]
     · rw [Set.disjoint_iff]
       rintro k ⟨hk₁, hk₂⟩
-      rw [mem_setOf_eq] at hk₁ hk₂
+      rw [mem_ofPred_eq] at hk₁ hk₂
       exact False.elim <| hk₂.not_ge hk₁
 
 @[simp]

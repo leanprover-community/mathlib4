@@ -91,6 +91,7 @@ namespace Complex
 
 variable (x y : ℂ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
@@ -106,6 +107,7 @@ theorem exp_zero : exp 0 = 1 := by
       simp only [sum_range_succ, pow_succ]
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exp_add : exp (x + y) = exp x * exp y := by
   have hj : ∀ j : ℕ, (∑ m ∈ range j, (x + y) ^ m / m.factorial) =
         ∑ i ∈ range j, ∑ k ∈ range (i + 1), x ^ k / k.factorial *

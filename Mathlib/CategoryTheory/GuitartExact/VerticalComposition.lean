@@ -43,6 +43,7 @@ def whiskerVertical (α : L ⟶ L') (β : R' ⟶ R) :
 
 namespace GuitartExact
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A 2-square stays Guitart exact if we replace the left and right functors
 by isomorphic functors. See also `whiskerVertical_iff`. -/
@@ -90,6 +91,7 @@ variable {H₁ : C₁ ⥤ D₁} {L₁ : C₁ ⥤ C₂} {R₁ : D₁ ⥤ D₂} {H
   {L₂ : C₂ ⥤ C₃} {R₂ : D₂ ⥤ D₃} {H₃ : C₃ ⥤ D₃}
   (w' : TwoSquare H₂ L₂ R₂ H₃)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical isomorphism between
 `w.structuredArrowDownwards Y₁ ⋙ w'.structuredArrowDownwards (R₁.obj Y₁)` and
 `(w ≫ᵥ w').structuredArrowDownwards Y₁.` -/
@@ -107,7 +109,6 @@ def vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L�
 
 namespace GuitartExact
 
-set_option backward.isDefEq.respectTransparency false in
 instance vComp [hw : w.GuitartExact] [hw' : w'.GuitartExact] :
     (w ≫ᵥ w').GuitartExact := by
   simp only [TwoSquare.guitartExact_iff_initial]
@@ -121,7 +122,6 @@ instance vComp' [GuitartExact w] [GuitartExact w'] {L₁₂ : C₁ ⥤ C₃}
   dsimp only [TwoSquare.vComp']
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_vComp [R₁.EssSurj] [w.GuitartExact] [(w ≫ᵥ w').GuitartExact] :
     w'.GuitartExact := by
   rw [guitartExact_iff_initial]
@@ -153,9 +153,9 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     (w ≫ᵥ w'.hom).GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro hww'
-    letI : CatCommSq H₂ eL.functor eR.functor H₃ := ⟨w'⟩
+    let : CatCommSq H₂ eL.functor eR.functor H₃ := ⟨w'⟩
     have hw' : CatCommSq.iso H₂ eL.functor eR.functor H₃ = w' := rfl
-    letI : CatCommSq H₃ eL.inverse eR.inverse H₂ := CatCommSq.vInvEquiv _ _ _ _ inferInstance
+    let : CatCommSq H₃ eL.inverse eR.inverse H₂ := CatCommSq.vInvEquiv _ _ _ _ inferInstance
     let w'' := CatCommSq.iso H₃ eL.inverse eR.inverse H₂
     let α : (L₁ ⋙ eL.functor) ⋙ eL.inverse ≅ L₁ :=
       Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft L₁ eL.unitIso.symm ≪≫ L₁.rightUnitor
@@ -178,6 +178,7 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
   · intro
     exact vComp w w'.hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma vComp'_iff_of_equivalences (E : C₂ ≌ C₃) (E' : D₂ ≌ D₃)
     (w' : H₂ ⋙ E'.functor ≅ E.functor ⋙ H₃) {L₁₂ : C₁ ⥤ C₃}
     {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ E.functor ≅ L₁₂)
