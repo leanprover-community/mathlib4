@@ -277,10 +277,10 @@ lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
   exact h
 
 theorem mem_range_ofSubtype_iff {p : α → Prop} [DecidablePred p] {g : Perm α} :
-    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.support : Set α) ⊆ setOf p := by
+    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.support : Set α) ⊆ Set.ofPred p := by
   constructor
   · rintro ⟨k, rfl⟩ x
-    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_setOf_eq]
+    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_ofPred_eq]
     exact fun ⟨hx, _⟩ ↦ hx
   · intro hg
     refine ⟨g.subtypePerm fun x ↦ ?_, ofSubtype_subtypePerm _ fun x hx ↦ hg (mem_support.mpr hx)⟩

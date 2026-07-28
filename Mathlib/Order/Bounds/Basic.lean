@@ -642,7 +642,7 @@ theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by sim
 
 @[to_dual (attr := simp)]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, forall_mem_empty, forall_true_iff]
+  simp only [upperBounds, eq_univ_iff_forall, mem_ofPred_eq, forall_mem_empty, forall_true_iff]
 
 @[to_dual (attr := simp)]
 theorem bddAbove_empty [Nonempty α] : BddAbove (∅ : Set α) := by

@@ -159,8 +159,11 @@ section Inv
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
-theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
+theorem inv_ofPred (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias inv_setOf := inv_ofPred
+@[deprecated (since := "2026-07-09")] alias neg_setOf := neg_ofPred
 
 @[to_additive (attr := simp, push)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=

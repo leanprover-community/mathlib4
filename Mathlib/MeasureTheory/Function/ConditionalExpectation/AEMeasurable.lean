@@ -96,11 +96,11 @@ variable {F 𝕜}
 
 theorem mem_lpMeasSubgroup_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} {μ : Measure α}
     {f : Lp F p μ} : f ∈ lpMeasSubgroup F m p μ ↔ AEStronglyMeasurable[m] f μ := by
-  rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_setOf_eq]
+  rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_ofPred_eq]
 
 theorem mem_lpMeas_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} {μ : Measure α}
     {f : Lp F p μ} : f ∈ lpMeas F 𝕜 m p μ ↔ AEStronglyMeasurable[m] f μ := by
-  rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_setOf_eq]
+  rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_ofPred_eq]
 
 theorem lpMeas.aestronglyMeasurable {m _ : MeasurableSpace α} {μ : Measure α}
     (f : lpMeas F 𝕜 m p μ) : AEStronglyMeasurable[m] (f : α → F) μ :=

@@ -98,7 +98,7 @@ instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
       use min (γ * (γ' * γ')) γ'
       intro y y_in
       apply hs
-      simp only [mem_setOf_eq, Units.min_val, Units.val_mul] at y_in
+      simp only [mem_ofPred_eq, Units.min_val, Units.val_mul] at y_in
       exact Valuation.inversion_estimate _ x_ne y_in }
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -112,7 +112,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   set γ' := Units.mk0 ((ValueGroup₀.restrict₀ _) x) (v.restrict.ne_zero_iff.mpr x_ne) with hdef
   exact ⟨γ', fun y hy => by
     simp only [Valuation.restrict_lt_iff_lt_embedding, hdef, sub_zero, Units.val_mk0,
-      mem_setOf_eq, embedding_restrict₀] at hy
+      mem_ofPred_eq, embedding_restrict₀] at hy
     simpa using hy⟩
 
 section
@@ -147,7 +147,7 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     rw [Filter.Eventually, Valued.mem_nhds_zero]
     obtain ⟨x, hx⟩ := hsurj γ
     use Units.mk0 (restrict₀ (.ofClass hv.v) x) (by simp [restrict₀_apply, hx, hγ])
-    simp only [Units.val_mk0, setOf_subset_setOf, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
+    simp only [Units.val_mk0, ofPred_subset_ofPred, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
       imp_self, implies_true]
   · have h0 : hv.v x ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero h0]
@@ -215,7 +215,7 @@ lemma valuation_isClosedMap : IsClosedMap (v.restrict : K → (ValueGroup₀ (.o
   refine IsClosedMap.of_nonempty ?_
   intro U hU hU'
   simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_nhds, subset_compl_comm,
-    compl_setOf, not_lt] at hU
+    compl_ofPred, not_lt] at hU
   simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
   refine (em _).imp_right fun h ↦ ?_
   obtain ⟨γ, h⟩ := hU _ h
@@ -241,7 +241,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
         exact zero_ne_one.symm
       convert! Valued.locally_const this
       ext x
-      rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_setOf_eq]
+      rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_ofPred_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
       rwa [Completion.isDenseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
     have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
@@ -387,10 +387,10 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   have heq : γ₀ = embedding γ₀' := rfl
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     rcases eq_or_ne γ₀ 0 with h | h
-    · simp only [(Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
+    · simp only [(Valuation.zero_iff _).mp h, mem_ofPred_eq, Valuation.map_zero, Units.zero_lt,
         iff_true]
       apply subset_closure
-      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
+      exact ⟨0, by simp only [mem_ofPred_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
     · exact this h
   intro h
   have h' : γ₀' ≠ 0 := by simpa only [heq, map_ne_zero] using h
