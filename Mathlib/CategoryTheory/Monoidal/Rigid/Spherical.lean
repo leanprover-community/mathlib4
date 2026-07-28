@@ -28,7 +28,7 @@ class SphericalCategory (C : Type u) [Category.{v} C] [MonoidalCategory C]
     [RigidCategory C] [PivotalCategory C] : Prop where
   leftTrace_eq_rightTrace {X : C} (f : X ⟶ X) : leftTrace f = rightTrace f
 
-/-- The common trace in a spherical category. -/
+/-- The trace in a spherical category. -/
 @[nolint unusedArguments]
 def trace [PivotalCategory C] [SphericalCategory C]
     {X : C} (f : X ⟶ X) : 𝟙_ C ⟶ 𝟙_ C :=
