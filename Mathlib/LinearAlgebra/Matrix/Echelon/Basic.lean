@@ -16,7 +16,7 @@ This file defines the row echelon form of matrices and the leading entries of th
 
 ## Main definitions
 
-- `Matrix.RowEchelon` expresses that `M` is in row echelon form: an entry of a lower row
+- `Matrix.IsRowEchelon` expresses that `M` is in row echelon form: an entry of a lower row
   vanishes whenever a higher row is zero at every column strictly to its left.
 - `Matrix.IsLeadingEntry`: `c : WithTop n` is the leading position of row `i` of `M`,
   with `⊤` for a zero row.
@@ -40,11 +40,11 @@ variable [Zero R]
 
 /-- `M` is in row echelon form: for rows `i₁ < i₂`, if the higher row `i₁` is zero at every
 column strictly left of `j₂`, then the lower row `i₂` is zero at `j₂`. -/
-def RowEchelon [LT m] [LT n] (M : Matrix m n R) : Prop :=
+def IsRowEchelon [LT m] [LT n] (M : Matrix m n R) : Prop :=
   ∀ ⦃i₁ i₂⦄, i₁ < i₂ → ∀ ⦃j₂⦄, (∀ j₁ < j₂, M i₁ j₁ = 0) → M i₂ j₂ = 0
 
 /-- In an echelon matrix, rows below a zero row are zero. -/
-theorem RowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : M.RowEchelon)
+theorem IsRowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : M.IsRowEchelon)
     (hlt : i₁ < i₂) (h0 : M i₁ = 0) : M i₂ = 0 :=
   funext fun _ => he hlt fun j₁ _ => congrFun h0 j₁
 

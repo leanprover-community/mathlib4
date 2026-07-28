@@ -34,8 +34,8 @@ def normalizeRank (e : Expr) : MetaM Simp.Result := do
       | throwError "expected the element type to be a domain"
     let decomp ← (mkBareissDecomposition M).run'
     let pf ← mkAppM ``Bareiss.Decomposition.rank_eq #[decomp]
-    let lenE ← mkAppM ``List.length #[← mkAppM ``Bareiss.Decomposition.pivot #[decomp]]
-    let some len := ((Kernel.whnf (← getEnv) (← getLCtx) lenE).toOption).bind (·.rawNatLit?)
+    let rankE ← mkAppM ``Bareiss.Decomposition.rank #[decomp]
+    let some len := ((Kernel.whnf (← getEnv) (← getLCtx) rankE).toOption).bind (·.rawNatLit?)
       | throwError "the pivot count does not reduce to a literal"
     let k := mkNatLit len
     return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }

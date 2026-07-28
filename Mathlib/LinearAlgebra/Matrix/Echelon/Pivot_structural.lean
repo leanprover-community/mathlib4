@@ -14,21 +14,21 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 
 The pivot map of a matrix in row echelon form sends each row to its leading (leftmost
 nonzero) column, or to `⊤` for a zero row. In this packaging the staircase conditions
-(`Monotone`, `StrictMonoOn` off the `⊤`-fiber) are the structure fields and `RowEchelon`
-is derived; see `Pivot.lean` for the packaging with `RowEchelon` primitive.
+(`Monotone`, `StrictMonoOn` off the `⊤`-fiber) are the structure fields and `IsRowEchelon`
+is derived; see `Pivot.lean` for the packaging with `IsRowEchelon` primitive.
 
 ## Main definitions
 
-- `Matrix.IsPivotMap`: `l : m → WithTop n` is the pivot map of `A`.
+- `Matrix.IsPivot`: `l : m → WithTop n` is the pivot map of `A`.
 
 ## Main results
 
-- `Matrix.IsPivotMap.rank_eq`: a matrix with pivot map `l` has rank the number of rows
+- `Matrix.IsPivot.rank_eq`: a matrix with pivot map `l` has rank the number of rows
   with a pivot.
-- `Matrix.IsPivotMap.unique`: the pivot map of a matrix is unique.
-- `Matrix.IsPivotMap.rank_eq_of_lowerTriangular`: the rank of `B`, read off a pivot map
+- `Matrix.IsPivot.unique`: the pivot map of a matrix is unique.
+- `Matrix.IsPivot.rank_eq_of_lowerTriangular`: the rank of `B`, read off a pivot map
   of `A * B.submatrix σ id` for `A` lower triangular with nonzero diagonal.
-- `Matrix.decidableIsPivotMap`: `IsPivotMap` is decidable over a `DecidableEq` ring and
+- `Matrix.decidableIsPivot`: `IsPivot` is decidable over a `DecidableEq` ring and
   finite linearly ordered indices.
 
 ## Tags
@@ -50,20 +50,20 @@ variable [Zero R] {A : Matrix m n R} {l : m → WithTop n}
 
 /-- `l` is the pivot map of `A`: it sends each row to its leading position, is monotone,
 and strictly increases on the nonzero rows. -/
-structure IsPivotMap [Preorder m] [Preorder n] (A : Matrix m n R) (l : m → WithTop n) :
+structure IsPivot [Preorder m] [Preorder n] (A : Matrix m n R) (l : m → WithTop n) :
     Prop where
   monotone : Monotone l
   strictMonoOn : StrictMonoOn l {i | l i ≠ ⊤}
   isLeadingEntry : ∀ i : m, A.IsLeadingEntry i (l i)
 
-theorem IsPivotMap.lt_of_lt_of_ne_top [Preorder m] [Preorder n] {i₁ i₂ : m}
-    (h : A.IsPivotMap l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
+theorem IsPivot.lt_of_lt_of_ne_top [Preorder m] [Preorder n] {i₁ i₂ : m}
+    (h : A.IsPivot l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
   rcases eq_or_ne (l i₂) ⊤ with h₂ | h₂
   · exact h₂ ▸ WithTop.lt_top_iff_ne_top.mpr h₁
   · exact h.strictMonoOn h₁ h₂ hlt
 
-theorem IsPivotMap.rowEchelon [Preorder m] [LinearOrder n] (h : A.IsPivotMap l) :
-    A.RowEchelon := by
+theorem IsPivot.isRowEchelon [Preorder m] [LinearOrder n] (h : A.IsPivot l) :
+    A.IsRowEchelon := by
   intro i₁ i₂ hlt j₂ hz
   refine (h.isLeadingEntry i₂).1 j₂ ?_
   rcases eq_or_ne (l i₂) ⊤ with h₂ | h₂
@@ -75,8 +75,8 @@ theorem IsPivotMap.rowEchelon [Preorder m] [LinearOrder n] (h : A.IsPivotMap l) 
     exact (h.isLeadingEntry i₁).2 c₁ hc₁ (hz c₁ (WithTop.coe_lt_coe.mp hcj))
 
 /-- The pivot map of a matrix is unique. -/
-theorem IsPivotMap.unique [Preorder m] [LinearOrder n] {l' : m → WithTop n}
-    (h : A.IsPivotMap l) (h' : A.IsPivotMap l') : l = l' :=
+theorem IsPivot.unique [Preorder m] [LinearOrder n] {l' : m → WithTop n}
+    (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' :=
   funext fun i => (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
 
 end Zero
@@ -96,15 +96,15 @@ section Rank
 variable [Fintype m] [Fintype n] [Preorder n] [DecidableEq n] {A : Matrix m n R}
   {l : m → WithTop n}
 
-theorem IsPivotMap.rank_le_card [Preorder m] [CommSemiring R] [StrongRankCondition R]
-    (h : A.IsPivotMap l) : A.rank ≤ #{i | l i ≠ ⊤} :=
+theorem IsPivot.rank_le_card [Preorder m] [CommSemiring R] [StrongRankCondition R]
+    (h : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} :=
   rank_le_card_of_row_eq_zero A _ fun i hi =>
     isLeadingEntry_top_iff.mp
       (of_not_not (fun hne => hi ((mem_filter_univ i).mpr hne)) ▸ h.isLeadingEntry i)
 
 variable [LinearOrder m] [CommRing R] [IsDomain R]
 
-theorem IsPivotMap.card_le_rank (h : A.IsPivotMap l) : #{i | l i ≠ ⊤} ≤ A.rank := by
+theorem IsPivot.card_le_rank (h : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank := by
   let g : {i // l i ≠ ⊤} → n := fun i => (l i.1).untop i.2
   have hlead : ∀ i, (∀ j < g i, A i.1 j = 0) ∧ A i.1 (g i) ≠ 0 := by
     intro i
@@ -121,11 +121,11 @@ theorem IsPivotMap.card_le_rank (h : A.IsPivotMap l) : #{i | l i ≠ ⊤} ≤ A.
         rw [rank_of_det_ne_zero hdet, Fintype.card_subtype]
     _ ≤ A.rank := rank_submatrix_le A Subtype.val g
 
-theorem IsPivotMap.rank_eq (h : A.IsPivotMap l) : A.rank = #{i | l i ≠ ⊤} :=
+theorem IsPivot.rank_eq (h : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} :=
   le_antisymm h.rank_le_card h.card_le_rank
 
-theorem IsPivotMap.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
-    {σ : Equiv.Perm m} (hpiv : (A * B.submatrix σ id).IsPivotMap l)
+theorem IsPivot.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
+    {σ : Equiv.Perm m} (hpiv : (A * B.submatrix σ id).IsPivot l)
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
     B.rank = #{i | l i ≠ ⊤} := by
   rw [← rank_mul_eq_right_of_lowerTriangular A B σ hA hd, hpiv.rank_eq]
@@ -146,8 +146,8 @@ instance decidableIsLeadingEntry [Fintype n] [LT n] [DecidableLT n] [DecidableEq
   decidable_of_iff
     ((∀ j : n, (j : WithTop n) < c → A i j = 0) ∧ ∀ c₀ : n, c = c₀ → A i c₀ ≠ 0) Iff.rfl
 
-instance decidableIsPivotMap [Fintype m] [LinearOrder m] [Fintype n] [LinearOrder n]
-    (A : Matrix m n R) (l : m → WithTop n) : Decidable (A.IsPivotMap l) :=
+instance decidableIsPivot [Fintype m] [LinearOrder m] [Fintype n] [LinearOrder n]
+    (A : Matrix m n R) (l : m → WithTop n) : Decidable (A.IsPivot l) :=
   decidable_of_iff'
     (Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧ ∀ i : m, A.IsLeadingEntry i (l i))
     ⟨fun h => ⟨h.monotone, h.strictMonoOn, h.isLeadingEntry⟩,

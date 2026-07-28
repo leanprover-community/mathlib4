@@ -70,10 +70,18 @@ def parseMatrix? (M : Expr) : Option (Array (Array Expr)) :=
     | _ => none
   | _ => none
 
-/-- Build the pivot-column list `[c₀, c₁, …] : List (Fin n)`. -/
-def mkPivotLit (n : Nat) (pivots : Array Nat) : MetaM Expr := do
+/-- Build the pivot-map literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
+first rows to their pivot columns and the remaining rows to `⊤`. -/
+def mkPivotMapLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
   let finN ← mkAppM ``Fin #[mkNatLit n]
-  mkListLit finN (← pivots.mapM (mkNumeral finN)).toList
+  let wtopN ← mkAppM ``WithTop #[finN]
+  let top ← mkAppOptM ``Top.top #[some wtopN, none]
+  let entries ← (Array.range m).mapM fun i =>
+    if hi : i < pivots.size then do
+      mkAppM ``WithTop.some #[← mkNumeral finN pivots[i]]
+    else
+      pure top
+  mkVecLit wtopN entries
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
@@ -263,11 +271,13 @@ def mkBareissDecomposition (M : Expr) : TermElabM Expr := do
   -- constructing the main Bareiss certificate from internal raw data
   let L ← mkMatrixLit R (← scaledL.mapM fun row => row.mapM fun v => mkIntNumeral R v)
   let σ ← mkPerm m d.swaps
-  let pivotE ← mkPivotLit n d.pivot
+  let pivotE ← mkPivotMapLit m n d.pivot
+  let rankE := mkNatLit d.pivot.size
   let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
-                $(← Term.exprToSyntax pivotE),
+                $(← Term.exprToSyntax pivotE), $(← Term.exprToSyntax rankE),
                 -- switch to an efficient decision of matrix mult once implemented
-                by decide +kernel, by decide +kernel, by decide +kernel⟩ :
+                by decide +kernel, by decide +kernel, by decide +kernel,
+                by decide +kernel⟩ :
               Bareiss.Decomposition $(← Term.exprToSyntax M)))
   let e ← Term.elabTermEnsuringType stx none
   Term.synthesizeSyntheticMVarsNoPostponing

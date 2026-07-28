@@ -45,6 +45,8 @@ variable {R : Type v} {M : Matrix (Fin m) (Fin n) R}
 
 namespace Bareiss
 
+open Finset
+
 variable [CommRing R] [IsDomain R]
 
 /-- The result returned by the Bareiss algorithm. -/
@@ -53,14 +55,18 @@ structure Decomposition (M : Matrix (Fin m) (Fin n) R) where
   L : Matrix (Fin m) (Fin m) R
   /-- The row permutation. -/
   σ : Equiv.Perm (Fin m)
-  /-- The pivot columns of the final echelon form. -/
-  pivot : List (Fin n)
+  /-- The pivot map of the final echelon form. -/
+  pivot : Fin m → WithTop (Fin n)
+  /-- The rank: the number of rows with a pivot. -/
+  rank : ℕ
   is_pivot : (L * (M.submatrix σ id)).IsPivot pivot
+  card_eq : #{i | pivot i ≠ ⊤} = rank
   L_lowerTriangular : L.BlockTriangular OrderDual.toDual
   L_diag_ne_zero : ∀ i, L i i ≠ 0
 
 theorem Decomposition.rank_eq (cert : Decomposition M) :
-  M.rank = cert.pivot.length :=
-  cert.is_pivot.rank_eq_of_lowerTriangular cert.L_lowerTriangular cert.L_diag_ne_zero
+    M.rank = cert.rank :=
+  (cert.is_pivot.rank_eq_of_lowerTriangular cert.L_lowerTriangular
+    cert.L_diag_ne_zero).trans cert.card_eq
 
 end Bareiss
