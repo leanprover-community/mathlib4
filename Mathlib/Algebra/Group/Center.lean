@@ -92,20 +92,17 @@ protected theorem map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMul
   refine ⟨fun a ↦ ?_ , fun a b ↦ ?_, fun a b ↦ ?_⟩
   · obtain ⟨_, rfl⟩ := hf a
     rw [commute_iff_eq, ← map_mul, ← map_mul, h.1]
-  · obtain ⟨_, rfl⟩ := hf a
+  all_goals
+    obtain ⟨_, rfl⟩ := hf a
     obtain ⟨_, rfl⟩ := hf b
-    rw [← map_mul, ← map_mul, h.2, map_mul, map_mul]
-  · obtain ⟨_, rfl⟩ := hf a
-    obtain ⟨_, rfl⟩ := hf b
-    rw [← map_mul, ← map_mul, h.3, map_mul, map_mul]
+    simp only [← map_mul, h.left_assoc, h.right_assoc]
 
 @[to_additive]
 protected theorem of_map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMulCentral (f a))
-    (hf : Function.Injective f) : IsMulCentral a := by
-  refine ⟨fun a ↦ hf ?_ , fun a b ↦ hf ?_, fun a b ↦ hf ?_⟩
-  · rw [map_mul, h.1, ← map_mul]
-  · rw [map_mul, map_mul, h.2, ← map_mul, ← map_mul]
-  · rw [map_mul, map_mul, h.3, ← map_mul, ← map_mul]
+    (hf : Function.Injective f) : IsMulCentral a where
+  comm _ := hf <| by rw [map_mul, map_mul, h.comm]
+  left_assoc _ _ := hf <| by simp [map_mul, h.left_assoc]
+  right_assoc _ _ := hf <| by simp [map_mul, h.right_assoc]
 
 end IsMulCentral
 
@@ -143,7 +140,7 @@ theorem center_subset_preimage {F} [FunLike F M N] [MulHomClass F M N] {f : F}
     (hf : Function.Injective f) : f ⁻¹' (Set.center N) ⊆ Set.center M :=
   fun _ hx ↦ Set.mem_center_iff.mpr (hx.of_map hf)
 
-@[to_additive image_addCenter_eq]
+@[to_additive (attr := simp) image_addCenter_eq]
 theorem image_center_eq {F} [EquivLike F M N] [MulEquivClass F M N] {f : F} :
     f '' (Set.center M) = Set.center N := by
   refine le_antisymm (image_center_subset <| EquivLike.surjective f) fun x hx ↦ ?_
@@ -152,14 +149,12 @@ theorem image_center_eq {F} [EquivLike F M N] [MulEquivClass F M N] {f : F} :
   simpa using image_center_subset (f : M ≃* N).symm.surjective (mem_image_of_mem _ hx)
 
 @[to_additive]
-theorem _root_.MulEquivClass.apply_mem_center {F} [EquivLike F M N]
-    [MulEquivClass F M N] (f : F) {x : M} (hx : x ∈ Set.center M) : f x ∈ Set.center N := by
-  simpa [← Set.image_center_eq (f := f)]
-
-@[to_additive]
 theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N] [MulEquivClass F M N]
     (f : F) {x : M} : f x ∈ Set.center N ↔ x ∈ Set.center M := by
-  simp [← Set.image_center_eq (f := f)]
+  grind [Set.image_center_eq (f := f), EmbeddingLike.apply_eq_iff_eq]
+
+@[to_additive]
+alias ⟨_, _root_.MulEquivClass.apply_mem_center⟩ := _root_.MulEquivClass.apply_mem_center_iff
 
 @[to_additive mem_addCentralizer]
 lemma mem_centralizer_iff {c : M} : c ∈ centralizer S ↔ ∀ m ∈ S, m * c = c * m := Iff.rfl
