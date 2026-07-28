@@ -197,7 +197,7 @@ theorem exists_clopen_of_closed_subset_open
   -- the union of this finite subcover does the job
   exact ⟨⋃ i ∈ I, V i, I.finite_toSet.isClopen_biUnion (fun i _ ↦ (hV i).1), hI, by simp_all⟩
 
-/-- Let `X` be a totally disconnected compact Hausdorff space, `D i ⊆ X` a finite family of clopens,
+/-- Let `X` be a zero-dimensional compact Hausdorff space, `D i ⊆ X` a finite family of clopens,
 and `Z i ⊆ D i` closed. Assume that the `Z i` are pairwise disjoint. Then there exist clopens
 `Z i ⊆ C i ⊆ D i` with the `C i` disjoint, and such that `∪ D i ⊆ ∪ C i`. -/
 theorem exists_clopen_partition_of_clopen_cover
