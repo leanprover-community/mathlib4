@@ -52,7 +52,7 @@ class IsAddFG (M : Type*) [Add M] : Prop where
 
 section Mul
 
-variable (M : Type*) [Mul M]
+variable (M N : Type*) [Mul M] [Mul N]
 
 /-- A type with multiplication is finitely generated if there is a finite subset such that every
 element of the type can be written as a finite product of elements from this finite subset.
@@ -63,12 +63,13 @@ This generalizes and will eventually replace the four existing definitions
 class IsMulFG : Prop where
   fg_top : ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤
 
-variable {M}
+variable {M N}
 
 @[to_additive]
 theorem isMulFG_def : IsMulFG M ↔ ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤ :=
   ⟨fun h ↦ h.fg_top, fun h ↦ ⟨h⟩⟩
 
+@[to_additive]
 instance [Finite M] : IsMulFG M := by
   cases nonempty_fintype M
   exact ⟨Finset.univ, by simp⟩
@@ -122,11 +123,9 @@ theorem isMulFG_iff_finite :
 theorem isMulFG_top_iff : IsMulFG (⊤ : Submonoid M) ↔ IsMulFG M :=
   isMulFG_iff.trans Monoid.isMulFG_iff.symm
 
-instance isMulFG_top [IsMulFG M] : IsMulFG (⊤ : Submonoid M) :=
+@[to_additive]
+instance [IsMulFG M] : IsMulFG (⊤ : Submonoid M) :=
   isMulFG_top_iff.mpr ‹_›
-
-instance isMulFG_bot : IsMulFG (⊥ : Submonoid M) :=
-  isMulFG_iff.mpr ⟨∅, by simp⟩
 
 end Submonoid
 
@@ -170,11 +169,9 @@ theorem isMulFG_iff_finite : IsMulFG H ↔ ∃ S : Set G, Subgroup.closure (S : 
 theorem isMulFG_top_iff : IsMulFG (⊤ : Subgroup G) ↔ IsMulFG G :=
   isMulFG_iff.trans Group.isMulFG_iff.symm
 
-instance isMulFG_top [IsMulFG G] : IsMulFG (⊤ : Subgroup G) :=
+@[to_additive]
+instance [IsMulFG G] : IsMulFG (⊤ : Subgroup G) :=
   isMulFG_top_iff.mpr ‹_›
-
-instance isMulFG_bot : IsMulFG (⊥ : Subgroup G) :=
-  isMulFG_iff.mpr ⟨∅, by simp⟩
 
 end Subgroup
 
