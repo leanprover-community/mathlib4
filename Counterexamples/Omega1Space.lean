@@ -7,6 +7,8 @@ import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.Compactness.Paracompact
+import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.Order.T5
 
@@ -28,36 +30,23 @@ open Set
 
 namespace Omega1Space
 
-universe u
-
-/-! Lemmas on the natural inclusion `Iio ω₁ ↪ Iic ω₁`. -/
-
 def inc : Iio ω₁ → Iic ω₁ := inclusion Iio_subset_Iic_self
 
 lemma inc_embedding : Topology.IsEmbedding inc := Topology.IsEmbedding.inclusion Iio_subset_Iic_self
-lemma inc_continuous : Continuous inc := inc_embedding.continuous
-
-lemma inc_prod_embedding :
-    Topology.IsEmbedding (fun (p : Iio ω₁ × Iic ω₁) => (inc p.1, p.2)) :=
-  inc_embedding.prodMap Topology.IsEmbedding.id
-
-/-! Lemmas on compactness. -/
 
 instance : Nontrivial (Iic ω₁) :=
   nontrivial_of_ne ⊥ ⊤ (fun h => (Cardinal.isSuccLimit_omega _).bot_lt.ne (Subtype.ext_iff.mp h))
 
-lemma isCompact_Iic_ω₁ : IsCompact (Iic ω₁) :=
-  by simp only [← Icc_bot, bot_eq_zero', isCompact_Icc];
+instance : CompactSpace (Iic ω₁) :=
+  isCompact_iff_compactSpace.mp (by simp only [← Icc_bot, bot_eq_zero, isCompact_Icc])
 
-instance : CompactSpace (Iic ω₁) := isCompact_iff_compactSpace.mp isCompact_Iic_ω₁
-
-/-! Main theorem: `Iio ω₁ × Iic ω₁` is not normal. -/
-
-theorem prod_Iio_ω₁_Iic_ω₁_not_normal : ¬ NormalSpace (Iio.{u+1} ω₁ × Iic.{u+1} ω₁) := by
+/-- Main theorem: `Iio ω₁ × Iic ω₁` is not normal. -/
+theorem not_normalSpace_Iio_prod_Iic_omega_one.{u} :
+    ¬ NormalSpace (Iio.{u+1} ω₁ × Iic.{u+1} ω₁) := by
   intro
   let A : Set (Iio ω₁ × Iic ω₁) := {(a,b) | inc a = b}
   let B : Set (Iio ω₁ × Iic ω₁) := {(a,b) | b = ⊤}
-  have hA : IsClosed A := isClosed_eq (inc_continuous.comp continuous_fst) continuous_snd
+  have hA : IsClosed A := isClosed_eq (inc_embedding.continuous.comp continuous_fst) continuous_snd
   have hB : IsClosed B := isClosed_eq continuous_snd continuous_const
   have hAB : Disjoint A B := by
     rw [disjoint_left]
@@ -90,33 +79,80 @@ theorem prod_Iio_ω₁_Iic_ω₁_not_normal : ¬ NormalSpace (Iio.{u+1} ω₁ ×
   obtain ⟨n, hn⟩ := (htprod.eventually (hU.mem_nhds (hAU rfl))).exists
   exact hβ2 (seq n) hn
 
-instance Iic_ω₁_prod_paracompact : ParacompactSpace (Iic ω₁ × Iic ω₁) := inferInstance
-instance Iic_ω₁_prod_normal : NormalSpace (Iic ω₁ × Iic ω₁) := inferInstance
+/-!
+With this result, the counterexamples below can be proven for topological spaces X and Y in
+Type (u+1). But since ω₁ and ω₁ + 1 are homeomorphic to Iio ω₁ and Iic ω₁ in bigger universes,
+the results can be made more general.
+-/
+
+noncomputable instance (o : Ordinal) : TopologicalSpace o.ToType := Preorder.topology _
+instance (o : Ordinal) : OrderTopology o.ToType := ⟨rfl⟩
+
+noncomputable def orderIso_lift.{u, w} (o : Ordinal.{u}) :
+    o.ToType ≃o (Ordinal.lift.{w, u} o).ToType :=
+  OrderIso.ofRelIsoLT <| Classical.choice <| Ordinal.lift_type_eq.{u, max u w, w}.1 <| by
+    simpa using congrFun Ordinal.lift_umax o
+
+noncomputable def homeoIio.{u, w} :
+    (ω₁ : Ordinal.{u}).ToType ≃ₜ Iio (ω₁ : Ordinal.{max u w}) :=
+  OrderIso.toHomeomorph <| (orderIso_lift.{u, w} ω₁).trans <| Ordinal.ToType.mk.symm.trans <|
+    OrderIso.setCongr _ _ (by simp)
+
+noncomputable def homeoIic.{u, w} :
+    ((ω₁ : Ordinal.{u}) + 1).ToType ≃ₜ Iic (ω₁ : Ordinal.{max u w}) :=
+  OrderIso.toHomeomorph <| (orderIso_lift.{u, w} (ω₁ + 1)).trans <| Ordinal.ToType.mk.symm.trans <|
+    OrderIso.setCongr _ _ (by
+      rw [Ordinal.lift_add, Ordinal.lift_one, ← Order.succ_eq_add_one, Order.Iio_succ]; simp)
+
+noncomputable def homeoIicIic.{u, v} :
+    ((ω₁ : Ordinal.{u}) + 1).ToType ≃ₜ ((ω₁ : Ordinal.{v}) + 1).ToType :=
+  homeoIic.{u, v}.trans homeoIic.{v, u}.symm
+
+instance compactSpace_toType.{u} : CompactSpace ((ω₁ : Ordinal.{u}) + 1).ToType :=
+  homeoIic.{u, u}.symm.compactSpace
+
+noncomputable def incT.{u, v} : (ω₁ : Ordinal.{u}).ToType → ((ω₁ : Ordinal.{v}) + 1).ToType :=
+  homeoIic.{v, u}.symm ∘ inc ∘ homeoIio.{u, v}
+
+lemma incT_prod_embedding.{u, v} : Topology.IsEmbedding
+    (fun (p : (ω₁ : Ordinal.{u}).ToType × ((ω₁ : Ordinal.{u}) + 1).ToType) =>
+      (incT.{u, v} p.1, homeoIicIic.{u, v} p.2)) := by
+  refine Topology.IsEmbedding.prodMap ?_ homeoIicIic.{u, v}.isEmbedding
+  exact homeoIic.{v, u}.symm.isEmbedding.comp
+    (inc_embedding.comp homeoIio.{u, v}.isEmbedding)
+
+theorem prod_omega_one_omega_one_plus_one_not_normal.{u, v} :
+    ¬ NormalSpace ((ω₁ : Ordinal.{u}).ToType × ((ω₁ : Ordinal.{v}) + 1).ToType) := by
+  intro
+  exact not_normalSpace_Iio_prod_Iic_omega_one.{max u v}
+    (homeoIio.prodCongr homeoIic).normalSpace
+
+/-! Counterexamples -/
 
 /-- A subspace of a paracompact space need not be paracompact. -/
-theorem subspace_of_paracompact_not_paracompact :
-    ¬ ∀ (X Y : Type (u+1)) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
+theorem subspace_of_paracompact_not_paracompact.{u,v} :
+    ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
       ParacompactSpace Y → Topology.IsEmbedding f → ParacompactSpace X := fun h => by
-  have : ParacompactSpace (Iio.{u+1} ω₁ × Iic.{u+1} ω₁) :=
-    h _ _ _ Iic_ω₁_prod_paracompact inc_prod_embedding
-  exact prod_Iio_ω₁_Iic_ω₁_not_normal inferInstance
+  have := h _ _ _ inferInstance incT_prod_embedding.{u, v}
+  exact prod_omega_one_omega_one_plus_one_not_normal.{u, u} inferInstance
 
 /-- The product of two normal spaces need not be normal. -/
-theorem product_of_normal_not_normal :
-    ¬ ∀ (X Y : Type (u+1)) [TopologicalSpace X] [TopologicalSpace Y],
+theorem product_of_normal_not_normal.{u,v} :
+    ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y],
       NormalSpace X → NormalSpace Y → NormalSpace (X × Y) :=
-  fun h => prod_Iio_ω₁_Iic_ω₁_not_normal (h _ _ inferInstance inferInstance)
+  fun h => prod_omega_one_omega_one_plus_one_not_normal.{u, v} (h _ _ inferInstance inferInstance)
 
 /-- A subspace of a normal space need not be normal. -/
-theorem subspace_of_normal_not_normal :
-    ¬ ∀ (X Y : Type (u+1)) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
+theorem subspace_of_normal_not_normal.{u,v} :
+    ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
       NormalSpace Y → Topology.IsEmbedding f → NormalSpace X :=
-  fun h => prod_Iio_ω₁_Iic_ω₁_not_normal (h _ _ _ Iic_ω₁_prod_normal inc_prod_embedding)
+  fun h => prod_omega_one_omega_one_plus_one_not_normal.{u, u}
+    (h _ _ _ inferInstance incT_prod_embedding.{u, v})
 
 /-- A regular space need not be normal. -/
-theorem regular_not_normal :
-    ¬ ∀ (X : Type (u+1)) [TopologicalSpace X], RegularSpace X → NormalSpace X :=
-  fun h => prod_Iio_ω₁_Iic_ω₁_not_normal (h _ inferInstance)
+theorem regular_not_normal.{u} :
+    ¬ ∀ (X : Type u) [TopologicalSpace X], RegularSpace X → NormalSpace X :=
+  fun h => prod_omega_one_omega_one_plus_one_not_normal.{u, u} (h _ inferInstance)
 
 end Omega1Space
 
