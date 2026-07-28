@@ -40,13 +40,13 @@ namespace Matrix
 
 public section
 
-lemma detpBalanced_iff_sub_mul_det_eq_zero {R : Type*} [CommRing R] {A : Matrix n n R} {a b : R} :
-    A.DetpBalanced a b ↔ (a - b) * A.det = 0 := by
-  grind [DetpBalanced, det_eq_detp_sub_detp]
+lemma isDetpBalanced_iff_sub_mul_det_eq_zero {R : Type*} [CommRing R] {A : Matrix n n R} {a b : R} :
+    A.IsDetpBalanced a b ↔ (a - b) * A.det = 0 := by
+  grind [IsDetpBalanced, det_eq_detp_sub_detp]
 
 lemma nonsingular_iff_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
     {A : Matrix n n R} : A.Nonsingular ↔ A.det ∈ nonZeroDivisors R := by
-  simp_rw [Nonsingular, detpBalanced_iff_sub_mul_det_eq_zero, mem_nonZeroDivisors_iff_right]
+  simp_rw [Nonsingular, isDetpBalanced_iff_sub_mul_det_eq_zero, mem_nonZeroDivisors_iff_right]
   exact ⟨fun h x eq ↦ h x 0 (by simpa), fun h a b eq ↦ sub_eq_zero.mp <| h _ (by simpa)⟩
 
 lemma nonsingular_iff_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
@@ -56,8 +56,8 @@ lemma nonsingular_iff_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
 /-- If the columns of a square matrix are linearly independent, then the matrix is nonsingular. -/
 theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) : A.Nonsingular := by
   intro a b bal
-  let P (r : ℕ) : Prop := ∀ f g : Fin r → n, (A.submatrix f g).DetpBalanced a b
-  suffices h : P 0 by simpa [DetpBalanced] using h Fin.elim0 Fin.elim0
+  let P (r : ℕ) : Prop := ∀ f g : Fin r → n, (A.submatrix f g).IsDetpBalanced a b
+  suffices h : P 0 by simpa [IsDetpBalanced] using h Fin.elim0 Fin.elim0
   refine Nat.decreasingInduction' (n := Fintype.card n) (fun r _ _ ih f g ↦ ?_) (Nat.zero_le _) <|
     bal.submatrix_of_card_le (Fintype.card_fin _).ge
   by_cases hg : g.Surjective
@@ -67,7 +67,7 @@ theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) :
   let Aj (j : Fin r) := A.submatrix f (Function.update g j j₀)
   let v (a b : R) : n →₀ R := ∑ j, .single (g j) (a * (Aj j).detp (-1) + b * (Aj j).detp 1) +
     .single j₀ (a * D.detp 1 + b * D.detp (-1))
-  suffices h : v a b = v b a by simpa [DetpBalanced, v, h₀] using congr($h j₀)
+  suffices h : v a b = v b a by simpa [IsDetpBalanced, v, h₀] using congr($h j₀)
   refine ind (funext fun i ↦ ?_)
   let Ai := A.submatrix (Option.rec i f) (Option.rec j₀ g)
   have (s : ℤˣ) : Ai.detp s = ∑ j, (Aj j).detp (-s) * A.col (g j) i + D.detp s * A.col j₀ i := by
@@ -75,7 +75,7 @@ theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) :
     congr!; aesop (add simp Function.update)
   have (a b : R) : (v a b).linearCombination R A.col i = a * Ai.detp 1 + b * Ai.detp (-1) := by
     simp [v, Finset.sum_add_distrib, mul_assoc, ← Finset.mul_sum, add_add_add_comm, mul_add, this]
-  simpa [this, DetpBalanced, ← submatrix_submatrix] using
+  simpa [this, IsDetpBalanced, ← submatrix_submatrix] using
     ih (Option.rec i f ∘ finSuccEquiv r) (Option.rec j₀ g ∘ finSuccEquiv r)
 
 theorem Nonsingular.of_linearIndependent_row (ind : LinearIndependent R A.row) : A.Nonsingular := by
@@ -160,4 +160,4 @@ instance (priority := 100) CommSemiring.strongRankCondition_of_nontrivial [Nontr
       convert hg.comp hf; ext; simp [A, g]
     have : A.row ⟨m, hnm⟩ = 0 := by ext; simp [A, g]
     exact not_subsingleton R
-      ⟨by simpa [Nonsingular, DetpBalanced, detp_eq_of_row_eq_zero _ this] using hA⟩
+      ⟨by simpa [Nonsingular, IsDetpBalanced, detp_eq_of_row_eq_zero _ this] using hA⟩

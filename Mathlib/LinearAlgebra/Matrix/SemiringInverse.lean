@@ -91,28 +91,29 @@ lemma detp_map {S : Type*} [CommSemiring S] (f : R →+* S) :
 
 /-- A square matrix `A` over a commutative semiring `R` is "determinant balanced"
 with respect to `a b : R` if `a|A|⁺ + b|A|⁻ = b|A|⁺ + a|A|⁻`. Over a commutative ring,
-this is equivalent to `(a - b)|A| = 0`, see `Matrix.detpBalanced_iff_sub_mul_det_eq_zero`. -/
-def DetpBalanced (a b : R) : Prop :=
+this is equivalent to `(a - b)|A| = 0`, see `Matrix.IsDetpBalanced_iff_sub_mul_det_eq_zero`. -/
+def IsDetpBalanced (a b : R) : Prop :=
   a * A.detp 1 + b * A.detp (-1) = b * A.detp 1 + a * A.detp (-1)
 
-lemma DetpBalanced.refl (a : R) : A.DetpBalanced a a := rfl
+lemma IsDetpBalanced.refl (a : R) : A.IsDetpBalanced a a := rfl
 
 variable {A} {a b c : R}
 
-lemma DetpBalanced.of_eq (eq : A.detp 1 = A.detp (-1)) : A.DetpBalanced a b := by
-  rw [DetpBalanced, eq, add_comm]
+lemma IsDetpBalanced.of_eq (eq : A.detp 1 = A.detp (-1)) : A.IsDetpBalanced a b := by
+  rw [IsDetpBalanced, eq, add_comm]
 
-lemma DetpBalanced.symm : A.DetpBalanced a b → A.DetpBalanced b a := Eq.symm
+lemma IsDetpBalanced.symm : A.IsDetpBalanced a b → A.IsDetpBalanced b a := Eq.symm
 
-lemma detpBalanced_comm : A.DetpBalanced a b ↔ A.DetpBalanced b a := Eq.comm
+lemma IsDetpBalanced_comm : A.IsDetpBalanced a b ↔ A.IsDetpBalanced b a := Eq.comm
 
-lemma DetpBalanced.trans [IsCancelAdd R] (hab : A.DetpBalanced a b) (hbc : A.DetpBalanced b c) :
-    A.DetpBalanced a c := by
-  rw [DetpBalanced] at *
+lemma IsDetpBalanced.trans [IsCancelAdd R]
+    (hab : A.IsDetpBalanced a b) (hbc : A.IsDetpBalanced b c) :
+    A.IsDetpBalanced a c := by
+  rw [IsDetpBalanced] at *
   apply add_left_cancel (a := b * detp 1 A + b * detp (-1) A)
   convert congr($hab + $hbc) using 1 <;> abel
 
-lemma DetpBalanced.mul_add_mul_eq (h : A.DetpBalanced a b) (s t : ℤˣ) :
+lemma IsDetpBalanced.mul_add_mul_eq (h : A.IsDetpBalanced a b) (s t : ℤˣ) :
     a * A.detp s + b * A.detp t = b * A.detp s + a * A.detp t := by
   obtain rfl | rfl := Int.units_eq_one_or s <;> obtain rfl | rfl := Int.units_eq_one_or t
   · rw [add_comm]
@@ -120,43 +121,45 @@ lemma DetpBalanced.mul_add_mul_eq (h : A.DetpBalanced a b) (s t : ℤˣ) :
   · rw [add_comm, ← h, add_comm]
   · rw [add_comm]
 
-@[simp] lemma detpBalanced_transpose_iff : Aᵀ.DetpBalanced a b ↔ A.DetpBalanced a b := by
-  simp [DetpBalanced]
+@[simp] lemma isDetpBalanced_transpose_iff : Aᵀ.IsDetpBalanced a b ↔ A.IsDetpBalanced a b := by
+  simp [IsDetpBalanced]
 
-alias ⟨DetpBalanced.of_transpose, DetpBalanced.transpose⟩ := detpBalanced_transpose_iff
+alias ⟨IsDetpBalanced.of_transpose, IsDetpBalanced.transpose⟩ := isDetpBalanced_transpose_iff
 
-lemma DetpBalanced.submatrix_equiv (e₁ e₂ : m ≃ n) (h : A.DetpBalanced a b) :
-    (A.submatrix e₁ e₂).DetpBalanced a b := by
-  simp_rw [DetpBalanced, detp_submatrix_equiv_equiv]
+lemma IsDetpBalanced.submatrix_equiv (e₁ e₂ : m ≃ n) (h : A.IsDetpBalanced a b) :
+    (A.submatrix e₁ e₂).IsDetpBalanced a b := by
+  simp_rw [IsDetpBalanced, detp_submatrix_equiv_equiv]
   apply h.mul_add_mul_eq
 
-@[simp] lemma detpBalanced_submatrix_equiv_iff {e₁ e₂ : m ≃ n} :
-    (A.submatrix e₁ e₂).DetpBalanced a b ↔ A.DetpBalanced a b where
+@[simp] lemma isDetpBalanced_submatrix_equiv_iff {e₁ e₂ : m ≃ n} :
+    (A.submatrix e₁ e₂).IsDetpBalanced a b ↔ A.IsDetpBalanced a b where
   mp h := by simpa using h.submatrix_equiv e₁.symm e₂.symm
   mpr := (·.submatrix_equiv ..)
 
-lemma DetpBalanced.smul (h : A.DetpBalanced a b) (c : R) :
-    (c • A).DetpBalanced a b := by
-  simp_rw [DetpBalanced, detp_smul, ← mul_assoc, mul_comm _ (c ^ _), mul_assoc,
+lemma IsDetpBalanced.smul (h : A.IsDetpBalanced a b) (c : R) :
+    (c • A).IsDetpBalanced a b := by
+  simp_rw [IsDetpBalanced, detp_smul, ← mul_assoc, mul_comm _ (c ^ _), mul_assoc,
     ← mul_add, h.mul_add_mul_eq]
 
 variable (A) in
 /-- A square matrix `A` over a commutative semiring `R` is called nonsingular if it is
-only determinant balanced with respect to equal elements. -/
-def Nonsingular : Prop := ∀ a b : R, A.DetpBalanced a b → a = b
+only determinant balanced with respect to equal elements.
 
-lemma Nonsingular.eq_of_detpBalanced (hA : A.Nonsingular) (hAd : A.DetpBalanced a b) :
+See also See also `Matrix.Nondegenerate`. -/
+def Nonsingular : Prop := ∀ a b : R, A.IsDetpBalanced a b → a = b
+
+lemma Nonsingular.eq_of_IsDetpBalanced (hA : A.Nonsingular) (hAd : A.IsDetpBalanced a b) :
     a = b := hA a b hAd
 
-lemma DetpBalanced.eq_of_nonsingular (hA : A.DetpBalanced a b) (hAn : A.Nonsingular) :
-    a = b := hAn.eq_of_detpBalanced hA
+lemma IsDetpBalanced.eq_of_nonsingular (hA : A.IsDetpBalanced a b) (hAn : A.Nonsingular) :
+    a = b := hAn.eq_of_IsDetpBalanced hA
 
 @[simp] lemma nonsingular_one : (1 : Matrix n n R).Nonsingular :=
-  fun a b h ↦ by simpa [DetpBalanced] using h
+  fun a b h ↦ by simpa [IsDetpBalanced] using h
 
 variable (A) in
 @[simp] lemma Nonsingular.of_isEmpty [IsEmpty n] : A.Nonsingular := by
-  simp [Nonsingular, DetpBalanced]
+  simp [Nonsingular, IsDetpBalanced]
 
 @[simp] lemma nonsingular_transpose_iff : Aᵀ.Nonsingular ↔ A.Nonsingular := by simp [Nonsingular]
 
@@ -187,9 +190,9 @@ lemma detp_eq_of_col_eq_zero {p : n} (hcol : A.col p = 0) : A.detp s = 0 := by
 
 /-- If `A` is determinant balanced with respect to `a` and `b`, any submatrix of
 the same or bigger size (possibly with repeated rows or columns) is also. -/
-lemma DetpBalanced.submatrix_of_card_le {a b : R} (h : A.DetpBalanced a b)
+lemma IsDetpBalanced.submatrix_of_card_le {a b : R} (h : A.IsDetpBalanced a b)
     (le : Fintype.card n ≤ Fintype.card m) (f g : m → n) :
-    (A.submatrix f g).DetpBalanced a b := by
+    (A.submatrix f g).IsDetpBalanced a b := by
   by_cases hf : f.Injective; swap
   · obtain ⟨p, q, eq, ne⟩ := Function.not_injective_iff.mp hf
     exact .of_eq (detp_eq_of_row_eq ne <| by ext; simp [eq])
@@ -200,7 +203,7 @@ lemma DetpBalanced.submatrix_of_card_le {a b : R} (h : A.DetpBalanced a b)
     ⟨hf, (Fintype.card_le_of_injective f hf).antisymm le⟩
   let g' := Equiv.ofBijective g <| (Fintype.bijective_iff_injective_and_card _).mpr
     ⟨hg, (Fintype.card_le_of_injective g hg).antisymm le⟩
-  rwa [show f = f' by rfl, show g = g' by rfl, detpBalanced_submatrix_equiv_iff]
+  rwa [show f = f' by rfl, show g = g' by rfl, isDetpBalanced_submatrix_equiv_iff]
 
 variable (A)
 
