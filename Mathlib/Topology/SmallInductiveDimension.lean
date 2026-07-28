@@ -122,7 +122,7 @@ theorem smallInductiveDimension_le_iff {n : ℕ} :
     smallInductiveDimension X ≤ n ↔ HasSmallInductiveDimensionLE X n where
   mp := hasSmallInductiveDimensionLE_of_smallInductiveDimension_le
   mpr h := by
-    refine csInf_le' fun m hm ↦ .mono ?_ h
+    refine sInf_le fun m hm ↦ .mono ?_ h
     simpa using hm
 
 theorem smallInductiveDimension_lt_iff {n : ℕ} :
