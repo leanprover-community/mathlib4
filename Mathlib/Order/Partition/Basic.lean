@@ -404,21 +404,16 @@ section Inf
 
 variable [Order.Frame α] {P Q R : Partition α}
 
-/-- The meet of two partitions, obtained by binding `P` with the partitions induced by `Q`
-on each part of `P`. -/
-def inf (P Q : Partition α) : Partition α :=
-  P.bind (fun a _ ↦ Q.induce a) (by simp)
-
 /-- When `α` is a frame, partitions form a semilattice under refinement, with meet given by
 `Partition.inf`. -/
 instance instSemilatticeInf : SemilatticeInf (Partition α) where
-  inf := inf
+  inf P Q := P.bind (fun a _ ↦ Q.induce a) (by simp)
   inf_le_left P Q := bind_le (by simp)
   inf_le_right P Q := by
-    rw [inf, bind_le_iff (by simp)]
+    rw [bind_le_iff (by simp)]
     exact fun _ _ ↦ induce_le
   le_inf P Q R hPQ hPR := by
-    rw [inf, le_bind_iff (by simp)]
+    rw [le_bind_iff (by simp)]
     exact ⟨hPQ, fun a _ ↦ induce_le_induce_left hPR⟩
 
 /-- Membership in a meet is equivalent to being a nontrivial meet of parts from each
