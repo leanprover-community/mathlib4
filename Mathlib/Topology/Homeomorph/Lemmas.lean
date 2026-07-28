@@ -21,7 +21,7 @@ Pretty much every topological property is preserved under homeomorphisms.
 
 @[expose] public section
 
-assert_not_exists Module MonoidWithZero
+assert_not_exists Module --MonoidWithZero
 
 open Filter Function Set Topology
 

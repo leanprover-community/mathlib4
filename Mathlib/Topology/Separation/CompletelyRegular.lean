@@ -9,6 +9,7 @@ public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.UnitInterval
 public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Topology.SmallInductiveDimension
 public import Mathlib.Analysis.Real.Cardinality
 
 import Mathlib.Topology.Algebra.Indicator
@@ -205,9 +206,10 @@ theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
     · exact (mem_compl_iff s x).mpr fun hs ↦ hsK hs hx
 
 open TopologicalSpace Cardinal in
-theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
+theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
     [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
-    IsTopologicalBasis {s : Set X | IsClopen s} := by
+    ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
   refine isTopologicalBasis_of_isOpen_of_nhds (fun x s ↦ IsClopen.isOpen s) (fun x s hxs hs ↦ ?_)
   choose f hf using completely_regular_isOpen x s hs hxs
   obtain ⟨hfc, hf₀, hf₁⟩ := hf
@@ -225,6 +227,22 @@ theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_conti
   · refine preimage_subset_iff.mpr (fun x ↦ ?_)
     contrapose; intro hxs
     simpa [hf₁ hxs] using le_one'
+
+open TopologicalSpace Cardinal in
+@[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
+(since := "2026-07-28")]
+theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
+    [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
+    IsTopologicalBasis {s : Set X | IsClopen s} := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis]
+  exact CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum hX
+
+instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
+  completely_regular x K hK hxK := by
+    obtain ⟨U, hU, hxU, hUK⟩ := exists_isClopen_mem_of_isOpen hK.isOpen_compl hxK
+    refine ⟨_, hU.compl.continuous_indicator continuous_one, ?_, fun y hy ↦ ?_⟩
+    · simpa
+    · rw [indicator_of_mem (subset_compl_comm.mp hUK hy)]
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]
@@ -246,6 +264,8 @@ instance {ι : Type*} {X : ι → Type*} [t : Π (i : ι), TopologicalSpace (X i
 
 instance {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [htX : T35Space X] [htY : T35Space Y] : T35Space (X × Y) where
+
+instance [T0Space X] [ZeroDimensionalSpace X] : T35Space X where
 
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints {f : X → ℝ | Continuous f} := by

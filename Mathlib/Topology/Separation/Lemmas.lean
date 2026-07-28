@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.GDelta.MetrizableSpace
 public import Mathlib.Topology.Separation.CompletelyRegular
-public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.SmallInductiveDimension
 
 /-!
 # Further separation lemmas
