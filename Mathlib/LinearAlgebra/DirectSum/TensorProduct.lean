@@ -120,10 +120,10 @@ lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
 
 lemma directSumLeft_symm_of {i : ι₁} (x : (M₁ i) ⊗[R] M₂') :
     (directSumLeft R S M₁ M₂').symm ((of (fun i ↦ M₁ i ⊗[R] M₂') i) x) =
-      rTensor M₂' (lof S ι₁ M₁ i) x := by
+      rTensor M₂' (lof R ι₁ M₁ i) x := by
   induction x using TensorProduct.induction_on with
   | zero => simp
-  | tmul x y => simp [LinearEquiv.symm_apply_eq]; simp [lof_eq_of]
+  | tmul x y => rw [← lof_eq_of S, directSumLeft_symm_lof_tmul, rTensor_tmul, lof_eq_of, lof_eq_of]
   | add x y h₁ h₂ => simp [h₁, h₂]
 
 set_option backward.isDefEq.respectTransparency false in

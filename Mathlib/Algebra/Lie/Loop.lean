@@ -73,15 +73,13 @@ def loopAlgebraEquivLaurent :
 
 namespace LoopAlgebra
 
+open DirectSum in
 noncomputable instance [DecidableEq A] [AddCommMonoid A] :
-    GradedLieAlgebra (fun (a : A) ↦ (DirectSum.decomposeTensor
-      (fun b ↦ AddMonoidAlgebra.grade R b) L a)) where
+    GradedLieAlgebra (fun a : A ↦ (decomposeTensor (AddMonoidAlgebra.grade R) L a)) where
   bracket_mem i j xi xj hi hj := by
-    rw [DirectSum.decomposeTensor_apply] at hi hj ⊢
-    obtain ⟨xi, hxi⟩ := hi
-    obtain ⟨xj, hxj⟩ := hj
-    rw [← hxi, ← hxj]
-    clear hxi hxj
+    rw [decomposeTensor_apply] at hi hj ⊢
+    obtain ⟨xi, rfl⟩ := hi
+    obtain ⟨xj, rfl⟩ := hj
     induction xi using TensorProduct.induction_on with
     | zero => simp
     | tmul x y =>
@@ -105,10 +103,9 @@ noncomputable instance [DecidableEq A] [AddCommMonoid A] :
       obtain ⟨v, hv⟩ := hy
       use u + v
       simp [← hu, ← hv]
-  decompose' :=
-    (DirectSum.tensorDecomposition (fun (a : A) ↦ AddMonoidAlgebra.grade R a) L).decompose'
-  left_inv := (DirectSum.tensorDecomposition _ L).left_inv
-  right_inv := (DirectSum.tensorDecomposition _ L).right_inv
+  decompose' := (tensorDecomposition (fun a : A ↦ AddMonoidAlgebra.grade R a) L).decompose'
+  left_inv := (tensorDecomposition _ L).left_inv
+  right_inv := (tensorDecomposition _ L).right_inv
 
 open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
