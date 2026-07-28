@@ -332,29 +332,18 @@ theorem exists_finset_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
     ∃ (t : Finset τ) (q : MvPolynomial (σ ⊕ { x // x ∈ t }) R),
       p = rename (Sum.map id (↑)) q := by
   classical
-  have hmap : ∀ (u v : Finset τ) (g : { x // x ∈ v } → τ) (f : { x // x ∈ u } → { x // x ∈ v }),
-      Sum.map (id : σ → σ) g ∘ Sum.map id f = Sum.map id (g ∘ f) := by
-    intro u v g f
-    funext x
-    obtain a | b := x <;> rfl
-  apply induction_on p
-  · intro r
-    exact ⟨∅, C r, by rw [rename_C]⟩
-  · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
-    refine ⟨s ∪ t, ⟨?_, ?_⟩⟩
-    · refine rename (Sum.map id (Subtype.map id ?_)) p +
-        rename (Sum.map id (Subtype.map id ?_)) q <;>
-        simp +contextual only [id, true_or, or_true, Finset.mem_union, forall_true_iff]
-    · simp only [rename_rename, map_add, hmap]
-      rfl
-  · rintro p i ⟨t, p, rfl⟩
-    obtain a | b := i
-    · exact ⟨t, p * X (Sum.inl a), by simp only [map_mul, rename_X, Sum.map_inl, id_eq]⟩
-    · refine ⟨insert b t, ⟨?_, ?_⟩⟩
-      · refine rename (Sum.map id (Subtype.map id ?_)) p * X (Sum.inr ⟨b, t.mem_insert_self b⟩)
-        simp +contextual only [id, or_true, Finset.mem_insert, forall_true_iff]
-      · simp only [rename_rename, rename_X, map_mul, Sum.map_inr, hmap]
-        rfl
+  obtain ⟨s, q, rfl⟩ := exists_finset_rename p
+  let f : { x // x ∈ s } → σ ⊕ { x // x ∈ s.toRight } := fun x =>
+    match h : x.1 with
+    | .inl a => .inl a
+    | .inr b => .inr ⟨b, Finset.mem_toRight.mpr (h ▸ x.2)⟩
+  refine ⟨s.toRight, rename f q, ?_⟩
+  rw [rename_rename]
+  congr 2
+  funext x
+  rcases x with ⟨a | b, h⟩
+  · rfl
+  · simp [f]
 
 /-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
 many of the variables from `τ`.
