@@ -228,6 +228,13 @@ lemma comp_mulIndicator_const (c : M) (f : M → N) (hf : f 1 = 1) :
     (fun x => f (s.mulIndicator (fun _ => c) x)) = s.mulIndicator fun _ => f c :=
   (mulIndicator_comp_of_one hf).symm
 
+/-- Evaluating the indicator of a family of functions at a point commutes with the indicator:
+`s.mulIndicator f a b = s.mulIndicator (f · b) a`. -/
+@[to_additive]
+lemma mulIndicator_apply_apply (f : α → β → M) (b : β) :
+    s.mulIndicator f a b = s.mulIndicator (fun i ↦ f i b) a := by
+  by_cases h : a ∈ s <;> simp [h]
+
 @[to_additive]
 lemma mulIndicator_preimage (s : Set α) (f : α → M) (B : Set M) :
     mulIndicator s f ⁻¹' B = s.ite (f ⁻¹' B) (1 ⁻¹' B) :=
