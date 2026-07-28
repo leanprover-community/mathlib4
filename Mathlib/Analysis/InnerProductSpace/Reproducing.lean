@@ -344,25 +344,26 @@ lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
       ← Finset.sum_mul, ← map_sum, RCLike.conj_mul]
     simp
 
-lemma posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : H) :
-    ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef := by
+lemma posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
+    ((‖f‖ : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef := by
   rw [posSemidef_iff_re_sum_kernel']
-  refine ⟨((posSemidef_kernel H).1.smul
+  refine ⟨((Fact.out : K.PosSemidef).1.smul
     (by rw [← RCLike.im_eq_zero_iff_isSelfAdjoint, RCLike.im_ofReal_pow])).sub
     (posSemidef_outerKernel 𝕜 f).1, fun g ↦ ?_⟩
   calc
-    _ = ∑ x₁ ∈ g.support, ∑ x₂ ∈ g.support, RCLike.re ⟪(‖f‖ ^ 2 : 𝕜) • kernel H x₂ x₁ (g x₁)
+    _ = ∑ x₁ ∈ g.support, ∑ x₂ ∈ g.support, RCLike.re ⟪(‖f‖ ^ 2 : 𝕜) • K x₂ x₁ (g x₁)
           - ⟪f x₁, g x₁⟫_𝕜 • f x₂, g x₂⟫_𝕜 := by
       simp [Finsupp.sum, map_sum, outerKernel_apply]
     _ = ∑ x₁ ∈ g.support, ∑ x₂ ∈ g.support, (‖f‖ ^ 2 * RCLike.re
-          ⟪kernel H x₂ x₁ (g x₁), g x₂⟫_𝕜 - RCLike.re (⟪g x₁, f x₁⟫_𝕜 • ⟪ f x₂, g x₂⟫_𝕜)) := by
+          ⟪K x₂ x₁ (g x₁), g x₂⟫_𝕜 - RCLike.re (⟪g x₁, f x₁⟫_𝕜 • ⟪ f x₂, g x₂⟫_𝕜)) := by
       simp [inner_sub_left, inner_smul_left]
-    _ = (‖f‖ * ‖g.sum fun x v ↦ kerFun H x v‖) ^ 2 - ‖⟪f, g.sum fun x v ↦ kerFun H x v⟫_𝕜‖ ^ 2 :=
+    _ = (‖f‖ * ‖g.sum fun x v ↦ kerFun (OfKernel K) x v‖) ^ 2
+          - ‖⟪f, g.sum fun x v ↦ kerFun (OfKernel K) x v⟫_𝕜‖ ^ 2 :=
       by
         simp_rw [Finset.sum_sub_distrib, ← inner_conj_symm _ (f _), Finsupp.sum, mul_pow _ _ 2,
           ← Finset.mul_sum, ← map_sum, ← inner_kerFun]
         congr 1
-        · simp_rw [kernel_inner, ← inner_sum, ← sum_inner]
+        · simp_rw [← OfKernel.kernel_ofKernel, kernel_inner, ← inner_sum, ← sum_inner]
           simp
         · simp_rw [RCLike.norm_sq_eq_def, ← Finset.smul_sum, ← Finset.sum_smul, ← map_sum,
             ← inner_sum]
@@ -370,78 +371,54 @@ lemma posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : H) :
     _ ≥ 0 := by
       grw [ge_iff_le, sub_nonneg, norm_inner_le_norm]
 
-lemma mem_coeCLM_range (f : X → V) {c : ℝ}
-    (hc : ((c : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef) : f ∈ (coeCLM 𝕜 (H:=H)).range := by
-  let Laux : (X × V →₀ 𝕜) →ₗ[𝕜] 𝕜 := Finsupp.linearCombination 𝕜 (fun xv => ⟪f xv.1, xv.2⟫_𝕜)
-  let toSpan : (X × V →₀ 𝕜) →ₗ[𝕜] H := Finsupp.linearCombination 𝕜 (fun xv => kerFun H xv.1 xv.2)
-  let toSpan' : (X × V →₀ 𝕜) →ₗ[𝕜] ↥(span 𝕜 {kerFun H x v | (x : X) (v : V)}) :=
-    Finsupp.linearCombination 𝕜 (fun xv => ⟨kerFun H xv.1 xv.2, subset_span ⟨xv.1, xv.2, rfl⟩⟩)
-  have h_ineq (φ : X × V →₀ 𝕜) : ‖Laux φ‖ ^2 ≤ c ^2 * ‖toSpan φ‖^2 := by
-    rw [posSemidef_iff_re_sum_kernel] at hc
-    simp_rw [Laux, toSpan, Finsupp.linearCombination_apply, Finsupp.sum,
-      ← inner_self_eq_norm_sq (𝕜:=𝕜), ←RCLike.re_ofReal_mul]
-    rw [← RCLike.conj_ofReal ((c ^ 2))]
-    simp_rw [map_pow _ c 2]
-    rw [← le_add_neg_iff_le]
-    simp_rw [← AddMonoidHom.map_add_neg, ← sub_eq_add_neg, sum_inner, inner_sum, inner_smul_right,
-      inner_smul_left, Finset.mul_sum, <-kernel_inner, RCLike.inner_apply', ← outerKernel_inner,
-      ← Finset.sum_sub_distrib, mul_comm, mul_left_comm, ← mul_assoc, mul_comm,
-      ← mul_sub_left_distrib, ← mul_sub_right_distrib, mul_comm ⟪(kernel H _ _) _, _⟫_𝕜  _,
-      ← inner_smul_left, ← inner_sub_left, mul_comm _ (φ _), ← mul_assoc, ← smul_apply, ← sub_apply,
-      ← Pi.smul_apply, ← Pi.sub_apply]
-    exact hc.2 φ
-  have hrange : span 𝕜 {kerFun H x v | (x : X) (v : V)} ≤ toSpan.range := by
-    rw [Finsupp.range_linearCombination 𝕜]
-    exact Submodule.span_mono fun _ ⟨x, v, h⟩ => ⟨⟨x, v⟩, h⟩
-  let L_lin : ↥(span 𝕜 {kerFun H x v | (x : X) (v : V)}) →ₗ[𝕜] 𝕜 :=
-    (toSpan.ker.liftQ Laux (fun φ hφ ↦ by have h := h_ineq φ; rw [hφ, norm_zero] at h; simp_all))
-      |>.comp toSpan.quotKerEquivRange.symm.toLinearMap
-      |>.comp (Submodule.inclusion hrange)
-  have hL : L_lin.comp toSpan' = Laux := by
-    apply Finsupp.lhom_ext
-    intro ⟨x, v⟩ _
-    simp only [LinearMap.comp_apply, toSpan', Finsupp.linearCombination_single,
-               map_smul, Laux, Finsupp.linearCombination_single]
-    congr 1
-    have h1 : Submodule.inclusion hrange ⟨kerFun H x v, subset_span ⟨x, v, rfl⟩⟩ =
-        (⟨toSpan (Finsupp.single (x, v) 1), LinearMap.mem_range_self _ _⟩ : toSpan.range) :=
-      Subtype.ext (by simp [toSpan, Finsupp.linearCombination_single])
-    have h2 : toSpan.quotKerEquivRange.symm ⟨toSpan _, LinearMap.mem_range_self _ _⟩ =
-        Submodule.Quotient.mk (Finsupp.single (x, v) 1) :=
-      toSpan.quotKerEquivRange.symm_apply_eq.mpr rfl
-    simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, L_lin]
-    simp_rw [h1, h2, Submodule.liftQ_apply, Laux, Finsupp.linearCombination_single, one_smul]
-  let L : ↥(span 𝕜 {kerFun H x v | (x : X) (v : V)}) →L[𝕜] 𝕜 := L_lin.mkContinuous ‖c‖ (fun ξ ↦ by
-    obtain ⟨y, hy⟩ := hrange ξ.2
-    have hcomp : (Submodule.subtype _).comp toSpan' = toSpan :=
-      Finsupp.lhom_ext fun _ _ ↦ by simp [toSpan, toSpan', Finsupp.linearCombination_single]
-    have hξ : toSpan' y = ξ := Subtype.ext (LinearMap.congr_fun hcomp y |>.trans hy)
-    rw [← hξ, ← LinearMap.comp_apply, LinearMap.congr_fun hL _,
-      ← sq_le_sq₀ (norm_nonneg _) (by positivity), mul_pow, Real.norm_eq_abs, sq_abs, hξ,
-      ← Submodule.norm_coe, ← hy]
-    exact h_ineq y
-  )
-  let K := (span 𝕜 {kerFun H x v | (x : X) (v : V)}).subtypeL
-  refine ⟨(InnerProductSpace.toDual 𝕜 H).symm (L.extend K), ?_⟩
-  ext x
-  apply ext_inner_left 𝕜
-  intro v
-  simp only [coe_coe, coeCLM_apply]
-  rw [← kerFun_inner, ← inner_conj_symm, toDual_symm_apply,
-    show kerFun H x v = K (toSpan' (Finsupp.single (x, v) 1)) from
-      (by simp [toSpan', Finsupp.linearCombination_single]; rfl),
-    ContinuousLinearMap.extend_eq _ (by rw [DenseRange, dense_iff_closure_eq,
-      show Set.range K = ↑(span 𝕜 {kerFun H x v | (x : X) (v : V)}) from Subtype.range_coe_subtype,
-      ← topologicalClosure_coe, kerFun_dense, top_coe]) ({ comap_uniformity := rfl }) _,
-    ← inner_conj_symm]
-  apply RingHom.congr_arg (starRingEnd 𝕜)
-  rw [LinearMap.mkContinuous_apply, ← LinearMap.comp_apply, LinearMap.congr_fun hL _,
-    Finsupp.linearCombination_single]
-  simp
+variable (K) in
+def toSubmodule : Submodule 𝕜 (X → V) := (coeCLM 𝕜 (H := OfKernel K)).range
 
-theorem mem_coeCLM_range_iff (f : X → V) : f ∈ (coeCLM 𝕜 (H:=H)).range ↔
-    ∃ (c : ℝ), 0 ≤ c ∧ ((c : 𝕜)^2 • kernel H - outerKernel 𝕜 f).PosSemidef :=
+lemma kerFun_OfKernel_apply_eq_toComplL_single (x : X) (v : V) :
+    kerFun (OfKernel K) x v = UniformSpace.Completion.toComplL (𝕜:=𝕜) (.single ⟨x, v⟩ 1) := by
+  simp [kerFun, coeCLM]
+
+lemma mem_toSubmodule (f : X → V) {c : ℝ}
+    (hc : ((c : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef) : f ∈ toSubmodule K := by
+  let L' : (H₀ K) →ₗ[𝕜] 𝕜 := Finsupp.linearCombination 𝕜 (fun xv => ⟪f xv.1, xv.2⟫_𝕜)
+  let L : (H₀ K) →L[𝕜] 𝕜 := L'.mkContinuous ‖c‖ (by
+    intro φ
+    apply (sq_le_sq₀ (norm_nonneg (L' φ)) (mul_nonneg (norm_nonneg c) (norm_nonneg φ))).mp
+    rw [← sub_nonneg]
+    calc
+      (‖c‖ * ‖φ‖) ^ 2 - ‖L' φ‖ ^ 2 = RCLike.re (↑(‖c‖ ^ 2) * ⟪φ, φ⟫_𝕜 - ⟪L' φ, L' φ⟫_𝕜) := by
+        rw [mul_pow, Core.norm_eq_sqrt_re_inner φ, InnerProductSpace.norm_sq_eq_re_inner (𝕜:=𝕜)
+          (L' φ), Real.sq_sqrt (Core.inner_self_nonneg), ← RCLike.re_ofReal_mul, ← map_sub]
+      _ = RCLike.re (↑(‖c‖ ^ 2) * ∑ x ∈ φ.support, ∑ x_1 ∈ φ.support, star (φ x) * φ x_1 *
+          ⟪(K x_1.1 x.1) x.2, x_1.2⟫_𝕜 - ∑ x ∈ φ.support, ∑ x_1 ∈ φ.support,
+          (starRingEnd 𝕜) (φ x) * (φ x_1 * ⟪⟪f x.1, x.2⟫_𝕜, ⟪f x_1.1, x_1.2⟫_𝕜⟫_𝕜)) := by
+        simp_rw [L', inner_H₀_def, Finsupp.linearCombination_apply, Finsupp.sum, sum_inner,
+          inner_sum, inner_smul_left, inner_smul_right]
+      _ = RCLike.re (∑ x ∈ φ.support, ∑ x_1 ∈ φ.support, (starRingEnd 𝕜) (φ x) * φ x_1 *
+          ⟪(c:𝕜) ^ 2 • (K x_1.1 x.1) x.2 - ⟪f x.1, x.2⟫_𝕜 • f x_1.1, x_1.2⟫_𝕜) := by
+        have : starRingEnd 𝕜 ((c:𝕜)^2) = ↑(‖c‖ ^ 2) := by simp
+        simp_rw [Finset.mul_sum, ← Finset.sum_sub_distrib, inner_sub_left, inner_smul_left, this,
+          RCLike.inner_apply', ← starRingEnd_apply]
+        ring_nf
+      _ ≥ 0 := by
+        rw [posSemidef_iff_re_sum_kernel] at hc
+        exact hc.2 φ
+  )
+  let ι : H₀ K →L[𝕜] OfKernel K := UniformSpace.Completion.toComplL
+  refine ⟨(InnerProductSpace.toDual 𝕜 (OfKernel K)).symm (L.extend ι), ?_⟩
+  ext x
+  apply ext_inner_right 𝕜 fun v ↦ ?_
+  rw [coe_coe, coeCLM_apply, ← inner_kerFun, toDual_symm_apply,
+    kerFun_OfKernel_apply_eq_toComplL_single, extend_eq L UniformSpace.Completion.denseRange_coe
+    (UniformSpace.Completion.isUniformInducing_coe (H₀ K)) _]
+  simp [L,L']
+
+theorem mem_toSubmodule_iff (f : X → V) : f ∈ toSubmodule K ↔
+    ∃ (c : ℝ), 0 ≤ c ∧ ((c : 𝕜)^2 • K - outerKernel 𝕜 f).PosSemidef :=
   ⟨fun ⟨g, hg⟩ => ⟨‖g‖, norm_nonneg _, hg ▸ posSemidef_norm_sq_smul_kernel_sub_outerKernel g⟩,
-   fun ⟨_, _, hc⟩ => mem_coeCLM_range f hc⟩
+   fun ⟨_, _, hc⟩ => mem_toSubmodule f hc⟩
+
+theorem exists_OfKernel_eq {f : X → V} (hf : f ∈ toSubmodule K) : ∃ (f' : OfKernel K), ↑f' = f :=
+  Set.mem_range.mp hf
 
 end RKHS
