@@ -234,6 +234,17 @@ protected theorem Multipliable.one_lt_tprod [L.LeAtTop] [L.NeBot] (hsum : Multip
 
 end OrderedCommGroup
 
+section WithZero
+
+theorem tprod_nonneg [CommMonoidWithZero α] [TopologicalSpace α] [Preorder α] [ZeroLEOneClass α]
+    [PosMulMono α] [ClosedIciTopology α] [L.NeBot] {f : ι → α} (hf : ∀ i, 0 ≤ f i) :
+    0 ≤ ∏'[L] x, f x := by
+  by_cases h : Multipliable f L
+  · exact ge_of_tendsto' h.hasProd fun s ↦ s.prod_nonneg fun i _ ↦ hf i
+  · simp [tprod_eq_one_of_not_multipliable h]
+
+end WithZero
+
 section CanonicallyOrderedMul
 
 variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
