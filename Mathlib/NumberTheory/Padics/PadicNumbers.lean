@@ -79,7 +79,7 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   map_add_le_max' := by
     intros
     split_ifs
-    any_goals simp_all [-exp_neg]
+    any_goals simp_all
     rw [← min_le_iff]
     exact padicValRat.min_le_padicValRat_add ‹_›
 
@@ -1185,7 +1185,7 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all [inv_le_inv₀]
+    any_goals simp_all
     simpa using le_valuation_add ‹_›
 
 lemma comap_mulValuation_eq_padicValuation :
