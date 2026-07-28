@@ -388,7 +388,7 @@ private lemma linearIndepOn_coroot_iff_aux {s : Set ι} (h : LinearIndepOn R P.r
     ⟨fun i ↦ Units.mk0 (2 / P.RootForm (P.root i) (P.root i))
       (by simp [two_ne_zero, IsAnisotropic.rootForm_root_ne_zero]),
      fun i ↦ by simp [coroot_eq_polarizationEquiv_apply_root]⟩
-  have : (s.restrict P.coroot) = P.PolarizationEquiv.toLinearMap ∘ (f • (s.restrict P.root)) := by
+  have : s.domRestrict P.coroot = P.PolarizationEquiv.toLinearMap ∘ (f • s.domRestrict P.root) := by
     ext; simp [hf, polarizationEquiv_apply]
   rw [← linearIndependent_restrict_iff, this,
     LinearMap.linearIndependent_iff_of_injOn _ P.PolarizationEquiv.injective.injOn]
