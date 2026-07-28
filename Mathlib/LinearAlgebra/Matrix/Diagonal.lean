@@ -81,8 +81,7 @@ variable {m : Type*} [Fintype m] {K : Type u} [Field K]
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     LinearMap.rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by
-  have hIJ : IsCompl { i : m | w i ≠ 0 } { i : m | w i = 0 } :=
-    isCompl_compl.symm
+  have hIJ : IsCompl { i : m | w i ≠ 0 } { i : m | w i = 0 } := isCompl_compl.symm
   have B₁ := iSup_range_single_eq_iInf_ker_proj K (fun _ : m => K) hIJ (Set.toFinite _)
   rw [LinearMap.rank, range_diagonal, B₁, ← @rank_fun' K]
   exact iInfKerProjEquiv K (fun _ ↦ K) hIJ.disjoint hIJ.codisjoint.top_le |>.rank_eq
