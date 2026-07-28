@@ -7,6 +7,7 @@ module
 
 public meta import ImportGraph.Imports.ImportGraph
 public meta import ImportGraph.Graph.TransitiveClosure
+public meta import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
@@ -106,28 +107,10 @@ macro "#import_bumps" : command => `(
   run_cmd logInfo "Counting imports from here."
   set_option linter.minImports true)
 
--- TODO: Upstream? https://github.com/leanprover/lean4/pull/14581
-/--
-`withSetOptionIn' k stx` peels off the `set_option ... in` prefixes of `stx` and applies the
-option values to the current scope. Then it runs `k` on the innermost command.
-The function is a variant of `withSetOptionIn`, with a result type that fits the phases of a
-stateful linter.
--/
-private partial def withSetOptionIn' {α : Type} (k : Syntax → CommandElabM α) :
-    Syntax → CommandElabM α :=
-  fun stx => do
-    if stx.getKind == ``Lean.Parser.Command.in &&
-       stx[0].getKind == ``Lean.Parser.Command.set_option then
-      -- Do not modify the infotrees when elaborating, and silently ignore errors.
-      let opts ← withEnableInfoTree false try
-          (·.1) <$> elabSetOption stx[0][1] stx[0][3]
-        catch _ => getOptions
-      withScope ({ · with opts }) do withSetOptionIn' k stx[2]
-    else
-      k stx
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
-def minImportsPost (stx : Syntax) (self : ImportState) : CommandElabM ImportState := do
+def minImportsPost (readPrev : PrevStateFn) (stx : Syntax) (self : ImportState) :
+    CommandElabM ImportState := do
   -- The reset applies also when the linter option is off. The linter then lints the
   -- `#reset_min_imports` command itself, against the empty state.
   let self := if stx.isOfKind ``resetMinImports then {} else self
@@ -153,14 +136,20 @@ def minImportsPost (stx : Syntax) (self : ImportState) : CommandElabM ImportStat
       .ofArray ((env.imports.map (·.module)).filter (!isInitImport ·))
     let newImps := importsSoFar \ explicitImportsInFile
     let currentlyUnneededImports := explicitImportsInFile \ importsSoFar
-    -- we read the current file, to do a custom parsing of the imports:
-    -- this is a hack to obtain some `Syntax` information for the `import X` commands
-    let fname ← getFileName
-    let contents ← IO.FS.readFile fname
-    -- `impMods` is the syntax for the modules imported in the current file
-    let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
+    -- `impMods` is the syntax for the modules imported in the current file. The state of the
+    -- `header` linter provides it when the header checks ran. Otherwise, we read the current
+    -- file and do a custom parsing of the imports: this is a hack to obtain some `Syntax`
+    -- information for the `import X` commands.
+    let headerStx := (readPrev Style.header.headerLinter).headerSyntax
+    let impMods ← if headerStx.isMissing then do
+        let fname ← getFileName
+        let contents ← IO.FS.readFile fname
+        let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
+        pure impMods.raw
+      else
+        pure headerStx
     for i in currentlyUnneededImports do
-      match impMods.raw.find? (·.getId == i) with
+      match impMods.find? (·.getId == i) with
         | some impPos => logWarningAt impPos m!"unneeded import '{i}'"
         | _ => dbg_trace f!"'{i}' not found"  -- this should be unreachable
     -- if the linter found new imports that should be added (likely to *reduce* the dependencies)
@@ -168,7 +157,7 @@ def minImportsPost (stx : Syntax) (self : ImportState) : CommandElabM ImportStat
       -- format the imports prepending `import ` to each module name
       let withImport := (newImps.toArray.qsort Name.lt).map (s!"import {·}")
       -- log a warning at the first `import`, if there is one.
-      logWarningAt ((impMods.raw.find? (·.isOfKind `import)).getD default)
+      logWarningAt ((impMods.find? (·.isOfKind `import)).getD default)
         m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     return self
   let id ← getId stx
@@ -202,7 +191,7 @@ The typed handle of the `minImports` linter. Other stateful linters can read the
 -/
 public initialize minImportsLinter : StatefulLinter ImportState Unit ←
   registerStatefulLinter {}
-    (post := fun stx self _ _ _ => withSetOptionIn' (minImportsPost · self) stx)
+    (post := fun stx self _ readPrev _ => withSetOptionIn' (minImportsPost readPrev · self) stx)
 
 end MinImports
 

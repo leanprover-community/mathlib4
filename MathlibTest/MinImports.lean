@@ -335,3 +335,19 @@ Note: This linter can be disabled with `set_option linter.minImports false`
 lemma async_uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
 
 end Linter.MinImports.Async
+
+section Linter.MinImports.FallbackEoiReport
+
+/-! The `header` linter does not run in this file: the module is not in `headerTestFiles` and
+the file is not imported in a library root. The end-of-file report of the `minImports` linter
+then falls back to a re-parse of the file header. -/
+
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: unneeded import 'Mathlib.Tactic.FunProp.Attr'
+-/
+#guard_msgs in
+set_option linter.minImports true in #exit
+
+end Linter.MinImports.FallbackEoiReport
