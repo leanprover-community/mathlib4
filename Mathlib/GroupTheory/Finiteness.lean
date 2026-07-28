@@ -111,6 +111,12 @@ theorem isMulFG_iff_finite :
 theorem isMulFG_top_iff : IsMulFG (⊤ : Submonoid M) ↔ IsMulFG M :=
   isMulFG_iff.trans Monoid.isMulFG_iff.symm
 
+instance isMulFG_top [IsMulFG M] : IsMulFG (⊤ : Submonoid M) :=
+  isMulFG_top_iff.mpr ‹_›
+
+instance isMulFG_bot : IsMulFG (⊥ : Submonoid M) :=
+  isMulFG_iff.mpr ⟨∅, by simp⟩
+
 end Submonoid
 
 namespace Group
@@ -152,6 +158,12 @@ theorem isMulFG_iff_finite : IsMulFG H ↔ ∃ S : Set G, Subgroup.closure (S : 
 @[to_additive (attr := simp)]
 theorem isMulFG_top_iff : IsMulFG (⊤ : Subgroup G) ↔ IsMulFG G :=
   isMulFG_iff.trans Group.isMulFG_iff.symm
+
+instance isMulFG_top [IsMulFG G] : IsMulFG (⊤ : Subgroup G) :=
+  isMulFG_top_iff.mpr ‹_›
+
+instance isMulFG_bot : IsMulFG (⊥ : Subgroup G) :=
+  isMulFG_iff.mpr ⟨∅, by simp⟩
 
 end Subgroup
 
