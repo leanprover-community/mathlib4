@@ -1128,10 +1128,10 @@ section
 variable {f g}
 
 /-- The identity determines a cocone on the coequalizer diagram of `f` and `g`, if `f = g`. -/
+@[implicit_reducible]
 def idCofork (h : f = g) : Cofork f g :=
   Cofork.ofπ (𝟙 Y) <| h ▸ rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The identity on `Y` is a coequalizer of `(f, g)`, where `f = g`. -/
 def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
   Cofork.IsColimit.mk _ (fun s => Cofork.π s) (fun _ => Category.id_comp _) fun s m h => by

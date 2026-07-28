@@ -334,7 +334,6 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
     _ ≅ 𝟭 C ⋙ F ⋙ G := isoWhiskerRight η.symm (F ⋙ G)
     _ ≅ F ⋙ G := leftUnitor (F ⋙ G)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
@@ -378,7 +377,6 @@ lemma symm_unit (e : C ≌ D) : e.symm.unit = e.counitInv := rfl
 
 variable {E : Type u₃} [Category.{v₃} E]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Equivalence of categories is transitive. -/
 @[trans, simps]
 def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
@@ -420,7 +418,6 @@ theorem invFunIdAssoc_hom_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
   dsimp [invFunIdAssoc]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
 @[simps! functor inverse unitIso_hom_app unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
@@ -590,7 +587,6 @@ theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := b
 theorem changeFunctor_trans (e : C ≌ D) {G G' : C ⥤ D} (iso₁ : e.functor ≅ G) (iso₂ : G ≅ G') :
     (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
 an isomorphism, then there is an equivalence of categories whose inverse is `G`. -/
 @[implicit_reducible, simps!]
@@ -672,17 +668,15 @@ end Functor
 
 namespace Functor
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem fun_inv_map (F : C ⥤ D) [IsEquivalence F] (X Y : D) (f : X ⟶ Y) :
-    F.map (F.inv.map f) = F.asEquivalence.counit.app X ≫ f ≫ F.asEquivalence.counitInv.app Y := by
-  simpa using! (NatIso.naturality_2 (α := F.asEquivalence.counitIso) (f := f)).symm
+    F.map (F.inv.map f) = F.asEquivalence.counit.app X ≫ f ≫ F.asEquivalence.counitInv.app Y :=
+  (NatIso.naturality_2 (α := F.asEquivalence.counitIso) (f := f)).symm
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem inv_fun_map (F : C ⥤ D) [IsEquivalence F] (X Y : C) (f : X ⟶ Y) :
-    F.inv.map (F.map f) = F.asEquivalence.unitInv.app X ≫ f ≫ F.asEquivalence.unit.app Y := by
-  simpa using! (NatIso.naturality_1 (α := F.asEquivalence.unitIso) (f := f)).symm
+    F.inv.map (F.map f) = F.asEquivalence.unitInv.app X ≫ f ≫ F.asEquivalence.unit.app Y :=
+  (NatIso.naturality_1 (α := F.asEquivalence.unitIso) (f := f)).symm
 
 lemma isEquivalence_of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsEquivalence] : G.IsEquivalence :=
   ((asEquivalence F).changeFunctor e).isEquivalence_functor
