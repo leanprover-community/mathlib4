@@ -63,6 +63,7 @@ theorem pullback_comm_sq (f : R →+* T) (g : S →+* T) :
     f.comp (f.pullbackFst g) = g.comp (f.pullbackSnd g) :=
   ext fun x ↦ x.prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) {a : R × S} (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
   rw [isUnit_eqLocus_mk_iff, Prod.isUnit_iff]

@@ -64,8 +64,6 @@ class StrongMono (f : P ⟶ Q) : Prop where
   /-- The right lifting property with respect to all epimorphisms -/
   rlp : ∀ ⦃X Y : C⦄ (z : X ⟶ Y) [Epi z], HasLiftingProperty z f
 
-attribute [to_dual existing] StrongEpi.llp StrongEpi.mk
-
 @[to_dual (reorder := hf (X Y, u v))]
 theorem StrongEpi.mk' {f : P ⟶ Q} [Epi f]
     (hf : ∀ (X Y : C) (z : X ⟶ Y) (_ : Mono z) (u : P ⟶ X)
@@ -145,8 +143,6 @@ class StrongEpiCategory : Prop where
 class StrongMonoCategory : Prop where
   /-- A strong mono category is a category in which every monomorphism is strong. -/
   strongMono_of_mono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], StrongMono f
-
-attribute [to_dual existing] StrongEpiCategory.strongEpi_of_epi StrongEpiCategory.mk
 
 end
 
