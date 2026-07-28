@@ -199,7 +199,7 @@ theorem Monic.dvd_iff_fraction_map_dvd_fraction_map {p q : R[X]}
   map_dvd_map _ (FaithfulSMul.algebraMap_injective ..) hq
 
 theorem Monic.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]}
-    (hq : q.Monic) (h : q.map (algebraMap R K) ∣ p.map (algebraMap R K)) : q ∣ p := 
+    (hq : q.Monic) (h : q.map (algebraMap R K) ∣ p.map (algebraMap R K)) : q ∣ p :=
   hq.dvd_iff_fraction_map_dvd_fraction_map.mp h
 
 end IsIntegrallyClosed
