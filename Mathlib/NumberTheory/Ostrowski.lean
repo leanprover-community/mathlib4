@@ -109,7 +109,7 @@ Every bounded absolute value on `ℚ` is equivalent to a `p`-adic absolute value
 
 /-- The real-valued `AbsoluteValue` corresponding to the p-adic norm on `ℚ`. -/
 def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
-  toFun x := padicNorm p x
+  toFun x := (padicNorm p x : ℝ)
   map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, forall_const]
   nonneg' x := cast_nonneg.mpr <| padicNorm.nonneg x
   eq_zero' _ :=
@@ -138,7 +138,7 @@ lemma exists_minimal_nat_zero_lt_and_lt_one :
     rcases eq_or_ne n 0 with rfl | hn
     · simp
     · simp [hf_nontriv, hn]
-  set P := {m : ℕ | 0 < f m ∧ f m < 1} -- p is going to be the minimum of this set.
+  set P := {m : ℕ | 0 < f ↑m ∧ f ↑m < 1} -- p is going to be the minimum of this set.
   have hP : P.Nonempty :=
     ⟨n, map_pos_of_ne_zero f (Nat.cast_ne_zero.mpr hn1), lt_of_le_of_ne (bdd n) hn2⟩
   exact ⟨sInf P, Nat.sInf_mem hP, fun _ hm ↦ Nat.sInf_le hm⟩
@@ -152,14 +152,14 @@ include hp0 hp1 hmin in
 lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
   have hp2 : 2 ≤ p := by
     by_contra! hp
-    interval_cases p <;> simp_all
+    interval_cases p <;> grind
   rw [Nat.prime_iff_not_exists_mul_eq]
   refine ⟨hp2, ?_⟩
   rintro ⟨a, b, ha, hb, rfl⟩
   obtain ⟨ha₀, hb₀⟩ := mul_ne_zero_iff.mp (by omega : a * b ≠ 0)
-  have h {n : ℕ} (hn₀ : n ≠ 0) (hn : n < a * b) : 1 ≤ f n :=
-    le_of_not_gt fun hn₁ ↦
-      (not_le_of_gt hn) <| hmin n ⟨map_pos_of_ne_zero f (mod_cast hn₀), hn₁⟩
+  have h {n : ℕ} (hn₀ : n ≠ 0) (hn : n < a * b) : 1 ≤ f n := by
+    by_contra! hn₁
+    exact (not_le_of_gt hn) <| hmin n ⟨map_pos_of_ne_zero f (mod_cast hn₀), hn₁⟩
   rw [Nat.cast_mul, map_mul] at hp1
   exact not_le_of_gt hp1 <| one_le_mul_of_one_le_of_one_le (h ha₀ ha) (h hb₀ hb)
 
@@ -189,7 +189,8 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
       apply rpow_le_rpow_of_exponent_ge hx0 hx1.le
       simp only [one_div, ← log_div_log, log_inv, neg_div, ← div_neg, hM]
       gcongr
-      exact neg_pos.mpr <| log_neg (lt_sup_of_lt_left hp0) (max_lt hp1 hm)
+      simp only [Left.neg_pos_iff]
+      exact log_neg (lt_sup_iff.mpr <| .inl hp0) (sup_lt_iff.mpr ⟨hp1, hm⟩)
     _ = 1 / 2 := rpow_logb hx0 hx1.ne one_half_pos
   apply lt_irrefl (1 : ℝ)
   calc
@@ -221,23 +222,21 @@ theorem equiv_padic_of_bounded :
     ∃! p, ∃ (_ : Fact p.Prime), f.IsEquiv (padic p) := by
   obtain ⟨p, ⟨hp0, hp1⟩, hmin⟩ := exists_minimal_nat_zero_lt_and_lt_one hf_nontriv bdd
   have hp := is_prime_of_minimal_nat_zero_lt_and_lt_one hp0 hp1 hmin
-  letI : Fact p.Prime := ⟨hp⟩
+  have : Fact p.Prime := ⟨hp⟩
   obtain ⟨t, ht, hpt⟩ := exists_pos_eq_pow_neg hp0 hp1 hmin
-  have hone {m : ℕ} (hm : ¬p ∣ m) : f m = 1 := eq_one_of_not_dvd bdd hp0 hp1 hmin hm
   simp_rw [← exists_nat_rpow_iff_isEquiv]
   refine ⟨p, ⟨inferInstance, t⁻¹, inv_pos.mpr ht, fun n ↦ ?_⟩, fun q ⟨hq, heq⟩ ↦ ?_⟩
   · rcases eq_or_ne n 0 with rfl | hn
     · simp [ht.ne']
-    · /- Any natural number can be written as a power of p times a natural number not divisible
-      by p  -/
-      rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hp.ne_one with ⟨_, m, hpm, rfl⟩
+    · rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hp.ne_one with ⟨_, m, hpm, rfl⟩
       have := (padicNorm.nat_eq_one_iff m).mpr hpm
-      simp_all [← rpow_natCast, ← rpow_mul, mul_comm t, mul_inv_cancel_right₀ ht.ne']
+      simp_all [← rpow_natCast, ← rpow_mul, mul_comm t, mul_inv_cancel_right₀ ht.ne',
+        eq_one_of_not_dvd bdd hp0 hp1 hmin hpm]
   · by_contra! hpq
     apply hq.elim.ne_one
     rw [ne_comm, ← Nat.coprime_primes hp hq.elim, hp.coprime_iff_not_dvd] at hpq
     rcases heq with ⟨_, _, heq⟩
-    simpa [hone hpq] using heq q
+    simpa [eq_one_of_not_dvd bdd hp0 hp1 hmin hpq] using heq q
 
 end Non_archimedean
 
