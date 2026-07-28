@@ -478,7 +478,7 @@ theorem relNorm_int (I : Ideal S) :
   rw [← Int.ideal_span_absNorm_eq_self (relNorm ℤ I), absNorm_relNorm]
 
 theorem absNorm_algebraMap (I : Ideal R) [Module.Finite ℤ R] :
-    absNorm (I.map (algebraMap R S)) = (absNorm I) ^ finrank R S := by
+    absNorm (I.map (algebraMap R S)) = absNorm I ^ finrank R S := by
   rw [← absNorm_relNorm ℤ, ← relNorm_relNorm ℤ R, relNorm_algebraMap, absNorm_relNorm, map_pow]
 
 end absNorm
