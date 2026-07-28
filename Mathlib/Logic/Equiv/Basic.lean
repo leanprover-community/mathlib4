@@ -440,7 +440,8 @@ def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
 
 
 section
-attribute [local simp] Trans.trans sigmaAssoc subtypeEquiv subtypeSigmaEquiv uniqueSigma eqRec_eq_cast
+attribute [local simp] Trans.trans sigmaAssoc subtypeEquiv subtypeSigmaEquiv uniqueSigma
+  eqRec_eq_cast
 
 /-- A subtype of a dependent triple which pins down both bases is equivalent to the
 respective fiber. -/
