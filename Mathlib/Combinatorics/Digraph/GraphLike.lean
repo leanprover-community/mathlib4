@@ -64,7 +64,6 @@ instance : GraphLike V (Bool × V × V) (V × V) (Digraph V) where
 
 instance : Directed V (Bool × V × V) (V × V) (Digraph V) where
   not_isTarget_of_isSource G i hi := by simp_all
-  not_isSource_of_isTarget G i hi := by simp_all
 
 instance : NoParallelEdge V (Bool × V × V) (V × V) (Digraph V) where
   edge_eq_of_isLink h h' := by
