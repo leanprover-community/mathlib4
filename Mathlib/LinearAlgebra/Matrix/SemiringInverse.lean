@@ -91,7 +91,7 @@ lemma detp_map {S : Type*} [CommSemiring S] (f : R →+* S) :
 
 /-- A square matrix `A` over a commutative semiring `R` is "determinant balanced"
 with respect to `a b : R` if `a|A|⁺ + b|A|⁻ = b|A|⁺ + a|A|⁻`. Over a commutative ring,
-this is equivalent to `(a - b)|A| = 0`, see `Matrix.IsDetpBalanced_iff_sub_mul_det_eq_zero`. -/
+this is equivalent to `(a - b)|A| = 0`, see `Matrix.isDetpBalanced_iff_sub_mul_det_eq_zero`. -/
 def IsDetpBalanced (a b : R) : Prop :=
   a * A.detp 1 + b * A.detp (-1) = b * A.detp 1 + a * A.detp (-1)
 
