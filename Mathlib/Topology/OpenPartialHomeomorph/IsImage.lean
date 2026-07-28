@@ -368,9 +368,9 @@ theorem restr_eqOnSource_of_eqOn {e e' : OpenPartialHomeomorph X Y} {s : Set X}
 theorem restr_eqOnSource_of_eqOn' {e e' : OpenPartialHomeomorph X Y} {s : Set X} (hs : IsOpen s)
     (heq : s.EqOn e e') (hsub : e.source ∩ s ⊆ e'.source) :
     e.restr s ≈ e'.restr (e.source ∩ s) := by
-  nth_rw 2 [← hs.interior_eq]
-  rw [← hs.interior_eq] at heq hsub
-  exact restr_eqOnSource_of_eqOn (heq.mono inter_subset_right) hsub
+  refine ⟨?_, fun z hz ↦ heq (e.restr_source' s hs ▸ hz).2⟩
+  rw [e.restr_source' s hs, e'.restr_source' _ (e.open_source.inter hs),
+    inter_eq_right.mpr hsub]
 
 theorem eq_of_eqOnSource_univ {e e' : OpenPartialHomeomorph X Y} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
