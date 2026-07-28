@@ -138,6 +138,16 @@ theorem smallInductiveDimension_lt_iff {n : ℕ} :
       apply (smallInductiveDimension_le_iff.2 h).trans_lt
       exact_mod_cast n.lt_add_one
 
+variable (X) in
+theorem smallInductiveDimension_le (n : ℕ) [H : HasSmallInductiveDimensionLE X n] :
+    smallInductiveDimension X ≤ n :=
+  smallInductiveDimension_le_iff.2 H
+
+variable (X) in
+theorem smallInductiveDimension_lt (n : ℕ) [H : HasSmallInductiveDimensionLT X n] :
+    smallInductiveDimension X < n :=
+  smallInductiveDimension_lt_iff.2 H
+
 theorem smallInductiveDimension_eq (n : ℕ)
     (hle : HasSmallInductiveDimensionLE X n) (hlt : ¬ HasSmallInductiveDimensionLT X n) :
     smallInductiveDimension X = n := by
