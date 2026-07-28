@@ -31,7 +31,7 @@ which is the original bound given by Karl Weierstrass. There is a better bound $
 
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace NowhereDifferentiable
 open Real Topology Filter
