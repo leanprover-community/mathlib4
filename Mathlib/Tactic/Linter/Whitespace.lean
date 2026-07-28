@@ -43,10 +43,10 @@ public register_option linter.style.whitespace : Bool := {
 }
 
 /-- Deprecated in favour of `linter.style.whitespace` -/
-@[deprecated linter.style.whitespace (since := "2026-01-07")]
 public register_option linter.style.commandStart : Bool := {
   defValue := false
   descr := "deprecated: use the `linter.style.whitespace` option instead"
+  deprecation? := some { since := "2026-01-07", text? := "use the `linter.style.whitespace` option instead" }
 }
 
 /-- If the `linter.style.whitespace.verbose` option is `true`, the `whitespace` linter

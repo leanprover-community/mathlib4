@@ -178,7 +178,7 @@ instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalS
   union' := by simpa only [empty_union] using CWComplex.union'
 
 /-- A relative CW complex with an empty base is an absolute CW complex. -/
-@[simps -isSimp, implicit_reducible]
+@[simps -isSimp, instance_reducible]
 def RelCWComplex.toCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) [RelCWComplex C ∅] :
     CWComplex C where
   cell := cell C
@@ -289,6 +289,20 @@ lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cel
     map n i 0 ∈ closedCell n i :=
   openCell_subset_closedCell _ _ (map_zero_mem_openCell _ _)
 
+lemma RelCWComplex.openCell_nonempty [RelCWComplex C D] (n : ℕ) (j : cell C n) :
+    (openCell n j).Nonempty :=
+  ⟨(map n j) 0, map_zero_mem_openCell n j⟩
+
+lemma RelCWComplex.closedCell_nonempty [RelCWComplex C D] (n : ℕ) (j : cell C n) :
+    (closedCell n j).Nonempty :=
+  ⟨(map n j) 0, map_zero_mem_closedCell n j⟩
+
+/-- If two open cells are equal, so are the underlying cells. -/
+lemma RelCWComplex.openCell_congr [RelCWComplex C D] (n : ℕ) {s t : cell C n}
+    (st : openCell n s = openCell n t) : s = t := by
+  contrapose! st
+  exact (disjoint_openCell_of_ne (by simpa)).ne (openCell_nonempty n s).ne_empty
+
 /-- This is an auxiliary lemma used to prove `RelCWComplex.eq_of_eq_union_iUnion`. -/
 private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
     (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
@@ -393,7 +407,7 @@ lemma RelCWComplex.cellFrontier_zero_eq_empty [RelCWComplex C D] {j : cell C 0} 
 @[alias_in CWComplex]
 lemma RelCWComplex.nonempty_cellFrontier [CWComplex C] {n : ℕ} (hn : n ≠ 0) (j : cell C n) :
     (cellFrontier n j).Nonempty := by
-  letI : NeZero n := ⟨hn⟩
+  let : NeZero n := ⟨hn⟩
   use map n j (Pi.single 0 1)
   simp only [cellFrontier, mem_image, mem_sphere_iff_norm, sub_zero]
   use Pi.single 0 1, by simp [Pi.norm_single]
@@ -490,9 +504,10 @@ private lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C 
         apply iUnion₂_subset fun l hl ↦ iUnion₂_subset fun i _ ↦ ?_
         rw [← cellFrontier_union_openCell_eq_closedCell]
         apply union_subset
-        · exact (hm' l (Nat.le_of_lt_succ hl) ((ENat.coe_lt_coe.2 hl).trans hm) i)
+        · exact (hm' l (Nat.le_of_lt_succ hl) ((ENat.natCast_lt_natCast.2 hl).trans hm) i)
         · apply subset_union_of_subset_right
-          exact subset_iUnion₂_of_subset l ((ENat.coe_lt_coe.2 hl).trans hm) <| subset_iUnion _ i
+          exact subset_iUnion₂_of_subset l ((ENat.natCast_lt_natCast.2 hl).trans hm) <|
+            subset_iUnion _ i
     · exact subset_union_of_subset_right (subset_iUnion₂_of_subset m hm (subset_iUnion _ j)) _
 
 lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
@@ -500,7 +515,7 @@ lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
   suffices D ∪ ⋃ n, ⋃ (j : cell C n), openCell n j =
       D ∪ ⋃ (m : ℕ) (_ : m < (⊤ : ℕ∞)) (j : cell C m), closedCell m j by
     simpa [union] using this
-  simp_rw [← RelCWComplex.iUnion_openCell_eq_iUnion_closedCell, ENat.coe_lt_top, iUnion_true]
+  simp_rw [← RelCWComplex.iUnion_openCell_eq_iUnion_closedCell, ENat.natCast_lt_top, iUnion_true]
 
 lemma CWComplex.iUnion_openCell_eq_complex [CWComplex C] :
     ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
@@ -1016,7 +1031,7 @@ lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} 
   apply disjoint_openCell_of_ne
   intro
   simp_all only [Sigma.mk.inj_iff]
-  exact (lt_self_iff_false m).mp (ENat.coe_lt_coe.1 (hln.trans_le hnm))
+  exact (lt_self_iff_false m).mp (ENat.natCast_lt_natCast.1 (hln.trans_le hnm))
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 @[alias_in CWComplex]
@@ -1060,5 +1075,47 @@ lemma RelCWComplex.disjoint_interior_base_iUnion_closedCell [T2Space X] [RelCWCo
     Disjoint (interior D) (⋃ (n : ℕ) (j : cell C n), closedCell n j) := by
   simp_rw [disjoint_iff_inter_eq_empty, inter_iUnion, disjoint_interior_base_closedCell.inter_eq,
     iUnion_empty]
+
+set_option backward.isDefEq.respectTransparency.types false in
+/-- A closed discrete subset of a space is a CW complex. -/
+@[reducible, simps -isSimp]
+def CWComplex.OfDiscreteClosed (hD : IsDiscrete D) (Dc : IsClosed D) : CWComplex D where
+  cell n := match n with
+    | 0 => D
+    | (_ + 1) => PEmpty
+  map n i := match n with
+    | 0 => PartialEquiv.single ![] i
+    | (_ + 1) => i.elim
+  source_eq n i := match n with
+    | 0 => by simp [ball, Matrix.empty_eq, eq_univ_iff_forall]
+    | (_ + 1) => i.elim
+  continuousOn n i := match n with
+    | 0 => continuousOn_const
+    | (_ + 1) => i.elim
+  continuousOn_symm n i := match n with
+    | 0 => continuousOn_const
+    | (_ + 1) => i.elim
+  pairwiseDisjoint' := by
+    simp_rw [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+    rintro ⟨_|n, j⟩ _ ⟨_|m, i⟩ _ ne
+    · simp_all [Subtype.coe_injective.ne]
+    · exact i.elim
+    · tauto
+    · exact i.elim
+  mapsTo' n i := match n with
+    | 0 => by simp [Matrix.zero_empty, sphere_eq_empty_of_subsingleton]
+    | (_ + 1) => i.elim
+  closed' A AD _ := isClosed_of_subset_discrete_closed AD hD Dc
+  union' := by
+    apply subset_antisymm (iUnion₂_subset_iff.mpr fun n ↦ by cases n <;> simp)
+    intro x xD
+    simp only [mem_iUnion, mem_image, mem_closedBall, dist_zero_right]
+    refine ⟨0, ?_⟩
+    simpa [-Matrix.zero_empty]
+
+/-- A discrete space is a CW complex. -/
+instance CWComplex.ofDiscreteTopology {X : Type*} [TopologicalSpace X] [DiscreteTopology X] :
+    CWComplex (univ : Set X) :=
+  CWComplex.OfDiscreteClosed IsDiscrete.univ isClosed_univ
 
 end Topology

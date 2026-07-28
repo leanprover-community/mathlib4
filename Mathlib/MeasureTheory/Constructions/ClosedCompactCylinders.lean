@@ -55,7 +55,9 @@ noncomputable def closedCompactCylinders.finset (ht : t ∈ closedCompactCylinde
   ((mem_closedCompactCylinders t).mp ht).choose
 
 /-- A set `S` such that `t = cylinder s S`. `s` is given by `closedCompactCylinders.finset`. -/
-def closedCompactCylinders.set (ht : t ∈ closedCompactCylinders X) :
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def closedCompactCylinders.set (ht : t ∈ closedCompactCylinders X) :
     Set (Π i : closedCompactCylinders.finset ht, X i) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose
 

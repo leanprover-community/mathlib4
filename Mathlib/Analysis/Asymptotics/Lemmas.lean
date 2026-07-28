@@ -192,10 +192,20 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
-theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [One F] [NormOneClass F]
     [TopologicalSpace α] {f : α → E} {x : α} :
-    (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
+    (ContinuousAt f x) ↔ (f · - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : F)) := by
   simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
+
+theorem _root_.ContinuousAt.isLittleO {α : Type*} {E : Type*} [NormedRing E] [One F]
+    [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
+    (f · - f x) =o[𝓝 x] (fun _ ↦ (1 : F)) :=
+  continuousAt_iff_isLittleO.mp hcont
+
+theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedRing E] [One F] [NormOneClass F]
+    [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
+    f =O[𝓝 x] (fun _ ↦ (1 : F)) :=
+  hcont.isLittleO.isBigO.congr_of_sub.mpr (isBigO_const_one ..)
 
 /-! ### Multiplication -/
 
@@ -600,7 +610,7 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₂ x - f₁ x :=
   IsBigOWith.of_bound <|
     mem_of_superset h.bound fun x hx => by
-      simp only [mem_setOf_eq] at hx ⊢
+      simp only [mem_ofPred_eq] at hx ⊢
       rw [mul_comm, one_div, ← div_eq_mul_inv, le_div_iff₀, mul_sub, mul_one, mul_comm]
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc
@@ -734,7 +744,7 @@ lemma isBigO_nat_atTop_induction {f : ℕ → E''} {g : ℕ → F''}
   let ubounds := {C | ∀ m ∈ Finset.Icc n₀ n₁, ‖f m‖ ≤ C * ‖g m‖}
   let C₁ := (Finset.Icc n₀ n₁).sup' (Finset.nonempty_Icc.mpr H₁) fun n => ‖f n‖ / ‖g n‖
   have C₁_mem : C₁ ∈ ubounds := by
-    rw [Set.mem_setOf]
+    rw [Set.mem_ofPred]
     intro m hm
     calc ‖f m‖ = (‖f m‖ / ‖g m‖) * ‖g m‖ := by by_cases hm' : g m = 0 <;> grind [norm_eq_zero]
       _ ≤ C₁ * ‖g m‖ := by

@@ -565,7 +565,6 @@ error: Could not find a model with corners for `?_`.
 Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 #check UniqueMDiffAt[Set.univ] m
 
 variable {s : TopologicalSpace.Opens M}
@@ -589,7 +588,6 @@ in the application
   UniqueMDiffOn I s
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 #check UniqueMDiffOn I s
 
 end UniqueMDiff
@@ -1004,34 +1002,71 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {f : M → M'} {s : Set M}
 
-/-- info: setOf fun x ↦ MDifferentiableAt I I' f x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableAt I I' f x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt f x}
 
-/-- info: setOf fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ MDifferentiableWithinAt I I' f s x : Set M -/
 #guard_msgs in
 #check {x | MDiffAt[s] f x}
 
-/-- info: setOf fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' Top.top f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ⊤ f x}
 
-/-- info: setOf fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffWithinAt I I' 2 f s x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt[s] 2 f x}
 
 open ContDiff in -- for the ∞ notation
-/-- info: setOf fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
+/-- info: Set.ofPred fun x ↦ ContMDiffAt I I' (↑Top.top) f x : Set M -/
 #guard_msgs in
 #check {x | CMDiffAt ∞ f x}
 
-/-- info: setOf fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Injective ⇑(mfderiv I I' f x) : Set M -/
 #guard_msgs in
 #check {x | Function.Injective (mfderiv% f x) }
 
-/-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
+/-- info: Set.ofPred fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
+
+end
+
+/-! Inferring a model with corners on a normed space, for an `IsManifold` hypothesis -/
+section
+
+open scoped ContDiff
+
+variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X] [IsManifold 𝓘(ℝ) ω X]
+  [TopologicalSpace Y] [ChartedSpace ℝ Y] [IsManifold 𝓘(ℝ) ω Y] {f : X → Y}
+
+/--
+info: ContMDiff (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) Top.top f : Prop
+-/
+#guard_msgs in
+#check CMDiff ω f
+
+variable {f : X → ℝ} in /--
+info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in #check MDiff f
+
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] [IsManifold 𝓘(𝕜, F) ω X] {f : X → 𝕜} in
+/-- info: MDifferentiable (modelWithCornersSelf 𝕜 F) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+-- This test is expected to fail: it passing would amount to guessing a model with corners on
+-- a product of two normed spaces (which is ambiguous).
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
+/--
+error: Could not find a model with corners for `X`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+#check MDiff f
 
 end
 
@@ -1433,10 +1468,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
       `Unit` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize instance of type class
+      failed to synthesize
         NontriviallyNormedField Unit
       ⏎
-      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 [Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `Unit` among local instances.

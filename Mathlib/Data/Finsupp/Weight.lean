@@ -175,7 +175,6 @@ theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w 
 theorem weight_eq_zero_iff_eq_zero
     (w : σ → M) [NonTorsionWeight ℕ w] {f : σ →₀ ℕ} :
     weight w f = 0 ↔ f = 0 := by
-  classical
   constructor
   · intro h
     ext s
@@ -203,6 +202,14 @@ theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
   grw [← le_weight _ (hw x)] at hd
   simp [*]
 
+theorem finite_of_nat_weight_lt [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d < n}.Finite :=
+  Set.Finite.subset (finite_of_nat_weight_le w hw n) (by grind)
+
+theorem finite_of_nat_weight_eq [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d = n}.Finite :=
+  Set.Finite.subset (finite_of_nat_weight_le w hw n) (by grind)
+
 end CanonicallyOrderedAddCommMonoid
 
 variable {R : Type*} [AddCommMonoid R]
@@ -213,14 +220,7 @@ def degree : (σ →₀ R) →+ R where
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
-@[deprecated (since := "2025-12-09")] alias degree_add := map_add
-
-@[deprecated (since := "2025-12-09")] alias degree_zero := map_zero
-
 theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
-
-@[deprecated (since := "2025-12-09")]
-alias degree_def := degree_apply
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
   rw [degree_apply, Finset.sum_subset] <;> simp
@@ -260,6 +260,9 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
 lemma finite_of_degree_lt [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | degree f < n}.Finite :=
   Set.Finite.subset (finite_of_degree_le n) (by grind)
 
+lemma finite_of_degree_eq [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | f.degree = n}.Finite :=
+  Set.Finite.subset (finite_of_degree_le n) (by grind)
+
 lemma range_single_one :
     Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by
   refine subset_antisymm ?_ ?_
@@ -277,6 +280,7 @@ theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ 
 @[deprecated (since := "2026-04-27")]
 alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
     [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :
       degree (x.comapDomain f hf) ≤ degree x := by
@@ -329,6 +333,7 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
       (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
     exact ⟨x, by aesop (add simp Set.subset_def), _, ⟨_, f_supp (by simp_all), rfl⟩, hx.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Pointwise in
 theorem image_pow_eq_finsuppProd_image {α β : Type*} [CommMonoid β] {f : α → β} {n} {s : Set α} :
     (f '' s) ^ n = (·.prod (f · ^ ·)) '' {x : α →₀ ℕ | x.degree = n ∧ ↑x.support ⊆ s} := by

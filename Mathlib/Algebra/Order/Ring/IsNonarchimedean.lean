@@ -118,7 +118,7 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
 /- TODO: Remove the funlike conditions on the lemmas required for add_max_of_ne, this will allow us
   to remove the CommGroup part in the below which is unnecessary. -/
 
-lemma add_eq_max_of_ne' {α S : Type*} [Semiring S] [LinearOrder S] [AddCommGroup α]
+lemma add_eq_max_of_ne' {α S : Type*} [LinearOrder S] [AddCommGroup α]
     (f : α → S) (fna : IsNonarchimedean f) (Neg : ∀ a, f a = f (-a)) {a b : α}
     (hne : f a ≠ f b) : f (a + b) = max (f a) (f b) := by
   wlog hab : f a > f b generalizing a b with H
@@ -223,6 +223,7 @@ theorem finset_powerset_image_add [IsStrictOrderedRing R]
     g (powersetCard (s.card - m) s)
   exact ⟨⟨b, hb_in (powersetCard_nonempty.mpr (Nat.sub_le s.card m))⟩, hb⟩
 
+omit [Semiring R] in
 lemma apply_sum_eq_of_lt {α β : Type*} [AddCommGroup α] {f : α → R} (fna : IsNonarchimedean f)
     (f_neg : ∀ a, f a = f (-a)) {s : Finset β} {l : β → α} {k : β} (hk : k ∈ s)
     (hmax : ∀ j ∈ s, j ≠ k → f (l j) < f (l k)) : f (∑ i ∈ s, l i) = f (l k) := by

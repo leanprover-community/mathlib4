@@ -72,6 +72,7 @@ theorem mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := b
 theorem mapEquiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
   Equiv.ext <| mapEquiv_symm_apply f e
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition of `mapEquiv`s is carried over the `EquivFunctor`.
 For plain `Functor`s, this lemma is named `map_map` when applied
 or `map_comp_map` when not applied.

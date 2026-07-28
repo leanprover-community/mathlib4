@@ -66,7 +66,7 @@ theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
 theorem range_diagonal [DecidableEq m] (w : m → K) :
     LinearMap.range (toLin' (diagonal w)) =
       ⨆ i ∈ { i | w i ≠ 0 }, LinearMap.range (LinearMap.single K (fun _ => K) i) := by
-  dsimp only [mem_setOf_eq]
+  dsimp only [mem_ofPred_eq]
   rw [← Submodule.map_top, ← iSup_range_single, Submodule.map_iSup]
   congr; funext i
   rw [← LinearMap.range_comp, diagonal_comp_single, ← range_smul']

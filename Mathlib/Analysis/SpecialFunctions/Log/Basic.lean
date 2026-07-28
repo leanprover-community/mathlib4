@@ -52,6 +52,7 @@ theorem log_of_pos (hx : 0 < x) : log x = expOrderIso.symm ⟨x, hx⟩ := by
   congr
   exact abs_of_pos hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exp_log_eq_abs (hx : x ≠ 0) : exp (log x) = |x| := by
   rw [log_of_ne_zero hx, ← coe_expOrderIso_apply, OrderIso.apply_symm_apply, Subtype.coe_mk]
 
@@ -360,20 +361,20 @@ lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
   tendsto_log_nhdsNE_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_lt h
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
-  simp +unfoldPartialApp only [continuousOn_iff_continuous_restrict,
-    restrict]
+  simp +unfoldPartialApp only [continuousOn_iff_continuous_domRestrict,
+    domRestrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 
 /-- The real logarithm is continuous as a function from nonzero reals. -/
 @[fun_prop]
 theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
-  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ => id
+  continuousOn_iff_continuous_domRestrict.1 <| continuousOn_log.mono fun _ => id
 
 /-- The real logarithm is continuous as a function from positive reals. -/
 @[fun_prop]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
-  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
+  continuousOn_iff_continuous_domRestrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
 
 theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
   (continuousOn_log x hx).continuousAt <| isOpen_compl_singleton.mem_nhds hx
@@ -469,6 +470,50 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   open_target := isOpen_Ioi
   continuousOn_toFun := continuousOn_exp
   continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
+
+@[simp]
+theorem image_log_Ioi {a : ℝ} (ha : 0 < a) : log '' Ioi a = Ioi (log a) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx).ne').image_Ioi_of_strictMonoOn
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx) tendsto_log_atTop
+
+@[simp]
+theorem image_log_Ici {a : ℝ} (ha : 0 < a) : log '' Ici a = Ici (log a) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx).ne').image_Ici_of_monotoneOn
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ ha.trans_le hx) tendsto_log_atTop
+
+@[simp]
+theorem image_log_Icc {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Icc a b = Icc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Icc_of_monotoneOn hab
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ico {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ico a b = Ico (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ico_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioc {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ioc a b = Ioc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ioc_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioo {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ioo a b = Ioo (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ioo_of_strictMonoOn hab
+    (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
+
+@[simp]
+theorem image_log_uIcc {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    log '' uIcc a b = uIcc (log a) (log b) :=
+  (continuousOn_log.mono fun _ hx ↦ ((lt_min ha hb).trans_le hx.1).ne').image_uIcc_of_monotoneOn
+    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ (lt_min ha hb).trans_le hx.1)
+
+@[simp]
+theorem image_log_Ioo_zero {a : ℝ} (ha : 0 < a) : log '' Ioo 0 a = Iio (log a) := by
+  nth_rw 1 [← exp_log ha, ← image_exp_Iio, ← image_comp, log_comp_exp, image_id]
+
+@[simp]
+theorem image_log_Ioc_zero {a : ℝ} (ha : 0 < a) : log '' Ioc 0 a = Iic (log a) := by
+  nth_rw 1 [← exp_log ha, ← image_exp_Iic, ← image_comp, log_comp_exp, image_id]
 
 end Real
 
