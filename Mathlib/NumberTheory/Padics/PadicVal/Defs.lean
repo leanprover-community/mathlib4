@@ -22,7 +22,7 @@ The valuation induces a norm on `ℚ`. This norm is defined in
 `Mathlib/NumberTheory/Padics/PadicNorm.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

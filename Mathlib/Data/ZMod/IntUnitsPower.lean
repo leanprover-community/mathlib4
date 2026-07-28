@@ -25,7 +25,7 @@ by using `Module R (Additive M)` in its place, especially since this already has
 `R = ℕ` and `R = ℤ`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ideal TwoSidedIdeal
 

@@ -22,7 +22,7 @@ We prove several asymptotics involving integral ideals of a number field.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

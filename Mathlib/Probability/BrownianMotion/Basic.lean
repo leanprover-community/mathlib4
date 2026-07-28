@@ -54,7 +54,7 @@ pre-Brownian motion, Brownian motion, Markov property
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory.BrownianReal
 open scoped ENNReal NNReal Topology

@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 # If an `Lp` space is complete, so is the target space
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal Topology
 open Filter ContinuousLinearMap

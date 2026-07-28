@@ -19,7 +19,7 @@ public import Mathlib.Algebra.Ring.Equiv
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u

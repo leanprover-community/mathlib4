@@ -54,7 +54,7 @@ projective module
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

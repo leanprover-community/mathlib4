@@ -23,7 +23,7 @@ Once mathlib has more material on the localization at a prime ideal, the results
 can be proven using more general going-up/going-down theory.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial Submodule
 

@@ -29,7 +29,7 @@ inequalities `u (n+1) ≤ c n * u n + b n` and `u (n+1) ≤ (1 + c n) * u n + b 
 * `Mathlib.Analysis.ODE.Gronwall` for the continuous Grönwall inequality for ODEs.
 -/
 
-@[expose] public section
+public section
 
 open Real Finset
 

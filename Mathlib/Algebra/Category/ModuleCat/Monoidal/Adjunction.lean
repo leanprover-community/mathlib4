@@ -17,7 +17,7 @@ Let `f : R →+* S` be a morphism of commutative rings. We show that the functor
 
 -/
 
-@[expose] public section
+public section
 
 set_option backward.defeqAttrib.useBackward true
 

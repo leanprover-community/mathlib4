@@ -21,7 +21,7 @@ of the ring.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u u'
 

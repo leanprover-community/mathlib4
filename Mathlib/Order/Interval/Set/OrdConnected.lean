@@ -21,7 +21,7 @@ In this file we prove that intersection of a family of `OrdConnected` sets is `O
 that all standard intervals are `OrdConnected`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Interval
 open Set
