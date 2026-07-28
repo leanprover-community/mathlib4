@@ -26,7 +26,7 @@ We prove:
 * `QuadraticAlgebra.isUnit_iff_norm_isUnit`:
   `w : QuadraticAlgebra R a b` is a unit iff `w.norm` is a unit in `R`.
 
-* `QuadraticAlgebra.norm_mem_nonZero_divisors_iff`:
+* `QuadraticAlgebra.norm_mem_nonZeroDivisors_iff`:
   `w : QuadraticAlgebra R a b` isn't a zero divisor iff
   `w.norm` isn't a zero divisor in `R`.
 
