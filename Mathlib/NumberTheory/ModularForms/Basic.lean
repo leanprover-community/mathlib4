@@ -198,8 +198,7 @@ variable {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
 instance add : Add (ModularForm Γ k) where add f g :=
   { toSlashInvariantForm := f + g
     holo' := f.holo'.add g.holo'
-    bdd_at_cusps' hc := by
-      simpa [FunLike.coe_add] using (f.bdd_at_cusps' hc).add (g.bdd_at_cusps' hc) }
+    bdd_at_cusps' hc := by simpa using (f.bdd_at_cusps' hc).add (g.bdd_at_cusps' hc) }
 
 instance : IsAddApply (ModularForm Γ k) ℍ ℂ where
   add_apply _ _ _ := rfl
@@ -211,9 +210,7 @@ instance : IsAddApply (ModularForm Γ k) ℍ ℂ where
 instance instZero : Zero (ModularForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const
-      bdd_at_cusps' hc g hg := by
-        simp only [SlashInvariantForm.toFun_eq_coe, FunLike.coe_zero, SlashAction.zero_slash]
-        exact zero_form_isBoundedAtImInfty } ⟩
+      bdd_at_cusps' hc g hg := by simpa using zero_form_isBoundedAtImInfty } ⟩
 
 instance : IsZeroApply (ModularForm Γ k) ℍ ℂ where
   zero_apply _ := rfl
@@ -244,7 +241,7 @@ local instance : IsScalarTower α ℂ ℂ where
 instance instSMulℝ : SMul α (ModularForm Γ k) where
   smul c f :=
   { toSlashInvariantForm := c • f.1
-    holo' := by simpa [FunLike.coe_smul] using f.holo'.const_smul (c • (1 : ℂ))
+    holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     bdd_at_cusps' hc g hg := by
       simpa only [IsBoundedAtImInfty, Filter.BoundedAtFilter, SlashInvariantForm.toFun_eq_coe,
         FunLike.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
@@ -266,7 +263,7 @@ variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [Γ.HasDetOne]
 instance instSMulℂ : SMul α (ModularForm Γ k) where
   smul c f :=
   { toSlashInvariantForm := c • f.1
-    holo' := by simpa [FunLike.coe_smul] using f.holo'.const_smul (c • (1 : ℂ))
+    holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     bdd_at_cusps' hc g hg := by
       simp_rw [IsBoundedAtImInfty, Filter.BoundedAtFilter, SlashInvariantForm.toFun_eq_coe,
         FunLike.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
@@ -285,8 +282,7 @@ instance instNeg : Neg (ModularForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
-      bdd_at_cusps' hc g hg := by
-        simpa [FunLike.coe_neg] using! (f.bdd_at_cusps' hc g hg).neg }⟩
+      bdd_at_cusps' hc g hg := by simpa using! (f.bdd_at_cusps' hc g hg).neg }⟩
 
 instance : IsNegApply (ModularForm Γ k) ℍ ℂ where
   neg_apply _ _ := rfl
@@ -387,8 +383,7 @@ instance hasAdd : Add (CuspForm Γ k) :=
   ⟨fun f g =>
     { toSlashInvariantForm := f + g
       holo' := f.holo'.add g.holo'
-      zero_at_cusps' A := by simpa [FunLike.coe_add] using
-        (f.zero_at_cusps' A).add (g.zero_at_cusps' A) }⟩
+      zero_at_cusps' A := by simpa using (f.zero_at_cusps' A).add (g.zero_at_cusps' A) }⟩
 
 instance : IsAddApply (CuspForm Γ k) ℍ ℂ where
   add_apply _ _ _ := rfl
@@ -400,7 +395,7 @@ instance : IsAddApply (CuspForm Γ k) ℍ ℂ where
 instance instZero : Zero (CuspForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const
-      zero_at_cusps' hc g hg := by simpa [FunLike.coe_zero] using! Filter.zero_zeroAtFilter _ } ⟩
+      zero_at_cusps' hc g hg := by simpa using! Filter.zero_zeroAtFilter _ } ⟩
 
 instance : IsZeroApply (CuspForm Γ k) ℍ ℂ where
   zero_apply _ := rfl
@@ -419,7 +414,7 @@ local instance : IsScalarTower α ℂ ℂ where
 
 instance instSMul : SMul α (CuspForm Γ k) where smul c f :=
   { toSlashInvariantForm := c • f.1
-    holo' := by simpa [FunLike.coe_smul] using f.holo'.const_smul (c • (1 : ℂ))
+    holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
         FunLike.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
@@ -441,7 +436,7 @@ variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [Γ.HasDetOne]
 
 instance IsGLPos.instSMul : SMul α (CuspForm Γ k) where smul c f :=
   { toSlashInvariantForm := c • f.1
-    holo' := by simpa [FunLike.coe_smul] using f.holo'.const_smul (c • (1 : ℂ))
+    holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
         FunLike.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f,
@@ -461,7 +456,7 @@ instance instNeg : Neg (CuspForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
-      zero_at_cusps' hc g hg := by simpa [FunLike.coe_neg] using! (f.zero_at_cusps' hc g hg).neg }⟩
+      zero_at_cusps' hc g hg := by simpa using! (f.zero_at_cusps' hc g hg).neg }⟩
 
 instance : IsNegApply (CuspForm Γ k) ℍ ℂ where
   neg_apply _ _ := rfl
