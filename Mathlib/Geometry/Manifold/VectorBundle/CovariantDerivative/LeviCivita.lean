@@ -43,7 +43,7 @@ Non-degeneracy of the metric `g` implies that this induces an isomorphism `T_pM 
 point, which combines to a bundle isomorphism `TM → T*M`.
 Similarly, a `(2,0)`-tensor (i.e., a map `T_pM × T_pM → ℝ` at each point) induces a `(1,1)`-tensor
 (i.e., a map `T_pM → (T_pM)*` at each point).
-We apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z p`, to obtain a `(1,1)`-tensor `∇ Y`.
+We apply this to the `(2,0)`-tensor `(X, Z) ↦ ∇ X Y Z`, to obtain a `(1,1)`-tensor denoted `∇ Y`.
 
 ## Main definitions and results
 
