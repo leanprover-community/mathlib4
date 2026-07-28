@@ -802,7 +802,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 
 -- A more general instance is provided below.
-private instance [T2Space X] [TotallyDisconnectedSpace X] [CompactSpace X] :
+private local instance [T2Space X] [TotallyDisconnectedSpace X] [CompactSpace X] :
     ZeroDimensionalSpace X := by
   rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
   refine fun x ↦ ⟨fun U ↦ ⟨fun hU ↦ ?_, fun ⟨V, ⟨hxV, V_op⟩, hUV⟩ ↦ ?_⟩⟩
