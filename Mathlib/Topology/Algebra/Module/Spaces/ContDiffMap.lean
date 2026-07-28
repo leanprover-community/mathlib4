@@ -26,8 +26,6 @@ open scoped ContDiff
 
 @[expose] public section
 
-namespace SmoothMap
-
 noncomputable section
 
 variable {𝕜 E F : Type*}
@@ -40,6 +38,8 @@ def ContDiffMap (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 F] :=
   {f : E → F // ContDiff 𝕜 ∞ f}
+
+namespace ContDiffMap
 
 instance : FunLike (ContDiffMap 𝕜 E F) E F where
   coe f := f.1
@@ -71,5 +71,4 @@ theorem jet_apply (f : ContDiffMap 𝕜 E F) (k : ℕ) :
       iteratedFDeriv 𝕜 k f :=
   rfl
 
-end
-end SmoothMap
+end ContDiffMap
