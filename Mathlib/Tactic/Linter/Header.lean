@@ -54,7 +54,9 @@ the `import` statements.
 
 The linter is a stateful linter (`Lean.Elab.Command.registerStatefulLinter`). Its state caches
 the result of the library-root check, and it records that the checks ran: the linter checks the
-header of each module once.
+header of each module once. The state also stores the parsed module header. Other linters, such
+as `minImports` and `longLine`, read the parsed header from the state instead of a re-parse of
+the file.
 -/
 
 meta section
@@ -273,9 +275,34 @@ public structure HeaderState where
   The state caches the answer, because `isInLibraryRoot` reads the library root file from
   disk. -/
   inLibraryRoot? : Option Bool := none
-  /-- `true` after the header checks ran. The linter checks the header of each module once. -/
-  ran : Bool := false
+  /-- `true` after the linter reaches a verdict for the module: the header checks ran, or the
+  module is exempt from the checks. Every later command takes a fast path. -/
+  settled : Bool := false
+  /-- The syntax of the module header: the copyright comment and the `import` commands, with
+  source positions in the current file. The value is `.missing` when the header checks did not
+  run. Other linters read this field to avoid a re-parse of the header. -/
+  headerSyntax : Syntax := .missing
   deriving Inhabited
+
+-- TODO: Upstream? https://github.com/leanprover/lean4/pull/14581
+/--
+`withSetOptionIn' k stx` peels off the `set_option ... in` prefixes of `stx` and applies the
+option values to the current scope. Then it runs `k` on the innermost command.
+The function is a variant of `withSetOptionIn`, with a result type that fits the phases of a
+stateful linter.
+-/
+public partial def withSetOptionIn' {α : Type} (k : Syntax → CommandElabM α) :
+    Syntax → CommandElabM α :=
+  fun stx => do
+    if stx.getKind == ``Lean.Parser.Command.in &&
+       stx[0].getKind == ``Lean.Parser.Command.set_option then
+      -- Do not modify the infotrees when elaborating, and silently ignore errors.
+      let opts ← withEnableInfoTree false try
+          (·.1) <$> elabSetOption stx[0][1] stx[0][3]
+        catch _ => getOptions
+      withScope ({ · with opts }) do withSetOptionIn' k stx[2]
+    else
+      k stx
 
 /--
 The "header" style linter checks that a file starts with
@@ -371,46 +398,16 @@ because they are files that test the linter.
 -/
 def headerTestFiles : NameSet := .ofList
   [`MathlibTest.Linter.Header.Basic, `MathlibTest.Linter.Header.Fail, `MathlibTest.Linter.Header.Verso,
-  `MathlibTest.DirectoryDependencyLinter.Test]
-
--- TODO: Upstream? https://github.com/leanprover/lean4/pull/14581
-/--
-`withSetOptionIn' k stx` peels off the `set_option ... in` prefixes of `stx` and applies the
-option values to the current scope. Then it runs `k` on the innermost command.
-The function is a variant of `withSetOptionIn`, with a result type that fits the phases of a
-stateful linter.
--/
-private partial def withSetOptionIn' {α : Type} (k : Syntax → CommandElabM α) :
-    Syntax → CommandElabM α :=
-  fun stx => do
-    if stx.getKind == ``Lean.Parser.Command.in &&
-       stx[0].getKind == ``Lean.Parser.Command.set_option then
-      -- Do not modify the infotrees when elaborating, and silently ignore errors.
-      let opts ← withEnableInfoTree false try
-          (·.1) <$> elabSetOption stx[0][1] stx[0][3]
-        catch _ => getOptions
-      withScope ({ · with opts }) do withSetOptionIn' k stx[2]
-    else
-      k stx
+  `MathlibTest.Linter.Header.MinImportsPayload, `MathlibTest.DirectoryDependencyLinter.Test]
 
 /--
-`headerChecks stx mainModule firstDocModPos` runs the header checks for the current module:
+`headerChecks stx mainModule upToStx` runs the header checks for the current module:
 the copyright header, broad or duplicate imports, directory dependencies, and the position of
-the first module doc-string. `stx` is the command that triggers the checks, and
-`firstDocModPos` is the end position of the first module doc-string of the file, or the end of
-the file when there is none.
+the first module doc-string. `stx` is the command that triggers the checks, and `upToStx` is
+the parse of the file up to the first module doc-string.
 -/
-def headerChecks (stx : Syntax) (mainModule : Name) (firstDocModPos : String.Pos.Raw) :
+def headerChecks (stx : Syntax) (mainModule : Name) (upToStx : Syntax) :
     CommandElabM Unit := do
-  -- We try to parse the file up to `firstDocModPos`.
-  let upToStx ← parseUpToHere firstDocModPos <|> (do
-    -- If parsing failed, there is some command which is not a module docstring.
-    -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
-    -- so we trigger a "no module doc-string" warning.
-    let fil ← getFileName
-    let fm ← getFileMap
-    let (stx, _) ← Parser.parseHeader { inputString := fm.source, fileName := fil, fileMap := fm }
-    parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   let imports := getImports upToStx
   let afterImports := firstNonImport? upToStx
@@ -457,11 +454,13 @@ def headerPost (stx : Syntax) (self : HeaderState) : CommandElabM HeaderState :=
   let self := { self with inLibraryRoot? := some inLibraryRoot }
   -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
   -- linting "scratch files". It is however active in the test files for the linter itself.
-  unless inLibraryRoot || headerTestFiles.contains mainModule do return self
+  -- Exemption is a per-module constant, so the verdict settles the state.
+  unless inLibraryRoot || headerTestFiles.contains mainModule do
+    return { self with settled := true }
   -- Skip linting the library root file itself.
   -- In practice, the `inLibraryRoot` check above already covers this (a well-formed `<root>.lean`
   -- does not import itself), but a root module could appear in `headerTestFiles`.
-  if mainModule == mainModule.getRoot then return self
+  if mainModule == mainModule.getRoot then return { self with settled := true }
   let fm ← getFileMap
   let mdDocs := (getMainModuleDoc (← getEnv)).toArray
   let versoDocs := (getMainVersoModuleDocs (← getEnv)).snippets
@@ -477,8 +476,17 @@ def headerPost (stx : Syntax) (self : HeaderState) : CommandElabM HeaderState :=
   let firstDocModPos := min firstMDDocModPos firstVersoDocModPos
   unless stx.getTailPos?.getD default ≤ firstDocModPos do
     return self
-  headerChecks stx mainModule firstDocModPos
-  return { self with ran := true }
+  -- We try to parse the file up to `firstDocModPos`.
+  let upToStx ← parseUpToHere firstDocModPos <|> (do
+    -- If parsing failed, there is some command which is not a module docstring.
+    -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
+    -- so we trigger a "no module doc-string" warning.
+    let fil ← getFileName
+    let (stx, _) ← Parser.parseHeader { inputString := fm.source, fileName := fil, fileMap := fm }
+    parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
+  headerChecks stx mainModule upToStx
+  -- `upToStx` is a `Lean.Parser.Module.module` node. Its first argument is the module header.
+  return { self with settled := true, headerSyntax := upToStx[0] }
 
 /--
 The typed handle of the `header` linter. Other stateful linters can read the previous
@@ -487,7 +495,7 @@ The typed handle of the `header` linter. Other stateful linters can read the pre
 public initialize headerLinter : StatefulLinter HeaderState Unit ←
   registerStatefulLinter {}
     (post := fun stx self _ _ _ => do
-      if self.ran then return self
+      if self.settled then return self
       withSetOptionIn' (headerPost · self) stx)
 
 end Style.header
