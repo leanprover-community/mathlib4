@@ -7,7 +7,6 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Std.Sync.Mutex
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
 
@@ -52,6 +51,10 @@ after it.
 This makes it possible for the linter to check the entire header of the file, emit warnings that
 could arise from this part and also flag that the file should contain a module doc-string after
 the `import` statements.
+
+The linter is a stateful linter (`Lean.Elab.Command.registerStatefulLinter`). Its state caches
+the result of the library-root check, and it records that the checks ran: the linter checks the
+header of each module once.
 -/
 
 meta section
@@ -263,15 +266,16 @@ def isInLibraryRoot (modName : Name) : IO Bool := do
     return res.imports.any (·.module == modName)
   else return false
 
-/-- `inLibraryRootMutex` caches whether the current file is imported in the library root file
-(e.g. `Mathlib.lean`), as computed by `isInLibraryRoot`. It is
-* `none` at initialization time;
-* `some true` if the `header` linter has already discovered that the current file
-  is imported in the library root file;
-* `some false` if the `header` linter has already discovered that the current file
-  is *not* imported in the library root file.
--/
-initialize inLibraryRootMutex : Std.Mutex (Option Bool) ← Std.Mutex.new none
+/-- `HeaderState` is the persistent state of the `header` linter. -/
+public structure HeaderState where
+  /-- Whether the current module is imported in the library root file (e.g. `Mathlib.lean`),
+  as computed by `isInLibraryRoot`. The value is `none` before the linter computes it.
+  The state caches the answer, because `isInLibraryRoot` reads the library root file from
+  disk. -/
+  inLibraryRoot? : Option Bool := none
+  /-- `true` after the header checks ran. The linter checks the header of each module once. -/
+  ran : Bool := false
+  deriving Inhabited
 
 /--
 The "header" style linter checks that a file starts with
@@ -369,51 +373,41 @@ def headerTestFiles : NameSet := .ofList
   [`MathlibTest.Linter.Header.Basic, `MathlibTest.Linter.Header.Fail, `MathlibTest.Linter.Header.Verso,
   `MathlibTest.DirectoryDependencyLinter.Test]
 
-@[inherit_doc Mathlib.Linter.linter.style.header]
-def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  let mainModule ← getMainModule
-  unless getLinterValue linter.style.header (← getLinterOptions) do
-    return
-  if (← get).messages.hasErrors then
-    return
-  let inLibraryRoot? ← inLibraryRootMutex.atomically do
-    match ← get with
-    | some d => return d
-    | none =>
-      let val ← isInLibraryRoot mainModule
-      -- We cache the answer to avoid recomputing it on every command. The fill runs under the mutex
-      -- so that concurrent (async) linter runs don't all miss the cache and each redundantly parse
-      -- the library root file; `mainModule` is fixed for the duration of the elaboration.
-      set (some val)
-      return val
-  -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
-  -- linting "scratch files". It is however active in the test files for the linter itself.
-  unless inLibraryRoot? || headerTestFiles.contains mainModule do return
-  -- Skip linting the library root file itself.
-  -- In practice, the `inLibraryRoot?` check above already covers this (a well-formed `<root>.lean`
-  -- does not import itself), but a root module could appear in `headerTestFiles`.
-  if mainModule == mainModule.getRoot then return
-  let fm ← getFileMap
-  let mdDocs := (getMainModuleDoc (← getEnv)).toArray
-  let versoDocs := (getMainVersoModuleDocs (← getEnv)).snippets
-  -- The end of the first module doc-string, or the end of the file if there is none.
-  -- For robustness, we assume Markdown and Verso docstrings can be arbitrarily mixed,
-  -- so we get the end pos for both types of docstrings and take their minimum as the first.
-  let firstMDDocModPos := match mdDocs[0]? with
-  | none     => fm.positions.back!
-  | some doc => fm.ofPosition doc.declarationRange.endPos
-  let firstVersoDocModPos := match versoDocs[0]? with
-  | none     => fm.positions.back!
-  | some doc => fm.ofPosition doc.declarationRange.endPos
-  let firstDocModPos := min firstMDDocModPos firstVersoDocModPos
-  unless stx.getTailPos?.getD default ≤ firstDocModPos do
-    return
+/--
+`withSetOptionIn' k stx` peels off the `set_option ... in` prefixes of `stx` and applies the
+option values to the current scope. Then it runs `k` on the innermost command.
+The function is a variant of `withSetOptionIn`, with a result type that fits the phases of a
+stateful linter.
+-/
+private partial def withSetOptionIn' {α : Type} (k : Syntax → CommandElabM α) :
+    Syntax → CommandElabM α :=
+  fun stx => do
+    if stx.getKind == ``Lean.Parser.Command.in &&
+       stx[0].getKind == ``Lean.Parser.Command.set_option then
+      -- Do not modify the infotrees when elaborating, and silently ignore errors.
+      let opts ← withEnableInfoTree false try
+          (·.1) <$> elabSetOption stx[0][1] stx[0][3]
+        catch _ => getOptions
+      withScope ({ · with opts }) do withSetOptionIn' k stx[2]
+    else
+      k stx
+
+/--
+`headerChecks stx mainModule firstDocModPos` runs the header checks for the current module:
+the copyright header, broad or duplicate imports, directory dependencies, and the position of
+the first module doc-string. `stx` is the command that triggers the checks, and
+`firstDocModPos` is the end position of the first module doc-string of the file, or the end of
+the file when there is none.
+-/
+def headerChecks (stx : Syntax) (mainModule : Name) (firstDocModPos : String.Pos.Raw) :
+    CommandElabM Unit := do
   -- We try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do
     -- If parsing failed, there is some command which is not a module docstring.
     -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
     -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
+    let fm ← getFileMap
     let (stx, _) ← Parser.parseHeader { inputString := fm.source, fileName := fil, fileMap := fm }
     parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
@@ -449,7 +443,51 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       m!"The module doc-string for a file should be the first command after the imports.\n\
        Please, add a module doc-string before `{stx}`."
 
-initialize addLinter headerLinter
+@[inherit_doc Mathlib.Linter.linter.style.header]
+def headerPost (stx : Syntax) (self : HeaderState) : CommandElabM HeaderState := do
+  let mainModule ← getMainModule
+  unless getLinterValue linter.style.header (← getLinterOptions) do
+    return self
+  if (← get).messages.hasErrors then
+    return self
+  let inLibraryRoot ← match self.inLibraryRoot? with
+    | some b => pure b
+    | none => isInLibraryRoot mainModule
+  let self := { self with inLibraryRoot? := some inLibraryRoot }
+  -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
+  -- linting "scratch files". It is however active in the test files for the linter itself.
+  unless inLibraryRoot || headerTestFiles.contains mainModule do return self
+  -- Skip linting the library root file itself.
+  -- In practice, the `inLibraryRoot` check above already covers this (a well-formed `<root>.lean`
+  -- does not import itself), but a root module could appear in `headerTestFiles`.
+  if mainModule == mainModule.getRoot then return self
+  let fm ← getFileMap
+  let mdDocs := (getMainModuleDoc (← getEnv)).toArray
+  let versoDocs := (getMainVersoModuleDocs (← getEnv)).snippets
+  -- The end of the first module doc-string, or the end of the file if there is none.
+  -- For robustness, we assume Markdown and Verso docstrings can be arbitrarily mixed,
+  -- so we get the end pos for both types of docstrings and take their minimum as the first.
+  let firstMDDocModPos := match mdDocs[0]? with
+  | none     => fm.positions.back!
+  | some doc => fm.ofPosition doc.declarationRange.endPos
+  let firstVersoDocModPos := match versoDocs[0]? with
+  | none     => fm.positions.back!
+  | some doc => fm.ofPosition doc.declarationRange.endPos
+  let firstDocModPos := min firstMDDocModPos firstVersoDocModPos
+  unless stx.getTailPos?.getD default ≤ firstDocModPos do
+    return self
+  headerChecks stx mainModule firstDocModPos
+  return { self with ran := true }
+
+/--
+The typed handle of the `header` linter. Other stateful linters can read the previous
+`HeaderState` of the linter through this handle.
+-/
+public initialize headerLinter : StatefulLinter HeaderState Unit ←
+  registerStatefulLinter {}
+    (post := fun stx self _ _ _ => do
+      if self.ran then return self
+      withSetOptionIn' (headerPost · self) stx)
 
 end Style.header
 
