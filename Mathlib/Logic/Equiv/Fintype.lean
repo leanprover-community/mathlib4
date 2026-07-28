@@ -135,7 +135,6 @@ Note that when `p = q`, `Equiv.Perm.subtypeCongr e (Equiv.refl _)` can be used i
 noncomputable abbrev extendSubtype (e : { x // p x } ≃ { x // q x }) : Perm α :=
   subtypeCongr e e.toCompl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     e.extendSubtype x = e ⟨x, hx⟩ := by
   simp [extendSubtype, subtypeCongr, sumCompl_symm_apply_of_pos hx]
