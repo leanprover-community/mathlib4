@@ -193,7 +193,7 @@ lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := b
 
 lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
   ext x
-  simp only [mem_diff, mem_range, mem_singleton_iff, ← valueMonoid_eq_valueGroup' f, mem_image,
+  simp only [mem_sdiff, mem_range, mem_singleton_iff, ← valueMonoid_eq_valueGroup' f, mem_image,
     SetLike.mem_coe, mem_valueMonoid_iff, mem_preimage, mem_range]
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -202,6 +202,7 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ f) = ⊤ := by
   rw [top_eq_univ, range_eq_univ]
@@ -229,7 +230,7 @@ variable [MonoidWithZero A] [CommGroupWithZero B] (f : A →*₀ B)
 theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, x, hy⟩ ↦ ?_⟩
-  · simp only [valueGroup, valueMonoid, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk] at hy
+  · simp only [valueGroup, valueMonoid] at hy
     induction hy using Subgroup.closure_induction with
     | mem _ h =>
       obtain ⟨a, ha⟩ := h

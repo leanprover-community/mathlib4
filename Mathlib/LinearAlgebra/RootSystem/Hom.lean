@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Morphisms of root pairings
+
 This file defines morphisms of root pairings, following the definition of morphisms of root data
 given in SGA III Exp. 21 Section 6.
 
@@ -225,7 +226,7 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom 
     have h := congrArg (LinearMap.comp (M₃ := Module.Dual R M) (σ₂₃ := .id R) P.flip.toPerfPair) hfg
     rw [← f.weight_coweight_transpose, ← g.weight_coweight_transpose] at h
     have : f.weightMap = g.weightMap := by
-      haveI : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+      have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
       refine (Module.dualMap_dualMap_eq_iff R M).mp (congrArg LinearMap.dualMap
         ((LinearEquiv.eq_comp_toLinearMap_iff f.weightMap.dualMap g.weightMap.dualMap).mp h))
     exact congrFun (congrArg DFunLike.coe this) x

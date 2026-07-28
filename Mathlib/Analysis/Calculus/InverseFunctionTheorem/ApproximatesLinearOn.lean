@@ -109,15 +109,15 @@ theorem lipschitz_sub (hf : ApproximatesLinearOn f f' s c) :
   hf.lipschitzOnWith.to_restrict
 
 protected theorem lipschitz (hf : ApproximatesLinearOn f f' s c) :
-    LipschitzWith (‖f'‖₊ + c) (s.restrict f) := by
-  simpa only [restrict_apply, add_sub_cancel] using!
+    LipschitzWith (‖f'‖₊ + c) (s.domRestrict f) := by
+  simpa only [domRestrict_apply, add_sub_cancel] using!
     (f'.lipschitz.restrict s).add hf.lipschitz_sub
 
-protected theorem continuous (hf : ApproximatesLinearOn f f' s c) : Continuous (s.restrict f) :=
+protected theorem continuous (hf : ApproximatesLinearOn f f' s c) : Continuous (s.domRestrict f) :=
   hf.lipschitz.continuous
 
 protected theorem continuousOn (hf : ApproximatesLinearOn f f' s c) : ContinuousOn f s :=
-  continuousOn_iff_continuous_restrict.2 hf.continuous
+  continuousOn_iff_continuous_domRestrict.2 hf.continuous
 
 end
 
@@ -310,14 +310,14 @@ variable {f' : E ≃L[𝕜] F} {s : Set E} {c : ℝ≥0}
 local notation "N" => ‖(f'.symm : F →L[𝕜] E)‖₊
 
 protected theorem antilipschitz (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.restrict f) := by
+    (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.domRestrict f) := by
   rcases hc with hE | hc
   · exact AntilipschitzWith.of_subsingleton
-  convert! (f'.antilipschitz.restrict s).add_lipschitzWith hf.lipschitz_sub hc
-  simp [restrict]
+  convert! (f'.antilipschitz.domRestrict s).add_lipschitzWith hf.lipschitz_sub hc
+  simp [domRestrict]
 
 protected theorem injective (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) : Injective (s.restrict f) :=
+    (hc : Subsingleton E ∨ c < N⁻¹) : Injective (s.domRestrict f) :=
   (hf.antilipschitz hc).injective
 
 protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
@@ -327,7 +327,7 @@ protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
 protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : Surjective f := by
   rcases hc with hE | hc
-  · haveI : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
+  · have : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
     exact surjective_to_subsingleton _
   · apply forall_of_forall_mem_closedBall (fun y : F => ∃ a, f a = y) (f 0) _
     have hc' : (0 : ℝ) < N⁻¹ - c := by rw [sub_pos]; exact hc
@@ -353,7 +353,7 @@ def toPartialEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
 Use properties of `OpenPartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toPartialEquiv hc).symm (f '' s) := by
-  apply continuousOn_iff_continuous_restrict.2
+  apply continuousOn_iff_continuous_domRestrict.2
   refine ((hf.antilipschitz hc).to_rightInvOn' ?_ (hf.toPartialEquiv hc).right_inv').continuous
   exact fun x hx => (hf.toPartialEquiv hc).map_target hx
 

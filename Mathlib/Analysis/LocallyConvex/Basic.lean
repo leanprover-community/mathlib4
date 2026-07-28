@@ -293,4 +293,8 @@ theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x�
   exact hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)
     (div_nonneg (sub_nonneg_of_le ha.1) zero_le_two) (by ring)
 
+theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
+  starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
+    hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
+
 end Real

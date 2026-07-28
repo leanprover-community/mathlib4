@@ -169,6 +169,11 @@ lemma LSeries_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s 
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
 
+/-- An alternate spelling of `LSeries` as `∑' n, f n / n ^ s` for the case `f 0 = 0`. -/
+lemma LSeries_def₀ {f : ℕ → ℂ} (hf : f 0 = 0) (s : ℂ) :
+    LSeries f s = ∑' n, f n / (n ^ s) := by
+  simp [LSeries, LSeries.term_def₀ hf, cpow_neg, div_eq_mul_inv]
+
 /-- `LSeriesSummable f s` indicates that the L-series of `f` converges absolutely at `s`. -/
 def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
   Summable (term f s)
@@ -187,8 +192,8 @@ lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
   have : term f s =ᶠ[cofinite] term g s := by
     rw [eventuallyEq_iff_exists_mem] at h ⊢
     obtain ⟨S, hS, hS'⟩ := h
-    refine ⟨S \ {0}, diff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
-    rw [Set.mem_diff, Set.mem_singleton_iff] at hn
+    refine ⟨S \ {0}, sdiff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
+    rw [Set.mem_sdiff, Set.mem_singleton_iff] at hn
     simp [hn.2, hS' hn.1]
   exact this.symm.mono fun n hn ↦ by simp [hn]
 
