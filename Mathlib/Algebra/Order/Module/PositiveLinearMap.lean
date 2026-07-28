@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Data.FunLike.Group
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Positive linear maps
@@ -143,9 +144,8 @@ instance : Zero (E₁ →ₚ[R] E₂) where
 lemma toLinearMap_zero : (0 : E₁ →ₚ[R] E₂).toLinearMap = 0 :=
   rfl
 
-@[simp]
-lemma zero_apply (x : E₁) : (0 : E₁ →ₚ[R] E₂) x = 0 :=
-  rfl
+instance : IsZeroApply (E₁ →ₚ[R] E₂) E₁ E₂ where
+  zero_apply _ := rfl
 
 variable [IsOrderedAddMonoid E₂]
 
@@ -158,10 +158,8 @@ lemma toLinearMap_add (f g : E₁ →ₚ[R] E₂) :
     (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := by
   rfl
 
-@[simp]
-lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) :
-    (f + g) x = f x + g x := by
-  rfl
+instance : IsAddApply (E₁ →ₚ[R] E₂) E₁ E₂ where
+  add_apply _ _ _ := rfl
 
 instance : SMul ℕ (E₁ →ₚ[R] E₂) where
   smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by
@@ -174,14 +172,10 @@ lemma toLinearMap_nsmul (f : E₁ →ₚ[R] E₂) (n : ℕ) :
     (n • f).toLinearMap = n • f.toLinearMap :=
   rfl
 
-@[simp]
-lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) :
-    (n • f) x = n • (f x) :=
-  rfl
+instance : IsSMulApply ℕ (E₁ →ₚ[R] E₂) E₁ E₂ where
+  smul_apply _ _ _ := rfl
 
-instance : AddCommMonoid (E₁ →ₚ[R] E₂) :=
-  toLinearMap_injective.addCommMonoid _ toLinearMap_zero toLinearMap_add
-    toLinearMap_nsmul
+instance : AddCommMonoid (E₁ →ₚ[R] E₂) := FunLike.addCommMonoid
 
 end general
 
