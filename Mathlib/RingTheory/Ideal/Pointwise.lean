@@ -155,7 +155,7 @@ instance IsCompletelyPrime.smul {I : Ideal R} [H : I.IsCompletelyPrime] (g : M) 
 
 instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime := by
   rw [I.pointwise_smul_eq_comap]
-  apply H.comap_of_equiv
+  exact H.comap_of_surjective _ (EquivLike.surjective _)
 
 @[simp]
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=

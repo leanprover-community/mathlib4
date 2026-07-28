@@ -99,12 +99,16 @@ theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
 theorem mem_under {x : A} : x ∈ P.under A ↔ algebraMap A B x ∈ P := mem_comap
 
-instance IsCompletelyPrime.under [hP : P.IsCompletelyPrime] : (P.under A).IsCompletelyPrime :=
+instance IsPrime.isCompletelyPrime_under [hP : P.IsPrime] :
+    (P.under A).IsCompletelyPrime := by
+  apply isCompletelyPrime_comap_of_range_subset_center
+  rw [Set.range_subset_iff]
+  exact Set.algebraMap_mem_center
+
+lemma IsCompletelyPrime.under [hP : P.IsCompletelyPrime] : (P.under A).IsCompletelyPrime :=
   hP.comap (algebraMap A B)
 
-instance IsPrime.under {B : Type*} [CommSemiring B] [Algebra A B] (P : Ideal B) [hP : P.IsPrime] :
-    (P.under A).IsPrime :=
-  inferInstance
+lemma IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime := inferInstance
 
 @[simp]
 lemma under_smul [SMulCommClass G A B] : (g • P : Ideal B).under A = P.under A := by
@@ -151,9 +155,9 @@ lemma isCompletelyPrime_of_liesOver [P.LiesOver p] [P.IsCompletelyPrime] : p.IsC
   rw [over_def P p]
   exact IsCompletelyPrime.under A P
 
-lemma isPrime_of_liesOver {B : Type*} [CommSemiring B] [Algebra A B] (P : Ideal B) (p : Ideal A)
-    [P.LiesOver p] [P.IsPrime] : p.IsPrime :=
-  (P.isCompletelyPrime_of_liesOver p).isPrime
+lemma isPrime_of_liesOver [P.LiesOver p] [P.IsPrime] : p.IsPrime := by
+  rw [over_def P p]
+  exact IsPrime.under A P
 
 variable {P}
 
@@ -281,7 +285,7 @@ theorem ne_bot_of_liesOver_of_ne_bot (hp : p ≠ ⊥) (P : Ideal B) [P.LiesOver 
 
 end CommRing
 
-instance {K A : Type*} [Field K] [Semiring A] [Algebra K A] (P : Ideal A) [P.IsCompletelyPrime] :
+instance {K A : Type*} [Field K] [Semiring A] [Algebra K A] (P : Ideal A) [P.IsPrime] :
     P.LiesOver (⊥ : Ideal K) :=
   ⟨((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right Ideal.IsPrime.ne_top').symm⟩
 namespace Quotient

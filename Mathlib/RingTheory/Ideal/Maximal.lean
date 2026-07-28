@@ -132,6 +132,21 @@ theorem sInf_isCompletelyPrime_of_isChain {s : Set (Ideal α)}
       · exact h (((H I hI).mem_or_mem (e hI)).resolve_left hI')
       · exact ((H J hJ).mem_or_mem (e hJ)).resolve_left fun x => hI' <| h x⟩
 
+theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty)
+    (hs' : IsChain (· ≤ ·) s) (H : ∀ p ∈ s, p.IsPrime) : (sInf s).IsPrime :=
+  ⟨fun e =>
+    let ⟨x, hx⟩ := hs
+    (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (sInf_le hx))),
+    fun e =>
+    or_iff_not_imp_left.mpr fun hx => by
+      simp_rw [Ideal.mem_sInf] at hx e ⊢
+      push Not at hx
+      obtain ⟨I, hI, hI'⟩ := hx
+      intro J hJ
+      rcases hs'.total hI hJ with h | h
+      · exact h (((H I hI).mem_or_mem_of_forall (fun a ↦ e a hI)).resolve_left hI')
+      · exact ((H J hJ).mem_or_mem_of_forall (fun a ↦ e a hJ)).resolve_left fun x ↦ hI' <| h x⟩
+
 end Ideal
 
 end Semiring
@@ -145,10 +160,6 @@ variable {a b : α}
 namespace Ideal
 
 variable [CommSemiring α] (I : Ideal α)
-
-theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
-    (H : ∀ p ∈ s, p.IsPrime) : (sInf s).IsPrime :=
-  sInf_isCompletelyPrime_of_isChain hs hs' (fun p hp ↦ (H p hp).isCompletelyPrime) |>.isPrime
 
 theorem span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set α)) ↔ Prime p := by
   simp [isPrime_iff_of_comm, Prime, span_singleton_eq_top, hp, mem_span_singleton]
