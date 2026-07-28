@@ -51,7 +51,7 @@ lemma variation_le_sum_smul {ι : Type*} [Fintype ι] (μ : VectorMeasure X V)
 
 /-- The variation of a vector measure with values in a finite-dimensional real normed vector
 space is finite. -/
-instance (μ : VectorMeasure X V) [FiniteDimensional ℝ V] : IsFiniteMeasure μ.variation := by
+instance [FiniteDimensional ℝ V] (μ : VectorMeasure X V) : IsFiniteMeasure μ.variation := by
   obtain b := Module.finBasis ℝ V
   apply isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coeff b i).variation)
   apply variation_le_sum_smul

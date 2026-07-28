@@ -41,11 +41,11 @@ noncomputable def coeff (b : Basis ι ℝ V) (μ : VectorMeasure X V) : ι → S
 lemma coeff_apply (b : Basis ι ℝ V) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
     μ.coeff b i E = b.coord i (μ E) := by simp [coeff]
 
-theorem sum_coeff_smul_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) (E : Set X) [Fintype ι] :
+theorem sum_coeff_smul_eq [Fintype ι] (b : Basis ι ℝ V) (μ : VectorMeasure X V) (E : Set X) :
     ∑ i, (μ.coeff b i E) • b i = μ E := by
   simp
 
-theorem sum_toSpanSingleton_coeff_eq (b : Basis ι ℝ V) (μ : VectorMeasure X V) [Fintype ι] :
+theorem sum_toSpanSingleton_coeff_eq [Fintype ι] (b : Basis ι ℝ V) (μ : VectorMeasure X V) :
     ∑ i, mapRangeₗ (toSpanSingleton ℝ V (b i))
       ((toSpanSingleton ℝ V (b i)).continuous_of_finiteDimensional) (μ.coeff b i) = μ := by
   ext; simp
