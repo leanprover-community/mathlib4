@@ -323,6 +323,58 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
   rw [← rename_rename, rename_rename e]
   simp only [Function.comp_def, Equiv.symm_apply_apply, rename_rename]
 
+/-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
+many of the variables from `τ`.
+
+Unlike `exists_finset_rename`, which compacts the whole variable type, the variables from `σ`
+are left untouched. -/
+theorem exists_finset_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
+    ∃ (t : Finset τ) (q : MvPolynomial (σ ⊕ { x // x ∈ t }) R),
+      p = rename (Sum.map id (↑)) q := by
+  classical
+  have hmap : ∀ (u v : Finset τ) (g : { x // x ∈ v } → τ) (f : { x // x ∈ u } → { x // x ∈ v }),
+      Sum.map (id : σ → σ) g ∘ Sum.map id f = Sum.map id (g ∘ f) := by
+    intro u v g f
+    funext x
+    obtain a | b := x <;> rfl
+  apply induction_on p
+  · intro r
+    exact ⟨∅, C r, by rw [rename_C]⟩
+  · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
+    refine ⟨s ∪ t, ⟨?_, ?_⟩⟩
+    · refine rename (Sum.map id (Subtype.map id ?_)) p +
+        rename (Sum.map id (Subtype.map id ?_)) q <;>
+        simp +contextual only [id, true_or, or_true, Finset.mem_union, forall_true_iff]
+    · simp only [rename_rename, map_add, hmap]
+      rfl
+  · rintro p i ⟨t, p, rfl⟩
+    obtain a | b := i
+    · exact ⟨t, p * X (Sum.inl a), by simp only [map_mul, rename_X, Sum.map_inl, id_eq]⟩
+    · refine ⟨insert b t, ⟨?_, ?_⟩⟩
+      · refine rename (Sum.map id (Subtype.map id ?_)) p * X (Sum.inr ⟨b, t.mem_insert_self b⟩)
+        simp +contextual only [id, or_true, Finset.mem_insert, forall_true_iff]
+      · simp only [rename_rename, rename_X, map_mul, Sum.map_inr, hmap]
+        rfl
+
+/-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
+many of the variables from `τ`.
+
+Unlike `exists_fin_rename`, which reindexes the whole variable type along an injection
+`Fin n → σ ⊕ τ`, the variables from `σ` are left untouched: only the right summand is
+compacted. -/
+theorem exists_fin_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
+    ∃ (n : ℕ) (f : Fin n → τ) (_hf : Injective f) (q : MvPolynomial (σ ⊕ Fin n) R),
+      p = rename (Sum.map id f) q := by
+  obtain ⟨t, q, rfl⟩ := exists_finset_right_rename p
+  let n := Fintype.card { x // x ∈ t }
+  let e := Fintype.equivFin { x // x ∈ t }
+  refine ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective,
+    rename (Sum.map id e) q, ?_⟩
+  rw [rename_rename]
+  congr 1
+  ext x
+  obtain a | b := x <;> simp
+
 end Rename
 
 theorem eval₂_cast_comp (f : σ → τ) (c : ℤ →+* R) (g : τ → R) (p : MvPolynomial σ ℤ) :
