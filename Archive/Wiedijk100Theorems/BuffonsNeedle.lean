@@ -96,7 +96,7 @@ Projection of a needle onto the x-axis. The needle's center is at x-coordinate `
 `l` and angle `θ`. Note, `θ` is measured relative to the y-axis, that is, a vertical needle has
 `θ = 0`.
 -/
-def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
+noncomputable def needleProjX (x θ : ℝ) : Set ℝ := .Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
 
 /--
 The indicator function of whether a needle at position `⟨x, θ⟩ : ℝ × ℝ` crosses the line `x = 0`.
@@ -120,7 +120,7 @@ noncomputable def N : Ω → ℝ := needleCrossesIndicator l ∘ B
 /--
 The possible x-positions and angle relative to the y-axis of a needle.
 -/
-abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
+noncomputable abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
 include hd in
 lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
