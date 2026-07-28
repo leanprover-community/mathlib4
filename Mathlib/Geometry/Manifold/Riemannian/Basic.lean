@@ -127,16 +127,16 @@ noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace% x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖ := by
+    ‖v‖ = ‖NormedSpace.fromTangentSpace _ v‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
   rfl
 
 lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖₊ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖₊ := by
+    ‖v‖₊ = ‖NormedSpace.fromTangentSpace _ v‖₊ := by
   simp [nnnorm, norm_tangentSpace_vectorSpace]
 
 lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖ₑ = ‖letI V := NormedSpace.fromTangentSpace _ v; V‖ₑ := by
+    ‖v‖ₑ = ‖NormedSpace.fromTangentSpace _ v‖ₑ := by
   simp [enorm, nnnorm_tangentSpace_vectorSpace]
 
 open MeasureTheory Measure
