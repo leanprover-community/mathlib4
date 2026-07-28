@@ -61,7 +61,7 @@ universe u v
 
 noncomputable section
 
-open Set Topology Filter unitInterval
+open Cardinal Set Topology TopologicalSpace Filter unitInterval
 
 variable {X : Type u} [TopologicalSpace X]
 
@@ -210,16 +210,14 @@ theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
   rw [← zeroDimensionalSpace_iff_isTopologicalBasis] at h
   infer_instance
 
-open TopologicalSpace Cardinal in
 theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
-    [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
-    ZeroDimensionalSpace X := by
+    [CompletelyRegularSpace X] (hX : .mk X < 𝔠) : ZeroDimensionalSpace X := by
   rw [zeroDimensionalSpace_iff_isTopologicalBasis]
   refine isTopologicalBasis_of_isOpen_of_nhds (fun x s ↦ IsClopen.isOpen s) (fun x s hxs hs ↦ ?_)
   choose f hf using completely_regular_isOpen x s hs hxs
   obtain ⟨hfc, hf₀, hf₁⟩ := hf
   let R := Set.range f
-  have hR : lift.{u, 0} (Cardinal.mk R) < lift.{0, u} continuum := by
+  have hR : lift.{u, 0} (Cardinal.mk R) < lift.{0, u} 𝔠 := by
     simpa [R] using mk_range_le_lift.trans_lt (lift_strictMono hX)
   rw [lift_continuum, ← lift_continuum.{u, 0}, lift_lt, ← mk_Icc_real zero_lt_one, ← unitInterval]
     at hR
@@ -233,14 +231,23 @@ theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
     contrapose; intro hxs
     simpa [hf₁ hxs] using le_one'
 
-open TopologicalSpace Cardinal in
 @[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
 (since := "2026-07-28")]
 theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
-    [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
+    [CompletelyRegularSpace X] (hX : .mk X < 𝔠) :
     IsTopologicalBasis {s : Set X | IsClopen s} := by
   rw [← zeroDimensionalSpace_iff_isTopologicalBasis]
   exact CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum hX
+
+instance [CompletelyRegularSpace X] [Countable X] : ZeroDimensionalSpace X :=
+  have := CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum (X := X) <|
+    Cardinal.mk_le_aleph0.trans_lt Cardinal.aleph0_lt_continuum
+  inferInstance
+
+protected lemma _root_.Set.Countable.zeroDimensionalSpace [CompletelyRegularSpace X] [Countable X]
+    {s : Set X} (h : s.Countable) : ZeroDimensionalSpace s :=
+  have := h.to_subtype
+  inferInstance
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]
@@ -300,3 +307,23 @@ lemma t35Space_iff_isEmbedding_stoneCechUnit :
     T35Space X ↔ IsEmbedding (stoneCechUnit : X → StoneCech X) where
   mp _ := isEmbedding_stoneCechUnit
   mpr hs := hs.t35Space
+
+@[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
+(since := "2026-07-28")]
+theorem totallySeparatedSpace_of_cardinalMk_lt_continuum [T35Space X] (h : .mk X < 𝔠) :
+    TotallySeparatedSpace X :=
+  have := CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum h
+  inferInstance
+
+@[deprecated Set.Countable.zeroDimensionalSpace (since := "2026-07-28")]
+protected lemma _root_.Set.Countable.totallySeparatedSpace [T35Space X] [Countable X]
+    {s : Set X} (h : s.Countable) : TotallySeparatedSpace s :=
+  have := h.zeroDimensionalSpace
+  inferInstance
+
+/-- Countable subsets of metric spaces are totally disconnected. -/
+theorem Set.Countable.isTotallyDisconnected [MetricSpace X] [T35Space X]
+    {s : Set X} (hs : s.Countable) : IsTotallyDisconnected s := by
+  rw [← totallyDisconnectedSpace_subtype_iff]
+  have : Countable s := hs
+  infer_instance
