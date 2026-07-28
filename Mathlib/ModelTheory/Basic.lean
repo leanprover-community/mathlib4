@@ -134,6 +134,12 @@ theorem card_le_aleph0_iff_countable :
     L.card ≤ ℵ₀ ↔ Countable (Σ l, L.Functions l) ∧ Countable (Σ l, L.Relations l) := by
   rw [card, mk_le_aleph0_iff, countable_symbols_iff]
 
+/-- The sum of two languages with countably many symbols has countably many symbols. -/
+instance Countable.countable_sum [Countable L.Symbols] [Countable L'.Symbols] :
+    Countable (L.sum L').Symbols := by
+  rw [countable_symbols_iff]
+  constructor <;> exact (Equiv.sigmaSumDistrib _ _).injective.countable
+
 @[simp]
 theorem card_functions_sum (i : ℕ) :
     #((L.sum L').Functions i)
