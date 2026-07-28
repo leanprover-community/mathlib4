@@ -16,7 +16,7 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 This linter lints against nonempty modules that have only private declarations, and suggests adding
 `public section` to the top or selectively marking declarations as `public`. Per-decl `@[expose]`
-is mentioned as an opt-in for individual `def`s/`inductive`s whose bodies are used downstream.
+is mentioned as an opt-in for individual `def`s whose bodies are used downstream.
 
 ## Implementation notes
 
@@ -93,9 +93,9 @@ def privateModule : Linter where run stx := do
       logLint linter.privateModule topOfFileRef
         "The current module only contains private declarations.\n\n\
         Consider adding `public section` at the beginning of the module, \
-        or selectively marking declarations as `public`. To expose an individual \
-        `def` or `inductive` body (e.g. for `rw`/`unfold`, or for pattern matching \
-        on a `@[match_pattern]`), mark that declaration with `@[expose]`."
+        or selectively marking declarations as `public`. If the body of a `def` \
+        is used downstream (mainly for definitional equality, or for `unfold`), \
+        mark that `def` with `@[expose]`."
 
 initialize addLinter privateModule
 

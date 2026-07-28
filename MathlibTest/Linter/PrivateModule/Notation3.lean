@@ -26,7 +26,7 @@ open Mathlib.Linter Parser in
 /--
 warning: The current module only contains private declarations.
 
-Consider adding `public section` at the beginning of the module, or selectively marking declarations as `public`. To expose an individual `def` or `inductive` body (e.g. for `rw`/`unfold`, or for pattern matching on a `@[match_pattern]`), mark that declaration with `@[expose]`.
+Consider adding `public section` at the beginning of the module, or selectively marking declarations as `public`. If the body of a `def` is used downstream (mainly for definitional equality, or for `unfold`), mark that `def` with `@[expose]`.
 
 Note: This linter can be disabled with `set_option linter.privateModule false`
 -/
