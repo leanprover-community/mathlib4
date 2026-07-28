@@ -304,23 +304,37 @@ instance :
       IsContained IsContained IsContained where
   trans := .trans
 
+protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
+
+protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
+
+/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
+
+/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
+protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
+
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
+theorem bot_isContained_iff {G : SimpleGraph V} : (⊥ : SimpleGraph W) ⊑ G ↔ Nonempty (W ↪ V) :=
+  ⟨Nonempty.intro ∘ Copy.toEmbedding ∘ Nonempty.some, Copy.isContained ∘ Copy.bot ∘ Nonempty.some⟩
+
 /-- `⊥` is contained in any simple graph having sufficiently many vertices. -/
-lemma bot_isContained_iff_card_le [Fintype α] [Fintype β] :
-    (⊥ : SimpleGraph α) ⊑ B ↔ Fintype.card α ≤ Fintype.card β :=
-  ⟨fun ⟨f⟩ ↦ Fintype.card_le_of_embedding f.toEmbedding,
-    fun h ↦ ⟨Copy.bot (Function.Embedding.nonempty_of_card_le h).some⟩⟩
+lemma bot_isContained_iff_card_le [Fintype W] [Fintype V] :
+    (⊥ : SimpleGraph W) ⊑ G ↔ Fintype.card W ≤ Fintype.card V := by
+  rw [bot_isContained_iff, Embedding.nonempty_iff_card_le]
 
 protected alias IsContained.bot := bot_isContained_iff_card_le
 
+theorem isContained_top_iff {H : SimpleGraph W} : H ⊑ (⊤ : SimpleGraph V) ↔ Nonempty (W ↪ V) :=
+  ⟨Nonempty.intro ∘ Copy.toEmbedding ∘ Nonempty.some, Copy.isContained ∘ Copy.top ∘ Nonempty.some⟩
+
 /-- `⊤` contains a simple graph if and only if it has sufficiently many vertices. -/
 lemma isContained_top_iff_card_le [Fintype V] [Fintype W] :
-    H ⊑ (⊤ : SimpleGraph V) ↔ card W ≤ card V :=
-  ⟨fun ⟨f⟩ ↦ Fintype.card_le_of_embedding f.toEmbedding,
-    fun h ↦ ⟨Copy.top (Function.Embedding.nonempty_of_card_le h).some⟩⟩
+    H ⊑ (⊤ : SimpleGraph V) ↔ card W ≤ card V := by
+  rw [isContained_top_iff, Embedding.nonempty_iff_card_le]
 
 protected alias IsContained.top := isContained_top_iff_card_le
 
@@ -332,6 +346,9 @@ theorem isContained_iff_exists_iso_subgraph :
     A ⊑ B ↔ ∃ B' : B.Subgraph, Nonempty (A ≃g B'.coe) where
   mp := fun ⟨f⟩ ↦ ⟨.map f.toHom ⊤, ⟨f.isoToSubgraph⟩⟩
   mpr := fun ⟨B', ⟨e⟩⟩ ↦ B'.coe_isContained.trans' ⟨e.toCopy⟩
+
+theorem isContained_iff_exists_le_comap : H ⊑ G ↔ ∃ (f : W ↪ V), H ≤ G.comap f :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.toHom.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨⟨f, (h ·)⟩, f.injective⟩⟩
 
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
@@ -433,19 +450,9 @@ def IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G
 
 @[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
 
-protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
-
 protected lemma Embedding.isIndContained (f : G ↪g H) : G ⊴ H := ⟨f⟩
 
-protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
-
 protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ f.isContained
-
-/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
-protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
-
-/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
-protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
 
 /-- If `G` is isomorphic to `H`, then `G` is inducingly contained in `H`. -/
 protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := e.toEmbedding.isIndContained
@@ -496,9 +503,6 @@ theorem isIndContained_iff_exists_iso_induce : G ⊴ H ↔ ∃ s, Nonempty (G �
     (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
   ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
-theorem isContained_top_iff {G : SimpleGraph V} : G ⊑ completeGraph W ↔ Nonempty (V ↪ W) :=
-  ⟨(⟨·.some.toEmbedding⟩), (.trans (.of_le le_top) ⟨Embedding.completeGraph ·.some |>.toCopy⟩)⟩
-
 theorem top_isIndContained_top_iff : completeGraph V ⊴ completeGraph W ↔ Nonempty (V ↪ W) :=
   ⟨(⟨·.some.toEmbedding⟩), (⟨.completeGraph ·.some⟩)⟩
 
@@ -509,9 +513,6 @@ theorem eq_top_of_isIndContained_top (h : G ⊴ completeGraph W) : G = ⊤ :=
   Embedding.complEquiv.symm.nonempty_congr
 
 protected alias ⟨IsIndContained.of_compl, IsIndContained.compl⟩ := compl_isIndContained_compl
-
-theorem isContained_iff_exists_le_comap : H ⊑ G ↔ ∃ (f : W ↪ V), H ≤ G.comap f :=
-  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.toHom.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨⟨f, (h ·)⟩, f.injective⟩⟩
 
 theorem isIndContained_iff_exists_comap_eq : H ⊴ G ↔ ∃ (f : W ↪ V), G.comap f = H :=
   ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.comap_eq⟩, fun ⟨f, h⟩ ↦ ⟨f, h ▸ .rfl⟩⟩
