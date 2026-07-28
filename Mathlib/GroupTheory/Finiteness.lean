@@ -21,6 +21,10 @@ finitely-generated modules.
 
 ## Main definition
 
+* `IsAddFG`: A type with addition is finitely generated if there is a finite subset such that
+  every element of the type can be written as a finite sum of elements from this finite subset.
+* `IsMulFG`: A type with multiplication is finitely generated if there is a finite subset such that
+  every element of the type can be written as a finite product of elements from this finite subset.
 * `Submonoid.FG S`, `AddSubmonoid.FG S` : A submonoid `S` is finitely generated.
 * `Monoid.FG M`, `AddMonoid.FG M` : A typeclass indicating a type `M` is finitely generated as a
   monoid.
@@ -38,9 +42,19 @@ section
 
 open Pointwise
 
+/-- A type with addition is finitely generated if there is a finite subset such that every
+element of the type can be written as a finite sum of elements from this finite subset.
+
+This generalizes and will eventually replace the four existing definitions
+`AddSubmonoid.FG`, `AddMonoid.FG`, `AddSubgroup.FG`, and `AddGroup.FG`. -/
 class IsAddFG (M : Type*) [Add M] : Prop where
   fg_top : ∃ S : Finset M, AddSubsemigroup.closure (S : Set M) = ⊤
 
+/-- A type with multiplication is finitely generated if there is a finite subset such that every
+element of the type can be written as a finite product of elements from this finite subset.
+
+This generalizes and will eventually replace the four existing definitions
+`Submonoid.FG`, `Monoid.FG`, `Subgroup.FG`, and `Group.FG`. -/
 @[to_additive existing]
 class IsMulFG (M : Type*) [Mul M] : Prop where
   fg_top : ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤
