@@ -105,6 +105,7 @@ macro "#import_bumps" : command => `(
   run_cmd logInfo "Counting imports from here."
   set_option linter.minImports true)
 
+-- TODO: Upstream? https://github.com/leanprover/lean4/pull/14581
 /--
 `withSetOptionIn' k stx` peels off the `set_option ... in` prefixes of `stx` and applies the
 option values to the current scope. Then it runs `k` on the innermost command.
