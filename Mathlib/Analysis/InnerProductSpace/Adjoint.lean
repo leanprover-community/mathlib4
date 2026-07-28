@@ -973,6 +973,8 @@ lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
 
+-- remark: `rfl` works here but the kernel spends a very long
+-- time typechecking it.
 theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := by
   refine StarAlgEquiv.ext fun x => ?_
@@ -981,9 +983,8 @@ theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H
     ContinuousLinearMap.mul_def, ContinuousLinearMap.mul_def, ContinuousLinearMap.comp_assoc]
 
 theorem conjStarAlgAut_symm_unitaryLinearIsometryEquiv (u : H ≃ₗᵢ[𝕜] H) :
-    conjStarAlgAut 𝕜 (H →L[𝕜] H) (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv :=
-  (conjStarAlgEquiv_unitaryLinearIsometryEquiv (linearIsometryEquiv.symm u)).symm.trans
-    congr(LinearIsometryEquiv.conjStarAlgEquiv $(linearIsometryEquiv.apply_symm_apply u))
+    conjStarAlgAut 𝕜 (H →L[𝕜] H) (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
+  simp [← conjStarAlgEquiv_unitaryLinearIsometryEquiv]
 
 end Unitary
 
