@@ -99,6 +99,7 @@ theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
       p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)

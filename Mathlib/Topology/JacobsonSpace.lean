@@ -35,7 +35,7 @@ variable (X) {Y} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 section closedPoints
 
 /-- The set of closed points. -/
-def closedPoints : Set X := setOf (IsClosed {·})
+def closedPoints : Set X := Set.ofPred (IsClosed {·})
 
 variable {X}
 

@@ -165,6 +165,7 @@ theorem dist_lt_of_sbtw_of_mem_perpBisector {a b c p : P}
     rw [right_vsub_midpoint, inner_smul_right,
         mem_perpBisector_iff_inner_eq_zero.mp hp, invOf_eq_inv, mul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p` lies on the perpendicular bisector of `ab` and `b` is weakly between `a` and `c`,
 then `p` is at least as close to `b` as to `c`. -/
 theorem dist_le_of_wbtw_of_mem_perpBisector {a b c p : P}

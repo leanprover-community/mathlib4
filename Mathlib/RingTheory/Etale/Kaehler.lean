@@ -188,11 +188,11 @@ lemma tensorCotangentInvFun_smul_mk
     (H : Function.Bijective ((f.mapKer halg).liftBaseChange Q.Ring)) (x : Q.Ring) (y : P.ker) :
     tensorCotangentInvFun f halg H (x • .mk ⟨f.toRingHom y, (f.mapKer halg y).2⟩) =
       x • 1 ⊗ₜ .mk y := by
-  letI := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
-  haveI : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
-  haveI : IsScalarTower P.Ring Q.Ring T :=
+  let := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
+  have : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
+  have : IsScalarTower P.Ring Q.Ring T :=
     .of_algebraMap_eq fun r ↦ halg ▸ (f.algebraMap_toRingHom r).symm
-  letI e := LinearEquiv.ofBijective _ H
+  let e := LinearEquiv.ofBijective _ H
   trans tensorCotangentInvFun f halg H (.mk ((f.mapKer halg).liftBaseChange Q.Ring (x ⊗ₜ y)))
   · simp; rfl
   change ((TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ Cotangent.mk).liftBaseChange _
@@ -230,6 +230,7 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
         simp only [LinearMap.liftBaseChange_tmul, map_smul]
         simp [Hom.mapKer, tensorCotangentInvFun_smul_mk] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `J ≃ Q ⊗ₚ I`, `S → T` is flat and `P → Q` is formally étale, then `T ⊗ H¹(L_P) ≃ H¹(L_Q)`. -/
 noncomputable
@@ -352,12 +353,12 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
     Extension.tensorH1CotangentOfFormallyEtale,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
     Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]
-  letI P : Extension R S := (Generators.self R S).toExtension
-  letI M' := M.comap (algebraMap P.Ring S)
-  letI fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')
+  let P : Extension R S := (Generators.self R S).toExtension
+  let M' := M.comap (algebraMap P.Ring S)
+  let fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')
     (f := (IsScalarTower.toAlgHom R S T).comp (IsScalarTower.toAlgHom R P.Ring S)) (fun ⟨y, hy⟩ ↦
     by simpa using IsLocalization.map_units T ⟨algebraMap P.Ring S y, hy⟩)
-  letI Q : Extension R T := .ofSurjective fQ (by
+  let Q : Extension R T := .ofSurjective fQ (by
     intro x
     obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq M x
     obtain ⟨x, rfl⟩ := P.algebraMap_surjective x
@@ -366,7 +367,7 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
     simp only [fQ, IsLocalization.coe_liftAlgHom, AlgHom.toRingHom_eq_coe]
     rw [IsLocalization.lift_mk'_spec]
     simp)
-  letI f : (Generators.self R T).toExtension.Hom Q :=
+  let f : (Generators.self R T).toExtension.Hom Q :=
   { toRingHom := (MvPolynomial.aeval Q.σ).toRingHom
     toRingHom_algebraMap := (MvPolynomial.aeval Q.σ).commutes
     algebraMap_toRingHom := by
