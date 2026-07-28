@@ -210,7 +210,7 @@ variable {I} in
 namespace CovariantDerivative
 variable {x : M}
 
-/-- A covariant derivative on a Riemannian bundle `TM` is called a **Levi-Civita connection**
+/-- A covariant derivative on the tangent bundle `TM` to a Riemannian manifold is called a **Levi-Civita connection**
 if it is torsion-free and compatible with `g`.
 Note that the bundle metric on `TM` is implicitly hidden in this definition.
 -/
@@ -248,8 +248,8 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
 /-- The **Koszul formula**, expressing the term `⟨∇ X Y, Z⟩` for all differentiable vector fields
 `X`, `Y` and `Z`, without reference to `∇`.
 This is the key insight to prove uniqueness of the Levi-Civita connection.
-This version of `IsLeviCivitaConnection.apply_eq` does not require the vector field we are
-differentiating to be differentiable. -/
+This version of `IsLeviCivitaConnection.apply_eq` does not require the direction in which we are
+differentiating to be coming from a differentiable vector field. -/
 public lemma IsLeviCivitaConnection.apply_eq_extend [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection) {x : M}
     (X₀ : TangentSpace I x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
