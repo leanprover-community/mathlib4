@@ -72,6 +72,22 @@ lemma IndepFun.hasCondDistrib_const [IsFiniteMeasure P] (hXY : IndepFun X Y P)
   · rw [Measure.compProd_const]
     exact hXY.map_prod_eq_prod_map_map hX hY
 
+/-- If the conditional distribution of one random variable given another is the constant kernel
+at its marginal distribution, then the two random variables are independent. -/
+lemma HasCondDistrib.indepFun_of_const [IsFiniteMeasure P]
+    (h : HasCondDistrib Y X (Kernel.const 𝓧 (P.map Y)) P) :
+    IndepFun X Y P := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map h.aemeasurable_fst h.aemeasurable_snd]
+  rw [h.map_eq, Measure.compProd_const]
+
+/-- Two a.e.-measurable random variables are independent if and only if the conditional
+distribution of the second given the first is the constant kernel at its marginal distribution. -/
+theorem indepFun_iff_hasCondDistrib_const [IsFiniteMeasure P]
+    (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
+    IndepFun X Y P ↔
+      HasCondDistrib Y X (Kernel.const 𝓧 (P.map Y)) P :=
+  ⟨fun hXY ↦ hXY.hasCondDistrib_const hX hY, fun h ↦ h.indepFun_of_const⟩
+
 variable [SFinite P] [IsSFiniteKernel κ]
 
 lemma HasCondDistrib.comp_left (h : HasCondDistrib Y X κ P) {f : 𝓨 → 𝓩} (hf : Measurable f) :
