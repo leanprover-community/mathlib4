@@ -126,7 +126,6 @@ public def doubleRightDualFunctor : C ⥤ C :=
 public instance doubleRightDualFunctorMonoidal : (doubleRightDualFunctor C).Monoidal :=
   inferInstanceAs (rightDualFunctor C ⋙ (rightDualFunctor C).opMop).Monoidal
 
-/-- The unit morphism of the double-right-dual functor. -/
 public lemma doubleRightDualFunctor_ε :
     letI : HasRightDual (𝟙_ C) := RightRigidCategory.rightDual _
     Functor.LaxMonoidal.ε (doubleRightDualFunctor C) =
@@ -135,7 +134,6 @@ public lemma doubleRightDualFunctor_ε :
       ((rightDualIso (RightRigidCategory.rightDual (𝟙_ C)).exact
         exactPairingUnit).homᘁ) := rfl
 
-/-- The tensorator of the double-right-dual functor. -/
 public lemma doubleRightDualFunctor_μ (X Y : C) :
     Functor.LaxMonoidal.μ (doubleRightDualFunctor C) X Y =
       (rightDualTensorIso Yᘁ Xᘁ).inv ≫ ((rightDualTensorIso X Y).homᘁ) := rfl
