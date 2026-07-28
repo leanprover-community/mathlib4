@@ -463,11 +463,12 @@ variable (R) in
 of level `n` that send every element of `H` to `1`. -/
 noncomputable def annihilator (H : Set (ZMod n)ˣ) :
     Subgroup (DirichletCharacter R n) :=
-  (MulChar.restrictHom ((Submonoid.closure H).map (Units.coeHom (ZMod n))) _).ker
+  (MulChar.domRestrictHom ((Submonoid.closure H).map (Units.coeHom (ZMod n))) _).ker
 
 theorem mem_annihilator_iff_mem_closure {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
     χ ∈ annihilator R H ↔ ∀ x ∈ Submonoid.closure H, χ x = 1 := by
-  simp only [annihilator, MonoidHom.mem_ker, MulChar.restrictHom_apply, MulChar.restrict_eq_one_iff]
+  simp only [annihilator, MonoidHom.mem_ker, MulChar.domRestrictHom_apply,
+    MulChar.domRestrict_eq_one_iff]
   refine ⟨fun hχ x hx ↦ ?_, fun h u ↦ ?_⟩
   · exact hχ <| (Submonoid.unitsEquivUnitsType _) <|
       ⟨x, Submonoid.mem_units_of_val_mem_inv_val_mem _ ⟨x, hx, rfl⟩
