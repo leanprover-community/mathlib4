@@ -273,10 +273,9 @@ checker.
 
 section Transport
 
-variable [Zero R] {m' n' : Type*}
+variable [Zero R] {m' n' : Type*} [Preorder n] [Preorder n'] {A : Matrix m n R}
 
-theorem isLeadingEntry_submatrix_iff [Preorder n] [Preorder n'] {A : Matrix m n R}
-    (f : m' → m) (en : n' ≃o n) {i : m'} {c : n'} :
+theorem isLeadingEntry_submatrix_iff (f : m' → m) (en : n' ≃o n) {i : m'} {c : n'} :
     (A.submatrix f en).IsLeadingEntry i c ↔ A.IsLeadingEntry (f i) (en c) := by
   constructor
   · rintro ⟨hz, hnz⟩
@@ -285,8 +284,7 @@ theorem isLeadingEntry_submatrix_iff [Preorder n] [Preorder n'] {A : Matrix m n 
   · rintro ⟨hz, hnz⟩
     exact ⟨fun j hj => hz (en j) (en.lt_iff_lt.mpr hj), hnz⟩
 
-variable [Preorder m] [Preorder n] [Preorder m'] [Preorder n'] {A : Matrix m n R}
-  (em : m' ≃o m) (en : n' ≃o n)
+variable [Preorder m] [Preorder m'] (em : m' ≃o m) (en : n' ≃o n)
 
 theorem rowEchelon_submatrix_iff : (A.submatrix em en).RowEchelon ↔ A.RowEchelon := by
   constructor
