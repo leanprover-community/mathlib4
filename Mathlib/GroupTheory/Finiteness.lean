@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
@@ -73,6 +74,14 @@ theorem isMulFG_def : IsMulFG M ↔ ∃ S : Finset M, Subsemigroup.closure (S : 
 instance [Finite M] : IsMulFG M := by
   cases nonempty_fintype M
   exact ⟨Finset.univ, by simp⟩
+
+theorem IsMulFG.of_surjective {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
+    (hf : Function.Surjective f) [IsMulFG M] : IsMulFG N := by
+  classical
+  obtain ⟨S, hS⟩ := ‹IsMulFG M›.fg_top
+  use S.image f
+  rwa [Finset.coe_image, ← MulHom.coe_coe, ← MulHom.map_mclosure, hS, ← MulHom.srange_eq_map,
+    MulHom.srange_eq_top_iff_surjective]
 
 end Mul
 
