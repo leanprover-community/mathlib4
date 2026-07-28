@@ -20,6 +20,8 @@ This file defines the row echelon form of matrices and the leading entries of th
   vanishes whenever a higher row is zero at every column strictly to its left.
 - `Matrix.IsLeadingEntry`: `c : WithTop n` is the leading position of row `i` of `M`,
   with `⊤` for a zero row.
+- `Matrix.IsReducedRowEchelon` additionally requires each leading entry to be `1` and the
+  entries above it to vanish.
 
 ## Tags
 
@@ -77,5 +79,16 @@ theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : WithTop n}
   · intro hlt
     obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
     exact h₁.2 c₀ hc (h₂.1 c₀ hlt')
+
+/-! ### Reduced row echelon form -/
+
+/-- `M` is in reduced row echelon form: it is in row echelon form, each leading entry is
+`1`, and entries above a leading entry vanish (entries below one vanish by
+`isRowEchelon`). -/
+structure IsReducedRowEchelon [LT m] [LT n] [One R] (M : Matrix m n R) : Prop where
+  isRowEchelon : M.IsRowEchelon
+  eq_one_of_isLeadingEntry : ∀ ⦃i : m⦄ ⦃c : n⦄, M.IsLeadingEntry i c → M i c = 1
+  eq_zero_of_lt_of_isLeadingEntry :
+    ∀ ⦃i₁ i₂ : m⦄, i₁ < i₂ → ∀ ⦃c : n⦄, M.IsLeadingEntry i₂ c → M i₁ c = 0
 
 end Matrix
