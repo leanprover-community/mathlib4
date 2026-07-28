@@ -280,7 +280,8 @@ lemma exact_zero_iff_injective {M N : Type*} (P : Type*)
     [AddCommGroup M] [AddCommGroup N] [AddCommMonoid P] [Module R N] [Module R M]
     [Module R P] (f : M →ₗ[R] N) :
     Function.Exact (0 : P →ₗ[R] M) f ↔ Function.Injective f := by
-  simp [← ker_eq_bot, exact_iff]
+  rw [exact_iff]
+  simp [ker_eq_bot]
 
 end Ring
 
@@ -289,7 +290,8 @@ lemma exact_zero_iff_surjective {M N : Type*} (P : Type*)
     [AddCommGroup M] [AddCommGroup N] [AddCommMonoid P] [Module R N] [Module R M]
     [Module R P] (f : M →ₗ[R] N) :
     Function.Exact f (0 : N →ₗ[R] P) ↔ Function.Surjective f := by
-  simp [range_eq_top, exact_iff, eqComm]
+  rw [exact_iff]
+  simp [range_eq_top, eqComm]
 
 end LinearMap
 

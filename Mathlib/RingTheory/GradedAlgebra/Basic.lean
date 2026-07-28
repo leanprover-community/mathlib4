@@ -262,13 +262,10 @@ def GradedRing.projZeroRingHom : A →+* A where
   map_zero' := by simp [decompose_zero]
   map_add' _ _ := by simp [decompose_add]
   map_mul' := by
-    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
-    · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+    refine DirectSum.Decomposition.inductionOn 𝒜 (by simp) ?_ ?_
     · rintro i ⟨c, hc⟩
-      refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
-      · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+      refine DirectSum.Decomposition.inductionOn 𝒜 (by simp) ?_ ?_
       · rintro j ⟨c', hc'⟩
-        simp only
         by_cases h : i + j = 0
         · rw [decompose_of_mem_same 𝒜
               (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),
