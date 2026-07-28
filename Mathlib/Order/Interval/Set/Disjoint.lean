@@ -36,8 +36,7 @@ section Preorder
 
 variable [Preorder α] {a b c : α}
 
-to_dual_name_hint Disjoint Disjoint
-to_dual_name_hint Left Right
+to_dual_name_hint Disjoint Disjoint, Left Right
 
 @[to_dual (attr := simp)]
 theorem Iic_disjoint_Ioi (h : a ≤ b) : Disjoint (Iic a) (Ioi b) :=
@@ -125,7 +124,7 @@ theorem Ico_disjoint_Ico : Disjoint (Ico a₁ a₂) (Ico b₁ b₂) ↔ min a₂
 @[simp]
 theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
   have h : _ ↔ min (toDual a₁) (toDual b₁) ≤ max (toDual a₂) (toDual b₂) := Ico_disjoint_Ico
-  simpa only [Ico_toDual] using h
+  simpa only [Ico_toDual] using! h
 
 @[simp]
 theorem Ioo_disjoint_Ioo [DenselyOrdered α] :
@@ -149,6 +148,11 @@ theorem iUnion_Ico_eq_Iio_self_iff {f : ι → α} {a : α} :
 theorem iUnion_Ioc_eq_Ioi_self_iff {f : ι → α} {a : α} :
     ⋃ i, Ioc a (f i) = Ioi a ↔ ∀ x, a < x → ∃ i, x ≤ f i := by
   simp [← Ioi_inter_Iic, ← inter_iUnion, subset_def]
+
+@[to_dual (attr := simp)]
+theorem iUnion_Icc_eq_Ici_self_iff {f : ι → α} {a : α} :
+    ⋃ i, Icc a (f i) = Ici a ↔ ∀ x ≥ a, ∃ i, x ≤ f i := by
+  simp [← Ici_inter_Iic, ← inter_iUnion, subset_def]
 
 @[simp]
 theorem biUnion_Ico_eq_Iio_self_iff {p : ι → Prop} {f : ∀ i, p i → α} {a : α} :
@@ -182,6 +186,14 @@ theorem IsLUB.biUnion_Iio_eq (h : IsLUB s a) : ⋃ x ∈ s, Iio x = Iio a :=
 
 theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :=
   h.dual.iUnion_Ioi_eq
+
+theorem iUnion_Ioi_eq_Ioi_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R} :
+    ⋃ i : ι, Ioi (f i) = Ioi (⨅ i, f i) :=
+  isGLB_iInf.iUnion_Ioi_eq
+
+theorem iUnion_Iio_eq_Iio_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R} :
+    ⋃ i : ι, Iio (f i) = Iio (⨆ i, f i) :=
+  isLUB_iSup.iUnion_Iio_eq
 
 theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by

@@ -17,7 +17,9 @@ Let `f : R →+* S` be a morphism of commutative rings. We show that the functor
 
 -/
 
-public section
+@[expose] public section
+
+set_option backward.defeqAttrib.useBackward true
 
 universe u
 
@@ -38,6 +40,7 @@ lemma extendsScalars_map_rightUnitor_inv_one_tmul (M : ModuleCat R) (m : M) :
     letI := f.toAlgebra
     (extendScalars f).map (ρ_ M).inv ((1 : S) ⊗ₜ[R] m) = (1 : S) ⊗ₜ[R] (m ⊗ₜ 1) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 open ModuleCat.MonoidalCategory in
 noncomputable instance : (extendScalars f).Monoidal :=
   letI : Algebra R S := f.toAlgebra
@@ -73,39 +76,50 @@ noncomputable instance : (extendScalars f).Monoidal :=
         rw [one_smul]
         rfl))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma extendScalars_ε :
     letI := f.toAlgebra
     dsimp% ε (extendScalars f) = (AlgebraTensorModule.rid R S S).toModuleIso.inv := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma extendScalars_η :
     letI := f.toAlgebra
     dsimp% η (extendScalars f) = (AlgebraTensorModule.rid R S S).toModuleIso.hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma extendScalars_μ (M₁ M₂ : ModuleCat R) :
     letI := f.toAlgebra
     dsimp% μ (extendScalars f) M₁ M₂ =
       (AlgebraTensorModule.distribBaseChange R S M₁ M₂).toModuleIso.inv :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma extendScalars_δ (M₁ M₂ : ModuleCat R) :
     letI := f.toAlgebra
     dsimp% δ (extendScalars f) M₁ M₂ =
       (AlgebraTensorModule.distribBaseChange R S M₁ M₂).toModuleIso.hom :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma extendScalars_δ_tmul (M₁ M₂ : ModuleCat R) (m₁ : M₁) (m₂ : M₂) :
     letI := f.toAlgebra
     dsimp% δ (extendScalars f) M₁ M₂ (((1 : S) ⊗ₜ[R] (m₁ ⊗ₜ[R] m₂) :)) =
       ((1 : S) ⊗ₜ[R] m₁) ⊗ₜ[S] ((1 : S) ⊗ₜ[R] m₂) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 noncomputable instance : (restrictScalars f).LaxMonoidal :=
   (extendRestrictScalarsAdj f).rightAdjointLaxMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma restrictScalars_η (r : R) :
     ε (restrictScalars f) r = f r := by
-  letI := f.toAlgebra
+  let := f.toAlgebra
   dsimp [Adjunction.rightAdjointLaxMonoidal_ε]
   rw [extendRestrictScalarsAdj_homEquiv_apply, extendScalars_η]
   erw [AlgebraTensorModule.rid_tmul]

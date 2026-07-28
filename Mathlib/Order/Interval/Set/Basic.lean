@@ -84,26 +84,8 @@ theorem left_notMem_Ioo : a ∉ Ioo a b := by simp
 @[to_dual right_notMem_Ico]
 theorem left_notMem_Ioc : a ∉ Ioc a b := by simp
 
-@[deprecated left_notMem_Ioo (since := "2025-12-26")]
-theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp
-
-@[deprecated left_notMem_Ioc (since := "2025-12-26")]
-theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp
-
 @[to_dual right_mem_Ioc] theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp
 @[to_dual right_mem_Icc] theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp
-
-@[deprecated (since := "2025-12-26")]
-alias left_mem_Ici := self_mem_Ici
-
-@[deprecated right_notMem_Ioo (since := "2025-12-26")]
-theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp
-
-@[deprecated right_notMem_Ico (since := "2025-12-26")]
-theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp
-
-@[deprecated (since := "2025-12-26")]
-alias right_mem_Iic := self_mem_Iic
 
 @[to_dual (attr := simp)]
 theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
@@ -188,9 +170,13 @@ theorem nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
 theorem nonempty_Ioo_subtype [DenselyOrdered α] (h : a < b) : Nonempty (Ioo a b) :=
   Nonempty.to_subtype (nonempty_Ioo.mpr h)
 
+@[to_additive (attr := simp)]
+theorem Iio_one_eq_empty [One α] [IsBotOneClass α] : Set.Iio (1 : α) = ∅ := by
+  ext; simp
+
 @[to_additive]
-instance isEmpty_Iio_one [One α] [IsBotOneClass α] : IsEmpty (Set.Iio (1 : α)) :=
-  ⟨fun a ↦ not_lt_one a.2⟩
+instance isEmpty_Iio_one [One α] [IsBotOneClass α] : IsEmpty (Set.Iio (1 : α)) := by
+  simp
 
 @[to_dual]
 instance [NoMinOrder α] : NoMinOrder (Iio a) :=
@@ -262,7 +248,7 @@ theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b where
   mpr h := (ssubset_iff_of_subset (Iic_subset_Iic.mpr h.le)).mpr
     ⟨b, self_mem_Iic, fun h' => h.not_ge h'⟩
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp, gcongr strict)]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h self_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 
@@ -320,7 +306,7 @@ theorem Icc_ssubset_Icc_left (h₂ : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b�
 theorem Ico_subset_Ioo (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ hx ↦
   ⟨ha.trans_le hx.1, hx.2.trans_le hb⟩
 
-@[to_dual]
+@[to_dual (attr := gcongr strict)]
 theorem Ico_subset_Ioo_left (h : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b :=
   Ico_subset_Ioo h le_rfl
 
@@ -328,7 +314,7 @@ theorem Ico_subset_Ioo_left (h : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b :=
 theorem Icc_subset_Ioc (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Ioc a₂ b₂ := fun _ hx ↦
   ⟨ha.trans_le hx.1, hx.2.trans hb⟩
 
-@[to_dual]
+@[to_dual (attr := gcongr strict)]
 theorem Icc_subset_Ioc_left (h : a₁ < a₂) : Icc a₂ b ⊆ Ioc a₁ b :=
   Icc_subset_Ioc h le_rfl
 
@@ -460,6 +446,9 @@ section matched_intervals
 
 end matched_intervals
 
+@[to_additive (attr := simp)]
+lemma Ici_one_eq_univ [One α] [IsBotOneClass α] : Ici (1 : α) = univ := by ext; simp
+
 end Preorder
 
 section PartialOrder
@@ -497,37 +486,53 @@ lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
   exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
 
 @[to_dual (attr := simp)]
-theorem Icc_diff_left : Icc a b \ {a} = Ioc a b :=
+theorem Icc_sdiff_left : Icc a b \ {a} = Ioc a b :=
   ext fun x => by simp [lt_iff_le_and_ne, eq_comm, and_right_comm]
 
+@[deprecated (since := "2026-06-03")] alias Icc_diff_left := Icc_sdiff_left
+
 @[to_dual (attr := simp)]
-theorem Ico_diff_left : Ico a b \ {a} = Ioo a b :=
+theorem Ico_sdiff_left : Ico a b \ {a} = Ioo a b :=
   ext fun x => by simp [and_right_comm, ← lt_iff_le_and_ne, eq_comm]
 
+@[deprecated (since := "2026-06-03")] alias Ico_diff_left := Ico_sdiff_left
+
 @[simp, to_dual none]
-theorem Icc_diff_both : Icc a b \ {a, b} = Ioo a b := by
-  rw [insert_eq, ← diff_diff, Icc_diff_left, Ioc_diff_right]
+theorem Icc_sdiff_both : Icc a b \ {a, b} = Ioo a b := by
+  rw [insert_eq, ← sdiff_sdiff, Icc_sdiff_left, Ioc_sdiff_right]
+
+@[deprecated (since := "2026-06-03")] alias Icc_diff_both := Icc_sdiff_both
 
 @[to_dual (attr := simp)]
-theorem Iic_diff_right : Iic a \ {a} = Iio a :=
+theorem Iic_sdiff_right : Iic a \ {a} = Iio a :=
   ext fun x => by simp [lt_iff_le_and_ne]
 
-@[to_dual (attr := simp)]
-theorem Ico_diff_Ioo_same (h : a < b) : Ico a b \ Ioo a b = {a} := by
-  rw [← Ico_diff_left, diff_diff_cancel_left (singleton_subset_iff.2 <| left_mem_Ico.2 h)]
+@[deprecated (since := "2026-06-03")] alias Iic_diff_right := Iic_sdiff_right
 
 @[to_dual (attr := simp)]
-theorem Icc_diff_Ico_same (h : a ≤ b) : Icc a b \ Ico a b = {b} := by
-  rw [← Icc_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 <| right_mem_Icc.2 h)]
+theorem Ico_sdiff_Ioo_same (h : a < b) : Ico a b \ Ioo a b = {a} := by
+  rw [← Ico_sdiff_left, sdiff_sdiff_cancel_left (singleton_subset_iff.2 <| left_mem_Ico.2 h)]
+
+@[deprecated (since := "2026-06-03")] alias Ico_diff_Ioo_same := Ico_sdiff_Ioo_same
+
+@[to_dual (attr := simp)]
+theorem Icc_sdiff_Ico_same (h : a ≤ b) : Icc a b \ Ico a b = {b} := by
+  rw [← Icc_sdiff_right, sdiff_sdiff_cancel_left (singleton_subset_iff.2 <| right_mem_Icc.2 h)]
+
+@[deprecated (since := "2026-06-03")] alias Icc_diff_Ico_same := Icc_sdiff_Ico_same
 
 @[simp, to_dual none]
-theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
-  rw [← Icc_diff_both, diff_diff_cancel_left]
+theorem Icc_sdiff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
+  rw [← Icc_sdiff_both, sdiff_sdiff_cancel_left]
   simp [insert_subset_iff, h]
 
+@[deprecated (since := "2026-06-03")] alias Icc_diff_Ioo_same := Icc_sdiff_Ioo_same
+
 @[to_dual (attr := simp)]
-theorem Iic_diff_Iio_same : Iic a \ Iio a = {a} := by
-  rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 self_mem_Iic)]
+theorem Iic_sdiff_Iio_same : Iic a \ Iio a = {a} := by
+  rw [← Iic_sdiff_right, sdiff_sdiff_cancel_left (singleton_subset_iff.2 self_mem_Iic)]
+
+@[deprecated (since := "2026-06-03")] alias Iic_diff_Iio_same := Iic_sdiff_Iio_same
 
 @[to_dual]
 theorem Iio_union_right : Iio a ∪ {a} = Iic a :=
@@ -535,19 +540,19 @@ theorem Iio_union_right : Iio a ∪ {a} = Iic a :=
 
 @[to_dual]
 theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
-  rw [← Ico_diff_left, diff_union_self,
+  rw [← Ico_sdiff_left, sdiff_union_self,
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Ico.2 hab)]
 
 @[to_dual none]
 theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
-  have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := diff_union_of_subset fun
+  have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := sdiff_union_of_subset fun
     | x, .inl rfl => left_mem_Icc.mpr h
     | x, .inr rfl => right_mem_Icc.mpr h
-  rw [← this, Icc_diff_both]
+  rw [← this, Icc_sdiff_both]
 
 @[to_dual]
 theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
-  rw [← Icc_diff_left, diff_union_self,
+  rw [← Icc_sdiff_left, sdiff_union_self,
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Icc.2 hab)]
 
 @[to_dual (attr := simp)]
@@ -573,22 +578,21 @@ theorem mem_Iic_Iio_of_subset_of_subset {s : Set α} (ho : Iio a ⊆ s) (hc : s 
 
 theorem mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset {s : Set α} (ho : Ioo a b ⊆ s) (hc : s ⊆ Icc a b) :
     s ∈ ({Icc a b, Ico a b, Ioc a b, Ioo a b} : Set (Set α)) := by
-  classical
-    by_cases ha : a ∈ s <;> by_cases hb : b ∈ s
-    · refine Or.inl (Subset.antisymm hc ?_)
-      rwa [← Ico_diff_left, diff_singleton_subset_iff, insert_eq_of_mem ha, ← Icc_diff_right,
-        diff_singleton_subset_iff, insert_eq_of_mem hb] at ho
-    · refine Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
-      · rw [← Icc_diff_right]
-        exact subset_diff_singleton hc hb
-      · rwa [← Ico_diff_left, diff_singleton_subset_iff, insert_eq_of_mem ha] at ho
-    · refine Or.inr <| Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
-      · rw [← Icc_diff_left]
-        exact subset_diff_singleton hc ha
-      · rwa [← Ioc_diff_right, diff_singleton_subset_iff, insert_eq_of_mem hb] at ho
-    · refine Or.inr <| Or.inr <| Or.inr <| Subset.antisymm ?_ ho
-      rw [← Ico_diff_left, ← Icc_diff_right]
-      apply_rules [subset_diff_singleton]
+  by_cases ha : a ∈ s <;> by_cases hb : b ∈ s
+  · refine Or.inl (Subset.antisymm hc ?_)
+    rwa [← Ico_sdiff_left, sdiff_singleton_subset_iff, insert_eq_of_mem ha, ← Icc_sdiff_right,
+      sdiff_singleton_subset_iff, insert_eq_of_mem hb] at ho
+  · refine Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
+    · rw [← Icc_sdiff_right]
+      exact subset_sdiff_singleton hc hb
+    · rwa [← Ico_sdiff_left, sdiff_singleton_subset_iff, insert_eq_of_mem ha] at ho
+  · refine Or.inr <| Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
+    · rw [← Icc_sdiff_left]
+      exact subset_sdiff_singleton hc ha
+    · rwa [← Ioc_sdiff_right, sdiff_singleton_subset_iff, insert_eq_of_mem hb] at ho
+  · refine Or.inr <| Or.inr <| Or.inr <| Subset.antisymm ?_ ho
+    rw [← Ico_sdiff_left, ← Icc_sdiff_right]
+    apply_rules [subset_sdiff_singleton]
 
 @[to_dual]
 theorem eq_left_or_mem_Ioo_of_mem_Ico {x : α} (hmem : x ∈ Ico a b) : x = a ∨ x ∈ Ioo a b :=

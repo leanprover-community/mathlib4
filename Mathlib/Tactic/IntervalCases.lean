@@ -5,7 +5,6 @@ Authors: Kim Morrison, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Control.Basic
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.NormNum
 

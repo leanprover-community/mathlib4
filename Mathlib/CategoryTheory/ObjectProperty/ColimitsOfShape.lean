@@ -118,6 +118,7 @@ noncomputable def reindex {X : C} (h : P.ColimitOfShape J X) (G : J' ⥤ J) [G.F
   toColimitPresentation := h.toColimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `P : ObjectProperty C`, and a presentation `P.ColimitOfShape J X`
 of an object `X : C`, this is the induced functor `J ⥤ CostructuredArrow P.ι X`. -/
@@ -263,8 +264,9 @@ lemma isClosedUnderColimitsOfShape_inverseImage_iff (P : ObjectProperty D)
     (P.inverseImage e.functor).IsClosedUnderColimitsOfShape J ↔
       P.IsClosedUnderColimitsOfShape J := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
-  convert (inferInstance :
-    ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderColimitsOfShape J)
+  convert!
+    (inferInstance :
+      ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderColimitsOfShape J)
   ext X
   simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 
@@ -390,14 +392,13 @@ instance [Q.IsClosedUnderLimitsOfShape Jᵒᵖ] :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
     P.IsStableUnderRetracts where
   of_retract {X Y} h hY := by
     let c : Cofork (h.r ≫ h.i) (𝟙 Y) := Cofork.ofπ h.r (by simp)
     have hc : IsColimit c :=
       Cofork.IsColimit.mk _ (fun s ↦ h.i ≫ s.π)
-        (fun s ↦ by simpa using s.condition)
+        (fun s ↦ by simpa using! s.condition)
         (fun s m hm ↦ by dsimp [c] at hm; simp [← hm])
     exact P.prop_of_isColimit hc (by rintro (_ | _) <;> exact hY)
 

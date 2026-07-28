@@ -36,6 +36,8 @@ over a base `X`. Here `Q = ⊤`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory.MorphismProperty
@@ -166,7 +168,7 @@ structure Hom (X Y : P.Comma L R Q W) extends CommaMorphism X.toComma Y.toComma 
 abbrev Hom.hom {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : X.toComma ⟶ Y.toComma :=
   f.toCommaMorphism
 
-@[simp, nolint simpVarHead]
+@[simp]
 lemma Hom.hom_mk {X Y : P.Comma L R Q W} (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
     Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
 
@@ -289,6 +291,7 @@ lemma inv_hom {X Y : P.Comma L R Q W} (f : X ⟶ Y) [IsIso f] : (inv f).hom = in
 
 variable (L R P Q W)
 
+set_option backward.defeqAttrib.useBackward true in
 instance [Q.RespectsIso] [W.RespectsIso] : (forget L R P Q W).ReflectsIsomorphisms where
   reflects f hf := by
     simp only [forget_obj, forget_map] at hf
@@ -375,6 +378,7 @@ def mapLeft (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.lef
   lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapLeft R l) hl
     (fun f ↦ f.prop_hom_left) (fun f ↦ f.prop_hom_right)
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (L R) in
 /-- The functor `P.Comma L R Q W ⥤ P.Comma L R Q W` induced by the identity natural transformation
 on `L` is naturally isomorphic to the identity functor. -/
@@ -383,6 +387,7 @@ def mapLeftId [Q.RespectsIso] [W.RespectsIso] :
     mapLeft (P := P) (Q := Q) (W := W) R (𝟙 L) (fun X ↦ by simpa using X.prop) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- The functor `P.Comma L₁ R Q W ⥤ P.Comma L₃ R Q W` induced by the composition of two natural
 transformations `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the
@@ -396,6 +401,7 @@ def mapLeftComp [Q.RespectsIso] [W.RespectsIso] (l : L₁ ⟶ L₂) (l' : L₂ �
       mapLeft R l' hl' ⋙ mapLeft R l hl :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
 `P.Comma L₁ R Q W ⥤ P.Comma L₂ R Q W`. -/
@@ -405,6 +411,7 @@ def mapLeftEq [Q.RespectsIso] [W.RespectsIso] (l l' : L₁ ⟶ L₂) (h : l = l'
     mapLeft R l hl ≅ mapLeft R l' (h ▸ hl) :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
 `P.Comma L₁ R Q W ≌ P.Comma L₂ R Q W`. -/
@@ -437,6 +444,7 @@ def mapRight (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ 
   lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapRight L r) hr
     (fun f ↦ f.prop_hom_left) (fun f ↦ f.prop_hom_right)
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (L R) in
 /-- The functor `P.Comma L R Q W ⥤ P.Comma L R Q W` induced by the identity natural transformation
 on `R` is naturally isomorphic to the identity functor. -/
@@ -445,6 +453,7 @@ def mapRightId [Q.RespectsIso] [W.RespectsIso] :
     mapRight (P := P) (Q := Q) (W := W) L (𝟙 R) (fun X ↦ by simpa using X.prop) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (L) in
 /-- The functor `P.Comma L R₁ Q W ⥤ P.Comma L R₃ Q W` induced by the composition of the natural
 transformations `r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the
@@ -458,6 +467,7 @@ def mapRightComp [Q.RespectsIso] [W.RespectsIso] (r : R₁ ⟶ R₂) (r' : R₂ 
       mapRight L r hr ⋙ mapRight L r' hr' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (L) in
 /-- Two equal natural transformations `R₁ ⟶ R₂` yield naturally isomorphic functors
 `P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W`. -/
@@ -467,6 +477,7 @@ def mapRightEq [Q.RespectsIso] [W.RespectsIso] (r r' : R₁ ⟶ R₂) (h : r = r
     mapRight L r hr ≅ mapRight L r' (h ▸ hr) :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (L) in
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
 `P.Comma L R₁ Q W ≌ P.Comma L R₂ Q W`. -/
@@ -648,12 +659,14 @@ protected def Over.isoMk [Q.RespectsIso] {A B : P.Over Q X} (f : A.left ≅ B.le
     (w : f.hom ≫ B.hom = A.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk f (Discrete.eqToIso' rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma Over.Hom.ext {A B : P.Over Q X} {f g : A ⟶ B} (h : f.left = g.left) : f = g := by
   ext
   · exact h
   · simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma Over.w {A B : P.Over Q X} (f : A ⟶ B) :
     f.left ≫ B.hom = A.hom := by
@@ -734,12 +747,14 @@ protected def Under.isoMk [Q.RespectsIso] {A B : P.Under Q X} (f : A.right ≅ B
     (w : A.hom ≫ f.hom = B.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk (Discrete.eqToIso' rfl) f
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma Under.Hom.ext {A B : P.Under Q X} {f g : A ⟶ B} (h : f.right = g.right) : f = g := by
   ext
   · simp
   · exact h
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
     A.hom ≫ f.right = B.hom := by
@@ -780,6 +795,7 @@ def CostructuredArrow.homMk {A B : P.CostructuredArrow Q F X} (f : A.left ⟶ B.
   prop_hom_left := hf
   prop_hom_right := trivial
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {P Q F X} in
 @[ext]
 lemma CostructuredArrow.Hom.ext {A B : P.CostructuredArrow Q F X} {f g : A ⟶ B}
@@ -787,7 +803,7 @@ lemma CostructuredArrow.Hom.ext {A B : P.CostructuredArrow Q F X} {f g : A ⟶ B
   ext <;> simp [h]
 
 variable {P Q F X} in
-/-- Construct an morphism in `P.CostructuredArrow Q F X` by giving the isomorphism
+/-- Construct an isomorphism in `P.CostructuredArrow Q F X` by giving the isomorphism
 on the underlying objects of `C`. -/
 @[simps]
 def CostructuredArrow.isoMk {A B : P.CostructuredArrow Q F X} (f : A.left ≅ B.left) (hf : Q f.hom)
@@ -814,6 +830,7 @@ instance [F.Faithful] : (CostructuredArrow.toOver P F X).Faithful := by
   ext
   exact F.map_injective congr($(hfg).left)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [F.Full] : (CostructuredArrow.toOver P F X).Full := by
   constructor
   intro A B f
@@ -823,6 +840,7 @@ instance [F.Full] : (CostructuredArrow.toOver P F X).Full := by
 
 end CostructuredArrow
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance HasFactorization.over
     {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
     [W₁.HasFactorization W₂] (S : C) :

@@ -377,7 +377,7 @@ theorem radius_compContinuousLinearMap_linearIsometryEquiv_eq [Nontrivial E]
     (p.compContinuousLinearMap u.toLinearIsometry.toContinuousLinearMap).radius = p.radius := by
   refine le_antisymm ?_ <| le_radius_compContinuousLinearMap _ _
   have _ : Nontrivial F := u.symm.toEquiv.nontrivial
-  convert radius_compContinuousLinearMap_le p u.toContinuousLinearEquiv
+  convert! radius_compContinuousLinearMap_le p u.toContinuousLinearEquiv
   have : u.toContinuousLinearEquiv.symm.toContinuousLinearMap =
     u.symm.toLinearIsometry.toContinuousLinearMap := rfl
   simp [this]
@@ -450,6 +450,6 @@ theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries �
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
   refine IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ ?_) (isBigO_refl _ _)
   refine IsBigOWith.of_bound (Eventually.of_forall fun n => ?_)
-  simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
+  simpa only [norm_norm] using! f.norm_compContinuousMultilinearMap_le (p n)
 
 end FormalMultilinearSeries

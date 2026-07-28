@@ -153,7 +153,7 @@ lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
 
 lemma doubleDualEmb_injective : Injective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) :=
   doubleDualEmb.ker_eq_bot_iff.1 <| eq_bot_iff.2 fun a ha ↦
-    forall_apply_eq_zero.1 fun ψ ↦ by simpa using DFunLike.congr_fun ha (Additive.ofMul ψ)
+    forall_apply_eq_zero.1 fun ψ ↦ by simpa using! DFunLike.congr_fun ha (Additive.ofMul ψ)
 
 lemma doubleDualEmb_bijective : Bijective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) := by
   cases nonempty_fintype α

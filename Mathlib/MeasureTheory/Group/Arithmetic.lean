@@ -114,9 +114,9 @@ theorem AEMeasurable.mul_const [MeasurableMul M] (hf : AEMeasurable f μ) (c : M
     AEMeasurable (fun x => f x * c) μ :=
   (measurable_mul_const c).comp_aemeasurable hf
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem Measurable.mul [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => f a * g a :=
+    Measurable (f * g) :=
   measurable_mul.comp (hf.prodMk hg)
 
 /-- Compositional version of `Measurable.mul` for use by `fun_prop`. -/
@@ -126,15 +126,13 @@ lemma Measurable.mul' [MeasurableMul₂ M] {f g : α → β → M} {h : α → �
     (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a * g a) (h a) := by
   dsimp; fun_prop
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f * g) μ :=
   measurable_mul.comp_aemeasurable (hf.prodMk hg)
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a * g a) μ :=
-  measurable_mul.comp_aemeasurable (hf.prodMk hg)
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.mul' := AEMeasurable.mul
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.add' := AEMeasurable.add
 
 @[to_additive]
 instance (priority := 100) MeasurableMul₂.toMeasurableMul [MeasurableMul₂ M] :
@@ -267,9 +265,9 @@ theorem AEMeasurable.div_const [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G
     AEMeasurable (fun x => f x / c) μ :=
   (MeasurableDiv.measurable_div_const c).comp_aemeasurable hf
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem Measurable.div [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => f a / g a :=
+    Measurable (f / g) :=
   measurable_div.comp (hf.prodMk hg)
 
 @[to_additive (attr := fun_prop)]
@@ -277,15 +275,13 @@ lemma Measurable.div' [MeasurableDiv₂ G] {f g : α → β → G} {h : α → �
     (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a / g a) (h a) := by
   dsimp; fun_prop
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f / g) μ :=
   measurable_div.comp_aemeasurable (hf.prodMk hg)
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a / g a) μ :=
-  measurable_div.comp_aemeasurable (hf.prodMk hg)
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.div' := AEMeasurable.div
+@[deprecated (since := "2026-06-26")] alias AEMeasurable.sub' := AEMeasurable.sub
 
 @[to_additive]
 instance (priority := 100) MeasurableDiv₂.toMeasurableDiv [MeasurableDiv₂ G] :
@@ -317,12 +313,6 @@ instance {β : Type*} [AddCommMonoid β] [PartialOrder β]
   simp_rw [Set.diagonal, le_antisymm_iff, ← tsub_eq_zero_iff_le]
   measurability
 
-@[deprecated (since := "2025-11-11")]
-alias measurableSet_eq_fun' := measurableSet_eq_fun
-
-@[deprecated (since := "2025-11-11")]
-alias measurableSet_eq_fun_of_countable := measurableSet_eq_fun
-
 end Div
 
 /-- We say that a type has `MeasurableNeg` if `x ↦ -x` is a measurable function. -/
@@ -342,11 +332,11 @@ export MeasurableNeg (measurable_neg)
 instance (priority := 100) measurableDiv_of_mul_inv (G : Type*) [MeasurableSpace G]
     [DivInvMonoid G] [MeasurableMul G] [MeasurableInv G] : MeasurableDiv G where
   measurable_const_div c := by
-    convert measurable_inv.const_mul c using 1
+    convert! measurable_inv.const_mul c using 1
     ext1
     apply div_eq_mul_inv
   measurable_div_const c := by
-    convert measurable_id.mul_const c⁻¹ using 1
+    convert! measurable_id.mul_const c⁻¹ using 1
     ext1
     apply div_eq_mul_inv
 
@@ -355,23 +345,23 @@ section Inv
 variable {G α : Type*} [Inv G] [MeasurableSpace G] [MeasurableInv G] {m : MeasurableSpace α}
   {f : α → G} {μ : Measure α}
 
-@[to_additive (attr := fun_prop)]
-theorem Measurable.inv (hf : Measurable f) : Measurable fun x => (f x)⁻¹ :=
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem Measurable.inv (hf : Measurable f) : Measurable f⁻¹ :=
   measurable_inv.comp hf
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable (fun x => (f x)⁻¹) μ :=
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable f⁻¹ μ :=
   measurable_inv.comp_aemeasurable hf
 
 @[to_additive (attr := simp)]
 theorem measurable_inv_iff {G : Type*} [InvolutiveInv G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : (Measurable fun x => (f x)⁻¹) ↔ Measurable f :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h => by simpa only [inv_inv] using h.fun_inv, fun h => h.inv⟩
 
 @[to_additive (attr := simp)]
 theorem aemeasurable_inv_iff {G : Type*} [InvolutiveInv G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h => by simpa only [inv_inv] using h.fun_inv, fun h => h.inv⟩
 
 @[to_additive]
 instance Pi.measurableInv {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
@@ -467,7 +457,7 @@ class MeasurableVAdd₂ (M α : Type*) [VAdd M α] [MeasurableSpace M] [Measurab
     Prop where
   measurable_vadd : Measurable (Function.uncurry (· +ᵥ ·) : M × α → α)
 
-/-- We say that the action of `M` on `α` has `Measurable_SMul₂` if the map
+/-- We say that the action of `M` on `α` has `MeasurableSMul₂` if the map
 `(c, x) ↦ c • x` is a measurable function. -/
 @[to_additive MeasurableVAdd₂]
 class MeasurableSMul₂ (M α : Type*) [SMul M α] [MeasurableSpace M] [MeasurableSpace α] :
@@ -493,7 +483,7 @@ instance measurableSMul₂_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [Measu
 @[to_additive]
 instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M] [MulAction M α]
     [MeasurableConstSMul M α] (s : Submonoid M) : MeasurableConstSMul s α where
-  measurable_const_smul c := by simpa only using measurable_const_smul (c : M)
+  measurable_const_smul c := by simpa only using! measurable_const_smul (c : M)
 
 @[to_additive]
 instance Submonoid.instMeasurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
@@ -541,9 +531,9 @@ end MeasurableConstSMul
 
 variable [MeasurableSpace M]
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem Measurable.smul [MeasurableSMul₂ M X] (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun x => f x • g x :=
+    Measurable (f • g) :=
   measurable_smul.comp (hf.prodMk hg)
 
 /-- Compositional version of `Measurable.smul` for use by `fun_prop`. -/
@@ -553,9 +543,9 @@ lemma Measurable.smul' [MeasurableSMul₂ M X] {f : α → β → M} {g : α →
     (hf : Measurable ↿f) (hg : Measurable ↿g) (hh : Measurable h) :
     Measurable fun a ↦ (f a • g a) (h a) := by dsimp; fun_prop
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem AEMeasurable.smul [MeasurableSMul₂ M X] {μ : Measure α} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun x => f x • g x) μ :=
+    (hg : AEMeasurable g μ) : AEMeasurable (f • g) μ :=
   MeasurableSMul₂.measurable_smul.comp_aemeasurable (hf.prodMk hg)
 
 @[to_additive]
@@ -738,7 +728,7 @@ nonrec instance MeasurableSMul.op {M α} [MeasurableSpace M] [MeasurableSpace α
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul M α] : MeasurableSMul Mᵐᵒᵖ α where
   measurable_smul_const x :=
     show Measurable fun c => op (unop c) • x by
-      simpa only [op_smul_eq_smul] using (measurable_smul_const x).comp measurable_mul_unop
+      simpa only [op_smul_eq_smul] using! (measurable_smul_const x).comp measurable_mul_unop
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
 nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]
@@ -847,7 +837,7 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
 lemma Finset.measurable_prod_apply {f : ι → α → β → M} {g : α → β} {s : Finset ι}
     (hf : ∀ i ∈ s, Measurable ↿(f i)) (hg : Measurable g) :
     Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp only [prod_apply]; fun_prop (discharger := assumption)
+  simp only [prod_apply]; fun_prop
 
 @[to_additive (attr := fun_prop)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :

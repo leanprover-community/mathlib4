@@ -99,6 +99,7 @@ with morphisms becoming inequalities, and isomorphisms becoming equations.
 
 /-- The category of subobjects of `X : C`, defined as isomorphism classes of monomorphisms into `X`.
 -/
+@[implicit_reducible]
 def Subobject (X : C) :=
   ThinSkeleton (MonoOver X)
 
@@ -110,6 +111,7 @@ namespace Subobject
 lemma skeletal (X : C) : Skeletal (Subobject X) := ThinSkeleton.skeletal
 
 /-- Convenience constructor for a subobject. -/
+@[implicit_reducible]
 def mk {X A : C} (f : A ⟶ X) [Mono f] : Subobject X :=
   (toThinSkeleton _).obj (MonoOver.mk f)
 
@@ -245,7 +247,7 @@ theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
     X ≤ Y := by
-  convert mk_le_mk_of_comm _ w <;> simp
+  convert! mk_le_mk_of_comm _ w <;> simp
 
 theorem le_mk_of_comm {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (g : (X : C) ⟶ A)
     (w : g ≫ f = X.arrow) : X ≤ mk f :=
@@ -448,7 +450,7 @@ lemma mk_lt_mk_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X}
   · assumption
   · exfalso
     apply hf
-    convert (isoOfMkEqMk i₁ i₂ h).isIso_hom
+    convert! (isoOfMkEqMk i₁ i₂ h).isIso_hom
     rw [← cancel_mono i₂, isoOfMkEqMk_hom, ofMkLEMk_comp, fac]
 
 lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
@@ -474,9 +476,6 @@ lemma isIso_hom_left_iff_subobjectMk_eq :
     fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
       by simp [← cancel_mono Q.1.hom]⟩⟩
 
-@[deprecated (since := "2025-12-18")]
-alias isIso_left_iff_subobjectMk_eq := isIso_hom_left_iff_subobjectMk_eq
-
 lemma isIso_iff_subobjectMk_eq :
     IsIso f ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom := by
   rw [isIso_iff_isIso_hom_left, isIso_hom_left_iff_subobjectMk_eq]
@@ -489,6 +488,7 @@ namespace Subobject
 
 /-- Any functor `MonoOver X ⥤ MonoOver Y` descends to a functor
 `Subobject X ⥤ Subobject Y`, because `MonoOver Y` is thin. -/
+@[implicit_reducible]
 def lower {Y : D} (F : MonoOver X ⥤ MonoOver Y) : Subobject X ⥤ Subobject Y :=
   ThinSkeleton.map F
 
@@ -521,6 +521,7 @@ def lowerAdjunction {A : C} {B : D} {L : MonoOver A ⥤ MonoOver B} {R : MonoOve
     (h : L ⊣ R) : lower L ⊣ lower R :=
   ThinSkeleton.lowerAdjunction _ _ h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An equivalence between `MonoOver A` and `MonoOver B` gives an equivalence
 between `Subobject A` and `Subobject B`. -/
 @[simps]
@@ -529,12 +530,12 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
   inverse := lower e.inverse
   unitIso := by
     apply eqToIso
-    convert ThinSkeleton.map_iso_eq e.unitIso
+    convert! ThinSkeleton.map_iso_eq e.unitIso
     · exact ThinSkeleton.map_id_eq.symm
     · exact (ThinSkeleton.map_comp_eq _ _).symm
   counitIso := by
     apply eqToIso
-    convert ThinSkeleton.map_iso_eq e.counitIso
+    convert! ThinSkeleton.map_iso_eq e.counitIso
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
 
@@ -666,6 +667,7 @@ lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
 def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
   lowerEquivalence (MonoOver.mapIso e)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- In fact, there's a type level bijection between the subobjects of isomorphic objects,
 which preserves the order. -/
 @[simps]
@@ -758,6 +760,9 @@ def existsIsoImage (f : X ⟶ Y) (x : Subobject X) :
     ((«exists» f).obj x : C) ≅ Limits.image (x.arrow ≫ f) :=
   (MonoOver.forget Y ⋙ Over.forget Y).mapIso <| (existsCompRepresentativeIso f).app x
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a subobject `x`, the `ImageFactorisation` of `x.arrow ≫ f` through `(exists f).obj x`. -/
 @[simps! F_I F_m]
 def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
@@ -767,7 +772,7 @@ def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
       (Image.imageFactorisation (x.arrow ≫ f))
       (existsIsoImage f x).symm
   ImageFactorisation.copy this ((«exists» f).obj x).arrow this.F.e (by
-    simpa [this, -Over.w] using (Over.w ((existsCompRepresentativeIso f).app x).hom.hom).symm)
+    simpa [this, -Over.w] using! (Over.w ((existsCompRepresentativeIso f).app x).hom.hom).symm)
 
 end Exists
 

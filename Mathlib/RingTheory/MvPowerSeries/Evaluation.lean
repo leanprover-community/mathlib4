@@ -24,7 +24,7 @@ consisting of ideals.
 
 Given `φ : R →+* S`, `a : σ → S`, and `f : MvPowerSeries σ R`,
 `MvPowerSeries.eval₂ f φ a` is the evaluation of the multivariate power series `f` at `a`.
-It `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
+If `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
 Otherwise, it is defined by density from polynomials;
 its values are irrelevant unless `φ` is continuous and `a` satisfies two conditions
 bundled in `MvPowerSeries.HasEval a` :
@@ -113,6 +113,7 @@ def hasEvalIdeal : Ideal (σ → S) where
   zero_mem' := HasEval.zero
   smul_mem' := HasEval.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
@@ -139,7 +140,6 @@ set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries inferInstance
 
-set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom
@@ -154,7 +154,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_isDenseInducing :
 
 variable {a : σ → S}
 
-/- The evaluation map on multivariate polynomials is uniformly continuous
+/-- The evaluation map on multivariate polynomials is uniformly continuous
 for the uniform structure induced by that on multivariate power series. -/
 theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
     [IsUniformAddGroup R] [IsUniformAddGroup S] [IsLinearTopology S S]
@@ -270,7 +270,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries
     (fun (d : σ →₀ ℕ) ↦ φ (coeff d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
   rw [← coe_eval₂Hom hφ ha, eval₂Hom_eq_extend hφ ha]
-  convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
+  convert! (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
   · simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
       eval₂_coe, eval₂_monomial]
   · rw [coe_eval₂Hom]; exact continuous_eval₂ hφ ha

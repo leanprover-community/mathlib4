@@ -55,11 +55,11 @@ def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
     · exact congr_hom (limit.w (F ⋙ Cat.objects) f) Y
   map_id X := by
     ext f
-    letI : Category (objects.obj (F.obj X)) := (inferInstance : Category (F.obj X))
+    let : Category (objects.obj (F.obj X)) := (inferInstance : Category (F.obj X))
     simp [Functor.congr_hom congr($(F.map_id X).toFunctor) f]
   map_comp {_ _ Z} f g := by
     ext h
-    letI : Category (objects.obj (F.obj Z)) := (inferInstance : Category (F.obj Z))
+    let : Category (objects.obj (F.obj Z)) := (inferInstance : Category (F.obj Z))
     simp [Functor.congr_hom congr($(F.map_comp f g).toFunctor) h, eqToHom_map]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -85,6 +85,7 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
 @[simps]
 def limitConeX (F : J ⥤ Cat.{v, v}) : Cat.{v, v} where α := limit (F ⋙ Cat.objects)
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [-simp] homDiagram_obj in
 /-- Auxiliary definition: the cone over the limit category. -/
 @[simps]
@@ -98,6 +99,7 @@ def limitCone (F : J ⥤ Cat.{v, v}) : Cone F where
         CategoryTheory.Functor.ext (fun X => (congr_hom (limit.w (F ⋙ Cat.objects) f) X).symm)
           fun X Y h => (congr_hom (limit.w (homDiagram X Y) f) h).symm }
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [-simp] homDiagram_obj Functor.comp_obj in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the universal morphism to the proposed limit cone. -/
@@ -124,6 +126,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
         rw [Functor.congr_hom this f]
         simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v}))
     (j : J) (h : X = Y) :
     limit.π (homDiagram X Y) j (eqToHom h) =
@@ -131,6 +134,7 @@ theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ C
   subst h
   simp [-homDiagram_obj]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the proposed cone is a limit cone. -/
 def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
@@ -158,6 +162,7 @@ instance : HasLimits Cat.{v, v} where
   has_limits_of_shape _ :=
     { has_limit := fun F => ⟨⟨⟨HasLimits.limitCone F, HasLimits.limitConeIsLimit F⟩⟩⟩ }
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : PreservesLimits Cat.objects.{v, v} where
   preservesLimitsOfShape :=
     { preservesLimit := fun {F} =>

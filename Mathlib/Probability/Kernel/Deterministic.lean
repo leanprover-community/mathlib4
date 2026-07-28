@@ -122,7 +122,7 @@ theorem IsDeterministic.exists_eq_deterministic [StandardBorelSpace β] (κ : Ke
     exact hf a
 
 /-- The equation of a Positive Markov category: if the composition of two Markov kernels `η ∘ₖ κ` is
- deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
+deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
 and `κ` independently. -/
 lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel α β}
     {η : Kernel β γ} [IsMarkovKernel κ] [IsMarkovKernel η] [IsDeterministic (η ∘ₖ κ)] :

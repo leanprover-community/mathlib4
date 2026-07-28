@@ -191,7 +191,7 @@ theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
 noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.symm
   isDecompOn' := by classical exact ⟨f.witness⁻¹, by
-    convert f.isDecompOn.of_leftInvOn f.leftInvOn
+    convert! f.isDecompOn.of_leftInvOn f.leftInvOn
     rw [image_source_eq_target, symm_source]⟩
 
 theorem map_target {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
@@ -205,6 +205,14 @@ theorem right_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
 
 @[simp]
 theorem symm_symm (f : Equidecomp X G) : f.symm.symm = f := rfl
+
+theorem symm_apply_eq (f : Equidecomp X G) {x y} (hx : x ∈ f.toPartialEquiv.target)
+    (hy : y ∈ f.toPartialEquiv.source) : f.symm x = y ↔ x = f y :=
+  f.toPartialEquiv.symm_apply_eq hy hx
+
+theorem eq_symm_apply (f : Equidecomp X G) {x y} (hx : x ∈ f.toPartialEquiv.target)
+    (hy : y ∈ f.toPartialEquiv.source) : y = f.symm x ↔ f y = x :=
+  f.toPartialEquiv.eq_symm_apply hy hx
 
 theorem symm_involutive : Function.Involutive (symm : Equidecomp X G → _) := symm_symm
 
