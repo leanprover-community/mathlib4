@@ -63,7 +63,6 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 ## TODO
 
 * Move the advanced material to a new file `RingTheory.Torsion`.
-* Replace `Module.IsTorsionFree` with `Module.IsTorsionFree`
 
 ## Tags
 
