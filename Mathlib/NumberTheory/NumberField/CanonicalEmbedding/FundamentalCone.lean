@@ -216,7 +216,7 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
   refine ⟨?_, ?_⟩
   · rw [Set.mem_preimage, logMap_real_smul hx.2 hc]
     exact hx.1
-  · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
+  · rw [Set.mem_ofPred_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
     exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
 
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
@@ -240,7 +240,7 @@ theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
   constructor
   · rw [Set.mem_preimage, logMap_torsion_smul _ hζ]
     exact hx.1
-  · rw [Set.mem_setOf_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
+  · rw [Set.mem_ofPred_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
     exact hx.2
 
 theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 K)ˣ) :

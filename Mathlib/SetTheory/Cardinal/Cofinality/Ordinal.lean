@@ -157,7 +157,7 @@ theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
-  have ht := hs.trans (isCofinal_setOf_imp_lt r)
+  have ht := hs.trans (isCofinal_setOfPred_imp_lt r)
   refine ⟨_, ht, (ord_le.2 (cof_le ht)).antisymm' ?_⟩
   rw [← hs', hr', type_le_iff']
   refine ⟨.ofMonotone (fun x ↦ ⟨x.1, ?_⟩) fun x y hxy ↦ ?_⟩
@@ -561,8 +561,8 @@ theorem mk_bounded_subset {α : Type*} (h : IsStrongPrelimit #α) {r : α → α
   have h' : IsStrongLimit #α := ⟨ha, @h⟩
   have ha := h'.aleph0_le
   apply le_antisymm
-  · have : { s : Set α | Bounded r s } = ⋃ i, 𝒫 { j | r j i } := setOf_exists _
-    rw [← coe_setOf, this]
+  · have : { s : Set α | Bounded r s } = ⋃ i, 𝒫 { j | r j i } := ofPred_exists _
+    rw [← coe_ofPred, this]
     refine mk_iUnion_le_sum_mk.trans ((sum_le_mk_mul_iSup (fun i => #(𝒫 { j | r j i }))).trans
       ((mul_le_max_of_aleph0_le_left ha).trans ?_))
     rw [max_eq_left]

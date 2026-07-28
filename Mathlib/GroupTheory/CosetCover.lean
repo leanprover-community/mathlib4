@@ -288,7 +288,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     intro h i hi j hj hij c hi' hj' x hx
     have hdisjoint := pairwiseDisjoint_leftCoset_cover_const_of_index_eq hcovers' h.symm
     -- We know the `f k • K k` are pairwise disjoint and need to prove that the `g i • H i` are.
-    rw [Set.mem_setOf_eq] at hi hj
+    rw [Set.mem_ofPred_eq] at hi hj
     have hk' (i) (hi : i ∈ s ∧ (H i).FiniteIndex) (hi' : c ≤ g i • (H i : Set G)) :
         ∃ (k : κ), k.1.1 = i ∧ K k = D ∧ x ∈ f k • (D : Set G) := by
       rw [← (ht i hi.1 hi.2).2] at hi'

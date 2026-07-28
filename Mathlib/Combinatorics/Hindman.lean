@@ -166,7 +166,7 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
   · intro U hU V hV
     rw [Set.mem_iInter] at *
     intro n
-    rw [Set.mem_setOf_eq, Ultrafilter.eventually_mul]
+    rw [Set.mem_ofPred_eq, Ultrafilter.eventually_mul]
     filter_upwards [hU n] with m hm
     obtain ⟨n', hn⟩ := FP.mul hm
     filter_upwards [hV (n' + n)] with m' hm'

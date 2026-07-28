@@ -57,7 +57,7 @@ lemma HeightOneSpectrum.Support.finite (k : K) : (Support R k).Finite := by
     intro v hv
     apply_fun v.valuation K at hk
     simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
-    rw [Set.mem_setOf_eq, valuation_of_algebraMap]
+    rw [Set.mem_ofPred_eq, valuation_of_algebraMap]
     have := intValuation_le_one v n
     contrapose! this
     rw [← hk, mul_comm]
@@ -157,7 +157,7 @@ theorem isUnit_iff {a : FiniteAdeleRing R K} :
     IsUnit a ↔ (∀ v, a v ≠ 0) ∧ ∀ᶠ v in Filter.cofinite, Valued.v (a v) = 1 := by
   rw [RestrictedProduct.isUnit_iff]
   simp only [isUnit_iff_ne_zero, adicCompletionIntegers.isUnit_iff_valued_eq_one, exists_prop,
-    Filter.eventually_cofinite, not_and_or, Set.setOf_or]
+    Filter.eventually_cofinite, not_and_or, Set.ofPred_or]
   simpa using! fun _ _ ↦ a.2
 
 theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
