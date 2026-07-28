@@ -302,26 +302,27 @@ theorem REPred.manyOneReducible_halting_problem {R : ℕ → Prop} (h : REPred R
     (Code.primrec₂_comp.comp (Primrec.const c) Code.primrec_const).to_comp, fun a => ?_⟩
   simp [Code.eval, hc, Part.assert]
 
-/-- The halting problem on a fixed input reduces to the two-argument halting problem. -/
-theorem halting_problem_manyOneReducible_halting_problem₂ (n : ℕ) :
-    (fun c : Code => (Code.eval c n).Dom) ≤₀ fun p : Code × ℕ => (Code.eval p.1 p.2).Dom :=
-  ⟨fun c => (c, n), Computable.id.pair (Computable.const n), fun _ => Iff.rfl⟩
+set_option backward.isDefEq.respectTransparency false in
+/-- The halting problem on a fixed input and the two-argument halting problem are many-one
+equivalent.
+
+Left to right pairs the code with the fixed input; right to left specializes the input into the
+code, sending `p` to `p.1.comp (Code.const p.2)`. The individual reductions are the two
+projections. -/
+theorem halting_problem_manyOneEquiv_halting_problem₂ (n : ℕ) :
+    ManyOneEquiv (fun c : Code => (Code.eval c n).Dom)
+      (fun p : Code × ℕ => (Code.eval p.1 p.2).Dom) := by
+  refine ⟨⟨fun c => (c, n), Computable.id.pair (Computable.const n), fun _ => Iff.rfl⟩, ?_⟩
+  refine ⟨fun p => p.1.comp (Code.const p.2),
+    (Code.primrec₂_comp.comp Primrec.fst (Code.primrec_const.comp Primrec.snd)).to_comp,
+    fun p => ?_⟩
+  simp [Code.eval]
 
 /-- Every recursively enumerable predicate on `ℕ` many-one reduces to the halting problem in its
 two-argument form. -/
 theorem REPred.manyOneReducible_halting_problem₂ {R : ℕ → Prop} (h : REPred R) :
     R ≤₀ fun p : Code × ℕ => (Code.eval p.1 p.2).Dom :=
-  (h.manyOneReducible_halting_problem 0).trans (halting_problem_manyOneReducible_halting_problem₂ 0)
-
-set_option backward.isDefEq.respectTransparency false in
-/-- The two-argument halting problem reduces to the halting problem on any fixed input, by
-specializing the input into the code. -/
-theorem halting_problem₂_manyOneReducible_halting_problem (n : ℕ) :
-    (fun p : Code × ℕ => (Code.eval p.1 p.2).Dom) ≤₀ fun c : Code => (Code.eval c n).Dom := by
-  refine ⟨fun p => p.1.comp (Code.const p.2),
-    (Code.primrec₂_comp.comp Primrec.fst (Code.primrec_const.comp Primrec.snd)).to_comp,
-    fun p => ?_⟩
-  simp [Code.eval]
+  (h.manyOneReducible_halting_problem 0).trans (halting_problem_manyOneEquiv_halting_problem₂ 0).1
 
 end HaltingProblem
 
