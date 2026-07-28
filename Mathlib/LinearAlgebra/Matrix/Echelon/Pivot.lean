@@ -15,11 +15,12 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 The pivot map of a matrix in row echelon form sends each row to its leading (leftmost
 nonzero) column, or to `⊤` for a zero row. The number of rows with a pivot is the rank,
 which lets the rank be read off a `T * (P * M)` decomposition (`T` lower triangular with
-nonzero diagonal, `P` a row permutation) without materialising the product.
+nonzero diagonal, `P` a row permutation) without materialising the product. `RowEchelon`
+is a primitive field of the structure and the staircase conditions are derived; see
+`Pivot_structural.lean` for the opposite packaging.
 
 ## Main definitions
 
-- `Matrix.IsLeadingEntry`: `c : WithTop n` is the leading position of row `i` of `A`.
 - `Matrix.IsPivotMap`: `l : m → WithTop n` is the pivot map of `A`.
 
 ## Main results
@@ -48,44 +49,6 @@ variable {m n : Type*} {R : Type*}
 section Zero
 
 variable [Zero R] {A : Matrix m n R} {l : m → WithTop n}
-
-/-! ### Leading entries -/
-/- These go into Basic.lean if adopted (same as the finset version) -/
-
-/-- `c` is the leading position of row `i`: entries strictly left of `c` vanish and, when
-`c` is a column, the entry at `c` is nonzero. `c = ⊤` states that the row is zero. -/
-def IsLeadingEntry [LT n] (A : Matrix m n R) (i : m) (c : WithTop n) : Prop :=
-  (∀ j : n, (j : WithTop n) < c → A i j = 0) ∧ ∀ c₀ : n, c = c₀ → A i c₀ ≠ 0
-
-@[simp]
-theorem isLeadingEntry_top_iff [LT n] {i : m} :
-    A.IsLeadingEntry i ⊤ ↔ A i = 0 :=
-  ⟨fun h => funext fun j => h.1 j (WithTop.coe_lt_top j),
-    fun h0 => ⟨fun j _ => congrFun h0 j, fun _ hc => absurd hc WithTop.top_ne_coe⟩⟩
-
-@[simp]
-theorem isLeadingEntry_coe_iff [LT n] {i : m} {c : n} :
-    A.IsLeadingEntry i c ↔ (∀ j < c, A i j = 0) ∧ A i c ≠ 0 :=
-  ⟨fun h => ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mpr hj), h.2 c rfl⟩,
-    fun h => ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mp hj),
-      fun _ hc => WithTop.coe_inj.mp hc ▸ h.2⟩⟩
-
-/-- A row has at most one leading position. -/
-theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : WithTop n}
-    (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) :
-    c₁ = c₂ := by
-  refine le_antisymm (not_lt.mp fun hlt => ?_) (not_lt.mp fun hlt => ?_)
-  · obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
-    exact h₂.2 c₀ hc (h₁.1 c₀ hlt')
-  · obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
-    exact h₁.2 c₀ hc (h₂.1 c₀ hlt')
-
-/-- In an echelon matrix, rows below a zero row are zero. -/
-theorem RowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : A.RowEchelon)
-    (hlt : i₁ < i₂) (h0 : A i₁ = 0) : A i₂ = 0 :=
-  funext fun _ => he hlt fun j₁ _ => congrFun h0 j₁
-
-/-! ### Pivot maps -/
 
 /-- `l` is the pivot map of `A`: the matrix is in row echelon form and `l` sends each row
 to its leading position. -/

@@ -10,16 +10,15 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 
 /-!
-# Pivot maps of a matrix, staircase packaging
+# Pivot maps of a matrix, structural formulation
 
 The pivot map of a matrix in row echelon form sends each row to its leading (leftmost
 nonzero) column, or to `⊤` for a zero row. In this packaging the staircase conditions
 (`Monotone`, `StrictMonoOn` off the `⊤`-fiber) are the structure fields and `RowEchelon`
-is derived; see `Pivot_map_echelon.lean` for the packaging with `RowEchelon` primitive.
+is derived; see `Pivot.lean` for the packaging with `RowEchelon` primitive.
 
 ## Main definitions
 
-- `Matrix.IsLeadingEntry`: `c : WithTop n` is the leading position of row `i` of `A`.
 - `Matrix.IsPivotMap`: `l : m → WithTop n` is the pivot map of `A`.
 
 ## Main results
@@ -48,39 +47,6 @@ variable {m n : Type*} {R : Type*}
 section Zero
 
 variable [Zero R] {A : Matrix m n R} {l : m → WithTop n}
-
-/-! ### Leading entries -/
-/- These go into Basic.lean if adopted (same as the finset version) -/
-
-/-- `c` is the leading position of row `i`: entries strictly left of `c` vanish and, when
-`c` is a column, the entry at `c` is nonzero. `c = ⊤` states that the row is zero. -/
-def IsLeadingEntry [LT n] (A : Matrix m n R) (i : m) (c : WithTop n) : Prop :=
-  (∀ j : n, (j : WithTop n) < c → A i j = 0) ∧ ∀ c₀ : n, c = c₀ → A i c₀ ≠ 0
-
-@[simp]
-theorem isLeadingEntry_top_iff [LT n] {i : m} :
-    A.IsLeadingEntry i ⊤ ↔ A i = 0 :=
-  ⟨fun h => funext fun j => h.1 j (WithTop.coe_lt_top j),
-    fun h0 => ⟨fun j _ => congrFun h0 j, fun _ hc => absurd hc WithTop.top_ne_coe⟩⟩
-
-@[simp]
-theorem isLeadingEntry_coe_iff [LT n] {i : m} {c : n} :
-    A.IsLeadingEntry i c ↔ (∀ j < c, A i j = 0) ∧ A i c ≠ 0 :=
-  ⟨fun h => ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mpr hj), h.2 c rfl⟩,
-    fun h => ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mp hj),
-      fun _ hc => WithTop.coe_inj.mp hc ▸ h.2⟩⟩
-
-/-- A row has at most one leading position. -/
-theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : WithTop n}
-    (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) :
-    c₁ = c₂ := by
-  refine le_antisymm (not_lt.mp fun hlt => ?_) (not_lt.mp fun hlt => ?_)
-  · obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
-    exact h₂.2 c₀ hc (h₁.1 c₀ hlt')
-  · obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
-    exact h₁.2 c₀ hc (h₂.1 c₀ hlt')
-
-/-! ### Pivot maps -/
 
 /-- `l` is the pivot map of `A`: it sends each row to its leading position, is monotone,
 and strictly increases on the nonzero rows. -/
