@@ -1018,16 +1018,24 @@ theorem MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin
     mfderiv[t] f x = mfderiv[s] f x :=
   (HasMFDerivWithinAt.mono_of_mem_nhdsWithin h.hasMFDerivWithinAt h₁).mfderivWithin hxt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Filter.EventuallyEq.mfderivWithin_eq (hL : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     mfderiv[s] f₁ x = mfderiv[s] f x := by
   by_cases h : MDiffAt[s] f x
   · unfold mfderivWithin
     simp only [h, (hL.mdifferentiableWithinAt_iff hx).1 h, ↓reduceIte, writtenInExtChartAt]
+    rw! [hx]
     apply Filter.EventuallyEq.fderivWithin_eq; swap
-    · simp [hx]
+    · simp only [extChartAt, OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
+        ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+        OpenPartialHomeomorph.coe_toPartialHomeomorph, PartialEquiv.coe_trans_symm,
+        PartialHomeomorph.coe_toPartialEquiv_symm, OpenPartialHomeomorph.coe_toPartialHomeomorph_symm,
+        ModelWithCorners.toPartialEquiv_coe_symm, comp_apply, ModelWithCorners.left_inv,
+        mem_chart_source, OpenPartialHomeomorph.left_inv, hx]
+      rfl
     filter_upwards [extChartAt_preimage_mem_nhdsWithin (I := I) hL] with y hy
-    simp only [preimage_ofPred_eq, mem_ofPred_eq] at hy
+    simp only [preimage_ofPred_eq] at hy
+    simp at hy
+    rw [mem_ofPred_eq] at hy
     simp [-extChartAt, hy, hx]
   · unfold mfderivWithin
     rw [if_neg h, if_neg]
