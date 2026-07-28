@@ -373,6 +373,7 @@ def headerTestFiles : NameSet := .ofList
   [`MathlibTest.Linter.Header.Basic, `MathlibTest.Linter.Header.Fail, `MathlibTest.Linter.Header.Verso,
   `MathlibTest.DirectoryDependencyLinter.Test]
 
+-- TODO: Upstream? https://github.com/leanprover/lean4/pull/14581
 /--
 `withSetOptionIn' k stx` peels off the `set_option ... in` prefixes of `stx` and applies the
 option values to the current scope. Then it runs `k` on the innermost command.
