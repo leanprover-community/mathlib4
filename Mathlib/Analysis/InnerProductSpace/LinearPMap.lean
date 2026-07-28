@@ -169,6 +169,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   convert this
   exact funext fun x => (hw x).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
@@ -206,6 +207,7 @@ namespace ContinuousLinearMap
 variable [CompleteSpace E] [CompleteSpace F]
 variable (A : E →L[𝕜] F) {p : Submodule 𝕜 E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restricting `A` to a dense submodule and taking the `LinearPMap.adjoint` is the same
 as taking the `ContinuousLinearMap.adjoint` interpreted as a `LinearPMap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :

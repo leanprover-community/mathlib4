@@ -51,11 +51,10 @@ instance instStarMul [StarRing R'] : StarMul (MulChar R R') where
   star := starComp
   star_involutive χ := by
     ext1
-    simp only [starComp_apply, RingHomCompTriple.comp_apply, RingHom.id_apply]
+    simp [starComp_apply]
   star_mul χ χ' := by
     ext1
-    simp only [starComp_apply, starRingEnd, coeToFun_mul, Pi.mul_apply, map_mul, RingHom.coe_coe,
-      starRingAut_apply, mul_comm]
+    simp [starComp_apply, mul_comm]
 
 @[simp]
 lemma star_apply [StarRing R'] (χ : MulChar R R') (a : R) : (star χ) a = star (χ a) :=

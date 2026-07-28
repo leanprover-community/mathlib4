@@ -47,7 +47,7 @@ theorem eq_of_mem_eqv_class {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b
   (H x).unique ⟨hc, hb⟩ ⟨hc', hb'⟩
 
 /-- Makes an equivalence relation from a set of sets partitioning α. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! b ∈ c, a ∈ b) : Setoid α where
   r x y := ∀ s ∈ c, x ∈ s → y ∈ s
   iseqv.refl := fun _ _ _ hx => hx
@@ -74,7 +74,7 @@ theorem finite_classes_ker {α β : Type*} [Finite β] (f : α → β) : (Setoid
 
 theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
     [Fintype (Setoid.ker f).classes] : Fintype.card (Setoid.ker f).classes ≤ Fintype.card β := by
-  classical exact
+  exact
       le_trans (Set.card_le_card (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
 
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/
@@ -143,7 +143,7 @@ theorem eqv_classes_of_disjoint_union {c : Set (Set α)} (hu : Set.sUnion c = @S
   ExistsUnique.intro b ⟨hc, ha⟩ fun _ hc' => H.elim_set hc'.1 hc _ hc'.2 ha
 
 /-- Makes an equivalence relation from a set of disjoints sets covering α. -/
-@[implicit_reducible]
+@[instance_reducible]
 def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     (H : c.PairwiseDisjoint id) : Setoid α :=
   Setoid.mkClasses c <| eqv_classes_of_disjoint_union hu H
@@ -266,6 +266,7 @@ instance Partition.partialOrder : PartialOrder (Partitions α) where
     rw [Partitions.ext_iff, ← classes_mkClasses x.toSet x.isPartition,
       ← classes_mkClasses y.toSet y.isPartition, h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
 partitions of `α` into subsets. -/
@@ -447,7 +448,7 @@ theorem class_of {x : α} : setOf (hs.setoid x) = s (hs.index x) :=
 theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=
   Quotient.inductionOn' x fun x => by
     ext y
-    simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]
+    simp only [Set.mem_preimage, hs.mem_iff_index_eq]
     exact Quotient.eq''
 
 /-- Combine functions with disjoint domains into a new function.

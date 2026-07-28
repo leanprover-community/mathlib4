@@ -72,7 +72,7 @@ theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
 theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     (hf : ((minpoly R pb.gen).map (algebraMap R F)).Splits) :
     algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).aroots F).prod := by
-  haveI := Module.nontrivial R F
+  have := Module.nontrivial R F
   have := minpoly.monic pb.isIntegral_gen
   rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, map_mul,
     ← coeff_map,
@@ -119,8 +119,8 @@ theorem norm_eq_zero_iff' [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fi
 
 theorem norm_eq_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {x : S} :
     Algebra.norm R x = 0 ↔ x = 0 := by
-  haveI : Module.Free R S := Module.Free.of_basis b
-  haveI : Module.Finite R S := Module.Finite.of_basis b
+  have : Module.Free R S := Module.Free.of_basis b
+  have : Module.Finite R S := Module.Finite.of_basis b
   exact norm_eq_zero_iff
 
 theorem norm_ne_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {x : S} :
@@ -179,7 +179,7 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (hE : ((minpoly R pb.gen).map (algebraMap R F)).Splits) (hfx : IsSeparable R pb.gen) :
     algebraMap R F (norm R pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod fun σ => σ pb.gen := by
-  letI := Classical.decEq F
+  let := Classical.decEq F
   rw [PowerBasis.norm_gen_eq_prod_roots pb hE]
   rw [@Fintype.prod_equiv (S →ₐ[R] F) _ _ (PowerBasis.AlgHom.fintype pb) _ _ pb.liftEquiv'
     (fun σ => σ pb.gen) (fun x => x) ?_]
@@ -194,13 +194,13 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
     ∏ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
       ((@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod
         fun σ : L →ₐ[K] E => σ pb.gen) ^ finrank L F := by
-  haveI : FiniteDimensional L F := FiniteDimensional.right K L F
-  haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
-  letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
+  have : FiniteDimensional L F := FiniteDimensional.right K L F
+  have : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
+  let : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
     ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
   · refine Finset.prod_congr rfl fun σ _ => ?_
-    letI : Algebra L E := σ.toRingHom.toAlgebra
+    let : Algebra L E := σ.toRingHom.toAlgebra
     simp_rw [Finset.prod_const]
     congr
     exact AlgHom.card L F E
@@ -220,8 +220,8 @@ lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
   classical
   by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
   · obtain ⟨s, ⟨b⟩⟩ := h
-    letI : Algebra A B := RingHom.toAlgebra e
-    letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
+    let : Algebra A B := RingHom.toAlgebra e
+    let : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.norm_eq_matrix_det b,
       Algebra.norm_eq_matrix_det (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he])),
       e.map_det]
@@ -236,7 +236,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     [CommRing A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
-  letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
+  let := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
   · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
     rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e']
     simp [e']

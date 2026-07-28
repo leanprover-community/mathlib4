@@ -694,6 +694,7 @@ theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
   simp [mem_principalUnitGroup_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The principal unit group agrees with the kernel of the canonical map from
 the units of `A` to the units of the residue field of `A`. -/
 def principalUnitGroupEquiv :

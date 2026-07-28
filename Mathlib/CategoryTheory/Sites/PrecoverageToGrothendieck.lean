@@ -232,7 +232,7 @@ lemma Presieve.isSheafFor_singleton_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S X Y : 
     (g : Y ⟶ S) (e : X ≅ Y) (he : e.hom ≫ g = f) :
     (singleton f).IsSheafFor F ↔ (singleton g).IsSheafFor F := by
   subst he
-  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ← Presieve.ofArrows_pUnit,
+  rw [← Presieve.ofArrows_pUnit.{0}, ← Presieve.ofArrows_pUnit,
     Presieve.isSheafFor_ofArrows_comp_iff]
 
 open Limits

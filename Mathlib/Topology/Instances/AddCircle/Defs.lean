@@ -658,6 +658,7 @@ lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
 
 variable (p)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
 `n`. The inverse of the map sends `m ↦ (m/n * p : AddCircle p)` where `m` is coprime to `n` and
 satisfies `0 ≤ m < n`. -/

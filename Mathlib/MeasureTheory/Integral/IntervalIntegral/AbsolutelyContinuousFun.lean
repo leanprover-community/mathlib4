@@ -6,7 +6,6 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 

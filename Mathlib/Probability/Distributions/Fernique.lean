@@ -377,6 +377,7 @@ lemma lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ
 alias lintegral_closedBall_diff_exp_logRatio_mul_sq_le :=
   lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Metric in
 lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)

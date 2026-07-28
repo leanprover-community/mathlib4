@@ -18,7 +18,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
   [ChartedSpace H M] [IsManifold I ∞ M]
-  (f : M → M) (x : M) (s : Set M)
+  (f : M → M) (x : M) (s : Set M) (f' : TangentSpace I x →L[ℝ] TangentSpace I (f x))
   (v : (x : M) → TangentSpace I x)
 
 /-- info: MDiff f : Prop -/
@@ -70,9 +70,17 @@ variable
 #guard_msgs in
 #check mfderiv% f x
 
-/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, E)) ⟨x, v x⟩ -/
+/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace I.tangent ⟨x, v x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% v) x
+
+/-- info: mfderiv[s] f x : TangentSpace I x →L[ℝ] TangentSpace I (f x) -/
+#guard_msgs in
+#check mfderivWithin I I f s x
+
+/-- info: mfderiv[s] f x : TangentSpace I x →L[ℝ] TangentSpace I (f x) -/
+#guard_msgs in
+#check mfderiv[s] f x
 
 /-- info: ⟨x, v x⟩ : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
@@ -97,6 +105,111 @@ variable
 /-- info: UniqueMDiffAt[s] : M → Prop -/
 #guard_msgs in
 #check UniqueMDiffWithinAt (𝕜 := ℝ) I s
+
+/-- info: HasMFDerivAt[s] f x f' : Prop -/
+#guard_msgs in
+#check HasMFDerivWithinAt I I f s x f'
+
+/-- info: HasMFDerivAt[s] f x f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt[s] f x f'
+
+/-- info: HasMFDerivAt% f x f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt I I f x f'
+
+/-- info: HasMFDerivAt% f x f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% f x f'
+
+section TotalSpace
+
+variable {𝕜 B : Type*} {E : B → Type*}
+
+variable
+  -- Let `E` be a fiber bundle with base `B` and fiber `F` (a vector space over `𝕜`)
+  [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
+  [NormedAddCommGroup F] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [FiberBundle F E]
+  -- Moreover let `E` be a vector bundle
+  [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
+  -- Let the base `B` be charted over a fixed model space `HB`
+  {HB : Type*} [TopologicalSpace HB] [ChartedSpace HB B]
+  -- Moreover let `HB` be modelled on a normed space `EB` so that `B` (and hence `E`) have
+  -- differentiable structures
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {I : ModelWithCorners 𝕜 EB HB}
+
+variable {f : B → 𝕜} {a : 𝕜} {s : Π x : B, E x} {u : Set B} {x₀ : B}
+  {f' : TangentSpace I x₀ →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (⟨x₀, s x₀⟩ : TotalSpace F E)}
+
+/--
+info: mfderiv% (T% s) : (x : B) → TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, s x⟩
+-/
+#guard_msgs in
+#check mfderiv I (I.prod 𝓘(𝕜, F)) (T% s)
+
+/--
+info: mfderiv% (T% s) : (x : B) → TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, s x⟩
+-/
+#guard_msgs in
+#check mfderiv% (T% s)
+
+/-- info: mfderiv[u] (T% s) x₀ : TangentSpace I x₀ →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x₀, s x₀⟩ -/
+#guard_msgs in
+#check mfderivWithin I (I.prod 𝓘(𝕜, F)) (T% s) u x₀
+
+/-- info: mfderiv[u] (T% s) x₀ : TangentSpace I x₀ →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x₀, s x₀⟩ -/
+#guard_msgs in
+#check mfderiv[u] (T% s) x₀
+
+/-- info: MDiff (T% s) : Prop -/
+#guard_msgs in
+#check MDifferentiable I (I.prod 𝓘(𝕜, F)) (T% s)
+
+/-- info: MDiff (T% s) : Prop -/
+#guard_msgs in
+#check MDiff (T% s)
+
+/-- info: MDiffAt (T% s) x₀ : Prop -/
+#guard_msgs in
+#check MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (T% s) x₀
+
+/-- info: MDiffAt (T% s) x₀ : Prop -/
+#guard_msgs in
+#check MDiffAt (T% s) x₀
+
+/-- info: MDiff[u] (T% s) : Prop -/
+#guard_msgs in
+#check MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (T% s) u
+
+/-- info: MDiff[u] (T% s) : Prop -/
+#guard_msgs in
+#check MDiff[u] (T% s)
+
+/-- info: MDiffAt[u] (T% s) x₀ : Prop -/
+#guard_msgs in
+#check MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (T% s) u x₀
+
+/-- info: MDiffAt[u] (T% s) x₀ : Prop -/
+#guard_msgs in
+#check MDiffAt[u] (T% s) x₀
+
+/-- info: HasMFDerivAt[u] (T% s) x₀ f' : Prop -/
+#guard_msgs in
+#check HasMFDerivWithinAt I (I.prod 𝓘(𝕜, F)) (T% s) u x₀ f'
+
+/-- info: HasMFDerivAt[u] (T% s) x₀ f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt[u] (T% s) x₀ f'
+
+/-- info: HasMFDerivAt% (T% s) x₀ f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt I (I.prod 𝓘(𝕜, F)) (T% s) x₀ f'
+
+/-- info: HasMFDerivAt% (T% s) x₀ f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% (T% s) x₀ f'
+
+end TotalSpace
 
 section ambiguity
 
@@ -142,6 +255,7 @@ inst✝ : IsManifold I ∞ M
 f : M → M
 x : M
 s : Set M
+f' : TangentSpace I x →L[ℝ] TangentSpace I (f x)
 v : (x : M) → TangentSpace I x
 g✝ g : E × E → E × E
 ⊢ MDiff id

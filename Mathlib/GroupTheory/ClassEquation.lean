@@ -44,6 +44,7 @@ theorem Group.sum_card_conj_classes_eq_card [Finite G] :
   cases nonempty_fintype G
   simp [← sum_conjClasses_card_eq_card, finsum_eq_sum_of_fintype]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **class equation** for finite groups. The cardinality of a group is equal to the size
 of its center plus the sum of the size of all its nontrivial conjugacy classes. -/
 theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :

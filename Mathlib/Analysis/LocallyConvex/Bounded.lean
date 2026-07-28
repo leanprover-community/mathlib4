@@ -390,7 +390,7 @@ variable [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
   if h : ∃ x : 𝕜, 1 < ‖x‖ then
-    letI : NontriviallyNormedField 𝕜 := ⟨h⟩
+    let : NontriviallyNormedField 𝕜 := ⟨h⟩
     rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
     intro U hU
     have h : Filter.Tendsto (fun x : E × E => x.fst + x.snd) (𝓝 0) (𝓝 0) :=
@@ -406,7 +406,7 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
     exact (absorbent_nhds_zero hx.1.1).vadd_absorbs hx.2.2.absorbs_self
   else
-    haveI : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
+    have : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
     exact Bornology.IsVonNBounded.of_boundedSpace
 
 end IsUniformAddGroup

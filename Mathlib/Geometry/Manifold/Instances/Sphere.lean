@@ -232,6 +232,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   · field_simp
     linear_combination 4 * (a - 1) * pythag
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul,
     innerSL_apply_apply, Submodule.orthogonalProjectionOnto_mem_subspace_eq_self]
@@ -340,10 +341,12 @@ def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
             (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toOpenPartialHomeomorph
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (stereographic' n v).source = {v}ᶜ := by simp [stereographic']
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (stereographic' n v).target = Set.univ := by simp [stereographic']

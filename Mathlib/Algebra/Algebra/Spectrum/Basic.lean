@@ -13,6 +13,7 @@ public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Spectrum of an element in an algebra
+
 This file develops the basic theory of the spectrum of an element of an algebra.
 This theory will serve as the foundation for spectral theory in Banach algebras.
 
@@ -431,7 +432,7 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
     [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
-    simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
+    simpa only [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
       AlgHom.spectrum_apply_subset (AlgEquivClass.toAlgEquiv f : A ≃ₐ[R] B).symm (f a)
 
 section ConjugateUnits

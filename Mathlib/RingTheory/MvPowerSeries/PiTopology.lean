@@ -199,7 +199,7 @@ instance {S : Type*} [Semiring S] [TopologicalSpace S]
 theorem variables_tendsto_zero [Semiring R] :
     Tendsto (X · : σ → MvPowerSeries σ R) cofinite (nhds 0) := by
   classical
-  simp only [tendsto_iff_coeff_tendsto, ← coeff_apply, coeff_X, coeff_zero]
+  simp only [tendsto_iff_coeff_tendsto, coeff_X, coeff_zero]
   refine fun d ↦ tendsto_nhds_of_eventually_eq ?_
   by_cases! h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, hi⟩ := h
@@ -211,7 +211,6 @@ theorem variables_tendsto_zero [Semiring R] :
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
     IsTopologicallyNilpotent f := by
-  classical
   obtain ⟨m, hm⟩ := hf
   simp_rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto, coeff_zero]
   exact fun d ↦ tendsto_atTop_of_eventually_const fun n hn ↦

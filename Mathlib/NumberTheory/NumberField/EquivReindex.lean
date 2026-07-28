@@ -8,8 +8,8 @@ module
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 /-!
-
 # Reindexed basis
+
 This file introduces an equivalence between the set of embeddings of `K` into `ℂ` and the
 index set of the chosen basis of the ring of integers of `K`.
 

@@ -60,6 +60,7 @@ protected theorem zero_sub : 0 - μ = 0 :=
 protected theorem sub_self : μ - μ = 0 :=
   sub_eq_zero_of_le le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem sub_zero : μ - 0 = μ := by
   rw [sub_def]

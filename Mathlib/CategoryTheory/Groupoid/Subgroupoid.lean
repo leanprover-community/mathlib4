@@ -127,7 +127,7 @@ theorem id_mem_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 d 
   id_mem_of_nonempty_isotropy S d (mem_objs_of_tgt S h)
 
 /-- A subgroupoid seen as a quiver on vertex set `C` -/
-@[implicit_reducible]
+@[instance_reducible]
 def asWideQuiver : Quiver C :=
   ⟨fun c d => S.arrows c d⟩
 
@@ -250,6 +250,7 @@ theorem inclusion_inj_on_objects {S T : Subgroupoid C} (h : S ≤ T) :
     Function.Injective (inclusion h).obj := fun ⟨s, hs⟩ ⟨t, ht⟩ => by
   simpa only [inclusion, Subtype.mk_eq_mk] using id
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inclusion_faithful {S T : Subgroupoid C} (h : S ≤ T) (s t : S.objs) :
     Function.Injective fun f : s ⟶ t => (inclusion h).map f := fun ⟨f, hf⟩ ⟨g, hg⟩ => by
   -- Porting note: was `...; simpa only [Subtype.mk_eq_mk] using id`

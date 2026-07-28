@@ -237,6 +237,7 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 def stalkMap (x : X) : Y.presheaf.stalk (f x) ⟶ X.presheaf.stalk x :=
   f.toLRSHom.stalkMap x
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by
@@ -399,6 +400,7 @@ theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e�
   rw [Category.assoc, f.naturality_assoc, ← Functor.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V e) :
     (f ≫ g).appLE U V e = g.app U ≫ f.appLE _ V e := by
@@ -464,32 +466,10 @@ end Hom
 
 end Scheme
 
-/-- The spectrum of a commutative ring, as a scheme.
-
-The notation `Spec(R)` for `(R : Type*) [CommRing R]` to mean `Spec (CommRingCat.of R)` is
-enabled in the scope `SpecOfNotation`. Please do not use it within Mathlib, but it can be
-used in downstream projects if desired. To use this, do:
-```lean
-import Mathlib.AlgebraicGeometry.Scheme
-
-variable (R : Type*) [CommRing R]
-
-open scoped SpecOfNotation
-
-#check Spec(R)
-```
--/
+/-- The spectrum of a commutative ring, as a scheme. -/
 def Spec (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
-
-/-- The spectrum of an unbundled ring as a scheme.
-WARNING: This is potentially confusing as `Spec (R)` and `Spec(R)` have different meanings.
-Hence we avoid using it in mathlib but leave it as a scoped instance for downstream projects.
-
-WARNING: If `R` is already an element of `CommRingCat`, you should use `Spec R` instead of
-`Spec(R)`, which is secretly `Spec(↑R)`. -/
-scoped[SpecOfNotation] notation3 "Spec("R")" => AlgebraicGeometry.Spec <| .of R
 
 theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
@@ -503,6 +483,7 @@ def Spec.map {R S : CommRingCat} (f : R ⟶ S) : Spec S ⟶ Spec R :=
 theorem Spec.map_id (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) :=
   Scheme.Hom.ext' <| Spec.locallyRingedSpaceMap_id R
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc, simp]
 theorem Spec.map_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f :=
@@ -634,9 +615,11 @@ lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec.map f).appTop := SpecΓIdentity.inv.naturality f
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- This is not marked simp to respect the abstraction
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = CommRingCat.ofHom (algebraMap _ _) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toOpen_eq (U) :
     CommRingCat.ofHom (algebraMap R <| (Spec.structureSheaf R).presheaf.obj (.op U)) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
@@ -850,6 +833,7 @@ end ZeroLocus
 
 end Scheme
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Spec R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
   ext x
@@ -859,6 +843,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
   rw [← isUnit_map_iff (StructureSheaf.stalkIso R x).symm, AlgEquiv.commutes]
   exact IsLocalization.AtPrime.isUnit_to_map_iff _ (PrimeSpectrum.asIdeal x) f
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
     (Spec R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.ΓSpecIso R).hom f) := by
@@ -904,6 +889,7 @@ lemma Scheme.inv_hom_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
   change (e.inv ≫ e.hom) y = 𝟙 Y.toPresheafedSpace y
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
     (Spec R).zeroLocus ((Scheme.ΓSpecIso R).inv '' s) = PrimeSpectrum.zeroLocus s := by
   ext x
@@ -998,6 +984,7 @@ lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f x ∈ U) (y) :
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `x = y`, the stalk maps are isomorphic. -/
 noncomputable def arrowStalkMapIsoOfEq {x y : X}

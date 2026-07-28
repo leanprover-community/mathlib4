@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Comap
-public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
-public import Mathlib.Data.Set.Card
 
 /-!
 # Restricting a measure to a subset or a subtype
@@ -55,6 +53,7 @@ theorem restrictₗ_apply {_m0 : MeasurableSpace α} (s : Set α) (μ : Measure 
     restrictₗ s μ = μ.restrict s :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma shows that `restrict` and `toOuterMeasure` commute. Note that the LHS has a
 restrict on measures and the RHS has a restrict on outer measures. -/
 theorem restrict_toOuterMeasure_eq_toOuterMeasure_restrict (h : MeasurableSet s) :
@@ -396,7 +395,7 @@ theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
 theorem restrict_biUnion_congr {s : Set ι} {t : ι → Set α} (hc : s.Countable) :
     μ.restrict (⋃ i ∈ s, t i) = ν.restrict (⋃ i ∈ s, t i) ↔
       ∀ i ∈ s, μ.restrict (t i) = ν.restrict (t i) := by
-  haveI := hc.toEncodable
+  have := hc.toEncodable
   simp only [biUnion_eq_iUnion, SetCoe.forall', restrict_iUnion_congr]
 
 theorem restrict_sUnion_congr {S : Set (Set α)} (hc : S.Countable) :
@@ -559,7 +558,7 @@ theorem ae_restrict_union_eq (s t : Set α) :
 
 theorem ae_restrict_biUnion_eq (s : ι → Set α) {t : Set ι} (ht : t.Countable) :
     ae (μ.restrict (⋃ i ∈ t, s i)) = ⨆ i ∈ t, ae (μ.restrict (s i)) := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   rw [biUnion_eq_iUnion, ae_restrict_iUnion_eq, ← iSup_subtype'']
 
 theorem ae_restrict_biUnion_finset_eq (s : ι → Set α) (t : Finset ι) :

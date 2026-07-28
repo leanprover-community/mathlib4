@@ -150,7 +150,7 @@ theorem Monotone.ciSup_mem_iInter_Icc_of_antitone [Preorder β] [IsDirectedOrder
     {f g : β → α} (hf : Monotone f) (hg : Antitone g) (h : f ≤ g) :
     (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) := by
   refine mem_iInter.2 fun n => ?_
-  haveI : Nonempty β := ⟨n⟩
+  have : Nonempty β := ⟨n⟩
   have h₁ : ∀ m, f m ≤ g n := fun m => hf.forall_le_of_antitone hg h m n
   have h₂ : Directed (· ≤ ·) f := hf.directed_le
   exact ⟨h₂.le_ciSup ⟨g <| n, forall_mem_range.2 h₁⟩ _, h₂.ciSup_le h₁⟩
@@ -213,7 +213,7 @@ theorem l_ciSup_of_directed (gc : GaloisConnection l u) {f : ι → α} (hd : Di
 theorem l_ciSup_set_of_directedOn (gc : GaloisConnection l u) {s : Set γ} {f : γ → α}
     (hd : DirectedOn (· ≤ ·) (f '' s)) (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
-  haveI := hne.to_subtype
+  have := hne.to_subtype
   rw [image_eq_range] at hf
   refine gc.l_ciSup_of_directed ?_ hf
   simpa [← directedOn_range, ← comp_def, range_comp]

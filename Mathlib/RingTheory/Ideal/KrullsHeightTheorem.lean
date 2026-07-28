@@ -56,6 +56,7 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
       exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
   IsNoetherianRing.isArtinianRing_of_krullDimLE_zero
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) [I.IsPrincipal]
     (hp : (IsLocalRing.maximalIdeal R) ∈ I.minimalPrimes) :

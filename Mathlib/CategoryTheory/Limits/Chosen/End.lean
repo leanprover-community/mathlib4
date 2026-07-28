@@ -32,7 +32,7 @@ class ChosenCoendsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] wh
 
 set_option linter.checkUnivs false in
 /-- The data of chosen coends in `C`. -/
-@[nolint checkUnivs, pp_with_univ]
+@[pp_with_univ]
 abbrev ChosenCoends (C : Type*) [Category* C] :=
   ∀ {J : Type u} [Category.{v} J], ChosenCoendsOfShape J C
 
@@ -53,6 +53,7 @@ lemma chosenCoend.condition {i j : J} (f : i ⟶ j) :
 
 variable {F}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms out of the chosen coend are determined by their composites with `chosenCoend.ι`. -/
 @[ext]
@@ -107,7 +108,7 @@ class ChosenEndsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] wher
 
 set_option linter.checkUnivs false in
 /-- The data of chosen ends in `C`. -/
-@[nolint checkUnivs, pp_with_univ]
+@[pp_with_univ]
 abbrev ChosenEnds (C : Type*) [Category* C] :=
   ∀ {J : Type u} [Category.{v} J], ChosenEndsOfShape J C
 

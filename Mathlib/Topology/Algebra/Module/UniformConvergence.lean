@@ -52,6 +52,7 @@ variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α}
   [FunLike hom H (α → E)] [LinearMapClass hom 𝕜 H (α → E)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `E` be a topological vector space over a normed field `𝕜`, let `α` be any type.
 Let `H` be a submodule of `α →ᵤ E` such that the range of each `f ∈ H` is von Neumann bounded.
 Then `H` is a topological vector space over `𝕜`,
@@ -100,7 +101,7 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
   obtain rfl := hφ.eq_induced; clear hφ
   simp +instances only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
   refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
-  letI : TopologicalSpace H :=
+  let : TopologicalSpace H :=
     .induced (UniformFun.ofFun ∘ s.restrict ∘ φ) (UniformFun.topologicalSpace s E)
   set φ' : H →ₗ[𝕜] (s → E) :=
     { toFun := s.restrict ∘ φ,

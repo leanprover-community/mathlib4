@@ -511,7 +511,7 @@ end SimpleFuncIntegral
 
 end SimpleFunc
 
-open SimpleFunc
+open L1.SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 

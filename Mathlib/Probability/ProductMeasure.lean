@@ -81,6 +81,7 @@ lemma piContent_cylinder {I : Finset ι} {S : Set (Π i : I, X i)} (hS : Measura
     piContent μ (cylinder I S) = Measure.pi (fun i : I ↦ μ i) S :=
   projectiveFamilyContent_cylinder _ hS
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : MeasurableSet s) :
     piContent μ s = Measure.pi μ s := by
   let e : @Finset.univ ι _ ≃ ι :=
@@ -257,6 +258,7 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the key theorem to build the product of an arbitrary family of probability measures:
 the `piContent` of a decreasing sequence of cylinders with empty intersection converges to `0`.
 

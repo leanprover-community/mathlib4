@@ -250,6 +250,7 @@ instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
 theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
@@ -261,7 +262,7 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
   Fintype.subtype (univ.filter p) (by simp)
 
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
-@[implicit_reducible]
+@[instance_reducible]
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s
 
@@ -280,6 +281,7 @@ noncomputable def finsetEquivSet : Finset α ≃ Set α where
 
 @[simp] lemma finsetEquivSet_apply (s : Finset α) : finsetEquivSet s = s := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma finsetEquivSet_symm_apply (s : Set α) [Fintype s] :
     finsetEquivSet.symm s = s.toFinset := by simp [finsetEquivSet]
 

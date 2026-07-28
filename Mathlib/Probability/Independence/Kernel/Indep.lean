@@ -586,7 +586,6 @@ theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
 theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (S T : Set ι) (hST : Disjoint S T) :
     Indep (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) κ μ := by
-  classical
   rcases eq_or_ne μ 0 with rfl | hμ
   · simp
   obtain ⟨η, η_eq, hη⟩ : ∃ (η : Kernel α Ω), κ =ᵐ[μ] η ∧ IsMarkovKernel η :=
@@ -606,7 +605,6 @@ theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
 theorem indep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m κ μ) {S T : Set ι} (hST : Disjoint S T) :
     Indep (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) κ μ := by
-  classical
   rcases eq_or_ne μ 0 with rfl | hμ
   · simp
   obtain ⟨η, η_eq, hη⟩ : ∃ (η : Kernel α Ω), κ =ᵐ[μ] η ∧ IsMarkovKernel η :=

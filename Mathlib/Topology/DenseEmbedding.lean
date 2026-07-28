@@ -192,7 +192,7 @@ theorem extend_unique [T2Space γ] {f : α → γ} {g : β → γ} (di : IsDense
 theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : IsDenseInducing i)
     (hf : ∀ᶠ x in 𝓝 b, ∃ c, Tendsto f (comap i <| 𝓝 x) (𝓝 c)) : ContinuousAt (di.extend f) b := by
   set φ := di.extend f
-  haveI := di.comap_nhds_neBot
+  have := di.comap_nhds_neBot
   suffices ∀ V' ∈ 𝓝 (φ b), IsClosed V' → φ ⁻¹' V' ∈ 𝓝 b by
     simpa [ContinuousAt, (closed_nhds_basis (φ b)).tendsto_right_iff]
   intro V' V'_in V'_closed

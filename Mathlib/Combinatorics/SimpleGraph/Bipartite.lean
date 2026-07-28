@@ -322,6 +322,7 @@ section Copy
 
 variable {α β : Type*} [Fintype α] [Fintype β]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A "left" subset of `card α` vertices and a "right" subset of `card β` vertices such that every
 vertex in the "left" subset is adjacent to every vertex in the "right" subset gives rise to a copy
 of a complete bipartite graph. -/
@@ -541,6 +542,7 @@ theorem bipartiteDoubleCover_le : G.bipartiteDoubleCover ≤ completeBipartiteGr
   | .inl _, .inr _ | .inr _, .inl _ => by simp
   | .inl _, .inl _ | .inr _, .inr _ => by simp at hadj
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bipartite double cover of `G` has twice the number of edges as `G`. -/
 theorem card_edgeFinset_bipartiteDoubleCover [Fintype V] [DecidableRel G.Adj] :
     #G.bipartiteDoubleCover.edgeFinset = 2 * #G.edgeFinset := by

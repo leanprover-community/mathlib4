@@ -60,13 +60,13 @@ lemma eLpNorm_restrict_le (f : α → ε') (p : ℝ≥0∞) (μ : Measure α) (s
 
 lemma eLpNorm_indicator_le (f : α → ε) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
-  refine eLpNorm_mono_ae' <| .of_forall fun x ↦ ?_
-  rw [enorm_indicator_eq_indicator_enorm]
-  exact s.indicator_le_self _ x
+  apply eLpNorm_mono_enorm
+  simp_rw [enorm_indicator_eq_indicator_enorm]
+  exact s.indicator_le_self _
 
 lemma eLpNormEssSup_indicator_le (s : Set α) (f : α → ε) :
     eLpNormEssSup (s.indicator f) μ ≤ eLpNormEssSup f μ := by
-  refine essSup_mono_ae (Eventually.of_forall fun x => ?_)
+  refine essSup_mono_ae (.of_forall fun x => ?_)
   simp_rw [enorm_indicator_eq_indicator_enorm]
   exact Set.indicator_le_self s _ x
 

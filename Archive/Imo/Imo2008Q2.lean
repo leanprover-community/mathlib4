@@ -12,6 +12,7 @@ import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2008 Q2
+
 (a) Prove that
           ```
           x^2 / (x-1)^2 + y^2 / (y-1)^2 + z^2 / (z-1)^2 ≥ 1

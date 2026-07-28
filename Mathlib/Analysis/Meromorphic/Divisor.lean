@@ -31,7 +31,7 @@ namespace MeromorphicOn
 ## Definition of the Divisor
 -/
 
-open Classical in
+open scoped Classical in
 /--
 The divisor of a meromorphic function `f`, mapping a point `z` to the order of `f` at `z`, and to
 zero if the order is infinite.
@@ -54,7 +54,7 @@ noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
       tauto
     · simp [hf, Pi.zero_def]
 
-open Classical in
+open scoped Classical in
 /-- Definition of the divisor -/
 theorem divisor_def (f : 𝕜 → E) (U : Set 𝕜) :
     divisor f U z = if MeromorphicOn f U ∧ z ∈ U then (meromorphicOrderAt f z).untop₀ else 0 :=
@@ -373,7 +373,6 @@ If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `
 -/
 theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
     divisor (f ^ n) U = n • divisor f U := by
-  classical
   ext z
   by_cases hn : n = 0
   · simp [hn]
@@ -392,7 +391,6 @@ If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `
 -/
 theorem divisor_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
     divisor (f ^ n) U = n • divisor f U := by
-  classical
   ext z
   by_cases hn : n = 0
   · simp [hn]

@@ -205,6 +205,7 @@ theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M
 
 variable {R L M N}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `maxTrivSubmodule` is functorial. -/
 def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L⁆ maxTrivSubmodule R L N where
   toFun m := ⟨f m, fun x =>

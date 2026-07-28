@@ -26,6 +26,7 @@ universe u v
 
 variable {X : Type u} [TopologicalSpace X] {ι : Sort v} {α : Type*} {x : X} {s t : Set X}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nhds_def' (x : X) : 𝓝 x = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (x ∈ _), iInf_and]
 

@@ -414,24 +414,54 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
     pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName scope?}\n\
       -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
+/--
+Whether an HTTP status returned for a single-file read should be treated as a
+cache miss (fall through to the next container in the chain) rather than a
+transfer failure worth reporting.
+
+`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
+set, which callers do for the `legacy` container: when its public read access is
+revoked ahead of retirement it answers reads with `403`, and old clients whose
+chain still lists `legacy` should fall through quietly instead of printing a
+per-file transfer failure. Any other status is a real failure.
+-/
+def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
+  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
+
+/-- Outcome of a single serial download: the file arrived (`served`), the server
+returned a cache miss that should fall through to the next container (`miss`), or
+the transfer failed for another reason that should drive the exit code
+(`failed`). The parallel path draws the same distinction through
+`TransferState.failed` and `isCacheMissStatus`. -/
+inductive DownloadOutcome
+  | served
+  | miss
+  | failed
+
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
-(`.cache`). Returns `true` on success, `false` on any error including 404.
-`scope?` is the per-round SHA scope (see `mkGetConfigContent`). -/
+(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`).
+`treatForbiddenAsMiss` mirrors the parallel path: a `legacy` `403` (public read
+access revoked ahead of retirement) is a miss, not a failure. -/
 def downloadFile (container : Option Container) (repo containerURL : String)
-    (hash : UInt64) (scope? : Option String) : IO Bool := do
+    (hash : UInt64) (scope? : Option String) (treatForbiddenAsMiss : Bool := false) :
+    IO DownloadOutcome := do
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
   let partFileName := fileName ++ ".part"
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
-    { cmd := (← IO.getCurl), args := #[url, "--fail", "--silent", "-o", partPath.toString] }
+    { cmd := (← IO.getCurl),
+      args := #[url, "--fail", "--silent", "--write-out", "%{http_code}",
+        "-o", partPath.toString] }
   if out.exitCode = 0 then
     IO.FS.rename partPath path
-    pure true
-  else
-    IO.FS.removeFile partPath
-    pure false
+    return .served
+  IO.FS.removeFile partPath
+  -- `--fail` exits nonzero on any HTTP error; the written-out status tells a 404
+  -- miss apart from a real transfer failure (a connection error reports `000`).
+  let httpCode := out.stdout.trimAscii.toNat?.getD 0
+  return if isCacheMissStatus httpCode treatForbiddenAsMiss then .miss else .failed
 
 /-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
     Handles both `.ltar` and `.ltar.part` files using `FilePath.fileStem`. -/
@@ -499,20 +529,6 @@ def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : Deco
   return some task
 
 /--
-Whether an HTTP status returned for a single-file read should be treated as a
-cache miss (fall through to the next container in the chain) rather than a
-transfer failure worth reporting.
-
-`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
-set, which callers do for the `legacy` container: when its public read access is
-revoked ahead of retirement it answers reads with `403`, and old clients whose
-chain still lists `legacy` should fall through quietly instead of printing a
-per-file transfer failure. Any other status is a real failure.
--/
-def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
-  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
-
-/--
 Whether an HTTP status is the one Azure returns for a blob that already exists,
 which a non-overwrite `put` (`If-None-Match: *`) hits when it declines to
 overwrite. Azure reports it as 409 (the `BlobAlreadyExists` error, what it
@@ -527,8 +543,11 @@ def monitorCurl (args : Array String) (size : Nat)
     (caption : String) (speedVar : String) (removeOnError := false)
     (decompConfig : Option DecompConfig := none)
     (treatForbiddenAsMiss : Bool := false)
-    (treatExistsAsSkip : Bool := false) : IO TransferState := do
+    (treatExistsAsSkip : Bool := false) : IO (TransferState × Std.HashSet UInt64) := do
   let useAnsi := (← IO.getEnv "TERM").isSome
+  -- Hashes of the files this pass fetched, used to decide what the next
+  -- container in the chain still needs to retry.
+  let servedRef ← IO.mkRef (∅ : Std.HashSet UInt64)
   let mkStatus (s : TransferState) : String := Id.run do
     let speedStr :=
       if s.speed != 0 then
@@ -561,9 +580,11 @@ def monitorCurl (args : Array String) (size : Nat)
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
               let finalPath := (fn.dropEnd 5).copy
               IO.FS.rename fn finalPath
+              let hash? := hashFromFileName finalPath
+              if let some hash := hash? then servedRef.modify (·.insert hash)
               -- Add to decompression queue if enabled
               if let some config := decompConfig then
-                let some hash := hashFromFileName finalPath | do
+                let some hash := hash? | do
                   IO.eprintln s!"Warning: Failed to extract hash from filename: {finalPath}"
                   decompFailed := decompFailed + 1
                 let some mod := config.hashToMod[hash]? | do
@@ -633,18 +654,19 @@ def monitorCurl (args : Array String) (size : Nat)
   if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
     IO.eprintln (mkStatus s)
-  return s
+  return (s, ← servedRef.get)
 
 /-- Run one container's download pass for the given hash map. Returns the
-`TransferState` produced by `monitorCurl` (or a synthesized empty state in
-serial mode). Side effect: any files successfully fetched are written to
-`CACHEDIR` with their final names. -/
+`TransferState` from `monitorCurl` (synthesized in serial mode, where it carries
+only the transfer-failure count) and the set of hashes it fetched, so the caller
+can carry the rest to the next container. Side effect: any files successfully
+fetched are written to `CACHEDIR` with their final names. -/
 private def downloadFilesFromContainer
     (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap)
     (parallel : Bool) (decompConfig : Option DecompConfig)
     (scope? : Option String) :
-    IO (Nat × TransferState) := do
+    IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
@@ -657,16 +679,27 @@ private def downloadFilesFromContainer
     -- of retirement; treat that as a miss so the chain stays quiet for clients
     -- whose chain still lists it.
     let treatForbiddenAsMiss := container == some Container.legacy
-    let s ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+    let (s, served) ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
       decompConfig (treatForbiddenAsMiss := treatForbiddenAsMiss)
     IO.FS.removeFile IO.CURLCFG
-    return (s.failed, s)
+    return (s, served)
   else
+    -- Mirror the parallel path's miss/failure split: a `legacy` 403 is a miss.
+    let treatForbiddenAsMiss := container == some Container.legacy
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
-      pure <| (← IO.asTask do downloadFile container repo containerURL hash scope?) :: acc
-    let failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
-    let emptyState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
-    return (failed, emptyState)
+      pure <| (hash, ← IO.asTask do
+        downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
+    -- Served hashes carry the remaining files to the next container; hard
+    -- failures (anything but a 404/legacy-403 miss, including a task that threw)
+    -- feed `TransferState.failed`, so they drive the exit code exactly as the
+    -- parallel path threads its own `failed` count.
+    let (served, failed) := r.foldl (init := ((∅ : Std.HashSet UInt64), 0))
+      fun (served, failed) (hash, t) =>
+        match t.get with
+        | .ok .served => (served.insert hash, failed)
+        | .ok .miss => (served, failed)
+        | _ => (served, failed + 1)
+    return (⟨0, 0, failed, 0, 0, #[], none, 0, 0, 0⟩, served)
 
 /-- Expand the trust-ordered container list into the concrete download rounds to
 run, each carrying the SHA scope to read at. A round is
@@ -749,6 +782,8 @@ def downloadFiles
   let unsafeMode := !unsafeScopes.isEmpty
   let mut remaining := hashMap
   let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  -- Hard transfer failures (not 404 misses) drive the exit code; misses are
+  -- normal and instead surface as the "not found" hint keyed on `remaining`.
   let mut downloadFailed := 0
   -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
   -- attributed by the drop in `remaining` across that round.
@@ -758,13 +793,14 @@ def downloadFiles
     let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
     let before := remaining.size
-    let (failed, s) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
-    -- Carry forward the decompression-related state across container rounds.
-    -- Counter fields (success/failed/done) reflect only the last round; we
-    -- aggregate `downloadFailed` separately below.
+    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
+    -- Keep the latest round's pipeline state and transfer-failure count for the
+    -- finalization and exit-code logic below. Drop the files this round served so
+    -- the next container only retries genuine misses, regardless of what is
+    -- already on disk.
     finalState := s
-    downloadFailed := failed
-    remaining ← remaining.filterExists false
+    downloadFailed := s.failed
+    remaining := remaining.filter fun _ hash => !served.contains hash
     if unsafeMode then
       if let some sha := roundScope? then
         scopeServed := scopeServed.push (sha, before - remaining.size)
@@ -782,7 +818,7 @@ def downloadFiles
       if remaining.size > 0 then
         IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
 
-  if warnOnMissing && downloadFailed > 0 && parallel then
+  if warnOnMissing && !remaining.isEmpty then
     IO.eprintln "Warning: some files were not found in the cache."
     IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
     IO.eprintln ""
@@ -1049,7 +1085,7 @@ def putFilesAbsolute
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
       "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
-    let s ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
+    let (s, _) ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
       (decompConfig := none) (treatExistsAsSkip := !overwrite)
     IO.FS.removeFile tempConfigFilePath
     -- Surface genuine upload failures. Already-present blobs (409/412 on a

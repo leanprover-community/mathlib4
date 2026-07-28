@@ -126,6 +126,7 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
 
 open scoped Valued
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).RankOne]
     [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
@@ -258,7 +259,6 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   -- there must be something in the cover that has the precise valuation of the element,
   -- because it must be outside the inner closed ball, and thus is covered by some sphere.
   obtain ⟨t, ht⟩ := this
-  classical
   refine (t.finite_toSet.dependent_image ?_).subset ?_
   · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
     push Not at hi'

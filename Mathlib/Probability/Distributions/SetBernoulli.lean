@@ -75,7 +75,6 @@ section Countable
 variable [Countable ι]
 
 lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
-  classical
   simp only [Filter.Eventually, mem_ae_iff, Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem,
     Set.setOf_exists, Set.setOf_and, measure_iUnion_null_iff]
   rintro i
@@ -130,7 +129,6 @@ lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
 lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I) (k : ℕ) :
     (setBer(u, p).map Set.ncard).real {k} =
       (u.ncard.choose k) * p ^ k * (1 - p) ^ (u.ncard - k) := by
-  classical
   have : {s ⊆ u | s.ncard ∈ ({k} : Set ℕ)}.Finite := hu.finite_subsets.subset (by grind)
   rw [measureReal_def, map_ncard_setBernoulli_apply, ← measureReal_def,
     ← Set.biUnion_of_singleton (setOf _)]

@@ -53,7 +53,7 @@ def Easy (F : Fin 21 → Finset ℕ) (p : ℕ) : Prop := 3 ≤ #{i | p ∈ F i}
 
 variable {G B : Fin 21 → Finset ℕ}
 
-open Classical in
+open scoped Classical in
 /-- Every contestant solved at most five problems that were not easy for the other cohort. -/
 lemma card_not_easy_le_five {i : Fin 21} (hG : #(G i) ≤ 6) (hB : ∀ j, ¬Disjoint (G i) (B j)) :
     #{p ∈ G i | ¬Easy B p} ≤ 5 := by
@@ -68,7 +68,7 @@ lemma card_not_easy_le_five {i : Fin 21} (hG : #(G i) ≤ 6) (hB : ∀ j, ¬Disj
     _ ≤ ∑ p ∈ G i, 2 := sum_le_sum fun p mp ↦ Nat.le_of_lt_succ (h p mp)
     _ ≤ _ := by rw [sum_const, smul_eq_mul]; lia
 
-open Classical in
+open scoped Classical in
 /-- There are at most 210 girl-boy pairs who solved some problem in common that was not easy for
 a fixed cohort. -/
 lemma card_not_easy_le_210 (hG : ∀ i, #(G i) ≤ 6) (hB : ∀ i j, ¬Disjoint (G i) (B j)) :
