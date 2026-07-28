@@ -5699,6 +5699,7 @@ public import Mathlib.ModelTheory.Basic
 public import Mathlib.ModelTheory.Bundled
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Definability
+public import Mathlib.ModelTheory.DefinablyFull
 public import Mathlib.ModelTheory.DirectLimit
 public import Mathlib.ModelTheory.ElementaryChain
 public import Mathlib.ModelTheory.ElementaryMaps

@@ -459,6 +459,33 @@ instance constantsOnSelfStructure : (constantsOn M).Structure M :=
 
 instance withConstantsSelfStructure : L[[M]].Structure M := inferInstance
 
+namespace LHom
+
+variable {L} {α : Type*} [L[[α]].Structure M] [(L.lhomWithConstants α).IsExpansionOn M]
+
+/-- A map between constant expansions is an expansion when it sends each new constant to its
+interpretation in the target structure. -/
+theorem lhomWithConstantsMap_isExpansionOn_of_eq
+    (f : α → M) (h : ∀ a : α, f a = ((L.con a : L[[α]].Constants) : M)) :
+    (L.lhomWithConstantsMap f).IsExpansionOn M := by
+  simp only [lhomWithConstantsMap]
+  constructor
+  · intro n g x
+    cases g with
+    | inl g => exact ((L.lhomWithConstants α).map_onFunction g x).symm
+    | inr g =>
+      cases n with
+      | zero =>
+        rw [Unique.eq_default x]
+        exact h g
+      | succ n => exact isEmptyElim g
+  · intro n R x
+    cases R with
+    | inl R => exact ((L.lhomWithConstants α).map_onRelation R x).symm
+    | inr R => exact isEmptyElim R
+
+end LHom
+
 instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 
