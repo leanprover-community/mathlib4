@@ -65,7 +65,10 @@ def supp (P : Partition α) : α := sSup P.parts
 
 instance : SetLike (Partition α) α where
   coe := Partition.parts
-  coe_injective p p' h := by cases p; cases p'; simpa using h
+  coe_injective p p' h := by
+    cases p
+    cases p'
+    simpa using h
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (P : Partition α) : Set α := P
@@ -125,9 +128,8 @@ lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
 lemma bot_lt_of_mem (hx : x ∈ P) : ⊥ < x :=
   bot_lt_iff_ne_bot.2 <| P.ne_bot_of_mem hx
 
-lemma supp_ne_bot_of_mem (hx : x ∈ P) : P.supp ≠ ⊥ := by
-  intro hP
-  exact P.ne_bot_of_mem hx <| le_bot_iff.mp <| (P.le_of_mem hx).trans_eq hP
+lemma supp_ne_bot_of_mem (hx : x ∈ P) : P.supp ≠ ⊥ :=
+  fun hP ↦ P.ne_bot_of_mem hx <| le_bot_iff.mp <| (P.le_of_mem hx).trans_eq hP
 
 @[deprecated (since := "2026-07-28")] alias ne_bot_of_mem' := supp_ne_bot_of_mem
 
@@ -160,20 +162,8 @@ instance : PartialOrder (Partition α) where
   le P Q := ∀ ⦃x⦄, x ∈ P → ∃ y ∈ Q, x ≤ y
   lt := _
   le_refl P x hx := ⟨x, hx, le_rfl⟩
-  le_trans P Q R hPQ hQR x hxP := by
-    obtain ⟨y, hy, hxy⟩ := hPQ hxP
-    obtain ⟨z, hz, hyz⟩ := hQR hy
-    exact ⟨z, hz, hxy.trans hyz⟩
-  le_antisymm P Q hp hq := by
-    refine Partition.ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · obtain ⟨y, hy, hxy⟩ := hp h
-      obtain ⟨x', hx', hyx'⟩ := hq hy
-      obtain rfl := P.pairwiseDisjoint.eq_of_le h hx' (P.ne_bot_of_mem h) (hxy.trans hyx')
-      rwa [hxy.antisymm hyx']
-    obtain ⟨y, hy, hxy⟩ := hq h
-    obtain ⟨x', hx', hyx'⟩ := hp hy
-    obtain rfl := Q.pairwiseDisjoint.eq_of_le h hx' (Q.ne_bot_of_mem h) (hxy.trans hyx')
-    rwa [hxy.antisymm hyx']
+  le_trans P Q R hPQ hQR x hxP := by grind
+  le_antisymm P Q hp hq := Partition.ext fun x ↦ by grind
 
 lemma le_def : P ≤ Q ↔ ∀ x ∈ P, ∃ y ∈ Q, x ≤ y := .rfl
 
@@ -181,10 +171,7 @@ lemma exists_le_of_mem_le (h : P ≤ Q) (hx : x ∈ P) : ∃ y ∈ Q, x ≤ y :=
 
 lemma existsUnique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) : ∃! y ∈ Q, x ≤ y := by
   obtain ⟨y, hy, hxy⟩ := h hx
-  refine ⟨y, ⟨hy, hxy⟩, fun z ⟨hz, hxz⟩ ↦ Q.eq_of_not_disjoint hz hy ?_⟩
-  have := P.ne_bot_of_mem hx
-  contrapose this
-  exact le_bot_iff.mp (this hxz hxy)
+  exact ⟨y, ⟨hy, hxy⟩, fun z ⟨hz, hxz⟩ ↦ Q.eq_of_not_disjoint hz hy (by grind)⟩
 
 /-- If the support of `Q` is contained in a part of `P`, then `Q` refines `P`. -/
 lemma le_of_supp_le_part (ha : a ∈ P) (hQa : Q.supp ≤ a) : Q ≤ P :=
@@ -221,7 +208,7 @@ lemma eq_bot (hP : P.supp = ⊥) : P = ⊥ := by
 /-- The support of a partition is bottom iff the partition is empty. -/
 @[simp]
 lemma supp_eq_bot_iff : P.supp = ⊥ ↔ P = ⊥ :=
-  ⟨eq_bot, fun h ↦ h ▸ supp_bot⟩
+  ⟨eq_bot, (· ▸ supp_bot)⟩
 
 /-- A partition has a part iff it is not the empty partition. -/
 @[simp]
@@ -263,10 +250,10 @@ lemma parts_top_subset : ((⊤ : Partition α) : Set α) ⊆ {⊤} :=
   fun _ ha ↦ (mem_top_iff.mp ha).1 ▸ rfl
 
 /-- Refinement of partitions implies inequality of supports. -/
-lemma supp_le_of_le {P Q : Partition α} (h : P ≤ Q) : P.supp ≤ Q.supp :=
+lemma supp_mono {P Q : Partition α} (h : P ≤ Q) : P.supp ≤ Q.supp :=
   sSup_le_sSup_of_isCofinalFor h
 
-lemma supp_mono : Monotone (Partition.supp (α := α)) := fun _ _ ↦ supp_le_of_le
+lemma supp_monotone : Monotone (Partition.supp (α := α)) := fun _ _ ↦ supp_mono
 
 /-- On a nontrivial complete lattice there are at least two partitions. -/
 instance [Nontrivial α] : Nontrivial (Partition α) :=
@@ -281,8 +268,7 @@ variable [CompleteLattice α] {P Q : Partition α} {a b : α}
 /-- Meet every part of `P` with `a`, discarding bottom. -/
 @[simps!]
 protected def induce (P : Partition α) (a : α) : Partition α :=
-  removeBot ((a ⊓ ·) '' P.parts) <|
-    P.sSupIndep'.image_of_le_self fun _ _ ↦ inf_le_right
+  removeBot ((a ⊓ ·) '' P.parts) <| P.sSupIndep'.image_of_le_self fun _ _ ↦ inf_le_right
 
 /-- Membership in an induced partition is equivalent to being a nontrivial meet of `a` with a
 part of `P`. -/
@@ -298,7 +284,8 @@ lemma inf_mem_induce (h : x ∈ P) (hne : a ⊓ x ≠ ⊥) : a ⊓ x ∈ P.induc
 @[simp]
 lemma induce_le : P.induce a ≤ P := by
   intro T hT
-  obtain ⟨hne, t, htP, rfl⟩ := (by simpa only [mem_induce_iff] using hT); clear hT
+  rw [mem_induce_iff] at hT
+  obtain ⟨hne, t, htP, rfl⟩ := hT
   exact ⟨t, htP, inf_le_right⟩
 
 /-- Inducing preserves refinement in the partition being induced. -/
@@ -334,22 +321,18 @@ variable [Order.Frame α] {P Q : Partition α} {a : α} {Qs : ∀ a ∈ P, Parti
 @[simps] protected def bind (P : Partition α) (Qs : ∀ a ∈ P, Partition α)
     (hQs : ∀ a, (h : a ∈ P) → (Qs a h).supp ≤ a) : Partition α where
   parts := ⋃ a : P, (Qs a a.prop).parts
-  sSupIndep' := by
-    intro b hb
+  sSupIndep' b hb := by
     simp only [mem_iUnion, Subtype.exists] at hb
-    obtain ⟨a, haP, hba : b ∈ Qs a haP⟩ := hb
-    obtain hasupp := hQs a haP
-    have hdj1 := (Qs a haP).sSupIndep hba
-    have hdj2 := (P.sSupIndep haP).mono_left <| ((Qs a haP).le_of_mem hba).trans hasupp
-    refine (hdj1.sup_right hdj2).mono_right ?_
-    simp only [mem_iUnion, Subtype.exists, sSup_le_iff, mem_sdiff,
-      mem_singleton_iff, and_imp, forall_exists_index]
-    rintro t' x hx (ht' : t' ∈ Qs x hx) hne
-    obtain hxsupp := hQs x hx
-    obtain (rfl | hne) := eq_or_ne x a
+    obtain ⟨a, haP, hba⟩ := hb
+    refine (Qs a haP).sSupIndep hba |>.sup_right ((P.sSupIndep haP).mono_left
+      <| ((Qs a haP).le_of_mem hba).trans (hQs a haP)) |>.mono_right ?_
+    simp only [sSup_le_iff, mem_sdiff, mem_iUnion, Subtype.exists, mem_singleton_iff, and_imp,
+      forall_exists_index]
+    rintro t' x hx ht' hne
+    obtain rfl | hne := eq_or_ne x a
     · exact (le_sSup_of_le (show t' ∈ _ \ {b} from ⟨ht', hne⟩) rfl.le).trans le_sup_left
-    exact le_trans (le_sSup_of_le (mem_sdiff_of_mem hx hne) <|
-      (Qs x hx).le_of_mem ht' |>.trans hxsupp) le_sup_right
+    exact le_trans (le_sSup_of_le (mem_sdiff_of_mem hx hne) <| (Qs x hx).le_of_mem ht' |>.trans
+      <| hQs x hx) le_sup_right
   bot_notMem' := by
     simp only [mem_iUnion, Subtype.exists, not_exists]
     exact fun x hx ↦ (Qs x hx).bot_notMem
@@ -357,7 +340,8 @@ variable [Order.Frame α] {P Q : Partition α} {a : α} {Qs : ∀ a ∈ P, Parti
 /-- Membership in a bind is equivalent to membership in one of the constituent partitions. -/
 @[simp] lemma mem_bind_iff (hQs : ∀ a, (h : a ∈ P) → (Qs a h).supp ≤ a) :
     a ∈ P.bind Qs hQs ↔ ∃ (b : α) (hb : b ∈ P), a ∈ Qs b hb := by
-  change _ ∈ ⋃ _, _ ↔ _; simp
+  change _ ∈ ⋃ _, _ ↔ _
+  simp
 
 /-- A bind refines `Q` iff every constituent partition refines `Q`. -/
 @[simp]
@@ -388,15 +372,14 @@ lemma le_bind_iff (hQs : ∀ a, (h : a ∈ P) → (Qs a h).supp ≤ a) :
     obtain rfl := P.eq_of_not_disjoint haP heP hne
     exact ⟨d, hdQse, inf_le_of_right_le hcd⟩
   obtain ⟨p, hpP, hap⟩ := hQP haQ
-  obtain ⟨q, hqQsp, haq⟩ := h p hpP <| inf_mem_induce haQ <| by
-    simp [hap, Q.ne_bot_of_mem haQ]
+  obtain ⟨q, hqQsp, haq⟩ := h p hpP <| inf_mem_induce haQ <| by simp [hap, Q.ne_bot_of_mem haQ]
   simp only [hap, inf_of_le_right] at haq
   exact ⟨q, (mem_bind_iff hQs).mpr ⟨p, hpP, hqQsp⟩, haq⟩
 
-lemma supp_bind (P : Partition α) (Qs : ∀ a ∈ P, Partition α)
-    (hQs : ∀ a, (h : a ∈ P) → (Qs a h).supp ≤ a) :
+lemma supp_bind (hQs : ∀ a, (h : a ∈ P) → (Qs a h).supp ≤ a) :
     (P.bind Qs hQs).supp = ⨆ a : P, (Qs a a.prop).supp := by
-  rw [← sSup_eq, coe_bind, sSup_iUnion]; rfl
+  rw [← sSup_eq, coe_bind, sSup_iUnion]
+  rfl
 
 end Bind
 
@@ -419,8 +402,7 @@ instance instSemilatticeInf : SemilatticeInf (Partition α) where
 /-- Membership in a meet is equivalent to being a nontrivial meet of parts from each
 partition. -/
 @[simp]
-lemma mem_inf_iff {a : α} :
-    a ∈ P ⊓ Q ↔ (∃ p ∈ P, ∃ q ∈ Q, p ⊓ q = a) ∧ a ≠ ⊥ := by
+lemma mem_inf_iff {a : α} : a ∈ P ⊓ Q ↔ (∃ p ∈ P, ∃ q ∈ Q, p ⊓ q = a) ∧ a ≠ ⊥ := by
   change a ∈ (P.bind _ _).parts ↔ _
   simp [and_comm, eq_comm]
 
