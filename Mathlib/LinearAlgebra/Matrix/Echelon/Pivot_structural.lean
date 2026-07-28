@@ -70,16 +70,15 @@ theorem IsPivot.isRowEchelon [Preorder m] [LinearOrder n] (h : A.IsPivot l) :
   · rw [h₂]
     exact WithTop.coe_lt_top j₂
   · have h₁ : l i₁ ≠ ⊤ := fun ht => h₂ (top_le_iff.mp (ht ▸ h.monotone hlt.le))
-    refine lt_of_le_of_lt (not_lt.mp ?_) (h.lt_of_lt_of_ne_top hlt h₁)
-    intro hc
-    obtain ⟨c₁, hc₁, hcj⟩ := WithTop.lt_iff_exists_coe.mp hc
-    exact (h.isLeadingEntry i₁).2 c₁ hc₁ (hz c₁ (WithTop.coe_lt_coe.mp hcj))
+    obtain ⟨c₁, hc₁⟩ := WithTop.ne_top_iff_exists.mp h₁
+    have hj : (j₂ : WithTop n) ≤ c₁ := WithTop.coe_le_coe.mpr <| le_of_not_gt fun hgt =>
+      (h.isLeadingEntry i₁).2 c₁ hc₁.symm (hz c₁ hgt)
+    exact lt_of_le_of_lt (hc₁ ▸ hj) (h.lt_of_lt_of_ne_top hlt h₁)
 
 /-- The pivot map of a matrix is unique. -/
 theorem IsPivot.unique [Preorder m] [LinearOrder n] {l' : m → WithTop n}
-    (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' := by
-  funext i
-  exact (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
+    (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' :=
+  funext fun i => (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
 
 end Zero
 
@@ -100,9 +99,8 @@ variable [Fintype m] [Fintype n] [Preorder n] [DecidableEq n] {A : Matrix m n R}
 
 theorem IsPivot.rank_le_card [Preorder m] [CommSemiring R] [StrongRankCondition R]
     (h : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} := by
-  refine rank_le_card_of_row_eq_zero A _ ?_
-  intro i hi
-  have htop : l i = ⊤ := of_not_not fun hne => hi ((mem_filter_univ i).mpr hne)
+  refine A.rank_le_card_of_row_eq_zero _ fun i hi => ?_
+  have htop : l i = ⊤ := by simpa using hi
   exact isLeadingEntry_top_iff.mp (htop ▸ h.isLeadingEntry i)
 
 variable [LinearOrder m] [CommRing R] [IsDomain R]
