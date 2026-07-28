@@ -6207,6 +6207,7 @@ public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Partition.Basic
 public import Mathlib.Order.Partition.Equipartition
 public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Order.Partition.Set
 public import Mathlib.Order.PiLex
 public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Order.Preorder.Finite
