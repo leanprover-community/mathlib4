@@ -214,7 +214,6 @@ lemma notMem_of_bot (hP : P.supp = ⊥) (x : α) : x ∉ P :=
   (eq_bot hP).symm ▸ notMem_bot
 
 /-- A partition has a part iff it is not the empty partition. -/
-@[simp]
 lemma parts_nonempty_iff (P : Partition α) : P.parts.Nonempty ↔ P ≠ ⊥ := by
   refine ⟨?_, fun hP ↦ nonempty_iff_ne_empty.mpr <| mt (coe_eq_empty_iff P).mp hP⟩
   rintro ⟨x, hx⟩ rfl

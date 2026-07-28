@@ -44,8 +44,7 @@ proved separately.
 -/
 
 @[expose] public section
-variable {α : Type*} {S : Set (Set α)} {s t : Set α} {a b c x y z : α}
-  {P Q : Partition (Set α)}
+variable {α : Type*} {S : Set (Set α)} {s t : Set α} {a b c x y z : α} {P Q : Partition (Set α)}
 
 open Set
 
@@ -271,23 +270,13 @@ lemma forall_apply_eq_apply_iff (hf : IsRepFun P f) (a) :
 
 lemma apply_eq_apply_iff' (hf : IsRepFun P f) :
     f a = f b ↔ (a = b ∧ ∀ c, f a = f c ↔ a = c) ∨ P.Rel a b := by
-  obtain h1 | h2 := hf.forall_apply_eq_apply_iff a
-  · refine ⟨by grind, ?_⟩
-    rintro (h | h)
-    · exact congrArg _ h.1
-    exact hf.apply_eq_apply h
-  grind
+  obtain h1 | h2 := hf.forall_apply_eq_apply_iff a <;> grind
 
 lemma idem (hf : IsRepFun P f) : f (f a) = f a := by
-  obtain (ha | ha) := em (a ∈ P.supp)
-  · rw [eq_comm, hf.apply_eq_apply_iff_rel ha]
-    exact hf.rel_apply ha
-  simp_rw [hf.apply_of_notMem ha]
+  obtain (ha | ha) := em (a ∈ P.supp) <;> grind
 
 theorem apply_apply (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) = f x := by
-  obtain (hx | hx) := em (x ∈ P.supp)
-  · exact hf.apply_eq_apply (hg.rel_apply hx).symm
-  rw [hg.apply_of_notMem hx, hf.apply_of_notMem hx]
+  obtain (hx | hx) := em (x ∈ P.supp) <;> grind
 
 /-- Any partially defined representative function extends to a complete one. -/
 lemma exists_extend_partial (P : Partition (Set α)) (f₀ : t → α)
@@ -303,12 +292,7 @@ lemma exists_extend_partial (P : Partition (Set α)) (f₀ : t → α)
     push Not at h
     exact P.rep_rel (P.partOf_mem ha) (P.mem_partOf ha)
   · simp_rw [hfdef, dif_pos hab.left_mem, dif_pos hab.right_mem]
-    split_ifs with h₁ h₂ h₂
-    · exact h_eq _ _ <| (hab.symm.trans h₁.choose_spec).symm.trans h₂.choose_spec
-    · exact h₂ ⟨_, hab.symm.trans h₁.choose_spec⟩ |>.elim
-    · exact h₁ ⟨_, hab.trans h₂.choose_spec⟩ |>.elim
-    congr 1
-    rwa [← rel_iff_partOf_eq_partOf_of_mem _ hab.left_mem hab.right_mem]
+    split_ifs with h₁ h₂ h₂ <;> grind
   obtain (ha | ha) := em (a.1 ∈ P.supp) |>.symm
   · simp [hfdef, ha, h_notMem _ ha]
   simp only [hfdef, ha, ↓reduceDIte]
