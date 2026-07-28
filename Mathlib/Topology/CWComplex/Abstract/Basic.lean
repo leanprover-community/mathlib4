@@ -44,7 +44,7 @@ The two approaches are equivalent but serve different purposes:
   Currently there is no way to move between the two definitions.
 -/
 
-@[expose] public section
+public section
 
 open TopCat
 

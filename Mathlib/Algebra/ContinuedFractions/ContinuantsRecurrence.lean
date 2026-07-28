@@ -35,15 +35,14 @@ theorem conts_recurrenceAux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = so
     (nth_contsAux_eq : g.contsAux n = ppred)
     (succ_nth_contsAux_eq : g.contsAux (n + 1) = pred) :
     g.conts (n + 1) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
-  simp [nth_cont_eq_succ_nth_contAux,
+  rw [nth_cont_eq_succ_nth_contAux,
     contsAux_recurrence nth_s_eq nth_contsAux_eq succ_nth_contsAux_eq]
 
 /-- Shows that `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂` and `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`. -/
 theorem conts_recurrence {gp ppred pred : Pair K} (succ_nth_s_eq : g.s.get? (n + 1) = some gp)
     (nth_conts_eq : g.conts n = ppred) (succ_nth_conts_eq : g.conts (n + 1) = pred) :
-    g.conts (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
-  rw [nth_cont_eq_succ_nth_contAux] at nth_conts_eq succ_nth_conts_eq
-  exact conts_recurrenceAux succ_nth_s_eq nth_conts_eq succ_nth_conts_eq
+    g.conts (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ :=
+  contsAux_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq
 
 /-- Shows that `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂`. -/
 theorem nums_recurrence {gp : Pair K} {ppredA predA : K}

@@ -136,6 +136,11 @@ instance : IsStableUnderRetracts (retractClosure P) where
     rintro X Y r₁ ⟨Z, hZ, ⟨r₂⟩⟩
     refine ⟨Z, hZ, ⟨r₁.trans r₂⟩⟩
 
+@[simp]
+lemma retractClosure_retractClosure :
+    P.retractClosure.retractClosure = P.retractClosure :=
+  retractClosure_eq_self P.retractClosure
+
 instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     ObjectProperty.EssentiallySmall.{w} P.retractClosure where
   exists_small_le' := by

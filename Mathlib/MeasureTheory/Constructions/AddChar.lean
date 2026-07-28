@@ -19,7 +19,7 @@ discrete measurable space.
 Give the definition in the correct generality.
 -/
 
-@[expose] public section
+public section
 
 namespace AddChar
 variable {A M : Type*} [AddMonoid A] [Monoid M] [MeasurableSpace A] [MeasurableSpace M]

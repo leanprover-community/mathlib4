@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Patrick Massot
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
@@ -393,7 +394,44 @@ protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [
     HasCompactMulSupport (1 : α → β) := by
   simp [HasCompactMulSupport]
 
+variable (α β) in
+/-- The submonoid of functions `α → β` with compact multiplicative support. -/
+@[to_additive /-- The additive submonoid of functions `α → β` with compact support. -/]
+def HasCompactMulSupport.submonoid : Submonoid (α → β) where
+  carrier := {f | HasCompactMulSupport f}
+  one_mem' := .one
+  mul_mem' := .mul
+
+@[to_additive (attr := simp)]
+theorem HasCompactMulSupport.mem_submonoid_iff {f : α → β} :
+    f ∈ HasCompactMulSupport.submonoid α β ↔ HasCompactMulSupport f :=
+  Iff.rfl
+
+@[to_additive]
+theorem HasCompactMulSupport.list_prod {α β : Type*} [TopologicalSpace α] [Monoid β]
+    {l : List (α → β)} (hl : ∀ f ∈ l, HasCompactMulSupport f) :
+    HasCompactMulSupport l.prod :=
+  list_prod_mem (S := HasCompactMulSupport.submonoid α β) hl
+
 end Monoid
+
+section CommMonoid
+
+variable [TopologicalSpace α] [CommMonoid β]
+
+@[to_additive]
+theorem HasCompactMulSupport.multiset_prod
+    (m : Multiset (α → β)) (hm : ∀ f ∈ m, HasCompactMulSupport f) :
+    HasCompactMulSupport m.prod :=
+  multiset_prod_mem (S := HasCompactMulSupport.submonoid α β) m hm
+
+@[to_additive]
+theorem HasCompactMulSupport.finset_prod {ι : Type*}
+    {s : Finset ι} {f : ι → α → β} (hf : ∀ i ∈ s, HasCompactMulSupport (f i)) :
+    HasCompactMulSupport (∏ i ∈ s, f i) :=
+  prod_mem (S := HasCompactMulSupport.submonoid α β) hf
+
+end CommMonoid
 
 section DivisionMonoid
 
@@ -490,7 +528,7 @@ theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [O
         rw [inter_assoc] at hz
         exact mem_of_mem_inter_left hz
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
-      simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
+      simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_ofPred_eq, mem_iInter,
         and_imp] at hz
       suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
         refine hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => ?_
@@ -498,7 +536,7 @@ theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [O
         contrapose hz
         simp [hz, subset_mulTSupport (f i) hi]
       intro i hi
-      simp only [Finite.coe_toFinset, mem_setOf_eq]
+      simp only [Finite.coe_toFinset, mem_ofPred_eq]
       exact ⟨z, ⟨hi, hzn⟩⟩
 
 @[to_additive]

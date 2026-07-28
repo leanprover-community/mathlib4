@@ -20,7 +20,7 @@ It suffices to check that preimages of affine open sets are compact
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -56,14 +56,11 @@ lemma Scheme.Hom.isCompact_preimage [QuasiCompact f] {U : Opens Y}
     (hU : IsCompact (U : Set Y)) : IsCompact (f ⁻¹ᵁ U : Set X) :=
   f.isSpectralMap.2 U.2 hU
 
-@[deprecated (since := "2025-10-07")]
-alias quasiCompact_iff_spectral := quasiCompact_iff_isSpectralMap
-
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
   constructor
   intro U _ hU'
-  convert hU'.image (inv f.base).hom.continuous_toFun using 1
+  convert! hU'.image (inv f.base).hom.continuous_toFun using 1
   rw [Set.image_eq_preimage_of_inverse]
   · delta Function.LeftInverse
     exact IsIso.inv_hom_id_apply f.base
@@ -85,24 +82,16 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens {U : Set X} :
   · rw [Subtype.range_coe]; exact X.isBasis_affineOpens
   · exact fun i => i.2.isCompact
 
-@[deprecated (since := "2025-10-14")]
-alias isCompactOpen_iff_eq_finset_affine_union :=
-  isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens
-
 theorem isCompact_iff_finite_and_eq_biUnion_affineOpens {U : X.Opens} :
     IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
-  convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) using 4 with s
+  convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) with s
   · simp [U.isOpen]
-  · convert SetLike.coe_injective.eq_iff.symm; simp
+  · convert! SetLike.coe_injective.eq_iff.symm; simp
 
 theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_basicOpen [IsAffine X] {U : Set X} :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set Γ(X, ⊤), s.Finite ∧ U = ⋃ i ∈ s, X.basicOpen i :=
   (isBasis_basicOpen X).isCompact_open_iff_eq_finite_iUnion _
     (fun _ => ((isAffineOpen_top _).basicOpen _).isCompact) _
-
-@[deprecated (since := "2025-10-14")]
-alias isCompactOpen_iff_eq_basicOpen_union :=
-  isCompact_and_isOpen_iff_finite_and_eq_biUnion_basicOpen
 
 variable {f} in
 theorem quasiCompact_iff_forall_isAffineOpen :
@@ -114,19 +103,14 @@ theorem quasiCompact_iff_forall_isAffineOpen :
   simp only [Set.preimage_iUnion]
   exact Set.Finite.isCompact_biUnion hS (fun i _ => H i i.prop)
 
-@[deprecated (since := "2025-10-14")]
-alias quasiCompact_iff_forall_affine := quasiCompact_iff_forall_isAffineOpen
-
-set_option backward.isDefEq.respectTransparency false in
 theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
-  classical
   refine isCompact_iff_finite_and_eq_biUnion_affineOpens.mpr ?_
   obtain ⟨s, hs, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hU
   let g : s → X.affineOpens := fun V ↦ ⟨V.1 ⊓ X.basicOpen f, by
     rw [← X.basicOpen_res _ (homOfLE ((le_iSup₂ V.1 V.2).trans_eq e.symm)).op]
     exact V.1.2.basicOpen _⟩
-  haveI : Finite s := hs.to_subtype
+  have : Finite s := hs.to_subtype
   refine ⟨Set.range g, Set.finite_range g, ?_⟩
   rw [iSup_range, ← iSup_inf_eq, iSup_subtype, ← e, inf_eq_right.mpr (X.basicOpen_le f)]
 
@@ -149,10 +133,12 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
         Opens.iSup_mk, Opens.coe_mk]
       exact isCompact_iUnion fun i => isCompact_iff_compactSpace.mpr (hS' i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X ↔ QuasiCompact (terminal.from X) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X : Scheme} [CompactSpace X] : QuasiCompact X.toSpecΓ :=
   HasAffineProperty.iff_of_isAffine.mpr ‹_›
 
@@ -174,10 +160,11 @@ instance quasiCompact_isStableUnderComposition :
 instance : MorphismProperty.IsMultiplicative @QuasiCompact where
   id_mem _ := inferInstance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance quasiCompact_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiCompact := by
-  letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
+  let := HasAffineProperty.isLocal_affineProperty @QuasiCompact
   apply HasAffineProperty.isStableUnderBaseChange
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g h
@@ -188,12 +175,15 @@ instance quasiCompact_isStableUnderBaseChange :
 
 variable {Z : Scheme.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [QuasiCompact f] : QuasiCompact (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -220,6 +210,7 @@ lemma isCompact_iff_exists {U : X.Opens} :
   simp only [Set.image_univ, Scheme.Opens.range_ι]
   rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsOpenImmersion.lift_fac]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01K9]
 nonrec lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     IsClosedMap f ↔ SpecializingMap f := by
@@ -264,7 +255,6 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
   obtain ⟨n, e⟩ := (hU.isLocalization_basicOpen f).exists_of_eq _ H
   exact ⟨n, by simpa [mul_comm x] using e⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x : Γ(X, U)` is zero on `D(f)` for some `f : Γ(X, U)`, and `U` is quasi-compact, then
 `f ^ n * x = 0` for some `n`. -/
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
@@ -283,13 +273,13 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   swap
   · change (X.presheaf.map (homOfLE _).op) ((X.presheaf.map (homOfLE _).op).hom x) = 0
     have H : (X.presheaf.map (homOfLE _).op) x = 0 := H
-    convert congr_arg (X.presheaf.map (homOfLE _).op).hom H
+    convert! congr_arg (X.presheaf.map (homOfLE _).op).hom H
     · simp only [← CommRingCat.comp_apply, ← Functor.map_comp]
       · rfl
     · rw [map_zero]
     · simp only [Scheme.basicOpen_res, inf_le_right]
   choose n hn using H'
-  haveI := hs.to_subtype
+  have := hs.to_subtype
   cases nonempty_fintype s
   use Finset.univ.sup n
   suffices ∀ i : s, X.presheaf.map (homOfLE (h₁ i)).op (f ^ Finset.univ.sup n * x) = 0 by
@@ -308,7 +298,6 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   rwa [mul_zero, ← mul_assoc, ← pow_add, tsub_add_cancel_of_le] at hn
   apply Finset.le_sup (Finset.mem_univ i)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A section over a compact open of a scheme is nilpotent if and only if its associated
 basic open is empty. -/
 lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
@@ -332,7 +321,6 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot {X : Scheme.{u}}
     IsNilpotent f ↔ X.basicOpen f = ⊥ :=
   isNilpotent_iff_basicOpen_eq_bot_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
 lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}

@@ -277,29 +277,28 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   -- We will get a contradiction from the fact that there is a countable set `u` with positive
   -- measure in the complement of `⋃ n, s n`.
   rcases h (⋃ n, ↑(s n)) (countable_iUnion fun n => (s n).2) with ⟨t, t_count, ht⟩
-  let u : A := ⟨t \ ⋃ n, ↑(s n), t_count.mono diff_subset⟩
+  let u : A := ⟨t \ ⋃ n, ↑(s n), t_count.mono sdiff_subset⟩
   set ε := f ↑u with hε
   have ε_pos : 0 < ε := ht
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
     rw [div_le_iff₀' (show (0 : ℝ) < 2 by simp), hε]
-    convert hF (s n) u using 2
-    · dsimp
-      ext x
-      simp only [u, not_exists, mem_iUnion, mem_diff]
+    convert! hF (s n) u using 2
+    · ext x
+      simp only [u, not_exists, mem_iUnion, mem_sdiff]
       tauto
     · congr 1
-      simp only [G, s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
+      simp only [G, s, Function.iterate_succ', union_sdiff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction n with
     | zero =>
       simp only [s, empty, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
-        Function.iterate_zero, Subtype.coe_mk, le_rfl]
+        Function.iterate_zero, le_rfl]
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
-        simpa only [s, Function.iterate_succ', union_diff_self]
-          using (diff_union_of_subset subset_union_left).symm
+        simpa only [s, Function.iterate_succ', union_sdiff_self]
+          using! (sdiff_union_of_subset subset_union_left).symm
       rw [this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
@@ -316,13 +315,13 @@ theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
   rcases (-f).exists_discrete_support_nonpos with ⟨s₂, s₂_count, h₂⟩
   refine ⟨s₁ ∪ s₂, s₁_count.union s₂_count, fun t ht => le_antisymm ?_ ?_⟩
   · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₁ := by
-      rw [diff_diff, union_comm, union_assoc, union_self]
+      rw [sdiff_sdiff, union_comm, union_assoc, union_self]
     rw [this]
-    exact h₁ _ (ht.mono diff_subset)
-  · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₂ := by rw [diff_diff, union_assoc, union_self]
+    exact h₁ _ (ht.mono sdiff_subset)
+  · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₂ := by rw [sdiff_sdiff, union_assoc, union_self]
     rw [this]
     simp only [neg_nonpos, neg_apply] at h₂
-    exact h₂ _ (ht.mono diff_subset)
+    exact h₂ _ (ht.mono sdiff_subset)
 
 /-- A countable set outside of which the measure gives zero mass to countable sets. We are not
 claiming this set is unique, but we make an arbitrary choice of such a set. -/
@@ -350,7 +349,7 @@ theorem eq_add_parts (f : BoundedAdditiveMeasure α) (s : Set α) :
     f s = f.discretePart s + f.continuousPart s := by
   simp only [discretePart, continuousPart, restrict_apply]
   rw [← f.additive, ← union_inter_distrib_right]
-  · simp only [union_univ, union_diff_self, univ_inter]
+  · simp only [union_univ, union_sdiff_self, univ_inter]
   · have : Disjoint f.discreteSupport (univ \ f.discreteSupport) := disjoint_sdiff_self_right
     exact this.mono inter_subset_left inter_subset_left
 
@@ -361,13 +360,13 @@ theorem discretePart_apply (f : BoundedAdditiveMeasure α) (s : Set α) :
 theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α) (s : Set α)
     (hs : s.Countable) : f.continuousPart s = 0 := by
   simp only [continuousPart, restrict_apply]
-  convert f.apply_countable s hs using 2
+  convert f.apply_countable s hs
   ext x
   simp [and_comm]
 
-theorem continuousPart_apply_diff (f : BoundedAdditiveMeasure α) (s t : Set α) (hs : s.Countable) :
+theorem continuousPart_apply_sdiff (f : BoundedAdditiveMeasure α) (s t : Set α) (hs : s.Countable) :
     f.continuousPart (t \ s) = f.continuousPart t := by
-  conv_rhs => rw [← diff_union_inter t s]
+  conv_rhs => rw [← sdiff_union_inter t s]
   rw [additive, left_eq_add]
   · exact continuousPart_apply_eq_zero_of_countable _ _ (hs.mono inter_subset_right)
   · exact Disjoint.mono_right inter_subset_right disjoint_sdiff_self_left
@@ -412,7 +411,7 @@ theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology �
   let f := (evalCLM ℝ x).toBoundedAdditiveMeasure
   calc
     f.continuousPart s = f.continuousPart (s \ {x}) :=
-      (continuousPart_apply_diff _ _ _ (countable_singleton x)).symm
+      (continuousPart_apply_sdiff _ _ _ (countable_singleton x)).symm
     _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := by simp [continuousPart]
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
@@ -433,7 +432,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
-    (μ : Measure α) [IsFiniteMeasure μ] [NoAtoms μ] (s : Set α) (hs : MeasurableSet s) :
+    (μ : Measure α) [IsFiniteMeasure μ] [NullSingletonClass μ] (s : Set α) (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = μ.real s := by
   let f := μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure
   change f (univ \ f.discreteSupport ∩ s) = μ.real s
@@ -443,8 +442,8 @@ theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSin
         (MeasurableSet.univ.diff (Countable.measurableSet f.countable_discreteSupport)) hs
   simp only [measureReal_def]
   congr 1
-  rw [inter_comm, ← inter_diff_assoc, inter_univ]
-  exact measure_diff_null (f.countable_discreteSupport.measure_zero _)
+  rw [inter_comm, ← inter_sdiff_assoc, inter_univ]
+  exact measure_sdiff_null (f.countable_discreteSupport.measure_zero _)
 
 end
 
@@ -457,27 +456,13 @@ along horizontals). Such a set cannot be measurable as it would contradict Fubin
 We need the continuum hypothesis to construct it.
 -/
 
-
+-- TODO: deprecate in favor of `Cardinal.exists_rel_mk_fibers_lt`
 theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
-  rcases Cardinal.exists_ord_eq ℝ with ⟨r, hr, H⟩
-  refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
-  · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
-      ext y
-      simp only [true_and, mem_univ, mem_setOf_eq, mem_insert_iff, union_singleton, mem_diff]
-      rcases trichotomous_of r x y with (h | rfl | h)
-      · simp only [h, not_or, false_iff, not_true]
-        constructor
-        · rintro rfl; exact irrefl_of r y h
-        · exact asymm h
-      · simp only [true_or, iff_true]; exact irrefl x
-      · simp only [h, iff_true, or_true]; exact asymm h
-    rw [this]
-    apply Countable.union _ (countable_singleton _)
-    rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff, ← Hcont]
-    exact Cardinal.card_typein_lt x H
-  · rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff, ← Hcont]
-    exact Cardinal.card_typein_lt y H
+  obtain ⟨r, hr₁, hr₂⟩ := Cardinal.exists_rel_mk_fibers_lt ℝ
+  refine ⟨fun x ↦ Set.ofPred (r x), ?_, ?_⟩
+  · simpa [Hcont, ← Set.compl_eq_univ_sdiff] using! hr₁
+  · simpa [Hcont] using hr₂
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/
@@ -516,7 +501,7 @@ theorem apply_f_eq_continuousPart (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy �
     φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
   set ψ := φ.toBoundedAdditiveMeasure
   have : φ (f Hcont x) = ψ (spf Hcont x) := rfl
-  have U : univ = spf Hcont x ∪ univ \ spf Hcont x := by simp only [union_univ, union_diff_self]
+  have U : univ = spf Hcont x ∪ univ \ spf Hcont x := by simp only [union_univ, union_sdiff_self]
   rw [this, eq_add_parts, discretePart_apply, hx, ψ.empty, zero_add, U,
     ψ.continuousPart.additive _ _ disjoint_sdiff_self_right,
     ψ.continuousPart_apply_eq_zero_of_countable _ (countable_compl_spf Hcont x), add_zero]
@@ -527,7 +512,7 @@ theorem countable_ne (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ)
     {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)} ⊆
       {x | (φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x).Nonempty} := by
     intro x hx
-    simp only [mem_setOf] at *
+    simp only [mem_ofPred] at *
     contrapose! hx
     exact apply_f_eq_continuousPart Hcont φ x hx |>.symm
   have B :
@@ -535,7 +520,7 @@ theorem countable_ne (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ)
       ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by
     intro x hx
     dsimp at hx
-    simp only [exists_prop, mem_iUnion, mem_setOf_eq]
+    simp only [exists_prop, mem_iUnion, mem_ofPred_eq]
     exact hx
   apply Countable.mono (Subset.trans A B)
   exact Countable.biUnion (countable_discreteSupport _) fun a _ => countable_spf_mem Hcont a
@@ -546,7 +531,7 @@ theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ 
   apply ae_restrict_of_ae
   refine measure_mono_null ?_ ((countable_ne Hcont φ).measure_zero _)
   intro x
-  simp only [imp_self, mem_setOf_eq, mem_compl_iff]
+  simp only [imp_self, mem_ofPred_eq, mem_compl_iff]
 
 theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by

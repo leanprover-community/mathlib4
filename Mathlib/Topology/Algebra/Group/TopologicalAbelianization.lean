@@ -28,7 +28,7 @@ group, topological abelianization
 
 -/
 
-@[expose] public section
+public section
 
 open scoped commutatorElement
 

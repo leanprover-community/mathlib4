@@ -76,8 +76,8 @@ theorem uniformContinuous_weierstrass {a : ℝ} (ha : a ∈ Set.Ioo 0 1) (b : �
 
 To show that Weierstrass function $f(x)$ is not differentiable at any $x$, we choose a sequence
 $\{x_m\}$ such that, as $m\to\infty$
- - $\{x_m\}$ converges to $x$
- - The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded,
+- $\{x_m\}$ converges to $x$
+- The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded,
    which means the derivative $f'(x)$ cannot exist.
 -/
 
@@ -160,7 +160,7 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
   · -- Show that the first term (after simplification) satisfies the bound
     suffices a ^ m * (2 / 3 * b ^ m * |seq b x m - x|) ≤
         a ^ m * (1 + cos ((b ^ m * x - ⌊b ^ m * x + 2⁻¹⌋) * π)) by
-      convert this using 1
+      convert! this using 1
       ring
     refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg ha.le _)
     trans 1
@@ -261,7 +261,7 @@ theorem not_differentiableAt_weierstrass
   obtain ⟨f', h⟩ := this
   have : Tendsto (fun m ↦ (seq b x m - x)⁻¹ * (weierstrass a b (seq b x m) - weierstrass a b x))
       atTop (𝓝 (f' 1)) := by
-    convert (h.lim_real 1).comp (tendsto_seq_sub_inv hb1 x)
+    convert! (h.lim_real 1).comp (tendsto_seq_sub_inv hb1 x)
     simp
   have h := (continuous_abs.tendsto _).comp this
   contrapose! h
@@ -274,7 +274,7 @@ theorem not_differentiableAt_weierstrass
     exact weierstrass_slope ha hb hab' x m
   have hpos : 0 < 2 / 3 - π / (a * b - 1) := by
     rw [sub_pos, div_lt_iff₀ (by simpa using hab'), ← div_lt_iff₀' (by norm_num), lt_sub_iff_add_lt]
-    convert hab using 1
+    convert! hab using 1
     grind
   exact (tendsto_const_nhds_iff.mpr rfl).pos_mul_atTop hpos (tendsto_pow_atTop_atTop_of_one_lt hab')
 

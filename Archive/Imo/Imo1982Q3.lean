@@ -74,7 +74,7 @@ end Imo1982Q3
 theorem imo1982_q3a (hx : Antitone x) (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     ∃ n : ℕ, 3.999 ≤ ∑ k ∈ range n, (x k) ^ 2 / x (k + 1) := by
   use 4000
-  convert Imo1982Q3.ineq (Nat.succ_ne_zero 3998) hx h0 hp
+  convert! Imo1982Q3.ineq (Nat.succ_ne_zero 3998) hx h0 hp
   norm_num
 
 /-- Part b of the problem is solved by `x k = (1 / 2) ^ k`. -/
@@ -88,6 +88,6 @@ theorem imo1982_q3b : ∃ x : ℕ → ℝ, Antitone x ∧ x 0 = 1 ∧ (∀ k, 0 
     simp_rw [← pow_mul, pow_succ, ← div_eq_mul_inv, div_div_eq_mul_div, mul_comm, mul_div_assoc,
       ← mul_sum, div_eq_mul_inv, this, ← two_add_two_eq_four, ← mul_two,
       mul_lt_mul_iff_of_pos_left two_pos]
-    convert NNReal.coe_lt_coe.2 <| geom_sum_lt (inv_ne_zero two_ne_zero) two_inv_lt_one n
+    convert! NNReal.coe_lt_coe.2 <| geom_sum_lt (inv_ne_zero two_ne_zero) two_inv_lt_one n
     · simp
     · norm_num

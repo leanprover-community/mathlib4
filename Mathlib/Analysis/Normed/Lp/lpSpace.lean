@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
+Authors: Heather Macbeth, Jireh Loreaux
 -/
 module
 
@@ -133,6 +133,13 @@ theorem memℓp_gen_iff'' {f : (i : α) → E i} (hp : 0 < p.toReal) :
   refine ⟨fun hf ↦ ?_, fun ⟨C, _, hC⟩ ↦ memℓp_gen' hC⟩
   exact ⟨_, tsum_nonneg fun i ↦ (by positivity), memℓp_gen_iff' hp |>.mp hf⟩
 
+/-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
+theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
+  rcases p.trichotomy with (rfl | rfl | _h)
+  · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
+  · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α ↦ ‖f i‖).toFinite)
+  · cases nonempty_fintype α; exact memℓp_gen ⟨Finset.univ.sum _, hasSum_fintype _⟩
+
 theorem zero_memℓp : Memℓp (0 : ∀ i, E i) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
@@ -248,7 +255,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
     refine (hf.finite_dsupport.union hg.finite_dsupport).subset fun i => ?_
-    simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
+    simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_ofPred_eq]
     contrapose!
     rintro ⟨hf', hg'⟩
     simp [hf', hg']
@@ -265,24 +272,26 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   · refine (Real.rpow_le_rpow (norm_nonneg _) (norm_add_le _ _) hp.le).trans ?_
     dsimp only [C]
     split_ifs with h
-    · simpa using NNReal.coe_le_coe.2 (NNReal.rpow_add_le_add_rpow ‖f i‖₊ ‖g i‖₊ hp.le h.le)
+    · simpa using! NNReal.coe_le_coe.2 (NNReal.rpow_add_le_add_rpow ‖f i‖₊ ‖g i‖₊ hp.le h.le)
     · let F : Fin 2 → ℝ≥0 := ![‖f i‖₊, ‖g i‖₊]
       simp only [not_lt] at h
-      simpa [Fin.sum_univ_succ] using
+      simpa [Fin.sum_univ_succ] using!
         Real.rpow_sum_le_const_mul_sum_rpow_of_nonneg Finset.univ h fun i _ => (F i).coe_nonneg
 
 theorem sub {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (f - g) p := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
-theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s, Memℓp (f i) p) :
+theorem finsetSum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s, Memℓp (f i) p) :
     Memℓp (fun a => ∑ i ∈ s, f i a) p := by
-  haveI : DecidableEq ι := Classical.decEq _
+  have : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
   · simp only [zero_mem_ℓp', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
+
+@[deprecated (since := "2026-04-08")] alias finset_sum := finsetSum
 
 section IsBoundedSMul
 
@@ -334,10 +343,24 @@ the same ambient group, which permits lemma statements like `lp.monotone` (below
 @[nolint unusedArguments]
 def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i
-deriving AddCommGroup
 
-instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
+namespace PreLp
+
+-- The `SMul` instance exists to avoid a zsmul diamond.
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] in
+deriving instance SMul 𝕜, AddCommGroup for PreLp E
+
+@[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
+@[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
+@[simp] lemma sub_apply {x y : PreLp E} {i : α} : (x - y) i = x i - y i := rfl
+@[simp] lemma neg_apply {x : PreLp E} {i : α} : (-x) i = -(x i) := rfl
+@[simp] lemma nsmul_apply {n : ℕ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+@[simp] lemma zsmul_apply {n : ℤ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+
+instance unique [IsEmpty α] : Unique (PreLp E) :=
   inferInstanceAs <| Unique (∀ _, _)
+
+end PreLp
 
 /-- **The (little) ℓᵖ space**: The additive subgroup of a type synonym of `Π i, E i`, which consists
 of those functions `f` such that `Memℓp f p` (i.e., `f` has finite `p`-norm).
@@ -410,7 +433,7 @@ theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x :=
 
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) :=
-  (lp E p).val_finset_sum f s
+  (lp E p).val_finsetSum f s
 
 @[simp]
 theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
@@ -474,7 +497,6 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   · rw [lp.norm_eq_tsum_rpow hp f]
     exact Real.rpow_nonneg (tsum_nonneg fun i ↦ by positivity) _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -488,15 +510,15 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   refine ⟨fun h => ?_, by rintro rfl; exact norm_zero⟩
   rcases p.trichotomy with (rfl | rfl | hp)
   · ext i
-    have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using h
+    have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using! h
     have : (¬f i = 0) = False := congr_fun this i
     tauto
   · rcases isEmpty_or_nonempty α with _i | _i
     · simp [eq_iff_true_of_subsingleton]
-    have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using lp.isLUB_norm f
+    have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using! lp.isLUB_norm f
     ext i
     have : ‖f i‖ = 0 := le_antisymm (H.1 ⟨i, rfl⟩) (norm_nonneg _)
-    simpa using this
+    simpa using! this
   · have hf : HasSum (fun i : α => ‖f i‖ ^ p.toReal) 0 := by
       have := lp.hasSum_norm hp f
       rwa [h, Real.zero_rpow hp.ne'] at this
@@ -504,7 +526,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     rw [hasSum_zero_iff_of_nonneg this] at hf
     ext i
     have : f i = 0 ∧ p.toReal ≠ 0 := by
-      simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using congr_fun hf i
+      simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using! congr_fun hf i
     exact this.1
 
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
@@ -580,12 +602,12 @@ section ComparePointwise
 
 theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ ‖f‖ := by
   rcases eq_or_ne p ∞ with (rfl | hp')
-  · haveI : Nonempty α := ⟨i⟩
+  · have : Nonempty α := ⟨i⟩
     exact (isLUB_norm f).1 ⟨i, rfl⟩
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp hp'
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i ↦ by positivity
   rw [← Real.rpow_le_rpow_iff (norm_nonneg _) (norm_nonneg' _) hp'']
-  convert le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
+  convert! le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
 
 lemma lipschitzWith_one_eval (p : ℝ≥0∞) [Fact (1 ≤ p)] (i : α) :
     LipschitzWith 1 (fun x : lp E p ↦ x i) :=
@@ -626,7 +648,7 @@ lemma norm_mono {F : α → Type*} [∀ i, NormedAddCommGroup (F i)]
     ‖x‖ ≤ ‖y‖ := by
   obtain (rfl | rfl | hp) := p.trichotomy
   · exact hp rfl |>.elim
-  · exact norm_le_of_forall_le (by positivity) fun i ↦(h i).trans <| norm_apply_le_norm hp y i
+  · exact norm_le_of_forall_le (by positivity) fun i ↦ (h i).trans <| norm_apply_le_norm hp y i
   · exact norm_le_of_forall_sum_le hp (norm_nonneg' _) fun s ↦ calc
       ∑ i ∈ s, ‖x i‖ ^ p.toReal
       _ ≤ ∑ i ∈ s, ‖y i‖ ^ p.toReal := by gcongr with i _; exact h i
@@ -693,7 +715,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     simp_rw [← Set.range_comp, Function.comp_def] at hfc
     exact norm_le_of_forall_le (by positivity)
       fun i ↦ norm_smul_le c (f i) |>.trans <| hfc.1 ⟨i, rfl⟩
-  · letI inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
+  · let inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
     have coe_nnnorm : ∀ f : lp E p, ↑‖f‖₊ = ‖f‖ := fun _ => rfl
     suffices ‖c • f‖₊ ^ p.toReal ≤ (‖c‖₊ * ‖f‖₊) ^ p.toReal by
       rwa [NNReal.rpow_le_rpow_iff hp] at this
@@ -718,6 +740,7 @@ section Sum
 
 variable {E : Type*} [NormedAddCommGroup E]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_tsum_le (f : ℓ¹(α, E)) :
     ‖∑' i, f i‖ ≤ ‖f‖ := calc
   ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ := norm_tsum_le_tsum_norm (.of_norm (by simpa using f.2.summable))
@@ -736,7 +759,7 @@ noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
         exacts [rfl, .of_norm (by simpa using f.2.summable), .of_norm (by simpa using g.2.summable)]
       map_smul' c f := by
         simp only [coeFn_smul]
-        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable))  }
+        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable)) }
     1 (fun f ↦ by simpa using norm_tsum_le f)
 
 end Sum
@@ -837,12 +860,12 @@ instance : Mul (lp B ∞) where
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 
-instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
+instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.normedAddCommGroup, lp.nonUnitalRing with
+  { lp.nonUnitalRing, lp.normedAddCommGroup with
     norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
       ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
       _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
@@ -986,11 +1009,11 @@ variable [DecidableEq α]
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
   ⟨Pi.single i a, by
-    refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
+    refine (memℓp_zero ?_).of_exponent_ge zero_le
     refine (Set.finite_singleton i).subset ?_
     intro j
     simp only [Set.mem_singleton_iff, Ne,
-      Set.mem_setOf_eq]
+      Set.mem_ofPred_eq]
     rw [not_imp_comm]
     intro h
     exact Pi.single_eq_of_ne h _⟩
@@ -1050,7 +1073,7 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
   map_smul' := lp.single_smul p i
 
 /-- The basis for `ℓ⁰(α, 𝕜)` given by `lp.single`. -/
-@[simps]
+@[simps repr_apply]
 noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
     { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.2
@@ -1060,6 +1083,7 @@ noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
       left_inv _ := rfl
       right_inv _ := Finsupp.ext fun _ ↦ rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zeroBasis_apply (i : α) : zeroBasis i = lp.single 0 i (1 : 𝕜) := by
   ext; simp [zeroBasis, Finsupp.single_apply, Pi.single, Function.update, eq_comm]
 
@@ -1076,7 +1100,7 @@ protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Fins
 
 @[simp]
 protected theorem norm_single (hp : 0 < p) (i : α) (x : E i) : ‖lp.single p i x‖ = ‖x‖ := by
-  haveI : Nonempty α := ⟨i⟩
+  have : Nonempty α := ⟨i⟩
   induction p with
   | top =>
     simp only [norm_eq_ciSup, lp.coeFn_single]
@@ -1180,7 +1204,6 @@ theorem ext_continuousAddMonoidHom
       f.comp (singleContinuousAddMonoidHom E p i) = g.comp (singleContinuousAddMonoidHom E p i)) :
     f = g := by
   ext x
-  classical
   have := lp.hasSum_single hp x
   rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
   congr! 2 with i
@@ -1224,8 +1247,7 @@ lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
   ext; rfl
 
 lemma linearMapOfLE_comp (hpq : p ≤ q) (hqr : q ≤ r) :
-   (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) =
-     linearMapOfLE 𝕜 E (hpq.trans hqr) := by
+    (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) = linearMapOfLE 𝕜 E (hpq.trans hqr) := by
   ext; rfl
 
 end OfLE
@@ -1257,19 +1279,11 @@ open Filter
 
 open scoped Topology uniformity
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
-    UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) := by
-  have hp : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'
-  rw [uniformContinuous_pi]
-  intro i
-  rw [NormedAddCommGroup.uniformity_basis_dist.uniformContinuous_iff
-    NormedAddCommGroup.uniformity_basis_dist]
-  intro ε hε
-  refine ⟨ε, hε, ?_⟩
-  rintro f g (hfg : ‖f - g‖ < ε)
-  have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
-  exact this.trans_lt hfg
+    UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) :=
+  uniformContinuous_pi.2 fun i ↦ (lipschitzWith_one_eval p i).uniformContinuous
 
 variable {ι : Type*} {l : Filter ι} [Filter.NeBot l]
 
@@ -1290,7 +1304,7 @@ theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (h
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp' hp
   let G : (∀ a, E a) → ℝ := fun f => ∑ a ∈ s, ‖f a‖ ^ p.toReal
   have hG : Continuous G := by
-    refine continuous_finset_sum s ?_
+    refine continuous_finsetSum s ?_
     intro a _
     have : Continuous fun f : ∀ a, E a => f a := continuous_apply a
     exact this.norm.rpow_const fun _ => Or.inr hp''.le

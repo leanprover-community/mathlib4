@@ -61,16 +61,19 @@ noncomputable def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R 
       rw [coeff_mul]
       apply sum_mem
       rintro uv huv
-      exact TwoSidedIdeal.mul_mem_left _ _ _ (hg _ (le_trans (Finset.antidiagonal.snd_le huv) he)))
+      exact TwoSidedIdeal.mul_mem_left _ _ _
+        (hg _ (le_trans (Finset.HasAntidiagonal.antidiagonal.snd_le huv) he)))
     (fun {f g} hf e he ↦ by
       classical
       rw [coeff_mul]
       apply sum_mem
       rintro uv huv
-      exact TwoSidedIdeal.mul_mem_right _ _ _ (hf _ (le_trans (Finset.antidiagonal.fst_le huv) he)))
+      exact TwoSidedIdeal.mul_mem_right _ _ _
+        (hf _ (le_trans (Finset.HasAntidiagonal.antidiagonal.fst_le huv) he)))
 
 variable {σ : Type*} {R : Type*} [Ring R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A power series `f` belongs to the two-sided ideal `basis σ R ⟨J, d⟩`
 if and only if `coeff e f ∈ J` for all `e ≤ d`. -/
 theorem mem_basis_iff {f : MvPowerSeries σ R} {Jd : TwoSidedIdeal R × (σ →₀ ℕ)} :
@@ -83,18 +86,19 @@ theorem basis_le {Jd Ke : TwoSidedIdeal R × (σ →₀ ℕ)} (hJK : Jd.1 ≤ Ke
     basis σ R Jd ≤ basis σ R Ke :=
   fun _ ↦ forall_imp (fun _ h hue ↦ hJK (h (le_trans hue hed)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `basis σ R ⟨J, d⟩ ≤ basis σ R ⟨K, e⟩` if and only if `J ≤ K` and `e ≤ d`. -/
 theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ ⊤) :
     basis σ R ⟨J, d⟩ ≤ basis σ R ⟨K, e⟩ ↔ J ≤ K ∧ e ≤ d := by
   classical
   constructor
-  · simp only [basis, TwoSidedIdeal.le_iff, TwoSidedIdeal.coe_mk', setOf_subset_setOf]
+  · simp only [basis, TwoSidedIdeal.le_iff, TwoSidedIdeal.coe_mk', ofPred_subset_ofPred]
     intro h
     constructor
     · intro x hx
       have (d' : _) : coeff d' (C (σ := σ) x) ∈ J := by
         rw [coeff_C]; split_ifs <;> [exact hx; exact J.zero_mem]
-      simpa using h (C x) (fun _ _ ↦ this _) _ (zero_le _)
+      simpa using h (C x) (fun _ _ ↦ this _) _ zero_le
     · by_contra h'
       apply hK
       rw [eq_top_iff]
@@ -125,10 +129,10 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
   · intro ⟨D, I⟩ ⟨hD, hI⟩
     refine ⟨⟨I, Finset.sup hD.toFinset id⟩, hI, fun f hf d hd ↦ ?_⟩
     rw [SetLike.mem_coe, mem_basis_iff] at hf
-    convert hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
+    convert! hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
   · intro ⟨I, d⟩ hI
     refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩
-    simpa [basis, coeff_apply, Iic, Set.pi] using subset_rfl
+    simpa [basis, coeff_apply, Iic, Set.pi] using! subset_rfl
 
 /-- The topology on `MvPowerSeries` is a left linear topology
   when the ring of coefficients has a linear topology. -/
@@ -168,7 +172,7 @@ theorem isTopologicallyNilpotent_iff_constantCoeff
   refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff⟩
   replace H : Tendsto (fun n ↦ constantCoeff (f ^ n)) atTop (nhds 0) :=
     continuous_constantCoeff R |>.tendsto' 0 0 constantCoeff_zero |>.comp H
-  simpa only [map_pow] using H
+  simpa only [map_pow] using! H
 
 end LinearTopology
 

@@ -24,7 +24,9 @@ free on the images of the relations of `P'`.
 - https://stacks.math.columbia.edu/tag/07CF
 -/
 
-open Pointwise MvPolynomial TensorProduct
+open scoped Pointwise
+open MvPolynomial TensorProduct
+
 namespace Algebra.Generators
 
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
@@ -57,6 +59,7 @@ of `I/I²` in `I`. -/
 abbrev T :=
   MvPolynomial ι R ⧸ (Ideal.span <| Set.range <| Subtype.val ∘ D.f ∘ b)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `R[X₁, ..., Xₙ] → S` factors via `T`, because the `bᵢ` are in `I`. -/
 def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
@@ -65,10 +68,8 @@ def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
   simpa only [Generators.toExtension_Ring, Generators.toExtension_commRing, Function.comp_apply,
     SetLike.mem_coe, RingHom.mem_ker, ← P.algebraMap_apply] using (D.f _).property
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Algebra D.T S := D.hom.toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Nontrivial S] : Nontrivial D.T := RingHom.domain_nontrivial (algebraMap D.T S)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -86,9 +87,9 @@ abbrev gbar : D.T := D.g
 set_option backward.isDefEq.respectTransparency false in
 /-- `S` is the localization of `T` away from `S`. -/
 instance : IsLocalization.Away D.gbar S := by
-  refine .of_surjective_of_isScalarTower (n := 1) ?_ ?_ _ ?_ (by simpa using D.hg)
+  refine .of_surjective_of_isScalarTower (n := 1) ?_ ?_ _ ?_ (by simpa using! D.hg)
   · refine .of_comp (g := algebraMap P.Ring D.T) ?_
-    convert P.algebraMap_surjective
+    convert! P.algebraMap_surjective
     ext x
     exact (IsScalarTower.algebraMap_apply _ D.T S x).symm
   · simp [T, Ideal.Quotient.mk_surjective]
@@ -96,13 +97,13 @@ instance : IsLocalization.Away D.gbar S := by
     rw [← map_one (algebraMap P.Ring S), ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
     exact D.hgmem
 
-open Classical in
+open scoped Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
 We make sure the section `T → R[X₁, ..., Xₙ]` maps `-1` to `-1` and `0` to `0`. -/
 def presLeft : Presentation R D.T ι σ :=
   .naive (fun x ↦ if x = 0 then 0 else if x = -1 then -1 else
       Function.surjInv Ideal.Quotient.mk_surjective x) fun x ↦ by
-    dsimp only; split_ifs
+    split_ifs
     · next h => subst h; rfl
     · next h => subst h; rfl
     · simp [Function.surjInv_eq]
@@ -111,30 +112,32 @@ def presLeft : Presentation R D.T ι σ :=
 def kerGen (i : σ) : D.presLeft.toExtension.ker :=
   ⟨(D.f (b i)).val, Presentation.mem_ker_naive _ _ i⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity on `R[X₁, ..., Xₙ]` as a map of presentations of `T` to `S`. -/
 def fhom : D.presLeft.Hom P where
   val i := X i
   aeval_val i := by simp [RingHom.algebraMap_toAlgebra, presLeft, hom, T]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toAlgHom_fhom : D.fhom.toAlgHom = AlgHom.id R P.Ring := by
   ext : 1
   simp [fhom]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ker_presLeft_le : D.presLeft.ker ≤ P.ker := by
   intro x hx
   simpa only [toExtension_commRing, toExtension_Ring, RingHom.mem_ker,
     toExtension_algebra₂, algebraMap_apply, Ideal.Quotient.algebraMap_eq,
-    map_zero] using (algebraMap D.T S).congr_arg hx
+    map_zero] using! (algebraMap D.T S).congr_arg hx
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentHom : S ⊗[D.T] D.presLeft.toExtension.Cotangent →ₗ[S] P.toExtension.Cotangent :=
   LinearMap.liftBaseChange _ (Extension.Cotangent.map D.fhom.toExtensionHom)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     D.tensorCotangentHom (1 ⊗ₜ[D.T] Extension.Cotangent.mk x) =
@@ -144,17 +147,17 @@ lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, toExtension_Ring,
     toExtension_commRing, toExtension_algebra₂, Presentation.naive_toGenerators, RingHom.id_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The backwards direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentInv : P.toExtension.Cotangent →ₗ[S] S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
   b.constr S fun i : σ ↦ 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorCotangentInv_apply (i : σ) :
     D.tensorCotangentInv (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=
   Module.Basis.constr_basis _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma span_range_mk_kerGen : Submodule.span D.T
     (Set.range fun i ↦ Extension.Cotangent.mk (D.kerGen i)) = ⊤ := by
   refine Extension.Cotangent.span_eq_top_of_span_eq_ker _ ?_
@@ -168,7 +171,7 @@ def tensorCotangentEquiv :
   refine LinearEquiv.ofLinear D.tensorCotangentHom D.tensorCotangentInv ?_ ?_
   · refine b.ext fun i ↦ ?_
     simpa only [LinearMap.coe_comp, Function.comp_apply, tensorCotangentInv_apply,
-      tensorCotangentHom_tmul] using D.hf (b i)
+      tensorCotangentHom_tmul] using! D.hf (b i)
   · ext : 2
     refine LinearMap.ext_on_range D.span_range_mk_kerGen fun i ↦ ?_
     simp [-toExtension_commRing, -toExtension_Ring, -toExtension_algebra₂, tensorCotangentHom_tmul,
@@ -190,6 +193,7 @@ set_option backward.isDefEq.respectTransparency false in
 def pres : Presentation R S (Unit ⊕ ι) (Unit ⊕ σ) :=
   D.presRight.comp D.presLeft
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_ofComp_mk [Nontrivial S] :
     (Extension.Cotangent.map
@@ -232,6 +236,7 @@ set_option backward.isDefEq.respectTransparency false in
 def basisRight : Module.Basis Unit S D.presRight.toExtension.Cotangent :=
   Generators.basisCotangentAway S D.gbar
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The basis on the cotangent space of the constructed presentation. -/
 def basis [Nontrivial S] : Module.Basis (Unit ⊕ σ) S D.pres.toExtension.Cotangent :=
   (Module.Basis.prod D.basisRight D.basisLeft).map D.cotangentEquivProd.symm
@@ -240,8 +245,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma basis_inl [Nontrivial S] :
     D.basis (.inl ()) =
       D.cotangentEquivProd.symm (Generators.cMulXSubOneCotangent S D.gbar, 0) := by
-  simpa [basis] using Generators.basisCotangentAway_apply _ _
+  simpa [basis] using! Generators.basisCotangentAway_apply _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma basis_inr [Nontrivial S] (i : σ) :
     D.basis (.inr i) = D.cotangentEquivProd.symm (0, D.basisLeft i) := by
   simp [basis]
@@ -258,12 +264,16 @@ lemma basis_apply [Nontrivial S] (r : Unit ⊕ σ) :
   · rw [basis_inr, cotangentEquivProd_symm_apply, cotangentCompLocalizationAwayEquiv_symm_inl,
       basisLeft, Module.Basis.map_apply, tensorCotangentEquiv_symm_apply,
       LinearMap.liftBaseChange_tmul, one_smul, Extension.Cotangent.map_mk]
+    simp only [Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom, AlgHom.toRingHom_eq_coe]
+    congr! 2 with x
+    simp [pres, Presentation.comp_relation_inr, kerGen, presLeft, Generators.toComp_toAlgHom]
     rfl
 
 end PresentationOfFreeCotangent.Aux
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open PresentationOfFreeCotangent in
 /--
@@ -288,14 +298,13 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
         span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
-  classical
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
   let v (i : σ) : P.ker := f (b₀ i)
   let J : Ideal P.Ring := Ideal.span (Set.range <| Subtype.val ∘ v)
   have hJfg : P.ker.FG := by
     rw [P.ker_eq_ker_aeval_val]
     apply FinitePresentation.ker_fG_of_surjective
-    convert P.algebraMap_surjective
+    convert! P.algebraMap_surjective
     simp [P.algebraMap_eq]
   have hJ : J ≤ P.ker := by simp [J, Ideal.span_le, Set.range_subset_iff]
   suffices hJ : P.ker ≤ J ⊔ P.ker • P.ker by
@@ -316,7 +325,7 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
     Function.comp_def, ← Submodule.restrictScalars_span P.Ring S P.algebraMap_surjective]
   refine le_trans le_top (top_le_iff.mpr ?_)
   rw [Submodule.restrictScalars_eq_top_iff]
-  convert b₀.span_eq
+  convert! b₀.span_eq
   exact hf _
 
 open PresentationOfFreeCotangent in
@@ -338,7 +347,7 @@ public lemma exists_presentation_of_free_cotangent [Algebra.FinitePresentation R
   · let P' : Presentation R S (Unit ⊕ α) (Unit ⊕ Fin (Module.finrank S P.toExtension.Cotangent)) :=
       { toGenerators := .ofSurjective (fun i : Unit ⊕ α ↦ 0) (Function.surjective_to_subsingleton _)
         relation _ := 1
-        span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
+        span_range_relation_eq_ker := by simpa using! (RingHom.ker_eq_top_of_subsingleton _).symm }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
   have : Module.Finite S P.toExtension.Cotangent :=

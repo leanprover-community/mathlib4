@@ -88,7 +88,7 @@ namespace ProbabilityTheory
 
 /-- `incrementsToRestrict I` is a continuous linear map `f` such that if `t₁ < ... < tₙ` are
 then elements of `I`, then `f (xₜ₁, xₜ₂ - xₜ₁, ..., xₜₙ - xₜₙ₋₁) = (xₜ₁, ..., xₜₙ)`. -/
-noncomputable def incrementsToRestrict [LinearOrder T] (R : Type*) [Semiring R] [AddCommMonoid E]
+noncomputable def incrementsToRestrict (R : Type*) [Semiring R] [AddCommMonoid E]
     [Module R E] [TopologicalSpace E] [ContinuousAdd E] (I : Finset T) :
     (Fin #I → E) →L[R] (I → E) :=
   { toFun x i := ∑ j ≤ (I.orderIsoOfFin rfl).symm i, x j

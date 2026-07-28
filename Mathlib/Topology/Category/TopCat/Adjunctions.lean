@@ -31,7 +31,7 @@ namespace TopCat
 `Top ⥤ Type`. -/
 @[simps! unit counit]
 def adj₁ : discrete ⊣ forget TopCat.{u} where
-  unit := { app := fun _ => id }
+  unit := 𝟙 _
   counit := { app := fun X => TopCat.ofHom (X := discrete.obj X) ⟨id, continuous_bot⟩ }
 
 /-- Equipping a type with the trivial topology is right adjoint to the forgetful functor
@@ -39,7 +39,7 @@ def adj₁ : discrete ⊣ forget TopCat.{u} where
 @[simps! unit counit]
 def adj₂ : forget TopCat.{u} ⊣ trivial where
   unit := { app := fun X => TopCat.ofHom (Y := trivial.obj X) ⟨id, continuous_top⟩ }
-  counit := { app := fun _ => id }
+  counit := 𝟙 _
 
 instance : (forget TopCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj₁⟩⟩

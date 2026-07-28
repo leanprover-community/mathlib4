@@ -33,7 +33,7 @@ protected lemma add_pow_prime_pow_eq' (h : Commute x y) (n : ℕ) :
   _ = ∑ k ∈ Icc 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k := by
     rw [h.add_pow, ← Nat.Ico_zero_eq_range, Ico_add_one_right_eq_Icc]
   _ = x ^ p ^ n + y ^ p ^ n + ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k := by
-    simp_rw [Icc_eq_cons_Ico (zero_le _), Ico_eq_cons_Ioo (pow_pos hp.pos _)]
+    simp_rw [Icc_eq_cons_Ico zero_le, Ico_eq_cons_Ioo (pow_pos hp.pos _)]
     simp [-cons_eq_insert, add_assoc]
   _ = _ := by
     simp_rw [mul_sum]
@@ -285,7 +285,7 @@ variable (R) [NonAssocRing R]
 /-- The characteristic of a finite ring cannot be zero. -/
 theorem char_ne_zero_of_finite (p : ℕ) [CharP R p] [Finite R] : p ≠ 0 := by
   rintro rfl
-  haveI : CharZero R := charP_to_charZero R
+  have : CharZero R := charP_to_charZero R
   exact absurd Nat.cast_injective (not_injective_infinite_finite ((↑) : ℕ → R))
 
 theorem ringChar_ne_zero_of_finite [Finite R] : ringChar R ≠ 0 :=

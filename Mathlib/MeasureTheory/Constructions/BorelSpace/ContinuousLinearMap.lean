@@ -14,7 +14,7 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory

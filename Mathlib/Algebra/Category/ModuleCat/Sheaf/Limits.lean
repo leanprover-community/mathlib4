@@ -19,7 +19,7 @@ limits exist in the category `SheafOfModules R`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ v₂ u₁ u₂ u
 

@@ -30,7 +30,7 @@ cancellative `CommMonoidWithZero`.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Cardinal

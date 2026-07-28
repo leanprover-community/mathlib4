@@ -37,7 +37,7 @@ infinitely many times.
 conservative dynamical system, Poincare recurrence theorem
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -69,7 +69,7 @@ namespace Conservative
 protected theorem id (μ : Measure α) : Conservative id μ :=
   { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
     exists_mem_iterate_mem' := fun _ _ h0 => by
-      simpa [exists_ne] using nonempty_of_measure_ne_zero h0 }
+      simpa [exists_ne] using! nonempty_of_measure_ne_zero h0 }
 
 theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν : ν ≪ μ)
     (h' : QuasiMeasurePreserving f ν ν) : Conservative f ν :=
@@ -111,14 +111,14 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeas
   -- Let `N` be the maximal `n` such that `μ (t n) ≠ 0`.
   obtain ⟨N, hN, hmax⟩ : ∃ N, μ (t N) ≠ 0 ∧ ∀ n > N, μ (t n) = 0 := by
     rw [Nat.frequently_atTop_iff_infinite, not_infinite] at H
-    convert exists_max_image _ (·) H ⟨0, by simpa⟩ using 4
-    rw [gt_iff_lt, ← not_le, not_imp_comm, mem_setOf]
+    convert! exists_max_image _ (·) H ⟨0, by simpa⟩ using 4
+    rw [gt_iff_lt, ← not_le, not_imp_comm, mem_ofPred]
   have htm {n : ℕ} : NullMeasurableSet (t n) μ :=
     hs.inter <| hs.preimage <| hf.toQuasiMeasurePreserving.iterate n
   -- Then all `t n`, `n > N`, are null sets, hence `T = t N \ ⋃ n > N, t n` has positive measure.
   set T := t N \ ⋃ n > N, t n with hT
   have hμT : μ T ≠ 0 := by
-    rwa [hT, measure_diff_null]
+    rwa [hT, measure_sdiff_null]
     exact (measure_biUnion_null_iff {n | N < n}.to_countable).2 hmax
   have hTm : NullMeasurableSet T μ := htm.diff <| .biUnion {n | N < n}.to_countable fun _ _ ↦ htm
   -- Take `x ∈ T` and `m ≠ 0` such that `f^[m] x ∈ T`.
@@ -127,7 +127,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeas
   -- This contradicts `x ∈ T ⊆ (⋃ n > N, t n)ᶜ`.
   refine hxt.2 <| mem_iUnion₂.2 ⟨N + m, ?_, hxt.1.1, ?_⟩
   · simpa [pos_iff_ne_zero]
-  · simpa only [iterate_add] using hmt.1.2
+  · simpa only [iterate_add] using! hmt.1.2
 
 /-- If `f` is a conservative map and `s` is a measurable set of nonzero measure, then
 for an arbitrarily large `m` a positive measure of points `x ∈ s` returns back to `s`
@@ -145,7 +145,7 @@ theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
     μ ({ x ∈ s | ∀ m ≥ n, f^[m] x ∉ s }) = 0 := by
   by_contra H
   have : NullMeasurableSet (s ∩ { x | ∀ m ≥ n, f^[m] x ∉ s }) μ := by
-    simp only [setOf_forall, ← compl_setOf]
+    simp only [ofPred_forall, ← compl_ofPred]
     exact hs.inter <| .biInter (to_countable _) fun m _ ↦
       (hs.preimage <| hf.toQuasiMeasurePreserving.iterate m).compl
   rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩

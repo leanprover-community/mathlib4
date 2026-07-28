@@ -19,7 +19,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.degMatrix`: The degree matrix of a simple graph
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
-* `isPosSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
+* `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
@@ -55,7 +55,7 @@ theorem isHermitian_adjMatrix [NonAssocSemiring R] [StarRing R] : (G.adjMatrix R
 theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
     (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
-  rw [sum_boole, Set.toFinset_setOf]
+  rw [sum_boole, Set.toFinset_ofPred]
 
 variable [DecidableEq V]
 
@@ -187,7 +187,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   rw [Subtype.ext_iff] at h0
   have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i) := by
     simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk]
-    repeat rw [AddSubmonoid.coe_finset_sum]
+    repeat rw [AddSubmonoid.coe_finsetSum]
     ext i
     simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero, sum_ite_eq,
       mem_univ, ↓reduceIte]
@@ -196,6 +196,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congrFun h0 i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
@@ -204,7 +205,7 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ← toLin'_apply, LinearMap.map_coe_ker])
   ext j
   simp only [lapMatrix_ker_basis_aux]
-  rw [AddSubmonoid.coe_finset_sum]
+  rw [AddSubmonoid.coe_finsetSum]
   simp only [SetLike.mk_smul_mk, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one,
     mul_zero, sum_ite_eq, mem_univ, ↓reduceIte]
   rfl

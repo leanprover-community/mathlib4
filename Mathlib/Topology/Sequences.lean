@@ -62,7 +62,7 @@ We build theory about these definitions here, so we remind the definitions.
 sequentially closed, sequentially compact, sequential space
 -/
 
-@[expose] public section
+public section
 
 
 open Bornology Filter Function Set TopologicalSpace Topology
@@ -173,6 +173,36 @@ instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop
 theorem isSeqClosed_iff_isClosed [SequentialSpace X] {M : Set X} : IsSeqClosed M ↔ IsClosed M :=
   ⟨IsSeqClosed.isClosed, IsClosed.isSeqClosed⟩
 
+/-- If `x : ℕ → X` has no convergent subsequence, then `⋃ i, closure {x i}` is closed. -/
+lemma isClosed_iUnion_closure_singleton_of_not_tendsto {x : ℕ → X} [SequentialSpace X]
+    (hx : ∀ (l : X) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
+    IsClosed (⋃ i, closure {x i}) := by
+  refine IsSeqClosed.isClosed fun y l hy hy' => ?_
+  by_cases! hm : ∃ m, ∃ᶠ n in atTop, y n ∈ closure {x m}
+  · obtain ⟨m, pm⟩ := hm
+    exact subset_iUnion _ m (isClosed_closure.mem_of_frequently_of_tendsto pm hy')
+  · have (j : ℕ) : ∃ᶠ k in atTop, ∃ n ≥ j, y n ∈ closure {x k} := by
+      refine frequently_atTop.2 fun a => ?_
+      have := (Filter.eventually_all_finite (by simp : (Iic a).Finite)).2 fun i hi => hm i
+      simp only [mem_Iic, eventually_atTop] at this
+      obtain ⟨c, hc⟩ := this
+      obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
+      refine ⟨b, ?_, c + j, j.le_add_left c, hb⟩
+      by_contra! hab
+      simp_all [hc (c + j) (c.le_add_right j) b hab.le]
+    obtain ⟨φ, hφ⟩ := extraction_forall_of_frequently this
+    choose ψ hψ1 hψ2 using hφ.2
+    have : Tendsto ψ atTop atTop := tendsto_atTop_mono hψ1 tendsto_id
+    refine (hx l φ hφ.1 (Tendsto.specializes (hy'.comp this) (fun n => ?_))).elim
+    exact specializes_iff_mem_closure.2 (hψ2 n)
+
+/-- If `x : ℕ → X` has no convergent subsequence in a T₁ sequential space, then its range is
+closed. -/
+lemma isClosed_range_of_not_tendsto {x : ℕ → X} [SequentialSpace X] [T1Space X]
+    (hx : ∀ (l : X) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
+    IsClosed (range x) := by
+  simpa using isClosed_iUnion_closure_singleton_of_not_tendsto hx
+
 /-- The preimage of a sequentially closed set under a sequentially continuous map is sequentially
 closed. -/
 theorem IsSeqClosed.preimage {f : X → Y} {s : Set Y} (hs : IsSeqClosed s) (hf : SeqContinuous f) :
@@ -200,9 +230,9 @@ theorem SequentialSpace.coinduced [SequentialSpace X] {Y} (f : X → Y) :
 
 protected theorem SequentialSpace.iSup {X} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
-  letI : TopologicalSpace X := ⨆ i, t i
+  let : TopologicalSpace X := ⨆ i, t i
   refine ⟨fun s hs ↦ isClosed_iSup_iff.2 fun i ↦ ?_⟩
-  letI := t i
+  let := t i
   exact IsSeqClosed.isClosed fun u x hus hux ↦ hs hus <| hux.mono_right <| nhds_mono <| le_iSup _ _
 
 protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
@@ -327,7 +357,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   contrapose! h
   obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
     simp only [not_subset, mem_iUnion₂, not_exists, exists_prop] at h
-    simpa only [forall_and, forall_mem_image, not_and] using seq_of_forall_finite_exists h
+    simpa only [forall_and, forall_mem_image, not_and] using! seq_of_forall_finite_exists h
   refine ⟨u, u_in, fun x _ φ hφ huφ => ?_⟩
   obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V :=
     huφ.cauchySeq.mem_entourage V_in
@@ -349,7 +379,7 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
       rw [le_principal_iff] at hls
       have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ˢ l := fun n => inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
       simpa only [l.basis_sets.prod_self.mem_iff, true_imp_iff, subset_inter_iff,
-        prod_self_subset_prod_self, and_assoc] using this
+        prod_self_subset_prod_self, and_assoc] using! this
     choose t htl htW hts using this
     have : ∀ n : ℕ, ⋂ k ≤ n, t k ⊆ t n := fun n => by apply iInter₂_subset; rfl
     exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
@@ -383,13 +413,7 @@ only if it is sequentially compact. -/
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.isCompact_iff_isSeqCompact := isCompact_iff_isSeqCompact
-
 theorem compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
   simp only [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
-
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.compactSpace_iff_seqCompactSpace := compactSpace_iff_seqCompactSpace
 
 end MetrizableSpaceSeqCompact

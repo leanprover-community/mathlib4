@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

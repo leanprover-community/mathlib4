@@ -22,7 +22,7 @@ This file proves that `Complex.sqrt` is differentiable on the slit plane
 * `Complex.deriv_sqrt`: the derivative equals `z ^ (-1 / 2 : ℂ) / 2`.
 -/
 
-@[expose] public section
+public section
 
 namespace Complex
 
