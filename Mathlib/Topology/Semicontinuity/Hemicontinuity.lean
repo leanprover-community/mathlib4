@@ -416,6 +416,55 @@ lemma LowerHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGen
   obtain ⟨n, hn⟩ := (hy_lim.eventually (hU.mem_nhds hy₀U)).exists
   exact hxU n ⟨y n, hy_mem n, hn⟩
 
+/-- **Sequential characterization of lower hemicontinuity**:
+If `f : α → Set β` is lower hemicontinuous at `x₀`, `β` is first countable at `y₀ ∈ f x₀`, and
+`x : ℕ → α` tends to `x₀`, then there is a companion sequence `y : ℕ → β` that tends to `y₀` with
+`y n ∈ f (x n)` for all sufficiently large `n`.
+
+This is a partial converse of `LowerHemicontinuousAt.of_sequences`. -/
+lemma LowerHemicontinuousAt.exists_seq_tendsto {x₀ : α} (hf : LowerHemicontinuousAt f x₀)
+    {x : ℕ → α} (hx : Tendsto x atTop (𝓝 x₀)) {y₀ : β} (hy₀ : y₀ ∈ f x₀)
+    [(𝓝 y₀).IsCountablyGenerated] :
+    ∃ y : ℕ → β, (∀ᶠ n in atTop, y n ∈ f (x n)) ∧ Tendsto y atTop (𝓝 y₀) := by
+  classical
+  obtain ⟨U, hU, hUbasis⟩ := (nhds_basis_opens y₀).exists_antitone_subbasis
+  have hev (k) : ∀ᶠ n in atTop, (f (x n) ∩ U k).Nonempty :=
+    hx.eventually <| (lowerHemicontinuousAt_iff.mp hf) (U k) (hU k).2 ⟨y₀, hy₀, (hU k).1⟩
+  -- For each `n`, find the largest `k ≤ n` where `U k` intersects `f (x n)`.
+  let g : ℕ → ℕ := fun n ↦ Nat.findGreatest (fun k ↦ (f (x n) ∩ U k).Nonempty) n
+  have key (n k) (hkn : k ≤ n) (hk : (f (x n) ∩ U k).Nonempty) : (f (x n) ∩ U (g n)).Nonempty :=
+    Nat.findGreatest_spec (P := fun k ↦ (f (x n) ∩ U k).Nonempty) hkn hk
+  -- Define `y n` to be some element of `f (x n) ∩ U (g n)` (or be arbitrary)
+  let y : ℕ → β := fun n ↦ if h : (f (x n) ∩ U (g n)).Nonempty then h.some else y₀
+  have hy (n) (h : (f (x n) ∩ U (g n)).Nonempty) : y n ∈ f (x n) ∩ U (g n) := by
+    simpa only [y, dif_pos h] using h.some_mem
+  refine ⟨y, (hev 0).mono (by grind), ?_⟩
+  -- Have to show for all `k`, eventually, all `y n ∈ U k`.
+  rw [hUbasis.tendsto_right_iff]
+  intro k _
+  filter_upwards [hev k, eventually_ge_atTop k] with n hk hkn
+  exact hUbasis.antitone (Nat.le_findGreatest hkn hk) (hy n (key n k hkn hk)).2
+
+/-- **Lower hemicontinuity along a countably generated filter** (subsequence form):
+if `f : α → Set β` is lower hemicontinuous at `x₀`, `β` is first countable at `y₀ ∈ f x₀`, and
+`x : ι → α` tends to `x₀` along a nontrivial countably generated filter `l`, then some sequence
+`u : ℕ → ι` converging to `l` admits a companion `y : ℕ → β` tending to `y₀` with
+`y k ∈ f (x (u k))` eventually.
+
+For a general filter one must pass to the subsequence `u`: the "same-index" conclusion already
+fails for `l = pure i₀` (which is `NeBot` and countably generated). When `l = atTop` one may take
+`u = id`, recovering `LowerHemicontinuousAt.exists_seq_tendsto`. -/
+lemma LowerHemicontinuousAt.exists_subseq_tendsto {ι : Type*} {l : Filter ι} [l.NeBot]
+    [l.IsCountablyGenerated] {x₀ : α} (hf : LowerHemicontinuousAt f x₀) {x : ι → α}
+    (hx : Tendsto x l (𝓝 x₀)) {y₀ : β} (hy₀ : y₀ ∈ f x₀) [(𝓝 y₀).IsCountablyGenerated] :
+    ∃ (u : ℕ → ι) (y : ℕ → β), Tendsto u atTop l ∧
+      (∀ᶠ k in atTop, y k ∈ f (x (u k))) ∧ Tendsto y atTop (𝓝 y₀) := by
+  obtain ⟨u, hu⟩ := Filter.exists_seq_tendsto l
+  obtain ⟨y, hy_mem, hy_lim⟩ := hf.exists_seq_tendsto (hx.comp hu) hy₀
+  exact ⟨u, y, hu, hy_mem, hy_lim⟩
+
+
+
 end facts
 
 /-! ### Open lower sections -/
