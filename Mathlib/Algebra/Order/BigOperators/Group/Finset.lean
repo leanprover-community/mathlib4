@@ -451,8 +451,11 @@ lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [Canonicall
 strictly less than over `S`. -/]
 lemma prod_lt_prod_of_subset_erase_union_singleton {ι M : Type*} [DecidableEq ι] [CommMonoid M]
     [PartialOrder M] [CanonicallyOrderedMul M] [MulLeftStrictMono M] {S S' : Finset ι} {f : ι → M}
-    {d d' : ι} (hd_mem : d ∈ S) (hd_not : d ∉ S') (hS' : S' ⊆ S.erase d ∪ {d'}) (hlt : f d' < f d) :
+    {d d' : ι} (hd_mem : d ∈ S) (hS' : S' ⊆ S.erase d ∪ {d'}) (hlt : f d' < f d) :
     ∏ x ∈ S', f x < ∏ x ∈ S, f x := by
+  have hd_not : d ∉ S' := fun hd ↦ (Finset.mem_union.mp (hS' hd)).elim
+    (fun h ↦ (Finset.mem_erase.mp h).1 rfl)
+    (fun h ↦ hlt.ne' (congrArg f (Finset.mem_singleton.mp h)))
   by_cases hd'S : d' ∈ S
   · calc ∏ x ∈ S', f x
         ≤ ∏ x ∈ S.erase d, f x := Finset.prod_le_prod_of_subset' (fun x hx ↦
