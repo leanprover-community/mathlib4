@@ -98,18 +98,24 @@ lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : R[M
 lemma mapDomainBialgHom_single (f : M →* N) (m : M) (r : R) :
     mapDomainBialgHom R f (single m r) = single (f m) r := mapDomain_single
 
-/-- A `R`-algebra homomorphism from `R[M]` is uniquely defined by its
-values on the functions `single a 1`. -/
+/-- A `R`-bialgebra homomorphism from `A[M]` is uniquely defined by its
+values on the functions `single m 1` and `single 1 a`.
+
+See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
+equality of `MonoidHom`s because `of` doesn't additivise. -/
 @[to_additive (dont_translate := A) (attr := ext high)
-/-- A `R`-algebra homomorphism from `R[M]` is uniquely defined by its
-values on the functions `single a 0`. -/]
+/-- A `R`-bialgebra homomorphism from `A[M]` is uniquely defined by its
+values on the functions `single m 1` and `single 1 a`.
+
+See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
+equality of `AddMonoidHom`s because `of` doesn't multiplicativise. -/]
 lemma bialgHom_ext ⦃φ₁ φ₂ : A[M] →ₐc[R] B⦄
   (single_one_right : ∀ (m : M), φ₁ (single m 1) = φ₂ (single m 1))
   (single_one_left : (φ₁ : A[M] →ₐ[R] B).comp singleOneAlgHom =
     (φ₂ : A[M] →ₐ[R] B).comp singleOneAlgHom) : φ₁ = φ₂ :=
   BialgHom.coe_toAlgHom_injective <| algHom_ext single_one_right single_one_left
 
-/-- See note [partially-applied ext lemmas]. -/
+/-- Version of `bialgHom_ext` where both assumptions are written as equalities of bundled homs. -/
 lemma bialgHom_ext' ⦃φ₁ φ₂ : A[M] →ₐc[R] B⦄
     (single_one_right : (φ₁ : A[M] →* B).comp (of A M) = (φ₂ : A[M] →* B).comp (of A M))
     (single_one_left : (φ₁ : A[M] →ₐ[R] B).comp singleOneAlgHom =
@@ -125,7 +131,7 @@ variable (R A) in
 /-- Isomorphic monoids have isomorphic monoid algebras. -/
 @[expose, to_additive (attr := simps! -isSimp) (dont_translate := R A)
 /-- Isomorphic monoids have isomorphic monoid algebras. -/]
-def domCongrBialgHom (e : M ≃* N) : A[M] ≃ₐc[R] A[N] :=
+def domCongrBialgEquiv (e : M ≃* N) : A[M] ≃ₐc[R] A[N] :=
   .ofAlgEquiv (domCongr R A e) (by ext <;> simp) <| by
     ext a
     · simp
@@ -226,7 +232,7 @@ section CommRing
 variable [CommRing R] [IsDomain R]
 
 open Submodule in
-@[to_additive (dont_translate := R) (attr := simp) isGroupLikeElem_iff_mem_range_single_one]
+@[to_additive (dont_translate := R) isGroupLikeElem_iff_mem_range_single_one]
 lemma isGroupLikeElem_iff_mem_range_single_one {x : R[M]} :
     IsGroupLikeElem R x ↔ x ∈ Set.range (single · 1) where
   mp hx := by
@@ -240,7 +246,7 @@ lemma isGroupLikeElem_iff_mem_range_single_one {x : R[M]} :
     exact smul_mem _ _ <| subset_span <| Set.mem_range_self _
   mpr := by rintro ⟨g, rfl⟩; exact isGroupLikeElem_single_one _
 
-section  MulOneClass
+section MulOneClass
 variable [MulOneClass M] {x : R[M]}
 
 lemma isGroupLikeElem_iff_mem_range_of : IsGroupLikeElem R x ↔ x ∈ Set.range (of R M) :=
@@ -260,7 +266,6 @@ private lemma single_mapDomainOfBialgHomFun_one (f : R[G] →ₐc[R] R[H]) (g : 
     single (mapDomainOfBialgHomFun f g) 1 = f (single g 1) :=
   (isGroupLikeElem_iff_mem_range_single_one.1 <| (isGroupLikeElem_single_one g).map f).choose_spec
 
-open Coalgebra in
 /-- A bialgebra homomorphism `R[G] → R[H]` between group algebras over a domain `R` comes from a
 group hom `G → H`.
 
@@ -279,9 +284,9 @@ def mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) : G →* H where
     rw [← mul_one (1 : R), ← single_mul_single, ← single_mul_single, map_mul]
     simp
 
-@[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma single_mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) (g : G) (r : R) :
-     single (mapDomainOfBialgHom f g) r = f (single g r) := by
+    single (mapDomainOfBialgHom f g) r = f (single g r) := by
   rw [← mul_one r, ← smul_eq_mul, ← smul_single, ← smul_single, map_smul]
   exact congr(r • $(single_mapDomainOfBialgHomFun_one f g))
 
@@ -328,6 +333,7 @@ variable [CommGroup G] [CommGroup H]
 
 /-- The group isomorphism between group homs `G → H` and bialgebra homs `R[G] → R[H]` of group
 algebras over a domain. -/
+@[expose, simps!]
 def mapDomainBialgHomMulEquiv : (G →* H) ≃* WithConv (R[G] →ₐc[R] R[H]) where
   toEquiv := mapDomainBialgHomEquiv.trans (WithConv.equiv _).symm
   map_mul' f g := by simp
