@@ -244,7 +244,7 @@ instance [CompletelyRegularSpace X] [Countable X] : ZeroDimensionalSpace X :=
     Cardinal.mk_le_aleph0.trans_lt Cardinal.aleph0_lt_continuum
   inferInstance
 
-protected lemma _root_.Set.Countable.zeroDimensionalSpace [CompletelyRegularSpace X] [Countable X]
+protected lemma _root_.Set.Countable.zeroDimensionalSpace [CompletelyRegularSpace X]
     {s : Set X} (h : s.Countable) : ZeroDimensionalSpace s :=
   have := h.to_subtype
   inferInstance
@@ -316,14 +316,13 @@ theorem totallySeparatedSpace_of_cardinalMk_lt_continuum [T35Space X] (h : .mk X
   inferInstance
 
 @[deprecated Set.Countable.zeroDimensionalSpace (since := "2026-07-28")]
-protected lemma _root_.Set.Countable.totallySeparatedSpace [T35Space X] [Countable X]
+protected lemma _root_.Set.Countable.totallySeparatedSpace [T35Space X]
     {s : Set X} (h : s.Countable) : TotallySeparatedSpace s :=
   have := h.zeroDimensionalSpace
   inferInstance
 
-/-- Countable subsets of metric spaces are totally disconnected. -/
-theorem Set.Countable.isTotallyDisconnected [MetricSpace X] [T35Space X]
-    {s : Set X} (hs : s.Countable) : IsTotallyDisconnected s := by
+theorem Set.Countable.isTotallyDisconnected [T35Space X]
+    {s : Set X} (h : s.Countable) : IsTotallyDisconnected s := by
   rw [← totallyDisconnectedSpace_subtype_iff]
-  have : Countable s := hs
+  have := h.zeroDimensionalSpace
   infer_instance
