@@ -9,8 +9,9 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: file contains a real `inductive` (not a `structure`/`class`).
-Downstream pattern-matching needs the constructors exposed. Linter must NOT fire. -/
+/-! Negative case: the file contains an `inductive` that is not a structure
+or a class. Downstream pattern matching needs access to the constructors.
+The linter must not fire. -/
 
 @[expose] public section
 
@@ -23,4 +24,4 @@ inductive Tree (α : Type)
 theorem leaf_eq : (Tree.leaf : Tree Nat) = Tree.leaf := rfl
 
 end SuperfluousExposeTest.Inductive
--- Expected: NO linter warning.
+-- Expected: no linter warning.

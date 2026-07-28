@@ -10,9 +10,10 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 set_option linter.superfluousExpose true
 
 /-
-A multi-line block comment that mentions, on its own line:
+This block comment contains, on its own line:
 @[expose] public section
-which must NOT trigger the linter: only an elaborated section scope counts.
+This text must not trigger the linter. Only an elaborated section scope
+counts.
 -/
 
 public section
@@ -24,5 +25,5 @@ theorem trivial_proof : True := trivial
 end SuperfluousExposeTest.ExposeInBlockComment
 
 end
--- Expected: NO linter warning (the `@[expose] public section` appears only
--- inside a block comment, not as a real header).
+-- Expected: no linter warning. The `@[expose] public section` text appears
+-- only inside a block comment, not as a real header.

@@ -28,34 +28,31 @@ public import MathlibTest.Linter.SuperfluousExpose.Negative_TermPrefixedDef
 
 /-! # Tests for the `superfluousExpose` linter
 
-The linter fires at end-of-file when no declaration in the module benefits
-from `@[expose]` exposure.
+The linter fires at the end of a file when no declaration in the module
+benefits from `@[expose]` exposure.
 
-Positive cases (linter should FIRE):
-* `Positive_TheoremOnly.lean`        — only `theorem`/`lemma`
-* `Positive_ClassOnly.lean`          — `class` + instance
-* `Positive_AbbrevOnly.lean`         — only `abbrev` (bodies auto-exposed)
-* `Positive_UnsafeDef.lean`          — only `unsafe def` (kernel-opaque)
-* `Positive_PartialDef.lean`         — only `partial def` (kernel-opaque)
-* `Positive_Notation.lean`           — `notation`/`infix` only
-* `Positive_Recursors.lean`          — `structure` (only auto-gen `.rec`/projections)
+Positive cases, where the linter must fire:
+* `Positive_TheoremOnly.lean`: only theorems.
+* `Positive_ClassOnly.lean`: a class and an instance.
+* `Positive_AbbrevOnly.lean`: only abbrevs, whose bodies are exposed by default.
+* `Positive_UnsafeDef.lean`: only an `unsafe def`, which is opaque to the kernel.
+* `Positive_PartialDef.lean`: only a `partial def`, which is opaque to the kernel.
+* `Positive_Notation.lean`: only `notation`.
+* `Positive_Recursors.lean`: a structure, which yields only auto-generated constants.
 
-Negative cases (linter must NOT fire — exposure-relevant decl present):
-* `Negative_PlainDef.lean`           — has a real plain `def`
-* `Negative_IrreducibleDef.lean`     — `@[irreducible] def` / `irreducible_def`:
-                                       downstream still uses `rw [name]`
-* `Negative_MatchPattern.lean`       — `@[match_pattern]` def: pattern elaboration
-                                       needs the body
-* `Negative_ToAdditive.lean`         — `@[to_additive] def`: source AND twin are real defs
-* `Negative_Inductive.lean`          — real `inductive` (not a structure)
-* `Negative_LocalInstance.lean`      — `local instance` (conservative limitation)
-* `Negative_ScopedInstance.lean`     — `scoped instance` (same limitation)
-* `Negative_NoExposeSection.lean`    — no `@[expose] section` in source
-* `Negative_ExposeInBlockComment.lean` — `@[expose] public section` appears only
-                                       inside a `/- … -/` comment
-* `Negative_ExposeOnNonPublicSection.lean` — `@[expose] section` (not `public`)
-* `Negative_InstPrefixedDef.lean`    — `def inst<Capital>…` whose return type isn't a class
-* `Negative_TermPrefixedDef.lean`    — `def term_…` whose return type isn't a parser descriptor
+Negative cases, where the linter must not fire:
+* `Negative_PlainDef.lean`: a plain `def`.
+* `Negative_IrreducibleDef.lean`: `@[irreducible] def`; downstream code can still use `rw`.
+* `Negative_MatchPattern.lean`: a `@[match_pattern]` def; pattern elaboration needs the body.
+* `Negative_ToAdditive.lean`: a `@[to_additive]` def; the source and the twin are real defs.
+* `Negative_Inductive.lean`: an inductive that is not a structure.
+* `Negative_LocalInstance.lean`: a `local instance`, a conservative limitation.
+* `Negative_ScopedInstance.lean`: a `scoped instance`, the same limitation.
+* `Negative_NoExposeSection.lean`: no `@[expose] section` in the file.
+* `Negative_ExposeInBlockComment.lean`: `@[expose] public section` only inside a comment.
+* `Negative_ExposeOnNonPublicSection.lean`: `@[expose] section` without `public`.
+* `Negative_InstPrefixedDef.lean`: a def named `inst<Capital>…` whose type is not a class.
+* `Negative_TermPrefixedDef.lean`: a def named `term…` whose type is not a parser descriptor.
 -/
 
 -- A trivial decl to give this file a body (Lean's module system requires it).

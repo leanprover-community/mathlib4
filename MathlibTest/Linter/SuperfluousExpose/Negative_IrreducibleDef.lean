@@ -9,10 +9,10 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: file with only `@[irreducible] def`s. Although the
-`@[irreducible]` annotation tells the elaborator not to unfold automatically,
-downstream code can still explicitly `rw [opaqueZero]` / `unfold opaqueZero`,
-which requires the body to be reachable. Linter must NOT fire. -/
+/-! Negative case: the file contains only `@[irreducible] def`s. The
+`@[irreducible]` attribute tells the elaborator to not unfold the def
+automatically. But downstream code can still write `rw [opaqueZero]` or
+`unfold opaqueZero`, and these need the body. The linter must not fire. -/
 
 @[expose] public section
 
@@ -24,4 +24,4 @@ namespace SuperfluousExposeTest.IrreducibleDef
 theorem opaqueZero_unfolded : opaqueZero = opaqueZero := rfl
 
 end SuperfluousExposeTest.IrreducibleDef
--- Expected: NO linter warning.
+-- Expected: no linter warning.

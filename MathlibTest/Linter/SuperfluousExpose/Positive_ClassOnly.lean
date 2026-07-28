@@ -8,8 +8,9 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: `class` declaration + instance — both have auto-generated
-projection/witness defs, but they're not "exposure-relevant". Linter must fire. -/
+/-! Positive case: the file contains a class and an instance. Both produce
+auto-generated projection and witness defs, and none of these benefit from
+exposure. The linter must fire. -/
 
 @[expose] public section
 
@@ -24,9 +25,9 @@ theorem use_foo [Foo Nat] : True := trivial
 
 end SuperfluousExposeTest.ClassOnly
 
--- Interrupt with `#exit` (a terminal command for the stateful linter) so the
--- lint fires where `#guard_msgs` can capture it. The linter is option-gated,
--- so it stays silent at the real end of file, where the option is off again.
+-- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
+-- can capture the warning. The linter option is off at the real end of the
+-- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean

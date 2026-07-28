@@ -10,9 +10,9 @@ public import Mathlib.Tactic.Translate.ToAdditive
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: `@[to_additive]` def. The source `def` is real; the
-auto-generated additive twin is also a real def with body matter. Linter
-must NOT fire on either the source-file or its derived-translation file. -/
+/-! Negative case: the file contains a `@[to_additive]` def. The source def
+is a real def, and the auto-generated additive twin is also a real def with
+a body that matters. The linter must not fire. -/
 
 @[expose] public section
 
@@ -24,5 +24,5 @@ def myProduct (x y : Nat) : Nat := x * y
 theorem myProduct_one_one : myProduct 1 1 = 1 := rfl
 
 end SuperfluousExposeTest.ToAdditive
--- Expected: NO linter warning (both `myProduct` (def) and its `to_additive`-derived
--- `mySum` are real defs that benefit from exposure).
+-- Expected: no linter warning. Both `myProduct` and the derived `mySum` are
+-- real defs that benefit from exposure.

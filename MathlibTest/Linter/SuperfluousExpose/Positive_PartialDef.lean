@@ -8,11 +8,11 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: file with only `partial def`s. Per the Lean reference,
-`partial def`s are "treated as opaque constants by the kernel and are
-neither unfolded nor reduced". Their bodies are irrelevant to downstream
-typechecking. (Internally they become `opaqueInfo`s, which the linter
-already skips, but we document the case explicitly.) -/
+/-! Positive case: the file contains only a `partial def`. The Lean reference
+says that the kernel treats a `partial def` as an opaque constant and does
+not unfold or reduce it. Its body is irrelevant to downstream typechecking.
+Internally a `partial def` becomes an `opaqueInfo`, which the linter already
+skips; this file documents the case explicitly. The linter must fire. -/
 
 @[expose] public section
 
@@ -25,9 +25,9 @@ theorem trivial_proof : True := trivial
 
 end SuperfluousExposeTest.PartialDef
 
--- Interrupt with `#exit` (a terminal command for the stateful linter) so the
--- lint fires where `#guard_msgs` can capture it. The linter is option-gated,
--- so it stays silent at the real end of file, where the option is off again.
+-- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
+-- can capture the warning. The linter option is off at the real end of the
+-- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean

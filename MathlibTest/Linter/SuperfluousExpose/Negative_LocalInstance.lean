@@ -9,11 +9,11 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: `local instance`. `Lean.Meta.isInstanceCore` misses these
-(they're scoped to the namespace they're declared in), and there is no
-robust signal we can use to recover them: a `local instance` looks identical
-in the environment to an `@[implicit_reducible] def` non-instance shortcut.
-The linter conservatively stays silent. -/
+/-! Negative case: the file contains a `local instance`.
+`Lean.Meta.isInstanceCore` does not see it, because the instance is scoped to
+its namespace. No robust signal can recover it: in the environment, a `local
+instance` looks identical to an `@[implicit_reducible] def` shortcut that is
+not an instance. The linter stays silent to be conservative. -/
 
 @[expose] public section
 
@@ -26,4 +26,4 @@ local instance instTaggedNat : Tagged Nat := ⟨()⟩
 theorem trivial_proof : True := trivial
 
 end SuperfluousExposeTest.LocalInstance
--- Expected: NO linter warning.
+-- Expected: no linter warning.

@@ -9,10 +9,11 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: `@[match_pattern]` `def`. The `@[match_pattern]` attribute
-makes the definition usable as a pattern (e.g. `match x with | mkPat a => ...`).
-That elaboration step needs the body exposed regardless of any `@[reducible]`
-companion attribute. Linter must NOT fire. -/
+/-! Negative case: the file contains a `@[match_pattern]` def. The
+`@[match_pattern]` attribute lets a `match` expression use the def as a
+pattern, for example `match x with | mkPat a => ...`. This elaboration step
+needs the body, with or without a companion `@[reducible]` attribute. The
+linter must not fire. -/
 
 @[expose] public section
 
@@ -24,4 +25,4 @@ def trivialPattern : Bool := true
 theorem trivialPattern_eq : trivialPattern = true := rfl
 
 end SuperfluousExposeTest.MatchPattern
--- Expected: NO linter warning.
+-- Expected: no linter warning.

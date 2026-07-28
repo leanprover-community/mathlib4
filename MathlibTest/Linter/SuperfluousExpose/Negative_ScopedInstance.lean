@@ -9,10 +9,10 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: `scoped instance`. Same situation as `local instance` —
-`isInstanceCore` misses it, and there is no robust signal we can use to
-distinguish it from an `@[implicit_reducible] def` non-instance shortcut.
-The linter conservatively stays silent. -/
+/-! Negative case: the file contains a `scoped instance`. The situation is
+the same as for `local instance`: `isInstanceCore` does not see it, and no
+robust signal can distinguish it from an `@[implicit_reducible] def` shortcut
+that is not an instance. The linter stays silent to be conservative. -/
 
 @[expose] public section
 
@@ -25,4 +25,4 @@ scoped instance instFooNat : Foo Nat := ⟨()⟩
 theorem trivial_proof : True := trivial
 
 end SuperfluousExposeTest.ScopedInstance
--- Expected: NO linter warning.
+-- Expected: no linter warning.

@@ -8,9 +8,9 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: file with only `abbrev`s. In modules, bodies of `abbrev`
-declarations are exposed by default regardless of `@[expose]`, so the
-`@[expose]` is superfluous on an abbrev-only section. -/
+/-! Positive case: the file contains only `abbrev` declarations. Modules
+expose `abbrev` bodies by default, with or without `@[expose]`. Thus the
+`@[expose]` modifier is superfluous here. The linter must fire. -/
 
 @[expose] public section
 
@@ -23,9 +23,9 @@ theorem double_zero : double 0 = 0 := rfl
 
 end SuperfluousExposeTest.AbbrevOnly
 
--- Interrupt with `#exit` (a terminal command for the stateful linter) so the
--- lint fires where `#guard_msgs` can capture it. The linter is option-gated,
--- so it stays silent at the real end of file, where the option is off again.
+-- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
+-- can capture the warning. The linter option is off at the real end of the
+-- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean

@@ -9,11 +9,10 @@ public import Mathlib.Tactic.Linter.SuperfluousExpose
 
 set_option linter.superfluousExpose true
 
-/-! Negative case: the file uses `@[expose] section` (without `public`).
-That's not a downstream-visibility section, so `@[expose]` is meaningless
-there and removing it accomplishes nothing observable downstream. The
-linter must NOT fire — its suggestion is targeted at `public section`s
-only. -/
+/-! Negative case: the file uses `@[expose] section` without `public`. The
+section has no downstream visibility, so `@[expose]` has no effect there,
+and its removal changes nothing downstream. The linter must not fire: its
+suggestion applies to `public section`s only. -/
 
 @[expose] section
 
@@ -24,4 +23,4 @@ theorem trivial_proof : True := trivial
 end SuperfluousExposeTest.ExposeOnNonPublic
 
 end
--- Expected: NO linter warning (the `@[expose]` is on a non-public section).
+-- Expected: no linter warning. The `@[expose]` is on a non-public section.

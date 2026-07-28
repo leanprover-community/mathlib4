@@ -8,8 +8,9 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: `notation` only. Notation declarations create `term_…` defs
-in the env; those bodies are syntax trees, never `unfold`ed. Linter must fire. -/
+/-! Positive case: the file contains only a `notation` declaration. A notation
+declaration creates a `term…` def in the environment. Its body is a syntax
+tree, and downstream code never unfolds it. The linter must fire. -/
 
 @[expose] public section
 
@@ -23,9 +24,9 @@ theorem op_eq (a : Nat) [Op Nat] : OP[a, a] = Op.op a a := rfl
 
 end SuperfluousExposeTest.Notation
 
--- Interrupt with `#exit` (a terminal command for the stateful linter) so the
--- lint fires where `#guard_msgs` can capture it. The linter is option-gated,
--- so it stays silent at the real end of file, where the option is off again.
+-- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
+-- can capture the warning. The linter option is off at the real end of the
+-- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean

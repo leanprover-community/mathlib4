@@ -8,11 +8,12 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: file with only `unsafe def`. Per the Lean reference,
-`unsafe` exempts the def from kernel checking; the kernel never reduces
-its body. Downstream Lean proofs can never `rw`/`unfold`/`rfl`-through
-an unsafe def, so its body's `.olean` placement doesn't affect downstream
-typechecking. (Compiled bytecode/IR lives outside the `@[expose]` partition.) -/
+/-! Positive case: the file contains only an `unsafe def`. The Lean reference
+says that `unsafe` exempts the def from kernel checking, and the kernel never
+reduces its body. Downstream proofs cannot apply `rw`, `unfold`, or `rfl` to
+an unsafe def. Thus the location of its body in the `.olean` does not affect
+downstream typechecking. The compiled code is outside the `@[expose]`
+partition. The linter must fire. -/
 
 @[expose] public section
 
@@ -24,9 +25,9 @@ theorem trivial_proof : True := trivial
 
 end SuperfluousExposeTest.UnsafeDef
 
--- Interrupt with `#exit` (a terminal command for the stateful linter) so the
--- lint fires where `#guard_msgs` can capture it. The linter is option-gated,
--- so it stays silent at the real end of file, where the option is off again.
+-- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
+-- can capture the warning. The linter option is off at the real end of the
+-- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean

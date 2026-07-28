@@ -8,7 +8,7 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: file with only theorems → linter must fire. -/
+/-! Positive case: the file contains only theorems. The linter must fire. -/
 
 @[expose] public section
 
@@ -20,9 +20,9 @@ theorem three_pos : 0 < 3 := by decide
 
 end SuperfluousExposeTest.TheoremOnly
 
--- Interrupt with `#exit` (a terminal command for the stateful linter) so the
--- lint fires where `#guard_msgs` can capture it. The linter is option-gated,
--- so it stays silent at the real end of file, where the option is off again.
+-- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
+-- can capture the warning. The linter option is off at the real end of the
+-- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean

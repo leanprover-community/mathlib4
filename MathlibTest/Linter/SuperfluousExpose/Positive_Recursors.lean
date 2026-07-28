@@ -8,8 +8,9 @@ module
 import Mathlib.Init
 import Mathlib.Tactic.Linter.SuperfluousExpose
 
-/-! Positive case: `structure` produces an auto-generated `.rec`, `.recOn`,
-`.casesOn`, and projection defs. None are exposure-relevant. Linter must fire. -/
+/-! Positive case: the file contains only a structure. A structure produces
+auto-generated `.rec`, `.recOn`, and `.casesOn` constants and projection
+defs. None of these benefit from exposure. The linter must fire. -/
 
 @[expose] public section
 
@@ -23,9 +24,9 @@ theorem point_zero_zero : (⟨0, 0⟩ : Point).x = 0 := rfl
 
 end SuperfluousExposeTest.Recursors
 
--- Interrupt with `#exit` (a terminal command for the stateful linter) so the
--- lint fires where `#guard_msgs` can capture it. The linter is option-gated,
--- so it stays silent at the real end of file, where the option is off again.
+-- `#exit` is a terminal command, so the linter fires there and `#guard_msgs`
+-- can capture the warning. The linter option is off at the real end of the
+-- file, so the linter is silent there.
 set_option linter.superfluousExpose true in
 /--
 warning: using 'exit' to interrupt Lean
