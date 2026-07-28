@@ -90,7 +90,7 @@ lemma _root_.FreeAddMonoid.toTensorProduct (p : FreeAddMonoid (M × N)) :
     (p.toList.map (fun x ↦ x.1 ⊗ₜ[R] x.2)).sum := by
   induction p using FreeAddMonoid.inductionOn' with
   | zero => rfl
-  | add_of b a ih =>
+  | of_add b a ih =>
     rw [FreeAddMonoid.toList_of_add, List.map_cons, List.sum_cons, ← ih]
     rfl
 
