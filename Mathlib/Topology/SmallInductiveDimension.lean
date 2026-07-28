@@ -107,10 +107,11 @@ noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
 
 private theorem hasSmallInductiveDimensionLT_of_smallInductiveDimension_lt {n : ℕ}
     (h : smallInductiveDimension X < n) : HasSmallInductiveDimensionLT X n := by
-  apply csInf_mem (s := {n : WithBot ℕ∞ | ∀ i : ℕ, n < i → HasSmallInductiveDimensionLT X i})
-  · contrapose! h
-    simp [smallInductiveDimension, h]
-  · exact h
+  contrapose! h
+  simp only [smallInductiveDimension, le_sInf_iff, mem_ofPred_eq]
+  intro a ha
+  contrapose! ha
+  exact ⟨n, ha, h⟩
 
 private theorem hasSmallInductiveDimensionLE_of_smallInductiveDimension_le {n : ℕ}
     (h : smallInductiveDimension X ≤ n) : HasSmallInductiveDimensionLE X n := by
@@ -132,7 +133,7 @@ theorem smallInductiveDimension_lt_iff {n : ℕ} :
     | zero =>
       rw [smallInductiveDimension, csInf_eq_bot_of_bot_mem]
       · simp
-      · exact fun i _ ↦ h.mono zero_le
+      · exact fun _ _ ↦ h.mono zero_le
     | succ n =>
       apply (smallInductiveDimension_le_iff.2 h).trans_lt
       exact_mod_cast n.lt_add_one
@@ -145,8 +146,8 @@ theorem smallInductiveDimension_eq (n : ℕ)
 
 @[simp]
 theorem smallInductiveDimension_eq_bot : smallInductiveDimension X = ⊥ ↔ IsEmpty X := by
-  rw [← hasSmallInductiveDimensionLT_zero_iff, ← smallInductiveDimension_lt_iff]
-  exact WithBot.lt_coe_bot.symm
+  simp_rw [← hasSmallInductiveDimensionLT_zero_iff, ← smallInductiveDimension_lt_iff,
+    WithBot.lt_coe_bot.symm, bot_eq_zero', Nat.cast_zero, WithBot.coe_zero]
 
 variable (X) in
 @[simp]
