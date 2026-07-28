@@ -12,24 +12,26 @@ public import Mathlib.LinearAlgebra.Determinant
 /-!
 # Discriminant of a quadratic algebra
 
-For `QuadraticAlgebra R a b` (with convention `ω² = a + b·ω`), we define its discriminant
-`discr a b = b ^ 2 + 4 * a`, the discriminant of the polynomial `X ^ 2 - b * X - a`.
+This file introduces the discriminant of a quadratic algebra `QuadraticAlgebra R a b` (with the
+convention `ω² = a + b·ω`), describes how it transforms under a change of generator, and derives
+the classification of quadratic algebras up to isomorphism together with a criterion, over a
+field, for `QuadraticAlgebra K a b` to be a field.
 
-We study how the discriminant transforms under a change of generator `ω ↦ u • ω + k`
-(`QuadraticAlgebra.map` / `QuadraticAlgebra.mapEquiv`), showing `discr` is multiplied
-by `u ^ 2`, and deduce that the discriminant classifies quadratic algebras up to isomorphism:
-modulo squares of units when `2` is invertible, and exactly over `ℤ`.
+## Main definitions
 
-We also characterise, when `2 ≠ 0`, when `QuadraticAlgebra K a b` is a field over a
-field `K`, namely when `discr a b` is not a square.
+* `QuadraticAlgebra.discr`: the discriminant `discr a b = b ^ 2 + 4 * a`.
 
-This is **false in characteristic `2`**: over `𝔽₂` the parameters `(0, 1)` and `(1, 1)` share
-discriminant `1`, yet `X² − X` splits (giving `𝔽₂ × 𝔽₂`) while `X² + X + 1` is irreducible
-(giving `𝔽₄`); the correct invariant there is the Artin–Schreier class.
+## Main results
 
-For `u` not a unit, `map` is the inclusion of an order of conductor `u`, with discriminant
-multiplied by `u ^ 2` (e.g. `ℤ[√d] ⊂ ℤ[(1+√d)/2]` for `d ≡ 1 mod 4` is `u = 2`, `k = -1`).
-Note `discr d 0 = 4 * d`, not `d`, matching the discriminant `4d` of `ℤ[√d]`.
+* `QuadraticAlgebra.discr_map`: the discriminant scales by `u ^ 2` under the change of
+  generator `ω ↦ u • ω + k`.
+* `QuadraticAlgebra.exists_sq_eq_iff_isSquare_discr`: over a ring with `2` invertible,
+  `X ^ 2 - b * X - a` has a root iff `discr a b` is a square.
+* `QuadraticAlgebra.nonempty_algEquiv_iff_of_invertible_two` and
+  `QuadraticAlgebra.nonempty_algEquiv_int_iff`: the discriminant classifies quadratic algebras
+  up to isomorphism, modulo squares of units when `2` is invertible and exactly over `ℤ`.
+* `QuadraticAlgebra.isField_iff_not_isSquare_discr`: over a field with `2 ≠ 0`,
+  `QuadraticAlgebra K a b` is a field iff `discr a b` is not a square.
 -/
 
 @[expose] public section
@@ -51,6 +53,12 @@ theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
   rw [trace_apply, norm_def, discr_def]; ring
 
+/-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.map`), the
+discriminant is multiplied by `u ^ 2`. -/
+theorem discr_map [CommRing R] (a b u k : R) :
+    discr (u ^ 2 * a - u * b * k - k ^ 2) (u * b + 2 * k) = u ^ 2 * discr a b := by
+  rw [discr_def, discr_def]; ring
+
 -- The `a = 1` case of `Mathlib.Algebra.QuadraticDiscriminant`, reproved to avoid its heavy
 -- transitive import of `Mathlib.Order.Filter.AtTopBot.Field`.
 /-- If `2` is invertible, the polynomial `X ^ 2 - b * X - a` has a root if and only if the
@@ -64,61 +72,6 @@ theorem exists_sq_eq_iff_isSquare_discr [CommRing R] [Invertible (2 : R)] {a b :
   grind
 
 end discr
-
-section map
-
-variable [CommRing R]
-
--- The quadratic relation satisfied by the new generator `u • ω + k`; this is what makes
--- `map` well defined. Stated with `x * x` rather than `x ^ 2` to match the shape of the
--- subtype condition of `lift` (`{ u // u * u = a • 1 + b • u }`), so it feeds `map` verbatim.
-private theorem map_relation (a b u k : R) :
-    (u • ω + algebraMap R (QuadraticAlgebra R a b) k) *
-        (u • ω + algebraMap R (QuadraticAlgebra R a b) k) =
-      (u ^ 2 * a - u * b * k - k ^ 2) • 1 +
-        (u * b + 2 * k) • (u • ω + algebraMap R (QuadraticAlgebra R a b) k) := by
-  ext <;> simp <;> ring
-
-/-- The `R`-algebra map induced by the change of generator `ω ↦ u • ω + k`, see `map_omega`. -/
-@[simps!]
-def map (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
-    (hb : b' = u * b + 2 * k) :
-    QuadraticAlgebra R a' b' →ₐ[R] QuadraticAlgebra R a b :=
-  lift ⟨u • ω + algebraMap R _ k, by rw [ha, hb]; exact map_relation a b u k⟩
-
-@[simp]
-theorem map_omega (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
-    (hb : b' = u * b + 2 * k) :
-    map a b u k ha hb ω = u • ω + algebraMap R (QuadraticAlgebra R a b) k := by
-  ext <;> simp
-
-theorem injective_map (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
-    (hb : b' = u * b + 2 * k) (hu : IsRegular u) :
-    Function.Injective (map a b u k ha hb) := by
-  intro z w h
-  have hy : z.im = w.im := hu.right <| by simpa using congr_arg im h
-  exact QuadraticAlgebra.ext (by simpa [hy] using congr_arg re h) hy
-
-theorem discr_map (a b u k : R) :
-    discr (u ^ 2 * a - u * b * k - k ^ 2) (u * b + 2 * k) = u ^ 2 * discr a b := by
-  rw [discr_def, discr_def]
-  ring
-
-/-- `map` along a unit `u`, as an isomorphism. -/
-@[simps! apply symm_apply]
-def mapEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
-    (ha : a' = (u : R) ^ 2 * a - (u : R) * b * k - k ^ 2)
-    (hb : b' = (u : R) * b + 2 * k) :
-    QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b where
-  __ := map a b u k ha hb
-  invFun := map a' b' (u⁻¹ : Rˣ) (-(u⁻¹ : Rˣ) * k)
-    (by simp only [sq, ha, mul_assoc, mul_sub, Units.inv_mul_cancel_left, hb, mul_add, neg_mul,
-        mul_neg, sub_neg_eq_add, neg_neg]; ring)
-    (by simp only [hb, mul_add, Units.inv_mul_cancel_left, neg_mul, mul_neg]; ring)
-  left_inv _ := by ext <;> simp [mul_assoc]
-  right_inv _ := by ext <;> simp [mul_assoc]
-
-end map
 
 section classification
 
@@ -192,7 +145,7 @@ theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
   rw [nonempty_algEquiv_iff (IsRegular.of_ne_zero two_ne_zero)]
   refine ⟨fun ⟨u, hu, _⟩ ↦ by rwa [Int.isUnit_sq u.isUnit, one_mul] at hu, fun h ↦ ?_⟩
   obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := by
-    rw [← Prime.dvd_mul (by exact Nat.prime_iff_prime_int.mp Nat.prime_two), ← sq_sub_sq]
+    rw [← Prime.dvd_mul Int.prime_two, ← sq_sub_sq]
     refine ⟨2 * a' - 2 * a, ?_⟩
     rwa [mul_sub, ← mul_assoc, ← mul_assoc, show (2 : ℤ) * 2 = 4 by norm_num,
       sub_eq_sub_iff_add_eq_add, ← discr_def, add_comm, ← discr_def]
@@ -203,12 +156,13 @@ end classification
 
 section field
 
-/-- Bridge instance for `b = 0`: no hypothesis on the characteristic is needed. -/
+-- These two `Fact (∀ r, r ^ 2 ≠ …)` instances are the bridge that lets the `Field`
+-- instance on `QuadraticAlgebra K a b` fire from `¬ IsSquare (discr a b)` (or `¬ IsSquare a`
+-- when `b = 0`) alone.
 instance {K : Type*} [Field K] {a : K} [Fact (¬ IsSquare a)] :
     Fact (∀ r : K, r ^ 2 ≠ a + 0 * r) :=
   ⟨fun r hr ↦ Fact.out (p := ¬ IsSquare a) ⟨r, by simpa [sq] using hr.symm⟩⟩
 
-/-- Bridge instance in general, when `2` is invertible. -/
 instance {K : Type*} [Field K] {a b : K} [NeZero (2 : K)] [Fact (¬ IsSquare (discr a b))] :
     Fact (∀ r : K, r ^ 2 ≠ a + b * r) :=
   letI : Invertible (2 : K) := invertibleOfNonzero two_ne_zero
