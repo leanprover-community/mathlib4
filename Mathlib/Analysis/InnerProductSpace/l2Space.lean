@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Module.Bases
 
 /-!
 # Hilbert sum of a family of inner product spaces
@@ -53,6 +54,12 @@ We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →�
 
 * `HilbertBasis.mkOfOrthogonalEqBot`: Make a Hilbert basis of `E` from an orthonormal family
   `v : ι → E` of vectors in `E` whose span has trivial orthogonal complement.
+
+* `HilbertBasis.toUnconditionalSchauderBasis`: Convert a Hilbert basis of `E` into an unconditional
+  Schauder basis (`UnconditionalSchauderBasis`), with coordinate functionals `x ↦ ⟪b i, x⟫`.
+
+* `HilbertBasis.toSchauderBasis`: Convert a Hilbert basis of `E` indexed by `ℕ` into a classical
+  Schauder basis (`SchauderBasis`).
 
 ## Main results
 
@@ -482,6 +489,29 @@ protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : Ort
 theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
     (b.toOrthonormalBasis : ι → E) = b :=
   OrthonormalBasis.coe_mk _ _
+
+/-- A Hilbert basis of is an unconditional Schauder basis (`UnconditionalSchauderBasis`),
+with coordinate functionals `x ↦ ⟪b i, x⟫`. The basis expansion `x = ∑' i, ⟪b i, x⟫ • b i`
+converges unconditionally. -/
+@[simps]
+protected def toUnconditionalSchauderBasis (b : HilbertBasis ι 𝕜 E) :
+    UnconditionalSchauderBasis ι 𝕜 E where
+  basis := b
+  coord i := innerSL 𝕜 (b i)
+  ortho i j := by
+    classical
+    simpa [innerSL_apply_apply, Pi.single_apply] using orthonormal_iff_ite.mp b.orthonormal i j
+  expansion x := by
+    simpa only [innerSL_apply_apply, ← b.repr_apply_apply] using b.hasSum_repr x
+
+/-- Every Hilbert basis indexed by `ℕ` is a Schauder basis (`SchauderBasis`) with
+coordinate functionals `x ↦ ⟪b i, x⟫`. The expansion `x = ∑ i, ⟪b i, x⟫ • b i` converges. -/
+@[simps]
+protected def toSchauderBasis (b : HilbertBasis ℕ 𝕜 E) : SchauderBasis 𝕜 E where
+  basis := ⇑b
+  coord i := innerSL 𝕜 (b i)
+  ortho := b.toUnconditionalSchauderBasis.ortho
+  expansion x := (b.toUnconditionalSchauderBasis.expansion x).mono_left SummationFilter.le_atTop
 
 protected theorem hasSum_orthogonalProjectionOnto {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : HilbertBasis ι 𝕜 U) (x : E) :
