@@ -296,34 +296,24 @@ sends `a` to `c.comp (Code.const a)`, a program that halts on every input exactl
 on `a`; in particular the input `n` plays no role. -/
 theorem REPred.manyOneReducible_halting_problem {R : ℕ → Prop} (h : REPred R) (n : ℕ) :
     R ≤₀ fun c : Code => (Code.eval c n).Dom := by
-  have hf : Partrec fun a : ℕ => (Part.assert (R a) fun _ => Part.some ()).map fun _ => (0 : ℕ) :=
+  obtain ⟨c, hc⟩ := Code.exists_code.mp <| Partrec.nat_iff.mp <|
     h.map (Computable.const (0 : ℕ)).to₂
-  set f : ℕ →. ℕ := fun a => (Part.assert (R a) fun _ => Part.some ()).map fun _ => (0 : ℕ)
-    with hf_def
-  have hdom : ∀ a, (f a).Dom ↔ R a := by
-    intro a
-    simp [hf_def, Part.assert]
-  obtain ⟨c, hc⟩ := Code.exists_code.mp (Partrec.nat_iff.mp hf)
   refine ⟨fun a => c.comp (Code.const a),
     (Code.primrec₂_comp.comp (Primrec.const c) Code.primrec_const).to_comp, fun a => ?_⟩
-  change R a ↔ (Code.eval (c.comp (Code.const a)) n).Dom
-  rw [show Code.eval (c.comp (Code.const a)) n = f a by
-    simp only [Code.eval, Code.eval_const, hc]
-    exact Part.bind_some a f]
-  exact (hdom a).symm
-
-/-- Every recursively enumerable predicate on `ℕ` many-one reduces to the halting problem in its
-two-argument form. -/
-theorem REPred.manyOneReducible_halting_problem₂ {R : ℕ → Prop} (h : REPred R) :
-    R ≤₀ fun p : Code × ℕ => (Code.eval p.1 p.2).Dom := by
-  obtain ⟨g, hg, hgR⟩ := h.manyOneReducible_halting_problem 0
-  exact ⟨fun a => (g a, 0), hg.pair (Computable.const 0), hgR⟩
+  simp [Code.eval, hc, Part.assert]
 
 /-- The halting problem on a fixed input reduces to the two-argument halting problem. -/
 theorem halting_problem_manyOneReducible_halting_problem₂ (n : ℕ) :
     (fun c : Code => (Code.eval c n).Dom) ≤₀ fun p : Code × ℕ => (Code.eval p.1 p.2).Dom :=
   ⟨fun c => (c, n), Computable.id.pair (Computable.const n), fun _ => Iff.rfl⟩
 
+/-- Every recursively enumerable predicate on `ℕ` many-one reduces to the halting problem in its
+two-argument form. -/
+theorem REPred.manyOneReducible_halting_problem₂ {R : ℕ → Prop} (h : REPred R) :
+    R ≤₀ fun p : Code × ℕ => (Code.eval p.1 p.2).Dom :=
+  (h.manyOneReducible_halting_problem 0).trans (halting_problem_manyOneReducible_halting_problem₂ 0)
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The two-argument halting problem reduces to the halting problem on any fixed input, by
 specializing the input into the code. -/
 theorem halting_problem₂_manyOneReducible_halting_problem (n : ℕ) :
@@ -331,10 +321,7 @@ theorem halting_problem₂_manyOneReducible_halting_problem (n : ℕ) :
   refine ⟨fun p => p.1.comp (Code.const p.2),
     (Code.primrec₂_comp.comp Primrec.fst (Code.primrec_const.comp Primrec.snd)).to_comp,
     fun p => ?_⟩
-  change (Code.eval p.1 p.2).Dom ↔ (Code.eval (p.1.comp (Code.const p.2)) n).Dom
-  rw [show Code.eval (p.1.comp (Code.const p.2)) n = Code.eval p.1 p.2 by
-    simp only [Code.eval, Code.eval_const]
-    exact Part.bind_some p.2 (Code.eval p.1)]
+  simp [Code.eval]
 
 end HaltingProblem
 
