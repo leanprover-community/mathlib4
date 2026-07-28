@@ -136,14 +136,20 @@ theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (
 
 @[simp] theorem isClosed_univ : IsClosed (univ : Set X) := isClosed_const
 
+lemma IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
+  simpa only [← isOpen_compl_iff, compl_union] using .inter
+
+lemma Set.Finite.isClosed_sUnion {s : Set (Set X)} (hs : s.Finite) (h : ∀ t ∈ s, IsClosed t) :
+    IsClosed (⋃₀ s) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => rw [sUnion_empty]; exact isClosed_empty
+  | insert _ _ ih => simp only [sUnion_insert, forall_mem_insert] at h ⊢; exact h.1.union (ih h.2)
+
 lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
   ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
 
 lemma IsClosed.isLocallyClosed (hs : IsClosed s) : IsLocallyClosed s :=
   ⟨_, _, isOpen_univ, hs, (univ_inter _).symm⟩
-
-theorem IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
-  simpa only [← isOpen_compl_iff, compl_union] using IsOpen.inter
 
 theorem isClosed_sInter {s : Set (Set X)} : (∀ t ∈ s, IsClosed t) → IsClosed (⋂₀ s) := by
   simpa only [← isOpen_compl_iff, compl_sInter, sUnion_image] using isOpen_biUnion
