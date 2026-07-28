@@ -124,12 +124,15 @@ theorem map_integerMultiple {ι : Type*} (s : Finset ι) (f : ι → S) (i : s) 
     algebraMap R S (integerMultiple M s f i) = commonDenom M s f • f i :=
   ((exist_integer_multiples M s f).choose_spec _ i.prop).choose_spec
 
-theorem integerMultipleMultiple_injective {ι : Type*} (s : Finset ι) (f : ι → S)
+theorem integerMultiple_injective {ι : Type*} (s : Finset ι) (f : ι → S)
     (hf : Function.Injective f) : Function.Injective (integerMultiple M s f) := by
   intro i j h
   rw [← SetLike.coe_eq_coe, ← hf.eq_iff,
     ← (IsLocalization.smul_bijective S (commonDenom M s f)).injective.eq_iff,
     ← map_integerMultiple M s f i, ← map_integerMultiple M s f j, h]
+
+@[deprecated (since := "2026-07-18")] alias integerMultipleMultiple_injective :=
+  integerMultiple_injective
 
 /-- A choice of a common multiple of the denominators of a finite set of fractions. -/
 noncomputable def commonDenomOfFinset (s : Finset S) : M :=
@@ -156,7 +159,7 @@ theorem finsetIntegerMultiple_image [DecidableEq R] (s : Finset S) :
 @[simp]
 theorem card_finsetIntegerMultiple [DecidableEq R] (s : Finset S) :
     (finsetIntegerMultiple M s).card = s.card :=
-  (Finset.card_image_of_injective _ (integerMultipleMultiple_injective M s id injective_id)).trans
+  (Finset.card_image_of_injective _ (integerMultiple_injective M s id injective_id)).trans
     Finset.card_attach
 
 end IsLocalization

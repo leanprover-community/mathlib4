@@ -339,8 +339,8 @@ theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
     simp
   obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
     @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
-    (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)
-    (ContinuousOn.restrict (Continuous.continuousOn f.continuous)) ε pos
+    (isCompact_iff_compactSpace.mp hK) AK hsep (K.domRestrict f)
+    (ContinuousOn.domRestrict (Continuous.continuousOn f.continuous)) ε pos
   obtain ⟨g, hgA, hgKAK⟩ := Subalgebra.mem_map.mp hgKAK
   use g, hgA
   intro x hxK
