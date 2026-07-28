@@ -6,8 +6,7 @@ Authors: Fernando Chu, Andrew Yang
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Small inductive dimension
@@ -48,7 +47,7 @@ class inductive HasSmallInductiveDimensionLT.{u} :
       (h : ∀ U ∈ s, HasSmallInductiveDimensionLT ↑(frontier U) n) :
       HasSmallInductiveDimensionLT X (n + 1)
 
-variable {X : Type*} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 variable (X) in
 /-- A topological space has dimension `≤ n` if it has dimension `< n + 1`. -/
@@ -60,6 +59,7 @@ variable (X) in
 noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasSmallInductiveDimensionLT X i}
 
+@[simp]
 lemma hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
   ⟨fun h ↦ by cases h; assumption, fun _ ↦ .zero⟩
 
@@ -101,3 +101,35 @@ theorem HasSmallInductiveDimensionLT.hasSmallInductiveDimensionLE {n : ℕ}
 
 instance (n : ℕ) [IsEmpty X] : HasSmallInductiveDimensionLT X n :=
   .mono zero_le <| hasSmallInductiveDimensionLT_zero_iff.2 ‹_›
+
+private theorem Homeomorph.hasSmallInductiveDimensionLT' (f : X ≃ₜ Y) (n : ℕ)
+    (h : HasSmallInductiveDimensionLT X n) : HasSmallInductiveDimensionLT Y n  := by
+  induction n generalizing f X Y with
+  | zero =>
+    rw [hasSmallInductiveDimensionLT_zero_iff] at h ⊢
+    exact f.toEquiv.isEmpty_congr.mp h
+  | succ n hn =>
+    cases h
+    rename_i s sb hs
+    refine .succ n (preimage ⇑f.symm '' s) (sb.isInducing f.symm.isInducing) ?_
+    intro U ⟨V, hV, VU⟩
+    rw [← VU]
+    refine hn ?_ (hs V hV)
+    rw [← f.image_eq_preimage_symm V, ← f.image_frontier V]
+    exact f.image (frontier V)
+
+protected theorem Homeomorph.hasSmallInductiveDimensionLT (f : X ≃ₜ Y) (n : ℕ) :
+    HasSmallInductiveDimensionLT X n ↔ HasSmallInductiveDimensionLT Y n  :=
+  ⟨fun h ↦ f.hasSmallInductiveDimensionLT' n h, fun h ↦ f.symm.hasSmallInductiveDimensionLT' n h⟩
+
+protected theorem Homeomorph.hasSmallInductiveDimensionLE (f : X ≃ₜ Y) (n : ℕ) :
+    HasSmallInductiveDimensionLE X n ↔ HasSmallInductiveDimensionLE Y n  := by
+  unfold HasSmallInductiveDimensionLE
+  exact f.hasSmallInductiveDimensionLT (n + 1)
+
+/-- The small inducive dimension is preserved by homeomorphisms. -/
+protected theorem Homeomorph.smallInductiveDimension (f : X ≃ₜ Y) :
+    smallInductiveDimension X = smallInductiveDimension Y := by
+  unfold _root_.smallInductiveDimension
+  congr! 3
+  exact forall₂_congr <| fun i _ ↦ f.hasSmallInductiveDimensionLT i
