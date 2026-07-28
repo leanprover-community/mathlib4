@@ -1433,7 +1433,7 @@ theorem StronglyMeasurable.setToFun_prod_right {β : Type*} {mβ : MeasurableSpa
         apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-      simp only [mem_setOf_eq, hfx, indicator_of_mem, this,
+      simp only [mem_ofPred_eq, hfx, indicator_of_mem, this,
         ← setToFun_simpleFunc_eq_setToSimpleFunc hT, f']
       refine
         tendsto_setToFun_of_dominated_convergence hT (fun y => ‖f x y‖ + ‖f x y‖)

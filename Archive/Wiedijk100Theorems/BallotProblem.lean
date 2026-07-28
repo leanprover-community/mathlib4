@@ -74,7 +74,7 @@ open scoped List in
 theorem mem_countedSequence_iff_perm {p q l} :
     l ∈ countedSequence p q ↔ l ~ List.replicate p (1 : ℤ) ++ List.replicate q (-1) := by
   rw [List.perm_replicate_append_replicate]
-  · simp only [countedSequence, List.subset_def, mem_setOf_eq, List.mem_cons (b := (1 : ℤ)),
+  · simp only [countedSequence, List.subset_def, mem_ofPred_eq, List.mem_cons (b := (1 : ℤ)),
       List.mem_singleton]
   · norm_num1
 
@@ -200,7 +200,7 @@ theorem first_vote_pos :
         ((countedSequence_nonempty _ _).image _)]
     · have : List.cons (-1) '' countedSequence (p + 1) q ∩ {l : List ℤ | l.headI = 1} = ∅ := by
         ext
-        simp only [mem_inter_iff, mem_image, mem_setOf_eq, mem_empty_iff_false, iff_false,
+        simp only [mem_inter_iff, mem_image, mem_ofPred_eq, mem_empty_iff_false, iff_false,
           not_and, forall_exists_index, and_imp]
         rintro l _ rfl
         norm_num
@@ -255,7 +255,7 @@ theorem countedSequence_int_pos_counted_succ_succ (p q : ℕ) :
   rw [counted_succ_succ, union_inter_distrib_right,
       (_ : List.cons (-1) '' countedSequence (p + 1) q ∩ {l | l.headI = 1} = ∅), union_empty] <;>
     · ext
-      simp only [mem_inter_iff, mem_image, mem_setOf_eq, and_iff_left_iff_imp, mem_empty_iff_false,
+      simp only [mem_inter_iff, mem_image, mem_ofPred_eq, and_iff_left_iff_imp, mem_empty_iff_false,
         iff_false, not_and, forall_exists_index, and_imp]
       rintro y _ rfl
       norm_num

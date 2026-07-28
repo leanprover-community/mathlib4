@@ -124,7 +124,7 @@ variable (R) in
 lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | IsSMulRegular M r }ᶜ :=
   Eq.trans (biUnion_associatedPrimes_eq_zero_divisors R M) <| by
-    simp_rw [Set.compl_setOf, isSMulRegular_iff_right_eq_zero_of_smul,
+    simp_rw [Set.compl_ofPred, isSMulRegular_iff_right_eq_zero_of_smul,
       not_forall, exists_prop, and_comm]
 
 lemma isSMulRegular_iff_ker_lsmul_eq_bot :

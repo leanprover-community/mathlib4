@@ -62,7 +62,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   have mono : ∀ r : ℝ≥0∞, Monotone fun n => rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a } := by
     intro r i j h
     refine inter_subset_inter_right _ ?_
-    simp_rw [subset_def, mem_setOf]
+    simp_rw [subset_def, mem_ofPred]
     intro x hx
     exact le_trans hx (h_mono h x)
   have h_meas : ∀ n, MeasurableSet {a : α | map c rs a ≤ f n a} := fun n =>
@@ -143,7 +143,7 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
   split_ifs with h
   · rfl
   · have := Set.notMem_subset hs.1 h
-    simp only [not_forall, not_le, mem_setOf_eq, not_exists, not_lt] at this
+    simp only [not_forall, not_le, mem_ofPred_eq, not_exists, not_lt] at this
     exact this n
 
 open Encodable in

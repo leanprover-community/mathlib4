@@ -115,14 +115,14 @@ theorem edist_comm : G.edist u v = G.edist v u := by
 
 lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
     ∃ p : G.Walk u v, p.length = k :=
-  have : G.edist u v ≠ ⊤ := by rw [h]; exact ENat.coe_ne_top _
+  have : G.edist u v ≠ ⊤ := by rw [h]; exact ENat.natCast_ne_top _
   have ⟨p, hp⟩ := exists_walk_of_edist_ne_top this
   ⟨p, Nat.cast_injective (hp.trans h)⟩
 
 lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ G.Reachable u v := by
   refine ⟨reachable_of_edist_ne_top, fun h ↦ ?_⟩
   by_contra hx
-  simp only [edist, iInf_eq_top, ENat.coe_ne_top] at hx
+  simp only [edist, iInf_eq_top, ENat.natCast_ne_top] at hx
   exact h.elim hx
 
 /--
@@ -213,7 +213,7 @@ theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v �
 
 @[grind =]
 lemma Reachable.coe_dist_eq_edist (h : G.Reachable u v) : G.dist u v = G.edist u v :=
-  ENat.coe_toNat <| edist_ne_top_iff_reachable.mpr h
+  ENat.natCast_toNat <| edist_ne_top_iff_reachable.mpr h
 
 protected theorem Reachable.exists_walk_length_eq_dist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
@@ -278,14 +278,14 @@ lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w
   · grind [dist_eq_zero_iff_eq_or_not_reachable]
-  rw [← ENat.coe_le_coe, ENat.coe_add]
+  rw [← ENat.natCast_le_natCast, ENat.natCast_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
 
 lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w
   · grind [dist_eq_zero_iff_eq_or_not_reachable]
-  rw [← ENat.coe_le_coe, ENat.coe_add]
+  rw [← ENat.natCast_le_natCast, ENat.natCast_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
 
 theorem dist_comm : G.dist u v = G.dist v u := by
@@ -306,7 +306,7 @@ The distance between vertices is equal to `1` if and only if these vertices are 
 -/
 @[simp]
 theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
-  rw [dist, ENat.toNat_eq_iff, ENat.coe_one, edist_eq_one_iff_adj]
+  rw [dist, ENat.toNat_eq_iff, ENat.natCast_one, edist_eq_one_iff_adj]
   decide
 
 theorem Adj.diff_dist_adj (hadj : G.Adj v w) :

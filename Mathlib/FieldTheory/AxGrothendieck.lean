@@ -156,7 +156,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     realize_bdEqual, Term.realize_relabel,
     Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply,
     Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum,
-    Set.MapsTo, Set.mem_setOf_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
+    Set.MapsTo, Set.mem_ofPred_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
   -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
