@@ -59,25 +59,23 @@ theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
 
-@[to_additive]
-theorem map_center_le_center {f : G →* H} (hf : Function.Surjective f) :
-    map f (center G) ≤ center H :=
-  Submonoid.map_center_le_center hf
-
-@[to_additive]
-theorem center_le_comap_center {f : G →* H} (hf : Function.Surjective f) :
-    center G ≤ comap f (center H) :=
-  Submonoid.center_le_comap_center hf
-
-@[to_additive]
-theorem map_center_of_mulEquiv (f : G ≃* H) :
-    map f (center G) = center H := by
-  refine le_antisymm (map_center_le_center f.surjective) ?_
-  rw [map_equiv_eq_comap_symm]
-  exact center_le_comap_center f.symm.surjective
-
 instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidable (z ∈ center G) :=
   decidable_of_iff' _ mem_center_iff
+
+@[to_additive]
+theorem map_center_le_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
+    (hf : Function.Surjective f) : map f (center G) ≤ center H :=
+  Set.image_center_le hf
+
+@[to_additive]
+theorem center_le_comap_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
+    (hf : Function.Surjective f) : center G ≤ comap f (center H) :=
+  map_le_iff_le_comap.mp (map_center_le_center hf)
+
+@[to_additive (attr := simp)]
+theorem map_center_eq {F} [EquivLike F G H] [MulEquivClass F G H] {f : F} :
+    map f (center G) = center H :=
+  SetLike.coe_injective Set.image_center_eq
 
 @[to_additive]
 instance centerCharacteristic : (center G).Characteristic := by

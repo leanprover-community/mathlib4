@@ -927,6 +927,15 @@ instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
+theorem map_center_le_center {F} [FunLike F A B] [AlgHomClass F R A B] {f : F}
+    (hf : Function.Surjective f) : map (AlgHomClass.toAlgHom f) (center R A) ≤ center R B :=
+  NonUnitalSubsemiring.map_center_le_center hf
+
+@[simp]
+theorem map_center_eq {F} [EquivLike F A B] [AlgEquivClass F R A B] {f : F} :
+    map (AlgHomClass.toAlgHom f) (center R A) = center R B :=
+  SetLike.coe_injective Set.image_center_eq
+
 end Center
 
 section Centralizer

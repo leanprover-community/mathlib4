@@ -5,6 +5,7 @@ Authors: Eric Wieser, Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Data.Set.Basic
@@ -92,7 +93,7 @@ namespace Set
 /-! ### Center -/
 
 section Mul
-variable [Mul M]
+variable {N} [Mul M] [Mul N]
 
 variable (M) in
 /-- The center of a magma. -/
@@ -108,6 +109,29 @@ def centralizer : Set M := {c | ∀ m ∈ S, m * c = c * m}
 @[to_additive mem_addCenter_iff]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl
+
+@[to_additive image_addCenter_le]
+theorem image_center_le {F} [FunLike F M N] [MulHomClass F M N] {f : F}
+    (hf : Function.Surjective f) : f '' (Set.center M) ≤ Set.center N := by
+  refine fun x hx ↦ Set.mem_center_iff.mpr ?_
+  obtain ⟨y, hy, rfl⟩ := Set.mem_image .. |>.mp hx
+  refine ⟨fun a ↦ ?_ , fun a b ↦ ?_, fun a b ↦ ?_⟩
+  · obtain ⟨_, rfl⟩ := hf a
+    rw [commute_iff_eq, ← map_mul, ← map_mul, (Set.mem_center_iff.mp hy).1]
+  · obtain ⟨_, rfl⟩ := hf a
+    obtain ⟨_, rfl⟩ := hf b
+    rw [← map_mul, ← map_mul, (Set.mem_center_iff.mp hy).2, map_mul, map_mul]
+  · obtain ⟨_, rfl⟩ := hf a
+    obtain ⟨_, rfl⟩ := hf b
+    rw [← map_mul, ← map_mul, (Set.mem_center_iff.mp hy).3, map_mul, map_mul]
+
+@[to_additive image_addCenter_eq]
+theorem image_center_eq {F} [EquivLike F M N] [MulEquivClass F M N] {f : F} :
+    f '' (Set.center M) = Set.center N := by
+  refine le_antisymm (image_center_le <| EquivLike.surjective f) fun x hx ↦ ?_
+  obtain ⟨a, rfl⟩ := EquivLike.surjective f x
+  refine ⟨a, ?_, rfl⟩
+  simpa using image_center_le (f : M ≃* N).symm.surjective (mem_image_of_mem _ hx)
 
 @[to_additive mem_addCentralizer]
 lemma mem_centralizer_iff {c : M} : c ∈ centralizer S ↔ ∀ m ∈ S, m * c = c * m := Iff.rfl

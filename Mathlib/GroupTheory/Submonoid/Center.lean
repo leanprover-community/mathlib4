@@ -59,7 +59,7 @@ instance {M α : Type*} [Monoid M] [MulAction M α] :
     SMulCommClass M (Submonoid.center M) α :=
   SMulCommClass.symm (Submonoid.center M) M α
 
-variable {M}
+variable {M N} [MulOneClass N]
 
 /-- The center of a multiplication with unit is commutative and associative.
 
@@ -78,6 +78,21 @@ protected theorem center_prod {N : Type*} [MulOneClass N] :
 protected theorem center_pi {ι : Type*} {M : ι → Type*} [Π i, MulOneClass (M i)] :
     center (Π i, M i) = pi .univ fun i ↦ center (M i) :=
   SetLike.coe_injective Set.center_pi
+
+@[to_additive]
+theorem map_center_le_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+    (hf : Function.Surjective f) : map f (center M) ≤ center N :=
+  Set.image_center_le hf
+
+@[to_additive]
+theorem center_le_comap_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+    (hf : Function.Surjective f) : center M ≤ comap f (center N) :=
+  map_le_iff_le_comap.mp (map_center_le_center hf)
+
+@[to_additive (attr := simp)]
+theorem map_center_eq {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) :
+    map f (center M) = center N :=
+  SetLike.coe_injective Set.image_center_eq
 
 end MulOneClass
 
@@ -100,28 +115,8 @@ theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
   exact Iff.rfl
 
 @[to_additive]
-theorem map_center_le_center {f : M →* N} (hf : Function.Surjective f) :
-    map f (center M) ≤ center N := by
-  refine fun x hx ↦ mem_center_iff.mpr fun y ↦ ?_
-  obtain ⟨m₁, rfl⟩ := hf y
-  obtain ⟨m₂, hm₂, rfl⟩ := mem_map.mp hx
-  rw [← MonoidHom.map_mul, ← MonoidHom.map_mul, mem_center_iff.mp hm₂]
-
-@[to_additive]
-theorem center_le_comap_center {f : M →* N} (hf : Function.Surjective f) :
-    center M ≤ comap f (center N) :=
-  map_le_iff_le_comap.mp (map_center_le_center hf)
-
-@[to_additive]
-theorem map_center_of_mulEquiv (f : M ≃* N) : map f (center M) = center N := by
-  refine le_antisymm (map_center_le_center (f := f.toMonoidHom) f.surjective) ?_
-  rw [map_equiv_eq_comap_symm]
-  exact center_le_comap_center (f := f.symm.toMonoidHom) f.symm.surjective
-
-@[to_additive]
 instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
   decidable_of_iff' _ mem_center_iff
-
 
 
 /-- The center of a monoid acts commutatively on that monoid. -/
