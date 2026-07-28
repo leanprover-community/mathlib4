@@ -43,7 +43,7 @@ namespace HomComplex
 
 /-- The subgroup of `Cocycle K L n` consisting of coboundaries. -/
 def coboundaries : AddSubgroup (Cocycle K L n) where
-  carrier := setOf (fun α ↦ ∃ (m : ℤ) (hm : m + 1 = n) (β : Cochain K L m), δ m n β = α)
+  carrier := Set.ofPred (fun α ↦ ∃ (m : ℤ) (hm : m + 1 = n) (β : Cochain K L m), δ m n β = α)
   zero_mem' := ⟨n - 1, by simp, 0, by simp⟩
   add_mem' := by
     rintro α₁ α₂ ⟨m, hm, β₁, hβ₁⟩ ⟨m', hm', β₂, hβ₂⟩
@@ -145,7 +145,7 @@ lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     toHom (mk x) = 0 ↔ x ∈ coboundaries K L n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
-      AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+      AddSubsemigroup.mem_mk, Set.mem_ofPred_eq]
     rw [toHom_mk, HomotopyCategory.quotient_map_eq_zero_iff] at h
     obtain ⟨γ, h⟩ := Cochain.equivHomotopy _ _ h.some
     simp only [Cochain.ofHom_zero, add_zero, Cocycle.equivHomShift_symm_apply,

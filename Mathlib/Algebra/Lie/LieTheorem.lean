@@ -71,7 +71,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
   have T_apply_succ (w : A) (n : ℕ) :
       Submodule.map (T χ w) (U' (n + 1)) ≤ U' n := by
     simp only [OrderHom.coe_mk, U', Submodule.map_span, Submodule.span_le, Set.image_subset_iff]
-    simp only [Set.subset_def, Set.mem_setOf_eq, Set.mem_preimage, SetLike.mem_coe,
+    simp only [Set.subset_def, Set.mem_ofPred_eq, Set.mem_preimage, SetLike.mem_coe,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     induction n generalizing w
     · simp only [zero_add, Nat.lt_one_iff, LinearMap.sub_apply, LieModule.toEnd_apply_apply,

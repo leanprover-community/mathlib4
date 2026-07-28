@@ -20,7 +20,7 @@ public import Mathlib.Order.SuccPred.WithBot
 * `Polynomial.degree`: the degree of a polynomial, where `0` has degree `⊥`
 * `Polynomial.natDegree`: the degree of a polynomial, where `0` has degree `0`
 * `Polynomial.leadingCoeff`: the leading coefficient of a polynomial
-* `Polynomial.Monic`: a polynomial is monic if its leading coefficient is 0
+* `Polynomial.Monic`: a polynomial is monic if its leading coefficient is 1
 * `Polynomial.nextCoeff`: the next coefficient after the leading coefficient
 
 ## Main results

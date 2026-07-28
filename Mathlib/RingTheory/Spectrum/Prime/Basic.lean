@@ -85,8 +85,8 @@ variable (R S)
 
 theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
-    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
-      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_ofPred.mpr <| hj ▸ j.isPrime,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_ofPred.mp hJ⟩, rfl⟩⟩
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -166,7 +166,7 @@ theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :
 
 theorem mem_vanishingIdeal (t : Set (PrimeSpectrum R)) (f : R) :
     f ∈ vanishingIdeal t ↔ ∀ x ∈ t, f ∈ x.asIdeal := by
-  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_setOf_eq]
+  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_ofPred_eq]
 
 @[simp]
 theorem vanishingIdeal_singleton (x : PrimeSpectrum R) :

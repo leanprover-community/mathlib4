@@ -263,7 +263,7 @@ theorem algebraicIndependent_bounded_of_finset_algebraicIndependent_bounded {n :
 section Subtype
 
 theorem AlgebraicIndependent.restrict_of_comp_subtype {s : Set ι}
-    (hs : AlgebraicIndependent R (x ∘ (↑) : s → A)) : AlgebraicIndependent R (s.restrict x) :=
+    (hs : AlgebraicIndependent R (x ∘ (↑) : s → A)) : AlgebraicIndependent R (s.domRestrict x) :=
   hs
 
 variable (R A)

@@ -181,6 +181,11 @@ section
 
 variable (R 𝕜 : Type*) {B : Type*} (F : Type*) (E : B → Type*) {B' : Type*} (f : B' → B)
 
+-- This instance exists to avoid an nsmul diamond.
+instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
+    SMul R ((f *ᵖ E) x) :=
+  inferInstanceAs <| SMul R (E (f x))
+
 instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) :=
   inferInstanceAs <| AddCommMonoid (E (f x))
 
