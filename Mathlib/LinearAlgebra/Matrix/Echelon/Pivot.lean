@@ -82,7 +82,7 @@ theorem IsPivot.rank_eq [CommRing R] [IsDomain R]
           rw [rank_of_det_ne_zero hdet, Fintype.card_fin]
       _ ≤ A.rank := rank_submatrix_le A (Fin.castLE h.length_le) l.get
 
-lemma rank_mul_eq_right_of_lowerTriangular [CommRing R] [IsDomain R]
+theorem rank_mul_eq_right_of_lowerTriangular [CommRing R] [IsDomain R]
     (A : Matrix (Fin m) (Fin m) R) (B : Matrix (Fin m) (Fin n) R) (σ : Equiv.Perm (Fin m))
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
     (A * B.submatrix σ id).rank = B.rank := by

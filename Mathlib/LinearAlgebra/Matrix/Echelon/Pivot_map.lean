@@ -10,10 +10,31 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 
 /-!
-# map-based formulation of the pivot
+# Pivot maps of a matrix, staircase packaging
 
-A standalone parallel of `Pivot.lean` carrying the pivot data as a map `l : m → WithTop n`
-sending each row to its leading column, with `⊤` for zero rows.
+The pivot map of a matrix in row echelon form sends each row to its leading (leftmost
+nonzero) column, or to `⊤` for a zero row. In this packaging the staircase conditions
+(`Monotone`, `StrictMonoOn` off the `⊤`-fiber) are the structure fields and `RowEchelon`
+is derived; see `Pivot_map_echelon.lean` for the packaging with `RowEchelon` primitive.
+
+## Main definitions
+
+- `Matrix.IsLeadingEntry`: `c : WithTop n` is the leading position of row `i` of `A`.
+- `Matrix.IsPivotMap`: `l : m → WithTop n` is the pivot map of `A`.
+
+## Main results
+
+- `Matrix.IsPivotMap.rank_eq`: a matrix with pivot map `l` has rank the number of rows
+  with a pivot.
+- `Matrix.IsPivotMap.unique`: the pivot map of a matrix is unique.
+- `Matrix.IsPivotMap.rank_eq_of_lowerTriangular`: the rank of `B`, read off a pivot map
+  of `A * B.submatrix σ id` for `A` lower triangular with nonzero diagonal.
+- `Matrix.decidableIsPivotMap`: `IsPivotMap` is decidable over a `DecidableEq` ring and
+  finite linearly ordered indices.
+
+## Tags
+
+matrix, echelon form, rank, pivot
 -/
 
 @[expose] public section
@@ -36,32 +57,28 @@ variable [Zero R] {A : Matrix m n R} {l : m → WithTop n}
 def IsLeadingEntry [LT n] (A : Matrix m n R) (i : m) (c : WithTop n) : Prop :=
   (∀ j : n, (j : WithTop n) < c → A i j = 0) ∧ ∀ c₀ : n, c = c₀ → A i c₀ ≠ 0
 
+@[simp]
 theorem isLeadingEntry_top_iff [LT n] {i : m} :
-    A.IsLeadingEntry i ⊤ ↔ A i = 0 := by
-  constructor
-  · intro h
-    exact funext fun j => h.1 j (WithTop.coe_lt_top j)
-  · intro h0
-    exact ⟨fun j _ => congrFun h0 j, fun c₀ hc => absurd hc (by simp)⟩
+    A.IsLeadingEntry i ⊤ ↔ A i = 0 :=
+  ⟨fun h => funext fun j => h.1 j (WithTop.coe_lt_top j),
+    fun h0 => ⟨fun j _ => congrFun h0 j, fun _ hc => absurd hc WithTop.top_ne_coe⟩⟩
 
+@[simp]
 theorem isLeadingEntry_coe_iff [LT n] {i : m} {c : n} :
-    A.IsLeadingEntry i c ↔ (∀ j < c, A i j = 0) ∧ A i c ≠ 0 := by
-  constructor
-  · intro h
-    exact ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mpr hj), h.2 c rfl⟩
-  · intro h
-    exact ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mp hj),
-      fun c₀ hc => WithTop.coe_inj.mp hc ▸ h.2⟩
+    A.IsLeadingEntry i c ↔ (∀ j < c, A i j = 0) ∧ A i c ≠ 0 :=
+  ⟨fun h => ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mpr hj), h.2 c rfl⟩,
+    fun h => ⟨fun j hj => h.1 j (WithTop.coe_lt_coe.mp hj),
+      fun _ hc => WithTop.coe_inj.mp hc ▸ h.2⟩⟩
 
 /-- A row has at most one leading position. -/
 theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : WithTop n}
     (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) :
     c₁ = c₂ := by
   refine le_antisymm (not_lt.mp fun hlt => ?_) (not_lt.mp fun hlt => ?_)
-  · obtain ⟨c₀, hc⟩ := WithTop.ne_top_iff_exists.mp hlt.ne_top
-    exact h₂.2 c₀ hc.symm (h₁.1 c₀ (hc ▸ hlt))
-  · obtain ⟨c₀, hc⟩ := WithTop.ne_top_iff_exists.mp hlt.ne_top
-    exact h₁.2 c₀ hc.symm (h₂.1 c₀ (hc ▸ hlt))
+  · obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
+    exact h₂.2 c₀ hc (h₁.1 c₀ hlt')
+  · obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
+    exact h₁.2 c₀ hc (h₂.1 c₀ hlt')
 
 /-! ### Pivot maps -/
 
@@ -71,7 +88,7 @@ structure IsPivotMap [Preorder m] [Preorder n] (A : Matrix m n R) (l : m → Wit
     Prop where
   monotone : Monotone l
   strictMonoOn : StrictMonoOn l {i | l i ≠ ⊤}
-  isLeadingEntry : ∀ i, A.IsLeadingEntry i (l i)
+  isLeadingEntry : ∀ i : m, A.IsLeadingEntry i (l i)
 
 theorem IsPivotMap.lt_of_lt_of_ne_top [Preorder m] [Preorder n] {i₁ i₂ : m}
     (h : A.IsPivotMap l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
@@ -82,24 +99,14 @@ theorem IsPivotMap.lt_of_lt_of_ne_top [Preorder m] [Preorder n] {i₁ i₂ : m}
 theorem IsPivotMap.rowEchelon [Preorder m] [LinearOrder n] (h : A.IsPivotMap l) :
     A.RowEchelon := by
   intro i₁ i₂ hlt j₂ hz
+  refine (h.isLeadingEntry i₂).1 j₂ ?_
   rcases eq_or_ne (l i₂) ⊤ with h₂ | h₂
-  · have h0 := h.isLeadingEntry i₂
-    rw [h₂, isLeadingEntry_top_iff] at h0
-    exact congrFun h0 j₂
-  · obtain ⟨c₂, hc₂⟩ := WithTop.ne_top_iff_exists.mp h₂
-    rcases eq_or_ne (l i₁) ⊤ with h₁ | h₁
-    · exact absurd (top_le_iff.mp (h₁ ▸ h.monotone hlt.le)) h₂
-    · obtain ⟨c₁, hc₁⟩ := WithTop.ne_top_iff_exists.mp h₁
-      have hlead₁ := h.isLeadingEntry i₁
-      have hlead₂ := h.isLeadingEntry i₂
-      rw [← hc₁, isLeadingEntry_coe_iff] at hlead₁
-      rw [← hc₂, isLeadingEntry_coe_iff] at hlead₂
-      have hcc : c₁ < c₂ := by
-        have hll := h.lt_of_lt_of_ne_top hlt h₁
-        rw [← hc₁, ← hc₂] at hll
-        exact WithTop.coe_lt_coe.mp hll
-      have hle : ¬ c₁ < j₂ := fun hc => hlead₁.2 (hz _ hc)
-      exact hlead₂.1 _ (lt_of_le_of_lt (not_lt.mp hle) hcc)
+  · rw [h₂]
+    exact WithTop.coe_lt_top j₂
+  · have h₁ : l i₁ ≠ ⊤ := fun ht => h₂ (top_le_iff.mp (ht ▸ h.monotone hlt.le))
+    refine lt_of_le_of_lt (not_lt.mp fun hc => ?_) (h.lt_of_lt_of_ne_top hlt h₁)
+    obtain ⟨c₁, hc₁, hcj⟩ := WithTop.lt_iff_exists_coe.mp hc
+    exact (h.isLeadingEntry i₁).2 c₁ hc₁ (hz c₁ (WithTop.coe_lt_coe.mp hcj))
 
 /-- The pivot map of a matrix is unique. -/
 theorem IsPivotMap.unique [Preorder m] [LinearOrder n] {l' : m → WithTop n}
@@ -124,44 +131,37 @@ variable [Fintype m] [Fintype n] [Preorder n] [DecidableEq n] {A : Matrix m n R}
   {l : m → WithTop n}
 
 theorem IsPivotMap.rank_le_card [Preorder m] [CommSemiring R] [StrongRankCondition R]
-    (h : A.IsPivotMap l) : A.rank ≤ (univ.filter fun i => l i ≠ ⊤).card := by
-  refine rank_le_card_of_row_eq_zero A _ fun i hi => ?_
-  have htop : l i = ⊤ := not_not.mp fun hne => hi (mem_filter.mpr ⟨mem_univ _, hne⟩)
-  have h0 := h.isLeadingEntry i
-  rw [htop, isLeadingEntry_top_iff] at h0
-  exact h0
+    (h : A.IsPivotMap l) : A.rank ≤ #{i | l i ≠ ⊤} :=
+  rank_le_card_of_row_eq_zero A _ fun i hi =>
+    isLeadingEntry_top_iff.mp
+      (of_not_not (fun hne => hi ((mem_filter_univ i).mpr hne)) ▸ h.isLeadingEntry i)
 
 variable [LinearOrder m] [CommRing R] [IsDomain R]
 
-theorem IsPivotMap.card_le_rank (h : A.IsPivotMap l) :
-    (univ.filter fun i => l i ≠ ⊤).card ≤ A.rank := by
+theorem IsPivotMap.card_le_rank (h : A.IsPivotMap l) : #{i | l i ≠ ⊤} ≤ A.rank := by
   let g : {i // l i ≠ ⊤} → n := fun i => (l i.1).untop i.2
   have hlead : ∀ i, (∀ j < g i, A i.1 j = 0) ∧ A i.1 (g i) ≠ 0 := by
     intro i
     have hl := h.isLeadingEntry i.1
     rw [← WithTop.coe_untop (l i.1) i.2, isLeadingEntry_coe_iff] at hl
     exact hl
-  have htri : (A.submatrix Subtype.val g).BlockTriangular id := by
-    intro i j hij
-    refine (hlead i).1 _ ?_
-    rw [← WithTop.coe_lt_coe, WithTop.coe_untop, WithTop.coe_untop]
-    exact h.strictMonoOn j.2 i.2 hij
+  have htri : (A.submatrix Subtype.val g).BlockTriangular id := fun i j hij =>
+    (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (h.strictMonoOn j.2 i.2 hij))
   have hdet : (A.submatrix Subtype.val g).det ≠ 0 := by
     rw [det_of_upperTriangular htri]
     exact prod_ne_zero_iff.mpr fun i _ => (hlead i).2
-  calc (univ.filter fun i => l i ≠ ⊤).card
+  calc #{i | l i ≠ ⊤}
       = (A.submatrix Subtype.val g).rank := by
         rw [rank_of_det_ne_zero hdet, Fintype.card_subtype]
     _ ≤ A.rank := rank_submatrix_le A Subtype.val g
 
-theorem IsPivotMap.rank_eq (h : A.IsPivotMap l) :
-    A.rank = (univ.filter fun i => l i ≠ ⊤).card :=
+theorem IsPivotMap.rank_eq (h : A.IsPivotMap l) : A.rank = #{i | l i ≠ ⊤} :=
   le_antisymm h.rank_le_card h.card_le_rank
 
 theorem IsPivotMap.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
     {σ : Equiv.Perm m} (hpiv : (A * B.submatrix σ id).IsPivotMap l)
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
-    B.rank = (univ.filter fun i => l i ≠ ⊤).card := by
+    B.rank = #{i | l i ≠ ⊤} := by
   rw [← rank_mul_eq_right_of_lowerTriangular A B σ hA hd, hpiv.rank_eq]
 
 end Rank
@@ -182,14 +182,10 @@ instance decidableIsLeadingEntry [Fintype n] [LT n] [DecidableLT n] [DecidableEq
 
 instance decidableIsPivotMap [Fintype m] [LinearOrder m] [Fintype n] [LinearOrder n]
     (A : Matrix m n R) (l : m → WithTop n) : Decidable (A.IsPivotMap l) :=
-  haveI : ∀ i : m, Decidable (A.IsLeadingEntry i (l i)) := fun _ => inferInstance
   decidable_of_iff'
-    ((∀ i₁ i₂, i₁ ≤ i₂ → l i₁ ≤ l i₂) ∧
-      (∀ i₁ i₂, i₁ < i₂ → l i₁ ≠ ⊤ → l i₁ < l i₂) ∧
-      ∀ i, A.IsLeadingEntry i (l i))
-    ⟨fun h => ⟨fun _ _ hle => h.monotone hle,
-      fun _ _ hlt h₁ => h.lt_of_lt_of_ne_top hlt h₁, h.isLeadingEntry⟩,
-      fun h => ⟨fun _ _ hle => h.1 _ _ hle, fun _ ha _ _ hab => h.2.1 _ _ hab ha, h.2.2⟩⟩
+    (Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧ ∀ i : m, A.IsLeadingEntry i (l i))
+    ⟨fun h => ⟨h.monotone, h.strictMonoOn, h.isLeadingEntry⟩,
+      fun h => ⟨h.1, h.2.1, h.2.2⟩⟩
 
 end Decidability
 

@@ -18,6 +18,24 @@ indices, carrying the pivot columns as a `Finset n`. The formulation is relation
 a pivot set of `A` when `A` is in row echelon form and `s` is characterized as the set of
 leading (leftmost nonzero) columns of the rows of `A`. No positional access appears in the
 statements.
+
+## Main definitions
+
+- `Matrix.IsLeadingEntry`: `c` is the leading column of row `i` of `A`.
+- `Matrix.IsPivotFinset`: `s` is the set of leading columns of the echelon matrix `A`.
+
+## Main results
+
+- `Matrix.IsPivotFinset.rank_eq`: a matrix with pivot set `s` has rank `s.card`.
+- `Matrix.IsPivotFinset.rank_eq_of_lowerTriangular`: the rank of `B`, read off a pivot set
+  of `A * B.submatrix σ id` for `A` lower triangular with nonzero diagonal.
+- `Matrix.decidableIsPivotFinset`: `IsPivotFinset` is decidable for `Fin`-indexed matrices
+  over a `DecidableEq` ring; general linearly ordered finite indices are decided by
+  transport along `monoEquivOfFin`.
+
+## Tags
+
+matrix, echelon form, rank, pivot
 -/
 
 @[expose] public section
@@ -29,7 +47,6 @@ open Finset OrderDual
 variable {m n : Type*} {R : Type*}
 
 /-! ### Leading entries -/
-/- These go into basic.lean if adopted -/
 
 /-- `c` is the column of the leading nonzero entry of row `i`. -/
 def IsLeadingEntry [Zero R] [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
