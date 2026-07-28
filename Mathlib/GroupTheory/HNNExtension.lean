@@ -125,7 +125,7 @@ theorem induction_on {motive : HNNExtension G A B φ → Prop}
     (t : motive t) (mul : ∀ x y, motive x → motive y → motive (x * y))
     (inv : ∀ x, motive x → motive x⁻¹) : motive x := by
   let S : Subgroup (HNNExtension G A B φ) :=
-    { carrier := setOf motive
+    { carrier := Set.ofPred motive
       one_mem' := by simpa using of 1
       mul_mem' := mul _ _
       inv_mem' := inv _ }

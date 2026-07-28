@@ -593,7 +593,7 @@ theorem mem_inf_principal' {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t �
     ← (isCompl_principal (t ∩ sᶜ)).le_right_iff, compl_inter, compl_compl]
 
 lemma mem_inf_principal {f : Filter α} {s t : Set α} : s ∈ f ⊓ 𝓟 t ↔ { x | x ∈ t → x ∈ s } ∈ f := by
-  simp only [mem_inf_principal', imp_iff_not_or, setOf_or, compl_def, setOf_mem_eq]
+  simp only [mem_inf_principal', imp_iff_not_or, ofPred_or, compl_def, ofPred_mem_eq]
 
 lemma iSup_inf_principal (f : ι → Filter α) (s : Set α) : ⨆ i, f i ⊓ 𝓟 s = (⨆ i, f i) ⊓ 𝓟 s := by
   ext
@@ -632,7 +632,7 @@ theorem eventually_mem_set {s : Set α} {l : Filter α} : (∀ᶠ x in l, x ∈ 
 
 protected theorem ext' {f₁ f₂ : Filter α}
     (h : ∀ p : α → Prop, (∀ᶠ x in f₁, p x) ↔ ∀ᶠ x in f₂, p x) : f₁ = f₂ :=
-  Filter.ext <| Set.setOf_bijective.surjective.forall.mpr h
+  Filter.ext <| Set.ofPred_bijective.surjective.forall.mpr h
 
 theorem Eventually.filter_mono {f₁ f₂ : Filter α} (h : f₁ ≤ f₂) {p : α → Prop}
     (hp : ∀ᶠ x in f₂, p x) : ∀ᶠ x in f₁, p x :=
@@ -811,7 +811,7 @@ theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filte
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
     (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x := by
   simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _),
-    Set.setOf_bijective.surjective.forall, Filter.Eventually, mem_setOf]
+    Set.ofPred_bijective.surjective.forall, Filter.Eventually, mem_ofPred]
 
 @[simp, push]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by

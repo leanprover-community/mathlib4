@@ -97,6 +97,9 @@ theorem weight_single (s : σ) (r : R) :
     weight w (Finsupp.single s r) = r • w s :=
   Finsupp.linearCombination_single _ _ _
 
+theorem weight_eq_sum [Fintype σ] (f : σ →₀ R) : weight w f = ∑ i, f i • w i := by
+  rw [weight_apply, f.sum_fintype (fun i c ↦ c • w i) fun _ ↦ zero_smul _ _]
+
 variable (R) in
 /-- A weight function is nontorsion if its values are not torsion. -/
 class NonTorsionWeight (w : σ → M) : Prop where

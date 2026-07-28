@@ -52,7 +52,7 @@ lemma mem_vertices_cons {a b c : V} (p : Path a b)
 
 lemma verticesSet_nil {a : V} : {v | v ∈ (nil : Path a a).vertices} = {a} := by
   simp only [vertices_nil, mem_singleton, Set.ext_iff, Set.mem_singleton_iff]
-  exact fun x ↦ Set.mem_setOf
+  exact fun x ↦ Set.mem_ofPred
 
 /-- The length of vertices list equals path length plus one -/
 @[simp]

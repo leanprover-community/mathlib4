@@ -65,8 +65,11 @@ theorem frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
   exact ⟨p, ⟨hp.2.1.le, hp.1, hp.2.2⟩⟩
 
 /-- For any positive `k : ℕ` there are infinitely many primes `p` such that `p ≡ 1 [MOD k]`. -/
-theorem infinite_setOf_prime_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
+theorem infinite_setOfPred_prime_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
     Set.Infinite {p : ℕ | Nat.Prime p ∧ p ≡ 1 [MOD k]} :=
   frequently_atTop_iff_infinite.1 (frequently_atTop_modEq_one hk0)
+
+@[deprecated (since := "2026-07-09")]
+alias infinite_setOf_prime_modEq_one := infinite_setOfPred_prime_modEq_one
 
 end Nat
