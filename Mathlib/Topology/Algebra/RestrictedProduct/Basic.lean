@@ -568,6 +568,13 @@ lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
     mulSingle A i (r ^ n) = mulSingle A i r ^ n := by
   ext; simp [Pi.mulSingle_zpow, RestrictedProduct.zpow_apply]
 
+@[to_additive (attr := simps)]
+def mulSingleHom [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)] (i : ι) :
+    (G i) →* Πʳ (i : ι), [G i, A i] where
+  toFun := mulSingle A i
+  map_one' := mulSingle_one A i
+  map_mul' := mulSingle_mul A i
+
 end single
 
 end RestrictedProduct
