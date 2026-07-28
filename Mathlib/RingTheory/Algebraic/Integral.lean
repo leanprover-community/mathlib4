@@ -566,16 +566,21 @@ attribute [local instance] FractionRing.liftAlgebra in
 /-- Tower law for `Module.finrank` in a tower of domains `R → S → T`. This is a variant of
 `Module.finrank_mul_finrank` that assumes the rings are domains instead of the modules being
 free. -/
-theorem Module.finrank_mul_finrank' [FaithfulSMul R S] (T : Type*) [CommRing T] [IsDomain T]
+theorem Module.finrank_mul_finrank' (T : Type*) [CommRing T] [IsDomain T]
     [Algebra S T] [Algebra R T] [IsScalarTower R S T] [FaithfulSMul S T] :
     Module.finrank R S * Module.finrank S T = Module.finrank R T := by
-  have : FaithfulSMul R T := .trans R S T
-  have : IsDomain R := (FaithfulSMul.algebraMap_injective R T).isDomain
-  have : IsDomain S := (FaithfulSMul.algebraMap_injective S T).isDomain
-  rw [← IsFractionRing.finrank_eq R (FractionRing R) S (FractionRing S),
-    ← IsFractionRing.finrank_eq S (FractionRing S) T (FractionRing T),
-    ← IsFractionRing.finrank_eq R (FractionRing R) T (FractionRing T),
-    Module.finrank_mul_finrank (FractionRing R) (FractionRing S) (FractionRing T)]
+  by_cases h : FaithfulSMul R S
+  · have : FaithfulSMul R T := .trans R S T
+    have : IsDomain R := (FaithfulSMul.algebraMap_injective R T).isDomain
+    have : IsDomain S := (FaithfulSMul.algebraMap_injective S T).isDomain
+    rw [← IsFractionRing.finrank_eq R (FractionRing R) S (FractionRing S),
+      ← IsFractionRing.finrank_eq S (FractionRing S) T (FractionRing T),
+      ← IsFractionRing.finrank_eq R (FractionRing R) T (FractionRing T),
+      Module.finrank_mul_finrank (FractionRing R) (FractionRing S) (FractionRing T)]
+  · rw [Module.finrank_eq_zero_of_not_faithfulSMul h, zero_mul,
+      Module.finrank_eq_zero_of_not_faithfulSMul]
+    exact fun _ ↦ h (FaithfulSMul.tower_bot R S T)
+
 section Polynomial
 
 attribute [local instance] Polynomial.algebra MvPolynomial.algebraMvPolynomial
