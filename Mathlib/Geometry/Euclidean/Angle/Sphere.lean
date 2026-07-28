@@ -184,11 +184,15 @@ theorem IsTangentAt_iff_angle_eq_pi_div_two {s : Sphere P} {p q : P} (hp : p ∈
 end Sphere
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
-
-local notation "o" => Module.Oriented.positiveOrientation
+  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)]
 
 namespace Sphere
+
+section
+
+variable [Module.Oriented ℝ V (Fin 2)]
+
+local notation "o" => Module.Oriented.positiveOrientation
 
 /-- The angle at the center of a circle equals twice the angle at the circumference, oriented angle
 version. -/
@@ -199,11 +203,16 @@ theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (h
   rw [oangle, oangle, o.oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real _ _ hp₂ hp₁ hp₃] <;>
     simp [hp₂p₁, hp₂p₃]
 
+end
+
 /-- The angle at the center of a circle equals twice the angle at the circumference, unoriented
 angle version, provided twice the angle at the circumference is at most `π`. -/
 theorem angle_center_eq_two_mul_angle_of_two_mul_angle_le_pi {s : Sphere P} {p₁ p₂ p₃ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃)
     (h : 2 * ∠ p₁ p₂ p₃ ≤ π) : ∠ p₁ s.center p₃ = 2 * ∠ p₁ p₂ p₃ := by
+  have : FiniteDimensional ℝ V := .of_finrank_eq_succ hd2.out
+  have : Module.Oriented ℝ V (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
   have hp₁c : p₁ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₁ hp₂ hp₂p₁.symm
   have hp₃c : p₃ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₃ hp₂ hp₂p₃.symm
   refine Real.injOn_cos ⟨angle_nonneg p₁ s.center p₃, angle_le_pi p₁ s.center p₃⟩
@@ -219,6 +228,9 @@ theorem angle_center_eq_two_pi_sub_two_mul_angle_of_pi_le_two_mul_angle {s : Sph
     {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁)
     (hp₂p₃ : p₂ ≠ p₃) (h : π ≤ 2 * ∠ p₁ p₂ p₃) :
     ∠ p₁ s.center p₃ = 2 * π - 2 * ∠ p₁ p₂ p₃ := by
+  have : FiniteDimensional ℝ V := .of_finrank_eq_succ hd2.out
+  have : Module.Oriented ℝ V (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
   have hp₁c : p₁ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₁ hp₂ hp₂p₁.symm
   have hp₃c : p₃ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₃ hp₂ hp₂p₃.symm
   refine Real.injOn_cos ⟨angle_nonneg p₁ s.center p₃, angle_le_pi p₁ s.center p₃⟩
@@ -228,6 +240,16 @@ theorem angle_center_eq_two_pi_sub_two_mul_angle_of_pi_le_two_mul_angle {s : Sph
     oangle_center_eq_two_zsmul_oangle hp₁ hp₂ hp₃ hp₂p₁ hp₂p₃, Real.cos_two_mul,
     ← cos_oangle_eq_cos_angle hp₂p₁.symm hp₂p₃.symm, two_zsmul, Real.Angle.cos_add]
   nlinarith [Real.Angle.cos_sq_add_sin_sq (∡ p₁ p₂ p₃)]
+
+end Sphere
+
+section
+
+variable [Module.Oriented ℝ V (Fin 2)]
+
+local notation "o" => Module.Oriented.positiveOrientation
+
+namespace Sphere
 
 /-- Oriented angle version of "angles in same segment are equal" and "opposite angles of a
 cyclic quadrilateral add to π", for oriented angles mod π (for which those are the same result),
@@ -373,6 +395,8 @@ theorem dist_div_sin_oangle_eq_two_mul_radius {s : Sphere P} {p₁ p₂ p₃ : P
     mul_div_cancel₀ _ (two_ne_zero' ℝ)]
 
 end Sphere
+
+end
 
 end EuclideanGeometry
 
