@@ -689,7 +689,7 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [IsTors
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by
   have := isDomain_of_prime (prime_of_isIntegrallyClosed hx')
   have :=
-    noZeroSMulDivisors_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
+    isTorsionFree_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
       (degree_pos hx').ne'
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,

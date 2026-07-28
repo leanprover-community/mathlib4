@@ -150,7 +150,7 @@ lemma Module.support_of_isTorsionFree [IsDomain R] [IsTorsionFree R M] [Nontrivi
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   exact fun p ↦ ⟨x, fun r hr ↦ ⟨fun e ↦ hr (e ▸ p.asIdeal.zero_mem), hx⟩⟩
 
-@[deprecated (since := "2026-7-27")]
+@[deprecated (since := "2026-07-27")]
 alias Module.support_of_noZeroSMulDivisors := Module.support_of_isTorsionFree
 
 variable {N P : Type*} [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
