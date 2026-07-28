@@ -6,8 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Nonneg.Module
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
@@ -24,7 +24,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   complete linear ordered archimedean commutative semifield; we have no typeclass for this in
   `mathlib` yet, so we define the following instances instead:
 
-  - `LinearOrderedSemiring ℝ≥0`;
+  - `IsOrderedRing ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
   - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
@@ -66,7 +66,10 @@ namespace NNReal
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-/-- Constructor of ℝ≥0 from a nonnegative real number -/
+/-- Constructor of ℝ≥0 from a nonnegative real number.
+
+Important: You should use `NNReal.mk` instead of the anonymous constructor `⟨_, _⟩` to avoid abuse
+of the definitional equality between `ℝ≥0` and `{ r : ℝ // 0 ≤ r }`. -/
 protected def mk (x : ℝ) (hx : 0 ≤ x) : ℝ≥0 := ⟨x, hx⟩
 
 instance : Zero ℝ≥0 := ⟨.mk 0 le_rfl⟩
@@ -112,12 +115,19 @@ noncomputable instance : Semifield ℝ≥0 := fast_instance%
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
-noncomputable section
-deriving instance LinearOrderedCommGroupWithZero for NNReal
-end
+instance : IsOrderedRing ℝ≥0 :=
+  Nonneg.isOrderedRing
+
+instance : IsStrictOrderedRing ℝ≥0 :=
+  Nonneg.isStrictOrderedRing
+
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
+  bot_le h := h.2
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
+
+@[simp] lemma mk_coe (a : ℝ≥0) (ha : 0 ≤ (a : ℝ)) : NNReal.mk (a : ℝ) ha = a := rfl
 
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
@@ -155,6 +165,7 @@ theorem _root_.Real.le_coe_toNNReal (r : ℝ) : r ≤ Real.toNNReal r :=
   le_max_left r 0
 
 @[bound] theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
+@[simp] lemma not_toReal_neg {r : ℝ≥0} : ¬ r.toReal < 0 := r.coe_nonneg.not_gt
 
 @[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal (.mk a ha) = a := rfl
 
@@ -321,12 +332,10 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast, gcongr] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
-set_option backward.privateInPublic true in
 @[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 
-set_option backward.privateInPublic true in
 @[bound] private alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
 
 @[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
@@ -334,7 +343,7 @@ set_option backward.privateInPublic true in
 @[simp, norm_cast] lemma coe_le_one : (r : ℝ) ≤ 1 ↔ r ≤ 1 := by rw [← coe_le_coe, coe_one]
 @[simp, norm_cast] lemma coe_lt_one : (r : ℝ) < 1 ↔ r < 1 := by rw [← coe_lt_coe, coe_one]
 
-@[mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
+@[gcongr, mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
 
 protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max_right _ h
@@ -352,13 +361,15 @@ theorem mk_natCast (n : ℕ) : NNReal.mk (n : ℝ) (n.cast_nonneg) = n :=
   NNReal.eq (NNReal.coe_natCast n).symm
 
 @[simp]
-theorem _root_.Real.toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
+theorem _root_.Real.toNNReal_natCast (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
+
+@[deprecated (since := "2026-05-19")] alias _root_.Real.toNNReal_coe_nat := Real.toNNReal_natCast
 
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     Real.toNNReal ofNat(n) = OfNat.ofNat n :=
-  Real.toNNReal_coe_nat n
+  Real.toNNReal_natCast n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 def gi : GaloisInsertion Real.toNNReal (↑) :=
@@ -907,6 +918,9 @@ theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
 
 @[simp] lemma toNNReal_abs (x : ℝ) : |x|.toNNReal = nnabs x := NNReal.coe_injective <| by simp
 
+@[simp high] lemma nnabs_natCast (n : ℕ) : nnabs n = n := by simp
+@[simp high] lemma nnabs_ofNat (n : ℕ) [n.AtLeastTwo] : nnabs ofNat(n) = ofNat(n) := by simp
+
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
   rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
@@ -991,11 +1005,12 @@ alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
@@ -1003,11 +1018,12 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `Real.toNNReal` -/
 @[positivity Real.toNNReal _]
-meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealToNNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
     assertInstancesCommute
-    match (← core q(inferInstance) q(inferInstance) a) with
+    match (← core q(inferInstance) (some q(inferInstance)) a) with
     | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
     | _ => failure
   | _, _, _ => throwError "not Real.toNNReal"
@@ -1016,11 +1032,12 @@ alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
 /-- Extension for the `positivity` tactic: `Real.nnabs` -/
 @[positivity Real.nnabs _]
-meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
     assertInstancesCommute
-    match (← core q(inferInstance) q(inferInstance) a).toNonzero with
+    match (← core q(inferInstance) (some q(inferInstance)) a).toNonzero with
     | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
     | _ => failure
   | _, _, _ => throwError "not Real.nnabs"

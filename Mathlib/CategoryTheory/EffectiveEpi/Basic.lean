@@ -102,8 +102,6 @@ instance epi_of_effectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f wh
     rw [show m₂ = desc f (f ≫ m₂) (fun _ _ h => by simp [← assoc, h]) from uniq _ _ _ _ rfl]
     exact uniq _ _ _ _ h
 
-@[deprecated (since := "2025-11-20")] alias epiOfEffectiveEpi := epi_of_effectiveEpi
-
 instance (priority := 100) strongEpi_of_effectiveEpi {X Y : C} (f : X ⟶ Y) [EffectiveEpi f] :
     StrongEpi f :=
   StrongEpi.mk' fun A B z hz u v sq ↦
@@ -232,14 +230,14 @@ def effectiveEpiFamilyStructOfIsIsoDesc {B : C} {α : Type*} (X : α → C)
   fac e h := by
     intro a
     have : π a = Sigma.ι X a ≫ (asIso (Sigma.desc π)).hom := by simp only [asIso_hom,
-      colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+      colimit.ι_desc, Cofan.mk_ι_app]
     rw [this, assoc]
-    simp only [asIso_hom, asIso_inv, IsIso.hom_inv_id_assoc, colimit.ι_desc, Cofan.mk_pt,
+    simp only [asIso_hom, asIso_inv, IsIso.hom_inv_id_assoc, colimit.ι_desc,
       Cofan.mk_ι_app]
   uniq e h m hm := by
     simp only [asIso_inv, IsIso.eq_inv_comp]
     ext a
-    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app,
+    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app,
       colimit.ι_desc]
     exact hm a
 

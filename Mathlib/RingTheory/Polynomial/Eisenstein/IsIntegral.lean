@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Eisenstein polynomials
+
 In this file we gather more miscellaneous results about Eisenstein polynomials
 
 ## Main results
@@ -137,7 +138,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     (hp : Prime p) (hBint : IsIntegral R B.gen) {z : L} {Q : R[X]} (hQ : aeval B.gen Q = p • z)
     (hzint : IsIntegral R z) (hei : (minpoly R B.gen).IsEisensteinAt 𝓟) : p ∣ Q.coeff 0 := by
   -- First define some abbreviations.
-  letI := B.finite
+  let := B.finite
   let P := minpoly R B.gen
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
   have finrank_K_L : Module.finrank K L = B.dim := B.finrank
@@ -156,7 +157,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     have hndiv : ¬p ^ 2 ∣ (minpoly R B.gen).coeff 0 := fun h =>
       hei.notMem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
     refine hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) (?_ : _ ∣ _) hndiv
-    convert (IsUnit.dvd_mul_right ⟨(-1) ^ (n.succ * n), rfl⟩).mpr this using 1
+    convert! (IsUnit.dvd_mul_right ⟨(-1) ^ (n.succ * n), rfl⟩).mpr this using 1
     push_cast
     ring_nf
     simp
@@ -235,15 +236,12 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   set P := minpoly R B.gen with hP
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
   have : Module.IsTorsionFree R L := .trans_faithfulSMul R K L
-  let _ := P.map (algebraMap R L)
   -- There is a polynomial `Q` such that `p • z = aeval B.gen Q`. We can assume that
   -- `Q.degree < P.degree` and `Q ≠ 0`.
   rw [adjoin_singleton_eq_range_aeval] at hz
   obtain ⟨Q₁, hQ⟩ := hz
   set Q := Q₁ %ₘ P with hQ₁
-  replace hQ : aeval B.gen Q = p • z := by
-    rw [← modByMonic_add_div Q₁ (minpoly R B.gen)] at hQ
-    simpa using hQ
+  replace hQ : aeval B.gen Q = p • z := by simpa [hQ₁, hP] using hQ
   by_cases hQzero : Q = 0
   · simp only [hQzero, Algebra.smul_def, zero_eq_mul, aeval_zero] at hQ
     rcases hQ with H | H₁
@@ -263,7 +261,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
   | hi j hind =>
     intro hj
-    convert hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) _ hndiv
+    convert! hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) _ hndiv
     -- Two technical results we will need about `P.natDegree` and `Q.natDegree`.
     have H := degree_modByMonic_lt Q₁ (minpoly.monic hBint)
     rw [← hQ₁, ← hP] at H
@@ -309,7 +307,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     suffices
         p ^ n.succ ∣ Q.coeff (succ j) ^ n.succ *
           (minpoly R B.gen).coeff 0 ^ (succ j + (P.natDegree - (j + 2))) by
-      convert this
+      convert! this
       rw [Nat.succ_eq_add_one, add_assoc, ← Nat.add_sub_assoc H, add_comm (j + 1),
         Nat.add_sub_add_left, ← Nat.add_sub_assoc, Nat.add_sub_add_left, hP, ←
         (minpoly.monic hBint).natDegree_map (algebraMap R K), ←

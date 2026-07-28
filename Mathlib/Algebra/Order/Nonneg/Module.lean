@@ -86,7 +86,9 @@ section Module
 variable [IsOrderedRing R] [AddCommMonoid M] [Module R M]
 
 /-- A module over an ordered semiring is also a module over just the non-negative scalars. -/
-instance instModule : Module R≥0 M := .compHom M coeRingHom
+instance instModule : Module R≥0 M where
+  smul := instSMul.smul
+  __ := Module.compHom M coeRingHom
 
 end Module
 end Nonneg

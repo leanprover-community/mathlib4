@@ -163,7 +163,7 @@ universe uK uV
 variable {K : Type uK} {V : Type uV}
 variable [CommSemiring K] [AddCommMonoid V] [Module K V] [Projective K V]
 
-open Module Module.Dual Submodule LinearMap Cardinal Basis Module
+open Module Module.Dual Submodule LinearMap Cardinal Module
 
 section
 
@@ -283,7 +283,9 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
 instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
   equiv ULift.moduleEquiv.symm
 
-instance instFiniteDimensionalOfIsReflexive (K V : Type*)
+-- Very low priority because instance resolution will often end up using the instances above
+-- to prove `IsReflexive`, which require proving `Finite` again.
+instance (priority := 90) instFiniteDimensionalOfIsReflexive (K V : Type*)
     [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
     FiniteDimensional K V := by
   rw [FiniteDimensional, ← rank_lt_aleph0_iff]
@@ -295,7 +297,7 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
     exact lt_irrefl _ this
   have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
   have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
-    convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
+    convert! lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
     rw [lift_id']
   exact lt_trans h₁ h₂
 
@@ -383,7 +385,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
   rw [← p.liftQ_mkQ K h]
   ext x
-  convert LinearMap.congr_fun hK' (p.mkQ x)
+  convert! LinearMap.congr_fun hK' (p.mkQ x)
   simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
@@ -575,7 +577,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
-  coe_injective' φ ψ h := by
+  coe_injective φ ψ h := by
     ext
     simp only [funext_iff] at h
     exact h _
@@ -701,7 +703,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have rr_surj : Function.Surjective f.rangeRestrict := by
     rw [← range_eq_top, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
-  convert this using 1
+  convert! this using 1
   · calc
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
       _ = _ := ?_
@@ -1025,9 +1027,9 @@ open Submodule in
 theorem dualAnnihilator_dualAnnihilator_eq_map (W : Subspace K V) [FiniteDimensional K W] :
     W.dualAnnihilator.dualAnnihilator = W.map (Dual.eval K V) := by
   let e1 := (Free.chooseBasis K W).toDualEquiv ≪≫ₗ W.quotAnnihilatorEquiv.symm
-  haveI := e1.finiteDimensional
+  have := e1.finiteDimensional
   let e2 := (Free.chooseBasis K _).toDualEquiv ≪≫ₗ W.dualAnnihilator.dualQuotEquivDualAnnihilator
-  haveI := LinearEquiv.finiteDimensional (V₂ := W.dualAnnihilator.dualAnnihilator) e2
+  have := LinearEquiv.finiteDimensional (V₂ := W.dualAnnihilator.dualAnnihilator) e2
   rw [eq_of_le_of_finrank_eq (map_le_dualAnnihilator_dualAnnihilator W)]
   rw [← (equivMapOfInjective _ (eval_apply_injective K (V := V)) W).finrank_eq, e1.finrank_eq]
   exact e2.finrank_eq
@@ -1123,71 +1125,5 @@ theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
   rfl
 
 end AlgebraTensorModule
-
-variable {R M N}
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
-variable [Module R M] [Module R N]
-
-/-- An inverse to `TensorProduct.dualDistrib` given bases.
--/
-noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  ∑ i, ∑ j,
-    (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
-
-@[simp]
-theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
-    dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
-  simp [dualDistribInvOfBasis]
-
-theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistrib R M N) (dualDistribInvOfBasis b c) = LinearMap.id := by
-  apply (b.tensorProduct c).dualBasis.ext
-  rintro ⟨i, j⟩
-  apply (b.tensorProduct c).ext
-  rintro ⟨i', j'⟩
-  simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
-    Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
-    Basis.tensorProduct_apply, LinearMap.coe_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
-    map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simpa using mul_comm _ _
-  all_goals { intros; simp [*] at * }
-
-theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
-    comp (dualDistribInvOfBasis b c) (dualDistrib R M N) = LinearMap.id := by
-  apply (b.dualBasis.tensorProduct c.dualBasis).ext
-  rintro ⟨i, j⟩
-  simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
-    id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
-  · simp
-  all_goals { intros; simp [*] at * }
-
-/-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
-It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simps!]
-noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
-    Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_
-  · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
-  · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
-
-variable (R M N)
-variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free R N]
-
-/--
-A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
-modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
-isomorphism `R ⊗ R ≃ R`.
--/
-@[simp]
-noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) :=
-  dualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
 
 end TensorProduct

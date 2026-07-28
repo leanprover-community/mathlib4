@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
@@ -60,7 +60,7 @@ noncomputable def invSelf : S :=
 
 @[simp]
 theorem mul_invSelf : algebraMap R S x * invSelf x = 1 := by
-  convert IsLocalization.mk'_mul_mk'_eq_one (M := Submonoid.powers x) (S := S) _ 1
+  convert! IsLocalization.mk'_mul_mk'_eq_one (M := Submonoid.powers x) (S := S) _ 1
   symm
   apply IsLocalization.mk'_one
 
@@ -159,6 +159,26 @@ theorem lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg (algebraMap R S a) = g a
 theorem lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
 
+section liftAlgHom
+
+variable {A : Type*} [CommSemiring A] [Algebra A R] [Algebra A S] [Algebra A P]
+  [IsScalarTower A R S] {f : R →ₐ[A] P} (hf : IsUnit (f x))
+include hf
+
+/-- `AlgHom` version of `IsLocalization.Away.lift`. -/
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift x hf
+  commutes' r := by simp [IsScalarTower.algebraMap_apply A R S]
+
+theorem liftAlgHom_toRingHom : (liftAlgHom x hf : S →ₐ[A] P).toRingHom = lift x hf := rfl
+
+@[simp]
+theorem coe_liftAlgHom : ⇑(liftAlgHom x hf : S →ₐ[A] P) = lift x hf := rfl
+
+theorem liftAlgHom_apply (s : S) : liftAlgHom x hf s = lift x hf s := rfl
+
+end liftAlgHom
+
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `y * x`
 respectively, the homomorphism induced from `S` to `P`. -/
 noncomputable def awayToAwayLeft (y : R) [Algebra R P] [IsLocalization.Away (y * x) P] : S →+* P :=
@@ -226,6 +246,7 @@ instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
     IsLocalization (Algebra.algebraMapSubmonoid A (.powers x)) Aₚ := by
   simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
@@ -306,9 +327,13 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
     [IsLocalization.Away x S₁] [IsLocalization.Away y S₂]
     [IsLocalization.Away (algebraMap R S₂ x) T] :
     IsLocalization.Away (algebraMap R S₁ y) T := by
-  convert IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
+  convert! IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
   simp
+
+theorem isDomain [IsDomain R] {x : R} (hx : x ≠ 0) [IsLocalization.Away x S] : IsDomain S :=
+  IsLocalization.isDomain_of_le_nonZeroDivisors S
+    (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
 
 end Away
 
@@ -332,7 +357,7 @@ noncomputable def atOne [IsLocalization.Away (1 : R) S] : R ≃ₐ[R] S :=
 theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
     [Algebra R S] {r : R} (hr : IsUnit r) (H : Function.Bijective (algebraMap R S)) :
     IsLocalization.Away r S :=
-  .of_le_isUnit_of_bijective (by simpa [Submonoid.powers_le] using hr.map (algebraMap R S)) H
+  .of_le_isUnit_of_bijective (by simpa [Submonoid.powers_le] using! hr.map (algebraMap R S)) H
 
 variable {R S}
 
@@ -590,6 +615,10 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),
     ← Finset.mul_sum, ← smul_eq_mul (a := c _), eq1, mul_one]
 
+/-- If `x ≠ 0`, then the localization of a domain away from `x` is again a domain. -/
+theorem Away.isDomain [IsDomain R] {x : R} (hx : x ≠ 0) : IsDomain (Localization.Away x) :=
+  IsLocalization.Away.isDomain (Localization.Away x) hx
+
 end Localization
 
 end CommSemiring
@@ -634,6 +663,7 @@ theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
 theorem selfZPow_neg_natCast (d : ℕ) : selfZPow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
   simp [selfZPow_of_nonpos _ _ (neg_nonpos.mpr (Int.natCast_nonneg d))]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem selfZPow_sub_natCast {n m : ℕ} :
     selfZPow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) := by
@@ -662,6 +692,7 @@ theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZ
     ext
     simp [pow_add]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := by
   by_cases! hd : d ≤ 0
   · rw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,
@@ -683,11 +714,9 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
   constructor
   · intro h
     have := congr_arg (fun s : B => s * selfZPow x B d) h
-    simp only at this
     rwa [mul_assoc, mul_assoc, selfZPow_neg_mul, mul_one, mul_comm b _] at this
   · intro h
     have := congr_arg (fun s : B => s * selfZPow x B (-d)) h
-    simp only at this
     rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
 
 variable {R : Type*} [CommRing R] (x : R) (B : Type*) [CommRing B]
@@ -698,7 +727,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
   obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
   have ha₀ : a₀ ≠ 0 := by
-    haveI := isDomain_of_le_nonZeroDivisors B
+    have := isDomain_of_le_nonZeroDivisors B
       (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
     simp only [← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt

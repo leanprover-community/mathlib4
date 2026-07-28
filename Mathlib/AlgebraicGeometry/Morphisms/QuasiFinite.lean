@@ -28,7 +28,7 @@ We prove that this is stable under composition and base change, and is right can
 - `AlgebraicGeometry.Scheme.Hom.isDiscrete_preimage_singleton`:
   Locally quasi-finite morphisms have discrete fibers.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage_singleton`:
-  Quasi-finite morphisms have finite fibers.
+  Quasi-finite, quasi-compact morphisms have finite fibers.
 - `AlgebraicGeometry.locallyQuasiFinite_iff_isFinite_fiber`: If `f` is quasi-compact,
   then `f` is locally quasi-finite iff all the fibers `f⁻¹(x)` are `κ(x)`-finite.
 - `AlgebraicGeometry.locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
@@ -56,16 +56,16 @@ quasi-finite (in the mathlib sense) for every pair of affine opens that `f` maps
 
 Note that this does not require `f` to be quasi-compact nor locally of finite type.
 
-Being locally quasi-finite implies that `f` has discrete and finite fibers
-(via `f.isDiscrete_preimage_singleton` and `f.finite_preimage_singleton`).
+Being locally quasi-finite implies that `f` has discrete fibers
+(via `f.isDiscrete_preimage_singleton`).
 The converse holds under various scenarios:
 
 - `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
   If `f` is quasi-compact, this is equivalent to `f ⁻¹ {x}` being `κ(x)`-finite for all `x`.
 - `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
   If `f` is locally of finite type, this is equivalent to `f` having discrete fibers.
-- `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
-  If `f` is locally of finite type, this is equivalent to `f` having finite fibers.
+- `locallyQuasiFinite_iff_finite_preimage_singleton`:
+  If `f` is of finite type, this is equivalent to `f` having finite fibers.
 -/
 @[mk_iff]
 class LocallyQuasiFinite : Prop where
@@ -86,6 +86,7 @@ instance {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [LocallyQuasiFinite f] [LocallyQuasiFinite g] : LocallyQuasiFinite (f ≫ g) :=
   MorphismProperty.comp_mem _ f g ‹_› ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := low) [IsFinite f] : LocallyQuasiFinite f := by
   rw [HasAffineProperty.eq_targetAffineLocally @IsFinite] at ‹IsFinite f›
   rw [HasRingHomProperty.eq_affineLocally @LocallyQuasiFinite]
@@ -114,14 +115,17 @@ instance : MorphismProperty.IsMultiplicative @LocallyQuasiFinite where
 instance : MorphismProperty.IsStableUnderBaseChange @LocallyQuasiFinite :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.QuasiFinite.isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyQuasiFinite g] :
     LocallyQuasiFinite (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyQuasiFinite f] :
     LocallyQuasiFinite (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (V : Y.Opens) [LocallyQuasiFinite f] : LocallyQuasiFinite (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -182,6 +186,7 @@ lemma Scheme.Hom.tendsto_cofinite_cofinite [LocallyQuasiFinite f] [QuasiCompact 
     Filter.Tendsto f .cofinite .cofinite :=
   .cofinite_of_finite_preimage_singleton f.finite_preimage_singleton
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma IsFinite.of_locallyQuasiFinite (f : X ⟶ Y) [LocallyQuasiFinite f]
     [QuasiCompact f] [IsLocallyArtinian Y] : IsFinite f := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
@@ -221,7 +226,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
       pullback.map _ _ _ _ (pullback.fst _ _) (Spec.map ((Y.affineCover.f i).residueFieldMap _))
         (Y.affineCover.f i) (by simp [pullback.condition]) (by simp)
     have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
-    convert (inferInstance : LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _) using 1
+    convert! (inferInstance : LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _) using 1
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
@@ -232,7 +237,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
     let g : (X.affineCover.f i ≫ f).fiber x ⟶ f.fiber x :=
       pullback.map _ _ _ _ (X.affineCover.f i) (𝟙 _) (𝟙 _) (by simp) (by simp)
     have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
-    convert (inferInstance : LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _) using 1
+    convert (inferInstance : LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _)
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
@@ -267,6 +272,7 @@ instance (priority := low) [IsPreimmersion f] : LocallyQuasiFinite f := by
     .of_isPreimmersion (pullback.snd _ _) (isClosed_discrete _)
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
     {f : X ⟶ Y} [LocallyOfFiniteType f] :
     LocallyQuasiFinite f ↔ ∀ x, IsDiscrete (f ⁻¹' {x}) := by
@@ -275,8 +281,9 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
   wlog hY : ∃ R, Y = Spec R
   · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
-    convert (H (Y.affineCover.f i x)).preimage ((pullback.fst f _).continuous.continuousOn)
-      (pullback.fst f (Y.affineCover.f i)).isOpenEmbedding.injective
+    convert!
+      (H (Y.affineCover.f i x)).preimage ((pullback.fst f _).continuous.continuousOn)
+        (pullback.fst f (Y.affineCover.f i)).isOpenEmbedding.injective
     ext
     simp [← (Y.affineCover.f i).isOpenEmbedding.injective.eq_iff, ← Scheme.Hom.comp_apply,
       -Hom.comp_base, pullback.condition]
@@ -292,14 +299,16 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
   exact (Algebra.QuasiFinite.iff_finite_comap_preimage_singleton).mpr fun x ↦
     ((Spec.map φ).isCompact_preimage_singleton _).finite (H _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
     [LocallyOfFiniteType f] (hf : ∀ x, (f ⁻¹' {x}).Finite) : LocallyQuasiFinite f := by
   change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
   · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
-    convert (hf (Y.affineCover.f i x)).preimage
-      (pullback.fst f (Y.affineCover.f i)).isOpenEmbedding.injective.injOn
+    convert!
+      (hf (Y.affineCover.f i x)).preimage
+        (pullback.fst f (Y.affineCover.f i)).isOpenEmbedding.injective.injOn
     ext
     simp [← (Y.affineCover.f i).isOpenEmbedding.injective.eq_iff, ← Scheme.Hom.comp_apply,
       -Hom.comp_base, pullback.condition]
@@ -330,6 +339,7 @@ if the stalk map `𝒪_{X, x} ⟶ 𝒪_{Y, f x}` is quasi-finite. -/
 def Scheme.Hom.QuasiFiniteAt (x : X) : Prop := (f.stalkMap x).hom.QuasiFinite
 
 variable {f} in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
     {x : X} (hx : f.QuasiFiniteAt x) {V : X.Opens} (hV : IsAffineOpen V) {U : Y.Opens}
     (hU : IsAffineOpen U) (hVU : V ≤ f ⁻¹ᵁ U) (hxV : x ∈ V.1) :
@@ -346,7 +356,7 @@ lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
   let e := IsLocalization.algEquiv (hV.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
     (X.presheaf.stalk (⟨x, hxV⟩ : V.1)) (Localization.AtPrime (hV.primeIdealOf ⟨x, hxV⟩).asIdeal)
   rw [RingHom.QuasiFiniteAt, Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
-  convert (RingHom.QuasiFinite.of_finite e.finite).comp (hx.comp H)
+  convert! (RingHom.QuasiFinite.of_finite e.finite).comp (hx.comp H)
   rw [← CommRingCat.hom_comp, f.germ_stalkMap, ← X.presheaf.germ_res (homOfLE hVU) _ hxV,
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map_assoc, CommRingCat.hom_comp, ← RingHom.comp_assoc,
     IsScalarTower.algebraMap_eq Γ(Y, U) Γ(X, V), e.toAlgHom.comp_algebraMap.symm]
@@ -358,8 +368,9 @@ lemma Scheme.Hom.quasiFiniteAt [LocallyQuasiFinite f] (x : X) :
   introv hf
   algebraize [f]
   refine .of_comp (g := algebraMap R _) ?_
-  convert RingHom.quasiFinite_algebraMap.mpr (inferInstance :
-    Algebra.QuasiFinite R (Localization.AtPrime J))
+  convert!
+    RingHom.quasiFinite_algebraMap.mpr
+      (inferInstance : Algebra.QuasiFinite R (Localization.AtPrime J))
   ext; simp; rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -390,7 +401,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
   · obtain ⟨i, y, hy⟩ := Y.affineCover.exists_eq (f x)
     obtain ⟨x, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback _ _ hy.symm
     let ι := Y.affineCover.f i
-    convert this (f := pullback.snd f ι) (x := x) ⟨_, rfl⟩ using 1
+    convert! this (f := pullback.snd f ι) (x := x) ⟨_, rfl⟩ using 1
     · exact (RingHom.QuasiFinite.respectsIso.arrow_mk_iso_iff
         (Scheme.stalkMapIsoOfIsPullback (.of_hasPullback f ι) x))
     have H : pullback.snd f ι ⁻¹' {pullback.snd f ι x} =
@@ -401,8 +412,9 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
     let f' : pullback.snd f ι ⁻¹' {pullback.snd f ι x} → f ⁻¹' {f (pullback.fst f ι x)} :=
       Set.MapsTo.restrict (pullback.fst f ι) _ _ fun a ha ↦ H.le ha
     have : Topology.IsOpenEmbedding f' := by
-      convert (f ⁻¹' {f (pullback.fst f ι x)}).restrictPreimage_isOpenEmbedding
-        (pullback.fst f ι).isOpenEmbedding using 0
+      convert!
+        (f ⁻¹' {f (pullback.fst f ι x)}).restrictPreimage_isOpenEmbedding
+          (pullback.fst f ι).isOpenEmbedding using 0
       dsimp [f', Set.restrictPreimage]
       congr!
     rw [this.isOpen_iff_image_isOpen, Set.image_singleton]; rfl
@@ -410,7 +422,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
   wlog hX : ∃ S, X = Spec S
   · obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
     let ι := X.affineCover.f i
-    convert this (x := x) _ (f := ι ≫ f) ⟨_, rfl⟩ using 1
+    convert! this (x := x) _ (f := ι ≫ f) ⟨_, rfl⟩ using 1
     · exact quasiFiniteAt_comp_iff_of_isOpenImmersion.symm
     rw [((f ⁻¹' {f (ι x)}).restrictPreimage_isOpenEmbedding
       ι.isOpenEmbedding).isOpen_iff_image_isOpen, Set.image_singleton]; rfl
@@ -419,6 +431,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
   rw [HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)] at ‹LocallyOfFiniteType (Spec.map φ)›
   algebraize [φ.hom]
   rw [← Algebra.quasiFiniteAt_iff_isOpen_singleton_fiber]
+  let := Localization.AtPrime.algebraOfLiesOver (x.asIdeal.under R) x.asIdeal
   trans Algebra.QuasiFinite (Localization.AtPrime (x.asIdeal.under R))
     (Localization.AtPrime x.asIdeal)
   · rw [← RingHom.quasiFinite_algebraMap]

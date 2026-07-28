@@ -6,7 +6,6 @@ Authors: Jean Lo
 module
 
 public import Mathlib.Dynamics.Flow
-public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # ω-limits
@@ -222,9 +221,9 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   have hj₁ : ∀ u ∈ f, IsOpen (j u) := fun _ _ ↦ isOpen_compl_iff.mpr isClosed_closure
   have hj₂ : k \ n ⊆ ⋃ u ∈ f, j u := by
     have : ⋃ u ∈ f, j u = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
-    rw [this, diff_subset_comm, diff_iUnion]
+    rw [this, sdiff_subset_comm, sdiff_iUnion]
     rw [omegaLimit_eq_iInter_inter _ _ _ hv₁] at hn₂
-    simp_rw [j, diff_compl]
+    simp_rw [j, sdiff_compl]
     rw [← inter_iInter]
     exact Subset.trans inter_subset_right hn₂
   rcases hk.elim_finite_subcover_image hj₁ hj₂ with ⟨g, hg₁ : ∀ u ∈ g, u ∈ f, hg₂, hg₃⟩
@@ -241,7 +240,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   have hw₄ : kᶜ ⊆ (closure (image2 ϕ w s))ᶜ := by
     simp only [compl_subset_compl]
     exact closure_mono (image2_subset inter_subset_right Subset.rfl)
-  have hnc : nᶜ ⊆ k \ n ∪ kᶜ := by rw [union_comm, ← inter_subset, diff_eq, inter_comm]
+  have hnc : nᶜ ⊆ k \ n ∪ kᶜ := by rw [union_comm, ← inter_subset, sdiff_eq, inter_comm]
   have hw : closure (image2 ϕ w s) ⊆ n :=
     compl_subset_compl.mp (Subset.trans hnc (union_subset hw₃ hw₄))
   exact ⟨_, hw₂, hw⟩
@@ -307,7 +306,7 @@ end omegaLimit
 -/
 namespace Flow
 
-variable {τ : Type*} [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] {α : Type*}
+variable {τ : Type*} [TopologicalSpace τ] [AddMonoid τ] {α : Type*}
   [TopologicalSpace α] (f : Filter τ) (ϕ : Flow τ α) (s : Set α)
 
 open omegaLimit
@@ -330,7 +329,7 @@ end Flow
 -/
 namespace Flow
 
-variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] [IsTopologicalAddGroup τ] {α : Type*}
+variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] {α : Type*}
   [TopologicalSpace α] (f : Filter τ) (ϕ : Flow τ α) (s : Set α)
 
 open omegaLimit
@@ -345,8 +344,7 @@ theorem omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f �
 
 theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by
   simp only [subset_def, mem_omegaLimit_iff_frequently₂, frequently_iff]
-  intro _ h
-  rintro n hn u hu
+  intro _ h n hn u hu
   rcases mem_nhds_iff.mp hn with ⟨o, ho₁, ho₂, ho₃⟩
   rcases h o (IsOpen.mem_nhds ho₂ ho₃) hu with ⟨t, _ht₁, ht₂⟩
   have l₁ : (ω f ϕ s ∩ o).Nonempty :=

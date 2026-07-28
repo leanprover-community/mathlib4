@@ -13,6 +13,7 @@ import Mathlib.Tactic.Ring
 
 /-!
 # IMO 1998 Q2
+
 In a competition, there are `a` contestants and `b` judges, where `b ≥ 3` is an odd integer. Each
 judge rates each contestant as either "pass" or "fail". Suppose `k` is a number such that, for any
 two judges, their ratings coincide for at most `k` contestants. Prove that `k / a ≥ (b - 1) / (2b)`.
@@ -97,7 +98,6 @@ def A : Finset (AgreedTriple C J) :=
   Finset.univ.filter @fun (a : AgreedTriple C J) =>
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
 
-open scoped Classical in
 theorem A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
     a ∈ A r → a.judgePair ∈ Finset.offDiag (@Finset.univ J _) := by simp [A, Finset.mem_offDiag]
 
@@ -210,7 +210,7 @@ end
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff₀]
-  on_goal 1 => convert Nat.cast_le (α := ℚ)
+  on_goal 1 => convert! Nat.cast_le (α := ℚ)
   all_goals simp [ha, hb]
 
 end

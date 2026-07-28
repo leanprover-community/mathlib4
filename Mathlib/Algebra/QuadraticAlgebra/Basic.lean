@@ -8,15 +8,18 @@ module
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
 
-/-! # Quadratic algebras : involution and norm.
+import Mathlib.Tactic.FieldSimp
+
+/-!
+# Quadratic algebras: involution and norm.
 
 Let `R` be a commutative ring. We define:
 
-* `QuadraticAlgebra.star` : the quadratic involution
+* `QuadraticAlgebra.star`: the quadratic involution
 
-* `QuadraticAlgebra.norm` : the norm
+* `QuadraticAlgebra.norm`: the norm
 
-We prove :
+We prove:
 
 * `QuadraticAlgebra.isUnit_iff_norm_isUnit`:
   `w : QuadraticAlgebra R a b` is a unit iff `w.norm` is a unit in `R`.
@@ -25,19 +28,14 @@ We prove :
   `w : QuadraticAlgebra R a b` isn't a zero divisor iff
   `w.norm` isn't a zero divisor in `R`.
 
-* If `R` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra R a b` is a field.
-
-## Warning
-If you are working over `ℚ`, note the existence of the diamond explained in
-`Mathlib.Algebra.QuadraticAlgebra.Defs`.
-
+* If `K` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra K a b` is a field.
 -/
 
 @[expose] public section
 
 namespace QuadraticAlgebra
 
-variable {R : Type*} {a b : R}
+variable {K R : Type*} {a b : R}
 
 section omega
 
@@ -80,20 +78,20 @@ theorem omega_mul_algebraMap_mul_mk (n x y : R) :
     (ω : QuadraticAlgebra R a b) * algebraMap _ _ n * ⟨x, y⟩ = ⟨a * n * y, n * x + n * b * y⟩ := by
   ext <;> simp; ring
 
-@[deprecated (since := "2025-12-15")] alias omega_mul_coe_mul_mk := omega_mul_algebraMap_mul_mk
-
 theorem mk_eq_add_smul_omega (x y : R) :
     (⟨x, y⟩ : QuadraticAlgebra R a b) = algebraMap _ _ x + y • ω := by
   ext <;> simp
 
 variable {A : Type*} [Ring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem algHom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
     (h : f ω = g ω) : f = g := by
   ext ⟨x, y⟩
   simp [mk_eq_add_smul_omega, h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unique `AlgHom` from `QuadraticAlgebra R a b` to an `R`-algebra `A`,
 constructed by replacing `ω` with the provided root.
 Conversely, this associates to every algebra morphism `QuadraticAlgebra R a b →ₐ[R] A`
@@ -208,8 +206,6 @@ theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r) = r ^ 2 := by
   simp [norm_def, pow_two]
 
-@[deprecated (since := "2025-12-15")] alias norm_coe := norm_algebraMap
-
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
   simp [norm_def, pow_two]
@@ -221,8 +217,6 @@ theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
 theorem algebraMap_norm_eq_mul_star (z : QuadraticAlgebra R a b) :
     (algebraMap R _ (norm z : R)) = z * star z := by
   ext <;> simp [norm, star, mul_comm] <;> ring
-
-@[deprecated (since := "2025-12-15")] alias coe_norm_eq_mul_star := algebraMap_norm_eq_mul_star
 
 @[simp]
 theorem norm_neg (x : QuadraticAlgebra R a b) : (-x).norm = x.norm := by
@@ -275,9 +269,6 @@ theorem algebraMap_mem_nonZeroDivisors_iff {r : R} :
     simp only [re_mul, algebraMap_re, algebraMap_im, mul_zero, add_zero, im_mul, zero_add] at hz
     simp [QuadraticAlgebra.ext_iff, re_zero, im_zero, h _ hz.left, h _ hz.right]
 
-@[deprecated (since := "2025-12-15")]
-alias coe_mem_nonZeroDivisors_iff := algebraMap_mem_nonZeroDivisors_iff
-
 theorem star_mem_nonZeroDivisors {z : QuadraticAlgebra R a b}
     (hz : z ∈ (QuadraticAlgebra R a b)⁰) :
     star z ∈ (QuadraticAlgebra R a b)⁰ := by
@@ -313,9 +304,9 @@ end norm
 
 section field
 
-variable [Field R] [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)]
+variable [Field K] {a b : K} [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)]
 
-lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra R a b} :
+lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra K a b} :
     norm z = 0 ↔ z = 0 := by
   constructor
   · intro hz
@@ -330,20 +321,27 @@ lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra R a b} :
   · intro hz
     simp [hz]
 
-/-- If `R` is a field and there is no `r : R` such that `r ^ 2 = a + b * r`,
-then `QuadraticAlgebra R a b` is a field. -/
-instance : Field (QuadraticAlgebra R a b) where
-  inv z := (norm z)⁻¹ • star z
+@[simps] instance : NNRatCast (QuadraticAlgebra K a b) where nnratCast q := ⟨q, 0⟩
+@[simps] instance : RatCast (QuadraticAlgebra K a b) where ratCast q := ⟨q, 0⟩
+
+@[simps -isSimp, simps!] instance : Inv (QuadraticAlgebra K a b) where inv z := (norm z)⁻¹ • star z
+@[simps -isSimp, simps!] instance : Div (QuadraticAlgebra K a b) where div w z := w * z⁻¹
+
+/-- If `K` is a field and there is no `r : K` such that `r ^ 2 = a + b * r`,
+then `QuadraticAlgebra K a b` is a field. -/
+instance : Field (QuadraticAlgebra K a b) where
+  inv_zero := by ext <;> simp
   mul_inv_cancel z hz := by
     rw [ne_eq, ← norm_eq_zero_iff_eq_zero] at hz
-    simp only [Algebra.mul_smul_comm]
+    simp only [inv_def, Algebra.mul_smul_comm]
     rw [← C_mul_eq_smul, C_eq_algebraMap, ← algebraMap_norm_eq_mul_star, ← map_mul,
       inv_mul_cancel₀ hz, map_one]
-  inv_zero := by simp
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
+  nnratCast_def q := by ext <;> simp [sq]; field_simp; simp [NNRat.cast_def]
+  ratCast_def q := by ext <;> simp [sq]; field_simp; simp [Rat.cast_def]
+  nnqsmul := (· • ·)
+  qsmul := (· • ·)
+  nnqsmul_def q x := by ext <;> simp [NNRat.smul_def]
+  qsmul_def q x := by ext <;> simp [Rat.smul_def]
 
 end field
 

@@ -362,8 +362,8 @@ theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + ha
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure. -/
 theorem hausdorffEDist_zero_iff_closure_eq_closure :
     hausdorffEDist s t = 0 ↔ closure s = closure t := by
-  simp only [hausdorffEDist_def, ENNReal.max_eq_zero_iff, ENNReal.iSup_eq_zero, ← subset_def,
-    ← mem_closure_iff_infEDist_zero, subset_antisymm_iff, isClosed_closure.closure_subset_iff]
+  simp [hausdorffEDist_def, ← subset_def, ← mem_closure_iff_infEDist_zero,
+    subset_antisymm_iff, isClosed_closure.closure_subset_iff]
 
 /-- The Hausdorff edistance between a set and its closure vanishes. -/
 @[simp]
@@ -431,7 +431,7 @@ theorem hausdorffEDist_iUnion_le {ι : Sort*} {s t : ι → Set α} :
 theorem hausdorffEDist_union_le {s₁ s₂ t₁ t₂ : Set α} :
     hausdorffEDist (s₁ ∪ s₂) (t₁ ∪ t₂) ≤ max (hausdorffEDist s₁ t₁) (hausdorffEDist s₂ t₂) := by
   simp_rw [union_eq_iUnion, sup_eq_iSup]
-  convert hausdorffEDist_iUnion_le with (_ | _)
+  convert! hausdorffEDist_iUnion_le with (_ | _)
 
 theorem hausdorffEDist_prod_le {s₁ t₁ : Set α} {s₂ t₂ : Set β} :
     hausdorffEDist (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) ≤ max (hausdorffEDist s₁ t₁) (hausdorffEDist s₂ t₂) := by

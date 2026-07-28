@@ -128,7 +128,6 @@ def Q : QuadraticForm ℝ ℝ :=
 theorem Q_apply (r : ℝ) : Q r = -(r * r) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Intermediate result for `CliffordAlgebraComplex.equiv`: clifford algebras over
 `CliffordAlgebraComplex.Q` above can be converted to `ℂ`. -/
 def toComplex : CliffordAlgebra Q →ₐ[ℝ] ℂ :=
@@ -164,7 +163,6 @@ def ofComplex : ℂ →ₐ[ℝ] CliffordAlgebra Q :=
 theorem ofComplex_I : ofComplex Complex.I = ι Q 1 :=
   Complex.liftAux_apply_I _ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toComplex_comp_ofComplex : toComplex.comp ofComplex = AlgHom.id ℝ ℂ := by
   ext1
@@ -345,6 +343,7 @@ theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : Quadra
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul r₁, ← smul_eq_mul r₂, map_smul, map_smul,
     smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, map_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
 the dual numbers. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
@@ -356,13 +355,17 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
       fun _ => (Algebra.commutes _ _).symm⟩)
     (by ext : 1; simp) (by ext : 2; simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε :=
-  (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
+theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε := by
+  dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
+  exact (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem equiv_symm_eps :
-    CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 :=
-  DualNumber.lift_apply_eps _
+    CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 := by
+  dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
+  exact DualNumber.lift_apply_eps _
 
 end CliffordAlgebraDualNumber

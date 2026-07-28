@@ -7,8 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.Order.Fin.Tuple
-public import Mathlib.Util.Superscript
 
 /-!
 # Integral over a torus in `ℂⁿ`
@@ -161,7 +159,7 @@ theorem torusIntegral_add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
 
 theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     (∯ x in T(c, R), f x - g x) = (∯ x in T(c, R), f x) - ∯ x in T(c, R), g x := by
-  simpa only [sub_eq_add_neg, ← torusIntegral_neg] using torusIntegral_add hf hg.neg
+  simpa only [sub_eq_add_neg, ← torusIntegral_neg] using! torusIntegral_add hf hg.neg
 
 theorem torusIntegral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
@@ -210,6 +208,7 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
       (MeasurableEquiv.measurableEmbedding _), H₁, H₂]
   simp [circleMap_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succ`. -/
 theorem torusIntegral_succAbove
     {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R)

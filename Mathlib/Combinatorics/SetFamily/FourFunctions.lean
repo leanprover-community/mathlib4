@@ -261,8 +261,6 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
 
 variable [ExistsAddOfLE β]
 
--- In the non-terminal simp below, simp runs on four goals, but only needs `exact` once.
-set_option linter.flexible false in
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)
@@ -273,7 +271,11 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
   induction u using Finset.induction generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ with
   | empty =>
     simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
-    obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
+    obtain rfl | rfl := h𝒜
+    · simp
+    obtain rfl | rfl := hℬ
+    · simp
+    simpa using h (subset_refl ∅) subset_rfl
   | insert a u hu ih =>
     specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃)
       (collapse_nonneg h₄) (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
@@ -296,6 +298,7 @@ section DistribLattice
 variable [DistribLattice α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
   [ExistsAddOfLE β] (f f₁ f₂ f₃ f₄ g μ : α → β)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
 lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
@@ -307,10 +310,10 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
   set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
-    simpa [s', map_eq_image, image_preimage, filter_eq_self] using
+    simpa [s', map_eq_image, image_preimage, filter_eq_self] using!
       fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
-    simpa [t', map_eq_image, image_preimage, filter_eq_self] using
+    simpa [t', map_eq_image, image_preimage, filter_eq_self] using!
       fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
@@ -319,16 +322,15 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
     (extend_nonneg (fun _ ↦ h₂ _) le_rfl) (extend_nonneg (fun _ ↦ h₃ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₄ _) le_rfl) ?_ (s'.map ⟨g, hg⟩) (t'.map ⟨g, hg⟩)
   · simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
-      using this
+      using! this
   rintro s t
-  classical
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
   · obtain ⟨b, rfl⟩ | ht := em (∃ b, g b = t)
     · simp_rw [← sup_eq_union, ← inf_eq_inter, ← map_sup, ← map_inf, hg.extend_apply]
       exact h _ _
-    · simpa [extend_apply' _ _ _ ht] using mul_nonneg
+    · simpa [extend_apply' _ _ _ ht] using! mul_nonneg
         (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
-  · simpa [extend_apply' _ _ _ hs] using mul_nonneg
+  · simpa [extend_apply' _ _ _ hs] using! mul_nonneg
       (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
 
 /-- An inequality of Daykin. Interestingly, any lattice in which this inequality holds is

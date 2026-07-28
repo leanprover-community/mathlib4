@@ -47,18 +47,12 @@ namespace LinearMap
 section Semiring
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
-variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
-variable {M : Type*} {N : Type*} {P : Type*}
-variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
-variable {Pₗ : Type*}
-variable {M' : Type*} {P' : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
-variable [AddCommGroup M'] [AddCommGroup P']
-variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
-variable [Module R M₂] [Module S N₂] [Module R P₂] [Module S₂ P₂]
-variable [Module R Pₗ] [Module S Pₗ]
+variable {R R₂ S S₂ : Type*} [Semiring R] [Semiring R₂] [Semiring S] [Semiring S₂]
+variable {M M₂ N N₂ P P₂ Pₗ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid N]
+variable [AddCommMonoid N₂] [AddCommMonoid P] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
+variable [Module R M] [Module R M₂] [Module S N] [Module S N₂] [Module R₂ P] [Module S₂ P]
+variable [Module R P₂] [Module S₂ P₂] [Module R Pₗ] [Module S Pₗ]
+variable {M' P' : Type*} [AddCommGroup M'] [AddCommGroup P']
 variable [Module R M'] [Module R₂ P'] [Module S₂ P']
 variable [SMulCommClass S₂ R₂ P] [SMulCommClass S R Pₗ] [SMulCommClass S₂ R₂ P']
 variable [SMulCommClass S₂ R P₂]
@@ -268,7 +262,6 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
     (B · ·)
     B.map_add₂
     (fun r' m _ ↦ by
-      dsimp only
       rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
     (fun _ ↦ map_add _)
     (fun _ x ↦ (B x).map_smul_of_tower _)
@@ -308,19 +301,15 @@ end Semiring
 
 section CommSemiring
 
-variable {R R₁ R₂ : Type*} [CommSemiring R] [Semiring R₁] [Semiring R₂]
-variable {A : Type*} [Semiring A]
-variable {M : Type*} {N : Type*} {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N]
-variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
-variable [Module R M]
-variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
-variable [Module R₁ Mₗ] [Module R₂ N] [Module R₁ Pₗ] [Module R₁ Qₗ]
-variable [Module R₂ Pₗ] [Module R₂ Qₗ']
+-- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
+variable {A R R₁ R₂ : Type*} [Semiring A] [CommSemiring R] [Semiring R₁] [Semiring R₂]
+variable {M Mₗ N Nₗ Pₗ Qₗ Qₗ' : Type*} [AddCommMonoid M] [AddCommMonoid Mₗ] [AddCommMonoid N]
+variable [AddCommMonoid Nₗ] [AddCommMonoid Pₗ] [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
+variable [Module R M] [Module R Mₗ] [Module R₁ Mₗ] [Module R₂ N] [Module R Nₗ] [Module R Pₗ]
+variable [Module R₂ Pₗ] [Module R₁ Pₗ] [Module R Qₗ] [Module R₁ Qₗ] [Module R Qₗ'] [Module R₂ Qₗ']
+variable {Tₗ Tₗ' : Type*} [AddCommMonoid Tₗ] [AddCommMonoid Tₗ'] [Module R₁ Tₗ] [Module R₂ Tₗ']
+
 variable (R)
-variable {Tₗ Tₗ' : Type*} [AddCommMonoid Tₗ] [AddCommMonoid Tₗ']
-variable [Module R₁ Tₗ] [Module R₂ Tₗ']
 
 /-- Create a bilinear map from a function that is linear in each component.
 
@@ -375,7 +364,7 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     ext x y
     obtain ⟨x', rfl⟩ := hₗ x
     obtain ⟨y', rfl⟩ := hᵣ y
-    convert LinearMap.congr_fun₂ h x' y' using 0
+    convert! LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
@@ -580,6 +569,7 @@ noncomputable def restrictScalarsRange :
     M' →ₗ[S] P' :=
   ((f.restrictScalars S).comp i).codLift k hk hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalarsRange_apply (m : M') :
     k (restrictScalarsRange i k hk f hf m) = f (i m) := by
@@ -619,6 +609,7 @@ noncomputable def restrictScalarsRange₂ :
   (((LinearMap.restrictScalarsₗ S R _ _ _).comp
     (B.restrictScalars S)).compl₁₂ i j).codRestrict₂ k hk hB
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma restrictScalarsRange₂_apply (m : M') (n : N') :
     k (restrictScalarsRange₂ i j k hk B hB m n) = B (i m) (j n) := by
   simp [restrictScalarsRange₂]

@@ -26,7 +26,6 @@ namespace Complex
 
 instance : FiniteDimensional ℝ ℂ := basisOneI.finiteDimensional_of_finite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ` is a finite extension of `ℝ` of degree 2, i.e `[ℂ : ℝ] = 2` -/
 @[simp, stacks 09G4]
 theorem finrank_real_complex : finrank ℝ ℂ = 2 := by
@@ -45,7 +44,7 @@ theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
 
 end Complex
 
-instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
+instance (priority := 500) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
   FiniteDimensional.trans ℝ ℂ E
 
@@ -77,6 +76,6 @@ lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
 /-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,
 as additive groups. -/
 theorem Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
-  LinearEquiv.nonempty_equiv_iff_rank_eq.mpr <| by simp
+  Module.nonempty_linearEquiv_iff_rank_eq.mpr <| by simp
 
 end Rational

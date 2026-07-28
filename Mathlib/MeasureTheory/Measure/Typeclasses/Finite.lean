@@ -104,7 +104,7 @@ instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFinite
 
 instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
   measure_univ_lt_top := by
-    rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+    rw [Measure.smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
@@ -148,7 +148,7 @@ theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measur
   contrapose! hμ
   simpa [measureUnivNNReal_eq_zero, Nat.le_zero] using hμ
 
-/-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
+/-- `le_of_add_le_add_left` is normally applicable to ordered cancellative monoids,
 but it holds for measures with the additional assumption that μ is finite. -/
 theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ μ + ν₂) : ν₁ ≤ ν₂ :=
   fun S => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S)
@@ -198,7 +198,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
-  convert key
+  convert! key
 
 open scoped symmDiff
 
@@ -206,12 +206,12 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
     (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
     |μ.real s - μ.real t| ≤ μ.real (s ∆ t) := by
   simp only [Measure.real]
-  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset diff_subset hs').ne
-  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
+  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset sdiff_subset hs').ne
+  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset sdiff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
-    convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
-  rw [measure_diff' s ht ht', measure_diff' t hs hs',
+    convert! abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
+  rw [measure_sdiff' s ht ht', measure_sdiff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     union_comm t s]
@@ -430,7 +430,7 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     [IsFiniteMeasure μ] (C : Set (Set α)) (hμν : ∀ s ∈ C, μ s = ν s) {m : MeasurableSpace α}
     (h : m ≤ m₀) (hA : m = MeasurableSpace.generateFrom C) (hC : IsPiSystem C)
     (h_univ : μ Set.univ = ν Set.univ) {s : Set α} (hs : MeasurableSet[m] s) : μ s = ν s := by
-  haveI : IsFiniteMeasure ν := by
+  have : IsFiniteMeasure ν := by
     constructor
     rw [← h_univ]
     apply IsFiniteMeasure.measure_univ_lt_top
@@ -480,7 +480,7 @@ theorem filter_mono_ae (h : f ⊓ (ae μ) ≤ g) (hg : μ.FiniteAtFilter g) : μ
 protected theorem measure_mono (h : μ ≤ ν) : ν.FiniteAtFilter f → μ.FiniteAtFilter f :=
   fun ⟨s, hs, hν⟩ => ⟨s, hs, (Measure.le_iff'.1 h s).trans_lt hν⟩
 
-@[mono]
+@[gcongr, mono]
 protected theorem mono (hf : f ≤ g) (hμ : μ ≤ ν) : ν.FiniteAtFilter g → μ.FiniteAtFilter f :=
   fun h => (h.filter_mono hf).measure_mono hμ
 
@@ -520,7 +520,7 @@ theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
     (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ := by
   refine IsCompact.induction_on h ?_ ?_ ?_ ?_
   · use ∅
-    simp [Superset]
+    simp
   · rintro s t hst ⟨U, htU, hUo, hU⟩
     exact ⟨U, hst.trans htU, hUo, hU⟩
   · rintro s t ⟨U, hsU, hUo, hU⟩ ⟨V, htV, hVo, hV⟩
@@ -563,7 +563,10 @@ theorem isFiniteMeasure_iff_isFiniteMeasureOnCompacts_of_compactSpace [Topologic
 
 /-- Compact covering of a `σ`-compact topological space as
 `MeasureTheory.Measure.FiniteSpanningSetsIn`. -/
-def MeasureTheory.Measure.finiteSpanningSetsInCompact [TopologicalSpace α] [SigmaCompactSpace α]
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def MeasureTheory.Measure.finiteSpanningSetsInCompact
+    [TopologicalSpace α] [SigmaCompactSpace α]
     {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn { K | IsCompact K } where
   set := compactCovering α
@@ -573,7 +576,10 @@ def MeasureTheory.Measure.finiteSpanningSetsInCompact [TopologicalSpace α] [Sig
 
 /-- A locally finite measure on a `σ`-compact topological space admits a finite spanning sequence
 of open sets. -/
-def MeasureTheory.Measure.finiteSpanningSetsInOpen [TopologicalSpace α] [SigmaCompactSpace α]
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def MeasureTheory.Measure.finiteSpanningSetsInOpen
+    [TopologicalSpace α] [SigmaCompactSpace α]
     {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn { K | IsOpen K } where
   set n := ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose
@@ -609,7 +615,7 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
   have T_ne : T.Nonempty := by
     by_contra h'T
     rw [not_nonempty_iff_eq_empty.1 h'T, sUnion_empty] at hT
-    simpa only [← hT] using mem_univ (default : α)
+    simpa only [← hT] using! mem_univ (default : α)
   obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, T = range f := T_count.exists_eq_range T_ne
   have fS : ∀ n, f n ∈ S := by
     intro n
@@ -625,7 +631,7 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
   obtain ⟨t, tT, xt⟩ : ∃ t : Set α, t ∈ range f ∧ x ∈ t := by
     have : x ∈ ⋃₀ T := by simp only [hT, mem_univ]
     simpa only [mem_sUnion, exists_prop, ← hf]
-  obtain ⟨n, rfl⟩ : ∃ n : ℕ, f n = t := by simpa only using tT
+  obtain ⟨n, rfl⟩ : ∃ n : ℕ, f n = t := by simpa only using! tT
   exact mem_iUnion_of_mem _ xt
 
 section MeasureIxx

@@ -309,8 +309,6 @@ lemma twoTorsionPolynomial_discr : W.twoTorsionPolynomial.discr = 16 * W.Δ := b
   simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.discr]
   ring1
 
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc := twoTorsionPolynomial_discr
-
 section CharTwo
 
 variable [CharP R 2]
@@ -323,9 +321,6 @@ lemma twoTorsionPolynomial_of_char_two : W.twoTorsionPolynomial = ⟨0, W.b₂, 
 
 lemma twoTorsionPolynomial_discr_of_char_two : W.twoTorsionPolynomial.discr = 0 := by
   linear_combination W.twoTorsionPolynomial_discr + 8 * W.Δ * CharP.cast_eq_zero R 2
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_of_char_two :=
-  twoTorsionPolynomial_discr_of_char_two
 
 end CharTwo
 
@@ -355,13 +350,6 @@ lemma twoTorsionPolynomial_discr_isUnit (hu : IsUnit (2 : R)) :
 lemma twoTorsionPolynomial_discr_ne_zero [Nontrivial R] (hu : IsUnit (2 : R)) (hΔ : IsUnit W.Δ) :
     W.twoTorsionPolynomial.discr ≠ 0 :=
   ((W.twoTorsionPolynomial_discr_isUnit hu).mpr hΔ).ne_zero
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_of_char_three :=
-  twoTorsionPolynomial_discr_of_char_three
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_isUnit :=
-  twoTorsionPolynomial_discr_isUnit
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_ne_zero :=
-  twoTorsionPolynomial_discr_ne_zero
 
 end TorsionPolynomial
 
@@ -450,9 +438,6 @@ end CharThree
 lemma twoTorsionPolynomial_discr_ne_zero_of_isElliptic [Nontrivial R] (hu : IsUnit (2 : R)) :
     W.twoTorsionPolynomial.discr ≠ 0 :=
   W.twoTorsionPolynomial_discr_ne_zero hu W.isUnit_Δ
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_ne_zero_of_isElliptic :=
-  twoTorsionPolynomial_discr_ne_zero_of_isElliptic
 
 section BaseChange
 

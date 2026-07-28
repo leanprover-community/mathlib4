@@ -112,7 +112,7 @@ theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A
 
 /-- A minimal polynomial is not a unit. -/
 theorem not_isUnit [Nontrivial B] : ¬IsUnit (minpoly A x) := by
-  haveI : Nontrivial A := (algebraMap A B).domain_nontrivial
+  have : Nontrivial A := (algebraMap A B).domain_nontrivial
   by_cases hx : IsIntegral A x
   · exact mt (monic hx).eq_one_of_isUnit (ne_one A x)
   · rw [eq_zero hx]
@@ -195,12 +195,16 @@ theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minp
   have eq_one : minpoly A x = 1 := by
     rw [eq_C_of_natDegree_eq_zero ndeg_eq_zero]
     convert C_1 (R := A)
-    simpa only [ndeg_eq_zero.symm] using (monic hx).leadingCoeff
-  simpa only [eq_one, map_one, one_ne_zero] using aeval A x
+    simpa only [ndeg_eq_zero.symm] using! (monic hx).leadingCoeff
+  simpa only [eq_one, map_one, one_ne_zero] using! aeval A x
 
 /-- The degree of a minimal polynomial is positive. -/
 theorem degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A x) :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos hx)
+
+@[simp]
+theorem aeval_modByMonic_minpoly (p : A[X]) (x : B) : (p %ₘ minpoly A x).aeval x = p.aeval x :=
+  aeval_modByMonic_eq_self_of_root (minpoly.aeval ..)
 
 section
 variable [Nontrivial B]
@@ -209,7 +213,7 @@ open Polynomial in
 theorem degree_eq_one_iff : (minpoly A x).degree = 1 ↔ x ∈ (algebraMap A B).range := by
   refine ⟨minpoly.mem_range_of_degree_eq_one _ _, ?_⟩
   rintro ⟨x, rfl⟩
-  haveI := Module.nontrivial A B
+  have := Module.nontrivial A B
   exact (degree_X_sub_C x ▸ minpoly.min A (algebraMap A B x) (monic_X_sub_C x) (by simp)).antisymm
     (Nat.WithBot.add_one_le_of_lt <| minpoly.degree_pos isIntegral_algebraMap)
 

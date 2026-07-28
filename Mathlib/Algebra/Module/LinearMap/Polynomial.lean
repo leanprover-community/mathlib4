@@ -97,8 +97,7 @@ lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
   apply MvPolynomial.IsHomogeneous.sum
   rintro j -
   apply MvPolynomial.isHomogeneous_monomial _ _
-  simp [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
-    Finsupp.single_eq_same]
+  simp
 
 lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
     (M.toMvPolynomial i).totalDegree ≤ 1 := by
@@ -128,6 +127,7 @@ lemma toMvPolynomial_add (M N : Matrix m n R) :
   ext i : 1
   simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
     (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
   simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
@@ -240,6 +240,7 @@ noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
 
+set_option backward.defeqAttrib.useBackward true in
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
@@ -253,7 +254,6 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_C, bind₁_C_right]
   · rintro ij
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, bind₁_X_right]
-    classical
     rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
     suffices toMvPolynomial (M₂ := (Module.End A (TensorProduct R A M)))
         (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
@@ -303,6 +303,7 @@ lemma polyCharpolyAux_coeff_eval [Module.Finite R M] [Module.Free R M] (x : L) (
   nontriviality R
   rw [← polyCharpolyAux_map_eq_charpoly φ b bₘ x, Polynomial.coeff_map]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]
     (x : ι → R) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval x) =

@@ -55,7 +55,6 @@ theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
     (I : LieIdeal R L) [hI : IsSolvable I] : I = ⊥ :=
   sSup_eq_bot.mp radical_eq_bot _ hI
 
-set_option backward.isDefEq.respectTransparency false in
 instance [HasTrivialRadical R L] : LieModule.IsFaithful R L L := by
   rw [isFaithful_self_iff]
   exact HasTrivialRadical.eq_bot_of_isSolvable _
@@ -69,7 +68,6 @@ theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable I → I = ⊥ :=
   ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
   rw [hasTrivialRadical_iff_no_solvable_ideals]
@@ -89,6 +87,13 @@ instance : LieModule.IsIrreducible R L L := by
   contrapose _i
   infer_instance
 
+include R in
+/-- A simple lie algebra is non-trivial. -/
+lemma nontrivial : Nontrivial L := by
+  have := IsSimple.non_abelian R (L := L)
+  contrapose! this
+  infer_instance
+
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
 
 variable {R L} in
@@ -97,7 +102,6 @@ protected lemma isAtom_iff_eq_top (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ := i
 variable {R L} in
 lemma eq_top_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ := isAtom_iff_eq_top.mp hI
 
-set_option backward.isDefEq.respectTransparency false in
 instance : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
   intro I hI
@@ -139,10 +143,10 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
         -- in the supremum of `I` and the atoms not equal to `I`.
         have hx : x ∈ I ⊔ sSup ({I' : LieIdeal R L | IsAtom I'} \ {I}) := by
           nth_rewrite 1 [← sSup_singleton (a := I)]
-          rw [← sSup_union, Set.union_diff_self, Set.union_eq_self_of_subset_left,
+          rw [← sSup_union, Set.union_sdiff_self, Set.union_eq_self_of_subset_left,
             IsSemisimple.sSup_atoms_eq_top]
           · apply LieSubmodule.mem_top
-          · simp only [Set.singleton_subset_iff, Set.mem_setOf_eq, hI]
+          · simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq, hI]
         -- Hence we can write `x` as `a + b` with `a ∈ I`
         -- and `b` in the supremum of the atoms not equal to `I`.
         rw [LieSubmodule.mem_sup] at hx
@@ -273,11 +277,11 @@ lemma booleanGenerators : BooleanGenerators {I : LieIdeal R L | IsAtom I} where
   finitelyAtomistic _ _ hs _ hIs := finitelyAtomistic _ hs _ hIs
 
 instance (priority := 100) instDistribLattice : DistribLattice (LieIdeal R L) :=
-  (booleanGenerators R L).distribLattice_of_sSup_eq_top sSup_atoms_eq_top
+  (booleanGenerators R L).distribLatticeOfSSupEqTop sSup_atoms_eq_top
 
 noncomputable
 instance (priority := 100) instBooleanAlgebra : BooleanAlgebra (LieIdeal R L) :=
-  (booleanGenerators R L).booleanAlgebra_of_sSup_eq_top sSup_atoms_eq_top
+  (booleanGenerators R L).booleanAlgebraOfSSupEqTop sSup_atoms_eq_top
 
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
@@ -296,7 +300,6 @@ instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
 
 end IsSemisimple
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A simple Lie algebra is semisimple. -/
 instance (priority := 100) IsSimple.instIsSemisimple [IsSimple R L] :
     IsSemisimple R L := by
@@ -325,6 +328,8 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
     rw [LieIdeal.solvable_iff_le_radical] at h₂
     exact (LieIdeal.inclusion_injective h₂).isLieAbelian h₁
   · intro h; apply h; infer_instance
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 theorem ad_ker_eq_bot_of_hasTrivialRadical [HasTrivialRadical R L] : (ad R L).ker = ⊥ := by simp
 

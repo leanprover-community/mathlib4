@@ -45,14 +45,14 @@ variable {M : Type*} [CommMonoidWithZero M] [IsCancelMulZero M]
 
 theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔ Irreducible p :=
   ⟨fun hp =>
-    ⟨by simpa only [Associates.isUnit_iff_eq_one] using hp.1, fun a b h =>
+    ⟨by simpa only [Associates.isUnit_iff_eq_one] using! hp.1, fun a b h =>
       (hp.le_iff.mp ⟨_, h⟩).casesOn (fun ha => Or.inl (a.isUnit_iff_eq_one.mpr ha)) fun ha =>
         Or.inr
           (show IsUnit b by
             rw [ha] at h
             apply isUnit_of_associated_mul (show Associated (p * b) p by conv_rhs => rw [h]) h₁)⟩,
     fun hp =>
-    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using hp.1,
+    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using! hp.1,
       fun b ⟨⟨a, hab⟩, hb⟩ =>
       (hp.isUnit_or_isUnit hab).casesOn
         (fun hb => show b = ⊥ by rwa [Associates.isUnit_iff_eq_one, ← Associates.bot_eq_one] at hb)
@@ -91,7 +91,7 @@ theorem element_of_chain_not_isUnit_of_index_ne_zero {n : ℕ} {i : Fin (n + 1)}
 
 theorem first_of_chain_isUnit {q : Associates M} {n : ℕ} {c : Fin (n + 1) → Associates M}
     (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) : IsUnit (c 0) := by
-  obtain ⟨i, hr⟩ := h₂.mp Associates.one_le
+  obtain ⟨i, hr⟩ := h₂.mp one_le
   rw [Associates.isUnit_iff_eq_one, ← Associates.le_one_iff, hr]
   exact h₁.monotone (Fin.zero_le i)
 
@@ -101,7 +101,7 @@ theorem second_of_chain_is_irreducible {q : Associates M} {n : ℕ} (hn : n ≠ 
     (hq : q ≠ 0) : Irreducible (c 1) := by
   rcases n with - | n; · contradiction
   refine (Associates.isAtom_iff (ne_zero_of_dvd_ne_zero hq (h₂.2 ⟨1, rfl⟩))).mp ⟨?_, fun b hb => ?_⟩
-  · exact ne_bot_of_gt (h₁ (show (0 : Fin (n + 2)) < 1 from Fin.zero_lt_one))
+  · exact ne_bot_of_gt (h₁ zero_lt_one)
   obtain ⟨⟨i, hi⟩, rfl⟩ := h₂.1 (hb.le.trans (h₂.2 ⟨1, rfl⟩))
   cases i
   · exact (Associates.isUnit_iff_eq_one _).mp (first_of_chain_isUnit h₁ @h₂)
@@ -186,7 +186,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : q = c 1 ^ n := by
   classical
     obtain ⟨i, hi'⟩ := element_of_chain_eq_pow_second_of_chain hn h₁ (@fun r => h₂) (dvd_refl q) hq
-    convert hi'
+    convert! hi'
     refine (Nat.lt_succ_iff.1 i.prop).antisymm' (Nat.le_of_succ_le_succ ?_)
     calc
       n + 1 = (Finset.univ : Finset (Fin (n + 1))).card := (Finset.card_fin _).symm
@@ -219,10 +219,10 @@ variable {N : Type*} [CommMonoidWithZero N]
 theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :
     (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
-  letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
-  letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
+  let : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
+  let : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
   simp only [← Associates.bot_eq_one, Subtype.mk_bot, bot_le, Subtype.coe_eq_bot_iff]
-  letI : BotHomClass ({ l // l ≤ m } ≃o { l // l ≤ n }) _ _ := OrderIsoClass.toBotHomClass
+  let : BotHomClass ({ l // l ≤ m } ≃o { l // l ≤ n }) _ _ := OrderIsoClass.toBotHomClass
   exact map_bot d
 
 set_option backward.isDefEq.respectTransparency false in
@@ -244,6 +244,10 @@ variable [UniqueFactorizationMonoid N] [UniqueFactorizationMonoid M]
 
 open DivisorChain
 
+
+set_option linter.overlappingInstances false
+
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_image_of_prime_by_factor_orderIso_dvd
     {m p : Associates M} {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
@@ -289,8 +293,8 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
   · have : b ≤ n := le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
     obtain ⟨x, hx⟩ := d.surjective ⟨b, this⟩
     rw [← Subtype.coe_mk (p := (· ≤ n)) b this, ← hx] at hb
-    letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
-    letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
+    let : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
+    let : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
     suffices x = ⊥ by
       rw [this, OrderIso.map_bot d] at hx
       refine (Subtype.mk_eq_bot_iff ?_ _).mp hx.symm
@@ -331,7 +335,7 @@ theorem emultiplicity_prime_eq_emultiplicity_image_by_factor_orderIso {m p : Ass
       emultiplicity (↑(d.symm (d ⟨p, dvd_of_mem_normalizedFactors hp⟩))) m by
     rw [d.symm_apply_apply ⟨p, dvd_of_mem_normalizedFactors hp⟩, Subtype.coe_mk] at this
     exact this
-  letI := Classical.decEq (Associates N)
+  let := Classical.decEq (Associates N)
   simpa only [Subtype.coe_eta] using
     emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso
       (mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors hn hp d) d.symm
@@ -343,7 +347,7 @@ variable [Subsingleton Mˣ] [Subsingleton Nˣ]
 /-- The order isomorphism between the factors of `mk m` and the factors of `mk n` induced by a
   bijection between the factors of `m` and the factors of `n` that preserves `∣`. -/
 @[simps]
-def mkFactorOrderIsoOfFactorDvdEquiv [IsCancelMulZero N]
+def mkFactorOrderIsoOfFactorDvdEquiv
     {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
     Set.Iic (Associates.mk m) ≃o Set.Iic (Associates.mk n) where
@@ -376,6 +380,8 @@ def mkFactorOrderIsoOfFactorDvdEquiv [IsCancelMulZero N]
 
 variable [UniqueFactorizationMonoid M] [UniqueFactorizationMonoid N]
 
+set_option linter.overlappingInstances false
+
 theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} {n : N} (hm : m ≠ 0)
     (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
@@ -387,7 +393,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
       associatesEquivOfUniqueUnits_symm_apply] at this
     obtain ⟨q, hq, hq'⟩ :=
       exists_mem_normalizedFactors_of_dvd hn this.irreducible
-        (d ⟨p, by apply dvd_of_mem_normalizedFactors; convert hp⟩).prop
+        (d ⟨p, by apply dvd_of_mem_normalizedFactors; convert! hp⟩).prop
     rwa [associated_iff_eq.mp hq']
   have :
     Associates.mk
@@ -400,11 +406,11 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
             exact mk_dvd_mk.mpr (dvd_of_mem_normalizedFactors hp)⟩) := by
     rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
   rw [← Associates.prime_mk, this]
-  letI := Classical.decEq (Associates M)
+  let := Classical.decEq (Associates M)
   refine map_prime_of_factor_orderIso (mk_ne_zero.mpr hn) ?_ _
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd (mk_ne_zero.mpr hm)
-      (prime_mk.mpr (prime_of_normalized_factor p (by convert hp))).irreducible
+      (prime_mk.mpr (prime_of_normalized_factor p (by convert! hp))).irreducible
       (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
   simpa only [associated_iff_eq.mp hq', associatesEquivOfUniqueUnits_symm_apply] using hq
 

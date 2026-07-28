@@ -33,7 +33,6 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 
 public section
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.card_ideal_quot (n : ℕ) : Nat.card (ℤ ⧸ (Ideal.span {(n : ℤ)})) = n := by
   simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
 

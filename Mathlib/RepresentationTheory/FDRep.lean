@@ -50,7 +50,7 @@ and this is reflected in the documentation.
 
 suppress_compilation
 
-universe u
+universe u v
 
 open CategoryTheory
 
@@ -61,14 +61,14 @@ open CategoryTheory.Limits
 
 Note that `R` can be any ring,
 but the main case of interest is when `R = k` is a field and `G` is a group. -/
-abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
+abbrev FDRep (R : Type u) (G : Type v) [Ring R] [Monoid G] :=
   Action (FGModuleCat.{u} R) G
 
 namespace FDRep
 
-variable {R k G : Type u} [CommRing R] [Field k] [Monoid G]
+variable {R k : Type u} {G : Type v} [CommRing R] [Field k] [Monoid G]
 
-example : LargeCategory (FDRep R G) := by infer_instance
+example {G : Type u} [Monoid G] : LargeCategory (FDRep R G) := by infer_instance
 example : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := by infer_instance
 example : Preadditive (FDRep R G) := by infer_instance
 example : HasFiniteLimits (FDRep k G) := by infer_instance
@@ -103,12 +103,12 @@ lemma endRingEquiv_comp_ρ (V : FDRep R G) :
 @[simp]
 lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom.hom = (ρ V g) := rfl
 
-@[deprecated (since := "2025-12-18")] alias hom_action_ρ := hom_hom_action_ρ
-
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
   FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) G).mapIso i)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   rw [FDRep.isoToLinearEquiv, ← hom_hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj,
@@ -167,8 +167,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
       (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
   toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom <| f.hom.toLinearMap), fun g ↦ by
     ext1
-    simp only [FGModuleCat.obj_carrier, ObjectProperty.FullSubcategory.comp_hom,
-      InducedCategory.homMk_hom, ModuleCat.hom_comp, hom_hom_action_ρ]
+    simp only [FGModuleCat.obj_carrier]
     exact f.hom.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -195,7 +194,7 @@ namespace FDRep
 -- below should then just be obtained from general results about rigid categories.
 open Representation
 
-variable {k G V : Type u} [Field k] [Group G]
+variable {k : Type u} {G : Type v} {V : Type u} [Field k] [Group G]
 variable [AddCommGroup V] [Module k V]
 variable [FiniteDimensional k V]
 variable (ρV : Representation k G V) (W : FDRep k G)

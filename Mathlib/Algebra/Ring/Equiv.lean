@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Util.Delaborators
 
+import Mathlib.Tactic.DSimpPercent
+
 /-!
 # (Semi)ring equivs
 
@@ -264,15 +266,11 @@ theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
     (⟨⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `RingEquiv.symm_mk`. -/
-protected def symm_mk.aux (f : R → S) (g h₁ h₂ h₃ h₄) := (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm
-
 @[simp]
-theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
-    (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
-      { symm_mk.aux f g h₁ h₂ h₃ h₄ with
-        toFun := g
-        invFun := f } :=
+theorem symm_mk (e : R ≃ S) (h₁ h₂) : dsimp%
+    (mk e h₁ h₂).symm =
+      { (mk e h₁ h₂).symm with
+        toEquiv := e.symm } :=
   rfl
 
 @[simp]
@@ -313,8 +311,6 @@ lemma coe_coe_toMulEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃* S).symm = ⇑e.sy
 
 @[simp]
 lemma coe_coe_toAddEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃+ S).symm = ⇑e.symm := rfl
-
-@[deprecated (since := "2025-11-05")] alias image_eq_preimage := image_eq_preimage_symm
 
 theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
     e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
@@ -541,6 +537,9 @@ theorem piCongrLeft'_symm {R : Type*} [NonUnitalNonAssocSemiring R] (e : α ≃ 
     (RingEquiv.piCongrLeft' (fun _ => R) e).symm = RingEquiv.piCongrLeft' _ e.symm := by
   simp only [piCongrLeft', RingEquiv.symm, MulEquiv.symm, Equiv.piCongrLeft'_symm]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport dependent functions through an equivalence of the base space.
 
 This is `Equiv.piCongrLeft` as a `RingEquiv`. -/
@@ -705,6 +704,10 @@ theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f 
 theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
   rfl
 
+@[simp]
+theorem coe_toNonUnitalRingHom' (f : R ≃+* S) : ⇑f.toNonUnitalRingHom = f :=
+  rfl
+
 theorem coe_nonUnitalRingHom_inj_iff {R S : Type*} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f g : R ≃+* S) : f = g ↔ (f : R →ₙ+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| NonUnitalRingHom.ext_iff.mp h⟩
@@ -714,12 +717,12 @@ theorem toNonUnitalRingHom_refl :
     (RingEquiv.refl R).toNonUnitalRingHom = NonUnitalRingHom.id R :=
   rfl
 
-@[simp]
+@[deprecated apply_symm_apply (since := "2026-06-16")]
 theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toNonUnitalRingHom (e.symm.toNonUnitalRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 
-@[simp]
+@[deprecated symm_apply_apply (since := "2026-06-16")]
 theorem symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toNonUnitalRingHom (e.toNonUnitalRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
@@ -893,10 +896,6 @@ def ofNonUnitalRingHom (hom : R →ₙ+* S) (inv : S →ₙ+* R)
 
 attribute [simp] ofNonUnitalRingHom_apply
 
-@[deprecated (since := "2025-12-04")] alias ofHomInv' := ofNonUnitalRingHom
-@[deprecated (since := "2025-12-04")] alias ofHomInv'_apply := ofNonUnitalRingHom_apply
-@[deprecated (since := "2025-12-04")] alias ofHomInv'_symm_apply := ofNonUnitalRingHom_symm_apply
-
 @[simp]
 theorem symm_ofNonUnitalRingHom (f : R →ₙ+* S) (g : S →ₙ+* R) (h₁ h₂) :
     (ofNonUnitalRingHom f g h₁ h₂).symm = ofNonUnitalRingHom g f h₂ h₁ :=
@@ -919,10 +918,6 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     right_inv := RingHom.ext_iff.1 h₁ }
 
 attribute [simp] ofRingHom_apply
-
-@[deprecated (since := "2025-12-04")] alias ofHomInv := ofRingHom
-@[deprecated (since := "2025-12-04")] alias ofHomInv_apply := ofRingHom_apply
-@[deprecated (since := "2025-12-04")] alias ofHomInv_symm_apply := ofRingHom_symm_apply
 
 theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl
