@@ -161,7 +161,7 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
     le_of_not_gt fun hn₁ ↦
       (not_le_of_gt hn) <| hmin n ⟨map_pos_of_ne_zero f (mod_cast hn₀), hn₁⟩
   rw [Nat.cast_mul, map_mul] at hp1
-  exact (not_le_of_gt hp1) <| one_le_mul_of_one_le_of_one_le (h ha₀ ha) (h hb₀ hb)
+  exact not_le_of_gt hp1 <| one_le_mul_of_one_le_of_one_le (h ha₀ ha) (h hb₀ hb)
 
 -- ## Step 3: if p does not divide m, then f m = 1
 
