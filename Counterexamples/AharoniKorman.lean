@@ -69,7 +69,7 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
 

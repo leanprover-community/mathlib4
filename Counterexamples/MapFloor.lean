@@ -41,8 +41,6 @@ But it does not preserve floors (nor ceils) as `⌊-ε⌋ = -1` while `⌊f (-ε
 
 namespace Counterexample
 
-noncomputable section
-
 open Function Int Polynomial
 
 /-- The integers with infinitesimals adjoined. Higher powers of `ε` are smaller than lower
@@ -132,7 +130,5 @@ theorem lt_forgetEpsilons_ceil (n : ℤ) :
   exact forgetEpsilons_floor_lt _
 
 end IntWithEpsilon
-
-end
 
 end Counterexample

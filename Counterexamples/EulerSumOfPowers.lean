@@ -29,7 +29,7 @@ http://euler.free.fr/
   https://www.ams.org/journals/mcom/1988-51-184/S0025-5718-1988-0930224-9/S0025-5718-1988-0930224-9.pdf
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace Counterexample
 

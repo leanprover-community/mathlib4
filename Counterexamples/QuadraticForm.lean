@@ -15,7 +15,7 @@ The main result of this file is `LinearMap.BilinForm.not_injOn_toQuadraticForm_i
 The counterexample we use is $B (x, y) (x', y') ↦ xy' + x'y$ where `x y x' y' : ZMod 2`.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 variable (F : Type*) [CommRing F]
 
@@ -25,7 +25,6 @@ open LinearMap (BilinForm)
 open LinearMap.BilinMap
 
 namespace Counterexample
-
 
 /-- The bilinear form we will use as a counterexample, over some field `F` of characteristic two. -/
 def B : BilinForm F (F × F) :=

@@ -24,7 +24,7 @@ We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a f
 <https://math.stackexchange.com/questions/1267419/examples-of-rings-whose-polynomial-rings-have-large-dimension>
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace Counterexample
 

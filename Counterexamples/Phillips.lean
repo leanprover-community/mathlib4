@@ -88,8 +88,6 @@ open Cardinal (aleph)
 
 open scoped Cardinal BoundedContinuousFunction
 
-noncomputable section
-
 /-- A copy of a type, endowed with the discrete topology -/
 def DiscreteCopy (α : Type u) : Type u :=
   α
@@ -585,7 +583,5 @@ theorem no_pettis_integral (Hcont : #ℝ = ℵ₁) :
   simp at h
 
 end Phillips1940
-
-end
 
 end Counterexample

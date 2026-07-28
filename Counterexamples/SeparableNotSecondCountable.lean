@@ -18,7 +18,7 @@ so that the duplicate is greater than the original point
 and points with different real values are compared by these values.
 -/
 
-public noncomputable section
+public section
 
 open Set TopologicalSpace
 

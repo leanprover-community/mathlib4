@@ -27,7 +27,7 @@ and Jeremy Tan [in August 2025](https://github.com/Parcly-Taxel/Shibuya/commit/b
 Its coordinates are polynomials in the unique real root of `2c^3 + 3c + 1`.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace SimpleGraph
 

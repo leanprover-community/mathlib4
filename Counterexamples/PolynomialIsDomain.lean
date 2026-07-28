@@ -20,7 +20,7 @@ As a consequence, the polynomial semiring `NatMaxAdd[X]` is not a domain,
 even though it has no zero-divisors other than 0.
 -/
 
-public noncomputable section
+public section
 
 /-- A type synonym for ℕ equipped with maximum as addition. -/
 @[expose] def NatMaxAdd := ℕ

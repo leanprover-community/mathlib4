@@ -21,7 +21,7 @@ This file demonstrates why `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_
 take `Ring R` and not `Semiring R`.
 -/
 
-public noncomputable section
+public section
 
 namespace Counterexample
 

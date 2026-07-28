@@ -16,7 +16,7 @@ theorem `not_forall_coeff_cyclotomic_neg_one_zero_one`. We prove this with the c
 `coeff_cyclotomic_105 : coeff (cyclotomic 105 ℤ) 7 = -2`.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Nat (properDivisors)
 open Finset

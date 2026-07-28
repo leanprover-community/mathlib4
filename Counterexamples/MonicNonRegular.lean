@@ -25,7 +25,7 @@ By truncation, `4, 5, 6` all mean `3` in `N`.
 It follows that multiplication by `(X + 2)` is not injective.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Polynomial
 

@@ -27,7 +27,7 @@ Based on Watkins' LF implementation of Hurkens' simplification of Girard's parad
 * `girard`: there are no Girard universes.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace Counterexample
 

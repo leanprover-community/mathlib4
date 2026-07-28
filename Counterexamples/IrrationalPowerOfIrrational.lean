@@ -18,8 +18,6 @@ Consider `c = √2^√2`. If `c` is rational, we are done.
 If `c` is irrational, then `c^√2 = 2` is rational, so we are done.
 -/
 
-public noncomputable section
-
 open Real
 
 namespace Counterexample
@@ -29,7 +27,7 @@ There exist irrational `a`, `b` with rational `a^b`.
 Note that the positivity assumption on `a` is imposed because of the definition of `rpow` for
 negative bases. See `Real.rpow_def_of_neg` for more details.
 -/
-theorem not_irrational_rpow :
+public theorem not_irrational_rpow :
     ¬ ∀ a b : ℝ, Irrational a → Irrational b → 0 < a → Irrational (a ^ b) := by
   push Not
   by_cases hc : Irrational (√2 ^ √2)

@@ -37,8 +37,6 @@ open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat Linea
 
 namespace Counterexample
 
-noncomputable section
-
 open CategoryTheory.Abelian.Pseudoelement
 
 /-- `x` is given by `t ↦ (t, 2 * t)`. -/
@@ -122,7 +120,5 @@ theorem exist_ne_and_fst_eq_fst_and_snd_eq_snd :
         pseudoApply (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = pseudoApply biprod.fst y ∧
           pseudoApply biprod.snd x = pseudoApply biprod.snd y :=
   ⟨⟦x⟧, ⟦y⟧, mk'_x_ne_mk'_y, fst_mk'_x_eq_fst_mk'_y, snd_mk'_x_eq_snd_mk'_y⟩
-
-end
 
 end Counterexample

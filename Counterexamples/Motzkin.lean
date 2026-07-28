@@ -19,13 +19,11 @@ This file contains a proof of the first property (nonnegativity).
 TODO: prove the second property.
 -/
 
-@[expose] public noncomputable section
-
 variable {K : Type*} [CommRing K] [LinearOrder K] [IsStrictOrderedRing K]
 
 /-- The **Motzkin polynomial** is nonnegative.
 This bivariate polynomial cannot be written as a sum of squares. -/
-lemma motzkin_polynomial_nonneg (x y : K) :
+public lemma motzkin_polynomial_nonneg (x y : K) :
     0 ≤ x ^ 4 * y ^ 2 + x ^ 2 * y ^ 4 - 3 * x ^ 2 * y ^ 2 + 1 := by
   by_cases hx : x = 0
   · simp [hx]

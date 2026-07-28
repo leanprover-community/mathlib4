@@ -24,7 +24,7 @@ similar result has also been independently formalized by Vlad Tsyrklevich
 (https://leanprover.zulipchat.com/#narrow/channel/113489-new-members/topic/golf.20request.3A.20Topologist's.20sine.20curve).
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Topology Filter Set Real
 

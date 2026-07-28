@@ -32,7 +32,7 @@ then `(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
 homogeneous, prime
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 namespace Counterexample
 

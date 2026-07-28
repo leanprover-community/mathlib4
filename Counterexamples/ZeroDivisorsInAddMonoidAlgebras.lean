@@ -42,7 +42,7 @@ finitely supported function is lexicographic, matching the list notation.  The i
 `[1, 1] > [1, 0]`.
 -/
 
-@[expose] public noncomputable section
+@[expose] public section
 
 open Finsupp hiding single
 open AddMonoidAlgebra
