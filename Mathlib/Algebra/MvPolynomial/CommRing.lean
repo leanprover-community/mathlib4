@@ -82,17 +82,23 @@ theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
 
 variable {σ} (p)
 
-open Classical in
 /-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
-removes `d` from the support and leaves the support inside `p.support.erase d ∪ {d'}`. -/
-theorem support_sub_monomial_sub_monomial [DecidableEq σ] (d d' : σ →₀ ℕ)
-    (c : R) (hdd' : d ≠ d') (hc : coeff d p = c) :
-    d ∉ (p - (monomial d c - monomial d' c)).support ∧
-      (p - (monomial d c - monomial d' c)).support ⊆ p.support.erase d ∪ {d'} := by
-  have hd_not : d ∉ (p - (monomial d c - monomial d' c)).support := by
-    rw [notMem_support_iff, coeff_sub, coeff_sub, coeff_monomial, coeff_monomial,
-      if_pos rfl, if_neg hdd'.symm, sub_zero, hc, sub_self]
-  refine ⟨hd_not, fun x hx ↦ ?_⟩
+removes `d` from the support. -/
+theorem notMem_support_sub_monomial_sub_monomial (d d' : σ →₀ ℕ) (c : R)
+    (hdd' : d ≠ d') (hc : coeff d p = c) :
+    d ∉ (p - (monomial d c - monomial d' c)).support := by
+  classical
+  rw [notMem_support_iff, coeff_sub, coeff_sub, coeff_monomial, coeff_monomial,
+    if_pos rfl, if_neg hdd'.symm, sub_zero, hc, sub_self]
+
+/-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
+leaves the support inside `p.support.erase d ∪ {d'}`. -/
+theorem support_sub_monomial_sub_monomial_subset [DecidableEq σ] (d d' : σ →₀ ℕ) (c : R)
+    (hdd' : d ≠ d') (hc : coeff d p = c) :
+    (p - (monomial d c - monomial d' c)).support ⊆ p.support.erase d ∪ {d'} := by
+  classical
+  intro x hx
+  have hd_not := notMem_support_sub_monomial_sub_monomial p d d' c hdd' hc
   rcases Finset.mem_union.mp (support_sub σ p _ hx) with hp | hdelta
   · by_cases hxd : x = d
     · exact absurd (hxd ▸ hx) hd_not
