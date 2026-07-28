@@ -86,6 +86,7 @@ syntax (name := doNotEmitWarningStx) "doNotEmitWarning" tactic : command
 macro_rules
   | `(command| doNotEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
 
+-- `#eval` instead of `initialize` so that the effect can be tested in this file
 #eval Mathlib.Linter.UnusedTactic.addIgnoreTacticKind ``doNotEmitWarningStx
 
 /--
