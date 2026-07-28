@@ -41,24 +41,23 @@ identified by `Batteries.Tactic.Lint.isAutoDecl` and skipped.
 
 ## Implementation notes
 
-Like `privateModule`, this linter acts on the end-of-input
-`Parser.Command.eoi` token, so it has access to the full elaborated
-environment. It walks `env.constants.map₂` to enumerate locally-defined
-constants.
+The linter is a *stateful linter* (`Lean.Elab.Command.registerStatefulLinter`),
+so it has state threaded across the commands of a module. After each command
+it inspects the current `Scope`: `Scope.isPublic` and `Scope.attrs` are
+inherited by nested scopes, so a command sits under an (explicit or inherited)
+`@[expose] public section` iff its scope is public and carries the `expose`
+attribute. The linter records this in its state. At the terminal command
+(`Parser.Command.eoi`, or `#exit`) — where the full elaborated environment is
+available but every section scope is already closed — it reads the threaded
+flag, walks `env.constants.map₂` to enumerate locally-defined constants, and
+fires unless some declaration benefits from exposure.
 
-Before linting, the file's source text is scanned (via `getFileMap`) for the
-presence of `@[expose] public section`. If no such header is present, the
-linter exits silently — the suggestion to remove `@[expose]` wouldn't apply.
-Only `public section`s are checked because `@[expose]` only affects
-downstream visibility, which is exclusive to `public section`.
-
-The more elegant approach — inspecting `(← getScope).attrs` directly for the
-`expose` token — is unavailable here: every `@[expose] public section` is
-already closed by the time `eoi` fires, so the root scope's `attrs` is
-empty. Tracking scope state across commands via an environment extension
-would in principle bridge the gap, but linter `modifyEnv` calls don't
-persist across `Linter.run` invocations, so we fall back to a small block-
-comment-aware text scan.
+The scope inspection is semantic rather than syntactic: a `@[expose] section`
+nested inside a `public section` is detected just like a literal
+`@[expose] public section` header, because exposure genuinely applies to the
+declarations in the inner section. A non-public `@[expose] section` is not
+detected: `@[expose]` only affects downstream visibility, which is exclusive
+to `public section`.
 
 The linter is conservative: every known limitation produces a false negative
 (the linter stays silent on a file where the warning would have applied),
@@ -158,61 +157,63 @@ private def benefitsFromExposure (env : Environment) (name : Name)
       !Lean.isStructure env name
   | _ => false
 
-/-- True iff `src` contains an `@[expose] public (meta)? section` header at a
-line start (after leading whitespace) and outside any block comment. Only
-`public section`s are matched: `@[expose]` only affects downstream
-visibility, which is exclusive to `public section`. -/
-private def fileHasExposeSection (src : String) : Bool :=
-  go (src.splitOn "\n") 0
-where
-  /-- True iff `line` opens a `public section` after stripping leading whitespace. -/
-  lineOpensExposeSection (line : String) : Bool :=
-    let trimmed := line.trimAsciiStart
-    if !trimmed.startsWith "@[expose]" then false else
-      let rest := (trimmed.drop "@[expose]".length).trimAsciiStart
-      rest.startsWith "public section" || rest.startsWith "public meta section"
-  /-- Block-comment depth after consuming `chars`, given a starting depth.
-  Tracks balanced `/-` / `-/` pairs; treats `--` at depth 0 as starting a
-  line comment that consumes the rest of the line. -/
-  commentDepthAfter : List Char → Nat → Nat
-    | [], d => d
-    | '-' :: '-' :: _, 0 => 0
-    | '/' :: '-' :: rest, d => commentDepthAfter rest (d + 1)
-    | '-' :: '/' :: rest, d => commentDepthAfter rest d.pred
-    | _ :: rest, d => commentDepthAfter rest d
-  go : List String → Nat → Bool
-    | [], _ => false
-    | line :: rest, depth =>
-        (depth == 0 && lineOpensExposeSection line) ||
-        go rest (commentDepthAfter line.toList depth)
+/-- True iff the attribute instance is `expose`. Scope attributes are built by
+`elabSection` via quotation, so the ident carries macro scopes; hygiene must
+be erased before comparing. -/
+private def isExposeAttrInstance (ai : TSyntax ``Parser.Term.attrInstance) : Bool :=
+  let attr := ai.raw[1]
+  attr.isOfKind ``Parser.Attr.simple && attr[0].getId.eraseMacroScopes == `expose
+
+/-- Persistent state of the `superfluousExpose` stateful linter: whether some
+command of the current module was elaborated inside an `@[expose] public
+section` scope. -/
+public structure ExposeSectionState where
+  /-- True iff some command so far sat in a public scope carrying `@[expose]`. -/
+  hasExposeSection : Bool := false
+deriving Inhabited
+
+/-- The end-of-module check of the `superfluousExpose` linter: walks the
+elaborated environment and logs the lint warning unless some declaration
+benefits from body exposure. Callers are responsible for checking the
+`linter.superfluousExpose` option and that the module has an
+`@[expose] public section`. -/
+def superfluousExposeCheck : CommandElabM Unit := do
+  let env ← getEnv
+  if !env.header.isModule then return
+  if env.constants.map₂.isEmpty then return
+  for (decl, info) in env.constants.map₂ do
+    if ← liftCoreM (Batteries.Tactic.Lint.isAutoDecl decl) then continue
+    if benefitsFromExposure env decl info then return
+  let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
+  logLint linter.superfluousExpose topOfFileRef
+    "This module has `@[expose] public section` but no declaration that \
+    would benefit from body exposure. The `@[expose]` modifier can be \
+    safely removed: it would only affect `def`/`inductive` bodies, and \
+    there are none here that need exposure (only theorems, instances, \
+    classes/structures, abbrevs, notation, or auto-generated decls)."
 
 /--
 The `superfluousExpose` linter detects modules with `@[expose] public section`
 where no declaration in the file needs its body exposed downstream. Suggests
 removing the `@[expose]` modifier.
 
-This linter only acts on the end-of-input `Parser.Command.eoi` token, and
-ignores all other syntax. It logs its message at the top of the file.
+After each command it records in its threaded state whether the command's
+scope is public and carries `@[expose]`; at the terminal command it reads the
+flag and runs `superfluousExposeCheck`. It logs its message at the top of the
+file.
 -/
-def superfluousExpose : Linter where run stx := do
-  if stx.isOfKind ``Parser.Command.eoi then
-    unless getLinterValue linter.superfluousExpose (← getLinterOptions) do
-      return
-    let env ← getEnv
-    if !env.header.isModule then return
-    if env.constants.map₂.isEmpty then return
-    unless fileHasExposeSection (← getFileMap).source do return
-    for (decl, info) in env.constants.map₂ do
-      if ← liftCoreM (Batteries.Tactic.Lint.isAutoDecl decl) then continue
-      if benefitsFromExposure env decl info then return
-    let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
-    logLint linter.superfluousExpose topOfFileRef
-      "This module has `@[expose] public section` but no declaration that \
-      would benefit from body exposure. The `@[expose]` modifier can be \
-      safely removed: it would only affect `def`/`inductive` bodies, and \
-      there are none here that need exposure (only theorems, instances, \
-      classes/structures, abbrevs, notation, or auto-generated decls)."
-
-initialize addLinter superfluousExpose
+public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
+  registerStatefulLinter {}
+    (post := fun stx self _ _ _ => do
+      if Parser.isTerminalCommand stx then
+        if self.hasExposeSection then
+          if getLinterValue linter.superfluousExpose (← getLinterOptions) then
+            superfluousExposeCheck
+        return self
+      else if self.hasExposeSection then
+        return self
+      else
+        let sc ← getScope
+        return { hasExposeSection := sc.isPublic && sc.attrs.any isExposeAttrInstance })
 
 end Mathlib.Linter
