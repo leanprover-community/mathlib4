@@ -246,9 +246,8 @@ public initialize superfluousExpose : StatefulLinter ExposeSectionState Unit ←
         for (n, info) in env.constants.map₂ do
           unless seen.contains n do
             seen := seen.insert n
-            unless benefits do
-              unless ← liftCoreM (Batteries.Tactic.Lint.isAutoDecl n) do
-                benefits := benefitsFromExposure env n info
+            unless benefits || (← liftCoreM (Batteries.Tactic.Lint.isAutoDecl n)) do
+              benefits := benefitsFromExposure env n info
         st := { seen, region? := some { r with someDeclBenefits := benefits } }
       if Parser.isTerminalCommand stx then
         -- The end of the file closes an open section.
