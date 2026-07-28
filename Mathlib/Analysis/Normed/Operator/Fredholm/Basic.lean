@@ -382,15 +382,10 @@ theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
   finite_coker := by simp
   closedComplemented_ker := by simp
 
-theorem IsInvertible.isFredholm {u : E →L[𝕜] F} (hu : u.IsInvertible) :
-    IsFredholm u :=
-  let ⟨e, he⟩ := hu
-  he ▸ e.isFredholm
-
 theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
     ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
 
-theorem IsInvertible.isFredholm {f : E →L[𝕜] F} (hf : IsInvertible f) :
+theorem IsInvertible.isFredholm {f : E →L[𝕜] F} (hf : f.IsInvertible) :
     IsFredholm f := by
   rcases hf with ⟨e, rfl⟩
   exact e.isFredholm
