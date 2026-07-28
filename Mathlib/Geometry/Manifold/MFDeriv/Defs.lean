@@ -299,7 +299,7 @@ def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
     (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousWithinAt f s x ∧
     HasFDerivWithinAt (writtenInExtChartAt I I' x f)
-      ((TangentSpaceCast I' (f x)) ∘L f' ∘L (TangentSpaceCast I x).symm)
+      ((tangentSpaceCastModel I' (f x)) ∘L f' ∘L (tangentSpaceCastModel I x).symm)
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x)
 
 variable (I I') in
@@ -314,7 +314,7 @@ this would not mean anything relevant. -/
 def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousAt f x ∧
     HasFDerivWithinAt (writtenInExtChartAt I I' x f)
-    ((TangentSpaceCast I' (f x)) ∘L f' ∘L (TangentSpaceCast I x).symm)
+    ((tangentSpaceCastModel I' (f x)) ∘L f' ∘L (tangentSpaceCastModel I x).symm)
     (range I) ((extChartAt I x) x)
 
 open scoped Classical in
@@ -324,9 +324,9 @@ is the derivative of `f` at `x` within `s`,
 as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableWithinAt I I' f s x then
-    ((TangentSpaceCast I' (f x)).symm) ∘L
+    ((tangentSpaceCastModel I' (f x)).symm) ∘L
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
-        ((extChartAt I x) x)) ∘L (TangentSpaceCast I x)
+        ((extChartAt I x) x)) ∘L (tangentSpaceCastModel I x)
   else 0
 
 open scoped Classical in
@@ -335,9 +335,9 @@ variable (I I') in
 as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableAt I I' f x then
-    ((TangentSpaceCast I' (f x)).symm) ∘L
+    ((tangentSpaceCastModel I' (f x)).symm) ∘L
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x)) ∘L
-    (TangentSpaceCast I x)
+    (tangentSpaceCastModel I x)
   else 0
 
 variable (I I') in

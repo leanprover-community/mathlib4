@@ -634,9 +634,9 @@ theorem mdifferentiableWithinAt_congr_nhds {t : Set M} (hst : 𝓝[s] x = 𝓝[t
 
 protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDiffAt[s] f x) :
     mfderiv[s] f x =
-      ((TangentSpaceCast I' (f x)).symm) ∘L
+      ((tangentSpaceCastModel I' (f x)).symm) ∘L
       (fderivWithin 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
-        ((extChartAt I x) x)) ∘L (TangentSpaceCast I x) := by
+        ((extChartAt I x) x)) ∘L (tangentSpaceCastModel I x) := by
   simp only [mfderivWithin, h, if_pos]
 
 theorem MDifferentiableAt.hasMFDerivAt (h : MDiffAt f x) : HasMFDerivAt% f x (mfderiv% f x) := by
@@ -646,9 +646,9 @@ theorem MDifferentiableAt.hasMFDerivAt (h : MDiffAt f x) : HasMFDerivAt% f x (mf
 
 protected theorem MDifferentiableAt.mfderiv (h : MDiffAt f x) :
     mfderiv% f x =
-      ((TangentSpaceCast I' (f x)).symm) ∘L
+      ((tangentSpaceCastModel I' (f x)).symm) ∘L
       fderivWithin 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) ∘L
-      (TangentSpaceCast I x) := by
+      (tangentSpaceCastModel I x) := by
   simp only [mfderiv, h, if_pos]
 
 protected theorem HasMFDerivAt.mfderiv (h : HasMFDerivAt% f x f') : mfderiv% f x = f' :=
@@ -914,7 +914,9 @@ theorem HasMFDerivWithinAt.congr_mfderiv (h : HasMFDerivAt[s] f x f') (h' : f' =
 
 theorem HasMFDerivWithinAt.congr_of_eventuallyEq
     (h : HasMFDerivAt[s] f x f') (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
-    HasMFDerivAt[s] f₁ x f' := by
+    HasMFDerivAt[s] f₁ x
+      ((tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L f') := by
   refine ⟨ContinuousWithinAt.congr_of_eventuallyEq h.1 h₁ hx, ?_⟩
   apply HasFDerivWithinAt.congr_of_eventuallyEq h.2
   · have :
@@ -927,12 +929,15 @@ theorem HasMFDerivWithinAt.congr_of_eventuallyEq
 
 theorem HasMFDerivWithinAt.congr_mono
     (h : HasMFDerivAt[s] f x f') (ht : ∀ x ∈ t, f₁ x = f x) (hx : f₁ x = f x) (h₁ : t ⊆ s) :
-    HasMFDerivAt[t] f₁ x f' :=
+    HasMFDerivAt[t] f₁ x
+    ((tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L f') :=
   (h.mono h₁).congr_of_eventuallyEq (Filter.mem_inf_of_right ht) hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivAt.congr_of_eventuallyEq (h : HasMFDerivAt% f x f') (h₁ : f₁ =ᶠ[𝓝 x] f) :
-    HasMFDerivAt% f₁ x f' := by
+    HasMFDerivAt% f₁ x
+    ((tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L f') := by
   rw [← hasMFDerivWithinAt_univ] at h ⊢
   apply h.congr_of_eventuallyEq _ (mem_of_mem_nhds h₁ :)
   rwa [nhdsWithin_univ]
@@ -1005,7 +1010,9 @@ theorem MDifferentiableAt.congr_of_eventuallyEq (h : MDiffAt f x) (hL : f₁ =�
 
 theorem MDifferentiableWithinAt.mfderivWithin_congr_mono (h : MDiffAt[s] f x)
     (hs : ∀ x ∈ t, f₁ x = f x) (hx : f₁ x = f x) (hxt : UniqueMDiffAt[t] x) (h₁ : t ⊆ s) :
-    mfderiv[t] f₁ x = mfderiv[s] f x :=
+    mfderiv[t] f₁ x =
+      (tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L mfderiv[s] f x :=
   (HasMFDerivWithinAt.congr_mono h.hasMFDerivWithinAt hs hx h₁).mfderivWithin hxt
 
 theorem MDifferentiableWithinAt.mfderivWithin_mono
@@ -1019,46 +1026,52 @@ theorem MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin
   (HasMFDerivWithinAt.mono_of_mem_nhdsWithin h.hasMFDerivWithinAt h₁).mfderivWithin hxt
 
 theorem Filter.EventuallyEq.mfderivWithin_eq (hL : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
-    mfderiv[s] f₁ x = mfderiv[s] f x := by
+    mfderiv[s] f₁ x =
+      (tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L mfderiv[s] f x := by
   by_cases h : MDiffAt[s] f x
   · unfold mfderivWithin
     simp only [h, (hL.mdifferentiableWithinAt_iff hx).1 h, ↓reduceIte, writtenInExtChartAt]
-    rw! [hx]
+    rw [hx]
+    congr 2
     apply Filter.EventuallyEq.fderivWithin_eq; swap
-    · simp only [extChartAt, OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
-        ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-        OpenPartialHomeomorph.coe_toPartialHomeomorph, PartialEquiv.coe_trans_symm,
-        PartialHomeomorph.coe_toPartialEquiv_symm, OpenPartialHomeomorph.coe_toPartialHomeomorph_symm,
-        ModelWithCorners.toPartialEquiv_coe_symm, comp_apply, ModelWithCorners.left_inv,
-        mem_chart_source, OpenPartialHomeomorph.left_inv, hx]
-      rfl
+    · simp [hx]
     filter_upwards [extChartAt_preimage_mem_nhdsWithin (I := I) hL] with y hy
-    simp only [preimage_ofPred_eq] at hy
-    simp at hy
-    rw [mem_ofPred_eq] at hy
-    simp [-extChartAt, hy, hx]
+    simp only [preimage_ofPred_eq, mem_ofPred_eq] at hy
+    simp [-extChartAt, hy]
   · unfold mfderivWithin
     rw [if_neg h, if_neg]
-    rwa [← hL.mdifferentiableWithinAt_iff hx]
+    · simp
+    · rwa [← hL.mdifferentiableWithinAt_iff hx]
 
 theorem Filter.EventuallyEq.mfderivWithin_eq_of_mem (hL : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
-    mfderiv[s] f₁ x = mfderiv[s] f x :=
+    mfderiv[s] f₁ x =
+      (tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L mfderiv[s] f x :=
   hL.mfderivWithin_eq (mem_of_mem_nhdsWithin hx hL :)
 
 theorem mfderivWithin_congr (hL : ∀ x ∈ s, f₁ x = f x) (hx : f₁ x = f x) :
-    mfderiv[s] f₁ x = mfderiv[s] f x :=
+    mfderiv[s] f₁ x =
+      (tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L mfderiv[s] f x :=
   Filter.EventuallyEq.mfderivWithin_eq (Filter.eventuallyEq_of_mem self_mem_nhdsWithin hL) hx
 
 theorem mfderivWithin_congr_of_mem (hL : ∀ x ∈ s, f₁ x = f x) (hx : x ∈ s) :
-    mfderiv[s] f₁ x = mfderiv[s] f x :=
+    mfderiv[s] f₁ x =
+      (tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L mfderiv[s] f x :=
   Filter.EventuallyEq.mfderivWithin_eq_of_mem (Filter.eventuallyEq_of_mem self_mem_nhdsWithin hL) hx
 
 theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundle I M) (hp : p.1 ∈ s) :
     tangentMap[s] f p = tangentMap[s] f₁ p := by
   refine TotalSpace.ext (h p.1 hp) ?_
   rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr h (h _ hp)]
+  rfl
 
-theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) : mfderiv% f₁ x = mfderiv% f x := by
+theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :
+    mfderiv% f₁ x =
+      (tangentSpaceCast I' (f x) (f₁ x) : TangentSpace I' (f x) →L[𝕜] TangentSpace I' (f₁ x))
+        ∘L mfderiv% f x := by
   have A : f₁ x = f x := (mem_of_mem_nhds hL :)
   rw [← mfderivWithin_univ, ← mfderivWithin_univ]
   rw [← nhdsWithin_univ] at hL
@@ -1078,7 +1091,6 @@ theorem mfderiv_congr {f' : M → M'} (h : f = f') :
 
 variable (x)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivWithinAt.comp (hg : HasMFDerivAt[u] g (f x) g')
     (hf : HasMFDerivAt[s] f x f') (hst : s ⊆ f ⁻¹' u) :
     HasMFDerivAt[s] (g ∘ f) x (g'.comp f') := by
