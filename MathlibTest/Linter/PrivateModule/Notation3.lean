@@ -26,7 +26,7 @@ open Mathlib.Linter Parser in
 /--
 warning: The current module only contains private declarations.
 
-Consider adding `public section` at the beginning of the module, or selectively marking declarations as `public`. If the body of a `def` is used downstream (mainly for definitional equality, or for `unfold`), mark that `def` with `@[expose]`.
+Consider adding `public section` at the beginning of the module, or selectively marking declarations as `public`. Mark a `def` with `@[expose]` if downstream code needs it to be definitionally equal to its body (e.g. for `unfold`).
 
 Note: This linter can be disabled with `set_option linter.privateModule false`
 -/

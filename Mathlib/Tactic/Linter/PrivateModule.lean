@@ -93,9 +93,9 @@ def privateModule : Linter where run stx := do
       logLint linter.privateModule topOfFileRef
         "The current module only contains private declarations.\n\n\
         Consider adding `public section` at the beginning of the module, \
-        or selectively marking declarations as `public`. If the body of a `def` \
-        is used downstream (mainly for definitional equality, or for `unfold`), \
-        mark that `def` with `@[expose]`."
+        or selectively marking declarations as `public`. Mark a `def` with \
+        `@[expose]` if downstream code needs it to be definitionally equal \
+        to its body (e.g. for `unfold`)."
 
 initialize addLinter privateModule
 
