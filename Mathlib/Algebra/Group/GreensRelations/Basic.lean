@@ -83,9 +83,11 @@ end IsGreenRightDvd
 
 namespace IsGreenHDvd
 
+/-- Green's H-divisibility relation is reflexive. -/
 @[refl] theorem refl (a : S) : IsGreenHDvd a a :=
   ⟨IsGreenLeftDvd.refl a, IsGreenRightDvd.refl a⟩
 
+/-- Green's H-divisibility relation is transitive. -/
 @[trans] theorem trans {a b c : S} (hab : IsGreenHDvd a b) (hbc : IsGreenHDvd b c) :
     IsGreenHDvd a c :=
   ⟨IsGreenLeftDvd.trans hab.1 hbc.1, IsGreenRightDvd.trans hab.2 hbc.2⟩
