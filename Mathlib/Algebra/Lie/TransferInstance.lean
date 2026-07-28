@@ -24,8 +24,8 @@ Main definitions:
 @[expose] public section
 
 section
-variable {α β : Type*} [AddCommGroup α] [LieRing β]
-variable {R : Type*} [CommRing R] [Module R α] [LieAlgebra R β]
+
+variable {R M L : Type*} [CommRing R] [AddCommGroup M] [Module R M] [LieRing L] [LieAlgebra R L]
 
 /-- Transfer `LieRing` across an `AddEquiv` -/
 protected abbrev AddEquiv.lieRing (e : α ≃+ β) : LieRing α where
