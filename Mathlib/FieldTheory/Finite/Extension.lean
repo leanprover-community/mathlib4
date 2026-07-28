@@ -184,18 +184,16 @@ theorem natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X {n : ℕ} :
   let a := AdjoinRoot.root f
   have : NeZero f.natDegree := NeZero.of_pos (Irreducible.natDegree_pos hi)
   have : Fact <| Irreducible f := ⟨hi⟩
-  refine hi.dvd_of_aeval_eq_zero (b := a) ?_ ?_
-  · rw [Polynomial.aeval_def]
-    exact AdjoinRoot.eval₂_root f
-  · let ⟨p, hp⟩ := CharP.exists k
-    have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime k p⟩
-    let e := FiniteField.algEquivExtension k p f.natDegree (AdjoinRoot f)
-      (finrank_quotient_span_eq_natDegree (f := f))
-    have hpeval : (e a) ^ (Nat.card k) ^ f.natDegree - (e a) = 0 := by
-      have := Fintype.ofFinite (Extension k p f.natDegree)
-      rw [← (natCard_extension k p f.natDegree), ← Fintype.card_eq_nat_card,
-        pow_card (e a), sub_self]
-    apply_fun e.symm at hpeval
-    simpa using hpeval
+  rw [← hi.dvd_iff_aeval_eq_zero (b := a) (by aesop)]
+  let ⟨p, hp⟩ := CharP.exists k
+  have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime k p⟩
+  let e := FiniteField.algEquivExtension k p f.natDegree (AdjoinRoot f)
+    (finrank_quotient_span_eq_natDegree (f := f))
+  have hpeval : (e a) ^ (Nat.card k) ^ f.natDegree - (e a) = 0 := by
+    have := Fintype.ofFinite (Extension k p f.natDegree)
+    rw [← (natCard_extension k p f.natDegree), ← Fintype.card_eq_nat_card,
+      pow_card (e a), sub_self]
+  apply_fun e.symm at hpeval
+  simpa using hpeval
 
 end Irreducible
