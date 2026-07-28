@@ -389,10 +389,8 @@ theorem imageSubobject_epi_comp [HasStrongEpiMonoFactorisations C] {X Y X' : C}
 
 lemma _root_.CategoryTheory.Subobject.sup_eq_imageSubobject [HasImages C] [HasBinaryCoproducts C]
     {A : C} (X Y : Subobject A) :
-    X ⊔ Y = imageSubobject (coprod.desc X.arrow Y.arrow) := by
-  refine eq_mk_of_comm (image.ι (coprod.desc X.arrow Y.arrow)) (supIsoImage X Y) ?_
-  · simp only [supIsoImage_hom]
-    apply ofLEMk_comp
+    X ⊔ Y = imageSubobject (coprod.desc X.arrow Y.arrow) :=
+  eq_mk_of_comm (image.ι (coprod.desc X.arrow Y.arrow)) (supIsoImage X Y) (ofLEMk_comp _)
 
 lemma _root_.CategoryTheory.Subobject.mk_mono_eq_imageSubobject [HasStrongEpiMonoFactorisations C]
     {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f)

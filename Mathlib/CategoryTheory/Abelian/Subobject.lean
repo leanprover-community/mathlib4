@@ -87,32 +87,14 @@ instance wellPowered_opposite [LocallySmall.{w} C] [WellPowered.{w} C] :
 
 namespace Subobject
 
-lemma sup_eq_imageSubobject {A : C} (X Y : Subobject A) :
-    X ⊔ Y = imageSubobject (biprod.desc X.arrow Y.arrow) := by
-  rw [CategoryTheory.Subobject.sup_eq_imageSubobject,
-    ← imageSubobject_iso_comp (biprod.isoCoprod _ _).hom (coprod.desc X.arrow Y.arrow)]
-  congr 1
-  ext <;> simp only [biprod_isoCoprod_hom, ← Category.assoc, biprod.inl_desc,
-    biprod.inr_desc, coprod.inl_desc, coprod.inr_desc]
+section
 
-lemma le_iff_comp_cokernel_zero {X : C} (f g : Subobject X) :
-    f ≤ g ↔ f.arrow ≫ cokernel.π (g.arrow) = 0 := by
-  constructor
-  · intro h
-    rw [← ofLE_arrow h, Category.assoc, cokernel.condition, comp_zero]
-  · intro h
-    exact le_of_comm
-      (kernel.lift (cokernel.π g.arrow) f.arrow h ≫
-        (asIso (Abelian.factorThruImage g.arrow)).inv) (by simp)
+variable {X Y : C} (f : X ⟶ Y)
 
 lemma imageSubobject_eq_kernelSubobject {X Y : C} (f : X ⟶ Y) :
     imageSubobject f = kernelSubobject (cokernel.π f) :=
   mk_eq_mk_of_comm (Limits.image.ι f) (kernel.ι (cokernel.π f)) (imageIsoImage f).symm
     (by simp only [Iso.symm_hom, imageIsoImage_inv, kernel.lift_ι])
-
-section
-
-variable {X Y : C} (f : X ⟶ Y)
 
 lemma exists_eq_kernelSubobject (X' : Subobject X) :
     («exists» f).obj X' = kernelSubobject (cokernel.π (X'.arrow ≫ f)) := by
@@ -152,8 +134,7 @@ lemma pullback_exists_eq_self_of_epi [Epi f] (X' : Subobject X) (h : kernelSubob
   have hX' : (Subobject.pullback f).obj (kernelSubobject d) = X' := by
     rw [pullback_mk_eq_kernelSubobject, ← comp_inv_factorThruCoimage d]
     simp only [← Category.assoc, d, comp_epiDesc, kernelSubobject_comp_mono]
-    rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono]
-    exact mk_arrow X'
+    rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow]
   rw [← hX', exists_pullback_eq_self_of_epi]
 
 lemma pullback_exists_eq_sup_of_epi [Epi f] (X' : Subobject X) :
@@ -189,11 +170,8 @@ def cokernelOrderIso {X : C} (Y : Subobject X) :
     exact le_kernelSubobject _ _ (by simp)⟩
   invFun q := («exists» (cokernel.π Y.arrow)).obj q
   left_inv p := exists_pullback_eq_self_of_epi (cokernel.π Y.arrow) p
-  right_inv := by
-    rintro ⟨q, hq : Y ≤ q⟩
-    ext1
-    exact pullback_exists_eq_self_of_epi _ _
-      (by rwa [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow])
+  right_inv := fun ⟨q, hq⟩ ↦ SetCoe.ext (pullback_exists_eq_self_of_epi _ _
+    (by rwa [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow]))
   map_rel_iff' := pullback_le_pullback_iff_of_epi _ _ _
 
 end CategoryTheory.Abelian.Subobject
