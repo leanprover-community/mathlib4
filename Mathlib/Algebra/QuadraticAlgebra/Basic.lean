@@ -11,13 +11,15 @@ public import Mathlib.Algebra.Star.Unitary
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Quadratic algebras: involution and norm.
+# Quadratic algebras: involution, norm, and trace.
 
 Let `R` be a commutative ring. We define:
 
 * `QuadraticAlgebra.star`: the quadratic involution
 
 * `QuadraticAlgebra.norm`: the norm
+
+* `QuadraticAlgebra.trace`: the trace, as an `R`-linear map
 
 We prove:
 
@@ -148,7 +150,7 @@ section star
 variable [CommRing R]
 
 /-- Conjugation in `QuadraticAlgebra R a b`.
-The conjugate of `x + y ω` is `x + y ω' = (x - a * y) - y ω`. -/
+The conjugate of `x + y ω` is `x + y ω' = (x + b * y) - y ω`. -/
 instance : Star (QuadraticAlgebra R a b) where
   star z := ⟨z.re + b * z.im, -z.im⟩
 
@@ -301,6 +303,64 @@ theorem norm_mem_nonZeroDivisors_iff {z : QuadraticAlgebra R a b} :
     exact Submonoid.mul_mem _ hz (star_mem_nonZeroDivisors hz)
 
 end norm
+
+section trace
+
+variable [CommRing R]
+
+/-- the trace in a quadratic algebra, as an `R`-linear map. -/
+def trace : QuadraticAlgebra R a b →ₗ[R] R where
+  toFun z := 2 * z.re + b * z.im
+  map_add' _ _ := by simp only [re_add, im_add]; ring
+  map_smul' _ _ := by simp only [re_smul, im_smul, RingHom.id_apply, smul_eq_mul]; ring
+
+theorem trace_def (z : QuadraticAlgebra R a b) :
+    trace z = 2 * z.re + b * z.im := rfl
+
+@[simp]
+theorem trace_algebraMap (r : R) :
+    trace (algebraMap R (QuadraticAlgebra R a b) r) = 2 * r := by
+  simp [trace_def, algebraMap_re, algebraMap_im]
+
+@[simp]
+theorem trace_natCast (n : ℕ) : trace (n : QuadraticAlgebra R a b) = 2 * n := by
+  simp [trace_def, re_natCast, im_natCast]
+
+@[simp]
+theorem trace_intCast (n : ℤ) : trace (n : QuadraticAlgebra R a b) = 2 * n := by
+  simp [trace_def, re_intCast, im_intCast]
+
+@[simp]
+theorem trace_omega : trace (ω : QuadraticAlgebra R a b) = b := by
+  simp [trace_def]
+
+@[simp]
+theorem trace_one : trace (1 : QuadraticAlgebra R a b) = 2 := by
+  simp [trace_def]
+
+@[simp]
+theorem trace_star (z : QuadraticAlgebra R a b) : trace (star z) = trace z := by
+  simp only [trace_def, re_star, im_star]
+  ring
+
+/-- `z + star z` is the trace of `z`. -/
+theorem algebraMap_trace_eq_add_star (z : QuadraticAlgebra R a b) :
+    algebraMap R (QuadraticAlgebra R a b) (trace z) = z + star z := by
+  ext <;>
+  simp only [trace_def, algebraMap_re, algebraMap_im, re_add, im_add, re_star, im_star] <;>
+  ring
+
+/-- Every element of a quadratic algebra satisfies its characteristic equation. -/
+theorem sq_sub_trace_smul_add_norm_eq_zero (z : QuadraticAlgebra R a b) :
+    z ^ 2 - trace z • z + algebraMap R _ (norm z) = 0 := by
+  rw [Algebra.smul_def, algebraMap_trace_eq_add_star, algebraMap_norm_eq_mul_star]; ring
+
+theorem sq_eq_trace_smul_sub_norm (z : QuadraticAlgebra R a b) :
+    z ^ 2 = trace z • z - algebraMap R _ (norm z) := by
+  rw [← sub_eq_zero, ← sub_add]
+  exact sq_sub_trace_smul_add_norm_eq_zero z
+
+end trace
 
 section field
 
