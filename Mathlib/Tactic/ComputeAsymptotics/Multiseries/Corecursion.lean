@@ -85,9 +85,8 @@ local instance : CompleteSpace (Stream' α) :=
 
 set_option backward.isDefEq.respectTransparency false in
 local instance : CompleteSpace (Seq α) := by
-  suffices IsClosed (X := Stream' (Option α))
-      (fun x ↦ ∀ {n : ℕ}, x n = none → x (n + 1) = none) by
-    apply IsClosed.completeSpace_coe
+  suffices IsClosed (X := Stream' (Option α)) {x | ∀ {n : ℕ}, x n = none → x (n + 1) = none} by
+    exact this.completeSpace_coe
   rw [isClosed_iff_clusterPt]
   intro s hs n hn
   rw [clusterPt_principal_iff] at hs
