@@ -265,12 +265,23 @@ theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeighte
     IsWeightedHomogeneous w (φ + ψ) n :=
   (weightedHomogeneousSubmodule R w n).add_mem hφ hψ
 
+section CommRing
+
+-- In this section we shadow the semiring `R` with a ring `R`.
+variable {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
+
+/-- The negation of a weighted homogeneous polynomial of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem neg (hφ : IsWeightedHomogeneous w φ n) : IsWeightedHomogeneous w (-φ) n :=
+  (weightedHomogeneousSubmodule R w n).neg_mem hφ
+
 /-- The difference of two weighted homogeneous polynomials of degree `n` is weighted homogeneous
   of weighted degree `n`. -/
-theorem sub {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
-    (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
+theorem sub (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
     IsWeightedHomogeneous w (φ - ψ) n :=
   (weightedHomogeneousSubmodule R w n).sub_mem hφ hψ
+
+end CommRing
 
 /-- A weighted homogeneous polynomial of degree `n` is zero if no monomial has weight `n`. -/
 theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
@@ -280,7 +291,7 @@ theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ
 
 /-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
 fixed `d₀` is a single monomial. -/
-theorem eq_monomial_of_unique_weight {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (d₀ : σ →₀ ℕ)
+theorem eq_monomial_of_unique_weight {w : σ → M} {d₀ : σ →₀ ℕ} (hφ : IsWeightedHomogeneous w φ n)
     (huniq : ∀ d, weight w d = n → d = d₀) : φ = monomial d₀ (coeff d₀ φ) :=
   eq_monomial_of_support_subset_singleton fun d hd ↦ huniq d (hφ (mem_support_iff.mp hd))
 
