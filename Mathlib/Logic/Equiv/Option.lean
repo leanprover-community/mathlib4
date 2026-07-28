@@ -235,8 +235,8 @@ theorem optionSubtype_symm_apply_apply_none
 @[simp]
 theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
     (b : { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β).symm b = e.symm b := by
-  simp only [optionSubtype, coe_fn_symm_mk, Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
-  exact fun h => False.elim (b.property h)
+  have := b.property
+  simp_all [optionSubtype]
 
 variable [DecidableEq α] {a b : α}
 

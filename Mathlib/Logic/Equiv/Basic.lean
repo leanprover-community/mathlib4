@@ -454,7 +454,7 @@ def sigmaSigmaSubtype {α : Type*} {β : α → Type*} {γ : (a : α) → β a �
     (sigmaAssoc γ).symm fun s ↦ by simp [sigmaAssoc]
   _ ≃ _ := subtypeSigmaEquiv _ _
   _ ≃ _ := uniqueSigma (fun ab ↦ γ (Sigma.fst <| Subtype.val ab) (Sigma.snd <| Subtype.val ab))
-  _ ≃ γ a b := Equiv.cast <| by rw [← show ⟨⟨a, b⟩, h⟩ = uniq.default from uniq.uniq _]
+  _ ≃ γ a b := Equiv.cast <| by rw [← uniq.uniq ⟨⟨a, b⟩, h⟩]
 
 @[simp]
 lemma sigmaSigmaSubtype_symm_apply {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
