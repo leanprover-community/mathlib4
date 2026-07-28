@@ -10,8 +10,8 @@ public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Data.Finset.Pairwise
 
 /-!
-
 # Sums of collections of Finsupp, and their support
+
 This file provides results about the `Finsupp.support` of sums of collections of `Finsupp`,
 including sums of `List`, `Multiset`, and `Finset`.
 
@@ -54,7 +54,7 @@ theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M
 
 theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
     (s.sum id).support ⊆ Finset.sup s Finsupp.support := by
-  classical convert! Multiset.support_sum_subset s.1; simp
+  convert! Multiset.support_sum_subset s.1; simp
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
     x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ f ∈ l, x ∈ f.support := by

@@ -348,9 +348,6 @@ theorem mapCocycles₁_one (φ : res 1 A ⟶ B) :
   rfl -- Todo: this should be proved by `_root_.zero_apply`
 
 
-@[deprecated (since := "2025-6-09")]
-alias H1Map_id := map_id
-
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_map :
@@ -553,7 +550,7 @@ noncomputable def resNatTrans (n : ℕ) :
     simp only [functor_map, Functor.comp_map,
       ← cancel_epi (groupCohomology.π _ n), HomologicalComplex.homologyπ_naturality_assoc,
       HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
-      ← cochainsMap_comp, res_obj_ρ, Category.comp_id, Rep.hom_id]
+      ← cochainsMap_comp, res_obj_ρ, Category.comp_id]
     rfl
 
 set_option backward.isDefEq.respectTransparency false in

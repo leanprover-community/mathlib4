@@ -349,7 +349,7 @@ theorem dilatransvection.apply {f : Dual R V} {v : V} {h : IsUnit (1 + f v)} {x 
 @[simp]
 theorem dilatransvection_mem_dilatransvections {f : Dual R V} {v : V} {h : IsUnit (1 + f v)} :
     dilatransvection h ∈ dilatransvections R V := by
-  simp only [dilatransvections, Set.mem_setOf_eq]
+  simp only [dilatransvections, Set.mem_ofPred_eq]
   refine ⟨f, v, by simp⟩
 
 open scoped Pointwise in
@@ -370,14 +370,14 @@ theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
       Module.rank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   simp only [dilatransvections]
   constructor
-  · simp only [Set.mem_setOf_eq]
+  · simp only [Set.mem_ofPred_eq]
     rintro ⟨f, v, he⟩
     apply le_trans (rank_mono (t := K ∙ v) ?_)
     · apply le_trans (rank_span_le _) (by simp)
     rintro _ ⟨x, rfl⟩
     simp [mem_span_singleton, he, LinearMap.transvection.apply]
   · intro he
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     set u := (e : V →ₗ[K] V) - LinearMap.id with hu
     rw [eq_sub_iff_add_eq] at hu
     by_cases hr : Module.rank K (range u) = 0

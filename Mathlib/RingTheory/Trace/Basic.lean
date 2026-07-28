@@ -80,7 +80,7 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
     Algebra.trace K S pb.gen = -(minpoly K pb.gen).nextCoeff := by
   have d_pos : 0 < pb.dim := PowerBasis.dim_pos pb
   have d_pos' : 0 < (minpoly K pb.gen).natDegree := by simpa
-  haveI : Nonempty (Fin pb.dim) := ⟨⟨0, d_pos⟩⟩
+  have : Nonempty (Fin pb.dim) := ⟨⟨0, d_pos⟩⟩
   rw [trace_eq_matrix_trace pb.basis, trace_eq_neg_charpoly_coeff, charpoly_leftMulMatrix, ←
     pb.natDegree_minpoly, Fintype.card_fin, ← nextCoeff_of_natDegree_pos d_pos']
 
@@ -184,8 +184,8 @@ lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [C
   classical
   by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
   · obtain ⟨s, ⟨b⟩⟩ := h
-    letI : Algebra A B := RingHom.toAlgebra e
-    letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
+    let : Algebra A B := RingHom.toAlgebra e
+    let : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.trace_eq_matrix_trace b,
       Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
     rw [AddMonoidHom.map_trace]
@@ -201,7 +201,7 @@ lemma Algebra.trace_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A�
     [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.trace A₁ B₁ x = e₁.symm (Algebra.trace A₂ B₂ (e₂ x)) := by
-  letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra
+  let := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra
   let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
   rw [← Algebra.trace_eq_of_ringEquiv e₁ he, ← Algebra.trace_eq_of_algEquiv e',
     RingEquiv.symm_apply_apply]
@@ -219,8 +219,8 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     (hE : ((minpoly K pb.gen).map (algebraMap K E)).Splits) (hfx : IsSeparable K pb.gen) :
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
-  letI := Classical.decEq E
-  letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
+  let := Classical.decEq E
+  let : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
@@ -237,16 +237,16 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
     ∑ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
       finrank L F •
         (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ : L →ₐ[K] E => σ pb.gen := by
-  haveI : FiniteDimensional L F := FiniteDimensional.right K L F
-  haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
-  letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
+  have : FiniteDimensional L F := FiniteDimensional.right K L F
+  have : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
+  let : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
     ← Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
   · refine Finset.sum_congr rfl fun σ _ => ?_
-    letI : Algebra L E := σ.toRingHom.toAlgebra
+    let : Algebra L E := σ.toRingHom.toAlgebra
     simp_rw [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
   · intro σ
-    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
+    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.domRestrict, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
 
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L] {x : L} :
@@ -257,7 +257,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
     trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits _), ← Algebra.smul_def,
     algebraMap_smul]
   · exact (sum_embeddings_eq_finrank_mul L E pb).symm
-  · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
+  · have := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact Algebra.IsSeparable.isSeparable K _
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
@@ -463,7 +463,7 @@ theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K 
   suffices algebraMap K (AlgebraicClosure L) (det (traceMatrix K pb.basis)) ≠ 0 by
     refine mt (fun ht => ?_) this
     rw [ht, map_zero]
-  haveI : FiniteDimensional K L := pb.finite
+  have : FiniteDimensional K L := pb.finite
   let e : Fin pb.dim ≃ (L →ₐ[K] AlgebraicClosure L) := (Fintype.equivFinOfCardEq ?_).symm
   · rw [RingHom.map_det, RingHom.mapMatrix_apply,
       traceMatrix_eq_embeddingsMatrixReindex_mul_trans K _ _ e,
@@ -477,7 +477,7 @@ theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K 
 theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableEq ι]
     (b : Basis ι K L) :
     det ((traceForm K L).toMatrix b) ≠ 0 := by
-  haveI : FiniteDimensional K L := b.finiteDimensional_of_finite
+  have : FiniteDimensional K L := b.finiteDimensional_of_finite
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
   rw [← LinearMap.BilinForm.toMatrix_mul_basis_toMatrix pb.basis b, ←
     det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, det_mul]

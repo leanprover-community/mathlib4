@@ -110,6 +110,7 @@ theorem unitsSMul_apply {v : Basis ι R M} {w : ι → Rˣ} (i : ι) : unitsSMul
 
 variable [CommSemiring R₂] [Module R₂ M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     (unitsSMul e w).coord i = (w i)⁻¹ • e.coord i := by
