@@ -337,7 +337,7 @@ instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] :
 @[to_additive]
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
-    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
+    let : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
@@ -347,7 +347,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
         ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
-    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
+    let : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f
@@ -850,3 +850,46 @@ def ContinuousMap.evalAlgHom (x : X) : C(X, R) →ₐ[S] R where
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
   commutes' _ := rfl
+
+section curry
+
+namespace ContinuousMap
+
+variable {Y Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
+
+@[to_additive (attr := simp)]
+lemma curry_mul_apply [Mul Z] [ContinuousMul Z] (f g : C(X × Y, Z)) (x : X) :
+    (f * g).curry x = f.curry x * g.curry x :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_div_apply [Div Z] [ContinuousDiv Z] (f g : C(X × Y, Z)) (x : X) :
+    (f / g).curry x = f.curry x / g.curry x :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_smul_apply {R : Type*} [SMul R Z] [ContinuousConstSMul R Z]
+    (f : C(X × Y, Z)) (r : R) (x : X) :
+    (r • f).curry x = r • f.curry x :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_inv_apply [Inv Z] [ContinuousInv Z] (f : C(X × Y, Z)) (x : X) :
+    (f⁻¹).curry x = (f.curry x)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_pow_apply [Monoid Z] [ContinuousMul Z]
+    (f : C(X × Y, Z)) (n : ℕ) (x : X) :
+    (f ^ n).curry x = (f.curry x) ^ n :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma curry_zpow_apply [Group Z] [IsTopologicalGroup Z]
+    (f : C(X × Y, Z)) (n : ℤ) (x : X) :
+    (f ^ n).curry x = (f.curry x) ^ n :=
+  rfl
+
+end ContinuousMap
+
+end curry

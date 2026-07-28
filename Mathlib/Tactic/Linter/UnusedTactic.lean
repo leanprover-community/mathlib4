@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
+public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -144,39 +145,29 @@ def getNames (mctx : MetavarContext) : List Name :=
   let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
-mutual
 /-- Search for tactic executions in the info tree and remove the syntax of the tactics that
 changed something. -/
-partial def eraseUsedTacticsList (exceptions : Std.HashSet SyntaxNodeKind)
+partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
     (trees : PersistentArray InfoTree) : M Unit :=
-  trees.forM (eraseUsedTactics exceptions)
-
-/-- Search for tactic executions in the info tree and remove the syntax of the tactics that
-changed something. -/
-partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind) : InfoTree → M Unit
-  | .node i c => do
-    if let .ofTacticInfo i := i then
-      let stx := i.stx
-      let kind := stx.getKind
-      if let some r := stx.getRange? true then
-        if exceptions.contains kind
-        -- if the tactic is allowed to not change the goals
-        then modify (·.erase r)
-        else
-        -- if the goals have changed
-        if i.goalsAfter != i.goalsBefore
-        then modify (·.erase r)
-        -- bespoke check for `swap_var`: the only change that it does is
-        -- in the usernames of local declarations, so we check the names before and after
-        else
-        if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-                (getNames i.mctxBefore != getNames i.mctxAfter)
-        then modify (·.erase r)
-    eraseUsedTacticsList exceptions c
-  | .context _ t => eraseUsedTactics exceptions t
-  | .hole _ => pure ()
-
-end
+  let ranges := trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ i ranges => Id.run do
+    let .ofTacticInfo i := i | return ranges
+    let stx := i.stx
+    let some r := stx.getRange? true | return ranges
+    let kind := stx.getKind
+    -- if the tactic is allowed to not change the goals
+    if exceptions.contains kind then
+      return ranges.push r
+    -- if the goals have changed
+    if i.goalsAfter != i.goalsBefore then
+      return ranges.push r
+    -- bespoke check for `swap_var`: the only change that it does is
+    -- in the usernames of local declarations, so we check the names before and after
+    if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
+            (getNames i.mctxBefore != getNames i.mctxAfter) then
+      return ranges.push r
+    return ranges
+  for r in ranges do
+    modify (·.erase r)
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
@@ -196,7 +187,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let exceptions := (← allowedRef.get).union <| allowedUnusedTacticExt.getState env
   let go : M Unit := do
     getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
-    eraseUsedTacticsList exceptions trees
+    eraseUsedTactics exceptions trees
   let (_, map) ← go.run {}
   let unused := map.toArray
   let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))

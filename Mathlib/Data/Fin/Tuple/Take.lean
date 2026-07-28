@@ -66,6 +66,7 @@ theorem take_repeat {α : Type*} {n' : ℕ} (m : ℕ) (h : m ≤ n) (a : Fin n' 
   ext i
   simp only [take, repeat_apply, modNat, val_castLE]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking `m + 1` elements is equal to taking `m` elements and adding the `(m + 1)`th one. -/
 theorem take_succ_eq_snoc (m : ℕ) (h : m < n) (v : (i : Fin n) → α i) :
     take m.succ h v = snoc (take m h.le v) (v ⟨m, h⟩) := by

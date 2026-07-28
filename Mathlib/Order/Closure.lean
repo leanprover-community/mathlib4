@@ -149,8 +149,11 @@ variable {c} {x y : α}
 theorem IsClosed.closure_eq : c.IsClosed x → c x = x := c.isClosed_iff.1
 
 /-- The set of closed elements for `c` is exactly its range. -/
-theorem setOf_isClosed_eq_range_closure : {x | c.IsClosed x} = Set.range c := by
+theorem setOfPred_isClosed_eq_range_closure : {x | c.IsClosed x} = Set.range c := by
   ext x; exact ⟨fun hx ↦ ⟨x, hx.closure_eq⟩, by rintro ⟨y, rfl⟩; exact c.isClosed_closure _⟩
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isClosed_eq_range_closure := setOfPred_isClosed_eq_range_closure
 
 theorem le_closure_iff : x ≤ c y ↔ c x ≤ c y :=
   ⟨fun h ↦ c.idempotent y ▸ c.monotone h, (c.le_closure x).trans⟩
@@ -401,7 +404,7 @@ theorem closure_is_closed (x : α) : u (l x) ∈ l.closed :=
 
 /-- The set of closed elements for `l` is the range of `u ∘ l`. -/
 theorem closed_eq_range_close : l.closed = Set.range (u ∘ l) :=
-  l.closureOperator.setOf_isClosed_eq_range_closure
+  l.closureOperator.setOfPred_isClosed_eq_range_closure
 
 /-- Send an `x` to an element of the set of closed elements (by taking the closure). -/
 def toClosed (x : α) : l.closed :=

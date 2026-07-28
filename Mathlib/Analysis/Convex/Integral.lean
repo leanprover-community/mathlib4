@@ -58,7 +58,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
     (hf : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) : (∫ x, f x ∂μ) ∈ s := by
   borelize E
   rcases hfi.aestronglyMeasurable with ⟨g, hgm, hfg⟩
-  haveI : SeparableSpace (range g ∩ s : Set E) :=
+  have : SeparableSpace (range g ∩ s : Set E) :=
     (hgm.isSeparable_range.mono inter_subset_left).separableSpace
   obtain ⟨y₀, h₀⟩ : (range g ∩ s).Nonempty := by
     rcases (hf.and hfg).exists with ⟨x₀, h₀⟩
@@ -119,7 +119,7 @@ theorem ConcaveOn.average_mem_hypograph [IsFiniteMeasure μ] [NeZero μ] (hg : C
     (hgc : ContinuousOn g s) (hsc : IsClosed s) (hfs : ∀ᵐ x ∂μ, f x ∈ s)
     (hfi : Integrable f μ) (hgi : Integrable (g ∘ f) μ) :
     (⨍ x, f x ∂μ, ⨍ x, g (f x) ∂μ) ∈ {p : E × ℝ | p.1 ∈ s ∧ p.2 ≤ g p.1} := by
-  simpa only [mem_setOf_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
+  simpa only [mem_ofPred_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
     hg.neg.average_mem_epigraph hgc.neg hsc hfs hfi hgi.neg
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed
@@ -166,7 +166,7 @@ theorem ConcaveOn.set_average_mem_hypograph (hg : ConcaveOn ℝ s g) (hgc : Cont
     (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞) (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
     (hfi : IntegrableOn f t μ) (hgi : IntegrableOn (g ∘ f) t μ) :
     (⨍ x in t, f x ∂μ, ⨍ x in t, g (f x) ∂μ) ∈ {p : E × ℝ | p.1 ∈ s ∧ p.2 ≤ g p.1} := by
-  simpa only [mem_setOf_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
+  simpa only [mem_ofPred_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
     hg.neg.set_average_mem_epigraph hgc.neg hsc h0 ht hfs hfi hgi.neg
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed
@@ -314,7 +314,7 @@ theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E
   · simp [average_eq, integral_undef hfi, hC0]
   rcases (le_top : μ univ ≤ ∞).eq_or_lt with hμt | hμt
   · simp [average_eq, measureReal_def, hμt, hC0]
-  haveI : IsFiniteMeasure μ := ⟨hμt⟩
+  have : IsFiniteMeasure μ := ⟨hμt⟩
   replace h_le : ∀ᵐ x ∂μ, f x ∈ closedBall (0 : E) C := by simpa only [mem_closedBall_zero_iff]
   simpa only [interior_closedBall _ hC0.ne', mem_ball_zero_iff] using
     (strictConvex_closedBall ℝ (0 : E) C).ae_eq_const_or_average_mem_interior isClosed_closedBall
@@ -339,6 +339,6 @@ a.e. on a set `t` of finite measure, then either this function is a.e. equal to 
 theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace ℝ E] (ht : μ t ≠ ∞)
     (h_le : ∀ᵐ x ∂μ.restrict t, ‖f x‖ ≤ C) :
     f =ᵐ[μ.restrict t] const α (⨍ x in t, f x ∂μ) ∨ ‖∫ x in t, f x ∂μ‖ < μ.real t * C := by
-  haveI := Fact.mk ht.lt_top
+  have := Fact.mk ht.lt_top
   rw [← measureReal_restrict_apply_univ]
   exact ae_eq_const_or_norm_integral_lt_of_norm_le_const h_le

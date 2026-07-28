@@ -70,12 +70,12 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 
 variable (M) in
-open Classical in
+open scoped Classical in
 /-- Trace of an endomorphism independent of basis. -/
 def trace : (M →ₗ[R] M) →ₗ[R] R :=
   if H : ∃ s : Finset M, Nonempty (Basis s R M) then traceAux R H.choose_spec.some else 0
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary lemma for `trace_eq_matrix_trace`. -/
 theorem trace_eq_matrix_trace_of_finset {s : Finset M} (b : Basis s R M) (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
@@ -181,8 +181,9 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
 /-- When `M` is finite free, the trace of a linear map corresponds to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`. -/
 theorem trace_eq_contract' :
-    LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap :=
-  trace_eq_contract_of_basis' (Module.Free.chooseBasis R M)
+    LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap := by
+  rw [dualTensorHomEquiv_eq_dualTensorHomEquivOfBasis (Module.Free.chooseBasis R M)]
+  exact trace_eq_contract_of_basis' _
 
 /-- The trace of the identity endomorphism is the dimension of the free module. -/
 @[simp]
@@ -210,17 +211,7 @@ theorem trace_prodMap :
   let e := (dualTensorHomEquiv R M M).prodCongr (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_
-  ext
-  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply,
-      curry_apply, coe_comp, coe_restrictScalars, coe_inl, Function.comp_apply, prodMap_apply,
-      map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero, trace_eq_contract_apply,
-      contractLeft_apply, coe_fst, coprod_apply, id_coe, id_eq, add_zero, e]
-  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prodCongr,
-      dualTensorHomEquivOfBasis_toLinearMap, AlgebraTensorModule.curry_apply,
-      curry_apply, coe_comp, coe_restrictScalars, coe_inr, Function.comp_apply, prodMap_apply,
-      map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom, trace_eq_contract_apply,
-      contractLeft_apply, coe_snd, coprod_apply, id_coe, id_eq, zero_add, e]
+  ext <;> simp [e]
 
 variable {R M N P}
 
@@ -302,10 +293,10 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
   classical
   by_cases hM : ∃ s : Finset M, Nonempty (Basis s R M)
   · obtain ⟨s, ⟨b⟩⟩ := hM
-    haveI := Module.Finite.of_basis b
-    haveI := (Module.free_def R M).mpr ⟨_, ⟨b⟩⟩
-    haveI := Module.Finite.of_basis (b.map e)
-    haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
+    have := Module.Finite.of_basis b
+    have := (Module.free_def R M).mpr ⟨_, ⟨b⟩⟩
+    have := Module.Finite.of_basis (b.map e)
+    have := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
   · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]

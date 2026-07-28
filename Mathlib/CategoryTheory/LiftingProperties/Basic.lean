@@ -38,6 +38,7 @@ variable {C : Type*} [Category* C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶
 
 to_dual_name_hint Left Right, A Y, B X, I P
 
+set_option linter.translate.warnInvalid false in
 /-- `HasLiftingProperty i p` means that `i` has the left lifting
 property with respect to `p`, or equivalently that `p` has
 the right lifting property with respect to `i`. -/
