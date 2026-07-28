@@ -639,6 +639,13 @@ situations. -/
 abbrev rightMate {X X' Y Y' : C} (pX : ExactPairing X X') (pY : ExactPairing Y Y')
     (f : X ⟶ Y) : Y' ⟶ X' := @rightAdjointMate C _ _ X Y ⟨X'⟩ ⟨Y'⟩ f
 
+@[reassoc]
+lemma coevaluation_comp_rightMate {X X' Y Y' : C}
+    (pX : ExactPairing X X') (pY : ExactPairing Y Y') (f : X ⟶ Y) :
+    η_ Y Y' ≫ Y ◁ pX.rightMate pY f = η_ X X' ≫ f ▷ X' :=
+  @coevaluation_comp_rightAdjointMate C _ _ X Y ⟨X'⟩ ⟨Y'⟩ f
+
+@[reassoc]
 lemma rightMate_comp_evaluation {X X' Y Y' : C} (pX : ExactPairing X X') (pY : ExactPairing Y Y')
     (f : X ⟶ Y) : pX.rightMate pY f ▷ X ≫ ε_ X X' = Y' ◁ f ≫ ε_ Y Y' :=
   @rightAdjointMate_comp_evaluation C _ _ X Y ⟨X'⟩ ⟨Y'⟩ f
@@ -649,6 +656,13 @@ lemma rightHom_ext {X X' Z : C} (p : ExactPairing X X') {f g : Z ⟶ X'}
   have hg := @tensorRightHomEquiv_whiskerRight_comp_evaluation C _ _ X Z ⟨X'⟩ g
   dsimp only [HasRightDual.rightDual] at hf hg
   rw [← cancel_mono (λ_ X').inv, ← hf, h, hg]
+
+lemma rightMate_eq_of_evaluation_eq {X X' Y Y' : C}
+    (pX : ExactPairing X X') (pY₁ pY₂ : ExactPairing Y Y') (f : X ⟶ Y)
+    (h : @evaluation C _ _ Y Y' pY₁ = @evaluation C _ _ Y Y' pY₂) :
+    pX.rightMate pY₁ f = pX.rightMate pY₂ f := by
+  apply pX.rightHom_ext
+  simp only [rightMate_comp_evaluation, h]
 
 lemma leftHom_ext {X X' Z : C} (p : ExactPairing X X') {f g : X ⟶ Z}
     (h : η_ X X' ≫ f ▷ X' = η_ X X' ≫ g ▷ X') : f = g := by
@@ -763,6 +777,9 @@ def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPai
   inv_hom_id := by
     rw [← @comp_rightAdjointMate, Category.comp_id, @rightAdjointMate_id]
     rfl
+
+lemma rightDualIso_inv {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) :
+    (rightDualIso p₁ p₂).inv = (rightDualIso p₂ p₁).hom := rfl
 
 /-- Left duals are isomorphic. -/
 def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPairing X₂ Y) : X₁ ≅ X₂ where

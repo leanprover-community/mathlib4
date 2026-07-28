@@ -65,12 +65,10 @@ def pivotalExactPairing (X : C) : ExactPairing Xᘁ X :=
   let : ExactPairing Xᘁ ((doubleRightDualFunctor C).obj X) := HasRightDual.exact
   exactPairingCongrRight (pivotalIso.app X)
 
-@[simp]
 lemma pivotalExactPairing_coevaluation (X : C) :
     letI := pivotalExactPairing X
     η_ Xᘁ X = η_ Xᘁ Xᘁᘁ ≫ Xᘁ ◁ (pivotalIso.app X).inv := rfl
 
-@[simp]
 lemma pivotalExactPairing_evaluation (X : C) :
     letI := pivotalExactPairing X
     ε_ Xᘁ X = (pivotalIso.app X).hom ▷ Xᘁ ≫ ε_ Xᘁ Xᘁᘁ := rfl
