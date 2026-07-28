@@ -376,6 +376,15 @@ def comap : LieSubalgebra R L :=
 
 @[simp] lemma mem_comap {x : L} : x ∈ K₂.comap f ↔ f x ∈ K₂ := Iff.rfl
 
+/-- A Lie subalgebra is equivalent to its push forward along an injective linear map. -/
+@[simps!] noncomputable def equivMapOfInjective (hf : Function.Injective f) :
+    K ≃ₗ⁅R⁆ K.map f where
+  __ := Submodule.equivMapOfInjective f.toLinearMap hf K
+  map_lie' {x y} := by
+    ext
+    change f ⁅(x : L), (y : L)⁆ = ⁅f (x : L), f (y : L)⁆
+    simp
+
 section LatticeStructure
 
 open Set
@@ -440,7 +449,7 @@ instance : InfSet (LieSubalgebra R L) :=
   ⟨fun S ↦
     { sInf {(s : Submodule R L) | s ∈ S} with
       lie_mem' := @fun x y hx hy ↦ by
-        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_setOf_eq,
+        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_ofPred_eq,
           forall_apply_eq_imp_iff₂, exists_imp, and_imp] at hx hy ⊢
         intro K hK
         exact K.lie_mem (hx K hK) (hy K hK) }⟩
@@ -541,6 +550,8 @@ variable (R L)
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
   RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
+
+theorem map_top : f.range = LieSubalgebra.map f ⊤ := by ext; simp
 
 variable {R L K K' f}
 
@@ -669,6 +680,13 @@ theorem coe_lieSpan_eq_span_of_forall_lie_eq_zero
   | add_right x y z _ _ _ hx hy => simp [add_mem hx hy]
   | smul_left r x y _ _ h => simp [smul_mem _ r h]
   | smul_right r x y _ _ h => simp [smul_mem _ r h]
+
+theorem map_lieSpan :
+    (lieSpan R L s).map f = lieSpan R L₂ (f '' s) := by
+  refine le_antisymm ?_ (lieSpan_le.mpr <| Set.image_mono subset_lieSpan)
+  rw [map_le_iff_le_comap, lieSpan_le]
+  change s ⊆ f ⁻¹' (lieSpan R L₂ (f '' s))
+  exact image_subset_iff.mp <| subset_lieSpan
 
 variable (R L)
 

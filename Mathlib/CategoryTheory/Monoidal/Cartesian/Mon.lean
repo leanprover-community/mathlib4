@@ -176,7 +176,7 @@ end Mon
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-@[to_additive (attr := simps, implicit_reducible)
+@[to_additive (attr := simps, instance_reducible)
 /-- If `X` represents a presheaf of additive monoids, then `X` is an additive monoid object. -/]
 def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     MonObj X where
@@ -360,6 +360,9 @@ def yonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
   map_id _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| IsMonHom.monoidHom_id
   map_comp _ _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| IsMonHom.monoidHom_comp _ _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (attr := reassoc)]
 lemma yonedaMon_naturality (α : yonedaMonObj M ⟶ yonedaMonObj N) (f : X ⟶ Y) (g : Y ⟶ M) :
       α.app _ (f ≫ g) = f ≫ α.app _ g := congr($(α.naturality f.op) g)
@@ -417,7 +420,7 @@ lemma essImage_yonedaMon :
   · rintro ⟨M, ⟨α⟩⟩
     exact ⟨M.X, ⟨Functor.representableByEquiv.symm (Functor.isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
-    letI := MonObj.ofRepresentableBy X F e
+    let := MonObj.ofRepresentableBy X F e
     exact ⟨Mon.mk X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩
 
 @[to_additive (attr := reassoc (attr := simp))]
@@ -456,6 +459,9 @@ lemma MonObj.mul_eq_mul : μ = fst M M * snd _ _ :=
 
 namespace Hom
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `M` and `N` are isomorphic as monoid objects, then `X ⟶ M` and `X ⟶ N` are isomorphic
 monoids. -/
 @[to_additive (attr := simps!)
@@ -468,7 +474,9 @@ end Hom
 
 open scoped IsMulCommutative in
 /-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
-@[to_additive]
+@[to_additive
+/-- An additive monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all
+`X`. -/]
 lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
     IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
   exact ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩
