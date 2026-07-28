@@ -194,20 +194,13 @@ theorem isIntegrallyClosed_iff' [IsDomain R] :
       degree_eq_one_of_irreducible_of_root ((H _ <| minpoly.monic hx).mp (minpoly.irreducible hx))
     rw [IsRoot, eval_map_algebraMap, minpoly.aeval R x]
 
-theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q : R[X]}
-    (hp : p.Monic) (hq : q.Monic)
-    (h : q.map (algebraMap R K) ∣ p.map (algebraMap R K)) : q ∣ p := by
-  obtain ⟨r, hr⟩ := h
-  obtain ⟨d', hr'⟩ := IsIntegrallyClosed.eq_map_mul_C_of_dvd K hp (dvd_of_mul_left_eq _ hr.symm)
-  rw [Monic.leadingCoeff, C_1, mul_one] at hr'
-  · rw [← hr', ← Polynomial.map_mul] at hr
-    exact dvd_of_mul_right_eq _ (Polynomial.map_injective _ (IsFractionRing.injective R K) hr.symm)
-  · exact Monic.of_mul_monic_left (hq.map (algebraMap R K)) (by simpa [← hr] using hp.map _)
+theorem Monic.dvd_iff_fraction_map_dvd_fraction_map {p q : R[X]}
+    (hq : q.Monic) : q.map (algebraMap R K) ∣ p.map (algebraMap R K) ↔ q ∣ p :=
+  map_dvd_map _ (FaithfulSMul.algebraMap_injective ..) hq
 
-theorem Monic.dvd_iff_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q : R[X]}
-    (hp : p.Monic) (hq : q.Monic) : q.map (algebraMap R K) ∣ p.map (algebraMap R K) ↔ q ∣ p :=
-  ⟨fun h => hp.dvd_of_fraction_map_dvd_fraction_map hq h, fun ⟨a, b⟩ =>
-    ⟨a.map (algebraMap R K), b.symm ▸ Polynomial.map_mul (algebraMap R K)⟩⟩
+theorem Monic.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]}
+    (hq : q.Monic) (h : q.map (algebraMap R K) ∣ p.map (algebraMap R K)) : q ∣ p := 
+  hq.dvd_iff_fraction_map_dvd_fraction_map.mp h
 
 end IsIntegrallyClosed
 
