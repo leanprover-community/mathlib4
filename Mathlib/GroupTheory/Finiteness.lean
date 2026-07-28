@@ -50,19 +50,30 @@ This generalizes and will eventually replace the four existing definitions
 class IsAddFG (M : Type*) [Add M] : Prop where
   fg_top : ∃ S : Finset M, AddSubsemigroup.closure (S : Set M) = ⊤
 
+section Mul
+
+variable (M : Type*) [Mul M]
+
 /-- A type with multiplication is finitely generated if there is a finite subset such that every
 element of the type can be written as a finite product of elements from this finite subset.
 
 This generalizes and will eventually replace the four existing definitions
 `Submonoid.FG`, `Monoid.FG`, `Subgroup.FG`, and `Group.FG`. -/
 @[to_additive existing]
-class IsMulFG (M : Type*) [Mul M] : Prop where
+class IsMulFG : Prop where
   fg_top : ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤
 
+variable {M}
+
 @[to_additive]
-theorem isMulFG_def {M : Type*} [Mul M] :
-    IsMulFG M ↔ ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤ :=
+theorem isMulFG_def : IsMulFG M ↔ ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤ :=
   ⟨fun h ↦ h.fg_top, fun h ↦ ⟨h⟩⟩
+
+instance [Finite M] : IsMulFG M := by
+  cases nonempty_fintype M
+  exact ⟨Finset.univ, by simp⟩
+
+end Mul
 
 namespace Monoid
 
