@@ -258,7 +258,7 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   have : |1 - x ^ 2| ≤ 1 := by
     rw [abs_le]
     constructor <;> nlinarith
-  bound [abs_cos_le_one (x * (π / 2))]
+  bound [abs_cos_le_one]
 
 /--
 Auxiliary for the proof that `π` is irrational.

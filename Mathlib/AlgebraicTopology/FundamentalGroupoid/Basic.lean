@@ -10,8 +10,6 @@ public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Data.Set.Subsingleton
 
-import Mathlib.Tactic.Bound
-
 /-!
 # Fundamental groupoid of a space
 
