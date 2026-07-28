@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
+public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LSum
@@ -87,6 +88,11 @@ lemma total_of_fintype [Fintype M] (w : StdSimplex R M) :
   have := w.total
   rwa [Finsupp.sum_fintype _ _ (by simp)] at this
 
+@[simp]
+lemma total_fin_two (w : StdSimplex R (Fin 2)) :
+    w.weights 0 + w.weights 1 = 1 := by
+  rw [← w.total_of_fintype, Fin.sum_univ_two]
+
 lemma range_toFun_comp_weights [Fintype M] :
     Set.range (fun t ↦ t.weights : StdSimplex R M → (M → R)) =
     (⋂ (i : M), { s | 0 ≤ s i }) ∩ { s | ∑ i, s i = 1 } := by
@@ -100,6 +106,15 @@ lemma range_toFun_comp_weights [Fintype M] :
       weights := equivFunOnFinite.symm s
       nonneg m := by simpa using h₁ m
       total := by simpa [Finsupp.sum_fintype] }, by simp⟩
+
+@[simp]
+lemma weights_apply_eq_one [Subsingleton M] (s : StdSimplex R M) (m : M) :
+    s.weights m = 1 := by
+  rw [← s.total, Finsupp.sum_eq_single m
+    (fun _ _ h ↦ (h (by subsingleton)).elim) (by simp)]
+
+instance [Subsingleton M] : Subsingleton (StdSimplex R M) where
+  allEq := by aesop
 
 variable [IsStrictOrderedRing R]
 
@@ -121,6 +136,23 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
     congr
     simpa [hwa] using w.total
   mpr := by rintro rfl; simp
+
+@[simp]
+lemma weights_apply_le_one
+    (s : StdSimplex R M) (m : M) : s.weights m ≤ 1 := by
+  by_cases hm : s.weights m = 0
+  · simpa only [hm] using zero_le_one' R
+  · rw [← s.total]
+    exact Finset.single_le_sum (by simp) (by simpa)
+
+instance [Inhabited M] : Inhabited (StdSimplex R M) where
+  default := .single default
+
+instance [Nonempty M] : Nonempty (StdSimplex R M) :=
+  ⟨.single (Classical.arbitrary _)⟩
+
+instance [Unique M] : Unique (StdSimplex R M) where
+  uniq := by subsingleton
 
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 @[simps weights]
