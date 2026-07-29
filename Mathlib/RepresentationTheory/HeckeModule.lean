@@ -5,6 +5,7 @@ Authors: Jiaxi Mo
 -/
 module
 
+public import Mathlib.GroupTheory.Index
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Induced
 
@@ -19,117 +20,23 @@ This files defines Hecke algebras and Hecke modules.
 
 namespace Representation
 
-section
-
-variable {G H : Type*} [Group G] [Group H]
+variable {G : Type*} [Group G]
 variable {k : Type*} [CommRing k]
-variable {V : Type*} [AddCommGroup V] [Module k V] {ρ : Representation k G V}
-variable {W : Type*} [AddCommGroup W] [Module k W] {σ : Representation k H W}
+variable {V : Type*} [AddCommGroup V] [Module k V]
+variable {W : Type*} [AddCommGroup W] [Module k W]
 
-/-- One direction of `resIndEquiv` which we use to construct IntertwiningMaps staring from `ind`. -/
-noncomputable def IntertwiningMap.resToInd (φ : H →* G) (f : IntertwiningMap σ (ρ.comp φ)) :
-    IntertwiningMap (ind φ σ) ρ :=
-  ⟨Representation.Coinvariants.lift _
-    (TensorProduct.lift <| (Finsupp.lift _ _ _ fun h => ρ h⁻¹ ∘ₗ f.toLinearMap) ∘ₗ
-      (MonoidAlgebra.coeffLinearEquiv k).toLinearMap)
-    fun h ↦ by
-      ext g x
-      have : f ((σ h x)) = ρ (φ h) (f x) := by
-        exact congrArg (fun f ↦ f x) (f.2 h)
-      simp only [LinearMap.coe_comp, Function.comp_apply, MonoidAlgebra.lsingle_apply]
-      simp [ofMulAction_single, mul_inv_rev, this], fun g ↦ by ext; simp [ind_apply]⟩
+noncomputable section hecke
 
-/-- `IndV.mk` is an `abbrev` so we do not put `@[simp]` here. -/
-lemma IntertwiningMap.resToInd_apply_IndVMk_trivial_eq (φ : H →* G) (g : G) (w : W)
-    (f : IntertwiningMap σ (ρ.comp φ)) :
-    IntertwiningMap.resToInd φ f (IndV.mk φ σ g w) = ρ g⁻¹ (f w) := by
-  simp [resToInd]
-
-variable (k)
-
-/-- The characteristic function on the coset `Hg`. -/
-noncomputable def cosetVector (H : Subgroup G) (g : G) :
-    IndV H.subtype (trivial k H k) := IndV.mk H.subtype (trivial k H k) g 1
-
-@[simp]
-lemma ind_apply_cosetVector (H : Subgroup G) (g₁ g₂ : G) :
-    ind H.subtype (trivial k H k) g₁ (cosetVector k H g₂) = cosetVector k H (g₂ * g₁⁻¹) := by
-  exact ind_mk _ _ g₁ g₂ 1
-
-@[simp]
-lemma ind_apply_subgroup_cosetVector_one {H : Subgroup G} (h : H) :
-    cosetVector k H h = cosetVector k H 1 := by
-  unfold cosetVector
-  convert IndV.mk_map_inv_mul H.subtype (trivial k H k) h⁻¹ 1 1
-  · simp
-  · simp
-
-lemma IntertwiningMap.surjective_cosetVector_one {H : Subgroup G}
-    (f : IntertwiningMap ρ (ind H.subtype (trivial k H k))) (h : ∃ v, f v = cosetVector k H 1) :
-    Function.Surjective f := by
-  intro x
-  refine IndV.induction_on x ?_ ?_
-  · intro g r
-    obtain ⟨v, hv⟩ := h
-    use r • (ρ g⁻¹ v)
-    rw [map_smul, IntertwiningMap.isIntertwining, hv, ind_apply_cosetVector, cosetVector,
-      ← map_smul, smul_eq_mul, mul_one, one_mul, inv_inv]
-  · intro _ _ ⟨v, hv⟩ ⟨w, hw⟩
-    use v + w
-    rw [map_add, hv, hw]
-
-@[simp]
-lemma IntertwiningMap.resToInd_apply_cosetVector_eq (H : Subgroup G) (g : G)
-    (f : IntertwiningMap (trivial k H k) (ρ.comp H.subtype)) :
-    IntertwiningMap.resToInd H.subtype f (cosetVector k H g) = ρ g⁻¹ (f 1) := by
-  exact IntertwiningMap.resToInd_apply_IndVMk_trivial_eq H.subtype g 1 f
-
-/-- The IntertwiningMap sending the neutral cosetVector to the neutral cosetVector. -/
-noncomputable def bimoduleHecke₁.canonicalIntertwiningMap {H1 H2 : Subgroup G} (h : H1 ≤ H2) :
-    IntertwiningMap (ind H1.subtype (trivial k H1 k)) (ind H2.subtype (trivial k H2 k)) :=
-  IntertwiningMap.resToInd H1.subtype
-    ⟨LinearMap.toSpanSingleton k _ (cosetVector k H2 1), fun g ↦ by
-      ext
-      rw [isTrivial_def, LinearMap.comp_id, LinearMap.toSpanSingleton_apply, one_smul,
-        LinearMap.coe_comp ((MonoidHom.comp (ind H2.subtype (trivial k (↥H2) k)) H1.subtype) g),
-        Function.comp_apply, LinearMap.toSpanSingleton_apply, one_smul, MonoidHom.comp_apply,
-        cosetVector, ind_mk, one_mul, ← mul_one (H1.subtype g)⁻¹]
-      exact (IndV.mk_map_inv_mul H2.subtype _ ⟨g, h g.2⟩ 1 1).symm⟩
-
-lemma bimoduleHecke₁.canonicalIntertwiningMap_apply_cosetVector_one_eq {H1 H2 : Subgroup G}
-    (h : H1 ≤ H2) :
-    bimoduleHecke₁.canonicalIntertwiningMap k h (cosetVector k H1 1) = cosetVector k H2 1 := by
-  unfold bimoduleHecke₁.canonicalIntertwiningMap
-  rw [IntertwiningMap.resToInd_apply_cosetVector_eq, IntertwiningMap.coe_mk,
-    LinearMap.toSpanSingleton_apply, one_smul, ind_apply_cosetVector, one_mul, inv_one, inv_one]
-
-@[simp]
-lemma bimoduleHecke₁.canonicalIntertwiningMap_apply_cosetVector_eq {H1 H2 : Subgroup G}
-    (h : H1 ≤ H2) (g : G) :
-    bimoduleHecke₁.canonicalIntertwiningMap k h (cosetVector k H1 g) = cosetVector k H2 g := by
-  rw [← inv_inv g, ← one_mul g⁻¹⁻¹, ← ind_apply_cosetVector, ← ind_apply_cosetVector,
-    ← bimoduleHecke₁.canonicalIntertwiningMap_apply_cosetVector_one_eq k h,
-    IntertwiningMap.isIntertwining]
-
-end
-
-universe u v
-variable {k : Type u} [CommRing k]
-variable {G : Type u} [Group G]
-variable {V : Type u} [AddCommGroup V] [Module k V]
-variable {W : Type u} [AddCommGroup W] [Module k W]
-variable (H : Subgroup G) (σ : Representation k H V) (ρ : Representation k G W)
-
-noncomputable section
+variable (H : Subgroup G) (σ : Representation k H W) (ρ : Representation k G V)
 
 /-- The twisted Hecke algebra with respect to a representation of a subgroup `H`. -/
-abbrev algebraHecke : Type u := (ind H.subtype σ).IntertwiningMap (ind H.subtype σ)
+abbrev algebraHecke := (ind H.subtype σ).IntertwiningMap (ind H.subtype σ)
 
 /-- The opposite algebra of the twisted Hecke algebra. -/
 abbrev algebraHeckeOp := (MulOpposite (algebraHecke H σ))
 
 /-- The module over the opposite twisted Hecke algebra associated a representation `ρ` of `G`. -/
-abbrev moduleHecke : Type u := (ind H.subtype σ).IntertwiningMap ρ
+abbrev moduleHecke := (ind H.subtype σ).IntertwiningMap ρ
 
 variable (k)
 
@@ -144,11 +51,116 @@ variable {k}
 /-- The module over the opposite standard Hecke algebra associated a representation `ρ` of `G`. -/
 abbrev moduleHecke₁ := (ind H.subtype (trivial k H k)).IntertwiningMap ρ
 
+variable (k) in
 /-- The standard Hecke bimodule. -/
-abbrev bimoduleHecke₁ (H1 H2 : Subgroup G) : Type u :=
-  moduleHecke₁ H1 (ind H2.subtype (trivial k H2 k))
+abbrev bimoduleHecke₁ (H1 H2 : Subgroup G) := moduleHecke₁ H1 (ind H2.subtype (trivial k H2 k))
+
+variable {H : Type*} [Group H] {σ : Representation k H W} {ρ : Representation k G V}
+
+/-- One direction of `resIndEquiv` which we use to construct IntertwiningMaps staring from `ind`. -/
+noncomputable def IntertwiningMap.indTo (φ : H →* G) (f : IntertwiningMap σ (ρ.comp φ)) :
+    IntertwiningMap (ind φ σ) ρ :=
+  ⟨Representation.Coinvariants.lift _
+    (TensorProduct.lift <| (Finsupp.lift _ _ _ fun h => ρ h⁻¹ ∘ₗ f.toLinearMap) ∘ₗ
+      (MonoidAlgebra.coeffLinearEquiv k).toLinearMap)
+    fun h ↦ by
+      ext g x
+      have : f ((σ h x)) = ρ (φ h) (f x) := by
+        exact congrArg (fun f ↦ f x) (f.2 h)
+      simp only [LinearMap.coe_comp, Function.comp_apply, MonoidAlgebra.lsingle_apply]
+      simp [ofMulAction_single, mul_inv_rev, this], fun g ↦ by ext; simp [ind_apply]⟩
+
+-- `IndV.mk` is an `abbrev` so no `@[simp]` here.
+lemma IntertwiningMap.indTo_apply_IndVMk_trivial_eq (φ : H →* G) (g : G) (w : W)
+    (f : IntertwiningMap σ (ρ.comp φ)) :
+    IntertwiningMap.indTo φ f (IndV.mk φ σ g w) = ρ g⁻¹ (f w) := by
+  simp [indTo]
+
+variable (k)
+
+/-- The characteristic function on the coset `Hg`. -/
+noncomputable def cosetVector₁ (H : Subgroup G) (g : G) :
+    IndV H.subtype (trivial k H k) := IndV.mk H.subtype (trivial k H k) g 1
+
+@[simp]
+lemma ind_apply_cosetVector₁ (H : Subgroup G) (g₁ g₂ : G) :
+    ind H.subtype (trivial k H k) g₁ (cosetVector₁ k H g₂) = cosetVector₁ k H (g₂ * g₁⁻¹) := by
+  exact ind_mk _ _ g₁ g₂ 1
+
+@[simp]
+lemma ind_apply_mul_subgroup_cosetVector₁ {H : Subgroup G} (h : H) (g : G) :
+    cosetVector₁ k H (h * g) = cosetVector₁ k H g := by
+  unfold cosetVector₁
+  convert IndV.mk_map_inv_mul H.subtype (trivial k H k) h⁻¹ g 1
+  · simp
+  · simp
+
+lemma IntertwiningMap.surjective_cosetVector₁_one {H : Subgroup G}
+    (f : IntertwiningMap ρ (ind H.subtype (trivial k H k))) (h : ∃ v, f v = cosetVector₁ k H 1) :
+    Function.Surjective f := by
+  intro x
+  refine IndV.induction_on x ?_ ?_
+  · intro g r
+    obtain ⟨v, hv⟩ := h
+    use r • (ρ g⁻¹ v)
+    rw [map_smul, IntertwiningMap.isIntertwining, hv, ind_apply_cosetVector₁, cosetVector₁,
+      ← map_smul, smul_eq_mul, mul_one, one_mul, inv_inv]
+  · intro _ _ ⟨v, hv⟩ ⟨w, hw⟩
+    use v + w
+    rw [map_add, hv, hw]
+
+@[simp]
+lemma IntertwiningMap.indTo_apply_cosetVector₁_eq (H : Subgroup G) (g : G)
+    (f : IntertwiningMap (trivial k H k) (ρ.comp H.subtype)) :
+    IntertwiningMap.indTo H.subtype f (cosetVector₁ k H g) = ρ g⁻¹ (f 1) := by
+  exact IntertwiningMap.indTo_apply_IndVMk_trivial_eq H.subtype g 1 f
+
+namespace bimoduleHecke₁
+
+/-- The IntertwiningMap sending the neutral cosetVector₁ to the neutral cosetVector₁. -/
+noncomputable def canonicalIntertwiningMap {H1 H2 : Subgroup G} (h : H1 ≤ H2) :
+    bimoduleHecke₁ k H1 H2 :=
+  IntertwiningMap.indTo H1.subtype
+    ⟨LinearMap.toSpanSingleton k _ (cosetVector₁ k H2 1), fun g ↦ by
+      ext
+      rw [isTrivial_def, LinearMap.comp_id, LinearMap.toSpanSingleton_apply, one_smul,
+        LinearMap.coe_comp, Function.comp_apply, LinearMap.toSpanSingleton_apply, one_smul,
+        MonoidHom.comp_apply, cosetVector₁, ind_mk, one_mul, ← mul_one (H1.subtype g)⁻¹]
+      exact (IndV.mk_map_inv_mul H2.subtype _ ⟨g, h g.2⟩ 1 1).symm⟩
+
+lemma canonicalIntertwiningMap_apply_cosetVector₁_one_eq {H1 H2 : Subgroup G}
+    (h : H1 ≤ H2) :
+    bimoduleHecke₁.canonicalIntertwiningMap k h (cosetVector₁ k H1 1) = cosetVector₁ k H2 1 := by
+  unfold canonicalIntertwiningMap
+  rw [IntertwiningMap.indTo_apply_cosetVector₁_eq, IntertwiningMap.coe_mk,
+    LinearMap.toSpanSingleton_apply, one_smul, ind_apply_cosetVector₁, one_mul, inv_inv]
+
+@[simp]
+lemma canonicalIntertwiningMap_apply_cosetVector₁_eq {H1 H2 : Subgroup G}
+    (h : H1 ≤ H2) (g : G) :
+    bimoduleHecke₁.canonicalIntertwiningMap k h (cosetVector₁ k H1 g) = cosetVector₁ k H2 g := by
+  rw [← inv_inv g, ← one_mul g⁻¹⁻¹, ← ind_apply_cosetVector₁, ← ind_apply_cosetVector₁,
+    ← canonicalIntertwiningMap_apply_cosetVector₁_one_eq k h, IntertwiningMap.isIntertwining]
+
+noncomputable def coCanonicalIntertwiningMap {H1 H2 : Subgroup G} [H1.IsFiniteRelIndex H2] :
+    bimoduleHecke₁ k H2 H1 :=
+  IntertwiningMap.indTo H2.subtype sorry
+    --⟨LinearMap.toSpanSingleton k _ (∑ i, cosetVector₁ k H1 (h i)), sorry⟩
+
+
+end bimoduleHecke₁
+
+end hecke
+
+noncomputable section
 
 namespace Rep
+
+universe u
+variable {G : Type u} [Group G]
+variable {k : Type u} [CommRing k]
+variable (H : Subgroup G)
+variable {W : Type u} [AddCommGroup W] [Module k W] (σ : Representation k H W)
 
 open CategoryTheory
 
