@@ -279,9 +279,7 @@ theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
 
 /-! ### Many-one completeness of the halting problem
 
-`ComputablePred.halting_problem_re` and `ComputablePred.halting_problem` show that the halting
-problem is recursively enumerable and not computable. Here we show that it is *complete* for
-recursively enumerable predicates under many-one reducibility.
+The halting problem is complete for recursively enumerable predicates under many-one reducibility.
 -/
 
 section HaltingProblem
@@ -289,11 +287,7 @@ section HaltingProblem
 open Nat.Partrec (Code)
 
 /-- Every recursively enumerable predicate on `ℕ` many-one reduces to the halting problem on any
-fixed input `n`.
-
-Given a code `c` for a partial recursive function whose domain is the predicate, the reduction
-sends `a` to `c.comp (Code.const a)`, a program that halts on every input exactly when `c` halts
-on `a`; in particular the input `n` plays no role. -/
+fixed input. -/
 theorem REPred.manyOneReducible_halting_problem {R : ℕ → Prop} (h : REPred R) (n : ℕ) :
     R ≤₀ fun c : Code => (Code.eval c n).Dom := by
   obtain ⟨c, hc⟩ := Code.exists_code.mp <| Partrec.nat_iff.mp <|
@@ -303,12 +297,8 @@ theorem REPred.manyOneReducible_halting_problem {R : ℕ → Prop} (h : REPred R
   simp [Code.eval, hc, Part.assert]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The halting problem on a fixed input and the two-argument halting problem are many-one
-equivalent.
-
-Left to right pairs the code with the fixed input; right to left specializes the input into the
-code, sending `p` to `p.1.comp (Code.const p.2)`. The individual reductions are the two
-projections. -/
+/-- The fixed-input and two-argument formulations of the halting problem are many-one
+equivalent. -/
 theorem halting_problem_manyOneEquiv_halting_problem₂ (n : ℕ) :
     ManyOneEquiv (fun c : Code => (Code.eval c n).Dom)
       (fun p : Code × ℕ => (Code.eval p.1 p.2).Dom) := by
@@ -318,8 +308,8 @@ theorem halting_problem_manyOneEquiv_halting_problem₂ (n : ℕ) :
     fun p => ?_⟩
   simp [Code.eval]
 
-/-- Every recursively enumerable predicate on `ℕ` many-one reduces to the halting problem in its
-two-argument form. -/
+/-- Every recursively enumerable predicate on `ℕ` many-one reduces to the two-argument halting
+problem. -/
 theorem REPred.manyOneReducible_halting_problem₂ {R : ℕ → Prop} (h : REPred R) :
     R ≤₀ fun p : Code × ℕ => (Code.eval p.1 p.2).Dom :=
   (h.manyOneReducible_halting_problem 0).trans (halting_problem_manyOneEquiv_halting_problem₂ 0).1
