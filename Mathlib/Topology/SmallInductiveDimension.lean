@@ -37,7 +37,7 @@ In this file we formalize this notion, and characterize the cases `n = 0` and `n
 
 @[expose] public section
 
-open Set TopologicalSpace Topology
+open Set Topology TopologicalSpace
 
 /--
 For a topological space, the property of having small inductive dimension less than `n : ℕ`  is
@@ -59,13 +59,8 @@ variable (X) in
 abbrev HasSmallInductiveDimensionLE (n : ℕ) :=
   HasSmallInductiveDimensionLT X (n + 1)
 
-variable (X) in
-/-- The small inductive dimension of a topological space. -/
-@[no_expose]
-noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
-  sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasSmallInductiveDimensionLT X i}
-
-lemma hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
+@[simp]
+theorem hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
   ⟨fun h ↦ by cases h; assumption, fun _ ↦ .zero⟩
 
 @[deprecated (since := "2026-06-21")]
@@ -275,3 +270,67 @@ theorem exists_clopen_partition_of_clopen_cover
       · simpa using (Set.pairwiseDisjoint_iff.mp C'_disj) (by trivial) (by trivial)
 
 end CompactSpace
+
+/-! ### Small inductive dimension -/
+
+variable (X) in
+/-- The small inductive dimension of a topological space. -/
+noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
+  sInf {n | ∀ i : ℕ, n < i → HasSmallInductiveDimensionLT X i}
+
+private theorem hasSmallInductiveDimensionLT_of_smallInductiveDimension_lt {n : ℕ}
+    (h : smallInductiveDimension X < n) : HasSmallInductiveDimensionLT X n := by
+  contrapose! h
+  simp only [smallInductiveDimension, le_sInf_iff, mem_ofPred_eq]
+  intro a ha
+  contrapose! ha
+  exact ⟨n, ha, h⟩
+
+private theorem hasSmallInductiveDimensionLE_of_smallInductiveDimension_le {n : ℕ}
+    (h : smallInductiveDimension X ≤ n) : HasSmallInductiveDimensionLE X n := by
+  apply hasSmallInductiveDimensionLT_of_smallInductiveDimension_lt (h.trans_lt _)
+  exact_mod_cast n.lt_add_one
+
+theorem smallInductiveDimension_le_iff {n : ℕ} :
+    smallInductiveDimension X ≤ n ↔ HasSmallInductiveDimensionLE X n where
+  mp := hasSmallInductiveDimensionLE_of_smallInductiveDimension_le
+  mpr h := sInf_le fun m hm ↦ .mono (by simpa using hm) h
+
+theorem smallInductiveDimension_lt_iff {n : ℕ} :
+    smallInductiveDimension X < n ↔ HasSmallInductiveDimensionLT X n where
+  mp := hasSmallInductiveDimensionLT_of_smallInductiveDimension_lt
+  mpr h := by
+    cases n with
+    | zero =>
+      rw [smallInductiveDimension, csInf_eq_bot_of_bot_mem]
+      · simp
+      · exact fun _ _ ↦ h.mono zero_le
+    | succ n =>
+      apply (smallInductiveDimension_le_iff.2 h).trans_lt
+      exact_mod_cast n.lt_add_one
+
+variable (X) in
+theorem smallInductiveDimension_le (n : ℕ) [H : HasSmallInductiveDimensionLE X n] :
+    smallInductiveDimension X ≤ n :=
+  smallInductiveDimension_le_iff.2 H
+
+variable (X) in
+theorem smallInductiveDimension_lt (n : ℕ) [H : HasSmallInductiveDimensionLT X n] :
+    smallInductiveDimension X < n :=
+  smallInductiveDimension_lt_iff.2 H
+
+theorem smallInductiveDimension_eq (n : ℕ)
+    (hle : HasSmallInductiveDimensionLE X n) (hlt : ¬ HasSmallInductiveDimensionLT X n) :
+    smallInductiveDimension X = n := by
+  apply (smallInductiveDimension_le_iff.2 hle).antisymm
+  rwa [← not_lt, smallInductiveDimension_lt_iff]
+
+@[simp]
+theorem smallInductiveDimension_eq_bot : smallInductiveDimension X = ⊥ ↔ IsEmpty X := by
+  simp_rw [← hasSmallInductiveDimensionLT_zero_iff, ← smallInductiveDimension_lt_iff,
+    WithBot.lt_coe_bot.symm, bot_eq_zero', Nat.cast_zero, WithBot.coe_zero]
+
+variable (X) in
+@[simp]
+theorem smallInductiveDimension_of_isEmpty [IsEmpty X] : smallInductiveDimension X = ⊥ :=
+  smallInductiveDimension_eq_bot.2 ‹_›
