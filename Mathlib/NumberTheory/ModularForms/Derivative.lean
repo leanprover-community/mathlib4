@@ -22,9 +22,6 @@ and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular
 - `serreDerivative_slash_equivariant`: Serre derivative is equivariant under the slash action.
 - `serreDerivativeMF`: the Serre derivative preserves modularity, i.e. for a subgroup `Γ` of
   `SL(2, ℤ)` it maps a weight `k` level `Γ` modular form to a weight `k + 2` level `Γ` modular form.
-
-Ramanujan's formulas for the (Serre) derivatives of the Eisenstein series `E₂`, `E₄`, `E₆` are
-proved in `Mathlib/NumberTheory/ModularForms/RamanujanFormula.lean`.
 -/
 
 open UpperHalfPlane hiding I

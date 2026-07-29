@@ -49,14 +49,11 @@ private lemma serreDerivative_eq_smul {k' : ℤ} {κ l L : ℂ} {g F : ModularFo
   subst hL
   obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' g hg).mp
     (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) F
-  have hfg : serreDerivative κ f = c • g' := by
-    rw [← hF, ← hG]; exact congrArg DFunLike.coe hc.symm
-  have hlim : Tendsto (serreDerivative κ f) atImInfty (𝓝 (-(κ * 12⁻¹ * l))) := by
+  have hfg : serreDerivative κ f = c • g' := hG ▸ hF ▸ congrArg DFunLike.coe hc.symm
+  have hlim : Tendsto (c • g') atImInfty (𝓝 (-(κ * 12⁻¹ * l))) := hfg ▸ by
     simpa using (normalizedDerivOfComplex_isZeroAtImInfty hf hb).sub
       ((tendsto_E2_atImInfty.const_mul (κ * 12⁻¹)).mul hl)
-  have hc1 : Tendsto (serreDerivative κ f) atImInfty (𝓝 (c • (1 : ℂ))) :=
-    hfg ▸ tendsto_const_nhds.smul hg1
-  rw [hfg, show c = -(κ * 12⁻¹ * l) by simpa using tendsto_nhds_unique hc1 hlim]
+  rw [hfg, ← tendsto_nhds_unique (hg1.const_mul c) hlim, mul_one]
 
 /-- **Ramanujan's formula for `E₄`**: `∂₄ E₄ = -E₆ / 3`. -/
 theorem serreDerivative_E₄ : serreDerivative 4 E₄ = (-3⁻¹ : ℂ) • E₆ :=
@@ -66,19 +63,15 @@ theorem serreDerivative_E₄ : serreDerivative 4 E₄ = (-3⁻¹ : ℂ) • E₆
     (ModularFormClass.bdd_at_infty E₄) tendsto_E₄_atImInfty tendsto_E₆_atImInfty (by norm_num)
 
 /-- **Ramanujan's formula for `E₆`**: `∂₆ E₆ = -E₄² / 2`. -/
-theorem serreDerivative_E₆ : serreDerivative 6 E₆ = (-2⁻¹ : ℂ) • E₄ ^ 2 := by
-  set E₄sq : ModularForm 𝒮ℒ 8 := mcast (by norm_num) (E₄.pow 2) with hE₄sq
-  have hne : E₄sq ≠ 0 := by
-    rw [hE₄sq, Ne, mcast_eq_zero_iff]
-    exact fun hcon ↦ E_ne_zero (by norm_num) ⟨2, rfl⟩ (by
-      ext z
-      simpa only [ModularForm.coe_pow, Pi.pow_apply, ModularForm.zero_apply,
-        sq_eq_zero_iff] using DFunLike.congr_fun hcon z)
-  exact serreDerivative_eq_smul
-    (F := mcast (show (6 : ℤ) + 2 = 8 by norm_num) (serreDerivativeMF 6 E₆))
+theorem serreDerivative_E₆ : serreDerivative 6 E₆ = (-2⁻¹ : ℂ) • E₄ ^ 2 :=
+  serreDerivative_eq_smul (F := mcast (show (6 : ℤ) + 2 = 8 by norm_num) (serreDerivativeMF 6 E₆))
+    (g := mcast (by norm_num) (E₄.pow 2))
     (by rw [ModularForm.coe_mcast, coe_serreDerivativeMF, Int.cast_ofNat])
-    (by simpa [Nat.ModEq] using dimension_level_one 8 ⟨4, rfl⟩) hne
-    (by rw [hE₄sq, ModularForm.coe_mcast, ModularForm.coe_pow]) E₆.holo'
+    (by simpa [Nat.ModEq] using dimension_level_one 8 ⟨4, rfl⟩)
+    (DFunLike.ne_iff.mpr <| (DFunLike.ne_iff.mp <| E_ne_zero (by norm_num) ⟨2, rfl⟩).imp fun z hz ↦
+      by simpa only [ModularForm.coe_mcast, ModularForm.coe_pow, Pi.pow_apply,
+        ModularForm.zero_apply] using pow_ne_zero 2 hz)
+    (by rw [ModularForm.coe_mcast, ModularForm.coe_pow]) E₆.holo'
     (ModularFormClass.bdd_at_infty E₆) tendsto_E₆_atImInfty
     ((one_pow 2 : (1 : ℂ) ^ 2 = 1) ▸ tendsto_E₄_atImInfty.pow 2) (by norm_num)
 
@@ -89,14 +82,10 @@ lemma normalizedDerivOfComplex_D2 (γ : SL(2, ℤ)) :
   have hcomp : ((D2 γ) ∘ ofComplex) =ᶠ[𝓝 (z : ℂ)]
       fun w ↦ 2 * π * I * (γ 1 0 : ℂ) * denom (γ : GL (Fin 2) ℝ) w ^ (-1 : ℤ) := by
     filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.im_pos] with w hw
-    simp [EisensteinSeries.D2, Function.comp_apply, ofComplex_apply_of_im_pos hw, zpow_neg,
-      div_eq_mul_inv]
-  have hentry : ((γ : GL (Fin 2) ℝ) 1 0 : ℝ) = ((γ 1 0 : ℤ) : ℝ) := by norm_cast
-  simp only [normalizedDerivOfComplex,
-    (((hasDerivAt_denom_zpow (γ : GL (Fin 2) ℝ) (-1) z).const_mul
-      (2 * π * I * (γ 1 0 : ℂ))).congr_of_eventuallyEq hcomp).deriv]
-  rw [zpow_sub_one₀ (denom_ne_zero _ _), zpow_neg, zpow_one, hentry]
-  push_cast
+    simp [EisensteinSeries.D2, ofComplex_apply_of_im_pos hw, div_eq_mul_inv]
+  simp only [normalizedDerivOfComplex, (((hasDerivAt_denom_zpow (γ : GL (Fin 2) ℝ) (-1) z).const_mul
+    (2 * π * I * (γ 1 0 : ℂ))).congr_of_eventuallyEq hcomp).deriv]
+  push_cast [show ((γ : GL (Fin 2) ℝ) 1 0 : ℝ) = (γ 1 0 : ℝ) by norm_cast]
   field_simp
 
 /-- Although `E₂` is only quasi-modular, its weight-1 Serre derivative `∂₁ E₂ = D E₂ - E₂² / 12`
@@ -109,31 +98,25 @@ lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
     rw [E2_slash_action, normalizedDerivOfComplex_sub _ _ E2_mdifferentiable (hD2.const_smul _),
       normalizedDerivOfComplex_smul _ _ hD2]
   ext z
-  have hz : denom (γ : GL (Fin 2) ℝ) (z : ℂ) ≠ 0 := denom_ne_zero _ z
   have hLHS : (serreDerivative 1 E2 ∣[(4 : ℤ)] γ) z =
       (D E2 ∣[(4 : ℤ)] γ) z - 12⁻¹ * ((E2 ∣[(2 : ℤ)] γ) z * (E2 ∣[(2 : ℤ)] γ) z) := by
     grind [ModularForm.SL_slash_apply, serreDerivative_apply, Pi.mul_apply,
       congrFun (ModularForm.mul_slash_SL2 2 2 γ E2 E2) z]
-  have hDz := congrFun (normalizedDerivOfComplex_SL_slash (k := 2) (γ := γ) E2_mdifferentiable) z
-  simp only [Pi.sub_apply, show (2 : ℤ) + 2 = 4 by norm_num, Int.cast_ofNat] at hDz
-  have hDslashz := congrFun hDslash z
-  have hE2sz := congrFun (E2_slash_action γ) z
-  simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul] at hDslashz hE2sz
-  rw [congrFun (normalizedDerivOfComplex_D2 γ) z] at hDslashz
   have hDE2 : (D E2 ∣[(4 : ℤ)] γ) z = D E2 z - 1 / (2 * riemannZeta 2) *
       (-(γ 1 0 : ℂ) ^ 2 / denom γ z ^ 2) +
       2 * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (E2 ∣[(2 : ℤ)] γ) z := by
+    have hDz := congrFun (normalizedDerivOfComplex_SL_slash (k := 2) (γ := γ) E2_mdifferentiable) z
+    have hDslashz := congrFun hDslash z
+    simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, show (2 : ℤ) + 2 = 4 by norm_num,
+      Int.cast_ofNat, normalizedDerivOfComplex_D2] at hDz hDslashz
     linear_combination hDslashz - hDz
-  rw [hLHS, serreDerivative_apply, hDE2, hE2sz]
-  simp only [EisensteinSeries.D2]
-  rw [riemannZeta_two]
-  field_simp [Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
-  ring_nf
-  simp only [I_sq, I_pow_three]
-  ring
+  rw [hLHS, serreDerivative_apply, hDE2, congrFun (E2_slash_action γ) z]
+  simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, EisensteinSeries.D2, riemannZeta_two]
+  field_simp [denom_ne_zero, Complex.ofReal_ne_zero.mpr Real.pi_ne_zero]
+  linear_combination (24 * (γ 1 0 : ℂ) * π * denom γ z * E2 z - 72 * (γ 1 0 : ℂ) ^ 2 * I) * I_sq
 
 /-- The weight-1 Serre derivative of `E₂`, packaged as a modular form of weight `4`. -/
-noncomputable def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
+def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
   toSlashInvariantForm :=
     { toFun := serreDerivative 1 E2
       slash_action_eq' := fun _ ⟨γ, hγ⟩ ↦ hγ ▸ serreDerivativeOne_E2_slash γ }
@@ -153,24 +136,20 @@ theorem serreDerivative_E₂ : serreDerivative 1 E2 = (-12⁻¹ : ℂ) • E₄ 
 /-- **Ramanujan's formula for `E₂`**: `D E₂ = (E₂² - E₄) / 12`. -/
 theorem normalizedDerivOfComplex_E₂ : D E2 = (12⁻¹ : ℂ) • (E2 ^ 2 - E₄) := by
   funext z
-  have h := congrFun serreDerivative_E₂ z
-  simp only [serreDerivative_apply, Pi.smul_apply, Pi.sub_apply, Pi.pow_apply, smul_eq_mul] at h ⊢
-  linear_combination h
+  linear_combination (norm := (simp only [serreDerivative_apply, Pi.smul_apply, Pi.sub_apply,
+    Pi.pow_apply, smul_eq_mul]; ring1)) congrFun serreDerivative_E₂ z
 
 /-- **Ramanujan's formula for `E₄`**: `D E₄ = (E₂ E₄ - E₆) / 3`. -/
 theorem normalizedDerivOfComplex_E₄ : D E₄ = (3⁻¹ : ℂ) • (E2 * E₄ - E₆) := by
   funext z
-  have h := congrFun serreDerivative_E₄ z
-  simp only [serreDerivative_apply, Pi.smul_apply, Pi.sub_apply, Pi.mul_apply, smul_eq_mul] at h ⊢
-  linear_combination h
+  linear_combination (norm := (simp only [serreDerivative_apply, Pi.smul_apply, Pi.sub_apply,
+    Pi.mul_apply, smul_eq_mul]; ring1)) congrFun serreDerivative_E₄ z
 
 /-- **Ramanujan's formula for `E₆`**: `D E₆ = (E₂ E₆ - E₄²) / 2`. -/
 theorem normalizedDerivOfComplex_E₆ : D E₆ = (2⁻¹ : ℂ) • (E2 * E₆ - E₄ ^ 2) := by
   funext z
-  have h := congrFun serreDerivative_E₆ z
-  simp only [serreDerivative_apply, Pi.smul_apply, Pi.sub_apply, Pi.mul_apply, Pi.pow_apply,
-    smul_eq_mul] at h ⊢
-  linear_combination h
+  linear_combination (norm := (simp only [serreDerivative_apply, Pi.smul_apply, Pi.sub_apply,
+    Pi.mul_apply, Pi.pow_apply, smul_eq_mul]; ring1)) congrFun serreDerivative_E₆ z
 
 end
 
