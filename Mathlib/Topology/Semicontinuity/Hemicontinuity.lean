@@ -417,7 +417,7 @@ lemma LowerHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGen
   exact hxU n ⟨y n, hy_mem n, hn⟩
 
 /-- **Sequential characterization of lower hemicontinuity**:
-If `f : α → Set β` is lower hemicontinuous at `x₀`, `β` is first countable at `y₀ ∈ f x₀`, and
+If `f : α → Set β` is lower hemicontinuous at `x₀`, `y₀ ∈ f x₀`, `𝓝 y₀` is countably generated, and
 `x : ℕ → α` tends to `x₀`, then there is a companion sequence `y : ℕ → β` that tends to `y₀` with
 `y n ∈ f (x n)` for all sufficiently large `n`.
 
