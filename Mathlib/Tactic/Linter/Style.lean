@@ -647,8 +647,10 @@ def elabShow (newType : Term) : TacticM Unit := do
         readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
         instead for these purposes."
 
+-- `(priority := high)` is added to avoid the confusing message omission that can happen with synthetic
+-- `sorry` and multiple parses, see also `MathlibTest/Linter/Show.lean`
 @[tactic_alt Tactic.show]
-elab (name := «show») "show " newType:term : tactic => elabShow newType
+elab (name := «show») (priority := high) "show " newType:term : tactic => elabShow newType
 
 end Style
 
