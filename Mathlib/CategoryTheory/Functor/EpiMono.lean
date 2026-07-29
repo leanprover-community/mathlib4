@@ -69,7 +69,6 @@ theorem epi_of_epi_map (F : C ⥤ D) [ReflectsEpimorphisms F] {X Y : C} {f : X �
     (h : Epi (F.map f)) : Epi f :=
   ReflectsEpimorphisms.reflects f h
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual]
 instance preservesMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesMonomorphisms F]
     [PreservesMonomorphisms G] : PreservesMonomorphisms (F ⋙ G) where

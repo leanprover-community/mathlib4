@@ -192,7 +192,7 @@ lemma primeFactors_gcd_choose_of_isPrimePow (h : IsPrimePow n) :
   intro p hp
   simp only [mem_primeFactors, ne_eq] at hp
   obtain ⟨hp₁, hp₂, hp₃⟩ := hp
-  haveI : Fact (Nat.Prime p) := ⟨hp₁⟩
+  have : Fact (Nat.Prime p) := ⟨hp₁⟩
   simp_rw [Finset.dvd_gcd_iff, ← modEq_zero_iff_dvd] at hp₂
   have := eq_pow_multiplicity_of_choose_modEq_zero_nat h.pos hp₂
   have dvd_pow : n.minFac ∣  p ^ multiplicity p n := this ▸ minFac_dvd _
@@ -218,7 +218,7 @@ theorem gcd_choose_eq_one_of_not_isPrimePow (hn : 1 < n) (hpn : ¬ IsPrimePow n)
   contrapose! hpn
   obtain ⟨q, hq, h⟩ := Nat.exists_prime_and_dvd hpn
   simp_rw [Finset.dvd_gcd_iff, ← modEq_zero_iff_dvd] at h
-  haveI : Fact (Nat.Prime q) := ⟨hq⟩
+  have : Fact (Nat.Prime q) := ⟨hq⟩
   have := eq_pow_multiplicity_of_choose_modEq_zero_nat (zero_lt_of_lt hn) h
   refine (isPrimePow_nat_iff n).mpr ⟨q, _, hq, Dvd.multiplicity_pos ?_, this.symm⟩
   specialize h 1 (by grind)

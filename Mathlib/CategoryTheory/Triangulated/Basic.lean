@@ -471,7 +471,7 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 variable {J : Type*} [Category* J]
 

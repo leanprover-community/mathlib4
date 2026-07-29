@@ -3,12 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Pi
-import Mathlib.Algebra.CharP.Quotient
-import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.RingTheory.MvPolynomial.Ideal
-import Mathlib.Tactic.Ring.NamePolyVars
+module
+
+public import Mathlib.Algebra.CharP.Pi
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.RingTheory.MvPolynomial.Ideal
+public import Mathlib.Tactic.Ring.NamePolyVars
 
 /-! # `algebraMap R (CliffordAlgebra Q)` is not always injective.
 
@@ -30,10 +32,9 @@ As a bonus result, we also show `BilinMap.not_forall_toQuadraticMap_surjective`:
 are quadratic forms that cannot be expressed via even non-symmetric bilinear forms.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
-open LinearMap (BilinForm)
-open LinearMap (BilinMap)
+open LinearMap (BilinForm BilinMap)
 
 name_poly_vars X, Y, Z over ZMod 2
 

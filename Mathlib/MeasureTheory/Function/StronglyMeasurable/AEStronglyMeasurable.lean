@@ -674,7 +674,7 @@ theorem _root_.MeasurableEmbedding.aestronglyMeasurable_map_iff {γ : Type*}
 theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β]
     [PseudoMetrizableSpace γ] {g : β → γ} {f : α → β} (hg : IsEmbedding g) :
     AEStronglyMeasurable (fun x => g (f x)) μ ↔ AEStronglyMeasurable f μ := by
-  letI := pseudoMetrizableSpacePseudoMetric γ
+  let := pseudoMetrizableSpacePseudoMetric γ
   borelize β γ
   refine
     ⟨fun H => aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨?_, ?_⟩, fun H =>
@@ -947,7 +947,9 @@ theorem exists_set_sigmaFinite (hf : AEFinStronglyMeasurable f μ) :
   exact Eventually.of_forall hgt_zero
 
 /-- A measurable set `t` such that `f =ᵐ[μ.restrict tᶜ] 0` and `sigma_finite (μ.restrict t)`. -/
-def sigmaFiniteSet (hf : AEFinStronglyMeasurable f μ) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def sigmaFiniteSet (hf : AEFinStronglyMeasurable f μ) : Set α :=
   hf.exists_set_sigmaFinite.choose
 
 protected theorem measurableSet (hf : AEFinStronglyMeasurable f μ) :

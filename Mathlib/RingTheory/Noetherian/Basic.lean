@@ -386,7 +386,7 @@ lemma FG.of_le [IsNoetherianRing R] {S T : Submodule R M} (hT : T.FG) (hST : S â
 See also `Submodule.CoFG.fg_of_disjoint`. -/
 theorem FG.of_disjoint_of_isNoetherian_quotient {S T : Submodule R M} [IsNoetherian R (M â§¸ T)]
     (hST : Disjoint S T) : S.FG :=
-  Module.Finite.iff_fg.mp <| .of_injective (T.mkQ.domRestrict S) (by simp [hST.eq_bot])
+  Module.Finite.iff_fg.mp <| .of_injective (T.mkQ.domRestrict S) (by simp [hST])
 
 end Submodule
 

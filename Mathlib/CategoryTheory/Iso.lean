@@ -83,7 +83,7 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
     _     = β.inv                 := by grind
 
 /-- Inverse isomorphism. -/
-@[symm]
+@[symm, implicit_reducible]
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
@@ -112,7 +112,7 @@ theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) 
   ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
 
 /-- Identity isomorphism. -/
-@[refl, simps (attr := grind =)]
+@[refl, simps (attr := grind =), implicit_reducible]
 def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
@@ -127,7 +127,7 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
 /-- Composition of two isomorphisms -/
-@[simps (attr := grind =)]
+@[simps (attr := grind =), implicit_reducible]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
@@ -219,7 +219,7 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
 attribute [local grind] Function.LeftInverse Function.RightInverse
 
 /-- The bijection `(Z ⟶ X) ≃ (Z ⟶ Y)` induced by `α : X ≅ Y`. -/
-@[to_dual (attr := simps) homFromEquiv
+@[implicit_reducible, to_dual (attr := simps) homFromEquiv
 /-- The bijection `(X ⟶ Z) ≃ (Y ⟶ Z)` induced by `α : X ≅ Y`. -/]
 def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
   toFun f := f ≫ α.hom
@@ -229,6 +229,7 @@ def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
 
 end Iso
 
+set_option linter.translate.warnInvalid false in
 /-- The `IsIso` typeclass expresses that a morphism is invertible.
 
 Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get
@@ -238,7 +239,6 @@ class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 
-set_option linter.translateOverwrite false in
 /-- `IsIso.mk'` is the dual of `IsIso.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
 @[to_dual existing mk]
@@ -469,7 +469,7 @@ variable {D : Type u₂}
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/
-@[simps]
+@[simps, implicit_reducible]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv

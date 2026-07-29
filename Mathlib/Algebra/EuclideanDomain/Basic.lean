@@ -55,7 +55,7 @@ theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
     rw [← div_add_mod a b, h, add_zero]
     exact dvd_mul_right _ _, fun ⟨c, e⟩ => by
     rw [e, ← add_left_cancel_iff, div_add_mod, add_zero]
-    haveI := Classical.dec
+    have := Classical.dec
     by_cases b0 : b = 0
     · simp only [b0, zero_mul]
     · rw [mul_div_cancel_left₀ _ b0]⟩
@@ -419,7 +419,7 @@ section RingEquiv
 variable {R S : Type*} [EuclideanDomain R] [CommRing S]
 
 /-- If `S` is a nontrivial commutative ring isomorphic to a Euclidean domain
- `R` then it is also a Euclidean domain. -/
+`R` then it is also a Euclidean domain. -/
 protected abbrev RingEquiv.euclideanDomain (e : S ≃+* R) : EuclideanDomain S where
   toNontrivial := e.nontrivial
   quotient a b := e.symm (e a / e b)

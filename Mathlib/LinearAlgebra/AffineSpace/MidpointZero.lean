@@ -23,10 +23,12 @@ public section
 
 open AffineMap AffineEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_inv_two {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (2⁻¹ : R) = midpoint R a b :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_one_half {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (1 / 2 : R) = midpoint R a b := by
   rw [one_div, lineMap_inv_two]

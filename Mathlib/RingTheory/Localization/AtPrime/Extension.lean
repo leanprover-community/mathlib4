@@ -168,8 +168,8 @@ theorem equivQuotientMapMaximalIdeal_apply_mk [p.IsMaximal] (x : S) :
 
 theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
     [(Ideal.map (algebraMap S Sₚ) P).LiesOver (maximalIdeal Rₚ)] :
-    (maximalIdeal Rₚ).inertiaDeg (P.map (algebraMap S Sₚ)) = p.inertiaDeg P := by
-  rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+    (maximalIdeal Rₚ).inertiaDeg' (P.map (algebraMap S Sₚ)) = p.inertiaDeg' P := by
+  rw [inertiaDeg'_algebraMap, inertiaDeg'_algebraMap]
   refine Algebra.finrank_eq_of_equiv_equiv (equivQuotMaximalIdeal p Rₚ).symm
     (equivQuotientMapOfIsMaximal p Sₚ P).symm ?_
   ext x
@@ -207,6 +207,7 @@ open IsLocalization AtPrime
 variable [IsDomain R] [IsDedekindDomain S] [IsTorsionFree R S] [Algebra R Sₚ] [IsScalarTower R S Sₚ]
   [IsScalarTower R Rₚ Sₚ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 For `R ⊆ S` an extension of Dedekind domains and `p` a prime ideal of `R`, the bijection
 between the primes of `S` over `p` and the primes over the maximal ideal of `Rₚ` in `Sₚ` where
@@ -238,8 +239,8 @@ theorem primesOverEquivPrimesOver_symm_apply (hp : p ≠ ⊥) (Q : (maximalIdeal
     ((primesOverEquivPrimesOver p Rₚ Sₚ hp).symm Q).1 = Ideal.comap (algebraMap S Sₚ) Q := rfl
 
 theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) (P : p.primesOver S) :
-    (maximalIdeal Rₚ).inertiaDeg (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
-      p.inertiaDeg P.val := by
+    (maximalIdeal Rₚ).inertiaDeg' (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
+      p.inertiaDeg' P.val := by
   have : NeZero p := ⟨hp⟩
   have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
     (ne_bot_of_mem_primesOver (NeZero.ne _) P.prop) inferInstance

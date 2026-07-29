@@ -196,7 +196,7 @@ theorem FG.exists_span_finset_card_eq_spanFinrank {p : Submodule R M} (h : p.FG)
   obtain ⟨s, ⟨hs₁, hs₂⟩⟩ := exists_span_set_encard_eq_spanFinrank h
   have s_f := Set.finite_of_encard_eq_coe hs₁
   refine ⟨s_f.toFinset, ⟨?_, by simpa using hs₂⟩⟩
-  simpa [s_f.encard_eq_coe_toFinset_card, ENat.coe_inj] using hs₁
+  simpa [s_f.encard_eq_coe_toFinset_card, ENat.natCast_inj] using hs₁
 
 lemma lift_spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Cardinal.{max u v}} :
     Cardinal.lift.{v} p.spanRank ≤ a ↔ ∃ s : Set M, Cardinal.lift.{v} #s ≤ a ∧ span R s = p := by
@@ -283,6 +283,13 @@ lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 
   · exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (by simp)) (by simp)
   · by_contra!
     simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
+
+lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPrincipal ∧ p ≠ ⊥ := by
+  refine ⟨fun h ↦ ⟨?_, (by grind [spanFinrank_bot])⟩,
+    fun ⟨⟨a, ha⟩, _⟩ ↦ ha ▸ spanFinrank_singleton (by simp_all)⟩
+  have fg : p.FG := spanRank_finite_iff_fg.1 (by simp_all [spanFinrank])
+  obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
+  exact ⟨a, ha ▸ (p.span_generators).symm⟩
 
 end Defs
 
@@ -433,7 +440,7 @@ lemma Module.Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R
 
 theorem Submodule.rank_eq_spanRank_of_free [Module.Free R M] [StrongRankCondition R] :
     Module.rank R M = (⊤ : Submodule R M).spanRank := by
-  haveI := nontrivial_of_invariantBasisNumber R
+  have := nontrivial_of_invariantBasisNumber R
   obtain ⟨I, B⟩ := ‹Module.Free R M›
   rw [← Basis.mk_eq_rank'' B, ← Basis.mk_eq_spanRank B, ← Cardinal.lift_id #(Set.range B),
     Cardinal.mk_range_eq_of_injective B.injective, Cardinal.lift_id _]
