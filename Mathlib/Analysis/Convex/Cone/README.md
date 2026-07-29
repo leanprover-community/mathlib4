@@ -13,3 +13,5 @@ The convex cone topics currently covered are:
 * Inner dual cone
 * Farkas' lemma, Hahn-Banach separation, hyperplane separation, double dual of a proper cone
 * M. Riesz extension theorem
+* Closure of cones
+* Tensor products of pointed cones
