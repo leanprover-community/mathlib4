@@ -62,23 +62,9 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
   simp only [Finsupp.single_eq_zero]
   split_ifs; · rfl
-  congr 1
-  symm
-  apply Finset.sum_nbij' (fun (a, b) ↦ (single () a, single () b))
-    fun (f, g) ↦ (f (), g ())
-  · aesop
-  · aesop
-  · aesop
-  · aesop
-  · rintro ⟨i, j⟩ _hij
-    obtain H | H := le_or_gt n j
-    · aesop
-    rw [if_pos H, if_pos]
-    · rfl
-    refine ⟨?_, fun hh ↦ H.not_ge ?_⟩
-    · rintro ⟨⟩
-      simpa [Finsupp.single_eq_same] using le_of_lt H
-    · simpa [Finsupp.single_eq_same] using hh ()
+  simp only [Finsupp.antidiagonal_single, Finset.sum_map, Function.Embedding.coe_prodMap,
+    Function.Embedding.coeFn_mk, Prod.map_fst, Prod.map_snd, lt_iff_le_not_ge,
+    Finsupp.single_le_single, coeff]
 
 /-- A formal power series is invertible if the constant coefficient is invertible. -/
 def invOfUnit (φ : R⟦X⟧) (u : Rˣ) : R⟦X⟧ :=
