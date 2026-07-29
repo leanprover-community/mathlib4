@@ -47,14 +47,6 @@ private lemma sum_posLog_inv_norm_sub_le {s : Finset 𝕜} {w : 𝕜} {c : ℝ} 
         exact h a ha
     _ = #s * log⁺ c⁻¹ := by rw [sum_const, nsmul_eq_mul]
 
-lemma _root_.Finset.Nontrivial.one_lt_card {α : Type*} {s : Finset α} (hs : s.Nontrivial) :
-    1 < #s :=
-  s.one_lt_card_iff_nontrivial.mpr hs
-
-lemma _root_.Finset.Nontrivial.two_le_card {α : Type*} {s : Finset α} (hs : s.Nontrivial) :
-    2 ≤ #s :=
-  s.one_lt_card_iff_nontrivial.mpr hs
-
 /--
 **Separation lemma**: for a finite set `s` of points, closeness to one point of `s`, measured by
 `∑ a ∈ s, log⁺ ‖· - a‖⁻¹`, is detected by the single function `log⁺ ‖∑ a ∈ s, (· - a)⁻¹‖`, up to a
