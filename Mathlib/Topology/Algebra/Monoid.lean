@@ -658,7 +658,7 @@ closure.
 
 See note [reducible non-instances] -/
 @[to_additive (attr := deprecated Subsemigroup.isMulCommutative_topologicalClosure
-(since := "2026-03-12"))
+(since := "2026-07-29"))
 /-- If a subsemigroup of an additive topological semigroup is commutative, then so is its
 topological closure.
 
@@ -735,7 +735,7 @@ instance Submonoid.isMulCommutative_topologicalClosure [T2Space M] (s : Submonoi
 open scoped IsMulCommutative in
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive (attr := deprecated Submonoid.isMulCommutative_topologicalClosure
-(since := "2026-03-12"))
+(since := "2026-07-29"))
 /-- If a submonoid of an additive topological monoid is commutative, then so is its
 topological closure.
 
