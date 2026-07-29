@@ -52,11 +52,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
 
 namespace ContinuousLinearMap
 
@@ -406,6 +401,13 @@ theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
     MDiffAt[s] f x ↔ MDiffAt[s] (Prod.fst ∘ f) x ∧ MDiffAt[s] (Prod.snd ∘ f) x :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
 
+section prod_module
+
+-- `F₁` and `F₂` are normed spaces.
+variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+variable {s : Set M} {x : M}
+
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
       MDiffAt[s] (Prod.fst ∘ f) x ∧ MDiffAt[s] (Prod.snd ∘ f) x := by
@@ -441,6 +443,8 @@ theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔ MDiff (Prod.fst ∘ f) ∧ MDiff (Prod.snd ∘ f) := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact mdifferentiable_prod_iff f
+
+end prod_module
 
 
 section prodMap
