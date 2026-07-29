@@ -105,16 +105,10 @@ supersets which are disjoint up to measure zero when `p` and `q` are finite numb
 `p < q`, then `f` is almost-everywhere measurable. -/
 theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type*} {m : MeasurableSpace α}
     (μ : Measure α) (f : α → ℝ≥0∞)
-    (h : ∀ (p : ℝ≥0) (q : ℝ≥0), p < q →
+    (h : ∀ (p : ℝ≥0∞) (q : ℝ≥0∞), p < q →
       ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
-        { x | f x < p } ⊆ u ∧ { x | (q : ℝ≥0∞) < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
+        { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
     AEMeasurable f μ := by
-  obtain ⟨s, s_count, s_dense, _, s_top⟩ :
-    ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ 0 ∉ s ∧ ∞ ∉ s :=
-    ENNReal.exists_countable_dense_no_zero_top
-  have I : ∀ x ∈ s, x ≠ ∞ := fun x xs hx => s_top (hx ▸ xs)
-  apply MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets μ s s_count s_dense _
-  rintro p hp q hq hpq
-  lift p to ℝ≥0 using I p hp
-  lift q to ℝ≥0 using I q hq
-  exact h p q (ENNReal.coe_lt_coe.1 hpq)
+  obtain ⟨s, s_count, s_dense⟩ := TopologicalSpace.exists_countable_dense ENNReal
+  apply MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets μ s s_count s_dense
+  exact fun p _ q _ hpq ↦ h p q hpq
