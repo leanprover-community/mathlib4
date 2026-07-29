@@ -27,6 +27,7 @@ segments in only one direction.
 
 section ToMove
 
+/-- The natural inclusion of `WithTop ℕ` into `WithBotTop ℤ`. -/
 def ofRight : WithTop ℕ → WithBotTop ℤ
   | ⊤ => ⊤
   | (k : ℕ) => ((k : ℤ) : WithBotTop ℤ)
