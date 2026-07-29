@@ -169,11 +169,11 @@ instance Prod.supConvergenceClass
     [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
   rintro ⟨a, b⟩ s h
-  rw [isLUB_prod, ← range_restrict, ← range_restrict] at h
+  rw [isLUB_prod, ← range_domRestrict, ← range_domRestrict] at h
   have A : Tendsto (fun x : s => (x : α × β).1) atTop (𝓝 a) :=
-    tendsto_atTop_isLUB (monotone_fst.restrict s) h.1
+    tendsto_atTop_isLUB (monotone_fst.domRestrict s) h.1
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
-    tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
+    tendsto_atTop_isLUB (monotone_snd.domRestrict s) h.2
   exact A.prodMk_nhds B
 
 instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [InfConvergenceClass α]
@@ -184,8 +184,8 @@ instance Pi.supConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine ⟨fun f s h => ?_⟩
-  simp only [isLUB_pi, ← range_restrict] at h
-  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
+  simp only [isLUB_pi, ← range_domRestrict] at h
+  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).domRestrict _) (h i)
 
 instance Pi.infConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]

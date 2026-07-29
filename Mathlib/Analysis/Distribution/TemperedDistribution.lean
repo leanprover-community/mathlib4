@@ -175,13 +175,14 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
   filter_upwards [g.coeFn_toLp (1 - p⁻¹)⁻¹ μ] with x hg
   rw [hg]
 
-instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
-    CoeDep (Lp F p μ) f 𝓢'(E, F) where
-  coe := toTemperedDistribution f
+/-- This coercion has to be a `CoeHead`, because `𝓢'(E, F)` can't infer the value of `p` or `μ`. -/
+instance instCoeToTemperedDistribution {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
+    CoeHead (Lp F p μ) 𝓢'(E, F) where
+  coe := toTemperedDistribution
 
 @[simp]
 theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
-    (f : 𝓢(E, F)) : ((f.toLp p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
+    (f : 𝓢(E, F)) : ((f : Lp F p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
   ext g
   simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
   apply integral_congr_ae
@@ -200,7 +201,7 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
   cont := by
     apply PointwiseConvergenceCLM.continuous_of_continuous_eval
     intro g
-    haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
+    have : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
     have hpq : ENNReal.HolderConjugate p (1 - p⁻¹)⁻¹ :=
       ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
     exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹).flip (g.toLp (1 - p⁻¹)⁻¹ μ)).cont
@@ -370,7 +371,7 @@ instance : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
   lineDerivOp_left_add x y f := by
     ext u
-    simp [lineDerivOp_left_add, UniformConvergenceCLM.add_apply, add_comm]
+    simp [lineDerivOp_left_add, add_comm]
 
 instance : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
@@ -438,8 +439,7 @@ theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢'
 @[simp]
 theorem laplacian_apply_apply (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) : (Δ f) u = f (Δ u) := by
   simp [laplacian_eq_sum (stdOrthonormalBasis ℝ E),
-    SchwartzMap.laplacian_eq_sum (stdOrthonormalBasis ℝ E),
-    UniformConvergenceCLM.sum_apply, map_neg, neg_neg]
+    SchwartzMap.laplacian_eq_sum (stdOrthonormalBasis ℝ E), map_neg, neg_neg]
 
 variable [MeasurableSpace E] [BorelSpace E]
 
@@ -602,15 +602,9 @@ def delta (x : E) : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ <|
     (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
 
-@[deprecated (since := "2025-12-23")]
-noncomputable alias _root_.SchwartzMap.delta := delta
-
 @[simp]
 theorem delta_apply (x : E) (f : 𝓢(E, ℂ)) : delta x f = f x :=
   rfl
-
-@[deprecated (since := "2025-12-23")]
-alias _root_.SchwartzMap.delta_apply := delta_apply
 
 open MeasureTheory MeasureTheory.Measure
 
@@ -620,9 +614,6 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 @[simp]
 theorem toTemperedDistribution_dirac_eq_delta (x : E) :
   (dirac x).toTemperedDistribution = delta x := by aesop
-
-@[deprecated (since := "2025-12-23")]
-alias _root_.SchwartzMap.integralCLM_dirac_eq_delta := toTemperedDistribution_dirac_eq_delta
 
 end definition
 

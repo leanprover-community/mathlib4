@@ -154,7 +154,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
 instance instProjectiveCompHausCompHaus (X : Stonean) : Projective (toCompHaus.obj X) where
   factors := by
     intro B C φ f _
-    haveI : ExtremallyDisconnected (toCompHaus.obj X).toTop := X.prop
+    have : ExtremallyDisconnected (toCompHaus.obj X).toTop := X.prop
     have hf : Function.Surjective f := by rwa [← CompHaus.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
       f.hom.hom.continuous
@@ -167,7 +167,7 @@ instance instProjectiveCompHausCompHaus (X : Stonean) : Projective (toCompHaus.o
 instance (X : Stonean) : Projective (toProfinite.obj X) where
   factors := by
     intro B C φ f _
-    haveI : ExtremallyDisconnected (toProfinite.obj X) := X.prop
+    have : ExtremallyDisconnected (toProfinite.obj X) := X.prop
     have hf : Function.Surjective f := by rwa [← Profinite.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
       f.hom.hom.continuous
@@ -180,7 +180,7 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
 instance (X : Stonean) : Projective X where
   factors := by
     intro B C φ f _
-    haveI : ExtremallyDisconnected X.toTop := X.prop
+    have : ExtremallyDisconnected X.toTop := X.prop
     have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
       f.hom.hom.continuous

@@ -107,7 +107,7 @@ theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) (
     multiplicity a b = (normalizedFactors b).count (normalize a) := by
   have := emultiplicity_eq_count_normalizedFactors ha hb
   rwa [(finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity,
-    ENat.coe_inj] at this
+    ENat.natCast_inj] at this
 
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
@@ -157,7 +157,7 @@ lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
   refine ⟨fun h _ _ ↦ emultiplicity_le_emultiplicity_of_dvd_right h, fun h ↦ ?_⟩
   by_cases hb : b = 0
   · simp_all
-  letI : NormalizationMonoid R := UniqueFactorizationMonoid.normalizationMonoid
+  let : StrongNormalizationMonoid R := UniqueFactorizationMonoid.strongNormalizationMonoid
   rw [dvd_iff_normalizedFactors_le_normalizedFactors ha hb, Multiset.le_iff_count]
   intro q
   by_cases hq : q ∈ normalizedFactors a
@@ -176,7 +176,7 @@ lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n �
   intro H p hp
   have := H p hp
   rwa [emultiplicity_pow hp, emultiplicity_pow hp,
-    ENat.mul_le_mul_left_iff (by exact_mod_cast hn) (ENat.coe_ne_top _)] at this
+    ENat.mul_le_mul_left_iff (by exact_mod_cast hn) (ENat.natCast_ne_top _)] at this
 
 @[fun_prop]
 lemma hasFiniteMulSupport_fun_pow_multiplicity {α M : Type*} [CommMonoid M] [Subsingleton Rˣ]

@@ -79,7 +79,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
-  coe_injective' := by rintro ⟨f, hf⟩; congr!
+  coe_injective := by rintro ⟨f, hf⟩; congr!
 
 initialize_simps_projections Chain (toFun → apply)
 
@@ -226,16 +226,16 @@ theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup 
 lemma isLUB_range_ωSup (c : Chain α) : IsLUB (Set.range c) (ωSup c) := by
   constructor
   · simp only [upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      Set.mem_setOf_eq]
+      Set.mem_ofPred_eq]
     exact fun a ↦ le_ωSup c a
   · simp only [lowerBounds, upperBounds, Set.mem_range, forall_exists_index,
-      forall_apply_eq_imp_iff, Set.mem_setOf_eq]
+      forall_apply_eq_imp_iff, Set.mem_ofPred_eq]
     exact fun ⦃a⦄ a_1 ↦ ωSup_le c a a_1
 
 lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a = ωSup c := by
   rw [le_antisymm_iff]
   simp only [IsLUB, IsLeast, upperBounds, lowerBounds, Set.mem_range, forall_exists_index,
-    forall_apply_eq_imp_iff, Set.mem_setOf_eq] at h
+    forall_apply_eq_imp_iff, Set.mem_ofPred_eq] at h
   constructor
   · apply h.2
     exact fun a ↦ le_ωSup c a
@@ -244,7 +244,7 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
@@ -303,6 +303,8 @@ lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
 alias ⟨ωScottContinuous.map_ωSup_of_orderHom, ωScottContinuous.of_map_ωSup_of_orderHom⟩ :=
   ωScottContinuous_iff_map_ωSup_of_orderHom
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 attribute [local push] Function.const_def
 
@@ -330,7 +332,7 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   · have := c.monotone hij _ ha; apply mem_unique this hb
   · have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
 
-open Classical in
+open scoped Classical in
 /-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `Part α`. -/
 protected noncomputable def ωSup (c : Chain (Part α)) : Part α :=
   if h : ∃ a, some a ∈ c then some (Classical.choose h) else none
@@ -493,7 +495,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
 
 instance : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h

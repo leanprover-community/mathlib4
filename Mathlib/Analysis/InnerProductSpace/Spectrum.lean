@@ -140,7 +140,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot (hT : T.IsSymmetric) :
   have hT' : IsSymmetric _ :=
     hT.restrict_invariant hT.orthogonalComplement_iSup_eigenspaces_invariant
   -- a self-adjoint operator on a nontrivial inner product space has an eigenvalue
-  haveI :=
+  have :=
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
   exact Submodule.eq_bot_of_subsingleton
 
@@ -161,7 +161,7 @@ noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
 
 theorem directSum_decompose_apply [_hT : Fact T.IsSymmetric] (x : E) (μ : Eigenvalues T) :
     DirectSum.decompose (fun μ : Eigenvalues T => eigenspace T μ) x μ =
-      (eigenspace T μ).orthogonalProjection x :=
+      (eigenspace T μ).orthogonalProjectionOnto x :=
   rfl
 
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives

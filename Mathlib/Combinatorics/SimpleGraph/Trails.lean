@@ -91,8 +91,9 @@ theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {
   ⟨fun h => p.edges_subset_edgeSet h,
    fun he => by simpa [Nat.succ_le_iff] using (h e he).ge⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The edge set of an Eulerian graph is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     Fintype G.edgeSet :=
   Fintype.ofFinset h.isTrail.edgesFinset fun e => by
@@ -119,6 +120,7 @@ theorem IsEulerian.edgeSet_eq {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     p.edgeSet = G.edgeSet := by
   rwa [← h.isTrail.isEulerian_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
@@ -130,7 +132,7 @@ theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEuleri
   rw [← Multiset.coe_countP, Multiset.countP_eq_card_filter, ← card_incidenceFinset_eq_degree]
   change Multiset.card _ = _
   congr 1
-  convert_to _ = (ht.isTrail.edgesFinset.filter (x ∈ ·)).val
+  convert_to! _ = (ht.isTrail.edgesFinset.filter (x ∈ ·)).val
   rw [ht.edgesFinset_eq, G.incidenceFinset_eq_filter x]
 
 theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V}

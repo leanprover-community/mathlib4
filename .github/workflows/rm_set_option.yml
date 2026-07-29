@@ -31,7 +31,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Configure Lean
         uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
@@ -42,7 +42,7 @@ jobs:
 
       - name: Restore progress cache
         if: toJson(inputs.dry_run) != 'true'
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: scripts/.rm_set_option_progress.jsonl
           # Use run_id in restore-keys so we always pick up the most recent cache
@@ -75,7 +75,7 @@ jobs:
         # Skip on dry-run (no files are modified) and if the progress file was
         # cleaned up (meaning the run completed fully).
         if: always() && toJson(inputs.dry_run) != 'true' && hashFiles('scripts/.rm_set_option_progress.jsonl') != ''
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: scripts/.rm_set_option_progress.jsonl
           key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
@@ -131,7 +131,7 @@ jobs:
 
       - name: Send Zulip message (success)
         if: steps.pr.outcome == 'success'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -144,7 +144,7 @@ jobs:
 
       - name: Send Zulip message (failure)
         if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'

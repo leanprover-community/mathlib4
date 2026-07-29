@@ -50,6 +50,7 @@ See `Algebra.QuasiFiniteAt.of_weaklyQuasiFiniteAt`. -/
 abbrev Algebra.WeaklyQuasiFiniteAt :=
   Algebra.QuasiFiniteAt R (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S))))
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Algebra.weaklyQuasiFiniteAt_iff :
     Algebra.WeaklyQuasiFiniteAt R q ↔
       Algebra.QuasiFinite R (Localization.AtPrime q ⧸

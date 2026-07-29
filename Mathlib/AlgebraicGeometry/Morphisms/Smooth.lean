@@ -183,14 +183,17 @@ instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :
 instance (priority := 900) [IsOpenImmersion f] : Smooth f :=
   SmoothOfRelativeDimension.smooth 0 f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth g] :
     Smooth (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth f] :
     Smooth (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [Smooth f] : Smooth (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -220,7 +223,7 @@ instance smoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
         g.appLE_map_assoc, Scheme.Hom.appLE_comp_appLE]
     refine ⟨U₂, hU₂, X.basicOpen s, hV₁'.basicOpen s, hx₁, e, heq ▸ ?_⟩
     apply IsStandardSmoothOfRelativeDimension.comp ?_ hf₂
-    haveI : IsLocalization.Away r Γ(Y, Y.basicOpen r) := hV₂.isLocalization_basicOpen r
+    have : IsLocalization.Away r Γ(Y, Y.basicOpen r) := hV₂.isLocalization_basicOpen r
     exact (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).left
       _ r _ hf₁
 
@@ -246,7 +249,7 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
     letI := (f.appLE U V hVU).hom.toAlgebra
     (f.stalkMap x).hom.FormallySmooth ↔
       hV.primeIdealOf ⟨x, hx⟩ ∈ Algebra.smoothLocus Γ(Y, U) Γ(X, V) := by
-  letI := (f.appLE U V hVU).hom.toAlgebra
+  let := (f.appLE U V hVU).hom.toAlgebra
   let p := (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal
   let q := (hV.primeIdealOf ⟨x, hx⟩).asIdeal
   have : q.LiesOver p :=
@@ -318,6 +321,7 @@ lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
   rw [Scheme.Hom.mem_smoothLocus, formallySmooth_stalkMap_iff U hU V hV hVU hxV]
   exact inferInstanceAs (Algebra.IsSmoothAt _ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.smoothLocus_eq_top_iff {f : X ⟶ Y} [LocallyOfFinitePresentation f] :
     f.smoothLocus = ⊤ ↔ Smooth f := by
   refine ⟨fun H ↦ ?_, fun _ ↦ f.smoothLocus_eq_top⟩
@@ -358,6 +362,7 @@ lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_perfectField
       (L := (Spec.structureSheaf K).presheaf.stalk (f (genericPoint X)))
   exact Algebra.FormallySmooth.of_perfectField
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.dense_smoothLocus_of_perfectField
     {K : Type u} [Field K] [PerfectField K] [IsReduced X]
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f] : Dense (f.smoothLocus : Set X) := by
@@ -376,10 +381,10 @@ lemma Scheme.Hom.dense_smoothLocus_of_perfectField
   let U : X.Opens :=
     ⟨(⋃₀ (irreducibleComponents X \ {irreducibleComponent x}))ᶜ, by
       rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-      exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.diff.isClosed_biUnion
+      exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.sdiff.isClosed_biUnion
         fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1⟩
   have hU : closure U = irreducibleComponent x :=
-    closure_sUnion_irreducibleComponents_diff_singleton
+    closure_sUnion_irreducibleComponents_sdiff_singleton
       TopologicalSpace.NoetherianSpace.finite_irreducibleComponents
       _ (irreducibleComponent_mem_irreducibleComponents x)
   have : AlgebraicGeometry.IsIntegral U :=

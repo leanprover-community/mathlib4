@@ -35,7 +35,7 @@ variable (X) {Y} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 section closedPoints
 
 /-- The set of closed points. -/
-def closedPoints : Set X := setOf (IsClosed {·})
+def closedPoints : Set X := Set.ofPred (IsClosed {·})
 
 variable {X}
 
@@ -89,10 +89,10 @@ lemma jacobsonSpace_iff_locallyClosed :
     have : Z ⊆ closure Z \ Z := by
       refine subset_closure.trans ?_
       nth_rw 1 [← H isClosed_closure]
-      rw [hZ'.closure_subset_iff, Set.subset_diff, Set.disjoint_iff, Set.inter_assoc,
+      rw [hZ'.closure_subset_iff, Set.subset_sdiff, Set.disjoint_iff, Set.inter_assoc,
         Set.inter_comm _ Z, e]
       exact ⟨Set.inter_subset_left, Set.inter_subset_right⟩
-    rw [Set.subset_diff, disjoint_self, Set.bot_eq_empty] at this
+    rw [Set.subset_sdiff, disjoint_self, Set.bot_eq_empty] at this
     exact hZ this.2
   · intro H Z hZ
     refine subset_antisymm (hZ.closure_subset_iff.mpr Set.inter_subset_left) ?_
