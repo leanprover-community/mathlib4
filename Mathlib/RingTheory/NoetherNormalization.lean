@@ -258,11 +258,9 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       set ϕ := kerLiftAlg <| hom2 f I
       have := Quotient.nontrivial_iff.mpr hi
       obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) (ker_ne_top <| hom2 f I)
-      have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
-        AlgHom.ext fun a ↦ by
-          simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
-      exact ⟨s, by lia, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
-        intg.trans _ _ <| (comp ▸ hom2_isIntegral f I fne fi).tower_top _ _⟩
+      have intgϕ := (hom2_isIntegral f I fne fi).kerLift
+      exact ⟨s, by lia, ϕ.comp g, (ϕ.coe_comp g) ▸ (kerLiftAlg_injective _).comp injg,
+        intg.trans g.toRingHom ϕ.toRingHom intgϕ⟩
 
 variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]
   [fin : Algebra.FiniteType k R]
